@@ -6,4 +6,8 @@
     <color name="key_text">#1A1C1E</color>
     <color name="key_hint">#7A7E83</color>
     <color name="keyboard_background">#D2D5DA</color>
+    <color name="suggestion_bar_background">#E8EAED</color>
+    <color name="suggestion_text">#1A1C1E</color>
+    <color name="suggestion_verbatim_text">#1565C0</color>
+    <color name="suggestion_divider">#BFC3C9</color>
 </resources>
