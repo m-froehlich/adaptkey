@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AdaptKey</string>
+    <string name="ime_name">AdaptKey</string>
+    <string name="settings_title">AdaptKey Settings</string>
+    <string name="subtype_de_qwertz">Deutsch (QWERTZ)</string>
+    <string name="settings_scaffold_note">Settings folgen in einer späteren Session (C-01 … C-09).</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple "A" glyph centred in the safe zone; placeholder launcher art for the scaffold. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,30 L70,78 L62,78 L58.5,67 L49.5,67 L46,78 L38,78 Z M51.5,60 L56.5,60 L54,51 Z" />
+</vector>
