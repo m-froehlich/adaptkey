@@ -6,22 +6,32 @@ import android.view.inputmethod.EditorInfo
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
+import de.froehlichmedia.adaptkey.touch.OffsetModel
+import de.froehlichmedia.adaptkey.touch.OffsetStore
 
 /**
  * AdaptKey input method (scaffold).
  *
  * Provides a self-drawn QWERTZ keyboard (L-01) that commits characters straight to the
  * target field via the active [android.view.inputmethod.InputConnection]. Control keys
- * (shift, delete, enter, space) are handled here. The adaptive learning, suggestion bar,
- * autocorrect and emoji/symbol panels described in the specification are intentionally
- * not part of this scaffold.
+ * (shift, delete, enter, space) are handled here, and raw taps continuously train the
+ * personal offset model (T-03), which is persisted across sessions. The suggestion bar,
+ * autocorrect and emoji/symbol panels described in the specification are intentionally not
+ * part of this stage yet.
  */
 class AdaptKeyService : InputMethodService() {
     
     private var keyboardView: AdaptKeyboardView? = null
+    private var offsetModel: OffsetModel? = null
+    
+    override fun onCreate() {
+        super.onCreate()
+        offsetModel = OffsetStore.load(this)
+    }
     
     override fun onCreateInputView(): View {
         val view = AdaptKeyboardView(this)
+        view.offsetModel = offsetModel
         view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _ -> handleKey(key) }
         keyboardView = view
         return view
@@ -31,6 +41,17 @@ class AdaptKeyService : InputMethodService() {
         super.onStartInput(info, restarting)
         // Reset transient state on every new field; auto-shift heuristics arrive in a later session.
         keyboardView?.shifted = false
+    }
+    
+    override fun onFinishInput() {
+        super.onFinishInput()
+        // Persist what the model learned while this field was focused (T-03).
+        offsetModel?.let { OffsetStore.save(this, it) }
+    }
+    
+    override fun onDestroy() {
+        offsetModel?.let { OffsetStore.save(this, it) }
+        super.onDestroy()
     }
     
     private fun handleKey(key: Key) {

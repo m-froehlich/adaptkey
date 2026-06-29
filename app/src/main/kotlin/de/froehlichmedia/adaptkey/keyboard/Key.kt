@@ -20,7 +20,7 @@ enum class KeyCode {
  * @property code the functional category, see [KeyCode]
  * @property char the character emitted for [KeyCode.CHAR] keys, otherwise null
  * @property hint optional corner hint glyph for the long-press secondary (L-05 / L-06); not yet active in the scaffold
- * @property weight relative horizontal weight within its row; drives the key-proportion stubs (L-02 / L-04)
+ * @property weight relative horizontal weight within its row; drives the configurable key proportions (L-02 / L-04, C-01)
  */
 data class Key(
     val label: String,
@@ -28,4 +28,12 @@ data class Key(
     val char: Char? = null,
     val hint: String? = null,
     val weight: Float = 1f
-)
+) {
+    
+    /**
+     * Stable identifier used to key the personal offset model (T-03). Char keys are keyed by their
+     * character, control keys by their [KeyCode] name. Unique within a single layout.
+     */
+    val id: String
+        get() = if (code == KeyCode.CHAR && char != null) "c:$char" else code.name
+}

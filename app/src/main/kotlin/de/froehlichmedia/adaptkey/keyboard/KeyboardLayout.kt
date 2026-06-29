@@ -1,14 +1,16 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 /**
- * Static QWERTZ key map for the scaffold (L-01).
+ * QWERTZ key map (L-01).
  *
- * Includes structural stubs for the persistent number row (L-06), the AltGr-style
- * long-press hints (L-05) and the adjusted key proportions (L-02 narrower space /
- * wider comma & full stop, L-04 wider backspace). None of the long-press / proportion
- * tuning is wired to behaviour yet — only the structure is present.
+ * The persistent number row (L-06) and the AltGr-style long-press hints (L-05) are present as
+ * structure; the long-press behaviour itself is not wired up yet. Key proportions (L-02 narrower
+ * space / wider comma & full stop, L-04 wider backspace) are driven by a [KeyProportions]
+ * configuration (C-01) rather than hard-coded weights.
  */
 object KeyboardLayout {
+    
+    private const val THIRD_ROW_LETTERS = "yxcvbnm"
     
     // L-06: German-QWERTZ shifted symbol per digit, shown as a corner hint.
     private val NUMBER_HINTS = mapOf(
@@ -22,31 +24,45 @@ object KeyboardLayout {
     )
     
     /**
+     * Builds the keyboard for the given configuration.
+     *
+     * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
+     * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
-    fun rows(): List<List<Key>> {
-        val numberRow = "1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) }
-        val row1 = "qwertzuiop".map { c -> charKey(c, LETTER_HINTS[c]) }
-        val row2 = "asdfghjkl".map { c -> charKey(c, LETTER_HINTS[c]) }
+    fun rows(
+        proportions: KeyProportions = KeyProportions.DEFAULT,
+        showNumberRow: Boolean = true
+    ): List<List<Key>> {
+        val result = ArrayList<List<Key>>()
         
-        val row3 = buildList {
-            add(Key(label = "⇧", code = KeyCode.SHIFT, weight = 1.5f))
-            "yxcvbnm".forEach { c -> add(charKey(c, LETTER_HINTS[c])) }
-            // L-04: backspace widened relative to its neighbours.
-            add(Key(label = "⌫", code = KeyCode.DELETE, weight = 1.5f))
+        if (showNumberRow) {
+            // L-06: persistent number row with shifted-symbol hints.
+            result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
         }
         
-        val bottomRow = buildList {
-            // L-03: combined emoji / numeric-layer key (stub: no panel yet).
-            add(Key(label = "?123", code = KeyCode.SYMBOL, weight = 1.5f))
+        result.add("qwertzuiop".map { c -> charKey(c, LETTER_HINTS[c]) })
+        result.add("asdfghjkl".map { c -> charKey(c, LETTER_HINTS[c]) })
+        
+        // L-04: the backspace surcharge is taken evenly from the third-row letters.
+        val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW_LETTERS.length)
+        result.add(buildList {
+            add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
+            THIRD_ROW_LETTERS.forEach { c -> add(charKey(c, LETTER_HINTS[c], weight = thirdRowLetterWeight)) }
+            add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
+        })
+        
+        result.add(buildList {
+            // L-03: combined emoji / numeric-layer key (no panel yet).
+            add(Key(label = "?123", code = KeyCode.SYMBOL, weight = proportions.symbolWeight))
             // L-02: comma & full stop widened, space narrowed.
-            add(charKey(',', weight = 1.3f))
-            add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = 3.5f))
-            add(charKey('.', weight = 1.3f))
-            add(Key(label = "↵", code = KeyCode.ENTER, weight = 1.5f))
-        }
+            add(charKey(',', weight = proportions.commaWeight))
+            add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
+            add(charKey('.', weight = proportions.periodWeight))
+            add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
+        })
         
-        return listOf(numberRow, row1, row2, row3, bottomRow)
+        return result
     }
     
     private fun charKey(c: Char, hint: String? = null, weight: Float = 1f): Key {

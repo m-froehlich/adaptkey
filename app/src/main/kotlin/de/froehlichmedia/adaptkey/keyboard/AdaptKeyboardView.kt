@@ -9,14 +9,17 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.touch.OffsetModel
 
 /**
- * Minimal self-drawn keyboard view for the scaffold.
+ * Self-drawn keyboard view.
  *
- * Lays each row out horizontally by [Key.weight] and resolves a tap from the initial
- * contact point only (T-01): the key is decided at [MotionEvent.ACTION_DOWN]; subsequent
- * movement is ignored and does not trigger swipe behaviour. The raw down coordinates are
- * forwarded to the listener so the later offset model (T-03) can consume them.
+ * Lays each row out horizontally by [Key.weight] (proportions from [proportions], L-02 / L-04)
+ * and resolves a tap from the initial contact point only (T-01): the key is decided at
+ * [MotionEvent.ACTION_DOWN]; subsequent movement is ignored and does not trigger swipe
+ * behaviour. When an [offsetModel] is attached it both refines the resolution (T-03) and is fed
+ * the confirmed tap so it keeps learning. The raw down coordinates are also forwarded to the
+ * listener for later token-level correction (T-02).
  */
 class AdaptKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -32,13 +35,28 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     var onKeyListener: OnKeyListener? = null
     
+    /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
+    var offsetModel: OffsetModel? = null
+    
     var shifted: Boolean = false
         set(value) {
             field = value
             invalidate()
         }
     
-    private val rows = KeyboardLayout.rows()
+    var proportions: KeyProportions = KeyProportions.DEFAULT
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    var showNumberRow: Boolean = true
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    private var rows = KeyboardLayout.rows(proportions, showNumberRow)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
     
@@ -72,6 +90,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     init {
         setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
+    }
+    
+    private fun rebuildRows() {
+        rows = KeyboardLayout.rows(proportions, showNumberRow)
+        if (width > 0) {
+            layoutKeys(width)
+        }
+        requestLayout()
+        invalidate()
     }
     
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -131,10 +158,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         when (event.actionMasked) {
             // T-01: the initial contact point is the authoritative tap coordinate.
             MotionEvent.ACTION_DOWN -> {
-                val key = keyAt(event.x, event.y)
-                if (key != null) {
+                val resolved = resolveKey(event.x, event.y)
+                if (resolved != null) {
+                    val (key, rect) = resolved
                     pressedKey = key
                     invalidate()
+                    // T-03: feed the confirmed tap back into the personal offset model.
+                    offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
                     onKeyListener?.onKey(key, event.x, event.y)
                 }
                 return true
@@ -151,13 +181,24 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
     
-    private fun keyAt(x: Float, y: Float): Key? {
-        for ((key, rect) in keyRects) {
-            if (rect.contains(x, y)) {
-                return key
+    private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
+        if (keyRects.isEmpty()) {
+            return null
+        }
+        val model = offsetModel
+        if (model != null) {
+            val candidates = keyRects.map { (key, rect) ->
+                OffsetModel.Candidate(key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f)
+            }
+            val chosen = model.resolve(candidates, x, y)
+            if (chosen != null) {
+                val match = keyRects.firstOrNull { it.first.id == chosen.id }
+                if (match != null) {
+                    return match
+                }
             }
         }
-        return null
+        return keyRects.firstOrNull { it.second.contains(x, y) }
     }
     
     private fun labelFor(key: Key): String {

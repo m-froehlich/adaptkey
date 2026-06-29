@@ -1,0 +1,91 @@
+package de.froehlichmedia.adaptkey.keyboard
+
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+/**
+ * Unit tests for the QWERTZ key map (L-01) including the number row (L-06), long-press hints
+ * (L-05), proportion wiring (L-02 / L-04) and the offset-model key ids.
+ */
+class KeyboardLayoutTest {
+    
+    private fun List<Key>.byChar(c: Char): Key {
+        return first { it.char == c }
+    }
+    
+    @Test
+    fun `default layout has five rows`() {
+        assertEquals(5, KeyboardLayout.rows().size)
+    }
+    
+    @Test
+    fun `hiding the number row drops the top row`() {
+        val rows = KeyboardLayout.rows(showNumberRow = false)
+        assertEquals(4, rows.size)
+        assertEquals('q', rows.first().first().char)
+    }
+    
+    @Test
+    fun `number row carries digits one to zero with shifted hints`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        assertEquals(10, numberRow.size)
+        assertEquals('1', numberRow.first().char)
+        assertEquals('0', numberRow.last().char)
+        assertEquals("!", numberRow.byChar('1').hint)
+        assertEquals("/", numberRow.byChar('7').hint)
+        assertEquals("=", numberRow.byChar('0').hint)
+    }
+    
+    @Test
+    fun `letters carry the AltGr long-press hints`() {
+        val rows = KeyboardLayout.rows()
+        
+        assertEquals("@", rows[1].byChar('q').hint)
+        assertEquals("€", rows[1].byChar('e').hint)
+        assertEquals("°", rows[2].byChar('d').hint)
+        assertEquals("#", rows[2].byChar('h').hint)
+        assertEquals("+", rows[3].byChar('n').hint)
+        assertEquals("-", rows[3].byChar('m').hint)
+    }
+    
+    @Test
+    fun `third row starts with shift and ends with a widened backspace`() {
+        val proportions = KeyProportions()
+        val thirdRow = KeyboardLayout.rows(proportions)[3]
+        
+        assertEquals(KeyCode.SHIFT, thirdRow.first().code)
+        assertEquals(KeyCode.DELETE, thirdRow.last().code)
+        assertEquals(proportions.backspaceWeight, thirdRow.last().weight, 1e-4f)
+        assertEquals(proportions.thirdRowLetterWeight(7), thirdRow.byChar('y').weight, 1e-4f)
+    }
+    
+    @Test
+    fun `bottom row hosts symbol comma space full-stop and enter`() {
+        val proportions = KeyProportions()
+        val bottomRow = KeyboardLayout.rows(proportions).last()
+        
+        assertEquals(KeyCode.SYMBOL, bottomRow[0].code)
+        assertEquals(KeyCode.SPACE, bottomRow[2].code)
+        assertEquals(KeyCode.ENTER, bottomRow[4].code)
+        assertEquals(proportions.commaWeight, bottomRow.byChar(',').weight, 1e-4f)
+        assertEquals(proportions.periodWeight, bottomRow.byChar('.').weight, 1e-4f)
+        assertEquals(proportions.spaceWeight, bottomRow[2].weight, 1e-4f)
+    }
+    
+    @Test
+    fun `custom proportions flow into the layout`() {
+        val bottomRow = KeyboardLayout.rows(KeyProportions(spaceWeight = 2f)).last()
+        assertEquals(2f, bottomRow[2].weight, 1e-4f)
+    }
+    
+    @Test
+    fun `key ids distinguish characters from control keys`() {
+        val rows = KeyboardLayout.rows()
+        
+        assertEquals("c:q", rows[1].byChar('q').id)
+        assertEquals("c:,", rows.last().byChar(',').id)
+        assertEquals("SPACE", rows.last()[2].id)
+        assertEquals("SHIFT", rows[3].first().id)
+    }
+}
