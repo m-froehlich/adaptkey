@@ -11,7 +11,10 @@ import android.view.inputmethod.EditorInfo
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
-import de.froehlichmedia.adaptkey.suggestion.StubSuggestionProvider
+import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
+import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
+import de.froehlichmedia.adaptkey.dictionary.SeedData
+import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
@@ -25,8 +28,8 @@ import de.froehlichmedia.adaptkey.touch.OffsetStore
  * Provides a self-drawn QWERTZ keyboard (L-01). Letters are accumulated in a composing token so
  * suggestions can complete or replace it; delimiters finalise the token. Raw taps continuously
  * train the personal offset model (T-03), which is persisted across sessions. The suggestion bar
- * applies the stabilisation policy (S-01 … S-06) and is fed by a placeholder provider until the
- * dictionary and prediction sessions land. The autocorrect commit policy (applying a pending
+ * applies the stabilisation policy (S-01 … S-06) and is fed by the SQLite personal dictionary
+ * (tier-1 n-gram), which learns committed words. The autocorrect commit policy (applying a pending
  * replacement on a delimiter), the emoji / numeric panel (L-03) and gestures are not part of this
  * stage yet.
  */
@@ -37,8 +40,10 @@ class AdaptKeyService : InputMethodService() {
     private var offsetModel: OffsetModel? = null
     
     private val config = SuggestionConfig()
-    private val provider: SuggestionProvider = StubSuggestionProvider()
     private val controller = SuggestionController(config)
+    private lateinit var dictionaryStore: DictionaryStore
+    private lateinit var provider: SuggestionProvider
+    private var previousWord: String? = null
     
     private val composing = StringBuilder()
     private val handler = Handler(Looper.getMainLooper())
@@ -50,6 +55,12 @@ class AdaptKeyService : InputMethodService() {
     override fun onCreate() {
         super.onCreate()
         offsetModel = OffsetStore.load(this)
+        val store = SqliteDictionaryStore(this)
+        if (store.isEmpty()) {
+            SeedData.seed(store)
+        }
+        dictionaryStore = store
+        provider = DictionarySuggestionProvider(store, config.maxSuggestions * 2)
     }
     
     override fun onCreateInputView(): View {
@@ -71,6 +82,7 @@ class AdaptKeyService : InputMethodService() {
         super.onStartInput(info, restarting)
         // Reset transient state on every new field; auto-shift heuristics arrive in a later session.
         composing.setLength(0)
+        previousWord = null
         keyboardView?.shifted = false
         clearSuggestions()
     }
@@ -102,20 +114,20 @@ class AdaptKeyService : InputMethodService() {
                     refreshSuggestions()
                 } else {
                     // Digits and punctuation finalise the current token and commit verbatim.
-                    finishComposing(ic)
+                    learnWord(finishComposing(ic))
                     ic.commitText(raw.toString(), 1)
                     clearSuggestions()
                 }
             }
             
             KeyCode.SPACE -> {
-                finishComposing(ic)
+                learnWord(finishComposing(ic))
                 ic.commitText(" ", 1)
                 clearSuggestions()
             }
             
             KeyCode.ENTER -> {
-                finishComposing(ic)
+                learnWord(finishComposing(ic))
                 ic.commitText("\n", 1)
                 clearSuggestions()
             }
@@ -163,8 +175,8 @@ class AdaptKeyService : InputMethodService() {
             clearSuggestions()
             return
         }
-        val candidates = provider.suggestionsFor(input)
-        val pending = provider.autocorrectFor(input)
+        val candidates = provider.suggestionsFor(input, previousWord)
+        val pending = provider.autocorrectFor(input, previousWord)
         controller.update(input, candidates, pending)
         showSuggestions()
         scheduleResort()
@@ -194,11 +206,23 @@ class AdaptKeyService : InputMethodService() {
         setCandidatesViewShown(false)
     }
     
-    private fun finishComposing(ic: android.view.inputmethod.InputConnection) {
-        if (composing.isNotEmpty()) {
-            ic.finishComposingText()
-            composing.setLength(0)
+    private fun finishComposing(ic: android.view.inputmethod.InputConnection): String? {
+        if (composing.isEmpty()) {
+            return null
         }
+        val word = composing.toString()
+        ic.finishComposingText()
+        composing.setLength(0)
+        return word
+    }
+    
+    private fun learnWord(word: String?) {
+        // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (T-tier 1).
+        if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
+            return
+        }
+        dictionaryStore.learn(word, previousWord)
+        previousWord = word
     }
     
     private fun onSuggestionClicked(item: SuggestionController.DisplayItem) {
@@ -206,9 +230,12 @@ class AdaptKeyService : InputMethodService() {
         when (item.kind) {
             // S-06: keep exactly what was typed and cancel the pending autocorrect for this occurrence.
             SuggestionController.Kind.VERBATIM -> {
+                val typed = composing.toString()
                 ic.finishComposingText()
                 composing.setLength(0)
                 controller.declineAutocorrect()
+                // S-06: repeated verbatim confirmation is a learning signal (cf. B-03).
+                learnWord(typed)
                 clearSuggestions()
             }
             
@@ -216,6 +243,7 @@ class AdaptKeyService : InputMethodService() {
             SuggestionController.Kind.NORMAL -> {
                 ic.commitText(item.word + " ", 1)
                 composing.setLength(0)
+                learnWord(item.word)
                 clearSuggestions()
             }
         }

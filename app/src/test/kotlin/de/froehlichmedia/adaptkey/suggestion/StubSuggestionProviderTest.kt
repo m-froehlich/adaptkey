@@ -15,7 +15,7 @@ class StubSuggestionProviderTest {
     
     @Test
     fun `suggestionsFor returns prefix matches sorted by descending score`() {
-        val suggestions = provider.suggestionsFor("de")
+        val suggestions = provider.suggestionsFor("de", null)
         val matchedWords = suggestions.map { it.word }
         
         assertTrue(matchedWords.contains("der"))
@@ -35,22 +35,22 @@ class StubSuggestionProviderTest {
     
     @Test
     fun `autocorrectFor returns null for a known word`() {
-        assertNull(provider.autocorrectFor("der"))
+        assertNull(provider.autocorrectFor("der", null))
     }
     
     @Test
     fun `autocorrectFor returns null for a too-short token`() {
-        assertNull(provider.autocorrectFor("d"))
+        assertNull(provider.autocorrectFor("d", null))
     }
     
     @Test
     fun `autocorrectFor returns null when nothing is within one edit`() {
-        assertNull(provider.autocorrectFor("xyzzy"))
+        assertNull(provider.autocorrectFor("xyzzy", null))
     }
     
     @Test
     fun `autocorrectFor proposes the most frequent single-edit neighbour`() {
         // "dee" is one substitution away from der/den/des/dem; der is the most frequent.
-        assertEquals("der", provider.autocorrectFor("dee"))
+        assertEquals("der", provider.autocorrectFor("dee", null))
     }
 }
