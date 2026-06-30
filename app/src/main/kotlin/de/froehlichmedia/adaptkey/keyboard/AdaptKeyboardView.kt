@@ -13,6 +13,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.gesture.SwipeDirection
+import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 import de.froehlichmedia.adaptkey.touch.AmbiguityBands
 import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.KeyBox
@@ -52,9 +54,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
         fun onLongPress(symbol: String)
     }
     
+    /**
+     * Callback invoked on release when the touch travelled far enough to be a swipe gesture (§4).
+     * Returning true marks the swipe as consumed, which suppresses the would-be tap; returning false
+     * lets the tap fire normally.
+     */
+    fun interface OnSwipeListener {
+        
+        fun onSwipe(key: Key, direction: SwipeDirection): Boolean
+    }
+    
     var onKeyListener: OnKeyListener? = null
     
     var onLongPressListener: OnLongPressListener? = null
+    
+    var onSwipeListener: OnSwipeListener? = null
     
     /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
     var offsetModel: OffsetModel? = null
@@ -107,6 +121,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var downY = 0f
     private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
     private val longPressTimeoutMs = ViewConfiguration.getLongPressTimeout().toLong()
+    // A swipe must travel clearly past the tap jitter slop before it is treated as a gesture (§4).
+    private val swipeThresholdPx = dp(36f)
     
     private val rowHeightPx = dp(54f)
     private val gapPx = dp(3f)
@@ -235,7 +251,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 pressedKey = null
                 invalidate()
                 if (key != null && !longPressFired) {
-                    onKeyListener?.onKey(key, downX, downY, pendingAmbiguity)
+                    // §4: a swipe past the gesture threshold is offered to the listener; if consumed it
+                    // suppresses the tap, otherwise the resolved key is emitted as usual (T-01).
+                    val direction = SwipeGesture.classify(event.x - downX, event.y - downY, swipeThresholdPx)
+                    val consumed = direction != SwipeDirection.NONE &&
+                        onSwipeListener?.onSwipe(key, direction) == true
+                    if (!consumed) {
+                        onKeyListener?.onKey(key, downX, downY, pendingAmbiguity)
+                    }
                 }
                 return true
             }

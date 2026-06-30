@@ -22,6 +22,10 @@ import de.froehlichmedia.adaptkey.dictionary.SeedData
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
+import de.froehlichmedia.adaptkey.gesture.GestureAction
+import de.froehlichmedia.adaptkey.gesture.KeyGesture
+import de.froehlichmedia.adaptkey.gesture.SwipeDirection
+import de.froehlichmedia.adaptkey.gesture.WordBoundary
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
@@ -48,8 +52,10 @@ import de.froehlichmedia.adaptkey.touch.TapAmbiguity
  *
  * Taps in the bottom-row space/letter ambiguity bands (T-05) are flagged per character; on a delimiter
  * the token may be retroactively split (A-05) or merged onto a spurious space (A-06) when the
- * dictionary confirms a valid result. The emoji / numeric panel (L-03) and gestures are not part of
- * this stage yet.
+ * dictionary confirms a valid result. Swipe gestures (§4) are handled too: swipe-left on backspace
+ * deletes a word (G-02), swipe-down dismisses the keyboard (G-03), and a horizontal swipe on the space
+ * bar is the language-switch gesture (G-01, a no-op stub until multilingual input exists). The emoji /
+ * numeric panel (L-03) is not part of this stage yet.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -122,6 +128,7 @@ class AdaptKeyService : InputMethodService() {
         view.offsetModel = offsetModel
         view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, ambiguity -> handleKey(key, ambiguity) }
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { symbol -> handleLongPress(symbol) }
+        view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         keyboardView = view
         applySettings()
         return view
@@ -247,6 +254,62 @@ class AdaptKeyService : InputMethodService() {
         val ic = currentInputConnection ?: return
         clearUndo()
         finalizeAndCommit(ic, symbol)
+    }
+    
+    /**
+     * Handles a swipe gesture (§4 G-01 … G-03) reported by the keyboard view. Resolves it to an
+     * action via [KeyGesture] and executes it.
+     *
+     * @param key the key the swipe started on (T-01 contact point)
+     * @param direction the recognised swipe direction
+     * @return true when the swipe carried an action and was consumed (suppressing the tap), false
+     *         when it should fall back to a normal tap
+     */
+    private fun handleSwipe(key: Key, direction: SwipeDirection): Boolean {
+        val ic = currentInputConnection ?: return false
+        return when (KeyGesture.resolve(key.code, direction)) {
+            // G-02: delete the whole previous word.
+            GestureAction.DELETE_WORD -> {
+                clearUndo()
+                deleteWord(ic)
+                true
+            }
+            
+            // G-03: dismiss the keyboard.
+            GestureAction.DISMISS_KEYBOARD -> {
+                requestHideSelf(0)
+                true
+            }
+            
+            // G-01: language switch. Multilingual input is not available yet (it needs a second language
+            // dictionary, cf. A-03), so the swipe is recognised and consumed but is intentionally a no-op.
+            GestureAction.LANGUAGE_PREV, GestureAction.LANGUAGE_NEXT -> true
+            
+            GestureAction.NONE -> false
+        }
+    }
+    
+    /**
+     * Deletes the whole previous word (G-02). An in-progress composing token is dropped outright;
+     * otherwise the committed previous word (and the whitespace before the cursor) is removed via
+     * [WordBoundary].
+     */
+    private fun deleteWord(ic: InputConnection) {
+        pendingMergeChar = null
+        if (composing.isNotEmpty()) {
+            composing.setLength(0)
+            composingFlags.clear()
+            ic.setComposingText("", 1)
+            ic.finishComposingText()
+            clearSuggestions()
+        } else {
+            val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
+            val count = WordBoundary.wordDeleteLength(before)
+            if (count > 0) {
+                ic.deleteSurroundingText(count, 0)
+            }
+        }
+        previousWord = null
     }
     
     private fun handleBackspace(ic: InputConnection) {
