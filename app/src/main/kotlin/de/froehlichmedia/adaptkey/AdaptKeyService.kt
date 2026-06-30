@@ -16,6 +16,7 @@ import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
+import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.SeedData
@@ -54,8 +55,9 @@ import de.froehlichmedia.adaptkey.touch.TapAmbiguity
  * the token may be retroactively split (A-05) or merged onto a spurious space (A-06) when the
  * dictionary confirms a valid result. Swipe gestures (§4) are handled too: swipe-left on backspace
  * deletes a word (G-02), swipe-down dismisses the keyboard (G-03), and a horizontal swipe on the space
- * bar is the language-switch gesture (G-01, a no-op stub until multilingual input exists). The emoji /
- * numeric panel (L-03) is not part of this stage yet.
+ * bar is the language-switch gesture (G-01, a no-op stub until multilingual input exists). Pressing
+ * Shift at the end of a word toggles its first-letter case or starts camelCase depending on the next
+ * key (G-05). The emoji / numeric panel (L-03) is not part of this stage yet.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -79,6 +81,13 @@ class AdaptKeyService : InputMethodService() {
     
     private val composing = StringBuilder()
     private val composingFlags = ArrayList<TapAmbiguity>()
+    
+    // G-05: a word-end Shift is pending — the first character has been provisionally toggled and the
+    // next key decides the outcome (camelCase vs. keep). composingCaseLocked marks a token whose casing
+    // the user fixed explicitly, so it is committed verbatim (bypassing autocorrect and §6).
+    private var wordEndShiftPending = false
+    private var composingCaseLocked = false
+    
     private var capsMode = CapsMode.NONE
     private var tokenSentenceStart = false
     private var tokenAfterHyphen = false
@@ -168,6 +177,7 @@ class AdaptKeyService : InputMethodService() {
         super.onStartInput(info, restarting)
         composing.setLength(0)
         composingFlags.clear()
+        resetWordEndShift()
         pendingMergeChar = null
         previousWord = null
         capsMode = capsModeFor(info)
@@ -209,12 +219,18 @@ class AdaptKeyService : InputMethodService() {
             }
             clearUndo()
         }
+        // G-05: resolve a pending word-end Shift against this key before it is handled normally. A Shift
+        // is left to fall through (it re-toggles via handleShift); every other key resolves here.
+        if (wordEndShiftPending && key.code != KeyCode.SHIFT) {
+            resolvePendingWordEndShift(key)
+        }
         when (key.code) {
             KeyCode.CHAR -> {
                 val raw = key.char ?: return
                 if (raw.isLetter()) {
                     if (composing.isEmpty()) {
                         captureTokenContext(ic)
+                        resetWordEndShift()
                     }
                     val ch = if (keyboardView?.shifted == true) raw.uppercaseChar() else raw
                     composing.append(ch)
@@ -296,6 +312,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun deleteWord(ic: InputConnection) {
         pendingMergeChar = null
+        resetWordEndShift()
         if (composing.isNotEmpty()) {
             composing.setLength(0)
             composingFlags.clear()
@@ -356,6 +373,13 @@ class AdaptKeyService : InputMethodService() {
             armShiftForNextWord(ic)
             return
         }
+        
+        // G-05: a word-end Shift made this token's casing explicit; commit it exactly as composed,
+        // bypassing autocorrect, capitalisation (§6) and token repair — the user has hand-finished it.
+        if (composingCaseLocked) {
+            commitVerbatim(ic, delimiter)
+            return
+        }
         val typed = composing.toString()
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
@@ -393,6 +417,25 @@ class AdaptKeyService : InputMethodService() {
         } else {
             clearUndo()
         }
+        clearSuggestions()
+        armShiftForNextWord(ic)
+    }
+    
+    /**
+     * Commits the composing token exactly as composed, followed by [delimiter] (G-05): no autocorrect,
+     * no §6 capitalisation and no token repair. Used when the user fixed the token's casing explicitly
+     * via a word-end Shift, which ranks as explicit input and must be preserved in both directions.
+     */
+    private fun commitVerbatim(ic: InputConnection, delimiter: String) {
+        val word = composing.toString()
+        ic.setComposingText(word, 1)
+        ic.finishComposingText()
+        composing.setLength(0)
+        composingFlags.clear()
+        resetWordEndShift()
+        ic.commitText(delimiter, 1)
+        learnWord(word)
+        clearUndo()
         clearSuggestions()
         armShiftForNextWord(ic)
     }
@@ -594,6 +637,12 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun handleShift() {
         val view = keyboardView ?: return
+        // G-05: Shift at the end of a fully typed word (a non-empty composing token) toggles the word's
+        // first-letter case; the next key decides whether the toggle is kept or turns into camelCase.
+        if (composing.isNotEmpty()) {
+            handleWordEndShift(view)
+            return
+        }
         val elapsed = SystemClock.uptimeMillis() - shiftArmTime
         if (ShiftGrace.suppressesShiftPress(shiftGuardedArm, view.shifted, settings.shiftGraceWindowMs, elapsed)) {
             return
@@ -603,6 +652,67 @@ class AdaptKeyService : InputMethodService() {
         if (shiftGuardedArm && wasUpper && !view.shifted) {
             fieldMandateOverridden = true
         }
+    }
+    
+    /**
+     * Applies a word-end Shift (G-05): provisionally toggles the case of the composing token's first
+     * character, arms the next letter to uppercase (so a following letter produces camelCase) and marks
+     * the token's casing as explicitly user-set. Pressing Shift again simply re-toggles.
+     */
+    private fun handleWordEndShift(view: AdaptKeyboardView) {
+        flipFirstInComposing()
+        updateComposing(currentInputConnection ?: return)
+        wordEndShiftPending = true
+        composingCaseLocked = true
+        view.shifted = true
+    }
+    
+    /**
+     * Resolves a pending word-end Shift (G-05) against the next key: a letter discards the first-char
+     * toggle and continues as camelCase, a delimiter keeps the toggle, anything else cancels the gesture.
+     * The token stays case-locked for the camelCase and keep outcomes, so it is committed verbatim.
+     */
+    private fun resolvePendingWordEndShift(key: Key) {
+        when (WordEndShift.resolveNextKey(nextKeyClass(key))) {
+            // The provisional toggle is discarded; the upcoming letter is inserted uppercase (camelCase).
+            WordEndShift.Resolution.CAMEL_CASE -> {
+                flipFirstInComposing()
+                currentInputConnection?.let { updateComposing(it) }
+                wordEndShiftPending = false
+            }
+            
+            // The toggle stands; the token will be committed verbatim by the following delimiter.
+            WordEndShift.Resolution.KEEP -> wordEndShiftPending = false
+            
+            // Backspace or other keys abandon the gesture; the token is no longer case-locked.
+            WordEndShift.Resolution.CANCEL -> resetWordEndShift()
+            
+            // Re-toggling is handled by handleShift, never reached here (Shift is excluded by the caller).
+            WordEndShift.Resolution.RETOGGLE -> Unit
+        }
+    }
+    
+    private fun nextKeyClass(key: Key): WordEndShift.NextKey {
+        return when (key.code) {
+            KeyCode.CHAR -> if (key.char?.isLetter() == true) WordEndShift.NextKey.LETTER else WordEndShift.NextKey.DELIMITER
+            KeyCode.SPACE, KeyCode.ENTER -> WordEndShift.NextKey.DELIMITER
+            KeyCode.SHIFT -> WordEndShift.NextKey.SHIFT
+            else -> WordEndShift.NextKey.OTHER
+        }
+    }
+    
+    private fun flipFirstInComposing() {
+        if (composing.isEmpty()) {
+            return
+        }
+        val flipped = WordEndShift.flipFirst(composing.toString())
+        composing.setLength(0)
+        composing.append(flipped)
+    }
+    
+    private fun resetWordEndShift() {
+        wordEndShiftPending = false
+        composingCaseLocked = false
     }
     
     private fun sentenceStartBefore(ic: InputConnection): Boolean {
