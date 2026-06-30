@@ -100,6 +100,7 @@ class AdaptKeyService : InputMethodService() {
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
         view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _ -> handleKey(key) }
+        view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { symbol -> handleLongPress(symbol) }
         keyboardView = view
         applySettings()
         return view
@@ -206,6 +207,16 @@ class AdaptKeyService : InputMethodService() {
             // L-03 stub: the combined emoji / ?123 key has no panel yet.
             KeyCode.SYMBOL -> Unit
         }
+    }
+    
+    /**
+     * Handles a long-press secondary symbol (L-05 / L-06): finalises the current token (so a held key
+     * mid-word commits the word first) and then commits the symbol, exactly like typing a delimiter.
+     */
+    private fun handleLongPress(symbol: String) {
+        val ic = currentInputConnection ?: return
+        clearUndo()
+        finalizeAndCommit(ic, symbol)
     }
     
     private fun handleBackspace(ic: InputConnection) {

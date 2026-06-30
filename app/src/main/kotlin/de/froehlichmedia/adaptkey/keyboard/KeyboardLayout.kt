@@ -3,10 +3,12 @@ package de.froehlichmedia.adaptkey.keyboard
 /**
  * QWERTZ key map (L-01).
  *
- * The persistent number row (L-06) and the AltGr-style long-press hints (L-05) are present as
- * structure; the long-press behaviour itself is not wired up yet. Key proportions (L-02 narrower
- * space / wider comma & full stop, L-04 wider backspace) are driven by a [KeyProportions]
- * configuration (C-01) rather than hard-coded weights.
+ * Each key carries its secondary long-press symbol as [Key.hint]: the persistent number row (L-06)
+ * uses the German-QWERTZ shifted symbols and letters use the AltGr-style map (L-05 / C-08). The hint
+ * is always populated so the long-press function works even when the corner glyphs are hidden; only
+ * the drawing is gated by the view. Key proportions (L-02 narrower space / wider comma & full stop,
+ * L-04 wider backspace) are driven by a [KeyProportions] configuration (C-01) rather than hard-coded
+ * weights.
  */
 object KeyboardLayout {
     
@@ -32,33 +34,28 @@ object KeyboardLayout {
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
      * @param letterHints the per-letter secondary-symbol map (L-05 / C-08); defaults to [DEFAULT_LETTER_HINTS]
-     * @param hintsEnabled whether the letter corner hints are drawn at all (C-08); defaults to true
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
         proportions: KeyProportions = KeyProportions.DEFAULT,
         showNumberRow: Boolean = true,
-        letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS,
-        hintsEnabled: Boolean = true
+        letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
-        
-        // C-08: letter hints are suppressed entirely when disabled; the number row keeps its own L-06 hints.
-        val hints: (Char) -> String? = { c -> if (hintsEnabled) letterHints[c] else null }
         
         if (showNumberRow) {
             // L-06: persistent number row with shifted-symbol hints.
             result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
         }
         
-        result.add("qwertzuiop".map { c -> charKey(c, hints(c)) })
-        result.add("asdfghjkl".map { c -> charKey(c, hints(c)) })
+        result.add("qwertzuiop".map { c -> charKey(c, letterHints[c]) })
+        result.add("asdfghjkl".map { c -> charKey(c, letterHints[c]) })
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW_LETTERS.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            THIRD_ROW_LETTERS.forEach { c -> add(charKey(c, hints(c), weight = thirdRowLetterWeight)) }
+            THIRD_ROW_LETTERS.forEach { c -> add(charKey(c, letterHints[c], weight = thirdRowLetterWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -73,6 +70,17 @@ object KeyboardLayout {
         })
         
         return result
+    }
+    
+    /**
+     * The symbol a long-press on [key] should emit (L-05 / L-06): a character key's secondary
+     * [Key.hint], or null when the key has no secondary or is a control key.
+     *
+     * @param key the pressed key
+     * @return the secondary symbol to commit on long-press, or null when there is none
+     */
+    fun longPressSymbol(key: Key): String? {
+        return if (key.code == KeyCode.CHAR) key.hint else null
     }
     
     private fun charKey(c: Char, hint: String? = null, weight: Float = 1f): Key {

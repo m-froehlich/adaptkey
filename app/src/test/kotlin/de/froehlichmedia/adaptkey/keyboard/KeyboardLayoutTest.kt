@@ -1,6 +1,7 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 /**
@@ -47,6 +48,24 @@ class KeyboardLayoutTest {
         assertEquals("#", rows[2].byChar('h').hint)
         assertEquals("+", rows[3].byChar('n').hint)
         assertEquals("-", rows[3].byChar('m').hint)
+    }
+    
+    @Test
+    fun `longPressSymbol returns the secondary for character keys and null otherwise`() {
+        val rows = KeyboardLayout.rows()
+        
+        assertEquals("@", KeyboardLayout.longPressSymbol(rows[1].byChar('q')))
+        assertEquals("/", KeyboardLayout.longPressSymbol(rows.first().byChar('7')))
+        assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('a')))
+        assertNull(KeyboardLayout.longPressSymbol(rows[3].first()))
+    }
+    
+    @Test
+    fun `a custom hint map drives the long-press secondary`() {
+        val rows = KeyboardLayout.rows(letterHints = mapOf('q' to "!"))
+        
+        assertEquals("!", KeyboardLayout.longPressSymbol(rows[1].byChar('q')))
+        assertNull(KeyboardLayout.longPressSymbol(rows[1].byChar('e')))
     }
     
     @Test

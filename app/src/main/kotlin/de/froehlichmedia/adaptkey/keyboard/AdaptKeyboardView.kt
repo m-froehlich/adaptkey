@@ -4,9 +4,13 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.touch.OffsetModel
@@ -20,6 +24,11 @@ import de.froehlichmedia.adaptkey.touch.OffsetModel
  * behaviour. When an [offsetModel] is attached it both refines the resolution (T-03) and is fed
  * the confirmed tap so it keeps learning. The raw down coordinates are also forwarded to the
  * listener for later token-level correction (T-02).
+ *
+ * The resolved character is emitted on release ([MotionEvent.ACTION_UP]); holding a key past the
+ * long-press timeout instead emits its secondary symbol (L-05 / L-06) via [onLongPressListener] and
+ * suppresses the tap. Resolution and offset-model learning still happen at ACTION_DOWN, so T-01 / T-03
+ * are unaffected.
  */
 class AdaptKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -27,13 +36,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
     
-    /** Callback invoked once per resolved tap, at ACTION_DOWN. */
+    /** Callback invoked once per resolved tap, on release (carrying the ACTION_DOWN coordinates). */
     fun interface OnKeyListener {
         
         fun onKey(key: Key, downX: Float, downY: Float)
     }
     
+    /** Callback invoked when a key is held past the long-press timeout (L-05 / L-06). */
+    fun interface OnLongPressListener {
+        
+        fun onLongPress(symbol: String)
+    }
+    
     var onKeyListener: OnKeyListener? = null
+    
+    var onLongPressListener: OnLongPressListener? = null
     
     /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
     var offsetModel: OffsetModel? = null
@@ -63,16 +80,24 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
-    /** Whether the letter corner hints are drawn at all (C-08). */
+    /** Whether the corner hint glyphs are drawn (C-08); the long-press function stays active either way. */
     var hintsEnabled: Boolean = true
         set(value) {
             field = value
-            rebuildRows()
+            invalidate()
         }
     
-    private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints, hintsEnabled)
+    private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
+    
+    private val longPressHandler = Handler(Looper.getMainLooper())
+    private var longPressRunnable: Runnable? = null
+    private var longPressFired = false
+    private var downX = 0f
+    private var downY = 0f
+    private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
+    private val longPressTimeoutMs = ViewConfiguration.getLongPressTimeout().toLong()
     
     private val rowHeightPx = dp(54f)
     private val gapPx = dp(3f)
@@ -107,7 +132,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     private fun rebuildRows() {
-        rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints, hintsEnabled)
+        rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
         if (width > 0) {
             layoutKeys(width)
         }
@@ -162,7 +187,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             canvas.drawText(label, cx, baseline, textPaint)
             
             val hint = key.hint
-            if (hint != null) {
+            if (hintsEnabled && hint != null) {
                 canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
             }
         }
@@ -172,27 +197,70 @@ class AdaptKeyboardView @JvmOverloads constructor(
         when (event.actionMasked) {
             // T-01: the initial contact point is the authoritative tap coordinate.
             MotionEvent.ACTION_DOWN -> {
-                val resolved = resolveKey(event.x, event.y)
-                if (resolved != null) {
-                    val (key, rect) = resolved
-                    pressedKey = key
-                    invalidate()
-                    // T-03: feed the confirmed tap back into the personal offset model.
-                    offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
-                    onKeyListener?.onKey(key, event.x, event.y)
+                val resolved = resolveKey(event.x, event.y) ?: return true
+                val (key, rect) = resolved
+                pressedKey = key
+                longPressFired = false
+                downX = event.x
+                downY = event.y
+                invalidate()
+                // T-03: feed the confirmed tap back into the personal offset model.
+                offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
+                scheduleLongPress(key)
+                return true
+            }
+            
+            MotionEvent.ACTION_MOVE -> {
+                // Movement does not change the resolved key (T-01); it only cancels the pending long-press.
+                if (pressedKey != null && movedBeyondSlop(event.x, event.y)) {
+                    cancelPendingLongPress()
                 }
                 return true
             }
             
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                if (pressedKey != null) {
-                    pressedKey = null
-                    invalidate()
+            MotionEvent.ACTION_UP -> {
+                cancelPendingLongPress()
+                val key = pressedKey
+                pressedKey = null
+                invalidate()
+                if (key != null && !longPressFired) {
+                    onKeyListener?.onKey(key, downX, downY)
                 }
+                return true
+            }
+            
+            MotionEvent.ACTION_CANCEL -> {
+                cancelPendingLongPress()
+                pressedKey = null
+                invalidate()
                 return true
             }
         }
         return super.onTouchEvent(event)
+    }
+    
+    private fun scheduleLongPress(key: Key) {
+        val symbol = KeyboardLayout.longPressSymbol(key) ?: return
+        val runnable = Runnable {
+            if (pressedKey === key) {
+                longPressFired = true
+                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                onLongPressListener?.onLongPress(symbol)
+            }
+        }
+        longPressRunnable = runnable
+        longPressHandler.postDelayed(runnable, longPressTimeoutMs)
+    }
+    
+    private fun cancelPendingLongPress() {
+        longPressRunnable?.let { longPressHandler.removeCallbacks(it) }
+        longPressRunnable = null
+    }
+    
+    private fun movedBeyondSlop(x: Float, y: Float): Boolean {
+        val dx = x - downX
+        val dy = y - downY
+        return dx * dx + dy * dy > touchSlopPx * touchSlopPx
     }
     
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
