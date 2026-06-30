@@ -207,7 +207,23 @@ class AdaptKeyService : InputMethodService() {
         // Pick up any changes made in the settings screen since the keyboard was last shown.
         settings = SettingsStore.load(this)
         applySettings()
+        // Pick up an offset model seeded by the calibration screen (K-01). Safe on a fresh field (not a
+        // restart): the live model was persisted on the previous onFinishInput, so storage is current.
+        if (!restarting) {
+            reloadOffsetModel()
+        }
         currentInputConnection?.let { armShiftForNextWord(it) }
+    }
+    
+    /**
+     * Reloads the personal offset model from storage and re-attaches it to the view, so a model the
+     * calibration screen merged (T-03 / K-01) is adopted even when this service instance was already
+     * resident. Only called on a fresh field, where the persisted model is up to date.
+     */
+    private fun reloadOffsetModel() {
+        val model = OffsetStore.load(this)
+        offsetModel = model
+        keyboardView?.offsetModel = model
     }
     
     override fun onFinishInput() {

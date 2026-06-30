@@ -159,4 +159,72 @@ class OffsetModelTest {
         assertNull(model.statFor("c:old"))
         assertEquals(5L, model.statFor("c:new")?.count)
     }
+    
+    @Test
+    fun `merge copies keys absent from the target`() {
+        val target = OffsetModel()
+        target.record("c:a", 0f, 0f, 2f, 3f)
+        val source = OffsetModel()
+        source.record("c:b", 0f, 0f, 4f, 5f)
+        
+        target.merge(source)
+        
+        assertEquals(1L, target.statFor("c:a")?.count)
+        assertEquals(4.0, target.statFor("c:b")?.meanDx ?: Double.NaN, 1e-9)
+        assertEquals(5.0, target.statFor("c:b")?.meanDy ?: Double.NaN, 1e-9)
+    }
+    
+    @Test
+    fun `merge of split halves matches a single combined model`() {
+        // The same four taps, once recorded into one model and once split across two merged models.
+        val single = OffsetModel()
+        single.record("c:k", 0f, 0f, 1f, 10f)
+        single.record("c:k", 0f, 0f, 3f, 12f)
+        single.record("c:k", 0f, 0f, 7f, 18f)
+        single.record("c:k", 0f, 0f, 9f, 20f)
+        
+        val first = OffsetModel()
+        first.record("c:k", 0f, 0f, 1f, 10f)
+        first.record("c:k", 0f, 0f, 3f, 12f)
+        val second = OffsetModel()
+        second.record("c:k", 0f, 0f, 7f, 18f)
+        second.record("c:k", 0f, 0f, 9f, 20f)
+        first.merge(second)
+        
+        val expected = single.statFor("c:k")
+        val merged = first.statFor("c:k")
+        assertEquals(expected?.count, merged?.count)
+        assertEquals(expected?.meanDx ?: Double.NaN, merged?.meanDx ?: Double.NaN, 1e-9)
+        assertEquals(expected?.meanDy ?: Double.NaN, merged?.meanDy ?: Double.NaN, 1e-9)
+        assertEquals(expected?.m2Dx ?: Double.NaN, merged?.m2Dx ?: Double.NaN, 1e-9)
+        assertEquals(expected?.m2Dy ?: Double.NaN, merged?.m2Dy ?: Double.NaN, 1e-9)
+    }
+    
+    @Test
+    fun `merge combines contact area as a sample-count-weighted mean`() {
+        val target = OffsetModel()
+        target.record("c:k", 0f, 0f, 0f, 0f, size = 0.2f)
+        val source = OffsetModel()
+        source.record("c:k", 0f, 0f, 0f, 0f, size = 0.4f)
+        source.record("c:k", 0f, 0f, 0f, 0f, size = 0.6f)
+        
+        target.merge(source)
+        
+        // (0.2*1 + 0.5*2) / 3 = 0.4
+        assertEquals(0.4, target.meanContactArea("c:k") ?: Double.NaN, 1e-6)
+        assertEquals(3L, target.statFor("c:k")?.sizeCount)
+    }
+    
+    @Test
+    fun `merge leaves the source model unchanged`() {
+        val target = OffsetModel()
+        target.record("c:k", 0f, 0f, 2f, 2f)
+        val source = OffsetModel()
+        source.record("c:k", 0f, 0f, 4f, 4f)
+        
+        target.merge(source)
+        
+        assertEquals(1L, source.statFor("c:k")?.count)
+        assertEquals(4.0, source.statFor("c:k")?.meanDx ?: Double.NaN, 1e-9)
+    }
 }

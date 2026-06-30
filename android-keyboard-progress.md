@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `89c24d1` (master, clean, runnable).
-- Unit tests: **201 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: commit `89c24d1` (master, clean, runnable) + K-01 calibration (this session, see Done).
+- Unit tests: **217 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -108,11 +108,23 @@ whenever a component lands so it does not have to be restated in every prompt.
 - `AdaptKeyService` wires everything live; applies settings on input view start and via a
   `OnSharedPreferenceChangeListener`.
 
+### Calibration / onboarding (K-)
+- K-01 calibration (skippable): `CalibrationActivity` (settings package) hosts an embedded
+  `AdaptKeyboardView` (number row off) whose `onKey` drives a pure `touch/CalibrationSession`
+  (sentence index + typed buffer + `advance`) over `touch/CalibrationSentences` (3 ASCII-only German
+  pangrams covering a–z; no autocorrect / no suggestion bar). The view's offset model is a dedicated
+  `OffsetModel(warmupSamples = Long.MAX_VALUE)` so resolution stays pure-geometry for the whole
+  session (each tap trains the physically-hit key). On finish the calibration model is **merged**
+  (not replaced) into the persisted one via new pure `OffsetModel.merge` (parallel/Chan Welford
+  combine of the per-key sufficient stats; contact-area mean = count-weighted), so a repeat from
+  Settings adds to learned data; then T-04 is re-derived + persisted and a pattern-specific feedback
+  dialog (§2.1) is shown. Reachable from a "Kalibrierung (K-01)" settings entry (repeatable) and a
+  one-time first-launch offer dialog (`k01_calibration_offered` flag in default prefs). Service now
+  reloads the offset model in `onStartInputView` (when `!restarting`) so a calibration done while the
+  service was resident is adopted (storage is current there — saved on the prior `onFinishInput`).
+
 ## Remaining (per spec §11)
 
-- **K-01 calibration mode (skippable)** — optional onboarding (type 2–3 provided sentences,
-  autocorrect off, no suggestion pressure) that seeds the initial offset model (T-03) and gives
-  T-04 feedback; repeatable from Settings. Builds directly on T-03/T-04. (Next up.)
 - **Emoji panel (L-03)** — UI-heavy, little pure logic, needs an emoji dataset.
 - **fastText language detection (A-03)** — ~1 MB on-device model, external dependency; also
   unblocks the G-01 language-switch no-op stub.
@@ -123,8 +135,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 - Android-only layers (Activity / View / Service / `SqliteDictionaryStore` DAO /
   `SettingsStore` IO) still lack instrumented tests. Notably untested glue:
   the T-05/A-05/A-06 service wiring (flag retention, merge/split `InputConnection` surgery),
-  the swipe/drag/word-end-shift View+Service glue, and the T-04 View/Service glue
-  (`event.size` capture, `charKeyGeometry`, `persistTypingPattern`).
+  the swipe/drag/word-end-shift View+Service glue, the T-04 View/Service glue
+  (`event.size` capture, `charKeyGeometry`, `persistTypingPattern`), and the K-01 `CalibrationActivity`
+  glue (key→session driving, merge-on-finish, feedback dialog) + the service offset-model reload.
 
 ## Notes / gotchas
 

@@ -174,6 +174,40 @@ class OffsetModel(
         data.forEach { (id, stat) -> stats[id] = stat.copy() }
     }
     
+    /**
+     * Folds another model's statistics into this one (K-01 calibration seeding).
+     *
+     * Per key the sufficient statistics are combined with the parallel (Chan) form of Welford's
+     * algorithm, so merging a freshly calibrated model into the persisted one is mathematically
+     * identical to having recorded every tap in a single model - this lets a repeated calibration
+     * add to the learned data instead of discarding it. Keys present only in [other] are copied in;
+     * the contact-area means (T-04) are combined as sample-count-weighted averages.
+     *
+     * @param other the model whose statistics are folded in; it is left unchanged
+     */
+    fun merge(other: OffsetModel) {
+        for ((id, incoming) in other.snapshot()) {
+            val existing = stats[id]
+            stats[id] = if (existing == null) incoming.copy() else combine(existing, incoming)
+        }
+    }
+    
+    private fun combine(a: Stat, b: Stat): Stat {
+        val count = a.count + b.count
+        if (count == 0L) {
+            return Stat()
+        }
+        val deltaX = b.meanDx - a.meanDx
+        val deltaY = b.meanDy - a.meanDy
+        val meanDx = a.meanDx + deltaX * b.count / count
+        val meanDy = a.meanDy + deltaY * b.count / count
+        val m2Dx = a.m2Dx + b.m2Dx + deltaX * deltaX * a.count * b.count / count
+        val m2Dy = a.m2Dy + b.m2Dy + deltaY * deltaY * a.count * b.count / count
+        val sizeCount = a.sizeCount + b.sizeCount
+        val meanSize = if (sizeCount == 0L) 0.0 else (a.meanSize * a.sizeCount + b.meanSize * b.sizeCount) / sizeCount
+        return Stat(count, meanDx, meanDy, m2Dx, m2Dy, sizeCount, meanSize)
+    }
+    
     private fun geometric(candidates: List<Candidate>, x: Float, y: Float): Candidate {
         val containing = candidates.firstOrNull { c ->
             x >= c.centerX - c.halfWidth && x <= c.centerX + c.halfWidth &&

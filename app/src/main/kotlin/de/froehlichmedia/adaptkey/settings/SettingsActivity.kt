@@ -1,10 +1,13 @@
 package de.froehlichmedia.adaptkey.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.TypingPattern
@@ -47,6 +50,28 @@ class SettingsActivity : AppCompatActivity() {
             // T-04 is re-derived by the running keyboard; reflect the latest detection on each return.
             val pattern = OffsetStore.loadDetectedPattern(requireContext())
             findPreference<Preference>("t04_detected")?.setSummary(patternLabel(pattern))
+            maybeOfferCalibration()
+        }
+        
+        /**
+         * Offers the K-01 calibration once, the first time the settings screen is shown. The "offered"
+         * flag is set before the dialog appears, so the offer never repeats regardless of the choice;
+         * calibration stays reachable any time via its permanent settings entry.
+         */
+        private fun maybeOfferCalibration() {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            if (prefs.getBoolean(KEY_CALIBRATION_OFFERED, false)) {
+                return
+            }
+            prefs.edit().putBoolean(KEY_CALIBRATION_OFFERED, true).apply()
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.k01_offer_title)
+                .setMessage(R.string.k01_offer_message)
+                .setPositiveButton(R.string.k01_offer_start) { _, _ ->
+                    startActivity(Intent(requireContext(), CalibrationActivity::class.java))
+                }
+                .setNegativeButton(R.string.k01_offer_later, null)
+                .show()
         }
         
         private fun patternLabel(pattern: TypingPattern): Int {
@@ -56,6 +81,12 @@ class SettingsActivity : AppCompatActivity() {
                 TypingPattern.THUMB -> R.string.t04_pattern_thumb
                 TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
             }
+        }
+        
+        companion object {
+            
+            // Default-prefs flag marking that the one-time K-01 calibration offer has been shown.
+            private const val KEY_CALIBRATION_OFFERED = "k01_calibration_offered"
         }
     }
 }

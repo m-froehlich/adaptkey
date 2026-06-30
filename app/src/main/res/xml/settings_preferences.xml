@@ -143,6 +143,19 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/cat_calibration">
+
+        <Preference
+            android:key="k01_calibration"
+            android:title="@string/k01_title"
+            android:summary="@string/k01_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
+        </Preference>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/cat_typing_pattern">
 
         <Preference

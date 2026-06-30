@@ -62,6 +62,26 @@
     <string name="t04_pattern_thumb">Daumen</string>
     <string name="t04_pattern_unknown">Noch nicht erkannt</string>
 
+    <!-- Calibration / onboarding (K-01). -->
+    <string name="cat_calibration">Kalibrierung (K-01)</string>
+    <string name="k01_title">Kalibrierung starten</string>
+    <string name="k01_summary">Tippe 2–3 Sätze, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
+    <string name="k01_activity_title">Kalibrierung</string>
+    <string name="k01_intro">Tippe die folgenden Sätze einfach so, wie du normalerweise tippst. Keine Autokorrektur, kein Zeitdruck.</string>
+    <string name="k01_counter">Satz %1$d von %2$d</string>
+    <string name="k01_next">Weiter</string>
+    <string name="k01_finish">Fertig</string>
+    <string name="k01_skip">Überspringen</string>
+    <string name="k01_done_title">Kalibrierung abgeschlossen</string>
+    <string name="k01_feedback_left_index">Es sieht so aus, als tippst du mit dem linken Zeigefinger. Ich passe mich entsprechend an.</string>
+    <string name="k01_feedback_right_index">Es sieht so aus, als tippst du mit dem rechten Zeigefinger. Ich passe mich entsprechend an.</string>
+    <string name="k01_feedback_thumb">Es sieht so aus, als tippst du mit dem Daumen. Ich stelle meine Erkennung darauf ein.</string>
+    <string name="k01_feedback_unknown">Danke! Ich habe deine Eingaben aufgenommen und lerne beim Tippen weiter dazu.</string>
+    <string name="k01_offer_title">Tastatur kalibrieren?</string>
+    <string name="k01_offer_message">Möchtest du AdaptKey kurz kalibrieren? Du tippst 2–3 Sätze, damit die Tastenerkennung von Anfang an besser zu dir passt. Du kannst das jederzeit in den Einstellungen nachholen.</string>
+    <string name="k01_offer_start">Jetzt kalibrieren</string>
+    <string name="k01_offer_later">Später</string>
+
     <!-- Blacklist editor (C-05). -->
     <string name="blacklist_title">Blacklist</string>
     <string name="blacklist_word_hint">Wort</string>
