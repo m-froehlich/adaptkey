@@ -17,6 +17,7 @@ import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
+import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.SeedData
@@ -57,7 +58,8 @@ import de.froehlichmedia.adaptkey.touch.TapAmbiguity
  * deletes a word (G-02), swipe-down dismisses the keyboard (G-03), and a horizontal swipe on the space
  * bar is the language-switch gesture (G-01, a no-op stub until multilingual input exists). Pressing
  * Shift at the end of a word toggles its first-letter case or starts camelCase depending on the next
- * key (G-05). The emoji / numeric panel (L-03) is not part of this stage yet.
+ * key (G-05), and dragging a suggestion into the trash zone blacklists it (G-04 / A-04). The emoji /
+ * numeric panel (L-03) is not part of this stage yet.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -169,8 +171,21 @@ class AdaptKeyService : InputMethodService() {
     override fun onCreateCandidatesView(): View {
         val bar = SuggestionBarView(this)
         bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
+        bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
         suggestionBar = bar
         return bar
+    }
+    
+    /**
+     * Handles a G-04 drag-to-trash: permanently blacklists [word] (A-04, category
+     * [BlacklistCategory.USER]) and refreshes the bar so the now-excluded word disappears immediately.
+     */
+    private fun onBlacklistWord(word: String) {
+        if (word.isBlank() || !this::dictionaryStore.isInitialized) {
+            return
+        }
+        dictionaryStore.blacklist(word, BlacklistCategory.USER)
+        refreshSuggestions()
     }
     
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {

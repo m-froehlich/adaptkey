@@ -1,16 +1,20 @@
 package de.froehlichmedia.adaptkey.suggestion
 
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.gesture.DragToTrash
 
 /**
  * Horizontally scrollable suggestion strip (S-01).
@@ -18,6 +22,11 @@ import de.froehlichmedia.adaptkey.R
  * Renders the entries produced by {@link SuggestionController}; the most probable suggestion is at
  * the far left and the strip scrolls horizontally when entries overflow. The verbatim "keep as
  * typed" chip (S-06) is rendered in a distinct style. Tapping an entry notifies [onItemClick].
+ *
+ * G-04: dragging an ordinary suggestion upward past a threshold arms a trash drop zone that is drawn
+ * over the bar; releasing while armed notifies [onBlacklist] so the word is permanently blacklisted
+ * (A-04). The gesture is intentionally a deliberate upward drag (not a swipe) and never fires on the
+ * verbatim chip, so it cannot be triggered accidentally while scrolling or tapping.
  */
 class SuggestionBarView @JvmOverloads constructor(
     context: Context,
@@ -31,11 +40,41 @@ class SuggestionBarView @JvmOverloads constructor(
         fun onItemClick(item: SuggestionController.DisplayItem)
     }
     
+    /** Invoked when a suggestion is dragged into the trash zone (G-04 / A-04). */
+    fun interface OnBlacklistListener {
+        
+        fun onBlacklist(word: String)
+    }
+    
     var onItemClick: OnItemClickListener? = null
+    
+    var onBlacklist: OnBlacklistListener? = null
     
     private val container = LinearLayout(context).apply {
         orientation = LinearLayout.HORIZONTAL
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT)
+    }
+    
+    // The entries currently rendered, in the same order as the container's child chips, so a touch
+    // can be mapped back to the suggestion it lands on (G-04).
+    private val items = ArrayList<SuggestionController.DisplayItem>()
+    
+    // G-04 drag-to-trash state.
+    private var dragDownX = 0f
+    private var dragDownY = 0f
+    private var dragWord: String? = null
+    private var dragIntercepting = false
+    private var trashArmed = false
+    private val dragThresholdPx = dp(48).toFloat()
+    
+    private val trashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.suggestion_trash_background)
+    }
+    
+    private val trashTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.suggestion_trash_text)
+        textAlign = Paint.Align.CENTER
+        textSize = dp(16).toFloat()
     }
     
     init {
@@ -54,6 +93,9 @@ class SuggestionBarView @JvmOverloads constructor(
     fun setItems(items: List<SuggestionController.DisplayItem>) {
         container.removeAllViews()
         scrollX = 0
+        cancelDrag()
+        this.items.clear()
+        this.items.addAll(items)
         for (item in items) {
             container.addView(chipFor(item))
         }
@@ -75,6 +117,101 @@ class SuggestionBarView @JvmOverloads constructor(
             isClickable = true
             setOnClickListener { onItemClick?.onItemClick(item) }
         }
+    }
+    
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                dragDownX = ev.x
+                dragDownY = ev.y
+                // Only ordinary suggestions can be trashed (never the verbatim chip).
+                dragWord = normalWordAt(ev.x)
+                dragIntercepting = false
+                setTrashArmed(false)
+            }
+            
+            MotionEvent.ACTION_MOVE -> {
+                // Take over the gesture once it becomes a deliberate upward drag, so the horizontal
+                // scroll keeps working for every other movement (G-04).
+                if (dragWord != null && DragToTrash.isArmed(ev.x - dragDownX, ev.y - dragDownY, dragThresholdPx)) {
+                    dragIntercepting = true
+                    setTrashArmed(true)
+                    return true
+                }
+            }
+        }
+        return super.onInterceptTouchEvent(ev)
+    }
+    
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        if (!dragIntercepting) {
+            return super.onTouchEvent(ev)
+        }
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_MOVE -> {
+                setTrashArmed(DragToTrash.isArmed(ev.x - dragDownX, ev.y - dragDownY, dragThresholdPx))
+                return true
+            }
+            
+            MotionEvent.ACTION_UP -> {
+                val word = dragWord
+                val commit = trashArmed
+                cancelDrag()
+                if (commit && word != null) {
+                    onBlacklist?.onBlacklist(word)
+                }
+                return true
+            }
+            
+            MotionEvent.ACTION_CANCEL -> {
+                cancelDrag()
+                return true
+            }
+        }
+        return true
+    }
+    
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+        // G-04: while armed, paint the trash drop zone over the visible bar (drawn after the children,
+        // in view coordinates so it stays fixed regardless of horizontal scroll).
+        if (trashArmed) {
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), trashPaint)
+            val baseline = height / 2f - (trashTextPaint.descent() + trashTextPaint.ascent()) / 2f
+            canvas.drawText(context.getString(R.string.suggestion_trash_label), width / 2f, baseline, trashTextPaint)
+        }
+    }
+    
+    /**
+     * Maps a touch x (in this view's coordinates) to the ordinary suggestion under it.
+     *
+     * @param viewX the touch x in view coordinates
+     * @return the word of the ordinary suggestion at that position, or null for the verbatim chip,
+     *         a gap, or an empty bar
+     */
+    private fun normalWordAt(viewX: Float): String? {
+        val contentX = viewX + scrollX
+        for (index in 0 until container.childCount) {
+            val child = container.getChildAt(index)
+            if (contentX >= child.left && contentX <= child.right) {
+                val item = items.getOrNull(index) ?: return null
+                return if (item.kind == SuggestionController.Kind.NORMAL) item.word else null
+            }
+        }
+        return null
+    }
+    
+    private fun setTrashArmed(value: Boolean) {
+        if (trashArmed != value) {
+            trashArmed = value
+            invalidate()
+        }
+    }
+    
+    private fun cancelDrag() {
+        dragWord = null
+        dragIntercepting = false
+        setTrashArmed(false)
     }
     
     private fun dp(value: Int): Int {

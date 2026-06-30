@@ -5,6 +5,9 @@
     <string name="settings_title">AdaptKey Settings</string>
     <string name="subtype_de_qwertz">Deutsch (QWERTZ)</string>
 
+    <!-- Suggestion bar drag-to-trash (G-04). -->
+    <string name="suggestion_trash_label">🗑  Löschen</string>
+
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Tasten</string>
     <string name="cat_suggestions">Vorschläge</string>
