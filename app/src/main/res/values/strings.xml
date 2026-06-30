@@ -4,5 +4,49 @@
     <string name="ime_name">AdaptKey</string>
     <string name="settings_title">AdaptKey Settings</string>
     <string name="subtype_de_qwertz">Deutsch (QWERTZ)</string>
-    <string name="settings_scaffold_note">Settings folgen in einer späteren Session (C-01 … C-09).</string>
+
+    <!-- Settings screen (C-01 … C-09). -->
+    <string name="cat_layout">Layout &amp; Tasten</string>
+    <string name="cat_suggestions">Vorschläge</string>
+    <string name="cat_dictionary">Wörterbuch</string>
+    <string name="cat_capitalisation">Großschreibung</string>
+
+    <string name="c01_space_title">Breite der Leertaste</string>
+    <string name="c01_space_summary">Schmaler reduziert versehentliche Leerzeichen statt Komma (L-02).</string>
+    <string name="c01_comma_title">Breite des Kommas</string>
+    <string name="c01_period_title">Breite des Punkts</string>
+    <string name="c01_backspace_title">Zusatzbreite der Rücktaste</string>
+    <string name="c01_backspace_summary">Prozentualer Aufschlag, von den Nachbartasten genommen (L-04).</string>
+
+    <string name="c02_title">Re-Sort-Verzögerung</string>
+    <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>
+    <string name="c03_title">Maximale Vorschläge</string>
+    <string name="c03_summary">Anzahl gleichzeitig stabilisierter Vorschläge (6–10).</string>
+    <string name="c04_enabled_title">Wort-Bestätigungs-Highlight</string>
+    <string name="c04_enabled_summary">Hebt ein erkanntes, vollständiges Wort beim Tippen hervor (S-05).</string>
+    <string name="c04_color_title">Highlight-Farbe</string>
+
+    <string name="c09_title">Nummernreihe</string>
+    <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
+    <string name="c08_hints_title">Eck-Symbole anzeigen</string>
+    <string name="c08_hints_summary">Sekundäre Long-Press-Symbole als Eck-Hinweis (L-05). Long-Press-Funktion folgt.</string>
+    <string name="c08_reset_title">Eck-Symbole zurücksetzen</string>
+    <string name="c08_reset_summary">Setzt die Per-Tasten-Belegung auf die Standardzuordnung zurück.</string>
+    <string name="c08_reset_done">Eck-Symbole auf Standard zurückgesetzt.</string>
+
+    <string name="c05_title">Blacklist bearbeiten</string>
+    <string name="c05_summary">Wörter dauerhaft von Vorschlägen und Autokorrektur ausschließen (A-04).</string>
+
+    <string name="c07_title">Shift-Schonfenster</string>
+    <string name="c07_summary">Gegen überraschende Feld-Großschreibung (0–500 ms). Logik folgt.</string>
+
+    <string name="c06_title">LLM-Schwellwert</string>
+    <string name="c06_summary">Deaktiviert – kein LLM-Tier vorhanden (C-06).</string>
+
+    <!-- Blacklist editor (C-05). -->
+    <string name="blacklist_title">Blacklist</string>
+    <string name="blacklist_word_hint">Wort</string>
+    <string name="blacklist_add">Hinzufügen</string>
+    <string name="blacklist_empty">Keine Einträge.</string>
+    <string name="blacklist_removed">%1$s entfernt.</string>
 </resources>

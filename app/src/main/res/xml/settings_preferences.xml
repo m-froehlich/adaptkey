@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/cat_layout">
+
+        <SeekBarPreference
+            android:key="c01_space_weight"
+            android:title="@string/c01_space_title"
+            android:summary="@string/c01_space_summary"
+            android:defaultValue="320"
+            android:max="600"
+            app:min="100"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="c01_comma_weight"
+            android:title="@string/c01_comma_title"
+            android:defaultValue="140"
+            android:max="300"
+            app:min="50"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="c01_period_weight"
+            android:title="@string/c01_period_title"
+            android:defaultValue="140"
+            android:max="300"
+            app:min="50"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="c01_backspace_extra"
+            android:title="@string/c01_backspace_title"
+            android:summary="@string/c01_backspace_summary"
+            android:defaultValue="10"
+            android:max="50"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="c09_number_row"
+            android:title="@string/c09_title"
+            android:summary="@string/c09_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="c08_hints_enabled"
+            android:title="@string/c08_hints_title"
+            android:summary="@string/c08_hints_summary"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="c08_reset_hints"
+            android:title="@string/c08_reset_title"
+            android:summary="@string/c08_reset_summary" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_suggestions">
+
+        <SeekBarPreference
+            android:key="c02_resort_delay_ms"
+            android:title="@string/c02_title"
+            android:summary="@string/c02_summary"
+            android:defaultValue="300"
+            android:max="600"
+            app:min="0"
+            app:seekBarIncrement="50"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="c03_max_suggestions"
+            android:title="@string/c03_title"
+            android:summary="@string/c03_summary"
+            android:defaultValue="8"
+            android:max="10"
+            app:min="6"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="c04_highlight_enabled"
+            android:title="@string/c04_enabled_title"
+            android:summary="@string/c04_enabled_summary"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="c04_highlight_color"
+            android:title="@string/c04_color_title"
+            android:entries="@array/c04_color_labels"
+            android:entryValues="@array/c04_color_values"
+            android:defaultValue="#FF2E7D32"
+            app:useSimpleSummaryProvider="true"
+            android:dependency="c04_highlight_enabled" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_dictionary">
+
+        <Preference
+            android:key="c05_blacklist"
+            android:title="@string/c05_title"
+            android:summary="@string/c05_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.BlacklistActivity" />
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_capitalisation">
+
+        <SeekBarPreference
+            android:key="c07_shift_grace_ms"
+            android:title="@string/c07_title"
+            android:summary="@string/c07_summary"
+            android:defaultValue="300"
+            android:max="500"
+            app:min="0"
+            app:seekBarIncrement="50"
+            app:showSeekBarValue="true" />
+
+        <Preference
+            android:key="c06_llm_threshold"
+            android:title="@string/c06_title"
+            android:summary="@string/c06_summary"
+            android:enabled="false"
+            android:selectable="false" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

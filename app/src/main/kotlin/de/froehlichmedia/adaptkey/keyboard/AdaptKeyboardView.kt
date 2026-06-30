@@ -56,7 +56,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
-    private var rows = KeyboardLayout.rows(proportions, showNumberRow)
+    /** Per-letter secondary-symbol map drawn as corner hints (L-05 / C-08). */
+    var letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    /** Whether the letter corner hints are drawn at all (C-08). */
+    var hintsEnabled: Boolean = true
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints, hintsEnabled)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
     
@@ -93,7 +107,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     private fun rebuildRows() {
-        rows = KeyboardLayout.rows(proportions, showNumberRow)
+        rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints, hintsEnabled)
         if (width > 0) {
             layoutKeys(width)
         }

@@ -73,6 +73,16 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `blacklistedWords lists stored keys sorted and empty by default`() {
+        assertTrue(store.blacklistedWords().isEmpty())
+        
+        store.blacklist("Zebra", BlacklistCategory.USER)
+        store.blacklist("Apfel", BlacklistCategory.PROFANITY)
+        
+        assertEquals(listOf("apfel", "zebra"), store.blacklistedWords())
+    }
+    
+    @Test
     fun `allKnownWords returns canonical forms`() {
         store.putWord(WordEntry("Berlin", 1L, setOf(PartOfSpeech.PROPER_NOUN)))
         assertEquals(listOf("Berlin"), store.allKnownWords())

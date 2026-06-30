@@ -134,6 +134,16 @@ class SqliteDictionaryStore(context: Context) :
         }
     }
     
+    override fun blacklistedWords(): List<String> {
+        val result = ArrayList<String>()
+        db.rawQuery("SELECT wkey FROM $TABLE_BLACKLIST ORDER BY wkey ASC", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(cursor.getString(0))
+            }
+        }
+        return result
+    }
+    
     override fun isEmpty(): Boolean {
         db.rawQuery("SELECT 1 FROM $TABLE_WORDS LIMIT 1", null).use { cursor ->
             return !cursor.moveToFirst()

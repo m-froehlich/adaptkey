@@ -22,7 +22,7 @@
                 android:resource="@xml/method" />
         </service>
 
-        <!-- Settings entry point (stub for this scaffold). -->
+        <!-- Settings entry point: launcher activity and IME settings activity (C-01 … C-09). -->
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/settings_title"
@@ -32,6 +32,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Blacklist editor (C-05), launched from the settings screen. -->
+        <activity
+            android:name=".settings.BlacklistActivity"
+            android:label="@string/blacklist_title"
+            android:exported="false" />
 
     </application>
 

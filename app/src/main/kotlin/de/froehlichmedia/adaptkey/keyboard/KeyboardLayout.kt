@@ -18,8 +18,11 @@ object KeyboardLayout {
         '6' to "&", '7' to "/", '8' to "(", '9' to ")", '0' to "="
     )
     
-    // L-05: default AltGr-style secondary symbols on selected letters.
-    private val LETTER_HINTS = mapOf(
+    /**
+     * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
+     * layer can offer it as the reset baseline for the configurable per-key map.
+     */
+    val DEFAULT_LETTER_HINTS = mapOf(
         'q' to "@", 'e' to "€", 'h' to "#", 'm' to "-", 'n' to "+", 'd' to "°"
     )
     
@@ -28,27 +31,34 @@ object KeyboardLayout {
      *
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
+     * @param letterHints the per-letter secondary-symbol map (L-05 / C-08); defaults to [DEFAULT_LETTER_HINTS]
+     * @param hintsEnabled whether the letter corner hints are drawn at all (C-08); defaults to true
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
         proportions: KeyProportions = KeyProportions.DEFAULT,
-        showNumberRow: Boolean = true
+        showNumberRow: Boolean = true,
+        letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS,
+        hintsEnabled: Boolean = true
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
+        
+        // C-08: letter hints are suppressed entirely when disabled; the number row keeps its own L-06 hints.
+        val hints: (Char) -> String? = { c -> if (hintsEnabled) letterHints[c] else null }
         
         if (showNumberRow) {
             // L-06: persistent number row with shifted-symbol hints.
             result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
         }
         
-        result.add("qwertzuiop".map { c -> charKey(c, LETTER_HINTS[c]) })
-        result.add("asdfghjkl".map { c -> charKey(c, LETTER_HINTS[c]) })
+        result.add("qwertzuiop".map { c -> charKey(c, hints(c)) })
+        result.add("asdfghjkl".map { c -> charKey(c, hints(c)) })
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW_LETTERS.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            THIRD_ROW_LETTERS.forEach { c -> add(charKey(c, LETTER_HINTS[c], weight = thirdRowLetterWeight)) }
+            THIRD_ROW_LETTERS.forEach { c -> add(charKey(c, hints(c), weight = thirdRowLetterWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         

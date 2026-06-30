@@ -101,6 +101,13 @@ interface DictionaryStore {
     fun blacklistCategory(word: String): BlacklistCategory?
     
     /**
+     * Lists all currently blacklisted words (A-04 / C-05), e.g. for the settings editor.
+     *
+     * @return the blacklisted words in their stored (lower-cased) key form, sorted alphabetically
+     */
+    fun blacklistedWords(): List<String>
+    
+    /**
      * @return true if no unigrams are stored yet (used to decide whether to seed)
      */
     fun isEmpty(): Boolean

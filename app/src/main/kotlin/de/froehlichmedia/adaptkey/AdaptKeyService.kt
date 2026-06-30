@@ -1,5 +1,6 @@
 package de.froehlichmedia.adaptkey
 
+import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
@@ -20,6 +21,8 @@ import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
+import de.froehlichmedia.adaptkey.settings.AdaptSettings
+import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
@@ -46,12 +49,20 @@ class AdaptKeyService : InputMethodService() {
     private var suggestionBar: SuggestionBarView? = null
     private var offsetModel: OffsetModel? = null
     
-    private val config = SuggestionConfig()
-    private val controller = SuggestionController(config)
+    private var settings = AdaptSettings.DEFAULT
+    private var config = SuggestionConfig()
+    private var controller = SuggestionController(config)
     private lateinit var dictionaryStore: DictionaryStore
     private lateinit var provider: SuggestionProvider
     private lateinit var capitalisation: CapitalisationEngine
     private var previousWord: String? = null
+    
+    // C-07 (shift grace window) is persisted and available via settings.shiftGraceWindowMs; the
+    // consuming shift-grace logic does not exist yet, so nothing reads it for now.
+    private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+        settings = SettingsStore.load(this)
+        applySettings()
+    }
     
     private val composing = StringBuilder()
     private var capsMode = CapsMode.NONE
@@ -71,6 +82,9 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onCreate() {
         super.onCreate()
+        settings = SettingsStore.load(this)
+        config = settings.suggestionConfig
+        controller = SuggestionController(config)
         offsetModel = OffsetStore.load(this)
         val store = SqliteDictionaryStore(this)
         if (store.isEmpty()) {
@@ -79,6 +93,7 @@ class AdaptKeyService : InputMethodService() {
         dictionaryStore = store
         provider = DictionarySuggestionProvider(store, config.maxSuggestions * 2)
         capitalisation = CapitalisationEngine(store)
+        SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
     }
     
     override fun onCreateInputView(): View {
@@ -86,7 +101,31 @@ class AdaptKeyService : InputMethodService() {
         view.offsetModel = offsetModel
         view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _ -> handleKey(key) }
         keyboardView = view
+        applySettings()
         return view
+    }
+    
+    /**
+     * Reloads the persisted configuration (C-01 … C-09) and pushes it into the live keyboard: the view
+     * proportions / number row / corner hints, and the suggestion pipeline. The suggestion controller
+     * and provider are only rebuilt when the relevant config actually changed, so applying settings
+     * mid-session is cheap and does not disturb an in-progress token.
+     */
+    private fun applySettings() {
+        val s = settings
+        if (config != s.suggestionConfig) {
+            config = s.suggestionConfig
+            controller = SuggestionController(config)
+            if (this::dictionaryStore.isInitialized) {
+                provider = DictionarySuggestionProvider(dictionaryStore, config.maxSuggestions * 2)
+            }
+        }
+        keyboardView?.let { view ->
+            view.proportions = s.keyProportions
+            view.showNumberRow = s.showNumberRow
+            view.letterHints = s.letterHints
+            view.hintsEnabled = s.hintsEnabled
+        }
     }
     
     override fun onCreateCandidatesView(): View {
@@ -106,6 +145,13 @@ class AdaptKeyService : InputMethodService() {
         clearSuggestions()
     }
     
+    override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        // Pick up any changes made in the settings screen since the keyboard was last shown.
+        settings = SettingsStore.load(this)
+        applySettings()
+    }
+    
     override fun onFinishInput() {
         super.onFinishInput()
         composing.setLength(0)
@@ -116,6 +162,7 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onDestroy() {
         handler.removeCallbacks(resortRunnable)
+        SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         offsetModel?.let { OffsetStore.save(this, it) }
         super.onDestroy()
     }
