@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.text.InputType
 import android.text.SpannableString
 import android.text.Spanned
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputConnection
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
+import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.SeedData
@@ -57,8 +59,6 @@ class AdaptKeyService : InputMethodService() {
     private lateinit var capitalisation: CapitalisationEngine
     private var previousWord: String? = null
     
-    // C-07 (shift grace window) is persisted and available via settings.shiftGraceWindowMs; the
-    // consuming shift-grace logic does not exist yet, so nothing reads it for now.
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         settings = SettingsStore.load(this)
         applySettings()
@@ -68,6 +68,14 @@ class AdaptKeyService : InputMethodService() {
     private var capsMode = CapsMode.NONE
     private var tokenSentenceStart = false
     private var tokenAfterHyphen = false
+    
+    // C-07: shift-grace state. The current word start may be auto-armed to uppercase by a field mandate
+    // (§6); shiftGuardedArm marks a "surprising" mid-sentence arm whose disarming Shift press is ignored
+    // during settings.shiftGraceWindowMs (measured from shiftArmTime). A press accepted after the window
+    // that lowers a guarded arm is a deliberate override and neutralises the mandate for this token.
+    private var shiftArmTime = 0L
+    private var shiftGuardedArm = false
+    private var fieldMandateOverridden = false
     
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
@@ -151,6 +159,7 @@ class AdaptKeyService : InputMethodService() {
         // Pick up any changes made in the settings screen since the keyboard was last shown.
         settings = SettingsStore.load(this)
         applySettings()
+        currentInputConnection?.let { armShiftForNextWord(it) }
     }
     
     override fun onFinishInput() {
@@ -202,7 +211,7 @@ class AdaptKeyService : InputMethodService() {
             
             KeyCode.DELETE -> handleBackspace(ic)
             
-            KeyCode.SHIFT -> keyboardView?.let { it.shifted = !it.shifted }
+            KeyCode.SHIFT -> handleShift()
             
             // L-03 stub: the combined emoji / ?123 key has no panel yet.
             KeyCode.SYMBOL -> Unit
@@ -245,6 +254,7 @@ class AdaptKeyService : InputMethodService() {
             ic.commitText(delimiter, 1)
             clearUndo()
             clearSuggestions()
+            armShiftForNextWord(ic)
             return
         }
         val typed = composing.toString()
@@ -265,6 +275,7 @@ class AdaptKeyService : InputMethodService() {
             clearUndo()
         }
         clearSuggestions()
+        armShiftForNextWord(ic)
     }
     
     private fun performAutocorrectUndo(ic: InputConnection) {
@@ -274,6 +285,7 @@ class AdaptKeyService : InputMethodService() {
         previousWord = typed
         clearUndo()
         clearSuggestions()
+        armShiftForNextWord(ic)
     }
     
     private fun updateComposing(ic: InputConnection) {
@@ -356,6 +368,7 @@ class AdaptKeyService : InputMethodService() {
                 composing.setLength(0)
                 learnWord(word)
                 clearSuggestions()
+                armShiftForNextWord(ic)
             }
         }
     }
@@ -367,12 +380,51 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun contextFor(typed: String): CapitalisationContext {
+        // C-07: once the user has deliberately overridden a surprising field mandate for this word, the
+        // mandate no longer forces an uppercase; the linguistic rules (sentence start, nouns) still apply.
+        val effectiveCaps = if (fieldMandateOverridden) CapsMode.NONE else capsMode
         return CapitalisationContext(
             explicitFirstUpper = typed.firstOrNull()?.isUpperCase() == true,
             sentenceStart = tokenSentenceStart,
-            capsMode = capsMode,
+            capsMode = effectiveCaps,
             afterHyphen = tokenAfterHyphen
         )
+    }
+    
+    /**
+     * Arms Shift for the word about to start, per the field mandate (§6 / C-07), and resets the grace
+     * state: records whether the arm is guarded and the time it was armed, and clears any previous
+     * override. Called after every commit and when the input view (re)starts.
+     */
+    private fun armShiftForNextWord(ic: InputConnection) {
+        val sentenceStart = sentenceStartBefore(ic)
+        keyboardView?.shifted = ShiftGrace.autoArmAtWordStart(capsMode, sentenceStart)
+        shiftGuardedArm = ShiftGrace.isGuardedArm(capsMode, sentenceStart)
+        shiftArmTime = SystemClock.uptimeMillis()
+        fieldMandateOverridden = false
+    }
+    
+    /**
+     * Handles a Shift key press through the C-07 grace guard: ignores a press that would lower a
+     * field-mandated uppercase within the grace window, otherwise toggles. A press that deliberately
+     * lowers a guarded arm after the window marks the field mandate as overridden for this word.
+     */
+    private fun handleShift() {
+        val view = keyboardView ?: return
+        val elapsed = SystemClock.uptimeMillis() - shiftArmTime
+        if (ShiftGrace.suppressesShiftPress(shiftGuardedArm, view.shifted, settings.shiftGraceWindowMs, elapsed)) {
+            return
+        }
+        val wasUpper = view.shifted
+        view.shifted = !view.shifted
+        if (shiftGuardedArm && wasUpper && !view.shifted) {
+            fieldMandateOverridden = true
+        }
+    }
+    
+    private fun sentenceStartBefore(ic: InputConnection): Boolean {
+        val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
+        return before.isBlank() || endsAtSentenceBoundary(before)
     }
     
     private fun consumeShift() {
