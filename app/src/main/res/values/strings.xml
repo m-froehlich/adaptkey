@@ -50,6 +50,18 @@
     <string name="c06_title">LLM-Schwellwert</string>
     <string name="c06_summary">Deaktiviert – kein LLM-Tier vorhanden (C-06).</string>
 
+    <!-- Typing pattern detection (T-04). -->
+    <string name="cat_typing_pattern">Tippmuster (T-04)</string>
+    <string name="t04_detected_title">Erkanntes Tippmuster</string>
+    <string name="t04_detected_summary">Aus deinen Tippabweichungen abgeleitet – reine Information, kein Eingriff.</string>
+    <string name="t04_override_title">Tippmuster überschreiben</string>
+    <string name="t04_override_summary">Manuell festlegen, falls die automatische Erkennung danebenliegt.</string>
+    <string name="t04_pattern_auto">Automatisch erkennen</string>
+    <string name="t04_pattern_left_index">Linker Zeigefinger</string>
+    <string name="t04_pattern_right_index">Rechter Zeigefinger</string>
+    <string name="t04_pattern_thumb">Daumen</string>
+    <string name="t04_pattern_unknown">Noch nicht erkannt</string>
+
     <!-- Blacklist editor (C-05). -->
     <string name="blacklist_title">Blacklist</string>
     <string name="blacklist_word_hint">Wort</string>

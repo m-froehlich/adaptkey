@@ -27,6 +27,32 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `record accumulates mean contact area only for sized taps`() {
+        val model = OffsetModel()
+        model.record("c:k", 0f, 0f, 1f, 1f, size = 0.2f)
+        model.record("c:k", 0f, 0f, 1f, 1f, size = 0.4f)
+        // A zero-size tap (device reports no contact area) must not drag the mean towards 0.
+        model.record("c:k", 0f, 0f, 1f, 1f, size = 0f)
+        
+        assertEquals(0.3, model.meanContactArea("c:k") ?: Double.NaN, 1e-6)
+        assertEquals(3L, model.statFor("c:k")?.count)
+        assertEquals(2L, model.statFor("c:k")?.sizeCount)
+    }
+    
+    @Test
+    fun `meanContactArea is null without any sized tap`() {
+        val model = OffsetModel()
+        model.record("c:k", 0f, 0f, 1f, 1f)
+        
+        assertNull(model.meanContactArea("c:k"))
+    }
+    
+    @Test
+    fun `meanContactArea is null for an untrained key`() {
+        assertNull(OffsetModel().meanContactArea("c:x"))
+    }
+    
+    @Test
     fun `totalSamples counts taps across all keys`() {
         val model = OffsetModel()
         model.record("c:a", 0f, 0f, 1f, 1f)
@@ -108,8 +134,8 @@ class OffsetModelTest {
     @Test
     fun `snapshot and restore round-trip the statistics`() {
         val source = OffsetModel()
-        source.record("c:a", 0f, 0f, 3f, 4f)
-        source.record("c:a", 0f, 0f, 5f, 6f)
+        source.record("c:a", 0f, 0f, 3f, 4f, size = 0.25f)
+        source.record("c:a", 0f, 0f, 5f, 6f, size = 0.35f)
         source.record("c:b", 0f, 0f, 1f, 1f)
         
         val target = OffsetModel()
@@ -119,6 +145,7 @@ class OffsetModelTest {
         assertEquals(2L, a?.count)
         assertEquals(source.statFor("c:a")?.meanDx ?: Double.NaN, a?.meanDx ?: Double.NaN, 1e-9)
         assertEquals(source.statFor("c:a")?.meanDy ?: Double.NaN, a?.meanDy ?: Double.NaN, 1e-9)
+        assertEquals(0.3, target.meanContactArea("c:a") ?: Double.NaN, 1e-6)
         assertEquals(3L, target.totalSamples)
     }
     

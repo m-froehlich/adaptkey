@@ -37,7 +37,9 @@ class OffsetModel(
         var meanDx: Double = 0.0,
         var meanDy: Double = 0.0,
         var m2Dx: Double = 0.0,
-        var m2Dy: Double = 0.0
+        var m2Dy: Double = 0.0,
+        var sizeCount: Long = 0L,
+        var meanSize: Double = 0.0
     )
     
     /** A candidate key with the geometry needed to score and record a tap. */
@@ -66,13 +68,19 @@ class OffsetModel(
     /**
      * Records a confirmed tap, updating the key's running mean and variance (Welford).
      *
+     * The optional contact area ([size], from {@code MotionEvent.getSize()}) feeds a separate running
+     * mean used by the typing-pattern detection (T-04). It is only accumulated when strictly positive,
+     * so devices that report no contact size simply leave [Stat.sizeCount] at zero and the pattern
+     * detection falls back gracefully.
+     *
      * @param id the confirmed key's id
      * @param centerX the key centre x in view pixels
      * @param centerY the key centre y in view pixels
      * @param x the raw tap x (T-01 ACTION_DOWN)
      * @param y the raw tap y (T-01 ACTION_DOWN)
+     * @param size the normalised contact area of the tap, or 0 when unavailable (T-04)
      */
-    fun record(id: String, centerX: Float, centerY: Float, x: Float, y: Float) {
+    fun record(id: String, centerX: Float, centerY: Float, x: Float, y: Float, size: Float = 0f) {
         val stat = stats.getOrPut(id) { Stat() }
         val dx = (x - centerX).toDouble()
         val dy = (y - centerY).toDouble()
@@ -83,6 +91,24 @@ class OffsetModel(
         val deltaY = dy - stat.meanDy
         stat.meanDy += deltaY / stat.count
         stat.m2Dy += deltaY * (dy - stat.meanDy)
+        if (size > 0f) {
+            stat.sizeCount += 1L
+            stat.meanSize += (size.toDouble() - stat.meanSize) / stat.sizeCount
+        }
+    }
+    
+    /**
+     * The mean contact area learned for a key (T-04), or null when no sized taps have been seen.
+     *
+     * @param id the key id
+     * @return the mean {@code MotionEvent.getSize()} for the key, or null when unavailable
+     */
+    fun meanContactArea(id: String): Double? {
+        val stat = stats[id]
+        if (stat == null || stat.sizeCount == 0L) {
+            return null
+        }
+        return stat.meanSize
     }
     
     /**

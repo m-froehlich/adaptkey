@@ -230,7 +230,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 downY = event.y
                 invalidate()
                 // T-03: feed the confirmed tap back into the personal offset model.
-                offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
+                // event.size (T-04) lets the model track contact area for typing-pattern detection.
+                offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y, event.size)
                 // T-05: classify the raw contact point into the space/letter ambiguity bands.
                 pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
                 scheduleLongPress(key)
@@ -307,6 +308,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val match = keyRects.firstOrNull { (key, _) -> key.code == KeyCode.SPACE } ?: return null
         val (key, rect) = match
         return KeyBox(key.id, key.char, rect.left, rect.top, rect.right, rect.bottom)
+    }
+    
+    /**
+     * Geometry of the char keys, for typing-pattern detection (T-04). Empty until the view is laid out.
+     *
+     * @return one [OffsetModel.Candidate] per char key, with the centre and half-size in view pixels
+     */
+    fun charKeyGeometry(): List<OffsetModel.Candidate> {
+        return keyRects
+            .filter { (key, _) -> key.code == KeyCode.CHAR }
+            .map { (key, rect) -> OffsetModel.Candidate(key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f) }
     }
     
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {

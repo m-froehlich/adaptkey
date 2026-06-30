@@ -16,6 +16,7 @@ object OffsetStore {
     
     private const val PREFS = "adaptkey_offset_model"
     private const val KEY_STATS = "stats"
+    private const val KEY_PATTERN = "typing_pattern"
     
     /**
      * Loads the persisted model.
@@ -37,7 +38,10 @@ object OffsetStore {
                     meanDx = array.getDouble(1),
                     meanDy = array.getDouble(2),
                     m2Dx = array.getDouble(3),
-                    m2Dy = array.getDouble(4)
+                    m2Dy = array.getDouble(4),
+                    // Contact-area stats (T-04) were added later; older blobs omit them.
+                    sizeCount = if (array.length() > 5) array.getLong(5) else 0L,
+                    meanSize = if (array.length() > 6) array.getDouble(6) else 0.0
                 )
             }
             model.restore(data)
@@ -60,11 +64,39 @@ object OffsetStore {
             array.put(stat.meanDy)
             array.put(stat.m2Dx)
             array.put(stat.m2Dy)
+            array.put(stat.sizeCount)
+            array.put(stat.meanSize)
             obj.put(id, array)
         }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_STATS, obj.toString())
             .apply()
+    }
+    
+    /**
+     * Persists the most recently detected typing pattern (T-04) so the settings screen, which has no
+     * laid-out keyboard, can display it. Stored alongside the model because it is derived from it.
+     *
+     * @param context any valid context (the input method service)
+     * @param pattern the detected pattern
+     */
+    fun saveDetectedPattern(context: Context, pattern: TypingPattern) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_PATTERN, pattern.name)
+            .apply()
+    }
+    
+    /**
+     * Loads the most recently detected typing pattern (T-04).
+     *
+     * @param context any valid context
+     * @return the stored pattern, or [TypingPattern.UNKNOWN] when none is stored or it is unparseable
+     */
+    fun loadDetectedPattern(context: Context): TypingPattern {
+        val name = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_PATTERN, null)
+            ?: return TypingPattern.UNKNOWN
+        return runCatching { TypingPattern.valueOf(name) }.getOrDefault(TypingPattern.UNKNOWN)
     }
 }

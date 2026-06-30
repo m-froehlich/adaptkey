@@ -41,6 +41,7 @@ import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.TapAmbiguity
+import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
 
 /**
  * AdaptKey input method.
@@ -213,15 +214,32 @@ class AdaptKeyService : InputMethodService() {
         super.onFinishInput()
         composing.setLength(0)
         clearSuggestions()
-        // Persist what the model learned while this field was focused (T-03).
+        // Persist what the model learned while this field was focused (T-03) and re-derive T-04.
         offsetModel?.let { OffsetStore.save(this, it) }
+        persistTypingPattern()
     }
     
     override fun onDestroy() {
         handler.removeCallbacks(resortRunnable)
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         offsetModel?.let { OffsetStore.save(this, it) }
+        persistTypingPattern()
         super.onDestroy()
+    }
+    
+    /**
+     * Re-derives the dominant typing pattern (T-04) from the live offset model and the laid-out
+     * keyboard geometry, and persists it for the settings screen. A no-op while the keyboard has not
+     * been laid out, so a previously detected pattern is never overwritten with an unknown result.
+     */
+    private fun persistTypingPattern() {
+        val model = offsetModel ?: return
+        val view = keyboardView ?: return
+        if (view.width <= 0) {
+            return
+        }
+        val pattern = TypingPatternAnalysis.classify(model, view.charKeyGeometry(), view.width.toFloat())
+        OffsetStore.saveDetectedPattern(this, pattern)
     }
     
     private fun handleKey(key: Key, ambiguity: AmbiguityResult) {

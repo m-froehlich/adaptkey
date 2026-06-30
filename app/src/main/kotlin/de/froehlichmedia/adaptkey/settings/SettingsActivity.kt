@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.touch.OffsetStore
+import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * Settings entry point for the configurable parameters (C-01 … C-09).
@@ -37,6 +39,22 @@ class SettingsActivity : AppCompatActivity() {
                 SettingsStore.resetLetterHints(requireContext())
                 Toast.makeText(requireContext(), R.string.c08_reset_done, Toast.LENGTH_SHORT).show()
                 true
+            }
+        }
+        
+        override fun onResume() {
+            super.onResume()
+            // T-04 is re-derived by the running keyboard; reflect the latest detection on each return.
+            val pattern = OffsetStore.loadDetectedPattern(requireContext())
+            findPreference<Preference>("t04_detected")?.setSummary(patternLabel(pattern))
+        }
+        
+        private fun patternLabel(pattern: TypingPattern): Int {
+            return when (pattern) {
+                TypingPattern.LEFT_INDEX_FINGER -> R.string.t04_pattern_left_index
+                TypingPattern.RIGHT_INDEX_FINGER -> R.string.t04_pattern_right_index
+                TypingPattern.THUMB -> R.string.t04_pattern_thumb
+                TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
             }
         }
     }
