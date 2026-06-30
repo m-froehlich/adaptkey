@@ -19,7 +19,9 @@ import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.SeedData
+import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
+import de.froehlichmedia.adaptkey.dictionary.TokenRepair
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
@@ -29,8 +31,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
+import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
+import de.froehlichmedia.adaptkey.touch.TapAmbiguity
 
 /**
  * AdaptKey input method.
@@ -42,8 +46,10 @@ import de.froehlichmedia.adaptkey.touch.OffsetStore
  * personal offset model (T-03). Suggestions follow the stabilisation policy (S-01 … S-06) and are
  * fed by the SQLite personal dictionary (tier-1 n-gram), which learns committed words.
  *
- * Retroactive split/merge (A-05 / A-06, depending on the T-05 ambiguity bands), the emoji / numeric
- * panel (L-03) and gestures are not part of this stage yet.
+ * Taps in the bottom-row space/letter ambiguity bands (T-05) are flagged per character; on a delimiter
+ * the token may be retroactively split (A-05) or merged onto a spurious space (A-06) when the
+ * dictionary confirms a valid result. The emoji / numeric panel (L-03) and gestures are not part of
+ * this stage yet.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -57,6 +63,7 @@ class AdaptKeyService : InputMethodService() {
     private lateinit var dictionaryStore: DictionaryStore
     private lateinit var provider: SuggestionProvider
     private lateinit var capitalisation: CapitalisationEngine
+    private lateinit var tokenRepair: TokenRepair
     private var previousWord: String? = null
     
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
@@ -65,9 +72,14 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private val composing = StringBuilder()
+    private val composingFlags = ArrayList<TapAmbiguity>()
     private var capsMode = CapsMode.NONE
     private var tokenSentenceStart = false
     private var tokenAfterHyphen = false
+    
+    // T-05 / A-06: the letter inferred for the most recently committed letter-ambiguous space; armed for
+    // the immediately following token, which may be merged back onto it (e.g. "aber  ald" -> "aber bald").
+    private var pendingMergeChar: Char? = null
     
     // C-07: shift-grace state. The current word start may be auto-armed to uppercase by a field mandate
     // (§6); shiftGuardedArm marks a "surprising" mid-sentence arm whose disarming Shift press is ignored
@@ -101,13 +113,14 @@ class AdaptKeyService : InputMethodService() {
         dictionaryStore = store
         provider = DictionarySuggestionProvider(store, config.maxSuggestions * 2)
         capitalisation = CapitalisationEngine(store)
+        tokenRepair = TokenRepair(store)
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
     }
     
     override fun onCreateInputView(): View {
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
-        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _ -> handleKey(key) }
+        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, ambiguity -> handleKey(key, ambiguity) }
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { symbol -> handleLongPress(symbol) }
         keyboardView = view
         applySettings()
@@ -147,6 +160,8 @@ class AdaptKeyService : InputMethodService() {
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
         super.onStartInput(info, restarting)
         composing.setLength(0)
+        composingFlags.clear()
+        pendingMergeChar = null
         previousWord = null
         capsMode = capsModeFor(info)
         clearUndo()
@@ -177,7 +192,7 @@ class AdaptKeyService : InputMethodService() {
         super.onDestroy()
     }
     
-    private fun handleKey(key: Key) {
+    private fun handleKey(key: Key, ambiguity: AmbiguityResult) {
         val ic = currentInputConnection ?: return
         // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
         if (undoTyped != null) {
@@ -196,6 +211,8 @@ class AdaptKeyService : InputMethodService() {
                     }
                     val ch = if (keyboardView?.shifted == true) raw.uppercaseChar() else raw
                     composing.append(ch)
+                    // T-05: retain this letter's space-ambiguity flag in step with the composing token (A-05).
+                    composingFlags.add(ambiguity.kind)
                     consumeShift()
                     updateComposing(ic)
                     refreshSuggestions()
@@ -205,7 +222,11 @@ class AdaptKeyService : InputMethodService() {
                 }
             }
             
-            KeyCode.SPACE -> finalizeAndCommit(ic, " ")
+            KeyCode.SPACE -> {
+                // T-05: a space tapped in the upper band carries the letter inferred for a possible merge (A-06).
+                val inferred = ambiguity.inferredChar.takeIf { ambiguity.kind == TapAmbiguity.LETTER_AMBIGUOUS }
+                finalizeAndCommit(ic, " ", inferred)
+            }
             
             KeyCode.ENTER -> finalizeAndCommit(ic, "\n")
             
@@ -229,7 +250,12 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun handleBackspace(ic: InputConnection) {
+        // A backspace breaks the immediate context a pending merge (A-06) would have relied on.
+        pendingMergeChar = null
         if (composing.isNotEmpty()) {
+            if (composingFlags.isNotEmpty()) {
+                composingFlags.removeAt(composingFlags.size - 1)
+            }
             composing.setLength(composing.length - 1)
             if (composing.isEmpty()) {
                 ic.setComposingText("", 1)
@@ -245,25 +271,55 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Finalises the composing token: applies the pending autocorrect and the capitalisation
-     * hierarchy, commits the result followed by [delimiter], learns the committed word and arms the
-     * A-07 undo when the committed form differs from what was typed.
+     * Finalises the composing token. First the retroactive token-repair rules are tried: a merge back
+     * onto a preceding spurious letter-ambiguous space (A-06), then a split at a space-ambiguous tap or
+     * a fully missed space (A-05). Failing those, the pending autocorrect and the capitalisation
+     * hierarchy are applied; the result is committed followed by [delimiter], the committed word is
+     * learned and the A-07 undo is armed when the committed form differs from what was typed.
+     *
+     * @param spaceInferred when this delimiter is a standalone letter-ambiguous space, the letter
+     *        inferred from the tap; armed for a possible merge of the next token (A-06)
      */
-    private fun finalizeAndCommit(ic: InputConnection, delimiter: String) {
+    private fun finalizeAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char? = null) {
+        val mergeChar = pendingMergeChar
+        pendingMergeChar = null
+        
         if (composing.isEmpty()) {
             ic.commitText(delimiter, 1)
             clearUndo()
             clearSuggestions()
+            // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
+            pendingMergeChar = spaceInferred
             armShiftForNextWord(ic)
             return
         }
         val typed = composing.toString()
+        
+        // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
+        if (mergeChar != null) {
+            val merged = tokenRepair.tryMerge(previousWord, mergeChar, typed)
+            if (merged != null) {
+                applyMerge(ic, merged, delimiter)
+                armShiftForNextWord(ic)
+                return
+            }
+        }
+        
+        // A-05: split the token at a space-ambiguous tap or a fully missed space, when valid.
+        val split = tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+        if (split != null) {
+            applySplit(ic, split, delimiter)
+            armShiftForNextWord(ic)
+            return
+        }
+        
         val corrected = provider.autocorrectFor(typed, previousWord) ?: typed // A-01 enforced in provider
         val finalWord = capitalisation.capitalise(corrected, contextFor(typed))
         
         ic.setComposingText(finalWord, 1)
         ic.finishComposingText()
         composing.setLength(0)
+        composingFlags.clear()
         ic.commitText(delimiter, 1)
         learnWord(finalWord)
         
@@ -276,6 +332,51 @@ class AdaptKeyService : InputMethodService() {
         }
         clearSuggestions()
         armShiftForNextWord(ic)
+    }
+    
+    /**
+     * Applies an A-06 merge: drops the composing token, removes the spurious preceding space and
+     * commits the reconstructed word (cased per §6) followed by [delimiter].
+     */
+    private fun applyMerge(ic: InputConnection, merged: String, delimiter: String) {
+        ic.setComposingText("", 1)
+        ic.finishComposingText()
+        composing.setLength(0)
+        composingFlags.clear()
+        ic.deleteSurroundingText(1, 0)
+        val cased = capitalisation.capitalise(merged, contextFor(merged))
+        ic.commitText(cased + delimiter, 1)
+        learnWord(cased)
+        clearUndo()
+        clearSuggestions()
+    }
+    
+    /**
+     * Applies an A-05 split: drops the composing token and commits the two words (each cased per §6)
+     * separated by a space, followed by [delimiter].
+     */
+    private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String) {
+        ic.setComposingText("", 1)
+        ic.finishComposingText()
+        composing.setLength(0)
+        composingFlags.clear()
+        val left = capitalisation.capitalise(split.left, contextFor(split.left))
+        val right = capitalisation.capitalise(split.right, followingPartContext())
+        ic.commitText(left + " " + right + delimiter, 1)
+        learnWord(left)
+        learnWord(right)
+        clearUndo()
+        clearSuggestions()
+    }
+    
+    private fun spaceAmbiguousIndices(): Set<Int> {
+        val indices = HashSet<Int>()
+        composingFlags.forEachIndexed { index, flag ->
+            if (flag == TapAmbiguity.SPACE_AMBIGUOUS) {
+                indices.add(index)
+            }
+        }
+        return indices
     }
     
     private fun performAutocorrectUndo(ic: InputConnection) {
@@ -349,12 +450,14 @@ class AdaptKeyService : InputMethodService() {
     private fun onSuggestionClicked(item: SuggestionController.DisplayItem) {
         val ic = currentInputConnection ?: return
         clearUndo()
+        pendingMergeChar = null
         when (item.kind) {
             // S-06: keep exactly what was typed and cancel the pending autocorrect for this occurrence.
             SuggestionController.Kind.VERBATIM -> {
                 val typed = composing.toString()
                 ic.finishComposingText()
                 composing.setLength(0)
+                composingFlags.clear()
                 controller.declineAutocorrect()
                 // S-06: repeated verbatim confirmation is a learning signal (cf. B-03).
                 learnWord(typed)
@@ -366,6 +469,7 @@ class AdaptKeyService : InputMethodService() {
                 val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 ic.commitText(word + " ", 1)
                 composing.setLength(0)
+                composingFlags.clear()
                 learnWord(word)
                 clearSuggestions()
                 armShiftForNextWord(ic)
@@ -388,6 +492,22 @@ class AdaptKeyService : InputMethodService() {
             sentenceStart = tokenSentenceStart,
             capsMode = effectiveCaps,
             afterHyphen = tokenAfterHyphen
+        )
+    }
+    
+    /**
+     * Capitalisation context for the second word of an A-05 split: never a sentence start or explicit
+     * capital, but still subject to any field mandate (§6) unless the user overrode it (C-07).
+     *
+     * @return the context for a split's following part
+     */
+    private fun followingPartContext(): CapitalisationContext {
+        val effectiveCaps = if (fieldMandateOverridden) CapsMode.NONE else capsMode
+        return CapitalisationContext(
+            explicitFirstUpper = false,
+            sentenceStart = false,
+            capsMode = effectiveCaps,
+            afterHyphen = false
         )
     }
     

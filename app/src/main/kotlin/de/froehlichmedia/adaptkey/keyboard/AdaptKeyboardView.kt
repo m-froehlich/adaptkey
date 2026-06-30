@@ -13,7 +13,11 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.touch.AmbiguityBands
+import de.froehlichmedia.adaptkey.touch.AmbiguityResult
+import de.froehlichmedia.adaptkey.touch.KeyBox
 import de.froehlichmedia.adaptkey.touch.OffsetModel
+import de.froehlichmedia.adaptkey.touch.TapAmbiguity
 
 /**
  * Self-drawn keyboard view.
@@ -39,7 +43,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     /** Callback invoked once per resolved tap, on release (carrying the ACTION_DOWN coordinates). */
     fun interface OnKeyListener {
         
-        fun onKey(key: Key, downX: Float, downY: Float)
+        fun onKey(key: Key, downX: Float, downY: Float, ambiguity: AmbiguityResult)
     }
     
     /** Callback invoked when a key is held past the long-press timeout (L-05 / L-06). */
@@ -90,6 +94,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
+    
+    // T-05: classifies a bottom-row tap into the space/letter ambiguity bands. Computed at ACTION_DOWN
+    // from the raw contact point and carried to the listener on release for later token-level repair.
+    private val ambiguityBands = AmbiguityBands()
+    private var pendingAmbiguity = AmbiguityResult(TapAmbiguity.NONE)
     
     private val longPressHandler = Handler(Looper.getMainLooper())
     private var longPressRunnable: Runnable? = null
@@ -206,6 +215,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 invalidate()
                 // T-03: feed the confirmed tap back into the personal offset model.
                 offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
+                // T-05: classify the raw contact point into the space/letter ambiguity bands.
+                pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
                 scheduleLongPress(key)
                 return true
             }
@@ -224,7 +235,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 pressedKey = null
                 invalidate()
                 if (key != null && !longPressFired) {
-                    onKeyListener?.onKey(key, downX, downY)
+                    onKeyListener?.onKey(key, downX, downY, pendingAmbiguity)
                 }
                 return true
             }
@@ -263,6 +274,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return dx * dx + dy * dy > touchSlopPx * touchSlopPx
     }
     
+    private fun bottomLetterBoxes(): List<KeyBox> {
+        return keyRects
+            .filter { (key, _) -> key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS }
+            .map { (key, rect) -> KeyBox(key.id, key.char, rect.left, rect.top, rect.right, rect.bottom) }
+    }
+    
+    private fun spaceBox(): KeyBox? {
+        val match = keyRects.firstOrNull { (key, _) -> key.code == KeyCode.SPACE } ?: return null
+        val (key, rect) = match
+        return KeyBox(key.id, key.char, rect.left, rect.top, rect.right, rect.bottom)
+    }
+    
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
         if (keyRects.isEmpty()) {
             return null
@@ -294,5 +317,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     private fun dp(value: Float): Float {
         return value * resources.displayMetrics.density
+    }
+    
+    companion object {
+        
+        // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
+        private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
     }
 }
