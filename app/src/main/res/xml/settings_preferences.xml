@@ -55,6 +55,15 @@
             android:defaultValue="true" />
 
         <Preference
+            android:key="c08_letter_hints_editor"
+            android:title="@string/c08_editor_title"
+            android:summary="@string/c08_editor_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.LetterHintsActivity" />
+        </Preference>
+
+        <Preference
             android:key="c08_reset_hints"
             android:title="@string/c08_reset_title"
             android:summary="@string/c08_reset_summary" />

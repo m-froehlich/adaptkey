@@ -33,6 +33,10 @@
     <string name="c08_reset_title">Eck-Symbole zurücksetzen</string>
     <string name="c08_reset_summary">Setzt die Per-Tasten-Belegung auf die Standardzuordnung zurück.</string>
     <string name="c08_reset_done">Eck-Symbole auf Standard zurückgesetzt.</string>
+    <string name="c08_editor_title">Eck-Symbole bearbeiten</string>
+    <string name="c08_editor_summary">Sekundärsymbol pro Buchstabe festlegen oder entfernen (L-05).</string>
+    <string name="c08_editor_intro">Tippe einen Buchstaben an, um sein Long-Press-Symbol zu wählen oder zu entfernen.</string>
+    <string name="c08_editor_none">— kein Symbol —</string>
 
     <string name="c05_title">Blacklist bearbeiten</string>
     <string name="c05_summary">Wörter dauerhaft von Vorschlägen und Autokorrektur ausschließen (A-04).</string>

@@ -39,6 +39,12 @@
             android:label="@string/blacklist_title"
             android:exported="false" />
 
+        <!-- Per-key secondary-symbol editor (C-08), launched from the settings screen. -->
+        <activity
+            android:name=".settings.LetterHintsActivity"
+            android:label="@string/c08_editor_title"
+            android:exported="false" />
+
     </application>
 
 </manifest>

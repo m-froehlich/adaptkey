@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.preference.PreferenceManager
-import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 
 /**
@@ -87,10 +86,33 @@ object SettingsStore {
             highlightColor = parseColor(p.getString(KEY_HIGHLIGHT_COLOR, null)),
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
             hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
-            letterHints = decodeHints(p.getString(KEY_LETTER_HINTS, null)),
+            letterHints = LetterHints.decodeOrDefault(p.getString(KEY_LETTER_HINTS, null)),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong()
         )
         return SettingsMapper.toAdaptSettings(raw)
+    }
+    
+    /**
+     * Loads the current C-08 per-key secondary-symbol map for the editor, applying the default
+     * fallback. This is the map the running keyboard resolves to as well (see [load]).
+     *
+     * @param context any valid context
+     * @return the validated per-key map, or the default mapping when none is stored
+     */
+    fun loadLetterHints(context: Context): Map<Char, String> {
+        return LetterHints.decodeOrDefault(prefs(context).getString(KEY_LETTER_HINTS, null))
+    }
+    
+    /**
+     * Persists an edited C-08 per-key secondary-symbol map. The map is sanitised and encoded by
+     * [LetterHints]; writing the [KEY_LETTER_HINTS] key triggers the service's preference listener, so
+     * the change reaches the live keyboard (hints + long-press) on the next input view.
+     *
+     * @param context any valid context
+     * @param hints the edited per-key map
+     */
+    fun saveLetterHints(context: Context, hints: Map<Char, String>) {
+        prefs(context).edit().putString(KEY_LETTER_HINTS, LetterHints.encode(hints)).apply()
     }
     
     /**
@@ -107,19 +129,5 @@ object SettingsStore {
             return SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR
         }
         return runCatching { Color.parseColor(value) }.getOrDefault(SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR)
-    }
-    
-    private fun decodeHints(value: String?): Map<Char, String> {
-        if (value.isNullOrBlank()) {
-            return KeyboardLayout.DEFAULT_LETTER_HINTS
-        }
-        val map = HashMap<Char, String>()
-        for (pair in value.split(';')) {
-            val parts = pair.split('=', limit = 2)
-            if (parts.size == 2 && parts[0].length == 1 && parts[1].isNotEmpty()) {
-                map[parts[0][0]] = parts[1]
-            }
-        }
-        return if (map.isEmpty()) KeyboardLayout.DEFAULT_LETTER_HINTS else map
     }
 }
