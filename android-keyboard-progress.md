@@ -28,7 +28,7 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: real multilingual dictionaries (this session, see Done) on top of the Greek-input / A-03 / L-03 work.
+- HEAD: commit `dd1cc76` — real DE/EN/EL Wikipedia dictionaries (full A-03 per-language switching).
 - Unit tests: **286 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
