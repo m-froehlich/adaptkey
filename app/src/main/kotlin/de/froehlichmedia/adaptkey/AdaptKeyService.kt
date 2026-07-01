@@ -13,6 +13,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
+import android.widget.Toast
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
@@ -40,6 +41,7 @@ import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
+import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
@@ -68,7 +70,8 @@ import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
  * the token may be retroactively split (A-05) or merged onto a spurious space (A-06) when the
  * dictionary confirms a valid result. Swipe gestures (§4) are handled too: swipe-left on backspace
  * deletes a word (G-02), swipe-down dismisses the keyboard (G-03), and a horizontal swipe on the space
- * bar is the language-switch gesture (G-01, a no-op stub until multilingual input exists). Pressing
+ * bar switches the input alphabet between German and Greek (G-01), with Greek vowels taking their tonos
+ * form via long-press. Pressing
  * Shift at the end of a word toggles its first-letter case or starts camelCase depending on the next
  * key (G-05), and dragging a suggestion into the trash zone blacklists it (G-04 / A-04). The combined
  * emoji / ?123 key (L-03) opens the emoji panel on a tap, or the numeric/symbol layer on a long-press
@@ -97,6 +100,11 @@ class AdaptKeyService : InputMethodService() {
     // replaced with the profile-backed classifier in onCreate. When the recent context is confidently
     // non-German, the German autocorrect is held back so foreign words are not mangled.
     private var languageClassifier = LanguageClassifier(emptyMap())
+    
+    // G-01: the active alphabet/input language, toggled by the space-bar swipe. GERMAN shows the Latin
+    // QWERTZ layout with the German dictionary pipeline; GREEK shows the Greek alphabet and commits raw
+    // text (no Greek dictionary yet). Kept for the service lifetime; defaults to German on each start.
+    private var activeLanguage = Language.GERMAN
     
     // L-03: which layer is shown, the numeric/symbol layer's current page, the bundled emoji dataset
     // and the persisted recent/frequently-used emoji (MRU).
@@ -257,6 +265,8 @@ class AdaptKeyService : InputMethodService() {
         // Pick up any changes made in the settings screen since the keyboard was last shown.
         settings = SettingsStore.load(this)
         applySettings()
+        // Reflect the active alphabet (G-01) on the freshly (re)created keyboard view.
+        keyboardView?.greek = activeLanguage == Language.GREEK
         // Pick up an offset model seeded by the calibration screen (K-01). Safe on a fresh field (not a
         // restart): the live model was persisted on the previous onFinishInput, so storage is current.
         if (!restarting) {
@@ -381,13 +391,39 @@ class AdaptKeyService : InputMethodService() {
                 val symbol = key.hint ?: return
                 val ic = currentInputConnection ?: return
                 clearUndo()
-                finalizeAndCommit(ic, symbol)
+                if (symbol.isNotEmpty() && symbol.all { it.isLetter() }) {
+                    // A letter secondary (a Greek accented vowel, G-01) extends the word rather than
+                    // delimiting it - it behaves exactly like typing that letter.
+                    appendLongPressLetter(ic, symbol)
+                } else {
+                    finalizeAndCommit(ic, symbol)
+                }
             }
             
             KeyCode.SYMBOL -> setSurface(PanelNavigation.onSwitchToSymbols())
             
             else -> Unit
         }
+    }
+    
+    /**
+     * Appends a letter secondary (a Greek accented vowel, G-01) into the composing token, mirroring
+     * the normal character path: it starts a token if none is open, honours a pending Shift for the
+     * upper-case accented form, and refreshes the composing text and suggestions.
+     */
+    private fun appendLongPressLetter(ic: InputConnection, letters: String) {
+        if (composing.isEmpty()) {
+            captureTokenContext(ic)
+            resetWordEndShift()
+        }
+        val upper = keyboardView?.shifted == true
+        for (ch in letters) {
+            composing.append(if (upper) ch.uppercaseChar() else ch)
+            composingFlags.add(TapAmbiguity.NONE)
+        }
+        consumeShift()
+        updateComposing(ic)
+        refreshSuggestions()
     }
     
     /**
@@ -425,6 +461,21 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * Toggles the input language between German and Greek (G-01). Any in-progress token is finalised
+     * first in the current language (so a German word being typed is committed with its rules before
+     * the switch), then the keyboard shows the other alphabet and a short toast confirms the change.
+     */
+    private fun toggleLanguage(ic: InputConnection) {
+        finalizeAndCommit(ic, "")
+        activeLanguage = if (activeLanguage == Language.GREEK) Language.GERMAN else Language.GREEK
+        keyboardView?.greek = activeLanguage == Language.GREEK
+        clearSuggestions()
+        val label = if (activeLanguage == Language.GREEK) "Ελληνικά" else "Deutsch"
+        Toast.makeText(this, label, Toast.LENGTH_SHORT).show()
+        armShiftForNextWord(ic)
+    }
+    
+    /**
      * Handles a swipe gesture (§4 G-01 … G-03, plus the L-03 upward swipe to the symbol layer)
      * reported by the keyboard view. Resolves it to an action via [KeyGesture] and executes it.
      *
@@ -449,9 +500,12 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // G-01: language switch. Multilingual input is not available yet (it needs a second language
-            // dictionary, cf. A-03), so the swipe is recognised and consumed but is intentionally a no-op.
-            GestureAction.LANGUAGE_PREV, GestureAction.LANGUAGE_NEXT -> true
+            // G-01: switch the input language / alphabet. With two languages (German, Greek), a left or
+            // right swipe both simply toggle between them.
+            GestureAction.LANGUAGE_PREV, GestureAction.LANGUAGE_NEXT -> {
+                toggleLanguage(ic)
+                true
+            }
             
             // L-03: upward swipe on the combined key switches to the numeric/symbol layer.
             GestureAction.OPEN_SYMBOL_LAYER -> {
@@ -672,7 +726,8 @@ class AdaptKeyService : InputMethodService() {
     
     private fun refreshSuggestions() {
         val input = composing.toString()
-        if (input.isEmpty()) {
+        // G-01: no Greek dictionary yet, so the (German) suggestion pipeline is off in Greek mode.
+        if (input.isEmpty() || activeLanguage != Language.GERMAN) {
             clearSuggestions()
             return
         }
@@ -764,6 +819,10 @@ class AdaptKeyService : InputMethodService() {
      * @return true when German autocorrect must not be applied for this token
      */
     private fun germanAutocorrectSuppressed(typed: String): Boolean {
+        // G-01: the Greek alphabet is committed raw (no German dictionary applies).
+        if (activeLanguage != Language.GERMAN) {
+            return true
+        }
         return languageClassifier.isForeign("$tokenContextBefore $typed")
     }
     

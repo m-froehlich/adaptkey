@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: A-03 language detection (this session, see Done) on top of `f5a8eca` (L-03 emoji/symbol panel).
-- Unit tests: **270 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: full Greek input (this session, see Done) on top of `cdcf164` (A-03) / `f5a8eca` (L-03).
+- Unit tests: **279 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -216,12 +216,43 @@ whenever a component lands so it does not have to be restated in every prompt.
   `LanguageProfileParserTest`, `LanguageClassifierTest`, `LanguageDetectionEvaluationTest`).
   `:app:assembleDebug` green; `language_profiles.tsv` confirmed packaged into `app-debug.apk`.
 
+### Greek input (G-01 real language switch)
+- The G-01 space-bar swipe (left **or** right — both toggle, with only two languages) now really
+  switches the input alphabet between **German (Latin QWERTZ)** and **Greek**, replacing the old
+  documented no-op stub. A short toast (`Ελληνικά` / `Deutsch`) confirms the switch. `AdaptKeyService`
+  holds `activeLanguage` (default German, kept for the service lifetime, re-synced onto the view in
+  `onStartInputView`); `toggleLanguage(ic)` finalises any in-progress token in the *current* language
+  first, flips `activeLanguage`, and sets `keyboardView.greek`.
+- Pure `keyboard/GreekLayout` (unit-tested): the standard modern-Greek touch rows
+  (`ςερτυθιοπ` / `ασδφγηξκλ` / `ζχψωβνμ`), with the number row and the whole control/bottom row
+  (shift, combined emoji-?123 key, comma/space/period/enter) mirroring `KeyboardLayout` exactly and
+  reusing the same `KeyProportions`. So switching alphabets only swaps the letters; emoji, ?123 and all
+  gestures work identically in Greek.
+- **Accents (tonos):** stressed vowels carry their accented form as the `Key.hint` long-press secondary
+  (α→ά, ε→έ, η→ή, ι→ί, ο→ό, υ→ύ, ω→ώ; `GreekLayout.ACCENTS`). Because a hint that is itself a **letter**
+  must extend the word rather than delimit it, `handleLongPress` now checks `symbol.all { isLetter() }`:
+  letter secondaries go through the new `appendLongPressLetter` (appends into the composing token,
+  honours Shift for the upper-case accented form, `TapAmbiguity.NONE` flag), while the existing
+  non-letter secondaries (@, €, !, /, …) still commit as a delimiter as before. Diaeresis forms (ϊ, ϋ)
+  are deliberately omitted for now — one long-press slot per key, tonos is far more common.
+- **Greek is committed raw:** there is **no Greek dictionary yet** (consistent with the project — even
+  the German lexicon is still a `SeedData` placeholder). In Greek mode `germanAutocorrectSuppressed`
+  returns true unconditionally (so nothing German is applied) and `refreshSuggestions` clears the bar.
+  §6 capitalisation is left running: it is German-POS-driven, so a Greek word (absent from the dict) is
+  never force-capitalised, while the sentence-start capital it does apply is also correct for Greek.
+- The `AdaptKeyboardView` gained a `greek` toggle that picks `GreekLayout.rows` vs `KeyboardLayout.rows`
+  in `rebuildRows()` (same shape as the L-03 `surface` switch). `KeyboardLayout.hasLongPressAction` /
+  `longPressSymbol` are generic over `Key`, so they work on Greek keys unchanged.
+- 279 unit tests (was 270; +9 `GreekLayoutTest`). `:app:assembleDebug` green. Greek keyboard/accent/
+  switch View+Service glue is Android-only → instrumented-test backlog.
+
 ## Remaining (per spec §11)
 
-- **Full Greek input** — Greek layout + Greek dictionary + real G-01 language switch (unblocks the
-  G-01 swipe no-op stub). Detection (A-03) is done; typing Greek is not.
+- **Greek dictionary** (optional next) — a Greek frequency lexicon would give Greek suggestions /
+  completion; needs a language-aware suggestion provider. Greek *input* itself is done.
 - **Mini-LLM tier-3** follow-on (C-06).
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
+- Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input.
 
 ## Testing gaps
 

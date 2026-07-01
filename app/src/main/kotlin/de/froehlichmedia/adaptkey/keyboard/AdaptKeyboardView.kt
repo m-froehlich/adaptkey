@@ -112,6 +112,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
+    /** Whether the letter surface shows the Greek alphabet (G-01) instead of the Latin QWERTZ layout. */
+    var greek: Boolean = false
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
     /** Per-letter secondary-symbol map drawn as corner hints (L-05 / C-08). */
     var letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS
         set(value) {
@@ -179,7 +186,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     private fun rebuildRows() {
         rows = when (surface) {
-            InputSurface.LETTERS -> KeyboardLayout.rows(proportions, showNumberRow, letterHints)
+            // G-01: the letter surface is either the Latin QWERTZ layout or the Greek alphabet.
+            InputSurface.LETTERS -> if (greek) {
+                GreekLayout.rows(proportions, showNumberRow)
+            } else {
+                KeyboardLayout.rows(proportions, showNumberRow, letterHints)
+            }
+            
             InputSurface.SYMBOLS -> SymbolLayout.rows(symbolPage, proportions)
             // The emoji panel is a separate view; this surface is never actually drawn.
             InputSurface.EMOJI -> emptyList()
