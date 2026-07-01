@@ -17,6 +17,7 @@ import android.widget.Toast
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
+import de.froehlichmedia.adaptkey.capitalisation.SentenceBoundary
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
@@ -842,7 +843,7 @@ class AdaptKeyService : InputMethodService() {
     
     private fun captureTokenContext(ic: InputConnection) {
         val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
-        tokenSentenceStart = before.isBlank() || endsAtSentenceBoundary(before)
+        tokenSentenceStart = SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart)
         tokenAfterHyphen = before.endsWith("-")
         tokenContextBefore = before
     }
@@ -1015,7 +1016,7 @@ class AdaptKeyService : InputMethodService() {
     
     private fun sentenceStartBefore(ic: InputConnection): Boolean {
         val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
-        return before.isBlank() || endsAtSentenceBoundary(before)
+        return SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart)
     }
     
     private fun consumeShift() {
@@ -1041,16 +1042,6 @@ class AdaptKeyService : InputMethodService() {
             type and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES != 0 -> CapsMode.SENTENCES
             else -> CapsMode.NONE
         }
-    }
-    
-    private fun endsAtSentenceBoundary(before: String): Boolean {
-        // Sentence start = previous text ends with '.', '!' or '?' followed by whitespace.
-        if (before.isEmpty() || !before.last().isWhitespace()) {
-            return false
-        }
-        val trimmed = before.trimEnd()
-        val last = trimmed.lastOrNull() ?: return false
-        return last == '.' || last == '!' || last == '?'
     }
     
     companion object {

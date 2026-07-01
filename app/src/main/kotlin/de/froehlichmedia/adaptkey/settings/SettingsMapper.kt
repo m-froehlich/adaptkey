@@ -24,7 +24,8 @@ data class RawSettings(
     val showNumberRow: Boolean = true,
     val hintsEnabled: Boolean = true,
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
-    val shiftGraceWindowMs: Long = AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS
+    val shiftGraceWindowMs: Long = AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS,
+    val commaLineNotSentenceStart: Boolean = true
 )
 
 /**
@@ -129,7 +130,8 @@ object SettingsMapper {
             showNumberRow = raw.showNumberRow,
             hintsEnabled = raw.hintsEnabled,
             letterHints = hints,
-            shiftGraceWindowMs = shiftGraceWindowMs(raw)
+            shiftGraceWindowMs = shiftGraceWindowMs(raw),
+            commaLineNotSentenceStart = raw.commaLineNotSentenceStart
         )
     }
 }

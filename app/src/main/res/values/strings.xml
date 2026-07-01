@@ -47,6 +47,9 @@
     <string name="c07_title">Shift-Schonfenster</string>
     <string name="c07_summary">Gegen überraschende Feld-Großschreibung (0–500 ms). Logik folgt.</string>
 
+    <string name="c10_title">Nach Komma-Zeile kein Satzanfang</string>
+    <string name="c10_summary">Nach einer mit Komma endenden Zeile (z. B. Mail-Anrede) wird die nächste Zeile nicht großgeschrieben.</string>
+
     <string name="c06_title">LLM-Schwellwert</string>
     <string name="c06_summary">Deaktiviert – kein LLM-Tier vorhanden (C-06).</string>
 

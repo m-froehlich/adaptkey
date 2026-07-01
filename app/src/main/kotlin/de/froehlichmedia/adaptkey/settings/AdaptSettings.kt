@@ -20,6 +20,8 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property letterHints the per-letter secondary-symbol map (C-08)
  * @property shiftGraceWindowMs the shift grace window against surprising field capitalisation (C-07,
  *           0-500 ms); persisted only, the consuming logic does not exist yet
+ * @property commaLineNotSentenceStart whether the content line after a comma-terminated line is not a
+ *           sentence start (§6, e-mail salutation; C-10, default on)
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -27,7 +29,8 @@ data class AdaptSettings(
     val showNumberRow: Boolean = true,
     val hintsEnabled: Boolean = true,
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
-    val shiftGraceWindowMs: Long = DEFAULT_SHIFT_GRACE_WINDOW_MS
+    val shiftGraceWindowMs: Long = DEFAULT_SHIFT_GRACE_WINDOW_MS,
+    val commaLineNotSentenceStart: Boolean = true
 ) {
     
     companion object {

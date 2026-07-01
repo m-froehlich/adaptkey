@@ -153,6 +153,8 @@ danke für deine schnelle Antwort.
 
 Here "danke" must stay lower case. No semantic recognition of the salutation is required; the purely structural rule *"a content line immediately following a comma-terminated line is not a sentence start"* is sufficient, and this pattern does not occur in any other everyday context. The remaining linguistic rules still apply (nouns and proper nouns are still capitalised; explicit user input still wins). This behaviour is bound to a boolean setting (C-10) so it can be disabled, but the **default is on**.
 
+For this rule to be meaningful, the baseline is that the **first word of a new line is treated as a sentence start** (extending hierarchy rule 2 beyond `.`/`!`/`?`): a deliberate line break normally begins a new sentence and is capitalised, as on common mobile keyboards. The comma-terminated-line rule above is the one exception.
+
 ### No Sentence Start After Known Abbreviations and Enumerators
 A period does **not** start a new sentence when it terminates a known abbreviation or an enumerator, so the following word is **not** auto-capitalised (unless another rule - a noun, a proper noun, or explicit user input - independently applies).
 

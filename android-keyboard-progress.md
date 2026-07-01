@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `dd1cc76` — real DE/EN/EL Wikipedia dictionaries (full A-03 per-language switching).
-- Unit tests: **286 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: §6 sentence-start rules (comma-line C-10 + abbreviations) on top of the real-dictionaries work.
+- Unit tests: **301 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -122,6 +122,31 @@ whenever a component lands so it does not have to be restated in every prompt.
   one-time first-launch offer dialog (`k01_calibration_offered` flag in default prefs). Service now
   reloads the offset model in `onStartInputView` (when `!restarting`) so a calibration done while the
   service was resident is adopted (storage is current there — saved on the prior `onFinishInput`).
+
+### §6 sentence-start rules (comma-line C-10 + abbreviations/enumerators)
+- Two new §6 capitalisation rules, replacing the old `endsAtSentenceBoundary` heuristic with a pure,
+  unit-tested `capitalisation/SentenceBoundary.isSentenceStart(before, suppressAfterCommaLine)`:
+  - **No auto-capital after a comma-terminated line (C-10, default on):** the content line following a
+    line whose last non-whitespace char is a comma is not a sentence start — covers the German e-mail
+    salutation (`Hallo Max Mustermann,` ⏎⏎ `danke …` → "danke" lower-case). Blank lines between are
+    skipped (they are part of the trailing-whitespace run). Bound to a boolean setting C-10.
+  - **No sentence start after a known abbreviation or enumerator:** a period ending `usw.`/`Nr.`/`z.B.`
+    (pure `capitalisation/Abbreviations`, a curated German set, case-insensitive) or an enumerator
+    `1.`/`10.` (regex) is not a sentence terminator, so the next word keeps its case.
+- **Behaviour change (documented in the spec too):** a **line start now counts as a sentence start**
+  (a deliberate newline capitalises the next word, like common mobile keyboards) — this is what makes
+  the comma exception meaningful. Previously only `.`/`!`/`?`+whitespace triggered a sentence start.
+  Preserved: a `.` with no following whitespace is still not a boundary.
+- Settings plumbing: C-10 added through `AdaptSettings` / `RawSettings` / `SettingsMapper` /
+  `SettingsStore` (`c10_comma_line_not_sentence_start`, default true) + a `SwitchPreferenceCompat` in
+  the Großschreibung category. Service reads `settings.commaLineNotSentenceStart` in
+  `captureTokenContext` and `sentenceStartBefore`.
+- Scope note: the abbreviation rule uses a **curated built-in set + enumerator regex**. Spaced forms
+  written with an internal space (`z. B.`) — only the space-free `z.B.` is recognised — and
+  *user-learned* abbreviations are a later extension (would need an abbreviation flag on dict entries;
+  the Wikipedia dicts strip periods so they carry none today).
+- 301 unit tests (was 286; +15: `AbbreviationsTest`, `SentenceBoundaryTest`, +1 `SettingsMapperTest`).
+  `:app:assembleDebug` green.
 
 ### Real multilingual dictionaries (A-03 fully realised: DE / EN / EL)
 - Replaces the tiny `SeedData` placeholder with **real, large Wikipedia-derived lexicons** for German,
@@ -290,15 +315,6 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Remaining (per spec §11)
 
-- **§6 capitalisation additions (specced 2026-07-01, not yet implemented):**
-  - *No sentence start after a comma-terminated line* (C-10, default on): the content line following a
-    comma-terminated line (blank lines skipped) is not a sentence start → no auto-capital. Covers the
-    German e-mail salutation (`Hallo Max Mustermann,` ⏎⏎ `danke …`). Purely structural, no salutation
-    recognition. Touches `endsAtSentenceBoundary` / `captureTokenContext` / `sentenceStartBefore` +
-    a new C-10 SwitchPreference.
-  - *No sentence start after known abbreviations / enumerators*: a period after a dictionary/user-known
-    abbreviation (`usw.`, `z. B.`, …) or an enumerator (`1.`, `2.`) does not terminate a sentence.
-    Needs an "abbreviation" flag on dictionary entries (new POS/attribute) + enumerator detection.
 - **Mini-LLM tier-3** follow-on (C-06).
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
 - Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05

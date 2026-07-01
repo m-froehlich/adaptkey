@@ -34,6 +34,7 @@ object SettingsStore {
     const val KEY_HINTS_ENABLED = "c08_hints_enabled"
     const val KEY_LETTER_HINTS = "c08_letter_hints"
     const val KEY_SHIFT_GRACE = "c07_shift_grace_ms"
+    const val KEY_COMMA_LINE_NOT_SENTENCE_START = "c10_comma_line_not_sentence_start"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -87,7 +88,8 @@ object SettingsStore {
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
             hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
             letterHints = LetterHints.decodeOrDefault(p.getString(KEY_LETTER_HINTS, null)),
-            shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong()
+            shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
+            commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

@@ -24,6 +24,12 @@ class SettingsMapperTest {
         assertTrue(resolved.hintsEnabled)
         assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, resolved.letterHints)
         assertEquals(AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS, resolved.shiftGraceWindowMs)
+        assertTrue(resolved.commaLineNotSentenceStart)
+    }
+    
+    @Test
+    fun `the comma-line rule flag passes through (C-10)`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(commaLineNotSentenceStart = false)).commaLineNotSentenceStart)
     }
     
     @Test

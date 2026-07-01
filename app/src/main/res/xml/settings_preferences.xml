@@ -124,6 +124,12 @@
 
     <PreferenceCategory android:title="@string/cat_capitalisation">
 
+        <SwitchPreferenceCompat
+            android:key="c10_comma_line_not_sentence_start"
+            android:title="@string/c10_title"
+            android:summary="@string/c10_summary"
+            android:defaultValue="true" />
+
         <SeekBarPreference
             android:key="c07_shift_grace_ms"
             android:title="@string/c07_title"
