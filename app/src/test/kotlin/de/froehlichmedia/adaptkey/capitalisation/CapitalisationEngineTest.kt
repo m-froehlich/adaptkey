@@ -100,4 +100,19 @@ class CapitalisationEngineTest {
     fun `empty input is returned unchanged`() {
         assertEquals("", engine.capitalise("", ctx(sentenceStart = true)))
     }
+    
+    @Test
+    fun `§6 rule 6 LLM exception lifts an ambiguous noun to upper-case`() {
+        assertEquals("Morgen", engine.capitalise("morgen", ctx(), llmForcesUpper = true))
+    }
+    
+    @Test
+    fun `§6 rule 6 LLM exception lifts an unknown word to upper-case`() {
+        assertEquals("Xyz", engine.capitalise("xyz", ctx(), llmForcesUpper = true))
+    }
+    
+    @Test
+    fun `§6 rule 6 LLM exception does not override the B-02 after-hyphen rule`() {
+        assertEquals("haus", engine.capitalise("Haus", ctx(afterHyphen = true), llmForcesUpper = true))
+    }
 }

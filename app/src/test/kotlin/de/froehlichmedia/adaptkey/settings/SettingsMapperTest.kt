@@ -2,6 +2,7 @@ package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
+import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -25,6 +26,18 @@ class SettingsMapperTest {
         assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, resolved.letterHints)
         assertEquals(AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS, resolved.shiftGraceWindowMs)
         assertTrue(resolved.commaLineNotSentenceStart)
+        assertEquals(LlmActivationThreshold.DEFAULT, resolved.llmActivationThreshold)
+    }
+    
+    @Test
+    fun `the C-06 threshold resolves from the stored key`() {
+        assertEquals(LlmActivationThreshold.HIGH, SettingsMapper.toAdaptSettings(RawSettings(llmThresholdKey = "high")).llmActivationThreshold)
+        assertEquals(LlmActivationThreshold.LOW, SettingsMapper.toLlmActivationThreshold(RawSettings(llmThresholdKey = "low")))
+    }
+    
+    @Test
+    fun `an unknown C-06 threshold key falls back to the default`() {
+        assertEquals(LlmActivationThreshold.DEFAULT, SettingsMapper.toLlmActivationThreshold(RawSettings(llmThresholdKey = "bogus")))
     }
     
     @Test

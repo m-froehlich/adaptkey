@@ -18,7 +18,8 @@ import de.froehlichmedia.adaptkey.touch.TypingPattern
  * Hosts a {@code androidx.preference} screen and is wired as both the launcher activity and the IME
  * settings activity (see {@code res/xml/method.xml}). The controls write to the default shared
  * preferences, which {@link SettingsStore} reads back and the running keyboard applies live. C-05
- * (blacklist) opens its own editor; C-06 (LLM threshold) is shown disabled because no LLM tier exists.
+ * (blacklist) opens its own editor; C-06 (LLM threshold) is a plain list preference persisted here and
+ * consumed by the tier-3 orchestration (inert while the mini-LLM backend is the no-op stub).
  */
 class SettingsActivity : AppCompatActivity() {
     

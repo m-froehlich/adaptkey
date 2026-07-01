@@ -51,7 +51,10 @@
     <string name="c10_summary">Nach einer mit Komma endenden Zeile (z. B. Mail-Anrede) wird die nächste Zeile nicht großgeschrieben.</string>
 
     <string name="c06_title">LLM-Schwellwert</string>
-    <string name="c06_summary">Deaktiviert – kein LLM-Tier vorhanden (C-06).</string>
+    <string name="c06_summary">Ab welcher N-Gramm-Sicherheit das Mini-LLM zugeschaltet wird (C-06). Das LLM-Backend ist noch nicht eingebunden.</string>
+    <string name="c06_threshold_low">Niedrig</string>
+    <string name="c06_threshold_medium">Mittel</string>
+    <string name="c06_threshold_high">Hoch</string>
 
     <!-- Typing pattern detection (T-04). -->
     <string name="cat_typing_pattern">Tippmuster (T-04)</string>

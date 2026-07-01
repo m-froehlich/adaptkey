@@ -140,12 +140,13 @@
             app:seekBarIncrement="50"
             app:showSeekBarValue="true" />
 
-        <Preference
+        <ListPreference
             android:key="c06_llm_threshold"
             android:title="@string/c06_title"
-            android:summary="@string/c06_summary"
-            android:enabled="false"
-            android:selectable="false" />
+            android:entries="@array/c06_threshold_labels"
+            android:entryValues="@array/c06_threshold_values"
+            android:defaultValue="medium"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

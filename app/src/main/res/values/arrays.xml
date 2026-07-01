@@ -33,4 +33,17 @@
         <item>THUMB</item>
     </string-array>
 
+    <!-- C-06 mini-LLM activation threshold (label / stored value). -->
+    <string-array name="c06_threshold_labels">
+        <item>@string/c06_threshold_low</item>
+        <item>@string/c06_threshold_medium</item>
+        <item>@string/c06_threshold_high</item>
+    </string-array>
+
+    <string-array name="c06_threshold_values">
+        <item>low</item>
+        <item>medium</item>
+        <item>high</item>
+    </string-array>
+
 </resources>

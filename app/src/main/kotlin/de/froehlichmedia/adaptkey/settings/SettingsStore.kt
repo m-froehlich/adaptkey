@@ -16,8 +16,7 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * validated configuration is produced by the pure [SettingsMapper]; that mapping is what the unit tests
  * exercise, while this Android-facing IO is left to instrumented tests (like the other store layers).
  *
- * C-05 (the blacklist) is not stored here - it lives in the SQLite dictionary. C-06 (LLM threshold) is
- * not stored at all because no LLM tier exists yet.
+ * C-05 (the blacklist) is not stored here - it lives in the SQLite dictionary.
  */
 object SettingsStore {
     
@@ -35,6 +34,7 @@ object SettingsStore {
     const val KEY_LETTER_HINTS = "c08_letter_hints"
     const val KEY_SHIFT_GRACE = "c07_shift_grace_ms"
     const val KEY_COMMA_LINE_NOT_SENTENCE_START = "c10_comma_line_not_sentence_start"
+    const val KEY_LLM_THRESHOLD = "c06_llm_threshold"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -89,7 +89,8 @@ object SettingsStore {
             hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
             letterHints = LetterHints.decodeOrDefault(p.getString(KEY_LETTER_HINTS, null)),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
-            commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true)
+            commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true),
+            llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

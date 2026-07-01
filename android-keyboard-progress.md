@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `41f6e4f` — §6 sentence-start rules (comma-line C-10 + abbreviations).
-- Unit tests: **301 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: commit `d5d6817` + the Tier-3 orchestration commit below (C-06).
+- Unit tests: **345 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -313,9 +313,65 @@ whenever a component lands so it does not have to be restated in every prompt.
 - 279 unit tests (was 270; +9 `GreekLayoutTest`). `:app:assembleDebug` green. Greek keyboard/accent/
   switch View+Service glue is Android-only → instrumented-test backlog.
 
+### Tier-3 mini-LLM orchestration (C-06, §9 — architecture first, real model deferred)
+
+- **User decision (Option A):** built the *pure, fully unit-tested tier-3 orchestration* behind a
+  pluggable backend with a **no-op default**, and left the heavy native ONNX Runtime / Gemma-Nano model
+  as a documented, optional, instrumented-test follow-on. Rationale (agreed): a real on-device LLM is a
+  hundreds-of-MB model + native dep, only instrumented-testable, unobtainable/unverifiable in this
+  environment, and clashes with the project's pure-logic style and the earlier A-03 decision to avoid
+  ONNX/fastText. The app also stays 100% offline (no runtime download). With the stub backend the whole
+  pipeline is **inert** — observable behaviour is byte-for-byte the tier-1-only build.
+- **Pure package `prediction/` (all JVM-unit-tested):**
+  - `Tier3Provider` (interface: `isAvailable` + `predict(Tier3Request): Tier3Result`) + the inert
+    `NoopTier3Provider` (default backend, `isAvailable=false`). This is the seam a real ONNX backend
+    slots behind later, unchanged.
+  - `Tier3Request` (input, previousWord, **full `sentence`** — A-02: the LLM sees the whole running
+    context, not a punctuation-truncated fragment) / `Tier3Result` (`Tier3Suggestion`s +
+    optional `CapitalisationProposal`).
+  - `Tier1Confidence` — pure rank-margin measure: top score ÷ Σ scores (one dominant candidate → ~1.0,
+    many similar → low, empty → 0.0). This is the value the C-06 threshold gates on.
+  - `LlmActivationThreshold` — the C-06 setting as an enum LOW/MEDIUM/HIGH carrying the tier-1-confidence
+    threshold (0.25/0.50/0.75; default MEDIUM); higher = LLM more eager. `fromKey` is the validation/clamp
+    point (unknown/blank/null → MEDIUM).
+  - `Tier3Activation.shouldActivate(conf, threshold, available)` — pure gate (available && conf < thr).
+  - `SuggestionMerger` — pure tier-1+tier-3 merge: tier-1 scores normalised to [0,1] vs their own max,
+    tier-3 confidence added (agreement between tiers floats a word to the top), stable order, capped.
+  - `HighCertaintyCapitalisation.forcesUpper(proposal, word, min=0.85)` — the §6 **rule-6 LLM exception**
+    reduced to one boolean; only lifts a word to upper-case at high certainty, never lowercases.
+  - `AdaptiveLearning.learningSignal(committed, tier3, tier1KnewWord, min=0.6)` — §9 feedback: a confident
+    LLM word the n-gram didn't know is returned as a reinforcement signal (else null).
+  - `Tier3Orchestrator(provider = NoopTier3Provider)` — composes the above: computes tier-1 confidence,
+    gates on C-06, consults the backend when activated, merges, and returns a `Tier3Outcome`
+    (suggestions / capitalisation proposal / activated / tier1Confidence / raw tier3). Not activated →
+    returns the tier-1 list **unchanged** (same reference), so the no-op path is a true identity.
+- **§6 rule-6 hook:** `CapitalisationEngine.capitalise` gained an optional `llmForcesUpper: Boolean = false`
+  placed just below proper/pure-noun and above the ambiguous-noun/`else` arms — so it can capitalise an
+  otherwise-lowercased ambiguous or unknown word, but the `afterHyphen` (B-02) and sentence-start arms
+  short-circuit first, so it never overrides B-02. Default `false` → all existing §6 tests unchanged.
+- **C-06 setting plumbing:** `llmActivationThreshold` added through `AdaptSettings` / `RawSettings`
+  (`llmThresholdKey: String?`) / `SettingsMapper.toLlmActivationThreshold` (the tested clamp via
+  `LlmActivationThreshold.fromKey`) / `SettingsStore` (`c06_llm_threshold`). The previously **disabled**
+  C-06 preference is now a real `ListPreference` (Niedrig/Mittel/Hoch → low/medium/high,
+  `useSimpleSummaryProvider`, default medium) in the Großschreibung category; the service picks it up via
+  the existing `OnSharedPreferenceChangeListener`.
+- **Service wiring (thin, inert under the stub):** `AdaptKeyService` holds a `Tier3Orchestrator()` and
+  the last token's `lastTier3Result` / `lastCapProposal`. `refreshSuggestions` runs the orchestrator
+  (`sentence = "$tokenContextBefore$input"`, A-02) and feeds `outcome.suggestions` to the controller;
+  `finalizeAndCommit` passes `HighCertaintyCapitalisation.forcesUpper(...)` into `capitalise` and, after
+  `learnWord`, calls `reinforceFromTier3` (the §9 feedback). All three read as identity with the no-op
+  backend (empty result, null proposal, no signal). `clearSuggestions` resets the tier-3 token state.
+- 345 unit tests (was 301; +44 across `Tier1ConfidenceTest`, `LlmActivationThresholdTest`,
+  `Tier3ActivationTest`, `SuggestionMergerTest`, `HighCertaintyCapitalisationTest`, `AdaptiveLearningTest`,
+  `NoopTier3ProviderTest`, `Tier3OrchestratorTest`, +3 `CapitalisationEngineTest`, +2 `SettingsMapperTest`).
+  `:app:assembleDebug` green.
+
 ## Remaining (per spec §11)
 
-- **Mini-LLM tier-3** follow-on (C-06).
+- **Tier-3 real backend:** a real on-device ONNX Runtime / Gemma-Nano `Tier3Provider` implementation
+  (thin Android layer behind the existing interface) + the model asset + instrumented tests. The pure
+  orchestration, C-06 setting, §6 rule-6 hook and adaptive-learning feedback are done and inert until it
+  lands.
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
 - Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05
   blacklist editor that is language-aware (currently operates on the active store); verify/tune the
@@ -336,7 +392,10 @@ whenever a component lands so it does not have to be restated in every prompt.
   JVM-tested + evaluated). Real-dictionaries adds: `DictionaryLoader` (3-store build + first-run asset
   import), `SqliteDictionaryStore.bulkImport` (transaction), and the async `loadDictionariesAsync` /
   `installStores` swap (background import → main-thread install); the pure `DictionaryAssetParser` is
-  unit-tested.
+  unit-tested. Tier-3 adds: the `AdaptKeyService` orchestrator glue (`refreshSuggestions` merge,
+  `finalizeAndCommit` §6 rule-6 hook + `reinforceFromTier3`, `lastTier3Result`/`lastCapProposal`
+  lifecycle) — inert with the no-op backend, so nothing observable to test until a real backend lands;
+  the whole `prediction/` package is fully JVM-unit-tested.
 
 ## Notes / gotchas
 

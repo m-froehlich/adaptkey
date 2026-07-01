@@ -17,8 +17,10 @@ import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
  * 5. Ambiguous words (noun and another part of speech) are left unchanged — no auto-capitalisation.
  *
  * B-02 (segment after a hyphen is lowercase unless it is a proper noun) is applied below the field
- * mandate but above the remaining linguistic rules. The high-confidence LLM exception from §6 is not
- * part of this stage.
+ * mandate but above the remaining linguistic rules. The high-confidence LLM exception from §6 (rule 6)
+ * is applied through the optional [llmForcesUpper] flag, which the caller derives from a tier-3
+ * proposal via {@link de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation}; it can lift
+ * an otherwise-lowercased word to upper-case but never lowercases anything.
  */
 class CapitalisationEngine(private val store: DictionaryStore) {
     
@@ -28,9 +30,11 @@ class CapitalisationEngine(private val store: DictionaryStore) {
      *
      * @param word the token to case (the already-applied autocorrect form, or the typed word)
      * @param context the positional and field context
+     * @param llmForcesUpper the §6 rule-6 LLM exception: when true, a high-certainty nominal context
+     *        capitalises a word the linguistic rules would otherwise leave lowercase (never the reverse)
      * @return the cased word; an empty input is returned unchanged
      */
-    fun capitalise(word: String, context: CapitalisationContext): String {
+    fun capitalise(word: String, context: CapitalisationContext, llmForcesUpper: Boolean = false): String {
         if (word.isEmpty()) {
             return word
         }
@@ -51,6 +55,7 @@ class CapitalisationEngine(private val store: DictionaryStore) {
             context.sentenceStart -> true
             isProper -> true
             isPureNoun -> true
+            llmForcesUpper -> true // §6 rule 6: high-certainty LLM nominal exception
             isAmbiguousNoun -> false
             else -> false
         }

@@ -2,16 +2,16 @@ package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
+import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 
 /**
- * Fully resolved and validated keyboard configuration (C-01 … C-09).
+ * Fully resolved and validated keyboard configuration (C-01 … C-10).
  *
  * This is the bundle the running keyboard consumes: it is produced from the raw, persisted values by
  * [SettingsMapper], which clamps every value into the spec ranges (§10) so a corrupt or out-of-range
  * stored value can never violate the data-class init contracts of [KeyProportions] / [SuggestionConfig].
- * C-05 (the blacklist) lives in the SQLite dictionary, not here; C-06 (LLM threshold) is intentionally
- * absent because no LLM tier exists yet.
+ * C-05 (the blacklist) lives in the SQLite dictionary, not here.
  *
  * @property keyProportions the key-proportion configuration (C-01)
  * @property suggestionConfig the suggestion-bar configuration (C-02 / C-03 / C-04)
@@ -22,6 +22,8 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           0-500 ms); persisted only, the consuming logic does not exist yet
  * @property commaLineNotSentenceStart whether the content line after a comma-terminated line is not a
  *           sentence start (§6, e-mail salutation; C-10, default on)
+ * @property llmActivationThreshold the C-06 tier-1 confidence below which the mini-LLM (tier 3) is
+ *           consulted (§9); drives the tier-3 orchestration, inert while the backend is the no-op stub
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -30,7 +32,8 @@ data class AdaptSettings(
     val hintsEnabled: Boolean = true,
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
     val shiftGraceWindowMs: Long = DEFAULT_SHIFT_GRACE_WINDOW_MS,
-    val commaLineNotSentenceStart: Boolean = true
+    val commaLineNotSentenceStart: Boolean = true,
+    val llmActivationThreshold: LlmActivationThreshold = LlmActivationThreshold.DEFAULT
 ) {
     
     companion object {

@@ -45,6 +45,11 @@ import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
+import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
+import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
+import de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation
+import de.froehlichmedia.adaptkey.prediction.Tier3Orchestrator
+import de.froehlichmedia.adaptkey.prediction.Tier3Result
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
@@ -81,7 +86,10 @@ import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
  * watches the recent context and switches the active lexicon per language — German by default, English
  * when the context is confidently English, Greek in the G-01 Greek mode — so each language gets its own
  * real Wikipedia-derived suggestions, autocorrect and capitalisation; a confidently-foreign but
- * unsupported language simply leaves the text as typed.
+ * unsupported language simply leaves the text as typed. A tier-3 mini-LLM orchestration (§9 / C-06) is
+ * wired in behind a pluggable backend: when the tier-1 confidence falls below the configured threshold
+ * it may merge LLM suggestions, capitalise at high certainty (§6 rule 6) and feed results back as an
+ * n-gram learning signal — all inert with the default no-op backend until a real model is installed.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -108,6 +116,15 @@ class AdaptKeyService : InputMethodService() {
     // replaced with the profile-backed classifier in onCreate. When the recent context is confidently
     // non-German, the German autocorrect is held back so foreign words are not mangled.
     private var languageClassifier = LanguageClassifier(emptyMap())
+    
+    // §9 / C-06: tier-3 mini-LLM orchestration. The default no-op backend is never available, so the
+    // orchestrator returns the tier-1 suggestions untouched and makes no capitalisation proposal — the
+    // pipeline is present but inert until a real ONNX/Gemma backend is installed behind Tier3Provider.
+    private val tier3 = Tier3Orchestrator()
+    // The tier-3 output for the token currently being composed, consulted when it is finalised: the §6
+    // rule-6 capitalisation proposal and the raw result feeding the adaptive-learning signal (§9).
+    private var lastTier3Result = Tier3Result.EMPTY
+    private var lastCapProposal: CapitalisationProposal? = null
     
     // G-01: the active alphabet/input language, toggled by the space-bar swipe. GERMAN shows the Latin
     // QWERTZ layout with the German dictionary pipeline; GREEK shows the Greek alphabet and commits raw
@@ -653,7 +670,14 @@ class AdaptKeyService : InputMethodService() {
         // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected
         // language's autocorrect applies (A-01 enforced in provider).
         val corrected = if (suppressAutocorrect) typed else provider.autocorrectFor(typed, previousWord) ?: typed
-        val finalWord = capitalisation.capitalise(corrected, contextFor(typed))
+        // §6 rule 6: a high-certainty tier-3 nominal proposal may lift an otherwise-lowercased word to
+        // upper-case (never with the no-op backend, where lastCapProposal is null).
+        val llmForcesUpper = HighCertaintyCapitalisation.forcesUpper(lastCapProposal, corrected)
+        // §9 adaptive learning: capture the tier-3 result and pre-commit knowledge before learnWord mutates it.
+        val tier3Result = lastTier3Result
+        val contextWord = previousWord
+        val tier1KnewCorrected = provider.isKnownWord(corrected)
+        val finalWord = capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper)
         
         ic.setComposingText(finalWord, 1)
         ic.finishComposingText()
@@ -661,6 +685,7 @@ class AdaptKeyService : InputMethodService() {
         composingFlags.clear()
         ic.commitText(delimiter, 1)
         learnWord(finalWord)
+        reinforceFromTier3(finalWord, tier3Result, contextWord, tier1KnewCorrected)
         
         if (finalWord != typed) {
             undoTyped = typed
@@ -772,8 +797,21 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
+        // §9 / C-06: consult tier 3 when the tier-1 confidence is below the threshold (never with the
+        // no-op backend, where the outcome is the tier-1 list unchanged and no capitalisation proposal).
+        // A-02: the mini-LLM sees the whole running context, not a punctuation-truncated fragment.
+        val outcome = tier3.predict(
+            input,
+            previousWord,
+            "$tokenContextBefore$input",
+            candidates,
+            settings.llmActivationThreshold,
+            config.maxSuggestions
+        )
+        lastTier3Result = outcome.tier3
+        lastCapProposal = outcome.capitalisation
         val pending = provider.autocorrectFor(input, previousWord)
-        controller.update(input, candidates, pending)
+        controller.update(input, outcome.suggestions, pending)
         showSuggestions()
         scheduleResort()
     }
@@ -798,6 +836,8 @@ class AdaptKeyService : InputMethodService() {
     private fun clearSuggestions() {
         handler.removeCallbacks(resortRunnable)
         controller.clear()
+        lastTier3Result = Tier3Result.EMPTY
+        lastCapProposal = null
         suggestionBar?.setItems(emptyList())
         setCandidatesViewShown(false)
     }
@@ -809,6 +849,27 @@ class AdaptKeyService : InputMethodService() {
         }
         dictionaryStore.learn(word, previousWord)
         previousWord = word
+    }
+    
+    /**
+     * §9 adaptive learning: when the committed word was a confident tier-3 suggestion the tier-1 n-gram
+     * did not know, reinforce it in the active dictionary so the n-gram improves and the mini-LLM is
+     * needed less over time. Inert with the no-op backend ([tier3Result] is then empty, so no signal
+     * fires); when it fires it is an extra reinforcement on top of the normal commit-time [learnWord].
+     *
+     * @param committedWord the finally committed word
+     * @param tier3Result the tier-3 result shown for this token
+     * @param contextWord the previous word at commit time (n-gram context for the reinforcement)
+     * @param tier1KnewWord whether the tier-1 n-gram already knew the word before the commit
+     */
+    private fun reinforceFromTier3(
+        committedWord: String,
+        tier3Result: Tier3Result,
+        contextWord: String?,
+        tier1KnewWord: Boolean
+    ) {
+        val signal = AdaptiveLearning.learningSignal(committedWord, tier3Result, tier1KnewWord) ?: return
+        dictionaryStore.learn(signal, contextWord)
     }
     
     private fun onSuggestionClicked(item: SuggestionController.DisplayItem) {

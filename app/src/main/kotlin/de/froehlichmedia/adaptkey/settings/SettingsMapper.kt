@@ -2,6 +2,7 @@ package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
+import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 
 /**
@@ -25,7 +26,8 @@ data class RawSettings(
     val hintsEnabled: Boolean = true,
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
     val shiftGraceWindowMs: Long = AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS,
-    val commaLineNotSentenceStart: Boolean = true
+    val commaLineNotSentenceStart: Boolean = true,
+    val llmThresholdKey: String? = null
 )
 
 /**
@@ -116,6 +118,17 @@ object SettingsMapper {
     }
     
     /**
+     * Resolves the C-06 mini-LLM activation threshold, falling back to the spec default for an unknown,
+     * blank or missing stored value (the validation point for this enum-valued setting; §9 / §10).
+     *
+     * @param raw the raw stored values
+     * @return the resolved [LlmActivationThreshold]
+     */
+    fun toLlmActivationThreshold(raw: RawSettings): LlmActivationThreshold {
+        return LlmActivationThreshold.fromKey(raw.llmThresholdKey)
+    }
+    
+    /**
      * Resolves the full validated configuration. An empty per-key hint map falls back to the default
      * mapping so the keyboard never ends up with no secondary symbols at all.
      *
@@ -131,7 +144,8 @@ object SettingsMapper {
             hintsEnabled = raw.hintsEnabled,
             letterHints = hints,
             shiftGraceWindowMs = shiftGraceWindowMs(raw),
-            commaLineNotSentenceStart = raw.commaLineNotSentenceStart
+            commaLineNotSentenceStart = raw.commaLineNotSentenceStart,
+            llmActivationThreshold = toLlmActivationThreshold(raw)
         )
     }
 }
