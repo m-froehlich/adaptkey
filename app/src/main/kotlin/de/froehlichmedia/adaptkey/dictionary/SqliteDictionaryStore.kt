@@ -13,8 +13,8 @@ import android.database.sqlite.SQLiteOpenHelper
  * NOCASE}, which does not fold German umlauts). This class is exercised by instrumented tests; the
  * store-independent logic is unit-tested through {@link InMemoryDictionaryStore}.
  */
-class SqliteDictionaryStore(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION), DictionaryStore {
+class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NAME) :
+    SQLiteOpenHelper(context, databaseName, null, DATABASE_VERSION), DictionaryStore {
     
     private val db: SQLiteDatabase
         get() = writableDatabase
@@ -40,6 +40,26 @@ class SqliteDictionaryStore(context: Context) :
     
     override fun putWord(entry: WordEntry) {
         putWordInternal(entry.word, entry.frequency, entry.partsOfSpeech)
+    }
+    
+    /**
+     * Bulk-imports a real dictionary (unigrams + bigrams) in a single transaction, for the one-time
+     * first-run seeding from the bundled asset. Far faster than individual [putWord] / [putBigram]
+     * calls for the ~100k-entry lexicons.
+     *
+     * @param words the unigram entries to insert
+     * @param bigrams the bigram rows to insert
+     */
+    fun bulkImport(words: List<WordEntry>, bigrams: List<DictionaryAssetParser.Bigram>) {
+        val database = db
+        database.beginTransaction()
+        try {
+            words.forEach { putWordInternal(it.word, it.frequency, it.partsOfSpeech) }
+            bigrams.forEach { putBigram(it.previousWord, it.word, it.count) }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
     }
     
     override fun putBigram(previousWord: String, word: String, count: Long) {

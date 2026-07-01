@@ -20,11 +20,11 @@ import de.froehlichmedia.adaptkey.capitalisation.CapsMode
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
-import de.froehlichmedia.adaptkey.dictionary.SeedData
+import de.froehlichmedia.adaptkey.dictionary.InMemoryDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
-import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
 import de.froehlichmedia.adaptkey.emoji.EmojiDataset
 import de.froehlichmedia.adaptkey.emoji.EmojiDatasetLoader
@@ -77,8 +77,10 @@ import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
  * emoji / ?123 key (L-03) opens the emoji panel on a tap, or the numeric/symbol layer on a long-press
  * or an upward swipe; the emoji panel commits Unicode codepoints directly and finalises any
  * in-progress composing token first, exactly like a delimiter. The on-device language detector (A-03)
- * watches the recent context and holds back the German autocorrect when the writing is confidently in
- * another language, so foreign words (or Greek) are not mangled.
+ * watches the recent context and switches the active lexicon per language — German by default, English
+ * when the context is confidently English, Greek in the G-01 Greek mode — so each language gets its own
+ * real Wikipedia-derived suggestions, autocorrect and capitalisation; a confidently-foreign but
+ * unsupported language simply leaves the text as typed.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -90,10 +92,15 @@ class AdaptKeyService : InputMethodService() {
     private var settings = AdaptSettings.DEFAULT
     private var config = SuggestionConfig()
     private var controller = SuggestionController(config)
+    // The active-language views of the dictionary pipeline; re-pointed per token by selectActiveDictionary.
     private lateinit var dictionaryStore: DictionaryStore
     private lateinit var provider: SuggestionProvider
     private lateinit var capitalisation: CapitalisationEngine
     private lateinit var tokenRepair: TokenRepair
+    // Real per-language lexicons (A-03): German default, English auto-detected, Greek via the G-01 mode.
+    private lateinit var stores: Map<Language, DictionaryStore>
+    private lateinit var providers: Map<Language, DictionarySuggestionProvider>
+    private lateinit var engines: Map<Language, CapitalisationEngine>
     private var previousWord: String? = null
     
     // A-03: on-device language detector. Starts empty (every result UNKNOWN -> guard is a no-op) and is
@@ -164,18 +171,43 @@ class AdaptKeyService : InputMethodService() {
         config = settings.suggestionConfig
         controller = SuggestionController(config)
         offsetModel = OffsetStore.load(this)
-        val store = SqliteDictionaryStore(this)
-        if (store.isEmpty()) {
-            SeedData.seed(store)
-        }
-        dictionaryStore = store
-        provider = DictionarySuggestionProvider(store, config.maxSuggestions * 2)
-        capitalisation = CapitalisationEngine(store)
-        tokenRepair = TokenRepair(store)
+        // Start with instant empty in-memory stores so the keyboard is responsive immediately, then load
+        // the real per-language lexicons off the main thread — importing ~0.5M rows into SQLite on the
+        // main thread would ANR. Until the load finishes (first run only) there are simply no suggestions.
+        installStores(DictionaryLoader.LANGUAGES.associateWith { InMemoryDictionaryStore() })
+        loadDictionariesAsync()
         emojiDataset = EmojiDatasetLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
         languageClassifier = LanguageProfileLoader.loadClassifier(this)
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
+    }
+    
+    /**
+     * Points the dictionary pipeline at [newStores]: builds a provider and a capitalisation engine per
+     * language and selects German as the initial active language. Called on the main thread with the
+     * instant empty stores first, then again once the real lexicons have loaded.
+     */
+    private fun installStores(newStores: Map<Language, DictionaryStore>) {
+        stores = newStores
+        providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2) }
+        engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
+        val german = newStores.getValue(Language.GERMAN)
+        dictionaryStore = german
+        provider = providers.getValue(Language.GERMAN)
+        capitalisation = engines.getValue(Language.GERMAN)
+        tokenRepair = TokenRepair(german)
+    }
+    
+    /**
+     * Loads the real per-language SQLite lexicons (importing the bundled assets on first run) on a
+     * background thread and swaps them in on the main thread, so the heavy first-run import never
+     * blocks the UI thread.
+     */
+    private fun loadDictionariesAsync() {
+        Thread {
+            val loaded = DictionaryLoader.loadStores(this)
+            handler.post { installStores(loaded) }
+        }.start()
     }
     
     override fun onCreateInputView(): View {
@@ -213,8 +245,10 @@ class AdaptKeyService : InputMethodService() {
         if (config != s.suggestionConfig) {
             config = s.suggestionConfig
             controller = SuggestionController(config)
-            if (this::dictionaryStore.isInitialized) {
-                provider = DictionarySuggestionProvider(dictionaryStore, config.maxSuggestions * 2)
+            if (this::stores.isInitialized) {
+                providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2) }
+                // Re-point the active provider; selectActiveDictionary corrects the language per token.
+                provider = providers.getValue(Language.GERMAN)
             }
         }
         keyboardView?.let { view ->
@@ -593,6 +627,9 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val typed = composing.toString()
+        // A-03: pick the dictionary/capitalisation for the recent context (German default, English
+        // auto-detected, Greek in Greek mode); suppress = a confidently-foreign but unsupported language.
+        val suppressAutocorrect = selectActiveDictionary("$tokenContextBefore $typed")
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
         if (mergeChar != null) {
@@ -612,12 +649,9 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         
-        // A-03: skip the German autocorrect when the recent context is confidently non-German.
-        val corrected = if (germanAutocorrectSuppressed(typed)) {
-            typed
-        } else {
-            provider.autocorrectFor(typed, previousWord) ?: typed // A-01 enforced in provider
-        }
+        // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected
+        // language's autocorrect applies (A-01 enforced in provider).
+        val corrected = if (suppressAutocorrect) typed else provider.autocorrectFor(typed, previousWord) ?: typed
         val finalWord = capitalisation.capitalise(corrected, contextFor(typed))
         
         ic.setComposingText(finalWord, 1)
@@ -726,14 +760,18 @@ class AdaptKeyService : InputMethodService() {
     
     private fun refreshSuggestions() {
         val input = composing.toString()
-        // G-01: no Greek dictionary yet, so the (German) suggestion pipeline is off in Greek mode.
-        if (input.isEmpty() || activeLanguage != Language.GERMAN) {
+        if (input.isEmpty()) {
+            clearSuggestions()
+            return
+        }
+        // A-03: pick the dictionary for the recent context; an unsupported foreign context shows nothing.
+        val suppressAutocorrect = selectActiveDictionary("$tokenContextBefore $input")
+        if (suppressAutocorrect) {
             clearSuggestions()
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
-        // A-03: do not offer (nor pre-arm) a German autocorrect when the context looks non-German.
-        val pending = if (germanAutocorrectSuppressed(input)) null else provider.autocorrectFor(input, previousWord)
+        val pending = provider.autocorrectFor(input, previousWord)
         controller.update(input, candidates, pending)
         showSuggestions()
         scheduleResort()
@@ -809,21 +847,44 @@ class AdaptKeyService : InputMethodService() {
         tokenContextBefore = before
     }
     
+    /** Which language's dictionary a token should use, and whether autocorrect must be held back. */
+    private data class DictChoice(val language: Language, val suppressAutocorrect: Boolean)
+    
     /**
-     * A-03 guard: whether the German autocorrect should be held back because the recent context - the
-     * text captured before the token plus the token [typed] so far - is confidently in another
-     * language. Conservative by construction (see [LanguageClassifier.isForeign]): unknown or
-     * borderline context keeps the German autocorrect active.
-     *
-     * @param typed the current composing token
-     * @return true when German autocorrect must not be applied for this token
+     * A-03: chooses the dictionary for the recent [context]. Greek mode (G-01) uses the Greek lexicon;
+     * otherwise the detector decides — a confidently English context uses the English lexicon, a
+     * confidently other-foreign context (e.g. French, which has no bundled lexicon) keeps the German
+     * store but holds back autocorrect so the text is left as typed, and everything else defaults to
+     * German. Conservative by construction (see [LanguageClassifier.isForeign]).
      */
-    private fun germanAutocorrectSuppressed(typed: String): Boolean {
-        // G-01: the Greek alphabet is committed raw (no German dictionary applies).
-        if (activeLanguage != Language.GERMAN) {
-            return true
+    private fun resolveDict(context: String): DictChoice {
+        if (activeLanguage == Language.GREEK) {
+            return DictChoice(Language.GREEK, suppressAutocorrect = false)
         }
-        return languageClassifier.isForeign("$tokenContextBefore $typed")
+        if (!languageClassifier.isForeign(context)) {
+            return DictChoice(Language.GERMAN, suppressAutocorrect = false)
+        }
+        val best = languageClassifier.classify(LanguageClassifier.lastWords(context, LANGUAGE_WINDOW)).language
+        return if (best == Language.ENGLISH) {
+            DictChoice(Language.ENGLISH, suppressAutocorrect = false)
+        } else {
+            DictChoice(Language.GERMAN, suppressAutocorrect = true)
+        }
+    }
+    
+    /**
+     * Re-points the active dictionary pipeline (provider / capitalisation / store) to the language of
+     * the recent [context] and reports whether autocorrect must be suppressed for it (A-03).
+     *
+     * @param context the recent text (context before the token plus the token itself)
+     * @return true when autocorrect must not be applied for this token
+     */
+    private fun selectActiveDictionary(context: String): Boolean {
+        val choice = resolveDict(context)
+        provider = providers.getValue(choice.language)
+        capitalisation = engines.getValue(choice.language)
+        dictionaryStore = stores.getValue(choice.language)
+        return choice.suppressAutocorrect
     }
     
     private fun contextFor(typed: String): CapitalisationContext {
@@ -995,5 +1056,8 @@ class AdaptKeyService : InputMethodService() {
     companion object {
         
         private const val MAX_CONTEXT_LOOKBACK = 80
+        
+        // A-03: how many trailing words of context feed the language detector (spec: last 3-5 words).
+        private const val LANGUAGE_WINDOW = 5
     }
 }

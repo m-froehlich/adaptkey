@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: full Greek input (this session, see Done) on top of `cdcf164` (A-03) / `f5a8eca` (L-03).
-- Unit tests: **279 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: real multilingual dictionaries (this session, see Done) on top of the Greek-input / A-03 / L-03 work.
+- Unit tests: **286 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -122,6 +122,50 @@ whenever a component lands so it does not have to be restated in every prompt.
   one-time first-launch offer dialog (`k01_calibration_offered` flag in default prefs). Service now
   reloads the offset model in `onStartInputView` (when `!restarting`) so a calibration done while the
   service was resident is adopted (storage is current there — saved on the prior `onFinishInput`).
+
+### Real multilingual dictionaries (A-03 fully realised: DE / EN / EL)
+- Replaces the tiny `SeedData` placeholder with **real, large Wikipedia-derived lexicons** for German,
+  English and Greek, and completes A-03: instead of merely *suppressing* German autocorrect on foreign
+  text, the keyboard now **switches the whole lexicon per language** — German default, English
+  auto-detected, Greek in the G-01 Greek mode — so each language gets its own suggestions, autocorrect
+  and capitalisation.
+- **Data / licence (user decision):** built from **Wikipedia** (DE/EN/EL `pages-articles` dumps),
+  licence **CC-BY-SA 4.0**. The user is putting the whole app under GPL and confirmed CC-BY-SA is fine
+  because the ShareAlike obligation lands only on the *data files* (which ship in the repo + APK), not
+  the code; a root `CREDITS.md` records the attribution. (Chosen over CC-BY Tatoeba, which had too
+  little Greek; Leipzig Corpora — ideal CC-BY — was unreachable from this environment.)
+- **Builder** (throwaway dev tool, not shipped): `scratchpad/build_dict.py` streams each bz2 dump,
+  decompresses incrementally and STOPS after ~500 MB decompressed (so only ~150 MB is actually
+  downloaded per language, not the 0.6–25 GB full dumps), crudely strips wikitext, tokenises with
+  sentence-initial tracking, and emits per language `dict_<code>.tsv` (`word\tfreq\tPOS`, top 120k) +
+  `bigram_<code>.tsv` (`prev\tword\tcount`, top 80k). Assets total ~12 MB; APK ~11 MB.
+- **POS from casing (no external POS lexicon):** part-of-speech is derived from *casing statistics in
+  running (non-sentence-initial) text* — German: a word mostly capitalised mid-sentence → `NOUN`, mixed
+  → ambiguous `{NOUN, OTHER}`; English/Greek: almost-always-capitalised → `PROPER_NOUN`, else `OTHER`.
+  This drives §6 exactly right per language (German capitalises common nouns, English/Greek only proper
+  nouns + sentence start) with zero extra data. Canonical surface case = most frequent non-initial form
+  (so `Haus`/`Berlin` come out capitalised, `das` lower-case). Verified: DE top words + `Jahr/Stadt/
+  Deutschland` as NOUN; EN `United/American/British` as PROPER_NOUN; EL function words + `Ελλάδα/Αθήνα`.
+- **Kotlin — minimal-interface approach:** the `DictionaryStore` interface is UNCHANGED; instead there
+  are **three single-language `SqliteDictionaryStore`s** (new optional `databaseName` ctor param →
+  `adaptkey_dictionary_<code>.db`) plus a per-language provider + capitalisation engine. Pure, tested
+  `dictionary/DictionaryAssetParser` (word/bigram TSV → `WordEntry`/`Bigram`, `\r`-tolerant, skips
+  junk). `SqliteDictionaryStore.bulkImport(words, bigrams)` does the first-run seed in one transaction.
+  Android-only `dictionary/DictionaryLoader` builds the three stores and seeds each from its asset when
+  empty (German falls back to `SeedData` if its asset is missing).
+- **Service routing:** `stores`/`providers`/`engines` maps keyed by `Language`; the active
+  `provider`/`capitalisation`/`dictionaryStore` fields are re-pointed per token by
+  `selectActiveDictionary(context)` → `resolveDict`: Greek mode → EL; else `isForeign` false → DE;
+  confidently English → EN; confidently other-foreign (e.g. French, no lexicon) → DE store but
+  autocorrect suppressed + no suggestions. Applied in `finalizeAndCommit` and `refreshSuggestions`
+  (the old `germanAutocorrectSuppressed` gate is gone). `LANGUAGE_WINDOW = 5` trailing words.
+- **First-run ANR avoided:** importing ~0.5M rows into SQLite on the IMS main thread would ANR, so
+  `onCreate` installs instant empty `InMemoryDictionaryStore`s and `loadDictionariesAsync()` loads the
+  real SQLite stores on a background thread, swapping them in on the main thread via `installStores`.
+  Until the (first-run-only) import finishes there are simply no suggestions — graceful.
+- 286 unit tests (was 279; +7 `DictionaryAssetParserTest`). The Greek-input package's earlier
+  "Greek committed raw / no Greek dictionary" note is now SUPERSEDED — Greek has a real lexicon and its
+  own suggestions/autocorrect. `:app:assembleDebug` green; all six dict assets packaged.
 
 ### Emoji / symbol panel (L-03)
 - The bottom-row combined key (`KeyCode.SYMBOL`, label 😊, corner hint "123") now does two things:
@@ -235,11 +279,9 @@ whenever a component lands so it does not have to be restated in every prompt.
   honours Shift for the upper-case accented form, `TapAmbiguity.NONE` flag), while the existing
   non-letter secondaries (@, €, !, /, …) still commit as a delimiter as before. Diaeresis forms (ϊ, ϋ)
   are deliberately omitted for now — one long-press slot per key, tonos is far more common.
-- **Greek is committed raw:** there is **no Greek dictionary yet** (consistent with the project — even
-  the German lexicon is still a `SeedData` placeholder). In Greek mode `germanAutocorrectSuppressed`
-  returns true unconditionally (so nothing German is applied) and `refreshSuggestions` clears the bar.
-  §6 capitalisation is left running: it is German-POS-driven, so a Greek word (absent from the dict) is
-  never force-capitalised, while the sentence-start capital it does apply is also correct for Greek.
+- **Greek was committed raw in that package — NOW SUPERSEDED** by the real multilingual dictionaries
+  section above: Greek has its own Wikipedia lexicon, so Greek mode gives Greek suggestions/autocorrect,
+  and the `germanAutocorrectSuppressed` gate was replaced by per-language `selectActiveDictionary`.
 - The `AdaptKeyboardView` gained a `greek` toggle that picks `GreekLayout.rows` vs `KeyboardLayout.rows`
   in `rebuildRows()` (same shape as the L-03 `surface` switch). `KeyboardLayout.hasLongPressAction` /
   `longPressSymbol` are generic over `Key`, so they work on Greek keys unchanged.
@@ -248,11 +290,11 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Remaining (per spec §11)
 
-- **Greek dictionary** (optional next) — a Greek frequency lexicon would give Greek suggestions /
-  completion; needs a language-aware suggestion provider. Greek *input* itself is done.
 - **Mini-LLM tier-3** follow-on (C-06).
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
-- Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input.
+- Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05
+  blacklist editor that is language-aware (currently operates on the active store); verify/tune the
+  first-run dictionary import time on a real device.
 
 ## Testing gaps
 
@@ -265,8 +307,11 @@ whenever a component lands so it does not have to be restated in every prompt.
   L-03 adds: `EmojiPanelView` (tab selection, grid population, back/emoji click wiring),
   `EmojiDatasetLoader` (asset read/fallback), `RecentEmojiStore` (JSON persistence) and the service's
   container/`setSurface` visibility toggling. A-03 adds: `LanguageProfileLoader` (asset read) and the
-  service's `germanAutocorrectSuppressed` guard integration (the pure classifier itself is fully
-  JVM-tested + evaluated).
+  service's per-language `selectActiveDictionary` routing (the pure classifier itself is fully
+  JVM-tested + evaluated). Real-dictionaries adds: `DictionaryLoader` (3-store build + first-run asset
+  import), `SqliteDictionaryStore.bulkImport` (transaction), and the async `loadDictionariesAsync` /
+  `installStores` swap (background import → main-thread install); the pure `DictionaryAssetParser` is
+  unit-tested.
 
 ## Notes / gotchas
 
