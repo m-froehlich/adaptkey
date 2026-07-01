@@ -290,6 +290,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Remaining (per spec §11)
 
+- **§6 capitalisation additions (specced 2026-07-01, not yet implemented):**
+  - *No sentence start after a comma-terminated line* (C-10, default on): the content line following a
+    comma-terminated line (blank lines skipped) is not a sentence start → no auto-capital. Covers the
+    German e-mail salutation (`Hallo Max Mustermann,` ⏎⏎ `danke …`). Purely structural, no salutation
+    recognition. Touches `endsAtSentenceBoundary` / `captureTokenContext` / `sentenceStartBefore` +
+    a new C-10 SwitchPreference.
+  - *No sentence start after known abbreviations / enumerators*: a period after a dictionary/user-known
+    abbreviation (`usw.`, `z. B.`, …) or an enumerator (`1.`, `2.`) does not terminate a sentence.
+    Needs an "abbreviation" flag on dictionary entries (new POS/attribute) + enumerator detection.
 - **Mini-LLM tier-3** follow-on (C-06).
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
 - Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05

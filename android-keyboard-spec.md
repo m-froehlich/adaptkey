@@ -142,6 +142,25 @@ When the target field declares `TYPE_TEXT_FLAG_CAP_SENTENCES`, `TYPE_TEXT_FLAG_C
 ### Delayed Shift Against Surprising Field Capitalisation *(configurable)*
 With `TYPE_TEXT_FLAG_CAP_WORDS` or `TYPE_TEXT_FLAG_CAP_CHARACTERS`, every word start is auto-armed to uppercase - including mid-sentence words, which is surprising relative to normal typing. A user who reflexively presses Shift to capitalise the next word would instead toggle the already-armed uppercase back to lowercase. To prevent this, a Shift press that would switch from a field-mandated uppercase to lowercase is ignored during a short grace window after the word start. Once the window elapses, Shift toggles normally, so a deliberate lowercase override remains possible. The guard applies only to field-mandated capitalisation outside a regular sentence start; ordinary sentence-start capitalisation is unaffected. The window length is configurable via a slider from 0 to 500 ms (C-07); a value of 0 disables the guard entirely.
 
+### No Sentence Start After a Comma-Terminated Line *(configurable, default on)*
+In multi-line text (typically e-mails), a line whose last non-whitespace character is a comma does **not** end a sentence: the next line that contains text - blank lines in between are skipped - is **not** treated as a sentence start and is therefore **not** auto-capitalised. This covers the standard German salutation, where the greeting line ends in a comma and the body continues in lower case:
+
+```
+Hallo Max Mustermann,
+
+danke für deine schnelle Antwort.
+```
+
+Here "danke" must stay lower case. No semantic recognition of the salutation is required; the purely structural rule *"a content line immediately following a comma-terminated line is not a sentence start"* is sufficient, and this pattern does not occur in any other everyday context. The remaining linguistic rules still apply (nouns and proper nouns are still capitalised; explicit user input still wins). This behaviour is bound to a boolean setting (C-10) so it can be disabled, but the **default is on**.
+
+### No Sentence Start After Known Abbreviations and Enumerators
+A period does **not** start a new sentence when it terminates a known abbreviation or an enumerator, so the following word is **not** auto-capitalised (unless another rule - a noun, a proper noun, or explicit user input - independently applies).
+
+- **Known abbreviations:** abbreviations whose canonical form always ends in a period, either already present in the dictionary (e.g. `usw.`, `z. B.`, `d. h.`, `ca.`, `Nr.`) or learned from the user's own input. Such an entry is flagged as *abbreviation* so its trailing period is understood as part of the token rather than a sentence terminator.
+- **Enumerators:** a run of digits followed by a period at a list position (e.g. `1.`, `2.`, `10.`) is an ordinal / list marker, not a sentence end.
+
+This complements the sentence-start rule in the capitalisation hierarchy (rule 2): the period after `usw.` or after `1.` is recognised as non-terminal, so the next word keeps its natural case.
+
 ---
 
 ## 7. Autocorrect Policy
@@ -210,6 +229,7 @@ LLM results feed back into the N-gram model as learning signals. The better the 
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
 | C-08 | Secondary long-press symbols & corner hint labels | Per-key map + on/off | letters `@`/`Q`, `€`/`E`, `#`/`H`, `-`/`M`, `+`/`N`, `°`/`D` |
 | C-09 | Persistent number row (with shifted-symbol long-press) | On/Off | On |
+| C-10 | No sentence start after a comma-terminated line (§6, e-mail salutation) | On/Off | On |
 
 ---
 
