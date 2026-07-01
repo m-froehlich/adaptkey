@@ -28,7 +28,7 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: §6 sentence-start rules (comma-line C-10 + abbreviations) on top of the real-dictionaries work.
+- HEAD: commit `41f6e4f` — §6 sentence-start rules (comma-line C-10 + abbreviations).
 - Unit tests: **301 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
