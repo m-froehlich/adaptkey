@@ -28,7 +28,7 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `d5d6817` + the Tier-3 orchestration commit below (C-06).
+- HEAD: commit `d380e31` — Tier-3 mini-LLM orchestration (C-06, architecture-first).
 - Unit tests: **345 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
