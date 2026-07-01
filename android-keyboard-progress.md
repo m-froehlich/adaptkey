@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `798a99c` (master, clean, runnable) + L-03 emoji/symbol panel (this session, see Done).
-- Unit tests: **243 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: A-03 language detection (this session, see Done) on top of `f5a8eca` (L-03 emoji/symbol panel).
+- Unit tests: **270 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -168,11 +168,60 @@ whenever a component lands so it does not have to be restated in every prompt.
   `EmojiDatasetParserTest`, `RecentEmojisTest`, plus additions to `KeyboardLayoutTest`/`KeyGestureTest`).
   `:app:assembleDebug` green, asset confirmed packaged into `app-debug.apk`.
 
+### Language detection (A-03)
+- **NOT the spec's literal fastText/ONNX.** After discussing it with the user we deliberately went with
+  a **pure-Kotlin character-trigram classifier** instead of a `.ftz` binary + ONNX Runtime. Reasons:
+  (1) runs fully offline just like fastText would (privacy identical — the app never needs internet),
+  (2) no native dependency / no APK bloat, (3) the whole thing is JVM-unit-testable in the project's
+  established style, and (4) the profiles are **transparent, inspectable data derived from open,
+  non-Facebook corpora** (the user explicitly distrusts Facebook, even OSS). Same interface, so a real
+  model could replace it later. **Honesty caveat recorded in code:** the *plumbing* is unit-tested; the
+  *model accuracy* is validated by an evaluation suite over a held-out corpus (a real eval, honestly
+  labelled — NOT "unit tests prove the model").
+- Languages: **DE, EN, EL (Greek)** + Latin neighbours **FR, ES, IT, NL, PT** (the user writes DE+EN,
+  occasional Greek, wife writes Greek often → Greek matters). Greek is decided by **script** (disjoint
+  Unicode block) via `language/ScriptDetector.greekFraction` — trivial and bulletproof, no n-gram needed.
+- Corpus/profiles: built from the **UDHR** (public domain) via a scratchpad Python builder
+  (`scratchpad/build_profiles.py`) that downloads the eight UDHR texts from the `eric-muller/udhr` GitHub
+  mirror, does a deterministic 80/20 train/eval split per language, and emits Cavnar-Trenkle profiles
+  (top-200 bi+trigrams, rank order) to `app/src/main/assets/language_profiles.tsv` (`<code>\t<ngram>`,
+  1600 lines) plus a held-out eval corpus to `app/src/test/resources/language_eval.tsv` (116 sentences).
+  The builder is a throwaway dev tool, not shipped; the asset + eval corpus are committed.
+- Pure package `language/` (all unit-tested): `Language` enum; `CharNgrams` (normalize + bi/trigram
+  counts + ranked profile — **normalization is byte-for-byte identical to the Python builder**, the one
+  correctness-critical parity point); `CharNgramProfile` (ngram→rank map); `LanguageProfileParser`
+  (`\t`-split, trailing-space-in-ngram significant, `\r`-tolerant, unknown codes skipped); `ScriptDetector`;
+  `LanguageClassifier` (Greek script fast-path → out-of-place distance over profiles → argmin; `classify`,
+  `classifyRecent(wordWindow)`, and the guard `isForeign`). Android-only `LanguageProfileLoader` (asset →
+  parser → classifier; empty-profiles fallback = every result UNKNOWN = guard is a safe no-op).
+- **Guard design gotcha (important):** `isForeign` does NOT use the general top-2 confidence — for
+  closely-related languages (PT vs ES/IT) that gap is tiny even when German is nowhere close, so a
+  confidence gate flagged only ~58% of non-German. Instead `isForeign` measures **German's own margin**:
+  fire only when some language wins *and* German's out-of-place distance is ≥ `germanMargin` (0.15)
+  worse than the winner's. This is the right question ("is this German?") and is conservative — UNKNOWN
+  / borderline → not foreign, so German autocorrect stays on by default and is never wrongly disabled.
+- Evaluation (`LanguageDetectionEvaluationTest`, honestly labelled as a **same-domain** UDHR held-out
+  split, not open-domain proof): overall argmin accuracy asserted ≥ 0.90 (actual well above), Greek
+  100% via the script path, German flagged foreign ≤ 1/15, and ≥ 0.85 of non-German sentences flagged.
+- Service wiring: `languageClassifier` loaded in `onCreate` (defaults to the empty/no-op classifier).
+  `captureTokenContext` now also stashes `tokenContextBefore`; new `germanAutocorrectSuppressed(typed)` =
+  `classifier.isForeign("$tokenContextBefore $typed")`. Applied in **two** spots: `finalizeAndCommit`
+  (commit `typed` verbatim instead of the German autocorrect) and `refreshSuggestions` (drop the pending
+  autocorrect chip). §6 capitalisation is left as-is — it is driven by German-dictionary POS tags, so a
+  foreign word (absent from the dict) is not force-capitalised anyway; noted as an accepted limitation.
+- **Scope line the user agreed to:** this session is *detection + German-autocorrect guard only*. Full
+  **Greek input** (a Greek layout + Greek dictionary + the real G-01 language switch) is a deliberate
+  separate next package; G-01's swipe remains the documented no-op stub for now.
+- 270 unit tests total (was 243; +27 across `CharNgramsTest`, `ScriptDetectorTest`,
+  `LanguageProfileParserTest`, `LanguageClassifierTest`, `LanguageDetectionEvaluationTest`).
+  `:app:assembleDebug` green; `language_profiles.tsv` confirmed packaged into `app-debug.apk`.
+
 ## Remaining (per spec §11)
 
-- **fastText language detection (A-03)** — ~1 MB on-device model, external dependency; also
-  unblocks the G-01 language-switch no-op stub.
+- **Full Greek input** — Greek layout + Greek dictionary + real G-01 language switch (unblocks the
+  G-01 swipe no-op stub). Detection (A-03) is done; typing Greek is not.
 - **Mini-LLM tier-3** follow-on (C-06).
+- Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
 
 ## Testing gaps
 
@@ -184,7 +233,9 @@ whenever a component lands so it does not have to be restated in every prompt.
   glue (key→session driving, merge-on-finish, feedback dialog) + the service offset-model reload.
   L-03 adds: `EmojiPanelView` (tab selection, grid population, back/emoji click wiring),
   `EmojiDatasetLoader` (asset read/fallback), `RecentEmojiStore` (JSON persistence) and the service's
-  container/`setSurface` visibility toggling.
+  container/`setSurface` visibility toggling. A-03 adds: `LanguageProfileLoader` (asset read) and the
+  service's `germanAutocorrectSuppressed` guard integration (the pure classifier itself is fully
+  JVM-tested + evaluated).
 
 ## Notes / gotchas
 
@@ -195,3 +246,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 - Kotlin style: same-line braces, no spaces inside parentheses, 4-space indent,
   stdlib `require()` / `use {}` (not INFOLOG Commons), KDoc on non-trivial public/protected API.
 - Minimal diff; do not reformat unrelated code; no unused imports / Kotlin warnings.
+- A-03 parity gotcha: `language/CharNgrams.normalize` MUST stay byte-for-byte identical to the Python
+  profile builder (`scratchpad/build_profiles.py`), else runtime n-grams won't line up with the stored
+  profiles and accuracy collapses. The evaluation test doubles as a cross-check of that parity.
+- Python on this machine: `/c/Program Files/Python314/python` (the `python3`/`python` aliases are the
+  broken Windows-Store stubs). Git-Bash path conversion mangles `/c/...` args unless you leave it on —
+  don't set `MSYS_NO_PATHCONV=1`, it made Python prepend the wrong drive.

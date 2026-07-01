@@ -40,6 +40,8 @@ import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
+import de.froehlichmedia.adaptkey.language.LanguageClassifier
+import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
@@ -71,7 +73,9 @@ import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
  * key (G-05), and dragging a suggestion into the trash zone blacklists it (G-04 / A-04). The combined
  * emoji / ?123 key (L-03) opens the emoji panel on a tap, or the numeric/symbol layer on a long-press
  * or an upward swipe; the emoji panel commits Unicode codepoints directly and finalises any
- * in-progress composing token first, exactly like a delimiter.
+ * in-progress composing token first, exactly like a delimiter. The on-device language detector (A-03)
+ * watches the recent context and holds back the German autocorrect when the writing is confidently in
+ * another language, so foreign words (or Greek) are not mangled.
  */
 class AdaptKeyService : InputMethodService() {
     
@@ -88,6 +92,11 @@ class AdaptKeyService : InputMethodService() {
     private lateinit var capitalisation: CapitalisationEngine
     private lateinit var tokenRepair: TokenRepair
     private var previousWord: String? = null
+    
+    // A-03: on-device language detector. Starts empty (every result UNKNOWN -> guard is a no-op) and is
+    // replaced with the profile-backed classifier in onCreate. When the recent context is confidently
+    // non-German, the German autocorrect is held back so foreign words are not mangled.
+    private var languageClassifier = LanguageClassifier(emptyMap())
     
     // L-03: which layer is shown, the numeric/symbol layer's current page, the bundled emoji dataset
     // and the persisted recent/frequently-used emoji (MRU).
@@ -113,6 +122,10 @@ class AdaptKeyService : InputMethodService() {
     private var capsMode = CapsMode.NONE
     private var tokenSentenceStart = false
     private var tokenAfterHyphen = false
+    
+    // A-03: the text before the cursor captured at token start, so the language of the recent context
+    // (this text plus the token being typed) can be judged without re-reading the field per keystroke.
+    private var tokenContextBefore = ""
     
     // T-05 / A-06: the letter inferred for the most recently committed letter-ambiguous space; armed for
     // the immediately following token, which may be merged back onto it (e.g. "aber  ald" -> "aber bald").
@@ -153,6 +166,7 @@ class AdaptKeyService : InputMethodService() {
         tokenRepair = TokenRepair(store)
         emojiDataset = EmojiDatasetLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
+        languageClassifier = LanguageProfileLoader.loadClassifier(this)
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
     }
     
@@ -230,6 +244,7 @@ class AdaptKeyService : InputMethodService() {
         resetWordEndShift()
         pendingMergeChar = null
         previousWord = null
+        tokenContextBefore = ""
         capsMode = capsModeFor(info)
         clearUndo()
         keyboardView?.shifted = false
@@ -543,7 +558,12 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         
-        val corrected = provider.autocorrectFor(typed, previousWord) ?: typed // A-01 enforced in provider
+        // A-03: skip the German autocorrect when the recent context is confidently non-German.
+        val corrected = if (germanAutocorrectSuppressed(typed)) {
+            typed
+        } else {
+            provider.autocorrectFor(typed, previousWord) ?: typed // A-01 enforced in provider
+        }
         val finalWord = capitalisation.capitalise(corrected, contextFor(typed))
         
         ic.setComposingText(finalWord, 1)
@@ -657,7 +677,8 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
-        val pending = provider.autocorrectFor(input, previousWord)
+        // A-03: do not offer (nor pre-arm) a German autocorrect when the context looks non-German.
+        val pending = if (germanAutocorrectSuppressed(input)) null else provider.autocorrectFor(input, previousWord)
         controller.update(input, candidates, pending)
         showSuggestions()
         scheduleResort()
@@ -730,6 +751,20 @@ class AdaptKeyService : InputMethodService() {
         val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
         tokenSentenceStart = before.isBlank() || endsAtSentenceBoundary(before)
         tokenAfterHyphen = before.endsWith("-")
+        tokenContextBefore = before
+    }
+    
+    /**
+     * A-03 guard: whether the German autocorrect should be held back because the recent context - the
+     * text captured before the token plus the token [typed] so far - is confidently in another
+     * language. Conservative by construction (see [LanguageClassifier.isForeign]): unknown or
+     * borderline context keeps the German autocorrect active.
+     *
+     * @param typed the current composing token
+     * @return true when German autocorrect must not be applied for this token
+     */
+    private fun germanAutocorrectSuppressed(typed: String): Boolean {
+        return languageClassifier.isForeign("$tokenContextBefore $typed")
     }
     
     private fun contextFor(typed: String): CapitalisationContext {
