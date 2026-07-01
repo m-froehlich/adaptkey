@@ -14,6 +14,11 @@ object KeyboardLayout {
     
     private const val THIRD_ROW_LETTERS = "yxcvbnm"
     
+    // L-03: the combined emoji / ?123 key - tap opens the emoji panel, long-press or an upward swipe
+    // switches to the numeric/symbol layer (corner-hinted like the other secondary symbols).
+    private const val SYMBOL_KEY_LABEL = "😊"
+    private const val SYMBOL_KEY_HINT = "123"
+    
     // L-06: German-QWERTZ shifted symbol per digit, shown as a corner hint.
     private val NUMBER_HINTS = mapOf(
         '1' to "!", '2' to "\"", '3' to "§", '4' to "$", '5' to "%",
@@ -60,8 +65,9 @@ object KeyboardLayout {
         })
         
         result.add(buildList {
-            // L-03: combined emoji / numeric-layer key (no panel yet).
-            add(Key(label = "?123", code = KeyCode.SYMBOL, weight = proportions.symbolWeight))
+            // L-03: combined emoji / numeric-layer key - tap opens the emoji panel, long-press / swipe-up
+            // switches to ?123.
+            add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
             // L-02: comma & full stop widened, space narrowed.
             add(charKey(',', weight = proportions.commaWeight))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
@@ -81,6 +87,18 @@ object KeyboardLayout {
      */
     fun longPressSymbol(key: Key): String? {
         return if (key.code == KeyCode.CHAR) key.hint else null
+    }
+    
+    /**
+     * Whether holding [key] past the long-press timeout has an action at all: a character key's
+     * secondary symbol (L-05 / L-06, see [longPressSymbol]), or the combined emoji / ?123 key
+     * switching to the numeric/symbol layer (L-03).
+     *
+     * @param key the pressed key
+     * @return true when a long-press on this key should be scheduled
+     */
+    fun hasLongPressAction(key: Key): Boolean {
+        return (key.code == KeyCode.CHAR && key.hint != null) || key.code == KeyCode.SYMBOL
     }
     
     private fun charKey(c: Char, hint: String? = null, weight: Float = 1f): Key {

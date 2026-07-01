@@ -49,4 +49,21 @@ class KeyGestureTest {
         assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.DELETE, SwipeDirection.NONE))
         assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.NONE))
     }
+    
+    @Test
+    fun `an upward swipe on the combined key switches to the symbol layer`() {
+        assertEquals(GestureAction.OPEN_SYMBOL_LAYER, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.UP))
+    }
+    
+    @Test
+    fun `other swipes on the combined key carry no action`() {
+        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.LEFT))
+        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.RIGHT))
+        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.NONE))
+    }
+    
+    @Test
+    fun `a downward swipe on the combined key still dismisses the keyboard`() {
+        assertEquals(GestureAction.DISMISS_KEYBOARD, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.DOWN))
+    }
 }

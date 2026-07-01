@@ -12,6 +12,7 @@ import android.text.style.BackgroundColorSpan
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import android.widget.FrameLayout
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
@@ -24,13 +25,21 @@ import de.froehlichmedia.adaptkey.dictionary.SeedData
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
+import de.froehlichmedia.adaptkey.emoji.EmojiDataset
+import de.froehlichmedia.adaptkey.emoji.EmojiDatasetLoader
+import de.froehlichmedia.adaptkey.emoji.EmojiPanelView
+import de.froehlichmedia.adaptkey.emoji.RecentEmojiStore
+import de.froehlichmedia.adaptkey.emoji.RecentEmojis
 import de.froehlichmedia.adaptkey.gesture.GestureAction
 import de.froehlichmedia.adaptkey.gesture.KeyGesture
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.WordBoundary
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
+import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
+import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
+import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
@@ -59,13 +68,16 @@ import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
  * deletes a word (G-02), swipe-down dismisses the keyboard (G-03), and a horizontal swipe on the space
  * bar is the language-switch gesture (G-01, a no-op stub until multilingual input exists). Pressing
  * Shift at the end of a word toggles its first-letter case or starts camelCase depending on the next
- * key (G-05), and dragging a suggestion into the trash zone blacklists it (G-04 / A-04). The emoji /
- * numeric panel (L-03) is not part of this stage yet.
+ * key (G-05), and dragging a suggestion into the trash zone blacklists it (G-04 / A-04). The combined
+ * emoji / ?123 key (L-03) opens the emoji panel on a tap, or the numeric/symbol layer on a long-press
+ * or an upward swipe; the emoji panel commits Unicode codepoints directly and finalises any
+ * in-progress composing token first, exactly like a delimiter.
  */
 class AdaptKeyService : InputMethodService() {
     
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
+    private var emojiPanel: EmojiPanelView? = null
     private var offsetModel: OffsetModel? = null
     
     private var settings = AdaptSettings.DEFAULT
@@ -76,6 +88,13 @@ class AdaptKeyService : InputMethodService() {
     private lateinit var capitalisation: CapitalisationEngine
     private lateinit var tokenRepair: TokenRepair
     private var previousWord: String? = null
+    
+    // L-03: which layer is shown, the numeric/symbol layer's current page, the bundled emoji dataset
+    // and the persisted recent/frequently-used emoji (MRU).
+    private var surface = InputSurface.LETTERS
+    private var symbolPage = 1
+    private lateinit var emojiDataset: EmojiDataset
+    private var recentEmojis: List<String> = emptyList()
     
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         settings = SettingsStore.load(this)
@@ -132,18 +151,33 @@ class AdaptKeyService : InputMethodService() {
         provider = DictionarySuggestionProvider(store, config.maxSuggestions * 2)
         capitalisation = CapitalisationEngine(store)
         tokenRepair = TokenRepair(store)
+        emojiDataset = EmojiDatasetLoader.load(this)
+        recentEmojis = RecentEmojiStore.load(this)
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
     }
     
     override fun onCreateInputView(): View {
+        val container = FrameLayout(this)
+        
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
         view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, ambiguity -> handleKey(key, ambiguity) }
-        view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { symbol -> handleLongPress(symbol) }
+        view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         keyboardView = view
+        
+        val panel = EmojiPanelView(this)
+        panel.dataset = emojiDataset
+        panel.setRecentEmojis(recentEmojis)
+        panel.onEmojiSelectedListener = EmojiPanelView.OnEmojiSelectedListener { emoji -> commitEmoji(emoji) }
+        panel.onBackListener = EmojiPanelView.OnBackListener { setSurface(InputSurface.LETTERS) }
+        panel.visibility = View.GONE
+        emojiPanel = panel
+        
+        container.addView(view)
+        container.addView(panel)
         applySettings()
-        return view
+        return container
     }
     
     /**
@@ -199,6 +233,7 @@ class AdaptKeyService : InputMethodService() {
         capsMode = capsModeFor(info)
         clearUndo()
         keyboardView?.shifted = false
+        setSurface(InputSurface.LETTERS)
         clearSuggestions()
     }
     
@@ -306,24 +341,77 @@ class AdaptKeyService : InputMethodService() {
             
             KeyCode.SHIFT -> handleShift()
             
-            // L-03 stub: the combined emoji / ?123 key has no panel yet.
-            KeyCode.SYMBOL -> Unit
+            // L-03: a tap opens the emoji panel from the letter view, or returns to letters from anywhere else.
+            KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
+            
+            // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
+            KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
+            
+            // L-03: toggles between the numeric/symbol layer's two pages.
+            KeyCode.SYMBOL_PAGE -> {
+                symbolPage = SymbolLayout.togglePage(symbolPage)
+                keyboardView?.symbolPage = symbolPage
+            }
         }
     }
     
     /**
-     * Handles a long-press secondary symbol (L-05 / L-06): finalises the current token (so a held key
-     * mid-word commits the word first) and then commits the symbol, exactly like typing a delimiter.
+     * Handles a long-press (L-05 / L-06 secondary symbols: finalises the current token, so a held key
+     * mid-word commits the word first, then commits the symbol exactly like typing a delimiter; or
+     * L-03: holding the combined emoji / ?123 key switches straight to the numeric/symbol layer).
      */
-    private fun handleLongPress(symbol: String) {
-        val ic = currentInputConnection ?: return
-        clearUndo()
-        finalizeAndCommit(ic, symbol)
+    private fun handleLongPress(key: Key) {
+        when (key.code) {
+            KeyCode.CHAR -> {
+                val symbol = key.hint ?: return
+                val ic = currentInputConnection ?: return
+                clearUndo()
+                finalizeAndCommit(ic, symbol)
+            }
+            
+            KeyCode.SYMBOL -> setSurface(PanelNavigation.onSwitchToSymbols())
+            
+            else -> Unit
+        }
     }
     
     /**
-     * Handles a swipe gesture (§4 G-01 … G-03) reported by the keyboard view. Resolves it to an
-     * action via [KeyGesture] and executes it.
+     * Delivers [emoji] as a raw Unicode codepoint via `commitText` (L-03): no app-side support is
+     * needed. Any in-progress composing token is finalised first, exactly like a delimiter, so it is
+     * not silently dropped, then the emoji itself is committed and recorded as the most recent use.
+     */
+    private fun commitEmoji(emoji: String) {
+        val ic = currentInputConnection ?: return
+        finalizeAndCommit(ic, "")
+        ic.commitText(emoji, 1)
+        recentEmojis = RecentEmojis.recordUse(recentEmojis, emoji)
+        RecentEmojiStore.save(this, recentEmojis)
+        emojiPanel?.setRecentEmojis(recentEmojis)
+    }
+    
+    /**
+     * Switches the visible input surface (L-03): shows/hides the letter+symbol keyboard vs. the emoji
+     * panel, and resets the numeric/symbol layer back to its first page whenever it is not the target.
+     */
+    private fun setSurface(next: InputSurface) {
+        surface = next
+        if (next != InputSurface.EMOJI) {
+            keyboardView?.surface = next
+        }
+        keyboardView?.visibility = if (next == InputSurface.EMOJI) View.GONE else View.VISIBLE
+        emojiPanel?.visibility = if (next == InputSurface.EMOJI) View.VISIBLE else View.GONE
+        if (next == InputSurface.EMOJI) {
+            emojiPanel?.setRecentEmojis(recentEmojis)
+        }
+        if (next != InputSurface.SYMBOLS) {
+            symbolPage = 1
+            keyboardView?.symbolPage = 1
+        }
+    }
+    
+    /**
+     * Handles a swipe gesture (§4 G-01 … G-03, plus the L-03 upward swipe to the symbol layer)
+     * reported by the keyboard view. Resolves it to an action via [KeyGesture] and executes it.
      *
      * @param key the key the swipe started on (T-01 contact point)
      * @param direction the recognised swipe direction
@@ -349,6 +437,12 @@ class AdaptKeyService : InputMethodService() {
             // G-01: language switch. Multilingual input is not available yet (it needs a second language
             // dictionary, cf. A-03), so the swipe is recognised and consumed but is intentionally a no-op.
             GestureAction.LANGUAGE_PREV, GestureAction.LANGUAGE_NEXT -> true
+            
+            // L-03: upward swipe on the combined key switches to the numeric/symbol layer.
+            GestureAction.OPEN_SYMBOL_LAYER -> {
+                setSurface(PanelNavigation.onSwitchToSymbols())
+                true
+            }
             
             GestureAction.NONE -> false
         }

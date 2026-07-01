@@ -4,12 +4,13 @@ import de.froehlichmedia.adaptkey.keyboard.KeyCode
 
 /**
  * Pure policy mapping a swipe (the key it started on, plus its [SwipeDirection]) onto a
- * [GestureAction] (§4 G-01 … G-03).
+ * [GestureAction] (§4 G-01 … G-03, plus the L-03 upward swipe on the combined emoji / ?123 key).
  *
  * A downward swipe dismisses the keyboard regardless of the key underneath (G-03). A horizontal
  * swipe is key-specific: left on backspace deletes a word (G-02), left / right on the space bar
- * switches language (G-01). Everything else carries no gesture and resolves to [GestureAction.NONE],
- * leaving the touch to be handled as a tap.
+ * switches language (G-01), up on the combined key switches to the numeric/symbol layer (L-03).
+ * Everything else carries no gesture and resolves to [GestureAction.NONE], leaving the touch to be
+ * handled as a tap.
  */
 object KeyGesture {
     
@@ -34,6 +35,9 @@ object KeyGesture {
                 SwipeDirection.RIGHT -> GestureAction.LANGUAGE_NEXT
                 else -> GestureAction.NONE
             }
+            
+            // L-03: swipe up on the combined emoji / ?123 key switches to the numeric/symbol layer.
+            KeyCode.SYMBOL -> if (direction == SwipeDirection.UP) GestureAction.OPEN_SYMBOL_LAYER else GestureAction.NONE
             
             else -> GestureAction.NONE
         }

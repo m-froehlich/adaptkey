@@ -1,7 +1,9 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -58,6 +60,25 @@ class KeyboardLayoutTest {
         assertEquals("/", KeyboardLayout.longPressSymbol(rows.first().byChar('7')))
         assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('a')))
         assertNull(KeyboardLayout.longPressSymbol(rows[3].first()))
+    }
+    
+    @Test
+    fun `hasLongPressAction is true for hinted letters, number-row digits and the combined key`() {
+        val rows = KeyboardLayout.rows()
+        
+        assertTrue(KeyboardLayout.hasLongPressAction(rows[1].byChar('q')))
+        assertTrue(KeyboardLayout.hasLongPressAction(rows.first().byChar('7')))
+        assertTrue(KeyboardLayout.hasLongPressAction(rows.last().first()))
+        assertFalse(KeyboardLayout.hasLongPressAction(rows[2].byChar('a')))
+        assertFalse(KeyboardLayout.hasLongPressAction(rows.last()[2]))
+    }
+    
+    @Test
+    fun `the combined key carries a 123 corner hint`() {
+        val symbolKey = KeyboardLayout.rows().last().first()
+        
+        assertEquals(KeyCode.SYMBOL, symbolKey.code)
+        assertEquals("123", symbolKey.hint)
     }
     
     @Test

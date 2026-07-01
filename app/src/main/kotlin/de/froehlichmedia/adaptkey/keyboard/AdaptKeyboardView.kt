@@ -32,9 +32,12 @@ import de.froehlichmedia.adaptkey.touch.TapAmbiguity
  * listener for later token-level correction (T-02).
  *
  * The resolved character is emitted on release ([MotionEvent.ACTION_UP]); holding a key past the
- * long-press timeout instead emits its secondary symbol (L-05 / L-06) via [onLongPressListener] and
- * suppresses the tap. Resolution and offset-model learning still happen at ACTION_DOWN, so T-01 / T-03
- * are unaffected.
+ * long-press timeout instead fires [onLongPressListener] (L-05 / L-06 secondary symbols, or the L-03
+ * combined key switching to the numeric/symbol layer) and suppresses the tap. Resolution and
+ * offset-model learning still happen at ACTION_DOWN, so T-01 / T-03 are unaffected.
+ *
+ * [surface] selects which layout is drawn: the letter view or the [SymbolLayout] numeric/symbol
+ * layer (L-03); the emoji panel itself is a separate view swapped in by the caller.
  */
 class AdaptKeyboardView @JvmOverloads constructor(
     context: Context,
@@ -48,10 +51,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         fun onKey(key: Key, downX: Float, downY: Float, ambiguity: AmbiguityResult)
     }
     
-    /** Callback invoked when a key is held past the long-press timeout (L-05 / L-06). */
+    /**
+     * Callback invoked when a key is held past the long-press timeout (L-05 / L-06 secondary
+     * symbols, or the L-03 combined key switching to the numeric/symbol layer); see
+     * [KeyboardLayout.hasLongPressAction] for which keys this fires on.
+     */
     fun interface OnLongPressListener {
         
-        fun onLongPress(symbol: String)
+        fun onLongPress(key: Key)
     }
     
     /**
@@ -86,6 +93,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
     
     var showNumberRow: Boolean = true
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    /** Which layout is drawn (L-03): the letter view or the numeric/symbol layer. */
+    var surface: InputSurface = InputSurface.LETTERS
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    /** The active numeric/symbol layer page (L-03), 1 or 2; only relevant while [surface] is SYMBOLS. */
+    var symbolPage: Int = 1
         set(value) {
             field = value
             rebuildRows()
@@ -157,7 +178,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     private fun rebuildRows() {
-        rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
+        rows = when (surface) {
+            InputSurface.LETTERS -> KeyboardLayout.rows(proportions, showNumberRow, letterHints)
+            InputSurface.SYMBOLS -> SymbolLayout.rows(symbolPage, proportions)
+            // The emoji panel is a separate view; this surface is never actually drawn.
+            InputSurface.EMOJI -> emptyList()
+        }
         if (width > 0) {
             layoutKeys(width)
         }
@@ -275,12 +301,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     private fun scheduleLongPress(key: Key) {
-        val symbol = KeyboardLayout.longPressSymbol(key) ?: return
+        if (!KeyboardLayout.hasLongPressAction(key)) {
+            return
+        }
         val runnable = Runnable {
             if (pressedKey === key) {
                 longPressFired = true
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                onLongPressListener?.onLongPress(symbol)
+                onLongPressListener?.onLongPress(key)
             }
         }
         longPressRunnable = runnable

@@ -10,7 +10,13 @@ enum class KeyCode {
     DELETE,
     ENTER,
     SPACE,
-    SYMBOL
+    SYMBOL,
+    
+    /** L-03: the "ABC" key on the numeric/symbol layer, returning to the letter view. */
+    LETTERS,
+    
+    /** L-03: toggles between the numeric/symbol layer's two pages. */
+    SYMBOL_PAGE
 }
 
 /**

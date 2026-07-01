@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `89c24d1` (master, clean, runnable) + K-01 calibration (this session, see Done).
-- Unit tests: **217 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: commit `798a99c` (master, clean, runnable) + L-03 emoji/symbol panel (this session, see Done).
+- Unit tests: **243 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -123,9 +123,53 @@ whenever a component lands so it does not have to be restated in every prompt.
   reloads the offset model in `onStartInputView` (when `!restarting`) so a calibration done while the
   service was resident is adopted (storage is current there — saved on the prior `onFinishInput`).
 
+### Emoji / symbol panel (L-03)
+- The bottom-row combined key (`KeyCode.SYMBOL`, label 😊, corner hint "123") now does two things:
+  tap opens the emoji panel; long-press **or** an upward swipe switches to the numeric/symbol layer.
+  Downward swipe still dismisses the keyboard from anywhere (G-03) — no collision, since it's the
+  opposite `SwipeDirection` in the same `KeyGesture.resolve` dispatch.
+- Pure layer/panel state: `keyboard/InputSurface` (LETTERS/SYMBOLS/EMOJI) + `keyboard/PanelNavigation`
+  (tap-transition table + long-press/swipe-up → SYMBOLS, both unit-tested).
+- Pure `keyboard/SymbolLayout`: 2-page `?123` keymap mirroring the letter layout's row shape/weights
+  (`KeyProportions` reused unchanged) — digits row + 10 symbols + page-toggle (`KeyCode.SYMBOL_PAGE`,
+  `SymbolLayout.togglePage`) + backspace + `KeyCode.LETTERS` ("ABC", returns to letters) + comma/space/
+  period/enter. `AdaptKeyboardView` gained `surface`/`symbolPage` vars that pick `KeyboardLayout.rows`
+  vs. `SymbolLayout.rows` in `rebuildRows()`.
+- `AdaptKeyboardView.OnLongPressListener` signature changed from `(symbol: String)` to `(key: Key)` so
+  the service can dispatch by `key.code` (CHAR → commit `key.hint` as before; SYMBOL → switch layer).
+  New `KeyboardLayout.hasLongPressAction(key)` (CHAR-with-hint, or SYMBOL) replaces the old
+  hint-presence check for scheduling; `longPressSymbol` is untouched (still CHAR-only, still used by
+  the service for the actual text to commit).
+- Emoji dataset: **asset-based** (user chose the larger option over a hardcoded short list) —
+  `app/src/main/assets/emoji_dataset.tsv`, 507 curated well-established single-codepoint emoji across
+  7 categories (`emoji/EmojiCategory`), one `<CATEGORY>\t<emoji>` line each. Pure
+  `emoji/EmojiDatasetParser` (Android-free, unit-tested: unknown categories / blank / malformed lines
+  are skipped, never crash) + `emoji/EmojiDataset` (`Map<EmojiCategory, List<String>>`) are parsed from
+  raw text handed in by the Android-only `emoji/EmojiDatasetLoader` (`context.assets.open`, falls back
+  to `EmojiDataset.EMPTY` on any failure). Validated at authoring time with a PowerShell pass
+  (`StringInfo.GetTextElementEnumerator` per entry = exactly one grapheme cluster; no cross-category
+  dupes) since there is no way to visually render emoji in this environment.
+- MRU recents: pure `emoji/RecentEmojis.recordUse(current, emoji, maxSize=30)` (move-to-front, dedup,
+  cap; unit-tested), persisted Android-side by `emoji/RecentEmojiStore` (JSON array in
+  SharedPreferences, mirrors the existing `OffsetStore` pattern).
+- `emoji/EmojiPanelView` (Android-only, thin): `LinearLayout` with a `HorizontalScrollView` tab bar
+  (back-to-letters ⌨, recent 🕐, then one tab per category using `EmojiCategory.icon`) over a
+  `ScrollView`-wrapped `GridLayout` (7 columns) of emoji cells; selecting an emoji fires
+  `OnEmojiSelectedListener`, the tab bar's first button fires `OnBackListener`.
+- Service wiring: `onCreateInputView` now returns a `FrameLayout` holding both the `AdaptKeyboardView`
+  and the `EmojiPanelView` (panel starts `GONE`); `setSurface(next)` toggles visibility of both, pushes
+  `surface`/`symbolPage` into the keyboard view, and resets `symbolPage` to 1 whenever leaving SYMBOLS.
+  `commitEmoji(emoji)`: per spec, first `finalizeAndCommit(ic, "")` (finalises any in-progress composing
+  token exactly like a delimiter, with an empty delimiter), **then** `ic.commitText(emoji, 1)`, then
+  records the MRU use and pushes the updated list back into the panel. `onStartInput` resets
+  `surface` to LETTERS for every new field. `CalibrationActivity`'s key switch got a no-op arm for the
+  three new `KeyCode`s (irrelevant to calibration).
+- 243 unit tests total (was 217; +26: `PanelNavigationTest`, `SymbolLayoutTest`,
+  `EmojiDatasetParserTest`, `RecentEmojisTest`, plus additions to `KeyboardLayoutTest`/`KeyGestureTest`).
+  `:app:assembleDebug` green, asset confirmed packaged into `app-debug.apk`.
+
 ## Remaining (per spec §11)
 
-- **Emoji panel (L-03)** — UI-heavy, little pure logic, needs an emoji dataset.
 - **fastText language detection (A-03)** — ~1 MB on-device model, external dependency; also
   unblocks the G-01 language-switch no-op stub.
 - **Mini-LLM tier-3** follow-on (C-06).
@@ -138,6 +182,9 @@ whenever a component lands so it does not have to be restated in every prompt.
   the swipe/drag/word-end-shift View+Service glue, the T-04 View/Service glue
   (`event.size` capture, `charKeyGeometry`, `persistTypingPattern`), and the K-01 `CalibrationActivity`
   glue (key→session driving, merge-on-finish, feedback dialog) + the service offset-model reload.
+  L-03 adds: `EmojiPanelView` (tab selection, grid population, back/emoji click wiring),
+  `EmojiDatasetLoader` (asset read/fallback), `RecentEmojiStore` (JSON persistence) and the service's
+  container/`setSurface` visibility toggling.
 
 ## Notes / gotchas
 

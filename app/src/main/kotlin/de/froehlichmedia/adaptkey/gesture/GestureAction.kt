@@ -17,5 +17,8 @@ enum class GestureAction {
     LANGUAGE_PREV,
     
     /** G-01: a right swipe on the space bar switches to the next input language. */
-    LANGUAGE_NEXT
+    LANGUAGE_NEXT,
+    
+    /** L-03: an upward swipe on the combined emoji / ?123 key switches to the numeric/symbol layer. */
+    OPEN_SYMBOL_LAYER
 }

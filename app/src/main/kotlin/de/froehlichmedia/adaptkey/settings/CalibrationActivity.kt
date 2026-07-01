@@ -75,8 +75,8 @@ class CalibrationActivity : AppCompatActivity() {
             // Enter doubles as "next sentence", so a long sentence can be confirmed from the keyboard.
             KeyCode.ENTER -> { onNext(); return }
             KeyCode.SHIFT -> { keyboard.shifted = !keyboard.shifted; return }
-            // L-03 stub: the symbol layer has no panel yet, and digits are not needed for calibration.
-            KeyCode.SYMBOL -> return
+            // L-03: the emoji panel and numeric/symbol layer are irrelevant to calibration (letters only).
+            KeyCode.SYMBOL, KeyCode.LETTERS, KeyCode.SYMBOL_PAGE -> return
         }
         refreshTyped()
     }
