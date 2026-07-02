@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `72803b5` — Tier-3 ONNX-route groundwork + parity-verified BPE tokenizer + pure loader.
-- Unit tests: **387 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: commit `af57bef` — Tier-3 ONNX groundwork + parity-verified tokenizer + browser/SAF model-import UX.
+- Unit tests: **392 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -385,8 +385,8 @@ whenever a component lands so it does not have to be restated in every prompt.
   - `Tier3ResponseParser` — raw continuation → ranked candidate words (completes the current token, or
     yields next-word predictions); confidence is rank-derived (a scored decode can supply real probs).
   - `Tier3Decoding` — validated per-activation limits (maxNewTokens / numCandidates), tiny by default.
-  - `Tier3ModelFiles` — canonical model-dir layout (`model.onnx` / `vocab.json` / `merges.txt`) +
-    presence check over `File`; drives `isAvailable`. The model is provided into app storage, not the APK.
+  - `Tier3ModelFiles` — the private model dir needs only the user-provided `model.onnx` (the tokenizer
+    is bundled in the APK, see below); presence check over `File` drives `isAvailable`.
   - `VocabJson` — minimal pure parser for a flat `vocab.json` (token→id, JSON string-escape + raw UTF-8).
   - `Tier3TokenizerParser` — assembles a `BpeTokenizer` from `vocab.json` + `merges.txt` text (resolves the
     SmolLM2 special-token ids from the vocab; skips the `#version` header; CRLF-tolerant). Pure/testable;
@@ -403,24 +403,32 @@ whenever a component lands so it does not have to be restated in every prompt.
     newlines, leading spaces all match **byte-for-byte**, and decode round-trips. The vocab/merges/golden
     data live under `src/test/resources/tokenizer/` (test-only, ~1.2 MB, not in the APK); generator is
     `scratchpad/gen_tokenizer_golden.py` (dev-only).
-- 387 unit tests (was 345; +19 pure core: `Tier3PromptTest`/`Tier3ResponseParserTest`/`Tier3DecodingTest`/
-  `Tier3ModelFilesTest`; +12 tokenizer: `ByteLevelTest`/`BpeTokenizerTest`/`BpeTokenizerParityTest`; +11
-  loader: `VocabJsonTest`/`Tier3TokenizerParserTest`). `:app:assembleDebug` green.
+- **Bundled tokenizer + model-import UX (browser + SAF, user choice):** `vocab.json` + `merges.txt`
+  (~1.3 MB, Apache-2.0) are bundled in `assets/tier3/` (CREDITS updated), so the user imports **only** the
+  single 273 MB `model.onnx`. Delivery needs **no permissions**: the app has no `INTERNET` (so it is
+  *provably* offline — verifiable in the manifest) and no storage permission. `Tier3ModelActivity`
+  (settings → Großschreibung category) delegates the download to the browser (`ACTION_VIEW` to the model's
+  public HF URL) and imports the picked file via SAF (`ACTION_OPEN_DOCUMENT`), copying it off the UI thread
+  through the pure, unit-tested `Tier3ModelInstaller` (atomic temp `.part` + rename → an interrupted import
+  never looks complete) into the app-private `Tier3ModelStorage.modelDir` (`filesDir/tier3-model`).
+  Android glue (`Tier3ModelActivity`, `Tier3ModelStorage`) is compile-verified / instrumented-test territory.
+- 392 unit tests (was 345; +19 pure core; +12 tokenizer; +11 loader; +6 `Tier3ModelInstallerTest`,
+  `Tier3ModelFilesTest` retargeted to the single-file layout). `:app:assembleDebug` green; tier3 assets
+  confirmed in `app-debug.apk`.
 
 ## Remaining (per spec §11)
 
-- **Tier-3 real backend — remaining (device/instrumented territory):** still to build behind the existing
-  `Tier3Provider` interface: (1) a thin Android file-read wrapper calling the (done, pure)
-  `Tier3TokenizerParser`; (2) `OnnxCausalLmSession`
-  — the fp16 KV-cache autoregressive decode loop against the confirmed I/O names, on `onnxruntime-android`
-  1.22.0 (adds native libs → notable APK growth); (3) `OnnxTier3Provider` assembling prompt → tokenize →
-  generate → decode → `Tier3ResponseParser`; (4) service wiring to select it when `Tier3ModelFiles.isComplete`,
-  else Noop; (5) the **model-import UX** (how each user gets the 273 MB model into app storage — deliberately
-  still to be negotiated; likely SAF file-import or an explicit one-time opt-in download, staying 100% offline);
-  (6) instrumented tests for the runtime. NB the decode loop + session are only compile-verifiable in this
-  environment — no emulator/device and no ONNX runtime in the local Python — so runtime correctness needs a
-  device. The pure orchestration, C-06 setting, §6 rule-6 hook, adaptive-learning feedback, prompt/parse/
-  model-file logic and the **parity-verified tokenizer** are all done.
+- **Tier-3 real backend — remaining (device/instrumented territory only):** the *inference runtime*, behind
+  the existing `Tier3Provider` interface: (1) an Android `Tier3TokenizerLoader` reading the bundled assets →
+  the (done, pure) `Tier3TokenizerParser`; (2) `OnnxCausalLmSession` — the fp16 KV-cache autoregressive
+  decode loop against the confirmed I/O names, on `onnxruntime-android` 1.22.0 (adds native libs → notable
+  APK growth); (3) `OnnxTier3Provider` assembling prompt → tokenize → generate → decode → `Tier3ResponseParser`,
+  `isAvailable` = `Tier3ModelStorage.isModelInstalled`; (4) service wiring to build it when the model is
+  present, else Noop; (5) instrumented tests for the runtime. NB the decode loop + session are only
+  compile-verifiable here — no emulator/device and no ONNX runtime in the local Python — so runtime
+  correctness needs a device. Everything else (pure orchestration, C-06 setting, §6 rule-6 hook,
+  adaptive-learning feedback, prompt/parse/model-file logic, the **parity-verified tokenizer** and the
+  **model-import UX**) is done. Model already downloaded to `D:\workspace-ai\models\SmolLM2-360M-Instruct\`.
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
 - Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05
   blacklist editor that is language-aware (currently operates on the active store); verify/tune the
