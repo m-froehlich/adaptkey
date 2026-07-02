@@ -35,3 +35,14 @@ The character-n-gram language-identification profiles (A-03) were derived from t
 
 A curated list of Unicode emoji code points grouped by category. Emoji are Unicode characters; the
 curated grouping is part of AdaptKey.
+
+## Tier-3 mini-LLM tokenizer (`app/src/main/assets/tier3/vocab.json`, `merges.txt`)
+
+The byte-level BPE tokenizer vocabulary and merges bundled for the optional tier-3 mini-LLM (§9 / C-06)
+are the tokenizer files of **SmolLM2-360M-Instruct** by Hugging Face.
+
+- Source: https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct
+- Licence: **Apache License 2.0** — https://www.apache.org/licenses/LICENSE-2.0
+- Only the tokenizer files are bundled. The model weights (`model.onnx`) are **not** shipped with the
+  app; they are provided by the user into the app's private storage (the app has no internet
+  permission). The same model/tokenizer are also under Apache-2.0.

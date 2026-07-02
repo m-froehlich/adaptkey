@@ -1,6 +1,5 @@
 package de.froehlichmedia.adaptkey.prediction
 
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -13,32 +12,18 @@ import java.io.File
 class Tier3ModelFilesTest {
     
     @Test
-    fun `a non-directory reports every required file missing`(@TempDir dir: File) {
-        val absent = File(dir, "does-not-exist")
-        assertEquals(Tier3ModelFiles.REQUIRED, Tier3ModelFiles.missingFiles(absent))
-        assertFalse(Tier3ModelFiles.isComplete(absent))
+    fun `a non-directory is incomplete`(@TempDir dir: File) {
+        assertFalse(Tier3ModelFiles.isComplete(File(dir, "does-not-exist")))
     }
     
     @Test
     fun `an empty directory is incomplete`(@TempDir dir: File) {
-        assertEquals(Tier3ModelFiles.REQUIRED, Tier3ModelFiles.missingFiles(dir))
         assertFalse(Tier3ModelFiles.isComplete(dir))
     }
     
     @Test
-    fun `a directory missing one file lists exactly that file`(@TempDir dir: File) {
+    fun `a directory holding the model graph is complete`(@TempDir dir: File) {
         File(dir, Tier3ModelFiles.MODEL_FILE).writeText("x")
-        File(dir, Tier3ModelFiles.VOCAB_FILE).writeText("x")
-        assertEquals(listOf(Tier3ModelFiles.MERGES_FILE), Tier3ModelFiles.missingFiles(dir))
-        assertFalse(Tier3ModelFiles.isComplete(dir))
-    }
-    
-    @Test
-    fun `a directory with every required file is complete`(@TempDir dir: File) {
-        for (name in Tier3ModelFiles.REQUIRED) {
-            File(dir, name).writeText("x")
-        }
-        assertTrue(Tier3ModelFiles.missingFiles(dir).isEmpty())
         assertTrue(Tier3ModelFiles.isComplete(dir))
     }
 }
