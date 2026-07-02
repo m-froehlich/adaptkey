@@ -8,6 +8,13 @@
     <!-- Suggestion bar drag-to-trash (G-04). -->
     <string name="suggestion_trash_label">🗑  Löschen</string>
 
+    <!-- Info & privacy category (shown first on the settings screen). -->
+    <string name="cat_info">Info &amp; Datenschutz</string>
+    <string name="info_privacy_title">Kein Internet, kein Tracking</string>
+    <string name="info_privacy_summary">Diese Tastatur besitzt keine Internet-Berechtigung – im System nachprüfbar. Nichts wird „nach Hause telefoniert", alles bleibt auf dem Gerät.</string>
+    <string name="info_license_title">Lizenz</string>
+    <string name="info_license_summary">Freie Software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
+
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Tasten</string>
     <string name="cat_suggestions">Vorschläge</string>

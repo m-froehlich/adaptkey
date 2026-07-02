@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Froehlich Media
+
 package de.froehlichmedia.adaptkey.emoji
 
 import android.content.Context
