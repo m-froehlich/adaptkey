@@ -18,14 +18,14 @@ object Tier3ModelFiles {
     /** The quantised ONNX model graph. */
     const val MODEL_FILE = "model.onnx"
     
-    /** The Hugging Face tokenizer definition (byte-level BPE), self-contained. */
-    const val TOKENIZER_FILE = "tokenizer.json"
+    /** The byte-level BPE vocabulary (token→id). */
+    const val VOCAB_FILE = "vocab.json"
     
-    /** The model config (carries the eos/bos token ids the decode loop needs). */
-    const val CONFIG_FILE = "config.json"
+    /** The byte-level BPE merges, in rank order. */
+    const val MERGES_FILE = "merges.txt"
     
     /** Every file that must be present for the backend to load. */
-    val REQUIRED = listOf(MODEL_FILE, TOKENIZER_FILE, CONFIG_FILE)
+    val REQUIRED = listOf(MODEL_FILE, VOCAB_FILE, MERGES_FILE)
     
     /**
      * @param dir the candidate model directory

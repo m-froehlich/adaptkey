@@ -28,8 +28,8 @@ class Tier3ModelFilesTest {
     @Test
     fun `a directory missing one file lists exactly that file`(@TempDir dir: File) {
         File(dir, Tier3ModelFiles.MODEL_FILE).writeText("x")
-        File(dir, Tier3ModelFiles.TOKENIZER_FILE).writeText("x")
-        assertEquals(listOf(Tier3ModelFiles.CONFIG_FILE), Tier3ModelFiles.missingFiles(dir))
+        File(dir, Tier3ModelFiles.VOCAB_FILE).writeText("x")
+        assertEquals(listOf(Tier3ModelFiles.MERGES_FILE), Tier3ModelFiles.missingFiles(dir))
         assertFalse(Tier3ModelFiles.isComplete(dir))
     }
     
