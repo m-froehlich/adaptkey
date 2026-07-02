@@ -42,8 +42,12 @@ android {
     }
     
     testOptions {
-        unitTests.all {
-            it.useJUnitPlatform()
+        unitTests {
+            // Robolectric needs the merged Android resources/assets available to JVM unit tests.
+            isIncludeAndroidResources = true
+            all {
+                it.useJUnitPlatform()
+            }
         }
     }
 }
@@ -56,5 +60,10 @@ dependencies {
     implementation(libs.onnxruntime.android)
     
     testImplementation(libs.junit.jupiter)
+    // Robolectric runs Android framework code on the JVM (no emulator); its tests are JUnit4, run on the
+    // platform via the vintage engine alongside the Jupiter tests.
+    testImplementation(libs.junit4)
+    testImplementation(libs.robolectric)
     testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit.vintage.engine)
 }

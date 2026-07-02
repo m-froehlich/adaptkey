@@ -7,6 +7,8 @@ material = "1.12.0"
 preference = "1.2.1"
 junit = "5.11.3"
 junitPlatform = "1.11.3"
+junit4 = "4.13.2"
+robolectric = "4.14.1"
 onnxruntime = "1.22.0"
 
 [libraries]
@@ -16,6 +18,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junit" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher", version.ref = "junitPlatform" }
+junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junit" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 onnxruntime-android = { group = "com.microsoft.onnxruntime", name = "onnxruntime-android", version.ref = "onnxruntime" }
 
 [plugins]
