@@ -56,6 +56,23 @@
     <string name="c06_threshold_medium">Mittel</string>
     <string name="c06_threshold_high">Hoch</string>
 
+    <!-- C-06 tier-3 model management (browser download + file import). -->
+    <string name="c06_model_pref_title">Mini-LLM-Modell (Tier 3)</string>
+    <string name="c06_model_pref_summary">Optionales On-Device-Modell herunterladen und importieren (C-06).</string>
+    <string name="c06_model_title">Mini-LLM-Modell</string>
+    <string name="c06_model_intro">Das Tier-3-Mini-LLM (C-06) ist optional. Das Modell (~273 MB) ist nicht in der App enthalten. Lade es einmalig herunter und importiere es anschließend – danach arbeitet die App weiterhin vollständig offline.</string>
+    <string name="c06_model_present">Modell installiert.</string>
+    <string name="c06_model_absent">Kein Modell installiert. Tier 3 ist inaktiv, die Tastatur arbeitet wie gewohnt.</string>
+    <string name="c06_model_download">1. Modell herunterladen (im Browser)</string>
+    <string name="c06_model_import">2. Heruntergeladene Datei importieren</string>
+    <string name="c06_model_remove">Modell entfernen</string>
+    <string name="c06_model_importing">Modell wird importiert …</string>
+    <string name="c06_model_imported">Modell importiert.</string>
+    <string name="c06_model_import_failed">Import fehlgeschlagen.</string>
+    <string name="c06_model_removed">Modell entfernt.</string>
+    <string name="c06_model_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>
+    <string name="c06_model_privacy">Diese App besitzt keine Internet- und keine Speicher-Berechtigung. Der Download läuft über deinen Browser; die App liest nur die eine ausgewählte Datei.</string>
+
     <!-- Typing pattern detection (T-04). -->
     <string name="cat_typing_pattern">Tippmuster (T-04)</string>
     <string name="t04_detected_title">Erkanntes Tippmuster</string>

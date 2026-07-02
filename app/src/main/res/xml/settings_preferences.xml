@@ -148,6 +148,15 @@
             android:defaultValue="medium"
             app:useSimpleSummaryProvider="true" />
 
+        <Preference
+            android:key="c06_model"
+            android:title="@string/c06_model_pref_title"
+            android:summary="@string/c06_model_pref_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.Tier3ModelActivity" />
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_calibration">

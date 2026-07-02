@@ -51,6 +51,12 @@
             android:label="@string/k01_activity_title"
             android:exported="false" />
 
+        <!-- Tier-3 mini-LLM model import (C-06), launched from the settings screen. -->
+        <activity
+            android:name=".settings.Tier3ModelActivity"
+            android:label="@string/c06_model_title"
+            android:exported="false" />
+
     </application>
 
 </manifest>
