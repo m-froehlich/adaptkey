@@ -17,6 +17,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.Toast
+import java.util.concurrent.Executors
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
@@ -52,7 +53,10 @@ import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
 import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
 import de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation
 import de.froehlichmedia.adaptkey.prediction.Tier3Orchestrator
+import de.froehlichmedia.adaptkey.prediction.Tier3Outcome
 import de.froehlichmedia.adaptkey.prediction.Tier3Result
+import de.froehlichmedia.adaptkey.prediction.onnx.OnnxTier3Provider
+import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
@@ -120,10 +124,20 @@ class AdaptKeyService : InputMethodService() {
     // non-German, the German autocorrect is held back so foreign words are not mangled.
     private var languageClassifier = LanguageClassifier(emptyMap())
     
-    // §9 / C-06: tier-3 mini-LLM orchestration. The default no-op backend is never available, so the
-    // orchestrator returns the tier-1 suggestions untouched and makes no capitalisation proposal — the
-    // pipeline is present but inert until a real ONNX/Gemma backend is installed behind Tier3Provider.
-    private val tier3 = Tier3Orchestrator()
+    // §9 / C-06: tier-3 mini-LLM orchestration. Defaults to the inert no-op backend; when the user has
+    // imported a model, onnxProvider is built off-thread and swapped in. When a real backend is active,
+    // the orchestrator (and thus the heavy inference) is run on a background thread (tier3Async) so the
+    // IME thread never blocks; the tier-1 suggestions are shown immediately and refined when it returns.
+    private var tier3 = Tier3Orchestrator()
+    private var onnxProvider: OnnxTier3Provider? = null
+    private var tier3Async = false
+    // A single-thread executor serialises access to the one OrtSession (its run() is not concurrent-safe)
+    // and coalesces bursts of typing. The volatile sequence lets a queued task skip work for a token that
+    // is already stale, and guards a late result from being applied after the token changed.
+    private val tier3Executor = Executors.newSingleThreadExecutor()
+    
+    @Volatile
+    private var tier3RequestSeq = 0
     // The tier-3 output for the token currently being composed, consulted when it is finalised: the §6
     // rule-6 capitalisation proposal and the raw result feeding the adaptive-learning signal (§9).
     private var lastTier3Result = Tier3Result.EMPTY
@@ -200,7 +214,31 @@ class AdaptKeyService : InputMethodService() {
         emojiDataset = EmojiDatasetLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
         languageClassifier = LanguageProfileLoader.loadClassifier(this)
+        loadTier3ProviderAsync()
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
+    }
+    
+    /**
+     * Builds the real tier-3 ONNX backend (§9 / C-06) off the main thread when the user has imported a
+     * model, and swaps it into the orchestrator on the main thread. A no-op when no model is present or
+     * when construction fails (the keyboard then stays on the inert no-op backend). Loading the ONNX
+     * session is heavy, so it never runs on the IME thread.
+     */
+    private fun loadTier3ProviderAsync() {
+        if (onnxProvider != null) {
+            return
+        }
+        Thread {
+            val built = runCatching { OnnxTier3Provider.createIfAvailable(this) }.getOrNull()
+            if (built != null) {
+                handler.post {
+                    onnxProvider?.close()
+                    onnxProvider = built
+                    tier3 = Tier3Orchestrator(built)
+                    tier3Async = true
+                }
+            }
+        }.start()
     }
     
     /**
@@ -327,7 +365,30 @@ class AdaptKeyService : InputMethodService() {
         if (!restarting) {
             reloadOffsetModel()
         }
+        reconcileTier3Provider()
         currentInputConnection?.let { armShiftForNextWord(it) }
+    }
+    
+    /**
+     * Reconciles the tier-3 backend with the model the user may have imported or removed in the settings
+     * screen since the keyboard was last shown (§9 / C-06): builds the ONNX backend off-thread when a
+     * model has appeared, or drops it (reverting to the inert no-op backend) when the model is gone.
+     */
+    private fun reconcileTier3Provider() {
+        val installed = Tier3ModelStorage.isModelInstalled(this)
+        if (installed && onnxProvider == null) {
+            loadTier3ProviderAsync()
+        } else if (!installed && onnxProvider != null) {
+            tier3Executor.execute {
+                val stale = onnxProvider
+                handler.post {
+                    onnxProvider = null
+                    tier3Async = false
+                    tier3 = Tier3Orchestrator()
+                    stale?.close()
+                }
+            }
+        }
     }
     
     /**
@@ -355,6 +416,9 @@ class AdaptKeyService : InputMethodService() {
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         offsetModel?.let { OffsetStore.save(this, it) }
         persistTypingPattern()
+        tier3Executor.shutdownNow()
+        onnxProvider?.close()
+        onnxProvider = null
         super.onDestroy()
     }
     
@@ -800,20 +864,48 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
+        val pending = provider.autocorrectFor(input, previousWord)
+        val previous = previousWord
+        val sentence = "$tokenContextBefore$input"
         // §9 / C-06: consult tier 3 when the tier-1 confidence is below the threshold (never with the
         // no-op backend, where the outcome is the tier-1 list unchanged and no capitalisation proposal).
         // A-02: the mini-LLM sees the whole running context, not a punctuation-truncated fragment.
-        val outcome = tier3.predict(
-            input,
-            previousWord,
-            "$tokenContextBefore$input",
-            candidates,
-            settings.llmActivationThreshold,
-            config.maxSuggestions
-        )
+        val seq = ++tier3RequestSeq
+        if (!tier3Async) {
+            // No-op (or absent) backend: the orchestrator is instant, run it inline.
+            applyTier3Outcome(input, pending, tier3.predict(input, previous, sentence, candidates, settings.llmActivationThreshold, config.maxSuggestions))
+            return
+        }
+        // A real backend runs the LLM: show the tier-1 suggestions immediately, then refine off-thread so
+        // the IME never blocks. A stale result (the token changed meanwhile) is discarded via the sequence.
+        controller.update(input, candidates, pending)
+        showSuggestions()
+        scheduleResort()
+        val threshold = settings.llmActivationThreshold
+        val limit = config.maxSuggestions
+        // Capture the orchestrator on the main thread so the executor never reads the reassignable field.
+        val orchestrator = tier3
+        tier3Executor.execute {
+            // Skip inference outright when the token already moved on while queued.
+            if (seq != tier3RequestSeq) {
+                return@execute
+            }
+            val outcome = orchestrator.predict(input, previous, sentence, candidates, threshold, limit)
+            handler.post {
+                if (seq == tier3RequestSeq && composing.toString() == input) {
+                    applyTier3Outcome(input, pending, outcome)
+                }
+            }
+        }
+    }
+    
+    /**
+     * Applies a tier-3 orchestration outcome to the suggestion bar: stores the §6 capitalisation proposal
+     * and the raw result (for the adaptive-learning feedback) and refreshes the bar.
+     */
+    private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome) {
         lastTier3Result = outcome.tier3
         lastCapProposal = outcome.capitalisation
-        val pending = provider.autocorrectFor(input, previousWord)
         controller.update(input, outcome.suggestions, pending)
         showSuggestions()
         scheduleResort()
