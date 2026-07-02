@@ -28,9 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `c24d22b` — tier-3 ONNX inference runtime wired (compile-verified; device-verification pending).
-- Unit tests: **396 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green. Debug APK ~43 MB
-  (onnxruntime native libs, arm64-v8a + armeabi-v7a only).
+- HEAD: commit `8a5e147` — tier-3 ONNX runtime wired + Robolectric JVM glue tests (device-verification pending).
+- Unit tests: **400 green** (`:app:testDebugUnitTest`, incl. 4 Robolectric); `:app:assembleDebug` green.
+  Debug APK ~43 MB (onnxruntime native libs, arm64-v8a + armeabi-v7a only).
+- **Robolectric** now runs Android glue on the JVM here (no emulator — this environment has no hardware
+  virtualization, `HyperVisorPresent=False`, so an Android emulator cannot boot). JUnit4 Robolectric tests
+  run via the vintage engine alongside Jupiter; `unitTests.isIncludeAndroidResources = true` for assets.
+  Covers: bundled `tier3/` tokenizer assets → reference-matching tokenizer end-to-end
+  (`Tier3TokenizerLoaderRoboTest`); `SettingsStore` prefs IO + clamp (`SettingsStoreRoboTest`); model
+  install/storage lifecycle (`Tier3ModelStorageRoboTest`). Native ONNX inference stays device-only.
 - **Licensing/meta:** project is **GPL-3.0-or-later** (`LICENSE` = verbatim GPLv3); every `.kt` file has an
   SPDX header (`SPDX-License-Identifier: GPL-3.0-or-later` + `Copyright (C) 2026 Froehlich Media`);
   `README.md` leads with the *provably-offline* story (no `INTERNET` permission — manifest-verifiable);
