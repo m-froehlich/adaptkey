@@ -28,8 +28,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `23672db` — GPL-3.0-or-later licensing + README + third-party notice + SPDX headers.
-- Unit tests: **392 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: commit `c24d22b` — tier-3 ONNX inference runtime wired (compile-verified; device-verification pending).
+- Unit tests: **396 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green. Debug APK ~43 MB
+  (onnxruntime native libs, arm64-v8a + armeabi-v7a only).
 - **Licensing/meta:** project is **GPL-3.0-or-later** (`LICENSE` = verbatim GPLv3); every `.kt` file has an
   SPDX header (`SPDX-License-Identifier: GPL-3.0-or-later` + `Copyright (C) 2026 Froehlich Media`);
   `README.md` leads with the *provably-offline* story (no `INTERNET` permission — manifest-verifiable);
@@ -422,19 +423,40 @@ whenever a component lands so it does not have to be restated in every prompt.
   `Tier3ModelFilesTest` retargeted to the single-file layout). `:app:assembleDebug` green; tier3 assets
   confirmed in `app-debug.apk`.
 
+### Tier-3 inference runtime — WIRED (compile-verified; device-verification pending)
+
+- **Dependency:** `onnxruntime-android` 1.22.0. `abiFilters` restricted to `arm64-v8a` + `armeabi-v7a`
+  (drops the emulator-only x86/x86_64 native libs; debug APK 87 MB → 43 MB). Tier-3 therefore needs an
+  **arm device**, not an x86_64 emulator, to test.
+- **`Fp16`** (pure, unit-tested): IEEE-754 half→float, for reading the fp16 logits (subnormal/inf/NaN
+  covered) — extracted so it is JVM-testable without the ONNX dependency.
+- **`OnnxCausalLmSession`** (Android, ONNX Runtime): greedy autoregressive decode loop against the
+  confirmed I/O (`input_ids`/`attention_mask`/`past_key_values.{0..31}.key/value` → `logits`/`present.*`).
+  Key trick: the fp16 KV cache is only **shuttled** (`present.*` fed straight back as `past_key_values.*`
+  via the retained `OrtSession.Result`), never read/converted; only the last-position logits are read
+  (fp16→float) for the argmax. Empty initial past = fp16 tensors of shape `[1,5,0,64]`.
+- **`Tier3TokenizerLoader`** (Android): reads the bundled `assets/tier3/` files → the pure
+  `Tier3TokenizerParser`.
+- **`OnnxTier3Provider`**: prompt → tokenize → `generate` → decode → `Tier3ResponseParser`; stop tokens =
+  `<|endoftext|>`/`<|im_end|>`. `createIfAvailable` returns null when no model is installed.
+- **Service wiring:** `loadTier3ProviderAsync` builds the provider off-thread (heavy session init) and
+  swaps in a `Tier3Orchestrator(provider)`. When a real backend is active, `refreshSuggestions` shows the
+  tier-1 suggestions immediately and runs tier-3 on a **single-thread executor** (`OrtSession.run` is not
+  concurrent-safe) with a volatile sequence guard (skip stale tokens; discard late results). Reconciled on
+  `onStartInputView` (picks up an import / drops on removal), executor + provider closed on `onDestroy`.
+- **NB device-only:** the decode loop / session / tensor lifecycle / fp16 read are **compile-checked only**
+  (no emulator/ONNX runtime here). Runtime correctness — and per-token latency/battery — must be validated
+  on a real arm device; iterate on device logs. Also to tune on device: whether greedy is enough, prompt
+  windowing, and whether the single big-model latency is acceptable per activation.
+
 ## Remaining (per spec §11)
 
-- **Tier-3 real backend — remaining (device/instrumented territory only):** the *inference runtime*, behind
-  the existing `Tier3Provider` interface: (1) an Android `Tier3TokenizerLoader` reading the bundled assets →
-  the (done, pure) `Tier3TokenizerParser`; (2) `OnnxCausalLmSession` — the fp16 KV-cache autoregressive
-  decode loop against the confirmed I/O names, on `onnxruntime-android` 1.22.0 (adds native libs → notable
-  APK growth); (3) `OnnxTier3Provider` assembling prompt → tokenize → generate → decode → `Tier3ResponseParser`,
-  `isAvailable` = `Tier3ModelStorage.isModelInstalled`; (4) service wiring to build it when the model is
-  present, else Noop; (5) instrumented tests for the runtime. NB the decode loop + session are only
-  compile-verifiable here — no emulator/device and no ONNX runtime in the local Python — so runtime
-  correctness needs a device. Everything else (pure orchestration, C-06 setting, §6 rule-6 hook,
-  adaptive-learning feedback, prompt/parse/model-file logic, the **parity-verified tokenizer** and the
-  **model-import UX**) is done. Model already downloaded to `D:\workspace-ai\models\SmolLM2-360M-Instruct\`.
+- **Tier-3 — device work only:** validate + tune the inference runtime above on a real arm device (import
+  the model via Settings → Info/Großschreibung → "Mini-LLM-Modell"), add instrumented tests, and confirm
+  latency/battery. Everything code-side (orchestration, C-06 setting, §6 rule-6 hook, adaptive-learning,
+  tokenizer + parity, model-import UX, ONNX session/provider/wiring) is built. Model already at
+  `D:\workspace-ai\models\SmolLM2-360M-Instruct\`. Possible optimisation: ABI splits / app bundle so each
+  device only pulls its own native lib (~18 MB arm64), and quantise/prune further if latency is high.
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
 - Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05
   blacklist editor that is language-aware (currently operates on the active store); verify/tune the
