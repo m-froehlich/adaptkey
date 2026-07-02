@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `1294e3a` — Tier-3 ONNX-route groundwork + parity-verified BPE tokenizer.
-- Unit tests: **376 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- HEAD: commit `72803b5` — Tier-3 ONNX-route groundwork + parity-verified BPE tokenizer + pure loader.
+- Unit tests: **387 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
@@ -385,8 +385,12 @@ whenever a component lands so it does not have to be restated in every prompt.
   - `Tier3ResponseParser` — raw continuation → ranked candidate words (completes the current token, or
     yields next-word predictions); confidence is rank-derived (a scored decode can supply real probs).
   - `Tier3Decoding` — validated per-activation limits (maxNewTokens / numCandidates), tiny by default.
-  - `Tier3ModelFiles` — canonical model-dir layout (`model.onnx` / `tokenizer.json` / `config.json`) +
+  - `Tier3ModelFiles` — canonical model-dir layout (`model.onnx` / `vocab.json` / `merges.txt`) +
     presence check over `File`; drives `isAvailable`. The model is provided into app storage, not the APK.
+  - `VocabJson` — minimal pure parser for a flat `vocab.json` (token→id, JSON string-escape + raw UTF-8).
+  - `Tier3TokenizerParser` — assembles a `BpeTokenizer` from `vocab.json` + `merges.txt` text (resolves the
+    SmolLM2 special-token ids from the vocab; skips the `#version` header; CRLF-tolerant). Pure/testable;
+    the Android layer only reads the files and calls it.
 - **Pure byte-level BPE tokenizer (`prediction/onnx/`, user chose hand-rolled Kotlin over a native lib):**
   - `ByteLevel` — the reversible GPT-2 byte↔char mapping.
   - `BpeTokenizer` — full SmolLM2/GPT-2 pipeline: `individual_digits` split, the GPT-2 pre-tokenisation
@@ -399,14 +403,15 @@ whenever a component lands so it does not have to be restated in every prompt.
     newlines, leading spaces all match **byte-for-byte**, and decode round-trips. The vocab/merges/golden
     data live under `src/test/resources/tokenizer/` (test-only, ~1.2 MB, not in the APK); generator is
     `scratchpad/gen_tokenizer_golden.py` (dev-only).
-- 376 unit tests (was 345; +19 pure core: `Tier3PromptTest`/`Tier3ResponseParserTest`/`Tier3DecodingTest`/
-  `Tier3ModelFilesTest`; +12 tokenizer: `ByteLevelTest`/`BpeTokenizerTest`/`BpeTokenizerParityTest`).
-  `:app:assembleDebug` green.
+- 387 unit tests (was 345; +19 pure core: `Tier3PromptTest`/`Tier3ResponseParserTest`/`Tier3DecodingTest`/
+  `Tier3ModelFilesTest`; +12 tokenizer: `ByteLevelTest`/`BpeTokenizerTest`/`BpeTokenizerParityTest`; +11
+  loader: `VocabJsonTest`/`Tier3TokenizerParserTest`). `:app:assembleDebug` green.
 
 ## Remaining (per spec §11)
 
 - **Tier-3 real backend — remaining (device/instrumented territory):** still to build behind the existing
-  `Tier3Provider` interface: (1) an Android `tokenizer.json` loader → `BpeTokenizer`; (2) `OnnxCausalLmSession`
+  `Tier3Provider` interface: (1) a thin Android file-read wrapper calling the (done, pure)
+  `Tier3TokenizerParser`; (2) `OnnxCausalLmSession`
   — the fp16 KV-cache autoregressive decode loop against the confirmed I/O names, on `onnxruntime-android`
   1.22.0 (adds native libs → notable APK growth); (3) `OnnxTier3Provider` assembling prompt → tokenize →
   generate → decode → `Tier3ResponseParser`; (4) service wiring to select it when `Tier3ModelFiles.isComplete`,
