@@ -28,8 +28,14 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `af57bef` — Tier-3 ONNX groundwork + parity-verified tokenizer + browser/SAF model-import UX.
+- HEAD: commit `23672db` — GPL-3.0-or-later licensing + README + third-party notice + SPDX headers.
 - Unit tests: **392 green** (`:app:testDebugUnitTest`); `:app:assembleDebug` green.
+- **Licensing/meta:** project is **GPL-3.0-or-later** (`LICENSE` = verbatim GPLv3); every `.kt` file has an
+  SPDX header (`SPDX-License-Identifier: GPL-3.0-or-later` + `Copyright (C) 2026 Froehlich Media`);
+  `README.md` leads with the *provably-offline* story (no `INTERNET` permission — manifest-verifiable);
+  `THIRD-PARTY-LICENSES.md` lists code libs; `CREDITS.md` covers bundled data. A settings "Info &
+  Datenschutz" category (shown first — the launcher/IME settings Activity is the one screen a keyboard has)
+  states the no-internet/no-tracking guarantee + the licence.
 - Architecture rule in force: pure, Android-free logic (recognition / thresholds /
   policy) lives in its own fully unit-tested classes; the Android layers
   (Activity / View / Service / SQLite DAO / SettingsStore IO) stay thin and are
