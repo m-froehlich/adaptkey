@@ -28,8 +28,18 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `f7cf5fc` — device-found fixes: typing-lag (autocorrect scan) + edge-to-edge keyboard insets.
-- Unit tests: **402 green** (`:app:testDebugUnitTest`, incl. 6 Robolectric); `:app:assembleDebug` green.
+- HEAD: commit `bd59e74` — device-feedback round: perf/insets fixes, umlaut long-press, backspace-shift, onboarding.
+- Unit tests: **408 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green.
+- **Device-feedback fixes (Pixel 9a):** typing-lag (autocorrect no longer scans all 120k words —
+  `DictionaryStore.correctionCandidates`, SQLite indexed; a Robolectric test caught a text-vs-int BETWEEN
+  bug); edge-to-edge insets (keyboard padded above the gesture pill / IME-switch); **umlaut long-press**
+  a/o/u→ä/ö/ü (+ß in the C-08 palette); **backspace shift-restore** (Addendum G-05, deleting an uppercase
+  char re-arms Shift); **first-run onboarding** panel above the keyboard (`onboarding/` — pure `Onboarding`
+  steps + `OnboardingStore` + `OnboardingView`; WELCOME→MODEL_IMPORT→CALIBRATION; shown on first keyboard
+  use, re-showable via an Info-category preference — fixes that the calibration offer never appeared). All
+  need on-device confirmation.
+- **Next (device-only-verifiable UI):** Gboard-style long-press popup for keys with *multiple* alternatives
+  (finger-tracking selection; single-alternative keys keep the immediate-apply behaviour).
 - **On-device fixes (Pixel 9a testing):** (1) typing lag was `autocorrectFor` scanning all ~120k words per
   keystroke on the main thread → new `DictionaryStore.correctionCandidates` (SQLite: indexed first-char
   range + length±1; default = whole lexicon), provider filters edit-distance before any DB query; a
