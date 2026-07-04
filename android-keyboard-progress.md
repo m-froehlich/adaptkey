@@ -28,8 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `bd59e74` — device-feedback round: perf/insets fixes, umlaut long-press, backspace-shift, onboarding.
-- Unit tests: **408 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green.
+- HEAD: commit `edf38c8` — v0.7.3; device round 2: autocorrect-split fix, caret-jump fix, embedded suggestion bar.
+- Unit tests: **409 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green. **App is now versioned: 0.7.3** (only the third digit bumps per APK; versionCode 73).
+- **Device round 2 fixes (Pixel 9a):** autocorrect "word-hacking" (A-05 missed-space split now requires a real
+  co-occurrence bigram, `TokenRepair.MIN_SPLIT_BIGRAM` — killed "Luste"→"Lu ste"); **mid-sentence caret jump**
+  (added `onUpdateSelection` → finish composing + reset token state on user caret moves); **suggestion bar was
+  completely missing** (dropped the legacy `onCreateCandidatesView`/`setCandidatesViewShown`; the strip is now
+  EMBEDDED as a 44dp row above the keyboard in the input-view root, toggled visible when there are items); ß
+  long-press on s; D-08 (deleting whitespace after a capital shifts to lowercase). Spec §12 (D-01…D-10) captures
+  the remaining feature requests.
+- **Next backlog (spec §12, mostly device-only UI):** D-01/D-02 multi-alternative long-press popup + full-stop
+  punctuation list (the "Gboard popup"); D-03 space bar shows language; D-04 space tap flash; D-05/D-06 optional
+  key sound + haptics (settings toggles, default off); D-07 accelerating backspace-on-hold; D-09 raw-tap
+  recording (diagnostic); D-10 backspace at start of entry. Also still open: suggestion-bar-missing root cause
+  was assumed (candidates-view API) — confirm the embed fixes it on device; the LLM decode loop still unverified.
 - **Device-feedback fixes (Pixel 9a):** typing-lag (autocorrect no longer scans all 120k words —
   `DictionaryStore.correctionCandidates`, SQLite indexed; a Robolectric test caught a text-vs-int BETWEEN
   bug); edge-to-edge insets (keyboard padded above the gesture pill / IME-switch); **umlaut long-press**
