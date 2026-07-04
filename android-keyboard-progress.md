@@ -28,8 +28,8 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `edf38c8` — v0.7.3; device round 2: autocorrect-split fix, caret-jump fix, embedded suggestion bar.
-- Unit tests: **409 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green. **App is now versioned: 0.7.3** (only the third digit bumps per APK; versionCode 73).
+- HEAD: commit `11393cd` — v0.7.4; A-05 split sharpened (drop only over-space letters c/v/b/n/m or T-05 flag).
+- Unit tests: **411 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green. **Versioned 0.7.4** (only the third digit bumps per APK; versionCode 74).
 - **Device round 2 fixes (Pixel 9a):** autocorrect "word-hacking" (A-05 missed-space split now requires a real
   co-occurrence bigram, `TokenRepair.MIN_SPLIT_BIGRAM` — killed "Luste"→"Lu ste"); **mid-sentence caret jump**
   (added `onUpdateSelection` → finish composing + reset token state on user caret moves); **suggestion bar was
