@@ -28,8 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `8a5e147` — tier-3 ONNX runtime wired + Robolectric JVM glue tests (device-verification pending).
-- Unit tests: **400 green** (`:app:testDebugUnitTest`, incl. 4 Robolectric); `:app:assembleDebug` green.
+- HEAD: commit `f7cf5fc` — device-found fixes: typing-lag (autocorrect scan) + edge-to-edge keyboard insets.
+- Unit tests: **402 green** (`:app:testDebugUnitTest`, incl. 6 Robolectric); `:app:assembleDebug` green.
+- **On-device fixes (Pixel 9a testing):** (1) typing lag was `autocorrectFor` scanning all ~120k words per
+  keystroke on the main thread → new `DictionaryStore.correctionCandidates` (SQLite: indexed first-char
+  range + length±1; default = whole lexicon), provider filters edit-distance before any DB query; a
+  Robolectric SQLite test caught a text-vs-integer `BETWEEN` bug (would've made autocorrect return nothing)
+  — fixed by inlining integer bounds. (2) edge-to-edge (targetSdk 35): the gesture pill / IME-switch button
+  overlapped the bottom row → `onCreateInputView` pads up by the navigation-bar/gesture inset. Both need
+  on-device confirmation.
   Debug APK ~43 MB (onnxruntime native libs, arm64-v8a + armeabi-v7a only).
 - **Robolectric** now runs Android glue on the JVM here (no emulator — this environment has no hardware
   virtualization, `HyperVisorPresent=False`, so an Android emulator cannot boot). JUnit4 Robolectric tests
