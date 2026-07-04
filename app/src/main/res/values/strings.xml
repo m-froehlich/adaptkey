@@ -80,6 +80,23 @@
     <string name="c06_model_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>
     <string name="c06_model_privacy">Diese App besitzt keine Internet- und keine Speicher-Berechtigung. Der Download läuft über deinen Browser; die App liest nur die eine ausgewählte Datei.</string>
 
+    <!-- First-run onboarding (shown above the keyboard). -->
+    <string name="onboarding_step_indicator">Schritt %1$d / %2$d</string>
+    <string name="onboarding_next">Weiter</string>
+    <string name="onboarding_finish">Fertig</string>
+    <string name="onboarding_skip">Überspringen</string>
+    <string name="onboarding_welcome_title">Willkommen bei AdaptKey</string>
+    <string name="onboarding_welcome_body">AdaptKey lernt, wie DU tippst – und bleibt dabei komplett offline.\n\n• Kein Internet: Diese Tastatur hat keine Internet-Berechtigung. Nichts wird „nach Hause telefoniert\".\n• Passt sich deinen Fingern an: erkennt dein Tippmuster und korrigiert Treffer nach deinem persönlichen Muster.\n• Lernt mit: Vorschläge und Autokorrektur werden mit der Zeit besser.\n• Deutsch, Englisch und Griechisch mit eigenen Wörterbüchern.\n• Freie Software (GPLv3).</string>
+    <string name="onboarding_model_title">Optionale Mini-KI</string>
+    <string name="onboarding_model_body">Optional kann eine kleine KI (Mini-LLM) die Vorschläge verbessern, wenn das normale Modell unsicher ist – ausschließlich auf dem Gerät. Das Modell (~273 MB) ist nicht enthalten: du lädst es einmalig über den Browser herunter und importierst es. Danach bleibt alles offline. Du kannst das jetzt überspringen und jederzeit später nachholen.</string>
+    <string name="onboarding_model_action">Modell einrichten</string>
+    <string name="onboarding_calibration_title">Kurz einlernen</string>
+    <string name="onboarding_calibration_body">Zum Schluss kannst du die Tastatur kurz einlernen: Du tippst ein paar vorgegebene Sätze, damit AdaptKey deine persönliche Trefferlage kennenlernt. Optional und jederzeit später möglich.</string>
+    <string name="onboarding_calibration_action">Kalibrierung starten</string>
+    <string name="onboarding_replay_title">Einführung erneut anzeigen</string>
+    <string name="onboarding_replay_summary">Zeigt die Erstnutzer-Einführung beim nächsten Öffnen der Tastatur wieder an.</string>
+    <string name="onboarding_replay_done">Einführung wird beim nächsten Öffnen der Tastatur angezeigt.</string>
+
     <!-- Typing pattern detection (T-04). -->
     <string name="cat_typing_pattern">Tippmuster (T-04)</string>
     <string name="t04_detected_title">Erkanntes Tippmuster</string>

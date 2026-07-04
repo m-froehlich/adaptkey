@@ -16,6 +16,11 @@
             android:summary="@string/info_license_summary"
             android:selectable="false" />
 
+        <Preference
+            android:key="onboarding_replay"
+            android:title="@string/onboarding_replay_title"
+            android:summary="@string/onboarding_replay_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_layout">

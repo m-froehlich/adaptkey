@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
@@ -16,6 +17,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -57,10 +59,14 @@ import de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation
 import de.froehlichmedia.adaptkey.prediction.Tier3Orchestrator
 import de.froehlichmedia.adaptkey.prediction.Tier3Outcome
 import de.froehlichmedia.adaptkey.prediction.Tier3Result
+import de.froehlichmedia.adaptkey.onboarding.OnboardingStore
+import de.froehlichmedia.adaptkey.onboarding.OnboardingView
 import de.froehlichmedia.adaptkey.prediction.onnx.OnnxTier3Provider
 import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
+import de.froehlichmedia.adaptkey.settings.CalibrationActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
+import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
@@ -105,6 +111,7 @@ class AdaptKeyService : InputMethodService() {
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
     private var emojiPanel: EmojiPanelView? = null
+    private var onboardingView: OnboardingView? = null
     private var offsetModel: OffsetModel? = null
     
     private var settings = AdaptSettings.DEFAULT
@@ -291,18 +298,47 @@ class AdaptKeyService : InputMethodService() {
         
         container.addView(view)
         container.addView(panel)
+        
+        // First-run onboarding panel, stacked above the keyboard (§2). The whole input view is made tall so
+        // the panel fills the area above the keys; it is hidden once the flow is finished or skipped.
+        val root = LinearLayout(this)
+        root.orientation = LinearLayout.VERTICAL
+        val onboarding = OnboardingView(this)
+        onboarding.onFinished = { hideOnboarding() }
+        onboarding.onOpenModelImport = { launchFromKeyboard(Tier3ModelActivity::class.java) }
+        onboarding.onOpenCalibration = { launchFromKeyboard(CalibrationActivity::class.java) }
+        onboardingView = onboarding
+        val onboardingHeight = (resources.displayMetrics.heightPixels * ONBOARDING_HEIGHT_FRACTION).toInt()
+        root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, onboardingHeight))
+        root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        onboarding.visibility = if (OnboardingStore.isCompleted(this)) View.GONE else View.VISIBLE
+        
         // Android 15 (targetSdk 35) draws edge-to-edge, so the input view would otherwise extend under the
         // gesture navigation pill / IME-switch button, which then overlap the bottom row (space / full stop)
-        // and steal taps. Pad the whole keyboard up by the bottom system-bar + gesture inset so it sits
-        // above them.
-        ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
+        // and steal taps. Pad the whole input view up by the bottom system-bar + gesture inset.
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(0, 0, 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
         applySettings()
-        return container
+        return root
+    }
+    
+    /**
+     * Hides the onboarding panel and records the flow as completed, so it does not reappear.
+     */
+    private fun hideOnboarding() {
+        OnboardingStore.setCompleted(this, true)
+        onboardingView?.visibility = View.GONE
+    }
+    
+    /**
+     * Launches one of the app's activities from the keyboard (a service context needs a new task).
+     */
+    private fun launchFromKeyboard(activity: Class<*>) {
+        startActivity(Intent(this, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
     
     /**
@@ -378,7 +414,21 @@ class AdaptKeyService : InputMethodService() {
             reloadOffsetModel()
         }
         reconcileTier3Provider()
+        reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
+    }
+    
+    /**
+     * Shows or hides the first-run onboarding panel to match the persisted completion flag, restarting the
+     * flow from the top when it reappears (e.g. after the user re-triggered it from the settings screen).
+     */
+    private fun reconcileOnboarding() {
+        val panel = onboardingView ?: return
+        val show = !OnboardingStore.isCompleted(this)
+        if (show && panel.visibility != View.VISIBLE) {
+            panel.restart()
+        }
+        panel.visibility = if (show) View.VISIBLE else View.GONE
     }
     
     /**
@@ -1235,5 +1285,8 @@ class AdaptKeyService : InputMethodService() {
         
         // A-03: how many trailing words of context feed the language detector (spec: last 3-5 words).
         private const val LANGUAGE_WINDOW = 5
+        
+        // Fraction of the screen height the first-run onboarding panel occupies above the keyboard.
+        private const val ONBOARDING_HEIGHT_FRACTION = 0.55
     }
 }

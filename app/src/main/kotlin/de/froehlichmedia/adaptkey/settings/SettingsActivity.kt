@@ -12,6 +12,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.onboarding.OnboardingStore
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.TypingPattern
 
@@ -45,6 +46,12 @@ class SettingsActivity : AppCompatActivity() {
             findPreference<Preference>("c08_reset_hints")?.setOnPreferenceClickListener {
                 SettingsStore.resetLetterHints(requireContext())
                 Toast.makeText(requireContext(), R.string.c08_reset_done, Toast.LENGTH_SHORT).show()
+                true
+            }
+            
+            findPreference<Preference>("onboarding_replay")?.setOnPreferenceClickListener {
+                OnboardingStore.setCompleted(requireContext(), false)
+                Toast.makeText(requireContext(), R.string.onboarding_replay_done, Toast.LENGTH_SHORT).show()
                 true
             }
         }
