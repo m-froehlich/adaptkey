@@ -34,7 +34,7 @@ object KeyboardLayout {
      */
     val DEFAULT_LETTER_HINTS = mapOf(
         'q' to "@", 'e' to "€", 'h' to "#", 'm' to "-", 'n' to "+", 'd' to "°",
-        'a' to "ä", 'o' to "ö", 'u' to "ü"
+        'a' to "ä", 'o' to "ö", 'u' to "ü", 's' to "ß"
     )
     
     /**

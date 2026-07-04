@@ -311,7 +311,20 @@ class AdaptKeyService : InputMethodService() {
         onboarding.onOpenModelImport = { launchFromKeyboard(Tier3ModelActivity::class.java) }
         onboarding.onOpenCalibration = { launchFromKeyboard(CalibrationActivity::class.java) }
         onboardingView = onboarding
+        
+        // Suggestion bar (S-01…S-06) embedded as a row directly above the keyboard, rather than the
+        // legacy onCreateCandidatesView / setCandidatesViewShown mechanism, which is unreliable on modern
+        // Android (edge-to-edge, gesture nav) and left the bar missing entirely on device. Hidden (GONE)
+        // when there are no suggestions so the keyboard sits at the bottom.
+        val bar = SuggestionBarView(this)
+        bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
+        bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
+        bar.visibility = View.GONE
+        suggestionBar = bar
+        
+        val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
+        root.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
         root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         setOnboardingShown(!OnboardingStore.isCompleted(this))
         
@@ -382,14 +395,6 @@ class AdaptKeyService : InputMethodService() {
         }
     }
     
-    override fun onCreateCandidatesView(): View {
-        val bar = SuggestionBarView(this)
-        bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
-        bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
-        suggestionBar = bar
-        return bar
-    }
-    
     /**
      * Handles a G-04 drag-to-trash: permanently blacklists [word] (A-04, category
      * [BlacklistCategory.USER]) and refreshes the bar so the now-excluded word disappears immediately.
@@ -415,6 +420,41 @@ class AdaptKeyService : InputMethodService() {
         keyboardView?.shifted = false
         setSurface(InputSurface.LETTERS)
         clearSuggestions()
+    }
+    
+    /**
+     * Keeps the in-progress composing token in sync when the caret moves for a reason other than our own
+     * typing — e.g. the user taps into the middle of the text to correct something. Without this the
+     * composing region is left stale and further edits jump the caret to the old position (mid-sentence
+     * editing was impossible). When the caret is no longer at the end of our composing region, we finish
+     * composing (leaving the text in place) and reset the token state so the next keystroke starts fresh
+     * at the new caret.
+     */
+    override fun onUpdateSelection(
+        oldSelStart: Int,
+        oldSelEnd: Int,
+        newSelStart: Int,
+        newSelEnd: Int,
+        candidatesStart: Int,
+        candidatesEnd: Int
+    ) {
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        if (composing.isEmpty()) {
+            return
+        }
+        // Our own edits leave the caret collapsed at the end of the composing region; anything else is a
+        // user-initiated caret move or selection.
+        val ownEdit = newSelStart == newSelEnd && candidatesEnd >= 0 && newSelStart == candidatesEnd
+        if (!ownEdit) {
+            currentInputConnection?.finishComposingText()
+            composing.setLength(0)
+            composingFlags.clear()
+            pendingMergeChar = null
+            resetWordEndShift()
+            clearUndo()
+            previousWord = null
+            clearSuggestions()
+        }
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -1020,7 +1060,7 @@ class AdaptKeyService : InputMethodService() {
     private fun showSuggestions() {
         val items = controller.displayed()
         suggestionBar?.setItems(items)
-        setCandidatesViewShown(items.isNotEmpty())
+        suggestionBar?.visibility = if (items.isNotEmpty()) View.VISIBLE else View.GONE
     }
     
     private fun clearSuggestions() {
@@ -1029,7 +1069,7 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         suggestionBar?.setItems(emptyList())
-        setCandidatesViewShown(false)
+        suggestionBar?.visibility = View.GONE
     }
     
     private fun learnWord(word: String?) {
@@ -1301,5 +1341,8 @@ class AdaptKeyService : InputMethodService() {
         
         // A-03: how many trailing words of context feed the language detector (spec: last 3-5 words).
         private const val LANGUAGE_WINDOW = 5
+        
+        // Height of the embedded suggestion strip.
+        private const val SUGGESTION_BAR_HEIGHT_DP = 44
     }
 }

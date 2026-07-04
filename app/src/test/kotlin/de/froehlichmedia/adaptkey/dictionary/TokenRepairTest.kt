@@ -23,6 +23,8 @@ class TokenRepairTest {
         listOf("und", "das", "aber", "bald", "ist", "ich").forEach { word ->
             store.putWord(WordEntry(word, frequency = 10L))
         }
+        // A fully-missed-space split now requires the two halves to co-occur (a real bigram).
+        store.putBigram("aber", "das", TokenRepair.MIN_SPLIT_BIGRAM)
         repair = TokenRepair(store)
     }
     
@@ -42,6 +44,12 @@ class TokenRepairTest {
     @Test
     fun `a token with no valid split is left alone`() {
         assertNull(repair.trySplit("abcdef", setOf(3)))
+    }
+    
+    @Test
+    fun `a missed-space split is rejected when the halves do not co-occur`() {
+        // "und" and "bald" are both known words, but without a bigram this is a typo, not a missed space.
+        assertNull(repair.trySplit("undbald", emptySet()))
     }
     
     @Test

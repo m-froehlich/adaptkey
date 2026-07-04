@@ -55,8 +55,13 @@ class TokenRepair(private val store: DictionaryStore) {
             return flagged.maxBy { it.second }.first
         }
         
+        // A fully missed space is only inserted when the two halves actually co-occur (a real bigram):
+        // with a large, noisy dictionary almost any typo can be cut into two "known" fragments, so a mere
+        // pair of dictionary words is not enough evidence — "aber das" (frequent bigram) splits, a typo
+        // like "luste" -> "lu ste" (never co-occurs) does not.
         val missed = (MIN_PART..t.length - MIN_PART)
             .mapNotNull { k -> candidateAt(t.substring(0, k), t.substring(k), previousWord) }
+            .filter { store.bigramFrequency(it.first.left, it.first.right) >= MIN_SPLIT_BIGRAM }
         return missed.maxByOrNull { it.second }?.first
     }
     
@@ -116,6 +121,9 @@ class TokenRepair(private val store: DictionaryStore) {
         
         /** Minimum bigram count accepted as a "high-probability" continuation (A-06). */
         const val MIN_BIGRAM = 3L
+        
+        /** Minimum bigram count required to accept a fully-missed-space split (A-05), so typos are not cut apart. */
+        const val MIN_SPLIT_BIGRAM = 3L
         
         private const val BIGRAM_WEIGHT = 10.0
     }
