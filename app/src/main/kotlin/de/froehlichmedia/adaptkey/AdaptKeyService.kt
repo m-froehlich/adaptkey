@@ -112,6 +112,7 @@ class AdaptKeyService : InputMethodService() {
     private var suggestionBar: SuggestionBarView? = null
     private var emojiPanel: EmojiPanelView? = null
     private var onboardingView: OnboardingView? = null
+    private var inputRoot: LinearLayout? = null
     private var offsetModel: OffsetModel? = null
     
     private var settings = AdaptSettings.DEFAULT
@@ -299,19 +300,20 @@ class AdaptKeyService : InputMethodService() {
         container.addView(view)
         container.addView(panel)
         
-        // First-run onboarding panel, stacked above the keyboard (§2). The whole input view is made tall so
-        // the panel fills the area above the keys; it is hidden once the flow is finished or skipped.
+        // First-run onboarding panel, stacked above the keyboard (§2). When shown, the whole input view is
+        // forced to the screen height (root minimumHeight) and the panel takes all the space above the keys
+        // (weight 1) — i.e. 100% minus the keyboard height; when hidden, the root collapses to the keyboard.
         val root = LinearLayout(this)
         root.orientation = LinearLayout.VERTICAL
+        inputRoot = root
         val onboarding = OnboardingView(this)
         onboarding.onFinished = { hideOnboarding() }
         onboarding.onOpenModelImport = { launchFromKeyboard(Tier3ModelActivity::class.java) }
         onboarding.onOpenCalibration = { launchFromKeyboard(CalibrationActivity::class.java) }
         onboardingView = onboarding
-        val onboardingHeight = (resources.displayMetrics.heightPixels * ONBOARDING_HEIGHT_FRACTION).toInt()
-        root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, onboardingHeight))
+        root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
-        onboarding.visibility = if (OnboardingStore.isCompleted(this)) View.GONE else View.VISIBLE
+        setOnboardingShown(!OnboardingStore.isCompleted(this))
         
         // Android 15 (targetSdk 35) draws edge-to-edge, so the input view would otherwise extend under the
         // gesture navigation pill / IME-switch button, which then overlap the bottom row (space / full stop)
@@ -327,11 +329,25 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Hides the onboarding panel and records the flow as completed, so it does not reappear.
+     * Hides the onboarding panel and records the flow as completed, so it does not reappear on its own
+     * (it stays reachable via the settings screen).
      */
     private fun hideOnboarding() {
         OnboardingStore.setCompleted(this, true)
-        onboardingView?.visibility = View.GONE
+        setOnboardingShown(false)
+    }
+    
+    /**
+     * Shows or hides the onboarding panel and resizes the input view accordingly: forced to the screen
+     * height while shown (so the panel fills everything above the keyboard), collapsed to the keyboard
+     * height while hidden.
+     */
+    private fun setOnboardingShown(show: Boolean) {
+        onboardingView?.visibility = if (show) View.VISIBLE else View.GONE
+        inputRoot?.let { root ->
+            root.minimumHeight = if (show) resources.displayMetrics.heightPixels else 0
+            root.requestLayout()
+        }
     }
     
     /**
@@ -428,7 +444,7 @@ class AdaptKeyService : InputMethodService() {
         if (show && panel.visibility != View.VISIBLE) {
             panel.restart()
         }
-        panel.visibility = if (show) View.VISIBLE else View.GONE
+        setOnboardingShown(show)
     }
     
     /**
@@ -1285,8 +1301,5 @@ class AdaptKeyService : InputMethodService() {
         
         // A-03: how many trailing words of context feed the language detector (spec: last 3-5 words).
         private const val LANGUAGE_WINDOW = 5
-        
-        // Fraction of the screen height the first-run onboarding panel occupies above the keyboard.
-        private const val ONBOARDING_HEIGHT_FRACTION = 0.55
     }
 }

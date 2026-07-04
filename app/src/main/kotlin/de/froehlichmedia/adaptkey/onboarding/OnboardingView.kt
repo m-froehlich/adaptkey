@@ -37,6 +37,7 @@ class OnboardingView(context: Context) : LinearLayout(context) {
     private val actionButton = Button(context)
     private val skipButton = Button(context)
     private val nextButton = Button(context)
+    private val footerView = TextView(context)
     
     init {
         orientation = VERTICAL
@@ -68,6 +69,11 @@ class OnboardingView(context: Context) : LinearLayout(context) {
         nav.addView(skipButton)
         nav.addView(nextButton)
         addView(nav, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        
+        footerView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+        footerView.setText(R.string.onboarding_footer_hint)
+        footerView.setPadding(0, dp(10), 0, 0)
+        addView(footerView)
         
         render()
     }

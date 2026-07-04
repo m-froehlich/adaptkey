@@ -93,6 +93,7 @@
     <string name="onboarding_calibration_title">Kurz einlernen</string>
     <string name="onboarding_calibration_body">Zum Schluss kannst du die Tastatur kurz einlernen: Du tippst ein paar vorgegebene Sätze, damit AdaptKey deine persönliche Trefferlage kennenlernt. Optional und jederzeit später möglich.</string>
     <string name="onboarding_calibration_action">Kalibrierung starten</string>
+    <string name="onboarding_footer_hint">Diese Einführung erreichst du später jederzeit über Einstellungen → Info &amp; Datenschutz → „Einführung erneut anzeigen\".</string>
     <string name="onboarding_replay_title">Einführung erneut anzeigen</string>
     <string name="onboarding_replay_summary">Zeigt die Erstnutzer-Einführung beim nächsten Öffnen der Tastatur wieder an.</string>
     <string name="onboarding_replay_done">Einführung wird beim nächsten Öffnen der Tastatur angezeigt.</string>
