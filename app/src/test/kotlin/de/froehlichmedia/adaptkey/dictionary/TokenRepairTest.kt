@@ -53,6 +53,18 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `an over-space letter is dropped as a likely space mis-tap even without a flag`() {
+        // 'c' sits over the space bar on QWERTZ, so "undcdas" is treated as "und" + "das".
+        assertEquals(SplitResult("und", "das"), repair.trySplit("undcdas", emptySet()))
+    }
+    
+    @Test
+    fun `a non-over-space interior letter is not dropped without a flag`() {
+        // 'x' is not over the space bar and is not flagged, so "undxdas" is left alone.
+        assertNull(repair.trySplit("undxdas", emptySet()))
+    }
+    
+    @Test
     fun `a known word is never split`() {
         assertNull(repair.trySplit("aber", setOf(2)))
     }
