@@ -17,6 +17,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import java.util.concurrent.Executors
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
@@ -289,6 +291,16 @@ class AdaptKeyService : InputMethodService() {
         
         container.addView(view)
         container.addView(panel)
+        // Android 15 (targetSdk 35) draws edge-to-edge, so the input view would otherwise extend under the
+        // gesture navigation pill / IME-switch button, which then overlap the bottom row (space / full stop)
+        // and steal taps. Pad the whole keyboard up by the bottom system-bar + gesture inset so it sits
+        // above them.
+        ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            v.setPadding(0, 0, 0, maxOf(bars.bottom, gestures.bottom))
+            insets
+        }
         applySettings()
         return container
     }

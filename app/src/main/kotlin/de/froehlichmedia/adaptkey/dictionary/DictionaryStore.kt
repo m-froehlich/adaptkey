@@ -77,6 +77,18 @@ interface DictionaryStore {
     fun allKnownWords(): List<String>
     
     /**
+     * A bounded candidate set for the single-edit autocorrect of [token], so callers never scan the
+     * whole lexicon on every keystroke. An edit-distance-1 match shares [token]'s first character and
+     * differs in length by at most one, so a store may return just those; the caller still applies the
+     * exact edit-distance test. The default implementation returns the whole lexicon (fine for the small
+     * in-memory store used in tests); the SQLite store overrides it with an indexed query.
+     *
+     * @param token the (case-insensitive) typed token being corrected
+     * @return a superset of the edit-distance-1 words, in canonical case
+     */
+    fun correctionCandidates(token: String): List<String> = allKnownWords()
+    
+    /**
      * Adds [word] to the blacklist under [category] (A-04).
      *
      * @param word the word to exclude

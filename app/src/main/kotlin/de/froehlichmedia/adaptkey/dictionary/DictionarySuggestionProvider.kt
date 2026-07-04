@@ -43,8 +43,10 @@ class DictionarySuggestionProvider(
         if (isKnownWord(token)) {
             return null
         }
-        return store.allKnownWords()
-            .filter { it.lowercase() != token && !store.isBlacklisted(it) && EditDistance.atMostOne(token, it.lowercase()) }
+        // Only a bounded candidate set is scanned (not the whole lexicon). The cheap pure edit-distance
+        // test runs before the per-candidate blacklist query, so the DB is touched only for real matches.
+        return store.correctionCandidates(token)
+            .filter { it.lowercase() != token && EditDistance.atMostOne(token, it.lowercase()) && !store.isBlacklisted(it) }
             .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
     }
     

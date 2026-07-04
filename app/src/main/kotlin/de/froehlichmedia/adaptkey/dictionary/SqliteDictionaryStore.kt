@@ -129,6 +129,37 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return result
     }
     
+    /**
+     * Bounded candidate set for the single-edit autocorrect: words whose lower-cased key starts with the
+     * token's first character (an edit-distance-1 match keeps the first character, save the rare first-char
+     * typo) and whose length is within one of the token's. The `wkey` primary-key index makes the
+     * first-character range scan fast, so this replaces the whole-lexicon scan that made per-keystroke
+     * autocorrect unusable with the real ~120k-word dictionaries.
+     */
+    override fun correctionCandidates(token: String): List<String> {
+        val key = token.lowercase()
+        if (key.isEmpty()) {
+            return emptyList()
+        }
+        val firstCodePoint = key.codePointAt(0)
+        val lower = String(Character.toChars(firstCodePoint))
+        val upper = String(Character.toChars(firstCodePoint + 1))
+        // The length bounds and LIMIT are inlined as integers: bound as text they would sort below any
+        // integer length() and the BETWEEN would never match. They are derived ints, so this is injection-safe.
+        val minLen = key.length - 1
+        val maxLen = key.length + 1
+        val result = ArrayList<String>()
+        db.rawQuery(
+            "SELECT word FROM $TABLE_WORDS WHERE wkey >= ? AND wkey < ? AND length(wkey) BETWEEN $minLen AND $maxLen LIMIT $CANDIDATE_LIMIT",
+            arrayOf(lower, upper)
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(cursor.getString(0))
+            }
+        }
+        return result
+    }
+    
     override fun blacklist(word: String, category: BlacklistCategory) {
         val values = ContentValues().apply {
             put("wkey", word.lowercase())
@@ -211,5 +242,8 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val TABLE_WORDS = "words"
         private const val TABLE_BIGRAMS = "bigrams"
         private const val TABLE_BLACKLIST = "blacklist"
+        
+        // Upper bound on autocorrect candidates scanned per keystroke (bounds worst-case latency).
+        private const val CANDIDATE_LIMIT = 2000
     }
 }
