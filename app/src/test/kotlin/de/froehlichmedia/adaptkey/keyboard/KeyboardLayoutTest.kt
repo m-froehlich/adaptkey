@@ -61,7 +61,7 @@ class KeyboardLayoutTest {
         
         assertEquals("@", KeyboardLayout.longPressSymbol(rows[1].byChar('q')))
         assertEquals("/", KeyboardLayout.longPressSymbol(rows.first().byChar('7')))
-        assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('a')))
+        assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('f')))
         assertNull(KeyboardLayout.longPressSymbol(rows[3].first()))
     }
     
@@ -72,7 +72,7 @@ class KeyboardLayoutTest {
         assertTrue(KeyboardLayout.hasLongPressAction(rows[1].byChar('q')))
         assertTrue(KeyboardLayout.hasLongPressAction(rows.first().byChar('7')))
         assertTrue(KeyboardLayout.hasLongPressAction(rows.last().first()))
-        assertFalse(KeyboardLayout.hasLongPressAction(rows[2].byChar('a')))
+        assertFalse(KeyboardLayout.hasLongPressAction(rows[2].byChar('f')))
         assertFalse(KeyboardLayout.hasLongPressAction(rows.last()[2]))
     }
     

@@ -676,6 +676,7 @@ class AdaptKeyService : InputMethodService() {
         // A backspace breaks the immediate context a pending merge (A-06) would have relied on.
         pendingMergeChar = null
         if (composing.isNotEmpty()) {
+            val deleted = composing.last()
             if (composingFlags.isNotEmpty()) {
                 composingFlags.removeAt(composingFlags.size - 1)
             }
@@ -688,8 +689,24 @@ class AdaptKeyService : InputMethodService() {
                 updateComposing(ic)
                 refreshSuggestions()
             }
+            armShiftIfDeletedUpper(deleted)
         } else {
+            val deleted = ic.getTextBeforeCursor(1, 0)?.firstOrNull()
             ic.deleteSurroundingText(1, 0)
+            if (deleted != null) {
+                armShiftIfDeletedUpper(deleted)
+            }
+        }
+    }
+    
+    /**
+     * Addendum to G-05: when the deleted character was uppercase, Shift is re-armed so the next keystroke
+     * reproduces an uppercase character — the case information is carried by the deleted character itself.
+     * A deleted lowercase character leaves the Shift state as it was (context-driven).
+     */
+    private fun armShiftIfDeletedUpper(deleted: Char) {
+        if (deleted.isUpperCase()) {
+            keyboardView?.shifted = true
         }
     }
     
