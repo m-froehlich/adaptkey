@@ -255,3 +255,51 @@ LLM results feed back into the N-gram model as learning signals. The better the 
 One session corresponds to approximately 1 hour of focused work. The LLM integration is designed as a separate follow-on project and can be added later without changes to the core architecture.
 
 **Prerequisite:** Android Studio with a configured Android SDK.
+
+---
+
+## 12. Device-Feedback Additions (from real-device testing, v0.7.x)
+
+Requirements added after testing on hardware. IDs continue the existing scheme.
+
+### D-01 - Multi-Alternative Long-Press Popup
+A key with **more than one** secondary alternative shows, on long-press, a small popup (context menu) of all
+alternatives, Gboard-style. The most common alternative is pre-selected; sliding the finger changes the
+selection and releasing commits the highlighted one. A key with **exactly one** alternative shows **no** popup
+and applies that alternative immediately on long-press (current behaviour, e.g. the umlauts on a/o/u, ß on s).
+
+### D-02 - Full-Stop Long-Press Punctuation List
+Long-press on the full-stop key presents (via D-01) the punctuation set in this order: `.` `!` `?` `,` `;` `:`
+`-` `_` `/`. The full stop is pre-selected.
+
+### D-03 - Space Bar Shows the Language
+The space bar is **not** labelled "Space". It shows the currently selected input language (e.g. "Deutsch",
+"English", "Ελληνικά"), which also doubles as a language indicator.
+
+### D-04 - Space Bar Tap Feedback
+The space bar briefly flashes/highlights on each key press, like the other keys, so a press is visibly
+acknowledged.
+
+### D-05 - Optional Key Sound *(configurable, default off)*
+An optional click sound on key presses, off by default, toggled in the settings.
+
+### D-06 - Optional Haptic Feedback *(configurable, default off)*
+An optional short vibration on key presses, off by default, toggled in the settings.
+
+### D-07 - Accelerating Backspace Repeat on Hold
+Holding backspace deletes, after a short initial delay, character by character; the rate **starts slow and
+accelerates** so the user is not surprised into deleting too much. After roughly three words deleted it switches
+to **word-wise** deletion until backspace is released.
+
+### D-08 - Backspace Shift-Restore Refinement (extends the G-05 addendum)
+When an uppercase character is deleted and then the space immediately to its left is deleted, that space
+deletion counts as deleting a **lowercase** character and shifts back to lowercase (the uppercase context ended
+at the word boundary).
+
+### D-09 - Raw-Tap Recording (diagnostic, opt-in)
+The raw tap coordinates during a calibration/onboarding session can be recorded and exported, so mis-resolution
+of touches (e.g. an uncalibrated finger) can be analysed offline.
+
+### D-10 - Backspace at Start of a Line/Entry
+A backspace at the very start of an entry should, where the editor allows, delete backwards across the boundary
+(joining with the previous entry / line) as common keyboards do, rather than being a no-op.

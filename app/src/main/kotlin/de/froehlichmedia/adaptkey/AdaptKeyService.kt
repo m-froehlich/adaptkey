@@ -795,24 +795,26 @@ class AdaptKeyService : InputMethodService() {
                 updateComposing(ic)
                 refreshSuggestions()
             }
-            armShiftIfDeletedUpper(deleted)
+            applyShiftAfterDelete(deleted)
         } else {
             val deleted = ic.getTextBeforeCursor(1, 0)?.firstOrNull()
             ic.deleteSurroundingText(1, 0)
             if (deleted != null) {
-                armShiftIfDeletedUpper(deleted)
+                applyShiftAfterDelete(deleted)
             }
         }
     }
     
     /**
-     * Addendum to G-05: when the deleted character was uppercase, Shift is re-armed so the next keystroke
-     * reproduces an uppercase character — the case information is carried by the deleted character itself.
-     * A deleted lowercase character leaves the Shift state as it was (context-driven).
+     * Addendum to G-05 (+ D-08): when the deleted character was uppercase, Shift is re-armed so the next
+     * keystroke reproduces an uppercase character — the case information is carried by the deleted character
+     * itself. Deleting whitespace (e.g. the space to the left of a just-deleted capital) counts as deleting a
+     * lowercase character and shifts back to lowercase. A deleted lowercase letter leaves Shift as it was.
      */
-    private fun armShiftIfDeletedUpper(deleted: Char) {
-        if (deleted.isUpperCase()) {
-            keyboardView?.shifted = true
+    private fun applyShiftAfterDelete(deleted: Char) {
+        when {
+            deleted.isUpperCase() -> keyboardView?.shifted = true
+            deleted.isWhitespace() -> keyboardView?.shifted = false
         }
     }
     
