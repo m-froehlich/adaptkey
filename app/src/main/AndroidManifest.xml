@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- D-06: optional key-press vibration (default off). VIBRATE is a normal, non-privacy permission and
+         does NOT declare INTERNET, so the provably-offline guarantee is unaffected. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

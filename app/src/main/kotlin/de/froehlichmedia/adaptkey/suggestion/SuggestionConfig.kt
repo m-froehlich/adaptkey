@@ -25,7 +25,7 @@ data class SuggestionConfig(
     
     companion object {
         
-        /** Default highlight colour (a light green with good contrast behind dark text), used for C-04. */
-        const val DEFAULT_HIGHLIGHT_COLOR: Int = 0xFF81C784.toInt()
+        /** Default recognised-word text colour (D-25): a readable medium green on typical backgrounds. */
+        const val DEFAULT_HIGHLIGHT_COLOR: Int = 0xFF2E7D32.toInt()
     }
 }

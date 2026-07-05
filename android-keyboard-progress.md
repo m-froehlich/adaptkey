@@ -28,10 +28,11 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `c98e1cc` — v0.7.8 (pushed to origin/main). (Working tree: **v0.7.9**, next §13 slice + spec §14
-  captured, not yet committed.)
-- Unit tests: **444 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.9** (only the third digit bumps per APK; versionCode 79).
+- HEAD: `59813de` — v0.7.9 + spec §14 (pushed to origin/main). (Working tree: **v0.7.10**, §14 bug/quality
+  batch landed, not yet committed.)
+- Unit tests: **455 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +11: `KeyboardProximityTest`,
+  weighted-distance + D-28 provider tests); `:app:assembleDebug` green (no warnings). **Versioned 0.7.10**
+  (only the third digit bumps per APK; versionCode 80).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -115,6 +116,28 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Round-3 bugs + quality: D-27 / D-05-06 / D-25-26 / D-29 / D-28 (v0.7.10)
+- **D-27 space-bar top edge (bug):** `resolveKey` now short-circuits to SPACE when the raw point is inside
+  the space-bar rect, so the offset model can't pull a clear space tap up to c/v. T-05 flagging unchanged.
+- **D-05/D-06 sound + haptics (bug):** the toggles were silenced by the system touch-sound/vibration
+  settings. Now authoritative: sound via a short `ToneGenerator` click, haptic via the `Vibrator` directly
+  (added the `VIBRATE` permission — normal, non-privacy; the no-INTERNET/no-storage guarantee is unchanged).
+  ToneGenerator released in `onDetachedFromWindow`.
+- **D-25 text colour / D-26 mid-word bug:** the recognised-word highlight is now a `ForegroundColorSpan`
+  (colours the text, not the background); default colour reverted to a readable medium green `#2E7D32`.
+  `shouldHighlightComposing` skips the colour when a letter follows the cursor (mid-word edit), so the two
+  correction characters are no longer coloured.
+- **D-29 punctuation eats accepted-suggestion space:** accepting a suggestion arms `pendingSuggestionSpace`;
+  the immediately following sentence/clause punctuation (`SPACE_EATING_PUNCTUATION` = `.,!?;:)`) deletes the
+  auto-added trailing space. One-shot — cleared as soon as a letter is typed or on a new field; spaces
+  before typed punctuation are never stripped in general.
+- **D-28 proximity + distance-2 correction:** new pure `suggestion/KeyboardProximity` (QWERTZ adjacency map)
+  + `EditDistance.weightedDistance` (weighted Levenshtein). The provider's fuzzy/autocorrect matching now
+  accepts a candidate up to a total cost of 2, where a neighbouring-key substitution costs 1 and any other
+  sub / indel costs 2 — so `komplezz`→`komplett` (two adjacent z→t slips) is caught, while two unrelated
+  edits are rejected. Distance-1 behaviour is unchanged. **Works without the LLM** (the answer to the user's
+  question: tier-3 adds context prediction on top, but typo correction must and does work offline).
 
 ### Round-2 slice 2: D-04 / D-14 / C-04 / D-21 / D-07 / A-07 (v0.7.9)
 - **D-04 flash (shortened again):** `flashDurationMs` 80→45→**28 ms** (Gboard-like; §14 D-28 still flagged

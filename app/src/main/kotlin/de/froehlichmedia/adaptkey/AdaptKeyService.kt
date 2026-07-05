@@ -12,7 +12,7 @@ import android.os.SystemClock
 import android.text.InputType
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.style.BackgroundColorSpan
+import android.text.style.ForegroundColorSpan
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -207,6 +207,10 @@ class AdaptKeyService : InputMethodService() {
     // D-07: characters removed during the current accelerating backspace hold; drives the switch from
     // character-wise to word-wise deletion once roughly three words have gone.
     private var backspaceHeldChars = 0
+    
+    // D-29: armed right after a suggestion is accepted (which appends a space); an immediately following
+    // punctuation mark removes that space. Cleared as soon as anything else is typed.
+    private var pendingSuggestionSpace = false
     
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
@@ -429,6 +433,7 @@ class AdaptKeyService : InputMethodService() {
         composingFlags.clear()
         resetWordEndShift()
         pendingMergeChar = null
+        pendingSuggestionSpace = false
         previousWord = null
         tokenContextBefore = ""
         capsMode = capsModeFor(info)
@@ -597,6 +602,9 @@ class AdaptKeyService : InputMethodService() {
                     if (composing.isEmpty()) {
                         captureTokenContext(ic)
                         resetWordEndShift()
+                        // D-29: a new word after the accepted suggestion keeps its leading space (correct);
+                        // the eat-the-space rule was only for an immediately following punctuation.
+                        pendingSuggestionSpace = false
                     }
                     val ch = if (isUpperArmed()) raw.uppercaseChar() else raw
                     composing.append(ch)
@@ -977,6 +985,15 @@ class AdaptKeyService : InputMethodService() {
         pendingMergeChar = null
         
         if (composing.isEmpty()) {
+            // D-29: a punctuation mark right after an accepted suggestion removes the auto-added trailing
+            // space, so it attaches to the word. Only in this armed state - spaces before a typed
+            // punctuation are never stripped in general.
+            if (pendingSuggestionSpace && isSpaceEatingPunctuation(delimiter)) {
+                if (ic.getTextBeforeCursor(1, 0) == " ") {
+                    ic.deleteSurroundingText(1, 0)
+                }
+            }
+            pendingSuggestionSpace = false
             ic.commitText(delimiter, 1)
             clearUndo()
             clearSuggestions()
@@ -985,6 +1002,7 @@ class AdaptKeyService : InputMethodService() {
             armShiftForNextWord(ic)
             return
         }
+        pendingSuggestionSpace = false
         
         // G-05: a word-end Shift made this token's casing explicit; commit it exactly as composed,
         // bypassing autocorrect, capitalisation (§6) and token repair — the user has hand-finished it.
@@ -1129,14 +1147,31 @@ class AdaptKeyService : InputMethodService() {
     
     private fun updateComposing(ic: InputConnection) {
         val text = composing.toString()
-        // S-05: highlight a recognised, complete word via a coloured composing span (toggleable, C-04).
-        if (config.highlightEnabled && provider.isKnownWord(text)) {
+        // S-05 / D-25: colour the recognised word's TEXT (not its background) while composing (C-04).
+        if (shouldHighlightComposing(ic, text)) {
             val span = SpannableString(text)
-            span.setSpan(BackgroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             ic.setComposingText(span, 1)
         } else {
             ic.setComposingText(text, 1)
         }
+    }
+    
+    /**
+     * Whether the composing token should be shown in the recognised-word colour (C-04 / S-05): it must be
+     * enabled and a known word, and (D-26) the edit must not be inside an existing word - if a letter
+     * immediately follows the cursor we are correcting mid-word, and the fragment must not be coloured.
+     *
+     * @param ic the current input connection
+     * @param text the composing token
+     * @return true when the token should be coloured
+     */
+    private fun shouldHighlightComposing(ic: InputConnection, text: String): Boolean {
+        if (!config.highlightEnabled || !provider.isKnownWord(text)) {
+            return false
+        }
+        val after = ic.getTextAfterCursor(1, 0)
+        return after.isNullOrEmpty() || !after[0].isLetter()
     }
     
     private fun refreshSuggestions() {
@@ -1280,9 +1315,22 @@ class AdaptKeyService : InputMethodService() {
                 composingFlags.clear()
                 learnWord(word)
                 clearSuggestions()
+                // D-29: arm the trailing space added here so an immediately following punctuation removes it.
+                pendingSuggestionSpace = true
                 armShiftForNextWord(ic)
             }
         }
+    }
+    
+    /**
+     * D-29: whether [delimiter] is a punctuation mark that should absorb the trailing space left by an
+     * accepted suggestion (sentence / clause punctuation, not a space, newline or opening bracket).
+     *
+     * @param delimiter the committed delimiter
+     * @return true when it should eat a preceding accepted-suggestion space
+     */
+    private fun isSpaceEatingPunctuation(delimiter: String): Boolean {
+        return delimiter.length == 1 && delimiter[0] in SPACE_EATING_PUNCTUATION
     }
     
     private fun captureTokenContext(ic: InputConnection) {
@@ -1527,5 +1575,8 @@ class AdaptKeyService : InputMethodService() {
         
         // D-15: two Shift presses within this window engage Caps Lock.
         private const val DOUBLE_TAP_SHIFT_MS = 300L
+        
+        // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
+        private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
     }
 }

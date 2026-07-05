@@ -8,7 +8,10 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Handler
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
@@ -238,7 +241,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val spaceSwipeThresholdPx = dp(28f)
     
     // D-05: lazily resolved so the AudioManager is only fetched when the sound feedback is actually used.
-    private val audioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager }
+    // D-05/D-06 (§14 fix): the toggles must be authoritative, so the feedback bypasses the system
+    // "touch sounds"/"touch vibration" settings that silenced AudioManager.playSoundEffect and
+    // performHapticFeedback on device. Sound = a short ToneGenerator click; haptic = the Vibrator directly.
+    private val toneGenerator by lazy {
+        runCatching { ToneGenerator(AudioManager.STREAM_SYSTEM, TONE_VOLUME) }.getOrNull()
+    }
+    private val vibrator by lazy { context.getSystemService(Vibrator::class.java) }
     
     private val rowHeightPx = dp(54f)
     // D-21 (§13): a few px of cell padding between keys (Gboard-like) so they read as separate keys.
@@ -599,10 +608,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun playKeyFeedback() {
         if (soundEnabled) {
-            audioManager?.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD)
+            // A short click tone on the system stream - audible regardless of the system touch-sound setting.
+            runCatching { toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, TONE_DURATION_MS) }
         }
         if (hapticsEnabled) {
-            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            val v = vibrator
+            if (v != null && v.hasVibrator()) {
+                v.vibrate(VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE))
+            }
         }
     }
     
@@ -695,6 +708,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (keyRects.isEmpty()) {
             return null
         }
+        // D-27: a tap geometrically inside the (large) space bar always resolves to space - the personal
+        // offset model must not pull a clear space tap, e.g. one near the space bar's top edge, up to the
+        // letter above it (c / v ...). The T-05 letter-ambiguity flag is still computed separately.
+        val spaceHit = keyRects.firstOrNull { it.first.code == KeyCode.SPACE && it.second.contains(x, y) }
+        if (spaceHit != null) {
+            return spaceHit
+        }
         val model = offsetModel
         if (model != null) {
             val candidates = keyRects.map { (key, rect) ->
@@ -727,9 +747,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return value * resources.displayMetrics.density
     }
     
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        // D-05: release the tone generator's audio resources when the view goes away.
+        runCatching { toneGenerator?.release() }
+    }
+    
     companion object {
         
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
         private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
+        
+        // D-05: key-click tone volume (0-100) and duration; D-06: haptic pulse duration.
+        private const val TONE_VOLUME = 70
+        private const val TONE_DURATION_MS = 40
+        private const val HAPTIC_DURATION_MS = 18L
     }
 }

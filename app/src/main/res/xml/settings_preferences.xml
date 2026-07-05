@@ -124,7 +124,7 @@
             android:title="@string/c04_color_title"
             android:entries="@array/c04_color_labels"
             android:entryValues="@array/c04_color_values"
-            android:defaultValue="#FF81C784"
+            android:defaultValue="#FF2E7D32"
             app:useSimpleSummaryProvider="true"
             android:dependency="c04_highlight_enabled" />
 

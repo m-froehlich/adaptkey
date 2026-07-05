@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.dictionary
 
 import de.froehlichmedia.adaptkey.suggestion.EditDistance
+import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
 import de.froehlichmedia.adaptkey.suggestion.Umlaut
@@ -64,8 +65,29 @@ class DictionarySuggestionProvider(
         val folded = Umlaut.fold(token)
         return store.correctionCandidates(token).filter { candidate ->
             val lower = candidate.lowercase()
-            lower != token && EditDistance.atMostOne(folded, Umlaut.fold(lower))
+            lower != token && isCloseMatch(folded, lower)
         }
+    }
+    
+    /**
+     * Whether [candidateLower] is a plausible correction of the folded token [foldedToken] (D-12 / D-28):
+     * within the proximity-aware weighted edit budget - a single edit of any kind, or two edits that are
+     * both cheap (a neighbouring-key substitution or an umlaut/ß fold), so `komplezz` reaches `komplett`
+     * (two adjacent `z`→`t` slips) while two unrelated substitutions are rejected.
+     *
+     * @param foldedToken the umlaut-folded, lower-cased typed token
+     * @param candidateLower the lower-cased candidate word
+     * @return true when the candidate is within the correction budget
+     */
+    private fun isCloseMatch(foldedToken: String, candidateLower: String): Boolean {
+        val cost = EditDistance.weightedDistance(foldedToken, Umlaut.fold(candidateLower), INDEL_COST) { x, y ->
+            when {
+                x == y -> 0
+                KeyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
+                else -> SUB_COST
+            }
+        }
+        return cost <= MAX_CORRECTION_COST
     }
     
     override fun isKnownWord(word: String): Boolean {
@@ -81,12 +103,13 @@ class DictionarySuggestionProvider(
         if (isKnownWord(token)) {
             return null
         }
-        // Only a bounded candidate set is scanned (not the whole lexicon). The cheap pure edit-distance
-        // test runs before the per-candidate blacklist query, so the DB is touched only for real matches.
-        // D-12: umlauts / ß are folded on both sides so a diacritic-less token ("grun") corrects to "grün".
+        // Only a bounded candidate set is scanned (not the whole lexicon). The cheap pure distance test
+        // runs before the per-candidate blacklist query, so the DB is touched only for real matches.
+        // D-12 / D-28: umlauts / ß are folded and neighbouring-key typos are cheap, so "grun"→"grün" and
+        // "komplezz"→"komplett".
         val folded = Umlaut.fold(token)
         return store.correctionCandidates(token)
-            .filter { it.lowercase() != token && EditDistance.atMostOne(folded, Umlaut.fold(it.lowercase())) && !store.isBlacklisted(it) }
+            .filter { it.lowercase() != token && isCloseMatch(folded, it.lowercase()) && !store.isBlacklisted(it) }
             .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
     }
     
@@ -106,5 +129,13 @@ class DictionarySuggestionProvider(
         private const val MIN_FUZZY_LENGTH = 3
         private const val SCAN_FACTOR = 2
         private const val BIGRAM_WEIGHT = 10.0
+        
+        // D-28 proximity-aware correction budget: a neighbouring-key substitution costs 1, any other
+        // substitution or an insert/delete costs 2, and a candidate is accepted up to a total cost of 2 -
+        // i.e. any single edit, or two edits that are both cheap (adjacent-key or umlaut-fold).
+        private const val ADJACENT_SUB_COST = 1
+        private const val SUB_COST = 2
+        private const val INDEL_COST = 2
+        private const val MAX_CORRECTION_COST = 2
     }
 }

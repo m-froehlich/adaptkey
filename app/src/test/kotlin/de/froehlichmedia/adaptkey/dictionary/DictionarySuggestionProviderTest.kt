@@ -128,4 +128,21 @@ class DictionarySuggestionProviderTest {
         // "mu" must not fuzzy-match "mit"; only prefix completion applies at this length.
         assertFalse(provider.suggestionsFor("mu", null).map { it.word }.contains("mit"))
     }
+    
+    @Test
+    fun `D-28 two adjacent-key typos are corrected (komplezz to komplett)`() {
+        store.putWord(WordEntry("komplett", 40L))
+        
+        assertTrue(provider.suggestionsFor("komplezz", null).map { it.word }.contains("komplett"))
+        assertEquals("komplett", provider.autocorrectFor("komplezz", null))
+    }
+    
+    @Test
+    fun `D-28 two unrelated (non-adjacent) edits are not corrected`() {
+        store.putWord(WordEntry("haus", 100L))
+        
+        // "hoos" is two non-adjacent substitutions from "haus" - beyond the correction budget.
+        assertNull(provider.autocorrectFor("hoos", null))
+        assertFalse(provider.suggestionsFor("hoos", null).map { it.word }.contains("haus"))
+    }
 }
