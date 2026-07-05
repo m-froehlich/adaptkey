@@ -61,9 +61,9 @@ object GreekLayout {
         result.add(buildList {
             // L-03: combined emoji / numeric-layer key, identical to the Latin bottom row.
             add(Key(label = "😊", code = KeyCode.SYMBOL, hint = "123", weight = proportions.symbolWeight))
-            add(charKey(',', weight = proportions.commaWeight))
+            // D-22: comma / full-stop carry the same long-press punctuation sets as the Latin layout.
+            add(charKey(',', alternatives = KeyboardLayout.COMMA_ALTERNATIVES, weight = proportions.commaWeight))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            // D-02: the full-stop key opens the punctuation popup on long-press (D-01), same as the Latin layout.
             add(charKey('.', alternatives = KeyboardLayout.PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
             add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
         })

@@ -28,11 +28,10 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `59813de` — v0.7.9 + spec §14 (pushed to origin/main). (Working tree: **v0.7.10**, §14 bug/quality
-  batch landed, not yet committed.)
-- Unit tests: **455 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +11: `KeyboardProximityTest`,
-  weighted-distance + D-28 provider tests); `:app:assembleDebug` green (no warnings). **Versioned 0.7.10**
-  (only the third digit bumps per APK; versionCode 80).
+- HEAD: `2af2f60` — v0.7.10 (§14 bugs/quality). (Working tree: **v0.7.11**, D-22/D-23 popup rework landed,
+  not yet committed. origin/main is at v0.7.9 `59813de` — v0.7.10 + v0.7.11 are unpushed.)
+- Unit tests: **454 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.11** (only the third digit bumps per APK; versionCode 81).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -116,6 +115,17 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Round-3 popup rework: D-22 punctuation split + D-23 vertical popup (v0.7.11)
+- **D-22:** the full-stop key now carries only the sentence terminators (`KeyboardLayout.PERIOD_ALTERNATIVES`
+  = `. ! ?`); the comma key carries the clause punctuation (`COMMA_ALTERNATIVES` = `, ; : - _ /`). Index 0 of
+  each is the key's own char (the primary). Both Latin and Greek layouts.
+- **D-23 vertical popup:** replaced the horizontal `LongPressPopup` with pure `VerticalLongPressPopup`
+  (y→index). The popup now draws the primary (index 0) as a cell offset at the top-left (pre-selected) and
+  the secondaries stacked in a column directly above the finger, bottom-to-top (so on the period key `!` is
+  directly above the finger and `?` above it; on the comma key `,` is the top-left default and `; : - _ /`
+  run bottom-to-top). Selection follows the finger's vertical position (`updatePopupSelection(event.y)`); a
+  single-alternative key (umlaut/AltGr) shows one preview cell above the key. Cells are clamped into the view.
 
 ### Round-3 bugs + quality: D-27 / D-05-06 / D-25-26 / D-29 / D-28 (v0.7.10)
 - **D-27 space-bar top edge (bug):** `resolveKey` now short-circuits to SPACE when the raw point is inside

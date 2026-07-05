@@ -29,10 +29,16 @@ object KeyboardLayout {
     )
     
     /**
-     * D-02: the punctuation set offered in the full-stop key's long-press popup (D-01), in spec order.
-     * The full stop is first, so it is the pre-selected default.
+     * D-02 / D-22: the full-stop key's long-press set - the sentence terminators only. Index 0 (the full
+     * stop) is the primary / pre-selected default; the rest are the popup secondaries (D-23).
      */
-    val PERIOD_ALTERNATIVES = listOf(".", "!", "?", ",", ";", ":", "-", "_", "/")
+    val PERIOD_ALTERNATIVES = listOf(".", "!", "?")
+    
+    /**
+     * D-22: the comma key's long-press set - the remaining clause punctuation. Index 0 (the comma) is the
+     * primary / pre-selected default; the rest are the popup secondaries (D-23).
+     */
+    val COMMA_ALTERNATIVES = listOf(",", ";", ":", "-", "_", "/")
     
     /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
@@ -79,9 +85,10 @@ object KeyboardLayout {
             // switches to ?123.
             add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
             // L-02: comma & full stop widened, space narrowed.
-            add(charKey(',', weight = proportions.commaWeight))
+            // D-22: the comma key carries the clause punctuation (; : - _ /) as its long-press popup.
+            add(charKey(',', alternatives = COMMA_ALTERNATIVES, weight = proportions.commaWeight))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            // D-02: the full-stop key opens the punctuation popup on long-press (D-01).
+            // D-02 / D-22: the full-stop key carries the sentence terminators (. ! ?).
             add(charKey('.', alternatives = PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
             add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
         })
