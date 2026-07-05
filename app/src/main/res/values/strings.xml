@@ -98,6 +98,14 @@
     <string name="onboarding_replay_summary">Zeigt die Erstnutzer-Einführung beim nächsten Öffnen der Tastatur wieder an.</string>
     <string name="onboarding_replay_done">Einführung wird beim nächsten Öffnen der Tastatur angezeigt.</string>
 
+    <!-- Reset learned touch data (offset model T-03 + typing pattern T-04), double-confirmed. -->
+    <string name="reset_learning_title">Erlernung &amp; Kalibrierung zurücksetzen</string>
+    <string name="reset_learning_summary">Setzt das gelernte Tippmuster und die Touch-Kalibrierung zurück (nicht das Wörterbuch).</string>
+    <string name="reset_learning_confirm1_message">Das gelernte Tippmuster und die Touch-Kalibrierung werden gelöscht. Fortfahren?</string>
+    <string name="reset_learning_confirm2_title">Endgültig zurücksetzen?</string>
+    <string name="reset_learning_confirm2_message">Dieser Schritt kann nicht rückgängig gemacht werden.</string>
+    <string name="reset_learning_done">Erlernung &amp; Kalibrierung zurückgesetzt.</string>
+
     <!-- Typing pattern detection (T-04). -->
     <string name="cat_typing_pattern">Tippmuster (T-04)</string>
     <string name="t04_detected_title">Erkanntes Tippmuster</string>

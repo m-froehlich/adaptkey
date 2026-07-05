@@ -54,6 +54,11 @@ class SettingsActivity : AppCompatActivity() {
                 Toast.makeText(requireContext(), R.string.onboarding_replay_done, Toast.LENGTH_SHORT).show()
                 true
             }
+            
+            findPreference<Preference>("reset_learning")?.setOnPreferenceClickListener {
+                confirmResetLearning()
+                true
+            }
         }
         
         override fun onResume() {
@@ -82,6 +87,33 @@ class SettingsActivity : AppCompatActivity() {
                     startActivity(Intent(requireContext(), CalibrationActivity::class.java))
                 }
                 .setNegativeButton(R.string.k01_offer_later, null)
+                .show()
+        }
+        
+        /**
+         * Double-confirmed reset of the learned touch data (offset model T-03 + typing pattern T-04): a
+         * first confirmation, then a final irreversible confirmation, then the actual reset. Kept behind two
+         * dialogs so it can never be triggered by accident, while staying quick for deliberate test resets.
+         */
+        private fun confirmResetLearning() {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.reset_learning_title)
+                .setMessage(R.string.reset_learning_confirm1_message)
+                .setPositiveButton(android.R.string.ok) { _, _ -> confirmResetLearningFinal() }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
+        
+        private fun confirmResetLearningFinal() {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.reset_learning_confirm2_title)
+                .setMessage(R.string.reset_learning_confirm2_message)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    OffsetStore.clear(requireContext())
+                    Toast.makeText(requireContext(), R.string.reset_learning_done, Toast.LENGTH_SHORT).show()
+                    findPreference<Preference>("t04_detected")?.setSummary(patternLabel(OffsetStore.loadDetectedPattern(requireContext())))
+                }
+                .setNegativeButton(android.R.string.cancel, null)
                 .show()
         }
         

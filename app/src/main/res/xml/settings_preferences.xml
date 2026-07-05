@@ -191,6 +191,11 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
         </Preference>
 
+        <Preference
+            android:key="reset_learning"
+            android:title="@string/reset_learning_title"
+            android:summary="@string/reset_learning_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_typing_pattern">
