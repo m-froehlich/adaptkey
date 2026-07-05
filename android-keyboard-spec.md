@@ -303,3 +303,82 @@ of touches (e.g. an uncalibrated finger) can be analysed offline.
 ### D-10 - Backspace at Start of a Line/Entry
 A backspace at the very start of an entry should, where the editor allows, delete backwards across the boundary
 (joining with the previous entry / line) as common keyboards do, rather than being a no-op.
+
+---
+
+## 13. Second Device-Feedback Round (from v0.7.7 testing)
+
+A further round of on-device testing. Overall the tap precision is now *substantially* better and close to
+usable. The following refinements to existing requirements and new requirements (IDs continue the D-series)
+came out of it.
+
+### Refinements to existing requirements
+
+- **K-01 / edge-to-edge (blocker):** the **calibration screen** does not push its embedded keyboard up by the
+  gesture-bar / navigation inset the way the IME view does (§ D device round 1), so the bottom row sits under
+  the gesture pill and calibration could not be completed. The calibration keyboard must apply the same
+  bottom inset padding as the live keyboard.
+- **D-04 (flash too slow):** the key-press flash lingers far too long - a double-tap of the same key shows no
+  visible second flash. The flash must be markedly shorter so rapid repeated taps each register visibly.
+- **D-07 (too slow / wrong stop):** (a) backspace-on-hold deletes too slowly - the repeat must accelerate to a
+  clearly faster rate; (b) word-wise deletion **stops before the last word of the line** instead of deleting
+  it - the word-boundary handling at the start of a line must remove that final word too.
+- **A-07 (undo misses splits):** a backspace immediately after an A-05 retroactive split does **not** undo the
+  split (rejoin the two words). The post-commit undo must also revert a split, not only a plain autocorrect.
+- **C-04 (defaults):** the recognised-word highlight must default **on** (many users watch for it), and the
+  default green is too dark - use a lighter shade with better contrast.
+
+### D-11 - Earlier and More Frequent Suggestions
+Word suggestions currently appear too late and too rarely. Sensible completions must be offered already after
+the **first or second letter** and consistently thereafter - many users type only until the intended word is
+offered and then pick it, which must work reliably here.
+
+### D-12 - Fuzzy, Umlaut-Aware Correction Candidates
+Suggestions and autocorrect must include close single-edit and umlaut variants: `mut` must offer `mit`, `grun`
+must offer `grün`, and a clearly mistyped `Defaukt` must be corrected/offered as `Default` rather than being
+accepted. Relatedly, the word-recognition highlight (S-05) must **not** treat nonsense like `Defaukt` as a
+known word.
+
+### D-13 - User Word Training / Add-to-Dictionary
+There must be a way for the user to teach the keyboard a word (e.g. `Backspace`), so it is offered, kept, and
+in particular **not** retroactively split (A-05) into `Back Space`. This includes a discoverable action to add
+the current/typed word to the personal dictionary.
+
+### D-14 - In-Keyboard Long-Press Feedback
+A long-press must produce visible feedback **on the keyboard itself** (a key flash/flicker, or - Gboard-style -
+the popup briefly rising), plus optionally the D-05/D-06 sound/haptic, so the user sees that the long-press
+registered even when looking at the keys rather than the text. This applies to single-alternative keys too,
+which currently show nothing on the keyboard.
+
+### D-15 - Double-Tap Shift = Caps Lock
+Pressing Shift twice in quick succession engages Caps Lock (persistent uppercase) until Shift is pressed again.
+
+### D-16 - Typing-Pattern-Driven Default Key Enlargement
+The enlarged-backspace idea (L-04) should be mirrored for the Shift key. After calibration detects the typing
+hand (T-04), the default enlargement is pre-set accordingly: a **left**-index typist gets the enlarged
+**backspace** (right side), a **right**-index typist gets an enlarged **Shift** (left side). Both remain
+user-adjustable afterwards.
+
+### D-17 - Expanded Onboarding USP Text
+The onboarding core-feature list is too terse. It should be expanded with the strongest USPs from this spec
+(provably offline / no INTERNET permission, adaptive per-finger touch model, retroactive split/merge, the
+on-device mini-LLM, real multilingual dictionaries, etc.) so a new user immediately understands what AdaptKey is.
+
+### D-18 - Emoji Panel Toggle *(configurable, default on)*
+The emoji panel is of limited use (messengers bring their own). A setting must allow disabling it - default on
+so it is discoverable, but switchable off. When off, the combined key (L-03) is purely a `?123` numeric/symbol
+key with no emoji panel.
+
+### D-19 - Full-Field Swipe to Switch Pages
+A left/right swipe **anywhere on the key field** switches between the surfaces/pages (letters ↔ symbols ↔
+numbers). This must be cleanly separated from the space-bar left/right language swipe (G-01). The `?123` key is
+kept for accessibility even if this makes it partly redundant.
+
+### D-20 - Larger Gesture Thresholds
+Swipe-down to dismiss (G-03) and the full-field left/right page swipe (D-19) currently trigger on too small a
+motion - a faint downward swipe already hides the keyboard. They must require a clearly larger travel to
+activate while staying practical. The space-bar language swipe (G-01) must stay proportional to the small space
+bar and remain easy.
+
+### D-21 - Key Cell Padding
+Add a few pixels of cell padding (spacing) between keys, Gboard-style, to visually separate them.

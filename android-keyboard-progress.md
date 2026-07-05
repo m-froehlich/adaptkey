@@ -47,12 +47,25 @@ whenever a component lands so it does not have to be restated in every prompt.
   EMBEDDED as a 44dp row above the keyboard in the input-view root, toggled visible when there are items); ß
   long-press on s; D-08 (deleting whitespace after a capital shifts to lowercase). Spec §12 (D-01…D-10) captures
   the remaining feature requests.
-- **Spec §12 D-series (device-feedback):** **COMPLETE.** v0.7.6: D-03 space bar shows language, D-04
+- **Spec §12 D-series (device-feedback round 1):** **COMPLETE.** v0.7.6: D-03 space bar shows language, D-04
   space/special-key tap flash, D-07 accelerating backspace-on-hold, D-10 backspace at start of entry.
   v0.7.7: D-01/D-02 multi-alternative long-press popup + full-stop punctuation list, D-05/D-06 optional
   key sound + haptics, D-09 raw-tap recording. All D-items need on-device confirmation (no emulator here).
-  Also still open: suggestion-bar-missing root cause was assumed (candidates-view API) — confirm the embed
-  fixes it on device; the LLM decode loop still unverified.
+- **Spec §13 (device-feedback round 2, v0.7.7 testing) = the NEW open backlog.** Precision is now much
+  better. Captured in spec §13:
+  - **Refinements/bugs:** K-01 calibration screen missing the gesture-bar inset (blocker — couldn't
+    calibrate); D-04 flash far too slow (double-tap invisible → shorten); D-07 too slow + word-wise delete
+    stops before the line's last word; A-07 undo doesn't revert an A-05 split; C-04 highlight should default
+    ON with a lighter green.
+  - **New features D-11..D-21:** D-11 earlier/more-frequent suggestions (after 1–2 letters); D-12 fuzzy +
+    umlaut-aware candidates (mut→mit, grun→grün, Defaukt→Default; and don't highlight nonsense as known);
+    D-13 user word training / add-to-dictionary (stop "Backspace"→"Back Space"); D-14 in-keyboard long-press
+    feedback (flash/popup, not just haptic); D-15 double-tap Shift = Caps Lock; D-16 pattern-driven default
+    key enlargement (left→backspace, right→Shift, adjustable); D-17 expand onboarding USP text; D-18 emoji
+    panel toggle (default on, off ⇒ combined key = ?123 only); D-19 full-field swipe to switch surfaces/pages
+    (separate from the space-bar language swipe); D-20 larger gesture thresholds for dismiss + page swipe
+    (space-bar swipe stays small); D-21 key cell padding (Gboard-like).
+  - Also still open from round 1: confirm the embedded suggestion bar on device; LLM decode loop unverified.
 - **Device-feedback fixes (Pixel 9a):** typing-lag (autocorrect no longer scans all 120k words —
   `DictionaryStore.correctionCandidates`, SQLite indexed; a Robolectric test caught a text-vs-int BETWEEN
   bug); edge-to-edge insets (keyboard padded above the gesture pill / IME-switch); **umlaut long-press**
