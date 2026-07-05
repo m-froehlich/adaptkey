@@ -14,7 +14,7 @@ package de.froehlichmedia.adaptkey.suggestion
 data class SuggestionConfig(
     val maxSuggestions: Int = 8,
     val reSortDelayMs: Long = 300L,
-    val highlightEnabled: Boolean = false,
+    val highlightEnabled: Boolean = true,
     val highlightColor: Int = DEFAULT_HIGHLIGHT_COLOR
 ) {
     
@@ -25,7 +25,7 @@ data class SuggestionConfig(
     
     companion object {
         
-        /** Default highlight colour (a muted green), used when C-04 is enabled. */
-        const val DEFAULT_HIGHLIGHT_COLOR: Int = 0xFF2E7D32.toInt()
+        /** Default highlight colour (a light green with good contrast behind dark text), used for C-04. */
+        const val DEFAULT_HIGHLIGHT_COLOR: Int = 0xFF81C784.toInt()
     }
 }

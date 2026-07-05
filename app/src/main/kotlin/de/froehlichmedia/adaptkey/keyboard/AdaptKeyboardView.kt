@@ -216,7 +216,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         flashKey = null
         invalidate()
     }
-    private val flashDurationMs = 80L
+    // D-04 / D-28 (§13/§14): a very short, Gboard-like flash - just long enough to be seen (~2 frames) but
+    // short enough that typing feels snappy and a rapid double-tap shows two distinct blinks.
+    private val flashDurationMs = 28L
     
     // D-07: the accelerating backspace-on-hold repeat. Scheduled on ACTION_DOWN of the backspace key and
     // cancelled on release / move; backspaceRepeated suppresses the would-be single-delete tap once at
@@ -239,7 +241,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val audioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager }
     
     private val rowHeightPx = dp(54f)
-    private val gapPx = dp(3f)
+    // D-21 (§13): a few px of cell padding between keys (Gboard-like) so they read as separate keys.
+    private val gapPx = dp(5f)
     private val keyRadiusPx = dp(6f)
     
     private val keyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -487,10 +490,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             if (pressedKey === key) {
                 longPressFired = true
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                // D-01: a key with two or more alternatives opens the finger-tracking popup instead of
-                // applying a single secondary immediately.
-                if (key.alternatives.size >= 2) {
-                    openPopup(key)
+                // D-01 / D-14: any key with an alternative shows the popup - a visible on-keyboard preview
+                // (Gboard-style) that confirms the long-press and commits on release. A single-alternative
+                // key shows a one-cell popup; a key with no alternative (the combined ?123 key) falls back
+                // to its listener action (switching to the numeric/symbol layer).
+                val alternatives = popupAlternativesFor(key)
+                if (alternatives.isNotEmpty()) {
+                    openPopup(key, alternatives)
                 } else {
                     onLongPressListener?.onLongPress(key)
                 }
@@ -501,12 +507,29 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-01: opens the multi-alternative popup above [key]. The cells are equal-width and centred over
-     * the key, clamped to stay within the view; the most common alternative (index 0) is pre-selected.
+     * The long-press popup alternatives for [key] (D-01 / D-14): its explicit [Key.alternatives] when
+     * present, otherwise its single [Key.hint] as a one-item list for a character key. Empty for a key
+     * with no secondary (e.g. the combined ?123 key), which falls back to its listener action.
+     *
+     * @param key the pressed key
+     * @return the alternatives to show in the popup, or empty when there is none
      */
-    private fun openPopup(key: Key) {
+    private fun popupAlternativesFor(key: Key): List<String> {
+        return when {
+            key.alternatives.isNotEmpty() -> key.alternatives
+            key.code == KeyCode.CHAR && key.hint != null -> listOf(key.hint)
+            else -> emptyList()
+        }
+    }
+    
+    /**
+     * D-01 / D-14: opens the long-press popup above [key] showing [alternatives]. The cells are
+     * equal-width and centred over the key, clamped to stay within the view; the most common alternative
+     * (index 0) is pre-selected.
+     */
+    private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
-        val count = key.alternatives.size
+        val count = alternatives.size
         // Shrink the cells if the row of alternatives would be wider than the view.
         val usable = (width - gapPx * 2f)
         popupCellWidth = minOf(popupCellWidthPx, usable / count)
@@ -514,7 +537,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val centred = rect.centerX() - popupWidth / 2f
         popupLeft = centred.coerceIn(gapPx, (width - gapPx - popupWidth).coerceAtLeast(gapPx))
         popupTop = (rect.top - popupHeightPx - gapPx).coerceAtLeast(0f)
-        popupAlternatives = key.alternatives
+        popupAlternatives = alternatives
         popupSelectedIndex = 0
         popupKey = key
         invalidate()

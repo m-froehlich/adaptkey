@@ -382,3 +382,68 @@ bar and remain easy.
 
 ### D-21 - Key Cell Padding
 Add a few pixels of cell padding (spacing) between keys, Gboard-style, to visually separate them.
+
+---
+
+## 14. Third Device-Feedback Round (from v0.7.8 testing)
+
+More on-device findings. Several refine features from §13; the rest are new requirements (IDs continue the
+D-series). Items marked *(bug)* are regressions/defects, not new scope.
+
+### Refinements to existing requirements
+
+- **D-04 - flash still too slow *(bug)*:** even after shortening, the key-press flash feels sluggish. It must
+  be *much* shorter, matching Gboard's very brief key flash, so typing feels snappy.
+- **D-05/D-06 - sound & haptic do not fire *(bug)*:** with both toggles enabled on device, no click sound is
+  heard and no vibration is felt. The feedback path is not actually working and must be fixed (audio focus /
+  `playSoundEffect` routing; haptic flags / an explicit `Vibrator` fallback).
+- **C-04 / S-05 - colour the text, not the background (D-25):** a recognised word should be shown by changing
+  its **font colour**, not a background highlight - it looks better. (Supersedes the background-span approach.)
+- **T-04 / K-01 - calibration produced no result:** a full calibration run detected **UNKNOWN** (no pattern).
+  The calibration may be too short and the classifier too conservative. Calibration must reliably produce a
+  concrete, visible result and state it plainly ("I detected that you type with your left index finger").
+  Investigate sample count / thresholds / sentence length.
+
+### D-22 - Punctuation Reorganisation (period vs comma)
+Split the current full-stop long-press set into two keys by meaning. The **full-stop key** carries the
+sentence terminators only: primary `.` with alternatives `!` `?`. The **comma key** carries the rest as its
+long-press set: primary `,` with alternatives `;` `:` `-` `_` `/`.
+
+### D-23 - Vertical Long-Press Popup Layout
+The long-press popup is laid out **vertically** above the finger, not horizontally. The primary character is
+pre-selected but sits **top-left** of the key (offset, not directly above the finger). The remaining
+alternatives are stacked **vertically above the finger**, ordered by priority bottom-to-top. So on the
+full-stop key the cell directly above the finger is `!`, with `?` above it; on the comma key the comma is the
+pre-selected top-left default and the alternatives run bottom-to-top `;` `:` `-` `_` `/`.
+
+### D-24 - Touch-Pattern Visualisation *(new feature)*
+Visualise the learned touch model: show the keyboard with a coloured circle over each key at the **expected
+strike point** (the T-03 per-key mean offset, radius ~ its variance). Offer it as the **result screen of a
+calibration** and as a toggle in the settings, so the user can see how their personal offsets look.
+
+### I18N - Multilingual App Texts *(new feature)*
+The app's own UI strings (settings, onboarding, dialogs, calibration) must be localised. At minimum **English**
+and **Greek** in addition to German, selected by the **system language**. (The keyboard's *typing* languages
+DE/EN/EL already exist; this is about the app-chrome strings via `res/values-en`, `values-el`.)
+
+### D-26 - Mid-Word Correction Colours the Inserted Characters *(bug)*
+When correcting inside an existing word, the two freshly typed correction characters can get coloured
+(highlighted). The recognised-word colouring must not apply to a mid-word edit like this.
+
+### D-27 - Space Bar Top-Edge Hit Target *(bug, high priority)*
+Tapping the **top edge of the space bar** registers the key **above** it (c / v …), producing many wrong
+letters instead of spaces. The space bar must reliably win at its own top edge. (This is the inverse of the
+T-05 space/letter band and must not be swamped by it - a genuine space tap must stay a space.)
+
+### D-28 - Proximity- and Distance-2-Aware Correction
+Correction must consider **physical key adjacency** and a larger edit budget. `komplezz` must suggest
+`komplett` - obvious to a human, and especially because `z` neighbours `t`. A single edit is not enough here
+(two characters differ); the matcher needs edit-distance-2 and/or an adjacency-weighted cost so a typo on a
+neighbouring key is cheap. (Open question the user raised: how much of this improves only once the optional
+tier-3 LLM model is imported - to be answered.)
+
+### D-29 - Punctuation After an Accepted Suggestion Eats the Trailing Space
+Accepting (tapping) a suggestion inserts a trailing space, which is correct. But if the **very next** input is
+a punctuation mark, that trailing space must be removed so the punctuation attaches to the word. This must
+apply **only** immediately after a "suggestion accepted" action - spaces before a typed punctuation mark must
+**not** be stripped in general.

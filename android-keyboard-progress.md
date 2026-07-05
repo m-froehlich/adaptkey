@@ -28,16 +28,24 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `953a31d` — v0.7.7 + spec §13 backlog (pushed to origin/main through v0.7.7 = `a9583f8`).
-  (Working tree: **v0.7.8**, first slice of the §13 round-2 backlog landed, not yet committed.)
-- Unit tests: **444 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +14: `UmlautTest`, provider
-  fuzzy tests, `PanelNavigation`/`KeyGesture` swipe tests); `:app:assembleDebug` green (no warnings).
-  **Versioned 0.7.8** (only the third digit bumps per APK; versionCode 78).
-- **§13 round-2 progress (v0.7.8):** DONE = K-01 calibration inset (blocker), D-11/D-12 earlier+fuzzy
-  suggestions, D-15 Caps Lock, D-19/D-20 full-field page swipe + larger gesture thresholds. STILL OPEN in
-  §13: D-04/D-14 (flash speed + long-press feedback), D-07 (faster + last-word), A-07 (undo the split),
-  D-13 (word training), C-04 (highlight default on + lighter green), D-16 (pattern-driven key enlargement),
-  D-17 (onboarding USP text), D-18 (emoji panel toggle), D-21 (key cell padding).
+- HEAD: `c98e1cc` — v0.7.8 (pushed to origin/main). (Working tree: **v0.7.9**, next §13 slice + spec §14
+  captured, not yet committed.)
+- Unit tests: **444 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.9** (only the third digit bumps per APK; versionCode 79).
+- **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
+  D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
+  D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
+  enlargement), D-17 (onboarding USP text), D-18 (emoji panel toggle), D-07 last-word-of-line (device repro).
+- **Spec §14 (device-feedback round 3, v0.7.8 testing) = NEW backlog, captured, not started.** Precision
+  keeps improving. Refinements: D-04 flash *still* too slow (→ shortened again this round), D-05/D-06
+  sound+haptic don't fire on device (bug), C-04→**D-25** colour the text not the background, T-04/K-01
+  calibration produced UNKNOWN (must reliably report a result). New: **D-22** punctuation reorg (period=.!?,
+  comma=,;:-_/), **D-23** vertical long-press popup (primary top-left preselected, alts stacked bottom→top
+  above the finger), **D-24** touch-pattern visualisation (coloured circles at expected strike point),
+  **I18N** localise app strings (EN+EL+DE, system language), **D-26** mid-word edit wrongly colours the
+  correction chars (bug), **D-27** space-bar top edge registers the key above / c-v (bug, HIGH), **D-28**
+  proximity + distance-2 correction (komplezz→komplett), **D-29** punctuation after an accepted suggestion
+  eats the trailing space. Tasks #18–#26 mirror these.
 - **A-05 split (v0.7.4):** a character is dropped only when it is a T-05 flag OR a letter over the space bar
   (`TokenRepair.OVER_SPACE_LETTERS` = c/v/b/n/m) — works without calibration; missed-space keeps the
   co-occurrence bigram gate. **Reset switch (v0.7.5):** `OffsetStore.clear()` + a two-dialog (first + final)
@@ -107,6 +115,26 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Round-2 slice 2: D-04 / D-14 / C-04 / D-21 / D-07 / A-07 (v0.7.9)
+- **D-04 flash (shortened again):** `flashDurationMs` 80→45→**28 ms** (Gboard-like; §14 D-28 still flagged
+  it as too slow after 45, so this round goes to 28 — device-tune further if needed).
+- **D-14 in-keyboard long-press feedback:** the long-press popup now shows for **single-alternative** keys
+  too (umlauts, ß, AltGr, Greek tonos) — a one-cell preview bubble that confirms the press and commits on
+  release, Gboard-style. `AdaptKeyboardView.popupAlternativesFor(key)` = `key.alternatives` else the single
+  `key.hint`; `openPopup(key, alternatives)`; only a key with no secondary (the ?123 key) falls back to the
+  listener action. (The vertical layout + punctuation reorg is the separate §14 D-22/D-23, not this.)
+- **C-04 defaults:** recognised-word highlight now defaults **on** (`SettingsStore` default + pref
+  `c04_highlight_enabled` true), default colour a lighter green `#FF81C784` (`SuggestionConfig.DEFAULT_
+  HIGHLIGHT_COLOR`, arrays green preset, pref default). NB §14 D-25 supersedes this to colour the *text*
+  not the background — next round.
+- **D-21 key cell padding:** `gapPx` 3→**5 dp** between keys.
+- **D-07 faster backspace hold:** `BackspaceRepeat` tuned — INITIAL 400→260, START 200→120, MIN 45→28,
+  ACCEL 0.82→0.78. (The word-mode "stops before the line's last word" report still needs device repro.)
+- **A-07 split-undo:** a backspace immediately after an A-05 retroactive split now rejoins the two words
+  into the originally typed token — `applySplit` takes the typed token and arms the existing
+  `undoTyped/undoCommitted/undoDelimiter` state (commits `left␣right`, undo restores `typed`). Merge (A-06)
+  undo is still not wired (needs to re-insert the removed space).
 
 ### Round-2 slice: K-01 inset / D-11-D-12 / D-15 / D-19-D-20 (v0.7.8)
 - **K-01 calibration inset (blocker fixed):** `CalibrationActivity` now applies the bottom

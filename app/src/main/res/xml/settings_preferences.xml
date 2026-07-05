@@ -117,14 +117,14 @@
             android:key="c04_highlight_enabled"
             android:title="@string/c04_enabled_title"
             android:summary="@string/c04_enabled_summary"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <ListPreference
             android:key="c04_highlight_color"
             android:title="@string/c04_color_title"
             android:entries="@array/c04_color_labels"
             android:entryValues="@array/c04_color_values"
-            android:defaultValue="#FF2E7D32"
+            android:defaultValue="#FF81C784"
             app:useSimpleSummaryProvider="true"
             android:dependency="c04_highlight_enabled" />
 

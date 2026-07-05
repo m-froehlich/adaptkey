@@ -20,16 +20,16 @@ import kotlin.math.pow
 object BackspaceRepeat {
     
     /** Delay before the first repeat fires, giving a normal tap room to be just a single deletion. */
-    const val INITIAL_DELAY_MS = 400L
+    const val INITIAL_DELAY_MS = 260L
     
-    /** Interval before the first accelerated repeat; the curve decays from here. */
-    const val START_DELAY_MS = 200L
+    /** Interval before the first accelerated repeat; the curve decays from here (D-07: faster than before). */
+    const val START_DELAY_MS = 120L
     
     /** Fastest repeat interval the acceleration is clamped to. */
-    const val MIN_DELAY_MS = 45L
+    const val MIN_DELAY_MS = 28L
     
     /** Geometric decay factor applied per repeat step (smaller = accelerates faster). */
-    const val ACCELERATION = 0.82
+    const val ACCELERATION = 0.78
     
     /** Characters removed during a hold before deletion switches from character-wise to word-wise. */
     const val WORD_MODE_AFTER_CHARS = 18

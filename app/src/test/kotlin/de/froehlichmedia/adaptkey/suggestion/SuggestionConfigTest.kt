@@ -4,7 +4,7 @@
 package de.froehlichmedia.adaptkey.suggestion
 
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -18,7 +18,8 @@ class SuggestionConfigTest {
         val config = SuggestionConfig()
         assertEquals(8, config.maxSuggestions)
         assertEquals(300L, config.reSortDelayMs)
-        assertFalse(config.highlightEnabled)
+        // C-04 (§13): the recognised-word highlight now defaults on.
+        assertTrue(config.highlightEnabled)
         assertEquals(SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR, config.highlightColor)
     }
     

@@ -1010,7 +1010,7 @@ class AdaptKeyService : InputMethodService() {
         // A-05: split the token at a space-ambiguous tap or a fully missed space, when valid.
         val split = tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
         if (split != null) {
-            applySplit(ic, split, delimiter)
+            applySplit(ic, split, delimiter, typed)
             armShiftForNextWord(ic)
             return
         }
@@ -1084,19 +1084,26 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Applies an A-05 split: drops the composing token and commits the two words (each cased per §6)
-     * separated by a space, followed by [delimiter].
+     * separated by a space, followed by [delimiter]. A-07: the split is armed for undo, so a single
+     * backspace immediately after rejoins the two words back into the originally typed token.
+     *
+     * @param typed the original token as typed, restored if the following key is a backspace undo
      */
-    private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String) {
+    private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String, typed: String) {
         ic.setComposingText("", 1)
         ic.finishComposingText()
         composing.setLength(0)
         composingFlags.clear()
         val left = capitalisation.capitalise(split.left, contextFor(split.left))
         val right = capitalisation.capitalise(split.right, followingPartContext())
-        ic.commitText(left + " " + right + delimiter, 1)
+        val committed = left + " " + right
+        ic.commitText(committed + delimiter, 1)
         learnWord(left)
         learnWord(right)
-        clearUndo()
+        // A-07: arm the undo so the next backspace reverts the split (see performAutocorrectUndo).
+        undoTyped = typed
+        undoCommitted = committed
+        undoDelimiter = delimiter
         clearSuggestions()
     }
     

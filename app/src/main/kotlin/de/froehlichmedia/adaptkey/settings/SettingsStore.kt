@@ -89,7 +89,7 @@ object SettingsStore {
             backspaceExtra = p.getInt(KEY_BACKSPACE_EXTRA, DEF_BACKSPACE_EXTRA) / WEIGHT_SCALE,
             maxSuggestions = p.getInt(KEY_MAX_SUGGESTIONS, DEF_MAX_SUGGESTIONS),
             reSortDelayMs = p.getInt(KEY_RESORT_DELAY, DEF_RESORT_DELAY).toLong(),
-            highlightEnabled = p.getBoolean(KEY_HIGHLIGHT_ENABLED, false),
+            highlightEnabled = p.getBoolean(KEY_HIGHLIGHT_ENABLED, true),
             highlightColor = parseColor(p.getString(KEY_HIGHLIGHT_COLOR, null)),
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
             hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
