@@ -28,8 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `11393cd` — v0.7.4; A-05 split sharpened (drop only over-space letters c/v/b/n/m or T-05 flag).
-- Unit tests: **411 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green. **Versioned 0.7.4** (only the third digit bumps per APK; versionCode 74).
+- HEAD: commit `e97943b` — v0.7.5; A-05 split sharpened + double-confirmed reset of learning/calibration.
+- Unit tests: **411 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green. **Versioned 0.7.5** (only the third digit bumps per APK; versionCode 75).
+- **A-05 split (v0.7.4):** a character is dropped only when it is a T-05 flag OR a letter over the space bar
+  (`TokenRepair.OVER_SPACE_LETTERS` = c/v/b/n/m) — works without calibration; missed-space keeps the
+  co-occurrence bigram gate. **Reset switch (v0.7.5):** `OffsetStore.clear()` + a two-dialog (first + final)
+  confirm in Settings → Kalibrierung resets the offset model (T-03) + typing pattern (T-04); not the dictionary.
+- **Env note:** the user granted standing permission (2026-07-05) for build/SDK/tests/`git add`/local commits
+  — do them without asking; a broad allowlist was added to `/d/workspace-ai/.claude/settings.local.json`
+  (gitignored, outside the repo). Only `git push` still prompts (outward-facing).
 - **Device round 2 fixes (Pixel 9a):** autocorrect "word-hacking" (A-05 missed-space split now requires a real
   co-occurrence bigram, `TokenRepair.MIN_SPLIT_BIGRAM` — killed "Luste"→"Lu ste"); **mid-sentence caret jump**
   (added `onUpdateSelection` → finish composing + reset token state on user caret moves); **suggestion bar was
