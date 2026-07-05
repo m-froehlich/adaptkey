@@ -13,6 +13,7 @@ import android.text.InputType
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.BackgroundColorSpan
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
@@ -45,6 +46,7 @@ import de.froehlichmedia.adaptkey.gesture.KeyGesture
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.WordBoundary
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
+import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
@@ -199,6 +201,10 @@ class AdaptKeyService : InputMethodService() {
     private var shiftGuardedArm = false
     private var fieldMandateOverridden = false
     
+    // D-07: characters removed during the current accelerating backspace hold; drives the switch from
+    // character-wise to word-wise deletion once roughly three words have gone.
+    private var backspaceHeldChars = 0
+    
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
     private var undoCommitted = ""
@@ -287,6 +293,7 @@ class AdaptKeyService : InputMethodService() {
         view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, ambiguity -> handleKey(key, ambiguity) }
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
+        view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
         keyboardView = view
         
         val panel = EmojiPanelView(this)
@@ -338,6 +345,8 @@ class AdaptKeyService : InputMethodService() {
             insets
         }
         applySettings()
+        // D-03: show the input language on the space bar from the first frame.
+        updateSpaceLabel()
         return root
     }
     
@@ -464,6 +473,8 @@ class AdaptKeyService : InputMethodService() {
         applySettings()
         // Reflect the active alphabet (G-01) on the freshly (re)created keyboard view.
         keyboardView?.greek = activeLanguage == Language.GREEK
+        // D-03: label the space bar with the current input language.
+        updateSpaceLabel()
         // Pick up an offset model seeded by the calibration screen (K-01). Safe on a fresh field (not a
         // restart): the live model was persisted on the previous onFinishInput, so storage is current.
         if (!restarting) {
@@ -706,10 +717,34 @@ class AdaptKeyService : InputMethodService() {
         finalizeAndCommit(ic, "")
         activeLanguage = if (activeLanguage == Language.GREEK) Language.GERMAN else Language.GREEK
         keyboardView?.greek = activeLanguage == Language.GREEK
+        // D-03: keep the space-bar language label in sync with the switch.
+        updateSpaceLabel()
         clearSuggestions()
-        val label = if (activeLanguage == Language.GREEK) "Ελληνικά" else "Deutsch"
-        Toast.makeText(this, label, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, languageLabel(activeLanguage), Toast.LENGTH_SHORT).show()
         armShiftForNextWord(ic)
+    }
+    
+    /**
+     * D-03: pushes the current input language's display label onto the space bar.
+     */
+    private fun updateSpaceLabel() {
+        keyboardView?.spaceLabel = languageLabel(activeLanguage)
+    }
+    
+    /**
+     * The human-readable name of an input language, shown on the space bar (D-03) and in the G-01
+     * switch toast. Only German and Greek are user-selectable alphabets today; English is listed for
+     * completeness (it is auto-detected for autocorrect but never becomes the active alphabet).
+     *
+     * @param language the active input language
+     * @return the label to display
+     */
+    private fun languageLabel(language: Language): String {
+        return when (language) {
+            Language.GREEK -> "Ελληνικά"
+            Language.ENGLISH -> "English"
+            else -> "Deutsch"
+        }
     }
     
     /**
@@ -782,26 +817,84 @@ class AdaptKeyService : InputMethodService() {
         // A backspace breaks the immediate context a pending merge (A-06) would have relied on.
         pendingMergeChar = null
         if (composing.isNotEmpty()) {
-            val deleted = composing.last()
-            if (composingFlags.isNotEmpty()) {
-                composingFlags.removeAt(composingFlags.size - 1)
-            }
-            composing.setLength(composing.length - 1)
-            if (composing.isEmpty()) {
-                ic.setComposingText("", 1)
-                ic.finishComposingText()
-                clearSuggestions()
-            } else {
-                updateComposing(ic)
-                refreshSuggestions()
-            }
-            applyShiftAfterDelete(deleted)
+            deleteComposingChar(ic)
         } else {
-            val deleted = ic.getTextBeforeCursor(1, 0)?.firstOrNull()
-            ic.deleteSurroundingText(1, 0)
-            if (deleted != null) {
-                applyShiftAfterDelete(deleted)
+            deleteOneBefore(ic)
+        }
+    }
+    
+    /**
+     * Removes the last character of the in-progress composing token, keeping the ambiguity flags (A-05)
+     * in step and refreshing the composing text / suggestions. Re-arms Shift when the removed character
+     * was uppercase (G-05 addendum).
+     */
+    private fun deleteComposingChar(ic: InputConnection) {
+        val deleted = composing.last()
+        if (composingFlags.isNotEmpty()) {
+            composingFlags.removeAt(composingFlags.size - 1)
+        }
+        composing.setLength(composing.length - 1)
+        if (composing.isEmpty()) {
+            ic.setComposingText("", 1)
+            ic.finishComposingText()
+            clearSuggestions()
+        } else {
+            updateComposing(ic)
+            refreshSuggestions()
+        }
+        applyShiftAfterDelete(deleted)
+    }
+    
+    /**
+     * Deletes the single character before the cursor. When there is nothing to delete in the current
+     * editable (the cursor is at the very start of the entry), a real DEL key event is sent instead so
+     * the editor can join with the previous line/entry if it supports it (D-10).
+     *
+     * @return true when a character was removed from the editable, false when the DEL fallback was used
+     */
+    private fun deleteOneBefore(ic: InputConnection): Boolean {
+        val before = ic.getTextBeforeCursor(1, 0)
+        if (before.isNullOrEmpty()) {
+            // D-10: nothing to delete here; let the editor decide (e.g. merge list items / lines).
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+            return false
+        }
+        val deleted = before[0]
+        ic.deleteSurroundingText(1, 0)
+        applyShiftAfterDelete(deleted)
+        return true
+    }
+    
+    /**
+     * Handles one tick of an accelerating backspace hold (D-07). The first tick (step 0) resets the
+     * hold state. While a composing token is present its characters are removed first; afterwards the
+     * committed text is deleted character-wise, switching to word-wise once roughly three words have
+     * been removed ([BackspaceRepeat.deletesWord]).
+     */
+    private fun handleBackspaceRepeat(step: Int) {
+        val ic = currentInputConnection ?: return
+        if (step == 0) {
+            backspaceHeldChars = 0
+            clearUndo()
+        }
+        pendingMergeChar = null
+        if (composing.isNotEmpty()) {
+            deleteComposingChar(ic)
+            backspaceHeldChars++
+            return
+        }
+        if (BackspaceRepeat.deletesWord(backspaceHeldChars)) {
+            val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
+            val count = WordBoundary.wordDeleteLength(before)
+            if (count > 0) {
+                ic.deleteSurroundingText(count, 0)
+                backspaceHeldChars += count
+            } else {
+                // Nothing left in this editable: fall back to a DEL key event (D-10).
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
             }
+        } else if (deleteOneBefore(ic)) {
+            backspaceHeldChars++
         }
     }
     

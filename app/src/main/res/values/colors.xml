@@ -3,6 +3,7 @@
     <color name="ic_launcher_background">#1565C0</color>
     <color name="key_background">#FFFFFF</color>
     <color name="key_background_special">#E0E3E7</color>
+    <color name="key_background_pressed">#A6C8FF</color>
     <color name="key_text">#1A1C1E</color>
     <color name="key_hint">#7A7E83</color>
     <color name="keyboard_background">#D2D5DA</color>

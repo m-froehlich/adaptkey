@@ -29,7 +29,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 ## Current State
 
 - HEAD: commit `e97943b` — v0.7.5; A-05 split sharpened + double-confirmed reset of learning/calibration.
-- Unit tests: **411 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green. **Versioned 0.7.5** (only the third digit bumps per APK; versionCode 75).
+  (Working tree: **v0.7.6**, D-03/D-04/D-07/D-10 landed, not yet committed.)
+- Unit tests: **417 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +6 `BackspaceRepeatTest`);
+  `:app:assembleDebug` green. **Versioned 0.7.6** (only the third digit bumps per APK; versionCode 76).
 - **A-05 split (v0.7.4):** a character is dropped only when it is a T-05 flag OR a letter over the space bar
   (`TokenRepair.OVER_SPACE_LETTERS` = c/v/b/n/m) — works without calibration; missed-space keeps the
   co-occurrence bigram gate. **Reset switch (v0.7.5):** `OffsetStore.clear()` + a two-dialog (first + final)
@@ -44,11 +46,12 @@ whenever a component lands so it does not have to be restated in every prompt.
   EMBEDDED as a 44dp row above the keyboard in the input-view root, toggled visible when there are items); ß
   long-press on s; D-08 (deleting whitespace after a capital shifts to lowercase). Spec §12 (D-01…D-10) captures
   the remaining feature requests.
-- **Next backlog (spec §12, mostly device-only UI):** D-01/D-02 multi-alternative long-press popup + full-stop
-  punctuation list (the "Gboard popup"); D-03 space bar shows language; D-04 space tap flash; D-05/D-06 optional
-  key sound + haptics (settings toggles, default off); D-07 accelerating backspace-on-hold; D-09 raw-tap
-  recording (diagnostic); D-10 backspace at start of entry. Also still open: suggestion-bar-missing root cause
-  was assumed (candidates-view API) — confirm the embed fixes it on device; the LLM decode loop still unverified.
+- **Next backlog (spec §12, mostly device-only UI):** **DONE in v0.7.6:** D-03 space bar shows language,
+  D-04 space/special-key tap flash, D-07 accelerating backspace-on-hold, D-10 backspace at start of entry.
+  **Still open:** D-01/D-02 multi-alternative long-press popup + full-stop punctuation list (the "Gboard
+  popup"); D-05/D-06 optional key sound + haptics (settings toggles, default off); D-09 raw-tap recording
+  (diagnostic). Also still open: suggestion-bar-missing root cause was assumed (candidates-view API) —
+  confirm the embed fixes it on device; the LLM decode loop still unverified.
 - **Device-feedback fixes (Pixel 9a):** typing-lag (autocorrect no longer scans all 120k words —
   `DictionaryStore.correctionCandidates`, SQLite indexed; a Robolectric test caught a text-vs-int BETWEEN
   bug); edge-to-edge insets (keyboard padded above the gesture pill / IME-switch); **umlaut long-press**
@@ -85,6 +88,41 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Device-feedback batch D-03 / D-04 / D-07 / D-10 (v0.7.6)
+- **D-03 space bar shows the language:** `AdaptKeyboardView.spaceLabel` (a view property, drawn for
+  `KeyCode.SPACE` in `labelFor`, so it survives layout rebuilds); the service pushes the current input
+  language's label via `updateSpaceLabel()` → `languageLabel(activeLanguage)` ("Deutsch" / "Ελληνικά";
+  "English" mapped for completeness but never the active alphabet — English is only auto-detected for
+  autocorrect). Called from `onCreateInputView`, `onStartInputView` and `toggleLanguage` (G-01), so the
+  label tracks the space-swipe switch. The G-01 toast now reuses `languageLabel`.
+- **D-04 space bar (and every special key) flashes on press:** root cause was `pressedKeyPaint` using
+  `key_background_special` — the *same* colour the special keys already draw at rest, so space/shift/enter
+  showed no change when pressed. Added a distinct `key_background_pressed` (#A6C8FF) colour for the pressed
+  paint. Plus a **post-release flash** (`flash(key)` / `flashKey` held for `flashDurationMs` = 80 ms via
+  the existing handler) so even a sub-frame quick tap is visibly acknowledged; `onDraw` highlights
+  `pressedKey || flashKey`; `cancelFlash()` on the next ACTION_DOWN. Flash fires on the tap-emit path only
+  (not on swipe/long-press).
+- **D-07 accelerating backspace-on-hold:** pure `keyboard/BackspaceRepeat` (unit-tested, 6 tests):
+  `INITIAL_DELAY_MS` = 400 before the first repeat, `nextDelayMs(step)` geometric decay from
+  `START_DELAY_MS` 200 → floor `MIN_DELAY_MS` 45 (factor 0.82), and `deletesWord(charsDeleted)` switches to
+  word-wise once `WORD_MODE_AFTER_CHARS` = 18 chars (~3 words) have gone. The view owns the timer
+  (`scheduleBackspaceRepeat` on ACTION_DOWN of `KeyCode.DELETE`, cancelled on UP/CANCEL/move-beyond-slop —
+  a move is a G-02 swipe, not a hold) and fires `OnBackspaceRepeatListener.onBackspaceRepeat(step)`;
+  `backspaceRepeated` suppresses the would-be single-delete tap on release so a hold never double-counts.
+  The service's `handleBackspaceRepeat(step)` resets on step 0, deletes composing chars first, then
+  committed text char-wise (via the shared `deleteOneBefore`) and word-wise (via `WordBoundary`) past the
+  threshold; `backspaceHeldChars` tracks the count.
+- **D-10 backspace at start of entry:** the single-char delete path is now `deleteOneBefore(ic)` — when
+  `getTextBeforeCursor(1)` is empty (cursor at the very start of the editable) it sends a real DEL key
+  event (`sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)`) so the editor can join with the previous line/entry
+  (Google-Keep-style), instead of the old no-op `deleteSurroundingText(1,0)`. Used by both the normal
+  backspace and the D-07 repeat. A newline within one field is still a normal in-editable delete (joins
+  lines) as before; only a truly empty prefix triggers the DEL fallback.
+- **Device-only verification** (this environment cannot run an emulator): the space-bar label rendering,
+  the flash timing feel, the backspace acceleration curve / word-switch threshold, and the D-10 DEL
+  fallback across real editors (Keep notes, chat apps) all need a pass on the Pixel 9a. `BackspaceRepeat`
+  itself is fully JVM-unit-tested; the view/service glue is Android-only.
 
 ### Layout (L-)
 - L-01 base QWERTZ; L-02/L-04 configurable key proportions (`keyboard/KeyProportions`,

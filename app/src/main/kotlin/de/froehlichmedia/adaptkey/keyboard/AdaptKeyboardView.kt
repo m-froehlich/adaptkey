@@ -74,11 +74,33 @@ class AdaptKeyboardView @JvmOverloads constructor(
         fun onSwipe(key: Key, direction: SwipeDirection): Boolean
     }
     
+    /**
+     * Callback invoked repeatedly while the backspace key is held (D-07), at the accelerating cadence
+     * of [BackspaceRepeat]. [step] is the 0-based repeat index so the service can decide between
+     * character- and word-wise deletion.
+     */
+    fun interface OnBackspaceRepeatListener {
+        
+        fun onBackspaceRepeat(step: Int)
+    }
+    
     var onKeyListener: OnKeyListener? = null
     
     var onLongPressListener: OnLongPressListener? = null
     
     var onSwipeListener: OnSwipeListener? = null
+    
+    var onBackspaceRepeatListener: OnBackspaceRepeatListener? = null
+    
+    /**
+     * D-03: the label drawn on the space bar, showing the current input language (e.g. "Deutsch",
+     * "English", "Ελληνικά") instead of the word "Space". Set by the service when the language changes.
+     */
+    var spaceLabel: String = ""
+        set(value) {
+            field = value
+            invalidate()
+        }
     
     /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
     var offsetModel: OffsetModel? = null
@@ -148,6 +170,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val longPressHandler = Handler(Looper.getMainLooper())
     private var longPressRunnable: Runnable? = null
     private var longPressFired = false
+    
+    // D-04: keeps a just-tapped key highlighted for a brief moment after release, so even a very quick
+    // tap (down and up within a frame) produces a visible flash acknowledging the press.
+    private var flashKey: Key? = null
+    private val flashRunnable = Runnable {
+        flashKey = null
+        invalidate()
+    }
+    private val flashDurationMs = 80L
+    
+    // D-07: the accelerating backspace-on-hold repeat. Scheduled on ACTION_DOWN of the backspace key and
+    // cancelled on release / move; backspaceRepeated suppresses the would-be single-delete tap once at
+    // least one repeat has fired, so a hold never double-counts the initial deletion.
+    private var backspaceRepeatRunnable: Runnable? = null
+    private var backspaceStep = 0
+    private var backspaceRepeated = false
+    
     private var downX = 0f
     private var downY = 0f
     private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
@@ -167,8 +206,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         color = ContextCompat.getColor(context, R.color.key_background_special)
     }
     
+    // D-04: a distinct pressed colour (not key_background_special, which the special keys already use at
+    // rest) so every key - including the space bar, shift and enter - visibly flashes when pressed.
     private val pressedKeyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = ContextCompat.getColor(context, R.color.key_background_special)
+        color = ContextCompat.getColor(context, R.color.key_background_pressed)
     }
     
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -242,7 +283,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         super.onDraw(canvas)
         for ((key, rect) in keyRects) {
             val paint = when {
-                key === pressedKey -> pressedKeyPaint
+                key === pressedKey || key === flashKey -> pressedKeyPaint
                 key.code == KeyCode.CHAR -> keyPaint
                 else -> specialKeyPaint
             }
@@ -266,6 +307,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 val resolved = resolveKey(event.x, event.y) ?: return true
                 val (key, rect) = resolved
+                cancelFlash()
                 pressedKey = key
                 longPressFired = false
                 downX = event.x
@@ -277,29 +319,39 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // T-05: classify the raw contact point into the space/letter ambiguity bands.
                 pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
                 scheduleLongPress(key)
+                // D-07: holding the backspace key starts an accelerating repeat delete.
+                if (key.code == KeyCode.DELETE) {
+                    scheduleBackspaceRepeat()
+                }
                 return true
             }
             
             MotionEvent.ACTION_MOVE -> {
-                // Movement does not change the resolved key (T-01); it only cancels the pending long-press.
+                // Movement does not change the resolved key (T-01); it only cancels the pending long-press
+                // and any backspace repeat (a swipe on backspace is a word-delete gesture, not a hold).
                 if (pressedKey != null && movedBeyondSlop(event.x, event.y)) {
                     cancelPendingLongPress()
+                    cancelBackspaceRepeat()
                 }
                 return true
             }
             
             MotionEvent.ACTION_UP -> {
                 cancelPendingLongPress()
+                cancelBackspaceRepeat()
                 val key = pressedKey
                 pressedKey = null
                 invalidate()
-                if (key != null && !longPressFired) {
+                // D-07: once a backspace hold has repeated, the release must not also fire a tap delete.
+                if (key != null && !longPressFired && !backspaceRepeated) {
                     // §4: a swipe past the gesture threshold is offered to the listener; if consumed it
                     // suppresses the tap, otherwise the resolved key is emitted as usual (T-01).
                     val direction = SwipeGesture.classify(event.x - downX, event.y - downY, swipeThresholdPx)
                     val consumed = direction != SwipeDirection.NONE &&
                         onSwipeListener?.onSwipe(key, direction) == true
                     if (!consumed) {
+                        // D-04: briefly flash the key so even a fast tap is visibly acknowledged.
+                        flash(key)
                         onKeyListener?.onKey(key, downX, downY, pendingAmbiguity)
                     }
                 }
@@ -308,6 +360,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             
             MotionEvent.ACTION_CANCEL -> {
                 cancelPendingLongPress()
+                cancelBackspaceRepeat()
                 pressedKey = null
                 invalidate()
                 return true
@@ -334,6 +387,51 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun cancelPendingLongPress() {
         longPressRunnable?.let { longPressHandler.removeCallbacks(it) }
         longPressRunnable = null
+    }
+    
+    /**
+     * D-04: highlights [key] for a brief moment after a tap, then repaints, so a quick press produces a
+     * visible flash. Replaces any previous lingering flash.
+     */
+    private fun flash(key: Key) {
+        longPressHandler.removeCallbacks(flashRunnable)
+        flashKey = key
+        invalidate()
+        longPressHandler.postDelayed(flashRunnable, flashDurationMs)
+    }
+    
+    private fun cancelFlash() {
+        longPressHandler.removeCallbacks(flashRunnable)
+        flashKey = null
+    }
+    
+    /**
+     * D-07: schedules the accelerating backspace repeat. The first repeat fires after
+     * [BackspaceRepeat.INITIAL_DELAY_MS]; each tick reports its step to the listener (which performs the
+     * deletion) and reschedules at the next, shorter [BackspaceRepeat] interval until the key is released.
+     */
+    private fun scheduleBackspaceRepeat() {
+        backspaceStep = 0
+        backspaceRepeated = false
+        val runnable = object : Runnable {
+            override fun run() {
+                if (pressedKey?.code != KeyCode.DELETE) {
+                    return
+                }
+                backspaceRepeated = true
+                onBackspaceRepeatListener?.onBackspaceRepeat(backspaceStep)
+                val next = BackspaceRepeat.nextDelayMs(backspaceStep)
+                backspaceStep++
+                longPressHandler.postDelayed(this, next)
+            }
+        }
+        backspaceRepeatRunnable = runnable
+        longPressHandler.postDelayed(runnable, BackspaceRepeat.INITIAL_DELAY_MS)
+    }
+    
+    private fun cancelBackspaceRepeat() {
+        backspaceRepeatRunnable?.let { longPressHandler.removeCallbacks(it) }
+        backspaceRepeatRunnable = null
     }
     
     private fun movedBeyondSlop(x: Float, y: Float): Boolean {
@@ -387,10 +485,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     private fun labelFor(key: Key): String {
         val ch = key.char
-        return if (key.code == KeyCode.CHAR && shifted && ch != null) {
-            ch.uppercaseChar().toString()
-        } else {
-            key.label
+        return when {
+            // D-03: the space bar shows the current input language instead of its layout label.
+            key.code == KeyCode.SPACE && spaceLabel.isNotEmpty() -> spaceLabel
+            key.code == KeyCode.CHAR && shifted && ch != null -> ch.uppercaseChar().toString()
+            else -> key.label
         }
     }
     
