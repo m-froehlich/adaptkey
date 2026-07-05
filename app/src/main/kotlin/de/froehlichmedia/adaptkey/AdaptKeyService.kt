@@ -294,6 +294,7 @@ class AdaptKeyService : InputMethodService() {
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
+        view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { _, alternative -> handleLongPressAlternative(alternative) }
         keyboardView = view
         
         val panel = EmojiPanelView(this)
@@ -401,6 +402,9 @@ class AdaptKeyService : InputMethodService() {
             view.showNumberRow = s.showNumberRow
             view.letterHints = s.letterHints
             view.hintsEnabled = s.hintsEnabled
+            // D-05 / D-06: optional key-press sound + haptics (both default off).
+            view.soundEnabled = s.keySoundEnabled
+            view.hapticsEnabled = s.keyHapticsEnabled
         }
     }
     
@@ -639,18 +643,35 @@ class AdaptKeyService : InputMethodService() {
                 val symbol = key.hint ?: return
                 val ic = currentInputConnection ?: return
                 clearUndo()
-                if (symbol.isNotEmpty() && symbol.all { it.isLetter() }) {
-                    // A letter secondary (a Greek accented vowel, G-01) extends the word rather than
-                    // delimiting it - it behaves exactly like typing that letter.
-                    appendLongPressLetter(ic, symbol)
-                } else {
-                    finalizeAndCommit(ic, symbol)
-                }
+                commitLongPressSymbol(ic, symbol)
             }
             
             KeyCode.SYMBOL -> setSurface(PanelNavigation.onSwitchToSymbols())
             
             else -> Unit
+        }
+    }
+    
+    /**
+     * Handles a D-01 popup selection: commits the chosen [alternative] exactly like a single long-press
+     * secondary (D-02 full-stop punctuation is a delimiter; a letter alternative would extend the word).
+     */
+    private fun handleLongPressAlternative(alternative: String) {
+        val ic = currentInputConnection ?: return
+        clearUndo()
+        commitLongPressSymbol(ic, alternative)
+    }
+    
+    /**
+     * Commits a long-press secondary [symbol]: a letter secondary (a Greek accented vowel, G-01) extends
+     * the composing word exactly like typing that letter, while any other symbol (an AltGr glyph or a
+     * D-02 punctuation mark) finalises the current token and commits like a delimiter.
+     */
+    private fun commitLongPressSymbol(ic: InputConnection, symbol: String) {
+        if (symbol.isNotEmpty() && symbol.all { it.isLetter() }) {
+            appendLongPressLetter(ic, symbol)
+        } else {
+            finalizeAndCommit(ic, symbol)
         }
     }
     

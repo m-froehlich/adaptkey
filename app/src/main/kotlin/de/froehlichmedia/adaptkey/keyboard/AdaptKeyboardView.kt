@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
@@ -84,6 +85,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         fun onBackspaceRepeat(step: Int)
     }
     
+    /**
+     * Callback invoked when a D-01 multi-alternative long-press popup is released on an alternative
+     * (finger-tracking selection): carries the pressed key and the chosen alternative string.
+     */
+    fun interface OnLongPressPopupListener {
+        
+        fun onLongPressAlternative(key: Key, alternative: String)
+    }
+    
     var onKeyListener: OnKeyListener? = null
     
     var onLongPressListener: OnLongPressListener? = null
@@ -91,6 +101,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var onSwipeListener: OnSwipeListener? = null
     
     var onBackspaceRepeatListener: OnBackspaceRepeatListener? = null
+    
+    var onLongPressPopupListener: OnLongPressPopupListener? = null
+    
+    /**
+     * Callback invoked at every ACTION_DOWN with the raw contact point and the resolved key's centre
+     * (D-09 diagnostic). Set only by the calibration screen when raw-tap recording is enabled; null (and
+     * therefore free) during normal typing.
+     */
+    fun interface OnRawTapListener {
+        
+        fun onRawTap(keyId: String, keyCenterX: Float, keyCenterY: Float, tapX: Float, tapY: Float)
+    }
+    
+    var onRawTapListener: OnRawTapListener? = null
     
     /**
      * D-03: the label drawn on the space bar, showing the current input language (e.g. "Deutsch",
@@ -158,6 +182,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /** D-05: whether a click sound plays on each key press (default off). */
+    var soundEnabled: Boolean = false
+    
+    /** D-06: whether a short vibration fires on each key press (default off). */
+    var hapticsEnabled: Boolean = false
+    
     private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
@@ -194,6 +224,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // A swipe must travel clearly past the tap jitter slop before it is treated as a gesture (§4).
     private val swipeThresholdPx = dp(36f)
     
+    // D-05: lazily resolved so the AudioManager is only fetched when the sound feedback is actually used.
+    private val audioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager }
+    
     private val rowHeightPx = dp(54f)
     private val gapPx = dp(3f)
     private val keyRadiusPx = dp(6f)
@@ -222,6 +255,31 @@ class AdaptKeyboardView @JvmOverloads constructor(
         color = ContextCompat.getColor(context, R.color.key_hint)
         textAlign = Paint.Align.RIGHT
         textSize = dp(11f)
+    }
+    
+    // D-01: the multi-alternative long-press popup. Active while popupKey is non-null; the finger slides
+    // over the equal-width cells to change popupSelectedIndex, and releasing commits the highlighted one.
+    private var popupKey: Key? = null
+    private var popupAlternatives: List<String> = emptyList()
+    private var popupSelectedIndex = 0
+    private var popupLeft = 0f
+    private var popupTop = 0f
+    private var popupCellWidth = 0f
+    private val popupCellWidthPx = dp(40f)
+    private val popupHeightPx = dp(46f)
+    
+    private val popupBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.key_background)
+    }
+    
+    private val popupSelectedPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.key_background_pressed)
+    }
+    
+    private val popupBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.suggestion_divider)
+        style = Paint.Style.STROKE
+        strokeWidth = dp(1f)
     }
     
     init {
@@ -299,6 +357,30 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
             }
         }
+        drawLongPressPopup(canvas)
+    }
+    
+    /**
+     * D-01: draws the multi-alternative long-press popup (when active) on top of the keys - a rounded
+     * bar of equal-width cells above the pressed key, with the currently selected alternative highlighted.
+     */
+    private fun drawLongPressPopup(canvas: Canvas) {
+        if (popupKey == null || popupAlternatives.isEmpty()) {
+            return
+        }
+        val width = popupCellWidth * popupAlternatives.size
+        val bounds = RectF(popupLeft, popupTop, popupLeft + width, popupTop + popupHeightPx)
+        canvas.drawRoundRect(bounds, keyRadiusPx, keyRadiusPx, popupBackgroundPaint)
+        popupAlternatives.forEachIndexed { index, alt ->
+            val cellLeft = popupLeft + index * popupCellWidth
+            val cell = RectF(cellLeft, popupTop, cellLeft + popupCellWidth, popupTop + popupHeightPx)
+            if (index == popupSelectedIndex) {
+                canvas.drawRoundRect(cell, keyRadiusPx, keyRadiusPx, popupSelectedPaint)
+            }
+            val baseline = cell.centerY() - (textPaint.descent() + textPaint.ascent()) / 2f
+            canvas.drawText(alt, cell.centerX(), baseline, textPaint)
+        }
+        canvas.drawRoundRect(bounds, keyRadiusPx, keyRadiusPx, popupBorderPaint)
     }
     
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -308,6 +390,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val resolved = resolveKey(event.x, event.y) ?: return true
                 val (key, rect) = resolved
                 cancelFlash()
+                dismissPopup()
+                // D-05 / D-06: optional press feedback (both default off).
+                playKeyFeedback()
                 pressedKey = key
                 longPressFired = false
                 downX = event.x
@@ -316,6 +401,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // T-03: feed the confirmed tap back into the personal offset model.
                 // event.size (T-04) lets the model track contact area for typing-pattern detection.
                 offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y, event.size)
+                // D-09: forward the raw tap + resolved key centre for the calibration diagnostic (opt-in).
+                onRawTapListener?.onRawTap(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
                 // T-05: classify the raw contact point into the space/letter ambiguity bands.
                 pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
                 scheduleLongPress(key)
@@ -327,6 +414,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
             
             MotionEvent.ACTION_MOVE -> {
+                // D-01: while the alternatives popup is open the finger slides to pick a cell, not swipe.
+                if (popupKey != null) {
+                    updatePopupSelection(event.x)
+                    return true
+                }
                 // Movement does not change the resolved key (T-01); it only cancels the pending long-press
                 // and any backspace repeat (a swipe on backspace is a word-delete gesture, not a hold).
                 if (pressedKey != null && movedBeyondSlop(event.x, event.y)) {
@@ -339,6 +431,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             MotionEvent.ACTION_UP -> {
                 cancelPendingLongPress()
                 cancelBackspaceRepeat()
+                // D-01: releasing over the alternatives popup commits the highlighted alternative.
+                if (popupKey != null) {
+                    commitPopupSelection()
+                    pressedKey = null
+                    invalidate()
+                    return true
+                }
                 val key = pressedKey
                 pressedKey = null
                 invalidate()
@@ -361,6 +460,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             MotionEvent.ACTION_CANCEL -> {
                 cancelPendingLongPress()
                 cancelBackspaceRepeat()
+                dismissPopup()
                 pressedKey = null
                 invalidate()
                 return true
@@ -377,11 +477,65 @@ class AdaptKeyboardView @JvmOverloads constructor(
             if (pressedKey === key) {
                 longPressFired = true
                 performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                onLongPressListener?.onLongPress(key)
+                // D-01: a key with two or more alternatives opens the finger-tracking popup instead of
+                // applying a single secondary immediately.
+                if (key.alternatives.size >= 2) {
+                    openPopup(key)
+                } else {
+                    onLongPressListener?.onLongPress(key)
+                }
             }
         }
         longPressRunnable = runnable
         longPressHandler.postDelayed(runnable, longPressTimeoutMs)
+    }
+    
+    /**
+     * D-01: opens the multi-alternative popup above [key]. The cells are equal-width and centred over
+     * the key, clamped to stay within the view; the most common alternative (index 0) is pre-selected.
+     */
+    private fun openPopup(key: Key) {
+        val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
+        val count = key.alternatives.size
+        // Shrink the cells if the row of alternatives would be wider than the view.
+        val usable = (width - gapPx * 2f)
+        popupCellWidth = minOf(popupCellWidthPx, usable / count)
+        val popupWidth = popupCellWidth * count
+        val centred = rect.centerX() - popupWidth / 2f
+        popupLeft = centred.coerceIn(gapPx, (width - gapPx - popupWidth).coerceAtLeast(gapPx))
+        popupTop = (rect.top - popupHeightPx - gapPx).coerceAtLeast(0f)
+        popupAlternatives = key.alternatives
+        popupSelectedIndex = 0
+        popupKey = key
+        invalidate()
+    }
+    
+    private fun updatePopupSelection(pointerX: Float) {
+        if (popupKey == null) {
+            return
+        }
+        val next = LongPressPopup.selectedIndex(pointerX, popupLeft, popupCellWidth, popupAlternatives.size)
+        if (next != popupSelectedIndex) {
+            popupSelectedIndex = next
+            invalidate()
+        }
+    }
+    
+    private fun commitPopupSelection() {
+        val key = popupKey
+        val alternative = popupAlternatives.getOrNull(popupSelectedIndex)
+        dismissPopup()
+        if (key != null && alternative != null) {
+            onLongPressPopupListener?.onLongPressAlternative(key, alternative)
+        }
+    }
+    
+    private fun dismissPopup() {
+        if (popupKey != null) {
+            popupKey = null
+            popupAlternatives = emptyList()
+            invalidate()
+        }
     }
     
     private fun cancelPendingLongPress() {
@@ -403,6 +557,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun cancelFlash() {
         longPressHandler.removeCallbacks(flashRunnable)
         flashKey = null
+    }
+    
+    /**
+     * D-05 / D-06: plays the optional key-press feedback, each gated by its own setting (both default
+     * off). [performHapticFeedback] routes through the window system, so no VIBRATE permission is needed
+     * (keeping AdaptKey's minimal-permission stance).
+     */
+    private fun playKeyFeedback() {
+        if (soundEnabled) {
+            audioManager?.playSoundEffect(AudioManager.FX_KEYPRESS_STANDARD)
+        }
+        if (hapticsEnabled) {
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        }
     }
     
     /**

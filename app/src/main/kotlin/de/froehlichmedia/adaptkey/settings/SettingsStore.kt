@@ -38,6 +38,9 @@ object SettingsStore {
     const val KEY_SHIFT_GRACE = "c07_shift_grace_ms"
     const val KEY_COMMA_LINE_NOT_SENTENCE_START = "c10_comma_line_not_sentence_start"
     const val KEY_LLM_THRESHOLD = "c06_llm_threshold"
+    const val KEY_KEY_SOUND = "d05_key_sound"
+    const val KEY_KEY_HAPTICS = "d06_key_haptics"
+    const val KEY_RECORD_RAW_TAPS = "d09_record_raw_taps"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -93,7 +96,10 @@ object SettingsStore {
             letterHints = LetterHints.decodeOrDefault(p.getString(KEY_LETTER_HINTS, null)),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
             commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true),
-            llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null)
+            llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null),
+            keySoundEnabled = p.getBoolean(KEY_KEY_SOUND, false),
+            keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
+            recordRawTaps = p.getBoolean(KEY_RECORD_RAW_TAPS, false)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

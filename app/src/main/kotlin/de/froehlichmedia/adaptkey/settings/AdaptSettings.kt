@@ -27,6 +27,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           sentence start (§6, e-mail salutation; C-10, default on)
  * @property llmActivationThreshold the C-06 tier-1 confidence below which the mini-LLM (tier 3) is
  *           consulted (§9); drives the tier-3 orchestration, inert while the backend is the no-op stub
+ * @property keySoundEnabled whether a click sound plays on each key press (D-05, default off)
+ * @property keyHapticsEnabled whether a short vibration fires on each key press (D-06, default off)
+ * @property recordRawTaps whether raw tap coordinates are recorded during a calibration session for
+ *           offline diagnostics (D-09, opt-in, default off)
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -36,7 +40,10 @@ data class AdaptSettings(
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
     val shiftGraceWindowMs: Long = DEFAULT_SHIFT_GRACE_WINDOW_MS,
     val commaLineNotSentenceStart: Boolean = true,
-    val llmActivationThreshold: LlmActivationThreshold = LlmActivationThreshold.DEFAULT
+    val llmActivationThreshold: LlmActivationThreshold = LlmActivationThreshold.DEFAULT,
+    val keySoundEnabled: Boolean = false,
+    val keyHapticsEnabled: Boolean = false,
+    val recordRawTaps: Boolean = false
 ) {
     
     companion object {

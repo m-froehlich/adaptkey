@@ -28,10 +28,11 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `e97943b` — v0.7.5; A-05 split sharpened + double-confirmed reset of learning/calibration.
-  (Working tree: **v0.7.6**, D-03/D-04/D-07/D-10 landed, not yet committed.)
-- Unit tests: **417 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +6 `BackspaceRepeatTest`);
-  `:app:assembleDebug` green. **Versioned 0.7.6** (only the third digit bumps per APK; versionCode 76).
+- HEAD: commit `b97c09f` — v0.7.6; D-03/D-04/D-07/D-10 (pushed to origin/main).
+  (Working tree: **v0.7.7**, the rest of the §12 D-series — D-01/D-02/D-05/D-06/D-09 — landed, not yet committed.)
+- Unit tests: **430 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +13: `LongPressPopupTest`,
+  `RawTapRecorderTest`, +1 `SettingsMapperTest`); `:app:assembleDebug` green (no warnings). **Versioned
+  0.7.7** (only the third digit bumps per APK; versionCode 77).
 - **A-05 split (v0.7.4):** a character is dropped only when it is a T-05 flag OR a letter over the space bar
   (`TokenRepair.OVER_SPACE_LETTERS` = c/v/b/n/m) — works without calibration; missed-space keeps the
   co-occurrence bigram gate. **Reset switch (v0.7.5):** `OffsetStore.clear()` + a two-dialog (first + final)
@@ -46,12 +47,12 @@ whenever a component lands so it does not have to be restated in every prompt.
   EMBEDDED as a 44dp row above the keyboard in the input-view root, toggled visible when there are items); ß
   long-press on s; D-08 (deleting whitespace after a capital shifts to lowercase). Spec §12 (D-01…D-10) captures
   the remaining feature requests.
-- **Next backlog (spec §12, mostly device-only UI):** **DONE in v0.7.6:** D-03 space bar shows language,
-  D-04 space/special-key tap flash, D-07 accelerating backspace-on-hold, D-10 backspace at start of entry.
-  **Still open:** D-01/D-02 multi-alternative long-press popup + full-stop punctuation list (the "Gboard
-  popup"); D-05/D-06 optional key sound + haptics (settings toggles, default off); D-09 raw-tap recording
-  (diagnostic). Also still open: suggestion-bar-missing root cause was assumed (candidates-view API) —
-  confirm the embed fixes it on device; the LLM decode loop still unverified.
+- **Spec §12 D-series (device-feedback):** **COMPLETE.** v0.7.6: D-03 space bar shows language, D-04
+  space/special-key tap flash, D-07 accelerating backspace-on-hold, D-10 backspace at start of entry.
+  v0.7.7: D-01/D-02 multi-alternative long-press popup + full-stop punctuation list, D-05/D-06 optional
+  key sound + haptics, D-09 raw-tap recording. All D-items need on-device confirmation (no emulator here).
+  Also still open: suggestion-bar-missing root cause was assumed (candidates-view API) — confirm the embed
+  fixes it on device; the LLM decode loop still unverified.
 - **Device-feedback fixes (Pixel 9a):** typing-lag (autocorrect no longer scans all 120k words —
   `DictionaryStore.correctionCandidates`, SQLite indexed; a Robolectric test caught a text-vs-int BETWEEN
   bug); edge-to-edge insets (keyboard padded above the gesture pill / IME-switch); **umlaut long-press**
@@ -88,6 +89,38 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Device-feedback batch D-01 / D-02 / D-05 / D-06 / D-09 (v0.7.7)
+- **D-01/D-02 multi-alternative long-press popup:** `Key` gained `alternatives: List<String>`; a key with
+  **≥2** alternatives opens a Gboard-style popup on long-press (finger slides to select, release commits),
+  while ≤1 keeps the immediate-apply behaviour (umlauts, ß, Greek tonos). The full-stop key carries
+  `KeyboardLayout.PERIOD_ALTERNATIVES` = `. ! ? , ; : - _ /` (D-02, full stop pre-selected = index 0),
+  shared by `GreekLayout`. Pure `keyboard/LongPressPopup.selectedIndex(pointerX, popupLeft, cellWidth,
+  count)` (unit-tested) does the x→cell maths; the view (`AdaptKeyboardView`) owns the popup state, draws
+  it above the key (clamped into view bounds, cells shrink if the row is too wide), tracks ACTION_MOVE to
+  re-highlight and commits on ACTION_UP via a new `OnLongPressPopupListener`. `hasLongPressAction` now also
+  true for `alternatives.size >= 2`; `scheduleLongPress` branches popup-vs-single. Service:
+  `handleLongPressAlternative` → shared `commitLongPressSymbol` (letter → append into word, else
+  finalise+commit like a delimiter) — the old single-secondary `handleLongPress` CHAR path was refactored
+  to reuse it.
+- **D-05/D-06 optional key sound + haptics (default off):** two settings (`d05_key_sound`, `d06_key_haptics`)
+  through `RawSettings`/`AdaptSettings`/`SettingsMapper`/`SettingsStore` + a new "Tasten-Rückmeldung"
+  preference category (two switches). The view holds `soundEnabled`/`hapticsEnabled` (pushed in
+  `applySettings`) and fires on ACTION_DOWN: `AudioManager.playSoundEffect(FX_KEYPRESS_STANDARD)` (lazy
+  AudioManager) and `performHapticFeedback(KEYBOARD_TAP)`. **No VIBRATE permission** — `performHapticFeedback`
+  routes through the window system, preserving the minimal-permission stance (dropped the deprecated
+  `FLAG_IGNORE_GLOBAL_SETTING` to stay warning-free).
+- **D-09 raw-tap recording (opt-in diagnostic):** setting `d09_record_raw_taps` (default off, in the
+  Kalibrierung category). Pure `touch/RawTapRecorder` + `RawTap` (unit-tested): collects
+  expected-char/resolved-key/key-centre/contact-point per tap, exposes per-axis deviation, serialises to a
+  TSV table (locale-independent 2-decimal coords). New view `OnRawTapListener` fires at ACTION_DOWN with the
+  raw point + resolved key centre; `CalibrationActivity` (when enabled) pairs each with the sentence's
+  expected char and, on finish, offers a neutral "Tipp-Daten exportieren" dialog button that shares the TSV
+  as `ACTION_SEND` text (no storage permission needed). Lets an uncalibrated finger's systematic offset be
+  analysed offline.
+- **Device-only verification:** popup rendering/geometry + finger-tracking, the punctuation set, the
+  sound/haptic feel, and the D-09 export flow all need a pass on the Pixel 9a. Pure cores (`LongPressPopup`,
+  `RawTapRecorder`, the settings mapping) are JVM-unit-tested; the view/activity glue is Android-only.
 
 ### Device-feedback batch D-03 / D-04 / D-07 / D-10 (v0.7.6)
 - **D-03 space bar shows the language:** `AdaptKeyboardView.spaceLabel` (a view property, drawn for

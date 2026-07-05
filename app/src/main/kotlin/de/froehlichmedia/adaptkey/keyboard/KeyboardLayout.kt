@@ -29,6 +29,12 @@ object KeyboardLayout {
     )
     
     /**
+     * D-02: the punctuation set offered in the full-stop key's long-press popup (D-01), in spec order.
+     * The full stop is first, so it is the pre-selected default.
+     */
+    val PERIOD_ALTERNATIVES = listOf(".", "!", "?", ",", ";", ":", "-", "_", "/")
+    
+    /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
      * layer can offer it as the reset baseline for the configurable per-key map.
      */
@@ -75,7 +81,8 @@ object KeyboardLayout {
             // L-02: comma & full stop widened, space narrowed.
             add(charKey(',', weight = proportions.commaWeight))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            add(charKey('.', weight = proportions.periodWeight))
+            // D-02: the full-stop key opens the punctuation popup on long-press (D-01).
+            add(charKey('.', alternatives = PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
             add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
         })
         
@@ -94,18 +101,19 @@ object KeyboardLayout {
     }
     
     /**
-     * Whether holding [key] past the long-press timeout has an action at all: a character key's
-     * secondary symbol (L-05 / L-06, see [longPressSymbol]), or the combined emoji / ?123 key
-     * switching to the numeric/symbol layer (L-03).
+     * Whether holding [key] past the long-press timeout has an action at all: a character key's single
+     * secondary symbol (L-05 / L-06, see [longPressSymbol]), its multi-alternative popup (D-01, two or
+     * more [Key.alternatives]), or the combined emoji / ?123 key switching to the numeric/symbol layer
+     * (L-03).
      *
      * @param key the pressed key
      * @return true when a long-press on this key should be scheduled
      */
     fun hasLongPressAction(key: Key): Boolean {
-        return (key.code == KeyCode.CHAR && key.hint != null) || key.code == KeyCode.SYMBOL
+        return (key.code == KeyCode.CHAR && (key.hint != null || key.alternatives.size >= 2)) || key.code == KeyCode.SYMBOL
     }
     
-    private fun charKey(c: Char, hint: String? = null, weight: Float = 1f): Key {
-        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, weight = weight)
+    private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
+        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
     }
 }

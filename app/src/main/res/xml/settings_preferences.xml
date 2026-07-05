@@ -180,6 +180,22 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/cat_feedback">
+
+        <SwitchPreferenceCompat
+            android:key="d05_key_sound"
+            android:title="@string/d05_sound_title"
+            android:summary="@string/d05_sound_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="d06_key_haptics"
+            android:title="@string/d06_haptics_title"
+            android:summary="@string/d06_haptics_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/cat_calibration">
 
         <Preference
@@ -190,6 +206,12 @@
                 android:targetPackage="de.froehlichmedia.adaptkey"
                 android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
         </Preference>
+
+        <SwitchPreferenceCompat
+            android:key="d09_record_raw_taps"
+            android:title="@string/d09_record_title"
+            android:summary="@string/d09_record_summary"
+            android:defaultValue="false" />
 
         <Preference
             android:key="reset_learning"

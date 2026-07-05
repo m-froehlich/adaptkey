@@ -63,14 +63,15 @@ object GreekLayout {
             add(Key(label = "😊", code = KeyCode.SYMBOL, hint = "123", weight = proportions.symbolWeight))
             add(charKey(',', weight = proportions.commaWeight))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            add(charKey('.', weight = proportions.periodWeight))
+            // D-02: the full-stop key opens the punctuation popup on long-press (D-01), same as the Latin layout.
+            add(charKey('.', alternatives = KeyboardLayout.PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
             add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
         })
         
         return result
     }
     
-    private fun charKey(c: Char, hint: String? = null, weight: Float = 1f): Key {
-        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, weight = weight)
+    private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
+        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
     }
 }

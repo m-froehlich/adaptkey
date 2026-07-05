@@ -144,4 +144,19 @@
     <string name="blacklist_add">Hinzufügen</string>
     <string name="blacklist_empty">Keine Einträge.</string>
     <string name="blacklist_removed">%1$s entfernt.</string>
+
+    <!-- Key-press feedback (D-05 / D-06). -->
+    <string name="cat_feedback">Tasten-Rückmeldung</string>
+    <string name="d05_sound_title">Tastenton</string>
+    <string name="d05_sound_summary">Spielt bei jedem Tastendruck einen kurzen Klick (Standard: aus).</string>
+    <string name="d06_haptics_title">Vibration</string>
+    <string name="d06_haptics_summary">Kurze Vibration bei jedem Tastendruck (Standard: aus).</string>
+
+    <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
+    <string name="d09_record_title">Roh-Tipp-Aufzeichnung</string>
+    <string name="d09_record_summary">Zeichnet bei der Kalibrierung die rohen Tipp-Koordinaten auf, um Tippfehler offline zu analysieren (Standard: aus).</string>
+    <string name="d09_export_button">Tipp-Daten exportieren</string>
+    <string name="d09_export_subject">AdaptKey Roh-Tipp-Aufzeichnung</string>
+    <string name="d09_export_chooser">Tipp-Daten teilen</string>
+    <string name="d09_export_empty">Keine Tipp-Daten aufgezeichnet.</string>
 </resources>

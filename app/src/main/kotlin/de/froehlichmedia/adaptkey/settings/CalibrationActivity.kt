@@ -3,9 +3,11 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import de.froehlichmedia.adaptkey.R
@@ -16,6 +18,7 @@ import de.froehlichmedia.adaptkey.touch.CalibrationSentences
 import de.froehlichmedia.adaptkey.touch.CalibrationSession
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
+import de.froehlichmedia.adaptkey.touch.RawTapRecorder
 import de.froehlichmedia.adaptkey.touch.TypingPattern
 import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
 
@@ -39,6 +42,10 @@ class CalibrationActivity : AppCompatActivity() {
     // so every recorded tap trains the key the finger physically hit rather than a half-learned guess.
     private val calibrationModel = OffsetModel(warmupSamples = Long.MAX_VALUE)
     
+    // D-09: opt-in raw-tap diagnostic. Non-null only when the setting is enabled; each tap is paired with
+    // the character the sentence expected at that point, so a systematic finger offset can be analysed.
+    private var rawTapRecorder: RawTapRecorder? = null
+    
     private lateinit var keyboard: AdaptKeyboardView
     private lateinit var counterView: TextView
     private lateinit var targetView: TextView
@@ -59,6 +66,15 @@ class CalibrationActivity : AppCompatActivity() {
         keyboard.showNumberRow = false
         keyboard.offsetModel = calibrationModel
         keyboard.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, _ -> onKey(key) }
+        // D-09: when enabled, record the raw tap (resolved at ACTION_DOWN, before the character is typed)
+        // together with the character the sentence expects at the current position.
+        if (SettingsStore.load(this).recordRawTaps) {
+            val recorder = RawTapRecorder()
+            rawTapRecorder = recorder
+            keyboard.onRawTapListener = AdaptKeyboardView.OnRawTapListener { keyId, cx, cy, x, y ->
+                recorder.record(expectedChar(), keyId, cx, cy, x, y)
+            }
+        }
         
         nextButton.setOnClickListener { onNext() }
         findViewById<Button>(R.id.calibration_skip).setOnClickListener { finish() }
@@ -88,6 +104,16 @@ class CalibrationActivity : AppCompatActivity() {
         if (keyboard.shifted) {
             keyboard.shifted = false
         }
+    }
+    
+    /**
+     * The character the current sentence expects at the current typed position (D-09), or null once the
+     * user has typed past the sentence end. Read at ACTION_DOWN, before the tapped character is appended.
+     *
+     * @return the expected character, or null past the sentence end
+     */
+    private fun expectedChar(): Char? {
+        return session.currentSentence().getOrNull(session.typedText().length)
     }
     
     private fun onNext() {
@@ -131,12 +157,36 @@ class CalibrationActivity : AppCompatActivity() {
     }
     
     private fun showFeedback(pattern: TypingPattern) {
-        AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
             .setTitle(R.string.k01_done_title)
             .setMessage(feedbackText(pattern))
             .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
             .setOnCancelListener { finish() }
-            .show()
+        // D-09: offer to export the recorded raw taps when the diagnostic captured any.
+        if (rawTapRecorder?.isEmpty() == false) {
+            builder.setNeutralButton(R.string.d09_export_button) { _, _ -> exportRawTaps() }
+        }
+        builder.show()
+    }
+    
+    /**
+     * D-09: shares the recorded raw taps as tab-separated text via a chooser, so they can be sent to a
+     * computer for offline analysis. No storage permission is needed - the data travels as share text.
+     */
+    private fun exportRawTaps() {
+        val recorder = rawTapRecorder
+        if (recorder == null || recorder.isEmpty()) {
+            Toast.makeText(this, R.string.d09_export_empty, Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        val share = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.d09_export_subject))
+            putExtra(Intent.EXTRA_TEXT, recorder.toTsv())
+        }
+        startActivity(Intent.createChooser(share, getString(R.string.d09_export_chooser)))
+        finish()
     }
     
     private fun feedbackText(pattern: TypingPattern): Int {

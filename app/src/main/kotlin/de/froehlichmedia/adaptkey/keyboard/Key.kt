@@ -29,6 +29,9 @@ enum class KeyCode {
  * @property code the functional category, see [KeyCode]
  * @property char the character emitted for [KeyCode.CHAR] keys, otherwise null
  * @property hint optional corner hint glyph for the long-press secondary (L-05 / L-06); not yet active in the scaffold
+ * @property alternatives the ordered secondary alternatives shown in the D-01 long-press popup (most
+ *           common first, which is pre-selected); a size of two or more triggers the popup, otherwise
+ *           the single [hint] is applied immediately on long-press
  * @property weight relative horizontal weight within its row; drives the configurable key proportions (L-02 / L-04, C-01)
  */
 data class Key(
@@ -36,6 +39,7 @@ data class Key(
     val code: KeyCode,
     val char: Char? = null,
     val hint: String? = null,
+    val alternatives: List<String> = emptyList(),
     val weight: Float = 1f
 ) {
     

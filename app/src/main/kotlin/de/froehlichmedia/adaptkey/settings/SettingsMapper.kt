@@ -30,7 +30,10 @@ data class RawSettings(
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
     val shiftGraceWindowMs: Long = AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS,
     val commaLineNotSentenceStart: Boolean = true,
-    val llmThresholdKey: String? = null
+    val llmThresholdKey: String? = null,
+    val keySoundEnabled: Boolean = false,
+    val keyHapticsEnabled: Boolean = false,
+    val recordRawTaps: Boolean = false
 )
 
 /**
@@ -148,7 +151,10 @@ object SettingsMapper {
             letterHints = hints,
             shiftGraceWindowMs = shiftGraceWindowMs(raw),
             commaLineNotSentenceStart = raw.commaLineNotSentenceStart,
-            llmActivationThreshold = toLlmActivationThreshold(raw)
+            llmActivationThreshold = toLlmActivationThreshold(raw),
+            keySoundEnabled = raw.keySoundEnabled,
+            keyHapticsEnabled = raw.keyHapticsEnabled,
+            recordRawTaps = raw.recordRawTaps
         )
     }
 }
