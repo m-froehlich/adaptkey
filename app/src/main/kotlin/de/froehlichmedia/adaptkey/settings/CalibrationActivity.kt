@@ -5,11 +5,14 @@ package de.froehlichmedia.adaptkey.settings
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.Key
@@ -56,6 +59,19 @@ class CalibrationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calibration)
         title = getString(R.string.k01_activity_title)
+        
+        // §13 / K-01 fix: Android 15 (targetSdk 35) draws the activity edge-to-edge, so the embedded
+        // keyboard's bottom row would sit under the gesture pill / navigation bar and could not be tapped -
+        // which blocked calibration. Pad the whole screen up by the bottom system-bar + gesture inset,
+        // exactly like the live keyboard's input view does.
+        val root = findViewById<View>(R.id.calibration_root)
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            // Only the bottom inset: the AppCompat ActionBar already handles the top status-bar inset.
+            v.setPadding(0, v.paddingTop, 0, maxOf(bars.bottom, gestures.bottom))
+            insets
+        }
         
         counterView = findViewById(R.id.calibration_counter)
         targetView = findViewById(R.id.calibration_target)

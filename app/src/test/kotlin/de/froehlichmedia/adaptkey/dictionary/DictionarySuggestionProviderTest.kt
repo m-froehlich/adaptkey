@@ -88,4 +88,44 @@ class DictionarySuggestionProviderTest {
         
         assertEquals("den", provider.autocorrectFor("dee", null))
     }
+    
+    @Test
+    fun `D-12 a close neighbour is offered even when the typed word is itself valid`() {
+        store.putWord(WordEntry("Mut", 50L))
+        store.putWord(WordEntry("mit", 100L))
+        
+        val words = provider.suggestionsFor("mut", null).map { it.word }
+        assertTrue(words.contains("mit"), "the intended \"mit\" must still be offered for a valid \"mut\"")
+    }
+    
+    @Test
+    fun `D-12 an umlaut variant is offered for a diacritic-less prefix`() {
+        store.putWord(WordEntry("grün", 80L))
+        
+        val words = provider.suggestionsFor("grun", null).map { it.word }
+        assertTrue(words.contains("grün"), "\"grun\" must surface \"grün\"")
+    }
+    
+    @Test
+    fun `D-12 a single mistype surfaces the intended word`() {
+        store.putWord(WordEntry("Default", 30L))
+        
+        val words = provider.suggestionsFor("defaukt", null).map { it.word }
+        assertTrue(words.contains("Default"), "\"defaukt\" must surface \"Default\"")
+    }
+    
+    @Test
+    fun `D-12 autocorrect is umlaut-aware`() {
+        store.putWord(WordEntry("grün", 80L))
+        
+        assertEquals("grün", provider.autocorrectFor("grun", null))
+    }
+    
+    @Test
+    fun `fuzzy neighbours are not offered for a one or two letter token`() {
+        store.putWord(WordEntry("mit", 100L))
+        
+        // "mu" must not fuzzy-match "mit"; only prefix completion applies at this length.
+        assertFalse(provider.suggestionsFor("mu", null).map { it.word }.contains("mit"))
+    }
 }

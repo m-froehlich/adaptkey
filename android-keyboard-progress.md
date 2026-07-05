@@ -28,11 +28,16 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: commit `b97c09f` — v0.7.6; D-03/D-04/D-07/D-10 (pushed to origin/main).
-  (Working tree: **v0.7.7**, the rest of the §12 D-series — D-01/D-02/D-05/D-06/D-09 — landed, not yet committed.)
-- Unit tests: **430 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +13: `LongPressPopupTest`,
-  `RawTapRecorderTest`, +1 `SettingsMapperTest`); `:app:assembleDebug` green (no warnings). **Versioned
-  0.7.7** (only the third digit bumps per APK; versionCode 77).
+- HEAD: `953a31d` — v0.7.7 + spec §13 backlog (pushed to origin/main through v0.7.7 = `a9583f8`).
+  (Working tree: **v0.7.8**, first slice of the §13 round-2 backlog landed, not yet committed.)
+- Unit tests: **444 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric; +14: `UmlautTest`, provider
+  fuzzy tests, `PanelNavigation`/`KeyGesture` swipe tests); `:app:assembleDebug` green (no warnings).
+  **Versioned 0.7.8** (only the third digit bumps per APK; versionCode 78).
+- **§13 round-2 progress (v0.7.8):** DONE = K-01 calibration inset (blocker), D-11/D-12 earlier+fuzzy
+  suggestions, D-15 Caps Lock, D-19/D-20 full-field page swipe + larger gesture thresholds. STILL OPEN in
+  §13: D-04/D-14 (flash speed + long-press feedback), D-07 (faster + last-word), A-07 (undo the split),
+  D-13 (word training), C-04 (highlight default on + lighter green), D-16 (pattern-driven key enlargement),
+  D-17 (onboarding USP text), D-18 (emoji panel toggle), D-21 (key cell padding).
 - **A-05 split (v0.7.4):** a character is dropped only when it is a T-05 flag OR a letter over the space bar
   (`TokenRepair.OVER_SPACE_LETTERS` = c/v/b/n/m) — works without calibration; missed-space keeps the
   co-occurrence bigram gate. **Reset switch (v0.7.5):** `OffsetStore.clear()` + a two-dialog (first + final)
@@ -102,6 +107,30 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Round-2 slice: K-01 inset / D-11-D-12 / D-15 / D-19-D-20 (v0.7.8)
+- **K-01 calibration inset (blocker fixed):** `CalibrationActivity` now applies the bottom
+  navigation/gesture inset to its root (`ViewCompat.setOnApplyWindowInsetsListener`, bottom only — the
+  AppCompat ActionBar handles the top), so the embedded keyboard sits above the gesture pill and
+  calibration is usable. Layout root got an id (`calibration_root`).
+- **D-11/D-12 earlier + fuzzy suggestions:** `DictionarySuggestionProvider.suggestionsFor` now merges
+  prefix completions (shown from the 1st letter) with **fuzzy neighbours** (from the 3rd letter): single
+  edit / umlaut-folded matches via the new pure `suggestion/Umlaut.fold` (ä→a, ö→o, ü→u, ß→ss) + the
+  existing bounded `correctionCandidates`. So a valid-but-wrong "mut" still offers "mit", "grun"→"grün",
+  "defaukt"→"Default". `autocorrectFor` is likewise umlaut-aware now. (Note: a junk-in-dict word being
+  highlighted as "known" — the "Defaukt was green" report — is a data issue tied to C-04, not fixed here;
+  the constructive part, offering "Default", is.)
+- **D-15 Caps Lock:** double-tap Shift (within `DOUBLE_TAP_SHIFT_MS`=300) engages a persistent
+  `AdaptKeyboardView.capsLock`; a further Shift press releases it. The Shift key shows "⇪" while locked,
+  letters render/commit uppercase (`isUpperArmed()` = shifted || capsLock), `consumeShift` leaves capsLock
+  intact, and a new field resets it.
+- **D-19/D-20 swipes:** a full-field horizontal swipe now cycles the surface/page
+  (letters → symbols-1 → symbols-2, wrapping) via new `GestureAction.SWITCH_SURFACE_NEXT/PREV`,
+  `KeyGesture.surfaceSwipe`, pure `PanelNavigation.swipePage`, and service `applySwipePage` — separate from
+  the space-bar language swipe (G-01) and the backspace word-delete (G-02). D-20: the view now uses
+  per-gesture thresholds (`resolveSwipe`): the small `spaceSwipeThresholdPx`=28dp only for the space-bar
+  language swipe, the larger `fieldSwipeThresholdPx`=64dp for dismiss-down / surface-swipe / word-delete, so
+  a faint down-swipe no longer hides the keyboard.
 
 ### Device-feedback batch D-01 / D-02 / D-05 / D-06 / D-09 (v0.7.7)
 - **D-01/D-02 multi-alternative long-press popup:** `Key` gained `alternatives: List<String>`; a key with

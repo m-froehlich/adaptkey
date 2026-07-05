@@ -23,5 +23,11 @@ enum class GestureAction {
     LANGUAGE_NEXT,
     
     /** L-03: an upward swipe on the combined emoji / ?123 key switches to the numeric/symbol layer. */
-    OPEN_SYMBOL_LAYER
+    OPEN_SYMBOL_LAYER,
+    
+    /** D-19: a right swipe across the key field advances to the next surface/page (letters → symbols → numbers). */
+    SWITCH_SURFACE_NEXT,
+    
+    /** D-19: a left swipe across the key field goes back to the previous surface/page. */
+    SWITCH_SURFACE_PREV
 }

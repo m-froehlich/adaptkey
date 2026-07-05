@@ -16,6 +16,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.ContextCompat
+import kotlin.math.abs
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
@@ -135,6 +136,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /** D-15: Caps Lock - persistent uppercase (engaged by a double-tap of Shift) until Shift is pressed again. */
+    var capsLock: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
     var proportions: KeyProportions = KeyProportions.DEFAULT
         set(value) {
             field = value
@@ -221,8 +229,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var downY = 0f
     private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
     private val longPressTimeoutMs = ViewConfiguration.getLongPressTimeout().toLong()
-    // A swipe must travel clearly past the tap jitter slop before it is treated as a gesture (§4).
-    private val swipeThresholdPx = dp(36f)
+    // D-20: field gestures (dismiss-down, surface swipe, word-delete) need a clearly larger travel so a
+    // faint motion no longer triggers them; the space-bar language swipe (G-01) stays small, proportional
+    // to the narrow space bar, so it remains easy.
+    private val fieldSwipeThresholdPx = dp(64f)
+    private val spaceSwipeThresholdPx = dp(28f)
     
     // D-05: lazily resolved so the AudioManager is only fetched when the sound feedback is actually used.
     private val audioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager }
@@ -443,11 +454,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 invalidate()
                 // D-07: once a backspace hold has repeated, the release must not also fire a tap delete.
                 if (key != null && !longPressFired && !backspaceRepeated) {
-                    // §4: a swipe past the gesture threshold is offered to the listener; if consumed it
-                    // suppresses the tap, otherwise the resolved key is emitted as usual (T-01).
-                    val direction = SwipeGesture.classify(event.x - downX, event.y - downY, swipeThresholdPx)
-                    val consumed = direction != SwipeDirection.NONE &&
-                        onSwipeListener?.onSwipe(key, direction) == true
+                    // §4 / D-20: a swipe is offered to the listener only once it clears the per-gesture
+                    // threshold (small for the space-bar language swipe, large for the field gestures); if
+                    // consumed it suppresses the tap, otherwise the resolved key is emitted as usual (T-01).
+                    val consumed = resolveSwipe(key, event.x - downX, event.y - downY)
                     if (!consumed) {
                         // D-04: briefly flash the key so even a fast tap is visibly acknowledged.
                         flash(key)
@@ -608,6 +618,33 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return dx * dx + dy * dy > touchSlopPx * touchSlopPx
     }
     
+    /**
+     * Resolves a release displacement into a swipe and offers it to the listener (§4 / D-20). The
+     * direction is first detected with the small threshold, then the dominant-axis travel must clear the
+     * threshold that applies to that gesture: the small [spaceSwipeThresholdPx] for the space-bar
+     * language swipe (G-01), the larger [fieldSwipeThresholdPx] for every field gesture (dismiss-down,
+     * surface swipe, word-delete). Returns true when the listener consumed the swipe.
+     *
+     * @param key the key the swipe started on
+     * @param dx the horizontal release displacement
+     * @param dy the vertical release displacement
+     * @return true when the swipe was recognised and consumed (suppressing the tap)
+     */
+    private fun resolveSwipe(key: Key, dx: Float, dy: Float): Boolean {
+        val direction = SwipeGesture.classify(dx, dy, spaceSwipeThresholdPx)
+        if (direction == SwipeDirection.NONE) {
+            return false
+        }
+        val horizontal = direction == SwipeDirection.LEFT || direction == SwipeDirection.RIGHT
+        val travel = if (horizontal) abs(dx) else abs(dy)
+        val isLanguageSwipe = key.code == KeyCode.SPACE && horizontal
+        val required = if (isLanguageSwipe) spaceSwipeThresholdPx else fieldSwipeThresholdPx
+        if (travel < required) {
+            return false
+        }
+        return onSwipeListener?.onSwipe(key, direction) == true
+    }
+    
     private fun bottomLetterBoxes(): List<KeyBox> {
         return keyRects
             .filter { (key, _) -> key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS }
@@ -656,7 +693,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return when {
             // D-03: the space bar shows the current input language instead of its layout label.
             key.code == KeyCode.SPACE && spaceLabel.isNotEmpty() -> spaceLabel
-            key.code == KeyCode.CHAR && shifted && ch != null -> ch.uppercaseChar().toString()
+            // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
+            key.code == KeyCode.SHIFT && capsLock -> "⇪"
+            key.code == KeyCode.CHAR && (shifted || capsLock) && ch != null -> ch.uppercaseChar().toString()
             else -> key.label
         }
     }

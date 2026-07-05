@@ -26,4 +26,23 @@ class PanelNavigationTest {
     fun `long-press or swipe-up always switches to the symbol layer`() {
         assertEquals(InputSurface.SYMBOLS, PanelNavigation.onSwitchToSymbols())
     }
+    
+    @Test
+    fun `D-19 a forward swipe cycles letters to symbol page 1 to page 2 and wraps`() {
+        assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 1), PanelNavigation.swipePage(InputSurface.LETTERS, 1, forward = true))
+        assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 2), PanelNavigation.swipePage(InputSurface.SYMBOLS, 1, forward = true))
+        assertEquals(PanelNavigation.Page(InputSurface.LETTERS, 1), PanelNavigation.swipePage(InputSurface.SYMBOLS, 2, forward = true))
+    }
+    
+    @Test
+    fun `D-19 a backward swipe reverses the cycle`() {
+        assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 2), PanelNavigation.swipePage(InputSurface.LETTERS, 1, forward = false))
+        assertEquals(PanelNavigation.Page(InputSurface.LETTERS, 1), PanelNavigation.swipePage(InputSurface.SYMBOLS, 1, forward = false))
+        assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 1), PanelNavigation.swipePage(InputSurface.SYMBOLS, 2, forward = false))
+    }
+    
+    @Test
+    fun `D-19 the emoji surface is treated as the letter view in the swipe cycle`() {
+        assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 1), PanelNavigation.swipePage(InputSurface.EMOJI, 1, forward = true))
+    }
 }

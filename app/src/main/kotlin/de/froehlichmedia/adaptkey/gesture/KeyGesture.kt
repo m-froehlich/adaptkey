@@ -11,9 +11,9 @@ import de.froehlichmedia.adaptkey.keyboard.KeyCode
  *
  * A downward swipe dismisses the keyboard regardless of the key underneath (G-03). A horizontal
  * swipe is key-specific: left on backspace deletes a word (G-02), left / right on the space bar
- * switches language (G-01), up on the combined key switches to the numeric/symbol layer (L-03).
- * Everything else carries no gesture and resolves to [GestureAction.NONE], leaving the touch to be
- * handled as a tap.
+ * switches language (G-01), up on the combined key switches to the numeric/symbol layer (L-03), and
+ * left / right anywhere else on the key field switches the surface/page (D-19). Everything else
+ * carries no gesture and resolves to [GestureAction.NONE], leaving the touch to be handled as a tap.
  */
 object KeyGesture {
     
@@ -30,18 +30,36 @@ object KeyGesture {
             return GestureAction.DISMISS_KEYBOARD
         }
         return when (keyCode) {
-            // G-02: swipe left on backspace deletes the whole previous word.
+            // G-02: swipe left on backspace deletes the whole previous word (right is not a surface swipe
+            // here, to keep the backspace key unambiguous).
             KeyCode.DELETE -> if (direction == SwipeDirection.LEFT) GestureAction.DELETE_WORD else GestureAction.NONE
-            // G-01: swipe left / right on the space bar switches the input language.
+            // G-01: swipe left / right on the space bar switches the input language (never a surface swipe).
             KeyCode.SPACE -> when (direction) {
                 SwipeDirection.LEFT -> GestureAction.LANGUAGE_PREV
                 SwipeDirection.RIGHT -> GestureAction.LANGUAGE_NEXT
                 else -> GestureAction.NONE
             }
             
-            // L-03: swipe up on the combined emoji / ?123 key switches to the numeric/symbol layer.
-            KeyCode.SYMBOL -> if (direction == SwipeDirection.UP) GestureAction.OPEN_SYMBOL_LAYER else GestureAction.NONE
+            // L-03: swipe up on the combined emoji / ?123 key switches to the numeric/symbol layer; a
+            // horizontal swipe there is an ordinary surface swipe (D-19).
+            KeyCode.SYMBOL -> if (direction == SwipeDirection.UP) GestureAction.OPEN_SYMBOL_LAYER else surfaceSwipe(direction)
             
+            // D-19: left / right anywhere else on the key field switches the surface/page.
+            else -> surfaceSwipe(direction)
+        }
+    }
+    
+    /**
+     * Maps a horizontal swipe on an ordinary field key to a surface/page switch (D-19); a non-horizontal
+     * direction carries no surface action.
+     *
+     * @param direction the recognised swipe direction
+     * @return the surface-switch action, or [GestureAction.NONE]
+     */
+    private fun surfaceSwipe(direction: SwipeDirection): GestureAction {
+        return when (direction) {
+            SwipeDirection.RIGHT -> GestureAction.SWITCH_SURFACE_NEXT
+            SwipeDirection.LEFT -> GestureAction.SWITCH_SURFACE_PREV
             else -> GestureAction.NONE
         }
     }

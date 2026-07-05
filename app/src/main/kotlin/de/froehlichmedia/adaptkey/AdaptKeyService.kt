@@ -201,6 +201,9 @@ class AdaptKeyService : InputMethodService() {
     private var shiftGuardedArm = false
     private var fieldMandateOverridden = false
     
+    // D-15: time of the last Shift press, for detecting a double-tap that engages Caps Lock.
+    private var lastShiftTime = 0L
+    
     // D-07: characters removed during the current accelerating backspace hold; drives the switch from
     // character-wise to word-wise deletion once roughly three words have gone.
     private var backspaceHeldChars = 0
@@ -431,6 +434,8 @@ class AdaptKeyService : InputMethodService() {
         capsMode = capsModeFor(info)
         clearUndo()
         keyboardView?.shifted = false
+        // D-15: a new field starts without Caps Lock.
+        keyboardView?.capsLock = false
         setSurface(InputSurface.LETTERS)
         clearSuggestions()
     }
@@ -593,7 +598,7 @@ class AdaptKeyService : InputMethodService() {
                         captureTokenContext(ic)
                         resetWordEndShift()
                     }
-                    val ch = if (keyboardView?.shifted == true) raw.uppercaseChar() else raw
+                    val ch = if (isUpperArmed()) raw.uppercaseChar() else raw
                     composing.append(ch)
                     // T-05: retain this letter's space-ambiguity flag in step with the composing token (A-05).
                     composingFlags.add(ambiguity.kind)
@@ -685,7 +690,7 @@ class AdaptKeyService : InputMethodService() {
             captureTokenContext(ic)
             resetWordEndShift()
         }
-        val upper = keyboardView?.shifted == true
+        val upper = isUpperArmed()
         for (ch in letters) {
             composing.append(if (upper) ch.uppercaseChar() else ch)
             composingFlags.add(TapAmbiguity.NONE)
@@ -806,7 +811,32 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
+            // D-19: a full-field horizontal swipe cycles the surface/page (letters ↔ symbols ↔ numbers).
+            GestureAction.SWITCH_SURFACE_NEXT -> {
+                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = true))
+                true
+            }
+            
+            GestureAction.SWITCH_SURFACE_PREV -> {
+                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = false))
+                true
+            }
+            
             GestureAction.NONE -> false
+        }
+    }
+    
+    /**
+     * Applies a D-19 surface/page switch from the horizontal-swipe cycle: shows the target surface and,
+     * for the numeric/symbol layer, its specific page.
+     *
+     * @param page the surface/page to switch to
+     */
+    private fun applySwipePage(page: PanelNavigation.Page) {
+        setSurface(page.surface)
+        if (page.surface == InputSurface.SYMBOLS) {
+            symbolPage = page.symbolPage
+            keyboardView?.symbolPage = symbolPage
         }
     }
     
@@ -1349,7 +1379,22 @@ class AdaptKeyService : InputMethodService() {
             handleWordEndShift(view)
             return
         }
-        val elapsed = SystemClock.uptimeMillis() - shiftArmTime
+        val now = SystemClock.uptimeMillis()
+        // D-15: a press while Caps Lock is on releases it; two quick presses engage it.
+        if (view.capsLock) {
+            view.capsLock = false
+            view.shifted = false
+            lastShiftTime = now
+            return
+        }
+        if (now - lastShiftTime <= DOUBLE_TAP_SHIFT_MS) {
+            view.capsLock = true
+            view.shifted = false
+            lastShiftTime = now
+            return
+        }
+        lastShiftTime = now
+        val elapsed = now - shiftArmTime
         if (ShiftGrace.suppressesShiftPress(shiftGuardedArm, view.shifted, settings.shiftGraceWindowMs, elapsed)) {
             return
         }
@@ -1426,7 +1471,19 @@ class AdaptKeyService : InputMethodService() {
         return SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart)
     }
     
+    /**
+     * Whether the next typed letter should be uppercase: either a one-shot Shift is armed or Caps Lock
+     * is engaged (D-15).
+     *
+     * @return true when the letter should be capitalised
+     */
+    private fun isUpperArmed(): Boolean {
+        val view = keyboardView ?: return false
+        return view.shifted || view.capsLock
+    }
+    
     private fun consumeShift() {
+        // D-15: Caps Lock is persistent, so only the one-shot Shift is cleared after a letter.
         if (keyboardView?.shifted == true) {
             keyboardView?.shifted = false
         }
@@ -1460,5 +1517,8 @@ class AdaptKeyService : InputMethodService() {
         
         // Height of the embedded suggestion strip.
         private const val SUGGESTION_BAR_HEIGHT_DP = 44
+        
+        // D-15: two Shift presses within this window engage Caps Lock.
+        private const val DOUBLE_TAP_SHIFT_MS = 300L
     }
 }
