@@ -13,10 +13,17 @@ object PanelNavigation {
      * A tap on the combined key opens the emoji panel from the letter view; the same action, routed
      * from the numeric/symbol layer's "ABC" key or the emoji panel's back button, returns to letters.
      *
+     * D-18: when the emoji panel is disabled, the combined key is purely a `?123` toggle - a tap from the
+     * letter view goes straight to the numeric/symbol layer and back.
+     *
      * @param current the currently shown surface
+     * @param emojiEnabled whether the emoji panel is enabled (D-18)
      * @return the surface to switch to
      */
-    fun onCombinedKeyTap(current: InputSurface): InputSurface {
+    fun onCombinedKeyTap(current: InputSurface, emojiEnabled: Boolean = true): InputSurface {
+        if (!emojiEnabled) {
+            return if (current == InputSurface.LETTERS) InputSurface.SYMBOLS else InputSurface.LETTERS
+        }
         return when (current) {
             InputSurface.LETTERS -> InputSurface.EMOJI
             InputSurface.SYMBOLS, InputSurface.EMOJI -> InputSurface.LETTERS

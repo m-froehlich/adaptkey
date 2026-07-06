@@ -28,6 +28,12 @@ class PanelNavigationTest {
     }
     
     @Test
+    fun `D-18 with the emoji panel disabled the combined key toggles letters and symbols`() {
+        assertEquals(InputSurface.SYMBOLS, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS, emojiEnabled = false))
+        assertEquals(InputSurface.LETTERS, PanelNavigation.onCombinedKeyTap(InputSurface.SYMBOLS, emojiEnabled = false))
+    }
+    
+    @Test
     fun `D-19 a forward swipe cycles letters to symbol page 1 to page 2 and wraps`() {
         assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 1), PanelNavigation.swipePage(InputSurface.LETTERS, 1, forward = true))
         assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 2), PanelNavigation.swipePage(InputSurface.SYMBOLS, 1, forward = true))

@@ -164,6 +164,8 @@ class AdaptKeyService : InputMethodService() {
     // and the persisted recent/frequently-used emoji (MRU).
     private var surface = InputSurface.LETTERS
     private var symbolPage = 1
+    // D-18: whether the emoji panel is enabled (default on). When off, the combined key is a ?123-only key.
+    private var emojiPanelEnabled = true
     private lateinit var emojiDataset: EmojiDataset
     private var recentEmojis: List<String> = emptyList()
     
@@ -216,6 +218,9 @@ class AdaptKeyService : InputMethodService() {
     private var undoTyped: String? = null
     private var undoCommitted = ""
     private var undoDelimiter = ""
+    // D-13: set when the armed undo would revert an A-05 split; undoing it then learns the rejoined word,
+    // so a real word the split mangled (e.g. "Backspace" -> "Back Space") is trained and never split again.
+    private var undoWasSplit = false
     
     private val handler = Handler(Looper.getMainLooper())
     private val resortRunnable = Runnable {
@@ -413,6 +418,8 @@ class AdaptKeyService : InputMethodService() {
             view.soundEnabled = s.keySoundEnabled
             view.hapticsEnabled = s.keyHapticsEnabled
         }
+        // D-18: emoji panel on/off (off makes the combined key a ?123-only key).
+        emojiPanelEnabled = s.emojiPanelEnabled
     }
     
     /**
@@ -631,8 +638,9 @@ class AdaptKeyService : InputMethodService() {
             
             KeyCode.SHIFT -> handleShift()
             
-            // L-03: a tap opens the emoji panel from the letter view, or returns to letters from anywhere else.
-            KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
+            // L-03 / D-18: a tap opens the emoji panel from the letter view (or the ?123 layer when the
+            // emoji panel is disabled), and returns to letters from anywhere else.
+            KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface, emojiPanelEnabled))
             
             // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
             KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
@@ -1122,6 +1130,8 @@ class AdaptKeyService : InputMethodService() {
         undoTyped = typed
         undoCommitted = committed
         undoDelimiter = delimiter
+        // D-13: mark this as a split, so undoing it trains the rejoined word.
+        undoWasSplit = true
         clearSuggestions()
     }
     
@@ -1137,10 +1147,16 @@ class AdaptKeyService : InputMethodService() {
     
     private fun performAutocorrectUndo(ic: InputConnection) {
         val typed = undoTyped ?: return
+        val wasSplit = undoWasSplit
         ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
         previousWord = typed
         clearUndo()
+        // D-13: undoing a wrong A-05 split trains the rejoined word, so it is never split again.
+        if (wasSplit) {
+            learnWord(typed)
+            previousWord = typed
+        }
         clearSuggestions()
         armShiftForNextWord(ic)
     }
@@ -1548,6 +1564,7 @@ class AdaptKeyService : InputMethodService() {
         undoTyped = null
         undoCommitted = ""
         undoDelimiter = ""
+        undoWasSplit = false
     }
     
     private fun capsModeFor(info: EditorInfo?): CapsMode {

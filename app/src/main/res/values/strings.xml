@@ -27,6 +27,8 @@
     <string name="c01_period_title">Full-stop width</string>
     <string name="c01_backspace_title">Extra backspace width</string>
     <string name="c01_backspace_summary">Percentage surcharge, taken from the neighbouring keys (L-04).</string>
+    <string name="c01_shift_title">Extra shift width</string>
+    <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
 
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>
@@ -38,6 +40,8 @@
 
     <string name="c09_title">Number row</string>
     <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
+    <string name="d18_title">Emoji panel</string>
+    <string name="d18_summary">When off, the 😊/?123 key opens only the numbers/symbols layer (D-18).</string>
     <string name="c08_hints_title">Show corner symbols</string>
     <string name="c08_hints_summary">Secondary long-press symbols as a corner hint (L-05). Long-press still works either way.</string>
     <string name="c08_reset_title">Reset corner symbols</string>
@@ -86,7 +90,7 @@
     <string name="onboarding_finish">Done</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_welcome_title">Welcome to AdaptKey</string>
-    <string name="onboarding_welcome_body">AdaptKey learns how YOU type — and stays completely offline while doing so.\n\n• No internet: this keyboard holds no internet permission. Nothing is "phoned home".\n• Adapts to your fingers: detects your typing pattern and corrects hits to your personal pattern.\n• Learns as you go: suggestions and autocorrect get better over time.\n• German, English and Greek, each with its own dictionary.\n• Free software (GPLv3).</string>
+    <string name="onboarding_welcome_body">AdaptKey learns how YOU type — and stays completely offline while doing so.\n\n• Provably offline: no internet permission at all — you can check it in the system. Nothing is ever "phoned home", and there is no tracking.\n• Adapts to your fingers: it learns where you actually hit each key and corrects accordingly. A short calibration gets it right from the start.\n• Smart correction: fixes typos on neighbouring keys and missing accents (e.g. "komplezz" → "komplett"), and repairs missed or accidental spaces.\n• Learns as you go: suggestions and autocorrect keep getting better.\n• Three languages: German, English and Greek, each with its own dictionary.\n• Optional on-device mini-AI for even better suggestions — downloaded once, still no internet.\n• Free software (GPLv3), no ads, no accounts.</string>
     <string name="onboarding_model_title">Optional mini-AI</string>
     <string name="onboarding_model_body">Optionally, a small AI (mini-LLM) can improve the suggestions when the normal model is unsure — entirely on the device. The model (~273 MB) is not included: you download it once via the browser and import it. Afterwards everything stays offline. You can skip this now and add it any time later.</string>
     <string name="onboarding_model_action">Set up model</string>

@@ -79,4 +79,30 @@ class KeyProportionsTest {
     fun `constructor rejects a negative backspace surcharge`() {
         assertThrows<IllegalArgumentException> { KeyProportions(backspaceExtra = -0.1f) }
     }
+    
+    @Test
+    fun `D-16 shift weight applies the surcharge and is off by default`() {
+        assertEquals(1.5f, KeyProportions().shiftWeight, 1e-4f)
+        assertEquals(1.5f * 1.10f, KeyProportions(shiftExtra = 0.10f).shiftWeight, 1e-4f)
+    }
+    
+    @Test
+    fun `D-16 a shift surcharge is also taken from the third-row letters, preserving the row width`() {
+        val proportions = KeyProportions(shiftExtra = 0.10f, backspaceExtra = 0f)
+        val letters = 7
+        
+        val tuned = proportions.shiftWeight +
+            letters * proportions.thirdRowLetterWeight(letters) +
+            proportions.backspaceWeight
+        val baseline = proportions.shiftBaseWeight +
+            letters * proportions.letterWeight +
+            proportions.backspaceBaseWeight
+        
+        assertEquals(baseline, tuned, 1e-4f)
+    }
+    
+    @Test
+    fun `constructor rejects a negative shift surcharge`() {
+        assertThrows<IllegalArgumentException> { KeyProportions(shiftExtra = -0.1f) }
+    }
 }

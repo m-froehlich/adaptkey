@@ -14,7 +14,8 @@ package de.froehlichmedia.adaptkey.keyboard
  * to be user-adjustable from the settings screen.
  *
  * @property letterWeight base weight of an ordinary letter key
- * @property shiftWeight weight of the shift key in the third row
+ * @property shiftBaseWeight the Gboard-like shift weight before the D-16 surcharge
+ * @property shiftExtra fractional surcharge applied to [shiftBaseWeight] (D-16, mirrors the backspace one)
  * @property backspaceBaseWeight the Gboard-like backspace weight before the L-04 surcharge
  * @property backspaceExtra fractional surcharge applied to [backspaceBaseWeight] (L-04, ~0.10 = 10 %)
  * @property symbolWeight weight of the combined emoji / numeric-layer key (L-03)
@@ -25,7 +26,8 @@ package de.froehlichmedia.adaptkey.keyboard
  */
 data class KeyProportions(
     val letterWeight: Float = 1.0f,
-    val shiftWeight: Float = 1.5f,
+    val shiftBaseWeight: Float = 1.5f,
+    val shiftExtra: Float = 0.0f,
     val backspaceBaseWeight: Float = 1.5f,
     val backspaceExtra: Float = 0.10f,
     val symbolWeight: Float = 1.3f,
@@ -37,7 +39,8 @@ data class KeyProportions(
     
     init {
         require(letterWeight > 0f) { "letterWeight must be > 0" }
-        require(shiftWeight > 0f) { "shiftWeight must be > 0" }
+        require(shiftBaseWeight > 0f) { "shiftBaseWeight must be > 0" }
+        require(shiftExtra >= 0f) { "shiftExtra must be >= 0" }
         require(backspaceBaseWeight > 0f) { "backspaceBaseWeight must be > 0" }
         require(backspaceExtra >= 0f) { "backspaceExtra must be >= 0" }
         require(symbolWeight > 0f) { "symbolWeight must be > 0" }
@@ -48,6 +51,14 @@ data class KeyProportions(
     }
     
     /**
+     * The final shift weight after applying the D-16 surcharge (mirrors [backspaceWeight]).
+     *
+     * @return [shiftBaseWeight] scaled by `(1 + shiftExtra)`
+     */
+    val shiftWeight: Float
+        get() = shiftBaseWeight * (1f + shiftExtra)
+    
+    /**
      * The final backspace weight after applying the L-04 surcharge.
      *
      * @return [backspaceBaseWeight] scaled by `(1 + backspaceExtra)`
@@ -56,8 +67,8 @@ data class KeyProportions(
         get() = backspaceBaseWeight * (1f + backspaceExtra)
     
     /**
-     * Per-letter weight in the third row after the backspace's extra width has been taken evenly
-     * from the [letterCount] letter keys (L-04), keeping the row's total width unchanged.
+     * Per-letter weight in the third row after the backspace's (L-04) and shift's (D-16) extra width has
+     * been taken evenly from the [letterCount] letter keys, keeping the row's total width unchanged.
      *
      * @param letterCount the number of letter keys sharing the surcharge; must be >= 0
      * @return the reduced per-letter weight, or [letterWeight] when [letterCount] is 0
@@ -67,7 +78,7 @@ data class KeyProportions(
         if (letterCount == 0) {
             return letterWeight
         }
-        val surcharge = backspaceBaseWeight * backspaceExtra
+        val surcharge = backspaceBaseWeight * backspaceExtra + shiftBaseWeight * shiftExtra
         return letterWeight - surcharge / letterCount
     }
     

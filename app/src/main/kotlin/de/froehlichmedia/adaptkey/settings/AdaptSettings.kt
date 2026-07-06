@@ -43,7 +43,8 @@ data class AdaptSettings(
     val llmActivationThreshold: LlmActivationThreshold = LlmActivationThreshold.DEFAULT,
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
-    val recordRawTaps: Boolean = false
+    val recordRawTaps: Boolean = false,
+    val emojiPanelEnabled: Boolean = true
 ) {
     
     companion object {

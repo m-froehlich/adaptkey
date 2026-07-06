@@ -63,10 +63,26 @@
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 
+        <SeekBarPreference
+            android:key="c01_shift_extra"
+            android:title="@string/c01_shift_title"
+            android:summary="@string/c01_shift_summary"
+            android:defaultValue="0"
+            android:max="50"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
         <SwitchPreferenceCompat
             android:key="c09_number_row"
             android:title="@string/c09_title"
             android:summary="@string/c09_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="d18_emoji_panel"
+            android:title="@string/d18_title"
+            android:summary="@string/d18_summary"
             android:defaultValue="true" />
 
         <SwitchPreferenceCompat

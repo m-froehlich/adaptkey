@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
+import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * Thin storage layer for the configurable parameters (C-01 … C-09).
@@ -28,6 +29,7 @@ object SettingsStore {
     const val KEY_COMMA_WEIGHT = "c01_comma_weight"
     const val KEY_PERIOD_WEIGHT = "c01_period_weight"
     const val KEY_BACKSPACE_EXTRA = "c01_backspace_extra"
+    const val KEY_SHIFT_EXTRA = "c01_shift_extra"
     const val KEY_RESORT_DELAY = "c02_resort_delay_ms"
     const val KEY_MAX_SUGGESTIONS = "c03_max_suggestions"
     const val KEY_HIGHLIGHT_ENABLED = "c04_highlight_enabled"
@@ -41,6 +43,7 @@ object SettingsStore {
     const val KEY_KEY_SOUND = "d05_key_sound"
     const val KEY_KEY_HAPTICS = "d06_key_haptics"
     const val KEY_RECORD_RAW_TAPS = "d09_record_raw_taps"
+    const val KEY_EMOJI_PANEL = "d18_emoji_panel"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -56,6 +59,9 @@ object SettingsStore {
     
     /** Default stored integer for the backspace surcharge slider, in percent (10 % = L-04). */
     const val DEF_BACKSPACE_EXTRA = 10
+    
+    /** Default stored integer for the shift surcharge slider, in percent (D-16, off until calibration). */
+    const val DEF_SHIFT_EXTRA = 0
     
     /** Default stored integer for the re-sort delay slider (C-02, 300 ms). */
     const val DEF_RESORT_DELAY = 300
@@ -87,6 +93,7 @@ object SettingsStore {
             commaWeight = p.getInt(KEY_COMMA_WEIGHT, DEF_COMMA_WEIGHT) / WEIGHT_SCALE,
             periodWeight = p.getInt(KEY_PERIOD_WEIGHT, DEF_PERIOD_WEIGHT) / WEIGHT_SCALE,
             backspaceExtra = p.getInt(KEY_BACKSPACE_EXTRA, DEF_BACKSPACE_EXTRA) / WEIGHT_SCALE,
+            shiftExtra = p.getInt(KEY_SHIFT_EXTRA, DEF_SHIFT_EXTRA) / WEIGHT_SCALE,
             maxSuggestions = p.getInt(KEY_MAX_SUGGESTIONS, DEF_MAX_SUGGESTIONS),
             reSortDelayMs = p.getInt(KEY_RESORT_DELAY, DEF_RESORT_DELAY).toLong(),
             highlightEnabled = p.getBoolean(KEY_HIGHLIGHT_ENABLED, true),
@@ -99,7 +106,8 @@ object SettingsStore {
             llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null),
             keySoundEnabled = p.getBoolean(KEY_KEY_SOUND, false),
             keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
-            recordRawTaps = p.getBoolean(KEY_RECORD_RAW_TAPS, false)
+            recordRawTaps = p.getBoolean(KEY_RECORD_RAW_TAPS, false),
+            emojiPanelEnabled = p.getBoolean(KEY_EMOJI_PANEL, true)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -134,6 +142,33 @@ object SettingsStore {
      */
     fun resetLetterHints(context: Context) {
         prefs(context).edit().remove(KEY_LETTER_HINTS).apply()
+    }
+    
+    /**
+     * D-16: presets the default key enlargement from the detected typing hand (T-04) after a calibration -
+     * a left-index typist gets the enlarged backspace (right side), a right-index typist an enlarged shift
+     * (left side). Writing the preferences reaches the live keyboard via the service's change listener; the
+     * user can still adjust both afterwards. THUMB / UNKNOWN leave the current settings untouched.
+     *
+     * @param context any valid context
+     * @param pattern the detected typing pattern
+     */
+    fun applyPatternEnlargement(context: Context, pattern: TypingPattern) {
+        val editor = prefs(context).edit()
+        when (pattern) {
+            TypingPattern.LEFT_INDEX_FINGER -> {
+                editor.putInt(KEY_BACKSPACE_EXTRA, DEF_BACKSPACE_EXTRA)
+                editor.putInt(KEY_SHIFT_EXTRA, DEF_SHIFT_EXTRA)
+            }
+            
+            TypingPattern.RIGHT_INDEX_FINGER -> {
+                editor.putInt(KEY_SHIFT_EXTRA, DEF_BACKSPACE_EXTRA)
+                editor.putInt(KEY_BACKSPACE_EXTRA, DEF_SHIFT_EXTRA)
+            }
+            
+            TypingPattern.THUMB, TypingPattern.UNKNOWN -> return
+        }
+        editor.apply()
     }
     
     private fun parseColor(value: String?): Int {

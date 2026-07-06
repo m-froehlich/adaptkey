@@ -162,6 +162,9 @@ class CalibrationActivity : AppCompatActivity() {
         OffsetStore.save(this, model)
         val pattern = detectPattern(model)
         OffsetStore.saveDetectedPattern(this, pattern)
+        // D-16: preset the default key enlargement from the detected hand (backspace for a left-index
+        // typist, shift for a right-index one); the user can still adjust it in the settings.
+        SettingsStore.applyPatternEnlargement(this, pattern)
         showFeedback(pattern)
     }
     

@@ -21,6 +21,7 @@ data class RawSettings(
     val commaWeight: Float = KeyProportions.DEFAULT.commaWeight,
     val periodWeight: Float = KeyProportions.DEFAULT.periodWeight,
     val backspaceExtra: Float = KeyProportions.DEFAULT.backspaceExtra,
+    val shiftExtra: Float = KeyProportions.DEFAULT.shiftExtra,
     val maxSuggestions: Int = SuggestionConfig().maxSuggestions,
     val reSortDelayMs: Long = SuggestionConfig().reSortDelayMs,
     val highlightEnabled: Boolean = SuggestionConfig().highlightEnabled,
@@ -33,7 +34,8 @@ data class RawSettings(
     val llmThresholdKey: String? = null,
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
-    val recordRawTaps: Boolean = false
+    val recordRawTaps: Boolean = false,
+    val emojiPanelEnabled: Boolean = true
 )
 
 /**
@@ -93,7 +95,8 @@ object SettingsMapper {
             spaceWeight = raw.spaceWeight.coerceIn(MIN_SPACE_WEIGHT, MAX_SPACE_WEIGHT),
             commaWeight = raw.commaWeight.coerceIn(MIN_PUNCT_WEIGHT, MAX_PUNCT_WEIGHT),
             periodWeight = raw.periodWeight.coerceIn(MIN_PUNCT_WEIGHT, MAX_PUNCT_WEIGHT),
-            backspaceExtra = raw.backspaceExtra.coerceIn(MIN_BACKSPACE_EXTRA, MAX_BACKSPACE_EXTRA)
+            backspaceExtra = raw.backspaceExtra.coerceIn(MIN_BACKSPACE_EXTRA, MAX_BACKSPACE_EXTRA),
+            shiftExtra = raw.shiftExtra.coerceIn(MIN_BACKSPACE_EXTRA, MAX_BACKSPACE_EXTRA)
         )
     }
     
@@ -154,7 +157,8 @@ object SettingsMapper {
             llmActivationThreshold = toLlmActivationThreshold(raw),
             keySoundEnabled = raw.keySoundEnabled,
             keyHapticsEnabled = raw.keyHapticsEnabled,
-            recordRawTaps = raw.recordRawTaps
+            recordRawTaps = raw.recordRawTaps,
+            emojiPanelEnabled = raw.emojiPanelEnabled
         )
     }
 }

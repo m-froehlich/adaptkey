@@ -28,10 +28,11 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `35bfb2b` — v0.7.13 (I18N). (Working tree: **v0.7.14**, English-default restructure, not yet
-  committed. origin/main is at v0.7.11 `4967664` — v0.7.12…v0.7.14 unpushed.) **Spec §14 COMPLETE.**
-- Unit tests: **458 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.14** (only the third digit bumps per APK; versionCode 84).
+- HEAD: `dbcd295` — v0.7.14 (English default). (Working tree: **v0.7.15**, §13-finish batch, not yet
+  committed. origin/main is at v0.7.11 `4967664` — v0.7.12…v0.7.15 unpushed.) **Spec §13 + §14 essentially
+  COMPLETE** (only D-07 last-word-of-line open, needs device repro).
+- Unit tests: **462 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.15** (only the third digit bumps per APK; versionCode 85).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -115,6 +116,26 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### §13 finish: D-13 / D-18 / D-17 / D-16 (v0.7.15)
+- **D-13 user word training:** undoing a wrong A-05 split (the A-07 backspace) now **learns** the rejoined
+  word (`undoWasSplit` flag → `learnWord` in `performAutocorrectUndo`), so a real word the splitter mangled
+  (e.g. "Backspace" → "Back Space") is trained and never split/autocorrected again (A-01). Discoverable via
+  the existing backspace-undo flow; typing + one undo teaches the word.
+- **D-18 emoji panel toggle:** setting `d18_emoji_panel` (default on) through the settings pipeline + a
+  Layout-category switch. When off, `PanelNavigation.onCombinedKeyTap(current, emojiEnabled=false)` makes the
+  combined key a pure ?123 toggle (letters ↔ symbols), no emoji panel.
+- **D-17 onboarding USP text:** expanded the welcome body (all 3 locales) with the strongest USPs — provably
+  offline / no-internet-permission, per-finger adaptation + calibration, smart neighbour-key/umlaut correction
+  (komplezz→komplett) + space repair, learns-as-you-go, DE/EN/EL dictionaries, optional on-device mini-AI,
+  GPLv3 no-ads-no-accounts.
+- **D-16 pattern-driven key enlargement:** `KeyProportions` gained `shiftBaseWeight` + `shiftExtra` (computed
+  `shiftWeight`, mirroring backspace); `thirdRowLetterWeight` now takes both surcharges from the letters so
+  the row width is preserved. New `c01_shift_extra` slider (settings pipeline + pref + strings ×3). After a
+  calibration, `SettingsStore.applyPatternEnlargement` presets the enlargement from the detected hand:
+  left-index → enlarged backspace, right-index → enlarged shift (THUMB/UNKNOWN untouched); user-adjustable.
+- **Only §13 item left open:** D-07 "word-wise delete stops before the line's last word" — not reproducible
+  from the pure logic; needs on-device repro.
 
 ### Round-3: I18N — English default + German/Greek locales (v0.7.13 / v0.7.14)
 - **§14 I18N:** all app-chrome strings localised. **English is the default** (`res/values/strings.xml`), so

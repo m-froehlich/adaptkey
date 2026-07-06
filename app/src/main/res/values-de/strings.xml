@@ -27,6 +27,8 @@
     <string name="c01_period_title">Breite des Punkts</string>
     <string name="c01_backspace_title">Zusatzbreite der Rücktaste</string>
     <string name="c01_backspace_summary">Prozentualer Aufschlag, von den Nachbartasten genommen (L-04).</string>
+    <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>
+    <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 
     <string name="c02_title">Re-Sort-Verzögerung</string>
     <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>
@@ -38,6 +40,8 @@
 
     <string name="c09_title">Nummernreihe</string>
     <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
+    <string name="d18_title">Emoji-Panel</string>
+    <string name="d18_summary">Wenn aus, öffnet die 😊/?123-Taste nur noch die Zahlen-/Symbolebene (D-18).</string>
     <string name="c08_hints_title">Eck-Symbole anzeigen</string>
     <string name="c08_hints_summary">Sekundäre Long-Press-Symbole als Eck-Hinweis (L-05). Long-Press-Funktion folgt.</string>
     <string name="c08_reset_title">Eck-Symbole zurücksetzen</string>
@@ -86,7 +90,7 @@
     <string name="onboarding_finish">Fertig</string>
     <string name="onboarding_skip">Überspringen</string>
     <string name="onboarding_welcome_title">Willkommen bei AdaptKey</string>
-    <string name="onboarding_welcome_body">AdaptKey lernt, wie DU tippst – und bleibt dabei komplett offline.\n\n• Kein Internet: Diese Tastatur hat keine Internet-Berechtigung. Nichts wird „nach Hause telefoniert\".\n• Passt sich deinen Fingern an: erkennt dein Tippmuster und korrigiert Treffer nach deinem persönlichen Muster.\n• Lernt mit: Vorschläge und Autokorrektur werden mit der Zeit besser.\n• Deutsch, Englisch und Griechisch mit eigenen Wörterbüchern.\n• Freie Software (GPLv3).</string>
+    <string name="onboarding_welcome_body">AdaptKey lernt, wie DU tippst – und bleibt dabei komplett offline.\n\n• Nachweisbar offline: gar keine Internet-Berechtigung – im System überprüfbar. Nichts wird je „nach Hause telefoniert\", kein Tracking.\n• Passt sich deinen Fingern an: lernt, wo du jede Taste tatsächlich triffst, und korrigiert entsprechend. Eine kurze Kalibrierung sitzt von Anfang an.\n• Clevere Korrektur: behebt Vertipper auf Nachbartasten und fehlende Umlaute (z. B. „komplezz\" → „komplett\") und repariert vergessene oder versehentliche Leerzeichen.\n• Lernt mit: Vorschläge und Autokorrektur werden immer besser.\n• Drei Sprachen: Deutsch, Englisch und Griechisch, je mit eigenem Wörterbuch.\n• Optionale Mini-KI auf dem Gerät für noch bessere Vorschläge – einmal herunterladen, trotzdem kein Internet.\n• Freie Software (GPLv3), ohne Werbung, ohne Konto.</string>
     <string name="onboarding_model_title">Optionale Mini-KI</string>
     <string name="onboarding_model_body">Optional kann eine kleine KI (Mini-LLM) die Vorschläge verbessern, wenn das normale Modell unsicher ist – ausschließlich auf dem Gerät. Das Modell (~273 MB) ist nicht enthalten: du lädst es einmalig über den Browser herunter und importierst es. Danach bleibt alles offline. Du kannst das jetzt überspringen und jederzeit später nachholen.</string>
     <string name="onboarding_model_action">Modell einrichten</string>
