@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- C-04 highlight colour preset labels (Greek). -->
+    <string-array name="c04_color_labels">
+        <item>Πράσινο</item>
+        <item>Μπλε</item>
+        <item>Πορτοκαλί</item>
+        <item>Μοβ</item>
+        <item>Τιρκουάζ</item>
+    </string-array>
+
+</resources>

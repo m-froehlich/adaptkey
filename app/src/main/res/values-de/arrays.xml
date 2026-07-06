@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- C-04 highlight colour preset labels (German). -->
+    <string-array name="c04_color_labels">
+        <item>Grün</item>
+        <item>Blau</item>
+        <item>Orange</item>
+        <item>Violett</item>
+        <item>Türkis</item>
+    </string-array>
+
+</resources>

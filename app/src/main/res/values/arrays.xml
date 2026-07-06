@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- C-04 highlight colour presets (label / ARGB value). -->
+    <!-- C-04 highlight colour presets (label / ARGB value). Labels localised per language. -->
     <string-array name="c04_color_labels">
-        <item>Grün</item>
-        <item>Blau</item>
+        <item>Green</item>
+        <item>Blue</item>
         <item>Orange</item>
-        <item>Violett</item>
-        <item>Türkis</item>
+        <item>Purple</item>
+        <item>Teal</item>
     </string-array>
 
     <string-array name="c04_color_values">

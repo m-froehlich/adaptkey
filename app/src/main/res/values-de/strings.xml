@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AdaptKey</string>
+    <string name="ime_name">AdaptKey</string>
+    <string name="settings_title">AdaptKey Settings</string>
+    <string name="subtype_de_qwertz">Deutsch (QWERTZ)</string>
+
+    <!-- Suggestion bar drag-to-trash (G-04). -->
+    <string name="suggestion_trash_label">🗑  Löschen</string>
+
+    <!-- Info & privacy category (shown first on the settings screen). -->
+    <string name="cat_info">Info &amp; Datenschutz</string>
+    <string name="info_privacy_title">Kein Internet, kein Tracking</string>
+    <string name="info_privacy_summary">Diese Tastatur besitzt keine Internet-Berechtigung – im System nachprüfbar. Nichts wird „nach Hause telefoniert", alles bleibt auf dem Gerät.</string>
+    <string name="info_license_title">Lizenz</string>
+    <string name="info_license_summary">Freie Software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
+
+    <!-- Settings screen (C-01 … C-09). -->
+    <string name="cat_layout">Layout &amp; Tasten</string>
+    <string name="cat_suggestions">Vorschläge</string>
+    <string name="cat_dictionary">Wörterbuch</string>
+    <string name="cat_capitalisation">Großschreibung</string>
+
+    <string name="c01_space_title">Breite der Leertaste</string>
+    <string name="c01_space_summary">Schmaler reduziert versehentliche Leerzeichen statt Komma (L-02).</string>
+    <string name="c01_comma_title">Breite des Kommas</string>
+    <string name="c01_period_title">Breite des Punkts</string>
+    <string name="c01_backspace_title">Zusatzbreite der Rücktaste</string>
+    <string name="c01_backspace_summary">Prozentualer Aufschlag, von den Nachbartasten genommen (L-04).</string>
+
+    <string name="c02_title">Re-Sort-Verzögerung</string>
+    <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>
+    <string name="c03_title">Maximale Vorschläge</string>
+    <string name="c03_summary">Anzahl gleichzeitig stabilisierter Vorschläge (6–10).</string>
+    <string name="c04_enabled_title">Wort-Bestätigungs-Highlight</string>
+    <string name="c04_enabled_summary">Hebt ein erkanntes, vollständiges Wort beim Tippen hervor (S-05).</string>
+    <string name="c04_color_title">Highlight-Farbe</string>
+
+    <string name="c09_title">Nummernreihe</string>
+    <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
+    <string name="c08_hints_title">Eck-Symbole anzeigen</string>
+    <string name="c08_hints_summary">Sekundäre Long-Press-Symbole als Eck-Hinweis (L-05). Long-Press-Funktion folgt.</string>
+    <string name="c08_reset_title">Eck-Symbole zurücksetzen</string>
+    <string name="c08_reset_summary">Setzt die Per-Tasten-Belegung auf die Standardzuordnung zurück.</string>
+    <string name="c08_reset_done">Eck-Symbole auf Standard zurückgesetzt.</string>
+    <string name="c08_editor_title">Eck-Symbole bearbeiten</string>
+    <string name="c08_editor_summary">Sekundärsymbol pro Buchstabe festlegen oder entfernen (L-05).</string>
+    <string name="c08_editor_intro">Tippe einen Buchstaben an, um sein Long-Press-Symbol zu wählen oder zu entfernen.</string>
+    <string name="c08_editor_none">— kein Symbol —</string>
+
+    <string name="c05_title">Blacklist bearbeiten</string>
+    <string name="c05_summary">Wörter dauerhaft von Vorschlägen und Autokorrektur ausschließen (A-04).</string>
+
+    <string name="c07_title">Shift-Schonfenster</string>
+    <string name="c07_summary">Gegen überraschende Feld-Großschreibung (0–500 ms). Logik folgt.</string>
+
+    <string name="c10_title">Nach Komma-Zeile kein Satzanfang</string>
+    <string name="c10_summary">Nach einer mit Komma endenden Zeile (z. B. Mail-Anrede) wird die nächste Zeile nicht großgeschrieben.</string>
+
+    <string name="c06_title">LLM-Schwellwert</string>
+    <string name="c06_summary">Ab welcher N-Gramm-Sicherheit das Mini-LLM zugeschaltet wird (C-06). Das LLM-Backend ist noch nicht eingebunden.</string>
+    <string name="c06_threshold_low">Niedrig</string>
+    <string name="c06_threshold_medium">Mittel</string>
+    <string name="c06_threshold_high">Hoch</string>
+
+    <!-- C-06 tier-3 model management (browser download + file import). -->
+    <string name="c06_model_pref_title">Mini-LLM-Modell (Tier 3)</string>
+    <string name="c06_model_pref_summary">Optionales On-Device-Modell herunterladen und importieren (C-06).</string>
+    <string name="c06_model_title">Mini-LLM-Modell</string>
+    <string name="c06_model_intro">Das Tier-3-Mini-LLM (C-06) ist optional. Das Modell (~273 MB) ist nicht in der App enthalten. Lade es einmalig herunter und importiere es anschließend – danach arbeitet die App weiterhin vollständig offline.</string>
+    <string name="c06_model_present">Modell installiert.</string>
+    <string name="c06_model_absent">Kein Modell installiert. Tier 3 ist inaktiv, die Tastatur arbeitet wie gewohnt.</string>
+    <string name="c06_model_download">1. Modell herunterladen (im Browser)</string>
+    <string name="c06_model_import">2. Heruntergeladene Datei importieren</string>
+    <string name="c06_model_remove">Modell entfernen</string>
+    <string name="c06_model_importing">Modell wird importiert …</string>
+    <string name="c06_model_imported">Modell importiert.</string>
+    <string name="c06_model_import_failed">Import fehlgeschlagen.</string>
+    <string name="c06_model_removed">Modell entfernt.</string>
+    <string name="c06_model_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>
+    <string name="c06_model_privacy">Diese App besitzt keine Internet- und keine Speicher-Berechtigung. Der Download läuft über deinen Browser; die App liest nur die eine ausgewählte Datei.</string>
+
+    <!-- First-run onboarding (shown above the keyboard). -->
+    <string name="onboarding_step_indicator">Schritt %1$d / %2$d</string>
+    <string name="onboarding_next">Weiter</string>
+    <string name="onboarding_finish">Fertig</string>
+    <string name="onboarding_skip">Überspringen</string>
+    <string name="onboarding_welcome_title">Willkommen bei AdaptKey</string>
+    <string name="onboarding_welcome_body">AdaptKey lernt, wie DU tippst – und bleibt dabei komplett offline.\n\n• Kein Internet: Diese Tastatur hat keine Internet-Berechtigung. Nichts wird „nach Hause telefoniert\".\n• Passt sich deinen Fingern an: erkennt dein Tippmuster und korrigiert Treffer nach deinem persönlichen Muster.\n• Lernt mit: Vorschläge und Autokorrektur werden mit der Zeit besser.\n• Deutsch, Englisch und Griechisch mit eigenen Wörterbüchern.\n• Freie Software (GPLv3).</string>
+    <string name="onboarding_model_title">Optionale Mini-KI</string>
+    <string name="onboarding_model_body">Optional kann eine kleine KI (Mini-LLM) die Vorschläge verbessern, wenn das normale Modell unsicher ist – ausschließlich auf dem Gerät. Das Modell (~273 MB) ist nicht enthalten: du lädst es einmalig über den Browser herunter und importierst es. Danach bleibt alles offline. Du kannst das jetzt überspringen und jederzeit später nachholen.</string>
+    <string name="onboarding_model_action">Modell einrichten</string>
+    <string name="onboarding_calibration_title">Kurz einlernen</string>
+    <string name="onboarding_calibration_body">Zum Schluss kannst du die Tastatur kurz einlernen: Du tippst ein paar vorgegebene Sätze, damit AdaptKey deine persönliche Trefferlage kennenlernt. Optional und jederzeit später möglich.</string>
+    <string name="onboarding_calibration_action">Kalibrierung starten</string>
+    <string name="onboarding_footer_hint">Diese Einführung erreichst du später jederzeit über Einstellungen → Info &amp; Datenschutz → „Einführung erneut anzeigen\".</string>
+    <string name="onboarding_replay_title">Einführung erneut anzeigen</string>
+    <string name="onboarding_replay_summary">Zeigt die Erstnutzer-Einführung beim nächsten Öffnen der Tastatur wieder an.</string>
+    <string name="onboarding_replay_done">Einführung wird beim nächsten Öffnen der Tastatur angezeigt.</string>
+
+    <!-- Reset learned touch data (offset model T-03 + typing pattern T-04), double-confirmed. -->
+    <string name="reset_learning_title">Erlernung &amp; Kalibrierung zurücksetzen</string>
+    <string name="reset_learning_summary">Setzt das gelernte Tippmuster und die Touch-Kalibrierung zurück (nicht das Wörterbuch).</string>
+    <string name="reset_learning_confirm1_message">Das gelernte Tippmuster und die Touch-Kalibrierung werden gelöscht. Fortfahren?</string>
+    <string name="reset_learning_confirm2_title">Endgültig zurücksetzen?</string>
+    <string name="reset_learning_confirm2_message">Dieser Schritt kann nicht rückgängig gemacht werden.</string>
+    <string name="reset_learning_done">Erlernung &amp; Kalibrierung zurückgesetzt.</string>
+
+    <!-- Typing pattern detection (T-04). -->
+    <string name="cat_typing_pattern">Tippmuster (T-04)</string>
+    <string name="t04_detected_title">Erkanntes Tippmuster</string>
+    <string name="t04_detected_summary">Aus deinen Tippabweichungen abgeleitet – reine Information, kein Eingriff.</string>
+    <string name="t04_override_title">Tippmuster überschreiben</string>
+    <string name="t04_override_summary">Manuell festlegen, falls die automatische Erkennung danebenliegt.</string>
+    <string name="t04_pattern_auto">Automatisch erkennen</string>
+    <string name="t04_pattern_left_index">Linker Zeigefinger</string>
+    <string name="t04_pattern_right_index">Rechter Zeigefinger</string>
+    <string name="t04_pattern_thumb">Daumen</string>
+    <string name="t04_pattern_unknown">Noch nicht erkannt</string>
+
+    <!-- Calibration / onboarding (K-01). -->
+    <string name="cat_calibration">Kalibrierung (K-01)</string>
+    <string name="k01_title">Kalibrierung starten</string>
+    <string name="k01_summary">Tippe 2–3 Sätze, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
+    <string name="k01_activity_title">Kalibrierung</string>
+    <string name="k01_intro">Tippe die folgenden Sätze einfach so, wie du normalerweise tippst. Keine Autokorrektur, kein Zeitdruck.</string>
+    <string name="k01_counter">Satz %1$d von %2$d</string>
+    <string name="k01_next">Weiter</string>
+    <string name="k01_finish">Fertig</string>
+    <string name="k01_skip">Überspringen</string>
+    <string name="k01_done_title">Kalibrierung abgeschlossen</string>
+    <string name="k01_feedback_left_index">Es sieht so aus, als tippst du mit dem linken Zeigefinger. Ich passe mich entsprechend an.</string>
+    <string name="k01_feedback_right_index">Es sieht so aus, als tippst du mit dem rechten Zeigefinger. Ich passe mich entsprechend an.</string>
+    <string name="k01_feedback_thumb">Es sieht so aus, als tippst du mit dem Daumen. Ich stelle meine Erkennung darauf ein.</string>
+    <string name="k01_feedback_unknown">Danke! Ich habe deine Eingaben aufgenommen und lerne beim Tippen weiter dazu.</string>
+    <string name="k01_offer_title">Tastatur kalibrieren?</string>
+    <string name="k01_offer_message">Möchtest du AdaptKey kurz kalibrieren? Du tippst 2–3 Sätze, damit die Tastenerkennung von Anfang an besser zu dir passt. Du kannst das jederzeit in den Einstellungen nachholen.</string>
+    <string name="k01_offer_start">Jetzt kalibrieren</string>
+    <string name="k01_offer_later">Später</string>
+
+    <!-- Blacklist editor (C-05). -->
+    <string name="blacklist_title">Blacklist</string>
+    <string name="blacklist_word_hint">Wort</string>
+    <string name="blacklist_add">Hinzufügen</string>
+    <string name="blacklist_empty">Keine Einträge.</string>
+    <string name="blacklist_removed">%1$s entfernt.</string>
+
+    <!-- Key-press feedback (D-05 / D-06). -->
+    <string name="cat_feedback">Tasten-Rückmeldung</string>
+    <string name="d05_sound_title">Tastenton</string>
+    <string name="d05_sound_summary">Spielt bei jedem Tastendruck einen kurzen Klick (Standard: aus).</string>
+    <string name="d06_haptics_title">Vibration</string>
+    <string name="d06_haptics_summary">Kurze Vibration bei jedem Tastendruck (Standard: aus).</string>
+
+    <!-- Touch-pattern visualisation (D-24). -->
+    <string name="d24_title">Tippmuster anzeigen</string>
+    <string name="d24_summary">Zeigt farbige Kreise über den Tasten, wo deine Anschläge im Schnitt landen.</string>
+    <string name="d24_intro">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (Punkt) und wie stark sie streuen (Kreis). So passt sich die Tastatur an dein Tippen an.</string>
+    <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
+    <string name="d24_show_button">Tippmuster anzeigen</string>
+
+    <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
+    <string name="d09_record_title">Roh-Tipp-Aufzeichnung</string>
+    <string name="d09_record_summary">Zeichnet bei der Kalibrierung die rohen Tipp-Koordinaten auf, um Tippfehler offline zu analysieren (Standard: aus).</string>
+    <string name="d09_export_button">Tipp-Daten exportieren</string>
+    <string name="d09_export_subject">AdaptKey Roh-Tipp-Aufzeichnung</string>
+    <string name="d09_export_chooser">Tipp-Daten teilen</string>
+    <string name="d09_export_empty">Keine Tipp-Daten aufgezeichnet.</string>
+</resources>

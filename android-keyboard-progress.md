@@ -28,10 +28,10 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `e1d177d` — v0.7.12 (calibration + D-24). (Working tree: **v0.7.13**, I18N landed, not yet
-  committed. origin/main is at v0.7.11 `4967664` — v0.7.12 + v0.7.13 unpushed.) **Spec §14 now COMPLETE.**
+- HEAD: `35bfb2b` — v0.7.13 (I18N). (Working tree: **v0.7.14**, English-default restructure, not yet
+  committed. origin/main is at v0.7.11 `4967664` — v0.7.12…v0.7.14 unpushed.) **Spec §14 COMPLETE.**
 - Unit tests: **458 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.13** (only the third digit bumps per APK; versionCode 83).
+  (no warnings). **Versioned 0.7.14** (only the third digit bumps per APK; versionCode 84).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -116,12 +116,13 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Done
 
-### Round-3: I18N — English + Greek app strings (v0.7.13)
-- **§14 I18N:** all app-chrome strings localised to English (`res/values-en/strings.xml`) and Greek
-  (`res/values-el/strings.xml`); German stays the default (`res/values/`). Selected by the system language,
-  other languages fall back to German. ~90 strings each (settings, onboarding, dialogs, calibration, D-24).
-  No hardcoded UI literals remain (the only in-code string is the language-name space-bar/toast label, an
-  intentional endonym). This completes spec §14.
+### Round-3: I18N — English default + German/Greek locales (v0.7.13 / v0.7.14)
+- **§14 I18N:** all app-chrome strings localised. **English is the default** (`res/values/strings.xml`), so
+  any unknown system language falls back to English; German is `res/values-de/`, Greek `res/values-el/`.
+  (v0.7.13 first shipped German-as-default with a `values-en`; v0.7.14 flipped it to English-as-default per
+  user requirement.) The C-04 colour-label array is localised too (`values*/arrays.xml`). ~90 strings each
+  (settings, onboarding, dialogs, calibration, D-24). No hardcoded UI literals remain (the only in-code
+  string is the language-name space-bar/toast label, an intentional endonym). This completes spec §14.
 
 ### Round-3: calibration reliability (T-04/K-01) + D-24 touch-model visualisation (v0.7.12)
 - **T-04/K-01 calibration now produces a result:** the live classifier is deliberately conservative
