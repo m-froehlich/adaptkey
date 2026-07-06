@@ -505,3 +505,18 @@ the candidate set is keyed on the exact first character - broaden it (first-char
 first char). And ranking must prefer a **lower-edit-cost** correction over a more frequent higher-cost one.
 Examples (recognised input -> intended): `Stabdsrx` -> `Standard`, `Uberblick` -> `Überblick`,
 `eerden` -> `werden`, `W8rt` -> `Wort`, and `dasy` -> `dass` (currently wrongly `das`).
+
+### D-39 - Raw-Coordinate Per-Character Correction
+Correction should not work from the committed characters alone but from the **retained raw tap coordinates**
+per character (T-02 / T-05). For an unknown word, walk it character by character and, using each tap's raw
+position and the offset model (T-03), consider the geometrically nearest **neighbouring** key that was
+likely intended, generating candidate spellings to validate against the dictionary. Most single-key slips
+are one position off, so this recovers many multi-typo words. Heavily garbled cases (e.g. `Stabdsrx` ->
+`Standard`, where much went wrong at once) may instead be left to the tier-3 LLM, which tends to recognise
+the intended word from context.
+
+### D-40 - A Digit Inside a Word Is a Likely Typo
+A digit typed **between letters** (mid-word, no separating space) is almost certainly an unwanted key -
+digits are rarely intended mid-word. Such a digit must be kept in the composing token (not treated as a
+delimiter) and corrected to a neighbouring letter like any other typo, so `W8rt` -> `Wort`. A digit at the
+start of a token (or a standalone digit) keeps its normal behaviour.

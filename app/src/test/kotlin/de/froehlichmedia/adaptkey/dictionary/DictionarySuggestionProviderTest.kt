@@ -168,4 +168,12 @@ class DictionarySuggestionProviderTest {
         
         assertEquals("Überblick", provider.autocorrectFor("Uberblick", null))
     }
+    
+    @Test
+    fun `D-40 a token with a stray digit corrects to the intended word (W8rt to Wort)`() {
+        store.putWord(WordEntry("Wort", 300L))
+        
+        // The service keeps a mid-word digit in the token; the digit is one substitution from the letter.
+        assertEquals("Wort", provider.autocorrectFor("W8rt", null))
+    }
 }

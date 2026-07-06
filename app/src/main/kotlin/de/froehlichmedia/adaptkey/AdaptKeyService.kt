@@ -3,8 +3,12 @@
 
 package de.froehlichmedia.adaptkey
 
+import android.content.ClipData
+import android.content.ClipDescription
+import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
@@ -70,6 +74,7 @@ import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.CalibrationActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
+import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
@@ -169,6 +174,9 @@ class AdaptKeyService : InputMethodService() {
     private var emojiPanelEnabled = true
     private lateinit var emojiDataset: EmojiDataset
     private var recentEmojis: List<String> = emptyList()
+    
+    // D-36: system clipboard, for the direct-paste chip.
+    private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
     
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         settings = SettingsStore.load(this)
@@ -509,6 +517,43 @@ class AdaptKeyService : InputMethodService() {
         reconcileTier3Provider()
         reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
+        // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
+        showClipboardChipIfAvailable()
+    }
+    
+    /**
+     * D-36: shows a direct-paste chip in the suggestion bar when a fresh field opens and the clipboard
+     * holds text; a tap pastes it. Sensitive content (e.g. a password) is masked in the preview. Typing
+     * anything replaces the chip with the normal suggestions.
+     */
+    private fun showClipboardChipIfAvailable() {
+        if (composing.isNotEmpty()) {
+            return
+        }
+        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return
+        if (clip.itemCount == 0) {
+            return
+        }
+        val sensitive = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            clip.description?.extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true
+        val label = ClipboardPreview.label(clip.getItemAt(0).coerceToText(this), sensitive) ?: return
+        val chip = SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, "")
+        suggestionBar?.setItems(listOf(chip))
+        suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * D-36: clears the clipboard after a paste, so pasted content - especially a password - does not linger.
+     */
+    private fun clearClipboard() {
+        val cm = clipboardManager ?: return
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                cm.clearPrimaryClip()
+            } else {
+                cm.setPrimaryClip(ClipData.newPlainText("", ""))
+            }
+        }
     }
     
     /**
@@ -610,7 +655,11 @@ class AdaptKeyService : InputMethodService() {
         when (key.code) {
             KeyCode.CHAR -> {
                 val raw = key.char ?: return
-                if (raw.isLetter()) {
+                // D-40: a digit typed between letters (composing non-empty) is almost certainly an unwanted
+                // key, so it is kept in the token and corrected like any other typo ("W8rt" -> "Wort");
+                // a leading or standalone digit keeps its normal delimiter behaviour.
+                val extendsToken = raw.isLetter() || (raw.isDigit() && composing.isNotEmpty())
+                if (extendsToken) {
                     if (composing.isEmpty()) {
                         captureTokenContext(ic)
                         resetWordEndShift()
@@ -618,7 +667,7 @@ class AdaptKeyService : InputMethodService() {
                         // the eat-the-space rule was only for an immediately following punctuation.
                         pendingSuggestionSpace = false
                     }
-                    val ch = if (isUpperArmed()) raw.uppercaseChar() else raw
+                    val ch = if (raw.isLetter() && isUpperArmed()) raw.uppercaseChar() else raw
                     composing.append(ch)
                     // T-05: retain this letter's space-ambiguity flag in step with the composing token (A-05).
                     composingFlags.add(ambiguity.kind)
@@ -626,7 +675,7 @@ class AdaptKeyService : InputMethodService() {
                     updateComposing(ic)
                     refreshSuggestions()
                 } else {
-                    // Digits and punctuation are delimiters; they finalise the current token.
+                    // Punctuation and a leading digit are delimiters; they finalise the current token.
                     finalizeAndCommit(ic, raw.toString())
                 }
             }
@@ -1343,6 +1392,13 @@ class AdaptKeyService : InputMethodService() {
                 // D-29: arm the trailing space added here so an immediately following punctuation removes it.
                 pendingSuggestionSpace = true
                 armShiftForNextWord(ic)
+            }
+            
+            // D-36: run the exact system paste action, then clear the clipboard (esp. passwords).
+            SuggestionController.Kind.CLIPBOARD -> {
+                ic.performContextMenuAction(android.R.id.paste)
+                clearClipboard()
+                clearSuggestions()
             }
         }
     }

@@ -22,7 +22,10 @@ class SuggestionController(private val config: SuggestionConfig) {
     /** The display category of a bar entry. */
     enum class Kind {
         NORMAL,
-        VERBATIM
+        VERBATIM,
+        
+        /** D-36: a direct-paste chip showing (a preview of) the clipboard; tapping it pastes. */
+        CLIPBOARD
     }
     
     /**
