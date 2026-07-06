@@ -207,6 +207,15 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
         </Preference>
 
+        <Preference
+            android:key="d24_touch_model"
+            android:title="@string/d24_title"
+            android:summary="@string/d24_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.TouchModelActivity" />
+        </Preference>
+
         <SwitchPreferenceCompat
             android:key="d09_record_raw_taps"
             android:title="@string/d09_record_title"

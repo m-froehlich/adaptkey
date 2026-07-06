@@ -152,6 +152,13 @@
     <string name="d06_haptics_title">Vibration</string>
     <string name="d06_haptics_summary">Kurze Vibration bei jedem Tastendruck (Standard: aus).</string>
 
+    <!-- Touch-pattern visualisation (D-24). -->
+    <string name="d24_title">Tippmuster anzeigen</string>
+    <string name="d24_summary">Zeigt farbige Kreise über den Tasten, wo deine Anschläge im Schnitt landen.</string>
+    <string name="d24_intro">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (Punkt) und wie stark sie streuen (Kreis). So passt sich die Tastatur an dein Tippen an.</string>
+    <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
+    <string name="d24_show_button">Tippmuster anzeigen</string>
+
     <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
     <string name="d09_record_title">Roh-Tipp-Aufzeichnung</string>
     <string name="d09_record_summary">Zeichnet bei der Kalibrierung die rohen Tipp-Koordinaten auf, um Tippfehler offline zu analysieren (Standard: aus).</string>

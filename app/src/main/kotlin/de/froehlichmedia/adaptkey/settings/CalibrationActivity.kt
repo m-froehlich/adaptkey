@@ -24,6 +24,7 @@ import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.RawTapRecorder
 import de.froehlichmedia.adaptkey.touch.TypingPattern
 import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
+import de.froehlichmedia.adaptkey.touch.TypingPatternClassifier
 
 /**
  * Optional onboarding / calibration screen (K-01, skippable).
@@ -169,7 +170,14 @@ class CalibrationActivity : AppCompatActivity() {
         if (width <= 0) {
             return TypingPattern.UNKNOWN
         }
-        return TypingPatternAnalysis.classify(model, keyboard.charKeyGeometry(), width.toFloat())
+        // T-04 / K-01: a calibration is a deliberate, controlled session, so use the decisive preset that
+        // commits to the dominant hand from a modest bias rather than the conservative live default.
+        return TypingPatternAnalysis.classify(
+            model,
+            keyboard.charKeyGeometry(),
+            width.toFloat(),
+            TypingPatternClassifier.forCalibration()
+        )
     }
     
     private fun showFeedback(pattern: TypingPattern) {
@@ -178,11 +186,22 @@ class CalibrationActivity : AppCompatActivity() {
             .setMessage(feedbackText(pattern))
             .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
             .setOnCancelListener { finish() }
-        // D-09: offer to export the recorded raw taps when the diagnostic captured any.
+        // The neutral slot offers the raw-tap export when the D-09 diagnostic captured data, otherwise the
+        // D-24 touch-pattern visualisation as the calibration result.
         if (rawTapRecorder?.isEmpty() == false) {
             builder.setNeutralButton(R.string.d09_export_button) { _, _ -> exportRawTaps() }
+        } else {
+            builder.setNeutralButton(R.string.d24_show_button) { _, _ -> showTouchModel() }
         }
         builder.show()
+    }
+    
+    /**
+     * D-24: opens the touch-pattern visualisation as the calibration result, then ends this screen.
+     */
+    private fun showTouchModel() {
+        startActivity(Intent(this, TouchModelActivity::class.java))
+        finish()
     }
     
     /**

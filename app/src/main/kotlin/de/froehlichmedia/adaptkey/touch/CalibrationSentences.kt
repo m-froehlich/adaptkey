@@ -13,10 +13,16 @@ package de.froehlichmedia.adaptkey.touch
  */
 object CalibrationSentences {
     
-    /** The default calibration sentences; their union covers every letter of the alphabet. */
+    /**
+     * The default calibration sentences; their union covers every letter of the alphabet. Five sentences
+     * (T-04 / K-01) give enough taps for a stable per-hand bias estimate, so the calibration reliably
+     * detects a typing pattern rather than stopping at UNKNOWN.
+     */
     val DEFAULT: List<String> = listOf(
         "Franz jagt im komplett verwahrlosten Taxi quer durch Bayern",
         "Vogel Quax zwickt Johnys Pferd Bim",
-        "Sylvia wagt quick den Jux bei Pforzheim"
+        "Sylvia wagt quick den Jux bei Pforzheim",
+        "Zwolf Boxkampfer jagen Viktor quer uber den Sylter Deich",
+        "The quick brown fox jumps over the lazy dog"
     )
 }

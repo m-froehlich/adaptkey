@@ -193,6 +193,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /** D-24: draws the learned touch model (expected strike point + spread per key) as an overlay. */
+    var showTouchModel: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
     /** D-05: whether a click sound plays on each key press (default off). */
     var soundEnabled: Boolean = false
     
@@ -307,6 +314,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
         strokeWidth = dp(1f)
     }
     
+    // D-24: touch-model overlay - a translucent spread ellipse plus a solid dot at the expected strike point.
+    private val touchModelFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0x3300796B.toInt()
+        style = Paint.Style.FILL
+    }
+    
+    private val touchModelStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0x8800796B.toInt()
+        style = Paint.Style.STROKE
+        strokeWidth = dp(1f)
+    }
+    
+    private val touchModelDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = 0xE0D32F2F.toInt()
+        style = Paint.Style.FILL
+    }
+    
     init {
         setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
     }
@@ -382,7 +406,34 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
             }
         }
+        if (showTouchModel) {
+            drawTouchModel(canvas)
+        }
         drawLongPressPopup(canvas)
+    }
+    
+    /**
+     * D-24: draws the learned touch model over the keys - for each trained character key, a translucent
+     * ellipse of the tap spread (per-axis std deviation) centred on the expected strike point (key centre
+     * plus the learned mean offset), with a solid dot at that point.
+     */
+    private fun drawTouchModel(canvas: Canvas) {
+        val model = offsetModel ?: return
+        val minRadius = dp(3f)
+        for ((key, rect) in keyRects) {
+            if (key.code != KeyCode.CHAR) {
+                continue
+            }
+            val spread = model.spreadFor(key.id) ?: continue
+            val cx = rect.centerX() + spread.meanDx.toFloat()
+            val cy = rect.centerY() + spread.meanDy.toFloat()
+            val rx = maxOf(spread.stdDevX.toFloat(), minRadius)
+            val ry = maxOf(spread.stdDevY.toFloat(), minRadius)
+            val oval = RectF(cx - rx, cy - ry, cx + rx, cy + ry)
+            canvas.drawOval(oval, touchModelFillPaint)
+            canvas.drawOval(oval, touchModelStrokePaint)
+            canvas.drawCircle(cx, cy, dp(2.5f), touchModelDotPaint)
+        }
     }
     
     /**

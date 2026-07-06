@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.touch
 
 import kotlin.math.ln
 import kotlin.math.max
+import kotlin.math.sqrt
 
 /**
  * Personal 2D offset model (T-03) - typing-style agnostic.
@@ -98,6 +99,32 @@ class OffsetModel(
             stat.sizeCount += 1L
             stat.meanSize += (size.toDouble() - stat.meanSize) / stat.sizeCount
         }
+    }
+    
+    /** The learned strike spread for a key (D-24): mean offset from the key centre and its std deviation. */
+    data class Spread(
+        val meanDx: Double,
+        val meanDy: Double,
+        val stdDevX: Double,
+        val stdDevY: Double,
+        val count: Long
+    )
+    
+    /**
+     * The learned strike spread for a key (D-24 touch-pattern visualisation): where the user's taps land
+     * relative to the key centre (mean offset) and how scattered they are (per-axis standard deviation).
+     *
+     * @param id the key id
+     * @return the spread, or null when the key is untrained
+     */
+    fun spreadFor(id: String): Spread? {
+        val stat = stats[id]
+        if (stat == null || stat.count == 0L) {
+            return null
+        }
+        val stdX = if (stat.count >= 2L) sqrt(stat.m2Dx / (stat.count - 1L)) else 0.0
+        val stdY = if (stat.count >= 2L) sqrt(stat.m2Dy / (stat.count - 1L)) else 0.0
+        return Spread(stat.meanDx, stat.meanDy, stdX, stdY, stat.count)
     }
     
     /**

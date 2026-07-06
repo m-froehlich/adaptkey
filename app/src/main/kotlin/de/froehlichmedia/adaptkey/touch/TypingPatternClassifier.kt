@@ -110,6 +110,30 @@ class TypingPatternClassifier(
         /** Default lateral-fraction magnitude that, on its own, identifies an index finger. */
         const val DEFAULT_LATERAL_THRESHOLD = 0.18
         
+        /** Minimum taps for a calibration classification (T-04 / K-01); calibration data is deliberate. */
+        const val CALIBRATION_MIN_TOTAL_SAMPLES = 20L
+        
+        /**
+         * Lateral threshold for a calibration classification: much more sensitive than the live default,
+         * so a real but modest hand bias (which left the conservative live detector at UNKNOWN) still
+         * yields a concrete result the user can be told about. Calibration is a controlled, deliberate
+         * session, so committing to the dominant direction is appropriate.
+         */
+        const val CALIBRATION_LATERAL_THRESHOLD = 0.05
+        
+        /**
+         * A decisive classifier for the K-01 calibration result: it reports the dominant hand from a
+         * smaller, more modest bias than the transparency-only live detector.
+         *
+         * @return a calibration-tuned classifier
+         */
+        fun forCalibration(): TypingPatternClassifier {
+            return TypingPatternClassifier(
+                minTotalSamples = CALIBRATION_MIN_TOTAL_SAMPLES,
+                lateralThreshold = CALIBRATION_LATERAL_THRESHOLD
+            )
+        }
+        
         /** Default lateral-fraction magnitude below which a tap counts as laterally neutral. */
         const val DEFAULT_LOW_LATERAL_THRESHOLD = 0.10
         

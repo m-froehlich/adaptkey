@@ -82,6 +82,26 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `spreadFor reports the mean offset and per-axis standard deviation (D-24)`() {
+        val model = OffsetModel()
+        // Deviations (2,4) and (6,8): mean (4,6), sample variance 8 on each axis.
+        model.record("c:k", 10f, 10f, 12f, 14f)
+        model.record("c:k", 10f, 10f, 16f, 18f)
+        
+        val spread = model.spreadFor("c:k")
+        assertEquals(4.0, spread?.meanDx ?: Double.NaN, 1e-9)
+        assertEquals(6.0, spread?.meanDy ?: Double.NaN, 1e-9)
+        assertEquals(kotlin.math.sqrt(8.0), spread?.stdDevX ?: Double.NaN, 1e-9)
+        assertEquals(kotlin.math.sqrt(8.0), spread?.stdDevY ?: Double.NaN, 1e-9)
+        assertEquals(2L, spread?.count)
+    }
+    
+    @Test
+    fun `spreadFor is null for an untrained key`() {
+        assertNull(OffsetModel().spreadFor("c:x"))
+    }
+    
+    @Test
     fun `cappedMeanOffset clamps to the given bounds`() {
         val model = OffsetModel()
         model.record("c:k", 0f, 0f, 1000f, -1000f)

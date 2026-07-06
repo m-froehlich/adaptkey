@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test
 class CalibrationSentencesTest {
     
     @Test
-    fun `default set offers two or three sentences`() {
+    fun `default set offers a handful of sentences`() {
         val size = CalibrationSentences.DEFAULT.size
-        assertTrue(size in 2..3, "expected 2-3 sentences, was $size")
+        assertTrue(size in 3..8, "expected 3-8 sentences, was $size")
     }
     
     @Test

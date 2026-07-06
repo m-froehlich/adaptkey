@@ -28,10 +28,10 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `2af2f60` — v0.7.10 (§14 bugs/quality). (Working tree: **v0.7.11**, D-22/D-23 popup rework landed,
-  not yet committed. origin/main is at v0.7.9 `59813de` — v0.7.10 + v0.7.11 are unpushed.)
-- Unit tests: **454 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.11** (only the third digit bumps per APK; versionCode 81).
+- HEAD: `4967664` — v0.7.11 (pushed to origin/main). (Working tree: **v0.7.12**, calibration reliability +
+  D-24 landed, not yet committed.)
+- Unit tests: **458 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.12** (only the third digit bumps per APK; versionCode 82).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -115,6 +115,19 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Round-3: calibration reliability (T-04/K-01) + D-24 touch-model visualisation (v0.7.12)
+- **T-04/K-01 calibration now produces a result:** the live classifier is deliberately conservative
+  (lateral threshold 0.18) so a real-but-modest hand bias fell through to UNKNOWN. Added
+  `TypingPatternClassifier.forCalibration()` — a decisive preset (lateral threshold 0.05, min 20 taps) used
+  only by `CalibrationActivity.detectPattern`; live info-only detection stays conservative. Also lengthened
+  `CalibrationSentences` 3→5 (more taps → stabler bias). Result is stated plainly via the existing
+  pattern-specific feedback strings.
+- **D-24 touch-model visualisation:** pure `OffsetModel.spreadFor(id)` (mean offset + per-axis std dev);
+  `AdaptKeyboardView.showTouchModel` overlay draws a translucent spread ellipse + a strike-point dot over
+  each trained char key. New `TouchModelActivity` (+ layout, manifest, strings) hosts a keyboard with the
+  overlay over the persisted model; reachable from a new settings entry (Kalibrierung category) and as the
+  calibration result (the feedback dialog's neutral button → visualisation, or → D-09 export when recording).
 
 ### Round-3 popup rework: D-22 punctuation split + D-23 vertical popup (v0.7.11)
 - **D-22:** the full-stop key now carries only the sentence terminators (`KeyboardLayout.PERIOD_ALTERNATIVES`

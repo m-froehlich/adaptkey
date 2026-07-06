@@ -61,6 +61,12 @@
             android:label="@string/c06_model_title"
             android:exported="false" />
 
+        <!-- Touch-pattern visualisation (D-24), launched from settings / the calibration result. -->
+        <activity
+            android:name=".settings.TouchModelActivity"
+            android:label="@string/d24_title"
+            android:exported="false" />
+
     </application>
 
 </manifest>

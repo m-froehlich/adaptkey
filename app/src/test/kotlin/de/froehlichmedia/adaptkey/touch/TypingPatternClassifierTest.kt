@@ -117,4 +117,20 @@ class TypingPatternClassifierTest {
         
         assertEquals(TypingPattern.LEFT_INDEX_FINGER, classifier.classify(samples))
     }
+    
+    @Test
+    fun `the calibration preset detects a modest bias the live default misses`() {
+        // A gentle rightward bias of 0.08: below the live 0.18 threshold, above the calibration 0.05 one.
+        val samples = listOf(sample(0.3, lateral = 0.08), sample(0.7, lateral = 0.08))
+        
+        assertEquals(TypingPattern.UNKNOWN, TypingPatternClassifier().classify(samples))
+        assertEquals(TypingPattern.LEFT_INDEX_FINGER, TypingPatternClassifier.forCalibration().classify(samples))
+    }
+    
+    @Test
+    fun `the calibration preset still needs some data`() {
+        val samples = listOf(sample(0.5, lateral = 0.2, count = 5L))
+        
+        assertEquals(TypingPattern.UNKNOWN, TypingPatternClassifier.forCalibration().classify(samples))
+    }
 }
