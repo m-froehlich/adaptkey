@@ -28,11 +28,11 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `dbcd295` — v0.7.14 (English default). (Working tree: **v0.7.15**, §13-finish batch, not yet
-  committed. origin/main is at v0.7.11 `4967664` — v0.7.12…v0.7.15 unpushed.) **Spec §13 + §14 essentially
-  COMPLETE** (only D-07 last-word-of-line open, needs device repro).
-- Unit tests: **462 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.15** (only the third digit bumps per APK; versionCode 85).
+- HEAD: `8fa945f` — v0.7.15 (§13 finish). (Working tree: **v0.7.16**, first 3 nice-to-haves, not yet
+  committed. origin/main is at v0.7.11 `4967664` — v0.7.12…v0.7.16 unpushed.) **Spec §12/§13/§14 complete**
+  bar D-07 last-word (device repro).
+- Unit tests: **463 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.16** (only the third digit bumps per APK; versionCode 86).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -116,6 +116,18 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Nice-to-haves: persist language / Greek diaeresis / language-aware blacklist (v0.7.16)
+- **Persist active language (G-01):** new `language/ActiveLanguageStore` (own private prefs file); the
+  service loads it in `onCreate` and saves it on each `toggleLanguage`, so the chosen alphabet
+  (German/Greek) survives a service restart.
+- **Greek diaeresis (ϊ / ϋ):** now that the long-press popup is multi-alternative (D-23), the ι and υ keys
+  carry `[tonos, diaeresis]` (`GreekLayout.DIAERESIS`, new `letterKey` helper): tonos is the pre-selected
+  primary, diaeresis the cell above. Other vowels keep the single tonos.
+- **Language-aware blacklist editor (C-05):** the editor opened the legacy `adaptkey_dictionary.db` instead
+  of the per-language DBs the keyboard actually uses — so edits had no effect. Now a language selector
+  (DE/EN/EL) reopens the matching store via the now-public `DictionaryLoader.databaseName(language)`, so the
+  blacklist is edited in the store the keyboard reads.
 
 ### §13 finish: D-13 / D-18 / D-17 / D-16 (v0.7.15)
 - **D-13 user word training:** undoing a wrong A-05 split (the A-07 backspace) now **learns** the rejoined

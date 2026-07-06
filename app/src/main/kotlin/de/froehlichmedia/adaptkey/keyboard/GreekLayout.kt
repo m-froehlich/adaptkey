@@ -31,6 +31,9 @@ object GreekLayout {
         'α' to "ά", 'ε' to "έ", 'η' to "ή", 'ι' to "ί", 'ο' to "ό", 'υ' to "ύ", 'ω' to "ώ"
     )
     
+    /** Diaeresis (dialytika) secondary for the two vowels that take it (ι, υ); the second long-press slot. */
+    val DIAERESIS = mapOf('ι' to "ϊ", 'υ' to "ϋ")
+    
     /**
      * Builds the Greek keyboard for the given configuration.
      *
@@ -48,13 +51,13 @@ object GreekLayout {
             result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
         }
         
-        result.add(ROW_TOP.map { c -> charKey(c, ACCENTS[c]) })
-        result.add(ROW_MIDDLE.map { c -> charKey(c, ACCENTS[c]) })
+        result.add(ROW_TOP.map { c -> letterKey(c) })
+        result.add(ROW_MIDDLE.map { c -> letterKey(c) })
         
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(ROW_BOTTOM.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            ROW_BOTTOM.forEach { c -> add(charKey(c, ACCENTS[c], weight = thirdRowLetterWeight)) }
+            ROW_BOTTOM.forEach { c -> add(letterKey(c, thirdRowLetterWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -69,6 +72,22 @@ object GreekLayout {
         })
         
         return result
+    }
+    
+    /**
+     * A Greek letter key with its accent long-press options: the tonos form as the primary (corner hint +
+     * pre-selected popup cell), plus the diaeresis form as a second popup cell for ι / υ (D-23). Letters
+     * with no accent get a plain key.
+     *
+     * @param c the Greek letter
+     * @param weight the key's row weight
+     * @return the key
+     */
+    private fun letterKey(c: Char, weight: Float = 1f): Key {
+        val tonos = ACCENTS[c]
+        val diaeresis = DIAERESIS[c]
+        val alternatives = if (tonos != null && diaeresis != null) listOf(tonos, diaeresis) else emptyList()
+        return charKey(c, hint = tonos, alternatives = alternatives, weight = weight)
     }
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {

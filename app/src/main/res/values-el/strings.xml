@@ -144,6 +144,7 @@
 
     <!-- Blacklist editor (C-05). -->
     <string name="blacklist_title">Λίστα αποκλεισμού</string>
+    <string name="blacklist_language">Γλώσσα:</string>
     <string name="blacklist_word_hint">Λέξη</string>
     <string name="blacklist_add">Προσθήκη</string>
     <string name="blacklist_empty">Καμία καταχώριση.</string>

@@ -144,6 +144,7 @@
 
     <!-- Blacklist editor (C-05). -->
     <string name="blacklist_title">Blacklist</string>
+    <string name="blacklist_language">Language:</string>
     <string name="blacklist_word_hint">Word</string>
     <string name="blacklist_add">Add</string>
     <string name="blacklist_empty">No entries.</string>

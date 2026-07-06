@@ -52,6 +52,7 @@ import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
+import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
@@ -241,6 +242,8 @@ class AdaptKeyService : InputMethodService() {
         loadDictionariesAsync()
         emojiDataset = EmojiDatasetLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
+        // Restore the alphabet the user last switched to (G-01), so it survives a service restart.
+        activeLanguage = ActiveLanguageStore.load(this)
         languageClassifier = LanguageProfileLoader.loadClassifier(this)
         loadTier3ProviderAsync()
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
@@ -758,6 +761,8 @@ class AdaptKeyService : InputMethodService() {
     private fun toggleLanguage(ic: InputConnection) {
         finalizeAndCommit(ic, "")
         activeLanguage = if (activeLanguage == Language.GREEK) Language.GERMAN else Language.GREEK
+        // Persist the switch so the chosen alphabet survives a service restart.
+        ActiveLanguageStore.save(this, activeLanguage)
         keyboardView?.greek = activeLanguage == Language.GREEK
         // D-03: keep the space-bar language label in sync with the switch.
         updateSpaceLabel()

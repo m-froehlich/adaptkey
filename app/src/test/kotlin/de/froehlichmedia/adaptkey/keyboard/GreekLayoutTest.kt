@@ -50,6 +50,16 @@ class GreekLayoutTest {
     }
     
     @Test
+    fun `iota and upsilon offer both tonos and diaeresis in the long-press popup`() {
+        val topRow = GreekLayout.rows()[1]
+        
+        assertEquals(listOf("ί", "ϊ"), topRow.byChar('ι').alternatives)
+        assertEquals(listOf("ύ", "ϋ"), topRow.byChar('υ').alternatives)
+        // A vowel without a diaeresis keeps a single tonos secondary (no multi-alternative popup).
+        assertTrue(topRow.byChar('ε').alternatives.isEmpty())
+    }
+    
+    @Test
     fun `consonants have no accent secondary`() {
         val rows = GreekLayout.rows()
         

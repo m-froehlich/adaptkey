@@ -20,7 +20,14 @@ object DictionaryLoader {
     /** The languages that ship with a bundled dictionary (German default, English auto, Greek via G-01). */
     val LANGUAGES = listOf(Language.GERMAN, Language.ENGLISH, Language.GREEK)
     
-    private fun databaseName(language: Language): String = "adaptkey_dictionary_${language.code}.db"
+    /**
+     * The SQLite database file backing [language]'s dictionary. Public so the C-05 blacklist editor can
+     * open the very store the running keyboard uses for that language.
+     *
+     * @param language the dictionary language
+     * @return the per-language database file name
+     */
+    fun databaseName(language: Language): String = "adaptkey_dictionary_${language.code}.db"
     
     private fun wordsAsset(language: Language): String = "dict_${language.code}.tsv"
     
