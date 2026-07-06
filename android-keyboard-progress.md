@@ -28,10 +28,10 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `4967664` — v0.7.11 (pushed to origin/main). (Working tree: **v0.7.12**, calibration reliability +
-  D-24 landed, not yet committed.)
+- HEAD: `e1d177d` — v0.7.12 (calibration + D-24). (Working tree: **v0.7.13**, I18N landed, not yet
+  committed. origin/main is at v0.7.11 `4967664` — v0.7.12 + v0.7.13 unpushed.) **Spec §14 now COMPLETE.**
 - Unit tests: **458 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.12** (only the third digit bumps per APK; versionCode 82).
+  (no warnings). **Versioned 0.7.13** (only the third digit bumps per APK; versionCode 83).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -115,6 +115,13 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### Round-3: I18N — English + Greek app strings (v0.7.13)
+- **§14 I18N:** all app-chrome strings localised to English (`res/values-en/strings.xml`) and Greek
+  (`res/values-el/strings.xml`); German stays the default (`res/values/`). Selected by the system language,
+  other languages fall back to German. ~90 strings each (settings, onboarding, dialogs, calibration, D-24).
+  No hardcoded UI literals remain (the only in-code string is the language-name space-bar/toast label, an
+  intentional endonym). This completes spec §14.
 
 ### Round-3: calibration reliability (T-04/K-01) + D-24 touch-model visualisation (v0.7.12)
 - **T-04/K-01 calibration now produces a result:** the live classifier is deliberately conservative
