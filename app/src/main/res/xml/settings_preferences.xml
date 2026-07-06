@@ -85,6 +85,16 @@
             android:summary="@string/d18_summary"
             android:defaultValue="true" />
 
+        <SeekBarPreference
+            android:key="d32_longpress_delay_ms"
+            android:title="@string/d32_title"
+            android:summary="@string/d32_summary"
+            android:defaultValue="320"
+            android:max="600"
+            app:min="150"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
         <SwitchPreferenceCompat
             android:key="c08_hints_enabled"
             android:title="@string/c08_hints_title"

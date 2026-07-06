@@ -28,11 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `8fa945f` — v0.7.15 (§13 finish). (Working tree: **v0.7.16**, first 3 nice-to-haves, not yet
-  committed. origin/main is at v0.7.11 `4967664` — v0.7.12…v0.7.16 unpushed.) **Spec §12/§13/§14 complete**
-  bar D-07 last-word (device repro).
-- Unit tests: **463 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.16** (only the third digit bumps per APK; versionCode 86).
+- HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
+  bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
+- Unit tests: **464 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.17** (only the third digit bumps per APK; versionCode 87).
+- **Spec §15 (round 4) status:** DONE = D-30 (freeze bug), D-31 (backspace speed), D-32 (long-press delay +
+  setting), D-33 (popup bottom-align), D-34 (vibration), D-35 (swipe thresholds). OPEN = **D-36** direct paste
+  (feature), **D-37** less-eager count-based learning + un-learn on undo, **D-38** correction quality
+  (first-char / umlaut-initial candidates + cost-ranked; Stabdsrx→Standard, Uberblick→Überblick,
+  eerden→werden, W8rt→Wort, dasy→dass).
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -116,6 +120,25 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### §15 round-4 bugs: D-30…D-35 (v0.7.17)
+- **D-30 (critical bug) keyboard freeze after held backspace:** `backspaceRepeated` was only reset on a
+  DELETE press, so after a hold it stayed true and the ACTION_UP tap-guard (`!backspaceRepeated`) swallowed
+  **every** subsequent tap (incl. backspace). Fixed by resetting it on every ACTION_DOWN. (This was the real
+  cause of the earlier "last word of the line" report — the whole keyboard was frozen.)
+- **D-31 backspace-hold speed:** `BackspaceRepeat` reworked — char-wise now starts at 190 ms and accelerates
+  only **moderately** (factor 0.90) to a 65 ms floor; word-wise runs at a clearly **slower** fixed 330 ms.
+  The service drives the cadence: `onBackspaceRepeat(step)` now returns the next delay, computed from the
+  running deletion count, so the char→word transition is a visible slow-down.
+- **D-32 long-press delay + setting:** the view's `longPressDelayMs` is settable (default 80 % of the system
+  timeout = ~20 % shorter). New `d32_longpress_delay_ms` slider (150–600, default 320) through the settings
+  pipeline + strings ×3.
+- **D-33 popup primary bottom-aligned:** the offset primary cell now sits level with the bottom of the
+  secondary column (near the finger) instead of top-left.
+- **D-34 vibration:** the haptic pulse was 18 ms (imperceptible) → 40 ms; VIBRATE is a normal auto-granted
+  permission (no runtime step). Now actually felt.
+- **D-35 swipe thresholds:** raised markedly — field gestures (dismiss-down / page swipe / word-delete)
+  64→**110 dp**, space-bar language swipe 28→**44 dp**, so a faint motion no longer triggers them.
 
 ### Nice-to-haves: persist language / Greek diaeresis / language-aware blacklist (v0.7.16)
 - **Persist active language (G-01):** new `language/ActiveLanguageStore` (own private prefs file); the

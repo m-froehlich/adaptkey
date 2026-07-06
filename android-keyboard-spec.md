@@ -447,3 +447,61 @@ Accepting (tapping) a suggestion inserts a trailing space, which is correct. But
 a punctuation mark, that trailing space must be removed so the punctuation attaches to the word. This must
 apply **only** immediately after a "suggestion accepted" action - spaces before a typed punctuation mark must
 **not** be stripped in general.
+
+---
+
+## 15. Fourth Device-Feedback Round (from v0.7.16 testing)
+
+Further on-device findings. `*(bug)*` marks defects.
+
+### D-30 - Long-Press Backspace Freezes Input *(bug, critical)*
+After using long-press (held) backspace and stopping, **no further input is possible** - not even a normal
+backspace, so the line's last word can no longer be deleted either (this was the real cause behind the
+earlier "stops before the last word" report). The keyboard must remain fully responsive after a held
+backspace (the repeat-suppression state must be reset on the next touch).
+
+### D-31 - Backspace-Hold Speed Re-tuning
+Held backspace starts at a reasonable rate but then **accelerates far too much**, and it keeps that fast rate
+when it switches to word-wise deletion - so half the text is gone in an instant. It must accelerate only
+**very moderately** after the first few characters, and on the transition to **word-wise** deletion it must
+slow down **clearly**, so the user can follow the deletion and stop at the right moment.
+
+### D-32 - Long-Press Delay Too Long *(+ setting)*
+The long-press (to reach the alt char / popup) takes too long. Shorten it by roughly **20 %**, and add a
+**setting** for the long-press delay.
+
+### D-33 - Popup Primary Cell Bottom-Aligned
+In the D-23 popup, the offset primary cell (the key's own char) should be **bottom-aligned** - level with the
+bottom of the secondary column, near the finger - rather than top-left. It works the same but feels more
+intuitive.
+
+### D-34 - Key Vibration Does Not Fire; Permission Half-Automatic *(bug)*
+The key-press vibration (D-06) still does not fire. VIBRATE is a normal, install-time permission (no runtime
+prompt), so enabling the setting must simply work - if any acquisition is needed it must happen
+half-automatically when the toggle is enabled, never as a manual step. The vibration pulse must also be long
+enough to actually be felt.
+
+### D-35 - Swipe Thresholds Still Too Sensitive
+Swipe-down (dismiss, G-03) and left/right (space-bar language G-01, full-field page D-19) still trigger on a
+**tiny** motion - a faint down-swipe hides the keyboard, a faint right-swipe on space switches language, a
+faint right-swipe elsewhere switches page. All must require a **clearly larger** (but still practical) travel.
+
+### D-36 - Direct Paste from the Clipboard *(new feature)*
+Like Gboard: when the clipboard holds content, show (part of) it where the suggestion bar is; a tap pastes it.
+Passwords appear as `•••••`. Two improvements over Gboard: (1) **clear the clipboard after pasting**,
+especially for passwords; (2) perform the **exact system paste action** (Gboard pastes in a way that behaves
+subtly wrong).
+
+### D-37 - Less Eager Learning *(with un-learn on undo)*
+A word must **not** be fully learned after a single autocorrect/accept (that also learns wrongly-corrected
+words). Instead: (1) a corrected word that is **reverted** (backspace-undo) must be **un-learned /
+decremented**; (2) an accepted/autocorrected word is only **counted up**, and counts as learned once it has
+been accepted **two or three times without being reverted**. It must stay comfortable and learn quickly, but
+not over-eagerly. (Refines D-13; design the count/threshold sensibly.)
+
+### D-38 - Correction Quality: First-Char, Umlaut-Initial, Cost-Ranked
+Real misses to fix, beyond D-28: first-character typos and umlaut-initial words are never corrected because
+the candidate set is keyed on the exact first character - broaden it (first-char neighbours + umlaut-folded
+first char). And ranking must prefer a **lower-edit-cost** correction over a more frequent higher-cost one.
+Examples (recognised input -> intended): `Stabdsrx` -> `Standard`, `Uberblick` -> `Überblick`,
+`eerden` -> `werden`, `W8rt` -> `Wort`, and `dasy` -> `dass` (currently wrongly `das`).

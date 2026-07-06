@@ -35,7 +35,8 @@ data class RawSettings(
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
     val recordRawTaps: Boolean = false,
-    val emojiPanelEnabled: Boolean = true
+    val emojiPanelEnabled: Boolean = true,
+    val longPressDelayMs: Long = AdaptSettings.DEFAULT_LONGPRESS_DELAY_MS
 )
 
 /**
@@ -63,6 +64,12 @@ object SettingsMapper {
     
     /** C-07 maximum shift grace window in ms (§10). */
     const val MAX_SHIFT_GRACE_MS = 500L
+    
+    /** D-32 minimum long-press delay in ms. */
+    const val MIN_LONGPRESS_DELAY_MS = 150L
+    
+    /** D-32 maximum long-press delay in ms. */
+    const val MAX_LONGPRESS_DELAY_MS = 600L
     
     /** C-01 lower bound for the space-bar weight (must stay a usable, positive width). */
     const val MIN_SPACE_WEIGHT = 1.0f
@@ -158,7 +165,8 @@ object SettingsMapper {
             keySoundEnabled = raw.keySoundEnabled,
             keyHapticsEnabled = raw.keyHapticsEnabled,
             recordRawTaps = raw.recordRawTaps,
-            emojiPanelEnabled = raw.emojiPanelEnabled
+            emojiPanelEnabled = raw.emojiPanelEnabled,
+            longPressDelayMs = raw.longPressDelayMs.coerceIn(MIN_LONGPRESS_DELAY_MS, MAX_LONGPRESS_DELAY_MS)
         )
     }
 }

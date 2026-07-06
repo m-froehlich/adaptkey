@@ -6,48 +6,37 @@ package de.froehlichmedia.adaptkey.keyboard
 import kotlin.math.pow
 
 /**
- * Pure timing/policy for the accelerating backspace-on-hold behaviour (D-07).
+ * Pure timing/policy for the accelerating backspace-on-hold behaviour (D-07 / D-31).
  *
- * Holding the backspace key starts repeating after a short initial delay ([INITIAL_DELAY_MS]); the
- * repeat interval starts slow ([START_DELAY_MS]) and accelerates geometrically towards a floor
- * ([MIN_DELAY_MS]), so the user is not surprised into deleting too much. Once roughly three words'
- * worth of characters have been removed ([WORD_MODE_AFTER_CHARS]) the deletion switches from
- * character-wise to word-wise until the key is released.
+ * Holding backspace starts repeating after [INITIAL_DELAY_MS]. Character-wise deletion starts at
+ * [CHAR_START_DELAY_MS] and accelerates only **moderately** ([CHAR_ACCELERATION]) towards a floor
+ * ([CHAR_MIN_DELAY_MS]), so it never runs away. Once roughly [WORD_MODE_AFTER_CHARS] characters have gone
+ * it switches to **word-wise** deletion at a clearly **slower**, fixed cadence ([WORD_DELAY_MS]) - so the
+ * jump into word deletion is a visible slow-down the user can follow and stop at the right moment.
  *
- * This class only computes the schedule and the deletion unit; the view drives the timer and the
- * service performs the actual deletion, so the whole policy stays Android-free and unit-testable.
+ * The delay is a function of how many characters have already been removed, so the service (which knows
+ * that count and drives the deletion) can return the next delay each tick; the view only owns the timer.
+ * The whole policy stays Android-free and unit-testable.
  */
 object BackspaceRepeat {
     
     /** Delay before the first repeat fires, giving a normal tap room to be just a single deletion. */
-    const val INITIAL_DELAY_MS = 260L
+    const val INITIAL_DELAY_MS = 400L
     
-    /** Interval before the first accelerated repeat; the curve decays from here (D-07: faster than before). */
-    const val START_DELAY_MS = 120L
+    /** Character-wise starting interval; the moderate acceleration decays from here. */
+    const val CHAR_START_DELAY_MS = 190L
     
-    /** Fastest repeat interval the acceleration is clamped to. */
-    const val MIN_DELAY_MS = 28L
+    /** Fastest character-wise interval the acceleration is clamped to (kept moderate on purpose). */
+    const val CHAR_MIN_DELAY_MS = 65L
     
-    /** Geometric decay factor applied per repeat step (smaller = accelerates faster). */
-    const val ACCELERATION = 0.78
+    /** Geometric decay factor per removed character - close to 1 so acceleration stays gentle (D-31). */
+    const val CHAR_ACCELERATION = 0.90
     
     /** Characters removed during a hold before deletion switches from character-wise to word-wise. */
-    const val WORD_MODE_AFTER_CHARS = 18
+    const val WORD_MODE_AFTER_CHARS = 16
     
-    /**
-     * The delay before the repeat at [step] should fire (0-based, where step 0 is the first repeat
-     * after [INITIAL_DELAY_MS]). Starts at [START_DELAY_MS] and decays geometrically towards
-     * [MIN_DELAY_MS], which it never goes below.
-     *
-     * @param step the 0-based repeat index
-     * @return the delay in milliseconds until this repeat fires
-     * @throws IllegalArgumentException when [step] is negative
-     */
-    fun nextDelayMs(step: Int): Long {
-        require(step >= 0) { "step must be >= 0" }
-        val decayed = (START_DELAY_MS * ACCELERATION.pow(step)).toLong()
-        return decayed.coerceAtLeast(MIN_DELAY_MS)
-    }
+    /** Word-wise deletion cadence: clearly slower than character-wise, so it is followable (D-31). */
+    const val WORD_DELAY_MS = 330L
     
     /**
      * Whether the deletion at this point in the hold should remove a whole word rather than a single
@@ -58,5 +47,23 @@ object BackspaceRepeat {
      */
     fun deletesWord(charsDeleted: Int): Boolean {
         return charsDeleted >= WORD_MODE_AFTER_CHARS
+    }
+    
+    /**
+     * The delay before the next deletion, given how many characters have been removed so far: the moderate
+     * character-wise decay while below the word threshold, and the slower fixed word-wise cadence at/after
+     * it (D-31).
+     *
+     * @param charsDeleted the number of characters removed so far during the hold
+     * @return the delay in milliseconds until the next deletion
+     * @throws IllegalArgumentException when [charsDeleted] is negative
+     */
+    fun nextDelayMs(charsDeleted: Int): Long {
+        require(charsDeleted >= 0) { "charsDeleted must be >= 0" }
+        if (deletesWord(charsDeleted)) {
+            return WORD_DELAY_MS
+        }
+        val decayed = (CHAR_START_DELAY_MS * CHAR_ACCELERATION.pow(charsDeleted)).toLong()
+        return decayed.coerceAtLeast(CHAR_MIN_DELAY_MS)
     }
 }

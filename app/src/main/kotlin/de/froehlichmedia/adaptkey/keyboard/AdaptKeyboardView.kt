@@ -80,13 +80,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * Callback invoked repeatedly while the backspace key is held (D-07), at the accelerating cadence
-     * of [BackspaceRepeat]. [step] is the 0-based repeat index so the service can decide between
-     * character- and word-wise deletion.
+     * Callback invoked repeatedly while the backspace key is held (D-07 / D-31). [step] is the 0-based
+     * repeat index (step 0 resets the hold). The service performs the deletion and returns the delay in
+     * milliseconds before the next repeat, so the cadence follows the character/word-wise phase.
      */
     fun interface OnBackspaceRepeatListener {
         
-        fun onBackspaceRepeat(step: Int)
+        fun onBackspaceRepeat(step: Int): Long
     }
     
     /**
@@ -240,12 +240,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var downX = 0f
     private var downY = 0f
     private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
-    private val longPressTimeoutMs = ViewConfiguration.getLongPressTimeout().toLong()
-    // D-20: field gestures (dismiss-down, surface swipe, word-delete) need a clearly larger travel so a
-    // faint motion no longer triggers them; the space-bar language swipe (G-01) stays small, proportional
-    // to the narrow space bar, so it remains easy.
-    private val fieldSwipeThresholdPx = dp(64f)
-    private val spaceSwipeThresholdPx = dp(28f)
+    
+    /**
+     * D-32: delay before a long-press fires (the alt char / popup). Set from the settings; defaults to
+     * ~20 % below the system long-press timeout so the popup comes up sooner even without a stored value.
+     */
+    var longPressDelayMs: Long = (ViewConfiguration.getLongPressTimeout() * 0.8f).toLong()
+    // D-20 / D-35: field gestures (dismiss-down, surface swipe, word-delete) need a clearly larger travel
+    // so a faint motion no longer triggers them; the space-bar language swipe (G-01) stays smaller,
+    // proportional to the narrow space bar, but still deliberate.
+    private val fieldSwipeThresholdPx = dp(110f)
+    private val spaceSwipeThresholdPx = dp(44f)
     
     // D-05: lazily resolved so the AudioManager is only fetched when the sound feedback is actually used.
     // D-05/D-06 (§14 fix): the toggles must be authoritative, so the feedback bypasses the system
@@ -473,6 +478,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val (key, rect) = resolved
                 cancelFlash()
                 dismissPopup()
+                // D-30: clear the backspace-repeat suppression from any previous hold, so a new touch is
+                // never wrongly swallowed (otherwise the keyboard freezes after a held backspace).
+                backspaceRepeated = false
                 // D-05 / D-06: optional press feedback (both default off).
                 playKeyFeedback()
                 pressedKey = key
@@ -571,7 +579,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
         }
         longPressRunnable = runnable
-        longPressHandler.postDelayed(runnable, longPressTimeoutMs)
+        longPressHandler.postDelayed(runnable, longPressDelayMs)
     }
     
     /**
@@ -591,9 +599,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-23: opens the vertical long-press popup for [key] showing [alternatives] (index 0 = primary,
+     * D-23 / D-33: opens the vertical long-press popup for [key] showing [alternatives] (index 0 = primary,
      * pre-selected). The secondaries stack in a column above the key, bottom-to-top; the primary cell sits
-     * at the top-left (offset from the finger). All cells are clamped to stay within the view.
+     * offset to the left but **bottom-aligned** (level with the bottom of the column, near the finger). All
+     * cells are clamped to stay within the view.
      */
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
@@ -601,14 +610,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         popupStackBottom = rect.top - gapPx
         val centred = rect.centerX() - popupCellWidthPx / 2f
         popupStackLeft = centred.coerceIn(gapPx, (width - gapPx - popupCellWidthPx).coerceAtLeast(gapPx))
-        if (secondaryCount <= 0) {
-            // A single alternative (e.g. an umlaut): just a preview cell directly above the key.
-            popupPrimaryLeft = popupStackLeft
-            popupPrimaryTop = popupStackBottom - popupCellHeightPx
+        // D-33: the primary cell is bottom-aligned (near the finger). For a single alternative it sits
+        // directly above the key; with secondaries it moves to the left of the column, at the same bottom row.
+        popupPrimaryTop = popupStackBottom - popupCellHeightPx
+        popupPrimaryLeft = if (secondaryCount <= 0) {
+            popupStackLeft
         } else {
-            // Primary offset to the upper-left of the secondary column (D-23).
-            popupPrimaryLeft = (popupStackLeft - popupCellWidthPx - gapPx).coerceAtLeast(gapPx)
-            popupPrimaryTop = (popupStackBottom - secondaryCount * popupCellHeightPx).coerceAtLeast(0f)
+            (popupStackLeft - popupCellWidthPx - gapPx).coerceAtLeast(gapPx)
         }
         popupAlternatives = alternatives
         popupSelectedIndex = 0
@@ -697,8 +705,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     return
                 }
                 backspaceRepeated = true
-                onBackspaceRepeatListener?.onBackspaceRepeat(backspaceStep)
-                val next = BackspaceRepeat.nextDelayMs(backspaceStep)
+                // D-31: the service deletes and returns the delay before the next repeat (char/word phase).
+                val next = onBackspaceRepeatListener?.onBackspaceRepeat(backspaceStep) ?: return
                 backspaceStep++
                 longPressHandler.postDelayed(this, next)
             }
@@ -822,9 +830,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
         private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
         
-        // D-05: key-click tone volume (0-100) and duration; D-06: haptic pulse duration.
+        // D-05: key-click tone volume (0-100) and duration; D-06: haptic pulse duration (D-34: long enough
+        // to actually be felt - a very short pulse was imperceptible).
         private const val TONE_VOLUME = 70
         private const val TONE_DURATION_MS = 40
-        private const val HAPTIC_DURATION_MS = 18L
+        private const val HAPTIC_DURATION_MS = 40L
     }
 }

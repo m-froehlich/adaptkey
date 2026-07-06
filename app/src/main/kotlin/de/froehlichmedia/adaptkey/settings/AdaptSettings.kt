@@ -44,13 +44,17 @@ data class AdaptSettings(
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
     val recordRawTaps: Boolean = false,
-    val emojiPanelEnabled: Boolean = true
+    val emojiPanelEnabled: Boolean = true,
+    val longPressDelayMs: Long = DEFAULT_LONGPRESS_DELAY_MS
 ) {
     
     companion object {
         
         /** Default shift grace window (C-07, 300 ms per §10). */
         const val DEFAULT_SHIFT_GRACE_WINDOW_MS = 300L
+        
+        /** Default long-press delay (D-32, ~20 % below the typical system timeout). */
+        const val DEFAULT_LONGPRESS_DELAY_MS = 320L
         
         /** The all-defaults configuration, equivalent to a freshly installed app. */
         val DEFAULT = AdaptSettings()

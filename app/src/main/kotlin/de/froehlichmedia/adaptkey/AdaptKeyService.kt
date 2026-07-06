@@ -420,6 +420,8 @@ class AdaptKeyService : InputMethodService() {
             // D-05 / D-06: optional key-press sound + haptics (both default off).
             view.soundEnabled = s.keySoundEnabled
             view.hapticsEnabled = s.keyHapticsEnabled
+            // D-32: configurable long-press delay.
+            view.longPressDelayMs = s.longPressDelayMs
         }
         // D-18: emoji panel on/off (off makes the combined key a ?123-only key).
         emojiPanelEnabled = s.emojiPanelEnabled
@@ -938,13 +940,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Handles one tick of an accelerating backspace hold (D-07). The first tick (step 0) resets the
+     * Handles one tick of an accelerating backspace hold (D-07 / D-31). The first tick (step 0) resets the
      * hold state. While a composing token is present its characters are removed first; afterwards the
-     * committed text is deleted character-wise, switching to word-wise once roughly three words have
-     * been removed ([BackspaceRepeat.deletesWord]).
+     * committed text is deleted character-wise, switching to word-wise once [BackspaceRepeat.deletesWord].
+     *
+     * @param step the 0-based repeat index (0 resets the hold)
+     * @return the delay in milliseconds before the next repeat tick
      */
-    private fun handleBackspaceRepeat(step: Int) {
-        val ic = currentInputConnection ?: return
+    private fun handleBackspaceRepeat(step: Int): Long {
+        val ic = currentInputConnection ?: return BackspaceRepeat.WORD_DELAY_MS
         if (step == 0) {
             backspaceHeldChars = 0
             clearUndo()
@@ -953,9 +957,7 @@ class AdaptKeyService : InputMethodService() {
         if (composing.isNotEmpty()) {
             deleteComposingChar(ic)
             backspaceHeldChars++
-            return
-        }
-        if (BackspaceRepeat.deletesWord(backspaceHeldChars)) {
+        } else if (BackspaceRepeat.deletesWord(backspaceHeldChars)) {
             val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
             val count = WordBoundary.wordDeleteLength(before)
             if (count > 0) {
@@ -968,6 +970,8 @@ class AdaptKeyService : InputMethodService() {
         } else if (deleteOneBefore(ic)) {
             backspaceHeldChars++
         }
+        // D-31: the next-tick delay follows the char/word-wise phase from the running deletion count.
+        return BackspaceRepeat.nextDelayMs(backspaceHeldChars)
     }
     
     /**

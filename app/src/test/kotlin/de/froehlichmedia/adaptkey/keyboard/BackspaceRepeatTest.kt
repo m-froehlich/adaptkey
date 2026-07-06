@@ -10,38 +10,44 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for the pure accelerating-backspace policy (D-07).
+ * Unit tests for the pure accelerating-backspace policy (D-07 / D-31).
  */
 class BackspaceRepeatTest {
     
     @Test
-    fun `first repeat starts at the slow interval`() {
-        assertEquals(BackspaceRepeat.START_DELAY_MS, BackspaceRepeat.nextDelayMs(0))
+    fun `character-wise deletion starts at the moderate start interval`() {
+        assertEquals(BackspaceRepeat.CHAR_START_DELAY_MS, BackspaceRepeat.nextDelayMs(0))
     }
     
     @Test
-    fun `the interval strictly decreases while accelerating`() {
+    fun `character-wise deletion accelerates only moderately down to a floor`() {
         var previous = Long.MAX_VALUE
         var reachedFloor = false
-        for (step in 0..40) {
-            val delay = BackspaceRepeat.nextDelayMs(step)
-            assertTrue(delay <= previous, "delay must not grow at step $step")
-            assertTrue(delay >= BackspaceRepeat.MIN_DELAY_MS, "delay must never drop below the floor")
-            if (delay == BackspaceRepeat.MIN_DELAY_MS) {
+        for (chars in 0 until BackspaceRepeat.WORD_MODE_AFTER_CHARS) {
+            val delay = BackspaceRepeat.nextDelayMs(chars)
+            assertTrue(delay <= previous, "delay must not grow at $chars chars")
+            assertTrue(delay >= BackspaceRepeat.CHAR_MIN_DELAY_MS, "delay must never drop below the floor")
+            if (delay == BackspaceRepeat.CHAR_MIN_DELAY_MS) {
                 reachedFloor = true
             }
             previous = delay
         }
-        assertTrue(reachedFloor, "the acceleration must eventually reach the floor")
+        assertTrue(reachedFloor, "the moderate acceleration reaches the floor before word mode")
     }
     
     @Test
-    fun `the interval is clamped to the floor and never goes below it`() {
-        assertEquals(BackspaceRepeat.MIN_DELAY_MS, BackspaceRepeat.nextDelayMs(1000))
+    fun `word-wise deletion uses the slower fixed cadence`() {
+        assertEquals(BackspaceRepeat.WORD_DELAY_MS, BackspaceRepeat.nextDelayMs(BackspaceRepeat.WORD_MODE_AFTER_CHARS))
+        assertEquals(BackspaceRepeat.WORD_DELAY_MS, BackspaceRepeat.nextDelayMs(BackspaceRepeat.WORD_MODE_AFTER_CHARS + 40))
     }
     
     @Test
-    fun `a negative step is rejected`() {
+    fun `the word-wise cadence is clearly slower than the fastest character-wise one (D-31)`() {
+        assertTrue(BackspaceRepeat.WORD_DELAY_MS > BackspaceRepeat.CHAR_MIN_DELAY_MS)
+    }
+    
+    @Test
+    fun `a negative count is rejected`() {
         assertThrows(IllegalArgumentException::class.java) { BackspaceRepeat.nextDelayMs(-1) }
     }
     

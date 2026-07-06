@@ -44,6 +44,7 @@ object SettingsStore {
     const val KEY_KEY_HAPTICS = "d06_key_haptics"
     const val KEY_RECORD_RAW_TAPS = "d09_record_raw_taps"
     const val KEY_EMOJI_PANEL = "d18_emoji_panel"
+    const val KEY_LONGPRESS_DELAY = "d32_longpress_delay_ms"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -71,6 +72,9 @@ object SettingsStore {
     
     /** Default stored integer for the shift grace window slider (C-07, 300 ms). */
     const val DEF_SHIFT_GRACE = 300
+    
+    /** Default stored integer for the long-press delay slider (D-32, 320 ms). */
+    const val DEF_LONGPRESS_DELAY = 320
     
     /**
      * @param context any valid context
@@ -107,7 +111,8 @@ object SettingsStore {
             keySoundEnabled = p.getBoolean(KEY_KEY_SOUND, false),
             keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
             recordRawTaps = p.getBoolean(KEY_RECORD_RAW_TAPS, false),
-            emojiPanelEnabled = p.getBoolean(KEY_EMOJI_PANEL, true)
+            emojiPanelEnabled = p.getBoolean(KEY_EMOJI_PANEL, true),
+            longPressDelayMs = p.getInt(KEY_LONGPRESS_DELAY, DEF_LONGPRESS_DELAY).toLong()
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
