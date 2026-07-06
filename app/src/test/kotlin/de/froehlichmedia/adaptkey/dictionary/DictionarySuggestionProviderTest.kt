@@ -145,4 +145,27 @@ class DictionarySuggestionProviderTest {
         assertNull(provider.autocorrectFor("hoos", null))
         assertFalse(provider.suggestionsFor("hoos", null).map { it.word }.contains("haus"))
     }
+    
+    @Test
+    fun `D-38 the lower-edit-cost correction wins over a more frequent one (dasy to dass)`() {
+        store.putWord(WordEntry("das", 1000L))
+        store.putWord(WordEntry("dass", 50L))
+        
+        // "das" is far more frequent, but "dass" is one adjacent edit (y->s) vs a deletion for "das".
+        assertEquals("dass", provider.autocorrectFor("dasy", null))
+    }
+    
+    @Test
+    fun `D-38 a first-key typo is corrected (eerden to werden)`() {
+        store.putWord(WordEntry("werden", 500L))
+        
+        assertEquals("werden", provider.autocorrectFor("eerden", null))
+    }
+    
+    @Test
+    fun `D-38 a missing initial umlaut is corrected (Uberblick to Überblick)`() {
+        store.putWord(WordEntry("Überblick", 80L))
+        
+        assertEquals("Überblick", provider.autocorrectFor("Uberblick", null))
+    }
 }

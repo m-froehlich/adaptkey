@@ -35,6 +35,17 @@ object KeyboardProximity {
         return neighbours[a]?.contains(b) == true
     }
     
+    /**
+     * The keys physically neighbouring [c] on the layout (D-38): used to broaden the correction candidate
+     * set so a typo on the very first key (e.g. `eerden` for `werden`) can still be found.
+     *
+     * @param c the letter
+     * @return its neighbouring letters, or an empty set for a non-letter
+     */
+    fun neighboursOf(c: Char): Set<Char> {
+        return neighbours[c] ?: emptySet()
+    }
+    
     private fun buildNeighbours(): Map<Char, Set<Char>> {
         val positions = HashMap<Char, Pair<Int, Int>>()
         ROWS.forEachIndexed { row, keys ->

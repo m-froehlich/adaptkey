@@ -30,13 +30,13 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **464 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.17** (only the third digit bumps per APK; versionCode 87).
-- **Spec §15 (round 4) status:** DONE = D-30 (freeze bug), D-31 (backspace speed), D-32 (long-press delay +
-  setting), D-33 (popup bottom-align), D-34 (vibration), D-35 (swipe thresholds). OPEN = **D-36** direct paste
-  (feature), **D-37** less-eager count-based learning + un-learn on undo, **D-38** correction quality
-  (first-char / umlaut-initial candidates + cost-ranked; Stabdsrx→Standard, Uberblick→Überblick,
-  eerden→werden, W8rt→Wort, dasy→dass).
+- Unit tests: **467 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.18** (only the third digit bumps per APK; versionCode 88). Working tree =
+  v0.7.18, unpushed since v0.7.16 (`1e47a56` on origin/main).
+- **Spec §15 (round 4) status:** DONE = D-30 freeze bug, D-31 backspace speed, D-32 long-press delay+setting,
+  D-33 popup bottom-align, D-34 vibration, D-35 swipe thresholds, D-38 correction quality (first-char /
+  umlaut-initial / cost-ranked). OPEN = **D-36** direct paste (feature), **D-37** less-eager count-based
+  learning + un-learn on undo.
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -120,6 +120,18 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### §15 D-38 correction quality: first-char / umlaut-initial / cost-ranked (v0.7.18)
+- **First-char + umlaut-initial candidates:** `DictionaryStore.correctionCandidates(token, firstChars)` (new
+  overload; SQLite searches one indexed bucket per first char) + provider `candidateFirstChars` = the token's
+  own initial letter plus its keyboard neighbours and, for a/o/u, the umlaut variant. So a first-key typo
+  (`eerden`→`werden`) and a missing initial umlaut (`Uberblick`→`Überblick`) are now reachable.
+- **Cost-ranked autocorrect:** `autocorrectFor` now ranks by lowest proximity-weighted edit cost first,
+  frequency only as a tiebreak (`correctionCost` extracted from `isCloseMatch`), so `dasy`→`dass` (one
+  adjacent edit) beats the far more frequent `das` (a deletion).
+- Still open in §15: **D-36** direct paste (feature), **D-37** less-eager count-based learning + un-learn on
+  undo. Heavily-garbled inputs (`Stabdsrx`→`Standard`) and digit-in-word (`W8rt`→`Wort`, a tokenisation
+  issue) remain beyond the current budget/scope — noted.
 
 ### §15 round-4 bugs: D-30…D-35 (v0.7.17)
 - **D-30 (critical bug) keyboard freeze after held backspace:** `backspaceRepeated` was only reset on a

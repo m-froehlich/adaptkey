@@ -141,20 +141,34 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         if (key.isEmpty()) {
             return emptyList()
         }
-        val firstCodePoint = key.codePointAt(0)
-        val lower = String(Character.toChars(firstCodePoint))
-        val upper = String(Character.toChars(firstCodePoint + 1))
+        return correctionCandidates(token, setOf(key[0]))
+    }
+    
+    override fun correctionCandidates(token: String, firstChars: Set<Char>): List<String> {
+        val key = token.lowercase()
+        if (key.isEmpty() || firstChars.isEmpty()) {
+            return emptyList()
+        }
         // The length bounds and LIMIT are inlined as integers: bound as text they would sort below any
         // integer length() and the BETWEEN would never match. They are derived ints, so this is injection-safe.
         val minLen = key.length - 1
         val maxLen = key.length + 1
+        // D-38: search each candidate first-character bucket (the token's own char plus its keyboard
+        // neighbours / umlaut variant), so a first-key typo or a missing initial umlaut can still be found.
+        // Each bucket is an indexed first-char range scan, so the total stays bounded and cheap.
+        val perBucketLimit = maxOf(1, CANDIDATE_LIMIT / firstChars.size)
         val result = ArrayList<String>()
-        db.rawQuery(
-            "SELECT word FROM $TABLE_WORDS WHERE wkey >= ? AND wkey < ? AND length(wkey) BETWEEN $minLen AND $maxLen LIMIT $CANDIDATE_LIMIT",
-            arrayOf(lower, upper)
-        ).use { cursor ->
-            while (cursor.moveToNext()) {
-                result.add(cursor.getString(0))
+        for (firstChar in firstChars) {
+            val codePoint = firstChar.code
+            val lower = String(Character.toChars(codePoint))
+            val upper = String(Character.toChars(codePoint + 1))
+            db.rawQuery(
+                "SELECT word FROM $TABLE_WORDS WHERE wkey >= ? AND wkey < ? AND length(wkey) BETWEEN $minLen AND $maxLen LIMIT $perBucketLimit",
+                arrayOf(lower, upper)
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    result.add(cursor.getString(0))
+                }
             }
         }
         return result

@@ -63,10 +63,31 @@ class DictionarySuggestionProvider(
             return emptyList()
         }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token).filter { candidate ->
+        return store.correctionCandidates(token, candidateFirstChars(token)).filter { candidate ->
             val lower = candidate.lowercase()
             lower != token && isCloseMatch(folded, lower)
         }
+    }
+    
+    /**
+     * The initial letters to search for correction candidates of [token] (D-38): its own first character,
+     * its keyboard neighbours (so a first-key typo like `eerden` -> `werden` is reachable) and its umlaut
+     * variant when it starts with `a` / `o` / `u` (so `Uberblick` -> `Überblick`).
+     *
+     * @param token the lower-cased token
+     * @return the set of initial letters to search
+     */
+    private fun candidateFirstChars(token: String): Set<Char> {
+        val first = token.firstOrNull() ?: return emptySet()
+        val result = HashSet<Char>()
+        result.add(first)
+        result.addAll(KeyboardProximity.neighboursOf(first))
+        when (first) {
+            'a' -> result.add('ä')
+            'o' -> result.add('ö')
+            'u' -> result.add('ü')
+        }
+        return result
     }
     
     /**
@@ -80,14 +101,26 @@ class DictionarySuggestionProvider(
      * @return true when the candidate is within the correction budget
      */
     private fun isCloseMatch(foldedToken: String, candidateLower: String): Boolean {
-        val cost = EditDistance.weightedDistance(foldedToken, Umlaut.fold(candidateLower), INDEL_COST) { x, y ->
+        return correctionCost(foldedToken, candidateLower) <= MAX_CORRECTION_COST
+    }
+    
+    /**
+     * The proximity-aware weighted edit cost between the folded token and a candidate (D-28 / D-38): a
+     * neighbouring-key substitution costs [ADJACENT_SUB_COST], any other substitution or an insert/delete
+     * [SUB_COST] / [INDEL_COST]. Used both to gate candidates and to rank the autocorrect by lowest cost.
+     *
+     * @param foldedToken the umlaut-folded, lower-cased typed token
+     * @param candidateLower the lower-cased candidate word
+     * @return the total weighted edit cost
+     */
+    private fun correctionCost(foldedToken: String, candidateLower: String): Int {
+        return EditDistance.weightedDistance(foldedToken, Umlaut.fold(candidateLower), INDEL_COST) { x, y ->
             when {
                 x == y -> 0
                 KeyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
                 else -> SUB_COST
             }
         }
-        return cost <= MAX_CORRECTION_COST
     }
     
     override fun isKnownWord(word: String): Boolean {
@@ -106,12 +139,23 @@ class DictionarySuggestionProvider(
         // Only a bounded candidate set is scanned (not the whole lexicon). The cheap pure distance test
         // runs before the per-candidate blacklist query, so the DB is touched only for real matches.
         // D-12 / D-28: umlauts / ß are folded and neighbouring-key typos are cheap, so "grun"→"grün" and
-        // "komplezz"→"komplett".
+        // "komplezz"→"komplett". D-38: also search neighbour / umlaut first-char buckets, and rank by the
+        // lowest edit cost first (frequency only breaks ties), so "dasy" corrects to "dass" (one adjacent
+        // edit) rather than the more frequent "das" (a deletion).
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token)
-            .filter { it.lowercase() != token && isCloseMatch(folded, it.lowercase()) && !store.isBlacklisted(it) }
-            .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
+        return store.correctionCandidates(token, candidateFirstChars(token))
+            .asSequence()
+            .filter { it.lowercase() != token && !store.isBlacklisted(it) }
+            .mapNotNull { candidate ->
+                val cost = correctionCost(folded, candidate.lowercase())
+                if (cost > MAX_CORRECTION_COST) null else CandidateCost(candidate, cost, score(candidate, store.frequencyOf(candidate), previousWord))
+            }
+            .minWithOrNull(compareBy({ it.cost }, { -it.score }))
+            ?.candidate
     }
+    
+    /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */
+    private data class CandidateCost(val candidate: String, val cost: Int, val score: Double)
     
     private fun score(word: String, frequency: Long, previousWord: String?): Double {
         val base = frequency.toDouble()

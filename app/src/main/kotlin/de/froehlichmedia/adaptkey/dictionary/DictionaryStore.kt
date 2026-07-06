@@ -89,6 +89,19 @@ interface DictionaryStore {
     fun correctionCandidates(token: String): List<String> = allKnownWords()
     
     /**
+     * A bounded candidate set for the correction of [token] that also searches the additional first-character
+     * buckets in [firstChars] (D-38): the token's keyboard-neighbour and umlaut-variant initial letters, so a
+     * first-key typo (`eerden` -> `werden`) or a missing initial umlaut (`Uberblick` -> `Überblick`) can be
+     * found. The default ignores [firstChars] (fine for the small in-memory store, which returns the whole
+     * lexicon); the SQLite store overrides it with one indexed query per bucket.
+     *
+     * @param token the (case-insensitive) typed token being corrected
+     * @param firstChars the initial letters to search (should include the token's own first character)
+     * @return a superset of the in-budget correction candidates, in canonical case
+     */
+    fun correctionCandidates(token: String, firstChars: Set<Char>): List<String> = correctionCandidates(token)
+    
+    /**
      * Adds [word] to the blacklist under [category] (A-04).
      *
      * @param word the word to exclude
