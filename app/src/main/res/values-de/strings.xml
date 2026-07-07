@@ -44,6 +44,12 @@
     <string name="d18_summary">Wenn aus, öffnet die 😊/?123-Taste nur noch die Zahlen-/Symbolebene (D-18).</string>
     <string name="d32_title">Long-Press-Verzögerung</string>
     <string name="d32_summary">Wie lange eine Taste gehalten werden muss, bis die Alternativen erscheinen, in ms (D-32).</string>
+    <string name="d59_title">\?123-Taste</string>
+    <string name="d59_summary">Die kombinierte ?123-Taste anzeigen. Wenn diese und das Emoji-Panel beide aus sind, verschwindet die Taste und ihr Platz bleibt leer (D-59).</string>
+    <string name="d55_below_title">Abstand unter der Ziffernreihe</string>
+    <string name="d55_below_summary">Zusätzlicher Abstand unter den Ziffern, in dp, gegen Vertipper in die obere Buchstabenreihe (D-55).</string>
+    <string name="d55_above_title">Abstand über der Leertaste</string>
+    <string name="d55_above_summary">Zusätzlicher Abstand über der Leer-/Enter-Reihe, in dp, gegen versehentliche Enter-Tipps (D-55).</string>
     <string name="c08_hints_title">Eck-Symbole anzeigen</string>
     <string name="c08_hints_summary">Sekundäre Long-Press-Symbole als Eck-Hinweis (L-05). Long-Press-Funktion folgt.</string>
     <string name="c08_reset_title">Eck-Symbole zurücksetzen</string>

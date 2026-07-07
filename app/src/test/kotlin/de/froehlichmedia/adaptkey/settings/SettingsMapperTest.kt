@@ -70,6 +70,25 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-55 extra row spacing is clamped into the 0-25 range`() {
+        val low = SettingsMapper.toAdaptSettings(RawSettings(extraSpaceBelowNumberRowDp = -5, extraSpaceAboveSpaceRowDp = -1))
+        assertEquals(SettingsMapper.MIN_EXTRA_SPACING_DP, low.extraSpaceBelowNumberRowDp)
+        assertEquals(SettingsMapper.MIN_EXTRA_SPACING_DP, low.extraSpaceAboveSpaceRowDp)
+        val high = SettingsMapper.toAdaptSettings(RawSettings(extraSpaceBelowNumberRowDp = 99, extraSpaceAboveSpaceRowDp = 40))
+        assertEquals(SettingsMapper.MAX_EXTRA_SPACING_DP, high.extraSpaceBelowNumberRowDp)
+        assertEquals(SettingsMapper.MAX_EXTRA_SPACING_DP, high.extraSpaceAboveSpaceRowDp)
+        val ok = SettingsMapper.toAdaptSettings(RawSettings(extraSpaceBelowNumberRowDp = 12, extraSpaceAboveSpaceRowDp = 3))
+        assertEquals(12, ok.extraSpaceBelowNumberRowDp)
+        assertEquals(3, ok.extraSpaceAboveSpaceRowDp)
+    }
+    
+    @Test
+    fun `D-59 symbol-key flag passes through unchanged`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(symbolKeyEnabled = false)).symbolKeyEnabled)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(symbolKeyEnabled = true)).symbolKeyEnabled)
+    }
+    
+    @Test
     fun `shiftGraceWindow is clamped into the spec range`() {
         assertEquals(SettingsMapper.MIN_SHIFT_GRACE_MS, SettingsMapper.shiftGraceWindowMs(RawSettings(shiftGraceWindowMs = -1L)))
         assertEquals(SettingsMapper.MAX_SHIFT_GRACE_MS, SettingsMapper.shiftGraceWindowMs(RawSettings(shiftGraceWindowMs = 9_000L)))

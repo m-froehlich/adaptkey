@@ -44,6 +44,12 @@
     <string name="d18_summary">When off, the 😊/?123 key opens only the numbers/symbols layer (D-18).</string>
     <string name="d32_title">Long-press delay</string>
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
+    <string name="d59_title">\?123 key</string>
+    <string name="d59_summary">Show the combined ?123 key. With this and the emoji panel both off, the key disappears and its slot stays empty (D-59).</string>
+    <string name="d55_below_title">Space below number row</string>
+    <string name="d55_below_summary">Extra gap under the digits, in dp, to reduce mis-taps into the top letter row (D-55).</string>
+    <string name="d55_above_title">Space above space bar</string>
+    <string name="d55_above_summary">Extra gap above the space/enter row, in dp, to reduce accidental Enter presses (D-55).</string>
     <string name="c08_hints_title">Show corner symbols</string>
     <string name="c08_hints_summary">Secondary long-press symbols as a corner hint (L-05). Long-press still works either way.</string>
     <string name="c08_reset_title">Reset corner symbols</string>

@@ -435,6 +435,11 @@ class AdaptKeyService : InputMethodService() {
             // D-47: when the emoji panel is off, the combined key must also drop its 😊 glyph and read as
             // a plain ?123 key.
             view.emojiEnabled = s.emojiPanelEnabled
+            // D-59: the combined ?123 key can be disabled; with the emoji panel also off it disappears.
+            view.symbolKeyEnabled = s.symbolKeyEnabled
+            // D-55: extra spacing below the number row and above the space row.
+            view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
+            view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp
         }
         // D-18: emoji panel on/off (off makes the combined key a ?123-only key).
         emojiPanelEnabled = s.emojiPanelEnabled

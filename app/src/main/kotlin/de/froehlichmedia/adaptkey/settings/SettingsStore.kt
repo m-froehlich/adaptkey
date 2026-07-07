@@ -45,6 +45,9 @@ object SettingsStore {
     const val KEY_RECORD_RAW_TAPS = "d09_record_raw_taps"
     const val KEY_EMOJI_PANEL = "d18_emoji_panel"
     const val KEY_LONGPRESS_DELAY = "d32_longpress_delay_ms"
+    const val KEY_SPACE_BELOW_NUMBER_ROW = "d55_space_below_number_row"
+    const val KEY_SPACE_ABOVE_SPACE_ROW = "d55_space_above_space_row"
+    const val KEY_SYMBOL_KEY = "d59_symbol_key"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -75,6 +78,9 @@ object SettingsStore {
     
     /** Default stored integer for the long-press delay slider (D-32, 320 ms). */
     const val DEF_LONGPRESS_DELAY = 320
+    
+    /** Default stored integer for both D-55 extra-row-spacing sliders (7 dp). */
+    const val DEF_EXTRA_SPACING = AdaptSettings.DEFAULT_EXTRA_SPACING_DP
     
     /**
      * @param context any valid context
@@ -112,7 +118,10 @@ object SettingsStore {
             keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
             recordRawTaps = p.getBoolean(KEY_RECORD_RAW_TAPS, false),
             emojiPanelEnabled = p.getBoolean(KEY_EMOJI_PANEL, true),
-            longPressDelayMs = p.getInt(KEY_LONGPRESS_DELAY, DEF_LONGPRESS_DELAY).toLong()
+            longPressDelayMs = p.getInt(KEY_LONGPRESS_DELAY, DEF_LONGPRESS_DELAY).toLong(),
+            extraSpaceBelowNumberRowDp = p.getInt(KEY_SPACE_BELOW_NUMBER_ROW, DEF_EXTRA_SPACING),
+            extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),
+            symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

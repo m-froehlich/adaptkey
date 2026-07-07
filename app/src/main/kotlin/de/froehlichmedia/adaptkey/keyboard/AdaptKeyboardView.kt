@@ -207,6 +207,32 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /**
+     * D-59: whether the combined ?123 key offers its numeric/symbol function. When this is off **and**
+     * [emojiEnabled] is off, the combined key disappears (drawn blank, taps ignored) but keeps its slot.
+     */
+    var symbolKeyEnabled: Boolean = true
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
+    /** D-55: extra vertical spacing (dp) below the number row. */
+    var extraSpaceBelowNumberRowDp: Int = 7
+        set(value) {
+            field = value
+            requestLayout()
+            invalidate()
+        }
+    
+    /** D-55: extra vertical spacing (dp) above the space/enter row. */
+    var extraSpaceAboveSpaceRowDp: Int = 7
+        set(value) {
+            field = value
+            requestLayout()
+            invalidate()
+        }
+    
     /** D-05: whether a click sound plays on each key press (default off). */
     var soundEnabled: Boolean = false
     
@@ -310,6 +336,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var popupRowTop = 0f
     private val popupCellWidthPx = dp(40f)
     private val popupCellHeightPx = dp(42f)
+    // D-54: how far a single-cell popup is nudged towards the keyboard centre so the finger does not hide it.
+    private val popupSingleNudgePx = dp(22f)
     
     private val popupBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.key_background)
@@ -368,7 +396,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        val height = (rows.size * rowHeightPx + gapPx).toInt() + paddingTop + paddingBottom
+        val height = (rows.size * rowHeightPx + gapPx + extraSpacingPx()).toInt() + paddingTop + paddingBottom
         setMeasuredDimension(width, height)
     }
     
@@ -384,6 +412,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         var top = paddingTop.toFloat() + gapPx
         
         for (row in rows) {
+            // D-55: extra gap directly above the space/enter row.
+            if (isSpaceRow(row)) {
+                top += dp(extraSpaceAboveSpaceRowDp.toFloat())
+            }
             val totalWeight = row.sumOf { it.weight.toDouble() }.toFloat()
             val unit = (usableWidth - gapPx * (row.size + 1)) / totalWeight
             var x = left + gapPx
@@ -394,12 +426,42 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 x += keyWidth + gapPx
             }
             top += rowHeightPx
+            // D-55: extra gap directly below the number row.
+            if (isNumberRow(row)) {
+                top += dp(extraSpaceBelowNumberRowDp.toFloat())
+            }
         }
+    }
+    
+    /** D-55: total extra vertical spacing added by the number-row / space-row gaps, in pixels. */
+    private fun extraSpacingPx(): Float {
+        var extra = 0f
+        for (row in rows) {
+            if (isNumberRow(row)) {
+                extra += dp(extraSpaceBelowNumberRowDp.toFloat())
+            }
+            if (isSpaceRow(row)) {
+                extra += dp(extraSpaceAboveSpaceRowDp.toFloat())
+            }
+        }
+        return extra
+    }
+    
+    private fun isNumberRow(row: List<Key>): Boolean {
+        return row.isNotEmpty() && row.all { it.code == KeyCode.CHAR && it.char?.isDigit() == true }
+    }
+    
+    private fun isSpaceRow(row: List<Key>): Boolean {
+        return row.any { it.code == KeyCode.SPACE }
     }
     
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         for ((key, rect) in keyRects) {
+            // D-59: the disabled combined key is drawn as empty space, keeping its slot (neighbours do not grow).
+            if (isHiddenSymbolKey(key)) {
+                continue
+            }
             val paint = when {
                 key === pressedKey || key === flashKey -> pressedKeyPaint
                 key.code == KeyCode.CHAR -> keyPaint
@@ -607,14 +669,27 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * the key. The row is centred over the stem so the pre-selected cell (the key's own character, or the
      * first alternative when the key's character is not among them) sits over the finger; the row is clamped
      * to stay within the view.
+     *
+     * D-53: when there is no room above the key (the number row sits at the very top of the view, so an
+     * above-popup would be clipped and invisible), the row is flipped to just below the key instead - this is
+     * what makes the digit keys show a popup at all. D-54: a single-cell popup is nudged ~a half-cell towards
+     * the keyboard centre (right on the left half, left on the right half) so the finger does not cover it.
      */
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
         val preSelected = preSelectedIndexFor(key, alternatives)
         val rowWidth = alternatives.size * popupCellWidthPx
         val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
-        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX(), popupCellWidthPx, alternatives.size, preSelected, gapPx, maxLeft)
-        popupRowTop = rect.top - gapPx - popupCellHeightPx
+        // D-54: only single-cell popups are nudged; multi-cell popups stay centred over the stem (D-44).
+        val nudge = if (alternatives.size == 1) {
+            if (rect.centerX() < width / 2f) popupSingleNudgePx else -popupSingleNudgePx
+        } else {
+            0f
+        }
+        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, popupCellWidthPx, alternatives.size, preSelected, gapPx, maxLeft)
+        // D-53: place the row above the key, or below it when above would be clipped off the top of the view.
+        val above = rect.top - gapPx - popupCellHeightPx
+        popupRowTop = if (above >= paddingTop.toFloat()) above else rect.bottom + gapPx
         popupAlternatives = alternatives
         popupSelectedIndex = preSelected
         popupKey = key
@@ -815,12 +890,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val chosen = model.resolve(candidates, x, y)
             if (chosen != null) {
                 val match = keyRects.firstOrNull { it.first.id == chosen.id }
-                if (match != null) {
+                if (match != null && !isHiddenSymbolKey(match.first)) {
                     return match
                 }
             }
         }
-        return keyRects.firstOrNull { it.second.contains(x, y) }
+        // D-59: a tap on the reserved (hidden) combined-key slot resolves to nothing, so it is inert.
+        return keyRects.firstOrNull { it.second.contains(x, y) && !isHiddenSymbolKey(it.first) }
+    }
+    
+    /** D-59: whether [key] is the combined ?123 key that is currently disabled (emoji off and symbol off). */
+    private fun isHiddenSymbolKey(key: Key): Boolean {
+        return key.code == KeyCode.SYMBOL && !emojiEnabled && !symbolKeyEnabled
     }
     
     private fun labelFor(key: Key): String {

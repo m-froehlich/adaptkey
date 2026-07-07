@@ -36,7 +36,10 @@ data class RawSettings(
     val keyHapticsEnabled: Boolean = false,
     val recordRawTaps: Boolean = false,
     val emojiPanelEnabled: Boolean = true,
-    val longPressDelayMs: Long = AdaptSettings.DEFAULT_LONGPRESS_DELAY_MS
+    val longPressDelayMs: Long = AdaptSettings.DEFAULT_LONGPRESS_DELAY_MS,
+    val extraSpaceBelowNumberRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
+    val extraSpaceAboveSpaceRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
+    val symbolKeyEnabled: Boolean = true
 )
 
 /**
@@ -70,6 +73,12 @@ object SettingsMapper {
     
     /** D-32 maximum long-press delay in ms. */
     const val MAX_LONGPRESS_DELAY_MS = 600L
+    
+    /** D-55 minimum extra row spacing in dp. */
+    const val MIN_EXTRA_SPACING_DP = 0
+    
+    /** D-55 maximum extra row spacing in dp. */
+    const val MAX_EXTRA_SPACING_DP = 25
     
     /** C-01 lower bound for the space-bar weight (must stay a usable, positive width). */
     const val MIN_SPACE_WEIGHT = 1.0f
@@ -166,7 +175,10 @@ object SettingsMapper {
             keyHapticsEnabled = raw.keyHapticsEnabled,
             recordRawTaps = raw.recordRawTaps,
             emojiPanelEnabled = raw.emojiPanelEnabled,
-            longPressDelayMs = raw.longPressDelayMs.coerceIn(MIN_LONGPRESS_DELAY_MS, MAX_LONGPRESS_DELAY_MS)
+            longPressDelayMs = raw.longPressDelayMs.coerceIn(MIN_LONGPRESS_DELAY_MS, MAX_LONGPRESS_DELAY_MS),
+            extraSpaceBelowNumberRowDp = raw.extraSpaceBelowNumberRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
+            extraSpaceAboveSpaceRowDp = raw.extraSpaceAboveSpaceRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
+            symbolKeyEnabled = raw.symbolKeyEnabled
         )
     }
 }

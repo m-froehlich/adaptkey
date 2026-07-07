@@ -31,6 +31,12 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property keyHapticsEnabled whether a short vibration fires on each key press (D-06, default off)
  * @property recordRawTaps whether raw tap coordinates are recorded during a calibration session for
  *           offline diagnostics (D-09, opt-in, default off)
+ * @property extraSpaceBelowNumberRowDp extra vertical spacing (dp) inserted below the number row (D-55,
+ *           0-25, default 7), to cut mis-taps between the digits and the top letter row
+ * @property extraSpaceAboveSpaceRowDp extra vertical spacing (dp) inserted above the space/enter row
+ *           (D-55, 0-25, default 7), to cut accidental Enter presses
+ * @property symbolKeyEnabled whether the combined ?123 key offers its numeric/symbol function (D-59,
+ *           default on); with this off and the emoji panel off the combined key disappears (slot reserved)
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -45,7 +51,10 @@ data class AdaptSettings(
     val keyHapticsEnabled: Boolean = false,
     val recordRawTaps: Boolean = false,
     val emojiPanelEnabled: Boolean = true,
-    val longPressDelayMs: Long = DEFAULT_LONGPRESS_DELAY_MS
+    val longPressDelayMs: Long = DEFAULT_LONGPRESS_DELAY_MS,
+    val extraSpaceBelowNumberRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
+    val extraSpaceAboveSpaceRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
+    val symbolKeyEnabled: Boolean = true
 ) {
     
     companion object {
@@ -55,6 +64,9 @@ data class AdaptSettings(
         
         /** Default long-press delay (D-32, ~20 % below the typical system timeout). */
         const val DEFAULT_LONGPRESS_DELAY_MS = 320L
+        
+        /** Default extra row spacing in dp (D-55). */
+        const val DEFAULT_EXTRA_SPACING_DP = 7
         
         /** The all-defaults configuration, equivalent to a freshly installed app. */
         val DEFAULT = AdaptSettings()

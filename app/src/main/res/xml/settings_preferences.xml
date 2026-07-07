@@ -85,6 +85,32 @@
             android:summary="@string/d18_summary"
             android:defaultValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="d59_symbol_key"
+            android:title="@string/d59_title"
+            android:summary="@string/d59_summary"
+            android:defaultValue="true" />
+
+        <SeekBarPreference
+            android:key="d55_space_below_number_row"
+            android:title="@string/d55_below_title"
+            android:summary="@string/d55_below_summary"
+            android:defaultValue="7"
+            android:max="25"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="d55_space_above_space_row"
+            android:title="@string/d55_above_title"
+            android:summary="@string/d55_above_summary"
+            android:defaultValue="7"
+            android:max="25"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
         <SeekBarPreference
             android:key="d32_longpress_delay_ms"
             android:title="@string/d32_title"
