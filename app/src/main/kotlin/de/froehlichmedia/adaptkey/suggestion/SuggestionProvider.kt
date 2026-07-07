@@ -48,4 +48,14 @@ interface SuggestionProvider {
      * @return the diacritic-restored known word, or null when there is none
      */
     fun diacriticRestoration(input: String, previousWord: String?): String? = null
+    
+    /**
+     * Next-word predictions to show once a word has been committed and no token is being composed yet
+     * (D-43): the most likely words to follow [previousWord], by bigram probability. The default returns
+     * none, so a non-predicting provider simply leaves the bar empty.
+     *
+     * @param previousWord the most recently committed word
+     * @return predicted next words as ranked suggestions, most likely first
+     */
+    fun nextWordSuggestions(previousWord: String): List<Suggestion> = emptyList()
 }

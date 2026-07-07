@@ -54,6 +54,16 @@ interface DictionaryStore {
     fun bigramFrequency(previousWord: String, word: String): Long
     
     /**
+     * The most frequent successor words of [previousWord] by bigram count (D-43 next-word prediction), in
+     * canonical case. The default returns none; both concrete stores override it with a bigram lookup.
+     *
+     * @param previousWord the preceding word (case-insensitive)
+     * @param limit the maximum number of successors to return
+     * @return the successor words ordered by descending bigram count, in canonical case
+     */
+    fun nextWords(previousWord: String, limit: Int): List<String> = emptyList()
+    
+    /**
      * @param word the word to look up
      * @return the unigram frequency, or 0 when unknown
      */

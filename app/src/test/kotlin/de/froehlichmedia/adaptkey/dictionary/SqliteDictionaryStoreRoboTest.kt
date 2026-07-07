@@ -50,4 +50,18 @@ class SqliteDictionaryStoreRoboTest {
         assertEquals(null, provider.autocorrectFor("haus", null)) // A-01: a known word is not corrected
         store.close()
     }
+    
+    @Test
+    fun nextWordsReturnsCanonicalSuccessorsByCount() {
+        val store = store("next.db")
+        store.putWord(WordEntry("Hund", 10L, emptySet()))
+        store.putWord(WordEntry("Hut", 10L, emptySet()))
+        store.putBigram("der", "Hund", 40L)
+        store.putBigram("der", "Hut", 5L)
+        
+        assertEquals(listOf("Hund", "Hut"), store.nextWords("der", 10))
+        assertEquals(listOf("Hund"), store.nextWords("der", 1))
+        assertTrue(store.nextWords("unbekannt", 10).isEmpty())
+        store.close()
+    }
 }

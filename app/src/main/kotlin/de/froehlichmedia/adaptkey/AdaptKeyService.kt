@@ -1141,7 +1141,8 @@ class AdaptKeyService : InputMethodService() {
         } else {
             clearUndo()
         }
-        clearSuggestions()
+        // D-43: predict the next word instead of leaving the bar blank.
+        showNextWordPredictions()
         armShiftForNextWord(ic)
     }
     
@@ -1160,7 +1161,8 @@ class AdaptKeyService : InputMethodService() {
         ic.commitText(delimiter, 1)
         learnWord(word)
         clearUndo()
-        clearSuggestions()
+        // D-43: predict the next word instead of leaving the bar blank.
+        showNextWordPredictions()
         armShiftForNextWord(ic)
     }
     
@@ -1178,7 +1180,8 @@ class AdaptKeyService : InputMethodService() {
         ic.commitText(cased + delimiter, 1)
         learnWord(cased)
         clearUndo()
-        clearSuggestions()
+        // D-43: predict the next word instead of leaving the bar blank.
+        showNextWordPredictions()
     }
     
     /**
@@ -1205,7 +1208,8 @@ class AdaptKeyService : InputMethodService() {
         undoDelimiter = delimiter
         // D-13: mark this as a split, so undoing it trains the rejoined word.
         undoWasSplit = true
-        clearSuggestions()
+        // D-43: predict the next word (following the right-hand split part) instead of a blank bar.
+        showNextWordPredictions()
     }
     
     private fun spaceAmbiguousIndices(): Set<Int> {
@@ -1236,7 +1240,8 @@ class AdaptKeyService : InputMethodService() {
             learnWord(typed)
         }
         previousWord = typed
-        clearSuggestions()
+        // D-43: predict the next word (following the word the user insisted on) instead of a blank bar.
+        showNextWordPredictions()
         armShiftForNextWord(ic)
     }
     
@@ -1358,6 +1363,28 @@ class AdaptKeyService : InputMethodService() {
         suggestionBar?.visibility = View.VISIBLE
     }
     
+    /**
+     * D-43: fills the (otherwise empty) suggestion bar with next-word predictions after a word has been
+     * committed - the most likely words to follow [previousWord] by bigram probability. Falls back to an
+     * empty bar when there is no context word or no prediction (e.g. at the very start of an entry). The
+     * tier-3 mini-LLM refines the bar the moment the user starts typing the next token; this baseline just
+     * makes the pause between words useful.
+     */
+    private fun showNextWordPredictions() {
+        handler.removeCallbacks(resortRunnable)
+        lastTier3Result = Tier3Result.EMPTY
+        lastCapProposal = null
+        val previous = previousWord
+        val predictions = if (previous == null) emptyList() else provider.nextWordSuggestions(previous)
+        if (predictions.isEmpty()) {
+            clearSuggestions()
+            return
+        }
+        controller.clear()
+        controller.update("", predictions, null)
+        showSuggestions()
+    }
+    
     private fun learnWord(word: String?) {
         // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (tier 1).
         if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
@@ -1435,7 +1462,8 @@ class AdaptKeyService : InputMethodService() {
                 composing.setLength(0)
                 composingFlags.clear()
                 learnWord(word)
-                clearSuggestions()
+                // D-43: after accepting a bar word, predict the next one so the flow continues.
+                showNextWordPredictions()
                 // D-29: arm the trailing space added here so an immediately following punctuation removes it.
                 pendingSuggestionSpace = true
                 armShiftForNextWord(ic)

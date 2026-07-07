@@ -65,6 +65,21 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `nextWords returns canonical-case successors ordered by count - D-43`() {
+        store.putWord(WordEntry("Hund", 10L))
+        store.putWord(WordEntry("Hut", 10L))
+        store.putBigram("der", "hund", 40L)
+        store.putBigram("der", "hut", 5L)
+        // A different context that must not leak into "der".
+        store.putBigram("dere", "hut", 99L)
+        
+        assertEquals(listOf("Hund", "Hut"), store.nextWords("der", 10))
+        assertEquals(listOf("Hund"), store.nextWords("der", 1))
+        assertEquals(emptyList<String>(), store.nextWords("der", 0))
+        assertEquals(emptyList<String>(), store.nextWords("", 10))
+    }
+    
+    @Test
     fun `blacklist add check category and remove`() {
         store.blacklist("Daß", BlacklistCategory.OLD_SPELLING)
         

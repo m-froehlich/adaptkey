@@ -107,6 +107,24 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
     }
     
+    override fun nextWords(previousWord: String, limit: Int): List<String> {
+        if (previousWord.isEmpty() || limit <= 0) {
+            return emptyList()
+        }
+        // The LIMIT is inlined as a derived int (injection-safe). The join maps each successor key back to
+        // its canonical-case word; the (prevkey, wkey) primary key makes the prevkey lookup fast.
+        val result = ArrayList<String>()
+        db.rawQuery(
+            "SELECT w.word FROM $TABLE_BIGRAMS b JOIN $TABLE_WORDS w ON b.wkey = w.wkey WHERE b.prevkey = ? ORDER BY b.count DESC LIMIT $limit",
+            arrayOf(previousWord.lowercase())
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(cursor.getString(0))
+            }
+        }
+        return result
+    }
+    
     override fun frequencyOf(word: String): Long {
         return entryOf(word)?.frequency ?: 0L
     }

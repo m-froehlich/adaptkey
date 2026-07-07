@@ -61,6 +61,28 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-43 nextWordSuggestions ranks successors by bigram count`() {
+        store.putWord(WordEntry("Hund", 10L))
+        store.putWord(WordEntry("Hut", 10L))
+        store.putBigram("der", "Hund", 40L)
+        store.putBigram("der", "Hut", 5L)
+        
+        val words = provider.nextWordSuggestions("der").map { it.word }
+        assertEquals(listOf("Hund", "Hut"), words)
+    }
+    
+    @Test
+    fun `D-43 nextWordSuggestions omits blacklisted successors and unknown context`() {
+        store.putWord(WordEntry("Hund", 10L))
+        store.putBigram("der", "Hund", 40L)
+        store.blacklist("Hund", BlacklistCategory.USER)
+        assertTrue(provider.nextWordSuggestions("der").isEmpty())
+        // No bigrams for an unseen context word.
+        assertTrue(provider.nextWordSuggestions("völlig").isEmpty())
+        assertTrue(provider.nextWordSuggestions("").isEmpty())
+    }
+    
+    @Test
     fun `A-01 a known word is never autocorrected`() {
         store.putWord(WordEntry("Haus", 100L))
         assertNull(provider.autocorrectFor("haus", null))

@@ -151,6 +151,19 @@ class DictionarySuggestionProvider(
             .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
     }
     
+    override fun nextWordSuggestions(previousWord: String): List<Suggestion> {
+        if (previousWord.isBlank()) {
+            return emptyList()
+        }
+        // The store already returns the successors ordered by bigram count; drop blacklisted words (A-04)
+        // and carry the count as the score so the bar ranking is consistent with the other tiers.
+        return store.nextWords(previousWord, maxCandidates)
+            .asSequence()
+            .filter { !store.isBlacklisted(it) }
+            .map { word -> Suggestion(word, store.bigramFrequency(previousWord, word).toDouble()) }
+            .toList()
+    }
+    
     override fun isKnownWord(word: String): Boolean {
         return store.isKnownWord(word) && !store.isBlacklisted(word) // A-04
     }
