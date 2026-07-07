@@ -38,6 +38,7 @@ import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.InMemoryDictionaryStore
+import de.froehlichmedia.adaptkey.dictionary.PendingLearnStore
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
 import de.froehlichmedia.adaptkey.emoji.EmojiDataset
@@ -1206,15 +1207,21 @@ class AdaptKeyService : InputMethodService() {
     private fun performAutocorrectUndo(ic: InputConnection) {
         val typed = undoTyped ?: return
         val wasSplit = undoWasSplit
+        val committed = undoCommitted
         ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
         previousWord = typed
         clearUndo()
-        // D-13: undoing a wrong A-05 split trains the rejoined word, so it is never split again.
         if (wasSplit) {
+            // D-13: undoing a wrong A-05 split trains the rejoined word at once, so it is never split again.
+            learnWordStrong(typed)
+        } else {
+            // D-37: undoing an autocorrect un-learns (counts down) the rejected correction, and counts up
+            // the word the user insisted on (promoted after repeated insistence).
+            PendingLearnStore.decrement(this, committed)
             learnWord(typed)
-            previousWord = typed
         }
+        previousWord = typed
         clearSuggestions()
         armShiftForNextWord(ic)
     }
@@ -1339,7 +1346,30 @@ class AdaptKeyService : InputMethodService() {
         if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
             return
         }
+        // D-37: a word already in the dictionary is reinforced immediately; a genuinely new word is only
+        // counted up and promoted once it has been committed LEARN_THRESHOLD times, so a one-off typo is
+        // not eagerly learned as a real word.
+        if (provider.isKnownWord(word)) {
+            dictionaryStore.learn(word, previousWord)
+        } else if (PendingLearnStore.increment(this, word) >= LEARN_THRESHOLD) {
+            dictionaryStore.learn(word, previousWord)
+            PendingLearnStore.clear(this, word)
+        }
+        previousWord = word
+    }
+    
+    /**
+     * Learns [word] authoritatively (D-13): a deliberate user correction (undoing a wrong split) promotes
+     * the word to the dictionary immediately, bypassing the D-37 count-up threshold.
+     *
+     * @param word the word to promote
+     */
+    private fun learnWordStrong(word: String?) {
+        if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
+            return
+        }
         dictionaryStore.learn(word, previousWord)
+        PendingLearnStore.clear(this, word)
         previousWord = word
     }
     
@@ -1657,6 +1687,10 @@ class AdaptKeyService : InputMethodService() {
         
         // D-15: two Shift presses within this window engage Caps Lock.
         private const val DOUBLE_TAP_SHIFT_MS = 300L
+        
+        // D-37: how many times a new word must be committed (without being reverted) before it is promoted
+        // to the learned dictionary, so a one-off typo is not eagerly learned.
+        private const val LEARN_THRESHOLD = 2
         
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"

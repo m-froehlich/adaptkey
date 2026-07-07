@@ -30,13 +30,14 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **473 green** (`:app:testDebugUnitTest`, incl. 9 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.19** (only the third digit bumps per APK; versionCode 89). Working tree =
-  v0.7.19, unpushed since v0.7.16 (`1e47a56` on origin/main).
+- Unit tests: **477 green** (`:app:testDebugUnitTest`, incl. 10 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.20** (only the third digit bumps per APK; versionCode 90). Working tree =
+  v0.7.20, `origin/main` at v0.7.19 (`96f94c3`).
 - **Spec §15 (round 4) status:** DONE = D-30 freeze bug, D-31 backspace speed, D-32 long-press delay+setting,
   D-33 popup bottom-align, D-34 vibration, D-35 swipe thresholds, D-38 correction quality, D-36 direct paste,
-  D-40 digit-in-word. OPEN = **D-37** less-eager count-based learning + un-learn on undo; **D-39** raw-coordinate
-  per-character correction (multi-typo like Stabdsrx; possibly tier-3 LLM).
+  D-40 digit-in-word, D-37 less-eager learning. **OPEN = only D-39** raw-coordinate per-character correction
+  (walk each char's retained raw tap to the intended neighbour key; multi-typo like Stabdsrx; possibly
+  tier-3 LLM) — a larger architectural piece, best as its own focused session.
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
@@ -120,6 +121,18 @@ whenever a component lands so it does not have to be restated in every prompt.
   earmarked for instrumented tests.
 
 ## Done
+
+### §15 D-37 less-eager learning (v0.7.20)
+- **Count-based promotion:** new `dictionary/PendingLearnStore` (own private SharedPreferences file — no
+  SQLite migration). `learnWord` now reinforces a word already in the dictionary immediately, but a
+  genuinely **new** word is only counted up and promoted to the learned lexicon after `LEARN_THRESHOLD` (=2)
+  commits — so a one-off typo (e.g. "asdf") is no longer learned as a real word on the first accept.
+- **Un-learn on undo:** an A-07 autocorrect-undo decrements the rejected correction's pending count and
+  counts up the word the user insisted on (promoted after repeated insistence). A **split**-undo (D-13) still
+  promotes the rejoined word **immediately** via the new `learnWordStrong` (a deliberate correction is
+  authoritative — so "Backspace" is still trained in one undo).
+- Robolectric `PendingLearnStoreRoboTest` covers the increment/decrement/clear IO.
+- **Only §15 item left: D-39** (raw-coordinate per-character correction) — a larger architectural piece.
 
 ### §15 D-36 direct paste + D-40 digit-in-word (v0.7.19)
 - **D-36 direct paste:** when a field opens and the clipboard holds text, a 📋 chip appears in the suggestion

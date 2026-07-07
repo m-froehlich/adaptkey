@@ -12,8 +12,8 @@ android {
         minSdk = 26
         targetSdk = 35
         // Versioning: only the third digit is bumped per APK (0.7.3 -> 0.7.4 -> ... -> 0.7.10 -> 0.7.11).
-        versionCode = 89
-        versionName = "0.7.19"
+        versionCode = 90
+        versionName = "0.7.20"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
