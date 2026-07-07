@@ -123,6 +123,34 @@ class DictionarySuggestionProvider(
         }
     }
     
+    /**
+     * The known word [input] becomes by restoring only its German diacritics - a word whose umlaut/ß-folded
+     * form equals the folded token but that carries the diacritics the user omitted (D-48: umlauts are
+     * first-class characters): `konnen` → `können`, `russ` → `ruß`. Returns null when the token is already a
+     * known word (A-01) or no pure-diacritic match exists.
+     *
+     * Such a restoration must take precedence over an A-05 split, so a real umlaut word (`konnen`) is
+     * corrected to `können`, never cut into fragments (`ko nen`).
+     *
+     * @param input the composing token (any case)
+     * @param previousWord the preceding word, for bigram tie-breaking among matches; may be null
+     * @return the diacritic-restored known word in canonical case, or null
+     */
+    override fun diacriticRestoration(input: String, previousWord: String?): String? {
+        val token = input.lowercase()
+        if (token.length < MIN_FUZZY_LENGTH || isKnownWord(token)) {
+            return null
+        }
+        val folded = Umlaut.fold(token)
+        return store.correctionCandidates(token, candidateFirstChars(token))
+            .asSequence()
+            .filter { candidate ->
+                val lower = candidate.lowercase()
+                lower != token && !store.isBlacklisted(candidate) && Umlaut.fold(lower) == folded
+            }
+            .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
+    }
+    
     override fun isKnownWord(word: String): Boolean {
         return store.isKnownWord(word) && !store.isBlacklisted(word) // A-04
     }

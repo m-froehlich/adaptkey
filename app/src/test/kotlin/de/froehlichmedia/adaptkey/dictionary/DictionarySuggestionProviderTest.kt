@@ -73,6 +73,26 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-48 diacriticRestoration restores omitted umlauts`() {
+        store.putWord(WordEntry("können", 100L))
+        
+        assertEquals("können", provider.diacriticRestoration("konnen", null))
+        // ß is a diacritic too: a typed "russ" restores to the sharp-s spelling.
+        store.putWord(WordEntry("ruß", 30L))
+        assertEquals("ruß", provider.diacriticRestoration("russ", null))
+    }
+    
+    @Test
+    fun `D-48 diacriticRestoration returns null for a valid word or a real typo`() {
+        store.putWord(WordEntry("können", 100L))
+        store.putWord(WordEntry("Masse", 100L))
+        // A-01: an already-known word is left alone.
+        assertNull(provider.diacriticRestoration("masse", null))
+        // A pure typo that is not merely a missing diacritic has no restoration.
+        assertNull(provider.diacriticRestoration("kannan", null))
+    }
+    
+    @Test
     fun `autocorrectFor proposes the most frequent single-edit neighbour`() {
         store.putWord(WordEntry("der", 100L))
         store.putWord(WordEntry("den", 50L))

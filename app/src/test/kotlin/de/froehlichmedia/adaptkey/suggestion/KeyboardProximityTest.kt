@@ -40,6 +40,20 @@ class KeyboardProximityTest {
     }
     
     @Test
+    fun `digits neighbour the letters below them - D-41`() {
+        // The number row sits above qwertzuiop, so `8` neighbours the `i`/`o` gap ("W8rt" is "Wort").
+        assertTrue(KeyboardProximity.adjacent('8', 'o'))
+        assertTrue(KeyboardProximity.adjacent('8', 'i'))
+        assertTrue(KeyboardProximity.adjacent('1', 'q'))
+        assertTrue(KeyboardProximity.adjacent('0', 'p'))
+        // ...and their horizontal digit neighbours.
+        assertTrue(KeyboardProximity.adjacent('8', '9'))
+        // ...but not far-away keys.
+        assertFalse(KeyboardProximity.adjacent('1', 'p'))
+        assertFalse(KeyboardProximity.adjacent('8', 'a'))
+    }
+    
+    @Test
     fun `adjacency is symmetric`() {
         for (a in 'a'..'z') {
             for (b in 'a'..'z') {

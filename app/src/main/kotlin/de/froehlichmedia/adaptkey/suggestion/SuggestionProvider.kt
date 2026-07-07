@@ -37,4 +37,15 @@ interface SuggestionProvider {
      * @return the proposed replacement, or null when the input is accepted as typed (A-01)
      */
     fun autocorrectFor(input: String, previousWord: String?): String?
+    
+    /**
+     * The known word [input] becomes by restoring only its diacritics (D-48: umlauts / ß are first-class
+     * characters). Used to veto an A-05 split so a real umlaut word (`konnen`) is corrected to `können`,
+     * not cut into fragments. The default implementation reports no restoration.
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word, for tie-breaking; may be null
+     * @return the diacritic-restored known word, or null when there is none
+     */
+    fun diacriticRestoration(input: String, previousWord: String?): String? = null
 }

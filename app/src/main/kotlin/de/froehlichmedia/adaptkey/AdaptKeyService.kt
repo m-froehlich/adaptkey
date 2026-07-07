@@ -1102,8 +1102,12 @@ class AdaptKeyService : InputMethodService() {
             }
         }
         
-        // A-05: split the token at a space-ambiguous tap or a fully missed space, when valid.
-        val split = tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+        // A-05: split the token at a space-ambiguous tap or a fully missed space, when valid. D-48: a token
+        // that is a real word once its German diacritics are restored (umlauts / ß are first-class
+        // characters) is never split - "konnen" is "können", not "ko nen". The diacritic restoration is left
+        // to the normal autocorrect path below; here it only vetoes the split.
+        val diacriticWord = if (suppressAutocorrect) null else provider.diacriticRestoration(typed, previousWord)
+        val split = if (diacriticWord != null) null else tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
         if (split != null) {
             applySplit(ic, split, delimiter, typed)
             armShiftForNextWord(ic)

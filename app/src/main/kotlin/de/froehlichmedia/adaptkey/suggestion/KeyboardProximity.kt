@@ -6,17 +6,19 @@ package de.froehlichmedia.adaptkey.suggestion
 import kotlin.math.abs
 
 /**
- * Physical key adjacency on the QWERTZ letter layout, used to make a typo on a **neighbouring** key a
- * cheap edit during correction (D-28). Two letters are adjacent when their keys touch horizontally,
- * vertically or diagonally; e.g. `z` neighbours `t`, so `komplezz` is a cheap two-edit hop from
- * `komplett`.
+ * Physical key adjacency on the QWERTZ layout, used to make a typo on a **neighbouring** key a cheap edit
+ * during correction (D-28). Two characters are adjacent when their keys touch horizontally, vertically or
+ * diagonally; e.g. `z` neighbours `t`, so `komplezz` is a cheap two-edit hop from `komplett`.
  *
- * The map is derived from the three letter rows by column index (a good approximation of the on-screen
- * stagger), so it stays in sync with [de.froehlichmedia.adaptkey.keyboard.KeyboardLayout] by construction.
+ * D-41: the number row is part of the map, so a digit is an ordinary neighbour character rather than a
+ * special case - the `8` key sits above the `i`/`o` gap, so `W8rt` is a cheap `8`→`o` slip from `Wort`.
+ *
+ * The map is derived from the four rows by column index (a good approximation of the on-screen stagger),
+ * so it stays in sync with [de.froehlichmedia.adaptkey.keyboard.KeyboardLayout] by construction.
  */
 object KeyboardProximity {
     
-    private val ROWS = listOf("qwertzuiop", "asdfghjkl", "yxcvbnm")
+    private val ROWS = listOf("1234567890", "qwertzuiop", "asdfghjkl", "yxcvbnm")
     
     private val neighbours: Map<Char, Set<Char>> = buildNeighbours()
     

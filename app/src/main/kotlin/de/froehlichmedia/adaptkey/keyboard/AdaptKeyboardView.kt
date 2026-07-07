@@ -302,18 +302,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         textSize = dp(11f)
     }
     
-    // D-01 / D-23: the vertical long-press popup. Active while popupKey is non-null. alternatives[0] is the
-    // primary (a cell at the top-left, pre-selected); alternatives[1..] are secondaries stacked in a column
-    // above the finger, bottom-to-top. Sliding up the column changes popupSelectedIndex; release commits it.
+    // D-01 / D-44: the horizontal long-press popup. Active while popupKey is non-null. The alternatives are
+    // a single row of cells above the key, centred over the stem so the pre-selected cell (the key's own
+    // character) sits over the finger; sliding the finger left/right below the row changes popupSelectedIndex
+    // (the cell above the pointer x), and release commits it.
     private var popupKey: Key? = null
     private var popupAlternatives: List<String> = emptyList()
     private var popupSelectedIndex = 0
-    private var popupStackLeft = 0f
-    private var popupStackBottom = 0f
-    private var popupPrimaryLeft = 0f
-    private var popupPrimaryTop = 0f
-    private val popupCellWidthPx = dp(44f)
-    private val popupCellHeightPx = dp(40f)
+    private var popupRowLeft = 0f
+    private var popupRowTop = 0f
+    private val popupCellWidthPx = dp(40f)
+    private val popupCellHeightPx = dp(42f)
     
     private val popupBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.key_background)
@@ -465,21 +464,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-23: draws the vertical long-press popup (when active) on top of the keys - the primary cell at the
-     * top-left and the secondaries stacked in a column above the finger, with the selected cell highlighted.
+     * D-44: draws the horizontal long-press popup (when active) on top of the keys - the alternatives in a
+     * single row above the key, left to right, with the selected cell highlighted.
      */
     private fun drawLongPressPopup(canvas: Canvas) {
         if (popupKey == null || popupAlternatives.isEmpty()) {
             return
         }
-        val secondaryCount = popupAlternatives.size - 1
-        // Secondaries: bottom-to-top above the finger (index 1 is the bottom cell, at the key's top edge).
-        for (k in 1..secondaryCount) {
-            val top = popupStackBottom - k * popupCellHeightPx
-            drawPopupCell(canvas, popupStackLeft, top, popupAlternatives[k], k == popupSelectedIndex)
+        popupAlternatives.forEachIndexed { index, text ->
+            val left = popupRowLeft + index * popupCellWidthPx
+            drawPopupCell(canvas, left, popupRowTop, text, index == popupSelectedIndex)
         }
-        // Primary: offset at the top-left, pre-selected.
-        drawPopupCell(canvas, popupPrimaryLeft, popupPrimaryTop, popupAlternatives[0], popupSelectedIndex == 0)
     }
     
     private fun drawPopupCell(canvas: Canvas, left: Float, top: Float, text: String, selected: Boolean) {
@@ -527,9 +522,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
             
             MotionEvent.ACTION_MOVE -> {
-                // D-23: while the alternatives popup is open the finger slides up/down to pick a cell.
+                // D-44: while the alternatives popup is open the finger slides left/right to pick a cell.
                 if (popupKey != null) {
-                    updatePopupSelection(event.y)
+                    updatePopupSelection(event.x)
                     return true
                 }
                 // Movement does not change the resolved key (T-01); it only cancels the pending long-press
@@ -622,36 +617,40 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-23 / D-33: opens the vertical long-press popup for [key] showing [alternatives] (index 0 = primary,
-     * pre-selected). The secondaries stack in a column above the key, bottom-to-top; the primary cell sits
-     * offset to the left but **bottom-aligned** (level with the bottom of the column, near the finger). All
-     * cells are clamped to stay within the view.
+     * D-44: opens the horizontal long-press popup for [key] showing [alternatives] as a row of cells above
+     * the key. The row is centred over the stem so the pre-selected cell (the key's own character, or the
+     * first alternative when the key's character is not among them) sits over the finger; the row is clamped
+     * to stay within the view.
      */
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
-        val secondaryCount = alternatives.size - 1
-        popupStackBottom = rect.top - gapPx
-        val centred = rect.centerX() - popupCellWidthPx / 2f
-        popupStackLeft = centred.coerceIn(gapPx, (width - gapPx - popupCellWidthPx).coerceAtLeast(gapPx))
-        // D-33: the primary cell is bottom-aligned (near the finger). For a single alternative it sits
-        // directly above the key; with secondaries it moves to the left of the column, at the same bottom row.
-        popupPrimaryTop = popupStackBottom - popupCellHeightPx
-        popupPrimaryLeft = if (secondaryCount <= 0) {
-            popupStackLeft
-        } else {
-            (popupStackLeft - popupCellWidthPx - gapPx).coerceAtLeast(gapPx)
-        }
+        val preSelected = preSelectedIndexFor(key, alternatives)
+        val rowWidth = alternatives.size * popupCellWidthPx
+        val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
+        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX(), popupCellWidthPx, alternatives.size, preSelected, gapPx, maxLeft)
+        popupRowTop = rect.top - gapPx - popupCellHeightPx
         popupAlternatives = alternatives
-        popupSelectedIndex = 0
+        popupSelectedIndex = preSelected
         popupKey = key
         invalidate()
     }
     
-    private fun updatePopupSelection(pointerY: Float) {
-        if (popupKey == null) {
+    /**
+     * The pre-selected cell for [key]'s [alternatives] (D-44): the index of the key's own character, so a
+     * straight-up release types the key's normal glyph; falls back to the first alternative (index 0) when
+     * the key's character is not in the list (e.g. a letter whose only alternative is its umlaut).
+     */
+    private fun preSelectedIndexFor(key: Key, alternatives: List<String>): Int {
+        val self = key.char?.toString() ?: return 0
+        val index = alternatives.indexOf(self)
+        return if (index < 0) 0 else index
+    }
+    
+    private fun updatePopupSelection(pointerX: Float) {
+        if (popupKey == null || popupAlternatives.isEmpty()) {
             return
         }
-        val next = VerticalLongPressPopup.selectedIndex(pointerY, popupStackBottom, popupCellHeightPx, popupAlternatives.size - 1)
+        val next = HorizontalLongPressPopup.selectedIndex(pointerX, popupRowLeft, popupCellWidthPx, popupAlternatives.size)
         if (next != popupSelectedIndex) {
             popupSelectedIndex = next
             invalidate()

@@ -30,9 +30,10 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **477 green** (`:app:testDebugUnitTest`, incl. 10 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.21** (only the third digit bumps per APK; versionCode 91). Working tree =
-  v0.7.21, `origin/main` at v0.7.19 (`96f94c3`) — v0.7.20 (D-37) and v0.7.21 (§16 Batch A) not yet pushed.
+- Unit tests: **481 green** (`:app:testDebugUnitTest`, incl. 10 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.22** (only the third digit bumps per APK; versionCode 92). Working tree =
+  v0.7.22, `origin/main` at v0.7.19 (`96f94c3`) — v0.7.20 (D-37), v0.7.21 (§16 Batch A) and v0.7.22 (§16
+  D-41/D-48/D-44) not yet pushed.
 - **Spec §15 (round 4) status:** DONE = D-30 freeze bug, D-31 backspace speed, D-32 long-press delay+setting,
   D-33 popup bottom-align, D-34 vibration, D-35 swipe thresholds, D-38 correction quality, D-36 direct paste,
   D-40 digit-in-word, D-37 less-eager learning. **OPEN = only D-39** raw-coordinate per-character correction.
@@ -43,13 +44,18 @@ whenever a component lands so it does not have to be restated in every prompt.
   key-widths (`3 * width/10`, floored at the old fixed threshold) in `resolveSwipe`; **D-47** combined key
   drops the 😊 glyph → reads `?123` when emoji off (`emojiEnabled` on the view, pushed from `applySettings`,
   corner hint suppressed); **D-50** suggestion bar stays permanently `VISIBLE` even when empty (no layout
-  jump). **Still open in §16:** **D-41** digits as ordinary neighbour chars (adjacency map incl. number row;
-  D-40 special-casing was the wrong direction), **D-43** next-word prediction (bigram baseline + LLM),
-  **D-44** alt popups → horizontal, centred over stem, finger-below selection (period `? . !`, comma
-  `- , : ; / _`; replaces the D-23 vertical popup), **D-48** umlaut fold must beat the split (`konnen`→
-  `können` not `ko nen`; umlauts are first-class), **D-49** raw-recording as a headline onboarding USP. The
-  big architectural item **D-39** (raw-coordinate correction) is the confirmed next focus and naturally
-  subsumes D-41.
+  jump).
+- **Spec §16 — Batch B/D-44 DONE (v0.7.22):** **D-41** the number row is now part of `KeyboardProximity`
+  (four rows), so a digit is an ordinary neighbour character (`8` sits above the `i`/`o` gap → `W8rt` is a
+  cheap `8`→`o` slip from `Wort`); **D-48** a token that is a real word once its German diacritics are
+  restored is first-class and vetoes the A-05 split — new `SuggestionProvider.diacriticRestoration()`
+  (fold-equal known word) is checked before `trySplit`, so `konnen`→`können`, never `ko nen` (also `russ`→
+  `ruß`); **D-44** the long-press popup is now **horizontal**: a row of cells centred over the stem, the
+  key's own glyph pre-selected, finger slides left/right **below** the row to pick (new pure-geometry
+  `HorizontalLongPressPopup` replaces `VerticalLongPressPopup`; period `? . !`, comma `- , : ; / _`).
+  **Still open in §16:** **D-43** next-word prediction (bigram baseline + LLM), **D-49** raw-recording as a
+  headline onboarding USP. The big architectural item **D-39** (raw-coordinate correction) is the confirmed
+  next focus.
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key

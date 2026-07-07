@@ -29,16 +29,18 @@ object KeyboardLayout {
     )
     
     /**
-     * D-02 / D-22: the full-stop key's long-press set - the sentence terminators only. Index 0 (the full
-     * stop) is the primary / pre-selected default; the rest are the popup secondaries (D-23).
+     * D-02 / D-22 / D-44: the full-stop key's long-press set - the sentence terminators, laid out left to
+     * right in the D-44 horizontal popup with the full stop centred (`? . !`). The popup pre-selects the
+     * key's own character (the full stop), so a straight-up release still types `.`.
      */
-    val PERIOD_ALTERNATIVES = listOf(".", "!", "?")
+    val PERIOD_ALTERNATIVES = listOf("?", ".", "!")
     
     /**
-     * D-22: the comma key's long-press set - the remaining clause punctuation. Index 0 (the comma) is the
-     * primary / pre-selected default; the rest are the popup secondaries (D-23).
+     * D-22 / D-44: the comma key's long-press set - the remaining clause punctuation, laid out left to
+     * right in the D-44 horizontal popup (`- , : ; / _`). The popup pre-selects the key's own character
+     * (the comma), so a straight-up release still types `,`.
      */
-    val COMMA_ALTERNATIVES = listOf(",", ";", ":", "-", "_", "/")
+    val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "/", "_")
     
     /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
