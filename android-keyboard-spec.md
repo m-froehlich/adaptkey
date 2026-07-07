@@ -674,3 +674,8 @@ any more. Restore the drag-to-trash from the suggestion bar.
 `konnen` is currently auto-corrected to `kannen`, which is not a word; it must become `können`. Possibly a
 ricochet from the D-41 digit-adjacency change or the D-48 pipeline reorder. This is the exact umlaut-first-
 class case from D-63 and must be fixed together with it.
+
+### D-66 - Key Vibration Does Not Fire At All (Bug)
+The key-press vibration (D-06 / D-34) definitely does not fire on device, despite the earlier fixes. Low
+priority for now, but the haptic path needs to be re-investigated (permission, VibratorManager vs Vibrator,
+amplitude, or the toggle wiring).

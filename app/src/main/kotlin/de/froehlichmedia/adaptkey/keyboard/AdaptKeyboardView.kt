@@ -336,8 +336,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var popupRowTop = 0f
     private val popupCellWidthPx = dp(40f)
     private val popupCellHeightPx = dp(42f)
-    // D-54: how far a single-cell popup is nudged towards the keyboard centre so the finger does not hide it.
-    private val popupSingleNudgePx = dp(22f)
+    // D-54: how far a single-cell popup is nudged towards the keyboard centre so the finger does not hide it
+    // (5 units - a little less than the D-55 space-row gap; a half-cell was too much).
+    private val popupSingleNudgePx = dp(5f)
     
     private val popupBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.key_background)
@@ -670,10 +671,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * first alternative when the key's character is not among them) sits over the finger; the row is clamped
      * to stay within the view.
      *
-     * D-53: when there is no room above the key (the number row sits at the very top of the view, so an
-     * above-popup would be clipped and invisible), the row is flipped to just below the key instead - this is
-     * what makes the digit keys show a popup at all. D-54: a single-cell popup is nudged ~a half-cell towards
-     * the keyboard centre (right on the left half, left on the right half) so the finger does not cover it.
+     * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
+     * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
+     * rather than clipped. D-54: a single-cell popup is nudged a few units towards the keyboard centre (right
+     * on the left half, left on the right half) so the finger does not cover it.
      */
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
@@ -687,9 +688,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
             0f
         }
         popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, popupCellWidthPx, alternatives.size, preSelected, gapPx, maxLeft)
-        // D-53: place the row above the key, or below it when above would be clipped off the top of the view.
-        val above = rect.top - gapPx - popupCellHeightPx
-        popupRowTop = if (above >= paddingTop.toFloat()) above else rect.bottom + gapPx
+        // D-53: always place the row above the key. For the number row this reaches above the keyboard, which
+        // is fine: the service disables child-clipping on the container/root, so the popup draws over the
+        // suggestion bar rather than being clipped.
+        popupRowTop = rect.top - gapPx - popupCellHeightPx
         popupAlternatives = alternatives
         popupSelectedIndex = preSelected
         popupKey = key

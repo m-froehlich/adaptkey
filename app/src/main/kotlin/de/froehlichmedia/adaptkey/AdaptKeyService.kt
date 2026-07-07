@@ -311,6 +311,10 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onCreateInputView(): View {
         val container = FrameLayout(this)
+        // D-53: let the keyboard's long-press popup draw outside the keyboard bounds - a number-row popup
+        // reaches up over the suggestion bar rather than being clipped or flipped below the key.
+        container.clipChildren = false
+        container.clipToPadding = false
         
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
@@ -337,6 +341,10 @@ class AdaptKeyService : InputMethodService() {
         // (weight 1) — i.e. 100% minus the keyboard height; when hidden, the root collapses to the keyboard.
         val root = LinearLayout(this)
         root.orientation = LinearLayout.VERTICAL
+        // D-53: the keyboard container's popup overflow must also escape the root, so it can overlap the
+        // suggestion bar row (the keyboard is drawn after the bar, so its popup lands on top of it).
+        root.clipChildren = false
+        root.clipToPadding = false
         inputRoot = root
         val onboarding = OnboardingView(this)
         onboarding.onFinished = { hideOnboarding() }
@@ -696,7 +704,7 @@ class AdaptKeyService : InputMethodService() {
                 finalizeAndCommit(ic, " ", inferred)
             }
             
-            KeyCode.ENTER -> finalizeAndCommit(ic, "\n")
+            KeyCode.ENTER -> handleEnter(ic)
             
             KeyCode.DELETE -> handleBackspace(ic)
             
@@ -714,6 +722,33 @@ class AdaptKeyService : InputMethodService() {
                 symbolPage = SymbolLayout.togglePage(symbolPage)
                 keyboardView?.symbolPage = symbolPage
             }
+        }
+    }
+    
+    /**
+     * D-61: handles the Enter key. In a real multi-line field it inserts a newline as before. In a
+     * single-line field it commits the pending word and then submits, honouring the editor's requested IME
+     * action (Go / Search / Send / Done) via [InputConnection.performEditorAction]; when the field declares no
+     * action (e.g. a browser address bar) a real Enter key event is sent, which such fields treat as submit.
+     * This replaces the old unconditional committing of a literal `\n`, which many search / URL fields
+     * ignored, so Enter appeared to do nothing.
+     */
+    private fun handleEnter(ic: InputConnection) {
+        val editorInfo = currentInputEditorInfo
+        val imeOptions = editorInfo?.imeOptions ?: 0
+        val multiLine = ((editorInfo?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
+        if (multiLine) {
+            finalizeAndCommit(ic, "\n")
+            return
+        }
+        // Single-line field: commit the pending word without a newline, then submit.
+        finalizeAndCommit(ic, "")
+        val action = imeOptions and EditorInfo.IME_MASK_ACTION
+        val noEnterAction = (imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0
+        if (!noEnterAction && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
+            ic.performEditorAction(action)
+        } else {
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
         }
     }
     
@@ -1474,10 +1509,21 @@ class AdaptKeyService : InputMethodService() {
                 armShiftForNextWord(ic)
             }
             
-            // D-36: run the exact system paste action, then clear the clipboard (esp. passwords).
+            // D-36 / D-60: commit the clipboard text directly instead of firing the editor's paste action.
+            // performContextMenuAction(paste) is not honoured by every field and, worse, races the immediate
+            // clearClipboard() - the field often read an already-emptied clipboard and nothing was pasted.
+            // Reading the text here and committing it is deterministic; only then is the clipboard cleared.
             SuggestionController.Kind.CLIPBOARD -> {
-                ic.performContextMenuAction(android.R.id.paste)
-                clearClipboard()
+                val text = clipboardManager
+                    ?.takeIf { it.hasPrimaryClip() }
+                    ?.primaryClip
+                    ?.takeIf { it.itemCount > 0 }
+                    ?.getItemAt(0)
+                    ?.coerceToText(this)
+                if (!text.isNullOrEmpty()) {
+                    ic.commitText(text, 1)
+                    clearClipboard()
+                }
                 clearSuggestions()
             }
         }
