@@ -13,6 +13,16 @@ Every available Android keyboard implicitly assumes a particular input gesture -
 
 Beyond this, off-the-shelf keyboards fail systematically at context-sensitive capitalisation, hyphenated compound words, punctuation as a prediction signal, and stability of the suggestion bar.
 
+### Guiding Principle - Umlauts Are Ordinary Characters (the spirit of the app)
+
+`ä ö ü ß` (and, by extension, the accented characters of every supported language) must be treated as
+completely **normal characters** everywhere in the app. They must never come as a surprise to any feature,
+never throw the autocorrect off its stride, and never produce an effect that a German user would find
+unexpected. For a German, an umlaut is not exotic - a keyboard that stumbles over `ä`/`ö`/`ü`/`ß` (fails to
+correct `konnen` → `können`, splits a word rather than restoring its umlaut, ranks a diacritic-less form
+oddly, etc.) is simply broken. This principle overrides convenience shortcuts and will shape several
+features (correction ranking, folding, split-vs-correct priority, suggestions).
+
 ---
 
 ## 2. Layout & Key Assignment

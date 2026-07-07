@@ -200,6 +200,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /** D-47: whether the emoji panel is enabled; when off, the combined key shows "?123" instead of 😊. */
+    var emojiEnabled: Boolean = true
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
     /** D-05: whether a click sound plays on each key press (default off). */
     var soundEnabled: Boolean = false
     
@@ -262,6 +269,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val vibrator by lazy { context.getSystemService(Vibrator::class.java) }
     
     private val rowHeightPx = dp(54f)
+    // D-42: the number row is shorter than the letter rows, so its touch zone does not reach down into the
+    // top letter row (where a tap meant for a letter was landing on the digit above it).
+    private val numberRowHeightPx = dp(44f)
     // D-21 (§13): a few px of cell padding between keys (Gboard-like) so they read as separate keys.
     private val gapPx = dp(5f)
     private val keyRadiusPx = dp(6f)
@@ -362,8 +372,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        val height = (rows.size * rowHeightPx + gapPx).toInt() + paddingTop + paddingBottom
+        val rowsHeight = rows.sumOf { rowHeight(it).toDouble() }.toFloat()
+        val height = (rowsHeight + gapPx).toInt() + paddingTop + paddingBottom
         setMeasuredDimension(width, height)
+    }
+    
+    /** D-42: the (shorter) number row versus a regular row. */
+    private fun rowHeight(row: List<Key>): Float {
+        return if (isNumberRow(row)) numberRowHeightPx else rowHeightPx
+    }
+    
+    private fun isNumberRow(row: List<Key>): Boolean {
+        return row.isNotEmpty() && row.all { it.code == KeyCode.CHAR && it.char?.isDigit() == true }
     }
     
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -378,16 +398,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         var top = paddingTop.toFloat() + gapPx
         
         for (row in rows) {
+            val height = rowHeight(row)
             val totalWeight = row.sumOf { it.weight.toDouble() }.toFloat()
             val unit = (usableWidth - gapPx * (row.size + 1)) / totalWeight
             var x = left + gapPx
             for (key in row) {
                 val keyWidth = unit * key.weight
-                val rect = RectF(x, top, x + keyWidth, top + rowHeightPx - gapPx)
+                val rect = RectF(x, top, x + keyWidth, top + height - gapPx)
                 keyRects.add(key to rect)
                 x += keyWidth + gapPx
             }
-            top += rowHeightPx
+            top += height
         }
     }
     
@@ -407,7 +428,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
             canvas.drawText(label, cx, baseline, textPaint)
             
             val hint = key.hint
-            if (hintsEnabled && hint != null) {
+            // D-47: no "123" corner hint on the combined key when it already reads "?123" (emoji off).
+            val suppressHint = key.code == KeyCode.SYMBOL && !emojiEnabled
+            if (hintsEnabled && hint != null && !suppressHint) {
                 canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
             }
         }
@@ -746,7 +769,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val horizontal = direction == SwipeDirection.LEFT || direction == SwipeDirection.RIGHT
         val travel = if (horizontal) abs(dx) else abs(dy)
         val isLanguageSwipe = key.code == KeyCode.SPACE && horizontal
-        val required = if (isLanguageSwipe) spaceSwipeThresholdPx else fieldSwipeThresholdPx
+        // D-46: a field swipe must travel roughly three key-widths before it counts, so a short drift no
+        // longer flips the page. A key-width is a tenth of the keyboard width (the top row holds ten keys);
+        // fall back to the fixed distance until the view has been measured.
+        val fieldRequired = if (width > 0) maxOf(fieldSwipeThresholdPx, 3f * (width / 10f)) else fieldSwipeThresholdPx
+        val required = if (isLanguageSwipe) spaceSwipeThresholdPx else fieldRequired
         if (travel < required) {
             return false
         }
@@ -810,6 +837,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             key.code == KeyCode.SPACE && spaceLabel.isNotEmpty() -> spaceLabel
             // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
+            // D-47: with the emoji panel off, the combined key is a plain ?123 key, not the emoji.
+            key.code == KeyCode.SYMBOL && !emojiEnabled -> "?123"
             key.code == KeyCode.CHAR && (shifted || capsLock) && ch != null -> ch.uppercaseChar().toString()
             else -> key.label
         }

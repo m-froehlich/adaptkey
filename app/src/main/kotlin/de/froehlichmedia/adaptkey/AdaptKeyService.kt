@@ -346,12 +346,13 @@ class AdaptKeyService : InputMethodService() {
         
         // Suggestion bar (S-01…S-06) embedded as a row directly above the keyboard, rather than the
         // legacy onCreateCandidatesView / setCandidatesViewShown mechanism, which is unreliable on modern
-        // Android (edge-to-edge, gesture nav) and left the bar missing entirely on device. Hidden (GONE)
-        // when there are no suggestions so the keyboard sits at the bottom.
+        // Android (edge-to-edge, gesture nav) and left the bar missing entirely on device. D-50: the bar
+        // stays permanently visible (even when empty) so the row never appears/disappears and the keyboard
+        // below it never jumps.
         val bar = SuggestionBarView(this)
         bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
         bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
-        bar.visibility = View.GONE
+        bar.visibility = View.VISIBLE
         suggestionBar = bar
         
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
@@ -431,6 +432,9 @@ class AdaptKeyService : InputMethodService() {
             view.hapticsEnabled = s.keyHapticsEnabled
             // D-32: configurable long-press delay.
             view.longPressDelayMs = s.longPressDelayMs
+            // D-47: when the emoji panel is off, the combined key must also drop its 😊 glyph and read as
+            // a plain ?123 key.
+            view.emojiEnabled = s.emojiPanelEnabled
         }
         // D-18: emoji panel on/off (off makes the combined key a ?123-only key).
         emojiPanelEnabled = s.emojiPanelEnabled
@@ -944,6 +948,12 @@ class AdaptKeyService : InputMethodService() {
             deleteComposingChar(ic)
         } else {
             deleteOneBefore(ic)
+            // D-45: deleting a character (typically the punctuation just typed at a line/sentence start)
+            // can leave the cursor back at a sentence start, where auto-capital must re-arm — otherwise the
+            // first letter of the fresh sentence stays lowercase.
+            if (composing.isEmpty() && sentenceStartBefore(ic)) {
+                keyboardView?.shifted = ShiftGrace.autoArmAtWordStart(capsMode, true)
+            }
         }
     }
     
@@ -1329,7 +1339,9 @@ class AdaptKeyService : InputMethodService() {
     private fun showSuggestions() {
         val items = controller.displayed()
         suggestionBar?.setItems(items)
-        suggestionBar?.visibility = if (items.isNotEmpty()) View.VISIBLE else View.GONE
+        // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
+        // it never jumps.
+        suggestionBar?.visibility = View.VISIBLE
     }
     
     private fun clearSuggestions() {
@@ -1338,7 +1350,8 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         suggestionBar?.setItems(emptyList())
-        suggestionBar?.visibility = View.GONE
+        // D-50: keep the (now empty) bar visible rather than hiding it.
+        suggestionBar?.visibility = View.VISIBLE
     }
     
     private fun learnWord(word: String?) {
