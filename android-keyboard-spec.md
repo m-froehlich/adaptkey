@@ -594,3 +594,83 @@ technical terms).
 The suggestion bar must keep its row at all times, even when it is momentarily empty, so the prompt slot
 above it does not jump up and down as suggestions come and go. (With next-word prediction (D-43) it will
 rarely be empty anyway.)
+
+## §17 - Device-Feedback Round 6 (v0.7.22 / v0.7.23 testing)
+
+The horizontal alt-key popups (D-44) are now excellent and highly usable. This round refines the keyboard
+geometry, doubles down on the umlaut-first-class principle, and adds several bugs found on device.
+
+### D-51 - Period Long-Press Order Is `! . ?`
+The full-stop key's horizontal alt popup should read `! . ?` (exclamation, full stop, question mark), left to
+right, with the full stop still the centred, pre-selected default. (Supersedes the D-44 `? . !` order.)
+
+### D-52 - The Number Row Is a Full-Height Key Row Again
+D-42 made the number row shorter, which only means the digits must be hit more precisely - the opposite of
+helpful, and there was no real benefit. Revert it: the number row is exactly as tall as the letter rows.
+
+### D-53 - The Number Row Long-Presses Like Every Other Key
+The number row is not an add-on or a foreign body; it is an ordinary part of the whole keyboard and must
+behave like one. In particular each digit must produce a long-press alt popup exactly as the letters do,
+offering its shifted symbol (the QWERTZ `! " § $ % & / ( ) =` etc. already shown as the corner hint). Right
+now the digits show no popup at all. Treat the row as first-class throughout, not as something bolted on.
+
+### D-54 - Single-Alternative Popups Are Nudged Toward the Keyboard Centre
+A one-cell alt popup should sit slightly offset from directly-above-the-key so the finger does not hide it:
+about two units to the right for keys on the left half of the keyboard, and two units to the left for keys on
+the right half. (Multi-cell popups keep the D-44 centred-over-stem behaviour.)
+
+### D-55 - Two New Spacing Settings: Below the Number Row and Above the Space Row
+Add two independent settings that insert extra vertical space (a) directly below the number row and (b)
+directly above the space row. Default 7 (units/dp), slider range 0-25. This is expected to remove a great
+many mis-taps and, above the space row, many accidental Enter presses.
+
+### D-56 - Backspace Hold: Single-Character Phase Slightly Faster
+The accelerating backspace hold (D-31) is almost perfect. Only the single-character deletion phase may be a
+touch faster; the word-wise phase stays as it is.
+
+### D-57 - Page-Swipe Width Retune (Space Bar Gets More)
+The full-field page swipe (D-46) is now a bit too wide. Reduce the required travel by ~15% - except on the
+space bar, where it may be ~15% more (its horizontal swipe is still too easy to trigger by accident). The
+swipe-down-to-hide gesture is perfect as it is and must not change.
+
+### D-58 - Page-Change Animation
+Give the surface/page change a slide animation, like the swipe-down animation. It looks much better and, more
+importantly, it makes the page change perceptible - right now the change is easy to miss.
+
+### D-59 - Optional `?123` Key (Default On)
+Add a setting to disable the combined `?123` key. It mostly gets in the way - it is easy to hit by accident
+when reaching for Shift (the new D-55 spacing above the row will already help). Default on. When this setting
+is **off AND** the emoji panel is also off, the button disappears entirely, but its slot stays reserved
+(the surrounding keys do not grow into the gap).
+
+### D-60 - Quick Paste Does Nothing (Bug)
+The direct-paste chip (D-36) currently has no effect. Likely the clipboard is cleared too early (before the
+paste action actually consumes it). Fix the ordering so the paste happens, then the clipboard is cleared.
+
+### D-61 - Enter Does Not Submit in Browser Address Bars / Search Fields (Bug)
+Pressing Enter in a browser address bar or a search field (e.g. YouTube) inserts a newline instead of
+submitting. The Enter key must honour the editor's requested IME action (Go/Search/Send/Done) instead of
+always emitting a newline.
+
+### D-62 - Mid-Word Editing Produces Live Suggestions
+When the caret is placed inside an existing word and the user types, the autocorrect / suggestions must behave
+as if the whole word were being composed right now - the full extent of the word (and, where useful, the
+surrounding context for the LLM) is taken into account, not just the fragment after the caret.
+
+### D-63 - Missing Umlauts / ß: Suggest-Up-Front, Auto-Correct When Unambiguous
+Every word typed without its umlaut or ß (`konnen`→`können`, `mussen`→`müssen`, `hoflich`→`höflich`,
+`weis`→`weiß`) must (1) be recognised with its diacritics and offered near the front of the suggestion bar,
+and (2) be auto-corrected when it is unambiguous - i.e. when no sensible non-diacritic word exists. So
+`mussen` auto-corrects to `müssen`. But `konnten` must only *suggest* `könnten`, because `konnten` is itself a
+valid word. Being able to skip the umlauts while typing and have the app restore them is a core comfort
+feature and must be supported as strongly as possible. (Extends D-48 from "beats a split" to full
+suggest+auto-correct behaviour.)
+
+### D-64 - Suggestion-Bar Word Cannot Be Dragged to Trash (Bug)
+Dragging a word out of the suggestion bar (to the trash / blacklist, G-04 / D-36-era gesture) does not work
+any more. Restore the drag-to-trash from the suggestion bar.
+
+### D-65 - `konnen` Auto-Corrects to `kannen` (Bug, HIGH)
+`konnen` is currently auto-corrected to `kannen`, which is not a word; it must become `können`. Possibly a
+ricochet from the D-41 digit-adjacency change or the D-48 pipeline reorder. This is the exact umlaut-first-
+class case from D-63 and must be fixed together with it.
