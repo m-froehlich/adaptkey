@@ -520,3 +520,67 @@ A digit typed **between letters** (mid-word, no separating space) is almost cert
 digits are rarely intended mid-word. Such a digit must be kept in the composing token (not treated as a
 delimiter) and corrected to a neighbouring letter like any other typo, so `W8rt` -> `Wort`. A digit at the
 start of a token (or a standalone digit) keeps its normal behaviour.
+
+---
+
+## 16. Fifth Device-Feedback Round (from v0.7.20 testing)
+
+More findings. `*(bug)*` marks defects. The overarching theme: digits and umlauts must be treated as
+perfectly ordinary characters/keys, never as exotic special cases.
+
+### D-41 - Digits Are Ordinary Neighbour Characters in Correction
+A stray digit inside a word is nothing more than a mis-hit neighbouring key and must be corrected exactly
+like a wrong neighbouring letter - not as a word separator that derails the suggestions into random
+uppercase acronyms. Include the number row in the keyboard-adjacency map so a digit is a **cheap**
+neighbour substitution (`8`↔`o` etc.), and make sure a mid-word digit no longer produces nonsense live
+suggestions. (This should ideally fall out of D-39's raw-coordinate approach; the special-casing in D-40 was
+the wrong direction.)
+
+### D-42 - Number-Row Hit Zone Too Tall *(bug)*
+The number-row keys react too far down - their touch zone feels like it reaches into the letter row below,
+so a tap meant for the top letter row lands on the digit above it. Tighten the number-row hit target.
+
+### D-43 - Next-Word Prediction in the Suggestion Bar
+The suggestion bar should predict and offer the **next** word before it is typed - this is what makes a
+keyboard feel alive. A bigram baseline (the stored n-gram continuations) works offline today; the tier-3 LLM
+elevates it to real context-aware prediction.
+
+### D-44 - Alt-Key Popups: Horizontal, Centred, Finger-Below Selection
+Return the long-press popup to a **horizontal** layout, but better than the first version:
+- It is centred **above the stem key**, and grows to the right (where there is room), extending at most one
+  cell to the **left** of the stem.
+- The **primary** character sits directly above the stem key and is pre-selected. For the full stop the row
+  is `?` `.` `!` (full stop centred, `?` upper-left, `!` upper-right). For the comma the row is
+  `-` `,` `:` `;` `/` `_` (comma centred over the stem, `-` the one cell to its left, the rest to the right).
+- Selection follows the finger **swiping underneath** the popup (along the key row), not resting on the
+  cells - so the finger never hides the choice; the highlight makes the selection clear.
+
+### D-45 - Restore Auto-Capitalisation After Deleting a Punctuation at Line Start *(bug)*
+At the start of a line the keyboard auto-shifts to uppercase. If the user types a punctuation mark there and
+then deletes it, the auto-uppercase is **not** restored - which is intuitively wrong. This needs an explicit
+exception to the general shift rules: deleting back to a sentence/line start re-arms the auto-capital.
+
+### D-46 - Swipe Length Still Too Short
+Even after D-35, a swipe still triggers on too little travel - a slight smear while pressing Shift already
+switches the page. The surface/language swipe should require at least roughly **three key-widths** of travel.
+To be tuned on device.
+
+### D-47 - Combined Key Must Not Show the Emoji Glyph When the Panel Is Off *(bug)*
+With the emoji panel disabled (D-18) the combined key correctly acts as `?123` only, but it still **displays
+the 😊 emoji**. Its label must reflect the state - show `?123` (or similar), not the emoji.
+
+### D-48 - Umlaut Words Are First-Class; a Fold Match Beats a Split
+`konnen` must autocorrect to `können` - an obvious, missing-umlaut case (the umlaut fold makes it the exact
+word). Instead the A-05 split wrongly wins and produces `ko nen`. A strong umlaut-fold / low-cost correction
+must take priority over a retroactive split. Umlauts must be treated as entirely normal characters, never as
+exotic - for a German user anything else is incomprehensible. Reorder the correction pipeline accordingly.
+
+### D-49 - Raw Touch-Recording as a Headline Onboarding USP
+The personal raw touch-recording / per-finger learning (T-03) is one of the app's absolute core features and
+USPs and must appear prominently on the onboarding page, phrased so an ordinary user understands it (not in
+technical terms).
+
+### D-50 - Suggestion Bar Stays Permanently Visible
+The suggestion bar must keep its row at all times, even when it is momentarily empty, so the prompt slot
+above it does not jump up and down as suggestions come and go. (With next-word prediction (D-43) it will
+rarely be empty anyway.)

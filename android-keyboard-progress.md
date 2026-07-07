@@ -35,9 +35,17 @@ whenever a component lands so it does not have to be restated in every prompt.
   v0.7.20, `origin/main` at v0.7.19 (`96f94c3`).
 - **Spec §15 (round 4) status:** DONE = D-30 freeze bug, D-31 backspace speed, D-32 long-press delay+setting,
   D-33 popup bottom-align, D-34 vibration, D-35 swipe thresholds, D-38 correction quality, D-36 direct paste,
-  D-40 digit-in-word, D-37 less-eager learning. **OPEN = only D-39** raw-coordinate per-character correction
-  (walk each char's retained raw tap to the intended neighbour key; multi-typo like Stabdsrx; possibly
-  tier-3 LLM) — a larger architectural piece, best as its own focused session.
+  D-40 digit-in-word, D-37 less-eager learning. **OPEN = only D-39** raw-coordinate per-character correction.
+- **Spec §16 (round 5) = NEW backlog, captured, not started** (tasks #38–#47): **D-41** digits as ordinary
+  neighbour chars (adjacency map incl. number row; D-40 special-casing was the wrong direction),
+  **D-42** number-row hit zone too tall (bug), **D-43** next-word prediction (bigram baseline + LLM),
+  **D-44** alt popups → horizontal, centred over stem, finger-below selection (period `? . !`, comma
+  `- , : ; / _`; replaces the D-23 vertical popup), **D-45** restore auto-capital after deleting a
+  punctuation at line start (bug), **D-46** swipe still too short (~3 key-widths), **D-47** combined key still
+  shows 😊 when emoji off (bug), **D-48** umlaut fold must beat the split (`konnen`→`können` not `ko nen`;
+  umlauts are first-class), **D-49** raw-recording as a headline onboarding USP, **D-50** suggestion bar
+  permanently visible (no layout jump). The big architectural item **D-39** (raw-coordinate correction) is
+  the confirmed next focus and naturally subsumes D-41.
 - **§13 round-2 status:** DONE across v0.7.8/v0.7.9 = K-01 inset, D-11/D-12 suggestions, D-15 Caps Lock,
   D-19/D-20 swipes, **D-04 flash speed, D-14 long-press popup feedback, C-04 defaults, D-21 cell padding,
   D-07 faster hold, A-07 split-undo**. STILL OPEN in §13: D-13 (word training), D-16 (pattern-driven key
