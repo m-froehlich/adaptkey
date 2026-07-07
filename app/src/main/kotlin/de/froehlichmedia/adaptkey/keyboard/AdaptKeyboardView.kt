@@ -269,9 +269,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val vibrator by lazy { context.getSystemService(Vibrator::class.java) }
     
     private val rowHeightPx = dp(54f)
-    // D-42: the number row is shorter than the letter rows, so its touch zone does not reach down into the
-    // top letter row (where a tap meant for a letter was landing on the digit above it).
-    private val numberRowHeightPx = dp(44f)
     // D-21 (§13): a few px of cell padding between keys (Gboard-like) so they read as separate keys.
     private val gapPx = dp(5f)
     private val keyRadiusPx = dp(6f)
@@ -371,18 +368,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        val rowsHeight = rows.sumOf { rowHeight(it).toDouble() }.toFloat()
-        val height = (rowsHeight + gapPx).toInt() + paddingTop + paddingBottom
+        val height = (rows.size * rowHeightPx + gapPx).toInt() + paddingTop + paddingBottom
         setMeasuredDimension(width, height)
-    }
-    
-    /** D-42: the (shorter) number row versus a regular row. */
-    private fun rowHeight(row: List<Key>): Float {
-        return if (isNumberRow(row)) numberRowHeightPx else rowHeightPx
-    }
-    
-    private fun isNumberRow(row: List<Key>): Boolean {
-        return row.isNotEmpty() && row.all { it.code == KeyCode.CHAR && it.char?.isDigit() == true }
     }
     
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -397,17 +384,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
         var top = paddingTop.toFloat() + gapPx
         
         for (row in rows) {
-            val height = rowHeight(row)
             val totalWeight = row.sumOf { it.weight.toDouble() }.toFloat()
             val unit = (usableWidth - gapPx * (row.size + 1)) / totalWeight
             var x = left + gapPx
             for (key in row) {
                 val keyWidth = unit * key.weight
-                val rect = RectF(x, top, x + keyWidth, top + height - gapPx)
+                val rect = RectF(x, top, x + keyWidth, top + rowHeightPx - gapPx)
                 keyRects.add(key to rect)
                 x += keyWidth + gapPx
             }
-            top += height
+            top += rowHeightPx
         }
     }
     
@@ -751,9 +737,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     /**
      * Resolves a release displacement into a swipe and offers it to the listener (§4 / D-20). The
      * direction is first detected with the small threshold, then the dominant-axis travel must clear the
-     * threshold that applies to that gesture: the small [spaceSwipeThresholdPx] for the space-bar
-     * language swipe (G-01), the larger [fieldSwipeThresholdPx] for every field gesture (dismiss-down,
-     * surface swipe, word-delete). Returns true when the listener consumed the swipe.
+     * threshold that applies to that gesture: the small [spaceSwipeThresholdPx] (D-57: +15%) for the
+     * space-bar language swipe (G-01), a three-key-width distance (D-46; D-57: -15%) for the horizontal page
+     * swipe, and the plain [fieldSwipeThresholdPx] three-key-width distance for the vertical field gestures
+     * (dismiss-down, up-to-symbols). Returns true when the listener consumed the swipe.
      *
      * @param key the key the swipe started on
      * @param dx the horizontal release displacement
@@ -772,7 +759,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // longer flips the page. A key-width is a tenth of the keyboard width (the top row holds ten keys);
         // fall back to the fixed distance until the view has been measured.
         val fieldRequired = if (width > 0) maxOf(fieldSwipeThresholdPx, 3f * (width / 10f)) else fieldSwipeThresholdPx
-        val required = if (isLanguageSwipe) spaceSwipeThresholdPx else fieldRequired
+        // D-57: the horizontal page swipe was a touch too wide - shorten it by 15%. The space-bar language
+        // swipe, still too easy to trigger by accident, is made 15% harder. Vertical field gestures
+        // (swipe-down-to-dismiss, up-to-symbols) keep the plain fieldRequired distance and are untouched.
+        val required = when {
+            isLanguageSwipe -> spaceSwipeThresholdPx * SPACE_SWIPE_FACTOR
+            horizontal -> fieldRequired * PAGE_SWIPE_FACTOR
+            else -> fieldRequired
+        }
         if (travel < required) {
             return false
         }
@@ -863,5 +857,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         private const val TONE_VOLUME = 70
         private const val TONE_DURATION_MS = 40
         private const val HAPTIC_DURATION_MS = 40L
+        
+        // D-57: the horizontal page swipe needs 15% less travel; the space-bar language swipe needs 15% more.
+        private const val PAGE_SWIPE_FACTOR = 0.85f
+        private const val SPACE_SWIPE_FACTOR = 1.15f
     }
 }

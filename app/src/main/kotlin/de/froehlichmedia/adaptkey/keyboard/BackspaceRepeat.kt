@@ -23,11 +23,11 @@ object BackspaceRepeat {
     /** Delay before the first repeat fires, giving a normal tap room to be just a single deletion. */
     const val INITIAL_DELAY_MS = 400L
     
-    /** Character-wise starting interval; the moderate acceleration decays from here. */
-    const val CHAR_START_DELAY_MS = 190L
+    /** Character-wise starting interval; the moderate acceleration decays from here (D-56: a touch quicker). */
+    const val CHAR_START_DELAY_MS = 165L
     
-    /** Fastest character-wise interval the acceleration is clamped to (kept moderate on purpose). */
-    const val CHAR_MIN_DELAY_MS = 65L
+    /** Fastest character-wise interval the acceleration is clamped to (D-56: a touch quicker, still moderate). */
+    const val CHAR_MIN_DELAY_MS = 50L
     
     /** Geometric decay factor per removed character - close to 1 so acceleration stays gentle (D-31). */
     const val CHAR_ACCELERATION = 0.90

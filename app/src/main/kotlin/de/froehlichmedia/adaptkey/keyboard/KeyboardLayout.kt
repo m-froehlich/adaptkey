@@ -29,11 +29,11 @@ object KeyboardLayout {
     )
     
     /**
-     * D-02 / D-22 / D-44: the full-stop key's long-press set - the sentence terminators, laid out left to
-     * right in the D-44 horizontal popup with the full stop centred (`? . !`). The popup pre-selects the
-     * key's own character (the full stop), so a straight-up release still types `.`.
+     * D-02 / D-22 / D-44 / D-51: the full-stop key's long-press set - the sentence terminators, laid out left
+     * to right in the horizontal popup with the full stop centred (`! . ?`). The popup pre-selects the key's
+     * own character (the full stop), so a straight-up release still types `.`.
      */
-    val PERIOD_ALTERNATIVES = listOf("?", ".", "!")
+    val PERIOD_ALTERNATIVES = listOf("!", ".", "?")
     
     /**
      * D-22 / D-44: the comma key's long-press set - the remaining clause punctuation, laid out left to
