@@ -52,6 +52,51 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun missingUmlautCorrectsToTheUmlautWordNotAShapeAlike() {
+        // D-65 / D-63: "konnen" must correct to "können" (missing umlaut, fold-distance 0), never to the
+        // real-but-wrong "kannen" (Kannen, distance 2). This reproduces the device condition: enough plain
+        // ASCII "k…" words to overflow the per-bucket candidate LIMIT. Because ö (U+00F6) sorts after every
+        // ASCII letter, "können" is the very last "k" word in wkey order and was dropped past the LIMIT -
+        // only the frequency-ordered scan (high-frequency "können" first) keeps it reachable.
+        val store = store("umlaut.db")
+        store.putWord(WordEntry("können", 5000L, emptySet()))
+        store.putWord(WordEntry("kannen", 3L, emptySet()))
+        store.putWord(WordEntry("müssen", 4000L, emptySet()))
+        // Filler: 400 distinct length-6 ASCII "k" words (all sort before "kö…"), more than the per-bucket
+        // LIMIT, each rarer than "können", so without ORDER BY freq the umlaut word falls off the end.
+        val letters = "abcdefghijklmnopqrstuvwxy"
+        var seeded = 0
+        for (a in letters) {
+            for (b in letters) {
+                if (seeded >= 400) {
+                    break
+                }
+                store.putWord(WordEntry("k" + a + b + "xyz", 1L, emptySet()))
+                seeded++
+            }
+        }
+        val provider = DictionarySuggestionProvider(store)
+        
+        assertEquals("können", provider.autocorrectFor("konnen", null))
+        assertEquals("müssen", provider.autocorrectFor("mussen", null))
+        store.close()
+    }
+    
+    @Test
+    fun ambiguousUmlautWordIsSuggestedButNotAutoCorrected() {
+        // D-63: "konnten" is itself a valid word, so it must NOT be auto-corrected (A-01), but "könnten"
+        // must still be offered in the suggestions.
+        val store = store("umlaut-ambiguous.db")
+        store.putWord(WordEntry("konnten", 200L, emptySet()))
+        store.putWord(WordEntry("könnten", 900L, emptySet()))
+        val provider = DictionarySuggestionProvider(store)
+        
+        assertEquals(null, provider.autocorrectFor("konnten", null))
+        assertTrue(provider.suggestionsFor("konnten", null).any { it.word == "könnten" })
+        store.close()
+    }
+    
+    @Test
     fun nextWordsReturnsCanonicalSuccessorsByCount() {
         val store = store("next.db")
         store.putWord(WordEntry("Hund", 10L, emptySet()))
