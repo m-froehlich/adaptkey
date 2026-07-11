@@ -155,6 +155,37 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `rankedCandidates orders by distance during warmup - D-39`() {
+        val candidates = listOf(candidate("A", 50f, 50f), candidate("B", 150f, 50f), candidate("C", 250f, 50f))
+        
+        val ranked = OffsetModel().rankedCandidates(candidates, x = 80f, y = 50f)
+        
+        assertEquals(listOf("A", "B", "C"), ranked.map { it.first.id })
+    }
+    
+    @Test
+    fun `rankedCandidates orders by learned likelihood after warmup - D-39`() {
+        val model = OffsetModel()
+        val candidates = listOf(candidate("A", 50f, 50f), candidate("B", 150f, 50f))
+        // The user systematically taps ~30px to the right of the intended key centre (same setup as the
+        // "resolve compensates a systematic offset" test above).
+        repeat(10) { model.record("A", 50f, 50f, 80f, 50f) }
+        repeat(10) { model.record("B", 150f, 50f, 180f, 50f) }
+        
+        // A tap at x=105 lands geometrically inside B, but the runner-up under the learned model is still A.
+        val ranked = model.rankedCandidates(candidates, x = 105f, y = 50f)
+        
+        assertEquals(listOf("A", "B"), ranked.map { it.first.id })
+        // Scores are comparable and best-first.
+        assertTrue(ranked[0].second >= ranked[1].second)
+    }
+    
+    @Test
+    fun `rankedCandidates handles an empty candidate list - D-39`() {
+        assertTrue(OffsetModel().rankedCandidates(emptyList(), 0f, 0f).isEmpty())
+    }
+    
+    @Test
     fun `snapshot and restore round-trip the statistics`() {
         val source = OffsetModel()
         source.record("c:a", 0f, 0f, 3f, 4f, size = 0.25f)

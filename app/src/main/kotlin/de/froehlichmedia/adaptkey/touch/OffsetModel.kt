@@ -189,6 +189,32 @@ class OffsetModel(
         return best ?: geometric(candidates, x, y)
     }
     
+    /**
+     * Ranks every candidate for a tap, best (most likely) first, with a comparable score (D-39): the same
+     * scoring [resolve] uses internally - the compensated 2D-Gaussian log-likelihood once the model is
+     * warmed up, or the negated squared distance to the centre during warm-up (so "higher is better" holds
+     * in both regimes). Unlike [resolve], which only returns the single best match, this exposes the full
+     * ordering so a caller can find the *runner-up* - the key a tap could plausibly have meant instead of
+     * the one actually chosen - e.g. for raw-coordinate correction of an unknown word.
+     *
+     * @param candidates the keys to rank; may be empty
+     * @param x the raw tap x
+     * @param y the raw tap y
+     * @return [candidates] paired with their score, sorted best first
+     */
+    fun rankedCandidates(candidates: List<Candidate>, x: Float, y: Float): List<Pair<Candidate, Double>> {
+        if (totalSamples < warmupSamples) {
+            return candidates
+                .map { c ->
+                    val dx = (x - c.centerX).toDouble()
+                    val dy = (y - c.centerY).toDouble()
+                    c to -(dx * dx + dy * dy)
+                }
+                .sortedByDescending { it.second }
+        }
+        return candidates.map { it to logLikelihood(it, x, y) }.sortedByDescending { it.second }
+    }
+    
     /** @return a defensive copy of all per-key statistics, keyed by key id */
     fun snapshot(): Map<String, Stat> {
         return stats.mapValues { entry -> entry.value.copy() }

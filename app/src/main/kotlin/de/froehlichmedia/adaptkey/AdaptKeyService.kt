@@ -76,6 +76,7 @@ import de.froehlichmedia.adaptkey.settings.CalibrationActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
+import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
@@ -84,6 +85,7 @@ import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.TapAmbiguity
+import de.froehlichmedia.adaptkey.touch.TapPoint
 import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
 
 /**
@@ -186,6 +188,10 @@ class AdaptKeyService : InputMethodService() {
     
     private val composing = StringBuilder()
     private val composingFlags = ArrayList<TapAmbiguity>()
+    // D-39: the raw ACTION_DOWN tap for each composing character, in lockstep with composing/composingFlags
+    // (same index, mutated at every site that mutates composingFlags) - lets an unknown token be corrected
+    // from where the taps actually landed (T-02), not just the committed spelling.
+    private val composingTaps = ArrayList<TapPoint>()
     
     // G-05: a word-end Shift is pending — the first character has been provisionally toggled and the
     // next key decides the outcome (camelCase vs. keep). composingCaseLocked marks a token whose casing
@@ -318,7 +324,7 @@ class AdaptKeyService : InputMethodService() {
         
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
-        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, ambiguity -> handleKey(key, ambiguity) }
+        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, x, y, ambiguity -> handleKey(key, x, y, ambiguity) }
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
@@ -469,6 +475,7 @@ class AdaptKeyService : InputMethodService() {
         super.onStartInput(info, restarting)
         composing.setLength(0)
         composingFlags.clear()
+        composingTaps.clear()
         resetWordEndShift()
         pendingMergeChar = null
         pendingSuggestionSpace = false
@@ -510,6 +517,7 @@ class AdaptKeyService : InputMethodService() {
             currentInputConnection?.finishComposingText()
             composing.setLength(0)
             composingFlags.clear()
+            composingTaps.clear()
             pendingMergeChar = null
             resetWordEndShift()
             clearUndo()
@@ -655,7 +663,7 @@ class AdaptKeyService : InputMethodService() {
         OffsetStore.saveDetectedPattern(this, pattern)
     }
     
-    private fun handleKey(key: Key, ambiguity: AmbiguityResult) {
+    private fun handleKey(key: Key, x: Float, y: Float, ambiguity: AmbiguityResult) {
         val ic = currentInputConnection ?: return
         // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
         if (undoTyped != null) {
@@ -689,6 +697,8 @@ class AdaptKeyService : InputMethodService() {
                     composing.append(ch)
                     // T-05: retain this letter's space-ambiguity flag in step with the composing token (A-05).
                     composingFlags.add(ambiguity.kind)
+                    // D-39: retain the raw tap too, for a later raw-coordinate correction of an unknown word.
+                    composingTaps.add(TapPoint(x, y))
                     consumeShift()
                     updateComposing(ic)
                     refreshSuggestions()
@@ -968,6 +978,7 @@ class AdaptKeyService : InputMethodService() {
         if (composing.isNotEmpty()) {
             composing.setLength(0)
             composingFlags.clear()
+            composingTaps.clear()
             ic.setComposingText("", 1)
             ic.finishComposingText()
             clearSuggestions()
@@ -1006,6 +1017,9 @@ class AdaptKeyService : InputMethodService() {
         val deleted = composing.last()
         if (composingFlags.isNotEmpty()) {
             composingFlags.removeAt(composingFlags.size - 1)
+        }
+        if (composingTaps.isNotEmpty()) {
+            composingTaps.removeAt(composingTaps.size - 1)
         }
         composing.setLength(composing.length - 1)
         if (composing.isEmpty()) {
@@ -1154,9 +1168,17 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         
-        // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected
-        // language's autocorrect applies (A-01 enforced in provider).
-        val corrected = if (suppressAutocorrect) typed else provider.autocorrectFor(typed, previousWord) ?: typed
+        // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected language's
+        // autocorrect applies (A-01 enforced in provider). D-39: when the ordinary edit-distance autocorrect
+        // finds nothing, fall back to raw-coordinate correction - walk the token's actual raw taps (T-02) and
+        // see whether the geometrically next-most-plausible key at any one position (T-03) produces a known
+        // word. This recovers slips the static keyboard-adjacency map cannot see, since that map never looks
+        // at where the tap actually landed.
+        val corrected = if (suppressAutocorrect) {
+            typed
+        } else {
+            provider.autocorrectFor(typed, previousWord) ?: rawCoordinateCorrection(typed) ?: typed
+        }
         // §6 rule 6: a high-certainty tier-3 nominal proposal may lift an otherwise-lowercased word to
         // upper-case (never with the no-op backend, where lastCapProposal is null).
         val llmForcesUpper = HighCertaintyCapitalisation.forcesUpper(lastCapProposal, corrected)
@@ -1170,6 +1192,7 @@ class AdaptKeyService : InputMethodService() {
         ic.finishComposingText()
         composing.setLength(0)
         composingFlags.clear()
+        composingTaps.clear()
         ic.commitText(delimiter, 1)
         learnWord(finalWord)
         reinforceFromTier3(finalWord, tier3Result, contextWord, tier1KnewCorrected)
@@ -1187,6 +1210,28 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-39: raw-coordinate fallback correction, tried only once the ordinary edit-distance autocorrect has
+     * found nothing. Generates respellings of [typed] from where its composing taps actually landed (T-02),
+     * scored against the personal offset model (T-03), and returns the first one that is a known,
+     * non-blacklisted word - or null when none qualifies.
+     *
+     * @param typed the composing token as typed
+     * @return a raw-coordinate-derived correction, or null when there is none
+     */
+    private fun rawCoordinateCorrection(typed: String): String? {
+        // A-01: never override a word that is already valid (autocorrectFor enforces this too, but it
+        // returns null for a known word just like it does for "no correction found" - this fallback must
+        // not then reinterpret that as "try harder").
+        if (provider.isKnownWord(typed)) {
+            return null
+        }
+        val model = offsetModel ?: return null
+        val geometry = keyboardView?.charKeyGeometry() ?: return null
+        return RawCoordinateCorrection.respellings(typed, composingTaps, geometry, model)
+            .firstOrNull { provider.isKnownWord(it) }
+    }
+    
+    /**
      * Commits the composing token exactly as composed, followed by [delimiter] (G-05): no autocorrect,
      * no §6 capitalisation and no token repair. Used when the user fixed the token's casing explicitly
      * via a word-end Shift, which ranks as explicit input and must be preserved in both directions.
@@ -1197,6 +1242,7 @@ class AdaptKeyService : InputMethodService() {
         ic.finishComposingText()
         composing.setLength(0)
         composingFlags.clear()
+        composingTaps.clear()
         resetWordEndShift()
         ic.commitText(delimiter, 1)
         learnWord(word)
@@ -1215,6 +1261,7 @@ class AdaptKeyService : InputMethodService() {
         ic.finishComposingText()
         composing.setLength(0)
         composingFlags.clear()
+        composingTaps.clear()
         ic.deleteSurroundingText(1, 0)
         val cased = capitalisation.capitalise(merged, contextFor(merged))
         ic.commitText(cased + delimiter, 1)
@@ -1236,6 +1283,7 @@ class AdaptKeyService : InputMethodService() {
         ic.finishComposingText()
         composing.setLength(0)
         composingFlags.clear()
+        composingTaps.clear()
         val left = capitalisation.capitalise(split.left, contextFor(split.left))
         val right = capitalisation.capitalise(split.right, followingPartContext())
         val committed = left + " " + right
@@ -1489,6 +1537,7 @@ class AdaptKeyService : InputMethodService() {
                 ic.finishComposingText()
                 composing.setLength(0)
                 composingFlags.clear()
+                composingTaps.clear()
                 controller.declineAutocorrect()
                 // S-06: repeated verbatim confirmation is a learning signal (cf. B-03).
                 learnWord(typed)
@@ -1501,6 +1550,7 @@ class AdaptKeyService : InputMethodService() {
                 ic.commitText(word + " ", 1)
                 composing.setLength(0)
                 composingFlags.clear()
+                composingTaps.clear()
                 learnWord(word)
                 // D-43: after accepting a bar word, predict the next one so the flow continues.
                 showNextWordPredictions()

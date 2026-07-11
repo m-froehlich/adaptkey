@@ -30,10 +30,28 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **489 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.27** (only the third digit bumps per APK; versionCode 97). `origin/main`
-  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.27, v0.7.26/v0.7.27
+- Unit tests: **497 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.28** (only the third digit bumps per APK; versionCode 98). `origin/main`
+  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.28, v0.7.26…v0.7.28
   unpushed.
+- **D-39 DONE (v0.7.28, the USP):** raw-coordinate per-character correction. New `TapPoint(x,y)`
+  (`touch` package) retains each composing character's raw `ACTION_DOWN` (T-02); `AdaptKeyService` now keeps
+  a `composingTaps` list in lockstep with `composing`/`composingFlags` (mutated at every site that mutates
+  `composingFlags` - clear/add/removeAt). New `OffsetModel.rankedCandidates(candidates, x, y)` exposes the
+  model's full best-first ranking with a comparable score (log-likelihood after warmup, negated squared
+  distance during warmup) - a pure addition alongside `resolve()`, which still only returns the single best
+  match. New pure `RawCoordinateCorrection.respellings(token, taps, keyCandidates, offsetModel)` (`suggestion`
+  package): for each character position, finds the *runner-up* key under the tap's actual raw position (not
+  the static QWERTZ adjacency map D-28/D-38/D-41 already use) and proposes a one-position substitution,
+  returning all respellings ordered by how close the runner-up came to beating the key that was actually
+  chosen. Wired into `finalizeAndCommit` as a **fallback**: only tried when the token is not already a known
+  word (A-01 preserved explicitly) and the ordinary edit-distance `autocorrectFor` found nothing; the first
+  respelling that is a known, non-blacklisted word wins. This recovers slips where the tap was genuinely
+  ambiguous between two keys and the wrong one was picked - something the static adjacency map cannot see,
+  since it never looks at where the tap actually landed. Heavily garbled tokens (many typos at once) are left
+  to tier-3, unchanged, per spec. 12 new unit tests (`OffsetModelTest`, `RawCoordinateCorrectionTest`); no
+  service-level (Robolectric) test added - `rawCoordinateCorrection()` in `AdaptKeyService` is thin glue over
+  the two pure/tested units, consistent with how the rest of the correction pipeline is tested.
 - **Spec §17 — popup-overlap + paste + Enter (v0.7.27):** **D-53 addendum** popups now draw *above* the key
   and overlap the suggestion bar instead of flipping below - the service sets `clipChildren=false` /
   `clipToPadding=false` on the keyboard container + root so the keyboard's popup (drawn after the bar) is not
