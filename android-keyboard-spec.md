@@ -679,3 +679,43 @@ class case from D-63 and must be fixed together with it.
 The key-press vibration (D-06 / D-34) definitely does not fire on device, despite the earlier fixes. Low
 priority for now, but the haptic path needs to be re-investigated (permission, VibratorManager vs Vibrator,
 amplitude, or the toggle wiring).
+
+## §18 - Device-Feedback Round 7 (v0.7.27 testing)
+
+### D-67 - Word Splitting Fires Too Eagerly; Must Require High Confidence (Bug)
+`kleiben` (a typo of `kleinen`) was split into `klei` + `en` instead of being auto-corrected to `kleinen`.
+Neither `klei` nor `en` are words an ordinary user would recognise as legitimate splits, yet the split still
+won. Root cause: the A-05 "drop a character" split path ([TokenRepair.trySplit], the branch keyed off
+[TokenRepair.OVER_SPACE_LETTERS]) accepts a split purely because both halves are *technically* known
+dictionary words - it has no bigram/frequency confidence gate at all (unlike the "fully missed space" branch,
+which does require a minimum bigram count). A split must only win when its confidence is clearly higher than
+the best available whole-word correction - in particular, a split must never beat a low-cost (single adjacent-
+key edit or better) autocorrect candidate for the un-split token. `kleiben` → `kleinen` is exactly such a case
+(`b` and `n` are adjacent keys). Generalise the D-48 "a fold match beats a split" veto: before accepting any
+split, check whether the token already has a high-confidence single-word correction (low edit cost, e.g. a
+proximity-aware cost of 0-1, and/or reasonable frequency) and prefer that over splitting.
+
+### D-68 - Rethink Calibration: Ask the Typing Pattern Directly, Refine Only Slowly Over Time (Big Idea, Deferred)
+The current three-sentence calibration (T-03/T-04) misclassified the user's typing pattern outright ("right
+index finger" for someone who is not), which visibly skews the touch zones (e.g. `j`'s effective zone drifting
+half onto `i` above it) and is a plausible cause of many reported mis-taps. Proposal to explore later: replace
+automatic calibration with an explicit, simple onboarding question - "how do you type?" (two-thumb, left-index,
+right-index, etc.) - and derive sensible **initial** touch zones directly from the chosen pattern, without
+relying on a noisy few-sentence sample:
+- For a one-handed/one-finger pattern (e.g. left index finger), keys in that hand's home third of the keyboard
+  get a tight, centred zone; zones widen and smear away from the centre (toward the far side of the keyboard)
+  the further a key is from that third, reflecting the increasing awkwardness of the reach. Keys at the far
+  edge from the typing hand may even have their effective zone extend noticeably into the visually adjacent
+  key's territory.
+- The mirrored shape applies to the opposite-hand / opposite-finger patterns, and a thumb pattern gets its own
+  (narrower, more central) shape.
+- The "two thumbs" pattern is the exception: zones stay fairly centred/tight on every key, since a two-thumb
+  typist reaches across the whole width symmetrically.
+- The keyboard may still *refine* these initial zones from real usage over time (as today), but this drift
+  must be made **much more sluggish** than currently - a single mistyped tap must never noticeably shift a
+  zone; only a sustained, consistent pattern over many taps should move it, and only gradually.
+
+This is a substantial redesign of the T-03/T-04 onboarding + calibration flow and is explicitly **not** meant
+to be implemented immediately - captured here as the guiding idea; the concrete approach (exact shape
+functions, migration/reset story for existing calibrations, whether calibration disappears entirely or
+becomes an optional refinement step) needs its own design pass later.
