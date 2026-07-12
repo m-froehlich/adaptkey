@@ -119,15 +119,11 @@
     <string name="reset_learning_done">Erlernung &amp; Kalibrierung zurückgesetzt.</string>
 
     <!-- Typing pattern detection (T-04). -->
-    <string name="cat_typing_pattern">Tippmuster (T-04)</string>
-    <string name="t04_detected_title">Tippmuster</string>
-    <string name="t04_detected_summary">Tippen zum Festlegen, wie du tippst – legt realistische Trefferzonen an.</string>
     <string name="t04_pattern_left_index">Linker Zeigefinger</string>
     <string name="t04_pattern_right_index">Rechter Zeigefinger</string>
     <string name="t04_pattern_left_thumb">Linker Daumen</string>
     <string name="t04_pattern_right_thumb">Rechter Daumen</string>
     <string name="t04_pattern_two_thumbs">Beide Daumen</string>
-    <string name="t04_pattern_two_thumbs_recommended">Beide Daumen (empfohlen)</string>
     <string name="t04_pattern_unknown">Noch nicht festgelegt</string>
 
     <!-- Calibration / onboarding (K-01). -->

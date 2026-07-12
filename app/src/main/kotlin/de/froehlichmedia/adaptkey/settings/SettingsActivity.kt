@@ -14,7 +14,6 @@ import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.onboarding.OnboardingStore
 import de.froehlichmedia.adaptkey.touch.OffsetStore
-import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * Settings entry point for the configurable parameters (C-01 … C-09).
@@ -63,9 +62,6 @@ class SettingsActivity : AppCompatActivity() {
         
         override fun onResume() {
             super.onResume()
-            // T-04 is re-derived by the running keyboard; reflect the latest detection on each return.
-            val pattern = OffsetStore.loadDetectedPattern(requireContext())
-            findPreference<Preference>("t04_detected")?.setSummary(patternLabel(pattern))
             maybeOfferCalibration()
         }
         
@@ -111,21 +107,9 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     OffsetStore.clear(requireContext())
                     Toast.makeText(requireContext(), R.string.reset_learning_done, Toast.LENGTH_SHORT).show()
-                    findPreference<Preference>("t04_detected")?.setSummary(patternLabel(OffsetStore.loadDetectedPattern(requireContext())))
                 }
                 .setNegativeButton(android.R.string.cancel, null)
                 .show()
-        }
-        
-        private fun patternLabel(pattern: TypingPattern): Int {
-            return when (pattern) {
-                TypingPattern.LEFT_INDEX_FINGER -> R.string.t04_pattern_left_index
-                TypingPattern.RIGHT_INDEX_FINGER -> R.string.t04_pattern_right_index
-                TypingPattern.LEFT_THUMB -> R.string.t04_pattern_left_thumb
-                TypingPattern.RIGHT_THUMB -> R.string.t04_pattern_right_thumb
-                TypingPattern.TWO_THUMBS -> R.string.t04_pattern_two_thumbs
-                TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
-            }
         }
         
         companion object {

@@ -119,15 +119,11 @@
     <string name="reset_learning_done">Learning &amp; calibration reset.</string>
 
     <!-- Typing pattern detection (T-04). -->
-    <string name="cat_typing_pattern">Typing pattern (T-04)</string>
-    <string name="t04_detected_title">Typing pattern</string>
-    <string name="t04_detected_summary">Tap to set how you type — used to set up realistic touch zones.</string>
     <string name="t04_pattern_left_index">Left index finger</string>
     <string name="t04_pattern_right_index">Right index finger</string>
     <string name="t04_pattern_left_thumb">Left thumb</string>
     <string name="t04_pattern_right_thumb">Right thumb</string>
     <string name="t04_pattern_two_thumbs">Both thumbs</string>
-    <string name="t04_pattern_two_thumbs_recommended">Both thumbs (recommended)</string>
     <string name="t04_pattern_unknown">Not set yet</string>
 
     <!-- Calibration / onboarding (K-01). -->

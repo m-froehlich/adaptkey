@@ -13,9 +13,10 @@
         android:layout_marginTop="16dp"
         android:text="@string/k01_intro" />
 
-    <!-- D-73: ordered by real-world prevalence - both thumbs is by far the most common pattern, so it
-         leads and doubles as the skip default; the author's own (uncommon) left-index-finger pattern is
-         deliberately last. -->
+    <!-- D-73 / D-77: ordered by real-world prevalence - both thumbs is by far the most common pattern, so
+         it leads and doubles as the silent skip default (no "(recommended)" label - not useful to someone
+         who types differently, and anyone who does just picks their own pattern); the author's own
+         (uncommon) left-index-finger pattern is deliberately last. -->
     <Button
         android:id="@+id/calibration_two_thumbs"
         android:layout_width="match_parent"
@@ -23,7 +24,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/t04_pattern_two_thumbs_recommended" />
+        android:text="@string/t04_pattern_two_thumbs" />
 
     <Button
         android:id="@+id/calibration_right_thumb"

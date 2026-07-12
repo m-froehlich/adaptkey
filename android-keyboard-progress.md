@@ -30,10 +30,36 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **503 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.34** (only the third digit bumps per APK; versionCode 104). `origin/main`
-  is at **v0.7.31** (user pushed it, then reported v0.7.32/v0.7.33 device feedback without pushing them
-  first); working tree = v0.7.34, v0.7.32…v0.7.34 unpushed - awaiting a fresh device round.
+- Unit tests: **504 green** (`:app:testDebugUnitTest`, incl. 12 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.35** (only the third digit bumps per APK; versionCode 105). `origin/main`
+  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.35 device feedback without pushing them
+  first); working tree = v0.7.35, v0.7.32…v0.7.35 unpushed - awaiting a fresh device round.
+- **§21 D-77 / D-78 DONE, D-74 follow-up INVESTIGATED BUT UNRESOLVED (v0.7.35):**
+  - **D-77**: removed the "(recommended)" suffix from the Two Thumbs calibration button - "helps nobody,
+    actively unhelpful for anyone whose real pattern differs"; the silent skip-default (D-73) already covers
+    the intent. Plain "Both thumbs" label again; the now-unused `t04_pattern_two_thumbs_recommended` string
+    (all 3 locales) removed.
+  - **D-78** (cleanup, found while investigating D-74's follow-up below): the settings screen had two
+    separate "Typing pattern" rows - the real one (`k01_calibration`, opens `CalibrationActivity`) and a
+    second, `t04_detected`, permanently `selectable="false"` with no click handler at all, i.e. fully inert,
+    left over from before D-68's calibration rewrite. Removed entirely (preference, its now-empty
+    "Typing pattern (T-04)" category, the `SettingsActivity` code keeping its summary in sync via
+    `patternLabel()`, the now-unused `TypingPattern` import, and the 3 now-dead strings) - `k01_calibration`
+    already covers it.
+  - **D-74 follow-up - root cause still not found**: user reports the touch-zone mask still shows stale
+    data after a pattern switch, checked via Settings → "Show typing pattern" (D-24). Direct questioning
+    established the *entire* repro happens inside the Settings app - pick pattern → dialog OK → Settings →
+    "Show typing pattern" - **with no app switch and no live keyboard/IME involvement anywhere in the
+    sequence**. This rules out D-74's fix as the relevant mechanism here (it only guards
+    `AdaptKeyService`'s own long-lived in-memory model against a *service*-side stale save; the IME is never
+    in this loop at all). Wrote a new regression test
+    (`OffsetStoreRoboTest.\`switching pattern fully replaces previously learned data\``) that reproduces
+    `CalibrationActivity.persistPattern()`'s exact save sequence - including seeding an old model with 500
+    *real recorded taps* first (not just a stale seed) to match "previously learned zones" - followed by
+    `TouchModelActivity`'s exact load; **it passes**, proving the persist/load round trip is correct at the
+    store layer. The bug, if it's still there, is somewhere neither code review nor this test have reached -
+    told the user this and asked for a more specific repro (first switch of a session vs. a later one; which
+    exact key still looks wrong).
 - **§20 D-76 DONE (v0.7.34, D-58 follow-up, both bugs - device-verification pending):**
   `AdaptKeyboardView.switchPage()` had two bugs in the D-58 page-slide:
   - **Backwards direction**: `slideSign` was assigned the wrong sign - a forward transition slid the new

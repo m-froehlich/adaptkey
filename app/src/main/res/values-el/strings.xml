@@ -119,15 +119,11 @@
     <string name="reset_learning_done">Η εκμάθηση &amp; η βαθμονόμηση επαναφέρθηκαν.</string>
 
     <!-- Typing pattern detection (T-04). -->
-    <string name="cat_typing_pattern">Μοτίβο πληκτρολόγησης (T-04)</string>
-    <string name="t04_detected_title">Μοτίβο πληκτρολόγησης</string>
-    <string name="t04_detected_summary">Πάτησε για να ορίσεις πώς πληκτρολογείς — ρυθμίζει ρεαλιστικές ζώνες αφής.</string>
     <string name="t04_pattern_left_index">Αριστερός δείκτης</string>
     <string name="t04_pattern_right_index">Δεξιός δείκτης</string>
     <string name="t04_pattern_left_thumb">Αριστερός αντίχειρας</string>
     <string name="t04_pattern_right_thumb">Δεξιός αντίχειρας</string>
     <string name="t04_pattern_two_thumbs">Και οι δύο αντίχειρες</string>
-    <string name="t04_pattern_two_thumbs_recommended">Και οι δύο αντίχειρες (προτείνεται)</string>
     <string name="t04_pattern_unknown">Δεν έχει οριστεί ακόμη</string>
 
     <!-- Calibration / onboarding (K-01). -->

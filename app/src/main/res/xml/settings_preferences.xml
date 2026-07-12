@@ -275,14 +275,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_typing_pattern">
-
-        <Preference
-            android:key="t04_detected"
-            android:title="@string/t04_detected_title"
-            android:summary="@string/t04_detected_summary"
-            android:selectable="false" />
-
-    </PreferenceCategory>
-
 </PreferenceScreen>

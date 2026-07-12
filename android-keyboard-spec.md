@@ -802,3 +802,33 @@ Two bugs in the D-58 slide animation:
   calling `requestLayout()` immediately on a page switch resizes the whole view mid-slide - everything below
   the row-count difference, most visibly the bottom-most space row, visibly jumps out from under the
   still-running animation. The resize must be deferred until the slide animation completes.
+
+## §21 - Device-Feedback Round 10 (v0.7.34 testing, D-73/D-74 follow-up)
+
+### D-77 - Remove the "(Recommended)" Label From the Two-Thumbs Button
+It helps nobody and is actively unhelpful for anyone whose real pattern is different (e.g. a left-handed
+single-finger typist) - they still have to read every option regardless. Silently defaulting to "both
+thumbs" when the picker is skipped (D-73) already covers the intent for the ~90% majority; anyone who types
+differently makes their own explicit choice anyway. Plain "Both thumbs" label, no suffix.
+
+### D-78 - Dead Duplicate "Typing Pattern" Settings Row (Cleanup, Found During D-74 Follow-Up Investigation)
+The settings screen had two separate "Typing pattern" rows in different categories: `k01_calibration`
+(Calibration category), properly wired to open [CalibrationActivity] and the one users actually use, and
+`t04_detected` (a leftover "Typing pattern (T-04)" category), `android:selectable="false"` with no click
+handler at all - inert, and confusingly showed the same title as the working row. Removed entirely
+(preference, its now-empty category, the `SettingsActivity` code that kept its summary in sync, and the
+now-unused strings) rather than wired up, since `k01_calibration` already does the job.
+
+### D-74 Follow-Up - Stale Touch-Zone Mask After a Pattern Switch: Root Cause Still Not Found
+Re-investigated after the D-74 fix (service-side stale-save guard) did not resolve it. Established via
+direct questioning that the reported repro is entirely within the Settings app (Settings → "Typing pattern"
+→ pick a pattern → dialog OK → Settings → "Show typing pattern"/D-24), with **no app switch and no live
+keyboard/IME involvement at any point** - meaning D-74's fix (which only guards the long-lived `AdaptKeyService`
+instance) cannot be the relevant mechanism for this specific repro, since the IME is never in the loop. A new
+regression test ([OffsetStoreRoboTest]) reproduces the exact `CalibrationActivity.persistPattern()` →
+`TouchModelActivity` load sequence, seeding a model with substantial prior *learned* data (500 recorded taps,
+not just a previous seed) before switching pattern, and passes: the persisted model is provably fully
+replaced and the fresh load reflects it, not the old data. The bug, if still present, must be somewhere
+neither direct code review nor this test have reached yet - needs a more specific repro (e.g. does it
+reproduce on the very first pattern switch of a session, or only on a second/later switch; which exact key
+still looks wrong and how).
