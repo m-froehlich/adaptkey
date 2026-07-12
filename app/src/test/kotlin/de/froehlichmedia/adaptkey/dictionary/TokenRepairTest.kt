@@ -76,6 +76,19 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `a missed-space split outscores a lower-quality drop candidate (immernoch to immer noch)`() {
+        store.putWord(WordEntry("immer", frequency = 500L))
+        store.putWord(WordEntry("noch", frequency = 500L))
+        // "och" is also a known word, so the drop-a-character path ("immer" + "och", dropping the
+        // over-space-letter 'n') is a technically valid candidate too - but it must lose to the missed-space
+        // candidate ("immer" + "noch") once both are compared, not win merely by being found first.
+        store.putWord(WordEntry("och", frequency = 5L))
+        store.putBigram("immer", "noch", 200L)
+        
+        assertEquals(SplitResult("immer", "noch"), repair.trySplit("immernoch", emptySet()))
+    }
+    
+    @Test
     fun `a spurious space is merged back into a known word`() {
         val merged = repair.tryMerge(previousWord = "ich", inferredChar = 'b', token = "ald")
         assertEquals("bald", merged)

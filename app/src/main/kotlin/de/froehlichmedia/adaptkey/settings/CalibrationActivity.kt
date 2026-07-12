@@ -56,14 +56,25 @@ class CalibrationActivity : AppCompatActivity() {
         }
         
         keyboard = findViewById(R.id.calibration_keyboard)
-        keyboard.showNumberRow = false
+        // D-72: the number row must be present here too, or its keys are simply missing from
+        // charKeyGeometry() below and PatternSeed never seeds them at all - the live keyboard shows the
+        // number row by default (C-09), so most users would otherwise get zero digit-row calibration.
+        keyboard.showNumberRow = true
         
-        bindPatternButton(R.id.calibration_left_index, TypingPattern.LEFT_INDEX_FINGER)
-        bindPatternButton(R.id.calibration_right_index, TypingPattern.RIGHT_INDEX_FINGER)
-        bindPatternButton(R.id.calibration_left_thumb, TypingPattern.LEFT_THUMB)
-        bindPatternButton(R.id.calibration_right_thumb, TypingPattern.RIGHT_THUMB)
+        // D-73: ordered by real-world prevalence, matching the layout - both thumbs leads and is the
+        // skip default.
         bindPatternButton(R.id.calibration_two_thumbs, TypingPattern.TWO_THUMBS)
-        findViewById<Button>(R.id.calibration_skip).setOnClickListener { finish() }
+        bindPatternButton(R.id.calibration_right_thumb, TypingPattern.RIGHT_THUMB)
+        bindPatternButton(R.id.calibration_left_thumb, TypingPattern.LEFT_THUMB)
+        bindPatternButton(R.id.calibration_right_index, TypingPattern.RIGHT_INDEX_FINGER)
+        bindPatternButton(R.id.calibration_left_index, TypingPattern.LEFT_INDEX_FINGER)
+        // D-73: skipping is not "do nothing" - by far the most common pattern (both thumbs) is applied
+        // quietly (no feedback dialog, unlike an explicit choice) so an undecided user still ends up with
+        // sensible touch zones instead of an unseeded, purely geometric model.
+        findViewById<Button>(R.id.calibration_skip).setOnClickListener {
+            persistPattern(TypingPattern.TWO_THUMBS)
+            finish()
+        }
     }
     
     private fun bindPatternButton(id: Int, pattern: TypingPattern) {
@@ -71,11 +82,21 @@ class CalibrationActivity : AppCompatActivity() {
     }
     
     /**
+     * D-68: seeds sensible initial touch zones straight from [pattern] and shows the confirmation dialog.
+     * See [persistPattern] for the actual seeding.
+     */
+    private fun applyPattern(pattern: TypingPattern) {
+        persistPattern(pattern)
+        showFeedback(pattern)
+    }
+    
+    /**
      * D-68: seeds sensible initial touch zones straight from the chosen pattern, replacing (not merging
      * with) any previously learned zones - a genuine pattern change describes a different hand/finger
      * geometry, so old data would only fight the new one. Also presets the D-16 key-enlargement default.
+     * Split out from [applyPattern] so D-73's silent skip-default can reuse it without the feedback dialog.
      */
-    private fun applyPattern(pattern: TypingPattern) {
+    private fun persistPattern(pattern: TypingPattern) {
         val geometry = keyboard.charKeyGeometry()
         val model = OffsetModel()
         model.restore(PatternSeed.seed(pattern, geometry))
@@ -84,7 +105,6 @@ class CalibrationActivity : AppCompatActivity() {
         // D-16: preset the default key enlargement from the chosen hand (backspace for a left typist, shift
         // for a right typist); the user can still adjust it in the settings.
         SettingsStore.applyPatternEnlargement(this, pattern)
-        showFeedback(pattern)
     }
     
     private fun showFeedback(pattern: TypingPattern) {

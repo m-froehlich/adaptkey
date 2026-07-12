@@ -10,10 +10,11 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.media.AudioManager
-import android.media.ToneGenerator
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Build
 import android.os.Handler
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -343,13 +344,26 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val fieldSwipeThresholdPx = dp(110f)
     private val spaceSwipeThresholdPx = dp(44f)
     
-    // D-05: lazily resolved so the AudioManager is only fetched when the sound feedback is actually used.
-    // D-05/D-06 (§14 fix): the toggles must be authoritative, so the feedback bypasses the system
-    // "touch sounds"/"touch vibration" settings that silenced AudioManager.playSoundEffect and
-    // performHapticFeedback on device. Sound = a short ToneGenerator click; haptic = the Vibrator directly.
-    private val toneGenerator by lazy {
-        runCatching { ToneGenerator(AudioManager.STREAM_SYSTEM, TONE_VOLUME) }.getOrNull()
+    // D-05: lazily resolved so SoundPool is only built when the sound feedback is actually used. D-05/D-06
+    // (§14 fix): the toggles must be authoritative, so the feedback bypasses the system "touch sounds" /
+    // "touch vibration" settings that silenced AudioManager.playSoundEffect and performHapticFeedback on
+    // device. Sound is now a short, bundled typewriter-click sample (D-70) instead of a synthesised
+    // ToneGenerator DTMF-style beep, which cannot render anything but a pure/dual sine tone; haptic is the
+    // Vibrator directly (below).
+    private val soundPool by lazy {
+        runCatching {
+            val attributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+            SoundPool.Builder().setMaxStreams(SOUND_MAX_STREAMS).setAudioAttributes(attributes).build()
+        }.getOrNull()
     }
+    
+    // D-70: SoundPool.load() decodes off-thread; a key pressed before it finishes must not crash or play
+    // garbage, so playback is gated on this flag rather than assuming the id is ready once loaded() returns.
+    private var clickSoundId = 0
+    private var clickSoundLoaded = false
     // D-66: Context.getSystemService(Vibrator::class.java) is deprecated from API 31 (S) onward in favour
     // of VibratorManager.getDefaultVibrator() - on some OEM builds targeting the newer API the legacy path
     // silently produced no vibration at all, which matches the on-device symptom (D-06/D-34's amplitude and
@@ -848,15 +862,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-05 / D-06: plays the optional key-press feedback, each gated by its own setting (both default
-     * off). Both go straight to hardware - a ToneGenerator click and a direct [Vibrator.vibrate] call -
-     * bypassing the system "touch sounds" / "touch vibration" toggles that silenced
-     * [AudioManager.playSoundEffect] / [performHapticFeedback] on device (D-06/D-34), which is why the
-     * app declares the VIBRATE permission itself instead of relying on the window-routed haptic API.
+     * off). Both go straight to hardware - a bundled sample via [SoundPool] and a direct [Vibrator.vibrate]
+     * call - bypassing the system "touch sounds" / "touch vibration" toggles that silenced
+     * {@code android.media.AudioManager.playSoundEffect} / [performHapticFeedback] on device (D-06/D-34),
+     * which is why the app declares the VIBRATE permission itself instead of relying on the window-routed
+     * haptic API.
      */
     private fun playKeyFeedback() {
         if (soundEnabled) {
-            // A short click tone on the system stream - audible regardless of the system touch-sound setting.
-            runCatching { toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, TONE_DURATION_MS) }
+            ensureClickSoundLoaded()
+            if (clickSoundLoaded) {
+                runCatching { soundPool?.play(clickSoundId, CLICK_VOLUME, CLICK_VOLUME, 1, 0, 1f) }
+            }
         }
         if (hapticsEnabled) {
             // D-66: wrapped like the tone generator above - a SecurityException or vendor-specific failure
@@ -864,10 +881,41 @@ class AdaptKeyboardView @JvmOverloads constructor(
             runCatching {
                 val v = vibrator
                 if (v != null && v.hasVibrator()) {
-                    v.vibrate(VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE))
+                    val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+                    // D-75 (D-66 still not firing on device): a plain vibrate(VibrationEffect) with no
+                    // attributes falls into an unclassified usage bucket that some OEM vibration-intensity
+                    // settings scale to zero independently of the (already-bypassed) "touch vibration"
+                    // toggle. USAGE_TOUCH is the category Android itself documents for on-screen-keyboard-
+                    // style UI feedback, so it is explicitly requested wherever available (API 33+;
+                    // VibrationAttributes does not exist below that).
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
+                    } else {
+                        v.vibrate(effect)
+                    }
                 }
             }
         }
+    }
+    
+    /**
+     * D-70: kicks off the (idempotent, async) decode of the bundled click sample the first time sound
+     * feedback is actually used, rather than eagerly in the constructor - most sessions never enable it.
+     * [clickSoundLoaded] only flips once [SoundPool.setOnLoadCompleteListener] confirms the sample is
+     * actually ready, so a key pressed in the brief window before that just stays silent instead of risking
+     * a play() call on a not-yet-decoded sample.
+     */
+    private fun ensureClickSoundLoaded() {
+        val pool = soundPool ?: return
+        if (clickSoundId != 0) {
+            return
+        }
+        pool.setOnLoadCompleteListener { _, sampleId, status ->
+            if (status == 0 && sampleId == clickSoundId) {
+                clickSoundLoaded = true
+            }
+        }
+        clickSoundId = runCatching { pool.load(context, R.raw.key_click, 1) }.getOrDefault(0)
     }
     
     /**
@@ -1020,8 +1068,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        // D-05: release the tone generator's audio resources when the view goes away.
-        runCatching { toneGenerator?.release() }
+        // D-05 / D-70: release SoundPool's decoded sample and native resources when the view goes away.
+        runCatching { soundPool?.release() }
         // D-58: an in-flight page-slide must not keep animating (or later invalidate()) a detached view.
         slideAnimator?.cancel()
     }
@@ -1031,10 +1079,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
         private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
         
-        // D-05: key-click tone volume (0-100) and duration; D-06: haptic pulse duration (D-34: long enough
-        // to actually be felt - a very short pulse was imperceptible).
-        private const val TONE_VOLUME = 70
-        private const val TONE_DURATION_MS = 40
+        // D-05 / D-70: key-click sample playback volume (SoundPool's 0f..1f linear range) and concurrent
+        // stream budget (an accidental rapid multi-touch must not drop/queue clicks awkwardly). D-06: haptic
+        // pulse duration (D-34: long enough to actually be felt - a very short pulse was imperceptible).
+        private const val CLICK_VOLUME = 0.9f
+        private const val SOUND_MAX_STREAMS = 4
         private const val HAPTIC_DURATION_MS = 40L
         
         // D-57: the horizontal page swipe needs 15% less travel; the space-bar language swipe needs 15% more.

@@ -13,20 +13,20 @@ package de.froehlichmedia.adaptkey.touch
  */
 enum class TypingPattern {
     
-    /** Typing with the left index finger only. */
-    LEFT_INDEX_FINGER,
-    
-    /** Typing with the right index finger only. */
-    RIGHT_INDEX_FINGER,
-    
-    /** One-handed typing with the left thumb (phone held in the left hand). */
-    LEFT_THUMB,
+    /** Two-handed typing with both thumbs - by far the most common pattern (D-73). */
+    TWO_THUMBS,
     
     /** One-handed typing with the right thumb (phone held in the right hand). */
     RIGHT_THUMB,
     
-    /** Two-handed typing with both thumbs. */
-    TWO_THUMBS,
+    /** One-handed typing with the left thumb (phone held in the left hand). */
+    LEFT_THUMB,
+    
+    /** Typing with the right index finger only. */
+    RIGHT_INDEX_FINGER,
+    
+    /** Typing with the left index finger only. */
+    LEFT_INDEX_FINGER,
     
     /** Not chosen yet. */
     UNKNOWN

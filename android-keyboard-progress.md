@@ -30,10 +30,65 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **498 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.32** (only the third digit bumps per APK; versionCode 102). `origin/main`
-  advanced to **v0.7.31** (user pushed it); working tree = v0.7.32, unpushed - awaiting a fresh device
-  round covering this batch plus v0.7.31.
+- Unit tests: **503 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.33** (only the third digit bumps per APK; versionCode 103). `origin/main`
+  is at **v0.7.31** (user pushed it, then reported v0.7.32 device feedback without pushing v0.7.32 first);
+  working tree = v0.7.33, v0.7.32 + v0.7.33 unpushed - awaiting a fresh device round.
+- **§19 D-69…D-75 DONE (v0.7.33, round-8 device feedback - device-verification pending):**
+  - **D-69** (autocorrect bug, "immernoch" → "immer och" instead of "immer noch"): `TokenRepair.trySplit`'s
+    "drop a character" strategy returned unconditionally whenever it found any candidate at all, without
+    ever trying (or comparing against) the "fully missed space" strategy - `n` sits over the space bar, so
+    "immer"+"och" satisfied the drop path and short-circuited before "immer"+"noch" (found by the
+    missed-space path, an extremely strong bigram) was even considered. Fixed by evaluating both strategies
+    and letting the single best-scoring candidate across both win, instead of the drop path having
+    unconditional priority. Distinct from D-67 (no high-confidence single-word correction exists for
+    "immernoch", so that veto doesn't apply here) - a new failure mode in the same split pipeline.
+  - **D-70** (key sound is a digital beep, should read as a typewriter): `ToneGenerator` can only render a
+    pure/dual sine DTMF-style tone, so no amount of tone-constant tweaking could ever sound mechanical.
+    Replaced with a short (~45ms) synthesised click sample (`res/raw/key_click.wav` - broadband noise burst
+    plus two fast-decaying resonant partials around 2.2-3.8kHz, generated with a small Python script, not
+    sourced/licensed audio) played via `SoundPool` (async-loaded on first use, released in
+    `onDetachedFromWindow`) instead of `ToneGenerator`.
+  - **D-71** (PatternSeed direction bias): D-68 deliberately left the systematic-offset *direction* at zero
+    ("a personal habit with no evidence to seed from"); on reflection this was the wrong default for a
+    one-sided pattern specifically - reaching for a far key is a fixed-pivot arc that physically tends to
+    undershoot the farther it reaches, which is closer to a physical constant than a personal habit.
+    `PatternSeed.shapeFor()` now also seeds `meanDx` (growing with reach, pointed back towards home) and,
+    for a thumb reaching the top row, `meanDy` (pointed down towards the home row) - on top of the existing
+    spread widening, which is unchanged. Two-thumb typing still gets no directional bias, matching its flat
+    spread. New `Shape` data class bundles all four seeded quantities; 5 new/replaced unit tests.
+  - **D-72** (number row missing from calibration seeding, bug): `CalibrationActivity`'s embedded preview
+    keyboard had `showNumberRow = false`, so the number row's keys never appeared in the
+    `charKeyGeometry()` list handed to `PatternSeed.seed()` at all - not a deliberate special-case, just an
+    oversight, since the live keyboard shows the number row by default (C-09). Now `true`; no PatternSeed
+    changes were needed since its shape formula is already purely geometric per key.
+  - **D-73** (typing-pattern reorder + skip-defaults-to-two-thumbs): `TypingPattern` enum and the
+    calibration screen's button order are now Both Thumbs, Right Thumb, Left Thumb, Right Index Finger,
+    Left Index Finger (by real-world prevalence, author's own left-index-finger pattern deliberately last).
+    The "Both Thumbs" button label also gains a "(recommended)" suffix. `CalibrationActivity.applyPattern()`
+    was split into `persistPattern()` (the seeding side effects) + the feedback dialog, so the Skip button
+    can now call `persistPattern(TWO_THUMBS)` directly (no dialog) instead of doing nothing - skipping no
+    longer leaves the model unseeded.
+  - **D-74** (stale touch-zone mask after a pattern switch, bug): root cause was **not** in
+    `TouchModelActivity` (which does always reload fresh on `onCreate`) but in the long-lived
+    `AdaptKeyService`: it holds its own in-memory `offsetModel`, only refreshed when a genuinely new field
+    is focused (`reloadOffsetModel()`); if the calibration screen replaces the persisted model on disk while
+    the service sits resident without refocusing a field in between, the service's next `onFinishInput` /
+    `onDestroy` save silently clobbered the fresh calibration with its stale in-memory copy. New
+    `offsetModelPattern` field tracks which pattern the held model was loaded under; new
+    `persistOffsetModel()` (replacing both direct `OffsetStore.save()` call sites) checks whether the
+    persisted pattern still matches before saving, and adopts the fresh model instead of saving over it when
+    it doesn't.
+  - **D-75** (vibration still doesn't fire, D-66 follow-up): the D-66 VibratorManager migration alone didn't
+    fix it. Further suspect, per the spec's own list of leads: a plain `vibrate(VibrationEffect)` call with
+    no usage attributes falls into an unclassified vibration category some OEM vibration-intensity settings
+    scale to zero, independently of the (already-bypassed) "touch vibration" toggle -
+    `VibrationAttributes.USAGE_TOUCH` (API 33+, Android's own documented category for on-screen-keyboard UI
+    feedback) is now requested explicitly where available. **Not confirmed working** - this may turn out to
+    be a device/OS-level restriction outside the app's control; needs another device round.
+  - No Robolectric/service-level tests added for D-72/D-73/D-74/D-75 (Android view/service/hardware glue,
+    consistent with how this layer is tested elsewhere - see D-39); D-69 and D-71 are pure logic with full
+    unit-test coverage.
 - **§17 D-64 / D-66 DONE (v0.7.32, both bugs - device-verification pending):**
   - **D-64** (suggestion-bar drag-to-trash stopped working): root cause was a touch-arbitration race, not
     the G-04 gesture logic itself (`DragToTrash.isArmed` was untouched and still fully tested/correct).

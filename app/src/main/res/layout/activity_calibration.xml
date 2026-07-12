@@ -13,32 +13,17 @@
         android:layout_marginTop="16dp"
         android:text="@string/k01_intro" />
 
+    <!-- D-73: ordered by real-world prevalence - both thumbs is by far the most common pattern, so it
+         leads and doubles as the skip default; the author's own (uncommon) left-index-finger pattern is
+         deliberately last. -->
     <Button
-        android:id="@+id/calibration_left_index"
+        android:id="@+id/calibration_two_thumbs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
-        android:text="@string/t04_pattern_left_index" />
-
-    <Button
-        android:id="@+id/calibration_right_index"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_right_index" />
-
-    <Button
-        android:id="@+id/calibration_left_thumb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_left_thumb" />
+        android:text="@string/t04_pattern_two_thumbs_recommended" />
 
     <Button
         android:id="@+id/calibration_right_thumb"
@@ -50,13 +35,31 @@
         android:text="@string/t04_pattern_right_thumb" />
 
     <Button
-        android:id="@+id/calibration_two_thumbs"
+        android:id="@+id/calibration_left_thumb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_two_thumbs" />
+        android:text="@string/t04_pattern_left_thumb" />
+
+    <Button
+        android:id="@+id/calibration_right_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/t04_pattern_right_index" />
+
+    <Button
+        android:id="@+id/calibration_left_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/t04_pattern_left_index" />
 
     <View
         android:layout_width="match_parent"

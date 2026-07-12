@@ -127,6 +127,7 @@
     <string name="t04_pattern_left_thumb">Linker Daumen</string>
     <string name="t04_pattern_right_thumb">Rechter Daumen</string>
     <string name="t04_pattern_two_thumbs">Beide Daumen</string>
+    <string name="t04_pattern_two_thumbs_recommended">Beide Daumen (empfohlen)</string>
     <string name="t04_pattern_unknown">Noch nicht festgelegt</string>
 
     <!-- Calibration / onboarding (K-01). -->

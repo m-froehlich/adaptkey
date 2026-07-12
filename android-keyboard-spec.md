@@ -722,3 +722,69 @@ This is a substantial redesign of the T-03/T-04 onboarding + calibration flow an
 to be implemented immediately - captured here as the guiding idea; the concrete approach (exact shape
 functions, migration/reset story for existing calibrations, whether calibration disappears entirely or
 becomes an optional refinement step) needs its own design pass later.
+
+## §19 - Device-Feedback Round 8 (v0.7.32 testing, D-68 follow-up)
+
+### D-69 - Word Split Wins Merely By Being Found First, Not By Being the Best Match (Bug)
+`immernoch` (the user's own deliberate, correct compound spelling of "immer noch") auto-corrects to
+`immer och` instead of splitting as `immer noch`. Root cause: [TokenRepair.trySplit] tried the "drop a
+character" strategy first and returned its result unconditionally whenever it found *any* valid candidate,
+without ever trying (let alone comparing against) the "fully missed space" strategy - `n` sits over the
+space bar, so `immer` + `och` is a technically valid drop candidate that already satisfies the drop path
+and short-circuits it, even though `immer` + `noch` (found by the missed-space path, an extremely strong
+bigram) would score far higher. This is a distinct bug from D-67 (there is no high-confidence single-word
+correction for `immernoch`, so that veto does not apply here) - the fix is that both split strategies must
+be evaluated and the single best-scoring candidate across both must win, not whichever strategy happens to
+run first.
+
+### D-70 - Key-Press Sound Should Read as a Typewriter, Not a Digital Beep
+The optional key-press sound (D-05) is currently a `ToneGenerator` DTMF-style tone, which only reads as an
+electronic "beep" - `ToneGenerator` cannot render anything but a pure/dual sine tone, so no tone selection
+can make it sound mechanical. Replace it with a short, bundled percussive click sample (a broadband noise
+burst plus a couple of fast-decaying resonant partials) reminiscent of a typewriter key strike, played via
+`SoundPool` for low-latency, overlap-safe playback.
+
+### D-71 - Pattern Seeding Must Also Predefine the Systematic Offset *Direction*, Not Just the Spread
+D-68 deliberately left the systematic-offset direction at zero, reasoning that whether a user over- or
+undershoots a far key was a personal habit with no evidence to seed from. On reflection this was the wrong
+call for a one-sided finger/thumb pattern specifically: reaching for a key far from the typing hand's home
+position is a fixed-pivot arc (the wrist for a finger, the base of the thumb for a thumb), and that arc
+physically tends to fall *short* of the visual target the farther it reaches - not a personal habit to wait
+and learn, but close to a physical constant for anyone typing this way. [PatternSeed] must therefore also
+seed a directional bias (`meanDx`, and for a thumb reaching the top row also `meanDy`) shifting the expected
+strike point back towards home, growing with reach, on top of the existing spread widening. Two-thumb
+typing keeps no directional bias, matching its flat spread.
+
+### D-72 - The Number Row Is Missing From Calibration Seeding (Bug)
+[PatternSeed] never seeds the number row's keys, because [CalibrationActivity]'s embedded preview keyboard
+explicitly hides the number row (`showNumberRow = false`) while reading `charKeyGeometry()` for seeding -
+the row's keys simply never appear in the geometry list handed to `PatternSeed.seed()`. Since the live
+keyboard shows the number row by default (C-09), most users end up with digit keys that have never been
+calibrated at all. The calibration preview must show the number row too.
+
+### D-73 - Reorder the Typing Patterns by Real-World Prevalence; Skip Also Applies a Sensible Default
+Both thumbs is by far the most common typing pattern and should lead the list (currently ordered
+finger-patterns-first, ending with two thumbs) - order: both thumbs, right thumb, left thumb, right index
+finger, left index finger. Skipping the picker must not leave the model unseeded either: it should apply
+"both thumbs" quietly (no confirmation dialog, unlike an explicit choice) as the sensible default for an
+undecided user.
+
+### D-74 - Touch-Pattern Visualisation Shows the Previous, Stale Pattern After a Pattern Switch (Bug)
+After switching the typing pattern, opening "Show typing pattern" from the settings screen (D-24) still
+shows the *previous*, now-replaced pattern's (skewed) zones, not the freshly seeded ones. Root cause: the
+live keyboard service is long-lived and holds its own in-memory copy of the personal offset model, only
+refreshed when a genuinely new input field is focused; if the calibration screen replaces the persisted
+model on disk while the service is resident but never refocuses a field in between, the service's next
+`onFinishInput` / `onDestroy` save silently clobbers the fresh calibration with its stale in-memory copy.
+The service must detect that the persisted pattern has changed since it last loaded its model and adopt the
+fresh one instead of saving over it.
+
+### D-75 - Key-Press Vibration Still Does Not Fire (Bug, D-66 Follow-Up)
+The D-66 fix (migrating from the deprecated `Context.getSystemService(Vibrator::class.java)` to
+`VibratorManager` on API 31+) did not resolve it - vibration still does not fire on device. Further
+suspect: a plain `Vibrator.vibrate(VibrationEffect)` call with no explicit usage attributes falls into an
+unclassified vibration category that some OEM vibration-intensity settings scale to zero, independently of
+the (already-bypassed) "touch vibration" toggle. `VibrationAttributes.USAGE_TOUCH` (API 33+) is the category
+Android itself documents for on-screen-keyboard-style UI feedback and should be requested explicitly where
+available. Still needs device confirmation - this may ultimately be a device/OS-level vibration-intensity
+restriction outside the app's control.

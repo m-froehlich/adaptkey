@@ -31,14 +31,18 @@ class TokenRepair(private val store: DictionaryStore) {
     /**
      * Attempts to split [token] into two words (A-05).
      *
-     * First a "hit a letter instead of space" mis-tap is tried by dropping one character and replacing it
-     * with a space: the character must be either a T-05 space-ambiguous tap or a letter that physically
-     * sits over the space bar ([OVER_SPACE_LETTERS], so it works even without touch calibration), e.g.
-     * {@code "und<c>das" -> "und" + "das"}. Failing that, a fully missed space is tried by inserting a space
-     * without dropping a character, but only where the two halves actually co-occur (a real bigram), so a
-     * typo is not cut into two coincidental fragments (e.g. {@code "aberdas" -> "aber" + "das"} splits,
-     * {@code "luste"} does not). In all modes each half must be a known, non-blacklisted word; among the
-     * valid candidates the highest-scoring split wins.
+     * D-69: two split strategies are tried and the higher-scoring result wins overall - neither one gets an
+     * unconditional priority over the other. A "hit a letter instead of space" mis-tap drops one character
+     * and replaces it with a space: the character must be either a T-05 space-ambiguous tap or a letter
+     * that physically sits over the space bar ([OVER_SPACE_LETTERS], so it works even without touch
+     * calibration), e.g. {@code "und<c>das" -> "und" + "das"}. A fully missed space is tried by inserting a
+     * space without dropping a character, but only where the two halves actually co-occur (a real bigram),
+     * so a typo is not cut into two coincidental fragments (e.g. {@code "aberdas" -> "aber" + "das"}
+     * splits, {@code "luste"} does not). Comparing both matters: {@code "immernoch"} contains an
+     * over-space-letter drop candidate ({@code "immer" + "och"}), but the missed-space candidate
+     * ({@code "immer" + "noch"}, a much stronger bigram) must win instead of the drop candidate winning
+     * merely because it was found first. In all modes each half must be a known, non-blacklisted word;
+     * among every valid candidate from both strategies the highest-scoring split wins.
      *
      * @param token the committed token (any case); a known word is never split
      * @param spaceAmbiguousIndices the indices flagged space-ambiguous by the T-05 bands
@@ -59,9 +63,6 @@ class TokenRepair(private val store: DictionaryStore) {
             .filter { it in MIN_PART..t.length - 1 - MIN_PART }
             .toSet()
         val dropped = dropIndices.mapNotNull { i -> candidateAt(t.substring(0, i), t.substring(i + 1), previousWord) }
-        if (dropped.isNotEmpty()) {
-            return dropped.maxBy { it.second }.first
-        }
         
         // A fully missed space is only inserted when the two halves actually co-occur (a real bigram):
         // with a large, noisy dictionary almost any typo can be cut into two "known" fragments, so a mere
@@ -70,7 +71,8 @@ class TokenRepair(private val store: DictionaryStore) {
         val missed = (MIN_PART..t.length - MIN_PART)
             .mapNotNull { k -> candidateAt(t.substring(0, k), t.substring(k), previousWord) }
             .filter { store.bigramFrequency(it.first.left, it.first.right) >= MIN_SPLIT_BIGRAM }
-        return missed.maxByOrNull { it.second }?.first
+        
+        return (dropped + missed).maxByOrNull { it.second }?.first
     }
     
     /**

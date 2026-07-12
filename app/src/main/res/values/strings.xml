@@ -127,6 +127,7 @@
     <string name="t04_pattern_left_thumb">Left thumb</string>
     <string name="t04_pattern_right_thumb">Right thumb</string>
     <string name="t04_pattern_two_thumbs">Both thumbs</string>
+    <string name="t04_pattern_two_thumbs_recommended">Both thumbs (recommended)</string>
     <string name="t04_pattern_unknown">Not set yet</string>
 
     <!-- Calibration / onboarding (K-01). -->

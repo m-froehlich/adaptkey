@@ -88,6 +88,7 @@ import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.TapAmbiguity
 import de.froehlichmedia.adaptkey.touch.TapPoint
+import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * AdaptKey input method.
@@ -126,6 +127,11 @@ class AdaptKeyService : InputMethodService() {
     private var onboardingView: OnboardingView? = null
     private var inputRoot: LinearLayout? = null
     private var offsetModel: OffsetModel? = null
+    // D-74: the typing pattern the currently-held offsetModel was loaded under, so a later save can detect
+    // whether the calibration screen has since replaced the persisted model with a different pattern from
+    // some other Activity while this long-lived service instance kept its own (now stale) copy in memory -
+    // see persistOffsetModel().
+    private var offsetModelPattern = TypingPattern.UNKNOWN
     
     private var settings = AdaptSettings.DEFAULT
     private var config = SuggestionConfig()
@@ -259,6 +265,7 @@ class AdaptKeyService : InputMethodService() {
         config = settings.suggestionConfig
         controller = SuggestionController(config)
         offsetModel = OffsetStore.load(this)
+        offsetModelPattern = OffsetStore.loadDetectedPattern(this)
         // Start with instant empty in-memory stores so the keyboard is responsive immediately, then load
         // the real per-language lexicons off the main thread — importing ~0.5M rows into SQLite on the
         // main thread would ANR. Until the load finishes (first run only) there are simply no suggestions.
@@ -632,23 +639,42 @@ class AdaptKeyService : InputMethodService() {
     private fun reloadOffsetModel() {
         val model = OffsetStore.load(this)
         offsetModel = model
+        offsetModelPattern = OffsetStore.loadDetectedPattern(this)
         keyboardView?.offsetModel = model
+    }
+    
+    /**
+     * D-74: persists what [offsetModel] learned (T-03) - but only when it is still current. This
+     * long-lived service instance can sit resident across a calibration-screen visit (K-01), which
+     * **replaces** the whole persisted model from a separate Activity; if the persisted pattern no longer
+     * matches [offsetModelPattern], that replacement happened after this model was loaded, so saving it now
+     * would silently clobber the fresh calibration with stale data (the symptom reported: after switching
+     * pattern, the D-24 touch-model visualisation still showed the previous, skewed pattern). In that case
+     * the fresh model is adopted instead (mirroring what a new field's [reloadOffsetModel] would do anyway)
+     * rather than saved over.
+     */
+    private fun persistOffsetModel() {
+        val model = offsetModel ?: return
+        if (OffsetStore.loadDetectedPattern(this) != offsetModelPattern) {
+            reloadOffsetModel()
+            return
+        }
+        OffsetStore.save(this, model)
     }
     
     override fun onFinishInput() {
         super.onFinishInput()
         composing.setLength(0)
         clearSuggestions()
-        // Persist what the model learned while this field was focused (T-03). D-68: the typing pattern
-        // (T-04) is no longer re-derived here - it is now an explicit user choice (see CalibrationActivity),
-        // not something inferred from live typing.
-        offsetModel?.let { OffsetStore.save(this, it) }
+        // D-68: the typing pattern (T-04) is no longer re-derived here - it is now an explicit user choice
+        // (see CalibrationActivity), not something inferred from live typing.
+        persistOffsetModel()
     }
     
     override fun onDestroy() {
         handler.removeCallbacks(resortRunnable)
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
-        offsetModel?.let { OffsetStore.save(this, it) }
+        persistOffsetModel()
         tier3Executor.shutdownNow()
         onnxProvider?.close()
         onnxProvider = null

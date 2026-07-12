@@ -127,6 +127,7 @@
     <string name="t04_pattern_left_thumb">Αριστερός αντίχειρας</string>
     <string name="t04_pattern_right_thumb">Δεξιός αντίχειρας</string>
     <string name="t04_pattern_two_thumbs">Και οι δύο αντίχειρες</string>
+    <string name="t04_pattern_two_thumbs_recommended">Και οι δύο αντίχειρες (προτείνεται)</string>
     <string name="t04_pattern_unknown">Δεν έχει οριστεί ακόμη</string>
 
     <!-- Calibration / onboarding (K-01). -->
