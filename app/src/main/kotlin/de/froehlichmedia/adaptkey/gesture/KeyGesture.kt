@@ -53,13 +53,16 @@ object KeyGesture {
      * Maps a horizontal swipe on an ordinary field key to a surface/page switch (D-19); a non-horizontal
      * direction carries no surface action.
      *
+     * D-91: a **left** swipe advances forward through the letters → symbols-page-1 → symbols-page-2 cycle,
+     * and **right** goes back - reversed from the original D-19 mapping per user request.
+     *
      * @param direction the recognised swipe direction
      * @return the surface-switch action, or [GestureAction.NONE]
      */
     private fun surfaceSwipe(direction: SwipeDirection): GestureAction {
         return when (direction) {
-            SwipeDirection.RIGHT -> GestureAction.SWITCH_SURFACE_NEXT
-            SwipeDirection.LEFT -> GestureAction.SWITCH_SURFACE_PREV
+            SwipeDirection.LEFT -> GestureAction.SWITCH_SURFACE_NEXT
+            SwipeDirection.RIGHT -> GestureAction.SWITCH_SURFACE_PREV
             else -> GestureAction.NONE
         }
     }

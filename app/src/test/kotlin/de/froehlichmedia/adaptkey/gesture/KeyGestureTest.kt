@@ -42,9 +42,9 @@ class KeyGestureTest {
     }
     
     @Test
-    fun `D-19 a horizontal swipe on a letter switches surface`() {
-        assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.LEFT))
-        assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.RIGHT))
+    fun `D-19 and D-91 a horizontal swipe on a letter switches surface`() {
+        assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.LEFT))
+        assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.RIGHT))
     }
     
     @Test
@@ -64,9 +64,9 @@ class KeyGestureTest {
     }
     
     @Test
-    fun `horizontal swipes on the combined key switch surface (D-19), NONE carries no action`() {
-        assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.LEFT))
-        assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.RIGHT))
+    fun `horizontal swipes on the combined key switch surface (D-19 and D-91), NONE carries no action`() {
+        assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.LEFT))
+        assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.RIGHT))
         assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.NONE))
     }
     

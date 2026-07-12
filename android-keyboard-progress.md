@@ -28,12 +28,16 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `cef6f97` — v0.7.43 (D-89). Working tree = **v0.7.44**, D-90 below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); D-89/D-90
-  done, D-91/D-92 next. §26's D-87/D-88 remain backlog-only.
+- HEAD: `90d25ac` — v0.7.44 (D-90). Working tree = **v0.7.45**, D-91 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); D-89/D-90/D-91
+  done, D-92 (the big one) next. §26's D-87/D-88 remain backlog-only.
 - Unit tests: **493 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.44** (only the third digit bumps per APK; versionCode 114). `origin/main` is
-  2 commits behind (D-93, D-89; this session's D-90 once committed makes it 3) - awaiting push.
+  warnings). **Versioned 0.7.45** (only the third digit bumps per APK; versionCode 115). `origin/main` is
+  3 commits behind (D-93, D-89, D-90; this session's D-91 once committed makes it 4) - awaiting push.
+- **D-91 DONE (v0.7.45):** reversed which `SwipeDirection` maps to `SWITCH_SURFACE_NEXT` vs.
+  `SWITCH_SURFACE_PREV` in `KeyGesture.surfaceSwipe()` - left now advances letters → symbols-1 → symbols-2,
+  right goes back. G-01 (space-bar language swipe) and G-02 (delete-word swipe) are untouched; the D-76/D-86
+  slide-direction plumbing in `AdaptKeyboardView.switchPage()` needed no change, as anticipated.
 - **D-90 DONE (v0.7.44):** `KeyboardLayout.DEFAULT_LETTER_HINTS` gained `p`→`π`, `b`→`×`, `v`→`÷` alongside
   the existing AltGr-style set; `π` was also added to the C-08 editor's `LetterHints.PALETTE` so it stays
   pickable for other keys and the palette-covers-all-defaults invariant test keeps holding.
