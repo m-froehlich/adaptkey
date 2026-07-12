@@ -218,4 +218,29 @@ class DictionarySuggestionProviderTest {
         // The service keeps a mid-word digit in the token; the digit is one substitution from the letter.
         assertEquals("Wort", provider.autocorrectFor("W8rt", null))
     }
+    
+    @Test
+    fun `D-67 highConfidenceCorrection accepts a single adjacent-key slip (kleiben to kleinen)`() {
+        store.putWord(WordEntry("kleinen", 200L))
+        
+        // "b" and "n" are adjacent QWERTZ keys, so this is a cost-1 correction.
+        assertEquals("kleinen", provider.highConfidenceCorrection("kleiben", null))
+    }
+    
+    @Test
+    fun `D-67 highConfidenceCorrection rejects a cost-2 correction that autocorrectFor still accepts`() {
+        store.putWord(WordEntry("komplett", 40L))
+        
+        // "komplezz" is two adjacent-key substitutions from "komplett" (cost 2, two ADJACENT_SUB_COST edits):
+        // still within the ordinary autocorrect budget (D-28), but above the single-adjacent-edit
+        // high-confidence ceiling, so it must not veto a split.
+        assertEquals("komplett", provider.autocorrectFor("komplezz", null))
+        assertNull(provider.highConfidenceCorrection("komplezz", null))
+    }
+    
+    @Test
+    fun `A-01 highConfidenceCorrection never overrides an already-known word`() {
+        store.putWord(WordEntry("haus", 100L))
+        assertNull(provider.highConfidenceCorrection("haus", null))
+    }
 }

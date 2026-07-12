@@ -3,6 +3,9 @@
 
 package de.froehlichmedia.adaptkey.keyboard
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -172,6 +175,52 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
+    /**
+     * D-58: switches to [newSurface] (and, for the numeric/symbol layer, [newSymbolPage]) with a
+     * perceptible slide, instead of the instant [surface] / [symbolPage] swap - the plain redraw was easy
+     * to miss. The new page arrives from the right for [forward] transitions (advancing through the D-19
+     * cycle, or drilling into the numeric layer) and from the left otherwise, mirroring the swipe or tap
+     * that triggered the change. A no-op switch (already showing the target) is skipped, and the very
+     * first switch - before the view has a width to animate across - falls back to an immediate change.
+     *
+     * @param newSurface the surface to show
+     * @param newSymbolPage the numeric/symbol page to show; only meaningful when [newSurface] is
+     *        [InputSurface.SYMBOLS]
+     * @param forward true when the new page conceptually lies "ahead" of the current one
+     */
+    fun switchPage(newSurface: InputSurface, newSymbolPage: Int = 1, forward: Boolean = true) {
+        if (newSurface == surface && (newSurface != InputSurface.SYMBOLS || newSymbolPage == symbolPage)) {
+            return
+        }
+        if (width <= 0) {
+            surface = newSurface
+            symbolPage = newSymbolPage
+            return
+        }
+        slideAnimator?.cancel()
+        val outgoing = ArrayList(keyRects)
+        surface = newSurface
+        symbolPage = newSymbolPage
+        slideOutKeyRects = outgoing
+        slideSign = if (forward) 1f else -1f
+        slideT = 0f
+        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator.duration = SLIDE_DURATION_MS
+        animator.addUpdateListener {
+            slideT = it.animatedValue as Float
+            invalidate()
+        }
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                slideAnimator = null
+                slideOutKeyRects = emptyList()
+                invalidate()
+            }
+        })
+        slideAnimator = animator
+        animator.start()
+    }
+    
     /** Whether the letter surface shows the Greek alphabet (G-01) instead of the Latin QWERTZ layout. */
     var greek: Boolean = false
         set(value) {
@@ -242,6 +291,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
+    
+    // D-58: the perceptible slide animation for a surface/page change (see switchPage()). slideOutKeyRects
+    // holds the outgoing page's geometry for the duration of the animation; empty when no slide is active.
+    private var slideAnimator: ValueAnimator? = null
+    private var slideOutKeyRects: List<Pair<Key, RectF>> = emptyList()
+    private var slideSign = 1f
+    private var slideT = 0f
     
     // T-05: classifies a bottom-row tap into the space/letter ambiguity bands. Computed at ACTION_DOWN
     // from the raw contact point and carried to the listener on release for later token-level repair.
@@ -458,7 +514,28 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        for ((key, rect) in keyRects) {
+        // D-58: while a page switch is animating, the outgoing page slides out and the current (new) page
+        // slides in from the opposite edge; slideSign carries the direction (see switchPage()).
+        if (slideOutKeyRects.isNotEmpty()) {
+            canvas.save()
+            canvas.translate(-slideT * width * slideSign, 0f)
+            drawKeys(canvas, slideOutKeyRects)
+            canvas.restore()
+            canvas.save()
+            canvas.translate((1f - slideT) * width * slideSign, 0f)
+            drawKeys(canvas, keyRects)
+            canvas.restore()
+        } else {
+            drawKeys(canvas, keyRects)
+        }
+        if (showTouchModel) {
+            drawTouchModel(canvas)
+        }
+        drawLongPressPopup(canvas)
+    }
+    
+    private fun drawKeys(canvas: Canvas, rects: List<Pair<Key, RectF>>) {
+        for ((key, rect) in rects) {
             // D-59: the disabled combined key is drawn as empty space, keeping its slot (neighbours do not grow).
             if (isHiddenSymbolKey(key)) {
                 continue
@@ -482,10 +559,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
             }
         }
-        if (showTouchModel) {
-            drawTouchModel(canvas)
-        }
-        drawLongPressPopup(canvas)
     }
     
     /**
@@ -928,6 +1001,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
         super.onDetachedFromWindow()
         // D-05: release the tone generator's audio resources when the view goes away.
         runCatching { toneGenerator?.release() }
+        // D-58: an in-flight page-slide must not keep animating (or later invalidate()) a detached view.
+        slideAnimator?.cancel()
     }
     
     companion object {
@@ -944,5 +1019,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-57: the horizontal page swipe needs 15% less travel; the space-bar language swipe needs 15% more.
         private const val PAGE_SWIPE_FACTOR = 0.85f
         private const val SPACE_SWIPE_FACTOR = 1.15f
+        
+        // D-58: the page-change slide - quick enough to stay snappy, slow enough to actually be seen.
+        private const val SLIDE_DURATION_MS = 180L
     }
 }

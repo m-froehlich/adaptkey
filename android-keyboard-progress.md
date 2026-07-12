@@ -30,10 +30,47 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **489 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.30** (only the third digit bumps per APK; versionCode 100). `origin/main`
-  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.30, v0.7.26…v0.7.30
+- Unit tests: **498 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.31** (only the third digit bumps per APK; versionCode 101). `origin/main`
+  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.31, v0.7.26…v0.7.31
   unpushed.
+- **§18 D-58 / D-62 / D-67 DONE (v0.7.31):** three of the round-7 backlog items.
+  - **D-58** (page-change animation): [AdaptKeyboardView] gained a self-drawn slide transition -
+    `switchPage(surface, symbolPage, forward)` snapshots the outgoing page's key geometry, swaps to the new
+    page, then runs a 180 ms `ValueAnimator` translating the outgoing page off one edge while the new page
+    slides in from the other; `forward` (new page arrives from the right) mirrors the actual trigger - the
+    D-19 swipe's own direction, "entering the numeric layer" for the combined-key tap/long-press, and
+    "page number increases" for the 1/2 toggle key. `AdaptKeyService.setSurface()` grew `forward` /
+    `targetSymbolPage` parameters (sensible defaults for ordinary callers) so every surface/page switch now
+    routes through the animated `switchPage()` instead of the old instant property swap.
+  - **D-62** (mid-word live suggestions): the caret landing inside (or against) an already-committed word
+    and typing there previously only ever composed the fragment typed from that point on - autocorrect and
+    suggestions never saw the rest of the word. New pure `WordExtent.reclaim(before, after)` (`gesture`
+    package, tested) finds the letter-runs touching the caret on each side; `AdaptKeyService.reclaimSurroundingWord()`
+    deletes them from the real editable and re-seeds `composing` with the whole word (before + after) the
+    moment a new token starts mid-word, so `finalizeAndCommit`'s `typed = composing.toString()` - and every
+    suggestion/autocorrect call downstream of it - now sees the complete word, not a fragment. This needed a
+    real "logical edit point" inside `composing` for the first time (previously typing always just appended
+    at the end): new `composingCursor` (index) / `composingAnchor` (absolute document offset of the
+    composing region's start, -1 when no reclaimed tail is in play) fields, a new `insertComposingChar()` /
+    position-aware `deleteComposingChar()` pair, and a `updateComposing()` follow-up `setSelection()` call
+    (batched with the preceding `setComposingText()` via `beginBatchEdit`/`endBatchEdit` so the app never
+    observes the transient end-of-text cursor `setComposingText` alone would produce - which would otherwise
+    fail the `onUpdateSelection` "is this our own edit" check and wipe the token mid-update). That check
+    itself was generalised from "cursor collapsed at the end of the composing region" to "at the tracked
+    edit point," since a deliberate mid-word placement no longer sits at the end. All nine composing-reset
+    call sites were consolidated into one `clearComposing()` so the two new fields can never be forgotten at
+    a reset. No service-level test added (consistent with the rest of the correction pipeline, see D-39) -
+    the new pure logic (`WordExtent`) is tested directly.
+  - **D-67** (word-splitting bug, "kleiben"→"klei en" instead of "kleinen"): the A-05 "drop a character"
+    split path had no confidence gate at all, unlike the "fully missed space" branch. Generalised the D-48
+    "a diacritic restoration beats a split" veto: new `SuggestionProvider.highConfidenceCorrection()`
+    (default delegates to `autocorrectFor`) restricts `DictionarySuggestionProvider`'s existing cost-ranked
+    candidate search (refactored into a shared `bestCorrection(maxCost)`) to `ADJACENT_SUB_COST` (a single
+    neighbouring-key substitution or better, cost ≤ 1) instead of the full `MAX_CORRECTION_COST` (≤ 2)
+    autocorrect budget; `AdaptKeyService.finalizeAndCommit()` now vetoes `TokenRepair.trySplit()` whenever
+    either the diacritic restoration or this high-confidence correction fires. `b`/`n` are QWERTZ-adjacent,
+    so "kleiben" now autocorrects to "kleinen" instead of splitting.
 - **D-68 DONE (v0.7.30, big one - device-verification pending):** replaced the three-sentence auto-detected
   calibration (T-04) with an explicit typing-pattern picker that seeds sensible initial per-key touch zones
   directly - the auto-detection could not reliably classify from so little data and, when wrong, seeded

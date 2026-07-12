@@ -169,6 +169,38 @@ class DictionarySuggestionProvider(
     }
     
     override fun autocorrectFor(input: String, previousWord: String?): String? {
+        return bestCorrection(input, previousWord, MAX_CORRECTION_COST)
+    }
+    
+    /**
+     * The autocorrection for [input], restricted to a low edit cost - a single neighbouring-key
+     * substitution or better (D-67). Used to veto an A-05 split so a split never beats a much safer
+     * whole-word correction, e.g. `kleiben` -> `kleinen` (a single adjacent `b`/`n` slip) must win over
+     * `klei` + `en`.
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @return the high-confidence autocorrect replacement, or null when none qualifies
+     */
+    override fun highConfidenceCorrection(input: String, previousWord: String?): String? {
+        return bestCorrection(input, previousWord, ADJACENT_SUB_COST)
+    }
+    
+    /**
+     * Shared candidate search behind [autocorrectFor] and [highConfidenceCorrection] (D-38 / D-67): only a
+     * bounded candidate set is scanned (not the whole lexicon). The cheap pure distance test runs before
+     * the per-candidate blacklist query, so the DB is touched only for real matches. D-12 / D-28: umlauts /
+     * ß are folded and neighbouring-key typos are cheap, so "grun"→"grün" and "komplezz"→"komplett". D-38:
+     * also search neighbour / umlaut first-char buckets, and rank by the lowest edit cost first (frequency
+     * only breaks ties), so "dasy" corrects to "dass" (one adjacent edit) rather than the more frequent
+     * "das" (a deletion).
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @param maxCost the inclusive edit-cost ceiling a candidate must stay within
+     * @return the best-ranked correction within [maxCost], or null when none qualifies
+     */
+    private fun bestCorrection(input: String, previousWord: String?, maxCost: Int): String? {
         val token = input.lowercase()
         if (token.length < MIN_AUTOCORRECT_LENGTH) {
             return null
@@ -177,19 +209,13 @@ class DictionarySuggestionProvider(
         if (isKnownWord(token)) {
             return null
         }
-        // Only a bounded candidate set is scanned (not the whole lexicon). The cheap pure distance test
-        // runs before the per-candidate blacklist query, so the DB is touched only for real matches.
-        // D-12 / D-28: umlauts / ß are folded and neighbouring-key typos are cheap, so "grun"→"grün" and
-        // "komplezz"→"komplett". D-38: also search neighbour / umlaut first-char buckets, and rank by the
-        // lowest edit cost first (frequency only breaks ties), so "dasy" corrects to "dass" (one adjacent
-        // edit) rather than the more frequent "das" (a deletion).
         val folded = Umlaut.fold(token)
         return store.correctionCandidates(token, candidateFirstChars(token))
             .asSequence()
             .filter { it.lowercase() != token && !store.isBlacklisted(it) }
             .mapNotNull { candidate ->
                 val cost = correctionCost(folded, candidate.lowercase())
-                if (cost > MAX_CORRECTION_COST) null else CandidateCost(candidate, cost, score(candidate, store.frequencyOf(candidate), previousWord))
+                if (cost > maxCost) null else CandidateCost(candidate, cost, score(candidate, store.frequencyOf(candidate), previousWord))
             }
             .minWithOrNull(compareBy({ it.cost }, { -it.score }))
             ?.candidate

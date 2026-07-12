@@ -20,6 +20,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -50,6 +51,7 @@ import de.froehlichmedia.adaptkey.gesture.GestureAction
 import de.froehlichmedia.adaptkey.gesture.KeyGesture
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.WordBoundary
+import de.froehlichmedia.adaptkey.gesture.WordExtent
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
@@ -191,6 +193,14 @@ class AdaptKeyService : InputMethodService() {
     // (same index, mutated at every site that mutates composingFlags) - lets an unknown token be corrected
     // from where the taps actually landed (T-02), not just the committed spelling.
     private val composingTaps = ArrayList<TapPoint>()
+    // D-62: the logical edit point within composing - equal to composing.length while typing normally
+    // extends the token at its end, but short of it while editing mid-word (an untouched "after" fragment,
+    // reclaimed from the surrounding text, still follows). composingAnchor is the absolute document offset
+    // of the composing region's start, needed to place the real cursor back at composingCursor after every
+    // setComposingText() call (which otherwise always leaves it at the end); -1 while no reclaimed "after"
+    // fragment is in play, so the natural end-of-composing cursor placement is already correct.
+    private var composingCursor = 0
+    private var composingAnchor = -1
     
     // G-05: a word-end Shift is pending — the first character has been provisionally toggled and the
     // next key decides the outcome (camelCase vs. keep). composingCaseLocked marks a token whose casing
@@ -472,9 +482,7 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
         super.onStartInput(info, restarting)
-        composing.setLength(0)
-        composingFlags.clear()
-        composingTaps.clear()
+        clearComposing()
         resetWordEndShift()
         pendingMergeChar = null
         pendingSuggestionSpace = false
@@ -509,14 +517,14 @@ class AdaptKeyService : InputMethodService() {
         if (composing.isEmpty()) {
             return
         }
-        // Our own edits leave the caret collapsed at the end of the composing region; anything else is a
-        // user-initiated caret move or selection.
-        val ownEdit = newSelStart == newSelEnd && candidatesEnd >= 0 && newSelStart == candidatesEnd
+        // Our own edits leave the caret collapsed at the end of the composing region - or, D-62, at the
+        // logical mid-word edit point we deliberately placed it at via setSelection() when a reclaimed
+        // "after" fragment still follows; anything else is a user-initiated caret move or selection.
+        val ownCursor = if (composingAnchor >= 0) composingAnchor + composingCursor else candidatesEnd
+        val ownEdit = newSelStart == newSelEnd && candidatesEnd >= 0 && newSelStart == ownCursor
         if (!ownEdit) {
             currentInputConnection?.finishComposingText()
-            composing.setLength(0)
-            composingFlags.clear()
-            composingTaps.clear()
+            clearComposing()
             pendingMergeChar = null
             resetWordEndShift()
             clearUndo()
@@ -676,13 +684,14 @@ class AdaptKeyService : InputMethodService() {
                         // D-29: a new word after the accepted suggestion keeps its leading space (correct);
                         // the eat-the-space rule was only for an immediately following punctuation.
                         pendingSuggestionSpace = false
+                        // D-62: the caret may sit inside (or against) an already-committed word - reclaim it
+                        // so autocorrect/suggestions see the whole word, not just what gets typed from here.
+                        reclaimSurroundingWord(ic, TapPoint(x, y))
                     }
                     val ch = if (raw.isLetter() && isUpperArmed()) raw.uppercaseChar() else raw
-                    composing.append(ch)
-                    // T-05: retain this letter's space-ambiguity flag in step with the composing token (A-05).
-                    composingFlags.add(ambiguity.kind)
-                    // D-39: retain the raw tap too, for a later raw-coordinate correction of an unknown word.
-                    composingTaps.add(TapPoint(x, y))
+                    // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
+                    // character at the logical edit point (the end, unless a reclaim left a tail after it).
+                    insertComposingChar(ch, ambiguity.kind, TapPoint(x, y))
                     consumeShift()
                     updateComposing(ic)
                     refreshSuggestions()
@@ -713,8 +722,10 @@ class AdaptKeyService : InputMethodService() {
             
             // L-03: toggles between the numeric/symbol layer's two pages.
             KeyCode.SYMBOL_PAGE -> {
-                symbolPage = SymbolLayout.togglePage(symbolPage)
-                keyboardView?.symbolPage = symbolPage
+                val nextPage = SymbolLayout.togglePage(symbolPage)
+                // D-58: mirror the direction the page number itself moves in.
+                keyboardView?.switchPage(InputSurface.SYMBOLS, nextPage, forward = nextPage > symbolPage)
+                symbolPage = nextPage
             }
         }
     }
@@ -793,16 +804,22 @@ class AdaptKeyService : InputMethodService() {
      * Appends a letter secondary (a Greek accented vowel, G-01) into the composing token, mirroring
      * the normal character path: it starts a token if none is open, honours a pending Shift for the
      * upper-case accented form, and refreshes the composing text and suggestions.
+     *
+     * D-62: also reclaims a mid-word caret like the ordinary character path, but leaves the reclaimed
+     * (and these appended) characters untracked in composingTaps - there is no raw tap coordinate for a
+     * long-press secondary, matching this path's pre-existing gap (see [insertComposingChar]).
      */
     private fun appendLongPressLetter(ic: InputConnection, letters: String) {
         if (composing.isEmpty()) {
             captureTokenContext(ic)
             resetWordEndShift()
+            reclaimSurroundingWord(ic, tap = null)
         }
         val upper = isUpperArmed()
         for (ch in letters) {
-            composing.append(if (upper) ch.uppercaseChar() else ch)
-            composingFlags.add(TapAmbiguity.NONE)
+            composing.insert(composingCursor, if (upper) ch.uppercaseChar() else ch)
+            composingFlags.add(composingCursor, TapAmbiguity.NONE)
+            composingCursor++
         }
         consumeShift()
         updateComposing(ic)
@@ -826,21 +843,29 @@ class AdaptKeyService : InputMethodService() {
     /**
      * Switches the visible input surface (L-03): shows/hides the letter+symbol keyboard vs. the emoji
      * panel, and resets the numeric/symbol layer back to its first page whenever it is not the target.
+     *
+     * D-58: the keyboard-view switch (letters <-> symbols) is animated with a perceptible slide; [forward]
+     * defaults to "entering the numeric/symbol layer slides in from the right, leaving it slides in from
+     * the left" and [targetSymbolPage] defaults to the current page, so ordinary callers need not think
+     * about it. The D-19 horizontal-swipe cycle passes both explicitly, mirroring the actual swipe.
+     *
+     * @param next the surface to show
+     * @param forward the D-58 slide direction
+     * @param targetSymbolPage the numeric/symbol page to show; only meaningful when [next] is
+     *        [InputSurface.SYMBOLS]
      */
-    private fun setSurface(next: InputSurface) {
+    private fun setSurface(next: InputSurface, forward: Boolean = next == InputSurface.SYMBOLS, targetSymbolPage: Int = symbolPage) {
         surface = next
+        val page = if (next == InputSurface.SYMBOLS) targetSymbolPage else 1
         if (next != InputSurface.EMOJI) {
-            keyboardView?.surface = next
+            keyboardView?.switchPage(next, page, forward)
         }
         keyboardView?.visibility = if (next == InputSurface.EMOJI) View.GONE else View.VISIBLE
         emojiPanel?.visibility = if (next == InputSurface.EMOJI) View.VISIBLE else View.GONE
         if (next == InputSurface.EMOJI) {
             emojiPanel?.setRecentEmojis(recentEmojis)
         }
-        if (next != InputSurface.SYMBOLS) {
-            symbolPage = 1
-            keyboardView?.symbolPage = 1
-        }
+        symbolPage = page
     }
     
     /**
@@ -924,12 +949,12 @@ class AdaptKeyService : InputMethodService() {
             
             // D-19: a full-field horizontal swipe cycles the surface/page (letters ↔ symbols ↔ numbers).
             GestureAction.SWITCH_SURFACE_NEXT -> {
-                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = true))
+                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = true), forward = true)
                 true
             }
             
             GestureAction.SWITCH_SURFACE_PREV -> {
-                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = false))
+                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = false), forward = false)
                 true
             }
             
@@ -939,16 +964,14 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Applies a D-19 surface/page switch from the horizontal-swipe cycle: shows the target surface and,
-     * for the numeric/symbol layer, its specific page.
+     * for the numeric/symbol layer, its specific page. D-58: [forward] carries the actual swipe direction
+     * through to the slide animation, so the page visibly moves the way the finger did.
      *
      * @param page the surface/page to switch to
+     * @param forward the swipe direction (true = right / next, false = left / previous)
      */
-    private fun applySwipePage(page: PanelNavigation.Page) {
-        setSurface(page.surface)
-        if (page.surface == InputSurface.SYMBOLS) {
-            symbolPage = page.symbolPage
-            keyboardView?.symbolPage = symbolPage
-        }
+    private fun applySwipePage(page: PanelNavigation.Page, forward: Boolean) {
+        setSurface(page.surface, forward, page.symbolPage)
     }
     
     /**
@@ -960,9 +983,7 @@ class AdaptKeyService : InputMethodService() {
         pendingMergeChar = null
         resetWordEndShift()
         if (composing.isNotEmpty()) {
-            composing.setLength(0)
-            composingFlags.clear()
-            composingTaps.clear()
+            clearComposing()
             ic.setComposingText("", 1)
             ic.finishComposingText()
             clearSuggestions()
@@ -993,23 +1014,43 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Removes the last character of the in-progress composing token, keeping the ambiguity flags (A-05)
-     * in step and refreshing the composing text / suggestions. Re-arms Shift when the removed character
-     * was uppercase (G-05 addendum).
+     * Removes the character immediately before the composing token's logical edit point (D-62: this may
+     * be mid-word, not the end, while a reclaimed "after" fragment still follows), keeping the ambiguity
+     * flags (A-05) in step and refreshing the composing text / suggestions. Re-arms Shift when the removed
+     * character was uppercase (G-05 addendum).
+     *
+     * When the edit point is already at the very start of composing - nothing left to remove on this side,
+     * though a reclaimed "after" fragment may still be sitting there - the real character just before the
+     * composing region is deleted instead, via [deleteOneBefore].
      */
     private fun deleteComposingChar(ic: InputConnection) {
-        val deleted = composing.last()
-        if (composingFlags.isNotEmpty()) {
-            composingFlags.removeAt(composingFlags.size - 1)
+        if (composingCursor == 0) {
+            // D-62: batched so the app never observes the selection mid-shift - deleteOneBefore()'s
+            // deleteSurroundingText() moves the still-active composing region (holding the untouched
+            // "after" fragment) left by one character before composingAnchor is adjusted to match.
+            ic.beginBatchEdit()
+            try {
+                if (deleteOneBefore(ic) && composingAnchor >= 0) {
+                    composingAnchor--
+                }
+            } finally {
+                ic.endBatchEdit()
+            }
+            return
         }
-        if (composingTaps.isNotEmpty()) {
-            composingTaps.removeAt(composingTaps.size - 1)
+        val index = composingCursor - 1
+        val deleted = composing[index]
+        composingFlags.removeAt(index)
+        if (index < composingTaps.size) {
+            composingTaps.removeAt(index)
         }
-        composing.setLength(composing.length - 1)
+        composing.deleteCharAt(index)
+        composingCursor--
         if (composing.isEmpty()) {
             ic.setComposingText("", 1)
             ic.finishComposingText()
             clearSuggestions()
+            composingAnchor = -1
         } else {
             updateComposing(ic)
             refreshSuggestions()
@@ -1142,10 +1183,17 @@ class AdaptKeyService : InputMethodService() {
         
         // A-05: split the token at a space-ambiguous tap or a fully missed space, when valid. D-48: a token
         // that is a real word once its German diacritics are restored (umlauts / ß are first-class
-        // characters) is never split - "konnen" is "können", not "ko nen". The diacritic restoration is left
-        // to the normal autocorrect path below; here it only vetoes the split.
+        // characters) is never split - "konnen" is "können", not "ko nen". D-67 generalises this: a split
+        // is also vetoed when a high-confidence single-word autocorrect exists (a low edit cost, e.g. a
+        // single adjacent-key slip) - "kleiben" is "kleinen" (b/n are adjacent keys), not "klei" + "en".
+        // Both restorations are left to the normal autocorrect path below; here they only veto the split.
         val diacriticWord = if (suppressAutocorrect) null else provider.diacriticRestoration(typed, previousWord)
-        val split = if (diacriticWord != null) null else tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+        val highConfidenceWord = if (suppressAutocorrect) null else provider.highConfidenceCorrection(typed, previousWord)
+        val split = if (diacriticWord != null || highConfidenceWord != null) {
+            null
+        } else {
+            tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+        }
         if (split != null) {
             applySplit(ic, split, delimiter, typed)
             armShiftForNextWord(ic)
@@ -1174,9 +1222,7 @@ class AdaptKeyService : InputMethodService() {
         
         ic.setComposingText(finalWord, 1)
         ic.finishComposingText()
-        composing.setLength(0)
-        composingFlags.clear()
-        composingTaps.clear()
+        clearComposing()
         ic.commitText(delimiter, 1)
         learnWord(finalWord)
         reinforceFromTier3(finalWord, tier3Result, contextWord, tier1KnewCorrected)
@@ -1224,9 +1270,7 @@ class AdaptKeyService : InputMethodService() {
         val word = composing.toString()
         ic.setComposingText(word, 1)
         ic.finishComposingText()
-        composing.setLength(0)
-        composingFlags.clear()
-        composingTaps.clear()
+        clearComposing()
         resetWordEndShift()
         ic.commitText(delimiter, 1)
         learnWord(word)
@@ -1243,9 +1287,7 @@ class AdaptKeyService : InputMethodService() {
     private fun applyMerge(ic: InputConnection, merged: String, delimiter: String) {
         ic.setComposingText("", 1)
         ic.finishComposingText()
-        composing.setLength(0)
-        composingFlags.clear()
-        composingTaps.clear()
+        clearComposing()
         ic.deleteSurroundingText(1, 0)
         val cased = capitalisation.capitalise(merged, contextFor(merged))
         ic.commitText(cased + delimiter, 1)
@@ -1265,9 +1307,7 @@ class AdaptKeyService : InputMethodService() {
     private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String, typed: String) {
         ic.setComposingText("", 1)
         ic.finishComposingText()
-        composing.setLength(0)
-        composingFlags.clear()
-        composingTaps.clear()
+        clearComposing()
         val left = capitalisation.capitalise(split.left, contextFor(split.left))
         val right = capitalisation.capitalise(split.right, followingPartContext())
         val committed = left + " " + right
@@ -1319,14 +1359,107 @@ class AdaptKeyService : InputMethodService() {
     
     private fun updateComposing(ic: InputConnection) {
         val text = composing.toString()
-        // S-05 / D-25: colour the recognised word's TEXT (not its background) while composing (C-04).
-        if (shouldHighlightComposing(ic, text)) {
-            val span = SpannableString(text)
-            span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            ic.setComposingText(span, 1)
-        } else {
-            ic.setComposingText(text, 1)
+        // D-62: setComposingText always leaves the real cursor at the end of the composed text; while
+        // editing mid-word (a reclaimed "after" fragment still follows composingCursor) a follow-up
+        // setSelection() must pull it back to the logical edit point. Both calls are batched so the app
+        // only ever observes the final, consistent selection - never the transient end-of-text one
+        // setComposingText alone would produce, which onUpdateSelection's ownEdit check (D-62) would not
+        // recognise as ours and would wipe the token it is itself in the middle of updating.
+        val needsCursorFixup = composingAnchor >= 0 && composingCursor != composing.length
+        if (needsCursorFixup) {
+            ic.beginBatchEdit()
         }
+        try {
+            // S-05 / D-25: colour the recognised word's TEXT (not its background) while composing (C-04).
+            if (shouldHighlightComposing(ic, text)) {
+                val span = SpannableString(text)
+                span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                ic.setComposingText(span, 1)
+            } else {
+                ic.setComposingText(text, 1)
+            }
+            if (needsCursorFixup) {
+                val absolute = composingAnchor + composingCursor
+                ic.setSelection(absolute, absolute)
+            }
+        } finally {
+            if (needsCursorFixup) {
+                ic.endBatchEdit()
+            }
+        }
+    }
+    
+    /**
+     * Resets the in-progress composing token to empty, including the D-62 mid-word edit-point state kept
+     * in step with it. Every commit / cancel / caret-move path that discards the current token calls this
+     * instead of repeating the field-by-field reset.
+     */
+    private fun clearComposing() {
+        composing.setLength(0)
+        composingFlags.clear()
+        composingTaps.clear()
+        composingCursor = 0
+        composingAnchor = -1
+    }
+    
+    /**
+     * Inserts [ch] into the composing token at the current logical edit point (D-62: this may be mid-word,
+     * not the end, while a reclaimed "after" fragment still follows), keeping [ambiguity] (A-05) and the
+     * raw [tap] (T-02 / D-39) in lockstep, then advances the edit point past the inserted character.
+     */
+    private fun insertComposingChar(ch: Char, ambiguity: TapAmbiguity, tap: TapPoint) {
+        composing.insert(composingCursor, ch)
+        composingFlags.add(composingCursor, ambiguity)
+        // composingTaps can trail composing/composingFlags in length (appendLongPressLetter does not track
+        // taps at all, D-39's pre-existing scope) - clamp so a stale index never throws; RawCoordinateCorrection
+        // already treats any length mismatch as "no candidates" rather than risk a wrong substitution.
+        composingTaps.add(composingCursor.coerceAtMost(composingTaps.size), tap)
+        composingCursor++
+    }
+    
+    /**
+     * D-62: when a new composing token starts with the caret sitting inside (or directly against) an
+     * already-committed word, reclaims that word's letters on both sides of the caret into the composing
+     * token - via [WordExtent] - so the autocorrect / suggestion pipeline sees the whole word being edited,
+     * not just whatever gets typed from here on. A no-op when the caret touches no word.
+     *
+     * The reclaimed text is deleted from the real editable and re-added to [composing] (with a neutral
+     * A-05 flag, since it was not actually just tapped); [tap] seeds the raw taps for the reclaimed
+     * characters when available (the ordinary character path always has one), or is left untracked when
+     * not (the long-press-letter path, matching its pre-existing composingTaps gap).
+     *
+     * When letters follow the caret too, the real cursor must be pulled back mid-composing on every
+     * subsequent redraw (see [updateComposing]), which needs the absolute document offset of the reclaim -
+     * read once via [InputConnection.getExtractedText]. When that is unavailable (a rare editor quirk) the
+     * reclaim is skipped outright rather than risk leaving the cursor in the wrong place.
+     *
+     * @param ic the current input connection
+     * @param tap the raw tap to record for the reclaimed characters, or null to leave them untracked
+     */
+    private fun reclaimSurroundingWord(ic: InputConnection, tap: TapPoint?) {
+        val after = ic.getTextAfterCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
+        val reclaim = WordExtent.reclaim(tokenContextBefore, after)
+        if (reclaim.before.isEmpty() && reclaim.after.isEmpty()) {
+            return
+        }
+        var anchor = -1
+        if (reclaim.after.isNotEmpty()) {
+            val cursorAbsolute = ic.getExtractedText(ExtractedTextRequest(), 0)?.selectionStart ?: return
+            anchor = cursorAbsolute - reclaim.before.length
+        }
+        ic.deleteSurroundingText(reclaim.before.length, reclaim.after.length)
+        composing.append(reclaim.before)
+        composingFlags.addAll(List(reclaim.before.length) { TapAmbiguity.NONE })
+        if (tap != null) {
+            composingTaps.addAll(List(reclaim.before.length) { tap })
+        }
+        composingCursor = composing.length
+        composing.append(reclaim.after)
+        composingFlags.addAll(List(reclaim.after.length) { TapAmbiguity.NONE })
+        if (tap != null) {
+            composingTaps.addAll(List(reclaim.after.length) { tap })
+        }
+        composingAnchor = anchor
     }
     
     /**
@@ -1519,9 +1652,7 @@ class AdaptKeyService : InputMethodService() {
             SuggestionController.Kind.VERBATIM -> {
                 val typed = composing.toString()
                 ic.finishComposingText()
-                composing.setLength(0)
-                composingFlags.clear()
-                composingTaps.clear()
+                clearComposing()
                 controller.declineAutocorrect()
                 // S-06: repeated verbatim confirmation is a learning signal (cf. B-03).
                 learnWord(typed)
@@ -1532,9 +1663,7 @@ class AdaptKeyService : InputMethodService() {
             SuggestionController.Kind.NORMAL -> {
                 val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 ic.commitText(word + " ", 1)
-                composing.setLength(0)
-                composingFlags.clear()
-                composingTaps.clear()
+                clearComposing()
                 learnWord(word)
                 // D-43: after accepting a bar word, predict the next one so the flow continues.
                 showNextWordPredictions()

@@ -50,6 +50,19 @@ interface SuggestionProvider {
     fun diacriticRestoration(input: String, previousWord: String?): String? = null
     
     /**
+     * The autocorrection for [input], but only when it is high-confidence (D-67): a low edit cost, e.g. a
+     * single neighbouring-key substitution or better. Used to veto an A-05 split so a split never beats a
+     * much safer whole-word correction (`kleiben` -> `kleinen`, not `klei` + `en` - `b`/`n` are adjacent
+     * keys). The default falls back to [autocorrectFor], since a placeholder provider has no cost tiers to
+     * be more selective with.
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @return the high-confidence autocorrect replacement, or null when none qualifies
+     */
+    fun highConfidenceCorrection(input: String, previousWord: String?): String? = autocorrectFor(input, previousWord)
+    
+    /**
      * Next-word predictions to show once a word has been committed and no token is being composed yet
      * (D-43): the most likely words to follow [previousWord], by bigram probability. The default returns
      * none, so a non-predicting provider simply leaves the bar empty.
