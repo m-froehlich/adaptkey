@@ -31,9 +31,31 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **498 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.31** (only the third digit bumps per APK; versionCode 101). `origin/main`
-  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.31, v0.7.26…v0.7.31
-  unpushed.
+  (no warnings). **Versioned 0.7.32** (only the third digit bumps per APK; versionCode 102). `origin/main`
+  advanced to **v0.7.31** (user pushed it); working tree = v0.7.32, unpushed - awaiting a fresh device
+  round covering this batch plus v0.7.31.
+- **§17 D-64 / D-66 DONE (v0.7.32, both bugs - device-verification pending):**
+  - **D-64** (suggestion-bar drag-to-trash stopped working): root cause was a touch-arbitration race, not
+    the G-04 gesture logic itself (`DragToTrash.isArmed` was untouched and still fully tested/correct).
+    `SuggestionBarView` only tried to intercept the drag once it crossed the full `dragThresholdPx` (48dp),
+    but its parent `HorizontalScrollView` claims a gesture for its own horizontal scroll at the much
+    smaller *system* touch slop (a handful of px) - so on a real device, any natural hand tremor gave the
+    scroll view a same-or-earlier chance to steal the gesture, and the 48dp vertical drag could never win
+    the race. Fix: intercept as soon as the drag is already vertical-dominant past a new, much smaller
+    `interceptThresholdPx` (`ViewConfiguration.scaledTouchSlop`, matching what the scroll view itself
+    reacts to), while still gating the visible trash-zone / commit-on-release decision on the original
+    48dp `dragThresholdPx` - claiming the gesture early is not the same as arming it.
+  - **D-66** (key-press vibration never fires): `AdaptKeyboardView`'s `vibrator` obtained
+    `Vibrator` via `Context.getSystemService(Vibrator::class.java)`, which is deprecated from API 31 (S)
+    onward in favour of `VibratorManager.getDefaultVibrator()` - the spec's own suspect list named exactly
+    this ("VibratorManager vs Vibrator"). Now resolves through `VibratorManager` on API 31+ and the legacy
+    path below that, and the `vibrate()` call itself is wrapped in `runCatching` (matching the existing
+    `ToneGenerator` pattern in the same file) so a vendor-specific haptics failure can never take down key
+    handling. Also fixed a stale doc comment left over from the earlier `performHapticFeedback` approach
+    (superseded before D-06/D-34, per the `vibrator` field's own comment) that still claimed the feedback
+    "routes through the window system" when the code has gone straight to hardware for a while.
+  - No new unit tests - both are Android view/hardware glue over already-tested pure logic
+    (`DragToTrash.isArmed`), consistent with how the rest of this layer is tested (see D-39).
 - **§18 D-58 / D-62 / D-67 DONE (v0.7.31):** three of the round-7 backlog items.
   - **D-58** (page-change animation): [AdaptKeyboardView] gained a self-drawn slide transition -
     `switchPage(surface, symbolPage, forward)` snapshots the outgoing page's key geometry, swaps to the new

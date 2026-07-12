@@ -12,6 +12,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -69,6 +70,12 @@ class SuggestionBarView @JvmOverloads constructor(
     private var dragIntercepting = false
     private var trashArmed = false
     private val dragThresholdPx = dp(48).toFloat()
+    // D-64: the gesture must be claimed away from the HorizontalScrollView's own horizontal-scroll
+    // interception (which reacts at the much smaller system touch slop) as soon as the drag already
+    // looks vertical-dominant - otherwise the scroll view wins the race well before dragThresholdPx is
+    // ever reached and the upward drag can never arm. Claiming the gesture early only decides who owns
+    // it; whether it actually arms (shows the trash zone / commits on release) still needs dragThresholdPx.
+    private val interceptThresholdPx = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
     
     private val trashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.suggestion_trash_background)
@@ -134,11 +141,15 @@ class SuggestionBarView @JvmOverloads constructor(
             }
             
             MotionEvent.ACTION_MOVE -> {
-                // Take over the gesture once it becomes a deliberate upward drag, so the horizontal
-                // scroll keeps working for every other movement (G-04).
-                if (dragWord != null && DragToTrash.isArmed(ev.x - dragDownX, ev.y - dragDownY, dragThresholdPx)) {
+                // D-64: claim the gesture at the small interceptThresholdPx, not the larger dragThresholdPx -
+                // otherwise HorizontalScrollView's own scroll interception (system touch slop) wins the race
+                // first and the drag can never take over. Once claimed, whether it is actually armed (trash
+                // zone shown / release commits) is still gated by the full dragThresholdPx.
+                val dx = ev.x - dragDownX
+                val dy = ev.y - dragDownY
+                if (dragWord != null && DragToTrash.isArmed(dx, dy, interceptThresholdPx)) {
                     dragIntercepting = true
-                    setTrashArmed(true)
+                    setTrashArmed(DragToTrash.isArmed(dx, dy, dragThresholdPx))
                     return true
                 }
             }

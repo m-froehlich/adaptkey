@@ -12,9 +12,11 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.os.Build
 import android.os.Handler
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.os.Looper
 import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
@@ -348,7 +350,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val toneGenerator by lazy {
         runCatching { ToneGenerator(AudioManager.STREAM_SYSTEM, TONE_VOLUME) }.getOrNull()
     }
-    private val vibrator by lazy { context.getSystemService(Vibrator::class.java) }
+    // D-66: Context.getSystemService(Vibrator::class.java) is deprecated from API 31 (S) onward in favour
+    // of VibratorManager.getDefaultVibrator() - on some OEM builds targeting the newer API the legacy path
+    // silently produced no vibration at all, which matches the on-device symptom (D-06/D-34's amplitude and
+    // duration tuning never mattered because nothing reached the hardware).
+    private val vibrator: Vibrator? by lazy {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                context.getSystemService(VibratorManager::class.java)?.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Vibrator::class.java)
+            }
+        }.getOrNull()
+    }
     
     private val rowHeightPx = dp(54f)
     // D-21 (§13): a few px of cell padding between keys (Gboard-like) so they read as separate keys.
@@ -833,8 +848,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-05 / D-06: plays the optional key-press feedback, each gated by its own setting (both default
-     * off). [performHapticFeedback] routes through the window system, so no VIBRATE permission is needed
-     * (keeping AdaptKey's minimal-permission stance).
+     * off). Both go straight to hardware - a ToneGenerator click and a direct [Vibrator.vibrate] call -
+     * bypassing the system "touch sounds" / "touch vibration" toggles that silenced
+     * [AudioManager.playSoundEffect] / [performHapticFeedback] on device (D-06/D-34), which is why the
+     * app declares the VIBRATE permission itself instead of relying on the window-routed haptic API.
      */
     private fun playKeyFeedback() {
         if (soundEnabled) {
@@ -842,9 +859,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             runCatching { toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, TONE_DURATION_MS) }
         }
         if (hapticsEnabled) {
-            val v = vibrator
-            if (v != null && v.hasVibrator()) {
-                v.vibrate(VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE))
+            // D-66: wrapped like the tone generator above - a SecurityException or vendor-specific failure
+            // in the vibration path must never take down key handling with it.
+            runCatching {
+                val v = vibrator
+                if (v != null && v.hasVibrator()) {
+                    v.vibrate(VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE))
+                }
             }
         }
     }
