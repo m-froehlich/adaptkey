@@ -31,9 +31,14 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **497 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.28** (only the third digit bumps per APK; versionCode 98). `origin/main`
-  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.28, v0.7.26…v0.7.28
+  (no warnings). **Versioned 0.7.29** (only the third digit bumps per APK; versionCode 99). `origin/main`
+  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.29, v0.7.26…v0.7.29
   unpushed.
+- **D-49 DONE (v0.7.29):** the onboarding welcome text (EN/DE/EL) now foregrounds D-39 as the headline USP -
+  "reads your actual taps, not just your typing" / recovers a word even when a slip landed on a completely
+  wrong key, not just a neighbouring one - and the "learns as you go" bullet now explicitly says the
+  continuous learning (T-03/T-04, D-37) is gentle/damped: only a steady pattern moves anything, never a
+  single slip. Spec D-49 updated to match.
 - **D-39 DONE (v0.7.28, the USP):** raw-coordinate per-character correction. New `TapPoint(x,y)`
   (`touch` package) retains each composing character's raw `ACTION_DOWN` (T-02); `AdaptKeyService` now keeps
   a `composingTaps` list in lockstep with `composing`/`composingFlags` (mutated at every site that mutates

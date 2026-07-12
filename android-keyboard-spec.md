@@ -586,9 +586,12 @@ must take priority over a retroactive split. Umlauts must be treated as entirely
 exotic - for a German user anything else is incomprehensible. Reorder the correction pipeline accordingly.
 
 ### D-49 - Raw Touch-Recording as a Headline Onboarding USP
-The personal raw touch-recording / per-finger learning (T-03) is one of the app's absolute core features and
-USPs and must appear prominently on the onboarding page, phrased so an ordinary user understands it (not in
-technical terms).
+The personal raw touch-recording / per-finger learning (T-03) - and, specifically, that it lets AdaptKey
+recover a word from where a tap actually landed even when the wrong key was picked outright (D-39), not just
+a neighbouring letter - is one of the app's absolute core features and USPs and must appear prominently on the
+onboarding page, phrased so an ordinary user understands it (not in technical terms). The onboarding text must
+also make clear that the continuous learning (T-03/T-04, D-37) is deliberately gentle/damped: it improves from
+a steady pattern over time, but a single slip never noticeably shifts anything.
 
 ### D-50 - Suggestion Bar Stays Permanently Visible
 The suggestion bar must keep its row at all times, even when it is momentarily empty, so the prompt slot
