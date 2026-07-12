@@ -970,3 +970,105 @@ last-resort safety net against `requestLayout()`'s inherent async re-measure lat
   with any slack appearing as blank space above the top row. Exactly reproduces the previous top-down
   result once the height matches again (the steady state, which is when `onMeasure()` already sizes the
   view to that same content height), so this is a no-op outside the transient window.
+
+## §26 - Backlog Captured, Not Yet Implemented (v0.7.41 planning round)
+
+D-86 confirmed working ("Animation ist jetzt perfekt"); touch-zone precision from the D-71/D-73 typing-style
+work is confirmed good. Next focus area named by the user: making autocorrect quality genuinely excellent.
+This round's items are captured here as backlog, per the usual rule for a larger batch - **not started**
+until explicitly released, except where noted.
+
+### D-87 - Mid-Word Live Correction (D-62) Still Does Not Activate At All (Bug, Re-Opened)
+Despite the D-84 fix (which addressed a real, confirmed bug - the duplicated `tokenContextBefore` silencing
+suggestions/autocorrect), the user reports mid-word editing still never activates the live-correction
+behaviour at all. D-84's fix was verified logically (the duplication bug it targeted was real and clearly
+would have caused exactly the "no suggestions" symptom reported at the time), but something else is
+apparently still preventing D-62 from working, or D-84 did not fully resolve the reported case. Needs a
+fresh investigation pass - likely starting with a very precise repro description (exact keyboard/app used,
+exact tap sequence, whether *any* visible reaction happens at all e.g. does the word even get reclaimed
+into a colourable/editable token) rather than another blind fix, given the previous "fix" that logically
+should have worked apparently didn't (fully) resolve it.
+
+### D-88 - Feedback When a Suggestion Is Accepted
+Currently silent and visually unremarkable - "das ist etwas trocken und man kriegt es nicht ausreichend
+mit" (too dry, not noticeable enough). Two additions, chosen by whether D-05 key sound is enabled:
+- **Sound on**: a distinct short "plop" sample (separate from the D-70/D-83/D-85 key-click sample) plays
+  when a correction is accepted - i.e. on the autocorrect commit path in `finalizeAndCommit()` when the
+  committed word differs from what was typed, and/or when a suggestion-bar item is tapped.
+- **Sound off**: some kind of brief micro-animation on acceptance instead, so the change is still
+  noticeable without audio. Exact treatment (e.g. a quick colour flash or scale pulse on the committed
+  word, or in the suggestion bar itself) to be designed during implementation.
+
+### D-89 - Settings: a Full Feature Overview Page
+A new settings screen (or section) that lists every feature the keyboard actually has - "nur, wenn man von
+den Features weiß, kann man auch alle davon richtig nutzen" (you can only really use a feature if you know
+it exists). AdaptKey has accumulated a large, easy-to-miss feature surface (raw-coordinate correction,
+diacritic-aware autocorrect, drag-to-trash, the D-19 swipe cycle, G-01…G-05 gestures, D-36 quick paste,
+D-43 next-word prediction, the D-01 long-press popups, etc.) with no single place a user can discover them
+all. Needs its own content/copy pass, not just a settings-row stub.
+
+### D-90 - New Alt-Key Hints on the Main Letter Page: P → π, B → ×, V → ÷
+Extends [KeyboardLayout.DEFAULT_LETTER_HINTS] (L-05 / C-08) with three more math symbols, reachable by
+long-press exactly like the existing `q→@`, `e→€`, `h→#`, `m→-`, `n→+`, `d→°` hints: `p→π` (pi), `b→×`
+(multiplication sign), `v→÷` (division sign). Independent of, and complementary to, the calculator-page
+redesign below (D-92) - these stay reachable without leaving the letter page at all, and are unrelated to
+whatever the calculator page's own `×` / `÷` keys look like.
+
+### D-91 - Reverse the D-19 Horizontal Swipe Direction
+Currently a **right** swipe (`SwipeDirection.RIGHT`) advances forward through the D-19 cycle (letters →
+symbols page 1 → symbols page 2) and a **left** swipe goes back ([KeyGesture.surfaceSwipe]). User wants
+this reversed: reaching the first special/symbol page should be the **right**-swipe direction instead of
+the left. A small, self-contained, easily-reversible change - swap which [SwipeDirection] maps to
+`SWITCH_SURFACE_NEXT` vs `SWITCH_SURFACE_PREV` in `KeyGesture.surfaceSwipe()`. Does **not** touch the
+space-bar language-swipe direction (G-01, `LANGUAGE_PREV` / `LANGUAGE_NEXT`), which is unrelated and not
+mentioned. D-76/D-86's `forward` slide-direction plumbing in `AdaptKeyboardView.switchPage()` already
+mirrors whatever `forward` value it's given, so the visual slide direction will automatically follow this
+change with no separate adjustment needed there.
+
+### D-92 - Redesign Both Symbol Pages: a Real Calculator Layout, Then a Leftover-Character Catch-All
+The two `?123` pages get properly differentiated instead of being two similar-looking generic symbol grids,
+and the two separate currency keys (`€` as an `e` alt-hint, `£` as a dedicated page-2 key) become **one**
+locale-aware currency key with a popup for the rest (D-92 folds in what was originally a separate ask).
+
+**First page - a real calculator layout** (proposed starting design, explicitly meant to be refined
+further once it's actually being built):
+
+```
+Row 1:  (    )    °    √    π    ~    &    |    [1/2]  ⌫
+Row 2:  7    8    9    ÷
+Row 3:  4    5    6    ×
+Row 4:  1    2    3    −
+Row 5:  ABC  [¤]  0    [,]  +    =    [space]  ⏎
+```
+
+- Digits large and grouped as a real block (7-8-9 / 4-5-6 / 1-2-3 / 0), not spread across a single row -
+  "ein echtes Taschenrechner-Layout" (a genuine calculator layout).
+- `×`'s own alt-popup: `*` (asterisk) and `·` (middle dot, the German "Malpunkt") - explicitly requested.
+  `÷`'s alt-popup was not fully specified; proposing `/` and `:` to mirror it (needs confirmation).
+- `=`'s alt-popup: `→` (arrow), `≈` (approximately equal, "= mit ~"), `≙` (U+2259 ESTIMATES, the German
+  "entspricht"-sign, "Gleich mit Dach").
+- This page's own `2` and `3` keys (not the main page's number row, which is untouched) get `²` / `³` as
+  alt-hints.
+- `[¤]` is the new consolidated currency key (see below): base glyph depends on the system/keyboard
+  language (`€` for German), alt-popup offers the other common currencies - `$` and `£` foremost, plus a
+  few more common ones (e.g. `¥`).
+- `[,]` is the decimal separator, language-dependent (`,` in German, `.` in English); its alt is the
+  language-dependent thousands separator (`.` in German, `,` in English).
+- `[1/2]` keeps its existing role (D-19 / L-03, toggles the two special pages - now "calculator" and
+  "extra characters" rather than "symbols page 1/2").
+- `[space]`: explicitly requested smaller and "directly above the Enter key", staying bottom-right. Placed
+  inline directly left of Enter in this draft instead, since a true stacked-above-Enter placement (a
+  partial-row-height key) is not something the current row/weight-based layout engine supports yet - would
+  need a small layout-engine extension. Flagging this as an open question to resolve during implementation:
+  is the inline-adjacent placement an acceptable interpretation, or is the stacked layout worth building?
+
+**Second page - leftover / catch-all characters, no number row** (independent of the C-09 number-row
+setting, which only ever applies to the main letters page): everything not already reachable as an alt
+somewhere else (a main-page letter hint, a comma/period popup entry, or now the calculator page) is largely
+already covered once the above lands - the German-locale audit found only `@`, `_`, `"`, `'` genuinely left
+over from the old two symbol pages (`:` `;` `!` `?` already live on the comma/period popups; `#` `§` `&`
+already live as alt-hints or on the number row; `*` moves to the `×` popup; `(` `)` `°` `√` `π` `~` `|` `=`
+`£` `¥` all move to the calculator page). Per the invitation to add common characters to fill the now
+sparser page: proposing `•` `©` `±` and the bracket family `{ }` `[ ]` `< >` (useful for anyone typing code
+snippets or math outside the calculator page) - open for adjustment once this page is actually in front of
+someone. No sentence punctuation here by design - already well reachable on the main page.

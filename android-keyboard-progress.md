@@ -34,6 +34,33 @@ whenever a component lands so it does not have to be restated in every prompt.
   removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.41** (only
   the third digit bumps per APK; versionCode 111). `origin/main` is at **v0.7.38** (user confirmed pushed);
   working tree = v0.7.41, v0.7.39…v0.7.41 unpushed - awaiting a fresh device round covering this batch.
+- **§26 CAPTURED, NOT STARTED (still v0.7.41, no code changes this entry):** D-86 confirmed working
+  ("Animation ist jetzt perfekt"); D-71/D-73 touch-zone precision confirmed good, next focus area named:
+  autocorrect quality. User then handed over a large backlog batch explicitly framed as "für die
+  Specs/das Backlog" (invoking the usual capture-first-then-wait-for-release rule) - all captured in
+  spec.md §26, nothing implemented yet:
+  - **D-87** (bug, re-opened): mid-word live correction (D-62) still does not activate at all, despite
+    D-84's fix - that fix was for a real, logically-confirmed bug (duplicated `tokenContextBefore`
+    suppressing suggestions), but apparently did not fully resolve what the user is seeing. Needs a fresh
+    investigation with a precise repro before another fix attempt.
+  - **D-88**: feedback (a distinct "plop" sound when D-05 sound is on, a micro-animation when it's off) on
+    accepting a suggestion/autocorrect - currently silent and easy to miss.
+  - **D-89**: a full "all features" settings page - the feature surface has grown large and easy to miss.
+  - **D-90**: three new `DEFAULT_LETTER_HINTS` alt-keys on the main page - `p→π`, `b→×`, `v→÷`.
+  - **D-91**: reverse which swipe direction (`KeyGesture.surfaceSwipe`) advances vs. goes back through the
+    D-19 page cycle - small, self-contained, easily reversible once released.
+  - **D-92**: the big one - redesign both `?123` pages. First becomes a real calculator layout (digits in
+    a proper 7-8-9/4-5-6/1-2-3/0 block, arithmetic operators with their own alt-popups, `=` with
+    `→`/`≈`/`≙` alts, this page's own `2`/`3` get `²`/`³`, a new locale-aware consolidated currency key
+    with a `$`/`£`/`¥` popup replacing the old two separate currency keys, a language-dependent decimal
+    separator with the thousands separator as its alt, and a smaller space key). Second page becomes a
+    leftover/catch-all for whatever isn't reachable elsewhere any more (not many characters left over) plus
+    a few proposed filler additions (`•` `©` `±` and bracket pairs), explicitly never showing the number
+    row regardless of the C-09 setting. A full proposed ASCII layout for the calculator page is in
+    spec.md §26 D-92, flagged as a first draft to refine together once implementation starts - one open
+    question already flagged there: the "space directly above Enter" placement as requested would need a
+    small layout-engine extension (partial-row-height keys) that doesn't exist yet; proposed a same-row
+    inline-adjacent placement as a pragmatic stand-in pending the user's call.
 - **D-86 DONE (v0.7.41):** implemented the refinement flagged just below. `AdaptKeyboardView.switchPage()`
   now compares the target page's row count against the current one (new `rowsFor()`, extracted from
   `rebuildRows()`) and resizes *immediately* before the slide starts when growing into more rows (the
