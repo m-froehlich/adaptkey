@@ -28,12 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `78df15e` — v0.7.41 (§26 backlog capture, doc-only commit). Working tree = **v0.7.43**, D-89 below plus
-  D-93, not yet committed. **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12);
-  D-89 done, D-90/D-91/D-92 next. §26's D-87/D-88 remain backlog-only.
+- HEAD: `cef6f97` — v0.7.43 (D-89). Working tree = **v0.7.44**, D-90 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); D-89/D-90
+  done, D-91/D-92 next. §26's D-87/D-88 remain backlog-only.
 - Unit tests: **493 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.43** (only the third digit bumps per APK; versionCode 113). `origin/main` is
-  1 commit behind (the §26 doc-only commit, plus this session's D-93/D-89 once committed) - awaiting push.
+  warnings). **Versioned 0.7.44** (only the third digit bumps per APK; versionCode 114). `origin/main` is
+  2 commits behind (D-93, D-89; this session's D-90 once committed makes it 3) - awaiting push.
+- **D-90 DONE (v0.7.44):** `KeyboardLayout.DEFAULT_LETTER_HINTS` gained `p`→`π`, `b`→`×`, `v`→`÷` alongside
+  the existing AltGr-style set; `π` was also added to the C-08 editor's `LetterHints.PALETTE` so it stays
+  pickable for other keys and the palette-covers-all-defaults invariant test keeps holding.
 - **D-89 DONE (v0.7.43):** new `FeatureOverviewActivity` ("Was AdaptKey alles kann"), reachable from a new
   entry in the settings screen's Info & Privacy category (right after "Show introduction again"). Renders a
   scrollable list of 18 curated feature entries (adaptive touch model, diacritic-aware autocorrect,

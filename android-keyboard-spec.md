@@ -1096,3 +1096,10 @@ auto-detected languages, and the provably-offline guarantee. The entry list itse
 `FeatureOverviewActivity` just inflates it into simple title/description view pairs, covered by a Robolectric
 test that checks one view pair per entry is actually rendered. Full text in all three locales (English,
 German, Greek).
+
+### D-90 - Implemented: New Alt-Key Hints P → π, B → ×, V → ÷ (v0.7.44)
+Extended `KeyboardLayout.DEFAULT_LETTER_HINTS` with the three new math-symbol long-press hints exactly as
+specced: `p`→`π`, `b`→`×`, `v`→`÷`, alongside the existing `q→@`, `e→€`, `h→#`, `m→-`, `n→+`, `d→°`. `π` was
+also added to the C-08 editor's `LetterHints.PALETTE` (next to the already-present `×`/`÷`), so a user who
+reassigns `p` elsewhere can still pick `π` for another key, and so the existing
+`PALETTE.containsAll(DEFAULT_LETTER_HINTS.values)` invariant test keeps holding.

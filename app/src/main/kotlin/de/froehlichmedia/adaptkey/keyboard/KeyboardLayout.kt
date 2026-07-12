@@ -48,6 +48,8 @@ object KeyboardLayout {
      */
     val DEFAULT_LETTER_HINTS = mapOf(
         'q' to "@", 'e' to "€", 'h' to "#", 'm' to "-", 'n' to "+", 'd' to "°",
+        // D-90: three math-symbol hints, alongside the original AltGr-style set above.
+        'p' to "π", 'b' to "×", 'v' to "÷",
         'a' to "ä", 'o' to "ö", 'u' to "ü", 's' to "ß"
     )
     

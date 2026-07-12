@@ -53,6 +53,10 @@ class KeyboardLayoutTest {
         assertEquals("#", rows[2].byChar('h').hint)
         assertEquals("+", rows[3].byChar('n').hint)
         assertEquals("-", rows[3].byChar('m').hint)
+        // D-90: three additional math-symbol hints.
+        assertEquals("π", rows[1].byChar('p').hint)
+        assertEquals("×", rows[3].byChar('b').hint)
+        assertEquals("÷", rows[3].byChar('v').hint)
     }
     
     @Test
