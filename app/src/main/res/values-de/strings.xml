@@ -15,6 +15,46 @@
     <string name="info_license_title">Lizenz</string>
     <string name="info_license_summary">Freie Software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
 
+    <!-- D-89: vollständige Feature-Übersicht, damit kein Feature unentdeckt bleibt. -->
+    <string name="d89_title">Was AdaptKey alles kann</string>
+    <string name="d89_summary">Eine vollständige Übersicht aller Funktionen, damit nichts unentdeckt bleibt.</string>
+    <string name="d89_f01_title">Adaptives Tipp-Modell</string>
+    <string name="d89_f01_desc">Lernt aus dem normalen Tippen dein persönliches Treffermuster für jede Taste – eine kurze, optionale Kalibrierung gibt einen sofortigen Vorsprung, danach verfeinert es sich laufend weiter.</string>
+    <string name="d89_f02_title">Umlaut-bewusste Autokorrektur</string>
+    <string name="d89_f02_desc">Fehlende Diakritika (wie deutsche Umlaute und ß) werden automatisch ergänzt, wenn eindeutig, sonst als oberster Vorschlag angeboten – z. B. „konnen" → „können".</string>
+    <string name="d89_f03_title">Korrektur von Nachbartasten und Leerzeichen</string>
+    <string name="d89_f03_desc">Korrigiert Tippfehler auf benachbarten Tasten und repariert ein fehlendes oder versehentlich eingefügtes Leerzeichen zwischen zwei Wörtern.</string>
+    <string name="d89_f04_title">Autokorrektur rückgängig machen</string>
+    <string name="d89_f04_desc">Ein einzelnes Löschen direkt nach einer Autokorrektur stellt genau das wieder her, was du getippt hattest, statt nur einen Buchstaben zu löschen.</string>
+    <string name="d89_f05_title">Mehrfachauswahl per langem Druck</string>
+    <string name="d89_f05_desc">Bei Tasten mit mehr als einer Alternative öffnet ein langer Druck ein Auswahlmenü aller Alternativen, wie bei Gboard.</string>
+    <string name="d89_f06_title">Alt-Zeichen per langem Druck</string>
+    <string name="d89_f06_desc">Häufige Sonderzeichen (@, €, #, π, ×, ÷ und mehr) liegen als langer Druck direkt auf den Buchstabentasten, sodass du die Buchstabenseite kaum je verlassen musst.</string>
+    <string name="d89_f07_title">Feste Zahlenreihe</string>
+    <string name="d89_f07_desc">Ziffern stehen dauerhaft in einer eigenen Reihe über den Buchstaben, jede mit ihrem Shift-Symbol per langem Druck erreichbar; in den Einstellungen abschaltbar.</string>
+    <string name="d89_f08_title">Wischen zwischen Buchstaben und Sonderzeichen</string>
+    <string name="d89_f08_desc">Ein Wisch nach links oder rechts an beliebiger Stelle auf den Tasten wechselt zwischen der Buchstabenseite und beiden Sonderzeichen-Seiten – ohne Umweg über die kleine „?123"-Taste.</string>
+    <string name="d89_f09_title">Sprachwechsel über die Leertaste</string>
+    <string name="d89_f09_desc">Wische auf der Leertaste nach links oder rechts, um die Eingabesprache zu wechseln.</string>
+    <string name="d89_f10_title">Ganzes Wort per Wisch löschen</string>
+    <string name="d89_f10_desc">Wische auf der Löschtaste nach links, um das gesamte vorherige Wort auf einmal zu löschen.</string>
+    <string name="d89_f11_title">Wisch nach unten zum Ausblenden</string>
+    <string name="d89_f11_desc">Wische irgendwo auf der Tastatur nach unten, um sie auszublenden.</string>
+    <string name="d89_f12_title">Vorschlag per Ziehen entfernen</string>
+    <string name="d89_f12_desc">Ziehe einen Vorschlag nach oben in den erscheinenden Papierkorb, um ihn dauerhaft auszuschließen – eine bewusste Bewegung, damit das nie aus Versehen passiert.</string>
+    <string name="d89_f13_title">Nachträgliche Groß-/Kleinschreibung</string>
+    <string name="d89_f13_desc">Shift direkt nach einem fertig getippten Wort kehrt die Groß-/Kleinschreibung des ersten Buchstabens um – tippst du weiter, wird stattdessen der nächste Buchstabe großgeschrieben (praktisch für camelCase).</string>
+    <string name="d89_f14_title">Direktes Einfügen aus der Zwischenablage</string>
+    <string name="d89_f14_desc">Der Inhalt der Zwischenablage erscheint dort, wo sonst die Vorschläge stehen; ein Tipp fügt ihn ein. Passwörter werden maskiert, die Zwischenablage wird direkt danach geleert.</string>
+    <string name="d89_f15_title">Vorhersage des nächsten Worts</string>
+    <string name="d89_f15_desc">Die Vorschlagsleiste sagt ein wahrscheinliches nächstes Wort voraus, noch bevor du auch nur einen Buchstaben davon getippt hast.</string>
+    <string name="d89_f16_title">Optionale KI auf dem Gerät</string>
+    <string name="d89_f16_desc">Ein kleines Sprachmodell lässt sich einmalig herunterladen und einbinden, um Vorschläge weiter zu verbessern – es läuft vollständig auf dem Gerät, an der Offline-Garantie ändert sich nichts.</string>
+    <string name="d89_f17_title">Drei Sprachen, automatisch erkannt</string>
+    <string name="d89_f17_desc">Deutsch, Englisch und Griechisch haben je ein eigenes Wörterbuch; welche Sprache gerade aktiv ist, wird automatisch aus dem Geschriebenen erkannt.</string>
+    <string name="d89_f18_title">Nachweisbar offline</string>
+    <string name="d89_f18_desc">Diese Tastatur fordert überhaupt keine Internet-Berechtigung an – das lässt sich in den System-App-Einstellungen selbst nachprüfen.</string>
+
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Tasten</string>
     <string name="cat_suggestions">Vorschläge</string>

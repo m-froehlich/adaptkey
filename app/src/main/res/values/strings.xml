@@ -15,6 +15,46 @@
     <string name="info_license_title">Licence</string>
     <string name="info_license_summary">Free software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
 
+    <!-- D-89: full feature overview, listing everything AdaptKey does so nothing stays hidden. -->
+    <string name="d89_title">What AdaptKey can do</string>
+    <string name="d89_summary">A full overview of every feature, so nothing stays hidden.</string>
+    <string name="d89_f01_title">Adaptive touch model</string>
+    <string name="d89_f01_desc">Learns your personal tap pattern for every key from everyday typing — an optional short calibration gives it an immediate head start, and it keeps refining itself afterwards.</string>
+    <string name="d89_f02_title">Diacritic-aware autocorrect</string>
+    <string name="d89_f02_desc">Missing diacritics (like German umlauts and ß) are restored automatically when unambiguous, or offered as the top suggestion otherwise — e.g. "konnen" → "können".</string>
+    <string name="d89_f03_title">Neighbour-key and space correction</string>
+    <string name="d89_f03_desc">Fixes typos landing on an adjacent key and repairs a missed or an accidentally inserted space between two words.</string>
+    <string name="d89_f04_title">Undo an autocorrection</string>
+    <string name="d89_f04_desc">A single backspace tap right after an autocorrection restores exactly what you typed, instead of just deleting a letter.</string>
+    <string name="d89_f05_title">Multi-alternative long-press popup</string>
+    <string name="d89_f05_desc">Long-press any key that has more than one alternative to choose from all of them at once, Gboard-style.</string>
+    <string name="d89_f06_title">Alt-key symbol hints</string>
+    <string name="d89_f06_desc">Common symbols (@, €, #, π, ×, ÷ and more) sit as long-press hints directly on letter keys, so you rarely need to leave the letter page.</string>
+    <string name="d89_f07_title">Persistent number row</string>
+    <string name="d89_f07_desc">Digits stay on a row of their own above the letters, each with its shifted symbol one long-press away; switch it off in settings if you prefer.</string>
+    <string name="d89_f08_title">Swipe between letters and symbols</string>
+    <string name="d89_f08_desc">A left/right swipe anywhere on the keys cycles through the letter page and both symbol pages — no need to reach for the small "?123" key.</string>
+    <string name="d89_f09_title">Space-bar language switch</string>
+    <string name="d89_f09_desc">Swipe left or right on the space bar to switch which language you\'re typing in.</string>
+    <string name="d89_f10_title">Swipe to delete a whole word</string>
+    <string name="d89_f10_desc">Swipe left on the backspace key to delete the entire previous word in one motion.</string>
+    <string name="d89_f11_title">Swipe down to dismiss</string>
+    <string name="d89_f11_desc">Swipe downward anywhere on the keyboard to hide it.</string>
+    <string name="d89_f12_title">Drag a suggestion to the trash</string>
+    <string name="d89_f12_desc">Drag a suggestion up into the trash area that appears to permanently exclude it — a deliberate motion, so it never happens by accident.</string>
+    <string name="d89_f13_title">Retroactive capitalisation</string>
+    <string name="d89_f13_desc">Press Shift right after finishing a word to flip the case of its first letter — or, if you keep typing, the next letter is capitalised instead (handy for camelCase).</string>
+    <string name="d89_f14_title">Quick paste from the clipboard</string>
+    <string name="d89_f14_desc">Clipboard content appears where the suggestion bar normally is; tap it to paste. Passwords are masked, and the clipboard is cleared right after pasting.</string>
+    <string name="d89_f15_title">Next-word prediction</string>
+    <string name="d89_f15_desc">The suggestion bar predicts a likely next word before you\'ve typed a single letter of it.</string>
+    <string name="d89_f16_title">Optional on-device mini-AI</string>
+    <string name="d89_f16_desc">A small language model can be downloaded once and imported to sharpen suggestions further — it runs entirely on the device, so the offline guarantee never changes.</string>
+    <string name="d89_f17_title">Three languages, detected automatically</string>
+    <string name="d89_f17_desc">German, English and Greek each have their own dictionary; the active one is detected automatically from what you\'re actually writing.</string>
+    <string name="d89_f18_title">Provably offline</string>
+    <string name="d89_f18_desc">This keyboard requests no internet permission at all — check it yourself in the system\'s app settings.</string>
+
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Keys</string>
     <string name="cat_suggestions">Suggestions</string>

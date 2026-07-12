@@ -28,11 +28,22 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `78df15e` — v0.7.41 (§26 backlog capture, doc-only commit). Working tree = **v0.7.42**, D-93 below,
-  not yet committed. **Spec §12/§13/§14 complete.** §26 = current backlog (mostly not started, see below).
-- Unit tests: **490 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.42** (only the third digit bumps per APK; versionCode 112). `origin/main` is
-  1 commit behind (the §26 doc-only commit, plus this entry's D-93 once committed) - awaiting push.
+- HEAD: `78df15e` — v0.7.41 (§26 backlog capture, doc-only commit). Working tree = **v0.7.43**, D-89 below plus
+  D-93, not yet committed. **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12);
+  D-89 done, D-90/D-91/D-92 next. §26's D-87/D-88 remain backlog-only.
+- Unit tests: **493 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.43** (only the third digit bumps per APK; versionCode 113). `origin/main` is
+  1 commit behind (the §26 doc-only commit, plus this session's D-93/D-89 once committed) - awaiting push.
+- **D-89 DONE (v0.7.43):** new `FeatureOverviewActivity` ("Was AdaptKey alles kann"), reachable from a new
+  entry in the settings screen's Info & Privacy category (right after "Show introduction again"). Renders a
+  scrollable list of 18 curated feature entries (adaptive touch model, diacritic-aware autocorrect,
+  neighbour-key/space correction, autocorrect undo, long-press popups, alt-key hints, the number row, the
+  D-19 swipe, G-01…G-05 gestures, quick paste, next-word prediction, the optional tier-3 mini-AI, the three
+  auto-detected languages, provably-offline), each with a one/two-sentence description, in all three locales
+  (EN/DE/EL). The list itself lives in a pure `FeatureCatalog` object (string-resource-id pairs), unit-tested
+  without Robolectric (`FeatureCatalogTest`); `FeatureOverviewActivity` just inflates it into title/description
+  view pairs, covered by a Robolectric test (`FeatureOverviewActivityRoboTest`) checking one pair per entry
+  renders. Not yet device-tested.
 - **D-93 DONE (v0.7.42):** on the symbol/numeric pages (L-03), the dedicated page-toggle (`1/2`/`2/2`) and
   back-to-letters (`ABC`) keys are now omitted whenever D-59's `symbolKeyEnabled` setting is off - they are
   redundant with the D-19 full-field swipe, which already reaches every surface regardless of that setting.

@@ -1082,3 +1082,17 @@ keys from their rows when it is `false`; the remaining keys in each row grow to 
 automatically, since row layout already divides row width proportionally by the sum of the row's key weights
 (`AdaptKeyboardView.layoutKeys()`) - no separate weight recalculation was needed. A small, clearly-scoped,
 directly-approved fix, implemented immediately rather than queued in the §26 backlog.
+
+### D-89 - Implemented: Settings Feature Overview (v0.7.43)
+Added a new `FeatureOverviewActivity` ("Was AdaptKey alles kann" / "What AdaptKey can do"), launched from a
+new entry in the settings screen's Info & Privacy category, right after "Show introduction again". It renders
+a scrollable list of 18 curated feature entries (title + one/two-sentence description each), covering the
+adaptive touch model, diacritic-aware autocorrect, neighbour-key/space correction, post-commit autocorrect
+undo, multi-alternative long-press popups, alt-key symbol hints, the persistent number row, the D-19
+letters/symbols swipe, the G-01…G-05 gesture set (language switch, whole-word delete, dismiss, drag-to-trash,
+retroactive capitalisation), quick paste, next-word prediction, the optional tier-3 mini-AI, the three
+auto-detected languages, and the provably-offline guarantee. The entry list itself lives in a pure
+`FeatureCatalog` object (a list of string-resource-id pairs) so it is unit-testable without Robolectric;
+`FeatureOverviewActivity` just inflates it into simple title/description view pairs, covered by a Robolectric
+test that checks one view pair per entry is actually rendered. Full text in all three locales (English,
+German, Greek).

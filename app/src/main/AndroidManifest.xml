@@ -67,6 +67,12 @@
             android:label="@string/d24_title"
             android:exported="false" />
 
+        <!-- Full feature overview (D-89), launched from the settings screen's Info & Privacy category. -->
+        <activity
+            android:name=".settings.FeatureOverviewActivity"
+            android:label="@string/d89_title"
+            android:exported="false" />
+
     </application>
 
 </manifest>

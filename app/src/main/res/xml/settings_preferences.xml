@@ -21,6 +21,15 @@
             android:title="@string/onboarding_replay_title"
             android:summary="@string/onboarding_replay_summary" />
 
+        <Preference
+            android:key="d89_feature_overview"
+            android:title="@string/d89_title"
+            android:summary="@string/d89_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.FeatureOverviewActivity" />
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_layout">
