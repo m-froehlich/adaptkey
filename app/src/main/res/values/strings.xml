@@ -104,21 +104,21 @@
     <string name="onboarding_model_action">Set up model</string>
     <string name="onboarding_calibration_title">How do you type?</string>
     <string name="onboarding_calibration_body">Finally, tell AdaptKey how you usually type. It sets up realistic touch zones for your fingers right away, then keeps refining them gently as you type. Optional and changeable any time later.</string>
-    <string name="onboarding_calibration_action">Set typing pattern</string>
+    <string name="onboarding_calibration_action">Set typing style</string>
     <string name="onboarding_footer_hint">You can reach this introduction any time via Settings → Info &amp; Privacy → "Show introduction again".</string>
     <string name="onboarding_replay_title">Show introduction again</string>
     <string name="onboarding_replay_summary">Shows the first-run introduction again the next time you open the keyboard.</string>
     <string name="onboarding_replay_done">The introduction will be shown the next time you open the keyboard.</string>
 
-    <!-- Reset learned touch data (offset model T-03 + typing pattern T-04), double-confirmed. -->
+    <!-- Reset learned touch data (offset model T-03 + typing style T-04), double-confirmed. -->
     <string name="reset_learning_title">Reset learning &amp; calibration</string>
-    <string name="reset_learning_summary">Resets the learned typing pattern and touch calibration (not the dictionary).</string>
-    <string name="reset_learning_confirm1_message">The learned typing pattern and touch calibration will be deleted. Continue?</string>
+    <string name="reset_learning_summary">Resets the learned typing style and touch calibration (not the dictionary).</string>
+    <string name="reset_learning_confirm1_message">The learned typing style and touch calibration will be deleted. Continue?</string>
     <string name="reset_learning_confirm2_title">Reset permanently?</string>
     <string name="reset_learning_confirm2_message">This step cannot be undone.</string>
     <string name="reset_learning_done">Learning &amp; calibration reset.</string>
 
-    <!-- Typing pattern detection (T-04). -->
+    <!-- Typing style detection (T-04). -->
     <string name="t04_pattern_left_index">Left index finger</string>
     <string name="t04_pattern_right_index">Right index finger</string>
     <string name="t04_pattern_left_thumb">Left thumb</string>
@@ -128,19 +128,19 @@
 
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Calibration (K-01)</string>
-    <string name="k01_title">Typing pattern</string>
+    <string name="k01_title">Typing style</string>
     <string name="k01_summary">Tell AdaptKey how you type, so key detection fits you from the start (K-01).</string>
-    <string name="k01_activity_title">Typing pattern</string>
+    <string name="k01_activity_title">Typing style</string>
     <string name="k01_intro">How do you usually type? This sets up realistic touch zones for your fingers right away; ordinary typing keeps refining them gently from there.</string>
     <string name="k01_skip">Skip</string>
-    <string name="k01_done_title">Typing pattern set</string>
+    <string name="k01_done_title">Typing style set</string>
     <string name="k01_feedback_left_index">Touch zones set up for your left index finger. I\'ll keep refining them gently as you type.</string>
     <string name="k01_feedback_right_index">Touch zones set up for your right index finger. I\'ll keep refining them gently as you type.</string>
     <string name="k01_feedback_left_thumb">Touch zones set up for your left thumb. I\'ll keep refining them gently as you type.</string>
     <string name="k01_feedback_right_thumb">Touch zones set up for your right thumb. I\'ll keep refining them gently as you type.</string>
     <string name="k01_feedback_two_thumbs">Touch zones set up for two-thumb typing. I\'ll keep refining them gently as you type.</string>
     <string name="k01_feedback_unknown">Thanks! I keep learning gently as you type.</string>
-    <string name="k01_offer_title">Set your typing pattern?</string>
+    <string name="k01_offer_title">Set your typing style?</string>
     <string name="k01_offer_message">Would you like to tell AdaptKey how you type? It sets up realistic touch zones right away. You can do this any time in the settings.</string>
     <string name="k01_offer_start">Set it now</string>
     <string name="k01_offer_later">Later</string>

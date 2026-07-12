@@ -104,21 +104,21 @@
     <string name="onboarding_model_action">Ρύθμιση μοντέλου</string>
     <string name="onboarding_calibration_title">Πώς πληκτρολογείς;</string>
     <string name="onboarding_calibration_body">Τέλος, πες στο AdaptKey πώς πληκτρολογείς συνήθως. Έτσι ρυθμίζονται αμέσως ρεαλιστικές ζώνες αφής για τα δάχτυλά σου, οι οποίες βελτιώνονται με μέτρο καθώς πληκτρολογείς. Προαιρετικό και αλλάξιμο οποιαδήποτε στιγμή αργότερα.</string>
-    <string name="onboarding_calibration_action">Ορισμός μοτίβου πληκτρολόγησης</string>
+    <string name="onboarding_calibration_action">Ορισμός στυλ πληκτρολόγησης</string>
     <string name="onboarding_footer_hint">Μπορείς να δεις ξανά αυτή την εισαγωγή οποιαδήποτε στιγμή από Ρυθμίσεις → Πληροφορίες &amp; Απόρρητο → «Εμφάνιση εισαγωγής ξανά».</string>
     <string name="onboarding_replay_title">Εμφάνιση εισαγωγής ξανά</string>
     <string name="onboarding_replay_summary">Εμφανίζει ξανά την εισαγωγή πρώτης χρήσης την επόμενη φορά που θα ανοίξεις το πληκτρολόγιο.</string>
     <string name="onboarding_replay_done">Η εισαγωγή θα εμφανιστεί την επόμενη φορά που θα ανοίξεις το πληκτρολόγιο.</string>
 
-    <!-- Reset learned touch data (offset model T-03 + typing pattern T-04), double-confirmed. -->
+    <!-- Reset learned touch data (offset model T-03 + typing style T-04), double-confirmed. -->
     <string name="reset_learning_title">Επαναφορά εκμάθησης &amp; βαθμονόμησης</string>
-    <string name="reset_learning_summary">Επαναφέρει το μοτίβο πληκτρολόγησης και τη βαθμονόμηση αφής (όχι το λεξικό).</string>
-    <string name="reset_learning_confirm1_message">Το μοτίβο πληκτρολόγησης και η βαθμονόμηση αφής θα διαγραφούν. Συνέχεια;</string>
+    <string name="reset_learning_summary">Επαναφέρει το στυλ πληκτρολόγησης και τη βαθμονόμηση αφής (όχι το λεξικό).</string>
+    <string name="reset_learning_confirm1_message">Το στυλ πληκτρολόγησης και η βαθμονόμηση αφής θα διαγραφούν. Συνέχεια;</string>
     <string name="reset_learning_confirm2_title">Οριστική επαναφορά;</string>
     <string name="reset_learning_confirm2_message">Αυτό το βήμα δεν μπορεί να αναιρεθεί.</string>
     <string name="reset_learning_done">Η εκμάθηση &amp; η βαθμονόμηση επαναφέρθηκαν.</string>
 
-    <!-- Typing pattern detection (T-04). -->
+    <!-- Typing style detection (T-04). -->
     <string name="t04_pattern_left_index">Αριστερός δείκτης</string>
     <string name="t04_pattern_right_index">Δεξιός δείκτης</string>
     <string name="t04_pattern_left_thumb">Αριστερός αντίχειρας</string>
@@ -128,19 +128,19 @@
 
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Βαθμονόμηση (K-01)</string>
-    <string name="k01_title">Μοτίβο πληκτρολόγησης</string>
+    <string name="k01_title">Στυλ πληκτρολόγησης</string>
     <string name="k01_summary">Πες στο AdaptKey πώς πληκτρολογείς, ώστε η αναγνώριση πλήκτρων να σου ταιριάζει από την αρχή (K-01).</string>
-    <string name="k01_activity_title">Μοτίβο πληκτρολόγησης</string>
+    <string name="k01_activity_title">Στυλ πληκτρολόγησης</string>
     <string name="k01_intro">Πώς πληκτρολογείς συνήθως; Έτσι ρυθμίζονται αμέσως ρεαλιστικές ζώνες αφής για τα δάχτυλά σου· το κανονικό πληκτρολόγημα τις βελτιώνει με μέτρο από εκεί και πέρα.</string>
     <string name="k01_skip">Παράλειψη</string>
-    <string name="k01_done_title">Το μοτίβο πληκτρολόγησης ορίστηκε</string>
+    <string name="k01_done_title">Το στυλ πληκτρολόγησης ορίστηκε</string>
     <string name="k01_feedback_left_index">Ζώνες αφής ρυθμισμένες για τον αριστερό σου δείκτη. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
     <string name="k01_feedback_right_index">Ζώνες αφής ρυθμισμένες για τον δεξιό σου δείκτη. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
     <string name="k01_feedback_left_thumb">Ζώνες αφής ρυθμισμένες για τον αριστερό σου αντίχειρα. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
     <string name="k01_feedback_right_thumb">Ζώνες αφής ρυθμισμένες για τον δεξιό σου αντίχειρα. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
     <string name="k01_feedback_two_thumbs">Ζώνες αφής ρυθμισμένες για πληκτρολόγηση με τους δύο αντίχειρες. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
     <string name="k01_feedback_unknown">Ευχαριστώ! Συνεχίζω να μαθαίνω με μέτρο καθώς πληκτρολογείς.</string>
-    <string name="k01_offer_title">Ορισμός μοτίβου πληκτρολόγησης;</string>
+    <string name="k01_offer_title">Ορισμός στυλ πληκτρολόγησης;</string>
     <string name="k01_offer_message">Θέλεις να πεις στο AdaptKey πώς πληκτρολογείς; Αυτό ρυθμίζει αμέσως ρεαλιστικές ζώνες αφής. Μπορείς να το κάνεις οποιαδήποτε στιγμή στις ρυθμίσεις.</string>
     <string name="k01_offer_start">Ορισμός τώρα</string>
     <string name="k01_offer_later">Αργότερα</string>

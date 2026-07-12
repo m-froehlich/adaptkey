@@ -832,3 +832,29 @@ replaced and the fresh load reflects it, not the old data. The bug, if still pre
 neither direct code review nor this test have reached yet - needs a more specific repro (e.g. does it
 reproduce on the very first pattern switch of a session, or only on a second/later switch; which exact key
 still looks wrong and how).
+
+## §22 - Device-Feedback Round 11 (v0.7.35 testing)
+
+### D-79 - Rename "Typing Pattern" to "Typing Style"
+"Typing pattern" (German "Tippmuster") is ambiguous - unclear whether it means how you hold/type (T-04:
+finger/thumb) or the learned touch zones themselves (D-24). Rename the T-04 concept to "Typing style"
+("Tipp-Stil" in German) everywhere it appears as user-facing text (onboarding, the calibration screen, the
+settings entry, the reset-learning dialogs). The German D-24 "show learned touch zones" screen, which had
+confusingly reused the very same word ("Tippmuster anzeigen") for a different concept, is renamed to
+"Trefferzonen anzeigen" (matching the English/Greek versions, which already used a different word - "touch
+pattern" / «μοτίβο αφής» - for D-24 than for T-04).
+
+### D-74 Follow-Up 2 - Confirmed: Reproduces on the Very First Switch, Every Time
+User confirmed the bug reproduces immediately on the first-ever attempt to switch typing style, and on
+every subsequent attempt - ruling out any "only after a second switch" or "only with substantial prior real
+usage data" theory. Extended the investigation with a second regression test
+([CalibrationActivityRoboTest]) that drives the *real* `CalibrationActivity` UI end to end (via Robolectric's
+`ActivityController`, not just the pure store/model layer): builds the real activity, taps the real "Both
+Thumbs" button via `performClick()`, then opens a real `TouchModelActivity` and inspects its keyboard's
+`offsetModel` - exercising real layout/measurement timing, `findViewById`, and the actual click listener
+wiring, none of which a plain unit test can catch. **This test also passes** - the number row is seeded
+(confirming D-72), the persisted pattern and model are both correct, and the freshly opened
+`TouchModelActivity` reflects them accurately. Two independent regression tests at different levels (pure
+store round-trip, and full real-Activity-with-a-real-click) both pass; the root cause remains unfound in
+this code path. Reported this back to the user and asked for a much more specific repro (ideally a
+screenshot, or an exact description of which key's zone looks wrong and how).

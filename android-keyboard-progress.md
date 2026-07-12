@@ -30,10 +30,29 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **504 green** (`:app:testDebugUnitTest`, incl. 12 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.35** (only the third digit bumps per APK; versionCode 105). `origin/main`
-  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.35 device feedback without pushing them
-  first); working tree = v0.7.35, v0.7.32…v0.7.35 unpushed - awaiting a fresh device round.
+- Unit tests: **505 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.36** (only the third digit bumps per APK; versionCode 106). `origin/main`
+  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.36 device feedback without pushing them
+  first); working tree = v0.7.36, v0.7.32…v0.7.36 unpushed - awaiting a fresh device round.
+- **§22 D-79 DONE, D-74 STILL UNRESOLVED - now tested at two levels (v0.7.36):**
+  - **D-79**: renamed "Typing pattern" (DE "Tippmuster") to "Typing style" ("Tipp-Stil") everywhere it's
+    user-facing (onboarding, calibration screen, settings entry, reset dialogs) - the old name was ambiguous
+    with the D-24 learned-touch-zones concept. The German D-24 screen, which had confusingly reused the same
+    word ("Tippmuster anzeigen") for that different concept, is now "Trefferzonen anzeigen" (matching
+    EN/EL, which already used a different word there). EN/EL string *values* changed; no resource key
+    renames, so no code changes needed beyond the strings themselves.
+  - **D-74 follow-up**: user confirmed the stale-mask bug reproduces on the very first pattern-switch
+    attempt, and every one after - ruling out any theory tied to substantial prior real-usage data or repeat
+    switches specifically. Added a second regression test, `CalibrationActivityRoboTest`, one level more
+    realistic than the first (`OffsetStoreRoboTest`, §21): drives the actual `CalibrationActivity` UI via
+    Robolectric's `ActivityController` - builds the real activity, taps the real "Both Thumbs" button via
+    `performClick()` (not calling `persistPattern()` directly), then opens a real `TouchModelActivity` and
+    inspects its keyboard's live `offsetModel`. This exercises real layout/measurement timing and the actual
+    click-listener wiring that a plain unit test can't reach. **It also passes** - number row seeded (D-72
+    confirmed working), pattern and model both correctly persisted and reflected on the very first attempt.
+    Two independent tests at different levels now both pass; root cause still not found in this code path.
+    Told the user this plainly and asked for a screenshot or a precise description of which key's zone looks
+    wrong and how, since code review and testing have been exhausted here.
 - **§21 D-77 / D-78 DONE, D-74 follow-up INVESTIGATED BUT UNRESOLVED (v0.7.35):**
   - **D-77**: removed the "(recommended)" suffix from the Two Thumbs calibration button - "helps nobody,
     actively unhelpful for anyone whose real pattern differs"; the silent skip-default (D-73) already covers

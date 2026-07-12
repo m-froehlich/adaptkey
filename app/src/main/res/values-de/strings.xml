@@ -104,21 +104,21 @@
     <string name="onboarding_model_action">Modell einrichten</string>
     <string name="onboarding_calibration_title">Wie tippst du?</string>
     <string name="onboarding_calibration_body">Zum Schluss verrätst du AdaptKey, wie du normalerweise tippst. Damit werden sofort realistische Trefferzonen für deine Finger eingerichtet und behutsam weiter verfeinert, während du tippst. Optional und jederzeit später änderbar.</string>
-    <string name="onboarding_calibration_action">Tippmuster festlegen</string>
+    <string name="onboarding_calibration_action">Tipp-Stil festlegen</string>
     <string name="onboarding_footer_hint">Diese Einführung erreichst du später jederzeit über Einstellungen → Info &amp; Datenschutz → „Einführung erneut anzeigen\".</string>
     <string name="onboarding_replay_title">Einführung erneut anzeigen</string>
     <string name="onboarding_replay_summary">Zeigt die Erstnutzer-Einführung beim nächsten Öffnen der Tastatur wieder an.</string>
     <string name="onboarding_replay_done">Einführung wird beim nächsten Öffnen der Tastatur angezeigt.</string>
 
-    <!-- Reset learned touch data (offset model T-03 + typing pattern T-04), double-confirmed. -->
+    <!-- Reset learned touch data (offset model T-03 + typing style T-04), double-confirmed. -->
     <string name="reset_learning_title">Erlernung &amp; Kalibrierung zurücksetzen</string>
-    <string name="reset_learning_summary">Setzt das gelernte Tippmuster und die Touch-Kalibrierung zurück (nicht das Wörterbuch).</string>
-    <string name="reset_learning_confirm1_message">Das gelernte Tippmuster und die Touch-Kalibrierung werden gelöscht. Fortfahren?</string>
+    <string name="reset_learning_summary">Setzt den gelernten Tipp-Stil und die Touch-Kalibrierung zurück (nicht das Wörterbuch).</string>
+    <string name="reset_learning_confirm1_message">Der gelernte Tipp-Stil und die Touch-Kalibrierung werden gelöscht. Fortfahren?</string>
     <string name="reset_learning_confirm2_title">Endgültig zurücksetzen?</string>
     <string name="reset_learning_confirm2_message">Dieser Schritt kann nicht rückgängig gemacht werden.</string>
     <string name="reset_learning_done">Erlernung &amp; Kalibrierung zurückgesetzt.</string>
 
-    <!-- Typing pattern detection (T-04). -->
+    <!-- Typing style detection (T-04). -->
     <string name="t04_pattern_left_index">Linker Zeigefinger</string>
     <string name="t04_pattern_right_index">Rechter Zeigefinger</string>
     <string name="t04_pattern_left_thumb">Linker Daumen</string>
@@ -128,19 +128,19 @@
 
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Kalibrierung (K-01)</string>
-    <string name="k01_title">Tippmuster</string>
+    <string name="k01_title">Tipp-Stil</string>
     <string name="k01_summary">Sag AdaptKey, wie du tippst, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
-    <string name="k01_activity_title">Tippmuster</string>
+    <string name="k01_activity_title">Tipp-Stil</string>
     <string name="k01_intro">Wie tippst du normalerweise? Damit werden sofort realistische Trefferzonen für deine Finger eingerichtet; normales Tippen verfeinert sie danach behutsam weiter.</string>
     <string name="k01_skip">Überspringen</string>
-    <string name="k01_done_title">Tippmuster festgelegt</string>
+    <string name="k01_done_title">Tipp-Stil festgelegt</string>
     <string name="k01_feedback_left_index">Trefferzonen für deinen linken Zeigefinger eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
     <string name="k01_feedback_right_index">Trefferzonen für deinen rechten Zeigefinger eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
     <string name="k01_feedback_left_thumb">Trefferzonen für deinen linken Daumen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
     <string name="k01_feedback_right_thumb">Trefferzonen für deinen rechten Daumen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
     <string name="k01_feedback_two_thumbs">Trefferzonen für beidhändiges Daumentippen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
     <string name="k01_feedback_unknown">Danke! Ich lerne behutsam weiter, während du tippst.</string>
-    <string name="k01_offer_title">Tippmuster festlegen?</string>
+    <string name="k01_offer_title">Tipp-Stil festlegen?</string>
     <string name="k01_offer_message">Möchtest du AdaptKey sagen, wie du tippst? Das richtet sofort realistische Trefferzonen ein. Du kannst das jederzeit in den Einstellungen nachholen.</string>
     <string name="k01_offer_start">Jetzt festlegen</string>
     <string name="k01_offer_later">Später</string>
@@ -161,11 +161,11 @@
     <string name="d06_haptics_summary">Kurze Vibration bei jedem Tastendruck (Standard: aus).</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
-    <string name="d24_title">Tippmuster anzeigen</string>
+    <string name="d24_title">Trefferzonen anzeigen</string>
     <string name="d24_summary">Zeigt farbige Kreise über den Tasten, wo deine Anschläge im Schnitt landen.</string>
     <string name="d24_intro">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (Punkt) und wie stark sie streuen (Kreis). So passt sich die Tastatur an dein Tippen an.</string>
     <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
-    <string name="d24_show_button">Tippmuster anzeigen</string>
+    <string name="d24_show_button">Trefferzonen anzeigen</string>
 
     <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
     <string name="d09_record_title">Roh-Tipp-Aufzeichnung</string>
