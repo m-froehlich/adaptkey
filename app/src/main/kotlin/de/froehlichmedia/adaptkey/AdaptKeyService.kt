@@ -953,7 +953,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun handleSwipe(key: Key, direction: SwipeDirection): Boolean {
         val ic = currentInputConnection ?: return false
-        return when (KeyGesture.resolve(key.code, direction)) {
+        return when (KeyGesture.resolve(key.code, direction, surface)) {
             // G-02: delete the whole previous word.
             GestureAction.DELETE_WORD -> {
                 clearUndo()

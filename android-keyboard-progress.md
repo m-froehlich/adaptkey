@@ -28,12 +28,26 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `90d25ac` — v0.7.44 (D-90). Working tree = **v0.7.45**, D-91 below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); D-89/D-90/D-91
-  done, D-92 (the big one) next. §26's D-87/D-88 remain backlog-only.
-- Unit tests: **493 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.45** (only the third digit bumps per APK; versionCode 115). `origin/main` is
-  3 commits behind (D-93, D-89, D-90; this session's D-91 once committed makes it 4) - awaiting push.
+- HEAD: `4bc6de5` — v0.7.45 (D-91). Working tree = **v0.7.46**, D-92 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); all four done
+  this session. §26's D-87/D-88 remain backlog-only, next up per the user's stated focus on autocorrect quality.
+- Unit tests: **499 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.46** (only the third digit bumps per APK; versionCode 116). `origin/main` is
+  4 commits behind (D-93, D-89, D-90, D-91; this session's D-92 once committed makes it 5) - awaiting push.
+- **D-92 DONE (v0.7.46):** rebuilt `SymbolLayout` into a real calculator page 1 (digit block 7-8-9/4-5-6/1-2-3,
+  operators with alt-popups `× → * × ·`, `÷ → / ÷ :`, `= → = → ≈ ≙`, this page's own `²`/`³` hints on 2/3, a
+  consolidated `¤` currency key with `$ £ € ¥` popup, `,` decimal separator with `.` thousands-separator hint,
+  a deliberately smaller inline space key) and a leftover catch-all page 2 (`@ _ " ' • © ±` + bracket family,
+  no number row, no sentence punctuation, normal-sized space). Currency base and decimal separator are
+  hardcoded to `€`/comma rather than truly language-branched - both selectable active alphabets (German,
+  Greek) agree on these, so real locale-branching would be speculative until English (if ever) becomes
+  selectable. Space stays inline left of Enter per the user's explicit call, not a new stacked-above-Enter
+  layout-engine feature. Also, per the user's addendum while making that call: `KeyGesture.resolve()` gained a
+  `surface` parameter so the G-01 space-bar language swipe only fires on the letters surface - the symbol
+  pages' space key (old and new) now falls through to the ordinary D-19 surface swipe instead, fixing a latent
+  bug where it inadvertently switched language. D-93's `symbolKeyEnabled` gating carries over to both new
+  pages. Not yet device-tested - this is the item most in need of real-device visual/ergonomic feedback of the
+  whole session (crowded row 5, digit-block proportions, popup readability).
 - **D-91 DONE (v0.7.45):** reversed which `SwipeDirection` maps to `SWITCH_SURFACE_NEXT` vs.
   `SWITCH_SURFACE_PREV` in `KeyGesture.surfaceSwipe()` - left now advances letters → symbols-1 → symbols-2,
   right goes back. G-01 (space-bar language swipe) and G-02 (delete-word swipe) are untouched; the D-76/D-86

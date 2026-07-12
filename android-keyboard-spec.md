@@ -1113,3 +1113,45 @@ combined `?123` key's horizontal swipe) is affected. The visual slide direction
 (`AdaptKeyboardView.switchPage()`'s `forward` plumbing from D-76/D-86) automatically follows, since it already
 mirrors whatever `forward` value it is given - no separate change needed, exactly as anticipated when D-91
 was captured.
+
+### D-92 - Implemented: Redesigned Both Symbol Pages (v0.7.46)
+Rebuilt `SymbolLayout` per the §26 draft. Before implementing, the user resolved the one open question the
+draft had flagged: the space key stays **inline, directly left of Enter** (no layout-engine extension for
+partial-height rows) - "machen wir das erstmal inline neben Enter und schauen, wie es wirkt. Umbauen können
+wir es immer noch."
+
+**Page 1 - calculator** (5 rows): row 1 is `( ) ° √ π ~ & | [1/2] ⌫` (8 everyday symbols, then the page
+toggle, then backspace - reordered from the old convention of leading with the toggle, to match the D-92
+draft exactly); rows 2-4 are the digit block `7 8 9 ÷` / `4 5 6 ×` / `1 2 3 −`, each cell equally weighted so
+the three rows form a genuine grid; row 5 is `ABC ¤ 0 , + = [space] ⏎`. `×`'s alt-popup is `* × ·` (asterisk
+and the German "Malpunkt" middle dot, as requested); `÷`'s mirrors it with `/ ÷ :` (not fully specified in the
+draft, decided per the "needs confirmation" note there); `=`'s is `= → ≈ ≙` (arrow, "≈", and the German
+"Gleich mit Dach"). This page's own `2`/`3` keys carry `²`/`³` as long-press hints (the main number row is
+untouched). `¤` is the new consolidated currency key: base glyph `€` with `$ £ € ¥` one long-press away. The
+decimal separator `,` carries `.` as its thousands-separator hint. Both the currency base and the decimal
+separator are **hardcoded to the German/European convention** rather than actually locale-aware: the app's
+only two selectable input alphabets (German, Greek - English is auto-detected for autocorrect but never
+becomes the active alphabet) both use `€` and the comma decimal separator, so there is currently no case
+where they would differ - wiring an actual `Language`-dependent branch into the `keyboard` package (which
+today deliberately has no dependency on the `language` package) would be speculative complexity for a
+distinction that cannot yet be observed. Revisit if English ever becomes a selectable active alphabet. The
+bottom row's `[space]` is deliberately smaller than the normal space bar (a local `CALC_SPACE_WEIGHT = 1.5f`,
+not exposed via `KeyProportions` since it is a fixed per-page design choice, not a user setting) - this is the
+most crowded row in the whole keyboard.
+
+**Page 2 - leftover catch-all** (3 rows, no number row regardless of C-09): row 1 is `@ _ " ' • © ± [1/2] ⌫`
+(the German-locale audit's leftover characters); row 2 is the bracket family `{ } [ ] < >`; row 3 is
+`ABC [space] ⏎` with the normal-sized space bar (this row is not crowded) and deliberately no comma/period -
+already well reachable on the main page.
+
+Both pages keep D-93's `symbolKeyEnabled` gating: the page-toggle and `ABC` keys are omitted when the
+combined `?123` key is disabled, on both pages' row 1 and bottom row respectively.
+
+**D-92 addendum, raised by the user while resolving the space-key question:** "Der Sprachwechsel ist hier
+natürlich nicht nötig. Den brauchen wir nur auf der Hauptseite" - the G-01 space-bar language swipe should
+only apply on the letters surface, not on the (now also present, and smaller) space key on the symbol pages.
+`KeyGesture.resolve()` gained a `surface: InputSurface = InputSurface.LETTERS` parameter; on any surface other
+than `LETTERS`, a horizontal swipe on `KeyCode.SPACE` now falls through to the ordinary D-19 surface-swipe
+behaviour instead of switching language. `AdaptKeyService.handleSwipe()` passes its current `surface` through.
+This also fixes the same latent behaviour on the pre-D-92 symbol pages, which already had a space key that
+inadvertently switched language on a horizontal swipe.

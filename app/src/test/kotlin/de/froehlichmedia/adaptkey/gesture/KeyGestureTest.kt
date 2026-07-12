@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.gesture
 
+import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -39,6 +40,22 @@ class KeyGestureTest {
     @Test
     fun `an upward swipe on the space bar carries no action`() {
         assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.UP))
+    }
+    
+    @Test
+    fun `D-92 horizontal swipes on the space key only switch language on the letters surface`() {
+        assertEquals(
+            GestureAction.LANGUAGE_PREV,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.LEFT, InputSurface.LETTERS)
+        )
+        assertEquals(
+            GestureAction.SWITCH_SURFACE_NEXT,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.LEFT, InputSurface.SYMBOLS)
+        )
+        assertEquals(
+            GestureAction.SWITCH_SURFACE_PREV,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.RIGHT, InputSurface.SYMBOLS)
+        )
     }
     
     @Test
