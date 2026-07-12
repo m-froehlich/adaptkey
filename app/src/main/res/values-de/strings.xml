@@ -163,7 +163,8 @@
     <!-- Touch-pattern visualisation (D-24). -->
     <string name="d24_title">Trefferzonen anzeigen</string>
     <string name="d24_summary">Zeigt farbige Kreise über den Tasten, wo deine Anschläge im Schnitt landen.</string>
-    <string name="d24_intro">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (Punkt) und wie stark sie streuen (Kreis). So passt sich die Tastatur an dein Tippen an.</string>
+    <string name="d24_intro_1">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (der Punkt) und wie stark sie streuen (der Kreis).</string>
+    <string name="d24_intro_2">So passt sich die Tastatur an dein Tippen an.</string>
     <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
     <string name="d24_show_button">Trefferzonen anzeigen</string>
 

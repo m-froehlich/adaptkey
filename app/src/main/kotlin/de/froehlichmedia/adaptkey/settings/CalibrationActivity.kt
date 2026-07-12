@@ -46,12 +46,16 @@ class CalibrationActivity : AppCompatActivity() {
         
         // §13 / K-01 fix: Android 15 (targetSdk 35) draws the activity edge-to-edge, so the embedded
         // keyboard's bottom row would sit under the gesture pill / navigation bar. Pad the whole screen up
-        // by the bottom system-bar + gesture inset, exactly like the live keyboard's input view does.
+        // by the bottom system-bar + gesture inset, exactly like the live keyboard's input view does. D-80:
+        // the top also needs the status bar / display cutout inset, or the intro text starts right under a
+        // front camera cutout.
         val root = findViewById<View>(R.id.calibration_root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            v.setPadding(0, v.paddingTop, 0, maxOf(bars.bottom, gestures.bottom))
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
         

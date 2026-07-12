@@ -163,7 +163,8 @@
     <!-- Touch-pattern visualisation (D-24). -->
     <string name="d24_title">Show touch pattern</string>
     <string name="d24_summary">Shows coloured circles over the keys where your taps land on average.</string>
-    <string name="d24_intro">The coloured circles show where your key taps land on average (dot) and how much they scatter (circle). This is how the keyboard adapts to your typing.</string>
+    <string name="d24_intro_1">The coloured circles show where your key taps land on average (the dot) and how much they scatter (the circle).</string>
+    <string name="d24_intro_2">This is how the keyboard adapts to your typing.</string>
     <string name="d24_empty">Nothing learned yet. Type for a while or start the calibration.</string>
     <string name="d24_show_button">Show touch pattern</string>
 

@@ -28,12 +28,16 @@ class TouchModelActivity : AppCompatActivity() {
         setContentView(R.layout.activity_touch_model)
         title = getString(R.string.d24_title)
         
-        // Match the live keyboard's edge-to-edge bottom inset so the keys clear the gesture bar.
+        // Match the live keyboard's edge-to-edge bottom inset so the keys clear the gesture bar. D-80: the
+        // top also needs the status bar / display cutout inset - without it, edge-to-edge drawing lets the
+        // intro text start right under a front camera cutout.
         val root = findViewById<View>(R.id.touch_model_root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            v.setPadding(0, v.paddingTop, 0, maxOf(bars.bottom, gestures.bottom))
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
         

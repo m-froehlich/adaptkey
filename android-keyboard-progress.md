@@ -31,9 +31,24 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **505 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.36** (only the third digit bumps per APK; versionCode 106). `origin/main`
-  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.36 device feedback without pushing them
-  first); working tree = v0.7.36, v0.7.32…v0.7.36 unpushed - awaiting a fresh device round.
+  (no warnings). **Versioned 0.7.37** (only the third digit bumps per APK; versionCode 107). `origin/main`
+  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.37 device feedback without pushing them
+  first); working tree = v0.7.37, v0.7.32…v0.7.37 unpushed - awaiting a fresh device round.
+- **D-74 RESOLVED (cause unconfirmed) + §23 D-80 DONE (v0.7.37):**
+  - **D-74**: user confirmed the switch now works correctly, seeded zones look right, deliberate D-68/D-71
+    overlap into neighbouring keys noted as expected (not a bug). None of the intervening changes (§21/§22:
+    label removal, dead-row cleanup, rename, two new tests) touched the actual persist/load mechanism, so
+    the fix can't be attributed with certainty - most likely the original D-74 service-side staleness guard
+    reaching the user's device only now, though a one-off render/device quirk during the earlier failing
+    attempts can't be ruled out either.
+  - **D-80** (`TouchModelActivity`'s D-24 intro text sits under the front-camera cutout): root cause was
+    identical to a pre-existing gap in `CalibrationActivity` too - both screens' window-insets handling only
+    padded for the *bottom* inset (nav bar / gesture pill, for the keyboard preview), never the *top*
+    (status bar / display cutout), so edge-to-edge drawing let text start right under a front camera. Both
+    now also inset for `WindowInsetsCompat.Type.statusBars()` / `.displayCutout()`. Also gave the D-24 intro
+    the more spacious two-paragraph treatment requested: split into `d24_intro_1` / `d24_intro_2` (replacing
+    the single `d24_intro` string, all 3 locales), larger font, more margin - there being little text and
+    plenty of vertical space to use above the keyboard preview.
 - **§22 D-79 DONE, D-74 STILL UNRESOLVED - now tested at two levels (v0.7.36):**
   - **D-79**: renamed "Typing pattern" (DE "Tippmuster") to "Typing style" ("Tipp-Stil") everywhere it's
     user-facing (onboarding, calibration screen, settings entry, reset dialogs) - the old name was ambiguous

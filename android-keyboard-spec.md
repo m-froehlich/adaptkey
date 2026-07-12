@@ -858,3 +858,25 @@ wiring, none of which a plain unit test can catch. **This test also passes** - t
 store round-trip, and full real-Activity-with-a-real-click) both pass; the root cause remains unfound in
 this code path. Reported this back to the user and asked for a much more specific repro (ideally a
 screenshot, or an exact description of which key's zone looks wrong and how).
+
+### D-74 - Resolved (Unconfirmed Cause)
+User confirmed the switch now works correctly and the seeded zones look right (including the deliberate
+D-68/D-71 overlap into neighbouring keys' territory at the far reach - by design, not a bug). Neither of
+this round's changes (§21/§22: label removal, dead-row cleanup, the rename, two new tests) touched the
+actual persist/load mechanism, so the fix cannot be attributed with certainty to anything in this
+conversation - most likely D-74's original service-side staleness guard, if the user's device had not yet
+picked up that build during the earlier failing attempts, though a one-off device/render quirk cannot be
+ruled out either.
+
+## §23 - Device-Feedback Round 12 (v0.7.36 testing)
+
+### D-80 - "Show Touch Zones" Intro Text Sits Under the Front-Camera Cutout
+The [TouchModelActivity] (D-24) intro text starts right at the very top of an edge-to-edge screen, so it is
+partially obscured by a front camera cutout. Root cause: the screen's window-insets handling (matching
+[CalibrationActivity], which has the identical bug for its own top-of-screen intro text) only accounted for
+the bottom inset (navigation bar / gesture pill, for the keyboard preview at the bottom); nothing padded the
+top for the status bar / display cutout. Both screens now also inset for `WindowInsetsCompat.Type.statusBars()`
+and `WindowInsetsCompat.Type.displayCutout()`. While fixing this, also gave the D-24 intro a more generous,
+readable presentation as requested: split into two clearly separated paragraphs (`d24_intro_1` /
+`d24_intro_2`, replacing the single `d24_intro` string), a larger font size, and more breathing room -
+there being little text and plenty of empty space above the keyboard preview to use.
