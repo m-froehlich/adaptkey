@@ -30,10 +30,48 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **505 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.38** (only the third digit bumps per APK; versionCode 108). `origin/main`
-  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.38 device feedback without pushing them
-  first); working tree = v0.7.38, v0.7.32…v0.7.38 unpushed - awaiting a fresh device round.
+- Unit tests: **488 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric; down from 505 - D-09's tests
+  removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.39** (only
+  the third digit bumps per APK; versionCode 109). `origin/main` is at **v0.7.38** (user confirmed pushed);
+  working tree = v0.7.39, unpushed - awaiting a fresh device round covering this batch.
+- **§24 D-82…D-84 DONE + D-09 REMOVED (v0.7.39), plus a device-feedback status sweep:**
+  - **D-82** (D-76 follow-up: slide still bled into the gesture area): the deferred `requestLayout()` from
+    D-76 freezes the view's measured height at the *outgoing* page's height for the whole animation: when
+    growing into a page with more rows, the incoming page's extra row drew below the still-old bounds and,
+    since the container disables `clipChildren` for the D-53 popup overflow, bled straight through into the
+    reserved bottom gesture-nav inset padding. Fixed by explicitly clipping key drawing to the view's own
+    current bounds in `onDraw` (slide and plain case both), leaving the long-press popup outside that clip
+    so D-53's own overflow keeps working. Cost: a growing page's extra row is briefly clipped (invisible)
+    until the resize lands at the end of the slide, rather than bleeding into the gesture area.
+  - **D-83** (D-70 follow-up: sound too loud + slightly delayed, both confirmed good in character):
+    `CLICK_VOLUME` 0.9 → 0.3 (SoundPool volume is linear, not dB - a much bigger perceived cut than the
+    numbers alone suggest). For the delay: re-encoded the sample at 48 kHz (many devices mix natively at
+    48 kHz; 44.1 kHz could need on-the-fly resampling), moved the async `SoundPool` decode to fire the
+    moment the D-05 setting turns on instead of lazily on the first key press, and switched
+    `AudioAttributes` usage from `USAGE_ASSISTANCE_SONIFICATION` to `USAGE_GAME` (SoundPool's own
+    documented low-latency recommendation for one-shot effects).
+  - **D-84** (D-62 bug: mid-word editing produced **no suggestions at all**): `reclaimSurroundingWord()`
+    captured `tokenContextBefore` before deleting the reclaimed fragment from the real editable, but never
+    trimmed it afterwards - so the fragment ended up duplicated (once in `tokenContextBefore`'s tail, once
+    inside `composing`), corrupting every `"$tokenContextBefore $typed"`-style string built later and
+    silently tripping the A-03 language classifier into treating the context as foreign, suppressing
+    suggestions and autocorrect entirely - specific to the mid-word reclaim path, which is exactly what the
+    user reported. Fixed by trimming `tokenContextBefore` right after the reclaim.
+  - **D-09 removed entirely** (explicit instruction: "bitte komplett aufräumen"): `RawTapRecorder`,
+    `CalibrationSentences`, `CalibrationSession` and their tests, `AdaptKeyboardView.OnRawTapListener` /
+    `onRawTapListener`, the `recordRawTaps` setting across the whole settings stack, and the `d09_*` strings
+    (all 3 locales) are all deleted rather than repurposed - test count dropped from 505 to 488 as a result
+    (the removed classes' own tests went with them, not a coverage loss).
+  - **Device-feedback status from this round** (no code changes for these, just recording the verdicts):
+    D-58/D-76 slide direction confirmed correct and no longer wobbly (D-82 above addresses the residual
+    gesture-area bleed); **D-61 confirmed working** (Enter honours the editor's IME action); **D-64
+    accepted as-is** ("nicht ganz intuitiv, aber daran kann man sich gewöhnen" - no further changes
+    planned); **D-67/D-69 confirmed correct** ("kleiben" now correctly stays "kleiben" rather than being
+    auto-corrected or split, since it is genuinely ambiguous); **D-66/D-75 vibration confirmed STILL not
+    firing** despite the VibratorManager + `USAGE_TOUCH` migration - three targeted API-level fixes across
+    three rounds (D-06, D-34, D-66/D-75) have not resolved it, so this needs a device-side diagnostic next
+    (does *any* app vibrate on this device at all; is there a system-level "vibration & haptics" master
+    toggle involved) rather than another blind code change.
 - **§23 D-81 DONE (v0.7.38):** the same cutout/status-bar gap as D-80, but for the first-run onboarding
   panel - while shown, `AdaptKeyService` stretches the whole input view to the full screen height
   (`setOnboardingShown()`), so its top can reach a front-camera cutout too, but the insets listener only

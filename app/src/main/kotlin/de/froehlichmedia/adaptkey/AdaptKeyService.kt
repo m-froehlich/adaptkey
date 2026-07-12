@@ -1481,6 +1481,13 @@ class AdaptKeyService : InputMethodService() {
             anchor = cursorAbsolute - reclaim.before.length
         }
         ic.deleteSurroundingText(reclaim.before.length, reclaim.after.length)
+        // D-84: the reclaimed "before" fragment moves into composing now, so it is no longer part of the
+        // context *preceding* the token - trim it from tokenContextBefore too, or it would appear twice
+        // (once here at its tail, once inside composing) in every "$tokenContextBefore $typed"-style string
+        // built later (refreshSuggestions(), finalizeAndCommit()). That duplication was silently confusing
+        // the A-03 language classifier into misreading the context as foreign and suppressing suggestions
+        // and autocorrect entirely for the rest of the token - the reported "no suggestions at all" bug.
+        tokenContextBefore = tokenContextBefore.dropLast(reclaim.before.length)
         composing.append(reclaim.before)
         composingFlags.addAll(List(reclaim.before.length) { TapAmbiguity.NONE })
         if (tap != null) {

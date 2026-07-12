@@ -167,12 +167,4 @@
     <string name="d24_intro_2">Έτσι προσαρμόζεται το πληκτρολόγιο στην πληκτρολόγησή σου.</string>
     <string name="d24_empty">Δεν έχουν μαθευτεί δεδομένα ακόμη. Πληκτρολόγησε για λίγο ή ξεκίνα τη βαθμονόμηση.</string>
     <string name="d24_show_button">Εμφάνιση μοτίβου αφής</string>
-
-    <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
-    <string name="d09_record_title">Καταγραφή ακατέργαστων πατημάτων</string>
-    <string name="d09_record_summary">Καταγράφει τις ακατέργαστες συντεταγμένες πατημάτων κατά τη βαθμονόμηση, ώστε τα λάθη να αναλύονται εκτός σύνδεσης (προεπιλογή: ανενεργό).</string>
-    <string name="d09_export_button">Εξαγωγή δεδομένων πατημάτων</string>
-    <string name="d09_export_subject">AdaptKey καταγραφή ακατέργαστων πατημάτων</string>
-    <string name="d09_export_chooser">Κοινή χρήση δεδομένων πατημάτων</string>
-    <string name="d09_export_empty">Δεν καταγράφηκαν δεδομένα πατημάτων.</string>
 </resources>

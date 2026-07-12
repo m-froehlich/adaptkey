@@ -143,15 +143,13 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `the feedback and diagnostics toggles default off and pass through when set (D-05, D-06, D-09)`() {
+    fun `the feedback toggles default off and pass through when set (D-05, D-06)`() {
         val defaults = SettingsMapper.toAdaptSettings(RawSettings())
         assertFalse(defaults.keySoundEnabled)
         assertFalse(defaults.keyHapticsEnabled)
-        assertFalse(defaults.recordRawTaps)
         
-        val enabled = SettingsMapper.toAdaptSettings(RawSettings(keySoundEnabled = true, keyHapticsEnabled = true, recordRawTaps = true))
+        val enabled = SettingsMapper.toAdaptSettings(RawSettings(keySoundEnabled = true, keyHapticsEnabled = true))
         assertTrue(enabled.keySoundEnabled)
         assertTrue(enabled.keyHapticsEnabled)
-        assertTrue(enabled.recordRawTaps)
     }
 }

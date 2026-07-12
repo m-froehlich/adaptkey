@@ -167,12 +167,4 @@
     <string name="d24_intro_2">So passt sich die Tastatur an dein Tippen an.</string>
     <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
     <string name="d24_show_button">Trefferzonen anzeigen</string>
-
-    <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
-    <string name="d09_record_title">Roh-Tipp-Aufzeichnung</string>
-    <string name="d09_record_summary">Zeichnet bei der Kalibrierung die rohen Tipp-Koordinaten auf, um Tippfehler offline zu analysieren (Standard: aus).</string>
-    <string name="d09_export_button">Tipp-Daten exportieren</string>
-    <string name="d09_export_subject">AdaptKey Roh-Tipp-Aufzeichnung</string>
-    <string name="d09_export_chooser">Tipp-Daten teilen</string>
-    <string name="d09_export_empty">Keine Tipp-Daten aufgezeichnet.</string>
 </resources>

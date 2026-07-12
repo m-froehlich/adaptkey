@@ -167,12 +167,4 @@
     <string name="d24_intro_2">This is how the keyboard adapts to your typing.</string>
     <string name="d24_empty">Nothing learned yet. Type for a while or start the calibration.</string>
     <string name="d24_show_button">Show touch pattern</string>
-
-    <!-- Raw-tap recording during calibration (D-09, diagnostic). -->
-    <string name="d09_record_title">Raw-tap recording</string>
-    <string name="d09_record_summary">Records the raw tap coordinates during calibration so typos can be analysed offline (default: off).</string>
-    <string name="d09_export_button">Export tap data</string>
-    <string name="d09_export_subject">AdaptKey raw-tap recording</string>
-    <string name="d09_export_chooser">Share tap data</string>
-    <string name="d09_export_empty">No tap data recorded.</string>
 </resources>

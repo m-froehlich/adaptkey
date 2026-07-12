@@ -115,18 +115,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var onLongPressPopupListener: OnLongPressPopupListener? = null
     
     /**
-     * Callback invoked at every ACTION_DOWN with the raw contact point and the resolved key's centre
-     * (D-09 diagnostic). Set only by the calibration screen when raw-tap recording is enabled; null (and
-     * therefore free) during normal typing.
-     */
-    fun interface OnRawTapListener {
-        
-        fun onRawTap(keyId: String, keyCenterX: Float, keyCenterY: Float, tapX: Float, tapY: Float)
-    }
-    
-    var onRawTapListener: OnRawTapListener? = null
-    
-    /**
      * D-03: the label drawn on the space bar, showing the current input language (e.g. "Deutsch",
      * "English", "Ελληνικά") instead of the word "Space". Set by the service when the language changes.
      */
@@ -301,6 +289,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /** D-05: whether a click sound plays on each key press (default off). */
     var soundEnabled: Boolean = false
+        set(value) {
+            field = value
+            // D-83: pre-warm the async SoundPool decode the moment the setting turns on, instead of only
+            // on the first key press - removes a decode-related delay on that very first tap.
+            if (value) {
+                ensureClickSoundLoaded()
+            }
+        }
     
     /** D-06: whether a short vibration fires on each key press (default off). */
     var hapticsEnabled: Boolean = false
@@ -375,8 +371,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // Vibrator directly (below).
     private val soundPool by lazy {
         runCatching {
+            // D-83: USAGE_GAME routes through the audio policy's lowest-latency path for short one-shot
+            // effects (SoundPool's own reference usage) - a key click is exactly that kind of sound, and
+            // USAGE_ASSISTANCE_SONIFICATION was measurably slower to start on device.
             val attributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_GAME)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build()
             SoundPool.Builder().setMaxStreams(SOUND_MAX_STREAMS).setAudioAttributes(attributes).build()
@@ -566,6 +565,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        // D-82: the container disables clipChildren (D-53) so the long-press popup can overflow upward
+        // over the suggestion bar - but that same permissiveness let D-76's deferred-resize slide bleed
+        // past this view's own (temporarily stale) bounds into the bottom gesture-nav inset padding when
+        // growing into a page with more rows. Key drawing is explicitly clipped to the view's own current
+        // bounds to prevent that, regardless of the container's clipChildren setting; the popup below is
+        // deliberately drawn outside this clip so its own overflow keeps working.
+        canvas.save()
+        canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
         // D-58: while a page switch is animating, the outgoing page slides out and the current (new) page
         // slides in from the opposite edge; slideSign carries the direction (see switchPage()).
         if (slideOutKeyRects.isNotEmpty()) {
@@ -580,6 +587,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         } else {
             drawKeys(canvas, keyRects)
         }
+        canvas.restore()
         if (showTouchModel) {
             drawTouchModel(canvas)
         }
@@ -683,8 +691,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // T-03: feed the confirmed tap back into the personal offset model.
                 // event.size (T-04) lets the model track contact area for typing-pattern detection.
                 offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y, event.size)
-                // D-09: forward the raw tap + resolved key centre for the calibration diagnostic (opt-in).
-                onRawTapListener?.onRawTap(key.id, rect.centerX(), rect.centerY(), event.x, event.y)
                 // T-05: classify the raw contact point into the space/letter ambiguity bands.
                 pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
                 scheduleLongPress(key)
@@ -1102,10 +1108,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
         private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
         
-        // D-05 / D-70: key-click sample playback volume (SoundPool's 0f..1f linear range) and concurrent
-        // stream budget (an accidental rapid multi-touch must not drop/queue clicks awkwardly). D-06: haptic
-        // pulse duration (D-34: long enough to actually be felt - a very short pulse was imperceptible).
-        private const val CLICK_VOLUME = 0.9f
+        // D-05 / D-70 / D-83: key-click sample playback volume (SoundPool's 0f..1f linear range - not dB,
+        // so this is a much bigger perceived cut than the number alone suggests) and concurrent stream
+        // budget (an accidental rapid multi-touch must not drop/queue clicks awkwardly). D-83: dropped from
+        // 0.9 - noticeably too loud on device, wanted at least ~50% quieter, more like ~65% here to be sure.
+        // D-06: haptic pulse duration (D-34: long enough to actually be felt - a very short pulse was
+        // imperceptible).
+        private const val CLICK_VOLUME = 0.3f
         private const val SOUND_MAX_STREAMS = 4
         private const val HAPTIC_DURATION_MS = 40L
         

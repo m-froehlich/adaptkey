@@ -29,8 +29,6 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           consulted (§9); drives the tier-3 orchestration, inert while the backend is the no-op stub
  * @property keySoundEnabled whether a click sound plays on each key press (D-05, default off)
  * @property keyHapticsEnabled whether a short vibration fires on each key press (D-06, default off)
- * @property recordRawTaps whether raw tap coordinates are recorded during a calibration session for
- *           offline diagnostics (D-09, opt-in, default off)
  * @property extraSpaceBelowNumberRowDp extra vertical spacing (dp) inserted below the number row (D-55,
  *           0-25, default 7), to cut mis-taps between the digits and the top letter row
  * @property extraSpaceAboveSpaceRowDp extra vertical spacing (dp) inserted above the space/enter row
@@ -49,7 +47,6 @@ data class AdaptSettings(
     val llmActivationThreshold: LlmActivationThreshold = LlmActivationThreshold.DEFAULT,
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
-    val recordRawTaps: Boolean = false,
     val emojiPanelEnabled: Boolean = true,
     val longPressDelayMs: Long = DEFAULT_LONGPRESS_DELAY_MS,
     val extraSpaceBelowNumberRowDp: Int = DEFAULT_EXTRA_SPACING_DP,

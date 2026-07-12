@@ -891,3 +891,49 @@ Fixed the same way as D-80: also inset for `statusBars()` / `displayCutout()`. D
 so this reports (and adds) zero extra padding there then, exactly mirroring how the bottom inset already
 behaved regardless of onboarding state - no risk of adding unwanted blank space above the keyboard during
 normal typing.
+
+## §24 - Device-Feedback Round 13 (v0.7.38 testing)
+
+### D-82 - Page-Slide Still Bleeds Into the Gesture Area (D-76 Follow-Up)
+The D-76 wobble is gone, but the slide can still visibly draw into the bottom gesture-nav inset padding.
+Root cause: D-76 deferred `requestLayout()` until the slide animation ends, so the view's own measured
+height stays frozen at the *outgoing* page's height for the whole animation - when sliding into a page with
+*more* rows (e.g. symbols, 4 rows, into letters, 5 rows with the number row shown), the incoming page's
+extra row is positioned below the view's still-old, shorter bounds. Because the container disables
+`clipChildren` (D-53, so the long-press popup can overflow upward over the suggestion bar), that overflow
+was never clipped and bled straight through into the reserved bottom-inset padding. Fixed by explicitly
+clipping the key-drawing canvas to the view's own current bounds during `onDraw` (both the slide and the
+plain case), leaving the long-press popup draw call outside that clip so its own D-53 overflow keeps
+working. The visible cost: a page that grows by a row briefly clips that row until the deferred resize
+lands at the end of the slide, rather than letting it bleed into the gesture area.
+
+### D-83 - Key-Click Sound: Too Loud and Slightly Delayed
+Two follow-ups to D-70's typewriter-click sample, both confirmed good in character:
+- **Volume**: `CLICK_VOLUME` cut from `0.9` to `0.3` (SoundPool's volume range is linear, not dB, so this
+  is a much bigger perceived cut than the raw numbers suggest) - comfortably past the requested "at least
+  50% quieter".
+- **Perceived delay**: three changes, each addressing a plausible source of `SoundPool` startup/output
+  latency: (1) the bundled sample is re-encoded at 48 kHz (many devices mix natively at 48 kHz; the
+  previous 44.1 kHz file could need on-the-fly resampling), (2) the async decode is now kicked off the
+  moment the D-05 sound setting turns on rather than lazily on the first key press, so there is no
+  decode-in-progress window during actual typing, and (3) `AudioAttributes.USAGE_GAME` replaces
+  `USAGE_ASSISTANCE_SONIFICATION` - the usage `SoundPool`'s own reference documentation recommends for
+  low-latency one-shot effects, and measurably faster to start on device for this exact class of sound.
+
+### D-84 - Mid-Word Editing (D-62) Produces No Suggestions At All (Bug)
+D-62's `reclaimSurroundingWord()` captures `tokenContextBefore` (via `captureTokenContext()`) *before*
+deleting the reclaimed "before" fragment from the real editable, but never trims it back afterwards - so
+the reclaimed fragment ends up duplicated: once as `tokenContextBefore`'s trailing text, once inside
+`composing` itself. Every `"$tokenContextBefore $typed"`-style string built later
+(`refreshSuggestions()`, `finalizeAndCommit()`) therefore contained a repeated word fragment, which was
+silently confusing the A-03 language classifier into misreading the context as foreign and suppressing
+suggestions *and* autocorrect entirely for the rest of the token - exactly the reported "no suggestions
+appear" symptom, and specific to the mid-word reclaim path (an ordinary end-of-word token never has this
+duplication). Fixed by trimming the reclaimed length off `tokenContextBefore` right after the reclaim.
+
+### D-09 - Raw-Tap Recording: Removed Entirely
+Per explicit instruction ("bitte komplett aufräumen"), the D-09 diagnostic - orphaned since D-68 replaced
+the sentence-based calibration it recorded against - is now gone rather than repurposed: `RawTapRecorder`,
+`CalibrationSentences`, `CalibrationSession` and their tests, `AdaptKeyboardView.OnRawTapListener` /
+`onRawTapListener` and its D-09 forwarding call, the `recordRawTaps` setting (`AdaptSettings`,
+`RawSettings`, `SettingsMapper`, `SettingsStore`), and the `d09_*` strings (all 3 locales) are all deleted.
