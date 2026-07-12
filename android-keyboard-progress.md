@@ -46,7 +46,9 @@ whenever a component lands so it does not have to be restated in every prompt.
     D-53's popups already intentionally overflow) rather than eliminate the timing issue outright. Flagged
     to the user as worth doing but not started - pure discussion so far.
   - **D-85**: `CLICK_VOLUME` halved again, `0.3` (D-83) → `0.15` - D-83 was a clear improvement but still
-    not "dezent" (subtle) enough per the user.
+    not "dezent" (subtle) enough per the user. **Confirmed by the user: "perfekt" at 0.15; the D-83 latency
+    fixes (48kHz sample, eager decode, `USAGE_GAME`) also confirmed "ziemlich erträglich" (quite
+    tolerable).** D-70/D-83/D-85 sound work is done unless something regresses.
 - **§24 D-82…D-84 DONE + D-09 REMOVED (v0.7.39), plus a device-feedback status sweep:**
   - **D-82** (D-76 follow-up: slide still bled into the gesture area): the deferred `requestLayout()` from
     D-76 freezes the view's measured height at the *outgoing* page's height for the whole animation: when
