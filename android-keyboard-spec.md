@@ -951,4 +951,22 @@ yet, pending confirmation.
 
 ### D-85 - Key-Click Sound: Halved Again
 D-83's 0.3 volume was a clear improvement but still not "dezent" (subtle) enough. `CLICK_VOLUME` halved
-again to `0.15`.
+again to `0.15`. **Confirmed by the user: "perfekt", and the D-83 latency work "ziemlich erträglich"
+(quite tolerable)** - the sound-feedback thread is done unless something regresses.
+
+### D-86 - Page-Slide: Resize Before Growing, After Shrinking; Bottom-Aligned Rows
+D-82's clip fix confirmed no more bleed into the gesture area, but user pointed out a related artifact it
+doesn't address: shrinking into a page with *fewer* rows can make that page suddenly appear pinned to the
+*top* edge of the still-larger (not yet resized) container, instead of staying anchored to the bottom where
+the user expects the space/enter row to be. Two changes, layered on top of D-82's clip (kept as a
+last-resort safety net against `requestLayout()`'s inherent async re-measure latency):
+- `switchPage()` now compares the target page's row count against the current one (`rowsFor()`, extracted
+  from `rebuildRows()`) and resizes *immediately*, before starting the slide, when growing into more rows -
+  the incoming page is never short on space in the first place. Shrinking into fewer rows still defers the
+  resize until the slide ends, exactly as D-76 originally fixed (avoiding a visible mid-slide jump).
+- `layoutKeys()` now lays rows out bottom-up (anchored just above `paddingBottom`) instead of top-down.
+  Whenever the view's current height does not (yet) match what `rows` needs - the transient window either
+  direction change leaves during its animation - the bottom-most row stays pinned to its usual position,
+  with any slack appearing as blank space above the top row. Exactly reproduces the previous top-down
+  result once the height matches again (the steady state, which is when `onMeasure()` already sizes the
+  view to that same content height), so this is a no-op outside the transient window.

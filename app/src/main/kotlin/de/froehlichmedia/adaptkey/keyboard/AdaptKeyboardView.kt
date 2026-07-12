@@ -176,11 +176,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * is skipped, and the very first switch - before the view has a width to animate across - falls back to
      * an immediate change.
      *
-     * D-76: [surface] / [symbolPage]'s own `requestLayout()` (via [rebuildRows]) is deferred until the
-     * animation ends. Letters and the numeric/symbol layer do not have the same row count (the number row
-     * is optional on letters but always shown on symbols), so applying the resize immediately would jump
-     * the whole view's height - and everything below the shortened rows, most visibly the bottom-most space
-     * row - out from under the still-running slide.
+     * D-76 / D-86: letters and the numeric/symbol layer do not have the same row count (the number row is
+     * optional on letters but always shown on symbols), so [surface] / [symbolPage]'s own `requestLayout()`
+     * (via [rebuildRows]) needs care around the slide: resizing *immediately* when growing into more rows
+     * means the incoming page never has to wait for extra space, while resizing only *after* the slide when
+     * shrinking into fewer rows avoids visibly jumping the whole view's height out from under the
+     * still-running slide. Either way, [layoutKeys] lays rows out bottom-up, so whichever page has fewer
+     * rows than the view's current (possibly not yet resized) height keeps its bottom-most row - typically
+     * space/enter - pinned to its usual position, with any slack as blank space above the top row, instead
+     * of the whole page jumping to sit at the top edge of an oversized container. [onDraw] additionally
+     * clips key drawing to the view's own bounds as a last-resort safety net against the brief mismatch
+     * window `requestLayout()`'s inherently asynchronous re-measure leaves even for the "resize immediately"
+     * case.
      *
      * @param newSurface the surface to show
      * @param newSymbolPage the numeric/symbol page to show; only meaningful when [newSurface] is
@@ -198,10 +205,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
         slideAnimator?.cancel()
         val outgoing = ArrayList(keyRects)
+        // D-86: growing into more rows resizes right away, so the incoming page is never short on space;
+        // shrinking into fewer still defers the resize until the slide ends (D-76's original fix, avoiding
+        // a visible mid-slide jump).
+        val growing = rowsFor(newSurface, newSymbolPage).size > rows.size
         deferRequestLayout = true
         surface = newSurface
         symbolPage = newSymbolPage
         deferRequestLayout = false
+        if (growing) {
+            requestLayout()
+        }
         slideOutKeyRects = outgoing
         // D-76: forward slides the outgoing page off to the right (matching a right/"next" swipe dragging
         // it away) and brings the new page in from the left - see drawKeys()'s use of slideSign.
@@ -483,7 +497,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     private fun rebuildRows() {
-        rows = when (surface) {
+        rows = rowsFor(surface, symbolPage)
+        if (width > 0) {
+            layoutKeys(width)
+        }
+        requestLayout()
+        invalidate()
+    }
+    
+    /**
+     * The key rows for [targetSurface] / [targetSymbolPage], without touching [rows] itself (D-86: lets
+     * [switchPage] compare the target's row count against the current one before committing to it, to
+     * decide whether the resize should happen before or after the slide).
+     */
+    private fun rowsFor(targetSurface: InputSurface, targetSymbolPage: Int): List<List<Key>> {
+        return when (targetSurface) {
             // G-01: the letter surface is either the Latin QWERTZ layout or the Greek alphabet.
             InputSurface.LETTERS -> if (greek) {
                 GreekLayout.rows(proportions, showNumberRow)
@@ -491,15 +519,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 KeyboardLayout.rows(proportions, showNumberRow, letterHints)
             }
             
-            InputSurface.SYMBOLS -> SymbolLayout.rows(symbolPage, proportions)
+            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions)
             // The emoji panel is a separate view; this surface is never actually drawn.
             InputSurface.EMOJI -> emptyList()
         }
-        if (width > 0) {
-            layoutKeys(width)
-        }
-        requestLayout()
-        invalidate()
     }
     
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -517,7 +540,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         keyRects.clear()
         val left = paddingLeft.toFloat()
         val usableWidth = totalWidth - paddingLeft - paddingRight
-        var top = paddingTop.toFloat() + gapPx
+        // D-86: anchored to the bottom (just above paddingBottom), not the top - see switchPage() for why:
+        // whenever this view's current height doesn't (yet) match what `rows` needs (a page switch mid-
+        // slide), the bottom-most row (typically space/enter) stays pinned to its usual position and any
+        // slack lands as blank space above the top row, instead of the whole page sitting at the
+        // container's top edge. Exactly reproduces the old top-down result once height matches rows again
+        // (onMeasure() sizes the view to that same contentHeight plus padding, so top ends up at
+        // paddingTop + gapPx either way in the steady state).
+        val contentHeight = rows.size * rowHeightPx + gapPx + extraSpacingPx()
+        var top = height - paddingBottom - contentHeight + gapPx
         
         for (row in rows) {
             // D-55: extra gap directly above the space/enter row.

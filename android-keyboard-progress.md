@@ -31,9 +31,21 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **488 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric; down from 505 - D-09's tests
-  removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.40** (only
-  the third digit bumps per APK; versionCode 110). `origin/main` is at **v0.7.38** (user confirmed pushed);
-  working tree = v0.7.40, v0.7.39…v0.7.40 unpushed - awaiting a fresh device round covering this batch.
+  removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.41** (only
+  the third digit bumps per APK; versionCode 111). `origin/main` is at **v0.7.38** (user confirmed pushed);
+  working tree = v0.7.41, v0.7.39…v0.7.41 unpushed - awaiting a fresh device round covering this batch.
+- **D-86 DONE (v0.7.41):** implemented the refinement flagged just below. `AdaptKeyboardView.switchPage()`
+  now compares the target page's row count against the current one (new `rowsFor()`, extracted from
+  `rebuildRows()`) and resizes *immediately* before the slide starts when growing into more rows (the
+  incoming page is never short on space), while still deferring the resize until the slide ends when
+  shrinking into fewer (D-76's original mid-slide-jump fix, unchanged for this direction).
+  `layoutKeys()` also now lays rows out bottom-up (anchored above `paddingBottom`) instead of top-down, so
+  whichever page is momentarily shorter than the view's current (not-yet-resized) height keeps its
+  bottom-most row (space/enter) pinned to its usual position instead of the whole page jumping to sit at
+  the container's top edge - exactly reproduces the old top-down result once the height matches again (a
+  no-op outside the transient mismatch window). D-82's clip-to-bounds fix is kept as a last-resort safety
+  net for the brief window `requestLayout()`'s async re-measure still leaves even for the "resize
+  immediately" case. Not yet device-tested.
 - **§25 D-85 DONE, D-82 CONFIRMED FIXED + a flagged refinement idea (v0.7.40):**
   - **D-82 confirmed fixed** - user verified no more bleed into the gesture area.
   - **D-82 refinement idea (not implemented, awaiting confirmation)**: user proposed either always drawing
