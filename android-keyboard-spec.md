@@ -788,3 +788,17 @@ the (already-bypassed) "touch vibration" toggle. `VibrationAttributes.USAGE_TOUC
 Android itself documents for on-screen-keyboard-style UI feedback and should be requested explicitly where
 available. Still needs device confirmation - this may ultimately be a device/OS-level vibration-intensity
 restriction outside the app's control.
+
+## §20 - Device-Feedback Round 9 (v0.7.33 testing, D-58 follow-up)
+
+### D-76 - Page-Slide Animation Runs Backwards and Resizes Mid-Slide (Bug)
+Two bugs in the D-58 slide animation:
+- The slide direction is inverted relative to the usual "content follows the finger" page-swipe feel (as
+  in a photo gallery or any carousel): a forward swipe/tap must slide the outgoing page off in the swipe
+  direction and bring the new page in from the *opposite* edge, not the other way around.
+- The whole keyboard does not animate as one piece - at minimum the space row visibly moves separately,
+  looking wobbly. Root cause: the letter and numeric/symbol surfaces do not have the same row count (the
+  number row is optional on letters, C-09, but always shown on symbols), so `AdaptKeyboardView.rebuildRows()`
+  calling `requestLayout()` immediately on a page switch resizes the whole view mid-slide - everything below
+  the row-count difference, most visibly the bottom-most space row, visibly jumps out from under the
+  still-running animation. The resize must be deferred until the slide animation completes.

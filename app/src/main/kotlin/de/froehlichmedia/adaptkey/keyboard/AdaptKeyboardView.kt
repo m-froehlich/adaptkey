@@ -181,10 +181,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     /**
      * D-58: switches to [newSurface] (and, for the numeric/symbol layer, [newSymbolPage]) with a
      * perceptible slide, instead of the instant [surface] / [symbolPage] swap - the plain redraw was easy
-     * to miss. The new page arrives from the right for [forward] transitions (advancing through the D-19
-     * cycle, or drilling into the numeric layer) and from the left otherwise, mirroring the swipe or tap
-     * that triggered the change. A no-op switch (already showing the target) is skipped, and the very
-     * first switch - before the view has a width to animate across - falls back to an immediate change.
+     * to miss. [forward] mirrors the swipe/tap that triggered the change - matching a page-swipe's usual
+     * "content follows the finger" feel (D-76): a forward transition (a right swipe / D-19 next, or
+     * drilling into the numeric layer) slides the outgoing page off to the **right** and brings the new
+     * page in from the **left**; backward is the mirror image. A no-op switch (already showing the target)
+     * is skipped, and the very first switch - before the view has a width to animate across - falls back to
+     * an immediate change.
+     *
+     * D-76: [surface] / [symbolPage]'s own `requestLayout()` (via [rebuildRows]) is deferred until the
+     * animation ends. Letters and the numeric/symbol layer do not have the same row count (the number row
+     * is optional on letters but always shown on symbols), so applying the resize immediately would jump
+     * the whole view's height - and everything below the shortened rows, most visibly the bottom-most space
+     * row - out from under the still-running slide.
      *
      * @param newSurface the surface to show
      * @param newSymbolPage the numeric/symbol page to show; only meaningful when [newSurface] is
@@ -202,10 +210,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
         slideAnimator?.cancel()
         val outgoing = ArrayList(keyRects)
+        deferRequestLayout = true
         surface = newSurface
         symbolPage = newSymbolPage
+        deferRequestLayout = false
         slideOutKeyRects = outgoing
-        slideSign = if (forward) 1f else -1f
+        // D-76: forward slides the outgoing page off to the right (matching a right/"next" swipe dragging
+        // it away) and brings the new page in from the left - see drawKeys()'s use of slideSign.
+        slideSign = if (forward) -1f else 1f
         slideT = 0f
         val animator = ValueAnimator.ofFloat(0f, 1f)
         animator.duration = SLIDE_DURATION_MS
@@ -217,6 +229,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             override fun onAnimationEnd(animation: Animator) {
                 slideAnimator = null
                 slideOutKeyRects = emptyList()
+                // D-76: the resize deferred above is applied now that the slide has finished.
+                requestLayout()
                 invalidate()
             }
         })
@@ -301,6 +315,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var slideOutKeyRects: List<Pair<Key, RectF>> = emptyList()
     private var slideSign = 1f
     private var slideT = 0f
+    // D-76: while true, requestLayout() (below) is a no-op - see switchPage()'s KDoc for why.
+    private var deferRequestLayout = false
+    
+    override fun requestLayout() {
+        if (deferRequestLayout) {
+            return
+        }
+        super.requestLayout()
+    }
     
     // T-05: classifies a bottom-row tap into the space/letter ambiguity bands. Computed at ACTION_DOWN
     // from the raw contact point and carried to the listener on release for later token-level repair.

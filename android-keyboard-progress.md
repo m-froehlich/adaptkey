@@ -31,9 +31,25 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **503 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.33** (only the third digit bumps per APK; versionCode 103). `origin/main`
-  is at **v0.7.31** (user pushed it, then reported v0.7.32 device feedback without pushing v0.7.32 first);
-  working tree = v0.7.33, v0.7.32 + v0.7.33 unpushed - awaiting a fresh device round.
+  (no warnings). **Versioned 0.7.34** (only the third digit bumps per APK; versionCode 104). `origin/main`
+  is at **v0.7.31** (user pushed it, then reported v0.7.32/v0.7.33 device feedback without pushing them
+  first); working tree = v0.7.34, v0.7.32…v0.7.34 unpushed - awaiting a fresh device round.
+- **§20 D-76 DONE (v0.7.34, D-58 follow-up, both bugs - device-verification pending):**
+  `AdaptKeyboardView.switchPage()` had two bugs in the D-58 page-slide:
+  - **Backwards direction**: `slideSign` was assigned the wrong sign - a forward transition slid the new
+    page in from the right and the outgoing page out to the left, the opposite of the usual page-swipe
+    "content follows the finger" feel (a forward/right swipe should drag the current page off to the
+    **right**, revealing the new one from the **left**, like a photo gallery). Fixed by flipping the sign.
+  - **Wobbly / not-one-piece slide**: letters (5 rows with the C-09 number row shown, the default) and the
+    numeric/symbol layer (always 4 rows - the number row is not optional there) have different row counts,
+    so `rebuildRows()`'s `requestLayout()` resized the whole view **immediately** on a page switch, while
+    the slide animation was still running - everything below the row-count difference, most visibly the
+    bottom-most space row, visibly jumped mid-slide. Fixed with a new `deferRequestLayout` flag (an
+    overridden `requestLayout()` that no-ops while true): the resize from `surface =` / `symbolPage =` is
+    now suppressed for the duration of the slide and only applied once the animation's `onAnimationEnd`
+    fires (both on natural completion and on `cancel()`, e.g. a rapid double-swipe).
+  - No new tests - pure View/animation glue (`ValueAnimator`, `requestLayout()` timing), consistent with
+    how this layer is tested elsewhere.
 - **§19 D-69…D-75 DONE (v0.7.33, round-8 device feedback - device-verification pending):**
   - **D-69** (autocorrect bug, "immernoch" → "immer och" instead of "immer noch"): `TokenRepair.trySplit`'s
     "drop a character" strategy returned unconditionally whenever it found any candidate at all, without
