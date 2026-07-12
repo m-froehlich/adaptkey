@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.keyboard
 
+import java.util.Locale
+
 /**
  * D-92: the two `?123` pages, reached by a long-press or upward swipe on the combined emoji / `?123` key
  * (L-03). Page 1 is a genuine calculator layout (digit block, arithmetic operators, currency, decimal
@@ -27,17 +29,6 @@ object SymbolLayout {
     private const val SQUARED_HINT = "²"
     private const val CUBED_HINT = "³"
     
-    // Page 1: one consolidated currency key - € is the base glyph (the only actively selectable input
-    // alphabets, German and Greek, are both Eurozone currencies), with the other common currencies one
-    // long-press away.
-    private const val CURRENCY_BASE = '€'
-    private val CURRENCY_ALTERNATIVES = listOf("$", "£", "€", "¥")
-    
-    // Page 1: the decimal separator - comma is what both actively selectable alphabets (German, Greek)
-    // use - with the full stop as its long-press thousands-separator alternative.
-    private const val DECIMAL_SEPARATOR = ','
-    private const val THOUSANDS_SEPARATOR_HINT = "."
-    
     // Page 1's bottom row is the most crowded row in the whole keyboard (D-92), so its space key is
     // deliberately smaller than the letter/page-2 space bar (C-01's spaceWeight), placed inline directly
     // left of Enter rather than the requested "stacked above Enter" (which would need a layout-engine
@@ -61,17 +52,25 @@ object SymbolLayout {
      *        dedicated page-toggle (`1/2`) and back-to-letters (`ABC`) keys on this layer are redundant
      *        with the D-19 full-field swipe, so they are dropped and the remaining keys in their rows
      *        grow to fill the freed space (D-93)
+     * @param locale the system locale the calculator page's currency key and decimal/thousands
+     *        separators are resolved from ([CalculatorLocale]); defaults to the JVM default locale
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      * @throws IllegalArgumentException if [page] is not 1 or 2
      */
-    fun rows(page: Int, proportions: KeyProportions = KeyProportions.DEFAULT, symbolKeyEnabled: Boolean = true): List<List<Key>> {
+    fun rows(
+        page: Int,
+        proportions: KeyProportions = KeyProportions.DEFAULT,
+        symbolKeyEnabled: Boolean = true,
+        locale: Locale = Locale.getDefault()
+    ): List<List<Key>> {
         requireValidPage(page)
-        return if (page == 1) calculatorRows(proportions, symbolKeyEnabled) else catchAllRows(proportions, symbolKeyEnabled)
+        return if (page == 1) calculatorRows(proportions, symbolKeyEnabled, locale) else catchAllRows(proportions, symbolKeyEnabled)
     }
     
-    private fun calculatorRows(proportions: KeyProportions, symbolKeyEnabled: Boolean): List<List<Key>> {
+    private fun calculatorRows(proportions: KeyProportions, symbolKeyEnabled: Boolean, locale: Locale): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         val symbolWeight = proportions.thirdRowLetterWeight(CALC_ROW1_SYMBOL_COUNT)
+        val format = CalculatorLocale.resolve(locale)
         
         result.add(buildList {
             CALC_ROW1_SYMBOLS.forEach { c -> add(charKey(c, weight = symbolWeight)) }
@@ -96,9 +95,9 @@ object SymbolLayout {
             if (symbolKeyEnabled) {
                 add(Key(label = "ABC", code = KeyCode.LETTERS, weight = proportions.symbolWeight))
             }
-            add(charKey(CURRENCY_BASE, alternatives = CURRENCY_ALTERNATIVES))
+            add(charKey(format.currencyBase, alternatives = format.currencyAlternatives))
             add(charKey('0'))
-            add(charKey(DECIMAL_SEPARATOR, hint = THOUSANDS_SEPARATOR_HINT, weight = proportions.commaWeight))
+            add(charKey(format.decimalSeparator, hint = format.thousandsSeparatorHint, weight = proportions.commaWeight))
             add(charKey('+'))
             add(charKey('=', alternatives = EQUALS_ALTERNATIVES))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = CALC_SPACE_WEIGHT))

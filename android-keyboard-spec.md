@@ -1127,17 +1127,12 @@ the three rows form a genuine grid; row 5 is `ABC ¤ 0 , + = [space] ⏎`. `×`'
 and the German "Malpunkt" middle dot, as requested); `÷`'s mirrors it with `/ ÷ :` (not fully specified in the
 draft, decided per the "needs confirmation" note there); `=`'s is `= → ≈ ≙` (arrow, "≈", and the German
 "Gleich mit Dach"). This page's own `2`/`3` keys carry `²`/`³` as long-press hints (the main number row is
-untouched). `¤` is the new consolidated currency key: base glyph `€` with `$ £ € ¥` one long-press away. The
-decimal separator `,` carries `.` as its thousands-separator hint. Both the currency base and the decimal
-separator are **hardcoded to the German/European convention** rather than actually locale-aware: the app's
-only two selectable input alphabets (German, Greek - English is auto-detected for autocorrect but never
-becomes the active alphabet) both use `€` and the comma decimal separator, so there is currently no case
-where they would differ - wiring an actual `Language`-dependent branch into the `keyboard` package (which
-today deliberately has no dependency on the `language` package) would be speculative complexity for a
-distinction that cannot yet be observed. Revisit if English ever becomes a selectable active alphabet. The
-bottom row's `[space]` is deliberately smaller than the normal space bar (a local `CALC_SPACE_WEIGHT = 1.5f`,
-not exposed via `KeyProportions` since it is a fixed per-page design choice, not a user setting) - this is the
-most crowded row in the whole keyboard.
+untouched). `¤` is the new consolidated currency key, and `,` is the decimal separator with `.` as its
+thousands-separator hint - both **resolved from the device's system locale** (see the D-92 follow-up below;
+an earlier version of this entry hardcoded both to `€`/comma, which the user corrected). The bottom row's
+`[space]` is deliberately smaller than the normal space bar (a local `CALC_SPACE_WEIGHT = 1.5f`, not exposed
+via `KeyProportions` since it is a fixed per-page design choice, not a user setting) - this is the most
+crowded row in the whole keyboard.
 
 **Page 2 - leftover catch-all** (3 rows, no number row regardless of C-09): row 1 is `@ _ " ' • © ± [1/2] ⌫`
 (the German-locale audit's leftover characters); row 2 is the bracket family `{ } [ ] < >`; row 3 is
@@ -1155,3 +1150,26 @@ than `LETTERS`, a horizontal swipe on `KeyCode.SPACE` now falls through to the o
 behaviour instead of switching language. `AdaptKeyService.handleSwipe()` passes its current `surface` through.
 This also fixes the same latent behaviour on the pre-D-92 symbol pages, which already had a space key that
 inadvertently switched language on a horizontal swipe.
+
+### D-92 follow-up - Implemented: Currency/Decimal Separator Now Follow the System Locale (v0.7.47)
+The initial D-92 implementation hardcoded the currency key to `€` and the decimal separator to comma,
+reasoning that the app's two selectable keyboard alphabets (German, Greek) never disagree on either point.
+The user corrected this: both the **keyboard-selected language** and the **system-selected language/region**
+were meant to influence these keys, with an explicit fallback rule - "bei Tastatur-sprachlicher Gleichheit
+(egal) auf das System als Entscheidung zurückfallen" (when the keyboard language is a tie, fall back to the
+system for the decision). Since German and Greek always tie on this specific point, the practical result is
+that the **system locale now always decides** - "Ein Amerikaner wird kein Verständnis für ein Komma und ein
+€ Zeichen haben," and English already exists in AdaptKey as a language, "wenn auch subtiler" (via A-03
+auto-detection, even though it is never a directly selectable keyboard alphabet).
+
+Implementation: a new pure, JVM-testable `CalculatorLocale` object (`keyboard` package) resolves a
+`java.util.Locale` into a `Format` (currency glyph + popup, decimal separator, thousands-separator hint)
+using the JDK's own locale data - `java.text.DecimalFormatSymbols` and `java.util.Currency` - rather than a
+hand-maintained table, so it is correct for locales well beyond the app's own DE/EN/EL dictionaries (verified
+for `en_US` → `$`/`.`, `en_GB` → `£`/`.`, `de_DE` → `€`/`,`, `el_GR` → `€`/`,`, `ja_JP` → the fullwidth yen
+sign). `Key.char` is a single `Char`, but not every locale's currency resolves to one glyph (a bare ISO code,
+or a locale without a resolvable country); those fall back to `€` rather than truncating or crashing.
+`SymbolLayout.rows()` gained a `locale: Locale = Locale.getDefault()` parameter (calculator page only);
+`AdaptKeyboardView` gained a `systemLocale: Locale` property threaded through the same way as
+`symbolKeyEnabled`; `AdaptKeyService.applySettings()` sets it from `resources.configuration.locales[0]` - the
+device's actual system locale, deliberately not the app's own DE/EL keyboard-alphabet toggle.

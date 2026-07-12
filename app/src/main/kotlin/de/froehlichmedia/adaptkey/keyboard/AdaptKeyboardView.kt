@@ -26,6 +26,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import androidx.core.content.ContextCompat
 import kotlin.math.abs
+import java.util.Locale
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
@@ -285,6 +286,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /**
+     * D-92: the system locale the calculator page's currency key and decimal/thousands separators are
+     * resolved from ([CalculatorLocale]) - deliberately the device's system locale, not the active
+     * keyboard alphabet (German/Greek never disagree on either point, see [CalculatorLocale]).
+     */
+    var systemLocale: Locale = Locale.getDefault()
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
     /** D-55: extra vertical spacing (dp) below the number row. */
     var extraSpaceBelowNumberRowDp: Int = 7
         set(value) {
@@ -519,7 +531,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 KeyboardLayout.rows(proportions, showNumberRow, letterHints)
             }
             
-            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, symbolKeyEnabled)
+            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, symbolKeyEnabled, systemLocale)
             // The emoji panel is a separate view; this surface is never actually drawn.
             InputSurface.EMOJI -> emptyList()
         }

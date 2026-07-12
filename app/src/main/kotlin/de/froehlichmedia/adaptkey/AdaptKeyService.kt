@@ -27,6 +27,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import java.util.Locale
 import java.util.concurrent.Executors
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
@@ -474,6 +475,9 @@ class AdaptKeyService : InputMethodService() {
             view.emojiEnabled = s.emojiPanelEnabled
             // D-59: the combined ?123 key can be disabled; with the emoji panel also off it disappears.
             view.symbolKeyEnabled = s.symbolKeyEnabled
+            // D-92: the calculator page's currency/decimal-separator keys follow the device's system
+            // locale (not the active keyboard alphabet - German and Greek never disagree on either point).
+            view.systemLocale = resources.configuration.locales.get(0)
             // D-55: extra spacing below the number row and above the space row.
             view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
             view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp

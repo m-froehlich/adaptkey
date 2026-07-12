@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.util.Locale
 
 /**
  * Unit tests for the D-92 `?123` layer: page 1 (calculator) and page 2 (leftover catch-all).
@@ -63,7 +64,7 @@ class SymbolLayoutTest {
     
     @Test
     fun `page 1 bottom row hosts abc, currency, zero, decimal separator, plus, equals, space and enter`() {
-        val bottomRow = SymbolLayout.rows(1).last()
+        val bottomRow = SymbolLayout.rows(1, locale = Locale.GERMANY).last()
         
         assertEquals(KeyCode.LETTERS, bottomRow[0].code)
         assertEquals('€', bottomRow.byChar('€').char)
@@ -74,6 +75,15 @@ class SymbolLayoutTest {
         assertEquals('+', bottomRow.byChar('+').char)
         assertEquals(KeyCode.SPACE, bottomRow[bottomRow.size - 2].code)
         assertEquals(KeyCode.ENTER, bottomRow.last().code)
+    }
+    
+    @Test
+    fun `page 1's currency and decimal separator follow the system locale, not a hardcoded default`() {
+        val usBottomRow = SymbolLayout.rows(1, locale = Locale.US).last()
+        
+        assertEquals('$', usBottomRow.byChar('$').char)
+        assertEquals('.', usBottomRow.byChar('.').char)
+        assertEquals(",", usBottomRow.byChar('.').hint)
     }
     
     @Test
@@ -116,8 +126,12 @@ class SymbolLayoutTest {
         val proportions = KeyProportions(spaceWeight = 2f, commaWeight = 3f, enterWeight = 4f)
         
         assertEquals(2f, SymbolLayout.rows(2, proportions).last().byChar(' ').weight, 1e-4f)
-        assertEquals(3f, SymbolLayout.rows(1, proportions).last().byChar(',').weight, 1e-4f)
-        assertEquals(4f, SymbolLayout.rows(1, proportions).last().first { it.code == KeyCode.ENTER }.weight, 1e-4f)
+        assertEquals(3f, SymbolLayout.rows(1, proportions, locale = Locale.GERMANY).last().byChar(',').weight, 1e-4f)
+        assertEquals(
+            4f,
+            SymbolLayout.rows(1, proportions).last().first { it.code == KeyCode.ENTER }.weight,
+            1e-4f
+        )
     }
     
     @Test

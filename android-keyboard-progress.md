@@ -28,20 +28,30 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `4bc6de5` — v0.7.45 (D-91). Working tree = **v0.7.46**, D-92 below, not yet committed.
+- HEAD: `0b4d7a8` — v0.7.46 (D-92). Working tree = **v0.7.47**, D-92 follow-up below, not yet committed.
   **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); all four done
-  this session. §26's D-87/D-88 remain backlog-only, next up per the user's stated focus on autocorrect quality.
-- Unit tests: **499 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.46** (only the third digit bumps per APK; versionCode 116). `origin/main` is
-  4 commits behind (D-93, D-89, D-90, D-91; this session's D-92 once committed makes it 5) - awaiting push.
+  this session, plus one correction round on D-92. §26's D-87/D-88 remain backlog-only, next up per the
+  user's stated focus on autocorrect quality.
+- Unit tests: **507 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.47** (only the third digit bumps per APK; versionCode 117). `origin/main` is
+  5 commits behind (D-93, D-89, D-90, D-91, D-92; this session's follow-up once committed makes it 6) -
+  awaiting push.
+- **D-92 follow-up DONE (v0.7.47):** corrected D-92's currency/decimal-separator design. The user pointed out
+  both the keyboard-selected language *and* the system-selected language/region were meant to drive these
+  keys, with the system as the tiebreaker when the keyboard language doesn't disambiguate (German and Greek
+  never do). New pure `CalculatorLocale` object resolves a `java.util.Locale` into currency glyph/popup +
+  decimal/thousands separators using the JDK's own `DecimalFormatSymbols`/`Currency` locale data (no
+  hand-maintained table) - verified for en_US ($/.), en_GB (£/.), de_DE (€/,), el_GR (€/,), ja_JP (fullwidth
+  ¥), plus a fallback to € for locales without a resolvable single-glyph currency. `SymbolLayout.rows()`
+  gained a `locale` parameter (calculator page only); `AdaptKeyboardView.systemLocale` threads it through the
+  same way as `symbolKeyEnabled`; `AdaptKeyService.applySettings()` sets it from
+  `resources.configuration.locales[0]` - the device's actual system locale, not the DE/EL keyboard toggle.
 - **D-92 DONE (v0.7.46):** rebuilt `SymbolLayout` into a real calculator page 1 (digit block 7-8-9/4-5-6/1-2-3,
   operators with alt-popups `× → * × ·`, `÷ → / ÷ :`, `= → = → ≈ ≙`, this page's own `²`/`³` hints on 2/3, a
-  consolidated `¤` currency key with `$ £ € ¥` popup, `,` decimal separator with `.` thousands-separator hint,
-  a deliberately smaller inline space key) and a leftover catch-all page 2 (`@ _ " ' • © ±` + bracket family,
-  no number row, no sentence punctuation, normal-sized space). Currency base and decimal separator are
-  hardcoded to `€`/comma rather than truly language-branched - both selectable active alphabets (German,
-  Greek) agree on these, so real locale-branching would be speculative until English (if ever) becomes
-  selectable. Space stays inline left of Enter per the user's explicit call, not a new stacked-above-Enter
+  consolidated `¤` currency key, `,` decimal separator with a thousands-separator hint (both later corrected
+  to be locale-aware, see the follow-up above), a deliberately smaller inline space key) and a leftover
+  catch-all page 2 (`@ _ " ' • © ±` + bracket family, no number row, no sentence punctuation, normal-sized
+  space). Space stays inline left of Enter per the user's explicit call, not a new stacked-above-Enter
   layout-engine feature. Also, per the user's addendum while making that call: `KeyGesture.resolve()` gained a
   `surface` parameter so the G-01 space-bar language swipe only fires on the letters surface - the symbol
   pages' space key (old and new) now falls through to the ordinary D-19 surface swipe instead, fixing a latent
