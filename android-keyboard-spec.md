@@ -1072,3 +1072,13 @@ already live as alt-hints or on the number row; `*` moves to the `×` popup; `(`
 sparser page: proposing `•` `©` `±` and the bracket family `{ }` `[ ]` `< >` (useful for anyone typing code
 snippets or math outside the calculator page) - open for adjustment once this page is actually in front of
 someone. No sentence punctuation here by design - already well reachable on the main page.
+
+### D-93 - Symbol Pages Drop `1/2` and `ABC` When the Combined `?123` Key Is Disabled *(implemented, v0.7.42)*
+When D-59's `symbolKeyEnabled` setting is off, the dedicated page-toggle (`1/2`/`2/2`) and back-to-letters
+(`ABC`) keys on the symbol/numeric pages (L-03) are redundant with the D-19 full-field swipe, which already
+reaches every surface (letters, symbols page 1, symbols page 2) regardless of that setting. `SymbolLayout.rows()`
+now takes a `symbolKeyEnabled` parameter (default `true`, matching prior behaviour) and simply omits those two
+keys from their rows when it is `false`; the remaining keys in each row grow to fill the freed space
+automatically, since row layout already divides row width proportionally by the sum of the row's key weights
+(`AdaptKeyboardView.layoutKeys()`) - no separate weight recalculation was needed. A small, clearly-scoped,
+directly-approved fix, implemented immediately rather than queued in the §26 backlog.

@@ -519,7 +519,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 KeyboardLayout.rows(proportions, showNumberRow, letterHints)
             }
             
-            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions)
+            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, symbolKeyEnabled)
             // The emoji panel is a separate view; this surface is never actually drawn.
             InputSurface.EMOJI -> emptyList()
         }

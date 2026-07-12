@@ -23,10 +23,14 @@ object SymbolLayout {
      *
      * @param page the symbol page, 1 or 2
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
+     * @param symbolKeyEnabled whether the combined `?123` key (D-59) is enabled; when it is off, the
+     *        dedicated page-toggle (`1/2`) and back-to-letters (`ABC`) keys on this layer are redundant
+     *        with the D-19 full-field swipe, so they are dropped and the remaining keys in their rows
+     *        grow to fill the freed space
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      * @throws IllegalArgumentException if [page] is not 1 or 2
      */
-    fun rows(page: Int, proportions: KeyProportions = KeyProportions.DEFAULT): List<List<Key>> {
+    fun rows(page: Int, proportions: KeyProportions = KeyProportions.DEFAULT, symbolKeyEnabled: Boolean = true): List<List<Key>> {
         requireValidPage(page)
         val rowA = if (page == 1) PAGE1_ROW_A else PAGE2_ROW_A
         val rowB = if (page == 1) PAGE1_ROW_B else PAGE2_ROW_B
@@ -37,13 +41,17 @@ object SymbolLayout {
         
         val rowBWeight = proportions.thirdRowLetterWeight(THIRD_ROW_SYMBOL_COUNT)
         result.add(buildList {
-            add(Key(label = pageLabel(page), code = KeyCode.SYMBOL_PAGE, weight = proportions.shiftWeight))
+            if (symbolKeyEnabled) {
+                add(Key(label = pageLabel(page), code = KeyCode.SYMBOL_PAGE, weight = proportions.shiftWeight))
+            }
             rowB.forEach { c -> add(charKey(c, weight = rowBWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
         result.add(buildList {
-            add(Key(label = "ABC", code = KeyCode.LETTERS, weight = proportions.symbolWeight))
+            if (symbolKeyEnabled) {
+                add(Key(label = "ABC", code = KeyCode.LETTERS, weight = proportions.symbolWeight))
+            }
             add(charKey(',', weight = proportions.commaWeight))
             add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
             add(charKey('.', weight = proportions.periodWeight))

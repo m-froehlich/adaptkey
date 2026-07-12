@@ -28,12 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
-  bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **488 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric; down from 505 - D-09's tests
-  removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.41** (only
-  the third digit bumps per APK; versionCode 111). `origin/main` is at **v0.7.38** (user confirmed pushed);
-  working tree = v0.7.41, v0.7.39…v0.7.41 unpushed - awaiting a fresh device round covering this batch.
+- HEAD: `78df15e` — v0.7.41 (§26 backlog capture, doc-only commit). Working tree = **v0.7.42**, D-93 below,
+  not yet committed. **Spec §12/§13/§14 complete.** §26 = current backlog (mostly not started, see below).
+- Unit tests: **490 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.42** (only the third digit bumps per APK; versionCode 112). `origin/main` is
+  1 commit behind (the §26 doc-only commit, plus this entry's D-93 once committed) - awaiting push.
+- **D-93 DONE (v0.7.42):** on the symbol/numeric pages (L-03), the dedicated page-toggle (`1/2`/`2/2`) and
+  back-to-letters (`ABC`) keys are now omitted whenever D-59's `symbolKeyEnabled` setting is off - they are
+  redundant with the D-19 full-field swipe, which already reaches every surface regardless of that setting.
+  `SymbolLayout.rows()` gained a `symbolKeyEnabled: Boolean = true` parameter; when `false` the two keys are
+  simply left out of their row's key list, and the remaining keys in that row grow to fill the freed space
+  automatically (row layout already divides row width proportionally by the sum of the row's key weights, so
+  no separate weight recalculation was needed). `AdaptKeyboardView.rowsFor()` now threads its existing
+  `symbolKeyEnabled` property through to `SymbolLayout.rows()`. A small, directly-approved, self-contained
+  fix - not part of the §26 backlog batch. Not yet device-tested.
 - **§26 CAPTURED, NOT STARTED (still v0.7.41, no code changes this entry):** D-86 confirmed working
   ("Animation ist jetzt perfekt"); D-71/D-73 touch-zone precision confirmed good, next focus area named:
   autocorrect quality. User then handed over a large backlog batch explicitly framed as "für die

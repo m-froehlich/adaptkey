@@ -65,6 +65,25 @@ class SymbolLayoutTest {
     }
     
     @Test
+    fun `with the combined symbol key disabled the third row drops the page toggle`() {
+        val thirdRow = SymbolLayout.rows(1, symbolKeyEnabled = false)[2]
+        
+        assertEquals(8, thirdRow.size)
+        assertEquals(KeyCode.DELETE, thirdRow.last().code)
+        assertEquals(null, thirdRow.firstOrNull { it.code == KeyCode.SYMBOL_PAGE })
+    }
+    
+    @Test
+    fun `with the combined symbol key disabled the bottom row drops abc`() {
+        val bottomRow = SymbolLayout.rows(1, symbolKeyEnabled = false).last()
+        
+        assertEquals(4, bottomRow.size)
+        assertEquals(null, bottomRow.firstOrNull { it.code == KeyCode.LETTERS })
+        assertEquals(KeyCode.SPACE, bottomRow[1].code)
+        assertEquals(KeyCode.ENTER, bottomRow[3].code)
+    }
+    
+    @Test
     fun `togglePage swaps between page 1 and 2`() {
         assertEquals(2, SymbolLayout.togglePage(1))
         assertEquals(1, SymbolLayout.togglePage(2))
