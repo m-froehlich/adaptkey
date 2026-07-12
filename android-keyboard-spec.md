@@ -880,3 +880,14 @@ and `WindowInsetsCompat.Type.displayCutout()`. While fixing this, also gave the 
 readable presentation as requested: split into two clearly separated paragraphs (`d24_intro_1` /
 `d24_intro_2`, replacing the single `d24_intro` string), a larger font size, and more breathing room -
 there being little text and plenty of empty space above the keyboard preview to use.
+
+### D-81 - The Onboarding Panel Has the Same Cutout Gap
+The same class of bug (D-80) also applies to the first-run onboarding panel: while it is shown,
+`AdaptKeyService` stretches the whole input view (`root`) to the full screen height
+(`setOnboardingShown()`), so its top can now also reach the status bar / a front-camera cutout - but its
+`setOnApplyWindowInsetsListener` only ever padded the bottom (for the gesture-nav-anchored keyboard below).
+Fixed the same way as D-80: also inset for `statusBars()` / `displayCutout()`. During ordinary typing
+`root` only wraps the (bottom-anchored) keyboard and suggestion bar and never reaches the top inset region,
+so this reports (and adds) zero extra padding there then, exactly mirroring how the bottom inset already
+behaved regardless of onboarding state - no risk of adding unwanted blank space above the keyboard during
+normal typing.

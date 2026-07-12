@@ -393,11 +393,18 @@ class AdaptKeyService : InputMethodService() {
         
         // Android 15 (targetSdk 35) draws edge-to-edge, so the input view would otherwise extend under the
         // gesture navigation pill / IME-switch button, which then overlap the bottom row (space / full stop)
-        // and steal taps. Pad the whole input view up by the bottom system-bar + gesture inset.
+        // and steal taps. Pad the whole input view up by the bottom system-bar + gesture inset. D-81: while
+        // onboarding is shown, root is stretched to the full screen height (setOnboardingShown()), so its
+        // top can now also reach the status bar / a front-camera cutout - pad that too. During ordinary
+        // typing root only wraps the (bottom-anchored) keyboard, so the window never overlaps the top
+        // inset region and this reports (and adds) zero padding there, exactly like the bottom inset
+        // already behaves.
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            v.setPadding(0, 0, 0, maxOf(bars.bottom, gestures.bottom))
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
         applySettings()

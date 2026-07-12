@@ -31,9 +31,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **505 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.37** (only the third digit bumps per APK; versionCode 107). `origin/main`
-  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.37 device feedback without pushing them
-  first); working tree = v0.7.37, v0.7.32…v0.7.37 unpushed - awaiting a fresh device round.
+  (no warnings). **Versioned 0.7.38** (only the third digit bumps per APK; versionCode 108). `origin/main`
+  is at **v0.7.31** (user pushed it, then reported v0.7.32…v0.7.38 device feedback without pushing them
+  first); working tree = v0.7.38, v0.7.32…v0.7.38 unpushed - awaiting a fresh device round.
+- **§23 D-81 DONE (v0.7.38):** the same cutout/status-bar gap as D-80, but for the first-run onboarding
+  panel - while shown, `AdaptKeyService` stretches the whole input view to the full screen height
+  (`setOnboardingShown()`), so its top can reach a front-camera cutout too, but the insets listener only
+  ever padded the bottom. Fixed identically (also inset for `statusBars()` / `displayCutout()`); during
+  ordinary typing the view never reaches the top inset region, so this adds zero extra padding there and
+  cannot push the normal keyboard down.
 - **D-74 RESOLVED (cause unconfirmed) + §23 D-80 DONE (v0.7.37):**
   - **D-74**: user confirmed the switch now works correctly, seeded zones look right, deliberate D-68/D-71
     overlap into neighbouring keys noted as expected (not a bug). None of the intervening changes (§21/§22:
