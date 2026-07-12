@@ -1108,13 +1108,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
         private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
         
-        // D-05 / D-70 / D-83: key-click sample playback volume (SoundPool's 0f..1f linear range - not dB,
-        // so this is a much bigger perceived cut than the number alone suggests) and concurrent stream
-        // budget (an accidental rapid multi-touch must not drop/queue clicks awkwardly). D-83: dropped from
-        // 0.9 - noticeably too loud on device, wanted at least ~50% quieter, more like ~65% here to be sure.
+        // D-05 / D-70 / D-83 / D-85: key-click sample playback volume (SoundPool's 0f..1f linear range -
+        // not dB, so this is a much bigger perceived cut than the number alone suggests) and concurrent
+        // stream budget (an accidental rapid multi-touch must not drop/queue clicks awkwardly). History:
+        // 0.9 (D-70) -> 0.3 (D-83, confirmed better but still not subtle) -> 0.15 (D-85, halved again).
         // D-06: haptic pulse duration (D-34: long enough to actually be felt - a very short pulse was
         // imperceptible).
-        private const val CLICK_VOLUME = 0.3f
+        private const val CLICK_VOLUME = 0.15f
         private const val SOUND_MAX_STREAMS = 4
         private const val HAPTIC_DURATION_MS = 40L
         

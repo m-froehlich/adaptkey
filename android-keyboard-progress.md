@@ -31,9 +31,22 @@ whenever a component lands so it does not have to be restated in every prompt.
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
 - Unit tests: **488 green** (`:app:testDebugUnitTest`, incl. 13 Robolectric; down from 505 - D-09's tests
-  removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.39** (only
-  the third digit bumps per APK; versionCode 109). `origin/main` is at **v0.7.38** (user confirmed pushed);
-  working tree = v0.7.39, unpushed - awaiting a fresh device round covering this batch.
+  removed with its code, see below); `:app:assembleDebug` green (no warnings). **Versioned 0.7.40** (only
+  the third digit bumps per APK; versionCode 110). `origin/main` is at **v0.7.38** (user confirmed pushed);
+  working tree = v0.7.40, v0.7.39…v0.7.40 unpushed - awaiting a fresh device round covering this batch.
+- **§25 D-85 DONE, D-82 CONFIRMED FIXED + a flagged refinement idea (v0.7.40):**
+  - **D-82 confirmed fixed** - user verified no more bleed into the gesture area.
+  - **D-82 refinement idea (not implemented, awaiting confirmation)**: user proposed either always drawing
+    pages bottom-aligned (space row at a fixed position, only the top edge moves with row count), or - if
+    that alone is not enough - resizing *before* the slide when the target page is taller and *after* it
+    when the target page is shorter, instead of D-76/D-82's blanket "always defer the resize, clip during
+    the animation". The resize-order idea is a genuinely cleaner fix for the underlying cause than the clip
+    workaround (a growing page would never need to be clipped/invisible at all), while bottom-alignment
+    alone would likely just relocate where any residual overflow lands (towards the suggestion bar, where
+    D-53's popups already intentionally overflow) rather than eliminate the timing issue outright. Flagged
+    to the user as worth doing but not started - pure discussion so far.
+  - **D-85**: `CLICK_VOLUME` halved again, `0.3` (D-83) → `0.15` - D-83 was a clear improvement but still
+    not "dezent" (subtle) enough per the user.
 - **§24 D-82…D-84 DONE + D-09 REMOVED (v0.7.39), plus a device-feedback status sweep:**
   - **D-82** (D-76 follow-up: slide still bled into the gesture area): the deferred `requestLayout()` from
     D-76 freezes the view's measured height at the *outgoing* page's height for the whole animation: when

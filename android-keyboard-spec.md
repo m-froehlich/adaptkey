@@ -937,3 +937,18 @@ the sentence-based calibration it recorded against - is now gone rather than rep
 `CalibrationSentences`, `CalibrationSession` and their tests, `AdaptKeyboardView.OnRawTapListener` /
 `onRawTapListener` and its D-09 forwarding call, the `recordRawTaps` setting (`AdaptSettings`,
 `RawSettings`, `SettingsMapper`, `SettingsStore`), and the `d09_*` strings (all 3 locales) are all deleted.
+
+## §25 - Device-Feedback Round 14 (v0.7.39 testing)
+
+### D-82 - Confirmed: No More Bleed
+User confirmed the D-82 clip fix produces no more visible bleed into the gesture area. Also raised, purely
+as a design discussion (not a defect report): why not always draw pages bottom-aligned so the space row
+sits at a fixed position and only the top edge moves with row count, or - if that alone doesn't solve it -
+resize *before* the slide when the target page is taller and *after* it when the target page is shorter
+(instead of D-76's blanket "always defer, clip during"), so a growing page never needs to be clipped at
+all. Flagged as a worthwhile refinement to pick up if the user wants it (see progress.md) - not implemented
+yet, pending confirmation.
+
+### D-85 - Key-Click Sound: Halved Again
+D-83's 0.3 volume was a clear improvement but still not "dezent" (subtle) enough. `CLICK_VOLUME` halved
+again to `0.15`.
