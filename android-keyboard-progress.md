@@ -30,10 +30,48 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 - HEAD: `1e47a56` — v0.7.16 (nice-to-haves, pushed to origin/main). (Working tree: **v0.7.17**, §15 round-4
   bug batch D-30…D-35, not yet committed.) **Spec §12/§13/§14 complete.** §15 (round 4) = current work.
-- Unit tests: **497 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
-  (no warnings). **Versioned 0.7.29** (only the third digit bumps per APK; versionCode 99). `origin/main`
-  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.29, v0.7.26…v0.7.29
+- Unit tests: **489 green** (`:app:testDebugUnitTest`, incl. 11 Robolectric); `:app:assembleDebug` green
+  (no warnings). **Versioned 0.7.30** (only the third digit bumps per APK; versionCode 100). `origin/main`
+  advanced to **v0.7.25** (user pushed v0.7.20…v0.7.25 themselves); working tree = v0.7.30, v0.7.26…v0.7.30
   unpushed.
+- **D-68 DONE (v0.7.30, big one - device-verification pending):** replaced the three-sentence auto-detected
+  calibration (T-04) with an explicit typing-pattern picker that seeds sensible initial per-key touch zones
+  directly - the auto-detection could not reliably classify from so little data and, when wrong, seeded
+  zones badly with no way to recover quickly (the offset model has no forgetting mechanism).
+  - **`TypingPattern`** now has 5 real patterns (`LEFT_INDEX_FINGER`, `RIGHT_INDEX_FINGER`, `LEFT_THUMB`,
+    `RIGHT_THUMB`, `TWO_THUMBS`) + `UNKNOWN` (not chosen yet); the old single `THUMB` catch-all is gone.
+  - **New `PatternSeed`** (`touch` package, pure/tested - 11 new tests): for a one-sided pattern, seeds each
+    key's spread tight near that hand's "home" third, widening (and deliberately smearing into the
+    neighbouring key) toward the far side; thumbs start less precise even at home and widen further, **plus**
+    extra widening the closer a key is to the top row (a thumb's hardest reach is the far top corner, not
+    just sideways); `TWO_THUMBS` is flat and uniformly wider with no positional skew at all. The systematic
+    offset *direction* is deliberately left at zero for the seed - only real usage should discover whether a
+    user over- or undershoots; only the *spread* is seeded, since that is directly grounded in the pattern's
+    geometry. Seeded at a sample count just above the model's warmup threshold, so it's trusted immediately
+    but still readily overridden by a user's first real taps.
+  - **New `OffsetModel.rankedCandidates`** (added for D-39) is reused implicitly via the seed's construction
+    (`OffsetModel.restore`); no change to `OffsetModel` itself beyond that existing addition.
+  - **`CalibrationActivity`** fully rewritten: five pattern buttons instead of a 2-3 sentence typing
+    exercise; picking one calls `PatternSeed.seed()` + `OffsetModel.restore()` and **replaces** (not merges)
+    the persisted model via `OffsetStore.save()`, then presets the D-16 key-enlargement default
+    (`SettingsStore.applyPatternEnlargement`, extended for the two new thumb patterns) and shows the D-24
+    touch-zone visualisation as immediate feedback. Reachable from onboarding (unchanged step-sequencing,
+    only the body text changed) and any time later via Settings → "Typing pattern" (the `t04_detected` row,
+    retitled from "Detected typing pattern" to a tap target).
+  - **Removed entirely** ("ersatzlos" per explicit instruction): `TypingPatternClassifier`,
+    `TypingPatternAnalysis` (+ their tests), and `AdaptKeyService.persistTypingPattern()` (the live
+    re-classification on every field focus/destroy). The dead `t04_pattern_override` `ListPreference` (never
+    actually wired to anything, confirmed by grep) and its arrays are gone too.
+  - **Side effect, flagged as a follow-up (task #68):** D-09 raw-tap recording had no sentence exercise left
+    to record against, so its settings toggle was removed from the UI; the underlying `RawTapRecorder` /
+    `CalibrationSentences` / `CalibrationSession` classes and the `recordRawTaps` setting plumbing were
+    deliberately left in place (unused but harmless, still compiling/tested) rather than torn out under time
+    pressure - needs a decision (delete, or repurpose to record during live typing instead).
+  - Onboarding welcome text, onboarding calibration step, and all `k01_*`/`t04_*` strings reworded (EN/DE/EL)
+    for the new "tell us your pattern" framing.
+  - **Not yet verified on a real device** - the shape-function constants (home fractions, spread factors,
+    top-row gain) are a considered starting point per the design discussion, expected to need tuning after
+    a first real test (user has a known strong left-hand rightward-edge drift to check against).
 - **D-49 DONE (v0.7.29):** the onboarding welcome text (EN/DE/EL) now foregrounds D-39 as the headline USP -
   "reads your actual taps, not just your typing" / recovers a word even when a slip landed on a completely
   wrong key, not just a neighbouring one - and the "learns as you go" bullet now explicitly says the

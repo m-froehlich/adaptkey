@@ -268,12 +268,6 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.TouchModelActivity" />
         </Preference>
 
-        <SwitchPreferenceCompat
-            android:key="d09_record_raw_taps"
-            android:title="@string/d09_record_title"
-            android:summary="@string/d09_record_summary"
-            android:defaultValue="false" />
-
         <Preference
             android:key="reset_learning"
             android:title="@string/reset_learning_title"
@@ -288,15 +282,6 @@
             android:title="@string/t04_detected_title"
             android:summary="@string/t04_detected_summary"
             android:selectable="false" />
-
-        <ListPreference
-            android:key="t04_pattern_override"
-            android:title="@string/t04_override_title"
-            android:summary="@string/t04_override_summary"
-            android:entries="@array/t04_override_labels"
-            android:entryValues="@array/t04_override_values"
-            android:defaultValue="auto"
-            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

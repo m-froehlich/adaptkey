@@ -159,28 +159,29 @@ object SettingsStore {
     }
     
     /**
-     * D-16: presets the default key enlargement from the detected typing hand (T-04) after a calibration -
-     * a left-index typist gets the enlarged backspace (right side), a right-index typist an enlarged shift
-     * (left side). Writing the preferences reaches the live keyboard via the service's change listener; the
-     * user can still adjust both afterwards. THUMB / UNKNOWN leave the current settings untouched.
+     * D-16: presets the default key enlargement from the chosen typing hand (T-04) - a left-hand typist
+     * (left index finger or left thumb) gets the enlarged backspace (right side, the awkward reach), a
+     * right-hand typist an enlarged shift (left side). Writing the preferences reaches the live keyboard via
+     * the service's change listener; the user can still adjust both afterwards. TWO_THUMBS / UNKNOWN have no
+     * natural asymmetry and leave the current settings untouched.
      *
      * @param context any valid context
-     * @param pattern the detected typing pattern
+     * @param pattern the chosen typing pattern
      */
     fun applyPatternEnlargement(context: Context, pattern: TypingPattern) {
         val editor = prefs(context).edit()
         when (pattern) {
-            TypingPattern.LEFT_INDEX_FINGER -> {
+            TypingPattern.LEFT_INDEX_FINGER, TypingPattern.LEFT_THUMB -> {
                 editor.putInt(KEY_BACKSPACE_EXTRA, DEF_BACKSPACE_EXTRA)
                 editor.putInt(KEY_SHIFT_EXTRA, DEF_SHIFT_EXTRA)
             }
             
-            TypingPattern.RIGHT_INDEX_FINGER -> {
+            TypingPattern.RIGHT_INDEX_FINGER, TypingPattern.RIGHT_THUMB -> {
                 editor.putInt(KEY_SHIFT_EXTRA, DEF_BACKSPACE_EXTRA)
                 editor.putInt(KEY_BACKSPACE_EXTRA, DEF_SHIFT_EXTRA)
             }
             
-            TypingPattern.THUMB, TypingPattern.UNKNOWN -> return
+            TypingPattern.TWO_THUMBS, TypingPattern.UNKNOWN -> return
         }
         editor.apply()
     }

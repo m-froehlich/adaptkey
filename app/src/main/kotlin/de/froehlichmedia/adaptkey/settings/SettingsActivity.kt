@@ -121,7 +121,9 @@ class SettingsActivity : AppCompatActivity() {
             return when (pattern) {
                 TypingPattern.LEFT_INDEX_FINGER -> R.string.t04_pattern_left_index
                 TypingPattern.RIGHT_INDEX_FINGER -> R.string.t04_pattern_right_index
-                TypingPattern.THUMB -> R.string.t04_pattern_thumb
+                TypingPattern.LEFT_THUMB -> R.string.t04_pattern_left_thumb
+                TypingPattern.RIGHT_THUMB -> R.string.t04_pattern_right_thumb
+                TypingPattern.TWO_THUMBS -> R.string.t04_pattern_two_thumbs
                 TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
             }
         }

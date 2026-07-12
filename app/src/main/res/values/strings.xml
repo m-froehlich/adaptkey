@@ -102,9 +102,9 @@
     <string name="onboarding_model_title">Optional mini-AI</string>
     <string name="onboarding_model_body">Optionally, a small AI (mini-LLM) can improve the suggestions when the normal model is unsure — entirely on the device. The model (~273 MB) is not included: you download it once via the browser and import it. Afterwards everything stays offline. You can skip this now and add it any time later.</string>
     <string name="onboarding_model_action">Set up model</string>
-    <string name="onboarding_calibration_title">Quick calibration</string>
-    <string name="onboarding_calibration_body">Finally, you can briefly calibrate the keyboard: you type a few given sentences so AdaptKey learns where your taps land. Optional and possible any time later.</string>
-    <string name="onboarding_calibration_action">Start calibration</string>
+    <string name="onboarding_calibration_title">How do you type?</string>
+    <string name="onboarding_calibration_body">Finally, tell AdaptKey how you usually type. It sets up realistic touch zones for your fingers right away, then keeps refining them gently as you type. Optional and changeable any time later.</string>
+    <string name="onboarding_calibration_action">Set typing pattern</string>
     <string name="onboarding_footer_hint">You can reach this introduction any time via Settings → Info &amp; Privacy → "Show introduction again".</string>
     <string name="onboarding_replay_title">Show introduction again</string>
     <string name="onboarding_replay_summary">Shows the first-run introduction again the next time you open the keyboard.</string>
@@ -120,34 +120,32 @@
 
     <!-- Typing pattern detection (T-04). -->
     <string name="cat_typing_pattern">Typing pattern (T-04)</string>
-    <string name="t04_detected_title">Detected typing pattern</string>
-    <string name="t04_detected_summary">Derived from your tap deviations — information only, no intervention.</string>
-    <string name="t04_override_title">Override typing pattern</string>
-    <string name="t04_override_summary">Set it manually if the automatic detection is off.</string>
-    <string name="t04_pattern_auto">Detect automatically</string>
+    <string name="t04_detected_title">Typing pattern</string>
+    <string name="t04_detected_summary">Tap to set how you type — used to set up realistic touch zones.</string>
     <string name="t04_pattern_left_index">Left index finger</string>
     <string name="t04_pattern_right_index">Right index finger</string>
-    <string name="t04_pattern_thumb">Thumb</string>
-    <string name="t04_pattern_unknown">Not detected yet</string>
+    <string name="t04_pattern_left_thumb">Left thumb</string>
+    <string name="t04_pattern_right_thumb">Right thumb</string>
+    <string name="t04_pattern_two_thumbs">Both thumbs</string>
+    <string name="t04_pattern_unknown">Not set yet</string>
 
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Calibration (K-01)</string>
-    <string name="k01_title">Start calibration</string>
-    <string name="k01_summary">Type a few sentences so key detection fits you from the start (K-01).</string>
-    <string name="k01_activity_title">Calibration</string>
-    <string name="k01_intro">Just type the following sentences the way you normally type. No autocorrect, no time pressure.</string>
-    <string name="k01_counter">Sentence %1$d of %2$d</string>
-    <string name="k01_next">Next</string>
-    <string name="k01_finish">Done</string>
+    <string name="k01_title">Typing pattern</string>
+    <string name="k01_summary">Tell AdaptKey how you type, so key detection fits you from the start (K-01).</string>
+    <string name="k01_activity_title">Typing pattern</string>
+    <string name="k01_intro">How do you usually type? This sets up realistic touch zones for your fingers right away; ordinary typing keeps refining them gently from there.</string>
     <string name="k01_skip">Skip</string>
-    <string name="k01_done_title">Calibration complete</string>
-    <string name="k01_feedback_left_index">It looks like you type with your left index finger. I\'ll adapt accordingly.</string>
-    <string name="k01_feedback_right_index">It looks like you type with your right index finger. I\'ll adapt accordingly.</string>
-    <string name="k01_feedback_thumb">It looks like you type with your thumb. I\'ll tune my detection to that.</string>
-    <string name="k01_feedback_unknown">Thanks! I\'ve taken in your input and keep learning as you type.</string>
-    <string name="k01_offer_title">Calibrate the keyboard?</string>
-    <string name="k01_offer_message">Would you like to briefly calibrate AdaptKey? You type a few sentences so key detection fits you better from the start. You can do this any time in the settings.</string>
-    <string name="k01_offer_start">Calibrate now</string>
+    <string name="k01_done_title">Typing pattern set</string>
+    <string name="k01_feedback_left_index">Touch zones set up for your left index finger. I\'ll keep refining them gently as you type.</string>
+    <string name="k01_feedback_right_index">Touch zones set up for your right index finger. I\'ll keep refining them gently as you type.</string>
+    <string name="k01_feedback_left_thumb">Touch zones set up for your left thumb. I\'ll keep refining them gently as you type.</string>
+    <string name="k01_feedback_right_thumb">Touch zones set up for your right thumb. I\'ll keep refining them gently as you type.</string>
+    <string name="k01_feedback_two_thumbs">Touch zones set up for two-thumb typing. I\'ll keep refining them gently as you type.</string>
+    <string name="k01_feedback_unknown">Thanks! I keep learning gently as you type.</string>
+    <string name="k01_offer_title">Set your typing pattern?</string>
+    <string name="k01_offer_message">Would you like to tell AdaptKey how you type? It sets up realistic touch zones right away. You can do this any time in the settings.</string>
+    <string name="k01_offer_start">Set it now</string>
     <string name="k01_offer_later">Later</string>
 
     <!-- Blacklist editor (C-05). -->

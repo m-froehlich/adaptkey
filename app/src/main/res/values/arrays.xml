@@ -18,21 +18,6 @@
         <item>#FF00838F</item>
     </string-array>
 
-    <!-- T-04 manual typing-pattern override (label / stored value). -->
-    <string-array name="t04_override_labels">
-        <item>@string/t04_pattern_auto</item>
-        <item>@string/t04_pattern_left_index</item>
-        <item>@string/t04_pattern_right_index</item>
-        <item>@string/t04_pattern_thumb</item>
-    </string-array>
-
-    <string-array name="t04_override_values">
-        <item>auto</item>
-        <item>LEFT_INDEX_FINGER</item>
-        <item>RIGHT_INDEX_FINGER</item>
-        <item>THUMB</item>
-    </string-array>
-
     <!-- C-06 mini-LLM activation threshold (label / stored value). -->
     <string-array name="c06_threshold_labels">
         <item>@string/c06_threshold_low</item>

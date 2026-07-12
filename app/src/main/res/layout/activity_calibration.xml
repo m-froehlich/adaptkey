@@ -13,63 +13,64 @@
         android:layout_marginTop="16dp"
         android:text="@string/k01_intro" />
 
-    <TextView
-        android:id="@+id/calibration_counter"
+    <Button
+        android:id="@+id/calibration_left_index"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
-        android:textStyle="bold" />
+        android:text="@string/t04_pattern_left_index" />
 
-    <TextView
-        android:id="@+id/calibration_target"
+    <Button
+        android:id="@+id/calibration_right_index"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:textSize="20sp" />
+        android:text="@string/t04_pattern_right_index" />
 
-    <TextView
-        android:id="@+id/calibration_typed"
+    <Button
+        android:id="@+id/calibration_left_thumb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="12dp"
-        android:minHeight="48dp"
-        android:textColor="?android:attr/textColorSecondary"
-        android:textSize="18sp" />
+        android:layout_marginTop="8dp"
+        android:text="@string/t04_pattern_left_thumb" />
+
+    <Button
+        android:id="@+id/calibration_right_thumb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/t04_pattern_right_thumb" />
+
+    <Button
+        android:id="@+id/calibration_two_thumbs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/t04_pattern_two_thumbs" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/calibration_skip"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/calibration_skip"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/k01_skip" />
-
-        <Button
-            android:id="@+id/calibration_next"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/k01_next" />
-
-    </LinearLayout>
+        android:text="@string/k01_skip" />
 
     <de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
         android:id="@+id/calibration_keyboard"

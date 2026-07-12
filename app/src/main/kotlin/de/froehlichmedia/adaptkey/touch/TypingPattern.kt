@@ -4,23 +4,30 @@
 package de.froehlichmedia.adaptkey.touch
 
 /**
- * The dominant typing pattern derived from the personal offset model (T-04).
+ * The user's explicitly chosen typing pattern (T-04).
  *
- * The classification is informational only - it never constrains input - and can be overridden
- * manually in the settings. See [TypingPatternClassifier] for how it is inferred from the
- * accumulated per-key deviations.
+ * D-68: no longer auto-detected from a short typing sample - a few sentences could not reliably classify
+ * it, and a wrong guess seeded some key zones badly, taking a very long time for real typing to correct
+ * (the offset model has no forgetting mechanism). Instead the pattern is asked directly (calibration
+ * screen / onboarding) and used to seed sensible initial per-key touch zones (T-03), see [PatternSeed].
  */
 enum class TypingPattern {
     
-    /** Systematic offset to the right, more pronounced on the right half; narrow contact area. */
+    /** Typing with the left index finger only. */
     LEFT_INDEX_FINGER,
     
-    /** Systematic offset to the left, more pronounced on the left half; narrow contact area. */
+    /** Typing with the right index finger only. */
     RIGHT_INDEX_FINGER,
     
-    /** Low lateral offset, large contact area, vertically centred hits. */
-    THUMB,
+    /** One-handed typing with the left thumb (phone held in the left hand). */
+    LEFT_THUMB,
     
-    /** Not enough evidence yet, or the deviations match no single pattern. */
+    /** One-handed typing with the right thumb (phone held in the right hand). */
+    RIGHT_THUMB,
+    
+    /** Two-handed typing with both thumbs. */
+    TWO_THUMBS,
+    
+    /** Not chosen yet. */
     UNKNOWN
 }

@@ -7,54 +7,37 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
-import de.froehlichmedia.adaptkey.keyboard.Key
-import de.froehlichmedia.adaptkey.keyboard.KeyCode
-import de.froehlichmedia.adaptkey.touch.CalibrationSentences
-import de.froehlichmedia.adaptkey.touch.CalibrationSession
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
-import de.froehlichmedia.adaptkey.touch.RawTapRecorder
+import de.froehlichmedia.adaptkey.touch.PatternSeed
 import de.froehlichmedia.adaptkey.touch.TypingPattern
-import de.froehlichmedia.adaptkey.touch.TypingPatternAnalysis
-import de.froehlichmedia.adaptkey.touch.TypingPatternClassifier
 
 /**
- * Optional onboarding / calibration screen (K-01, skippable).
+ * Typing-pattern picker (K-01, skippable), reachable from onboarding and any time later from settings.
  *
- * The user types 2-3 provided sentences ([CalibrationSentences]) "as they normally would" - with no
- * autocorrect, no suggestion pressure and no time limit. The raw {@code ACTION_DOWN} coordinates feed a
- * dedicated [OffsetModel] hosted by an embedded [AdaptKeyboardView]; on completion that model is merged
- * into the persisted one (T-03), the dominant typing pattern is re-derived (T-04) and the user is given
- * brief feedback. Reachable any time from the settings screen and offered once on first launch.
+ * D-68: this used to be a three-sentence typing exercise whose result then had to be auto-classified into
+ * a typing pattern (T-04) - too little data to classify reliably, and a wrong guess could seed some key
+ * zones badly, taking a very long time for real typing to correct (the offset model has no forgetting
+ * mechanism). Asking the pattern directly and deriving sensible initial per-key touch zones from it (see
+ * [PatternSeed]) is both simpler and more reliable; ordinary typing then keeps refining those zones (T-03),
+ * exactly as it already did before.
+ *
+ * A genuine pattern change **replaces** the whole personal offset model - the previous zones described a
+ * different hand/finger geometry, so keeping them would only fight the new one.
  *
  * As an Android-facing layer it is left to instrumented tests; the testable logic lives in the pure
- * [CalibrationSession] / [CalibrationSentences] and in [OffsetModel.merge].
+ * [PatternSeed].
  */
 class CalibrationActivity : AppCompatActivity() {
     
-    private val session = CalibrationSession(CalibrationSentences.DEFAULT)
-    
-    // A practically infinite warm-up keeps the model in pure-geometry resolution for the whole session,
-    // so every recorded tap trains the key the finger physically hit rather than a half-learned guess.
-    private val calibrationModel = OffsetModel(warmupSamples = Long.MAX_VALUE)
-    
-    // D-09: opt-in raw-tap diagnostic. Non-null only when the setting is enabled; each tap is paired with
-    // the character the sentence expected at that point, so a systematic finger offset can be analysed.
-    private var rawTapRecorder: RawTapRecorder? = null
-    
+    // Only used to obtain the laid-out char-key geometry that seeds the model - nothing is typed on it.
     private lateinit var keyboard: AdaptKeyboardView
-    private lateinit var counterView: TextView
-    private lateinit var targetView: TextView
-    private lateinit var typedView: TextView
-    private lateinit var nextButton: Button
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,168 +45,64 @@ class CalibrationActivity : AppCompatActivity() {
         title = getString(R.string.k01_activity_title)
         
         // §13 / K-01 fix: Android 15 (targetSdk 35) draws the activity edge-to-edge, so the embedded
-        // keyboard's bottom row would sit under the gesture pill / navigation bar and could not be tapped -
-        // which blocked calibration. Pad the whole screen up by the bottom system-bar + gesture inset,
-        // exactly like the live keyboard's input view does.
+        // keyboard's bottom row would sit under the gesture pill / navigation bar. Pad the whole screen up
+        // by the bottom system-bar + gesture inset, exactly like the live keyboard's input view does.
         val root = findViewById<View>(R.id.calibration_root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            // Only the bottom inset: the AppCompat ActionBar already handles the top status-bar inset.
             v.setPadding(0, v.paddingTop, 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
         
-        counterView = findViewById(R.id.calibration_counter)
-        targetView = findViewById(R.id.calibration_target)
-        typedView = findViewById(R.id.calibration_typed)
-        nextButton = findViewById(R.id.calibration_next)
-        
         keyboard = findViewById(R.id.calibration_keyboard)
         keyboard.showNumberRow = false
-        keyboard.offsetModel = calibrationModel
-        keyboard.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, _ -> onKey(key) }
-        // D-09: when enabled, record the raw tap (resolved at ACTION_DOWN, before the character is typed)
-        // together with the character the sentence expects at the current position.
-        if (SettingsStore.load(this).recordRawTaps) {
-            val recorder = RawTapRecorder()
-            rawTapRecorder = recorder
-            keyboard.onRawTapListener = AdaptKeyboardView.OnRawTapListener { keyId, cx, cy, x, y ->
-                recorder.record(expectedChar(), keyId, cx, cy, x, y)
-            }
-        }
         
-        nextButton.setOnClickListener { onNext() }
+        bindPatternButton(R.id.calibration_left_index, TypingPattern.LEFT_INDEX_FINGER)
+        bindPatternButton(R.id.calibration_right_index, TypingPattern.RIGHT_INDEX_FINGER)
+        bindPatternButton(R.id.calibration_left_thumb, TypingPattern.LEFT_THUMB)
+        bindPatternButton(R.id.calibration_right_thumb, TypingPattern.RIGHT_THUMB)
+        bindPatternButton(R.id.calibration_two_thumbs, TypingPattern.TWO_THUMBS)
         findViewById<Button>(R.id.calibration_skip).setOnClickListener { finish() }
-        
-        refresh()
     }
     
-    private fun onKey(key: Key) {
-        when (key.code) {
-            KeyCode.CHAR -> {
-                val ch = key.char ?: return
-                session.append(if (keyboard.shifted && ch.isLetter()) ch.uppercaseChar() else ch)
-                consumeShift()
-            }
-            KeyCode.SPACE -> session.append(' ')
-            KeyCode.DELETE -> session.backspace()
-            // Enter doubles as "next sentence", so a long sentence can be confirmed from the keyboard.
-            KeyCode.ENTER -> { onNext(); return }
-            KeyCode.SHIFT -> { keyboard.shifted = !keyboard.shifted; return }
-            // L-03: the emoji panel and numeric/symbol layer are irrelevant to calibration (letters only).
-            KeyCode.SYMBOL, KeyCode.LETTERS, KeyCode.SYMBOL_PAGE -> return
-        }
-        refreshTyped()
-    }
-    
-    private fun consumeShift() {
-        if (keyboard.shifted) {
-            keyboard.shifted = false
-        }
+    private fun bindPatternButton(id: Int, pattern: TypingPattern) {
+        findViewById<Button>(id).setOnClickListener { applyPattern(pattern) }
     }
     
     /**
-     * The character the current sentence expects at the current typed position (D-09), or null once the
-     * user has typed past the sentence end. Read at ACTION_DOWN, before the tapped character is appended.
-     *
-     * @return the expected character, or null past the sentence end
+     * D-68: seeds sensible initial touch zones straight from the chosen pattern, replacing (not merging
+     * with) any previously learned zones - a genuine pattern change describes a different hand/finger
+     * geometry, so old data would only fight the new one. Also presets the D-16 key-enlargement default.
      */
-    private fun expectedChar(): Char? {
-        return session.currentSentence().getOrNull(session.typedText().length)
-    }
-    
-    private fun onNext() {
-        if (session.advance()) {
-            refresh()
-        } else {
-            finishCalibration()
-        }
-    }
-    
-    private fun refresh() {
-        counterView.text = getString(R.string.k01_counter, session.currentNumber, session.sentenceCount)
-        targetView.text = session.currentSentence()
-        nextButton.setText(if (session.isOnLastSentence) R.string.k01_finish else R.string.k01_next)
-        refreshTyped()
-    }
-    
-    private fun refreshTyped() {
-        typedView.text = session.typedText()
-    }
-    
-    /**
-     * Merges the calibration samples into the persisted offset model (T-03), re-derives the typing
-     * pattern (T-04) and shows the feedback dialog. Closing the dialog ends the activity.
-     */
-    private fun finishCalibration() {
-        val model = OffsetStore.load(this)
-        model.merge(calibrationModel)
+    private fun applyPattern(pattern: TypingPattern) {
+        val geometry = keyboard.charKeyGeometry()
+        val model = OffsetModel()
+        model.restore(PatternSeed.seed(pattern, geometry))
         OffsetStore.save(this, model)
-        val pattern = detectPattern(model)
         OffsetStore.saveDetectedPattern(this, pattern)
-        // D-16: preset the default key enlargement from the detected hand (backspace for a left-index
-        // typist, shift for a right-index one); the user can still adjust it in the settings.
+        // D-16: preset the default key enlargement from the chosen hand (backspace for a left typist, shift
+        // for a right typist); the user can still adjust it in the settings.
         SettingsStore.applyPatternEnlargement(this, pattern)
         showFeedback(pattern)
     }
     
-    private fun detectPattern(model: OffsetModel): TypingPattern {
-        val width = keyboard.width
-        if (width <= 0) {
-            return TypingPattern.UNKNOWN
-        }
-        // T-04 / K-01: a calibration is a deliberate, controlled session, so use the decisive preset that
-        // commits to the dominant hand from a modest bias rather than the conservative live default.
-        return TypingPatternAnalysis.classify(
-            model,
-            keyboard.charKeyGeometry(),
-            width.toFloat(),
-            TypingPatternClassifier.forCalibration()
-        )
-    }
-    
     private fun showFeedback(pattern: TypingPattern) {
-        val builder = AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle(R.string.k01_done_title)
             .setMessage(feedbackText(pattern))
             .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+            .setNeutralButton(R.string.d24_show_button) { _, _ -> showTouchModel() }
             .setOnCancelListener { finish() }
-        // The neutral slot offers the raw-tap export when the D-09 diagnostic captured data, otherwise the
-        // D-24 touch-pattern visualisation as the calibration result.
-        if (rawTapRecorder?.isEmpty() == false) {
-            builder.setNeutralButton(R.string.d09_export_button) { _, _ -> exportRawTaps() }
-        } else {
-            builder.setNeutralButton(R.string.d24_show_button) { _, _ -> showTouchModel() }
-        }
-        builder.show()
+            .show()
     }
     
     /**
-     * D-24: opens the touch-pattern visualisation as the calibration result, then ends this screen.
+     * D-24: opens the touch-pattern visualisation so the seeded zones can be inspected right away, then
+     * ends this screen.
      */
     private fun showTouchModel() {
         startActivity(Intent(this, TouchModelActivity::class.java))
-        finish()
-    }
-    
-    /**
-     * D-09: shares the recorded raw taps as tab-separated text via a chooser, so they can be sent to a
-     * computer for offline analysis. No storage permission is needed - the data travels as share text.
-     */
-    private fun exportRawTaps() {
-        val recorder = rawTapRecorder
-        if (recorder == null || recorder.isEmpty()) {
-            Toast.makeText(this, R.string.d09_export_empty, Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-        val share = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.d09_export_subject))
-            putExtra(Intent.EXTRA_TEXT, recorder.toTsv())
-        }
-        startActivity(Intent.createChooser(share, getString(R.string.d09_export_chooser)))
         finish()
     }
     
@@ -231,7 +110,9 @@ class CalibrationActivity : AppCompatActivity() {
         return when (pattern) {
             TypingPattern.LEFT_INDEX_FINGER -> R.string.k01_feedback_left_index
             TypingPattern.RIGHT_INDEX_FINGER -> R.string.k01_feedback_right_index
-            TypingPattern.THUMB -> R.string.k01_feedback_thumb
+            TypingPattern.LEFT_THUMB -> R.string.k01_feedback_left_thumb
+            TypingPattern.RIGHT_THUMB -> R.string.k01_feedback_right_thumb
+            TypingPattern.TWO_THUMBS -> R.string.k01_feedback_two_thumbs
             TypingPattern.UNKNOWN -> R.string.k01_feedback_unknown
         }
     }

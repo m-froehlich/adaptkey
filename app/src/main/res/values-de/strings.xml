@@ -102,9 +102,9 @@
     <string name="onboarding_model_title">Optionale Mini-KI</string>
     <string name="onboarding_model_body">Optional kann eine kleine KI (Mini-LLM) die Vorschläge verbessern, wenn das normale Modell unsicher ist – ausschließlich auf dem Gerät. Das Modell (~273 MB) ist nicht enthalten: du lädst es einmalig über den Browser herunter und importierst es. Danach bleibt alles offline. Du kannst das jetzt überspringen und jederzeit später nachholen.</string>
     <string name="onboarding_model_action">Modell einrichten</string>
-    <string name="onboarding_calibration_title">Kurz einlernen</string>
-    <string name="onboarding_calibration_body">Zum Schluss kannst du die Tastatur kurz einlernen: Du tippst ein paar vorgegebene Sätze, damit AdaptKey deine persönliche Trefferlage kennenlernt. Optional und jederzeit später möglich.</string>
-    <string name="onboarding_calibration_action">Kalibrierung starten</string>
+    <string name="onboarding_calibration_title">Wie tippst du?</string>
+    <string name="onboarding_calibration_body">Zum Schluss verrätst du AdaptKey, wie du normalerweise tippst. Damit werden sofort realistische Trefferzonen für deine Finger eingerichtet und behutsam weiter verfeinert, während du tippst. Optional und jederzeit später änderbar.</string>
+    <string name="onboarding_calibration_action">Tippmuster festlegen</string>
     <string name="onboarding_footer_hint">Diese Einführung erreichst du später jederzeit über Einstellungen → Info &amp; Datenschutz → „Einführung erneut anzeigen\".</string>
     <string name="onboarding_replay_title">Einführung erneut anzeigen</string>
     <string name="onboarding_replay_summary">Zeigt die Erstnutzer-Einführung beim nächsten Öffnen der Tastatur wieder an.</string>
@@ -120,34 +120,32 @@
 
     <!-- Typing pattern detection (T-04). -->
     <string name="cat_typing_pattern">Tippmuster (T-04)</string>
-    <string name="t04_detected_title">Erkanntes Tippmuster</string>
-    <string name="t04_detected_summary">Aus deinen Tippabweichungen abgeleitet – reine Information, kein Eingriff.</string>
-    <string name="t04_override_title">Tippmuster überschreiben</string>
-    <string name="t04_override_summary">Manuell festlegen, falls die automatische Erkennung danebenliegt.</string>
-    <string name="t04_pattern_auto">Automatisch erkennen</string>
+    <string name="t04_detected_title">Tippmuster</string>
+    <string name="t04_detected_summary">Tippen zum Festlegen, wie du tippst – legt realistische Trefferzonen an.</string>
     <string name="t04_pattern_left_index">Linker Zeigefinger</string>
     <string name="t04_pattern_right_index">Rechter Zeigefinger</string>
-    <string name="t04_pattern_thumb">Daumen</string>
-    <string name="t04_pattern_unknown">Noch nicht erkannt</string>
+    <string name="t04_pattern_left_thumb">Linker Daumen</string>
+    <string name="t04_pattern_right_thumb">Rechter Daumen</string>
+    <string name="t04_pattern_two_thumbs">Beide Daumen</string>
+    <string name="t04_pattern_unknown">Noch nicht festgelegt</string>
 
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Kalibrierung (K-01)</string>
-    <string name="k01_title">Kalibrierung starten</string>
-    <string name="k01_summary">Tippe 2–3 Sätze, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
-    <string name="k01_activity_title">Kalibrierung</string>
-    <string name="k01_intro">Tippe die folgenden Sätze einfach so, wie du normalerweise tippst. Keine Autokorrektur, kein Zeitdruck.</string>
-    <string name="k01_counter">Satz %1$d von %2$d</string>
-    <string name="k01_next">Weiter</string>
-    <string name="k01_finish">Fertig</string>
+    <string name="k01_title">Tippmuster</string>
+    <string name="k01_summary">Sag AdaptKey, wie du tippst, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
+    <string name="k01_activity_title">Tippmuster</string>
+    <string name="k01_intro">Wie tippst du normalerweise? Damit werden sofort realistische Trefferzonen für deine Finger eingerichtet; normales Tippen verfeinert sie danach behutsam weiter.</string>
     <string name="k01_skip">Überspringen</string>
-    <string name="k01_done_title">Kalibrierung abgeschlossen</string>
-    <string name="k01_feedback_left_index">Es sieht so aus, als tippst du mit dem linken Zeigefinger. Ich passe mich entsprechend an.</string>
-    <string name="k01_feedback_right_index">Es sieht so aus, als tippst du mit dem rechten Zeigefinger. Ich passe mich entsprechend an.</string>
-    <string name="k01_feedback_thumb">Es sieht so aus, als tippst du mit dem Daumen. Ich stelle meine Erkennung darauf ein.</string>
-    <string name="k01_feedback_unknown">Danke! Ich habe deine Eingaben aufgenommen und lerne beim Tippen weiter dazu.</string>
-    <string name="k01_offer_title">Tastatur kalibrieren?</string>
-    <string name="k01_offer_message">Möchtest du AdaptKey kurz kalibrieren? Du tippst 2–3 Sätze, damit die Tastenerkennung von Anfang an besser zu dir passt. Du kannst das jederzeit in den Einstellungen nachholen.</string>
-    <string name="k01_offer_start">Jetzt kalibrieren</string>
+    <string name="k01_done_title">Tippmuster festgelegt</string>
+    <string name="k01_feedback_left_index">Trefferzonen für deinen linken Zeigefinger eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
+    <string name="k01_feedback_right_index">Trefferzonen für deinen rechten Zeigefinger eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
+    <string name="k01_feedback_left_thumb">Trefferzonen für deinen linken Daumen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
+    <string name="k01_feedback_right_thumb">Trefferzonen für deinen rechten Daumen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
+    <string name="k01_feedback_two_thumbs">Trefferzonen für beidhändiges Daumentippen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
+    <string name="k01_feedback_unknown">Danke! Ich lerne behutsam weiter, während du tippst.</string>
+    <string name="k01_offer_title">Tippmuster festlegen?</string>
+    <string name="k01_offer_message">Möchtest du AdaptKey sagen, wie du tippst? Das richtet sofort realistische Trefferzonen ein. Du kannst das jederzeit in den Einstellungen nachholen.</string>
+    <string name="k01_offer_start">Jetzt festlegen</string>
     <string name="k01_offer_later">Später</string>
 
     <!-- Blacklist editor (C-05). -->
