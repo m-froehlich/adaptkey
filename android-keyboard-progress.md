@@ -28,18 +28,21 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `6b3b0af` — v0.8.5 (§30 follow-up). Working tree = **v0.8.6**, operator reorder below, not yet
-  committed. **Spec §12/§13/§14 complete.** §28/§29/§30 fully implemented; this entry is one more small
-  follow-up (operator column order), still before any device testing of the whole D-92→D-102 batch. §26's
-  D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `f0332a8` — v0.8.6 (operator reorder). Working tree = **v0.8.7**, plus/plus-minus correction below,
+  not yet committed. **Spec §12/§13/§14 complete.** §28/§29/§30 fully implemented; still before any device
+  testing of the whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain
+  backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **521 green** (`:app:testDebugUnitTest`, incl. Robolectric; two tests merged into one while
-  updating for this change, hence one fewer than last entry despite no coverage lost); `:app:assembleDebug`
-  green (no warnings). `origin/main` is 17 commits behind; this session's change once committed makes it 18 -
-  awaiting push.
+- Unit tests: **521 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 18 commits behind; this session's change once committed makes it 19 - awaiting
+  push.
+- **Corrected the row-4 reshuffle (v0.8.7):** §30's "`+` moved to the end of row 4" was a misreading - it was
+  always `±` (plus-minus), not the plain `+`. `+` is back in its original spot in page 2's row 4 (after `-`,
+  before `°`); `±` moved out of row 1 to the end of row 4 instead. Row 1 is now 7 symbols (`€ @ • © ® Ø ƒ`);
+  row 4 is now 9 (`# ' - + ° × ÷ * ±`).
 - **Operator column reordered (v0.8.6):** the calculator page's right-hand operator column (4th cell of rows
   2-5) reordered top to bottom from `÷ × − +` to `+ − × ÷`. Only the operator identity per row changed;
   digits and each row's own column cell (space/currency/=/enter) stayed put. Each operator kept its own

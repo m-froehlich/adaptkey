@@ -1525,3 +1525,9 @@ from `÷ × − +` to `+ − × ÷`. Only the operator identity per row changed 
 they were. Each operator keeps its own alt-popup wherever it now sits: `×` still offers `* × ·`, `÷` still
 offers `/ ÷ :`. New row layout: row 2 `7 8 9 +`, row 3 `4 5 6 −`, row 4 `1 2 3 ×`, row 5
 `0 <decimal-sep> ABC ÷`.
+
+### Page 2: corrected the wrong symbol moved in the row-4 reshuffle (v0.8.7)
+§30's "`+` moved to the end of row 4" was a misreading of the original ask - it was always meant to be `±`
+(plus-minus), not the plain `+`. Corrected: `+` moves back to its original spot in row 4 (right after `-`,
+before `°`); `±` moves out of row 1 to the very end of row 4 instead. Row 1 is now `€ @ • © ® Ø ƒ` (seven,
+not eight); row 4 is now `# ' - + ° × ÷ * ±` (nine, not eight).
