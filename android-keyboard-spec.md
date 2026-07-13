@@ -1405,3 +1405,25 @@ the finger is. `CalculatorLocale.COMMON_CURRENCY_SYMBOLS` reversed to `¥ £ $ �
 land near the *end* of the list instead, biasing the popup to grow leftward - into the room that's actually
 there. The uncommon-currency fallback (`resolveCurrencyGlyph` returning something outside the common four)
 now appends rather than prepends, for the same reason.
+
+### D-102 - Implemented: Page 2 Upgraded into a Real Number-Row Alternative (v0.7.54)
+Page 2 grew from 3 rows to 5, per the confirmed reading of the §27 draft:
+
+- **Row 1** (leftover symbols): `@ _ ' • © ±` (six, not seven - the double quote moved to row 3 below to
+  avoid the same glyph appearing twice on this page), then `⌫`. Still no page-toggle key (D-100).
+- **Row 2 (new)**: a fixed digit row `1234567890`, shown **unconditionally, independent of C-09** - this
+  deliberately reverses D-92's original "no number row regardless of C-09" decision for this page. Plain
+  digits, no long-press hints - row 3 already puts their shifted symbols directly on the surface.
+- **Row 3 (new)**: the main number row's shifted symbols in `1..0` order - `! " § $ % & / ( ) =` - as plain,
+  directly-tappable characters rather than hidden behind a long-press, restoring easy access to them when the
+  main number row (and its hints) are hidden.
+- **Row 4 (new)**: the main letter page's alt-hint symbols, distributed here: `€ # - + ° × ÷ *`. Two
+  exclusions to avoid a same-page duplicate: `@` (q's hint) is skipped, already covered by row 1; `/` (v's
+  hint, D-96) is skipped, already covered by row 3 (7's shifted symbol). `π`'s own Greek-letter popup (D-99)
+  stays on the letters page rather than being duplicated here. **Per the user's own framing, this is a first
+  draft** - "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um" - explicitly open to re-sorting
+  once seen on a real device.
+- **Row 5** (unchanged): optional `ABC`, `space`, `⏎`.
+
+Verified no character repeats anywhere on the page (new test, `SymbolLayoutTest`). Not yet device-tested - the
+letter-hint distribution (row 4) in particular is exactly the part flagged as provisional.

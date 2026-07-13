@@ -28,13 +28,21 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `679959a` — v0.7.52 (D-94). Working tree = **v0.7.53**, D-100 below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released D-100 next, then D-102. D-100 done this entry; D-102 next.
-  §26's D-87/D-88 and the rest of §27 (D-95, D-102, D-103, D-104) remain backlog-only.
-- Unit tests: **513 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.53** (only the third digit bumps per APK; versionCode 123). `origin/main` is
-  12 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98, D-101,
-  D-94; this session's D-100 once committed makes it 13) - awaiting push.
+- HEAD: `8038884` — v0.7.53 (D-100). Working tree = **v0.7.54**, D-102 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released D-100 then D-102 - both done this session. §26's D-87/D-88 and
+  the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- Unit tests: **516 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.54** (only the third digit bumps per APK; versionCode 124). `origin/main` is
+  13 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98, D-101,
+  D-94, D-100; this session's D-102 once committed makes it 14) - awaiting push.
+- **D-102 DONE (v0.7.54, spec §28):** page 2 grew from 3 rows to 5. Row 1 keeps the leftover symbols (now 6,
+  not 7 - the double quote moved out) + backspace. New row 2: a fixed digit row, unconditional, independent
+  of C-09 (reverses D-92's original decision for this page). New row 3: the main number row's shifted symbols
+  (`! " § $ % & / ( ) =`), directly tappable. New row 4: the main letter page's alt-hint symbols
+  (`€ # - + ° × ÷ *`), with `@`/`/` skipped to avoid same-page duplicates (already covered by rows 1/3); `π`'s
+  Greek popup (D-99) stays on the letters page, not duplicated. Row 5 (ABC/space/enter) unchanged. New test
+  verifies no character repeats anywhere on the page. Row 4 is explicitly a first draft per the user's own
+  "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um" - not yet device-tested.
 - **D-100 DONE (v0.7.53, spec §28):** page 1 restructured - narrower digit block, new right-hand column
   (`⌫`/`space`/`¤`/optional `ABC`/`⏎`, one per row from row 1 to row 5), digit grid grows a 4th row
   (`0`/decimal-sep/`=`/`+` under `1`/`2`/`3`/operator). Column cells share one weight

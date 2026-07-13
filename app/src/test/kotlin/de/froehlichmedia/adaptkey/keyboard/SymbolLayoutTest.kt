@@ -119,27 +119,48 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `page 2 is a leftover catch-all with three rows and no number row`() {
+    fun `D-102 page 2 is now five rows, upgraded from a plain leftover catch-all`() {
         val rows = SymbolLayout.rows(2)
         
-        assertEquals(3, rows.size)
-        assertTrue(rows.none { row -> row.any { it.char?.isDigit() == true } })
+        assertEquals(5, rows.size)
     }
     
     @Test
-    fun `D-100 page 2 row one carries the leftover symbols and backspace, no page-toggle key`() {
+    fun `D-100 and D-102 page 2 row one carries the leftover symbols and backspace, no page-toggle key`() {
         val row = SymbolLayout.rows(2)[0]
         
-        assertEquals("@_\"'•©±".toList(), row.dropLast(1).map { it.char })
+        assertEquals("@_'•©±".toList(), row.dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
         assertTrue(row.none { it.code == KeyCode.LETTERS })
     }
     
     @Test
-    fun `page 2 row two is the bracket family`() {
+    fun `D-102 page 2 row two is a fixed digit row, independent of the number-row setting`() {
         val row = SymbolLayout.rows(2)[1]
         
-        assertEquals("{}[]<>".toList(), row.map { it.char })
+        assertEquals("1234567890".toList(), row.map { it.char })
+    }
+    
+    @Test
+    fun `D-102 page 2 row three is the main number row's shifted symbols, directly tappable`() {
+        val row = SymbolLayout.rows(2)[2]
+        
+        assertEquals("!\"§$%&/()=".toList(), row.map { it.char })
+        assertTrue(row.all { it.hint == null && it.alternatives.isEmpty() })
+    }
+    
+    @Test
+    fun `D-102 page 2 row four distributes the main page's letter alt-hint symbols`() {
+        val row = SymbolLayout.rows(2)[3]
+        
+        assertEquals("€#-+°×÷*".toList(), row.map { it.char })
+    }
+    
+    @Test
+    fun `D-102 no character repeats anywhere on page 2`() {
+        val chars = SymbolLayout.rows(2).flatten().mapNotNull { it.char }
+        
+        assertEquals(chars.size, chars.toSet().size)
     }
     
     @Test

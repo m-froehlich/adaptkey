@@ -8,11 +8,12 @@ import java.util.Locale
 /**
  * D-92 / D-100: the two `?123` pages, reached by a long-press or upward swipe on the combined emoji /
  * `?123` key (L-03), or a D-19 full-field swipe. Page 1 is a genuine calculator layout (digit block,
- * arithmetic operators, currency, decimal separator); page 2 is a leftover/catch-all page for the handful
- * of characters not already reachable elsewhere (a main-page letter hint, the comma/period popups, or page
- * 1 itself). D-100 removed the page-toggle key from both pages entirely - the D-19 swipe (or the `ABC`
- * detour back to the letters page) is now the only way to move between them. Mirrors the alpha layout's
- * row shape (proportions, weights) so the same [KeyProportions] configuration (C-01) applies unchanged.
+ * arithmetic operators, currency, decimal separator). Page 2 (D-102) is the fallback place to reach
+ * digits and their shifted symbols when the main page's number row is hidden (C-09) - plus the handful of
+ * other leftover characters and the main page's letter alt-hints, distributed here since there's room.
+ * D-100 removed the page-toggle key from both pages entirely - the D-19 swipe (or the `ABC` detour back to
+ * the letters page) is now the only way to move between them. Mirrors the alpha layout's row shape
+ * (proportions, weights) so the same [KeyProportions] configuration (C-01) applies unchanged.
  */
 object SymbolLayout {
     
@@ -43,12 +44,27 @@ object SymbolLayout {
     // proportions.backspaceWeight (L-04) rather than trying to force-match this column.
     private const val CALC_COLUMN_WEIGHT = 1f
     
-    // Page 2 (catch-all) row 1: the German-locale audit's leftover characters, not reachable elsewhere.
-    private const val CATCHALL_ROW1_SYMBOLS = "@_\"'•©±"
+    // D-102: page 2's leftover characters, not reachable elsewhere. The double quote moved out to
+    // CATCHALL_NUMBER_SYMBOLS below (D-102 also put it there) to avoid the same glyph appearing twice on
+    // this page; the bracket family that used to live here moved to page 1 (D-101).
+    private const val CATCHALL_ROW1_SYMBOLS = "@_'•©±"
     
-    // Page 2 row 2: the bracket family, useful for code/math outside the calculator page. No sentence
-    // punctuation on this page by design - already well reachable on the main letter page.
-    private const val CATCHALL_BRACKETS = "{}[]<>"
+    // D-102: a fixed digit row, independent of C-09 - the fallback for anyone who has hidden the main
+    // page's number row.
+    private const val CATCHALL_DIGITS = "1234567890"
+    
+    // D-102: the main number row's shifted symbols (L-06 / NUMBER_HINTS, in 1..0 order), directly
+    // tappable here rather than hidden behind a long-press - the whole point is restoring easy access to
+    // them when the main number row (and its long-press hints) are hidden.
+    private const val CATCHALL_NUMBER_SYMBOLS = "!\"§$%&/()="
+    
+    // D-102: the main letter page's alt-hint symbols (KeyboardLayout.DEFAULT_LETTER_HINTS), distributed
+    // here now that there's room. @ (q's hint) is skipped - already covered by CATCHALL_ROW1_SYMBOLS above
+    // - and / (v's hint, D-96) is skipped too - already covered by CATCHALL_NUMBER_SYMBOLS (7's shifted
+    // symbol) - to avoid the same glyph appearing twice on this page. π keeps its own Greek-letter popup
+    // (D-99) on the letters page rather than being duplicated here. A first draft, per the user's own
+    // "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um".
+    private const val CATCHALL_LETTER_HINTS = "€#-+°×÷*"
     
     /**
      * Builds the symbol/numeric keyboard for [page].
@@ -134,13 +150,20 @@ object SymbolLayout {
     private fun catchAllRows(proportions: KeyProportions, symbolKeyEnabled: Boolean): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
-        // Row 1: symbols, then backspace. No page-toggle key any more (D-100).
+        // Row 1: leftover symbols, then backspace. No page-toggle key any more (D-100).
         result.add(buildList {
             CATCHALL_ROW1_SYMBOLS.forEach { c -> add(charKey(c)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
-        result.add(CATCHALL_BRACKETS.map { c -> charKey(c) })
+        // Row 2 (D-102): the fixed digit row, independent of C-09.
+        result.add(CATCHALL_DIGITS.map { c -> charKey(c) })
+        
+        // Row 3 (D-102): the main number row's shifted symbols, directly tappable.
+        result.add(CATCHALL_NUMBER_SYMBOLS.map { c -> charKey(c) })
+        
+        // Row 4 (D-102): the main letter page's alt-hint symbols, distributed here.
+        result.add(CATCHALL_LETTER_HINTS.map { c -> charKey(c) })
         
         result.add(buildList {
             if (symbolKeyEnabled) {
