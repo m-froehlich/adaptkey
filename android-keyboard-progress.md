@@ -28,14 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `8814d70` — v0.7.48 (D-96+D-99). Working tree = **v0.7.49**, D-97 below, not yet committed.
+- HEAD: `74b01b9` — v0.7.49 (D-97). Working tree = **v0.7.50**, D-98 below, not yet committed.
   **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then D-94 (spec §28).
-  D-96/D-99/D-97 done; D-98/D-101/D-94 next. §26's D-87/D-88 and the rest of §27 (D-95, D-100, D-102, D-103,
+  D-96/D-99/D-97/D-98 done; D-101/D-94 next. §26's D-87/D-88 and the rest of §27 (D-95, D-100, D-102, D-103,
   D-104) remain backlog-only.
 - Unit tests: **509 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.49** (only the third digit bumps per APK; versionCode 119). `origin/main` is
-  8 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99; this session's D-97
-  once committed makes it 9) - awaiting push.
+  warnings). **Versioned 0.7.50** (only the third digit bumps per APK; versionCode 120). `origin/main` is
+  9 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97; this session's
+  D-98 once committed makes it 10) - awaiting push.
+- **D-98 DONE (v0.7.50, spec §28):** currency popup reordered to `€ $ £ ¥`
+  (`CalculatorLocale.COMMON_CURRENCY_SYMBOLS`). New generic corner indicator, `MORE_ALTERNATIVES_GLYPH = "◢"`,
+  drawn by `AdaptKeyboardView.drawKeys()` for any key with no single hint but a D-01 multi-alternative popup
+  (comma, period, ×/÷/=/currency/`(` on the calculator page, etc.) - previously these drew no corner cue at
+  all. The right-to-left popup-growth question (tied to D-100's column move) stays open until D-100 lands.
+  Not yet device-tested.
 - **D-97 DONE (v0.7.49, spec §28):** `AdaptKeyboardView.labelFor()`'s space-bar language label (D-03) now
   only applies on the letters surface; any other surface's space key shows a new plain `SPACE_GLYPH = "␣"`
   (U+2423 OPEN BOX) instead. Scoped to "not letters" for consistency with the D-92 follow-up's G-01 gesture

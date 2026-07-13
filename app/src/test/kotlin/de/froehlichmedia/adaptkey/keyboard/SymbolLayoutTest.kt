@@ -68,7 +68,7 @@ class SymbolLayoutTest {
         
         assertEquals(KeyCode.LETTERS, bottomRow[0].code)
         assertEquals('€', bottomRow.byChar('€').char)
-        assertEquals(listOf("$", "£", "€", "¥"), bottomRow.byChar('€').alternatives)
+        assertEquals(listOf("€", "$", "£", "¥"), bottomRow.byChar('€').alternatives)
         assertEquals('0', bottomRow.byChar('0').char)
         assertEquals(',', bottomRow.byChar(',').char)
         assertEquals(".", bottomRow.byChar(',').hint)

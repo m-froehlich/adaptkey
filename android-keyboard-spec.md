@@ -1337,3 +1337,13 @@ specifically", for consistency with the same surface-scoping the D-92 follow-up 
 gesture - this also fixes page 2's space key, which had the same latent issue even though only the calculator
 page was explicitly mentioned. Purely a `labelFor()`/drawing change; no test added (private, drawing-only View
 glue - an existing, documented testing gap for this class, not a new one).
+
+### D-98 - Implemented: Currency Popup Order + "More Alternatives" Corner Indicator (v0.7.50)
+1. `CalculatorLocale.COMMON_CURRENCY_SYMBOLS` reordered to `€ $ £ ¥` (was `$ £ € ¥`).
+2. New generic corner indicator: `AdaptKeyboardView.drawKeys()` now draws a small triangle,
+   `MORE_ALTERNATIVES_GLYPH = "◢"`, in a key's corner whenever it has no single [Key.hint] of its own but does
+   have a D-01 multi-alternative popup (`alternatives.size >= 2`) - comma, period, and the calculator page's
+   `×`/`÷`/`=`/currency/`(` keys all previously drew no corner cue at all. Applies generically to every layout,
+   not just the currency key. Gated by the same `hintsEnabled`/`suppressHint` checks as the existing hint
+   glyph. The right-to-left popup-growth question flagged alongside this item in §27 (tied to D-100's column
+   move) is deferred until D-100 actually lands and the key's on-screen position is known.

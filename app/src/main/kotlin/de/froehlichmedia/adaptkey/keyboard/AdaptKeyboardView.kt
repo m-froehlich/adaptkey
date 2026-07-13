@@ -658,8 +658,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val hint = key.hint
             // D-47: no "123" corner hint on the combined key when it already reads "?123" (emoji off).
             val suppressHint = key.code == KeyCode.SYMBOL && !emojiEnabled
-            if (hintsEnabled && hint != null && !suppressHint) {
-                canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
+            if (hintsEnabled && !suppressHint) {
+                if (hint != null) {
+                    canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
+                } else if (key.alternatives.size >= 2) {
+                    // D-98: a key with no single corner glyph but a multi-alternative popup (D-01) - comma,
+                    // period, the calculator page's ×/÷/=/currency keys, etc. - still gets a corner
+                    // indicator instead of no visual cue at all, Gboard/AOSP-style.
+                    canvas.drawText(MORE_ALTERNATIVES_GLYPH, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
+                }
             }
         }
     }
@@ -1174,5 +1181,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-97: the plain space-bar glyph (U+2423 OPEN BOX) shown on the symbol pages' space keys, which
         // have no language of their own to display.
         private const val SPACE_GLYPH = "␣"
+        
+        // D-98: the "there's more on long-press" corner indicator for a multi-alternative key with no
+        // single corner hint of its own.
+        private const val MORE_ALTERNATIVES_GLYPH = "◢"
     }
 }

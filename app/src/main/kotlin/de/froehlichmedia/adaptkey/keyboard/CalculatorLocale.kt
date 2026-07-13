@@ -39,8 +39,8 @@ object CalculatorLocale {
     /** Fallback when a locale's currency can't be resolved to a single glyph (e.g. a 3-letter ISO code). */
     private const val DEFAULT_CURRENCY = '€'
     
-    /** The common currencies always offered in the popup, in a fixed, familiar reading order. */
-    private val COMMON_CURRENCY_SYMBOLS = listOf("$", "£", "€", "¥")
+    /** The common currencies always offered in the popup, in a fixed, familiar reading order (D-98). */
+    private val COMMON_CURRENCY_SYMBOLS = listOf("€", "$", "£", "¥")
     
     /**
      * Resolves the calculator format for [locale].
