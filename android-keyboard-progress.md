@@ -28,14 +28,21 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `8e91eb9` — v0.7.50 (D-98). Working tree = **v0.7.51**, D-101 below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then D-94 (spec §28).
-  D-96/D-99/D-97/D-98/D-101 done; D-94 next (last of this release round). §26's D-87/D-88 and the rest of §27
-  (D-95, D-100, D-102, D-103, D-104) remain backlog-only.
+- HEAD: `cb5475c` — v0.7.51 (D-101). Working tree = **v0.7.52**, D-94 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then D-94 (spec §28) -
+  **all six done this entry, the whole release round complete.** §26's D-87/D-88 and the rest of §27 (D-95,
+  D-100, D-102, D-103, D-104) remain backlog-only; user's next focus is autocorrect quality (D-87) or a further
+  §27 release, whichever they pick.
 - Unit tests: **510 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.51** (only the third digit bumps per APK; versionCode 121). `origin/main` is
-  10 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98; this
-  session's D-101 once committed makes it 11) - awaiting push.
+  warnings). **Versioned 0.7.52** (only the third digit bumps per APK; versionCode 122). `origin/main` is
+  11 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98, D-101;
+  this session's D-94 once committed makes it 12) - awaiting push.
+- **D-94 DONE (v0.7.52, spec §28):** fixed the slide-animation direction regression from D-91. Root cause:
+  `AdaptKeyService.handleSwipe()` derived the animation's `forward` flag from the resulting *action*
+  (NEXT/PREV) rather than the *physical swipe direction* - these always coincided before D-91 (right swipe was
+  always NEXT), so D-91 silently decoupled them. Fix: `forward = direction == SwipeDirection.RIGHT` for the
+  animation call in both branches; `PanelNavigation.swipePage()`'s own action-based `forward` (which page to
+  land on) is unchanged. No new test - `AdaptKeyService` swipe-handling glue is an existing documented gap.
 - **D-101 DONE (v0.7.51, spec §28):** page 1's `)` key removed; `(` now carries the whole bracket family
   (`( ) { } [ ] < >`) as its D-01 popup. Row 1 shrank from 8 to 7 symbols
   (`CALC_ROW1_SYMBOL_COUNT` updated). Page 2's bracket row deliberately untouched - its removal is D-102, not

@@ -985,13 +985,17 @@ class AdaptKeyService : InputMethodService() {
             }
             
             // D-19: a full-field horizontal swipe cycles the surface/page (letters ↔ symbols ↔ numbers).
+            // D-94: the page-index step (which page to land on) is action-based - NEXT/PREV, per D-91's
+            // mapping - but the slide *animation* must follow the finger's actual physical direction
+            // (D-76), which D-91 decoupled from the action: a right swipe always slides "forward"
+            // (RIGHT swipes NEXT), regardless of whether that swipe means NEXT or PREV.
             GestureAction.SWITCH_SURFACE_NEXT -> {
-                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = true), forward = true)
+                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = true), forward = direction == SwipeDirection.RIGHT)
                 true
             }
             
             GestureAction.SWITCH_SURFACE_PREV -> {
-                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = false), forward = false)
+                applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = false), forward = direction == SwipeDirection.RIGHT)
                 true
             }
             
@@ -1001,11 +1005,12 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Applies a D-19 surface/page switch from the horizontal-swipe cycle: shows the target surface and,
-     * for the numeric/symbol layer, its specific page. D-58: [forward] carries the actual swipe direction
-     * through to the slide animation, so the page visibly moves the way the finger did.
+     * for the numeric/symbol layer, its specific page. D-58 / D-94: [forward] carries the actual physical
+     * swipe direction through to the slide animation (true = swiped right), so the page visibly moves the
+     * way the finger did - independent of whether that swipe meant NEXT or PREV (D-91).
      *
      * @param page the surface/page to switch to
-     * @param forward the swipe direction (true = right / next, false = left / previous)
+     * @param forward whether the triggering swipe was a right swipe (true) or a left swipe (false)
      */
     private fun applySwipePage(page: PanelNavigation.Page, forward: Boolean) {
         setSurface(page.surface, forward, page.symbolPage)

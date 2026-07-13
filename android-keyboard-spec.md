@@ -1354,3 +1354,18 @@ Page 1's row 1 drops the separate `)` key; `(` now carries `BRACKET_ALTERNATIVES
 goes from 8 symbols to 7 (`CALC_ROW1_SYMBOL_COUNT` updated accordingly, so `thirdRowLetterWeight` still
 accounts for the actual cell count). Page 2's bracket row is untouched for now - removing it is D-102, not yet
 released, so it stays as a (now momentarily redundant) fallback until then.
+
+### D-94 - Implemented: Fixed the Slide-Animation Direction After D-91 (v0.7.52)
+Root cause confirmed as suspected: `AdaptKeyService.handleSwipe()` derived the slide animation's `forward`
+flag from the resulting *action* (`SWITCH_SURFACE_NEXT` → `true`, `SWITCH_SURFACE_PREV` → `false`), not from
+the *physical swipe direction*. Before D-91 these always coincided (right swipe was always NEXT), so the bug
+was invisible; D-91 decoupled them (left swipe is now NEXT), and the animation kept following the old
+action-based logic - so it played backwards relative to the finger for exactly the cases D-91 changed.
+
+Fix: both `SWITCH_SURFACE_NEXT`/`SWITCH_SURFACE_PREV` branches now pass `forward = direction ==
+SwipeDirection.RIGHT` to `applySwipePage()` for the animation, while `PanelNavigation.swipePage()`'s own
+`forward` argument (which page to land on) stays action-based, unchanged. These are two genuinely different
+"forward" concepts that happened to share one boolean pre-D-91: which page to land on (action-based, D-91's
+concern) and which way the slide visually plays (physical-direction-based, D-76's concern, per its own
+comment - "forward slides the outgoing page off to the right ... matching a right swipe"). No new test - this
+is `AdaptKeyService`'s swipe-handling glue, already a documented Android-service testing gap, not a new one.
