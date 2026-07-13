@@ -1673,3 +1673,18 @@ dispatches once the outermost `endBatchEdit()` completes), so this composes safe
 own conditional inner batch. The app now coalesces the delete and the composing update into a single
 transaction and reports only the final, consistent selection - eliminating the intermediate stale callback
 entirely.
+
+## §33 - Page 2 Row 4: `°`/`-` Swap, Phone-Field Auto-Select Confirmed (v0.8.12)
+
+### Page 2 row 4: `°` moved ahead of `-`
+`CATCHALL_LETTER_HINTS` reordered from `# ' ^ - ° + × ÷ * ±` to `# ' ^ ° - + × ÷ * ±`. `-` keeps its `_`
+long-press alt regardless of position.
+
+### Confirmed: phone-number (and similar) fields already auto-select the calculator page
+Answering the question raised alongside this round's request: yes, and it was already implemented - §31
+(v0.8.9) added `AdaptKeyService.initialSurfaceFor(info: EditorInfo?)`, called from `onStartInput()`, which
+inspects `info.inputType and InputType.TYPE_MASK_CLASS` and opens straight to the calculator page
+(`InputSurface.SYMBOLS`, page 1) for `TYPE_CLASS_PHONE`, `TYPE_CLASS_NUMBER`, and `TYPE_CLASS_DATETIME`
+fields - covering phone-number fields and any other field an app marks as one of these non-text classes.
+`TYPE_CLASS_TEXT` (and fields with no `EditorInfo` at all) still open on `LETTERS` as before. No action
+needed this round; nothing changed.

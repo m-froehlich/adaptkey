@@ -78,12 +78,13 @@ object SymbolLayout {
     // room. € moved out to CATCHALL_ROW1_SYMBOLS above (its own first position there); the apostrophe moved
     // in right after #, so it roughly sits under row 3's own " above it; ± moved in at the very end
     // (correction - + was never meant to move, it stays in its original spot). ° moved ahead of + so the
-    // arithmetic operators (- + × ÷) aren't split apart (correction). ^ inserted at position 3 to fill the
-    // row out to 10 keys, matching rows 2 and 3's width (correction). / (v's hint, D-96) is still skipped -
-    // already covered by CATCHALL_NUMBER_SYMBOLS (7's shifted symbol). π keeps its own Greek-letter popup
-    // (D-99) on the letters page rather than being duplicated here. Still a first draft, per the user's own
-    // "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um".
-    private const val CATCHALL_LETTER_HINTS = "#'^-°+×÷*±"
+    // arithmetic operators (- + × ÷) aren't split apart (correction), then swapped with - itself (§33) so °
+    // now leads. ^ inserted at position 3 to fill the row out to 10 keys, matching rows 2 and 3's width
+    // (correction). / (v's hint, D-96) is still skipped - already covered by CATCHALL_NUMBER_SYMBOLS (7's
+    // shifted symbol). π keeps its own Greek-letter popup (D-99) on the letters page rather than being
+    // duplicated here. Still a first draft, per the user's own "schauen wir, wie sich das ergibt und
+    // sortieren ggf. nochmal um".
+    private const val CATCHALL_LETTER_HINTS = "#'^°-+×÷*±"
     
     // D-102 (correction): this page's € key (now the first key of row 1 above) also gets the common-currency
     // popup - redundant with page 1's dedicated currency key, by explicit request. It sits on the *left*

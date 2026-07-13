@@ -177,7 +177,7 @@ class SymbolLayoutTest {
     fun `paragraph 29 follow-up - page 2 row four distributes the remaining letter alt-hint symbols`() {
         val row = SymbolLayout.rows(2)[3]
         
-        assertEquals("#'^-°+×÷*±".toList(), row.map { it.char })
+        assertEquals("#'^°-+×÷*±".toList(), row.map { it.char })
     }
     
     @Test
