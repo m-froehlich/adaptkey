@@ -59,7 +59,6 @@ import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
-import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
@@ -756,14 +755,6 @@ class AdaptKeyService : InputMethodService() {
             
             // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
             KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
-            
-            // L-03: toggles between the numeric/symbol layer's two pages.
-            KeyCode.SYMBOL_PAGE -> {
-                val nextPage = SymbolLayout.togglePage(symbolPage)
-                // D-58: mirror the direction the page number itself moves in.
-                keyboardView?.switchPage(InputSurface.SYMBOLS, nextPage, forward = nextPage > symbolPage)
-                symbolPage = nextPage
-            }
         }
     }
     

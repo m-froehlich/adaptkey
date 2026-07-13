@@ -39,8 +39,14 @@ object CalculatorLocale {
     /** Fallback when a locale's currency can't be resolved to a single glyph (e.g. a 3-letter ISO code). */
     private const val DEFAULT_CURRENCY = '€'
     
-    /** The common currencies always offered in the popup, in a fixed, familiar reading order (D-98). */
-    private val COMMON_CURRENCY_SYMBOLS = listOf("€", "$", "£", "¥")
+    // D-100: the currency key now sits in the calculator page's right-hand column, at the screen's right
+    // edge. The D-44 popup keeps its pre-selected cell (the key's own char) centred under the stem, so a
+    // pre-selected cell near the *start* of the list forces the popup to grow almost entirely rightward -
+    // straight into the screen edge, where AdaptKeyboardView.openPopup()'s clamp then has to shove the
+    // whole row far to the left, away from the stem key. Ordering the common currencies so the base glyph
+    // tends to land near the *end* of the list instead makes the popup grow leftward, which is where the
+    // room actually is.
+    private val COMMON_CURRENCY_SYMBOLS = listOf("¥", "£", "$", "€")
     
     /**
      * Resolves the calculator format for [locale].
@@ -54,7 +60,7 @@ object CalculatorLocale {
         val currencyAlternatives = if (currencyBase.toString() in COMMON_CURRENCY_SYMBOLS) {
             COMMON_CURRENCY_SYMBOLS
         } else {
-            listOf(currencyBase.toString()) + COMMON_CURRENCY_SYMBOLS
+            COMMON_CURRENCY_SYMBOLS + listOf(currencyBase.toString())
         }
         return Format(
             currencyBase = currencyBase,

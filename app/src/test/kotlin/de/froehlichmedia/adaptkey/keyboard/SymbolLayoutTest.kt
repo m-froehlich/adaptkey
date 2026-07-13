@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 import java.util.Locale
 
 /**
- * Unit tests for the D-92 `?123` layer: page 1 (calculator) and page 2 (leftover catch-all).
+ * Unit tests for the D-92 / D-100 `?123` layer: page 1 (calculator) and page 2 (leftover catch-all).
  */
 class SymbolLayoutTest {
     
@@ -27,13 +27,12 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `page 1 row one carries everyday symbols, the page toggle and backspace`() {
+    fun `D-100 page 1 row one carries everyday symbols and backspace, no page-toggle key`() {
         val row = SymbolLayout.rows(1)[0]
         
-        assertEquals("(°√π~&|".toList(), row.dropLast(2).map { it.char })
-        assertEquals(KeyCode.SYMBOL_PAGE, row[row.size - 2].code)
-        assertEquals("1/2", row[row.size - 2].label)
+        assertEquals("(°√π~&|".toList(), row.dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
+        assertTrue(row.none { it.code == KeyCode.LETTERS })
     }
     
     @Test
@@ -48,12 +47,28 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `page 1 has a real digit block with an operator ending each row`() {
-        val rows = SymbolLayout.rows(1)
+    fun `D-100 rows 2 to 4 end with space, currency and the optional abc key`() {
+        val rows = SymbolLayout.rows(1, locale = Locale.GERMANY)
         
-        assertEquals(listOf('7', '8', '9', '÷'), rows[1].map { it.char })
-        assertEquals(listOf('4', '5', '6', '×'), rows[2].map { it.char })
-        assertEquals(listOf('1', '2', '3', '−'), rows[3].map { it.char })
+        assertEquals(listOf('7', '8', '9', '÷'), rows[1].dropLast(1).map { it.char })
+        assertEquals(KeyCode.SPACE, rows[1].last().code)
+        
+        assertEquals(listOf('4', '5', '6', '×'), rows[2].dropLast(1).map { it.char })
+        assertEquals('€', rows[2].last().char)
+        
+        assertEquals(listOf('1', '2', '3', '−'), rows[3].dropLast(1).map { it.char })
+        assertEquals(KeyCode.LETTERS, rows[3].last().code)
+    }
+    
+    @Test
+    fun `D-100 row 5 is 0, decimal separator, equals and plus, ending with enter`() {
+        val row = SymbolLayout.rows(1, locale = Locale.GERMANY)[4]
+        
+        assertEquals('0', row[0].char)
+        assertEquals(',', row[1].char)
+        assertEquals('=', row[2].char)
+        assertEquals('+', row[3].char)
+        assertEquals(KeyCode.ENTER, row[4].code)
     }
     
     @Test
@@ -74,27 +89,33 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `page 1 bottom row hosts abc, currency, zero, decimal separator, plus, equals, space and enter`() {
-        val bottomRow = SymbolLayout.rows(1, locale = Locale.GERMANY).last()
+    fun `D-98 and D-100 the currency popup order favours leftward growth`() {
+        val row = SymbolLayout.rows(1, locale = Locale.GERMANY)[2]
         
-        assertEquals(KeyCode.LETTERS, bottomRow[0].code)
-        assertEquals('€', bottomRow.byChar('€').char)
-        assertEquals(listOf("€", "$", "£", "¥"), bottomRow.byChar('€').alternatives)
-        assertEquals('0', bottomRow.byChar('0').char)
-        assertEquals(',', bottomRow.byChar(',').char)
-        assertEquals(".", bottomRow.byChar(',').hint)
-        assertEquals('+', bottomRow.byChar('+').char)
-        assertEquals(KeyCode.SPACE, bottomRow[bottomRow.size - 2].code)
-        assertEquals(KeyCode.ENTER, bottomRow.last().code)
+        assertEquals(listOf("¥", "£", "$", "€"), row.byChar('€').alternatives)
+    }
+    
+    @Test
+    fun `D-100 the calculator column cells share the same weight`() {
+        val rows = SymbolLayout.rows(1, locale = Locale.GERMANY)
+        
+        val space = rows[1].last().weight
+        val currency = rows[2].last().weight
+        val abc = rows[3].last().weight
+        val enter = rows[4].last().weight
+        
+        assertEquals(space, currency, 1e-4f)
+        assertEquals(space, abc, 1e-4f)
+        assertEquals(space, enter, 1e-4f)
     }
     
     @Test
     fun `page 1's currency and decimal separator follow the system locale, not a hardcoded default`() {
-        val usBottomRow = SymbolLayout.rows(1, locale = Locale.US).last()
+        val row = SymbolLayout.rows(1, locale = Locale.US)[4]
         
-        assertEquals('$', usBottomRow.byChar('$').char)
-        assertEquals('.', usBottomRow.byChar('.').char)
-        assertEquals(",", usBottomRow.byChar('.').hint)
+        assertEquals('$', SymbolLayout.rows(1, locale = Locale.US)[2].last().char)
+        assertEquals('.', row[1].char)
+        assertEquals(",", row[1].hint)
     }
     
     @Test
@@ -106,13 +127,12 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `page 2 row one carries the leftover symbols, the page toggle and backspace`() {
+    fun `D-100 page 2 row one carries the leftover symbols and backspace, no page-toggle key`() {
         val row = SymbolLayout.rows(2)[0]
         
-        assertEquals("@_\"'•©±".toList(), row.dropLast(2).map { it.char })
-        assertEquals(KeyCode.SYMBOL_PAGE, row[row.size - 2].code)
-        assertEquals("2/2", row[row.size - 2].label)
+        assertEquals("@_\"'•©±".toList(), row.dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
+        assertTrue(row.none { it.code == KeyCode.LETTERS })
     }
     
     @Test
@@ -134,42 +154,25 @@ class SymbolLayoutTest {
     
     @Test
     fun `proportions flow into both pages`() {
-        val proportions = KeyProportions(spaceWeight = 2f, commaWeight = 3f, enterWeight = 4f)
+        val proportions = KeyProportions(spaceWeight = 2f, enterWeight = 4f)
         
         assertEquals(2f, SymbolLayout.rows(2, proportions).last().byChar(' ').weight, 1e-4f)
-        assertEquals(3f, SymbolLayout.rows(1, proportions, locale = Locale.GERMANY).last().byChar(',').weight, 1e-4f)
-        assertEquals(
-            4f,
-            SymbolLayout.rows(1, proportions).last().first { it.code == KeyCode.ENTER }.weight,
-            1e-4f
-        )
+        assertEquals(4f, SymbolLayout.rows(2, proportions).last().first { it.code == KeyCode.ENTER }.weight, 1e-4f)
     }
     
     @Test
-    fun `with the combined symbol key disabled both pages drop the page toggle and abc`() {
-        val page1Row1 = SymbolLayout.rows(1, symbolKeyEnabled = false)[0]
-        val page1Bottom = SymbolLayout.rows(1, symbolKeyEnabled = false).last()
-        val page2Row1 = SymbolLayout.rows(2, symbolKeyEnabled = false)[0]
+    fun `with the combined symbol key disabled both pages drop abc, and page 1 also drops the column cell`() {
+        val page1Row4 = SymbolLayout.rows(1, symbolKeyEnabled = false)[3]
         val page2Bottom = SymbolLayout.rows(2, symbolKeyEnabled = false).last()
         
-        assertNull(page1Row1.firstOrNull { it.code == KeyCode.SYMBOL_PAGE })
-        assertEquals(KeyCode.DELETE, page1Row1.last().code)
-        assertNull(page1Bottom.firstOrNull { it.code == KeyCode.LETTERS })
+        assertEquals(4, page1Row4.size)
+        assertTrue(page1Row4.none { it.code == KeyCode.LETTERS })
         
-        assertNull(page2Row1.firstOrNull { it.code == KeyCode.SYMBOL_PAGE })
-        assertEquals(KeyCode.DELETE, page2Row1.last().code)
         assertNull(page2Bottom.firstOrNull { it.code == KeyCode.LETTERS })
     }
     
     @Test
-    fun `togglePage swaps between page 1 and 2`() {
-        assertEquals(2, SymbolLayout.togglePage(1))
-        assertEquals(1, SymbolLayout.togglePage(2))
-    }
-    
-    @Test
-    fun `rows and togglePage reject pages other than 1 or 2`() {
+    fun `rows rejects pages other than 1 or 2`() {
         assertThrows(IllegalArgumentException::class.java) { SymbolLayout.rows(3) }
-        assertThrows(IllegalArgumentException::class.java) { SymbolLayout.togglePage(0) }
     }
 }

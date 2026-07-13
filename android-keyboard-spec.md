@@ -1369,3 +1369,39 @@ SwipeDirection.RIGHT` to `applySwipePage()` for the animation, while `PanelNavig
 concern) and which way the slide visually plays (physical-direction-based, D-76's concern, per its own
 comment - "forward slides the outgoing page off to the right ... matching a right swipe"). No new test - this
 is `AdaptKeyService`'s swipe-handling glue, already a documented Android-service testing gap, not a new one.
+
+### D-100 - Implemented: Narrower Digit Block, New Right-Hand Column, Page-Toggle Key Removed (v0.7.53)
+Page 1 (calculator) restructured to the confirmed reading of the §27 draft:
+
+- **Row 1**: the row-1 symbols (`( ° √ π ~ & |`), then `⌫` - the top of the new right-hand column. No more
+  page-toggle key.
+- **Rows 2-4**: the digit/operator grid (`7 8 9 ÷` / `4 5 6 ×` / `1 2 3 −`), each row ending with its column
+  cell - `space` (row 2, moved here from the old bottom row), `¤` currency (row 3, likewise moved), the
+  optional `ABC` (row 4, D-59/D-93-gated, likewise moved).
+- **Row 5 (new)**: `0` under `1`, the decimal separator under `2`, `=` under `3`, `+` under the operator
+  column, ending with `⏎`.
+
+Column-width uniformity: rows 2-5 each have the same number of other cells (4), so giving the column cell in
+each of those rows the same weight (`CALC_COLUMN_WEIGHT = 1f`, matching the plain digit-cell weight) makes
+them all render at the same pixel width automatically - exactly the "wird sich das optimal ergeben" the user
+predicted. Row 1's `⌫` is the confirmed exception (different cell composition) and keeps
+`proportions.backspaceWeight` (L-04) rather than trying to force a match. The decimal separator also drops its
+old `proportions.commaWeight` (previously wider, matching the letter page's comma) in favour of the same
+uniform column/grid weight as its row-5 neighbours (`0`, `=`, `+`) and the digits above it.
+
+Page-toggle key removed entirely from **both** pages (D-93's `symbolKeyEnabled` gating no longer applies to
+it - it's just gone, unconditionally). Both pages now reachable only via the D-19/D-91 swipe or the `ABC`
+detour back to letters. Dead code removed along with it: `KeyCode.SYMBOL_PAGE`, `SymbolLayout.togglePage()`,
+`SymbolLayout.pageLabel()`, and the corresponding tap-handling branch in `AdaptKeyService`
+(`PanelNavigation`'s own independent page-cycling logic was already the only thing driving D-19/D-91 - this
+key's handler was its sole other caller).
+
+**Currency popup order, addressed proactively per the user's own flag:** now that `¤` sits in the far-right
+column, a D-44 popup pre-selected near the *start* of its list (the old `€ $ £ ¥` order, with the typical
+German-locale base `€` at index 0) would want to grow almost entirely rightward from a key already at the
+screen edge - `AdaptKeyboardView.openPopup()`'s existing edge-clamp (`HorizontalLongPressPopup.rowLeft()`)
+keeps it on-screen, but shoves the whole row away from the stem key, decoupling the visible popup from where
+the finger is. `CalculatorLocale.COMMON_CURRENCY_SYMBOLS` reversed to `¥ £ $ €` so the base glyph tends to
+land near the *end* of the list instead, biasing the popup to grow leftward - into the room that's actually
+there. The uncommon-currency fallback (`resolveCurrencyGlyph` returning something outside the common four)
+now appends rather than prepends, for the same reason.

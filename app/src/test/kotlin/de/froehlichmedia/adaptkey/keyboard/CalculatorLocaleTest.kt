@@ -66,6 +66,20 @@ class CalculatorLocaleTest {
     }
     
     @Test
+    fun `D-100 the popup orders the common currencies so the base tends to land near the end`() {
+        val germany = CalculatorLocale.resolve(Locale.GERMANY)
+        
+        assertEquals(listOf("¥", "£", "$", "€"), germany.currencyAlternatives)
+    }
+    
+    @Test
+    fun `D-100 an uncommon currency is appended, not prepended`() {
+        val format = CalculatorLocale.resolve(Locale.KOREA)
+        
+        assertEquals(listOf("¥", "£", "$", "€", "₩"), format.currencyAlternatives)
+    }
+    
+    @Test
     fun `a locale without a resolvable currency falls back to the euro instead of crashing`() {
         val format = CalculatorLocale.resolve(Locale("xx"))
         

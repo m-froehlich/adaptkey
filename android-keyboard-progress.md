@@ -28,15 +28,24 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `cb5475c` — v0.7.51 (D-101). Working tree = **v0.7.52**, D-94 below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then D-94 (spec §28) -
-  **all six done this entry, the whole release round complete.** §26's D-87/D-88 and the rest of §27 (D-95,
-  D-100, D-102, D-103, D-104) remain backlog-only; user's next focus is autocorrect quality (D-87) or a further
-  §27 release, whichever they pick.
-- Unit tests: **510 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.52** (only the third digit bumps per APK; versionCode 122). `origin/main` is
-  11 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98, D-101;
-  this session's D-94 once committed makes it 12) - awaiting push.
+- HEAD: `679959a` — v0.7.52 (D-94). Working tree = **v0.7.53**, D-100 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released D-100 next, then D-102. D-100 done this entry; D-102 next.
+  §26's D-87/D-88 and the rest of §27 (D-95, D-102, D-103, D-104) remain backlog-only.
+- Unit tests: **513 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.53** (only the third digit bumps per APK; versionCode 123). `origin/main` is
+  12 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98, D-101,
+  D-94; this session's D-100 once committed makes it 13) - awaiting push.
+- **D-100 DONE (v0.7.53, spec §28):** page 1 restructured - narrower digit block, new right-hand column
+  (`⌫`/`space`/`¤`/optional `ABC`/`⏎`, one per row from row 1 to row 5), digit grid grows a 4th row
+  (`0`/decimal-sep/`=`/`+` under `1`/`2`/`3`/operator). Column cells share one weight
+  (`CALC_COLUMN_WEIGHT = 1f`) so rows 2-5 line up automatically (same cell count per row); row 1's `⌫` is the
+  confirmed exception, keeping `backspaceWeight`. Page-toggle key removed entirely from **both** pages
+  (`KeyCode.SYMBOL_PAGE`, `SymbolLayout.togglePage()`/`pageLabel()`, and the service's tap handler all deleted
+  as dead code) - both pages now reachable only via D-19/D-91 swipe or the `ABC` detour. Also, proactively per
+  the user's own flag: `CalculatorLocale.COMMON_CURRENCY_SYMBOLS` reversed to `¥ £ $ €` so the popup biases
+  toward growing leftward now that `¤` sits at the right edge (the existing `HorizontalLongPressPopup`
+  edge-clamp already kept it on-screen, but was shoving it away from the stem key). Not yet device-tested -
+  the most layout-heavy change of the whole §27/§28 round.
 - **D-94 DONE (v0.7.52, spec §28):** fixed the slide-animation direction regression from D-91. Root cause:
   `AdaptKeyService.handleSwipe()` derived the animation's `forward` flag from the resulting *action*
   (NEXT/PREV) rather than the *physical swipe direction* - these always coincided before D-91 (right swipe was
