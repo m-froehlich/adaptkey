@@ -55,6 +55,15 @@ object SymbolLayout {
     // proportions.backspaceWeight (L-04) rather than trying to force-match this column.
     private const val CALC_COLUMN_WEIGHT = 1f
     
+    // §36: row 5's ABC and decimal-separator cells share this weight, kept deliberately equal - the sum of
+    // two *equal* flanking weights always lands the cell between them on the row's own centre, whatever
+    // that shared value is, which is what actually centres 0 under 2 (not the specific number chosen here).
+    private const val ABC_DECIMAL_WEIGHT = 0.5f
+    
+    // The three digit columns' combined weight per row (1 + 1 + 1, each digit's own default charKey()
+    // weight) - row 5 needs this named explicitly since its own three cells no longer split it evenly.
+    private const val CALC_DIGIT_COLUMN_WEIGHT = 3f
+    
     // §29 follow-up: page 2's leftover characters, not reachable elsewhere, plus € (moved here from the
     // letter-hints row below - it now leads the row) and a handful of new additions: ® next to © (the
     // circled C/R pair), Ø ("Durchschnitt", the German shorthand for "average" - also added as an alt on
@@ -164,14 +173,18 @@ object SymbolLayout {
             )
         )
         
-        // Row 5 (corrected): 0 (under 1, with a # long-press alt for phone-number-style fields), decimal
-        // separator (under 2), ABC (under 3 - D-59/D-93-gated but always emitted here so the row keeps its
-        // cell count; AdaptKeyboardView hides it when disabled), ÷ (under the operator column) | enter.
+        // Row 5 (§36): ABC now sits narrow under 1 (D-59/D-93-gated but always emitted here so the row keeps
+        // its cell count; AdaptKeyboardView hides it when disabled, drawn as empty space so 0 does not grow
+        // to fill the gap) and the decimal separator equally narrow under 3 - both share ABC_DECIMAL_WEIGHT,
+        // which is what actually centres 0 under 2 (the sum of two *equal* flanking weights always lands the
+        // middle cell's centre on the row's own centre, whatever that shared weight is); 0 (with its # alt
+        // for phone-number-style fields) is widened by the weight freed up from both sides to fill the gap
+        // between them. ÷ (under the operator column) | enter unaffected.
         result.add(
             listOf(
-                charKey('0', hint = HASH_HINT),
-                charKey(format.decimalSeparator, hint = format.thousandsSeparatorHint),
-                Key(label = "ABC", code = KeyCode.LETTERS),
+                Key(label = "ABC", code = KeyCode.LETTERS, weight = ABC_DECIMAL_WEIGHT),
+                charKey('0', hint = HASH_HINT, weight = CALC_DIGIT_COLUMN_WEIGHT - 2 * ABC_DECIMAL_WEIGHT),
+                charKey(format.decimalSeparator, hint = format.thousandsSeparatorHint, weight = ABC_DECIMAL_WEIGHT),
                 charKey('÷', alternatives = DIVIDE_ALTERNATIVES),
                 Key(label = "↵", code = KeyCode.ENTER, weight = CALC_COLUMN_WEIGHT)
             )

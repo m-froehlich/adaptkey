@@ -1763,3 +1763,24 @@ with no case transform ever applied to the delimiter argument itself. This also 
 noted only in passing here: previously such a symbol would have been folded into the *same* composing token
 as whatever was typed around it (subject to autocorrect/suggestions as if it were part of a word); now it
 commits standalone, matching how the calculator page's own π key (§31, direct tap) already behaves.
+
+## §36 - Calculator Row 5: `0` Centred Under `2` (v0.8.15)
+
+### Row 5 rearranged: `ABC` narrow under `1`, `0` centred (widened), decimal separator narrow under `3`
+Raised via a friend's suggestion that `0` belongs centred under `2`, matching a phone dial pad / physical
+numpad. Previous order was `0` (under `1`) `,` (under `2`) `ABC` (under `3`); now `ABC` `0` `,`, with `ABC`
+and the decimal separator both narrowed to the same weight and `0` widened to fill the space between them.
+
+This is a pure [Key.weight] change, not a structural one - [AdaptKeyboardView] already lays out each row as a
+plain proportional (flexbox-style) split (`keyWidth = unit * key.weight`, `unit = usableWidth / totalWeight`
+per row), so no per-key pixel math or hand-hacked positioning was needed. The centring itself rests on one
+fact worth recording: the sum of two *equal* flanking weights always lands the cell between them on the
+row's own centre, regardless of what that shared weight actually is - so the exact value chosen
+(`ABC_DECIMAL_WEIGHT = 0.5f`, `SymbolLayout`) is somewhat arbitrary and could be tuned freely later without
+re-deriving the centring; only the *equality* of the two flanking weights matters. `0`'s own weight is
+computed as `CALC_DIGIT_COLUMN_WEIGHT - 2 * ABC_DECIMAL_WEIGHT` (`3 - 2*0.5 = 2`) rather than hardcoded, so
+changing `ABC_DECIMAL_WEIGHT` alone keeps the row's total consistent with rows 2-4's three digit/operator
+cells (still 3, so the right-hand column stays aligned) without a second edit. `ABC`'s existing reserved-slot
+hiding (D-59/D-93/§29-follow-up: drawn as empty space, inert, when the combined `?123` key setting is off)
+is unaffected by its new narrower weight - that mechanism only ever cared about the key's own slot staying
+present, never its width.

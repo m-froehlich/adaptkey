@@ -65,19 +65,31 @@ class SymbolLayoutTest {
         assertEquals('=', rows[3].last().char)
         
         val row5 = rows[4]
-        assertEquals('0', row5[0].char)
-        assertEquals(',', row5[1].char)
-        assertEquals(KeyCode.LETTERS, row5[2].code)
+        assertEquals(KeyCode.LETTERS, row5[0].code)
+        assertEquals('0', row5[1].char)
+        assertEquals(',', row5[2].char)
         assertEquals('÷', row5[3].char)
         assertEquals(KeyCode.ENTER, row5[4].code)
     }
     
     @Test
     fun `the 0 key carries a hash long-press hint for phone-number-style fields`() {
-        val zeroKey = SymbolLayout.rows(1)[4][0]
+        val zeroKey = SymbolLayout.rows(1)[4][1]
         
         assertEquals('0', zeroKey.char)
         assertEquals("#", zeroKey.hint)
+    }
+    
+    @Test
+    fun `paragraph 36 the 0 key is centred under 2, flanked by equally-narrow ABC and decimal-separator keys`() {
+        val row5 = SymbolLayout.rows(1, locale = Locale.GERMANY)[4]
+        
+        assertEquals(0.5f, row5[0].weight, 1e-4f)
+        assertEquals(2f, row5[1].weight, 1e-4f)
+        assertEquals(0.5f, row5[2].weight, 1e-4f)
+        // The row's own total (3, matching rows 2-4's three digit/operator cells) confirms nothing else
+        // silently absorbed the weight freed up from the two narrowed flanking keys.
+        assertEquals(3f, row5[0].weight + row5[1].weight + row5[2].weight, 1e-4f)
     }
     
     @Test
@@ -123,8 +135,8 @@ class SymbolLayoutTest {
         val row5 = SymbolLayout.rows(1, locale = Locale.US)[4]
         
         assertEquals('$', SymbolLayout.rows(1, locale = Locale.US)[2].last().char)
-        assertEquals('.', row5[1].char)
-        assertEquals(",", row5[1].hint)
+        assertEquals('.', row5[2].char)
+        assertEquals(",", row5[2].hint)
     }
     
     @Test
@@ -218,7 +230,7 @@ class SymbolLayoutTest {
         val page2Bottom = SymbolLayout.rows(2).last()
         
         assertEquals(5, page1Row5.size)
-        assertEquals(KeyCode.LETTERS, page1Row5[2].code)
+        assertEquals(KeyCode.LETTERS, page1Row5[0].code)
         
         assertEquals(KeyCode.LETTERS, page2Bottom[0].code)
     }

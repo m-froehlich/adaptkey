@@ -28,17 +28,24 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `515fba3` — v0.8.13 (§34). Working tree = **v0.8.14**, §35 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34/§35 fully implemented; still before any device testing
-  of the whole D-92→D-104/§32-35 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain
+- HEAD: `82acc56` — v0.8.14 (§35). Working tree = **v0.8.15**, §36 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34/§35/§36 fully implemented; still before any device
+  testing of the whole D-92→D-104/§32-36 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain
   backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **538 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 21 commits behind HEAD `515fba3`; this session's §35 commit once made brings it
-  to 26 - awaiting push.
+- Unit tests: **539 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 21 commits behind HEAD `82acc56`; this session's §36 commit once made brings it
+  to 27 - awaiting push.
+- **§36 DONE (v0.8.15): calculator row 5 rearranged, `0` centred under `2`.** A friend's suggestion (0 on a
+  phone dial pad / numpad sits centred, not under `1`). New order `ABC` `0` `,` (was `0` `,` `ABC`), with
+  `ABC` and the decimal separator narrowed to the same weight (`SymbolLayout.ABC_DECIMAL_WEIGHT = 0.5f`) and
+  `0` widened to fill the freed space. Pure [Key.weight] change - `AdaptKeyboardView`'s row layout was already
+  a plain proportional split, no structural work needed. Key fact worth remembering: two *equal* flanking
+  weights always centre the cell between them on the row's own centre regardless of the shared value, so the
+  exact `0.5f` chosen is arbitrary and freely retunable later without re-deriving the centring math.
 - **§35 DONE (v0.8.14): fixed auto-capitalisation of the Greek math-symbol popup.** Picking π/α/β/γ/δ/λ/ω
   from the `p` key's popup (D-99, math symbols on the Latin keyboard, not Greek-mode text) could get
   silently upper-cased by the ordinary auto-cap-at-word-start feature - wrong, since case is semantically
