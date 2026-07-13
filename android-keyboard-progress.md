@@ -28,14 +28,28 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `0b4d7a8` — v0.7.46 (D-92). Working tree = **v0.7.47**, D-92 follow-up below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released D-89/D-90/D-91/D-92 in that order (2026-07-12); all four done
-  this session, plus one correction round on D-92. §26's D-87/D-88 remain backlog-only, next up per the
-  user's stated focus on autocorrect quality.
+- HEAD: `b468b28` — v0.7.47 (D-92 follow-up). Working tree = same v0.7.47, only a doc-only §27 backlog
+  capture added, not yet committed (no code changes, no version bump). **Spec §12/§13/§14 complete.**
+  User released D-89/D-90/D-91/D-92 in that order (2026-07-12), all four done plus one correction round on
+  D-92's currency/decimal logic. A first real device round on that batch (2026-07-13) produced a new backlog,
+  captured in spec.md §27 (D-94…D-102) - **not started**, awaiting release. §26's D-87/D-88 also still
+  backlog-only.
 - Unit tests: **507 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
   warnings). **Versioned 0.7.47** (only the third digit bumps per APK; versionCode 117). `origin/main` is
-  5 commits behind (D-93, D-89, D-90, D-91, D-92; this session's follow-up once committed makes it 6) -
-  awaiting push.
+  5 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up; this session's §27 doc commit once made would be
+  6th) - awaiting push.
+- **§27 CAPTURED, NOT STARTED (still v0.7.47, no code changes this entry):** device round 15 on the D-89…D-92
+  batch. D-91 confirmed working. New items: D-94 (bug - the D-91 direction fix didn't reach the slide
+  animation), D-95 (parked idea - a Settings-shortcut key, no placement decided), D-96 (main page: reorganise
+  v/b/x/c alt-hints - x→×, c→÷, v→/, b→*), D-97 (calculator space key shouldn't show the language label),
+  D-98 (currency popup reorder to €$£¥ + a new "more alternatives" corner-hint indicator that doesn't exist
+  yet), D-99 (π key gets a Greek-letter alt-popup: α β γ δ λ ω), D-100 (the big one - narrower digit block,
+  new persistent right-hand column for ⌫/space/¤/ABC/⏎ with a real per-row-weight technical challenge to
+  match column width, digit grid grows to 4×4 with 0/,/=/+ on a new bottom row, page-toggle key removed
+  entirely from both pages), D-101 (`(`/`)` merge into one key with the full bracket family as its popup),
+  D-102 (page 2 upgraded into a real number-row alternative for C-09-off users - fixed digit row always shown,
+  a row of the main number row's shifted symbols, and the main page's letter alt-hints distributed across the
+  rest - explicitly flagged by the user as a draft to re-sort once built).
 - **D-92 follow-up DONE (v0.7.47):** corrected D-92's currency/decimal-separator design. The user pointed out
   both the keyboard-selected language *and* the system-selected language/region were meant to drive these
   keys, with the system as the tiebreaker when the keyboard language doesn't disambiguate (German and Greek

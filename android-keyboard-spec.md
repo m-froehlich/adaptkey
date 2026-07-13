@@ -1173,3 +1173,119 @@ or a locale without a resolvable country); those fall back to `€` rather than 
 `AdaptKeyboardView` gained a `systemLocale: Locale` property threaded through the same way as
 `symbolKeyEnabled`; `AdaptKeyService.applySettings()` sets it from `resources.configuration.locales[0]` - the
 device's actual system locale, deliberately not the app's own DE/EL keyboard-alphabet toggle.
+
+---
+
+## §27 - Device-Feedback Round 15 (v0.7.47 testing)
+
+D-91 confirmed working ("Das funktioniert genau richtig") - a real device round on the D-89…D-92 batch,
+mostly focused on the D-92 calculator/catch-all pages. Captured here as backlog, per the usual rule -
+**not started** until explicitly released.
+
+### D-94 - Bug: the D-91 Swipe Reversal Didn't Reach the Slide Animation
+D-91 correctly reversed which direction (`SwipeDirection`) advances vs. goes back through the letters →
+symbols-1 → symbols-2 cycle, and the user confirms the *function* is now exactly right. But the *visual*
+slide animation still moves the old way. D-91's implementation assumed `AdaptKeyboardView.switchPage()`'s
+`forward` plumbing (from D-76/D-86) would automatically follow the new mapping with no separate change - that
+assumption was apparently wrong, or incomplete. Needs investigation: likely `applySwipePage()` /
+`PanelNavigation.swipePage()` in `AdaptKeyService` still derive the slide's `forward` flag from the page-index
+comparison (`targetSymbolPage > symbolPage` or similar) rather than from which *swipe direction* the user
+actually made, so the two got decoupled once D-91 remapped direction to action independently of page order.
+
+### D-95 - Idea, Parked: a Settings-Shortcut Key Somewhere on the Keyboard
+A key that jumps straight to Settings would be convenient, but the user has no placement idea yet and
+explicitly wants this only kept in mind for now ("behalten wir das erstmal nur im Hinterkopf") - not an
+actionable backlog item until a placement makes sense (a spare slot might open up once D-100 below reshuffles
+the calculator page, worth revisiting then).
+
+### D-96 - Main Page: Reorganise the v / b (and New x / c) Alt-Hints
+Current (`KeyboardLayout.DEFAULT_LETTER_HINTS`, from D-90): `b`→`×`, `v`→`÷`. New assignment:
+- `x` → `×` (multiplication moves here)
+- `c` → `÷` (division moves here)
+- `v` → `/` (slash, new)
+- `b` → `*` (asterisk, new)
+
+`x` and `c` currently carry no hint at all, so this is a clean four-way reassignment, not a conflict. `π` on
+`p` (D-90) is untouched.
+
+### D-97 - Calculator Page: Space Key Shouldn't Show the Language Label
+D-03 makes every `KeyCode.SPACE` key show the active input language ("Deutsch") via
+`AdaptKeyboardView.labelFor()`'s `spaceLabel` branch - correct for the main letters page, but the calculator
+page's smaller, inline space key (D-92) inherits it too, which makes no sense there (mirrors the same
+surface-scoping mistake G-01 had before the D-92 follow-up fixed the *gesture* side). Wants the plain,
+Gboard-style long rounded-rectangle space glyph ("▭"-like, exact glyph/icon TBD during implementation)
+instead, regardless of active language. Likely needs `labelFor()` (or the caller) to know which surface a
+given space key belongs to, similar to how `KeyGesture.resolve()` gained a `surface` parameter for D-92.
+
+### D-98 - Calculator Page: Currency Popup Order + a "More Alternatives" Corner Indicator
+Two asks:
+1. Reorder the currency popup to `€ $ £ ¥` (currently `$ £ € ¥` from the original D-92 implementation).
+2. A corner-hint glyph that signals "this key has more long-press alternatives" - **does not exist yet**: today
+   `AdaptKeyboardView` only ever draws a key's own [Key.hint] string as the corner glyph (L-05/C-08); a
+   multi-alternative key (D-01) with `alternatives.size >= 2` but `hint == null` - comma, period, the currency
+   key, `×`/`÷`/`=` on the calculator page, etc. - currently draws **no** corner indicator at all. This would be
+   a new, generically-applicable visual (small dot/triangle badge, exact treatment TBD), not specific to the
+   currency key alone.
+
+Also flagged, tied to D-100's layout move below: once the currency key relocates into the new right-hand
+column, a popup that always grows rightward (D-44) may run out of room against the screen edge - the order
+(or growth direction) may need to flip depending on the key's on-screen position. Needs resolving once D-100's
+exact column position is implemented and actually on screen.
+
+### D-99 - Main Page: Greek-Letter Alt-Popup on the π Key
+The `p`→`π` key (D-90) gets a multi-alternative long-press popup (D-01) offering the Greek letters
+`α β γ δ λ ω` (Alpha, Beta, Gamma, Delta, Lambda, Omega) alongside `π` itself.
+
+### D-100 - Calculator Page: Narrower Digit Block, New Persistent Right-Hand Column, Digit-Grid 4th Row, Page-Toggle Key Removed
+The biggest item this round - a further reshuffle of D-92's calculator page:
+
+- **Narrow the digit block** to free a new column on the **right edge**, running the full height of the page
+  (row 1 down to the bottom row), holding, top to bottom: `⌫` (already there), `[space]` (moved here, under
+  backspace), `¤` (currency, moved here, under space), the optional `ABC` key (D-59-gated, moved here, under
+  currency), `⏎` (already there, at the bottom). **All cells in this right-hand column must render at the
+  same width as each other** ("alle Tasten bis runter zum Enter in derselben Breite").
+  - Technically non-trivial: `AdaptKeyboardView.layoutKeys()` divides each row's own width proportionally by
+    the *sum of that row's own key weights* - rows with very different total content (row 1's ~7-8 symbols vs.
+    a 4-cell digit row) will not automatically give a same-*weight* trailing cell the same *pixel* width. The
+    right column's weight per row will likely need computing from each row's own total content weight (so the
+    column occupies the same *fraction* of every row), not just reusing one constant weight value.
+- **The digit block gains a 4th row**, turning the operators + digits area into a genuine 4×4 grid:
+  ```
+  7  8  9  ÷
+  4  5  6  ×
+  1  2  3  −
+  0  ,  =  +
+  ```
+  `0` under `1`, the decimal separator under `2`, `=` under `3`, and `+` under the operator column (÷/×/−).
+  Every cell in this 4×4 grid renders at the same width as the column above it.
+- **The page-toggle key (`1/2` on this page, `2/2` on page 2 - the user's note names it "die 2/2 Taste" but the
+  surrounding text is entirely about page 1's layout, so this is read as shorthand for "the page-toggle key",
+  to be confirmed) is removed entirely from both pages, without D-93's `symbolKeyEnabled` gating** - it's just
+  gone, freeing its slot unconditionally. The two symbol pages become reachable **only** via the D-19/D-91
+  full-field swipe, or the documented fallback detour: `ABC` back to the main letters page, then the combined
+  `?123` key back to symbols page 1, then swipe to page 2.
+
+### D-101 - Calculator Page: Bracket Family as the `(` Key's Alt-Popup
+The separate `(` and `)` keys (row 1) become **one** key (exact base glyph/label TBD - `(` is the natural
+choice) whose D-01 multi-alternative popup offers `)` plus the rest of the bracket family: `{` `}` `[` `]`
+`<` `>`. This is what makes page 2's bracket row (D-102 below) redundant.
+
+### D-102 - Page 2: a Real Number-Row Alternative + Full Letter-Hint Distribution
+Page 2 gets upgraded into something genuinely useful for anyone who has turned the main page's number row off
+(C-09) - not just a leftover catch-all:
+
+- **Remove the bracket row** (`{ } [ ] < >`) - redundant once D-101 lands (reachable via the `(` key's popup).
+- **Add back a fixed digit row** (`1234567890`), shown **unconditionally, independent of C-09** - this
+  explicitly **reverses** D-92's original "no number row regardless of C-09" decision for this page. The
+  intent: C-09 stays a main-page-only declutter option, and page 2 becomes the fallback place to reach digits
+  (and, per the next point, their shifted symbols) when it's off.
+- **A new row directly under the digit row**, holding all of the main number row's shifted-symbol long-press
+  hints (`L-06`/`NUMBER_HINTS`: `! " § $ % & / ( ) =`) as plain, directly-tappable characters - not hidden
+  behind a long-press, since the whole point is restoring easy access to them when the main number row (and
+  its long-press hints) are hidden.
+- **Distribute the main letter page's alt-hint symbols** (everything in `KeyboardLayout.DEFAULT_LETTER_HINTS`
+  - `@ € # - + °` plus D-96's reorganised `× ÷ / *`, and `π`'s own new Greek-letter popup from D-99 stays
+    where it is) across the rest of page 2's available space "sinnvoll" (sensibly) - **the user explicitly
+    flags this as provisional**: "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um" (we'll see
+    how it turns out and re-sort if needed). Treat the first implementation as a draft layout to review
+    together, not a final answer.
