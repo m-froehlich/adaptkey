@@ -1327,3 +1327,13 @@ a user who has reassigned `p` to something else via the C-08 editor keeps their 
 long-press instead of an unrelated Greek-letter popup. The underlying popup mechanism (`Key.alternatives`,
 `AdaptKeyboardView.popupAlternativesFor`) is already fully generic across every layout (letters, symbol
 pages), so no view-layer change was needed - only the key data itself.
+
+### D-97 - Implemented: Symbol Pages' Space Key No Longer Shows the Language Label (v0.7.49)
+`AdaptKeyboardView.labelFor()`'s D-03 branch (space bar shows the active input language) now checks
+`surface == InputSurface.LETTERS` before using `spaceLabel`; on any other surface, `KeyCode.SPACE` falls
+through to a new plain glyph, `SPACE_GLYPH = "␣"` (U+2423 OPEN BOX - the usual elongated-open-rectangle space
+symbol the user described). Scoped to "not the letters surface" rather than "the calculator page
+specifically", for consistency with the same surface-scoping the D-92 follow-up already applied to the G-01
+gesture - this also fixes page 2's space key, which had the same latent issue even though only the calculator
+page was explicitly mentioned. Purely a `labelFor()`/drawing change; no test added (private, drawing-only View
+glue - an existing, documented testing gap for this class, not a new one).

@@ -28,14 +28,19 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `f03aa5d` — v0.7.47 (§27 D-94…D-104 doc capture). Working tree = **v0.7.48**, D-96/D-99 below, not
-  yet committed. **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then
-  D-94 (spec §28). D-96/D-99 done this entry; D-97/D-98/D-101/D-94 next. §26's D-87/D-88 and the rest of §27
-  (D-95, D-100, D-102, D-103, D-104) remain backlog-only.
+- HEAD: `8814d70` — v0.7.48 (D-96+D-99). Working tree = **v0.7.49**, D-97 below, not yet committed.
+  **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then D-94 (spec §28).
+  D-96/D-99/D-97 done; D-98/D-101/D-94 next. §26's D-87/D-88 and the rest of §27 (D-95, D-100, D-102, D-103,
+  D-104) remain backlog-only.
 - Unit tests: **509 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.48** (only the third digit bumps per APK; versionCode 118). `origin/main` is
-  7 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2; this session's D-96/D-99 once
-  committed makes it 8) - awaiting push.
+  warnings). **Versioned 0.7.49** (only the third digit bumps per APK; versionCode 119). `origin/main` is
+  8 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99; this session's D-97
+  once committed makes it 9) - awaiting push.
+- **D-97 DONE (v0.7.49, spec §28):** `AdaptKeyboardView.labelFor()`'s space-bar language label (D-03) now
+  only applies on the letters surface; any other surface's space key shows a new plain `SPACE_GLYPH = "␣"`
+  (U+2423 OPEN BOX) instead. Scoped to "not letters" for consistency with the D-92 follow-up's G-01 gesture
+  fix - also fixes page 2's space key, not just the calculator page the user explicitly mentioned. No new
+  test (private drawing-only View glue, an existing documented gap). Not yet device-tested.
 - **D-96/D-99 DONE (v0.7.48, spec §28):** `KeyboardLayout.DEFAULT_LETTER_HINTS` reorganised - `x`→`×`, `c`→`÷`,
   `v`→`/`, `b`→`*` (replacing D-90's `b`→`×`/`v`→`÷`; `x`/`c` were previously unassigned). The `p`→`π` key
   gained a Greek-letter D-01 popup (`π α β γ δ λ ω`) via a new private `topRowKey()` helper in

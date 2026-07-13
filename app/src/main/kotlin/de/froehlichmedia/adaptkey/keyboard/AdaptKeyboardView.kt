@@ -1123,8 +1123,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun labelFor(key: Key): String {
         val ch = key.char
         return when {
-            // D-03: the space bar shows the current input language instead of its layout label.
-            key.code == KeyCode.SPACE && spaceLabel.isNotEmpty() -> spaceLabel
+            // D-03: the letters surface's space bar shows the current input language instead of its
+            // layout label. D-97: the symbol pages' (smaller, secondary) space keys have no language of
+            // their own to show, so they fall through to the plain space glyph instead.
+            key.code == KeyCode.SPACE && surface == InputSurface.LETTERS && spaceLabel.isNotEmpty() -> spaceLabel
+            key.code == KeyCode.SPACE && surface != InputSurface.LETTERS -> SPACE_GLYPH
             // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
             // D-47: with the emoji panel off, the combined key is a plain ?123 key, not the emoji.
@@ -1167,5 +1170,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         
         // D-58: the page-change slide - quick enough to stay snappy, slow enough to actually be seen.
         private const val SLIDE_DURATION_MS = 180L
+        
+        // D-97: the plain space-bar glyph (U+2423 OPEN BOX) shown on the symbol pages' space keys, which
+        // have no language of their own to display.
+        private const val SPACE_GLYPH = "␣"
     }
 }
