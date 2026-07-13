@@ -81,12 +81,12 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `paragraph 36 the 0 key is centred under 2, flanked by equally-narrow ABC and decimal-separator keys`() {
+    fun `paragraph 36 and 37 the 0 key is centred under 2, flanked by equally-narrow ABC and decimal-separator keys`() {
         val row5 = SymbolLayout.rows(1, locale = Locale.GERMANY)[4]
         
-        assertEquals(0.5f, row5[0].weight, 1e-4f)
-        assertEquals(2f, row5[1].weight, 1e-4f)
-        assertEquals(0.5f, row5[2].weight, 1e-4f)
+        assertEquals(0.75f, row5[0].weight, 1e-4f)
+        assertEquals(1.5f, row5[1].weight, 1e-4f)
+        assertEquals(0.75f, row5[2].weight, 1e-4f)
         // The row's own total (3, matching rows 2-4's three digit/operator cells) confirms nothing else
         // silently absorbed the weight freed up from the two narrowed flanking keys.
         assertEquals(3f, row5[0].weight + row5[1].weight + row5[2].weight, 1e-4f)

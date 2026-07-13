@@ -1784,3 +1784,11 @@ cells (still 3, so the right-hand column stays aligned) without a second edit. `
 hiding (D-59/D-93/§29-follow-up: drawn as empty space, inert, when the combined `?123` key setting is off)
 is unaffected by its new narrower weight - that mechanism only ever cared about the key's own slot staying
 present, never its width.
+
+## §37 - Row 5 Retuned: `0` Less Oversized (v0.8.16)
+
+§36's `ABC_DECIMAL_WEIGHT = 0.5f` made `0` twice as wide as an ordinary digit key (weight `2f` against their
+`1f`) - reported as visibly too large. Retuned to `0.75f`, giving `0` a more modest `1.5f` (1.5x) width
+instead. As noted in §36, only one constant needed changing - `0`'s own weight is derived
+(`CALC_DIGIT_COLUMN_WEIGHT - 2 * ABC_DECIMAL_WEIGHT`), and the centring under `2` holds for any value as long
+as `ABC` and the decimal separator stay equal to each other, which they still do.

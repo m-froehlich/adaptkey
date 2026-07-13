@@ -55,10 +55,12 @@ object SymbolLayout {
     // proportions.backspaceWeight (L-04) rather than trying to force-match this column.
     private const val CALC_COLUMN_WEIGHT = 1f
     
-    // §36: row 5's ABC and decimal-separator cells share this weight, kept deliberately equal - the sum of
-    // two *equal* flanking weights always lands the cell between them on the row's own centre, whatever
-    // that shared value is, which is what actually centres 0 under 2 (not the specific number chosen here).
-    private const val ABC_DECIMAL_WEIGHT = 0.5f
+    // §36 (retuned, §37): row 5's ABC and decimal-separator cells share this weight, kept deliberately equal
+    // - the sum of two *equal* flanking weights always lands the cell between them on the row's own centre,
+    // whatever that shared value is, which is what actually centres 0 under 2 (not the specific number
+    // chosen here). 0.5f made 0 twice as wide as a normal digit key, which looked oversized; 0.75f gives it
+    // a more modest 1.5x width instead.
+    private const val ABC_DECIMAL_WEIGHT = 0.75f
     
     // The three digit columns' combined weight per row (1 + 1 + 1, each digit's own default charKey()
     // weight) - row 5 needs this named explicitly since its own three cells no longer split it evenly.
