@@ -28,17 +28,37 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `8b8120b` — v0.8.15 (§36). Working tree = **v0.8.16**, §37 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34/§35/§36/§37 fully implemented; still before any device
-  testing of the whole D-92→D-104/§32-37 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain
-  backlog-only.
+- HEAD: `28a80d5` — v0.8.16 (§37). Working tree = **v0.8.17**, §38 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34/§35/§36/§37/§38 fully implemented; still before any
+  device testing of the whole D-92→D-104/§32-38 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104)
+  remain backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **539 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 21 commits behind HEAD `8b8120b`; this session's §37 commit once made brings it
-  to 28 - awaiting push.
+  warnings). `origin/main` is 21 commits behind HEAD `28a80d5`; this session's §38 commit once made brings it
+  to 29 - awaiting push.
+- **§38 DONE (v0.8.17): D-36 clipboard paste reworked - native paste action, sensitive-only auto-clear.**
+  Reported: the D-36 paste chip's `commitText()` loses app-specific paste behaviour (Google Keep splits a
+  pasted multi-line list into one entry per line via its own native "Paste" handling, but not via plain
+  committed text) - confirmed as a real, if surprising, side effect of *how* text arrives, not a Keep bug;
+  a further ask (splitting first-line-into-title on Keep's list-note title field) is confirmed **not
+  achievable from the keyboard at all** - no IME channel exists to target multiple app-internal UI elements.
+  Reverted the D-36/D-60 paste chip from `commitText()` back to
+  `InputConnection.performContextMenuAction(android.R.id.paste)`, addressing D-36/D-60's two original
+  objections differently: "not honoured by every field" is **not fixed** (no way to detect after the fact
+  whether a native paste happened, so no automatic `commitText()` fallback is possible) and accepted as a
+  known, open risk; "races the immediate `clearClipboard()`" **is fixed**, by deferring the clear
+  `CLIPBOARD_CLEAR_DELAY_MS` (300 ms, via the service's existing `Handler.postDelayed`, same pattern as
+  `resortRunnable`) instead of firing it synchronously, with a re-check that the clipboard still holds what
+  was pasted before actually clearing (skips if something else was copied meanwhile). Also: the clipboard is
+  now only ever auto-cleared when the content is flagged sensitive (`ClipDescription.EXTRA_IS_SENSITIVE`,
+  Android 13+, set by whichever app *copied* it - not content-pattern-matched, not based on the current paste
+  target's field type; almost certainly the same mechanism behind GBoard's bullet-masked clipboard preview,
+  and already used for AdaptKey's own D-36 chip preview) - ordinary clipboard content is preserved across a
+  paste instead of being unconditionally wiped. No new unit tests - this is `AdaptKeyService`
+  `ClipboardManager`/`InputConnection`/`Handler` glue, an existing documented testing gap.
 - **§37 DONE (v0.8.16): row 5's `0` retuned, less oversized.** §36's `ABC_DECIMAL_WEIGHT = 0.5f` made `0`
   twice as wide as an ordinary digit key - reported as too large. Retuned to `0.75f`, giving `0` a more
   modest `1.5f` width; `0`'s own weight is derived from the constant, so this was a one-line change, and

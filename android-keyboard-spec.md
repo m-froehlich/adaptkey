@@ -1792,3 +1792,58 @@ present, never its width.
 instead. As noted in §36, only one constant needed changing - `0`'s own weight is derived
 (`CALC_DIGIT_COLUMN_WEIGHT - 2 * ABC_DECIMAL_WEIGHT`), and the centring under `2` holds for any value as long
 as `ABC` and the decimal separator stay equal to each other, which they still do.
+
+## §38 - D-36 Clipboard Paste Reworked: Native Paste Action, Sensitive-Only Auto-Clear (v0.8.17)
+
+### Reported: the D-36 paste chip's `commitText()` approach loses app-specific paste behaviour
+Pasting a multi-line list into Google Keep's note editor via the D-36 direct-paste chip produced a single
+multi-line entry; pasting the same text via the field's own long-press "Paste" produced one list entry per
+line. Investigated and confirmed: this is a real difference in *how* text arrives at the target app, not a
+Keep bug. `InputConnection.commitText()` (D-36/D-60's approach since it landed) just inserts characters -
+indistinguishable, from the target app's point of view, from someone typing very fast including newlines.
+Keep's per-line list-entry splitting is almost certainly wired to its own native paste-handling code path
+(the one `InputConnection.performContextMenuAction(android.R.id.paste)` would trigger, since that asks the
+target editor to run its own "Paste" context-menu action - the same thing a long-press "Paste" runs), not to
+"multi-line text arrived from somewhere." A related ask - pasting into a Keep list-note's *title* field
+splitting the first line into the title and the rest into list entries - is confirmed **not achievable from
+the keyboard side at all**: an IME's entire view of an app is "there is a text field, I can commit text into
+it" - it has no channel to know an app maintains multiple separate UI elements (title + individually-rendered
+list rows) a paste should be distributed across. That would need to be built into Keep's own paste handler.
+
+### Reverted to `performContextMenuAction(paste)`, with the D-36/D-60 concerns addressed differently
+D-36/D-60 originally moved *away* from `performContextMenuAction(paste)` for two reasons, both still true as
+general facts, addressed (or knowingly accepted) differently now:
+
+1. **"Not honoured by every field"** - in some fields/apps, the call silently does nothing. **Not fixed** -
+   there is no reliable way for an IME to detect after the fact whether a native paste actually happened, so
+   there is no way to build an automatic fallback to `commitText()`. Accepted as a known, open risk in
+   exchange for the Notes-app benefit and (below) no longer wiping ordinary clipboard content; the user will
+   report back if it causes trouble in practice.
+2. **"Races the immediate `clearClipboard()`"** - the old code cleared the clipboard synchronously right
+   after firing the paste action, but `performContextMenuAction()` triggers the target app's *own*
+   asynchronous paste handling, which often had not actually read the clipboard yet by the time it was
+   wiped - the original reason paste appeared to silently fail in several apps. **Fixed**: the clear is now
+   deferred `CLIPBOARD_CLEAR_DELAY_MS` (300 ms) via the service's existing `Handler` (the same
+   `postDelayed()` pattern already used for `resortRunnable`) instead of firing synchronously -
+   `scheduleClipboardClear()`. 300 ms is generous relative to how quickly a target app's UI thread actually
+   processes a plain-text paste (typically single-digit milliseconds), while still keeping a sensitive
+   value's exposure window short. Before clearing, the callback re-reads the current clipboard text and
+   compares it against what was pasted - if it no longer matches (the user copied something else in the
+   meantime), the clear is skipped rather than silently wiping unrelated newer content.
+
+### Also requested and implemented: only ever auto-clear *sensitive* content
+Previously every paste cleared the clipboard unconditionally, "so pasted content - especially a password -
+does not linger" (the original D-36 rationale) - which also discarded ordinary, harmless clipboard content
+the user might have wanted to paste again elsewhere. Now `clearClipboard()` (via `scheduleClipboardClear()`)
+only ever runs when the clip is flagged sensitive.
+
+**How "sensitive" is determined** (a question raised alongside this fix): via the clipboard's own
+[ClipDescription.EXTRA_IS_SENSITIVE] flag (Android 13/Tiramisu+), set by whichever app *copied* the content
+(a password manager or browser flags it when the source field was a password field) - not by inspecting the
+clipboard text's own content for password-like patterns, and not by the *current* paste target field's
+`inputType`. There is no reliable signal at all pre-Tiramisu, or from a copying app that does not set the
+flag. This is almost certainly also how GBoard decides to show a run of bullets instead of a text preview for
+clipboard content - the masking has to happen the moment the clip preview is offered, before the user has
+even chosen a target field, so it cannot be based on where the text will land. AdaptKey already read this
+same flag for the D-36 chip's own bullet-masked preview ([ClipboardPreview]); the check is now factored into
+a shared `isSensitiveClip()` used by both the preview and the new auto-clear decision.

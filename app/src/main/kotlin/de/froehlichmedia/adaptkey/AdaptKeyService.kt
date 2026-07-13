@@ -589,16 +589,50 @@ class AdaptKeyService : InputMethodService() {
         if (clip.itemCount == 0) {
             return
         }
-        val sensitive = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            clip.description?.extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true
-        val label = ClipboardPreview.label(clip.getItemAt(0).coerceToText(this), sensitive) ?: return
+        val label = ClipboardPreview.label(clip.getItemAt(0).coerceToText(this), isSensitiveClip(clip)) ?: return
         val chip = SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, "")
         suggestionBar?.setItems(listOf(chip))
         suggestionBar?.visibility = View.VISIBLE
     }
     
     /**
-     * D-36: clears the clipboard after a paste, so pasted content - especially a password - does not linger.
+     * §38 (was D-36): whether [clip]'s content is sensitive (e.g. a password) - flagged by the app that
+     * *copied* it, via the OS-level [ClipDescription.EXTRA_IS_SENSITIVE] (Android 13+ only; there is no
+     * signal at all on older platforms, or from a copying app that does not set it - neither the clipboard
+     * content itself nor the current paste target's field type is consulted). The same flag drives both the
+     * D-36 chip's bullet-masked preview ([ClipboardPreview]) and, from §38, whether a paste auto-clears the
+     * clipboard afterward.
+     */
+    private fun isSensitiveClip(clip: ClipData): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            clip.description?.extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true
+    }
+    
+    /**
+     * §38: schedules a clipboard clear [CLIPBOARD_CLEAR_DELAY_MS] after a sensitive paste - long enough for
+     * the target app's asynchronous [InputConnection.performContextMenuAction] paste handling to have
+     * actually read the clipboard first (see the `CLIPBOARD` branch of `handleSuggestionTap()` for why that
+     * call, not `commitText()`, is used), short enough to keep the exposure window for the sensitive content
+     * small. Skips clearing if the clipboard no longer holds [expectedText] by the time it fires - something
+     * else was copied in the meantime, and that must not be silently wiped.
+     */
+    private fun scheduleClipboardClear(expectedText: String) {
+        handler.postDelayed({
+            val current = clipboardManager
+                ?.takeIf { it.hasPrimaryClip() }
+                ?.primaryClip
+                ?.takeIf { it.itemCount > 0 }
+                ?.getItemAt(0)
+                ?.coerceToText(this)
+                ?.toString()
+            if (current == expectedText) {
+                clearClipboard()
+            }
+        }, CLIPBOARD_CLEAR_DELAY_MS)
+    }
+    
+    /**
+     * D-36: clears the clipboard, so a sensitive paste (a password, §38) does not linger.
      */
     private fun clearClipboard() {
         val cm = clipboardManager ?: return
@@ -1766,20 +1800,27 @@ class AdaptKeyService : InputMethodService() {
                 armShiftForNextWord(ic)
             }
             
-            // D-36 / D-60: commit the clipboard text directly instead of firing the editor's paste action.
-            // performContextMenuAction(paste) is not honoured by every field and, worse, races the immediate
-            // clearClipboard() - the field often read an already-emptied clipboard and nothing was pasted.
-            // Reading the text here and committing it is deterministic; only then is the clipboard cleared.
+            // §38 (reverted from D-36 / D-60's commitText()): fires the editor's own native paste action
+            // instead of committing the clipboard text directly, so an app whose paste handling does
+            // something beyond plain text insertion (e.g. a notes app splitting pasted lines into separate
+            // list entries the way it would for the user's own long-press "Paste") sees that too - a plain
+            // commitText() call looks like nothing more than fast typing to such an app. D-36 / D-60's two
+            // original objections to this: (1) performContextMenuAction(paste) is not honoured by every
+            // field, silently doing nothing there - still true, and not fixed here; accepted as a known risk
+            // now that the Notes-app benefit outweighs it. (2) it races an immediate clearClipboard() - the
+            // field often read an already-emptied clipboard - fixed by delaying the clear instead
+            // (scheduleClipboardClear(), §38), long enough for the target's async paste handling to have
+            // actually read the clipboard first. Non-sensitive content is no longer cleared at all (only a
+            // password, or anything else the copying app flagged sensitive, ever gets cleared - see
+            // isSensitiveClip()).
             SuggestionController.Kind.CLIPBOARD -> {
-                val text = clipboardManager
-                    ?.takeIf { it.hasPrimaryClip() }
-                    ?.primaryClip
-                    ?.takeIf { it.itemCount > 0 }
-                    ?.getItemAt(0)
-                    ?.coerceToText(this)
+                val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip?.takeIf { it.itemCount > 0 }
+                val text = clip?.getItemAt(0)?.coerceToText(this)
                 if (!text.isNullOrEmpty()) {
-                    ic.commitText(text, 1)
-                    clearClipboard()
+                    ic.performContextMenuAction(android.R.id.paste)
+                    if (isSensitiveClip(clip)) {
+                        scheduleClipboardClear(text.toString())
+                    }
                 }
                 clearSuggestions()
             }
@@ -2055,6 +2096,12 @@ class AdaptKeyService : InputMethodService() {
         
         // D-15: two Shift presses within this window engage Caps Lock.
         private const val DOUBLE_TAP_SHIFT_MS = 300L
+        
+        // §38: how long a sensitive clipboard paste is left in place before it is auto-cleared - long
+        // enough for the target app's async performContextMenuAction(paste) handling to have actually read
+        // it (typically single-digit milliseconds for a plain text field), short enough to keep the window
+        // a malicious clipboard-reading app could grab it in small.
+        private const val CLIPBOARD_CLEAR_DELAY_MS = 300L
         
         // D-37: how many times a new word must be committed (without being reverted) before it is promoted
         // to the learned dictionary, so a one-off typo is not eagerly learned.
