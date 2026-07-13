@@ -28,13 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `8038884` — v0.7.53 (D-100). Working tree = **v0.7.54**, D-102 below, not yet committed.
-  **Spec §12/§13/§14 complete.** User released D-100 then D-102 - both done this session. §26's D-87/D-88 and
-  the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `3dbf382` — v0.7.54 (D-102). Working tree = **v0.8.3**, a deliberate minor-version bump below, not yet
+  committed (no code change). **Spec §12/§13/§14 complete.** User released D-100 then D-102 - both done.
+  §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- **Versioning jumped from 0.7.54 to 0.8.3 (2026-07-13), user's deliberate call**: the user had originally
+  meant to cross the 0.8 line for the raw-tap-recording feature, but that landed and was later removed
+  (D-09) before it happened; the D-92/D-100/D-102 calculator/symbol-page redesign is what they now consider
+  the appropriate milestone for it. **Still only the third digit bumps per APK going forward** (0.8.3 ->
+  0.8.4 -> ...), same rule as before, just a fresh minor number. `versionCode` does **not** try to encode the
+  new version number (`8*10+3=83` would be *lower* than the outgoing 124, which Android's monotonic-versionCode
+  requirement forbids for updates) - it just keeps counting up by 1 regardless: 124 -> **125**.
 - Unit tests: **516 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.54** (only the third digit bumps per APK; versionCode 124). `origin/main` is
-  13 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2, D-96+D-99, D-97, D-98, D-101,
-  D-94, D-100; this session's D-102 once committed makes it 14) - awaiting push.
+  warnings). `origin/main` is 14 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2,
+  D-96+D-99, D-97, D-98, D-101, D-94, D-100, D-102; this session's version bump once committed makes it 15) -
+  awaiting push.
 - **D-102 DONE (v0.7.54, spec §28):** page 2 grew from 3 rows to 5. Row 1 keeps the leftover symbols (now 6,
   not 7 - the double quote moved out) + backspace. New row 2: a fixed digit row, unconditional, independent
   of C-09 (reverses D-92's original decision for this page). New row 3: the main number row's shifted symbols
