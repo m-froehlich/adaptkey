@@ -1616,3 +1616,60 @@ edit, or null when there's no number directly before the caret. One accepted tra
 worked around: since the key carries no hint, it gets no corner-glyph visual cue that long-press does
 something - acceptable for a power-user bonus gesture the user already knows exists, and forcing one through
 the existing hint-is-commit-text machinery would have caused the exact bug this design avoids.
+
+## §32 - D-87 Root-Cause Fixes: Mid-Word Correction (v0.8.11)
+
+Investigated the report that D-62 mid-word live correction "still doesn't activate", with three symptoms:
+no suggestions while typing mid-word, the caret jumping to word/sentence end, and whole words being
+swallowed. Found and fixed two independent bugs in the same code path, both around `reclaimSurroundingWord()`
+(the D-62 mechanism that pulls a word's letters on both sides of the caret into `composing` when a new
+composing token starts mid-word). No Robolectric integration test was built for either fix - a realistic
+fake `InputConnection` that reproduces windowed `ExtractedText` and batch-edit callback timing is out of
+scope for this environment (see below); both fixes were verified by careful manual trace against the
+`InputConnection`/`ExtractedText` API contract, plus new pure unit tests for the extracted logic they touch.
+**Neither fix has been confirmed on a real device yet** - this environment has no Android emulator (no
+hardware virtualization available) and Robolectric cannot exercise real IPC timing.
+
+### Bug 1: `ExtractedText.selectionStart` used as an absolute position
+`reclaimSurroundingWord()` computed the mid-word composing anchor from
+`ic.getExtractedText(ExtractedTextRequest(), 0)?.selectionStart` directly. Per the `ExtractedText` API
+contract, `selectionStart` is relative to the *extracted chunk* (`ExtractedText.text`), not the whole
+document - `ExtractedText.startOffset` must be added to get an absolute document position. Using
+`selectionStart` alone happens to work in short/simple fields, where `startOffset` is always 0, but silently
+miscomputes the anchor - and with it every later "is this our own edit" check in `onUpdateSelection` - in any
+field long or paginated enough for the framework to window the extraction instead of returning the whole
+document. This explains why the bug was previously reported as intermittent rather than reliably
+reproducible (§27/§28's D-84 fix addressed a real, different bug - a `tokenContextBefore` duplication that
+silenced suggestions entirely - but did not touch this anchor computation).
+
+Fixed by extracting the arithmetic into a new pure, unit-tested `ComposingAnchor.resolve(extractedStartOffset,
+extractedSelectionStart, reclaimedBeforeLength)` object (top-level package, mirroring `WordBoundary`/
+`SentenceBoundary`), and using it in `reclaimSurroundingWord()`. Confirmed via `grep` this was the only
+occurrence of the `getExtractedText()...selectionStart` pattern in `AdaptKeyService.kt`.
+
+### Bug 2: the reclaim's `deleteSurroundingText()` was not batched with the composing update
+`reclaimSurroundingWord()` calls `ic.deleteSurroundingText()` directly (to pull the reclaimed letters out of
+the real, committed text) as a standalone `InputConnection` call, *before* `insertComposingChar()` and
+`updateComposing()` run - and `updateComposing()`'s own `beginBatchEdit()`/`endBatchEdit()` wraps only its
+own `setComposingText()`/`setSelection()` pair, not the earlier delete. Since `InputConnection` calls are
+typically dispatched asynchronously to the app and `onUpdateSelection` callbacks arrive back on a later
+message-loop turn, this unbatched delete can produce its own, independent `onUpdateSelection` callback that
+arrives *after* `composing`/`composingAnchor`/`composingCursor` have already advanced past it (both the
+delete and the later composing update happen synchronously within the same `handleKey()` call, well before
+either callback fires) - reporting a stale, delete-time-only cursor position that no longer matches
+`onUpdateSelection`'s `ownCursor` expectation. The mismatch trips the "not our edit" branch, which calls
+`finishComposingText()` and `clearComposing()` - wiping the token this very keystroke was building - even
+though nothing the user did caused it. Unlike Bug 1, this is timing-dependent rather than field-length
+dependent, so it plausibly explains a more reliably-reproducible version of all three symptoms: suggestions
+that flash and vanish (or never appear) as the wipe races the suggestion refresh, the caret landing wherever
+the stale callback's cursor position happened to be (which reads as "jumping to word/sentence end"), and
+letters already reclaimed into `composing` disappearing along with it (reads as "words being swallowed").
+
+Fixed by wrapping the whole reclaim-through-`updateComposing()` sequence in one outer
+`beginBatchEdit()`/`endBatchEdit()` at both call sites that invoke `reclaimSurroundingWord()` - the ordinary
+character path in `handleKey()`'s `KeyCode.CHAR` branch, and the long-press-letter path in
+`appendLongPressLetter()`. Nesting batch edits is an explicitly supported Android pattern (the app only
+dispatches once the outermost `endBatchEdit()` completes), so this composes safely with `updateComposing()`'s
+own conditional inner batch. The app now coalesces the delete and the composing update into a single
+transaction and reports only the final, consistent selection - eliminating the intermediate stale callback
+entirely.

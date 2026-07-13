@@ -724,22 +724,35 @@ class AdaptKeyService : InputMethodService() {
                 // a leading or standalone digit keeps its normal delimiter behaviour.
                 val extendsToken = isWordLetter || (raw.isDigit() && composing.isNotEmpty())
                 if (extendsToken) {
-                    if (composing.isEmpty()) {
-                        captureTokenContext(ic)
-                        resetWordEndShift()
-                        // D-29: a new word after the accepted suggestion keeps its leading space (correct);
-                        // the eat-the-space rule was only for an immediately following punctuation.
-                        pendingSuggestionSpace = false
-                        // D-62: the caret may sit inside (or against) an already-committed word - reclaim it
-                        // so autocorrect/suggestions see the whole word, not just what gets typed from here.
-                        reclaimSurroundingWord(ic, TapPoint(x, y))
+                    // D-87: a reclaim's own deleteSurroundingText() must not be allowed to reach the app as
+                    // a standalone edit - batched together with the setComposingText/setSelection that
+                    // follow, the app coalesces all three into one update and reports only the final,
+                    // consistent selection. Unbatched, its own onUpdateSelection callback can arrive after
+                    // composing/composingAnchor have already advanced, so onUpdateSelection's ownEdit check
+                    // (comparing against the now-current, not the delete-time, expected cursor) mismatches
+                    // and wipes the token it is itself in the middle of building.
+                    ic.beginBatchEdit()
+                    try {
+                        if (composing.isEmpty()) {
+                            captureTokenContext(ic)
+                            resetWordEndShift()
+                            // D-29: a new word after the accepted suggestion keeps its leading space (correct);
+                            // the eat-the-space rule was only for an immediately following punctuation.
+                            pendingSuggestionSpace = false
+                            // D-62: the caret may sit inside (or against) an already-committed word - reclaim
+                            // it so autocorrect/suggestions see the whole word, not just what gets typed from
+                            // here.
+                            reclaimSurroundingWord(ic, TapPoint(x, y))
+                        }
+                        val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
+                        // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
+                        // character at the logical edit point (the end, unless a reclaim left a tail after it).
+                        insertComposingChar(ch, ambiguity.kind, TapPoint(x, y))
+                        consumeShift()
+                        updateComposing(ic)
+                    } finally {
+                        ic.endBatchEdit()
                     }
-                    val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
-                    // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
-                    // character at the logical edit point (the end, unless a reclaim left a tail after it).
-                    insertComposingChar(ch, ambiguity.kind, TapPoint(x, y))
-                    consumeShift()
-                    updateComposing(ic)
                     refreshSuggestions()
                 } else {
                     // Punctuation and a leading digit are delimiters; they finalise the current token.
@@ -867,19 +880,26 @@ class AdaptKeyService : InputMethodService() {
      * long-press secondary, matching this path's pre-existing gap (see [insertComposingChar]).
      */
     private fun appendLongPressLetter(ic: InputConnection, letters: String) {
-        if (composing.isEmpty()) {
-            captureTokenContext(ic)
-            resetWordEndShift()
-            reclaimSurroundingWord(ic, tap = null)
+        // D-87: see the CHAR handler in handleKey for why the reclaim's deleteSurroundingText() must be
+        // batched together with the setComposingText/setSelection that follow.
+        ic.beginBatchEdit()
+        try {
+            if (composing.isEmpty()) {
+                captureTokenContext(ic)
+                resetWordEndShift()
+                reclaimSurroundingWord(ic, tap = null)
+            }
+            val upper = isUpperArmed()
+            for (ch in letters) {
+                composing.insert(composingCursor, if (upper) ch.uppercaseChar() else ch)
+                composingFlags.add(composingCursor, TapAmbiguity.NONE)
+                composingCursor++
+            }
+            consumeShift()
+            updateComposing(ic)
+        } finally {
+            ic.endBatchEdit()
         }
-        val upper = isUpperArmed()
-        for (ch in letters) {
-            composing.insert(composingCursor, if (upper) ch.uppercaseChar() else ch)
-            composingFlags.add(composingCursor, TapAmbiguity.NONE)
-            composingCursor++
-        }
-        consumeShift()
-        updateComposing(ic)
         refreshSuggestions()
     }
     
@@ -1506,8 +1526,9 @@ class AdaptKeyService : InputMethodService() {
         }
         var anchor = -1
         if (reclaim.after.isNotEmpty()) {
-            val cursorAbsolute = ic.getExtractedText(ExtractedTextRequest(), 0)?.selectionStart ?: return
-            anchor = cursorAbsolute - reclaim.before.length
+            // D-87: see ComposingAnchor for why startOffset must be added, not just selectionStart alone.
+            val extracted = ic.getExtractedText(ExtractedTextRequest(), 0) ?: return
+            anchor = ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, reclaim.before.length)
         }
         ic.deleteSurroundingText(reclaim.before.length, reclaim.after.length)
         // D-84: the reclaimed "before" fragment moves into composing now, so it is no longer part of the

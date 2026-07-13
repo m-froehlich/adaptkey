@@ -28,17 +28,35 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `e584770` — v0.8.9 (§31). Working tree = **v0.8.10**, sign-flip feature below, not yet committed.
-  **Spec §12/§13/§14 complete.** §28/§29/§30/§31 fully implemented; still before any device testing of the
-  whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only. User
-  is about to do a device test pass on mid-word live correction (D-62/D-87) next.
+- HEAD: `4667a8b` — v0.8.10 (sign-flip). Working tree = **v0.8.11**, §32 D-87 root-cause fixes below, not yet
+  committed. **Spec §12/§13/§14 complete.** §28/§29/§30/§31/§32 fully implemented; still before any device
+  testing of the whole D-92→D-104/§32 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain
+  backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **528 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 21 commits behind; this session's sign-flip commit once made brings it to 22 -
-  awaiting push.
+- Unit tests: **531 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 21 commits behind HEAD `4667a8b`; this session's §32 commit once made brings it
+  to 23 - awaiting push.
+- **§32 DONE (v0.8.11): two D-87 root-cause fixes for mid-word live correction (D-62).** User reported
+  suggestions not activating mid-word, the caret jumping to word/sentence end while typing, and words being
+  swallowed. Found two independent, real bugs in `reclaimSurroundingWord()`'s neighbourhood, both verified by
+  manual API-contract trace (no device/emulator available to reproduce live) - **needs real-device
+  confirmation before considering D-87 closed**:
+  1. The mid-word composing anchor used `ExtractedText.selectionStart` as if it were an absolute document
+     position; per the API it's relative to the extracted chunk and needs `ExtractedText.startOffset` added.
+     Silently correct in short fields (`startOffset` always 0), silently wrong in long/paginated ones. Fixed
+     via a new pure `ComposingAnchor.resolve()` (top-level package, `WordBoundary`/`SentenceBoundary`
+     pattern) plus 3 new unit tests.
+  2. `reclaimSurroundingWord()`'s own `deleteSurroundingText()` ran as a standalone, unbatched
+     `InputConnection` call before the later `updateComposing()` batch - its own `onUpdateSelection` callback
+     could arrive after `composing`/`composingAnchor` had already advanced, reporting a stale cursor that
+     mismatches `onUpdateSelection`'s "own edit" check and wipes the in-progress token. Timing-dependent, not
+     field-length dependent - the more likely explanation for a reliably-reproducible bug. Fixed by wrapping
+     the whole reclaim→insert→`updateComposing()` sequence in one outer `beginBatchEdit()`/`endBatchEdit()` at
+     both call sites (`handleKey()`'s `CHAR` branch, `appendLongPressLetter()`); nested batch edits are an
+     explicitly supported Android pattern. See spec §32 for full detail.
 - **Sign-flip on the calculator's minus key DONE (v0.8.10):** the §31 backlog item, confirmed and requested
   directly. Long-press `−` flips the sign of the number before the caret - operates on committed text (not
   composing state, since digits commit immediately on this page). New pure `SignFlip` object (`keyboard`
