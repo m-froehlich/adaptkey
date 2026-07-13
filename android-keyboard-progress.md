@@ -28,16 +28,40 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `4e8a692` — v0.8.12 (§33). Working tree = **v0.8.13**, §34 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34 fully implemented; still before any device testing of
-  the whole D-92→D-104/§32-34 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `515fba3` — v0.8.13 (§34). Working tree = **v0.8.14**, §35 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34/§35 fully implemented; still before any device testing
+  of the whole D-92→D-104/§32-35 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain
+  backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **531 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 21 commits behind HEAD `4e8a692`; this session's §34 commit once made brings it
-  to 25 - awaiting push.
+- Unit tests: **538 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 21 commits behind HEAD `515fba3`; this session's §35 commit once made brings it
+  to 26 - awaiting push.
+- **§35 DONE (v0.8.14): fixed auto-capitalisation of the Greek math-symbol popup.** Picking π/α/β/γ/δ/λ/ω
+  from the `p` key's popup (D-99, math symbols on the Latin keyboard, not Greek-mode text) could get
+  silently upper-cased by the ordinary auto-cap-at-word-start feature - wrong, since case is semantically
+  significant for these (`Π` ≠ `π`), unlike an ordinary word. Root cause: `commitLongPressSymbol()` decided
+  "extends the composing word, subject to case" purely via `isLetter()`, which is equally true for these
+  Greek symbols and for G-01's genuine Greek accented vowels - nothing distinguished "real language letter"
+  from "letter borrowed as a symbol". Fixed with a new pure, unit-tested
+  `AlternativeScript.extendsWord(symbol, activeLanguageIsGreek)` (`keyboard` package, JDK
+  `Character.UnicodeScript` under the hood - no hand-maintained character list): true only for a genuine
+  letter that is either picked while actually in Greek mode, or not Greek script at all (so German umlauts
+  are unaffected). When false, the symbol now routes through `finalizeAndCommit()` instead - the same
+  verbatim, no-case-transform path plain punctuation already uses - which also fixes a related gap: these
+  symbols no longer get folded into the same composing token as surrounding text, matching how the
+  calculator page's own π key (§31, direct tap) already commits standalone.
+- **§34 DONE (v0.8.13): letters-page `p` key's Greek-letter alternatives reversed.** `p` sits at the top
+  row's right edge, so its popup gets clamped and grows leftward instead of the usual rightward - since the
+  row always draws in list order, `π` (the key's own character) ended up at the far end instead of nearest
+  the finger. Fixed by reversing the order only at that call site (`KeyboardLayout.topRowKey()`:
+  `PI_ALTERNATIVES.reversed()`), leaving the shared `PI_ALTERNATIVES` constant (also used by the calculator
+  page's `π` key, which isn't at an edge) untouched. Also answered the accompanying design question (could
+  the layout auto-sort outward from the pivot instead of manual per-key reversal) - feasible but a real
+  change to the popup draw/select/commit pipeline; not worth it for a single edge-anchored key, revisit if a
+  second one shows up. See spec §34 for the full write-up.
 - **§34 DONE (v0.8.13): letters-page `p` key's Greek-letter alternatives reversed.** `p` sits at the top
   row's right edge, so its popup gets clamped and grows leftward instead of the usual rightward - since the
   row always draws in list order, `π` (the key's own character) ended up at the far end instead of nearest

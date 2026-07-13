@@ -1728,3 +1728,38 @@ need re-auditing once the auto-mirroring lands, since the manual reversal done h
 up and this manual-reversal-per-key pattern starts repeating; for a single instance, the explicit
 `.reversed()` at the one call site that needs it (with the comment explaining why) is the smaller, more
 inspectable change.
+
+## §35 - Bug Fixed: Greek Math-Symbol Popup Got Auto-Capitalised (v0.8.14)
+
+### Bug fixed: picking π/α/β/γ/δ/λ/ω from the `p` key's popup could insert an upper-case letter
+Reported: inserting a Greek letter as a math symbol (not while in Greek input mode) at, say, the start of a
+line produced the upper-case form (`Π`) even though the key itself clearly shows the lower-case glyph - and
+for a mathematical constant/variable, case is meaningful (`Π` and `π` are different symbols), unlike an
+ordinary word where auto-capitalising the first letter is invisible/correct.
+
+Root cause: `AdaptKeyService.commitLongPressSymbol()` decided whether a picked long-press alternative should
+extend the composing word (and so become subject to §6 capitalisation / Shift-arming, via
+`appendLongPressLetter()`) purely by `symbol.all { it.isLetter() }`. That check was written for G-01 - a
+Greek accented vowel picked while genuinely typing Greek text, where extending the word and following normal
+case rules is exactly right - but the same `isLetter()` test is equally true for π/α/β/γ/δ/λ/ω, D-99's
+Greek-letter popup added to the **Latin** keyboard's `p` key as a shortcut for mathematical symbols. Nothing
+in the check distinguished "genuine language letter" from "a letter borrowed from a different script purely
+as a symbol".
+
+Fixed with a new pure, unit-tested `AlternativeScript.extendsWord(symbol, activeLanguageIsGreek)` (`keyboard`
+package): true only when every character is a letter *and* either the keyboard is actually in Greek mode
+(§28's `activeLanguage == Language.GREEK`, only ever true while `GreekLayout` - not `KeyboardLayout` - is on
+screen, so this can never misfire the other way), or the letter is not itself Greek script
+(`Character.UnicodeScript.of(...) == GREEK`, via the JDK's own Unicode script table - no hand-maintained
+character list to keep in sync). `commitLongPressSymbol()` now calls this instead of the bare `isLetter()`
+check. A German umlaut (`ä`, `ö`, `ü`) is unaffected either way - it is Latin script, so the Greek-script
+exclusion never applies to it, and it keeps extending the word with normal case behaviour as before.
+
+When the check now returns false, the symbol routes through `finalizeAndCommit()` instead - the same path
+plain punctuation and the calculator page's non-letter symbols already use. This finalises whatever word was
+in progress first (autocorrect/capitalisation apply to *that* normally), then commits the Greek symbol via
+`ic.commitText(delimiter, 1)` - which every branch of `finalizeAndCommit()` already does completely verbatim,
+with no case transform ever applied to the delimiter argument itself. This also fixes a second, related gap
+noted only in passing here: previously such a symbol would have been folded into the *same* composing token
+as whatever was typed around it (subject to autocorrect/suggestions as if it were part of a word); now it
+commits standalone, matching how the calculator page's own π key (§31, direct tap) already behaves.

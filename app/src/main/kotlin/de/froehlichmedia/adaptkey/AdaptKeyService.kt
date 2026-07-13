@@ -54,6 +54,7 @@ import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.WordBoundary
 import de.froehlichmedia.adaptkey.gesture.WordExtent
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
+import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
@@ -858,12 +859,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Commits a long-press secondary [symbol]: a letter secondary (a Greek accented vowel, G-01) extends
-     * the composing word exactly like typing that letter, while any other symbol (an AltGr glyph or a
-     * D-02 punctuation mark) finalises the current token and commits like a delimiter.
+     * Commits a long-press secondary [symbol]: a letter secondary that is genuine language text (a Greek
+     * accented vowel, G-01, while actually in Greek mode) extends the composing word exactly like typing
+     * that letter, while any other symbol - an AltGr glyph, a D-02 punctuation mark, or a Greek letter
+     * borrowed as a math symbol on the Latin keyboard (§35, π/α/β/γ/δ/λ/ω on the `p` key's popup) - finalises
+     * the current token and commits like a delimiter, verbatim and immune to auto-capitalisation. See
+     * [AlternativeScript] for why case is significant for the latter (Π ≠ π) but not for an ordinary word.
      */
     private fun commitLongPressSymbol(ic: InputConnection, symbol: String) {
-        if (symbol.isNotEmpty() && symbol.all { it.isLetter() }) {
+        if (AlternativeScript.extendsWord(symbol, activeLanguage == Language.GREEK)) {
             appendLongPressLetter(ic, symbol)
         } else {
             finalizeAndCommit(ic, symbol)
