@@ -1347,3 +1347,10 @@ glue - an existing, documented testing gap for this class, not a new one).
    not just the currency key. Gated by the same `hintsEnabled`/`suppressHint` checks as the existing hint
    glyph. The right-to-left popup-growth question flagged alongside this item in §27 (tied to D-100's column
    move) is deferred until D-100 actually lands and the key's on-screen position is known.
+
+### D-101 - Implemented: Bracket Family as the `(` Key's Alt-Popup (v0.7.51)
+Page 1's row 1 drops the separate `)` key; `(` now carries `BRACKET_ALTERNATIVES = listOf("(", ")", "{", "}",
+"[", "]", "<", ">")` as its D-01 popup (base included first, matching the `=`/period/comma convention). Row 1
+goes from 8 symbols to 7 (`CALC_ROW1_SYMBOL_COUNT` updated accordingly, so `thirdRowLetterWeight` still
+accounts for the actual cell count). Page 2's bracket row is untouched for now - removing it is D-102, not yet
+released, so it stays as a (now momentarily redundant) fallback until then.

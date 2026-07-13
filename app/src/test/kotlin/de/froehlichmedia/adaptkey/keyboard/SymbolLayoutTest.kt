@@ -30,10 +30,21 @@ class SymbolLayoutTest {
     fun `page 1 row one carries everyday symbols, the page toggle and backspace`() {
         val row = SymbolLayout.rows(1)[0]
         
-        assertEquals("()°√π~&|".toList(), row.dropLast(2).map { it.char })
+        assertEquals("(°√π~&|".toList(), row.dropLast(2).map { it.char })
         assertEquals(KeyCode.SYMBOL_PAGE, row[row.size - 2].code)
         assertEquals("1/2", row[row.size - 2].label)
         assertEquals(KeyCode.DELETE, row.last().code)
+    }
+    
+    @Test
+    fun `D-101 the bracket key absorbs the whole bracket family as its popup`() {
+        val row = SymbolLayout.rows(1)[0]
+        
+        assertEquals(
+            listOf("(", ")", "{", "}", "[", "]", "<", ">"),
+            row.byChar('(').alternatives
+        )
+        assertNull(row.firstOrNull { it.char == ')' })
     }
     
     @Test

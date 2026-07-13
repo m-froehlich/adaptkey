@@ -15,9 +15,14 @@ import java.util.Locale
  */
 object SymbolLayout {
     
+    // D-101: the ( key's long-press popup absorbs the whole bracket family - ) plus the curly and angle
+    // pairs - so page 1 needs only one bracket key, not two.
+    private const val BRACKET_KEY = '('
+    private val BRACKET_ALTERNATIVES = listOf("(", ")", "{", "}", "[", "]", "<", ">")
+    
     // Page 1 (calculator) row 1: everyday symbols not already reachable via a letter-page long-press hint.
-    private const val CALC_ROW1_SYMBOLS = "()°√π~&|"
-    private const val CALC_ROW1_SYMBOL_COUNT = 8
+    private const val CALC_ROW1_SYMBOLS = "(°√π~&|"
+    private const val CALC_ROW1_SYMBOL_COUNT = 7
     
     // Page 1 (calculator): ×'s alt-popup is the asterisk and the German "Malpunkt" middle dot; ÷'s mirrors
     // it with the slash and colon; ='s offers the arrow, "approximately" and the German "Gleich mit Dach".
@@ -73,7 +78,7 @@ object SymbolLayout {
         val format = CalculatorLocale.resolve(locale)
         
         result.add(buildList {
-            CALC_ROW1_SYMBOLS.forEach { c -> add(charKey(c, weight = symbolWeight)) }
+            CALC_ROW1_SYMBOLS.forEach { c -> add(calcRow1Key(c, symbolWeight)) }
             if (symbolKeyEnabled) {
                 add(Key(label = pageLabel(1), code = KeyCode.SYMBOL_PAGE, weight = proportions.shiftWeight))
             }
@@ -150,6 +155,11 @@ object SymbolLayout {
     
     private fun pageLabel(page: Int): String {
         return if (page == 1) "1/2" else "2/2"
+    }
+    
+    /** D-101: gives [BRACKET_KEY] its bracket-family popup; every other row-1 symbol is a plain key. */
+    private fun calcRow1Key(c: Char, weight: Float): Key {
+        return if (c == BRACKET_KEY) charKey(c, alternatives = BRACKET_ALTERNATIVES, weight = weight) else charKey(c, weight = weight)
     }
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
