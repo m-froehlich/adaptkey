@@ -17,13 +17,13 @@ import java.util.Locale
  */
 object SymbolLayout {
     
-    // D-101: the ( key's long-press popup absorbs the whole bracket family - ) plus the curly and angle
-    // pairs - so page 1 needs only one bracket key, not two.
-    private const val BRACKET_KEY = '('
-    private val BRACKET_ALTERNATIVES = listOf("(", ")", "{", "}", "[", "]", "<", ">")
+    // D-101 (corrected): ( and ) stay two separate keys, each with the matching bracket family of its own
+    // kind (opening / closing) as its D-01 popup - not merged into one key.
+    private val OPEN_BRACKET_ALTERNATIVES = listOf("(", "{", "[", "<")
+    private val CLOSE_BRACKET_ALTERNATIVES = listOf(")", "}", "]", ">")
     
     // Page 1 (calculator) row 1: everyday symbols not already reachable via a letter-page long-press hint.
-    private const val CALC_ROW1_SYMBOLS = "(°√π~&|"
+    private const val CALC_ROW1_SYMBOLS = "()°√π~&|"
     
     // Page 1 (calculator): ×'s alt-popup is the asterisk and the German "Malpunkt" middle dot; ÷'s mirrors
     // it with the slash and colon; ='s offers the arrow, "approximately" and the German "Gleich mit Dach".
@@ -66,14 +66,26 @@ object SymbolLayout {
     // "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um".
     private const val CATCHALL_LETTER_HINTS = "€#-+°×÷*"
     
+    // D-102 (correction): this page's € key (distributed from the letter hints above) also gets the
+    // common-currency popup - redundant with page 1's dedicated currency key, by explicit request. It sits
+    // on the *left* here, unlike page 1's, so the base glyph stays first (grows rightward), not reversed
+    // like CalculatorLocale.COMMON_CURRENCY_SYMBOLS.
+    private val CATCHALL_CURRENCY_ALTERNATIVES = listOf("€", "$", "£", "¥")
+    
+    // D-102 (correction): this page's distributed "-" key (m's hint) gets "_" as its single long-press alt.
+    private const val UNDERSCORE_HINT = "_"
+    
     /**
      * Builds the symbol/numeric keyboard for [page].
      *
      * @param page the symbol page, 1 (calculator) or 2 (leftover catch-all)
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
-     * @param symbolKeyEnabled whether the combined `?123` key (D-59) is enabled; when it is off, the
-     *        back-to-letters (`ABC`) key on this layer is redundant with the D-19 full-field swipe, so it
-     *        is dropped and the remaining keys in its row grow to fill the freed space (D-93)
+     * @param symbolKeyEnabled whether the combined `?123` key (D-59) is enabled; when it is off, page 2's
+     *        back-to-letters (`ABC`) key is redundant with the D-19 full-field swipe, so it is dropped and
+     *        the remaining keys in its row grow to fill the freed space (D-93). Page 1's `ABC` key (D-100)
+     *        is always present in the returned rows regardless - its slot must stay reserved so the
+     *        calculator column's proportions stay correct; [AdaptKeyboardView] hides it visually and
+     *        makes it inert when this is `false`, the same way it already treats the disabled combined key
      * @param locale the system locale the calculator page's currency key and decimal/thousands
      *        separators are resolved from ([CalculatorLocale]); defaults to the JVM default locale
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
@@ -86,10 +98,10 @@ object SymbolLayout {
         locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         requireValidPage(page)
-        return if (page == 1) calculatorRows(proportions, symbolKeyEnabled, locale) else catchAllRows(proportions, symbolKeyEnabled)
+        return if (page == 1) calculatorRows(proportions, locale) else catchAllRows(proportions, symbolKeyEnabled)
     }
     
-    private fun calculatorRows(proportions: KeyProportions, symbolKeyEnabled: Boolean, locale: Locale): List<List<Key>> {
+    private fun calculatorRows(proportions: KeyProportions, locale: Locale): List<List<Key>> {
         val format = CalculatorLocale.resolve(locale)
         val result = ArrayList<List<Key>>()
         
@@ -122,23 +134,26 @@ object SymbolLayout {
             )
         )
         
-        // Row 4: 1 2 3 − | ABC (optional, D-59/D-93).
-        result.add(buildList {
-            add(charKey('1'))
-            add(charKey('2', hint = SQUARED_HINT))
-            add(charKey('3', hint = CUBED_HINT))
-            add(charKey('−'))
-            if (symbolKeyEnabled) {
-                add(Key(label = "ABC", code = KeyCode.LETTERS, weight = CALC_COLUMN_WEIGHT))
-            }
-        })
+        // Row 4 (corrected): 1 2 3 − | = (swapped with ABC below - "=" always visible in the column,
+        // ABC tucked into the grid instead, since ABC is the rarer action of the two).
+        result.add(
+            listOf(
+                charKey('1'),
+                charKey('2', hint = SQUARED_HINT),
+                charKey('3', hint = CUBED_HINT),
+                charKey('−'),
+                charKey('=', alternatives = EQUALS_ALTERNATIVES, weight = CALC_COLUMN_WEIGHT)
+            )
+        )
         
-        // Row 5: 0 (under 1), decimal separator (under 2), = (under 3), + (under the operator column) | enter.
+        // Row 5 (corrected): 0 (under 1), decimal separator (under 2), ABC (under 3 - D-59/D-93-gated but
+        // always emitted here so the row keeps its cell count; AdaptKeyboardView hides it when disabled),
+        // + (under the operator column) | enter.
         result.add(
             listOf(
                 charKey('0'),
                 charKey(format.decimalSeparator, hint = format.thousandsSeparatorHint),
-                charKey('=', alternatives = EQUALS_ALTERNATIVES),
+                Key(label = "ABC", code = KeyCode.LETTERS),
                 charKey('+'),
                 Key(label = "↵", code = KeyCode.ENTER, weight = CALC_COLUMN_WEIGHT)
             )
@@ -159,11 +174,14 @@ object SymbolLayout {
         // Row 2 (D-102): the fixed digit row, independent of C-09.
         result.add(CATCHALL_DIGITS.map { c -> charKey(c) })
         
-        // Row 3 (D-102): the main number row's shifted symbols, directly tappable.
-        result.add(CATCHALL_NUMBER_SYMBOLS.map { c -> charKey(c) })
+        // Row 3 (D-102): the main number row's shifted symbols, directly tappable. ( and ) also get their
+        // bracket-family popups (correction), matching page 1's bracket keys.
+        result.add(CATCHALL_NUMBER_SYMBOLS.map { c -> catchAllNumberSymbolKey(c) })
         
-        // Row 4 (D-102): the main letter page's alt-hint symbols, distributed here.
-        result.add(CATCHALL_LETTER_HINTS.map { c -> charKey(c) })
+        // Row 4 (D-102): the main letter page's alt-hint symbols, distributed here. € also gets the
+        // common-currency popup and - also gets _ as its alt (correction), both redundant with elsewhere
+        // by explicit request.
+        result.add(CATCHALL_LETTER_HINTS.map { c -> catchAllLetterHintKey(c) })
         
         result.add(buildList {
             if (symbolKeyEnabled) {
@@ -180,9 +198,31 @@ object SymbolLayout {
         require(page == 1 || page == 2) { "page must be 1 or 2: $page" }
     }
     
-    /** D-101: gives [BRACKET_KEY] its bracket-family popup; every other row-1 symbol is a plain key. */
+    /** D-101 (corrected): gives `(` / `)` their own bracket-family popup; every other row-1 symbol is plain. */
     private fun calcRow1Key(c: Char): Key {
-        return if (c == BRACKET_KEY) charKey(c, alternatives = BRACKET_ALTERNATIVES) else charKey(c)
+        return when (c) {
+            '(' -> charKey(c, alternatives = OPEN_BRACKET_ALTERNATIVES)
+            ')' -> charKey(c, alternatives = CLOSE_BRACKET_ALTERNATIVES)
+            else -> charKey(c)
+        }
+    }
+    
+    /** D-102 (corrected): gives `(` / `)` in the shifted-symbols row their own bracket-family popup too. */
+    private fun catchAllNumberSymbolKey(c: Char): Key {
+        return when (c) {
+            '(' -> charKey(c, alternatives = OPEN_BRACKET_ALTERNATIVES)
+            ')' -> charKey(c, alternatives = CLOSE_BRACKET_ALTERNATIVES)
+            else -> charKey(c)
+        }
+    }
+    
+    /** D-102 (corrected): gives `€` the common-currency popup and `-` an `_` alt; the rest stay plain. */
+    private fun catchAllLetterHintKey(c: Char): Key {
+        return when (c) {
+            '€' -> charKey(c, alternatives = CATCHALL_CURRENCY_ALTERNATIVES)
+            '-' -> charKey(c, hint = UNDERSCORE_HINT)
+            else -> charKey(c)
+        }
     }
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {

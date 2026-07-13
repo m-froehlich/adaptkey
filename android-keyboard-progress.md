@@ -28,20 +28,31 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `3dbf382` — v0.7.54 (D-102). Working tree = **v0.8.3**, a deliberate minor-version bump below, not yet
-  committed (no code change). **Spec §12/§13/§14 complete.** User released D-100 then D-102 - both done.
-  §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
-- **Versioning jumped from 0.7.54 to 0.8.3 (2026-07-13), user's deliberate call**: the user had originally
-  meant to cross the 0.8 line for the raw-tap-recording feature, but that landed and was later removed
-  (D-09) before it happened; the D-92/D-100/D-102 calculator/symbol-page redesign is what they now consider
-  the appropriate milestone for it. **Still only the third digit bumps per APK going forward** (0.8.3 ->
-  0.8.4 -> ...), same rule as before, just a fresh minor number. `versionCode` does **not** try to encode the
-  new version number (`8*10+3=83` would be *lower* than the outgoing 124, which Android's monotonic-versionCode
-  requirement forbids for updates) - it just keeps counting up by 1 regardless: 124 -> **125**.
-- Unit tests: **516 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 14 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2,
-  D-96+D-99, D-97, D-98, D-101, D-94, D-100, D-102; this session's version bump once committed makes it 15) -
+- HEAD: `2b3f6ea` — v0.8.3 (version bump). Working tree = **v0.8.4**, §29 corrections below, not yet
+  committed. **Spec §12/§13/§14 complete.** §28 (D-96…D-102, D-94) fully implemented; §29 is a same-session
+  correction round on top of it, before any device testing happened. §26's D-87/D-88 and the rest of §27
+  (D-95, D-103, D-104) remain backlog-only.
+- **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
+  history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
+  third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
+  (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
+- Unit tests: **518 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 15 commits behind; this session's §29 correction once committed makes it 16 -
   awaiting push.
+- **§29 DONE (v0.8.4):** correction round on §28, caught by the user before any device testing:
+  - **D-101 corrected**: `(`/`)` are two separate keys again (not merged) - `(` gets
+    `OPEN_BRACKET_ALTERNATIVES = ( { [ <`, `)` gets `CLOSE_BRACKET_ALTERNATIVES = ) } ] >`. Page 1 row 1 back
+    to 8 symbols.
+  - **D-100 corrected**: page 1's `ABC` key must stay a *reserved* slot when `symbolKeyEnabled` is off, not
+    omitted - D-93's omit-and-grow pattern breaks D-100's cross-row column/grid alignment. `SymbolLayout`
+    always emits it now; `AdaptKeyboardView`'s `isHiddenSymbolKey` (renamed `isHiddenKey`) gained a second
+    condition covering it (drawn as nothing, taps inert - same mechanism as the D-59 combined-key case). Page
+    2's own `ABC` is unaffected (not part of a column layout).
+  - **D-100 also**: swapped `ABC` and `=` - `=` now lives in the always-visible right column (row 4), `ABC`
+    moved into the digit grid (row 5, under `3`, still gated via the reserved-slot mechanism).
+  - **D-102 corrected/extended**: page 2's `(`/`)` (in the shifted-symbols row) get the same bracket-family
+    popups as page 1's; row 4's `€` also gets the common-currency popup (un-reversed order, `€ $ £ ¥`, since
+    it sits on the left and should grow rightward); row 4's `-` gets `_` as a single alt.
 - **D-102 DONE (v0.7.54, spec §28):** page 2 grew from 3 rows to 5. Row 1 keeps the leftover symbols (now 6,
   not 7 - the double quote moved out) + backspace. New row 2: a fixed digit row, unconditional, independent
   of C-09 (reverses D-92's original decision for this page). New row 3: the main number row's shifted symbols

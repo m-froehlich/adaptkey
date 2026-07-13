@@ -640,7 +640,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun drawKeys(canvas: Canvas, rects: List<Pair<Key, RectF>>) {
         for ((key, rect) in rects) {
             // D-59: the disabled combined key is drawn as empty space, keeping its slot (neighbours do not grow).
-            if (isHiddenSymbolKey(key)) {
+            if (isHiddenKey(key)) {
                 continue
             }
             val paint = when {
@@ -1113,18 +1113,26 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val chosen = model.resolve(candidates, x, y)
             if (chosen != null) {
                 val match = keyRects.firstOrNull { it.first.id == chosen.id }
-                if (match != null && !isHiddenSymbolKey(match.first)) {
+                if (match != null && !isHiddenKey(match.first)) {
                     return match
                 }
             }
         }
-        // D-59: a tap on the reserved (hidden) combined-key slot resolves to nothing, so it is inert.
-        return keyRects.firstOrNull { it.second.contains(x, y) && !isHiddenSymbolKey(it.first) }
+        // D-59: a tap on a reserved (hidden) key slot resolves to nothing, so it is inert.
+        return keyRects.firstOrNull { it.second.contains(x, y) && !isHiddenKey(it.first) }
     }
     
-    /** D-59: whether [key] is the combined ?123 key that is currently disabled (emoji off and symbol off). */
-    private fun isHiddenSymbolKey(key: Key): Boolean {
-        return key.code == KeyCode.SYMBOL && !emojiEnabled && !symbolKeyEnabled
+    /**
+     * D-59 / D-100 (correction): whether [key] occupies a slot that is currently disabled but must stay
+     * reserved rather than collapse - the combined `?123` key (emoji off and symbol off), or the
+     * calculator page's `ABC` key (symbol off). The calculator page's key must keep its slot even when
+     * hidden: its row is part of the D-100 column/grid layout, where every row relies on having the same
+     * number of cells for the columns to line up - simply omitting the key (as D-93 does for page 2's own
+     * `ABC`) would narrow that one row and break the grid alignment.
+     */
+    private fun isHiddenKey(key: Key): Boolean {
+        return (key.code == KeyCode.SYMBOL && !emojiEnabled && !symbolKeyEnabled) ||
+            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && symbolPage == 1 && !symbolKeyEnabled)
     }
     
     private fun labelFor(key: Key): String {

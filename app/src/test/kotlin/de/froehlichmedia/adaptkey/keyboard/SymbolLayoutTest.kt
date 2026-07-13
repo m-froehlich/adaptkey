@@ -11,7 +11,8 @@ import org.junit.jupiter.api.Test
 import java.util.Locale
 
 /**
- * Unit tests for the D-92 / D-100 `?123` layer: page 1 (calculator) and page 2 (leftover catch-all).
+ * Unit tests for the D-92 / D-100 / D-102 `?123` layer: page 1 (calculator) and page 2 (number-row
+ * alternative / catch-all).
  */
 class SymbolLayoutTest {
     
@@ -30,24 +31,21 @@ class SymbolLayoutTest {
     fun `D-100 page 1 row one carries everyday symbols and backspace, no page-toggle key`() {
         val row = SymbolLayout.rows(1)[0]
         
-        assertEquals("(°√π~&|".toList(), row.dropLast(1).map { it.char })
+        assertEquals("()°√π~&|".toList(), row.dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
         assertTrue(row.none { it.code == KeyCode.LETTERS })
     }
     
     @Test
-    fun `D-101 the bracket key absorbs the whole bracket family as its popup`() {
+    fun `D-101 corrected - the open and close bracket keys stay separate, each with its own family popup`() {
         val row = SymbolLayout.rows(1)[0]
         
-        assertEquals(
-            listOf("(", ")", "{", "}", "[", "]", "<", ">"),
-            row.byChar('(').alternatives
-        )
-        assertNull(row.firstOrNull { it.char == ')' })
+        assertEquals(listOf("(", "{", "[", "<"), row.byChar('(').alternatives)
+        assertEquals(listOf(")", "}", "]", ">"), row.byChar(')').alternatives)
     }
     
     @Test
-    fun `D-100 rows 2 to 4 end with space, currency and the optional abc key`() {
+    fun `D-100 rows 2 and 3 end with space and currency`() {
         val rows = SymbolLayout.rows(1, locale = Locale.GERMANY)
         
         assertEquals(listOf('7', '8', '9', '÷'), rows[1].dropLast(1).map { it.char })
@@ -55,20 +53,21 @@ class SymbolLayoutTest {
         
         assertEquals(listOf('4', '5', '6', '×'), rows[2].dropLast(1).map { it.char })
         assertEquals('€', rows[2].last().char)
-        
-        assertEquals(listOf('1', '2', '3', '−'), rows[3].dropLast(1).map { it.char })
-        assertEquals(KeyCode.LETTERS, rows[3].last().code)
     }
     
     @Test
-    fun `D-100 row 5 is 0, decimal separator, equals and plus, ending with enter`() {
-        val row = SymbolLayout.rows(1, locale = Locale.GERMANY)[4]
+    fun `D-100 corrected - row 4 ends with equals, row 5 carries abc under 3`() {
+        val row4 = SymbolLayout.rows(1, locale = Locale.GERMANY)[3]
+        val row5 = SymbolLayout.rows(1, locale = Locale.GERMANY)[4]
         
-        assertEquals('0', row[0].char)
-        assertEquals(',', row[1].char)
-        assertEquals('=', row[2].char)
-        assertEquals('+', row[3].char)
-        assertEquals(KeyCode.ENTER, row[4].code)
+        assertEquals(listOf('1', '2', '3', '−'), row4.dropLast(1).map { it.char })
+        assertEquals('=', row4.last().char)
+        
+        assertEquals('0', row5[0].char)
+        assertEquals(',', row5[1].char)
+        assertEquals(KeyCode.LETTERS, row5[2].code)
+        assertEquals('+', row5[3].char)
+        assertEquals(KeyCode.ENTER, row5[4].code)
     }
     
     @Test
@@ -85,7 +84,7 @@ class SymbolLayoutTest {
         
         assertEquals(listOf("*", "×", "·"), rows[2].byChar('×').alternatives)
         assertEquals(listOf("/", "÷", ":"), rows[1].byChar('÷').alternatives)
-        assertEquals(listOf("=", "→", "≈", "≙"), rows[4].byChar('=').alternatives)
+        assertEquals(listOf("=", "→", "≈", "≙"), rows[3].byChar('=').alternatives)
     }
     
     @Test
@@ -96,26 +95,26 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `D-100 the calculator column cells share the same weight`() {
+    fun `D-100 corrected - the calculator column cells share the same weight`() {
         val rows = SymbolLayout.rows(1, locale = Locale.GERMANY)
         
         val space = rows[1].last().weight
         val currency = rows[2].last().weight
-        val abc = rows[3].last().weight
+        val equals = rows[3].last().weight
         val enter = rows[4].last().weight
         
         assertEquals(space, currency, 1e-4f)
-        assertEquals(space, abc, 1e-4f)
+        assertEquals(space, equals, 1e-4f)
         assertEquals(space, enter, 1e-4f)
     }
     
     @Test
     fun `page 1's currency and decimal separator follow the system locale, not a hardcoded default`() {
-        val row = SymbolLayout.rows(1, locale = Locale.US)[4]
+        val row5 = SymbolLayout.rows(1, locale = Locale.US)[4]
         
         assertEquals('$', SymbolLayout.rows(1, locale = Locale.US)[2].last().char)
-        assertEquals('.', row[1].char)
-        assertEquals(",", row[1].hint)
+        assertEquals('.', row5[1].char)
+        assertEquals(",", row5[1].hint)
     }
     
     @Test
@@ -146,7 +145,15 @@ class SymbolLayoutTest {
         val row = SymbolLayout.rows(2)[2]
         
         assertEquals("!\"§$%&/()=".toList(), row.map { it.char })
-        assertTrue(row.all { it.hint == null && it.alternatives.isEmpty() })
+        assertTrue(row.none { it.char != '(' && it.char != ')' && (it.hint != null || it.alternatives.isNotEmpty()) })
+    }
+    
+    @Test
+    fun `D-102 corrected - the parentheses in row three also get bracket-family popups`() {
+        val row = SymbolLayout.rows(2)[2]
+        
+        assertEquals(listOf("(", "{", "[", "<"), row.byChar('(').alternatives)
+        assertEquals(listOf(")", "}", "]", ">"), row.byChar(')').alternatives)
     }
     
     @Test
@@ -154,6 +161,14 @@ class SymbolLayoutTest {
         val row = SymbolLayout.rows(2)[3]
         
         assertEquals("€#-+°×÷*".toList(), row.map { it.char })
+    }
+    
+    @Test
+    fun `D-102 corrected - the euro key gets a currency popup growing rightward, the minus key gets an underscore alt`() {
+        val row = SymbolLayout.rows(2)[3]
+        
+        assertEquals(listOf("€", "$", "£", "¥"), row.byChar('€').alternatives)
+        assertEquals("_", row.byChar('-').hint)
     }
     
     @Test
@@ -182,12 +197,12 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `with the combined symbol key disabled both pages drop abc, and page 1 also drops the column cell`() {
-        val page1Row4 = SymbolLayout.rows(1, symbolKeyEnabled = false)[3]
+    fun `D-100 corrected - disabling the combined symbol key still reserves page 1's abc slot, but page 2 drops it`() {
+        val page1Row5 = SymbolLayout.rows(1, symbolKeyEnabled = false)[4]
         val page2Bottom = SymbolLayout.rows(2, symbolKeyEnabled = false).last()
         
-        assertEquals(4, page1Row4.size)
-        assertTrue(page1Row4.none { it.code == KeyCode.LETTERS })
+        assertEquals(5, page1Row5.size)
+        assertEquals(KeyCode.LETTERS, page1Row5[2].code)
         
         assertNull(page2Bottom.firstOrNull { it.code == KeyCode.LETTERS })
     }

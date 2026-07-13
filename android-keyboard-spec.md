@@ -1427,3 +1427,47 @@ Page 2 grew from 3 rows to 5, per the confirmed reading of the §27 draft:
 
 Verified no character repeats anywhere on the page (new test, `SymbolLayoutTest`). Not yet device-tested - the
 letter-hint distribution (row 4) in particular is exactly the part flagged as provisional.
+
+---
+
+## §29 - Correction Round on D-101 / D-100 / D-102 (v0.8.4)
+
+Before any device testing of §28's batch, the user caught a misreading of D-101 and requested a few more
+refinements to D-100/D-102 while reviewing. All implemented in this round; no separate spec-then-wait cycle
+since each point is small, self-contained, and directly approved in the same message.
+
+### D-101 - Corrected: `(` and `)` Stay Two Separate Keys
+The original D-101 implementation merged `(`/`)` into one key. That was a misunderstanding - the intent was
+always **two** keys, each keeping its own D-01 popup for its own bracket family (opening vs. closing):
+`OPEN_BRACKET_ALTERNATIVES = listOf("(", "{", "[", "<")`,
+`CLOSE_BRACKET_ALTERNATIVES = listOf(")", "}", "]", ">")`. Page 1's row 1 goes back to 8 symbols (`()°√π~&|`).
+The page 2 correction below applies the same treatment to the `(`/`)` that live in its shifted-symbols row.
+
+### D-100 - Corrected: Page 1's `ABC` Slot Must Stay Reserved When Hidden, Not Collapse
+D-93's established pattern - just omit a disabled key and let its row's remaining cells grow - is *wrong* for
+page 1's `ABC` key specifically, because D-100 made every row's cell count part of a cross-row column/grid
+alignment: omitting `ABC` narrows its row relative to its neighbours, breaking the grid. `SymbolLayout` now
+always emits the `ABC` key on page 1 regardless of `symbolKeyEnabled`; `AdaptKeyboardView` hides it (drawing
+nothing, taps inert) exactly the way it already treats the disabled combined `?123` key (D-59) - the shared
+predicate was renamed `isHiddenKey` and gained a second condition: `KeyCode.LETTERS` on the `SYMBOLS` surface,
+`symbolPage == 1`, `!symbolKeyEnabled`. Page 2's own (unrelated) `ABC` key keeps the D-93 omit-and-grow
+behaviour unchanged - it isn't part of a column layout, so nothing there needed to change.
+
+### D-100 - Also: Swapped `ABC` and `=`
+While confirming the reserved-slot fix, the user asked to swap `ABC` and `=`: `=` now sits in the persistent
+right-hand column (row 4, always visible, no gating - fitting, since a real calculator's `=` usually lives in
+a prominent bottom-right position), and `ABC` moved into the digit grid instead, at row 5 under `3` (still
+`symbolKeyEnabled`-gated via the reserved-slot mechanism above, just at a different position). Row 4 is now
+`1 2 3 − =`; row 5 is `0 <decimal-sep> ABC + ⏎`.
+
+### D-102 - Corrected/Extended: Bracket, Currency and Underscore Alts on Page 2
+Three refinements to page 2, all additive (no structural change):
+- The `(`/`)` in row 3 (the shifted-symbols row) get the same `OPEN_BRACKET_ALTERNATIVES` /
+  `CLOSE_BRACKET_ALTERNATIVES` popups as page 1's bracket keys, per the D-101 correction above. This doesn't
+  reduce their direct (short-tap) accessibility - row 3's whole point (D-102) - since the base character still
+  commits on a plain tap; the popup is a purely additive long-press extra.
+- Row 4's `€` (distributed from the letters page's `e` hint) also gets the common-currency popup - redundant
+  with page 1's dedicated currency key, by explicit request. It sits on the *left* of the screen here, unlike
+  page 1's, so its alternatives stay in the **un**-reversed order (`€ $ £ ¥`, base first) so the popup grows
+  rightward, into the room that's actually there on this side.
+- Row 4's `-` (distributed from the letters page's `m` hint) gets `_` as a single long-press alt.
