@@ -42,14 +42,22 @@ object KeyboardLayout {
      */
     val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "/", "_")
     
+    /** D-90: the π key's own corner hint. */
+    private const val PI_HINT = "π"
+    
+    /** D-99: the π key's long-press popup - the Greek letters, alongside π itself. */
+    private val PI_ALTERNATIVES = listOf(PI_HINT, "α", "β", "γ", "δ", "λ", "ω")
+    
     /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
      * layer can offer it as the reset baseline for the configurable per-key map.
      */
     val DEFAULT_LETTER_HINTS = mapOf(
         'q' to "@", 'e' to "€", 'h' to "#", 'm' to "-", 'n' to "+", 'd' to "°",
-        // D-90: three math-symbol hints, alongside the original AltGr-style set above.
-        'p' to "π", 'b' to "×", 'v' to "÷",
+        // D-90: the math-symbol hint on p, alongside the original AltGr-style set above.
+        'p' to PI_HINT,
+        // D-96: reorganised math-symbol hints - × moved to x, ÷ moved to c, v gets /, b gets *.
+        'x' to "×", 'c' to "÷", 'v' to "/", 'b' to "*",
         'a' to "ä", 'o' to "ö", 'u' to "ü", 's' to "ß"
     )
     
@@ -73,7 +81,7 @@ object KeyboardLayout {
             result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
         }
         
-        result.add("qwertzuiop".map { c -> charKey(c, letterHints[c]) })
+        result.add("qwertzuiop".map { c -> topRowKey(c, letterHints) })
         result.add("asdfghjkl".map { c -> charKey(c, letterHints[c]) })
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
@@ -122,6 +130,16 @@ object KeyboardLayout {
      */
     fun hasLongPressAction(key: Key): Boolean {
         return (key.code == KeyCode.CHAR && (key.hint != null || key.alternatives.size >= 2)) || key.code == KeyCode.SYMBOL
+    }
+    
+    /**
+     * D-99: builds a top-row key, giving `p` its Greek-letter popup ([PI_ALTERNATIVES]) - but only while
+     * it still carries the default π hint, so a user who has reassigned `p` via the C-08 editor keeps
+     * their own single-symbol long-press instead of an unrelated Greek-letter popup.
+     */
+    private fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
+        val hint = letterHints[c]
+        return if (c == 'p' && hint == PI_HINT) charKey(c, hint, alternatives = PI_ALTERNATIVES) else charKey(c, hint)
     }
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {

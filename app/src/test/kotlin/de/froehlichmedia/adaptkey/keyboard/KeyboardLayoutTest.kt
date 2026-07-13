@@ -53,10 +53,28 @@ class KeyboardLayoutTest {
         assertEquals("#", rows[2].byChar('h').hint)
         assertEquals("+", rows[3].byChar('n').hint)
         assertEquals("-", rows[3].byChar('m').hint)
-        // D-90: three additional math-symbol hints.
+        // D-90: math-symbol hint on p.
         assertEquals("π", rows[1].byChar('p').hint)
-        assertEquals("×", rows[3].byChar('b').hint)
-        assertEquals("÷", rows[3].byChar('v').hint)
+        // D-96: reorganised math-symbol hints - × on x, ÷ on c, / on v, * on b.
+        assertEquals("×", rows[3].byChar('x').hint)
+        assertEquals("÷", rows[3].byChar('c').hint)
+        assertEquals("/", rows[3].byChar('v').hint)
+        assertEquals("*", rows[3].byChar('b').hint)
+    }
+    
+    @Test
+    fun `D-99 the pi key offers a Greek-letter popup alongside pi itself`() {
+        val pKey = KeyboardLayout.rows()[1].byChar('p')
+        
+        assertEquals(listOf("π", "α", "β", "γ", "δ", "λ", "ω"), pKey.alternatives)
+    }
+    
+    @Test
+    fun `D-99 a reassigned p key loses the Greek-letter popup`() {
+        val pKey = KeyboardLayout.rows(letterHints = mapOf('p' to "!"))[1].byChar('p')
+        
+        assertEquals("!", pKey.hint)
+        assertTrue(pKey.alternatives.isEmpty())
     }
     
     @Test

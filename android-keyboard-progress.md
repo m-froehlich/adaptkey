@@ -28,16 +28,19 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `b468b28` — v0.7.47 (D-92 follow-up). Working tree = same v0.7.47, only a doc-only §27 backlog
-  capture added, not yet committed (no code changes, no version bump). **Spec §12/§13/§14 complete.**
-  User released D-89/D-90/D-91/D-92 in that order (2026-07-12), all four done plus one correction round on
-  D-92's currency/decimal logic. A first real device round on that batch (2026-07-13) produced a new backlog,
-  captured in spec.md §27 (D-94…D-102) - **not started**, awaiting release. §26's D-87/D-88 also still
-  backlog-only.
-- Unit tests: **507 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). **Versioned 0.7.47** (only the third digit bumps per APK; versionCode 117). `origin/main` is
-  5 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up; this session's §27 doc commit once made would be
-  6th) - awaiting push.
+- HEAD: `f03aa5d` — v0.7.47 (§27 D-94…D-104 doc capture). Working tree = **v0.7.48**, D-96/D-99 below, not
+  yet committed. **Spec §12/§13/§14 complete.** User released, in order: D-96, D-97, D-98, D-99, D-101, then
+  D-94 (spec §28). D-96/D-99 done this entry; D-97/D-98/D-101/D-94 next. §26's D-87/D-88 and the rest of §27
+  (D-95, D-100, D-102, D-103, D-104) remain backlog-only.
+- Unit tests: **509 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Versioned 0.7.48** (only the third digit bumps per APK; versionCode 118). `origin/main` is
+  7 commits behind (D-93, D-89, D-90, D-91, D-92-follow-up, §27 capture ×2; this session's D-96/D-99 once
+  committed makes it 8) - awaiting push.
+- **D-96/D-99 DONE (v0.7.48, spec §28):** `KeyboardLayout.DEFAULT_LETTER_HINTS` reorganised - `x`→`×`, `c`→`÷`,
+  `v`→`/`, `b`→`*` (replacing D-90's `b`→`×`/`v`→`÷`; `x`/`c` were previously unassigned). The `p`→`π` key
+  gained a Greek-letter D-01 popup (`π α β γ δ λ ω`) via a new private `topRowKey()` helper in
+  `KeyboardLayout.rows()`, gated so a user-reassigned `p` (via C-08) keeps its own plain hint instead of the
+  Greek popup. No view-layer change needed - the popup mechanism was already generic. Not yet device-tested.
 - **§27 CAPTURED, NOT STARTED (still v0.7.47, no code changes this entry):** device round 15 on the D-89…D-92
   batch. D-91 confirmed working. New items: D-94 (bug - the D-91 direction fix didn't reach the slide
   animation), D-95 (parked idea - a Settings-shortcut key, no placement decided), D-96 (main page: reorganise

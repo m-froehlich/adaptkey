@@ -1304,3 +1304,26 @@ check once it's actually laid out.
 Same status as D-103 - no placement decided, park it alongside D-103 and fit both in wherever makes sense once
 D-100 lands, then get the user's read on it. Toggles the trig-function key's (D-103) angle unit; exact
 key behaviour (a two-state toggle vs. its own popup) to be decided during implementation.
+
+---
+
+## §28 - §27 Release Round 1 (v0.7.48+)
+
+User confirmed the D-100 "die 2/2 Taste" reading (§27) as correct, and clarified D-100 further: since every
+digit-grid row except the first has the same cell count, the right-hand column's width will line up "optimal"
+without needing special per-row weight math - noted for whenever D-100 is released. Released this round, in
+this order: D-96, D-97, D-98, D-99, D-101, then D-94.
+
+### D-96 - Implemented: Reorganised the v / b / x / c Alt-Hints (v0.7.48)
+`KeyboardLayout.DEFAULT_LETTER_HINTS` now maps `x`→`×`, `c`→`÷`, `v`→`/`, `b`→`*`, replacing D-90's `b`→`×` /
+`v`→`÷`. `x` and `c` carried no hint before, so this was a clean four-way reassignment. `p`→`π` (D-90) is
+unaffected. All four reassigned letters live on the third row (`yxcvbnm`), so nothing moved between rows.
+
+### D-99 - Implemented: Greek-Letter Popup on the π Key (v0.7.48)
+The `p`→`π` key now carries a D-01 multi-alternative popup, `KeyboardLayout.PI_ALTERNATIVES = listOf("π", "α",
+"β", "γ", "δ", "λ", "ω")`, alongside its existing corner hint. `KeyboardLayout.rows()` gained a private
+`topRowKey()` helper that only attaches the popup when `letterHints['p']` still equals the default `π` hint -
+a user who has reassigned `p` to something else via the C-08 editor keeps their own plain single-symbol
+long-press instead of an unrelated Greek-letter popup. The underlying popup mechanism (`Key.alternatives`,
+`AdaptKeyboardView.popupAlternativesFor`) is already fully generic across every layout (letters, symbol
+pages), so no view-layer change was needed - only the key data itself.
