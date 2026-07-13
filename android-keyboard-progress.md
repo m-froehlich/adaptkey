@@ -49,7 +49,9 @@ whenever a component lands so it does not have to be restated in every prompt.
   entirely from both pages), D-101 (`(`/`)` merge into one key with the full bracket family as its popup),
   D-102 (page 2 upgraded into a real number-row alternative for C-09-off users - fixed digit row always shown,
   a row of the main number row's shifted symbols, and the main page's letter alt-hints distributed across the
-  rest - explicitly flagged by the user as a draft to re-sort once built).
+  rest - explicitly flagged by the user as a draft to re-sort once built), D-103 (calculator page: a `sin` key
+  with alt `cos`/`tan`/`log`, no placement decided yet), D-104 (calculator page: a deg/rad toggle key, same
+  status as D-103 - both explicitly parked until D-100's reshuffle exists to fit them into).
 - **D-92 follow-up DONE (v0.7.47):** corrected D-92's currency/decimal-separator design. The user pointed out
   both the keyboard-selected language *and* the system-selected language/region were meant to drive these
   keys, with the system as the tiebreaker when the keyboard language doesn't disambiguate (German and Greek

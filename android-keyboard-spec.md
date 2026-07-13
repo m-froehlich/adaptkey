@@ -1289,3 +1289,18 @@ Page 2 gets upgraded into something genuinely useful for anyone who has turned t
     flags this as provisional**: "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um" (we'll see
     how it turns out and re-sort if needed). Treat the first implementation as a draft layout to review
     together, not a final answer.
+
+### D-103 - Calculator Page: a Trig-Function Key (sin, alt: cos / tan / log)
+A key labelled `sin` whose D-01 multi-alternative long-press popup offers `cos`, `tan` and `log`. No
+placement decided yet - the user explicitly wants it fit in wherever it reasonably ends up once D-100's
+reshuffled calculator page exists ("versuche einfach, sie sinnvoll unterzubringen... dann schaue ich, ob mir
+das gefällt" - just try to place it sensibly, then I'll see if I like it). Worth considering together with
+D-100's new right-hand column and 4×4 grid, and with D-104 below, since both are calculator-page additions
+competing for the same likely-tight space. Multi-character labels (`sin`/`cos`/`tan`/`log`) are new territory
+for this key grid - every existing key is a single glyph - so this may also need a small label-width sanity
+check once it's actually laid out.
+
+### D-104 - Calculator Page: a deg/rad Toggle Key
+Same status as D-103 - no placement decided, park it alongside D-103 and fit both in wherever makes sense once
+D-100 lands, then get the user's read on it. Toggles the trig-function key's (D-103) angle unit; exact
+key behaviour (a two-state toggle vs. its own popup) to be decided during implementation.
