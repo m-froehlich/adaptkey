@@ -68,7 +68,9 @@ class KeyboardLayoutTest {
     fun `D-99 the pi key offers a Greek-letter popup alongside pi itself`() {
         val pKey = KeyboardLayout.rows()[1].byChar('p')
         
-        assertEquals(listOf("π", "α", "β", "γ", "δ", "λ", "ω"), pKey.alternatives)
+        // §34: reversed relative to KeyboardLayout.PI_ALTERNATIVES - p sits at the row's right edge, where
+        // the popup grows leftward, so pi itself must be last (nearest the key) rather than first.
+        assertEquals(listOf("ω", "λ", "δ", "γ", "β", "α", "π"), pKey.alternatives)
     }
     
     @Test

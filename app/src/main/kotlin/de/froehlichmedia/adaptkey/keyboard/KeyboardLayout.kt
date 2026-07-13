@@ -150,11 +150,18 @@ object KeyboardLayout {
      * and `o` its Ø popup ([O_ALTERNATIVES]) - but only while each still carries its own default hint, so
      * a user who has reassigned `p` or `o` via the C-08 editor keeps their own single-symbol long-press
      * instead of an unrelated popup.
+     *
+     * §34: `p` is the last key of the top row, hard against the keyboard's right edge - the popup has no
+     * room to grow rightward from its stem, so [AdaptKeyboardView] clamps the whole row leftward instead,
+     * which (since the row is always drawn in list order, left to right) puts [PI_HINT] itself at the far
+     * end, away from the finger, and the least-relevant alternative right next to it. [PI_ALTERNATIVES] is
+     * shared with the calculator page's `π` key ([SymbolLayout]), which sits mid-row there and does not
+     * have this problem, so only this call site reverses the order rather than the shared constant itself.
      */
     private fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
         val hint = letterHints[c]
         return when {
-            c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES)
+            c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES.reversed())
             c == 'o' && hint == O_HINT -> charKey(c, hint, alternatives = O_ALTERNATIVES)
             else -> charKey(c, hint)
         }

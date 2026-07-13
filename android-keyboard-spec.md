@@ -1688,3 +1688,43 @@ inspects `info.inputType and InputType.TYPE_MASK_CLASS` and opens straight to th
 fields - covering phone-number fields and any other field an app marks as one of these non-text classes.
 `TYPE_CLASS_TEXT` (and fields with no `EditorInfo` at all) still open on `LETTERS` as before. No action
 needed this round; nothing changed.
+
+## §34 - Letters-Page `p` Key: Reversed Alternatives Order (v0.8.13)
+
+### Bug fixed: the `p` key's Greek-letter popup grew away from `π`, not towards it
+`p` is the last key of the letters page's top row (`qwertzuiop`), hard against the keyboard's right edge.
+`AdaptKeyboardView.openPopup()`/`HorizontalLongPressPopup.rowLeft()` centre the popup row over the pressed
+key's stem, then clamp the whole row to stay on screen - for an edge key like `p`, the ideal (centred)
+position always overflows off-screen, so the row gets clamped and visually grows leftward instead. Since the
+row is always drawn in `Key.alternatives` list order (left to right, unconditionally), and `π` sat first in
+`KeyboardLayout.PI_ALTERNATIVES` (`π α β γ δ λ ω`), clamping put `π` itself - the character actually printed
+on the key - at the far end of the row, away from the finger, with the least-relevant alternative (`ω`)
+right next to it.
+
+Fixed by reversing the order specifically at the letters-page call site (`topRowKey()`:
+`alternatives = PI_ALTERNATIVES.reversed()`), not the shared `PI_ALTERNATIVES` constant itself - the
+calculator page's `π` key ([SymbolLayout], `CALC_ROW1_SYMBOLS = "()°√π~&|"`) sits roughly mid-row there, not
+against an edge, so it doesn't have this problem and was left untouched. Pre-selection (which cell is
+highlighted the instant the popup opens) is unaffected either way - `AdaptKeyboardView.preSelectedIndexFor()`
+looks up the key's own character's *current* index in whatever list it's given, so it finds `π` correctly
+regardless of order.
+
+### Design question: could the layout itself sort outward from the pivot automatically?
+Raised alongside this fix: instead of manually reversing an alternatives list per key based on where it
+happens to land on screen, could `AdaptKeyboardView`'s popup layer sort/display outward from the anchor
+automatically, so authors never have to think about screen position when writing a `Key.alternatives` list?
+
+In principle yes: the row is already clamped for edge overflow (`rowLeft()`), so the same code already knows
+whether a row got pushed away from its ideal (unclamped) centred position, and in which direction. The
+missing piece is a de-coupling between *logical* order (as authored - "the base character first, then
+alternatives in relevance order") and *visual* order (as drawn) that the view could resolve by mirroring the
+list whenever the row is clamped opposite its usual growth direction. This would remove one recurring class
+of authoring mistake (an edge key's alternatives silently facing the wrong way) at the cost of a real design
+change: `drawLongPressPopup()`/`updatePopupSelection()`/`commitPopupSelection()` all currently index directly
+into `popupAlternatives` in stored order, so "visual order" and "list order" would need to diverge somewhere
+in that pipeline, and every existing edge-key alternatives list (there is currently exactly one, `p`) would
+need re-auditing once the auto-mirroring lands, since the manual reversal done here would then double-flip.
+**Not implemented this round** - worth doing if a second or third edge-anchored multi-alternative key shows
+up and this manual-reversal-per-key pattern starts repeating; for a single instance, the explicit
+`.reversed()` at the one call site that needs it (with the comment explaining why) is the smaller, more
+inspectable change.
