@@ -510,7 +510,9 @@ class AdaptKeyService : InputMethodService() {
         keyboardView?.shifted = false
         // D-15: a new field starts without Caps Lock.
         keyboardView?.capsLock = false
-        setSurface(InputSurface.LETTERS)
+        // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens
+        // straight to the calculator page instead of the letters surface.
+        setSurface(initialSurfaceFor(info), targetSymbolPage = 1)
         clearSuggestions()
     }
     
@@ -709,10 +711,16 @@ class AdaptKeyService : InputMethodService() {
         when (key.code) {
             KeyCode.CHAR -> {
                 val raw = key.char ?: return
+                // A key is only alphabetic text when it actually lives on the letters surface - a Greek
+                // letter or other case-mapped glyph reused as a plain symbol on the calculator/catch-all
+                // pages (e.g. π, ƒ) is not a word-forming letter there, and must not be auto-capitalised
+                // or treated as continuing a composing word just because Char.isLetter() happens to be
+                // true for it.
+                val isWordLetter = raw.isLetter() && surface == InputSurface.LETTERS
                 // D-40: a digit typed between letters (composing non-empty) is almost certainly an unwanted
                 // key, so it is kept in the token and corrected like any other typo ("W8rt" -> "Wort");
                 // a leading or standalone digit keeps its normal delimiter behaviour.
-                val extendsToken = raw.isLetter() || (raw.isDigit() && composing.isNotEmpty())
+                val extendsToken = isWordLetter || (raw.isDigit() && composing.isNotEmpty())
                 if (extendsToken) {
                     if (composing.isEmpty()) {
                         captureTokenContext(ic)
@@ -724,7 +732,7 @@ class AdaptKeyService : InputMethodService() {
                         // so autocorrect/suggestions see the whole word, not just what gets typed from here.
                         reclaimSurroundingWord(ic, TapPoint(x, y))
                     }
-                    val ch = if (raw.isLetter() && isUpperArmed()) raw.uppercaseChar() else raw
+                    val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
                     // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
                     // character at the logical edit point (the end, unless a reclaim left a tail after it).
                     insertComposingChar(ch, ambiguity.kind, TapPoint(x, y))
@@ -1971,6 +1979,21 @@ class AdaptKeyService : InputMethodService() {
             type and InputType.TYPE_TEXT_FLAG_CAP_WORDS != 0 -> CapsMode.WORDS
             type and InputType.TYPE_TEXT_FLAG_CAP_SENTENCES != 0 -> CapsMode.SENTENCES
             else -> CapsMode.NONE
+        }
+    }
+    
+    /**
+     * A field whose declared type primarily wants digits (a phone number, a plain numeric field, or a
+     * date/time field) opens straight to the calculator page instead of the letters surface.
+     *
+     * @param info the newly focused field's editor info, or null
+     * @return the surface [onStartInput] should open the keyboard on
+     */
+    private fun initialSurfaceFor(info: EditorInfo?): InputSurface {
+        val type = info?.inputType ?: return InputSurface.LETTERS
+        return when (type and InputType.TYPE_MASK_CLASS) {
+            InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER, InputType.TYPE_CLASS_DATETIME -> InputSurface.SYMBOLS
+            else -> InputSurface.LETTERS
         }
     }
     

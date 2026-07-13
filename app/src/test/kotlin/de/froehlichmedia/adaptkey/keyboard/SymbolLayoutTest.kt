@@ -73,6 +73,14 @@ class SymbolLayoutTest {
     }
     
     @Test
+    fun `the 0 key carries a hash long-press hint for phone-number-style fields`() {
+        val zeroKey = SymbolLayout.rows(1)[4][0]
+        
+        assertEquals('0', zeroKey.char)
+        assertEquals("#", zeroKey.hint)
+    }
+    
+    @Test
     fun `page 1's own 2 and 3 keys carry squared and cubed hints`() {
         val digitRow = SymbolLayout.rows(1)[3]
         
@@ -130,7 +138,7 @@ class SymbolLayoutTest {
     fun `paragraph 29 follow-up - page 2 row one is led by euro, then the leftover symbols, then backspace`() {
         val row = SymbolLayout.rows(2)[0]
         
-        assertEquals("€@•©®Øƒ".toList(), row.dropLast(1).map { it.char })
+        assertEquals("€•@©®Øƒ".toList(), row.dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
         assertTrue(row.none { it.code == KeyCode.LETTERS })
     }
@@ -169,7 +177,7 @@ class SymbolLayoutTest {
     fun `paragraph 29 follow-up - page 2 row four distributes the remaining letter alt-hint symbols`() {
         val row = SymbolLayout.rows(2)[3]
         
-        assertEquals("#'-+°×÷*±".toList(), row.map { it.char })
+        assertEquals("#'^-°+×÷*±".toList(), row.map { it.char })
     }
     
     @Test

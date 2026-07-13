@@ -36,6 +36,9 @@ object SymbolLayout {
     private const val SQUARED_HINT = "²"
     private const val CUBED_HINT = "³"
     
+    // Page 1's own 0 key carries # as a long-press hint - needed for fields marked as a phone number.
+    private const val HASH_HINT = "#"
+    
     // D-100: the digit block is narrower than before, freeing a right-hand column that runs the full
     // height of the page (backspace / space / currency / optional ABC / enter). Every cell down that
     // column from row 2 (space) to row 5 (enter) shares this weight - since every one of those rows has
@@ -49,11 +52,11 @@ object SymbolLayout {
     // letter-hints row below - it now leads the row) and a handful of new additions: ® next to © (the
     // circled C/R pair), Ø ("Durchschnitt", the German shorthand for "average" - also added as an alt on
     // the letters page's o key), and ƒ (the function symbol, also newly added to the letters page's f key).
-    // The underscore that used to live here on its own is gone - now redundant with the "-" key's own _ alt
-    // below. The apostrophe that used to live here moved to the letter-hints row (still below); ± moved
-    // there too (correction - the plain + stays put, it was never meant to move); the bracket family that
-    // used to live here moved to page 1 (D-101).
-    private const val CATCHALL_ROW1_SYMBOLS = "€@•©®Øƒ"
+    // • moved ahead of @ (correction). The underscore that used to live here on its own is gone - now
+    // redundant with the "-" key's own _ alt below. The apostrophe that used to live here moved to the
+    // letter-hints row (still below); ± moved there too (correction - the plain + stays put, it was never
+    // meant to move); the bracket family that used to live here moved to page 1 (D-101).
+    private const val CATCHALL_ROW1_SYMBOLS = "€•@©®Øƒ"
     
     // D-102: a fixed digit row, independent of C-09 - the fallback for anyone who has hidden the main
     // page's number row.
@@ -67,11 +70,13 @@ object SymbolLayout {
     // §29 follow-up: the main letter page's remaining alt-hint symbols, distributed here now that there's
     // room. € moved out to CATCHALL_ROW1_SYMBOLS above (its own first position there); the apostrophe moved
     // in right after #, so it roughly sits under row 3's own " above it; ± moved in at the very end
-    // (correction - + was never meant to move, it stays in its original spot). / (v's hint, D-96) is still
-    // skipped - already covered by CATCHALL_NUMBER_SYMBOLS (7's shifted symbol). π keeps its own
-    // Greek-letter popup (D-99) on the letters page rather than being duplicated here. Still a first draft,
-    // per the user's own "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um".
-    private const val CATCHALL_LETTER_HINTS = "#'-+°×÷*±"
+    // (correction - + was never meant to move, it stays in its original spot). ° moved ahead of + so the
+    // arithmetic operators (- + × ÷) aren't split apart (correction). ^ inserted at position 3 to fill the
+    // row out to 10 keys, matching rows 2 and 3's width (correction). / (v's hint, D-96) is still skipped -
+    // already covered by CATCHALL_NUMBER_SYMBOLS (7's shifted symbol). π keeps its own Greek-letter popup
+    // (D-99) on the letters page rather than being duplicated here. Still a first draft, per the user's own
+    // "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um".
+    private const val CATCHALL_LETTER_HINTS = "#'^-°+×÷*±"
     
     // D-102 (correction): this page's € key (now the first key of row 1 above) also gets the common-currency
     // popup - redundant with page 1's dedicated currency key, by explicit request. It sits on the *left*
@@ -151,12 +156,12 @@ object SymbolLayout {
             )
         )
         
-        // Row 5 (corrected): 0 (under 1), decimal separator (under 2), ABC (under 3 - D-59/D-93-gated but
-        // always emitted here so the row keeps its cell count; AdaptKeyboardView hides it when disabled),
-        // ÷ (under the operator column) | enter.
+        // Row 5 (corrected): 0 (under 1, with a # long-press alt for phone-number-style fields), decimal
+        // separator (under 2), ABC (under 3 - D-59/D-93-gated but always emitted here so the row keeps its
+        // cell count; AdaptKeyboardView hides it when disabled), ÷ (under the operator column) | enter.
         result.add(
             listOf(
-                charKey('0'),
+                charKey('0', hint = HASH_HINT),
                 charKey(format.decimalSeparator, hint = format.thousandsSeparatorHint),
                 Key(label = "ABC", code = KeyCode.LETTERS),
                 charKey('÷', alternatives = DIVIDE_ALTERNATIVES),

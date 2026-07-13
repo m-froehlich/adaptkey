@@ -28,16 +28,29 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `5941f80` — v0.8.7 (row-4 fix). Working tree = **v0.8.8**, page-2 ABC-reserved-slot change below, not
-  yet committed. **Spec §12/§13/§14 complete.** §28/§29/§30 fully implemented; still before any device testing
-  of the whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `dda8578` — v0.8.8 (page-2 ABC reserved slot). Working tree = **v0.8.9**, §31 below, not yet committed.
+  **Spec §12/§13/§14 complete.** §28/§29/§30/§31 fully implemented; still before any device testing of the
+  whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only. New
+  backlog item from §31: a calculator minus-key long-press sign-flip, not yet implemented (tentative ask).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **521 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 19 commits behind; this session's change once committed makes it 20 - awaiting
-  push.
+- Unit tests: **522 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 20 commits behind; this session's §31 once committed makes it 21 - awaiting push.
+- **§31 DONE (v0.8.9):** page 2 row 1 bullet moved ahead of `@`; row 4 `°` moved ahead of `+` and `^` inserted
+  at position 3 (now 10 keys, matching rows 2/3's width). **Real bug fixed**: calculator-page `π` (and page
+  2's `ƒ`) always got auto-capitalised to `Π`/`Ƒ` - root cause was the ordinary auto-cap-at-field-start
+  feature (`armShiftForNextWord`) combined with two `uppercaseChar()` call sites keying off bare
+  `Char.isLetter()` (true for Greek/Latin-hook letters) instead of "is this key actually on the letters
+  surface". Fixed in both `AdaptKeyService.kt` (commit path, introduced `isWordLetter = raw.isLetter() &&
+  surface == InputSurface.LETTERS`, also fixing a related gap where π was wrongly treated as continuing a
+  composing word) and `AdaptKeyboardView.labelFor()` (display path, added the same surface check plus a
+  missing `ch.isLetter()` guard). Calculator's `0` key gained a `#` long-press hint (phone-number fields).
+  New: `AdaptKeyService.onStartInput()` now opens straight to the calculator page for
+  `TYPE_CLASS_PHONE`/`TYPE_CLASS_NUMBER`/`TYPE_CLASS_DATETIME` fields via a new `initialSurfaceFor()` helper,
+  instead of always defaulting to the letters surface. A calculator minus-key long-press sign-flip was raised
+  tentatively and captured as backlog (spec §31), not implemented this round.
 - **Page 2's ABC slot now reserved when hidden too (v0.8.8):** previously used D-93's omit-and-grow (space
   grows to fill the gap when ABC is hidden); now matches page 1's D-100-corrected reserved-slot treatment, so
   space stays its normal size instead of looking oversized. `SymbolLayout.rows()`/`catchAllRows()` dropped

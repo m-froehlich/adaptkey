@@ -1544,3 +1544,59 @@ D-100 correction; page 2's row 5 now does too). All of the visibility/interactiv
 `AdaptKeyboardView.isHiddenKey()`, whose `KeyCode.LETTERS` condition dropped its `symbolPage == 1`
 restriction - it now applies uniformly to whichever symbol page is showing. Since `SymbolLayout` no longer
 needs the setting, `AdaptKeyboardView.rowsFor()`'s call into it dropped the argument too.
+
+---
+
+## §31 - Case-Toggle Bug Fix, Page-2 Reorders, Phone-Field Auto-Select (v0.8.9)
+
+### Page 2 row 1: bullet moved ahead of `@`
+`CATCHALL_ROW1_SYMBOLS` reordered from `€ @ • © ® Ø ƒ` to `€ • @ © ® Ø ƒ`.
+
+### Page 2 row 4: `°` moved ahead of `+`, `^` inserted at position 3
+So the arithmetic operators (`- + × ÷`) aren't split apart by `°` sitting between them, and to fill the row
+out to 10 keys - matching rows 2 and 3's width, since they now all have the same key count.
+`CATCHALL_LETTER_HINTS` reordered/extended from `# ' - + ° × ÷ * ±` to `# ' ^ - ° + × ÷ * ±`.
+
+### Bug fixed: symbol-page character keys were getting auto-capitalised
+The calculator page's `π` key always produced `Π`; the same happened to page 2's `ƒ` key. Root cause,
+confirmed by investigation: this is **not** a per-key case-toggle mechanic - it's the ordinary
+auto-capitalise-at-sentence/field-start feature (`armShiftForNextWord`) arming `shifted = true`
+automatically (no user Shift tap involved), combined with two independent, insufficiently-guarded
+`uppercaseChar()` call sites that only checked `Char.isLetter()` - true for `π` and `ƒ` because they are
+genuine Unicode letters (Greek `Ll`, Latin `Ll` respectively), even though on the `SYMBOLS` surface they
+represent a constant and a symbol, not alphabetic text:
+- **Commit path** (`AdaptKeyService.kt`, `handleKey()`'s `KeyCode.CHAR` branch): `raw.isLetter()` decided
+  both whether the character continues a composing "word" (`extendsToken`) and whether it gets
+  uppercased. Fixed by introducing `isWordLetter = raw.isLetter() && surface == InputSurface.LETTERS` and
+  using that instead of the bare `isLetter()` check in both places. This also fixes a related, distinct gap:
+  `π` was being treated as continuing a composing word (subject to autocorrect/suggestions) rather than
+  committing immediately like the calculator page's other symbols (`°`, `√`, `~`, `&`, `|`).
+- **Display-only path** (`AdaptKeyboardView.labelFor()`): had no `isLetter()` guard at all, just
+  `shifted || capsLock`. Fixed by adding both `surface == InputSurface.LETTERS` and `ch.isLetter()` to the
+  condition.
+
+The fix is surface-based, not character-based - it doesn't special-case `π`/`ƒ`, so it also covers any future
+symbol/calculator-page character that happens to have a Unicode case mapping. The letters-page `f`→`ƒ`
+long-press hint is untouched - case genuinely applies there, same as every other letter hint (`a`→`ä` etc.).
+No new test - this is `AdaptKeyService`/`AdaptKeyboardView` glue, an existing documented testing gap.
+
+### Calculator page: `0` key gets a `#` long-press hint
+For fields marked as a phone number (dial pads commonly need `#`/`*`).
+
+### New: fields wanting digits auto-open the calculator page
+`AdaptKeyService.onStartInput()` previously reset every field unconditionally to `InputSurface.LETTERS`. A
+new `initialSurfaceFor(info: EditorInfo?)` inspects `info.inputType and InputType.TYPE_MASK_CLASS` and opens
+straight to the calculator page (`InputSurface.SYMBOLS`, page 1) for `TYPE_CLASS_PHONE`, `TYPE_CLASS_NUMBER`,
+and `TYPE_CLASS_DATETIME` fields - the three non-text input classes, all of which primarily want digits and
+gain nothing from the full alphabetic keyboard, mirroring how stock Android/Gboard show a numeric-style
+keyboard for these. `TYPE_CLASS_TEXT` (and no `EditorInfo` at all) still opens on `LETTERS` as before. No new
+test - `onStartInput` is service-glue, an existing documented gap; the same pattern already applies to
+`capsModeFor()` right next to it.
+
+### Backlog, not implemented: sign-flip on long-press of the calculator's minus key
+Raised tentatively ("wäre vielleicht auch praktisch" - "might also be practical") rather than as a firm
+request. Captured here for a later round rather than built now: long-pressing `−` on the calculator page
+would flip the sign of the number currently being typed/composed (prepend or remove a leading `-`). Needs
+design work before implementation - in particular, finding the start of the "current number" to the left of
+the caret (not just the current composing token, since digits on the calculator page don't enter composing
+state the way letters do) and deciding the exact edit semantics.

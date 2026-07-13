@@ -1147,7 +1147,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
             // D-47: with the emoji panel off, the combined key is a plain ?123 key, not the emoji.
             key.code == KeyCode.SYMBOL && !emojiEnabled -> "?123"
-            key.code == KeyCode.CHAR && (shifted || capsLock) && ch != null -> ch.uppercaseChar().toString()
+            // A char key only has case on the letters surface - a symbol/calculator-page character that
+            // happens to be a Unicode letter with a case mapping (e.g. π) must not be shown uppercased.
+            key.code == KeyCode.CHAR && surface == InputSurface.LETTERS && (shifted || capsLock) && ch != null && ch.isLetter() ->
+                ch.uppercaseChar().toString()
             else -> key.label
         }
     }
