@@ -40,8 +40,15 @@ class SymbolLayoutTest {
     fun `D-101 corrected - the open and close bracket keys stay separate, each with its own family popup`() {
         val row = SymbolLayout.rows(1)[0]
         
-        assertEquals(listOf("(", "{", "[", "<"), row.byChar('(').alternatives)
-        assertEquals(listOf(")", "}", "]", ">"), row.byChar(')').alternatives)
+        assertEquals(listOf("(", "[", "{", "<"), row.byChar('(').alternatives)
+        assertEquals(listOf(")", "]", "}", ">"), row.byChar(')').alternatives)
+    }
+    
+    @Test
+    fun `the calculator page's own pi key also offers the Greek-letter popup`() {
+        val row = SymbolLayout.rows(1)[0]
+        
+        assertEquals(listOf("π", "α", "β", "γ", "δ", "λ", "ω"), row.byChar('π').alternatives)
     }
     
     @Test
@@ -125,12 +132,19 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `D-100 and D-102 page 2 row one carries the leftover symbols and backspace, no page-toggle key`() {
+    fun `paragraph 29 follow-up - page 2 row one is led by euro, then the leftover symbols, then backspace`() {
         val row = SymbolLayout.rows(2)[0]
         
-        assertEquals("@_'•©±".toList(), row.dropLast(1).map { it.char })
+        assertEquals("€@•©®±Øƒ".toList(), row.dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
         assertTrue(row.none { it.code == KeyCode.LETTERS })
+    }
+    
+    @Test
+    fun `paragraph 29 follow-up - page 2 row one's euro key gets a currency popup growing rightward`() {
+        val row = SymbolLayout.rows(2)[0]
+        
+        assertEquals(listOf("€", "$", "£", "¥"), row.byChar('€').alternatives)
     }
     
     @Test
@@ -152,22 +166,21 @@ class SymbolLayoutTest {
     fun `D-102 corrected - the parentheses in row three also get bracket-family popups`() {
         val row = SymbolLayout.rows(2)[2]
         
-        assertEquals(listOf("(", "{", "[", "<"), row.byChar('(').alternatives)
-        assertEquals(listOf(")", "}", "]", ">"), row.byChar(')').alternatives)
+        assertEquals(listOf("(", "[", "{", "<"), row.byChar('(').alternatives)
+        assertEquals(listOf(")", "]", "}", ">"), row.byChar(')').alternatives)
     }
     
     @Test
-    fun `D-102 page 2 row four distributes the main page's letter alt-hint symbols`() {
+    fun `paragraph 29 follow-up - page 2 row four distributes the remaining letter alt-hint symbols`() {
         val row = SymbolLayout.rows(2)[3]
         
-        assertEquals("€#-+°×÷*".toList(), row.map { it.char })
+        assertEquals("#'-°×÷*+".toList(), row.map { it.char })
     }
     
     @Test
-    fun `D-102 corrected - the euro key gets a currency popup growing rightward, the minus key gets an underscore alt`() {
+    fun `D-102 corrected - the minus key in row four gets an underscore alt`() {
         val row = SymbolLayout.rows(2)[3]
         
-        assertEquals(listOf("€", "$", "£", "¥"), row.byChar('€').alternatives)
         assertEquals("_", row.byChar('-').hint)
     }
     

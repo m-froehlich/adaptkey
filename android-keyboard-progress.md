@@ -28,17 +28,32 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `2b3f6ea` — v0.8.3 (version bump). Working tree = **v0.8.4**, §29 corrections below, not yet
-  committed. **Spec §12/§13/§14 complete.** §28 (D-96…D-102, D-94) fully implemented; §29 is a same-session
-  correction round on top of it, before any device testing happened. §26's D-87/D-88 and the rest of §27
-  (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `ae0d699` — v0.8.4 (§29 corrections). Working tree = **v0.8.5**, §30 below, not yet committed.
+  **Spec §12/§13/§14 complete.** §28 (D-96…D-102, D-94) and §29 fully implemented; §30 is a further
+  same-session follow-up, still before any device testing of the whole D-92→D-102 batch happened. §26's
+  D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **518 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 15 commits behind; this session's §29 correction once committed makes it 16 -
+- Unit tests: **522 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 16 commits behind; this session's §30 follow-up once committed makes it 17 -
   awaiting push.
+- **§30 DONE (v0.8.5):** further follow-up on §29, before device testing:
+  - Bracket popup order: square before curly (`( [ { <` / `) ] } >`), shared by both pages' bracket keys.
+  - Page 2: dedicated `_` key dropped (redundant with `-`'s own `_` alt); `+` moved to the end of row 4; `€`
+    moved out of row 4 to the start of row 1 (keeps its currency popup); apostrophe moved from row 1 to row
+    4 (position 2, after `#`, roughly under row 3's `"`); `®` added next to `©`; `Ø` ("Durchschnitt") added.
+  - Letters page: `f`→`ƒ` (function symbol, was unassigned; added to `LetterHints.PALETTE` too), also added
+    to page 2 row 1. `o` gained `Ø` as a second long-press alternative alongside its umlaut (chosen as the
+    intuitive host - visually a stylised O) - **caught and fixed a bug while building this**: `o` is in the
+    *top* row, not the middle row, initially wired to the wrong row's key-builder; an internal test caught
+    it before it shipped.
+  - Calculator page: the π key was plain (no popup at all) - now reuses `KeyboardLayout.PI_ALTERNATIVES`
+    (exposed, was `private`) for the same Greek-letter popup as the letters page's π. The user described an
+    "obscure case-toggle function" firing there instead - no separate bug found in the shift/case code;
+    flagged to confirm resolved on next device test, since the exact prior behaviour wasn't independently
+    reproduced.
 - **§29 DONE (v0.8.4):** correction round on §28, caught by the user before any device testing:
   - **D-101 corrected**: `(`/`)` are two separate keys again (not merged) - `(` gets
     `OPEN_BRACKET_ALTERNATIVES = ( { [ <`, `)` gets `CLOSE_BRACKET_ALTERNATIVES = ) } ] >`. Page 1 row 1 back

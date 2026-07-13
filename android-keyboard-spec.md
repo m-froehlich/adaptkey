@@ -1471,3 +1471,49 @@ Three refinements to page 2, all additive (no structural change):
   page 1's, so its alternatives stay in the **un**-reversed order (`€ $ £ ¥`, base first) so the popup grows
   rightward, into the room that's actually there on this side.
 - Row 4's `-` (distributed from the letters page's `m` hint) gets `_` as a single long-press alt.
+
+---
+
+## §30 - §29 Follow-Up: Bracket Order, Page-2 Reshuffle, New Symbols (v0.8.5)
+
+Continued review of §29, before device testing.
+
+### Bracket popup order - square before curly
+`OPEN_BRACKET_ALTERNATIVES` / `CLOSE_BRACKET_ALTERNATIVES` (shared by page 1's `(`/`)` and page 2's `(`/`)`
+in the shifted-symbols row) reordered to `( [ { <` / `) ] } >` - square brackets before curly braces.
+
+### Page 2: dedicated underscore key dropped
+Now redundant with `-`'s own `_` alt (added last round) - removed from row 1.
+
+### Page 2: `+` to the end of row 4, `€` to the start of row 1
+`+` moves to the last position of row 4 (the last content row); `€` moves out of row 4 entirely, to the
+first position of row 1, keeping its common-currency popup.
+
+### Page 2: apostrophe moved to row 4, second position
+Was in row 1; now sits right after `#` in row 4 - which happens to put it roughly under row 3's own `"`,
+directly above it.
+
+### Page 2: `®` added next to `©`
+The circled C and circled R sit together in row 1.
+
+### Page 2 + letters page: `Ø` added ("Durchschnitt")
+Added to page 2's row 1 (room was made by the removals above). Also added as a second long-press alternative
+on the letters page's `o` key (`KeyboardLayout.O_ALTERNATIVES = listOf("ö", "Ø")`) - chosen as the host key
+since Ø is visually a stylised O; gated the same reassignment-aware way as `p`'s Greek-letter popup, so a
+user who has reassigned `o` via C-08 keeps their own plain hint. **Bug fixed while implementing this**: the
+o key is in the *top* row (`qwertzuiop`), not the middle row (`asdfghjkl`) - an internal test caught a wrong
+row index before this shipped.
+
+### Letters page: `f` gets the function symbol, also added to page 2
+`f` was still unassigned - `KeyboardLayout.DEFAULT_LETTER_HINTS` gained `f`→`ƒ` (also added to
+`LetterHints.PALETTE`, keeping the C-08-editor-can-reproduce-every-default invariant). Also added to page
+2's row 1.
+
+### Calculator page: the π key gets its Greek-letter popup too
+Previously plain (no `hint`, no `alternatives`) on page 1, unlike the letters page's `p`→π. Now reuses
+`KeyboardLayout.PI_ALTERNATIVES` directly (exposed, was `private`) so both π keys stay in sync. The user
+described an "obscure case-toggle function" firing instead of a proper popup on long-press - no separate
+bug was found in the case/shift-handling code, so the working theory is that this was simply the absence of
+a defined long-press action; giving the key `alternatives.size >= 2` routes it through the same D-01 popup
+mechanism as every other multi-alternative key. Flagged as something to confirm is actually resolved once
+next tested on a device, since the exact prior behaviour wasn't independently reproduced first.

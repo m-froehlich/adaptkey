@@ -45,8 +45,16 @@ object KeyboardLayout {
     /** D-90: the π key's own corner hint. */
     private const val PI_HINT = "π"
     
-    /** D-99: the π key's long-press popup - the Greek letters, alongside π itself. */
-    private val PI_ALTERNATIVES = listOf(PI_HINT, "α", "β", "γ", "δ", "λ", "ω")
+    /** D-99: the π key's long-press popup - the Greek letters, alongside π itself. Also reused by the
+     *  calculator page's own π key ([SymbolLayout]), which carries the identical popup (§29 follow-up). */
+    val PI_ALTERNATIVES = listOf(PI_HINT, "α", "β", "γ", "δ", "λ", "ω")
+    
+    /** The o key's own corner hint (the umlaut). */
+    private const val O_HINT = "ö"
+    
+    /** §29 follow-up: the o key's long-press popup - ö plus Ø, the German shorthand for "Durchschnitt"
+     *  (average) - chosen as the most intuitive host since Ø is visually a stylised O. */
+    private val O_ALTERNATIVES = listOf(O_HINT, "Ø")
     
     /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
@@ -58,7 +66,9 @@ object KeyboardLayout {
         'p' to PI_HINT,
         // D-96: reorganised math-symbol hints - × moved to x, ÷ moved to c, v gets /, b gets *.
         'x' to "×", 'c' to "÷", 'v' to "/", 'b' to "*",
-        'a' to "ä", 'o' to "ö", 'u' to "ü", 's' to "ß"
+        // §29 follow-up: f was still free - the function symbol goes here.
+        'f' to "ƒ",
+        'a' to "ä", 'o' to O_HINT, 'u' to "ü", 's' to "ß"
     )
     
     /**
@@ -133,14 +143,20 @@ object KeyboardLayout {
     }
     
     /**
-     * D-99: builds a top-row key, giving `p` its Greek-letter popup ([PI_ALTERNATIVES]) - but only while
-     * it still carries the default π hint, so a user who has reassigned `p` via the C-08 editor keeps
-     * their own single-symbol long-press instead of an unrelated Greek-letter popup.
+     * D-99 / §29 follow-up: builds a top-row key, giving `p` its Greek-letter popup ([PI_ALTERNATIVES])
+     * and `o` its Ø popup ([O_ALTERNATIVES]) - but only while each still carries its own default hint, so
+     * a user who has reassigned `p` or `o` via the C-08 editor keeps their own single-symbol long-press
+     * instead of an unrelated popup.
      */
     private fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
         val hint = letterHints[c]
-        return if (c == 'p' && hint == PI_HINT) charKey(c, hint, alternatives = PI_ALTERNATIVES) else charKey(c, hint)
+        return when {
+            c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES)
+            c == 'o' && hint == O_HINT -> charKey(c, hint, alternatives = O_ALTERNATIVES)
+            else -> charKey(c, hint)
+        }
     }
+    
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)

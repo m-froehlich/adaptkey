@@ -18,9 +18,10 @@ import java.util.Locale
 object SymbolLayout {
     
     // D-101 (corrected): ( and ) stay two separate keys, each with the matching bracket family of its own
-    // kind (opening / closing) as its D-01 popup - not merged into one key.
-    private val OPEN_BRACKET_ALTERNATIVES = listOf("(", "{", "[", "<")
-    private val CLOSE_BRACKET_ALTERNATIVES = listOf(")", "}", "]", ">")
+    // kind (opening / closing) as its D-01 popup - not merged into one key. §29 follow-up: square brackets
+    // before curly braces.
+    private val OPEN_BRACKET_ALTERNATIVES = listOf("(", "[", "{", "<")
+    private val CLOSE_BRACKET_ALTERNATIVES = listOf(")", "]", "}", ">")
     
     // Page 1 (calculator) row 1: everyday symbols not already reachable via a letter-page long-press hint.
     private const val CALC_ROW1_SYMBOLS = "()°√π~&|"
@@ -44,10 +45,14 @@ object SymbolLayout {
     // proportions.backspaceWeight (L-04) rather than trying to force-match this column.
     private const val CALC_COLUMN_WEIGHT = 1f
     
-    // D-102: page 2's leftover characters, not reachable elsewhere. The double quote moved out to
-    // CATCHALL_NUMBER_SYMBOLS below (D-102 also put it there) to avoid the same glyph appearing twice on
-    // this page; the bracket family that used to live here moved to page 1 (D-101).
-    private const val CATCHALL_ROW1_SYMBOLS = "@_'•©±"
+    // §29 follow-up: page 2's leftover characters, not reachable elsewhere, plus € (moved here from the
+    // letter-hints row below - it now leads the row) and a handful of new additions: ® next to © (the
+    // circled C/R pair), Ø ("Durchschnitt", the German shorthand for "average" - also added as an alt on
+    // the letters page's o key), and ƒ (the function symbol, also newly added to the letters page's f key).
+    // The underscore that used to live here on its own is gone - now redundant with the "-" key's own _ alt
+    // below. The apostrophe that used to live here moved to the letter-hints row (still below), and the
+    // bracket family that used to live here moved to page 1 (D-101).
+    private const val CATCHALL_ROW1_SYMBOLS = "€@•©®±Øƒ"
     
     // D-102: a fixed digit row, independent of C-09 - the fallback for anyone who has hidden the main
     // page's number row.
@@ -58,21 +63,23 @@ object SymbolLayout {
     // them when the main number row (and its long-press hints) are hidden.
     private const val CATCHALL_NUMBER_SYMBOLS = "!\"§$%&/()="
     
-    // D-102: the main letter page's alt-hint symbols (KeyboardLayout.DEFAULT_LETTER_HINTS), distributed
-    // here now that there's room. @ (q's hint) is skipped - already covered by CATCHALL_ROW1_SYMBOLS above
-    // - and / (v's hint, D-96) is skipped too - already covered by CATCHALL_NUMBER_SYMBOLS (7's shifted
-    // symbol) - to avoid the same glyph appearing twice on this page. π keeps its own Greek-letter popup
-    // (D-99) on the letters page rather than being duplicated here. A first draft, per the user's own
-    // "schauen wir, wie sich das ergibt und sortieren ggf. nochmal um".
-    private const val CATCHALL_LETTER_HINTS = "€#-+°×÷*"
+    // §29 follow-up: the main letter page's remaining alt-hint symbols, distributed here now that there's
+    // room. € moved out to CATCHALL_ROW1_SYMBOLS above (its own first position there); + moved to the very
+    // end of this row instead (fits better there); the apostrophe moved in right after #, so it roughly
+    // sits under row 3's own " above it. / (v's hint, D-96) is still skipped - already covered by
+    // CATCHALL_NUMBER_SYMBOLS (7's shifted symbol). π keeps its own Greek-letter popup (D-99) on the
+    // letters page rather than being duplicated here. Still a first draft, per the user's own "schauen wir,
+    // wie sich das ergibt und sortieren ggf. nochmal um".
+    private const val CATCHALL_LETTER_HINTS = "#'-°×÷*+"
     
-    // D-102 (correction): this page's € key (distributed from the letter hints above) also gets the
-    // common-currency popup - redundant with page 1's dedicated currency key, by explicit request. It sits
-    // on the *left* here, unlike page 1's, so the base glyph stays first (grows rightward), not reversed
-    // like CalculatorLocale.COMMON_CURRENCY_SYMBOLS.
+    // D-102 (correction): this page's € key (now the first key of row 1 above) also gets the common-currency
+    // popup - redundant with page 1's dedicated currency key, by explicit request. It sits on the *left*
+    // here, unlike page 1's, so the base glyph stays first (grows rightward), not reversed like
+    // CalculatorLocale.COMMON_CURRENCY_SYMBOLS.
     private val CATCHALL_CURRENCY_ALTERNATIVES = listOf("€", "$", "£", "¥")
     
-    // D-102 (correction): this page's distributed "-" key (m's hint) gets "_" as its single long-press alt.
+    // D-102 (correction): this page's distributed "-" key (m's hint) gets "_" as its single long-press alt -
+    // which is also why the standalone underscore key in row 1 above could be dropped (§29 follow-up).
     private const val UNDERSCORE_HINT = "_"
     
     /**
@@ -165,9 +172,9 @@ object SymbolLayout {
     private fun catchAllRows(proportions: KeyProportions, symbolKeyEnabled: Boolean): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
-        // Row 1: leftover symbols, then backspace. No page-toggle key any more (D-100).
+        // Row 1: leftover symbols (led by €, §29 follow-up), then backspace. No page-toggle key (D-100).
         result.add(buildList {
-            CATCHALL_ROW1_SYMBOLS.forEach { c -> add(charKey(c)) }
+            CATCHALL_ROW1_SYMBOLS.forEach { c -> add(catchAllRow1Key(c)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -178,9 +185,8 @@ object SymbolLayout {
         // bracket-family popups (correction), matching page 1's bracket keys.
         result.add(CATCHALL_NUMBER_SYMBOLS.map { c -> catchAllNumberSymbolKey(c) })
         
-        // Row 4 (D-102): the main letter page's alt-hint symbols, distributed here. € also gets the
-        // common-currency popup and - also gets _ as its alt (correction), both redundant with elsewhere
-        // by explicit request.
+        // Row 4 (D-102): the main letter page's remaining alt-hint symbols, distributed here. - also gets
+        // _ as its alt (correction), redundant with elsewhere by explicit request.
         result.add(CATCHALL_LETTER_HINTS.map { c -> catchAllLetterHintKey(c) })
         
         result.add(buildList {
@@ -198,11 +204,16 @@ object SymbolLayout {
         require(page == 1 || page == 2) { "page must be 1 or 2: $page" }
     }
     
-    /** D-101 (corrected): gives `(` / `)` their own bracket-family popup; every other row-1 symbol is plain. */
+    /**
+     * D-101 (corrected): gives `(` / `)` their own bracket-family popup. §29 follow-up: gives `π` its
+     * Greek-letter popup too, reusing [KeyboardLayout.PI_ALTERNATIVES] so both π keys stay in sync. Every
+     * other row-1 symbol is plain.
+     */
     private fun calcRow1Key(c: Char): Key {
         return when (c) {
             '(' -> charKey(c, alternatives = OPEN_BRACKET_ALTERNATIVES)
             ')' -> charKey(c, alternatives = CLOSE_BRACKET_ALTERNATIVES)
+            'π' -> charKey(c, alternatives = KeyboardLayout.PI_ALTERNATIVES)
             else -> charKey(c)
         }
     }
@@ -216,10 +227,14 @@ object SymbolLayout {
         }
     }
     
-    /** D-102 (corrected): gives `€` the common-currency popup and `-` an `_` alt; the rest stay plain. */
+    /** §29 follow-up: gives `€` (now leading row 1) the common-currency popup; the rest stay plain. */
+    private fun catchAllRow1Key(c: Char): Key {
+        return if (c == '€') charKey(c, alternatives = CATCHALL_CURRENCY_ALTERNATIVES) else charKey(c)
+    }
+    
+    /** D-102 (corrected): gives `-` an `_` alt; the rest of this row stays plain. */
     private fun catchAllLetterHintKey(c: Char): Key {
         return when (c) {
-            '€' -> charKey(c, alternatives = CATCHALL_CURRENCY_ALTERNATIVES)
             '-' -> charKey(c, hint = UNDERSCORE_HINT)
             else -> charKey(c)
         }

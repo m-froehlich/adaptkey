@@ -60,6 +60,8 @@ class KeyboardLayoutTest {
         assertEquals("÷", rows[3].byChar('c').hint)
         assertEquals("/", rows[3].byChar('v').hint)
         assertEquals("*", rows[3].byChar('b').hint)
+        // §29 follow-up: the function-symbol hint on f.
+        assertEquals("ƒ", rows[2].byChar('f').hint)
     }
     
     @Test
@@ -78,12 +80,27 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `the o key offers an average-symbol popup alongside its umlaut`() {
+        val oKey = KeyboardLayout.rows()[1].byChar('o')
+        
+        assertEquals(listOf("ö", "Ø"), oKey.alternatives)
+    }
+    
+    @Test
+    fun `a reassigned o key loses the average-symbol popup`() {
+        val oKey = KeyboardLayout.rows(letterHints = mapOf('o' to "!"))[1].byChar('o')
+        
+        assertEquals("!", oKey.hint)
+        assertTrue(oKey.alternatives.isEmpty())
+    }
+    
+    @Test
     fun `longPressSymbol returns the secondary for character keys and null otherwise`() {
         val rows = KeyboardLayout.rows()
         
         assertEquals("@", KeyboardLayout.longPressSymbol(rows[1].byChar('q')))
         assertEquals("/", KeyboardLayout.longPressSymbol(rows.first().byChar('7')))
-        assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('f')))
+        assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('g')))
         assertNull(KeyboardLayout.longPressSymbol(rows[3].first()))
     }
     
@@ -94,7 +111,7 @@ class KeyboardLayoutTest {
         assertTrue(KeyboardLayout.hasLongPressAction(rows[1].byChar('q')))
         assertTrue(KeyboardLayout.hasLongPressAction(rows.first().byChar('7')))
         assertTrue(KeyboardLayout.hasLongPressAction(rows.last().first()))
-        assertFalse(KeyboardLayout.hasLongPressAction(rows[2].byChar('f')))
+        assertFalse(KeyboardLayout.hasLongPressAction(rows[2].byChar('g')))
         assertFalse(KeyboardLayout.hasLongPressAction(rows.last()[2]))
     }
     
