@@ -52,28 +52,23 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `D-100 rows 2 and 3 end with space and currency`() {
+    fun `corrected - the operator column reads plus, minus, times, divide top to bottom`() {
         val rows = SymbolLayout.rows(1, locale = Locale.GERMANY)
         
-        assertEquals(listOf('7', '8', '9', '÷'), rows[1].dropLast(1).map { it.char })
+        assertEquals(listOf('7', '8', '9', '+'), rows[1].dropLast(1).map { it.char })
         assertEquals(KeyCode.SPACE, rows[1].last().code)
         
-        assertEquals(listOf('4', '5', '6', '×'), rows[2].dropLast(1).map { it.char })
+        assertEquals(listOf('4', '5', '6', '−'), rows[2].dropLast(1).map { it.char })
         assertEquals('€', rows[2].last().char)
-    }
-    
-    @Test
-    fun `D-100 corrected - row 4 ends with equals, row 5 carries abc under 3`() {
-        val row4 = SymbolLayout.rows(1, locale = Locale.GERMANY)[3]
-        val row5 = SymbolLayout.rows(1, locale = Locale.GERMANY)[4]
         
-        assertEquals(listOf('1', '2', '3', '−'), row4.dropLast(1).map { it.char })
-        assertEquals('=', row4.last().char)
+        assertEquals(listOf('1', '2', '3', '×'), rows[3].dropLast(1).map { it.char })
+        assertEquals('=', rows[3].last().char)
         
+        val row5 = rows[4]
         assertEquals('0', row5[0].char)
         assertEquals(',', row5[1].char)
         assertEquals(KeyCode.LETTERS, row5[2].code)
-        assertEquals('+', row5[3].char)
+        assertEquals('÷', row5[3].char)
         assertEquals(KeyCode.ENTER, row5[4].code)
     }
     
@@ -89,8 +84,8 @@ class SymbolLayoutTest {
     fun `the operator keys carry their alt-popups`() {
         val rows = SymbolLayout.rows(1)
         
-        assertEquals(listOf("*", "×", "·"), rows[2].byChar('×').alternatives)
-        assertEquals(listOf("/", "÷", ":"), rows[1].byChar('÷').alternatives)
+        assertEquals(listOf("*", "×", "·"), rows[3].byChar('×').alternatives)
+        assertEquals(listOf("/", "÷", ":"), rows[4].byChar('÷').alternatives)
         assertEquals(listOf("=", "→", "≈", "≙"), rows[3].byChar('=').alternatives)
     }
     

@@ -1517,3 +1517,11 @@ bug was found in the case/shift-handling code, so the working theory is that thi
 a defined long-press action; giving the key `alternatives.size >= 2` routes it through the same D-01 popup
 mechanism as every other multi-alternative key. Flagged as something to confirm is actually resolved once
 next tested on a device, since the exact prior behaviour wasn't independently reproduced first.
+
+### Calculator page: reordered the operator column - plus, minus, times, divide (v0.8.6)
+The right-hand operator column (the 4th cell of rows 2-5, alongside the digit block) reordered top to bottom
+from `÷ × − +` to `+ − × ÷`. Only the operator identity per row changed - the digits (`7 8 9` / `4 5 6` /
+`1 2 3` / `0`) and each row's own right-hand-column cell (`space` / currency / `=` / `⏎`) stay exactly where
+they were. Each operator keeps its own alt-popup wherever it now sits: `×` still offers `* × ·`, `÷` still
+offers `/ ÷ :`. New row layout: row 2 `7 8 9 +`, row 3 `4 5 6 −`, row 4 `1 2 3 ×`, row 5
+`0 <decimal-sep> ABC ÷`.

@@ -119,49 +119,49 @@ object SymbolLayout {
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
-        // Row 2: 7 8 9 ÷ | space.
+        // Row 2 (corrected): 7 8 9 + | space. Operator column reordered top to bottom: + − × ÷.
         result.add(
             listOf(
                 charKey('7'),
                 charKey('8'),
                 charKey('9'),
-                charKey('÷', alternatives = DIVIDE_ALTERNATIVES),
+                charKey('+'),
                 Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = CALC_COLUMN_WEIGHT)
             )
         )
         
-        // Row 3: 4 5 6 × | currency.
+        // Row 3 (corrected): 4 5 6 − | currency.
         result.add(
             listOf(
                 charKey('4'),
                 charKey('5'),
                 charKey('6'),
-                charKey('×', alternatives = MULTIPLY_ALTERNATIVES),
+                charKey('−'),
                 charKey(format.currencyBase, alternatives = format.currencyAlternatives, weight = CALC_COLUMN_WEIGHT)
             )
         )
         
-        // Row 4 (corrected): 1 2 3 − | = (swapped with ABC below - "=" always visible in the column,
-        // ABC tucked into the grid instead, since ABC is the rarer action of the two).
+        // Row 4 (corrected): 1 2 3 × | = ("=" always visible in the column, ABC tucked into the grid
+        // instead, since ABC is the rarer action of the two).
         result.add(
             listOf(
                 charKey('1'),
                 charKey('2', hint = SQUARED_HINT),
                 charKey('3', hint = CUBED_HINT),
-                charKey('−'),
+                charKey('×', alternatives = MULTIPLY_ALTERNATIVES),
                 charKey('=', alternatives = EQUALS_ALTERNATIVES, weight = CALC_COLUMN_WEIGHT)
             )
         )
         
         // Row 5 (corrected): 0 (under 1), decimal separator (under 2), ABC (under 3 - D-59/D-93-gated but
         // always emitted here so the row keeps its cell count; AdaptKeyboardView hides it when disabled),
-        // + (under the operator column) | enter.
+        // ÷ (under the operator column) | enter.
         result.add(
             listOf(
                 charKey('0'),
                 charKey(format.decimalSeparator, hint = format.thousandsSeparatorHint),
                 Key(label = "ABC", code = KeyCode.LETTERS),
-                charKey('+'),
+                charKey('÷', alternatives = DIVIDE_ALTERNATIVES),
                 Key(label = "↵", code = KeyCode.ENTER, weight = CALC_COLUMN_WEIGHT)
             )
         )

@@ -28,17 +28,22 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `ae0d699` — v0.8.4 (§29 corrections). Working tree = **v0.8.5**, §30 below, not yet committed.
-  **Spec §12/§13/§14 complete.** §28 (D-96…D-102, D-94) and §29 fully implemented; §30 is a further
-  same-session follow-up, still before any device testing of the whole D-92→D-102 batch happened. §26's
+- HEAD: `6b3b0af` — v0.8.5 (§30 follow-up). Working tree = **v0.8.6**, operator reorder below, not yet
+  committed. **Spec §12/§13/§14 complete.** §28/§29/§30 fully implemented; this entry is one more small
+  follow-up (operator column order), still before any device testing of the whole D-92→D-102 batch. §26's
   D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **522 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 16 commits behind; this session's §30 follow-up once committed makes it 17 -
+- Unit tests: **521 green** (`:app:testDebugUnitTest`, incl. Robolectric; two tests merged into one while
+  updating for this change, hence one fewer than last entry despite no coverage lost); `:app:assembleDebug`
+  green (no warnings). `origin/main` is 17 commits behind; this session's change once committed makes it 18 -
   awaiting push.
+- **Operator column reordered (v0.8.6):** the calculator page's right-hand operator column (4th cell of rows
+  2-5) reordered top to bottom from `÷ × − +` to `+ − × ÷`. Only the operator identity per row changed;
+  digits and each row's own column cell (space/currency/=/enter) stayed put. Each operator kept its own
+  alt-popup wherever it moved.
 - **§30 DONE (v0.8.5):** further follow-up on §29, before device testing:
   - Bracket popup order: square before curly (`( [ { <` / `) ] } >`), shared by both pages' bracket keys.
   - Page 2: dedicated `_` key dropped (redundant with `-`'s own `_` alt); `+` moved to the end of row 4; `€`
