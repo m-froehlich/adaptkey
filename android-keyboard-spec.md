@@ -1531,3 +1531,16 @@ offers `/ ÷ :`. New row layout: row 2 `7 8 9 +`, row 3 `4 5 6 −`, row 4 `1 2 
 (plus-minus), not the plain `+`. Corrected: `+` moves back to its original spot in row 4 (right after `-`,
 before `°`); `±` moves out of row 1 to the very end of row 4 instead. Row 1 is now `€ @ • © ® Ø ƒ` (seven,
 not eight); row 4 is now `# ' - + ° × ÷ * ±` (nine, not eight).
+
+### Page 2: `ABC`'s slot next to `space` also reserved when hidden (v0.8.8)
+Page 2's bottom row previously used D-93's original omit-and-grow pattern for its `ABC` key: hidden entirely
+when the combined `?123` key is off, letting `space` grow to fill the gap. Per request, this now matches
+page 1's D-100-corrected treatment instead - `ABC`'s slot stays reserved (drawn as nothing, tap inert) rather
+than collapsing, so `space` stays its normal size instead of looking oversized when `ABC` is hidden.
+
+Implementation: `SymbolLayout` no longer takes a `symbolKeyEnabled` parameter at all - both pages'
+`ABC` key is now unconditionally present in the returned rows (page 1 already worked this way since the
+D-100 correction; page 2's row 5 now does too). All of the visibility/interactivity logic lives in
+`AdaptKeyboardView.isHiddenKey()`, whose `KeyCode.LETTERS` condition dropped its `symbolPage == 1`
+restriction - it now applies uniformly to whichever symbol page is showing. Since `SymbolLayout` no longer
+needs the setting, `AdaptKeyboardView.rowsFor()`'s call into it dropped the argument too.

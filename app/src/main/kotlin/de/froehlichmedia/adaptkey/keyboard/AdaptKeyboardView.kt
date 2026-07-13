@@ -531,7 +531,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 KeyboardLayout.rows(proportions, showNumberRow, letterHints)
             }
             
-            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, symbolKeyEnabled, systemLocale)
+            InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)
             // The emoji panel is a separate view; this surface is never actually drawn.
             InputSurface.EMOJI -> emptyList()
         }
@@ -1124,15 +1124,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-59 / D-100 (correction): whether [key] occupies a slot that is currently disabled but must stay
-     * reserved rather than collapse - the combined `?123` key (emoji off and symbol off), or the
-     * calculator page's `ABC` key (symbol off). The calculator page's key must keep its slot even when
-     * hidden: its row is part of the D-100 column/grid layout, where every row relies on having the same
-     * number of cells for the columns to line up - simply omitting the key (as D-93 does for page 2's own
-     * `ABC`) would narrow that one row and break the grid alignment.
+     * reserved rather than collapse - the combined `?123` key (emoji off and symbol off), or either
+     * symbol page's `ABC` key (symbol off). Page 1's `ABC` must keep its slot so the D-100 column/grid
+     * layout's per-row cell count stays consistent; page 2's `ABC` keeps its slot too (a later correction)
+     * purely so its neighbouring `space` key doesn't grow to fill the gap and end up looking oversized -
+     * both now use this same reserved-but-inert treatment instead of D-93's original omit-and-grow.
      */
     private fun isHiddenKey(key: Key): Boolean {
         return (key.code == KeyCode.SYMBOL && !emojiEnabled && !symbolKeyEnabled) ||
-            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && symbolPage == 1 && !symbolKeyEnabled)
+            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && !symbolKeyEnabled)
     }
     
     private fun labelFor(key: Key): String {

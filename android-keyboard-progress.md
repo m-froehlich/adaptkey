@@ -28,17 +28,22 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `f0332a8` — v0.8.6 (operator reorder). Working tree = **v0.8.7**, plus/plus-minus correction below,
-  not yet committed. **Spec §12/§13/§14 complete.** §28/§29/§30 fully implemented; still before any device
-  testing of the whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain
-  backlog-only.
+- HEAD: `5941f80` — v0.8.7 (row-4 fix). Working tree = **v0.8.8**, page-2 ABC-reserved-slot change below, not
+  yet committed. **Spec §12/§13/§14 complete.** §28/§29/§30 fully implemented; still before any device testing
+  of the whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **521 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 18 commits behind; this session's change once committed makes it 19 - awaiting
+  warnings). `origin/main` is 19 commits behind; this session's change once committed makes it 20 - awaiting
   push.
+- **Page 2's ABC slot now reserved when hidden too (v0.8.8):** previously used D-93's omit-and-grow (space
+  grows to fill the gap when ABC is hidden); now matches page 1's D-100-corrected reserved-slot treatment, so
+  space stays its normal size instead of looking oversized. `SymbolLayout.rows()`/`catchAllRows()` dropped
+  the `symbolKeyEnabled` parameter entirely - both pages' `ABC` key is now always present in the built rows;
+  `AdaptKeyboardView.isHiddenKey()`'s `KeyCode.LETTERS` condition dropped its `symbolPage == 1` restriction,
+  applying uniformly to whichever symbol page is showing.
 - **Corrected the row-4 reshuffle (v0.8.7):** §30's "`+` moved to the end of row 4" was a misreading - it was
   always `±` (plus-minus), not the plain `+`. `+` is back in its original spot in page 2's row 4 (after `-`,
   before `°`); `±` moved out of row 1 to the end of row 4 instead. Row 1 is now 7 symbols (`€ @ • © ® Ø ƒ`);

@@ -84,16 +84,14 @@ object SymbolLayout {
     private const val UNDERSCORE_HINT = "_"
     
     /**
-     * Builds the symbol/numeric keyboard for [page].
+     * Builds the symbol/numeric keyboard for [page]. Both pages' `ABC` key is always present in the
+     * returned rows, regardless of whether the combined `?123` key (D-59) is enabled - its slot must stay
+     * reserved (page 1 for the calculator column's proportions, D-100; page 2 so `space` doesn't grow to
+     * fill the gap and look oversized). [AdaptKeyboardView] hides it visually and makes it inert when the
+     * setting is off, the same way it already treats the disabled combined key.
      *
      * @param page the symbol page, 1 (calculator) or 2 (leftover catch-all)
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
-     * @param symbolKeyEnabled whether the combined `?123` key (D-59) is enabled; when it is off, page 2's
-     *        back-to-letters (`ABC`) key is redundant with the D-19 full-field swipe, so it is dropped and
-     *        the remaining keys in its row grow to fill the freed space (D-93). Page 1's `ABC` key (D-100)
-     *        is always present in the returned rows regardless - its slot must stay reserved so the
-     *        calculator column's proportions stay correct; [AdaptKeyboardView] hides it visually and
-     *        makes it inert when this is `false`, the same way it already treats the disabled combined key
      * @param locale the system locale the calculator page's currency key and decimal/thousands
      *        separators are resolved from ([CalculatorLocale]); defaults to the JVM default locale
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
@@ -102,11 +100,10 @@ object SymbolLayout {
     fun rows(
         page: Int,
         proportions: KeyProportions = KeyProportions.DEFAULT,
-        symbolKeyEnabled: Boolean = true,
         locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         requireValidPage(page)
-        return if (page == 1) calculatorRows(proportions, locale) else catchAllRows(proportions, symbolKeyEnabled)
+        return if (page == 1) calculatorRows(proportions, locale) else catchAllRows(proportions)
     }
     
     private fun calculatorRows(proportions: KeyProportions, locale: Locale): List<List<Key>> {
@@ -170,7 +167,7 @@ object SymbolLayout {
         return result
     }
     
-    private fun catchAllRows(proportions: KeyProportions, symbolKeyEnabled: Boolean): List<List<Key>> {
+    private fun catchAllRows(proportions: KeyProportions): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
         // Row 1: leftover symbols (led by €, §29 follow-up), then backspace. No page-toggle key (D-100).
@@ -190,13 +187,16 @@ object SymbolLayout {
         // _ as its alt (correction), redundant with elsewhere by explicit request.
         result.add(CATCHALL_LETTER_HINTS.map { c -> catchAllLetterHintKey(c) })
         
-        result.add(buildList {
-            if (symbolKeyEnabled) {
-                add(Key(label = "ABC", code = KeyCode.LETTERS, weight = proportions.symbolWeight))
-            }
-            add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
-        })
+        // Row 5 (corrected): ABC's slot next to space stays reserved when hidden (D-59/D-100-style, via
+        // AdaptKeyboardView) rather than collapsing (D-93's old omit-and-grow) - so space doesn't grow to
+        // fill the gap and end up looking oversized when the combined ?123 key is disabled.
+        result.add(
+            listOf(
+                Key(label = "ABC", code = KeyCode.LETTERS, weight = proportions.symbolWeight),
+                Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight),
+                Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
+            )
+        )
         
         return result
     }

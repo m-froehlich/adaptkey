@@ -205,14 +205,14 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `D-100 corrected - disabling the combined symbol key still reserves page 1's abc slot, but page 2 drops it`() {
-        val page1Row5 = SymbolLayout.rows(1, symbolKeyEnabled = false)[4]
-        val page2Bottom = SymbolLayout.rows(2, symbolKeyEnabled = false).last()
+    fun `corrected - both pages' abc key is always present, its reserved-slot hiding is AdaptKeyboardView's job`() {
+        val page1Row5 = SymbolLayout.rows(1)[4]
+        val page2Bottom = SymbolLayout.rows(2).last()
         
         assertEquals(5, page1Row5.size)
         assertEquals(KeyCode.LETTERS, page1Row5[2].code)
         
-        assertNull(page2Bottom.firstOrNull { it.code == KeyCode.LETTERS })
+        assertEquals(KeyCode.LETTERS, page2Bottom[0].code)
     }
     
     @Test
