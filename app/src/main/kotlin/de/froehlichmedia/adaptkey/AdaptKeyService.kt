@@ -59,6 +59,8 @@ import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
+import de.froehlichmedia.adaptkey.keyboard.SignFlip
+import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
@@ -795,12 +797,19 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Handles a long-press (L-05 / L-06 secondary symbols: finalises the current token, so a held key
-     * mid-word commits the word first, then commits the symbol exactly like typing a delimiter; or
-     * L-03: holding the combined emoji / ?123 key switches straight to the numeric/symbol layer).
+     * mid-word commits the word first, then commits the symbol exactly like typing a delimiter; L-03:
+     * holding the combined emoji / ?123 key switches straight to the numeric/symbol layer; or §31: holding
+     * the calculator's minus key flips the sign of the number before the caret instead of committing text).
      */
     private fun handleLongPress(key: Key) {
         when (key.code) {
             KeyCode.CHAR -> {
+                if (key.char == SymbolLayout.MINUS_SIGN) {
+                    val ic = currentInputConnection ?: return
+                    clearUndo()
+                    flipSignBeforeCaret(ic)
+                    return
+                }
                 val symbol = key.hint ?: return
                 val ic = currentInputConnection ?: return
                 clearUndo()
@@ -811,6 +820,18 @@ class AdaptKeyService : InputMethodService() {
             
             else -> Unit
         }
+    }
+    
+    /**
+     * §31: flips the sign of the number immediately before the caret - long-pressing the calculator's
+     * minus key. Does nothing if there is no number directly before the caret. See [SignFlip] for the
+     * pure logic.
+     */
+    private fun flipSignBeforeCaret(ic: InputConnection) {
+        val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: return
+        val result = SignFlip.resultFor(before) ?: return
+        ic.deleteSurroundingText(result.deleteLength, 0)
+        ic.commitText(result.insertText, 1)
     }
     
     /**

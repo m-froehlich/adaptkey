@@ -28,16 +28,24 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `dda8578` — v0.8.8 (page-2 ABC reserved slot). Working tree = **v0.8.9**, §31 below, not yet committed.
+- HEAD: `e584770` — v0.8.9 (§31). Working tree = **v0.8.10**, sign-flip feature below, not yet committed.
   **Spec §12/§13/§14 complete.** §28/§29/§30/§31 fully implemented; still before any device testing of the
-  whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only. New
-  backlog item from §31: a calculator minus-key long-press sign-flip, not yet implemented (tentative ask).
+  whole D-92→D-102 batch. §26's D-87/D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only. User
+  is about to do a device test pass on mid-word live correction (D-62/D-87) next.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **522 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 20 commits behind; this session's §31 once committed makes it 21 - awaiting push.
+- Unit tests: **528 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` is 21 commits behind; this session's sign-flip commit once made brings it to 22 -
+  awaiting push.
+- **Sign-flip on the calculator's minus key DONE (v0.8.10):** the §31 backlog item, confirmed and requested
+  directly. Long-press `−` flips the sign of the number before the caret - operates on committed text (not
+  composing state, since digits commit immediately on this page). New pure `SignFlip` object (`keyboard`
+  package, mirrors `WordBoundary`/`SentenceBoundary`) computes the edit; `SymbolLayout.MINUS_SIGN` exposed;
+  `KeyboardLayout.hasLongPressAction()` gained a dedicated case for this hint-less, alternatives-less key;
+  `AdaptKeyService.handleLongPress()` intercepts it before the generic commit-text path. Trade-off accepted:
+  no corner-glyph visual cue, since giving it a hint would route it through the wrong (commit-text) pipeline.
 - **§31 DONE (v0.8.9):** page 2 row 1 bullet moved ahead of `@`; row 4 `°` moved ahead of `+` and `^` inserted
   at position 3 (now 10 keys, matching rows 2/3's width). **Real bug fixed**: calculator-page `π` (and page
   2's `ƒ`) always got auto-capitalised to `Π`/`Ƒ` - root cause was the ordinary auto-cap-at-field-start

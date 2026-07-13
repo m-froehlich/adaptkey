@@ -1593,10 +1593,26 @@ keyboard for these. `TYPE_CLASS_TEXT` (and no `EditorInfo` at all) still opens o
 test - `onStartInput` is service-glue, an existing documented gap; the same pattern already applies to
 `capsModeFor()` right next to it.
 
-### Backlog, not implemented: sign-flip on long-press of the calculator's minus key
-Raised tentatively ("wäre vielleicht auch praktisch" - "might also be practical") rather than as a firm
-request. Captured here for a later round rather than built now: long-pressing `−` on the calculator page
-would flip the sign of the number currently being typed/composed (prepend or remove a leading `-`). Needs
-design work before implementation - in particular, finding the start of the "current number" to the left of
-the caret (not just the current composing token, since digits on the calculator page don't enter composing
-state the way letters do) and deciding the exact edit semantics.
+### Implemented: sign-flip on long-press of the calculator's minus key (v0.8.10)
+Originally raised tentatively in §31, then explicitly confirmed and requested. Long-pressing `−` on the
+calculator page now flips the sign of the number immediately before the caret (removes a leading
+[`SymbolLayout.MINUS_SIGN`] if present, otherwise inserts one) - operating directly on the *committed* text
+via `InputConnection`, not composing state, since digits on the calculator page commit immediately rather
+than entering a composing token (confirmed during investigation: with `composing` always empty there, this
+is the only viable approach).
+
+The minus key carries neither a [Key.hint] nor [Key.alternatives] - unlike every other long-press secondary,
+this is an *edit* action, not "commit this text", so routing it through the existing
+hint/alternatives-commit pipeline (`commitLongPressSymbol`) would be wrong (it would literally type a `±`
+character rather than editing the number). Instead: `SymbolLayout.MINUS_SIGN` (`'−'`, U+2212, not the ASCII
+hyphen) is now a public constant; `KeyboardLayout.hasLongPressAction()` gained a dedicated case recognising
+this specific key (mirroring how it already special-cases the combined `?123` key); `AdaptKeyService.
+handleLongPress()` intercepts it before the generic hint-reading branch and calls a new
+`flipSignBeforeCaret()`. The actual text-scanning logic lives in a new pure, unit-tested `SignFlip` object
+(`keyboard` package, mirroring the existing `WordBoundary`/`SentenceBoundary` pattern) - `resultFor(before:
+CharSequence)` scans back over digits and `,`/`.` (either decimal-separator character, since only the
+number's *extent* matters here) to find where the number starts, and returns a `(deleteLength, insertText)`
+edit, or null when there's no number directly before the caret. One accepted trade-off, noted rather than
+worked around: since the key carries no hint, it gets no corner-glyph visual cue that long-press does
+something - acceptable for a power-user bonus gesture the user already knows exists, and forcing one through
+the existing hint-is-commit-text machinery would have caused the exact bug this design avoids.

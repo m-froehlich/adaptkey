@@ -39,6 +39,13 @@ object SymbolLayout {
     // Page 1's own 0 key carries # as a long-press hint - needed for fields marked as a phone number.
     private const val HASH_HINT = "#"
     
+    /**
+     * §31: the calculator page's minus key (U+2212, not the ASCII hyphen). Exposed so
+     * [KeyboardLayout.hasLongPressAction] and [de.froehlichmedia.adaptkey.AdaptKeyService]'s long-press-to-
+     * flip-sign handling can recognise this specific key without duplicating the literal.
+     */
+    const val MINUS_SIGN = '−'
+    
     // D-100: the digit block is narrower than before, freeing a right-hand column that runs the full
     // height of the page (backspace / space / currency / optional ABC / enter). Every cell down that
     // column from row 2 (space) to row 5 (enter) shares this weight - since every one of those rows has
@@ -139,7 +146,7 @@ object SymbolLayout {
                 charKey('4'),
                 charKey('5'),
                 charKey('6'),
-                charKey('−'),
+                charKey(MINUS_SIGN),
                 charKey(format.currencyBase, alternatives = format.currencyAlternatives, weight = CALC_COLUMN_WEIGHT)
             )
         )

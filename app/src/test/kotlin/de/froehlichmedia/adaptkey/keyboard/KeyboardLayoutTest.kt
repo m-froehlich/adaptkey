@@ -116,6 +116,14 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `paragraph 31 hasLongPressAction is true for the calculator minus key despite no hint or alternatives`() {
+        val minusKey = SymbolLayout.rows(1)[2].byChar(SymbolLayout.MINUS_SIGN)
+        
+        assertTrue(minusKey.hint == null && minusKey.alternatives.isEmpty())
+        assertTrue(KeyboardLayout.hasLongPressAction(minusKey))
+    }
+    
+    @Test
     fun `the combined key carries a 123 corner hint`() {
         val symbolKey = KeyboardLayout.rows().last().first()
         
