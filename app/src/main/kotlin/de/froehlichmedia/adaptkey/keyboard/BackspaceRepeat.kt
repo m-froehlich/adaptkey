@@ -23,11 +23,15 @@ object BackspaceRepeat {
     /** Delay before the first repeat fires, giving a normal tap room to be just a single deletion. */
     const val INITIAL_DELAY_MS = 400L
     
-    /** Character-wise starting interval; the moderate acceleration decays from here (D-56: a touch quicker). */
-    const val CHAR_START_DELAY_MS = 165L
+    /**
+     * Character-wise starting interval; the moderate acceleration decays from here (D-56: a touch quicker;
+     * §59: another ~9% quicker still, uniformly with [CHAR_MIN_DELAY_MS] so the decay curve's shape is
+     * unchanged, only its overall speed).
+     */
+    const val CHAR_START_DELAY_MS = 150L
     
-    /** Fastest character-wise interval the acceleration is clamped to (D-56: a touch quicker, still moderate). */
-    const val CHAR_MIN_DELAY_MS = 50L
+    /** Fastest character-wise interval the acceleration is clamped to (D-56 / §59, see [CHAR_START_DELAY_MS]). */
+    const val CHAR_MIN_DELAY_MS = 45L
     
     /** Geometric decay factor per removed character - close to 1 so acceleration stays gentle (D-31). */
     const val CHAR_ACCELERATION = 0.90
@@ -35,8 +39,11 @@ object BackspaceRepeat {
     /** Characters removed during a hold before deletion switches from character-wise to word-wise. */
     const val WORD_MODE_AFTER_CHARS = 16
     
-    /** Word-wise deletion cadence: clearly slower than character-wise, so it is followable (D-31). */
-    const val WORD_DELAY_MS = 330L
+    /**
+     * Word-wise deletion cadence: clearly slower than character-wise, so it is followable (D-31; §59: ~9%
+     * quicker, matching the same round-number reduction applied to the character-wise interval above).
+     */
+    const val WORD_DELAY_MS = 300L
     
     /**
      * Whether the deletion at this point in the hold should remove a whole word rather than a single

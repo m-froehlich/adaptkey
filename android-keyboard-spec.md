@@ -2418,3 +2418,16 @@ trade-off rather than an oversight: this makes *every* tap into *any* existing w
 suggestion session for it, not only a deliberate "I want to fix this word" tap - matching what was asked for,
 but a behaviour change worth specifically confirming feels right in practice, not just in the two reported
 cases.
+
+## §59 - Backspace-Hold Repeat: ~9% Faster (v0.8.32)
+
+Requested: the accelerating backspace-on-hold (D-07/D-31/D-56) felt a touch too slow, both for character-wise
+and word-wise deletion, by roughly 5-10%.
+
+`BackspaceRepeat`'s three cadence constants reduced by the same round-number proportion (~9%), so the decay
+curve's *shape* is unchanged, only its overall speed: `CHAR_START_DELAY_MS` 165ms → 150ms, `CHAR_MIN_DELAY_MS`
+50ms → 45ms (both scaled together, since scaling only one would have distorted how quickly the curve reaches
+its floor), `WORD_DELAY_MS` 330ms → 300ms. `INITIAL_DELAY_MS` (400ms, the delay before holding starts
+repeating at all) is untouched - the request was specifically about the repeat cadence once it starts, not
+how long a hold takes to begin repeating. Existing `BackspaceRepeatTest` assertions reference the constants
+symbolically, not their literal values, so nothing needed updating there.

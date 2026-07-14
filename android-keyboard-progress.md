@@ -28,22 +28,27 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `3150b70` — v0.8.30 (§57). Working tree = **v0.8.31**, §58 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§57 implemented. §54's suggestion-accepted feedback confirmed working (after
+- HEAD: `2ea7a47` — v0.8.31 (§58). Working tree = **v0.8.32**, §59 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§58 implemented. §54's suggestion-accepted feedback confirmed working (after
   §55's fix) and iterated twice on real-device feedback (§56, §57). §58: a real gap (not a bug) in D-62 mid-
   word live correction found and fixed - `reclaimSurroundingWord()` was only ever wired to a keystroke, never
-  to the caret merely arriving at a word (a tap, or Backspace re-editing a just-committed word) - see below.
-  Still before any device testing of the whole D-92→D-104/§32-58 batch except §47/§48/§54-§57's
-  sound-and-flight mechanism (confirmed working and iterated per real-device feedback); §58 itself is
-  unconfirmed pending the user's next test. **Every named backlog item is closed** (§26's D-88 via
-  §54/§56/§57; §27's D-95/D-103/D-104 via §48/§53).
+  to the caret merely arriving at a word (a tap, or Backspace re-editing a just-committed word). Still before
+  any device testing of the whole D-92→D-104/§32-59 batch except §47/§48/§54-§57's sound-and-flight mechanism
+  (confirmed working and iterated per real-device feedback); §58 and §59 are both unconfirmed pending the
+  user's next test. **Every named backlog item is closed** (§26's D-88 via §54/§56/§57; §27's D-95/D-103/D-104
+  via §48/§53).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` confirmed up to date with local HEAD `3150b70` (`git fetch` + rev-list check);
-  this session's §58 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  warnings). `origin/main` confirmed up to date with local HEAD `2ea7a47` (`git fetch` + rev-list check);
+  this session's §59 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§59 DONE (v0.8.32): backspace-hold repeat sped up ~9%**, both character-wise and word-wise, per request
+  (felt "a touch too slow" by roughly 5-10%). `BackspaceRepeat.CHAR_START_DELAY_MS` 165→150ms,
+  `CHAR_MIN_DELAY_MS` 50→45ms (scaled together so the decay curve's shape stays the same), `WORD_DELAY_MS`
+  330→300ms. `INITIAL_DELAY_MS` (before a hold starts repeating at all) untouched - the request was about the
+  repeat cadence, not the trigger delay.
 - **§58 DONE (v0.8.31): found and fixed a real gap in D-62 mid-word live correction - not another bug in the
   reclaim mechanism itself (§32/§46 had already ruled that out), but a missing trigger for it entirely.**
   Two precise repro cases (re-editing a word via Backspace right after committing it; a plain tap into the
