@@ -2069,3 +2069,37 @@ Requested feature, not implemented - resolves an existing backlog item (§26) wi
   from the letter view, or the ?123 layer when the emoji panel is disabled"). Worth checking whether the
   combined key's dual-purpose behaviour still makes sense once the emoji button has its own dedicated,
   always-reachable home in the new row, or whether it simplifies to "always ?123" once this lands.
+
+## §49 - §47 Implemented: Live Colour Preview of a Pending A-05 Split
+
+Implements §47. Two deliberate deviations from that section's "suggested shape", both root-caused against
+the actual call sites rather than guessed:
+
+1. **No caching between `refreshSuggestions()` and `updateComposing()`.** §47 suggested computing the split
+   preview in `refreshSuggestions()` and caching it for `updateComposing()` to read. Every call site
+   (the `CHAR` key handler, `appendLongPressLetter()`, `deleteComposingChar()`) calls `updateComposing(ic)`
+   *before* `refreshSuggestions()` for the same keystroke - a cache written by the latter would always be
+   one keystroke stale when the former reads it. Instead, the new `AdaptKeyService.splitPreview(ic, text)`
+   calls `tokenRepair.trySplit()` directly from inside `updateComposing()`, mirroring how
+   `shouldHighlightComposing()` already computes its own answer inline rather than reading a cached one. This
+   costs the same per-keystroke dictionary queries `trySplit()` already pays once at commit time
+   (`finalizeAndCommit()`), now paid continuously while composing - bounded by token length, same order of
+   magnitude as the lookups `refreshSuggestions()` already does every keystroke, so no new caching
+   infrastructure was warranted.
+2. **No new `SplitPreview` wrapper type.** §47 sketched a `SplitPreview.previewFor(...)` function reusing
+   `TokenRepair.trySplit()`. `trySplit()` was reusable as-is; the only real gap was the two colour-span
+   ranges within the *original* token, which needed the strategy (drop-a-character vs. missed-space) to
+   know whether a one-character gap sits between the halves. Rather than have `trySplit()` track and return
+   which strategy won, `SplitResult.spanRanges(token)` recovers it from length arithmetic alone: a
+   drop-strategy split's `left.length + right.length` is always exactly `token.length - 1` (one dropped
+   character), a missed-space split's is exactly `token.length` (contiguous) - see
+   [TokenRepair.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/dictionary/TokenRepair.kt). No new file,
+   tested directly on `SplitResult`.
+
+`updateComposing()`'s single-span branch is now the `else` of a new `splitPreview(ic, text) != null` check;
+the split-preview branch applies two `ForegroundColorSpan`s from `SplitResult.spanRanges()`. `splitPreview()`
+is gated exactly like `shouldHighlightComposing()` (`config.highlightEnabled`, and D-26's mid-word rule) -
+both now share the extracted `isEditingMidWord(ic)` helper instead of duplicating the "letter immediately
+after the cursor" check. Mutual exclusivity between the split preview and the existing single-word highlight
+falls out for free: `trySplit()` already returns null whenever the whole token is itself a known word, which
+is `shouldHighlightComposing()`'s own trigger condition.

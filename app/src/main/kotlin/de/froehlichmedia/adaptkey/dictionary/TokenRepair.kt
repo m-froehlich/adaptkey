@@ -13,7 +13,24 @@ package de.froehlichmedia.adaptkey.dictionary
 data class SplitResult(
     val left: String,
     val right: String
-)
+) {
+    
+    /**
+     * §47: the two colour-span ranges within [token] this split corresponds to - contiguous for a
+     * missed-space split, with a one-character gap at the dropped character for a drop-strategy split.
+     * The strategy is not tracked explicitly; it is recovered from the length arithmetic alone, since a
+     * drop split's halves are always exactly one character shorter than [token] combined, while a
+     * missed-space split's halves add up to [token] exactly.
+     *
+     * @param token the exact composing token this result was computed from
+     * @return the left and right span ranges, in that order
+     */
+    fun spanRanges(token: String): Pair<IntRange, IntRange> {
+        val gap = token.length - left.length - right.length
+        val rightStart = left.length + gap
+        return (0 until left.length) to (rightStart until rightStart + right.length)
+    }
+}
 
 /**
  * Retroactive token repair for the space/letter confusion bands (T-05): word split (A-05) and word

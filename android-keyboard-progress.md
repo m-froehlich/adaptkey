@@ -28,17 +28,31 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `94a8dc2` — v0.8.20 (§45). Working tree = **v0.8.21**, §46-§48 below (docs only, no code change), not
-  yet committed. **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any device testing of
-  the whole D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only,
-  now joined by §47 (split-preview colouring) and §48 (swipe-up settings row, resolves §26's old entry).
+- HEAD: `f0e4806` — v0.8.21 (§46-§48 docs). Working tree = **v0.8.22**, §49 below, not yet committed.
+  **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any device testing of the whole
+  D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only; §47 is
+  now implemented (§49 below), §48 (swipe-up settings row, resolves §26's old entry) remains backlog-only,
+  next up.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **549 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check - this
-  session's §46-§48 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- Unit tests: **551 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check; this
+  session's commits (§46-§48 docs, now §49) put local ahead of `origin/main`, not pushed without confirmation.
+- **§49 DONE (v0.8.22): §47 implemented - live colour preview of a pending A-05 split while composing.**
+  `AdaptKeyService.updateComposing()` now calls a new `splitPreview(ic, text)` (calling
+  `TokenRepair.trySplit()` directly, same as `shouldHighlightComposing()` already does inline - no cache,
+  since every call site calls `updateComposing()` *before* `refreshSuggestions()`, so a cache written by the
+  latter would always be one keystroke stale) and, when a split applies, colours the two halves via the new
+  `SplitResult.spanRanges(token)`, which recovers the drop-vs-missed-space strategy from length arithmetic
+  alone rather than a new wrapper type. `shouldHighlightComposing()` and the new `splitPreview()` now share
+  an extracted `isEditingMidWord(ic)` helper (D-26's mid-word gate); mutual exclusivity with the single-word
+  highlight falls out for free since `trySplit()` already rejects an already-known whole token. See spec §49
+  for the full root-cause writeup of both deviations from §47's suggested shape. Tested directly on
+  `SplitResult.spanRanges()` (`TokenRepairTest`); the `updateComposing()` Spannable wiring itself is Android
+  glue, untested per this project's established, documented limitation (no emulator/device in this
+  environment).
 - **§46-§48 DONE (v0.8.21, documentation only, no code change):** §46 - third full audit of the D-62/D-87
   mid-word correction path found no further code-level defect; confirmed (by inspecting the actual jar)
   Robolectric 4.14.1 has no shadow support for `InputMethodService`/`InputConnection` at all, only

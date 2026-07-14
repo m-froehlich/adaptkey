@@ -130,4 +130,22 @@ class TokenRepairTest {
         store.blacklist("bald", BlacklistCategory.USER)
         assertNull(repair.tryMerge(previousWord = "ich", inferredChar = 'b', token = "ald"))
     }
+    
+    @Test
+    fun `paragraph 47 a missed-space split's span ranges are contiguous, with no gap`() {
+        // "aberdas" -> "aber" + "das": the halves add up to the token exactly, so there is no dropped
+        // character between them.
+        val ranges = SplitResult("aber", "das").spanRanges("aberdas")
+        assertEquals(0..3, ranges.first)
+        assertEquals(4..6, ranges.second)
+    }
+    
+    @Test
+    fun `paragraph 47 a drop-strategy split's span ranges leave a one-character gap`() {
+        // "undcdas" -> "und" + "das": the halves are one character shorter than the token combined, so the
+        // dropped 'c' at index 3 sits uncoloured between the two spans.
+        val ranges = SplitResult("und", "das").spanRanges("undcdas")
+        assertEquals(0..2, ranges.first)
+        assertEquals(4..6, ranges.second)
+    }
 }

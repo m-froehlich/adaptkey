@@ -1518,7 +1518,18 @@ class AdaptKeyService : InputMethodService() {
         }
         try {
             // S-05 / D-25: colour the recognised word's TEXT (not its background) while composing (C-04).
-            if (shouldHighlightComposing(ic, text)) {
+            // §47: a token about to A-05-split if finalised now gets the same colour over each resulting
+            // half instead, with the dropped character / boundary left uncoloured between them - checked
+            // first, since trySplit() never matches an already-known word (mutually exclusive by
+            // construction with the single-word case below).
+            val split = splitPreview(ic, text)
+            if (split != null) {
+                val (leftRange, rightRange) = split.spanRanges(text)
+                val span = SpannableString(text)
+                span.setSpan(ForegroundColorSpan(config.highlightColor), leftRange.first, leftRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                span.setSpan(ForegroundColorSpan(config.highlightColor), rightRange.first, rightRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                ic.setComposingText(span, 1)
+            } else if (shouldHighlightComposing(ic, text)) {
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
@@ -1627,11 +1638,35 @@ class AdaptKeyService : InputMethodService() {
      * @return true when the token should be coloured
      */
     private fun shouldHighlightComposing(ic: InputConnection, text: String): Boolean {
-        if (!config.highlightEnabled || !provider.isKnownWord(text)) {
-            return false
+        return config.highlightEnabled && provider.isKnownWord(text) && !isEditingMidWord(ic)
+    }
+    
+    /**
+     * §47: whether the composing token would currently A-05-split if finalised right now, for the live
+     * split-colour preview - gated the same way as [shouldHighlightComposing] (the highlight setting must
+     * be on, and D-26's mid-word rule applies equally here: a reclaimed fragment being edited mid-word must
+     * not be coloured). [TokenRepair.trySplit] itself already never matches an already-known word, so this
+     * and the single-word highlight are naturally mutually exclusive.
+     *
+     * @param ic the current input connection
+     * @param text the composing token
+     * @return the split preview, or null when none applies right now
+     */
+    private fun splitPreview(ic: InputConnection, text: String): SplitResult? {
+        if (!config.highlightEnabled || isEditingMidWord(ic)) {
+            return null
         }
+        return tokenRepair.trySplit(text, spaceAmbiguousIndices(), previousWord)
+    }
+    
+    /**
+     * D-26: whether the cursor sits inside an existing word rather than at its end - a letter immediately
+     * following the cursor means the current edit is correcting mid-word, so the composing fragment must
+     * not be coloured (used by both [shouldHighlightComposing] and [splitPreview]).
+     */
+    private fun isEditingMidWord(ic: InputConnection): Boolean {
         val after = ic.getTextAfterCursor(1, 0)
-        return after.isNullOrEmpty() || !after[0].isLetter()
+        return !after.isNullOrEmpty() && after[0].isLetter()
     }
     
     private fun refreshSuggestions() {
