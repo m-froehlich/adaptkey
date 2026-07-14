@@ -2262,3 +2262,40 @@ New tests: `SymbolLayoutTest` (row-1 contents, alternatives/hint, `Key.id` uniqu
 `KeyboardLayoutTest` (`hasLongPressAction` for both the multi-alternative and single-hint `TEXT` cases). The
 `commitLongPressSymbol`/`AlternativeScript`-bypass fix itself is `AdaptKeyService` glue with no independently
 testable pure logic beyond what `AlternativeScriptTest` (§35) already covers - not re-tested in isolation.
+
+## §54 - D-88: Feedback When a Suggestion Is Accepted (v0.8.27)
+
+Previously silent and visually unremarkable ("das ist etwas trocken und man kriegt es nicht ausreichend
+mit"). Implemented both of D-88's two additions, chosen by the same D-05 key-sound setting the spec named:
+
+**Sound on:** a distinct new "plop" sample, separate from the D-70/D-83/D-85 key-click sample, plays via
+`AdaptKeyboardView.playSuggestionAcceptedSound()` - loaded into the same shared `SoundPool` lazily, exactly
+like the click sample. No suitable sample existed in this environment (no audio-editing tooling, no network
+fetch of third-party assets), so one was synthesised from scratch with a short Python script (stdlib `wave`
+module only, no external dependencies or copyrighted material): a 130 ms exponential pitch sweep from 900 Hz
+down to 140 Hz with a fast attack and exponential decay envelope - the classic "water-drop" plop shape -
+matching the existing sample's format (mono, 16-bit PCM, 48 kHz). Bundled as `res/raw/suggestion_accept.wav`.
+
+**Sound off:** a brief highlight flash on the suggestion bar instead (`SuggestionBarView.flashAccepted()`) -
+fades from a peak alpha to fully transparent over 280 ms, painted as a full-bar overlay rect after the chips
+(and the G-04 trash zone, when armed) so it is always visible. Uses the same green as the existing C-04/S-05
+recognised-word highlight for visual consistency, via a new `flashColor` property the service pushes from the
+user's actual configured `highlightColor` (not just its default) in `applySettings()`.
+
+**Found and fixed one real bug in the existing `SoundPool` setup while adding the second sample:**
+`SoundPool.setOnLoadCompleteListener()` keeps only the single most-recently-registered listener - the
+original `ensureClickSoundLoaded()` installed one checking only `clickSoundId` each time it ran, which a
+naive `ensureAcceptSoundLoaded()` following the exact same pattern would have silently replaced with one
+checking only `acceptSoundId`, permanently losing the ability to ever detect the *click* sample finishing its
+decode if the accept sample's loader happened to run afterward (order-dependent, so not always the same
+failure). Fixed by installing one shared listener - checking both ids - once, at `soundPool`'s own lazy
+creation, rather than repeatedly inside each `ensure*Loaded()`.
+
+**Trigger points:** `finalizeAndCommit()`'s existing `finalWord != typed` branch (the same check that already
+drives the S-05 undo-tracking, so "an accepted correction" is defined identically in both places) and the
+`SuggestionController.Kind.NORMAL` suggestion-bar-tap branch (any bar suggestion, even one that happens to
+match what was typed, per D-88's "and/or when a suggestion-bar item is tapped").
+
+No new unit tests - `notifySuggestionAccepted()`, `playSuggestionAcceptedSound()` and `flashAccepted()` are
+all Android `SoundPool`/animation/view glue with no independently testable pure logic, matching this
+project's established, documented limitation (no emulator/device in this environment).

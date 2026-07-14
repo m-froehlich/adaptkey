@@ -28,18 +28,32 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `fb80b74` — v0.8.25 (§52). Working tree = **v0.8.26**, §53 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§52 fully implemented; still before any device testing of the whole
-  D-92→D-104/§32-53 batch except §47/§48 (confirmed working and refined per real-device feedback, §51/§52).
-  §26's D-88 remains backlog-only; §27's D-95/D-103/D-104 are now all closed (D-95 resolved by §48's gear
-  icon, no separate key needed; D-103/D-104 implemented in §53).
+- HEAD: `d354d84` — v0.8.26 (§53). Working tree = **v0.8.27**, §54 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§53 fully implemented; still before any device testing of the whole
+  D-92→D-104/§32-54 batch except §47/§48 (confirmed working and refined per real-device feedback, §51/§52).
+  §26's D-88 is now implemented (§54); §27's D-95/D-103/D-104 all closed (D-95 resolved by §48's gear icon,
+  no separate key needed; D-103/D-104 implemented in §53). **Every named backlog item is now closed.**
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` confirmed up to date with local HEAD `fb80b74` (`git fetch` + rev-list check);
-  this session's §53 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  warnings). `origin/main` confirmed up to date with local HEAD `d354d84` (`git fetch` + rev-list check);
+  this session's §54 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§54 DONE (v0.8.27): implemented D-88 - feedback when a correction/suggestion is accepted.** Previously
+  silent. Sound on (D-05): a new, distinct "plop" sample (`AdaptKeyboardView.playSuggestionAcceptedSound()`,
+  same shared `SoundPool` as the click sample) - synthesised from scratch with a small Python script (stdlib
+  `wave` only) since no suitable sample/tooling existed in this environment: a 130 ms exponential pitch sweep
+  900 Hz → 140 Hz, bundled as `res/raw/suggestion_accept.wav`. Sound off: a 280 ms fading highlight flash on
+  the suggestion bar instead (`SuggestionBarView.flashAccepted()`), reusing the C-04/S-05 highlight green via
+  a new `flashColor` the service pushes from the user's actual configured colour. **Found and fixed a real,
+  pre-existing bug while adding the second sample**: `SoundPool.setOnLoadCompleteListener()` only keeps the
+  most-recently-registered listener - a second `ensure*Loaded()` following the original's exact pattern would
+  have silently broken the first sample's "loaded" detection depending on call order. Fixed by installing one
+  shared listener (checking both ids) once, at the pool's own lazy creation. Trigger points:
+  `finalizeAndCommit()`'s existing `finalWord != typed` branch (same check S-05's undo-tracking already uses)
+  and the `SuggestionController.Kind.NORMAL` suggestion-bar-tap branch. No new unit tests - all glue, no new
+  pure logic. See spec §54 for full detail.
 - **§53 DONE (v0.8.26): implemented D-103 (calculator `sin` key, D-01 popup with `cos`/`tan`/`log`) and
   D-104 (calculator `deg` key, single hint `rad`), and closed D-95 (settings-shortcut key) as resolved by
   §48's gear icon, no separate key needed.** Neither existing `KeyCode` fit a key whose tap commits a literal

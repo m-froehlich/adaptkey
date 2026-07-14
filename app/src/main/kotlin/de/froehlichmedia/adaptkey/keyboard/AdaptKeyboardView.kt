@@ -399,7 +399,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 .setUsage(AudioAttributes.USAGE_GAME)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build()
-            SoundPool.Builder().setMaxStreams(SOUND_MAX_STREAMS).setAudioAttributes(attributes).build()
+            SoundPool.Builder().setMaxStreams(SOUND_MAX_STREAMS).setAudioAttributes(attributes).build().also { pool ->
+                // D-88: one shared listener for every sample this pool ever loads (SoundPool keeps only the
+                // most recently registered listener, so installing a fresh one per sample in each
+                // ensure*Loaded() would silently drop an earlier sample's "loaded" flip on the next call) -
+                // it just checks which of the (possibly still-zero) ids the completed sample matches.
+                pool.setOnLoadCompleteListener { _, sampleId, status ->
+                    if (status != 0) {
+                        return@setOnLoadCompleteListener
+                    }
+                    when (sampleId) {
+                        clickSoundId -> clickSoundLoaded = true
+                        acceptSoundId -> acceptSoundLoaded = true
+                    }
+                }
+            }
         }.getOrNull()
     }
     
@@ -407,6 +421,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // garbage, so playback is gated on this flag rather than assuming the id is ready once loaded() returns.
     private var clickSoundId = 0
     private var clickSoundLoaded = false
+    
+    // D-88: same idea, for the separate "suggestion accepted" sample.
+    private var acceptSoundId = 0
+    private var acceptSoundLoaded = false
     // D-66: Context.getSystemService(Vibrator::class.java) is deprecated from API 31 (S) onward in favour
     // of VibratorManager.getDefaultVibrator() - on some OEM builds targeting the newer API the legacy path
     // silently produced no vibration at all, which matches the on-device symptom (D-06/D-34's amplitude and
@@ -986,12 +1004,31 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (clickSoundId != 0) {
             return
         }
-        pool.setOnLoadCompleteListener { _, sampleId, status ->
-            if (status == 0 && sampleId == clickSoundId) {
-                clickSoundLoaded = true
-            }
-        }
         clickSoundId = runCatching { pool.load(context, R.raw.key_click, 1) }.getOrDefault(0)
+    }
+    
+    /**
+     * D-88: plays a distinct "plop" sample (separate from the D-70/D-83/D-85 key-click sample) when a
+     * correction or suggestion is accepted, gated on the same [soundEnabled] setting (D-05) - the visual
+     * flash on the suggestion bar is used instead when sound is off. A no-op until the async decode
+     * completes, exactly like [playKeyFeedback]'s click sample.
+     */
+    fun playSuggestionAcceptedSound() {
+        if (!soundEnabled) {
+            return
+        }
+        ensureAcceptSoundLoaded()
+        if (acceptSoundLoaded) {
+            runCatching { soundPool?.play(acceptSoundId, CLICK_VOLUME, CLICK_VOLUME, 1, 0, 1f) }
+        }
+    }
+    
+    private fun ensureAcceptSoundLoaded() {
+        val pool = soundPool ?: return
+        if (acceptSoundId != 0) {
+            return
+        }
+        acceptSoundId = runCatching { pool.load(context, R.raw.suggestion_accept, 1) }.getOrDefault(0)
     }
     
     /**

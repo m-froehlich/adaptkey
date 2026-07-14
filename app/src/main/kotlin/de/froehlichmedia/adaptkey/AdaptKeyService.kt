@@ -495,6 +495,22 @@ class AdaptKeyService : InputMethodService() {
             view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
             view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp
         }
+        // D-88: the acceptance flash matches the user's actual configured highlight colour (C-04/S-05),
+        // not just its default.
+        suggestionBar?.flashColor = config.highlightColor
+    }
+    
+    /**
+     * D-88: feedback when a correction or suggestion is accepted - previously "too dry", silent and
+     * visually unremarkable. Plays a distinct "plop" sample when key-press sound is on (D-05), or a brief
+     * highlight flash on the suggestion bar when it is off, so the change is noticeable either way.
+     */
+    private fun notifySuggestionAccepted() {
+        if (settings.keySoundEnabled) {
+            keyboardView?.playSuggestionAcceptedSound()
+        } else {
+            suggestionBar?.flashAccepted()
+        }
     }
     
     /**
@@ -1436,6 +1452,8 @@ class AdaptKeyService : InputMethodService() {
             undoTyped = typed
             undoCommitted = finalWord
             undoDelimiter = delimiter
+            // D-88: the word actually changed - this is an accepted correction, not a plain commit.
+            notifySuggestionAccepted()
         } else {
             clearUndo()
         }
@@ -1916,6 +1934,9 @@ class AdaptKeyService : InputMethodService() {
                 ic.commitText(word + " ", 1)
                 clearComposing()
                 learnWord(word)
+                // D-88: tapping a bar suggestion is always an accepted suggestion, regardless of whether it
+                // happens to match what was typed.
+                notifySuggestionAccepted()
                 // D-43: after accepting a bar word, predict the next one so the flow continues.
                 showNextWordPredictions()
                 // D-29: arm the trailing space added here so an immediately following punctuation removes it.

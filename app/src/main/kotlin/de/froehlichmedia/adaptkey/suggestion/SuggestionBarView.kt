@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.suggestion
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -13,6 +14,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.animation.DecelerateInterpolator
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -86,6 +88,14 @@ class SuggestionBarView @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
         textSize = dp(16).toFloat()
     }
+    
+    // D-88: the colour of the brief acceptance flash (see flashAccepted()) - defaults to the same green
+    // as the C-04/S-05 recognised-word highlight for visual consistency; the service pushes the user's
+    // actual configured highlight colour here (settings.highlightColor) so a customised colour matches too.
+    var flashColor: Int = SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR
+    
+    private val flashPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var flashAnimator: ValueAnimator? = null
     
     init {
         isFillViewport = true
@@ -194,6 +204,31 @@ class SuggestionBarView @JvmOverloads constructor(
             val baseline = height / 2f - (trashTextPaint.descent() + trashTextPaint.ascent()) / 2f
             canvas.drawText(context.getString(R.string.suggestion_trash_label), width / 2f, baseline, trashTextPaint)
         }
+        // D-88: the acceptance flash, if currently animating - drawn last so it is visible over the chips.
+        if (flashPaint.alpha > 0) {
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), flashPaint)
+        }
+    }
+    
+    /**
+     * D-88: a brief highlight flash confirming a correction or suggestion was just accepted - the visual
+     * counterpart to [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView.playSuggestionAcceptedSound],
+     * used instead of it when key-press sound (D-05) is off, so the change is noticeable either way. Fades
+     * from [FLASH_PEAK_ALPHA] to fully transparent over [FLASH_DURATION_MS]; a flash already in progress is
+     * restarted from the peak rather than left to layer with the new one.
+     */
+    fun flashAccepted() {
+        flashAnimator?.cancel()
+        flashAnimator = ValueAnimator.ofInt(FLASH_PEAK_ALPHA, 0).apply {
+            duration = FLASH_DURATION_MS
+            interpolator = DecelerateInterpolator()
+            addUpdateListener {
+                flashPaint.color = flashColor
+                flashPaint.alpha = it.animatedValue as Int
+                invalidate()
+            }
+            start()
+        }
     }
     
     /**
@@ -230,5 +265,18 @@ class SuggestionBarView @JvmOverloads constructor(
     
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
+    }
+    
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        // D-88: an in-flight flash must not keep posting invalidate() against a detached view.
+        flashAnimator?.cancel()
+    }
+    
+    companion object {
+        
+        // D-88: peak alpha (of 255) the acceptance flash starts at, and how long it takes to fade out.
+        private const val FLASH_PEAK_ALPHA = 110
+        private const val FLASH_DURATION_MS = 280L
     }
 }
