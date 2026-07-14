@@ -2314,3 +2314,39 @@ over the whole bar permanently. `flashAccepted()`'s own animator only ever set `
 
 Fixed with one line: `Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 0 }` at declaration, so the overlay starts
 fully transparent and only becomes visible for the duration of an actual flash.
+
+## §56 - D-88 Refined: Sound Sharpened/Louder, Flash Replaced with a Flying Word, Settings Rename (v0.8.29)
+
+Feedback on §54 after real-device testing: the plop sound works well but needed to sound more like a sharp
+"Plöpp" than a duller "Blöpp" (and 10% louder); the flat bar-flash felt too minimal, not clearly conveying
+"this is being applied to your text"; the animation should play independently of the sound setting, not only
+as its fallback. Also: rename the D-59 combined-key setting to `?123/ABC-Taste`.
+
+### Sound: sharper attack, 10% louder
+Regenerated `suggestion_accept.wav` with the same synthesis approach (§54): attack shortened from 3 ms to
+under 1 ms (a near-instant onset reads as a sharp plosive "P", not a softer "B"), a brief (~6 ms) higher-
+frequency transient layered only at the very onset for the extra "crack" a true plosive attack has, and peak
+amplitude raised from 0.75 to 0.825 (10% louder). Everything else (the 900→140 Hz pitch-drop shape, envelope,
+sample rate/format) is unchanged.
+
+### Animation: replaced the flat flash with a flying, shrinking, fading word
+**Technical constraint clarified with the user first, since it changes what "flies into the text" can
+concretely mean**: an IME can only draw within its own window - it has no way to draw into the *target app's*
+text field, which is a separate window/process entirely. What is achievable, and what was built: the accepted
+word rises from the middle of the suggestion bar, shrinking and fading out as it exits upward past the bar's
+own top edge (`SuggestionBarView.flyAccepted(word)`, replacing `flashAccepted()`) - close to the visible top
+of the keyboard, right below where the actual (external, undrawable) text field continues. Deliberately
+subtle per explicit request ("dezent... damit sie nicht nach ein paar Mal nervt"): a modest 34dp rise, 380 ms
+duration, DecelerateInterpolator easing. Negative y-values (above the bar's own allocated bounds) reach the
+screen because `root` (`AdaptKeyService.onCreateInputView()`) already runs with `clipChildren = false` for
+the same reason the existing D-53 long-press popup escapes upward over this same bar - a sibling view's
+overflow past its own bounds is not clipped by a `ViewGroup` with `clipChildren = false`.
+
+**Decoupled from sound entirely**, per explicit request: `notifySuggestionAccepted(word)` now always plays
+the flight, and *additionally* plays the plop sample when key-press sound (D-05) happens to be on - no
+longer an either/or gated on that setting.
+
+### Settings: renamed the D-59 combined-key toggle
+`d59_title` (`strings.xml`, all three locales) changed from "?123 key" / "?123-Taste" / "Πλήκτρο ?123" to
+"?123/ABC key" / "?123/ABC-Taste" / "Πλήκτρο ?123/ABC" - the key's own two functions (numeric/symbol layer,
+and the `ABC` return key it pairs with), not just one of them, now named in the setting itself.

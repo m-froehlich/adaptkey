@@ -89,16 +89,19 @@ class SuggestionBarView @JvmOverloads constructor(
         textSize = dp(16).toFloat()
     }
     
-    // D-88: the colour of the brief acceptance flash (see flashAccepted()) - defaults to the same green
-    // as the C-04/S-05 recognised-word highlight for visual consistency; the service pushes the user's
-    // actual configured highlight colour here (settings.highlightColor) so a customised colour matches too.
-    var flashColor: Int = SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR
+    // §56 (was D-88's flash, replaced per user feedback): the colour of the accepted word as it flies up
+    // and out - defaults to the same green as the C-04/S-05 recognised-word highlight for visual
+    // consistency; the service pushes the user's actual configured highlight colour here
+    // (settings.highlightColor) so a customised colour matches too.
+    var flyColor: Int = SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR
     
-    // §55 bug fix: android.graphics.Paint() defaults to fully opaque black (alpha 255) until something
-    // sets it otherwise - flashPaint was never given an initial alpha, so draw()'s `alpha > 0` check was
-    // true from the very first frame, painting the whole bar solid black before any flash ever ran.
-    private val flashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 0 }
-    private var flashAnimator: ValueAnimator? = null
+    private val flyTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        textAlign = Paint.Align.CENTER
+        alpha = 0
+    }
+    private var flyWord: String? = null
+    private var flyProgress = 0f
+    private var flyAnimator: ValueAnimator? = null
     
     init {
         isFillViewport = true
@@ -207,27 +210,39 @@ class SuggestionBarView @JvmOverloads constructor(
             val baseline = height / 2f - (trashTextPaint.descent() + trashTextPaint.ascent()) / 2f
             canvas.drawText(context.getString(R.string.suggestion_trash_label), width / 2f, baseline, trashTextPaint)
         }
-        // D-88: the acceptance flash, if currently animating - drawn last so it is visible over the chips.
-        if (flashPaint.alpha > 0) {
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), flashPaint)
+        // §56: the accepted word, if currently flying - drawn last so it is visible over the chips. Negative
+        // y values (above the bar's own top edge) are deliberate and only reach the screen because root
+        // (AdaptKeyService.onCreateInputView()) already disables clipChildren for the same reason the D-53
+        // long-press popup escapes upward over this same bar - a sibling view's overflow is not clipped by
+        // a ViewGroup with clipChildren = false, only its own explicit bounds would be.
+        val word = flyWord
+        if (word != null && flyTextPaint.alpha > 0) {
+            val progress = flyProgress
+            val y = height / 2f - progress * dp(FLY_RISE_DP)
+            flyTextPaint.textSize = dp(FLY_BASE_TEXT_DP) * (1f - progress * FLY_SHRINK_FRACTION)
+            canvas.drawText(word, width / 2f, y, flyTextPaint)
         }
     }
     
     /**
-     * D-88: a brief highlight flash confirming a correction or suggestion was just accepted - the visual
-     * counterpart to [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView.playSuggestionAcceptedSound],
-     * used instead of it when key-press sound (D-05) is off, so the change is noticeable either way. Fades
-     * from [FLASH_PEAK_ALPHA] to fully transparent over [FLASH_DURATION_MS]; a flash already in progress is
-     * restarted from the peak rather than left to layer with the new one.
+     * §56 (replaces D-88's flat bar flash, per user feedback that it read as too minimal): the accepted
+     * word rises from the middle of the bar, shrinking and fading out as it exits upward past the bar's own
+     * top edge - a visible, but deliberately subtle ([FLY_RISE_DP] is modest, [FLY_DURATION_MS] short),
+     * suggestion that the word is going up into the text above, not just "something happened here". Played
+     * independently of [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView.playSuggestionAcceptedSound] -
+     * always, regardless of whether key-press sound (D-05) is on. A flight already in progress is replaced
+     * outright rather than left to layer with the new one.
      */
-    fun flashAccepted() {
-        flashAnimator?.cancel()
-        flashAnimator = ValueAnimator.ofInt(FLASH_PEAK_ALPHA, 0).apply {
-            duration = FLASH_DURATION_MS
+    fun flyAccepted(word: String) {
+        flyAnimator?.cancel()
+        flyWord = word
+        flyAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = FLY_DURATION_MS
             interpolator = DecelerateInterpolator()
             addUpdateListener {
-                flashPaint.color = flashColor
-                flashPaint.alpha = it.animatedValue as Int
+                flyProgress = it.animatedValue as Float
+                flyTextPaint.color = flyColor
+                flyTextPaint.alpha = ((1f - flyProgress) * 255).toInt().coerceIn(0, 255)
                 invalidate()
             }
             start()
@@ -272,14 +287,18 @@ class SuggestionBarView @JvmOverloads constructor(
     
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        // D-88: an in-flight flash must not keep posting invalidate() against a detached view.
-        flashAnimator?.cancel()
+        // §56: an in-flight animation must not keep posting invalidate() against a detached view.
+        flyAnimator?.cancel()
     }
     
     companion object {
         
-        // D-88: peak alpha (of 255) the acceptance flash starts at, and how long it takes to fade out.
-        private const val FLASH_PEAK_ALPHA = 110
-        private const val FLASH_DURATION_MS = 280L
+        // §56: how far the accepted word rises (in dp, from the bar's vertical centre) and how long the
+        // whole flight takes - both deliberately modest ("dezent") so it stays a quiet confirmation rather
+        // than something that draws attention on every single acceptance.
+        private const val FLY_RISE_DP = 34
+        private const val FLY_DURATION_MS = 380L
+        private const val FLY_BASE_TEXT_DP = 15
+        private const val FLY_SHRINK_FRACTION = 0.22f
     }
 }

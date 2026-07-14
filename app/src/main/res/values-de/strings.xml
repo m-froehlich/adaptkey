@@ -82,7 +82,7 @@
     <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
     <string name="d32_title">Long-Press-Verzögerung</string>
     <string name="d32_summary">Wie lange eine Taste gehalten werden muss, bis die Alternativen erscheinen, in ms (D-32).</string>
-    <string name="d59_title">\?123-Taste</string>
+    <string name="d59_title">\?123/ABC-Taste</string>
     <string name="d59_summary">Die kombinierte ?123-Taste anzeigen. Wenn diese aus ist, verschwindet die Taste und ihr Platz bleibt leer (D-59).</string>
     <string name="d55_below_title">Abstand unter der Ziffernreihe</string>
     <string name="d55_below_summary">Zusätzlicher Abstand unter den Ziffern, in dp, gegen Vertipper in die obere Buchstabenreihe (D-55).</string>

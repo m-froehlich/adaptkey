@@ -28,19 +28,30 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `03d192c` — v0.8.27 (§54). Working tree = **v0.8.28**, §55 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§54 implemented; §54 shipped with a real bug (§55, fixed same round - see
-  below), so treat it as "implemented and now fixed", not "confirmed working", pending the user's next test.
-  Still before any device testing of the whole D-92→D-104/§32-55 batch except §47/§48 (confirmed working and
-  refined per real-device feedback, §51/§52). **Every named backlog item is closed** (§26's D-88 via §54;
-  §27's D-95/D-103/D-104 via §48/§53).
+- HEAD: `81bdcfa` — v0.8.28 (§55). Working tree = **v0.8.29**, §56 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§55 implemented. §54's suggestion-accepted feedback confirmed working after
+  §55's fix, then refined again per device-tested feedback (§56 - sound sharpened/louder, the flash replaced
+  with a flying-word animation, decoupled from sound). Still before any device testing of the whole
+  D-92→D-104/§32-56 batch except §47/§48/§54-§56's sound-and-flash mechanism generally (confirmed working and
+  iterated per real-device feedback). **Every named backlog item is closed** (§26's D-88 via §54/§56; §27's
+  D-95/D-103/D-104 via §48/§53).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` confirmed up to date with local HEAD `03d192c` (`git fetch` + rev-list check);
-  this session's §55 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  warnings). `origin/main` confirmed up to date with local HEAD `81bdcfa` (`git fetch` + rev-list check);
+  this session's §56 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§56 DONE (v0.8.29): D-88 refined per device-tested feedback.** Sound: attack shortened to under 1ms plus
+  a brief onset transient (sharper "Plöpp" not "Blöpp"), peak amplitude +10% (0.75 → 0.825) - same 900→140Hz
+  pitch-drop shape otherwise. Animation: replaced the flat bar-flash with `SuggestionBarView.flyAccepted()` -
+  the accepted word rises 34dp from the bar's centre, shrinking and fading over 380ms, exiting past the bar's
+  own top edge (reaches the screen via `root`'s existing `clipChildren = false`, the same mechanism the D-53
+  long-press popup already relies on) - explained to the user first that an IME genuinely cannot draw into
+  the target app's own text field, so "flies into the text" concretely means "flies up and out of the
+  keyboard", not literally crossing into the app's window. Decoupled from sound entirely: the flight always
+  plays now; the plop sample plays *additionally* only when D-05 key sound is on (previously either/or).
+  Also: renamed the D-59 combined-key setting from "?123 key" to "?123/ABC key" (all three locales).
 - **§55 DONE (v0.8.28): fixed §54's flash overlay turning the whole suggestion bar solid black.** Reported
   immediately after §54 shipped. `SuggestionBarView`'s new `flashPaint` was declared with no initial colour/
   alpha; `android.graphics.Paint()` defaults to opaque black (alpha 255) until set otherwise, so `draw()`'s

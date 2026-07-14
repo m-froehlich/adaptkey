@@ -495,21 +495,22 @@ class AdaptKeyService : InputMethodService() {
             view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
             view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp
         }
-        // D-88: the acceptance flash matches the user's actual configured highlight colour (C-04/S-05),
+        // §56: the accepted-word flight matches the user's actual configured highlight colour (C-04/S-05),
         // not just its default.
-        suggestionBar?.flashColor = config.highlightColor
+        suggestionBar?.flyColor = config.highlightColor
     }
     
     /**
-     * D-88: feedback when a correction or suggestion is accepted - previously "too dry", silent and
-     * visually unremarkable. Plays a distinct "plop" sample when key-press sound is on (D-05), or a brief
-     * highlight flash on the suggestion bar when it is off, so the change is noticeable either way.
+     * D-88 / §56: feedback when a correction or suggestion is accepted - previously "too dry", silent and
+     * visually unremarkable. [word] flies up out of the suggestion bar and fades, always, regardless of the
+     * D-05 key-sound setting - §56 decoupled this from sound entirely, per feedback that a purely
+     * sound-gated flash was too easy to miss and read as tied to the wrong toggle. The distinct "plop"
+     * sample plays in addition, only when key-press sound is actually on.
      */
-    private fun notifySuggestionAccepted() {
+    private fun notifySuggestionAccepted(word: String) {
+        suggestionBar?.flyAccepted(word)
         if (settings.keySoundEnabled) {
             keyboardView?.playSuggestionAcceptedSound()
-        } else {
-            suggestionBar?.flashAccepted()
         }
     }
     
@@ -1453,7 +1454,7 @@ class AdaptKeyService : InputMethodService() {
             undoCommitted = finalWord
             undoDelimiter = delimiter
             // D-88: the word actually changed - this is an accepted correction, not a plain commit.
-            notifySuggestionAccepted()
+            notifySuggestionAccepted(finalWord)
         } else {
             clearUndo()
         }
@@ -1936,7 +1937,7 @@ class AdaptKeyService : InputMethodService() {
                 learnWord(word)
                 // D-88: tapping a bar suggestion is always an accepted suggestion, regardless of whether it
                 // happens to match what was typed.
-                notifySuggestionAccepted()
+                notifySuggestionAccepted(word)
                 // D-43: after accepting a bar word, predict the next one so the flow continues.
                 showNextWordPredictions()
                 // D-29: arm the trailing space added here so an immediately following punctuation removes it.
