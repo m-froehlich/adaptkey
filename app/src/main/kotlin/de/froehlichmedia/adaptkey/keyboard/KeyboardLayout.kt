@@ -131,17 +131,17 @@ object KeyboardLayout {
     }
     
     /**
-     * Whether holding [key] past the long-press timeout has an action at all: a character key's single
-     * secondary symbol (L-05 / L-06, see [longPressSymbol]), its multi-alternative popup (D-01, two or
-     * more [Key.alternatives]), the combined emoji / ?123 key switching to the numeric/symbol layer
-     * (L-03), or §31's calculator minus key, which flips the sign of the number before the caret instead
-     * of committing text - it carries neither a hint nor alternatives, so it needs its own case here.
+     * Whether holding [key] past the long-press timeout has an action at all: a character or §53 [TEXT]
+     * key's single secondary symbol (L-05 / L-06, see [longPressSymbol]), its multi-alternative popup
+     * (D-01, two or more [Key.alternatives]), the combined emoji / ?123 key switching to the numeric/symbol
+     * layer (L-03), or §31's calculator minus key, which flips the sign of the number before the caret
+     * instead of committing text - it carries neither a hint nor alternatives, so it needs its own case here.
      *
      * @param key the pressed key
      * @return true when a long-press on this key should be scheduled
      */
     fun hasLongPressAction(key: Key): Boolean {
-        return (key.code == KeyCode.CHAR && (key.hint != null || key.alternatives.size >= 2)) ||
+        return ((key.code == KeyCode.CHAR || key.code == KeyCode.TEXT) && (key.hint != null || key.alternatives.size >= 2)) ||
             key.code == KeyCode.SYMBOL ||
             (key.code == KeyCode.CHAR && key.char == SymbolLayout.MINUS_SIGN)
     }

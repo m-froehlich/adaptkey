@@ -126,6 +126,16 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `paragraph 53 hasLongPressAction is true for both the multi-alternative and single-hint TEXT keys`() {
+        val row = SymbolLayout.rows(1)[0]
+        val sinKey = row.first { it.code == KeyCode.TEXT && it.label == "sin" }
+        val degKey = row.first { it.code == KeyCode.TEXT && it.label == "deg" }
+        
+        assertTrue(KeyboardLayout.hasLongPressAction(sinKey))
+        assertTrue(KeyboardLayout.hasLongPressAction(degKey))
+    }
+    
+    @Test
     fun `the combined key carries a 123 corner hint`() {
         val symbolKey = KeyboardLayout.rows().last().first()
         

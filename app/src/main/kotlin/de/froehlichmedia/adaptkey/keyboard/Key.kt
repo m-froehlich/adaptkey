@@ -16,7 +16,13 @@ enum class KeyCode {
     SYMBOL,
     
     /** L-03: the "ABC" key on the numeric/symbol layer, returning to the letter view. */
-    LETTERS
+    LETTERS,
+    
+    /**
+     * §53 (D-103/D-104): a key whose tap commits a literal multi-character [Key.label] verbatim (e.g. the
+     * calculator page's `sin`/`deg` keys) - unlike [CHAR], which is limited to a single [Key.char].
+     */
+    TEXT
 }
 
 /**
@@ -42,8 +48,13 @@ data class Key(
     
     /**
      * Stable identifier used to key the personal offset model (T-03). Char keys are keyed by their
-     * character, control keys by their [KeyCode] name. Unique within a single layout.
+     * character, [TEXT] keys by their (unique-per-layout) label, control keys by their [KeyCode] name.
+     * Unique within a single layout.
      */
     val id: String
-        get() = if (code == KeyCode.CHAR && char != null) "c:$char" else code.name
+        get() = when {
+            code == KeyCode.CHAR && char != null -> "c:$char"
+            code == KeyCode.TEXT -> "t:$label"
+            else -> code.name
+        }
 }

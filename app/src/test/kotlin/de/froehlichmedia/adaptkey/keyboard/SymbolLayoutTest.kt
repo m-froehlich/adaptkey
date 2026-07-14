@@ -31,9 +31,35 @@ class SymbolLayoutTest {
     fun `D-100 page 1 row one carries everyday symbols and backspace, no page-toggle key`() {
         val row = SymbolLayout.rows(1)[0]
         
-        assertEquals("()°√π~&|".toList(), row.dropLast(1).map { it.char })
+        // §53: the row now also carries the sin/deg TEXT keys, between the symbols and backspace.
+        assertEquals("()°√π~&|".toList(), row.dropLast(3).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
         assertTrue(row.none { it.code == KeyCode.LETTERS })
+    }
+    
+    @Test
+    fun `paragraph 53 page 1 row one carries the sin and deg TEXT keys before backspace`() {
+        val row = SymbolLayout.rows(1)[0]
+        val sinKey = row[row.size - 3]
+        val degKey = row[row.size - 2]
+        
+        assertEquals(KeyCode.TEXT, sinKey.code)
+        assertEquals("sin", sinKey.label)
+        assertEquals(listOf("sin", "cos", "tan", "log"), sinKey.alternatives)
+        
+        assertEquals(KeyCode.TEXT, degKey.code)
+        assertEquals("deg", degKey.label)
+        assertEquals("rad", degKey.hint)
+    }
+    
+    @Test
+    fun `paragraph 53 the sin and deg TEXT keys have distinct ids for the T-03 offset model`() {
+        val row = SymbolLayout.rows(1)[0]
+        val sinKey = row.first { it.code == KeyCode.TEXT && it.label == "sin" }
+        val degKey = row.first { it.code == KeyCode.TEXT && it.label == "deg" }
+        
+        assertEquals("t:sin", sinKey.id)
+        assertEquals("t:deg", degKey.id)
     }
     
     @Test

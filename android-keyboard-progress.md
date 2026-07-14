@@ -28,19 +28,34 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `3615096` — v0.8.24 (§51, §48 refined). Working tree = **v0.8.25**, §52 below (docs only, no code
-  change), not yet committed. **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any
-  device testing of the whole D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104)
-  remain backlog-only; §47 and §48 are both implemented (§49/§50), confirmed working on a real device and
-  refined per user feedback (§51/§52).
+- HEAD: `fb80b74` — v0.8.25 (§52). Working tree = **v0.8.26**, §53 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§52 fully implemented; still before any device testing of the whole
+  D-92→D-104/§32-53 batch except §47/§48 (confirmed working and refined per real-device feedback, §51/§52).
+  §26's D-88 remains backlog-only; §27's D-95/D-103/D-104 are now all closed (D-95 resolved by §48's gear
+  icon, no separate key needed; D-103/D-104 implemented in §53).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **551 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check; this
-  session's commits (§46-§48 docs, §49, §50, §51, now §52) put local ahead of `origin/main`, not pushed
-  without confirmation.
+- Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` confirmed up to date with local HEAD `fb80b74` (`git fetch` + rev-list check);
+  this session's §53 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§53 DONE (v0.8.26): implemented D-103 (calculator `sin` key, D-01 popup with `cos`/`tan`/`log`) and
+  D-104 (calculator `deg` key, single hint `rad`), and closed D-95 (settings-shortcut key) as resolved by
+  §48's gear icon, no separate key needed.** Neither existing `KeyCode` fit a key whose tap commits a literal
+  multi-character label (`CHAR` is hard-limited to one `Char`) - added `KeyCode.TEXT`, committing `key.label`
+  via `finalizeAndCommit()`. Extended four places that were generic over "has a hint/alternatives" to also
+  recognise `TEXT`, not just `CHAR` (`KeyboardLayout.hasLongPressAction()`, `AdaptKeyboardView.
+  popupAlternativesFor()`/`preSelectedIndexFor()`, `Key.id` for the T-03 offset model - a bare `code.name`
+  would have collided between `sin` and `deg`, now `"t:$label"`). Caught and fixed a real bug before
+  shipping: `cos`/`tan`/`log` are ordinary Latin letters, so §35's `AlternativeScript.extendsWord()` guard
+  would have treated them as genuine word text and let them extend the composing token - the same class of
+  bug §35 fixed for the Greek math-symbol popup, here via a different (non-Greek) route. Fixed by threading
+  the popup's originating key through `handleLongPressAlternative()`/`commitLongPressSymbol()` (previously
+  discarded at the listener call site) so a `TEXT` key's alternatives always commit as symbols regardless of
+  script. Placement: appended to calculator row 1, double-weighted versus that row's single-glyph keys since
+  a three-letter label needs more room - a starting guess, not device-verified, easy to retune (§36/§37
+  precedent). See spec §53 for full detail.
 - **§52 DONE (v0.8.25, documentation only, no code change): records the user-supplied rationale for why
   the settings row's emoji button needs no setting at all (§51's removal).** The old D-18 toggle existed
   because the combined key permanently occupied a scarce main-keyboard slot for a low-value feature (most

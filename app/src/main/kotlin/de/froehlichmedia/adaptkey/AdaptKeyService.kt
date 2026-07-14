@@ -349,7 +349,7 @@ class AdaptKeyService : InputMethodService() {
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
-        view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { _, alternative -> handleLongPressAlternative(alternative) }
+        view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
         keyboardView = view
         
         val panel = EmojiPanelView(this)
@@ -829,6 +829,11 @@ class AdaptKeyService : InputMethodService() {
             
             // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
             KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
+            
+            // §53 (D-103/D-104): a multi-character key (e.g. the calculator page's sin/deg) commits its
+            // own label verbatim, exactly like any other symbol - finalising whatever token was in
+            // progress first, never extending it.
+            KeyCode.TEXT -> finalizeAndCommit(ic, key.label)
         }
     }
     
@@ -877,7 +882,7 @@ class AdaptKeyService : InputMethodService() {
                 val symbol = key.hint ?: return
                 val ic = currentInputConnection ?: return
                 clearUndo()
-                commitLongPressSymbol(ic, symbol)
+                commitLongPressSymbol(ic, symbol, key.code)
             }
             
             KeyCode.SYMBOL -> setSurface(PanelNavigation.onSwitchToSymbols())
@@ -901,23 +906,28 @@ class AdaptKeyService : InputMethodService() {
     /**
      * Handles a D-01 popup selection: commits the chosen [alternative] exactly like a single long-press
      * secondary (D-02 full-stop punctuation is a delimiter; a letter alternative would extend the word).
+     * [key] is the popup's originating key, needed to recognise a §53 [KeyCode.TEXT] alternative (e.g.
+     * `cos`/`tan`/`log` on the calculator's `sin` key) as a symbol commit, never word-extending text.
      */
-    private fun handleLongPressAlternative(alternative: String) {
+    private fun handleLongPressAlternative(key: Key, alternative: String) {
         val ic = currentInputConnection ?: return
         clearUndo()
-        commitLongPressSymbol(ic, alternative)
+        commitLongPressSymbol(ic, alternative, key.code)
     }
     
     /**
      * Commits a long-press secondary [symbol]: a letter secondary that is genuine language text (a Greek
      * accented vowel, G-01, while actually in Greek mode) extends the composing word exactly like typing
-     * that letter, while any other symbol - an AltGr glyph, a D-02 punctuation mark, or a Greek letter
-     * borrowed as a math symbol on the Latin keyboard (§35, π/α/β/γ/δ/λ/ω on the `p` key's popup) - finalises
-     * the current token and commits like a delimiter, verbatim and immune to auto-capitalisation. See
-     * [AlternativeScript] for why case is significant for the latter (Π ≠ π) but not for an ordinary word.
+     * that letter, while any other symbol - an AltGr glyph, a D-02 punctuation mark, a Greek letter
+     * borrowed as a math symbol on the Latin keyboard (§35, π/α/β/γ/δ/λ/ω on the `p` key's popup), or a §53
+     * [KeyCode.TEXT] alternative (`cos`/`tan`/`log`, `rad`) - finalises the current token and commits like
+     * a delimiter, verbatim and immune to auto-capitalisation. [sourceCode] is the originating key's code;
+     * a [KeyCode.TEXT] key's alternatives are always symbols, regardless of script, since `cos`/`tan`/`log`
+     * are ordinary Latin letters [AlternativeScript] would otherwise treat as genuine word text. See
+     * [AlternativeScript] for why case is significant for the Greek case (Π ≠ π) but not for an ordinary word.
      */
-    private fun commitLongPressSymbol(ic: InputConnection, symbol: String) {
-        if (AlternativeScript.extendsWord(symbol, activeLanguage == Language.GREEK)) {
+    private fun commitLongPressSymbol(ic: InputConnection, symbol: String, sourceCode: KeyCode) {
+        if (sourceCode != KeyCode.TEXT && AlternativeScript.extendsWord(symbol, activeLanguage == Language.GREEK)) {
             appendLongPressLetter(ic, symbol)
         } else {
             finalizeAndCommit(ic, symbol)
@@ -2119,7 +2129,7 @@ class AdaptKeyService : InputMethodService() {
     private fun nextKeyClass(key: Key): WordEndShift.NextKey {
         return when (key.code) {
             KeyCode.CHAR -> if (key.char?.isLetter() == true) WordEndShift.NextKey.LETTER else WordEndShift.NextKey.DELIMITER
-            KeyCode.SPACE, KeyCode.ENTER -> WordEndShift.NextKey.DELIMITER
+            KeyCode.SPACE, KeyCode.ENTER, KeyCode.TEXT -> WordEndShift.NextKey.DELIMITER
             KeyCode.SHIFT -> WordEndShift.NextKey.SHIFT
             else -> WordEndShift.NextKey.OTHER
         }

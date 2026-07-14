@@ -827,8 +827,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * The long-press popup alternatives for [key] (D-01 / D-14): its explicit [Key.alternatives] when
-     * present, otherwise its single [Key.hint] as a one-item list for a character key. Empty for a key
-     * with no secondary (e.g. the combined ?123 key), which falls back to its listener action.
+     * present, otherwise its single [Key.hint] as a one-item list for a character or §53 [KeyCode.TEXT] key.
+     * Empty for a key with no secondary (e.g. the combined ?123 key), which falls back to its listener
+     * action.
      *
      * @param key the pressed key
      * @return the alternatives to show in the popup, or empty when there is none
@@ -836,7 +837,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun popupAlternativesFor(key: Key): List<String> {
         return when {
             key.alternatives.isNotEmpty() -> key.alternatives
-            key.code == KeyCode.CHAR && key.hint != null -> listOf(key.hint)
+            (key.code == KeyCode.CHAR || key.code == KeyCode.TEXT) && key.hint != null -> listOf(key.hint)
             else -> emptyList()
         }
     }
@@ -875,12 +876,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * The pre-selected cell for [key]'s [alternatives] (D-44): the index of the key's own character, so a
+     * The pre-selected cell for [key]'s [alternatives] (D-44): the index of the key's own character (or,
+     * §53, a [KeyCode.TEXT] key's own [Key.label], e.g. `sin` among `sin`/`cos`/`tan`/`log`), so a
      * straight-up release types the key's normal glyph; falls back to the first alternative (index 0) when
-     * the key's character is not in the list (e.g. a letter whose only alternative is its umlaut).
+     * that self-value is not in the list (e.g. a letter whose only alternative is its umlaut).
      */
     private fun preSelectedIndexFor(key: Key, alternatives: List<String>): Int {
-        val self = key.char?.toString() ?: return 0
+        val self = key.char?.toString() ?: key.label
         val index = alternatives.indexOf(self)
         return if (index < 0) 0 else index
     }

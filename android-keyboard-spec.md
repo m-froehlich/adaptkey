@@ -2213,3 +2213,52 @@ confirmed in code, not just in this write-up: `AdaptKeyboardView.isHiddenKey()` 
 takes no emoji-related parameter at all (per §50). `symbolKeyEnabled` itself is unaffected by any of this and
 remains exactly as documented (D-59) - it governs the combined key's own numeric/symbol function, which is
 an entirely separate concern from the emoji button's now-settingless existence in the row.
+
+## §53 - D-103 / D-104: Trig-Function and Angle-Unit Keys on the Calculator Page (v0.8.26)
+
+Confirmed D-95 (§27's "settings-shortcut key somewhere on the keyboard" idea) is resolved by §48's swipe-up
+settings row (the gear icon) - no separate key needed, closing that backlog item without further work.
+
+### New: `sin` key (D-103) and `deg` key (D-104), appended to calculator row 1
+`sin`'s D-01 popup offers `cos`/`tan`/`log` (base included, matching every other multi-alternative key's
+convention); `deg`'s single hint offers `rad` - a plain single-hint key like the calculator's `0`→`#`, not a
+stateful toggle remembering which unit was last chosen, so either unit is always reachable directly without
+first cycling through the other (D-104 explicitly left "two-state toggle vs. its own popup" open; a
+hint-based key reuses the existing single-hint mechanism outright rather than adding new toggle state).
+Placed at the end of row 1 (`CALC_ROW1_SYMBOLS`'s "everyday symbols not already reachable" row), each given
+double weight (`FUNCTION_KEY_WEIGHT = 2f`) relative to that row's single-glyph keys, since a three-letter
+label needs more room to stay legible - a starting guess, not verified on a device, easy to retune later
+(same approach as §36/§37's row-5 weight tuning).
+
+### New `KeyCode.TEXT`: a key whose tap commits a literal multi-character label, not a single `Key.char`
+Neither existing `KeyCode` fit: `CHAR` is hard-limited to one `Char` (`handleKey()`'s `CHAR` branch reads
+`key.char ?: return` - a plain tap on a null-char key would be a silent no-op), and every other code is a
+fixed control action. Added `KeyCode.TEXT`, whose plain tap commits `key.label` verbatim via
+`finalizeAndCommit()` (finalising any in-progress token first, exactly like a punctuation delimiter or the
+calculator page's other symbol keys - never word-extending). Four places already generic over "does this key
+have a hint/alternatives" needed a small extension to also recognise `TEXT`, not just `CHAR`:
+- `KeyboardLayout.hasLongPressAction()` - a `TEXT` key with a hint or 2+ alternatives now schedules a
+  long-press exactly like a `CHAR` key does.
+- `AdaptKeyboardView.popupAlternativesFor()` - a `TEXT` key's single `hint` is now offered as a one-item
+  popup too, not only a `CHAR` key's.
+- `AdaptKeyboardView.preSelectedIndexFor()` - falls back to `key.label` (not just `key.char?.toString()`)
+  to find the key's own value within its alternatives, so `sin` pre-selects correctly among
+  `sin`/`cos`/`tan`/`log` despite having no `Key.char` at all.
+- `Key.id` (T-03 personal offset model key) - a bare `code.name` would have collided (`"TEXT"` for both `sin`
+  and `deg`, violating the "unique within a single layout" contract); now `"t:$label"` for `TEXT` keys,
+  mirroring `CHAR`'s `"c:$char"`.
+
+**A real, non-obvious bug caught before it shipped:** `cos`/`tan`/`log` are ordinary Latin letters, so
+`AlternativeScript.extendsWord()` (§35's Greek-vs-symbol guard) would have judged them "genuine language
+text" and routed them through `appendLongPressLetter()` - extending the composing token and exposing them to
+autocorrect/suggestions, exactly the bug §35 fixed for the Greek math-symbol popup, just triggered by a
+different, non-Greek route this time. Fixed by threading the popup's originating key's `code` through
+`handleLongPressAlternative()`/`commitLongPressSymbol()` (previously the key was discarded at the listener
+call site - `{ _, alternative -> ... }`) so a `TEXT` key's alternatives always commit as symbols, regardless
+of script - the `AlternativeScript` check is skipped outright for `sourceCode == KeyCode.TEXT`, not merely
+one more input to it.
+
+New tests: `SymbolLayoutTest` (row-1 contents, alternatives/hint, `Key.id` uniqueness) and
+`KeyboardLayoutTest` (`hasLongPressAction` for both the multi-alternative and single-hint `TEXT` cases). The
+`commitLongPressSymbol`/`AlternativeScript`-bypass fix itself is `AdaptKeyService` glue with no independently
+testable pure logic beyond what `AlternativeScriptTest` (§35) already covers - not re-tested in isolation.

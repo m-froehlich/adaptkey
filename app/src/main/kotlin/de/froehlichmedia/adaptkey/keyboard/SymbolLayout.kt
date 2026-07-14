@@ -32,6 +32,20 @@ object SymbolLayout {
     private val DIVIDE_ALTERNATIVES = listOf("/", "÷", ":")
     private val EQUALS_ALTERNATIVES = listOf("=", "→", "≈", "≙")
     
+    // §53 (D-103/D-104): row 1's two §53 TEXT keys, appended after CALC_ROW1_SYMBOLS - sin's D-01 popup
+    // offers the other three trig functions (base included, matching every other multi-alt key's
+    // convention); deg's single hint offers rad, mirroring an ordinary single-hint CHAR key (e.g. the 0
+    // key's # hint) rather than a stateful toggle - simpler, and lets either unit be reached directly
+    // without first cycling through the other.
+    private const val TRIG_FUNCTION_LABEL = "sin"
+    private val TRIG_FUNCTION_ALTERNATIVES = listOf(TRIG_FUNCTION_LABEL, "cos", "tan", "log")
+    private const val ANGLE_UNIT_LABEL = "deg"
+    private const val ANGLE_UNIT_HINT = "rad"
+    
+    // A three-letter label needs more room than row 1's other, single-glyph keys to stay legible - a
+    // starting guess, easy to retune once actually seen on a device (mirrors §36/§37's approach).
+    private const val FUNCTION_KEY_WEIGHT = 2f
+    
     // Page 1: this page's own 2 / 3 keys (not the main number row) carry ² / ³ as a long-press hint.
     private const val SQUARED_HINT = "²"
     private const val CUBED_HINT = "³"
@@ -134,10 +148,12 @@ object SymbolLayout {
         val format = CalculatorLocale.resolve(locale)
         val result = ArrayList<List<Key>>()
         
-        // Row 1: symbols, then backspace - the top of the new right-hand column (D-100). No page-toggle
-        // key any more.
+        // Row 1: symbols, the §53 sin/deg keys, then backspace - the top of the new right-hand column
+        // (D-100). No page-toggle key any more.
         result.add(buildList {
             CALC_ROW1_SYMBOLS.forEach { c -> add(calcRow1Key(c)) }
+            add(textKey(TRIG_FUNCTION_LABEL, alternatives = TRIG_FUNCTION_ALTERNATIVES, weight = FUNCTION_KEY_WEIGHT))
+            add(textKey(ANGLE_UNIT_LABEL, hint = ANGLE_UNIT_HINT, weight = FUNCTION_KEY_WEIGHT))
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -271,5 +287,10 @@ object SymbolLayout {
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
+    }
+    
+    /** §53: a key that commits its own multi-character [label] verbatim on a plain tap ([KeyCode.TEXT]). */
+    private fun textKey(label: String, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
+        return Key(label = label, code = KeyCode.TEXT, hint = hint, alternatives = alternatives, weight = weight)
     }
 }
