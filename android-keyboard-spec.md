@@ -2368,3 +2368,53 @@ bar's next `setItems()` refresh, so the tapped chip is still there to find), and
 acceptance finds the top suggestion chip whenever the committed word happens to match what was already being
 shown there (a common case, since the just-corrected word is usually also the top suggestion) - and falls
 back gracefully to centre for whatever cases it doesn't (the bar showing something else, or being empty).
+
+## §58 - Mid-Word Live Correction: a Real Gap Found (Not Just Bugs) - Reclaim on Caret Move (v0.8.31)
+
+Two precise, concrete repro cases pinned down what §32/§46's investigations, focused on bugs in the
+*existing* mechanism, had not: a genuine **missing trigger path**, not (only) a defect in the one that
+exists.
+
+1. Type a word (e.g. "hatte"), Space, then Backspace (to re-edit it) - the caret ends up touching the word,
+   but no suggestion appears. Typing the word without ever pressing Space first works fine.
+2. Type "Hatte ich", tap the caret into the middle of "Hatte" - no suggestion appears; at minimum "hätte"
+   should be offered.
+
+Traced both to the same root cause: `reclaimSurroundingWord()` (D-62) was **only ever called from a
+keystroke handler** (`handleKey()`'s `CHAR` branch, `appendLongPressLetter()`) - never in response to the
+caret simply *arriving* at a word with nothing typed. Confirmed by grep: no other call site existed. Case 1's
+Backspace removes the space and leaves the caret touching "hatte", but backspace-when-composing-is-empty
+(`deleteOneBefore()`) never reclaims anything - it is a plain delete, nothing more. Case 2's tap moves the
+caret via a genuine external `onUpdateSelection` callback, which - before this fix - only ever handled the
+already-composing case (deciding whether to wipe an in-progress token); the `composing.isEmpty()` branch was
+a bare `return`, doing nothing at all. Neither repro case was ever reaching the reclaim mechanism, regardless
+of §32's earlier fixes to that mechanism itself - the earlier "no further defect found" conclusion (§46) was
+correct as far as it went, but was investigating the wrong question: not "is the reclaim broken" but "does
+anything ever call it here at all".
+
+**Fixed**: `onUpdateSelection()`'s `composing.isEmpty()` branch now calls a new `reclaimWordAtCaret()` for a
+collapsed selection (`newSelStart == newSelEnd`) - it runs the exact same reclaim-then-render sequence
+`handleKey()`'s `CHAR` branch runs when a new token starts mid-word (`captureTokenContext()`,
+`resetWordEndShift()`, `reclaimSurroundingWord()`, `updateComposing()`, `refreshSuggestions()`), minus
+inserting a character, since nothing was typed - and the same D-87 outer batch edit, for the same reason
+(`reclaimSurroundingWord()`'s own `deleteSurroundingText()` must not reach the app as a standalone edit). A
+no-op when the caret touches no word at all, exactly like the keystroke-triggered path already was. Self-
+limiting against re-entrancy: the moment a reclaim actually happens, `composing` becomes non-empty
+synchronously, so any callback this reclaim's own edits generate lands in the already-composing branch, not
+back in this one.
+
+**Also answers a separate question raised alongside these repros**: searched the dictionary/capitalisation/
+suggestion/language packages for hardcoded word-specific exception logic (e.g. `if (word == "...")`-style
+special-casing that should be generalised into real rules, matching this session's §43-§45 fixes). Found
+none - the only literal word lists in that area are `SeedData.kt` (a tiny bootstrap dictionary used before
+the real one loads) and `StubSuggestionProvider`'s fallback word list (explicitly documented as "the
+placeholder" provider) - legitimate bootstrap/fallback *data*, not exception *rules* silently overriding the
+general logic.
+
+**Not yet confirmed on a real device** - verified by careful tracing of the exact call graph (confirmed via
+grep that no other reclaim call site existed), not by observing it run, consistent with this project's
+documented limitation (no emulator/device in this environment). Also worth flagging as a real, accepted
+trade-off rather than an oversight: this makes *every* tap into *any* existing word start a live-edit/
+suggestion session for it, not only a deliberate "I want to fix this word" tap - matching what was asked for,
+but a behaviour change worth specifically confirming feels right in practice, not just in the two reported
+cases.

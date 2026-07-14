@@ -563,6 +563,13 @@ class AdaptKeyService : InputMethodService() {
     ) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
         if (composing.isEmpty()) {
+            // §58: the caret may have just landed on an existing committed word - a tap, or our own
+            // backspace removing a trailing delimiter - with no new character typed at all. D-62's reclaim
+            // was only ever wired to run on the *next* keystroke; do it right now instead, so mid-word live
+            // correction also works the instant the caret touches a word.
+            if (newSelStart == newSelEnd) {
+                reclaimWordAtCaret()
+            }
             return
         }
         // Our own edits leave the caret collapsed at the end of the composing region - or, D-62, at the
@@ -579,6 +586,33 @@ class AdaptKeyService : InputMethodService() {
             previousWord = null
             clearSuggestions()
         }
+    }
+    
+    /**
+     * §58: reclaims the word the caret currently touches (D-62), purely from a caret move rather than a
+     * keystroke - mirrors the reclaim-then-render sequence [handleKey]'s `CHAR` branch runs when a new token
+     * starts mid-word, minus inserting a character (nothing was typed). A no-op when the caret touches no
+     * word ([WordExtent.reclaim], via [reclaimSurroundingWord], finds nothing on either side) - batched for
+     * the same D-87 reason: [reclaimSurroundingWord]'s own `deleteSurroundingText()` must not reach the app
+     * as a standalone edit, or its callback can arrive after `composing` has already advanced and wipe what
+     * this very call just built.
+     */
+    private fun reclaimWordAtCaret() {
+        val ic = currentInputConnection ?: return
+        ic.beginBatchEdit()
+        try {
+            captureTokenContext(ic)
+            resetWordEndShift()
+            pendingSuggestionSpace = false
+            reclaimSurroundingWord(ic, tap = null)
+            if (composing.isEmpty()) {
+                return
+            }
+            updateComposing(ic)
+        } finally {
+            ic.endBatchEdit()
+        }
+        refreshSuggestions()
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
