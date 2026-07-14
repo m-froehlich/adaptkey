@@ -37,10 +37,11 @@ object KeyboardLayout {
     
     /**
      * D-22 / D-44: the comma key's long-press set - the remaining clause punctuation, laid out left to
-     * right in the D-44 horizontal popup (`- , : ; / _`). The popup pre-selects the key's own character
-     * (the comma), so a straight-up release still types `,`.
+     * right in the D-44 horizontal popup (`- , : ;  _`). The popup pre-selects the key's own character
+     * (the comma), so a straight-up release still types `,`. §39: `/` dropped - now reachable directly on
+     * the `7` key's long-press hint (D-96), redundant here.
      */
-    val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "/", "_")
+    val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "_")
     
     /** D-90: the π key's own corner hint. */
     private const val PI_HINT = "π"

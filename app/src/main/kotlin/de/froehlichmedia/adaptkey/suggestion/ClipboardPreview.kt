@@ -16,6 +16,22 @@ object ClipboardPreview {
     private const val BULLET = '•'
     private const val MASK_LENGTH = 6
     
+    /** §40: the chip is no longer offered once the clip is older than this. */
+    const val MAX_AGE_MS = 5 * 60 * 1000L
+    
+    /**
+     * §40: whether a clip timestamped [clipTimestampMs] ([android.content.ClipDescription.getTimestamp],
+     * `System.currentTimeMillis()` time base) is still fresh enough to offer as a direct-paste chip - the
+     * chip must not keep resurfacing something copied long ago and likely forgotten about.
+     *
+     * @param clipTimestampMs when the clip was created
+     * @param nowMs the current time, same time base
+     * @return true when the clip is within [MAX_AGE_MS] of [nowMs]
+     */
+    fun isFresh(clipTimestampMs: Long, nowMs: Long): Boolean {
+        return nowMs - clipTimestampMs <= MAX_AGE_MS
+    }
+    
     /**
      * Formats the chip label for [text].
      *

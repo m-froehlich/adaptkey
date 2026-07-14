@@ -28,17 +28,26 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `28a80d5` — v0.8.16 (§37). Working tree = **v0.8.17**, §38 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28/§29/§30/§31/§32/§33/§34/§35/§36/§37/§38 fully implemented; still before any
-  device testing of the whole D-92→D-104/§32-38 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104)
-  remain backlog-only.
+- HEAD: `59abb36` — v0.8.17 (§38). Working tree = **v0.8.18**, §39-§42 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§38 fully implemented; still before any device testing of the whole
+  D-92→D-104/§32-42 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **539 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` is 21 commits behind HEAD `28a80d5`; this session's §38 commit once made brings it
-  to 29 - awaiting push.
+- Unit tests: **542 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). **Correction:** `origin/main` was actually already up to date with HEAD `59abb36` as of this
+  check (`git fetch` + `git status` confirmed) - the "N commits behind, awaiting push" note carried in this
+  file for a while was stale/inaccurate, not a real backlog of unpushed work. This session's next commit
+  will put local 1 commit ahead - still not pushed without explicit confirmation, per standing instruction.
+- **§39-§42 DONE (v0.8.18): batch of 4 small fixes.** §39 dropped `/` from the letters page's comma-key
+  popup (redundant with the `7` key's hint, D-96). §40: the D-36 paste chip is no longer offered once the
+  clip is older than 5 minutes (`ClipDescription.getTimestamp()`, new `ClipboardPreview.isFresh()`). §41
+  fixed a real bug: Backspace on a text selection deleted the character before the cursor instead of the
+  selection - `handleBackspace()` never checked `InputConnection.getSelectedText()` at all; fixed by
+  checking it first and replacing a real selection via `commitText("", 1)`. §42 fixed the system-gesture-
+  inset strip below the keyboard showing whatever sat behind the IME window (it fell outside every child's
+  bounds, so had no background of its own) - one line, `root.setBackgroundColor(R.color.keyboard_background)`.
 - **§38 DONE (v0.8.17): D-36 clipboard paste reworked - native paste action, sensitive-only auto-clear.**
   Reported: the D-36 paste chip's `commitText()` loses app-specific paste behaviour (Google Keep splits a
   pasted multi-line list into one entry per line via its own native "Paste" handling, but not via plain

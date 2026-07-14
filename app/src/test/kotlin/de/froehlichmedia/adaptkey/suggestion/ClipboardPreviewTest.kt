@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.suggestion
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -42,5 +43,20 @@ class ClipboardPreviewTest {
         assertNull(ClipboardPreview.label(null, sensitive = false))
         assertNull(ClipboardPreview.label("   ", sensitive = false))
         assertNull(ClipboardPreview.label("\n\t", sensitive = true))
+    }
+    
+    @Test
+    fun `paragraph 40 a clip copied just now is fresh`() {
+        assertTrue(ClipboardPreview.isFresh(clipTimestampMs = 1_000L, nowMs = 1_000L))
+    }
+    
+    @Test
+    fun `paragraph 40 a clip exactly at the age limit is still fresh`() {
+        assertTrue(ClipboardPreview.isFresh(clipTimestampMs = 0L, nowMs = ClipboardPreview.MAX_AGE_MS))
+    }
+    
+    @Test
+    fun `paragraph 40 a clip past the age limit is no longer fresh`() {
+        assertFalse(ClipboardPreview.isFresh(clipTimestampMs = 0L, nowMs = ClipboardPreview.MAX_AGE_MS + 1))
     }
 }

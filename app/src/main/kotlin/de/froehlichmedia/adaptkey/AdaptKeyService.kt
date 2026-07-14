@@ -25,6 +25,7 @@ import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.util.Locale
@@ -370,6 +371,10 @@ class AdaptKeyService : InputMethodService() {
         // suggestion bar row (the keyboard is drawn after the bar, so its popup lands on top of it).
         root.clipChildren = false
         root.clipToPadding = false
+        // §42: root's own background, not just AdaptKeyboardView's - the bottom system-gesture-inset
+        // padding below (see the OnApplyWindowInsetsListener below) falls outside every child's bounds, so
+        // without this it let whatever sits behind the IME window show through underneath the keyboard.
+        root.setBackgroundColor(ContextCompat.getColor(this, R.color.keyboard_background))
         inputRoot = root
         val onboarding = OnboardingView(this)
         onboarding.onFinished = { hideOnboarding() }
@@ -579,7 +584,9 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-36: shows a direct-paste chip in the suggestion bar when a fresh field opens and the clipboard
      * holds text; a tap pastes it. Sensitive content (e.g. a password) is masked in the preview. Typing
-     * anything replaces the chip with the normal suggestions.
+     * anything replaces the chip with the normal suggestions. §40: nothing is offered once the clip is
+     * older than [ClipboardPreview.MAX_AGE_MS] - a long-forgotten clipboard entry should not keep
+     * resurfacing every time a field opens.
      */
     private fun showClipboardChipIfAvailable() {
         if (composing.isNotEmpty()) {
@@ -587,6 +594,9 @@ class AdaptKeyService : InputMethodService() {
         }
         val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return
         if (clip.itemCount == 0) {
+            return
+        }
+        if (!ClipboardPreview.isFresh(clip.description.timestamp, System.currentTimeMillis())) {
             return
         }
         val label = ClipboardPreview.label(clip.getItemAt(0).coerceToText(this), isSensitiveClip(clip)) ?: return
@@ -1118,6 +1128,20 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun handleBackspace(ic: InputConnection) {
+        // §41: a real, non-collapsed text selection takes priority over the ordinary single-character
+        // delete below - Backspace must remove the selection itself, matching every other editor, not the
+        // character before the cursor (which the selection may not even be adjacent to).
+        val selected = ic.getSelectedText(0)
+        if (!selected.isNullOrEmpty()) {
+            if (composing.isNotEmpty()) {
+                ic.finishComposingText()
+                clearComposing()
+                clearSuggestions()
+            }
+            pendingMergeChar = null
+            ic.commitText("", 1)
+            return
+        }
         // A backspace breaks the immediate context a pending merge (A-06) would have relied on.
         pendingMergeChar = null
         if (composing.isNotEmpty()) {

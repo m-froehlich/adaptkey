@@ -1847,3 +1847,40 @@ clipboard content - the masking has to happen the moment the clip preview is off
 even chosen a target field, so it cannot be based on where the text will land. AdaptKey already read this
 same flag for the D-36 chip's own bullet-masked preview ([ClipboardPreview]); the check is now factored into
 a shared `isSensitiveClip()` used by both the preview and the new auto-clear decision.
+
+## §39-§42 - Batch: Comma Popup, Clipboard Age, Selection Backspace, Gesture-Area Background (v0.8.18)
+
+Four independent, small, low-risk fixes from the same feedback round, batched into one version bump/commit
+given their size.
+
+### §39 - Letters page: `/` dropped from the comma key's popup
+`KeyboardLayout.COMMA_ALTERNATIVES` was `- , : ; / _`; `/` is redundant now that it also lives on the `7`
+key's long-press hint (D-96), so it is dropped: `- , : ; _`.
+
+### §40 - D-36 paste chip no longer offered once the clip is older than 5 minutes
+A stale clipboard entry (copied long ago, likely forgotten about) should not keep resurfacing as a paste
+suggestion every time a field opens. `ClipDescription.getTimestamp()` (`System.currentTimeMillis()` time
+base, available since API 26 - AdaptKey's own minSdk, so no version gate is needed, unlike §38's
+Tiramisu-only `EXTRA_IS_SENSITIVE`) gives the clip's creation time. New pure, unit-tested
+`ClipboardPreview.isFresh(clipTimestampMs, nowMs)` (`MAX_AGE_MS = 5 * 60 * 1000L`), checked in
+`showClipboardChipIfAvailable()` before anything else - a stale clip now shows no chip at all, exactly as if
+the clipboard were empty.
+
+### §41 - Bug fixed: Backspace on a text selection deleted a character instead of the selection
+Selecting text (long-press + drag) and pressing Backspace deleted the single character before the cursor,
+not the selection itself, unlike every other text editor. `handleBackspace()` never checked for an active,
+non-collapsed selection at all - `deleteOneBefore()`'s unconditional `getTextBeforeCursor(1, 0)` /
+`deleteSurroundingText(1, 0)` doesn't know or care whether a selection exists elsewhere in the field. Fixed
+by checking `InputConnection.getSelectedText(0)` first, before either of `handleBackspace()`'s existing
+branches (composing vs. not): a non-empty result means a real selection exists, which is replaced via
+`commitText("", 1)` - the standard InputConnection idiom for "replace the current selection with nothing",
+exactly what any ordinary keypress does to a selection. Any in-progress composing token is finished and
+cleared first, since it cannot correspond to the (out-of-band) selected range. No new test - `InputConnection`
+selection state is service glue, an existing documented gap.
+
+### §42 - Fixed: the system-gesture-inset area below the keyboard showed whatever was behind the IME window
+`AdaptKeyboardView` already paints its own background (`R.color.keyboard_background`) within its own bounds,
+but the bottom padding added to `root` (the outer `LinearLayout`) to clear the Android 15 edge-to-edge
+gesture-navigation pill sits *outside* every child's bounds - `root` itself had no background, so that strip
+let whatever sat behind the IME window show through, looking wrong against the keyboard immediately above it.
+Fixed with one line: `root.setBackgroundColor(R.color.keyboard_background)`, matching the keyboard's own.
