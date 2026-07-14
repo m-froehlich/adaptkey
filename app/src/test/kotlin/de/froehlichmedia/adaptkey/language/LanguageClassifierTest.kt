@@ -48,6 +48,32 @@ class LanguageClassifierTest {
     }
     
     @Test
+    fun `paragraph 43 a single word is never enough to decide foreign, even one that would otherwise clearly win`() {
+        val permissive = LanguageClassifier(
+            mapOf(
+                Language.GERMAN to profileFrom(Language.GERMAN, "der die das und ein eine ist haben werden auch"),
+                Language.ENGLISH to profileFrom(Language.ENGLISH, "the quick brown fox jumps over lazy dog with love")
+            ),
+            minWords = 1
+        )
+        // With the old single-word-permitting gate, "over" (literally in the English training text) confidently
+        // wins English and fires isForeign - proving the underlying risk a lone word poses is real, not
+        // hypothetical: the same statistical noise misclassified genuinely German words in production (§43).
+        assertEquals(Language.ENGLISH, permissive.classify("over").language)
+        assertTrue(permissive.isForeign("over"))
+        
+        // The default minWords = 2 blocks the exact same single word outright.
+        val guarded = twoLanguageClassifier()
+        assertEquals(Language.UNKNOWN, guarded.classify("over").language)
+        assertFalse(guarded.isForeign("over"))
+    }
+    
+    @Test
+    fun `paragraph 43 a second word is enough to lift the minWords guard`() {
+        assertTrue(twoLanguageClassifier().isForeign("quick over"))
+    }
+    
+    @Test
     fun `the closest profile wins`() {
         val classifier = twoLanguageClassifier()
         

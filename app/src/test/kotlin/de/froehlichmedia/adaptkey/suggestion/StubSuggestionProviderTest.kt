@@ -56,4 +56,9 @@ class StubSuggestionProviderTest {
         // "dee" is one substitution away from der/den/des/dem; der is the most frequent.
         assertEquals("der", provider.autocorrectFor("dee", null))
     }
+    
+    @Test
+    fun `paragraph 44 shouldOverrideKnownWord defaults to false without frequency data`() {
+        assertFalse(provider.shouldOverrideKnownWord("due", "die"))
+    }
 }

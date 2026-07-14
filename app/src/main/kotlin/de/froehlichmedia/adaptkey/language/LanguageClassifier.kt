@@ -14,6 +14,15 @@ import kotlin.math.abs
  * confidence derived from the relative gap to the runner-up, so callers can stay conservative on
  * short or ambiguous input.
  *
+ * §43: a single word's own n-gram sample is too noisy to trust for this out-of-place comparison,
+ * *regardless of how many n-grams that one word happens to produce* - closely-related Latin-script
+ * languages share most common bigrams/trigrams, so one word's idiosyncratic ranking easily nudges the
+ * distance past [minNgrams] while still being statistically meaningless. Confirmed empirically: with
+ * the bundled profiles, isolated common German words like "Bitte", "heute", "Auto", "werden" and
+ * "trinkst" - none of them short by [minNgrams]'s standard - classified as foreign on their own, but
+ * every one resolved correctly the moment a second word joined them. [minWords] guards against this
+ * directly, on top of (not instead of) [minNgrams].
+ *
  * Everything here is deterministic and free of Android, so it is unit-tested directly and validated
  * against a held-out corpus in the evaluation suite. Detection never rewrites text; it only informs
  * whether German autocorrect should apply (the A-03 guard) and, later, per-language filtering.
@@ -21,11 +30,14 @@ import kotlin.math.abs
  * @param profiles the per-language n-gram profiles, typically parsed from the bundled asset
  * @param minNgrams the minimum number of input n-grams required to attempt a Latin-script decision;
  *        below this the input is too short and [Language.UNKNOWN] is returned
+ * @param minWords the minimum number of whitespace-separated words required to attempt a Latin-script
+ *        decision, independent of [minNgrams] - a single word is never enough (see above)
  * @param profileSize the profile length, also the per-n-gram penalty for an out-of-place miss
  */
 class LanguageClassifier(
     private val profiles: Map<Language, CharNgramProfile>,
     private val minNgrams: Int = 8,
+    private val minWords: Int = 2,
     private val greekThreshold: Double = 0.5,
     private val profileSize: Int = 200
 ) {
@@ -49,7 +61,7 @@ class LanguageClassifier(
         if (ScriptDetector.greekFraction(text) >= greekThreshold) {
             return Result(Language.GREEK, 1.0)
         }
-        if (profiles.isEmpty()) {
+        if (profiles.isEmpty() || wordCount(text) < minWords) {
             return Result(Language.UNKNOWN, 0.0)
         }
         val ranked = CharNgrams.rankedProfile(text, profileSize)
@@ -87,6 +99,9 @@ class LanguageClassifier(
      * worse than the winner's. That deliberately ignores how close the winner is to a related language
      * (e.g. Portuguese vs. Spanish) - irrelevant to the sole question "is this German?".
      *
+     * §43: a lone word - even a longer one clearing [minNgrams] on its own - is never enough to fire
+     * this; see [minWords] and the class doc.
+     *
      * @param context the recent text
      * @param germanMargin how much worse German's distance must be than the winner's, as a fraction
      * @param wordWindow how many trailing words to consider
@@ -96,6 +111,9 @@ class LanguageClassifier(
         val text = lastWords(context, wordWindow)
         if (ScriptDetector.greekFraction(text) >= greekThreshold) {
             return true
+        }
+        if (wordCount(text) < minWords) {
+            return false
         }
         val ranked = CharNgrams.rankedProfile(text, profileSize)
         if (profiles.isEmpty() || ranked.size < minNgrams) {
@@ -124,6 +142,11 @@ class LanguageClassifier(
             sum += if (rank != null) abs(index - rank).toLong() else profileSize.toLong()
         }
         return sum.toDouble() / ranked.size
+    }
+    
+    /** §43: the number of whitespace-separated words in [text], for the [minWords] guard. */
+    private fun wordCount(text: String): Int {
+        return text.trim().split(Regex("\\s+")).count { it.isNotEmpty() }
     }
     
     companion object {

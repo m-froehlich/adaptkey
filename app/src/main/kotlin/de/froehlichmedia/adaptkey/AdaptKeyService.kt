@@ -1393,16 +1393,19 @@ class AdaptKeyService : InputMethodService() {
      * @return a raw-coordinate-derived correction, or null when there is none
      */
     private fun rawCoordinateCorrection(typed: String): String? {
-        // A-01: never override a word that is already valid (autocorrectFor enforces this too, but it
-        // returns null for a known word just like it does for "no correction found" - this fallback must
-        // not then reinterpret that as "try harder").
-        if (provider.isKnownWord(typed)) {
-            return null
-        }
         val model = offsetModel ?: return null
         val geometry = keyboardView?.charKeyGeometry() ?: return null
-        return RawCoordinateCorrection.respellings(typed, composingTaps, geometry, model)
-            .firstOrNull { provider.isKnownWord(it) }
+        val candidate = RawCoordinateCorrection.respellings(typed, composingTaps, geometry, model)
+            .firstOrNull { provider.isKnownWord(it) } ?: return null
+        // A-01: never override a word that is already valid (autocorrectFor enforces this too, but it
+        // returns null for a known word just like it does for "no correction found" - this fallback must
+        // not then reinterpret that as "try harder") - except (§44) when the typed word is itself
+        // dramatically rarer than [candidate], matching autocorrectFor's own A-01 override so the two paths
+        // agree rather than one silently re-protecting what the other already decided to correct.
+        if (provider.isKnownWord(typed) && !provider.shouldOverrideKnownWord(typed, candidate)) {
+            return null
+        }
+        return candidate
     }
     
     /**

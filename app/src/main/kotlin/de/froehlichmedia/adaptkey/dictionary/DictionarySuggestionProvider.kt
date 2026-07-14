@@ -205,12 +205,8 @@ class DictionarySuggestionProvider(
         if (token.length < MIN_AUTOCORRECT_LENGTH) {
             return null
         }
-        // A-01: a valid word is never overwritten.
-        if (isKnownWord(token)) {
-            return null
-        }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token, candidateFirstChars(token))
+        val best = store.correctionCandidates(token, candidateFirstChars(token))
             .asSequence()
             .filter { it.lowercase() != token && !store.isBlacklisted(it) }
             .mapNotNull { candidate ->
@@ -218,7 +214,28 @@ class DictionarySuggestionProvider(
                 if (cost > maxCost) null else CandidateCost(candidate, cost, score(candidate, store.frequencyOf(candidate), previousWord))
             }
             .minWithOrNull(compareBy({ it.cost }, { -it.score }))
-            ?.candidate
+            ?: return null
+        // A-01: a valid word is never overwritten - except (§44) when shouldOverrideKnownWord() says the
+        // typed word is itself dramatically rarer than the best neighbour.
+        if (isKnownWord(token) && !shouldOverrideKnownWord(token, best.candidate)) {
+            return null
+        }
+        return best.candidate
+    }
+    
+    /**
+     * §44: a candidate overrides A-01 when it is at least [KNOWN_WORD_OVERRIDE_RATIO] times more frequent
+     * than [word] - deliberately extreme, so an ordinary pair of genuinely different, comparably common
+     * words never gets remotely close to it and A-01 keeps protecting every normal known word exactly as
+     * before. Without this, a stray adjacent-key slip that happens to also spell a real (but rare) word is
+     * permanently protected from correction: "due" (a rare loanword, frequency 24 in the bundled corpus)
+     * blocked any correction to "die" (frequency ~890000) outright, simply for existing in the dictionary
+     * at all - regardless of how implausible it is that "due" was actually intended over "die".
+     */
+    override fun shouldOverrideKnownWord(word: String, candidate: String): Boolean {
+        val wordFrequency = store.frequencyOf(word.lowercase())
+        val candidateFrequency = store.frequencyOf(candidate.lowercase())
+        return wordFrequency * KNOWN_WORD_OVERRIDE_RATIO <= candidateFrequency
     }
     
     /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */
@@ -248,5 +265,9 @@ class DictionarySuggestionProvider(
         private const val SUB_COST = 2
         private const val INDEL_COST = 2
         private const val MAX_CORRECTION_COST = 2
+        
+        // §44: how many times more frequent a correction candidate must be than the typed word before A-01's
+        // "known word" protection is set aside. Deliberately extreme - see bestCorrection().
+        private const val KNOWN_WORD_OVERRIDE_RATIO = 50
     }
 }

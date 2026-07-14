@@ -1884,3 +1884,60 @@ but the bottom padding added to `root` (the outer `LinearLayout`) to clear the A
 gesture-navigation pill sits *outside* every child's bounds - `root` itself had no background, so that strip
 let whatever sat behind the IME window show through, looking wrong against the keyboard immediately above it.
 Fixed with one line: `root.setBackgroundColor(R.color.keyboard_background)`, matching the keyboard's own.
+
+## §43-§44 - Two Systemic Autocorrect Priority Bugs (v0.8.19)
+
+Two concrete, reported failures ("Hallo" → "Hall" + apparent English-mode switch; "die"/"der" losing to
+"due"/"ddr") were investigated and confirmed to share the session's stated strategy: both traced to a real,
+generalisable rule defect, not a word-specific quirk - fixed at the rule level, verified against the actual
+bundled dictionary/profile assets (not guessed), with regression tests capturing the mechanism rather than
+the individual reported words.
+
+### §43 - Bug fixed: a single common word could misclassify as a foreign language
+Root cause, confirmed empirically against the bundled `language_profiles.tsv`: `LanguageClassifier.isForeign()`
+/`classify()` only gated on raw n-gram *count* (`minNgrams = 8`) before attempting a Cavnar-Trenkle
+out-of-place language decision - but a single isolated word's own n-gram sample is too statistically noisy to
+trust for this comparison, *regardless of how many n-grams that one word happens to produce*. Empirical sweep
+over 27 common German words (single word, no context) found roughly 30% misclassified as foreign: `Bitte` →
+Italian, `heute` → Dutch, `Auto` → Italian, `Straße` → Italian, `werden` → Dutch, `trinkst` → English (this
+one has 15 n-grams, nearly double the minimum), and `Hallo` → English (confidence only 0.20) - reproducing
+the reported bug exactly, including the second-order symptom: once `resolveDict()` re-points `provider`/
+`capitalisation`/`dictionaryStore` to English for the token, German capitalisation rules and suggestions stop
+applying for it, which reads as "the keyboard switched to English mode" even though the persistent
+letters/Greek toggle (`activeLanguage`) never actually changes - there is no third, persisted "English mode".
+Every one of the misfiring words classified correctly the moment a second word joined it in the input.
+
+Fixed with a new `minWords` constructor parameter (default 2, independent of `minNgrams`) on
+`LanguageClassifier`, checked in both `classify()` and `isForeign()` right after the (unaffected) Greek
+script fast-path - a lone word, however long, never reaches the Latin-script ranking at all. 2 new unit tests
+demonstrate the mechanism directly: a single word that would unambiguously win a toy English profile
+(`"over"`, literally present in the test's training text) is blocked with the default `minWords = 2`, and
+correctly wins once paired with a second word.
+
+### §44 - Bug fixed: A-01's "known word" protection had no sense of proportion
+Root cause, confirmed against the bundled `dict_de.tsv`: `die` (frequency 889,897) and `der` (1,004,234) are
+the two most common words in the corpus, yet autocorrect refused to ever propose them once the composing
+token happened to land on `due` (frequency 24 - a rare loanword entry) or `ddr` (4,405 - the GDR
+abbreviation) - both of which are themselves real, if obscure, dictionary entries. `DictionarySuggestionProvider.
+bestCorrection()`'s A-01 guard (`if (isKnownWord(token)) return null`) is an absolute veto with no concept of
+*how* known the word is - a coincidental 24-frequency loanword got exactly the same ironclad protection as a
+genuinely common word, permanently shielding it from a single-substitution neighbour nearly 40,000x more
+frequent. `u`/`i` are QWERTZ-adjacent keys, so a `due`-for-`die` mistap is a completely ordinary slip this
+system should already handle - A-01 was actively preventing it.
+
+Separately confirmed: this is also why the user never noticed `AdaptKeyService.rawCoordinateCorrection()`
+(D-39/T-02/T-03) engaging for these cases - it carried its own, independent copy of the exact same absolute
+"known word" veto, so it was blocked for precisely the same reason, for precisely the same words. (The
+underlying raw-coordinate machinery itself is fine: `OffsetModel` trains continuously from ordinary typing via
+`AdaptKeyboardView`'s `offsetModel?.record(...)` on every resolved tap, not only from the K-01 calibration
+screen, and clears its warm-up threshold - 20 taps - almost immediately in normal use.)
+
+Fixed by making the veto *relative* instead of absolute: a new `SuggestionProvider.shouldOverrideKnownWord
+(word, candidate)` (default `false`, so `StubSuggestionProvider` is unaffected) returns true only when
+`candidate` is at least `KNOWN_WORD_OVERRIDE_RATIO` (50x) more frequent than `word` -
+`DictionarySuggestionProvider` implements it from the store's real frequencies; `bestCorrection()` and
+`rawCoordinateCorrection()` both now consult this single, shared rule instead of each carrying their own
+copy of the old absolute check, so the two paths can no longer silently disagree. The ratio is deliberately
+extreme - verified against a "Bad" (100) vs. "Bat" (200) pair (only 2x apart) that an ordinary, comparably-
+common word pair stays fully protected by A-01 exactly as before; only a genuinely lopsided, near-certain
+"this was a coincidence" gap like `due`/`die` (~37,000x) or `ddr`/`der` (~228x) crosses the threshold.

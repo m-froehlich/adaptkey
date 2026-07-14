@@ -89,6 +89,33 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `paragraph 44 A-01 is set aside for a dramatically rarer known word next to a much more common neighbour`() {
+        // Reproduces the reported bug: "due" is itself a rare but real dictionary entry, so A-01 used to
+        // block any correction to "die" outright - regardless of "die" being nearly 40000x more frequent.
+        store.putWord(WordEntry("due", 24L))
+        store.putWord(WordEntry("die", 889_897L))
+        
+        assertEquals("die", provider.autocorrectFor("due", null))
+    }
+    
+    @Test
+    fun `paragraph 44 A-01 still protects a known word whose frequency is only modestly lower than a neighbour's`() {
+        store.putWord(WordEntry("Bad", 100L))
+        store.putWord(WordEntry("Bat", 200L))
+        
+        assertNull(provider.autocorrectFor("Bad", null))
+    }
+    
+    @Test
+    fun `paragraph 44 shouldOverrideKnownWord matches autocorrectFor's own threshold`() {
+        store.putWord(WordEntry("ddr", 4_405L))
+        store.putWord(WordEntry("der", 1_004_234L))
+        
+        assertTrue(provider.shouldOverrideKnownWord("ddr", "der"))
+        assertFalse(provider.shouldOverrideKnownWord("der", "ddr"))
+    }
+    
+    @Test
     fun `autocorrectFor returns null for a too-short token`() {
         store.putWord(WordEntry("der", 100L))
         assertNull(provider.autocorrectFor("d", null))

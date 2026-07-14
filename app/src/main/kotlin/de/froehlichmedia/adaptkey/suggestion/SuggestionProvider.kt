@@ -71,4 +71,18 @@ interface SuggestionProvider {
      * @return predicted next words as ranked suggestions, most likely first
      */
     fun nextWordSuggestions(previousWord: String): List<Suggestion> = emptyList()
+    
+    /**
+     * §44: whether a known [word] should still be treated as correctable in favour of [candidate] - true
+     * only when [candidate] is dramatically more frequent, e.g. [word] is a rare dictionary entry that
+     * coincidentally matches a typo of a far more common word (`due` blocking a correction to `die` purely
+     * for existing in the dictionary at all, regardless of how implausible it is that `due` was intended).
+     * Used by both [autocorrectFor]'s own A-01 guard and the raw-coordinate correction fallback, so they
+     * agree. The default (no frequency data available) never overrides a known word.
+     *
+     * @param word the known word A-01 would otherwise protect
+     * @param candidate the correction under consideration
+     * @return true when [word]'s A-01 protection should be set aside for [candidate]
+     */
+    fun shouldOverrideKnownWord(word: String, candidate: String): Boolean = false
 }
