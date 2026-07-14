@@ -28,22 +28,23 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `df55062` — v0.8.32 (§59). Working tree = **v0.8.33**, §60 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§59 implemented. §54's suggestion-accepted feedback confirmed working (after
-  §55's fix) and iterated twice on real-device feedback (§56, §57). §58: a real gap (not a bug) in D-62 mid-
-  word live correction found and fixed - `reclaimSurroundingWord()` was only ever wired to a keystroke, never
-  to the caret merely arriving at a word (a tap, or Backspace re-editing a just-committed word); §59 sped up
-  the backspace-hold repeat ~9%. Still before any device testing of the whole D-92→D-104/§32-60 batch except
-  §47/§48/§54-§57's sound-and-flight mechanism (confirmed working and iterated per real-device feedback);
-  §58/§59/§60 are all unconfirmed pending the user's next test. **Every named backlog item is closed** (§26's
-  D-88 via §54/§56/§57; §27's D-95/D-103/D-104 via §48/§53).
+- HEAD: `47bbf10` — v0.8.33 (§60). Working tree unchanged, this entry is a docs-only status update (no version
+  bump). **Spec §12/§13/§14 complete.** §28-§60 implemented. **§58 (D-62/D-87 mid-word live correction)
+  CONFIRMED WORKING on a real device** - closes out a saga that spanned D-84, §32's two D-87 fixes, §46's
+  "no further defect found" investigation, and finally §58's actual missing-trigger fix; this is the first
+  explicit user confirmation of the whole D-62 mechanism working end to end. §54's suggestion-accepted
+  feedback also confirmed working (after §55's fix), iterated twice more per real-device feedback (§56, §57).
+  **§59 (backspace-hold ~9% speed-up) CONFIRMED WORKING.** §60 (clipboard file detection) working well in
+  initial testing but deliberately left open, not marked confirmed - the user wants it to prove itself more
+  broadly before treating it as settled.
+  **Every named backlog item is closed** (§26's D-88 via §54/§56/§57; §27's D-95/D-103/D-104 via §48/§53).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` confirmed up to date with local HEAD `df55062` (`git fetch` + rev-list check);
-  this session's §60 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  warnings). `origin/main` confirmed up to date with local HEAD `47bbf10` (`git fetch` + rev-list check) as of
+  the §60 round; not pushed without confirmation.
 - **§60 DONE (v0.8.33): the D-36 paste chip no longer risks offering binary file content as garbled text.**
   A `ClipData.Item` carries either inline `text` (a plain copy) or a `uri` (a real file, e.g. from a Files
   app) - detectable for free from the clip's own declared `ClipDescription` MIME type, no I/O needed. New

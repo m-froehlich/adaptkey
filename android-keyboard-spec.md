@@ -2411,13 +2411,15 @@ the real one loads) and `StubSuggestionProvider`'s fallback word list (explicitl
 placeholder" provider) - legitimate bootstrap/fallback *data*, not exception *rules* silently overriding the
 general logic.
 
-**Not yet confirmed on a real device** - verified by careful tracing of the exact call graph (confirmed via
-grep that no other reclaim call site existed), not by observing it run, consistent with this project's
-documented limitation (no emulator/device in this environment). Also worth flagging as a real, accepted
-trade-off rather than an oversight: this makes *every* tap into *any* existing word start a live-edit/
-suggestion session for it, not only a deliberate "I want to fix this word" tap - matching what was asked for,
-but a behaviour change worth specifically confirming feels right in practice, not just in the two reported
-cases.
+Verified by careful tracing of the exact call graph (confirmed via grep that no other reclaim call site
+existed), not by observing it run at the time, consistent with this project's documented limitation (no
+emulator/device in this environment) - but worth flagging as a real, accepted trade-off regardless: this
+makes *every* tap into *any* existing word start a live-edit/suggestion session for it, not only a deliberate
+"I want to fix this word" tap.
+
+**CONFIRMED WORKING on a real device** (user, same day) - closes out the D-62/D-87 mid-word live correction
+saga (D-84's real-but-partial fix, §32's two D-87 fixes, §46's "no further defect found" investigation, and
+finally this section's actual missing-trigger fix).
 
 ## §59 - Backspace-Hold Repeat: ~9% Faster (v0.8.32)
 
@@ -2431,6 +2433,8 @@ its floor), `WORD_DELAY_MS` 330ms → 300ms. `INITIAL_DELAY_MS` (400ms, the dela
 repeating at all) is untouched - the request was specifically about the repeat cadence once it starts, not
 how long a hold takes to begin repeating. Existing `BackspaceRepeatTest` assertions reference the constants
 symbolically, not their literal values, so nothing needed updating there.
+
+**CONFIRMED WORKING** (user, same round as §58's confirmation).
 
 ## §60 - D-36 Paste Chip: File Clips No Longer Risk Pasting Binary Garbage as Text (v0.8.33)
 
@@ -2465,3 +2469,6 @@ KDoc comment open and silently swallowing the rest of the file as commentary (a 
 reference" errors at compile time, traced back to this one line). Reworded to avoid embedding a literal `/*`
 inside any comment; the one real occurrence of the string `"text/*"` left in the file is inside an ordinary
 string literal (`hasMimeType("text/*")`), where it is not treated as a comment token.
+
+**Working well in initial testing, deliberately left open rather than marked confirmed** - the user wants
+broader real-world use before treating this one as settled.
