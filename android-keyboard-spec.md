@@ -2186,3 +2186,30 @@ No spec-writing lesson beyond the usual one: flavour text describing *how someth
 "emerging from the keyboard", "exclusively via symbolKeyEnabled") is a proposal to validate against the
 real, built thing, not a requirement to defend once it turns out the user pictured something else once they
 could actually try it.
+
+## §52 - Why the Emoji Button Needs No Setting (User Rationale for §51)
+
+§51 dropped `SettingsRowView`'s emoji-button gate on `symbolKeyEnabled` as a user correction; this section
+records the actual *why* behind it, as user-supplied reasoning, not just "the user asked" - so a future
+reader (or session) does not misread the empty settings screen slot as an oversight or re-introduce a gate.
+
+**Why the old `emojiPanelEnabled` toggle (D-18) existed at all:** the combined `?123`/emoji key sat on the
+main keyboard, permanently occupying one of its limited key slots (L-03), while the emoji panel itself is
+low-value to begin with - most messaging apps ship their own emoji picker, so AdaptKey's is rarely the one
+actually used. That is a real space/value trade-off worth a toggle: a user who never opens AdaptKey's emoji
+panel could reclaim the slot for `?123` alone instead.
+
+**Why that trade-off no longer exists once the emoji button lives in the §48 settings row:** the row is
+reached by an upward swipe and takes no permanent keyboard real estate - it exists only while open. There is
+no scarce slot to reclaim, so the original reason for a toggle is gone; gating the row's emoji button behind
+a setting anyway would just be an unnecessary extra decision for the user with no actual trade-off behind it.
+Confirms `emojiButtonEnabled` (§51) was correctly removed outright, not merely defaulted differently, and
+that no replacement setting of any kind should be reintroduced later without this same trade-off returning.
+
+**Consequence for the combined key:** `symbolKeyEnabled` (D-59, still the one setting hiding the combined
+`?123` key and reserving its slot) is now the *only* thing the main keyboard's combined key depends on -
+confirmed in code, not just in this write-up: `AdaptKeyboardView.isHiddenKey()` gates the `SYMBOL` key on
+`!symbolKeyEnabled` alone (no `emojiEnabled` counterpart left, per §51), and `PanelNavigation.onCombinedKeyTap()`
+takes no emoji-related parameter at all (per §50). `symbolKeyEnabled` itself is unaffected by any of this and
+remains exactly as documented (D-59) - it governs the combined key's own numeric/symbol function, which is
+an entirely separate concern from the emoji button's now-settingless existence in the row.

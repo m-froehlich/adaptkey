@@ -28,19 +28,28 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `8ea0adc` — v0.8.23 (§50, §48 implemented). Working tree = **v0.8.24**, §51 below, not yet committed.
-  **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any device testing of the whole
-  D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only; §47 and
-  §48 are both implemented (§49/§50) and §48 already confirmed working on a real device, refined per user
-  feedback (§51).
+- HEAD: `3615096` — v0.8.24 (§51, §48 refined). Working tree = **v0.8.25**, §52 below (docs only, no code
+  change), not yet committed. **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any
+  device testing of the whole D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104)
+  remain backlog-only; §47 and §48 are both implemented (§49/§50), confirmed working on a real device and
+  refined per user feedback (§51/§52).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **551 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
   warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check; this
-  session's commits (§46-§48 docs, §49, §50, now §51) put local ahead of `origin/main`, not pushed without
-  confirmation.
+  session's commits (§46-§48 docs, §49, §50, §51, now §52) put local ahead of `origin/main`, not pushed
+  without confirmation.
+- **§52 DONE (v0.8.25, documentation only, no code change): records the user-supplied rationale for why
+  the settings row's emoji button needs no setting at all (§51's removal).** The old D-18 toggle existed
+  because the combined key permanently occupied a scarce main-keyboard slot for a low-value feature (most
+  messaging apps ship their own emoji picker); the §48 row costs no permanent slot (reached by a swipe,
+  exists only while open), so that trade-off - and the reason for a toggle - is gone. Confirms in code that
+  the main keyboard's combined key now depends on `symbolKeyEnabled` (D-59) alone: `AdaptKeyboardView.isHiddenKey()`
+  has no `emojiEnabled` counterpart left, `PanelNavigation.onCombinedKeyTap()` takes no emoji parameter.
+  `symbolKeyEnabled` itself is unchanged - a separate concern (the combined key's own numeric/symbol
+  function), not affected by the emoji button's now-settingless existence in the row.
 - **§51 DONE (v0.8.24): §48 refined per user device-testing feedback - confirmed §47 and §48's core
   behaviour both work.** Two corrections: (1) the settings row now sits above the suggestion bar (topmost
   row while open), not between it and the keyboard - `root.addView()` order changed in
