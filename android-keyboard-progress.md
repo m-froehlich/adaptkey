@@ -28,16 +28,29 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `53e2306` — v0.8.19 (§43-§44). Working tree = **v0.8.20**, §45 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§44 fully implemented; still before any device testing of the whole
-  D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `94a8dc2` — v0.8.20 (§45). Working tree = **v0.8.21**, §46-§48 below (docs only, no code change), not
+  yet committed. **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any device testing of
+  the whole D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only,
+  now joined by §47 (split-preview colouring) and §48 (swipe-up settings row, resolves §26's old entry).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **549 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
   warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check - this
-  session's §45 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  session's §46-§48 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§46-§48 DONE (v0.8.21, documentation only, no code change):** §46 - third full audit of the D-62/D-87
+  mid-word correction path found no further code-level defect; confirmed (by inspecting the actual jar)
+  Robolectric 4.14.1 has no shadow support for `InputMethodService`/`InputConnection` at all, only
+  `InputMethodManager` - a real tooling gap, not an effort shortfall, so no automated regression test could
+  be built for this area; still needs real-device confirmation. §47 - detailed backlog write-up for live
+  green-colouring a pending A-05 split while still composing (two real gaps: split detection currently only
+  runs at commit time, and composing-text colouring is currently single-span only). §48 - detailed backlog
+  write-up resolving §26's old swipe-up-settings-row item: upward swipe anywhere reveals an animated row
+  (emoji button left, settings gear right, clipped-slide-up animation), downward swipe closes the row first
+  and only a second downward swipe falls through to the existing G-03 dismiss-keyboard gesture, and
+  `AdaptSettings.emojiPanelEnabled` can be retired in favour of the existing `symbolKeyEnabled` (?123/ABC)
+  setting governing the emoji button too. See spec §46/§47/§48 for full detail.
 - **§45 DONE (v0.8.20): fixed A-05 word-splitting into meaningless fragments (e.g. "meinst" → "mei St").**
   `TokenRepair.trySplit()`'s drop-a-character strategy had no bigram co-occurrence requirement at all -
   unlike the missed-space strategy, which already required one - so any token containing an over-space

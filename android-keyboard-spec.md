@@ -1975,3 +1975,97 @@ corpus) or the existing `immernoch` -> `immer noch` comparison test (the weaker 
 now gets filtered out outright rather than merely losing a score comparison - same outcome, tighter
 mechanism). New regression test reproduces the exact reported failure (`mei`/`st` known but never
 co-occurring) rather than encoding the specific word as a special case.
+
+## §46 - Mid-Word Live Correction: Third Investigation Pass, No Further Code Defect Found (v0.8.21)
+
+Reported: mid-word live correction (D-62/D-87) "just doesn't work at all" even after §32's two D-87 fixes
+this session (the `ExtractedText.startOffset` anchor bug and the unbatched-`deleteSurroundingText` race).
+Asked to test intensively.
+
+Re-audited the entire path end to end a third time - `WordExtent.reclaim()`, `reclaimSurroundingWord()`,
+`insertComposingChar()`, `updateComposing()` (both its conditional inner batch and the outer batch §32 added),
+`deleteComposingChar()`'s two branches (mid-composing and pulling in a real character before the reclaim),
+and `onUpdateSelection()`'s `ownEdit` check - specifically looking for a *third* defect in the same family.
+Found none: every read (`getTextBeforeCursor`/`getTextAfterCursor`) inside a batch edit is fine (batching only
+governs coalesced writes, per the `InputConnection` contract, not read semantics); every write that changes
+`composingAnchor` is either accompanied by a matching `InputConnection` call in the same batch or doesn't need
+one; the single-operation batches in `deleteComposingChar()`'s `composingCursor == 0` branch are self-
+consistent (the anchor adjustment and the one `deleteSurroundingText()` call move the cursor by the same
+amount, so no callback can observe a mismatched state).
+
+**Could not build a genuine automated regression test for this area.** Checked directly: Robolectric 4.14.1's
+`shadows-framework` jar (inspected via `unzip -l`) ships a shadow for `InputMethodManager` only - there is no
+shadow for `InputMethodService` (the class `AdaptKeyService` extends) or for `BaseInputConnection`/
+`InputConnection` at all. Without either, there is no way to exercise the real, timing-sensitive callback
+sequence (`beginBatchEdit`/`endBatchEdit`/`onUpdateSelection` ordering) that the two already-fixed D-87 bugs
+specifically hinged on - a hand-rolled fake `InputConnection` would not reproduce the actual async Binder
+callback timing that caused those bugs in the first place, so it would only provide false confidence, not
+real verification. This is a genuine tooling gap in this environment (no Android emulator either - see prior
+entries), not a shortcut.
+
+**Not yet resolved; needs real-device confirmation to make further progress.** If the symptom persists on the
+latest build, the most useful next report would specify: which of the three original symptoms still
+reproduces (no suggestions / caret jump / word swallowed - possibly not all three anymore), and which app/
+field it was tested in (a hint at whether `ExtractedText` windowing, i.e. non-zero `startOffset`, is actually
+involved for that specific field, which the first D-87 fix targeted).
+
+## §47 - Backlog: Live Colour Preview of a Pending A-05 Split
+
+Requested feature, not implemented: a token that is about to be A-05-split when finalised should already show
+that outcome live, while still composing - both resulting word-parts (minus whatever character would be
+dropped as the mistaken "separator") coloured in the existing recognised-word green (the C-04/S-05 highlight,
+setting-gated), exactly as a single whole recognised word already gets coloured before it autocorrects
+(`shouldHighlightComposing()`). So a user typing a token that will end up split sees the split coming, not
+just the final result after committing.
+
+Not a small tweak - two real gaps to close:
+
+1. **Split detection currently only runs at commit time.** `TokenRepair.trySplit()` is called from
+   `finalizeAndCommit()`, once, when a delimiter is typed - never while the token is still composing. A live
+   preview needs a "would this currently split if finalised right now" check run continuously (most likely
+   from `refreshSuggestions()` or `updateComposing()`, alongside the existing per-keystroke work), not just
+   once at the end. `TokenRepair.trySplit()`'s own logic is already reusable for this (it needs no state
+   beyond the token itself, `spaceAmbiguousIndices` and `previousWord`, all already available where
+   `refreshSuggestions()` runs) - the gap is purely that nothing currently *calls* it early.
+2. **The composing text currently gets one colour span for the whole token, or none.** `updateComposing()`
+   applies a single `ForegroundColorSpan` over the entire composing `SpannableString` when
+   `shouldHighlightComposing()` says so. A split preview needs *two* separate spans - one over each half - and
+   the dropped character (drop-strategy split) or the boundary itself (missed-space split) left uncoloured, so
+   the visual matches "these two pieces, not this one word". `updateComposing()`'s `SpannableString` branch
+   would need to switch from "colour everything" to "colour these two ranges" when a split preview is active,
+   falling back to the existing single-span behaviour otherwise.
+
+Suggested shape (not committed to): a new pure function, e.g. `SplitPreview.previewFor(token, ...): SplitResult?`
+(thin wrapper reusing `TokenRepair.trySplit()`), called from `refreshSuggestions()`, its result cached
+alongside the existing suggestion state so `updateComposing()` can read it without recomputing; `updateComposing()`
+then builds either the existing single span or two spans depending on whether a preview is present. Interacts
+with §35's Greek math-symbol fix and D-62's mid-word reclaim only in that both also touch composing-text
+spans - worth double-checking span ranges stay correct when a reclaimed "after" fragment is also present.
+
+## §48 - Backlog: Swipe-Up Settings Row (Gear + Emoji Button)
+
+Requested feature, not implemented - resolves an existing backlog item (§26) with a concrete design:
+
+- **Trigger:** an upward swipe anywhere on the keyboard (mirroring G-03's existing "downward swipe anywhere
+  dismisses the keyboard" - `GestureAction.DISMISS_KEYBOARD`) reveals a new row above the keyboard.
+- **Row contents:** the emoji button at the left edge, a settings gear icon at the right edge that opens the
+  app's settings directly (`launchFromKeyboard`, the same mechanism already used for the calibration/model-
+  import screens from onboarding).
+- **Animation:** the row slides up into view, but is clipped at its own bottom edge against the top of the
+  existing keyboard - it should read as emerging *from* the keyboard, not sliding in over it. The existing
+  D-86 "growing into more rows resizes right away" handling (`rebuildRows()`/the slide-direction logic from
+  D-94's fix) is the closest existing precedent for a keyboard-height change with animation and is the
+  natural place to extend, though this is a genuinely new row *above* the keyboard rather than a change in
+  row count within it, so it may need its own transition rather than reusing that path directly.
+- **Dismiss interaction, layered on G-03:** a downward swipe while the row is showing animates the row away
+  (closing it), *not* the whole keyboard. Only a *second* downward swipe - now that the row is already closed
+  - falls through to the existing G-03 dismiss-keyboard behaviour. `GestureAction` would need a new value
+  (e.g. `CLOSE_SETTINGS_ROW` or similar) that `handleSwipe()`'s downward-swipe handling checks for before
+  falling back to `DISMISS_KEYBOARD`, gated on whether the row is currently open.
+- **Settings consequence:** the standalone `AdaptSettings.emojiPanelEnabled` setting (and its corresponding UI
+  toggle) can be retired - the emoji button's visibility becomes governed solely by the existing
+  `symbolKeyEnabled` (?123/ABC key) setting, removing the dependency `PanelNavigation`/`AdaptKeyboardView`
+  currently have on `emojiPanelEnabled` for deciding what the combined key does (L-03: "opens the emoji panel
+  from the letter view, or the ?123 layer when the emoji panel is disabled"). Worth checking whether the
+  combined key's dual-purpose behaviour still makes sense once the emoji button has its own dedicated,
+  always-reachable home in the new row, or whether it simplifies to "always ?123" once this lands.
