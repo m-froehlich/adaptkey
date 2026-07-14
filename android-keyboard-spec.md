@@ -2299,3 +2299,18 @@ match what was typed, per D-88's "and/or when a suggestion-bar item is tapped").
 No new unit tests - `notifySuggestionAccepted()`, `playSuggestionAcceptedSound()` and `flashAccepted()` are
 all Android `SoundPool`/animation/view glue with no independently testable pure logic, matching this
 project's established, documented limitation (no emulator/device in this environment).
+
+## §55 - Bug Fixed: §54's Flash Overlay Made the Suggestion Bar Solid Black (v0.8.28)
+
+Reported immediately after §54: the suggestion bar was fully black, unreadable, regardless of whether an
+acceptance had actually happened yet.
+
+Root cause: `flashPaint` (`SuggestionBarView`) was declared as `Paint(Paint.ANTI_ALIAS_FLAG)` with no initial
+colour or alpha. `android.graphics.Paint()` defaults to fully opaque black (`0xFF000000`, alpha 255) until
+something sets it otherwise - `draw()`'s `if (flashPaint.alpha > 0)` was therefore true from the very first
+frame the view ever drew, long before `flashAccepted()` had ever run once, painting a solid opaque black rect
+over the whole bar permanently. `flashAccepted()`'s own animator only ever set `flashPaint`'s colour/alpha
+*while actually animating* - there was no code path that ever left it transparent by default.
+
+Fixed with one line: `Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 0 }` at declaration, so the overlay starts
+fully transparent and only becomes visible for the duration of an actual flash.

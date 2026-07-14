@@ -94,7 +94,10 @@ class SuggestionBarView @JvmOverloads constructor(
     // actual configured highlight colour here (settings.highlightColor) so a customised colour matches too.
     var flashColor: Int = SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR
     
-    private val flashPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    // §55 bug fix: android.graphics.Paint() defaults to fully opaque black (alpha 255) until something
+    // sets it otherwise - flashPaint was never given an initial alpha, so draw()'s `alpha > 0` check was
+    // true from the very first frame, painting the whole bar solid black before any flash ever ran.
+    private val flashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 0 }
     private var flashAnimator: ValueAnimator? = null
     
     init {

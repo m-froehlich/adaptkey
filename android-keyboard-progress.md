@@ -28,18 +28,25 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `d354d84` — v0.8.26 (§53). Working tree = **v0.8.27**, §54 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§53 fully implemented; still before any device testing of the whole
-  D-92→D-104/§32-54 batch except §47/§48 (confirmed working and refined per real-device feedback, §51/§52).
-  §26's D-88 is now implemented (§54); §27's D-95/D-103/D-104 all closed (D-95 resolved by §48's gear icon,
-  no separate key needed; D-103/D-104 implemented in §53). **Every named backlog item is now closed.**
+- HEAD: `03d192c` — v0.8.27 (§54). Working tree = **v0.8.28**, §55 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§54 implemented; §54 shipped with a real bug (§55, fixed same round - see
+  below), so treat it as "implemented and now fixed", not "confirmed working", pending the user's next test.
+  Still before any device testing of the whole D-92→D-104/§32-55 batch except §47/§48 (confirmed working and
+  refined per real-device feedback, §51/§52). **Every named backlog item is closed** (§26's D-88 via §54;
+  §27's D-95/D-103/D-104 via §48/§53).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` confirmed up to date with local HEAD `d354d84` (`git fetch` + rev-list check);
-  this session's §54 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  warnings). `origin/main` confirmed up to date with local HEAD `03d192c` (`git fetch` + rev-list check);
+  this session's §55 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§55 DONE (v0.8.28): fixed §54's flash overlay turning the whole suggestion bar solid black.** Reported
+  immediately after §54 shipped. `SuggestionBarView`'s new `flashPaint` was declared with no initial colour/
+  alpha; `android.graphics.Paint()` defaults to opaque black (alpha 255) until set otherwise, so `draw()`'s
+  `flashPaint.alpha > 0` check was true from the very first frame, long before any acceptance had happened -
+  `flashAccepted()`'s animator only ever set colour/alpha *while animating*, nothing ever initialised it
+  transparent. One-line fix: `Paint(Paint.ANTI_ALIAS_FLAG).apply { alpha = 0 }` at declaration.
 - **§54 DONE (v0.8.27): implemented D-88 - feedback when a correction/suggestion is accepted.** Previously
   silent. Sound on (D-05): a new, distinct "plop" sample (`AdaptKeyboardView.playSuggestionAcceptedSound()`,
   same shared `SoundPool` as the click sample) - synthesised from scratch with a small Python script (stdlib
