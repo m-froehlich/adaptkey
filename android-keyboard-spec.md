@@ -1941,3 +1941,37 @@ copy of the old absolute check, so the two paths can no longer silently disagree
 extreme - verified against a "Bad" (100) vs. "Bat" (200) pair (only 2x apart) that an ordinary, comparably-
 common word pair stays fully protected by A-01 exactly as before; only a genuinely lopsided, near-certain
 "this was a coincidence" gap like `due`/`die` (~37,000x) or `ddr`/`der` (~228x) crosses the threshold.
+
+## §45 - Bug Fixed: A-05 Word Splitting Could Chop a Word into Meaningless Fragments (v0.8.20)
+
+### Reported: "meinst" (a normal German verb form) split into "mei" + "St"
+Described as a general problem, not a one-off - "die Worttrennung muss wohl erst mit einer höheren Confidence
+ausgeführt werden" (word splitting needs a higher confidence bar). Investigated and confirmed systemic, with
+a precise, evidence-based root cause rather than a guess.
+
+`TokenRepair.trySplit()` tries two independent strategies - dropping a single "hit letter instead of space"
+character (`OVER_SPACE_LETTERS = c/v/b/n/m`, or a T-05-flagged tap), or inserting a space with nothing
+dropped - and picks whichever valid candidate scores highest. The missed-space strategy already required the
+two halves to be a real, co-occurring bigram (`MIN_SPLIT_BIGRAM`), specifically to stop a typo being cut into
+two coincidentally-real dictionary fragments. **The drop-a-character strategy had no such requirement at
+all** - only that both halves individually be *some* known dictionary word, however obscure.
+
+`meinst` (m-e-i-n-s-t) has `n` at index 3, an over-space letter - dropping it yields `mei` + `st`. Verified
+against the bundled `dict_de.tsv`: `mei` is a real but rare entry (frequency 16 - a proper noun / dialect
+word), `st` a common abbreviation (5,939, "Sankt"). Both pass the "is this a known word" check individually,
+so the drop candidate was accepted outright - and verified against `bigram_de.tsv`: `mei`+`st` has **zero**
+recorded co-occurrences. (`mein`+`st`, the plausible "correct" split, also has zero - `meinst` simply isn't
+covered by this dictionary's verb-conjugation entries at all, so the right outcome is no split, not a
+different split.) This generalises well beyond the one reported word: any token containing `c`/`v`/`b`/`n`/`m`
+whose two sides happen to both exist somewhere in the dictionary - true of an enormous number of ordinary
+German words, given how many contain those letters - was vulnerable to being cut apart on zero co-occurrence
+evidence, exactly the "höhere Confidence" gap the user diagnosed.
+
+Fixed by applying the same bigram-co-occurrence filter to *both* strategies' candidates uniformly, instead of
+only the missed-space one, before picking the highest-scoring survivor - removing the special case rather
+than patching around the one reported word. Confirmed the fix doesn't regress the strategy's own motivating
+case (`und<c>das` -> `und` + `das`, a real, extremely common bigram - 10,165 occurrences in the bundled
+corpus) or the existing `immernoch` -> `immer noch` comparison test (the weaker `immer`+`och` drop candidate
+now gets filtered out outright rather than merely losing a score comparison - same outcome, tighter
+mechanism). New regression test reproduces the exact reported failure (`mei`/`st` known but never
+co-occurring) rather than encoding the specific word as a special case.

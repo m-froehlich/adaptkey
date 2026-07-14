@@ -23,8 +23,10 @@ class TokenRepairTest {
         listOf("und", "das", "aber", "bald", "ist", "ich").forEach { word ->
             store.putWord(WordEntry(word, frequency = 10L))
         }
-        // A fully-missed-space split now requires the two halves to co-occur (a real bigram).
+        // §45: every split candidate now requires the two halves to co-occur (a real bigram), whichever
+        // strategy found it.
         store.putBigram("aber", "das", TokenRepair.MIN_SPLIT_BIGRAM)
+        store.putBigram("und", "das", TokenRepair.MIN_SPLIT_BIGRAM)
         repair = TokenRepair(store)
     }
     
@@ -67,6 +69,17 @@ class TokenRepairTest {
     @Test
     fun `a known word is never split`() {
         assertNull(repair.trySplit("aber", setOf(2)))
+    }
+    
+    @Test
+    fun `paragraph 45 a drop candidate with no co-occurrence evidence is rejected, even when both halves are known words`() {
+        // Reproduces the reported bug: "mei" and "st" are each individually real (if obscure) dictionary
+        // entries, and 'n' sits over the space bar, so the drop strategy alone used to accept "mei" + "st"
+        // with zero evidence the two are ever used together - "meinst" -> "mei St".
+        store.putWord(WordEntry("mei", frequency = 16L))
+        store.putWord(WordEntry("st", frequency = 5939L))
+        
+        assertNull(repair.trySplit("meinst", emptySet()))
     }
     
     @Test

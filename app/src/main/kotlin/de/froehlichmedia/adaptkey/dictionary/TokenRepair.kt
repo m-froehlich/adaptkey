@@ -31,18 +31,23 @@ class TokenRepair(private val store: DictionaryStore) {
     /**
      * Attempts to split [token] into two words (A-05).
      *
-     * D-69: two split strategies are tried and the higher-scoring result wins overall - neither one gets an
-     * unconditional priority over the other. A "hit a letter instead of space" mis-tap drops one character
-     * and replaces it with a space: the character must be either a T-05 space-ambiguous tap or a letter
-     * that physically sits over the space bar ([OVER_SPACE_LETTERS], so it works even without touch
+     * D-69 / §45: two split strategies are tried and the higher-scoring result wins overall - neither one
+     * gets an unconditional priority over the other. A "hit a letter instead of space" mis-tap drops one
+     * character and replaces it with a space: the character must be either a T-05 space-ambiguous tap or a
+     * letter that physically sits over the space bar ([OVER_SPACE_LETTERS], so it works even without touch
      * calibration), e.g. {@code "und<c>das" -> "und" + "das"}. A fully missed space is tried by inserting a
-     * space without dropping a character, but only where the two halves actually co-occur (a real bigram),
-     * so a typo is not cut into two coincidental fragments (e.g. {@code "aberdas" -> "aber" + "das"}
-     * splits, {@code "luste"} does not). Comparing both matters: {@code "immernoch"} contains an
-     * over-space-letter drop candidate ({@code "immer" + "och"}), but the missed-space candidate
+     * space without dropping a character. Both strategies require the two halves to actually co-occur (a
+     * real bigram, §45), not merely both individually be known words - with a large, noisy dictionary,
+     * almost any typo can be cut into two "known" fragments if either half is allowed to be an obscure
+     * dictionary entry nobody would plausibly have typed there: {@code "meinst"} (a common, if
+     * dictionary-unlisted, verb form) used to split into {@code "mei" + "st"} purely because both
+     * fragments happened to exist somewhere in the dictionary (a rare proper noun / dialect word and a
+     * common abbreviation), with zero evidence they are ever used together - the drop strategy alone had no
+     * co-occurrence requirement at all. Comparing both strategies still matters: {@code "immernoch"}
+     * contains an over-space-letter drop candidate ({@code "immer" + "och"}), but the missed-space candidate
      * ({@code "immer" + "noch"}, a much stronger bigram) must win instead of the drop candidate winning
-     * merely because it was found first. In all modes each half must be a known, non-blacklisted word;
-     * among every valid candidate from both strategies the highest-scoring split wins.
+     * merely because it was found first. In all modes each half must also be a known, non-blacklisted word;
+     * among every valid, co-occurring candidate from both strategies the highest-scoring split wins.
      *
      * @param token the committed token (any case); a known word is never split
      * @param spaceAmbiguousIndices the indices flagged space-ambiguous by the T-05 bands
@@ -64,15 +69,19 @@ class TokenRepair(private val store: DictionaryStore) {
             .toSet()
         val dropped = dropIndices.mapNotNull { i -> candidateAt(t.substring(0, i), t.substring(i + 1), previousWord) }
         
-        // A fully missed space is only inserted when the two halves actually co-occur (a real bigram):
-        // with a large, noisy dictionary almost any typo can be cut into two "known" fragments, so a mere
-        // pair of dictionary words is not enough evidence — "aber das" (frequent bigram) splits, a typo
-        // like "luste" -> "lu ste" (never co-occurs) does not.
         val missed = (MIN_PART..t.length - MIN_PART)
             .mapNotNull { k -> candidateAt(t.substring(0, k), t.substring(k), previousWord) }
-            .filter { store.bigramFrequency(it.first.left, it.first.right) >= MIN_SPLIT_BIGRAM }
         
-        return (dropped + missed).maxByOrNull { it.second }?.first
+        // §45: neither strategy's candidates are accepted unless the two halves actually co-occur (a real
+        // bigram) - with a large, noisy dictionary almost any typo can be cut into two "known" fragments, so
+        // a mere pair of dictionary words is not enough evidence on its own: "aber das" (frequent bigram)
+        // splits, a typo like "luste" -> "lu ste" (never co-occurs) does not, and neither does "meinst" ->
+        // "mei st" (both individually real dictionary entries, but never used together). Applied uniformly
+        // to both strategies, not only the missed-space one (§45's fix - see the KDoc above).
+        return (dropped + missed)
+            .filter { store.bigramFrequency(it.first.left, it.first.right) >= MIN_SPLIT_BIGRAM }
+            .maxByOrNull { it.second }
+            ?.first
     }
     
     /**

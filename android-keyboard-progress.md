@@ -28,16 +28,25 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `c30627b` — v0.8.18 (§39-§42). Working tree = **v0.8.19**, §43-§44 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§42 fully implemented; still before any device testing of the whole
-  D-92→D-104/§32-44 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
+- HEAD: `53e2306` — v0.8.19 (§43-§44). Working tree = **v0.8.20**, §45 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§44 fully implemented; still before any device testing of the whole
+  D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only.
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
-- Unit tests: **548 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` was confirmed up to date with local HEAD as of the previous check (§39-§42 round)
-  - this session's §43-§44 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- Unit tests: **549 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
+  warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check - this
+  session's §45 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§45 DONE (v0.8.20): fixed A-05 word-splitting into meaningless fragments (e.g. "meinst" → "mei St").**
+  `TokenRepair.trySplit()`'s drop-a-character strategy had no bigram co-occurrence requirement at all -
+  unlike the missed-space strategy, which already required one - so any token containing an over-space
+  letter (`c`/`v`/`b`/`n`/`m`) whose two halves both happened to exist *somewhere* in the dictionary, however
+  obscure, got split with zero evidence they're ever used together. Verified against the real assets: `mei`
+  (freq 16, rare) + `st` (freq 5939, "Sankt") have zero recorded co-occurrences in `bigram_de.tsv`. Fixed by
+  applying the bigram-co-occurrence filter uniformly to both strategies before ranking, not only the
+  missed-space one - confirmed this doesn't regress the strategy's own motivating case (`und<c>das` → `und`
+  `das`, 10,165 real co-occurrences) or the existing `immernoch` comparison test.
 - **§43-§44 DONE (v0.8.19): two systemic autocorrect priority bugs, both root-caused against the real
   bundled assets (not guessed) and fixed at the rule level, with regression tests for the mechanism, not the
   reported words.** §43: `LanguageClassifier` could misclassify a single common word as foreign purely from
