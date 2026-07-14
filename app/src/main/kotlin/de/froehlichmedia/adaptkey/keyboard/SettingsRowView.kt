@@ -18,14 +18,15 @@ import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
 
 /**
- * §48: the swipe-up settings row - the emoji button (left edge) and a settings gear (right edge),
- * revealed above the keyboard by an upward swipe (mirroring G-03's downward-dismiss-anywhere).
+ * §48 / §51: the swipe-up settings row - the emoji button (left edge) and a settings gear (right edge),
+ * revealed above the suggestion bar (the topmost row while open) by an upward swipe anywhere on the
+ * keyboard (mirroring G-03's downward-dismiss-anywhere).
  *
  * [open] / [close] jump the reserved layout space to its target height immediately (the D-86 precedent:
  * growing resizes right away, so nothing ever waits for space), then slide the row's own content - not
  * its outer bounds - up out of / back down into that already-reserved space. The content is clipped by
  * the row's own bounds (a plain [ViewGroup][android.view.ViewGroup]'s default `clipChildren`), so it
- * reads as emerging from the keyboard's top edge rather than sliding in over it.
+ * reads as emerging into view rather than sliding in over whatever is below it.
  */
 class SettingsRowView @JvmOverloads constructor(
     context: Context,
@@ -48,13 +49,6 @@ class SettingsRowView @JvmOverloads constructor(
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
-    
-    /** §49: the emoji button's visibility is governed solely by `AdaptSettings.symbolKeyEnabled`. */
-    var emojiButtonEnabled: Boolean = true
-        set(value) {
-            field = value
-            emojiButton.visibility = if (value) View.VISIBLE else View.INVISIBLE
-        }
     
     /** Whether the row is currently open (or mid-opening); false once fully closed. */
     var isOpen: Boolean = false

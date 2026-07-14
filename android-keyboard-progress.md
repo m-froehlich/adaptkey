@@ -28,18 +28,29 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `c55bfd3` — v0.8.22 (§49, §47 implemented). Working tree = **v0.8.23**, §50 below, not yet committed.
+- HEAD: `8ea0adc` — v0.8.23 (§50, §48 implemented). Working tree = **v0.8.24**, §51 below, not yet committed.
   **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any device testing of the whole
   D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only; §47 and
-  §48 are both now implemented (§49/§50).
+  §48 are both implemented (§49/§50) and §48 already confirmed working on a real device, refined per user
+  feedback (§51).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **551 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
   warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check; this
-  session's commits (§46-§48 docs, §49, now §50) put local ahead of `origin/main`, not pushed without
+  session's commits (§46-§48 docs, §49, §50, now §51) put local ahead of `origin/main`, not pushed without
   confirmation.
+- **§51 DONE (v0.8.24): §48 refined per user device-testing feedback - confirmed §47 and §48's core
+  behaviour both work.** Two corrections: (1) the settings row now sits above the suggestion bar (topmost
+  row while open), not between it and the keyboard - `root.addView()` order changed in
+  `onCreateInputView()`; purely cosmetic, no technical reason favoured the old placement since the row's
+  own open()/close() reveal animation is self-contained and position-independent. (2) the row's emoji
+  button is now unconditionally visible - `SettingsRowView.emojiButtonEnabled` (tied to
+  `symbolKeyEnabled`, §50's own reading of §48's "exclusively via symbolKeyEnabled" text) is removed
+  entirely; user feedback was that gating it on the unrelated combined-key setting no longer made sense
+  once the button had its own dedicated row. §50's un-prompted design call (tapping either row button
+  closes the row) was explicitly confirmed as wanted, unchanged. See spec §51 for the full writeup.
 - **§50 DONE (v0.8.23): §48 implemented - swipe-up settings row (gear + emoji button), resolving §26's old
   backlog entry.** New `SettingsRowView` (`app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/`), an
   ordinary `FrameLayout` inserted into the root layout between the suggestion bar and the keyboard container

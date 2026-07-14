@@ -2152,3 +2152,37 @@ Pure logic (`KeyGesture`/`PanelNavigation`) is unit-tested (`KeyGestureTest`, `P
 `SettingsRowView` itself is Android view/animation glue with no decision logic of its own beyond what those
 two already cover, left untested per this project's established, documented limitation (no emulator/device
 in this environment).
+
+## §51 - §48 Refined: Row Position + Unconditional Emoji Button (User Feedback)
+
+Two corrections to §50's implementation, both direct user feedback after trying the built feature (device
+build, not this environment's own testing - confirms §50's row-auto-closes-on-tap design call, made without
+being spelled out in §48, was wanted as built):
+
+1. **The settings row now sits above the suggestion bar, not between it and the keyboard.** §48's own text
+   ("clipped at its own bottom edge against the top of the existing keyboard... emerging from the keyboard")
+   was itself just the implementer's working assumption for "a new row above the keyboard" at spec-writing
+   time, not a constraint anyone had weighed against alternatives - the user tried the shipped placement and
+   asked for the row to be the topmost element instead, above the word-suggestion row. No technical reason
+   favours the old placement: `SettingsRowView.open()`/`close()` reserve their own height and animate their
+   own content via `translationY` regardless of where they sit in `AdaptKeyService`'s root `LinearLayout` -
+   the reveal animation is entirely self-contained and position-independent. The only change is
+   `root.addView()` order (`onboardingView`, `row`, `bar`, `container`) in `onCreateInputView()`; the
+   "emerges from the keyboard" framing in `SettingsRowView`'s KDoc no longer quite fits (it now emerges from
+   the very top of the input view, with the suggestion bar below it, not from the keyboard's edge) and was
+   reworded rather than left stale.
+2. **The row's emoji button is now unconditionally visible - `symbolKeyEnabled` no longer gates it.**
+   §48's own text said the button's visibility "should run exclusively via `AdaptSettings.symbolKeyEnabled`"
+   - implemented that way in §50 (`SettingsRowView.emojiButtonEnabled`, wired from `applySettings()`) - but
+   the user reconsidered once they saw it built: with the emoji button now living in its own dedicated row
+   (not the combined keyboard key `symbolKeyEnabled` actually governs), tying its visibility to that
+   unrelated setting no longer made sense to them, and it is dropped entirely. `emojiButtonEnabled` is
+   removed from `SettingsRowView` along with its `applySettings()` wiring; the button (and `settingsButton`)
+   are always shown once the row is open. `AdaptSettings.symbolKeyEnabled`'s doc comment updated to drop the
+   now-incorrect claim; the `d59_summary` string (all three locales) reverted to no longer mention the
+   settings row.
+
+No spec-writing lesson beyond the usual one: flavour text describing *how something should look* (§48's
+"emerging from the keyboard", "exclusively via symbolKeyEnabled") is a proposal to validate against the
+real, built thing, not a requirement to defend once it turns out the user pictured something else once they
+could actually try it.

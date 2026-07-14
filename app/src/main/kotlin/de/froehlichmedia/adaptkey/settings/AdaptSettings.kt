@@ -34,9 +34,8 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property extraSpaceAboveSpaceRowDp extra vertical spacing (dp) inserted above the space/enter row
  *           (D-55, 0-25, default 7), to cut accidental Enter presses
  * @property symbolKeyEnabled whether the combined ?123 key offers its numeric/symbol function (D-59,
- *           default on); with this off the combined key disappears (slot reserved). §49 (implementing
- *           §48): also the sole setting governing the settings row's emoji button visibility now that
- *           `emojiPanelEnabled` is retired.
+ *           default on); with this off the combined key disappears (slot reserved). §51: no longer also
+ *           governs the §48 settings row's emoji button - that button is unconditionally visible.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,

@@ -394,8 +394,8 @@ class AdaptKeyService : InputMethodService() {
         bar.visibility = View.VISIBLE
         suggestionBar = bar
         
-        // §48: the swipe-up settings row - sits directly above the keyboard container (below the
-        // suggestion bar), reserved at zero height and hidden until an upward swipe opens it.
+        // §48 / §51: the swipe-up settings row - sits above the suggestion bar (the topmost row while
+        // open), reserved at zero height and hidden until an upward swipe opens it.
         val row = SettingsRowView(this)
         row.onEmojiClick = SettingsRowView.OnEmojiClickListener { openEmojiPanelFromSettingsRow() }
         row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
@@ -403,8 +403,8 @@ class AdaptKeyService : InputMethodService() {
         
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
-        root.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
         root.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0))
+        root.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
         root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         setOnboardingShown(!OnboardingStore.isCompleted(this))
         
@@ -495,9 +495,6 @@ class AdaptKeyService : InputMethodService() {
             view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
             view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp
         }
-        // §49 (implementing §48): the settings row's emoji button is governed by the same setting as the
-        // combined key, now that the retired emojiPanelEnabled no longer exists.
-        settingsRow?.emojiButtonEnabled = s.symbolKeyEnabled
     }
     
     /**
