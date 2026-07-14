@@ -61,6 +61,7 @@ import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
+import de.froehlichmedia.adaptkey.keyboard.SettingsRowView
 import de.froehlichmedia.adaptkey.keyboard.SignFlip
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
@@ -79,6 +80,7 @@ import de.froehlichmedia.adaptkey.prediction.onnx.OnnxTier3Provider
 import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.CalibrationActivity
+import de.froehlichmedia.adaptkey.settings.SettingsActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
@@ -128,6 +130,7 @@ class AdaptKeyService : InputMethodService() {
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
     private var emojiPanel: EmojiPanelView? = null
+    private var settingsRow: SettingsRowView? = null
     private var onboardingView: OnboardingView? = null
     private var inputRoot: LinearLayout? = null
     private var offsetModel: OffsetModel? = null
@@ -184,8 +187,6 @@ class AdaptKeyService : InputMethodService() {
     // and the persisted recent/frequently-used emoji (MRU).
     private var surface = InputSurface.LETTERS
     private var symbolPage = 1
-    // D-18: whether the emoji panel is enabled (default on). When off, the combined key is a ?123-only key.
-    private var emojiPanelEnabled = true
     private lateinit var emojiDataset: EmojiDataset
     private var recentEmojis: List<String> = emptyList()
     
@@ -393,9 +394,17 @@ class AdaptKeyService : InputMethodService() {
         bar.visibility = View.VISIBLE
         suggestionBar = bar
         
+        // §48: the swipe-up settings row - sits directly above the keyboard container (below the
+        // suggestion bar), reserved at zero height and hidden until an upward swipe opens it.
+        val row = SettingsRowView(this)
+        row.onEmojiClick = SettingsRowView.OnEmojiClickListener { openEmojiPanelFromSettingsRow() }
+        row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
+        settingsRow = row
+        
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         root.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
+        root.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0))
         root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         setOnboardingShown(!OnboardingStore.isCompleted(this))
         
@@ -477,10 +486,7 @@ class AdaptKeyService : InputMethodService() {
             view.hapticsEnabled = s.keyHapticsEnabled
             // D-32: configurable long-press delay.
             view.longPressDelayMs = s.longPressDelayMs
-            // D-47: when the emoji panel is off, the combined key must also drop its 😊 glyph and read as
-            // a plain ?123 key.
-            view.emojiEnabled = s.emojiPanelEnabled
-            // D-59: the combined ?123 key can be disabled; with the emoji panel also off it disappears.
+            // D-59: the combined ?123 key can be disabled, in which case it disappears entirely.
             view.symbolKeyEnabled = s.symbolKeyEnabled
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system
             // locale (not the active keyboard alphabet - German and Greek never disagree on either point).
@@ -489,8 +495,9 @@ class AdaptKeyService : InputMethodService() {
             view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
             view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp
         }
-        // D-18: emoji panel on/off (off makes the combined key a ?123-only key).
-        emojiPanelEnabled = s.emojiPanelEnabled
+        // §49 (implementing §48): the settings row's emoji button is governed by the same setting as the
+        // combined key, now that the retired emojiPanelEnabled no longer exists.
+        settingsRow?.emojiButtonEnabled = s.symbolKeyEnabled
     }
     
     /**
@@ -579,6 +586,8 @@ class AdaptKeyService : InputMethodService() {
         currentInputConnection?.let { armShiftForNextWord(it) }
         // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
         showClipboardChipIfAvailable()
+        // §48: never carry an open settings row over into a fresh keyboard presentation.
+        settingsRow?.closeImmediately()
     }
     
     /**
@@ -817,9 +826,9 @@ class AdaptKeyService : InputMethodService() {
             
             KeyCode.SHIFT -> handleShift()
             
-            // L-03 / D-18: a tap opens the emoji panel from the letter view (or the ?123 layer when the
-            // emoji panel is disabled), and returns to letters from anywhere else.
-            KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface, emojiPanelEnabled))
+            // L-03 / §49: a tap toggles the ?123 layer (D-18's emoji-panel dual purpose retired - the
+            // emoji button now lives in the §48 settings row instead).
+            KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
             
             // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
             KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
@@ -1035,8 +1044,9 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Handles a swipe gesture (§4 G-01 … G-03, plus the L-03 upward swipe to the symbol layer)
-     * reported by the keyboard view. Resolves it to an action via [KeyGesture] and executes it.
+     * Handles a swipe gesture (§4 G-01 … G-03, the L-03 upward swipe to the symbol layer, and §48's
+     * upward-swipe settings row) reported by the keyboard view. Resolves it to an action via
+     * [KeyGesture] and executes it.
      *
      * @param key the key the swipe started on (T-01 contact point)
      * @param direction the recognised swipe direction
@@ -1053,9 +1063,16 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // G-03: dismiss the keyboard.
+            // G-03: dismiss the keyboard - §48: unless the settings row is open, in which case this
+            // downward swipe closes the row first; only a second one (row already closed) reaches here
+            // again to actually dismiss. KeyGesture.resolve() is a pure function with no row-open state of
+            // its own, so this re-routing happens here rather than as a distinct GestureAction.
             GestureAction.DISMISS_KEYBOARD -> {
-                requestHideSelf(0)
+                if (settingsRow?.isOpen == true) {
+                    closeSettingsRow()
+                } else {
+                    requestHideSelf(0)
+                }
                 true
             }
             
@@ -1069,6 +1086,12 @@ class AdaptKeyService : InputMethodService() {
             // L-03: upward swipe on the combined key switches to the numeric/symbol layer.
             GestureAction.OPEN_SYMBOL_LAYER -> {
                 setSurface(PanelNavigation.onSwitchToSymbols())
+                true
+            }
+            
+            // §48: upward swipe anywhere else reveals the settings row.
+            GestureAction.OPEN_SETTINGS_ROW -> {
+                openSettingsRow()
                 true
             }
             
@@ -1102,6 +1125,37 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun applySwipePage(page: PanelNavigation.Page, forward: Boolean) {
         setSurface(page.surface, forward, page.symbolPage)
+    }
+    
+    /**
+     * §48: opens the settings row (an upward swipe anywhere on the keyboard, except the combined key).
+     */
+    private fun openSettingsRow() {
+        settingsRow?.open()
+    }
+    
+    /**
+     * §48: closes the settings row (a downward swipe while it is open, or either of its own buttons
+     * being tapped). [onClosed] runs once the close animation has finished collapsing the reserved space.
+     */
+    private fun closeSettingsRow(onClosed: () -> Unit = {}) {
+        settingsRow?.close(onClosed) ?: onClosed()
+    }
+    
+    /**
+     * §48: the settings row's emoji button - closes the row and opens the emoji panel, exactly like the
+     * combined key used to before §49 retired its dual purpose.
+     */
+    private fun openEmojiPanelFromSettingsRow() {
+        closeSettingsRow { setSurface(InputSurface.EMOJI) }
+    }
+    
+    /**
+     * §48: the settings row's gear button - closes the row and launches [SettingsActivity], the same
+     * `launchFromKeyboard` mechanism already used for the onboarding calibration/model-import screens.
+     */
+    private fun openSettingsAppFromSettingsRow() {
+        closeSettingsRow { launchFromKeyboard(SettingsActivity::class.java) }
     }
     
     /**

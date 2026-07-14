@@ -10,24 +10,18 @@ package de.froehlichmedia.adaptkey.keyboard
 object PanelNavigation {
     
     /**
-     * A tap on the combined key opens the emoji panel from the letter view; the same action, routed
-     * from the numeric/symbol layer's "ABC" key or the emoji panel's back button, returns to letters.
+     * A tap on the combined key toggles between the letter view and the numeric/symbol layer.
      *
-     * D-18: when the emoji panel is disabled, the combined key is purely a `?123` toggle - a tap from the
-     * letter view goes straight to the numeric/symbol layer and back.
+     * §49 (implementing §48): the combined key used to also open the emoji panel (D-18, gated on the now-
+     * retired `emojiPanelEnabled` setting) - now that the emoji button has its own dedicated,
+     * always-reachable home in the settings row, that dual purpose is gone; the combined key is always a
+     * plain `?123` toggle, unconditionally (this was already D-18's own "emoji panel disabled" behaviour).
      *
      * @param current the currently shown surface
-     * @param emojiEnabled whether the emoji panel is enabled (D-18)
      * @return the surface to switch to
      */
-    fun onCombinedKeyTap(current: InputSurface, emojiEnabled: Boolean = true): InputSurface {
-        if (!emojiEnabled) {
-            return if (current == InputSurface.LETTERS) InputSurface.SYMBOLS else InputSurface.LETTERS
-        }
-        return when (current) {
-            InputSurface.LETTERS -> InputSurface.EMOJI
-            InputSurface.SYMBOLS, InputSurface.EMOJI -> InputSurface.LETTERS
-        }
+    fun onCombinedKeyTap(current: InputSurface): InputSurface {
+        return if (current == InputSurface.LETTERS) InputSurface.SYMBOLS else InputSurface.LETTERS
     }
     
     /**

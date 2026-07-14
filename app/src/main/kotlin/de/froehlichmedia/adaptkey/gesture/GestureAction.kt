@@ -29,5 +29,8 @@ enum class GestureAction {
     SWITCH_SURFACE_NEXT,
     
     /** D-19: a left swipe across the key field goes back to the previous surface/page. */
-    SWITCH_SURFACE_PREV
+    SWITCH_SURFACE_PREV,
+    
+    /** §48: an upward swipe anywhere on the keyboard (except the combined key, L-03) reveals the settings row. */
+    OPEN_SETTINGS_ROW
 }

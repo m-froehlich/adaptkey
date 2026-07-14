@@ -269,16 +269,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
-    /** D-47: whether the emoji panel is enabled; when off, the combined key shows "?123" instead of 😊. */
-    var emojiEnabled: Boolean = true
-        set(value) {
-            field = value
-            invalidate()
-        }
-    
     /**
-     * D-59: whether the combined ?123 key offers its numeric/symbol function. When this is off **and**
-     * [emojiEnabled] is off, the combined key disappears (drawn blank, taps ignored) but keeps its slot.
+     * D-59 / §49 (implementing §48): whether the combined ?123 key offers its numeric/symbol function.
+     * The combined key no longer has a separate emoji-enabled state (D-47/D-18 retired - see
+     * [PanelNavigation.onCombinedKeyTap]); it always reads "?123" and, when this is off, disappears
+     * (drawn blank, taps ignored) but keeps its slot.
      */
     var symbolKeyEnabled: Boolean = true
         set(value) {
@@ -656,8 +651,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             canvas.drawText(label, cx, baseline, textPaint)
             
             val hint = key.hint
-            // D-47: no "123" corner hint on the combined key when it already reads "?123" (emoji off).
-            val suppressHint = key.code == KeyCode.SYMBOL && !emojiEnabled
+            // D-47 / §49: no "123" corner hint on the combined key - it always already reads "?123".
+            val suppressHint = key.code == KeyCode.SYMBOL
             if (hintsEnabled && !suppressHint) {
                 if (hint != null) {
                     canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
@@ -1124,14 +1119,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-59 / D-100 (correction): whether [key] occupies a slot that is currently disabled but must stay
-     * reserved rather than collapse - the combined `?123` key (emoji off and symbol off), or either
-     * symbol page's `ABC` key (symbol off). Page 1's `ABC` must keep its slot so the D-100 column/grid
-     * layout's per-row cell count stays consistent; page 2's `ABC` keeps its slot too (a later correction)
-     * purely so its neighbouring `space` key doesn't grow to fill the gap and end up looking oversized -
-     * both now use this same reserved-but-inert treatment instead of D-93's original omit-and-grow.
+     * reserved rather than collapse - the combined `?123` key (symbol off - §49: no longer also needs
+     * emoji off, now that the combined key has no separate emoji-enabled state), or either symbol page's
+     * `ABC` key (symbol off). Page 1's `ABC` must keep its slot so the D-100 column/grid layout's per-row
+     * cell count stays consistent; page 2's `ABC` keeps its slot too (a later correction) purely so its
+     * neighbouring `space` key doesn't grow to fill the gap and end up looking oversized - both now use
+     * this same reserved-but-inert treatment instead of D-93's original omit-and-grow.
      */
     private fun isHiddenKey(key: Key): Boolean {
-        return (key.code == KeyCode.SYMBOL && !emojiEnabled && !symbolKeyEnabled) ||
+        return (key.code == KeyCode.SYMBOL && !symbolKeyEnabled) ||
             (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && !symbolKeyEnabled)
     }
     
@@ -1145,8 +1141,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             key.code == KeyCode.SPACE && surface != InputSurface.LETTERS -> SPACE_GLYPH
             // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
-            // D-47: with the emoji panel off, the combined key is a plain ?123 key, not the emoji.
-            key.code == KeyCode.SYMBOL && !emojiEnabled -> "?123"
+            // D-47 / §49: the combined key is always a plain ?123 key, not the emoji (retired D-18).
+            key.code == KeyCode.SYMBOL -> "?123"
             // A char key only has case on the letters surface - a symbol/calculator-page character that
             // happens to be a Unicode letter with a case mapping (e.g. π) must not be shown uppercased.
             key.code == KeyCode.CHAR && surface == InputSurface.LETTERS && (shifted || capsLock) && ch != null && ch.isLetter() ->

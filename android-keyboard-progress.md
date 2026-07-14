@@ -28,18 +28,40 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `f0e4806` — v0.8.21 (§46-§48 docs). Working tree = **v0.8.22**, §49 below, not yet committed.
+- HEAD: `c55bfd3` — v0.8.22 (§49, §47 implemented). Working tree = **v0.8.23**, §50 below, not yet committed.
   **Spec §12/§13/§14 complete.** §28-§45 fully implemented; still before any device testing of the whole
-  D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only; §47 is
-  now implemented (§49 below), §48 (swipe-up settings row, resolves §26's old entry) remains backlog-only,
-  next up.
+  D-92→D-104/§32-45 batch. §26's D-88 and the rest of §27 (D-95, D-103, D-104) remain backlog-only; §47 and
+  §48 are both now implemented (§49/§50).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **551 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
   warnings). `origin/main` was confirmed up to date with local HEAD as of the §39-§42 round check; this
-  session's commits (§46-§48 docs, now §49) put local ahead of `origin/main`, not pushed without confirmation.
+  session's commits (§46-§48 docs, §49, now §50) put local ahead of `origin/main`, not pushed without
+  confirmation.
+- **§50 DONE (v0.8.23): §48 implemented - swipe-up settings row (gear + emoji button), resolving §26's old
+  backlog entry.** New `SettingsRowView` (`app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/`), an
+  ordinary `FrameLayout` inserted into the root layout between the suggestion bar and the keyboard container
+  - deliberately *not* built on `AdaptKeyboardView`'s D-86/D-94 row-growth machinery, which animates row
+  count within that one Canvas-drawn view, not a second view stacked above it (confirming §48's own
+  suspicion this might not transfer directly). `open()`/`close()` jump the reserved layout height
+  immediately (D-86 precedent in spirit) and animate only the row's inner content via `translationY`,
+  clipped by the row's own bounds (a plain `ViewGroup`'s default `clipChildren`, no bespoke transition
+  needed). Gestures: `GestureAction.OPEN_SETTINGS_ROW` (new) fires for an upward swipe anywhere except the
+  combined key (`KeyGesture`); a downward swipe while the row is open is re-routed to close it first inside
+  `AdaptKeyService.handleSwipe()`'s existing `DISMISS_KEYBOARD` branch (no new `GestureAction` for closing -
+  `KeyGesture.resolve()` stays a pure function with no row-open state to gate on). Design call beyond §48's
+  own spec text: the combined `?123`/emoji key's D-18 dual purpose is retired outright, always a plain
+  `?123` toggle now (`PanelNavigation.onCombinedKeyTap()` lost its `emojiEnabled` parameter;
+  `AdaptKeyboardView` lost its own `emojiEnabled` field) - keeping the old behaviour would have needed a
+  replacement setting for the one §48 itself retires. `AdaptSettings.emojiPanelEnabled` removed end to end
+  (`SettingsMapper`, `SettingsStore.KEY_EMOJI_PANEL`, `settings_preferences.xml`, all three locale
+  `strings.xml`); the row's emoji button visibility is now driven by `symbolKeyEnabled` per §48's own
+  instruction. Both row buttons close the row before acting. See spec §50 for the full writeup. `KeyGesture`/
+  `PanelNavigation` (pure) tested via `KeyGestureTest`/`PanelNavigationTest`; `SettingsRowView` itself is
+  Android view/animation glue with no decision logic of its own, untested per this project's established,
+  documented limitation (no emulator/device in this environment).
 - **§49 DONE (v0.8.22): §47 implemented - live colour preview of a pending A-05 split while composing.**
   `AdaptKeyService.updateComposing()` now calls a new `splitPreview(ic, text)` (calling
   `TokenRepair.trySplit()` directly, same as `shouldHighlightComposing()` already does inline - no cache,

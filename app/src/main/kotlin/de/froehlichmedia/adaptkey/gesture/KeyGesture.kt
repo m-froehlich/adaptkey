@@ -8,16 +8,18 @@ import de.froehlichmedia.adaptkey.keyboard.KeyCode
 
 /**
  * Pure policy mapping a swipe (the key it started on, plus its [SwipeDirection]) onto a
- * [GestureAction] (§4 G-01 … G-03, plus the L-03 upward swipe on the combined emoji / ?123 key).
+ * [GestureAction] (§4 G-01 … G-03, the L-03 upward swipe on the combined emoji / ?123 key, and §48's
+ * upward-swipe settings row).
  *
- * A downward swipe dismisses the keyboard regardless of the key underneath (G-03). A horizontal
- * swipe is key-specific: left on backspace deletes a word (G-02), left / right on the space bar
- * switches language (G-01) - but only on the letters surface (D-92: the smaller space keys on the
- * `?123` pages have no language of their own to switch, so a horizontal swipe there is an ordinary
- * surface swipe like everywhere else on those pages) -, up on the combined key switches to the
- * numeric/symbol layer (L-03), and left / right anywhere else on the key field switches the
- * surface/page (D-19). Everything else carries no gesture and resolves to [GestureAction.NONE],
- * leaving the touch to be handled as a tap.
+ * A downward swipe dismisses the keyboard regardless of the key underneath (G-03); an upward swipe
+ * reveals the settings row regardless of the key underneath too (§48), except on the combined key,
+ * which keeps its own upward gesture. A horizontal swipe is key-specific: left on backspace deletes a
+ * word (G-02), left / right on the space bar switches language (G-01) - but only on the letters surface
+ * (D-92: the smaller space keys on the `?123` pages have no language of their own to switch, so a
+ * horizontal swipe there is an ordinary surface swipe like everywhere else on those pages) -, up on the
+ * combined key switches to the numeric/symbol layer (L-03), and left / right anywhere else on the key
+ * field switches the surface/page (D-19). Everything else carries no gesture and resolves to
+ * [GestureAction.NONE], leaving the touch to be handled as a tap.
  */
 object KeyGesture {
     
@@ -31,9 +33,16 @@ object KeyGesture {
      * @return the mapped action, or [GestureAction.NONE] when the swipe has no meaning here
      */
     fun resolve(keyCode: KeyCode, direction: SwipeDirection, surface: InputSurface = InputSurface.LETTERS): GestureAction {
-        // G-03: a downward swipe dismisses the keyboard from anywhere.
+        // G-03: a downward swipe dismisses the keyboard from anywhere (§48: AdaptKeyService.handleSwipe()
+        // re-routes this to closing the settings row first when it is open, before it ever reaches here -
+        // this resolver has no row-open state to gate on, so it always reports the plain dismiss).
         if (direction == SwipeDirection.DOWN) {
             return GestureAction.DISMISS_KEYBOARD
+        }
+        // §48: an upward swipe reveals the settings row from anywhere, mirroring G-03 above - except the
+        // combined emoji/?123 key, which keeps its own L-03 upward gesture (switch to the symbol layer).
+        if (direction == SwipeDirection.UP && keyCode != KeyCode.SYMBOL) {
+            return GestureAction.OPEN_SETTINGS_ROW
         }
         return when (keyCode) {
             // G-02: swipe left on backspace deletes the whole previous word (right is not a surface swipe

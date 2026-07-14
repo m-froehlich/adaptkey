@@ -42,7 +42,6 @@ object SettingsStore {
     const val KEY_LLM_THRESHOLD = "c06_llm_threshold"
     const val KEY_KEY_SOUND = "d05_key_sound"
     const val KEY_KEY_HAPTICS = "d06_key_haptics"
-    const val KEY_EMOJI_PANEL = "d18_emoji_panel"
     const val KEY_LONGPRESS_DELAY = "d32_longpress_delay_ms"
     const val KEY_SPACE_BELOW_NUMBER_ROW = "d55_space_below_number_row"
     const val KEY_SPACE_ABOVE_SPACE_ROW = "d55_space_above_space_row"
@@ -115,7 +114,6 @@ object SettingsStore {
             llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null),
             keySoundEnabled = p.getBoolean(KEY_KEY_SOUND, false),
             keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
-            emojiPanelEnabled = p.getBoolean(KEY_EMOJI_PANEL, true),
             longPressDelayMs = p.getInt(KEY_LONGPRESS_DELAY, DEF_LONGPRESS_DELAY).toLong(),
             extraSpaceBelowNumberRowDp = p.getInt(KEY_SPACE_BELOW_NUMBER_ROW, DEF_EXTRA_SPACING),
             extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),

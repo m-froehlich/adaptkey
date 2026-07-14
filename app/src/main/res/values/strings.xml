@@ -80,12 +80,10 @@
 
     <string name="c09_title">Number row</string>
     <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
-    <string name="d18_title">Emoji panel</string>
-    <string name="d18_summary">When off, the 😊/?123 key opens only the numbers/symbols layer (D-18).</string>
     <string name="d32_title">Long-press delay</string>
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
     <string name="d59_title">\?123 key</string>
-    <string name="d59_summary">Show the combined ?123 key. With this and the emoji panel both off, the key disappears and its slot stays empty (D-59).</string>
+    <string name="d59_summary">Show the combined ?123 key. With this off, the key disappears and its slot stays empty; it also hides the emoji button in the swipe-up settings row (D-59, §48).</string>
     <string name="d55_below_title">Space below number row</string>
     <string name="d55_below_summary">Extra gap under the digits, in dp, to reduce mis-taps into the top letter row (D-55).</string>
     <string name="d55_above_title">Space above space bar</string>

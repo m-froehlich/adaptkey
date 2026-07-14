@@ -89,12 +89,6 @@
             android:defaultValue="true" />
 
         <SwitchPreferenceCompat
-            android:key="d18_emoji_panel"
-            android:title="@string/d18_title"
-            android:summary="@string/d18_summary"
-            android:defaultValue="true" />
-
-        <SwitchPreferenceCompat
             android:key="d59_symbol_key"
             android:title="@string/d59_title"
             android:summary="@string/d59_summary"

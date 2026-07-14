@@ -12,25 +12,21 @@ import org.junit.jupiter.api.Test
 class PanelNavigationTest {
     
     @Test
-    fun `a tap on the combined key opens the emoji panel from the letter view`() {
-        assertEquals(InputSurface.EMOJI, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS))
+    fun `paragraph 49 a tap on the combined key toggles letters and symbols`() {
+        assertEquals(InputSurface.SYMBOLS, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS))
+        assertEquals(InputSurface.LETTERS, PanelNavigation.onCombinedKeyTap(InputSurface.SYMBOLS))
     }
     
     @Test
-    fun `the same tap returns to letters from the symbol layer or the emoji panel`() {
-        assertEquals(InputSurface.LETTERS, PanelNavigation.onCombinedKeyTap(InputSurface.SYMBOLS))
+    fun `paragraph 49 a tap from the emoji surface still falls back to letters`() {
+        // Defensive only - the combined key is not reachable while the emoji panel is showing (its own
+        // keyboard view is hidden), but the fallback stays correct regardless.
         assertEquals(InputSurface.LETTERS, PanelNavigation.onCombinedKeyTap(InputSurface.EMOJI))
     }
     
     @Test
     fun `long-press or swipe-up always switches to the symbol layer`() {
         assertEquals(InputSurface.SYMBOLS, PanelNavigation.onSwitchToSymbols())
-    }
-    
-    @Test
-    fun `D-18 with the emoji panel disabled the combined key toggles letters and symbols`() {
-        assertEquals(InputSurface.SYMBOLS, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS, emojiEnabled = false))
-        assertEquals(InputSurface.LETTERS, PanelNavigation.onCombinedKeyTap(InputSurface.SYMBOLS, emojiEnabled = false))
     }
     
     @Test

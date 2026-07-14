@@ -2103,3 +2103,52 @@ both now share the extracted `isEditingMidWord(ic)` helper instead of duplicatin
 after the cursor" check. Mutual exclusivity between the split preview and the existing single-word highlight
 falls out for free: `trySplit()` already returns null whenever the whole token is itself a known word, which
 is `shouldHighlightComposing()`'s own trigger condition.
+
+## §50 - §48 Implemented: Swipe-Up Settings Row (Gear + Emoji Button)
+
+Implements §48. Follows the suggested shape's gesture design closely (an upward swipe anywhere but the
+combined key opens the row via `KeyGesture`/`GestureAction.OPEN_SETTINGS_ROW`; a downward swipe while it is
+open closes it first, gated in `AdaptKeyService.handleSwipe()` before falling back to `DISMISS_KEYBOARD`),
+but resolves the two points §48 left open, and lands the animation differently from the D-86 precedent it
+flagged as a possible mismatch:
+
+1. **No new `CLOSE_SETTINGS_ROW` `GestureAction`.** `KeyGesture.resolve()` is a pure function with no row-
+   open state to gate on - it always reports the plain `DISMISS_KEYBOARD` for a downward swipe, exactly as
+   before. `AdaptKeyService.handleSwipe()`'s existing `DISMISS_KEYBOARD` branch re-routes to
+   `closeSettingsRow()` when `settingsRow?.isOpen == true`, and only falls through to `requestHideSelf(0)`
+   otherwise - the state check lives where the state actually is, without inventing an action value
+   `KeyGesture` itself never produces.
+2. **The combined `?123`/emoji key's dual purpose is retired - it is now always a plain `?123` toggle.**
+   §48 flagged this as worth checking once the emoji button has its own dedicated home; keeping the old
+   D-18 behaviour would have needed a replacement setting for something §48's own instructions retire
+   outright (`emojiPanelEnabled`), so the combined key drops its emoji affordance entirely.
+   `PanelNavigation.onCombinedKeyTap()` lost its `emojiEnabled` parameter (its body is now exactly D-18's
+   old "disabled" branch, unconditionally); `AdaptKeyboardView` lost its own `emojiEnabled` field, and its
+   three call sites (label, corner-hint suppression, hidden-slot check) collapsed to the `?123` case
+   unconditionally. `emojiPanelEnabled` is removed end to end - `AdaptSettings`, `SettingsMapper`,
+   `SettingsStore` (`KEY_EMOJI_PANEL`), and the `settings_preferences.xml` toggle (all three locale
+   `strings.xml` variants updated to match) - and the settings row's emoji button visibility is now driven
+   by `symbolKeyEnabled` instead, per §48's own instruction.
+
+**The animation does not reuse `AdaptKeyboardView`'s D-86/D-94 row-growth machinery**, confirming §48's own
+suspicion that it might not transfer directly: that machinery lives inside `AdaptKeyboardView`'s self-drawn
+Canvas engine and animates *row count within the same view*, not a second, independent view stacked above
+it. The new `SettingsRowView` ([SettingsRowView.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/SettingsRowView.kt))
+is instead an ordinary `FrameLayout` inserted into `AdaptKeyService`'s root `LinearLayout` between the
+suggestion bar and the keyboard container. `open()`/`close()` jump the reserved layout space to its target
+height immediately (still the D-86 precedent in spirit - growing resizes right away, so nothing waits for
+space) and then animate only the row's *inner content* via `translationY`, clipped to the row's own bounds
+by a plain `ViewGroup`'s default `clipChildren` - no explicit `clipBounds` needed. This reads as the content
+sliding up out of / back down into the space right above the keyboard, matching "clipped at its own bottom
+edge against the top of the keyboard, emerging from it" without needing a bespoke transition class.
+
+Both row buttons close the row before acting (`openEmojiPanelFromSettingsRow()` /
+`openSettingsAppFromSettingsRow()` in `AdaptKeyService.kt`), a deliberate "tap an item, the menu closes"
+UX call not spelled out in §48; `SettingsRowView.closeImmediately()` (no animation) resets the row on every
+fresh `onStartInputView()`, so a row left open when the keyboard was dismissed some other way (e.g. the
+Home button, not a down-swipe) never carries over into the next field.
+
+Pure logic (`KeyGesture`/`PanelNavigation`) is unit-tested (`KeyGestureTest`, `PanelNavigationTest`);
+`SettingsRowView` itself is Android view/animation glue with no decision logic of its own beyond what those
+two already cover, left untested per this project's established, documented limitation (no emulator/device
+in this environment).

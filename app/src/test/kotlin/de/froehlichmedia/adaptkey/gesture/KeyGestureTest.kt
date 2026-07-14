@@ -26,9 +26,10 @@ class KeyGestureTest {
     }
     
     @Test
-    fun `other swipes on backspace carry no action`() {
+    fun `other swipes on backspace carry no action, except up which opens the settings row`() {
         assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.DELETE, SwipeDirection.RIGHT))
-        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.DELETE, SwipeDirection.UP))
+        // §48: an upward swipe is not backspace-specific - it opens the settings row from anywhere.
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.DELETE, SwipeDirection.UP))
     }
     
     @Test
@@ -38,8 +39,8 @@ class KeyGestureTest {
     }
     
     @Test
-    fun `an upward swipe on the space bar carries no action`() {
-        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.UP))
+    fun `an upward swipe on the space bar opens the settings row (paragraph 48)`() {
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.UP))
     }
     
     @Test
@@ -65,8 +66,8 @@ class KeyGestureTest {
     }
     
     @Test
-    fun `an upward swipe on a letter carries no action`() {
-        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.UP))
+    fun `an upward swipe on a letter opens the settings row (paragraph 48)`() {
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.UP))
     }
     
     @Test
@@ -90,5 +91,14 @@ class KeyGestureTest {
     @Test
     fun `a downward swipe on the combined key still dismisses the keyboard`() {
         assertEquals(GestureAction.DISMISS_KEYBOARD, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.DOWN))
+    }
+    
+    @Test
+    fun `paragraph 48 an upward swipe opens the settings row from any key except the combined key`() {
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.UP))
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.UP))
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.DELETE, SwipeDirection.UP))
+        // The combined key keeps its own L-03 upward gesture instead.
+        assertEquals(GestureAction.OPEN_SYMBOL_LAYER, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.UP))
     }
 }
