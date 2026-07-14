@@ -2431,3 +2431,37 @@ its floor), `WORD_DELAY_MS` 330ms → 300ms. `INITIAL_DELAY_MS` (400ms, the dela
 repeating at all) is untouched - the request was specifically about the repeat cadence once it starts, not
 how long a hold takes to begin repeating. Existing `BackspaceRepeatTest` assertions reference the constants
 symbolically, not their literal values, so nothing needed updating there.
+
+## §60 - D-36 Paste Chip: File Clips No Longer Risk Pasting Binary Garbage as Text (v0.8.33)
+
+Asked: can the keyboard tell when the clipboard holds a whole *file* (e.g. copied in a Files app), rather
+than plain copied/selected text - and if so, only ever offer it via Quick Paste when it is itself a text
+file (`.txt`, `.md`, and other recognisable text files), showing nothing at all otherwise.
+
+**Yes, detectable without reading anything.** `ClipData.Item` carries either inline text (`getText()`) or a
+URI (`getUri()`) pointing at real content - a plain copy (selected text, a typed string) always populates
+`text`; a file copy (Files app, sharing a document) populates `uri` instead. The clip's own `ClipDescription`
+already declares a MIME type for that URI - reading it needs no I/O at all, so the file-vs-text decision
+itself is free. Android's `ClipDescription.hasMimeType()` supports the `"text/*"` wildcard natively (no
+hand-rolled MIME parsing needed) - true for `.txt`/`.md`/`.csv`/etc., false for images, PDFs, and anything
+unrecognised.
+
+**Implemented**: new `AdaptKeyService.resolveClipboardText(clip, item)`, called from
+`showClipboardChipIfAvailable()` in place of the previous direct `item.coerceToText(this)` call. A plain
+text item (`item.uri == null`) behaves exactly as before - zero change to the common case. A URI item is only
+offered when `clip.description.hasMimeType("text/*")`; anything else returns null, and the chip is suppressed
+entirely, exactly as requested ("sollte dann einfach nichts anzeigen"). When it *is* a text file, its content
+is read directly via `contentResolver.openInputStream(uri)` (bypassing `coerceToText()`'s own less-
+predictable URI-resolution fallbacks), capped at `CLIPBOARD_FILE_PREVIEW_CHARS` (512) - a small, bounded read
+regardless of the file's actual size, since only the chip's own already-truncated preview
+(`ClipboardPreview.MAX_LENGTH`, 24 chars) needs the content at all. The *actual* paste, on tap, still goes
+through §38's native `performContextMenuAction(paste)` - the target app resolves the real file itself, this
+read is never used for the paste's own content, only the chip's preview label.
+
+One real bug caught (and fixed) while writing this: the KDoc for `resolveClipboardText()` originally spelled
+out the wildcard as `` `text/*` `` in backticked prose - but Kotlin block comments nest, so the literal `/*`
+inside that backticked span opened a *nested* comment the actual closing `*/` only closed, leaving the outer
+KDoc comment open and silently swallowing the rest of the file as commentary (a cascade of "unresolved
+reference" errors at compile time, traced back to this one line). Reworded to avoid embedding a literal `/*`
+inside any comment; the one real occurrence of the string `"text/*"` left in the file is inside an ordinary
+string literal (`hasMimeType("text/*")`), where it is not treated as a comment token.

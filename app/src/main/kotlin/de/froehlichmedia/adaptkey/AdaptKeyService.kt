@@ -656,10 +656,40 @@ class AdaptKeyService : InputMethodService() {
         if (!ClipboardPreview.isFresh(clip.description.timestamp, System.currentTimeMillis())) {
             return
         }
-        val label = ClipboardPreview.label(clip.getItemAt(0).coerceToText(this), isSensitiveClip(clip)) ?: return
+        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return
+        val label = ClipboardPreview.label(text, isSensitiveClip(clip)) ?: return
         val chip = SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, "")
         suggestionBar?.setItems(listOf(chip))
         suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * §60: the clipboard text to preview - or null when nothing should be offered at all. A plain text
+     * [item] (no [android.content.ClipData.Item.getUri]) is an ordinary copy (selected text, etc.) and
+     * always qualifies, exactly as before. A URI item is real *file* content instead - e.g. copied in a
+     * Files app - which only qualifies when the clip itself declares a text-family MIME type (`.txt`,
+     * `.md`, and any other recognisable text file, per the request); anything else (an image, a PDF, an
+     * unrecognised binary) is suppressed outright rather than risk decoding arbitrary binary bytes as
+     * garbled "text". The read is capped at [CLIPBOARD_FILE_PREVIEW_CHARS] - only the chip's own short,
+     * already-truncated preview ([ClipboardPreview.label]) needs the content; the actual paste (§38's
+     * native paste action) resolves the file itself through the target app, not through this read.
+     *
+     * @param clip the current primary clip
+     * @param item its first (and only ever considered) item
+     * @return the text to preview/offer, or null to show no chip at all
+     */
+    private fun resolveClipboardText(clip: ClipData, item: ClipData.Item): CharSequence? {
+        val uri = item.uri ?: return item.coerceToText(this)
+        if (!clip.description.hasMimeType("text/*")) {
+            return null
+        }
+        return runCatching {
+            contentResolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
+                val buffer = CharArray(CLIPBOARD_FILE_PREVIEW_CHARS)
+                val read = reader.read(buffer)
+                if (read <= 0) null else String(buffer, 0, read)
+            }
+        }.getOrNull()
     }
     
     /**
@@ -2281,6 +2311,11 @@ class AdaptKeyService : InputMethodService() {
         // it (typically single-digit milliseconds for a plain text field), short enough to keep the window
         // a malicious clipboard-reading app could grab it in small.
         private const val CLIPBOARD_CLEAR_DELAY_MS = 300L
+        
+        // §60: how much of a clipboard *file*'s content to read for the chip's own already-truncated
+        // preview - generous relative to ClipboardPreview.MAX_LENGTH (24), but still a small, bounded read
+        // regardless of the file's real size.
+        private const val CLIPBOARD_FILE_PREVIEW_CHARS = 512
         
         // D-37: how many times a new word must be committed (without being reverted) before it is promoted
         // to the learned dictionary, so a one-off typo is not eagerly learned.
