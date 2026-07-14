@@ -100,6 +100,7 @@ class SuggestionBarView @JvmOverloads constructor(
         alpha = 0
     }
     private var flyWord: String? = null
+    private var flyOriginX = 0f
     private var flyProgress = 0f
     private var flyAnimator: ValueAnimator? = null
     
@@ -220,22 +221,25 @@ class SuggestionBarView @JvmOverloads constructor(
             val progress = flyProgress
             val y = height / 2f - progress * dp(FLY_RISE_DP)
             flyTextPaint.textSize = dp(FLY_BASE_TEXT_DP) * (1f - progress * FLY_SHRINK_FRACTION)
-            canvas.drawText(word, width / 2f, y, flyTextPaint)
+            canvas.drawText(word, flyOriginX, y, flyTextPaint)
         }
     }
     
     /**
-     * §56 (replaces D-88's flat bar flash, per user feedback that it read as too minimal): the accepted
-     * word rises from the middle of the bar, shrinking and fading out as it exits upward past the bar's own
-     * top edge - a visible, but deliberately subtle ([FLY_RISE_DP] is modest, [FLY_DURATION_MS] short),
-     * suggestion that the word is going up into the text above, not just "something happened here". Played
-     * independently of [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView.playSuggestionAcceptedSound] -
-     * always, regardless of whether key-press sound (D-05) is on. A flight already in progress is replaced
-     * outright rather than left to layer with the new one.
+     * §56 (replaces D-88's flat bar flash, per user feedback that it read as too minimal), §57 (anchored to
+     * the accepted suggestion's own position, per further feedback that a fixed centre origin felt too
+     * detached from the bar): the accepted word rises from where its own chip currently sits - or the bar's
+     * horizontal centre when no matching chip is found (§57's own "ungefähre Position reicht" allowance,
+     * see [originXFor]) - shrinking and fading out as it exits upward past the bar's own top edge. Visible,
+     * but deliberately subtle ([FLY_RISE_DP] is modest, [FLY_DURATION_MS] short). Played independently of
+     * [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView.playSuggestionAcceptedSound] - always,
+     * regardless of whether key-press sound (D-05) is on. A flight already in progress is replaced outright
+     * rather than left to layer with the new one.
      */
     fun flyAccepted(word: String) {
         flyAnimator?.cancel()
         flyWord = word
+        flyOriginX = originXFor(word)
         flyAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = FLY_DURATION_MS
             interpolator = DecelerateInterpolator()
@@ -247,6 +251,20 @@ class SuggestionBarView @JvmOverloads constructor(
             }
             start()
         }
+    }
+    
+    /**
+     * §57: the horizontal centre (in this view's own coordinates, i.e. already offset by [scrollX]) of the
+     * currently displayed chip whose [SuggestionController.DisplayItem.word] matches [word] - the tapped
+     * suggestion for a bar-tap acceptance, or (since [notifySuggestionAccepted] fires before the bar's next
+     * refresh) still the top suggestion chip for an autocorrect-on-commit acceptance, when it happens to be
+     * the same word. Falls back to the bar's own horizontal centre when no chip matches (the exact
+     * "ungefähre Position reicht" case named in the request) rather than searching further or guessing.
+     */
+    private fun originXFor(word: String): Float {
+        val index = items.indexOfFirst { it.word.equals(word, ignoreCase = true) }
+        val child = if (index >= 0) container.getChildAt(index) else null
+        return if (child != null) (child.left + child.right) / 2f - scrollX else width / 2f
     }
     
     /**

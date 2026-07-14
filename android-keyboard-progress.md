@@ -28,20 +28,30 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- HEAD: `81bdcfa` — v0.8.28 (§55). Working tree = **v0.8.29**, §56 below, not yet committed. **Spec
-  §12/§13/§14 complete.** §28-§55 implemented. §54's suggestion-accepted feedback confirmed working after
-  §55's fix, then refined again per device-tested feedback (§56 - sound sharpened/louder, the flash replaced
-  with a flying-word animation, decoupled from sound). Still before any device testing of the whole
-  D-92→D-104/§32-56 batch except §47/§48/§54-§56's sound-and-flash mechanism generally (confirmed working and
-  iterated per real-device feedback). **Every named backlog item is closed** (§26's D-88 via §54/§56; §27's
+- HEAD: `2280c07` — v0.8.29 (§56). Working tree = **v0.8.30**, §57 below, not yet committed. **Spec
+  §12/§13/§14 complete.** §28-§56 implemented. §54's suggestion-accepted feedback confirmed working (after
+  §55's fix) and iterated twice on real-device feedback (§56 sound/animation rework, §57 anchoring the
+  animation to the suggestion's position). Still before any device testing of the whole D-92→D-104/§32-57
+  batch except §47/§48/§54-§57's sound-and-flight mechanism generally (confirmed working and iterated per
+  real-device feedback). **Every named backlog item is closed** (§26's D-88 via §54/§56/§57; §27's
   D-95/D-103/D-104 via §48/§53).
 - **Versioning jumped from 0.7.54 to 0.8.3 on 2026-07-13** (user's deliberate call, see prior entry in git
   history) - the D-92/D-100/D-102 calculator/symbol-page redesign is the new 0.8 milestone. Still only the
   third digit bumps per APK going forward. `versionCode` counts up by 1 regardless of the version name
   (doesn't try to encode it - `8*10+3` would be lower than the outgoing value).
 - Unit tests: **554 green** (`:app:testDebugUnitTest`, incl. Robolectric); `:app:assembleDebug` green (no
-  warnings). `origin/main` confirmed up to date with local HEAD `81bdcfa` (`git fetch` + rev-list check);
-  this session's §56 commit once made puts local 1 commit ahead, not pushed without confirmation.
+  warnings). `origin/main` confirmed up to date with local HEAD `2280c07` (`git fetch` + rev-list check);
+  this session's §57 commit once made puts local 1 commit ahead, not pushed without confirmation.
+- **§57 DONE (v0.8.30): the flying word now starts from the accepted suggestion's own position, not the
+  bar's fixed centre.** New `SuggestionBarView.originXFor(word)` looks up the currently displayed chip whose
+  word matches (case-insensitively) and uses its horizontal centre; falls back to the bar's centre - the
+  previous §56 behaviour - only when no chip matches. One lookup naturally covers both trigger paths: a
+  bar-tap acceptance finds its own just-tapped chip (still present, since the flight starts before the bar's
+  next refresh); an autocorrect-on-commit acceptance finds the top suggestion chip whenever it happens to
+  match the committed word (the common case). Rise distance/duration/shrink unchanged - confirmed already
+  right as-is.
+- **§56 DONE (v0.8.29): D-88 refined per device-tested feedback.** Sound: attack shortened to under 1ms plus
+  a brief onset transient (sharper "Plöpp" not "Blöpp"), peak amplitude +10% (0.75 → 0.825) - same 900→140Hz
 - **§56 DONE (v0.8.29): D-88 refined per device-tested feedback.** Sound: attack shortened to under 1ms plus
   a brief onset transient (sharper "Plöpp" not "Blöpp"), peak amplitude +10% (0.75 → 0.825) - same 900→140Hz
   pitch-drop shape otherwise. Animation: replaced the flat bar-flash with `SuggestionBarView.flyAccepted()` -

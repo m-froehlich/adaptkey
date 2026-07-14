@@ -2350,3 +2350,21 @@ longer an either/or gated on that setting.
 `d59_title` (`strings.xml`, all three locales) changed from "?123 key" / "?123-Taste" / "Πλήκτρο ?123" to
 "?123/ABC key" / "?123/ABC-Taste" / "Πλήκτρο ?123/ABC" - the key's own two functions (numeric/symbol layer,
 and the `ABC` return key it pairs with), not just one of them, now named in the setting itself.
+
+## §57 - §56 Refined: the Flying Word Now Anchors to the Accepted Suggestion's Position (v0.8.30)
+
+Feedback after device testing §56: the overall effect works well and the rise distance is exactly right as
+is - but flying from the bar's fixed horizontal centre every time read as too disconnected from the actual
+suggestion; flying from (at least approximately) the accepted suggestion's own on-screen position was asked
+for instead, with an explicit allowance that an approximate position is fine if precise tracking is awkward.
+
+New `SuggestionBarView.originXFor(word)`: looks up the currently displayed chip whose
+`SuggestionController.DisplayItem.word` matches the accepted word (case-insensitively) and returns its
+horizontal centre (in the bar's own coordinates, already accounting for `scrollX`); falls back to the bar's
+centre - the previous, exact §56 behaviour - only when no matching chip is found, rather than trying harder
+to guess a position. This single lookup naturally covers both trigger paths without needing separate
+handling: a bar-tap acceptance finds its own just-tapped chip (`notifySuggestionAccepted()` fires before the
+bar's next `setItems()` refresh, so the tapped chip is still there to find), and an autocorrect-on-commit
+acceptance finds the top suggestion chip whenever the committed word happens to match what was already being
+shown there (a common case, since the just-corrected word is usually also the top suggestion) - and falls
+back gracefully to centre for whatever cases it doesn't (the bar showing something else, or being empty).
