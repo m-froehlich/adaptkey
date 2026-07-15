@@ -1756,9 +1756,13 @@ whenever a component lands so it does not have to be restated in every prompt.
   `D:\workspace-ai\models\SmolLM2-360M-Instruct\`. Possible optimisation: ABI splits / app bundle so each
   device only pulls its own native lib (~18 MB arm64), and quantise/prune further if latency is high.
 - Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
-- Nice-to-haves: persist `activeLanguage` across service restarts; Greek diaeresis (ϊ/ϋ) input; a C-05
-  blacklist editor that is language-aware (currently operates on the active store); verify/tune the
-  first-run dictionary import time on a real device.
+- Verify/tune the first-run dictionary import time on a real device.
+- **Stale-doc cleanup (found while answering "what's still open", not re-derived from anything new):** this
+  section previously also listed "persist `activeLanguage` across service restarts", "Greek diaeresis (ϊ/ϋ)
+  input" and "a language-aware C-05 blacklist editor" as nice-to-haves - all three were already implemented
+  long ago (`ActiveLanguageStore`; the G-01 Greek-input package, v0.7.16; `BlacklistActivity`'s language
+  spinner, also v0.7.16) and confirmed still present in the current code. Removed rather than left to
+  mislead a future session into re-implementing them.
 
 ## Testing gaps
 
