@@ -67,6 +67,7 @@ import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
+import de.froehlichmedia.adaptkey.language.LanguageCycle
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
 import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
 import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
@@ -622,6 +623,7 @@ class AdaptKeyService : InputMethodService() {
         applySettings()
         // Reflect the active alphabet (G-01) on the freshly (re)created keyboard view.
         keyboardView?.greek = activeLanguage == Language.GREEK
+        keyboardView?.qwerty = activeLanguage == Language.ENGLISH
         // D-03: label the space bar with the current input language.
         updateSpaceLabel()
         // Pick up an offset model seeded by the calibration screen (K-01). Safe on a fresh field (not a
@@ -1091,16 +1093,20 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Toggles the input language between German and Greek (G-01). Any in-progress token is finalised
-     * first in the current language (so a German word being typed is committed with its rules before
-     * the switch), then the keyboard shows the other alphabet and a short toast confirms the change.
+     * D-106 stage 1: steps the input language through the [LanguageCycle] (German, English, Greek) via
+     * G-01. Any in-progress token is finalised first in the current language (so a word being typed is
+     * committed with its own rules before the switch), then the keyboard shows the new alphabet and a
+     * short toast confirms the change.
+     *
+     * @param forward true for a right swipe (advances through the cycle), false for a left swipe (goes back)
      */
-    private fun toggleLanguage(ic: InputConnection) {
+    private fun toggleLanguage(ic: InputConnection, forward: Boolean) {
         finalizeAndCommit(ic, "")
-        activeLanguage = if (activeLanguage == Language.GREEK) Language.GERMAN else Language.GREEK
+        activeLanguage = if (forward) LanguageCycle.next(activeLanguage) else LanguageCycle.previous(activeLanguage)
         // Persist the switch so the chosen alphabet survives a service restart.
         ActiveLanguageStore.save(this, activeLanguage)
         keyboardView?.greek = activeLanguage == Language.GREEK
+        keyboardView?.qwerty = activeLanguage == Language.ENGLISH
         // D-03: keep the space-bar language label in sync with the switch.
         updateSpaceLabel()
         clearSuggestions()
@@ -1117,8 +1123,8 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * The human-readable name of an input language, shown on the space bar (D-03) and in the G-01
-     * switch toast. Only German and Greek are user-selectable alphabets today; English is listed for
-     * completeness (it is auto-detected for autocorrect but never becomes the active alphabet).
+     * switch toast. D-106 stage 1: German, English and Greek are all user-selectable alphabets via the
+     * [LanguageCycle].
      *
      * @param language the active input language
      * @return the label to display
@@ -1164,10 +1170,15 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // G-01: switch the input language / alphabet. With two languages (German, Greek), a left or
-            // right swipe both simply toggle between them.
-            GestureAction.LANGUAGE_PREV, GestureAction.LANGUAGE_NEXT -> {
-                toggleLanguage(ic)
+            // G-01 / D-106 stage 1: switch the input language / alphabet, stepping the LanguageCycle in
+            // the swipe's own direction (left = previous, right = next).
+            GestureAction.LANGUAGE_PREV -> {
+                toggleLanguage(ic, forward = false)
+                true
+            }
+            
+            GestureAction.LANGUAGE_NEXT -> {
+                toggleLanguage(ic, forward = true)
                 true
             }
             
@@ -1453,9 +1464,12 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val typed = composing.toString()
-        // A-03: pick the dictionary/capitalisation for the recent context (German default, English
-        // auto-detected, Greek in Greek mode); suppress = a confidently-foreign but unsupported language.
-        val suppressAutocorrect = selectActiveDictionary("$tokenContextBefore $typed")
+        // A-03: pick the dictionary/capitalisation for the recent context (German default, English or
+        // Greek when explicitly active, English also auto-detected while German is active); suppress = a
+        // confidently-foreign but unsupported language. D-106 stage 2: also suppressed when the token is
+        // already a known word in some other consulted language (mandatory English + every G-01-cycle
+        // language) - an embedded loanword like "Word" must never be silently corrected away.
+        val suppressAutocorrect = selectActiveDictionary("$tokenContextBefore $typed") || knownInOtherLanguage(typed)
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
         if (mergeChar != null) {
@@ -1826,7 +1840,10 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
-        val pending = provider.autocorrectFor(input, previousWord)
+        // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
+        // language (mandatory English + every G-01-cycle language) - the active language's own completions
+        // are still shown as usual, only the impending-autocorrect chip is suppressed.
+        val pending = if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
         val previous = previousWord
         val sentence = "$tokenContextBefore$input"
         // §9 / C-06: consult tier 3 when the tier-1 confidence is below the threshold (never with the
@@ -2058,15 +2075,20 @@ class AdaptKeyService : InputMethodService() {
     private data class DictChoice(val language: Language, val suppressAutocorrect: Boolean)
     
     /**
-     * A-03: chooses the dictionary for the recent [context]. Greek mode (G-01) uses the Greek lexicon;
-     * otherwise the detector decides — a confidently English context uses the English lexicon, a
-     * confidently other-foreign context (e.g. French, which has no bundled lexicon) keeps the German
-     * store but holds back autocorrect so the text is left as typed, and everything else defaults to
-     * German. Conservative by construction (see [LanguageClassifier.isForeign]).
+     * A-03 / D-106 stage 1: chooses the dictionary for the recent [context]. Greek mode and English mode
+     * (both explicit G-01 language choices now, English promoted from an auto-detected-only fallback)
+     * force their own lexicon unconditionally; otherwise the detector decides while German is active — a
+     * confidently English context uses the English lexicon, a confidently other-foreign context (e.g.
+     * French, which has no bundled lexicon) keeps the German store but holds back autocorrect so the text
+     * is left as typed, and everything else defaults to German. Conservative by construction (see
+     * [LanguageClassifier.isForeign]).
      */
     private fun resolveDict(context: String): DictChoice {
         if (activeLanguage == Language.GREEK) {
             return DictChoice(Language.GREEK, suppressAutocorrect = false)
+        }
+        if (activeLanguage == Language.ENGLISH) {
+            return DictChoice(Language.ENGLISH, suppressAutocorrect = false)
         }
         if (!languageClassifier.isForeign(context)) {
             return DictChoice(Language.GERMAN, suppressAutocorrect = false)
@@ -2092,6 +2114,21 @@ class AdaptKeyService : InputMethodService() {
         capitalisation = engines.getValue(choice.language)
         dictionaryStore = stores.getValue(choice.language)
         return choice.suppressAutocorrect
+    }
+    
+    /**
+     * D-106 stage 2: whether [token] is a known word in some bundled dictionary other than the one
+     * currently active for it - English is always consulted, and so is every other language reachable
+     * via the G-01 [LanguageCycle] (currently every bundled language is simultaneously reachable there).
+     * A deliberately plain "known anywhere" check, not a cross-language suggestion ranking: an embedded
+     * loanword like "Word" is protected from autocorrect exactly like a locally-known word (A-01),
+     * instead of being silently corrected to the nearest similarly-spelled active-language word ("wird").
+     *
+     * @param token the composing token (any case)
+     * @return true when any non-active language's dictionary already knows this exact word
+     */
+    private fun knownInOtherLanguage(token: String): Boolean {
+        return providers.any { (language, otherProvider) -> language != activeLanguage && otherProvider.isKnownWord(token) }
     }
     
     private fun contextFor(typed: String): CapitalisationContext {

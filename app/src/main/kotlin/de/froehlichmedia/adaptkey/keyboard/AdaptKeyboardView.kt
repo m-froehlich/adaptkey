@@ -241,8 +241,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
         animator.start()
     }
     
-    /** Whether the letter surface shows the Greek alphabet (G-01) instead of the Latin QWERTZ layout. */
+    /** Whether the letter surface shows the Greek alphabet (G-01) instead of the Latin layout. */
     var greek: Boolean = false
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    /**
+     * D-106 stage 1: whether the Latin letter surface uses the English QWERTY layout (y/z swapped)
+     * instead of German QWERTZ. Only meaningful when [greek] is false.
+     */
+    var qwerty: Boolean = false
         set(value) {
             field = value
             rebuildRows()
@@ -537,11 +547,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun rowsFor(targetSurface: InputSurface, targetSymbolPage: Int): List<List<Key>> {
         return when (targetSurface) {
-            // G-01: the letter surface is either the Latin QWERTZ layout or the Greek alphabet.
+            // G-01: the letter surface is the Greek alphabet, or the Latin layout (German QWERTZ, or
+            // English QWERTY - D-106 stage 1).
             InputSurface.LETTERS -> if (greek) {
                 GreekLayout.rows(proportions, showNumberRow)
             } else {
-                KeyboardLayout.rows(proportions, showNumberRow, letterHints)
+                KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty)
             }
             
             InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)

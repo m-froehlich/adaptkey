@@ -15,7 +15,12 @@ package de.froehlichmedia.adaptkey.keyboard
  */
 object KeyboardLayout {
     
-    private const val THIRD_ROW_LETTERS = "yxcvbnm"
+    // D-106 stage 1: German uses QWERTZ (y/z swapped versus the English QWERTY convention); only the
+    // position of these two letters differs, everything else (hints, alternatives, weights) is shared.
+    private const val THIRD_ROW_LETTERS_QWERTZ = "yxcvbnm"
+    private const val THIRD_ROW_LETTERS_QWERTY = "zxcvbnm"
+    private const val TOP_ROW_QWERTZ = "qwertzuiop"
+    private const val TOP_ROW_QWERTY = "qwertyuiop"
     
     // L-03: the combined emoji / ?123 key - tap opens the emoji panel, long-press or an upward swipe
     // switches to the numeric/symbol layer (corner-hinted like the other secondary symbols).
@@ -78,12 +83,16 @@ object KeyboardLayout {
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
      * @param letterHints the per-letter secondary-symbol map (L-05 / C-08); defaults to [DEFAULT_LETTER_HINTS]
+     * @param qwerty D-106 stage 1: true for the English active language (QWERTY, y/z swapped versus
+     *        German); false for German (QWERTZ). Only the two letters' screen position differs - hints,
+     *        alternatives and every other key are shared between both variants.
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
         proportions: KeyProportions = KeyProportions.DEFAULT,
         showNumberRow: Boolean = true,
-        letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS
+        letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS,
+        qwerty: Boolean = false
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -92,14 +101,16 @@ object KeyboardLayout {
             result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
         }
         
-        result.add("qwertzuiop".map { c -> topRowKey(c, letterHints) })
+        val topRowLetters = if (qwerty) TOP_ROW_QWERTY else TOP_ROW_QWERTZ
+        val thirdRowLetters = if (qwerty) THIRD_ROW_LETTERS_QWERTY else THIRD_ROW_LETTERS_QWERTZ
+        result.add(topRowLetters.map { c -> topRowKey(c, letterHints) })
         result.add("asdfghjkl".map { c -> charKey(c, letterHints[c]) })
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
-        val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW_LETTERS.length)
+        val thirdRowLetterWeight = proportions.thirdRowLetterWeight(thirdRowLetters.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            THIRD_ROW_LETTERS.forEach { c -> add(charKey(c, letterHints[c], weight = thirdRowLetterWeight)) }
+            thirdRowLetters.forEach { c -> add(charKey(c, letterHints[c], weight = thirdRowLetterWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         

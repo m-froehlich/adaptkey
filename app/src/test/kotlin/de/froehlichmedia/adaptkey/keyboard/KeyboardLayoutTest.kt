@@ -190,4 +190,31 @@ class KeyboardLayoutTest {
         assertEquals("SPACE", rows.last()[2].id)
         assertEquals("SHIFT", rows[3].first().id)
     }
+    
+    @Test
+    fun `qwertz is the default - z sits in the top row, y leads the third row`() {
+        val rows = KeyboardLayout.rows()
+        
+        assertEquals('z', rows[1][5].char)
+        assertEquals('y', rows[3][1].char)
+    }
+    
+    @Test
+    fun `qwerty swaps y and z - y sits in the top row, z leads the third row`() {
+        val rows = KeyboardLayout.rows(qwerty = true)
+        
+        assertEquals('y', rows[1][5].char)
+        assertEquals('z', rows[3][1].char)
+    }
+    
+    @Test
+    fun `qwerty keeps every other row and hint identical to qwertz`() {
+        val qwertz = KeyboardLayout.rows()
+        val qwerty = KeyboardLayout.rows(qwerty = true)
+        
+        assertEquals(qwertz[0], qwerty[0]) // number row
+        assertEquals(qwertz[2], qwerty[2]) // middle row (asdfghjkl)
+        assertEquals(qwertz.last(), qwerty.last()) // bottom row
+        assertEquals(qwertz[1].byChar('p').hint, qwerty[1].byChar('p').hint) // π hint follows the char
+    }
 }

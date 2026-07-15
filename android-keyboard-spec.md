@@ -2473,7 +2473,105 @@ string literal (`hasMimeType("text/*")`), where it is not treated as a comment t
 **Working well in initial testing, deliberately left open rather than marked confirmed** - the user wants
 broader real-world use before treating this one as settled.
 
-## §61 - Backlog Round 16, Part 1: Layout, Language Architecture, Touch-Model Bounds
+## §63 - D-106 Stages 1+2 Implemented: English as an Explicit Language, Cross-Dictionary Loanword Protection (v0.8.34)
+
+Follows a design discussion resolving D-106 (§61) into three stages; stage 3 (installable additional
+languages) is discussed below but deliberately not started, and its Greeklish-transliteration sub-item is
+dropped outright per explicit instruction, not merely deferred.
+
+### D-115 correction: the case-only-correction rule does not fix "stimmen"/"Stimmen" - traced to a different mechanism
+Before implementing, the "never silently apply a pure-case-differing correction" idea discussed for D-115 was
+checked directly against the code, not assumed: `DictionarySuggestionProvider.bestCorrection()`'s own candidate
+filter (`it.lowercase() != token`) already structurally excludes a case-only-different candidate - "Stimmen"
+can never even reach that function's candidate list for typed "stimmen" in the first place. The actual
+mechanism is `CapitalisationEngine.capitalise()`'s §6 rule 3 ("pure noun → auto-capitalise"), which trusts
+`store.partsOfSpeech(word)` - itself a case-insensitive lookup (`InMemoryDictionaryStore`/`SqliteDictionaryStore`
+both `.lowercase()` the key). "stimmen" is tagged as pure `NOUN` in the shipped dictionary, not the documented
+"mixed → ambiguous `{NOUN, OTHER}`" case the build is supposed to detect for exactly this kind of homograph -
+so §6 rule 5 ("ambiguous words: no automatic correction, offered as a suggestion" - which already exists and
+already does precisely what was wanted) never gets a chance to fire, purely because the underlying data
+mis-classified the word as unambiguous. The fix for this specific mechanism is therefore a dictionary-build
+ambiguity-detection improvement, not a new runtime rule; recorded here so a future session doesn't
+re-implement the case-only-correction idea expecting it to also cover this case. That idea is kept for its
+original purpose (D-111's visibility gap, and any future correction path that genuinely could offer a
+case-only candidate) - it just isn't a fix for D-115's own reported symptom. Deferred alongside the Ablaut-
+generation idea (D-115) as a data-quality item, not started this round.
+
+### D-106 Stage 1 - English Promoted to a Real, Selectable Keyboard Language (QWERTY)
+The per-language `stores`/`providers`/`engines` maps (`AdaptKeyService`) already carried a full English entry
+from the earlier real-multilingual-dictionaries work - English was only ever reached via A-03's per-token
+auto-detection, never as a deliberately chosen active alphabet the way German/Greek already were. Promoted it
+to a third, explicit position in the G-01 cycle:
+
+- New pure `language/LanguageCycle` object (`LanguageCycleTest`, 3 tests): the fixed order
+  `German → English → Greek`, with `next()`/`previous()` wrapping around the ends - kept separate from
+  `AdaptKeyService` so the stepping logic itself is JVM-unit-tested, matching this project's usual split
+  between pure policy and Android glue.
+- `AdaptKeyService.toggleLanguage()` now takes a `forward: Boolean` (the swipe's own direction), stepping via
+  `LanguageCycle` instead of the old two-language `if (== GREEK) GERMAN else GREEK` flip;
+  `handleSwipe()`'s `GestureAction.LANGUAGE_PREV`/`LANGUAGE_NEXT` branches (already distinct in `KeyGesture`,
+  previously collapsed into one identical call since direction didn't matter for two languages) now pass their
+  own direction through.
+- `resolveDict()` gained an unconditional `activeLanguage == Language.ENGLISH` branch (mirroring the existing
+  Greek one), so English becomes the *forced* dictionary/capitalisation/store while active, not merely a
+  classifier fallback - the classifier-driven English routing for an auto-detected foreign context (while
+  German is active) is untouched, since that's still exactly what it's for.
+- **QWERTY layout**: German is QWERTZ; English keyboards are QWERTY, differing only in the `y`/`z` position.
+  `KeyboardLayout.rows()` gained a `qwerty: Boolean = false` parameter selecting between two private row-string
+  constants (`"qwertzuiop"`/`"qwertyuiop"` for the top row, `"yxcvbnm"`/`"zxcvbnm"` for the third) - every hint,
+  alternative, weight and every other row is entirely unchanged and shared between both variants, since
+  `letterHints`/`topRowKey()` key off the character itself, not its screen position.
+  `AdaptKeyboardView` gained a parallel `qwerty` property (same `rebuildRows()`-on-set pattern as the existing
+  `greek` property), threaded into `rowsFor()`'s `KeyboardLayout.rows(...)` call; both `.greek =` assignment
+  sites in `AdaptKeyService` (`onStartInputView`, `toggleLanguage()`) gained a matching `.qwerty =` assignment.
+- **Known, accepted trade-off, not fixed this round**: the personal touch-offset model (T-03) keys its learned
+  per-key zones by `Key.id` (`"c:y"`/`"c:z"`), which is character-identity-based, not screen-position-based. Since
+  `y` and `z` sit in different physical positions between QWERTZ and QWERTY, switching to English moves each
+  letter's on-screen position while carrying over whatever offset was learned for it under German - a real, but
+  narrow and self-healing effect (only these two keys, only right after a switch, and T-03's continuous learning
+  already re-adapts from there exactly as it would after any other zone drift). Not worth a bigger fix (e.g.
+  position-aware ids, which would also need migrating already-persisted calibration data) for two keys that
+  settle back out through ordinary typing.
+- `languageLabel()`'s doc comment and the surrounding KDoc updated to drop the old "only German and Greek are
+  user-selectable" framing.
+
+### D-106 Stage 2 - Cross-Dictionary Loanword Protection
+New `AdaptKeyService.knownInOtherLanguage(token)`: true when the token is a known word in any *other* bundled
+language's dictionary than the one currently active for it (`providers.any { (language, p) -> language !=
+activeLanguage && p.isKnownWord(token) }`) - since `providers` already holds all three bundled languages
+simultaneously (German/English/Greek, all reachable via the stage-1 cycle), this naturally covers "every
+active-or-selectable language, plus always English" without needing a separate "which languages are installed"
+concept yet (that's stage 3). Deliberately a plain existence check, not a cross-language suggestion-ranking
+model - matching the scoped-down design agreed on discussion, since frequency counts from different corpora
+aren't meaningfully comparable and the reported problem ("Word" wrongly autocorrected to "wird") only needs
+"don't touch a word that's valid somewhere else", not a merged, ranked completion list.
+
+Wired at the two existing A-03 `suppressAutocorrect`-style choke points, asymmetrically per what each one needs:
+
+- `finalizeAndCommit()`: folded straight into the existing `suppressAutocorrect` flag (`selectActiveDictionary(...)
+  || knownInOtherLanguage(typed)`) - every downstream check already gated on that flag (the A-05 split veto, the
+  diacritic-restoration/high-confidence-correction lookups, the final `autocorrectFor`/`rawCoordinateCorrection`
+  call) now also leaves a cross-language-known token completely alone, for free, with no other line needing to
+  change.
+- `refreshSuggestions()`: **not** folded into `suppressAutocorrect` there, since that flag's existing branch
+  clears the *entire* suggestion bar (correct for "unsupported foreign language, show nothing" - A-03's original
+  case - but wrong here, where the active language's own ordinary completions should keep showing). Instead only
+  the pending-autocorrect chip is suppressed: `val pending = if (knownInOtherLanguage(input)) null else
+  provider.autocorrectFor(...)`.
+
+No new unit tests beyond `LanguageCycleTest` - `knownInOtherLanguage()`/the `finalizeAndCommit()`/
+`refreshSuggestions()` wiring are `AdaptKeyService` glue over the already-tested `DictionarySuggestionProvider.
+isKnownWord()`, consistent with this project's established Android-service testing gap (see D-39 precedent).
+
+### D-106 Stage 3 - What's Left Without Greeklish
+Confirmed still worth keeping, **without** the transliteration sub-item the user struck entirely (not just
+deferred - reasoning recorded: the handful of Greek loanwords worth using can simply be learned over time
+through ordinary typing, and an English/American-convention Greeklish mapping would often be outright wrong for
+German-flavoured Greek transliteration anyway): **installable/activatable additional languages beyond the three
+bundled ones.** Still captured as its own, later design item - reuse the tier-3 model's browser+SAF import
+pattern (`Tier3ModelActivity`/`Tier3ModelInstaller`, no `INTERNET` permission needed) for delivery, define an
+"installable language pack" data format, and add a settings screen to manage installed/active/cycle-reachable
+languages. Not started. - Backlog Round 16, Part 1: Layout, Language Architecture, Touch-Model Bounds
 
 Captured, **not started**, per the usual rule for a batch this size - released item by item later.
 

@@ -28,6 +28,36 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§63 DONE (v0.8.34): D-106 stages 1+2 implemented - English promoted to a real, selectable keyboard
+  language (QWERTY) plus cross-dictionary loanword protection.** New pure `language/LanguageCycle`
+  (German→English→Greek, wrapping `next()`/`previous()`, 3 tests) drives the G-01 swipe direction-aware now
+  that there are three languages, not two; `resolveDict()` forces the English dictionary/capitalisation/store
+  unconditionally while active (mirroring the existing Greek branch), instead of only ever reaching English via
+  A-03 auto-detection. `KeyboardLayout.rows()` gained a `qwerty` parameter (German QWERTZ vs. English QWERTY -
+  only the `y`/`z` position differs, every hint/alternative/weight is shared), threaded through
+  `AdaptKeyboardView`'s new `qwerty` property the same way `greek` already works. Known, accepted, self-healing
+  trade-off: T-03's per-key offset model keys by character id (`"c:y"`/`"c:z"`), not screen position, so
+  switching languages briefly carries over the wrong learned zone for just these two keys until ordinary typing
+  re-adapts them - not worth a bigger id/migration fix for that. **Stage 2**: new
+  `AdaptKeyService.knownInOtherLanguage(token)` checks every bundled language's dictionary (not just the active
+  one) before allowing autocorrect - an embedded loanword like "Word" is now protected exactly like a
+  locally-known word instead of being silently corrected to "wird". Wired asymmetrically: folded straight into
+  `finalizeAndCommit()`'s existing `suppressAutocorrect` flag (so the A-05 split veto and every correction
+  lookup downstream is covered for free), but kept separate in `refreshSuggestions()` (only the pending-
+  autocorrect chip is suppressed there, not the whole suggestion bar - the active language's own completions
+  must keep showing). **Also recorded a correction to the D-115 discussion**: traced end-to-end before
+  implementing anything and found the previously-agreed "block pure-case-only corrections" idea does not
+  actually fix "stimmen"→"Stimmen" - `bestCorrection()`'s own candidate filter already excludes case-only
+  candidates structurally, so the real mechanism is `CapitalisationEngine`'s §6-rule-3 pure-noun auto-capitalise
+  trusting a dictionary POS tag that itself mis-classifies this known homograph as unambiguous `NOUN` instead of
+  the documented "mixed → ambiguous" case - §6 rule 5 (suggestion-only, no auto-apply) already exists and would
+  already do the right thing once the *data* is fixed; this is a dictionary-build item, not a new runtime rule.
+  Deferred alongside the Ablaut-generation idea (D-115), not started. **Stage 3 (installable languages beyond
+  the three bundled) confirmed still worth keeping as a later item; its Greeklish-transliteration sub-item was
+  struck entirely** (not deferred) per explicit user instruction - the handful of Greek loanwords anyone
+  actually wants can just be learned via ordinary typing, and an English-convention transliteration mapping
+  would often be wrong for German-flavoured Greek anyway. 560 unit tests (was 554; +6: 3 `KeyboardLayoutTest`
+  qwerty cases, 3 `LanguageCycleTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 - **§61/§62 CAPTURED (still v0.8.33, no code change this entry, HEAD `e1e70bd` before this commit):** a large
   batch of new backlog from the user, split into two spec sections per the usual large-batch rule (capture,
   don't implement until released). **§61** (layout/architecture/touch-model, D-105…D-110): every main-page
