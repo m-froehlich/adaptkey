@@ -33,6 +33,14 @@ object KeyboardLayout {
         '6' to "&", '7' to "/", '8' to "(", '9' to ")", '0' to "="
     )
     
+    // D-105: every digit's own superscript form, offered as a second D-01 popup alternative alongside
+    // its existing shifted symbol above (so a digit's own D-01 popup can offer ² / ³ etc., not only the
+    // calculator page's dedicated 2/3 keys, D-92).
+    private val NUMBER_SUPERSCRIPTS = mapOf(
+        '1' to "¹", '2' to "²", '3' to "³", '4' to "⁴", '5' to "⁵",
+        '6' to "⁶", '7' to "⁷", '8' to "⁸", '9' to "⁹", '0' to "⁰"
+    )
+    
     /**
      * D-02 / D-22 / D-44 / D-51: the full-stop key's long-press set - the sentence terminators, laid out left
      * to right in the horizontal popup with the full stop centred (`! . ?`). The popup pre-selects the key's
@@ -98,7 +106,7 @@ object KeyboardLayout {
         
         if (showNumberRow) {
             // L-06: persistent number row with shifted-symbol hints.
-            result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
+            result.add("1234567890".map { c -> numberKey(c) })
         }
         
         val topRowLetters = if (qwerty) TOP_ROW_QWERTY else TOP_ROW_QWERTZ
@@ -182,5 +190,20 @@ object KeyboardLayout {
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
+    }
+    
+    /**
+     * D-105: builds a number-row key with its existing shifted symbol (index 0, pre-selected - unchanged
+     * from before) and its own superscript form (index 1) as a real D-01 two-cell popup, instead of the
+     * shifted symbol applying immediately on long-press. `0` sits at the row's right edge - the same
+     * problem §34 already fixed for the letters page's `p` key - so its popup has no room to grow
+     * rightward and gets clamped leftward instead; reversing its list keeps its own glyph nearest the
+     * finger, matching that precedent (only this one call site, not the shared constants).
+     */
+    private fun numberKey(c: Char): Key {
+        val hint = NUMBER_HINTS[c]
+        val superscript = NUMBER_SUPERSCRIPTS[c]
+        val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
+        return charKey(c, hint, alternatives = if (c == '0') alternatives.reversed() else alternatives)
     }
 }

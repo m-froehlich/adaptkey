@@ -28,6 +28,43 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§64 DONE (v0.8.35): a large batch release from §61/§62's backlog - D-105, D-108, D-109, D-111-D-115,
+  D-119-D-121, D-123. D-118 struck outright (not reproducible, no repro forthcoming); D-122 deliberately left
+  unimplemented (still just an unconfirmed design idea, no trace done - this project's "trace before fixing"
+  rule).** Layout: **D-105** every main-page digit key (both the Latin and Greek layouts) now has a second D-01
+  alternative - its own superscript form alongside the existing shifted symbol - with `0` reversed for being an
+  edge key (§34 precedent). Touch/gesture: **D-108** long-press now only cancels once the touch leaves the
+  pressed key's own bounds, not the much smaller system touch-slop; **D-109** T-03 learning got two bounds - an
+  ambiguous tap (T-05) is no longer recorded into the model at all (this was the actual mechanism behind
+  bottom-row keys drifting toward space), `DEFAULT_MAX_OFFSET_FACTOR` tightened 0.9→0.5, and the D-24
+  visualisation now shows the same capped offset the model's own resolution actually uses instead of a raw,
+  more-extreme-looking uncapped value. Suggestions/capitalisation: **D-111/D-112** a pending capitalisation
+  change (an ordinary noun about to auto-capitalise, or a spelling correction that must also carry the right
+  case, e.g. "Fur"→"Für" not "für") now reuses the existing S-06 mechanism to preview live, before it applies -
+  flagged as a broad behaviour change worth confirming doesn't feel noisy on-device, since German capitalises
+  most nouns; **D-113** §44's ratio-override now also requires a cost-1 adjacent-key edit, not the full two-edit
+  budget, fixing "spreche"→"Sprache" (cost-2, was a regression of §44's own fix) without touching "due"/"ddr"
+  (both cost-1, unaffected); **D-114** a new `minAutocorrectFrequency` (opt-in, default 0 so ~15 existing tests
+  with small synthetic frequencies stay unaffected; production wires 300) drops low-confidence candidates like
+  "Virgin" (62) from autocorrect entirely, plus `vorhin` added to `dict_de.tsv` (was genuinely missing);
+  **D-115** turned out to be two different causes - "merke" was a genuine missing-word gap (added, freq 65,
+  protected by A-01 automatically once known), "stimmen"→"Stimmen" was **not** fixable by the case-only-
+  correction idea discussed in §63 at all (that idea doesn't even reach this bug) - traced to
+  `CapitalisationEngine`'s §6 rule 3 trusting a dictionary POS tag that mis-classified a genuine noun/verb
+  homograph as unambiguous `NOUN`; fixed with a one-line data change (`NOUN`→`NOUN,OTHER`) that lets the
+  *already-existing* §6 rule 5 (ambiguous → suggest, don't auto-apply) do its job. Mid-word correction (§58
+  follow-ons): **D-119** SPACE mid-word now splits the token and inserts a literal space instead of finalising
+  the whole word; **D-120** the same generalised fix (moved inside `finalizeAndCommit()` itself, not
+  SPACE-specific) also fixes punctuation/long-press-symbol delimiters landing at the caret instead of always at
+  the token's end; **D-121** `handleShift()` reordered to check Caps-Lock-off before the G-05 word-end gesture,
+  and G-05 now requires the caret to genuinely be at the token's own end, not just "composing is non-empty" -
+  one bug, fixes both the mid-word-Backspace-then-Shift and the Caps-Lock-off-mid-word repros; **D-123** a
+  one-shot guard flag stops a suggestion-bar tap's own echo callback from clearing D-29's space-eating flag
+  before the user's next punctuation keystroke ever arrives. 567 unit tests (was 560; +7: 4
+  `KeyboardLayoutTest`/`GreekLayoutTest`, 3 `DictionarySuggestionProviderTest`). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. **Nothing in this round has been confirmed on a real device** - most of it is
+  Android view/service glue this environment cannot exercise end-to-end (no emulator, no `InputConnection`
+  Robolectric shadow).
 - **§63 DONE (v0.8.34): D-106 stages 1+2 implemented - English promoted to a real, selectable keyboard
   language (QWERTY) plus cross-dictionary loanword protection.** New pure `language/LanguageCycle`
   (German→English→Greek, wrapping `next()`/`previous()`, 3 tests) drives the G-01 swipe direction-aware now

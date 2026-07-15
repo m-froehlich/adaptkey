@@ -730,7 +730,7 @@ gleich	2765	OTHER
 Schlacht	2763	NOUN
 daraus	2755	OTHER
 Länge	2753	NOUN
-Stimmen	2748	NOUN
+Stimmen	2748	NOUN,OTHER
 veröffentlichte	2742	OTHER
 katholischen	2741	OTHER
 Inseln	2739	NOUN
@@ -1527,6 +1527,7 @@ verhindern	1439	OTHER
 religiösen	1439	OTHER
 ermöglichen	1437	OTHER
 vorher	1437	OTHER
+vorhin	900	OTHER
 Standort	1437	NOUN
 wirken	1436	OTHER
 Grad	1435	NOUN
@@ -21725,6 +21726,7 @@ Ventile	79	NOUN
 qualitativen	79	OTHER
 Kunsthändler	79	NOUN
 merkt	79	OTHER
+merke	65	OTHER
 Dracula	79	NOUN
 verpasste	79	OTHER
 Kunstsammlungen	79	NOUN

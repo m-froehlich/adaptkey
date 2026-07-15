@@ -335,6 +335,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
+    // D-108: the pressed key's own bounds, so a small in-key smear does not cancel a pending long-press.
+    private var pressedKeyRect: RectF? = null
     
     // D-58: the perceptible slide animation for a surface/page change (see switchPage()). slideOutKeyRects
     // holds the outgoing page's geometry for the duration of the animation; empty when no slide is active.
@@ -699,6 +701,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * D-24: draws the learned touch model over the keys - for each trained character key, a translucent
      * ellipse of the tap spread (per-axis std deviation) centred on the expected strike point (key centre
      * plus the learned mean offset), with a solid dot at that point.
+     *
+     * D-109: the centre uses [OffsetModel.cappedMeanOffset], the same bound [OffsetModel]'s own key
+     * resolution applies internally - not the raw, uncapped [OffsetModel.Spread.meanDx]/`meanDy] - so the
+     * visualisation never shows a drift more extreme than what the model will actually do when resolving
+     * a real tap.
      */
     private fun drawTouchModel(canvas: Canvas) {
         val model = offsetModel ?: return
@@ -708,8 +715,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 continue
             }
             val spread = model.spreadFor(key.id) ?: continue
-            val cx = rect.centerX() + spread.meanDx.toFloat()
-            val cy = rect.centerY() + spread.meanDy.toFloat()
+            val capX = (rect.width() / 2f).toDouble() * model.maxOffsetFactor
+            val capY = (rect.height() / 2f).toDouble() * model.maxOffsetFactor
+            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capX, capY)
+            val cx = rect.centerX() + cappedDx.toFloat()
+            val cy = rect.centerY() + cappedDy.toFloat()
             val rx = maxOf(spread.stdDevX.toFloat(), minRadius)
             val ry = maxOf(spread.stdDevY.toFloat(), minRadius)
             val oval = RectF(cx - rx, cy - ry, cx + rx, cy + ry)
@@ -758,15 +768,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // D-05 / D-06: optional press feedback (both default off).
                 playKeyFeedback()
                 pressedKey = key
+                pressedKeyRect = rect
                 longPressFired = false
                 downX = event.x
                 downY = event.y
                 invalidate()
+                // T-05: classify the raw contact point into the space/letter ambiguity bands - checked
+                // before recording (D-109) so an ambiguous tap never trains the resolved key's model below.
+                pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
                 // T-03: feed the confirmed tap back into the personal offset model.
                 // event.size (T-04) lets the model track contact area for typing-pattern detection.
-                offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y, event.size)
-                // T-05: classify the raw contact point into the space/letter ambiguity bands.
-                pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
+                // D-109: never for an ambiguous tap (T-05) - it might genuinely have meant the *other* key
+                // (space vs. a bottom-row letter, or vice versa), so training the resolved key on it risks
+                // reinforcing exactly the wrong lesson; this is what drove the reported bottom-row-into-space
+                // drift from repeated space mistaps.
+                if (pendingAmbiguity.kind == TapAmbiguity.NONE) {
+                    offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y, event.size)
+                }
                 scheduleLongPress(key)
                 // D-07: holding the backspace key starts an accelerating repeat delete.
                 if (key.code == KeyCode.DELETE) {
@@ -781,10 +799,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     updatePopupSelection(event.x)
                     return true
                 }
-                // Movement does not change the resolved key (T-01); it only cancels the pending long-press
-                // and any backspace repeat (a swipe on backspace is a word-delete gesture, not a hold).
-                if (pressedKey != null && movedBeyondSlop(event.x, event.y)) {
+                // Movement does not change the resolved key (T-01). D-108: a small smear that has not
+                // actually left the pressed key's own bounds must not cancel a pending long-press - only
+                // leaving the key does. Backspace repeat still reacts to the tighter system touch-slop
+                // (a swipe on backspace is a deliberate G-02 word-delete gesture, not a hold, and should
+                // still be recognised promptly).
+                if (pressedKey != null && movedOutsideKey(event.x, event.y)) {
                     cancelPendingLongPress()
+                }
+                if (pressedKey != null && movedBeyondSlop(event.x, event.y)) {
                     cancelBackspaceRepeat()
                 }
                 return true
@@ -802,6 +825,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 }
                 val key = pressedKey
                 pressedKey = null
+                pressedKeyRect = null
                 invalidate()
                 // D-07: once a backspace hold has repeated, the release must not also fire a tap delete.
                 if (key != null && !longPressFired && !backspaceRepeated) {
@@ -823,6 +847,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 cancelBackspaceRepeat()
                 dismissPopup()
                 pressedKey = null
+                pressedKeyRect = null
                 invalidate()
                 return true
             }
@@ -1075,6 +1100,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val dx = x - downX
         val dy = y - downY
         return dx * dx + dy * dy > touchSlopPx * touchSlopPx
+    }
+    
+    /**
+     * D-108: whether the touch has left the pressed key's own bounds - used to decide whether a smear
+     * should still count as a held long-press, rather than the much smaller system touch-slop
+     * ([movedBeyondSlop]), which could cancel a long-press well before the finger leaves the key at all.
+     */
+    private fun movedOutsideKey(x: Float, y: Float): Boolean {
+        return pressedKeyRect?.contains(x, y) == false
     }
     
     /**

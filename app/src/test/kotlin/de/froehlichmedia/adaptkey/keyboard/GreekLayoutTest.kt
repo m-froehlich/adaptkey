@@ -101,4 +101,12 @@ class GreekLayoutTest {
         assertEquals('1', numberRow.first().char)
         assertEquals("!", numberRow.byChar('1').hint)
     }
+    
+    @Test
+    fun `D-105 the Greek number row also gets the superscript second alternative, 0 reversed`() {
+        val numberRow = GreekLayout.rows().first()
+        
+        assertEquals(listOf("!", "¹"), numberRow.byChar('1').alternatives)
+        assertEquals(listOf("⁰", "="), numberRow.byChar('0').alternatives)
+    }
 }

@@ -26,6 +26,13 @@ object GreekLayout {
         '6' to "&", '7' to "/", '8' to "(", '9' to ")", '0' to "="
     )
     
+    // D-105: every digit's own superscript form, offered as a second D-01 popup alternative alongside its
+    // existing shifted symbol above (shared with the Latin layout's identical treatment).
+    private val NUMBER_SUPERSCRIPTS = mapOf(
+        '1' to "¹", '2' to "²", '3' to "³", '4' to "⁴", '5' to "⁵",
+        '6' to "⁶", '7' to "⁷", '8' to "⁸", '9' to "⁹", '0' to "⁰"
+    )
+    
     /** Tonos (stress-accent) secondary for each stressed vowel, offered as a long-press. */
     val ACCENTS = mapOf(
         'α' to "ά", 'ε' to "έ", 'η' to "ή", 'ι' to "ί", 'ο' to "ό", 'υ' to "ύ", 'ω' to "ώ"
@@ -48,7 +55,7 @@ object GreekLayout {
         val result = ArrayList<List<Key>>()
         
         if (showNumberRow) {
-            result.add("1234567890".map { c -> charKey(c, NUMBER_HINTS[c]) })
+            result.add("1234567890".map { c -> numberKey(c) })
         }
         
         result.add(ROW_TOP.map { c -> letterKey(c) })
@@ -92,5 +99,13 @@ object GreekLayout {
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
+    }
+    
+    /** D-105: see [KeyboardLayout.numberKey] - identical treatment, including the `0` reversal. */
+    private fun numberKey(c: Char): Key {
+        val hint = NUMBER_HINTS[c]
+        val superscript = NUMBER_SUPERSCRIPTS[c]
+        val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
+        return charKey(c, hint, alternatives = if (c == '0') alternatives.reversed() else alternatives)
     }
 }

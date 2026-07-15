@@ -18,10 +18,16 @@ import de.froehlichmedia.adaptkey.suggestion.Umlaut
  *
  * @property store the backing dictionary store
  * @property maxCandidates the maximum number of suggestions returned
+ * @property minAutocorrectFrequency D-114: a correction candidate below this absolute frequency is never
+ *           offered by [autocorrectFor]/[highConfidenceCorrection], however good its edit cost otherwise
+ *           looks - defaults to 0 (no floor) so a plain `DictionarySuggestionProvider(store)` behaves
+ *           exactly as before; production call sites pass a real, corpus-calibrated value (see
+ *           [de.froehlichmedia.adaptkey.AdaptKeyService])
  */
 class DictionarySuggestionProvider(
     private val store: DictionaryStore,
-    private val maxCandidates: Int = 12
+    private val maxCandidates: Int = 12,
+    private val minAutocorrectFrequency: Long = 0
 ) : SuggestionProvider {
     
     override fun suggestionsFor(input: String, previousWord: String?): List<Suggestion> {
@@ -211,13 +217,26 @@ class DictionarySuggestionProvider(
             .filter { it.lowercase() != token && !store.isBlacklisted(it) }
             .mapNotNull { candidate ->
                 val cost = correctionCost(folded, candidate.lowercase())
-                if (cost > maxCost) null else CandidateCost(candidate, cost, score(candidate, store.frequencyOf(candidate), previousWord))
+                val frequency = store.frequencyOf(candidate)
+                // D-114: a candidate too rare to be a trustworthy silent autocorrect target is dropped
+                // outright, regardless of edit cost - see minAutocorrectFrequency.
+                if (cost > maxCost || frequency < minAutocorrectFrequency) {
+                    null
+                } else {
+                    CandidateCost(candidate, cost, score(candidate, frequency, previousWord))
+                }
             }
             .minWithOrNull(compareBy({ it.cost }, { -it.score }))
             ?: return null
-        // A-01: a valid word is never overwritten - except (§44) when shouldOverrideKnownWord() says the
-        // typed word is itself dramatically rarer than the best neighbour.
-        if (isKnownWord(token) && !shouldOverrideKnownWord(token, best.candidate)) {
+        // A-01: a valid word is never overwritten - except (§44/D-113) when the candidate is both a
+        // single adjacent-key-level edit away (cost <= ADJACENT_SUB_COST, not the full two-edit
+        // autocorrect budget) AND dramatically more frequent (shouldOverrideKnownWord()). D-113:
+        // restricting the override to the strict single-adjacent-edit tier is what keeps it to genuine
+        // cheap-typo cases ("due"->"die", "ddr"->"der", both cost 1) without also firing on two real,
+        // unrelated words that merely happen to sit within the wider two-edit autocorrect budget
+        // ("spreche" is a cost-2 edit from "Sprache" - e/a are not adjacent keys - so a common verb form
+        // was losing to a far more frequent, but entirely different, noun).
+        if (isKnownWord(token) && !(best.cost <= ADJACENT_SUB_COST && shouldOverrideKnownWord(token, best.candidate))) {
             return null
         }
         return best.candidate

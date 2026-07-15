@@ -44,6 +44,24 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-105 every digit key now has two alternatives - its shifted symbol and its own superscript`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        // The shifted symbol (unchanged) stays index 0, pre-selected; the superscript is the new index 1.
+        assertEquals(listOf("!", "¹"), numberRow.byChar('1').alternatives)
+        assertEquals(listOf("\"", "²"), numberRow.byChar('2').alternatives)
+        assertEquals(listOf("§", "³"), numberRow.byChar('3').alternatives)
+        assertTrue(KeyboardLayout.hasLongPressAction(numberRow.byChar('2')))
+    }
+    
+    @Test
+    fun `D-105 the 0 key - at the row's right edge - has its alternatives reversed`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        assertEquals(listOf("⁰", "="), numberRow.byChar('0').alternatives)
+    }
+    
+    @Test
     fun `letters carry the AltGr long-press hints`() {
         val rows = KeyboardLayout.rows()
         

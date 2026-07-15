@@ -251,6 +251,12 @@ class AdaptKeyService : InputMethodService() {
     // punctuation mark removes that space. Cleared as soon as anything else is typed.
     private var pendingSuggestionSpace = false
     
+    // D-123: a suggestion-bar tap's own commitText() generates an asynchronous onUpdateSelection callback
+    // that, since composing is already empty by the time it lands, calls reclaimWordAtCaret() - which
+    // would otherwise unconditionally clear pendingSuggestionSpace above before the very punctuation check
+    // it exists for ever gets to run. Armed for exactly the one reclaim call that follows a suggestion tap.
+    private var suppressNextReclaimSpaceReset = false
+    
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
     private var undoCommitted = ""
@@ -316,7 +322,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun installStores(newStores: Map<Language, DictionaryStore>) {
         stores = newStores
-        providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2) }
+        providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, MIN_AUTOCORRECT_CANDIDATE_FREQUENCY) }
         engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
         val german = newStores.getValue(Language.GERMAN)
         dictionaryStore = german
@@ -472,7 +478,7 @@ class AdaptKeyService : InputMethodService() {
             config = s.suggestionConfig
             controller = SuggestionController(config)
             if (this::stores.isInitialized) {
-                providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2) }
+                providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, MIN_AUTOCORRECT_CANDIDATE_FREQUENCY) }
                 // Re-point the active provider; selectActiveDictionary corrects the language per token.
                 provider = providers.getValue(Language.GERMAN)
             }
@@ -604,7 +610,14 @@ class AdaptKeyService : InputMethodService() {
         try {
             captureTokenContext(ic)
             resetWordEndShift()
-            pendingSuggestionSpace = false
+            // D-123: skip the reset exactly once when this call is only the echo of a suggestion-bar tap's
+            // own commit, not a genuine subsequent caret move - otherwise D-29's space-eating flag never
+            // survives to see the punctuation it is meant to react to.
+            if (suppressNextReclaimSpaceReset) {
+                suppressNextReclaimSpaceReset = false
+            } else {
+                pendingSuggestionSpace = false
+            }
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
                 return
@@ -896,6 +909,7 @@ class AdaptKeyService : InputMethodService() {
             
             KeyCode.SPACE -> {
                 // T-05: a space tapped in the upper band carries the letter inferred for a possible merge (A-06).
+                // D-119: finalizeAndCommit() itself splits at the caret when it is mid-word.
                 val inferred = ambiguity.inferredChar.takeIf { ambiguity.kind == TapAmbiguity.LETTER_AMBIGUOUS }
                 finalizeAndCommit(ic, " ", inferred)
             }
@@ -1455,6 +1469,16 @@ class AdaptKeyService : InputMethodService() {
             armShiftForNextWord(ic)
             return
         }
+        // D-119 / D-120: a caret sitting mid-word (not at the composing token's true end - a common state
+        // since §58's reclaim-on-caret-move) means this delimiter must split the token at the caret,
+        // rather than finalising the whole token with the delimiter appended at its end - previously true
+        // regardless of caret position, for every delimiter (SPACE, typed punctuation, a long-press
+        // symbol via commitLongPressSymbol()), since they all funnel through here.
+        if (composingCursor != composing.length) {
+            pendingMergeChar = mergeChar // restore for the recursive "before" finalisation below
+            splitComposingAtCaretAndCommit(ic, delimiter, spaceInferred)
+            return
+        }
         pendingSuggestionSpace = false
         
         // G-05: a word-end Shift made this token's casing explicit; commit it exactly as composed,
@@ -1787,6 +1811,74 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-119 / D-120: called by [finalizeAndCommit] when a delimiter (SPACE, typed punctuation, or a
+     * long-press symbol) arrives while the caret sits mid-word (not at the composing token's true end) -
+     * a common state since §58's reclaim-on-caret-move. Previously every delimiter unconditionally
+     * finalised the *whole* composing token with itself appended at the end, regardless of where the
+     * caret actually was - wrongly turning "insert this character here" into "I have finished typing this
+     * word" (D-119: SPACE), and always landing the delimiter after the whole word instead of at the caret
+     * (D-120: e.g. a quote typed before an existing word ended up after it).
+     *
+     * Splits the composing token in two at the caret: the part before it is finalised exactly like any
+     * ordinary word (autocorrect, capitalisation, committed with [delimiter] via a recursive
+     * [finalizeAndCommit] call - so the delimiter lands exactly where the caret was, between the two
+     * halves); the part after it becomes a fresh composing token, re-seeded at the caret's own new
+     * position (via the same [composingAnchor] mid-word-edit-point mechanism [reclaimSurroundingWord]
+     * already uses) so editing continues right where the caret was - never jumped to the token's end.
+     *
+     * @param ic the current input connection
+     * @param delimiter the character(s) to commit between the split halves
+     * @param spaceInferred forwarded to the recursive [finalizeAndCommit] call for the "before" half (A-06)
+     */
+    private fun splitComposingAtCaretAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char?) {
+        val splitAt = composingCursor
+        val beforeText = composing.substring(0, splitAt)
+        val beforeFlags = ArrayList(composingFlags.subList(0, splitAt))
+        val beforeTaps = ArrayList(composingTaps.subList(0, splitAt.coerceAtMost(composingTaps.size)))
+        val afterText = composing.substring(splitAt)
+        val afterFlags = ArrayList(composingFlags.subList(splitAt, composingFlags.size))
+        val afterTaps = if (splitAt < composingTaps.size) {
+            ArrayList(composingTaps.subList(splitAt, composingTaps.size))
+        } else {
+            ArrayList()
+        }
+        
+        ic.beginBatchEdit()
+        try {
+            // Shrink the real composing region to just the "before" half first - otherwise finalising it
+            // below would replace the *whole* existing composing span (before+after) and silently discard
+            // the "after" half, which only exists in memory here, never yet committed anywhere.
+            ic.setComposingText(beforeText, 1)
+            composing.setLength(0)
+            composing.append(beforeText)
+            composingFlags.clear()
+            composingFlags.addAll(beforeFlags)
+            composingTaps.clear()
+            composingTaps.addAll(beforeTaps)
+            composingCursor = beforeText.length
+            composingAnchor = -1
+            finalizeAndCommit(ic, delimiter, spaceInferred)
+            
+            
+            // Re-seed the "after" half as a fresh composing token, right where the caret was - mirroring
+            // how a brand-new word normally starts (D-62).
+            captureTokenContext(ic)
+            resetWordEndShift()
+            val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
+            val anchor = if (extracted != null) extracted.startOffset + extracted.selectionStart else -1
+            composing.append(afterText)
+            composingFlags.addAll(afterFlags)
+            composingTaps.addAll(afterTaps)
+            composingCursor = 0
+            composingAnchor = anchor
+            updateComposing(ic)
+        } finally {
+            ic.endBatchEdit()
+        }
+        refreshSuggestions()
+    }
+    
+    /**
      * Whether the composing token should be shown in the recognised-word colour (C-04 / S-05): it must be
      * enabled and a known word, and (D-26) the edit must not be inside an existing word - if a letter
      * immediately follows the cursor we are correcting mid-word, and the fragment must not be coloured.
@@ -1843,7 +1935,17 @@ class AdaptKeyService : InputMethodService() {
         // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
         // language (mandatory English + every G-01-cycle language) - the active language's own completions
         // are still shown as usual, only the impending-autocorrect chip is suppressed.
-        val pending = if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
+        val correctionCandidate = if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
+        // D-111 / D-112: run the eventual committed form through the same §6 capitalisation
+        // finalizeAndCommit() will apply, so a pending *case-only* change (D-111 - e.g. an ordinary noun
+        // about to be auto-capitalised) is visible as the existing S-06 pending chip before it is ever
+        // silently applied, and a spelling correction's own case already follows the sentence/field
+        // context (D-112 - "Fur" at a sentence start previews as "Für", not "für"). Deliberately mirrors
+        // only the autocorrectFor/diacritic-fold path (cost-0 within it, so already covered) and not the
+        // rarer raw-coordinate-correction fallback, which needs the real composing taps/geometry and isn't
+        // worth computing on every keystroke just for this preview.
+        val capitalizedPreview = capitalisation.capitalise(correctionCandidate ?: input, contextFor(input))
+        val pending = capitalizedPreview.takeIf { it != input }
         val previous = previousWord
         val sentence = "$tokenContextBefore$input"
         // §9 / C-06: consult tier 3 when the tier-1 confidence is below the threshold (never with the
@@ -2023,6 +2125,11 @@ class AdaptKeyService : InputMethodService() {
                 showNextWordPredictions()
                 // D-29: arm the trailing space added here so an immediately following punctuation removes it.
                 pendingSuggestionSpace = true
+                // D-123: this commitText() above will generate its own onUpdateSelection callback shortly,
+                // which - composing already empty by then - calls reclaimWordAtCaret(); guard it against
+                // clearing the flag just armed, since that callback is only the echo of this very commit,
+                // not a genuine subsequent tap elsewhere.
+                suppressNextReclaimSpaceReset = true
                 armShiftForNextWord(ic)
             }
             
@@ -2179,18 +2286,24 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun handleShift() {
         val view = keyboardView ?: return
-        // G-05: Shift at the end of a fully typed word (a non-empty composing token) toggles the word's
-        // first-letter case; the next key decides whether the toggle is kept or turns into camelCase.
-        if (composing.isNotEmpty()) {
-            handleWordEndShift(view)
-            return
-        }
         val now = SystemClock.uptimeMillis()
-        // D-15: a press while Caps Lock is on releases it; two quick presses engage it.
+        // D-15 / D-121: a press while Caps Lock is on always releases it - checked first, before the G-05
+        // word-end gesture below, so a Caps-Lock-off press mid-word (e.g. right after typing "MCU" with
+        // Caps Lock still on, before any delimiter) is never swallowed by G-05 instead, leaving Caps Lock
+        // stuck on.
         if (view.capsLock) {
             view.capsLock = false
             view.shifted = false
             lastShiftTime = now
+            return
+        }
+        // G-05 / D-121: Shift at the end of a fully typed word toggles the word's first-letter case - the
+        // caret must genuinely sit at the composing token's own end (composingCursor == composing.length),
+        // not merely "composing is non-empty": a mid-word Backspace (e.g. removing a leading character to
+        // re-edit it) leaves composing non-empty with the caret elsewhere, and a Shift press there is an
+        // ordinary case-toggle-for-the-next-letter, not this word-end gesture.
+        if (composing.isNotEmpty() && composingCursor == composing.length) {
+            handleWordEndShift(view)
             return
         }
         if (now - lastShiftTime <= DOUBLE_TAP_SHIFT_MS) {
@@ -2360,5 +2473,16 @@ class AdaptKeyService : InputMethodService() {
         
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
+        
+        // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
+        // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing
+        // from the dictionary entirely) autocorrected to "Virgin" (an English-proper-noun artefact of the
+        // German Wikipedia corpus, frequency 62), when no candidate here should have won at all. Calibrated
+        // against the bundled dict_de.tsv: every legitimate correction target this session already relies
+        // on sits far above this floor (komplett 881, Sankt 968, Standard 1534, kleinen 3748, Wort 4084,
+        // können 23227, werden 93866), while known bad low-confidence candidates sit far below it (Virgin
+        // 62, Vorhinein 11) - a candidate this rare is dropped from autocorrect consideration outright
+        // (though it can still surface in the broader suggestion-bar prefix/fuzzy list, unaffected).
+        private const val MIN_AUTOCORRECT_CANDIDATE_FREQUENCY = 300L
     }
 }

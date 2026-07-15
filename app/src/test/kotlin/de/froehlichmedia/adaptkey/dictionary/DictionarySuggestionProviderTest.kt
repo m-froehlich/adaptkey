@@ -116,6 +116,54 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-113 the ratio override does not fire on a cost-2 edit even at an extreme frequency ratio`() {
+        // "spreche" (a common verb form) and "Sprache" (a noun) differ by "e"->"a" - not adjacent keys on
+        // QWERTZ, so this is a cost-2 edit, not the cost-1 typo class §44 was built for ("due"->"die",
+        // "ddr"->"der"). A huge frequency ratio alone must not be enough to override A-01 here.
+        store.putWord(WordEntry("spreche", 49L))
+        store.putWord(WordEntry("Sprache", 7228L))
+        
+        // The ratio check alone (unchanged) still says yes - it's the new cost-2 exclusion in
+        // bestCorrection() that actually blocks the override, not a change to the ratio rule itself.
+        assertTrue(provider.shouldOverrideKnownWord("spreche", "Sprache"))
+        assertNull(provider.autocorrectFor("spreche", null))
+    }
+    
+    @Test
+    fun `D-113 the ratio override still fires for a genuine cost-1 adjacent-key typo`() {
+        store.putWord(WordEntry("due", 24L))
+        store.putWord(WordEntry("die", 889_897L))
+        
+        // Unchanged from the original §44 behaviour: a single adjacent-key slip still overrides A-01.
+        assertEquals("die", provider.autocorrectFor("due", null))
+    }
+    
+    @Test
+    fun `D-114 minAutocorrectFrequency defaults to no floor - unaffected by the reported case's fix`() {
+        // The shared no-floor provider (default constructor) still finds a low-frequency candidate, exactly
+        // as before D-114 - the floor is opt-in via the constructor, not a blanket behaviour change.
+        store.putWord(WordEntry("Virgin", 62L))
+        
+        assertEquals("Virgin", provider.autocorrectFor("Virhin", null))
+    }
+    
+    @Test
+    fun `D-114 a candidate below minAutocorrectFrequency is never offered, however good its edit cost`() {
+        // Reproduces the reported bug: "vorhin" is missing from the dictionary entirely, and "Virgin" (an
+        // English-proper-noun artefact of the German Wikipedia corpus) was the only candidate within the
+        // edit-cost budget - low-confidence, but nothing stopped it from winning by default.
+        val guardedStore = InMemoryDictionaryStore()
+        val guardedProvider = DictionarySuggestionProvider(guardedStore, minAutocorrectFrequency = 300)
+        guardedStore.putWord(WordEntry("Virgin", 62L))
+        guardedStore.putWord(WordEntry("Vorhinein", 11L))
+        
+        assertNull(guardedProvider.autocorrectFor("Virhin", null))
+        // A candidate at or above the floor is unaffected.
+        guardedStore.putWord(WordEntry("Wort", 300L))
+        assertEquals("Wort", guardedProvider.autocorrectFor("W8rt", null))
+    }
+    
+    @Test
     fun `autocorrectFor returns null for a too-short token`() {
         store.putWord(WordEntry("der", 100L))
         assertNull(provider.autocorrectFor("d", null))

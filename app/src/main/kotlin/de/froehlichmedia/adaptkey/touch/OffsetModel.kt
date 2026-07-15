@@ -31,7 +31,7 @@ import kotlin.math.sqrt
  * @property warmupSamples number of recorded taps below which [resolve] uses pure geometry
  */
 class OffsetModel(
-    private val maxOffsetFactor: Double = DEFAULT_MAX_OFFSET_FACTOR,
+    val maxOffsetFactor: Double = DEFAULT_MAX_OFFSET_FACTOR,
     private val warmupSamples: Long = DEFAULT_WARMUP_SAMPLES
 ) {
     
@@ -309,8 +309,12 @@ class OffsetModel(
     
     companion object {
         
+        // D-109: tightened from 0.9 (a learned zone could sit within 10% of a key's edge, effectively
+        // crowding into the neighbouring key's own territory) - a starting, more conservative point per
+        // the reported J-key overdrift; not yet device-tuned further, easy to retune later (single
+        // constant, same precedent as the various sound/gesture threshold tunings this project has had).
         /** Default cap on the learned mean offset, as a fraction of the key half-size. */
-        const val DEFAULT_MAX_OFFSET_FACTOR = 0.9
+        const val DEFAULT_MAX_OFFSET_FACTOR = 0.5
         
         /** Default number of taps before the model overrides plain geometry. */
         const val DEFAULT_WARMUP_SAMPLES = 20L

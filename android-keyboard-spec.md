@@ -2889,3 +2889,192 @@ flag is cleared before the punctuation check ever gets a chance to run. **Plausi
 runtime-confirmed** (no emulator in this environment, and the actual callback timing here is exactly the kind
 of thing §32/§46 already found could only be confirmed on a real device) - worth checking first, before
 assuming D-29 needs a redesign rather than this one ordering fix.
+
+## §64 - Batch Release: D-105, D-108, D-109, D-111–D-115, D-119–D-121, D-123 (v0.8.35)
+
+Released together per explicit user instruction, following the §63 discussion. **D-118 struck outright** (not
+deferred) - confirmed not reproducible as described, no further repro was forthcoming. **D-122 deliberately not
+implemented this round** - it was captured as an unconfirmed design idea, not a traced bug, and this round's
+priority was items already root-caused; still open, needs a concrete repro/trace before an implementation
+attempt, consistent with this project's "trace before fixing" rule.
+
+### D-105 - Every Main-Page Digit Key Gets a Superscript Second Alternative
+`KeyboardLayout.rows()`/`GreekLayout.rows()` both gained a `numberKey(c)` builder: every digit's existing
+shifted-symbol hint (L-06) stays index 0 (pre-selected, unchanged behaviour for a straight long-press), with
+its own superscript form (`¹²³⁴⁵⁶⁷⁸⁹⁰`) added as index 1 - every digit now opens a real D-01 two-cell popup
+instead of applying its shifted symbol immediately. `0` sits at the number row's right edge - the same problem
+§34 fixed for the letters page's `p` key - so its list is reversed at this one call site (not the shared
+constants), keeping its own glyph nearest the finger once its popup clamps leftward. Applied identically to
+both the German/English Latin layout and the Greek layout, since L-06's number row is otherwise shared/mirrored
+between them. 4 new tests (`KeyboardLayoutTest`, `GreekLayoutTest`).
+
+### D-108 - Long-Press Popup Now Tolerates a Small In-Key Smear
+`AdaptKeyboardView` gained `pressedKeyRect` (the pressed key's own bounds, captured on `ACTION_DOWN` alongside
+`pressedKey`) and a new `movedOutsideKey(x, y)` check. `ACTION_MOVE` now cancels a pending long-press only once
+the touch has actually left the pressed key's rect, not once it clears the much smaller system touch-slop
+(`movedBeyondSlop`) - which could cancel a long-press well before the finger left the key at all. Backspace-hold
+cancellation is deliberately left on the original, tighter slop-based check (`movedBeyondSlop`), since a swipe
+on backspace is a distinct, deliberate G-02 word-delete gesture that should still be recognised promptly, not
+tolerated as a "smear". Android touch-handling glue, no new test - consistent with this project's documented
+testing gap (no emulator/device here), same class as D-64's touch-arbitration fix.
+
+### D-109 - T-03 Learning Now Has Bounds
+Two independent changes, both aimed at the reported drift (bottom-row keys creeping toward space; the user's
+own `j` key drifting too far left):
+1. **Ambiguous taps no longer train the model at all.** `AdaptKeyboardView.onTouchEvent()`'s `ACTION_DOWN`
+   branch now runs the T-05 `ambiguityBands.classify(...)` call *before* `offsetModel?.record(...)`, and only
+   records the tap when `pendingAmbiguity.kind == TapAmbiguity.NONE`. A tap flagged `SPACE_AMBIGUOUS` (a
+   bottom-row letter that might really have meant space) or `LETTER_AMBIGUOUS` (the reverse) is, by
+   definition, not confidently the key it resolved to - training that key on it anyway was reinforcing exactly
+   the wrong lesson every time a mistap got silently corrected elsewhere (T-05/A-05). This directly targets the
+   reported bottom-row-into-space drift at its source, rather than trying to bound it after the fact.
+2. **`OffsetModel.DEFAULT_MAX_OFFSET_FACTOR` tightened from 0.9 to 0.5** - the existing cap on the learned mean
+   offset, as a fraction of a key's half-size. 0.9 let a learned strike point sit within 10% of a key's own
+   edge, effectively crowding into the neighbouring key's territory; 0.5 is a more conservative starting point,
+   not yet device-tuned further (a single constant, easy to retune later, same precedent as several other
+   threshold tunings this project has needed). Also: `AdaptKeyboardView.drawTouchModel()` (the D-24
+   visualisation) previously drew the *raw, uncapped* `Spread.meanDx`/`meanDy` as the strike-point centre - so
+   the very visualisation the user was judging the drift from could show a **more extreme** drift than the
+   model's own `resolve()` would ever actually apply (which already caps it via `logLikelihood()`). Fixed by
+   having the visualisation use `OffsetModel.cappedMeanOffset()` (newly exposed `maxOffsetFactor` property) with
+   the same per-key bound `logLikelihood()` computes, so the visualisation now accurately reflects what the
+   model will really do. `spreadFor()` itself is left returning raw, uncapped statistics unchanged - its
+   existing tests (`OffsetModelTest`, `CalibrationActivityRoboTest`, `OffsetStoreRoboTest`) rely on that exact
+   contract for verifying the underlying sufficient statistics, independent of any display-time capping.
+
+### D-111 / D-112 - A Pending Capitalisation Change Is Now Visible Before It Applies, in the Correct Case
+`AdaptKeyService.refreshSuggestions()`'s `pending` (the S-06 "impending autocorrect" signal, previously only
+ever a spelling correction from `provider.autocorrectFor()`) now runs that correction candidate (or the raw
+input, if none) through the *same* §6 `capitalisation.capitalise(...)` call `finalizeAndCommit()` will
+eventually apply, using the *already-tracked* live context (`contextFor(input)` - sentence-start/field-mandate
+state that already exists per-token, no new tracking needed). Reusing the *existing* S-06 mechanism
+(`SuggestionController.update(input, candidates, pending)`, unchanged) means no new UI code was needed at all:
+- **D-111**: an ordinary noun about to be auto-capitalised (§6 rule 3/4) - previously invisible until the
+  delimiter silently applied it - now shows as the S-06 verbatim/pending chip pair *while still composing*.
+- **D-112**: a correction whose own case must follow the sentence/field context ("Fur" at a sentence start) now
+  previews as "Für", not the dictionary's plain canonical "für" - the capitalisation transform runs on the
+  *corrected* candidate, not only ever on the raw typed text.
+
+Deliberately narrower than a byte-perfect preview of `finalizeAndCommit()`'s full pipeline: only
+`autocorrectFor()`'s own candidate search is mirrored (umlaut/diacritic restoration is already free within it,
+cost 0 once folded - see D-48/D-63), not the rarer raw-coordinate-correction fallback (D-39, needs real
+composing taps/geometry, not worth computing every keystroke for a preview) or the §9 tier-3 `llmForcesUpper`
+exception (defaults to `false` in the preview; the real commit-time value still applies correctly at commit).
+
+**Heads-up, not yet device-tested**: because German capitalises essentially every common noun, this makes the
+S-06 chip pair appear far more often than before - literally on most nouns typed lowercase, not only the
+ambiguous/surprising cases that originally motivated the request. This is the deliberate, direct consequence of
+what was asked ("es darf nicht überraschend geschehen, ohne je in den Vorschlägen aufzutauchen") rather than an
+oversight - flagged clearly since it is a real, broad change to how often the suggestion bar's S-06 pair shows
+up, worth confirming feels right in everyday typing rather than noisy, the same way several other features in
+this project were refined after real-device feedback.
+
+### D-113 - §44's Ratio-Override Restricted to Genuine Cost-1 Typos
+`DictionarySuggestionProvider.bestCorrection()`'s A-01 override check now additionally requires
+`best.cost <= ADJACENT_SUB_COST` (a single neighbouring-key substitution) before `shouldOverrideKnownWord()`'s
+frequency-ratio check is even consulted - previously the ratio alone (`shouldOverrideKnownWord`, unchanged) could
+override A-01 for *any* candidate within the full two-edit `MAX_CORRECTION_COST` budget. Verified against the
+real bundled `KeyboardProximity` map: "due"→"die" and "ddr"→"der" (§44's original motivating cases) are both
+cost-1 (u/i and d/e are QWERTZ-adjacent) and are unaffected; "spreche"→"Sprache" (this round's reported false
+positive) is cost-2 (e/a are not adjacent) and no longer overrides, despite an even more extreme frequency ratio
+(≈147x) than either original case. 2 new tests.
+
+### D-114 - A Low-Confidence Autocorrect Candidate Is Never Silently Applied + the Missing Word Added
+Two independent parts:
+1. **New `minAutocorrectFrequency` constructor parameter on `DictionarySuggestionProvider`** (default `0`, so a
+   plain `DictionarySuggestionProvider(store)` - including the shared test-suite instance - is entirely
+   unaffected): a correction candidate below this absolute frequency is dropped from `bestCorrection()`'s
+   candidate search outright, however good its edit cost otherwise looks. `AdaptKeyService`'s two real
+   construction sites now pass `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY = 300L`, calibrated against the bundled
+   `dict_de.tsv`: every legitimate correction target already relied on this session sits far above it
+   (komplett 881, Sankt 968, Standard 1534, kleinen 3748, Wort 4084, können 23227, werden 93866), while the
+   reported bad candidates sit far below it (Virgin 62, Vorhinein 11) - directly fixes "vorhin"→"Virgin"
+   without needing any per-word special case. A candidate below the floor can still appear in the broader
+   suggestion-bar prefix/fuzzy list (`suggestionsFor`, unaffected) - only the *silent autocorrect* path is
+   gated. Deliberately a constructor parameter rather than a hardcoded constant: an absolute, corpus-scale
+   floor would have broken over a dozen existing tests that use small, illustrative synthetic frequencies (40,
+   50, 80, 200...) to test *relative* ranking, not realistic absolute frequencies - making it opt-in keeps that
+   whole existing test suite meaningful unchanged, while production explicitly opts into the real floor. 2 new
+   tests, including one confirming the no-floor default is unaffected.
+2. **`vorhin` added to `dict_de.tsv`** (frequency 900, `OTHER`) - confirmed genuinely absent from the bundled
+   dictionary (only `Virgin` and the correctly-capitalised `Vorhinein`, an "im Vorhinein" idiom, existed
+   nearby). Calibrated against comparable temporal adverbs already in the corpus (`vorher` 1437, `jetzt` 1499)
+   - a hand-inserted, clearly-documented data patch (no dictionary-build pipeline exists in this environment to
+   regenerate a real corpus-derived frequency, see D-115 below), not a re-run of the actual build.
+
+### D-115 - Two Different Root Causes, Not One: a Ranking Bug vs. a True Data Gap
+Split into what the evidence actually showed, not treated as one problem:
+- **"merke"→"Marke"**: `merke` (the verb form) was genuinely absent from `dict_de.tsv` entirely - not a
+  case-collapse issue (the words differ by more than case: `merke` vs. `Marke`), a plain coverage gap. Added
+  `merke	65	OTHER` next to its conjugation siblings (`merkt` 79, `merken` 72, `merkte` 56 - all similarly rare
+  in this Wikipedia-derived, mostly-third-person corpus), comfortably below `Marke`'s 578 but a small enough
+  ratio (≈8.9x, far under §44's 50x) that A-01 protects it outright once it exists as a known word at all - no
+  override, no special rule needed.
+- **"stimmen"→"Stimmen"**: **not** the same mechanism, and **not** something the §63-discussed case-only
+  correction idea could ever have fixed - traced end-to-end (see §63's own correction note) to
+  `CapitalisationEngine.capitalise()`'s §6 rule 3 (pure noun → auto-capitalise) trusting `store.partsOfSpeech()`,
+  itself a case-insensitive lookup. `Stimmen` was tagged plain `NOUN` in the dictionary, not the documented
+  "mixed → ambiguous `{NOUN, OTHER}`" case the build is supposed to produce for exactly this kind of
+  case-homograph (the verb "stimmen" and the noun "Stimmen" are both genuinely common) - so §6 rule 5
+  ("ambiguous: no auto-capitalisation, offered as a suggestion instead" - which **already exists and already
+  does exactly what was wanted**) never got a chance to fire. Fixed with a one-line data change:
+  `Stimmen	2748	NOUN` → `Stimmen	2748	NOUN,OTHER` in `dict_de.tsv`, directly answering the question raised in
+  discussion (does the dictionary keep both forms, or do they collapse? - confirmed: they collapse into one
+  row/one POS set, and the fix is exactly the "at least a marker that both exist" floor proposed) - no runtime
+  logic changed at all for this one; §6's rule 5 now reaches it because the data correctly says "ambiguous".
+- **Ablaut/irregular-verb generation, and any broader dictionary rebuild** remain explicitly deferred - noted in
+  §63, not touched this round. No dictionary-build pipeline exists in this environment (`scratchpad/build_dict.py`
+  was a throwaway dev tool, never committed) - both data edits above are hand-inserted, clearly-documented
+  patches to the shipped TSV assets, not a re-run of the actual Wikipedia-corpus build.
+
+### D-119 - SPACE Mid-Word Now Inserts a Literal Space Instead of Finalising the Whole Token
+New `AdaptKeyService.splitComposingAtCaretAndCommit(ic, delimiter, spaceInferred)`, invoked from inside
+`finalizeAndCommit()` itself (see D-120 below - the same fix covers both) whenever `composingCursor !=
+composing.length`. Splits the composing token in two at the caret: the "before" half is finalised exactly like
+an ordinary word (autocorrect, capitalisation, committed with the delimiter) via a **recursive**
+`finalizeAndCommit()` call; the "after" half becomes a fresh composing token, re-seeded at the caret's own new
+position via the same `composingAnchor`/`composingCursor` mid-word-edit-point mechanism `reclaimSurroundingWord()`
+already established (D-62/§58) - so editing continues right where the caret was, never jumped to the token's
+end. The real composing region is shrunk to just the "before" text first (`ic.setComposingText(beforeText, 1)`)
+before any of this, so finalising it does not silently replace the *whole* existing before+after composing span
+and discard the "after" half, which exists only in memory until re-seeded. `pendingMergeChar` is explicitly
+restored before delegating, so the recursive "before" finalisation still sees it correctly (an edge case not
+otherwise reachable, kept consistent rather than silently dropped). Android service glue, no new test -
+consistent with this project's established `AdaptKeyService` testing gap (no `InputConnection` Robolectric
+shadow, see §46).
+
+### D-120 - Mid-Word Punctuation Now Lands at the Caret, Not Always at the Token's End
+Same fix as D-119, generalised: the mid-word check now lives *inside* `finalizeAndCommit()` itself (moved from
+being SPACE-specific), so **every** delimiter that funnels through it - typed punctuation, a long-press symbol
+via `commitLongPressSymbol()` (this round's reported repro: a quote typed before an existing word, via long-press,
+previously landed after it) - is fixed for free, with no change needed at any of those call sites. Root cause
+confirmed via trace: `ic.setComposingText(finalWord, 1)` always places Android's cursor *after* the whole
+composed text (`newCursorPosition = 1`), regardless of where the logical caret actually was - `finalizeAndCommit()`
+never had a concept of "the caret is mid-token" before this round at all.
+
+### D-121 - `handleShift()` Now Checks Caps-Lock-Off First and Requires the Caret to Genuinely Be at the Word's End
+One bug, two reported repros (a mid-word Backspace-then-Shift wrongly re-triggering G-05; a Caps-Lock-off Shift
+press mid-word wrongly re-triggering G-05 instead of releasing Caps Lock) - both traced to the same function.
+`handleShift()` reordered so the Caps-Lock-release branch (D-15) is checked *before* the G-05 word-end branch,
+and the G-05 branch itself now requires `composingCursor == composing.length` (genuinely at the token's own
+end), not merely `composing.isNotEmpty()` - a mid-word Backspace can leave composing non-empty with the caret
+elsewhere, which previously still (wrongly) triggered `handleWordEndShift()`'s first-letter flip. Android
+service glue, no new test - same established gap as D-119/D-120.
+
+### D-123 - Suggestion-Bar-Tap's Trailing Space Now Survives the Punctuation Check
+New one-shot guard field `suppressNextReclaimSpaceReset`: set alongside `pendingSuggestionSpace = true` in
+`onSuggestionClicked()`'s `Kind.NORMAL` branch, consumed (and cleared) by `reclaimWordAtCaret()` instead of that
+function's previous unconditional `pendingSuggestionSpace = false` reset. Confirmed via trace (§63) that a
+suggestion-bar tap's own `commitText()` generates an asynchronous `onUpdateSelection` callback which - composing
+already empty by then - calls `reclaimWordAtCaret()` as a plain side effect of its *own* commit, not a genuine
+subsequent tap elsewhere; without the guard, that call cleared D-29's space-eating flag before the user's next
+keystroke (the punctuation mark it exists to react to) ever arrived. Scoped to exactly one reclaim call, so a
+genuine subsequent caret move (a real tap elsewhere) still resets the flag normally, same as before. Android
+service glue, no new test - same established gap.
+
+567 unit tests (was 560; +7: 4 `KeyboardLayoutTest`/`GreekLayoutTest` D-105 cases, 3
+`DictionarySuggestionProviderTest` D-113/D-114 cases). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+**None of this round's items have been confirmed on a real device yet** - several (D-108, D-109, D-111/D-112,
+D-119-D-121, D-123) are Android view/service glue this environment cannot exercise end-to-end (no
+emulator/device, no `InputConnection` Robolectric shadow, per the established, repeatedly-documented limitation
+of this environment).
