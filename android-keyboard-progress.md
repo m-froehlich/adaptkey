@@ -28,6 +28,48 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§61/§62 CAPTURED (still v0.8.33, no code change this entry, HEAD `e1e70bd` before this commit):** a large
+  batch of new backlog from the user, split into two spec sections per the usual large-batch rule (capture,
+  don't implement until released). **§61** (layout/architecture/touch-model, D-105…D-110): every main-page
+  digit key gets a second alt (its own superscript digit, so every digit becomes a real D-01 popup, with the
+  edge-anchored `0` needing the same reversed-order treatment §34 gave `p`); a big deferred language-
+  architecture idea (English as an explicit selectable keyboard language like Greek, consulting every
+  active/selectable language's dictionary plus always English while typing so embedded loanwords like "Word"
+  aren't autocorrected away, and installable/activatable languages beyond the three bundled ones - explicitly
+  not to be implemented from this capture alone, needs its own design pass like D-68/D-92 did); the S-05/C-04
+  recognised-word highlight's semantics are under user reconsideration (possibly reversed to "green means about
+  to be corrected" instead of today's "green means safe, no correction planned") - deliberately just flagged,
+  not designed, per explicit instruction; long-press should tolerate a small in-key smear without cancelling;
+  T-03 offset-model learning needs hard bounds (bottom-row keys drifting toward space from repeated mistaps,
+  and a general drift cap - the user's own `j` key has drifted too far left within the existing per-axis-size
+  cap); and an unexplained editor-specific auto-cap failure in the eBay-Kleinanzeigen app, not yet traced.
+  **§62** is the user-requested "stop chasing individual words, find the general rules" master plan for a large
+  batch of autocorrect/suggestion reports, organised into six themes (A: a pending change must be visible
+  before it applies; B: false-positive corrections firing despite genuine ambiguity; C: dictionary
+  coverage/morphology gaps; D: one report investigated and found not reproducible as described; E: four §58
+  mid-word-correction follow-on bugs, all traced to the same mechanism; F: suggestion-accept-vs-punctuation).
+  Several of §62's items were checked directly against the real bundled `dict_de.tsv` and the actual
+  `AdaptKeyService.kt`/`DictionarySuggestionProvider.kt`/`KeyboardProximity.kt` code before writing, not
+  guessed: confirmed **`spreche`/`Sprache` (D-113)** is §44's own 50x ratio-override firing on an unrelated
+  homograph pair (7228 vs. 49 ≈ 147x) rather than a typo relationship - a real regression from §44's own fix;
+  confirmed **`vorhin`/`Virgin` (D-114)** - `vorhin` is simply absent from the dictionary, `Virgin` is an
+  English-proper-noun artefact of the Wikipedia corpus; confirmed **`merke`/`Marke` and `stimmen`/`Stimmen`
+  (D-115)** - the lowercase verb forms are entirely missing, directly answering the user's own question: the
+  dictionary build's POS-from-casing heuristic collapses a case-homograph pair into one surface form, silently
+  discarding the other rather than keeping both or even flagging that both exist; confirmed **single "c"→"x"
+  (D-118) is NOT currently reproducible** - `MIN_AUTOCORRECT_LENGTH = 2` blocks any single-character token
+  before autocorrect runs at all, reported back rather than captured as a fix target; and confirmed, by reading
+  `AdaptKeyService.kt` directly, all four §58-mid-word-correction bugs (D-119 SPACE mid-word wrongly finalises
+  instead of inserting a literal space; D-120 mid-word punctuation always commits at the composing token's
+  *end*, never at the actual caret, since `setComposingText(text, 1)` always parks the cursor there; D-121
+  `handleShift()` checks `composing.isNotEmpty()` before the Caps-Lock-off branch and never checks the caret is
+  genuinely at the token's end, so both a mid-word Backspace-then-Shift and a Caps-Lock-off Shift wrongly
+  re-trigger the G-05 word-end gesture instead - one bug, two repros; D-123 suggestion-bar-tap's trailing space
+  plausibly gets cleared by `reclaimWordAtCaret()`'s unconditional `pendingSuggestionSpace = false` before the
+  D-29 punctuation check ever runs, though this one is code-grounded, not runtime-confirmed). Remaining §62
+  items (D-111/D-112 visibility/case-propagation, D-116 compound-word recognition, D-117 too-late recognition,
+  D-122 split-priority during mid-word correction) are captured as open design questions, not yet traced to a
+  specific cause. **Nothing in §61/§62 is implemented - captured only, per the usual large-batch rule.**
 - HEAD: `47bbf10` — v0.8.33 (§60). Working tree unchanged, this entry is a docs-only status update (no version
   bump). **Spec §12/§13/§14 complete.** §28-§60 implemented. **§58 (D-62/D-87 mid-word live correction)
   CONFIRMED WORKING on a real device** - closes out a saga that spanned D-84, §32's two D-87 fixes, §46's

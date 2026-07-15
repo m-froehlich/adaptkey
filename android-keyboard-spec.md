@@ -2472,3 +2472,322 @@ string literal (`hasMimeType("text/*")`), where it is not treated as a comment t
 
 **Working well in initial testing, deliberately left open rather than marked confirmed** - the user wants
 broader real-world use before treating this one as settled.
+
+## §61 - Backlog Round 16, Part 1: Layout, Language Architecture, Touch-Model Bounds
+
+Captured, **not started**, per the usual rule for a batch this size - released item by item later.
+
+### D-105 - Every Main-Page Digit Key Gets Its Own Superscript Digit as a Second Alt
+Extends L-06's existing shifted-symbol hint (each digit already carries its QWERTZ shifted symbol, e.g. `2`→`"`,
+`3`→`§`) with a second long-press alternative: the digit's own superscript form (`²`, `³`, and, for
+completeness, `¹`/`⁴`.../`⁰` on every other digit too - not only 2 and 3, which is the visually obvious case
+since square/cube are the everyday ones, but "alle Zifferntasten" per the request). Every digit key therefore
+goes from a single alternative (which - per D-14/D-53 - applies immediately on long-press with only a one-cell
+preview) to **two** alternatives, which per D-01 means every digit now opens a real multi-cell selection popup
+instead of applying its shifted symbol immediately. This is a genuine behaviour change for the whole number
+row, not just a cosmetic addition, and needs deciding during implementation: which of the two alternatives is
+index 0 (pre-selected), and in what order the two are offered. `0` sits at the number row's right edge, so -
+exactly the problem §34 already fixed for the letters page's `p`→π key - its popup will want to grow left
+instead of right once clamped to the screen edge; the same reversed-alternatives-at-this-one-call-site
+treatment (not a change to any shared constant) applies here.
+
+### D-106 - Language Architecture: Explicit English, Multi-Dictionary Consultation, Installable Languages (Big Idea, Deferred)
+Two related asks, both pointing at the same underlying gap - AdaptKey currently has exactly one *active*
+language pointer (German/Greek, toggled by the G-01 space-swipe) plus a separate, invisible A-03 classifier
+that silently reassigns English per-token for autocorrect purposes, but English is never a real, user-selectable
+keyboard alphabet the way German/Greek are, and there is no notion of "installing" or "activating" a language
+beyond the three hardcoded, bundled ones:
+
+1. **English as an explicit, selectable keyboard language, like Greek.** The user wants to cycle to English via
+   the same G-01 mechanism (or an equivalent selector) that already switches German ↔ Greek, not have it stay a
+   background auto-detection artifact.
+2. **Embedded loanwords/code-switching must not get autocorrected away.** Typing English words inline in German
+   text (e.g. "Word") currently has no protection - A-03's language classifier requires several words of context
+   (§43's `minWords = 2` fix) before it suppresses German autocorrect for a whole *stretch* of foreign text, but
+   a single embedded English word surrounded by German has no such signal and gets silently autocorrected to
+   whatever German word is nearest (e.g. "Word" → "wird"). Proposed direction: the dictionaries of **every
+   currently-active-or-selectable language** (i.e. everything reachable via the space-swipe cycle) **plus always
+   English** should be consulted as valid-word candidates while typing, not just the one currently "active"
+   language - so "Word" is found as a known word in the English dictionary and is accepted as a real candidate
+   (removing the perceived ambiguity with "wird" and blocking the autocorrect), regardless of which alphabet is
+   currently toggled. In the user's own case this would mean German + English (mandatory) + Greek, ideally
+   including Greek transliteration (Greeklish) "if that isn't too much effort".
+3. **Other languages should be installable/activatable later**, implying a real language-management concept
+   (enable/disable/install a language) rather than a fixed three-language toggle baked into the code.
+
+**Explicitly not to be implemented from this capture alone** - this is architecturally closer to D-68's
+"rethink calibration" or D-92's calculator redesign: it touches the active-language toggle (G-01), the A-03
+classifier/dictionary-selection plumbing (`selectActiveDictionary`/`resolveDict`), the settings surface, and
+potentially the shipped dictionary asset set, and needs its own design pass (exact UI for "install/activate a
+language", whether "consult N dictionaries simultaneously" changes the autocorrect/suggestion ranking model in
+ways that need new tie-breaking rules, and what "always consult English" costs in per-keystroke lookup time)
+before any code changes.
+
+### D-107 - Recognised-Word Highlight (S-05/C-04) Semantics Under Reconsideration (Not Decided - Flag Only)
+Raised, explicitly **not** to be designed or implemented yet ("deshalb erstmal nur vormerken") - the user is
+reconsidering when the green highlight should apply at all. As currently specified (S-05), the highlight means
+"this word is recognised as correct and complete, *no* correction is planned" - i.e. green currently signals
+*safety*. The user's new framing is the opposite: green should apply *only when the word is about to be
+auto-corrected*, i.e. signal an impending *change*, not "this is fine as typed". This is a full reversal of
+current S-05 semantics, not a tweak, and the user is explicit that the exact rule isn't settled yet. Noted here
+purely as a flag for a future design conversation - no interpretation, no implementation.
+
+### D-108 - Long-Press Popup Must Tolerate a Small In-Key Smear
+Reported: a slight finger smear while holding a key with an alt (e.g. the full-stop key) - without the finger
+actually leaving the key's own bounds - can currently cancel the pending long-press instead of still opening
+the popup. The request: as long as the touch has not left the key's own bounds, it must still count as a
+held long-press and show the popup: likely the scheduled-long-press-cancellation logic reacts to the system's
+small `ACTION_MOVE` touch-slop rather than to "did the finger leave this key's rect", the way the D-64
+drag-to-trash investigation found a similar too-eager slop-based cancellation for a different gesture. Not
+yet traced against the actual `scheduleLongPress`/move-handling code - captured as reported, to investigate
+together with an implementation pass.
+
+### D-109 - T-03 Offset-Model Learning Needs Hard Bounds
+Two related reports, both about the personal touch-offset model (T-03) drifting a key's learned zone too far
+from its true, safe position, purely from ordinary (if imprecise) real-world typing - not overridden
+deliberately by the user, and visibly worse for them, confirmed by the D-24 touch-zone visualisation:
+
+1. **Bottom-row keys (`c`/`v`/`b`/`n`/`m`, the row directly above the space bar) drift toward space** when the
+   user repeatedly mistaps one of them instead of hitting space. Every such mistap that later gets silently
+   corrected (the T-05 space-ambiguous flag already exists for exactly this class of tap, and A-05 already uses
+   it to retroactively turn the wrong letter back into a space) is nonetheless still being fed into that key's
+   own `OffsetModel` as if it were a genuine, confirmed hit for that letter - reinforcing exactly the wrong
+   lesson. Proposed direction: a tap that is later resolved as "this was actually meant to be a space" (T-05
+   space-ambiguous, subsequently split back to a space by A-05) should not be recorded as a positive training
+   sample for the letter key it landed on - and even so, as a hard backstop, the model should never let a
+   bottom-row key's zone drift so far toward space that it starts overlapping the space bar's own territory in
+   the first place.
+2. **General drift bound, beyond the specific space-adjacency case**: the user's own `j` key has drifted
+   significantly leftward, to their detriment, well within whatever cap the model already applies
+   ("offset capped to key size" per T-03) - the existing cap is evidently too loose in practice, or a
+   directionally-biased pattern (from typing-pattern seeding, T-04/`PatternSeed`, or ordinary sustained real
+   usage) can still walk a zone to an uncomfortable extreme even while staying inside it. Needs investigation
+   into the current clamp value/shape and whether a materially tighter or shape-aware (not just per-axis-size)
+   bound is warranted, independent of the bottom-row-specific fix above.
+
+### D-110 - eBay Kleinanzeigen Input Field Never Auto-Capitalises (Investigate)
+The message-input box in the (eBay) Kleinanzeigen app never capitalises the first letter, neither at the true
+start of a line nor at a sentence start - both of which are AdaptKey's own rules (§6 hierarchy rule 2,
+independent of whatever the field's own `EditorInfo` caps flags say) and should apply regardless of what the
+target field requests. Not yet traced - candidate causes to check once picked up: whether this field reports an
+`inputType`/variation (e.g. a filter or no-suggestions variant) that some existing capitalisation code path
+mistakenly treats as "skip auto-cap entirely" rather than just "no field-mandated baseline", or whether
+`getCursorCapsMode()`/`EditorInfo` from this specific app returns something AdaptKey's `CapitalisationEngine`
+call site doesn't handle. Needs the actual field's reported `EditorInfo` (loggable during a debug session) to
+make progress rather than guessing further.
+
+## §62 - Backlog Round 16, Part 2: Autocorrect/Suggestion Quality - Master Plan
+
+The user handed over a large batch of concrete autocorrect/suggestion reports with an explicit instruction on
+how to work through them: **do not chase individual reported words** - find and fix the *general rules* behind
+the pattern, the way §43 (a language-classifier confidence gate), §44 (a relative instead of absolute A-01
+veto) and §45 (a uniform bigram-evidence requirement across both split strategies) already did this session.
+Before writing this section, each report was checked directly against the bundled dictionary assets
+(`app/src/main/assets/dict_de.tsv`) and/or the actual code (`AdaptKeyService.kt`,
+`DictionarySuggestionProvider.kt`, `KeyboardProximity.kt`) rather than guessed at - several turned out to have a
+concrete, confirmable cause already visible in the current build; others are dictionary-data findings; a couple
+remain open questions needing a design decision. **Nothing in this section is implemented yet** - captured as a
+batch, to be worked through and released deliberately, most likely roughly in the theme order below (visibility
+gaps and the two confirmed regressions first, since those are the most self-contained; the mid-word-correction
+cluster together, since all four share one function/mechanism; the dictionary-coverage questions last, since
+those may need a data/build-pipeline change rather than a pure logic fix).
+
+### Theme A - A Pending Change Must Be Visible Before It Applies
+
+#### D-111 - A Silent Case-Changing Correction Is Never Shown as a Suggestion First
+When autocorrect is about to change a word's *case* (most often: silently upper-casing a word the user
+deliberately typed lower-case), that outcome currently never appears in the suggestion bar in advance - S-02's
+"the word exactly as typed does not appear as a suggestion" rule (built for the ordinary "don't waste a slot on
+a no-op" case) ends up hiding a case change that is very much *not* a no-op from the user's point of view. S-06
+already carved out the one existing exception (a pending literal-substitution autocorrect gets a verbatim
+"keep as typed" chip) - this needs a comparable exception for a pending *case-only* change: the target casing
+must be visible in the bar before it is silently applied, not discovered only after the fact.
+
+#### D-112 - A Correction's Own Case Must Match the Target Casing Context, Not Just the Dictionary's Canonical Form
+Example given: typing "Fur" at a position that will be capitalised (sentence start, or an explicit mid-word
+capital) currently offers/applies the dictionary's plain canonical form "für" - the correction should instead
+be "Für", matching the same capitalisation context that would apply to any other word typed there. This looks
+like an ordering problem between whichever step resolves the *best-matching dictionary word* (case-folded,
+naturally, since umlaut/case folding is how the fuzzy match works at all) and whichever step applies §6's
+capitalisation transform - the transform needs to run on the *chosen correction*, not only ever on the *raw
+typed text*, or a corrected word can silently skip the capitalisation the identical, uncorrected word would
+have received. Not yet traced to a specific call site; likely close to where `TokenRepair`/`autocorrectFor`
+hands its answer back to `finalizeAndCommit()`, which is also where §6's `CapitalisationEngine` runs.
+
+### Theme B - False-Positive Corrections: Ambiguity/Confidence Gating
+
+#### D-113 - "spreche" → "Sprache": §44's Own Ratio-Override Fires on an Unrelated Homograph Pair
+Checked directly against `dict_de.tsv`: **both words are separately known** - `Sprache` (freq 7228, NOUN) and
+`spreche` (freq 49, OTHER/verb-form) each have their own dictionary row, so this is not a missing-word case like
+D-115 below. The frequency ratio is ≈147x, comfortably past §44's `KNOWN_WORD_OVERRIDE_RATIO` (50x) - the very
+rule §44 introduced specifically to let a hugely-more-frequent *typo neighbour* (`die` vs. `due`, `der` vs.
+`ddr`) override A-01's known-word protection. Here it fires on two words that are not typo variants of each
+other at all, merely a common noun and a rarer verb inflection that happen to sit within edit-distance budget
+of each other (a single letter + case). §44's ratio-alone heuristic is evidently not sufficient by itself to
+distinguish "this is almost certainly the intended typo-correction of a rare misspelling" (its original,
+correct use) from "these are two entirely different, unrelated real words, one of which is just far more common
+than the other" (this new false positive) - needs a sharper condition, not a bigger ratio or a word-specific
+exception. Candidate angle to explore: a same-length/case-differs-only correction relative to a real known word
+is much more likely to be this second, illegitimate class than a genuine spelling typo, and might need its own,
+stricter rule (or outright exclusion from the override) rather than reusing the exact same ratio threshold as a
+plain misspelling.
+
+#### D-114 - "Vorhin" → "Virgin"/"vorhinein": Missing Dictionary Entry + No "Genuinely Ambiguous, Don't Correct" Gate
+Checked directly against `dict_de.tsv`: **`vorhin` itself does not exist in the dictionary at all.** The only
+near matches are `Virgin` (freq 62, NOUN - an English proper-noun artifact of the Wikipedia-derived corpus,
+almost certainly from articles mentioning Virginia/Virgin Islands/the Virgin brand) and `Vorhinein` (freq 11,
+NOUN, capitalised - itself a likely POS/casing-heuristic miscategorisation, since "vorhinein" is an ordinary
+lower-case adverb in real German, not a proper noun; its low sample count plausibly let sentence-initial
+capitalised occurrences dominate the "canonical surface case" heuristic - see A-03's build notes). Two separate
+fixes fall out of this one report: (1) a straightforward dictionary-data gap (add `vorhin`, fix `Vorhinein`'s
+casing/POS), and (2) the more general, more valuable fix - **there is currently no "none of the candidates is a
+clearly dominant winner, so don't silently autocorrect at all" gate**. Even with the data gap fixed, the
+underlying mechanism accepted a correction here despite two candidates of comparable low frequency (62 vs. 11)
+and no dictionary entry for the actually-intended word - exactly the "keine Eindeutigkeit" complaint that
+recurs across several of this round's reports (see also D-111-adjacent cases and D-113). Also flags a data-
+quality question worth answering once the dictionary build is revisited: why does a rare English proper noun
+like `Virgin` outrank a real German adverb form in the first place, and should the build pipeline filter or
+down-weight low-value foreign proper-noun noise picked up incidentally from the German Wikipedia dump (ties
+into D-106's broader multi-language-dictionary discussion).
+
+### Theme C - Dictionary Coverage / Morphology
+
+#### D-115 - "merke" → "Marke", "stimmen" → "Stimmen": Missing Verb-Inflection Entries, Not a Ranking Bug
+Checked directly against `dict_de.tsv` - **neither `merke` nor `stimmen` (the verb forms) exist as their own
+dictionary rows at all**; only `Marke` (freq 578, NOUN) and `Stimmen` (freq 2748, NOUN) do. Since the typed
+word is not a known word in either case, A-01 never even engages - ordinary autocorrect just finds the nearest
+known candidate (a one-letter substitution plus a case change, well within budget) and applies it, with nothing
+to override. This directly answers the question raised alongside these two reports: **does the dictionary keep
+both the noun and the verb form of a case-homograph, or do they collapse into one?** Confirmed: **they
+collapse** - per A-03's build notes, part-of-speech is derived from casing statistics on a single,
+case-insensitive dictionary key, with one "canonical surface case" chosen as whichever casing was more frequent
+in the source corpus; the "mixed → ambiguous `{NOUN, OTHER}`" case the build is documented to detect apparently
+still keeps only one *surface form* (one dictionary row) per key even when it flags the ambiguity, discarding
+the minority-cased form's own separate existence as a known word entirely - exactly the gap the user suspected,
+and now confirmed with real data rather than assumed. At minimum this needs the dictionary build to record that
+*both* forms exist (the user's own suggested floor: "mindestens muss dort ein Vermerk stehen, dass es beide
+gibt") so A-01 can protect the minority form even if only one surface spelling is ever offered as a completion;
+ideally both surface forms become independently known words. This is a data/build-pipeline change
+(`scratchpad/build_dict.py`, outside the shipped app), not a runtime logic fix - likely needs re-running the
+dictionary build with the collapsing behaviour changed, not just patched at read time.
+
+#### D-116 - Compound-Word/Fragment Recognition ("Beitragsjahren")
+Typing "Nach 45 Beitragsjahreb" (a typo of "Beitragsjahren") is not recognised or corrected - plausibly because
+the intended whole word does not exist in the dictionary at all (an uncommon compound, "Beitragsjahre" +
+dative-plural "-n"), not because of any correction-quality bug. Raised by the user as a concrete example of a
+broader idea: could AdaptKey recognise/correct compound words (or fragments of them) it has never seen as a
+whole unit, by decomposing them the way B-01 already does for explicitly hyphenated compounds, but for
+unhyphenated ones? This is a substantial, open-ended feature idea (German compound-splitting without a hyphen
+to anchor on is a much harder problem than B-01's hyphen-segmented case), not a quick fix - captured here as a
+question to think about, not a committed design.
+
+#### D-117 - Words Recognised Too Late for a Garbled Prefix ("erkamm" → should already hint "erkannt")
+General complaint: recognition/suggestion often kicks in far later than it could. Concrete example: typing
+"erkamm" (multiple edits away from "erkannt": not a single adjacent-key substitution, more than one character
+differs) should arguably already surface "erkannt" as a likely candidate at that point, the way a human reader
+would guess it immediately. Flagged by the user themselves as a genuinely open question - is this achievable
+with the existing tier-1 edit-distance/proximity approach at all, or does meaningfully "reading past" this many
+simultaneous typos really need the tier-3 mini-LLM (still device-pending, see the "Remaining" section of
+progress.md) rather than a tier-1 rule tweak? No commitment either way yet - needs a concrete decision on how
+much fuzz budget/ranking change is worth trying at tier-1 before concluding this is genuinely LLM-only territory.
+
+### Theme D - Investigated, Not Reproducible as Described
+
+#### D-118 - Single "c" → "x": Not Reproducible in the Current Code as Described
+Traced directly: `DictionarySuggestionProvider.bestCorrection()` has a hard `MIN_AUTOCORRECT_LENGTH = 2` floor
+(`DictionarySuggestionProvider.kt:205,254`) that rejects any token shorter than 2 characters *before* any
+candidate search, known-word check, or A-01 guard even runs - a standalone, single-character "c" cannot reach
+autocorrect at all via this path. (For what it's worth, `KeyboardProximity`'s QWERTZ adjacency map does list `c`
+and `x` as neighbours - `"yxcvbnm"` - so if this were reachable, `x` would indeed be a cheap substitution
+candidate; it just isn't reachable as described.) Reported back rather than captured as a blind fix target -
+needs a sharper repro to make progress: was the `c` truly a standalone token (bounded by spaces/punctuation on
+both sides), or part of a longer word where a `c`-containing segment got corrected and only looked like an
+isolated "c" in the moment it was observed?
+
+### Theme E - Mid-Word Correction (§58) Follow-On Bugs
+
+All four items below were traced directly against the current `AdaptKeyService.kt` and are confirmed causes,
+not guesses - they all sit in or immediately around the same mid-word-editing mechanism §58 introduced
+(`reclaimWordAtCaret()`, `composingCursor`, `handleShift()`), which makes sense as a cluster: §58 made "the
+caret is sitting somewhere inside an existing word" a much more common, load-bearing state than it used to be,
+and several other code paths were apparently never updated to account for the caret *not* being at the
+composing token's end while that state is active.
+
+#### D-119 - SPACE Mid-Word Wrongly Finalises Instead of Inserting a Literal Space
+Repro: "Das ist ein Test.nächstes Wort", caret placed right after the period (mid-word relative to
+`nächstes`, not at its end) specifically to insert a missing space there - pressing SPACE does not insert a
+space at all; instead the whole word gets accepted/finalised and the caret jumps to its end. Confirmed:
+`handleKey()`'s `KeyCode.SPACE` branch calls `finalizeAndCommit(ic, " ", ...)` **unconditionally** whenever
+`composing` is non-empty, with no check of `composingCursor` against `composing.length` at all - so SPACE
+always finalises the *entire* composing token as if the user had just finished typing it, regardless of where
+in the word the caret actually is. The user's own generalisation looks correct: SPACE is probably never the
+right trigger for "finalise this word" unless the caret genuinely sits at the word's own end (or, per the
+user's more cautious floor, at least requires a letter to have just been typed at that position first) - a
+mid-word SPACE should instead behave as an ordinary literal-space insertion that splits the token in two.
+
+#### D-120 - Mid-Word Punctuation/Symbol Insertion Lands at the End of the Word, Not at the Caret
+Repro: type "Ein", place the caret before the `E`, type a `"` (double quote, via a key's long-press
+alternative) - the quote ends up *after* "Ein" (i.e. "Ein\""), not before the `E` where the caret visibly was.
+Confirmed: `commitLongPressSymbol()`'s non-letter path (and `finalizeAndCommit()` generally, so this is not
+specific to quotes or to long-press) commits the finalised word via
+`ic.setComposingText(finalWord, 1)` - Android's `newCursorPosition = 1` places the cursor **after the entire
+composing text**, unconditionally - and only then commits the delimiter at that (now end-of-word) cursor
+position via `ic.commitText(delimiter, 1)`. There is no code path that commits a delimiter at the caret's
+actual, pre-existing mid-word position (`composingCursor`) - every delimiter commit assumes "the caret is at
+the end of what I'm about to finalise", which §58 broke the moment mid-word editing became a first-class,
+common state.
+
+#### D-121 - `handleShift()` Always Prefers the G-05 Word-End Gesture Over Caps-Lock-Off, and Doesn't Check the Caret Is Actually at the Word's End
+Two reported symptoms trace to the exact same code (`AdaptKeyService.handleShift()`, one function), so this is
+one bug with two triggers, not two:
+
+1. **Backspace mid-word, then Shift, wrongly re-triggers G-05.** Repro: type "Verbinder", caret after the `V`,
+   Backspace (removes the `V`, leaving "erbinder" with the caret now at the token's *start*, not its end), then
+   Shift (intended, per the user, as an ordinary case toggle) - the following `e` gets capitalised
+   unexpectedly. Confirmed: `handleShift()`'s very first check is `if (composing.isNotEmpty())`
+   (`AdaptKeyService.kt:2147`) - not a comparison of `composingCursor` against `composing.length` - so *any*
+   non-empty composing token routes straight into `handleWordEndShift()` → `flipFirstInComposing()`, which
+   always flips `composing[0]` (the string's first character) regardless of where the caret actually sits.
+   There is no "is the caret genuinely at this token's end" check anywhere in this path.
+2. **Caps Lock, mid-word, Shift-to-turn-off wrongly re-triggers G-05 instead.** Repro: engage Caps Lock, type
+   "MCU" (no Space yet - `composing` is still non-empty), press Shift meaning only to release Caps Lock -
+   confirmed: the same `composing.isNotEmpty()` check at line 2147 is evaluated **before** the
+   `view.capsLock` check further down the same function (lines 2153-2158), so the Caps-Lock-release branch is
+   never reached at all while composing is non-empty; the G-05 word-end gesture fires instead, and Caps Lock
+   silently remains engaged for the rest of the input.
+
+Both symptoms need the same underlying fix: `handleShift()` needs to (a) check Caps-Lock-off intent before
+falling into the G-05 branch, not after, and (b) gate the G-05 word-end gesture on the caret genuinely being at
+the composing token's own end (`composingCursor == composing.length`, or equivalent), not merely on
+`composing` being non-empty - the same kind of caret-position blind spot D-119/D-120 above already found in two
+other call sites.
+
+#### D-122 - Mid-Word Correction Should Raise Word-Split Priority When an Unresolved c/v/b Connector Is Detected
+When A-05's word-splitting fails to catch a stray `c`/`v`/`b` (etc.) that should have been a space, the token is
+left stuck together with the wrong letter as an accidental connector - the request is that entering *mid-word*
+correction on such a token (§58) should recognise this specific shape (an otherwise-unresolved
+`TokenRepair.OVER_SPACE_LETTERS` character sitting inside the composing token) and give the split candidate
+noticeably higher priority than it would otherwise get, so the user gets an easy way to split the words apart
+without much extra effort once they've gone back to fix it. Not yet investigated against
+`TokenRepair`/`refreshSuggestions()`/the existing §49 live-split-preview machinery (which already calls
+`trySplit()` continuously while composing, just for colouring, not yet as a promoted suggestion) - captured as
+a design direction to explore together with an implementation pass, not a traced bug.
+
+### Theme F - Suggestion-Accept vs. Immediately-Typed Punctuation
+
+#### D-123 - Suggestion-Bar-Tap's Trailing Space May Not Survive to the Punctuation Check
+D-29 (already implemented, v0.7.10) is supposed to cover exactly this: accepting a suggestion adds a trailing
+space, and typing punctuation immediately afterward should eat that space. Traced the current wiring rather
+than assuming it's simply missing: `onSuggestionClicked()`'s bar-tap path is the *only* site that arms
+`pendingSuggestionSpace = true` (autocorrect-on-commit doesn't need to, since it commits the delimiter directly
+without an extra space) and `finalizeAndCommit()`'s `composing.isEmpty()` branch is the only site that checks
+and consumes it. A plausible gap: `onSuggestionClicked()` calls `commitText()` *then* `clearComposing()` *then*
+sets the flag - but `commitText()` on a collapsed selection triggers the framework's `onUpdateSelection()`
+callback, which (composing already empty at that point) unconditionally calls `reclaimWordAtCaret()`
+(`AdaptKeyService.kt:571`), and `reclaimWordAtCaret()` resets `pendingSuggestionSpace = false`
+(`AdaptKeyService.kt:606`) as one of its first steps, regardless of whether it finds anything to reclaim. If
+that callback lands - as such callbacks normally do, asynchronously - before the user's next keystroke, D-29's
+flag is cleared before the punctuation check ever gets a chance to run. **Plausible and code-grounded, not
+runtime-confirmed** (no emulator in this environment, and the actual callback timing here is exactly the kind
+of thing §32/§46 already found could only be confirmed on a real device) - worth checking first, before
+assuming D-29 needs a redesign rather than this one ordering fix.
