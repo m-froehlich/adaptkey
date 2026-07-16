@@ -3455,3 +3455,70 @@ currently-correct auto-capitalisation. **Deliberately not bulk-applied** - this 
 correctness fix like the two already-confirmed cases, so it needs the user's own call on how far to go (fix
 only as individually reported; apply everywhere regardless of the lopsidedness; or apply above some
 frequency-ratio cutoff) rather than a unilateral bulk data change.
+
+## §69 - D-124 Closed (Not a MIME Bug), D-116 Implemented: Unhyphenated-Compound Recognition (v0.8.39)
+
+Device confirmation on the §64 batch: **D-114 confirmed working; D-119/D-120/D-121/D-123 provisionally
+confirmed** ("scheinen zu klappen" - not yet stress-tested as thoroughly as the already-CONFIRMED §68 items).
+
+### D-124 - Closed: Not the Suspected Mechanism at All, Not Fixable via MIME Detection
+Traced with the concrete repro this time (copying the app's own APK via **Total Commander**): the Quick
+Paste chip's own preview showed a plain, readable text label ("Total commander file li…", truncated at
+`ClipboardPreview.MAX_LENGTH`) - not garbled binary content. This rules out both of the mechanisms the two
+prior fixes (§66, §68) addressed: there is no non-text file being coerced into text here at all. Total
+Commander evidently puts a **plain-text placeholder string** (most likely for its own internal drag/paste
+protocol between TC instances) directly into `ClipData.Item`'s text, declared as genuine `text/plain` -
+which, from the OS's and AdaptKey's point of view, **is** exactly what it claims to be: ordinary pasteable
+text. No `ClipDescription` MIME check, however precise, can distinguish "genuine text a user wants to paste"
+from "an app's own internal placeholder string that happens to also be plain text" - the two are
+indistinguishable at the API level.
+
+The only way to suppress this specific case would be a hardcoded match against Total Commander's own
+placeholder string - explicitly rejected as exactly the kind of app-/string-specific hack this project
+avoids elsewhere (D-118's "trace before fixing" and the general-rule-over-individual-word-patching
+philosophy of §62 apply equally to app-specific patching). **Closed as a known, accepted limitation**, not a
+bug: the D-36/§60 mechanism (detect and block a real file being offered as text) works correctly and remains
+in place; a source app choosing to expose its own internal placeholder text as plain clipboard text is
+outside what any MIME-based filter can address.
+
+### D-116 - Unhyphenated Compound Recognition: Known Noun First Part + Correctable Rest (Suggestion-Only)
+The reported case ("Beitragsjahreb", a typo of "Beitragsjahren") was never actually a correction-quality
+bug: `b`/`n` is an ordinary QWERTZ-adjacent, cost-1 typo relationship (the same class D-67 already
+autocorrects elsewhere) - the real obstacle is that "Beitragsjahren" itself is too rare a compound to be in
+the bundled dictionary at all (unlike B-01's hyphenated case, there is no explicit compound boundary marker
+to anchor a fix on). Full recursive decomposition-plus-fuzzy-matching was discussed and deliberately
+rejected as disproportionately expensive and error-prone for the value it would add; the released design is
+a narrower, single-split-point approach agreed on directly with the user:
+
+**New pure `dictionary/CompoundSplit`** (8 tests): tries to peel a **known noun** (≥4 characters) off the
+front of an unknown token, optionally followed by a German Fugenelement (`s`/`es`/`en`/`er`/`n`/`e`, or none
+at all for a direct concatenation like `Haus`+`schuh`), such that the remainder (≥2 characters) is itself
+accepted by a caller-supplied `resolveRest` callback. Searches the **longest** possible first part first (a
+shorter one is more likely a spurious coincidental match - the classic German compound-splitting ambiguity,
+e.g. "Wachstube" as "Wachs"+"tube" vs. "Wach"+"Stube", both individually valid), and only a single split
+point is tried, deliberately not recursing into further parts - a typo inside the first part itself is out
+of scope, matching how the request was framed ("den ersten Teil sauber erkannt").
+
+**Wired into `DictionarySuggestionProvider.suggestionsFor()`** (3 new tests) via a new private
+`compoundCandidate()`: the first-part check requires the candidate to be tagged `PartOfSpeech.NOUN` (the
+user's own explicit scoping call - unsure whether nouns alone will cover enough cases long-term, but a
+reasonable, revisitable starting point, and Fugenelemente are grammatically a noun-compounding phenomenon
+anyway); the rest is resolved via `isKnownWord()` when already known, else `highConfidenceCorrection()` -
+reusing D-67's existing cost-1 ceiling and D-114's frequency floor rather than inventing a separate
+confidence policy for this feature. **Deliberately gated on `candidates.isEmpty()`** - the compound search
+only ever runs once ordinary prefix/fuzzy matching found nothing at all, both because that is genuinely when
+it is needed (a real compound has no single-word neighbour close enough for D-12 to find) and to keep its
+handful of extra store lookups off the common keystroke path entirely - D-138 is this project's own standing
+reminder that stacking several per-keystroke lookups onto every composing step is a real, previously-felt
+cost, not a theoretical one.
+
+**Suggestion-only by explicit user decision, never wired into `autocorrectFor()`/`highConfidenceCorrection()`
+itself**: given the split point can be genuinely ambiguous (the Wachstube case above), a wrong guess must
+only ever be offered, never silently applied - "dann ist man auf der sicheren Seite". Verified directly: a
+constructed compound candidate appears in `suggestionsFor()` but `autocorrectFor()`/`highConfidenceCorrection()`
+both still return null for the same input.
+
+586 unit tests (was 575; +11: 8 `CompoundSplitTest`, 3 `DictionarySuggestionProviderTest`).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-tested - `CompoundSplit` itself is fully
+pure/unit-tested, but real German compound coverage/false-positive rate can only really be judged against
+everyday typing on a real device.

@@ -28,6 +28,23 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§69 DONE (v0.8.39): D-124 closed (not a MIME bug - Total Commander puts a genuine plain-text placeholder
+  string on the clipboard, indistinguishable from real pasteable text; accepted as a known limitation, no
+  app-specific hack); D-116 implemented (unhyphenated-compound recognition).** Also: **D-114 confirmed
+  working; D-119/D-120/D-121/D-123 provisionally confirmed** on device. **D-116**: new pure
+  `dictionary/CompoundSplit` peels a known noun (≥4 chars) off the front of an unknown token, optionally
+  followed by a German Fugenelement, such that the remainder resolves (known, or a cost-1 correction of a
+  known word) - e.g. "Beitragsjahreb" -> "Beitrag" + "s" + "jahren" ("Beitragsjahren" itself is too rare for
+  the dictionary). Wired into `DictionarySuggestionProvider.suggestionsFor()`, gated on `candidates.isEmpty()`
+  (only runs once ordinary prefix/fuzzy matching found nothing, both because that's when it's actually needed
+  and to keep its extra store lookups off the common keystroke path - see D-138). Nouns-only for now (the
+  user's own explicit, revisitable scoping call) and deliberately **suggestion-only** - never wired into
+  `autocorrectFor()`/`highConfidenceCorrection()` - since the split point can be genuinely ambiguous (the
+  classic "Wachstube" German compound-splitting counterexample); a wrong guess must only ever be offered, not
+  silently applied. Only a single split point is tried (no recursion into further parts), and a typo inside
+  the first part itself is out of scope. 586 unit tests (was 575; +11: 8 `CompoundSplitTest`, 3
+  `DictionarySuggestionProviderTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-tested - real compound coverage/false-positive rate needs everyday typing to judge.
 - **§68 DONE (v0.8.38): device feedback on §64-§67 - D-105/D-108/D-130/D-138 CONFIRMED WORKING; D-124
   follow-up fix; D-111 clarified as D-115's own mechanism, not a preview bug.** **D-124**: the §66 fix didn't
   resolve it on device - re-traced, found the MIME check only ever ran on the URI branch

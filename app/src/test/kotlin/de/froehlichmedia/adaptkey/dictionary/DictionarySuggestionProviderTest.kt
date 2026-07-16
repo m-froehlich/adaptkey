@@ -329,4 +329,36 @@ class DictionarySuggestionProviderTest {
         store.putWord(WordEntry("haus", 100L))
         assertNull(provider.highConfidenceCorrection("haus", null))
     }
+    
+    @Test
+    fun `D-116 an unlisted compound is reconstructed from a known noun first part and a correctable rest`() {
+        // Reproduces the reported case: "Beitragsjahren" itself is too rare for the dictionary, but its
+        // first part ("Beitrag") is known and its typo'd rest ("jahreb") is a cost-1 slip (b/n are adjacent
+        // QWERTZ keys) of the known "Jahren".
+        store.putWord(WordEntry("Beitrag", 500L, setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Jahren", 2_000L, setOf(PartOfSpeech.NOUN)))
+        
+        assertTrue(provider.suggestionsFor("beitragsjahreb", null).map { it.word }.contains("Beitragsjahren"))
+    }
+    
+    @Test
+    fun `D-116 is suggestion-only - never silently autocorrected`() {
+        store.putWord(WordEntry("Beitrag", 500L, setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Jahren", 2_000L, setOf(PartOfSpeech.NOUN)))
+        
+        // The split point can be genuinely ambiguous (the classic German compound-splitting problem), so
+        // this must only ever appear as a suggestion, never fire through the autocorrect/high-confidence path.
+        assertNull(provider.autocorrectFor("beitragsjahreb", null))
+        assertNull(provider.highConfidenceCorrection("beitragsjahreb", null))
+    }
+    
+    @Test
+    fun `D-116 a known word that is not tagged as a noun is not accepted as a compound first part`() {
+        // "kaufen" is a real, known word here, but only as a verb - starting the compound search from a
+        // non-noun first part is explicitly out of scope for this round.
+        store.putWord(WordEntry("Kaufen", 500L, setOf(PartOfSpeech.VERB)))
+        store.putWord(WordEntry("Haus", 100L, setOf(PartOfSpeech.NOUN)))
+        
+        assertTrue(provider.suggestionsFor("kaufenhaus", null).isEmpty())
+    }
 }

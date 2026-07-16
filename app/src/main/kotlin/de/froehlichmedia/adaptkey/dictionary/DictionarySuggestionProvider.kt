@@ -50,9 +50,47 @@ class DictionarySuggestionProvider(
             }
             candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
         }
+        // D-116: an unhyphenated compound whose exact form isn't itself in the dictionary but whose known
+        // first part plus a resolvable rest reconstructs it - only attempted once prefix/fuzzy matching
+        // found nothing at all, both because that is genuinely when it is needed (a real compound has no
+        // single-word neighbour close enough for D-12 to find) and to keep it off the common keystroke path
+        // entirely: it can run a handful of extra store lookups (D-138 is the standing reminder that
+        // stacking several per-keystroke lookups is a real, previously-felt cost, not a theoretical one).
+        if (candidates.isEmpty()) {
+            compoundCandidate(token, previousWord)?.let { word ->
+                candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
+            }
+        }
         return candidates.values
             .sortedByDescending { it.score }
             .take(maxCandidates)
+    }
+    
+    /**
+     * D-116: recognises [token] as a plausible unhyphenated compound - a known noun (at least a handful of
+     * characters) as the first part, followed by an optional Fugenelement and a remainder that is itself
+     * known or a high-confidence (cost-1) correction of one, e.g. `beitragsjahreb` -> `Beitrag` + `s` +
+     * `jahren` (the whole compound `Beitragsjahren` is too rare to be in the dictionary itself). Deliberately
+     * **suggestion-only** - never wired into [autocorrectFor] / [highConfidenceCorrection] - because the
+     * split point itself can be genuinely ambiguous between two equally valid readings (the classic German
+     * compound-splitting counterexample "Wachstube" as "Wachs"+"tube" vs. "Wach"+"Stube"); offering a wrong
+     * guess in the bar is harmless, silently committing one is not.
+     *
+     * @param token the lower-cased composing token
+     * @param previousWord the preceding word, threaded through to the rest correction's own bigram scoring
+     * @return the reconstructed compound in natural German casing (capitalised first part, lower-case
+     *         rest), or null when no plausible split exists
+     */
+    private fun compoundCandidate(token: String, previousWord: String?): String? {
+        if (isKnownWord(token)) {
+            return null
+        }
+        val result = CompoundSplit.split(
+            token,
+            isKnownNoun = { candidate -> isKnownWord(candidate) && store.partsOfSpeech(candidate).contains(PartOfSpeech.NOUN) },
+            resolveRest = { rest -> if (isKnownWord(rest)) rest else highConfidenceCorrection(rest, previousWord) }
+        ) ?: return null
+        return result.firstPart.replaceFirstChar { it.titlecase() } + result.fugenElement + result.rest
     }
     
     /**
