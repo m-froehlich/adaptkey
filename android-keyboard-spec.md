@@ -3686,3 +3686,43 @@ mid-word editing (tapping back into an already-typed word) specifically, or can 
 typing too; whether it correlates with a held key (backspace-repeat) or a fast burst of keystrokes; and
 whether disabling C-06 (the tier-3 mini-LLM, if a model is installed) changes anything. Per this project's own
 rule, no fix will be attempted from speculation alone.
+
+## §74 - Device Confirmations: D-106/D-111-D-113/D-122/§72; D-135 Negative Result (finanzen.net zero)
+
+No code change this entry - device-feedback status update only.
+
+**Confirmed working:** D-122 (mid-word connector-split suggestion), the §72 caret-position fix, and (a
+blanket confirmation covering the remaining older, previously-unconfirmed items) D-106 stages 1+2 (English as
+an explicit language, cross-dictionary loanword protection), D-111/D-112 (pending-capitalisation-change
+preview, correction-follows-context casing) and D-113 (§44 ratio-override restricted to cost-1 typos).
+
+### D-135 - Autofill Inline Suggestions: No Suggestion Shown for the Username Field in "finanzen.net zero"
+Tested against a real login field (finanzen.net zero, a brokerage app) - no inline suggestion appeared for
+the username field. Not yet traced - no device logs available in this environment, and several genuinely
+different causes would all look identical from the outside ("nothing shows up"), so guessing at a fix would
+likely just be wrong:
+
+1. **No saved credential for this app in the configured autofill service** - the most mundane explanation
+   and worth ruling out first: does the device's autofill service (Settings → Passwords/Autofill) actually
+   have a saved login for finanzen.net zero already? With nothing saved, there is nothing for the platform to
+   ever offer, regardless of anything AdaptKey does.
+2. **The field itself may not be autofill-relevant per the app's own declaration** - per the Autofill
+   Framework's own design (§66/§67), the platform decides *whether* to call
+   `onCreateInlineSuggestionsRequest()` at all based on the target field's own declared `autofillHints`/
+   `inputType`; AdaptKey has no influence over this. Notably, **finance/brokerage apps quite commonly disable
+   autofill deliberately on login fields**, as an explicit anti-phishing/security measure - this would be a
+   real, intentional restriction on the app's side, not a bug in AdaptKey at all, and is arguably the single
+   most likely explanation given the specific *kind* of app this is.
+3. **The configured autofill service might not support inline suggestions specifically** - some autofill
+   providers only implement the older dropdown-style UI, not the inline-in-IME mechanism `onInlineSuggestions
+   Response()` depends on; autofill being "enabled" is not the same as inline suggestions being supported.
+4. **An actual bug in AdaptKey's own integration** - possible, though §67's implementation was checked against
+   the real resolved `autofill-1.3.0.aar` class list rather than assumed; this whole feature was explicitly
+   flagged as "unverified beyond compiling" pending exactly this kind of real-device test.
+
+**Not fixed or further investigated this round** - deliberately not guessing among four candidates that would
+look identical from the outside. To make progress, the next report would ideally answer: does the device's
+autofill service have a saved login for this app already; what autofill service is configured (Google
+Password Manager / a third-party one); and - the most diagnostic single test - does an inline suggestion
+appear for *any* login field in *any* app with AdaptKey active, or has it never been observed working at all
+yet. If it turns out to be case 2 (the app itself opts out), that would not be an AdaptKey bug to fix at all.

@@ -28,6 +28,14 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§74 (still v0.8.42, no code change this entry): device-feedback status update.** **Confirmed working:**
+  D-122, the §72 caret-position fix, and (blanket confirmation) D-106 stages 1+2, D-111/D-112, D-113. **D-135
+  negative result:** no Autofill inline suggestion appeared for the username field in "finanzen.net zero"
+  (a brokerage app). Not traced - no device logs available here, and at least 4 genuinely different causes
+  would look identical from the outside (no saved credential yet; the app itself opting the field out of
+  autofill, plausible and arguably likely for a finance app's login field specifically; the configured
+  autofill service not supporting inline suggestions; an actual AdaptKey-side bug). Deliberately not guessed
+  at - see spec §74 for the specific follow-up questions that would narrow it down.
 - **§70 clear-clipboard button CONFIRMED WORKING on device** (user confirmation, no code change).
 - **§73 CAPTURED (still v0.8.42, no code change this entry): D-139, intermittent text jitter/character**
   **scramble, no repro yet.** Reported as occasional and disruptive (only recoverable by clearing everything),
