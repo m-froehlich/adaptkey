@@ -3523,6 +3523,8 @@ both still return null for the same input.
 pure/unit-tested, but real German compound coverage/false-positive rate can only really be judged against
 everyday typing on a real device.
 
+**D-116 CONFIRMED WORKING on device** (user confirmation, no code change).
+
 ## §70 - Settings Row: New Clear-Clipboard Button (v0.8.40)
 
 New idea raised directly, not part of any prior backlog entry: a third button in the §48/§50 swipe-up

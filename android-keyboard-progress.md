@@ -28,6 +28,7 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **D-116 CONFIRMED WORKING on device** (user confirmation, no code change - see §69).
 - **§70 DONE (v0.8.40): settings row gained a third button - clear clipboard.** New idea, not from any prior
   backlog entry. `SettingsRowView.clearClipboardButton` (glyph `🗑`, matching the row's existing plain-`TextView`
   glyph style - `😊`/`⚙` - no drawable asset needed) sits immediately left of the settings gear via the same
