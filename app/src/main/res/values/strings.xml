@@ -17,6 +17,8 @@
 
     <!-- D-89: full feature overview, listing everything AdaptKey does so nothing stays hidden. -->
     <string name="d89_title">What AdaptKey can do</string>
+    <string name="d128_title">What “Adapt” means</string>
+    <string name="d128_summary">AdaptKey learns continuously, only from your own typing, entirely on this device: your personal touch pattern adjusts with every confirmed keystroke, corrected or newly typed words are added to your dictionary, and - if you have installed the optional mini-AI - it is consulted less and less often as your own dictionary learns to predict the same words by itself.</string>
     <string name="d89_summary">A full overview of every feature, so nothing stays hidden.</string>
     <string name="d89_f01_title">Adaptive touch model</string>
     <string name="d89_f01_desc">Learns your personal tap pattern for every key from everyday typing — an optional short calibration gives it an immediate head start, and it keeps refining itself afterwards.</string>
@@ -116,6 +118,8 @@
     <!-- C-06 tier-3 model management (browser download + file import). -->
     <string name="c06_model_pref_title">Mini-LLM model (tier 3)</string>
     <string name="c06_model_pref_summary">Download and import the optional on-device model (C-06).</string>
+    <string name="d126_title">Mini-LLM enabled</string>
+    <string name="d126_summary">When off, the mini-LLM never runs, even if a model is installed - useful to save battery/latency without deleting the model.</string>
     <string name="c06_model_title">Mini-LLM model</string>
     <string name="c06_model_intro">The tier-3 mini-LLM (C-06) is optional. The model (~273 MB) is not bundled in the app. Download it once and then import it — afterwards the app keeps working fully offline.</string>
     <string name="c06_model_present">Model installed.</string>

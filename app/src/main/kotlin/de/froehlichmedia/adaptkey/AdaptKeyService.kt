@@ -36,6 +36,7 @@ import androidx.autofill.inline.v1.InlineSuggestionUi
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.util.Locale
 import java.util.concurrent.Executors
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
@@ -100,6 +101,7 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
+import de.froehlichmedia.adaptkey.suggestion.TimePattern
 import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.OffsetStore
@@ -456,6 +458,14 @@ class AdaptKeyService : InputMethodService() {
             v.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
+        // D-136: without this, the system's own gesture-area controls (the pill / back indicator) render
+        // with whatever appearance the window would otherwise inherit, independent of what background
+        // colour AdaptKey itself paints beneath them - poor contrast was reported on at least one device.
+        // AdaptKey's keyboard background is always light (R.color.keyboard_background, no dark-theme
+        // variant exists), so the controls must always render dark-on-light to stay visible against it.
+        window?.window?.let { win ->
+            WindowInsetsControllerCompat(win, root).isAppearanceLightNavigationBars = true
+        }
         applySettings()
         // D-03: show the input language on the space bar from the first frame.
         updateSpaceLabel()
@@ -530,6 +540,8 @@ class AdaptKeyService : InputMethodService() {
         // §56: the accepted-word flight matches the user's actual configured highlight colour (C-04/S-05),
         // not just its default.
         suggestionBar?.flyColor = config.highlightColor
+        // D-126: toggling the mini-LLM switch takes effect immediately, not only on the next field focus.
+        reconcileTier3Provider()
     }
     
     /**
@@ -669,7 +681,8 @@ class AdaptKeyService : InputMethodService() {
         if (!restarting) {
             reloadOffsetModel()
         }
-        reconcileTier3Provider()
+        // D-126: applySettings() above already calls reconcileTier3Provider() (it must also re-check on an
+        // ordinary settings-screen change while the service stays resident, not only per field focus).
         reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
         // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
@@ -2168,10 +2181,23 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
-        // D-122: kept out of `candidates` itself so it never enters the tier-1/tier-3 merge's own score
-        // normalisation (SuggestionMerger normalises every tier-1 score against the list's own maximum) -
-        // added only to what is actually displayed, at every controller.update() call site below.
+        // D-122 / D-131: both kept out of `candidates` itself so neither ever enters the tier-1/tier-3
+        // merge's own score normalisation (SuggestionMerger normalises every tier-1 score against the
+        // list's own maximum, so one inflated synthetic entry would compress every real candidate's
+        // contribution toward zero) - added only to what is actually displayed, at every
+        // controller.update() call site below (see extraSuggestions()).
         val splitSuggestion = if (duringRepeat) null else midWordConnectorSplitSuggestion(input)
+        // D-131: D-39's raw-coordinate fallback becomes a live, incremental signal instead of only ever
+        // resolving at the final delimiter - reuses rawCoordinateCorrection() exactly as finalizeAndCommit()
+        // already does at commit time (same A-01/§44 checks inside it), just consulted here too. Gated on
+        // emptiness and !duringRepeat like D-116/D-117: it needs composingTaps/keyboard-geometry lookups,
+        // and D-138 already flagged stacking extra per-keystroke lookups as a real, previously-felt cost.
+        val rawCoordinateSuggestion = if (duringRepeat || candidates.isNotEmpty()) {
+            null
+        } else {
+            rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
+        }
+        val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion)
         val pending = if (duringRepeat) {
             provider.autocorrectFor(input, previousWord)
         } else {
@@ -2202,13 +2228,13 @@ class AdaptKeyService : InputMethodService() {
                 input,
                 pending,
                 tier3.predict(input, previous, sentence, candidates, settings.llmActivationThreshold, config.maxSuggestions),
-                splitSuggestion
+                extras
             )
             return
         }
         // A real backend runs the LLM: show the tier-1 suggestions immediately, then refine off-thread so
         // the IME never blocks. A stale result (the token changed meanwhile) is discarded via the sequence.
-        controller.update(input, withSplitSuggestion(candidates, splitSuggestion), pending)
+        controller.update(input, candidates + extras, pending)
         showSuggestions()
         scheduleResort()
         val threshold = settings.llmActivationThreshold
@@ -2223,7 +2249,7 @@ class AdaptKeyService : InputMethodService() {
             val outcome = orchestrator.predict(input, previous, sentence, candidates, threshold, limit)
             handler.post {
                 if (seq == tier3RequestSeq && composing.toString() == input) {
-                    applyTier3Outcome(input, pending, outcome, splitSuggestion)
+                    applyTier3Outcome(input, pending, outcome, extras)
                 }
             }
         }
@@ -2233,19 +2259,16 @@ class AdaptKeyService : InputMethodService() {
      * Applies a tier-3 orchestration outcome to the suggestion bar: stores the §6 capitalisation proposal
      * and the raw result (for the adaptive-learning feedback) and refreshes the bar.
      *
-     * @param splitSuggestion D-122's mid-word connector-split candidate, appended after the tier-1/tier-3
-     *        merge rather than fed into it - see [refreshSuggestions]
+     * @param extras D-122's mid-word connector-split candidate and/or D-131's live raw-coordinate
+     *        suggestion, appended after the tier-1/tier-3 merge rather than fed into it - see
+     *        [refreshSuggestions]
      */
-    private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome, splitSuggestion: Suggestion? = null) {
+    private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome, extras: List<Suggestion> = emptyList()) {
         lastTier3Result = outcome.tier3
         lastCapProposal = outcome.capitalisation
-        controller.update(input, withSplitSuggestion(outcome.suggestions, splitSuggestion), pending)
+        controller.update(input, outcome.suggestions + extras, pending)
         showSuggestions()
         scheduleResort()
-    }
-    
-    private fun withSplitSuggestion(suggestions: List<Suggestion>, splitSuggestion: Suggestion?): List<Suggestion> {
-        return if (splitSuggestion == null) suggestions else suggestions + splitSuggestion
     }
     
     /**
@@ -2270,7 +2293,7 @@ class AdaptKeyService : InputMethodService() {
         val split = tokenRepair.splitAtUnresolvedConnector(input, previousWord) ?: return null
         val left = capitalisation.capitalise(split.left, contextFor(split.left))
         val right = capitalisation.capitalise(split.right, followingPartContext())
-        return Suggestion("$left $right", SPLIT_SUGGESTION_SCORE)
+        return Suggestion("$left $right", MAX_PRIORITY_SUGGESTION_SCORE)
     }
     
     private fun scheduleResort() {
@@ -2314,7 +2337,8 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         val previous = previousWord
-        val predictions = if (previous == null) emptyList() else provider.nextWordSuggestions(previous)
+        val predictions = (if (previous == null) emptyList() else provider.nextWordSuggestions(previous)) +
+            listOfNotNull(timeSuggestion())
         if (predictions.isEmpty()) {
             clearSuggestions()
             return
@@ -2322,6 +2346,19 @@ class AdaptKeyService : InputMethodService() {
         controller.clear()
         controller.update("", predictions, null)
         showSuggestions()
+    }
+    
+    /**
+     * D-137: a typed time (`14:30`) is essentially always followed by "Uhr" in German, regardless of what
+     * (if anything) the bigram table happens to know about that exact, effectively unique digit token -
+     * offered with a deliberately maximal score, same reasoning as D-122's split suggestion, so it always
+     * sorts first among whatever [showNextWordPredictions] otherwise finds.
+     *
+     * @return the "Uhr" suggestion, or null when the text just committed does not end in a time
+     */
+    private fun timeSuggestion(): Suggestion? {
+        val before = currentInputConnection?.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return null
+        return if (TimePattern.endsWithTime(before)) Suggestion(UHR, MAX_PRIORITY_SUGGESTION_SCORE) else null
     }
     
     private fun learnWord(word: String?) {
@@ -2786,10 +2823,17 @@ class AdaptKeyService : InputMethodService() {
         private const val INLINE_SUGGESTION_MAX_COUNT = 3
         private const val INLINE_SUGGESTION_WIDTH_DP = 160
         
-        // D-122: comfortably above any real dictionary frequency (the largest bundled entries sit around
-        // 1e6, see MIN_AUTOCORRECT_CANDIDATE_FREQUENCY's own comment) so the mid-word connector-split
-        // suggestion always sorts first, without using an extreme value (Double.MAX_VALUE) that could risk
-        // odd behaviour in any future score arithmetic.
-        private const val SPLIT_SUGGESTION_SCORE = 1_000_000_000.0
+        // D-122 / D-137: comfortably above any real dictionary frequency (the largest bundled entries sit
+        // around 1e6, see MIN_AUTOCORRECT_CANDIDATE_FREQUENCY's own comment) so a synthesised, always-right
+        // suggestion (the mid-word connector-split candidate; the "Uhr" time suggestion) always sorts
+        // first, without using an extreme value (Double.MAX_VALUE) that could risk odd behaviour in any
+        // future score arithmetic.
+        private const val MAX_PRIORITY_SUGGESTION_SCORE = 1_000_000_000.0
+        
+        // D-137: how far back to look for a trailing typed time - long enough for "14:30" plus a
+        // reasonable amount of trailing punctuation/whitespace, short enough to stay a cheap read.
+        private const val TIME_LOOKBACK = 16
+        
+        private const val UHR = "Uhr"
     }
 }

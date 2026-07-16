@@ -36,6 +36,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property symbolKeyEnabled whether the combined ?123 key offers its numeric/symbol function (D-59,
  *           default on); with this off the combined key disappears (slot reserved). §51: no longer also
  *           governs the §48 settings row's emoji button - that button is unconditionally visible.
+ * @property tier3Enabled D-126: whether the tier-3 mini-LLM may run at all, independent of whether a model
+ *           file happens to be installed (default on, so installing a model is the only step needed by
+ *           default) - lets a model stay imported while inference is switched off, e.g. to save
+ *           battery/latency without having to delete and later re-import the file.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -51,7 +55,8 @@ data class AdaptSettings(
     val longPressDelayMs: Long = DEFAULT_LONGPRESS_DELAY_MS,
     val extraSpaceBelowNumberRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
-    val symbolKeyEnabled: Boolean = true
+    val symbolKeyEnabled: Boolean = true,
+    val tier3Enabled: Boolean = true
 ) {
     
     companion object {

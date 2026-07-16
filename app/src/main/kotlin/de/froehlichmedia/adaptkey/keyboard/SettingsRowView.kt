@@ -28,6 +28,12 @@ import de.froehlichmedia.adaptkey.R
  * its outer bounds - up out of / back down into that already-reserved space. The content is clipped by
  * the row's own bounds (a plain [ViewGroup][android.view.ViewGroup]'s default `clipChildren`), so it
  * reads as emerging into view rather than sliding in over whatever is below it.
+ *
+ * D-132: the row's own background lives on [content], not on the outer view - `content`'s `translationY`
+ * is what actually animates, so its background and its buttons slide together as one piece. The instant
+ * layout-height jump above is otherwise invisible (nothing is painted at the outer view's own bounds), so
+ * the two together read as one continuous reveal rather than the background "popping in" at full height
+ * before the buttons catch up.
  */
 class SettingsRowView @JvmOverloads constructor(
     context: Context,
@@ -70,7 +76,8 @@ class SettingsRowView @JvmOverloads constructor(
     private var slideAnimator: ValueAnimator? = null
     
     init {
-        setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
+        // D-132: on content, not here - see the class KDoc for why.
+        content.setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
         val buttonSizePx = dp(BUTTON_SIZE_DP)
         val marginPx = dp(BUTTON_MARGIN_DP)
         content.addView(

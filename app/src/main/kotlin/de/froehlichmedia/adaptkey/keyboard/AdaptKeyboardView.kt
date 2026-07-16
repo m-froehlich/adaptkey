@@ -710,6 +710,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         drawLongPressPopup(canvas)
     }
     
+    /** D-129: identifies the calculator minus key by its own character, matching [KeyboardLayout.hasLongPressAction]. */
+    private fun isSignFlipKey(key: Key): Boolean {
+        return key.code == KeyCode.CHAR && key.char == SymbolLayout.MINUS_SIGN
+    }
+    
     private fun drawKeys(canvas: Canvas, rects: List<Pair<Key, RectF>>) {
         for ((key, rect) in rects) {
             // D-59: the disabled combined key is drawn as empty space, keeping its slot (neighbours do not grow).
@@ -740,10 +745,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
             if (hintsEnabled && !suppressHint) {
                 if (hint != null) {
                     canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
-                } else if (key.alternatives.size >= 2) {
+                } else if (key.alternatives.size >= 2 || isSignFlipKey(key)) {
                     // D-98: a key with no single corner glyph but a multi-alternative popup (D-01) - comma,
                     // period, the calculator page's ×/÷/=/currency keys, etc. - still gets a corner
-                    // indicator instead of no visual cue at all, Gboard/AOSP-style.
+                    // indicator instead of no visual cue at all, Gboard/AOSP-style. D-129: the calculator
+                    // minus key's own long-press sign-flip (§31) has neither a hint nor alternatives - §31
+                    // deliberately kept it that way, since giving it either would wrongly route its
+                    // long-press through the hint/alternatives commit-text pipeline instead of SignFlip -
+                    // so it is recognised here by its own identity instead, reusing the same generic "more
+                    // on long-press" cue rather than inventing a bespoke glyph a user might mistake for a
+                    // committable character.
                     canvas.drawText(MORE_ALTERNATIVES_GLYPH, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
                 }
             }
@@ -758,7 +769,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * D-109: the centre uses [OffsetModel.cappedMeanOffset], the same bound [OffsetModel]'s own key
      * resolution applies internally - not the raw, uncapped [OffsetModel.Spread.meanDx]/`meanDy] - so the
      * visualisation never shows a drift more extreme than what the model will actually do when resolving
-     * a real tap.
+     * a real tap. D-133: the bottom row's own harder downward bound is included too, for the same reason.
      */
     private fun drawTouchModel(canvas: Canvas) {
         val model = offsetModel ?: return
@@ -770,7 +781,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val spread = model.spreadFor(key.id) ?: continue
             val capX = (rect.width() / 2f).toDouble() * model.maxOffsetFactor
             val capY = (rect.height() / 2f).toDouble() * model.maxOffsetFactor
-            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capX, capY)
+            val capYDown = (rect.height() / 2f).toDouble() * (downwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capX, capY, capYDown)
             val cx = rect.centerX() + cappedDx.toFloat()
             val cy = rect.centerY() + cappedDy.toFloat()
             val rx = maxOf(spread.stdDevX.toFloat(), minRadius)
@@ -1226,6 +1238,27 @@ class AdaptKeyboardView @JvmOverloads constructor(
             .map { (key, rect) -> OffsetModel.Candidate(key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f) }
     }
     
+    /**
+     * D-133: the bottom letter row (`c v b n m`, the row directly above the space bar) gets a harder,
+     * direction-specific bound on its own learned downward drift, on top of [OffsetModel]'s ordinary
+     * isotropic [OffsetModel.maxOffsetFactor] cap (D-109) - repeated mistaps that get silently corrected
+     * elsewhere (T-05 / A-05) could still walk a key's effective zone far enough downward to encroach on
+     * the space bar's own territory before D-109's general cap kicks in. [BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR]
+     * keeps the learned centre from ever drifting past the vertical middle between a key's own centre and
+     * its bottom edge - a considered starting point, not yet device-tuned, easy to retune later (a single
+     * constant, same precedent as this project's other threshold tunings).
+     *
+     * @return the tighter downward factor for a bottom-row over-space-bar letter key, or null (meaning
+     *         "use the model's own [OffsetModel.maxOffsetFactor], same as every other direction") otherwise
+     */
+    private fun downwardOffsetFactorFor(key: Key): Double? {
+        return if (key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS) {
+            BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR
+        } else {
+            null
+        }
+    }
+    
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
         if (keyRects.isEmpty()) {
             return null
@@ -1240,7 +1273,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val model = offsetModel
         if (model != null) {
             val candidates = keyRects.map { (key, rect) ->
-                OffsetModel.Candidate(key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f)
+                OffsetModel.Candidate(
+                    key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f,
+                    maxDownwardOffsetFactor = downwardOffsetFactorFor(key)
+                )
             }
             val chosen = model.resolve(candidates, x, y)
             if (chosen != null) {
@@ -1304,6 +1340,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
         private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
+        
+        // D-133: caps how far these keys' own learned centre may drift *downward* (toward the space bar)
+        // - the vertical midpoint between a key's own centre and its bottom edge, tighter than D-109's
+        // general 0.5 isotropic cap. A considered starting point, not yet device-tuned.
+        private const val BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR = 0.25
         
         // D-05 / D-70 / D-83 / D-85: key-click sample playback volume (SoundPool's 0f..1f linear range -
         // not dB, so this is a much bigger perceived cut than the number alone suggests) and concurrent

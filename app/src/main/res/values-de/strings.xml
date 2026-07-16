@@ -17,6 +17,8 @@
 
     <!-- D-89: vollständige Feature-Übersicht, damit kein Feature unentdeckt bleibt. -->
     <string name="d89_title">Was AdaptKey alles kann</string>
+    <string name="d128_title">Was „Adapt“ bedeutet</string>
+    <string name="d128_summary">AdaptKey lernt fortlaufend, ausschließlich aus deinem eigenen Tippverhalten und komplett auf diesem Gerät: Dein persönliches Tippmuster passt sich mit jedem bestätigten Tastendruck an, korrigierte oder neu getippte Wörter werden in dein Wörterbuch aufgenommen, und - falls die optionale Mini-KI installiert ist - wird sie immer seltener befragt, je besser dein eigenes Wörterbuch dieselben Wörter selbst vorhersagen kann.</string>
     <string name="d89_summary">Eine vollständige Übersicht aller Funktionen, damit nichts unentdeckt bleibt.</string>
     <string name="d89_f01_title">Adaptives Tipp-Modell</string>
     <string name="d89_f01_desc">Lernt aus dem normalen Tippen dein persönliches Treffermuster für jede Taste – eine kurze, optionale Kalibrierung gibt einen sofortigen Vorsprung, danach verfeinert es sich laufend weiter.</string>
@@ -116,6 +118,8 @@
     <!-- C-06 tier-3 model management (browser download + file import). -->
     <string name="c06_model_pref_title">Mini-LLM-Modell (Tier 3)</string>
     <string name="c06_model_pref_summary">Optionales On-Device-Modell herunterladen und importieren (C-06).</string>
+    <string name="d126_title">Mini-KI aktiviert</string>
+    <string name="d126_summary">Wenn aus, läuft die Mini-KI nie, auch wenn ein Modell installiert ist - nützlich, um Akku/Latenz zu sparen, ohne das Modell zu löschen.</string>
     <string name="c06_model_title">Mini-LLM-Modell</string>
     <string name="c06_model_intro">Das Tier-3-Mini-LLM (C-06) ist optional. Das Modell (~273 MB) ist nicht in der App enthalten. Lade es einmalig herunter und importiere es anschließend – danach arbeitet die App weiterhin vollständig offline.</string>
     <string name="c06_model_present">Modell installiert.</string>

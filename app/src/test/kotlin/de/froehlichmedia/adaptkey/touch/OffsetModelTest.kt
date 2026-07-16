@@ -119,6 +119,27 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `D-133 cappedMeanOffset applies a tighter downward bound when given one`() {
+        val model = OffsetModel()
+        model.record("c:k", 0f, 0f, 0f, 1000f)
+        
+        val (_, dyDefault) = model.cappedMeanOffset("c:k", maxAbsX = 10.0, maxAbsY = 20.0)
+        assertEquals(20.0, dyDefault, 1e-9)
+        
+        val (_, dyDown) = model.cappedMeanOffset("c:k", maxAbsX = 10.0, maxAbsY = 20.0, maxAbsYDown = 5.0)
+        assertEquals(5.0, dyDown, 1e-9)
+    }
+    
+    @Test
+    fun `D-133 cappedMeanOffset's downward-only bound does not affect an upward deviation`() {
+        val model = OffsetModel()
+        model.record("c:k", 0f, 0f, 0f, -1000f)
+        
+        val (_, dy) = model.cappedMeanOffset("c:k", maxAbsX = 10.0, maxAbsY = 20.0, maxAbsYDown = 5.0)
+        assertEquals(-20.0, dy, 1e-9)
+    }
+    
+    @Test
     fun `resolve returns null for empty candidates`() {
         assertNull(OffsetModel().resolve(emptyList(), 0f, 0f))
     }
@@ -153,6 +174,25 @@ class OffsetModelTest {
         assertEquals("A", chosen?.id)
         assertTrue(model.totalSamples >= OffsetModel.DEFAULT_WARMUP_SAMPLES)
     }
+    
+    @Test
+    fun `D-133 a candidate's own maxDownwardOffsetFactor tightens its downward cap independently of maxOffsetFactor`() {
+        val model = OffsetModel()
+        // A trains a large, consistent systematic downward drift (mean dy = 100) - well past either cap
+        // considered below, so both scenarios clamp; only how much differs.
+        repeat(30) { model.record("A", centerX = 0f, centerY = 0f, x = 0f, y = 100f) }
+        val bareA = OffsetModel.Candidate("A", 0f, 0f, halfWidth = 20f, halfHeight = 20f)
+        val cappedA = OffsetModel.Candidate("A", 0f, 0f, halfWidth = 20f, halfHeight = 20f, maxDownwardOffsetFactor = 0.05)
+        val b = OffsetModel.Candidate("B", 0f, 200f, halfWidth = 20f, halfHeight = 20f)
+        
+        // Ordinary isotropic cap (0.5): A's predicted centre moves to y=10 - still close enough to beat
+        // B's own (untrained, unmoved) home for a tap at y=50.
+        assertEquals("A", model.resolve(listOf(bareA, b), x = 0f, y = 50f)?.id)
+        // The tighter, direction-specific cap (0.05): A's predicted centre only reaches y=1, now further
+        // from the tap than B's home - B must win instead.
+        assertEquals("B", model.resolve(listOf(cappedA, b), x = 0f, y = 50f)?.id)
+    }
+    
     
     @Test
     fun `rankedCandidates orders by distance during warmup - D-39`() {

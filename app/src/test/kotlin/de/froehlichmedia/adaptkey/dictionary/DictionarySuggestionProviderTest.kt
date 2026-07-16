@@ -361,4 +361,37 @@ class DictionarySuggestionProviderTest {
         
         assertTrue(provider.suggestionsFor("kaufenhaus", null).isEmpty())
     }
+    
+    @Test
+    fun `D-117 a multi-typo word beyond the ordinary D-28 budget still surfaces as a suggestion`() {
+        // "erkamm" -> "erkannt": two adjacent-key substitutions (m/n) plus an insertion (cost 4), beyond
+        // the ordinary two-edit MAX_CORRECTION_COST but within the wider, suggestion-only D-117 fallback.
+        store.putWord(WordEntry("erkannt", 300L))
+        
+        assertTrue(provider.suggestionsFor("erkamm", null).map { it.word }.contains("erkannt"))
+    }
+    
+    @Test
+    fun `D-117 is suggestion-only - never silently autocorrected`() {
+        store.putWord(WordEntry("erkannt", 300L))
+        
+        assertNull(provider.autocorrectFor("erkamm", null))
+        assertNull(provider.highConfidenceCorrection("erkamm", null))
+    }
+    
+    @Test
+    fun `D-117 does not fire once ordinary prefix or fuzzy matching already found something`() {
+        store.putWord(WordEntry("erkannt", 300L))
+        // "erk" is itself a prefix match for "erkannt" - the wider D-117 fallback must not additionally
+        // kick in and start pulling in unrelated far-off candidates once there is already something.
+        val words = provider.suggestionsFor("erk", null).map { it.word }
+        assertEquals(listOf("erkannt"), words)
+    }
+    
+    @Test
+    fun `D-117 is not attempted for a token shorter than the minimum wide-fuzzy length`() {
+        // "kamm" is short enough that a cost-4 budget would be far too loose to mean anything.
+        store.putWord(WordEntry("kannst", 300L))
+        assertTrue(provider.suggestionsFor("kamm", null).isEmpty())
+    }
 }

@@ -61,6 +61,20 @@ class DictionarySuggestionProvider(
                 candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
             }
         }
+        // D-117: a longer token garbled by more than D-28's ordinary two-edit budget ("erkamm" for
+        // "erkannt") still gets one more, wider-budget try - suggestion-only (never autocorrect, unlike
+        // every other candidate source above, this one is deliberately never trusted enough for that) and
+        // only once every cheaper, tighter search above found nothing at all, for the same reason as D-116:
+        // this is a rare fallback, not a general loosening of D-28's own budget, which stays exactly as
+        // tight as before for the common case.
+        if (candidates.isEmpty()) {
+            for (word in wideFuzzyNeighbours(token)) {
+                if (candidates.containsKey(word) || store.isBlacklisted(word)) {
+                    continue // A-04
+                }
+                candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
+            }
+        }
         return candidates.values
             .sortedByDescending { it.score }
             .take(maxCandidates)
@@ -112,6 +126,31 @@ class DictionarySuggestionProvider(
             lower != token && isCloseMatch(folded, lower)
         }
     }
+    
+    /**
+     * D-117: [fuzzyNeighbours]'s own wider-budget sibling ([WIDE_CORRECTION_COST] instead of
+     * [MAX_CORRECTION_COST]) for a token multiple typos have garbled past the ordinary D-28 budget, e.g.
+     * `erkamm` -> `erkannt` (two substitutions plus an insertion). Restricted to a longer minimum length
+     * ([MIN_WIDE_FUZZY_LENGTH]) than the ordinary fuzzy search, since a wide edit-cost budget on a short
+     * token would match almost anything - and, like [fuzzyNeighbours], still only searches the token's own
+     * first-character bucket (its own letter or a keyboard neighbour), so a token whose very *first* letter
+     * is also badly garbled is still out of reach; a genuinely open question (see D-117's own spec entry),
+     * not attempted here.
+     *
+     * @param token the lower-cased composing token
+     * @return the neighbouring known words in canonical case
+     */
+    private fun wideFuzzyNeighbours(token: String): List<String> {
+        if (token.length < MIN_WIDE_FUZZY_LENGTH) {
+            return emptyList()
+        }
+        val folded = Umlaut.fold(token)
+        return store.correctionCandidates(token, candidateFirstChars(token)).filter { candidate ->
+            val lower = candidate.lowercase()
+            lower != token && correctionCost(folded, lower) <= WIDE_CORRECTION_COST
+        }
+    }
+    
     
     /**
      * The initial letters to search for correction candidates of [token] (D-38): its own first character,
@@ -334,5 +373,12 @@ class DictionarySuggestionProvider(
         // §44: how many times more frequent a correction candidate must be than the typed word before A-01's
         // "known word" protection is set aside. Deliberately extreme - see bestCorrection().
         private const val KNOWN_WORD_OVERRIDE_RATIO = 50
+        
+        // D-117: a considered, not-yet-device-tuned starting point for the wider, suggestion-only fallback
+        // budget - loose enough to reach "erkamm" -> "erkannt" (cost 4: two adjacent-key substitutions plus
+        // an insertion), restricted to longer tokens ([MIN_WIDE_FUZZY_LENGTH]) so it stays meaningfully
+        // scoped rather than a general loosening of D-28's own tight, autocorrect-grade budget.
+        private const val WIDE_CORRECTION_COST = 4
+        private const val MIN_WIDE_FUZZY_LENGTH = 6
     }
 }

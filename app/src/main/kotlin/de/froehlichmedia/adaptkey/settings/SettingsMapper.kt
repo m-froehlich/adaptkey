@@ -37,7 +37,8 @@ data class RawSettings(
     val longPressDelayMs: Long = AdaptSettings.DEFAULT_LONGPRESS_DELAY_MS,
     val extraSpaceBelowNumberRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
-    val symbolKeyEnabled: Boolean = true
+    val symbolKeyEnabled: Boolean = true,
+    val tier3Enabled: Boolean = true
 )
 
 /**
@@ -174,7 +175,8 @@ object SettingsMapper {
             longPressDelayMs = raw.longPressDelayMs.coerceIn(MIN_LONGPRESS_DELAY_MS, MAX_LONGPRESS_DELAY_MS),
             extraSpaceBelowNumberRowDp = raw.extraSpaceBelowNumberRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             extraSpaceAboveSpaceRowDp = raw.extraSpaceAboveSpaceRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
-            symbolKeyEnabled = raw.symbolKeyEnabled
+            symbolKeyEnabled = raw.symbolKeyEnabled,
+            tier3Enabled = raw.tier3Enabled
         )
     }
 }

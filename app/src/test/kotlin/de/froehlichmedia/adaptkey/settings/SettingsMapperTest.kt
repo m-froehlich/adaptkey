@@ -89,6 +89,13 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-126 tier3Enabled flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).tier3Enabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(tier3Enabled = false)).tier3Enabled)
+    }
+    
+    
+    @Test
     fun `shiftGraceWindow is clamped into the spec range`() {
         assertEquals(SettingsMapper.MIN_SHIFT_GRACE_MS, SettingsMapper.shiftGraceWindowMs(RawSettings(shiftGraceWindowMs = -1L)))
         assertEquals(SettingsMapper.MAX_SHIFT_GRACE_MS, SettingsMapper.shiftGraceWindowMs(RawSettings(shiftGraceWindowMs = 9_000L)))

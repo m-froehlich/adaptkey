@@ -233,6 +233,12 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.Tier3ModelActivity" />
         </Preference>
 
+        <SwitchPreferenceCompat
+            android:key="d126_tier3_enabled"
+            android:title="@string/d126_title"
+            android:summary="@string/d126_summary"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_feedback">

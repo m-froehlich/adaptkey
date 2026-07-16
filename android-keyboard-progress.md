@@ -28,6 +28,31 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§75 DONE (v0.8.43): batch release - D-117, D-126, D-127/D-128, D-129, D-131, D-132, D-133, D-136, D-137.**
+  **D-117**: a wider-budget, suggestion-only fuzzy fallback (`wideFuzzyNeighbours`, cost 4, tokens ≥6 chars)
+  for multi-typo words beyond D-28's normal budget ("erkamm"→"erkannt"), tried only once every cheaper search
+  found nothing. **D-126**: the uninstall action already existed (`Tier3ModelActivity.removeModel()`, just
+  never marked confirmed); added the missing independent enable/disable toggle (`tier3Enabled`, default on,
+  full settings pipeline), `reconcileTier3Provider()` now gates on it and reacts live via `applySettings()`.
+  **D-127/D-128**: consolidated "what learns when" reference (T-03/D-37/D-13/T-04/§9 tier-3 reinforcement -
+  see spec §75 for the full write-up) plus a compact, prominent callout added to the existing D-89
+  `FeatureOverviewActivity` summarising it for users. **D-129**: the calculator minus key's sign-flip
+  long-press now shows a corner-hint glyph (reuses D-98's generic "◢" cue, keyed off the key's own identity
+  rather than hint/alternatives, which would have wrongly rerouted its commit path). **D-131**: D-39's
+  raw-coordinate correction is now live while composing too, not just at commit time - refactored suggestion
+  assembly so it and D-122's split suggestion both stay out of the tier-1 candidates list `SuggestionMerger`
+  normalises against (shared `extras: List<Suggestion>`, appended only at display time). **D-132**: the
+  settings row's background moved from the outer view onto its animated `content` child, so the whole reveal
+  (background + buttons) now slides as one piece instead of the background popping in at full height first.
+  **D-133**: `OffsetModel.Candidate` gained an optional `maxDownwardOffsetFactor`, applied to the bottom
+  letter row (`c v b n m`, factor 0.25) on top of D-109's isotropic cap - verified end-to-end via `resolve()`,
+  not just that the parameter exists. **D-136**: `WindowInsetsControllerCompat.isAppearanceLightNavigationBars
+  = true` (unconditional - AdaptKey's keyboard background has no dark variant) fixes the suspected missing
+  system-bar-appearance flag. **D-137**: a typed time always adds "Uhr" as a next-word prediction (new pure
+  `TimePattern.endsWithTime()`), same maximal-score-kept-out-of-normalisation approach as D-122, now shared
+  via `MAX_PRIORITY_SUGGESTION_SCORE`. 607 unit tests (was 592; +15). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. None of this round's Android/service/view-glue items have been confirmed on
+  a real device yet.
 - **§74 (still v0.8.42, no code change this entry): device-feedback status update.** **Confirmed working:**
   D-122, the §72 caret-position fix, and (blanket confirmation) D-106 stages 1+2, D-111/D-112, D-113. **D-135
   negative result:** no Autofill inline suggestion appeared for the username field in "finanzen.net zero"

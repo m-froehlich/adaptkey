@@ -3726,3 +3726,129 @@ autofill service have a saved login for this app already; what autofill service 
 Password Manager / a third-party one); and - the most diagnostic single test - does an inline suggestion
 appear for *any* login field in *any* app with AdaptKey active, or has it never been observed working at all
 yet. If it turns out to be case 2 (the app itself opts out), that would not be an AdaptKey bug to fix at all.
+
+## §75 - Batch Release: D-117, D-126, D-127/D-128, D-129, D-131, D-132, D-133, D-136, D-137 (v0.8.43)
+
+Released together per explicit user instruction, one round mirroring §64's own batch-release shape.
+
+### D-117 - A Multi-Typo Word Beyond D-28's Budget Still Surfaces as a Suggestion
+New `DictionarySuggestionProvider.wideFuzzyNeighbours()`: the same first-character-bucket search as D-12's
+`fuzzyNeighbours()`, but at a wider edit-cost budget (`WIDE_CORRECTION_COST = 4` vs. the ordinary
+`MAX_CORRECTION_COST = 2`), restricted to tokens of at least `MIN_WIDE_FUZZY_LENGTH = 6` characters (a wide
+budget on a short token would match almost anything) and only ever tried once every cheaper search above
+found nothing at all - the same `candidates.isEmpty()` fallback gate as D-116. Reaches the motivating example,
+`erkamm` -> `erkannt` (two adjacent-key substitutions plus an insertion, cost 4). **Suggestion-only**: D-28's
+own tight, autocorrect-grade budget is completely untouched, so this never silently applies on its own -
+verified directly (`autocorrectFor`/`highConfidenceCorrection` both still return null for the same input).
+Scope limitation, noted honestly rather than solved: still only searches the token's own first-character
+bucket (its letter or a keyboard neighbour), so a token whose very first letter is *also* badly garbled stays
+out of reach - a genuinely open question per D-117's own spec entry, not attempted here. 4 new tests.
+
+### D-126 - Tier-3 Independent Enable Toggle (the Uninstall Action Already Existed)
+Traced before implementing: `Tier3ModelActivity` already had a working "remove model" button
+(`removeModel()` → `Tier3ModelInstaller.clear()`) - the uninstall half of D-126 was already done, just never
+marked confirmed in the backlog. Implemented the other half: new `tier3Enabled: Boolean` (default on) through
+the full settings pipeline (`RawSettings`/`AdaptSettings`/`SettingsMapper`/`SettingsStore`,
+`d126_tier3_enabled`) plus a `SwitchPreferenceCompat` right below the model-import entry.
+`AdaptKeyService.reconcileTier3Provider()` now gates on `settings.tier3Enabled && Tier3ModelStorage.
+isModelInstalled(this)` instead of installed-state alone, and is called from `applySettings()` itself (removed
+the now-redundant standalone call in `onStartInputView()`) so toggling the switch takes effect immediately
+while the service is resident, not only on the next field focus - a model can now stay imported while
+inference is switched off, e.g. to save battery/latency without deleting and later re-importing the ~270+ MB
+file. 1 new test (`SettingsMapperTest`).
+
+### D-127 / D-128 - What Learns When (Internal Reference + a User-Facing Settings Summary)
+
+**D-127 - internal reference, consolidated here for future sessions:**
+- **T-03 (`OffsetModel`)**: learns from every confirmed tap (`AdaptKeyboardView.onTouchEvent`'s `ACTION_DOWN`
+  → `record()`) - except a tap D-109 flags as space/letter-ambiguous, which is never recorded at all (the
+  root cause D-109 fixed). Bounded by D-109's isotropic cap and now D-133's bottom-row-specific downward cap.
+- **D-37 (dictionary, `learnWord`)**: a word already known is reinforced immediately (frequency + bigram bump).
+  A genuinely new word is only counted via `PendingLearnStore` and promoted to the real dictionary after
+  `LEARN_THRESHOLD = 2` commits, so a one-off typo is never learned as if it were a real word on the first go.
+- **D-13 (`learnWordStrong`)**: a *deliberate* correction (undoing a wrong A-05 split) promotes the rejoined
+  word immediately, bypassing D-37's threshold - a deliberate correction is a much stronger, unambiguous
+  signal than merely typing the same word twice.
+- **T-04 (`PatternSeed`)**: not continuous learning - a one-time initial seed applied when a typing pattern is
+  chosen in Settings (K-01), front-loading a plausible starting shape for T-03; the model keeps learning from
+  real taps afterwards regardless of the seed.
+- **§9 tier-3 adaptive learning (`reinforceFromTier3`)**: after a commit, a word the mini-LLM was confident
+  about but tier-1's own dictionary didn't already know is fed back into the *same* D-37 pipeline as a
+  reinforcement signal. This is the actual mechanism behind "the LLM is consulted less over time" - as the
+  dictionary absorbs what the LLM already knows, tier-1's own confidence rises, and C-06's activation
+  threshold (`Tier3Activation.shouldActivate`) simply triggers tier-3 less often for words it has already
+  reinforced. Not a schedule, an emergent property of the two mechanisms feeding each other.
+
+**D-128 - user-facing summary**: extended the existing D-89 `FeatureOverviewActivity` per the user's own
+suggested shape, rather than a new screen - a compact, visually distinct callout (`key_background_special`
+background, its own heading) inserted above the ordinary scrolling feature list, summarising D-127's write-up
+in plain language: the touch model adjusts with every confirmed keystroke, corrected/new words join the
+dictionary, and the optional mini-AI is consulted less as the dictionary learns to predict the same words
+itself. New strings (`d128_title`/`d128_summary`, all three locales). No new tests - static layout/string
+content, no decision logic.
+
+### D-129 - Corner-Hint Glyph for the Calculator Minus Key's Sign-Flip
+§31 (v0.8.10) deliberately shipped this key with neither a `hint` nor `alternatives`, since either would
+have wrongly routed its long-press through the hint/alternatives commit-text pipeline instead of `SignFlip`.
+New `AdaptKeyboardView.isSignFlipKey()` recognises the key by its own identity (`char == SymbolLayout.
+MINUS_SIGN`, mirroring `KeyboardLayout.hasLongPressAction()`'s existing special case) and reuses D-98's
+existing generic "more on long-press" corner glyph (`MORE_ALTERNATIVES_GLYPH`, "◢") - deliberately not a
+bespoke sign-flip glyph a user might mistake for a committable character. No new tests - pure `onDraw` glue,
+the established gap for this view.
+
+### D-131 - Raw-Coordinate Correction (D-39) Now Live While Composing
+`AdaptKeyService.refreshSuggestions()` now also consults the existing `rawCoordinateCorrection()` fallback -
+previously only ever reached at commit time - once ordinary prefix/fuzzy/compound/wide-fuzzy candidates are
+all still empty (`!duringRepeat`, consistent with D-138's own per-keystroke-cost concern for exactly this
+class of extra lookup). Refactored the suggestion-assembly in `refreshSuggestions()`/`applyTier3Outcome()`:
+D-122's split suggestion and this new raw-coordinate suggestion are both collected into one `extras: List
+<Suggestion>`, appended only at display time (`candidates + extras` / `outcome.suggestions + extras`) rather
+than fed into the tier-1 candidates `SuggestionMerger` itself normalises against - avoids exactly the
+score-normalisation distortion a synthetic maximal score would otherwise cause there (a lesson already applied
+to D-122, now generalised instead of duplicated). No new tests - `AdaptKeyService`/`InputConnection` glue over
+the already-tested `RawCoordinateCorrection`, the established gap for this layer.
+
+### D-132 - Settings Row: the Whole Reveal Now Slides as One Piece
+Root cause of the "pops in" complaint: the row's own background lived on the *outer* view, whose
+`layoutParams.height` jumps to its target instantly (the D-86 precedent, avoided for good reason - an
+animated live-relayout would be expensive) - so the solid background appeared at full height immediately,
+while only the buttons inside then slid up over 180ms. Fix: moved the background from the outer
+`SettingsRowView` onto `content` (the child whose `translationY` already animates) - the instant height jump
+is now invisible (nothing is painted at the outer view's own bounds), so the background and the buttons slide
+together as one continuous reveal, matching what was asked without needing a live-relayout animation at all.
+One-line change; no new tests - pure View/animation glue, the established gap for this view.
+
+### D-133 - Bottom-Row Touch Zones: a Hard, Direction-Specific Downward Bound
+New `OffsetModel.Candidate.maxDownwardOffsetFactor` (nullable, defaults to "use the model's own isotropic
+`maxOffsetFactor`, same as every other direction") lets a caller tighten a specific candidate's downward (+y)
+cap independently of D-109's general isotropic one; `cappedMeanOffset()` gained a matching optional
+`maxAbsYDown` parameter for the D-24 visualisation to stay truthful (D-109's own established principle).
+`AdaptKeyboardView` sets `BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR = 0.25` (a considered, not-yet-device-tuned
+starting point - the vertical midpoint between a bottom-row key's own centre and its bottom edge) for
+`c`/`v`/`b`/`n`/`m`, reusing the already-existing `BOTTOM_ROW_LETTERS` constant (§64's T-05 ambiguity-band
+set) rather than duplicating it. 3 new tests, including one proving the effect end-to-end via `resolve()`
+(not merely that the parameter exists).
+
+### D-136 - Gesture-Area System Control Contrast
+Confirmed the suspected mechanism before fixing it (checked the actual window/insets setup, not assumed):
+`AdaptKeyService` never touched the system-bars appearance flag at all, so the OS gesture-area controls
+(pill/back indicator) rendered with whatever the window would otherwise inherit, independent of AdaptKey's
+own painted background. Since `R.color.keyboard_background` has no dark-theme variant (always light), the
+fix is unconditional: `WindowInsetsControllerCompat(window.window, root).isAppearanceLightNavigationBars =
+true` in `onCreateInputView()`, alongside the existing D-42/edge-to-edge inset handling. No new tests -
+window/service glue, the established gap for this layer.
+
+### D-137 - A Typed Time Always Suggests "Uhr"
+New pure `suggestion/TimePattern.endsWithTime()` (7 tests): a plain shape check (`\d{1,2}:\d{2}` at the end
+of the text, optional trailing whitespace) - deliberately not range-validating real hours/minutes, since a
+shape-only false positive is harmless and range-validation would add complexity for no real gain.
+`AdaptKeyService.showNextWordPredictions()` now also checks the text immediately before the cursor and, when
+it ends in a time, adds `Suggestion("Uhr", MAX_PRIORITY_SUGGESTION_SCORE)` - the same deliberately maximal,
+tier-3-normalisation-avoiding scoring approach as D-122, generalised into a shared `MAX_PRIORITY_SUGGESTION_
+SCORE` constant now that two independent features use it.
+
+607 unit tests (was 592; +15: 7 `TimePatternTest`, 3 `OffsetModelTest`, 4 `DictionarySuggestionProviderTest`,
+1 `SettingsMapperTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of this round's Android/
+service/view-glue items (D-126, D-128, D-129, D-131, D-132, D-136) have been confirmed on a real device yet -
+this environment's established, repeatedly-documented limitation (no emulator, no `InputConnection`
+Robolectric shadow, no way to render the settings screen or observe system-bar icon contrast).

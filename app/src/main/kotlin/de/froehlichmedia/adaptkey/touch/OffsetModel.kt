@@ -46,13 +46,23 @@ class OffsetModel(
         var meanSize: Double = 0.0
     )
     
-    /** A candidate key with the geometry needed to score and record a tap. */
+    /**
+     * A candidate key with the geometry needed to score and record a tap.
+     *
+     * @property maxDownwardOffsetFactor D-133: overrides [maxOffsetFactor] for this candidate's downward
+     *           (+y) learned offset only, when set - e.g. the bottom letter row's own harder,
+     *           direction-specific bound against drifting toward the space bar below it (D-109 already
+     *           bounds every axis isotropically; this tightens one direction further, for these keys only).
+     *           Upward and both horizontal bounds are unaffected. Null (the default) means "use
+     *           [maxOffsetFactor], same as every other direction".
+     */
     data class Candidate(
         val id: String,
         val centerX: Float,
         val centerY: Float,
         val halfWidth: Float,
-        val halfHeight: Float
+        val halfHeight: Float,
+        val maxDownwardOffsetFactor: Double? = null
     )
     
     private val stats = HashMap<String, Stat>()
@@ -146,15 +156,18 @@ class OffsetModel(
      *
      * @param id the key id
      * @param maxAbsX maximum absolute x offset to return
-     * @param maxAbsY maximum absolute y offset to return
+     * @param maxAbsY maximum absolute y offset to return, in the upward (negative) direction
+     * @param maxAbsYDown D-133: maximum absolute y offset in the downward (positive) direction, when a
+     *        harder direction-specific bound applies (e.g. the bottom letter row); defaults to [maxAbsY],
+     *        i.e. the ordinary symmetric bound, for every existing caller
      * @return the clamped (dx, dy) mean offset, or (0, 0) when the key is untrained
      */
-    fun cappedMeanOffset(id: String, maxAbsX: Double, maxAbsY: Double): Pair<Double, Double> {
+    fun cappedMeanOffset(id: String, maxAbsX: Double, maxAbsY: Double, maxAbsYDown: Double = maxAbsY): Pair<Double, Double> {
         val stat = stats[id]
         if (stat == null || stat.count == 0L) {
             return 0.0 to 0.0
         }
-        return stat.meanDx.coerceIn(-maxAbsX, maxAbsX) to stat.meanDy.coerceIn(-maxAbsY, maxAbsY)
+        return stat.meanDx.coerceIn(-maxAbsX, maxAbsX) to stat.meanDy.coerceIn(-maxAbsY, maxAbsYDown)
     }
     
     /**
@@ -282,9 +295,11 @@ class OffsetModel(
     private fun logLikelihood(candidate: Candidate, x: Float, y: Float): Double {
         val stat = stats[candidate.id]
         val capX = candidate.halfWidth * maxOffsetFactor
-        val capY = candidate.halfHeight * maxOffsetFactor
+        val capYUp = candidate.halfHeight * maxOffsetFactor
+        // D-133: a candidate may declare a harder, direction-specific bound on its own downward drift.
+        val capYDown = candidate.halfHeight * (candidate.maxDownwardOffsetFactor ?: maxOffsetFactor)
         val offsetX = (stat?.meanDx ?: 0.0).coerceIn(-capX, capX)
-        val offsetY = (stat?.meanDy ?: 0.0).coerceIn(-capY, capY)
+        val offsetY = (stat?.meanDy ?: 0.0).coerceIn(-capYUp, capYDown)
         val predictedX = candidate.centerX + offsetX
         val predictedY = candidate.centerY + offsetY
         val varX = variance(stat?.m2Dx, stat?.count, defaultVariance(candidate.halfWidth))
