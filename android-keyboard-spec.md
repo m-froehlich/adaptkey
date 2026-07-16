@@ -3954,3 +3954,32 @@ up as the row grows - which alone produces the "buttons rising into place" effec
 No new tests for either fix - both are Android view/animation glue, the established gap for this layer; 612
 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Neither has been re-confirmed on
 device yet.
+
+## §78 - Version Shown in Settings; D-128 Relocated and Rewritten (v0.8.46)
+
+### New: App Version Shown in Settings
+Requested directly. New static `info_version` `Preference` in the settings screen's Info category
+(`selectable="false"`, same style as `info_privacy`/`info_license`), its summary set at runtime in
+`SettingsFragment.onCreatePreferences()` from `PackageManager.getPackageInfo(packageName, 0).versionName` -
+read live from the actual installed package rather than a hand-maintained string resource, which would
+inevitably drift out of sync with the real `versionName` in `app/build.gradle.kts`. New `info_version_title`
+string (all three locales).
+
+### D-128 - Two Corrections, Both From Direct Feedback
+**Placement**: the §75 callout lived inside `FeatureOverviewActivity`, reachable only after tapping into it -
+not what was asked ("direkt in den Settings auf dem Haupt-Screen ... am besten im Text unter dem Button, der
+in die Feature-Liste führt"). Removed that callout entirely (the `LinearLayout` block, `d128_title`/
+`d128_summary` strings - both now unused) and moved its role onto the **existing** `d89_feature_overview`
+preference's own `summary` text - the text already shown directly under that button on the settings screen,
+with no extra navigation required.
+
+**Content**: the §75 text described dictionary word-learning and the tier-3 LLM fading out - real mechanisms,
+but not distinctive: most keyboards claim some version of "learns your words". Rewritten to name what is
+actually unique to AdaptKey and was specifically asked for: the raw per-character touch coordinate is
+recorded (T-02), not just which key it resolved to; each key's own hit zone is continuously, individually
+re-shaped from that data (T-03); and the starting shape for that model comes from the typing style chosen
+during setup (K-01/T-04's `PatternSeed`), not a blank slate. New `d89_summary` text (all three locales),
+replacing the previous generic "a full overview of every feature" line.
+
+No new tests - static settings-screen content and a runtime `PackageManager` read, no decision logic. 612
+unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

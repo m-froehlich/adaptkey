@@ -28,6 +28,18 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§78 DONE (v0.8.46): app version shown in Settings; D-128 relocated and rewritten.** New static
+  `info_version` preference in the settings Info category, summary read live at runtime from
+  `PackageManager.getPackageInfo(...).versionName` (not a hand-maintained string, which would drift from
+  `app/build.gradle.kts`). **D-128**: two direct corrections. Placement - the §75 callout lived inside
+  `FeatureOverviewActivity`, requiring a tap to reach; moved onto the existing `d89_feature_overview`
+  preference's own `summary`, visible directly on the settings main screen with no navigation (removed the
+  now-unused callout layout block and `d128_title`/`d128_summary` strings). Content - the §75 text described
+  generic dictionary-learning/LLM-fade-out, not distinctive from other keyboards; rewritten to name what's
+  actually unique: raw per-character touch coordinates are recorded (T-02), each key's hit zone is
+  continuously reshaped from that data (T-03), seeded from the typing style chosen at setup, not a blank
+  slate (K-01/T-04 `PatternSeed`). No new tests. 612 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
 - **§77 DONE (v0.8.45): D-132 and D-137 follow-up fixes - neither §75 fix actually worked, both re-traced
   from scratch.** **D-137**: root cause was that a *standalone* typed digit never reaches
   `showNextWordPredictions()` at all - `finalizeAndCommit()`'s empty-composing branch treats the digit

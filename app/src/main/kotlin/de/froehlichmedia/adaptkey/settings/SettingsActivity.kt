@@ -42,6 +42,12 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
             
+            // Read live from the actual installed package rather than a hand-maintained string resource,
+            // which would inevitably drift out of sync with the real versionName in app/build.gradle.kts.
+            findPreference<Preference>("info_version")?.summary = runCatching {
+                requireContext().packageManager.getPackageInfo(requireContext().packageName, 0).versionName
+            }.getOrNull()
+            
             findPreference<Preference>("c08_reset_hints")?.setOnPreferenceClickListener {
                 SettingsStore.resetLetterHints(requireContext())
                 Toast.makeText(requireContext(), R.string.c08_reset_done, Toast.LENGTH_SHORT).show()

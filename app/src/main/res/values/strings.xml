@@ -14,12 +14,11 @@
     <string name="info_privacy_summary">This keyboard holds no internet permission — verifiable in the system. Nothing is "phoned home"; everything stays on the device.</string>
     <string name="info_license_title">Licence</string>
     <string name="info_license_summary">Free software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
+    <string name="info_version_title">Version</string>
 
     <!-- D-89: full feature overview, listing everything AdaptKey does so nothing stays hidden. -->
     <string name="d89_title">What AdaptKey can do</string>
-    <string name="d128_title">What “Adapt” means</string>
-    <string name="d128_summary">AdaptKey learns continuously, only from your own typing, entirely on this device: your personal touch pattern adjusts with every confirmed keystroke, corrected or newly typed words are added to your dictionary, and - if you have installed the optional mini-AI - it is consulted less and less often as your own dictionary learns to predict the same words by itself.</string>
-    <string name="d89_summary">A full overview of every feature, so nothing stays hidden.</string>
+    <string name="d89_summary">AdaptKey records the exact raw touch position behind every letter you type, not just which key it resolved to, and continuously adjusts each key\'s own hit zone to your personal tap pattern - seeded from the typing style you chose during setup, then refined by every further keystroke.</string>
     <string name="d89_f01_title">Adaptive touch model</string>
     <string name="d89_f01_desc">Learns your personal tap pattern for every key from everyday typing — an optional short calibration gives it an immediate head start, and it keeps refining itself afterwards.</string>
     <string name="d89_f02_title">Diacritic-aware autocorrect</string>

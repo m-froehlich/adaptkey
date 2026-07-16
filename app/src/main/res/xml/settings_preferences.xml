@@ -17,6 +17,11 @@
             android:selectable="false" />
 
         <Preference
+            android:key="info_version"
+            android:title="@string/info_version_title"
+            android:selectable="false" />
+
+        <Preference
             android:key="onboarding_replay"
             android:title="@string/onboarding_replay_title"
             android:summary="@string/onboarding_replay_summary" />
