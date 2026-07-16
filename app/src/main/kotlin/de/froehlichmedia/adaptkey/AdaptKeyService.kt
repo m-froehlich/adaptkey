@@ -97,6 +97,7 @@ import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
 import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
+import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
 import de.froehlichmedia.adaptkey.touch.AmbiguityResult
@@ -1822,6 +1823,32 @@ class AdaptKeyService : InputMethodService() {
         showNextWordPredictions()
     }
     
+    /**
+     * D-122: commits a tapped mid-word connector-split suggestion (a [SuggestionController.Kind.NORMAL]
+     * bar word containing a space - see [midWordConnectorSplitSuggestion], the only source of such a word)
+     * via the same [applySplit] the automatic A-05 commit-time path uses, so per-half capitalisation, the
+     * A-07 undo arming and D-13 learning all match exactly. [word] is already display-capitalised
+     * (`"$left $right"`); [applySplit] recomputes the same capitalisation itself from the lower-cased
+     * [SplitResult] it expects, which is deterministic against the still-current context and therefore
+     * harmless, not merely redundant.
+     *
+     * @param ic the current input connection
+     * @param word the pre-capitalised `"$left $right"` suggestion text
+     */
+    private fun applyMidWordSplitSuggestion(ic: InputConnection, word: String) {
+        val (left, right) = word.split(' ', limit = 2)
+        applySplit(ic, SplitResult(left.lowercase(), right.lowercase()), delimiter = " ", typed = composing.toString())
+        // D-88: tapping a bar suggestion is always an accepted suggestion, regardless of whether it happens
+        // to match what was typed.
+        notifySuggestionAccepted(word)
+        // D-29: arm the trailing space applySplit's own delimiter added, so immediate punctuation removes it.
+        pendingSuggestionSpace = true
+        // D-123: guard applySplit's own commitText() echo against clearing the flag just armed (mirrors the
+        // matching guard in the ordinary NORMAL branch).
+        suppressNextReclaimSpaceReset = true
+        armShiftForNextWord(ic)
+    }
+    
     private fun spaceAmbiguousIndices(): Set<Int> {
         val indices = HashSet<Int>()
         composingFlags.forEachIndexed { index, flag ->
@@ -2108,6 +2135,10 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
+        // D-122: kept out of `candidates` itself so it never enters the tier-1/tier-3 merge's own score
+        // normalisation (SuggestionMerger normalises every tier-1 score against the list's own maximum) -
+        // added only to what is actually displayed, at every controller.update() call site below.
+        val splitSuggestion = if (duringRepeat) null else midWordConnectorSplitSuggestion(input)
         val pending = if (duringRepeat) {
             provider.autocorrectFor(input, previousWord)
         } else {
@@ -2134,12 +2165,17 @@ class AdaptKeyService : InputMethodService() {
         val seq = ++tier3RequestSeq
         if (!tier3Async) {
             // No-op (or absent) backend: the orchestrator is instant, run it inline.
-            applyTier3Outcome(input, pending, tier3.predict(input, previous, sentence, candidates, settings.llmActivationThreshold, config.maxSuggestions))
+            applyTier3Outcome(
+                input,
+                pending,
+                tier3.predict(input, previous, sentence, candidates, settings.llmActivationThreshold, config.maxSuggestions),
+                splitSuggestion
+            )
             return
         }
         // A real backend runs the LLM: show the tier-1 suggestions immediately, then refine off-thread so
         // the IME never blocks. A stale result (the token changed meanwhile) is discarded via the sequence.
-        controller.update(input, candidates, pending)
+        controller.update(input, withSplitSuggestion(candidates, splitSuggestion), pending)
         showSuggestions()
         scheduleResort()
         val threshold = settings.llmActivationThreshold
@@ -2154,7 +2190,7 @@ class AdaptKeyService : InputMethodService() {
             val outcome = orchestrator.predict(input, previous, sentence, candidates, threshold, limit)
             handler.post {
                 if (seq == tier3RequestSeq && composing.toString() == input) {
-                    applyTier3Outcome(input, pending, outcome)
+                    applyTier3Outcome(input, pending, outcome, splitSuggestion)
                 }
             }
         }
@@ -2163,13 +2199,45 @@ class AdaptKeyService : InputMethodService() {
     /**
      * Applies a tier-3 orchestration outcome to the suggestion bar: stores the §6 capitalisation proposal
      * and the raw result (for the adaptive-learning feedback) and refreshes the bar.
+     *
+     * @param splitSuggestion D-122's mid-word connector-split candidate, appended after the tier-1/tier-3
+     *        merge rather than fed into it - see [refreshSuggestions]
      */
-    private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome) {
+    private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome, splitSuggestion: Suggestion? = null) {
         lastTier3Result = outcome.tier3
         lastCapProposal = outcome.capitalisation
-        controller.update(input, outcome.suggestions, pending)
+        controller.update(input, withSplitSuggestion(outcome.suggestions, splitSuggestion), pending)
         showSuggestions()
         scheduleResort()
+    }
+    
+    private fun withSplitSuggestion(suggestions: List<Suggestion>, splitSuggestion: Suggestion?): List<Suggestion> {
+        return if (splitSuggestion == null) suggestions else suggestions + splitSuggestion
+    }
+    
+    /**
+     * D-122: while the user is actively re-editing an existing word mid-word ([isEditingMidWord] - a much
+     * stronger "please fix this word" signal than ordinary forward typing), offers a would-be split at an
+     * unresolved [TokenRepair.OVER_SPACE_LETTERS] connector even without [TokenRepair.trySplit]'s usual
+     * bigram-co-occurrence requirement (relaxing that gate for *ordinary* typing would reopen the exact
+     * "any two known fragments get cut apart" false-positive problem §45 fixed - restricting it to this
+     * deliberate re-edit moment is what makes it safe). Suggestion-only, exactly like D-116's compound
+     * recognition - never silently applied, only ever offered, with a deliberately maximal score so it
+     * sorts first ("noticeably higher priority", as requested). Already capitalised as it would actually
+     * commit (mirroring [applySplit]'s own two calls), matched by [onSuggestionClicked]'s own tap handling
+     * for such a candidate.
+     *
+     * @param input the composing token
+     * @return the split suggestion, pre-capitalised as `"$left $right"`, or null when none applies
+     */
+    private fun midWordConnectorSplitSuggestion(input: String): Suggestion? {
+        if (currentInputConnection?.let { isEditingMidWord(it) } != true) {
+            return null
+        }
+        val split = tokenRepair.splitAtUnresolvedConnector(input, previousWord) ?: return null
+        val left = capitalisation.capitalise(split.left, contextFor(split.left))
+        val right = capitalisation.capitalise(split.right, followingPartContext())
+        return Suggestion("$left $right", SPLIT_SUGGESTION_SCORE)
     }
     
     private fun scheduleResort() {
@@ -2294,6 +2362,14 @@ class AdaptKeyService : InputMethodService() {
             
             // Complete the token with the chosen word (cased per §6) and start a new one.
             SuggestionController.Kind.NORMAL -> {
+                // D-122: a suggestion word containing a space can only be the mid-word connector-split
+                // candidate (see midWordConnectorSplitSuggestion) - no other suggestion source in this
+                // codebase ever produces a multi-word candidate - so it needs applySplit()'s own per-half
+                // capitalisation and undo/learn wiring, not the single-word path below.
+                if (item.word.contains(' ')) {
+                    applyMidWordSplitSuggestion(ic, item.word)
+                    return
+                }
                 val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 ic.commitText(word + " ", 1)
                 clearComposing()
@@ -2676,5 +2752,11 @@ class AdaptKeyService : InputMethodService() {
         // the actual rendered content within it).
         private const val INLINE_SUGGESTION_MAX_COUNT = 3
         private const val INLINE_SUGGESTION_WIDTH_DP = 160
+        
+        // D-122: comfortably above any real dictionary frequency (the largest bundled entries sit around
+        // 1e6, see MIN_AUTOCORRECT_CANDIDATE_FREQUENCY's own comment) so the mid-word connector-split
+        // suggestion always sorts first, without using an extreme value (Double.MAX_VALUE) that could risk
+        // odd behaviour in any future score arithmetic.
+        private const val SPLIT_SUGGESTION_SCORE = 1_000_000_000.0
     }
 }

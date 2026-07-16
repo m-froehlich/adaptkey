@@ -28,6 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§71 DONE (v0.8.41): D-122 implemented - mid-word connector-split suggestion.** First real repro
+  ("Testvwort hallo", caret placed inside "Testvwort", expected a "Test Wort" suggestion, bar stayed empty).
+  Root cause, two compounding correct-for-their-own-reasons behaviours: `TokenRepair.trySplit()`'s §45
+  bigram-co-occurrence gate applies uniformly, so "test"/"wort" (no recorded co-occurrence) never even
+  reaches a candidate; and even a found split was never wired into the suggestion bar at all (only the live
+  colour preview, itself suppressed during mid-word editing, or the silent A-05 auto-commit). New
+  `TokenRepair.splitAtUnresolvedConnector()` (connector-drop only, no bigram gate) is consulted only while
+  `isEditingMidWord()` is true (the deliberate-re-edit signal is what makes relaxing the gate safe);
+  `midWordConnectorSplitSuggestion()` pre-capitalises it and adds it to the bar with a deliberately maximal
+  score (kept out of the tier-1 `candidates` list itself, to avoid skewing `SuggestionMerger`'s own
+  normalisation - appended only at display time). Suggestion-only like D-116 - tapping it delegates to the
+  existing `applySplit()` (per-half capitalisation, A-07 undo, D-13 learning all reused, not reimplemented).
+  592 unit tests (was 586; +6 `TokenRepairTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not
+  yet device-tested.
 - **D-116 CONFIRMED WORKING on device** (user confirmation, no code change - see §69).
 - **§70 DONE (v0.8.40): settings row gained a third button - clear clipboard.** New idea, not from any prior
   backlog entry. `SettingsRowView.clearClipboardButton` (glyph `🗑`, matching the row's existing plain-`TextView`

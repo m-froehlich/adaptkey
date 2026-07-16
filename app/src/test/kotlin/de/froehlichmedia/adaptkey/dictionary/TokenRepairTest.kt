@@ -148,4 +148,53 @@ class TokenRepairTest {
         assertEquals(0..2, ranges.first)
         assertEquals(4..6, ranges.second)
     }
+    
+    @Test
+    fun `D-122 an unresolved connector is split even with no bigram co-occurrence at all`() {
+        // Reproduces the reported case: "testvwort" ("test" + accidental "v" + "wort") - "test" and "wort"
+        // never co-occur in the corpus, so trySplit() itself would (correctly, for its own broader use)
+        // find nothing here; splitAtUnresolvedConnector() must still find it.
+        store.putWord(WordEntry("test", frequency = 500L))
+        store.putWord(WordEntry("wort", frequency = 4_084L))
+        
+        assertNull(repair.trySplit("testvwort", emptySet()), "trySplit() itself must stay bigram-gated")
+        assertEquals(SplitResult("test", "wort"), repair.splitAtUnresolvedConnector("testvwort"))
+    }
+    
+    @Test
+    fun `D-122 a non-over-space letter is never treated as a connector`() {
+        store.putWord(WordEntry("test", frequency = 500L))
+        store.putWord(WordEntry("wort", frequency = 4_084L))
+        // 'x' is not one of TokenRepair.OVER_SPACE_LETTERS, unlike 'v'.
+        assertNull(repair.splitAtUnresolvedConnector("testxwort"))
+    }
+    
+    @Test
+    fun `D-122 only the connector position that yields two known words on both sides is picked`() {
+        // "undcdasnist": dropping the 'c' (index 3) would leave "und" + "dasnist" - "dasnist" is not a
+        // known word, so that position is rejected; only dropping the 'n' (index 7) yields two genuinely
+        // known words on both sides.
+        store.putWord(WordEntry("undcdas", frequency = 1L)) // an unlikely but present "word" for this test
+        store.putWord(WordEntry("ist", frequency = 500L))
+        
+        assertEquals(SplitResult("undcdas", "ist"), repair.splitAtUnresolvedConnector("undcdasnist"))
+    }
+    
+    @Test
+    fun `D-122 no split when neither half is a known word`() {
+        assertNull(repair.splitAtUnresolvedConnector("xyzvabc"))
+    }
+    
+    @Test
+    fun `D-122 a known word is never split`() {
+        assertNull(repair.splitAtUnresolvedConnector("aber"))
+    }
+    
+    @Test
+    fun `D-122 a blacklisted half is rejected`() {
+        store.putWord(WordEntry("test", frequency = 500L))
+        store.putWord(WordEntry("wort", frequency = 4_084L))
+        store.blacklist("wort", BlacklistCategory.USER)
+        assertNull(repair.splitAtUnresolvedConnector("testvwort"))
+    }
 }

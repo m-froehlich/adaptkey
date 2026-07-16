@@ -102,6 +102,34 @@ class TokenRepair(private val store: DictionaryStore) {
     }
     
     /**
+     * D-122: an unresolved [OVER_SPACE_LETTERS] connector split - unlike [trySplit], this does **not**
+     * require the two halves to have a recorded bigram co-occurrence. Deliberately narrower in every other
+     * respect (only the connector-letter-drop strategy, never the missed-space one) and meant to be
+     * consulted only while the user is actively re-editing an existing word mid-word - a much stronger
+     * intent signal ("I came back to fix this specific word") than ordinary forward typing, where relaxing
+     * the bigram gate this way would reopen the exact "any two known fragments get cut apart" false-positive
+     * problem §45 fixed. The caller is responsible for that gating and for treating the result as a
+     * suggestion only, never a silent autocorrect.
+     *
+     * @param token the composing token (any case); a known word is never split
+     * @param previousWord the word committed before the token, used only for ranking between multiple
+     *        candidate connector positions (via the shared [score]), not as a gate; may be null
+     * @return the highest-scoring connector split, or null when no candidate position yields two known,
+     *         non-blacklisted words
+     */
+    fun splitAtUnresolvedConnector(token: String, previousWord: String? = null): SplitResult? {
+        val t = token.lowercase()
+        if (t.length < 2 * MIN_PART || store.isKnownWord(t)) {
+            return null
+        }
+        return t.indices
+            .filter { it in MIN_PART..t.length - 1 - MIN_PART && t[it] in OVER_SPACE_LETTERS }
+            .mapNotNull { i -> candidateAt(t.substring(0, i), t.substring(i + 1), previousWord) }
+            .maxByOrNull { it.second }
+            ?.first
+    }
+    
+    /**
      * Attempts to merge a spurious letter-ambiguous space back into [token] (A-06): prepends the
      * [inferredChar] from the tap's x-coordinate and tests whether the result is a valid word or a
      * high-probability continuation of [previousWord]. Only applies when [token] itself is not a valid

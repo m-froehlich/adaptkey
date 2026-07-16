@@ -3558,3 +3558,52 @@ No new unit tests - `SettingsRowView` is Android view/animation glue with no dec
 (same established gap as the rest of the row, see §50), and `clearClipboardFromSettingsRow()` is a one-line
 service-glue wrapper over the already-tested-by-precedent (Android glue, not pure logic) `clearClipboard()`.
 586 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-tested.
+
+## §71 - D-122 Implemented: Mid-Word Connector-Split Suggestion (v0.8.41)
+
+First real repro for D-122, traced end-to-end before implementing anything. Repro: type "Testvwort hallo",
+then place the caret inside "Testvwort" (mid-word re-edit) - expected a "Test Wort" suggestion (the
+accidental `v` connector, one of [TokenRepair.OVER_SPACE_LETTERS]); the bar stayed completely empty instead.
+
+**Root cause, two compounding, individually correct behaviours:** (1) `TokenRepair.trySplit()`'s §45
+bigram-co-occurrence gate applies uniformly to the connector-drop strategy too - "test" and "wort" never
+co-occur in the bundled corpus, so `trySplit("testvwort", …)` correctly finds nothing, by the same design
+that keeps ordinary typos (`"meinst"` -> `"mei st"`) from being cut apart on zero evidence. (2) Even where
+`trySplit()` *does* find a candidate, its result was never wired into the suggestion bar at all - only into
+the live composing-text colour preview (§49's `splitPreview()`, itself deliberately suppressed during
+mid-word editing by D-26's `isEditingMidWord` gate, to avoid mis-colouring a reclaimed fragment) or the
+silent A-05 auto-commit at delimiter time. There was no middle path of "offer it, let the user decide" for a
+split candidate at all, unlike ordinary autocorrect.
+
+**Fix, matching the design agreed on directly:**
+
+New `TokenRepair.splitAtUnresolvedConnector(token, previousWord)` (6 new tests): the connector-drop
+strategy only, deliberately **without** `trySplit()`'s bigram-co-occurrence requirement - both halves must
+still be known, non-blacklisted words (the existing `candidateAt`/`isWord`/`score` helpers, unchanged).
+Consulted **only** while `AdaptKeyService.isEditingMidWord()` is true (mirroring D-26/§49's own gate) - the
+user having deliberately tapped back into an existing word is a far stronger "please fix this" signal than
+ordinary forward typing, which is exactly why the bigram gate can be relaxed here without reopening §45's
+"any two known fragments get cut apart" false-positive problem for everyday typos.
+
+New `AdaptKeyService.midWordConnectorSplitSuggestion(input)`, consulted from `refreshSuggestions()` (skipped
+during `duringRepeat`, consistent with D-138): pre-capitalises the split exactly as `applySplit()` would
+(`contextFor(split.left)` / `followingPartContext()`) and wraps it as a `Suggestion("$left $right",
+SPLIT_SUGGESTION_SCORE)` with a deliberately maximal score (1e9 - comfortably above any real dictionary
+frequency, but far below `Double.MAX_VALUE` to avoid any risk in downstream arithmetic) so it sorts first -
+"noticeably higher priority", as D-122 originally asked. **Kept out of the `candidates` list itself** and
+appended only at the point of display (`withSplitSuggestion()`, called at every `controller.update()` site):
+feeding it into `candidates` would have made it `SuggestionMerger`'s own `maxTier1` normalisation baseline,
+compressing every ordinary tier-1 score toward zero - a real, if subtle, side effect worth avoiding rather
+than accepting.
+
+**Suggestion-only, exactly like D-116** - never wired into `autocorrectFor()`/`highConfidenceCorrection()`,
+so it can never silently apply on its own. Tapping it (`AdaptKeyService.onSuggestionClicked()`'s `NORMAL`
+branch, extended to recognise a suggestion word containing a space - no other suggestion source in this
+codebase ever produces one, a safe, unique signal) delegates to the *existing* `applySplit()` via new
+`applyMidWordSplitSuggestion()`, so per-half capitalisation, A-07 undo arming (a backspace immediately after
+reverts to "Testvwort") and D-13 learning all match the already-established, already-tested A-05 commit path
+exactly, rather than a parallel reimplementation.
+
+592 unit tests (was 586; +6 `TokenRepairTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-tested - the pure split-recognition logic is fully unit-tested, but the suggestion-bar wiring and tap
+handling are `AdaptKeyService`/`InputConnection` glue, the established testing gap for this layer.
