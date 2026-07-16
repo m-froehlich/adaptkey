@@ -3078,3 +3078,160 @@ service glue, no new test - same established gap.
 D-119-D-121, D-123) are Android view/service glue this environment cannot exercise end-to-end (no
 emulator/device, no `InputConnection` Robolectric shadow, per the established, repeatedly-documented limitation
 of this environment).
+
+## §65 - Backlog Round 17: Post-§64 Device Feedback
+
+Captured, **not started**, per the usual rule - the user explicitly asked for these to be collected now, with
+implementation planned as a separate, later round.
+
+### D-124 - §60's Clipboard MIME-Type Filter Doesn't Actually Block a Non-Text File (Bug, Re-Opened)
+§60 (v0.8.33) was left deliberately unconfirmed pending broader real-world use - this is that use, and it
+surfaced a real failure: copying the app's own APK file offers it via the D-36 Quick Paste chip, which
+`resolveClipboardText()`'s `clip.description.hasMimeType("text/*")` check should have suppressed entirely (an
+APK is `application/vnd.android.package-archive`, not `text/*`). Not yet re-traced against the current code -
+possible leads for the next pass: whether the specific source app (wherever the APK was copied from) declares a
+`ClipDescription` MIME type at all, whether it reports something unexpected `hasMimeType` still matches, or
+whether the `item.uri == null` fast path (plain-text items, unconditionally allowed) is firing instead of the
+URI branch for this particular copy for some reason.
+
+### D-125 - An Unknown Inflected Verb Form Must Not Be Silently "Corrected" to the Dictionary's Base Form
+Reported: "beurteilst" (2nd person singular of "beurteilen") auto-corrects to "beurteilt" (a different real
+inflected form, 3rd person singular / past participle) - the same class of bug as D-115's "merke"/"stimmen",
+but framed as a systemic morphology gap rather than one more missing word. The user's own proposed scope: **not**
+every inflection of every verb needs to be in the dictionary (95% of the value, per their own estimate, doesn't
+need that) - but the regular, highly-productive German conjugation *patterns* (weak/regular verb endings:
+-e/-st/-t/-en/-t/-en present tense, the regular preterite/participle patterns) should be recognised as
+"plausible enough to leave alone" even when the exact surface form isn't a dictionary entry, without necessarily
+being *offered* as a suggestion. This is a generalisation of D-115's fix (which patched two specific words) into
+an actual rule: something that recognises "this token is a regular conjugation of a stem the dictionary already
+knows" and extends A-01-style protection to it, distinct from (and a real alternative to) a full corpus rebuild
+or hand-adding every inflection. Not yet designed - needs its own pass on what "regular enough" means precisely
+and where in the pipeline (a new check alongside `isKnownWord`, most likely) this would plug in.
+
+### D-126 - Tier-3 Mini-LLM Needs an Uninstall Action and an Independent Enable/Disable Toggle
+Once a model has been imported (`Tier3ModelActivity`/`Tier3ModelInstaller`/`Tier3ModelStorage`), there is
+currently no way to remove it again, and no toggle to turn the LLM off/on independently of whether a model file
+happens to be present - "installed" and "active" are currently the same state. Two asks: (1) a settings action
+to delete the imported model file (freeing the ~270+ MB it occupies) and (2) a switch that disables tier-3
+inference even while a model remains installed (e.g. to save battery/latency without having to re-import later).
+Ties into `Tier3ModelStorage`/the C-06 settings plumbing - not yet scoped against the actual current code.
+
+### D-127 - Document "What Learns When" (Dev Docs)
+Requested as its own task: a clear, consolidated write-up of exactly which user actions feed which learning
+mechanism and when (T-03 offset model per confirmed tap per D-109's new ambiguous-tap exclusion; D-37's
+count-based dictionary promotion/un-learn on undo; T-04 pattern seeding; the tier-3 adaptive-learning signal,
+§9). This is meant to land in the project's own docs (this spec/progress file), not user-facing copy - a
+reference for future sessions and for writing D-128's user-facing summary accurately.
+
+### D-128 - Settings Needs a Prominent, Compact Explanation of What Adapts and Learns
+The app is named **AdaptKey** - the user wants the settings screen to prominently (but compactly) explain what
+justifies that name: which actions teach the keyboard something and how, explicitly covering the T-03 raw-touch
+model and the tier-3 mini-LLM's adaptive-learning fade-out (§9 - the LLM is consulted less as the n-gram model
+learns from it). Possible shape floated by the user: extend the existing D-89 `FeatureOverviewActivity` ("Was
+AdaptKey alles kann") with a short, dedicated summary of these core learning/adaptation features, rather than
+building an entirely separate screen. Depends on D-127's consolidated internal write-up existing first, so the
+user-facing summary is accurate rather than reconstructed from memory.
+
+### D-129 - Calculator's Minus Key Needs a Corner-Hint Glyph for Its Sign-Flip Function
+§31 (v0.8.10) added the sign-flip-on-long-press feature to the calculator page's `−` key, explicitly accepting
+"no corner-glyph visual cue" as a trade-off at the time (the key carries neither a `hint` nor `alternatives`, so
+routing it through the ordinary hint-drawing path would have wrongly turned the gesture into a text-commit
+action - see §31's own write-up). Revisiting that trade-off: the user now wants some corner indicator so the
+long-press function is discoverable, without accidentally routing it back through the commit-text machinery
+that was the reason it has none today. Needs its own small design pass (a corner glyph driven by a condition
+other than "has a hint/alternatives", most likely).
+
+### D-130 - A Real Language Switch After Sustained English, Plus a Space-Bar Acknowledgement Animation
+Two related asks:
+1. **Promote the A-03 per-token English routing to a real D-106-stage-1 active-language switch after
+   sustained English input.** Today, typing English inline while German is active only ever routes
+   individual tokens to the English dictionary (A-03's classifier, `LANGUAGE_WINDOW = 5`) - it never actually
+   flips `activeLanguage` the way the G-01 swipe does. The user observes this already works well for the one
+   thing it was built for (D-106 stage 2's cross-language autocorrect suppression), but questions whether the
+   current "soft" per-token routing is still worth keeping *as well* now that stage 2 exists, and proposes:
+   after **five** consecutive English words (not the classifier's own 2-word window), perform a genuine
+   `LanguageCycle`-style switch to English as the *active* language, not just a per-token dictionary
+   substitution. This is a real behavioural change to A-03/D-106's interaction, not yet designed - needs
+   deciding whether this replaces or layers on top of the existing classifier routing.
+2. **Acknowledge every language change - automatic or manual (G-01 swipe) - with a visible animation on the
+   space bar**, not just the current text label swap. Two alternatives floated: a glow sweep travelling
+   bottom-to-top across the space key's text, or a fade-out of the current label followed by a fade-in of the
+   new one. Purely a visual-polish request ("sieht nett aus und ist auffällig") - no functional change beyond
+   making the existing D-03 space-bar label swap more noticeable.
+
+### D-131 - Raw-Coordinate Correction Should Become Visible Earlier While Still Typing
+D-39's raw-coordinate correction is confirmed working well now, but currently only ever applies at
+`finalizeAndCommit()` time (as the last fallback, once ordinary edit-distance autocorrect finds nothing) - it
+has no live presence during composing the way the ordinary suggestion list and the §49 split preview do. The
+user wants its effect visible earlier - ideally before the last letter of the word is even typed - so a
+raw-coordinate respelling becomes a live, incremental confidence signal rather than something that only ever
+resolves at the final delimiter. Not yet designed - would need `refreshSuggestions()` to also consult
+`RawCoordinateCorrection.respellings(...)` against the in-progress token (mirroring how D-111/D-112 already
+pulled a piece of `finalizeAndCommit()`'s own logic forward into live suggestions), which needs `composingTaps`
+data for the token-so-far rather than the whole finished word.
+
+### D-132 - Settings-Row Slide-In Animation Needs Polish
+§50's `SettingsRowView` currently reserves its height immediately and animates only its inner content via
+`translationY` - per the user, this reads as the row and its buttons "popping in" instantly rather than
+sliding, which "looks odd". Requested: the buttons together with the whole row should slide up from below as
+one piece, or - the user's own pragmatic alternative - achieve the same visual via a clip-based reveal rather
+than a translation animation. Needs its own implementation pass against the current `SettingsRowView.open()`.
+
+### D-133 - Bottom-Row Touch Zones Need a Harder, Direction-Specific Bound (D-109 Follow-Up)
+D-109 (§64) already stopped ambiguous taps from training the model at all and tightened the general
+`maxOffsetFactor` cap from 0.9 to 0.5 - the user wants a stronger, explicitly *directional* guarantee on top of
+that general isotropic bound specifically for the bottom row (`c v b n m`): its keys' effective zones must never
+be allowed to drift downward past the vertical middle of the key, keeping a hard, guaranteed margin against the
+space bar regardless of how the general cap is tuned. This is a stricter, axis-specific version of D-109's
+existing fix, not yet designed against `OffsetModel`/`logLikelihood()`'s current isotropic-fraction cap.
+
+### D-134 - SPACE Sometimes Seems to Get Swallowed After a Full Stop (Unconfirmed Pattern)
+The user notices a recurring pattern - pressing SPACE right after a `.` sometimes has no visible effect - but
+is not fully certain it isn't their own mis-tap, and has not pinned down a precise repro yet. Flagged as
+"never happened on Gboard". Possible leads for whenever this gets a proper trace: interaction with D-29's
+space-eating-punctuation logic (though that only ever removes a space *before* punctuation, not after), the
+auto-capitalisation-arming that follows a sentence-ending period, or an interaction with this round's own new
+D-119/D-120 mid-word-split logic (shipped the same week this pattern was first noticed) - genuinely unknown
+which, if any, of these is responsible without a precise repro.
+
+### D-135 - Password-Manager (Autofill) Suggestions in the Bar - Big Idea, Feasibility Unknown
+Requested: when typing into a recognised username/email field, offer a saved username from the Google Password
+Manager as a suggestion; in a recognised password field, offer the matching saved password. The user
+explicitly flags their own uncertainty about feasibility ("ich weiß nicht, wie Gboard das genau macht... 
+vielleicht benötigen wir hier Schnittstellen, die wir nicht haben"). This is almost certainly the Android
+**Autofill Framework** (`InlineSuggestion`s an IME can render inline in its own suggestion strip, the mechanism
+Gboard is known to use for exactly this) rather than anything the keyboard could build unassisted - needs
+dedicated research into that API's actual capabilities/constraints (what a non-Gboard IME can access, whether
+it needs any special OS-level trust/permission Gboard has and a third-party app wouldn't) before any design or
+implementation commitment. Captured as a large, speculative idea, not a scoped task yet.
+
+### D-136 - Gesture-Area Control Contrast Is Poor Compared to Gboard
+§42 already fixed the gesture-nav-inset strip's *background* colour (it previously showed whatever sat behind
+the IME window). The user now flags a related but distinct issue: on Gboard, the system's gesture-area controls
+(the pill/back-indicator etc.) render as dark icons on a light-grey background with good contrast; on AdaptKey
+they are barely visible. Suspected mechanism, not yet confirmed: Android's system bars have a light/dark
+*appearance* flag (`WindowInsetsController.setSystemBarsAppearance`/`APPEARANCE_LIGHT_NAVIGATION_BARS`) that
+controls whether the OS draws these control icons dark-on-light or light-on-dark, independent of whatever
+background colour the app itself paints beneath them - if AdaptKey's window never sets this (or sets it
+opposite to what its own light keyboard background needs), the system would keep drawing light-on-light or an
+otherwise mismatched combination. Needs verifying against the actual `AdaptKeyService`/window setup before
+concluding this is really the mechanism.
+
+### D-137 - A Typed Time Should Always Suggest "Uhr" as the Next Word
+German convention: a time written as 1-2 digits, a colon, then 2 digits (e.g. "14:30") is essentially always
+followed by "Uhr". Requested: detect this pattern and always offer "Uhr" as a D-43 next-word prediction
+regardless of what the bigram table happens to know about this exact digit token (which, being effectively
+unique per occurrence, likely has weak or no bigram evidence today). Needs a pattern-detection addition to
+`showNextWordPredictions()`/`DictionaryStore.nextWords()`'s call site, not a data fix.
+
+### D-138 - Backspace-Hold Now Feels Jerky/Stuttery (Possible Regression - Needs Investigation, Not Guessed)
+Reported right after this session's own §64 batch shipped: held backspace now feels like it "checks something
+in between" rather than repeating smoothly. Flagged plainly as a suspect, not a conclusion: this same round
+touched `AdaptKeyboardView.onTouchEvent()`'s `ACTION_DOWN`/`ACTION_MOVE` handling twice - D-108 added a new
+`pressedKeyRect`/`movedOutsideKey()` check (though it only gates the long-press cancellation branch, not
+backspace-repeat's own `movedBeyondSlop`-based cancellation, which was left unchanged) and D-109 reordered the
+T-05 `ambiguityBands.classify()` call ahead of `offsetModel?.record()` and made the record call conditional.
+Neither change was intended to touch backspace-repeat's own cadence (`BackspaceRepeat`/`scheduleBackspaceRepeat`
+are untouched code), but the timing coincidence with this exact area of `onTouchEvent()` having just changed is
+too close to ignore. Needs an actual trace through `onTouchEvent`'s `ACTION_DOWN` handling for `KeyCode.DELETE`
+next round, not a blind revert or guess.

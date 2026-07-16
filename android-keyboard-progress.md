@@ -28,6 +28,33 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§65 CAPTURED (still v0.8.35, no code change this entry): post-§64 real-device feedback, D-124…D-138.**
+  Captured only, per explicit instruction - implementation planned as a separate later round. Highlights:
+  **D-124** re-opens §60 as a bug - the clipboard MIME-type filter didn't block the app's own APK file from
+  being offered via Quick Paste, not yet re-traced. **D-125** generalises D-115 into an actual rule request:
+  unknown *regular* verb inflections ("beurteilst"→wrongly "beurteilt") shouldn't need every form in the
+  dictionary, just recognition of the regular/productive conjugation patterns as "protect, don't necessarily
+  suggest". **D-126** tier-3 needs an uninstall action and an independent enable/disable toggle (currently
+  "installed" and "active" are the same state). **D-127/D-128**: document "what learns when" internally, then
+  surface a compact, prominent settings explanation of what AdaptKey adapts/learns (name justification),
+  covering raw-touch and the tier-3 LLM fade-out explicitly - possibly extending the D-89 feature-overview
+  screen. **D-129** the calculator minus key's sign-flip (§31) needs a corner-hint glyph after all (§31
+  explicitly accepted no-hint as a trade-off at the time). **D-130**: promote A-03's soft per-token English
+  routing to a real D-106-stage-1 active-language switch after five consecutive English words (not just two),
+  plus a space-bar acknowledgement animation (glow sweep or fade) for every language change, automatic or
+  manual. **D-131**: raw-coordinate correction (D-39) should become visible earlier while still typing, not
+  only at commit time. **D-132**: the settings-row slide-in (§50) should animate as a real slide-up, not pop in
+  instantly. **D-133**: a harder, direction-specific (not just isotropic) bound on the bottom row's downward
+  touch-zone drift, refining D-109. **D-134**: SPACE sometimes seems to get swallowed after a full stop -
+  pattern only, no repro yet, possibly related to D-119/D-120 or pre-existing. **D-135**: Google Password
+  Manager suggestions in the bar - a big, speculative idea explicitly flagged by the user as maybe needing
+  Android Autofill/`InlineSuggestion` APIs this project doesn't yet use, needs feasibility research before any
+  design commitment. **D-136**: gesture-area system controls have poor contrast versus Gboard - suspected
+  missing `APPEARANCE_LIGHT_NAVIGATION_BARS`-style window-insets flag, not yet confirmed. **D-137**: a typed
+  time (`14:30`) should always suggest "Uhr" as the next word (D-43 pattern addition). **D-138**: backspace-hold
+  now feels jerky - flagged as a possible regression from this same session's own §64 `onTouchEvent()` changes
+  (D-108's `movedOutsideKey` check, D-109's record/classify reordering), explicitly not yet traced or guessed
+  at - needs investigation as the first order of business next round.
 - **§64 DONE (v0.8.35): a large batch release from §61/§62's backlog - D-105, D-108, D-109, D-111-D-115,
   D-119-D-121, D-123. D-118 struck outright (not reproducible, no repro forthcoming); D-122 deliberately left
   unimplemented (still just an unconfirmed design idea, no trace done - this project's "trace before fixing"
