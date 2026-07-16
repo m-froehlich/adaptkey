@@ -28,6 +28,17 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§70 DONE (v0.8.40): settings row gained a third button - clear clipboard.** New idea, not from any prior
+  backlog entry. `SettingsRowView.clearClipboardButton` (glyph `🗑`, matching the row's existing plain-`TextView`
+  glyph style - `😊`/`⚙` - no drawable asset needed) sits immediately left of the settings gear via the same
+  `Gravity.END` offset approach. Wired to a new `AdaptKeyService.clearClipboardFromSettingsRow()`, which closes
+  the row and calls the pre-existing `clearClipboard()` (already used by D-36/D-38's post-paste auto-clear) -
+  no new clearing logic, just a new direct trigger. Follows the established "tapping a row button closes the
+  row" convention. Known, accepted minor edge case: an already-showing D-36 paste chip isn't retroactively
+  hidden (only re-evaluated on field open) - harmless (pastes nothing once genuinely empty), not new (same as
+  any external clear), not addressed this round. No new tests - Android glue, same established gap as the rest
+  of `SettingsRowView`. 586 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not
+  yet device-tested.
 - **§69 DONE (v0.8.39): D-124 closed (not a MIME bug - Total Commander puts a genuine plain-text placeholder
   string on the clipboard, indistinguishable from real pasteable text; accepted as a known limitation, no
   app-specific hack); D-116 implemented (unhyphenated-compound recognition).** Also: **D-114 confirmed

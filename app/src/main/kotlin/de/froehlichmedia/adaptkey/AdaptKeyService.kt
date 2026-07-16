@@ -428,6 +428,7 @@ class AdaptKeyService : InputMethodService() {
         val row = SettingsRowView(this)
         row.onEmojiClick = SettingsRowView.OnEmojiClickListener { openEmojiPanelFromSettingsRow() }
         row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
+        row.onClearClipboardClick = SettingsRowView.OnClearClipboardClickListener { clearClipboardFromSettingsRow() }
         settingsRow = row
         
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
@@ -1390,6 +1391,16 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun openSettingsAppFromSettingsRow() {
         closeSettingsRow { launchFromKeyboard(SettingsActivity::class.java) }
+    }
+    
+    /**
+     * §69: the settings row's clear-clipboard button - closes the row and immediately wipes the clipboard,
+     * reusing the same [clearClipboard] the D-36/D-38 quick-paste flow already calls after a paste (P+
+     * `clearPrimaryClip()` / the pre-P `newPlainText("", "")` fallback), just triggered directly by the
+     * user instead of automatically after a paste.
+     */
+    private fun clearClipboardFromSettingsRow() {
+        closeSettingsRow { clearClipboard() }
     }
     
     /**

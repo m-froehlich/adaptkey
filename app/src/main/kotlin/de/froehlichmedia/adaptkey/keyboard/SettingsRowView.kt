@@ -18,9 +18,10 @@ import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
 
 /**
- * §48 / §51: the swipe-up settings row - the emoji button (left edge) and a settings gear (right edge),
- * revealed above the suggestion bar (the topmost row while open) by an upward swipe anywhere on the
- * keyboard (mirroring G-03's downward-dismiss-anywhere).
+ * §48 / §51 / §69: the swipe-up settings row - the emoji button (left edge), a clear-clipboard button and
+ * a settings gear (right edge, clear-clipboard immediately to its left), revealed above the suggestion bar
+ * (the topmost row while open) by an upward swipe anywhere on the keyboard (mirroring G-03's
+ * downward-dismiss-anywhere).
  *
  * [open] / [close] jump the reserved layout space to its target height immediately (the D-86 precedent:
  * growing resizes right away, so nothing ever waits for space), then slide the row's own content - not
@@ -46,9 +47,17 @@ class SettingsRowView @JvmOverloads constructor(
         fun onSettingsClick()
     }
     
+    /** §69: invoked when the clear-clipboard button is tapped. */
+    fun interface OnClearClipboardClickListener {
+        
+        fun onClearClipboardClick()
+    }
+    
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
+    
+    var onClearClipboardClick: OnClearClipboardClickListener? = null
     
     /** Whether the row is currently open (or mid-opening); false once fully closed. */
     var isOpen: Boolean = false
@@ -56,6 +65,7 @@ class SettingsRowView @JvmOverloads constructor(
     
     private val emojiButton = buttonFor("😊") { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
+    private val clearClipboardButton = buttonFor("🗑") { onClearClipboardClick?.onClearClipboardClick() }
     private val content = FrameLayout(context)
     private var slideAnimator: ValueAnimator? = null
     
@@ -66,6 +76,14 @@ class SettingsRowView @JvmOverloads constructor(
         content.addView(
             emojiButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = marginPx }
+        )
+        // §69: sits directly left of the settings gear, offset by the gear's own width plus one more
+        // button-margin's worth of gap so the two read as a distinct pair at the row's right edge.
+        content.addView(
+            clearClipboardButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
+                marginEnd = marginPx * 2 + buttonSizePx
+            }
         )
         content.addView(
             settingsButton,

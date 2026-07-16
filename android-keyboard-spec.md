@@ -3522,3 +3522,37 @@ both still return null for the same input.
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-tested - `CompoundSplit` itself is fully
 pure/unit-tested, but real German compound coverage/false-positive rate can only really be judged against
 everyday typing on a real device.
+
+## §70 - Settings Row: New Clear-Clipboard Button (v0.8.40)
+
+New idea raised directly, not part of any prior backlog entry: a third button in the §48/§50 swipe-up
+settings row, immediately left of the settings gear, that wipes the clipboard on tap.
+
+`SettingsRowView` gained `clearClipboardButton` (glyph `🗑`, the standard wastebasket emoji - matching the
+row's existing style of plain `TextView`s showing a Unicode glyph rather than a drawable asset, exactly like
+the emoji button's `😊` and the gear's `⚙`; this project draws its own keyboard rather than depending on
+bundled icon assets, and this row already followed that convention before this round) and a new
+`OnClearClipboardClickListener`. Positioned via the same `Gravity.END`-anchored `FrameLayout` approach as the
+settings gear, offset by the gear's own width plus one more button-margin so the two read as a distinct pair
+at the row's right edge, leaving the emoji button alone at the left edge unchanged.
+
+`AdaptKeyService` wires it to a new `clearClipboardFromSettingsRow()`, which closes the row and calls the
+*already-existing* `clearClipboard()` - the same function the D-36/D-38 quick-paste flow already calls
+automatically after a sensitive paste (`ClipboardManager.clearPrimaryClip()` on API 29+, a
+`ClipData.newPlainText("", "")` overwrite below that) - now also reachable directly, on demand, via this
+button. No new clearing logic was needed at all, only a new trigger for the existing one. Follows the
+established "tapping either row button closes the row" convention (§50/§51) unchanged.
+
+**Known, accepted minor edge case, not addressed this round**: the D-36 clipboard-paste chip is only
+(re-)evaluated once, when a field opens (`showClipboardChipIfAvailable()` in `onStartInputView`) - clearing
+the clipboard via this new button does not retroactively hide an already-showing paste chip for the current
+field. Tapping a stale chip afterwards is harmless (it pastes nothing, since the clipboard is genuinely
+empty by then) - the same latent behaviour already existed for any clipboard clear happening via another
+route (a different app, the system's own clipboard UI); not a new risk introduced by this button, and not
+worth adding a live clipboard-change listener for, unless device use suggests it is actually felt in
+practice.
+
+No new unit tests - `SettingsRowView` is Android view/animation glue with no decision logic of its own
+(same established gap as the rest of the row, see §50), and `clearClipboardFromSettingsRow()` is a one-line
+service-glue wrapper over the already-tested-by-precedent (Android glue, not pure logic) `clearClipboard()`.
+586 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-tested.
