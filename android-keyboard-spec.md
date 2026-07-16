@@ -3644,3 +3644,45 @@ No new unit tests - this is `AdaptKeyService`/`InputConnection` glue with no new
 functions were already Android-glue, the established testing gap for this layer; the arithmetic itself is a
 one-line addition, not a standalone unit worth extracting). 592 unit tests (unchanged).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
+
+## §73 - Backlog Capture: D-139 (Intermittent Text Jitter / Character Scramble, No Repro Yet)
+
+Captured, **not started** - no code change this entry, no repro yet either.
+
+### D-139 - Occasionally the Whole Text Jitters and Its Characters Get Scrambled, Recoverable Only by Clearing Everything
+Reported as an intermittent, disruptive glitch first noticed roughly four or five builds ago (no precise
+version pinned yet): occasionally the entire text in the field visibly jitters and its characters end up
+wildly out of order: the only practical recovery is to delete everything and start over. **No reliable repro
+exists yet** - explicitly flagged as such by the user, who will report back once one is found. Nothing here
+is implemented or even root-caused; this section only records the report plus honest, clearly-labelled
+speculation about plausible mechanisms, to make it easier to recognise the cause quickly once a repro exists.
+
+**Plausible mechanisms (speculation, not a diagnosis):**
+
+- **An `onUpdateSelection()` feedback loop.** The D-62/D-87 mid-word-reclaim machinery
+  (`reclaimWordAtCaret()`/`reclaimSurroundingWord()`) already depends on an "is this cursor movement genuinely
+  the user's, or just the echo of our own just-issued edit" check to avoid re-triggering itself - this exact
+  class of self-triggering has been the root cause of several past bugs in this area (§32's D-87 investigation,
+  D-123's suggestion-tap echo). If that check ever fails to recognise a self-issued edit as its own, the
+  callback could re-invoke `reclaimWordAtCaret()`, which edits the text again, which fires the callback again -
+  an unbounded (or slowly-diverging) loop of small edits. This would plausibly *look* like the reported
+  "jitter", and if the reclaimed range drifts wrong on each iteration, could plausibly scramble character
+  order the way "durcheinander gewürfelt" describes. This mid-word-editing machinery has seen real churn very
+  recently (D-116, D-122, §72's anchor-arithmetic fix) - not evidence those introduced this bug (the user's own
+  timeline of "four or five builds ago" points earlier, and §72 specifically *reduced* risk in this exact area
+  by removing a read-after-write dependency), but it is the area with the most recent activity and the
+  strongest structural resemblance to the symptom, so it is the first place worth looking once a repro exists.
+- **A specific target app/editor's `InputConnection` behaving unexpectedly under batched edits.** Precedent:
+  D-110 (eBay Kleinanzeigen's auto-cap failure) is a confirmed instance of a specific app's `InputConnection`
+  not behaving as this IME assumes. If the jitter only ever happens in one particular app, that would point
+  here instead of at AdaptKey's own state machine.
+- **Less likely, noted for completeness:** a stale async tier-3 result slipping past the `tier3RequestSeq`
+  guard - the guard checks `composing.toString() == input` at apply time, which could coincidentally still
+  match after the token changed and changed back. This would more plausibly cause a wrong *suggestion* than
+  actual text corruption, so it is a weaker candidate than the two above.
+
+**What would help most, once a repro is found:** which app/field it happened in; whether it correlates with
+mid-word editing (tapping back into an already-typed word) specifically, or can happen during plain forward
+typing too; whether it correlates with a held key (backspace-repeat) or a fast burst of keystrokes; and
+whether disabling C-06 (the tier-3 mini-LLM, if a model is installed) changes anything. Per this project's own
+rule, no fix will be attempted from speculation alone.

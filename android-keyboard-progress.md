@@ -28,6 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§70 clear-clipboard button CONFIRMED WORKING on device** (user confirmation, no code change).
+- **§73 CAPTURED (still v0.8.42, no code change this entry): D-139, intermittent text jitter/character**
+  **scramble, no repro yet.** Reported as occasional and disruptive (only recoverable by clearing everything),
+  first noticed roughly 4-5 builds ago, no precise version pinned. No repro exists yet - user will report back
+  once one is found. Recorded honest, clearly-labelled speculation only (no fix attempted, no diagnosis): the
+  strongest candidate is an `onUpdateSelection()` feedback loop in the D-62/D-87 mid-word-reclaim machinery
+  (self-issued edit not recognised as "own", re-triggering itself) - an area with recent real churn (D-116,
+  D-122, §72), though the user's own timeline points earlier than that. See spec §73 for the full write-up and
+  what would help most once a repro exists.
 - **§72 DONE (v0.8.42): bug fixed - mid-word SPACE left the caret before, not after, the inserted space.**
   Precise repro: type "Testcwort", caret after the `c`, Backspace it, then SPACE - the space is inserted
   correctly but the caret stays before it. Root cause traced to `splitComposingAtCaretAndCommit()` (the
