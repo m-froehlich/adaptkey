@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.inputmethodservice.InputMethodService
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -17,14 +18,21 @@ import android.text.InputType
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Size
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.ExtractedTextRequest
+import android.view.inputmethod.InlineSuggestionsRequest
+import android.view.inputmethod.InlineSuggestionsResponse
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
+import android.widget.inline.InlinePresentationSpec
+import androidx.annotation.RequiresApi
+import androidx.autofill.inline.UiVersions
+import androidx.autofill.inline.v1.InlineSuggestionUi
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -57,6 +65,7 @@ import de.froehlichmedia.adaptkey.gesture.WordExtent
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
+import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
@@ -133,6 +142,9 @@ class AdaptKeyService : InputMethodService() {
     private var emojiPanel: EmojiPanelView? = null
     private var settingsRow: SettingsRowView? = null
     private var onboardingView: OnboardingView? = null
+    // D-135: platform-rendered Autofill inline suggestions (a saved username/password), shown instead of
+    // the ordinary suggestion bar whenever at least one is available for the current field.
+    private var inlineSuggestionsBar: InlineSuggestionsBarView? = null
     private var inputRoot: LinearLayout? = null
     private var offsetModel: OffsetModel? = null
     // D-74: the typing pattern the currently-held offsetModel was loaded under, so a later save can detect
@@ -405,6 +417,12 @@ class AdaptKeyService : InputMethodService() {
         bar.visibility = View.VISIBLE
         suggestionBar = bar
         
+        // D-135: the inline-suggestions row occupies the same slot as the ordinary suggestion bar, shown
+        // instead of it whenever a real autofill suggestion is available (see onInlineSuggestionsResponse).
+        val inlineBar = InlineSuggestionsBarView(this)
+        inlineBar.visibility = View.GONE
+        inlineSuggestionsBar = inlineBar
+        
         // §48 / §51: the swipe-up settings row - sits above the suggestion bar (the topmost row while
         // open), reserved at zero height and hidden until an upward swipe opens it.
         val row = SettingsRowView(this)
@@ -416,6 +434,7 @@ class AdaptKeyService : InputMethodService() {
         root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         root.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0))
         root.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
+        root.addView(inlineBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
         root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         setOnboardingShown(!OnboardingStore.isCompleted(this))
         
@@ -655,6 +674,80 @@ class AdaptKeyService : InputMethodService() {
         showClipboardChipIfAvailable()
         // §48: never carry an open settings row over into a fresh keyboard presentation.
         settingsRow?.closeImmediately()
+        // D-135: never carry a previous field's autofill suggestions over into a fresh one - a new
+        // onCreateInlineSuggestionsRequest()/onInlineSuggestionsResponse() round-trip supplies fresh ones
+        // (or none) for whatever field is now focused.
+        resetInlineSuggestions()
+    }
+    
+    /**
+     * D-135: builds the request declaring how AdaptKey wants Autofill inline suggestions presented -
+     * called by the platform (API 30+ only; never invoked at all on older devices) whenever the focused
+     * field is autofill-relevant. One shared [InlinePresentationSpec] sized to the ordinary suggestion
+     * bar's own height, with the standard [UiVersions] v1 style so the active autofill service renders a
+     * suggestion compatible with what most services already expect.
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {
+        val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
+        val style = UiVersions.newStylesBuilder()
+            .addStyle(InlineSuggestionUi.newStyleBuilder().build())
+            .build()
+        val spec = InlinePresentationSpec.Builder(
+            Size(0, 0),
+            Size(resources.displayMetrics.widthPixels, barHeight)
+        ).setStyle(style).build()
+        return InlineSuggestionsRequest.Builder(listOf(spec))
+            .setMaxSuggestionCount(INLINE_SUGGESTION_MAX_COUNT)
+            .build()
+    }
+    
+    /**
+     * D-135: receives the autofill service's actual suggestions (a saved username/email or password,
+     * depending on the focused field) - each one is an opaque view the platform itself renders
+     * ([InlineSuggestion.inflate]); AdaptKey never sees the underlying credential text, only places the
+     * inflated views once ready. Shown in [inlineSuggestionsBar] instead of the ordinary suggestion bar for
+     * as long as at least one is present; reverts to the ordinary bar once cleared (a fresh, empty response,
+     * or the field changing via [resetInlineSuggestions]).
+     *
+     * @return true only when at least one suggestion is being shown - false (nothing to display) when the
+     *         response is empty, per the API contract
+     */
+    @RequiresApi(Build.VERSION_CODES.R)
+    override fun onInlineSuggestionsResponse(response: InlineSuggestionsResponse): Boolean {
+        val bar = inlineSuggestionsBar ?: return false
+        bar.clearSuggestions()
+        val suggestions = response.inlineSuggestions
+        if (suggestions.isEmpty()) {
+            bar.visibility = View.GONE
+            suggestionBar?.visibility = View.VISIBLE
+            return false
+        }
+        val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
+        val size = Size(INLINE_SUGGESTION_WIDTH_DP.dpToPx(), barHeight)
+        for (suggestion in suggestions.take(INLINE_SUGGESTION_MAX_COUNT)) {
+            suggestion.inflate(this, size, mainExecutor) { view ->
+                if (view == null) {
+                    return@inflate
+                }
+                bar.addSuggestion(view)
+                bar.visibility = View.VISIBLE
+                suggestionBar?.visibility = View.GONE
+            }
+        }
+        return true
+    }
+    
+    /** D-135: converts a dp value to pixels, for the inline-suggestion inflate size. */
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
+    }
+    
+    /** D-135: clears any inline suggestions and restores the ordinary suggestion bar. */
+    private fun resetInlineSuggestions() {
+        inlineSuggestionsBar?.clearSuggestions()
+        inlineSuggestionsBar?.visibility = View.GONE
+        suggestionBar?.visibility = View.VISIBLE
     }
     
     /**
@@ -2560,5 +2653,11 @@ class AdaptKeyService : InputMethodService() {
         // D-130: consecutive commits routed to English (while German/Greek stays active) before
         // trackSustainedEnglishUsage() promotes it to a real active-language switch.
         private const val SUSTAINED_ENGLISH_WORD_THRESHOLD = 5
+        
+        // D-135: at most this many Autofill inline suggestions are requested/shown at once; each is
+        // inflated at this width (a reasonable single-suggestion chip width - the platform itself decides
+        // the actual rendered content within it).
+        private const val INLINE_SUGGESTION_MAX_COUNT = 3
+        private const val INLINE_SUGGESTION_WIDTH_DP = 160
     }
 }

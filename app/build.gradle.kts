@@ -15,8 +15,8 @@ android {
         // versionCode just keeps counting up by 1 per release regardless of the versionName - Android
         // requires it to strictly increase for updates to install, and it doesn't need to encode the
         // version number in any particular way.
-        versionCode = 158
-        versionName = "0.8.36"
+        versionCode = 159
+        versionName = "0.8.37"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
@@ -62,6 +62,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.preference.ktx)
     implementation(libs.onnxruntime.android)
+    // D-135: androidx.autofill provides the standard UiVersions/InlineSuggestionUi style-bundle helpers for
+    // the platform Inline Suggestions API (API 30+); the library itself is a plain compat helper and does
+    // not raise minSdk.
+    implementation(libs.androidx.autofill)
     
     testImplementation(libs.junit.jupiter)
     // Robolectric runs Android framework code on the JVM (no emulator); its tests are JUnit4, run on the

@@ -28,6 +28,26 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§67 DONE (v0.8.37): D-135 implemented - Autofill inline suggestions (Google Password Manager or whatever
+  autofill service the device has configured).** New `androidx.autofill:autofill:1.3.0` dependency (small
+  compat helper, no minSdk impact) + `res/xml/method.xml`'s `android:supportsInlineSuggestions="true"`.
+  `AdaptKeyService` gained two `@RequiresApi(Build.VERSION_CODES.R)` overrides -
+  `onCreateInlineSuggestionsRequest()` (builds the request/style spec) and `onInlineSuggestionsResponse()`
+  (inflates each opaque `InlineSuggestion` async, adds it to the new `InlineSuggestionsBarView`). **Caught a
+  real mistake before it shipped**: the `InlineSuggestionUi` class initially assumed to live at
+  `androidx.autofill.inline.suggestions` (a guess from memory, this API having never been used in this
+  project before) actually lives at `androidx.autofill.inline.v1` - caught immediately by the compiler, then
+  confirmed properly by `unzip`+`javap`-inspecting the actual resolved `autofill-1.3.0.aar`'s class list
+  rather than guessing again, before fixing the import. New `InlineSuggestionsBarView` (plain
+  `HorizontalScrollView`+`LinearLayout`, not a custom-drawn view - each suggestion is a real, opaque platform
+  `View` AdaptKey can only place, never read or restyle, the documented privacy boundary) occupies the same
+  row as the ordinary suggestion bar, toggling with it. `resetInlineSuggestions()` clears stale suggestions
+  on every fresh field via `onStartInputView()`. No settings toggle added this round (purely additive,
+  invisible unless a real suggestion exists - can add one later if device use suggests it's wanted). No new
+  tests (Android/platform-callback glue only, consistent with the established testing gap) - **this entire
+  feature is unverified beyond compiling; needs a real Android 11+ device with an autofill service configured
+  to confirm anything actually renders.** 575 unit tests (unchanged). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green.
 - **§66 DONE (v0.8.36): D-124, D-115/D-125, D-130, D-138 implemented; D-135 researched (confirmed feasible,
   not implemented).** **D-138 traced first, not guessed**: backspace-hold jerkiness root-caused to this
   session's own added per-keystroke SQLite lookups (D-106 stage 2's `knownInOtherLanguage`, D-111/D-112's

@@ -3355,3 +3355,61 @@ Sources: [Integrate autofill with IMEs and autofill services (Android Developers
 `DictionarySuggestionProviderTest` D-115/D-125 case). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 D-124/D-130/D-138 are Android service/view glue, no new tests, consistent with this project's established
 testing gap; D-115/D-125's pure recognition logic is fully unit-tested.
+
+## §67 - D-135 Implemented: Autofill Inline Suggestions (Password Manager) (v0.8.37)
+
+Builds directly on §66's feasibility research - the documented, public Android Autofill inline-suggestions
+API (API 30+), not anything Gboard-specific.
+
+### New dependency and manifest declaration
+`androidx.autofill:autofill:1.3.0` added (a small, plain compat helper library - `UiVersions`/
+`InlineSuggestionUi` style-bundle builders; does not raise `minSdk`). `res/xml/method.xml` gained
+`android:supportsInlineSuggestions="true"`, the flag that tells the platform AdaptKey wants to render these
+inline rather than falling back to a system dropdown.
+
+### `AdaptKeyService` - two new `@RequiresApi(Build.VERSION_CODES.R)` overrides
+- `onCreateInlineSuggestionsRequest(uiExtras)`: builds one shared `InlinePresentationSpec` sized to the
+  ordinary suggestion bar's own height (min `Size(0, 0)`, max full screen width × bar height) with the
+  standard `UiVersions.INLINE_UI_VERSION_1` style bundle (`UiVersions.newStylesBuilder().addStyle(
+  InlineSuggestionUi.newStyleBuilder().build()).build()` - **note**: the real class lives at
+  `androidx.autofill.inline.v1.InlineSuggestionUi`, not the `androidx.autofill.inline.suggestions` package
+  guessed initially from memory before verifying against the actual downloaded AAR's class list
+  (`unzip`/`javap` against the resolved `autofill-1.3.0.aar` - checked directly rather than trusting
+  recollection of an API surface this project had never used before). Requests up to
+  `INLINE_SUGGESTION_MAX_COUNT` (3) suggestions.
+- `onInlineSuggestionsResponse(response)`: for each returned `InlineSuggestion`, calls `.inflate(...)` (async,
+  `mainExecutor`) and adds the resulting opaque `InlineContentView` to the new `inlineSuggestionsBar` once
+  ready; returns `false` when the response is empty (nothing to show - reverts to the ordinary suggestion bar)
+  and `true` once at least one inflated view has been added, per the API's own contract for "the IME is
+  handling display itself".
+
+### New `keyboard/InlineSuggestionsBarView`
+A plain `HorizontalScrollView`-wrapped `LinearLayout` container (`addSuggestion(view)`/`clearSuggestions()`/
+`hasSuggestions`) - deliberately an ordinary `ViewGroup`, not a custom `Canvas`-drawn view like
+`AdaptKeyboardView`/`SuggestionBarView`, since each suggestion is a real, opaque `View` the platform itself
+inflates and owns; AdaptKey can only place it, never draw or restyle its content (the documented privacy
+boundary - AdaptKey never receives the underlying username/password text at any point). Occupies the exact
+same row/slot as the ordinary suggestion bar (`root.addView(inlineBar, ...barHeight)`, right after `bar`),
+toggling visibility with it: showing inline suggestions hides the ordinary bar and vice versa, since both
+would otherwise compete for the same slot.
+
+### Lifecycle wiring
+New `resetInlineSuggestions()` (clears and hides the row, restores the ordinary bar) called from
+`onStartInputView()` - every fresh field starts clean rather than carrying over a previous field's stale
+suggestions; a new `onCreateInlineSuggestionsRequest()`/`onInlineSuggestionsResponse()` round-trip (driven
+entirely by the platform, not by AdaptKey) supplies fresh ones, or none, for whatever is now focused.
+
+### Scope notes
+No new settings toggle this round (§66's write-up had speculated one might be wanted) - the feature is
+purely additive and invisible unless the platform actually has a real suggestion to offer for the focused
+field, so there is no real annoyance/behaviour-change downside to weigh against a toggle's own complexity;
+can be added later if real-device use suggests otherwise. No new tests - both the view (a thin `ViewGroup`
+wrapper with no decision logic) and the service overrides (platform callback glue, `@RequiresApi`-gated,
+calling into `InlineSuggestion.inflate()` which cannot be exercised without a real device/autofill service)
+are consistent with this project's established Android-glue testing gap - **this entire feature is
+unverified beyond compiling and the API contract read from documentation + the actual resolved AAR's class
+list; it needs a real Android 11+ device with an autofill service configured to confirm anything renders at
+all.**
+
+575 unit tests (unchanged - no new pure/testable logic this round). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green.
