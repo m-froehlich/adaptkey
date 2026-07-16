@@ -3906,3 +3906,51 @@ confirmed diagnosis - D-139 stays open pending an actual repro.
 
 5 new unit tests (`CallbackBurstGuardTest`). 612 unit tests total (was 607).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+## §77 - D-132 and D-137 Follow-Up Fixes: Neither Original Fix Actually Worked (v0.8.45)
+
+Device feedback on §75: neither D-132 nor D-137 changed anything observable. Both re-traced from scratch
+rather than adjusted blindly.
+
+### D-137 - Root Cause: Digits Never Reach the Code Path That Was Fixed
+The §75 fix wired the "Uhr" check into `showNextWordPredictions()` - but that function is only called from
+deep inside `finalizeAndCommit()`'s *normal word-commit* path, which requires an actual composing **token**
+to finalise. Traced the `KeyCode.CHAR` handler directly: a digit only ever extends a composing token when
+`composing` is already non-empty (D-40, the mid-word-typo case); a **standalone** digit - typing "1", "4",
+":", "3", "0" one at a time to form "14:30" - has `composing` empty at every single keystroke, so each one
+instead calls `finalizeAndCommit(ic, raw.toString())` **treating the digit itself as the delimiter**, which
+takes `finalizeAndCommit()`'s *separate* empty-composing branch (commit the character, `clearSuggestions()`,
+return early) - the branch where `showNextWordPredictions()` is never called at all. The §75 fix was wired
+into a code path a typed time structurally never reaches.
+
+**Fix:** new `AdaptKeyService.showTimeSuggestion(ic)`, called from *inside* the empty-composing branch itself
+(right after the character commits), replacing the unconditional `clearSuggestions()` with "show the Uhr
+prediction if the just-committed text ends in a time, else clear as before". The original `showNextWordPredictions()`
+wiring is left in place (harmless, not reachable by pure digit typing, but a small correctness margin for
+any other route that might reach it).
+
+### D-132 - Root Cause: the Row's Background Was Never the Problem
+Re-examined the actual visible complaint ("poppt sofort rein und die Buttons sliden darauf nach oben") rather
+than assuming the §75 diagnosis just needed a bigger version of the same fix. The row sits in the **same
+parent `LinearLayout`** as the suggestion bar and keyboard below it - jumping `layoutParams.height` to the
+target instantly (the D-86-inspired shortcut §75 kept) makes those *sibling views* visibly jump down by the
+row's full height the moment the swipe is recognised, regardless of what happens to the row's own background
+afterwards. Worse, `content`'s background (moved there in §75) is `R.color.keyboard_background` - **the
+exact same colour as the root view's own background** (§42) - so it was never visually distinguishable from
+what was already showing through in the first place; the §75 fix changed nothing a user could actually see.
+D-86's "resize right away" shortcut is correct for `AdaptKeyboardView`'s own self-contained page-slide (no
+siblings to disturb) but does not transfer to a row stacked above other views.
+
+**Fix:** `SettingsRowView.animateHeight()` now genuinely animates `layoutParams.height` itself
+(`ValueAnimator.ofInt` + `requestLayout()` on every frame - the standard Android pattern for an animatable
+view height, since there is no dedicated height property) from 0 to `ROW_HEIGHT_DP` and back, so the
+suggestion bar/keyboard shift down/up in the *same* motion as the row's own growth. `content` no longer
+tracks the row's own (now-animating) bounds via `MATCH_PARENT`; it keeps a **fixed** `ROW_HEIGHT_DP` height,
+anchored to the row's bottom edge (`Gravity.BOTTOM`). As the row's own smaller, animating bounds clip
+`content` (a `ViewGroup`'s default `clipChildren`), progressively more of it becomes visible from the bottom
+up as the row grows - which alone produces the "buttons rising into place" effect, with no separate
+`translationY` animation needed at all (removed).
+
+No new tests for either fix - both are Android view/animation glue, the established gap for this layer; 612
+unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Neither has been re-confirmed on
+device yet.

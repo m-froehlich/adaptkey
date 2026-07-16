@@ -1630,7 +1630,16 @@ class AdaptKeyService : InputMethodService() {
             pendingSuggestionSpace = false
             ic.commitText(delimiter, 1)
             clearUndo()
-            clearSuggestions()
+            // D-137: a standalone digit or punctuation mark - composing was already empty - is exactly how
+            // typing a time ("14:30") actually reaches this function: per the KeyCode.CHAR handler's own
+            // "a leading digit is a delimiter" rule, digits (and punctuation like `:`) never sit in
+            // `composing` when typed as a fresh token, so the ordinary word-commit path further below -
+            // where showNextWordPredictions() normally runs - is never reached by a time at all. This is
+            // why the original wiring inside showNextWordPredictions() alone never fired for the reported
+            // case; checked here too, where digit/punctuation commits actually land.
+            if (!showTimeSuggestion(ic)) {
+                clearSuggestions()
+            }
             // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
             pendingMergeChar = spaceInferred
             armShiftForNextWord(ic)
@@ -2373,6 +2382,29 @@ class AdaptKeyService : InputMethodService() {
         val before = currentInputConnection?.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return null
         return if (TimePattern.endsWithTime(before)) Suggestion(UHR, MAX_PRIORITY_SUGGESTION_SCORE) else null
     }
+    
+    /**
+     * D-137: the empty-composing branch's own equivalent of [timeSuggestion] - called right after a
+     * standalone digit/punctuation commit (see [finalizeAndCommit]'s own call site for why that path, not
+     * [showNextWordPredictions], is what actually needs this for a typed time).
+     *
+     * @param ic the current input connection
+     * @return true when a time was found and the suggestion bar now shows the "Uhr" prediction
+     */
+    private fun showTimeSuggestion(ic: InputConnection): Boolean {
+        val before = ic.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return false
+        if (!TimePattern.endsWithTime(before)) {
+            return false
+        }
+        handler.removeCallbacks(resortRunnable)
+        lastTier3Result = Tier3Result.EMPTY
+        lastCapProposal = null
+        controller.clear()
+        controller.update("", listOf(Suggestion(UHR, MAX_PRIORITY_SUGGESTION_SCORE)), null)
+        showSuggestions()
+        return true
+    }
+    
     
     private fun learnWord(word: String?) {
         // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (tier 1).

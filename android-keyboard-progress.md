@@ -28,6 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§77 DONE (v0.8.45): D-132 and D-137 follow-up fixes - neither §75 fix actually worked, both re-traced
+  from scratch.** **D-137**: root cause was that a *standalone* typed digit never reaches
+  `showNextWordPredictions()` at all - `finalizeAndCommit()`'s empty-composing branch treats the digit
+  itself as the delimiter and returns early via a separate code path, since composing is empty at every
+  keystroke of "14:30" (a digit only joins an existing composing token per D-40's mid-word case). New
+  `showTimeSuggestion(ic)` is now called from *that* branch instead. **D-132**: root cause was never the
+  row's background (which happens to be the exact same colour as the root view's own background, so §75's
+  fix was invisible) - it was the row's `layoutParams.height` jumping to full size *instantly*, visibly
+  shoving the suggestion bar/keyboard (siblings in the same `LinearLayout`) down before any animation ran.
+  `SettingsRowView.animateHeight()` now genuinely animates the height itself
+  (`ValueAnimator.ofInt`+`requestLayout()` per frame); `content` switched from `MATCH_PARENT` to a fixed,
+  bottom-anchored height so clipping alone produces the "buttons rising into place" reveal, no separate
+  `translationY` needed. No new tests (Android view/animation glue). 612 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Neither re-confirmed on device yet.
 - **§76 DONE (v0.8.44): D-139 investigated - no root cause confirmed, a defensive circuit breaker added.**
   Still no repro for the reported "text jitters, characters get scrambled" glitch. Traced
   `onUpdateSelection()`/`reclaimWordAtCaret()`/`reclaimSurroundingWord()`/`splitComposingAtCaretAndCommit()`

@@ -23,17 +23,24 @@ import de.froehlichmedia.adaptkey.R
  * (the topmost row while open) by an upward swipe anywhere on the keyboard (mirroring G-03's
  * downward-dismiss-anywhere).
  *
- * [open] / [close] jump the reserved layout space to its target height immediately (the D-86 precedent:
- * growing resizes right away, so nothing ever waits for space), then slide the row's own content - not
- * its outer bounds - up out of / back down into that already-reserved space. The content is clipped by
- * the row's own bounds (a plain [ViewGroup][android.view.ViewGroup]'s default `clipChildren`), so it
- * reads as emerging into view rather than sliding in over whatever is below it.
+ * D-132 (second pass - the first attempt below didn't fix the reported "pops in" complaint): the row sits
+ * in the same parent [android.widget.LinearLayout] as the suggestion bar and keyboard *below* it, so the
+ * originally-D-86-inspired "jump `layoutParams.height` to the target immediately, only animate content
+ * afterwards" approach made the suggestion bar and keyboard visibly jump down by the row's full height the
+ * instant the swipe was recognised - the row's own background was never actually the problem (it happens
+ * to match the root view's own background colour exactly, so it was never visually distinguishable in the
+ * first place; the *device-visible* pop was the sibling views jumping, not a background appearing). D-86's
+ * "resize right away" shortcut works for [AdaptKeyboardView]'s own self-contained page-slide, which has no
+ * siblings to push around - it does not transfer to a row stacked above other views.
  *
- * D-132: the row's own background lives on [content], not on the outer view - `content`'s `translationY`
- * is what actually animates, so its background and its buttons slide together as one piece. The instant
- * layout-height jump above is otherwise invisible (nothing is painted at the outer view's own bounds), so
- * the two together read as one continuous reveal rather than the background "popping in" at full height
- * before the buttons catch up.
+ * Fixed properly: [layoutParams] `height` itself is now animated (`ValueAnimator.ofInt` +
+ * `requestLayout()` per frame, the standard Android pattern for an animatable view height - there is no
+ * dedicated height property to animate directly), so the suggestion bar and keyboard shift down/up in the
+ * very same motion as the row's own growth. [content] keeps a *fixed* [ROW_HEIGHT_DP] height, anchored to
+ * the row's bottom edge (`Gravity.BOTTOM`) rather than stretching with it - as the row's own (animating,
+ * smaller-than-`content`) bounds clip `content` (a `ViewGroup`'s default `clipChildren`), progressively more
+ * of it becomes visible from the bottom up as the row grows, which is what makes the buttons read as
+ * sliding up into place without any separate `translationY` animation being needed at all.
  */
 class SettingsRowView @JvmOverloads constructor(
     context: Context,
@@ -73,10 +80,9 @@ class SettingsRowView @JvmOverloads constructor(
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
     private val clearClipboardButton = buttonFor("🗑") { onClearClipboardClick?.onClearClipboardClick() }
     private val content = FrameLayout(context)
-    private var slideAnimator: ValueAnimator? = null
+    private var heightAnimator: ValueAnimator? = null
     
     init {
-        // D-132: on content, not here - see the class KDoc for why.
         content.setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
         val buttonSizePx = dp(BUTTON_SIZE_DP)
         val marginPx = dp(BUTTON_MARGIN_DP)
@@ -96,12 +102,15 @@ class SettingsRowView @JvmOverloads constructor(
             settingsButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply { marginEnd = marginPx }
         )
-        addView(content, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        // D-132: a fixed height, bottom-anchored - see the class KDoc for why this (not a translationY
+        // slide) is what actually makes the buttons read as rising into place as the row itself grows.
+        addView(content, LayoutParams(LayoutParams.MATCH_PARENT, dp(ROW_HEIGHT_DP), Gravity.BOTTOM))
         visibility = View.GONE
     }
     
     /**
-     * Reveals the row: reserves its target height immediately, then slides the content up into view. A
+     * Reveals the row: animates its reserved layout height from 0 up to [ROW_HEIGHT_DP], so the suggestion
+     * bar/keyboard below it shift down in the same motion as the row's own content becoming visible. A
      * no-op while already open.
      */
     fun open() {
@@ -109,16 +118,13 @@ class SettingsRowView @JvmOverloads constructor(
             return
         }
         isOpen = true
-        val targetHeightPx = dp(ROW_HEIGHT_DP)
-        layoutParams = layoutParams.apply { height = targetHeightPx }
         visibility = View.VISIBLE
-        requestLayout()
-        slide(from = targetHeightPx.toFloat(), to = 0f) {}
+        animateHeight(from = 0, to = dp(ROW_HEIGHT_DP)) {}
     }
     
     /**
-     * Slides the content back down, then reclaims the reserved space. [onClosed] runs once the row has
-     * fully collapsed (also invoked synchronously when already closed).
+     * Animates the reserved height back down to 0. [onClosed] runs once fully collapsed (also invoked
+     * synchronously when already closed).
      */
     fun close(onClosed: () -> Unit = {}) {
         if (!isOpen) {
@@ -126,11 +132,8 @@ class SettingsRowView @JvmOverloads constructor(
             return
         }
         isOpen = false
-        val targetHeightPx = dp(ROW_HEIGHT_DP)
-        slide(from = 0f, to = targetHeightPx.toFloat()) {
+        animateHeight(from = dp(ROW_HEIGHT_DP), to = 0) {
             visibility = View.GONE
-            layoutParams = layoutParams.apply { height = 0 }
-            requestLayout()
             onClosed()
         }
     }
@@ -141,29 +144,37 @@ class SettingsRowView @JvmOverloads constructor(
      * while the row was showing).
      */
     fun closeImmediately() {
-        slideAnimator?.cancel()
-        slideAnimator = null
+        heightAnimator?.cancel()
+        heightAnimator = null
         isOpen = false
         visibility = View.GONE
-        content.translationY = 0f
         layoutParams = layoutParams?.apply { height = 0 }
         requestLayout()
     }
     
-    private fun slide(from: Float, to: Float, onEnd: () -> Unit) {
-        slideAnimator?.cancel()
-        content.translationY = from
-        val animator = ValueAnimator.ofFloat(from, to)
+    /**
+     * D-132: animates [layoutParams]' `height` itself from [from] to [to] px, so the row's reserved space
+     * in its parent [android.widget.LinearLayout] grows/shrinks smoothly (the standard `ValueAnimator.ofInt`
+     * + `requestLayout()`-per-frame pattern - there is no dedicated Android height property to animate).
+     */
+    private fun animateHeight(from: Int, to: Int, onEnd: () -> Unit) {
+        heightAnimator?.cancel()
+        layoutParams = layoutParams.apply { height = from }
+        requestLayout()
+        val animator = ValueAnimator.ofInt(from, to)
         animator.duration = SLIDE_DURATION_MS
-        animator.addUpdateListener { content.translationY = it.animatedValue as Float }
+        animator.addUpdateListener {
+            layoutParams = layoutParams.apply { height = it.animatedValue as Int }
+            requestLayout()
+        }
         animator.addListener(object : AnimatorListenerAdapter() {
             
             override fun onAnimationEnd(animation: Animator) {
-                slideAnimator = null
+                heightAnimator = null
                 onEnd()
             }
         })
-        slideAnimator = animator
+        heightAnimator = animator
         animator.start()
     }
     
