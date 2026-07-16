@@ -233,6 +233,9 @@ class AdaptKeyService : InputMethodService() {
     private var composingCursor = 0
     private var composingAnchor = -1
     
+    // D-139: see the KDoc on its use in onUpdateSelection().
+    private val selectionUpdateBurstGuard = CallbackBurstGuard()
+    
     // G-05: a word-end Shift is pending — the first character has been provisionally toggled and the
     // next key decides the outcome (camelCase vs. keep). composingCaseLocked marks a token whose casing
     // the user fixed explicitly, so it is committed verbatim (bypassing autocorrect and §6).
@@ -606,6 +609,16 @@ class AdaptKeyService : InputMethodService() {
         candidatesEnd: Int
     ) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        // D-139: a defensive circuit breaker, not a confirmed fix - no repro exists yet for the reported
+        // "text jitters, characters get scrambled" glitch, but this function's own reactive mutations
+        // (reclaimWordAtCaret() below / finishComposingText() further down) could in principle re-trigger
+        // this very callback, and this codebase has hit a genuinely self-triggering onUpdateSelection
+        // cascade before (a different specific bug, §32's D-87, but the same class of risk). If this ever
+        // fires abnormally often in a short window, stop reacting rather than let a possible cascade
+        // continue to escalate - see CallbackBurstGuard for the threshold reasoning.
+        if (selectionUpdateBurstGuard.isBurst(SystemClock.uptimeMillis())) {
+            return
+        }
         if (composing.isEmpty()) {
             // §58: the caret may have just landed on an existing committed word - a tap, or our own
             // backspace removing a trailing delimiter - with no new character typed at all. D-62's reclaim

@@ -28,6 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§76 DONE (v0.8.44): D-139 investigated - no root cause confirmed, a defensive circuit breaker added.**
+  Still no repro for the reported "text jitters, characters get scrambled" glitch. Traced
+  `onUpdateSelection()`/`reclaimWordAtCaret()`/`reclaimSurroundingWord()`/`splitComposingAtCaretAndCommit()`
+  end to end for a self-triggering-callback mechanism (this project's own established failure class, per
+  §32's D-87): found two concrete, real structural risks (`onUpdateSelection()`'s `composing.isEmpty()`
+  branch calls `reclaimWordAtCaret()` with no "is this our own edit" guard at all; the `!ownEdit` branch's own
+  `finishComposingText()` call could in principle re-trigger the same callback) but could not prove either
+  one actually cascades without being able to observe real callback timing (no emulator/`InputConnection`
+  shadow here). Added new pure `CallbackBurstGuard` (5 tests, sliding-window call counter) at the top of
+  `onUpdateSelection()`: if it fires >40 times within 200ms, every reactive branch is skipped for that call,
+  breaking a possible runaway cascade rather than letting it continue - verified this stays clear of even a
+  sustained 45ms-tick backspace-hold (§59). **Explicitly not claimed as a fix** - a structural hardening
+  measure for a real risk, kept clearly separate from a confirmed diagnosis. D-139 stays open pending an
+  actual repro. 612 unit tests (was 607; +5). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 - **§75 DONE (v0.8.43): batch release - D-117, D-126, D-127/D-128, D-129, D-131, D-132, D-133, D-136, D-137.**
   **D-117**: a wider-budget, suggestion-only fuzzy fallback (`wideFuzzyNeighbours`, cost 4, tokens ≥6 chars)
   for multi-typo words beyond D-28's normal budget ("erkamm"→"erkannt"), tried only once every cheaper search

@@ -3852,3 +3852,57 @@ SCORE` constant now that two independent features use it.
 service/view-glue items (D-126, D-128, D-129, D-131, D-132, D-136) have been confirmed on a real device yet -
 this environment's established, repeatedly-documented limitation (no emulator, no `InputConnection`
 Robolectric shadow, no way to render the settings screen or observe system-bar icon contrast).
+
+## §76 - D-139 Investigated: No Root Cause Confirmed, a Defensive Circuit Breaker Added (v0.8.44)
+
+Followed up on D-139 (§73) by request. **No repro exists yet - nothing below is a confirmed fix.** This is a
+code-reading pass over the most plausible mechanism identified in §73 (a self-triggering `onUpdateSelection`
+cascade in the D-62/D-87 mid-word-reclaim machinery), reported honestly as what it is: a real, structurally
+identifiable risk, not proof of what actually happened on-device.
+
+### What was traced
+Read `AdaptKeyService.onUpdateSelection()`, `reclaimWordAtCaret()`, `reclaimSurroundingWord()`,
+`splitComposingAtCaretAndCommit()` and the mid-word composing-mutation paths end to end, specifically
+looking for a way this project's own established failure mode (§32's D-87: a `deleteSurroundingText()` call
+reaching the app as a standalone edit, its callback arriving after `composing`/`composingAnchor` had already
+advanced, wiping the token it was itself building) could recur in a form severe enough to look like the
+reported "text jitters, characters get scrambled" symptom.
+
+**Found, concretely:**
+- `onUpdateSelection()`'s `composing.isEmpty()` branch calls `reclaimWordAtCaret()` **unconditionally**
+  whenever the selection collapses - unlike the non-empty branch, which gates on an explicit `ownEdit` check,
+  this one has no "is this genuinely a new user action, or an echo of our own prior edit" guard at all.
+- The `!ownEdit` branch itself calls `currentInputConnection?.finishComposingText()` - a **mutating** call
+  issued from *inside* the callback handler, which could in principle produce its own follow-up
+  `onUpdateSelection` invocation.
+- Chained together, a caret-move callback could in principle re-trigger `reclaimWordAtCaret()` /
+  `finishComposingText()` repeatedly, each iteration mutating the document again - which would plausibly
+  present exactly as "the text jitters and its characters end up scrambled", the reported symptom.
+
+**Not found:** a concrete, provable trigger for this chain actually re-entering itself - that depends on
+Android's actual callback-delivery timing and the specific target app's `InputConnection` implementation,
+neither of which this environment (no emulator, no `InputConnection` Robolectric shadow) can exercise to
+prove one way or the other. Recomputing `composingAnchor` arithmetically (§72) rules out one instance of the
+D-87 stale-read pattern but does not rule out this one, which is structurally different (a callback
+triggering more `InputConnection` mutations, not a mutation being read back too early).
+
+### What was added: a circuit breaker, not a fix
+New pure `CallbackBurstGuard` (5 tests): a plain sliding-window call counter (`isBurst(nowMs)`), Android-free
+so it is directly unit-testable. Wired into the very top of `onUpdateSelection()` - if this callback fires
+more than `DEFAULT_LIMIT = 40` times within `DEFAULT_WINDOW_MS = 200`, every reactive branch below is skipped
+for that call, stopping a possible cascade from continuing to escalate rather than letting it run unbounded.
+
+Threshold reasoning, so a future session can retune it rather than guess again: a held backspace repeats as
+fast as every 45ms (§59), so even a sustained hold manages only ~4-5 ticks within a 200ms window - comfortably
+under 40, so ordinary heavy backspace use is untouched (verified directly: a test simulates 200ms of 45ms-tick
+backspace-repeat and confirms it never trips the guard). A genuine unthrottled cascade - no deliberate delay
+between steps at all, unlike a timer-driven repeat - would be expected to blow past 40 within the same 200ms
+almost immediately. Deliberately conservative (wide margin against false positives) since a wrongly-tripped
+guard would itself be a new, self-inflicted bug in ordinary use.
+
+**Explicitly not claimed:** that this is what caused the reported symptom, or that it is now fixed. This is a
+structural hardening measure for a real risk found by reading the code, kept clearly separate from a
+confirmed diagnosis - D-139 stays open pending an actual repro.
+
+5 new unit tests (`CallbackBurstGuardTest`). 612 unit tests total (was 607).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green.
