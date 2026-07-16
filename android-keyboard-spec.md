@@ -3607,3 +3607,40 @@ exactly, rather than a parallel reimplementation.
 592 unit tests (was 586; +6 `TokenRepairTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-tested - the pure split-recognition logic is fully unit-tested, but the suggestion-bar wiring and tap
 handling are `AdaptKeyService`/`InputConnection` glue, the established testing gap for this layer.
+
+## §72 - Bug Fixed: Mid-Word SPACE Left the Caret Before, Not After, the Inserted Space (v0.8.42)
+
+Reported directly, with a precise repro: type "Testcwort" (an unsplit double-word, `c` the accidental
+connector), place the caret right after the `c`, delete it with Backspace, then press SPACE to re-insert it
+as a real space - the space is correctly inserted, but the caret afterwards sits **before** it instead of
+after it (i.e. still between "Test" and the space, not between the space and "wort").
+
+**Root cause, traced (not guessed):** this is the D-119/D-120 `splitComposingAtCaretAndCommit()` path (a
+mid-word SPACE splits the composing token at the caret). After the "before" half ("Test") is finalised via a
+recursive `finalizeAndCommit()` call, the "after" half's new anchor was computed by **re-reading**
+`InputConnection.getExtractedText()` - still inside the same outer batch edit, and *after* several prior
+`InputConnection` mutations already issued within that same call (the recursive finalise's own
+`setComposingText()`/`finishComposingText()`/`commitText()`). Every *other* same-batch state read in this
+class reads *before* it mutates anything (`reclaimSurroundingWord()`'s own anchor read, for instance) - this
+was the one place reading *after* several prior edits in the same batch, a markedly riskier pattern. Confirmed
+this is the real mechanism (not a coincidence) by checking whether the reported repro could instead be an
+autocorrect-length-mismatch artefact: it cannot - "Test" does not change length under §6 capitalisation here
+(`test` -> `Test` is a pure case change), so even in this exact zero-length-delta case the caret still landed
+one position short of where the space actually was - pointing squarely at the anchor read itself being stale
+by exactly the space's own width, not at anything downstream.
+
+**Fix:** the "after" half's anchor is now computed **arithmetically**, with no read-back at all.
+`finalizeAndCommit()` (and every path it can delegate to - `commitVerbatim()`, `applyMerge()`, `applySplit()`,
+and its own default inline commit) now returns the number of characters it actually, net, inserted into the
+document (word length + delimiter length, minus one for `applyMerge()`'s own preceding-space deletion).
+`splitComposingAtCaretAndCommit()` captures the "before" half's own anchor *before* recursing into
+`finalizeAndCommit()`, then computes the "after" half's anchor as `beforeAnchor + committedLength` - a value
+derived entirely from state this function already controls, immune to any question of whether a same-batch
+`InputConnection` read reflects the edits just issued to it. This is a stronger fix than merely restructuring
+the batching to force a flush before reading, since it removes the read-after-write dependency altogether
+rather than trying to make it reliable.
+
+No new unit tests - this is `AdaptKeyService`/`InputConnection` glue with no new pure logic (the changed
+functions were already Android-glue, the established testing gap for this layer; the arithmetic itself is a
+one-line addition, not a standalone unit worth extracting). 592 unit tests (unchanged).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.

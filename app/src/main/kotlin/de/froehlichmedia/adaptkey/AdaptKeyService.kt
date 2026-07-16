@@ -1582,8 +1582,13 @@ class AdaptKeyService : InputMethodService() {
      *
      * @param spaceInferred when this delimiter is a standalone letter-ambiguous space, the letter
      *        inferred from the tap; armed for a possible merge of the next token (A-06)
+     * @return D-122: the net number of characters this call actually inserted into the document (the
+     *         committed word plus [delimiter], minus any characters it deleted immediately before the
+     *         former composing token) - used by [splitComposingAtCaretAndCommit] to compute the "after"
+     *         half's new anchor arithmetically instead of re-reading the editor's state after several
+     *         prior edits in the same batch, see its own KDoc for why that mattered
      */
-    private fun finalizeAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char? = null) {
+    private fun finalizeAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char? = null): Int {
         val mergeChar = pendingMergeChar
         pendingMergeChar = null
         
@@ -1603,7 +1608,7 @@ class AdaptKeyService : InputMethodService() {
             // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
             pendingMergeChar = spaceInferred
             armShiftForNextWord(ic)
-            return
+            return delimiter.length
         }
         // D-119 / D-120: a caret sitting mid-word (not at the composing token's true end - a common state
         // since §58's reclaim-on-caret-move) means this delimiter must split the token at the caret,
@@ -1612,16 +1617,14 @@ class AdaptKeyService : InputMethodService() {
         // symbol via commitLongPressSymbol()), since they all funnel through here.
         if (composingCursor != composing.length) {
             pendingMergeChar = mergeChar // restore for the recursive "before" finalisation below
-            splitComposingAtCaretAndCommit(ic, delimiter, spaceInferred)
-            return
+            return splitComposingAtCaretAndCommit(ic, delimiter, spaceInferred)
         }
         pendingSuggestionSpace = false
         
         // G-05: a word-end Shift made this token's casing explicit; commit it exactly as composed,
         // bypassing autocorrect, capitalisation (§6) and token repair — the user has hand-finished it.
         if (composingCaseLocked) {
-            commitVerbatim(ic, delimiter)
-            return
+            return commitVerbatim(ic, delimiter)
         }
         val typed = composing.toString()
         // A-03: pick the dictionary/capitalisation for the recent context (German default, English or
@@ -1636,9 +1639,9 @@ class AdaptKeyService : InputMethodService() {
         if (mergeChar != null) {
             val merged = tokenRepair.tryMerge(previousWord, mergeChar, typed)
             if (merged != null) {
-                applyMerge(ic, merged, delimiter)
+                val committedLength = applyMerge(ic, merged, delimiter)
                 armShiftForNextWord(ic)
-                return
+                return committedLength
             }
         }
         
@@ -1656,9 +1659,9 @@ class AdaptKeyService : InputMethodService() {
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
         }
         if (split != null) {
-            applySplit(ic, split, delimiter, typed)
+            val committedLength = applySplit(ic, split, delimiter, typed)
             armShiftForNextWord(ic)
-            return
+            return committedLength
         }
         
         // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected language's
@@ -1701,6 +1704,7 @@ class AdaptKeyService : InputMethodService() {
         showNextWordPredictions()
         armShiftForNextWord(ic)
         trackSustainedEnglishUsage(ic, dictChoice.language)
+        return finalWord.length + delimiter.length
     }
     
     /**
@@ -1764,8 +1768,11 @@ class AdaptKeyService : InputMethodService() {
      * Commits the composing token exactly as composed, followed by [delimiter] (G-05): no autocorrect,
      * no §6 capitalisation and no token repair. Used when the user fixed the token's casing explicitly
      * via a word-end Shift, which ranks as explicit input and must be preserved in both directions.
+     *
+     * @return D-122: the number of characters committed (`word.length + delimiter.length`) - see
+     *         [finalizeAndCommit]'s own return contract
      */
-    private fun commitVerbatim(ic: InputConnection, delimiter: String) {
+    private fun commitVerbatim(ic: InputConnection, delimiter: String): Int {
         val word = composing.toString()
         ic.setComposingText(word, 1)
         ic.finishComposingText()
@@ -1777,13 +1784,17 @@ class AdaptKeyService : InputMethodService() {
         // D-43: predict the next word instead of leaving the bar blank.
         showNextWordPredictions()
         armShiftForNextWord(ic)
+        return word.length + delimiter.length
     }
     
     /**
      * Applies an A-06 merge: drops the composing token, removes the spurious preceding space and
      * commits the reconstructed word (cased per §6) followed by [delimiter].
+     *
+     * @return D-122: the net number of characters committed, accounting for the deleted preceding space
+     *         (`cased.length + delimiter.length - 1`) - see [finalizeAndCommit]'s own return contract
      */
-    private fun applyMerge(ic: InputConnection, merged: String, delimiter: String) {
+    private fun applyMerge(ic: InputConnection, merged: String, delimiter: String): Int {
         ic.setComposingText("", 1)
         ic.finishComposingText()
         clearComposing()
@@ -1794,6 +1805,7 @@ class AdaptKeyService : InputMethodService() {
         clearUndo()
         // D-43: predict the next word instead of leaving the bar blank.
         showNextWordPredictions()
+        return cased.length + delimiter.length - 1
     }
     
     /**
@@ -1802,8 +1814,10 @@ class AdaptKeyService : InputMethodService() {
      * backspace immediately after rejoins the two words back into the originally typed token.
      *
      * @param typed the original token as typed, restored if the following key is a backspace undo
+     * @return D-122: the number of characters committed (`committed.length + delimiter.length`) - see
+     *         [finalizeAndCommit]'s own return contract
      */
-    private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String, typed: String) {
+    private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String, typed: String): Int {
         ic.setComposingText("", 1)
         ic.finishComposingText()
         clearComposing()
@@ -1821,6 +1835,7 @@ class AdaptKeyService : InputMethodService() {
         undoWasSplit = true
         // D-43: predict the next word (following the right-hand split part) instead of a blank bar.
         showNextWordPredictions()
+        return committed.length + delimiter.length
     }
     
     /**
@@ -2022,12 +2037,29 @@ class AdaptKeyService : InputMethodService() {
      * position (via the same [composingAnchor] mid-word-edit-point mechanism [reclaimSurroundingWord]
      * already uses) so editing continues right where the caret was - never jumped to the token's end.
      *
+     * D-122 fix: the "after" half's new anchor is computed **arithmetically** - the "before" half's own
+     * anchor (captured before it is finalised) plus however many characters [finalizeAndCommit] reports
+     * actually landed in the document - rather than by re-reading [InputConnection.getExtractedText] right
+     * after that recursive call. The previous version did exactly that re-read, still inside the same batch
+     * edit and after several prior [InputConnection] mutations (the recursive finalise's own
+     * `setComposingText`/`finishComposingText`/`commitText` calls) - a markedly riskier pattern than every
+     * other same-batch state read in this class, which all read *before* mutating rather than after several
+     * mutations. Confirmed bug (not a guess): typing "Testcwort", deleting the `c` mid-word and pressing
+     * SPACE left the caret *before* the just-inserted space instead of after it, in a case where the
+     * "before" half ("Test") does not even change length under autocorrect - ruling out an autocorrect-
+     * length-mismatch explanation and pointing squarely at the anchor computation itself. The arithmetic
+     * form needs no such read at all.
+     *
      * @param ic the current input connection
      * @param delimiter the character(s) to commit between the split halves
      * @param spaceInferred forwarded to the recursive [finalizeAndCommit] call for the "before" half (A-06)
+     * @return the number of characters [finalizeAndCommit] committed for the "before" half, so an outer,
+     *         top-level caller of `finalizeAndCommit` that happens to land here still gets a meaningful
+     *         value under the same return contract (see there)
      */
-    private fun splitComposingAtCaretAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char?) {
+    private fun splitComposingAtCaretAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char?): Int {
         val splitAt = composingCursor
+        val beforeAnchor = composingAnchor
         val beforeText = composing.substring(0, splitAt)
         val beforeFlags = ArrayList(composingFlags.subList(0, splitAt))
         val beforeTaps = ArrayList(composingTaps.subList(0, splitAt.coerceAtMost(composingTaps.size)))
@@ -2038,7 +2070,7 @@ class AdaptKeyService : InputMethodService() {
         } else {
             ArrayList()
         }
-        
+        var committedLength: Int
         ic.beginBatchEdit()
         try {
             // Shrink the real composing region to just the "before" half first - otherwise finalising it
@@ -2053,15 +2085,15 @@ class AdaptKeyService : InputMethodService() {
             composingTaps.addAll(beforeTaps)
             composingCursor = beforeText.length
             composingAnchor = -1
-            finalizeAndCommit(ic, delimiter, spaceInferred)
-            
+            committedLength = finalizeAndCommit(ic, delimiter, spaceInferred)
             
             // Re-seed the "after" half as a fresh composing token, right where the caret was - mirroring
-            // how a brand-new word normally starts (D-62).
+            // how a brand-new word normally starts (D-62). The new anchor is simply where "before" itself
+            // started plus however much it (and the delimiter) actually added to the document - see the
+            // D-122 note above for why this is no longer a getExtractedText() read.
             captureTokenContext(ic)
             resetWordEndShift()
-            val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
-            val anchor = if (extracted != null) extracted.startOffset + extracted.selectionStart else -1
+            val anchor = if (beforeAnchor >= 0) beforeAnchor + committedLength else -1
             composing.append(afterText)
             composingFlags.addAll(afterFlags)
             composingTaps.addAll(afterTaps)
@@ -2072,6 +2104,7 @@ class AdaptKeyService : InputMethodService() {
             ic.endBatchEdit()
         }
         refreshSuggestions()
+        return committedLength
     }
     
     /**

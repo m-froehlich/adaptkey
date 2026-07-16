@@ -28,6 +28,20 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§72 DONE (v0.8.42): bug fixed - mid-word SPACE left the caret before, not after, the inserted space.**
+  Precise repro: type "Testcwort", caret after the `c`, Backspace it, then SPACE - the space is inserted
+  correctly but the caret stays before it. Root cause traced to `splitComposingAtCaretAndCommit()` (the
+  D-119/D-120 mid-word-split path): the "after" half's new anchor was computed by re-reading
+  `InputConnection.getExtractedText()` *after* several prior same-batch `InputConnection` mutations (the
+  recursive "before"-half finalise's own `setComposingText`/`finishComposingText`/`commitText`) - the one
+  same-batch state read in this class that reads *after* mutating rather than before. Confirmed via the
+  repro itself: "Test" doesn't even change length under capitalisation here, ruling out an autocorrect-
+  length-mismatch explanation and pointing at the read itself. Fixed by computing the anchor **
+  arithmetically** instead: `finalizeAndCommit()` and its delegates (`commitVerbatim`/`applyMerge`/
+  `applySplit`) now return the net character count they actually committed, so
+  `splitComposingAtCaretAndCommit()` can derive `beforeAnchor + committedLength` with no read-back at all.
+  No new tests (Android/`InputConnection` glue, existing gap). 592 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
 - **§71 DONE (v0.8.41): D-122 implemented - mid-word connector-split suggestion.** First real repro
   ("Testvwort hallo", caret placed inside "Testvwort", expected a "Test Wort" suggestion, bar stayed empty).
   Root cause, two compounding correct-for-their-own-reasons behaviours: `TokenRepair.trySplit()`'s §45
