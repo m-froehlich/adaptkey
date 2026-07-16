@@ -184,6 +184,10 @@ class AdaptKeyService : InputMethodService() {
     // text (no Greek dictionary yet). Kept for the service lifetime; defaults to German on each start.
     private var activeLanguage = Language.GERMAN
     
+    // D-130: consecutive commits routed to English by A-03 while German/Greek stays active - once this
+    // reaches SUSTAINED_ENGLISH_WORD_THRESHOLD, trackSustainedEnglishUsage() promotes it to a real switch.
+    private var consecutiveEnglishWords = 0
+    
     // L-03: which layer is shown, the numeric/symbol layer's current page, the bundled emoji dataset
     // and the persisted recent/frequently-used emoji (MRU).
     private var surface = InputSurface.LETTERS
@@ -695,7 +699,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun resolveClipboardText(clip: ClipData, item: ClipData.Item): CharSequence? {
         val uri = item.uri ?: return item.coerceToText(this)
-        if (!clip.description.hasMimeType("text/*")) {
+        if (!isTextMimeType(clip)) {
             return null
         }
         return runCatching {
@@ -705,6 +709,22 @@ class AdaptKeyService : InputMethodService() {
                 if (read <= 0) null else String(buffer, 0, read)
             }
         }.getOrNull()
+    }
+    
+    /**
+     * D-124: whether [clip] genuinely declares a text-family MIME type - checked against its own concrete
+     * declared type(s) directly, *not* via [ClipDescription.hasMimeType], whose documented wildcard
+     * matching treats [ClipDescription.MIMETYPE_UNKNOWN] (a generic "unknown type" declaration some
+     * file-sharing apps use, e.g. for a copied APK) as matching any requested pattern, including a
+     * `text` request - exactly the reported bug (an APK file was offered via Quick Paste). That generic
+     * wildcard declaration is therefore explicitly excluded here, not treated as a text match.
+     */
+    private fun isTextMimeType(clip: ClipData): Boolean {
+        val description = clip.description
+        return (0 until description.mimeTypeCount).any { i ->
+            val type = description.getMimeType(i)
+            type != ClipDescription.MIMETYPE_UNKNOWN && type.startsWith("text/")
+        }
     }
     
     /**
@@ -1116,6 +1136,8 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun toggleLanguage(ic: InputConnection, forward: Boolean) {
         finalizeAndCommit(ic, "")
+        // D-130: acknowledge the switch on the space bar - captures the outgoing label before it changes.
+        keyboardView?.beginLanguageChangeFade()
         activeLanguage = if (forward) LanguageCycle.next(activeLanguage) else LanguageCycle.previous(activeLanguage)
         // Persist the switch so the chosen alphabet survives a service restart.
         ActiveLanguageStore.save(this, activeLanguage)
@@ -1333,8 +1355,11 @@ class AdaptKeyService : InputMethodService() {
      * When the edit point is already at the very start of composing - nothing left to remove on this side,
      * though a reclaimed "after" fragment may still be sitting there - the real character just before the
      * composing region is deleted instead, via [deleteOneBefore].
+     *
+     * @param duringRepeat D-138: true when called from [handleBackspaceRepeat] - passed through to
+     *        [refreshSuggestions] to skip its more expensive per-keystroke lookups for this tick (see there)
      */
-    private fun deleteComposingChar(ic: InputConnection) {
+    private fun deleteComposingChar(ic: InputConnection, duringRepeat: Boolean = false) {
         if (composingCursor == 0) {
             // D-62: batched so the app never observes the selection mid-shift - deleteOneBefore()'s
             // deleteSurroundingText() moves the still-active composing region (holding the untouched
@@ -1364,7 +1389,7 @@ class AdaptKeyService : InputMethodService() {
             composingAnchor = -1
         } else {
             updateComposing(ic)
-            refreshSuggestions()
+            refreshSuggestions(duringRepeat)
         }
         applyShiftAfterDelete(deleted)
     }
@@ -1405,7 +1430,7 @@ class AdaptKeyService : InputMethodService() {
         }
         pendingMergeChar = null
         if (composing.isNotEmpty()) {
-            deleteComposingChar(ic)
+            deleteComposingChar(ic, duringRepeat = true)
             backspaceHeldChars++
         } else if (BackspaceRepeat.deletesWord(backspaceHeldChars)) {
             val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
@@ -1493,7 +1518,8 @@ class AdaptKeyService : InputMethodService() {
         // confidently-foreign but unsupported language. D-106 stage 2: also suppressed when the token is
         // already a known word in some other consulted language (mandatory English + every G-01-cycle
         // language) - an embedded loanword like "Word" must never be silently corrected away.
-        val suppressAutocorrect = selectActiveDictionary("$tokenContextBefore $typed") || knownInOtherLanguage(typed)
+        val dictChoice = selectActiveDictionary("$tokenContextBefore $typed")
+        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownInOtherLanguage(typed)
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
         if (mergeChar != null) {
@@ -1562,6 +1588,39 @@ class AdaptKeyService : InputMethodService() {
         }
         // D-43: predict the next word instead of leaving the bar blank.
         showNextWordPredictions()
+        armShiftForNextWord(ic)
+        trackSustainedEnglishUsage(ic, dictChoice.language)
+    }
+    
+    /**
+     * D-130: promotes A-03's per-token English routing (used while German/Greek stays active) to a real
+     * active-language switch after [SUSTAINED_ENGLISH_WORD_THRESHOLD] consecutive commits routed to
+     * English - the existing per-token routing, and D-106 stage 2's cross-language autocorrect protection,
+     * already work well for a single embedded loanword; a sustained run of English words is a different,
+     * stronger signal that the user has genuinely switched languages, not just borrowed one word.
+     *
+     * @param ic the current input connection
+     * @param tokenLanguage the language [finalizeAndCommit] actually routed the just-committed token to
+     */
+    private fun trackSustainedEnglishUsage(ic: InputConnection, tokenLanguage: Language) {
+        if (activeLanguage == Language.ENGLISH || tokenLanguage != Language.ENGLISH) {
+            consecutiveEnglishWords = 0
+            return
+        }
+        consecutiveEnglishWords++
+        if (consecutiveEnglishWords < SUSTAINED_ENGLISH_WORD_THRESHOLD) {
+            return
+        }
+        consecutiveEnglishWords = 0
+        // D-130: acknowledge the switch on the space bar, the same way the manual G-01 swipe now does.
+        keyboardView?.beginLanguageChangeFade()
+        activeLanguage = Language.ENGLISH
+        ActiveLanguageStore.save(this, activeLanguage)
+        keyboardView?.greek = false
+        keyboardView?.qwerty = true
+        updateSpaceLabel()
+        clearSuggestions()
+        Toast.makeText(this, languageLabel(activeLanguage), Toast.LENGTH_SHORT).show()
         armShiftForNextWord(ic)
     }
     
@@ -1919,33 +1978,44 @@ class AdaptKeyService : InputMethodService() {
         return !after.isNullOrEmpty() && after[0].isLetter()
     }
     
-    private fun refreshSuggestions() {
+    /**
+     * @param duringRepeat D-138: true while called from an active [handleBackspaceRepeat] tick - skips the
+     *        D-106-stage-2 / D-111-D-112 lookups below, which are never actually read mid-repeat (the bar
+     *        is changing every 45-330ms, see [BackspaceRepeat]) but add several extra per-keystroke
+     *        dictionary round-trips that measurably compete with the repeat's own fastest tick interval -
+     *        a plausible, traced (not guessed) explanation for backspace-hold feeling jerky after they were
+     *        added. Every other call site keeps the full live preview (the default `false`).
+     */
+    private fun refreshSuggestions(duringRepeat: Boolean = false) {
         val input = composing.toString()
         if (input.isEmpty()) {
             clearSuggestions()
             return
         }
         // A-03: pick the dictionary for the recent context; an unsupported foreign context shows nothing.
-        val suppressAutocorrect = selectActiveDictionary("$tokenContextBefore $input")
-        if (suppressAutocorrect) {
+        if (selectActiveDictionary("$tokenContextBefore $input").suppressAutocorrect) {
             clearSuggestions()
             return
         }
         val candidates = provider.suggestionsFor(input, previousWord)
-        // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
-        // language (mandatory English + every G-01-cycle language) - the active language's own completions
-        // are still shown as usual, only the impending-autocorrect chip is suppressed.
-        val correctionCandidate = if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
-        // D-111 / D-112: run the eventual committed form through the same §6 capitalisation
-        // finalizeAndCommit() will apply, so a pending *case-only* change (D-111 - e.g. an ordinary noun
-        // about to be auto-capitalised) is visible as the existing S-06 pending chip before it is ever
-        // silently applied, and a spelling correction's own case already follows the sentence/field
-        // context (D-112 - "Fur" at a sentence start previews as "Für", not "für"). Deliberately mirrors
-        // only the autocorrectFor/diacritic-fold path (cost-0 within it, so already covered) and not the
-        // rarer raw-coordinate-correction fallback, which needs the real composing taps/geometry and isn't
-        // worth computing on every keystroke just for this preview.
-        val capitalizedPreview = capitalisation.capitalise(correctionCandidate ?: input, contextFor(input))
-        val pending = capitalizedPreview.takeIf { it != input }
+        val pending = if (duringRepeat) {
+            provider.autocorrectFor(input, previousWord)
+        } else {
+            // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
+            // language (mandatory English + every G-01-cycle language) - the active language's own
+            // completions are still shown as usual, only the impending-autocorrect chip is suppressed.
+            val correctionCandidate = if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
+            // D-111 / D-112: run the eventual committed form through the same §6 capitalisation
+            // finalizeAndCommit() will apply, so a pending *case-only* change (D-111 - e.g. an ordinary noun
+            // about to be auto-capitalised) is visible as the existing S-06 pending chip before it is ever
+            // silently applied, and a spelling correction's own case already follows the sentence/field
+            // context (D-112 - "Fur" at a sentence start previews as "Für", not "für"). Deliberately mirrors
+            // only the autocorrectFor/diacritic-fold path (cost-0 within it, so already covered) and not the
+            // rarer raw-coordinate-correction fallback, which needs the real composing taps/geometry and
+            // isn't worth computing on every keystroke just for this preview.
+            val capitalizedPreview = capitalisation.capitalise(correctionCandidate ?: input, contextFor(input))
+            capitalizedPreview.takeIf { it != input }
+        }
         val previous = previousWord
         val sentence = "$tokenContextBefore$input"
         // §9 / C-06: consult tier 3 when the tier-1 confidence is below the threshold (never with the
@@ -2210,17 +2280,19 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Re-points the active dictionary pipeline (provider / capitalisation / store) to the language of
-     * the recent [context] and reports whether autocorrect must be suppressed for it (A-03).
+     * the recent [context] (A-03) and returns the full [DictChoice] - the caller reads
+     * [DictChoice.suppressAutocorrect] for the autocorrect gate and, since D-130, [DictChoice.language]
+     * to track sustained per-token English routing towards a real active-language switch.
      *
      * @param context the recent text (context before the token plus the token itself)
-     * @return true when autocorrect must not be applied for this token
+     * @return the resolved choice for this token
      */
-    private fun selectActiveDictionary(context: String): Boolean {
+    private fun selectActiveDictionary(context: String): DictChoice {
         val choice = resolveDict(context)
         provider = providers.getValue(choice.language)
         capitalisation = engines.getValue(choice.language)
         dictionaryStore = stores.getValue(choice.language)
-        return choice.suppressAutocorrect
+        return choice
     }
     
     /**
@@ -2484,5 +2556,9 @@ class AdaptKeyService : InputMethodService() {
         // 62, Vorhinein 11) - a candidate this rare is dropped from autocorrect consideration outright
         // (though it can still surface in the broader suggestion-bar prefix/fuzzy list, unaffected).
         private const val MIN_AUTOCORRECT_CANDIDATE_FREQUENCY = 300L
+        
+        // D-130: consecutive commits routed to English (while German/Greek stays active) before
+        // trackSustainedEnglishUsage() promotes it to a real active-language switch.
+        private const val SUSTAINED_ENGLISH_WORD_THRESHOLD = 5
     }
 }

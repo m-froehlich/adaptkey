@@ -236,7 +236,15 @@ class DictionarySuggestionProvider(
         // unrelated words that merely happen to sit within the wider two-edit autocorrect budget
         // ("spreche" is a cost-2 edit from "Sprache" - e/a are not adjacent keys - so a common verb form
         // was losing to a far more frequent, but entirely different, noun).
-        if (isKnownWord(token) && !(best.cost <= ADJACENT_SUB_COST && shouldOverrideKnownWord(token, best.candidate))) {
+        if (isKnownWord(token)) {
+            if (!(best.cost <= ADJACENT_SUB_COST && shouldOverrideKnownWord(token, best.candidate))) {
+                return null
+            }
+        } else if (RegularVerbInflection.isPlausibleInflection(token, ::isKnownWord)) {
+            // D-115 / D-125: an unknown but regular ("weak") verb inflection of a known infinitive
+            // ("beurteilst" of "beurteilen") is protected outright, with no ratio-override - unlike a
+            // literal known word, it has no recorded frequency of its own to compare against a candidate's,
+            // so §44's ratio check would always trivially fire (0 * ratio <= anything) if applied here.
             return null
         }
         return best.candidate

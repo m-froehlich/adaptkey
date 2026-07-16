@@ -125,6 +125,53 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    // D-130: space-bar acknowledgement fade for a language change (automatic sustained-English switch or
+    // manual G-01 swipe) - the previous label fades out, then the new one (already pushed via [spaceLabel]
+    // by the time this runs) fades back in.
+    private var spaceLabelFadeFrom: String? = null
+    private var spaceLabelFadeProgress = 0f
+    private var spaceLabelAnimator: ValueAnimator? = null
+    
+    /**
+     * D-130: starts the space-bar fade acknowledging a language change. Call this *before* pushing the new
+     * value into [spaceLabel] - it captures whatever the label currently shows as the fade-out source; the
+     * fade-in target is simply [spaceLabel] itself, read live as the animation progresses past its midpoint.
+     */
+    fun beginLanguageChangeFade() {
+        spaceLabelAnimator?.cancel()
+        spaceLabelFadeFrom = spaceLabel
+        spaceLabelFadeProgress = 0f
+        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator.duration = LANGUAGE_FADE_DURATION_MS
+        animator.addUpdateListener {
+            spaceLabelFadeProgress = it.animatedValue as Float
+            invalidate()
+        }
+        animator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                spaceLabelFadeFrom = null
+                spaceLabelAnimator = null
+                invalidate()
+            }
+        })
+        spaceLabelAnimator = animator
+        animator.start()
+    }
+    
+    /** D-130: draws the space key's label cross-fading from [spaceLabelFadeFrom] to the current [spaceLabel]. */
+    private fun drawFadingSpaceLabel(canvas: Canvas, cx: Float, baseline: Float) {
+        val from = spaceLabelFadeFrom ?: return
+        val progress = spaceLabelFadeProgress
+        if (progress < 0.5f) {
+            textPaint.alpha = (255 * (1f - progress * 2f)).toInt().coerceIn(0, 255)
+            canvas.drawText(from, cx, baseline, textPaint)
+        } else {
+            textPaint.alpha = (255 * ((progress - 0.5f) * 2f)).toInt().coerceIn(0, 255)
+            canvas.drawText(spaceLabel, cx, baseline, textPaint)
+        }
+        textPaint.alpha = 255
+    }
+    
     /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
     var offsetModel: OffsetModel? = null
     
@@ -679,7 +726,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val label = labelFor(key)
             val cx = rect.centerX()
             val baseline = rect.centerY() - (textPaint.descent() + textPaint.ascent()) / 2f
-            canvas.drawText(label, cx, baseline, textPaint)
+            // D-130: the space key's own label cross-fades while a language-change acknowledgement is
+            // playing, instead of jumping straight to the new text.
+            if (key.code == KeyCode.SPACE && spaceLabelFadeFrom != null) {
+                drawFadingSpaceLabel(canvas, cx, baseline)
+            } else {
+                canvas.drawText(label, cx, baseline, textPaint)
+            }
             
             val hint = key.hint
             // D-47 / §49: no "123" corner hint on the combined key - it always already reads "?123".
@@ -1268,6 +1321,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         
         // D-58: the page-change slide - quick enough to stay snappy, slow enough to actually be seen.
         private const val SLIDE_DURATION_MS = 180L
+        
+        // D-130: the space-bar language-change fade - out then back in, so both halves stay quick.
+        private const val LANGUAGE_FADE_DURATION_MS = 260L
         
         // D-97: the plain space-bar glyph (U+2423 OPEN BOX) shown on the symbol pages' space keys, which
         // have no language of their own to display.

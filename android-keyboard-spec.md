@@ -3235,3 +3235,123 @@ Neither change was intended to touch backspace-repeat's own cadence (`BackspaceR
 are untouched code), but the timing coincidence with this exact area of `onTouchEvent()` having just changed is
 too close to ignore. Needs an actual trace through `onTouchEvent`'s `ACTION_DOWN` handling for `KeyCode.DELETE`
 next round, not a blind revert or guess.
+
+## §66 - Release Round: D-124, D-115/D-125, D-130, D-138 + D-135 Feasibility Research (v0.8.36)
+
+### D-138 - Backspace-Hold Jerkiness: Traced (Not Guessed) to This Session's Own Added Per-Keystroke Lookups
+Before touching anything, traced the actual call path rather than reverting blindly: `handleBackspaceRepeat()`
+calls `deleteComposingChar()` on every repeat tick, which calls `refreshSuggestions()` same as an ordinary
+keystroke. This session's own §64/§63 changes added real per-keystroke cost to that function - D-106 stage 2's
+`knownInOtherLanguage()` (up to 3 dictionary lookups) and D-111/D-112's `capitalizedPreview` (1 more
+`store.partsOfSpeech()` lookup) - none of which existed before this session. `SqliteDictionaryStore`'s
+`wkey TEXT PRIMARY KEY` schema makes each individual lookup cheap (an indexed point lookup), but stacking up to
+4 extra SQLite round-trips onto *every* tick of a hold whose fastest interval is 45 ms (§59) is a concrete,
+plausible mechanism for exactly the reported "jerky, seems to check things in between" - not a guess, but also
+not something this environment can profile to *prove* is the (sole) cause.
+
+**Fix**: `deleteComposingChar()` gained a `duringRepeat: Boolean` parameter, threaded from
+`handleBackspaceRepeat()`'s call site only (the ordinary single-tap `handleBackspace()` path is unaffected);
+`refreshSuggestions(duringRepeat: Boolean = false)` skips `knownInOtherLanguage()`/`capitalizedPreview()`
+entirely when `true`, falling back to the plain `provider.autocorrectFor()` result - matching this function's
+pre-§63/§64 behaviour for exactly this one call path. Nothing about D-106 stage 2 or D-111/D-112's actual
+*protection* is weakened - `finalizeAndCommit()`'s own checks (unaffected by this parameter) still fully apply
+once the hold stops and a real commit happens; only the *live bar preview* during a fast-changing, transient
+hold is skipped, which nobody is meaningfully reading mid-repeat anyway.
+
+### D-124 - Clipboard MIME-Type Filter: the Real Bug Was `hasMimeType`'s Own Wildcard Semantics
+Traced precisely, not re-guessed: `ClipDescription.hasMimeType(String)` is documented to treat a clip whose own
+declared concrete type is the generic wildcard (`ClipDescription.MIMETYPE_UNKNOWN`, many file-sharing/share-sheet
+paths use this instead of a specific type) as matching *any* requested pattern - including a `text` request.
+Copying the app's own APK (or plausibly any file shared via a path that only declares this generic wildcard)
+made `resolveClipboardText()`'s `hasMimeType("text/*")` check return true for content that is not text at all.
+
+**Fix**: new `isTextMimeType(clip)` reads the clip's own declared MIME type(s) directly
+(`ClipDescription.mimeTypeCount`/`getMimeType(i)`) and requires a genuine `text/`-prefixed type, explicitly
+excluding `MIMETYPE_UNKNOWN` - bypassing `hasMimeType`'s wildcard-matching behaviour entirely rather than trying
+to out-guess it. (While writing this fix, avoided re-introducing §60's own already-once-caught KDoc bug:
+writing the literal wildcard glyph sequence inside a `/** */` doc comment opens a nested Kotlin block comment
+and swallows the rest of the file - worded around it this time by referencing `ClipDescription.MIMETYPE_UNKNOWN`
+by name instead of spelling the literal pattern in prose.)
+
+### D-115 / D-125 - Generalised: Unknown Regular Verb Inflections Are Protected, Not Just Two Patched Words
+New pure `dictionary/RegularVerbInflection` object (7 tests): recognises a token as a plausible regular ("weak")
+German verb inflection of a *known* infinitive by stripping a candidate personal ending (present tense
+`-e/-est/-st/-et/-t`, preterite `-te/-test/-ten/-tet`) and checking whether the reconstructed `stem + "en"` is
+itself a known dictionary word - e.g. `beurteilst` strips `-st` to `beurteil`, and `beurteil` + `en` =
+`beurteilen`, a known word, so `beurteilst` is protected even though it is not itself in the dictionary. This is
+the generalisation D-125 asked for: not every inflection needs its own dictionary row (D-115's approach for
+`merke`/`stimmen`), just recognising the *productive pattern* is enough to stop a wrong autocorrect, without
+necessarily surfacing the form as a suggestion. Deliberately data-free (no dictionary changes) and pattern-only
+- a coincidental match against an unrelated `-en`-ending known word is possible in principle but low-probability,
+an accepted trade-off of a simple heuristic; strong/irregular ("ablaut") verbs and participles stay out of
+scope, matching the "95% via patterns, not exhaustive coverage" framing the user gave this.
+
+Wired into `DictionarySuggestionProvider.bestCorrection()`'s A-01 guard: a plausible inflection is protected
+*unconditionally* (no §44/D-113 ratio-override applies), since - unlike a literal known word - it has no
+recorded frequency of its own to compare against a correction candidate's; applying the ratio check to it would
+trivially always fire (`0 * ratio <= anything`).
+
+### D-130 - Sustained-English Real Language Switch + Space-Bar Change Animation
+Two parts, both building directly on already-shipped mechanisms (D-106 stage 1's `LanguageCycle`/`qwerty`
+layout, A-03's classifier):
+
+1. **`AdaptKeyService.trackSustainedEnglishUsage()`**: a new `consecutiveEnglishWords` counter increments each
+   time `finalizeAndCommit()` routes a commit to English while German/Greek stays the *active* alphabet (via
+   `resolveDict()`'s classifier branch, now exposed by changing `selectActiveDictionary()`'s return type from a
+   bare `Boolean` to the full `DictChoice` so the caller can read which language was actually chosen, not only
+   whether autocorrect was suppressed); resets to `0` the moment a non-English word commits. At
+   `SUSTAINED_ENGLISH_WORD_THRESHOLD = 5` consecutive English commits, it performs a real active-language
+   switch - the same state changes `toggleLanguage()` already makes (`activeLanguage`, `ActiveLanguageStore`,
+   `keyboardView.qwerty`, the space label, a toast) - rather than continuing to rely on per-token routing
+   indefinitely. D-106 stage 2's cross-language autocorrect protection (the mechanism the user confirmed
+   already "funktioniert wunderbar") is completely untouched by this - this is purely about *when the active
+   alphabet itself flips*, a different, additive concern.
+2. **`AdaptKeyboardView.beginLanguageChangeFade()`**: a 260 ms cross-fade of the space bar's own label text -
+   the previous label fades out over the first half, the new one (already pushed via the existing `spaceLabel`
+   property by the time this runs) fades back in over the second half - implemented as a plain alpha animation
+   on the shared `textPaint` (reset to full opacity immediately after each draw, since the paint is shared
+   across every key's label), not a custom shader/glow shader. Chosen over the alternative "glow sweep" framing
+   the user offered, since a straightforward two-stage alpha fade is robust to implement correctly without a
+   bespoke gradient/shader animation and the user explicitly offered it as an acceptable alternative. Wired
+   into both `toggleLanguage()` (the manual G-01 swipe) and the new automatic switch above, so both trigger
+   paths get the same acknowledgement.
+
+### D-135 - Google Password Manager / Autofill Suggestions: Confirmed Feasible (Researched, Not Implemented)
+Researched against the current, official Android documentation rather than assumed from memory (this is
+exactly the kind of API surface that's easy to misremember or that could have changed): **yes, this is
+genuinely feasible for a third-party IME**, via the public, documented Android **Autofill Framework inline
+suggestions** mechanism (not anything Gboard-specific or requiring undocumented platform access) - and it would
+work with whatever autofill provider the *device* has configured (Google Password Manager by default on most
+phones, but equally Bitwarden/1Password/etc. if the user has set a different one), not something tied
+specifically to Google's own service.
+
+**How it works, and what it would take:**
+- The IME's method metadata (`res/xml/method.xml`) needs `android:supportsInlineSuggestions="true"`.
+- `AdaptKeyService` would need to override two `InputMethodService` methods:
+  `onCreateInlineSuggestionsRequest()` (declares how many suggestions are wanted and an `InlinePresentationSpec`
+  - size/style constraints only) and `onInlineSuggestionsResponse()` (receives an `InlineSuggestionsResponse`,
+  inflates each `InlineSuggestion` into a real `InlineContentView` to display).
+- **The IME never sees the actual credential data at all** - each suggestion is an opaque, platform-rendered
+  `View` the autofill service itself draws (its own branding/lock-icon/biometric-prompt behaviour and all);
+  AdaptKey could only control *where* and *how large* to place these views (and loosely nudge their text/colour
+  style via the presentation spec), not read or restyle their content into AdaptKey's own chip look. This is a
+  deliberate platform privacy boundary, not a limitation specific to a third-party IME versus Gboard.
+- The platform decides *when* to call `onCreateInlineSuggestionsRequest()` at all, based on the target field's
+  own declared autofill hints/`inputType` - AdaptKey would not need to build its own username/password field
+  detection for this to trigger correctly.
+- **Minimum API level: 30 (Android 11)** - AdaptKey's `minSdk` is 26, so this would need to be implemented as an
+  optional, version-gated feature (a no-op below API 30), not a `minSdk` bump.
+- Entirely dependent on the device actually having an autofill service configured/enabled at all; a no-op,
+  graceful fallback when it isn't.
+
+**Not implemented this round** - confirmed genuinely buildable with a clear shape, but a real scoped feature of
+its own size (a new settings toggle likely wanted too, given the visual "foreign" rendering these suggestions
+would necessarily have compared to AdaptKey's own chips) - a candidate for its own future implementation round,
+not folded into this one.
+
+Sources: [Integrate autofill with IMEs and autofill services (Android Developers)](https://developer.android.com/identity/autofill/ime-autofill).
+
+575 unit tests (was 567 before this round; +8: 7 `RegularVerbInflectionTest` + 1
+`DictionarySuggestionProviderTest` D-115/D-125 case). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+D-124/D-130/D-138 are Android service/view glue, no new tests, consistent with this project's established
+testing gap; D-115/D-125's pure recognition logic is fully unit-tested.

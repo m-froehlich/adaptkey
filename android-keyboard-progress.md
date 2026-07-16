@@ -28,6 +28,37 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§66 DONE (v0.8.36): D-124, D-115/D-125, D-130, D-138 implemented; D-135 researched (confirmed feasible,
+  not implemented).** **D-138 traced first, not guessed**: backspace-hold jerkiness root-caused to this
+  session's own added per-keystroke SQLite lookups (D-106 stage 2's `knownInOtherLanguage`, D-111/D-112's
+  capitalisation preview) running on every `handleBackspaceRepeat()` tick via `deleteComposingChar()` →
+  `refreshSuggestions()`, competing with the hold's 45ms fastest interval (§59) - fixed with a `duringRepeat`
+  parameter that skips those two additions (not the actual autocorrect protection, which still fully applies
+  at commit time) for repeat ticks only. **D-124**: the real bug was `ClipDescription.hasMimeType()`'s own
+  documented wildcard semantics - a clip declaring the generic `MIMETYPE_UNKNOWN` (some file-sharing paths use
+  this, apparently including whatever shared the app's own APK) matches *any* requested pattern including
+  `text/*`; fixed with a direct concrete-MIME-type check bypassing `hasMimeType` entirely. Also nearly
+  re-introduced §60's own KDoc nested-block-comment bug while documenting the fix (a literal wildcard glyph
+  sequence in a doc comment) - caught and reworded before it compiled wrong. **D-115/D-125**: new pure
+  `RegularVerbInflection` recognises an unknown token as a plausible regular verb inflection of a *known*
+  infinitive (strips a present-tense/preterite personal ending, checks whether `stem + "en"` is known) and
+  protects it from autocorrect unconditionally (no ratio-override, since it has no recorded frequency of its
+  own) - generalises D-115's two hand-patched words into an actual pattern-based rule, exactly as D-125 asked.
+  **D-130**: `trackSustainedEnglishUsage()` promotes A-03's per-token English routing to a real
+  `LanguageCycle`-style active-language switch after 5 consecutive English commits (D-106 stage 2's own
+  cross-language autocorrect protection is untouched - a separate concern); `selectActiveDictionary()` now
+  returns the full `DictChoice` (was a bare Boolean) so the caller can read which language a token was actually
+  routed to. New `AdaptKeyboardView.beginLanguageChangeFade()` - a 260ms two-stage alpha cross-fade of the
+  space bar's own label - acknowledges every language change, manual (G-01) or automatic. **D-135**: researched
+  against current official Android docs (not assumed from memory) - genuinely feasible for a third-party IME
+  via the public Autofill Framework inline-suggestions API (`onCreateInlineSuggestionsRequest`/
+  `onInlineSuggestionsResponse`, `android:supportsInlineSuggestions`), works with whatever autofill provider the
+  device has configured (not Google-specific), but needs API 30+ (AdaptKey's `minSdk` is 26, so this would be
+  version-gated, not a `minSdk` bump) and the IME would only ever render opaque, platform-drawn suggestion
+  views - never see the actual username/password content itself. Confirmed feasible with a clear shape; not
+  implemented, left for its own future round given its size. 575 unit tests (was 567; +8: 7
+  `RegularVerbInflectionTest`, 1 `DictionarySuggestionProviderTest`). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green.
 - **§65 CAPTURED (still v0.8.35, no code change this entry): post-§64 real-device feedback, D-124…D-138.**
   Captured only, per explicit instruction - implementation planned as a separate later round. Highlights:
   **D-124** re-opens §60 as a bug - the clipboard MIME-type filter didn't block the app's own APK file from

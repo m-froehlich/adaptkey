@@ -164,6 +164,17 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-115 D-125 an unknown regular verb inflection is protected, not corrected to a different known word`() {
+        // Reproduces the reported bug: "beurteilst" (2nd person singular, not itself in the dictionary)
+        // must not autocorrect to "beurteilt" (a different real inflected form) just because the latter is
+        // known and within edit-cost budget.
+        store.putWord(WordEntry("beurteilen", 139L))
+        store.putWord(WordEntry("beurteilt", 306L))
+        
+        assertNull(provider.autocorrectFor("beurteilst", null))
+    }
+    
+    @Test
     fun `autocorrectFor returns null for a too-short token`() {
         store.putWord(WordEntry("der", 100L))
         assertNull(provider.autocorrectFor("d", null))
