@@ -776,25 +776,31 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §60: the clipboard text to preview - or null when nothing should be offered at all. A plain text
-     * [item] (no [android.content.ClipData.Item.getUri]) is an ordinary copy (selected text, etc.) and
-     * always qualifies, exactly as before. A URI item is real *file* content instead - e.g. copied in a
-     * Files app - which only qualifies when the clip itself declares a text-family MIME type (`.txt`,
-     * `.md`, and any other recognisable text file, per the request); anything else (an image, a PDF, an
-     * unrecognised binary) is suppressed outright rather than risk decoding arbitrary binary bytes as
-     * garbled "text". The read is capped at [CLIPBOARD_FILE_PREVIEW_CHARS] - only the chip's own short,
-     * already-truncated preview ([ClipboardPreview.label]) needs the content; the actual paste (§38's
-     * native paste action) resolves the file itself through the target app, not through this read.
+     * §60 / D-124: the clipboard text to preview - or null when nothing should be offered at all. D-124:
+     * the clip must genuinely declare a text-family MIME type ([isTextMimeType]) *regardless* of whether
+     * this particular [item] carries a [android.content.ClipData.Item.getUri] or plain
+     * [android.content.ClipData.Item.getText] - checked first, before branching on which one this item
+     * has, since some file-sharing/copy paths populate [ClipData.Item.getText] directly (a filename, a
+     * content-URI string, or worse) rather than using the URI field the original §60 fix only ever
+     * gated - the reported "an APK file is still offered" bug survived §60's own fix because it only
+     * checked the MIME type on the URI branch, leaving the plain-text branch completely ungated. An
+     * ordinary text copy (selecting text, `ClipData.newPlainText(...)`) always declares `text/plain` or
+     * similar, so this costs the common case nothing.
+     *
+     * A URI item (real *file* content, e.g. copied in a Files app) is read directly, capped at
+     * [CLIPBOARD_FILE_PREVIEW_CHARS] - only the chip's own short, already-truncated preview
+     * ([ClipboardPreview.label]) needs the content; the actual paste (§38's native paste action) resolves
+     * the file itself through the target app, not through this read.
      *
      * @param clip the current primary clip
      * @param item its first (and only ever considered) item
      * @return the text to preview/offer, or null to show no chip at all
      */
     private fun resolveClipboardText(clip: ClipData, item: ClipData.Item): CharSequence? {
-        val uri = item.uri ?: return item.coerceToText(this)
         if (!isTextMimeType(clip)) {
             return null
         }
+        val uri = item.uri ?: return item.coerceToText(this)
         return runCatching {
             contentResolver.openInputStream(uri)?.bufferedReader(Charsets.UTF_8)?.use { reader ->
                 val buffer = CharArray(CLIPBOARD_FILE_PREVIEW_CHARS)

@@ -3413,3 +3413,45 @@ all.**
 
 575 unit tests (unchanged - no new pure/testable logic this round). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green.
+
+## §68 - Device Feedback on §64-§67: D-124 Follow-Up, D-111 Clarified as D-115's Pattern (v0.8.38)
+
+Device confirmation on the §64-§67 batch: **D-105, D-108, D-130, D-138 confirmed working.** Two follow-ups:
+
+### D-124 - Real Gap Found: the MIME Check Only Ever Covered the URI Branch
+§66's fix (`isTextMimeType()`, checked in place of `ClipDescription.hasMimeType()`'s wildcard-matching
+gotcha) did not fix the reported case - confirmed still broken on device. Re-traced rather than re-guessing:
+`resolveClipboardText()`'s structure was `val uri = item.uri ?: return item.coerceToText(this)` *before* the
+MIME check - so the check only ever ran on the URI branch. Whatever copied the APK onto the clipboard
+apparently populates `ClipData.Item.getText()` directly (a filename, a content-URI string, or similar)
+rather than `getUri()`, which takes the `?:` fallback straight to `item.coerceToText(this)` - completely
+bypassing `isTextMimeType()`. Fixed by moving the MIME check to run first, unconditionally, before branching
+on which of `getUri()`/`getText()` this item actually has. An ordinary text copy (`ClipData.newPlainText`, what
+any normal "Copy" action produces) already always declares `text/plain`, so this costs the common case
+nothing. **Not yet re-confirmed on device** - if this still doesn't resolve it, the next step needs to know
+exactly which app/action was used to copy the APK, since two independent theories have now been tried and
+ruled out or fixed.
+
+### D-111 - Not a Preview Bug: "stelle"/"Stelle" Is D-115's Exact Mechanism, Confirmed
+Reported: "stelle" previews as "Stelle" (D-111 working as designed) but still auto-applies - read at first as
+"the preview doesn't prevent auto-apply", but traced before assuming a behavioural change was needed. Checked
+`dict_de.tsv` directly: `Stelle` (freq 3497) was tagged plain `NOUN`, and `stelle` (the "ich"-form of
+"stellen", a genuine, comparably common verb reading - "die Stelle" / "ich stelle") has no separate entry -
+**exactly** D-115's `stimmen`/`Stimmen` mechanism (§6 rule 3 auto-capitalises because the dictionary never
+flagged the ambiguity), not a gap in D-111's preview mechanism at all - the preview is doing its job (showing
+what §6 will do); the thing it shows is what's wrong, for the same reason as before. Fixed identically:
+`Stelle	3497	NOUN` -> `Stelle	3497	NOUN,OTHER` in `dict_de.tsv`.
+
+**Systematic follow-up, not yet acted on beyond `Stelle`:** given this is now the second real report of the
+identical pattern, scanned the whole bundled `dict_de.tsv` for the general shape (a `NOUN`-tagged word whose
+lower-cased form, minus a trailing `e` plus `en`, is a separately known, non-`NOUN`-only word - i.e. every
+noun that is *also* the plausible "ich"-form of a real verb). **Found 141 candidates.** Many are exactly the
+`stimmen`/`stelle` class (comparably common in both readings - `Liebe`/`liebe`, `Sorge`/`sorge`,
+`Suche`/`suche`, `Pflege`/`pflege`); some are much more lopsided (`Ende` 15847 vs. `enden` 630, `Ware` 263 vs.
+the unrelated-but-textually-matching `waren` 31549) where the noun reading so overwhelmingly dominates that
+blanket-marking them ambiguous would trade a rare false-positive fix for real, felt friction on very common,
+currently-correct auto-capitalisation. **Deliberately not bulk-applied** - this is a real product trade-off
+(safety against a rare mis-capitalisation vs. typing fluency for an overwhelmingly-common word), not a pure
+correctness fix like the two already-confirmed cases, so it needs the user's own call on how far to go (fix
+only as individually reported; apply everywhere regardless of the lopsidedness; or apply above some
+frequency-ratio cutoff) rather than a unilateral bulk data change.

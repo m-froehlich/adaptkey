@@ -28,6 +28,22 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§68 DONE (v0.8.38): device feedback on §64-§67 - D-105/D-108/D-130/D-138 CONFIRMED WORKING; D-124
+  follow-up fix; D-111 clarified as D-115's own mechanism, not a preview bug.** **D-124**: the §66 fix didn't
+  resolve it on device - re-traced, found the MIME check only ever ran on the URI branch
+  (`resolveClipboardText()`'s `item.uri ?: return item.coerceToText(this)` came *before* the check); whatever
+  copied the reported APK apparently puts its identity in `ClipData.Item.getText()` instead of `getUri()`,
+  bypassing the check entirely. Fixed by moving the MIME check to run first, unconditionally - not yet
+  re-confirmed on device. **D-111**: "stelle" previewing as "Stelle" but still auto-applying turned out to be
+  D-115's exact mechanism, not a gap in the preview - confirmed via `dict_de.tsv`: `Stelle` was tagged plain
+  `NOUN` (should be `NOUN,OTHER`, since "stelle" is a genuinely common verb reading too - "ich stelle").
+  Fixed identically to `Stimmen`. **Found 141 more candidates via a systematic dictionary scan** (every
+  `NOUN`-tagged word whose lowercase form is also a plausible verb "ich"-form) - deliberately **not**
+  bulk-applied, since many are lopsided enough (`Ende` 15847 vs. `enden` 630) that blanket-fixing them would
+  trade a rare mis-capitalisation for real friction on an overwhelmingly-common, currently-correct
+  auto-capitalisation; needs the user's own call on scope (as-reported only / apply all / a frequency-ratio
+  cutoff) before touching the rest. 575 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest`
+  green.
 - **§67 DONE (v0.8.37): D-135 implemented - Autofill inline suggestions (Google Password Manager or whatever
   autofill service the device has configured).** New `androidx.autofill:autofill:1.3.0` dependency (small
   compat helper, no minSdk impact) + `res/xml/method.xml`'s `android:supportsInlineSuggestions="true"`.
