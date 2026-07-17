@@ -28,6 +28,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **D-144 and D-145 CONFIRMED WORKING on device** (user confirmation after §93, no code change) - swipe-down
+  now reliably dismisses/closes from anywhere, including empty bar/row background; the URL-mode period
+  popup's centred entry is correctly the locale-specific TLD.
 - **§93 DONE (v0.8.59): both §92 fixes were still wrong, both re-traced from scratch and actually fixed.**
   **D-144**: `onTouchEvent()` claiming `ACTION_DOWN` (§92's fix) wasn't enough - re-traced against Android's
   own `ViewGroup.dispatchTouchEvent()` contract and found the real mechanism: `onInterceptTouchEvent()` is
