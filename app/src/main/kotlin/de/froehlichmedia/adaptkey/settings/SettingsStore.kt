@@ -47,6 +47,7 @@ object SettingsStore {
     const val KEY_SPACE_ABOVE_SPACE_ROW = "d55_space_above_space_row"
     const val KEY_SYMBOL_KEY = "d59_symbol_key"
     const val KEY_TIER3_ENABLED = "d126_tier3_enabled"
+    const val KEY_DIAGNOSTIC_LOG_ENABLED = "d_diag_enabled"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -119,7 +120,8 @@ object SettingsStore {
             extraSpaceBelowNumberRowDp = p.getInt(KEY_SPACE_BELOW_NUMBER_ROW, DEF_EXTRA_SPACING),
             extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),
             symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true),
-            tier3Enabled = p.getBoolean(KEY_TIER3_ENABLED, true)
+            tier3Enabled = p.getBoolean(KEY_TIER3_ENABLED, true),
+            diagnosticLogEnabled = p.getBoolean(KEY_DIAGNOSTIC_LOG_ENABLED, false)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

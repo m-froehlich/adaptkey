@@ -73,6 +73,12 @@
             android:label="@string/d89_title"
             android:exported="false" />
 
+        <!-- D-139/D-110: diagnostic-log viewer/export, launched from the settings screen's Diagnostics category. -->
+        <activity
+            android:name=".settings.DiagnosticLogActivity"
+            android:label="@string/d_diag_activity_title"
+            android:exported="false" />
+
     </application>
 
 </manifest>

@@ -38,7 +38,8 @@ data class RawSettings(
     val extraSpaceBelowNumberRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val symbolKeyEnabled: Boolean = true,
-    val tier3Enabled: Boolean = true
+    val tier3Enabled: Boolean = true,
+    val diagnosticLogEnabled: Boolean = false
 )
 
 /**
@@ -176,7 +177,8 @@ object SettingsMapper {
             extraSpaceBelowNumberRowDp = raw.extraSpaceBelowNumberRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             extraSpaceAboveSpaceRowDp = raw.extraSpaceAboveSpaceRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             symbolKeyEnabled = raw.symbolKeyEnabled,
-            tier3Enabled = raw.tier3Enabled
+            tier3Enabled = raw.tier3Enabled,
+            diagnosticLogEnabled = raw.diagnosticLogEnabled
         )
     }
 }

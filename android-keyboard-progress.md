@@ -28,6 +28,18 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§88 DONE (v0.8.54): D-139/D-110 - in-app diagnostic log replaces the need for `adb logcat`.** Requested
+  directly - §87's logcat approach needs the phone tethered to a PC, impractical since D-139 happens during
+  normal daily use, not a desk-testing session. New `diagnostics/` package: `DiagnosticRingBuffer` (pure, 7
+  tests) is a time-windowed FIFO pruned relative to its own newest entry; `DiagnosticLog` wraps it as an
+  Android singleton with a real monotonic clock and a settings-driven `enabled` flag (off by default, clears
+  on disable). New "Diagnostics" settings category: a toggle (`d_diag_enabled`, full
+  RawSettings/AdaptSettings/SettingsMapper/SettingsStore pipeline) + a `DiagnosticLogActivity` viewer
+  (refreshes on every `onResume()`, entries shown with relative age, `Share`/`Copy`/`Clear` actions - Share
+  mirrors the existing D-09 `ACTION_SEND` precedent, no storage permission). §87's seven `Log.d`/`Log.w` call
+  sites now route through one new `AdaptKeyService.diag()` helper into both logcat and the in-app log. 8 new
+  unit tests. 660 unit tests (was 652; +8). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed - next jitter occurrence should be catchable via Settings → Diagnostics, no PC needed.
 - **§87 DONE (v0.8.53): D-139 - diagnostic logging added while typing.** Requested directly - the reported
   text-jitter/character-scramble happens fairly often for the user but isn't immediately reproducible with
   the same text, matching the suspected timing-dependent `onUpdateSelection()` cascade from §73/§76. New

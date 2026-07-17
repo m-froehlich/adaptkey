@@ -49,6 +49,7 @@ import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
 import de.froehlichmedia.adaptkey.credential.CredentialRanking
 import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.credential.LoginFieldDetector
+import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
@@ -579,6 +580,9 @@ class AdaptKeyService : InputMethodService() {
         suggestionBar?.flyColor = config.highlightColor
         // D-126: toggling the mini-LLM switch takes effect immediately, not only on the next field focus.
         reconcileTier3Provider()
+        // D-139/D-110: toggling diagnostic recording takes effect immediately; turning it off also clears
+        // whatever was recorded so far (DiagnosticLog.enabled's own setter), not just stops adding to it.
+        DiagnosticLog.enabled = s.diagnosticLogEnabled
     }
     
     /**
@@ -607,14 +611,31 @@ class AdaptKeyService : InputMethodService() {
         refreshSuggestions()
     }
     
+    /**
+     * D-139/D-110: routes one diagnostic line to both `adb logcat` (for anyone who has it set up) and the
+     * in-app [DiagnosticLog] ring buffer (a rolling, in-memory, 5-minute log viewable/shareable from
+     * Settings - needs no PC/USB tether at all, unlike logcat). [DiagnosticLog.record] is a cheap no-op
+     * unless the user has actually turned recording on (off by default).
+     *
+     * @param tag the logcat tag (also prefixed onto the in-app entry, so both views group the same way)
+     * @param message the diagnostic text
+     * @param warn true to log at `Log.w` instead of `Log.d` (used for the one entry that is close to a
+     *        smoking gun for the D-139 cascade if it ever actually fires)
+     */
+    private fun diag(tag: String, message: String, warn: Boolean = false) {
+        if (warn) Log.w(tag, message) else Log.d(tag, message)
+        DiagnosticLog.record("[$tag] $message")
+    }
+    
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
         super.onStartInput(info, restarting)
         // D-110 (temporary diagnostic): a fixed root cause was found and fixed in ShiftGrace for fields
         // that declare no caps flag at all, but it is not certain that is the *whole* story for the
         // originally-reported eBay Kleinanzeigen field - this logs exactly the EditorInfo fields
-        // capsModeFor()/D-142's field-kind detection actually consult, so a `adb logcat -s AdaptKey:D` while
-        // focusing that field can finally confirm or rule out a deeper cause. Remove once D-110 is closed.
-        Log.d(
+        // capsModeFor()/D-142's field-kind detection actually consult, so a `adb logcat -s AdaptKey:D` (or
+        // the in-app diagnostic log, Settings -> Diagnostics) while focusing that field can finally confirm
+        // or rule out a deeper cause. Remove once D-110 is closed.
+        diag(
             "AdaptKey",
             "onStartInput: package=${info?.packageName} fieldName=${info?.fieldName} " +
                 "inputType=0x${Integer.toHexString(info?.inputType ?: 0)} hintText=${info?.hintText}"
@@ -671,7 +692,7 @@ class AdaptKeyService : InputMethodService() {
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
         // characters get scrambled" glitch in the act. Remove once D-139 is closed for good.
-        Log.d(
+        diag(
             "AdaptKeyJitter",
             "onUpdateSelection t=${SystemClock.uptimeMillis()} old=[$oldSelStart,$oldSelEnd] " +
                 "new=[$newSelStart,$newSelEnd] candidates=[$candidatesStart,$candidatesEnd] " +
@@ -687,7 +708,7 @@ class AdaptKeyService : InputMethodService() {
         if (selectionUpdateBurstGuard.isBurst(SystemClock.uptimeMillis())) {
             // D-139 (temporary diagnostic): if this ever actually fires, it is close to a smoking gun for
             // the suspected self-triggering cascade - flagged at warning level so it stands out in logcat.
-            Log.w("AdaptKeyJitter", "onUpdateSelection: CallbackBurstGuard TRIPPED - suppressing reactive branches")
+            diag("AdaptKeyJitter", "onUpdateSelection: CallbackBurstGuard TRIPPED - suppressing reactive branches", warn = true)
             return
         }
         if (composing.isEmpty()) {
@@ -708,7 +729,7 @@ class AdaptKeyService : InputMethodService() {
         if (!ownEdit) {
             // D-139 (temporary diagnostic): this branch wipes the in-progress token - exactly what a
             // reported scramble/jitter would look like if it fires when it should not.
-            Log.d("AdaptKeyJitter", "onUpdateSelection: NOT ownEdit (ownCursor=$ownCursor) - finishing+clearing composing=\"$composing\"")
+            diag("AdaptKeyJitter", "onUpdateSelection: NOT ownEdit (ownCursor=$ownCursor) - finishing+clearing composing=\"$composing\"")
             currentInputConnection?.finishComposingText()
             clearComposing()
             pendingMergeChar = null
@@ -1937,7 +1958,7 @@ class AdaptKeyService : InputMethodService() {
         // D-139 (temporary diagnostic): the actual permanent write to the field - typed vs. what got
         // committed, so a scramble that only shows up in the final text (not just while composing) is
         // still caught here.
-        Log.d("AdaptKeyJitter", "finalizeAndCommit: typed=\"$typed\" -> finalWord=\"$finalWord\" delimiter=\"$delimiter\"")
+        diag("AdaptKeyJitter", "finalizeAndCommit: typed=\"$typed\" -> finalWord=\"$finalWord\" delimiter=\"$delimiter\"")
         
         ic.setComposingText(finalWord, 1)
         ic.finishComposingText()
@@ -2231,7 +2252,7 @@ class AdaptKeyService : InputMethodService() {
         val text = composing.toString()
         // D-139 (temporary diagnostic): the exact string pushed to the field as composing text, on every
         // call - a scrambled/reordered result should show up directly in this sequence of log lines.
-        Log.d("AdaptKeyJitter", "updateComposing: text=\"$text\" anchor=$composingAnchor cursor=$composingCursor")
+        diag("AdaptKeyJitter", "updateComposing: text=\"$text\" anchor=$composingAnchor cursor=$composingCursor")
         // D-62: setComposingText always leaves the real cursor at the end of the composed text; while
         // editing mid-word (a reclaimed "after" fragment still follows composingCursor) a follow-up
         // setSelection() must pull it back to the logical edit point. Both calls are batched so the app
@@ -2329,7 +2350,7 @@ class AdaptKeyService : InputMethodService() {
         // D-139 (temporary diagnostic): a reclaim mutates the real editable via deleteSurroundingText()
         // below, then rebuilds composing from these two fragments - exactly the mechanism §73/§76 suspect
         // for the reported jitter/scramble, so every actual reclaim (not the common no-op above) is logged.
-        Log.d("AdaptKeyJitter", "reclaimSurroundingWord: before=\"${reclaim.before}\" after=\"${reclaim.after}\"")
+        diag("AdaptKeyJitter", "reclaimSurroundingWord: before=\"${reclaim.before}\" after=\"${reclaim.after}\"")
         var anchor = -1
         if (reclaim.after.isNotEmpty()) {
             // D-87: see ComposingAnchor for why startOffset must be added, not just selectionStart alone.

@@ -40,6 +40,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           file happens to be installed (default on, so installing a model is the only step needed by
  *           default) - lets a model stay imported while inference is switched off, e.g. to save
  *           battery/latency without having to delete and later re-import the file.
+ * @property diagnosticLogEnabled D-139/D-110: whether the in-memory diagnostic log records while typing
+ *           (default off - it captures raw composing/committed text). A rolling 5-minute window
+ *           ([de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog]), never written to disk, viewable and
+ *           shareable from Settings - an alternative to `adb logcat` that needs no PC/USB tether.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -56,7 +60,8 @@ data class AdaptSettings(
     val extraSpaceBelowNumberRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val symbolKeyEnabled: Boolean = true,
-    val tier3Enabled: Boolean = true
+    val tier3Enabled: Boolean = true,
+    val diagnosticLogEnabled: Boolean = false
 ) {
     
     companion object {

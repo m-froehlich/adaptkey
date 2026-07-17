@@ -4348,3 +4348,53 @@ comment - to be removed once D-139 is closed for good, the same lifecycle as D-0
 
 No new tests - pure Android logging calls with no decision logic of their own. 652 unit tests (unchanged).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+## §88 - D-139/D-110: In-App Diagnostic Log Replaces the Need for `adb logcat` (v0.8.54)
+
+Requested directly: §87's `adb logcat` approach requires the phone to stay tethered to a PC while a repro
+happens - impractical for D-139 specifically, since the user reports the jitter happens somewhat often during
+*normal* daily use, not during a deliberate desk-testing session, and re-tethering after the fact loses
+whatever logcat already discarded. Asked for an in-app, self-managing alternative instead: a FIFO log that
+drops anything older than 5 minutes on its own, toggled by a setting, viewable and exportable from within the
+app.
+
+### New `diagnostics/` package
+- `DiagnosticEntry` - one recorded line (a monotonic timestamp + message).
+- `DiagnosticRingBuffer` - pure, JVM-unit-tested (7 tests, synthetic timestamps): appends an entry and prunes
+  everything older than a configurable retention window *relative to the newest entry's own timestamp*, so
+  pruning behaves correctly regardless of real wall-clock gaps between recordings.
+- `DiagnosticLog` - the Android-facing singleton wrapping it with the real clock
+  (`SystemClock.elapsedRealtime()` - monotonic, resets on reboot, never a calendar timestamp), a 5-minute
+  retention window, and an `enabled` flag mirroring the new setting (turning it off also clears whatever was
+  recorded, not just stops adding to it). `record()` is a cheap no-op unless enabled, so call sites never need
+  their own guard.
+
+### Settings: a new "Diagnostics" category
+A new `diagnosticLogEnabled: Boolean` (default off - it records raw typed text) threaded through the full
+existing pipeline (`RawSettings`/`AdaptSettings`/`SettingsMapper`/`SettingsStore`, `d_diag_enabled`, applied
+live in `applySettings()`), plus a second row (`d_diag_log`) opening the new `DiagnosticLogActivity`. Both
+sit in the settings screen's own new category, kept separate from "Info & Privacy" for visibility, though the
+toggle's own summary text states plainly what it records and that it is never written to disk or transmitted
+unless explicitly shared.
+
+### `DiagnosticLogActivity` - the viewer/export screen
+Refreshes its content on every `onResume()`, not just `onCreate()` - so leaving the keyboard to reproduce an
+issue and coming back to Settings picks up whatever was recorded meanwhile, no relaunch needed. Each entry is
+rendered with a relative age (`-4.2s`, computed against the same monotonic clock) rather than a wall-clock
+timestamp - directly answers "how long before I opened this screen did that happen" without the user having
+to correlate calendar time by hand. Two export paths: `Intent.ACTION_SEND` (plain text, share-sheet chooser,
+no storage permission - the same D-09 raw-tap-recording precedent this project has used before) and a direct
+clipboard copy for pasting straight into a chat. A `Clear` button wipes the buffer on demand.
+
+### §87's `Log.d`/`Log.w` calls now feed both logcat and the in-app log
+New private `AdaptKeyService.diag(tag, message, warn)` routes every one of §86/§87's seven diagnostic call
+sites (`onStartInput`, `onUpdateSelection` ×3, `finalizeAndCommit`, `updateComposing`,
+`reclaimSurroundingWord`) to both `Log.d`/`Log.w` (kept for anyone who does have `adb` set up) and
+`DiagnosticLog.record()` - one shared helper instead of duplicating the routing at each site. No call site's
+own diagnostic content changed, only where it goes.
+
+8 new unit tests (7 `DiagnosticRingBufferTest`, 1 `SettingsMapperTest`). 660 unit tests total (was 652).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. The Activity/settings-wiring itself is Android view/
+service glue with no independently testable pure logic beyond `DiagnosticRingBuffer` - the established
+testing gap for this layer. Not yet device-confirmed - next time the jitter happens, the in-app log (Settings
+→ Diagnostics → "View / share diagnostic log") should have it, no PC required.

@@ -294,4 +294,23 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/cat_diagnostics">
+
+        <SwitchPreferenceCompat
+            android:key="d_diag_enabled"
+            android:title="@string/d_diag_enabled_title"
+            android:summary="@string/d_diag_enabled_summary"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="d_diag_log"
+            android:title="@string/d_diag_log_title"
+            android:summary="@string/d_diag_log_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.DiagnosticLogActivity" />
+        </Preference>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

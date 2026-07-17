@@ -214,4 +214,18 @@
     <string name="d24_intro_2">So passt sich die Tastatur an dein Tippen an.</string>
     <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
     <string name="d24_show_button">Trefferzonen anzeigen</string>
+
+    <!-- D-139/D-110: In-App-Diagnoseprotokoll, eine Alternative zu adb logcat ohne PC-/USB-Verbindung. -->
+    <string name="cat_diagnostics">Diagnose</string>
+    <string name="d_diag_enabled_title">Diagnoseprotokoll aufzeichnen</string>
+    <string name="d_diag_enabled_summary">Führt ein rollierendes, rein internes Protokoll der letzten 5 Minuten Tippgeschehen, um einem seltenen Fehler (z. B. dem gemeldeten Zittern) auf die Spur zu kommen. Standardmäßig aus. Zeichnet den getippten Text auf - wird nie auf die Festplatte geschrieben und nie versendet, außer du teilst es unten ausdrücklich.</string>
+    <string name="d_diag_log_title">Diagnoseprotokoll ansehen / teilen</string>
+    <string name="d_diag_log_summary">Zeigt das aktuelle Protokoll und erlaubt Kopieren oder Teilen.</string>
+    <string name="d_diag_activity_title">Diagnoseprotokoll</string>
+    <string name="d_diag_empty">Noch keine Einträge. Aufzeichnung in den Einstellungen aktivieren, den Fehler reproduzieren, dann innerhalb von 5 Minuten hierher zurückkehren.</string>
+    <string name="d_diag_share">Teilen</string>
+    <string name="d_diag_copy">Kopieren</string>
+    <string name="d_diag_clear">Leeren</string>
+    <string name="d_diag_copied">In die Zwischenablage kopiert.</string>
+    <string name="d_diag_cleared">Protokoll geleert.</string>
 </resources>

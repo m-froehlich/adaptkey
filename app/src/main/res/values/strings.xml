@@ -214,4 +214,18 @@
     <string name="d24_intro_2">This is how the keyboard adapts to your typing.</string>
     <string name="d24_empty">Nothing learned yet. Type for a while or start the calibration.</string>
     <string name="d24_show_button">Show touch pattern</string>
+
+    <!-- D-139/D-110: in-memory diagnostic log, an alternative to adb logcat that needs no PC/USB tether. -->
+    <string name="cat_diagnostics">Diagnostics</string>
+    <string name="d_diag_enabled_title">Record diagnostic log</string>
+    <string name="d_diag_enabled_summary">Keeps a rolling 5-minute, in-memory log of recent typing events, to help track down a rare glitch (e.g. the reported text jitter). Off by default. Records the text you type - never written to disk, never sent anywhere unless you explicitly share it below.</string>
+    <string name="d_diag_log_title">View / share diagnostic log</string>
+    <string name="d_diag_log_summary">Shows the current log and lets you copy or share it.</string>
+    <string name="d_diag_activity_title">Diagnostic log</string>
+    <string name="d_diag_empty">No entries yet. Turn on recording in Settings, reproduce the issue, then come back here within 5 minutes.</string>
+    <string name="d_diag_share">Share</string>
+    <string name="d_diag_copy">Copy</string>
+    <string name="d_diag_clear">Clear</string>
+    <string name="d_diag_copied">Copied to clipboard.</string>
+    <string name="d_diag_cleared">Log cleared.</string>
 </resources>
