@@ -745,16 +745,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
             if (hintsEnabled && !suppressHint) {
                 if (hint != null) {
                     canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
-                } else if (key.alternatives.size >= 2 || isSignFlipKey(key)) {
+                } else if (isSignFlipKey(key)) {
+                    // D-129 (second pass): the calculator minus key's own long-press sign-flip (§31) has
+                    // neither a hint nor alternatives - §31 deliberately kept it that way, since giving it
+                    // either would wrongly route its long-press through the hint/alternatives commit-text
+                    // pipeline instead of SignFlip. The first attempt reused MORE_ALTERNATIVES_GLYPH (the
+                    // generic "a D-01 alternatives popup awaits" triangle) here, but that is actively
+                    // misleading for this key - no popup ever appears. SIGN_FLIP_GLYPH ("±", the plus/minus
+                    // ligature the user asked for) reads directly as "flips the sign" instead.
+                    canvas.drawText(SIGN_FLIP_GLYPH, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
+                } else if (key.alternatives.size >= 2) {
                     // D-98: a key with no single corner glyph but a multi-alternative popup (D-01) - comma,
                     // period, the calculator page's ×/÷/=/currency keys, etc. - still gets a corner
-                    // indicator instead of no visual cue at all, Gboard/AOSP-style. D-129: the calculator
-                    // minus key's own long-press sign-flip (§31) has neither a hint nor alternatives - §31
-                    // deliberately kept it that way, since giving it either would wrongly route its
-                    // long-press through the hint/alternatives commit-text pipeline instead of SignFlip -
-                    // so it is recognised here by its own identity instead, reusing the same generic "more
-                    // on long-press" cue rather than inventing a bespoke glyph a user might mistake for a
-                    // committable character.
+                    // indicator instead of no visual cue at all, Gboard/AOSP-style.
                     canvas.drawText(MORE_ALTERNATIVES_GLYPH, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
                 }
             }
@@ -1373,5 +1376,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-98: the "there's more on long-press" corner indicator for a multi-alternative key with no
         // single corner hint of its own.
         private const val MORE_ALTERNATIVES_GLYPH = "◢"
+        
+        // D-129 (second pass): the calculator minus key's own sign-flip corner hint - a genuine plus/minus
+        // ligature, not the generic "there's a popup" triangle a sign-flip never actually shows.
+        private const val SIGN_FLIP_GLYPH = "±"
     }
 }

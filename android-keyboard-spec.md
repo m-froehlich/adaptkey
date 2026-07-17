@@ -4183,3 +4183,33 @@ service/`InputConnection`/view glue with no independently testable pure logic be
 established testing gap for this layer. 649 unit tests total (was 622). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. **Not yet device-confirmed** - this is exactly the area (real login forms,
 real apps' actual `EditorInfo`/hint-text behaviour) that can only really be judged on a real device.
+
+## §83 - Two Icon Fixes, Reported While D-142 Was Being Device-Tested (v0.8.49)
+
+### D-129 (Third Pass): the Sign-Flip Corner Hint Reused the Wrong Cue
+Reported directly: the calculator minus key's sign-flip corner hint (§75/§31) is identical to
+`MORE_ALTERNATIVES_GLYPH` (D-98's "◢", "a D-01 alternatives popup awaits") - but no popup ever appears for
+this key, so the cue actively promises something that never happens. §75's own write-up already reused
+`MORE_ALTERNATIVES_GLYPH` deliberately, "rather than inventing a bespoke glyph a user might mistake for a
+committable character" - a reasonable-sounding reason at the time that turned out wrong in practice: reusing
+the *wrong* existing cue is worse than a purpose-built one. Fixed with a new `SIGN_FLIP_GLYPH = "±"` (the
+plus/minus ligature the user asked for directly) - `AdaptKeyboardView.drawKeys()`'s corner-hint branch now
+checks `isSignFlipKey(key)` before the generic multi-alternative case, drawing `±` via the same `hintPaint`
+position an ordinary single-hint key already uses (not the "more alternatives" triangle's styling). Private
+drawing-only `View` code, no new test - the established gap for this layer.
+
+### D-70/§70 (Follow-Up): the Clear-Clipboard Button's Trash-Can Icon Was Unclear
+Reported: the settings row's clear-clipboard button (a bare 🗑) gives no indication of *what* it clears
+without already knowing - "man wird diesen Knopf vermutlich nie drücken" (nobody would ever press it blind).
+Asked for a "ligature" of the clipboard glyph and a small overlaid trash can. A true combined-glyph ligature
+does not exist for an arbitrary emoji pair (Unicode ZWJ sequences are only defined for a curated, fixed set
+of combinations - clipboard + trash is not one of them), so the practical equivalent was built instead: new
+`SettingsRowView.badgedButtonFor(baseGlyph, badgeGlyph, onClick)` renders `baseGlyph` (📋) filling the whole
+button with `badgeGlyph` (🗑) as a small badge - its own circular `keyboard_background`-coloured pill, for
+contrast against the button's own background - in the bottom-right corner, the same visual language as an
+app icon's notification badge. `clearClipboardButton` now uses this instead of the plain `buttonFor("🗑")`;
+every other row button (emoji, gear, credential-mode) is unaffected. Private `View`-construction code, no new
+test - same established gap.
+
+649 unit tests (unchanged - both are Android view/drawing glue with no new pure logic).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

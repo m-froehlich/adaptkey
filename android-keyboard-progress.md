@@ -28,6 +28,15 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§83 DONE (v0.8.49): two icon fixes, reported while D-142 was being device-tested.** **D-129 (third
+  pass)**: the calculator minus key's sign-flip corner hint reused D-98's generic `MORE_ALTERNATIVES_GLYPH`
+  ("◢", "a popup awaits") - misleading, since no popup ever appears for this key. New `SIGN_FLIP_GLYPH = "±"`
+  (a real plus/minus ligature) replaces it. **D-70/§70 follow-up**: the settings row's clear-clipboard button
+  (bare 🗑) gave no clue what it clears - new `SettingsRowView.badgedButtonFor()` renders the clipboard glyph
+  📋 with a small 🗑 badge overlaid bottom-right (its own pill background), the practical equivalent of the
+  requested "ligature" (no true combined-glyph exists for this emoji pair). Both are private View/drawing
+  code, no new tests - the established gap for this layer. 649 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
 - **§82 DONE (v0.8.48): D-142 - login-field credential learning & suggestions, full round.** New `credential/`
   package: `LoginFieldKind`/`LoginFieldDetector`/`CredentialEntry`/`CredentialRanking` (pure) +
   `CredentialStore` (SharedPreferences/JSON, own private file, entirely separate from the ordinary

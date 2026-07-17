@@ -98,7 +98,11 @@ class SettingsRowView @JvmOverloads constructor(
     private val credentialModeButton = buttonFor("🔑") { onCredentialModeClick?.onCredentialModeClick() }
     private val emojiButton = buttonFor("😊") { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
-    private val clearClipboardButton = buttonFor("🗑") { onClearClipboardClick?.onClearClipboardClick() }
+    
+    // Reported: a bare 🗑 gives no clue *what* it clears unless you already know - so nobody would ever
+    // press it. A clipboard glyph with a small trash badge overlaid in the corner reads as "clear the
+    // clipboard" directly, the same way a "ligature" of the two ideas would.
+    private val clearClipboardButton = badgedButtonFor("📋", "🗑") { onClearClipboardClick?.onClearClipboardClick() }
     private val content = FrameLayout(context)
     private var heightAnimator: ValueAnimator? = null
     private var credentialFlashAnimator: ValueAnimator? = null
@@ -252,6 +256,51 @@ class SettingsRowView @JvmOverloads constructor(
         }
     }
     
+    /**
+     * A button whose icon is a "ligature" of two glyphs: [baseGlyph] fills the whole button, [badgeGlyph]
+     * sits as a small badge (its own pill background, for contrast) in the bottom-right corner - so the
+     * icon reads as "[badgeGlyph] applied to [baseGlyph]" (e.g. clipboard + trash = "clear the clipboard"),
+     * not as two unrelated symbols. A single overlaid emoji sequence was considered and rejected - there is
+     * no defined ZWJ combination for an arbitrary emoji pair, so it would just render as two separate
+     * glyphs with no visual relationship at all.
+     */
+    private fun badgedButtonFor(baseGlyph: String, badgeGlyph: String, onClick: () -> Unit): View {
+        val badgeSizePx = dp(BADGE_SIZE_DP)
+        val badgeMarginPx = dp(BADGE_MARGIN_DP)
+        val base = TextView(context).apply {
+            text = baseGlyph
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(context, R.color.key_text))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+        }
+        val badge = TextView(context).apply {
+            text = badgeGlyph
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(context, R.color.key_text))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(ContextCompat.getColor(context, R.color.keyboard_background))
+            }
+        }
+        return FrameLayout(context).apply {
+            background = GradientDrawable().apply {
+                setColor(ContextCompat.getColor(context, R.color.key_background_special))
+                cornerRadius = dp(BUTTON_CORNER_RADIUS_DP).toFloat()
+            }
+            isClickable = true
+            setOnClickListener { onClick() }
+            addView(base, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+            addView(
+                badge,
+                LayoutParams(badgeSizePx, badgeSizePx, Gravity.BOTTOM or Gravity.END).apply {
+                    marginEnd = badgeMarginPx
+                    bottomMargin = badgeMarginPx
+                }
+            )
+        }
+    }
+    
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
     }
@@ -267,6 +316,8 @@ class SettingsRowView @JvmOverloads constructor(
         private const val FLASH_DURATION_MS = 220L
         private const val FLASH_REPEAT_COUNT = 3
         private const val BUTTON_CORNER_RADIUS_DP = 8
+        private const val BADGE_SIZE_DP = 18
+        private const val BADGE_MARGIN_DP = 1
         
         // D-58 precedent (AdaptKeyboardView's own page-slide): quick enough to stay snappy, slow enough
         // to actually be seen.
