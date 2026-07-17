@@ -40,6 +40,20 @@ interface DictionaryStore {
     fun learn(word: String, previousWord: String?)
     
     /**
+     * Reverses exactly one prior [learn] observation of [word] (A-07 undo of a rejected
+     * autocorrect/split): decrements its unigram frequency and, when [previousWord] is given, the
+     * corresponding bigram count, each by exactly one - removing the entry entirely once its count
+     * reaches zero, so a word [learn] had just created (frequency 1) is fully un-learned again rather
+     * than left behind as a zero-frequency ghost [isKnownWord] would still report as known. Never
+     * called on its own; always paired with the exact prior [learn] call it undoes, so the count can
+     * never go negative in practice.
+     *
+     * @param word the word to reverse
+     * @param previousWord the word committed immediately before, or null
+     */
+    fun unlearn(word: String, previousWord: String?)
+    
+    /**
      * @param prefix the (case-insensitive) prefix to match
      * @param limit the maximum number of entries to return
      * @return matching unigrams sorted by descending frequency

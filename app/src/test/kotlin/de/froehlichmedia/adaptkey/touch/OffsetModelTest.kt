@@ -30,6 +30,55 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `unrecord reverses a single record call back to an untrained key`() {
+        val model = OffsetModel()
+        model.record("c:k", centerX = 10f, centerY = 10f, x = 12f, y = 14f)
+        model.unrecord("c:k", centerX = 10f, centerY = 10f, x = 12f, y = 14f)
+        
+        assertNull(model.statFor("c:k"))
+    }
+    
+    @Test
+    fun `unrecord restores the exact prior mean and variance among several samples`() {
+        val model = OffsetModel()
+        model.record("c:k", 10f, 10f, 12f, 14f)
+        model.record("c:k", 10f, 10f, 16f, 18f)
+        val before = model.statFor("c:k")!!
+        
+        model.record("c:k", 10f, 10f, 9f, 20f)
+        model.unrecord("c:k", 10f, 10f, 9f, 20f)
+        val after = model.statFor("c:k")!!
+        
+        assertEquals(before.count, after.count)
+        assertEquals(before.meanDx, after.meanDx, 1e-9)
+        assertEquals(before.meanDy, after.meanDy, 1e-9)
+        assertEquals(before.m2Dx, after.m2Dx, 1e-9)
+        assertEquals(before.m2Dy, after.m2Dy, 1e-9)
+    }
+    
+    @Test
+    fun `unrecord on an untrained key is a harmless no-op`() {
+        val model = OffsetModel()
+        model.unrecord("c:x", 0f, 0f, 1f, 1f)
+        
+        assertNull(model.statFor("c:x"))
+    }
+    
+    @Test
+    fun `unrecord also reverses the contact-area mean`() {
+        val model = OffsetModel()
+        model.record("c:k", 0f, 0f, 1f, 1f, size = 0.2f)
+        model.record("c:k", 0f, 0f, 1f, 1f, size = 0.4f)
+        model.unrecord("c:k", 0f, 0f, 1f, 1f, size = 0.4f)
+        
+        // Float->Double promotion of the size argument loses precision below 1e-6, same established
+        // tolerance as the existing contact-area tests just below (see this project's own documented gotcha).
+        assertEquals(0.2, model.meanContactArea("c:k") ?: Double.NaN, 1e-6)
+        assertEquals(1L, model.statFor("c:k")?.count)
+        assertEquals(1L, model.statFor("c:k")?.sizeCount)
+    }
+    
+    @Test
     fun `record accumulates mean contact area only for sized taps`() {
         val model = OffsetModel()
         model.record("c:k", 0f, 0f, 1f, 1f, size = 0.2f)

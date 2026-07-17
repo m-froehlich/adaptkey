@@ -28,6 +28,28 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§81 DONE (v0.8.47): D-140 - rejected autocorrect/split commits are now un-learned, not just visually
+  reverted; D-141 - "Uhr" suggestion no longer appears/applies before the trailing space.** **D-140**: new
+  `DictionaryStore.unlearn()` (symmetric inverse of `learn()`, removes an entry once its count hits zero) +
+  `learnWord()` now returns a `LearnOutcome` captured into the A-07 undo state, so `performAutocorrectUndo()`
+  precisely reverses whatever dictionary frequency/bigram reinforcement the rejected commit persisted (not
+  just the old, incomplete `PendingLearnStore.decrement` call, which never touched the common case of an
+  already-known correction target). Separately, new `OffsetModel.unrecord()` (exact Welford inverse) reverses
+  T-03 touch-model training, but **only** for the D-39 raw-coordinate-correction path specifically (found via
+  a new `rawCorrectionUndoFor()`, capturing the single substituted tap before `clearComposing()` wipes it) -
+  deliberately **not** for ordinary dictionary/diacritic/split corrections, since those are purely linguistic
+  decisions with no bearing on which key was actually touched, and blanket-unlearning them would discard good
+  training data. **D-141**: `TimePattern`'s regex now requires at least one trailing whitespace character
+  (`\s+$`, was `\s*$`), so the format is not even checked until the delimiting space after the time has
+  actually been typed - fixes both the premature suggestion and the missing-space-on-apply bug in one change.
+  Also: §3's T-03/T-04 spec sections swapped in reading order (T-04 now precedes T-03, matching that
+  `PatternSeed` seeds T-03 from the T-04 pattern choice) - documentation only, IDs unchanged. 622 unit tests
+  (was 612; +10: 4 `OffsetModelTest`, 3 `InMemoryDictionaryStoreTest`, 2 `SqliteDictionaryStoreRoboTest`, 1
+  `TimePatternTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+- **§80 (still v0.8.46, no code change): two new backlog items captured, not started** - D-142 (credential-
+  field learning: immediate save for username/email input, its own separate suggestion list exclusive to
+  login-type fields, live frequency-ranked email-domain completion after `@`) and D-143 (a dedicated URL-entry
+  keyboard layout, explicitly capture-only per the user's own instruction). See spec §80 for the full write-up.
 - **§79 (still v0.8.46, no code change): D-135 struck from the backlog** per explicit user instruction - no
   longer tracked as an open item; the already-shipped §67 Autofill implementation and §74's negative
   device-test writeup are otherwise untouched. 612 unit tests (unchanged).

@@ -26,6 +26,30 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun unlearnReversesALearnThatCreatedABrandNewWord() {
+        val store = store("unlearn-new.db")
+        store.learn("neu", "ganz")
+        store.unlearn("neu", "ganz")
+        
+        assertFalse(store.isKnownWord("neu"))
+        assertEquals(0L, store.bigramFrequency("ganz", "neu"))
+        store.close()
+    }
+    
+    @Test
+    fun unlearnReversesALearnThatReinforcedAnAlreadyKnownWord() {
+        val store = store("unlearn-reinforce.db")
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", "der")
+        store.unlearn("hund", "der")
+        
+        assertTrue(store.isKnownWord("hund"))
+        assertEquals(3L, store.frequencyOf("hund"))
+        assertEquals(0L, store.bigramFrequency("der", "hund"))
+        store.close()
+    }
+    
+    @Test
     fun correctionCandidatesAreBoundedByFirstCharAndLength() {
         val store = store("cand.db")
         listOf("haus", "hase", "maus", "h", "hausboot").forEach { store.putWord(WordEntry(it, 10L, emptySet())) }

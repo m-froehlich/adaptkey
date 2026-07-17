@@ -41,6 +41,33 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `unlearn reverses a learn that created a brand new word`() {
+        store.learn("neu", "ganz")
+        store.unlearn("neu", "ganz")
+        
+        assertFalse(store.isKnownWord("neu"))
+        assertEquals(0L, store.bigramFrequency("ganz", "neu"))
+    }
+    
+    @Test
+    fun `unlearn reverses a learn that reinforced an already-known word`() {
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", "der")
+        store.unlearn("hund", "der")
+        
+        assertTrue(store.isKnownWord("hund"))
+        assertEquals(3L, store.frequencyOf("hund"))
+        assertEquals(0L, store.bigramFrequency("der", "hund"))
+    }
+    
+    @Test
+    fun `unlearn on an unknown word is a harmless no-op`() {
+        store.unlearn("nie-gelernt", "kontext")
+        
+        assertFalse(store.isKnownWord("nie-gelernt"))
+    }
+    
+    @Test
     fun `unigramsByPrefix returns case-insensitive prefix matches sorted by descending frequency`() {
         store.putWord(WordEntry("Haus", 5L))
         store.putWord(WordEntry("Hund", 9L))

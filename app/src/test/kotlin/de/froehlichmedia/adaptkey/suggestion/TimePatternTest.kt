@@ -11,18 +11,23 @@ import org.junit.jupiter.api.Test
 class TimePatternTest {
     
     @Test
-    fun `a two-digit hour and minute match`() {
-        assertTrue(TimePattern.endsWithTime("Wir sehen uns um 14:30"))
+    fun `a two-digit hour and minute followed by whitespace match`() {
+        assertTrue(TimePattern.endsWithTime("Wir sehen uns um 14:30 "))
     }
     
     @Test
-    fun `a single-digit hour matches`() {
-        assertTrue(TimePattern.endsWithTime("um 9:05"))
+    fun `a single-digit hour followed by whitespace matches`() {
+        assertTrue(TimePattern.endsWithTime("um 9:05 "))
     }
     
     @Test
     fun `trailing whitespace after the time still matches`() {
         assertTrue(TimePattern.endsWithTime("um 14:30 "))
+    }
+    
+    @Test
+    fun `a time with no trailing whitespace yet does not match`() {
+        assertFalse(TimePattern.endsWithTime("Wir sehen uns um 14:30"))
     }
     
     @Test

@@ -111,6 +111,60 @@ class OffsetModel(
         }
     }
     
+    /**
+     * D-140: reverses exactly one prior [record] call for [id] - the exact algebraic inverse of the
+     * Welford update, not a heuristic. Used to un-train the model for a tap that later turned out to be
+     * a genuine touch-resolution mistake (D-39 raw-coordinate correction), so a rejected correction does
+     * not leave the model permanently reinforced towards the very key that was actually wrong. A no-op
+     * when [id] has no recorded samples at all. Must be called with the exact same arguments the
+     * corresponding [record] call used - it is the caller's responsibility to have retained them (it
+     * cannot be inferred afterwards which single sample among many should be removed).
+     *
+     * @param id the key id whose most recent matching sample is reversed
+     * @param centerX the key centre x in view pixels, as passed to the original [record] call
+     * @param centerY the key centre y in view pixels, as passed to the original [record] call
+     * @param x the raw tap x, as passed to the original [record] call
+     * @param y the raw tap y, as passed to the original [record] call
+     * @param size the contact area, as passed to the original [record] call
+     */
+    fun unrecord(id: String, centerX: Float, centerY: Float, x: Float, y: Float, size: Float = 0f) {
+        val stat = stats[id] ?: return
+        if (stat.count <= 0L) {
+            return
+        }
+        val dx = (x - centerX).toDouble()
+        val dy = (y - centerY).toDouble()
+        val n1 = stat.count
+        val n0 = n1 - 1L
+        if (n0 == 0L) {
+            // The last remaining sample for this key is being removed - drop the entry entirely so
+            // statFor()/isKnownWord-style callers see an untrained key again, indistinguishable from one
+            // that was never recorded at all, rather than a lingering all-zero Stat.
+            stats.remove(id)
+            return
+        }
+        val mean1X = stat.meanDx
+        val mean0X = (mean1X * n1 - dx) / n0
+        stat.m2Dx -= (dx - mean0X) * (dx - mean1X)
+        stat.meanDx = mean0X
+        val mean1Y = stat.meanDy
+        val mean0Y = (mean1Y * n1 - dy) / n0
+        stat.m2Dy -= (dy - mean0Y) * (dy - mean1Y)
+        stat.meanDy = mean0Y
+        stat.count = n0
+        if (size > 0f && stat.sizeCount > 0L) {
+            val n1Size = stat.sizeCount
+            val n0Size = n1Size - 1L
+            if (n0Size == 0L) {
+                stat.sizeCount = 0L
+                stat.meanSize = 0.0
+            } else {
+                stat.meanSize = (stat.meanSize * n1Size - size.toDouble()) / n0Size
+                stat.sizeCount = n0Size
+            }
+        }
+    }
+    
     /** The learned strike spread for a key (D-24): mean offset from the key centre and its std deviation. */
     data class Spread(
         val meanDx: Double,

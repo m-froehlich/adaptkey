@@ -286,6 +286,14 @@ class AdaptKeyService : InputMethodService() {
     // D-13: set when the armed undo would revert an A-05 split; undoing it then learns the rejoined word,
     // so a real word the split mangled (e.g. "Backspace" -> "Back Space") is trained and never split again.
     private var undoWasSplit = false
+    // D-140: exactly what learnWord() did for the committed word(s) - one entry for a plain correction,
+    // two (left, right) for a split - so performAutocorrectUndo() can precisely un-learn it, rather than
+    // leaving the rejected commit's dictionary/bigram reinforcement in place forever.
+    private var undoLearnRecords: List<LearnRecord> = emptyList()
+    // D-140: the single touch-model sample a D-39 raw-coordinate correction actually changed, so it alone
+    // (never the whole token - an ordinary dictionary/diacritic/split correction is never a touch-
+    // resolution error) can be un-trained on undo. Null whenever the correction was not raw-coordinate-based.
+    private var undoRawCorrection: RawCorrectionUndo? = null
     
     private val handler = Handler(Looper.getMainLooper())
     private val resortRunnable = Runnable {
@@ -1705,11 +1713,15 @@ class AdaptKeyService : InputMethodService() {
         // see whether the geometrically next-most-plausible key at any one position (T-03) produces a known
         // word. This recovers slips the static keyboard-adjacency map cannot see, since that map never looks
         // at where the tap actually landed.
-        val corrected = if (suppressAutocorrect) {
-            typed
-        } else {
-            provider.autocorrectFor(typed, previousWord) ?: rawCoordinateCorrection(typed) ?: typed
-        }
+        val autocorrected = if (suppressAutocorrect) null else provider.autocorrectFor(typed, previousWord)
+        val rawCorrected = if (!suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
+        val corrected = autocorrected ?: rawCorrected ?: typed
+        // D-140: when the D-39 raw-coordinate fallback (not an ordinary dictionary/diacritic correction)
+        // produced this correction, capture the single tap it actually changed - before clearComposing()
+        // below wipes composingTaps - so a rejected correction can precisely un-train just that one
+        // touch-model sample later (see performAutocorrectUndo). An ordinary autocorrect is never a
+        // touch-resolution error, so it never gets a raw-correction undo at all.
+        val rawCorrectionUndo = if (rawCorrected != null) rawCorrectionUndoFor(typed, rawCorrected) else null
         // §6 rule 6: a high-certainty tier-3 nominal proposal may lift an otherwise-lowercased word to
         // upper-case (never with the no-op backend, where lastCapProposal is null).
         val llmForcesUpper = HighCertaintyCapitalisation.forcesUpper(lastCapProposal, corrected)
@@ -1723,13 +1735,16 @@ class AdaptKeyService : InputMethodService() {
         ic.finishComposingText()
         clearComposing()
         ic.commitText(delimiter, 1)
-        learnWord(finalWord)
+        val learnRecord = learnWord(finalWord)
         reinforceFromTier3(finalWord, tier3Result, contextWord, tier1KnewCorrected)
         
         if (finalWord != typed) {
             undoTyped = typed
             undoCommitted = finalWord
             undoDelimiter = delimiter
+            undoWasSplit = false
+            undoLearnRecords = listOf(learnRecord)
+            undoRawCorrection = rawCorrectionUndo
             // D-88: the word actually changed - this is an accepted correction, not a plain commit.
             notifySuggestionAccepted(finalWord)
         } else {
@@ -1799,6 +1814,40 @@ class AdaptKeyService : InputMethodService() {
         return candidate
     }
     
+    /** D-140: the single touch-model sample a D-39 raw-coordinate correction actually changed, captured
+     * so [OffsetModel.unrecord] can be called with exactly the arguments the original [OffsetModel.record]
+     * call used. */
+    private data class RawCorrectionUndo(
+        val id: String,
+        val centerX: Float,
+        val centerY: Float,
+        val x: Float,
+        val y: Float
+    )
+    
+    /**
+     * D-140: finds the single character position where [rawCorrected] (a D-39 [rawCoordinateCorrection]
+     * result) actually differs from [typed], and looks up the raw tap and key geometry recorded for it -
+     * so a later rejected-correction undo can reverse exactly that one touch-model sample, not the whole
+     * token. Must be called before [clearComposing] runs (it reads [composingTaps], which that clears).
+     * Returns null when no single differing position can be identified (defensive; [rawCoordinateCorrection]
+     * only ever produces a single-position substitution, so this should always succeed when it fires).
+     *
+     * @param typed the token as typed, before the raw-coordinate correction
+     * @param rawCorrected the raw-coordinate-corrected word
+     * @return the touch sample to reverse on undo, or null
+     */
+    private fun rawCorrectionUndoFor(typed: String, rawCorrected: String): RawCorrectionUndo? {
+        if (typed.length != rawCorrected.length) {
+            return null
+        }
+        val index = typed.indices.firstOrNull { typed[it] != rawCorrected[it] } ?: return null
+        val tap = composingTaps.getOrNull(index) ?: return null
+        val id = "c:${typed[index].lowercaseChar()}"
+        val geometry = keyboardView?.charKeyGeometry()?.firstOrNull { it.id == id } ?: return null
+        return RawCorrectionUndo(id, geometry.centerX, geometry.centerY, tap.x, tap.y)
+    }
+    
     /**
      * Commits the composing token exactly as composed, followed by [delimiter] (G-05): no autocorrect,
      * no §6 capitalisation and no token repair. Used when the user fixed the token's casing explicitly
@@ -1860,14 +1909,18 @@ class AdaptKeyService : InputMethodService() {
         val right = capitalisation.capitalise(split.right, followingPartContext())
         val committed = left + " " + right
         ic.commitText(committed + delimiter, 1)
-        learnWord(left)
-        learnWord(right)
+        val leftRecord = learnWord(left)
+        val rightRecord = learnWord(right)
         // A-07: arm the undo so the next backspace reverts the split (see performAutocorrectUndo).
         undoTyped = typed
         undoCommitted = committed
         undoDelimiter = delimiter
         // D-13: mark this as a split, so undoing it trains the rejoined word.
         undoWasSplit = true
+        // D-140: precisely un-learn both halves on undo, see performAutocorrectUndo. A split never
+        // involves the D-39 raw-coordinate path, so there is no touch-model sample to un-train here.
+        undoLearnRecords = listOf(leftRecord, rightRecord)
+        undoRawCorrection = null
         // D-43: predict the next word (following the right-hand split part) instead of a blank bar.
         showNextWordPredictions()
         return committed.length + delimiter.length
@@ -1912,18 +1965,28 @@ class AdaptKeyService : InputMethodService() {
     private fun performAutocorrectUndo(ic: InputConnection) {
         val typed = undoTyped ?: return
         val wasSplit = undoWasSplit
-        val committed = undoCommitted
+        val learnRecords = undoLearnRecords
+        val rawCorrection = undoRawCorrection
         ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
         previousWord = typed
         clearUndo()
+        // D-140: un-learn exactly what the rejected commit persisted (whether it reinforced an
+        // already-known word or newly promoted/counted an unknown one) before re-learning what the user
+        // insisted on - otherwise a wrong correction/pairing keeps being reinforced every time it is
+        // typed and rejected, even though the user never actually accepted it.
+        learnRecords.forEach { unlearnWord(it) }
+        // D-140: a rejected D-39 raw-coordinate correction means the touch model resolved this one tap to
+        // the wrong key - reverse just that single sample. An ordinary dictionary/diacritic/split
+        // correction never sets this (see rawCorrectionUndoFor's call site), so this only ever fires for
+        // the raw-coordinate path, never for a purely linguistic correction the user happened to reject.
+        if (rawCorrection != null) {
+            offsetModel?.unrecord(rawCorrection.id, rawCorrection.centerX, rawCorrection.centerY, rawCorrection.x, rawCorrection.y)
+        }
         if (wasSplit) {
             // D-13: undoing a wrong A-05 split trains the rejoined word at once, so it is never split again.
             learnWordStrong(typed)
         } else {
-            // D-37: undoing an autocorrect un-learns (counts down) the rejected correction, and counts up
-            // the word the user insisted on (promoted after repeated insistence).
-            PendingLearnStore.decrement(this, committed)
             learnWord(typed)
         }
         previousWord = typed
@@ -2406,21 +2469,62 @@ class AdaptKeyService : InputMethodService() {
     }
     
     
-    private fun learnWord(word: String?) {
+    /**
+     * D-140: what [learnWord] actually did for one word, so a later A-07 undo can reverse exactly that
+     * and nothing else.
+     */
+    private enum class LearnOutcome {
+        /** Not a letters-only token, or blank - [learnWord] did nothing. */
+        SKIPPED,
+        
+        /** [DictionaryStore.learn] was called - either an already-known word was reinforced, or a new
+         * word was just promoted past [LEARN_THRESHOLD]. Both undo identically via
+         * [DictionaryStore.unlearn], so this single case covers both. */
+        LEARNED,
+        
+        /** The word was new and not yet promoted - only [PendingLearnStore] was incremented. */
+        PENDING
+    }
+    
+    /** One word [learnWord] processed, with the context it used, for a precise [unlearnWord]. */
+    private data class LearnRecord(val word: String, val previousWord: String?, val outcome: LearnOutcome)
+    
+    private fun learnWord(word: String?): LearnRecord {
         // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (tier 1).
         if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
-            return
+            return LearnRecord(word ?: "", previousWord, LearnOutcome.SKIPPED)
         }
         // D-37: a word already in the dictionary is reinforced immediately; a genuinely new word is only
         // counted up and promoted once it has been committed LEARN_THRESHOLD times, so a one-off typo is
         // not eagerly learned as a real word.
-        if (provider.isKnownWord(word)) {
-            dictionaryStore.learn(word, previousWord)
+        val context = previousWord
+        val outcome = if (provider.isKnownWord(word)) {
+            dictionaryStore.learn(word, context)
+            LearnOutcome.LEARNED
         } else if (PendingLearnStore.increment(this, word) >= LEARN_THRESHOLD) {
-            dictionaryStore.learn(word, previousWord)
+            dictionaryStore.learn(word, context)
             PendingLearnStore.clear(this, word)
+            LearnOutcome.LEARNED
+        } else {
+            LearnOutcome.PENDING
         }
         previousWord = word
+        return LearnRecord(word, context, outcome)
+    }
+    
+    /**
+     * D-140: reverses exactly what [learnWord] did for [record] - the un-learn half of A-07's undo.
+     * Whatever training an autocorrect/split persisted must be un-learned when the user rejects it via
+     * backspace, or the wrong word/pairing keeps getting reinforced every time it is typed and rejected.
+     *
+     * @param record the outcome to reverse, as returned by the original [learnWord] call
+     */
+    private fun unlearnWord(record: LearnRecord) {
+        when (record.outcome) {
+            LearnOutcome.SKIPPED -> {}
+            LearnOutcome.LEARNED -> dictionaryStore.unlearn(record.word, record.previousWord)
+            LearnOutcome.PENDING -> PendingLearnStore.decrement(this, record.word)
+        }
     }
     
     /**
@@ -2786,6 +2890,8 @@ class AdaptKeyService : InputMethodService() {
         undoCommitted = ""
         undoDelimiter = ""
         undoWasSplit = false
+        undoLearnRecords = emptyList()
+        undoRawCorrection = null
     }
     
     private fun capsModeFor(info: EditorInfo?): CapsMode {

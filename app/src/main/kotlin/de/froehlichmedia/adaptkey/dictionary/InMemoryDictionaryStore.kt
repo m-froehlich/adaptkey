@@ -35,6 +35,28 @@ class InMemoryDictionaryStore : DictionaryStore {
         }
     }
     
+    override fun unlearn(word: String, previousWord: String?) {
+        val key = word.lowercase()
+        val existing = unigrams[key]
+        if (existing != null) {
+            val frequency = existing.frequency - 1L
+            if (frequency <= 0L) {
+                unigrams.remove(key)
+            } else {
+                unigrams[key] = existing.copy(frequency = frequency)
+            }
+        }
+        if (previousWord != null) {
+            val bigramKey = bigramKey(previousWord, word)
+            val count = (bigrams[bigramKey] ?: 0L) - 1L
+            if (count <= 0L) {
+                bigrams.remove(bigramKey)
+            } else {
+                bigrams[bigramKey] = count
+            }
+        }
+    }
+    
     override fun unigramsByPrefix(prefix: String, limit: Int): List<WordEntry> {
         val normalized = prefix.lowercase()
         return unigrams

@@ -85,6 +85,26 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
     }
     
+    override fun unlearn(word: String, previousWord: String?) {
+        val existing = entryOf(word)
+        if (existing != null) {
+            val frequency = existing.frequency - 1L
+            if (frequency <= 0L) {
+                db.delete(TABLE_WORDS, "wkey = ?", arrayOf(word.lowercase()))
+            } else {
+                putWordInternal(existing.word, frequency, existing.partsOfSpeech)
+            }
+        }
+        if (previousWord != null) {
+            val count = bigramFrequency(previousWord, word) - 1L
+            if (count <= 0L) {
+                db.delete(TABLE_BIGRAMS, "prevkey = ? AND wkey = ?", arrayOf(previousWord.lowercase(), word.lowercase()))
+            } else {
+                putBigram(previousWord, word, count)
+            }
+        }
+    }
+    
     override fun unigramsByPrefix(prefix: String, limit: Int): List<WordEntry> {
         val result = ArrayList<WordEntry>()
         db.rawQuery(

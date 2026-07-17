@@ -55,9 +55,6 @@ The initial contact point (`MotionEvent.ACTION_DOWN`) is used as the authoritati
 ### T-02 - Retroactive Character Correction
 The most recently entered character is held in composing state until sufficient context is available (e.g. the start of the next word). If context subsequently points to a more probable neighbouring character, the entry is corrected via `setComposingText` / `commitText`. The raw touch coordinate is retained until the final decision is made.
 
-### T-03 - Personal Offset Model (Typing-Style Agnostic)
-All tap events are persisted as tuples `(touch_x, touch_y, confirmed_key)`. A 2D Gaussian offset kernel is computed per key to compensate for each user's individual systematic deviation. The model makes no assumptions about handedness or finger - it learns exclusively from observed deviations. It is updated continuously and improves with every confirmed word.
-
 ### T-04 - Typing Pattern Detection
 The dominant typing pattern is derived automatically from the accumulated offset model:
 
@@ -66,6 +63,9 @@ The dominant typing pattern is derived automatically from the accumulated offset
 - **Thumb:** Low lateral offset; larger contact area (touch radius from `MotionEvent.getSize()`); hits tend to be vertically centred.
 
 The detected pattern is shown to the user as information only - not as a constraint - and can be overridden manually. Pattern detection has no effect on functionality; it serves transparency and optional upfront configuration.
+
+### T-03 - Personal Offset Model (Typing-Style Agnostic)
+All tap events are persisted as tuples `(touch_x, touch_y, confirmed_key)`. A 2D Gaussian offset kernel is computed per key to compensate for each user's individual systematic deviation. The model makes no assumptions about handedness or finger - it learns exclusively from observed deviations. It is updated continuously and improves with every confirmed word.
 
 ### T-05 - Space/Letter Confusion in the Bottom Row
 The boundary between the space bar and the bottom letter row (`c v b n m`) is treated as a high-risk zone for swapped space/letter input - a risk aggravated by the narrower space bar (L-02). Two ambiguous bands are defined:
@@ -3990,3 +3990,117 @@ Per explicit user instruction, D-135 (password-manager/Autofill suggestions in t
 from the open backlog for now - not investigated further, not scheduled. §67's already-shipped Autofill
 inline-suggestions implementation and §74's negative device result (no inline suggestion for the username
 field in "finanzen.net zero") are left exactly as documented; only the open backlog entry itself is dropped.
+
+## §80 - Backlog Captured, Not Yet Implemented (Two New Requests)
+
+### D-142 - Credential-Field Learning: Immediate Save, Its Own Suggestion List, Live Email-Domain Ranking
+Raised directly, following a review of the T-03/D-37/tier-3 learning write-up (D-127): the ordinary learning
+pipeline is wrong for login-type fields (username/email). Three related asks, explicitly scoped as a single
+new feature, not started this round:
+
+1. **Immediate save, no D-37 threshold.** Typing a username or email address into a recognised login field
+   must be learned on the very first commit, not counted up over `LEARN_THRESHOLD` (2) occurrences like an
+   ordinary new dictionary word (D-37) - a login value is deliberate, precise input by construction, the
+   opposite of the "don't eagerly learn a one-off typo" reasoning `PendingLearnStore` exists for.
+2. **A separate, specially-flagged store - not the ordinary dictionary.** These values need their own list
+   (or an explicit flag on existing entries) so they never get mixed into everyday-word suggestions and
+   autocorrect. Ordinary dictionary words are never something a user would want to type into a username/email
+   field, and vice versa - offering them there is "sinnbefreit" (pointless) per the user's own framing.
+3. **Login-field suggestions are exclusively this list**, not the ordinary dictionary/n-gram/tier-3
+   suggestion pipeline, whenever the target field is recognised as a login-type field (candidate signal:
+   `EditorInfo.inputType`'s `TYPE_TEXT_VARIATION_EMAIL_ADDRESS`/`TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS`/
+   `TYPE_TEXT_VARIATION_USERNAME`/`TYPE_TEXT_VARIATION_PASSWORD`/`autofillHints`, needs confirming against
+   real login fields, not assumed).
+4. **Live, frequency-ranked email-domain completion after `@`.** Once the user has typed `@` in a
+   not-yet-known email address, offer the domains from their own saved credential entries, most-frequent
+   first, as completions - directly motivated by the user's own workflow (one personal domain, many aliases
+   on it).
+
+Needs its own design pass before implementation - at minimum: the exact field-type detection signal (and its
+false-positive/false-negative behaviour on real apps, the same caution D-135's writeup already flagged for
+`EditorInfo`-based field detection in general); the storage shape (a new SQLite table vs. a flagged column on
+the existing dictionary schema); whether "domain" parsing is naive (`substringAfter('@')`) or needs more
+care; and privacy handling (this store would contain real usernames/email addresses, unlike the ordinary
+dictionary - likely needs its own place in the existing "Info & Privacy" settings copy, and probably its own
+clear/reset action alongside the existing T-03/dictionary reset). Not designed or scoped further than this.
+
+### D-143 - A Dedicated Keyboard Layout for URL Entry Fields
+Raised directly, explicitly to be captured only for now ("merke dir das bitte einmal vor als noch zu
+planendes Feature") - no design or implementation this round. A URL-specific layout, in the spirit of how a
+phone/number-class field already auto-opens the calculator page (`AdaptKeyService.initialSurfaceFor()`, §31):
+likely direct access to `/`, `.`, `www`, `.com` and similar without a long-press detour, auto-selected for
+`TYPE_TEXT_VARIATION_URI`-class fields. Needs its own design pass (exact key set, placement, whether it
+reuses `SymbolLayout`'s machinery or is a genuinely new layout) before implementation.
+
+## §81 - D-140 Implemented: Un-Learn on A-07 Undo (T-03 + Dictionary); D-141: "Uhr" Timing Fixed (v0.8.47)
+
+### D-140 - Rejected Corrections Are Now Un-Learned, Not Just Reverted On Screen
+Raised directly, following a review of the D-127 "what learns when" write-up: A-07's post-commit undo (a
+single backspace right after a corrected/split commit) restored the visible text, but never reversed whatever
+training that commit had already persisted - a rejected correction kept reinforcing the dictionary
+frequency/bigram of the *wrong* word, and kept the T-03 touch model's (possibly wrong) key resolution,
+forever. Both must be un-learned, or - per the user's own framing - the A-07 safety net "kann man sich auch
+sparen" (might as well not exist).
+
+**Dictionary (every autocorrect/split undo path):** new `DictionaryStore.unlearn(word, previousWord)` - the
+exact symmetric inverse of `learn()`: decrements the unigram frequency and bigram count by one each, removing
+the entry entirely once a count reaches zero (so a word `learn()` had just created, frequency 1, is fully
+un-learned again, rather than left behind as a zero-frequency ghost `isKnownWord()` would still report as
+known). `learnWord()` now returns a `LearnOutcome` (`SKIPPED`/`LEARNED`/`PENDING`) describing exactly what it
+did, captured into the armed A-07 undo state (`undoLearnRecords` - one entry for a plain correction, two
+(left/right) for a split, each with the context word it used); `performAutocorrectUndo()` reverses each via
+the new `unlearnWord()` before re-learning the word the user insisted on, replacing the old, incomplete
+`PendingLearnStore.decrement(committed)` call (which only ever helped the rare case where the wrongly-
+committed word was itself still unpromoted - the *common* case, an already-known correction target getting
+silently reinforced by the original commit, was never touched at all).
+
+**T-03 touch model - scoped precisely, not blanket-applied:** the touch-offset model is *not* wrong every
+time an autocorrect fires - most corrections (spelling, diacritic restoration, splits) are purely linguistic
+decisions with no bearing on which physical key was actually touched, and un-learning correctly-resolved taps
+just because a linguistic correction was rejected would quietly discard good training data. The model can
+only be genuinely wrong in one specific path: D-39's raw-coordinate fallback, whose entire premise is "the
+runner-up key under this exact tap was more likely than the one that got resolved." New
+`OffsetModel.unrecord(id, centerX, centerY, x, y, size)` is the exact algebraic inverse of the Welford update
+`record()` performs (not a heuristic - `record` then `unrecord` with the same arguments restores the prior
+mean/variance/contact-area state precisely, including removing the key's entry entirely once its last sample
+is reversed, so it reads as genuinely untrained again). `finalizeAndCommit()` now distinguishes whether
+`autocorrectFor()` or the `rawCoordinateCorrection()` fallback produced the correction (previously collapsed
+into one `?:` chain); when it was the raw-coordinate path, new `rawCorrectionUndoFor()` finds the single
+character position where the correction actually differs from what was typed (D-39 only ever substitutes one
+position) and captures that position's raw tap, resolved key id and key geometry, before `clearComposing()`
+wipes `composingTaps`. On undo, only that one sample is reversed via `offsetModel.unrecord()` - never the
+rest of the token's (correctly resolved) taps, and never anything at all for an ordinary
+dictionary/diacritic/split correction, which sets no raw-correction undo in the first place.
+
+New tests: `OffsetModelTest` (4, proving `record`/`unrecord` round-trip exactly, including the contact-area
+mean), `InMemoryDictionaryStoreTest`/`SqliteDictionaryStoreRoboTest` (5, `learn`/`unlearn` symmetry for both a
+brand-new word and a reinforced known word). The `AdaptKeyService` wiring itself (`rawCorrectionUndoFor`,
+`unlearnWord`, the extended `performAutocorrectUndo`) is service/`InputConnection` glue with no independently
+testable pure logic beyond what these cover - the established testing gap for this layer (no emulator/
+`InputConnection` Robolectric shadow in this environment).
+
+### D-141 - "Uhr" Suggestion No Longer Appears (or Applies) Before the Trailing Space
+Reported directly: the D-137/§77 "Uhr" prediction appeared immediately after the last digit of a typed time
+(e.g. right after "14:30"'s `0`), before any space had been typed - and tapping it then concatenated straight
+onto the digits with no separating space at all ("14:30Uhr "). `TimePattern`'s regex previously allowed zero
+or more trailing whitespace characters (`\s*$`), so it matched the bare digits alone. Changed to require **at
+least one** trailing whitespace character (`\s+$`) - the format is deliberately not even checked until the
+actual delimiting space has been typed, per the user's own framing ("vorher muss das Format gar nicht geprüft
+werden"). Since the space is always already committed to the field by the time either call site
+(`showTimeSuggestion()`'s empty-composing branch, and the `timeSuggestion()` fallback inside
+`showNextWordPredictions()`) checks the pattern, this single regex change fixes both complaints at once: the
+suggestion no longer appears prematurely, and applying it (`onSuggestionClicked()`'s unchanged
+`commitText(word + " ", 1)`) now always lands after a real, already-present space. 2 `TimePatternTest` cases
+updated to require trailing whitespace, 1 new case added confirming no match without it.
+
+### Reordered T-03/T-04 in §3 (Documentation Only)
+Per direct request, so the spec's own reading order matches the actual dependency: T-04 (typing pattern) now
+precedes T-03 (personal offset model) in §3, since K-01's `PatternSeed` (D-68) seeds T-03 from the pattern
+T-04 describes, not the reverse. Purely a section-order swap - the IDs themselves are unchanged (renumbering
+would ripple through many code comments/tests that reference "T-03"/"T-04" by name), and, consistent with how
+the rest of this document works, the original §3 text is left as the historical baseline; the actual current
+behaviour (an explicit pattern picker, not the auto-detection §3 originally described) is already documented
+correctly in D-68/§63 and later.
+
+622 unit tests (was 612; +10). `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of this round's
+items have been device-confirmed yet.
