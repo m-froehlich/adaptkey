@@ -5,7 +5,6 @@ package de.froehlichmedia.adaptkey.credential
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /** Unit tests for the D-142 login-field classification. */
@@ -49,27 +48,44 @@ class LoginFieldDetectorTest {
     }
     
     @Test
-    fun `hasWeakUsernameSignal matches an English hint text`() {
-        assertTrue(LoginFieldDetector.hasWeakUsernameSignal("Username", null))
+    fun `weakSignalKind matches an English username hint text`() {
+        assertEquals(LoginFieldKind.USERNAME, LoginFieldDetector.weakSignalKind("Username", null))
     }
     
     @Test
-    fun `hasWeakUsernameSignal matches a German hint text case-insensitively`() {
-        assertTrue(LoginFieldDetector.hasWeakUsernameSignal("Bitte Benutzername eingeben", null))
+    fun `weakSignalKind matches a German username hint text case-insensitively`() {
+        assertEquals(LoginFieldKind.USERNAME, LoginFieldDetector.weakSignalKind("Bitte Benutzername eingeben", null))
     }
     
     @Test
-    fun `hasWeakUsernameSignal matches the field name when hint text is absent`() {
-        assertTrue(LoginFieldDetector.hasWeakUsernameSignal(null, "login_field"))
+    fun `weakSignalKind matches the field name when hint text is absent`() {
+        assertEquals(LoginFieldKind.USERNAME, LoginFieldDetector.weakSignalKind(null, "login_field"))
     }
     
     @Test
-    fun `hasWeakUsernameSignal is false for an unrelated hint`() {
-        assertFalse(LoginFieldDetector.hasWeakUsernameSignal("Nachricht eingeben", "message"))
+    fun `weakSignalKind matches an English email hint text`() {
+        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.weakSignalKind("Email address", null))
     }
     
     @Test
-    fun `hasWeakUsernameSignal is false when both signals are absent`() {
-        assertFalse(LoginFieldDetector.hasWeakUsernameSignal(null, null))
+    fun `weakSignalKind matches a German email hint text - the finanzen_net_zero case`() {
+        // D-142 follow-up: a real device field labelled "E-Mail-Adresse" did not classify() as EMAIL at
+        // all (InputType variation not set) - this is the fallback that should catch it instead.
+        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.weakSignalKind("E-Mail-Adresse", null))
+    }
+    
+    @Test
+    fun `weakSignalKind prefers email over username when both keywords are present`() {
+        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.weakSignalKind("Username or email", null))
+    }
+    
+    @Test
+    fun `weakSignalKind is none for an unrelated hint`() {
+        assertEquals(LoginFieldKind.NONE, LoginFieldDetector.weakSignalKind("Nachricht eingeben", "message"))
+    }
+    
+    @Test
+    fun `weakSignalKind is none when both signals are absent`() {
+        assertEquals(LoginFieldKind.NONE, LoginFieldDetector.weakSignalKind(null, null))
     }
 }

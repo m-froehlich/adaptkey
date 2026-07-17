@@ -259,10 +259,16 @@ class AdaptKeyService : InputMethodService() {
     // same observation should both handleEnter() and onFinishInput() fire for the same field.
     private var credentialCaptured = false
     
-    // D-142: whether LoginFieldDetector.hasWeakUsernameSignal() fired for the current field (only ever set
-    // when loginFieldKind is still NONE) - drives the settings-row auto-open + button flash nudge in
-    // onStartInputView(), never suggestion behaviour by itself.
-    private var weakUsernameSignal = false
+    // D-142: what LoginFieldDetector.weakSignalKind() found for the current field (only ever computed when
+    // loginFieldKind is still NONE) - drives the settings-row auto-open + button flash nudge in
+    // onStartInputView(), never suggestion behaviour by itself; also what toggleCredentialModeFromSettingsRow()
+    // activates into when the user actually taps the nudged button.
+    private var weakSignalKind = LoginFieldKind.NONE
+    
+    // D-142: whether the current loginFieldKind was switched on via the settings-row button rather than
+    // reliably detected from InputType - only a manually-activated mode can be toggled back off again by
+    // the same button (a reliably-detected EMAIL/PASSWORD field is never user-toggleable).
+    private var credentialModeManuallyActivated = false
     
     // A-03: the text before the cursor captured at token start, so the language of the recent context
     // (this text plus the token being typed) can be judged without re-reading the field per keystroke.
@@ -619,13 +625,18 @@ class AdaptKeyService : InputMethodService() {
         // D-142: classify the field once per focus - drives both the suggestion pipeline and what gets
         // learned for the rest of this field's session (see refreshSuggestions/captureCredentialIfLoginField).
         // EMAIL/PASSWORD are reliably signalled by InputType; USERNAME has no such signal at all (verified
-        // against the real SDK, see LoginFieldDetector's own KDoc) - only ever reached via the settings
-        // row's manual toggle, optionally nudged by the weak hasWeakUsernameSignal() below.
+        // against the real SDK, see LoginFieldDetector's own KDoc), and not even EMAIL is always set on a
+        // field that is visibly labelled as one (confirmed on device) - both are only ever reached via the
+        // settings row's manual toggle, optionally nudged by the weak weakSignalKind() below.
         loginFieldKind = LoginFieldDetector.classify((info?.inputType ?: 0) and InputType.TYPE_MASK_VARIATION)
         credentialCaptured = false
+        credentialModeManuallyActivated = false
         settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
-        weakUsernameSignal = loginFieldKind == LoginFieldKind.NONE &&
-            LoginFieldDetector.hasWeakUsernameSignal(info?.hintText, info?.fieldName)
+        weakSignalKind = if (loginFieldKind == LoginFieldKind.NONE) {
+            LoginFieldDetector.weakSignalKind(info?.hintText, info?.fieldName)
+        } else {
+            LoginFieldKind.NONE
+        }
         clearSuggestions()
     }
     
@@ -747,11 +758,11 @@ class AdaptKeyService : InputMethodService() {
         // §48: never carry an open settings row over into a fresh keyboard presentation.
         settingsRow?.closeImmediately()
         // D-142: reflect a reliable EMAIL/PASSWORD classification on the toggle button immediately; a weak
-        // (unreliable) username signal instead proactively opens the row and flashes the button, nudging
-        // the user to confirm manually rather than silently guessing and risking ordinary text fields
-        // elsewhere being wrongly treated as login fields.
+        // (unreliable) email/username signal instead proactively opens the row and flashes the button,
+        // nudging the user to confirm manually rather than silently guessing and risking ordinary text
+        // fields elsewhere being wrongly treated as login fields.
         settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
-        if (weakUsernameSignal) {
+        if (weakSignalKind != LoginFieldKind.NONE) {
             settingsRow?.open()
             settingsRow?.flashCredentialModeButton()
         }
@@ -1572,14 +1583,19 @@ class AdaptKeyService : InputMethodService() {
      * D-142: the settings row's credential-mode button - manually switches the currently focused field
      * into credential mode (the saved-username/email suggestion list, immediate learning on submit) when
      * it could not be auto-detected (see [LoginFieldDetector] - `InputType` has no signal for a plain
-     * username field at all). A no-op for a field already reliably classified as EMAIL/PASSWORD - those
-     * are not user-toggleable. Tapping again while manually active switches back off.
+     * username field at all, and real apps do not always set it even for an email field). Activates as
+     * [weakSignalKind] when that nudge is what prompted the tap (so domain completion still works for a
+     * weak-signal *email* field, not just a generic username fallback), or plain [LoginFieldKind.USERNAME]
+     * when tapped with no signal at all. A no-op for a field already reliably classified as EMAIL/PASSWORD -
+     * those are not user-toggleable. Tapping again while manually active switches back off.
      */
     private fun toggleCredentialModeFromSettingsRow() {
-        loginFieldKind = when (loginFieldKind) {
-            LoginFieldKind.NONE -> LoginFieldKind.USERNAME
-            LoginFieldKind.USERNAME -> LoginFieldKind.NONE
-            LoginFieldKind.EMAIL, LoginFieldKind.PASSWORD -> loginFieldKind
+        if (credentialModeManuallyActivated) {
+            loginFieldKind = LoginFieldKind.NONE
+            credentialModeManuallyActivated = false
+        } else if (loginFieldKind == LoginFieldKind.NONE) {
+            loginFieldKind = weakSignalKind.takeIf { it != LoginFieldKind.NONE } ?: LoginFieldKind.USERNAME
+            credentialModeManuallyActivated = true
         }
         settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
         closeSettingsRow { refreshSuggestions() }

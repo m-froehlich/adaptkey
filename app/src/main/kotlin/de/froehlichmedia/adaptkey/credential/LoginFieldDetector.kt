@@ -15,10 +15,11 @@ package de.froehlichmedia.adaptkey.credential
  * hints live on the target app's own `View`, which an IME never has a reference to. `InputType`'s variation
  * bits are therefore the *only* reliable signal available at all, and they distinguish email and password
  * fields cleanly - but have no distinct variation for "username" whatsoever, so [classify] can never
- * produce [LoginFieldKind.USERNAME] on its own. [hasWeakUsernameSignal] offers a second, explicitly
- * unreliable signal for that case (an app-supplied hint string, when present at all) - used only to
- * proactively nudge the user toward the manual credential-mode toggle, never to switch suggestion
- * behaviour by itself (see `AdaptKeyService`).
+ * produce [LoginFieldKind.USERNAME] on its own, and real apps do not always set the email variation even on
+ * a field visibly labelled "E-Mail-Adresse" (confirmed on device - `finanzen.net zero`'s own email field did
+ * not classify as EMAIL). [weakSignalKind] offers a second, explicitly unreliable signal for both cases (an
+ * app-supplied hint string, when present at all) - used only to proactively nudge the user toward the manual
+ * credential-mode toggle, never to switch suggestion behaviour by itself (see `AdaptKeyService`).
  */
 object LoginFieldDetector {
     
@@ -45,24 +46,37 @@ object LoginFieldDetector {
     }
     
     /**
-     * A deliberately weak, best-effort signal that the field *might* be a username-style identifier field:
-     * whether its app-supplied hint text or field name contains a recognisable keyword. Neither field is
-     * reliably populated by real apps, and a hit here is never trusted enough to switch suggestion
-     * behaviour on its own - it only prompts the user (a settings-row nudge) to confirm via the manual
-     * toggle. Deliberately not exhaustive across every language - covers the languages this project already
-     * ships dictionaries for (German, English) plus a couple of the most common others.
+     * A deliberately weak, best-effort signal for a field [classify] could not reliably place: whether its
+     * app-supplied hint text or field name contains a recognisable EMAIL or USERNAME keyword. Neither
+     * `EditorInfo` field is reliably populated by real apps in the first place, and a hit here is never
+     * trusted enough to switch suggestion behaviour on its own - it only prompts the user (a settings-row
+     * nudge) to confirm via the manual toggle. EMAIL keywords are checked first and win over USERNAME ones
+     * on a field mentioning both (an email-labelled field is the more specific, more actionable read -
+     * domain completion only ever applies to EMAIL). Deliberately not exhaustive across every language -
+     * covers the languages this project already ships dictionaries for (German, English) plus a couple of
+     * the most common others.
      *
      * @param hintText `EditorInfo.hintText`, or null when the field declares none
      * @param fieldName `EditorInfo.fieldName`, or null when the field declares none
-     * @return true when a recognisable username-style keyword was found
+     * @return [LoginFieldKind.EMAIL] / [LoginFieldKind.USERNAME] when a recognisable keyword was found,
+     *         [LoginFieldKind.NONE] otherwise
      */
-    fun hasWeakUsernameSignal(hintText: CharSequence?, fieldName: String?): Boolean {
+    fun weakSignalKind(hintText: CharSequence?, fieldName: String?): LoginFieldKind {
         val haystack = listOfNotNull(hintText?.toString(), fieldName).joinToString(" ").lowercase()
         if (haystack.isBlank()) {
-            return false
+            return LoginFieldKind.NONE
         }
-        return USERNAME_KEYWORDS.any { haystack.contains(it) }
+        return when {
+            EMAIL_KEYWORDS.any { haystack.contains(it) } -> LoginFieldKind.EMAIL
+            USERNAME_KEYWORDS.any { haystack.contains(it) } -> LoginFieldKind.USERNAME
+            else -> LoginFieldKind.NONE
+        }
     }
+    
+    private val EMAIL_KEYWORDS = listOf(
+        "email", "e-mail", "mailadresse",
+        "διεύθυνση email", "correo electrónico", "adresse e-mail"
+    )
     
     private val USERNAME_KEYWORDS = listOf(
         "username", "user name", "user id", "userid", "login", "account name",

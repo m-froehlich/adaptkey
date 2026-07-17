@@ -28,6 +28,18 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§85 DONE (v0.8.51): D-142 follow-up - weak-signal detection now also covers email, not just username.**
+  Reported: a `finanzen.net zero` field labelled "E-Mail-Adresse" didn't activate credential mode at all.
+  Real gap found in code (not guessed): `LoginFieldDetector`'s weak-signal fallback only ever checked
+  username keywords, never email ones - so a purely "E-Mail-Adresse"-labelled field could never have matched
+  it regardless of device behaviour. `hasWeakUsernameSignal(): Boolean` -> `weakSignalKind(): LoginFieldKind`,
+  now checks a new `EMAIL_KEYWORDS` list first. New `credentialModeManuallyActivated` flag lets the settings-
+  row toggle activate the *specific* kind the weak signal suggested (so a nudged email field gets real domain
+  completion, not a generic username fallback) while still only letting a manually-activated mode be toggled
+  back off. **Not claimed as a confirmed fix** - can't tell from here whether `InputType` detection itself is
+  also failing for this app; reported back for another device round. 3 new/expanded
+  `LoginFieldDetectorTest` cases. 652 unit tests (was 649; +3). `:app:assembleDebug`/`:app:testDebugUnitTest`
+  green.
 - **§84 DONE (v0.8.50): §83's clipboard+trash badge dropped its contrast pill background** per device
   feedback - the badge reads clearly on its own. One-line change in `SettingsRowView.badgedButtonFor()`. No
   new tests. 649 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green.

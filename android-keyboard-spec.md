@@ -4220,3 +4220,42 @@ Device feedback on §83's clipboard+trash badge: the overlaid 🗑 reads clearly
 `keyboard_background`-coloured pill drawn underneath it was unnecessary and looks better removed.
 `SettingsRowView.badgedButtonFor()`'s `badge` `TextView` no longer sets a `background` at all; everything
 else (position, size, margin) is unchanged. No new tests - same established View-glue gap.
+
+## §85 - D-142 Follow-Up: Weak-Signal Detection Now Also Covers Email, Not Just Username (v0.8.51)
+
+### Reported: a `finanzen.net zero` field labelled "E-Mail-Adresse" did not activate credential mode at all
+Device-tested directly: the field's on-screen label was unambiguously "E-Mail-Adresse", yet neither the
+reliable `InputType`-based detection nor the weak-signal nudge fired. The user could not tell from the device
+alone whether the app's `InputType` genuinely lacks the email variation, or whether the weak-signal fallback
+simply never fires at all - both remain open questions this environment cannot resolve without further device
+feedback, but a concrete, real gap was found by re-reading the code rather than guessing blindly: **§80/§82's
+weak-signal detector (`LoginFieldDetector.hasWeakUsernameSignal()`) only ever checked username-style
+keywords ("username", "benutzername", …), never anything email-related at all.** A field labelled purely
+"E-Mail-Adresse" - with no "username"/"login"/etc. wording anywhere - could never have triggered the nudge
+regardless of what its `hintText`/`fieldName` said, even on a device where the fallback mechanism itself
+works perfectly. This alone fully explains the reported symptom if `InputType` genuinely did not classify the
+field (plausible - plenty of real apps use a plain text field with their own client-side email validation
+instead of setting the OS-provided variation); it may not be the *only* mechanism at play, so the fix is
+reported back for another device round rather than claimed as a confirmed complete resolution.
+
+### Fixed: the weak signal now recognises email keywords too, not just username ones
+`LoginFieldDetector.hasWeakUsernameSignal(hintText, fieldName): Boolean` is now
+`weakSignalKind(hintText, fieldName): LoginFieldKind` - checks a new `EMAIL_KEYWORDS` list ("email",
+"e-mail", "mailadresse", plus the German/Greek/Spanish/French equivalents already following this class's
+existing multi-language pattern) before the existing `USERNAME_KEYWORDS` list, so "E-Mail-Adresse" itself now
+matches directly. Email wins when a hint mentions both (e.g. "Username or email") - the more specific,
+actionable read, since only `LoginFieldKind.EMAIL` gets domain completion.
+
+`AdaptKeyService` threads the richer result through: `weakSignalKind: LoginFieldKind` (was
+`weakUsernameSignal: Boolean`) still only drives the settings-row auto-open + button flash *nudge*, never
+suggestion behaviour by itself, matching the original design exactly - only what it can activate *into*
+changed. New `credentialModeManuallyActivated` flag lets `toggleCredentialModeFromSettingsRow()` activate the
+field as the *specific* kind the weak signal suggested (so a nudged email field gets real domain completion
+once confirmed, not just a generic username fallback) while still correctly toggling back off only a
+manually-activated mode - a reliably-detected EMAIL/PASSWORD field stays non-user-toggleable exactly as
+before.
+
+3 new/expanded `LoginFieldDetectorTest` cases (including one named directly after the reported repro). 652
+unit tests (was 649; +3). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Still needs a device round**
+to learn whether this alone resolves the reported case, or whether `InputType` detection itself also needs a
+closer look for this specific app.
