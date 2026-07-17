@@ -3983,3 +3983,10 @@ replacing the previous generic "a full overview of every feature" line.
 
 No new tests - static settings-screen content and a runtime `PackageManager` read, no decision logic. 612
 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §79 - D-135 Struck From the Backlog
+
+Per explicit user instruction, D-135 (password-manager/Autofill suggestions in the suggestion bar) is struck
+from the open backlog for now - not investigated further, not scheduled. §67's already-shipped Autofill
+inline-suggestions implementation and §74's negative device result (no inline suggestion for the username
+field in "finanzen.net zero") are left exactly as documented; only the open backlog entry itself is dropped.

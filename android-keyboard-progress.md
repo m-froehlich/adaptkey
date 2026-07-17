@@ -28,6 +28,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§79 (still v0.8.46, no code change): D-135 struck from the backlog** per explicit user instruction - no
+  longer tracked as an open item; the already-shipped §67 Autofill implementation and §74's negative
+  device-test writeup are otherwise untouched. 612 unit tests (unchanged).
 - **§78 DONE (v0.8.46): app version shown in Settings; D-128 relocated and rewritten.** New static
   `info_version` preference in the settings Info category, summary read live at runtime from
   `PackageManager.getPackageInfo(...).versionName` (not a hand-maintained string, which would drift from
