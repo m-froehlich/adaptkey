@@ -4791,3 +4791,9 @@ testing gap for this class (no Robolectric shadow available in this environment)
 
 689 unit tests (unchanged - existing tests updated, no new ones needed). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. Not yet re-confirmed on device.
+
+## §94 - D-110, D-141, D-129 Confirmed Working on Device (No Code Change)
+
+Device feedback: **D-110** (§86's `ShiftGrace.autoArmAtWordStart()` fix for `CapsMode.NONE`), **D-141** (§81's
+`TimePattern` trailing-whitespace fix), and **D-129** (§83's `SIGN_FLIP_GLYPH` corner hint, third pass) all
+confirmed working. No further action needed on any of the three; no code change this entry.

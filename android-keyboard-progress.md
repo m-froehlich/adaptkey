@@ -28,6 +28,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§94 (still v0.8.59, no code change): D-110, D-141, D-129 CONFIRMED WORKING on device** - §86's
+  `ShiftGrace.autoArmAtWordStart()` fix, §81's `TimePattern` trailing-whitespace fix, and §83's
+  `SIGN_FLIP_GLYPH` corner hint (third pass) are all closed. 689 unit tests (unchanged).
 - **D-144 and D-145 CONFIRMED WORKING on device** (user confirmation after §93, no code change) - swipe-down
   now reliably dismisses/closes from anywhere, including empty bar/row background; the URL-mode period
   popup's centred entry is correctly the locale-specific TLD.
