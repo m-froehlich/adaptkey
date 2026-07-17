@@ -7,32 +7,37 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 
-/** Unit tests for the D-142 login-field classification. */
+/**
+ * Unit tests for the D-142 login-field classification. The variation literals below are the bare
+ * (class-bit-free) `InputType` values `classify()` actually receives - verified via `javap` against the
+ * real `android-35` `InputType.class` - see [LoginFieldDetector]'s own KDoc for the masking bug this
+ * corrected (found while implementing D-143's analogous URI-variation check).
+ */
 class LoginFieldDetectorTest {
     
     @Test
     fun `email variation is classified as email`() {
-        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.classify(0x21))
+        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.classify(0x20))
     }
     
     @Test
     fun `web email variation is classified as email`() {
-        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.classify(0xd1))
+        assertEquals(LoginFieldKind.EMAIL, LoginFieldDetector.classify(0xd0))
     }
     
     @Test
     fun `password variation is classified as password`() {
-        assertEquals(LoginFieldKind.PASSWORD, LoginFieldDetector.classify(0x81))
+        assertEquals(LoginFieldKind.PASSWORD, LoginFieldDetector.classify(0x80))
     }
     
     @Test
     fun `visible password variation is classified as password`() {
-        assertEquals(LoginFieldKind.PASSWORD, LoginFieldDetector.classify(0x91))
+        assertEquals(LoginFieldKind.PASSWORD, LoginFieldDetector.classify(0x90))
     }
     
     @Test
     fun `web password variation is classified as password`() {
-        assertEquals(LoginFieldKind.PASSWORD, LoginFieldDetector.classify(0xe1))
+        assertEquals(LoginFieldKind.PASSWORD, LoginFieldDetector.classify(0xe0))
     }
     
     @Test
@@ -43,7 +48,7 @@ class LoginFieldDetectorTest {
     @Test
     fun `classify never produces username - InputType has no variation for it`() {
         // Every variation constant that exists must map to EMAIL, PASSWORD or NONE.
-        assertFalse(listOf(0x21, 0xd1, 0x81, 0x91, 0xe1, 0, 0x01, 0x02, 0x03)
+        assertFalse(listOf(0x20, 0xd0, 0x80, 0x90, 0xe0, 0, 0x01, 0x02, 0x03)
             .any { LoginFieldDetector.classify(it) == LoginFieldKind.USERNAME })
     }
     

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.util.Locale
 
 /**
  * Unit tests for the Greek key map (full Greek input): row structure, tonos accents as long-press
@@ -108,5 +109,18 @@ class GreekLayoutTest {
         
         assertEquals(listOf("!", "¹"), numberRow.byChar('1').alternatives)
         assertEquals(listOf("⁰", "="), numberRow.byChar('0').alternatives)
+    }
+    
+    @Test
+    fun `D-143 urlMode gives the Greek layout the same URL bottom row as the Latin layout`() {
+        val greekRow = GreekLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
+        val latinRow = KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
+        
+        assertEquals(latinRow, greekRow)
+    }
+    
+    @Test
+    fun `D-143 without urlMode the Greek bottom row is unaffected`() {
+        assertEquals(GreekLayout.rows().last(), GreekLayout.rows(locale = Locale.US).last())
     }
 }

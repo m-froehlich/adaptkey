@@ -20,17 +20,30 @@ package de.froehlichmedia.adaptkey.credential
  * not classify as EMAIL). [weakSignalKind] offers a second, explicitly unreliable signal for both cases (an
  * app-supplied hint string, when present at all) - used only to proactively nudge the user toward the manual
  * credential-mode toggle, never to switch suggestion behaviour by itself (see `AdaptKeyService`).
+ *
+ * **Bug fixed, found while building D-143's own analogous URI-variation check, not guessed**: the five
+ * variation constants below previously included the `TYPE_CLASS_TEXT` bit baked in (e.g. `0x21` for EMAIL),
+ * copied from how the *unmasked* `InputType` constants are commonly written combined with their class.
+ * [classify]'s own contract, though, is a value already masked with `TYPE_MASK_VARIATION` (`0x0ff0`) - which
+ * does *not* include the class bits (`0x000f`) at all, so the masked value `classify` actually ever receives
+ * (verified via `javap` against `android-35`'s real `InputType.class`: `TYPE_MASK_VARIATION = 4080`,
+ * `TYPE_TEXT_VARIATION_EMAIL_ADDRESS = 32` = `0x20`, not `0x21`) could never match these class-bit-inclusive
+ * literals - `classify` silently returned [LoginFieldKind.NONE] for *every* real field, regardless of its
+ * actual variation. This plausibly explains why even the "reliable" EMAIL detection never activated on
+ * device (§85's `finanzen.net zero` report), not only the already-known "no variation exists for username at
+ * all" limitation. Corrected to the bare (class-bit-free) variation values.
  */
 object LoginFieldDetector {
     
     // android.text.InputType's variation constants, as plain Int literals (the same values javac/kotlinc
     // would inline from the real constants) - keeps this class free of any android.* import, so it needs
-    // no Robolectric shadow to unit-test.
-    private const val VARIATION_EMAIL_ADDRESS = 0x00000021
-    private const val VARIATION_WEB_EMAIL_ADDRESS = 0x000000d1
-    private const val VARIATION_PASSWORD = 0x00000081
-    private const val VARIATION_VISIBLE_PASSWORD = 0x00000091
-    private const val VARIATION_WEB_PASSWORD = 0x000000e1
+    // no Robolectric shadow to unit-test. Bare variation bits only (no TYPE_CLASS_TEXT baked in) - see the
+    // class KDoc above for why that distinction matters here.
+    private const val VARIATION_EMAIL_ADDRESS = 0x00000020
+    private const val VARIATION_WEB_EMAIL_ADDRESS = 0x000000d0
+    private const val VARIATION_PASSWORD = 0x00000080
+    private const val VARIATION_VISIBLE_PASSWORD = 0x00000090
+    private const val VARIATION_WEB_PASSWORD = 0x000000e0
     
     /**
      * @param inputTypeVariation `EditorInfo.inputType and InputType.TYPE_MASK_VARIATION`

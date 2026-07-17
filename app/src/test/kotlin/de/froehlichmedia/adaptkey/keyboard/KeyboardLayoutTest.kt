@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.util.Locale
 
 /**
  * Unit tests for the QWERTZ key map (L-01) including the number row (L-06), long-press hints
@@ -234,5 +235,66 @@ class KeyboardLayoutTest {
         assertEquals(qwertz[2], qwerty[2]) // middle row (asdfghjkl)
         assertEquals(qwertz.last(), qwerty.last()) // bottom row
         assertEquals(qwertz[1].byChar('p').hint, qwerty[1].byChar('p').hint) // π hint follows the char
+    }
+    
+    @Test
+    fun `D-143 urlMode replaces the bottom row with the URL row`() {
+        val bottomRow = KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
+        
+        assertEquals(7, bottomRow.size)
+        assertEquals(KeyCode.SYMBOL, bottomRow[0].code)
+        assertEquals(KeyCode.TEXT, bottomRow[1].code)
+        assertEquals("https://", bottomRow[1].label)
+        assertEquals(KeyCode.TEXT, bottomRow[2].code)
+        assertEquals("www.", bottomRow[2].label)
+        assertEquals(KeyCode.CHAR, bottomRow[3].code)
+        assertEquals('/', bottomRow[3].char)
+        assertEquals(KeyCode.SPACE, bottomRow[4].code)
+        assertEquals(KeyCode.CHAR, bottomRow[5].code)
+        assertEquals('.', bottomRow[5].char)
+        assertEquals(KeyCode.ENTER, bottomRow[6].code)
+    }
+    
+    @Test
+    fun `D-143 without urlMode the bottom row is unaffected by the locale parameter`() {
+        assertEquals(KeyboardLayout.rows().last(), KeyboardLayout.rows(locale = Locale.US).last())
+    }
+    
+    @Test
+    fun `D-143 the slash key's popup is comma's original list with slash prepended`() {
+        val bottomRow = KeyboardLayout.rows(urlMode = true).last()
+        
+        assertEquals(listOf("/") + KeyboardLayout.COMMA_ALTERNATIVES, bottomRow.byChar('/').alternatives)
+    }
+    
+    @Test
+    fun `D-143 the https key offers the other everyday protocols, www has neither hint nor alternatives`() {
+        val bottomRow = KeyboardLayout.rows(urlMode = true).last()
+        val httpsKey = bottomRow.first { it.code == KeyCode.TEXT && it.label == "https://" }
+        val wwwKey = bottomRow.first { it.code == KeyCode.TEXT && it.label == "www." }
+        
+        assertEquals(listOf("https://", "http://", "ftp://", "file://"), httpsKey.alternatives)
+        assertNull(wwwKey.hint)
+        assertTrue(wwwKey.alternatives.isEmpty())
+    }
+    
+    @Test
+    fun `D-143 the period key's popup is locale-resolved TLDs instead of the sentence terminators`() {
+        val germanRow = KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
+        val usRow = KeyboardLayout.rows(urlMode = true, locale = Locale.US).last()
+        
+        assertEquals(UrlLocale.periodAlternatives(Locale.GERMANY), germanRow.byChar('.').alternatives)
+        assertEquals(UrlLocale.periodAlternatives(Locale.US), usRow.byChar('.').alternatives)
+    }
+    
+    @Test
+    fun `D-143 urlMode leaves every other row identical to the ordinary layout`() {
+        val ordinary = KeyboardLayout.rows()
+        val url = KeyboardLayout.rows(urlMode = true)
+        
+        assertEquals(ordinary[0], url[0]) // number row
+        assertEquals(ordinary[1], url[1]) // top row (p / π etc.)
+        assertEquals(ordinary[2], url[2]) // middle row
+        assertEquals(ordinary[3], url[3]) // third row (shift / backspace)
     }
 }

@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.keyboard
 
+import java.util.Locale
+
 /**
  * QWERTZ key map (L-01).
  *
@@ -56,6 +58,23 @@ object KeyboardLayout {
      */
     val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "_")
     
+    /**
+     * D-143: the URL-mode `/` key's long-press set - the original [COMMA_ALTERNATIVES] list unchanged,
+     * with `/` prepended as the new primary (pre-selected) character. The comma simply swaps places with
+     * `/` (primary ↔ alternative); it stays fully reachable, just no longer the key's own tap character.
+     */
+    val URL_SLASH_ALTERNATIVES = listOf("/") + COMMA_ALTERNATIVES
+    
+    /** D-143: the URL-mode `https://` key's long-press set - the other everyday protocols. */
+    val URL_PROTOCOL_ALTERNATIVES = listOf("https://", "http://", "ftp://", "file://")
+    
+    // D-143: a URL practically never needs a space, so the URL-mode bottom row shrinks it drastically and
+    // reinvests the freed width in the two new protocol / www keys instead - an eight-character label
+    // ("https://") needs noticeably more room than a plain glyph, "www." somewhat less.
+    private const val URL_PROTOCOL_KEY_WEIGHT = 2.5f
+    private const val URL_WWW_KEY_WEIGHT = 1.5f
+    private const val URL_SPACE_WEIGHT = 1f
+    
     /** D-90: the π key's own corner hint. */
     private const val PI_HINT = "π"
     
@@ -94,13 +113,19 @@ object KeyboardLayout {
      * @param qwerty D-106 stage 1: true for the English active language (QWERTY, y/z swapped versus
      *        German); false for German (QWERTZ). Only the two letters' screen position differs - hints,
      *        alternatives and every other key are shared between both variants.
+     * @param urlMode D-143: true for a recognised URL-entry field - replaces the bottom row's comma/space/
+     *        period trio with [urlBottomRow]; defaults to false (the ordinary bottom row).
+     * @param locale D-143: the system locale [urlBottomRow]'s period key resolves its TLD popup from
+     *        ([UrlLocale]); only meaningful when [urlMode] is true.
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
         proportions: KeyProportions = KeyProportions.DEFAULT,
         showNumberRow: Boolean = true,
         letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS,
-        qwerty: Boolean = false
+        qwerty: Boolean = false,
+        urlMode: Boolean = false,
+        locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -122,20 +147,52 @@ object KeyboardLayout {
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
-        result.add(buildList {
-            // L-03: combined emoji / numeric-layer key - tap opens the emoji panel, long-press / swipe-up
-            // switches to ?123.
-            add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
-            // L-02: comma & full stop widened, space narrowed.
-            // D-22: the comma key carries the clause punctuation (; : - _ /) as its long-press popup.
-            add(charKey(',', alternatives = COMMA_ALTERNATIVES, weight = proportions.commaWeight))
-            add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            // D-02 / D-22: the full-stop key carries the sentence terminators (. ! ?).
-            add(charKey('.', alternatives = PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
-            add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
-        })
+        result.add(
+            if (urlMode) {
+                urlBottomRow(proportions, locale)
+            } else {
+                buildList {
+                    // L-03: combined emoji / numeric-layer key - tap opens the emoji panel, long-press /
+                    // swipe-up switches to ?123.
+                    add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
+                    // L-02: comma & full stop widened, space narrowed.
+                    // D-22: the comma key carries the clause punctuation (; : - _ /) as its long-press popup.
+                    add(charKey(',', alternatives = COMMA_ALTERNATIVES, weight = proportions.commaWeight))
+                    add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
+                    // D-02 / D-22: the full-stop key carries the sentence terminators (. ! ?).
+                    add(charKey('.', alternatives = PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
+                    add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
+                }
+            }
+        )
         
         return result
+    }
+    
+    /**
+     * D-143: the URL-mode bottom row, shared by [KeyboardLayout] and [GreekLayout] (URL entry doesn't
+     * depend on the active typing alphabet - both show identical URL keys). Replaces the ordinary
+     * comma/space/period trio: `/` takes over the comma key's own primary position (its own alt popup
+     * unchanged, just demoted to an alternative - see [URL_SLASH_ALTERNATIVES]); a new `https://` key
+     * (§53 [KeyCode.TEXT], its alt popup the other everyday protocols) and a `www.` key are funded by
+     * shrinking the now barely-needed space key; the full-stop key's alt popup is a locale-resolved TLD
+     * list instead of the ordinary sentence terminators (a URL practically never needs `!`/`?`, see
+     * [UrlLocale]).
+     *
+     * @param proportions the key-proportion configuration (C-01)
+     * @param locale the system locale the period key's TLD popup is resolved from ([UrlLocale])
+     * @return the row as a list of [Key] from left to right
+     */
+    fun urlBottomRow(proportions: KeyProportions, locale: Locale): List<Key> {
+        return listOf(
+            Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight),
+            textKey("https://", alternatives = URL_PROTOCOL_ALTERNATIVES, weight = URL_PROTOCOL_KEY_WEIGHT),
+            textKey("www.", weight = URL_WWW_KEY_WEIGHT),
+            charKey('/', alternatives = URL_SLASH_ALTERNATIVES, weight = proportions.commaWeight),
+            Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = URL_SPACE_WEIGHT),
+            charKey('.', alternatives = UrlLocale.periodAlternatives(locale), weight = proportions.periodWeight),
+            Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
+        )
     }
     
     /**
@@ -190,6 +247,11 @@ object KeyboardLayout {
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
+    }
+    
+    /** §53 / D-143: a key that commits its own multi-character [label] verbatim on a plain tap ([KeyCode.TEXT]). */
+    private fun textKey(label: String, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
+        return Key(label = label, code = KeyCode.TEXT, hint = hint, alternatives = alternatives, weight = weight)
     }
     
     /**

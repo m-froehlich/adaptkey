@@ -4398,3 +4398,94 @@ own diagnostic content changed, only where it goes.
 service glue with no independently testable pure logic beyond `DiagnosticRingBuffer` - the established
 testing gap for this layer. Not yet device-confirmed - next time the jitter happens, the in-app log (Settings
 → Diagnostics → "View / share diagnostic log") should have it, no PC required.
+
+## §89 - D-143 Implemented: a Dedicated URL-Mode Bottom Row (v0.8.55)
+
+Planned in a design conversation before implementation, per D-143's own "needs its own design pass" note
+(§80). The main open questions from that capture were resolved directly with the user rather than guessed:
+this is **not** a new `?123`-style page - it stays on the letters surface (a URL still needs the full
+alphabet for its domain/path) and only swaps the bottom row, exactly like the existing `qwerty`/`greek`
+toggles already swap other parts of the same layout without a separate `InputSurface`.
+
+### New URL-mode bottom row, replacing the ordinary comma/space/period trio
+`[?123] [https://] [www.] [/] [space, narrow] [.] [⏎]` - built by a new, shared
+`KeyboardLayout.urlBottomRow()` (also called by `GreekLayout`, since URL entry doesn't depend on the active
+typing alphabet - both layouts show identical URL keys):
+- **`/` takes over the comma key's own primary position.** Its long-press popup is the original
+  `COMMA_ALTERNATIVES` list with `/` simply prepended as the new pre-selected character - the comma swaps
+  from primary to alternative, staying fully reachable, with nothing else about the popup changed.
+- **A new `https://` key** (§53 `KeyCode.TEXT`, mirroring the calculator page's `sin`/`deg` keys), whose
+  long-press popup offers the other everyday protocols: `http://`, `ftp://`, `file://`.
+- **A new `www.` key** (also `KeyCode.TEXT`), with no long-press action of its own yet.
+- **The space key shrinks drastically** (a URL practically never needs one) - the freed width funds the two
+  new keys above; it is labelled with the plain space glyph (`SPACE_GLYPH`, already used by the `?123` pages
+  for the same reason) rather than the active-language label, since it is both too narrow for that and not
+  a meaningful place to switch language from (see the G-01 gesture point below).
+- **The full-stop key's long-press popup is a locale-resolved TLD list instead of the ordinary sentence
+  terminators** (`! . ?`) - a URL practically never needs `!`/`?`. New `UrlLocale` object (`keyboard`
+  package) mirrors `CalculatorLocale`'s JDK-locale-driven approach rather than a hand-maintained worldwide
+  table: English-language locales lead with the two generic TLDs (`.com`, `.org`), then the locale's own
+  country-code TLD when one is idiomatically used for casual addresses; every other locale leads with its
+  own ccTLD instead, then `.com`/`.org`. A small `CCTLD_OVERRIDES` map corrects the two cases this reasoning
+  actually calls for, not an attempt at exhaustive worldwide coverage: Great Britain uses `.co.uk`, not the
+  bare `.uk`, for ordinary sites, and the United States has no everyday casual ccTLD at all (`.us` is not how
+  Americans think of their own sites, unlike `.de` for Germans). Resolved from the same `systemLocale`
+  property `AdaptKeyboardView` already threads through for the calculator page's currency/decimal-separator
+  keys (D-92) - no new locale plumbing needed.
+
+### Trigger: auto-open only, not part of the D-19 swipe cycle
+New `AdaptKeyService.isUrlField(info)` checks `EditorInfo.inputType` for `TYPE_TEXT_VARIATION_URI` (compared
+against the real, unmasked `InputType` constant - see the bug note below), mirroring `initialSurfaceFor()`'s
+existing phone/number/datetime-class check but as an orthogonal `urlMode` flag rather than a surface switch,
+since it stays on `LETTERS`. Set fresh per field in `onStartInput()` (pushed to the view *before*
+`setSurface()`, so its own `rebuildRows()` already reads the correct value) and defensively re-pushed in
+`onStartInputView()` in case the view was recreated in between - the same two-point pattern
+`greek`/`qwerty` already use for their own per-session state.
+
+### Autocorrect/suggestions: suppressed entirely, reusing the D-142 credential-field precedent
+`finalizeAndCommit()`'s existing login-field short-circuit (`if (loginFieldKind != LoginFieldKind.NONE)`)
+now also covers `urlMode` - a domain/path is exactly as much "not prose" as a username/email value, and the
+existing fragment-committer already did precisely what a URL needs (commit verbatim, no autocorrect, no §6
+capitalisation, no token-repair, no dictionary learning), so no new commit logic was needed, only a wider
+condition. Renamed `commitLoginFieldFragment()` → `commitVerbatimFieldFragment()` since it now serves both
+features (the function itself was already login-agnostic - purely mechanical). `refreshSuggestions()` gets
+its own new, simpler bypass (`if (urlMode) { clearSuggestions(); return }`) rather than reusing
+`showCredentialSuggestions()` - a URL field has no candidate list of its own to offer, unlike a login field's
+saved credentials, so the bar just stays empty. The D-36 clipboard-paste chip is deliberately **not**
+suppressed - pasting a copied link into a URL field is exactly the kind of thing it exists for.
+
+### G-01 language swipe: the URL-mode space key is treated like a symbol-page space key
+`KeyGesture.resolve()` gained a `urlMode` parameter, extending the existing D-92 surface check
+(`surface == LETTERS`) to `surface == LETTERS && !urlMode` for the space-key branch - a horizontal swipe on
+the narrow URL-mode space key falls through to the ordinary D-19 surface swipe instead of switching
+language, the same reasoning D-92 already applied to the smaller `?123`-page space keys ("no language of its
+own to switch"), even though URL mode itself stays on the letters surface rather than a different one.
+
+### Real bug found and fixed while building D-143's own field-variation check, not guessed
+Verified `isUrlField()`'s bitmask logic against the real Android SDK first (`javap` against `android-35`'s
+`InputType.class`, this project's established habit before trusting a constant): `TYPE_MASK_VARIATION`
+(`0x0ff0`) does **not** include the `TYPE_CLASS_TEXT` bit (`0x0001`), so the value `classify()`-style code
+actually receives from `inputType and TYPE_MASK_VARIATION` never carries that bit either. Checking
+`LoginFieldDetector` for the same pattern (needed to avoid repeating whatever mistake it might have made)
+found exactly that mistake: its five variation constants (`VARIATION_EMAIL_ADDRESS` etc.) had the class bit
+baked in (`0x21` for EMAIL, when the real masked value is `0x20`) - so `classify()` could **never** match a
+real field's variation and silently returned `LoginFieldKind.NONE` for every field, regardless of its actual
+type. This plausibly explains §85's `finanzen.net zero` report on its own (not only the already-documented
+"no variation exists for username at all" limitation) - the "reliable" EMAIL/PASSWORD detection was never
+reliable in practice, only in its own unit tests (which passed the same class-bit-inclusive literals
+directly, proving the constants self-consistent but never checking them against what a real masked
+`EditorInfo.inputType` value actually looks like). Fixed: all five constants corrected to their bare,
+class-bit-free values, verified against the real SDK (`TYPE_TEXT_VARIATION_EMAIL_ADDRESS = 32`,
+`_PASSWORD = 128`, `_VISIBLE_PASSWORD = 144`, `_WEB_EMAIL_ADDRESS = 208`, `_WEB_PASSWORD = 224`); the
+existing `LoginFieldDetectorTest` literals corrected to match. **Not yet device-confirmed** whether this
+alone resolves §85's report - the weak-signal email/username keyword fallback (§85's own fix) still applies
+regardless and may have been doing all the real work on some devices; this fix means the *reliable* path can
+finally also engage on devices where it was silently dead before.
+
+15 new unit tests (`UrlLocaleTest` 6, `KeyboardLayoutTest` 6, `GreekLayoutTest` 2, `KeyGestureTest` 1). 675
+unit tests total (was 660). `:app:assembleDebug`/`:app:testDebugUnitTest` green. The pure `UrlLocale`/
+row-shape logic is fully unit-tested; the `AdaptKeyService` wiring (`isUrlField`/`onStartInput`/
+`onStartInputView` pushes, the `finalizeAndCommit`/`refreshSuggestions` short-circuits) is service glue with
+no independently testable logic beyond what those cover - the established testing gap for this layer. Not
+yet device-tested - the new key weights (`https://`/`www.`/the narrower space) are a considered starting
+guess, not tuned against a real screen, easy to retune later (same precedent as §36/§37/§53).

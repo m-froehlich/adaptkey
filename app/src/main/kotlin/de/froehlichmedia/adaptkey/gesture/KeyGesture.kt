@@ -14,12 +14,13 @@ import de.froehlichmedia.adaptkey.keyboard.KeyCode
  * A downward swipe dismisses the keyboard regardless of the key underneath (G-03); an upward swipe
  * reveals the settings row regardless of the key underneath too (§48), except on the combined key,
  * which keeps its own upward gesture. A horizontal swipe is key-specific: left on backspace deletes a
- * word (G-02), left / right on the space bar switches language (G-01) - but only on the letters surface
- * (D-92: the smaller space keys on the `?123` pages have no language of their own to switch, so a
- * horizontal swipe there is an ordinary surface swipe like everywhere else on those pages) -, up on the
- * combined key switches to the numeric/symbol layer (L-03), and left / right anywhere else on the key
- * field switches the surface/page (D-19). Everything else carries no gesture and resolves to
- * [GestureAction.NONE], leaving the touch to be handled as a tap.
+ * word (G-02), left / right on the space bar switches language (G-01) - but only on the letters surface,
+ * and not while D-143's URL mode is active there either (D-92 / D-143: the smaller space keys on the
+ * `?123` pages, and the narrower URL-mode space key, have no language of their own to switch, so a
+ * horizontal swipe there is an ordinary surface swipe like everywhere else) -, up on the combined key
+ * switches to the numeric/symbol layer (L-03), and left / right anywhere else on the key field switches
+ * the surface/page (D-19). Everything else carries no gesture and resolves to [GestureAction.NONE],
+ * leaving the touch to be handled as a tap.
  */
 object KeyGesture {
     
@@ -30,9 +31,17 @@ object KeyGesture {
      * @param direction the recognised swipe direction
      * @param surface the surface the swipe happened on; defaults to [InputSurface.LETTERS], since G-01's
      *        language swipe only applies there (D-92)
+     * @param urlMode D-143: true while a URL-mode field is focused - suppresses G-01's language swipe on
+     *        the (narrower, letters-surface) URL-mode space key the same way a non-letters surface already
+     *        does; defaults to false
      * @return the mapped action, or [GestureAction.NONE] when the swipe has no meaning here
      */
-    fun resolve(keyCode: KeyCode, direction: SwipeDirection, surface: InputSurface = InputSurface.LETTERS): GestureAction {
+    fun resolve(
+        keyCode: KeyCode,
+        direction: SwipeDirection,
+        surface: InputSurface = InputSurface.LETTERS,
+        urlMode: Boolean = false
+    ): GestureAction {
         // G-03: a downward swipe dismisses the keyboard from anywhere (§48: AdaptKeyService.handleSwipe()
         // re-routes this to closing the settings row first when it is open, before it ever reaches here -
         // this resolver has no row-open state to gate on, so it always reports the plain dismiss).
@@ -50,8 +59,9 @@ object KeyGesture {
             KeyCode.DELETE -> if (direction == SwipeDirection.LEFT) GestureAction.DELETE_WORD else GestureAction.NONE
             // G-01: swipe left / right on the letters surface's space bar switches the input language
             // (never a surface swipe there). D-92: on any other surface, the space key has no language of
-            // its own, so it falls through to an ordinary surface swipe (D-19) like every other key there.
-            KeyCode.SPACE -> if (surface == InputSurface.LETTERS) {
+            // its own, so it falls through to an ordinary surface swipe (D-19) like every other key there -
+            // D-143: the URL-mode space key is the same case, even though it stays on the letters surface.
+            KeyCode.SPACE -> if (surface == InputSurface.LETTERS && !urlMode) {
                 when (direction) {
                     SwipeDirection.LEFT -> GestureAction.LANGUAGE_PREV
                     SwipeDirection.RIGHT -> GestureAction.LANGUAGE_NEXT

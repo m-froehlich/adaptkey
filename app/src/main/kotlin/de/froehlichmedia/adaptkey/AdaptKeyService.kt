@@ -213,6 +213,13 @@ class AdaptKeyService : InputMethodService() {
     // and the persisted recent/frequently-used emoji (MRU).
     private var surface = InputSurface.LETTERS
     private var symbolPage = 1
+    
+    // D-143: whether the currently-focused field is a recognised URL-entry field (TYPE_TEXT_VARIATION_URI)
+    // - re-determined fresh per field in onStartInput, mirroring surface/loginFieldKind. Drives the letters
+    // surface's URL-mode bottom row (KeyboardLayout.urlBottomRow) and short-circuits autocorrect/
+    // capitalisation/suggestions exactly like a recognised login field (see finalizeAndCommit/
+    // refreshSuggestions) - a domain/path is not natural-language prose either.
+    private var urlMode = false
     private lateinit var emojiDataset: EmojiDataset
     private var recentEmojis: List<String> = emptyList()
     
@@ -651,6 +658,11 @@ class AdaptKeyService : InputMethodService() {
         keyboardView?.shifted = false
         // D-15: a new field starts without Caps Lock.
         keyboardView?.capsLock = false
+        // D-143: recognised fresh per field, mirroring surface below - pushed to the view before
+        // setSurface() so its own rebuildRows() (triggered by the surface/symbolPage property setters
+        // inside switchPage()) already reads the correct value.
+        urlMode = isUrlField(info)
+        keyboardView?.urlMode = urlMode
         // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens
         // straight to the calculator page instead of the letters surface.
         setSurface(initialSurfaceFor(info), targetSymbolPage = 1)
@@ -782,6 +794,9 @@ class AdaptKeyService : InputMethodService() {
         // Reflect the active alphabet (G-01) on the freshly (re)created keyboard view.
         keyboardView?.greek = activeLanguage == Language.GREEK
         keyboardView?.qwerty = activeLanguage == Language.ENGLISH
+        // D-143: same defensive re-push, in case the view was (re)created after onStartInput already
+        // computed this field's urlMode.
+        keyboardView?.urlMode = urlMode
         // D-03: label the space bar with the current input language.
         updateSpaceLabel()
         // Pick up an offset model seeded by the calibration screen (K-01). Safe on a fresh field (not a
@@ -925,7 +940,7 @@ class AdaptKeyService : InputMethodService() {
      * since the local part is already fixed and only the domain is still open.
      *
      * Reads the field's own text via [InputConnection.getTextBeforeCursor] rather than [composing]:
-     * [commitLoginFieldFragment] commits every `.`/`@`/`-`/`_` as its own delimiter, so `composing` alone
+     * [commitVerbatimFieldFragment] commits every `.`/`@`/`-`/`_` as its own delimiter, so `composing` alone
      * only ever holds the current fragment (e.g. just `"e"` of `"peter@e"`) - the field's real text
      * already includes both the earlier committed fragments and the live composing span, in one read.
      *
@@ -1508,7 +1523,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun handleSwipe(key: Key, direction: SwipeDirection): Boolean {
         val ic = currentInputConnection ?: return false
-        return when (KeyGesture.resolve(key.code, direction, surface)) {
+        return when (KeyGesture.resolve(key.code, direction, surface, urlMode)) {
             // G-02: delete the whole previous word.
             GestureAction.DELETE_WORD -> {
                 clearUndo()
@@ -1836,19 +1851,22 @@ class AdaptKeyService : InputMethodService() {
         val mergeChar = pendingMergeChar
         pendingMergeChar = null
         
-        // D-142: a login field's value must never be touched by autocorrect/capitalisation/token-repair,
-        // and must never be learned fragment-by-fragment into the ordinary dictionary - each `.`/`@`/`-`/
-        // `_` is its own delimiter under the ordinary composing-token model, so without this short-circuit
-        // an email address would be autocorrected/capitalised piecemeal as it is typed. Every fragment
-        // commits exactly as typed instead; the whole value is captured once, separately, from the
-        // field's own committed text (see captureCredentialIfLoginField), never here.
-        if (loginFieldKind != LoginFieldKind.NONE) {
+        // D-142 / D-143: a login field's value, or a URL being entered, must never be touched by
+        // autocorrect/capitalisation/token-repair, and (for a login field) must never be learned
+        // fragment-by-fragment into the ordinary dictionary - each `.`/`@`/`-`/`_` is its own delimiter
+        // under the ordinary composing-token model, so without this short-circuit an email address or a
+        // domain name would be autocorrected/capitalised piecemeal as it is typed. Every fragment commits
+        // exactly as typed instead; a login field's whole value is captured once, separately, from the
+        // field's own committed text (see captureCredentialIfLoginField), never here - a URL is simply
+        // never learned into the dictionary at all, matching how it is never suggested from either
+        // (refreshSuggestions).
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode) {
             if (composing.isEmpty()) {
                 ic.commitText(delimiter, 1)
                 clearUndo()
                 return delimiter.length
             }
-            return commitLoginFieldFragment(ic, delimiter)
+            return commitVerbatimFieldFragment(ic, delimiter)
         }
         
         if (composing.isEmpty()) {
@@ -2101,19 +2119,20 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-142: commits the composing fragment exactly as typed, followed by [delimiter], with no
+     * D-142 / D-143: commits the composing fragment exactly as typed, followed by [delimiter], with no
      * autocorrect, §6 capitalisation, token-repair or dictionary learning at all - the [finalizeAndCommit]
-     * short-circuit for every login-relevant field (username/email/password). A login field's value is a
-     * precise identifier, not prose: it must never be silently "corrected", and since the ordinary
-     * composing-token model treats every `.`/`@`/`-`/`_` as its own delimiter, letting the normal pipeline
-     * touch even one fragment would risk corrupting the value across several separately-finalised pieces.
-     * The whole value is learned once, separately, from the field's own committed text (see
-     * [captureCredentialIfLoginField]) - never per-fragment here, and never into the ordinary dictionary.
+     * short-circuit for every login-relevant field (username/email/password) and, since D-143, every
+     * URL-mode field too. Neither a login field's value nor a URL is prose: both must never be silently
+     * "corrected", and since the ordinary composing-token model treats every `.`/`@`/`-`/`_`/`/` as its own
+     * delimiter, letting the normal pipeline touch even one fragment would risk corrupting the value across
+     * several separately-finalised pieces. A login field's whole value is learned once, separately, from
+     * the field's own committed text (see [captureCredentialIfLoginField]) - never per-fragment here, and
+     * never into the ordinary dictionary; a URL is simply never learned into the dictionary at all.
      *
      * @return D-122: the number of characters committed (`word.length + delimiter.length`) - matches
      *         [finalizeAndCommit]'s own return contract
      */
-    private fun commitLoginFieldFragment(ic: InputConnection, delimiter: String): Int {
+    private fun commitVerbatimFieldFragment(ic: InputConnection, delimiter: String): Int {
         val word = composing.toString()
         ic.setComposingText(word, 1)
         ic.finishComposingText()
@@ -2515,6 +2534,12 @@ class AdaptKeyService : InputMethodService() {
      *        added. Every other call site keeps the full live preview (the default `false`).
      */
     private fun refreshSuggestions(duringRepeat: Boolean = false) {
+        // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
+        // useful while entering one, so the bar simply stays empty.
+        if (urlMode) {
+            clearSuggestions()
+            return
+        }
         // D-142: a recognised login field replaces the entire ordinary pipeline below - offering a normal
         // dictionary word while entering a username/email is never useful, and a password field shows no
         // suggestions at all (see showCredentialSuggestions).
@@ -2903,7 +2928,7 @@ class AdaptKeyService : InputMethodService() {
             // D-142: commits the tapped credential value exactly as stored - never §6-capitalised, and
             // reinforced in the credential store, never the ordinary dictionary (learnWord). item.word is
             // always the *whole* intended value (e.g. a full "local@domain" completion), but the field may
-            // already hold several already-committed fragments of it (commitLoginFieldFragment commits
+            // already hold several already-committed fragments of it (commitVerbatimFieldFragment commits
             // each `.`/`@`/`-`/`_` as its own delimiter) plus whatever is still composing - all of that is
             // deleted first, so the tap replaces the value typed so far instead of appending after it.
             SuggestionController.Kind.CREDENTIAL -> {
@@ -3208,6 +3233,26 @@ class AdaptKeyService : InputMethodService() {
             InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER, InputType.TYPE_CLASS_DATETIME -> InputSurface.SYMBOLS
             else -> InputSurface.LETTERS
         }
+    }
+    
+    /**
+     * D-143: whether [info] is a recognised URL-entry field (`TYPE_TEXT_VARIATION_URI`) - drives the
+     * letters surface's URL-mode bottom row instead of a separate surface, since a URL still needs the
+     * full alphabet for its domain/path (see [urlMode]).
+     *
+     * Compares against the real, unmasked `InputType.TYPE_TEXT_VARIATION_URI` constant, not a hand-rolled
+     * literal - see [de.froehlichmedia.adaptkey.credential.LoginFieldDetector]'s own KDoc for the exact
+     * class-bit-masking mistake this avoids.
+     *
+     * @param info the newly focused field's editor info, or null
+     * @return true when the field's own declared type is a URI-variation text field
+     */
+    private fun isUrlField(info: EditorInfo?): Boolean {
+        val type = info?.inputType ?: return false
+        if (type and InputType.TYPE_MASK_CLASS != InputType.TYPE_CLASS_TEXT) {
+            return false
+        }
+        return (type and InputType.TYPE_MASK_VARIATION) == InputType.TYPE_TEXT_VARIATION_URI
     }
     
     companion object {

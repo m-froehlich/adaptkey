@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.keyboard
 
+import java.util.Locale
+
 /**
  * Modern Greek (monotonic) key map, the alternate alphabet reached via the G-01 language switch.
  *
@@ -46,11 +48,18 @@ object GreekLayout {
      *
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
+     * @param urlMode D-143: true for a recognised URL-entry field - replaces the bottom row's comma/space/
+     *        period trio with [KeyboardLayout.urlBottomRow] (URL entry doesn't depend on the active typing
+     *        alphabet, so it's identical to the Latin layout's); defaults to false.
+     * @param locale D-143: the system locale [KeyboardLayout.urlBottomRow]'s period key resolves its TLD
+     *        popup from ([UrlLocale]); only meaningful when [urlMode] is true.
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
         proportions: KeyProportions = KeyProportions.DEFAULT,
-        showNumberRow: Boolean = true
+        showNumberRow: Boolean = true,
+        urlMode: Boolean = false,
+        locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -68,15 +77,23 @@ object GreekLayout {
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
-        result.add(buildList {
-            // L-03: combined emoji / numeric-layer key, identical to the Latin bottom row.
-            add(Key(label = "😊", code = KeyCode.SYMBOL, hint = "123", weight = proportions.symbolWeight))
-            // D-22: comma / full-stop carry the same long-press punctuation sets as the Latin layout.
-            add(charKey(',', alternatives = KeyboardLayout.COMMA_ALTERNATIVES, weight = proportions.commaWeight))
-            add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-            add(charKey('.', alternatives = KeyboardLayout.PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
-            add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
-        })
+        result.add(
+            if (urlMode) {
+                // D-143: URL entry doesn't depend on the active typing alphabet - identical to the Latin
+                // layout's own URL-mode bottom row.
+                KeyboardLayout.urlBottomRow(proportions, locale)
+            } else {
+                buildList {
+                    // L-03: combined emoji / numeric-layer key, identical to the Latin bottom row.
+                    add(Key(label = "😊", code = KeyCode.SYMBOL, hint = "123", weight = proportions.symbolWeight))
+                    // D-22: comma / full-stop carry the same long-press punctuation sets as the Latin layout.
+                    add(charKey(',', alternatives = KeyboardLayout.COMMA_ALTERNATIVES, weight = proportions.commaWeight))
+                    add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
+                    add(charKey('.', alternatives = KeyboardLayout.PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
+                    add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
+                }
+            }
+        )
         
         return result
     }

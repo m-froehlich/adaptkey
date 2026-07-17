@@ -60,6 +60,23 @@ class KeyGestureTest {
     }
     
     @Test
+    fun `D-143 a horizontal swipe on the URL-mode space key switches surface, not language`() {
+        assertEquals(
+            GestureAction.SWITCH_SURFACE_NEXT,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.LEFT, InputSurface.LETTERS, urlMode = true)
+        )
+        assertEquals(
+            GestureAction.SWITCH_SURFACE_PREV,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.RIGHT, InputSurface.LETTERS, urlMode = true)
+        )
+        // Confirms the default (urlMode = false) is unaffected - still the ordinary language swipe.
+        assertEquals(
+            GestureAction.LANGUAGE_PREV,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.LEFT, InputSurface.LETTERS)
+        )
+    }
+    
+    @Test
     fun `D-19 and D-91 a horizontal swipe on a letter switches surface`() {
         assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.LEFT))
         assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.RIGHT))

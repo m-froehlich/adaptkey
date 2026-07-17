@@ -28,6 +28,30 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§89 DONE (v0.8.55): D-143 implemented - a dedicated URL-mode bottom row, planned with the user before
+  implementation.** Auto-opens (not part of the D-19 swipe cycle) for `TYPE_TEXT_VARIATION_URI` fields, on
+  the letters surface (not a new page - a domain/path still needs the full alphabet). New shared
+  `KeyboardLayout.urlBottomRow()` (also used by `GreekLayout` - URL entry doesn't depend on the active
+  typing alphabet): `[?123] [https://] [www.] [/] [space, narrow] [.] [⏎]`. `/` takes over the comma key's
+  primary slot (comma demoted to its own popup, unchanged otherwise); new `https://`/`www.` `KeyCode.TEXT`
+  keys (§53 precedent) funded by shrinking the now-barely-needed space key; the period key's popup becomes a
+  locale-resolved TLD list (new `UrlLocale`, mirrors `CalculatorLocale`'s JDK-locale-driven approach, plus a
+  2-entry `CCTLD_OVERRIDES` map for GB (`.co.uk`) and US (no idiomatic ccTLD)) instead of `! . ?`.
+  Autocorrect/suggestions/capitalisation suppressed entirely by widening D-142's existing login-field
+  short-circuit in `finalizeAndCommit()` to also cover `urlMode` (renamed `commitLoginFieldFragment()` →
+  `commitVerbatimFieldFragment()`, since the function itself was already feature-agnostic); a new, simpler
+  bypass in `refreshSuggestions()` keeps the bar empty (no credential-style list of its own). G-01's
+  language swipe on the (narrow) URL-mode space key falls through to the ordinary D-19 surface swipe instead,
+  extending `KeyGesture`'s existing D-92 surface check. **Real bug found and fixed while verifying the new
+  `TYPE_TEXT_VARIATION_URI` check against the real SDK (`javap`, not guessed)**: `LoginFieldDetector`'s five
+  variation constants had the `TYPE_CLASS_TEXT` bit wrongly baked in, so `classify()` could never match a
+  real field's masked `inputType` and silently returned `NONE` for every field - plausibly the real
+  explanation for §85's `finanzen.net zero` report, not only the documented "no username variation exists"
+  limitation. Fixed (5 constants + the test literals that encoded the same mistake) - not yet device-
+  confirmed whether this alone resolves §85, since the weak-signal keyword fallback there still applies
+  regardless. 15 new unit tests (`UrlLocaleTest`, `KeyboardLayoutTest`, `GreekLayoutTest`, `KeyGestureTest`).
+  675 unit tests (was 660; +15). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-tested -
+  the new key weights are a considered starting guess, easy to retune (§36/§37/§53 precedent).
 - **§88 DONE (v0.8.54): D-139/D-110 - in-app diagnostic log replaces the need for `adb logcat`.** Requested
   directly - §87's logcat approach needs the phone tethered to a PC, impractical since D-139 happens during
   normal daily use, not a desk-testing session. New `diagnostics/` package: `DiagnosticRingBuffer` (pure, 7
