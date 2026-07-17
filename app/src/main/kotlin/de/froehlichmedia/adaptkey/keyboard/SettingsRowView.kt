@@ -66,29 +66,57 @@ class SettingsRowView @JvmOverloads constructor(
         fun onClearClipboardClick()
     }
     
+    /** D-142: invoked when the credential-mode button is tapped. */
+    fun interface OnCredentialModeClickListener {
+        
+        fun onCredentialModeClick()
+    }
+    
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
     
     var onClearClipboardClick: OnClearClipboardClickListener? = null
     
+    var onCredentialModeClick: OnCredentialModeClickListener? = null
+    
     /** Whether the row is currently open (or mid-opening); false once fully closed. */
     var isOpen: Boolean = false
         private set
     
+    /**
+     * D-142: reflects whether credential mode is currently active for the focused field, so the button's
+     * own background shows the state - reliably-detected email/password fields set this without the
+     * button ever being tapped; a weak-signal or undetected field only sets it once the user actually taps.
+     */
+    var credentialModeActive: Boolean = false
+        set(value) {
+            field = value
+            credentialModeButton.background = credentialModeBackground(value)
+        }
+    
+    private val credentialModeButton = buttonFor("🔑") { onCredentialModeClick?.onCredentialModeClick() }
     private val emojiButton = buttonFor("😊") { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
     private val clearClipboardButton = buttonFor("🗑") { onClearClipboardClick?.onClearClipboardClick() }
     private val content = FrameLayout(context)
     private var heightAnimator: ValueAnimator? = null
+    private var credentialFlashAnimator: ValueAnimator? = null
     
     init {
         content.setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
         val buttonSizePx = dp(BUTTON_SIZE_DP)
         val marginPx = dp(BUTTON_MARGIN_DP)
+        // D-142: the credential-mode button sits at the row's very left edge, ahead of the emoji button.
+        content.addView(
+            credentialModeButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = marginPx }
+        )
         content.addView(
             emojiButton,
-            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = marginPx }
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply {
+                marginStart = marginPx * 2 + buttonSizePx
+            }
         )
         // §69: sits directly left of the settings gear, offset by the gear's own width plus one more
         // button-margin's worth of gap so the two read as a distinct pair at the row's right edge.
@@ -178,6 +206,37 @@ class SettingsRowView @JvmOverloads constructor(
         animator.start()
     }
     
+    /**
+     * D-142: briefly pulses the credential-mode button's opacity a few times - used when a weak signal
+     * suggests the focused field might be a username field, but the signal is not reliable enough to
+     * switch suggestion behaviour automatically; this nudges the user toward the manual toggle instead of
+     * silently guessing. Independent of [credentialModeActive]'s own background state.
+     */
+    fun flashCredentialModeButton() {
+        credentialFlashAnimator?.cancel()
+        val animator = ValueAnimator.ofFloat(1f, 0.3f)
+        animator.duration = FLASH_DURATION_MS
+        animator.repeatMode = ValueAnimator.REVERSE
+        animator.repeatCount = FLASH_REPEAT_COUNT
+        animator.addUpdateListener { credentialModeButton.alpha = it.animatedValue as Float }
+        animator.addListener(object : AnimatorListenerAdapter() {
+            
+            override fun onAnimationEnd(animation: Animator) {
+                credentialModeButton.alpha = 1f
+                credentialFlashAnimator = null
+            }
+        })
+        credentialFlashAnimator = animator
+        animator.start()
+    }
+    
+    private fun credentialModeBackground(active: Boolean): GradientDrawable {
+        return GradientDrawable().apply {
+            setColor(ContextCompat.getColor(context, if (active) R.color.key_background_pressed else R.color.key_background_special))
+            cornerRadius = dp(BUTTON_CORNER_RADIUS_DP).toFloat()
+        }
+    }
+    
     private fun buttonFor(glyph: String, onClick: () -> Unit): TextView {
         return TextView(context).apply {
             text = glyph
@@ -204,6 +263,9 @@ class SettingsRowView @JvmOverloads constructor(
         
         private const val BUTTON_SIZE_DP = 36
         private const val BUTTON_MARGIN_DP = 8
+        // D-142: three reverse-repeats of a 220ms fade reads as a clear, brief pulse without lingering.
+        private const val FLASH_DURATION_MS = 220L
+        private const val FLASH_REPEAT_COUNT = 3
         private const val BUTTON_CORNER_RADIUS_DP = 8
         
         // D-58 precedent (AdaptKeyboardView's own page-slide): quick enough to stay snappy, slow enough

@@ -159,6 +159,12 @@
     <string name="reset_learning_confirm2_message">Dieser Schritt kann nicht rückgängig gemacht werden.</string>
     <string name="reset_learning_done">Erlernung &amp; Kalibrierung zurückgesetzt.</string>
 
+    <!-- D-142: gespeicherte Benutzernamen/E-Mail-Adressen löschen (eigener Speicher, nie das Wörterbuch). -->
+    <string name="d142_clear_credentials_title">Gespeicherte Benutzernamen &amp; E-Mails löschen</string>
+    <string name="d142_clear_credentials_summary">Löscht alle Benutzernamen und E-Mail-Adressen, die AdaptKey aus Anmeldefeldern gelernt hat.</string>
+    <string name="d142_clear_credentials_confirm_message">Alle gespeicherten Benutzernamen und E-Mail-Adressen werden gelöscht. Dies kann nicht rückgängig gemacht werden. Fortfahren?</string>
+    <string name="d142_clear_credentials_done">Gespeicherte Benutzernamen &amp; E-Mails gelöscht.</string>
+
     <!-- Typing style detection (T-04). -->
     <string name="t04_pattern_left_index">Linker Zeigefinger</string>
     <string name="t04_pattern_right_index">Rechter Zeigefinger</string>

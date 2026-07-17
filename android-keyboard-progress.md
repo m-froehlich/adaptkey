@@ -28,6 +28,29 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§82 DONE (v0.8.48): D-142 - login-field credential learning & suggestions, full round.** New `credential/`
+  package: `LoginFieldKind`/`LoginFieldDetector`/`CredentialEntry`/`CredentialRanking` (pure) +
+  `CredentialStore` (SharedPreferences/JSON, own private file, entirely separate from the ordinary
+  dictionary). **Real constraint found mid-implementation, surfaced to the user rather than guessed around**:
+  `EditorInfo` has no `autofillHints` field at all (confirmed via `javap` against the real `android-35`
+  `android.jar`) - so `InputType`'s variation bits are the only reliable field-level signal, and they have no
+  variation for "username" at all. **Agreed compromise**: EMAIL fields are fully automatic (reliable
+  `InputType` detection); PASSWORD fields are reliably detected and always excluded (never learned, never
+  suggested into); USERNAME has no reliable signal, so it is reached only via a new weak
+  `hintText`/`fieldName`-keyword signal (nudges - auto-opens the settings row and flashes a new 4th button,
+  leftmost, ahead of emoji - never silently switches behaviour) or the same button's manual toggle for a
+  field the detection missed entirely. Learning is immediate (no D-37 threshold), captured from
+  `handleEnter()` and `onFinishInput()` by reading the field's real committed text (not `composing`, since
+  every `.`/`@`/`-`/`_` is its own delimiter under the ordinary token model) - a new
+  `commitLoginFieldFragment()` short-circuits `finalizeAndCommit()` for every login-relevant field so no
+  fragment is ever autocorrected/capitalised/learned into the ordinary dictionary. Suggestions replace the
+  entire ordinary pipeline (new `SuggestionController.Kind.CREDENTIAL`, mirrors the D-36 clipboard-chip
+  precedent) - the credential list for USERNAME/EMAIL, nothing at all for PASSWORD, and the user's own
+  most-used email domains (summed frequency across aliases) once `@` is typed in an EMAIL field. A new
+  single-confirm settings action clears the whole store. 27 new tests (`LoginFieldDetectorTest`,
+  `CredentialRankingTest`, `CredentialStoreRoboTest`). 649 unit tests (was 622; +27).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - real login forms are
+  exactly what this needs to be judged against.
 - **§81 DONE (v0.8.47): D-140 - rejected autocorrect/split commits are now un-learned, not just visually
   reverted; D-141 - "Uhr" suggestion no longer appears/applies before the trailing space.** **D-140**: new
   `DictionaryStore.unlearn()` (symmetric inverse of `learn()`, removes an entry once its count hits zero) +

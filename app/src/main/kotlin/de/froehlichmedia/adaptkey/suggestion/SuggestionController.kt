@@ -25,7 +25,15 @@ class SuggestionController(private val config: SuggestionConfig) {
         VERBATIM,
         
         /** D-36: a direct-paste chip showing (a preview of) the clipboard; tapping it pastes. */
-        CLIPBOARD
+        CLIPBOARD,
+        
+        /** D-142: a saved username/email/domain-completion value in a recognised login field; tapping it
+         * commits [DisplayItem.word] verbatim (never §6-capitalised) and reinforces it in the credential
+         * store, never the ordinary dictionary. Built and pushed directly to the suggestion bar, bypassing
+         * this class's own [update]/[displayed] (S-03 position stabilisation is for smoothing prose-typing
+         * suggestion flicker; a short, freshly-ranked credential list has no need for it), mirroring how
+         * [CLIPBOARD] is already handled. */
+        CREDENTIAL
     }
     
     /**

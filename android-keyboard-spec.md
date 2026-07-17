@@ -4104,3 +4104,82 @@ correctly in D-68/§63 and later.
 
 622 unit tests (was 612; +10). `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of this round's
 items have been device-confirmed yet.
+
+## §82 - D-142 Implemented: Login-Field Credential Learning & Suggestions (v0.8.48)
+
+Implements the §80 capture, with one real technical finding that reshaped its scope - surfaced to the user
+before continuing, rather than silently narrowed or guessed around.
+
+### Real constraint found: `EditorInfo` has no autofill-hint field at all
+§80's own design leaned on `EditorInfo.autofillHints` for username detection - the compiler flagged it as
+unresolved, then verified directly against the real `android-35` `android.jar` via `javap` (not assumed):
+no such field exists on `EditorInfo` at all. Autofill hints live on the target app's own `View`, which an
+IME never has a reference to. `InputType`'s variation bits remain the only reliable field-level signal, and
+they distinguish email/password cleanly - but have no variation for "username" whatsoever, so a plain login
+field is, at the `EditorInfo` level, indistinguishable from any other text field. Guessing from a bare
+unvaried text field would have wrongly treated ordinary prose fields (chat, notes, search) as login fields
+everywhere - explicitly rejected rather than shipped.
+
+### Agreed compromise
+- **EMAIL fields**: fully automatic ("obligatorisch") - reliably detected via
+  `InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS`/`WEB_EMAIL_ADDRESS`.
+- **PASSWORD fields**: reliably detected and always excluded - never learned from, never suggested into.
+- **USERNAME**: no reliable field-level signal exists, so it is never auto-activated from field type alone.
+  Two ways in instead:
+  1. A new **weak signal** (`LoginFieldDetector.hasWeakUsernameSignal()`) checks the field's own
+     `EditorInfo.hintText`/`fieldName` (an app-supplied placeholder string, set only sometimes, often
+     localised) against a small username-keyword list (EN/DE plus a couple of others). When it fires, the
+     settings row auto-opens and its new credential-mode button flashes - a *nudge*, never a silent switch.
+  2. A new **manual toggle**: a fourth settings-row button (leftmost, ahead of the emoji button) always lets
+     the user switch the current field into credential mode by hand, for any field the detection missed
+     entirely - swipe up, tap the key-glyph button.
+
+### New `credential/` package (pure + Android glue, mirroring the dictionary/store split)
+`LoginFieldKind` (NONE/USERNAME/EMAIL/PASSWORD), `LoginFieldDetector` (pure `classify()` +
+`hasWeakUsernameSignal()`), `CredentialEntry`, `CredentialRanking` (pure: prefix-match suggestions + domain-
+frequency ranking), `CredentialStore` (SharedPreferences/JSON, mirrors `RecentEmojiStore`'s pattern - its own
+private file, entirely separate from the ordinary dictionary and every other store).
+
+### Learning (D-142 point 1: immediate, no D-37 threshold)
+`CredentialStore.learn()` always reinforces on the very first observation - deliberate credential input is
+precise by construction, unlike an ordinary new dictionary word the D-37 threshold guards against learning
+too eagerly. Captured from two points: `handleEnter()` (the common case, right before the field's own submit
+action can navigate away or clear the field) and `onFinishInput()` (catches leaving the field some other way,
+e.g. tapping an on-screen "Login" button) - a `credentialCaptured` flag stops the second from double-
+reinforcing the same observation. Reads the field's own committed text via
+`InputConnection.getTextBeforeCursor()`, not `composing` - necessary because `finalizeAndCommit()`'s ordinary
+per-fragment delimiter model would otherwise autocorrect/capitalise an email address piecemeal as it is typed
+(every `.`/`@`/`-`/`_` is its own delimiter under the existing token model). New `commitLoginFieldFragment()`
+is a `finalizeAndCommit()` short-circuit for every login-relevant field (USERNAME/EMAIL/PASSWORD): commits
+each fragment exactly as typed, no autocorrect, no §6 capitalisation, no dictionary learning at all - the
+whole value is captured once, separately, never per-fragment into the ordinary dictionary.
+
+### Suggestions (D-142 points 2/3: a separate list, exclusively shown)
+`refreshSuggestions()` branches to a new `showCredentialSuggestions()` for any non-`NONE` `loginFieldKind`,
+entirely bypassing the ordinary dictionary/tier-1/tier-3 pipeline - a normal word is never offered in a login
+field. Built and pushed directly to the suggestion bar via a new `SuggestionController.Kind.CREDENTIAL`
+(mirrors the existing D-36 `CLIPBOARD` chip precedent - bypasses `SuggestionController.update()`/`displayed()`
+entirely, since S-03's position stabilisation exists to smooth prose-typing flicker a short, freshly-ranked
+credential list has no need for). Tapping a credential suggestion deletes whatever is already typed in the
+field first (the value-so-far may span several already-committed fragments plus the live composing one)
+before committing the full tapped value, so it replaces rather than appends onto it. A PASSWORD field shows
+nothing at all - offering suggestions while typing a password would be a pointless information leak, on top
+of never being learned from in the first place.
+
+### Domain completion (D-142 point 4)
+Once the value typed so far in an EMAIL field contains `@`, `showCredentialSuggestions()` switches to
+`CredentialRanking.emailDomainsFor()` - the user's own most-used domains (summed frequency across every alias
+on that domain, so several less-frequent aliases on one domain still correctly outrank a single more-frequent
+one elsewhere), completing the address instead of matching whole saved addresses.
+
+### Privacy
+A new settings action (Info & Privacy category, `d142_clear_credentials`) deletes the whole credential store
+in one confirmation dialog (single-confirm, unlike `reset_learning`'s double-confirm - far lower-stakes,
+nothing about typing quality is affected by clearing it, unlike wiping the whole learned touch model).
+
+27 new unit tests (`LoginFieldDetectorTest`, `CredentialRankingTest`, `CredentialStoreRoboTest`).
+`AdaptKeyService`'s own wiring (field capture, suggestion branching, the settings-row button) is
+service/`InputConnection`/view glue with no independently testable pure logic beyond what these cover - the
+established testing gap for this layer. 649 unit tests total (was 622). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. **Not yet device-confirmed** - this is exactly the area (real login forms,
+real apps' actual `EditorInfo`/hint-text behaviour) that can only really be judged on a real device.

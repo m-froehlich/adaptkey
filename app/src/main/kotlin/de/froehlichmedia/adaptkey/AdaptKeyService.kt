@@ -45,6 +45,10 @@ import de.froehlichmedia.adaptkey.capitalisation.CapsMode
 import de.froehlichmedia.adaptkey.capitalisation.SentenceBoundary
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
+import de.froehlichmedia.adaptkey.credential.CredentialRanking
+import de.froehlichmedia.adaptkey.credential.CredentialStore
+import de.froehlichmedia.adaptkey.credential.LoginFieldDetector
+import de.froehlichmedia.adaptkey.credential.LoginFieldKind
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
@@ -246,6 +250,20 @@ class AdaptKeyService : InputMethodService() {
     private var tokenSentenceStart = false
     private var tokenAfterHyphen = false
     
+    // D-142: the currently focused field's login-relevance, classified from EditorInfo in onStartInput.
+    // Drives both the suggestion pipeline (the credential list instead of the dictionary for USERNAME/
+    // EMAIL, nothing at all for PASSWORD) and what gets learned (see captureCredentialIfLoginField).
+    private var loginFieldKind = LoginFieldKind.NONE
+    
+    // D-142: whether this field's value has already been captured once - prevents double-reinforcing the
+    // same observation should both handleEnter() and onFinishInput() fire for the same field.
+    private var credentialCaptured = false
+    
+    // D-142: whether LoginFieldDetector.hasWeakUsernameSignal() fired for the current field (only ever set
+    // when loginFieldKind is still NONE) - drives the settings-row auto-open + button flash nudge in
+    // onStartInputView(), never suggestion behaviour by itself.
+    private var weakUsernameSignal = false
+    
     // A-03: the text before the cursor captured at token start, so the language of the recent context
     // (this text plus the token being typed) can be judged without re-reading the field per keystroke.
     private var tokenContextBefore = ""
@@ -443,6 +461,7 @@ class AdaptKeyService : InputMethodService() {
         row.onEmojiClick = SettingsRowView.OnEmojiClickListener { openEmojiPanelFromSettingsRow() }
         row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
         row.onClearClipboardClick = SettingsRowView.OnClearClipboardClickListener { clearClipboardFromSettingsRow() }
+        row.onCredentialModeClick = SettingsRowView.OnCredentialModeClickListener { toggleCredentialModeFromSettingsRow() }
         settingsRow = row
         
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
@@ -597,6 +616,16 @@ class AdaptKeyService : InputMethodService() {
         // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens
         // straight to the calculator page instead of the letters surface.
         setSurface(initialSurfaceFor(info), targetSymbolPage = 1)
+        // D-142: classify the field once per focus - drives both the suggestion pipeline and what gets
+        // learned for the rest of this field's session (see refreshSuggestions/captureCredentialIfLoginField).
+        // EMAIL/PASSWORD are reliably signalled by InputType; USERNAME has no such signal at all (verified
+        // against the real SDK, see LoginFieldDetector's own KDoc) - only ever reached via the settings
+        // row's manual toggle, optionally nudged by the weak hasWeakUsernameSignal() below.
+        loginFieldKind = LoginFieldDetector.classify((info?.inputType ?: 0) and InputType.TYPE_MASK_VARIATION)
+        credentialCaptured = false
+        settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        weakUsernameSignal = loginFieldKind == LoginFieldKind.NONE &&
+            LoginFieldDetector.hasWeakUsernameSignal(info?.hintText, info?.fieldName)
         clearSuggestions()
     }
     
@@ -706,10 +735,26 @@ class AdaptKeyService : InputMethodService() {
         // ordinary settings-screen change while the service stays resident, not only per field focus).
         reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
-        // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
-        showClipboardChipIfAvailable()
+        // D-142: a recognised login field shows its own credential suggestions immediately, even before
+        // anything is typed (the user's usual identifiers, most-used first) - takes priority over the
+        // generic D-36 paste chip below, which would otherwise compete for the same bar slot.
+        if (loginFieldKind == LoginFieldKind.USERNAME || loginFieldKind == LoginFieldKind.EMAIL) {
+            showCredentialSuggestions()
+        } else {
+            // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
+            showClipboardChipIfAvailable()
+        }
         // §48: never carry an open settings row over into a fresh keyboard presentation.
         settingsRow?.closeImmediately()
+        // D-142: reflect a reliable EMAIL/PASSWORD classification on the toggle button immediately; a weak
+        // (unreliable) username signal instead proactively opens the row and flashes the button, nudging
+        // the user to confirm manually rather than silently guessing and risking ordinary text fields
+        // elsewhere being wrongly treated as login fields.
+        settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        if (weakUsernameSignal) {
+            settingsRow?.open()
+            settingsRow?.flashCredentialModeButton()
+        }
         // D-135: never carry a previous field's autofill suggestions over into a fresh one - a new
         // onCreateInlineSuggestionsRequest()/onInlineSuggestionsResponse() round-trip supplies fresh ones
         // (or none) for whatever field is now focused.
@@ -809,6 +854,85 @@ class AdaptKeyService : InputMethodService() {
         val chip = SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, "")
         suggestionBar?.setItems(listOf(chip))
         suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * D-142: replaces the ordinary suggestion pipeline entirely while a recognised login field is
+     * focused. A password field ([LoginFieldKind.PASSWORD]) shows nothing at all - offering suggestions
+     * while typing a password would be a pointless information leak, and this feature never learns from
+     * one anyway (see [captureCredentialIfLoginField]). A username/email field shows the saved credential
+     * list instead of the ordinary dictionary - a normal word is never something the user would want to
+     * type here. Once the value typed so far in an email field contains `@`, the list switches to the
+     * user's own most-used domains completing the address instead of matching whole saved addresses,
+     * since the local part is already fixed and only the domain is still open.
+     *
+     * Reads the field's own text via [InputConnection.getTextBeforeCursor] rather than [composing]:
+     * [commitLoginFieldFragment] commits every `.`/`@`/`-`/`_` as its own delimiter, so `composing` alone
+     * only ever holds the current fragment (e.g. just `"e"` of `"peter@e"`) - the field's real text
+     * already includes both the earlier committed fragments and the live composing span, in one read.
+     *
+     * Built and pushed directly to [suggestionBar], bypassing [controller] entirely (mirrors how the D-36
+     * clipboard chip is already handled) - S-03's position stabilisation exists to smooth prose-typing
+     * suggestion flicker, which a short, freshly-ranked credential list has no need for.
+     */
+    private fun showCredentialSuggestions() {
+        handler.removeCallbacks(resortRunnable)
+        controller.clear()
+        lastTier3Result = Tier3Result.EMPTY
+        lastCapProposal = null
+        if (loginFieldKind == LoginFieldKind.PASSWORD) {
+            suggestionBar?.setItems(emptyList())
+            suggestionBar?.visibility = View.VISIBLE
+            return
+        }
+        val input = currentInputConnection?.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString()
+            ?.takeLastWhile { !it.isWhitespace() }
+            .orEmpty()
+        val entries = CredentialStore.all(this)
+        val atIndex = input.indexOf('@')
+        val values = if (loginFieldKind == LoginFieldKind.EMAIL && atIndex >= 0) {
+            val localPart = input.substring(0, atIndex)
+            val domainPrefix = input.substring(atIndex + 1)
+            CredentialRanking.emailDomainsFor(entries, domainPrefix, config.maxSuggestions).map { "$localPart@$it" }
+        } else {
+            CredentialRanking.suggestionsFor(entries, input, config.maxSuggestions)
+        }
+        val items = values
+            .filterNot { it.equals(input, ignoreCase = true) }
+            .map { SuggestionController.DisplayItem(it, SuggestionController.Kind.CREDENTIAL, it) }
+        suggestionBar?.setItems(items)
+        suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * D-142: saves the value just entered into a recognised username/email field, immediately (no D-37
+     * count-up threshold - deliberate credential input is precise by construction). Called from both
+     * [handleEnter] (the common case - the field's own "Weiter"/"Login" submit) and [onFinishInput] (the
+     * field losing focus some other way, e.g. tapping an on-screen button instead) - [credentialCaptured]
+     * makes the second call a no-op when the first already ran for this field. Best-effort: if the target
+     * app clears the field's content before either of these fires, there is nothing left to read.
+     *
+     * @param ic the current input connection
+     */
+    private fun captureCredentialIfLoginField(ic: InputConnection) {
+        val kind = loginFieldKind
+        if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured) {
+            return
+        }
+        credentialCaptured = true
+        ic.finishComposingText()
+        val before = ic.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString() ?: return
+        // A login field's own content is normally the whole field (no internal spaces) - only the
+        // trailing run of non-whitespace characters right before the cursor is the credential value.
+        val value = before.takeLastWhile { !it.isWhitespace() }
+        if (value.length < MIN_CREDENTIAL_LENGTH) {
+            return
+        }
+        // A field classified as USERNAME may still be where the user typed their email as the identifier
+        // (common on real login forms) - reclassify from the value itself so it is stored (and later
+        // offered for @-domain completion) correctly.
+        val actualKind = if (value.contains('@')) LoginFieldKind.EMAIL else kind
+        CredentialStore.learn(this, value, actualKind)
     }
     
     /**
@@ -980,6 +1104,9 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onFinishInput() {
         super.onFinishInput()
+        // D-142: catches leaving a login field WITHOUT pressing Enter (e.g. tapping an on-screen "Login"
+        // button) - must run before the connection below is torn down, and before composing is cleared.
+        currentInputConnection?.let { captureCredentialIfLoginField(it) }
         composing.setLength(0)
         clearSuggestions()
         // D-68: the typing pattern (T-04) is no longer re-derived here - it is now an explicit user choice
@@ -1107,6 +1234,9 @@ class AdaptKeyService : InputMethodService() {
         }
         // Single-line field: commit the pending word without a newline, then submit.
         finalizeAndCommit(ic, "")
+        // D-142: a login field's value is typically finished right here (Enter/"Weiter"/"Login"), before
+        // the app's own submit action can navigate away or clear the field.
+        captureCredentialIfLoginField(ic)
         val action = imeOptions and EditorInfo.IME_MASK_ACTION
         val noEnterAction = (imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0
         if (!noEnterAction && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
@@ -1439,6 +1569,23 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-142: the settings row's credential-mode button - manually switches the currently focused field
+     * into credential mode (the saved-username/email suggestion list, immediate learning on submit) when
+     * it could not be auto-detected (see [LoginFieldDetector] - `InputType` has no signal for a plain
+     * username field at all). A no-op for a field already reliably classified as EMAIL/PASSWORD - those
+     * are not user-toggleable. Tapping again while manually active switches back off.
+     */
+    private fun toggleCredentialModeFromSettingsRow() {
+        loginFieldKind = when (loginFieldKind) {
+            LoginFieldKind.NONE -> LoginFieldKind.USERNAME
+            LoginFieldKind.USERNAME -> LoginFieldKind.NONE
+            LoginFieldKind.EMAIL, LoginFieldKind.PASSWORD -> loginFieldKind
+        }
+        settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        closeSettingsRow { refreshSuggestions() }
+    }
+    
+    /**
      * Deletes the whole previous word (G-02). An in-progress composing token is dropped outright;
      * otherwise the committed previous word (and the whitespace before the cursor) is removed via
      * [WordBoundary].
@@ -1625,6 +1772,21 @@ class AdaptKeyService : InputMethodService() {
     private fun finalizeAndCommit(ic: InputConnection, delimiter: String, spaceInferred: Char? = null): Int {
         val mergeChar = pendingMergeChar
         pendingMergeChar = null
+        
+        // D-142: a login field's value must never be touched by autocorrect/capitalisation/token-repair,
+        // and must never be learned fragment-by-fragment into the ordinary dictionary - each `.`/`@`/`-`/
+        // `_` is its own delimiter under the ordinary composing-token model, so without this short-circuit
+        // an email address would be autocorrected/capitalised piecemeal as it is typed. Every fragment
+        // commits exactly as typed instead; the whole value is captured once, separately, from the
+        // field's own committed text (see captureCredentialIfLoginField), never here.
+        if (loginFieldKind != LoginFieldKind.NONE) {
+            if (composing.isEmpty()) {
+                ic.commitText(delimiter, 1)
+                clearUndo()
+                return delimiter.length
+            }
+            return commitLoginFieldFragment(ic, delimiter)
+        }
         
         if (composing.isEmpty()) {
             // D-29: a punctuation mark right after an accepted suggestion removes the auto-added trailing
@@ -1868,6 +2030,30 @@ class AdaptKeyService : InputMethodService() {
         // D-43: predict the next word instead of leaving the bar blank.
         showNextWordPredictions()
         armShiftForNextWord(ic)
+        return word.length + delimiter.length
+    }
+    
+    /**
+     * D-142: commits the composing fragment exactly as typed, followed by [delimiter], with no
+     * autocorrect, §6 capitalisation, token-repair or dictionary learning at all - the [finalizeAndCommit]
+     * short-circuit for every login-relevant field (username/email/password). A login field's value is a
+     * precise identifier, not prose: it must never be silently "corrected", and since the ordinary
+     * composing-token model treats every `.`/`@`/`-`/`_` as its own delimiter, letting the normal pipeline
+     * touch even one fragment would risk corrupting the value across several separately-finalised pieces.
+     * The whole value is learned once, separately, from the field's own committed text (see
+     * [captureCredentialIfLoginField]) - never per-fragment here, and never into the ordinary dictionary.
+     *
+     * @return D-122: the number of characters committed (`word.length + delimiter.length`) - matches
+     *         [finalizeAndCommit]'s own return contract
+     */
+    private fun commitLoginFieldFragment(ic: InputConnection, delimiter: String): Int {
+        val word = composing.toString()
+        ic.setComposingText(word, 1)
+        ic.finishComposingText()
+        clearComposing()
+        resetWordEndShift()
+        ic.commitText(delimiter, 1)
+        clearUndo()
         return word.length + delimiter.length
     }
     
@@ -2255,6 +2441,13 @@ class AdaptKeyService : InputMethodService() {
      *        added. Every other call site keeps the full live preview (the default `false`).
      */
     private fun refreshSuggestions(duringRepeat: Boolean = false) {
+        // D-142: a recognised login field replaces the entire ordinary pipeline below - offering a normal
+        // dictionary word while entering a username/email is never useful, and a password field shows no
+        // suggestions at all (see showCredentialSuggestions).
+        if (loginFieldKind != LoginFieldKind.NONE) {
+            showCredentialSuggestions()
+            return
+        }
         val input = composing.toString()
         if (input.isEmpty()) {
             clearSuggestions()
@@ -2632,6 +2825,27 @@ class AdaptKeyService : InputMethodService() {
                 }
                 clearSuggestions()
             }
+            
+            // D-142: commits the tapped credential value exactly as stored - never §6-capitalised, and
+            // reinforced in the credential store, never the ordinary dictionary (learnWord). item.word is
+            // always the *whole* intended value (e.g. a full "local@domain" completion), but the field may
+            // already hold several already-committed fragments of it (commitLoginFieldFragment commits
+            // each `.`/`@`/`-`/`_` as its own delimiter) plus whatever is still composing - all of that is
+            // deleted first, so the tap replaces the value typed so far instead of appending after it.
+            SuggestionController.Kind.CREDENTIAL -> {
+                ic.finishComposingText()
+                clearComposing()
+                val existing = ic.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString()
+                    ?.takeLastWhile { !it.isWhitespace() }.orEmpty()
+                if (existing.isNotEmpty()) {
+                    ic.deleteSurroundingText(existing.length, 0)
+                }
+                ic.commitText(item.word, 1)
+                val actualKind = if (item.word.contains('@')) LoginFieldKind.EMAIL else loginFieldKind
+                CredentialStore.learn(this, item.word, actualKind)
+                credentialCaptured = true
+                clearSuggestions()
+            }
         }
     }
     
@@ -2986,5 +3200,12 @@ class AdaptKeyService : InputMethodService() {
         private const val TIME_LOOKBACK = 16
         
         private const val UHR = "Uhr"
+        
+        // D-142: how far back to read for a login field's own value - generous enough for a realistic
+        // email address or username, short enough to stay a cheap read.
+        private const val CREDENTIAL_LOOKBACK = 128
+        
+        // D-142: a single stray character is not a plausible credential value worth saving.
+        private const val MIN_CREDENTIAL_LENGTH = 2
     }
 }

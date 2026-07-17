@@ -159,6 +159,12 @@
     <string name="reset_learning_confirm2_message">Αυτό το βήμα δεν μπορεί να αναιρεθεί.</string>
     <string name="reset_learning_done">Η εκμάθηση &amp; η βαθμονόμηση επαναφέρθηκαν.</string>
 
+    <!-- D-142: διαγραφή αποθηκευμένων ονομάτων χρήστη/διευθύνσεων email (ξεχωριστή αποθήκευση, ποτέ το λεξικό). -->
+    <string name="d142_clear_credentials_title">Διαγραφή αποθηκευμένων ονομάτων χρήστη &amp; email</string>
+    <string name="d142_clear_credentials_summary">Διαγράφει κάθε όνομα χρήστη και διεύθυνση email που έμαθε το AdaptKey από πεδία σύνδεσης.</string>
+    <string name="d142_clear_credentials_confirm_message">Όλα τα αποθηκευμένα ονόματα χρήστη και οι διευθύνσεις email θα διαγραφούν. Αυτό δεν μπορεί να αναιρεθεί. Συνέχεια;</string>
+    <string name="d142_clear_credentials_done">Τα αποθηκευμένα ονόματα χρήστη &amp; email διαγράφηκαν.</string>
+
     <!-- Typing style detection (T-04). -->
     <string name="t04_pattern_left_index">Αριστερός δείκτης</string>
     <string name="t04_pattern_right_index">Δεξιός δείκτης</string>

@@ -159,6 +159,12 @@
     <string name="reset_learning_confirm2_message">This step cannot be undone.</string>
     <string name="reset_learning_done">Learning &amp; calibration reset.</string>
 
+    <!-- D-142: clear the saved usernames/email addresses (a separate store, never the dictionary). -->
+    <string name="d142_clear_credentials_title">Clear saved usernames &amp; emails</string>
+    <string name="d142_clear_credentials_summary">Deletes every username and email address AdaptKey has learned from login fields.</string>
+    <string name="d142_clear_credentials_confirm_message">Every saved username and email address will be deleted. This cannot be undone. Continue?</string>
+    <string name="d142_clear_credentials_done">Saved usernames &amp; emails cleared.</string>
+
     <!-- Typing style detection (T-04). -->
     <string name="t04_pattern_left_index">Left index finger</string>
     <string name="t04_pattern_right_index">Right index finger</string>

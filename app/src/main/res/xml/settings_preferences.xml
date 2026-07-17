@@ -35,6 +35,11 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.FeatureOverviewActivity" />
         </Preference>
 
+        <Preference
+            android:key="d142_clear_credentials"
+            android:title="@string/d142_clear_credentials_title"
+            android:summary="@string/d142_clear_credentials_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_layout">
