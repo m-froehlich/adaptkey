@@ -28,6 +28,17 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§87 DONE (v0.8.53): D-139 - diagnostic logging added while typing.** Requested directly - the reported
+  text-jitter/character-scramble happens fairly often for the user but isn't immediately reproducible with
+  the same text, matching the suspected timing-dependent `onUpdateSelection()` cascade from §73/§76. New
+  `AdaptKeyJitter` log tag (separate from §86's `AdaptKey` tag) logs every `onUpdateSelection()` call (old/new
+  selection, composing state, ownEdit result, and the exact composing string right before a wipe), every
+  `CallbackBurstGuard` trip (now `Log.w`, previously silent), every actual `reclaimSurroundingWord()` splice,
+  every `updateComposing()` push (the literal string sent to the field), and `finalizeAndCommit()`'s
+  typed-vs-committed pair - `adb logcat -s AdaptKeyJitter:D` while typing to finally catch it in the act. Not
+  gated behind any flag (logcat-only, never transmitted, same bar as D-09's own now-removed diagnostic) -
+  temporary, to be removed once D-139 is closed. No new tests (pure logging). 652 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 - **§86 DONE (v0.8.52): D-110 picked up - a real bug found and fixed, honestly not claimed as the full
   explanation.** Both candidate causes named in D-110's own original write-up were ruled out by direct code
   check (no `NO_SUGGESTIONS`/filter-variant handling exists anywhere; `CapitalisationEngine` already consults

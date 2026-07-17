@@ -668,6 +668,15 @@ class AdaptKeyService : InputMethodService() {
         candidatesEnd: Int
     ) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
+        // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
+        // characters get scrambled" glitch in the act. Remove once D-139 is closed for good.
+        Log.d(
+            "AdaptKeyJitter",
+            "onUpdateSelection t=${SystemClock.uptimeMillis()} old=[$oldSelStart,$oldSelEnd] " +
+                "new=[$newSelStart,$newSelEnd] candidates=[$candidatesStart,$candidatesEnd] " +
+                "composing=\"$composing\" anchor=$composingAnchor cursor=$composingCursor"
+        )
         // D-139: a defensive circuit breaker, not a confirmed fix - no repro exists yet for the reported
         // "text jitters, characters get scrambled" glitch, but this function's own reactive mutations
         // (reclaimWordAtCaret() below / finishComposingText() further down) could in principle re-trigger
@@ -676,6 +685,9 @@ class AdaptKeyService : InputMethodService() {
         // fires abnormally often in a short window, stop reacting rather than let a possible cascade
         // continue to escalate - see CallbackBurstGuard for the threshold reasoning.
         if (selectionUpdateBurstGuard.isBurst(SystemClock.uptimeMillis())) {
+            // D-139 (temporary diagnostic): if this ever actually fires, it is close to a smoking gun for
+            // the suspected self-triggering cascade - flagged at warning level so it stands out in logcat.
+            Log.w("AdaptKeyJitter", "onUpdateSelection: CallbackBurstGuard TRIPPED - suppressing reactive branches")
             return
         }
         if (composing.isEmpty()) {
@@ -694,6 +706,9 @@ class AdaptKeyService : InputMethodService() {
         val ownCursor = if (composingAnchor >= 0) composingAnchor + composingCursor else candidatesEnd
         val ownEdit = newSelStart == newSelEnd && candidatesEnd >= 0 && newSelStart == ownCursor
         if (!ownEdit) {
+            // D-139 (temporary diagnostic): this branch wipes the in-progress token - exactly what a
+            // reported scramble/jitter would look like if it fires when it should not.
+            Log.d("AdaptKeyJitter", "onUpdateSelection: NOT ownEdit (ownCursor=$ownCursor) - finishing+clearing composing=\"$composing\"")
             currentInputConnection?.finishComposingText()
             clearComposing()
             pendingMergeChar = null
@@ -1919,6 +1934,10 @@ class AdaptKeyService : InputMethodService() {
         val contextWord = previousWord
         val tier1KnewCorrected = provider.isKnownWord(corrected)
         val finalWord = capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper)
+        // D-139 (temporary diagnostic): the actual permanent write to the field - typed vs. what got
+        // committed, so a scramble that only shows up in the final text (not just while composing) is
+        // still caught here.
+        Log.d("AdaptKeyJitter", "finalizeAndCommit: typed=\"$typed\" -> finalWord=\"$finalWord\" delimiter=\"$delimiter\"")
         
         ic.setComposingText(finalWord, 1)
         ic.finishComposingText()
@@ -2210,6 +2229,9 @@ class AdaptKeyService : InputMethodService() {
     
     private fun updateComposing(ic: InputConnection) {
         val text = composing.toString()
+        // D-139 (temporary diagnostic): the exact string pushed to the field as composing text, on every
+        // call - a scrambled/reordered result should show up directly in this sequence of log lines.
+        Log.d("AdaptKeyJitter", "updateComposing: text=\"$text\" anchor=$composingAnchor cursor=$composingCursor")
         // D-62: setComposingText always leaves the real cursor at the end of the composed text; while
         // editing mid-word (a reclaimed "after" fragment still follows composingCursor) a follow-up
         // setSelection() must pull it back to the logical edit point. Both calls are batched so the app
@@ -2304,6 +2326,10 @@ class AdaptKeyService : InputMethodService() {
         if (reclaim.before.isEmpty() && reclaim.after.isEmpty()) {
             return
         }
+        // D-139 (temporary diagnostic): a reclaim mutates the real editable via deleteSurroundingText()
+        // below, then rebuilds composing from these two fragments - exactly the mechanism §73/§76 suspect
+        // for the reported jitter/scramble, so every actual reclaim (not the common no-op above) is logged.
+        Log.d("AdaptKeyJitter", "reclaimSurroundingWord: before=\"${reclaim.before}\" after=\"${reclaim.after}\"")
         var anchor = -1
         if (reclaim.after.isNotEmpty()) {
             // D-87: see ComposingAnchor for why startOffset must be added, not just selectionStart alone.

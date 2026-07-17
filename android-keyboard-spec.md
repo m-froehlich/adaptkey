@@ -4311,3 +4311,40 @@ own diagnostic was eventually torn out once it had served its purpose.
 1 existing `ShiftGraceTest` case corrected (was asserting the bug as intended behaviour, now asserts the fix).
 652 unit tests (unchanged - a one-line change to an already-tested pure function).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed either way.**
+
+## §87 - D-139: Diagnostic Logging Added While Typing (v0.8.53)
+
+Requested directly, following §86's `AdaptKey:D` diagnostic - the user reports D-139 ("occasionally the whole
+text jitters and its characters get scrambled") happens "nicht selten" (fairly often) but is not immediately
+reproducible with the exact same text again, i.e. genuinely timing-dependent, exactly the shape §73/§76's own
+suspected mechanism (a self-triggering `onUpdateSelection()` cascade in the D-62/D-87 mid-word-reclaim
+machinery) would produce. A new `Log.d`/`Log.w` tag, `AdaptKeyJitter` (kept separate from D-110's `AdaptKey`
+tag, so either can be filtered independently - `adb logcat -s AdaptKeyJitter:D` to watch only this), logs at
+every point §76's own trace identified as load-bearing for the suspected cascade:
+
+- **`onUpdateSelection()`** - every call: timestamp, old/new selection, `candidatesStart`/`candidatesEnd`,
+  and the live `composing`/`composingAnchor`/`composingCursor` state. A second line logs the `ownEdit`
+  determination and, when it comes out false, the exact `composing` string about to be wiped
+  (`finishComposingText()` + `clearComposing()`) - precisely the branch that would produce a visible
+  jitter/scramble if it fires when it should not.
+- **`CallbackBurstGuard` tripping** - previously a silent early return; now an explicit `Log.w`, since this
+  firing at all is close to a smoking gun for the suspected cascade actually happening.
+- **`reclaimSurroundingWord()`** - every *actual* reclaim (not the common no-op): the `before`/`after`
+  fragments it is about to splice into `composing`, right before the `deleteSurroundingText()` call §32/D-87
+  already found risky once before.
+- **`updateComposing()`** - the exact string pushed to the field as composing text on every call. A
+  scrambled/reordered result should show up directly in this sequence of log lines, in order.
+- **`finalizeAndCommit()`** - `typed` vs. the actual `finalWord` permanently written to the field, so a
+  corruption that only shows up in the *committed* text (not just while composing) is still caught.
+
+Deliberately not gated behind a settings toggle or `BuildConfig.DEBUG` check (consistent with §86's own
+`AdaptKey` log) - `Log.d`/`Log.w` output stays on-device in logcat, never transmitted anywhere, matching the
+app's existing "provably offline" posture; capturing it requires physical/`adb` access to the device, the
+same bar D-09's own (now-removed) raw-tap-recording diagnostic set. Composing/committed text content is
+logged verbatim, including whatever the user is actually typing - worth knowing before sharing a captured
+logcat with anyone, though it never leaves the device on its own. Clearly labelled as temporary in every
+comment - to be removed once D-139 is closed for good, the same lifecycle as D-09 and (eventually) §86's own
+`AdaptKey` log.
+
+No new tests - pure Android logging calls with no decision logic of their own. 652 unit tests (unchanged).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green.
