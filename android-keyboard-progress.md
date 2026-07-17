@@ -28,6 +28,23 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§92 DONE (v0.8.58): confirmations + two follow-up fixes.** D-146 (double space) and the single-word-plus-
+  space backspace case **confirmed working**; D-148 **withdrawn** (user can no longer reproduce either
+  backspace-after-suggestion report, will re-open with a fresh repro if it recurs - nothing was implemented).
+  **D-145 corrected**: the D-01 popup centres its *pre-selected* (index-0) cell directly over the stem key -
+  the locale's own ccTLD must be that entry for every locale, not only non-English ones, since it's the one
+  reachable with zero finger movement. `UrlLocale.periodAlternatives()` no longer branches on English vs.
+  other - the ccTLD always leads when one resolves (e.g. `en_GB` now leads with `.co.uk`, not `.com`),
+  falling back to `.com` only when there's no idiomatic ccTLD at all (`en_US`). **D-144 follow-up fixed**:
+  swipe-down never registered when starting on empty bar/row background (only worked starting on a chip/
+  button) - root cause, found from a precise repro: a plain, non-clickable `View`/`ViewGroup`'s default
+  `onTouchEvent()` declines an `ACTION_DOWN` no child claimed, and once a gesture's first event goes
+  unclaimed by anything in a subtree, later events never reach that subtree's `onInterceptTouchEvent()`
+  again - a chip/button claims `ACTION_DOWN` independently (clickable), which is why those worked. Fixed in
+  both `SuggestionBarView` and `SettingsRowView`: `onTouchEvent()` now claims `ACTION_DOWN` unconditionally
+  as its own fallback, reached only when no clickable descendant already claimed it - chip/button taps are
+  unaffected. No new tests (Android touch-dispatch glue). 689 unit tests (was 688; +1 `UrlLocaleTest`).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
 - **§91 DONE (v0.8.57): device-feedback batch on §89/§90 - D-145/D-146/D-147 fixed, D-144's settings-row half
   still open, D-148 captured pending clarification.** **D-145**: two URL-mode popup corrections - `/`'s and
   `.`'s own popups no longer redundantly list themselves (`URL_SLASH_ALTERNATIVES` is now exactly

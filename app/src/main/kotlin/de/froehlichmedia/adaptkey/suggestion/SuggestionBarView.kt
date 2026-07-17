@@ -245,6 +245,16 @@ class SuggestionBarView @JvmOverloads constructor(
             }
             return true
         }
+        // D-144 follow-up: a touch that starts on the bar's own empty background (no chip under it - most
+        // notably an entirely empty bar, D-50) is never offered to a clickable child, and
+        // HorizontalScrollView's own default onTouchEvent() declines an ACTION_DOWN that didn't start on a
+        // child - so without this, such a touch is never tracked as an ongoing gesture at all, and a
+        // downward swipe starting there could never be detected regardless of the interception logic above.
+        // Claiming it here only ever matters in that fallback case: a touch that lands on a chip is already
+        // claimed by the chip itself (clickable) long before dispatch would ever reach this override.
+        if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+            return true
+        }
         return super.onTouchEvent(ev)
     }
     

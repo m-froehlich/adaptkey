@@ -190,25 +190,35 @@ class SettingsRowView @JvmOverloads constructor(
     }
     
     override fun onTouchEvent(ev: MotionEvent): Boolean {
-        if (!swipeDownIntercepting) {
-            return super.onTouchEvent(ev)
-        }
-        when (ev.actionMasked) {
-            MotionEvent.ACTION_UP -> {
-                val direction = SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, swipeDownThresholdPx)
-                swipeDownIntercepting = false
-                if (direction == SwipeDirection.DOWN) {
-                    onSwipeDown?.onSwipeDown()
+        if (swipeDownIntercepting) {
+            when (ev.actionMasked) {
+                MotionEvent.ACTION_UP -> {
+                    val direction = SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, swipeDownThresholdPx)
+                    swipeDownIntercepting = false
+                    if (direction == SwipeDirection.DOWN) {
+                        onSwipeDown?.onSwipeDown()
+                    }
+                    return true
                 }
-                return true
+                
+                MotionEvent.ACTION_CANCEL -> {
+                    swipeDownIntercepting = false
+                    return true
+                }
             }
-            
-            MotionEvent.ACTION_CANCEL -> {
-                swipeDownIntercepting = false
-                return true
-            }
+            return true
         }
-        return true
+        // D-144 follow-up: a touch that starts on the row's own empty background (not on any button) is
+        // never offered to a clickable child, and every view here (this outer FrameLayout, its `content`
+        // child, the plain-clickable buttons) declines an ACTION_DOWN that started on nobody in particular -
+        // so without this, such a touch is never tracked as an ongoing gesture at all, and a downward swipe
+        // starting there could never be detected regardless of the interception logic above. Claiming it
+        // here only ever matters in that fallback case: a touch that lands on a button is already claimed by
+        // the button itself (clickable) long before dispatch would ever reach this override.
+        if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+            return true
+        }
+        return super.onTouchEvent(ev)
     }
     
     /**

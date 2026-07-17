@@ -4676,3 +4676,56 @@ highlight-semantics reversal, deliberately left undesigned until confirmed) - **
 this round**, captured here pending clarification: is this about the bar-tap path specifically (in which
 case a fresh, precise repro is needed, since the current code should already behave as wanted), or a genuine
 request to change what a Backspace does after any autocorrect, silent or tapped?
+
+## §92 - Confirmations on §91, D-144/D-145 Follow-Ups, D-148 Withdrawn (v0.8.58)
+
+Device confirmation on §91's batch: **D-146 (double space mid-text) and the single-word-plus-space backspace
+case both confirmed working.** **D-148 withdrawn** - the user can no longer reproduce either backspace-after-
+suggestion report and will re-open it with a fresh repro if it recurs; nothing was implemented for it, matching
+§91's own "captured pending clarification, not guessed at" stance.
+
+Two precise repro refinements on the still-open items drove both fixes below - both traced to a real,
+concrete, previously-unconsidered mechanism, not guessed at.
+
+### D-145 - Corrected: the Locale-Driven TLD Must Be the *Pre-Selected* Entry, Not Merely Listed First in Prose Order
+§91's `UrlLocale.periodAlternatives()` fix already dropped the redundant bare `.`, but kept the *original*
+D-143 ordering rule ("English leads with the generic TLDs, then its own ccTLD") - reported back as still
+wrong: since the D-01 popup always **centres its pre-selected cell directly over the stem key**
+(`HorizontalLongPressPopup.rowLeft()`, and `preSelectedIndexFor()`'s existing index-0 fallback whenever the
+key's own character isn't itself in the alternatives list, true here since `.` was just removed from it),
+whichever entry sits at index 0 is the one reachable by a straight release with **zero finger movement** -
+by far the most-favoured position, not merely "read first". The locale-specific ccTLD - precisely the one
+suggestion tailored to *this* user's own country - must be that entry, for every locale, not only non-English
+ones. Fixed by dropping the English/non-English branch entirely: `periodAlternatives()` now always leads with
+the ccTLD when [UrlLocale] resolves one, falling back to `.com` only when it doesn't (e.g. `en_US`, which has
+no idiomatic ccTLD at all per the existing `CCTLD_OVERRIDES` entry). `en_GB` now leads with `.co.uk` instead
+of `.com` - the opposite of §89's original design intent, corrected per this direct clarification of *why*
+pre-selection position matters more than list-reading order. Tests updated to match (`UrlLocaleTest`).
+
+### D-144 Follow-Up - Fixed: Swipe-Down Never Registered on an Empty Bar/Row Background
+§90/§91 traced the suggestion-bar and settings-row swipe-down interception logic repeatedly without finding a
+defect, because the defect was not in that logic at all - it was one step earlier. Precise repro this round:
+swipe-down works when the touch **starts on a suggestion chip or a settings-row button**, but not when it
+starts on **empty bar background (no suggestions shown at all) or the row's own empty background (the gaps
+between buttons)**. This pinpointed the real, well-known Android touch-dispatch gotcha: a plain,
+non-clickable `View`/`ViewGroup`'s default `onTouchEvent()` returns `false` for an `ACTION_DOWN` no child
+claimed either - and once a gesture's very first `ACTION_DOWN` goes unclaimed by *anything* in a view's own
+subtree, later events in that same gesture are never delivered to that subtree's `onInterceptTouchEvent()`/
+`onTouchEvent()` at all, regardless of how correct the interception logic itself is. A chip or a button is
+independently clickable, so it *does* claim `ACTION_DOWN` - which is exactly why the gesture worked from
+there. `SuggestionBarView`'s empty state has the identical mechanism, just via `HorizontalScrollView`'s own
+built-in touch handling (which likewise only claims a touch that started on a child) rather than plain
+`View`'s default - same root cause, same fix shape.
+
+Fixed identically in both views: `onTouchEvent()` now explicitly claims `ACTION_DOWN` unconditionally
+(`return true`) as its own fallback, reached only when no clickable descendant already claimed it first - a
+touch that *does* land on a chip/button is completely unaffected, since dispatch already resolves to that
+child long before this fallback is ever reached. This guarantees every gesture starting anywhere within
+either view's own bounds is tracked from its very first event, so the existing (already-correct)
+`onInterceptTouchEvent()` swipe-down detection now gets a genuine chance to run regardless of what, if
+anything, happens to be under the finger at the start. No new unit tests - both changes are Android
+touch-dispatch glue with no independently testable pure logic beyond the already-tested `SwipeGesture`, the
+established gap for this layer.
+
+689 unit tests (was 688; +1, `UrlLocaleTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+re-confirmed on device.

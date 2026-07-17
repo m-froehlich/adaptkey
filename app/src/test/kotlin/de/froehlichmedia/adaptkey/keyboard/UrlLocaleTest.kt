@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test
 import java.util.Locale
 
 /**
- * Unit tests for the D-143/D-144 URL-mode period-key TLD resolution: [UrlLocale.periodAlternatives]
- * orders TLD suggestions per [UrlLocale]'s own doc comment - D-144 correction: never includes the plain
- * full stop itself, since a straight tap already types `.` and repeating it in its own popup is redundant.
+ * Unit tests for the D-143/D-144/D-145 URL-mode period-key TLD resolution:
+ * [UrlLocale.periodAlternatives] never includes the plain full stop itself (D-144 - a straight tap already
+ * types `.`), and the locale's own ccTLD always leads when it has one (D-145 - the D-01 popup centres its
+ * *pre-selected* (first) entry directly over the stem, so the single most personally relevant suggestion
+ * must be the one reachable without any finger movement, regardless of language).
  */
 class UrlLocaleTest {
     
@@ -26,12 +28,12 @@ class UrlLocaleTest {
     }
     
     @Test
-    fun `a UK locale is English - leads with the generic TLDs, then co uk (not the bare uk)`() {
-        assertEquals(listOf(".com", ".org", ".co.uk"), UrlLocale.periodAlternatives(Locale.UK))
+    fun `D-145 a UK locale leads with co uk (not the bare uk), even though English is generic-first elsewhere`() {
+        assertEquals(listOf(".co.uk", ".com", ".org"), UrlLocale.periodAlternatives(Locale.UK))
     }
     
     @Test
-    fun `a US locale is English with no idiomatic ccTLD - only the generic TLDs`() {
+    fun `a US locale is English with no idiomatic ccTLD - leads with the generic com instead`() {
         assertEquals(listOf(".com", ".org"), UrlLocale.periodAlternatives(Locale.US))
     }
     
@@ -44,5 +46,13 @@ class UrlLocaleTest {
     fun `D-144 the bare full stop is never among the alternatives`() {
         assertFalse(UrlLocale.periodAlternatives(Locale.GERMANY).contains("."))
         assertFalse(UrlLocale.periodAlternatives(Locale.US).contains("."))
+    }
+    
+    @Test
+    fun `D-145 the ccTLD, when present, is always the first (pre-selected) entry`() {
+        assertEquals(".de", UrlLocale.periodAlternatives(Locale.GERMANY).first())
+        assertEquals(".co.uk", UrlLocale.periodAlternatives(Locale.UK).first())
+        // No ccTLD for this locale - .com is the sensible first entry instead.
+        assertEquals(".com", UrlLocale.periodAlternatives(Locale.US).first())
     }
 }
