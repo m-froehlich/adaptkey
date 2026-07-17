@@ -28,6 +28,26 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§93 DONE (v0.8.59): both §92 fixes were still wrong, both re-traced from scratch and actually fixed.**
+  **D-144**: `onTouchEvent()` claiming `ACTION_DOWN` (§92's fix) wasn't enough - re-traced against Android's
+  own `ViewGroup.dispatchTouchEvent()` contract and found the real mechanism: `onInterceptTouchEvent()` is
+  only re-consulted for events *after* `ACTION_DOWN` when some child already claimed the gesture
+  (`mFirstTouchTarget != null`); on empty bar/row background nothing claims it, so `onInterceptTouchEvent()`
+  is *never called again* for that gesture, and the swipe-direction detection living inside it (correct as
+  it was) is structurally unreachable there. Fixed by duplicating that same detection directly into
+  `onTouchEvent()`'s own fallback branch (reached only when nothing else claimed the gesture) in both
+  `SuggestionBarView` and `SettingsRowView` - `ACTION_MOVE` there now runs the identical `SwipeGesture`
+  check and sets the shared `swipeDownIntercepting` flag, after which the existing (already-correct)
+  confirm-on-release branch picks it up exactly as it already did for the chip/button-claimed case.
+  **D-145**: "the locale entry must be in the middle" meant the *pre-selected, centred-over-the-stem*
+  position (this key's own original `! . ?` convention - `.` at the true middle, not leading), not "index
+  0" as §91 implemented - device feedback confirmed `.de, .com, .org` when `.com, .de, .org` was wanted.
+  Fixed at both ends: `UrlLocale.periodAlternatives()` now returns the ccTLD in the *middle* of the list;
+  `AdaptKeyboardView.preSelectedIndexFor()` gained a small, structurally-scoped special case for this one
+  key (identifies the ccTLD entry as "neither `.com` nor `.org`", not by a hardcoded index, so it stays
+  correct regardless of list shape) so it is what actually gets pre-selected instead of the generic
+  index-0 fallback. 689 unit tests (unchanged - existing tests updated, no new ones needed).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
 - **§92 DONE (v0.8.58): confirmations + two follow-up fixes.** D-146 (double space) and the single-word-plus-
   space backspace case **confirmed working**; D-148 **withdrawn** (user can no longer reproduce either
   backspace-after-suggestion report, will re-open with a fresh repro if it recurs - nothing was implemented).

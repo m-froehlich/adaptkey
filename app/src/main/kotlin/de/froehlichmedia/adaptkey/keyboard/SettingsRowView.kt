@@ -208,15 +208,32 @@ class SettingsRowView @JvmOverloads constructor(
             }
             return true
         }
-        // D-144 follow-up: a touch that starts on the row's own empty background (not on any button) is
-        // never offered to a clickable child, and every view here (this outer FrameLayout, its `content`
-        // child, the plain-clickable buttons) declines an ACTION_DOWN that started on nobody in particular -
-        // so without this, such a touch is never tracked as an ongoing gesture at all, and a downward swipe
-        // starting there could never be detected regardless of the interception logic above. Claiming it
-        // here only ever matters in that fallback case: a touch that lands on a button is already claimed by
-        // the button itself (clickable) long before dispatch would ever reach this override.
-        if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
-            return true
+        // D-144 follow-up (second pass - the first attempt below wasn't enough): a touch that starts on the
+        // row's own empty background (not on any button) is never offered to a clickable child, so
+        // ViewGroup's own dispatch never establishes a touch target for it at ACTION_DOWN. Per Android's own
+        // documented dispatchTouchEvent() contract, onInterceptTouchEvent() is only re-consulted for a later
+        // event when a touch target already exists ("intercepted = mFirstTouchTarget == null ||
+        // onInterceptTouchEvent(ev)" only runs that check at all when a target is present; otherwise it is
+        // forced true and every event goes straight to this view's own onTouchEvent()) - so the
+        // ACTION_MOVE-based detection in onInterceptTouchEvent() above is structurally *unreachable* for
+        // exactly this case, no matter how correct it is. Claiming ACTION_DOWN alone (this fix's first
+        // attempt) was not enough on its own: it satisfied the "someone claims it" requirement, but the
+        // swipe-direction check itself still only lived in onInterceptTouchEvent(), which this exact
+        // scenario never calls again. This branch is the necessary, fully self-contained fallback: it
+        // re-implements the same detection directly against whichever events onTouchEvent() itself receives,
+        // only ever reached when nothing else claimed the gesture (a touch landing on a button is claimed by
+        // the button itself long before dispatch would reach here).
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> return true
+            
+            MotionEvent.ACTION_MOVE -> {
+                if (SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, interceptThresholdPx) == SwipeDirection.DOWN) {
+                    swipeDownIntercepting = true
+                }
+                return true
+            }
+            
+            MotionEvent.ACTION_CANCEL -> return true
         }
         return super.onTouchEvent(ev)
     }

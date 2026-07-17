@@ -1037,11 +1037,27 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * §53, a [KeyCode.TEXT] key's own [Key.label], e.g. `sin` among `sin`/`cos`/`tan`/`log`), so a
      * straight-up release types the key's normal glyph; falls back to the first alternative (index 0) when
      * that self-value is not in the list (e.g. a letter whose only alternative is its umlaut).
+     *
+     * D-145: the one exception is the URL-mode period key, whose alternatives deliberately never contain
+     * `.` itself (D-144 - repeating it would be redundant) - the generic index-0 fallback would wrongly
+     * pre-select a mere top-level-domain default there. [UrlLocale.periodAlternatives] places the
+     * locale-specific ccTLD suggestion (the one entry that is neither `.com` nor `.org`) at this key's own
+     * historical, pre-URL-mode centre position, so it is pre-selected here the same way - falling back to
+     * index 0 only when no such locale-specific entry exists at all (e.g. `en_US`).
      */
     private fun preSelectedIndexFor(key: Key, alternatives: List<String>): Int {
         val self = key.char?.toString() ?: key.label
         val index = alternatives.indexOf(self)
-        return if (index < 0) 0 else index
+        if (index >= 0) {
+            return index
+        }
+        if (key.code == KeyCode.CHAR && key.char == '.') {
+            val ccTldIndex = alternatives.indexOfFirst { it != ".com" && it != ".org" }
+            if (ccTldIndex >= 0) {
+                return ccTldIndex
+            }
+        }
+        return 0
     }
     
     private fun updatePopupSelection(pointerX: Float) {

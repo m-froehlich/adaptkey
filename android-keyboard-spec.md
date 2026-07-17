@@ -4729,3 +4729,65 @@ established gap for this layer.
 
 689 unit tests (was 688; +1, `UrlLocaleTest`). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 re-confirmed on device.
+
+## §93 - D-144 Actually Fixed, D-145 Corrected Again: the Popup's Centre Position, Not List Order (v0.8.59)
+
+Device feedback on §92: both of its fixes were still wrong, for two different, precisely-diagnosed reasons.
+
+### D-144 Follow-Up - the Real Root Cause: `onInterceptTouchEvent()` Is Structurally Unreachable Once Nothing Claims `ACTION_DOWN`
+§92's "claim `ACTION_DOWN` unconditionally in `onTouchEvent()`" fix did not resolve it - confirmed still
+broken on an empty bar/row background. Re-traced against Android's own documented `ViewGroup.
+dispatchTouchEvent()` contract rather than patching further blindly, and found the actual mechanism: for any
+event **other than** `ACTION_DOWN`, the contract is (paraphrased from the real source):
+```
+intercepted = if (action == ACTION_DOWN || mFirstTouchTarget != null) onInterceptTouchEvent(ev) else true
+```
+`mFirstTouchTarget` is only non-null when some **child** claimed the gesture at `ACTION_DOWN`. When a touch
+starts on empty background, no chip/button (child) claims it, so `mFirstTouchTarget` stays `null` for the
+whole gesture - meaning `onInterceptTouchEvent()` is **never called again** for any later event in that same
+gesture; every subsequent event goes straight to this view's own `onTouchEvent()`, bypassing
+`onInterceptTouchEvent()` entirely, `intercepted` forced `true` unconditionally. §92's fix satisfied "claim
+`ACTION_DOWN`" but the actual **swipe-direction detection itself** still only lived inside
+`onInterceptTouchEvent()`'s `ACTION_MOVE` branch - a branch this exact scenario structurally can never reach,
+however correct its own logic is. This is why the two-stage claim-early/confirm-late pattern worked
+perfectly when a chip/button was under the finger (which *does* populate `mFirstTouchTarget`, keeping
+`onInterceptTouchEvent()` in the loop) and never worked otherwise, regardless of which specific claiming
+attempt was tried.
+
+**Fixed properly**: both `SuggestionBarView.onTouchEvent()` and `SettingsRowView.onTouchEvent()` now
+re-implement the *same* swipe-down detection directly in their own fallback branch (reached only when
+nothing else - no child, no earlier interception - already claimed the gesture): `ACTION_DOWN` claims it,
+`ACTION_MOVE` runs the identical `SwipeGesture.classify(..., interceptThresholdPx)` check and sets
+`swipeDownIntercepting = true` on a match, after which the *existing*, already-correct `swipeDownIntercepting`
+branch (checked earlier in the same function) picks up `ACTION_UP`/`ACTION_CANCEL` exactly as it already did
+for the chip/button-claimed case - no duplicated confirm-threshold logic, just the missing detection step
+restored to a path it can actually run on. No new unit tests - Android touch-dispatch glue over the
+already-tested, already-pure `SwipeGesture`, the established gap for this layer.
+
+### D-145 - Corrected Again: the Popup Centres Whichever Cell Is *Pre-Selected*, Not Whichever Is Listed First
+§91 read "the locale-driven entry must be in the middle" as "must be index 0" and reordered
+`periodAlternatives()` accordingly - device feedback confirmed this produced `.de, .com, .org` (ccTLD
+leading) when `.com, .de, .org` (ccTLD in the visual *middle*) was actually wanted, matching this exact key's
+own **original, pre-URL-mode** convention: the plain sentence-terminator popup (`! . ?`) already put `.`
+- the key's own character - at the true middle of a 3-item list, flanked by `!`/`?`, not leading it. The
+locale-driven TLD should occupy that *same* centred slot the key has always used, not the "leads the list"
+slot some other keys (`https://`, `=`) use instead - these are two different, independently-valid
+conventions already coexisting in this codebase, and the period key's own established one is the centred
+kind.
+
+**Fixed at both ends of the mechanism**: `UrlLocale.periodAlternatives()` now returns `[".com", ccTld, ".org"]`
+(ccTLD in the middle) instead of leading with it; separately, `AdaptKeyboardView.preSelectedIndexFor()` -
+whose existing generic rule ("pre-select the key's own character, or index 0 if not found in the list") would
+otherwise pre-select `.com` for *any* locale, since this key's own `.` is deliberately never in the list at
+all (D-144) - gained a small, precisely-scoped special case: for exactly this key (`KeyCode.CHAR`, `char ==
+'.'`), when the generic self-match fails, pre-select whichever entry is neither `.com` nor `.org` (the
+locale-specific one) instead of blindly falling back to index 0; only when *no* such entry exists (e.g.
+`en_US`, no ccTLD at all) does it fall back to plain index 0 (`.com`). This composes correctly regardless of
+where the ccTLD ends up sitting in the list - it doesn't hardcode "index 1", it *identifies* the ccTLD entry
+structurally (the one that isn't a hardcoded generic literal), so the fix does not silently break if the list
+shape changes again later. `UrlLocaleTest` updated to the corrected `[".com", ccTld, ".org"]` shape; no new
+test for `preSelectedIndexFor` itself - private `AdaptKeyboardView` drawing/interaction logic, the established
+testing gap for this class (no Robolectric shadow available in this environment).
+
+689 unit tests (unchanged - existing tests updated, no new ones needed). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
