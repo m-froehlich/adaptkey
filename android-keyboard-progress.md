@@ -28,6 +28,21 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§86 DONE (v0.8.52): D-110 picked up - a real bug found and fixed, honestly not claimed as the full
+  explanation.** Both candidate causes named in D-110's own original write-up were ruled out by direct code
+  check (no `NO_SUGGESTIONS`/filter-variant handling exists anywhere; `CapitalisationEngine` already consults
+  `sentenceStart` independently of `capsMode`). Found instead: `ShiftGrace.autoArmAtWordStart()` silently
+  never armed Shift at a sentence start for `CapsMode.NONE` (a field declaring no caps flag at all - a
+  plausible shape for a plain eBay Kleinanzeigen message field) - even `CapsMode.SENTENCES` did. Contradicted
+  the project's own stated design and was even encoded as *intended* in an existing test. Fixed by folding
+  `NONE` into the same branch as `SENTENCES`. **Caveat stated plainly**: tracing `CapitalisationEngine`'s
+  commit-time logic suggests the final committed word should already have been correct regardless of this
+  bug - so this confirms/fixes the live-typed-character and Shift-key visual symptom, but is not proven to be
+  the *whole* explanation for "the committed word never capitalises." A temporary `Log.d("AdaptKey", ...)` in
+  `onStartInput()` now logs the real `EditorInfo` for every focused field (`adb logcat -s AdaptKey:D`) to
+  finally get the data point the original write-up said was needed - to be removed once D-110 is closed for
+  good. 1 existing `ShiftGraceTest` case corrected (was asserting the bug as intended). 652 unit tests
+  (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed either way.
 - **§85 DONE (v0.8.51): D-142 follow-up - weak-signal detection now also covers email, not just username.**
   Reported: a `finanzen.net zero` field labelled "E-Mail-Adresse" didn't activate credential mode at all.
   Real gap found in code (not guessed): `LoginFieldDetector`'s weak-signal fallback only ever checked

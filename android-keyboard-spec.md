@@ -4259,3 +4259,55 @@ before.
 unit tests (was 649; +3). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Still needs a device round**
 to learn whether this alone resolves the reported case, or whether `InputType` detection itself also needs a
 closer look for this specific app.
+
+## §86 - D-110 Picked Up: a Real, Confirmed Bug Found and Fixed - Not Claimed as the Full Explanation
+
+Investigated per direct request ("schau mal, was du bei D-110 tun kannst"). Traced the two candidate causes
+D-110's own original write-up named - both **ruled out directly against the actual code**, not guessed:
+
+- "a filter/no-suggestions variant treated as skip-auto-cap-entirely": grepped `AdaptKeyService.kt` for any
+  `TYPE_TEXT_FLAG_NO_SUGGESTIONS`/`TYPE_TEXT_VARIATION_FILTER` handling - none exists anywhere in the file.
+  There is no code path that could special-case such a variant at all, so this is not the mechanism.
+- "`getCursorCapsMode()`/`EditorInfo` mishandled at the `CapitalisationEngine` call site": `CapitalisationEngine.
+  capitalise()` checks `context.capsMode` only for the `CHARACTERS`/`WORDS` special cases; `context.sentenceStart`
+  (from the independent `SentenceBoundary` check) is consulted regardless of `capsMode`, exactly matching the
+  spec's own stated intent ("AdaptKey's own rules... apply regardless of what the target field requests"). This
+  call site is not the defect either.
+
+### A real, separate bug found instead: `ShiftGrace.autoArmAtWordStart()` silently dropped sentence-start arming for `CapsMode.NONE`
+```kotlin
+CapsMode.WORDS, CapsMode.CHARACTERS -> true
+CapsMode.SENTENCES -> sentenceStart
+CapsMode.NONE -> false   // always false, regardless of sentenceStart - the actual bug
+```
+A field that declares **no** caps flag of its own at all (`CapsMode.NONE`) - exactly what a plain, unadorned
+message box (a very plausible shape for eBay Kleinanzeigen's message field) would report - never armed Shift
+at a sentence start, even though `CapsMode.SENTENCES` (the field *explicitly* asking for sentence-case) did.
+This directly contradicts the project's own stated design and was even encoded as an *intended* test
+(`ShiftGraceTest`'s `` `NONE never auto-arms` ``) rather than caught as a defect - the kind of thing that only
+surfaces once a concrete failing app is reported. Fixed by folding `NONE` into the same branch as `SENTENCES`:
+both now arm Shift exactly when `sentenceStart` is true, matching `CapitalisationEngine`'s own already-correct
+independent handling.
+
+**Honest caveat, not glossed over**: this is a confirmed, real bug, worth fixing on its own merits regardless
+of D-110 - but tracing `CapitalisationEngine.capitalise()`'s commit-time logic shows the *final committed*
+word should already have been corrected independently of this bug (`context.sentenceStart` is checked there
+too, unconditionally, the moment `explicitFirstUpper` is false). So this fix should visibly correct the
+*live-typed* character and the Shift key's own visual state at a sentence start in any field with no caps
+flag - a real, felt difference either way - but it is **not proven** to be the complete explanation for "the
+committed word itself never ends up capitalised" as D-110 originally described. It may be the whole story
+(if something about this app's own `InputConnection` behaviour interacts with the visual/live-typed state in
+a way not modelled here) or only part of it.
+
+### A temporary diagnostic added to close the loop either way
+D-110's own original write-up already named the blocker: "needs the actual field's reported `EditorInfo`
+... to make progress rather than guessing further." A one-line `Log.d("AdaptKey", ...)` in `onStartInput()`
+now logs `packageName`/`fieldName`/`inputType` (hex)/`hintText` for every focused field - retrievable via
+`adb logcat -s AdaptKey:D` while focusing the eBay Kleinanzeigen field. This finally supplies the concrete
+data point the investigation has been missing, regardless of whether the `ShiftGrace` fix alone resolves it.
+Clearly labelled as temporary in its own comment - remove once D-110 is closed for good, mirroring how D-09's
+own diagnostic was eventually torn out once it had served its purpose.
+
+1 existing `ShiftGraceTest` case corrected (was asserting the bug as intended behaviour, now asserts the fix).
+652 unit tests (unchanged - a one-line change to an already-tested pure function).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed either way.**

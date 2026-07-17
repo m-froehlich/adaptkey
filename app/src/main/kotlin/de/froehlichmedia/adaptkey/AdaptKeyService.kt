@@ -18,6 +18,7 @@ import android.text.InputType
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.util.Size
 import android.view.KeyEvent
 import android.view.View
@@ -608,6 +609,16 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onStartInput(info: EditorInfo?, restarting: Boolean) {
         super.onStartInput(info, restarting)
+        // D-110 (temporary diagnostic): a fixed root cause was found and fixed in ShiftGrace for fields
+        // that declare no caps flag at all, but it is not certain that is the *whole* story for the
+        // originally-reported eBay Kleinanzeigen field - this logs exactly the EditorInfo fields
+        // capsModeFor()/D-142's field-kind detection actually consult, so a `adb logcat -s AdaptKey:D` while
+        // focusing that field can finally confirm or rule out a deeper cause. Remove once D-110 is closed.
+        Log.d(
+            "AdaptKey",
+            "onStartInput: package=${info?.packageName} fieldName=${info?.fieldName} " +
+                "inputType=0x${Integer.toHexString(info?.inputType ?: 0)} hintText=${info?.hintText}"
+        )
         clearComposing()
         resetWordEndShift()
         pendingMergeChar = null

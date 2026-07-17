@@ -21,7 +21,12 @@ package de.froehlichmedia.adaptkey.capitalisation
 object ShiftGrace {
     
     /**
-     * Whether a fresh word start should be auto-armed to uppercase by the field mandate.
+     * Whether a fresh word start should be auto-armed to uppercase - by the field mandate, or (D-110)
+     * by AdaptKey's own §6 sentence-start rule, which applies independently of whatever the field itself
+     * requests (see the spec's "Editor-Mandated Capitalisation" section). [CapsMode.NONE] previously armed
+     * nothing at all, silently dropping sentence-start arming for any field that declares no caps flag of
+     * its own (a plain, unadorned message field, as plenty of real apps use - e.g. the reported eBay
+     * Kleinanzeigen case) - fixed by treating it the same as [CapsMode.SENTENCES] here.
      *
      * @param capsMode the editor-mandated capitalisation
      * @param sentenceStart whether the upcoming word starts a sentence
@@ -30,8 +35,7 @@ object ShiftGrace {
     fun autoArmAtWordStart(capsMode: CapsMode, sentenceStart: Boolean): Boolean {
         return when (capsMode) {
             CapsMode.WORDS, CapsMode.CHARACTERS -> true
-            CapsMode.SENTENCES -> sentenceStart
-            CapsMode.NONE -> false
+            CapsMode.SENTENCES, CapsMode.NONE -> sentenceStart
         }
     }
     

@@ -27,8 +27,8 @@ class ShiftGraceTest {
     }
     
     @Test
-    fun `NONE never auto-arms`() {
-        assertFalse(ShiftGrace.autoArmAtWordStart(CapsMode.NONE, sentenceStart = true))
+    fun `NONE still auto-arms at a sentence start - D-110, AdaptKey's own rule applies regardless of the field`() {
+        assertTrue(ShiftGrace.autoArmAtWordStart(CapsMode.NONE, sentenceStart = true))
         assertFalse(ShiftGrace.autoArmAtWordStart(CapsMode.NONE, sentenceStart = false))
     }
     
