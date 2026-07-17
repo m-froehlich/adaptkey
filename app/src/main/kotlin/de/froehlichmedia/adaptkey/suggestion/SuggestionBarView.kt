@@ -21,6 +21,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.gesture.DragToTrash
+import de.froehlichmedia.adaptkey.gesture.SwipeDirection
+import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 
 /**
  * Horizontally scrollable suggestion strip (S-01).
@@ -33,6 +35,10 @@ import de.froehlichmedia.adaptkey.gesture.DragToTrash
  * over the bar; releasing while armed notifies [onBlacklist] so the word is permanently blacklisted
  * (A-04). The gesture is intentionally a deliberate upward drag (not a swipe) and never fires on the
  * verbatim chip, so it cannot be triggered accidentally while scrolling or tapping.
+ *
+ * D-144: a downward swipe anywhere on the bar (any chip, the verbatim chip, or an empty gap) notifies
+ * [onSwipeDown] - mirroring [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView]'s own G-03
+ * swipe-down-to-dismiss, which previously only reacted on the keyboard's own key field, not this row.
  */
 class SuggestionBarView @JvmOverloads constructor(
     context: Context,
@@ -52,9 +58,17 @@ class SuggestionBarView @JvmOverloads constructor(
         fun onBlacklist(word: String)
     }
     
+    /** D-144: invoked when a downward swipe anywhere on the bar dismisses/closes, mirroring G-03. */
+    fun interface OnSwipeDownListener {
+        
+        fun onSwipeDown()
+    }
+    
     var onItemClick: OnItemClickListener? = null
     
     var onBlacklist: OnBlacklistListener? = null
+    
+    var onSwipeDown: OnSwipeDownListener? = null
     
     private val container = LinearLayout(context).apply {
         orientation = LinearLayout.HORIZONTAL
@@ -65,13 +79,18 @@ class SuggestionBarView @JvmOverloads constructor(
     // can be mapped back to the suggestion it lands on (G-04).
     private val items = ArrayList<SuggestionController.DisplayItem>()
     
-    // G-04 drag-to-trash state.
+    // G-04 drag-to-trash state, and D-144's downward-swipe-to-dismiss - both track the same touch-down
+    // point (dragDownX/dragDownY), just resolved against opposite vertical directions.
     private var dragDownX = 0f
     private var dragDownY = 0f
     private var dragWord: String? = null
     private var dragIntercepting = false
+    private var swipeDownIntercepting = false
     private var trashArmed = false
     private val dragThresholdPx = dp(48).toFloat()
+    // D-144: the confirm distance for the downward dismiss swipe - matches AdaptKeyboardView's own
+    // fieldSwipeThresholdPx, so the gesture feels consistent whether it starts on the keyboard body or here.
+    private val swipeDownThresholdPx = dp(110).toFloat()
     // D-64: the gesture must be claimed away from the HorizontalScrollView's own horizontal-scroll
     // interception (which reacts at the much smaller system touch slop) as soon as the drag already
     // looks vertical-dominant - otherwise the scroll view wins the race well before dragThresholdPx is
@@ -154,6 +173,7 @@ class SuggestionBarView @JvmOverloads constructor(
                 // Only ordinary suggestions can be trashed (never the verbatim chip).
                 dragWord = normalWordAt(ev.x)
                 dragIntercepting = false
+                swipeDownIntercepting = false
                 setTrashArmed(false)
             }
             
@@ -169,37 +189,63 @@ class SuggestionBarView @JvmOverloads constructor(
                     setTrashArmed(DragToTrash.isArmed(dx, dy, dragThresholdPx))
                     return true
                 }
+                // D-144: the same early-claim reasoning as G-04 above, mirrored for the opposite (downward)
+                // direction - regardless of dragWord, so this also fires over the verbatim chip or a gap.
+                if (SwipeGesture.classify(dx, dy, interceptThresholdPx) == SwipeDirection.DOWN) {
+                    swipeDownIntercepting = true
+                    return true
+                }
             }
         }
         return super.onInterceptTouchEvent(ev)
     }
     
     override fun onTouchEvent(ev: MotionEvent): Boolean {
-        if (!dragIntercepting) {
-            return super.onTouchEvent(ev)
-        }
-        when (ev.actionMasked) {
-            MotionEvent.ACTION_MOVE -> {
-                setTrashArmed(DragToTrash.isArmed(ev.x - dragDownX, ev.y - dragDownY, dragThresholdPx))
-                return true
-            }
-            
-            MotionEvent.ACTION_UP -> {
-                val word = dragWord
-                val commit = trashArmed
-                cancelDrag()
-                if (commit && word != null) {
-                    onBlacklist?.onBlacklist(word)
+        if (dragIntercepting) {
+            when (ev.actionMasked) {
+                MotionEvent.ACTION_MOVE -> {
+                    setTrashArmed(DragToTrash.isArmed(ev.x - dragDownX, ev.y - dragDownY, dragThresholdPx))
+                    return true
                 }
-                return true
+                
+                MotionEvent.ACTION_UP -> {
+                    val word = dragWord
+                    val commit = trashArmed
+                    cancelDrag()
+                    if (commit && word != null) {
+                        onBlacklist?.onBlacklist(word)
+                    }
+                    return true
+                }
+                
+                MotionEvent.ACTION_CANCEL -> {
+                    cancelDrag()
+                    return true
+                }
             }
-            
-            MotionEvent.ACTION_CANCEL -> {
-                cancelDrag()
-                return true
-            }
+            return true
         }
-        return true
+        // D-144: only the confirm distance differs from the interception check above - the direction must
+        // still hold at release, exactly mirroring AdaptKeyboardView's own resolveSwipe() two-stage pattern.
+        if (swipeDownIntercepting) {
+            when (ev.actionMasked) {
+                MotionEvent.ACTION_UP -> {
+                    val direction = SwipeGesture.classify(ev.x - dragDownX, ev.y - dragDownY, swipeDownThresholdPx)
+                    swipeDownIntercepting = false
+                    if (direction == SwipeDirection.DOWN) {
+                        onSwipeDown?.onSwipeDown()
+                    }
+                    return true
+                }
+                
+                MotionEvent.ACTION_CANCEL -> {
+                    swipeDownIntercepting = false
+                    return true
+                }
+            }
+            return true
+        }
+        return super.onTouchEvent(ev)
     }
     
     override fun draw(canvas: Canvas) {
@@ -296,6 +342,9 @@ class SuggestionBarView @JvmOverloads constructor(
     private fun cancelDrag() {
         dragWord = null
         dragIntercepting = false
+        // D-144: setItems() (a fresh suggestion refresh mid-gesture) also calls this - a stale downward-swipe
+        // interception should not carry over into whatever now occupies the bar.
+        swipeDownIntercepting = false
         setTrashArmed(false)
     }
     

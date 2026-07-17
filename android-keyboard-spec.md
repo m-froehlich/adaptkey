@@ -4489,3 +4489,60 @@ row-shape logic is fully unit-tested; the `AdaptKeyService` wiring (`isUrlField`
 no independently testable logic beyond what those cover - the established testing gap for this layer. Not
 yet device-tested - the new key weights (`https://`/`www.`/the narrower space) are a considered starting
 guess, not tuned against a real screen, easy to retune later (same precedent as §36/§37/§53).
+
+## §90 - D-144: Swipe-Down-to-Dismiss Now Also Reacts on the Suggestion Bar and the Settings Row (v0.8.56)
+
+### Bug fixed: G-03's downward swipe only ever reacted on the keyboard's own key field
+Reported directly: swiping down to close the §48 settings row (or, once already closed, to dismiss the
+keyboard entirely) only worked when the swipe started on `AdaptKeyboardView` itself - not on the suggestion
+bar (`SuggestionBarView`) or the settings row (`SettingsRowView`) stacked above it. Confirmed by reading the
+actual touch-dispatch architecture rather than assuming: `AdaptKeyboardView.onTouchEvent()`'s own
+`resolveSwipe()` is the *only* place in the whole app that ever recognised a swipe gesture at all -
+`SuggestionBarView` only ever intercepted an upward drag (G-04, drag-to-trash) and otherwise deferred
+everything to `HorizontalScrollView`'s own scrolling; `SettingsRowView` had no touch handling of its own
+whatsoever beyond its buttons' plain click listeners. Since these are three separate sibling views in the
+same root `LinearLayout`, a touch starting on either of the other two never reached
+`AdaptKeyboardView`'s touch handler at all - there is no Android mechanism that would forward it there.
+
+### Fix: the same pure `SwipeGesture` classifier, wired into both sibling views
+Both `SuggestionBarView` and `SettingsRowView` gained the exact two-stage claim-early/confirm-late
+interception pattern `AdaptKeyboardView.resolveSwipe()` and (for G-04) `SuggestionBarView` itself already
+used: `onInterceptTouchEvent()`'s `ACTION_MOVE` branch claims the gesture (`swipeDownIntercepting = true`)
+the moment `SwipeGesture.classify(dx, dy, interceptThresholdPx)` (the small system touch-slop) reports a
+downward-dominant movement - stealing it away from whichever child would otherwise track it as a button
+press or, for the suggestion bar, from `HorizontalScrollView`'s own horizontal-scroll interception; `
+onTouchEvent()`'s `ACTION_UP` then only actually fires a new `OnSwipeDownListener.onSwipeDown()` once the
+full travel re-confirms `SwipeDirection.DOWN` against a larger `swipeDownThresholdPx` (110dp, matching
+`AdaptKeyboardView`'s own `fieldSwipeThresholdPx` so the gesture feels the same everywhere it can start).
+No new pure logic was needed - both views reuse the already-tested `gesture.SwipeGesture`/`SwipeDirection`
+classifier directly, the same one the keyboard body's own dismiss gesture is built on.
+
+`SuggestionBarView`'s new interception fires regardless of `dragWord` (unlike G-04, which only ever arms
+over an ordinary suggestion chip, never the verbatim one) - so a downward swipe starting over the verbatim
+chip or an empty gap is caught too, matching "swipe down anywhere on the bar."
+
+### Wiring: one shared dismiss function, not three copies
+`AdaptKeyService.handleSwipe()`'s existing `GestureAction.DISMISS_KEYBOARD` branch (`if (settingsRow?.isOpen
+== true) closeSettingsRow() else requestHideSelf(0)`) was extracted into a new private
+`dismissKeyboardOrCloseSettingsRow()`, now called from all three sources: the keyboard body (unchanged
+behaviour, just refactored), the new `SuggestionBarView.onSwipeDown`, and the new
+`SettingsRowView.onSwipeDown` - so "close the row first, only dismiss on a second swipe once it's already
+closed" is one rule in one place, not duplicated per view.
+
+### Investigated but not changed: the reported "(exkl. Space)" exclusion
+The report also described the previously-working scope as "the key field, excluding the space bar" - traced
+this specifically before writing it off, since a real, separate space-bar-only exclusion would need its own
+fix. Found no code path that treats `KeyCode.SPACE` any differently for a downward swipe: `KeyGesture.
+resolve()`'s `if (direction == SwipeDirection.DOWN) return GestureAction.DISMISS_KEYBOARD` fires
+unconditionally, before any key-specific branching (including the `KeyCode.SPACE` case further down, which
+only ever special-cases *horizontal* swipes for G-01); `AdaptKeyboardView.resolveSwipe()`'s own threshold
+computation is likewise keyCode-agnostic for a vertical swipe. Not dismissed as user error either - simply
+not reproducible from the code as described, the same honest "traced, not found, needs a repro" outcome
+this project has reached before for a code-grounded-but-unconfirmed report (D-118's precedent). If this
+persists, it needs a repro isolating it from the (now fixed) suggestion-bar/settings-row gap.
+
+No new unit tests - both changes are Android view/touch-dispatch glue reusing the already-tested,
+already-pure `SwipeGesture`/`SwipeDirection` classifier, the established testing gap for this layer (same
+class as D-64's own drag-to-trash interception, never itself unit-tested beyond the pure `DragToTrash`
+object it wraps). 675 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.

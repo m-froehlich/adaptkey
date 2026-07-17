@@ -461,6 +461,8 @@ class AdaptKeyService : InputMethodService() {
         val bar = SuggestionBarView(this)
         bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
         bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
+        // D-144: a downward swipe on the bar itself dismisses/closes too, not only on the keyboard body.
+        bar.onSwipeDown = SuggestionBarView.OnSwipeDownListener { dismissKeyboardOrCloseSettingsRow() }
         bar.visibility = View.VISIBLE
         suggestionBar = bar
         
@@ -477,6 +479,8 @@ class AdaptKeyService : InputMethodService() {
         row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
         row.onClearClipboardClick = SettingsRowView.OnClearClipboardClickListener { clearClipboardFromSettingsRow() }
         row.onCredentialModeClick = SettingsRowView.OnCredentialModeClickListener { toggleCredentialModeFromSettingsRow() }
+        // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
+        row.onSwipeDown = SettingsRowView.OnSwipeDownListener { dismissKeyboardOrCloseSettingsRow() }
         settingsRow = row
         
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
@@ -1536,11 +1540,7 @@ class AdaptKeyService : InputMethodService() {
             // again to actually dismiss. KeyGesture.resolve() is a pure function with no row-open state of
             // its own, so this re-routing happens here rather than as a distinct GestureAction.
             GestureAction.DISMISS_KEYBOARD -> {
-                if (settingsRow?.isOpen == true) {
-                    closeSettingsRow()
-                } else {
-                    requestHideSelf(0)
-                }
+                dismissKeyboardOrCloseSettingsRow()
                 true
             }
             
@@ -1613,6 +1613,21 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun closeSettingsRow(onClosed: () -> Unit = {}) {
         settingsRow?.close(onClosed) ?: onClosed()
+    }
+    
+    /**
+     * G-03 / §48 / D-144: a downward swipe closes the settings row first when it is open; only a second
+     * one (row already closed) actually dismisses the keyboard. Shared by every downward-swipe source -
+     * the keyboard body ([AdaptKeyboardView.OnSwipeListener] via [handleSwipe]), the suggestion bar
+     * ([de.froehlichmedia.adaptkey.suggestion.SuggestionBarView.OnSwipeDownListener]) and the settings row
+     * itself ([SettingsRowView.OnSwipeDownListener]) - previously only the keyboard body reacted at all.
+     */
+    private fun dismissKeyboardOrCloseSettingsRow() {
+        if (settingsRow?.isOpen == true) {
+            closeSettingsRow()
+        } else {
+            requestHideSelf(0)
+        }
     }
     
     /**

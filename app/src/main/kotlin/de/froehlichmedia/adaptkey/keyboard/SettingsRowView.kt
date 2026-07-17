@@ -11,11 +11,15 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.gesture.SwipeDirection
+import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 
 /**
  * §48 / §51 / §69: the swipe-up settings row - the emoji button (left edge), a clear-clipboard button and
@@ -41,6 +45,10 @@ import de.froehlichmedia.adaptkey.R
  * smaller-than-`content`) bounds clip `content` (a `ViewGroup`'s default `clipChildren`), progressively more
  * of it becomes visible from the bottom up as the row grows, which is what makes the buttons read as
  * sliding up into place without any separate `translationY` animation being needed at all.
+ *
+ * D-144: a downward swipe anywhere on the row (over any button, or the gaps between them) notifies
+ * [onSwipeDown] - mirroring [AdaptKeyboardView]'s own G-03 swipe-down-to-dismiss, which previously only
+ * reacted on the keyboard's own key field, not this row.
  */
 class SettingsRowView @JvmOverloads constructor(
     context: Context,
@@ -72,6 +80,12 @@ class SettingsRowView @JvmOverloads constructor(
         fun onCredentialModeClick()
     }
     
+    /** D-144: invoked when a downward swipe anywhere on the row dismisses/closes, mirroring G-03. */
+    fun interface OnSwipeDownListener {
+        
+        fun onSwipeDown()
+    }
+    
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
@@ -79,6 +93,8 @@ class SettingsRowView @JvmOverloads constructor(
     var onClearClipboardClick: OnClearClipboardClickListener? = null
     
     var onCredentialModeClick: OnCredentialModeClickListener? = null
+    
+    var onSwipeDown: OnSwipeDownListener? = null
     
     /** Whether the row is currently open (or mid-opening); false once fully closed. */
     var isOpen: Boolean = false
@@ -106,6 +122,14 @@ class SettingsRowView @JvmOverloads constructor(
     private val content = FrameLayout(context)
     private var heightAnimator: ValueAnimator? = null
     private var credentialFlashAnimator: ValueAnimator? = null
+    
+    // D-144: downward-swipe-to-dismiss state, mirroring SuggestionBarView's own D-144 handling and
+    // AdaptKeyboardView's resolveSwipe() two-stage claim-early/confirm-late pattern.
+    private var touchDownX = 0f
+    private var touchDownY = 0f
+    private var swipeDownIntercepting = false
+    private val interceptThresholdPx = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
+    private val swipeDownThresholdPx = dp(110).toFloat()
     
     init {
         content.setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
@@ -138,6 +162,53 @@ class SettingsRowView @JvmOverloads constructor(
         // slide) is what actually makes the buttons read as rising into place as the row itself grows.
         addView(content, LayoutParams(LayoutParams.MATCH_PARENT, dp(ROW_HEIGHT_DP), Gravity.BOTTOM))
         visibility = View.GONE
+    }
+    
+    /**
+     * D-144: claims a downward swipe away from whichever button would otherwise track it as a press
+     * (every button here is plain-clickable) - the same early-claim reasoning
+     * [de.froehlichmedia.adaptkey.suggestion.SuggestionBarView] uses for its own D-144 handling and
+     * [AdaptKeyboardView.resolveSwipe] already uses for the keyboard body.
+     */
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                touchDownX = ev.x
+                touchDownY = ev.y
+                swipeDownIntercepting = false
+            }
+            
+            MotionEvent.ACTION_MOVE -> {
+                val direction = SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, interceptThresholdPx)
+                if (direction == SwipeDirection.DOWN) {
+                    swipeDownIntercepting = true
+                    return true
+                }
+            }
+        }
+        return super.onInterceptTouchEvent(ev)
+    }
+    
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        if (!swipeDownIntercepting) {
+            return super.onTouchEvent(ev)
+        }
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_UP -> {
+                val direction = SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, swipeDownThresholdPx)
+                swipeDownIntercepting = false
+                if (direction == SwipeDirection.DOWN) {
+                    onSwipeDown?.onSwipeDown()
+                }
+                return true
+            }
+            
+            MotionEvent.ACTION_CANCEL -> {
+                swipeDownIntercepting = false
+                return true
+            }
+        }
+        return true
     }
     
     /**
@@ -179,6 +250,7 @@ class SettingsRowView @JvmOverloads constructor(
         heightAnimator?.cancel()
         heightAnimator = null
         isOpen = false
+        swipeDownIntercepting = false
         visibility = View.GONE
         layoutParams = layoutParams?.apply { height = 0 }
         requestLayout()

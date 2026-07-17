@@ -28,6 +28,24 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§90 DONE (v0.8.56): D-144 fixed - swipe-down-to-dismiss now also reacts on the suggestion bar and the
+  settings row, not only the keyboard body.** Root-caused first: `AdaptKeyboardView.resolveSwipe()` was the
+  *only* place in the app that ever recognised a swipe at all - `SuggestionBarView` only intercepted G-04's
+  upward drag-to-trash, `SettingsRowView` had no touch handling beyond its buttons' plain clicks - so a swipe
+  starting on either sibling view never reached the keyboard body's handler (no Android mechanism forwards it
+  there). Fixed by giving both views the same two-stage claim-early ([gesture.SwipeGesture], small
+  touch-slop)/confirm-late (110dp, matching `fieldSwipeThresholdPx`) interception `AdaptKeyboardView`/G-04
+  already used - no new pure logic, both reuse the already-tested `SwipeGesture`/`SwipeDirection` classifier
+  directly. `AdaptKeyService.handleSwipe()`'s `DISMISS_KEYBOARD` branch extracted into one shared
+  `dismissKeyboardOrCloseSettingsRow()`, now called from all three sources (keyboard body, new
+  `SuggestionBarView.onSwipeDown`, new `SettingsRowView.onSwipeDown`) instead of being duplicated.
+  **Investigated, not reproduced**: the report's own "(exkl. Space)" aside - traced `KeyGesture.resolve()`'s
+  unconditional `DOWN -> DISMISS_KEYBOARD` check and `resolveSwipe()`'s threshold math, both keyCode-agnostic
+  for a vertical swipe; found no code path that treats the space bar any differently. Reported back honestly
+  as "traced, not found" rather than guessed at - needs its own repro if it persists (D-118 precedent for this
+  kind of outcome). No new tests - Android touch-dispatch glue over the already-pure/tested classifier, same
+  class of gap as D-64's own (never separately unit-tested) drag-to-trash interception. 675 unit tests
+  (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
 - **§89 DONE (v0.8.55): D-143 implemented - a dedicated URL-mode bottom row, planned with the user before
   implementation.** Auto-opens (not part of the D-19 swipe cycle) for `TYPE_TEXT_VARIATION_URI` fields, on
   the letters surface (not a new page - a domain/path still needs the full alphabet). New shared
