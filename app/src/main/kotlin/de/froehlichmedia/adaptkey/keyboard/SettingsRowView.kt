@@ -258,11 +258,11 @@ class SettingsRowView @JvmOverloads constructor(
     
     /**
      * A button whose icon is a "ligature" of two glyphs: [baseGlyph] fills the whole button, [badgeGlyph]
-     * sits as a small badge (its own pill background, for contrast) in the bottom-right corner - so the
-     * icon reads as "[badgeGlyph] applied to [baseGlyph]" (e.g. clipboard + trash = "clear the clipboard"),
-     * not as two unrelated symbols. A single overlaid emoji sequence was considered and rejected - there is
-     * no defined ZWJ combination for an arbitrary emoji pair, so it would just render as two separate
-     * glyphs with no visual relationship at all.
+     * sits as a small badge in the bottom-right corner - so the icon reads as "[badgeGlyph] applied to
+     * [baseGlyph]" (e.g. clipboard + trash = "clear the clipboard"), not as two unrelated symbols. A single
+     * overlaid emoji sequence was considered and rejected - there is no defined ZWJ combination for an
+     * arbitrary emoji pair, so it would just render as two separate glyphs with no visual relationship at
+     * all. Confirmed on-device that the badge needs no contrast background of its own to read clearly.
      */
     private fun badgedButtonFor(baseGlyph: String, badgeGlyph: String, onClick: () -> Unit): View {
         val badgeSizePx = dp(BADGE_SIZE_DP)
@@ -273,15 +273,12 @@ class SettingsRowView @JvmOverloads constructor(
             setTextColor(ContextCompat.getColor(context, R.color.key_text))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
         }
+        // Confirmed on-device: the badge reads clearly on its own, no contrast pill needed underneath it.
         val badge = TextView(context).apply {
             text = badgeGlyph
             gravity = Gravity.CENTER
             setTextColor(ContextCompat.getColor(context, R.color.key_text))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(ContextCompat.getColor(context, R.color.keyboard_background))
-            }
         }
         return FrameLayout(context).apply {
             background = GradientDrawable().apply {

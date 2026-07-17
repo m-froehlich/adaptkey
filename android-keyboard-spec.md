@@ -4213,3 +4213,10 @@ test - same established gap.
 
 649 unit tests (unchanged - both are Android view/drawing glue with no new pure logic).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §84 - §83 Refined: Badge Contrast Background Dropped (v0.8.50)
+
+Device feedback on §83's clipboard+trash badge: the overlaid 🗑 reads clearly on its own - the circular
+`keyboard_background`-coloured pill drawn underneath it was unnecessary and looks better removed.
+`SettingsRowView.badgedButtonFor()`'s `badge` `TextView` no longer sets a `background` at all; everything
+else (position, size, margin) is unchanged. No new tests - same established View-glue gap.

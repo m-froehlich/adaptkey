@@ -28,6 +28,9 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§84 DONE (v0.8.50): §83's clipboard+trash badge dropped its contrast pill background** per device
+  feedback - the badge reads clearly on its own. One-line change in `SettingsRowView.badgedButtonFor()`. No
+  new tests. 649 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 - **§83 DONE (v0.8.49): two icon fixes, reported while D-142 was being device-tested.** **D-129 (third
   pass)**: the calculator minus key's sign-flip corner hint reused D-98's generic `MORE_ALTERNATIVES_GLYPH`
   ("◢", "a popup awaits") - misleading, since no popup ever appears for this key. New `SIGN_FLIP_GLYPH = "±"`
