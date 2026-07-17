@@ -4546,3 +4546,133 @@ already-pure `SwipeGesture`/`SwipeDirection` classifier, the established testing
 class as D-64's own drag-to-trash interception, never itself unit-tested beyond the pure `DragToTrash`
 object it wraps). 675 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+## §91 - Device Feedback on §89/§90: D-145 (URL Popup Fixes), D-146 (Double Space), D-147 (Umlaut Prefix), D-144 Follow-Up (v0.8.57)
+
+Batch of device-feedback findings from testing §89/§90, released together per explicit user instruction.
+Confirmed: swipe-down-to-dismiss now works on the suggestion bar (§90's fix); D-144's own settings-row half
+still doesn't react on device - see its own section below.
+
+### D-145 - Two Corrections to the D-143 URL-Mode Popups
+Two related device-feedback points on the URL-mode keys' long-press popups:
+
+1. **The slash and period keys' own popups still redundantly listed themselves.** `URL_SLASH_ALTERNATIVES`
+   (§89) prepended `/` to the comma family, and `UrlLocale.periodAlternatives()` prepended the bare `.` to
+   its TLD list - both defensible-looking at the time (matching the existing comma/period-family convention
+   of including the key's own character), but wrong here specifically: a plain tap already commits `/` or
+   `.`, so repeating either in its own long-press popup offers nothing new, just a wasted cell. Fixed:
+   `URL_SLASH_ALTERNATIVES` is now exactly `COMMA_ALTERNATIVES` (no `/` entry at all - the comma still sits
+   in its own established position within that list, simply no longer displacing anything);
+   `UrlLocale.periodAlternatives()` now returns only the TLD suggestions, never the bare `.`. Both keys still
+   pre-select sensibly on a straight release - `preSelectedIndexFor()`'s existing fallback-to-index-0
+   behaviour (already used for keys like `o`'s umlaut popup, whose own character isn't in its alternatives
+   list either) picks the first popup entry when the key's own character isn't found in it, so no separate
+   change was needed there.
+2. **Popup cells were a fixed 40dp wide, too narrow for wide content.** Every D-01 long-press popup
+   (`AdaptKeyboardView.popupCellWidthPx`) used one uniform width for every cell, sized for a single glyph -
+   fine for `!`/`.`/`?`, badly cramped for `https://`/`ftp://`/`.co.uk`. Fixed by sizing each cell to its own
+   text content: `AdaptKeyboardView.popupCellWidthFor(text)` measures the string via the existing
+   `textPaint` and floors it at a minimum (`popupCellMinWidthPx`, still 40dp, so a lone glyph keeps a
+   comfortably tappable cell), computed once per popup open (`openPopup()`) into a new `popupCellWidths: List
+   <Float>`. This needed `HorizontalLongPressPopup` (the pure row-layout/hit-testing object) generalised from
+   a single `cellWidth: Float` to a `cellWidths: List<Float>` throughout - `rowLeft()` now sums the widths
+   before the pre-selected cell to find its centre offset, and `selectedIndex()` walks the cumulative cell
+   spans instead of dividing by a uniform width. Benefits every existing multi-alternative popup with
+   multi-character content, not only the URL keys - the calculator page's `sin`/`cos`/`tan`/`log` popup (§53)
+   was cramped the same way and is fixed by the same change, with no separate call site work.
+
+9 new/updated unit tests (`HorizontalLongPressPopupTest` gained variable-width cases, `KeyboardLayoutTest`/
+`UrlLocaleTest` updated for the no-self-char popups). No test regressions. `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
+
+### D-146 - Applying a Suggestion Mid-Text No Longer Creates a Double Space
+Reported: tapping a bar suggestion while editing a word that already has more text after it (not at the very
+end of the field) left a doubled space behind. Root cause, confirmed directly in `onSuggestionClicked()`'s
+`NORMAL` branch: `ic.commitText(word + " ", 1)` unconditionally appended its own trailing space, with no
+check for whatever already followed the caret - correct at the end of a field (nothing follows), wrong
+whenever real text already continues right after the reclaimed word (D-62 pulls the *whole* word being
+edited into `composing`, but never the space *after* it, which stays untouched, real document content).
+Fixed by checking `InputConnection.getTextAfterCursor(1, 0)` (read while the old composing span is still in
+place, i.e. before the `commitText()` call, so it reflects the untouched, real surrounding text) - a space
+already there means no second one is added. `pendingSuggestionSpace` (D-29's "punctuation eats the trailing
+space" arming) is now only set when this code actually added its own space, not when one was already there -
+eating a pre-existing, real document space on the next punctuation keystroke would have been a new, separate
+bug. No new unit tests - `AdaptKeyService`/`InputConnection` glue with no independently testable pure logic,
+the established gap for this layer.
+
+### D-147 - Umlaut/ß-Aware Prefix Completion for Suggestions
+Reported: typing `tatsachl` (skipping the umlaut, a deliberate typing shortcut - "ich bin oft einfach zu
+faul, den Umlaut explizit zu tippen") never suggests `tatsächlich`, even though the prefix is otherwise
+correct. Confirmed as a real, previously-unnoticed gap, not guessed: `DictionaryStore.unigramsByPrefix()`
+(both `InMemoryDictionaryStore` and `SqliteDictionaryStore`) does a **literal** prefix match (`key.startsWith`
+/ `wkey LIKE 'prefix%'`) with no umlaut/ß folding at all - and D-12's existing `fuzzyNeighbours()` umlaut
+folding doesn't help either, since it only matches candidates close to the *same length* as the whole token,
+never a genuinely shorter *prefix* of a longer word. Neither of the two existing suggestion mechanisms could
+ever have reached this case. **Confirmed this is a real regression against this project's own founding
+principle, not a new feature being requested**: per direct instruction, re-checked the original spec (§1,
+before any device-feedback D-series existed) - the "Guiding Principle - Umlauts Are Ordinary Characters"
+text explicitly lists "suggestions" among the features this principle is meant to shape, and states an
+umlaut-blind keyboard is "simply broken" from a German user's perspective; literal-only prefix matching is
+exactly that blind spot, just never exercised by a *prefix* (only ever by D-12's whole-word fuzzy matching)
+until now.
+
+**Fixed** with a new `Umlaut.unfoldCandidates(text)` (7 new tests) - the exact reverse of the existing
+`Umlaut.fold()`: generates every plausible pre-folding spelling of a typed (already-lowercased) prefix, so
+`"tatsachl"` yields `"tatsächl"` among its candidates (and `"tatsachl"` itself, always first - the
+overwhelmingly common case where nothing needs unfolding costs exactly the one query it always did).
+Combinatorial in the number of fold-eligible positions - every `a`/`o`/`u` may or may not have originally
+been `ä`/`ö`/`ü`; every `ss` run (never a lone `s`, which `ß` never folds from) may or may not have
+originally been `ß` - bounded by a generous cap (`MAX_CANDIDATES = 32`) that real typed prefixes are not
+expected to reach in practice, only guarding against a pathological worst case.
+`DictionarySuggestionProvider.suggestionsFor()`'s prefix-completion loop now queries `store.unigramsByPrefix()`
+once per unfold candidate instead of once for the literal token alone, merging results (a word already found
+via an earlier variant is not re-added). 2 new `DictionarySuggestionProviderTest` cases confirm both the
+umlaut case (`tatsachl` → `tatsächlich`) and the ß case (`strass` → `Straße`, which needs the *`ss`→`ß`*
+direction specifically, since `"strass"` is not even a literal prefix of `"straße"` at all).
+
+9 new unit tests total (`UmlautTest` 7, `DictionarySuggestionProviderTest` 2). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green.
+
+### D-144 Follow-Up - Settings-Row Swipe-Down Still Doesn't React (Investigated Again, Not Reproduced)
+Reported: after §90's fix, swipe-down-to-dismiss works on the suggestion bar but still doesn't react on the
+settings row itself. Re-read `SettingsRowView`'s `onInterceptTouchEvent()`/`onTouchEvent()` line by line
+against `SuggestionBarView`'s own (confirmed-working) equivalent - the two are structurally identical for
+the swipe-down path (claim early at the small system touch-slop via `SwipeGesture.classify()`, confirm late
+at the 110dp threshold on release), and `SettingsRowView`'s bounds/layout were independently confirmed
+correct by the fact that its buttons already register taps reliably. No asymmetry was found between the two
+views' touch-dispatch logic, and Android's own documented touch-interception contract (once
+`onInterceptTouchEvent()` claims a gesture, every subsequent event for that pointer routes to the same
+view's `onTouchEvent()`, regardless of where the raw coordinate later ends up relative to that view's own
+bounds) does not suggest a reason this would behave differently from the bar. **Not fixed - no code-level
+cause found**, reported back rather than guessed at further (the same honest "traced, not found" outcome as
+D-118 and this session's own "(exkl. Space)" investigation, §90). Needs a more specific repro to make
+progress: does this reproduce with the row fully settled open (not mid-swipe-up-animation); does starting
+the downward swipe directly on a button behave differently from starting it in a gap between buttons.
+
+### D-148 - Captured, Not Designed: A-07 Backspace-After-Suggestion Semantics Need Clarification
+Two related reports about Backspace behaviour after a suggestion is applied:
+
+- "When I explicitly apply a suggestion [tap a bar chip], Backspace must not revert it - I usually just want
+  to remove the automatically-inserted trailing space."
+- "If only one word is in the field, followed by a space, and I press Backspace there, the whole word gets
+  deleted immediately."
+
+Traced both plausible mechanisms directly, not guessed: **a bar-tap** (`onSuggestionClicked()`'s `NORMAL`
+branch) already calls `clearUndo()` at its own top and never re-arms `undoTyped`/A-07's undo state
+afterwards - confirmed via every `undoTyped =` assignment site in the file, only two exist, both inside
+`finalizeAndCommit()`'s own autocorrect-on-commit path and `applySplit()`/`applyMerge()`, never in
+`onSuggestionClicked()`. So a plain Backspace right after a bar-tap should already fall through to the
+ordinary `deleteOneBefore()` path (removes exactly the one trailing space character, via
+`deleteSurroundingText(1, 0)`) - not a revert. **A-07 itself** (`performAutocorrectUndo()`), by contrast, is
+a long-standing, deliberately-designed feature (since v0.7.9, refined by D-13/D-37/D-140): when a *silent*
+autocorrect-on-commit fires (typing a delimiter after a word autocorrect changes), a single Backspace
+*intentionally* restores the originally-typed word instead of deleting a character - this is not a bug, it
+is what A-07 has always been asked to do. The two reports could describe either: (a) a case the tracing above
+doesn't yet explain (needs a precise repro to find), or (b) a request to actually *change* A-07's own
+long-standing behaviour so it never restores the typed word any more, only ever removing the trailing
+delimiter, even after a genuine silent autocorrect. Given how foundational A-07 is, and this project's own
+precedent of confirming a real behavioural change with the user before touching one (see D-107's still-open
+highlight-semantics reversal, deliberately left undesigned until confirmed) - **not implemented either way
+this round**, captured here pending clarification: is this about the bar-tap path specifically (in which
+case a fresh, precise repro is needed, since the current code should already behave as wanted), or a genuine
+request to change what a Backspace does after any autocorrect, silent or tapped?

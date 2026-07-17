@@ -31,21 +31,21 @@ object UrlLocale {
     )
     
     /**
-     * The period key's URL-mode long-press alternatives for [locale]: the plain full stop itself (so a
-     * straight release still types `.`), followed by up to three TLD suggestions.
+     * The period key's URL-mode long-press alternatives for [locale]: up to three TLD suggestions, **not**
+     * including the plain full stop itself (D-144 correction - a plain tap already types `.`, so repeating
+     * it in its own popup would be a redundant entry offering nothing new).
      *
      * @param locale the system locale to resolve from
-     * @return the ordered alternatives list, always starting with `.`
+     * @return the ordered TLD suggestions, never including the bare `.`
      */
     fun periodAlternatives(locale: Locale): List<String> {
         val ccTld = ccTldFor(locale)
         val english = locale.language.equals("en", ignoreCase = true)
-        val tlds = if (english) {
+        return if (english) {
             listOfNotNull(".com", ".org", ccTld?.let { ".$it" })
         } else {
             listOfNotNull(ccTld?.let { ".$it" }, ".com", ".org")
         }
-        return listOf(".") + tlds
     }
     
     private fun ccTldFor(locale: Locale): String? {

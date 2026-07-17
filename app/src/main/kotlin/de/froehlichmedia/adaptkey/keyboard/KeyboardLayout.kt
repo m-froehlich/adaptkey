@@ -59,11 +59,12 @@ object KeyboardLayout {
     val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "_")
     
     /**
-     * D-143: the URL-mode `/` key's long-press set - the original [COMMA_ALTERNATIVES] list unchanged,
-     * with `/` prepended as the new primary (pre-selected) character. The comma simply swaps places with
-     * `/` (primary ↔ alternative); it stays fully reachable, just no longer the key's own tap character.
+     * D-144 (was D-143's own first pass, corrected per direct feedback): the URL-mode `/` key's long-press
+     * set - exactly [COMMA_ALTERNATIVES] unchanged, with **no** `/` entry - a plain tap already commits `/`,
+     * so repeating it in its own popup would be a redundant entry offering nothing new. The comma still
+     * swaps places with `/` (primary ↔ alternative), just without also duplicating the key's own character.
      */
-    val URL_SLASH_ALTERNATIVES = listOf("/") + COMMA_ALTERNATIVES
+    val URL_SLASH_ALTERNATIVES = COMMA_ALTERNATIVES
     
     /** D-143: the URL-mode `https://` key's long-press set - the other everyday protocols. */
     val URL_PROTOCOL_ALTERNATIVES = listOf("https://", "http://", "ftp://", "file://")

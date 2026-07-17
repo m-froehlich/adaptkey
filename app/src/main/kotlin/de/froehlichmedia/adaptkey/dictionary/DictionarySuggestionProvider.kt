@@ -36,11 +36,18 @@ class DictionarySuggestionProvider(
         // the merged set is re-sorted by score before it is capped.
         val candidates = LinkedHashMap<String, Suggestion>()
         // Prefix completion, ranked by frequency + bigram context (shown from the very first letter, D-11).
-        for (entry in store.unigramsByPrefix(token, maxCandidates * SCAN_FACTOR)) {
-            if (store.isBlacklisted(entry.word)) {
-                continue // A-04
+        // D-144: unigramsByPrefix is a literal/raw prefix match (both stores) - it alone would never find
+        // "tatsächlich" for a typed "tatsachl", violating this app's own founding "umlauts are ordinary
+        // characters" principle for the one feature it names explicitly (suggestions). Umlaut.unfoldCandidates
+        // tries every plausible unfolded spelling of the typed prefix - the literal token first (the
+        // overwhelmingly common case, with nothing to unfold, costs exactly the one query it always did).
+        for (prefixVariant in Umlaut.unfoldCandidates(token)) {
+            for (entry in store.unigramsByPrefix(prefixVariant, maxCandidates * SCAN_FACTOR)) {
+                if (candidates.containsKey(entry.word) || store.isBlacklisted(entry.word)) {
+                    continue // A-04
+                }
+                candidates[entry.word] = Suggestion(entry.word, score(entry.word, entry.frequency, previousWord))
             }
-            candidates[entry.word] = Suggestion(entry.word, score(entry.word, entry.frequency, previousWord))
         }
         // D-12: also offer close real words - a single edit or an umlaut/ß variant - so a mistype or a
         // valid-but-wrong word still surfaces the intended one ("mut" -> "mit", "grun" -> "grün").

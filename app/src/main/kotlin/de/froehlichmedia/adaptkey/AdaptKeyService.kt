@@ -2897,7 +2897,13 @@ class AdaptKeyService : InputMethodService() {
                     return
                 }
                 val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
-                ic.commitText(word + " ", 1)
+                // D-144: applying a suggestion mid-text (the composing token sits before real, already-
+                // typed text) must not add a *second* space when one is already there right after it -
+                // checked against the document's current state, before commitText() below replaces the
+                // composing span, since the real text immediately following it is untouched by that replace.
+                val alreadySpaced = ic.getTextAfterCursor(1, 0)?.firstOrNull()?.isWhitespace() == true
+                val trailingSpace = if (alreadySpaced) "" else " "
+                ic.commitText(word + trailingSpace, 1)
                 clearComposing()
                 learnWord(word)
                 // D-88: tapping a bar suggestion is always an accepted suggestion, regardless of whether it
@@ -2905,8 +2911,10 @@ class AdaptKeyService : InputMethodService() {
                 notifySuggestionAccepted(word)
                 // D-43: after accepting a bar word, predict the next one so the flow continues.
                 showNextWordPredictions()
-                // D-29: arm the trailing space added here so an immediately following punctuation removes it.
-                pendingSuggestionSpace = true
+                // D-29: arm the trailing space added here so an immediately following punctuation removes
+                // it - only when a space was actually added above; a pre-existing one mid-text is real
+                // document content, not ours to eat.
+                pendingSuggestionSpace = trailingSpace.isNotEmpty()
                 // D-123: this commitText() above will generate its own onUpdateSelection callback shortly,
                 // which - composing already empty by then - calls reclaimWordAtCaret(); guard it against
                 // clearing the flag just armed, since that callback is only the echo of this very commit,

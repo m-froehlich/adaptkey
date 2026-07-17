@@ -31,4 +31,71 @@ object Umlaut {
         }
         return builder.toString()
     }
+    
+    /**
+     * D-144: the reverse of [fold] - every plausible spelling [text] could have had *before* folding, so a
+     * prefix typed entirely without diacritics (skipping the umlaut/ß is a deliberate comfort shortcut, per
+     * this project's own founding "umlauts are ordinary characters" principle) still reaches a dictionary
+     * prefix search indexed on the *real*, unfolded spelling - e.g. "tatsachl" must still find "tatsächlich"
+     * even though the two share no literal prefix at all. [text] itself is always the first entry (the
+     * common case: nothing to unfold).
+     *
+     * Combinatorial in the number of fold-eligible positions (each `a`/`o`/`u` may or may not have
+     * originally been `ä`/`ö`/`ü`; each `ss` run may or may not have originally been a single `ß`) - bounded
+     * by [MAX_CANDIDATES] so a long, heavily-vowelled prefix can never blow this up; real typed prefixes are
+     * short in practice (this exists specifically to help *early*, live completion, D-11), so the cap is
+     * never expected to bind for a genuine typing session.
+     *
+     * @param text the lower-cased text to generate unfold candidates for (typically a composing prefix)
+     * @return the candidates, [text] itself always first, each one otherwise unique
+     */
+    fun unfoldCandidates(text: String): List<String> {
+        val results = LinkedHashSet<String>()
+        results.add(text)
+        unfold(text, 0, StringBuilder(), results)
+        return results.toList()
+    }
+    
+    private fun unfold(text: String, index: Int, current: StringBuilder, results: MutableSet<String>) {
+        if (results.size >= MAX_CANDIDATES) {
+            return
+        }
+        if (index >= text.length) {
+            results.add(current.toString())
+            return
+        }
+        val c = text[index]
+        val umlaut = VOWEL_UNFOLD[c]
+        when {
+            umlaut != null -> {
+                current.append(c)
+                unfold(text, index + 1, current, results)
+                current.setLength(current.length - 1)
+                current.append(umlaut)
+                unfold(text, index + 1, current, results)
+                current.setLength(current.length - 1)
+            }
+            
+            c == 's' && index + 1 < text.length && text[index + 1] == 's' -> {
+                current.append("ss")
+                unfold(text, index + 2, current, results)
+                current.setLength(current.length - 2)
+                current.append('ß')
+                unfold(text, index + 2, current, results)
+                current.setLength(current.length - 1)
+            }
+            
+            else -> {
+                current.append(c)
+                unfold(text, index + 1, current, results)
+                current.setLength(current.length - 1)
+            }
+        }
+    }
+    
+    private val VOWEL_UNFOLD = mapOf('a' to 'ä', 'o' to 'ö', 'u' to 'ü')
+    
+    // A considered, generous-enough-for-any-real-prefix cap - see unfoldCandidates' own KDoc for why binding
+    // it in practice would mean an unusually long, heavily-vowelled prefix, not ordinary typing.
+    private const val MAX_CANDIDATES = 32
 }

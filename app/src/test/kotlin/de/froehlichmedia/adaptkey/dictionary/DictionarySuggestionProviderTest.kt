@@ -37,6 +37,24 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-144 a prefix typed without its umlaut still reaches the correctly-spelled word`() {
+        store.putWord(WordEntry("tatsächlich", 500L))
+        
+        val words = provider.suggestionsFor("tatsachl", null).map { it.word }
+        assertTrue(words.contains("tatsächlich"))
+    }
+    
+    @Test
+    fun `D-144 a prefix typed with ss instead of ß still reaches the correctly-spelled word`() {
+        store.putWord(WordEntry("Straße", 500L))
+        
+        // "strass" is not a literal prefix of "straße" at all - only unfolding the trailing "ss" to "ß"
+        // (Umlaut.unfoldCandidates) makes "straß" reachable as a real dictionary prefix.
+        val words = provider.suggestionsFor("strass", null).map { it.word }
+        assertTrue(words.contains("Straße"))
+    }
+    
+    @Test
     fun `A-04 blacklisted words are excluded from suggestions`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putWord(WordEntry("Haus", 100L))

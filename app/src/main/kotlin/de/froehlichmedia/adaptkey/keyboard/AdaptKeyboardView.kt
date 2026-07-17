@@ -548,10 +548,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // (the cell above the pointer x), and release commits it.
     private var popupKey: Key? = null
     private var popupAlternatives: List<String> = emptyList()
+    // D-144: each cell's own width, sized to its own text content (computed once in openPopup(), since the
+    // alternatives never change while a popup is showing) - previously a single uniform popupCellWidthPx,
+    // which overflowed for wide multi-character content (e.g. a URL protocol popup's "https://"/"ftp://").
+    private var popupCellWidths: List<Float> = emptyList()
     private var popupSelectedIndex = 0
     private var popupRowLeft = 0f
     private var popupRowTop = 0f
-    private val popupCellWidthPx = dp(40f)
+    // D-144: the floor every cell width is coerced to, and the horizontal padding added around a cell's own
+    // measured text - a single glyph (e.g. "!") still gets a comfortably tappable cell, not just its own
+    // tight text bounds.
+    private val popupCellMinWidthPx = dp(40f)
+    private val popupCellPaddingPx = dp(10f)
     private val popupCellHeightPx = dp(42f)
     // D-54: how far a single-cell popup is nudged towards the keyboard centre so the finger does not hide it
     // (5 units - a little less than the D-55 space-row gap; a half-cell was too much).
@@ -817,14 +825,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (popupKey == null || popupAlternatives.isEmpty()) {
             return
         }
+        var left = popupRowLeft
         popupAlternatives.forEachIndexed { index, text ->
-            val left = popupRowLeft + index * popupCellWidthPx
-            drawPopupCell(canvas, left, popupRowTop, text, index == popupSelectedIndex)
+            val cellWidth = popupCellWidths[index]
+            drawPopupCell(canvas, left, popupRowTop, cellWidth, text, index == popupSelectedIndex)
+            left += cellWidth
         }
     }
     
-    private fun drawPopupCell(canvas: Canvas, left: Float, top: Float, text: String, selected: Boolean) {
-        val cell = RectF(left, top, left + popupCellWidthPx, top + popupCellHeightPx)
+    private fun drawPopupCell(canvas: Canvas, left: Float, top: Float, cellWidth: Float, text: String, selected: Boolean) {
+        val cell = RectF(left, top, left + cellWidth, top + popupCellHeightPx)
         canvas.drawRoundRect(cell, keyRadiusPx, keyRadiusPx, popupBackgroundPaint)
         if (selected) {
             canvas.drawRoundRect(cell, keyRadiusPx, keyRadiusPx, popupSelectedPaint)
@@ -832,6 +842,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         canvas.drawRoundRect(cell, keyRadiusPx, keyRadiusPx, popupBorderPaint)
         val baseline = cell.centerY() - (textPaint.descent() + textPaint.ascent()) / 2f
         canvas.drawText(text, cell.centerX(), baseline, textPaint)
+    }
+    
+    /**
+     * D-144: the cell width for a popup entry - its own measured text plus [popupCellPaddingPx] on each
+     * side, floored at [popupCellMinWidthPx] so a single short glyph (e.g. `!`) still gets a comfortably
+     * tappable cell rather than shrinking to its tight text bounds.
+     */
+    private fun popupCellWidthFor(text: String): Float {
+        return maxOf(popupCellMinWidthPx, textPaint.measureText(text) + 2f * popupCellPaddingPx)
     }
     
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -990,7 +1009,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
         val preSelected = preSelectedIndexFor(key, alternatives)
-        val rowWidth = alternatives.size * popupCellWidthPx
+        // D-144: each cell sized to its own text content instead of a single uniform width, so wide entries
+        // (a URL protocol popup's "https://"/"ftp://") are no longer cramped/overflowing.
+        val cellWidths = alternatives.map { popupCellWidthFor(it) }
+        val rowWidth = cellWidths.sum()
         val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
         // D-54: only single-cell popups are nudged; multi-cell popups stay centred over the stem (D-44).
         val nudge = if (alternatives.size == 1) {
@@ -998,12 +1020,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         } else {
             0f
         }
-        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, popupCellWidthPx, alternatives.size, preSelected, gapPx, maxLeft)
+        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, cellWidths, preSelected, gapPx, maxLeft)
         // D-53: always place the row above the key. For the number row this reaches above the keyboard, which
         // is fine: the service disables child-clipping on the container/root, so the popup draws over the
         // suggestion bar rather than being clipped.
         popupRowTop = rect.top - gapPx - popupCellHeightPx
         popupAlternatives = alternatives
+        popupCellWidths = cellWidths
         popupSelectedIndex = preSelected
         popupKey = key
         invalidate()
@@ -1025,7 +1048,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (popupKey == null || popupAlternatives.isEmpty()) {
             return
         }
-        val next = HorizontalLongPressPopup.selectedIndex(pointerX, popupRowLeft, popupCellWidthPx, popupAlternatives.size)
+        val next = HorizontalLongPressPopup.selectedIndex(pointerX, popupRowLeft, popupCellWidths)
         if (next != popupSelectedIndex) {
             popupSelectedIndex = next
             invalidate()
@@ -1045,6 +1068,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (popupKey != null) {
             popupKey = null
             popupAlternatives = emptyList()
+            popupCellWidths = emptyList()
             invalidate()
         }
     }

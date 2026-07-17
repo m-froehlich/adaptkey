@@ -28,6 +28,29 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§91 DONE (v0.8.57): device-feedback batch on §89/§90 - D-145/D-146/D-147 fixed, D-144's settings-row half
+  still open, D-148 captured pending clarification.** **D-145**: two URL-mode popup corrections - `/`'s and
+  `.`'s own popups no longer redundantly list themselves (`URL_SLASH_ALTERNATIVES` is now exactly
+  `COMMA_ALTERNATIVES`, `UrlLocale.periodAlternatives()` drops the bare `.`); popup cells now size to their
+  own text content (`AdaptKeyboardView.popupCellWidthFor()`, `HorizontalLongPressPopup` generalised from a
+  single `cellWidth` to `cellWidths: List<Float>`) instead of a uniform 40dp, fixing both the URL keys and
+  (for free) the calculator page's `sin`/`cos`/`tan`/`log` popup. **D-146**: applying a suggestion mid-text no
+  longer leaves a double space - `onSuggestionClicked()` now checks `getTextAfterCursor(1, 0)` before adding
+  its own trailing space. **D-147**: suggestions now reach a dictionary word even when its umlaut/ß was
+  skipped while typing (`tatsachl` → `tatsächlich`) - new `Umlaut.unfoldCandidates()` (the reverse of
+  `Umlaut.fold()`) tried as extra prefix queries in `DictionarySuggestionProvider.suggestionsFor()`; confirmed
+  backed by the original spec's own founding "umlauts are ordinary characters" principle, which explicitly
+  names suggestions as a feature it must shape - re-checked per direct instruction, not assumed. **D-144
+  follow-up**: settings-row swipe-down still doesn't react on device; re-verified the code is structurally
+  identical to the suggestion bar's (confirmed-working) fix - no bug found, needs a sharper repro. **D-148**:
+  captured, not implemented - two Backspace-after-suggestion reports traced against the actual A-07/bar-tap
+  code (bar-tap already clears A-07 undo state, so a plain Backspace should already just remove the trailing
+  space; A-07 itself deliberately restores the typed word after a *silent* autocorrect, by long-standing
+  design) - genuinely unclear whether this needs a sharper repro or an actual, confirmed change to A-07's own
+  behaviour; left undesigned pending the user's own read, matching the D-107 precedent for a foundational
+  behaviour change. 9 new tests (`UmlautTest` 7, `DictionarySuggestionProviderTest` 2) plus updated
+  `HorizontalLongPressPopupTest`/`KeyboardLayoutTest`/`UrlLocaleTest`. 688 unit tests (was 675).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-145/D-146/D-147 not yet re-confirmed on device.
 - **§90 DONE (v0.8.56): D-144 fixed - swipe-down-to-dismiss now also reacts on the suggestion bar and the
   settings row, not only the keyboard body.** Root-caused first: `AdaptKeyboardView.resolveSwipe()` was the
   *only* place in the app that ever recognised a swipe at all - `SuggestionBarView` only intercepted G-04's

@@ -6,11 +6,16 @@ package de.froehlichmedia.adaptkey.keyboard
 /**
  * Pure layout + selection geometry for the D-44 horizontal long-press popup.
  *
- * The alternatives are shown as a single row of equal-width cells directly above the pressed key. The row
- * is centred over the key's stem so the pre-selected cell (the key's own character) sits right above the
- * finger; the finger then slides left/right **below** the row and the cell above the pointer's x is
- * selected. This replaces the D-23 vertical column: it maps a pointer x-coordinate to the selected index
- * and computes the (clamped) row origin, leaving the drawing and touch plumbing to the view.
+ * The alternatives are shown as a single row of cells directly above the pressed key. The row is centred
+ * over the key's stem so the pre-selected cell (the key's own character) sits right above the finger; the
+ * finger then slides left/right **below** the row and the cell above the pointer's x is selected. This
+ * replaces the D-23 vertical column: it maps a pointer x-coordinate to the selected index and computes the
+ * (clamped) row origin, leaving the drawing and touch plumbing to the view.
+ *
+ * D-144: cells are no longer assumed equal-width - [cellWidths] gives each cell its own width (the view
+ * sizes each to its own text content, e.g. a URL protocol popup's `https://`/`ftp://` entries need far more
+ * room than a single glyph), so every position here is computed from the actual per-cell widths rather than
+ * a uniform `index * cellWidth`.
  */
 object HorizontalLongPressPopup {
     
@@ -19,19 +24,19 @@ object HorizontalLongPressPopup {
      * clamped so the whole row stays within `[minLeft, maxLeft]` (the visible keyboard width).
      *
      * @param keyCenterX the x-centre of the pressed key (the stem the row is centred over)
-     * @param cellWidth the width of one cell; must be > 0
-     * @param count the number of alternatives; must be >= 1
+     * @param cellWidths each cell's own width, left to right; must be non-empty, every width > 0
      * @param preSelectedIndex the pre-selected cell index (the key's own character); clamped into range
      * @param minLeft the smallest allowed row-left (usually a small edge gap)
      * @param maxLeft the largest allowed row-left (view width - row width - edge gap)
      * @return the clamped x of the row's left edge
-     * @throws IllegalArgumentException when [cellWidth] is not positive or [count] is < 1
+     * @throws IllegalArgumentException when [cellWidths] is empty or any width is not positive
      */
-    fun rowLeft(keyCenterX: Float, cellWidth: Float, count: Int, preSelectedIndex: Int, minLeft: Float, maxLeft: Float): Float {
-        require(cellWidth > 0f) { "cellWidth must be > 0" }
-        require(count >= 1) { "count must be >= 1" }
-        val index = preSelectedIndex.coerceIn(0, count - 1)
-        val ideal = keyCenterX - (index + 0.5f) * cellWidth
+    fun rowLeft(keyCenterX: Float, cellWidths: List<Float>, preSelectedIndex: Int, minLeft: Float, maxLeft: Float): Float {
+        require(cellWidths.isNotEmpty()) { "cellWidths must not be empty" }
+        require(cellWidths.all { it > 0f }) { "every cell width must be > 0" }
+        val index = preSelectedIndex.coerceIn(0, cellWidths.size - 1)
+        val offsetToPreSelectedCenter = cellWidths.take(index).sum() + cellWidths[index] / 2f
+        val ideal = keyCenterX - offsetToPreSelectedCenter
         if (maxLeft < minLeft) {
             return minLeft
         }
@@ -39,18 +44,25 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * The selected alternatives index for a pointer at [pointerX], picking the cell above the finger.
+     * The selected alternatives index for a pointer at [pointerX], picking whichever cell's own span
+     * (measured left to right from [rowLeft], using each cell's own [cellWidths] entry) contains it.
      *
      * @param pointerX the current pointer x (view pixels)
      * @param rowLeft the x of the row's left edge (from [rowLeft])
-     * @param cellWidth the width of one cell; must be > 0
-     * @param count the number of alternatives; must be >= 1
-     * @return the selected index in `0 until count` (clamped in range)
-     * @throws IllegalArgumentException when [cellWidth] is not positive or [count] is < 1
+     * @param cellWidths each cell's own width, left to right; must be non-empty, every width > 0
+     * @return the selected index in `0 until cellWidths.size` (clamped in range)
+     * @throws IllegalArgumentException when [cellWidths] is empty or any width is not positive
      */
-    fun selectedIndex(pointerX: Float, rowLeft: Float, cellWidth: Float, count: Int): Int {
-        require(cellWidth > 0f) { "cellWidth must be > 0" }
-        require(count >= 1) { "count must be >= 1" }
-        return ((pointerX - rowLeft) / cellWidth).toInt().coerceIn(0, count - 1)
+    fun selectedIndex(pointerX: Float, rowLeft: Float, cellWidths: List<Float>): Int {
+        require(cellWidths.isNotEmpty()) { "cellWidths must not be empty" }
+        require(cellWidths.all { it > 0f }) { "every cell width must be > 0" }
+        var right = rowLeft
+        for (index in cellWidths.indices) {
+            right += cellWidths[index]
+            if (pointerX < right) {
+                return index
+            }
+        }
+        return cellWidths.size - 1
     }
 }

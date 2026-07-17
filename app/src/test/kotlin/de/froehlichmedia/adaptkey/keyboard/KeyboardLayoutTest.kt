@@ -261,10 +261,11 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-143 the slash key's popup is comma's original list with slash prepended`() {
+    fun `D-144 the slash key's popup is exactly comma's original list, no redundant slash entry`() {
         val bottomRow = KeyboardLayout.rows(urlMode = true).last()
         
-        assertEquals(listOf("/") + KeyboardLayout.COMMA_ALTERNATIVES, bottomRow.byChar('/').alternatives)
+        assertEquals(KeyboardLayout.COMMA_ALTERNATIVES, bottomRow.byChar('/').alternatives)
+        assertFalse(bottomRow.byChar('/').alternatives.contains("/"))
     }
     
     @Test
