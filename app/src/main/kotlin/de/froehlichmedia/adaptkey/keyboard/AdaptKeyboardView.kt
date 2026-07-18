@@ -317,6 +317,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
+    /**
+     * D-158: whether the current field is a recognised email-address field - replaces the letters
+     * surface's bottom row (comma/space/period) with the email-mode row (@ / a new dash key / a narrower
+     * space / a TLD-popup period, mirroring [urlMode]'s own reasoning). Stays on [InputSurface.LETTERS] -
+     * not a separate surface, since an email address still needs the full alphabet.
+     */
+    var emailMode: Boolean = false
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    
     /** Per-letter secondary-symbol map drawn as corner hints (L-05 / C-08). */
     var letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS
         set(value) {
@@ -619,9 +632,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // G-01: the letter surface is the Greek alphabet, or the Latin layout (German QWERTZ, or
             // English QWERTY - D-106 stage 1).
             InputSurface.LETTERS -> if (greek) {
-                GreekLayout.rows(proportions, showNumberRow, urlMode, systemLocale)
+                GreekLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
             } else {
-                KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty, urlMode, systemLocale)
+                KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty, urlMode, emailMode, systemLocale)
             }
             
             InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)
@@ -1365,9 +1378,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // D-03: the letters surface's space bar shows the current input language instead of its
             // layout label. D-97: the symbol pages' (smaller, secondary) space keys have no language of
             // their own to show, so they fall through to the plain space glyph instead - D-143's narrower
-            // URL-mode space key is the same case, even though it stays on the letters surface.
-            key.code == KeyCode.SPACE && surface == InputSurface.LETTERS && !urlMode && spaceLabel.isNotEmpty() -> spaceLabel
-            key.code == KeyCode.SPACE && (surface != InputSurface.LETTERS || urlMode) -> SPACE_GLYPH
+            // URL-mode space key is the same case, even though it stays on the letters surface; D-158's
+            // email-mode space key mirrors it identically.
+            key.code == KeyCode.SPACE && surface == InputSurface.LETTERS && !urlMode && !emailMode && spaceLabel.isNotEmpty() -> spaceLabel
+            key.code == KeyCode.SPACE && (surface != InputSurface.LETTERS || urlMode || emailMode) -> SPACE_GLYPH
             // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
             // D-47 / §49: the combined key is always a plain ?123 key, not the emoji (retired D-18).

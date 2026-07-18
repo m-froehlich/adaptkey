@@ -5024,3 +5024,58 @@ protection are untouched.
 green. None of this round's Android/service-glue items (D-150-D-153, D-156) have been confirmed on a real
 device yet; D-154/D-155/D-157 rely on dictionary-level logic that is directly unit-tested, but the end-to-end
 on-device behaviour is likewise not yet re-confirmed.
+
+## §97 - D-158: Dedicated Email-Mode Keyboard Layout (v0.8.62)
+
+Implemented as its own round, deliberately deferred from §95/§96 per explicit instruction. Mirrors D-143's
+URL-mode row precisely, per the user's own spec: `@` takes over the comma key's primary slot, a new dash key
+funds itself from the space key's width, the period key behaves exactly like URL-mode's, and the space key
+carries only its plain glyph.
+
+**`KeyboardLayout.emailBottomRow(proportions, locale)`** (new, alongside the existing `urlBottomRow`, shared
+by `KeyboardLayout` and `GreekLayout` exactly like it): `[?123] [@] [-] [space, narrow] [.] [⏎]`.
+- **`@` key**: takes over the comma key's own primary position (`charKey('@', alternatives =
+  EMAIL_AT_ALTERNATIVES, weight = proportions.commaWeight)`); `EMAIL_AT_ALTERNATIVES` is literally
+  `COMMA_ALTERNATIVES` unchanged (comma itself is already in that list, so it is automatically demoted to a
+  popup entry with no separate constant needed - the same trick `URL_SLASH_ALTERNATIVES` already uses for
+  `/`).
+- **New dash key**: `charKey('-', hint = "_", weight = EMAIL_DASH_KEY_WEIGHT)` - a single D-01 long-press
+  secondary (`_`), the same AltGr-style single-hint pattern as e.g. `m` → `-` in `DEFAULT_LETTER_HINTS`, not
+  a multi-cell popup. Funded from the space key's own width rather than growing the row overall (D-143's own
+  approach for its protocol/www keys): `EMAIL_DASH_KEY_WEIGHT = 1.4f` + `EMAIL_SPACE_WEIGHT = 1.8f` sum to
+  exactly `3.2` - the *ordinary* row's own `spaceWeight` - so the email row's total width matches the
+  ordinary bottom row's exactly, just redistributed between the two keys, rather than URL mode's
+  row-grows-overall approach.
+- **Period key**: `charKey('.', alternatives = UrlLocale.periodAlternatives(locale), weight =
+  proportions.periodWeight)` - byte-for-byte the same call `urlBottomRow` makes, since an email address ends
+  in a domain/TLD exactly like a URL does.
+- **`-`/`_` need no new delimiter handling**: both already commit verbatim with no autocorrect/learning for
+  any `loginFieldKind != NONE` field (D-142's `commitVerbatimFieldFragment`, whose own KDoc already names
+  `.`/`@`/`-`/`_` explicitly as "each its own delimiter under the ordinary token model") - an EMAIL field
+  already satisfies that condition via the pre-existing, unrelated `loginFieldKind == EMAIL` classification,
+  so the new dash key needed no companion service-layer change at all.
+
+**Detection**: a new `AdaptKeyService.isEmailField(info)`, mirroring `isUrlField` exactly (checks
+`InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS`/`TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS` directly against the
+raw `EditorInfo`) rather than derived from `loginFieldKind` - purely because `loginFieldKind` is not computed
+until after `setSurface()` runs in `onStartInput()`, and (like `urlMode`) this must be pushed to the keyboard
+view *before* that call so its own `rebuildRows()` already reads the correct value; reordering the existing,
+already-commented `loginFieldKind` computation was avoided as unnecessary risk for this. New service-level
+`emailMode` field (mirrors `urlMode`'s own field exactly) drives only the keyboard-view layout
+(`AdaptKeyboardView.emailMode`, new) and the G-01 space-swipe suppression (`KeyGesture.resolve()` gained an
+`emailMode` parameter, identical reasoning to its existing `urlMode` one) - autocorrect/suggestion suppression
+needed **no** new code at all, since a reliably-detected EMAIL field already fully short-circuits through the
+pre-existing, unrelated D-142 credential pipeline (`loginFieldKind != LoginFieldKind.NONE`), which also means
+an email field already shows the D-142 domain-completion suggestion bar for free.
+
+**Space glyph**: `AdaptKeyboardView.labelFor()`'s existing `urlMode`-gated "space bar shows the plain glyph,
+not the language label" branch (D-143) now also checks `emailMode`, exactly mirroring `urlMode`'s own two
+conditions - no new logic, just the same rule extended to the new flag.
+
+8 new unit tests: `KeyboardLayoutTest` (6, mirroring the existing D-143 URL-mode cases one-for-one, plus one
+confirming `urlMode` wins if both flags were somehow set at once), `GreekLayoutTest` (1, confirms the Greek
+layout's email row is identical to the Latin layout's, mirroring the existing urlMode parity test),
+`KeyGestureTest` (1, confirms a horizontal swipe on the email-mode space key surface-switches rather than
+language-switches). 698 unit tests (was 690; +8). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-tested - the new key weights (`EMAIL_DASH_KEY_WEIGHT`/`EMAIL_SPACE_WEIGHT`) are a considered starting
+guess, easy to retune (§36/§37/§53/§89 precedent).

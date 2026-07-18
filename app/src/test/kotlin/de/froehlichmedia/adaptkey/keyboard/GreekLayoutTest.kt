@@ -123,4 +123,12 @@ class GreekLayoutTest {
     fun `D-143 without urlMode the Greek bottom row is unaffected`() {
         assertEquals(GreekLayout.rows().last(), GreekLayout.rows(locale = Locale.US).last())
     }
+    
+    @Test
+    fun `D-158 emailMode gives the Greek layout the same email bottom row as the Latin layout`() {
+        val greekRow = GreekLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
+        val latinRow = KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
+        
+        assertEquals(latinRow, greekRow)
+    }
 }

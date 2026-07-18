@@ -28,6 +28,23 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§97 DONE (v0.8.62): D-158 - dedicated email-mode keyboard layout, its own round per explicit deferral.**
+  New `KeyboardLayout.emailBottomRow()` (shared by `KeyboardLayout`/`GreekLayout`, mirrors D-143's
+  `urlBottomRow` precisely): `[?123] [@] [-] [space, narrow] [.] [⏎]` - `@` takes over the comma key's
+  primary slot (comma demoted into `EMAIL_AT_ALTERNATIVES = COMMA_ALTERNATIVES`, no new list needed, same
+  trick as D-143's `/`); a new dash key (`-`, `_` as its single D-01 secondary) is funded entirely from the
+  space key's own width (`EMAIL_DASH_KEY_WEIGHT` + `EMAIL_SPACE_WEIGHT` sum to exactly the ordinary
+  `spaceWeight`, so the row's total width is unchanged, unlike URL mode's row-grows-overall approach); the
+  period key reuses `UrlLocale.periodAlternatives()` byte-for-byte, same as URL mode. Detection via new
+  `isEmailField()` (mirrors `isUrlField`'s direct-`InputType` check, not derived from `loginFieldKind` -
+  needed pushed to the view before `setSurface()` runs, same ordering constraint `urlMode` already has). New
+  `AdaptKeyboardView.emailMode`/`KeyGesture` `emailMode` param, both mirroring `urlMode` exactly. Needed
+  **no** autocorrect/suggestion-suppression code at all - a reliably-detected EMAIL field already fully
+  short-circuits through the pre-existing D-142 credential pipeline, which also means the domain-completion
+  suggestion bar already works for free. 8 new tests (`KeyboardLayoutTest` 6, `GreekLayoutTest` 1,
+  `KeyGestureTest` 1, all mirroring the existing D-143 URL-mode cases one-for-one). 698 unit tests (was 690;
+  +8). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-tested - the new key weights are a
+  considered starting guess, easy to retune (§36/§37/§53/§89 precedent).
 - **§96 DONE (v0.8.61): §95's whole backlog cleared - D-150 through D-157, one requested round.** D-158
   (email-mode keyboard) deliberately deferred to its own round. **D-150**: diagnostic log window 5min→1min;
   `AdaptKeyService.diag()` now unconditionally skips both logcat and the in-app ring buffer while the focused

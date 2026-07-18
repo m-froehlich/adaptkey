@@ -220,6 +220,15 @@ class AdaptKeyService : InputMethodService() {
     // capitalisation/suggestions exactly like a recognised login field (see finalizeAndCommit/
     // refreshSuggestions) - a domain/path is not natural-language prose either.
     private var urlMode = false
+    
+    // D-158: whether the currently-focused field is a recognised email-address field - unlike urlMode,
+    // this is *derived* from loginFieldKind (already reliably detected via InputType for D-142's own
+    // purposes, see LoginFieldDetector's KDoc) rather than re-parsing EditorInfo a second time; re-derived
+    // fresh alongside loginFieldKind in onStartInput. Drives only the letters surface's email-mode bottom
+    // row (KeyboardLayout.emailBottomRow) and the G-01 space-swipe suppression - autocorrect/suggestions
+    // suppression for an email field is already fully handled by the existing D-142 credential pipeline
+    // (loginFieldKind != LoginFieldKind.NONE), so this flag has no role there at all.
+    private var emailMode = false
     private lateinit var emojiDataset: EmojiDataset
     private var recentEmojis: List<String> = emptyList()
     
@@ -687,11 +696,13 @@ class AdaptKeyService : InputMethodService() {
         keyboardView?.shifted = false
         // D-15: a new field starts without Caps Lock.
         keyboardView?.capsLock = false
-        // D-143: recognised fresh per field, mirroring surface below - pushed to the view before
+        // D-143 / D-158: recognised fresh per field, mirroring surface below - pushed to the view before
         // setSurface() so its own rebuildRows() (triggered by the surface/symbolPage property setters
         // inside switchPage()) already reads the correct value.
         urlMode = isUrlField(info)
         keyboardView?.urlMode = urlMode
+        emailMode = isEmailField(info)
+        keyboardView?.emailMode = emailMode
         // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens
         // straight to the calculator page instead of the letters surface.
         setSurface(initialSurfaceFor(info), targetSymbolPage = 1)
@@ -1555,7 +1566,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun handleSwipe(key: Key, direction: SwipeDirection): Boolean {
         val ic = currentInputConnection ?: return false
-        return when (KeyGesture.resolve(key.code, direction, surface, urlMode)) {
+        return when (KeyGesture.resolve(key.code, direction, surface, urlMode, emailMode)) {
             // G-02: delete the whole previous word.
             GestureAction.DELETE_WORD -> {
                 clearUndo()
@@ -3375,6 +3386,26 @@ class AdaptKeyService : InputMethodService() {
             return false
         }
         return (type and InputType.TYPE_MASK_VARIATION) == InputType.TYPE_TEXT_VARIATION_URI
+    }
+    
+    /**
+     * D-158: whether the currently-focused field is a recognised email-address field, mirroring
+     * [isUrlField]'s own direct-`InputType` check exactly. The same reliable variation bits
+     * `LoginFieldDetector.classify()` already uses for D-142's own EMAIL detection (verified against the
+     * real SDK there) - checked directly here too, rather than deriving from `loginFieldKind`, only
+     * because that field is not computed until after `setSurface()` runs below and this must be pushed to
+     * the keyboard view before it, exactly like [urlMode].
+     *
+     * @return true when the field's own declared type is an email-address-variation text field
+     */
+    private fun isEmailField(info: EditorInfo?): Boolean {
+        val type = info?.inputType ?: return false
+        if (type and InputType.TYPE_MASK_CLASS != InputType.TYPE_CLASS_TEXT) {
+            return false
+        }
+        val variation = type and InputType.TYPE_MASK_VARIATION
+        return variation == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS ||
+            variation == InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
     }
     
     companion object {

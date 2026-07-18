@@ -77,6 +77,19 @@ class KeyGestureTest {
     }
     
     @Test
+    fun `D-158 a horizontal swipe on the email-mode space key switches surface, not language`() {
+        assertEquals(
+            GestureAction.SWITCH_SURFACE_NEXT,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.LEFT, InputSurface.LETTERS, emailMode = true)
+        )
+        assertEquals(
+            GestureAction.SWITCH_SURFACE_PREV,
+            KeyGesture.resolve(KeyCode.SPACE, SwipeDirection.RIGHT, InputSurface.LETTERS, emailMode = true)
+        )
+    }
+    
+    
+    @Test
     fun `D-19 and D-91 a horizontal swipe on a letter switches surface`() {
         assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.LEFT))
         assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.CHAR, SwipeDirection.RIGHT))

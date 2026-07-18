@@ -76,6 +76,19 @@ object KeyboardLayout {
     private const val URL_WWW_KEY_WEIGHT = 1.5f
     private const val URL_SPACE_WEIGHT = 1f
     
+    /**
+     * D-158: the email-mode `@` key's long-press set - exactly [COMMA_ALTERNATIVES] unchanged (comma
+     * itself is already in there), mirroring how [URL_SLASH_ALTERNATIVES] demotes comma the same way for
+     * `/` without duplicating the key's own new primary character.
+     */
+    val EMAIL_AT_ALTERNATIVES = COMMA_ALTERNATIVES
+    
+    // D-158: the new dash key is funded from the space key's own width, unlike D-143's protocol/www keys
+    // (which grew the row overall) - the row's total weight matches the ordinary bottom row's exactly
+    // (1.4 + 1.8 = 3.2 = the ordinary spaceWeight), just redistributed between the two keys.
+    private const val EMAIL_DASH_KEY_WEIGHT = 1.4f
+    private const val EMAIL_SPACE_WEIGHT = 1.8f
+    
     /** D-90: the π key's own corner hint. */
     private const val PI_HINT = "π"
     
@@ -116,8 +129,12 @@ object KeyboardLayout {
      *        alternatives and every other key are shared between both variants.
      * @param urlMode D-143: true for a recognised URL-entry field - replaces the bottom row's comma/space/
      *        period trio with [urlBottomRow]; defaults to false (the ordinary bottom row).
-     * @param locale D-143: the system locale [urlBottomRow]'s period key resolves its TLD popup from
-     *        ([UrlLocale]); only meaningful when [urlMode] is true.
+     * @param emailMode D-158: true for a recognised email-address field - replaces the bottom row's
+     *        comma/space/period trio with [emailBottomRow]; defaults to false. Ignored when [urlMode] is
+     *        also true (cannot both apply to the same field in practice).
+     * @param locale D-143 / D-158: the system locale [urlBottomRow]'s/[emailBottomRow]'s period key
+     *        resolves its TLD popup from ([UrlLocale]); only meaningful when [urlMode] or [emailMode] is
+     *        true.
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
@@ -126,6 +143,7 @@ object KeyboardLayout {
         letterHints: Map<Char, String> = DEFAULT_LETTER_HINTS,
         qwerty: Boolean = false,
         urlMode: Boolean = false,
+        emailMode: Boolean = false,
         locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
@@ -151,6 +169,8 @@ object KeyboardLayout {
         result.add(
             if (urlMode) {
                 urlBottomRow(proportions, locale)
+            } else if (emailMode) {
+                emailBottomRow(proportions, locale)
             } else {
                 buildList {
                     // L-03: combined emoji / numeric-layer key - tap opens the emoji panel, long-press /
@@ -191,6 +211,30 @@ object KeyboardLayout {
             textKey("www.", weight = URL_WWW_KEY_WEIGHT),
             charKey('/', alternatives = URL_SLASH_ALTERNATIVES, weight = proportions.commaWeight),
             Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = URL_SPACE_WEIGHT),
+            charKey('.', alternatives = UrlLocale.periodAlternatives(locale), weight = proportions.periodWeight),
+            Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
+        )
+    }
+    
+    /**
+     * D-158: the email-mode bottom row, shared by [KeyboardLayout] and [GreekLayout] (email entry doesn't
+     * depend on the active typing alphabet, mirroring [urlBottomRow]'s own reasoning). Replaces the
+     * ordinary comma/space/period trio: `@` takes over the comma key's own primary position (its own alt
+     * popup unchanged, just demoted to an alternative - see [EMAIL_AT_ALTERNATIVES]); a new dash key (`-`,
+     * `_` as its single D-01 long-press secondary) is funded by narrowing the now less-needed space key;
+     * the full-stop key's alt popup is the same locale-resolved TLD list [urlBottomRow] uses, since an
+     * email address ends in a domain/TLD exactly like a URL does.
+     *
+     * @param proportions the key-proportion configuration (C-01)
+     * @param locale the system locale the period key's TLD popup is resolved from ([UrlLocale])
+     * @return the row as a list of [Key] from left to right
+     */
+    fun emailBottomRow(proportions: KeyProportions, locale: Locale): List<Key> {
+        return listOf(
+            Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight),
+            charKey('@', alternatives = EMAIL_AT_ALTERNATIVES, weight = proportions.commaWeight),
+            charKey('-', hint = "_", weight = EMAIL_DASH_KEY_WEIGHT),
+            Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = EMAIL_SPACE_WEIGHT),
             charKey('.', alternatives = UrlLocale.periodAlternatives(locale), weight = proportions.periodWeight),
             Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
         )

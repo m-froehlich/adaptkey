@@ -298,4 +298,62 @@ class KeyboardLayoutTest {
         assertEquals(ordinary[2], url[2]) // middle row
         assertEquals(ordinary[3], url[3]) // third row (shift / backspace)
     }
+    
+    @Test
+    fun `D-158 emailMode replaces the bottom row with the email row`() {
+        val bottomRow = KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
+        
+        assertEquals(6, bottomRow.size)
+        assertEquals(KeyCode.SYMBOL, bottomRow[0].code)
+        assertEquals(KeyCode.CHAR, bottomRow[1].code)
+        assertEquals('@', bottomRow[1].char)
+        assertEquals(KeyCode.CHAR, bottomRow[2].code)
+        assertEquals('-', bottomRow[2].char)
+        assertEquals(KeyCode.SPACE, bottomRow[3].code)
+        assertEquals(KeyCode.CHAR, bottomRow[4].code)
+        assertEquals('.', bottomRow[4].char)
+        assertEquals(KeyCode.ENTER, bottomRow[5].code)
+    }
+    
+    @Test
+    fun `D-158 the at key's popup is exactly comma's original list, no redundant at entry`() {
+        val bottomRow = KeyboardLayout.rows(emailMode = true).last()
+        
+        assertEquals(KeyboardLayout.COMMA_ALTERNATIVES, bottomRow.byChar('@').alternatives)
+        assertFalse(bottomRow.byChar('@').alternatives.contains("@"))
+    }
+    
+    @Test
+    fun `D-158 the dash key has a single underscore secondary and no popup`() {
+        val bottomRow = KeyboardLayout.rows(emailMode = true).last()
+        val dashKey = bottomRow.byChar('-')
+        
+        assertEquals("_", dashKey.hint)
+        assertTrue(dashKey.alternatives.isEmpty())
+    }
+    
+    @Test
+    fun `D-158 the period key's popup is locale-resolved TLDs, exactly like urlMode's`() {
+        val emailRow = KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
+        val urlRow = KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
+        
+        assertEquals(UrlLocale.periodAlternatives(Locale.GERMANY), emailRow.byChar('.').alternatives)
+        assertEquals(urlRow.byChar('.').alternatives, emailRow.byChar('.').alternatives)
+    }
+    
+    @Test
+    fun `D-158 emailMode leaves every other row identical to the ordinary layout`() {
+        val ordinary = KeyboardLayout.rows()
+        val email = KeyboardLayout.rows(emailMode = true)
+        
+        assertEquals(ordinary[0], email[0]) // number row
+        assertEquals(ordinary[1], email[1]) // top row (p / π etc.)
+        assertEquals(ordinary[2], email[2]) // middle row
+        assertEquals(ordinary[3], email[3]) // third row (shift / backspace)
+    }
+    
+    @Test
+    fun `D-158 urlMode takes priority over emailMode when both are somehow set`() {
+        assertEquals(KeyboardLayout.rows(urlMode = true).last(), KeyboardLayout.rows(urlMode = true, emailMode = true).last())
+    }
 }

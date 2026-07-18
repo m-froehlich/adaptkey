@@ -51,14 +51,19 @@ object GreekLayout {
      * @param urlMode D-143: true for a recognised URL-entry field - replaces the bottom row's comma/space/
      *        period trio with [KeyboardLayout.urlBottomRow] (URL entry doesn't depend on the active typing
      *        alphabet, so it's identical to the Latin layout's); defaults to false.
-     * @param locale D-143: the system locale [KeyboardLayout.urlBottomRow]'s period key resolves its TLD
-     *        popup from ([UrlLocale]); only meaningful when [urlMode] is true.
+     * @param emailMode D-158: true for a recognised email-address field - replaces the bottom row's
+     *        comma/space/period trio with [KeyboardLayout.emailBottomRow] (identical reasoning to
+     *        [urlMode]); defaults to false. Ignored when [urlMode] is also true.
+     * @param locale D-143 / D-158: the system locale [KeyboardLayout.urlBottomRow]'s/[KeyboardLayout.
+     *        emailBottomRow]'s period key resolves its TLD popup from ([UrlLocale]); only meaningful when
+     *        [urlMode] or [emailMode] is true.
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
         proportions: KeyProportions = KeyProportions.DEFAULT,
         showNumberRow: Boolean = true,
         urlMode: Boolean = false,
+        emailMode: Boolean = false,
         locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
@@ -82,6 +87,9 @@ object GreekLayout {
                 // D-143: URL entry doesn't depend on the active typing alphabet - identical to the Latin
                 // layout's own URL-mode bottom row.
                 KeyboardLayout.urlBottomRow(proportions, locale)
+            } else if (emailMode) {
+                // D-158: same reasoning - identical to the Latin layout's own email-mode bottom row.
+                KeyboardLayout.emailBottomRow(proportions, locale)
             } else {
                 buildList {
                     // L-03: combined emoji / numeric-layer key, identical to the Latin bottom row.

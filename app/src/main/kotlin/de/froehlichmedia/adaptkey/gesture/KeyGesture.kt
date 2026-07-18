@@ -34,13 +34,17 @@ object KeyGesture {
      * @param urlMode D-143: true while a URL-mode field is focused - suppresses G-01's language swipe on
      *        the (narrower, letters-surface) URL-mode space key the same way a non-letters surface already
      *        does; defaults to false
+     * @param emailMode D-158: true while an email-mode field is focused - suppresses G-01's language swipe
+     *        on the (narrower, letters-surface) email-mode space key, identical reasoning to [urlMode];
+     *        defaults to false
      * @return the mapped action, or [GestureAction.NONE] when the swipe has no meaning here
      */
     fun resolve(
         keyCode: KeyCode,
         direction: SwipeDirection,
         surface: InputSurface = InputSurface.LETTERS,
-        urlMode: Boolean = false
+        urlMode: Boolean = false,
+        emailMode: Boolean = false
     ): GestureAction {
         // G-03: a downward swipe dismisses the keyboard from anywhere (§48: AdaptKeyService.handleSwipe()
         // re-routes this to closing the settings row first when it is open, before it ever reaches here -
@@ -60,8 +64,9 @@ object KeyGesture {
             // G-01: swipe left / right on the letters surface's space bar switches the input language
             // (never a surface swipe there). D-92: on any other surface, the space key has no language of
             // its own, so it falls through to an ordinary surface swipe (D-19) like every other key there -
-            // D-143: the URL-mode space key is the same case, even though it stays on the letters surface.
-            KeyCode.SPACE -> if (surface == InputSurface.LETTERS && !urlMode) {
+            // D-143 / D-158: the URL-mode / email-mode space key is the same case, even though it stays
+            // on the letters surface.
+            KeyCode.SPACE -> if (surface == InputSurface.LETTERS && !urlMode && !emailMode) {
                 when (direction) {
                     SwipeDirection.LEFT -> GestureAction.LANGUAGE_PREV
                     SwipeDirection.RIGHT -> GestureAction.LANGUAGE_NEXT
