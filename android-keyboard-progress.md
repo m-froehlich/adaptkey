@@ -35,7 +35,26 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§103 DONE (v0.8.67): D-160 implemented - expensive suggestion fallbacks debounced off the hot path,
+- **§104 DONE (v0.8.68): D-161 - self-healing recheck for a suspected WindowInsets timing race, per the
+  user's own proposed mitigation.** Reported: sporadically, the keyboard appears stuck under the gesture
+  nav bar on entering an app, jumping into place only on first touch - too rare to observe directly; the
+  supplied device log had no window/insets evidence either way (the diagnostic channels only cover
+  `onStartInput`/composing state). Candidate mechanism found by reading the code, explicitly **not**
+  confirmed from a log: `onCreateInputView()`'s `onApplyWindowInsets` listener (§42/D-136) is the only place
+  that sets the bottom/top padding keeping the keyboard clear of the gesture-nav/status-bar insets, and
+  Android does not guarantee that callback fires before the freshly-created IME window's first visible
+  frame - until it does, padding stays `0`, which would look exactly like the reported symptom, resolving on
+  the next relayout (a touch). Implemented as the user proposed rather than trying to catch the exact race
+  live: new `applyWindowInsetsPadding()` (shared computation, listener and recheck both call it) plus a
+  one-shot `windowInsetsRecheckRunnable` scheduled from `onStartInputView()` for `WINDOW_INSETS_RECHECK_DELAY_MS`
+  (1000ms) later - reads the real current insets directly via `ViewCompat.getRootWindowInsets()` (no
+  dependency on a further callback), corrects `inputRoot`'s padding only if it actually differs, and logs
+  only then - doubling as the diagnostic instrumentation discussed previously. No new tests (Android view/
+  window-insets glue over already-tested `androidx.core.view` APIs). 716 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed** - D-161 stays open
+  either way (a silent recheck could mean the hypothesis is wrong, or just that it hasn't recurred yet; a
+  logged correction would confirm both the mechanism and the fix at once).
+- **§103 (v0.8.67): D-160 implemented - expensive suggestion fallbacks debounced off the hot path,
   design approved by the user (option 1).** The user's follow-up question (must the compound fuzzy search
   be dropped entirely?) answered no - the debounce removes the cost, not the feature: cheap prefix/fuzzy
   searches stay synchronous per keystroke; the expensive empty-candidates escalation (D-116 compound split

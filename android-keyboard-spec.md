@@ -5487,3 +5487,44 @@ escalation fixed here. Named as the next lever if any residual long-word lag rem
 3 new tests (`DictionarySuggestionProviderTest`: flag-off skips D-116, flag-off skips D-117, cheap results
 identical under both flag values). 716 unit tests (was 713; +3). `:app:assembleDebug`/`:app:testDebugUnitTest`
 green. Not yet device-confirmed - both this and §101's D-139 fix await the same testing round.
+
+## §104 - D-161: Self-Healing Recheck for a Suspected WindowInsets Timing Race (v0.8.68)
+
+Reported: sporadically, entering an app and bringing up the keyboard appears to render it stuck under the
+gesture navigation bar, only "jumping" into its correct position on the first touch - too rare to have ever
+been directly observed in the act. The device log supplied for it contained no evidence either way (the
+`AdaptKey`/`AdaptKeyJitter` channels log only `onStartInput` and composing state, nothing about the view/
+window lifecycle) - stated plainly rather than guessed past.
+
+**Candidate mechanism, found by reading the code, not confirmed from a log**: the bottom (and, while
+onboarding is shown, top) padding that keeps the keyboard above the gesture-nav/status-bar insets is set
+exclusively inside `onCreateInputView()`'s `ViewCompat.setOnApplyWindowInsetsListener` callback (§42/D-136).
+Android does not guarantee this callback fires before a freshly-created IME window's first visible frame -
+a known, device-dependent timing gap. Until it fires, padding stays at its default `0`, which would render
+the keyboard flush at the window's bottom edge - visually indistinguishable from "stuck in the gesture bar"
+- and a subsequent touch event forcing a relayout would resolve it, matching "jumps up on first use"
+exactly. Plausible and shaped right, but unconfirmed - the existing diagnostic channel cannot see window/
+insets events at all, so this could not be verified from the log actually captured.
+
+**User's proposed mitigation, implemented as suggested**: re-check the real state a fixed delay after the
+keyboard is shown, and self-heal if it turns out wrong, rather than trying to catch the exact race live.
+New `applyWindowInsetsPadding(view, insets)` extracts the listener's own padding computation (shared, not
+duplicated) so the same math can be applied from a fresh, synchronous read. New
+`windowInsetsRecheckRunnable`, scheduled from `onStartInputView()` (`handler.removeCallbacks` first, so
+rapid app/field switching only leaves the most recent check pending) for `WINDOW_INSETS_RECHECK_DELAY_MS`
+(1000ms, the user's own proposed value) later: reads the *current* real insets directly via
+`ViewCompat.getRootWindowInsets()` - no dependency on any further callback firing - and only if the
+padding it implies differs from what `inputRoot` currently has, applies it and logs the correction (channel
+`AdaptKey`, warning level, before/after values). This doubles as the diagnostic instrumentation discussed
+previously: a silent no-op on every ordinary occurrence would mean the hypothesis is wrong or the recheck
+never actually catches the race in practice; a logged correction would be direct, on-device confirmation.
+
+**Trade-offs, stated plainly**: this is a mitigation, not a proven root-cause fix - if the actual mechanism
+differs from the hypothesis above, the symptom could still occur and simply resolve a second later than
+observed (self-healing either way, but the diagnosis would then need revisiting). A real occurrence would
+still be visible for up to ~1 second before the recheck corrects it - shorter than "wait for the user to
+touch something," which was the previous, unbounded worst case. No new tests - Android view/window-inset
+glue over already-tested `androidx.core.view` APIs, this project's established gap for this layer.
+`:app:assembleDebug`/`:app:testDebugUnitTest` green (716 unit tests, unchanged). Not yet device-confirmed -
+D-161 stays open either way: either the recheck never logs a correction (occurrence too rare to have
+happened yet, or the hypothesis is wrong) or it does (confirming both the mechanism and the mitigation).

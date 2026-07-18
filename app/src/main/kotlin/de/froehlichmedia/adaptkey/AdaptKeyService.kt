@@ -363,6 +363,36 @@ class AdaptKeyService : InputMethodService() {
         }
     }
     
+    // D-161: reported sporadically, no repro yet - the keyboard occasionally appears to render underneath
+    // the gesture navigation bar until the first touch. Candidate mechanism (from reading the code, not yet
+    // confirmed from a device log): onApplyWindowInsets is not guaranteed to be delivered before the input
+    // view's first visible frame, so applyWindowInsetsPadding() may not have run yet at that point. This
+    // one-shot recheck, scheduled from onStartInputView, re-reads the real current insets directly
+    // (no dependency on a further callback) and self-heals a stale padding if one is found - logging only
+    // when it actually corrects something, so a real occurrence is finally caught rather than guessed at.
+    private val windowInsetsRecheckRunnable = Runnable {
+        val root = inputRoot
+        if (root == null || !root.isAttachedToWindow) {
+            return@Runnable
+        }
+        val insets = ViewCompat.getRootWindowInsets(root) ?: return@Runnable
+        val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+        val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+        val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+        val expectedTop = maxOf(statusBars.top, cutout.top)
+        val expectedBottom = maxOf(bars.bottom, gestures.bottom)
+        if (root.paddingTop != expectedTop || root.paddingBottom != expectedBottom) {
+            diag(
+                "AdaptKey",
+                "windowInsetsRecheck: stale padding corrected - top ${root.paddingTop}->$expectedTop, " +
+                    "bottom ${root.paddingBottom}->$expectedBottom",
+                warn = true
+            )
+            applyWindowInsetsPadding(root, insets)
+        }
+    }
+    
     override fun onCreate() {
         super.onCreate()
         settings = SettingsStore.load(this)
@@ -530,11 +560,7 @@ class AdaptKeyService : InputMethodService() {
         // inset region and this reports (and adds) zero padding there, exactly like the bottom inset
         // already behaves.
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            v.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
+            applyWindowInsetsPadding(v, insets)
             insets
         }
         // D-136: without this, the system's own gesture-area controls (the pill / back indicator) render
@@ -571,6 +597,22 @@ class AdaptKeyService : InputMethodService() {
             root.minimumHeight = if (show) resources.displayMetrics.heightPixels else 0
             root.requestLayout()
         }
+    }
+    
+    /**
+     * §42 / D-136: pads the whole input view up by the bottom system-bar + gesture inset (and, while
+     * onboarding stretches [inputRoot] to the full screen height, the top status-bar/cutout inset too) -
+     * see the KDoc above the [ViewCompat.setOnApplyWindowInsetsListener] call in [onCreateInputView] for
+     * the full reasoning. Extracted so [windowInsetsRecheckRunnable] (D-161) can re-apply the exact same
+     * computation from a fresh, synchronously-read [WindowInsetsCompat], not only from the listener's own
+     * callback.
+     */
+    private fun applyWindowInsetsPadding(view: View, insets: WindowInsetsCompat) {
+        val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+        val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+        val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+        view.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
     }
     
     /**
@@ -883,6 +925,10 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        // D-161: see windowInsetsRecheckRunnable's own KDoc - cancel any still-pending check from a
+        // previous, faster field/app switch before scheduling this one, so only the most recent survives.
+        handler.removeCallbacks(windowInsetsRecheckRunnable)
+        handler.postDelayed(windowInsetsRecheckRunnable, WINDOW_INSETS_RECHECK_DELAY_MS)
         // Pick up any changes made in the settings screen since the keyboard was last shown.
         settings = SettingsStore.load(this)
         applySettings()
@@ -3521,6 +3567,12 @@ class AdaptKeyService : InputMethodService() {
         // keystrokes of fluent typing (so they never run mid-word-flurry), short enough that the bar
         // still fills at any natural pause. A starting value, easy to retune (§36/§37 precedent).
         private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
+        
+        // D-161: how long after the keyboard is shown windowInsetsRecheckRunnable re-verifies the real
+        // padding - long enough that a normally-delivered onApplyWindowInsets callback has certainly
+        // already run, short enough that a real correction (the rare case) is barely noticeable. The
+        // user's own proposed value.
+        private const val WINDOW_INSETS_RECHECK_DELAY_MS = 1000L
         
         // §60: how much of a clipboard *file*'s content to read for the chip's own already-truncated
         // preview - generous relative to ClipboardPreview.MAX_LENGTH (24), but still a small, bounded read
