@@ -429,7 +429,7 @@ class AdaptKeyService : InputMethodService() {
         
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
-        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, x, y, ambiguity -> handleKey(key, x, y, ambiguity) }
+        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, x, y, ambiguity, weight -> handleKey(key, x, y, ambiguity, weight) }
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
@@ -1240,7 +1240,7 @@ class AdaptKeyService : InputMethodService() {
         super.onDestroy()
     }
     
-    private fun handleKey(key: Key, x: Float, y: Float, ambiguity: AmbiguityResult) {
+    private fun handleKey(key: Key, x: Float, y: Float, ambiguity: AmbiguityResult, weight: Double) {
         val ic = currentInputConnection ?: return
         // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
         if (undoTyped != null) {
@@ -1287,12 +1287,12 @@ class AdaptKeyService : InputMethodService() {
                             // D-62: the caret may sit inside (or against) an already-committed word - reclaim
                             // it so autocorrect/suggestions see the whole word, not just what gets typed from
                             // here.
-                            reclaimSurroundingWord(ic, TapPoint(x, y))
+                            reclaimSurroundingWord(ic, TapPoint(x, y, weight))
                         }
                         val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
                         // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
                         // character at the logical edit point (the end, unless a reclaim left a tail after it).
-                        insertComposingChar(ch, ambiguity.kind, TapPoint(x, y))
+                        insertComposingChar(ch, ambiguity.kind, TapPoint(x, y, weight))
                         consumeShift()
                         updateComposing(ic)
                     } finally {
@@ -2157,15 +2157,16 @@ class AdaptKeyService : InputMethodService() {
         return candidate
     }
     
-    /** D-140: the single touch-model sample a D-39 raw-coordinate correction actually changed, captured
-     * so [OffsetModel.unrecord] can be called with exactly the arguments the original [OffsetModel.record]
-     * call used. */
+    /** D-140 / D-159: the single touch-model sample a D-39 raw-coordinate correction actually changed,
+     * captured so [OffsetModel.unrecord] can be called with exactly the arguments (including the D-159
+     * weight) the original [OffsetModel.record] call used. */
     private data class RawCorrectionUndo(
         val id: String,
         val centerX: Float,
         val centerY: Float,
         val x: Float,
-        val y: Float
+        val y: Float,
+        val weight: Double
     )
     
     /**
@@ -2188,7 +2189,7 @@ class AdaptKeyService : InputMethodService() {
         val tap = composingTaps.getOrNull(index) ?: return null
         val id = "c:${typed[index].lowercaseChar()}"
         val geometry = keyboardView?.charKeyGeometry()?.firstOrNull { it.id == id } ?: return null
-        return RawCorrectionUndo(id, geometry.centerX, geometry.centerY, tap.x, tap.y)
+        return RawCorrectionUndo(id, geometry.centerX, geometry.centerY, tap.x, tap.y, tap.weight)
     }
     
     /**
@@ -2349,7 +2350,14 @@ class AdaptKeyService : InputMethodService() {
         // correction never sets this (see rawCorrectionUndoFor's call site), so this only ever fires for
         // the raw-coordinate path, never for a purely linguistic correction the user happened to reject.
         if (rawCorrection != null) {
-            offsetModel?.unrecord(rawCorrection.id, rawCorrection.centerX, rawCorrection.centerY, rawCorrection.x, rawCorrection.y)
+            offsetModel?.unrecord(
+                rawCorrection.id,
+                rawCorrection.centerX,
+                rawCorrection.centerY,
+                rawCorrection.x,
+                rawCorrection.y,
+                rawCorrection.weight
+            )
         }
         if (wasSplit) {
             // D-13: undoing a wrong A-05 split trains the rejoined word at once, so it is never split again.

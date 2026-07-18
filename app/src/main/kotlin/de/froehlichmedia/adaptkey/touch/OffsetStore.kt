@@ -36,15 +36,20 @@ object OffsetStore {
             val data = HashMap<String, OffsetModel.Stat>()
             for (id in obj.keys()) {
                 val array = obj.getJSONArray(id)
+                val count = array.getLong(0)
                 data[id] = OffsetModel.Stat(
-                    count = array.getLong(0),
+                    count = count,
                     meanDx = array.getDouble(1),
                     meanDy = array.getDouble(2),
                     m2Dx = array.getDouble(3),
                     m2Dy = array.getDouble(4),
                     // Contact-area stats (T-04) were added later; older blobs omit them.
                     sizeCount = if (array.length() > 5) array.getLong(5) else 0L,
-                    meanSize = if (array.length() > 6) array.getDouble(6) else 0.0
+                    meanSize = if (array.length() > 6) array.getDouble(6) else 0.0,
+                    // D-159: weightSum was added later still - an older blob's every recorded sample was
+                    // genuinely unweighted (full weight 1.0 each), so weightSum == count is the correct
+                    // migration, not just a convenient placeholder.
+                    weightSum = if (array.length() > 7) array.getDouble(7) else count.toDouble()
                 )
             }
             model.restore(data)
@@ -69,6 +74,7 @@ object OffsetStore {
             array.put(stat.m2Dy)
             array.put(stat.sizeCount)
             array.put(stat.meanSize)
+            array.put(stat.weightSum)
             obj.put(id, array)
         }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

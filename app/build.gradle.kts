@@ -15,8 +15,8 @@ android {
         // versionCode just keeps counting up by 1 per release regardless of the versionName - Android
         // requires it to strictly increase for updates to install, and it doesn't need to encode the
         // version number in any particular way.
-        versionCode = 184
-        versionName = "0.8.62"
+        versionCode = 185
+        versionName = "0.8.63"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing

@@ -28,6 +28,32 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§98 DONE (v0.8.63): D-159 - robust (Huber-style) downweighting for the T-03 touch-zone learning model,
+  discussed and designed with the user before implementation.** Each recorded tap is now weighted by how
+  far it falls from the key's *currently learned* expected strike point relative to its learned spread
+  (`OffsetModel.weightFor()`, the same Gaussian shape `logLikelihood()` already scores candidates with) -
+  a wild outlier contributes less to the running mean, floored at `MIN_SAMPLE_WEIGHT = 0.1` so a
+  *persistent* run of similarly-off taps still pulls the mean there over time, just more gradually. User's
+  own follow-up correctly identified that no separate "not enough data" gate was needed for this (a
+  completed K-01 calibration already seeds every key with `count = 25`, well above `MIN_VARIANCE_SAMPLES`)
+  - the weighting simply reuses `variance()`'s own existing seeded/geometric fallback. `record()` now
+  returns the weight it applied; `unrecord()` (D-140) takes it back as a required parameter and performs
+  the exact weighted-Welford inverse - required real plumbing through `TapPoint` (new `weight` field),
+  `AdaptKeyboardView.OnKeyListener`/`AdaptKeyService.handleKey()` (new `weight` parameter), and
+  `RawCorrectionUndo` (new `weight` field), not just an `OffsetModel`-internal change. `OffsetStore`
+  persists the new `weightSum` field with a backward-compatible migration default; `PatternSeed` needed no
+  code change at all (its named-argument `Stat(count = SEED_COUNT, ...)` already picks up the correct
+  default). **Honest caveat documented**: `merge()`'s old "sequential recording equals split-then-merged"
+  equivalence no longer holds in general (an inherent, expected consequence of per-sample state-dependent
+  weighting, not a bug) - `combine()` still performs a correct weighted parallel merge of two already-
+  computed `Stat`s, just not a reproduction of what one continuous stream would have produced; in practice
+  `merge()` is only ever used to fold a calibration seed into the persisted model, never a literal tap-
+  stream split, so nothing relied on the old property. `OffsetModelTest.kt` reworked - two tests that
+  asserted exact hand-computed unweighted arithmetic were replaced with property-based tests demonstrating
+  the actual intended behaviour (single-sample exactness, outlier discounting, sustained-drift-still-wins,
+  weighted-merge-formula correctness). 702 unit tests (was 698; +4). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. Not yet device-tested - `MIN_SAMPLE_WEIGHT`/`DEFAULT_SIGMA_FACTOR` are
+  starting points, easy to retune later.
 - **§97 DONE (v0.8.62): D-158 - dedicated email-mode keyboard layout, its own round per explicit deferral.**
   New `KeyboardLayout.emailBottomRow()` (shared by `KeyboardLayout`/`GreekLayout`, mirrors D-143's
   `urlBottomRow` precisely): `[?123] [@] [-] [space, narrow] [.] [⏎]` - `@` takes over the comma key's

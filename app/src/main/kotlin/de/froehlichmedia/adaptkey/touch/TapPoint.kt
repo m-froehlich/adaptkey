@@ -10,5 +10,10 @@ package de.froehlichmedia.adaptkey.touch
  *
  * @property x the raw tap x
  * @property y the raw tap y
+ * @property weight D-159: the weight [OffsetModel.record] actually applied for this tap - retained so a
+ *        later [OffsetModel.unrecord] (D-140) can reverse the exact same weighted update, not a heuristic
+ *        re-derivation from whatever the model's current state happens to be by then. Defaults to `1.0`
+ *        (an ordinary, undownweighted sample) for call sites with no real weight to report - the
+ *        long-press-letter path, which has never tracked taps at all (a pre-existing, documented gap).
  */
-data class TapPoint(val x: Float, val y: Float)
+data class TapPoint(val x: Float, val y: Float, val weight: Double = 1.0)

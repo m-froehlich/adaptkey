@@ -60,10 +60,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
     
-    /** Callback invoked once per resolved tap, on release (carrying the ACTION_DOWN coordinates). */
+    /**
+     * Callback invoked once per resolved tap, on release (carrying the ACTION_DOWN coordinates).
+     *
+     * @param weight D-159: the weight [OffsetModel.record] applied to this tap at ACTION_DOWN time (`1.0`
+     *        when no model was recorded into at all, e.g. an ambiguous T-05 tap) - the caller must retain
+     *        this alongside the coordinates if it may ever need to [OffsetModel.unrecord] this exact
+     *        sample later (D-140), since the weight cannot be re-derived afterwards.
+     */
     fun interface OnKeyListener {
         
-        fun onKey(key: Key, downX: Float, downY: Float, ambiguity: AmbiguityResult)
+        fun onKey(key: Key, downX: Float, downY: Float, ambiguity: AmbiguityResult, weight: Double)
     }
     
     /**
@@ -430,6 +437,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // from the raw contact point and carried to the listener on release for later token-level repair.
     private val ambiguityBands = AmbiguityBands()
     private var pendingAmbiguity = AmbiguityResult(TapAmbiguity.NONE)
+    
+    // D-159: the weight OffsetModel.record() applied for this tap at ACTION_DOWN, carried to the listener
+    // on release exactly like pendingAmbiguity above - 1.0 (an ordinary, undownweighted sample) when the
+    // ambiguity check skipped recording altogether (T-05) or no model is attached at all.
+    private var pendingRecordWeight = 1.0
     
     private val longPressHandler = Handler(Looper.getMainLooper())
     private var longPressRunnable: Runnable? = null
@@ -894,8 +906,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // (space vs. a bottom-row letter, or vice versa), so training the resolved key on it risks
                 // reinforcing exactly the wrong lesson; this is what drove the reported bottom-row-into-space
                 // drift from repeated space mistaps.
-                if (pendingAmbiguity.kind == TapAmbiguity.NONE) {
-                    offsetModel?.record(key.id, rect.centerX(), rect.centerY(), event.x, event.y, event.size)
+                pendingRecordWeight = if (pendingAmbiguity.kind == TapAmbiguity.NONE) {
+                    offsetModel?.record(
+                        key.id,
+                        rect.centerX(),
+                        rect.centerY(),
+                        event.x,
+                        event.y,
+                        event.size,
+                        rect.width() / 2f,
+                        rect.height() / 2f
+                    ) ?: 1.0
+                } else {
+                    1.0
                 }
                 scheduleLongPress(key)
                 // D-07: holding the backspace key starts an accelerating repeat delete.
@@ -948,7 +971,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     if (!consumed) {
                         // D-04: briefly flash the key so even a fast tap is visibly acknowledged.
                         flash(key)
-                        onKeyListener?.onKey(key, downX, downY, pendingAmbiguity)
+                        onKeyListener?.onKey(key, downX, downY, pendingAmbiguity, pendingRecordWeight)
                     }
                 }
                 return true

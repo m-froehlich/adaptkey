@@ -5079,3 +5079,95 @@ layout's email row is identical to the Latin layout's, mirroring the existing ur
 language-switches). 698 unit tests (was 690; +8). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-tested - the new key weights (`EMAIL_DASH_KEY_WEIGHT`/`EMAIL_SPACE_WEIGHT`) are a considered starting
 guess, easy to retune (§36/§37/§53/§89 precedent).
+
+## §98 - D-159: Robust (Huber-Style) Downweighting for the Touch-Zone Learning Model (v0.8.63)
+
+Requested directly by the user, out of concern that a single wildly mis-tapped-but-still-resolved touch
+could disproportionately drag a key's learned zone off course, degrading precision over time. Design
+discussed and agreed before implementation (per this project's own established convention for
+non-trivial behaviour changes):
+
+- **The idea**: weight each recorded tap's contribution to `OffsetModel`'s running mean/variance by how
+  far it falls from the key's *currently learned* expected strike point, relative to the currently
+  learned spread - a tap close to what the model already expects contributes close to full weight, a
+  wildly-off one contributes much less (never zero - floored at `MIN_SAMPLE_WEIGHT = 0.1`, so a
+  *persistent* run of similarly-off taps still pulls the mean there over time, just more gradually than
+  an unweighted model would). This is standard robust (Huber-style) M-estimation, not an ad hoc invention.
+- **User's own follow-up correction, confirmed correct on inspection**: an earlier proposal to gate the
+  weighting behind `MIN_VARIANCE_SAMPLES` ("not enough real data yet to judge distance against") was
+  dropped after checking `PatternSeed.seed()` directly - a completed K-01 calibration already seeds every
+  key with `count = SEED_COUNT = 25` (comfortably above `MIN_VARIANCE_SAMPLES = 5`) *and* a synthetic
+  variance derived from the chosen typing pattern, so a dedicated gate would almost never actually bind
+  for a calibrated key. The weighting instead simply reuses `variance()`'s own pre-existing fallback
+  (seeded/learned spread once available, otherwise a geometric estimate from the key's own size) with no
+  new gate at all - simpler and more correct than the original proposal.
+
+### Implementation
+`OffsetModel.Stat` gained `weightSum: Double = count.toDouble()` (the Kotlin default expression
+deliberately references `count`, so any `Stat` built without thinking about weighting at all - older
+persisted data, hand-built seeds/tests - is automatically treated as "every sample had full weight",
+which is exactly correct for that data). `record()` now computes a weight via new `weightFor()` (the same
+Gaussian log-likelihood shape `logLikelihood()` already scores candidates with, as `exp(-0.5 * r²)`) before
+folding the sample in via a weighted Welford update (West's algorithm), and **returns the weight applied**
+- callers that may need to `unrecord()` this exact sample later must retain it, since it cannot be
+re-derived afterwards once further taps have moved the key's mean/variance on. `record()` also gained
+optional `halfWidth`/`halfHeight` parameters (defaulting to `50f`, matching this test suite's own existing
+convention) feeding only the geometric variance fallback for a not-yet-trained key; every real
+`AdaptKeyboardView` call site passes the key's actual `rect.width()/height() / 2f`.
+
+`unrecord()` (D-140) now takes the weight as a required parameter and performs the exact algebraic inverse
+of the *weighted* update (not a heuristic) - `spreadFor()`'s standard-deviation formula and `merge()`'s
+parallel-combination formula (`combine()`) were both updated to use `weightSum` (the true effective sample
+mass the weighted M2 sums were accumulated against) rather than the plain `count` as their divisor/merge
+weight; `variance()` still gates *whether* to trust any computed variance on `count` (a question of "have
+we observed enough real taps", independent of how much effective weight they carried).
+
+**Threading the weight from tap to potential undo** required a real, traced-through plumbing change, not
+just the `OffsetModel` API: `TapPoint` gained a `weight: Double = 1.0` field; `AdaptKeyboardView`'s
+`OnKeyListener.onKey()` callback gained a `weight` parameter (captured at `ACTION_DOWN` right after the
+`record()` call, carried to release exactly like the existing `pendingAmbiguity`); `AdaptKeyService.handleKey()`
+gained a matching parameter, threaded into both `TapPoint(x, y, weight)` construction sites; the existing
+`RawCorrectionUndo` (D-140's own capture struct for a D-39 raw-coordinate-correction undo) gained a `weight`
+field, populated from the composing tap's own `.weight` and passed unchanged to `unrecord()`.
+
+**Persistence**: `OffsetStore` persists/loads `weightSum` as a new trailing JSON array index (7), following
+the exact precedent the T-04 contact-area fields (`sizeCount`/`meanSize`) already set for a length-gated
+backward-compatible field addition - an older blob without it defaults `weightSum = count.toDouble()` on
+load (every historically-recorded sample genuinely *was* unweighted, so this is the correct migration, not
+just a convenient placeholder). `PatternSeed.seed()` needed **no code change** at all - it already
+constructs `Stat(count = SEED_COUNT, ...)` with named arguments, so the new `weightSum` default expression
+picks up the right value automatically.
+
+### An honest, load-bearing caveat: `merge()`'s old "sequential equals split-then-merged" equivalence is gone
+Under the previous plain (unweighted) Welford update, recording a stream of taps into one model was
+mathematically identical to splitting them across two models and merging the halves (`OffsetModelTest` had
+a dedicated test proving exactly this, `merge of split halves matches a single combined model`). This is
+no longer true in general once per-sample weighting depends on each side's own independent *running*
+state: a sample recorded into the "second half" model never saw the "first half"'s taps, so it cannot be
+downweighted against them the way it would have been inside one continuous stream - and this breaks even
+for a stream of *identical* deviations, since each branch's own very first sample is separately bootstrapped
+against a fresh zero mean (traced by hand while writing the replacement test, not assumed). This is an
+inherent, expected consequence of introducing robust per-sample downweighting - a well-known property of
+recursive robust estimators generally, not a bug introduced here. `combine()` still performs a correct
+*weighted* parallel combination of two already-computed `Stat` objects (each weighed by its own
+`weightSum`) - verified directly by a new dedicated test - it just no longer claims that doing so
+reproduces what continuous single-stream recording would have produced. In practice `merge()` is only ever
+called to fold a `PatternSeed`-built calibration model into the persisted one (never a literal split of the
+same real tap stream), so this was already more of an incidental nice-to-have property of the old
+implementation than something anything actually relied on.
+
+### Tests
+`OffsetModelTest.kt` reworked throughout: the old `record accumulates mean deviation per key` and
+`spreadFor reports the mean offset and per-axis standard deviation` tests asserted exact hand-computed
+arithmetic-mean/variance values that the new weighting genuinely changes, so both were replaced rather than
+patched - by property-based tests that directly demonstrate the *intended* behaviour instead (a single
+sample always sets the mean exactly, since nothing exists yet to weigh it against; a wildly-off *second*
+sample moves the mean less than a naive average would; a *sustained* run of 200 similarly-off samples still
+pulls the mean close to it, confirming persistent drift is still learnable; `spreadFor`'s formula is
+cross-checked against the model's own exposed `weightSum`/`m2` state rather than a hardcoded literal). Every
+`unrecord()` call site across the file now captures and replays the exact weight `record()` returned. The
+invalidated `merge of split halves` test was removed (see the caveat above) and replaced with a test of
+`combine()`'s actual weighted-merge formula. 4 net new tests (some removed, more added):
+`OffsetModelTest` +4. 702 unit tests (was 698; +4). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+Not yet device-tested - `MIN_SAMPLE_WEIGHT`/`DEFAULT_SIGMA_FACTOR` are considered starting points, easy to
+retune later (established precedent for every such constant in this touch-model area).

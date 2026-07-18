@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.touch
 
+import kotlin.math.exp
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -11,10 +12,21 @@ import kotlin.math.sqrt
  * Personal 2D offset model (T-03) - typing-style agnostic.
  *
  * For every confirmed tap the model accumulates the deviation `(dx, dy) = (touch - keyCentre)`
- * per key as an incremental 2D Gaussian (Welford mean and variance). The learned per-key mean
- * compensates for the user's systematic deviation; [resolve] then picks the candidate whose
- * compensated Gaussian best explains a new tap. The model makes no assumption about handedness
- * or finger - it learns purely from observed deviations and improves continuously.
+ * per key as an incremental 2D Gaussian (weighted Welford mean and variance, D-159). The learned
+ * per-key mean compensates for the user's systematic deviation; [resolve] then picks the candidate
+ * whose compensated Gaussian best explains a new tap. The model makes no assumption about
+ * handedness or finger - it learns purely from observed deviations and improves continuously.
+ *
+ * D-159: each recorded tap is downweighted by how far it falls from the key's *currently learned*
+ * expected strike point, relative to the currently learned spread (the same Gaussian [logLikelihood]
+ * itself already scores candidates with) - a single wildly-off but still-resolved tap can no longer
+ * yank the mean as hard as an ordinary, consistent one, while a *sustained* run of off-centre taps
+ * still pulls the zone there over time (each one still contributes at least [MIN_SAMPLE_WEIGHT]).
+ * This is standard robust (Huber-style) downweighting, not a heuristic invention - and needs no
+ * separate "not enough data yet" gate of its own: it reuses [variance]'s own existing fallback
+ * (the learned/seeded spread once available, otherwise a geometric estimate from the key's own
+ * size), so an initial K-01 calibration seed is trusted as "real" spread immediately, exactly as
+ * [resolve] already treats it (the seed's sample count already clears [warmupSamples] on its own).
  *
  * While fewer than [warmupSamples] taps have been seen, [resolve] falls back to plain geometry
  * so early typing behaves predictably. The learned mean offset is capped to a fraction of the
@@ -35,9 +47,19 @@ class OffsetModel(
     private val warmupSamples: Long = DEFAULT_WARMUP_SAMPLES
 ) {
     
-    /** Incremental sufficient statistics for one key's deviation distribution. */
+    /**
+     * Incremental sufficient statistics for one key's deviation distribution.
+     *
+     * @property weightSum D-159: the running sum of per-sample weights [record] actually applied -
+     *        the true "effective sample size" the weighted [meanDx]/[meanDy]/[m2Dx]/[m2Dy] were
+     *        accumulated against, distinct from [count] (the plain number of taps recorded, used for
+     *        [warmupSamples]/readiness gating). Defaults to matching [count] - i.e. "every recorded
+     *        sample had full weight" - the correct assumption for a [Stat] built by anything that
+     *        does not think about weighting at all (older persisted data, hand-built seeds/tests).
+     */
     data class Stat(
         var count: Long = 0L,
+        var weightSum: Double = count.toDouble(),
         var meanDx: Double = 0.0,
         var meanDy: Double = 0.0,
         var m2Dx: Double = 0.0,
@@ -80,12 +102,20 @@ class OffsetModel(
     }
     
     /**
-     * Records a confirmed tap, updating the key's running mean and variance (Welford).
+     * Records a confirmed tap, updating the key's running mean and variance (weighted Welford, D-159).
+     *
+     * D-159: the sample is weighted by [weightFor] before being folded in - a tap far from the key's
+     * *currently learned* expected strike point (relative to its currently learned spread) contributes
+     * less than a tap close to it, so one wild outlier can no longer swing the mean as hard as an
+     * ordinary one; a sustained run of similarly-off taps still pulls the mean there over time, just
+     * more gradually. [halfWidth]/[halfHeight] feed only the geometric fallback spread used before any
+     * real (or seeded) variance exists for this key - once one does, it is used instead, exactly as
+     * [logLikelihood] already does at resolve time.
      *
      * The optional contact area ([size], from {@code MotionEvent.getSize()}) feeds a separate running
      * mean used by the typing-pattern detection (T-04). It is only accumulated when strictly positive,
      * so devices that report no contact size simply leave [Stat.sizeCount] at zero and the pattern
-     * detection falls back gracefully.
+     * detection falls back gracefully. Contact area is never weighted - only the positional deviation.
      *
      * @param id the confirmed key's id
      * @param centerX the key centre x in view pixels
@@ -93,49 +123,83 @@ class OffsetModel(
      * @param x the raw tap x (T-01 ACTION_DOWN)
      * @param y the raw tap y (T-01 ACTION_DOWN)
      * @param size the normalised contact area of the tap, or 0 when unavailable (T-04)
+     * @param halfWidth the key's own half-width in view pixels, for the geometric fallback spread only
+     * @param halfHeight the key's own half-height in view pixels, for the geometric fallback spread only
+     * @return the weight actually applied to this sample (D-159/D-140) - callers that may later need to
+     *         [unrecord] this exact sample must retain it, since it cannot be re-derived afterwards once
+     *         further taps have moved the key's mean/variance on
      */
-    fun record(id: String, centerX: Float, centerY: Float, x: Float, y: Float, size: Float = 0f) {
+    fun record(
+        id: String,
+        centerX: Float,
+        centerY: Float,
+        x: Float,
+        y: Float,
+        size: Float = 0f,
+        halfWidth: Float = DEFAULT_FALLBACK_HALF_SIZE,
+        halfHeight: Float = DEFAULT_FALLBACK_HALF_SIZE
+    ): Double {
         val stat = stats.getOrPut(id) { Stat() }
         val dx = (x - centerX).toDouble()
         val dy = (y - centerY).toDouble()
+        val weight = weightFor(stat, dx, dy, halfWidth, halfHeight)
         stat.count += 1L
+        stat.weightSum += weight
         val deltaX = dx - stat.meanDx
-        stat.meanDx += deltaX / stat.count
-        stat.m2Dx += deltaX * (dx - stat.meanDx)
+        stat.meanDx += (weight / stat.weightSum) * deltaX
+        stat.m2Dx += weight * deltaX * (dx - stat.meanDx)
         val deltaY = dy - stat.meanDy
-        stat.meanDy += deltaY / stat.count
-        stat.m2Dy += deltaY * (dy - stat.meanDy)
+        stat.meanDy += (weight / stat.weightSum) * deltaY
+        stat.m2Dy += weight * deltaY * (dy - stat.meanDy)
         if (size > 0f) {
             stat.sizeCount += 1L
             stat.meanSize += (size.toDouble() - stat.meanSize) / stat.sizeCount
         }
+        return weight
     }
     
     /**
-     * D-140: reverses exactly one prior [record] call for [id] - the exact algebraic inverse of the
-     * Welford update, not a heuristic. Used to un-train the model for a tap that later turned out to be
-     * a genuine touch-resolution mistake (D-39 raw-coordinate correction), so a rejected correction does
-     * not leave the model permanently reinforced towards the very key that was actually wrong. A no-op
-     * when [id] has no recorded samples at all. Must be called with the exact same arguments the
-     * corresponding [record] call used - it is the caller's responsibility to have retained them (it
-     * cannot be inferred afterwards which single sample among many should be removed).
+     * D-159: the robust downweighting kernel - the (unnormalised) Gaussian likelihood ratio of `(dx, dy)`
+     * under the key's own currently learned deviation model, i.e. exactly the same statistical framework
+     * [logLikelihood] already scores candidates with, reused here as "how surprising is this one sample
+     * given what we already believe about this key". Floored at [MIN_SAMPLE_WEIGHT] so a persistent run
+     * of similarly-placed taps still moves the mean there over time rather than being discounted forever.
+     */
+    private fun weightFor(stat: Stat, dx: Double, dy: Double, halfWidth: Float, halfHeight: Float): Double {
+        val varX = variance(stat.m2Dx, stat.count, stat.weightSum, defaultVariance(halfWidth))
+        val varY = variance(stat.m2Dy, stat.count, stat.weightSum, defaultVariance(halfHeight))
+        val rx = dx - stat.meanDx
+        val ry = dy - stat.meanDy
+        val r2 = (rx * rx) / varX + (ry * ry) / varY
+        return max(MIN_SAMPLE_WEIGHT, exp(-0.5 * r2))
+    }
+    
+    /**
+     * D-140 / D-159: reverses exactly one prior [record] call for [id] - the exact algebraic inverse of
+     * the *weighted* Welford update, not a heuristic. Used to un-train the model for a tap that later
+     * turned out to be a genuine touch-resolution mistake (D-39 raw-coordinate correction), so a rejected
+     * correction does not leave the model permanently reinforced towards the very key that was actually
+     * wrong. A no-op when [id] has no recorded samples at all. Must be called with the exact same
+     * arguments the corresponding [record] call used, [weight] included - it is the caller's
+     * responsibility to have retained them (neither the sample to remove nor the weight it was originally
+     * given can be inferred afterwards, once further taps have moved the key's mean/variance on).
      *
      * @param id the key id whose most recent matching sample is reversed
      * @param centerX the key centre x in view pixels, as passed to the original [record] call
      * @param centerY the key centre y in view pixels, as passed to the original [record] call
      * @param x the raw tap x, as passed to the original [record] call
      * @param y the raw tap y, as passed to the original [record] call
+     * @param weight D-159: the weight [record] returned for this exact sample
      * @param size the contact area, as passed to the original [record] call
      */
-    fun unrecord(id: String, centerX: Float, centerY: Float, x: Float, y: Float, size: Float = 0f) {
+    fun unrecord(id: String, centerX: Float, centerY: Float, x: Float, y: Float, weight: Double, size: Float = 0f) {
         val stat = stats[id] ?: return
         if (stat.count <= 0L) {
             return
         }
         val dx = (x - centerX).toDouble()
         val dy = (y - centerY).toDouble()
-        val n1 = stat.count
-        val n0 = n1 - 1L
+        val n0 = stat.count - 1L
         if (n0 == 0L) {
             // The last remaining sample for this key is being removed - drop the entry entirely so
             // statFor()/isKnownWord-style callers see an untrained key again, indistinguishable from one
@@ -143,15 +207,18 @@ class OffsetModel(
             stats.remove(id)
             return
         }
+        val weightSum1 = stat.weightSum
+        val weightSum0 = weightSum1 - weight
         val mean1X = stat.meanDx
-        val mean0X = (mean1X * n1 - dx) / n0
-        stat.m2Dx -= (dx - mean0X) * (dx - mean1X)
+        val mean0X = (mean1X * weightSum1 - weight * dx) / weightSum0
+        stat.m2Dx -= weight * (dx - mean0X) * (dx - mean1X)
         stat.meanDx = mean0X
         val mean1Y = stat.meanDy
-        val mean0Y = (mean1Y * n1 - dy) / n0
-        stat.m2Dy -= (dy - mean0Y) * (dy - mean1Y)
+        val mean0Y = (mean1Y * weightSum1 - weight * dy) / weightSum0
+        stat.m2Dy -= weight * (dy - mean0Y) * (dy - mean1Y)
         stat.meanDy = mean0Y
         stat.count = n0
+        stat.weightSum = weightSum0
         if (size > 0f && stat.sizeCount > 0L) {
             val n1Size = stat.sizeCount
             val n0Size = n1Size - 1L
@@ -186,8 +253,10 @@ class OffsetModel(
         if (stat == null || stat.count == 0L) {
             return null
         }
-        val stdX = if (stat.count >= 2L) sqrt(stat.m2Dx / (stat.count - 1L)) else 0.0
-        val stdY = if (stat.count >= 2L) sqrt(stat.m2Dy / (stat.count - 1L)) else 0.0
+        // D-159: m2Dx/m2Dy are now weighted sums of squares, so weightSum (not the plain sample count) is
+        // their correct normalising denominator.
+        val stdX = if (stat.weightSum > 1.0) sqrt(stat.m2Dx / (stat.weightSum - 1.0)) else 0.0
+        val stdY = if (stat.weightSum > 1.0) sqrt(stat.m2Dy / (stat.weightSum - 1.0)) else 0.0
         return Spread(stat.meanDx, stat.meanDy, stdX, stdY, stat.count)
     }
     
@@ -320,15 +389,19 @@ class OffsetModel(
         if (count == 0L) {
             return Stat()
         }
+        // D-159: the parallel merge weighs each side by its own weightSum (the true effective mass its
+        // mean/m2 were accumulated against), not the plain sample count - the unweighted case (every
+        // weightSum equal to its count) reduces to exactly the original Chan formula.
+        val weightSum = a.weightSum + b.weightSum
         val deltaX = b.meanDx - a.meanDx
         val deltaY = b.meanDy - a.meanDy
-        val meanDx = a.meanDx + deltaX * b.count / count
-        val meanDy = a.meanDy + deltaY * b.count / count
-        val m2Dx = a.m2Dx + b.m2Dx + deltaX * deltaX * a.count * b.count / count
-        val m2Dy = a.m2Dy + b.m2Dy + deltaY * deltaY * a.count * b.count / count
+        val meanDx = if (weightSum > 0.0) a.meanDx + deltaX * b.weightSum / weightSum else a.meanDx
+        val meanDy = if (weightSum > 0.0) a.meanDy + deltaY * b.weightSum / weightSum else a.meanDy
+        val m2Dx = a.m2Dx + b.m2Dx + if (weightSum > 0.0) deltaX * deltaX * a.weightSum * b.weightSum / weightSum else 0.0
+        val m2Dy = a.m2Dy + b.m2Dy + if (weightSum > 0.0) deltaY * deltaY * a.weightSum * b.weightSum / weightSum else 0.0
         val sizeCount = a.sizeCount + b.sizeCount
         val meanSize = if (sizeCount == 0L) 0.0 else (a.meanSize * a.sizeCount + b.meanSize * b.sizeCount) / sizeCount
-        return Stat(count, meanDx, meanDy, m2Dx, m2Dy, sizeCount, meanSize)
+        return Stat(count, weightSum, meanDx, meanDy, m2Dx, m2Dy, sizeCount, meanSize)
     }
     
     private fun geometric(candidates: List<Candidate>, x: Float, y: Float): Candidate {
@@ -356,16 +429,22 @@ class OffsetModel(
         val offsetY = (stat?.meanDy ?: 0.0).coerceIn(-capYUp, capYDown)
         val predictedX = candidate.centerX + offsetX
         val predictedY = candidate.centerY + offsetY
-        val varX = variance(stat?.m2Dx, stat?.count, defaultVariance(candidate.halfWidth))
-        val varY = variance(stat?.m2Dy, stat?.count, defaultVariance(candidate.halfHeight))
+        val varX = variance(stat?.m2Dx, stat?.count, stat?.weightSum, defaultVariance(candidate.halfWidth))
+        val varY = variance(stat?.m2Dy, stat?.count, stat?.weightSum, defaultVariance(candidate.halfHeight))
         val ddx = x - predictedX
         val ddy = y - predictedY
         return -0.5 * (ddx * ddx / varX + ddy * ddy / varY) - 0.5 * (ln(varX) + ln(varY))
     }
     
-    private fun variance(m2: Double?, count: Long?, default: Double): Double {
-        if (m2 != null && count != null && count >= MIN_VARIANCE_SAMPLES) {
-            val sampleVariance = m2 / (count - 1L)
+    /**
+     * @param weightSum D-159: the weighted effective sample size the M2 sum was actually accumulated
+     *        against - the correct normalising denominator once trusted, distinct from [count] (which
+     *        still gates *whether* to trust a computed variance at all, since that is a question of "have
+     *        we observed enough real taps", not "how much effective weight do they carry").
+     */
+    private fun variance(m2: Double?, count: Long?, weightSum: Double?, default: Double): Double {
+        if (m2 != null && count != null && count >= MIN_VARIANCE_SAMPLES && weightSum != null && weightSum > 1.0) {
+            val sampleVariance = m2 / (weightSum - 1.0)
             return max(sampleVariance, default * VARIANCE_FLOOR_FRACTION)
         }
         return default
@@ -391,5 +470,16 @@ class OffsetModel(
         private const val MIN_VARIANCE_SAMPLES = 5L
         private const val VARIANCE_FLOOR_FRACTION = 0.1
         private const val DEFAULT_SIGMA_FACTOR = 0.6
+        
+        // D-159: a sample is never discounted below this fraction of full weight - a persistent run of
+        // similarly-off taps still pulls the mean there over time (just more gradually than an unweighted
+        // model would), rather than being discounted forever. Not yet device-tuned, easy to retune later
+        // (same precedent as DEFAULT_MAX_OFFSET_FACTOR above).
+        private const val MIN_SAMPLE_WEIGHT = 0.1
+        
+        // D-159: the geometric fallback half-size record() uses when a caller does not pass the key's
+        // real halfWidth/halfHeight (every real AdaptKeyboardView call site does) - matches this test
+        // suite's own long-standing convention for an ordinary key (see OffsetModelTest's candidate()).
+        private const val DEFAULT_FALLBACK_HALF_SIZE = 50f
     }
 }
