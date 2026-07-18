@@ -28,6 +28,34 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§99 (v0.8.64): D-139 root cause found from three real device logs the user captured and traced against
+  the actual code - not yet fixed; D-158 follow-up (email-only `.net` TLD) and a diagnostic-log description
+  cleanup implemented.** **D-139**: `onUpdateSelection()`'s `ownEdit` check
+  (`AdaptKeyService.kt:782-784`) derives the expected cursor purely locally only for the D-62 mid-word case;
+  for the ordinary end-of-word case (`composingAnchor == -1`, the overwhelming majority of every keystroke)
+  it falls back to `candidatesEnd`, a value the *target editor* reports back, not anything AdaptKey tracks
+  itself - Android does not guarantee this is synchronised with the selection-update stream. When a callback
+  right after the service's own `setComposingText()` reports `candidatesEnd = -1` (a real, observed race),
+  the edit is misjudged as external, wiping the just-typed token via `finishComposingText()`+`clearComposing()`;
+  because `composing` is then empty, the very next callback calls `reclaimWordAtCaret()`, which re-derives it
+  via *another* `setComposingText()` - subject to the identical race, so it fails identically every retry,
+  producing an unbounded self-perpetuating loop (~5-10 iterations/second in the captured logs, well under
+  `CallbackBurstGuard`'s >40/200ms trip threshold, so §76's circuit breaker never engages) that only ends on
+  a focus change. Reproduced in at least Google Keep and Signal - not app-specific. A fix direction was
+  proposed (extend the mid-word path's purely-local cursor tracking to the ordinary case too, instead of
+  ever trusting the remote-reported `candidatesEnd`) but **deliberately not implemented** - a foundational
+  change to the composing pipeline's self-recognition mechanism, left for the user's own decision on
+  direction per this project's established convention for non-trivial design changes. **D-158 follow-up**:
+  the email keyboard's period-key popup gained a fourth, email-only `.net` entry directly before `.org` -
+  confirmed with the user this must NOT also apply to URL mode - via new `UrlLocale.emailPeriodAlternatives()`
+  (URL mode's own `periodAlternatives()` is untouched); `AdaptKeyboardView.preSelectedIndexFor()`'s ccTLD
+  lookup now also excludes `.net`, or a ccTLD-less locale's email keyboard would wrongly pre-select `.net`
+  instead of falling back to `.com`. **Diagnostic-log description**: `d_diag_enabled_summary` (all three
+  locales) no longer names the D-139 jitter specifically (generic "rare glitches" instead - naming a still-
+  open bug in a Settings description was premature) and the password-field exclusion is now its own short,
+  separate sentence instead of the last clause of one long paragraph. 5 new/changed tests (`UrlLocaleTest`
+  +2, `KeyboardLayoutTest`: 1 replaced + 1 added). 705 unit tests (was 702; +3). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed; D-139 stays open pending the user's decision.
 - **§98 DONE (v0.8.63): D-159 - robust (Huber-style) downweighting for the T-03 touch-zone learning model,
   discussed and designed with the user before implementation.** Each recorded tap is now weighted by how
   far it falls from the key's *currently learned* expected strike point relative to its learned spread

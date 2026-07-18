@@ -333,12 +333,20 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-158 the period key's popup is locale-resolved TLDs, exactly like urlMode's`() {
+    fun `D-158 the period key's popup is locale-resolved TLDs, plus an email-only net entry`() {
+        val emailRow = KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
+        
+        assertEquals(UrlLocale.emailPeriodAlternatives(Locale.GERMANY), emailRow.byChar('.').alternatives)
+        assertEquals(listOf(".com", ".de", ".net", ".org"), emailRow.byChar('.').alternatives)
+    }
+    
+    @Test
+    fun `D-158 follow-up email's net addition is not shared with urlMode's period popup`() {
         val emailRow = KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
         val urlRow = KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
         
-        assertEquals(UrlLocale.periodAlternatives(Locale.GERMANY), emailRow.byChar('.').alternatives)
-        assertEquals(urlRow.byChar('.').alternatives, emailRow.byChar('.').alternatives)
+        assertFalse(urlRow.byChar('.').alternatives.contains(".net"))
+        assertTrue(emailRow.byChar('.').alternatives.contains(".net"))
     }
     
     @Test

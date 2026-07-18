@@ -5171,3 +5171,73 @@ invalidated `merge of split halves` test was removed (see the caveat above) and 
 `OffsetModelTest` +4. 702 unit tests (was 698; +4). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 Not yet device-tested - `MIN_SAMPLE_WEIGHT`/`DEFAULT_SIGMA_FACTOR` are considered starting points, easy to
 retune later (established precedent for every such constant in this touch-model area).
+
+## §99 - D-139 Root Cause Found (Design Decision Pending); D-158 Follow-Up: Email-Only `.net`; Diagnostic-Log Description Cleanup (v0.8.64)
+
+### D-139 - root cause identified from three real device logs, not yet fixed
+The user captured three genuine device logs reproducing the reported "text jitters, characters get
+scrambled" glitch, then supplied all three for tracing against the real code (`AdaptKeyService.kt`), not
+guessed. All three show the identical mechanism, always triggered right after a word commits and the next
+character is typed. Root cause: `onUpdateSelection()`'s `ownEdit` check -
+
+```kotlin
+val ownCursor = if (composingAnchor >= 0) composingAnchor + composingCursor else candidatesEnd
+val ownEdit = newSelStart == newSelEnd && candidatesEnd >= 0 && newSelStart == ownCursor
+```
+
+- only tracks the expected cursor position purely locally (immune to any outside timing) for the D-62
+mid-word-edit case (`composingAnchor >= 0`). For the ordinary, by far most common case - typing at a
+token's own end, `composingAnchor == -1` by construction - `ownCursor` falls back to `candidatesEnd`, a
+value the *target editor* reports back per callback, not anything AdaptKey tracks itself. Android does not
+guarantee this is synchronised 1:1 with the selection-update stream; a specific `onUpdateSelection` callback
+immediately following the service's own `setComposingText()` call can report `candidatesEnd = -1` (the
+editor's own composing-span bookkeeping momentarily lagging, or a stale/delayed echo of a prior edit
+arriving out of order) even though `composing` genuinely holds live, correctly-typed text. The
+`candidatesEnd >= 0` guard then misclassifies this entirely legitimate self-edit as external,
+`finishComposingText()` + `clearComposing()` wipes the just-typed token, and because `composing` is now
+empty the very next callback falls into the `composing.isEmpty()` branch and calls `reclaimWordAtCaret()`,
+which re-derives the same text via *another* `setComposingText()` call - subject to the identical race, so
+it fails identically every retry. The result is an unbounded self-perpetuating loop (finish → clear →
+reclaim → re-compose → misjudged again), observed running at roughly 5-10 iterations/second for 7-9+
+seconds straight in the captured logs, only ending on a focus change. `CallbackBurstGuard` (§76) never trips
+- its threshold is >40 calls within 200ms, and this loop's rate is throttled by the real IPC round-trip of
+each cycle to well under that. Reproduced in at least two different target apps (Google Keep, Signal) -
+not app-specific. This is a different, deeper mechanism than either of §76's circuit breaker (a generic
+defensive measure, not a diagnosis) or §95/D-149's fix (a real but unrelated bug in the same neighbourhood -
+`selectionCollapsed` not being reset).
+
+**Fix direction proposed, not implemented this round**: extend the same purely-local cursor-tracking the
+mid-word path already uses (immune to this race by construction) to the ordinary end-of-word case too,
+instead of ever trusting the remotely-reported `candidatesEnd` for `ownEdit` recognition. This is a
+foundational change to the self-recognition mechanism the entire composing pipeline depends on, with real
+trade-offs to weigh (e.g. how to track the composing start position locally for the common case, which
+currently has no equivalent to `composingAnchor`) - per this project's own convention for non-trivial design
+changes, deliberately left for a follow-up round pending the user's own decision on direction, rather than
+implemented directly. No code changed for D-139 itself this round.
+
+### D-158 follow-up - email-mode TLD popup gains `.net`, email-only
+Requested directly: the email keyboard's period-key long-press popup needed a `.net` entry, placed directly
+before `.org`. Confirmed with the user this is **email-only**, not shared with URL mode's own period popup
+(which had reused `UrlLocale.periodAlternatives()` byte-for-byte since D-158/§97). New
+`UrlLocale.emailPeriodAlternatives(locale)` returns `periodAlternatives()`'s own list with `.net` inserted
+directly before `.org` (`[.com, ccTLD, .net, .org]`, or `[.com, .net, .org]` for a ccTLD-less locale);
+`KeyboardLayout.emailBottomRow()` now calls it instead of `periodAlternatives()`, while `urlBottomRow()` is
+untouched. `AdaptKeyboardView.preSelectedIndexFor()`'s ccTLD lookup (pre-selects whichever popup entry is
+neither `.com` nor `.org`, so D-01's popup centres the locale's own most-relevant TLD directly over the stem
+- see D-145) now also excludes `.net`, or a ccTLD-less locale's email keyboard would have wrongly
+pre-selected `.net` instead of falling back to `.com`; because the ccTLD (when present) always precedes
+`.net` in the new list, this only changes behaviour for the ccTLD-less fallback case, not the general one.
+5 new/changed tests (`UrlLocaleTest` +2, `KeyboardLayoutTest`: 1 replaced + 1 added).
+
+### Diagnostic-log description cleanup - no code change to behaviour
+Two corrections to `d_diag_enabled_summary` (all three locales), requested directly: it must not reference
+the reported jitter (D-139) by name - naming a specific, still-unresolved bug in a Settings description was
+premature and potentially misleading once other rare issues might also show up in the same log - reworded
+to the generic "rare glitches"; and the password-field exclusion, previously buried as the last clause of
+one long paragraph, is now its own short, clearly separate sentence so it is not easy to miss. No behaviour
+changed, description text only.
+
+3 net new tests (`UrlLocaleTest` +2, `KeyboardLayoutTest` +1). 705 unit tests (was 702; +3).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. The `.net` addition and description rewrite are not yet
+device-confirmed; D-139 remains open, now with a confirmed root cause and a proposed fix direction awaiting
+the user's decision.

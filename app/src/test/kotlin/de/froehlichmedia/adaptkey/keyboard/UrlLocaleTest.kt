@@ -63,4 +63,16 @@ class UrlLocaleTest {
         val us = UrlLocale.periodAlternatives(Locale.US)
         assertTrue(us.all { it == ".com" || it == ".org" })
     }
+    
+    @Test
+    fun `D-158 follow-up email's TLD list is periodAlternatives with net inserted before org`() {
+        assertEquals(listOf(".com", ".de", ".net", ".org"), UrlLocale.emailPeriodAlternatives(Locale.GERMANY))
+        assertEquals(listOf(".com", ".net", ".org"), UrlLocale.emailPeriodAlternatives(Locale.US))
+    }
+    
+    @Test
+    fun `D-158 follow-up net is not among urlMode's own alternatives`() {
+        assertFalse(UrlLocale.periodAlternatives(Locale.GERMANY).contains(".net"))
+        assertFalse(UrlLocale.periodAlternatives(Locale.US).contains(".net"))
+    }
 }

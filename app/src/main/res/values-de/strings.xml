@@ -218,7 +218,7 @@
     <!-- D-139/D-110: In-App-Diagnoseprotokoll, eine Alternative zu adb logcat ohne PC-/USB-Verbindung. -->
     <string name="cat_diagnostics">Diagnose</string>
     <string name="d_diag_enabled_title">Diagnoseprotokoll aufzeichnen</string>
-    <string name="d_diag_enabled_summary">Führt ein rollierendes, rein internes Protokoll der letzten 1 Minute Tippgeschehen, um einem seltenen Fehler (z. B. dem gemeldeten Zittern) auf die Spur zu kommen. Standardmäßig aus. Zeichnet den getippten Text auf - wird nie auf die Festplatte geschrieben und nie versendet, außer du teilst es unten ausdrücklich. Zeichnet in einem Passwort-Feld grundsätzlich nichts auf, unabhängig davon, ob diese Option aktiviert ist.</string>
+    <string name="d_diag_enabled_summary">Führt ein rollierendes, rein internes Protokoll der letzten 1 Minute Tippgeschehen, um seltenen Fehlern auf die Spur zu kommen. Standardmäßig aus, wird nie auf die Festplatte geschrieben und nie versendet, außer du teilst es unten ausdrücklich. Passwort-Felder sind davon immer ausgenommen, unabhängig von dieser Einstellung.</string>
     <string name="d_diag_log_title">Diagnoseprotokoll ansehen / teilen</string>
     <string name="d_diag_log_summary">Zeigt das aktuelle Protokoll und erlaubt Kopieren oder Teilen.</string>
     <string name="d_diag_activity_title">Diagnoseprotokoll</string>

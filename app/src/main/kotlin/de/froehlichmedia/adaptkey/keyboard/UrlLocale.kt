@@ -52,6 +52,23 @@ object UrlLocale {
         return if (ccTld != null) listOf(".com", ccTld, ".org") else listOf(".com", ".org")
     }
     
+    /**
+     * The period key's email-mode long-press alternatives for [locale]: exactly [periodAlternatives], with
+     * `.net` inserted directly before `.org` - explicitly requested as an email-only addition, not shared
+     * with [periodAlternatives]/URL mode. The locale's own ccTLD, when present, still precedes `.net` in the
+     * list, so [AdaptKeyboardView.preSelectedIndexFor]'s "neither `.com` nor `.org`" ccTLD lookup keeps
+     * finding it first regardless; that lookup is additionally hardened to also exclude `.net` itself, so a
+     * locale with no ccTLD (where `.net` would otherwise be the first non-`.com`/`.org` entry) still falls
+     * back to pre-selecting `.com`, exactly as before.
+     *
+     * @param locale the system locale to resolve from
+     * @return the ordered TLD suggestions, never including the bare `.`
+     */
+    fun emailPeriodAlternatives(locale: Locale): List<String> {
+        val ccTld = ccTldFor(locale)?.let { ".$it" }
+        return if (ccTld != null) listOf(".com", ccTld, ".net", ".org") else listOf(".com", ".net", ".org")
+    }
+    
     private fun ccTldFor(locale: Locale): String? {
         val country = locale.country
         if (country.isBlank()) {

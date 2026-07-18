@@ -222,8 +222,8 @@ object KeyboardLayout {
      * ordinary comma/space/period trio: `@` takes over the comma key's own primary position (its own alt
      * popup unchanged, just demoted to an alternative - see [EMAIL_AT_ALTERNATIVES]); a new dash key (`-`,
      * `_` as its single D-01 long-press secondary) is funded by narrowing the now less-needed space key;
-     * the full-stop key's alt popup is the same locale-resolved TLD list [urlBottomRow] uses, since an
-     * email address ends in a domain/TLD exactly like a URL does.
+     * the full-stop key's alt popup is the locale-resolved TLD list [urlBottomRow] uses, plus an
+     * email-only `.net` entry ([UrlLocale.emailPeriodAlternatives] - explicitly not shared with URL mode).
      *
      * @param proportions the key-proportion configuration (C-01)
      * @param locale the system locale the period key's TLD popup is resolved from ([UrlLocale])
@@ -235,7 +235,7 @@ object KeyboardLayout {
             charKey('@', alternatives = EMAIL_AT_ALTERNATIVES, weight = proportions.commaWeight),
             charKey('-', hint = "_", weight = EMAIL_DASH_KEY_WEIGHT),
             Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = EMAIL_SPACE_WEIGHT),
-            charKey('.', alternatives = UrlLocale.periodAlternatives(locale), weight = proportions.periodWeight),
+            charKey('.', alternatives = UrlLocale.emailPeriodAlternatives(locale), weight = proportions.periodWeight),
             Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
         )
     }

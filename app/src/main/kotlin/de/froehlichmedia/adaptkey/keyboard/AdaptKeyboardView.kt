@@ -1088,7 +1088,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
             return index
         }
         if (key.code == KeyCode.CHAR && key.char == '.') {
-            val ccTldIndex = alternatives.indexOfFirst { it != ".com" && it != ".org" }
+            // D-158 follow-up: email mode's own `.net` addition (UrlLocale.emailPeriodAlternatives) is not
+            // the locale's ccTLD either - excluded here too, or a ccTLD-less locale would wrongly pre-select
+            // `.net` instead of falling back to `.com` below.
+            val ccTldIndex = alternatives.indexOfFirst { it != ".com" && it != ".org" && it != ".net" }
             if (ccTldIndex >= 0) {
                 return ccTldIndex
             }
