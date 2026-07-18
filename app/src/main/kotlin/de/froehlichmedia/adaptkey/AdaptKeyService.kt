@@ -249,9 +249,12 @@ class AdaptKeyService : InputMethodService() {
     // D-62: the logical edit point within composing - equal to composing.length while typing normally
     // extends the token at its end, but short of it while editing mid-word (an untouched "after" fragment,
     // reclaimed from the surrounding text, still follows). composingAnchor is the absolute document offset
-    // of the composing region's start, needed to place the real cursor back at composingCursor after every
-    // setComposingText() call (which otherwise always leaves it at the end); -1 while no reclaimed "after"
-    // fragment is in play, so the natural end-of-composing cursor placement is already correct.
+    // of the composing region's start - resolved by reclaimSurroundingWord() whenever composing text
+    // exists (D-159), not only during a genuine mid-word reclaim: used both to place the real cursor back
+    // at composingCursor after every setComposingText() call (which otherwise always leaves it at the end)
+    // and, more fundamentally, by onUpdateSelection's ownEdit check to recognise our own edits without
+    // relying on the target editor's own reported composing span. -1 only while composing is empty, or if
+    // an ExtractedText read genuinely failed.
     private var composingCursor = 0
     private var composingAnchor = -1
     
@@ -779,8 +782,23 @@ class AdaptKeyService : InputMethodService() {
         // Our own edits leave the caret collapsed at the end of the composing region - or, D-62, at the
         // logical mid-word edit point we deliberately placed it at via setSelection() when a reclaimed
         // "after" fragment still follows; anything else is a user-initiated caret move or selection.
-        val ownCursor = if (composingAnchor >= 0) composingAnchor + composingCursor else candidatesEnd
-        val ownEdit = newSelStart == newSelEnd && candidatesEnd >= 0 && newSelStart == ownCursor
+        // D-159 (jitter fix): composingAnchor is now always resolved locally by reclaimSurroundingWord()
+        // whenever composing text exists, not only for a genuine mid-word reclaim - candidatesEnd (the
+        // target editor's own, remotely-reported composing span) is deliberately no longer consulted here
+        // at all. It is not guaranteed to arrive in sync with the corresponding selection update, and
+        // trusting it as a gating condition caused a real, reproducible self-triggering onUpdateSelection
+        // cascade: an ordinary, legitimate edit could be misjudged as foreign whenever this specific
+        // callback happened to report a stale/lagging candidatesEnd, wiping the just-typed composing token
+        // - which then re-triggered reclaimWordAtCaret()'s own setComposingText() call, subject to the
+        // identical race, forming an unbounded loop (traced end-to-end from real device logs, see spec).
+        // When composingAnchor is unknown (-1, e.g. an ExtractedText read failed), there is nothing
+        // reliable to compare against - stay conservative and do not react at all, since wrongly wiping a
+        // live composing token is the destructive branch.
+        if (composingAnchor < 0) {
+            return
+        }
+        val ownCursor = composingAnchor + composingCursor
+        val ownEdit = newSelStart == newSelEnd && newSelStart == ownCursor
         if (!ownEdit) {
             // D-139 (temporary diagnostic): this branch wipes the in-progress token - exactly what a
             // reported scramble/jitter would look like if it fires when it should not.
@@ -2465,10 +2483,13 @@ class AdaptKeyService : InputMethodService() {
      * characters when available (the ordinary character path always has one), or is left untracked when
      * not (the long-press-letter path, matching its pre-existing composingTaps gap).
      *
-     * When letters follow the caret too, the real cursor must be pulled back mid-composing on every
-     * subsequent redraw (see [updateComposing]), which needs the absolute document offset of the reclaim -
-     * read once via [InputConnection.getExtractedText]. When that is unavailable (a rare editor quirk) the
-     * reclaim is skipped outright rather than risk leaving the cursor in the wrong place.
+     * D-159: the absolute document offset of the new composing region's start is now resolved here
+     * unconditionally, via [InputConnection.getExtractedText] - not only when letters follow the caret too
+     * - since [onUpdateSelection]'s ownEdit check depends on it for every composing token, not only a
+     * genuine mid-word reclaim (see [composingAnchor]'s own KDoc). When extraction is unavailable (a rare
+     * editor quirk) the anchor is simply left unresolved (-1) rather than aborting the reclaim outright;
+     * [onUpdateSelection] already treats an unresolved anchor conservatively (never wipes), so this degrades
+     * gracefully instead of silently orphaning the surrounding text in the document.
      *
      * @param ic the current input connection
      * @param tap the raw tap to record for the reclaimed characters, or null to leave them untracked
@@ -2476,19 +2497,23 @@ class AdaptKeyService : InputMethodService() {
     private fun reclaimSurroundingWord(ic: InputConnection, tap: TapPoint?) {
         val after = ic.getTextAfterCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
         val reclaim = WordExtent.reclaim(tokenContextBefore, after)
+        // D-87 / D-159: see ComposingAnchor for why startOffset must be added, not just selectionStart
+        // alone. Read before any mutation below, matching this class's established read-before-mutating
+        // convention (see splitComposingAtCaretAndCommit's own D-122 note).
+        val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
+        val anchor = if (extracted != null) {
+            ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, reclaim.before.length)
+        } else {
+            -1
+        }
         if (reclaim.before.isEmpty() && reclaim.after.isEmpty()) {
+            composingAnchor = anchor
             return
         }
         // D-139 (temporary diagnostic): a reclaim mutates the real editable via deleteSurroundingText()
         // below, then rebuilds composing from these two fragments - exactly the mechanism §73/§76 suspect
         // for the reported jitter/scramble, so every actual reclaim (not the common no-op above) is logged.
         diag("AdaptKeyJitter", "reclaimSurroundingWord: before=\"${reclaim.before}\" after=\"${reclaim.after}\"")
-        var anchor = -1
-        if (reclaim.after.isNotEmpty()) {
-            // D-87: see ComposingAnchor for why startOffset must be added, not just selectionStart alone.
-            val extracted = ic.getExtractedText(ExtractedTextRequest(), 0) ?: return
-            anchor = ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, reclaim.before.length)
-        }
         ic.deleteSurroundingText(reclaim.before.length, reclaim.after.length)
         // D-84: the reclaimed "before" fragment moves into composing now, so it is no longer part of the
         // context *preceding* the token - trim it from tokenContextBefore too, or it would appear twice

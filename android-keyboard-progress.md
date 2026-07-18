@@ -28,6 +28,26 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§100 DONE (v0.8.65): D-139 actually fixed - `composingAnchor` now resolved locally for every composing
+  token, not only the D-62 mid-word case.** User pushback on §99's diagnosis was correctly on-target: they
+  suspected the mid-word-correction machinery, and the logs confirm it as the **amplifier** (§58's
+  `reclaimWordAtCaret()` turns one transient misdetection into an unbounded loop) but not the **trigger**
+  (`composingAnchor == -1` in every affected log line - always ordinary end-of-word typing, matching the
+  user's own recollection that it wasn't a deliberate mid-word correction). User explicitly asked for the
+  thorough fix over tuning §58 alone, reasoning that a half-fix would surface later as unrelated-looking
+  phantoms (words silently skipping autocorrect/capitalisation/learning). Fix: `reclaimSurroundingWord()`
+  now resolves `composingAnchor` via the existing, already-tested `ComposingAnchor.resolve()` (D-87)
+  unconditionally - for a brand-new word, a before-only reclaim, or a genuine mid-word reclaim alike - not
+  only when a mid-word "after" fragment exists. `onUpdateSelection()`'s `ownEdit` check no longer references
+  `candidatesEnd` (the target editor's own, remotely-reported composing span) at all; when the anchor is
+  genuinely unresolved (`getExtractedText()` failure, rare) the check now deliberately does nothing rather
+  than guess and wipe. Free side-effect: `splitComposingAtCaretAndCommit()`'s (D-119/D-120/D-122) own
+  arithmetic anchor propagation for its re-seeded "after" half was silently gated on the same
+  now-almost-always-true `beforeAnchor >= 0` condition - fixed with no code change there at all. 1 new test
+  (`ComposingAnchorTest`, the `reclaimedBeforeLength = 0` boundary). 706 unit tests (was 705; +1).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed** - D-139 has had multiple
+  "fixed but not actually fixed" rounds before (§76, §95/D-149), so stays open pending a real-device repro
+  attempt, even though this round is a traced, code-verified root-cause fix rather than a guess.
 - **§99 (v0.8.64): D-139 root cause found from three real device logs the user captured and traced against
   the actual code - not yet fixed; D-158 follow-up (email-only `.net` TLD) and a diagnostic-log description
   cleanup implemented.** **D-139**: `onUpdateSelection()`'s `ownEdit` check

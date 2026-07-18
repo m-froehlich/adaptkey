@@ -5241,3 +5241,67 @@ changed, description text only.
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. The `.net` addition and description rewrite are not yet
 device-confirmed; D-139 remains open, now with a confirmed root cause and a proposed fix direction awaiting
 the user's decision.
+
+## §100 - D-139 Actually Fixed: `composingAnchor` Now Resolved Locally for Every Composing Token, Not Only Mid-Word (v0.8.65)
+
+Follow-up to §99's diagnosis, same round of device logs. The user's own instinct, raised directly, was
+right in substance but not in scope: they suspected the D-62 mid-word-correction machinery ("reclaimed"
+composing) was implicated, and asked whether tuning it away would make the bug disappear. Tracing confirmed
+the mid-word mechanism is real to the story, but not as the trigger - it is the **amplifier**.
+`composingAnchor` is `-1` in every single affected line of all three logs, i.e. the misdetection always
+hits during ordinary end-of-word typing, never a genuine mid-word edit (matching the user's own recollection
+exactly). What §58's `reclaimWordAtCaret()` contributes is turning one transient misdetection into an
+*unbounded* loop: once a spurious "not ownEdit" wipes a token, composing is empty with a collapsed caret -
+precisely the condition `reclaimWordAtCaret()` reacts to - so it immediately re-derives the same text via
+another `setComposingText()` call, subject to the identical race, forming the observed multi-second freeze.
+Restricting §58 alone (the tuning the user asked about) would very likely have stopped that runaway
+escalation, but would have left the underlying misdetection itself free to still fire occasionally during
+completely ordinary typing - without the reclaim to rebuild it, that would silently early-commit the
+in-progress word via the raw `finishComposingText()` path, **bypassing `finalizeAndCommit()` entirely**
+(no autocorrect, no capitalisation, no dictionary learning for that one word) - a smaller but real
+manifestation of the same defect, and exactly the kind of "half-fixed, chase phantoms for days later"
+outcome the user explicitly asked to avoid. Fixed at the actual root instead, per the user's explicit
+request for a thorough, one-time fix over a symptom patch.
+
+**The fix**: `composingAnchor` - previously "the absolute document offset of the composing region's start,
+tracked only while a D-62 mid-word reclaim's untouched 'after' fragment is in play, `-1` otherwise" - is now
+resolved by `reclaimSurroundingWord()` unconditionally, for every case a composing token can start from: a
+brand-new word with nothing adjacent, a reclaim of a preceding word with nothing following the caret, or a
+genuine mid-word before+after reclaim. All three of `AdaptKeyService`'s composing-starting call sites
+(`handleKey()`'s `CHAR` branch, `reclaimWordAtCaret()`, `appendLongPressLetter()`) already funnel through
+`reclaimSurroundingWord()` before any character lands in a fresh composing buffer, so this one change covers
+all of them uniformly - confirmed by walking every read/write site of `composingAnchor` in the file, per
+this project's completeness convention, not just the two call sites the bug was found in. The anchor is
+computed via the existing, already-tested `ComposingAnchor.resolve()` (D-87) - previously scoped to the
+mid-word case only, now recognised as the general-purpose "where does composing start" primitive it always
+was - read once via `InputConnection.getExtractedText()` **before** any mutation in the same call, matching
+this class's own established read-before-mutating convention (the D-122 KDoc on
+`splitComposingAtCaretAndCommit()` states the same principle explicitly). `onUpdateSelection()`'s `ownEdit`
+check no longer references `candidatesEnd` at all - `candidatesEnd`/`candidatesStart` are now unused outside
+the diagnostic log line, since the whole reason they were consulted (the *only* case `composingAnchor` was
+`-1` while composing was non-empty) no longer exists. When `composingAnchor` is still unresolved (`-1`) -
+now only possible if `getExtractedText()` itself fails, a rare editor-quirk case that previously aborted the
+whole reclaim outright - `onUpdateSelection()` deliberately does nothing (neither treats the update as own
+nor as foreign) rather than guess, since guessing wrong and wiping is the destructive branch; this is a
+strictly more conservative failure mode than before, not merely a different one.
+
+**Side effect confirmed, not incidental**: `splitComposingAtCaretAndCommit()` (D-119/D-120/D-122, the
+mid-word-SPACE-split path) already computed its re-seeded "after" half's anchor arithmetically from the
+"before" half's own `composingAnchor` (`beforeAnchor + committedLength`), but only produced a real anchor
+when `beforeAnchor >= 0` - which, before this fix, was almost never true for an ordinary split (the "before"
+half's own anchor was itself usually `-1`). That call site needed no code change at all: since
+`composingAnchor` is now resolved for every token, `beforeAnchor` is now valid in the same cases, and the
+existing arithmetic propagates correctly - a second, previously-silent instance of the same
+`candidatesEnd`-dependent gap, fixed for free by fixing the root cause rather than each call site
+individually.
+
+**Trade-off accepted, stated plainly**: `reclaimSurroundingWord()` now calls `getExtractedText()` on every
+new word (previously only when a genuine mid-word "after" fragment existed) - one extra lightweight IPC
+round-trip per word, not per keystroke, in exchange for eliminating a reproducible multi-second input freeze.
+
+1 new test (`ComposingAnchorTest`: the `reclaimedBeforeLength = 0` boundary, now a load-bearing case rather
+than an untested corner). 706 unit tests (was 705; +1). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+**Not yet device-confirmed** - this class of bug has had multiple "fixed but not actually fixed" rounds
+before (§76, §95/D-149), so D-139 stays open until the user reproduces the original repro steps again on a
+real device and it holds up; this round is a traced, code-verified root-cause fix, not a guess, but device
+confirmation is still the bar per this project's own convention.

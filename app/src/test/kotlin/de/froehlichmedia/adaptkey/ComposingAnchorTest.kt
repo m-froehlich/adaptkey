@@ -36,4 +36,14 @@ class ComposingAnchorTest {
             ComposingAnchor.resolve(extractedStartOffset = 4000, extractedSelectionStart = 7, reclaimedBeforeLength = 4)
         )
     }
+    
+    @Test
+    fun `a zero-length reclaimed prefix resolves to the current caret position unchanged`() {
+        // D-159: reclaimSurroundingWord() now resolves this anchor unconditionally, including for a brand
+        // new composing token with nothing reclaimed on either side - the anchor must simply be "here".
+        assertEquals(
+            4007,
+            ComposingAnchor.resolve(extractedStartOffset = 4000, extractedSelectionStart = 7, reclaimedBeforeLength = 0)
+        )
+    }
 }
