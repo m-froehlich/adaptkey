@@ -5681,3 +5681,53 @@ private field guard, and `knownInOtherLanguage`'s private exception set are all 
 untested categories; `CROSS_LANGUAGE_CONFUSABLES` itself had no test for "due" either). 716 unit tests
 (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of D-162/D-163/D-164 have been
 device-confirmed yet.
+
+## §106 - D-166 Withdrawn; D-170 Fixed (Real Device Log); D-175 Diagnostic Added for Never-Saved Credentials (v0.8.70)
+
+**D-166 withdrawn** (the "DiecVorschlaege" highlights-but-never-auto-splits question captured in §105) -
+per direct instruction: the user cannot currently reproduce it and will re-open with a fresh repro if it
+recurs, matching the D-148 precedent for this outcome. D-165 (mid-word split can destroy deliberately-typed
+capitalisation) and D-167 (the generalised embedded-capital-as-confidence-signal design idea) are untouched
+by this - the user's "streiche es" was specifically about the highlight/auto-split question, not those two.
+
+### D-170 fixed: a delimiter typed mid-fragment in a login/email/URL field always landed after the whole fragment
+Reported precisely and reproduced from a real device log: in K9 Mail's email compose field, typing
+"foo.bar", moving the caret back to just after "foo" (before the "."), Backspace (deleting the "."), then
+typing "@" - expected "foo@bar", the caret instead jumped to the very end and "@" landed after "bar"
+("foobar@"). Traced end to end against the log's own position trail, not guessed: `finalizeAndCommit()`'s
+D-142/D-143 login/urlMode branch returns *before* its own D-119/D-120 "is the caret mid-word" check ever
+runs, straight into `commitVerbatimFieldFragment()` - which committed the *entire* composing fragment
+verbatim, delimiter appended at its end, with zero awareness of `composingCursor`. So the moment the caret
+sat anywhere but the fragment's own end when a delimiter arrived (a repositioned tap, exactly this repro),
+the delimiter landed in the wrong place - a login/email/URL-field-specific gap the ordinary word path's
+D-119/D-120 fix never covered, since it structurally cannot be reached from there. Fixed by mirroring
+`splitComposingAtCaretAndCommit()`'s own already-correct before/after split and arithmetic anchor
+computation (D-122's own no-post-mutation-read principle) directly inside `commitVerbatimFieldFragment()`,
+without its recursive `finalizeAndCommit()`/autocorrect step, which a verbatim fragment never uses anyway.
+The user's own proposal to instead simply stop treating "@" as a delimiter was considered and declined:
+"." (and "-"/"_") would still carry the identical latent bug for anyone who edits mid-fragment with those
+characters instead - fixing the general mechanism, not the one character, matches this project's own
+long-standing "find the general rule" preference (§62) over a per-character workaround. No new tests -
+Android `InputConnection` batch-edit glue, the same established gap as `splitComposingAtCaretAndCommit`
+itself.
+
+### D-175 (credential storage) - own email address in a confirmed-active credential field is never learned
+Reported directly, alongside a proposed explanation: maybe the suggestion bar is simply suppressed
+throughout email mode, so even a successfully-learned credential would never be offered. Checked against the
+actual code: not the case - `refreshSuggestions()` already routes to `showCredentialSuggestions()` whenever
+`loginFieldKind != NONE`, which reads `CredentialStore.all(this)` live on every composing update and would
+render real entries if any existed. The suggestion-bar side is not disabled; the more likely explanation is
+that nothing is actually being learned in the first place, or the wrong value is. Traced
+`captureCredentialIfLoginField()` (called from both `handleEnter()` and `onFinishInput()`,
+`MIN_CREDENTIAL_LENGTH = 2`, `credentialCaptured` correctly reset per field in `onStartInput`) end to end -
+no gap was found by reading the code alone; every gate looks correct on paper, which is exactly the kind of
+situation this project treats as "needs real data, not another guess." **Diagnostic added, same D-number**:
+`captureCredentialIfLoginField()` now logs every early-return reason (`kind`/`credentialCaptured` state, a
+null `getTextBeforeCursor` read, a too-short value) and the exact value and kind it ultimately learns, to
+the `AdaptKey` channel - to be removed once D-175 is actually closed. Not yet fixed - waiting on the next
+real occurrence's log before touching anything further.
+
+1 fix (D-170) plus diagnostic-only instrumentation for D-175 - no new tests (Android `InputConnection`/glue,
+consistent with the established gap for this class of change). 716 unit tests (unchanged).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. D-170 not yet device-confirmed; D-175 stays open
+pending a captured log of the next occurrence.

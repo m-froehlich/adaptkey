@@ -1129,23 +1129,38 @@ class AdaptKeyService : InputMethodService() {
      * @param ic the current input connection
      */
     private fun captureCredentialIfLoginField(ic: InputConnection) {
+        // D-174 (temporary diagnostic): reported that a genuine email address, typed into a field where
+        // credential mode was confirmed active, was never actually learned - no bug found by reading this
+        // function alone (every gate looks correct), so every early-return reason and the final captured
+        // value are logged to see, from a real occurrence, which branch actually fires. Remove once D-174
+        // is closed.
         val kind = loginFieldKind
         if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured) {
+            diag(
+                "AdaptKey",
+                "captureCredentialIfLoginField: skipped - kind=$kind credentialCaptured=$credentialCaptured"
+            )
             return
         }
         credentialCaptured = true
         ic.finishComposingText()
-        val before = ic.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString() ?: return
+        val before = ic.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString()
+        if (before == null) {
+            diag("AdaptKey", "captureCredentialIfLoginField: getTextBeforeCursor returned null - kind=$kind", warn = true)
+            return
+        }
         // A login field's own content is normally the whole field (no internal spaces) - only the
         // trailing run of non-whitespace characters right before the cursor is the credential value.
         val value = before.takeLastWhile { !it.isWhitespace() }
         if (value.length < MIN_CREDENTIAL_LENGTH) {
+            diag("AdaptKey", "captureCredentialIfLoginField: value too short (len=${value.length}) - kind=$kind")
             return
         }
         // A field classified as USERNAME may still be where the user typed their email as the identifier
         // (common on real login forms) - reclassify from the value itself so it is stored (and later
         // offered for @-domain completion) correctly.
         val actualKind = if (value.contains('@')) LoginFieldKind.EMAIL else kind
+        diag("AdaptKey", "captureCredentialIfLoginField: learning value=\"$value\" kind=$actualKind")
         CredentialStore.learn(this, value, actualKind)
     }
     
@@ -2328,14 +2343,44 @@ class AdaptKeyService : InputMethodService() {
      *         [finalizeAndCommit]'s own return contract
      */
     private fun commitVerbatimFieldFragment(ic: InputConnection, delimiter: String): Int {
-        val word = composing.toString()
-        ic.setComposingText(word, 1)
-        ic.finishComposingText()
-        clearComposing()
-        resetWordEndShift()
-        ic.commitText(delimiter, 1)
+        // D-170: finalizeAndCommit()'s login/urlMode branch returns before its own D-119/D-120 mid-word
+        // split check ever runs, so this path never respected composingCursor at all - a delimiter typed
+        // while the caret sits mid-fragment (e.g. repositioned via a tap to insert "@" between an
+        // already-typed "foo" and "bar") always committed after the *whole* fragment instead of exactly
+        // where the caret was. Mirrors splitComposingAtCaretAndCommit's own before/after split and
+        // arithmetic anchor, without the recursive finalizeAndCommit()/autocorrect step this verbatim path
+        // never uses anyway - a login/email/URL fragment is never autocorrected or capitalised.
+        val splitAt = composingCursor
+        val beforeAnchor = composingAnchor
+        val beforeText = composing.substring(0, splitAt)
+        val afterText = composing.substring(splitAt)
+        val afterFlags = ArrayList(composingFlags.subList(splitAt, composingFlags.size))
+        val afterTaps = if (splitAt < composingTaps.size) {
+            ArrayList(composingTaps.subList(splitAt, composingTaps.size))
+        } else {
+            ArrayList()
+        }
+        ic.beginBatchEdit()
+        try {
+            ic.setComposingText(beforeText, 1)
+            ic.finishComposingText()
+            clearComposing()
+            resetWordEndShift()
+            ic.commitText(delimiter, 1)
+            if (afterText.isNotEmpty()) {
+                captureTokenContext(ic)
+                composing.append(afterText)
+                composingFlags.addAll(afterFlags)
+                composingTaps.addAll(afterTaps)
+                composingCursor = 0
+                composingAnchor = if (beforeAnchor >= 0) beforeAnchor + beforeText.length + delimiter.length else -1
+                updateComposing(ic)
+            }
+        } finally {
+            ic.endBatchEdit()
+        }
         clearUndo()
-        return word.length + delimiter.length
+        return beforeText.length + delimiter.length
     }
     
     /**

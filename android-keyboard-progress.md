@@ -35,7 +35,26 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§105 DONE (v0.8.69): D-161 retuned (1000->500ms); large device-feedback batch - D-162/D-163/D-164
+- **§106 DONE (v0.8.70): D-166 withdrawn (no repro, per direct instruction); D-170 fixed from a real
+  device log; D-175 (credentials never learned) diagnosed as far as static reading allows, diagnostic
+  logging added, not yet fixed.** **D-170**: in K9 Mail's email field, repositioning the caret mid-fragment
+  (after "foo", before "."), Backspace, then typing "@" jumped the caret to the end and inserted "@" after
+  "bar" instead of where intended - traced to `commitVerbatimFieldFragment()` never checking
+  `composingCursor` at all (the login/urlMode branch in `finalizeAndCommit()` returns before its own
+  D-119/D-120 mid-word check ever runs), so every delimiter in a login/email/URL field always landed after
+  the whole fragment. Fixed by mirroring `splitComposingAtCaretAndCommit()`'s before/after split + arithmetic
+  anchor directly inside the verbatim path. User's own alternative proposal (stop treating "@" as a
+  delimiter) was declined and explained - "." would carry the identical latent bug, so the general fix was
+  preferred over a per-character one. **D-175**: user's own email address, typed into a field with confirmed-
+  active credential mode, is never learned. Their own hypothesis (suggestion bar disabled throughout email
+  mode) checked and ruled out - `showCredentialSuggestions()` already renders real `CredentialStore` entries
+  live whenever `loginFieldKind != NONE`; the bar isn't the problem. `captureCredentialIfLoginField()` traced
+  end to end (called from both `handleEnter`/`onFinishInput`, thresholds/reset all look correct) - no gap
+  found from static reading alone. Diagnostic logging added (every early-return reason plus the exact
+  captured value/kind) rather than guessing further; stays open pending the next real occurrence's log.
+  716 unit tests (unchanged - both changes are Android `InputConnection`/service glue).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-170 not yet device-confirmed.
+- **§105 (v0.8.69): D-161 retuned (1000->500ms); large device-feedback batch - D-162/D-163/D-164
   fixed, D-173 answered as a design question, D-165-D-172 captured for their own rounds.** Every item
   traced against real code first, per this project's own convention. **D-162**: `SuggestionBarView`'s
   D-144 swipe-down-on-background fallback was unconditionally consuming every off-chip
