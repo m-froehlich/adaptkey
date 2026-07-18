@@ -5361,3 +5361,68 @@ their own distinct line, so a further negative round would be immediately attrib
 7 new tests (`SelectionTruthTest` - both observed mismatch shapes are encoded as named cases). 713 unit
 tests (was 706; +7). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed** -
 same bar as §100: D-139 stays open until the user's own repro attempts hold up on a real device.
+
+## §102 - Backlog Capture: D-160 (Typing Lag on Long Unknown Compounds - Per-Keystroke Pipeline Saturation, Traced Hypothesis)
+
+Reported: strong lag while typing `gesamtparteilichen` (an 18-char compound, guaranteed absent from the
+dictionary), captured in a device log still running v0.8.65. Not implemented this round - captured with a
+traced hypothesis and a proposed fix direction, pending the user's call.
+
+### What the log shows
+
+**No D-139 mechanism anywhere in this log**: zero wipe lines, the composing stream is position-perfect
+through the entire word (`anchor=124`, cursors 1-18 all consistent). This is a *different* problem:
+performance, not state corruption.
+
+The evidence chain for where the lag sits:
+
+1. **Callback starvation followed by a burst.** Every keystroke up to cursor 12 gets its
+   `onUpdateSelection` echo within ~100-200ms. From cursor 13 (`gesamtparteil`) through 18 - roughly 2.5
+   seconds of continuous typing - **no callbacks arrive at all**; then, within ~90ms right after the SPACE
+   commit, all six queued echoes (`new=137`…`142`) plus the commit's own pair arrive at once. Selection
+   callbacks are ordinary Handler messages on the IME's own main thread, while touch input is delivered
+   with input-pipeline priority - so this pattern is the signature of **AdaptKey's own main thread having
+   no idle time between keystrokes** (messages starve, drain the instant typing pauses), not of the app
+   lagging.
+2. **The target app was demonstrably responsive throughout**: `updateComposing` performs a synchronous
+   `getTextAfterCursor` read per keystroke (`isEditingMidWord`, §47 preview gate) - had the app's UI thread
+   been stalled, those blocking reads would have stalled `updateComposing` itself; its log lines flowed at
+   a steady ~300-400ms per keystroke the whole time.
+3. That steady pace itself cannot distinguish "the user's real typing rhythm" from "queued taps being
+   processed as fast as the pipeline allows" - but combined with the felt lag and the proven zero-idle main
+   thread, queued taps are the consistent reading.
+
+### Why this word specifically - the empty-candidates escalation
+
+`DictionarySuggestionProvider.suggestionsFor()` runs per keystroke, and its expensive fallbacks are all
+gated on `candidates.isEmpty()` - which for a long unknown compound like `gesamtpar…` is true on **every**
+keystroke from ~7 chars on. So precisely the worst-case token runs the full chain each keystroke: umlaut-
+unfold prefix scans, `fuzzyNeighbours` (first-char-bucket scan + per-candidate edit cost), **`CompoundSplit`
+(which internally runs `highConfidenceCorrection(rest)` - a second full fuzzy pass)**, **`wideFuzzyNeighbours`
+(cost-4 Levenshtein against the entire `g` first-char bucket - large in German - on an 18-char token)**, plus
+`rawCoordinateCorrection` (D-131, also gated on empty candidates) and the D-106-stage-2 multi-dictionary
+`knownInOtherLanguage` check for the pending autocorrect. Additionally `updateComposing` itself runs
+`TokenRepair.trySplit` per keystroke (§47 split preview, O(token length) split points with store lookups
+each) *before* pushing the letter to the field. D-138/D-153 are the standing precedent that stacking
+per-keystroke lookups is a real, repeatedly-felt cost - this is the typing-forward analogue of the
+backspace-hold case, with the additional twist that the expensive paths escalate exactly when the token is
+long and unknown.
+
+### Incidental finding - live confirmation of §101's premise (pre-§101 build)
+
+At the moment the stale echo burst still reported positions 137-142, the reclaim's own synchronous
+`getExtractedText` read had already resolved `anchor=143` - the true post-commit caret. Reads see reality
+while callbacks lag: the exact property §101's truth verification is built on, observed live in an
+unmodified v0.8.65 log. (The burst itself arrived while composing was empty, landing in the harmless
+empty-branch no-ops - which is why this log shows lag but no jitter.)
+
+### Proposed fix direction (not designed in detail, needs discussion)
+
+Preferred candidate: **debounce the expensive empty-candidates tail**. Cheap work (prefix scan, ordinary
+fuzzy) stays synchronous per keystroke; the expensive fallbacks (compound split, wide fuzzy,
+raw-coordinate) run only once the token has been stable for ~150-250ms (`Handler.postDelayed`, S-04
+resort-delay precedent) - during fast typing they never run, at the natural pause they still deliver.
+Alternatives worth weighing: per-keystroke length caps on `trySplit`/preview work; negative-result caching
+within a token. An instrumentation-first round (timing the preview and `suggestionsFor` durations via the
+existing D-139 diagnostic channel) would confirm the millisecond attribution on-device before committing to
+a design - the hypothesis above is traced from callback-queue behaviour, not from direct timings.

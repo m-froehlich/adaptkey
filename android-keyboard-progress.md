@@ -28,6 +28,22 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§102 CAPTURED (still v0.8.66, no code change): D-160 - strong typing lag on `gesamtparteilichen`,
+  traced hypothesis, not yet implemented.** From a v0.8.65 device log: **no D-139 mechanism present** (zero
+  wipes, composing stream position-perfect) - a distinct performance problem. Evidence chain: selection
+  callbacks starved for ~2.5s of continuous typing then burst all at once right after the commit (ordinary
+  Handler messages starving while prioritised touch input keeps preempting = AdaptKey's own main thread had
+  no idle time); the app itself was demonstrably responsive (per-keystroke synchronous reads in
+  `updateComposing` never stalled). Root-cause hypothesis, code-verified: `suggestionsFor()`'s expensive
+  fallbacks (CompoundSplit incl. inner fuzzy pass, cost-4 `wideFuzzyNeighbours` over the whole first-char
+  bucket, `rawCoordinateCorrection`) are all gated on `candidates.isEmpty()` - which for a long unknown
+  compound is true on *every* keystroke, so the worst-case token runs the full chain per keystroke, plus
+  `TokenRepair.trySplit` per keystroke in `updateComposing` (§47 preview). D-138/D-153 precedent, typing-
+  forward analogue. Proposed direction (needs design Go): debounce the expensive empty-candidates tail
+  (~150-250ms stability, S-04 precedent); optionally an instrumentation-first round via the existing
+  diagnostic channel to confirm millisecond attribution. **Incidental §101 validation**: the log shows a
+  truth-read resolving `anchor=143` while stale callbacks still reported 137-142 - reads see reality while
+  callbacks lag, §101's exact premise, observed live. 713 unit tests (unchanged).
 - **§101 DONE (v0.8.66): D-139 second half - truth verification replaces positional equality in
   `onUpdateSelection`.** §100 device-tested negative (still reproduced); per the project's own rule the
   diagnosis was re-questioned from two fresh device logs, not patched. Both logs confirm §100's local
