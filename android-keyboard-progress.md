@@ -28,7 +28,21 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- **§102 CAPTURED (still v0.8.66, no code change): D-160 - strong typing lag on `gesamtparteilichen`,
+- **§103 DONE (v0.8.67): D-160 implemented - expensive suggestion fallbacks debounced off the hot path,
+  design approved by the user (option 1).** The user's follow-up question (must the compound fuzzy search
+  be dropped entirely?) answered no - the debounce removes the cost, not the feature: cheap prefix/fuzzy
+  searches stay synchronous per keystroke; the expensive empty-candidates escalation (D-116 compound split
+  incl. inner fuzzy pass, D-117 wide fuzzy, D-131 raw-coordinate) runs in one deferred pass only once the
+  token has been stable for `EXPENSIVE_SUGGESTION_DELAY_MS` (200ms, retunable starting value). Mechanics:
+  `SuggestionProvider.suggestionsFor()` gained `includeExpensiveFallbacks: Boolean = true` (default keeps
+  every existing caller/test unchanged); the hot path passes `false` and schedules
+  `expensiveSuggestionRunnable`; staleness is double-guarded (every fresh refresh cancels before its early
+  returns, and the runnable re-checks `composing` equals its scheduled token). Deliberately untouched: the
+  §47 `trySplit` preview and the per-keystroke pending-chip work - moderate constant costs, named as the
+  next lever if residual long-word lag remains. 3 new tests (`DictionarySuggestionProviderTest`). 716 unit
+  tests (was 713; +3). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed -
+  awaits the same testing round as §101's D-139 fix.
+- **§102 CAPTURED (v0.8.66, no code change): D-160 - strong typing lag on `gesamtparteilichen`,
   traced hypothesis, not yet implemented.** From a v0.8.65 device log: **no D-139 mechanism present** (zero
   wipes, composing stream position-perfect) - a distinct performance problem. Evidence chain: selection
   callbacks starved for ~2.5s of continuous typing then burst all at once right after the commit (ordinary

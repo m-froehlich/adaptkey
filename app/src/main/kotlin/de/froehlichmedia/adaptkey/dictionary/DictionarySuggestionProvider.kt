@@ -30,7 +30,7 @@ class DictionarySuggestionProvider(
     private val minAutocorrectFrequency: Long = 0
 ) : SuggestionProvider {
     
-    override fun suggestionsFor(input: String, previousWord: String?): List<Suggestion> {
+    override fun suggestionsFor(input: String, previousWord: String?, includeExpensiveFallbacks: Boolean): List<Suggestion> {
         val token = input.lowercase()
         // Keyed by canonical word so a word is never offered twice; insertion order is irrelevant since
         // the merged set is re-sorted by score before it is capped.
@@ -63,7 +63,12 @@ class DictionarySuggestionProvider(
         // single-word neighbour close enough for D-12 to find) and to keep it off the common keystroke path
         // entirely: it can run a handful of extra store lookups (D-138 is the standing reminder that
         // stacking several per-keystroke lookups is a real, previously-felt cost, not a theoretical one).
-        if (candidates.isEmpty()) {
+        // D-160: the empty-candidates gate alone proved insufficient - a long unknown compound satisfies it
+        // on *every* keystroke, so exactly the worst-case token ran this (and the wide fuzzy below,
+        // including this one's own inner highConfidenceCorrection pass) per keystroke, saturating the main
+        // thread (spec §102). Both fallbacks now additionally honour includeExpensiveFallbacks: the hot
+        // path passes false and re-runs with true in one deferred pass once the token has been stable.
+        if (includeExpensiveFallbacks && candidates.isEmpty()) {
             compoundCandidate(token, previousWord)?.let { word ->
                 candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
             }
@@ -73,8 +78,8 @@ class DictionarySuggestionProvider(
         // every other candidate source above, this one is deliberately never trusted enough for that) and
         // only once every cheaper, tighter search above found nothing at all, for the same reason as D-116:
         // this is a rare fallback, not a general loosening of D-28's own budget, which stays exactly as
-        // tight as before for the common case.
-        if (candidates.isEmpty()) {
+        // tight as before for the common case. Gated on includeExpensiveFallbacks like D-116 (D-160).
+        if (includeExpensiveFallbacks && candidates.isEmpty()) {
             for (word in wideFuzzyNeighbours(token)) {
                 if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                     continue // A-04

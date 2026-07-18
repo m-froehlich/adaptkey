@@ -18,10 +18,15 @@ interface SuggestionProvider {
      *
      * @param input the current composing token (never blank when called)
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @param includeExpensiveFallbacks D-160: whether the implementation may also run its expensive
+     *        last-resort searches (compound reconstruction, wide-budget fuzzy matching) when the cheap
+     *        ones find nothing. The per-keystroke hot path passes false and re-runs with true in one
+     *        deferred pass once the token has been stable for a moment; the default keeps the full
+     *        behaviour for every other caller. Implementations without such fallbacks ignore it.
      * @return candidates sorted by descending [Suggestion.score]; may include or omit [input]
      *         (the controller enforces S-02)
      */
-    fun suggestionsFor(input: String, previousWord: String?): List<Suggestion>
+    fun suggestionsFor(input: String, previousWord: String?, includeExpensiveFallbacks: Boolean = true): List<Suggestion>
     
     /**
      * @param word the word to check

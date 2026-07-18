@@ -424,4 +424,27 @@ class DictionarySuggestionProviderTest {
         store.putWord(WordEntry("kannst", 300L))
         assertTrue(provider.suggestionsFor("kamm", null).isEmpty())
     }
+    
+    @Test
+    fun `D-160 the hot path with expensive fallbacks off skips the D-116 compound reconstruction`() {
+        store.putWord(WordEntry("Beitrag", 500L, setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Jahren", 2_000L, setOf(PartOfSpeech.NOUN)))
+        
+        assertTrue(provider.suggestionsFor("beitragsjahreb", null, includeExpensiveFallbacks = false).isEmpty())
+    }
+    
+    @Test
+    fun `D-160 the hot path with expensive fallbacks off skips the D-117 wide fuzzy search`() {
+        store.putWord(WordEntry("erkannt", 300L))
+        
+        assertTrue(provider.suggestionsFor("erkamm", null, includeExpensiveFallbacks = false).isEmpty())
+    }
+    
+    @Test
+    fun `D-160 cheap prefix and fuzzy results are unaffected by the expensive-fallbacks flag`() {
+        store.putWord(WordEntry("erkannt", 300L))
+        
+        assertEquals(listOf("erkannt"), provider.suggestionsFor("erk", null, includeExpensiveFallbacks = false).map { it.word })
+        assertEquals(listOf("erkannt"), provider.suggestionsFor("erk", null, includeExpensiveFallbacks = true).map { it.word })
+    }
 }

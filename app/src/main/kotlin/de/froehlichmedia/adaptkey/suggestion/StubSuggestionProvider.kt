@@ -28,7 +28,7 @@ class StubSuggestionProvider : SuggestionProvider {
     
     private val knownWords: Set<String> = words.toHashSet()
     
-    override fun suggestionsFor(input: String, previousWord: String?): List<Suggestion> {
+    override fun suggestionsFor(input: String, previousWord: String?, includeExpensiveFallbacks: Boolean): List<Suggestion> {
         val prefix = input.lowercase()
         return words
             .filter { it.startsWith(prefix) }

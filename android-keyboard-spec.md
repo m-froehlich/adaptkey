@@ -5426,3 +5426,36 @@ Alternatives worth weighing: per-keystroke length caps on `trySplit`/preview wor
 within a token. An instrumentation-first round (timing the preview and `suggestionsFor` durations via the
 existing D-139 diagnostic channel) would confirm the millisecond attribution on-device before committing to
 a design - the hypothesis above is traced from callback-queue behaviour, not from direct timings.
+
+## §103 - D-160 Implemented: the Expensive Suggestion Fallbacks Are Debounced Off the Hot Path (v0.8.67)
+
+§102's captured lag fixed as discussed and explicitly approved (option 1, the debounce). The user's design
+question - whether the compound fuzzy search would have to be dropped entirely for being too expensive -
+answered no, and that is the point of this design: the cost disappears from the hot path (while typing
+fluently, where nobody reads the bar anyway - the same reasoning as D-138/D-153's `duringRepeat` gate), while
+the feature keeps its full value at every natural pause, where a single run costs only tens of milliseconds
+and is imperceptible off the typing path. Nothing is dropped, only deferred.
+
+**Mechanics**: `SuggestionProvider.suggestionsFor()` gained an `includeExpensiveFallbacks: Boolean = true`
+parameter - the default keeps full behaviour for every existing caller and test, so only the one hot path
+changes. `DictionarySuggestionProvider` honours `false` by skipping exactly the two `candidates.isEmpty()`
+blocks (D-116 compound split with its inner `highConfidenceCorrection` fuzzy pass, D-117 wide fuzzy);
+`StubSuggestionProvider` ignores the flag (it has no expensive work). In `AdaptKeyService.refreshSuggestions()`
+the per-keystroke call now passes `false`; when the cheap searches found nothing it schedules one deferred
+pass (`expensiveSuggestionRunnable`, `EXPENSIVE_SUGGESTION_DELAY_MS = 200` - a starting value, easy to
+retune) that re-runs the full pipeline with `true`. D-131's raw-coordinate suggestion, part of the same
+empty-candidates escalation, waits for the same deferred pass. Staleness is handled twice over: every fresh
+(non-deferred) refresh cancels a pending pass outright - placed before the function's early returns, so
+URL/login/foreign-context bailouts cancel too - and the runnable itself re-checks that `composing` still
+equals the token it was scheduled for (a commit, deletion, suggestion acceptance, or field change between
+cancel points thus degrades to a no-op).
+
+**Deliberately not touched this round**: the §47 split-colour preview (`TokenRepair.trySplit` per keystroke
+inside `updateComposing`, ~15-20 store lookups for an 18-char token) and the per-keystroke
+`autocorrectFor`/`knownInOtherLanguage` pending-chip work. Both are moderate, constant-shaped costs that
+D-153 already partially gates; the §102 log attributes the saturation dominantly to the empty-candidates
+escalation fixed here. Named as the next lever if any residual long-word lag remains on device.
+
+3 new tests (`DictionarySuggestionProviderTest`: flag-off skips D-116, flag-off skips D-117, cheap results
+identical under both flag values). 716 unit tests (was 713; +3). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green. Not yet device-confirmed - both this and §101's D-139 fix await the same testing round.

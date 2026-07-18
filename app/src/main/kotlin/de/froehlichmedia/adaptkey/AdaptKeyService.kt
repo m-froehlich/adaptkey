@@ -351,6 +351,18 @@ class AdaptKeyService : InputMethodService() {
         showSuggestions()
     }
     
+    // D-160: the composing token a deferred expensive-fallback suggestion pass was scheduled for - the
+    // pass only runs if the token is still exactly this when the delay elapses; any state change both
+    // cancels the callback and clears this. See refreshSuggestions().
+    private var expensiveSuggestionToken: String? = null
+    private val expensiveSuggestionRunnable = Runnable {
+        val expected = expensiveSuggestionToken
+        expensiveSuggestionToken = null
+        if (expected != null && expected == composing.toString()) {
+            refreshSuggestions(includeExpensiveFallbacks = true)
+        }
+    }
+    
     override fun onCreate() {
         super.onCreate()
         settings = SettingsStore.load(this)
@@ -2692,8 +2704,22 @@ class AdaptKeyService : InputMethodService() {
      *        dictionary round-trips that measurably compete with the repeat's own fastest tick interval -
      *        a plausible, traced (not guessed) explanation for backspace-hold feeling jerky after they were
      *        added. Every other call site keeps the full live preview (the default `false`).
+     * @param includeExpensiveFallbacks D-160: true only when called from [expensiveSuggestionRunnable]'s
+     *        deferred pass - runs the expensive empty-candidates fallbacks (D-116 compound split, D-117
+     *        wide fuzzy, D-131 raw-coordinate) that the per-keystroke hot path skips and schedules
+     *        instead, once the token has been stable for [EXPENSIVE_SUGGESTION_DELAY_MS]. Traced from a
+     *        real device log (spec §102): for a long unknown compound the empty-candidates gate is true on
+     *        every keystroke, so exactly the worst-case token ran the whole chain per keystroke,
+     *        saturating the main thread badly enough to starve callback delivery for seconds.
      */
-    private fun refreshSuggestions(duringRepeat: Boolean = false) {
+    private fun refreshSuggestions(duringRepeat: Boolean = false, includeExpensiveFallbacks: Boolean = false) {
+        // D-160: any fresh (non-deferred) refresh reflects a state change that supersedes a scheduled
+        // deferred fallback pass - cancel it here, before every early return below; it is rescheduled
+        // further down if still warranted for the new state.
+        if (!includeExpensiveFallbacks) {
+            handler.removeCallbacks(expensiveSuggestionRunnable)
+            expensiveSuggestionToken = null
+        }
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
         // useful while entering one, so the bar simply stays empty.
         if (urlMode) {
@@ -2724,7 +2750,14 @@ class AdaptKeyService : InputMethodService() {
         // function's own duringRepeat gate - a plausible, traced explanation for backspace-hold feeling
         // jerky again. The bar it populates is changing every 45-330ms mid-repeat regardless (unreadable),
         // exactly the same reasoning already applied to every other addition below.
-        val candidates = if (duringRepeat) emptyList() else provider.suggestionsFor(input, previousWord)
+        val candidates = if (duringRepeat) emptyList() else provider.suggestionsFor(input, previousWord, includeExpensiveFallbacks)
+        // D-160: when the cheap searches found nothing, schedule the one deferred pass that may also run
+        // the expensive fallbacks - it fires only if the token is still unchanged when the delay elapses,
+        // so during fluent typing it never runs at all and at any natural pause it still delivers.
+        if (!duringRepeat && !includeExpensiveFallbacks && candidates.isEmpty()) {
+            expensiveSuggestionToken = input
+            handler.postDelayed(expensiveSuggestionRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
+        }
         // D-122 / D-131: both kept out of `candidates` itself so neither ever enters the tier-1/tier-3
         // merge's own score normalisation (SuggestionMerger normalises every tier-1 score against the
         // list's own maximum, so one inflated synthetic entry would compress every real candidate's
@@ -2736,7 +2769,8 @@ class AdaptKeyService : InputMethodService() {
         // already does at commit time (same A-01/§44 checks inside it), just consulted here too. Gated on
         // emptiness and !duringRepeat like D-116/D-117: it needs composingTaps/keyboard-geometry lookups,
         // and D-138 already flagged stacking extra per-keystroke lookups as a real, previously-felt cost.
-        val rawCoordinateSuggestion = if (duringRepeat || candidates.isNotEmpty()) {
+        // D-160: part of the same empty-candidates escalation, so it now also waits for the deferred pass.
+        val rawCoordinateSuggestion = if (duringRepeat || !includeExpensiveFallbacks || candidates.isNotEmpty()) {
             null
         } else {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
@@ -3481,6 +3515,12 @@ class AdaptKeyService : InputMethodService() {
         // it (typically single-digit milliseconds for a plain text field), short enough to keep the window
         // a malicious clipboard-reading app could grab it in small.
         private const val CLIPBOARD_CLEAR_DELAY_MS = 300L
+        
+        // D-160: how long the composing token must stay unchanged before the expensive suggestion
+        // fallbacks (D-116/D-117/D-131) run in their one deferred pass - longer than the gap between
+        // keystrokes of fluent typing (so they never run mid-word-flurry), short enough that the bar
+        // still fills at any natural pause. A starting value, easy to retune (§36/§37 precedent).
+        private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
         
         // §60: how much of a clipboard *file*'s content to read for the chip's own already-truncated
         // preview - generous relative to ClipboardPreview.MAX_LENGTH (24), but still a small, bounded read
