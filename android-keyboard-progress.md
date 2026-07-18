@@ -35,7 +35,40 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§104 DONE (v0.8.68): D-161 - self-healing recheck for a suspected WindowInsets timing race, per the
+- **§105 DONE (v0.8.69): D-161 retuned (1000->500ms); large device-feedback batch - D-162/D-163/D-164
+  fixed, D-173 answered as a design question, D-165-D-172 captured for their own rounds.** Every item
+  traced against real code first, per this project's own convention. **D-162**: `SuggestionBarView`'s
+  D-144 swipe-down-on-background fallback was unconditionally consuming every off-chip
+  `ACTION_DOWN`/`ACTION_MOVE` regardless of direction, starving `HorizontalScrollView`'s own native scroll
+  - fixed by always feeding `super.onTouchEvent()` first, only additionally claiming a confirmed downward
+  swipe. **D-163**: `armShiftForNextWord()` had no `loginFieldKind`/`emailMode` check at all - email
+  fields no longer auto-arm Shift (Caps Lock remains the user's own choice). **D-164**: "sue" too often won
+  over a typed "die" - traced to the exact D-157 mechanism (a real English word shielded by
+  `knownInOtherLanguage()`'s cross-language protection, with nothing in the German dictionary to correct it
+  back); fixed by adding "sue" to `CROSS_LANGUAGE_CONFUSABLES` alongside "due", **not** by removing it from
+  `dict_en.tsv` (an earlier in-round attempt to do that was corrected by the user and reverted before
+  committing - "sue" remains a fully valid, protected English word everywhere else). **Incidental finding**:
+  `DictionaryLoader` only seeds a store when empty, and `DATABASE_VERSION` has never been bumped despite
+  several prior `.tsv` data edits (D-114, §68) - a future data-only dictionary fix needs a version bump (with
+  its own real trade-off: wiping existing installs' learned words/blacklists) to reach an already-installed
+  device at all. **D-173** (design question, answered not implemented): whether a lone/near-lone recognised
+  word should take suggestion slot 1 - leaning against it, favours predictability (S-05's highlight already
+  confirms recognition for free) over the marginal benefit of a less-empty bar. **Captured for later**:
+  D-165 (mid-word split can destroy deliberately-typed capitalisation - `applySplit()` re-derives casing
+  from generic rules, discarding what was typed), D-166 (why the same split only *previews*, never
+  auto-applies - traced but genuinely inconclusive without a device repro), D-167 (the user's own proposed
+  generalisation - an embedded mid-word capital should raise split confidence and be preserved - a real
+  algorithm change needing its own design round), D-168 (popup alternatives never respect Shift/Caps Lock -
+  root cause found in `drawPopupCell()`, needs careful scoping against symbol/TEXT-key popups before
+  fixing), D-169 (email fields should also open the settings row + flash the credential button, timing
+  needs its own design pass per the user's own flag), D-170 (a real caret-jump bug in email-mode fields -
+  deliberately not guessed at, same class of bug §99-§101 needed real logs for), D-171 ("Ddr"/"Der" - the
+  dictionary-side override is confirmed already correctly wired per D-113; likely the T-02/T-03 raw-touch
+  path instead, needs a device log), D-172 ("aks"->"als" - every gate traced clears on paper; genuinely
+  unresolved without a repro). 716 unit tests (unchanged - all three fixes are Android-glue/private-service
+  changes, matching this project's established untested-layer precedent). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. None of D-162/D-163/D-164 device-confirmed yet.
+- **§104 (v0.8.68): D-161 - self-healing recheck for a suspected WindowInsets timing race, per the
   user's own proposed mitigation.** Reported: sporadically, the keyboard appears stuck under the gesture
   nav bar on entering an app, jumping into place only on first touch - too rare to observe directly; the
   supplied device log had no window/insets evidence either way (the diagnostic channels only cover

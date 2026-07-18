@@ -5528,3 +5528,156 @@ glue over already-tested `androidx.core.view` APIs, this project's established g
 `:app:assembleDebug`/`:app:testDebugUnitTest` green (716 unit tests, unchanged). Not yet device-confirmed -
 D-161 stays open either way: either the recheck never logs a correction (occurrence too rare to have
 happened yet, or the hypothesis is wrong) or it does (confirming both the mechanism and the mitigation).
+
+## §105 - D-161 Retuned; Large Device-Feedback Batch: Three Fixed, One Design Question Answered, Rest Captured (v0.8.69)
+
+**D-161 retuned**: `WINDOW_INSETS_RECHECK_DELAY_MS` 1000->500ms per direct request - the user's own first
+keystroke usually lands well before a full second elapses, which would make the correction land too late to
+matter in practice.
+
+A large batch of new device feedback followed, all traced against the real code before deciding what to do
+with each - per this project's own established large-batch convention, implemented only what was
+unambiguous and well-diagnosed, answered the one genuine design question directly, and captured the rest
+rather than guessing at fixes for bugs that need a real repro or a design round first.
+
+### D-162 - fixed: the suggestion bar could not be scrolled to reach overflowing suggestions
+`SuggestionBarView` is a `HorizontalScrollView`, but its D-144 swipe-down-on-background fallback branch in
+`onTouchEvent()` unconditionally returned `true` for every `ACTION_DOWN`/`ACTION_MOVE` that started off a
+chip (empty background or a gap between chips) - regardless of direction. `super.onTouchEvent()` (native
+horizontal scrolling) never got a chance to run at all for exactly that case. Fixed by always feeding
+`super.onTouchEvent(ev)` the event first (so native scroll tracks and responds normally), only additionally
+claiming it when the movement genuinely classifies as a downward swipe; everything else falls through to
+whatever the scroll view itself decided. D-144's own swipe-down-to-dismiss is unaffected - still claimed
+the moment it is confirmed.
+
+### D-163 - fixed: no auto-capitalisation inside a recognised email field
+`armShiftForNextWord()` (called on every field entry and after every commit) armed Shift per the ordinary
+S6/C-07 field mandate unconditionally, with no `loginFieldKind`/`emailMode` check at all - an email address
+is conventionally lower-case throughout, so this fought the user at field entry and after every `.`/`-`/`_`
+segment. Fixed with a guard: while `loginFieldKind == EMAIL`, Shift is never auto-armed; a manually engaged
+Caps Lock (D-15, the user's own explicit choice) is untouched.
+
+### D-164 - fixed: "sue" too often replaced a typed "die" and never got corrected back
+Reported precisely: typing "die" (lower-case) frequently lands as "Sue" (capitalised) instead, far too
+often to be coincidence. Traced to the exact D-157 mechanism, not a new one: "sue" is not in the German
+dictionary at all, so A-01 never protected it on the German side - the only thing standing between it and
+correction was `knownInOtherLanguage()`'s cross-language loanword shield, which (correctly, for a genuine
+loanword) refuses to autocorrect away any token that is a known word in any bundled dictionary, English
+included. Once produced (most plausibly via T-02/T-03 raw-coordinate resolution reading the tap sequence as
+s-u-e rather than d-i-e - s/d and u/i are each single QWERTZ-adjacent-key pairs), "sue" was then shielded
+from ever being corrected back, exactly like D-157's original "due" case. Fixed the same way D-157 was
+fixed - not by removing "sue" from dict_en.tsv (it remains a real, valid English word, "to sue" someone,
+and should stay fully usable and protected as a genuine English word everywhere else) - by adding it to the
+existing CROSS_LANGUAGE_CONFUSABLES exception list alongside "due". Ordinary edit-cost ranking then already
+prefers "sie" (cost 1: only u/i differ, adjacent keys) over "die" (cost 2: two substitutions) with no extra
+logic needed - matching exactly what the user asked for ("zuallererst auf 'sie' fallen"). An earlier
+attempt this round to instead delete "sue" from dict_en.tsv was corrected by the user mid-round and
+reverted before being committed - kept here as a matter of record, not because it shipped.
+
+**Incidental finding, not acted on this round**: `DictionaryLoader.loadStores()` only seeds a language's
+SQLite store from its bundled .tsv asset if the store is currently empty - an already-populated store from
+a prior install is never re-seeded, and `SqliteDictionaryStore.DATABASE_VERSION` has stayed at 1 throughout
+the project's history despite several prior direct dict_de.tsv/dict_en.tsv data edits (D-114's "vorhin",
+Section 68's POS re-tags). Any data-only dictionary edit - like the reverted "sue"-removal attempt above
+would have been - only reaches a fresh install or one where app data was cleared; an existing install's own
+DB silently keeps the old data forever otherwise. D-164 itself is unaffected (it is compiled code in
+AdaptKeyService.kt, not seeded data), but this is worth knowing before relying on a future .tsv-only fix
+actually reaching an already-installed device without a version bump (which would also wipe that
+installation's own learned words/frequencies and user-blacklist entries - a real trade-off, not a free
+fix, and not something to do silently without discussion).
+
+### D-173 - design question, answered directly: should a lone/near-lone recognised word take suggestion slot 1?
+Asked directly: since S-02 already excludes the recognised, correctly-typed word from ever occupying a
+suggestion slot (a deliberate "don't waste a slot on an echo of what's already typed" rule), should that be
+relaxed when it is the only candidate left, or one of at most three? Assessment: leaning against it, even
+the narrower "only when it is the sole remaining candidate" form. The bar's job is to offer alternatives;
+S-05's live green highlight already confirms "this is a recognised, valid word" for free, without spending
+any bar real estate - showing the same word again as a chip would partly duplicate that signal while also
+reading as an actual suggestion (something to consider changing to), which it is not. The bigger cost is
+predictability: "the bar never shows what I already typed" is a clean, always-true rule the user can rely
+on; making it conditional on how many other candidates happen to exist trades that clean invariant for a
+behaviour that is not obviously wrong, but also not obviously right, and is genuinely hard to predict from
+the outside - exactly the "inconsistency trains the wrong expectation" concern the user's own question
+raised. Not implemented; revisit if it turns out the empty bar itself reads as "broken" in practice rather
+than merely quiet.
+
+### Captured, not implemented this round - each needs a design round or a real device repro before fixing
+
+- **D-165 - mid-word split can destroy deliberately-typed capitalisation.** Reported: "DiecVorschlaege",
+  once split, becomes "die Vorschlaege" - losing the user's own explicit capital D. Traced: `applySplit()`
+  recomputes both halves' casing purely from `capitalisation.capitalise(split.left/right,
+  contextFor(...))` (generic sentence-position/POS rules) - `TokenRepair.trySplit()` itself lower-cases the
+  whole token internally before searching, so the user's own typed casing is discarded entirely before a
+  split candidate is even found, and never consulted again when re-applying case. Not yet fixed - see D-167.
+- **D-166 - why does "DiecVorschlaege" only preview as splittable but never actually auto-split?** The live
+  Section-47 preview (`splitPreview()`) and the actual commit-time split (`finalizeAndCommit()`) both call
+  the identical `TokenRepair.trySplit()` - the only structural difference is that commit-time additionally
+  vetoes the split whenever a `diacriticWord` or `highConfidenceWord` match exists (D-48/D-67). Statically
+  tracing `diacriticRestoration()`/`highConfidenceCorrection()` against a 14-character nonsense compound
+  like this suggests neither should plausibly match (both only search a bounded, first-character-bucketed
+  candidate set for something close to the whole token) - but this was not verified against the actual
+  repro on a device, and no other blocking gate was found in the static trace either. Genuinely unresolved -
+  needs either a repro captured with the AdaptKeyJitter-style diagnostic (which does not currently cover
+  this pipeline at all) or the user's own exact keystroke sequence to pin down precisely. Not guessed at
+  further.
+- **D-167 - proposed generalisation, needs a design round: an embedded mid-word capital should raise split
+  confidence and be preserved, not be ignored.** Ties D-165/D-166 together - the user's own insight.
+  Currently a capital letter appearing mid-token plays no role at all in `trySplit()`'s own search (it is
+  lower-cased away first) or in confidence/ranking; the proposal is to use it as a genuine, generalisable
+  signal both ways: raise confidence that a split point belongs exactly there, and preserve the user's own
+  casing across the split instead of re-deriving it from generic rules. A real algorithm change to a
+  currently pure, already-tested function (`TokenRepair.trySplit`/`WordExtent`) with real trade-offs (how
+  much confidence boost, interaction with the existing Section-45 bigram-co-occurrence gate, whether it
+  should also extend to D-116's compound split) - per this project's own convention for non-trivial design
+  changes, deliberately left for its own discussion round rather than implemented from this capture alone.
+- **D-168 - in Caps Lock / Shift, the umlaut alternatives in a key's long-press popup stay lower-case.**
+  Root cause found: `AdaptKeyboardView.drawPopupCell()` draws each `popupAlternatives` entry's raw text
+  completely unchanged - unlike the main key label (`labelFor()`, which does respect `shifted`/`capsLock`),
+  no case transform is applied to the popup row at all, for any key. Not yet fixed: needs careful scoping
+  before touching it, since `Key.alternatives`/`hint` also carries non-letter content that must never be
+  case-transformed (symbol popups like the calculator's greek letters, Section-53's multi-character `TEXT`
+  keys like `https://`) - the same "is this actually a word-forming letter in this context" distinction
+  `AlternativeScript.extendsWord()` (Section 35) already makes for a related but different purpose. Scoping
+  this correctly is the reason it was captured rather than patched in the same pass as D-162-D-164.
+- **D-169 - entering a recognised email field should also open the settings row and flash the credential
+  button, timed appropriately late.** Root cause of the current gap found: `weakSignalKind` (which drives
+  the row auto-open + flash nudge in `onStartInputView`) is only ever computed when `loginFieldKind ==
+  LoginFieldKind.NONE` - a reliably-detected EMAIL field (an InputType match, not a nudge) never sets it, so
+  the row never opens for it today, even though `credentialModeActive` is still set correctly. The user's
+  own request explicitly flags the timing needs care ("muss natuerlich entsprechend spaet stattfinden, auf
+  diesem Pfad") - i.e. this is a genuine UX/sequencing design decision (when exactly relative to the row's
+  own open animation, and whether an already-manually-toggled field should still re-flash), not a one-line
+  fix - captured for its own discussion round rather than guessed at.
+- **D-170 - email field: moving the caret after "foo." in "foo.bar", Backspace, then typing "@" jumps the
+  caret to the end and inserts "@" after "bar" instead of where the caret was.** Not traced this round -
+  explicitly the same class of caret/composing-state bug this exact session spent three rounds (Sections
+  99-101) tracing from real device logs rather than guessing at, and email-mode fields run through their own
+  largely separate `commitVerbatimFieldFragment()` path (D-142/D-158) where every `.`/`@`/`-`/`_` is its own
+  delimiter under the ordinary token model - genuinely unfamiliar territory for the D-139 fix's own
+  reasoning to be assumed to cover. Needs a device log of the exact repro before touching anything here.
+- **D-171 - "Ddr" too often committed instead of "Der"; the user's own suspicion is the raw-touch model,
+  not the dictionary.** Checked directly against the bundled data: DDR is a real dictionary entry (frequency
+  4405, NOUN) - exactly the D-113 scenario (a known word overridden by Section-44's 50x-frequency-ratio rule
+  at cost 1, "der" at ~1,004,234 is ~228x more frequent) - and D-113's own history explicitly names this
+  pair as confirmed working after that fix. On paper, the dictionary-side path should already correct this.
+  The user's own suspicion is more likely right: this probably lives in the T-02/T-03 raw-coordinate
+  correction path instead (a systematic touch-zone drift for keys near d/e, or the raw correction fallback
+  overriding what the dictionary path would otherwise have fixed) - not traced this round; needs a device
+  log of the actual repro, per the user's own explicit request to examine the raw touch recording carefully
+  before considering a blacklist as a last resort.
+- **D-172 - why doesn't "aks" autocorrect to "als"?** Checked directly against the bundled data and every
+  gate in `bestCorrection()`: "aks" is in neither dictionary (confirmed) so A-01 does not apply at all;
+  length (3) clears MIN_AUTOCORRECT_LENGTH (2); k/l are confirmed keyboard-adjacent (KeyboardProximity's own
+  row map), so the edit cost to "als" is exactly 1 - well inside MAX_CORRECTION_COST (2); "als"'s frequency
+  (191,841) is far above minAutocorrectFrequency (300); "als" is not blacklisted. Every gate traced says
+  this should already autocorrect. No blocking mechanism was found in the static trace - genuinely
+  unresolved without either a repro captured via the diagnostic channel or the user's own exact context
+  (e.g. whether tier 3 is installed and active, or whether the full token typed was actually longer than
+  "aks" alone before the delimiter landed). Not guessed at further.
+
+3 fixes, all Android-glue/private-service-method changes with no new pure logic - no new tests, matching
+this project's established gap for this layer (`SuggestionBarView`'s touch handling, `armShiftForNextWord`'s
+private field guard, and `knownInOtherLanguage`'s private exception set are all already-established
+untested categories; `CROSS_LANGUAGE_CONFUSABLES` itself had no test for "due" either). 716 unit tests
+(unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of D-162/D-163/D-164 have been
+device-confirmed yet.

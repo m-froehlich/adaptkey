@@ -261,14 +261,25 @@ class SuggestionBarView @JvmOverloads constructor(
         // whichever events onTouchEvent() itself receives, only ever reached when nothing else claimed the
         // gesture (a touch landing on a chip is claimed by the chip itself long before dispatch would reach
         // here).
+        // D-162: this fallback previously consumed every ACTION_DOWN/ACTION_MOVE unconditionally, which
+        // was necessary for the D-144 swipe-down-on-background case but also silently swallowed an
+        // ordinary horizontal scroll drag starting off a chip - HorizontalScrollView's own onTouchEvent()
+        // never got a chance to run at all. super.onTouchEvent() is now always fed every event first (so
+        // native scrolling tracks and responds normally); only a confirmed downward swipe is additionally
+        // claimed here, everything else falls through to whatever the scroll view itself decided.
         when (ev.actionMasked) {
-            MotionEvent.ACTION_DOWN -> return true
+            MotionEvent.ACTION_DOWN -> {
+                super.onTouchEvent(ev)
+                return true
+            }
             
             MotionEvent.ACTION_MOVE -> {
+                val scrolled = super.onTouchEvent(ev)
                 if (SwipeGesture.classify(ev.x - dragDownX, ev.y - dragDownY, interceptThresholdPx) == SwipeDirection.DOWN) {
                     swipeDownIntercepting = true
+                    return true
                 }
-                return true
+                return scrolled
             }
             
             MotionEvent.ACTION_CANCEL -> return true

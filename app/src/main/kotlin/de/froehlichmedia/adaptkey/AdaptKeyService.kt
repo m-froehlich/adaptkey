@@ -3286,6 +3286,13 @@ class AdaptKeyService : InputMethodService() {
      * reviewed, confirmed-confusable words in the list; most genuine cross-language homographs (real
      * loanwords) are deliberately left with their existing protection intact.
      *
+     * D-164: "sue" (English, frequency 189) added the same way - "sue" is not itself in the German
+     * dictionary at all, so A-01 never protected it on the German side; this cross-language shield was
+     * the *only* thing keeping it from ever being corrected. Once waived, ordinary edit-cost ranking
+     * already prefers "sie" (cost 1: u/i are adjacent keys) over "die" (cost 2: two substitutions) with no
+     * extra logic needed - "sue" keeps its normal standing as a real, valid English word (deliberately
+     * *not* removed from dict_en.tsv) everywhere except this one shield.
+     *
      * @param token the composing token (any case)
      * @return true when any non-active language's dictionary already knows this exact word
      */
@@ -3330,6 +3337,18 @@ class AdaptKeyService : InputMethodService() {
      * override. Called after every commit and when the input view (re)starts.
      */
     private fun armShiftForNextWord(ic: InputConnection) {
+        // D-163: an email address is conventionally lower-case throughout - auto-capitalising the first
+        // word (field entry) or the word after every `.`/`-`/`_` segment (every commit) would fight the
+        // user constantly. This runs after every commit as well as on field entry, so the one guard here
+        // covers the whole field's lifetime, not only its very first word. A manually engaged Caps Lock
+        // (D-15) is the user's own explicit choice and is untouched - only the automatic arm is suppressed.
+        if (loginFieldKind == LoginFieldKind.EMAIL) {
+            keyboardView?.shifted = false
+            shiftGuardedArm = false
+            shiftArmTime = SystemClock.uptimeMillis()
+            fieldMandateOverridden = false
+            return
+        }
         val sentenceStart = sentenceStartBefore(ic)
         keyboardView?.shifted = ShiftGrace.autoArmAtWordStart(capsMode, sentenceStart)
         shiftGuardedArm = ShiftGrace.isGuardedArm(capsMode, sentenceStart)
@@ -3570,9 +3589,10 @@ class AdaptKeyService : InputMethodService() {
         
         // D-161: how long after the keyboard is shown windowInsetsRecheckRunnable re-verifies the real
         // padding - long enough that a normally-delivered onApplyWindowInsets callback has certainly
-        // already run, short enough that a real correction (the rare case) is barely noticeable. The
-        // user's own proposed value.
-        private const val WINDOW_INSETS_RECHECK_DELAY_MS = 1000L
+        // already run, short enough that a real correction (the rare case) is barely noticeable. Retuned
+        // 1000->500ms per direct request - the user's own first keystroke usually lands before a full
+        // second elapses, which would make the correction moot by the time it ran.
+        private const val WINDOW_INSETS_RECHECK_DELAY_MS = 500L
         
         // §60: how much of a clipboard *file*'s content to read for the chip's own already-truncated
         // preview - generous relative to ClipboardPreview.MAX_LENGTH (24), but still a small, bounded read
@@ -3586,9 +3606,9 @@ class AdaptKeyService : InputMethodService() {
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
         
-        // D-157: see knownInOtherLanguage()'s own KDoc - a short, explicit, reviewed exception list, not a
-        // general heuristic.
-        private val CROSS_LANGUAGE_CONFUSABLES = setOf("due")
+        // D-157 / D-164: see knownInOtherLanguage()'s own KDoc - a short, explicit, reviewed exception
+        // list, not a general heuristic.
+        private val CROSS_LANGUAGE_CONFUSABLES = setOf("due", "sue")
         
         // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
         // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing
