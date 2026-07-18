@@ -28,7 +28,28 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
-- **§100 DONE (v0.8.65): D-139 actually fixed - `composingAnchor` now resolved locally for every composing
+- **§101 DONE (v0.8.66): D-139 second half - truth verification replaces positional equality in
+  `onUpdateSelection`.** §100 device-tested negative (still reproduced); per the project's own rule the
+  diagnosis was re-questioned from two fresh device logs, not patched. Both logs confirm §100's local
+  anchor tracking works exactly as built - but the equality check consuming it was still timing-naive:
+  **log 1** shows a commit's lagging callback echoes arriving after the next token already composes
+  (reported positions describe superseded states); **log 2** shows a genuine D-62 mid-word tap whose
+  reclaim batch the Gemini search field does *not* coalesce, echoing the `deleteSurroundingText` step's
+  transient caret as its own update - which lies *outside* the interval [old, expected], so the AOSP-style
+  "belated update" heuristic proposed after log 1 alone would NOT have covered it (waiting for log 2 before
+  designing prevented a second insufficient fix). Fix: a mismatching callback is now verified against
+  ground truth before reacting - synchronous `InputConnection` reads are answered only after all
+  previously-sent mutations applied, so `getExtractedText()` sees reality regardless of queue lag; reality
+  at the expected caret = stale echo of our own edit (ignore), reality elsewhere = genuinely external
+  (reset exactly as before). New pure `SelectionTruth.isAtExpectedCaret()` shared by both stages (reported
+  positions first, read-free common case; ground truth only on mismatch). Trade-offs accepted: one extra
+  IPC read only for mismatching callbacks; null-`getExtractedText` editors fall into §100's conservative
+  do-nothing branch. `CallbackBurstGuard` and `AdaptKeyJitter` diagnostics stay until device-confirmed;
+  EXTERNAL wipes now log expected+actual so a further negative round is attributable. 7 new tests
+  (`SelectionTruthTest`, both observed mismatch shapes as named cases). 713 unit tests (was 706; +7).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed - D-139 stays open until
+  the user's repro attempts hold up on device.**
+- **§100 (v0.8.65): D-139 first half - `composingAnchor` now resolved locally for every composing
   token, not only the D-62 mid-word case.** User pushback on §99's diagnosis was correctly on-target: they
   suspected the mid-word-correction machinery, and the logs confirm it as the **amplifier** (§58's
   `reclaimWordAtCaret()` turns one transient misdetection into an unbounded loop) but not the **trigger**

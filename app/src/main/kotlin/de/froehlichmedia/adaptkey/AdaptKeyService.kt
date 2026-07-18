@@ -782,35 +782,57 @@ class AdaptKeyService : InputMethodService() {
         // Our own edits leave the caret collapsed at the end of the composing region - or, D-62, at the
         // logical mid-word edit point we deliberately placed it at via setSelection() when a reclaimed
         // "after" fragment still follows; anything else is a user-initiated caret move or selection.
-        // D-159 (jitter fix): composingAnchor is now always resolved locally by reclaimSurroundingWord()
-        // whenever composing text exists, not only for a genuine mid-word reclaim - candidatesEnd (the
-        // target editor's own, remotely-reported composing span) is deliberately no longer consulted here
-        // at all. It is not guaranteed to arrive in sync with the corresponding selection update, and
-        // trusting it as a gating condition caused a real, reproducible self-triggering onUpdateSelection
-        // cascade: an ordinary, legitimate edit could be misjudged as foreign whenever this specific
-        // callback happened to report a stale/lagging candidatesEnd, wiping the just-typed composing token
-        // - which then re-triggered reclaimWordAtCaret()'s own setComposingText() call, subject to the
-        // identical race, forming an unbounded loop (traced end-to-end from real device logs, see spec).
-        // When composingAnchor is unknown (-1, e.g. an ExtractedText read failed), there is nothing
-        // reliable to compare against - stay conservative and do not react at all, since wrongly wiping a
-        // live composing token is the destructive branch.
+        // §100 (D-139): composingAnchor is resolved locally by reclaimSurroundingWord() whenever composing
+        // text exists, not only for a genuine mid-word reclaim - candidatesEnd (the target editor's own,
+        // remotely-reported composing span) is deliberately not consulted here at all, since it is not
+        // guaranteed to arrive in sync with the selection-update stream. When composingAnchor is unknown
+        // (-1, e.g. an ExtractedText read failed), there is nothing reliable to compare against - stay
+        // conservative and do not react at all, since wrongly wiping a live composing token is the
+        // destructive branch.
         if (composingAnchor < 0) {
             return
         }
-        val ownCursor = composingAnchor + composingCursor
-        val ownEdit = newSelStart == newSelEnd && newSelStart == ownCursor
-        if (!ownEdit) {
-            // D-139 (temporary diagnostic): this branch wipes the in-progress token - exactly what a
-            // reported scramble/jitter would look like if it fires when it should not.
-            diag("AdaptKeyJitter", "onUpdateSelection: NOT ownEdit (ownCursor=$ownCursor) - finishing+clearing composing=\"$composing\"")
-            currentInputConnection?.finishComposingText()
-            clearComposing()
-            pendingMergeChar = null
-            resetWordEndShift()
-            clearUndo()
-            previousWord = null
-            clearSuggestions()
+        val expected = composingAnchor + composingCursor
+        if (SelectionTruth.isAtExpectedCaret(expected, newSelStart, newSelEnd)) {
+            return
         }
+        // §101 (D-139): a mismatching callback alone proves nothing - callbacks lag behind the IME's own
+        // local state during fast typing (a commit's echoes can arrive after the next token has already
+        // started composing) and some editors report a batch edit's transient intermediate states as their
+        // own updates (observed live: the reclaim's deleteSurroundingText() step echoed separately by the
+        // Gemini search field). Treating any such stale echo of our own edit as an external caret move
+        // wiped the live token and re-triggered reclaimWordAtCaret()'s identical-race rebuild, forming the
+        // reported multi-second jitter loop (traced end-to-end from four real device logs, see spec
+        // §99-§101). Synchronous InputConnection reads, unlike callbacks, are answered only after every
+        // previously-sent mutation has been applied - so read the editor's true current selection now and
+        // let reality decide: truth at the expected caret means this callback was a stale echo of our own
+        // edit (ignore it, newer state is already correct); truth elsewhere means a genuinely external
+        // change that must reset the composing state exactly as before. The extra IPC read only ever
+        // happens for mismatching callbacks - the in-sync common case above stays read-free.
+        val ic = currentInputConnection ?: return
+        val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
+        if (extracted == null) {
+            // No ground truth available (rare editor quirk) - same conservative do-nothing as the unknown-
+            // anchor case above, for the same reason.
+            diag("AdaptKeyJitter", "onUpdateSelection: mismatch (expected=$expected) but ground truth unavailable - ignored conservatively")
+            return
+        }
+        val actualStart = ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, 0)
+        val actualEnd = ComposingAnchor.resolve(extracted.startOffset, extracted.selectionEnd, 0)
+        if (SelectionTruth.isAtExpectedCaret(expected, actualStart, actualEnd)) {
+            diag("AdaptKeyJitter", "onUpdateSelection: STALE ECHO of own edit (expected=$expected, reported=[$newSelStart,$newSelEnd]) - ignored")
+            return
+        }
+        // D-139 (temporary diagnostic): this branch wipes the in-progress token - exactly what a
+        // reported scramble/jitter would look like if it fires when it should not.
+        diag("AdaptKeyJitter", "onUpdateSelection: EXTERNAL (expected=$expected, actual=[$actualStart,$actualEnd]) - finishing+clearing composing=\"$composing\"")
+        ic.finishComposingText()
+        clearComposing()
+        pendingMergeChar = null
+        resetWordEndShift()
+        clearUndo()
+        previousWord = null
+        clearSuggestions()
     }
     
     /**

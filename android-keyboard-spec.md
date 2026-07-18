@@ -5305,3 +5305,59 @@ than an untested corner). 706 unit tests (was 705; +1). `:app:assembleDebug`/`:a
 before (§76, §95/D-149), so D-139 stays open until the user reproduces the original repro steps again on a
 real device and it holds up; this round is a traced, code-verified root-cause fix, not a guess, but device
 confirmation is still the bar per this project's own convention.
+
+## §101 - D-139, Second Half: Truth Verification Replaces Positional Equality in `onUpdateSelection` (v0.8.66)
+
+§100 device-tested negative: the jitter still reproduced. Two fresh device logs supplied and traced from
+scratch per this project's own rule - the diagnosis re-questioned, not the same approach patched. Both logs
+confirm §100's mechanism itself works as built (`composingAnchor` resolves correctly for every token:
+`anchor=0/4/9/…` throughout, where the pre-§100 logs showed `-1` everywhere), but expose that the *check
+consuming it* was still timing-naive in a way §100's diagnosis had not covered. Two distinct trigger shapes,
+one shared root:
+
+- **Log 1 (ordinary fast typing, Gemini search field)**: after committing `habe ` the user types `g` before
+  the commit's callbacks arrive; composing is locally `"g"` with `anchor=9`, expected caret 10. The commit's
+  *lagging echoes* (`old=[8,8] new=[8,8]`, then `new=[9,9]` - descriptions of already-superseded intermediate
+  states) then fail the `newSelStart == expected` equality and are misjudged as external caret moves.
+- **Log 2 (genuine D-62 mid-word tap, same field)**: tapping into `angebucht` after the `a` reclaims
+  correctly (`anchor=126`, `cursor=1`, expected 127), but the reclaim's batch
+  (`deleteSurroundingText` -> `setComposingText` -> `setSelection`) is **not coalesced by this editor** -
+  the delete step's transient state (caret 126) is echoed as its own update, `old=[127] new=[126]`, which
+  fails the equality check too. Notably this echo lies *outside* the interval [old, expected] = [127,127] -
+  so the initially-proposed AOSP-style "belated update" interval heuristic, considered after log 1 alone,
+  would **not** have covered it. The user's instinct to wait for the second log before committing to a
+  design prevented shipping a second insufficient fix.
+
+Either misjudgement wipes the live token; §58's `reclaimWordAtCaret()` then rebuilds it through the same
+race, forming the same self-perpetuating loop as before (~6 Hz for 5+ seconds in log 2, ended only by the
+focus change). The shared root: **any classification computed from callback positions alone is guessing
+about queue-lag and per-editor batch-coalescing behaviour** - callback streams are asynchronous descriptions
+of the past, in whatever granularity the editor chooses.
+
+**The fix - let reality decide instead of classifying echoes**: synchronous `InputConnection` reads, unlike
+callbacks, are answered by the editor only after every previously-sent mutation has been applied, so a read
+always sees the true current state regardless of how far the callback queue lags. `onUpdateSelection` now
+verifies a mismatching callback against ground truth before reacting: read the actual selection via
+`getExtractedText()` (absolute via the existing `ComposingAnchor.resolve()`, offset math shared, not
+duplicated); if reality sits collapsed exactly at the expected caret, the callback was a stale echo of the
+IME's own edit - ignore it, the newer local state is already correct; if reality is elsewhere, it is a
+genuinely external change (user tap, app-side edit) and the composing state resets exactly as before. The
+shared predicate is the new pure `SelectionTruth.isAtExpectedCaret()` (applied first to the callback's own
+reported positions - the read-free, overwhelmingly common in-sync case - then to the ground truth). Both
+log-1 and log-2 trigger shapes, and every future editor-specific echo shape, collapse into the same
+question with the same reliable answer.
+
+**Trade-offs, accepted deliberately**: one extra `getExtractedText()` IPC round-trip *only* for mismatching
+callbacks (the in-sync common case stays read-free; mismatches occur a few times per word boundary under
+lag, never per keystroke). Editors where `getExtractedText()` returns null fall into the same conservative
+do-nothing branch as §100's unknown-anchor case - after a genuine external caret move there, composing
+could stay stale for one keystroke; rare, and strictly less destructive than wiping a live token wrongly.
+A genuinely external move landing *exactly* at the expected caret is indistinguishable from an echo and
+gets ignored - harmless by construction, since state and reality agree. `CallbackBurstGuard` (§76) stays
+untouched as a safety net. The `AdaptKeyJitter` diagnostics stay in until D-139 is finally closed on
+device; the wipe branch now logs `EXTERNAL` with both expected and actual positions, and stale echoes log
+their own distinct line, so a further negative round would be immediately attributable.
+
+7 new tests (`SelectionTruthTest` - both observed mismatch shapes are encoded as named cases). 713 unit
+tests (was 706; +7). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Not yet device-confirmed** -
+same bar as §100: D-139 stays open until the user's own repro attempts hold up on a real device.
