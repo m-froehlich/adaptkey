@@ -5731,3 +5731,62 @@ real occurrence's log before touching anything further.
 consistent with the established gap for this class of change). 716 unit tests (unchanged).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-170 not yet device-confirmed; D-175 stays open
 pending a captured log of the next occurrence.
+
+## §107 - D-171/D-176: "ddr" and D-164's Cross-Language Shield Redesigned onto a Real, Data-Driven Blacklist (v0.8.71)
+
+Corrected mid-round, twice, by direct instruction - a genuine design discussion, not a guess either time.
+
+**Round 1 (this session's own D-164 fix, now superseded)**: "sue"/"due" were shielded from autocorrecting to
+"sie"/"die" by `knownInOtherLanguage()`'s cross-language loanword protection, waived via a short hardcoded
+Kotlin exception list, `CROSS_LANGUAGE_CONFUSABLES`.
+
+**Round 2 (§105/§106's own D-171 capture)**: for "Ddr"/"Der" the user clarified precisely - "DDR" genuinely
+is a real German dictionary entry (confirmed, frequency 4405, `NOUN`), just one the user almost never wants
+against how often they type "der". Proposed putting "ddr" on "the same blacklist as due" - which surfaced a
+real misunderstanding to correct: "due"/"sue" were never on the actual A-04 blacklist at all, only on the
+separate, narrower `CROSS_LANGUAGE_CONFUSABLES` exception list. An initial reply proposed blacklisting
+"due"/"sue" in the *English* store to unify everything under A-04 - **wrong**, and corrected by direct
+instruction: the original design was always the *German* blacklist. Re-checked against the actual code and
+confirmed correct once re-derived properly: `knownInOtherLanguage()` is only ever consulted while the
+*active* dictionary is German (or whichever language the current token resolved to via
+`selectActiveDictionary()` - `dictionaryStore` at that point already reflects it), so a block against
+`dictionaryStore`'s own blacklist inherently never engages once the active language is genuinely English -
+"due"/"sue" typed and meant as real English words stay fully protected the moment English is actually
+selected, exactly as `CROSS_LANGUAGE_CONFUSABLES` already guaranteed, just via the general A-04 mechanism
+instead of a bespoke Kotlin set. The proposed English-store blacklisting would **not** have had this
+property (it would have also blocked "due"/"sue" while genuinely typing English) - the corrected,
+German-store design was the right one from the start.
+
+**Implemented**: `knownInOtherLanguage()` now checks `dictionaryStore.isBlacklisted(token)` (the active
+dictionary's own A-04 blacklist) instead of the removed `CROSS_LANGUAGE_CONFUSABLES` set - a token
+blacklisted in whichever language is currently active for it waives the cross-language shield, a strictly
+more general mechanism (any bundled language could carry its own such entries the same way, not only
+German) that also naturally extends to the settings-editable blacklist the user floated as a future idea,
+with no further code change needed once that UI exists. New `BlacklistCategory.BUNDLED` (distinct from
+`USER`'s live G-04 drag-to-trash additions) marks these as app-shipped, not user-added. New
+`installStores()`-driven `seedBundledBlacklist()` blacklists `"due"`, `"sue"`, `"ddr"` in the German store on
+every call - both the initial synchronous in-memory placeholder and the real SQLite store once
+`loadDictionariesAsync()` finishes - so a fresh install, an existing one, and the transient in-memory stage
+all end up with these entries. `blacklist()` is a plain upsert, so calling it every service start is cheap
+and idempotent; critically, this reaches an **already-installed** device immediately, unlike the
+`DictionaryLoader`/`DATABASE_VERSION` reimport path noted in §106, which would need a destructive full
+reimport instead.
+
+**"ddr" itself is a different, simpler case than "due"/"sue" - not a cross-language shield at all.** It is a
+real German dictionary word, so `DictionarySuggestionProvider.isKnownWord()`'s own existing
+`store.isKnownWord(word) && !store.isBlacklisted(word)` check is sufficient on its own: once blacklisted,
+`isKnownWord("ddr")` is permanently `false` regardless of the word's own underlying frequency data (the
+blacklist flag always wins), so `bestCorrection()`'s A-01 gate is skipped entirely and "der" (cost 1, vastly
+more frequent) wins outright - no ratio-override even needed anymore. Verified this also satisfies the
+user's stated expectations precisely: A-07's Backspace-undo is completely blacklist-agnostic (reverts
+committed text unconditionally, regardless of why the correction fired), and `learnWord()`'s own D-37
+pending-count promotion path (`PendingLearnStore.increment(...) >= LEARN_THRESHOLD`) - the one route by
+which a *non*-blacklisted unknown word can eventually get learned from repetition - cannot ever re-establish
+`isKnownWord("ddr") == true`, since the blacklist check is a separate, always-applied `AND NOT` condition
+independent of whatever frequency accumulates underneath; "wird also so nie gelernt" holds precisely, not
+approximately.
+
+No new tests - `knownInOtherLanguage`/`seedBundledBlacklist` are private `AdaptKeyService` glue calling
+already-tested `DictionaryStore.blacklist()`/`isKnownWord()`, the same established gap as D-157/D-164's own
+(untested) exception list before it. 716 unit tests (unchanged). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. Not yet device-confirmed.

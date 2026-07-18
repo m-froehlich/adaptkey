@@ -451,6 +451,23 @@ class AdaptKeyService : InputMethodService() {
         provider = providers.getValue(Language.GERMAN)
         capitalisation = engines.getValue(Language.GERMAN)
         tokenRepair = TokenRepair(german)
+        seedBundledBlacklist(german)
+    }
+    
+    /**
+     * D-176: seeds the small, reviewed set of app-bundled German blacklist entries - see
+     * [BlacklistCategory.BUNDLED]'s own KDoc and [knownInOtherLanguage]'s for the full reasoning behind
+     * each word. Called from every [installStores] - both the initial synchronous in-memory stores and the
+     * real SQLite stores once [loadDictionariesAsync] finishes - so a fresh install, an already-populated
+     * existing install, and even the transient in-memory placeholder all end up with these entries, with no
+     * `DATABASE_VERSION` bump (and the destructive full reimport that would entail) needed. `blacklist()`
+     * is a plain upsert (`INSERT OR REPLACE`), so calling this on every install is cheap and idempotent -
+     * never wipes or duplicates anything.
+     */
+    private fun seedBundledBlacklist(german: DictionaryStore) {
+        for (word in BUNDLED_GERMAN_BLACKLIST) {
+            german.blacklist(word, BlacklistCategory.BUNDLED)
+        }
     }
     
     /**
@@ -3321,28 +3338,27 @@ class AdaptKeyService : InputMethodService() {
      * loanword like "Word" is protected from autocorrect exactly like a locally-known word (A-01),
      * instead of being silently corrected to the nearest similarly-spelled active-language word ("wird").
      *
-     * D-157: [CROSS_LANGUAGE_CONFUSABLES] carves out a short, explicit list of tokens this blanket
-     * protection was never meant to cover this aggressively - "due" (English, frequency 11775) is an
-     * all-too-common mistype of "die" (German, frequency ~890000, a single adjacent-key edit) that this
-     * check was silently shielding from autocorrect entirely, even though the German dictionary's own
-     * §44/D-113 frequency-ratio override already knows exactly how to handle it once actually reached.
-     * Listing a word here does not touch its cross-language *suggestions* or its own-language A-01
-     * protection - only this specific "never autocorrect it away" shield, and only for the handful of
-     * reviewed, confirmed-confusable words in the list; most genuine cross-language homographs (real
-     * loanwords) are deliberately left with their existing protection intact.
-     *
-     * D-164: "sue" (English, frequency 189) added the same way - "sue" is not itself in the German
-     * dictionary at all, so A-01 never protected it on the German side; this cross-language shield was
-     * the *only* thing keeping it from ever being corrected. Once waived, ordinary edit-cost ranking
-     * already prefers "sie" (cost 1: u/i are adjacent keys) over "die" (cost 2: two substitutions) with no
-     * extra logic needed - "sue" keeps its normal standing as a real, valid English word (deliberately
-     * *not* removed from dict_en.tsv) everywhere except this one shield.
+     * D-157/D-164/D-176: a token blacklisted (A-04) in the *currently active* language's own store waives
+     * this shield - originally a short hardcoded exception list ([CROSS_LANGUAGE_CONFUSABLES], now
+     * removed), redesigned per direct instruction into a real, data-driven `BlacklistCategory.BUNDLED`
+     * entry in the active dictionary itself: "due"/"sue" are blacklisted in German so they lose to
+     * "die"/"sie" while German is active, without touching their own standing as real, fully protected
+     * English words the moment English actually becomes the active language for a token - `dictionaryStore`
+     * at this point in the call always already reflects [DictChoice.language] (see
+     * [selectActiveDictionary]), so the check is inherently scoped to whichever language is active for
+     * *this* token, not hardcoded to German - any bundled language could carry its own such entries the
+     * same way. Listing a word here does not touch its cross-language *suggestions* or its own-language
+     * A-01 protection - only this specific "never autocorrect it away" shield. "ddr" is a different,
+     * simpler case entirely - a real German dictionary word that is blacklisted for the ordinary A-01 gate
+     * in [DictionarySuggestionProvider.isKnownWord] directly, not through this cross-language path at all;
+     * mentioned here only because it is seeded alongside "due"/"sue" in the same place
+     * ([installStores]'s `seedBundledBlacklist`).
      *
      * @param token the composing token (any case)
      * @return true when any non-active language's dictionary already knows this exact word
      */
     private fun knownInOtherLanguage(token: String): Boolean {
-        if (token.lowercase() in CROSS_LANGUAGE_CONFUSABLES) {
+        if (dictionaryStore.isBlacklisted(token)) {
             return false
         }
         return providers.any { (language, otherProvider) -> language != activeLanguage && otherProvider.isKnownWord(token) }
@@ -3651,9 +3667,9 @@ class AdaptKeyService : InputMethodService() {
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
         
-        // D-157 / D-164: see knownInOtherLanguage()'s own KDoc - a short, explicit, reviewed exception
-        // list, not a general heuristic.
-        private val CROSS_LANGUAGE_CONFUSABLES = setOf("due", "sue")
+        // D-176: seeded once per installStores() call into the German store - see knownInOtherLanguage()'s
+        // own KDoc and installStores()'s seedBundledBlacklist() for the full reasoning.
+        private val BUNDLED_GERMAN_BLACKLIST = setOf("due", "sue", "ddr")
         
         // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
         // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing

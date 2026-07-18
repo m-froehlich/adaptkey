@@ -35,7 +35,29 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§106 DONE (v0.8.70): D-166 withdrawn (no repro, per direct instruction); D-170 fixed from a real
+- **§107 DONE (v0.8.71): D-171/D-176 - "ddr" and D-164's cross-language shield both redesigned onto a
+  real, data-driven A-04 blacklist, corrected mid-round twice by direct instruction.** User clarified "DDR"
+  genuinely is a real German dictionary word (confirmed, frequency 4405) they almost never want against how
+  often they type "der" - and revealed "due"/"sue" were never actually on a real blacklist at all, only on
+  the narrower `CROSS_LANGUAGE_CONFUSABLES` Kotlin exception list from D-157/D-164. First proposed fix
+  (blacklist "due"/"sue" in the *English* store) was wrong and corrected: the original design was always
+  the *German* blacklist. Re-derived why that's actually correct: `knownInOtherLanguage()` only ever runs
+  while German (or whichever language a token resolved to) is the active dictionary, so checking that
+  dictionary's own blacklist inherently never engages once English is genuinely active - "due"/"sue" stay
+  fully protected as real English words the moment the language actually switches, exactly matching
+  `CROSS_LANGUAGE_CONFUSABLES`'s old guarantee, now via the general A-04 mechanism instead of a hardcoded
+  list. Implemented: `knownInOtherLanguage()` now checks `dictionaryStore.isBlacklisted(token)`; new
+  `BlacklistCategory.BUNDLED` (app-shipped, distinct from `USER`'s live drag-to-trash entries); new
+  `installStores()`-driven `seedBundledBlacklist()` blacklists "due"/"sue"/"ddr" in German on every call
+  (idempotent upsert, reaches an already-installed device immediately, no destructive `DATABASE_VERSION`
+  reimport needed - see §106's own incidental finding on that reimport gap). "ddr" itself needs no
+  cross-language logic at all - it's a real German word, so `isKnownWord()`'s existing
+  `store.isKnownWord() && !isBlacklisted()` check alone makes it permanently non-"known" once blacklisted,
+  regardless of how often it's typed afterward (D-37's pending-learn threshold cannot re-establish
+  `isKnownWord` truth, since the blacklist AND-condition always wins) - Backspace-undo (A-07) is fully
+  blacklist-agnostic and unaffected. 716 unit tests (unchanged - private service glue over already-tested
+  store methods). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+- **§106 (v0.8.70): D-166 withdrawn (no repro, per direct instruction); D-170 fixed from a real
   device log; D-175 (credentials never learned) diagnosed as far as static reading allows, diagnostic
   logging added, not yet fixed.** **D-170**: in K9 Mail's email field, repositioning the caret mid-fragment
   (after "foo", before "."), Backspace, then typing "@" jumped the caret to the end and inserted "@" after
