@@ -45,6 +45,14 @@ whenever a component lands so it does not have to be restated in every prompt.
   design direction, not yet built), and an email-mode keyboard layout - none implemented this round. No new
   unit tests (Android `InputConnection` service glue, the established gap for this class). 689 unit tests
   (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
+- **§95 addendum (still v0.8.60, no code change): D-139 typing-speed hint recorded; D-150 amended with a
+  password-field logging requirement; D-157 confirmed matching the user's intent exactly.** The user reports
+  the jitter seems to occur more often when typing faster - noted for the next repro, not investigated yet.
+  D-150 (the 5-minute diagnostic log window) now explicitly requires that logging **never** happen while
+  typing into a password field, regardless of the `enabled` setting - not implemented, needs a field-type
+  guard (likely reusing `LoginFieldDetector`'s password check). D-157's recommended design (a small
+  `knownInOtherLanguage()` exception list, not a new blacklist mechanism) was confirmed by the user as exactly
+  what they meant. 689 unit tests (unchanged).
 - **§94 (still v0.8.59, no code change): D-110, D-141, D-129 CONFIRMED WORKING on device** - §86's
   `ShiftGrace.autoArmAtWordStart()` fix, §81's `TimePattern` trailing-whitespace fix, and §83's
   `SIGN_FLIP_GLYPH` corner hint (third pass) are all closed. 689 unit tests (unchanged).

@@ -4843,13 +4843,24 @@ it was reported as intermittent across multiple root causes over this project's 
 `CallbackBurstGuard`, §87/§88's diagnostic logging), and this is one concrete, traced mechanism found and
 fixed from a precise repro, not a claim that every remaining jitter report is now explained.
 
+**Additional hint recorded, not yet investigated**: the user reports the jitter appears to correlate with
+typing speed - occurring more often when typing faster. Consistent with (but not proof of) a timing/race
+explanation for whatever remains of D-139 beyond D-149 - noted here for whenever the next repro/log arrives,
+not acted on yet.
+
 ### Nine backlog items captured, not implemented this round
 
 Reported together with the D-149 repro; captured per the user's own instruction to backlog them while this
 round focused on D-149. None of the following has any code change yet:
 
 - **D-150**: the D-139 in-app diagnostic log's 5-minute retention window (`DiagnosticRingBuffer`, §87/§88) is
-  far more data than needed for a single repro - reduce to 1 minute.
+  far more data than needed for a single repro - reduce to 1 minute. **Amended requirement, explicitly called
+  out by the user**: logging must **never** happen while typing into a password field, regardless of whether
+  diagnostics are enabled - the current `diag()` call sites (`onUpdateSelection`, `updateComposing`,
+  `finalizeAndCommit`, etc.) have no field-type awareness at all today, so a password typed while diagnostics
+  happen to be on would currently land in the (shareable/copyable) in-app log. Needs its own explicit guard,
+  most likely keyed off the same `EditorInfo`/`InputType` password-variation check `LoginFieldDetector` (D-142)
+  already has, checked independently of the `enabled` setting - not implemented yet.
 - **D-151**: the `DiagnosticLogActivity` viewer's Share/Copy/Clear controls are unusable because they sit
   under the display notch.
 - **D-152 (regression)**: the first word in a field is again deleted all at once instead of character-by-
@@ -4869,7 +4880,8 @@ round focused on D-149. None of the following has any code change yet:
 - **D-157**: how to stop `due` (an all-too-common typo for `die`) from surviving as valid English in German
   mode. The user's own proposal: a per-dictionary blacklist of explicitly-rejected words, forced to
   autocorrect to the intended target, reversible via the existing A-07 undo with no relearning on reject.
-  Recommendation for the eventual implementation, not yet built: rather than a new blacklist-plus-forced-
+  **User confirmed the recommendation below matches their intent exactly.** Recommendation for the eventual
+  implementation, not yet built: rather than a new blacklist-plus-forced-
   replacement mechanism, add a small, explicit "confusable" override list consulted by the existing D-106
   stage-2 cross-language protection (`knownInOtherLanguage()`/`selectActiveDictionary()`) - e.g. `due` in a
   German context stops being treated as a protected known-English word, and the *already-existing* ordinary
