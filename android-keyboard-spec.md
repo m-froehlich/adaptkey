@@ -4797,3 +4797,91 @@ testing gap for this class (no Robolectric shadow available in this environment)
 Device feedback: **D-110** (§86's `ShiftGrace.autoArmAtWordStart()` fix for `CapsMode.NONE`), **D-141** (§81's
 `TimePattern` trailing-whitespace fix), and **D-129** (§83's `SIGN_FLIP_GLYPH` corner hint, third pass) all
 confirmed working. No further action needed on any of the three; no code change this entry.
+
+## §95 - D-149: a D-62 Mid-Word Reclaim's Backspace Could Wipe the Whole Word Instead of One Character; Nine New Backlog Items Captured (v0.8.60)
+
+### D-149 - Bug fixed, traced from a precise device log: Backspace after a mid-word reclaim could delete the entire reclaimed word instead of one character, matching the reported D-139 "shaking" symptom
+
+The user captured and supplied a full `AdaptKeyJitter` log for their own concrete repro of the reported
+jitter/shake: type `diecwird` (an unrelated typing slip, out of scope here), place the caret right after the
+`c`, press Backspace, then Space - the trailing text visibly "shook" instead of simply shifting, and the user
+suspected this could also be the escalation mechanism behind the intermittent D-139 jitter itself. Traced end
+to end against the actual log (not guessed): the tap collapses the caret at document offset 303 (`newSelStart
+== newSelEnd`), which correctly triggers `reclaimWordAtCaret()` (D-62/§58) - `composing` becomes `"diecwird"`
+with `composingAnchor = 299`, `composingCursor = 4` (the logical edit point right after the `c`), confirmed by
+the following `onUpdateSelection` echo reporting the same collapsed `[303,303]`. The very next log line for
+the Backspace itself, however, shows `composing` jumping straight to `""` and the cursor snapping to `299`
+(the *anchor*, i.e. the whole reclaimed word's start) - with **no** `updateComposing:` line in between, which
+only `deleteComposingChar()`'s normal per-character path would have logged.
+
+That gap points squarely at `handleBackspace()`'s other branch: the §41 "real text selection" check, which
+calls `InputConnection.getSelectedText(0)` completely ungated and, on a non-empty result, wipes the whole
+selection via `commitText("", 1)` - previously correct for a genuine long-press-drag selection, but never
+cross-checked against anything the IME itself already knows about the current selection state. On the device
+tested (Google Keep, the app active for this whole log), `getSelectedText(0)` returned the full reclaimed word
+non-empty at this exact point even though the immediately preceding `onUpdateSelection` - the IME's own
+authoritative source for selection state - had just confirmed a collapsed caret; stock Android's
+`BaseInputConnection.setComposingText()` never selects anything on its own, so this is attributed to a
+Keep-specific interaction between its own (non-standard, rich-text) editor and the D-62 reclaim-then-collapse
+sequence, not a generic platform behaviour - not independently provable further without a live device/logcat
+session on that exact app, and stated as such rather than guessed at. The same `reclaimWordAtCaret()` path
+worked correctly multiple times elsewhere in the very same log (e.g. the `engliscge`/`cWörter` sequence,
+several Backspaces in a row via the normal single-character path) - the misfire is intermittent, which lines
+up with D-139's own long-standing "occasional, not always reproducible" description and plausibly explains at
+least part of it, though it is not claimed as the *whole* explanation.
+
+**Fixed at the trust boundary, not by trying to out-guess Keep's internals**: a new `selectionCollapsed` flag
+is set unconditionally at the top of `onUpdateSelection()` (`newSelStart == newSelEnd`) - the IME's own
+confirmed reality - and `handleBackspace()` now only calls `getSelectedText(0)` at all when that flag says a
+real selection is currently believed to exist; otherwise the ordinary `deleteComposingChar()`/`deleteOneBefore()`
+paths run as before. A genuine long-press-drag selection is unaffected, since that is exactly how an IME
+normally learns about a selection in the first place - it always reports its non-collapsed bounds via
+`onUpdateSelection` before the user can press Backspace on it. No new unit tests - `InputConnection`/
+`onUpdateSelection` service glue, the established gap for this class; the fix was verified by re-reading the
+exact call sequence against the supplied log, not by guessing. D-139 is **not** declared closed by this entry -
+it was reported as intermittent across multiple root causes over this project's history (§76's
+`CallbackBurstGuard`, §87/§88's diagnostic logging), and this is one concrete, traced mechanism found and
+fixed from a precise repro, not a claim that every remaining jitter report is now explained.
+
+### Nine backlog items captured, not implemented this round
+
+Reported together with the D-149 repro; captured per the user's own instruction to backlog them while this
+round focused on D-149. None of the following has any code change yet:
+
+- **D-150**: the D-139 in-app diagnostic log's 5-minute retention window (`DiagnosticRingBuffer`, §87/§88) is
+  far more data than needed for a single repro - reduce to 1 minute.
+- **D-151**: the `DiagnosticLogActivity` viewer's Share/Copy/Clear controls are unusable because they sit
+  under the display notch.
+- **D-152 (regression)**: the first word in a field is again deleted all at once instead of character-by-
+  character - not yet re-traced against which recent change reintroduced this.
+- **D-153 (regression)**: backspace-hold has become jerky/sluggish again, echoing D-138 - not yet re-traced.
+- **D-154**: `uber` should autocorrect to `über` once the word is *finished* (a delimiter typed) - ambiguous
+  while still composing, but the user's own reasoning is that at word-completion the umlaut-restoration
+  candidate (`provider.diacriticRestoration`) is a single, extremely-high-confidence match while `uber` itself
+  is not a word that should ever survive as typed - worth checking against `suppressAutocorrect`/
+  `knownInOtherLanguage()` (D-106 stage 2) possibly protecting `uber` as a known English/German-loanword token.
+- **D-155**: `fur` colours green (recognised as a correction target, i.e. `shouldHighlightComposing`/S-05 or
+  the D-47 split-preview machinery) but is not actually autocorrected to `für` at commit - reported as an open
+  question ("Warum?"), not yet traced; likely the same `suppressAutocorrect`/coloured-but-not-corrected gap as
+  D-154, or a distinct issue in `autocorrectFor()`/`diacriticRestoration()` - needs its own trace before fixing.
+- **D-156**: a live touch-zone visualisation toggle (the existing D-24 overlay) requested for the settings row,
+  next to the D-70 clear-clipboard button.
+- **D-157**: how to stop `due` (an all-too-common typo for `die`) from surviving as valid English in German
+  mode. The user's own proposal: a per-dictionary blacklist of explicitly-rejected words, forced to
+  autocorrect to the intended target, reversible via the existing A-07 undo with no relearning on reject.
+  Recommendation for the eventual implementation, not yet built: rather than a new blacklist-plus-forced-
+  replacement mechanism, add a small, explicit "confusable" override list consulted by the existing D-106
+  stage-2 cross-language protection (`knownInOtherLanguage()`/`selectActiveDictionary()`) - e.g. `due` in a
+  German context stops being treated as a protected known-English word, and the *already-existing* ordinary
+  autocorrect pipeline (which already proposes `die` for `due` as a plain adjacent-key edit, §64's D-113
+  precedent) does the rest, including A-07's already-correct no-relearn-on-undo behaviour, with no new commit
+  path needed at all. A short, explicit, per-word list (like §68's per-word `NOUN,OTHER` tagging) rather than a
+  general heuristic, since this is not a generalisable rule - most cross-language homographs (e.g. genuine
+  loanwords) must keep their existing protection.
+- **D-158**: a dedicated email-mode keyboard layout, mirroring D-143's URL-mode row: `@` takes over the comma
+  key's primary slot (comma demoted to its own popup, mirroring how URL-mode treats `/`), a new key next to
+  SPACE trades it some width for `-` (with `_` as its D-01 alternative), the period key looks and behaves
+  exactly as in URL-mode, and SPACE carries only its plain glyph (no extra label) in this mode.
+
+689 unit tests (unchanged - Android service glue, no new pure logic to cover). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. D-149 not yet re-confirmed on device.

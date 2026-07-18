@@ -28,6 +28,23 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§95 DONE (v0.8.60): D-149 - a real bug found and fixed from a precise device log the user captured
+  themselves.** A D-62 mid-word reclaim's Backspace (e.g. tapping into `diecwird` right after the `c`, then
+  Backspace) could wipe the *entire* reclaimed word via `handleBackspace()`'s §41 selection-delete branch,
+  instead of removing the single intended character - traced to that branch trusting a bare
+  `InputConnection.getSelectedText(0)` call with no cross-check, which returned non-empty on the device tested
+  (Google Keep) even though the IME's own `onUpdateSelection` had just confirmed a collapsed caret. Fixed with
+  a new `selectionCollapsed` flag (set from `onUpdateSelection`, the authoritative source) gating that branch,
+  so a real drag-selection still works exactly as before while this false-positive case no longer fires.
+  Directly matches the "shaking" symptom the user reported as part of D-139 and is a plausible contributor to
+  it, though D-139 itself is not declared closed - it has had multiple root causes traced over this project's
+  history and this is one concrete mechanism, not a claim that every remaining report is now explained. Nine
+  new backlog items captured (D-150…D-158, see spec §95) - diagnostic log window too long, log-viewer controls
+  under the notch, two regressions (first-word delete, backspace-hold jerkiness), `uber`/`fur` umlaut-
+  autocorrect gaps, a touch-zone-visualisation toggle, a `due`-typo blacklist proposal (with a recommended
+  design direction, not yet built), and an email-mode keyboard layout - none implemented this round. No new
+  unit tests (Android `InputConnection` service glue, the established gap for this class). 689 unit tests
+  (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet re-confirmed on device.
 - **§94 (still v0.8.59, no code change): D-110, D-141, D-129 CONFIRMED WORKING on device** - §86's
   `ShiftGrace.autoArmAtWordStart()` fix, §81's `TimePattern` trailing-whitespace fix, and §83's
   `SIGN_FLIP_GLYPH` corner hint (third pass) are all closed. 689 unit tests (unchanged).

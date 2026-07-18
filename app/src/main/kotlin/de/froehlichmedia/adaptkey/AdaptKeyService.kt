@@ -249,6 +249,11 @@ class AdaptKeyService : InputMethodService() {
     // D-139: see the KDoc on its use in onUpdateSelection().
     private val selectionUpdateBurstGuard = CallbackBurstGuard()
     
+    // D-149: whether the most recent onUpdateSelection - the IME's own authoritative source for selection
+    // state - reported a real, non-collapsed selection. See handleBackspace() for why this is trusted over
+    // a fresh InputConnection.getSelectedText(0) call.
+    private var selectionCollapsed = true
+    
     // G-05: a word-end Shift is pending — the first character has been provisionally toggled and the
     // next key decides the outcome (camelCase vs. keep). composingCaseLocked marks a token whose casing
     // the user fixed explicitly, so it is committed verbatim (bypassing autocorrect and §6).
@@ -705,6 +710,9 @@ class AdaptKeyService : InputMethodService() {
         candidatesEnd: Int
     ) {
         super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        // D-149: recorded unconditionally, before the burst-guard/ownEdit branches below, so it always
+        // reflects the most recently confirmed reality regardless of how this particular call is handled.
+        selectionCollapsed = newSelStart == newSelEnd
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
         // characters get scrambled" glitch in the act. Remove once D-139 is closed for good.
@@ -1705,7 +1713,18 @@ class AdaptKeyService : InputMethodService() {
         // §41: a real, non-collapsed text selection takes priority over the ordinary single-character
         // delete below - Backspace must remove the selection itself, matching every other editor, not the
         // character before the cursor (which the selection may not even be adjacent to).
-        val selected = ic.getSelectedText(0)
+        //
+        // D-149: gated on selectionCollapsed (the IME's own onUpdateSelection-confirmed state) rather than
+        // trusting a bare InputConnection.getSelectedText(0) call alone - traced from a precise repro (a
+        // D-62 mid-word reclaim, e.g. tapping into "diecwird" right after the "c", then Backspace): with
+        // composingCursor mid-word and the caret genuinely collapsed (confirmed by the immediately preceding
+        // onUpdateSelection), getSelectedText(0) still returned the whole reclaimed word non-empty on the
+        // device tested (Google Keep) - taking this branch then wiped the entire reclaimed token via
+        // commitText("", 1) instead of removing the single intended character, which is exactly the
+        // "text gets shaken/rearranged" symptom reported as part of D-139. A genuine drag-selection is
+        // unaffected - it always reports its non-collapsed bounds via onUpdateSelection first, which is
+        // exactly how an IME learns about a selection in the first place.
+        val selected = if (!selectionCollapsed) ic.getSelectedText(0) else null
         if (!selected.isNullOrEmpty()) {
             if (composing.isNotEmpty()) {
                 ic.finishComposingText()
