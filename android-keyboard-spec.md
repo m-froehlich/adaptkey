@@ -23,6 +23,34 @@ correct `konnen` → `können`, splits a word rather than restoring its umlaut, 
 oddly, etc.) is simply broken. This principle overrides convenience shortcuts and will shape several
 features (correction ranking, folding, split-vs-correct priority, suggestions).
 
+### Guiding Principle - `onUpdateSelection`'s Self-Recognition Mechanism Is Foundational (D-139, §99-§101)
+
+Getting `AdaptKeyService.onUpdateSelection()` to correctly recognise the IME's own edits took three full
+device-log tracing rounds (§99 diagnosis, §100 first fix - still reproduced - §101 the actual fix) against
+two independently observed, genuinely different race shapes (a lagging commit echo; an un-coalesced batch
+edit's transient intermediate state, from an editor that does not merge the reclaim's delete/set/select
+sequence into one callback). Not a blanket "don't touch this file" - but any future change that touches
+composing state, `onUpdateSelection`, `reclaimSurroundingWord`, or the batch-edit sequencing in
+`AdaptKeyService` must keep these three properties intact, and should be weighed against them before
+shipping (re-reading §99-§101 in full is the cheap, sufficient check - not an exhaustive whole-file re-audit
+every time):
+
+1. `composingAnchor` (the absolute document offset of the composing region's start) must be resolved for
+   *every* composing token, not only a mid-word one - `reclaimSurroundingWord()` reads it unconditionally,
+   before any mutation in that same call.
+2. `onUpdateSelection`'s `ownEdit`/truth check must never decide anything from the target editor's own
+   remotely-reported `candidatesStart`/`candidatesEnd` - that value is not guaranteed to arrive in sync
+   with the selection-update stream (this was D-139's actual root cause, §100).
+3. A callback whose reported positions mismatch the expected caret must be verified against a synchronous
+   ground-truth read (`getExtractedText()`) before the composing state is torn down - simple positional
+   equality against only the latest expected value is insufficient, proven by two distinct real echo
+   shapes in §101 that a naive "belated update" interval heuristic (considered and rejected mid-round)
+   would *not* both have caught.
+
+If a change would make any of these three no longer hold, stop and re-derive against §99-§101's actual
+device logs rather than guessing - this class of bug reproduces silently and took real device logs, not
+code review alone, to find each time.
+
 ---
 
 ## 2. Layout & Key Assignment

@@ -26,6 +26,13 @@ whenever a component lands so it does not have to be restated in every prompt.
 - A post-write hook normalises blank lines / CRLF and may reformat files after edits
   (do not fight it).
 
+## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
+
+D-139 (§99-§101 in the spec) took three real device-log tracing rounds to actually fix. Any change to
+`AdaptKeyService.onUpdateSelection()`, `reclaimSurroundingWord()`, `composingAnchor`, or the batch-edit
+sequencing around them must keep spec §99-§101's three stated invariants intact - see that section's
+"Guiding Principle" note before touching this area, not a full re-audit every time.
+
 ## Current State
 
 - **§103 DONE (v0.8.67): D-160 implemented - expensive suggestion fallbacks debounced off the hot path,
