@@ -209,6 +209,18 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-154 D-155 diacriticRestoration restores uber and fur regardless of other-language homographs`() {
+        // "fur" is coincidentally a real English word and "uber" a foreign-looking ASCII token - neither
+        // is a reason for the German dictionary's own umlaut restoration to stay silent (AdaptKeyService's
+        // finalizeAndCommit consults this provider directly, independent of cross-language suppression).
+        store.putWord(WordEntry("über", 60204L))
+        store.putWord(WordEntry("für", 158762L))
+        
+        assertEquals("über", provider.diacriticRestoration("uber", null))
+        assertEquals("für", provider.diacriticRestoration("fur", null))
+    }
+    
+    @Test
     fun `D-48 diacriticRestoration returns null for a valid word or a real typo`() {
         store.putWord(WordEntry("können", 100L))
         store.putWord(WordEntry("Masse", 100L))

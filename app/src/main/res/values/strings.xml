@@ -218,7 +218,7 @@
     <!-- D-139/D-110: in-memory diagnostic log, an alternative to adb logcat that needs no PC/USB tether. -->
     <string name="cat_diagnostics">Diagnostics</string>
     <string name="d_diag_enabled_title">Record diagnostic log</string>
-    <string name="d_diag_enabled_summary">Keeps a rolling 5-minute, in-memory log of recent typing events, to help track down a rare glitch (e.g. the reported text jitter). Off by default. Records the text you type - never written to disk, never sent anywhere unless you explicitly share it below.</string>
+    <string name="d_diag_enabled_summary">Keeps a rolling 1-minute, in-memory log of recent typing events, to help track down a rare glitch (e.g. the reported text jitter). Off by default. Records the text you type - never written to disk, never sent anywhere unless you explicitly share it below. Never records anything at all while typing in a password field, whether this is on or off.</string>
     <string name="d_diag_log_title">View / share diagnostic log</string>
     <string name="d_diag_log_summary">Shows the current log and lets you copy or share it.</string>
     <string name="d_diag_activity_title">Diagnostic log</string>

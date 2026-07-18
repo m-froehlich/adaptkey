@@ -484,6 +484,7 @@ class AdaptKeyService : InputMethodService() {
         row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
         row.onClearClipboardClick = SettingsRowView.OnClearClipboardClickListener { clearClipboardFromSettingsRow() }
         row.onCredentialModeClick = SettingsRowView.OnCredentialModeClickListener { toggleCredentialModeFromSettingsRow() }
+        row.onTouchZoneToggleClick = SettingsRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromSettingsRow() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
         row.onSwipeDown = SettingsRowView.OnSwipeDownListener { dismissKeyboardOrCloseSettingsRow() }
         settingsRow = row
@@ -629,9 +630,16 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * D-139/D-110: routes one diagnostic line to both `adb logcat` (for anyone who has it set up) and the
-     * in-app [DiagnosticLog] ring buffer (a rolling, in-memory, 5-minute log viewable/shareable from
+     * in-app [DiagnosticLog] ring buffer (a rolling, in-memory, 1-minute log viewable/shareable from
      * Settings - needs no PC/USB tether at all, unlike logcat). [DiagnosticLog.record] is a cheap no-op
      * unless the user has actually turned recording on (off by default).
+     *
+     * D-150: neither destination is written to at all while the focused field is a password - many
+     * `diag()` call sites (`finalizeAndCommit`, `updateComposing`, ...) log the literal typed/committed
+     * text, and [LoginFieldKind.PASSWORD] is reliably detected from `InputType` (§82), so this is a single
+     * choke point every current and future call site is automatically covered by, rather than trusting each
+     * one to remember an individual check. Unconditional - independent of [DiagnosticLog.enabled] and of
+     * whether `adb logcat` happens to be attached, since a password must never reach *either* log.
      *
      * @param tag the logcat tag (also prefixed onto the in-app entry, so both views group the same way)
      * @param message the diagnostic text
@@ -639,6 +647,9 @@ class AdaptKeyService : InputMethodService() {
      *        smoking gun for the D-139 cascade if it ever actually fires)
      */
     private fun diag(tag: String, message: String, warn: Boolean = false) {
+        if (loginFieldKind == LoginFieldKind.PASSWORD) {
+            return
+        }
         if (warn) Log.w(tag, message) else Log.d(tag, message)
         DiagnosticLog.record("[$tag] $message")
     }
@@ -662,6 +673,15 @@ class AdaptKeyService : InputMethodService() {
         pendingSuggestionSpace = false
         previousWord = null
         tokenContextBefore = ""
+        // D-152: a fresh field's own initial selection is delivered via EditorInfo, not a guaranteed
+        // onUpdateSelection callback beforehand - selectionCollapsed must not be left stale from whatever
+        // the *previous* field's last reported selection happened to be. Left stale as false (e.g. the
+        // previous field ended on a genuine drag-selection), handleBackspace()'s D-149 guard would wrongly
+        // still trust getSelectedText() for this field's very first Backspace - most visibly hit right after
+        // the field's first word gets D-62-reclaimed on focus, deleting that whole word instead of one
+        // character. A fresh field is assumed collapsed until its own onUpdateSelection says otherwise,
+        // matching every other real editor's default caret state.
+        selectionCollapsed = true
         capsMode = capsModeFor(info)
         clearUndo()
         keyboardView?.shifted = false
@@ -1665,6 +1685,20 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-156: the settings row's touch-zone-visualisation toggle - closes the row (so the overlay is
+     * actually visible on the real keyboard underneath, not hidden behind the row) and flips
+     * [AdaptKeyboardView.showTouchModel] live, unlike its only prior use (D-24) which was confined to a
+     * separate, non-live preview keyboard in [de.froehlichmedia.adaptkey.settings.TouchModelActivity].
+     * Session-only, like [credentialModeManuallyActivated] - resets on the next keyboard presentation.
+     */
+    private fun toggleTouchZoneVisualizationFromSettingsRow() {
+        val visible = !(keyboardView?.showTouchModel ?: false)
+        keyboardView?.showTouchModel = visible
+        settingsRow?.touchZoneVisible = visible
+        closeSettingsRow()
+    }
+    
+    /**
      * D-142: the settings row's credential-mode button - manually switches the currently focused field
      * into credential mode (the saved-username/email suggestion list, immediate learning on submit) when
      * it could not be auto-detected (see [LoginFieldDetector] - `InputType` has no signal for a plain
@@ -1792,7 +1826,7 @@ class AdaptKeyService : InputMethodService() {
             clearSuggestions()
             composingAnchor = -1
         } else {
-            updateComposing(ic)
+            updateComposing(ic, duringRepeat)
             refreshSuggestions(duringRepeat)
         }
         applyShiftAfterDelete(deleted)
@@ -1970,8 +2004,22 @@ class AdaptKeyService : InputMethodService() {
         // characters) is never split - "konnen" is "können", not "ko nen". D-67 generalises this: a split
         // is also vetoed when a high-confidence single-word autocorrect exists (a low edit cost, e.g. a
         // single adjacent-key slip) - "kleiben" is "kleinen" (b/n are adjacent keys), not "klei" + "en".
-        // Both restorations are left to the normal autocorrect path below; here they only veto the split.
-        val diacriticWord = if (suppressAutocorrect) null else provider.diacriticRestoration(typed, previousWord)
+        // D-154/D-155: diacriticWord is now also the actual correction below (not only a split veto), and
+        // is deliberately evaluated against the German dictionary specifically and independent of
+        // suppressAutocorrect/knownInOtherLanguage - "uber" (a bare ASCII token) reads as foreign to the
+        // A-03 classifier without its umlaut, and "fur" happens to be a real English word, but neither is a
+        // stronger signal than the umlauted form being an unambiguous, high-frequency German dictionary
+        // entry - this project's own founding "umlauts are ordinary characters" principle says the restored
+        // form should win. Confirmed via the bundled dict_en.tsv/dict_de.tsv: "fur" is a real (frequency
+        // 366) English word, "uber" is in neither dictionary at all, while "für"/"über" are common German
+        // words - Umlaut.fold() already round-trips both back to the bare ASCII form. Left off outside
+        // German mode (G-01) - a user who explicitly switched to English/Greek does not want German umlaut
+        // restoration forced onto their own explicit choice.
+        val diacriticWord = if (activeLanguage == Language.GERMAN) {
+            providers.getValue(Language.GERMAN).diacriticRestoration(typed, previousWord)
+        } else {
+            null
+        }
         val highConfidenceWord = if (suppressAutocorrect) null else provider.highConfidenceCorrection(typed, previousWord)
         val split = if (diacriticWord != null || highConfidenceWord != null) {
             null
@@ -1989,10 +2037,13 @@ class AdaptKeyService : InputMethodService() {
         // finds nothing, fall back to raw-coordinate correction - walk the token's actual raw taps (T-02) and
         // see whether the geometrically next-most-plausible key at any one position (T-03) produces a known
         // word. This recovers slips the static keyboard-adjacency map cannot see, since that map never looks
-        // at where the tap actually landed.
-        val autocorrected = if (suppressAutocorrect) null else provider.autocorrectFor(typed, previousWord)
-        val rawCorrected = if (!suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
-        val corrected = autocorrected ?: rawCorrected ?: typed
+        // at where the tap actually landed. D-154/D-155: diacriticWord (computed above, independent of
+        // suppressAutocorrect) wins outright when present - skipping autocorrectFor/rawCoordinateCorrection
+        // entirely in that case, not just as a tie-breaker, since an unambiguous umlaut restoration is a
+        // strictly stronger signal than either.
+        val autocorrected = if (diacriticWord != null || suppressAutocorrect) null else provider.autocorrectFor(typed, previousWord)
+        val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
+        val corrected = diacriticWord ?: autocorrected ?: rawCorrected ?: typed
         // D-140: when the D-39 raw-coordinate fallback (not an ordinary dictionary/diacritic correction)
         // produced this correction, capture the single tap it actually changed - before clearComposing()
         // below wipes composingTaps - so a rejected correction can precisely un-train just that one
@@ -2301,7 +2352,16 @@ class AdaptKeyService : InputMethodService() {
         armShiftForNextWord(ic)
     }
     
-    private fun updateComposing(ic: InputConnection) {
+    /**
+     * @param duringRepeat D-153: true while called from an active [handleBackspaceRepeat] tick - skips the
+     *        [splitPreview]/[shouldHighlightComposing] colour-preview lookups below, which run an uncached
+     *        dictionary query apiece on every call and are never actually read mid-repeat (the composing
+     *        text is changing every 45-330ms, see [BackspaceRepeat]) - the same D-138 diagnosis (uncached
+     *        per-keystroke dictionary lookups competing with the repeat's fastest tick interval), but for a
+     *        call site D-138 itself never covered (it only gated [refreshSuggestions]'s two additions).
+     *        Every other call site keeps the full live preview (the default `false`).
+     */
+    private fun updateComposing(ic: InputConnection, duringRepeat: Boolean = false) {
         val text = composing.toString()
         // D-139 (temporary diagnostic): the exact string pushed to the field as composing text, on every
         // call - a scrambled/reordered result should show up directly in this sequence of log lines.
@@ -2322,14 +2382,14 @@ class AdaptKeyService : InputMethodService() {
             // half instead, with the dropped character / boundary left uncoloured between them - checked
             // first, since trySplit() never matches an already-known word (mutually exclusive by
             // construction with the single-word case below).
-            val split = splitPreview(ic, text)
+            val split = if (duringRepeat) null else splitPreview(ic, text)
             if (split != null) {
                 val (leftRange, rightRange) = split.spanRanges(text)
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), leftRange.first, leftRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), rightRange.first, rightRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
-            } else if (shouldHighlightComposing(ic, text)) {
+            } else if (!duringRepeat && shouldHighlightComposing(ic, text)) {
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
@@ -2591,7 +2651,14 @@ class AdaptKeyService : InputMethodService() {
             clearSuggestions()
             return
         }
-        val candidates = provider.suggestionsFor(input, previousWord)
+        // D-153: provider.suggestionsFor() runs several uncached dictionary lookups per call (a prefix
+        // scan, fuzzy-neighbour edit-distance search, and conditionally a compound-split attempt - see its
+        // own KDoc, which already names D-138's exact lesson) and grew heavier still after D-138 shipped
+        // (D-116's compound split, D-147's Umlaut.unfoldCandidates) without ever being added to this
+        // function's own duringRepeat gate - a plausible, traced explanation for backspace-hold feeling
+        // jerky again. The bar it populates is changing every 45-330ms mid-repeat regardless (unreadable),
+        // exactly the same reasoning already applied to every other addition below.
+        val candidates = if (duringRepeat) emptyList() else provider.suggestionsFor(input, previousWord)
         // D-122 / D-131: both kept out of `candidates` itself so neither ever enters the tier-1/tier-3
         // merge's own score normalisation (SuggestionMerger normalises every tier-1 score against the
         // list's own maximum, so one inflated synthetic entry would compress every real candidate's
@@ -3063,10 +3130,23 @@ class AdaptKeyService : InputMethodService() {
      * loanword like "Word" is protected from autocorrect exactly like a locally-known word (A-01),
      * instead of being silently corrected to the nearest similarly-spelled active-language word ("wird").
      *
+     * D-157: [CROSS_LANGUAGE_CONFUSABLES] carves out a short, explicit list of tokens this blanket
+     * protection was never meant to cover this aggressively - "due" (English, frequency 11775) is an
+     * all-too-common mistype of "die" (German, frequency ~890000, a single adjacent-key edit) that this
+     * check was silently shielding from autocorrect entirely, even though the German dictionary's own
+     * §44/D-113 frequency-ratio override already knows exactly how to handle it once actually reached.
+     * Listing a word here does not touch its cross-language *suggestions* or its own-language A-01
+     * protection - only this specific "never autocorrect it away" shield, and only for the handful of
+     * reviewed, confirmed-confusable words in the list; most genuine cross-language homographs (real
+     * loanwords) are deliberately left with their existing protection intact.
+     *
      * @param token the composing token (any case)
      * @return true when any non-active language's dictionary already knows this exact word
      */
     private fun knownInOtherLanguage(token: String): Boolean {
+        if (token.lowercase() in CROSS_LANGUAGE_CONFUSABLES) {
+            return false
+        }
         return providers.any { (language, otherProvider) -> language != activeLanguage && otherProvider.isKnownWord(token) }
     }
     
@@ -3327,6 +3407,10 @@ class AdaptKeyService : InputMethodService() {
         
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
+        
+        // D-157: see knownInOtherLanguage()'s own KDoc - a short, explicit, reviewed exception list, not a
+        // general heuristic.
+        private val CROSS_LANGUAGE_CONFUSABLES = setOf("due")
         
         // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
         // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing

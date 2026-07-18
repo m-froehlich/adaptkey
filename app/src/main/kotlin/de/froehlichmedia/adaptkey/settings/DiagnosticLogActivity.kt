@@ -9,10 +9,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticEntry
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
@@ -20,7 +23,7 @@ import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 /**
  * D-139/D-110: views and exports the current in-memory diagnostic log ([DiagnosticLog]) - the requested
  * alternative to `adb logcat` that needs no PC/USB tether: the phone can simply be brought back to this
- * screen after a repro, within the log's own 5-minute rolling window.
+ * screen after a repro, within the log's own 1-minute rolling window.
  *
  * Content is refreshed on every [onResume] (not just [onCreate]), so leaving the keyboard to reproduce an
  * issue and then returning here picks up whatever was recorded meanwhile, without needing to relaunch the
@@ -36,6 +39,26 @@ class DiagnosticLogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_diagnostic_log)
         title = getString(R.string.d_diag_activity_title)
+        
+        // D-151: Android 15 (targetSdk 35) draws this activity edge-to-edge, so the Share/Copy/Clear row -
+        // pinned to the very top with only a fixed 16dp padding - ended up under the status bar / display
+        // cutout (e.g. a front-camera notch) and was unreachable. Same fix as CalibrationActivity's (§13/
+        // D-80) and TouchModelActivity's: pad the root by the real top/bottom insets instead of a fixed value.
+        val root = findViewById<View>(R.id.diag_root)
+        val edgePaddingPx = 16.dpToPx()
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(
+                edgePaddingPx,
+                maxOf(statusBars.top, cutout.top, edgePaddingPx),
+                edgePaddingPx,
+                maxOf(bars.bottom, gestures.bottom, edgePaddingPx)
+            )
+            insets
+        }
         
         contentView = findViewById(R.id.diag_content)
         emptyView = findViewById(R.id.diag_empty)
@@ -101,5 +124,10 @@ class DiagnosticLogActivity : AppCompatActivity() {
     private fun formatEntry(entry: DiagnosticEntry, nowMs: Long): String {
         val ageSeconds = (nowMs - entry.timestampMs) / 1000.0
         return "-%.1fs  %s".format(ageSeconds, entry.message)
+    }
+    
+    /** D-151: converts a dp value to pixels, for the edge-inset padding above. */
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
     }
 }

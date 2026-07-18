@@ -28,6 +28,32 @@ whenever a component lands so it does not have to be restated in every prompt.
 
 ## Current State
 
+- **§96 DONE (v0.8.61): §95's whole backlog cleared - D-150 through D-157, one requested round.** D-158
+  (email-mode keyboard) deliberately deferred to its own round. **D-150**: diagnostic log window 5min→1min;
+  `AdaptKeyService.diag()` now unconditionally skips both logcat and the in-app ring buffer while the focused
+  field is a password (one choke point, not per-call-site checks); the password exclusion is now also spelled
+  out in `d_diag_enabled_summary` (all three locales), per explicit follow-up request. **D-151**: the log
+  viewer's Share/Copy/Clear row was the one settings screen missing the `CalibrationActivity`/`TouchModelActivity`
+  edge-to-edge window-insets pattern - fixed identically. **D-152 (regression)**: traced to a real gap in
+  §95's own D-149 fix - `selectionCollapsed` wasn't reset on `onStartInput()`, so it could stay stale from the
+  *previous* field and let the same §41-misfire class of bug through for a freshly focused field's first word;
+  now reset alongside every other per-field state. **D-153 (regression)**: root-caused to two uncached
+  per-keystroke dictionary lookups D-138 never actually covered - `updateComposing()`'s own colour-preview
+  calls, and `refreshSuggestions()`'s `suggestionsFor()` (grew heavier since D-138 via D-116/D-147) - both now
+  skip during a backspace-repeat tick via the existing `duringRepeat` flag. **D-154/D-155**: `uber`/`fur`
+  weren't autocorrected to `über`/`für` - confirmed via the bundled dictionaries that `fur` is a real English
+  word (blocking it via D-106 stage 2) and `uber` is in neither dictionary (plausibly caught by the A-03
+  foreign-language classifier instead); `diacriticRestoration()` itself was never broken (new test confirms
+  it). Fixed by giving diacritic restoration its own gate, independent of both suppressors, restricted to
+  German mode - and it now wins as the actual correction, not just an A-05 split-veto as before. **D-156**: a
+  live D-24 touch-zone-visualisation toggle added to the settings row (🎯, next to clear-clipboard) - the
+  overlay previously only ever worked on a separate, non-live preview keyboard. **D-157**: `due` no longer
+  blocked from autocorrecting to `die` - root-caused to D-106 stage 2's cross-language protection gating off
+  the call to `autocorrectFor()` before §44/D-113's already-correct German-dictionary override logic (already
+  tested, already returns "die") ever got a chance to run; fixed with the confirmed-recommended small
+  `CROSS_LANGUAGE_CONFUSABLES` exception set, not a new commit path. 1 new test
+  (`DictionarySuggestionProviderTest`, uber/fur). 690 unit tests (was 689; +1).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of this round confirmed on device yet.
 - **§95 DONE (v0.8.60): D-149 - a real bug found and fixed from a precise device log the user captured
   themselves.** A D-62 mid-word reclaim's Backspace (e.g. tapping into `diecwird` right after the `c`, then
   Backspace) could wipe the *entire* reclaimed word via `handleBackspace()`'s §41 selection-delete branch,

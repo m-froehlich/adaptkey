@@ -4903,3 +4903,124 @@ round focused on D-149. None of the following has any code change yet:
 
 689 unit tests (unchanged - Android service glue, no new pure logic to cover). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. D-149 not yet re-confirmed on device.
+
+## §96 - §95's Backlog Cleared: D-150 through D-157 (v0.8.61)
+
+Requested as one round - D-150…D-157 from §95's backlog, all implemented and traced (not guessed) where a
+root cause was needed. D-158 (email-mode keyboard) deliberately deferred to its own separate round per
+explicit instruction.
+
+### D-150 - diagnostic log window shortened to 1 minute; password fields never logged, in code and in the Settings text
+`DiagnosticRingBuffer`'s `RETENTION_MS` dropped from 5 minutes to 1 (a single repro never needed more, and 5
+minutes produced far more volume than expected). Separately and more importantly: `AdaptKeyService.diag()` -
+the single choke point every `AdaptKeyJitter`/`AdaptKey` log call already funnelled through - now returns
+immediately, before either `Log.d`/`Log.w` (logcat) or `DiagnosticLog.record()` (the in-app ring buffer), when
+`loginFieldKind == LoginFieldKind.PASSWORD`. Reliable, since `LoginFieldKind.PASSWORD` is itself reliably
+detected from `InputType` (§82) - one gate, not a per-call-site check every current and future `diag()` call
+must remember individually, and unconditional (independent of `DiagnosticLog.enabled`, since a password must
+never reach *either* destination, not just the shareable one). The exclusion is also spelled out directly in
+`d_diag_enabled_summary` (`strings.xml`, all three locales - `values`/`values-de`/`values-el`) per the user's
+own explicit follow-up request, so someone who did not read the source can still enable the toggle in good
+conscience.
+
+### D-151 - the log viewer's Share/Copy/Clear row was unreachable under the display notch
+`DiagnosticLogActivity` was the one settings screen in this codebase that never applied the edge-to-edge
+window-insets padding `CalibrationActivity` (§13/D-80) and `TouchModelActivity` already do - a fixed 16dp
+`android:padding` on the root layout is not enough once Android 15 (`targetSdk 35`) draws the activity
+edge-to-edge, so the button row pinned to the very top ended up under the status bar / camera cutout. Fixed
+with the exact same `ViewCompat.setOnApplyWindowInsetsListener` pattern as its two siblings: real
+`statusBars`/`displayCutout`/`navigationBars`/`systemGestures` insets, each floored at the original 16dp so
+the layout never gets *tighter* than before on a device with small/no insets.
+
+### D-152 - regression: the first word in a fresh field could be deleted all at once on a single Backspace
+Traced to a genuine gap in §95's own D-149 fix, not a separate mechanism: the new `selectionCollapsed` flag is
+only ever updated from `onUpdateSelection`, but a freshly focused field's *own* initial selection is delivered
+via `EditorInfo`, not a guaranteed `onUpdateSelection` callback beforehand - so `selectionCollapsed` could stay
+stale from whatever the *previous* field's last reported selection happened to be. Left stale as `false` (e.g.
+the previous field ended on a genuine drag-selection), `handleBackspace()`'s D-149 guard would wrongly still
+trust `getSelectedText()` for this field's very first Backspace - most visibly hit right after the field's
+first word gets D-62-reclaimed on focus (exactly the same class of bug D-149 fixed, just reachable through a
+staleness window D-149 itself left open). Fixed by resetting `selectionCollapsed = true` in `onStartInput()`,
+alongside every other per-field state reset already there - a fresh field is assumed collapsed until its own
+`onUpdateSelection` says otherwise, matching every other real editor's default caret state.
+
+### D-153 - regression: backspace-hold became jerky again
+Root-caused to two uncached per-keystroke dictionary lookups that D-138 (§64) never actually covered, both of
+which grew measurably heavier since D-138 was written:
+1. `updateComposing()`'s own `splitPreview()`/`shouldHighlightComposing()` colour-preview calls (`isKnownWord`/
+   `trySplit`, each a real, uncached SQLite query against `SqliteDictionaryStore.entryOf()`) ran on *every*
+   call, including every `handleBackspaceRepeat()` tick - D-138 only ever gated `refreshSuggestions()`'s own
+   additions, never `updateComposing()`'s.
+2. `refreshSuggestions()`'s `provider.suggestionsFor()` call (prefix scan + fuzzy-neighbour search, and
+   conditionally a compound-split attempt) ran unconditionally too, and gained real additional cost after
+   D-138 shipped - D-116's compound split and D-147's `Umlaut.unfoldCandidates` prefix search were both added
+   later without ever being folded into the existing `duringRepeat` gate, despite `suggestionsFor()`'s own KDoc
+   already naming D-138 as the standing lesson to apply.
+
+Both `updateComposing()` and the `candidates` computation inside `refreshSuggestions()` now take the existing
+`duringRepeat` flag (already threaded through `deleteComposingChar()`) and skip these specific calls during a
+repeat tick - the bar/highlight they drive is changing every 45-330ms mid-repeat regardless (unreadable),
+exactly the same reasoning D-138 already established for its own gated additions.
+
+### D-154 / D-155 - "uber"/"fur" were never autocorrected to "über"/"für"
+Confirmed against the bundled dictionaries directly (`grep`, not guessed): `fur` is a real English word
+(`dict_en.tsv`, frequency 366); `uber` is in neither `dict_en.tsv` nor `dict_de.tsv` at all; `über`/`für` are
+common German words. Two independent mechanisms were both silently blocking the umlaut restoration
+`DictionarySuggestionProvider.diacriticRestoration()` already correctly computes (confirmed via a new test -
+it already returns `"über"`/`"für"` given those two typed tokens, this was never a bug in the restoration
+logic itself):
+- **`fur`**: D-106 stage 2's `knownInOtherLanguage("fur")` returns true (the English dictionary knows it), so
+  `finalizeAndCommit()`'s `suppressAutocorrect` flag was true, which gated `diacriticWord`'s computation off
+  entirely.
+- **`uber`**: not protected by `knownInOtherLanguage` (unknown everywhere), but plausibly caught by
+  `resolveDict()`'s A-03 foreign-language classifier - a bare ASCII token missing its umlaut is exactly the
+  n-gram shape that reads as non-German, setting `dictChoice.suppressAutocorrect = true` the same way. Not
+  independently re-run against the live classifier in this environment (no device); named as the traced,
+  plausible mechanism, not an unconditionally proven one - consistent with how this project already treats
+  A-03 classifier edge cases (§43).
+
+**Fixed by giving diacritic restoration its own, narrower gate**, matching the user's own reasoning: an ASCII
+form only reachable by *dropping* a German umlaut is a stronger, more specific signal than either "the general
+context looks foreign" or "this coincidentally spells a real word in some other bundled language" - this
+project's own founding "umlauts are ordinary characters" principle says the restored form should win.
+`diacriticWord` is now computed directly against the German provider (`providers.getValue(Language.GERMAN)`),
+independent of `suppressAutocorrect`/`knownInOtherLanguage`, but only while `activeLanguage == Language.GERMAN`
+(a user who explicitly G-01-switched to English/Greek does not want German umlaut restoration forced onto
+their own explicit choice) - and, new this round, it now actually **wins as the correction itself** (`corrected
+= diacriticWord ?: autocorrected ?: rawCorrected ?: typed`), not merely used to veto an A-05 split as before.
+One new test (`DictionarySuggestionProviderTest`) locks in `diacriticRestoration("uber")` → `"über"` and
+`diacriticRestoration("fur")` → `"für"` directly against the underlying provider. Flagged honestly as a
+behaviour change worth confirming doesn't misfire on-device, same caveat class as D-111/D-112.
+
+### D-156 - a live touch-zone-visualisation toggle in the settings row
+`AdaptKeyboardView.showTouchModel` (D-24) previously only ever ran on a separate, non-live preview keyboard
+inside `TouchModelActivity`/`CalibrationActivity` - never on the actual keyboard while typing in a real app.
+New `SettingsRowView` button (🎯, placed left of the D-70 clear-clipboard button, same background-reflects-
+state styling as the D-142 credential button) wired to a new `AdaptKeyService.toggleTouchZoneVisualizationFromSettingsRow()`,
+which flips `keyboardView.showTouchModel` directly and closes the row (so the overlay is actually visible on
+the keyboard underneath, not hidden behind the row itself). Session-only, like `credentialModeManuallyActivated`
+- resets on the next keyboard presentation, no new persisted setting. No new tests - Android view/service glue,
+the established gap for this layer.
+
+### D-157 - "due" no longer protected from autocorrecting to "die" in German mode
+Root-caused precisely, not guessed: `dict_de.tsv` already contains `due` (frequency 24, a rare loanword entry)
+*and* `dict_en.tsv` contains it too (frequency 11775) - §44/D-113 (v0.8.19) already taught the German
+dictionary's own `bestCorrection()`/`shouldOverrideKnownWord()` exactly how to override a rare known word for a
+dramatically more frequent, single-adjacent-edit candidate (`autocorrectFor("due", null)` already returns
+`"die"` directly against `DictionarySuggestionProvider`, confirmed by the pre-existing test from §44 itself) -
+but D-106 stage 2's `knownInOtherLanguage("due")` (English also knows it) set `suppressAutocorrect = true` in
+`finalizeAndCommit()`, which skipped the call to `autocorrectFor()` entirely before that already-correct logic
+ever got a chance to run. Implemented exactly per the user's confirmed recommendation from §95: not a new
+blacklist-plus-forced-replacement mechanism, but a short, explicit `CROSS_LANGUAGE_CONFUSABLES` exception set
+(currently just `{"due"}`) consulted by `knownInOtherLanguage()` itself - letting the *already-existing*,
+already-tested correction pipeline (including A-07's already-correct no-relearn-on-undo behaviour) do the rest,
+with no new commit path needed at all. Deliberately a short, reviewed, per-word list (§68's per-word
+`NOUN,OTHER` dictionary-tagging precedent) rather than a general heuristic, since most genuine cross-language
+homographs (real loanwords) must keep their existing protection - only `knownInOtherLanguage()`'s "never
+autocorrect it away" shield is affected; cross-language suggestions and the word's own in-language A-01
+protection are untouched.
+
+690 unit tests (was 689; +1 `DictionarySuggestionProviderTest`). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green. None of this round's Android/service-glue items (D-150-D-153, D-156) have been confirmed on a real
+device yet; D-154/D-155/D-157 rely on dictionary-level logic that is directly unit-tested, but the end-to-end
+on-device behaviour is likewise not yet re-confirmed.

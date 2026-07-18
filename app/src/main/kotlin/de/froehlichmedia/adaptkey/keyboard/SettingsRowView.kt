@@ -80,6 +80,12 @@ class SettingsRowView @JvmOverloads constructor(
         fun onCredentialModeClick()
     }
     
+    /** D-156: invoked when the touch-zone-visualisation toggle button is tapped. */
+    fun interface OnTouchZoneToggleClickListener {
+        
+        fun onTouchZoneToggleClick()
+    }
+    
     /** D-144: invoked when a downward swipe anywhere on the row dismisses/closes, mirroring G-03. */
     fun interface OnSwipeDownListener {
         
@@ -93,6 +99,8 @@ class SettingsRowView @JvmOverloads constructor(
     var onClearClipboardClick: OnClearClipboardClickListener? = null
     
     var onCredentialModeClick: OnCredentialModeClickListener? = null
+    
+    var onTouchZoneToggleClick: OnTouchZoneToggleClickListener? = null
     
     var onSwipeDown: OnSwipeDownListener? = null
     
@@ -111,9 +119,21 @@ class SettingsRowView @JvmOverloads constructor(
             credentialModeButton.background = credentialModeBackground(value)
         }
     
+    /**
+     * D-156: reflects whether the live D-24 touch-zone overlay is currently showing on the keyboard itself
+     * (as opposed to [de.froehlichmedia.adaptkey.settings.TouchModelActivity]'s own, separate preview
+     * keyboard) - the button's background mirrors [credentialModeButton]'s own active/inactive styling.
+     */
+    var touchZoneVisible: Boolean = false
+        set(value) {
+            field = value
+            touchZoneToggleButton.background = credentialModeBackground(value)
+        }
+    
     private val credentialModeButton = buttonFor("🔑") { onCredentialModeClick?.onCredentialModeClick() }
     private val emojiButton = buttonFor("😊") { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
+    private val touchZoneToggleButton = buttonFor("🎯") { onTouchZoneToggleClick?.onTouchZoneToggleClick() }
     
     // Reported: a bare 🗑 gives no clue *what* it clears unless you already know - so nobody would ever
     // press it. A clipboard glyph with a small trash badge overlaid in the corner reads as "clear the
@@ -152,6 +172,14 @@ class SettingsRowView @JvmOverloads constructor(
             clearClipboardButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
                 marginEnd = marginPx * 2 + buttonSizePx
+            }
+        )
+        // D-156: one more slot further left, same spacing convention as clearClipboardButton's own offset
+        // from the gear.
+        content.addView(
+            touchZoneToggleButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
+                marginEnd = marginPx * 3 + buttonSizePx * 2
             }
         )
         content.addView(
