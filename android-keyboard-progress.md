@@ -53,6 +53,9 @@ whenever a component lands so it does not have to be restated in every prompt.
   guard (likely reusing `LoginFieldDetector`'s password check). D-157's recommended design (a small
   `knownInOtherLanguage()` exception list, not a new blacklist mechanism) was confirmed by the user as exactly
   what they meant. 689 unit tests (unchanged).
+- **§95 addendum 2 (still v0.8.60, no code change): D-150 further amended** - the password exclusion must also
+  be spelled out in the Settings UI text (`d_diag_enabled_summary`), not just hold true in code, so someone
+  other than the user can enable the toggle without reading the source. Not implemented yet.
 - **§94 (still v0.8.59, no code change): D-110, D-141, D-129 CONFIRMED WORKING on device** - §86's
   `ShiftGrace.autoArmAtWordStart()` fix, §81's `TimePattern` trailing-whitespace fix, and §83's
   `SIGN_FLIP_GLYPH` corner hint (third pass) are all closed. 689 unit tests (unchanged).

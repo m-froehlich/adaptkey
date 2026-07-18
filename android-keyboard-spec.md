@@ -4860,7 +4860,13 @@ round focused on D-149. None of the following has any code change yet:
   `finalizeAndCommit`, etc.) have no field-type awareness at all today, so a password typed while diagnostics
   happen to be on would currently land in the (shareable/copyable) in-app log. Needs its own explicit guard,
   most likely keyed off the same `EditorInfo`/`InputType` password-variation check `LoginFieldDetector` (D-142)
-  already has, checked independently of the `enabled` setting - not implemented yet.
+  already has, checked independently of the `enabled` setting - not implemented yet. **Further amended,
+  explicitly requested by the user**: the password exclusion must also be stated in the Settings UI itself
+  (`cat_diagnostics`/`d_diag_enabled_summary` in `strings.xml`), not just hold true in code - so someone other
+  than the user, who cannot read the source, can still enable the toggle with a clear conscience. The current
+  `d_diag_enabled_summary` ("Records the text you type - never written to disk, never sent anywhere unless you
+  explicitly share it below.") says nothing about password fields at all and must be revised alongside the
+  actual guard, not left to imply a blanket "everything you type" once the guard exists.
 - **D-151**: the `DiagnosticLogActivity` viewer's Share/Copy/Clear controls are unusable because they sit
   under the display notch.
 - **D-152 (regression)**: the first word in a field is again deleted all at once instead of character-by-
