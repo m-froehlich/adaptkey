@@ -2128,7 +2128,19 @@ class AdaptKeyService : InputMethodService() {
         // already a known word in some other consulted language (mandatory English + every G-01-cycle
         // language) - an embedded loanword like "Word" must never be silently corrected away.
         val dictChoice = selectActiveDictionary("$tokenContextBefore $typed")
-        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownInOtherLanguage(typed)
+        // D-172 (temporary diagnostic): the previous round's diag only showed the OR'd suppressAutocorrect,
+        // which conflates two entirely different sources (A-03's foreign-language classification vs D-106
+        // stage 2's cross-language protection) and never showed tokenContextBefore itself - needed now that
+        // dictChoice.suppressAutocorrect was confirmed true for a context that should be a single word
+        // (isForeign()'s own minWords=2 gate re-verified by hand against the current source and should not
+        // have fired) - logging the raw context string is the only way to actually see why.
+        val knownElsewhere = knownInOtherLanguage(typed)
+        diag(
+            "AdaptKeyJitter",
+            "finalizeAndCommit: tokenContextBefore=\"$tokenContextBefore\" dictChoice.suppressAutocorrect=" +
+                "${dictChoice.suppressAutocorrect} knownInOtherLanguage=$knownElsewhere"
+        )
+        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownElsewhere
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
         if (mergeChar != null) {

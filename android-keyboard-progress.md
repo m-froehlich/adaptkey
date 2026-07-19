@@ -35,7 +35,25 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§108 DONE (v0.8.72): D-172 ("aks"/"als") reproduced from a fresh device log, still no blocking gate
+- **§109 DONE (v0.8.73): D-172 - English-language hypothesis ruled out by device confirmation +
+  diagnostic log; `suppressAutocorrect=true` now confirmed as the actual block, source still unattributed;
+  a second, self-inflicted finding surfaced along the way.** Log with §108's diagnostic showed
+  `dict=GERMAN suppressAutocorrect=true autocorrected=null` - German confirmed active, `autocorrectFor()`
+  never even called. Contradicts a full re-read of `LanguageClassifier.isForeign()`'s own `minWords=2` gate,
+  which should make a single-word context return `false` immediately - not resolved by further hand-tracing,
+  since the prior diagnostic conflated two independent `suppressAutocorrect` sources
+  (A-03 language classification vs. D-106 stage 2 cross-language check) into one boolean and never logged
+  `tokenContextBefore` itself. Both gaps closed: `finalizeAndCommit()` now logs `tokenContextBefore` and the
+  two sources separately. **Second finding**: user noticed "aks" now colours green (S-05) and cannot be
+  reached via G-04 drag-to-trash at all - explained (not guessed): repeated testing itself crossed D-37's
+  `LEARN_THRESHOLD=2`, silently teaching the dictionary "aks" is real, purely as a side effect of the
+  autocorrect block firing on each repeated attempt; unreachable via G-04 because S-02 never shows the
+  current-input word as its own suggestion. Pointed to the existing `BlacklistActivity` (C-05) settings
+  screen as the practical fix for the user's own device - no code change needed for that part. D-37's own
+  learning threshold having no safety net against learning nonsense after 2 repetitions is left as its own
+  open question. 716 unit tests (unchanged - diagnostic only). `:app:assembleDebug`/`:app:testDebugUnitTest`
+  green. D-172 stays open pending the next captured log.
+- **§108 (v0.8.72): D-172 ("aks"/"als") reproduced from a fresh device log, still no blocking gate
   found by hand-tracing - diagnostic added rather than guessing.** `finalizeAndCommit()` read in full this
   round (past where the original §105 trace stopped) to find the actual autocorrect-application logic.
   Every gate re-checked against this exact repro still comes back clear: length/frequency thresholds both

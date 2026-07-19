@@ -5815,3 +5815,38 @@ together right where they are computed, so the next repro (reported as easy to r
 definitively instead of guessing further. No new tests (diagnostic logging only, matching every prior
 instance of this pattern this session). 716 unit tests (unchanged). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. D-172 stays open pending the next captured log.
+
+## §109 - D-172: the English-Language Hypothesis Ruled Out, `suppressAutocorrect` Confirmed True; a Second, Self-Inflicted Finding (v0.8.73)
+
+User confirmed German was genuinely the active language, then supplied a repro with §108's diagnostic
+already in place: `finalizeAndCommit: dict=GERMAN suppressAutocorrect=true diacriticWord=null
+autocorrected=null rawCorrected=null`. This rules out the English-language hypothesis outright and pins the
+block precisely: `autocorrectFor()` was never even called, because `suppressAutocorrect` was `true` before
+it. This directly contradicts a hand-trace of `LanguageClassifier.isForeign()` (re-read in full this round,
+not from memory) - its own `minWords = 2` gate should make a single-word context (`" Aks"`, since
+`tokenContextBefore` should be empty for the first word of a fresh note) return `false` immediately, before
+any statistical distance is even computed. The contradiction was not resolved by further hand-tracing -
+`suppressAutocorrect` is itself an OR of two independent conditions
+(`dictChoice.suppressAutocorrect` from A-03's language classification vs. `knownInOtherLanguage()`'s D-106
+stage 2 cross-language check) that the prior diagnostic line conflated into one boolean, and
+`tokenContextBefore`'s actual runtime value was never logged at all. Both gaps closed: `finalizeAndCommit()`
+now logs `tokenContextBefore` and the two `suppressAutocorrect` sources separately, so the next repro
+attributes the true value to its actual source instead of leaving both live hypotheses (a wrongly-triggered
+foreign-language classification, or an unexpected cross-language/blacklist match) unresolved.
+
+**Second, distinct finding surfaced along the way, from the user's own observation**: "aks" now colours
+green (S-05, "recognised word") when it visibly had not before - and does not appear as a suggestion chip at
+all, so G-04's drag-to-trash gesture can never reach it. Explained, not guessed: the repeated testing
+itself (at least three prior verbatim, uncorrected commits of "Aks" across this investigation) crossed D-37's
+own `LEARN_THRESHOLD = 2` - `learnWord()`'s `PendingLearnStore` promotion path silently taught the German
+dictionary that "aks" is a real word, purely as a side effect of `suppressAutocorrect` blocking its
+correction on each attempt. It cannot be reached via G-04 because S-02 never shows the word matching the
+current input as its own suggestion. Practical fix pointed out: `BlacklistActivity` (C-05) already exists as
+a settings-level dictionary/blacklist editor and can remove it directly, no code change needed for the
+user's own device. Left as its own open question, not fixed this round: D-37's learning threshold has no
+safety net at all against silently learning a nonsense token after only two repetitions - worth a design
+round of its own if it turns out to matter beyond this self-inflicted testing scenario.
+
+No new tests (diagnostic logging only). 716 unit tests (unchanged). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. D-172 stays open pending the next captured log, now with both
+`suppressAutocorrect` sources and the raw context string visible.
