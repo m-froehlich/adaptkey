@@ -50,7 +50,9 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   `weakSignalKind` precedent. Resets to default-on every fresh field focus via the pre-existing
   `urlMode = isUrlField(info)` in `onStartInput` - no new reset logic needed. 736 unit tests total
   (unchanged - Android View/Service glue, same established untested-glue gap). `:app:assembleDebug`/
-  `:app:testDebugUnitTest` green. Neither D-184 nor D-185 is device-confirmed yet. See spec §116.
+  `:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): D-185 works as intended, closed. D-184
+  showed no visible effect yet - left open for a future round rather than re-patched speculatively.** See
+  spec §116.
 - **§115 (v0.8.79): D-183/D-184/D-185 - three items captured to the backlog, not implemented,
   no code changed.** D-183: a mid-text suggestion-bar tap still inserts a superfluous space, including a
   wrong space *before* a period when applied right before one - not yet traced (needs a real device log with

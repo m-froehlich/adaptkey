@@ -6236,4 +6236,10 @@ the existing `toggleTouchZoneVisualizationFromSettingsRow()`/`toggleCredentialMo
 
 No new tests - `SettingsRowView`/`AdaptKeyService` field-focus and click-listener glue is the same
 established untested Android-only gap as every other settings-row button (D-142/D-156/§69). 736 unit tests
-total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19):
+works as intended. D-185 closed.**
+
+**D-184 device feedback (2026-07-19): no visible effect yet.** Left open, to be re-diagnosed in a future
+round rather than patched again speculatively - see this project's own rule of re-questioning a diagnosis
+after negative feedback, not re-tweaking the same fix a third/fourth time. The `paintSuppressedKey` repress
+gap above is the current state, unconfirmed.
