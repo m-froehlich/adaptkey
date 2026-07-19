@@ -6243,3 +6243,39 @@ works as intended. D-185 closed.**
 round rather than patched again speculatively - see this project's own rule of re-questioning a diagnosis
 after negative feedback, not re-tweaking the same fix a third/fourth time. The `paintSuppressedKey` repress
 gap above is the current state, unconfirmed.
+
+## §117 - D-183: Fixed - a Mid-Word Reclaim Leaves the Real Cursor Inside the Token, Not at Its End (v0.8.81)
+
+D-183 was initially misdiagnosed as editor-specific: the first three repro logs supplied (Google Keep) mostly
+showed an unrelated symptom (external caret jumps mid-composing, already tracked under D-139/§99-101's own
+"Keep-specific interaction" precedent), not D-183 itself - no suggestion-bar tap appears in any of them. The
+user clarified precisely and supplied a fourth log (Signal this time, "100% reproducible, egal wo") isolating
+the *actual* mechanism: tap into the *middle* of an already-committed word (a D-62 reclaim), then apply a bar
+suggestion to it - a space gets inserted right after the word even though real whitespace is already there.
+
+**Root cause, confirmed directly from the code, not the editor**: `onSuggestionClicked()`'s `NORMAL` branch
+already carried a D-144 guard for exactly this class of bug (`applying a suggestion mid-text ... must not add
+a second space when one is already there`) - `ic.getTextAfterCursor(1, 0)?.firstOrNull()?.isWhitespace()`.
+That check is correct only when the real `InputConnection` cursor sits at the *end* of the composing token,
+which is true for ordinary end-of-typing suggestion acceptance (the case D-144 was written for) but **not**
+for a D-62 mid-word reclaim: `composingCursor` there is the tap offset *inside* the token (e.g. the repro's
+`composing="bdg"` reclaimed with `cursor=2`, i.e. tapped between 'd' and 'g'), so the real cursor sits mid-
+token, not at its end. `getTextAfterCursor(1, 0)` at that position returns the token's *own* next character
+(here, `'g'` - about to be overwritten by `commitText()` two lines later), never the real document text that
+follows the *whole* token - so `alreadySpaced` was always `false` for a mid-word reclaim, regardless of what
+actually followed, and the unconditional `" "` got appended next to whatever whitespace was already there.
+
+Fixed by skipping past the token's own remaining characters before checking: `remainingComposingChars =
+composing.length - composingCursor` (0 for the ordinary end-of-token case, reducing to the exact previous
+check - not a behaviour change there), then `ic.getTextAfterCursor(remainingComposingChars + 1, 0)
+?.getOrNull(remainingComposingChars)` reads the real character right after the token's true end regardless
+of where inside it the cursor sits.
+
+`applyMidWordSplitSuggestion()`/`applySplit()` (the D-122 mid-word-*connector-split* suggestion path, taken
+only when a suggestion word itself contains a space) were not touched - they always pass a fixed `" "`
+delimiter with no "already spaced" check of any kind, a related but separate gap; not fixed here since it
+was never reproduced and is a different code path with its own A-05 auto-split callers to consider.
+
+No new tests - `onSuggestionClicked`'s `InputConnection` interaction is the same established untested
+Android-glue gap as the rest of this function (D-142/D-122/D-144 above it). 736 unit tests total (unchanged).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

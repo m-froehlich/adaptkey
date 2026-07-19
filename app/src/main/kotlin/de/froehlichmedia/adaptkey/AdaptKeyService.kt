@@ -3294,11 +3294,19 @@ class AdaptKeyService : InputMethodService() {
                     return
                 }
                 val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
-                // D-144: applying a suggestion mid-text (the composing token sits before real, already-
-                // typed text) must not add a *second* space when one is already there right after it -
-                // checked against the document's current state, before commitText() below replaces the
-                // composing span, since the real text immediately following it is untouched by that replace.
-                val alreadySpaced = ic.getTextAfterCursor(1, 0)?.firstOrNull()?.isWhitespace() == true
+                // D-144 / D-183: applying a suggestion mid-text (the composing token sits before real,
+                // already-typed text) must not add a *second* space when one is already there right after
+                // it - checked against the document's current state, before commitText() below replaces
+                // the composing span, since the real text immediately following it is untouched by that
+                // replace. D-183: a D-62 mid-word reclaim leaves the real cursor *inside* the composing
+                // token (composingCursor < composing.length), not at its end - the character right after
+                // the cursor is then still one of the token's own remaining characters (about to be
+                // replaced by commitText() below), not the real document text that follows the whole
+                // token. Skip past those remaining characters first, so the check lands on the same real
+                // position regardless of where inside the token the reclaim happened to be tapped.
+                val remainingComposingChars = composing.length - composingCursor
+                val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
+                    ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
                 val trailingSpace = if (alreadySpaced) "" else " "
                 ic.commitText(word + trailingSpace, 1)
                 clearComposing()
