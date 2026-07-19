@@ -20,6 +20,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
@@ -28,6 +29,7 @@ import androidx.core.content.ContextCompat
 import kotlin.math.abs
 import java.util.Locale
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 import de.froehlichmedia.adaptkey.touch.AmbiguityBands
@@ -1191,9 +1193,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (hapticsEnabled) {
             // D-66: wrapped like the tone generator above - a SecurityException or vendor-specific failure
             // in the vibration path must never take down key handling with it.
-            runCatching {
-                val v = vibrator
-                if (v != null && v.hasVibrator()) {
+            // D-193 (temporary diagnostic): D-06/D-34/D-66/D-75 have now failed three separate device
+            // rounds without ever confirming what actually happens at runtime - this very runCatching
+            // previously swallowed everything silently, including the exception itself. Every branch below
+            // is now logged (vibrator availability, which VibrationAttributes path was taken, and any
+            // exception) so a single Settings -> Diagnostics repro can finally show where it actually
+            // breaks, instead of guessing a fourth hypothesis. Remove once D-193 is closed.
+            val v = vibrator
+            if (v == null || !v.hasVibrator()) {
+                logHaptics("no vibrator available - vibrator=$v hasVibrator=${v?.hasVibrator()}", warn = true)
+            } else {
+                runCatching {
                     val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
                     // D-75 (D-66 still not firing on device): a plain vibrate(VibrationEffect) with no
                     // attributes falls into an unclassified usage bucket that some OEM vibration-intensity
@@ -1203,12 +1213,29 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     // VibrationAttributes does not exist below that).
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
+                        logHaptics("vibrate() called with USAGE_TOUCH, sdk=${Build.VERSION.SDK_INT}")
                     } else {
                         v.vibrate(effect)
+                        logHaptics("vibrate() called without attributes, sdk=${Build.VERSION.SDK_INT} (< 33)")
                     }
+                }.onFailure { e ->
+                    logHaptics("vibrate() threw ${e::class.simpleName}: ${e.message}", warn = true)
                 }
             }
         }
+    }
+    
+    /**
+     * D-193 (temporary diagnostic): dual-output like `AdaptKeyService.diag()` - logcat (`adb logcat -s
+     * AdaptKeyHaptics:D`) plus the in-app rolling log (Settings -> Diagnostics), so a repro needs no PC/USB
+     * tether. No password-field guard here (unlike the service's own `diag()`) - haptics fire identically
+     * on every key regardless of field kind, and none of these messages ever include typed content. Remove
+     * once D-193 is closed.
+     */
+    private fun logHaptics(message: String, warn: Boolean = false) {
+        val full = "playKeyFeedback: $message"
+        if (warn) Log.w("AdaptKeyHaptics", full) else Log.d("AdaptKeyHaptics", full)
+        DiagnosticLog.record("[AdaptKeyHaptics] $full")
     }
     
     /**

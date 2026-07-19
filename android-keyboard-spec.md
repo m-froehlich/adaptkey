@@ -6572,3 +6572,35 @@ developer-facing documentation, not the user-facing string, and was correctly le
 No new tests beyond the string/resource changes already covered by `FeatureCatalogTest`'s existing
 assertions. 741 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+## §124 - D-193: Diagnostic Logging for the Still-Never-Working Key Vibration (v0.8.88)
+
+Asked directly whether to revisit D-06/D-34/D-66/D-75 (key-press vibration - optional, default off, never
+once confirmed working across three separate device-feedback rounds and three different fix hypotheses:
+the VIBRATE permission, migrating `Vibrator` to `VibratorManager`, and finally requesting
+`VibrationAttributes.USAGE_TOUCH`). Per this project's own rule of re-questioning a diagnosis after
+"already fixed" negative feedback rather than patching the same approach again: a fourth blind hypothesis
+was rejected in favour of diagnostics first, since none of the three prior rounds were ever backed by an
+actual device log of what happens at runtime.
+
+**Root gap found by re-reading the code, not guessed**: `playKeyFeedback()`'s entire vibration path
+(`AdaptKeyboardView.kt`) was already wrapped in a `runCatching { }` (D-66's own defensive guard against a
+`SecurityException`/vendor failure taking down key handling) - but the block silently discarded whatever it
+caught, with zero logging. If `vibrate()` has been throwing this whole time, D-34/D-66/D-75 could never
+have found that out from any log, real device or otherwise - the exception itself was invisible by
+construction.
+
+**Fixed** (diagnostics only, no behavioural change): `hasVibrator()` is now checked and logged *before*
+entering the `runCatching` (previously silently absorbed into "nothing happened" if false); the
+`runCatching` block itself now logs which `VibrationAttributes` path fired (`USAGE_TOUCH` on API 33+, plain
+`vibrate()` below that) on success, and - the actual gap - `.onFailure` now logs the exception type and
+message instead of discarding it. New `AdaptKeyboardView.logHaptics()` mirrors `AdaptKeyService.diag()`'s
+own dual-output shape (logcat `AdaptKeyHaptics` tag + the in-app rolling `DiagnosticLog`, Settings ->
+Diagnostics, no PC/USB tether needed) but skips that function's password-field guard - haptics fire
+identically regardless of field kind, and no message here ever carries typed content.
+
+No new tests - Android `Vibrator`/logging glue, the same established untested gap as the rest of D-06/D-139.
+741 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Needs a real device
+repro next: enable the D-139/D-110 diagnostic log (Settings) and the D-06 vibration toggle, type a few keys,
+then share the log - whichever of the three logged outcomes actually shows up finally answers whether this
+is a code bug or an OS/OEM-level vibration-intensity restriction outside the app's control.
