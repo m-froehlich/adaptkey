@@ -13,4 +13,5 @@
     <color name="suggestion_divider">#BFC3C9</color>
     <color name="suggestion_trash_background">#D32F2F</color>
     <color name="suggestion_trash_text">#FFFFFF</color>
+    <color name="link_text">#1565C0</color>
 </resources>

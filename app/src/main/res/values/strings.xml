@@ -19,6 +19,7 @@
     <!-- D-89: full feature overview, listing everything AdaptKey does so nothing stays hidden. -->
     <string name="d89_title">What AdaptKey can do</string>
     <string name="d89_summary">AdaptKey records the exact raw touch position behind every letter you type, not just which key it resolved to, and continuously adjusts each key\'s own hit zone to your personal tap pattern - seeded from the typing style you chose during setup, then refined by every further keystroke.</string>
+    <string name="d89_learn_more">Learn more</string>
     <string name="d89_f01_title">Adaptive touch model</string>
     <string name="d89_f01_desc">Learns your personal tap pattern for every key from everyday typing — an optional short calibration gives it an immediate head start, and it keeps refining itself afterwards.</string>
     <string name="d89_f02_title">Diacritic-aware autocorrect</string>
@@ -55,6 +56,23 @@
     <string name="d89_f17_desc">German, English and Greek each have their own dictionary; the active one is detected automatically from what you\'re actually writing.</string>
     <string name="d89_f18_title">Provably offline</string>
     <string name="d89_f18_desc">This keyboard requests no internet permission at all — check it yourself in the system\'s app settings.</string>
+
+    <string name="d89_f19_title">Remembers your usernames and emails</string>
+    <string name="d89_f19_desc">Recognises login fields and offers your own previously used usernames and email addresses as you type. Every saved value can be reviewed or removed from settings any time, or saving can be switched off entirely — passwords are never touched or recorded, no matter what.</string>
+    <string name="d89_f20_title">Suggest emails from your contacts</string>
+    <string name="d89_f20_desc">An optional, opt-in setting offers email addresses from your address book alongside your saved ones — permission is asked for right there in settings, never behind your back.</string>
+    <string name="d89_f21_title">Dedicated keyboard for URL and email fields</string>
+    <string name="d89_f21_desc">A web address or email field automatically gets its own keyboard row (https://, www., a dedicated @ or slash) — switchable back to the ordinary keyboard from the extra row if you just want to search or type normally.</string>
+    <string name="d89_f22_title">Review what the keyboard has learned</string>
+    <string name="d89_f22_desc">See every word AdaptKey has taught itself from your own typing, kept completely separate from the built-in dictionary, and remove any of them individually.</string>
+    <string name="d89_f23_title">Password manager suggestions</string>
+    <string name="d89_f23_desc">Autofill suggestions from your password manager appear right in the suggestion bar when available.</string>
+    <string name="d89_f24_title">Recognises unhyphenated compounds</string>
+    <string name="d89_f24_desc">Long compound words are recognised and corrected even without a hyphen, from their known component parts.</string>
+    <string name="d89_f25_title">Suggests the missing space in run-together words</string>
+    <string name="d89_f25_desc">Two words typed without a space in between are offered back apart, as a normal suggestion-bar tap.</string>
+    <string name="d89_f26_title">Swipe up for the extra row</string>
+    <string name="d89_f26_desc">An upward swipe on the keyboard reveals a row of extra actions — emoji panel, clearing the clipboard, and a live view of your personal touch-zone model.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Keys</string>
@@ -115,7 +133,7 @@
     <string name="d190_never_record_credentials_summary">Recognised usernames and email addresses are never saved for later suggestion. Never affects passwords - those are never recorded regardless of this setting. Already-saved values keep being suggested either way.</string>
 
     <string name="d191_contacts_suggestions_title">Suggest contacts\' emails</string>
-    <string name="d191_contacts_suggestions_summary">Offers email addresses from your address book alongside your saved credentials, once allowed. Your contacts are read live and never stored in this app - that would be redundant with your address book. Turning this on asks for the Contacts permission once, right here.</string>
+    <string name="d191_contacts_suggestions_summary">Offers email addresses from your address book alongside your saved credentials, once allowed. Your contacts are read live and never stored in this app. Turning this on asks for the Contacts permission once, right here.</string>
     <string name="d191_contacts_permission_denied">Contacts permission not granted - suggestions from contacts stay off.</string>
 
     <string name="c07_title">Shift grace window</string>

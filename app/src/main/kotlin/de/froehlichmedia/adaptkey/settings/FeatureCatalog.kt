@@ -39,6 +39,16 @@ object FeatureCatalog {
         Entry(R.string.d89_f15_title, R.string.d89_f15_desc),
         Entry(R.string.d89_f16_title, R.string.d89_f16_desc),
         Entry(R.string.d89_f17_title, R.string.d89_f17_desc),
-        Entry(R.string.d89_f18_title, R.string.d89_f18_desc)
+        Entry(R.string.d89_f18_title, R.string.d89_f18_desc),
+        // D-192: catalog refreshed - these cover everything user-facing added since the catalog was first
+        // written (D-89, v0.7.43) through D-191, none of which had ever been added here.
+        Entry(R.string.d89_f19_title, R.string.d89_f19_desc),
+        Entry(R.string.d89_f20_title, R.string.d89_f20_desc),
+        Entry(R.string.d89_f21_title, R.string.d89_f21_desc),
+        Entry(R.string.d89_f22_title, R.string.d89_f22_desc),
+        Entry(R.string.d89_f23_title, R.string.d89_f23_desc),
+        Entry(R.string.d89_f24_title, R.string.d89_f24_desc),
+        Entry(R.string.d89_f25_title, R.string.d89_f25_desc),
+        Entry(R.string.d89_f26_title, R.string.d89_f26_desc)
     )
 }

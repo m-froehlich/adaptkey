@@ -6533,3 +6533,42 @@ D-190's own from §121 exactly). 741 unit tests total (740 + 1).
 flow are Android-only glue (`ContentResolver`, `ActivityResultLauncher`), the same established untested gap
 as the rest of D-142. `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - in
 particular the actual on-device permission-dialog flow and a real address-book read need a real test pass.
+
+## §123 - D-192: Feature Catalog Refreshed; "Learn More" Hint; D-191 Summary Trimmed (v0.8.87)
+
+### D-192 - the feature-overview catalog was stale since D-89 (v0.7.43)
+Asked directly: is the Settings feature list still current? Checked via `git log` on `FeatureCatalog.kt`
+itself - untouched since the commit that created it (D-89, v0.7.43); the app is now at v0.8.87. Confirmed
+stale by comparing the 18 existing entries against every spec section added since, filtering out pure bug
+fixes/refinements (not catalog-worthy) from genuine new user-facing capability. Eight were missing:
+credential memory (D-142/D-180/D-190, merged into one entry - detection+suggestion+review+opt-out reads as
+one coherent capability from the user's side), contact-derived email suggestions (D-191, kept separate - its
+own distinct opt-in/permission story), the URL/email dedicated keyboards (D-143/D-158/D-185, merged - same
+underlying idea applied to two field types), the learned-words editor (D-177), password-manager autofill
+suggestions (D-135), unhyphenated-compound recognition (D-116), the mid-word connector-split suggestion
+(D-122), and the extra row itself (§48ff - swipe up for emoji/clear-clipboard/touch-zone-visualisation, never
+catalogued even though it has existed since v0.8.40). `FeatureCatalog.ENTRIES` grew from 18 to 26
+(`d89_f19` … `d89_f26`, continuing the existing numbering - one catalog, not a new feature of its own), all
+three shipped locales (DE/EN/EL). `FeatureCatalogTest`'s own assertions are entry-count-agnostic, so no test
+changes were needed; the growth is exercised by the existing "not empty, every entry has both strings, no
+duplicate resource ids" checks automatically.
+
+### D-192 also - a "Learn more" hint on the feature-overview settings entry
+Requested alongside the catalog refresh: the entry itself gave no visual cue that tapping it opens something
+worth reading. A plain XML `android:summary` string cannot carry a partial colour span on its own, so - like
+`info_version`'s own already-established pattern of setting a preference's summary programmatically -
+`SettingsActivity.onCreatePreferences()` now builds a `SpannableString` (base `d89_summary` text + a new
+`d89_learn_more` string on its own line) and colours only the added line via `ForegroundColorSpan` over a
+new `R.color.link_text` (`#1565C0` - the same blue already used for `suggestion_verbatim_text` /
+`ic_launcher_background`, reused under its own semantic name rather than repurposing an unrelated one).
+
+### D-191 summary trimmed
+The `d191_contacts_suggestions_summary` string's "that would be redundant with your address book" clause -
+originally written as much to explain the design *to the assistant working on it* as to the end user - was
+struck from all three locales per direct feedback that it cluttered the paragraph without adding anything a
+user needs. `AdaptSettings.contactsSuggestionsEnabled`'s own KDoc keeps the fuller reasoning; that is
+developer-facing documentation, not the user-facing string, and was correctly left alone.
+
+No new tests beyond the string/resource changes already covered by `FeatureCatalogTest`'s existing
+assertions. 741 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.

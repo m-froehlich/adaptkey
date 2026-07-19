@@ -7,6 +7,9 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -73,6 +76,24 @@ class SettingsActivity : AppCompatActivity() {
             findPreference<Preference>("info_version")?.summary = runCatching {
                 requireContext().packageManager.getPackageInfo(requireContext().packageName, 0).versionName
             }.getOrNull()
+            
+            // D-192: appends a coloured "Learn more" hint to the feature-overview entry's own summary, so
+            // it visibly reads as a link rather than blending into the surrounding plain-text preferences -
+            // set programmatically (like info_version above) since a plain XML summary string cannot carry
+            // a partial colour span on its own.
+            findPreference<Preference>("d89_feature_overview")?.let { preference ->
+                val base = getString(R.string.d89_summary)
+                val learnMore = getString(R.string.d89_learn_more)
+                val full = "$base\n\n$learnMore"
+                preference.summary = SpannableString(full).apply {
+                    setSpan(
+                        ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.link_text)),
+                        base.length + 2,
+                        full.length,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
             
             findPreference<Preference>("c08_reset_hints")?.setOnPreferenceClickListener {
                 SettingsStore.resetLetterHints(requireContext())

@@ -35,6 +35,20 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§123 (v0.8.87): D-192 - feature catalog refreshed + polish.** `FeatureCatalog.kt` was untouched since
+  D-89 (v0.7.43); confirmed stale via `git log` and grew from 18 to 26 entries (`d89_f19`…`d89_f26`, all
+  three locales) covering everything genuinely new and user-facing since: credential memory (D-142/D-180/
+  D-190, merged into one entry), contact-derived email suggestions (D-191), the URL/email dedicated
+  keyboards (D-143/D-158/D-185, merged), the learned-words editor (D-177), password-manager autofill
+  (D-135), unhyphenated-compound recognition (D-116), the connector-split suggestion (D-122), and the extra
+  row itself (never catalogued before). Also added: a coloured "Learn more" hint on the feature-overview
+  settings entry (new `R.color.link_text`, a `SpannableString` built in `SettingsActivity`, matching
+  `info_version`'s own established programmatic-summary pattern) - and trimmed the D-191 setting's own
+  summary text (the "redundant with your address book" clause was meant to explain the design choice while
+  building it, not for the end user - struck per feedback, `AdaptSettings`'s own KDoc keeps the full
+  reasoning). 741 unit tests total (unchanged - resource-only + `FeatureCatalogTest`'s existing assertions
+  already cover the growth). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+  See spec §123.
 - **§122 (v0.8.86): D-191 - opt-in contact-derived email suggestions.** `READ_CONTACTS` added to the
   manifest (first permission beyond `VIBRATE`; no `INTERNET` either way). New
   `AdaptSettings.contactsSuggestionsEnabled` (default off) threaded through the usual settings pipeline;

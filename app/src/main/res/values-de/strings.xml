@@ -19,6 +19,7 @@
     <!-- D-89: vollständige Feature-Übersicht, damit kein Feature unentdeckt bleibt. -->
     <string name="d89_title">Was AdaptKey alles kann</string>
     <string name="d89_summary">AdaptKey zeichnet nicht nur auf, welche Taste erkannt wurde, sondern die tatsächliche Tipp-Position hinter jedem Buchstaben (Raw-Touch), und passt die Trefferzone jeder Taste laufend an dein persönliches Tippverhalten an - initial vorbelegt durch den bei der Einrichtung gewählten Tipp-Stil, danach fortlaufend feinjustiert.</string>
+    <string name="d89_learn_more">Mehr erfahren</string>
     <string name="d89_f01_title">Adaptives Tipp-Modell</string>
     <string name="d89_f01_desc">Lernt aus dem normalen Tippen dein persönliches Treffermuster für jede Taste – eine kurze, optionale Kalibrierung gibt einen sofortigen Vorsprung, danach verfeinert es sich laufend weiter.</string>
     <string name="d89_f02_title">Umlaut-bewusste Autokorrektur</string>
@@ -55,6 +56,23 @@
     <string name="d89_f17_desc">Deutsch, Englisch und Griechisch haben je ein eigenes Wörterbuch; welche Sprache gerade aktiv ist, wird automatisch aus dem Geschriebenen erkannt.</string>
     <string name="d89_f18_title">Nachweisbar offline</string>
     <string name="d89_f18_desc">Diese Tastatur fordert überhaupt keine Internet-Berechtigung an – das lässt sich in den System-App-Einstellungen selbst nachprüfen.</string>
+
+    <string name="d89_f19_title">Merkt sich Benutzernamen und E-Mails</string>
+    <string name="d89_f19_desc">Erkennt Login-Felder und schlägt beim Tippen deine zuvor verwendeten Benutzernamen und E-Mail-Adressen vor. Jeder gespeicherte Wert lässt sich jederzeit in den Einstellungen einsehen oder entfernen, das Speichern kann auch ganz abgeschaltet werden - Passwörter werden dabei nie angefasst oder aufgezeichnet.</string>
+    <string name="d89_f20_title">E-Mails aus Kontakten vorschlagen</string>
+    <string name="d89_f20_desc">Eine optionale Einstellung bietet zusätzlich E-Mail-Adressen aus deinem Adressbuch an - die Berechtigung dafür wird genau dort in den Einstellungen angefragt, nie im Hintergrund.</string>
+    <string name="d89_f21_title">Eigene Tastatur für URL- und E-Mail-Felder</string>
+    <string name="d89_f21_desc">Ein Webadress- oder E-Mail-Feld bekommt automatisch eine eigene Tastenzeile (https://, www., ein eigenes @ oder Schrägstrich) - über die Extra-Zeile jederzeit zurückschaltbar auf die normale Tastatur, wenn du lieber suchen oder normal tippen willst.</string>
+    <string name="d89_f22_title">Zeigt, was die Tastatur gelernt hat</string>
+    <string name="d89_f22_desc">Zeigt jedes Wort, das AdaptKey sich selbst aus deinem Tippen beigebracht hat, komplett getrennt vom eingebauten Wörterbuch, und lässt jedes davon einzeln wieder entfernen.</string>
+    <string name="d89_f23_title">Vorschläge aus dem Passwort-Manager</string>
+    <string name="d89_f23_desc">Autofill-Vorschläge deines Passwort-Managers erscheinen direkt in der Vorschlagsleiste, wenn verfügbar.</string>
+    <string name="d89_f24_title">Erkennt zusammengesetzte Wörter ohne Bindestrich</string>
+    <string name="d89_f24_desc">Lange zusammengesetzte Wörter werden auch ohne Bindestrich anhand ihrer bekannten Bestandteile erkannt und korrigiert.</string>
+    <string name="d89_f25_title">Schlägt das fehlende Leerzeichen vor</string>
+    <string name="d89_f25_desc">Zwei ohne Leerzeichen zusammengetippte Wörter werden als normaler Vorschlag wieder getrennt angeboten.</string>
+    <string name="d89_f26_title">Nach oben wischen für die Extra-Zeile</string>
+    <string name="d89_f26_desc">Ein Wisch nach oben auf der Tastatur öffnet eine Zeile mit zusätzlichen Aktionen - Emoji-Auswahl, Zwischenablage leeren und eine Live-Ansicht deines persönlichen Tipp-Zonen-Modells.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Tasten</string>
@@ -115,7 +133,7 @@
     <string name="d190_never_record_credentials_summary">Erkannte Benutzernamen und E-Mail-Adressen werden nie zur späteren Vorschlags-Nutzung gespeichert. Betrifft niemals Passwörter - diese werden unabhängig von dieser Einstellung nie aufgezeichnet. Bereits gespeicherte Werte werden weiterhin vorgeschlagen.</string>
 
     <string name="d191_contacts_suggestions_title">E-Mails aus Kontakten vorschlagen</string>
-    <string name="d191_contacts_suggestions_summary">Bietet E-Mail-Adressen aus deinem Adressbuch zusätzlich zu deinen gespeicherten Zugangsdaten an, sobald erlaubt. Deine Kontakte werden live gelesen und nie in dieser App gespeichert - das wäre redundant zum Adressbuch. Beim Aktivieren wird hier einmalig die Kontakte-Berechtigung angefragt.</string>
+    <string name="d191_contacts_suggestions_summary">Bietet E-Mail-Adressen aus deinem Adressbuch zusätzlich zu deinen gespeicherten Zugangsdaten an, sobald erlaubt. Deine Kontakte werden live gelesen und nie in dieser App gespeichert. Beim Aktivieren wird hier einmalig die Kontakte-Berechtigung angefragt.</string>
     <string name="d191_contacts_permission_denied">Kontakte-Berechtigung nicht erteilt - Vorschläge aus Kontakten bleiben aus.</string>
 
     <string name="c07_title">Shift-Schonfenster</string>
