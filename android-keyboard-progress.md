@@ -47,7 +47,7 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   `applyMidWordSplitSuggestion()`/`applySplit()` (the separate D-122 connector-split path) have the same
   class of gap but were not touched - never reproduced, different code path. 736 unit tests total
   (unchanged - `InputConnection` glue, established gap). `:app:assembleDebug`/`:app:testDebugUnitTest`
-  green. Not yet device-confirmed. See spec §117.
+  green. **Device-confirmed (2026-07-19): works as intended, closed.** See spec §117.
 - **§116 (v0.8.80): D-172/D-181 device-confirmed; D-184/D-185 implemented.** "aks"→"als" confirmed working
   problem-free on device - D-172/D-181 (§113) fully closed. D-184: root cause was structural, not the
   duration - `ACTION_DOWN` already cancelled the previous flash but never rendered a genuine "off" frame

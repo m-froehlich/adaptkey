@@ -6278,4 +6278,5 @@ was never reproduced and is a different code path with its own A-05 auto-split c
 
 No new tests - `onSuggestionClicked`'s `InputConnection` interaction is the same established untested
 Android-glue gap as the rest of this function (D-142/D-122/D-144 above it). 736 unit tests total (unchanged).
-`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): works as intended.
+D-183 closed.**
