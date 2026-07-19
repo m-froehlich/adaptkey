@@ -35,7 +35,18 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§118 (v0.8.82): D-186/D-187/D-188.** D-186: `learnWord()`/`learnWordStrong()` now skip
+- **§119 (v0.8.83): D-174 closed.** Root cause confirmed from a real K9 Mail device log: the recipient
+  field's `inputType` correctly classified as EMAIL (`loginFieldKind` was never the bug), but K9 converts
+  the typed address into a recipient "chip" and tears the field's `InputConnection` down the instant focus
+  leaves it - faster than `onFinishInput()`'s own fallback read of it (`getTextBeforeCursor()` came back
+  null, confirmed in the log by a burst of "ground truth unavailable" `onUpdateSelection` callbacks
+  immediately before it). Fixed with a new in-memory `credentialSnapshot` (`AdaptKeyService`) that mirrors
+  every fragment `commitVerbatimFieldFragment()` actually commits into a login-relevant field, used only as
+  a fallback when the `InputConnection` read fails - the ordinary case (connection survives) is unchanged.
+  739 unit tests total (unchanged - `InputConnection` timing glue, not reproducible without the exact
+  app/timing that produced the log). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed. See spec §119.
+- **§118 (v0.8.82): D-186/D-187/D-188 - device-confirmed, all three closed.** D-186: `learnWord()`/`learnWordStrong()` now skip
   `dictionaryStore.isBundledWord(word)` entirely (no write to the learned overlay) instead of reinforcing
   every already-bundled word there - the D-177 design that caused it ("die"/"du"/"immer" flooding the
   Learned Words editor) is reversed by direct instruction. A new `LEARNED_CLEANUP_VERSION`-gated

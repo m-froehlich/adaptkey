@@ -6359,3 +6359,46 @@ style rather than refactoring working code to introduce one.
 No new tests - `WindowInsets` layout glue is Android-only, same class of gap as `CalibrationActivity`'s own
 inset fix. 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+**Device-confirmed (2026-07-19): D-186/D-187/D-188 all work as intended. All three closed.**
+
+## §119 - D-174 Closed: a Fast-Tearing-Down `InputConnection` Beat `onFinishInput`'s Own Read of It (v0.8.83)
+
+D-174 (labelled D-175 in §106, where it was opened one day earlier as a diagnostic-logging-only round after
+"no bug found by reading `captureCredentialIfLoginField` alone" - the same item, the code comment's own
+number was a one-off typo never corrected until now) is now closed, from a real device log: the user's own
+K9 Mail
+recipient ("To:") field, `inputType` variation confirmed `0x20` (`TYPE_TEXT_VARIATION_EMAIL_ADDRESS`) -
+`loginFieldKind` classification itself was never the problem, exactly as the prior static read had already
+concluded. The user typed their own address in full (visible in the log only as separate composing
+fragments between commits - not reproduced here or anywhere else in this repo, by explicit request).
+
+**Root cause**: right as focus left the "To:" field for "Betreff" (Subject), the log shows a burst of five
+`onUpdateSelection` callbacks within about 24ms, each hitting the D-139/§101 "mismatch ... ground truth
+unavailable - ignored conservatively" branch (`ic.getExtractedText()` itself returning null) - K9 converts
+the typed address into a recipient "chip" the instant the field loses focus, tearing down that field's
+`InputConnection` faster than anything can read it. `onFinishInput()`'s own fallback call to
+`captureCredentialIfLoginField()` runs immediately after, and its `ic.getTextBeforeCursor()` read hit that
+exact same dead connection: `"getTextBeforeCursor returned null - kind=EMAIL"` - the value was genuinely
+typed, genuinely classified, and then unrecoverable by the time anything tried to read it back out of the
+document. Neither `handleEnter()`'s own capture path helps here - the user moved to the next field by
+tapping it directly, never triggering the field's IME_ACTION submit at all, a completely ordinary way to
+fill out a multi-field compose form.
+
+**Fixed by no longer depending on being able to read the value back out of a possibly-already-dead
+connection at all**: a new in-memory `credentialSnapshot` (`AdaptKeyService`, reset per field in
+`onStartInput`) mirrors every fragment `commitVerbatimFieldFragment()` actually commits into a login-
+relevant field (gated on `loginFieldKind != NONE`, so a pure `urlMode` field is skipped) - built from data
+the service already assembles for the commit itself, never re-read from the `InputConnection`, so it cannot
+be affected by the same connection dying moments later. `captureCredentialIfLoginField()` still tries
+`ic.getTextBeforeCursor()` first (unchanged, cheap, and correct for the ordinary case where the connection
+survives) and only falls back to `credentialSnapshot + composing` (the still-uncommitted tail, e.g. a
+fragment cut short by the same fast teardown) when that read comes back null. The two sources are never
+concatenated together on the success path - `finishComposingText()` immediately above the read already
+finalises `composing` into the document, so `before` alone already contains it; appending `composing` again
+there would double the tail.
+
+No new tests - `InputConnection`/field-teardown timing is Android-only and not reproducible without the
+exact app/timing that produced the original log; the same established gap as the rest of this function.
+739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.

@@ -296,6 +296,14 @@ class AdaptKeyService : InputMethodService() {
     // the same button (a reliably-detected EMAIL/PASSWORD field is never user-toggleable).
     private var credentialModeManuallyActivated = false
     
+    // D-174: a running in-memory copy of every fragment [commitVerbatimFieldFragment] has committed into
+    // the current login-relevant field (reset per field in onStartInput) - [captureCredentialIfLoginField]'s
+    // fallback when InputConnection.getTextBeforeCursor() itself is already unusable (see that function's
+    // own KDoc for why this is needed at all, confirmed from a real device log: some editors - K9 Mail's
+    // recipient field, converting the typed address into a chip - tear the connection down for that field
+    // so fast that even onFinishInput()'s own read of it comes back null).
+    private val credentialSnapshot = StringBuilder()
+    
     // A-03: the text before the cursor captured at token start, so the language of the recent context
     // (this text plus the token being typed) can be judged without re-reading the field per keystroke.
     private var tokenContextBefore = ""
@@ -801,6 +809,7 @@ class AdaptKeyService : InputMethodService() {
         loginFieldKind = LoginFieldDetector.classify((info?.inputType ?: 0) and InputType.TYPE_MASK_VARIATION)
         credentialCaptured = false
         credentialModeManuallyActivated = false
+        credentialSnapshot.setLength(0)
         settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
         weakSignalKind = if (loginFieldKind == LoginFieldKind.NONE) {
             LoginFieldDetector.weakSignalKind(info?.hintText, info?.fieldName)
@@ -1168,11 +1177,13 @@ class AdaptKeyService : InputMethodService() {
      * @param ic the current input connection
      */
     private fun captureCredentialIfLoginField(ic: InputConnection) {
-        // D-174 (temporary diagnostic): reported that a genuine email address, typed into a field where
-        // credential mode was confirmed active, was never actually learned - no bug found by reading this
-        // function alone (every gate looks correct), so every early-return reason and the final captured
-        // value are logged to see, from a real occurrence, which branch actually fires. Remove once D-174
-        // is closed.
+        // D-174: confirmed from a real device log (K9 Mail's recipient field) - getTextBeforeCursor()
+        // itself can already return null by the time this runs. K9 converts the typed address into a
+        // recipient "chip" the instant focus leaves the field, tearing the InputConnection down faster
+        // than onFinishInput()'s own read of it - the log showed a burst of onUpdateSelection callbacks
+        // with "ground truth unavailable" immediately before this exact null. loginFieldKind classification
+        // itself was never the problem (confirmed EMAIL in the same log). Falls back to credentialSnapshot
+        // (an in-memory record of what was actually committed, unaffected by the connection dying) below.
         val kind = loginFieldKind
         if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured) {
             diag(
@@ -1184,13 +1195,18 @@ class AdaptKeyService : InputMethodService() {
         credentialCaptured = true
         ic.finishComposingText()
         val before = ic.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString()
-        if (before == null) {
-            diag("AdaptKey", "captureCredentialIfLoginField: getTextBeforeCursor returned null - kind=$kind", warn = true)
-            return
-        }
         // A login field's own content is normally the whole field (no internal spaces) - only the
         // trailing run of non-whitespace characters right before the cursor is the credential value.
-        val value = before.takeLastWhile { !it.isWhitespace() }
+        // D-174: when the read above already succeeded, it already reflects the real document - including
+        // whatever composing held, since finishComposingText() just finalised it there - so composing is
+        // NOT appended too, or the still-pending tail would be duplicated. Only the snapshot fallback
+        // (which by construction never includes that same not-yet-committed tail) needs it appended.
+        val value = if (before != null) {
+            before.takeLastWhile { !it.isWhitespace() }
+        } else {
+            diag("AdaptKey", "captureCredentialIfLoginField: getTextBeforeCursor null, using snapshot - kind=$kind", warn = true)
+            (credentialSnapshot.toString() + composing).takeLastWhile { !it.isWhitespace() }
+        }
         if (value.length < MIN_CREDENTIAL_LENGTH) {
             diag("AdaptKey", "captureCredentialIfLoginField: value too short (len=${value.length}) - kind=$kind")
             return
@@ -2453,6 +2469,12 @@ class AdaptKeyService : InputMethodService() {
             clearComposing()
             resetWordEndShift()
             ic.commitText(delimiter, 1)
+            // D-174: mirror what just landed in the real document into the in-memory fallback snapshot -
+            // see captureCredentialIfLoginField's own KDoc. Only login-relevant fields ever get read back
+            // out of it, so a pure urlMode fragment is skipped to avoid pointlessly accumulating it.
+            if (loginFieldKind != LoginFieldKind.NONE) {
+                credentialSnapshot.append(beforeText).append(delimiter)
+            }
             if (afterText.isNotEmpty()) {
                 captureTokenContext(ic)
                 composing.append(afterText)
