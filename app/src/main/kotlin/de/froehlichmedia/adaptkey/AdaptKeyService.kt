@@ -77,7 +77,7 @@ import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
-import de.froehlichmedia.adaptkey.keyboard.SettingsRowView
+import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
 import de.froehlichmedia.adaptkey.keyboard.SignFlip
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
@@ -149,7 +149,7 @@ class AdaptKeyService : InputMethodService() {
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
     private var emojiPanel: EmojiPanelView? = null
-    private var settingsRow: SettingsRowView? = null
+    private var extraRow: ExtraRowView? = null
     private var onboardingView: OnboardingView? = null
     // D-135: platform-rendered Autofill inline suggestions (a saved username/password), shown instead of
     // the ordinary suggestion bar whenever at least one is available for the current field.
@@ -286,12 +286,12 @@ class AdaptKeyService : InputMethodService() {
     private var credentialCaptured = false
     
     // D-142: what LoginFieldDetector.weakSignalKind() found for the current field (only ever computed when
-    // loginFieldKind is still NONE) - drives the settings-row auto-open + button flash nudge in
-    // onStartInputView(), never suggestion behaviour by itself; also what toggleCredentialModeFromSettingsRow()
+    // loginFieldKind is still NONE) - drives the extra-row auto-open + button flash nudge in
+    // onStartInputView(), never suggestion behaviour by itself; also what toggleCredentialModeFromExtraRow()
     // activates into when the user actually taps the nudged button.
     private var weakSignalKind = LoginFieldKind.NONE
     
-    // D-142: whether the current loginFieldKind was switched on via the settings-row button rather than
+    // D-142: whether the current loginFieldKind was switched on via the extra-row button rather than
     // reliably detected from InputType - only a manually-activated mode can be toggled back off again by
     // the same button (a reliably-detected EMAIL/PASSWORD field is never user-toggleable).
     private var credentialModeManuallyActivated = false
@@ -546,7 +546,7 @@ class AdaptKeyService : InputMethodService() {
         bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
         bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
         // D-144: a downward swipe on the bar itself dismisses/closes too, not only on the keyboard body.
-        bar.onSwipeDown = SuggestionBarView.OnSwipeDownListener { dismissKeyboardOrCloseSettingsRow() }
+        bar.onSwipeDown = SuggestionBarView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         bar.visibility = View.VISIBLE
         suggestionBar = bar
         
@@ -556,18 +556,18 @@ class AdaptKeyService : InputMethodService() {
         inlineBar.visibility = View.GONE
         inlineSuggestionsBar = inlineBar
         
-        // §48 / §51: the swipe-up settings row - sits above the suggestion bar (the topmost row while
+        // §48 / §51: the swipe-up extra row - sits above the suggestion bar (the topmost row while
         // open), reserved at zero height and hidden until an upward swipe opens it.
-        val row = SettingsRowView(this)
-        row.onEmojiClick = SettingsRowView.OnEmojiClickListener { openEmojiPanelFromSettingsRow() }
-        row.onSettingsClick = SettingsRowView.OnSettingsClickListener { openSettingsAppFromSettingsRow() }
-        row.onClearClipboardClick = SettingsRowView.OnClearClipboardClickListener { clearClipboardFromSettingsRow() }
-        row.onCredentialModeClick = SettingsRowView.OnCredentialModeClickListener { toggleCredentialModeFromSettingsRow() }
-        row.onTouchZoneToggleClick = SettingsRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromSettingsRow() }
-        row.onUrlModeToggleClick = SettingsRowView.OnUrlModeToggleClickListener { toggleUrlModeFromSettingsRow() }
+        val row = ExtraRowView(this)
+        row.onEmojiClick = ExtraRowView.OnEmojiClickListener { openEmojiPanelFromExtraRow() }
+        row.onSettingsClick = ExtraRowView.OnSettingsClickListener { openSettingsAppFromExtraRow() }
+        row.onClearClipboardClick = ExtraRowView.OnClearClipboardClickListener { clearClipboardFromExtraRow() }
+        row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
+        row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
+        row.onUrlModeToggleClick = ExtraRowView.OnUrlModeToggleClickListener { toggleUrlModeFromExtraRow() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
-        row.onSwipeDown = SettingsRowView.OnSwipeDownListener { dismissKeyboardOrCloseSettingsRow() }
-        settingsRow = row
+        row.onSwipeDown = ExtraRowView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
+        extraRow = row
         
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
@@ -805,12 +805,12 @@ class AdaptKeyService : InputMethodService() {
         // EMAIL/PASSWORD are reliably signalled by InputType; USERNAME has no such signal at all (verified
         // against the real SDK, see LoginFieldDetector's own KDoc), and not even EMAIL is always set on a
         // field that is visibly labelled as one (confirmed on device) - both are only ever reached via the
-        // settings row's manual toggle, optionally nudged by the weak weakSignalKind() below.
+        // extra row's manual toggle, optionally nudged by the weak weakSignalKind() below.
         loginFieldKind = LoginFieldDetector.classify((info?.inputType ?: 0) and InputType.TYPE_MASK_VARIATION)
         credentialCaptured = false
         credentialModeManuallyActivated = false
         credentialSnapshot.setLength(0)
-        settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        extraRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
         weakSignalKind = if (loginFieldKind == LoginFieldKind.NONE) {
             LoginFieldDetector.weakSignalKind(info?.hintText, info?.fieldName)
         } else {
@@ -996,26 +996,29 @@ class AdaptKeyService : InputMethodService() {
             // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
             showClipboardChipIfAvailable()
         }
-        // §48: never carry an open settings row over into a fresh keyboard presentation.
-        settingsRow?.closeImmediately()
-        // D-142: reflect a reliable EMAIL/PASSWORD classification on the toggle button immediately; a weak
-        // (unreliable) email/username signal instead proactively opens the row and flashes the button,
-        // nudging the user to confirm manually rather than silently guessing and risking ordinary text
-        // fields elsewhere being wrongly treated as login fields.
-        settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
-        if (weakSignalKind != LoginFieldKind.NONE) {
-            settingsRow?.open()
-            settingsRow?.flashCredentialModeButton()
+        // §48: never carry an open extra row over into a fresh keyboard presentation.
+        extraRow?.closeImmediately()
+        // D-142 / D-189: reflect credential-mode state on the toggle button, and reveal the row for BOTH a
+        // reliable EMAIL/PASSWORD classification and a weak (unreliable) email/username signal - the
+        // reliable case used to only update the button's background silently, leaving the user with no way
+        // to actually see that credential mode had switched on; the weak-signal case already opened the row
+        // to nudge a manual confirmation. loginFieldKind and weakSignalKind are mutually exclusive
+        // (weakSignalKind is only ever computed while loginFieldKind is still NONE), so this never
+        // double-opens or double-flashes. The flash itself only runs once open() actually finishes - see
+        // that function's own KDoc for why an immediate flash would run while the row is still sliding in.
+        extraRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        if (loginFieldKind != LoginFieldKind.NONE || weakSignalKind != LoginFieldKind.NONE) {
+            extraRow?.open { extraRow?.flashCredentialModeButton() }
         }
         // D-185: the toggle button is reachable only in a real URL-variation field - tracks the field's
         // own type ([isUrlField]), not the live [urlMode] toggle, so it stays visible after being switched
         // off. Unlike the reliable-login-classification case above, a URL field always reveals the row (not
         // only on a weak/uncertain signal) since the button would otherwise be undiscoverable.
         val urlVariationField = isUrlField(info)
-        settingsRow?.urlModeButtonVisible = urlVariationField
-        settingsRow?.urlModeActive = urlMode
+        extraRow?.urlModeButtonVisible = urlVariationField
+        extraRow?.urlModeActive = urlMode
         if (urlVariationField) {
-            settingsRow?.open()
+            extraRow?.open()
         }
         // D-135: never carry a previous field's autofill suggestions over into a fresh one - a new
         // onCreateInlineSuggestionsRequest()/onInlineSuggestionsResponse() round-trip supplies fresh ones
@@ -1487,7 +1490,7 @@ class AdaptKeyService : InputMethodService() {
             KeyCode.SHIFT -> handleShift()
             
             // L-03 / §49: a tap toggles the ?123 layer (D-18's emoji-panel dual purpose retired - the
-            // emoji button now lives in the §48 settings row instead).
+            // emoji button now lives in the §48 extra row instead).
             KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
             
             // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
@@ -1724,7 +1727,7 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Handles a swipe gesture (§4 G-01 … G-03, the L-03 upward swipe to the symbol layer, and §48's
-     * upward-swipe settings row) reported by the keyboard view. Resolves it to an action via
+     * upward-swipe extra row) reported by the keyboard view. Resolves it to an action via
      * [KeyGesture] and executes it.
      *
      * @param key the key the swipe started on (T-01 contact point)
@@ -1742,12 +1745,12 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // G-03: dismiss the keyboard - §48: unless the settings row is open, in which case this
+            // G-03: dismiss the keyboard - §48: unless the extra row is open, in which case this
             // downward swipe closes the row first; only a second one (row already closed) reaches here
             // again to actually dismiss. KeyGesture.resolve() is a pure function with no row-open state of
             // its own, so this re-routing happens here rather than as a distinct GestureAction.
             GestureAction.DISMISS_KEYBOARD -> {
-                dismissKeyboardOrCloseSettingsRow()
+                dismissKeyboardOrCloseExtraRow()
                 true
             }
             
@@ -1769,9 +1772,9 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // §48: upward swipe anywhere else reveals the settings row.
+            // §48: upward swipe anywhere else reveals the extra row.
             GestureAction.OPEN_SETTINGS_ROW -> {
-                openSettingsRow()
+                openExtraRow()
                 true
             }
             
@@ -1808,15 +1811,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §48: opens the settings row (an upward swipe anywhere on the keyboard, except the combined key).
+     * §48: opens the extra row (an upward swipe anywhere on the keyboard, except the combined key).
      */
-    private fun openSettingsRow() {
-        settingsRow?.open()
+    private fun openExtraRow() {
+        extraRow?.open()
     }
     
     /**
-     * §48: closes the settings row - a downward swipe while it is open (see
-     * [dismissKeyboardOrCloseSettingsRow]), or the fresh-field reset in `onStartInputView`. [onClosed] runs
+     * §48: closes the extra row - a downward swipe while it is open (see
+     * [dismissKeyboardOrCloseExtraRow]), or the fresh-field reset in `onStartInputView`. [onClosed] runs
      * once the close animation has finished collapsing the reserved space. D-187: every individual row
      * button used to call this on tap too (§48's original design) - dropped by direct request, reported as
      * generally wrong and confirmed at least for the toggle buttons (touch-zone/credential-mode/URL-mode),
@@ -1825,68 +1828,68 @@ class AdaptKeyService : InputMethodService() {
      * specific action button (emoji/settings/clear-clipboard) auto-closing again is a possible future
      * exception, not reinstated speculatively here.
      */
-    private fun closeSettingsRow(onClosed: () -> Unit = {}) {
-        settingsRow?.close(onClosed) ?: onClosed()
+    private fun closeExtraRow(onClosed: () -> Unit = {}) {
+        extraRow?.close(onClosed) ?: onClosed()
     }
     
     /**
-     * G-03 / §48 / D-144: a downward swipe closes the settings row first when it is open; only a second
+     * G-03 / §48 / D-144: a downward swipe closes the extra row first when it is open; only a second
      * one (row already closed) actually dismisses the keyboard. Shared by every downward-swipe source -
      * the keyboard body ([AdaptKeyboardView.OnSwipeListener] via [handleSwipe]), the suggestion bar
-     * ([de.froehlichmedia.adaptkey.suggestion.SuggestionBarView.OnSwipeDownListener]) and the settings row
-     * itself ([SettingsRowView.OnSwipeDownListener]) - previously only the keyboard body reacted at all.
+     * ([de.froehlichmedia.adaptkey.suggestion.SuggestionBarView.OnSwipeDownListener]) and the extra row
+     * itself ([ExtraRowView.OnSwipeDownListener]) - previously only the keyboard body reacted at all.
      */
-    private fun dismissKeyboardOrCloseSettingsRow() {
-        if (settingsRow?.isOpen == true) {
-            closeSettingsRow()
+    private fun dismissKeyboardOrCloseExtraRow() {
+        if (extraRow?.isOpen == true) {
+            closeExtraRow()
         } else {
             requestHideSelf(0)
         }
     }
     
     /**
-     * §48: the settings row's emoji button - opens the emoji panel, exactly like the combined key used to
-     * before §49 retired its dual purpose. D-187: no longer closes the row - see [closeSettingsRow]'s own
+     * §48: the extra row's emoji button - opens the emoji panel, exactly like the combined key used to
+     * before §49 retired its dual purpose. D-187: no longer closes the row - see [closeExtraRow]'s own
      * KDoc for why button taps stopped auto-closing it.
      */
-    private fun openEmojiPanelFromSettingsRow() {
+    private fun openEmojiPanelFromExtraRow() {
         setSurface(InputSurface.EMOJI)
     }
     
     /**
-     * §48: the settings row's gear button - launches [SettingsActivity], the same `launchFromKeyboard`
+     * §48: the extra row's gear button - launches [SettingsActivity], the same `launchFromKeyboard`
      * mechanism already used for the onboarding calibration/model-import screens. D-187: no longer closes
-     * the row - see [closeSettingsRow]'s own KDoc.
+     * the row - see [closeExtraRow]'s own KDoc.
      */
-    private fun openSettingsAppFromSettingsRow() {
+    private fun openSettingsAppFromExtraRow() {
         launchFromKeyboard(SettingsActivity::class.java)
     }
     
     /**
-     * §69: the settings row's clear-clipboard button - immediately wipes the clipboard, reusing the same
+     * §69: the extra row's clear-clipboard button - immediately wipes the clipboard, reusing the same
      * [clearClipboard] the D-36/D-38 quick-paste flow already calls after a paste (P+ `clearPrimaryClip()`
      * / the pre-P `newPlainText("", "")` fallback), just triggered directly by the user instead of
-     * automatically after a paste. D-187: no longer closes the row - see [closeSettingsRow]'s own KDoc.
+     * automatically after a paste. D-187: no longer closes the row - see [closeExtraRow]'s own KDoc.
      */
-    private fun clearClipboardFromSettingsRow() {
+    private fun clearClipboardFromExtraRow() {
         clearClipboard()
     }
     
     /**
-     * D-156: the settings row's touch-zone-visualisation toggle - flips [AdaptKeyboardView.showTouchModel]
+     * D-156: the extra row's touch-zone-visualisation toggle - flips [AdaptKeyboardView.showTouchModel]
      * live, unlike its only prior use (D-24) which was confined to a separate, non-live preview keyboard in
      * [de.froehlichmedia.adaptkey.settings.TouchModelActivity]. Session-only, like
      * [credentialModeManuallyActivated] - resets on the next keyboard presentation. D-187: no longer closes
-     * the row - see [closeSettingsRow]'s own KDoc.
+     * the row - see [closeExtraRow]'s own KDoc.
      */
-    private fun toggleTouchZoneVisualizationFromSettingsRow() {
+    private fun toggleTouchZoneVisualizationFromExtraRow() {
         val visible = !(keyboardView?.showTouchModel ?: false)
         keyboardView?.showTouchModel = visible
-        settingsRow?.touchZoneVisible = visible
+        extraRow?.touchZoneVisible = visible
     }
     
     /**
-     * D-142: the settings row's credential-mode button - manually switches the currently focused field
+     * D-142: the extra row's credential-mode button - manually switches the currently focused field
      * into credential mode (the saved-username/email suggestion list, immediate learning on submit) when
      * it could not be auto-detected (see [LoginFieldDetector] - `InputType` has no signal for a plain
      * username field at all, and real apps do not always set it even for an email field). Activates as
@@ -1894,9 +1897,9 @@ class AdaptKeyService : InputMethodService() {
      * weak-signal *email* field, not just a generic username fallback), or plain [LoginFieldKind.USERNAME]
      * when tapped with no signal at all. A no-op for a field already reliably classified as EMAIL/PASSWORD -
      * those are not user-toggleable. Tapping again while manually active switches back off. D-187: no
-     * longer closes the row - see [closeSettingsRow]'s own KDoc.
+     * longer closes the row - see [closeExtraRow]'s own KDoc.
      */
-    private fun toggleCredentialModeFromSettingsRow() {
+    private fun toggleCredentialModeFromExtraRow() {
         if (credentialModeManuallyActivated) {
             loginFieldKind = LoginFieldKind.NONE
             credentialModeManuallyActivated = false
@@ -1904,23 +1907,23 @@ class AdaptKeyService : InputMethodService() {
             loginFieldKind = weakSignalKind.takeIf { it != LoginFieldKind.NONE } ?: LoginFieldKind.USERNAME
             credentialModeManuallyActivated = true
         }
-        settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        extraRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
         refreshSuggestions()
     }
     
     /**
-     * D-185: the settings row's URL-keyboard toggle - flips [urlMode] itself (the same flag
+     * D-185: the extra row's URL-keyboard toggle - flips [urlMode] itself (the same flag
      * [isUrlField] seeds it with on field entry), so every consumer that already reads it
      * (the view's own D-143 bottom row, [finalizeAndCommit]'s verbatim-commit branch, [refreshSuggestions]'
      * empty-bar branch) picks up the change with no separate state to keep in sync. Only reachable while
-     * [SettingsRowView.urlModeButtonVisible] is showing the button, i.e. only in a real URL-variation
+     * [ExtraRowView.urlModeButtonVisible] is showing the button, i.e. only in a real URL-variation
      * field - [urlMode] reverts to the field's own default (on) the next time any field is focused. D-187:
-     * no longer closes the row - see [closeSettingsRow]'s own KDoc.
+     * no longer closes the row - see [closeExtraRow]'s own KDoc.
      */
-    private fun toggleUrlModeFromSettingsRow() {
+    private fun toggleUrlModeFromExtraRow() {
         urlMode = !urlMode
         keyboardView?.urlMode = urlMode
-        settingsRow?.urlModeActive = urlMode
+        extraRow?.urlModeActive = urlMode
         refreshSuggestions()
     }
     

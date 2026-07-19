@@ -6402,3 +6402,45 @@ No new tests - `InputConnection`/field-teardown timing is Android-only and not r
 exact app/timing that produced the original log; the same established gap as the rest of this function.
 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+## §120 - D-189: `SettingsRowView` Renamed to `ExtraRowView`; Credential-Mode Reveal + Delayed Flash (v0.8.84)
+
+Two items, requested together: a reliable-credential-field reveal bug found while testing D-174, and a
+rename by direct request.
+
+### Reveal bug - entering a reliably-classified credential field never showed the row
+Reported: entering the E-Mail field sets credential mode, but the row never appears to show it. Root cause,
+confirmed by re-reading `onStartInputView`'s own credential block: it only ever called `open()` (+
+`flashCredentialModeButton()`) when `weakSignalKind != NONE` - the *unreliable*-signal nudge path (D-142).
+A *reliably* classified EMAIL/PASSWORD field (`loginFieldKind` set directly from `InputType`, no nudge
+needed) only ever updated `credentialModeActive`'s background colour, silently, exactly mirroring D-185's
+own "must also reveal the row" requirement for `urlMode` - which already got this right, this path just
+never did. Fixed: the row now opens whenever `loginFieldKind != NONE` **or** `weakSignalKind != NONE`
+(mutually exclusive by construction - `weakSignalKind` is only ever computed while `loginFieldKind` is still
+`NONE` - so this never double-opens). The credential button now also flashes on the reliable path, not only
+the weak-signal one, so a field-entry reveal is never silent.
+
+The flash must wait for the reveal to actually finish - a flash fired the instant `open()` returns would run
+while the row is still mid-slide-in, before the button is even visible. `ExtraRowView.open()` gained an
+`onOpened: () -> Unit = {}` parameter (mirroring `close()`'s existing `onClosed`), invoked once the height
+animation completes (or synchronously if already open, same as `close()`'s own already-closed case) - the
+call site is now `extraRow?.open { extraRow?.flashCredentialModeButton() }`.
+
+### D-189 - `SettingsRowView` → `ExtraRowView`
+Requested directly: the class/variable/function names all said "settings row", but the row long ago outgrew
+being about the settings button alone (emoji, clear-clipboard, touch-zone, credential-mode and URL-mode
+buttons all followed) - by the user's own description, still mentally reaching for "extra row" and having to
+translate every time "settings row" came up. Mechanical rename, no behaviour change beyond the two items
+above: `SettingsRowView.kt` → `ExtraRowView.kt` (class `SettingsRowView` → `ExtraRowView`), and every
+`AdaptKeyService` identifier that said "SettingsRow"/"settingsRow" (the `extraRow` field, `openExtraRow()`/
+`closeExtraRow()`/`dismissKeyboardOrCloseExtraRow()`, and every `...FromExtraRow()` button handler renamed
+from `...FromSettingsRow()`) - `openSettingsAppFromExtraRow()` keeps "Settings" only where it genuinely
+still means the Settings app (the gear button's own action), not the row. Prose "settings row" /
+"settings-row" in `AdaptKeyService`'s own comments updated to "extra row" / "extra-row" throughout, for the
+same reason - a half-renamed codebase would not actually fix the described mental friction. Historical
+spec/progress entries before this section are deliberately left saying "settings row" - this file's own
+append-only convention (§48 etc.) records what was true at the time, not retroactively rewritten.
+
+No new tests - button-tap/reveal wiring is the same established untested Android-glue gap as every other
+extra-row handler. 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+Not yet device-confirmed.

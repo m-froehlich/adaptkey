@@ -35,6 +35,17 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§120 (v0.8.84): D-189.** `SettingsRowView` renamed to `ExtraRowView` throughout (class/file, the
+  `extraRow` field, every `AdaptKeyService` handler - `openExtraRow`/`closeExtraRow`/
+  `dismissKeyboardOrCloseExtraRow`/every `...FromExtraRow()` button handler; `openSettingsAppFromExtraRow()`
+  keeps "Settings" only for the gear's own Settings-app action) - requested directly, the row long ago
+  outgrew being about the settings button alone. Bundled with a reveal-bug fix found while testing D-174:
+  entering a *reliably* classified EMAIL/PASSWORD field set `credentialModeActive` silently, never opening
+  the row to show it - only the *weak-signal* nudge path did. Now opens for both (mutually exclusive by
+  construction, never double-opens), and the credential button flashes on both paths too, deferred via a new
+  `ExtraRowView.open(onOpened)` callback so it fires once the row's slide-in animation has actually finished,
+  not while still mid-animation. 739 unit tests total (unchanged). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See spec §120.
 - **§119 (v0.8.83): D-174 closed.** Root cause confirmed from a real K9 Mail device log: the recipient
   field's `inputType` correctly classified as EMAIL (`loginFieldKind` was never the bug), but K9 converts
   the typed address into a recipient "chip" and tears the field's `InputConnection` down the instant focus

@@ -22,10 +22,14 @@ import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 
 /**
- * §48 / §51 / §69: the swipe-up settings row - the emoji button (left edge), a clear-clipboard button and
+ * §48 / §51 / §69: the swipe-up extra row - the emoji button (left edge), a clear-clipboard button and
  * a settings gear (right edge, clear-clipboard immediately to its left), revealed above the suggestion bar
  * (the topmost row while open) by an upward swipe anywhere on the keyboard (mirroring G-03's
  * downward-dismiss-anywhere).
+ *
+ * D-189: renamed from `SettingsRowView` - the row grew well past its original settings-button-only purpose
+ * (emoji/clear-clipboard/touch-zone/credential-mode/URL-mode buttons all followed), and "settings" as the
+ * name kept reading as narrower than what the row actually does, by direct request.
  *
  * D-132 (second pass - the first attempt below didn't fix the reported "pops in" complaint): the row sits
  * in the same parent [android.widget.LinearLayout] as the suggestion bar and keyboard *below* it, so the
@@ -50,7 +54,7 @@ import de.froehlichmedia.adaptkey.gesture.SwipeGesture
  * [onSwipeDown] - mirroring [AdaptKeyboardView]'s own G-03 swipe-down-to-dismiss, which previously only
  * reacted on the keyboard's own key field, not this row.
  */
-class SettingsRowView @JvmOverloads constructor(
+class ExtraRowView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -322,16 +326,19 @@ class SettingsRowView @JvmOverloads constructor(
     
     /**
      * Reveals the row: animates its reserved layout height from 0 up to [ROW_HEIGHT_DP], so the suggestion
-     * bar/keyboard below it shift down in the same motion as the row's own content becoming visible. A
-     * no-op while already open.
+     * bar/keyboard below it shift down in the same motion as the row's own content becoming visible.
+     * [onOpened] runs once fully expanded (also invoked synchronously when already open) - D-189: needed so
+     * a caller-triggered effect on one of the row's own buttons (e.g. [flashCredentialModeButton]) can wait
+     * until the row is actually visible, instead of running while it is still sliding into place.
      */
-    fun open() {
+    fun open(onOpened: () -> Unit = {}) {
         if (isOpen) {
+            onOpened()
             return
         }
         isOpen = true
         visibility = View.VISIBLE
-        animateHeight(from = 0, to = dp(ROW_HEIGHT_DP)) {}
+        animateHeight(from = 0, to = dp(ROW_HEIGHT_DP), onOpened)
     }
     
     /**
@@ -352,8 +359,8 @@ class SettingsRowView @JvmOverloads constructor(
     
     /**
      * Resets the row to closed with no animation - a fresh keyboard presentation should never carry over
-     * a settings row left open from a previous session (e.g. the keyboard was dismissed some other way
-     * while the row was showing).
+     * an extra row left open from a previous session (e.g. the keyboard was dismissed some other way while
+     * the row was showing).
      */
     fun closeImmediately() {
         heightAnimator?.cancel()
