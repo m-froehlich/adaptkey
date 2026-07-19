@@ -18,6 +18,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
@@ -44,6 +46,27 @@ class BlacklistActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blacklist)
         title = getString(R.string.blacklist_title)
+        
+        // D-188: same edge-to-edge inset fix as CalibrationActivity's own K-01 fix (§13) - Android 15
+        // (targetSdk 35) draws this activity edge-to-edge too, so its top/bottom controls (language
+        // spinner, add row, list) were sliding under the status bar/display cutout and the gesture-nav
+        // area, unusable there. Adds the inset on top of the layout's own static 16dp padding rather than
+        // replacing it, so the existing spacing is unchanged everywhere the inset itself is zero.
+        val root = findViewById<View>(R.id.blacklist_root)
+        val basePadding = root.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            v.setPadding(
+                basePadding,
+                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
+                basePadding + maxOf(navBars.bottom, gestures.bottom)
+            )
+            insets
+        }
         
         openStore(language)
         listView = findViewById(R.id.blacklist_list)

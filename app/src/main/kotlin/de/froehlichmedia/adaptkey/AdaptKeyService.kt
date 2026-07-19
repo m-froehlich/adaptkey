@@ -1799,8 +1799,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §48: closes the settings row (a downward swipe while it is open, or either of its own buttons
-     * being tapped). [onClosed] runs once the close animation has finished collapsing the reserved space.
+     * §48: closes the settings row - a downward swipe while it is open (see
+     * [dismissKeyboardOrCloseSettingsRow]), or the fresh-field reset in `onStartInputView`. [onClosed] runs
+     * once the close animation has finished collapsing the reserved space. D-187: every individual row
+     * button used to call this on tap too (§48's original design) - dropped by direct request, reported as
+     * generally wrong and confirmed at least for the toggle buttons (touch-zone/credential-mode/URL-mode),
+     * where it also fought the toggle's own purpose (e.g. hiding the touch-zone overlay behind the row it
+     * was meant to reveal). Left in place only for the swipe-down gesture and the field-reset path; a
+     * specific action button (emoji/settings/clear-clipboard) auto-closing again is a possible future
+     * exception, not reinstated speculatively here.
      */
     private fun closeSettingsRow(onClosed: () -> Unit = {}) {
         settingsRow?.close(onClosed) ?: onClosed()
@@ -1822,43 +1829,44 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §48: the settings row's emoji button - closes the row and opens the emoji panel, exactly like the
-     * combined key used to before §49 retired its dual purpose.
+     * §48: the settings row's emoji button - opens the emoji panel, exactly like the combined key used to
+     * before §49 retired its dual purpose. D-187: no longer closes the row - see [closeSettingsRow]'s own
+     * KDoc for why button taps stopped auto-closing it.
      */
     private fun openEmojiPanelFromSettingsRow() {
-        closeSettingsRow { setSurface(InputSurface.EMOJI) }
+        setSurface(InputSurface.EMOJI)
     }
     
     /**
-     * §48: the settings row's gear button - closes the row and launches [SettingsActivity], the same
-     * `launchFromKeyboard` mechanism already used for the onboarding calibration/model-import screens.
+     * §48: the settings row's gear button - launches [SettingsActivity], the same `launchFromKeyboard`
+     * mechanism already used for the onboarding calibration/model-import screens. D-187: no longer closes
+     * the row - see [closeSettingsRow]'s own KDoc.
      */
     private fun openSettingsAppFromSettingsRow() {
-        closeSettingsRow { launchFromKeyboard(SettingsActivity::class.java) }
+        launchFromKeyboard(SettingsActivity::class.java)
     }
     
     /**
-     * §69: the settings row's clear-clipboard button - closes the row and immediately wipes the clipboard,
-     * reusing the same [clearClipboard] the D-36/D-38 quick-paste flow already calls after a paste (P+
-     * `clearPrimaryClip()` / the pre-P `newPlainText("", "")` fallback), just triggered directly by the
-     * user instead of automatically after a paste.
+     * §69: the settings row's clear-clipboard button - immediately wipes the clipboard, reusing the same
+     * [clearClipboard] the D-36/D-38 quick-paste flow already calls after a paste (P+ `clearPrimaryClip()`
+     * / the pre-P `newPlainText("", "")` fallback), just triggered directly by the user instead of
+     * automatically after a paste. D-187: no longer closes the row - see [closeSettingsRow]'s own KDoc.
      */
     private fun clearClipboardFromSettingsRow() {
-        closeSettingsRow { clearClipboard() }
+        clearClipboard()
     }
     
     /**
-     * D-156: the settings row's touch-zone-visualisation toggle - closes the row (so the overlay is
-     * actually visible on the real keyboard underneath, not hidden behind the row) and flips
-     * [AdaptKeyboardView.showTouchModel] live, unlike its only prior use (D-24) which was confined to a
-     * separate, non-live preview keyboard in [de.froehlichmedia.adaptkey.settings.TouchModelActivity].
-     * Session-only, like [credentialModeManuallyActivated] - resets on the next keyboard presentation.
+     * D-156: the settings row's touch-zone-visualisation toggle - flips [AdaptKeyboardView.showTouchModel]
+     * live, unlike its only prior use (D-24) which was confined to a separate, non-live preview keyboard in
+     * [de.froehlichmedia.adaptkey.settings.TouchModelActivity]. Session-only, like
+     * [credentialModeManuallyActivated] - resets on the next keyboard presentation. D-187: no longer closes
+     * the row - see [closeSettingsRow]'s own KDoc.
      */
     private fun toggleTouchZoneVisualizationFromSettingsRow() {
         val visible = !(keyboardView?.showTouchModel ?: false)
         keyboardView?.showTouchModel = visible
         settingsRow?.touchZoneVisible = visible
-        closeSettingsRow()
     }
     
     /**
@@ -1869,7 +1877,8 @@ class AdaptKeyService : InputMethodService() {
      * [weakSignalKind] when that nudge is what prompted the tap (so domain completion still works for a
      * weak-signal *email* field, not just a generic username fallback), or plain [LoginFieldKind.USERNAME]
      * when tapped with no signal at all. A no-op for a field already reliably classified as EMAIL/PASSWORD -
-     * those are not user-toggleable. Tapping again while manually active switches back off.
+     * those are not user-toggleable. Tapping again while manually active switches back off. D-187: no
+     * longer closes the row - see [closeSettingsRow]'s own KDoc.
      */
     private fun toggleCredentialModeFromSettingsRow() {
         if (credentialModeManuallyActivated) {
@@ -1880,7 +1889,7 @@ class AdaptKeyService : InputMethodService() {
             credentialModeManuallyActivated = true
         }
         settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
-        closeSettingsRow { refreshSuggestions() }
+        refreshSuggestions()
     }
     
     /**
@@ -1889,13 +1898,14 @@ class AdaptKeyService : InputMethodService() {
      * (the view's own D-143 bottom row, [finalizeAndCommit]'s verbatim-commit branch, [refreshSuggestions]'
      * empty-bar branch) picks up the change with no separate state to keep in sync. Only reachable while
      * [SettingsRowView.urlModeButtonVisible] is showing the button, i.e. only in a real URL-variation
-     * field - [urlMode] reverts to the field's own default (on) the next time any field is focused.
+     * field - [urlMode] reverts to the field's own default (on) the next time any field is focused. D-187:
+     * no longer closes the row - see [closeSettingsRow]'s own KDoc.
      */
     private fun toggleUrlModeFromSettingsRow() {
         urlMode = !urlMode
         keyboardView?.urlMode = urlMode
         settingsRow?.urlModeActive = urlMode
-        closeSettingsRow { refreshSuggestions() }
+        refreshSuggestions()
     }
     
     /**
@@ -3169,11 +3179,20 @@ class AdaptKeyService : InputMethodService() {
         if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
             return LearnRecord(word ?: "", previousWord, LearnOutcome.SKIPPED)
         }
-        // D-37: a word already in the dictionary is reinforced immediately; a genuinely new word is only
-        // counted up and promoted once it has been committed LEARN_THRESHOLD times, so a one-off typo is
-        // not eagerly learned as a real word.
+        // D-37: an already-*learned* word is reinforced immediately; a genuinely new word is only counted
+        // up and promoted once it has been committed LEARN_THRESHOLD times, so a one-off typo is not
+        // eagerly learned as a real word.
         val context = previousWord
-        val outcome = if (provider.isKnownWord(word)) {
+        val outcome = if (dictionaryStore.isBundledWord(word)) {
+            // D-186: a word already in the *bundled* dictionary (any casing - isBundledWord's own lookup
+            // key is lowercased) must never be written to the learned overlay at all. D-177's original
+            // design reinforced it there too ("frequency personalisation"), but every commit of an
+            // ordinary word ("die", "du", "immer", ...) hitting this branch flooded the Learned Words
+            // editor with plain vocabulary, defeating its purpose as a review list of what was actually
+            // *taught*. There is nothing to learn about a word the dictionary already ships with.
+            LearnOutcome.SKIPPED
+        } else if (provider.isKnownWord(word)) {
+            // Not bundled, but already known - i.e. a genuinely previously-learned word - reinforce it.
             dictionaryStore.learn(word, context)
             LearnOutcome.LEARNED
         } else if (isPendingBlacklistRecurrence(word)) {
@@ -3238,7 +3257,7 @@ class AdaptKeyService : InputMethodService() {
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
-        if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
+        if (word.isNullOrEmpty() || !word.all { it.isLetter() } || dictionaryStore.isBundledWord(word)) {
             return
         }
         dictionaryStore.learn(word, previousWord)

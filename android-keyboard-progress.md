@@ -35,6 +35,20 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§118 (v0.8.82): D-186/D-187/D-188.** D-186: `learnWord()`/`learnWordStrong()` now skip
+  `dictionaryStore.isBundledWord(word)` entirely (no write to the learned overlay) instead of reinforcing
+  every already-bundled word there - the D-177 design that caused it ("die"/"du"/"immer" flooding the
+  Learned Words editor) is reversed by direct instruction. A new `LEARNED_CLEANUP_VERSION`-gated
+  `purgeBundledDuplicatesFromLearned()` (mirrors D-178's `BUNDLED_DICTIONARY_VERSION` precedent) flushes
+  existing installs' accumulated duplicates once. D-187: none of the six settings-row button handlers
+  auto-closes the row anymore (was `closeSettingsRow { action }` for every one) - by direct instruction, at
+  minimum for the toggle buttons, for now across the board; `closeSettingsRow()` itself still serves the
+  swipe-down gesture and the fresh-field reset. D-188: `BlacklistActivity`/`LearnedWordsActivity`/
+  `CredentialsActivity` gained the same `WindowInsets` edge-to-edge padding fix `CalibrationActivity` already
+  had (K-01/§13) - their controls were sliding under the status bar/cutout/gesture-nav, same root cause,
+  same fix, applied to all three even though only two were named in the report. 3 new tests
+  (`SqliteDictionaryStoreRoboTest`: learned-cleanup version + purge). 739 unit tests total (736 + 3).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of the three device-confirmed yet. See spec §118.
 - **§117 (v0.8.81): D-183 fixed.** Root cause confirmed from code, not the editor (initial Google Keep
   logs were a different, already-tracked D-139-class symptom - no suggestion tap in them at all; a fourth,
   Signal-based log isolated the real mechanism). `onSuggestionClicked()`'s existing D-144 "don't double a

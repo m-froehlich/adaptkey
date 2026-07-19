@@ -6280,3 +6280,82 @@ No new tests - `onSuggestionClicked`'s `InputConnection` interaction is the same
 Android-glue gap as the rest of this function (D-142/D-122/D-144 above it). 736 unit tests total (unchanged).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): works as intended.
 D-183 closed.**
+
+## §118 - D-186/D-187/D-188: Learned-Overlay Flooding, Settings-Row Auto-Close, List-Activity Insets (v0.8.82)
+
+Three items from the same device-feedback round; D-186 fixed forward + a historical cleanup migration,
+D-187 and D-188 are straightforward behavioural/layout fixes with no design ambiguity worth discussing first.
+
+### D-186 - the learned-words overlay was flooded with ordinary bundled vocabulary
+Reported: the Learned Words editor (§110) filled up with plain dictionary words ("die", "du", "immer", ...),
+making it useless as a review list of what was actually *taught*. Root cause, confirmed directly from the
+code: `AdaptKeyService.learnWord()`'s first branch (`provider.isKnownWord(word)` - true for *any* known word,
+bundled or learned) unconditionally called `dictionaryStore.learn(word, context)` on every single commit of
+an already-bundled word - `SqliteDictionaryStore.learn()`'s own KDoc *already* documented this as deliberate
+(D-177: "always the learned table, regardless of whether word is also a bundled entry ... reinforcing an
+already-bundled word ... adds/updates a small personal overlay ... for ranking"). That original design traded
+a small ranking-personalisation signal for exactly this flooding, and the user has now weighed that trade-off
+directly and rejected it: a bundled word must never be written to the learned overlay at all, in any casing.
+
+Fixed forward: `learnWord()` now checks `dictionaryStore.isBundledWord(word)` (already existed on the
+interface, already case-insensitive - `entryOfIn`'s lookup key is `word.lowercase()`) *before* consulting
+`provider.isKnownWord()`, and returns `LearnOutcome.SKIPPED` immediately when true - nothing to learn about a
+word the dictionary already ships with. The remaining `provider.isKnownWord()` branch now only ever fires for
+a genuinely previously-*learned* word (not bundled), still reinforcing it as before. `learnWordStrong()`
+(D-13's "undo a wrong split" promotion) got the same guard for consistency, though in practice it can only
+ever receive an unknown word (A-05 only splits tokens that were unknown to begin with). `reinforceFromTier3()`
+needed no change - `AdaptiveLearning.learningSignal()` already returns `null` whenever `tier1KnewWord` is
+true, which already covers bundled words (`isKnownWord` merges both sources), so it never could have written
+one.
+
+Historical cleanup: fixing the write path does nothing for words already flooded into existing installs, so
+- mirroring D-178/§111's own precedent exactly (`BUNDLED_DICTIONARY_VERSION` gating a one-time
+`resetBundledWords()`) - a new `LEARNED_CLEANUP_VERSION` (`DictionaryLoader`) gates a one-time
+`SqliteDictionaryStore.purgeBundledDuplicatesFromLearned()` per store on the next load, tracked separately
+(`learnedCleanupVersion()`/`setLearnedCleanupVersion()`, its own `TABLE_META` key) from the bundled-reseed
+version so the two migrations stay independent. Deletes every `TABLE_LEARNED`/`TABLE_LEARNED_BIGRAMS` row
+whose key also exists in `TABLE_WORDS` - never touches `TABLE_WORDS`/`TABLE_BIGRAMS`, the blacklist, or a
+genuinely self-taught word (one with no bundled counterpart).
+
+3 new tests (`SqliteDictionaryStoreRoboTest`: `learnedCleanupVersion` default/round-trip,
+`purgeBundledDuplicatesFromLearned` removes only the bundled duplicate). 739 unit tests total (736 + 3).
+`AdaptKeyService.learnWord`/`learnWordStrong` themselves are the same established untested Android-glue gap
+as the rest of that file. `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+### D-187 - the settings row auto-closed after every button tap
+Reported, by direct instruction: the row should generally not hide itself right after a button confirms an
+action - at minimum never for the toggle buttons, and for now not at all, pending further feedback on
+whether any specific *action* button (not a toggle) should get it back. Mechanical fix, no design ambiguity:
+every one of the six settings-row button handlers in `AdaptKeyService` (`openEmojiPanelFromSettingsRow`,
+`openSettingsAppFromSettingsRow`, `clearClipboardFromSettingsRow`, `toggleTouchZoneVisualizationFromSettingsRow`,
+`toggleCredentialModeFromSettingsRow`, `toggleUrlModeFromSettingsRow`) no longer wraps its action in
+`closeSettingsRow { ... }` - the action now runs directly, and the row stays open. For the toggle buttons
+this also *fixes* a real functional conflict the old code introduced for its own convenience:
+`toggleTouchZoneVisualizationFromSettingsRow`'s auto-close existed specifically "so the overlay is actually
+visible ... not hidden behind the row" - i.e. the previous design required closing the row to see the very
+thing the toggle turns on, which is exactly the kind of side effect the user is now rejecting outright.
+`closeSettingsRow()` itself is untouched - still used by the downward-swipe-to-dismiss gesture
+(`dismissKeyboardOrCloseSettingsRow`) and the unconditional fresh-field reset in `onStartInputView`, neither
+of which is "a button tap confirming an action".
+
+No new tests - button-tap wiring is the same established untested Android-glue gap as every other settings-
+row handler. 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.
+
+### D-188 - list-editor activities' controls slid under the notch/gesture-nav again
+Reported: controls in the Learned Words and Credentials list editors were unreachable, pushed under the
+display cutout/gesture-nav area. Same root cause as K-01's own edge-to-edge fix (§13): Android 15
+(targetSdk 35) draws every activity edge-to-edge, and `BlacklistActivity`/`LearnedWordsActivity`/
+`CredentialsActivity` (added D-112/D-177/D-180, all three structurally identical - language spinner/list
+editors) never got `CalibrationActivity`'s own inset-padding fix, only a static `android:padding="16dp"` in
+each layout XML. Fixed identically in all three (not just the two the report named - same layout, same bug):
+each root `LinearLayout` gained an `android:id`, and `onCreate()` now installs the same
+`ViewCompat.setOnApplyWindowInsetsListener` CalibrationActivity already uses (`maxOf(statusBars, cutout)` on
+top, `maxOf(navigationBars, systemGestures)` on bottom) - added *on top of* the existing static 16dp rather
+than replacing it, so spacing is unchanged wherever the inset itself is zero. Kept as three near-identical
+inline blocks rather than extracting a shared helper, matching `CalibrationActivity`'s own existing inline
+style rather than refactoring working code to introduce one.
+
+No new tests - `WindowInsets` layout glue is Android-only, same class of gap as `CalibrationActivity`'s own
+inset fix. 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.

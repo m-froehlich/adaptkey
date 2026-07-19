@@ -16,6 +16,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
@@ -48,6 +50,24 @@ class LearnedWordsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learned_words)
         title = getString(R.string.learned_words_title)
+        
+        // D-188: same edge-to-edge inset fix as CalibrationActivity's own K-01 fix (§13) - see
+        // BlacklistActivity's identical block for the full reasoning.
+        val root = findViewById<View>(R.id.learned_words_root)
+        val basePadding = root.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            v.setPadding(
+                basePadding,
+                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
+                basePadding + maxOf(navBars.bottom, gestures.bottom)
+            )
+            insets
+        }
         
         openStore(language)
         listView = findViewById(R.id.learned_words_list)

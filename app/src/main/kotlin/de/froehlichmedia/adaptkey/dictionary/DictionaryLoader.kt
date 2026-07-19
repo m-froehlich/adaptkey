@@ -32,6 +32,14 @@ object DictionaryLoader {
     private const val BUNDLED_DICTIONARY_VERSION = 1
     
     /**
+     * D-186: bump to force a one-time [SqliteDictionaryStore.purgeBundledDuplicatesFromLearned] on every
+     * existing install's next load - flushes bundled words ("die", "du", "immer", ...) that a pre-D-186
+     * build wrote into the learned overlay on every single reinforcement, flooding the Learned Words
+     * editor with plain vocabulary instead of just what was actually taught.
+     */
+    private const val LEARNED_CLEANUP_VERSION = 1
+    
+    /**
      * The SQLite database file backing [language]'s dictionary. Public so the C-05 blacklist editor can
      * open the very store the running keyboard uses for that language.
      *
@@ -59,6 +67,10 @@ object DictionaryLoader {
                 store.resetBundledWords()
                 seed(context, language, store)
                 store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
+            }
+            if (store.learnedCleanupVersion() < LEARNED_CLEANUP_VERSION) {
+                store.purgeBundledDuplicatesFromLearned()
+                store.setLearnedCleanupVersion(LEARNED_CLEANUP_VERSION)
             }
             store
         }

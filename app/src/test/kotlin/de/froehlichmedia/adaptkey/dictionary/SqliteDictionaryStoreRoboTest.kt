@@ -243,4 +243,40 @@ class SqliteDictionaryStoreRoboTest {
         assertEquals(1L, store.bigramFrequency("der", "aks"))
         store.close()
     }
+    
+    @Test
+    fun learnedCleanupVersionDefaultsToZeroForAStoreThatNeverRecordedOne() {
+        val store = store("cleanup-version-default.db")
+        
+        assertEquals(0, store.learnedCleanupVersion())
+        store.close()
+    }
+    
+    @Test
+    fun setLearnedCleanupVersionAndLearnedCleanupVersionRoundTrip() {
+        val store = store("cleanup-version-roundtrip.db")
+        
+        store.setLearnedCleanupVersion(1)
+        assertEquals(1, store.learnedCleanupVersion())
+        
+        store.setLearnedCleanupVersion(2)
+        assertEquals(2, store.learnedCleanupVersion())
+        store.close()
+    }
+    
+    @Test
+    fun purgeBundledDuplicatesFromLearnedRemovesOnlyWordsAlsoInTheBundledDictionary() {
+        val store = store("purge-bundled-duplicates.db")
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", "der")
+        store.learn("flauschbeere", "die")
+        
+        store.purgeBundledDuplicatesFromLearned()
+        
+        assertFalse(store.learnedWords().any { it.word == "hund" })
+        assertTrue(store.learnedWords().any { it.word == "flauschbeere" })
+        // "hund" is still known - it comes from the untouched bundled table, not the purged overlay.
+        assertTrue(store.isKnownWord("hund"))
+        store.close()
+    }
 }

@@ -153,6 +153,53 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
     
+    /**
+     * D-186: removes every [TABLE_LEARNED] / [TABLE_LEARNED_BIGRAMS] row whose key also exists in
+     * [TABLE_WORDS] - a one-time flush for installs that accumulated bundled-word duplicates in the
+     * learned overlay before [learn] stopped writing them there at all (see [learn]'s own KDoc). Never
+     * touches [TABLE_WORDS]/[TABLE_BIGRAMS], the blacklist, or a genuinely self-taught word (one with no
+     * bundled counterpart).
+     */
+    fun purgeBundledDuplicatesFromLearned() {
+        val database = db
+        database.beginTransaction()
+        try {
+            database.execSQL("DELETE FROM $TABLE_LEARNED WHERE wkey IN (SELECT wkey FROM $TABLE_WORDS)")
+            database.execSQL("DELETE FROM $TABLE_LEARNED_BIGRAMS WHERE wkey IN (SELECT wkey FROM $TABLE_WORDS)")
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+    
+    /**
+     * D-186: the learned-overlay cleanup version last applied to this store, or 0 if never recorded -
+     * mirrors [bundledContentVersion]'s own versioning scheme, but for [purgeBundledDuplicatesFromLearned]
+     * instead of a bundled reseed.
+     *
+     * @return the recorded version, or 0 if none is recorded yet
+     */
+    fun learnedCleanupVersion(): Int {
+        db.rawQuery("SELECT value FROM $TABLE_META WHERE key = ?", arrayOf(META_KEY_LEARNED_CLEANUP_VERSION)).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getString(0).toIntOrNull() ?: 0 else 0
+        }
+    }
+    
+    /**
+     * Records the learned-overlay cleanup version this store now holds, so a later
+     * [DictionaryLoader.loadStores] call does not run [purgeBundledDuplicatesFromLearned] again until the
+     * constant is bumped further.
+     *
+     * @param version the version to record
+     */
+    fun setLearnedCleanupVersion(version: Int) {
+        val values = ContentValues().apply {
+            put("key", META_KEY_LEARNED_CLEANUP_VERSION)
+            put("value", version.toString())
+        }
+        db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+    
     override fun putBigram(previousWord: String, word: String, count: Long) {
         putBigramInternal(TABLE_BIGRAMS, previousWord, word, count)
     }
@@ -498,6 +545,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val TABLE_PENDING_BLACKLIST = "pending_blacklist"
         private const val TABLE_META = "meta"
         private const val META_KEY_BUNDLED_VERSION = "bundled_version"
+        private const val META_KEY_LEARNED_CLEANUP_VERSION = "learned_cleanup_version"
         
         // Upper bound on autocorrect candidates scanned per keystroke (bounds worst-case latency).
         private const val CANDIDATE_LIMIT = 2000
