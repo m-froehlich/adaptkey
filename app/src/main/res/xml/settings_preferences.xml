@@ -235,6 +235,12 @@
             android:summary="@string/d190_never_record_credentials_summary"
             android:defaultValue="false" />
 
+        <SwitchPreferenceCompat
+            android:key="d191_contacts_suggestions_enabled"
+            android:title="@string/d191_contacts_suggestions_title"
+            android:summary="@string/d191_contacts_suggestions_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_capitalisation">

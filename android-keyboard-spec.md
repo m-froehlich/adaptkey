@@ -6478,3 +6478,58 @@ one, and the setting's own name/summary is scoped to recording only.
 `tier3Enabled`/`diagnosticLogEnabled` tests exactly). 740 unit tests total (739 + 1). `AdaptKeyService`'s own
 two gated call sites are the same established untested Android-glue gap as the rest of D-142/D-174.
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §122 - D-191: Opt-In Contact-Derived Email Suggestions (v0.8.86)
+
+Follow-up to §121's Contacts-permission discussion: the user weighed the "keyboard asking for Contacts"
+trust cost directly and confirmed the recommended shape - opt-in only, permission requested exactly at the
+moment the Settings toggle is switched on, never proactively on first use of an email field (confirmed not
+buildable that way regardless - only an `Activity` can show the runtime permission dialog, not the IME's own
+`Service`). Contacts are read live at suggestion time and never persisted locally, by explicit request -
+storing them would be redundant with the address book itself.
+
+**Manifest**: `READ_CONTACTS` added (a real, visible change to the app's permission footprint - the first
+one beyond `VIBRATE`, still declaring no `INTERNET` either way, so the provably-offline guarantee is
+unaffected). Declaring it in the manifest does not itself request or grant anything; nothing changes for a
+user who never turns the new setting on.
+
+**Settings (D-191)**: new `AdaptSettings.contactsSuggestionsEnabled` (default off), threaded through
+`RawSettings`/`SettingsMapper`/`SettingsStore` exactly like every other simple boolean setting
+(`d191_contacts_suggestions_enabled`); a `SwitchPreferenceCompat` in `cat_dictionary` below D-190's own
+toggle, all three locales, summary spelling out the live-read/never-stored point directly.
+
+**Permission flow lives entirely in `SettingsActivity`** (not the keyboard service - explained in that
+class's own new KDoc, referenced from the manifest comment too): a `registerForActivityResult(RequestPermission())`
+launcher, registered unconditionally at Fragment construction per the documented contract. The toggle's
+`setOnPreferenceChangeListener` intercepts a switch-to-on when the permission is not already granted -
+blocks the immediate flip (`return false`) and launches the system dialog instead; the launcher's own
+callback resolves the switch to its true final state (`isChecked = true` on grant, `= false` + an explanatory
+toast on denial). Already-granted (including a user re-enabling the setting later, or after a permission
+already held from before) and switching off both skip the dialog entirely and go straight through - a
+previously granted permission is never re-asked for, matching the "don't nag" requirement directly.
+
+**Reading contacts (`AdaptKeyService`)**: `loadContactEmailsAsync()` re-checks both the setting and the live
+`READ_CONTACTS` grant (defence in depth - the permission could have been revoked via system settings after
+being granted) before doing anything. Queries `ContactsContract.CommonDataKinds.Email.CONTENT_URI` on a new
+dedicated `contactsExecutor` (mirrors `tier3Executor`'s own single-thread pattern), capped at
+`CONTACT_EMAIL_LIMIT` (2000) rows, applying the result to `contactEmailCache` back on the main thread via
+`handler.post`. Triggered once per EMAIL field focus (`onStartInput`, alongside the existing credential-field
+reset block), **not per keystroke** - deliberately mirrors D-160's own "an external, unpredictably-sized read
+has no business on the hot path" reasoning; a synchronous full-address-book read on every keystroke (or even
+just on field focus) risked exactly the jank D-160 already fixed for a different expensive-lookup source.
+
+`showCredentialSuggestions()` now sources its ranking input from a new `mergedCredentialEntries()` instead of
+`CredentialStore.all(this)` directly: cached contact addresses are wrapped as ordinary, never-persisted
+`CredentialEntry(value, EMAIL, frequency = 0)` values and appended, deduplicated by value against the real
+stored entries (a real, learned entry - with genuine frequency - always wins over a same-valued contact
+entry) so nothing is ever offered twice. Flowing through the existing `CredentialRanking.suggestionsFor`/
+`emailDomainsFor` unchanged means the `@`-domain-completion path picks up contact domains too, for free -
+no second ranking path was needed. `showCredentialSuggestions()`'s own `PASSWORD` short-circuit is untouched
+(contacts never apply there either, matching D-190's own password exclusion).
+
+1 new test (`SettingsMapperTest`: `contactsSuggestionsEnabled` passthrough default/round-trip, mirroring
+D-190's own from §121 exactly). 741 unit tests total (740 + 1).
+`AdaptKeyService`'s `loadContactEmailsAsync`/`mergedCredentialEntries` and `SettingsActivity`'s permission
+flow are Android-only glue (`ContentResolver`, `ActivityResultLauncher`), the same established untested gap
+as the rest of D-142. `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - in
+particular the actual on-device permission-dialog flow and a real address-book read need a real test pass.

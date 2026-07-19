@@ -3,11 +3,14 @@
 
 package de.froehlichmedia.adaptkey
 
+import android.Manifest
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.provider.ContactsContract
 import android.os.Build
 import android.inputmethodservice.InputMethodService
 import android.os.Bundle
@@ -46,6 +49,7 @@ import de.froehlichmedia.adaptkey.capitalisation.CapsMode
 import de.froehlichmedia.adaptkey.capitalisation.SentenceBoundary
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
+import de.froehlichmedia.adaptkey.credential.CredentialEntry
 import de.froehlichmedia.adaptkey.credential.CredentialRanking
 import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.credential.LoginFieldDetector
@@ -303,6 +307,14 @@ class AdaptKeyService : InputMethodService() {
     // recipient field, converting the typed address into a chip - tear the connection down for that field
     // so fast that even onFinishInput()'s own read of it comes back null).
     private val credentialSnapshot = StringBuilder()
+    
+    // D-191: contact-derived email addresses for the currently focused EMAIL field, loaded once per field
+    // focus (see loadContactEmailsAsync/onStartInput) rather than per keystroke, mirroring D-160's own
+    // "not on the hot path" reasoning for an external, unpredictably-sized read. null until the async load
+    // for the current field completes (or was never started); never persisted - see the class's own KDoc
+    // reference to D-191 in AdaptSettings.
+    private var contactEmailCache: List<String>? = null
+    private val contactsExecutor = Executors.newSingleThreadExecutor()
     
     // A-03: the text before the cursor captured at token start, so the language of the recent context
     // (this text plus the token being typed) can be judged without re-reading the field per keystroke.
@@ -816,6 +828,13 @@ class AdaptKeyService : InputMethodService() {
         } else {
             LoginFieldKind.NONE
         }
+        // D-191: a fresh field's contact cache is always stale (different field, possibly different kind);
+        // re-loaded from scratch only for a genuine EMAIL field, never per keystroke - see
+        // loadContactEmailsAsync's own KDoc.
+        contactEmailCache = null
+        if (loginFieldKind == LoginFieldKind.EMAIL) {
+            loadContactEmailsAsync()
+        }
         clearSuggestions()
     }
     
@@ -1153,7 +1172,7 @@ class AdaptKeyService : InputMethodService() {
         val input = currentInputConnection?.getTextBeforeCursor(CREDENTIAL_LOOKBACK, 0)?.toString()
             ?.takeLastWhile { !it.isWhitespace() }
             .orEmpty()
-        val entries = CredentialStore.all(this)
+        val entries = mergedCredentialEntries()
         val atIndex = input.indexOf('@')
         val values = if (loginFieldKind == LoginFieldKind.EMAIL && atIndex >= 0) {
             val localPart = input.substring(0, atIndex)
@@ -1167,6 +1186,60 @@ class AdaptKeyService : InputMethodService() {
             .map { SuggestionController.DisplayItem(it, SuggestionController.Kind.CREDENTIAL, it) }
         suggestionBar?.setItems(items)
         suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * D-191: [CredentialStore]'s own entries plus any already-loaded [contactEmailCache] addresses, wrapped
+     * as ordinary (never-persisted) [CredentialEntry] values with `frequency = 0` so they flow through
+     * [CredentialRanking]'s existing ranking/domain-completion logic unchanged - a real learned entry always
+     * outranks a contact-derived one with the same value, and the two are deduplicated by value so an
+     * address that is both a saved credential and a contact is never offered twice.
+     */
+    private fun mergedCredentialEntries(): List<CredentialEntry> {
+        val stored = CredentialStore.all(this)
+        val contacts = contactEmailCache
+        if (contacts.isNullOrEmpty()) {
+            return stored
+        }
+        val storedValues = stored.mapTo(HashSet()) { it.value.lowercase() }
+        val extra = contacts
+            .filterNot { it.lowercase() in storedValues }
+            .map { CredentialEntry(it, LoginFieldKind.EMAIL, frequency = 0L) }
+        return stored + extra
+    }
+    
+    /**
+     * D-191: kicks off a background `ContactsContract` query for every address-book email (capped at
+     * [CONTACT_EMAIL_LIMIT]), applied to [contactEmailCache] on the main thread once it completes - run
+     * once per EMAIL field focus (see `onStartInput`), never per keystroke, mirroring D-160's own
+     * "not on the hot path" reasoning for an external, unpredictably-sized read (a large address book read
+     * synchronously could jank the very moment a field gains focus). A no-op unless both the user's own
+     * [AdaptSettings.contactsSuggestionsEnabled] preference and the actual live `READ_CONTACTS` grant are
+     * present - the live check is deliberate defence in depth against the permission having been revoked
+     * (via system settings) since the preference was last turned on. Nothing is ever written back to
+     * contacts, and the read addresses are never persisted anywhere in this app - see
+     * [AdaptSettings.contactsSuggestionsEnabled]'s own KDoc for why.
+     */
+    private fun loadContactEmailsAsync() {
+        if (!settings.contactsSuggestionsEnabled ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        contactsExecutor.execute {
+            val addresses = runCatching {
+                val projection = arrayOf(ContactsContract.CommonDataKinds.Email.ADDRESS)
+                contentResolver.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, projection, null, null, null)?.use { cursor ->
+                    val addressIndex = cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.ADDRESS)
+                    val result = LinkedHashSet<String>()
+                    while (cursor.moveToNext() && result.size < CONTACT_EMAIL_LIMIT) {
+                        cursor.getString(addressIndex)?.takeIf { it.contains('@') }?.let { result.add(it) }
+                    }
+                    result.toList()
+                }.orEmpty()
+            }.getOrElse { emptyList() }
+            handler.post { contactEmailCache = addresses }
+        }
     }
     
     /**
@@ -1409,6 +1482,7 @@ class AdaptKeyService : InputMethodService() {
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         persistOffsetModel()
         tier3Executor.shutdownNow()
+        contactsExecutor.shutdownNow()
         onnxProvider?.close()
         onnxProvider = null
         super.onDestroy()
@@ -3877,5 +3951,9 @@ class AdaptKeyService : InputMethodService() {
         
         // D-142: a single stray character is not a plausible credential value worth saving.
         private const val MIN_CREDENTIAL_LENGTH = 2
+        
+        // D-191: a generous bound on how many address-book email rows a single background query reads,
+        // so even a very large contacts list stays a bounded, one-off cost rather than unbounded per field.
+        private const val CONTACT_EMAIL_LIMIT = 2000
     }
 }

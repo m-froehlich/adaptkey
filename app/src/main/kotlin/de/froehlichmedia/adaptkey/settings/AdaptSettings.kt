@@ -54,6 +54,12 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           which are never recorded regardless of this setting; only gates whether a recognised
  *           username/email value gets saved for later suggestion. Already-saved values keep being
  *           suggested either way - this only stops new ones from being added.
+ * @property contactsSuggestionsEnabled D-191: whether the address book's own email addresses are merged
+ *           into the EMAIL-field credential suggestion list - default **off**, opt-in only. The user's
+ *           stated preference, not a live permission check by itself; every actual read still re-checks
+ *           `READ_CONTACTS` at the point of use (defence in depth against a permission revoked externally
+ *           after this was turned on). Contacts are read fresh at suggestion time and never persisted -
+ *           storing them locally would be redundant with the address book itself.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -73,7 +79,8 @@ data class AdaptSettings(
     val tier3Enabled: Boolean = true,
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
-    val neverRecordCredentials: Boolean = false
+    val neverRecordCredentials: Boolean = false,
+    val contactsSuggestionsEnabled: Boolean = false
 ) {
     
     companion object {

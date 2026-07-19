@@ -35,6 +35,21 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§122 (v0.8.86): D-191 - opt-in contact-derived email suggestions.** `READ_CONTACTS` added to the
+  manifest (first permission beyond `VIBRATE`; no `INTERNET` either way). New
+  `AdaptSettings.contactsSuggestionsEnabled` (default off) threaded through the usual settings pipeline;
+  `SettingsActivity` (not the keyboard service - only an `Activity` can show a runtime permission dialog)
+  requests `READ_CONTACTS` exactly when the toggle is switched on via `registerForActivityResult`, blocking
+  the immediate flip until the OS answers; already-granted/switching-off skip the dialog. `AdaptKeyService.
+  loadContactEmailsAsync()` queries `ContactsContract` on a new dedicated `contactsExecutor` once per EMAIL
+  field focus (never per keystroke, mirroring D-160's hot-path reasoning), capped at 2000 rows, applied to
+  `contactEmailCache` on the main thread. `showCredentialSuggestions()` now ranks via a new
+  `mergedCredentialEntries()` - cached contact addresses wrapped as never-persisted, frequency-0
+  `CredentialEntry` values, deduplicated against real stored entries - flowing through the existing
+  `CredentialRanking` unchanged, so `@`-domain-completion picks up contact domains too for free. 1 new test
+  (`SettingsMapperTest`). 741 unit tests total (740 + 1). `:app:assembleDebug`/`:app:testDebugUnitTest`
+  green. Not yet device-confirmed - the actual permission-dialog flow and a real address-book read need a
+  device pass. See spec §122.
 - **§121 (v0.8.85): D-190 - "Never save credentials" setting.** New `AdaptSettings.neverRecordCredentials`
   (default off), threaded through `RawSettings`/`SettingsMapper`/`SettingsStore` like `tier3Enabled`/
   `diagnosticLogEnabled`; a `SwitchPreferenceCompat` in `cat_dictionary` (DE/EN/EL), title+summary spelling

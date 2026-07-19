@@ -114,6 +114,10 @@
     <string name="d190_never_record_credentials_title">Never save credentials</string>
     <string name="d190_never_record_credentials_summary">Recognised usernames and email addresses are never saved for later suggestion. Never affects passwords - those are never recorded regardless of this setting. Already-saved values keep being suggested either way.</string>
 
+    <string name="d191_contacts_suggestions_title">Suggest contacts\' emails</string>
+    <string name="d191_contacts_suggestions_summary">Offers email addresses from your address book alongside your saved credentials, once allowed. Your contacts are read live and never stored in this app - that would be redundant with your address book. Turning this on asks for the Contacts permission once, right here.</string>
+    <string name="d191_contacts_permission_denied">Contacts permission not granted - suggestions from contacts stay off.</string>
+
     <string name="c07_title">Shift grace window</string>
     <string name="c07_summary">Guards against surprising field capitalisation (0–500 ms).</string>
 

@@ -106,6 +106,12 @@ class SettingsMapperTest {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings(neverRecordCredentials = true)).neverRecordCredentials)
     }
     
+    @Test
+    fun `D-191 contactsSuggestionsEnabled flag passes through unchanged, defaulting to off`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).contactsSuggestionsEnabled)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(contactsSuggestionsEnabled = true)).contactsSuggestionsEnabled)
+    }
+    
     
     @Test
     fun `shiftGraceWindow is clamped into the spec range`() {

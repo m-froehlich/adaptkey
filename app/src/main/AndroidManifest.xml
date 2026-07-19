@@ -5,6 +5,15 @@
          does NOT declare INTERNET, so the provably-offline guarantee is unaffected. -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- D-191: optional contact-derived email suggestions (default off, opt-in via Settings, runtime grant
+         requested only at that moment - never on first use of an email field, since only an Activity can
+         show that dialog, not this IME's own Service; see SettingsActivity's own KDoc). READ_CONTACTS is a
+         dangerous permission declared here only so it CAN be requested when the user opts in - declaring it
+         does not grant it. Contact data is read live at suggestion time and never persisted locally (that
+         would be redundant with the address book itself) - still declared here, not INTERNET, so the
+         provably-offline guarantee (no network access ever) is unaffected either way. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
