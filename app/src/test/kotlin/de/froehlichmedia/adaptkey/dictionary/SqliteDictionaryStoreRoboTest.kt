@@ -207,4 +207,40 @@ class SqliteDictionaryStoreRoboTest {
         assertEquals(5L, store.frequencyOf("hund"))
         store.close()
     }
+    
+    @Test
+    fun bundledContentVersionDefaultsToZeroForAStoreThatNeverRecordedOne() {
+        val store = store("version-default.db")
+        
+        assertEquals(0, store.bundledContentVersion())
+        store.close()
+    }
+    
+    @Test
+    fun setBundledContentVersionAndBundledContentVersionRoundTrip() {
+        val store = store("version-roundtrip.db")
+        
+        store.setBundledContentVersion(3)
+        assertEquals(3, store.bundledContentVersion())
+        
+        store.setBundledContentVersion(4)
+        assertEquals(4, store.bundledContentVersion())
+        store.close()
+    }
+    
+    @Test
+    fun resetBundledWordsWipesOnlyTheBundledTablesLeavingLearnedWordsIntact() {
+        val store = store("reset-bundled.db")
+        store.putWord(WordEntry("hund", 3L))
+        store.putBigram("der", "hund", 10L)
+        store.learn("aks", "der")
+        
+        store.resetBundledWords()
+        
+        assertFalse(store.isKnownWord("hund"))
+        assertEquals(0L, store.bigramFrequency("der", "hund"))
+        assertTrue(store.isKnownWord("aks"))
+        assertEquals(1L, store.bigramFrequency("der", "aks"))
+        store.close()
+    }
 }

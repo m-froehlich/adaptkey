@@ -35,7 +35,23 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§110 DONE (v0.8.74): D-177 - learned words split into their own store, separate from the bundled
+- **§111 DONE (v0.8.75): D-178/D-179 - one-time bundled-dictionary reimport flushes pre-D-177
+  contamination; clearer remove-confirmation dialogs.** D-178: "aks" doesn't show up in the new Learned
+  Words editor (§110) because it was learned on v0.8.73, before the split existed - it physically sits in
+  `TABLE_WORDS` (the bundled table), indistinguishable from a real entry, since `learn()` had no separate
+  table to write to yet at that point. New `BUNDLED_DICTIONARY_VERSION` (bumped to 1, tracked per-store in
+  a new `meta` table separate from the schema `DATABASE_VERSION`) makes `DictionaryLoader.loadStores()` call
+  new `SqliteDictionaryStore.resetBundledWords()` (wipes only `TABLE_WORDS`/`TABLE_BIGRAMS`, never the
+  learned overlay/blacklist/pending marks) and reseed exactly once per store on the next load for every
+  existing install - flushing "aks" and any similar pre-D-177 contamination back out, since it isn't a real
+  dictionary word and the reseed won't reintroduce it. D-179: `BlacklistActivity`'s and
+  `LearnedWordsActivity`'s remove-confirmation dialogs previously showed only the bare word with generic
+  "Cancel"/"OK" - now titled with the actual action and word (`"Remove “%1$s”…"` / `"Forget “%1$s”?"`) and a
+  positive button labelled "Remove"/"Forget" instead of "OK", across all three locales. 3 new tests
+  (`SqliteDictionaryStoreRoboTest`: version default/round-trip, `resetBundledWords` scope). 733 unit tests
+  total (730 + 3 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See
+  spec §111.
+- **§110 (v0.8.74): D-177 - learned words split into their own store, separate from the bundled
   dictionary; G-04/A-04 two-stage unlearn-then-provisional-blacklist; new Learned Words settings editor.**
   Grew out of two D-172 (§109) side observations ("diecVorschläge" wrongly blacklisted instead of unlearned;
   "aks" unreachable via G-04 at all since S-02 never suggests the current-input word) plus the user's own

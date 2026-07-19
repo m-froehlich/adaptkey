@@ -14,11 +14,22 @@ import de.froehlichmedia.adaptkey.language.Language
  * all ranking / capitalisation logic is reused unchanged per language. Android-only glue; the parsing
  * itself is the pure, unit-tested [DictionaryAssetParser]. If a language's asset is missing the store
  * is left empty (and German additionally falls back to the small [SeedData] so it is never empty).
+ *
+ * D-178: [BUNDLED_DICTIONARY_VERSION] tracks the bundled asset content, separately from the store's own
+ * schema ({@code SqliteDictionaryStore}'s {@code DATABASE_VERSION}). Bumping it forces exactly one
+ * [SqliteDictionaryStore.resetBundledWords] + reseed per store on the next load, without touching the
+ * learned overlay, the blacklist, or the pending-blacklist marks - this release bumps it for the first
+ * time, to flush out words (like "aks", D-172/D-177) that a pre-D-177 build had learned straight into the
+ * bundled table, back before [SqliteDictionaryStore.learn] had a separate table of its own to write to,
+ * and that would otherwise sit there forever, indistinguishable from a real dictionary entry.
  */
 object DictionaryLoader {
     
     /** The languages that ship with a bundled dictionary (German default, English auto, Greek via G-01). */
     val LANGUAGES = listOf(Language.GERMAN, Language.ENGLISH, Language.GREEK)
+    
+    /** D-178: bump to force a one-time reseed of the bundled tables on every existing install's next load. */
+    private const val BUNDLED_DICTIONARY_VERSION = 1
     
     /**
      * The SQLite database file backing [language]'s dictionary. Public so the C-05 blacklist editor can
@@ -35,13 +46,19 @@ object DictionaryLoader {
     
     /**
      * @param context any valid context (the input method service)
-     * @return a store per supported language, each seeded from its asset when first created
+     * @return a store per supported language, each seeded from its asset when first created, and reseeded
+     * exactly once whenever [BUNDLED_DICTIONARY_VERSION] is bumped past what the store already holds
      */
     fun loadStores(context: Context): Map<Language, SqliteDictionaryStore> {
         return LANGUAGES.associateWith { language ->
             val store = SqliteDictionaryStore(context, databaseName(language))
             if (store.isEmpty()) {
                 seed(context, language, store)
+                store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
+            } else if (store.bundledContentVersion() < BUNDLED_DICTIONARY_VERSION) {
+                store.resetBundledWords()
+                seed(context, language, store)
+                store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
             }
             store
         }

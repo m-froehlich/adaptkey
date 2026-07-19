@@ -5940,3 +5940,45 @@ frequency it did before the split, just via two tables added together instead of
 directly. 730 unit tests total (716 + 14 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 `LearnedWordsActivity` and the new settings row are SQLite/Android-facing UI, consistent with the established
 gap for this class of change (same as `BlacklistActivity` before it) - not yet device-confirmed.
+
+## §111 - D-178/D-179: One-Time Bundled-Dictionary Reimport to Flush Pre-D-177 Contamination; Clearer Remove-Confirmation Dialogs (v0.8.75)
+
+**D-178.** Directly reported: "aks" (§109's own self-inflicted D-37 finding) does not appear in the new
+`LearnedWordsActivity` (§110) at all, so it cannot be removed there either. Root cause, not guessed: "aks"
+was learned back on v0.8.73, *before* v0.8.74's own split existed - at that time `learn()` still wrote
+straight into `TABLE_WORDS`, the bundled table, since there was no separate `TABLE_LEARNED` yet to write to
+instead. So on this device "aks" is physically a row in `TABLE_WORDS`, byte-for-byte indistinguishable from a
+real bundled entry - `isBundledWord("aks")` reports `true` (wrongly, for this one pre-existing case), and
+`learnedWords()` correctly does not return it, since it never looks at `TABLE_WORDS` at all. This is exactly
+the one-time migration edge case §110's own design discussion had already flagged as solved "for free" by the
+separate-table design - true for everything learned *after* updating to v0.8.74, but not for what a prior
+build had already written into the wrong table before that split existed.
+
+The user reasoned through the fix directly: bump some version marker so the bundled dictionary gets replaced
+in the DB, flushing the previously-learned words back out of it. Implemented as asked - `DictionaryLoader`
+gains `BUNDLED_DICTIONARY_VERSION` (bumped to `1` this release, tracked per-store in a new tiny `meta` table,
+deliberately separate from `SqliteDictionaryStore`'s own schema `DATABASE_VERSION`, which controls table
+structure, not bundled content). New `SqliteDictionaryStore.resetBundledWords()` clears only `TABLE_WORDS`/
+`TABLE_BIGRAMS` - never the learned overlay, the blacklist, or the pending-blacklist marks - and
+`loadStores()` now calls it, then reseeds from the asset, exactly once per store whenever
+`bundledContentVersion() < BUNDLED_DICTIONARY_VERSION`, before recording the new version. A fresh install
+still goes through the existing `isEmpty()` seeding path unchanged and simply records the current version
+directly, without ever calling `resetBundledWords()` on an empty table. Since "aks" is not a real dictionary
+word, the reseed does not bring it back - it is gone from `TABLE_WORDS` once this release reaches the
+device, with the genuinely-learned overlay (empty on this device, since v0.8.74 has not yet had a chance to
+teach it anything real) left completely untouched, exactly as asked.
+
+**D-179.** Directly reported: both remove-confirmation dialogs (`BlacklistActivity`, `LearnedWordsActivity`)
+showed only the bare word as the message with generic "Cancel"/"OK" buttons - nothing in the dialog itself
+said this was a delete operation. Fixed by giving each dialog a title that states the action and names the
+word (`"Remove “%1$s” from the blacklist?"` / `"Forget “%1$s”?"`), and a positive button labelled with the
+actual action ("Remove" / "Forget") instead of generic "OK" - a purely additive-strings change across all
+three locales (`values`/`values-de`/`values-el`), no behavioural change to either activity beyond the dialog
+text itself.
+
+3 new tests (`SqliteDictionaryStoreRoboTest`): `bundledContentVersion()` defaults to 0 for a store that never
+recorded one, `setBundledContentVersion()`/`bundledContentVersion()` round-trip, and `resetBundledWords()`
+wipes only the bundled unigram/bigram tables while a learned word (with its own bigram) survives untouched.
+D-179 is dialog text only, no new tests needed. 733 unit tests total (730 + 3 new).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Neither the reimport nor the dialog wording is yet
+device-confirmed.

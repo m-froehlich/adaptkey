@@ -78,8 +78,8 @@ class LearnedWordsActivity : AppCompatActivity() {
     
     private fun confirmRemove(entry: WordEntry) {
         AlertDialog.Builder(this)
-            .setMessage(entry.word)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+            .setTitle(getString(R.string.learned_words_remove_confirm_title, entry.word))
+            .setPositiveButton(R.string.learned_words_remove_confirm_action) { _, _ ->
                 // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly - every
                 // word listed here is by definition already in the learned lexicon (learnedWords() itself
                 // never returns a bundled one), so there is no isBundledWord() branch to make here at all.

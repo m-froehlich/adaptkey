@@ -205,12 +205,16 @@
     <string name="blacklist_add">Προσθήκη</string>
     <string name="blacklist_empty">Καμία καταχώριση.</string>
     <string name="blacklist_removed">%1$s αφαιρέθηκε.</string>
+    <string name="blacklist_remove_confirm_title">Αφαίρεση της λέξης «%1$s» από τη λίστα αποκλεισμού;</string>
+    <string name="blacklist_remove_confirm_action">Αφαίρεση</string>
 
     <!-- Επεξεργασία λέξεων που έμαθε το πληκτρολόγιο (D-177). -->
     <string name="learned_words_title">Λέξεις που έμαθε το πληκτρολόγιο</string>
     <string name="learned_words_language">Γλώσσα:</string>
     <string name="learned_words_empty">Καμία λέξη ακόμη.</string>
     <string name="learned_words_removed">%1$s ξεχάστηκε.</string>
+    <string name="learned_words_remove_confirm_title">Να ξεχαστεί η λέξη «%1$s»;</string>
+    <string name="learned_words_remove_confirm_action">Ξέχασέ το</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Ανάδραση πλήκτρων</string>

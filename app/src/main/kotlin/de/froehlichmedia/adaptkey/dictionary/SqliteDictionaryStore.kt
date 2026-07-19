@@ -34,12 +34,12 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         get() = writableDatabase
     
     init {
-        // D-177: additive and idempotent (CREATE TABLE IF NOT EXISTS), so it reaches an already-installed
-        // device's existing database - whose onCreate() ran long before these tables existed - without any
-        // destructive DATABASE_VERSION bump/reimport, exactly like §107's bundled-blacklist seeding. Also
-        // covers the ordinary fresh-install path, where onCreate() below already created everything and this
-        // is a harmless no-op.
-        ensureLearnedSchema(db)
+        // D-177/D-178: additive and idempotent (CREATE TABLE IF NOT EXISTS), so it reaches an
+        // already-installed device's existing database - whose onCreate() ran long before these tables
+        // existed - without any destructive DATABASE_VERSION bump/reimport, exactly like §107's
+        // bundled-blacklist seeding. Also covers the ordinary fresh-install path, where onCreate() below
+        // already created everything and this is a harmless no-op.
+        ensureAdditiveSchema(db)
     }
     
     override fun onCreate(database: SQLiteDatabase) {
@@ -52,7 +52,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         database.execSQL(
             "CREATE TABLE $TABLE_BLACKLIST (wkey TEXT PRIMARY KEY, category TEXT NOT NULL)"
         )
-        ensureLearnedSchema(database)
+        ensureAdditiveSchema(database)
     }
     
     override fun onUpgrade(database: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -62,10 +62,11 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         database.execSQL("DROP TABLE IF EXISTS $TABLE_LEARNED")
         database.execSQL("DROP TABLE IF EXISTS $TABLE_LEARNED_BIGRAMS")
         database.execSQL("DROP TABLE IF EXISTS $TABLE_PENDING_BLACKLIST")
+        database.execSQL("DROP TABLE IF EXISTS $TABLE_META")
         onCreate(database)
     }
     
-    private fun ensureLearnedSchema(database: SQLiteDatabase) {
+    private fun ensureAdditiveSchema(database: SQLiteDatabase) {
         database.execSQL(
             "CREATE TABLE IF NOT EXISTS $TABLE_LEARNED (wkey TEXT PRIMARY KEY, word TEXT NOT NULL, freq INTEGER NOT NULL, pos TEXT NOT NULL)"
         )
@@ -74,6 +75,12 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         )
         database.execSQL(
             "CREATE TABLE IF NOT EXISTS $TABLE_PENDING_BLACKLIST (wkey TEXT PRIMARY KEY, ts INTEGER NOT NULL)"
+        )
+        // D-178: tracks the bundled dictionary content version so DictionaryLoader can tell an
+        // already-seeded store apart from one still holding pre-D-177 words that were learned straight into
+        // TABLE_WORDS, back when learn() had no separate table to write to yet.
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS $TABLE_META (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
         )
     }
     
@@ -99,6 +106,51 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         } finally {
             database.endTransaction()
         }
+    }
+    
+    /**
+     * D-178: wipes only the bundled tables ([TABLE_WORDS] / [TABLE_BIGRAMS]), leaving the learned overlay,
+     * the blacklist, and the pending-blacklist marks untouched, so [DictionaryLoader] can reseed a clean
+     * copy of the bundled asset - flushing out any word that was learned straight into [TABLE_WORDS] by a
+     * pre-D-177 build, back before [learn] had a separate table of its own to write to, and that would
+     * otherwise sit there forever, indistinguishable from a real dictionary entry.
+     */
+    fun resetBundledWords() {
+        val database = db
+        database.beginTransaction()
+        try {
+            database.execSQL("DELETE FROM $TABLE_WORDS")
+            database.execSQL("DELETE FROM $TABLE_BIGRAMS")
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+    
+    /**
+     * D-178: the bundled dictionary content version last seeded into this store, or 0 if never recorded
+     * (every store that predates this mechanism).
+     *
+     * @return the recorded version, or 0 if none is recorded yet
+     */
+    fun bundledContentVersion(): Int {
+        db.rawQuery("SELECT value FROM $TABLE_META WHERE key = ?", arrayOf(META_KEY_BUNDLED_VERSION)).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getString(0).toIntOrNull() ?: 0 else 0
+        }
+    }
+    
+    /**
+     * Records the bundled dictionary content version this store now holds, so a later
+     * [DictionaryLoader.loadStores] call does not reseed it again until the constant is bumped further.
+     *
+     * @param version the version to record
+     */
+    fun setBundledContentVersion(version: Int) {
+        val values = ContentValues().apply {
+            put("key", META_KEY_BUNDLED_VERSION)
+            put("value", version.toString())
+        }
+        db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
     
     override fun putBigram(previousWord: String, word: String, count: Long) {
@@ -444,6 +496,8 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val TABLE_LEARNED = "learned"
         private const val TABLE_LEARNED_BIGRAMS = "learned_bigrams"
         private const val TABLE_PENDING_BLACKLIST = "pending_blacklist"
+        private const val TABLE_META = "meta"
+        private const val META_KEY_BUNDLED_VERSION = "bundled_version"
         
         // Upper bound on autocorrect candidates scanned per keystroke (bounds worst-case latency).
         private const val CANDIDATE_LIMIT = 2000

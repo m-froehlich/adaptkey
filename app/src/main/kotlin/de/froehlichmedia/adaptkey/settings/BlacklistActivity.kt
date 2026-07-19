@@ -93,8 +93,8 @@ class BlacklistActivity : AppCompatActivity() {
     
     private fun confirmRemove(word: String) {
         AlertDialog.Builder(this)
-            .setMessage(word)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+            .setTitle(getString(R.string.blacklist_remove_confirm_title, word))
+            .setPositiveButton(R.string.blacklist_remove_confirm_action) { _, _ ->
                 store.unblacklist(word)
                 Toast.makeText(this, getString(R.string.blacklist_removed, word), Toast.LENGTH_SHORT).show()
                 refresh()

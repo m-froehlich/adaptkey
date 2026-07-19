@@ -205,12 +205,16 @@
     <string name="blacklist_add">Hinzufügen</string>
     <string name="blacklist_empty">Keine Einträge.</string>
     <string name="blacklist_removed">%1$s entfernt.</string>
+    <string name="blacklist_remove_confirm_title">„%1$s“ aus der Blacklist entfernen?</string>
+    <string name="blacklist_remove_confirm_action">Entfernen</string>
 
     <!-- Editor für gelernte Wörter (D-177). -->
     <string name="learned_words_title">Gelernte Wörter</string>
     <string name="learned_words_language">Sprache:</string>
     <string name="learned_words_empty">Noch keine gelernten Wörter.</string>
     <string name="learned_words_removed">%1$s vergessen.</string>
+    <string name="learned_words_remove_confirm_title">„%1$s“ vergessen?</string>
+    <string name="learned_words_remove_confirm_action">Vergessen</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Tasten-Rückmeldung</string>
