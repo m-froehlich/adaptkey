@@ -6604,3 +6604,13 @@ No new tests - Android `Vibrator`/logging glue, the same established untested ga
 repro next: enable the D-139/D-110 diagnostic log (Settings) and the D-06 vibration toggle, type a few keys,
 then share the log - whichever of the three logged outcomes actually shows up finally answers whether this
 is a code bug or an OS/OEM-level vibration-intensity restriction outside the app's control.
+
+**Resolved (2026-07-19, device log + confirmation)**: the repro log showed `vibrate() called with
+USAGE_TOUCH` on every single keystroke, with no `hasVibrator()` failure and no exception ever logged -
+proving the app's own code path was correct all along (right API, right attributes, no silent failure to
+find). Confirmed by the user: the actual cause was a central *system* setting on the device (outside the
+app's control), not a code defect - exactly the outcome D-75 had already flagged as the leading suspect,
+now confirmed rather than assumed. **D-06/D-34/D-66/D-75/D-193 are all closed.** The D-193 diagnostic
+logging (`AdaptKeyboardView.logHaptics()`) is left in place rather than stripped out immediately - low-risk,
+already proven useful for exactly this class of "silently does nothing" report, and removing it is a purely
+mechanical follow-up if it is ever judged no longer worth keeping.

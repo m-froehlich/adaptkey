@@ -35,17 +35,14 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§124 (v0.8.88): D-193 - diagnostics for the still-never-working key vibration.** D-06/D-34/D-66/D-75
-  have failed three device rounds (permission, `VibratorManager` migration, `USAGE_TOUCH`) with no
-  vibration ever confirmed working, and no root cause was ever pinned down from an actual log - a fourth
-  blind fix was rejected in favour of diagnostics first. Found by re-reading the code: `playKeyFeedback()`'s
-  `runCatching { }` around the whole vibration path (D-66's own defensive guard) silently discarded any
-  exception with zero logging - if `vibrate()` has been throwing, none of the three prior "fixes" could ever
-  have known. New `AdaptKeyboardView.logHaptics()` (mirrors `AdaptKeyService.diag()`'s dual logcat +
-  in-app-`DiagnosticLog` output, no password-field guard needed here) now logs `hasVibrator()`, which
-  `VibrationAttributes` path fired, and - the actual gap - the exception itself on failure. No behavioural
-  change. 741 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Needs a
-  real device repro next (enable Settings -> Diagnostics + the D-06 toggle, type, share the log). See
+- **§124 (v0.8.88): D-193 - key vibration finally closed.** Diagnostic logging
+  (`AdaptKeyboardView.logHaptics()`, mirrors `AdaptKeyService.diag()`'s dual logcat + in-app-`DiagnosticLog`
+  output) added after D-06/D-34/D-66/D-75 failed three device rounds with the root cause never pinned down
+  from an actual log. The repro log showed `vibrate()` succeeding with `USAGE_TOUCH` on every keystroke, no
+  exception, no `hasVibrator()` failure - proving the app's own code was correct all along. **Confirmed by
+  the user: the actual cause was a central system setting on the device, outside the app's control.**
+  D-06/D-34/D-66/D-75/D-193 are all closed. The diagnostic logging is left in place (low-risk, proven
+  useful). 741 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. See
   spec §124.
 - **§123 (v0.8.87): D-192 - feature catalog refreshed + polish.** `FeatureCatalog.kt` was untouched since
   D-89 (v0.7.43); confirmed stale via `git log` and grew from 18 to 26 entries (`d89_f19`…`d89_f26`, all
