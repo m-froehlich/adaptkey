@@ -81,6 +81,18 @@ object CredentialStore {
     }
     
     /**
+     * D-180: removes one learned credential entry outright, regardless of its accumulated frequency -
+     * the settings screen's own per-entry removal, complementing [clear]'s delete-everything action.
+     *
+     * @param context any valid context (the input method service)
+     * @param value the credential value to remove (case-insensitive, matching [learn]'s own identity rule)
+     */
+    fun forget(context: Context, value: String) {
+        val entries = all(context).filterNot { it.value.equals(value, ignoreCase = true) }
+        save(context, entries)
+    }
+    
+    /**
      * @param context any valid context (the input method service)
      * @return true when no credential has been learned yet
      */

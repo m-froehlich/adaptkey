@@ -5982,3 +5982,44 @@ wipes only the bundled unigram/bigram tables while a learned word (with its own 
 D-179 is dialog text only, no new tests needed. 733 unit tests total (730 + 3 new).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Neither the reimport nor the dialog wording is yet
 device-confirmed.
+
+## §112 - D-180: Saved Credentials Get Their Own Reviewable List; a Shared "Copy" Option on Every Remove Dialog (v0.8.76)
+
+Directly reported: the top-level "Clear saved usernames & emails" settings action (D-142) was all-or-nothing
+- no way to review what had actually been learned, or remove just one wrong entry while keeping the rest,
+unlike the C-05/§110 blacklist and learned-word editors it sat right next to in spirit. The user's own
+design: turn it into a list screen first, structurally close to those two, with a "Delete all" button for
+the old behaviour, per-entry removal via **long press** rather than a plain tap (a saved credential is more
+sensitive than an ordinary word - a stray tap should not risk deleting one), and a third "Copy" option on
+the remove dialog for pulling a value back out to the clipboard - the user immediately generalised this last
+part to the existing blacklist/learned-word dialogs too ("Vermutlich ist das sogar auch sinnvoll für die
+Lösch-Dialoge in den beiden anderen Listen"). Also requested: move the settings entry itself out of the
+top-level Info & Privacy category into the Dictionary group, where the blacklist/learned-words/expiry
+entries already live.
+
+**Implemented, all as asked:**
+
+- New `CredentialsActivity` (settings screen): lists every `CredentialStore.all()` entry (value, kind,
+  frequency), a "Delete all" button (reusing D-142's existing confirm dialog/strings unchanged, just moved
+  here from the top-level action), and `listView.setOnItemLongClickListener` opening a remove-confirmation
+  dialog per entry - titled with the value, a "Remove" positive button, "Cancel", and a neutral "Copy"
+  button that writes the value to the clipboard via `ClipboardManager` (the same pattern `DiagnosticLogActivity`
+  already established for its own log-copy button) and toasts confirmation. The "Delete all" button disables
+  itself when the list is empty, so it can never fire a no-op "cleared" toast over nothing.
+- New `CredentialStore.forget(context, value)`: removes exactly one entry by its case-insensitive value
+  (matching `learn()`'s own identity rule), complementing the existing delete-everything `clear()`.
+- The former top-level `d142_clear_credentials` settings action (in `cat_info`, with its own click listener
+  and confirm dialog in `SettingsActivity`) is gone; a plain navigating `Preference` (`d142_credentials`,
+  matching the `c05_blacklist`/`d177_learned_words` pattern exactly - title, summary, `<intent>` to the new
+  activity, no click-listener code in `SettingsActivity` at all) now lives inside `cat_dictionary`, appended
+  after the pending-blacklist-expiry `SeekBarPreference`. `SettingsActivity`'s now-dead
+  `confirmClearCredentials()` and its `CredentialStore` import were removed along with it.
+- `BlacklistActivity` and `LearnedWordsActivity`'s own remove dialogs (§111/D-179's new titled versions)
+  each gained the identical neutral "Copy" button, copying the word to the clipboard the same way. A single
+  shared string pair (`copy_to_clipboard_action`/`copy_to_clipboard_done`) backs all three dialogs, rather
+  than three near-identical per-screen copies.
+
+3 new tests (`CredentialStoreRoboTest`): `forget()` removes only the matching entry, matches
+case-insensitively (mirroring `learn()`'s own identity rule), and is a harmless no-op on a value that was
+never learned. 736 unit tests total (733 + 3 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green. New
+settings screen and its long-press gesture not yet device-confirmed.

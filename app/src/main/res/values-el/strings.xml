@@ -108,6 +108,9 @@
     <string name="d177_expiry_title">Διάρκεια μνήμης ξεχασμένων λέξεων</string>
     <string name="d177_expiry_summary">Πόσο καιρό παραμένει σε αναμονή μια αφαιρεμένη λέξη πριν μπορέσει να ξαναμαθευτεί σιωπηλά (1–30 ημέρες).</string>
 
+    <string name="d142_credentials_title">Αποθηκευμένα ονόματα χρήστη &amp; email</string>
+    <string name="d142_credentials_summary">Δες τα αποθηκευμένα στοιχεία σύνδεσης, αφαίρεσε ένα-ένα ή διάγραψέ τα όλα μαζί.</string>
+
     <string name="c07_title">Παράθυρο χάριτος Shift</string>
     <string name="c07_summary">Προστασία από απροσδόκητη κεφαλαιοποίηση πεδίου (0–500 ms).</string>
 
@@ -167,7 +170,6 @@
 
     <!-- D-142: διαγραφή αποθηκευμένων ονομάτων χρήστη/διευθύνσεων email (ξεχωριστή αποθήκευση, ποτέ το λεξικό). -->
     <string name="d142_clear_credentials_title">Διαγραφή αποθηκευμένων ονομάτων χρήστη &amp; email</string>
-    <string name="d142_clear_credentials_summary">Διαγράφει κάθε όνομα χρήστη και διεύθυνση email που έμαθε το AdaptKey από πεδία σύνδεσης.</string>
     <string name="d142_clear_credentials_confirm_message">Όλα τα αποθηκευμένα ονόματα χρήστη και οι διευθύνσεις email θα διαγραφούν. Αυτό δεν μπορεί να αναιρεθεί. Συνέχεια;</string>
     <string name="d142_clear_credentials_done">Τα αποθηκευμένα ονόματα χρήστη &amp; email διαγράφηκαν.</string>
 
@@ -215,6 +217,16 @@
     <string name="learned_words_removed">%1$s ξεχάστηκε.</string>
     <string name="learned_words_remove_confirm_title">Να ξεχαστεί η λέξη «%1$s»;</string>
     <string name="learned_words_remove_confirm_action">Ξέχασέ το</string>
+
+    <!-- Επεξεργασία αποθηκευμένων ονομάτων χρήστη/email (D-180). -->
+    <string name="credentials_empty">Δεν υπάρχουν ακόμη αποθηκευμένα ονόματα χρήστη ή email.</string>
+    <string name="credentials_removed">%1$s αφαιρέθηκε.</string>
+    <string name="credentials_remove_confirm_title">Αφαίρεση της τιμής «%1$s»;</string>
+    <string name="credentials_remove_confirm_action">Αφαίρεση</string>
+
+    <!-- Κοινή επιλογή "αντιγραφή στο πρόχειρο" στους διαλόγους διαγραφής λίστας αποκλεισμού, γλωσσών που έμαθε το πληκτρολόγιο και στοιχείων σύνδεσης. -->
+    <string name="copy_to_clipboard_action">Αντιγραφή</string>
+    <string name="copy_to_clipboard_done">Το «%1$s» αντιγράφηκε στο πρόχειρο.</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Ανάδραση πλήκτρων</string>

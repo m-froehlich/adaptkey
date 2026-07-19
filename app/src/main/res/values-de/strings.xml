@@ -108,6 +108,9 @@
     <string name="d177_expiry_title">Vormerkungsdauer vergessener Wörter</string>
     <string name="d177_expiry_summary">Wie lange ein entferntes gelerntes Wort vorgemerkt bleibt, bevor es still erneut gelernt werden kann (1–30 Tage).</string>
 
+    <string name="d142_credentials_title">Gespeicherte Benutzernamen &amp; E-Mails</string>
+    <string name="d142_credentials_summary">Gespeicherte Anmeldedaten ansehen, einzeln entfernen oder alle auf einmal löschen.</string>
+
     <string name="c07_title">Shift-Schonfenster</string>
     <string name="c07_summary">Gegen überraschende Feld-Großschreibung (0–500 ms). Logik folgt.</string>
 
@@ -167,7 +170,6 @@
 
     <!-- D-142: gespeicherte Benutzernamen/E-Mail-Adressen löschen (eigener Speicher, nie das Wörterbuch). -->
     <string name="d142_clear_credentials_title">Gespeicherte Benutzernamen &amp; E-Mails löschen</string>
-    <string name="d142_clear_credentials_summary">Löscht alle Benutzernamen und E-Mail-Adressen, die AdaptKey aus Anmeldefeldern gelernt hat.</string>
     <string name="d142_clear_credentials_confirm_message">Alle gespeicherten Benutzernamen und E-Mail-Adressen werden gelöscht. Dies kann nicht rückgängig gemacht werden. Fortfahren?</string>
     <string name="d142_clear_credentials_done">Gespeicherte Benutzernamen &amp; E-Mails gelöscht.</string>
 
@@ -215,6 +217,16 @@
     <string name="learned_words_removed">%1$s vergessen.</string>
     <string name="learned_words_remove_confirm_title">„%1$s“ vergessen?</string>
     <string name="learned_words_remove_confirm_action">Vergessen</string>
+
+    <!-- Editor für gespeicherte Benutzernamen/E-Mails (D-180). -->
+    <string name="credentials_empty">Noch keine gespeicherten Benutzernamen oder E-Mails.</string>
+    <string name="credentials_removed">%1$s entfernt.</string>
+    <string name="credentials_remove_confirm_title">„%1$s“ entfernen?</string>
+    <string name="credentials_remove_confirm_action">Entfernen</string>
+
+    <!-- Geteilte "In Zwischenablage kopieren"-Option in den Lösch-Dialogen von Blacklist, gelernten Wörtern und Zugangsdaten. -->
+    <string name="copy_to_clipboard_action">Kopieren</string>
+    <string name="copy_to_clipboard_done">%1$s in die Zwischenablage kopiert.</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Tasten-Rückmeldung</string>

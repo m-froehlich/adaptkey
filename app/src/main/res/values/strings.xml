@@ -108,6 +108,9 @@
     <string name="d177_expiry_title">Forgotten-word memory</string>
     <string name="d177_expiry_summary">How long a removed learned word is remembered before it can quietly be learned again (1–30 days).</string>
 
+    <string name="d142_credentials_title">Saved usernames &amp; emails</string>
+    <string name="d142_credentials_summary">Review saved login values, remove one at a time, or clear them all.</string>
+
     <string name="c07_title">Shift grace window</string>
     <string name="c07_summary">Guards against surprising field capitalisation (0–500 ms).</string>
 
@@ -167,7 +170,6 @@
 
     <!-- D-142: clear the saved usernames/email addresses (a separate store, never the dictionary). -->
     <string name="d142_clear_credentials_title">Clear saved usernames &amp; emails</string>
-    <string name="d142_clear_credentials_summary">Deletes every username and email address AdaptKey has learned from login fields.</string>
     <string name="d142_clear_credentials_confirm_message">Every saved username and email address will be deleted. This cannot be undone. Continue?</string>
     <string name="d142_clear_credentials_done">Saved usernames &amp; emails cleared.</string>
 
@@ -215,6 +217,16 @@
     <string name="learned_words_removed">%1$s forgotten.</string>
     <string name="learned_words_remove_confirm_title">Forget “%1$s”?</string>
     <string name="learned_words_remove_confirm_action">Forget</string>
+
+    <!-- Saved usernames/emails editor (D-180). -->
+    <string name="credentials_empty">No saved usernames or emails yet.</string>
+    <string name="credentials_removed">%1$s removed.</string>
+    <string name="credentials_remove_confirm_title">Remove “%1$s”?</string>
+    <string name="credentials_remove_confirm_action">Remove</string>
+
+    <!-- Shared "copy to clipboard" option on the blacklist / learned-words / credentials remove dialogs. -->
+    <string name="copy_to_clipboard_action">Copy</string>
+    <string name="copy_to_clipboard_done">%1$s copied to clipboard.</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Key-press feedback</string>

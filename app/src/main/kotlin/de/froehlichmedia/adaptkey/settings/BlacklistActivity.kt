@@ -3,6 +3,9 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -100,7 +103,14 @@ class BlacklistActivity : AppCompatActivity() {
                 refresh()
             }
             .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.copy_to_clipboard_action) { _, _ -> copyToClipboard(word) }
             .show()
+    }
+    
+    private fun copyToClipboard(value: String) {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager ?: return
+        clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.blacklist_title), value))
+        Toast.makeText(this, getString(R.string.copy_to_clipboard_done, value), Toast.LENGTH_SHORT).show()
     }
     
     /**

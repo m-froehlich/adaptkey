@@ -49,6 +49,12 @@
             android:label="@string/learned_words_title"
             android:exported="false" />
 
+        <!-- Saved usernames/emails editor (D-180), launched from the settings screen. -->
+        <activity
+            android:name=".settings.CredentialsActivity"
+            android:label="@string/d142_credentials_title"
+            android:exported="false" />
+
         <!-- Per-key secondary-symbol editor (C-08), launched from the settings screen. -->
         <activity
             android:name=".settings.LetterHintsActivity"

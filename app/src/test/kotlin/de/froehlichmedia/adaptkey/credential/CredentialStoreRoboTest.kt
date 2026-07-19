@@ -92,4 +92,37 @@ class CredentialStoreRoboTest {
         assertEquals(2L, entries.getValue("user2@example.com").frequency)
         assertEquals(LoginFieldKind.EMAIL, entries.getValue("user2@example.com").kind)
     }
+    
+    @Test
+    fun forgetRemovesOnlyTheMatchingEntry() {
+        val context = RuntimeEnvironment.getApplication()
+        CredentialStore.learn(context, "user1", LoginFieldKind.USERNAME)
+        CredentialStore.learn(context, "user2@example.com", LoginFieldKind.EMAIL)
+        
+        CredentialStore.forget(context, "user1")
+        
+        val entries = CredentialStore.all(context)
+        assertEquals(1, entries.size)
+        assertEquals("user2@example.com", entries[0].value)
+    }
+    
+    @Test
+    fun forgetMatchesCaseInsensitively() {
+        val context = RuntimeEnvironment.getApplication()
+        CredentialStore.learn(context, "Peter@example.com", LoginFieldKind.EMAIL)
+        
+        CredentialStore.forget(context, "peter@example.com")
+        
+        assertTrue(CredentialStore.isEmpty(context))
+    }
+    
+    @Test
+    fun forgetOnAnUnknownValueIsAHarmlessNoOp() {
+        val context = RuntimeEnvironment.getApplication()
+        CredentialStore.learn(context, "user1", LoginFieldKind.USERNAME)
+        
+        CredentialStore.forget(context, "never-learned")
+        
+        assertEquals(1, CredentialStore.all(context).size)
+    }
 }

@@ -35,7 +35,21 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§111 DONE (v0.8.75): D-178/D-179 - one-time bundled-dictionary reimport flushes pre-D-177
+- **§112 DONE (v0.8.76): D-180 - saved credentials get their own reviewable list; a shared "Copy"
+  option on every remove dialog.** The former top-level "Clear saved usernames & emails" action (D-142,
+  `cat_info`) was all-or-nothing; user-designed replacement: new `CredentialsActivity` (settings screen,
+  moved into `cat_dictionary` next to blacklist/learned-words/expiry) lists every `CredentialStore.all()`
+  entry, a "Delete all" button (reuses D-142's existing confirm dialog unchanged), and per-entry removal via
+  **long press** (not a plain tap - a saved credential is more sensitive than an ordinary word) opening a
+  remove dialog with "Remove"/"Cancel" plus a neutral "Copy" button that writes the value to the clipboard.
+  New `CredentialStore.forget(context, value)` removes one entry case-insensitively. The user generalised the
+  copy idea immediately to the existing `BlacklistActivity`/`LearnedWordsActivity` remove dialogs too, which
+  now share the same neutral "Copy" button via one shared string pair rather than per-screen duplicates.
+  `SettingsActivity`'s now-dead `confirmClearCredentials()`/`CredentialStore` import removed. 3 new tests
+  (`CredentialStoreRoboTest`: `forget()` scoping, case-insensitivity, no-op on unknown value). 736 unit tests
+  total (733 + 3 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See
+  spec §112.
+- **§111 (v0.8.75): D-178/D-179 - one-time bundled-dictionary reimport flushes pre-D-177
   contamination; clearer remove-confirmation dialogs.** D-178: "aks" doesn't show up in the new Learned
   Words editor (§110) because it was learned on v0.8.73, before the split existed - it physically sits in
   `TABLE_WORDS` (the bundled table), indistinguishable from a real entry, since `learn()` had no separate

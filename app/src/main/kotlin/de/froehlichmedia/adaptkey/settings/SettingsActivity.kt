@@ -12,7 +12,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.R
-import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.onboarding.OnboardingStore
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 
@@ -65,11 +64,6 @@ class SettingsActivity : AppCompatActivity() {
                 confirmResetLearning()
                 true
             }
-            
-            findPreference<Preference>("d142_clear_credentials")?.setOnPreferenceClickListener {
-                confirmClearCredentials()
-                true
-            }
         }
         
         override fun onResume() {
@@ -119,23 +113,6 @@ class SettingsActivity : AppCompatActivity() {
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     OffsetStore.clear(requireContext())
                     Toast.makeText(requireContext(), R.string.reset_learning_done, Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-        }
-        
-        /**
-         * D-142: a single confirmation (unlike [confirmResetLearning]'s double-confirm) - clearing the
-         * saved credential list is far lower-stakes than wiping the whole learned touch model: nothing
-         * about typing quality is affected, and rebuilding it is just a matter of logging in again.
-         */
-        private fun confirmClearCredentials() {
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.d142_clear_credentials_title)
-                .setMessage(R.string.d142_clear_credentials_confirm_message)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    CredentialStore.clear(requireContext())
-                    Toast.makeText(requireContext(), R.string.d142_clear_credentials_done, Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton(android.R.string.cancel, null)
                 .show()
