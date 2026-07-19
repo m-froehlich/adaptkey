@@ -43,6 +43,12 @@
             android:label="@string/blacklist_title"
             android:exported="false" />
 
+        <!-- Learned-words editor (D-177), launched from the settings screen. -->
+        <activity
+            android:name=".settings.LearnedWordsActivity"
+            android:label="@string/learned_words_title"
+            android:exported="false" />
+
         <!-- Per-key secondary-symbol editor (C-08), launched from the settings screen. -->
         <activity
             android:name=".settings.LetterHintsActivity"

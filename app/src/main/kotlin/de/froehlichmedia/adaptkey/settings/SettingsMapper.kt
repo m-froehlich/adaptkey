@@ -39,7 +39,8 @@ data class RawSettings(
     val extraSpaceAboveSpaceRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val symbolKeyEnabled: Boolean = true,
     val tier3Enabled: Boolean = true,
-    val diagnosticLogEnabled: Boolean = false
+    val diagnosticLogEnabled: Boolean = false,
+    val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
 )
 
 /**
@@ -79,6 +80,12 @@ object SettingsMapper {
     
     /** D-55 maximum extra row spacing in dp. */
     const val MAX_EXTRA_SPACING_DP = 25
+    
+    /** D-177 minimum pending-blacklist expiry, in days. */
+    const val MIN_PENDING_BLACKLIST_EXPIRY_DAYS = 1
+    
+    /** D-177 maximum pending-blacklist expiry, in days. */
+    const val MAX_PENDING_BLACKLIST_EXPIRY_DAYS = 30
     
     /** C-01 lower bound for the space-bar weight (must stay a usable, positive width). */
     const val MIN_SPACE_WEIGHT = 1.0f
@@ -178,7 +185,8 @@ object SettingsMapper {
             extraSpaceAboveSpaceRowDp = raw.extraSpaceAboveSpaceRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             symbolKeyEnabled = raw.symbolKeyEnabled,
             tier3Enabled = raw.tier3Enabled,
-            diagnosticLogEnabled = raw.diagnosticLogEnabled
+            diagnosticLogEnabled = raw.diagnosticLogEnabled,
+            pendingBlacklistExpiryDays = raw.pendingBlacklistExpiryDays.coerceIn(MIN_PENDING_BLACKLIST_EXPIRY_DAYS, MAX_PENDING_BLACKLIST_EXPIRY_DAYS)
         )
     }
 }

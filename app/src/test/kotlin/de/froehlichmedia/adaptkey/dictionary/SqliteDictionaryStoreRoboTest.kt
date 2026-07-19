@@ -133,4 +133,78 @@ class SqliteDictionaryStoreRoboTest {
         assertTrue(store.nextWords("unbekannt", 10).isEmpty())
         store.close()
     }
+    
+    @Test
+    fun isBundledWordDistinguishesBundledFromLearnedOnly() {
+        val store = store("bundled-flag.db")
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("aks", null)
+        
+        assertTrue(store.isBundledWord("hund"))
+        assertFalse(store.isBundledWord("aks"))
+        store.close()
+    }
+    
+    @Test
+    fun forgetRemovesALearnedWordRegardlessOfAccumulatedFrequency() {
+        val store = store("forget.db")
+        store.learn("aks", null)
+        store.learn("aks", null)
+        store.learn("aks", null)
+        
+        store.forget("aks")
+        
+        assertFalse(store.isKnownWord("aks"))
+        store.close()
+    }
+    
+    @Test
+    fun forgetOnABundledWordLeavesItsBundledFrequencyUntouched() {
+        val store = store("forget-bundled.db")
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", null)
+        
+        store.forget("hund")
+        
+        assertTrue(store.isKnownWord("hund"))
+        assertEquals(3L, store.frequencyOf("hund"))
+        store.close()
+    }
+    
+    @Test
+    fun learnedWordsReturnsOnlyLearnedEntriesSortedByDescendingFrequency() {
+        val store = store("learned-words.db")
+        store.putWord(WordEntry("hund", 100L))
+        store.learn("aks", null)
+        store.learn("neu", null)
+        store.learn("neu", null)
+        
+        assertEquals(listOf("neu", "aks"), store.learnedWords().map { it.word })
+        store.close()
+    }
+    
+    @Test
+    fun pendingBlacklistMarkCheckAndClearRoundTrip() {
+        val store = store("pending-blacklist.db")
+        
+        assertEquals(null, store.pendingBlacklistedSince("aks"))
+        
+        store.markPendingBlacklist("aks", 12345L)
+        assertEquals(12345L, store.pendingBlacklistedSince("aks"))
+        
+        store.clearPendingBlacklist("aks")
+        assertEquals(null, store.pendingBlacklistedSince("aks"))
+        store.close()
+    }
+    
+    @Test
+    fun aWordThatIsBothBundledAndLearnedReportsTheSummedFrequency() {
+        val store = store("merged-frequency.db")
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", null)
+        store.learn("hund", null)
+        
+        assertEquals(5L, store.frequencyOf("hund"))
+        store.close()
+    }
 }

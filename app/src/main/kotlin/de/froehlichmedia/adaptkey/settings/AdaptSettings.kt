@@ -44,6 +44,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           (default off - it captures raw composing/committed text). A rolling 5-minute window
  *           ([de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog]), never written to disk, viewable and
  *           shareable from Settings - an alternative to `adb logcat` that needs no PC/USB tether.
+ * @property pendingBlacklistExpiryDays D-177: how long a word stays provisionally forgotten
+ *           ([de.froehlichmedia.adaptkey.dictionary.DictionaryStore.markPendingBlacklist]) before the
+ *           mark simply expires unused, rather than ever becoming a real, permanent blacklist entry -
+ *           default 7 days. Exposed as a setting mainly so the mechanism itself is discoverable, not
+ *           because frequent retuning is expected once a value has proven itself.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -61,7 +66,8 @@ data class AdaptSettings(
     val extraSpaceAboveSpaceRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val symbolKeyEnabled: Boolean = true,
     val tier3Enabled: Boolean = true,
-    val diagnosticLogEnabled: Boolean = false
+    val diagnosticLogEnabled: Boolean = false,
+    val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
 ) {
     
     companion object {
@@ -74,6 +80,9 @@ data class AdaptSettings(
         
         /** Default extra row spacing in dp (D-55). */
         const val DEFAULT_EXTRA_SPACING_DP = 7
+        
+        /** Default D-177 pending-blacklist expiry, in days - the user's own proposed starting value. */
+        const val DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS = 7
         
         /** The all-defaults configuration, equivalent to a freshly installed app. */
         val DEFAULT = AdaptSettings()

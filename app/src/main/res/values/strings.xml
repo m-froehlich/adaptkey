@@ -102,6 +102,12 @@
     <string name="c05_title">Edit blacklist</string>
     <string name="c05_summary">Permanently exclude words from suggestions and autocorrect (A-04).</string>
 
+    <string name="d177_learned_words_title">Learned words</string>
+    <string name="d177_learned_words_summary">Review or remove words the keyboard has taught itself from your own typing - including ones that never show up as a suggestion.</string>
+
+    <string name="d177_expiry_title">Forgotten-word memory</string>
+    <string name="d177_expiry_summary">How long a removed learned word is remembered before it can quietly be learned again (1–30 days).</string>
+
     <string name="c07_title">Shift grace window</string>
     <string name="c07_summary">Guards against surprising field capitalisation (0–500 ms).</string>
 
@@ -199,6 +205,12 @@
     <string name="blacklist_add">Add</string>
     <string name="blacklist_empty">No entries.</string>
     <string name="blacklist_removed">%1$s removed.</string>
+
+    <!-- Learned-words editor (D-177). -->
+    <string name="learned_words_title">Learned Words</string>
+    <string name="learned_words_language">Language:</string>
+    <string name="learned_words_empty">No learned words yet.</string>
+    <string name="learned_words_removed">%1$s forgotten.</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Key-press feedback</string>

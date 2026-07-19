@@ -139,4 +139,81 @@ class InMemoryDictionaryStoreTest {
         store.putWord(WordEntry("a", 1L))
         assertFalse(store.isEmpty())
     }
+    
+    @Test
+    fun `isBundledWord is true only for words added via putWord - D-177`() {
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("aks", null)
+        
+        assertTrue(store.isBundledWord("hund"))
+        assertFalse(store.isBundledWord("aks"))
+    }
+    
+    @Test
+    fun `isBundledWord stays true after a bundled word is also learned - D-177`() {
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", null)
+        
+        assertTrue(store.isBundledWord("hund"))
+    }
+    
+    @Test
+    fun `forget removes a learned word outright regardless of accumulated frequency - D-177`() {
+        store.learn("aks", null)
+        store.learn("aks", null)
+        store.learn("aks", null)
+        
+        store.forget("aks")
+        
+        assertFalse(store.isKnownWord("aks"))
+    }
+    
+    @Test
+    fun `forget on a bundled word leaves its bundled frequency untouched - D-177`() {
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", null)
+        
+        store.forget("hund")
+        
+        assertTrue(store.isKnownWord("hund"))
+        assertEquals(3L, store.frequencyOf("hund"))
+    }
+    
+    @Test
+    fun `learnedWords returns only learned entries sorted by descending frequency - D-177`() {
+        store.putWord(WordEntry("hund", 100L))
+        store.learn("aks", null)
+        store.learn("neu", null)
+        store.learn("neu", null)
+        
+        val words = store.learnedWords().map { it.word }
+        assertEquals(listOf("neu", "aks"), words)
+    }
+    
+    @Test
+    fun `learnedWords is empty by default`() {
+        assertTrue(store.learnedWords().isEmpty())
+    }
+    
+    @Test
+    fun `pending blacklist mark check and clear round-trip - D-177`() {
+        assertEquals(null, store.pendingBlacklistedSince("aks"))
+        
+        store.markPendingBlacklist("aks", 12345L)
+        assertEquals(12345L, store.pendingBlacklistedSince("aks"))
+        
+        store.clearPendingBlacklist("aks")
+        assertEquals(null, store.pendingBlacklistedSince("aks"))
+    }
+    
+    @Test
+    fun `a word that is both bundled and learned reports the summed frequency - D-177`() {
+        store.putWord(WordEntry("hund", 3L))
+        store.learn("hund", null)
+        store.learn("hund", null)
+        
+        assertEquals(5L, store.frequencyOf("hund"))
+        assertEquals(listOf("hund"), store.unigramsByPrefix("h", 10).map { it.word })
+        assertEquals(5L, store.unigramsByPrefix("h", 10).first().frequency)
+    }
 }

@@ -102,6 +102,12 @@
     <string name="c05_title">Επεξεργασία λίστας αποκλεισμού</string>
     <string name="c05_summary">Μόνιμος αποκλεισμός λέξεων από προτάσεις και αυτόματη διόρθωση (A-04).</string>
 
+    <string name="d177_learned_words_title">Λέξεις που έμαθε το πληκτρολόγιο</string>
+    <string name="d177_learned_words_summary">Δες ή αφαίρεσε λέξεις που έμαθε μόνο του το πληκτρολόγιο από τη δική σου πληκτρολόγηση - ακόμη κι αν δεν εμφανίζονται ποτέ ως πρόταση.</string>
+
+    <string name="d177_expiry_title">Διάρκεια μνήμης ξεχασμένων λέξεων</string>
+    <string name="d177_expiry_summary">Πόσο καιρό παραμένει σε αναμονή μια αφαιρεμένη λέξη πριν μπορέσει να ξαναμαθευτεί σιωπηλά (1–30 ημέρες).</string>
+
     <string name="c07_title">Παράθυρο χάριτος Shift</string>
     <string name="c07_summary">Προστασία από απροσδόκητη κεφαλαιοποίηση πεδίου (0–500 ms).</string>
 
@@ -199,6 +205,12 @@
     <string name="blacklist_add">Προσθήκη</string>
     <string name="blacklist_empty">Καμία καταχώριση.</string>
     <string name="blacklist_removed">%1$s αφαιρέθηκε.</string>
+
+    <!-- Επεξεργασία λέξεων που έμαθε το πληκτρολόγιο (D-177). -->
+    <string name="learned_words_title">Λέξεις που έμαθε το πληκτρολόγιο</string>
+    <string name="learned_words_language">Γλώσσα:</string>
+    <string name="learned_words_empty">Καμία λέξη ακόμη.</string>
+    <string name="learned_words_removed">%1$s ξεχάστηκε.</string>
 
     <!-- Key-press feedback (D-05 / D-06). -->
     <string name="cat_feedback">Ανάδραση πλήκτρων</string>

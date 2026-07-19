@@ -707,7 +707,18 @@ class AdaptKeyService : InputMethodService() {
         if (word.isBlank() || !this::dictionaryStore.isInitialized) {
             return
         }
-        dictionaryStore.blacklist(word, BlacklistCategory.USER)
+        // D-177: a real dictionary word must be permanently blacklisted to ever be suppressed - there is
+        // nothing to "forget", it will always be in the bundled asset regardless. A purely self-taught
+        // word (never in the bundled asset, only ever reached D-37's own learning threshold through the
+        // user's own typing) is instead forgotten outright and only provisionally marked - see
+        // learnWord()'s own isPendingBlacklistRecurrence() check for what happens if it gets learned
+        // again before the mark expires.
+        if (dictionaryStore.isBundledWord(word)) {
+            dictionaryStore.blacklist(word, BlacklistCategory.USER)
+        } else {
+            dictionaryStore.forget(word)
+            dictionaryStore.markPendingBlacklist(word, System.currentTimeMillis())
+        }
         refreshSuggestions()
     }
     
@@ -3124,6 +3135,15 @@ class AdaptKeyService : InputMethodService() {
         val outcome = if (provider.isKnownWord(word)) {
             dictionaryStore.learn(word, context)
             LearnOutcome.LEARNED
+        } else if (isPendingBlacklistRecurrence(word)) {
+            // D-177: this exact word was provisionally forgotten (G-04 drag-to-trash, or the learned-words
+            // editor) and is now trying to get learned again within the pending window - a genuinely
+            // recurring mistake, not the one-off typo/test word the provisional mark was betting on.
+            // Escalate straight to a real, permanent blacklist entry instead of ever learning it again.
+            dictionaryStore.forget(word)
+            dictionaryStore.blacklist(word, BlacklistCategory.USER)
+            dictionaryStore.clearPendingBlacklist(word)
+            LearnOutcome.SKIPPED
         } else if (PendingLearnStore.increment(this, word) >= LEARN_THRESHOLD) {
             dictionaryStore.learn(word, context)
             PendingLearnStore.clear(this, word)
@@ -3133,6 +3153,26 @@ class AdaptKeyService : InputMethodService() {
         }
         previousWord = word
         return LearnRecord(word, context, outcome)
+    }
+    
+    /**
+     * D-177: whether [word] currently carries an unexpired pending-blacklist mark
+     * ([DictionaryStore.markPendingBlacklist]), checked before every promotion attempt in [learnWord] so a
+     * recurring mistake escalates to a real blacklist entry instead of quietly being learned again. Also
+     * clears an expired mark as a side effect (it no longer matters either way), so a stale entry does not
+     * linger in the store forever once its window has passed.
+     *
+     * @param word the word about to be learned
+     * @return true when the mark exists and is still within [AdaptSettings.pendingBlacklistExpiryDays]
+     */
+    private fun isPendingBlacklistRecurrence(word: String): Boolean {
+        val markedAt = dictionaryStore.pendingBlacklistedSince(word) ?: return false
+        val expiryMillis = settings.pendingBlacklistExpiryDays * DAY_MILLIS
+        if (System.currentTimeMillis() - markedAt > expiryMillis) {
+            dictionaryStore.clearPendingBlacklist(word)
+            return false
+        }
+        return true
     }
     
     /**
@@ -3685,6 +3725,9 @@ class AdaptKeyService : InputMethodService() {
         // D-37: how many times a new word must be committed (without being reverted) before it is promoted
         // to the learned dictionary, so a one-off typo is not eagerly learned.
         private const val LEARN_THRESHOLD = 2
+        
+        // D-177: converts AdaptSettings.pendingBlacklistExpiryDays (whole days) to milliseconds.
+        private const val DAY_MILLIS = 24 * 60 * 60 * 1000L
         
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"

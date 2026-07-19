@@ -46,12 +46,76 @@ interface DictionaryStore {
      * reaches zero, so a word [learn] had just created (frequency 1) is fully un-learned again rather
      * than left behind as a zero-frequency ghost [isKnownWord] would still report as known. Never
      * called on its own; always paired with the exact prior [learn] call it undoes, so the count can
-     * never go negative in practice.
+     * never go negative in practice. Only ever touches the learned lexicon (D-177) - a bundled word's
+     * own frequency is never affected, since [learn] never wrote there in the first place.
      *
      * @param word the word to reverse
      * @param previousWord the word committed immediately before, or null
      */
     fun unlearn(word: String, previousWord: String?)
+    
+    /**
+     * D-177: permanently, irreversibly removes [word] from the learned lexicon regardless of its
+     * accumulated frequency - unlike [unlearn], which only reverses exactly one prior observation and
+     * leaves the rest intact. Never touches the bundled dictionary (nothing to remove there in the
+     * first place - see [isBundledWord]). Used when the user rejects a self-taught word outright (the
+     * G-04 drag-to-trash gesture, or the learned-words editor), not to undo a single commit.
+     *
+     * @param word the word to forget entirely
+     */
+    fun forget(word: String)
+    
+    /**
+     * D-177: whether [word] is part of the bundled dictionary asset, independent of any learning.
+     * Distinguishes a real dictionary word - which must be permanently blacklisted to ever be
+     * suppressed, since there is nothing to "forget" - from a purely self-taught one, which [forget]
+     * can simply remove outright. A word can be both (e.g. a common bundled word the user has also
+     * personally reinforced); this reports true regardless, since the bundled fact alone is what
+     * matters for that decision.
+     *
+     * @param word the word to check
+     * @return true when [word] exists in the bundled dictionary
+     */
+    fun isBundledWord(word: String): Boolean
+    
+    /**
+     * D-177: every word currently in the learned lexicon (never the bundled dictionary), in canonical
+     * case with its learned frequency, for the learned-words editor - including a word that could never
+     * be reached any other way (e.g. one matching the current input, which S-02 always excludes from
+     * the suggestion bar, so G-04's drag-to-trash structurally can never reach it either).
+     *
+     * @return the learned words, sorted by descending frequency
+     */
+    fun learnedWords(): List<WordEntry>
+    
+    /**
+     * D-177: marks [word] as provisionally forgotten, recorded with [timestampMillis] but never
+     * surfaced in the visible blacklist ([blacklistedWords]) - the "naively unlearn it, but remember
+     * for a while in case it comes back" refinement: if [word] gets learned again before the mark
+     * expires, that is treated as a genuinely recurring mistake (not a one-off typo/test word) and the
+     * caller promotes it to a real, permanent blacklist entry instead of learning it again. Replaces
+     * any existing mark for the same word (a fresh forget resets the expiry window).
+     *
+     * @param word the word to mark
+     * @param timestampMillis when it was marked (epoch millis)
+     */
+    fun markPendingBlacklist(word: String, timestampMillis: Long)
+    
+    /**
+     * @param word the word to check
+     * @return the epoch-millis timestamp [word] was marked at via [markPendingBlacklist], or null if it
+     *         was never marked (or the mark has since been cleared) - the caller applies the expiry
+     *         window, not this store
+     */
+    fun pendingBlacklistedSince(word: String): Long?
+    
+    /**
+     * Clears a pending-blacklist mark for [word] - either because it expired unused, or because it was
+     * just promoted to a real, permanent blacklist entry.
+     *
+     * @param word the word to clear
+     */
+    fun clearPendingBlacklist(word: String)
     
     /**
      * @param prefix the (case-insensitive) prefix to match

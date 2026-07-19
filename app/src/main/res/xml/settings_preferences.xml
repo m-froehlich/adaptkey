@@ -206,6 +206,25 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.BlacklistActivity" />
         </Preference>
 
+        <Preference
+            android:key="d177_learned_words"
+            android:title="@string/d177_learned_words_title"
+            android:summary="@string/d177_learned_words_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.LearnedWordsActivity" />
+        </Preference>
+
+        <SeekBarPreference
+            android:key="d177_pending_blacklist_expiry_days"
+            android:title="@string/d177_expiry_title"
+            android:summary="@string/d177_expiry_summary"
+            android:defaultValue="7"
+            android:max="30"
+            app:min="1"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_capitalisation">

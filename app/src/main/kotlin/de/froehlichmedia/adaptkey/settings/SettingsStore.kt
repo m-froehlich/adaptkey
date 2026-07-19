@@ -48,6 +48,7 @@ object SettingsStore {
     const val KEY_SYMBOL_KEY = "d59_symbol_key"
     const val KEY_TIER3_ENABLED = "d126_tier3_enabled"
     const val KEY_DIAGNOSTIC_LOG_ENABLED = "d_diag_enabled"
+    const val KEY_PENDING_BLACKLIST_EXPIRY_DAYS = "d177_pending_blacklist_expiry_days"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -81,6 +82,9 @@ object SettingsStore {
     
     /** Default stored integer for both D-55 extra-row-spacing sliders (7 dp). */
     const val DEF_EXTRA_SPACING = AdaptSettings.DEFAULT_EXTRA_SPACING_DP
+    
+    /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
+    const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
     /**
      * @param context any valid context
@@ -121,7 +125,8 @@ object SettingsStore {
             extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),
             symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true),
             tier3Enabled = p.getBoolean(KEY_TIER3_ENABLED, true),
-            diagnosticLogEnabled = p.getBoolean(KEY_DIAGNOSTIC_LOG_ENABLED, false)
+            diagnosticLogEnabled = p.getBoolean(KEY_DIAGNOSTIC_LOG_ENABLED, false),
+            pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

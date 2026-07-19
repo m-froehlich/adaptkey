@@ -35,7 +35,29 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§109 DONE (v0.8.73): D-172 - English-language hypothesis ruled out by device confirmation +
+- **§110 DONE (v0.8.74): D-177 - learned words split into their own store, separate from the bundled
+  dictionary; G-04/A-04 two-stage unlearn-then-provisional-blacklist; new Learned Words settings editor.**
+  Grew out of two D-172 (§109) side observations ("diecVorschläge" wrongly blacklisted instead of unlearned;
+  "aks" unreachable via G-04 at all since S-02 never suggests the current-input word) plus the user's own
+  return to "ddr" (§107). User-designed, corrected mid-round twice by direct instruction: (1) a genuinely
+  bundled word (`"ddr"`) has nothing to unlearn and goes straight to a permanent blacklist entry, unchanged
+  from §107; (2) a self-taught word gets unlearned first and only *provisionally* marked pending, for a
+  settings-editable `pendingBlacklistExpiryDays` window (default 7, 1-30) - only a genuine recurrence inside
+  that window escalates it to a permanent `BlacklistCategory.USER` entry via `learnWord()`'s new
+  `isPendingBlacklistRecurrence()` check; otherwise the mark simply expires and the word is an ordinary D-37
+  candidate again; (3) the learned lexicon lives in a completely separate SQLite table
+  (`TABLE_LEARNED`/`TABLE_LEARNED_BIGRAMS`/`TABLE_PENDING_BLACKLIST`, additive `CREATE TABLE IF NOT EXISTS`
+  migration, no `DATABASE_VERSION` bump) rather than an `origin` column on the shared table as first proposed
+  - "Ich würde das Wörterbuch absolut unangetastet lassen" - so a future bundled-dictionary update can never
+  touch or reset what the user has personally taught the keyboard, and existing installs need no migration at
+  all. New `LearnedWordsActivity` settings screen (mirrors `BlacklistActivity`, remove-only) makes every
+  learned word reachable, including ones like "aks" that G-04 structurally cannot reach. All "does the
+  keyboard know this" reads across both `DictionaryStore` implementations now merge bundled + learned sources
+  transparently. 14 new tests (8 `InMemoryDictionaryStoreTest`, 6 `SqliteDictionaryStoreRoboTest`); all
+  pre-existing tests in both files pass unchanged against the rewritten stores. 730 unit tests total (716 +
+  14 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Settings/Activity side not yet
+  device-confirmed. See spec §110.
+- **§109 (v0.8.73): D-172 - English-language hypothesis ruled out by device confirmation +
   diagnostic log; `suppressAutocorrect=true` now confirmed as the actual block, source still unattributed;
   a second, self-inflicted finding surfaced along the way.** Log with §108's diagnostic showed
   `dict=GERMAN suppressAutocorrect=true autocorrected=null` - German confirmed active, `autocorrectFor()`

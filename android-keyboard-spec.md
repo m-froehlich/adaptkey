@@ -5850,3 +5850,93 @@ round of its own if it turns out to matter beyond this self-inflicted testing sc
 No new tests (diagnostic logging only). 716 unit tests (unchanged). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. D-172 stays open pending the next captured log, now with both
 `suppressAutocorrect` sources and the raw context string visible.
+
+## §110 - D-177: Learned Words Moved to a Separate Store; Two-Stage Unlearn-Then-Provisional-Blacklist; a New Learned-Words Editor (v0.8.74)
+
+Grew directly out of two D-172 (§109) side observations and one more the user brought back to "ddr" (§107):
+a testing artefact ("diecVorschläge") got blacklisted instead of merely unlearned when dragged to trash, and
+"aks" - silently learned as a side effect of repeated failed corrections - could never be reached via G-04 at
+all, since S-02 never offers the current-input word as its own suggestion. Both exposed the same underlying
+gap: G-04's drag-to-trash and §107's A-04 blacklist had been conflated into a single mechanism, when they are
+actually two different situations that need different treatment.
+
+**The user's own design, arrived at over several corrected rounds, not guessed at once**:
+
+1. **Two categories of "words that shouldn't have been learned" are not the same problem.** A genuinely
+   bundled dictionary word the user rarely wants against a much more common neighbour (`"ddr"` vs. `"der"`,
+   §107's own case) has nothing to unlearn - it must go straight to a permanent blacklist entry, exactly as
+   §107 already implemented. A word the keyboard itself *learned* from the user's own typing
+   (`"diecVorschläge"`, `"aks"`) is different: the first drag-to-trash should simply unlearn it via D-37's
+   existing mechanism, not immediately blacklist it - a single accidental commit should not permanently
+   condemn a word the user might legitimately type again.
+2. **Only a genuine recurrence earns a permanent blacklist entry.** After unlearning, the word is marked
+   *provisionally* pending for a configurable window (`pendingBlacklistExpiryDays`, default 7, settings-editable
+   `SeekBarPreference` 1-30 - the user asked for this to be a real, visible settings value specifically so the
+   mechanism itself is discoverable, not because frequent retuning is expected). If the same word crosses
+   D-37's `LEARN_THRESHOLD` again inside that window, `learnWord()` now escalates it straight to a *permanent*
+   `BlacklistCategory.USER` entry instead of re-learning it - the recurrence itself is the signal that this
+   was not a one-off accidental commit. If the window lapses without a recurrence, the provisional mark
+   simply disappears (checked and cleared lazily on the next `learnWord()` call for that word) and the word
+   is once again an ordinary candidate for D-37 learning, exactly as if it had never been dragged to trash.
+3. **"Blacklisting" a genuinely bundled word (`"ddr"`) has always meant something different from
+   "unlearning" a self-taught one, so G-04 must branch on which kind of word it actually is.**
+   `onBlacklistWord()` now checks `dictionaryStore.isBundledWord(word)` first: a bundled word is blacklisted
+   immediately (§107's existing path, unchanged), a learned-only word is forgotten and provisionally marked
+   instead (this round's new path).
+4. **The learned lexicon must live in a store the bundled dictionary asset never touches, corrected mid-round
+   by direct instruction.** An initial proposal added an `origin` column to the single shared words table,
+   with a migration story for already-learned words on existing installs (treat them as bundled, a one-time
+   inexact edge case). Overridden with the better design: "Ich würde das Wörterbuch absolut unangetastet
+   lassen" - a fully separate table, so a future app update can ship a refreshed bundled dictionary without
+   ever touching or resetting anything the user has personally taught the keyboard. This also eliminates the
+   migration edge case outright: an existing install's learned words already live in the one place a bundled
+   reimport can never reach, nothing to reconcile.
+5. **A new settings screen makes every learned word reachable, including ones G-04 structurally cannot
+   reach.** `"aks"` (§109) proved G-04's own suggestion-bar drag gesture cannot remove a word matching the
+   current input (S-02), so it needed its own always-available editor, independent of what the suggestion bar
+   happens to be showing at the time.
+
+**Implemented, across `DictionaryStore`'s two backing implementations
+(`SqliteDictionaryStore`/`InMemoryDictionaryStore`), `AdaptKeyService`, and settings:**
+
+- `SqliteDictionaryStore` gains three new tables (`TABLE_LEARNED`, `TABLE_LEARNED_BIGRAMS`,
+  `TABLE_PENDING_BLACKLIST`), created via `ensureLearnedSchema()` using `CREATE TABLE IF NOT EXISTS`, run
+  unconditionally from both `init {}` and `onCreate()` - additive, non-destructive, and reaches
+  already-installed devices immediately without bumping `DATABASE_VERSION` (which would trigger `onUpgrade()`'s
+  destructive drop-and-recreate, wiping existing learned/blacklist data - the same established constraint
+  §107 already worked around for its own bundled-blacklist seeding). `learn()`/`unlearn()` now write only to
+  the learned tables; every "does the keyboard know this word" read (`entryOf`, `frequencyOf`, `isKnownWord`,
+  `partsOfSpeech`, `unigramsByPrefix`, `bigramFrequency`, `nextWords`, `allKnownWords`,
+  `correctionCandidates`) merges bundled and learned sources (summing frequencies, deduplicating word sets),
+  so nothing else in the autocorrect/suggestion pipeline needs to know the split exists at all.
+- `DictionaryStore` gains `forget(word)` (removes a learned word outright, regardless of accumulated
+  frequency - unlike `unlearn()`, which only reverses a single learning event), `isBundledWord(word)`,
+  `learnedWords()` (for the new editor), and `markPendingBlacklist()`/`pendingBlacklistedSince()`/
+  `clearPendingBlacklist()` for the provisional-mark round-trip. `InMemoryDictionaryStore` mirrors the same
+  split with plain `HashMap`s for unit testing.
+- `AdaptKeyService.onBlacklistWord()` branches on `isBundledWord()` as described above.
+  `learnWord()` gains an `isPendingBlacklistRecurrence(word)` check (comparing
+  `pendingBlacklistedSince()` against `settings.pendingBlacklistExpiryDays`, clearing an expired mark as a
+  side effect) ahead of the existing `PendingLearnStore` promotion branch: a recurrence forgets the word,
+  blacklists it permanently, and clears the provisional mark, reporting `LearnOutcome.SKIPPED` (A-07's
+  Backspace-undo correctly does nothing for `SKIPPED`, matching how a genuine promotion-into-blacklist should
+  behave - there is nothing left to undo back to).
+- New `LearnedWordsActivity` (settings screen, `d177_learned_words` entry under the dictionary category):
+  a per-language spinner plus a list of every word in `learnedWords()`, tap-to-remove with confirmation,
+  running the identical forget-then-provisionally-mark action as G-04's own learned-word branch. Structurally
+  mirrors the existing `BlacklistActivity` (C-05), minus the add-word row - this screen is remove-only.
+- New `pendingBlacklistExpiryDays` setting (`AdaptSettings`/`SettingsMapper`/`SettingsStore`, default 7,
+  clamped 1-30) with its own `SeekBarPreference` in `settings_preferences.xml`, right after the existing
+  blacklist entry.
+
+14 new tests (8 `InMemoryDictionaryStoreTest`, 6 `SqliteDictionaryStoreRoboTest`) covering `isBundledWord`
+against both bundled-only and also-learned words, `forget()` removing a multiply-reinforced learned word
+outright while leaving a bundled word's own frequency untouched, `learnedWords()` excluding bundled entries
+and sorting by descending frequency, the pending-blacklist mark/check/clear round-trip, and merged-frequency
+correctness for a word that is both bundled and learned. All 14 existing `InMemoryDictionaryStoreTest` cases
+and all existing `SqliteDictionaryStoreRoboTest` cases pass unchanged against the rewritten stores, confirming
+the merge-preserving design: every existing `learn()`/`unlearn()` scenario nets to the identical merged
+frequency it did before the split, just via two tables added together instead of one table incremented
+directly. 730 unit tests total (716 + 14 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+`LearnedWordsActivity` and the new settings row are SQLite/Android-facing UI, consistent with the established
+gap for this class of change (same as `BlacklistActivity` before it) - not yet device-confirmed.
