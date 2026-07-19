@@ -3732,9 +3732,12 @@ class AdaptKeyService : InputMethodService() {
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
         
-        // D-176: seeded once per installStores() call into the German store - see knownInOtherLanguage()'s
-        // own KDoc and installStores()'s seedBundledBlacklist() for the full reasoning.
-        private val BUNDLED_GERMAN_BLACKLIST = setOf("due", "sue", "ddr")
+        // D-176/D-181: seeded once per installStores() call into the German store - see
+        // knownInOtherLanguage()'s own KDoc and installStores()'s seedBundledBlacklist() for the full
+        // reasoning. "aks" (D-172): a genuine bundled English dictionary entry ("AKS", a Wikipedia-derived
+        // acronym, freq 18, PROPER_NOUN) was tripping knownInOtherLanguage()'s cross-language shield and
+        // blocking "Aks" -> "als" - the identical failure mode as "due"/"sue", fixed the identical way.
+        private val BUNDLED_GERMAN_BLACKLIST = setOf("due", "sue", "ddr", "aks")
         
         // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
         // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing

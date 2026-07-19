@@ -6023,3 +6023,38 @@ entries already live.
 case-insensitively (mirroring `learn()`'s own identity rule), and is a harmless no-op on a value that was
 never learned. 736 unit tests total (733 + 3 new). `:app:assembleDebug`/`:app:testDebugUnitTest` green. New
 settings screen and its long-press gesture not yet device-confirmed.
+
+## §113 - D-172/D-181: Root Cause Found and Fixed - "AKS" Is a Genuine Bundled English Dictionary Entry (v0.8.77)
+
+D-172, open since §108, finally closed by a fresh device log with §109's diagnostic in place:
+`dictChoice.suppressAutocorrect=false knownInOtherLanguage=true`. The German-language classification was
+never at fault - `LanguageClassifier.isForeign()`'s `minWords=2` gate really does return `false` for a
+single-word context, exactly as re-verified by hand several times across §108/§109; every one of those
+re-reads was correct. The actual block was always the *other* half of the OR'd `suppressAutocorrect`:
+`knownInOtherLanguage("aks")`, D-106 stage 2's cross-language shield, checks whether the token is already a
+known word in some *other* consulted language's dictionary - and it is. `grep`-ing the actual bundled asset
+confirms it directly: `dict_en.tsv` contains `AKS	18	PROPER_NOUN` - a genuine Wikipedia-derived English
+acronym entry, not stale data, not something D-177/§111's dictionary-reset touched (that only ever concerned
+the *German* store's contamination, and "AKS" belongs in English on its own merits). §109's own "aks now
+colours green" side finding (D-37 silently learning it after repeated failed corrections) had made the real
+cause harder to isolate at the time, but is now fully explained too: two independent mechanisms were
+compounding - D-37 pending-learn promotion made it *known* (fixed already, D-178/§111's reimport flushed
+it), while D-106 stage 2's cross-language shield independently made it *uncorrectable* (this round's fix) -
+solving one without the other would have left "Aks" silently uncorrected forever, exactly what the user kept
+observing.
+
+This is architecturally the identical failure mode as "due"/"sue" (§107): a token that is a real word in a
+consulted *other* language must not be corrected away while some *other* active language is being typed
+(mandatory English + every G-01-cycle language) - working exactly as designed, just for an entry ("AKS", the
+acronym) the user never actually intends to type. Fixed the identical way: `"aks"` added to the existing
+`BUNDLED_GERMAN_BLACKLIST` (now `due`/`sue`/`ddr`/`aks`), seeded into the German store by the already-existing,
+idempotent `seedBundledBlacklist()` on every `installStores()` call - reaching every existing install
+automatically, no reimport needed. `knownInOtherLanguage()`'s existing `if (dictionaryStore.isBlacklisted(token))
+return false` early-out then bypasses the cross-language shield for "aks" specifically, letting the ordinary
+autocorrect proceed to "als" - unlike "ddr", "aks" is not itself a real German dictionary word, so there is no
+A-01 side effect to reason about at all, only the removal of an unwanted protection.
+
+No new tests - `knownInOtherLanguage`/`seedBundledBlacklist`/`BUNDLED_GERMAN_BLACKLIST` are private
+`AdaptKeyService` glue, the same established, untested gap as the rest of D-176/§107's own blacklist seeding.
+736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-172 is closed,
+pending only the user's own device confirmation that "Aks" now corrects to "als".

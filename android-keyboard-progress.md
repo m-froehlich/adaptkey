@@ -35,7 +35,22 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§112 DONE (v0.8.76): D-180 - saved credentials get their own reviewable list; a shared "Copy"
+- **§113 DONE (v0.8.77): D-172/D-181 - root cause found and fixed: "AKS" is a genuine bundled
+  English dictionary entry.** D-172 (open since §108) finally closed by a fresh log with §109's diagnostic:
+  `dictChoice.suppressAutocorrect=false knownInOtherLanguage=true` - the German-language classification was
+  never at fault (`isForeign()`'s `minWords=2` gate really does return false for a single word, confirmed
+  correct all along); the actual block was D-106 stage 2's cross-language shield, and `grep`-ing the actual
+  asset confirms why: `dict_en.tsv` contains `AKS	18	PROPER_NOUN`, a genuine Wikipedia-derived English
+  acronym entry. Architecturally identical to "due"/"sue" (§107) - a real word in another consulted language
+  correctly protected from being corrected away, just for an entry the user never intends to type. Fixed the
+  identical way: `"aks"` added to the existing `BUNDLED_GERMAN_BLACKLIST` (now `due`/`sue`/`ddr`/`aks`),
+  seeded via the already-existing `seedBundledBlacklist()` - reaches every existing install automatically, no
+  reimport needed. §109's "aks colours green" side finding (D-37 silently learning it, already fixed by
+  D-178/§111's reimport) and this round's fix were two independent compounding causes - both are now
+  resolved. No new tests (same established untested-glue gap as §107). 736 unit tests total (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-172 is closed, pending device confirmation. See
+  spec §113.
+- **§112 (v0.8.76): D-180 - saved credentials get their own reviewable list; a shared "Copy"
   option on every remove dialog.** The former top-level "Clear saved usernames & emails" action (D-142,
   `cat_info`) was all-or-nothing; user-designed replacement: new `CredentialsActivity` (settings screen,
   moved into `cat_dictionary` next to blacklist/learned-words/expiry) lists every `CredentialStore.all()`
