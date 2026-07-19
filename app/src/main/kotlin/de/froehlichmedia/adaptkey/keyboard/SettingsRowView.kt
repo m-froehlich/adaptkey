@@ -86,6 +86,12 @@ class SettingsRowView @JvmOverloads constructor(
         fun onTouchZoneToggleClick()
     }
     
+    /** D-185: invoked when the URL-keyboard toggle button is tapped. */
+    fun interface OnUrlModeToggleClickListener {
+        
+        fun onUrlModeToggleClick()
+    }
+    
     /** D-144: invoked when a downward swipe anywhere on the row dismisses/closes, mirroring G-03. */
     fun interface OnSwipeDownListener {
         
@@ -101,6 +107,8 @@ class SettingsRowView @JvmOverloads constructor(
     var onCredentialModeClick: OnCredentialModeClickListener? = null
     
     var onTouchZoneToggleClick: OnTouchZoneToggleClickListener? = null
+    
+    var onUrlModeToggleClick: OnUrlModeToggleClickListener? = null
     
     var onSwipeDown: OnSwipeDownListener? = null
     
@@ -130,10 +138,52 @@ class SettingsRowView @JvmOverloads constructor(
             touchZoneToggleButton.background = credentialModeBackground(value)
         }
     
+    /**
+     * D-185: reflects whether the URL keyboard is currently active for the focused field (vs. toggled off
+     * to the ordinary letter keyboard while still inside the same URL field) - the button's background
+     * mirrors [credentialModeButton]'s own active/inactive styling. Independent of [urlModeButtonVisible]:
+     * a URL field always starts with this true (D-185's own "defaults to on" rule), so it only actually
+     * matters once the row has been opened and the user can see it.
+     */
+    var urlModeActive: Boolean = false
+        set(value) {
+            field = value
+            urlModeToggleButton.background = credentialModeBackground(value)
+        }
+    
+    /**
+     * D-185: whether the URL-keyboard toggle button is shown at all - only while the focused field is
+     * itself a URL-variation field (reserving no space in the row otherwise, unlike every other button
+     * here which is always present). Tracks the field's own type, not the live toggle state
+     * ([urlModeActive]) - the button must stay reachable after being toggled off, so the user can toggle
+     * it back on without leaving the field. Since [content] is a [FrameLayout] (fixed per-child margins,
+     * not a flow layout), [urlModeToggleButton] permanently occupies [emojiButton]'s original slot
+     * (immediately after [credentialModeButton], per D-185); [emojiButton] itself is shifted one slot
+     * further right for as long as this is visible, and restored to its original slot when it is not.
+     */
+    var urlModeButtonVisible: Boolean = false
+        set(value) {
+            field = value
+            urlModeToggleButton.visibility = if (value) View.VISIBLE else View.GONE
+            emojiButton.layoutParams = (emojiButton.layoutParams as LayoutParams).apply {
+                marginStart = if (value) slotMarginStart(3) else slotMarginStart(2)
+            }
+            emojiButton.requestLayout()
+        }
+    
+    private val buttonSizePx = dp(BUTTON_SIZE_DP)
+    private val marginPx = dp(BUTTON_MARGIN_DP)
+    
     private val credentialModeButton = buttonFor("🔑") { onCredentialModeClick?.onCredentialModeClick() }
     private val emojiButton = buttonFor("😊") { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
     private val touchZoneToggleButton = buttonFor("🎯") { onTouchZoneToggleClick?.onTouchZoneToggleClick() }
+    
+    // D-185: sits between credentialModeButton and emojiButton (see [urlModeButtonVisible]) - GONE by
+    // default, since it must not appear at all outside a URL field.
+    private val urlModeToggleButton = buttonFor("🌐") { onUrlModeToggleClick?.onUrlModeToggleClick() }.apply {
+        visibility = View.GONE
+    }
     
     // Reported: a bare 🗑 gives no clue *what* it clears unless you already know - so nobody would ever
     // press it. A clipboard glyph with a small trash badge overlaid in the corner reads as "clear the
@@ -153,17 +203,21 @@ class SettingsRowView @JvmOverloads constructor(
     
     init {
         content.setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
-        val buttonSizePx = dp(BUTTON_SIZE_DP)
-        val marginPx = dp(BUTTON_MARGIN_DP)
         // D-142: the credential-mode button sits at the row's very left edge, ahead of the emoji button.
         content.addView(
             credentialModeButton,
-            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = marginPx }
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = slotMarginStart(1) }
+        )
+        // D-185: permanently at slot 2 - GONE by default (see [urlModeToggleButton]'s own declaration), so
+        // it neither reserves space nor is drawn until [urlModeButtonVisible] shows it.
+        content.addView(
+            urlModeToggleButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply { marginStart = slotMarginStart(2) }
         )
         content.addView(
             emojiButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply {
-                marginStart = marginPx * 2 + buttonSizePx
+                marginStart = slotMarginStart(2)
             }
         )
         // §69: sits directly left of the settings gear, offset by the gear's own width plus one more
@@ -427,6 +481,17 @@ class SettingsRowView @JvmOverloads constructor(
     
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
+    }
+    
+    /**
+     * D-185: the `marginStart` for the [index]-th button from the row's left edge (1-based: slot 1 =
+     * [credentialModeButton]'s own `marginPx`, slot 2 = [emojiButton]'s original `marginPx * 2 +
+     * buttonSizePx`), so [urlModeButtonVisible] can shift [emojiButton] between slot 2 (its position
+     * outside a URL field) and slot 3 (once [urlModeToggleButton] claims slot 2) without duplicating the
+     * spacing formula.
+     */
+    private fun slotMarginStart(index: Int): Int {
+        return marginPx * index + buttonSizePx * (index - 1)
     }
     
     companion object {

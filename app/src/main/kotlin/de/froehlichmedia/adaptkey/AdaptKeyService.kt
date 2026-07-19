@@ -556,6 +556,7 @@ class AdaptKeyService : InputMethodService() {
         row.onClearClipboardClick = SettingsRowView.OnClearClipboardClickListener { clearClipboardFromSettingsRow() }
         row.onCredentialModeClick = SettingsRowView.OnCredentialModeClickListener { toggleCredentialModeFromSettingsRow() }
         row.onTouchZoneToggleClick = SettingsRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromSettingsRow() }
+        row.onUrlModeToggleClick = SettingsRowView.OnUrlModeToggleClickListener { toggleUrlModeFromSettingsRow() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
         row.onSwipeDown = SettingsRowView.OnSwipeDownListener { dismissKeyboardOrCloseSettingsRow() }
         settingsRow = row
@@ -996,6 +997,16 @@ class AdaptKeyService : InputMethodService() {
         if (weakSignalKind != LoginFieldKind.NONE) {
             settingsRow?.open()
             settingsRow?.flashCredentialModeButton()
+        }
+        // D-185: the toggle button is reachable only in a real URL-variation field - tracks the field's
+        // own type ([isUrlField]), not the live [urlMode] toggle, so it stays visible after being switched
+        // off. Unlike the reliable-login-classification case above, a URL field always reveals the row (not
+        // only on a weak/uncertain signal) since the button would otherwise be undiscoverable.
+        val urlVariationField = isUrlField(info)
+        settingsRow?.urlModeButtonVisible = urlVariationField
+        settingsRow?.urlModeActive = urlMode
+        if (urlVariationField) {
+            settingsRow?.open()
         }
         // D-135: never carry a previous field's autofill suggestions over into a fresh one - a new
         // onCreateInlineSuggestionsRequest()/onInlineSuggestionsResponse() round-trip supplies fresh ones
@@ -1869,6 +1880,21 @@ class AdaptKeyService : InputMethodService() {
             credentialModeManuallyActivated = true
         }
         settingsRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        closeSettingsRow { refreshSuggestions() }
+    }
+    
+    /**
+     * D-185: the settings row's URL-keyboard toggle - flips [urlMode] itself (the same flag
+     * [isUrlField] seeds it with on field entry), so every consumer that already reads it
+     * (the view's own D-143 bottom row, [finalizeAndCommit]'s verbatim-commit branch, [refreshSuggestions]'
+     * empty-bar branch) picks up the change with no separate state to keep in sync. Only reachable while
+     * [SettingsRowView.urlModeButtonVisible] is showing the button, i.e. only in a real URL-variation
+     * field - [urlMode] reverts to the field's own default (on) the next time any field is focused.
+     */
+    private fun toggleUrlModeFromSettingsRow() {
+        urlMode = !urlMode
+        keyboardView?.urlMode = urlMode
+        settingsRow?.urlModeActive = urlMode
         closeSettingsRow { refreshSuggestions() }
     }
     

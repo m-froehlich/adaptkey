@@ -458,6 +458,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // short enough that typing feels snappy and a rapid double-tap shows two distinct blinks.
     private val flashDurationMs = 28L
     
+    // D-184: a same-key re-press arriving while [flashKey] is still lit from the immediately preceding
+    // release used to merge into one continuous highlight - ACTION_DOWN sets pressedKey to the same key
+    // before the single resulting invalidate() ever renders an "off" frame, so a fast double-tap never
+    // actually blinked twice despite flashDurationMs already being very short. paintSuppressedKey masks
+    // JUST the paint for that one key for one frame so a genuine off-frame renders first; pressedKey and
+    // all touch/keystroke handling (long-press, backspace repeat, release) are set immediately as before,
+    // so this cannot drop or delay an actual keypress - only its highlight briefly blinks off then on.
+    private var paintSuppressedKey: Key? = null
+    private val paintSuppressEndRunnable = Runnable {
+        paintSuppressedKey = null
+        invalidate()
+    }
+    private val repressGapMs = 16L
+    
     // D-07: the accelerating backspace-on-hold repeat. Scheduled on ACTION_DOWN of the backspace key and
     // cancelled on release / move; backspaceRepeated suppresses the would-be single-delete tap once at
     // least one repeat has fired, so a hold never double-counts the initial deletion.
@@ -767,6 +781,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 continue
             }
             val paint = when {
+                // D-184: this key is mid-repress-gap - paint it as unpressed for one frame even though
+                // pressedKey already points at it, so the following frame's highlight reads as a new blink.
+                key === paintSuppressedKey -> if (key.code == KeyCode.CHAR) keyPaint else specialKeyPaint
                 key === pressedKey || key === flashKey -> pressedKeyPaint
                 key.code == KeyCode.CHAR -> keyPaint
                 else -> specialKeyPaint
@@ -884,6 +901,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 val resolved = resolveKey(event.x, event.y) ?: return true
                 val (key, rect) = resolved
+                // D-184: this exact key is still showing its previous tap's flash - force one off-frame
+                // so the new press reads as a distinct second blink instead of a continuation of the first.
+                if (flashKey === key) {
+                    longPressHandler.removeCallbacks(paintSuppressEndRunnable)
+                    paintSuppressedKey = key
+                    longPressHandler.postDelayed(paintSuppressEndRunnable, repressGapMs)
+                }
                 cancelFlash()
                 dismissPopup()
                 // D-30: clear the backspace-repeat suppression from any previous hold, so a new touch is

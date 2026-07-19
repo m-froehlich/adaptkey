@@ -35,7 +35,23 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§115 DONE (v0.8.79): D-183/D-184/D-185 - three items captured to the backlog, not implemented,
+- **§116 (v0.8.80): D-172/D-181 device-confirmed; D-184/D-185 implemented.** "aks"→"als" confirmed working
+  problem-free on device - D-172/D-181 (§113) fully closed. D-184: root cause was structural, not the
+  duration - `ACTION_DOWN` already cancelled the previous flash but never rendered a genuine "off" frame
+  before the new press's highlight, so a same-key double-tap always read as one continuous flash regardless
+  of how short `flashDurationMs` (28ms, already shortened twice in §13/§14) was; fixed with a new
+  `paintSuppressedKey` one-frame (16ms) repress gap in `AdaptKeyboardView` that only masks the *paint*, never
+  the underlying `pressedKey`/keystroke logic - no dropped-keystroke risk. D-185: the settings row gained a
+  🌐 toggle button (second slot, right after the credential-mode button, `emojiButton` dynamically shifted
+  one slot right while it's shown) that flips the existing `AdaptKeyService.urlMode` flag directly - every
+  consumer already reading that flag (bottom-row swap, verbatim-commit, empty-suggestion-bar) respects a
+  manual toggle for free. Button visibility tracks `isUrlField(info)` (the field's fixed type, stays
+  reachable after toggling off); the row auto-opens on every URL-field entry, mirroring the existing
+  `weakSignalKind` precedent. Resets to default-on every fresh field focus via the pre-existing
+  `urlMode = isUrlField(info)` in `onStartInput` - no new reset logic needed. 736 unit tests total
+  (unchanged - Android View/Service glue, same established untested-glue gap). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. Neither D-184 nor D-185 is device-confirmed yet. See spec §116.
+- **§115 (v0.8.79): D-183/D-184/D-185 - three items captured to the backlog, not implemented,
   no code changed.** D-183: a mid-text suggestion-bar tap still inserts a superfluous space, including a
   wrong space *before* a period when applied right before one - not yet traced (needs a real device log with
   the exact suggestion/caret position/surrounding text). D-184: the typing "flash" highlight effect needs a
@@ -78,8 +94,8 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   reimport needed. §109's "aks colours green" side finding (D-37 silently learning it, already fixed by
   D-178/§111's reimport) and this round's fix were two independent compounding causes - both are now
   resolved. No new tests (same established untested-glue gap as §107). 736 unit tests total (unchanged).
-  `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-172 is closed, pending device confirmation. See
-  spec §113.
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): "aks" now corrects to
+  "als" problem-free.** D-172/D-181 fully closed. See spec §113.
 - **§112 (v0.8.76): D-180 - saved credentials get their own reviewable list; a shared "Copy"
   option on every remove dialog.** The former top-level "Clear saved usernames & emails" action (D-142,
   `cat_info`) was all-or-nothing; user-designed replacement: new `CredentialsActivity` (settings screen,

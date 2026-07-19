@@ -6056,8 +6056,8 @@ A-01 side effect to reason about at all, only the removal of an unwanted protect
 
 No new tests - `knownInOtherLanguage`/`seedBundledBlacklist`/`BUNDLED_GERMAN_BLACKLIST` are private
 `AdaptKeyService` glue, the same established, untested gap as the rest of D-176/§107's own blacklist seeding.
-736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-172 is closed,
-pending only the user's own device confirmation that "Aks" now corrects to "als".
+736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed
+(2026-07-19): "aks" now corrects to "als" problem-free. D-172/D-181 fully closed.**
 
 ## §114 - D-182: `reclaimSurroundingWord()` Stops Deleting Text It Only Needs to Recolour (v0.8.78)
 
@@ -6158,3 +6158,82 @@ and how the per-field toggle state should reset (or not) between separate URL-fi
 
 No code changes, no new tests. 736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest`
 green (unaffected).
+
+## §116 - D-172/D-181 Device-Confirmed; D-184/D-185 Implemented (v0.8.80)
+
+**D-172/D-181 device-confirmed**: "aks" now corrects to "als" problem-free, as reported. §113's fix is fully
+closed - see that section's own updated final line.
+
+### D-184 - key-press flash: root cause was structural, not the duration
+This is the *third* round reporting the exact same "flash feels sluggish / a double-tap doesn't show two
+distinct blinks" symptom (round 2 / §13 shortened it 80ms→28ms; round 3 / §14 shortened it again to today's
+28ms, both times believing the constant itself was the fix). Per this project's own rule of re-questioning a
+diagnosis after a "fixed" point gets negative feedback again rather than reapplying the same fix a third
+time: traced `AdaptKeyboardView`'s actual touch state machine instead of shortening `flashDurationMs` again.
+Root cause, confirmed directly from the code (not guessed): `ACTION_DOWN` already calls `cancelFlash()`
+before setting `pressedKey = key`, but both happen synchronously in the same handler before the single
+resulting `invalidate()` - so the screen never renders a genuine "off" frame between the previous tap's
+afterglow ending and the new tap's press-highlight starting. For a same-key double-tap arriving within the
+28ms afterglow window (a very realistic case for two fast presses of one letter, e.g. "ll"/"ss"), the key
+paints as continuously highlighted across both taps, reading as one long flash rather than two distinct
+ones - independent of how short `flashDurationMs` itself is, which is why shortening it twice already never
+fixed this specific complaint.
+
+Fixed by decoupling the *paint* of a repress from the underlying press/keystroke logic (`pressedKey` and all
+touch handling - long-press, backspace-repeat, release - are set/read exactly as before, so this cannot drop
+or delay an actual keystroke, only its highlight): `paintSuppressedKey` (`AdaptKeyboardView.kt`) masks the
+one key that still has an active `flashKey` at the moment of a new `ACTION_DOWN`, forcing it to paint
+unpressed for one `repressGapMs` (16ms, ~1 frame) window before the normal highlight resumes - a real,
+render-visible off-then-on blink for the specific same-key-repress case, left untouched for every ordinary
+(non-overlapping) tap. `flashDurationMs` itself was left at 28ms (already at the "Gboard-like, ~2 frames"
+floor per §13/§14's own reasoning; a fourth reduction had nothing left to gain).
+
+No new tests - `AdaptKeyboardView`'s touch/paint state machine is the same established untested Android-glue
+gap as the rest of D-04/D-14/D-144's own history in this file. Not yet device-confirmed - this is a genuine
+behavioural risk (untestable without an emulator/device) rather than a proven fix; if a same-key double-tap
+still reads as one flash, or the added 16ms gap itself feels laggy, that is the next thing to trace.
+
+### D-185 - togglable URL keyboard: built on the existing `urlMode` flag, no new state
+`AdaptKeyService.urlMode` was already the single flag every consumer reads (`AdaptKeyboardView`'s D-143
+bottom-row swap, `finalizeAndCommit`'s verbatim-commit branch, `refreshSuggestions`' empty-bar branch) - so
+letting the new settings-row button flip `urlMode` directly, rather than introducing a second "is URL mode
+overridden" variable, makes every one of those consumers respect a manual toggle for free, with nothing to
+keep in sync. `onStartInput` already unconditionally recomputes `urlMode = isUrlField(info)` on every fresh
+field focus, which is exactly D-185's own "defaults to on the moment a URL field is entered" requirement -
+a prior visit's manual toggle-off never carries into the next field visit, without any extra reset code.
+
+Button visibility ("shown only while `urlMode` is active", i.e. must not appear at all outside a URL field,
+but must stay reachable after being toggled off so the user can turn it back on) is deliberately tracked by
+`isUrlField(info)` - the field's own fixed type - rather than by the live, now-toggleable `urlMode` value
+itself; conflating the two would have made the button disappear the moment it was used to switch off, with
+no way back short of leaving the field. `SettingsRowView.urlModeButtonVisible` (visibility) and
+`.urlModeActive` (background, mirrors `credentialModeActive`'s own styling) are therefore two independent
+properties, pushed from `AdaptKeyService.onStartInputView` (`urlModeButtonVisible` from a fresh
+`isUrlField(info)` check, `urlModeActive` from the current `urlMode`).
+
+Layout: `SettingsRowView.content` is a `FrameLayout` (fixed per-child margins, not a flow layout), so
+inserting a button "second from the left, immediately after the credential-mode button" - `emojiButton`'s
+own existing slot - needs the display to actively move `emojiButton` aside rather than just adding a sibling.
+`urlModeToggleButton` (🌐) permanently occupies `emojiButton`'s original slot (`GONE` by default so it
+reserves no space); `urlModeButtonVisible`'s setter shifts `emojiButton`'s own `marginStart` one slot
+further right for as long as the toggle button claims that slot, restoring it when not - both computed via a
+new small `slotMarginStart(index)` helper instead of duplicating the existing hand-written margin arithmetic
+a third time (credential/emoji/clear-clipboard/touch-zone were each already one own copy of the same
+formula).
+
+Row auto-open: mirrors the existing `weakSignalKind` precedent in `onStartInputView` exactly (open the row +
+reveal a button on a relevant field focus) rather than inventing new interaction/gesture-conflict logic -
+addresses the spec's own open question about interaction with the row's swipe-up/down gesture, since
+`settingsRow?.closeImmediately()` already runs unconditionally first on every fresh field presentation and
+the row's open()/close() state is otherwise untouched by this change. Unlike the *weak-signal* login case
+(only opens on an unreliable signal), a URL field always opens the row on entry, even though `isUrlField`
+is a fully reliable `InputType` check - without at least one guaranteed reveal, the new button would be
+practically undiscoverable, since it lives nowhere else.
+
+`AdaptKeyService.toggleUrlModeFromSettingsRow()`: flips `urlMode`, re-pushes it to the view and to
+`settingsRow.urlModeActive`, then closes the row and refreshes suggestions - the same three-step shape as
+the existing `toggleTouchZoneVisualizationFromSettingsRow()`/`toggleCredentialModeFromSettingsRow()`.
+
+No new tests - `SettingsRowView`/`AdaptKeyService` field-focus and click-listener glue is the same
+established untested Android-only gap as every other settings-row button (D-142/D-156/§69). 736 unit tests
+total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
