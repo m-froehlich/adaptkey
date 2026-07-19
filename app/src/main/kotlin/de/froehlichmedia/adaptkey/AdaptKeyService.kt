@@ -2685,11 +2685,26 @@ class AdaptKeyService : InputMethodService() {
             composingAnchor = anchor
             return
         }
-        // D-139 (temporary diagnostic): a reclaim mutates the real editable via deleteSurroundingText()
-        // below, then rebuilds composing from these two fragments - exactly the mechanism §73/§76 suspect
-        // for the reported jitter/scramble, so every actual reclaim (not the common no-op above) is logged.
+        // D-139 (temporary diagnostic): a reclaim mutates the real editable, then rebuilds composing from
+        // these two fragments - exactly the mechanism §73/§76 suspect for the reported jitter/scramble, so
+        // every actual reclaim (not the common no-op above) is logged.
         diag("AdaptKeyJitter", "reclaimSurroundingWord: before=\"${reclaim.before}\" after=\"${reclaim.after}\"")
-        ic.deleteSurroundingText(reclaim.before.length, reclaim.after.length)
+        // D-182: mark the already-existing text as the composing region in place, rather than deleting and
+        // re-inserting it - the delete step briefly left the reclaimed span empty before updateComposing()'s
+        // follow-up setComposingText() restored it, which some editors (observed live: the Gemini search
+        // field) rendered as a visible flash, and in one captured case even echoed that transient
+        // collapsed-at-anchor state back as a *third*, differently-stale onUpdateSelection call whose own
+        // ground-truth read then agreed with it - fooling §101's verification into misreading the
+        // correctly-rebuilt reclaim as a genuine external change and tearing it down. setComposingRegion()
+        // never removes a character, so there is no transient empty state left for any of this to observe
+        // in the first place. Falls back to the old delete/reinsert only when the anchor could not be
+        // resolved at all (anchor < 0, e.g. a failed ExtractedText read) - the same rare, already-
+        // conservative case this method already treats specially just above.
+        if (anchor >= 0) {
+            ic.setComposingRegion(anchor, anchor + reclaim.before.length + reclaim.after.length)
+        } else {
+            ic.deleteSurroundingText(reclaim.before.length, reclaim.after.length)
+        }
         // D-84: the reclaimed "before" fragment moves into composing now, so it is no longer part of the
         // context *preceding* the token - trim it from tokenContextBefore too, or it would appear twice
         // (once here at its tail, once inside composing) in every "$tokenContextBefore $typed"-style string

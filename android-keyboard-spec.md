@@ -6058,3 +6058,60 @@ No new tests - `knownInOtherLanguage`/`seedBundledBlacklist`/`BUNDLED_GERMAN_BLA
 `AdaptKeyService` glue, the same established, untested gap as the rest of D-176/§107's own blacklist seeding.
 736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-172 is closed,
 pending only the user's own device confirmation that "Aks" now corrects to "als".
+
+## §114 - D-182: `reclaimSurroundingWord()` Stops Deleting Text It Only Needs to Recolour (v0.8.78)
+
+**D-181 side item (no code change)**: reported "aks" showing in the C-05 blacklist as `USER` rather than
+`BUNDLED` - a leftover from manually adding it there by hand before D-181's code fix existed (the editor's
+category picker defaults to whatever was last selected). `seedBundledBlacklist()`'s `INSERT OR REPLACE`
+already always wins with `BUNDLED` the next time `AdaptKeyService.onCreate()` actually runs - which any
+install/update naturally triggers, so no fix was needed here, only an explanation. Deliberately **not**
+turned into a reseed-on-every-editor-visit mechanism - the user explicitly confirmed manually re-adding it
+as `USER` later should stick, not be silently overwritten, matching this project's D-177 stance that a
+removed entry's removal must actually hold.
+
+**The real fix, D-182**: a follow-up repro (a fresh word typed alone, then a second word typed and deleted)
+showed the "word deleted" symptom from §113's report was actually already gone on the current build - but a
+new, related symptom remained: the cursor visibly jumps to the very start of the field for an instant during
+the same reclaim. Traced precisely against the log: `reclaimSurroundingWord()` calls
+`ic.deleteSurroundingText(...)` to remove the committed word from the document, then `updateComposing()`
+calls `ic.setComposingText(...)` moments later to put it back as *styled* (S-05-coloured) composing text -
+between those two calls the reclaimed span is briefly empty, and the cursor has nowhere to sit but position
+0 (or, mid-text, the reclaim's own start offset) for that instant. The user asked directly whether a
+"replace" function existed that would do this better - clarified that no single InputConnection call can
+both target an arbitrary already-committed range *and* apply styled composing text in one step (styling only
+attaches via `setComposingText`, which alone can only replace the current selection/cursor position, not an
+arbitrary range elsewhere); `InputConnection.setComposingRegion(start, end)` - the API Android documents
+specifically for "mark this already-existing text as being actively edited by the IME" - plus a follow-up
+`setComposingText()` for the styling is the correct two-call sequence, not a delete-based workaround. (A
+genuinely atomic single-call `replaceText()` exists but only from API 33 onward; skipped rather than adding
+a version-gated fallback path purely to save one call on newer devices, given `setComposingRegion()` already
+covers every supported API level cleanly.)
+
+**A second, more serious log** (a real device capture from the same morning) showed this same delete-based
+transient state causing actual data loss, not just a visual flash: tapping far back into already-committed
+text landed mid-word in "geminibund" (a D-62 reclaim), and while the *first* stale echo of the reclaim's own
+`deleteSurroundingText()` step was correctly recognised and ignored by §101's ground-truth verification, a
+*third* differently-stale `onUpdateSelection` callback arrived shortly after, reporting yet another position
+- and this time the synchronous ground-truth read **also** returned the same transient collapsed-at-anchor
+position, causing §101's own EXTERNAL branch to fire and tear down the correctly-rebuilt `"geminibund"`
+composing token entirely. This is the same root instability (the Gemini search field appears to echo a
+delete-based edit's transient states unusually persistently) fooling even the ground-truth check itself,
+not a new, independent bug - not fully proven to be resolved by this fix alone (a third echo reporting a
+wholly different composing span, `[65,75]`, is harder to fully explain), but removing the delete-based
+transient state removes the thing every observed echo in both logs was actually echoing.
+
+**Fixed**: `reclaimSurroundingWord()` now calls `ic.setComposingRegion(anchor, anchor + before.length +
+after.length)` to mark the already-existing text as composing in place - the characters are never removed
+from the document at any point, so there is no empty/transient state left for a misbehaving editor to
+observe, echo, or have a ground-truth read agree with. Falls back to the old `deleteSurroundingText()`
+behaviour only when the anchor could not be resolved at all (`anchor < 0`, e.g. a failed `ExtractedText`
+read) - the same already-conservative rare case this method already special-cases. `updateComposing()`
+itself is unchanged: its `setComposingText()` call now simply restyles the region `setComposingRegion()` just
+established, rather than re-inserting fresh characters into a moment-ago-empty span.
+
+No new tests - `reclaimSurroundingWord()` is `AdaptKeyService`-internal `InputConnection` glue, the same
+established gap as the rest of this class. 736 unit tests total (unchanged). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. Not yet device-confirmed - specifically needs the exact "tap far back
+mid-word after a long gap" scenario re-tested, since that is the one where a genuine tear-down (not just a
+visual flash) was observed.

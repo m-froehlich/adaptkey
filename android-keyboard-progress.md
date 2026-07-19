@@ -35,7 +35,26 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§113 DONE (v0.8.77): D-172/D-181 - root cause found and fixed: "AKS" is a genuine bundled
+- **§114 DONE (v0.8.78): D-182 - `reclaimSurroundingWord()` stops deleting text it only needs to
+  recolour.** Follow-up to §113: the "word deleted" symptom was already gone on the current build, but a
+  related cursor-jump-to-start-of-field remained during the same reclaim. Root cause: `reclaimSurroundingWord()`
+  deleted the committed text then `updateComposing()` re-inserted it moments later as styled composing text
+  - briefly leaving the reclaimed span empty, with nowhere for the cursor to sit but the reclaim's start
+  offset. A second, more serious device log from the same morning showed this same transient state actually
+  causing data loss (not just a flash): a third, differently-stale `onUpdateSelection` echo's own
+  ground-truth read agreed with the transient collapsed-at-anchor position, fooling §101's verification into
+  tearing down a correctly-rebuilt reclaimed token entirely. Fixed by switching to
+  `InputConnection.setComposingRegion(start, end)` - marks the already-existing text as composing in place,
+  never removing a character, so there is no empty state left for a misbehaving editor (Gemini's search
+  field, observed live in both logs) to echo or have ground truth agree with. Falls back to the old
+  delete/reinsert only when the anchor is unresolvable (`anchor < 0`). Also confirmed (no code change): "aks"
+  showing as `USER` in the blacklist was a leftover from a manual pre-fix addition -
+  `seedBundledBlacklist()`'s upsert already corrects it to `BUNDLED` on the next app start; deliberately not
+  turned into a reseed-on-every-visit mechanism, so a later manual re-add as `USER` will still stick. No new
+  tests (established `AdaptKeyService`-internal glue gap). 736 unit tests total (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - the mid-text tear-down
+  scenario specifically needs re-testing. See spec §114.
+- **§113 (v0.8.77): D-172/D-181 - root cause found and fixed: "AKS" is a genuine bundled
   English dictionary entry.** D-172 (open since §108) finally closed by a fresh log with §109's diagnostic:
   `dictChoice.suppressAutocorrect=false knownInOtherLanguage=true` - the German-language classification was
   never at fault (`isForeign()`'s `minWords=2` gate really does return false for a single word, confirmed
