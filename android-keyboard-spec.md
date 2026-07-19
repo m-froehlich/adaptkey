@@ -5790,3 +5790,28 @@ No new tests - `knownInOtherLanguage`/`seedBundledBlacklist` are private `AdaptK
 already-tested `DictionaryStore.blacklist()`/`isKnownWord()`, the same established gap as D-157/D-164's own
 (untested) exception list before it. 716 unit tests (unchanged). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §108 - D-172 ("aks"/"als"): Reproduced from a Device Log, Still No Blocking Gate Found - Diagnostic Added (v0.8.72)
+
+A fresh, easy-to-reproduce device log confirmed the report precisely: typing "Aks" (sentence-initial, Google
+Keep) committed unchanged - no correction to "Als" at all. `finalizeAndCommit()` was read in full this round
+(past where §105's original trace stopped) to find the actual autocorrect-application logic, not only the
+A-05 split veto - every gate it touches was re-checked by hand against this exact token and still comes back
+clear: `MIN_AUTOCORRECT_LENGTH`/`MIN_AUTOCORRECT_CANDIDATE_FREQUENCY` (300, confirmed) both clear "als"
+(frequency 191,841); `k`/`l` are confirmed keyboard-adjacent (cost 1); `RegularVerbInflection.isPlausibleInflection("aks", ...)`
+traced by hand against every listed ending - none actually strip anything from a token ending in "s", so it
+returns `false`, not a blocker; `LanguageClassifier.isForeign()` requires `minWords = 2` (checked directly in
+the class) - a single-word context returns `false` immediately, before any statistical classification even
+runs. Every one of these says "Aks" should correct to "Als".
+
+**One variable the diagnostic channel has never shown**: which dictionary (`dictChoice.language`) was
+actually resolved as active for this token. A concrete, checkable hypothesis: if G-01's active language was
+English at the time (left there manually, or via D-130's sustained-English auto-promotion) rather than
+German, the entire autocorrect search would run against the English lexicon, which has no entry for "als"
+at all - fully explaining the observed behaviour with no bug anywhere. Not confirmed either way from this
+log alone (it was never logged). Diagnostic added to `finalizeAndCommit()`: `dictChoice.language`,
+`suppressAutocorrect`, and the `diacriticWord`/`autocorrected`/`rawCorrected` values are now all logged
+together right where they are computed, so the next repro (reported as easy to reproduce) settles this
+definitively instead of guessing further. No new tests (diagnostic logging only, matching every prior
+instance of this pattern this session). 716 unit tests (unchanged). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. D-172 stays open pending the next captured log.

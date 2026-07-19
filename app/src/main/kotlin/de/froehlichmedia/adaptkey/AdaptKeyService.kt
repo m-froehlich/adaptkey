@@ -2185,6 +2185,16 @@ class AdaptKeyService : InputMethodService() {
         val autocorrected = if (diacriticWord != null || suppressAutocorrect) null else provider.autocorrectFor(typed, previousWord)
         val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
         val corrected = diacriticWord ?: autocorrected ?: rawCorrected ?: typed
+        // D-172 (temporary diagnostic): reported that an unknown-but-clearly-close-to-a-common-word token
+        // (e.g. "aks" -> "als") sometimes never autocorrects at all, despite every gate traced by hand
+        // (cost, frequency, blacklist, foreign-language classification) looking like it should fire. The
+        // one variable this log did not previously show is which dictionary actually ran the check -
+        // logged here so the next repro settles it instead of guessing further.
+        diag(
+            "AdaptKeyJitter",
+            "finalizeAndCommit: dict=${dictChoice.language} suppressAutocorrect=$suppressAutocorrect " +
+                "diacriticWord=$diacriticWord autocorrected=$autocorrected rawCorrected=$rawCorrected"
+        )
         // D-140: when the D-39 raw-coordinate fallback (not an ordinary dictionary/diacritic correction)
         // produced this correction, capture the single tap it actually changed - before clearComposing()
         // below wipes composingTaps - so a rejected correction can precisely un-train just that one

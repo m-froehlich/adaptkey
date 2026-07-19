@@ -35,7 +35,20 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§107 DONE (v0.8.71): D-171/D-176 - "ddr" and D-164's cross-language shield both redesigned onto a
+- **§108 DONE (v0.8.72): D-172 ("aks"/"als") reproduced from a fresh device log, still no blocking gate
+  found by hand-tracing - diagnostic added rather than guessing.** `finalizeAndCommit()` read in full this
+  round (past where the original §105 trace stopped) to find the actual autocorrect-application logic.
+  Every gate re-checked against this exact repro still comes back clear: length/frequency thresholds both
+  pass, k/l confirmed keyboard-adjacent (cost 1), `RegularVerbInflection.isPlausibleInflection` traced by
+  hand and returns false (no ending actually strips from a token ending in "s"), `LanguageClassifier.isForeign()`'s
+  `minWords = 2` gate means a single-word context never even reaches statistical classification. One
+  variable the diagnostic channel never showed: which dictionary (`dictChoice.language`) actually resolved
+  as active - a concrete hypothesis (G-01 left on English, so the whole search ran against a lexicon with no
+  "als" at all) would fully explain it with no bug anywhere, but isn't confirmed either way yet. Added
+  `dictChoice.language`/`suppressAutocorrect`/`diacriticWord`/`autocorrected`/`rawCorrected` logging to
+  `finalizeAndCommit()` to settle it on the next (reportedly easy) repro. 716 unit tests (unchanged -
+  diagnostic-only). `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-172 stays open.
+- **§107 (v0.8.71): D-171/D-176 - "ddr" and D-164's cross-language shield both redesigned onto a
   real, data-driven A-04 blacklist, corrected mid-round twice by direct instruction.** User clarified "DDR"
   genuinely is a real German dictionary word (confirmed, frequency 4405) they almost never want against how
   often they type "der" - and revealed "due"/"sue" were never actually on a real blacklist at all, only on
