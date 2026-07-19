@@ -6403,6 +6403,8 @@ exact app/timing that produced the original log; the same established gap as the
 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
 
+**Device-confirmed (2026-07-19): works as intended, closed.**
+
 ## §120 - D-189: `SettingsRowView` Renamed to `ExtraRowView`; Credential-Mode Reveal + Delayed Flash (v0.8.84)
 
 Two items, requested together: a reliable-credential-field reveal bug found while testing D-174, and a
@@ -6479,6 +6481,8 @@ one, and the setting's own name/summary is scoped to recording only.
 two gated call sites are the same established untested Android-glue gap as the rest of D-142/D-174.
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
 
+**Device-confirmed (2026-07-19): works as intended, closed.**
+
 ## §122 - D-191: Opt-In Contact-Derived Email Suggestions (v0.8.86)
 
 Follow-up to §121's Contacts-permission discussion: the user weighed the "keyboard asking for Contacts"
@@ -6534,6 +6538,9 @@ flow are Android-only glue (`ContentResolver`, `ActivityResultLauncher`), the sa
 as the rest of D-142. `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - in
 particular the actual on-device permission-dialog flow and a real address-book read need a real test pass.
 
+**Device-confirmed (2026-07-19): works as intended, including the permission-dialog flow and a real
+address-book read. Closed.**
+
 ## §123 - D-192: Feature Catalog Refreshed; "Learn More" Hint; D-191 Summary Trimmed (v0.8.87)
 
 ### D-192 - the feature-overview catalog was stale since D-89 (v0.7.43)
@@ -6572,6 +6579,8 @@ developer-facing documentation, not the user-facing string, and was correctly le
 No new tests beyond the string/resource changes already covered by `FeatureCatalogTest`'s existing
 assertions. 741 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+**Device-confirmed (2026-07-19): works as intended, closed.**
 
 ## §124 - D-193: Diagnostic Logging for the Still-Never-Working Key Vibration (v0.8.88)
 

@@ -56,8 +56,8 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   summary text (the "redundant with your address book" clause was meant to explain the design choice while
   building it, not for the end user - struck per feedback, `AdaptSettings`'s own KDoc keeps the full
   reasoning). 741 unit tests total (unchanged - resource-only + `FeatureCatalogTest`'s existing assertions
-  already cover the growth). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
-  See spec §123.
+  already cover the growth). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed
+  (2026-07-19): works as intended, closed.** See spec §123.
 - **§122 (v0.8.86): D-191 - opt-in contact-derived email suggestions.** `READ_CONTACTS` added to the
   manifest (first permission beyond `VIBRATE`; no `INTERNET` either way). New
   `AdaptSettings.contactsSuggestionsEnabled` (default off) threaded through the usual settings pipeline;
@@ -71,8 +71,8 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   `CredentialEntry` values, deduplicated against real stored entries - flowing through the existing
   `CredentialRanking` unchanged, so `@`-domain-completion picks up contact domains too for free. 1 new test
   (`SettingsMapperTest`). 741 unit tests total (740 + 1). `:app:assembleDebug`/`:app:testDebugUnitTest`
-  green. Not yet device-confirmed - the actual permission-dialog flow and a real address-book read need a
-  device pass. See spec §122.
+  green. **Device-confirmed (2026-07-19): works as intended, including the permission-dialog flow and a
+  real address-book read. Closed.** See spec §122.
 - **§121 (v0.8.85): D-190 - "Never save credentials" setting.** New `AdaptSettings.neverRecordCredentials`
   (default off), threaded through `RawSettings`/`SettingsMapper`/`SettingsStore` like `tier3Enabled`/
   `diagnosticLogEnabled`; a `SwitchPreferenceCompat` in `cat_dictionary` (DE/EN/EL), title+summary spelling
@@ -83,7 +83,7 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   auto-request-on-first-email-field flow - a runtime permission dialog needs an `Activity`, the IME service
   can't show one itself; a Settings-only opt-in toggle would be the right shape if ever built, not built this
   round). 1 new test (`SettingsMapperTest`). 740 unit tests total (739 + 1). `:app:assembleDebug`/
-  `:app:testDebugUnitTest` green. Not yet device-confirmed. See spec §121.
+  `:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): works as intended, closed.** See spec §121.
 - **§120 (v0.8.84): D-189.** `SettingsRowView` renamed to `ExtraRowView` throughout (class/file, the
   `extraRow` field, every `AdaptKeyService` handler - `openExtraRow`/`closeExtraRow`/
   `dismissKeyboardOrCloseExtraRow`/every `...FromExtraRow()` button handler; `openSettingsAppFromExtraRow()`
@@ -104,8 +104,8 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   every fragment `commitVerbatimFieldFragment()` actually commits into a login-relevant field, used only as
   a fallback when the `InputConnection` read fails - the ordinary case (connection survives) is unchanged.
   739 unit tests total (unchanged - `InputConnection` timing glue, not reproducible without the exact
-  app/timing that produced the log). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
-  device-confirmed. See spec §119.
+  app/timing that produced the log). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed
+  (2026-07-19): works as intended, closed.** See spec §119.
 - **§118 (v0.8.82): D-186/D-187/D-188 - device-confirmed, all three closed.** D-186: `learnWord()`/`learnWordStrong()` now skip
   `dictionaryStore.isBundledWord(word)` entirely (no write to the learned overlay) instead of reinforcing
   every already-bundled word there - the D-177 design that caused it ("die"/"du"/"immer" flooding the
@@ -119,7 +119,8 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   had (K-01/§13) - their controls were sliding under the status bar/cutout/gesture-nav, same root cause,
   same fix, applied to all three even though only two were named in the report. 3 new tests
   (`SqliteDictionaryStoreRoboTest`: learned-cleanup version + purge). 739 unit tests total (736 + 3).
-  `:app:assembleDebug`/`:app:testDebugUnitTest` green. None of the three device-confirmed yet. See spec §118.
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): all three work as
+  intended, closed.** See spec §118.
 - **§117 (v0.8.81): D-183 fixed.** Root cause confirmed from code, not the editor (initial Google Keep
   logs were a different, already-tracked D-139-class symptom - no suggestion tap in them at all; a fourth,
   Signal-based log isolated the real mechanism). `onSuggestionClicked()`'s existing D-144 "don't double a
