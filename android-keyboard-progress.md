@@ -35,7 +35,18 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
-- **§114 DONE (v0.8.78): D-182 - `reclaimSurroundingWord()` stops deleting text it only needs to
+- **§115 DONE (v0.8.79): D-183/D-184/D-185 - three items captured to the backlog, not implemented,
+  no code changed.** D-183: a mid-text suggestion-bar tap still inserts a superfluous space, including a
+  wrong space *before* a period when applied right before one - not yet traced (needs a real device log with
+  the exact suggestion/caret position/surrounding text). D-184: the typing "flash" highlight effect needs a
+  shorter duration - feels sluggish and visually swallows double-taps - exact animation/constant responsible
+  not yet identified. D-185: the existing automatic `urlMode` (D-142/D-143) needs to become togglable - a
+  new settings-row button (shown only while `urlMode` is active, positioned second from the left right after
+  the existing credential-mode button), defaulting on when a URL field is entered, switching to the ordinary
+  letter keyboard when toggled off (motivation: a browser's URL bar, e.g. Chrome, can also be used to type an
+  ordinary search query). 736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest`
+  green (unaffected, no code touched). See spec §115 for full detail on each.
+- **§114 (v0.8.78): D-182 - `reclaimSurroundingWord()` stops deleting text it only needs to
   recolour.** Follow-up to §113: the "word deleted" symptom was already gone on the current build, but a
   related cursor-jump-to-start-of-field remained during the same reclaim. Root cause: `reclaimSurroundingWord()`
   deleted the committed text then `updateComposing()` re-inserted it moments later as styled composing text

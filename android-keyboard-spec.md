@@ -6115,3 +6115,46 @@ established gap as the rest of this class. 736 unit tests total (unchanged). `:a
 `:app:testDebugUnitTest` green. Not yet device-confirmed - specifically needs the exact "tap far back
 mid-word after a long gap" scenario re-tested, since that is the one where a genuine tear-down (not just a
 visual flash) was observed.
+
+## §115 - D-183/D-184/D-185: Three Backlog Items Captured, Not Implemented (v0.8.79)
+
+Explicitly requested as backlog captures only ("nimm ins Backlog auf") - no tracing, diagnostic, or
+implementation done this round; no code changed.
+
+### D-183 - mid-text suggestion tap still inserts a superfluous space, including before a period
+Reported: applying a suggestion-bar tap while the caret sits mid-text (not at the end of the document) still
+inserts an extra space that should not be there, and doing so immediately before a period leaves a stray
+space *before* the period - almost always wrong. Not yet traced against `handleSuggestionTap()`/the D-119/
+D-120 mid-word-delimiter-split machinery or `SPACE_EATING_PUNCTUATION` (§29/D-29's own "absorb a trailing
+space before punctuation" mechanism, which evidently is not reached or not sufficient for this specific
+suggestion-tap path). Needs a real device log capturing the exact suggestion tapped, the caret position, and
+the surrounding text before tracing further - not to be guessed at.
+
+### D-184 - the typing "flash" highlight effect needs a shorter duration
+Reported: the visual flash effect that plays while typing (S-05/§4-area word-recognition highlight, or
+possibly a key-press flash - needs disambiguating against the actual animation code once picked up) feels
+long enough to make typing seem sluggish, and specifically swallows the visual feedback of a double-tap
+(two flashes overlapping/cancelling rather than reading as two distinct presses). Needs identifying the
+exact animation/duration constant responsible (likely in `AdaptKeyboardView` or `SettingsRowView`'s existing
+`FLASH_DURATION_MS`-style constants, though this may be an entirely different, key-press-specific effect not
+yet located) before it can be safely shortened without breaking whatever readability need set the current
+duration in the first place.
+
+### D-185 - a togglable URL keyboard, defaulting on, with a normal-keyboard override for search-in-URL-bar use
+The existing `urlMode` flag (D-142/D-143, `AdaptKeyService.isUrlField()` checking `EditorInfo.inputType` for
+`TYPE_TEXT_VARIATION_URI`) is automatic today - there is no way to switch back to the ordinary letter
+keyboard while a URL-variation field is focused. Requested: entering a URL field must also reveal the
+settings row (mirroring how the row already surfaces its existing buttons) with a **new toggle button, shown
+only while `urlMode` is active** (reserving no space in the row otherwise, exactly like the credential-mode
+button's own always-shown-but-state-reflecting pattern would not fit here - this one must not appear at all
+outside a URL field) - positioned second from the left, immediately after the existing credential-mode
+button (`SettingsRowView`'s 🔑, currently the row's leftmost button). Defaults to on (URL keyboard active)
+the moment a URL field is entered; toggling it off switches to the ordinary letter keyboard while still
+inside the same URL field. Motivation given directly: a browser's URL bar (Chrome named specifically) can
+also be used to type an ordinary search query, which needs the normal keyboard, not the URL-specialised one.
+Needs a design pass on: exactly how "settings row must appear on URL-field entry" interacts with the row's
+existing swipe-up/swipe-down show/hide gesture (§48/§69) and any other auto-show triggers already in place,
+and how the per-field toggle state should reset (or not) between separate URL-field visits.
+
+No code changes, no new tests. 736 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green (unaffected).
