@@ -1188,10 +1188,13 @@ class AdaptKeyService : InputMethodService() {
         // itself was never the problem (confirmed EMAIL in the same log). Falls back to credentialSnapshot
         // (an in-memory record of what was actually committed, unaffected by the connection dying) below.
         val kind = loginFieldKind
-        if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured) {
+        // D-190: PASSWORD is excluded unconditionally above, regardless of this setting - the toggle only
+        // ever gates whether a recognised USERNAME/EMAIL value gets saved.
+        if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured || settings.neverRecordCredentials) {
             diag(
                 "AdaptKey",
-                "captureCredentialIfLoginField: skipped - kind=$kind credentialCaptured=$credentialCaptured"
+                "captureCredentialIfLoginField: skipped - kind=$kind credentialCaptured=$credentialCaptured " +
+                    "neverRecordCredentials=${settings.neverRecordCredentials}"
             )
             return
         }
@@ -2472,10 +2475,12 @@ class AdaptKeyService : InputMethodService() {
             clearComposing()
             resetWordEndShift()
             ic.commitText(delimiter, 1)
-            // D-174: mirror what just landed in the real document into the in-memory fallback snapshot -
-            // see captureCredentialIfLoginField's own KDoc. Only login-relevant fields ever get read back
-            // out of it, so a pure urlMode fragment is skipped to avoid pointlessly accumulating it.
-            if (loginFieldKind != LoginFieldKind.NONE) {
+            // D-174 / D-190: mirror what just landed in the real document into the in-memory fallback
+            // snapshot - see captureCredentialIfLoginField's own KDoc. Only login-relevant fields ever get
+            // read back out of it, so a pure urlMode fragment is skipped to avoid pointlessly accumulating
+            // it; likewise skipped outright when the user has disabled credential recording entirely - it
+            // would never be read, only held in memory for nothing.
+            if (loginFieldKind != LoginFieldKind.NONE && !settings.neverRecordCredentials) {
                 credentialSnapshot.append(beforeText).append(delimiter)
             }
             if (afterText.isNotEmpty()) {

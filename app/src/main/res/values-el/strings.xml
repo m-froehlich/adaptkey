@@ -111,6 +111,9 @@
     <string name="d142_credentials_title">Αποθηκευμένα ονόματα χρήστη &amp; email</string>
     <string name="d142_credentials_summary">Δες τα αποθηκευμένα στοιχεία σύνδεσης, αφαίρεσε ένα-ένα ή διάγραψέ τα όλα μαζί.</string>
 
+    <string name="d190_never_record_credentials_title">Ποτέ αποθήκευση διαπιστευτηρίων</string>
+    <string name="d190_never_record_credentials_summary">Αναγνωρισμένα ονόματα χρήστη και διευθύνσεις email δεν αποθηκεύονται ποτέ για μελλοντική πρόταση. Δεν αφορά ποτέ τους κωδικούς πρόσβασης - αυτοί δεν καταγράφονται ποτέ, ανεξάρτητα από αυτή τη ρύθμιση. Ήδη αποθηκευμένες τιμές συνεχίζουν να προτείνονται.</string>
+
     <string name="c07_title">Παράθυρο χάριτος Shift</string>
     <string name="c07_summary">Προστασία από απροσδόκητη κεφαλαιοποίηση πεδίου (0–500 ms).</string>
 

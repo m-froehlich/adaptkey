@@ -49,6 +49,7 @@ object SettingsStore {
     const val KEY_TIER3_ENABLED = "d126_tier3_enabled"
     const val KEY_DIAGNOSTIC_LOG_ENABLED = "d_diag_enabled"
     const val KEY_PENDING_BLACKLIST_EXPIRY_DAYS = "d177_pending_blacklist_expiry_days"
+    const val KEY_NEVER_RECORD_CREDENTIALS = "d190_never_record_credentials"
     
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
@@ -126,7 +127,8 @@ object SettingsStore {
             symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true),
             tier3Enabled = p.getBoolean(KEY_TIER3_ENABLED, true),
             diagnosticLogEnabled = p.getBoolean(KEY_DIAGNOSTIC_LOG_ENABLED, false),
-            pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS)
+            pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS),
+            neverRecordCredentials = p.getBoolean(KEY_NEVER_RECORD_CREDENTIALS, false)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }

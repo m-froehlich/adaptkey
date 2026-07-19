@@ -100,6 +100,12 @@ class SettingsMapperTest {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings(diagnosticLogEnabled = true)).diagnosticLogEnabled)
     }
     
+    @Test
+    fun `D-190 neverRecordCredentials flag passes through unchanged, defaulting to off`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).neverRecordCredentials)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(neverRecordCredentials = true)).neverRecordCredentials)
+    }
+    
     
     @Test
     fun `shiftGraceWindow is clamped into the spec range`() {

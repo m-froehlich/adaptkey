@@ -111,6 +111,9 @@
     <string name="d142_credentials_title">Gespeicherte Benutzernamen &amp; E-Mails</string>
     <string name="d142_credentials_summary">Gespeicherte Anmeldedaten ansehen, einzeln entfernen oder alle auf einmal löschen.</string>
 
+    <string name="d190_never_record_credentials_title">Anmeldedaten nie speichern</string>
+    <string name="d190_never_record_credentials_summary">Erkannte Benutzernamen und E-Mail-Adressen werden nie zur späteren Vorschlags-Nutzung gespeichert. Betrifft niemals Passwörter - diese werden unabhängig von dieser Einstellung nie aufgezeichnet. Bereits gespeicherte Werte werden weiterhin vorgeschlagen.</string>
+
     <string name="c07_title">Shift-Schonfenster</string>
     <string name="c07_summary">Gegen überraschende Feld-Großschreibung (0–500 ms). Logik folgt.</string>
 

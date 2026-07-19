@@ -111,6 +111,9 @@
     <string name="d142_credentials_title">Saved usernames &amp; emails</string>
     <string name="d142_credentials_summary">Review saved login values, remove one at a time, or clear them all.</string>
 
+    <string name="d190_never_record_credentials_title">Never save credentials</string>
+    <string name="d190_never_record_credentials_summary">Recognised usernames and email addresses are never saved for later suggestion. Never affects passwords - those are never recorded regardless of this setting. Already-saved values keep being suggested either way.</string>
+
     <string name="c07_title">Shift grace window</string>
     <string name="c07_summary">Guards against surprising field capitalisation (0–500 ms).</string>
 

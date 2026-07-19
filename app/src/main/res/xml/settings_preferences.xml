@@ -229,6 +229,12 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.CredentialsActivity" />
         </Preference>
 
+        <SwitchPreferenceCompat
+            android:key="d190_never_record_credentials"
+            android:title="@string/d190_never_record_credentials_title"
+            android:summary="@string/d190_never_record_credentials_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_capitalisation">

@@ -6444,3 +6444,37 @@ append-only convention (§48 etc.) records what was true at the time, not retroa
 No new tests - button-tap/reveal wiring is the same established untested Android-glue gap as every other
 extra-row handler. 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 **Device-confirmed (2026-07-19): works as intended. D-189 closed.**
+
+## §121 - D-190: "Never Save Credentials" Setting (v0.8.85)
+
+Requested directly alongside a Contacts-permission discussion (recommended against for now - a keyboard
+requesting `READ_CONTACTS` is a much heavier trust ask than for an ordinary app, and a runtime permission
+dialog can only be shown from an `Activity`, not the IME `Service` itself, so the requested "ask on first
+email field" convenience is not achievable the way it was imagined; a Settings-only opt-in toggle, matching
+the existing Tier3ModelActivity/CalibrationActivity pattern, was recommended instead - not built this round,
+this section covers only the credential-recording opt-out that followed). A privacy-conscious opt-out for
+D-142's credential recording, explicitly scoped by the user to never affect passwords (already true
+unconditionally in the code - `captureCredentialIfLoginField` excludes `LoginFieldKind.PASSWORD` before any
+other check, regardless of this setting) and to default **off** (recording stays on by default, matching
+the just-validated D-142/D-174 behaviour - a feature that was just confirmed working is not silently
+disabled by a new setting's own default).
+
+New `AdaptSettings.neverRecordCredentials` (default `false`), threaded through the established
+`RawSettings`/`SettingsMapper`/`SettingsStore` pattern (`d190_never_record_credentials` preference key, a
+plain passthrough boolean - no clamping needed) exactly like `tier3Enabled`/`diagnosticLogEnabled`. New
+`SwitchPreferenceCompat` in the `cat_dictionary` category, directly below the existing "Saved usernames &
+emails" entry, in all three shipped locales (DE/EN/EL) - title + a summary spelling out the password
+exclusion and that already-saved values keep being suggested (this setting only stops *new* ones from being
+added, it does not suppress suggestions from what is already stored).
+
+Gates two sites in `AdaptKeyService`, both already established from D-174: `captureCredentialIfLoginField()`
+now also skips (alongside its existing `NONE`/`PASSWORD`/`credentialCaptured` early-return) when the setting
+is on, and `commitVerbatimFieldFragment()` skips accumulating into `credentialSnapshot` in the same case -
+no point holding an in-memory copy of a value that will never be read back out of it. `showCredentialSuggestions()`
+is untouched by design - suggesting an already-saved value is a different operation from recording a new
+one, and the setting's own name/summary is scoped to recording only.
+
+1 new test (`SettingsMapperTest`: passthrough default/round-trip, mirroring the existing
+`tier3Enabled`/`diagnosticLogEnabled` tests exactly). 740 unit tests total (739 + 1). `AdaptKeyService`'s own
+two gated call sites are the same established untested Android-glue gap as the rest of D-142/D-174.
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

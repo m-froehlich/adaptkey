@@ -35,6 +35,17 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§121 (v0.8.85): D-190 - "Never save credentials" setting.** New `AdaptSettings.neverRecordCredentials`
+  (default off), threaded through `RawSettings`/`SettingsMapper`/`SettingsStore` like `tier3Enabled`/
+  `diagnosticLogEnabled`; a `SwitchPreferenceCompat` in `cat_dictionary` (DE/EN/EL), title+summary spelling
+  out that passwords are never affected (already unconditional in the code) and already-saved values keep
+  being suggested - only *new* recording is gated. Gates `captureCredentialIfLoginField()` and the
+  `credentialSnapshot` accumulation in `commitVerbatimFieldFragment()`; `showCredentialSuggestions()`
+  untouched by design. Came with a Contacts-permission question (recommended against building an
+  auto-request-on-first-email-field flow - a runtime permission dialog needs an `Activity`, the IME service
+  can't show one itself; a Settings-only opt-in toggle would be the right shape if ever built, not built this
+  round). 1 new test (`SettingsMapperTest`). 740 unit tests total (739 + 1). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See spec §121.
 - **§120 (v0.8.84): D-189.** `SettingsRowView` renamed to `ExtraRowView` throughout (class/file, the
   `extraRow` field, every `AdaptKeyService` handler - `openExtraRow`/`closeExtraRow`/
   `dismissKeyboardOrCloseExtraRow`/every `...FromExtraRow()` button handler; `openSettingsAppFromExtraRow()`

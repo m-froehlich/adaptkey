@@ -49,6 +49,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           mark simply expires unused, rather than ever becoming a real, permanent blacklist entry -
  *           default 7 days. Exposed as a setting mainly so the mechanism itself is discoverable, not
  *           because frequent retuning is expected once a value has proven itself.
+ * @property neverRecordCredentials D-190: whether [de.froehlichmedia.adaptkey.AdaptKeyService.captureCredentialIfLoginField]
+ *           is disabled outright (default off, i.e. recording stays on) - never affects PASSWORD fields,
+ *           which are never recorded regardless of this setting; only gates whether a recognised
+ *           username/email value gets saved for later suggestion. Already-saved values keep being
+ *           suggested either way - this only stops new ones from being added.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -67,7 +72,8 @@ data class AdaptSettings(
     val symbolKeyEnabled: Boolean = true,
     val tier3Enabled: Boolean = true,
     val diagnosticLogEnabled: Boolean = false,
-    val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
+    val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
+    val neverRecordCredentials: Boolean = false
 ) {
     
     companion object {
