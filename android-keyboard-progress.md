@@ -45,7 +45,7 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   construction, never double-opens), and the credential button flashes on both paths too, deferred via a new
   `ExtraRowView.open(onOpened)` callback so it fires once the row's slide-in animation has actually finished,
   not while still mid-animation. 739 unit tests total (unchanged). `:app:assembleDebug`/
-  `:app:testDebugUnitTest` green. Not yet device-confirmed. See spec §120.
+  `:app:testDebugUnitTest` green. **Device-confirmed (2026-07-19): works as intended, closed.** See spec §120.
 - **§119 (v0.8.83): D-174 closed.** Root cause confirmed from a real K9 Mail device log: the recipient
   field's `inputType` correctly classified as EMAIL (`loginFieldKind` was never the bug), but K9 converts
   the typed address into a recipient "chip" and tears the field's `InputConnection` down the instant focus

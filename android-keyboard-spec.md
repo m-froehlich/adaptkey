@@ -6443,4 +6443,4 @@ append-only convention (§48 etc.) records what was true at the time, not retroa
 
 No new tests - button-tap/reveal wiring is the same established untested Android-glue gap as every other
 extra-row handler. 739 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
-Not yet device-confirmed.
+**Device-confirmed (2026-07-19): works as intended. D-189 closed.**
