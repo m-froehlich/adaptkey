@@ -37,6 +37,9 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§129 addendum (still v0.8.93, no code change): D-203 CONFIRMED WORKING on device.** User confirmed the
+  redesigned split gate (`MIN_SPLIT_HALF_FREQUENCY`/both-nouns-rejection/no-bigram-gate) now correctly
+  handles the "der"+"Kinderarzt"-class case on a real device. D-203 closed. 756 unit tests (unchanged).
 - **§129 (v0.8.93): D-203 - the MIN_SPLIT_BIGRAM split gate replaced after a live design
   discussion, grown out of D-167.** Asked directly why mid-word re-edit (`splitAtUnresolvedConnector`,
   D-122) finds "der"+"Kinderarzt" but ordinary commit-time typing (`trySplit`) does not - confirmed against
