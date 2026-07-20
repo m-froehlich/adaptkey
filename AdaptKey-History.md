@@ -7019,3 +7019,47 @@ full searches.
 device-confirmed - this closes out the sluggishness investigation from §134/D-207/D-208/D-209 as one
 coherent piece of work, per the user's own explicit request to see it through properly rather than leave it
 half addressed. D-210 (the A-05 split regression) remains its own, separately deferred item.
+
+## §136 - D-212: WAL Enabled - D-211 Alone Showed No Improvement, Root-Caused to Connection-Level Locking (v0.8.99)
+
+The user re-ran §135/D-211's own repeated "Herzlichen Glückwunsch ... Geburtstag" test against the new
+background-thread build and supplied a fresh log - direct quote: "Das hat leider noch so gar nicht
+funktioniert." Measured via the log's own raw millisecond timestamps exactly as before: "Geburtstag" now
+costs ~450ms/character, equal to or worse than the pre-D-211 baseline - D-211 alone did not help. (Two
+apparent typos in the same log, `"Glückwunsvh"` for `"Glückwunsch"` and `"ubrigebd"` for `"übrigens"`, were
+checked and are plausible ordinary adjacent-key mistypes - v/c and b/n, d/s are each real QWERTZ neighbours
+- not evidence of the fix corrupting text; not treated as a finding.)
+
+**Root-caused, not guessed**: `SqliteDictionaryStore` extends `SQLiteOpenHelper` with a single connection
+(`writableDatabase`) and never called `enableWriteAheadLogging()` (confirmed by grep - zero hits before this
+round). Without WAL, SQLite's default rollback-journal mode serialises *all* access to a connection across
+threads, including pure reads - so D-211's background search and the main thread's own, still-synchronous
+per-keystroke prefix-completion query (`unigramsByPrefix()`, never moved off the main thread, correctly so -
+it is meant to stay instant) contend for the same lock. D-211 moved the expensive search off the main
+thread's own call stack, but without WAL the main thread was still getting blocked *indirectly*, waiting on
+that lock - and D-209's own uncapped primary bucket made the background query itself larger, so the
+contention got worse, not better, explaining why this test if anything looked equal or slightly worse than
+before D-211.
+
+**Also discussed and deliberately deferred**: whether a running `rawQuery()` can be aborted mid-flight at
+all. Confirmed genuinely possible via `android.os.CancellationSignal` (Android registers a real
+`sqlite3_progress_handler` that can interrupt an in-progress query, not just gate before it starts) - but
+wiring it through would mean threading an Android-specific type into `DictionarySuggestionProvider`/
+`DictionaryStore`, both deliberately kept Android-free so they stay testable on the plain JVM without
+Robolectric. The user's own instinct: this is very likely solvable without actually breaking that
+abstraction for tests (e.g. a generic cancellation-token shape the Sqlite implementation happens to bridge
+into a real `CancellationSignal`, while the in-memory one just ignores it) - agreed as plausible, but
+deliberately not designed this round. Kept in reserve specifically for if a fresh device log after WAL
+still shows a problem attributable to the query itself, not the connection-lock contention WAL now removes.
+Separately confirmed, addressing the user's other question directly: `expensiveSuggestionExecutor` is
+single-threaded, so queued-but-not-yet-started stale requests already drain near-instantly via the cheap
+sequence check before ever touching the database - "10 parallel queries" was never actually possible with
+this design; only the one request already mid-query when superseded pays for a single query's own duration,
+a small, bounded cost distinct from the connection-locking problem WAL fixes.
+
+**Fixed**: `SqliteDictionaryStore.onConfigure()` (new override) calls `database.enableWriteAheadLogging()`
+before any table is created/opened - additive, no schema/version change, reaches every existing install
+automatically on its next open. No new tests (Android/SQLite configuration, exercised indirectly by every
+existing `SqliteDictionaryStoreRoboTest` case continuing to pass under WAL). 772 unit tests (unchanged).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - awaits the next repeat of
+the same "Herzlichen Glückwunsch..." test to see what, if anything, is still left.

@@ -37,6 +37,26 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§136 (v0.8.99): D-212 - WAL enabled; D-211 alone confirmed insufficient, root-caused to
+  connection-level lock contention.** User re-ran §135's own test against the D-211 build: "Das hat
+  leider noch so gar nicht funktioniert" - measured, "Geburtstag" still ~450ms/char, no better than before
+  D-211. Root-caused: `SqliteDictionaryStore` never enabled write-ahead logging, so SQLite's default
+  rollback-journal mode serialises *all* connection access across threads (even pure reads) - D-211's
+  background search and the main thread's own still-synchronous prefix-completion query were contending for
+  the same lock, so the main thread was still getting blocked *indirectly*, and D-209's now-larger primary-
+  bucket query made it worse, not better. Fixed: `SqliteDictionaryStore.onConfigure()` now calls
+  `enableWriteAheadLogging()` - additive, reaches every existing install automatically. Also discussed:
+  whether a running query can be aborted mid-flight via `android.os.CancellationSignal` (confirmed genuinely
+  possible - a real progress-handler interrupt, not just a pre-check) but deliberately deferred, kept in
+  reserve only if a fresh log after WAL still shows a problem - wiring it through would touch the
+  deliberately Android-free `DictionarySuggestionProvider`/`DictionaryStore`, though the user's own instinct
+  is this is solvable without actually breaking that testable abstraction, worth designing properly if it
+  comes to that rather than bolting it on now. Also confirmed: the background executor is single-threaded,
+  so "many parallel queries" was never actually possible - only one in-flight query's own duration is ever
+  wasted when superseded, a small bounded cost distinct from the lock-contention problem WAL fixes. No new
+  tests (SQLite configuration, exercised indirectly by the existing Robolectric store tests). 772 unit
+  tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - awaits
+  a repeat of the same test to see what, if anything, remains. See history §136.
 - **§135 (v0.8.98): D-211 - the expensive suggestion search moves off the main thread entirely,
   closing out the sluggishness investigation.** User's own follow-up idea after §134: instead of D-160's
   main-thread debounce (still blocks the UI when it fires), run the search on a background thread and

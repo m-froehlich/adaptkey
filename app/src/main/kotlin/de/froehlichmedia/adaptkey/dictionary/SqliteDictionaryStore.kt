@@ -42,6 +42,21 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         ensureAdditiveSchema(db)
     }
     
+    /**
+     * D-212: enables write-ahead logging - without it, SQLite's default rollback-journal mode serialises
+     * *every* access to this connection across threads, so [de.froehlichmedia.adaptkey.AdaptKeyService]'s
+     * D-211 background suggestion search (reading via [correctionCandidates]) would still block the main
+     * thread's own per-keystroke prefix-completion read ([unigramsByPrefix]) behind the same lock -
+     * confirmed as the likely cause after D-211 alone showed no measured improvement (a fresh device log
+     * looked no better, in places worse, right after D-209 made the background read itself larger). WAL
+     * allows genuine concurrent readers, which is exactly this situation: one thread reading in the
+     * background while another reads (and occasionally writes, e.g. [learn]) on the main thread.
+     */
+    override fun onConfigure(database: SQLiteDatabase) {
+        super.onConfigure(database)
+        database.enableWriteAheadLogging()
+    }
+    
     override fun onCreate(database: SQLiteDatabase) {
         database.execSQL(
             "CREATE TABLE $TABLE_WORDS (wkey TEXT PRIMARY KEY, word TEXT NOT NULL, freq INTEGER NOT NULL, pos TEXT NOT NULL)"
