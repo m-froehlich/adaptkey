@@ -336,6 +336,31 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-205 a closer fuzzy candidate generally outranks a farther, more frequent one`() {
+        // "vein" is one adjacent-key substitution from "bein" (v neighbours b); "sein" is a
+        // non-adjacent substitution (cost 2). Despite "sein" being 20x more frequent, the ranking
+        // must still favour the closer candidate - the suggestion bar's own analogue of D-38's
+        // already-shipped cost-first autocorrect ranking.
+        store.putWord(WordEntry("vein", 1000L))
+        store.putWord(WordEntry("sein", 20000L))
+        
+        val words = provider.suggestionsFor("bein", null).map { it.word }
+        assertEquals(listOf("vein", "sein"), words.take(2))
+    }
+    
+    @Test
+    fun `D-205 an overwhelmingly more frequent farther candidate can still win - a soft preference`() {
+        // Same shape as above, but "sein" is now frequent enough (near the bundled corpus's own
+        // realistic ceiling) to overcome the cost discount against a "vein" at the corpus's own
+        // frequency floor - proving FUZZY_COST_DECAY is a soft preference, not a hard cost-first
+        // rule like bestCorrection()'s own autocorrect ranking.
+        store.putWord(WordEntry("vein", 8L))
+        store.putWord(WordEntry("sein", 1_000_000L))
+        
+        assertEquals("sein", provider.suggestionsFor("bein", null).first().word)
+    }
+    
+    @Test
     fun `D-38 a first-key typo is corrected (eerden to werden)`() {
         store.putWord(WordEntry("werden", 500L))
         

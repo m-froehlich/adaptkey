@@ -6827,3 +6827,47 @@ No new unit tests - both changes are Android-facing (a private `AdaptKeyService`
 `blacklist()`/`isBlacklisted()`/`blacklistCategory()` mechanics were already covered when D-107/D-157 first
 built them. 762 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+## §133 - D-205 Designed and Implemented: Suggestion-Bar Ranking Now Discounts by Edit Cost (v0.8.96)
+
+D-205's own design conversation. The user's position, restated for confirmation: for a correction/fuzzy
+candidate, closeness to the actual mistake should generally matter more than raw dictionary frequency - the
+opposite of `suggestionsFor()`'s existing `score()`, which ranks every fuzzy/prefix candidate purely by
+frequency (+ bigram bonus), with no edit-cost term at all. Pointed out that `bestCorrection()` (behind
+`autocorrectFor()`/`highConfidenceCorrection()`, the single-target *autocorrect* decision) already ranks
+cost-first (`compareBy({it.cost}, {-it.score})`) - the gap is specifically the suggestion bar's own
+multi-candidate ranking, `suggestionsFor()`.
+
+**Scope discussion, two levels of ambition laid out**: (1) a self-contained, purely `DictionarySuggestionProvider`
+side fix - rank the existing static-keyboard-adjacency edit cost first, frequency as tie-break, mirroring
+`bestCorrection()`'s own proven approach; (2) a much bigger step - weigh the *actual recorded touch
+coordinates* (T-02) against T-03's personalised per-key offset model, not just a static adjacency map. (2)
+would need raw taps threaded into the (deliberately Android/touch-free, JVM-testable) provider or a merge
+step in `AdaptKeyService` - a real architectural extension, not a resort. **User confirmed (1) first,
+explicitly deferring (2)** - reasoning given directly: this app has fought typing sluggishness multiple times
+before (D-153/D-160/D-194/§102/§125) and a heavier per-keystroke computation must not reopen that. (2) stays
+captured for its own later round, this time with an explicit performance constraint attached.
+
+**Hard cost-first vs. a softer weighted blend, also discussed**: `bestCorrection()`'s existing rule is a hard
+lexicographic sort (cost strictly before frequency, no exception). Asked whether the bar should mirror that
+exactly or allow a softer blend where an overwhelmingly more frequent farther candidate can still
+occasionally win. **User chose the softer, weighted blend** ("Eine weichere Gewichtung klingt fair").
+
+**Implemented** (`DictionarySuggestionProvider.kt`): `fuzzyNeighbours()`/`wideFuzzyNeighbours()` (D-12/D-117)
+now return each candidate's own edit cost alongside it, not just a boolean pass/fail gate (the now-redundant
+`isCloseMatch()` helper removed). A new `scoreWithCost()` discounts the existing `score()` multiplicatively
+by `FUZZY_COST_DECAY^cost` (`FUZZY_COST_DECAY = 0.01`, a considered starting point calibrated against the
+real bundled `dict_de.tsv` frequency range - roughly 8 to 1,000,000): a cost-1 candidate needs ~100x the
+frequency of a cost-0 one to outrank it, a cost-2 candidate ~10,000x - both reachable at the corpus's real
+extremes, so the preference is genuinely soft, not absolute. A plain prefix completion is unaffected (cost 0
+by construction, decay factor 1). `bestCorrection()`/the autocorrect decision itself is untouched - its own
+hard cost-first rule stays exactly as conservative as before, unrelated to this change.
+
+2 new tests (`DictionarySuggestionProviderTest`): a closer, far-less-frequent fuzzy candidate outranking a
+farther, more-frequent one at realistic corpus proportions, and a second case at the corpus's own frequency
+extremes proving the rule is a soft preference (the farther candidate can still win when frequent enough) -
+not a hard cost-first rule like `bestCorrection()`'s. 764 unit tests total (762 + 2).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - `FUZZY_COST_DECAY` is a
+starting point, easy to retune in isolation without touching any call site. D-205's own touch-proximity
+extension (item (2) above) stays captured, unimplemented, for a future round with its performance cost
+considered up front.

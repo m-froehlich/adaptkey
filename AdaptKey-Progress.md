@@ -37,6 +37,25 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§133 (v0.8.96): D-205 designed and implemented - suggestion-bar ranking now discounts by edit cost,
+  not just frequency.** User's position: for a fuzzy/correction candidate, closeness to the actual mistake
+  should generally outweigh raw frequency - `bestCorrection()` (autocorrect) already ranks cost-first, but
+  `suggestionsFor()` (the bar) ranked purely by frequency. Two scope levels discussed: (1) rank the existing
+  static-adjacency edit cost first in the bar too (small, self-contained); (2) weigh the actual recorded
+  touch coordinates (T-02) against T-03's personalised model (bigger, needs raw taps threaded into the
+  Android/touch-free provider). **User chose (1) first**, explicitly deferring (2) over performance concerns
+  (this app has fought typing sluggishness multiple times before - D-153/D-160/D-194/§102/§125 - and didn't
+  want that risk reopened); (2) stays captured for later with that constraint attached. Also chose a **soft,
+  weighted blend** over `bestCorrection()`'s own hard cost-first rule - an overwhelmingly more frequent
+  farther candidate can still occasionally win. Implemented: `fuzzyNeighbours()`/`wideFuzzyNeighbours()` now
+  surface each candidate's edit cost; new `scoreWithCost()` discounts `score()` by
+  `FUZZY_COST_DECAY^cost` (`FUZZY_COST_DECAY = 0.01`, calibrated against the real `dict_de.tsv` frequency
+  range 8-1,000,000 - cost-1 needs ~100x the frequency to win, cost-2 ~10,000x, both reachable at the
+  corpus's extremes). Prefix completions (cost 0 by construction) and `bestCorrection()`'s own autocorrect
+  ranking are both unaffected. 2 new tests (`DictionarySuggestionProviderTest`: a realistic closer-wins case,
+  and an extreme-frequency case proving the rule is soft, not absolute). 764 unit tests total (762 + 2).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - `FUZZY_COST_DECAY` is a
+  starting point, easy to retune in isolation. See history §133.
 - **§132 (v0.8.95): D-206 designed and implemented - archaic-spelling relics blacklisted, not purged;
   BlacklistActivity now defaults to user-only entries.** Grounded in real data before choosing a direction:
   of 1648 ß-containing `dict_de.tsv` entries, only 40 show the actual pre-1996-reform-relic frequency

@@ -239,10 +239,14 @@ When an uppercase character is deleted, Shift remains active - the next keystrok
 ### S-01 - Horizontally Scrollable, Configurable Maximum
 The bar shows as many ordinary (tier-1/tier-3) suggestions as are meaningful and scrolls horizontally.
 Default: 8 entries. Maximum is user-configurable (recommended range: 6-10). Sorted by descending
-probability; the most probable suggestion appears at the far left. The bar's row is always reserved even
-when momentarily empty. Depending on the focused field, the bar's slot can instead show a platform-rendered
-Autofill inline-suggestions row, or a credential-suggestion list (§12) - S-01's own scrolling/sorting
-behaviour describes the ordinary dictionary/tier-3 case specifically.
+probability; the most probable suggestion appears at the far left. For a correction/fuzzy candidate (as
+opposed to a plain prefix completion), "probability" is not raw dictionary frequency alone: how close the
+candidate actually is to the typed token weighs in too, as a soft preference (a much closer candidate
+generally outranks a farther one even when the farther one is far more frequent, though an overwhelmingly
+more frequent farther candidate can still occasionally win - never an absolute cost-first rule). The bar's
+row is always reserved even when momentarily empty. Depending on the focused field, the bar's slot can
+instead show a platform-rendered Autofill inline-suggestions row, or a credential-suggestion list (§12) -
+S-01's own scrolling/sorting behaviour describes the ordinary dictionary/tier-3 case specifically.
 
 ### S-02 - No Duplicate of the Current Input
 The word exactly as typed does not appear as a suggestion. That slot belongs to genuine alternatives.

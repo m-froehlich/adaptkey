@@ -8,6 +8,7 @@ import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
 import de.froehlichmedia.adaptkey.suggestion.Umlaut
+import kotlin.math.pow
 
 /**
  * Tier-1 suggestion provider over a {@link DictionaryStore}: personal n-gram completion with a
@@ -51,11 +52,13 @@ class DictionarySuggestionProvider(
         }
         // D-12: also offer close real words - a single edit or an umlaut/ß variant - so a mistype or a
         // valid-but-wrong word still surfaces the intended one ("mut" -> "mit", "grun" -> "grün").
-        for (word in fuzzyNeighbours(token)) {
+        // D-205: ranked by scoreWithCost, not score - a closer candidate generally outranks a farther,
+        // merely more frequent one (see scoreWithCost's own KDoc).
+        for ((word, cost) in fuzzyNeighbours(token)) {
             if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                 continue // A-04
             }
-            candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
+            candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, cost))
         }
         // D-116: an unhyphenated compound whose exact form isn't itself in the dictionary but whose known
         // first part plus a resolvable rest reconstructs it - only attempted once prefix/fuzzy matching
@@ -80,11 +83,11 @@ class DictionarySuggestionProvider(
         // this is a rare fallback, not a general loosening of D-28's own budget, which stays exactly as
         // tight as before for the common case. Gated on includeExpensiveFallbacks like D-116 (D-160).
         if (includeExpensiveFallbacks && candidates.isEmpty()) {
-            for (word in wideFuzzyNeighbours(token)) {
+            for ((word, cost) in wideFuzzyNeighbours(token)) {
                 if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                     continue // A-04
                 }
-                candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
+                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, cost))
             }
         }
         return candidates.values
@@ -133,17 +136,25 @@ class DictionarySuggestionProvider(
      * correct form. The token itself is excluded (S-02 handles the verbatim case). Uses the same bounded,
      * indexed candidate set as the autocorrect, so it stays cheap per keystroke.
      *
+     * D-205: returns each candidate's own edit cost alongside it - [suggestionsFor] discounts [score] by it
+     * ([scoreWithCost]) instead of ranking purely by frequency, so a candidate genuinely close to the typed
+     * token generally outranks a farther one even when the farther one is far more frequent.
+     *
      * @param token the lower-cased composing token
-     * @return the neighbouring known words in canonical case
+     * @return the neighbouring known words in canonical case, each paired with its edit cost
      */
-    private fun fuzzyNeighbours(token: String): List<String> {
+    private fun fuzzyNeighbours(token: String): List<Pair<String, Int>> {
         if (token.length < MIN_FUZZY_LENGTH) {
             return emptyList()
         }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token, candidateFirstChars(token)).filter { candidate ->
+        return store.correctionCandidates(token, candidateFirstChars(token)).mapNotNull { candidate ->
             val lower = candidate.lowercase()
-            lower != token && isCloseMatch(folded, lower)
+            if (lower == token) {
+                return@mapNotNull null
+            }
+            val cost = correctionCost(folded, lower, MAX_CORRECTION_COST)
+            if (cost <= MAX_CORRECTION_COST) candidate to cost else null
         }
     }
     
@@ -158,16 +169,20 @@ class DictionarySuggestionProvider(
      * not attempted here.
      *
      * @param token the lower-cased composing token
-     * @return the neighbouring known words in canonical case
+     * @return the neighbouring known words in canonical case, each paired with its edit cost (D-205)
      */
-    private fun wideFuzzyNeighbours(token: String): List<String> {
+    private fun wideFuzzyNeighbours(token: String): List<Pair<String, Int>> {
         if (token.length < MIN_WIDE_FUZZY_LENGTH) {
             return emptyList()
         }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token, candidateFirstChars(token)).filter { candidate ->
+        return store.correctionCandidates(token, candidateFirstChars(token)).mapNotNull { candidate ->
             val lower = candidate.lowercase()
-            lower != token && correctionCost(folded, lower, WIDE_CORRECTION_COST) <= WIDE_CORRECTION_COST
+            if (lower == token) {
+                return@mapNotNull null
+            }
+            val cost = correctionCost(folded, lower, WIDE_CORRECTION_COST)
+            if (cost <= WIDE_CORRECTION_COST) candidate to cost else null
         }
     }
     
@@ -191,20 +206,6 @@ class DictionarySuggestionProvider(
             'u' -> result.add('ü')
         }
         return result
-    }
-    
-    /**
-     * Whether [candidateLower] is a plausible correction of the folded token [foldedToken] (D-12 / D-28):
-     * within the proximity-aware weighted edit budget - a single edit of any kind, or two edits that are
-     * both cheap (a neighbouring-key substitution or an umlaut/ß fold), so `komplezz` reaches `komplett`
-     * (two adjacent `z`→`t` slips) while two unrelated substitutions are rejected.
-     *
-     * @param foldedToken the umlaut-folded, lower-cased typed token
-     * @param candidateLower the lower-cased candidate word
-     * @return true when the candidate is within the correction budget
-     */
-    private fun isCloseMatch(foldedToken: String, candidateLower: String): Boolean {
-        return correctionCost(foldedToken, candidateLower, MAX_CORRECTION_COST) <= MAX_CORRECTION_COST
     }
     
     /**
@@ -393,6 +394,30 @@ class DictionarySuggestionProvider(
         return base + store.bigramFrequency(previousWord, word).toDouble() * BIGRAM_WEIGHT
     }
     
+    /**
+     * D-205: [score], discounted by how far [word] actually is from the typed token - raised directly from
+     * the user's own position that a candidate's *closeness* to the actual mistake should generally matter
+     * more for the suggestion bar's ranking than how often it is used overall, mirroring [bestCorrection]'s
+     * already-shipped cost-first autocorrect ranking (`compareBy({it.cost}, {-it.score})`) - but as a soft
+     * preference here, not a hard rule, since this ranking also has to sit alongside candidate sources with
+     * no cost concept at all (an ordinary prefix completion is cost 0 by construction). [FUZZY_COST_DECAY]
+     * is applied once per cost step (`FUZZY_COST_DECAY^cost`), so an overwhelmingly more frequent but
+     * farther candidate can still occasionally win - calibrated against the real bundled `dict_de.tsv`
+     * frequency range (roughly 8 to 1,000,000): at 0.01, a cost-1 candidate needs ~100x the frequency of a
+     * cost-0 one to outrank it, a cost-2 candidate ~10,000x - both achievable at the corpus's extremes, not
+     * as a matter of course. A considered starting point, not yet device-tuned - easy to retune here alone,
+     * no call site depends on its exact value.
+     *
+     * @param word the candidate word
+     * @param frequency the candidate's dictionary frequency
+     * @param previousWord the preceding word, for the same bigram bonus [score] applies
+     * @param cost the candidate's edit cost from the typed token (0 for an exact/prefix match)
+     * @return [score]'s own result, discounted by [FUZZY_COST_DECAY] raised to the power of [cost]
+     */
+    private fun scoreWithCost(word: String, frequency: Long, previousWord: String?, cost: Int): Double {
+        return score(word, frequency, previousWord) * FUZZY_COST_DECAY.pow(cost)
+    }
+    
     companion object {
         
         private const val MIN_AUTOCORRECT_LENGTH = 2
@@ -420,5 +445,9 @@ class DictionarySuggestionProvider(
         // scoped rather than a general loosening of D-28's own tight, autocorrect-grade budget.
         private const val WIDE_CORRECTION_COST = 4
         private const val MIN_WIDE_FUZZY_LENGTH = 6
+        
+        // D-205: see scoreWithCost()'s own KDoc for the calibration reasoning against the real bundled
+        // dict_de.tsv frequency range.
+        private const val FUZZY_COST_DECAY = 0.01
     }
 }
