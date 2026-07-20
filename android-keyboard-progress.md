@@ -35,6 +35,34 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§125 (v0.8.89): D-194 - typing/backspace-hold sluggishness traced to three unthrottled
+  per-keystroke lookups, root-caused and fixed after a design discussion.** Reported: typing and
+  held-Backspace both feel sluggish, worsening with the composing token's length, worst for a long token
+  that never resolves to a real word - also floated as the likely real explanation for D-184's "flash" tuning
+  having no visible effect. Traced to three gaps, none covered by D-160's (§103) existing debounce: (1)
+  `updateComposing()`'s S-05/§47 split-preview/highlight colouring ran `TokenRepair.trySplit()` synchronously
+  on every keystroke - an O(token length) scan of split points, never short-circuiting for a token that never
+  becomes a known word; (2) `DictionarySuggestionProvider`'s base `fuzzyNeighbours()` (D-12) ran an uncapped
+  Levenshtein DP per candidate, every keystroke; (3) `refreshSuggestions()`'s `duringRepeat` branch (D-138/
+  D-153) still called `provider.autocorrectFor()` unconditionally during backspace-hold, missed when that
+  gate was introduced. Design discussed before implementing (per this project's own convention): debounce the
+  colouring like D-160 already does for suggestions (chosen), a hard token-length cutoff (rejected - real
+  three-part compounds get long fast), and a banded/early-exit edit distance (chosen, pure optimisation, no
+  behaviour change). A fourth idea - caching which token prefixes are already-confirmed compound-component
+  candidates - was raised but deliberately deferred to its own round (new per-token mutable state with real
+  invalidation rules, not something to fold in speculatively next to the §99-§101 guardrail's territory).
+  Fixed: `EditDistance.weightedDistance()` gained an optional banded `maxCost` (Ukkonen's banded edit
+  distance - `O(a.length*b.length)` to `O(max(a,b).length * band)`), threaded through every
+  `DictionarySuggestionProvider` call site with its own real ceiling so no candidate that used to qualify
+  stops qualifying; a new `ComposingPreview` cache (mirrors `expensiveSuggestionToken`'s shape) makes
+  `updateComposing()` read a debounced, cached split/highlight result instead of computing it inline -
+  continuous typing renders uncoloured until a genuine pause, coloured 200ms later, matching the trade-off
+  the user explicitly accepted; and `duringRepeat`'s `pending` autocorrect lookup was dropped outright (no
+  trade-off - already-established "unreadable mid-repeat" reasoning). 5 new tests (`EditDistanceTest`:
+  banded-vs-unbounded agreement, band-too-narrow signalling, length-difference and longer-token regression
+  cases). 746 unit tests total (741 + 5). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed - D-184 stays open pending the same session, expected to improve as a side effect rather
+  than needing its own fix. See spec §125.
 - **§124 (v0.8.88): D-193 - key vibration finally closed.** Diagnostic logging
   (`AdaptKeyboardView.logHaptics()`, mirrors `AdaptKeyService.diag()`'s dual logcat + in-app-`DiagnosticLog`
   output) added after D-06/D-34/D-66/D-75 failed three device rounds with the root cause never pinned down

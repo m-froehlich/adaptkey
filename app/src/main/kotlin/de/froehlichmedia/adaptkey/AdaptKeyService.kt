@@ -383,6 +383,40 @@ class AdaptKeyService : InputMethodService() {
         }
     }
     
+    /**
+     * §125 / D-194: the cached result of the S-05/§47 split-preview/highlight colouring decision for
+     * exactly one composing token's text, alongside [composingPreviewFor] which records which text it was
+     * computed for. See [composingPreviewRunnable].
+     *
+     * @property split the live A-05-split colour preview, or null when none applies
+     * @property highlighted whether the whole token should render in the recognised-word colour
+     */
+    private data class ComposingPreview(val split: SplitResult?, val highlighted: Boolean)
+    
+    // §125 / D-194: the S-05/§47 split-preview/highlight colouring inside updateComposing() used to call
+    // splitPreview()/shouldHighlightComposing() - each several uncached dictionary round-trips - on every
+    // single keystroke, unlike every other lookup this class already defers (D-160); the cost scales with
+    // the composing token's own length (trySplit() tries every split point) and never short-circuits for a
+    // token that never becomes a known word, exactly the reported "gets slower the longer/more garbled the
+    // word" symptom. Mirrors expensiveSuggestionToken/expensiveSuggestionRunnable's debounce shape:
+    // composingPreview only reflects composingPreviewFor's exact text, so every keystroke renders
+    // uncoloured (composingPreviewFor never matches the just-changed text) until typing actually pauses for
+    // EXPENSIVE_SUGGESTION_DELAY_MS, at which point composingPreviewRunnable computes the real preview once
+    // and re-renders. See ComposingPreview / scheduleComposingPreviewRefresh / updateComposing().
+    private var composingPreviewToken: String? = null
+    private var composingPreviewFor: String? = null
+    private var composingPreview = ComposingPreview(null, false)
+    private val composingPreviewRunnable = Runnable {
+        val expected = composingPreviewToken
+        composingPreviewToken = null
+        val ic = currentInputConnection
+        if (expected != null && ic != null && expected == composing.toString()) {
+            composingPreviewFor = expected
+            composingPreview = ComposingPreview(splitPreview(ic, expected), shouldHighlightComposing(ic, expected))
+            updateComposing(ic)
+        }
+    }
+    
     // D-161: reported sporadically, no repro yet - the keyboard occasionally appears to render underneath
     // the gesture navigation bar until the first touch. Candidate mechanism (from reading the code, not yet
     // confirmed from a device log): onApplyWindowInsets is not guaranteed to be delivered before the input
@@ -2706,12 +2740,13 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * @param duringRepeat D-153: true while called from an active [handleBackspaceRepeat] tick - skips the
-     *        [splitPreview]/[shouldHighlightComposing] colour-preview lookups below, which run an uncached
-     *        dictionary query apiece on every call and are never actually read mid-repeat (the composing
-     *        text is changing every 45-330ms, see [BackspaceRepeat]) - the same D-138 diagnosis (uncached
-     *        per-keystroke dictionary lookups competing with the repeat's fastest tick interval), but for a
-     *        call site D-138 itself never covered (it only gated [refreshSuggestions]'s two additions).
-     *        Every other call site keeps the full live preview (the default `false`).
+     *        colour-preview rendering below entirely (never even reads [composingPreview]), since it is
+     *        never actually read mid-repeat (the composing text is changing every 45-330ms, see
+     *        [BackspaceRepeat]) - the same D-138 diagnosis (uncached per-keystroke dictionary lookups
+     *        competing with the repeat's fastest tick interval), but for a call site D-138 itself never
+     *        covered (it only gated [refreshSuggestions]'s two additions). Every other call site keeps the
+     *        full live preview (the default `false`) - "live" now meaning the cached, debounced result from
+     *        [scheduleComposingPreviewRefresh] (§125 / D-194), not a fresh computation every call; see there.
      */
     private fun updateComposing(ic: InputConnection, duringRepeat: Boolean = false) {
         val text = composing.toString()
@@ -2734,14 +2769,21 @@ class AdaptKeyService : InputMethodService() {
             // half instead, with the dropped character / boundary left uncoloured between them - checked
             // first, since trySplit() never matches an already-known word (mutually exclusive by
             // construction with the single-word case below).
-            val split = if (duringRepeat) null else splitPreview(ic, text)
+            // §125 / D-194: neither lookup runs here anymore - both read composingPreview, which only ever
+            // reflects composingPreviewFor's own exact text (scheduleComposingPreviewRefresh keeps the two
+            // in lockstep), so a token still being actively typed renders uncoloured until it is stable for
+            // EXPENSIVE_SUGGESTION_DELAY_MS - see the field-level KDoc above composingPreviewRunnable.
+            if (!duringRepeat) {
+                scheduleComposingPreviewRefresh(text)
+            }
+            val split = if (!duringRepeat && composingPreviewFor == text) composingPreview.split else null
             if (split != null) {
                 val (leftRange, rightRange) = split.spanRanges(text)
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), leftRange.first, leftRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), rightRange.first, rightRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
-            } else if (!duringRepeat && shouldHighlightComposing(ic, text)) {
+            } else if (!duringRepeat && composingPreviewFor == text && composingPreview.highlighted) {
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
@@ -2760,6 +2802,25 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * §125 / D-194: (re-)schedules [composingPreviewRunnable] to compute the real S-05/§47 colour preview
+     * for [text], unless it is already scheduled for that exact text or already cached for it
+     * ([composingPreviewFor]). Called only from [updateComposing]'s non-repeat path, so the previous
+     * pending callback (for whatever the token was before this keystroke) is implicitly superseded -
+     * `postDelayed` after `removeCallbacks` always restarts the full delay, exactly the debounce this
+     * exists for.
+     *
+     * @param text the current composing token
+     */
+    private fun scheduleComposingPreviewRefresh(text: String) {
+        if (composingPreviewFor == text || composingPreviewToken == text) {
+            return
+        }
+        handler.removeCallbacks(composingPreviewRunnable)
+        composingPreviewToken = text
+        handler.postDelayed(composingPreviewRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
+    }
+    
+    /**
      * Resets the in-progress composing token to empty, including the D-62 mid-word edit-point state kept
      * in step with it. Every commit / cancel / caret-move path that discards the current token calls this
      * instead of repeating the field-by-field reset.
@@ -2770,6 +2831,12 @@ class AdaptKeyService : InputMethodService() {
         composingTaps.clear()
         composingCursor = 0
         composingAnchor = -1
+        // §125 / D-194: not required for correctness (composingPreviewFor is always compared against the
+        // current composing text before use) but avoids leaving a pointless callback scheduled for a token
+        // that no longer exists.
+        handler.removeCallbacks(composingPreviewRunnable)
+        composingPreviewToken = null
+        composingPreviewFor = null
     }
     
     /**
@@ -2999,7 +3066,9 @@ class AdaptKeyService : InputMethodService() {
      *        is changing every 45-330ms, see [BackspaceRepeat]) but add several extra per-keystroke
      *        dictionary round-trips that measurably compete with the repeat's own fastest tick interval -
      *        a plausible, traced (not guessed) explanation for backspace-hold feeling jerky after they were
-     *        added. Every other call site keeps the full live preview (the default `false`).
+     *        added. §125 / D-194: also now skips the `pending` autocorrect-preview lookup, which had been
+     *        left unconditional by oversight (the same expensive search this whole gate exists to avoid).
+     *        Every other call site keeps the full live preview (the default `false`).
      * @param includeExpensiveFallbacks D-160: true only when called from [expensiveSuggestionRunnable]'s
      *        deferred pass - runs the expensive empty-candidates fallbacks (D-116 compound split, D-117
      *        wide fuzzy, D-131 raw-coordinate) that the per-keystroke hot path skips and schedules
@@ -3072,8 +3141,13 @@ class AdaptKeyService : InputMethodService() {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
         }
         val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion)
+        // §125 / D-194: duringRepeat used to still call provider.autocorrectFor() here unconditionally -
+        // the exact same expensive bestCorrection() search (a store query plus a banded edit-distance scan
+        // per candidate) this function's own KDoc already gates everything else behind, simply missed when
+        // the duringRepeat branch was introduced (D-138/D-153). Its result (the impending-autocorrect
+        // preview chip) is exactly as unreadable mid-repeat as every other lookup already skipped here.
         val pending = if (duringRepeat) {
-            provider.autocorrectFor(input, previousWord)
+            null
         } else {
             // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
             // language (mandatory English + every G-01-cycle language) - the active language's own

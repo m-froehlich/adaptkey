@@ -6623,3 +6623,80 @@ now confirmed rather than assumed. **D-06/D-34/D-66/D-75/D-193 are all closed.**
 logging (`AdaptKeyboardView.logHaptics()`) is left in place rather than stripped out immediately - low-risk,
 already proven useful for exactly this class of "silently does nothing" report, and removing it is a purely
 mechanical follow-up if it is ever judged no longer worth keeping.
+
+## §125 - D-194: Typing/Backspace-Hold Sluggishness Traced to Three Unthrottled Per-Keystroke Lookups (v0.8.89)
+
+Reported: typing and held-Backspace both feel sluggish, worsening with the length of the still-uncommitted
+composing token - most noticeably for a long, deliberately non-word letter sequence that never resolves to a
+known word. Also volunteered as the likely real explanation for D-184 (§115/§116, "flash" highlight tuning
+that had "no visible effect" on device) rather than a separate bug.
+
+**Root cause, traced from code, not guessed** - three independent gaps, none covered by D-160's (§103)
+existing per-keystroke debounce, which only ever covered `refreshSuggestions()`'s own *expensive*-fallback
+tier (D-116/D-117/D-131):
+
+1. **`updateComposing()`'s S-05/§47 split-preview/highlight colouring** called `TokenRepair.trySplit()` /
+   `shouldHighlightComposing()` synchronously on every keystroke, never debounced at all. `trySplit()` only
+   short-circuits when the *whole* token is already a known word - never true for a garbled sequence - so it
+   ran a full scan over every possible split point (`O(token length)`), each doing multiple `isKnownWord()` /
+   `isBlacklisted()` / `frequencyOf()` / `bigramFrequency()` store round-trips. Directly explains "gets worse
+   with length, worst for text that never becomes a real word".
+2. **`DictionarySuggestionProvider.suggestionsFor()`'s base `fuzzyNeighbours()` tier (D-12)** ran an
+   uncapped `EditDistance.weightedDistance()` (a full Levenshtein DP, no early cutoff) against every
+   candidate in its store bucket, on every keystroke from token length 3 up - and since the SQL bucket query
+   bounds candidate length to within one character of the token's own length, the DP cost itself scaled with
+   the token length too.
+3. **Backspace-hold's own `duringRepeat` gate (D-138/§101, D-153/§103) had a gap**: `refreshSuggestions()`
+   still called `provider.autocorrectFor()` unconditionally for the pending-autocorrect preview chip even
+   with `duringRepeat = true`, despite the surrounding KDoc explicitly describing this whole branch as
+   existing to skip exactly this class of expensive per-tick lookup - missed when that gate was introduced,
+   never covered by D-138's or D-153's own additions.
+
+Design discussed with the user before implementing (three named trade-offs: debounce the colouring like
+D-160 already does for suggestions vs. a hard token-length cutoff vs. a banded/early-exit edit distance).
+**Decided**: debounce the colouring (a hard length cutoff was rejected - unhyphenated three-part compounds
+get long fast and should keep working); band the edit distance regardless of debounce, since it is a pure
+optimisation with no behavioural change either way. A fourth idea (caching which token prefixes are already
+confirmed compound-component candidates, so a stable left half is never re-derived letter-by-letter) was
+raised but deliberately **not** implemented this round - it introduces new per-composing-token mutable state
+with its own invalidation rules (forward typing vs. backspace vs. D-62 mid-word reclaim), exactly the kind of
+correctness-sensitive addition this project's own §99-§101 guardrail exists for; captured for its own design
+round instead of folded in speculatively.
+
+**Fixed**:
+
+- `EditDistance.weightedDistance()` gained an optional `maxCost` parameter implementing Ukkonen's banded edit
+  distance: a cell more than `maxCost / indelCost` off the diagonal cannot possibly resolve to a distance
+  `<= maxCost` (every `substitutionCost` in this codebase returns `>= 0`, never negative), so those cells are
+  never evaluated at all - `O(a.length * b.length)` becomes `O(max(a.length, b.length) * band)`, a
+  constant-width band instead of one that grows with the strings. Every call site
+  (`DictionarySuggestionProvider.correctionCost()` and its three callers - `isCloseMatch`/`bestCorrection`/
+  `wideFuzzyNeighbours`) now threads its own real comparison ceiling straight through as `maxCost`, so a
+  candidate that would have qualified still does - the banding only ever discards work that could never have
+  produced a qualifying result. Omitting `maxCost` keeps the exact, unbounded distance (used nowhere in this
+  app now, but kept as the documented no-band default).
+- New `ComposingPreview` cache (`composingPreviewFor` / `composingPreview`) mirrors D-160's own
+  `expensiveSuggestionToken` shape: `updateComposing()` now reads the *cached* split/highlight result for the
+  exact current text instead of computing it inline, and (outside `duringRepeat`) calls the new
+  `scheduleComposingPreviewRefresh()`, which debounces a real recompute (`composingPreviewRunnable`) by the
+  same `EXPENSIVE_SUGGESTION_DELAY_MS` (200ms) D-160 already established. During continuous typing the cache
+  key never matches the just-changed text, so the token renders uncoloured until typing actually pauses -
+  the trade-off the user explicitly accepted ("looking elsewhere while typing fast, won't notice a delayed
+  colour"). `clearComposing()` cancels/resets the cache alongside the rest of the per-token state, though
+  this is a hygiene measure, not a correctness requirement - a stale cache entry can never apply to the
+  wrong, current token, since every read compares against the live `composing` text first.
+- `refreshSuggestions()`'s `duringRepeat` branch now returns `pending = null` instead of calling
+  `provider.autocorrectFor()` - closing the D-138/D-153 gap directly, with no design trade-off (the pending
+  chip was already established as unreadable mid-repeat for every other lookup this branch skips).
+
+5 new tests (`EditDistanceTest`: banded-vs-unbounded agreement within budget, correct "exceeds maxCost"
+signalling when the band is too narrow, a length-difference-wider-than-band case, and a longer-token
+regression case shaped like the reported scenario). `TokenRepair`/`DictionarySuggestionProvider`'s existing
+tests pass unchanged (banding is transparent to every caller that already only compares against a fixed
+ceiling). `AdaptKeyService`'s own changes are untouched-by-tests Android/`InputConnection` glue, the
+established gap for this class. 746 unit tests total (741 + 5). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green. Not yet device-confirmed - awaits a real typing/backspace-hold session, ideally including a long
+garbled non-word token (the reported worst case) and a genuine long compound (to confirm split-preview
+colouring still eventually appears, just debounced). D-184 (§115/§116) stays open pending the same session -
+if the flash issue was actually a symptom of this main-thread saturation rather than the animation constant,
+it should improve alongside typing responsiveness rather than needing its own further change.

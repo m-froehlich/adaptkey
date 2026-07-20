@@ -159,7 +159,7 @@ class DictionarySuggestionProvider(
         val folded = Umlaut.fold(token)
         return store.correctionCandidates(token, candidateFirstChars(token)).filter { candidate ->
             val lower = candidate.lowercase()
-            lower != token && correctionCost(folded, lower) <= WIDE_CORRECTION_COST
+            lower != token && correctionCost(folded, lower, WIDE_CORRECTION_COST) <= WIDE_CORRECTION_COST
         }
     }
     
@@ -196,7 +196,7 @@ class DictionarySuggestionProvider(
      * @return true when the candidate is within the correction budget
      */
     private fun isCloseMatch(foldedToken: String, candidateLower: String): Boolean {
-        return correctionCost(foldedToken, candidateLower) <= MAX_CORRECTION_COST
+        return correctionCost(foldedToken, candidateLower, MAX_CORRECTION_COST) <= MAX_CORRECTION_COST
     }
     
     /**
@@ -204,12 +204,20 @@ class DictionarySuggestionProvider(
      * neighbouring-key substitution costs [ADJACENT_SUB_COST], any other substitution or an insert/delete
      * [SUB_COST] / [INDEL_COST]. Used both to gate candidates and to rank the autocorrect by lowest cost.
      *
+     * §125 / D-194: [maxCost] is threaded straight into [EditDistance.weightedDistance]'s own banding -
+     * every call site here only ever compares the result against a fixed ceiling anyway (see its own
+     * KDoc), so passing that same ceiling in lets the DP stay within a band around it instead of scanning
+     * the whole token/candidate pair, which is what actually mattered for the per-keystroke cost on long
+     * tokens. Callers must pass their own real ceiling, not a stand-in - a narrower one here than the one
+     * actually compared against downstream would wrongly clip candidates that should have qualified.
+     *
      * @param foldedToken the umlaut-folded, lower-cased typed token
      * @param candidateLower the lower-cased candidate word
-     * @return the total weighted edit cost
+     * @param maxCost the same cost ceiling the caller will compare the result against
+     * @return the total weighted edit cost, or a value guaranteed to exceed [maxCost] when the true cost does
      */
-    private fun correctionCost(foldedToken: String, candidateLower: String): Int {
-        return EditDistance.weightedDistance(foldedToken, Umlaut.fold(candidateLower), INDEL_COST) { x, y ->
+    private fun correctionCost(foldedToken: String, candidateLower: String, maxCost: Int): Int {
+        return EditDistance.weightedDistance(foldedToken, Umlaut.fold(candidateLower), INDEL_COST, maxCost) { x, y ->
             when {
                 x == y -> 0
                 KeyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
@@ -305,7 +313,7 @@ class DictionarySuggestionProvider(
             .asSequence()
             .filter { it.lowercase() != token && !store.isBlacklisted(it) }
             .mapNotNull { candidate ->
-                val cost = correctionCost(folded, candidate.lowercase())
+                val cost = correctionCost(folded, candidate.lowercase(), maxCost)
                 val frequency = store.frequencyOf(candidate)
                 // D-114: a candidate too rare to be a trustworthy silent autocorrect target is dropped
                 // outright, regardless of edit cost - see minAutocorrectFrequency.
