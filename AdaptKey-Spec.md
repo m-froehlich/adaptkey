@@ -260,11 +260,9 @@ punctuation, hyphen). While a retroactive split (A-05) is pending, a live two-sp
 instead - both halves coloured, the dropped/boundary character left uncoloured - mutually exclusive with the
 ordinary single-word highlight. During a fast continuous typing burst, recomputation is debounced (~200 ms
 after the token stops changing) for performance, so the highlight can lag briefly in that case. Feature is
-toggleable; colour is user-selectable.
-
-> **Open design question (unresolved):** whether green should continue to mean "safe, no correction planned"
-> (the current meaning) or the opposite, "about to be auto-corrected." Not decided - do not treat either
-> reading as settled.
+toggleable; colour is user-selectable. Confirmed by the user (see `AdaptKey-History.md`) that green meaning
+"safe, no correction planned" is the correct, settled reading - the alternative ("about to be
+auto-corrected") is not adopted.
 
 ### S-06 - Verbatim "Keep As Typed" Affordance
 Whenever autocorrect intends to replace the current token on the next delimiter - including a pending

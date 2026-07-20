@@ -37,6 +37,10 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§130 (still v0.8.93, no code change): D-107 closed - S-05 highlight semantics confirmed settled.**
+  User confirmed the current meaning (green = safe, no correction planned) is correct as-is; the previously
+  floated reversal ("green = about to be auto-corrected") is not adopted. Spec §S-05's open-design-question
+  callout replaced with a confirmed-settled note. 756 unit tests (unchanged). See history §130.
 - **§129 addendum (still v0.8.93, no code change): D-203 CONFIRMED WORKING on device.** User confirmed the
   redesigned split gate (`MIN_SPLIT_HALF_FREQUENCY`/both-nouns-rejection/no-bigram-gate) now correctly
   handles the "der"+"Kinderarzt"-class case on a real device. D-203 closed. 756 unit tests (unchanged).

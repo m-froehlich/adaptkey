@@ -6695,3 +6695,16 @@ rewritten to reflect the new behaviour, not merely patched to keep passing. 756 
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real
 "dervKinderarzt"-shaped repro to confirm the auto-split now actually fires at commit time. D-167's own
 embedded-capital confidence idea remains captured, unimplemented, for a possible future round.
+
+## §130 - D-107 Closed: S-05 Highlight Semantics Confirmed as Settled, No Reversal (v0.8.93, no code change)
+
+D-107 (§62, "Recognised-Word Highlight (S-05/C-04) Semantics Under Reconsideration") was raised purely as a
+flag - the user was weighing whether green should keep meaning "safe, no correction planned" (the S-05
+semantics as specified and implemented all along) or flip to the opposite, "about to be auto-corrected". No
+implementation was ever attempted either way; the spec's own S-05 section carried an explicit "not decided"
+callout the entire time.
+
+**User confirmed directly: the current behaviour - green means safe, no correction planned - works as
+intended.** The reversal is not adopted. D-107 is closed; the spec's open-design-question callout is removed
+in favour of a short confirmed-settled note. No code change, no new tests (nothing was ever built for the
+alternative reading to begin with). 756 unit tests (unchanged).
