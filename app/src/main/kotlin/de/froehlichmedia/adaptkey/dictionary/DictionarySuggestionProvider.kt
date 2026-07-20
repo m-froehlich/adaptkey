@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.suggestion.Correction
 import de.froehlichmedia.adaptkey.suggestion.EditDistance
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
@@ -54,11 +55,20 @@ class DictionarySuggestionProvider(
         // valid-but-wrong word still surfaces the intended one ("mut" -> "mit", "grun" -> "grün").
         // D-205: ranked by scoreWithCost, not score - a closer candidate generally outranks a farther,
         // merely more frequent one (see scoreWithCost's own KDoc).
-        for ((word, cost) in fuzzyNeighbours(token)) {
-            if (candidates.containsKey(word) || store.isBlacklisted(word)) {
-                continue // A-04
+        // D-208: moved behind includeExpensiveFallbacks (like D-116/D-117 below), unlike those NOT also
+        // gated on candidates.isEmpty() - D-12's own basic behaviour ("mut" -> "mit") must still surface
+        // even when prefix completion also found something for "mut" itself. Its own cost (a bucket scan
+        // of up to ~2000 candidates plus a per-candidate edit-distance computation, §125/D-194's banding
+        // notwithstanding) grows with the composing token's own length and was running on every keystroke
+        // once the token reached MIN_FUZZY_LENGTH - a real, measured, felt slowdown mid-word on longer
+        // words, distinct from D-160's own commit-adjacent empty-candidates escalation.
+        if (includeExpensiveFallbacks) {
+            for ((word, cost) in fuzzyNeighbours(token)) {
+                if (candidates.containsKey(word) || store.isBlacklisted(word)) {
+                    continue // A-04
+                }
+                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, cost))
             }
-            candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, cost))
         }
         // D-116: an unhyphenated compound whose exact form isn't itself in the dictionary but whose known
         // first part plus a resolvable rest reconstructs it - only attempted once prefix/fuzzy matching
@@ -293,7 +303,21 @@ class DictionarySuggestionProvider(
     }
     
     override fun autocorrectFor(input: String, previousWord: String?): String? {
-        return bestCorrection(input, previousWord, MAX_CORRECTION_COST)
+        return bestCorrection(input, previousWord, MAX_CORRECTION_COST)?.candidate
+    }
+    
+    /**
+     * D-207: answers [autocorrectFor] and [highConfidenceCorrection] together from the single, wider
+     * ([MAX_CORRECTION_COST]) search - a cost-1 candidate always wins that search's own cost-first ranking
+     * whenever one exists (see [bestCorrection]'s own KDoc), so it is exactly the candidate
+     * [highConfidenceCorrection]'s tighter budget would separately have found; re-running that narrower
+     * search again on the same token would only ever rediscover the same winner. Replaces the two
+     * independent `store.correctionCandidates()` searches [de.froehlichmedia.adaptkey.AdaptKeyService]'s
+     * `finalizeAndCommit()` previously ran on every commit for this reason alone.
+     */
+    override fun bestCorrectionFor(input: String, previousWord: String?): Correction? {
+        val best = bestCorrection(input, previousWord, MAX_CORRECTION_COST) ?: return null
+        return Correction(best.candidate, best.cost <= ADJACENT_SUB_COST)
     }
     
     /**
@@ -307,7 +331,7 @@ class DictionarySuggestionProvider(
      * @return the high-confidence autocorrect replacement, or null when none qualifies
      */
     override fun highConfidenceCorrection(input: String, previousWord: String?): String? {
-        return bestCorrection(input, previousWord, ADJACENT_SUB_COST)
+        return bestCorrection(input, previousWord, ADJACENT_SUB_COST)?.candidate
     }
     
     /**
@@ -319,12 +343,16 @@ class DictionarySuggestionProvider(
      * only breaks ties), so "dasy" corrects to "dass" (one adjacent edit) rather than the more frequent
      * "das" (a deletion).
      *
+     * D-207: returns the winning candidate's own edit cost alongside it (not just the word) - lets
+     * [bestCorrectionFor] answer the high-confidence question from this one search's own result, instead
+     * of running a second, narrower search over the same candidates purely to re-derive it.
+     *
      * @param input the current composing token
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
      * @param maxCost the inclusive edit-cost ceiling a candidate must stay within
-     * @return the best-ranked correction within [maxCost], or null when none qualifies
+     * @return the best-ranked candidate within [maxCost] and its own cost, or null when none qualifies
      */
-    private fun bestCorrection(input: String, previousWord: String?, maxCost: Int): String? {
+    private fun bestCorrection(input: String, previousWord: String?, maxCost: Int): CandidateCost? {
         val token = input.lowercase()
         if (token.length < MIN_AUTOCORRECT_LENGTH) {
             return null
@@ -365,7 +393,7 @@ class DictionarySuggestionProvider(
             // so §44's ratio check would always trivially fire (0 * ratio <= anything) if applied here.
             return null
         }
-        return best.candidate
+        return best
     }
     
     /**

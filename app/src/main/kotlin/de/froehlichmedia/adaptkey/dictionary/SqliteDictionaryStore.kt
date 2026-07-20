@@ -392,7 +392,11 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // common umlaut word like "können" fell past the LIMIT while a rare same-shape word ("kannen") stayed
         // - and "konnen" mis-corrected to "kannen". Frequency order keeps the umlaut words reachable.
         val perBucketLimit = maxOf(1, CANDIDATE_LIMIT / firstChars.size)
-        return correctionCandidatesInternal(token, firstChars, perBucketLimit)
+        // D-209: the token's own first-character bucket is never capped, unlike the keyboard-neighbour
+        // buckets (reached only for a first-key typo, a much rarer case) - see correctionCandidatesInternal's
+        // own KDoc for the reasoning and the real repro ("Kita", frequency 17, crowded out by 389 more
+        // frequent same-letter/same-length-window words before ever reaching the edit-distance comparison).
+        return correctionCandidatesInternal(token, firstChars, perBucketLimit, uncappedChar = token.lowercase().firstOrNull())
     }
     
     /**
@@ -405,7 +409,21 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return correctionCandidatesInternal(token, firstChars, Int.MAX_VALUE)
     }
     
-    private fun correctionCandidatesInternal(token: String, firstChars: Set<Char>, perBucketLimit: Int): List<String> {
+    /**
+     * D-209: [uncappedChar], when given, is searched without [perBucketLimit] at all - reserved for the
+     * token's own literal first character (not its keyboard-neighbour or umlaut-variant chars), the single
+     * bucket where a same-first-letter typo (the overwhelming common case) actually lives, and therefore
+     * the one bucket where silently dropping a rare-but-correct candidate is most costly. Deliberately
+     * scoped to only that one bucket, not every searched first-char - uncapping the neighbour buckets too
+     * would reopen the exact per-keystroke cost concern D-160/D-208 already address, for candidates that
+     * only ever matter for a first-key typo, a rarer case than an ordinary same-letter one.
+     */
+    private fun correctionCandidatesInternal(
+        token: String,
+        firstChars: Set<Char>,
+        perBucketLimit: Int,
+        uncappedChar: Char? = null
+    ): List<String> {
         val key = token.lowercase()
         if (key.isEmpty() || firstChars.isEmpty()) {
             return emptyList()
@@ -426,8 +444,9 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             val codePoint = firstChar.code
             val lower = String(Character.toChars(codePoint))
             val upper = String(Character.toChars(codePoint + 1))
-            result.addAll(bucketQuery(TABLE_WORDS, lower, upper, minLen, maxLen, perBucketLimit))
-            result.addAll(bucketQuery(TABLE_LEARNED, lower, upper, minLen, maxLen, perBucketLimit))
+            val limit = if (firstChar == uncappedChar) Int.MAX_VALUE else perBucketLimit
+            result.addAll(bucketQuery(TABLE_WORDS, lower, upper, minLen, maxLen, limit))
+            result.addAll(bucketQuery(TABLE_LEARNED, lower, upper, minLen, maxLen, limit))
         }
         return result.toList()
     }

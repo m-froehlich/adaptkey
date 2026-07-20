@@ -18,11 +18,13 @@ interface SuggestionProvider {
      *
      * @param input the current composing token (never blank when called)
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
-     * @param includeExpensiveFallbacks D-160: whether the implementation may also run its expensive
-     *        last-resort searches (compound reconstruction, wide-budget fuzzy matching) when the cheap
-     *        ones find nothing. The per-keystroke hot path passes false and re-runs with true in one
+     * @param includeExpensiveFallbacks D-160/D-208: whether the implementation may also run its costlier
+     *        searches - D-12's own fuzzy-neighbour matching (cost grows with the token's own length,
+     *        unconditionally once long enough to qualify) and, only once those also find nothing, the
+     *        expensive last-resort searches (compound reconstruction, wide-budget fuzzy matching). The
+     *        per-keystroke hot path passes false (prefix completion only) and re-runs with true in one
      *        deferred pass once the token has been stable for a moment; the default keeps the full
-     *        behaviour for every other caller. Implementations without such fallbacks ignore it.
+     *        behaviour for every other caller. Implementations without such tiers ignore it.
      * @return candidates sorted by descending [Suggestion.score]; may include or omit [input]
      *         (the controller enforces S-02)
      */
@@ -66,6 +68,23 @@ interface SuggestionProvider {
      * @return the high-confidence autocorrect replacement, or null when none qualifies
      */
     fun highConfidenceCorrection(input: String, previousWord: String?): String? = autocorrectFor(input, previousWord)
+    
+    /**
+     * D-207: [autocorrectFor]'s own result, plus whether that exact candidate also qualifies as
+     * [highConfidenceCorrection] - answered from a single search where possible, since autocorrectFor's
+     * search space is already a superset of highConfidenceCorrection's tighter cost budget. Replaces the
+     * call site that previously called both independently on the same input just to answer a yes/no cost
+     * question about the very candidate [autocorrectFor] already found - a whole second candidate search
+     * wasted on every commit. The default (no cost tiers to share) simply calls both separately.
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @return the correction and whether it is high-confidence, or null when [autocorrectFor] is null
+     */
+    fun bestCorrectionFor(input: String, previousWord: String?): Correction? {
+        val word = autocorrectFor(input, previousWord) ?: return null
+        return Correction(word, highConfidenceCorrection(input, previousWord) == word)
+    }
     
     /**
      * Next-word predictions to show once a word has been committed and no token is being composed yet

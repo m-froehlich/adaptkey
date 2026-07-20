@@ -2350,8 +2350,14 @@ class AdaptKeyService : InputMethodService() {
         } else {
             null
         }
-        val highConfidenceWord = if (suppressAutocorrect) null else provider.highConfidenceCorrection(typed, previousWord)
-        val split = if (diacriticWord != null || highConfidenceWord != null) {
+        // D-207: a single search now answers both "what's the best correction" and "is it high-confidence
+        // enough to veto a split" - previously two independent bestCorrection() searches for the exact
+        // same token (highConfidenceCorrection() then autocorrectFor()), each running its own
+        // store.correctionCandidates() scan, on every single commit. Gated on diacriticWord too (not just
+        // suppressAutocorrect, as the old highConfidenceWord alone was) - split is vetoed by diacriticWord
+        // regardless, so computing this at all in that case was already pure waste.
+        val bestCorrection = if (diacriticWord != null || suppressAutocorrect) null else provider.bestCorrectionFor(typed, previousWord)
+        val split = if (diacriticWord != null || bestCorrection?.highConfidence == true) {
             null
         } else {
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
@@ -2371,7 +2377,7 @@ class AdaptKeyService : InputMethodService() {
         // suppressAutocorrect) wins outright when present - skipping autocorrectFor/rawCoordinateCorrection
         // entirely in that case, not just as a tie-breaker, since an unambiguous umlaut restoration is a
         // strictly stronger signal than either.
-        val autocorrected = if (diacriticWord != null || suppressAutocorrect) null else provider.autocorrectFor(typed, previousWord)
+        val autocorrected = bestCorrection?.word
         val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
         val corrected = diacriticWord ?: autocorrected ?: rawCorrected ?: typed
         // D-172 (temporary diagnostic): reported that an unknown-but-clearly-close-to-a-common-word token
@@ -3126,10 +3132,14 @@ class AdaptKeyService : InputMethodService() {
         // jerky again. The bar it populates is changing every 45-330ms mid-repeat regardless (unreadable),
         // exactly the same reasoning already applied to every other addition below.
         val candidates = if (duringRepeat) emptyList() else provider.suggestionsFor(input, previousWord, includeExpensiveFallbacks)
-        // D-160: when the cheap searches found nothing, schedule the one deferred pass that may also run
-        // the expensive fallbacks - it fires only if the token is still unchanged when the delay elapses,
-        // so during fluent typing it never runs at all and at any natural pause it still delivers.
-        if (!duringRepeat && !includeExpensiveFallbacks && candidates.isEmpty()) {
+        // D-160/D-208: schedule the deferred pass (fuzzy neighbours plus, once those also find nothing,
+        // the expensive last-resort fallbacks) whenever the hot path ran without them - no longer gated on
+        // candidates.isEmpty(): D-208 moved fuzzy matching itself into the deferred tier, so a prefix
+        // completion finding something on the hot path must not skip fuzzy's own chance to contribute too
+        // (D-12: "mut" must still surface "mit" alongside "mut"'s own prefix completions). Fires only if
+        // the token is still unchanged when the delay elapses, so during fluent typing this simply keeps
+        // getting cancelled and rescheduled - the actual search only ever runs once per genuine pause.
+        if (!duringRepeat && !includeExpensiveFallbacks) {
             expensiveSuggestionToken = input
             handler.postDelayed(expensiveSuggestionRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
         }

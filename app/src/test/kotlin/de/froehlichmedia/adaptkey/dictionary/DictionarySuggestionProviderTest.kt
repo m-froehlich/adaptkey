@@ -408,6 +408,32 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-207 bestCorrectionFor reports a cost-1 correction as high-confidence`() {
+        store.putWord(WordEntry("kleinen", 200L))
+        
+        val result = provider.bestCorrectionFor("kleiben", null)
+        assertEquals("kleinen", result?.word)
+        assertTrue(result?.highConfidence == true)
+    }
+    
+    @Test
+    fun `D-207 bestCorrectionFor reports a cost-2-only correction as not high-confidence`() {
+        store.putWord(WordEntry("komplett", 40L))
+        
+        // Same word pair as D-67's own two-call test above - bestCorrectionFor must agree with what
+        // autocorrectFor()/highConfidenceCorrection() would separately have concluded, from one search.
+        val result = provider.bestCorrectionFor("komplezz", null)
+        assertEquals("komplett", result?.word)
+        assertFalse(result?.highConfidence == true)
+    }
+    
+    @Test
+    fun `D-207 bestCorrectionFor returns null exactly when autocorrectFor does`() {
+        store.putWord(WordEntry("haus", 100L))
+        assertNull(provider.bestCorrectionFor("haus", null))
+    }
+    
+    @Test
     fun `D-116 an unlisted compound is reconstructed from a known noun first part and a correctable rest`() {
         // Reproduces the reported case: "Beitragsjahren" itself is too rare for the dictionary, but its
         // first part ("Beitrag") is known and its typo'd rest ("jahreb") is a cost-1 slip (b/n are adjacent
@@ -511,10 +537,34 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
-    fun `D-160 cheap prefix and fuzzy results are unaffected by the expensive-fallbacks flag`() {
+    fun `D-160 a plain prefix match is unaffected by the expensive-fallbacks flag`() {
         store.putWord(WordEntry("erkannt", 300L))
         
+        // "erk" is itself a literal prefix of "erkannt" - reached via prefix completion, not fuzzy
+        // matching, so this must not depend on includeExpensiveFallbacks either way.
         assertEquals(listOf("erkannt"), provider.suggestionsFor("erk", null, includeExpensiveFallbacks = false).map { it.word })
         assertEquals(listOf("erkannt"), provider.suggestionsFor("erk", null, includeExpensiveFallbacks = true).map { it.word })
+    }
+    
+    @Test
+    fun `D-208 the hot path with expensive fallbacks off skips D-12 fuzzy matching too`() {
+        store.putWord(WordEntry("mit", 100L))
+        
+        // "mut" is a genuine fuzzy (not prefix) match for "mit" - D-208 moved this off the instant hot
+        // path (its cost grows with the composing token's own length), unlike the plain-prefix case above.
+        assertTrue(provider.suggestionsFor("mut", null, includeExpensiveFallbacks = false).isEmpty())
+        assertEquals(listOf("mit"), provider.suggestionsFor("mut", null, includeExpensiveFallbacks = true).map { it.word })
+    }
+    
+    @Test
+    fun `D-208 fuzzy matching still applies in the deferred pass even when the hot path already found something`() {
+        store.putWord(WordEntry("mut", 50L))
+        store.putWord(WordEntry("mit", 100L))
+        
+        // Unlike D-116/D-117 (only attempted when candidates.isEmpty()), D-12 fuzzy matching must still
+        // surface "mit" for "mut" even though "mut" itself is a real word with its own prefix completion.
+        val words = provider.suggestionsFor("mut", null, includeExpensiveFallbacks = true).map { it.word }
+        assertTrue(words.contains("mut"))
+        assertTrue(words.contains("mit"))
     }
 }

@@ -6871,3 +6871,94 @@ not a hard cost-first rule like `bestCorrection()`'s. 764 unit tests total (762 
 starting point, easy to retune in isolation without touching any call site. D-205's own touch-proximity
 extension (item (2) above) stays captured, unimplemented, for a future round with its performance cost
 considered up front.
+
+## §134 - D-207/D-208/D-209: A Real Sluggishness Investigation, Traced to Three Distinct Causes, All Fixed (v0.8.97)
+
+The user reported typing feeling sluggish "again", visible in the flash-highlight effect lagging, and
+supplied real in-app diagnostic logs (`AdaptKeyJitter`/`AdaptKeyHaptics`) from several repeated typing
+sessions for direct tracing, per this project's own "trace from real data, not a guess" convention.
+
+**D-207 - the commit-time double search.** Precisely measured via the logs' own raw millisecond
+timestamps (not the coarser rounded display): committing a longer/harder-to-resolve word costs a
+consistent ~400ms right at the delimiter keystroke (`"Kiza"`->`"Liga"`, `"mitnehme"`), exactly where the
+key's own flash must also render. Traced in `finalizeAndCommit()`: `highConfidenceCorrection()` and
+`autocorrectFor()` were called independently on the *same* `typed` token, each running its own
+`store.correctionCandidates()` bucket scan + per-candidate edit-distance computation - `highConfidenceWord`
+itself is only ever used to decide whether to veto an A-05 split, never committed. Since
+`autocorrectFor()`'s search (`MAX_CORRECTION_COST`) is a strict superset of `highConfidenceCorrection()`'s
+tighter one (`ADJACENT_SUB_COST`) and the cost-first ranking (`compareBy({cost},{-score})`) means a cost-1
+candidate always wins whichever search finds it, the two answers are always derivable from one search.
+Fixed: `bestCorrection()` (private, `DictionarySuggestionProvider`) now returns the winning candidate's own
+cost alongside it (was discarded after gating); new `SuggestionProvider.bestCorrectionFor()` (default
+method, `Correction(word, highConfidence)`) answers both from a single search, overridden properly in
+`DictionarySuggestionProvider`; `finalizeAndCommit()` now calls it once instead of
+`highConfidenceCorrection()` + `autocorrectFor()` separately - also now correctly skipped entirely when
+`diacriticWord != null` (previously computed anyway and thrown away, since a diacritic restoration already
+vetoes the split regardless). `highConfidenceCorrection()`/`autocorrectFor()` themselves are unchanged and
+still used elsewhere (e.g. `compoundCandidate()`'s own, genuinely different, `rest`-resolution call) - only
+the one redundant call site in `finalizeAndCommit()` is fixed.
+
+**D-208 - live per-keystroke fuzzy search scaling with token length.** A second log, repeating the same
+"Glückwunsch"/"übrigens" typing without any suggestion taps this time, showed a *different*, mid-word
+pattern: fluid for the first 1-2 characters, then consistently 300-500ms/keystroke for every remaining
+character - confirmed by the user as felt and reproducible, worse than a one-off blip. Traced to
+`DictionarySuggestionProvider.fuzzyNeighbours()`, called unconditionally on the hot path in
+`suggestionsFor()` once the composing token reaches `MIN_FUZZY_LENGTH` (3) - a `store.correctionCandidates()`
+bucket scan (up to ~2000 candidates worst case) plus a per-candidate edit-distance computation whose own
+cost scales with the token's own, ever-growing length, on *every* keystroke from that point on - unlike
+D-116/D-117/D-131, never gated behind D-160's `includeExpensiveFallbacks` debounce at all. Two red herrings
+ruled out first, per direct user confirmation: a ~2.8s pause mid-"Glückwunsch" (a deliberate long-press to
+reach `ü`, hosted on the `u` key) and an instant multi-character jump completing "Herzlichen" (a
+suggestion-bar tap, a different commit path entirely) - both expected behaviour, not bugs.
+
+Fixed: `fuzzyNeighbours()`'s own loop in `suggestionsFor()` moved behind `includeExpensiveFallbacks`, like
+D-116/D-117 - but deliberately *not* also gated on `candidates.isEmpty()` like those, since D-12's own basic
+behaviour ("mut" must still surface "mit" even though "mut" itself has its own prefix completions) would
+otherwise silently regress. `AdaptKeyService.refreshSuggestions()`'s own deferred-pass scheduling
+correspondingly drops its `candidates.isEmpty()` condition too - now always schedules the debounced pass
+when the hot path ran without expensive fallbacks, so fuzzy matching gets its own chance once typing
+settles for `EXPENSIVE_SUGGESTION_DELAY_MS` (200ms), regardless of whether prefix completion already found
+something. During a fluent, uninterrupted typing burst the deferred pass keeps getting cancelled and
+rescheduled (never actually running); at any natural pause it delivers - the exact same trade-off already
+accepted for D-116/D-117/D-131 since D-160, now extended to ordinary fuzzy matching too.
+
+**D-209 - the "Kita" bucket-cap starvation, found independently while discussing the felt lag.** User
+report: typing "Kiza" (meaning "Kita") autocorrected to "Liga" instead. Confirmed against the real bundled
+data: "Kita" (frequency 17) exists, but `correctionCandidatesInternal()`'s per-first-character-bucket LIMIT
+(`CANDIDATE_LIMIT / firstChars.size`, ≈285 for a 7-char neighbour set) crowds it out of its own 'k'-bucket -
+636 same-length 'k'-words exist, 389 of them more frequent than 17, exceeding the cap - so "Kita" never
+even reaches the edit-distance comparison, while "Liga" (reached via the 'l' neighbour-key bucket) does.
+The same class of bug D-197 already fixed for `diacriticCandidates()`, but not for the general
+`correctionCandidates()` path `bestCorrection()`/`fuzzyNeighbours()`/`wideFuzzyNeighbours()` all share.
+Deliberately **not** fixed by raising or removing the limit everywhere (that bucket search is exactly what
+D-208 above just finished making cheaper by deferring) - fixed narrowly instead: the token's own *literal*
+first-character bucket (where an ordinary, same-first-letter typo actually lives - the common case) is now
+searched with no cap at all; the keyboard-neighbour buckets (reached only for a rarer first-key typo) keep
+the existing per-bucket limit. `SqliteDictionaryStore.correctionCandidatesInternal()` gained an
+`uncappedChar` parameter, applied only to the token's own first character; `correctionCandidates()` passes
+its own first character as that argument. D-208's own deferral is what makes this safe to do at all -
+uncapping the primary bucket while it still ran on every keystroke would have reopened the exact cost
+concern D-208 just fixed.
+
+**Order matters**: D-208 (defer fuzzy off the hot path) was implemented before D-209 (uncap the primary
+bucket) specifically so the wider bucket search D-209 introduces only ever runs once per settling pause,
+never per keystroke.
+
+6 new tests (`DictionarySuggestionProviderTest`: 3 for `bestCorrectionFor()`'s cost-derivation agreement
+with the two separate calls it replaces, 2 for D-208's fuzzy-gating behaviour, 1 existing test renamed for
+accuracy; `SqliteDictionaryStoreRoboTest`: the existing D-197 comparison test adjusted to a genuine
+neighbour-bucket scenario since the token's own bucket is no longer capped, plus 1 new test demonstrating
+D-209's own primary-bucket fix directly with the real "Kita"-shaped frequency gap). 770 unit tests total
+(764 + 6). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## D-210 - Captured, Not Designed: A-05 Split Regression Producing Nonsense ("übrigebs" -> "übrig Ebs")
+
+Flagged by the user while supplying the second sluggishness-investigation log, explicitly deferred so as
+not to distract from the performance work ("das soll das aktuelle Thema nicht distracten") but named as a
+"klare Regression" they are now seeing "häufiger" (more often) and want addressed as its own, dedicated
+round. Observed directly in the log: typing `"übrigebs"` (itself a typo of `"übrigens"`, n->b) committed as
+two separate tokens, `"übrig"` and `"Ebs"` - the latter capitalised and not a real word at all, i.e. an
+A-05 split fired and produced a nonsensical result instead of a straightforward whole-word correction to
+"übrigens". Not traced further this round - no root-cause hypothesis recorded yet, deliberately, since the
+user asked to look at this "unbedingt" and separately. Needs its own device-log-driven investigation before
+any fix is attempted, per this project's established convention for this class of bug.

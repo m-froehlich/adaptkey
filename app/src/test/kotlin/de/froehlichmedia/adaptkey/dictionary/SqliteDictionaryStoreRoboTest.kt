@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 Froehlich Media
 
 package de.froehlichmedia.adaptkey.dictionary
@@ -65,12 +65,17 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
-    fun diacriticCandidatesAreNotBoundedByFrequencyUnlikeCorrectionCandidates() {
+    fun diacriticCandidatesAreNotBoundedByFrequencyUnlikeCorrectionCandidatesInANeighbourBucket() {
         val store = store("diacritic-cand.db")
         // Six same-bucket ("h", length 4-6) words at descending frequency; "hobel" (the lowest) plays the
         // role of a rare-but-correctly-spelled diacritic candidate (D-197 / spec §126) that
         // correctionCandidates' frequency-truncated LIMIT would starve out before diacriticRestoration ever
         // gets a chance to compare it against the token.
+        // D-209: the token itself ("zobel", not a real word) starts with 'z', not 'h' - so the 'h' bucket
+        // here is reached only as a synthetic keyboard-neighbour char, exercising the still-capped case
+        // (D-209 lifts the cap only for the token's own literal first-character bucket, not every bucket
+        // correctionCandidates searches - see correctionCandidatesAreNotBoundedByFrequencyInTheTokenSOwnBucket
+        // below for that other case).
         listOf("haupt" to 500L, "hafen" to 400L, "hallo" to 300L, "hemde" to 200L, "hitze" to 100L, "hobel" to 1L)
             .forEach { (word, freq) -> store.putWord(WordEntry(word, freq, emptySet())) }
         // A large synthetic firstChars set (only 'h' actually matches any seeded word; the other 399 are
@@ -79,11 +84,30 @@ class SqliteDictionaryStoreRoboTest {
         // thousands of real words to reach the real per-bucket cap in a fast unit test.
         val firstChars = (setOf('h') + (1..399).map { offset -> Char(8000 + offset) }).toSet()
         
-        val bounded = store.correctionCandidates("hobel", firstChars)
-        val unbounded = store.diacriticCandidates("hobel", firstChars)
+        val bounded = store.correctionCandidates("zobel", firstChars)
+        val unbounded = store.diacriticCandidates("zobel", firstChars)
         
         assertFalse(bounded.contains("hobel"))
         assertTrue(unbounded.containsAll(listOf("haupt", "hafen", "hallo", "hemde", "hitze", "hobel")))
+        store.close()
+    }
+    
+    @Test
+    fun correctionCandidatesAreNotBoundedByFrequencyInTheTokenSOwnBucket() {
+        val store = store("cand-primary.db")
+        // D-209: the real "Kita"-shaped repro - a rare-but-correct word (frequency 17 in the real bundled
+        // dictionary; "hobel" here at frequency 1) crowded out of its own first-letter bucket by hundreds
+        // of more frequent same-letter/same-length-window words, before ever reaching the edit-distance
+        // comparison. Same six-word "h" bucket as the neighbour-bucket comparison test above, but the token
+        // itself ("hobel") now shares that bucket's own first character - so, unlike a neighbour bucket,
+        // the frequency cap must not apply here at all.
+        listOf("haupt" to 500L, "hafen" to 400L, "hallo" to 300L, "hemde" to 200L, "hitze" to 100L, "hobel" to 1L)
+            .forEach { (word, freq) -> store.putWord(WordEntry(word, freq, emptySet())) }
+        val firstChars = (setOf('h') + (1..399).map { offset -> Char(8000 + offset) }).toSet()
+        
+        val candidates = store.correctionCandidates("hobel", firstChars)
+        
+        assertTrue(candidates.containsAll(listOf("haupt", "hafen", "hallo", "hemde", "hitze", "hobel")))
         store.close()
     }
     

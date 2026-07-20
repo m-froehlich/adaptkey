@@ -37,6 +37,35 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§134 (v0.8.97): D-207/D-208/D-209 - a real sluggishness investigation, traced to three distinct
+  causes from real device logs, all fixed; D-210 captured (split-regression, separate round needed).**
+  User supplied real `AdaptKeyJitter`/`AdaptKeyHaptics` logs from repeated typing sessions. **D-207**:
+  commit-time ~400ms stall on longer/harder words (`"Kiza"`->`"Liga"`, `"mitnehme"`), precisely measured via
+  raw log timestamps - traced to `finalizeAndCommit()` calling `highConfidenceCorrection()` AND
+  `autocorrectFor()` independently on the same token, each running its own full `correctionCandidates()`
+  search, purely to answer a yes/no split-veto question the wider search's own result already answers.
+  Fixed: `bestCorrection()` now returns cost alongside the word; new `SuggestionProvider.bestCorrectionFor()`
+  answers both from one search. **D-208**: mid-word sluggishness (fluid for 1-2 chars, then consistently
+  300-500ms/keystroke) - traced to `fuzzyNeighbours()` running unconditionally on every keystroke once the
+  token reaches length 3, cost scaling with token length, never covered by D-160's existing debounce (unlike
+  D-116/D-117/D-131). Two red herrings ruled out first (a deliberate long-press for `ü`; a suggestion-bar
+  tap completing "Herzlichen") - both confirmed as expected behaviour, not bugs. Fixed: fuzzy matching moved
+  behind `includeExpensiveFallbacks` (but NOT also gated on `candidates.isEmpty()`, unlike D-116/D-117 -
+  D-12's "mut"->"mit" must still surface alongside "mut"'s own prefix completions); the deferred-pass
+  scheduling in `refreshSuggestions()` now always fires (not just when empty) so fuzzy gets its own
+  200ms-debounced chance regardless of what prefix completion found. **D-209**: separately, "Kita" (freq 17)
+  found not to autocorrect at all for "Kiza" - confirmed against real data that its own first-letter bucket
+  (636 same-length 'k'-words, 389 more frequent) exceeds the ~285 per-bucket cap, starving it out before the
+  edit-distance comparison - the same class of bug D-197 already fixed for `diacriticCandidates()`. Fixed
+  narrowly: only the token's own literal first-character bucket is now uncapped (not the neighbour-key
+  buckets) - safe specifically because D-208 already moved this search off the per-keystroke hot path.
+  6 new tests (`DictionarySuggestionProviderTest` 5, `SqliteDictionaryStoreRoboTest` 1 new + 1 adjusted).
+  770 unit tests total (764 + 6). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed - this was explicitly an "all registers" fix per the user's own request given how
+  unacceptable the lag had become. **D-210 captured, not designed**: a real A-05 split regression
+  (`"übrigebs"` -> `"übrig Ebs"`, nonsense) the user flagged as recurring more often lately and wants
+  addressed as its own dedicated round - deliberately not traced this round to avoid distracting from the
+  performance work. See history §134.
 - **§133 (v0.8.96): D-205 designed and implemented - suggestion-bar ranking now discounts by edit cost,
   not just frequency.** User's position: for a fuzzy/correction candidate, closeness to the actual mistake
   should generally outweigh raw frequency - `bestCorrection()` (autocorrect) already ranks cost-first, but
