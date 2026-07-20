@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ListView
 import android.widget.Spinner
@@ -41,6 +42,9 @@ class BlacklistActivity : AppCompatActivity() {
     private lateinit var emptyView: TextView
     private lateinit var adapter: ArrayAdapter<String>
     private val words = ArrayList<String>()
+    // D-206: bundled entries (e.g. the archaic-spelling seed) are rarely of interest and should rarely be
+    // removed at all - the list starts filtered to user-added entries only; this reveals bundled ones too.
+    private var showBundled = false
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +95,11 @@ class BlacklistActivity : AppCompatActivity() {
             }
             
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+        
+        findViewById<CheckBox>(R.id.blacklist_show_bundled).setOnCheckedChangeListener { _, checked ->
+            showBundled = checked
+            refresh()
         }
         
         val categorySpinner = findViewById<Spinner>(R.id.blacklist_category)
@@ -167,7 +176,10 @@ class BlacklistActivity : AppCompatActivity() {
     
     private fun refresh() {
         words.clear()
-        words.addAll(store.blacklistedWords())
+        // D-206: hide BUNDLED entries by default (showBundled = false) - a bundled entry (e.g. the
+        // archaic-spelling seed, or the cross-language confusables of §107/§113) is rarely of interest and
+        // should rarely be removed at all, unlike a USER entry a person deliberately added themselves.
+        words.addAll(store.blacklistedWords().filter { showBundled || store.blacklistCategory(it) == BlacklistCategory.USER })
         adapter.clear()
         adapter.addAll(words.map { word -> "$word  (${store.blacklistCategory(word)?.name ?: ""})" })
         adapter.notifyDataSetChanged()

@@ -4060,7 +4060,29 @@ class AdaptKeyService : InputMethodService() {
         // reasoning. "aks" (D-172): a genuine bundled English dictionary entry ("AKS", a Wikipedia-derived
         // acronym, freq 18, PROPER_NOUN) was tripping knownInOtherLanguage()'s cross-language shield and
         // blocking "Aks" -> "als" - the identical failure mode as "due"/"sue", fixed the identical way.
-        private val BUNDLED_GERMAN_BLACKLIST = setOf("due", "sue", "ddr", "aks")
+        //
+        // D-206: pre-1996-spelling-reform relics of otherwise ordinary, high-frequency common words - a
+        // curated subset of dict_de.tsv's own ß-containing entries, hand-picked (not a blanket rule) by
+        // checking each candidate against the real corpus frequencies: kept only where the modern ss-form
+        // is the dominant, living spelling in the very same corpus (e.g. "daß" 868 vs. "dass" 61892) -
+        // never a genuinely modern long-vowel ß word that merely has a rarer Swiss-spelling ss-counterpart
+        // present too (e.g. "große"/"grosse", "außerdem"/"ausserdem" - those stay untouched, ß is correct
+        // and current there). Deliberately excludes proper nouns/surnames/place names sharing the same
+        // ß-vs-ss shape (e.g. "Keßler", "Reuß", "Elsaß") - a person's or place's own spelling is not an
+        // error to silently correct - and excludes two outright coincidental collisions between different
+        // words that the naive ß->ss substitution alone cannot tell apart ("Maße" != "Masse", "Buße" !=
+        // "Busse"). Blacklisting (not purging from the dictionary) keeps each word typeable/known - so
+        // quoting genuinely old text still works - while it can never surface as its own suggestion again;
+        // the existing ß->"ss" fold (Umlaut.fold, unrelated to D-204's own newer host-key fold) already
+        // makes each of these a cost-0 match for its modern form, so autocorrect can still silently fix a
+        // live typing of one of these to the modern spelling via the existing §44 known-word override.
+        private val BUNDLED_GERMAN_BLACKLIST = setOf(
+            "due", "sue", "ddr", "aks",
+            "daß", "muß", "mußt", "mußte", "müßte", "wußte", "läßt", "laß", "laßt",
+            "einfluß", "anschluß", "schluß", "fluß", "prozeß", "kongreß", "rußland",
+            "bewußt", "bewußtsein", "bewußtseins", "unbewußten",
+            "haß", "gewiß", "kuß", "bißchen", "häßlich"
+        )
         
         // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
         // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing

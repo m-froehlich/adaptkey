@@ -6782,3 +6782,48 @@ autocorrect without removing them entirely (e.g. for the rare case of someone tr
 user explicitly noted this overlaps with D-204's own ß/"ss" territory (old-reform spelling conventions and
 the `ß`/`ss` fold-variant mechanism just built are closely related) - worth designing together, not in
 isolation. No scope, detection heuristic, or mechanism chosen yet.
+
+## §132 - D-206 Designed and Implemented: Archaic-Spelling Relics Blacklisted, Not Purged (v0.8.95)
+
+D-206's own design conversation, grounded in the real bundled data before any direction was chosen (not
+guessed): of `dict_de.tsv`'s 1648 `ß`-containing entries, 115 have a co-existing `ß`→`"ss"`-substituted
+counterpart already in the dictionary too. Of *those*, 74 run in the direction the user's framing did not
+anticipate - the `ß`-form dominates by a wide margin (`"große"` 11204 vs. `"grosse"` 213, `"außerdem"` 7890
+vs. `"ausserdem"` 95, `"Straße"` 3782 vs. `"Strasse"` 92) - these are genuinely modern, correctly-spelled
+long-vowel `ß` words whose rare `ss`-form is the Swiss-spelling convention, not a reform relic, and must never
+be touched. Only 40 run the other way (the `ss`-form dominates - `"daß"` 868 vs. `"dass"` 61892, `"muß"` 149
+vs. `"muss"` 6917, `"Fluß"` 14 vs. `"Fluss"` 1803) - the actual signature of a pre-1996-reform relic. Even
+within those 40, two are outright coincidental collisions the naive substitution cannot distinguish
+(`"Maße"` != `"Masse"`, `"Buße"` != `"Busse"` - genuinely different words, not a spelling pair at all), and
+several are proper nouns/surnames/place names (`"Keßler"`, `"Reuß"`, `"Aßmann"`, `"Preßburg"`, `"Nußbaum"`,
+`"Elsaß"`, `"Haußmann"`, `"Schloßberg"`/`"Schloßplatz"`) whose own spelling is a legitimate identity choice,
+not an error - a blanket mechanical rule over all 40 would have been wrong for a meaningful fraction of it.
+**User confirmed, on seeing these numbers, that the scope is far smaller than assumed** and approved the
+proposed mechanism directly.
+
+**Mechanism, confirmed by the user over the two candidates discussed**: reuse the existing `A-04` `BUNDLED`
+blacklist (the same one seeded for `due`/`sue`/`ddr`/`aks`, D-157/D-172) rather than purging the dictionary
+outright or inventing a new "derank" concept - keeps every relic typeable/known (quoting genuinely old text
+still works) while it can never surface as its own suggestion again, is fully reversible, and needed no new
+storage mechanism at all. A curated 25-word list (`daß`, `muß`, `mußt`, `mußte`, `müßte`, `wußte`, `läßt`,
+`laß`, `laßt`, `Einfluß`, `Anschluß`, `Schluß`, `Fluß`, `Prozeß`, `Kongreß`, `Rußland`, `bewußt`,
+`Bewußtsein`, `Bewußtseins`, `unbewußten`, `Haß`, `gewiß`, `Kuß`, `bißchen`, `häßlich`) - deliberately
+excluding the collisions and the proper nouns/surnames/place names above - is now seeded into
+`BUNDLED_GERMAN_BLACKLIST` alongside the pre-existing four entries. The pre-existing `ß`→`"ss"` fold
+(`Umlaut.fold`, unrelated to D-204's newer host-key fold) already makes each of these a cost-0 match for its
+modern form, so a live typing of one of them can still be silently autocorrected to the modern spelling via
+the existing §44 known-word-override ratio, unaffected by the blacklist itself.
+
+**Also addressed, per the user's own follow-up**: the `BlacklistActivity` editor (C-05) previously listed
+every blacklisted word regardless of category. The user's own reasoning - a `BUNDLED` entry is rarely of
+interest and should rarely be removed at all, "da muss man sich schon sehr sicher sein" - is now reflected
+directly: the list defaults to `USER`-category entries only, with a new `blacklist_show_bundled` checkbox
+(unchecked by default, all three locales) to reveal `BUNDLED` entries too when genuinely needed. Pure
+client-side filtering in `refresh()` (`store.blacklistCategory(it) == BlacklistCategory.USER`) - no new store
+API needed, `store.blacklistedWords()`/`blacklistCategory()` already existed.
+
+No new unit tests - both changes are Android-facing (a private `AdaptKeyService` seed constant, an
+`Activity`'s view/filter wiring), the established untested-glue gap for this layer; the underlying
+`blacklist()`/`isBlacklisted()`/`blacklistCategory()` mechanics were already covered when D-107/D-157 first
+built them. 762 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.

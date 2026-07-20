@@ -37,6 +37,25 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§132 (v0.8.95): D-206 designed and implemented - archaic-spelling relics blacklisted, not purged;
+  BlacklistActivity now defaults to user-only entries.** Grounded in real data before choosing a direction:
+  of 1648 ß-containing `dict_de.tsv` entries, only 40 show the actual pre-1996-reform-relic frequency
+  signature (`"daß"` 868 vs. `"dass"` 61892) - the other 74 run the opposite way and are genuinely modern,
+  correctly-spelled ß words with a rare Swiss-spelling counterpart (`"große"`/`"grosse"`), never to be
+  touched. Even within the 40, 2 are coincidental word collisions (`"Maße"`≠`"Masse"`, `"Buße"`≠`"Busse"`)
+  and several are proper nouns/surnames (`"Keßler"`, `"Reuß"`, `"Elsaß"`, ...) excluded from any automated
+  action. User confirmed the much-smaller-than-assumed scope and approved reusing the existing A-04 BUNDLED
+  blacklist (same mechanism as `due`/`sue`/`ddr`/`aks`) over purging the dictionary or inventing a new
+  "derank" concept. A curated 25-word list (`daß`, `muß`, `mußte`, `Fluß`, `Rußland`, `Kongreß`, `häßlich`,
+  ...) seeded into `BUNDLED_GERMAN_BLACKLIST` - stays typeable/known, never surfaces as its own suggestion
+  again, still silently autocorrects to the modern form via the pre-existing §44 known-word-override (cost-0
+  under the pre-existing `ß`->`"ss"` fold). Also, per the user's own follow-up: `BlacklistActivity` now
+  defaults to showing only `USER`-category entries (a `BUNDLED` entry is rarely of interest and should
+  rarely be removed - "da muss man sich schon sehr sicher sein"), with a new unchecked-by-default
+  `blacklist_show_bundled` checkbox (all 3 locales) to reveal bundled entries when genuinely needed. No new
+  tests (Android-facing glue, established gap - the underlying blacklist mechanics were already covered when
+  first built). 762 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed. See history §132.
 - **§131 (v0.8.94): D-204 - a second, app-specific ß fold convention ("gruse" for "Grüße"); D-205/D-206
   captured for later design rounds.** "vieie gruse" never autocorrected to "viele Grüße"; separately "viele
   Gruße" restored correctly at commit but the bar showed "große"/"größe" far ahead of "Grüße". Root cause,

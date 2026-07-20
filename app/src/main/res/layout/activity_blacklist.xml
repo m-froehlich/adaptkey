@@ -26,6 +26,13 @@
 
     </LinearLayout>
 
+    <CheckBox
+        android:id="@+id/blacklist_show_bundled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/blacklist_show_bundled" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

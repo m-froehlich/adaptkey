@@ -374,8 +374,16 @@ triggers a real language switch, not merely per-token filtering.
 ### A-04 - Blacklist for Unwanted Words
 Words can be permanently excluded from suggestions and autocorrect. The blacklist is persisted in SQLite and
 survives app updates, with a category distinction between a bundled entry and a user-added one. A small
-bundled cross-language-confusables set (`due`, `sue`, `ddr`, `aks`) is seeded by default (see A-01). Also
-interacts with the provisional pending-blacklist mechanism for a self-taught word (G-04/W-01).
+bundled cross-language-confusables set (`due`, `sue`, `ddr`, `aks`) is seeded by default (see A-01), alongside
+a curated set of pre-1996-spelling-reform relics of otherwise ordinary common words (e.g. `daß`, `muß`,
+`Rußland`) - hand-picked against the bundled dictionary's own real corpus frequencies (kept only where the
+modern spelling is demonstrably the dominant, living form in the same corpus), deliberately excluding any
+proper noun/surname/place name sharing the same ß-vs-ss shape, whose own spelling is not an error to correct.
+Blacklisting keeps a word typeable/known (quoting genuinely old text still works) while it can never surface
+as its own suggestion again. The blacklist editor (C-05) shows only user-added entries by default - a bundled
+entry is rarely of interest and should rarely be removed at all - with an explicit toggle to reveal bundled
+entries too. Also interacts with the provisional pending-blacklist mechanism for a self-taught word
+(G-04/W-01).
 
 ### A-05 - Retroactive Word Split on Missed Space
 When the current token is not a valid word and is not a plausible regular-verb inflection, and it can be
@@ -622,7 +630,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-02 | Suggestion re-sort delay | 0-600 ms | 300 ms |
 | C-03 | Maximum number of suggestions | Integer (6-10) | 8 |
 | C-04 | Word confirmation highlight | On/Off + colour | **On** |
-| C-05 | Word blacklist | List + categories (bundled/user) | Seeded with a small bundled confusables set |
+| C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled confusables + archaic-spelling set |
 | C-06 | LLM activation threshold | N-gram confidence value | medium |
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
 | C-08 | Secondary long-press symbols & corner hint labels | Per-key map + on/off | see L-05 |

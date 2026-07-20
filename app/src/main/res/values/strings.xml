@@ -234,6 +234,9 @@
     <string name="blacklist_removed">%1$s removed.</string>
     <string name="blacklist_remove_confirm_title">Remove “%1$s” from the blacklist?</string>
     <string name="blacklist_remove_confirm_action">Remove</string>
+    <!-- D-206: bundled entries are rarely of interest and should rarely be removed, so the list starts
+         filtered to user-added entries only; this reveals the bundled ones too. -->
+    <string name="blacklist_show_bundled">Show built-in entries too</string>
 
     <!-- Learned-words editor (D-177). -->
     <string name="learned_words_title">Learned Words</string>

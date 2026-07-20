@@ -234,6 +234,10 @@
     <string name="blacklist_removed">%1$s entfernt.</string>
     <string name="blacklist_remove_confirm_title">„%1$s“ aus der Blacklist entfernen?</string>
     <string name="blacklist_remove_confirm_action">Entfernen</string>
+    <!-- D-206: mitgelieferte Einträge interessieren so gut wie nie und sollen kaum je gelöscht werden -
+         die Liste startet daher gefiltert auf selbst hinzugefügte Einträge; dies blendet die mitgelieferten
+         zusätzlich ein. -->
+    <string name="blacklist_show_bundled">Auch mitgelieferte Einträge anzeigen</string>
 
     <!-- Editor für gelernte Wörter (D-177). -->
     <string name="learned_words_title">Gelernte Wörter</string>
