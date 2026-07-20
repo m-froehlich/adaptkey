@@ -3378,14 +3378,45 @@ class AdaptKeyService : InputMethodService() {
     /** One word [learnWord] processed, with the context it used, for a precise [unlearnWord]. */
     private data class LearnRecord(val word: String, val previousWord: String?, val outcome: LearnOutcome)
     
+    /**
+     * D-202: the D-37 promotion threshold to use for [word] - re-evaluated fresh on every call, never
+     * cached or persisted anywhere, so a later change to either signal below reclassifies an
+     * already-pending word retroactively with no data migration needed.
+     *
+     * Two signals, cheapest first: an embedded capital past the first character
+     * ([hasEmbeddedCapital]) - a near-certain "this was meant to be two words" sign, a pure string scan with
+     * no dictionary lookup at all - and, when that alone is not conclusive,
+     * [SuggestionProvider.looksLikeUnsplitCompound] (D-116's own noun + Fugenelement + resolvable-rest
+     * compound recognition, confirmed sufficient on its own). This is a *learning-throttle* decision only -
+     * unrelated to D-167's own, separate and still-undecided question of whether such a token should also
+     * auto-split more aggressively while typing. A false positive here just delays an ordinary word's
+     * promotion by a couple more repetitions, not a real loss - traded deliberately for fewer incorrectly
+     * glued-together compounds ending up in the learned-words list.
+     *
+     * @param word the word being considered for learning (any case)
+     * @return [COMPOUND_LEARN_THRESHOLD] or the ordinary [LEARN_THRESHOLD]
+     */
+    private fun learnThresholdFor(word: String): Int {
+        return if (hasEmbeddedCapital(word) || provider.looksLikeUnsplitCompound(word)) {
+            COMPOUND_LEARN_THRESHOLD
+        } else {
+            LEARN_THRESHOLD
+        }
+    }
+    
+    /** D-202: whether [word] carries a capital letter anywhere past its first character. */
+    private fun hasEmbeddedCapital(word: String): Boolean {
+        return word.drop(1).any { it.isUpperCase() }
+    }
+    
     private fun learnWord(word: String?): LearnRecord {
         // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (tier 1).
         if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
             return LearnRecord(word ?: "", previousWord, LearnOutcome.SKIPPED)
         }
         // D-37: an already-*learned* word is reinforced immediately; a genuinely new word is only counted
-        // up and promoted once it has been committed LEARN_THRESHOLD times, so a one-off typo is not
-        // eagerly learned as a real word.
+        // up and promoted once it has been committed learnThresholdFor(word) times (D-202: higher for a
+        // suspected unsplit compound), so a one-off typo is not eagerly learned as a real word.
         val context = previousWord
         val outcome = if (dictionaryStore.isBundledWord(word)) {
             // D-186: a word already in the *bundled* dictionary (any casing - isBundledWord's own lookup
@@ -3408,7 +3439,7 @@ class AdaptKeyService : InputMethodService() {
             dictionaryStore.blacklist(word, BlacklistCategory.USER)
             dictionaryStore.clearPendingBlacklist(word)
             LearnOutcome.SKIPPED
-        } else if (PendingLearnStore.increment(this, word) >= LEARN_THRESHOLD) {
+        } else if (PendingLearnStore.increment(this, word) >= learnThresholdFor(word)) {
             dictionaryStore.learn(word, context)
             PendingLearnStore.clear(this, word)
             LearnOutcome.LEARNED
@@ -3999,6 +4030,13 @@ class AdaptKeyService : InputMethodService() {
         // D-37: how many times a new word must be committed (without being reverted) before it is promoted
         // to the learned dictionary, so a one-off typo is not eagerly learned.
         private const val LEARN_THRESHOLD = 2
+        
+        // D-202: the same D-37 promotion threshold, but for a word that looksLikeUnsplitCompound() -
+        // higher on purpose, so a repeatedly mistyped, incorrectly-glued-together compound (e.g.
+        // "dervKinderarzt") is not learned as if it were a genuine single word before the user notices and
+        // starts fixing it. A false positive here only delays an ordinary word's promotion by a couple more
+        // repetitions - accepted as harmless (see learnThresholdFor's own KDoc).
+        private const val COMPOUND_LEARN_THRESHOLD = 4
         
         // D-177: converts AdaptSettings.pendingBlacklistExpiryDays (whole days) to milliseconds.
         private const val DAY_MILLIS = 24 * 60 * 60 * 1000L

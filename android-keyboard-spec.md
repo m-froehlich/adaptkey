@@ -6870,3 +6870,36 @@ not-yet-learned `PendingLearnStore` counting-up path, not the unconditional rein
 already-learned word (`learnWord()`'s `provider.isKnownWord(word)` branch has no threshold at all today) -
 assumed out of scope unless the user says otherwise. Awaiting the user's choice of heuristic (and confirmation
 of scope) before implementing.
+
+## §128 - D-202 Implemented: Higher Learn Threshold for a Suspected Unsplit Compound (v0.8.92)
+
+Follow-up to §127's captured design discussion. User's decision: heuristic (a) (D-116's own
+`compoundCandidate()`/`CompoundSplit` recognition) is sufficient on its own - explicitly accepting that a
+false positive only delays an ordinary word's promotion by a couple more repetitions, no real harm, traded
+for fewer incorrectly glued-together compounds ending up learned. Heuristic (b) (an embedded mid-word
+capital) may run first as a cheap pre-check, since it is a near-certain signal and, unlike (a), needs no
+dictionary lookup at all - confirmed cheap (`word.drop(1).any { it.isUpperCase() }`, a plain string scan).
+Scope confirmed as originally proposed: only the not-yet-learned `PendingLearnStore` counting-up path: an
+already-learned word's unconditional reinforcement is untouched.
+
+**Implemented**: new `SuggestionProvider.looksLikeUnsplitCompound(word)` (default `false` for
+`StubSuggestionProvider`; `DictionarySuggestionProvider` implements it by reusing the existing
+`compoundCandidate()` unchanged, context-free (`previousWord = null`) since this only feeds a boolean
+learning-throttle decision, not a ranked suggestion). `AdaptKeyService` gained
+`hasEmbeddedCapital(word)` (the cheap pre-check) and `learnThresholdFor(word)`, consulted at the one D-37
+promotion site (`PendingLearnStore.increment(...) >= learnThresholdFor(word)`, replacing the previously
+hard-coded `LEARN_THRESHOLD`): `hasEmbeddedCapital(word) || provider.looksLikeUnsplitCompound(word)` selects
+the new `COMPOUND_LEARN_THRESHOLD = 4` over the ordinary `LEARN_THRESHOLD = 2`. Both checks are re-run fresh
+on every promotion attempt, nothing classified is ever cached/persisted - a later change to either signal
+reclassifies an already-pending word retroactively with no data migration, exactly as requested. The
+counter-decrement-on-undo half needed no change at all: `PendingLearnStore.decrement()` was already wired
+into `unlearnWord()`'s `PENDING` branch (A-07 undo), so a rejected occurrence already counts back down under
+the new threshold too, unchanged. Explicitly independent of D-167 (still undecided, live split-*confidence*
+while typing) - this only throttles learning, never auto-splits or suggests anything by itself.
+
+3 new tests (`DictionarySuggestionProviderTest`: `looksLikeUnsplitCompound` true for a reconstructable
+compound, false when no reconstruction exists, false for an already-known word). `hasEmbeddedCapital`/
+`learnThresholdFor` themselves are untested `AdaptKeyService` glue (established gap - trivial pure logic, but
+private members of an otherwise-untested class). 750 unit tests total (747 + 3). `:app:assembleDebug`/
+`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real repeated-mistyped-compound session to
+see the higher threshold actually delay promotion as intended.

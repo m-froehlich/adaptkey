@@ -90,4 +90,16 @@ interface SuggestionProvider {
      * @return true when [word]'s A-01 protection should be set aside for [candidate]
      */
     fun shouldOverrideKnownWord(word: String, candidate: String): Boolean = false
+    
+    /**
+     * D-202: whether [word] looks like a plausible but incorrectly-unsplit compound (D-116's own noun +
+     * Fugenelement + resolvable-rest recognition) - used only to slow down how eagerly such a token is
+     * learned as if it were a genuine single word (see [de.froehlichmedia.adaptkey.AdaptKeyService]'s D-37
+     * promotion threshold), never to auto-split or suggest anything itself. The default reports no opinion
+     * (a placeholder provider has no compound recognition to consult).
+     *
+     * @param word the word being considered for learning (any case)
+     * @return true when [word] resolves to a plausible compound reconstruction
+     */
+    fun looksLikeUnsplitCompound(word: String): Boolean = false
 }

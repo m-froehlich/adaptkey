@@ -393,6 +393,29 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-202 looksLikeUnsplitCompound is true for a token compoundCandidate can reconstruct`() {
+        store.putWord(WordEntry("Beitrag", 500L, setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Jahren", 2_000L, setOf(PartOfSpeech.NOUN)))
+        
+        assertTrue(provider.looksLikeUnsplitCompound("beitragsjahreb"))
+    }
+    
+    @Test
+    fun `D-202 looksLikeUnsplitCompound is false when no compound reconstruction exists`() {
+        store.putWord(WordEntry("Kaufen", 500L, setOf(PartOfSpeech.VERB)))
+        store.putWord(WordEntry("Haus", 100L, setOf(PartOfSpeech.NOUN)))
+        
+        assertFalse(provider.looksLikeUnsplitCompound("kaufenhaus"))
+    }
+    
+    @Test
+    fun `D-202 looksLikeUnsplitCompound is false for an already-known word`() {
+        store.putWord(WordEntry("haus", 100L, setOf(PartOfSpeech.NOUN)))
+        
+        assertFalse(provider.looksLikeUnsplitCompound("haus"))
+    }
+    
+    @Test
     fun `D-117 a multi-typo word beyond the ordinary D-28 budget still surfaces as a suggestion`() {
         // "erkamm" -> "erkannt": two adjacent-key substitutions (m/n) plus an insertion (cost 4), beyond
         // the ordinary two-edit MAX_CORRECTION_COST but within the wider, suggestion-only D-117 fallback.

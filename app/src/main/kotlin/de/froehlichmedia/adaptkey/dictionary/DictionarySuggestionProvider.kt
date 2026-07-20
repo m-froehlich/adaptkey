@@ -119,6 +119,14 @@ class DictionarySuggestionProvider(
         return result.firstPart.replaceFirstChar { it.titlecase() } + result.fugenElement + result.rest
     }
     
+    // D-202: reuses compoundCandidate() as-is (confirmed sufficient on its own) rather than a separate
+    // recognition pass - context-free (no previousWord) since this only feeds a learning-throttle decision,
+    // not a ranked suggestion, so the rest-correction's bigram tie-breaking among otherwise-equal candidates
+    // does not matter here.
+    override fun looksLikeUnsplitCompound(word: String): Boolean {
+        return compoundCandidate(word.lowercase(), null) != null
+    }
+    
     /**
      * Close real-word neighbours of [token] for the suggestion bar (D-12): candidates within one edit of
      * the token once German umlauts / ß are folded on both sides, so a diacritic-less typing matches its

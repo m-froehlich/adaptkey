@@ -35,6 +35,21 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§128 (v0.8.92): D-202 implemented - higher learn threshold for a suspected unsplit compound.**
+  Follow-up to §127. User decided: D-116's `compoundCandidate()`/`CompoundSplit` recognition (heuristic a)
+  is sufficient alone (a false positive only delays learning by a couple more repetitions, no real harm);
+  a cheap embedded-mid-word-capital pre-check (heuristic b) runs first since it needs no dictionary lookup.
+  Scope confirmed as proposed: only the not-yet-learned `PendingLearnStore` path, not already-learned-word
+  reinforcement. New `SuggestionProvider.looksLikeUnsplitCompound()` (implemented in
+  `DictionarySuggestionProvider` by reusing `compoundCandidate()` unchanged); `AdaptKeyService` gained
+  `hasEmbeddedCapital()` + `learnThresholdFor()`, now consulted at the one D-37 promotion site instead of
+  the hard-coded `LEARN_THRESHOLD` - selects the new `COMPOUND_LEARN_THRESHOLD = 4` over the ordinary `2`.
+  Both checks re-run fresh every time, nothing cached, so a later code change reclassifies an already-pending
+  word retroactively with no migration. The counter-decrement-on-undo half needed no change - already wired
+  into A-07 undo via `PendingLearnStore.decrement()`. Explicitly independent of D-167 (still undecided, live
+  split-*confidence* while typing) - this only throttles learning. 3 new tests
+  (`DictionarySuggestionProviderTest`). 750 unit tests total (747 + 3). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See spec §128.
 - **§127 (v0.8.91): D-201 fixed (doubled space on a mid-word connector-split chip); D-202
   captured.** D-201: applying the D-122 `"der Kinderarzt"` connector-split chip while re-editing mid-word
   into an already-space-terminated `"dervKinderarzt "` doubled the space - exactly the gap §117/D-183 had
