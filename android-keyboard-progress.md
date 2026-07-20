@@ -35,6 +35,22 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§127 (v0.8.91): D-201 fixed (doubled space on a mid-word connector-split chip); D-202
+  captured.** D-201: applying the D-122 `"der Kinderarzt"` connector-split chip while re-editing mid-word
+  into an already-space-terminated `"dervKinderarzt "` doubled the space - exactly the gap §117/D-183 had
+  already flagged as present-but-unreproduced in `applyMidWordSplitSuggestion()`/`applySplit()`, now
+  reproduced and fixed by hoisting the existing D-144/D-183 "don't double an already-present space" check
+  above the D-122 branch split in `onSuggestionClicked()` and threading the computed delimiter through
+  instead of `applySplit()`'s previous hardcoded `" "`. No new tests (established `AdaptKeyService` glue
+  gap). 747 unit tests total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed. D-202 (captured, not implemented): a suspected incorrectly-unsplit compound should need
+  4 uncorrected occurrences instead of the ordinary `LEARN_THRESHOLD = 2` before D-37 promotes it - the
+  counter-decrement-on-undo half of this **already exists** (`PendingLearnStore.decrement()`, already wired
+  into A-07 undo); only the threshold itself needs to become a live, per-word decision instead of a fixed
+  constant (architecturally small). Open question needing the user's choice: the detection heuristic for
+  "vermutlich zusammengesetzt" - reuse D-116's `compoundCandidate()`/`CompoundSplit`, the D-167
+  embedded-capital signal, or a combination - plus confirming scope stays limited to the not-yet-learned
+  `PendingLearnStore` path. See spec §127.
 - **§126 (v0.8.90): D-196/D-197/D-198 fixed; D-167/D-199/B-03(D-200) captured as design discussions.**
   Batch of seven items from one feedback round. **Fixed**: D-196 - suggestion-bar chips showed the raw
   dictionary-stored case while the commit path (`onSuggestionClicked`) already recomputed the full §6

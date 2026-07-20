@@ -2671,17 +2671,27 @@ class AdaptKeyService : InputMethodService() {
      * [SplitResult] it expects, which is deterministic against the still-current context and therefore
      * harmless, not merely redundant.
      *
+     * D-201: [delimiter] is the caller's own D-144/D-183 "don't double an already-present space" result -
+     * this path used to hardcode a trailing space unconditionally, exactly the class of gap §117/D-183 had
+     * already flagged as present but unreproduced here ("applyMidWordSplitSuggestion()/applySplit() ... have
+     * the same class of gap but were not touched"). Applying `"der Kinderarzt"` mid-word into
+     * `"dervKinderarzt "` (a real space already follows) was silently doubling it.
+     *
      * @param ic the current input connection
      * @param word the pre-capitalised `"$left $right"` suggestion text
+     * @param delimiter the delimiter to commit after [word]: `" "` normally, or `""` when the document
+     *        already has whitespace right after the (possibly mid-word) composing token
      */
-    private fun applyMidWordSplitSuggestion(ic: InputConnection, word: String) {
+    private fun applyMidWordSplitSuggestion(ic: InputConnection, word: String, delimiter: String) {
         val (left, right) = word.split(' ', limit = 2)
-        applySplit(ic, SplitResult(left.lowercase(), right.lowercase()), delimiter = " ", typed = composing.toString())
+        applySplit(ic, SplitResult(left.lowercase(), right.lowercase()), delimiter = delimiter, typed = composing.toString())
         // D-88: tapping a bar suggestion is always an accepted suggestion, regardless of whether it happens
         // to match what was typed.
         notifySuggestionAccepted(word)
-        // D-29: arm the trailing space applySplit's own delimiter added, so immediate punctuation removes it.
-        pendingSuggestionSpace = true
+        // D-29 / D-201: arm the trailing space applySplit's own delimiter added, so immediate punctuation
+        // removes it - only when a space was actually added; a pre-existing one mid-text is real document
+        // content, not ours to eat (mirrors the ordinary NORMAL branch's identical guard).
+        pendingSuggestionSpace = delimiter.isNotEmpty()
         // D-123: guard applySplit's own commitText() echo against clearing the flag just armed (mirrors the
         // matching guard in the ordinary NORMAL branch).
         suppressNextReclaimSpaceReset = true
@@ -3498,29 +3508,31 @@ class AdaptKeyService : InputMethodService() {
             
             // Complete the token with the chosen word (cased per §6) and start a new one.
             SuggestionController.Kind.NORMAL -> {
-                // D-122: a suggestion word containing a space can only be the mid-word connector-split
-                // candidate (see midWordConnectorSplitSuggestion) - no other suggestion source in this
-                // codebase ever produces a multi-word candidate - so it needs applySplit()'s own per-half
-                // capitalisation and undo/learn wiring, not the single-word path below.
-                if (item.word.contains(' ')) {
-                    applyMidWordSplitSuggestion(ic, item.word)
-                    return
-                }
-                val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 // D-144 / D-183: applying a suggestion mid-text (the composing token sits before real,
                 // already-typed text) must not add a *second* space when one is already there right after
-                // it - checked against the document's current state, before commitText() below replaces
+                // it - checked against the document's current state, before either branch below replaces
                 // the composing span, since the real text immediately following it is untouched by that
                 // replace. D-183: a D-62 mid-word reclaim leaves the real cursor *inside* the composing
                 // token (composingCursor < composing.length), not at its end - the character right after
                 // the cursor is then still one of the token's own remaining characters (about to be
                 // replaced by commitText() below), not the real document text that follows the whole
                 // token. Skip past those remaining characters first, so the check lands on the same real
-                // position regardless of where inside the token the reclaim happened to be tapped.
+                // position regardless of where inside the token the reclaim happened to be tapped. D-201:
+                // hoisted above the D-122 branch split below - both branches need the identical check, and
+                // it depends only on composing/composingCursor/the document, never on item.word.
                 val remainingComposingChars = composing.length - composingCursor
                 val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
                     ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
                 val trailingSpace = if (alreadySpaced) "" else " "
+                // D-122: a suggestion word containing a space can only be the mid-word connector-split
+                // candidate (see midWordConnectorSplitSuggestion) - no other suggestion source in this
+                // codebase ever produces a multi-word candidate - so it needs applySplit()'s own per-half
+                // capitalisation and undo/learn wiring, not the single-word path below.
+                if (item.word.contains(' ')) {
+                    applyMidWordSplitSuggestion(ic, item.word, trailingSpace)
+                    return
+                }
+                val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 ic.commitText(word + trailingSpace, 1)
                 clearComposing()
                 learnWord(word)

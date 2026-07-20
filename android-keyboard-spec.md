@@ -6828,3 +6828,45 @@ dictionary" precedents from single words to hyphen-chains, rather than being an 
 implemented; recommended starting point (not yet agreed) is Strategy 1 first, since it needs no new storage,
 with Strategy 2 as a natural follow-up once the chain-confidence signal it depends on is proven reliable.
 Awaiting the user's direction on hop depth / promotion threshold / UI mechanics before implementing either.
+
+## §127 - D-201 Fixed: Doubled Space Applying a Mid-Word Connector-Split Chip; D-202 Captured (v0.8.91)
+
+**D-201 - fixed.** Reported repro: `"dervKinderarzt "` committed as one unsplit blob (D-167's own open gap -
+the embedded-capital signal that would raise split confidence enough to auto-split at commit time doesn't
+exist yet); re-editing mid-word and tapping the resulting `"der Kinderarzt"` D-122 connector-split chip
+doubled the space that was already there. Root cause: exactly the gap §117/D-183 had already named but never
+reproduced ("`applyMidWordSplitSuggestion()`/`applySplit()` ... have the same class of gap but were not
+touched - never reproduced, different code path"), now reproduced. `onSuggestionClicked()`'s `Kind.NORMAL`
+branch already computes the correct D-144/D-183 "is there already whitespace right after the (possibly
+mid-word) composing token" check for the ordinary single-word path, but returned early into
+`applyMidWordSplitSuggestion()` *before* that check for the D-122 multi-word candidate, which then called
+`applySplit()` with a hardcoded `" "` delimiter unconditionally. Fixed by hoisting the existing check above
+the branch split (identical for both branches, depends only on `composing`/`composingCursor`/the document,
+never on `item.word`) and threading the computed delimiter (`" "` or `""`) into `applyMidWordSplitSuggestion()`
+-> `applySplit()`; `pendingSuggestionSpace` (D-29) now also only arms when a space was actually added, mirroring
+the ordinary branch. No new tests (`AdaptKeyService` `InputConnection` glue, established gap). 747 unit tests
+total (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+**D-202 - captured as a design discussion, not implemented.** Proposal: a token suspected of being an
+incorrectly-unsplit compound should need more repeated, uncorrected typing before D-37 promotes it from
+`PendingLearnStore` into the real dictionary - 4 occurrences instead of the ordinary `LEARN_THRESHOLD = 2` -
+so that repeatedly mistyping `"dervKinderarzt"` does not get it learned as if it were a genuine single word
+before the user notices and starts fixing it. Investigated first (not guessed): the counter-decrement half of
+the proposal ("ein Zurücknehmen muss den Counter zurückzählen") **already exists** and needs no new code -
+`unlearnWord()`'s `PENDING` branch already calls `PendingLearnStore.decrement()` on every A-07 undo
+(`AdaptKeyService.kt:3453`), so a rejected occurrence already counts back down, not merely resets. What is
+missing: `LEARN_THRESHOLD` (`AdaptKeyService.kt:4001`) is a single fixed constant, consulted at exactly one
+site (`learnWord()`'s `PendingLearnStore.increment(...) >= LEARN_THRESHOLD` check) - turning it into a
+per-word decision evaluated fresh at that same call site, every time, is architecturally small (matches the
+user's own "Live-Prüfung ... ermöglicht, dass es nachträglich durch Code-Updates anders klassifiziert werden
+kann" requirement for free, simply by never persisting the classification anywhere). **The open question is
+the detection heuristic itself** - what counts as "offensichtlich oder auch nur vermutlich zusammengesetzt":
+(a) reuse `DictionarySuggestionProvider.compoundCandidate()`/`CompoundSplit.split()` as-is (D-116's own
+existing "plausible compound" recognition - noun first part + Fugenelement + resolvable rest - the closest
+already-existing match to "compound" in this codebase); (b) the D-167 embedded-mid-word-capital signal once
+(if) that lands; (c) some OR-combination of both, matching the "offensichtlich [strict] oder vermutlich
+[loose]" wording more literally. Scope also needs confirming: the proposal as read only touches the
+not-yet-learned `PendingLearnStore` counting-up path, not the unconditional reinforcement of an
+already-learned word (`learnWord()`'s `provider.isKnownWord(word)` branch has no threshold at all today) -
+assumed out of scope unless the user says otherwise. Awaiting the user's choice of heuristic (and confirmation
+of scope) before implementing.
