@@ -62,7 +62,12 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   banded-vs-unbounded agreement, band-too-narrow signalling, length-difference and longer-token regression
   cases). 746 unit tests total (741 + 5). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
   device-confirmed - D-184 stays open pending the same session, expected to improve as a side effect rather
-  than needing its own fix. See spec §125.
+  than needing its own fix. **D-195** (the fourth idea, a compound-prefix confirmation cache spanning both
+  `trySplit()` and D-116's `compoundCandidate()`) was shelved after discussion, not implemented: besides the
+  new-mutable-state/invalidation risk already named, the user raised a real objection - the actual best split
+  boundary can shift a character or two later as more of the token is typed, which a naive "confirmed forever"
+  cache would fight against rather than accommodate. Captured for its own round if it comes up again. See
+  spec §125.
 - **§124 (v0.8.88): D-193 - key vibration finally closed.** Diagnostic logging
   (`AdaptKeyboardView.logHaptics()`, mirrors `AdaptKeyService.diag()`'s dual logcat + in-app-`DiagnosticLog`
   output) added after D-06/D-34/D-66/D-75 failed three device rounds with the root cause never pinned down

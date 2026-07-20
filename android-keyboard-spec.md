@@ -6656,12 +6656,24 @@ Design discussed with the user before implementing (three named trade-offs: debo
 D-160 already does for suggestions vs. a hard token-length cutoff vs. a banded/early-exit edit distance).
 **Decided**: debounce the colouring (a hard length cutoff was rejected - unhyphenated three-part compounds
 get long fast and should keep working); band the edit distance regardless of debounce, since it is a pure
-optimisation with no behavioural change either way. A fourth idea (caching which token prefixes are already
-confirmed compound-component candidates, so a stable left half is never re-derived letter-by-letter) was
-raised but deliberately **not** implemented this round - it introduces new per-composing-token mutable state
-with its own invalidation rules (forward typing vs. backspace vs. D-62 mid-word reclaim), exactly the kind of
-correctness-sensitive addition this project's own §99-§101 guardrail exists for; captured for its own design
-round instead of folded in speculatively.
+optimisation with no behavioural change either way. **D-195** (a fourth idea, raised and shelved, not
+implemented): caching which composing-token prefixes are already confirmed compound-component candidates -
+covering both `TokenRepair.trySplit()` (the A-05/§47 colouring mechanism this round touched) and
+`DictionarySuggestionProvider.compoundCandidate()`/`CompoundSplit` (D-116's actual noun-first-part
+recognition, which the user pointed out is the closer match for "compound component" than `trySplit()`'s more
+general missed-space/typo logic) - so a stable left half is never re-derived letter-by-letter as the token
+grows. Two reasons it was shelved rather than implemented: (1) it introduces new per-composing-token mutable
+state with its own invalidation rules (forward typing vs. backspace vs. D-62 mid-word reclaim), exactly the
+kind of correctness-sensitive addition this project's own §99-§101 guardrail exists for; (2) the user's own
+follow-up objection, which holds up under scrutiny - as more characters are typed, the *actual* best split
+boundary can turn out to sit one or two characters later than an earlier position that had already looked
+like a confirmed valid left half (a shorter valid word/prefix later superseded by a longer, better one, or by
+D-116's own Fugenelement/rest-correction logic settling on a different split once more of the rest is known).
+A naive "confirmed = cached forever" scheme would risk locking in that earlier, inferior boundary instead of
+re-ranking against a fresher alternative once one appears - not merely an implementation detail to patch
+around, but a real tension with the whole idea of caching a "confirmed" boundary at all. Captured for its own
+round if it comes up again, not implemented now; A (§125's debounce) and C (§125's banding) are considered
+sufficient for now.
 
 **Fixed**:
 
