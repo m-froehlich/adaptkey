@@ -35,6 +35,28 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§129 (v0.8.93): D-203 - the MIN_SPLIT_BIGRAM split gate replaced after a live design
+  discussion, grown out of D-167.** Asked directly why mid-word re-edit (`splitAtUnresolvedConnector`,
+  D-122) finds "der"+"Kinderarzt" but ordinary commit-time typing (`trySplit`) does not - confirmed against
+  the bundled corpus (not guessed): `bigram_de.tsv` has zero co-occurrences for "der"+"kinderarzt" even
+  though "Kinderarzt" is a well-known noun. `MIN_SPLIT_BIGRAM` required exactly that prior co-occurrence,
+  which a first-time-typed compound typo can never have by definition - this reframed D-167 entirely (not
+  a confidence problem, a structurally-too-strict gate). Redesigned from a live brainstorm, calibrated
+  against real data before implementing: a naive "frequency floor alone" doesn't separate "Mei"(16)/"St"(5939)
+  from "Kinderarzt"(14) - the bundled dictionary is already pre-filtered at freq>=8; a naive "one half must
+  be a noun" rule would have broken this project's own existing valid-split tests ("und"+"das", "aber"+"das",
+  no noun on either side) - refined to reject only when *both* halves are nouns instead. Implemented (shared
+  by both `trySplit()`/`splitAtUnresolvedConnector()`): (1) `RegularVerbInflection.isPlausibleInflection`
+  now also guards `TokenRepair` (never previously consulted there) - closes "meinst"->"mei"+"st" at the
+  source; (2) `MIN_SPLIT_HALF_FREQUENCY=10` per half; (3) both-nouns pairs rejected; (4) `MIN_SPLIT_BIGRAM`
+  removed as a gate entirely (still feeds `score()`'s ranking). Also connected to the umlaut/ß-fold strategy
+  per direct instruction: `resolveWord()` tries `Umlaut.unfoldCandidates()`, so a half typed without its
+  diacritic ("uber") still resolves via "über" for eligibility/POS purposes - `SplitResult` itself still
+  carries the literal typed substrings (keeps §47 span-colouring correct; restoring the diacritic in the
+  committed text too would be a separate future feature). 6 new tests, every pre-existing bigram-dependent
+  test rewritten to match the new behaviour (`TokenRepairTest`, 23 -> 29). 756 unit tests total (750 + 6).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. D-167's own
+  embedded-capital-confidence idea stays captured for a possible later round. See spec §129.
 - **§128 (v0.8.92): D-202 implemented - higher learn threshold for a suspected unsplit compound.**
   Follow-up to §127. User decided: D-116's `compoundCandidate()`/`CompoundSplit` recognition (heuristic a)
   is sufficient alone (a false positive only delays learning by a couple more repetitions, no real harm);

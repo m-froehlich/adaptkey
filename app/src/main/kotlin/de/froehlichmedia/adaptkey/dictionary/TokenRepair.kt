@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.suggestion.Umlaut
+
 /**
  * The two words a token was split into (A-05); both are returned in lower case, so the caller applies
  * the capitalisation hierarchy (§6) to each part.
@@ -33,13 +35,34 @@ data class SplitResult(
 }
 
 /**
- * Retroactive token repair for the space/letter confusion bands (T-05): word split (A-05) and word
- * merge (A-06). Pure logic over the {@link DictionaryStore} abstraction, so it is unit-tested with the
+ * Retroactive token repair for the space/letter confusion bands (T-05): word split (A-05) and word merge
+ * (A-06). Pure logic over the {@link DictionaryStore} abstraction, so it is unit-tested with the
  * in-memory store, mirroring {@link DictionarySuggestionProvider} and {@code CapitalisationEngine}.
  *
  * Both rules require a valid linguistic result, not mere spatial proximity: a split or merge is applied
  * only when the dictionary (or a high-probability bigram) confirms it. A token that is already a known
  * word is never touched (consistent with A-01).
+ *
+ * §128 (D-203): the split-candidate gate was redesigned after a real, data-confirmed finding - requiring
+ * a prior bigram co-occurrence (the old `MIN_SPLIT_BIGRAM`) rejected *every* first-time-typed compound
+ * typo by construction (a compound accidentally glued together has, by definition, never been recorded as
+ * two separate co-occurring words), which is exactly why "der" + "Kinderarzt" split successfully during a
+ * deliberate mid-word re-edit ([splitAtUnresolvedConnector], which never required co-occurrence) but not
+ * at ordinary commit time ([trySplit], which did) - confirmed against the bundled corpus, not guessed: the
+ * bigram table has zero co-occurrences for "der"+"kinderarzt" even though both halves are individually
+ * well-known. The replacement, from a live design discussion: (1) a token that is already a known word,
+ * *or a plausible regular-verb inflection of one* ([RegularVerbInflection]), is never split at all - closes
+ * the historical "meinst" -> "mei"+"st" false positive at the source, the same way A-01 protects a literal
+ * dictionary word; (2) each half must individually clear [MIN_SPLIT_HALF_FREQUENCY], not merely exist -
+ * calibrated against the bundled dict_de.tsv (whose own floor is already 8, so this is a narrow trim of the
+ * bottom tier, not a strong filter - most of the historical "mei"/"st"-class noise is closer to genuine
+ * dictionary entries in frequency than initially assumed, see [isNoun]'s own note); (3) a pair where *both*
+ * halves independently resolve to a noun is rejected - German does not ordinarily juxtapose two bare,
+ * unlinked nouns as separate words (that is what a compound *word* is for), unlike an article/pronoun/
+ * conjunction (tagged [PartOfSpeech.OTHER] in this dictionary) followed by a noun, which is an entirely
+ * ordinary phrase shape; (4) bigram co-occurrence is no longer a gate at all - it still weights ranking via
+ * [score] exactly as before, so a candidate *with* co-occurrence evidence still wins over one without, but
+ * a plausible novel pairing is no longer rejected outright for lacking prior evidence.
  *
  * @property store the backing dictionary store
  */
@@ -53,34 +76,27 @@ class TokenRepair(private val store: DictionaryStore) {
      * character and replaces it with a space: the character must be either a T-05 space-ambiguous tap or a
      * letter that physically sits over the space bar ([OVER_SPACE_LETTERS], so it works even without touch
      * calibration), e.g. {@code "und<c>das" -> "und" + "das"}. A fully missed space is tried by inserting a
-     * space without dropping a character. Both strategies require the two halves to actually co-occur (a
-     * real bigram, §45), not merely both individually be known words - with a large, noisy dictionary,
-     * almost any typo can be cut into two "known" fragments if either half is allowed to be an obscure
-     * dictionary entry nobody would plausibly have typed there: {@code "meinst"} (a common, if
-     * dictionary-unlisted, verb form) used to split into {@code "mei" + "st"} purely because both
-     * fragments happened to exist somewhere in the dictionary (a rare proper noun / dialect word and a
-     * common abbreviation), with zero evidence they are ever used together - the drop strategy alone had no
-     * co-occurrence requirement at all. Comparing both strategies still matters: {@code "immernoch"}
-     * contains an over-space-letter drop candidate ({@code "immer" + "och"}), but the missed-space candidate
-     * ({@code "immer" + "noch"}, a much stronger bigram) must win instead of the drop candidate winning
-     * merely because it was found first. In all modes each half must also be a known, non-blacklisted word;
-     * among every valid, co-occurring candidate from both strategies the highest-scoring split wins.
+     * space without dropping a character. Both strategies require each half to clear [candidateAt]'s own
+     * gates (§128 / D-203) - not merely both individually be *any* known word, which alone let almost any
+     * typo be cut into two "known" fragments if either half happened to be an obscure dictionary entry
+     * nobody would plausibly have typed there. In all modes each half must also be non-blacklisted; among
+     * every valid candidate from both strategies the highest-scoring split wins.
      *
-     * @param token the committed token (any case); a known word is never split
+     * @param token the committed token (any case); a known word (or plausible inflection of one) is never split
      * @param spaceAmbiguousIndices the indices flagged space-ambiguous by the T-05 bands
      * @param previousWord the word committed before the token, for bigram scoring; may be null
      * @return the split, or null when no valid linguistic split exists
      */
     fun trySplit(token: String, spaceAmbiguousIndices: Set<Int>, previousWord: String? = null): SplitResult? {
         val t = token.lowercase()
-        if (t.length < 2 * MIN_PART || store.isKnownWord(t)) {
+        if (t.length < 2 * MIN_PART || isAlreadyRecognised(t)) {
             return null
         }
         
         // Drop-a-character split: the removed character is either a T-05 space-ambiguous tap or a letter
         // that physically sits over the space bar (c/v/b/n/m on QWERTZ) — both are plausible "hit a letter
         // instead of space" mis-taps. The over-space set makes this work even without touch calibration,
-        // where the T-05 flags are unreliable. Each half must still be a valid word.
+        // where the T-05 flags are unreliable. Each half must still clear candidateAt's own gates.
         val dropIndices = (spaceAmbiguousIndices + t.indices.filter { t[it] in OVER_SPACE_LETTERS })
             .filter { it in MIN_PART..t.length - 1 - MIN_PART }
             .toSet()
@@ -89,37 +105,27 @@ class TokenRepair(private val store: DictionaryStore) {
         val missed = (MIN_PART..t.length - MIN_PART)
             .mapNotNull { k -> candidateAt(t.substring(0, k), t.substring(k), previousWord) }
         
-        // §45: neither strategy's candidates are accepted unless the two halves actually co-occur (a real
-        // bigram) - with a large, noisy dictionary almost any typo can be cut into two "known" fragments, so
-        // a mere pair of dictionary words is not enough evidence on its own: "aber das" (frequent bigram)
-        // splits, a typo like "luste" -> "lu ste" (never co-occurs) does not, and neither does "meinst" ->
-        // "mei st" (both individually real dictionary entries, but never used together). Applied uniformly
-        // to both strategies, not only the missed-space one (§45's fix - see the KDoc above).
-        return (dropped + missed)
-            .filter { store.bigramFrequency(it.first.left, it.first.right) >= MIN_SPLIT_BIGRAM }
-            .maxByOrNull { it.second }
-            ?.first
+        return (dropped + missed).maxByOrNull { it.second }?.first
     }
     
     /**
-     * D-122: an unresolved [OVER_SPACE_LETTERS] connector split - unlike [trySplit], this does **not**
-     * require the two halves to have a recorded bigram co-occurrence. Deliberately narrower in every other
-     * respect (only the connector-letter-drop strategy, never the missed-space one) and meant to be
-     * consulted only while the user is actively re-editing an existing word mid-word - a much stronger
-     * intent signal ("I came back to fix this specific word") than ordinary forward typing, where relaxing
-     * the bigram gate this way would reopen the exact "any two known fragments get cut apart" false-positive
-     * problem §45 fixed. The caller is responsible for that gating and for treating the result as a
-     * suggestion only, never a silent autocorrect.
+     * D-122: an unresolved [OVER_SPACE_LETTERS] connector split - unlike [trySplit], considers only the
+     * connector-letter-drop strategy, never the missed-space one, and only ever consulted while the user is
+     * actively re-editing an existing word mid-word ([AdaptKeyService.isEditingMidWord] - a much stronger
+     * intent signal ("I came back to fix this specific word") than ordinary forward typing). Since §128 /
+     * D-203, [candidateAt]'s own gates (frequency floor, not-both-nouns) apply here exactly as they do in
+     * [trySplit] - there is no longer a *co-occurrence* difference between the two (bigram was never a gate
+     * either function still needs), only a difference in which strategies/positions are tried. The caller is
+     * responsible for treating the result as a suggestion only, never a silent autocorrect.
      *
-     * @param token the composing token (any case); a known word is never split
+     * @param token the composing token (any case); a known word (or plausible inflection of one) is never split
      * @param previousWord the word committed before the token, used only for ranking between multiple
      *        candidate connector positions (via the shared [score]), not as a gate; may be null
-     * @return the highest-scoring connector split, or null when no candidate position yields two known,
-     *         non-blacklisted words
+     * @return the highest-scoring connector split, or null when no candidate position yields two valid halves
      */
     fun splitAtUnresolvedConnector(token: String, previousWord: String? = null): SplitResult? {
         val t = token.lowercase()
-        if (t.length < 2 * MIN_PART || store.isKnownWord(t)) {
+        if (t.length < 2 * MIN_PART || isAlreadyRecognised(t)) {
             return null
         }
         return t.indices
@@ -158,18 +164,80 @@ class TokenRepair(private val store: DictionaryStore) {
         return null
     }
     
+    /**
+     * §128 / D-203: whether [t] is already recognised as a real word and must never be split - either
+     * literally ([DictionaryStore.isKnownWord]) or as a plausible regular-verb inflection of a known
+     * infinitive ([RegularVerbInflection]). The latter closes the historical "meinst" -> "mei" + "st" false
+     * positive at the source: "meinst" is never itself in the dictionary, so the old `isKnownWord(t)`-only
+     * guard let it fall through to split-candidate generation at all.
+     */
+    private fun isAlreadyRecognised(t: String): Boolean {
+        return store.isKnownWord(t) || RegularVerbInflection.isPlausibleInflection(t, store::isKnownWord)
+    }
+    
+    /**
+     * §128 / D-203: the shared candidate gate behind both [trySplit] and [splitAtUnresolvedConnector].
+     * Both [left] and [right] must resolve to a real, non-blacklisted word ([resolveWord] - umlaut/ß-fold
+     * aware, so a half typed without its diacritic, e.g. "ueber", is still recognised via its real spelling
+     * "über" for the purposes of this check and [isNoun], matching this project's own "umlauts are ordinary
+     * characters" principle elsewhere), each must individually clear [MIN_SPLIT_HALF_FREQUENCY] (not merely
+     * exist), and the pair must not be *both* nouns ([isNoun] - German does not ordinarily juxtapose two
+     * bare, unlinked nouns as separate words, unlike a function word followed by a noun, an entirely
+     * ordinary phrase shape). Deliberately does **not** require prior bigram co-occurrence (§128 / D-203) -
+     * see the class-level KDoc for why that was the wrong gate. [SplitResult] still carries the literal
+     * typed substrings ([left]/[right] as passed in, not the umlaut-restored form) so [SplitResult.spanRanges]
+     * - which maps back onto the exact characters of the currently displayed composing text - stays correct;
+     * only the *resolved* forms are used for the frequency/noun/score lookups below.
+     *
+     * @param left the left half exactly as typed (lower-cased)
+     * @param right the right half exactly as typed (lower-cased)
+     * @param previousWord the word committed before the token, for bigram scoring; may be null
+     * @return the split candidate and its score, or null when either half fails a gate
+     */
     private fun candidateAt(left: String, right: String, previousWord: String?): Pair<SplitResult, Double>? {
         if (left.length < MIN_PART || right.length < MIN_PART) {
             return null
         }
-        if (!isWord(left) || !isWord(right)) {
+        val leftWord = resolveWord(left) ?: return null
+        val rightWord = resolveWord(right) ?: return null
+        if (store.frequencyOf(leftWord) < MIN_SPLIT_HALF_FREQUENCY || store.frequencyOf(rightWord) < MIN_SPLIT_HALF_FREQUENCY) {
             return null
         }
-        return SplitResult(left, right) to score(left, right, previousWord)
+        if (isNoun(leftWord) && isNoun(rightWord)) {
+            return null
+        }
+        return SplitResult(left, right) to score(leftWord, rightWord, previousWord)
     }
     
-    private fun isWord(word: String): Boolean {
-        return store.isKnownWord(word) && !store.isBlacklisted(word)
+    /**
+     * §128 / D-203: [raw] itself first (the common case - nothing to unfold), then every plausible
+     * umlaut/ß-restored spelling ([Umlaut.unfoldCandidates]), so a half typed without its diacritic still
+     * resolves to its real dictionary entry.
+     *
+     * @param raw the lower-cased, literally-typed half
+     * @return the matched canonical, non-blacklisted word, or null when no variant matches
+     */
+    private fun resolveWord(raw: String): String? {
+        for (candidate in Umlaut.unfoldCandidates(raw)) {
+            if (store.isKnownWord(candidate) && !store.isBlacklisted(candidate)) {
+                return candidate
+            }
+        }
+        return null
+    }
+    
+    /**
+     * §128 / D-203: whether [word] resolves to a noun ([PartOfSpeech.NOUN] or [PartOfSpeech.PROPER_NOUN]),
+     * used by [candidateAt] to reject a both-nouns pair. Calibrated against the bundled dict_de.tsv for the
+     * motivating "meinst" -> "mei"+"st" case: both "Mei" (frequency 16, tagged NOUN+OTHER) and "St"
+     * (frequency 5939, tagged NOUN) individually clear [MIN_SPLIT_HALF_FREQUENCY] comfortably - frequency
+     * alone cannot distinguish them from a genuine compound half like "Kinderarzt" (frequency 14) - but both
+     * being tagged as nouns is what actually sets this pair apart from an ordinary phrase like "der" (OTHER)
+     * + "Kinderarzt" (NOUN) or "und" (OTHER) + "das" (OTHER).
+     */
+    private fun isNoun(word: String): Boolean {
+        val pos = store.partsOfSpeech(word)
+        return pos.contains(PartOfSpeech.NOUN) || pos.contains(PartOfSpeech.PROPER_NOUN)
     }
     
     private fun score(left: String, right: String, previousWord: String?): Double {
@@ -186,8 +254,15 @@ class TokenRepair(private val store: DictionaryStore) {
         /** Minimum bigram count accepted as a "high-probability" continuation (A-06). */
         const val MIN_BIGRAM = 3L
         
-        /** Minimum bigram count required to accept a fully-missed-space split (A-05), so typos are not cut apart. */
-        const val MIN_SPLIT_BIGRAM = 3L
+        /**
+         * §128 / D-203: the minimum standalone frequency either half of a split must individually clear
+         * (replaces the old `MIN_SPLIT_BIGRAM` co-occurrence gate - see the class-level KDoc). Calibrated
+         * against the bundled dict_de.tsv, whose own minimum entry frequency is already 8 (the corpus was
+         * pre-filtered at the source) - this is a narrow trim of the very bottom tier, not a strong filter;
+         * most of the discrimination against implausible fragments comes from [isNoun]'s both-nouns rule
+         * instead, not from frequency alone.
+         */
+        const val MIN_SPLIT_HALF_FREQUENCY = 10L
         
         /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
         val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm')

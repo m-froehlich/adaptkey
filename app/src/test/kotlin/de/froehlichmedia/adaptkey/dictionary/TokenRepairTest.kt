@@ -11,6 +11,10 @@ import org.junit.jupiter.api.Test
 /**
  * Unit tests for the pure retroactive token repair: word split (A-05) and word merge (A-06), each
  * requiring a valid linguistic result rather than mere spatial proximity.
+ *
+ * §128 / D-203: the split-candidate gate no longer requires prior bigram co-occurrence (see
+ * [TokenRepair]'s own class-level KDoc for why that gate was replaced) - these tests set up frequencies at
+ * or above [TokenRepair.MIN_SPLIT_HALF_FREQUENCY] for every word meant to be a valid split half.
  */
 class TokenRepairTest {
     
@@ -23,10 +27,6 @@ class TokenRepairTest {
         listOf("und", "das", "aber", "bald", "ist", "ich").forEach { word ->
             store.putWord(WordEntry(word, frequency = 10L))
         }
-        // §45: every split candidate now requires the two halves to co-occur (a real bigram), whichever
-        // strategy found it.
-        store.putBigram("aber", "das", TokenRepair.MIN_SPLIT_BIGRAM)
-        store.putBigram("und", "das", TokenRepair.MIN_SPLIT_BIGRAM)
         repair = TokenRepair(store)
     }
     
@@ -49,9 +49,12 @@ class TokenRepairTest {
     }
     
     @Test
-    fun `a missed-space split is rejected when the halves do not co-occur`() {
-        // "und" and "bald" are both known words, but without a bigram this is a typo, not a missed space.
-        assertNull(repair.trySplit("undbald", emptySet()))
+    fun `§128 a missed-space split succeeds even without any prior bigram co-occurrence`() {
+        // "und" and "bald" are both known words and neither is a noun - no bigram between them was ever
+        // recorded, and none is needed any more (D-203): a first-time-typed compound typo has, by
+        // definition, never co-occurred as two separate words before, so requiring it rejected exactly the
+        // cases this mechanism exists to catch.
+        assertEquals(SplitResult("und", "bald"), repair.trySplit("undbald", emptySet()))
     }
     
     @Test
@@ -72,14 +75,70 @@ class TokenRepairTest {
     }
     
     @Test
-    fun `paragraph 45 a drop candidate with no co-occurrence evidence is rejected, even when both halves are known words`() {
-        // Reproduces the reported bug: "mei" and "st" are each individually real (if obscure) dictionary
-        // entries, and 'n' sits over the space bar, so the drop strategy alone used to accept "mei" + "st"
-        // with zero evidence the two are ever used together - "meinst" -> "mei St".
+    fun `§128 a regular-verb inflection of a known infinitive is never split`() {
+        // Reproduces the reported bug at its actual source: "meinst" is not itself in the dictionary, but
+        // strips its "st" ending to "mein" + "en" = "meinen", a known infinitive - RegularVerbInflection
+        // recognises it as a plausible inflection, so it is treated exactly like a literal known word and
+        // never even reaches split-candidate generation. "mei" is deliberately *not* tagged as a noun here
+        // (unlike the real dictionary's actual "Mei" entry) so this pair would otherwise pass the
+        // not-both-nouns check and split successfully if the inflection guard did not exist - isolating
+        // that the guard alone is what blocks it here (the separate "both nouns" test below covers the
+        // real-world "Mei"/"St" tagging, an independent mechanism that closes the same historical bug).
+        store.putWord(WordEntry("meinen", frequency = 500L))
         store.putWord(WordEntry("mei", frequency = 16L))
-        store.putWord(WordEntry("st", frequency = 5939L))
+        store.putWord(WordEntry("st", frequency = 5_939L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
         assertNull(repair.trySplit("meinst", emptySet()))
+    }
+    
+    @Test
+    fun `§128 a drop candidate where both halves are nouns is rejected, even when both are known words`() {
+        // Reproduces the reported bug as it would appear without a covering verb inflection: "mei" and "st"
+        // are each individually real (if obscure) dictionary entries, individually well above the
+        // frequency floor, and 'n' sits over the space bar - but both resolve to a noun, unlike an ordinary
+        // phrase (an article/pronoun/conjunction, tagged OTHER, followed by a noun). Frequencies mirror the
+        // real bundled dict_de.tsv values for "Mei" (16) and "St" (5939) - deliberately not obviously "too
+        // rare", since frequency alone cannot distinguish this pair from a genuine compound half.
+        store.putWord(WordEntry("mei", frequency = 16L, partsOfSpeech = setOf(PartOfSpeech.NOUN, PartOfSpeech.OTHER)))
+        store.putWord(WordEntry("st", frequency = 5_939L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertNull(repair.trySplit("meinst", emptySet()))
+    }
+    
+    @Test
+    fun `§128 a function word followed by a noun is a valid split, unlike two nouns`() {
+        // "der" (untagged here, matching the real dictionary's OTHER-only article entries) + "kinderarzt"
+        // (NOUN) is an entirely ordinary German phrase shape and must still split - only a *both-nouns*
+        // pairing is rejected, not "any pairing involving a noun".
+        store.putWord(WordEntry("der", frequency = 1_004_234L))
+        store.putWord(WordEntry("kinderarzt", frequency = 14L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertEquals(SplitResult("der", "kinderarzt"), repair.trySplit("derkinderarzt", emptySet()))
+    }
+    
+    @Test
+    fun `§128 a half below the frequency floor is rejected even though it is a known word`() {
+        store.putWord(WordEntry("mini", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY - 1))
+        store.putWord(WordEntry("wort", frequency = 500L))
+        
+        assertNull(repair.trySplit("miniwort", emptySet()))
+        
+        // The identical pair clears the floor once "mini" is frequent enough - confirming the frequency
+        // check, not some other gate, was what rejected it above.
+        store.putWord(WordEntry("mini", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY))
+        assertEquals(SplitResult("mini", "wort"), repair.trySplit("miniwort", emptySet()))
+    }
+    
+    @Test
+    fun `§128 a half typed without its umlaut still resolves via the real diacritic spelling`() {
+        // "uberwort" ("uber" typed without the umlaut + "wort") must still be recognised as "über" + "wort"
+        // (D-48: umlauts are ordinary characters) - the split's own halves stay the literal typed substrings
+        // (so §47's span-colouring math over the still-displayed composing text stays correct), but
+        // eligibility/frequency/noun-pair checks resolve through the real spelling.
+        store.putWord(WordEntry("über", frequency = 500L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
+        store.putWord(WordEntry("wort", frequency = 4_084L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertEquals(SplitResult("uber", "wort"), repair.trySplit("uberwort", emptySet()))
     }
     
     @Test
@@ -92,10 +151,12 @@ class TokenRepairTest {
     fun `a missed-space split outscores a lower-quality drop candidate (immernoch to immer noch)`() {
         store.putWord(WordEntry("immer", frequency = 500L))
         store.putWord(WordEntry("noch", frequency = 500L))
-        // "och" is also a known word, so the drop-a-character path ("immer" + "och", dropping the
-        // over-space-letter 'n') is a technically valid candidate too - but it must lose to the missed-space
-        // candidate ("immer" + "noch") once both are compared, not win merely by being found first.
-        store.putWord(WordEntry("och", frequency = 5L))
+        // "och" is also a known word, well above the frequency floor, so the drop-a-character path
+        // ("immer" + "och", dropping the over-space-letter 'n') is a technically valid candidate too - but
+        // it must lose to the missed-space candidate ("immer" + "noch") once both are compared by score,
+        // not win merely by being found first, and not be excluded by the frequency floor either (this
+        // test is specifically about score ranking, not gating).
+        store.putWord(WordEntry("och", frequency = 15L))
         store.putBigram("immer", "noch", 200L)
         
         assertEquals(SplitResult("immer", "noch"), repair.trySplit("immernoch", emptySet()))
@@ -150,15 +211,24 @@ class TokenRepairTest {
     }
     
     @Test
-    fun `D-122 an unresolved connector is split even with no bigram co-occurrence at all`() {
-        // Reproduces the reported case: "testvwort" ("test" + accidental "v" + "wort") - "test" and "wort"
-        // never co-occur in the corpus, so trySplit() itself would (correctly, for its own broader use)
-        // find nothing here; splitAtUnresolvedConnector() must still find it.
+    fun `D-122 an unresolved connector is found even without any prior bigram co-occurrence`() {
         store.putWord(WordEntry("test", frequency = 500L))
         store.putWord(WordEntry("wort", frequency = 4_084L))
         
-        assertNull(repair.trySplit("testvwort", emptySet()), "trySplit() itself must stay bigram-gated")
         assertEquals(SplitResult("test", "wort"), repair.splitAtUnresolvedConnector("testvwort"))
+    }
+    
+    @Test
+    fun `D-122 only tries the connector-drop strategy, unlike trySplit's own missed-space strategy too`() {
+        // "testwort" has no over-space-letter connector position at all - splitAtUnresolvedConnector can
+        // never find a candidate here, while trySplit's own missed-space strategy does. This is the actual
+        // remaining difference between the two functions now that neither requires bigram co-occurrence
+        // (§128 / D-203) - scope of strategies tried, not evidence required.
+        store.putWord(WordEntry("test", frequency = 500L))
+        store.putWord(WordEntry("wort", frequency = 4_084L))
+        
+        assertNull(repair.splitAtUnresolvedConnector("testwort"))
+        assertEquals(SplitResult("test", "wort"), repair.trySplit("testwort", emptySet()))
     }
     
     @Test
@@ -173,8 +243,8 @@ class TokenRepairTest {
     fun `D-122 only the connector position that yields two known words on both sides is picked`() {
         // "undcdasnist": dropping the 'c' (index 3) would leave "und" + "dasnist" - "dasnist" is not a
         // known word, so that position is rejected; only dropping the 'n' (index 7) yields two genuinely
-        // known words on both sides.
-        store.putWord(WordEntry("undcdas", frequency = 1L)) // an unlikely but present "word" for this test
+        // known words on both sides, both above the frequency floor.
+        store.putWord(WordEntry("undcdas", frequency = 15L)) // an unlikely but present "word" for this test
         store.putWord(WordEntry("ist", frequency = 500L))
         
         assertEquals(SplitResult("undcdas", "ist"), repair.splitAtUnresolvedConnector("undcdasnist"))
@@ -196,5 +266,13 @@ class TokenRepairTest {
         store.putWord(WordEntry("wort", frequency = 4_084L))
         store.blacklist("wort", BlacklistCategory.USER)
         assertNull(repair.splitAtUnresolvedConnector("testvwort"))
+    }
+    
+    @Test
+    fun `D-122 both-nouns pairing is rejected here too, mirroring trySplit`() {
+        store.putWord(WordEntry("mei", frequency = 16L, partsOfSpeech = setOf(PartOfSpeech.NOUN, PartOfSpeech.OTHER)))
+        store.putWord(WordEntry("st", frequency = 5_939L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertNull(repair.splitAtUnresolvedConnector("meinst"))
     }
 }

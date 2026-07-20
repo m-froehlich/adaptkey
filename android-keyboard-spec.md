@@ -6903,3 +6903,72 @@ compound, false when no reconstruction exists, false for an already-known word).
 private members of an otherwise-untested class). 750 unit tests total (747 + 3). `:app:assembleDebug`/
 `:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real repeated-mistyped-compound session to
 see the higher threshold actually delay promotion as intended.
+
+## §129 - D-203: The MIN_SPLIT_BIGRAM Gate Replaced After a Live Design Discussion (v0.8.93)
+
+Grew out of D-167 (§126/§127/§128's own captured discussion, "diecVorschläge"/"dervKinderarzt" not
+auto-splitting): asked directly why a deliberate mid-word re-edit ([TokenRepair.splitAtUnresolvedConnector],
+D-122) finds "der" + "Kinderarzt" but ordinary commit-time typing ([TokenRepair.trySplit]) does not, on the
+user's own suspicion that the reason "might not be what I assumed" - **confirmed against the bundled corpus,
+not guessed**: `bigram_de.tsv` has zero recorded co-occurrences for `"der"`+`"kinderarzt"`, even though
+`"Kinderarzt"` is a perfectly good known noun (frequency 14). `trySplit()`'s `MIN_SPLIT_BIGRAM` gate required
+exactly this prior co-occurrence; `splitAtUnresolvedConnector()` never did. This reframed the whole
+discussion: the real bottleneck was never about split *confidence* or an embedded-capital signal at all - a
+first-time-typed compound typo has, by definition, never been recorded as two separately co-occurring words,
+so `MIN_SPLIT_BIGRAM` rejected exactly the class of case this mechanism exists to catch. D-167's own
+embedded-capital idea is explicitly kept in reserve for later, not abandoned.
+
+**Redesigned from a live brainstorm, evaluated against real data before implementing** (§45's own motivating
+case, `"meinst"` -> `"mei"` + `"st"`, used throughout as the regression test): four candidate replacement
+mechanisms were discussed (frequency floor per half; a stricter minimum length - rejected outright, user's
+own words: "wirklich schädlich"; grammatical pair-plausibility; demoting bigram from a gate to a scoring
+signal only). Two calibration findings surfaced *during* implementation, checked against the bundled
+`dict_de.tsv` rather than assumed correct on first principles:
+
+- **Frequency floor alone cannot separate the motivating example**: "Mei" (16) and "St" (5939) are not
+  meaningfully rarer than "Kinderarzt" (14) - the bundled dictionary is already pre-filtered at its own
+  frequency floor of 8, so there is no genuinely "obscure" tier left within it to filter by frequency alone.
+  Implemented anyway as a light, narrow trim of the bottom tier ([MIN_SPLIT_HALF_FREQUENCY] = 10) - real
+  value, just a smaller one than initially hoped, with the pair-plausibility rule below doing the actual work
+  for this case.
+- **A naive "one half must be a noun" rule would have broken already-correct behaviour**: this project's own
+  existing test suite documents `"und"` + `"das"`, `"aber"` + `"das"` (conjunction/pronoun pairs, tagged
+  `OTHER`, no noun on either side) as valid, already-verified splits - a "must contain a noun" gate would have
+  wrongly rejected them. Refined instead to reject only when **both** halves independently resolve to a noun
+  (`isNoun` in the new code) - "Mei" (tagged `NOUN`+`OTHER`) and "St" (tagged `NOUN`) are both nouns and get
+  rejected, while an article/pronoun/conjunction (`OTHER`) followed by a noun - an entirely ordinary German
+  phrase shape - passes untouched. Grounded in the dictionary's real (coarse, 6-tag) `PartOfSpeech` set, not
+  an invented finer-grained scheme it does not actually have.
+
+**Implemented** (`TokenRepair.kt`, shared by both `trySplit()` and `splitAtUnresolvedConnector()` via the
+common `candidateAt()`/`isAlreadyRecognised()` gates - so both benefit from every change, not just the
+commit-time path):
+
+1. A token that is a known word **or a plausible regular-verb inflection of one**
+   (`RegularVerbInflection.isPlausibleInflection`, already trusted elsewhere for exactly this - D-115/D-125)
+   is never split at all. Closes the historical "meinst" bug at its actual source, the same way A-01 already
+   protects a literal dictionary word - `RegularVerbInflection` was never previously consulted by `TokenRepair`
+   at all.
+2. Each half must individually clear `MIN_SPLIT_HALF_FREQUENCY` (10), not merely exist.
+3. A pair where both halves resolve to a noun (`PartOfSpeech.NOUN`/`PROPER_NOUN`) is rejected.
+4. `MIN_SPLIT_BIGRAM` co-occurrence is **no longer a gate** - removed entirely; bigram frequency still feeds
+   `score()`'s existing ranking exactly as before, so a candidate *with* co-occurrence evidence still wins
+   over one without, but a plausible novel pairing is no longer rejected outright for lacking prior evidence.
+
+Additionally, connected to the umlaut/ß-fold strategy per direct instruction: candidate half resolution
+(`resolveWord()`) now tries `Umlaut.unfoldCandidates()` before giving up, so a half typed without its
+diacritic (e.g. "uber") still resolves via its real spelling ("über") for eligibility/frequency/noun-pair
+purposes - matching this project's founding "umlauts are ordinary characters" principle, previously never
+applied inside `TokenRepair` at all. Scoped deliberately narrow: `SplitResult` still carries the literal
+*typed* substrings, not the diacritic-restored form, so §47's span-colouring (which maps directly onto the
+still-displayed composing text's exact characters) stays correct; restoring the diacritic in the actually
+*committed* text as well would be a separate, further feature, not implemented this round.
+
+6 new tests (`TokenRepairTest`, 23 -> 29: the inflection guard, the both-nouns rejection isolated from a
+function-word-plus-noun pass, the frequency floor, umlaut-fold resolution, and two D-122 tests distinguishing
+its now-narrower-but-still-real difference from `trySplit` - strategy scope, not evidence requirements, since
+neither needs bigram co-occurrence any more). Every pre-existing test that depended on the old bigram gate was
+rewritten to reflect the new behaviour, not merely patched to keep passing. 756 unit tests total (750 + 6).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real
+"dervKinderarzt"-shaped repro to confirm the auto-split now actually fires at commit time. D-167's own
+embedded-capital confidence idea remains captured, unimplemented, for a possible future round.
