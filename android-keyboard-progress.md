@@ -35,6 +35,36 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§126 (v0.8.90): D-196/D-197/D-198 fixed; D-167/D-199/B-03(D-200) captured as design discussions.**
+  Batch of seven items from one feedback round. **Fixed**: D-196 - suggestion-bar chips showed the raw
+  dictionary-stored case while the commit path (`onSuggestionClicked`) already recomputed the full §6
+  hierarchy - `AdaptKeyService.showSuggestions()` now capitalises every `Kind.NORMAL` item's *display* text
+  with the exact same `capitalisation.capitalise(item.word, contextFor(...))` call the commit path uses, so
+  the two can no longer diverge (`SuggestionController` itself untouched, stays Android/capitalisation-free).
+  D-197 - "Gruße" wasn't restored to "Grüße" (suggested "Große" instead): fold/cost math was already correct
+  (both fold to "grusse", cost 0) - the real bug was `correctionCandidates()`'s frequency-truncated SQL LIMIT
+  (§125's own bounding, meant for the *edit-distance* search) silently starving a rare-but-correct diacritic
+  candidate before `diacriticRestoration()`'s cheap exact-match check ever saw it. New
+  `DictionaryStore.diacriticCandidates()` (SQLite override: same bucket query, no per-bucket cap - safe since
+  the per-candidate check here is O(1), not a DP) fixes it. D-198 - email keyboard's period-key popup
+  pre-selected `.net` instead of the locale's `.de`: traced to the popup row's own edge-clamping (email's
+  4-entry TLD list is wider than URL mode's 3-entry one, same key position near the right edge) combined with
+  `ACTION_MOVE` re-deriving the popup selection from raw pointer x on every move with no threshold - fixed
+  generally (not patched to this one popup) by only updating selection past the system touch slop from the
+  original touch-down, mirroring the existing D-108 long-press-smear pattern. 1 new test
+  (`SqliteDictionaryStoreRoboTest`, D-197's regression). 747 unit tests total (746 + 1). `:app:assembleDebug`/
+  `:app:testDebugUnitTest` green. None of the three device-confirmed yet. **Captured, not implemented**: D-167
+  (embedded-capital split-confidence boost - two directions discussed, score-bonus-only vs. relaxing the §45
+  bigram gate for a noun-shaped right half, awaiting the user's choice); D-199 (autocorrect-reapply-after-reject
+  strategy, explicitly requested as a proposal only - extend the existing single-slot A-07 undo state into a
+  one-shot "just rejected, commit verbatim once" suppression instead of clearing it immediately, scoped to
+  expire on the next *different* word committed rather than a time constant); B-03/D-200 (hyphenated-compound
+  learning, e.g. "E-Mail-Adresse" - researched first: hyphen bigram/next-word data is already collected
+  identically to space-delimited words, so both of the user's proposed strategies are about the *suggestion*
+  side, not new recording; strategy 1 chains next-word predictions across hyphens into one multi-part chip,
+  strategy 2 (the original spec's B-03) promotes a repeatedly-confirmed chain into a learned whole-phrase unit,
+  generalising D-37/D-110's existing single-word precedents - neither implemented, open questions on hop
+  depth/promotion threshold/commit mechanics await the user's direction). See spec §126.
 - **§125 (v0.8.89): D-194 - typing/backspace-hold sluggishness traced to three unthrottled
   per-keystroke lookups, root-caused and fixed after a design discussion.** Reported: typing and
   held-Backspace both feel sluggish, worsening with the composing token's length, worst for a long token

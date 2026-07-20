@@ -387,6 +387,25 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     override fun correctionCandidates(token: String, firstChars: Set<Char>): List<String> {
+        // D-65 / D-63: order each bucket by descending frequency before the LIMIT cut. Without it the rows
+        // come back in wkey order, and German umlaut letters (ö = U+00F6 etc.) sort after all of a-z, so a
+        // common umlaut word like "können" fell past the LIMIT while a rare same-shape word ("kannen") stayed
+        // - and "konnen" mis-corrected to "kannen". Frequency order keeps the umlaut words reachable.
+        val perBucketLimit = maxOf(1, CANDIDATE_LIMIT / firstChars.size)
+        return correctionCandidatesInternal(token, firstChars, perBucketLimit)
+    }
+    
+    /**
+     * D-197: [correctionCandidates]' identical bucket search but with no per-bucket cap at all - see
+     * [DictionaryStore.diacriticCandidates]'s own KDoc for why a frequency-truncated search silently starved
+     * out a rare but correctly-spelled diacritic candidate (e.g. "Grüße", frequency 18, behind hundreds of
+     * more common same-bucket words) before diacritic restoration ever got to compare it against the token.
+     */
+    override fun diacriticCandidates(token: String, firstChars: Set<Char>): List<String> {
+        return correctionCandidatesInternal(token, firstChars, Int.MAX_VALUE)
+    }
+    
+    private fun correctionCandidatesInternal(token: String, firstChars: Set<Char>, perBucketLimit: Int): List<String> {
         val key = token.lowercase()
         if (key.isEmpty() || firstChars.isEmpty()) {
             return emptyList()
@@ -398,11 +417,6 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // D-38: search each candidate first-character bucket (the token's own char plus its keyboard
         // neighbours / umlaut variant), so a first-key typo or a missing initial umlaut can still be found.
         // Each bucket is an indexed first-char range scan, so the total stays bounded and cheap.
-        // D-65 / D-63: order each bucket by descending frequency before the LIMIT cut. Without it the rows
-        // come back in wkey order, and German umlaut letters (ö = U+00F6 etc.) sort after all of a-z, so a
-        // common umlaut word like "können" fell past the LIMIT while a rare same-shape word ("kannen") stayed
-        // - and "konnen" mis-corrected to "kannen". Frequency order keeps the umlaut words reachable.
-        val perBucketLimit = maxOf(1, CANDIDATE_LIMIT / firstChars.size)
         // D-177: also searched against the (small) learned table, deduplicated by exact canonical form - a
         // word reinforced in both tables shares the same canonical case (learn() resolves it from whichever
         // already exists), so a plain set is enough; frequencyOf() further downstream already merges both

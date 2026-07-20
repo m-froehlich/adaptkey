@@ -956,8 +956,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
             
             MotionEvent.ACTION_MOVE -> {
                 // D-44: while the alternatives popup is open the finger slides left/right to pick a cell.
+                // D-198: only once the finger has actually moved beyond the system touch slop since the
+                // original ACTION_DOWN - previously every ACTION_MOVE re-derived the selection from the raw
+                // pointer x regardless of magnitude, so an essentially stationary hold (real touch input
+                // still delivers incidental sub-slop jitter) could silently drift the selection away from
+                // preSelectedIndexFor's own promise ("a straight release types the key's own value"),
+                // especially for a popup row wide enough to have been clamped off-centre from the pressed
+                // key (e.g. the email period key's 4-entry TLD list sitting near the keyboard's right edge -
+                // reported as ".net" ending up selected over the intended ".de"). Mirrors movedBeyondSlop's
+                // own downX/downY-relative threshold, already established for the identical D-108 long-press
+                // smear tolerance just below.
                 if (popupKey != null) {
-                    updatePopupSelection(event.x)
+                    if (movedBeyondSlop(event.x, event.y)) {
+                        updatePopupSelection(event.x)
+                    }
                     return true
                 }
                 // Movement does not change the resolved key (T-01). D-108: a small smear that has not

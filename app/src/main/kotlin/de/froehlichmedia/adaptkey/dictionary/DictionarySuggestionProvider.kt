@@ -235,6 +235,13 @@ class DictionarySuggestionProvider(
      * Such a restoration must take precedence over an A-05 split, so a real umlaut word (`konnen`) is
      * corrected to `können`, never cut into fragments (`ko nen`).
      *
+     * D-197: draws candidates from [DictionaryStore.diacriticCandidates], not [DictionaryStore.correctionCandidates]
+     * - this is an exact fold-equality test, not a weighted edit-distance search, so it needs the *complete*
+     * length/first-character window, not [correctionCandidates]' frequency-truncated one. A rare but
+     * correctly-spelled diacritic word was previously crowded out of the bounded candidate set by hundreds of
+     * more common same-bucket words before ever reaching the comparison below, e.g. "Gruße" failing to
+     * restore to "Grüße" (frequency 18) while falling back to an unrelated fuzzy match instead.
+     *
      * @param input the composing token (any case)
      * @param previousWord the preceding word, for bigram tie-breaking among matches; may be null
      * @return the diacritic-restored known word in canonical case, or null
@@ -245,7 +252,7 @@ class DictionarySuggestionProvider(
             return null
         }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token, candidateFirstChars(token))
+        return store.diacriticCandidates(token, candidateFirstChars(token))
             .asSequence()
             .filter { candidate ->
                 val lower = candidate.lowercase()

@@ -6712,3 +6712,119 @@ garbled non-word token (the reported worst case) and a genuine long compound (to
 colouring still eventually appears, just debounced). D-184 (§115/§116) stays open pending the same session -
 if the flash issue was actually a symptom of this main-thread saturation rather than the animation constant,
 it should improve alongside typing responsiveness rather than needing its own further change.
+
+## §126 - D-196/D-197/D-198: Three More Root-Caused Fixes; D-167/D-199/B-03 Captured as Design Discussions (v0.8.90)
+
+A batch of seven items from one device-feedback round. Three were traced to real, code-confirmed root causes
+and fixed; three are new-mechanism/weighting decisions with genuine trade-offs, presented as design
+discussions per this project's own convention rather than implemented speculatively.
+
+### Fixed
+
+**D-196 - suggestion-chip case mismatch** (reported before, never actually tracked/fixed - "ist wohl
+runtergefallen"). Root cause traced (not guessed): `SuggestionController.displayed()`'s ordinary
+(`Kind.NORMAL`) entries show the dictionary's raw stored canonical case, never run through
+`CapitalisationEngine` - while `onSuggestionClicked()` (the commit path) already recomputes the full §6
+hierarchy via `capitalisation.capitalise(item.word, contextFor(...))` before actually inserting it. The
+S-06 pending-autocorrect chip (D-111/D-112) already got this treatment; the ordinary candidates list never
+did - a sibling case patched, this one silently wasn't. Concretely reproducible from code alone: typing
+`Bahn-h` and tapping the bar's `Haus` (dictionary-stored capitalised, a pure noun) commits `haus`
+(B-02: lowercase after a hyphen unless a proper noun) - chip and document disagree. Fixed by capitalising
+every `Kind.NORMAL` item's *display text* (never its `.word`, which the controller's own S-02/S-03
+identity/dedup logic still needs raw and untouched) in `AdaptKeyService.showSuggestions()`, using the exact
+same `capitalisation.capitalise(item.word, contextFor(composing.toString()))` call the commit path already
+uses - so display and commit can no longer diverge, by construction, not by re-deriving the rule twice.
+`SuggestionController` itself stays untouched (still free of any Android/capitalisation dependency, still
+independently JVM-tested). Re-running the already-capitalised S-06 replacement through the same call is a
+safe no-op (`capitalise()` is a pure function of word + context).
+
+**D-197 - "Gruße" never restored to "Grüße"; wrong suggestion "Große" instead.** Root cause traced by hand
+from the actual fold rules, cost constants, and bundled dictionary data (not guessed): `Umlaut.fold("Gruße")`
+and `Umlaut.fold("Grüße")` both produce `"grusse"` - an exact match, cost 0 - so the fold/cost math itself
+already favours "Grüße" correctly. The real bug: `DictionaryStore.correctionCandidates()`'s per-bucket SQL
+query is frequency-truncated (`CANDIDATE_LIMIT`/bucket-count, D-38/D-65) to keep the *weighted edit-distance*
+search affordable on the per-keystroke hot path (§125) - but `diacriticRestoration()` reuses that same
+truncated query for an entirely different kind of check (an exact fold-equality comparison, not a DP), so a
+rare-but-correctly-spelled word ("Grüße", frequency 18) gets silently crowded out of the candidate set by
+hundreds of more common same-bucket words before the comparison ever runs, while "Große" (frequency 11204)
+survives the cut and wins by elimination, not by genuinely lower edit cost. Fixed with a new
+`DictionaryStore.diacriticCandidates()` (default delegates to `correctionCandidates`, harmless for the
+already-unbounded in-memory store; the SQLite store overrides it with the identical indexed bucket query but
+no per-bucket cap at all - safe because the per-candidate check afterward is a cheap string comparison, not
+an edit-distance DP, so completeness costs almost nothing here unlike the case §125 was about).
+`diacriticRestoration()` now calls it instead of `correctionCandidates()`. 1 new test
+(`SqliteDictionaryStoreRoboTest`: confirms `diacriticCandidates()` returns a candidate `correctionCandidates()`
+truncates away under an artificially narrowed per-bucket limit).
+
+**D-198 - email keyboard's period-key popup pre-selects `.net` instead of the locale's own `.de`.**
+Root cause: plausible and well-evidenced from code, not pixel-confirmed on a real device. The period key sits
+in the same position (second-from-last, right before Enter) in both URL mode (3-entry `.com`/ccTLD/`.org`
+popup) and email mode (4-entry `.com`/ccTLD/`.net`/`.org`, D-158) - email's extra `.net` entry makes its popup
+row measurably wider, and `HorizontalLongPressPopup.rowLeft()` clamps the row to stay on-screen when centring
+it over a key that close to the right edge would run past the edge, which shifts the *whole* row - including
+which cell actually sits above the key - away from `preSelectedIndexFor()`'s own logical pre-selection. Since
+`ACTION_MOVE` was previously re-deriving the popup selection from the raw pointer x on *every* move event with
+no threshold at all, even the incidental sub-pixel jitter real touch input delivers during an ostensibly
+stationary hold could flip the selection to whatever cell the clamped layout put under the finger instead -
+matching the report exactly ("`.net` ist hier etwas mehr über der Basis-Taste"). Fixed generally rather than
+patched to this one popup: `ACTION_MOVE` now only calls `updatePopupSelection()` once the finger has moved
+beyond the system touch slop from the original `ACTION_DOWN` (mirrors `movedBeyondSlop()`, already established
+for the identical D-108 long-press-smear tolerance a few lines below) - so a genuinely stationary hold now
+reliably keeps whichever cell was logically pre-selected, regardless of whether the row was clamped, for every
+long-press popup in the app, not only this one. No new tests (Android touch-event glue, established gap).
+
+3 new tests total across the three fixes. 747 unit tests total (746 + 1, the diacritic-candidates regression
+- the other two fixes touch only untested Android glue). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+None of the three yet device-confirmed.
+
+### Captured as design discussions (not implemented)
+
+**D-167** (open since §102/§105, spec-captured design question, now revisited): an embedded mid-word capital
+(`"diecVorschläge"`) should raise the A-05 split confidence enough to apply far more often already while
+typing/right after the delimiter, not needing a later manual drag-to-split. `TokenRepair.trySplit()` currently
+requires both halves to be known, non-blacklisted words **and** a real bigram co-occurrence
+(`MIN_SPLIT_BIGRAM`, §45's guard against "any two known fragments get cut apart" false positives). Two
+directions discussed, not decided: (A) keep the bigram gate exactly as-is, but give a split whose right half
+starts with an embedded capital a large score bonus so it wins ranking against competing candidates - safe,
+conservative, but still blocked whenever the bigram itself is rare/unseen; (B) relax or bypass
+`MIN_SPLIT_BIGRAM` specifically for this case, mirroring D-122's own precedent (a narrow, strongly-signalled
+exception is safe where a blanket relaxation reopens §45's original problem) - likely narrowed further to
+"right half is a plausible noun" (reusing D-116's `isKnownNoun` concept) rather than merely capitalised, since
+an embedded capital alone can also just be a Shift mis-hit with no real word boundary intended. Awaiting the
+user's choice between (A)/(B)/a combination before implementing.
+
+**D-199** (strategy proposal, explicitly requested, not implemented): autocorrect silently reapplying a
+correction the user just explicitly rejected via A-07 undo, e.g. `"Autp."` -> `"Auto."`, Backspace (A-07
+reverts to `"Autp."`), Backspace again (deletes the period), Space (`"Autp"` -> `"Auto"` again, unchanged).
+Traced end to end: `performAutocorrectUndo()` fully restores the raw typed text and delimiter, reverses the
+dictionary/bigram learning and any raw-coordinate touch training, and calls `clearUndo()` immediately - by the
+time the user retypes the delimiter, `finalizeAndCommit()` runs the ordinary pipeline completely fresh, with
+zero memory that this exact `(typed, corrected)` pair was just rejected. No existing suppression/cooldown
+mechanism was found anywhere in the codebase (checked: A-04/D-177's word-level blacklist-on-recurrence is a
+different, opposite-direction mechanism - promoting a *repeated* word to blacklisted, not suppressing a
+*just-rejected* correction once). Proposed strategy: extend the existing single-slot A-07 undo state (already
+"armed for one keystroke" by construction, matching this class's established pattern) instead of clearing it
+immediately on undo - keep `(undoTyped, undoCommitted)` around as a one-shot suppression that
+`finalizeAndCommit()`'s autocorrect-selection step checks first; a matching `(typed, corrected)` pair commits
+verbatim once instead of re-applying, then the slot clears for real. Scoped to expire the moment *any other*
+word gets committed (not a time constant), so a later, unrelated encounter with the same typo on some other
+day still autocorrects normally - a narrow, session-scoped exception, not a systemic weakening of autocorrect
+confidence. Awaiting go before implementing (touches the same commit hot path §99-§101's guardrail covers).
+
+**B-03 / D-200** (spec-documented design intent since the original spec, never implemented; revisited with
+two concrete strategies from the user, e.g. `"E-Mail-Adresse"`). Researched first (not guessed): a hyphen is
+already an ordinary delimiter (B-01) - bigram learning and D-43 next-word predictions already fire identically
+after a hyphen-committed fragment as after a space, no code treats them differently. So neither strategy needs
+new *recording* infrastructure; both are about what the *suggestion* side does with data already being
+collected. **Strategy 1** (chain next-word predictions across hyphen boundaries into one multi-part suggestion,
+"auch drei- oder vierteilig"): open questions - how many bigram hops to chase and what confidence/count
+threshold stops the chain at each hop; how a multi-part chip ranks against an ordinary single-word completion
+in the same bar slot; UI/commit mechanics for a chip that types several hyphen-joined parts at once. **Strategy
+2** (learn a whole hyphenated combination as one dictionary unit after repeated confirmation - this is exactly
+B-03) - the user's own point: it needs strategy 1's per-hop tracking as its trigger signal ("muss es aber wie
+in Vorschlag 1 zunächst als Verbindung gezählt werden"), i.e. it generalises D-37's "repeated typing promotes
+a candidate to known" and D-110's "learned words live in their own store, separate from the bundled
+dictionary" precedents from single words to hyphen-chains, rather than being an independent mechanism. Neither
+implemented; recommended starting point (not yet agreed) is Strategy 1 first, since it needs no new storage,
+with Strategy 2 as a natural follow-up once the chain-confidence signal it depends on is proven reliable.
+Awaiting the user's direction on hop depth / promotion threshold / UI mechanics before implementing either.

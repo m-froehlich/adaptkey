@@ -190,6 +190,24 @@ interface DictionaryStore {
     fun correctionCandidates(token: String, firstChars: Set<Char>): List<String> = correctionCandidates(token)
     
     /**
+     * D-197: every word matching [token]'s length/first-character window - unlike [correctionCandidates],
+     * never frequency-truncated. [de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider.diacriticRestoration]
+     * needs this because its own per-candidate test (an umlaut/ß-fold equality check) is a cheap exact-match
+     * string comparison, not the weighted edit-distance search [correctionCandidates]' frequency budget exists
+     * to keep affordable on the per-keystroke hot path - so completeness matters far more here than staying
+     * small, and a rare but correctly-spelled word (e.g. a low-frequency umlaut word crowded out by hundreds
+     * of more common same-bucket entries) must not be silently excluded before diacritic restoration ever gets
+     * to compare it. The default implementation is identical to [correctionCandidates] (fine for the small
+     * in-memory store, which is never frequency-truncated to begin with); the SQLite store overrides it with
+     * an unbounded version of the same indexed bucket query.
+     *
+     * @param token the (case-insensitive) typed token being corrected
+     * @param firstChars the initial letters to search (should include the token's own first character)
+     * @return every candidate in the length/first-character window, in canonical case
+     */
+    fun diacriticCandidates(token: String, firstChars: Set<Char>): List<String> = correctionCandidates(token, firstChars)
+    
+    /**
      * Adds [word] to the blacklist under [category] (A-04).
      *
      * @param word the word to exclude

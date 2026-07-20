@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+﻿// SPDX-License-Identifier: GPL-3.0-or-later
 // Copyright (C) 2026 Froehlich Media
 
 package de.froehlichmedia.adaptkey.dictionary
@@ -61,6 +61,29 @@ class SqliteDictionaryStoreRoboTest {
         assertFalse(candidates.contains("maus")) // different first char
         assertFalse(candidates.contains("hausboot")) // length differs by more than one
         assertFalse(candidates.contains("h")) // length differs by more than one
+        store.close()
+    }
+    
+    @Test
+    fun diacriticCandidatesAreNotBoundedByFrequencyUnlikeCorrectionCandidates() {
+        val store = store("diacritic-cand.db")
+        // Six same-bucket ("h", length 4-6) words at descending frequency; "hobel" (the lowest) plays the
+        // role of a rare-but-correctly-spelled diacritic candidate (D-197 / spec §126) that
+        // correctionCandidates' frequency-truncated LIMIT would starve out before diacriticRestoration ever
+        // gets a chance to compare it against the token.
+        listOf("haupt" to 500L, "hafen" to 400L, "hallo" to 300L, "hemde" to 200L, "hitze" to 100L, "hobel" to 1L)
+            .forEach { (word, freq) -> store.putWord(WordEntry(word, freq, emptySet())) }
+        // A large synthetic firstChars set (only 'h' actually matches any seeded word; the other 399 are
+        // disjoint Unicode code points no real word ever starts with) forces perBucketLimit down to
+        // CANDIDATE_LIMIT(2000)/400 = 5 - fewer than the six seeded words - without needing to seed
+        // thousands of real words to reach the real per-bucket cap in a fast unit test.
+        val firstChars = (setOf('h') + (1..399).map { offset -> Char(8000 + offset) }).toSet()
+        
+        val bounded = store.correctionCandidates("hobel", firstChars)
+        val unbounded = store.diacriticCandidates("hobel", firstChars)
+        
+        assertFalse(bounded.contains("hobel"))
+        assertTrue(unbounded.containsAll(listOf("haupt", "hafen", "hallo", "hemde", "hitze", "hobel")))
         store.close()
     }
     

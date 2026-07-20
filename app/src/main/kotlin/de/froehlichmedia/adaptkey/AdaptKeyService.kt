@@ -3256,7 +3256,23 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun showSuggestions() {
-        val items = controller.displayed()
+        // D-196: SuggestionController itself stays free of any capitalisation/Android dependency (its own
+        // S-02/S-03 identity and dedup logic already relies on comparing raw canonical dictionary words, not
+        // display text - capitalising earlier would break that), so every Kind.NORMAL entry's *display* text
+        // is derived here, right before rendering, via the exact same capitalisation.capitalise(word,
+        // contextFor(...)) call onSuggestionClicked() already uses to decide what actually gets committed on
+        // a tap - the same formula, the same live `composing` state, so what is shown and what would commit
+        // can no longer diverge. The already-capitalised S-06 pending-replacement item (also Kind.NORMAL,
+        // D-111/D-112) is safely re-capitalised too: capitalise() is a pure function of (word, context), so
+        // reapplying it to its own prior output yields the identical string back.
+        val context = contextFor(composing.toString())
+        val items = controller.displayed().map { item ->
+            if (item.kind == SuggestionController.Kind.NORMAL) {
+                item.copy(text = capitalisation.capitalise(item.word, context))
+            } else {
+                item
+            }
+        }
         suggestionBar?.setItems(items)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.
