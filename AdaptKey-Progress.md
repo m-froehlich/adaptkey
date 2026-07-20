@@ -1,9 +1,11 @@
 # AdaptKey — Implementation Progress
 
 Living status of the AdaptKey IME implementation, kept next to
-[`android-keyboard-spec.md`](android-keyboard-spec.md). Requirement IDs
-(`L-`/`T-`/`G-`/`S-`/`A-`/`B-`/`C-`/`K-`) refer to that spec. Update this file
-whenever a component lands so it does not have to be restated in every prompt.
+[`AdaptKey-Spec.md`](AdaptKey-Spec.md) (the current, crystallised feature set) and
+[`AdaptKey-History.md`](AdaptKey-History.md) (the append-only device-feedback/design-decision journal).
+Requirement IDs (`L-`/`T-`/`G-`/`S-`/`A-`/`B-`/`C-`/`K-`, plus the newer `E-`/`U-`/`P-`/`W-`/`R-`/`V-`/`N-`/`X-`
+domains) refer to the spec. Update this file whenever a component lands so it does not have to be restated
+in every prompt.
 
 ## Project / Stack
 
