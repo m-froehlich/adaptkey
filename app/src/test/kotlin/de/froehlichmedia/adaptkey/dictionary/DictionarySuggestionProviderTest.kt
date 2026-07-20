@@ -567,4 +567,32 @@ class DictionarySuggestionProviderTest {
         assertTrue(words.contains("mut"))
         assertTrue(words.contains("mit"))
     }
+    
+    @Test
+    fun `D-211 the fuzzy scan stops early once isCancelled returns true`() {
+        // Three fuzzy matches for "bein" (v/n/f all keyboard-neighbour "b" substitutions) - a real scan
+        // would find all three; cancelling on the very first poll must stop it after at most one.
+        store.putWord(WordEntry("vein", 100L))
+        store.putWord(WordEntry("nein", 90L))
+        store.putWord(WordEntry("fein", 80L))
+        
+        var calls = 0
+        val words = provider.suggestionsFor("bein", null, includeExpensiveFallbacks = true) {
+            calls++
+            calls > 1
+        }.map { it.word }
+        
+        assertTrue(words.size <= 1)
+    }
+    
+    @Test
+    fun `D-211 isCancelled that never returns true has no effect on the result`() {
+        store.putWord(WordEntry("vein", 100L))
+        store.putWord(WordEntry("nein", 90L))
+        store.putWord(WordEntry("fein", 80L))
+        
+        val words = provider.suggestionsFor("bein", null, includeExpensiveFallbacks = true) { false }.map { it.word }
+        
+        assertEquals(setOf("vein", "nein", "fein"), words.toSet())
+    }
 }

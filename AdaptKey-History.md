@@ -6962,3 +6962,60 @@ A-05 split fired and produced a nonsensical result instead of a straightforward 
 "übrigens". Not traced further this round - no root-cause hypothesis recorded yet, deliberately, since the
 user asked to look at this "unbedingt" and separately. Needs its own device-log-driven investigation before
 any fix is attempted, per this project's established convention for this class of bug.
+
+## §135 - D-211: The Expensive Suggestion Search Moves Off the Main Thread Entirely (v0.8.98)
+
+Follow-up to §134's own D-207/D-208/D-209 round, raised by the user directly: rather than debouncing the
+expensive fallback search on the main thread (D-160's original design, still relied on by D-208), why not
+run it on a background thread and simply discard the result if a newer keystroke has arrived by the time it
+finishes? The user pre-empted the two real objections themselves: a forced thread kill is unsafe (correctly
+recalling `Thread.stop()`'s Java 1.2 deprecation and doubting it is even reliably available on current
+JDKs) and getting this right needs the in-flight search - and any late callback that "verspätet reinfunkt" -
+to recognise itself as stale rather than overwrite newer state, proposing cooperative abort checks as the
+safe replacement.
+
+**Confirmed as the right direction, and better than §134's own D-208 fix, not just an addition to it**:
+`handler` (`Handler(Looper.getMainLooper())`) - D-160's debounce only ever delayed *when* the expensive
+search ran, never moved it off the main thread; once the delay elapsed it still blocked the UI thread (and
+the key-press flash render) for however long the search took. A working precedent for exactly the proposed
+shape already existed in this codebase: `tier3Executor` (`Executors.newSingleThreadExecutor()`) already
+runs the mini-LLM prediction off-thread, checking a sequence number (`tier3RequestSeq`) once before starting
+and once more before posting the result back via `handler.post` - the same "cooperative staleness check,
+not a hard kill" shape the user arrived at independently. The one gap: tier3 only checks staleness *around*
+its single expensive call, never *during* it - fine for one bounded inference call, insufficient for a
+candidate-bucket scan that can now run to hundreds of rows (D-209 uncapped the primary bucket) with a
+per-candidate edit-distance computation in between.
+
+**Implemented**: `AdaptKeyService.expensiveSuggestionToken`/`expensiveSuggestionRunnable` (D-160's
+`Handler.postDelayed` debounce) replaced entirely by `expensiveSuggestionExecutor`
+(`Executors.newSingleThreadExecutor()`, mirroring `tier3Executor`) and an `AtomicInteger
+expensiveSuggestionSeq` (proper cross-thread visibility, unlike a plain `var`). `refreshSuggestions()` bumps
+the sequence on every fresh (non-deferred) call; the deferred dispatch now submits directly to the executor
+(no artificial delay at all - a fast, continuous typing burst simply produces a string of near-instant
+bail-outs instead of queued waiting, and a genuine pause gets its result the moment the search actually
+finishes, not `EXPENSIVE_SUGGESTION_DELAY_MS` later on top of that). The background block checks staleness
+once before calling `provider.suggestionsFor()` at all (a call already stale before it starts never touches
+the database), and the result is checked a second time on the main thread, inside `handler.post`, against
+both the sequence *and* `composing.toString() == input`, before ever being applied - mirroring tier3's own
+double-check exactly.
+
+**The mid-search gap tier3 doesn't have, closed via cooperative cancellation**: `SuggestionProvider.
+suggestionsFor()` gained a new `isCancelled: () -> Boolean = { false }` parameter (default no-op, so every
+existing caller/test is unaffected); `DictionarySuggestionProvider.fuzzyNeighbours()`/`wideFuzzyNeighbours()`
+- the two candidate-bucket loops D-208/D-209 already identified as the actual expensive part - rewritten
+from a lazy `mapNotNull` chain to an explicit loop that polls `isCancelled()` once per candidate and
+`break`s early, returning whatever was already gathered (harmless either way, since the caller re-checks
+staleness before ever applying it). `compoundCandidate()`'s own, much smaller, token-length-bounded search
+was deliberately left unchanged - not worth the same treatment, since its own iteration count was never the
+measured driver of the slowdown. Avoiding a request backlog under fast typing was also considered
+explicitly: `Executors.newSingleThreadExecutor()` queues excess submissions rather than dropping them, but
+each queued-then-dequeued stale task now bails via the cheap start-of-call sequence check before ever
+reaching the database, so a queue of superseded requests costs only a handful of atomic reads, not repeated
+full searches.
+
+2 new tests (`DictionarySuggestionProviderTest`: the fuzzy scan stopping after the very first
+`isCancelled()` poll returns true, and a control case confirming a never-cancelling poll changes nothing).
+772 unit tests total (770 + 2). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed - this closes out the sluggishness investigation from §134/D-207/D-208/D-209 as one
+coherent piece of work, per the user's own explicit request to see it through properly rather than leave it
+half addressed. D-210 (the A-05 split regression) remains its own, separately deferred item.

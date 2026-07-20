@@ -37,6 +37,27 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§135 (v0.8.98): D-211 - the expensive suggestion search moves off the main thread entirely,
+  closing out the sluggishness investigation.** User's own follow-up idea after §134: instead of D-160's
+  main-thread debounce (still blocks the UI when it fires), run the search on a background thread and
+  discard the result if superseded - correctly anticipating both real pitfalls themselves (a forced thread
+  kill is unsafe/`Thread.stop()` is deprecated since Java 1.2; needs cooperative "recognise yourself as
+  stale" checks, including for a callback that lands late). Confirmed as the better fix, not just an
+  addition: `handler` is bound to the main `Looper`, so D-160/D-208's debounce only ever delayed *when* the
+  search ran on the main thread, never moved it off - a working precedent for the proposed shape already
+  existed in `tier3Executor` (background thread + sequence-number staleness check before/after), just
+  missing a mid-search check the fuzzy/compound/wide-fuzzy candidate-bucket scan actually needs (unlike
+  tier3's single bounded inference call). Implemented: `expensiveSuggestionToken`/`expensiveSuggestionRunnable`
+  (`Handler.postDelayed`) replaced by `expensiveSuggestionExecutor` (mirrors `tier3Executor`) + `AtomicInteger
+  expensiveSuggestionSeq`; no artificial delay at all now - a fast typing burst just produces near-instant
+  bail-outs, a genuine pause gets its result the moment the search finishes. New `SuggestionProvider.
+  suggestionsFor(isCancelled)` parameter (default no-op); `fuzzyNeighbours()`/`wideFuzzyNeighbours()` (the
+  actual expensive loops per D-208/D-209) now poll it once per candidate and break early - checked before
+  starting, during, and a third time on the main thread before ever applying the result, so a late callback
+  is recognised as stale and discarded rather than overwriting newer state. 2 new tests
+  (`DictionarySuggestionProviderTest`: early-stop-on-cancel, and a never-cancels control case). 772 unit
+  tests total (770 + 2). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+  See history §135.
 - **§134 (v0.8.97): D-207/D-208/D-209 - a real sluggishness investigation, traced to three distinct
   causes from real device logs, all fixed; D-210 captured (split-regression, separate round needed).**
   User supplied real `AdaptKeyJitter`/`AdaptKeyHaptics` logs from repeated typing sessions. **D-207**:

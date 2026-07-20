@@ -43,6 +43,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import java.util.Locale
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
@@ -371,17 +372,25 @@ class AdaptKeyService : InputMethodService() {
         showSuggestions()
     }
     
-    // D-160: the composing token a deferred expensive-fallback suggestion pass was scheduled for - the
-    // pass only runs if the token is still exactly this when the delay elapses; any state change both
-    // cancels the callback and clears this. See refreshSuggestions().
-    private var expensiveSuggestionToken: String? = null
-    private val expensiveSuggestionRunnable = Runnable {
-        val expected = expensiveSuggestionToken
-        expensiveSuggestionToken = null
-        if (expected != null && expected == composing.toString()) {
-            refreshSuggestions(includeExpensiveFallbacks = true)
-        }
-    }
+    // D-211: replaces D-160's own Handler.postDelayed debounce entirely - that only ever delayed *when*
+    // the expensive fallback search ran on the main thread, never moved it off the main thread, so it
+    // still blocked the UI (and the key-press flash render) for however long the search took once the
+    // delay elapsed. The search now runs on this dedicated background thread instead (mirroring the
+    // existing tier3Executor precedent below), so it never blocks the main thread at all.
+    //
+    // A genuinely forced thread kill was considered and rejected: Thread.stop() has been deprecated since
+    // Java 1.2 for good reason (it can tear a shared data structure - a SQLite cursor mid-iteration, a
+    // mutable map - apart at an arbitrary point) and is not reliably available on current JDKs at all.
+    // Cooperative cancellation is used instead: expensiveSuggestionSeq is bumped on every fresh (non-
+    // deferred) keystroke, and the background search polls it - once at the very start (a call that is
+    // already stale before it even begins never touches the database at all) and again once per candidate
+    // inside DictionarySuggestionProvider's own costlier searches (see their KDoc), so a call superseded
+    // partway through stops there rather than finishing pointless work. The result is checked for
+    // staleness a third time, on the main thread, right before it would ever be applied - so a callback
+    // that still manages to "funk rein" late (the background thread finished just as, or just after,
+    // another keystroke landed) is recognised as stale and discarded rather than overwriting a newer state.
+    private val expensiveSuggestionExecutor = Executors.newSingleThreadExecutor()
+    private val expensiveSuggestionSeq = AtomicInteger(0)
     
     /**
      * §125 / D-194: the cached result of the S-05/§47 split-preview/highlight colouring decision for
@@ -398,7 +407,10 @@ class AdaptKeyService : InputMethodService() {
     // single keystroke, unlike every other lookup this class already defers (D-160); the cost scales with
     // the composing token's own length (trySplit() tries every split point) and never short-circuits for a
     // token that never becomes a known word, exactly the reported "gets slower the longer/more garbled the
-    // word" symptom. Mirrors expensiveSuggestionToken/expensiveSuggestionRunnable's debounce shape:
+    // word" symptom. Mirrors the token-based staleness check expensiveSuggestionExecutor's own dispatch
+    // uses (D-211), just still on a main-thread timer rather than a background thread - this preview is
+    // cheap enough (a single trySplit()/shouldHighlightComposing() pass, not a whole candidate-bucket scan)
+    // that D-211's own background-thread treatment was judged unnecessary for it, only the debounce itself:
     // composingPreview only reflects composingPreviewFor's exact text, so every keystroke renders
     // uncoloured (composingPreviewFor never matches the just-changed text) until typing actually pauses for
     // EXPENSIVE_SUGGESTION_DELAY_MS, at which point composingPreviewRunnable computes the real preview once
@@ -1516,6 +1528,7 @@ class AdaptKeyService : InputMethodService() {
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         persistOffsetModel()
         tier3Executor.shutdownNow()
+        expensiveSuggestionExecutor.shutdownNow()
         contactsExecutor.shutdownNow()
         onnxProvider?.close()
         onnxProvider = null
@@ -3085,21 +3098,31 @@ class AdaptKeyService : InputMethodService() {
      *        added. §125 / D-194: also now skips the `pending` autocorrect-preview lookup, which had been
      *        left unconditional by oversight (the same expensive search this whole gate exists to avoid).
      *        Every other call site keeps the full live preview (the default `false`).
-     * @param includeExpensiveFallbacks D-160: true only when called from [expensiveSuggestionRunnable]'s
-     *        deferred pass - runs the expensive empty-candidates fallbacks (D-116 compound split, D-117
-     *        wide fuzzy, D-131 raw-coordinate) that the per-keystroke hot path skips and schedules
-     *        instead, once the token has been stable for [EXPENSIVE_SUGGESTION_DELAY_MS]. Traced from a
-     *        real device log (spec §102): for a long unknown compound the empty-candidates gate is true on
-     *        every keystroke, so exactly the worst-case token ran the whole chain per keystroke,
-     *        saturating the main thread badly enough to starve callback delivery for seconds.
+     * @param includeExpensiveFallbacks D-160/D-208/D-211: true only when re-entering after the background
+     *        [expensiveSuggestionExecutor] search below has finished - runs D-12 fuzzy matching and, once
+     *        that also finds nothing, the expensive empty-candidates fallbacks (D-116 compound split,
+     *        D-117 wide fuzzy, D-131 raw-coordinate) the per-keystroke hot path skips entirely. Traced from
+     *        a real device log (spec §102): for a long unknown compound the empty-candidates gate is true
+     *        on every keystroke, so exactly the worst-case token ran the whole chain per keystroke,
+     *        saturating the main thread badly enough to starve callback delivery for seconds; D-208/D-211
+     *        later found the same was true of fuzzy matching itself, and moved the search off the main
+     *        thread entirely rather than only delaying when it ran there (see
+     *        [expensiveSuggestionExecutor]'s own field KDoc).
+     * @param precomputedExpensiveCandidates D-211: the background search's own already-computed result,
+     *        supplied only by its own re-entrant call below - used in place of calling
+     *        `provider.suggestionsFor()` a second time. Every other caller leaves this null.
      */
-    private fun refreshSuggestions(duringRepeat: Boolean = false, includeExpensiveFallbacks: Boolean = false) {
-        // D-160: any fresh (non-deferred) refresh reflects a state change that supersedes a scheduled
-        // deferred fallback pass - cancel it here, before every early return below; it is rescheduled
-        // further down if still warranted for the new state.
+    private fun refreshSuggestions(
+        duringRepeat: Boolean = false,
+        includeExpensiveFallbacks: Boolean = false,
+        precomputedExpensiveCandidates: List<Suggestion>? = null
+    ) {
+        // D-211: any fresh (non-deferred) refresh reflects a state change that supersedes a background
+        // expensive-fallback search already in flight - bumping the sequence here (before every early
+        // return below) is what that search polls to recognise itself as stale, both before it starts and
+        // partway through (see expensiveSuggestionSeq's own field KDoc).
         if (!includeExpensiveFallbacks) {
-            handler.removeCallbacks(expensiveSuggestionRunnable)
-            expensiveSuggestionToken = null
+            expensiveSuggestionSeq.incrementAndGet()
         }
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
         // useful while entering one, so the bar simply stays empty.
@@ -3131,17 +3154,39 @@ class AdaptKeyService : InputMethodService() {
         // function's own duringRepeat gate - a plausible, traced explanation for backspace-hold feeling
         // jerky again. The bar it populates is changing every 45-330ms mid-repeat regardless (unreadable),
         // exactly the same reasoning already applied to every other addition below.
-        val candidates = if (duringRepeat) emptyList() else provider.suggestionsFor(input, previousWord, includeExpensiveFallbacks)
-        // D-160/D-208: schedule the deferred pass (fuzzy neighbours plus, once those also find nothing,
-        // the expensive last-resort fallbacks) whenever the hot path ran without them - no longer gated on
-        // candidates.isEmpty(): D-208 moved fuzzy matching itself into the deferred tier, so a prefix
-        // completion finding something on the hot path must not skip fuzzy's own chance to contribute too
-        // (D-12: "mut" must still surface "mit" alongside "mut"'s own prefix completions). Fires only if
-        // the token is still unchanged when the delay elapses, so during fluent typing this simply keeps
-        // getting cancelled and rescheduled - the actual search only ever runs once per genuine pause.
+        // D-211: precomputedExpensiveCandidates, when given, is the background search's own already-final
+        // result (see the dispatch below) - used as-is instead of calling suggestionsFor() a second time.
+        val candidates = when {
+            duringRepeat -> emptyList()
+            precomputedExpensiveCandidates != null -> precomputedExpensiveCandidates
+            else -> provider.suggestionsFor(input, previousWord, includeExpensiveFallbacks)
+        }
+        // D-160/D-208/D-211: dispatch the deferred pass (fuzzy neighbours plus, once those also find
+        // nothing, the expensive last-resort fallbacks) to the background executor whenever the hot path
+        // ran without them - no longer gated on candidates.isEmpty(): D-208 moved fuzzy matching itself
+        // into this tier, so a prefix completion finding something on the hot path must not skip fuzzy's
+        // own chance to contribute too (D-12: "mut" must still surface "mit" alongside "mut"'s own prefix
+        // completions). D-211: runs on expensiveSuggestionExecutor, never the main thread - a superseded
+        // call bails before touching the database, or partway through its own candidate scan (see
+        // DictionarySuggestionProvider's own KDoc on isCancelled), so a fast, continuous typing burst never
+        // pays for finished-but-discarded work; the result is applied via one more refreshSuggestions()
+        // call, re-entering on the main thread through handler.post, only if still fresh at that point too.
         if (!duringRepeat && !includeExpensiveFallbacks) {
-            expensiveSuggestionToken = input
-            handler.postDelayed(expensiveSuggestionRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
+            val seq = expensiveSuggestionSeq.get()
+            val previous = previousWord
+            expensiveSuggestionExecutor.execute {
+                if (seq != expensiveSuggestionSeq.get()) {
+                    return@execute
+                }
+                val expanded = provider.suggestionsFor(input, previous, includeExpensiveFallbacks = true) {
+                    seq != expensiveSuggestionSeq.get()
+                }
+                handler.post {
+                    if (seq == expensiveSuggestionSeq.get() && composing.toString() == input) {
+                        refreshSuggestions(includeExpensiveFallbacks = true, precomputedExpensiveCandidates = expanded)
+                    }
+                }
+            }
         }
         // D-122 / D-131: both kept out of `candidates` itself so neither ever enters the tier-1/tier-3
         // merge's own score normalisation (SuggestionMerger normalises every tier-1 score against the

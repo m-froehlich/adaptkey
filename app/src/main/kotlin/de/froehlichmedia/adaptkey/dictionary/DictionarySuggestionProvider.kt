@@ -32,7 +32,12 @@ class DictionarySuggestionProvider(
     private val minAutocorrectFrequency: Long = 0
 ) : SuggestionProvider {
     
-    override fun suggestionsFor(input: String, previousWord: String?, includeExpensiveFallbacks: Boolean): List<Suggestion> {
+    override fun suggestionsFor(
+        input: String,
+        previousWord: String?,
+        includeExpensiveFallbacks: Boolean,
+        isCancelled: () -> Boolean
+    ): List<Suggestion> {
         val token = input.lowercase()
         // Keyed by canonical word so a word is never offered twice; insertion order is irrelevant since
         // the merged set is re-sorted by score before it is capped.
@@ -63,7 +68,7 @@ class DictionarySuggestionProvider(
         // once the token reached MIN_FUZZY_LENGTH - a real, measured, felt slowdown mid-word on longer
         // words, distinct from D-160's own commit-adjacent empty-candidates escalation.
         if (includeExpensiveFallbacks) {
-            for ((word, cost) in fuzzyNeighbours(token)) {
+            for ((word, cost) in fuzzyNeighbours(token, isCancelled)) {
                 if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                     continue // A-04
                 }
@@ -93,7 +98,7 @@ class DictionarySuggestionProvider(
         // this is a rare fallback, not a general loosening of D-28's own budget, which stays exactly as
         // tight as before for the common case. Gated on includeExpensiveFallbacks like D-116 (D-160).
         if (includeExpensiveFallbacks && candidates.isEmpty()) {
-            for ((word, cost) in wideFuzzyNeighbours(token)) {
+            for ((word, cost) in wideFuzzyNeighbours(token, isCancelled)) {
                 if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                     continue // A-04
                 }
@@ -150,22 +155,36 @@ class DictionarySuggestionProvider(
      * ([scoreWithCost]) instead of ranking purely by frequency, so a candidate genuinely close to the typed
      * token generally outranks a farther one even when the farther one is far more frequent.
      *
+     * D-211: polls [isCancelled] once per candidate - the search runs on a background thread now (D-208),
+     * so a superseded call stops partway through the (potentially large, D-209-uncapped) candidate list
+     * instead of finishing pointless work; whatever was already gathered is still returned rather than
+     * discarded, since a spent cycle can at least contribute what it found, but the caller checks staleness
+     * again before ever applying it (see [de.froehlichmedia.adaptkey.AdaptKeyService]'s own KDoc).
+     *
      * @param token the lower-cased composing token
+     * @param isCancelled polled once per candidate; true stops the scan early
      * @return the neighbouring known words in canonical case, each paired with its edit cost
      */
-    private fun fuzzyNeighbours(token: String): List<Pair<String, Int>> {
+    private fun fuzzyNeighbours(token: String, isCancelled: () -> Boolean): List<Pair<String, Int>> {
         if (token.length < MIN_FUZZY_LENGTH) {
             return emptyList()
         }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token, candidateFirstChars(token)).mapNotNull { candidate ->
+        val result = ArrayList<Pair<String, Int>>()
+        for (candidate in store.correctionCandidates(token, candidateFirstChars(token))) {
+            if (isCancelled()) {
+                break
+            }
             val lower = candidate.lowercase()
             if (lower == token) {
-                return@mapNotNull null
+                continue
             }
             val cost = correctionCost(folded, lower, MAX_CORRECTION_COST)
-            if (cost <= MAX_CORRECTION_COST) candidate to cost else null
+            if (cost <= MAX_CORRECTION_COST) {
+                result.add(candidate to cost)
+            }
         }
+        return result
     }
     
     /**
@@ -178,22 +197,32 @@ class DictionarySuggestionProvider(
      * is also badly garbled is still out of reach; a genuinely open question (see D-117's own spec entry),
      * not attempted here.
      *
+     * D-211: polls [isCancelled] once per candidate - see [fuzzyNeighbours]'s own KDoc for the reasoning.
+     *
      * @param token the lower-cased composing token
+     * @param isCancelled polled once per candidate; true stops the scan early
      * @return the neighbouring known words in canonical case, each paired with its edit cost (D-205)
      */
-    private fun wideFuzzyNeighbours(token: String): List<Pair<String, Int>> {
+    private fun wideFuzzyNeighbours(token: String, isCancelled: () -> Boolean): List<Pair<String, Int>> {
         if (token.length < MIN_WIDE_FUZZY_LENGTH) {
             return emptyList()
         }
         val folded = Umlaut.fold(token)
-        return store.correctionCandidates(token, candidateFirstChars(token)).mapNotNull { candidate ->
+        val result = ArrayList<Pair<String, Int>>()
+        for (candidate in store.correctionCandidates(token, candidateFirstChars(token))) {
+            if (isCancelled()) {
+                break
+            }
             val lower = candidate.lowercase()
             if (lower == token) {
-                return@mapNotNull null
+                continue
             }
             val cost = correctionCost(folded, lower, WIDE_CORRECTION_COST)
-            if (cost <= WIDE_CORRECTION_COST) candidate to cost else null
+            if (cost <= WIDE_CORRECTION_COST) {
+                result.add(candidate to cost)
+            }
         }
+        return result
     }
     
     

@@ -22,13 +22,23 @@ interface SuggestionProvider {
      *        searches - D-12's own fuzzy-neighbour matching (cost grows with the token's own length,
      *        unconditionally once long enough to qualify) and, only once those also find nothing, the
      *        expensive last-resort searches (compound reconstruction, wide-budget fuzzy matching). The
-     *        per-keystroke hot path passes false (prefix completion only) and re-runs with true in one
-     *        deferred pass once the token has been stable for a moment; the default keeps the full
+     *        per-keystroke hot path passes false (prefix completion only); the default keeps the full
      *        behaviour for every other caller. Implementations without such tiers ignore it.
+     * @param isCancelled D-211: polled between candidates during the costlier searches above - true once
+     *        this call has been superseded by more recent input, so a background-thread search can stop
+     *        partway through instead of finishing pointless work for a token nobody is waiting on any more.
+     *        Checked cooperatively, not a hard interrupt (see [de.froehlichmedia.adaptkey.AdaptKeyService]'s
+     *        own KDoc on why a forcible thread kill is neither safe nor, on current JDKs, reliably possible
+     *        at all). The default never cancels, since a synchronous caller has nothing to poll against.
      * @return candidates sorted by descending [Suggestion.score]; may include or omit [input]
      *         (the controller enforces S-02)
      */
-    fun suggestionsFor(input: String, previousWord: String?, includeExpensiveFallbacks: Boolean = true): List<Suggestion>
+    fun suggestionsFor(
+        input: String,
+        previousWord: String?,
+        includeExpensiveFallbacks: Boolean = true,
+        isCancelled: () -> Boolean = { false }
+    ): List<Suggestion>
     
     /**
      * @param word the word to check
