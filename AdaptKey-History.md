@@ -6708,3 +6708,77 @@ callout the entire time.
 intended.** The reversal is not adopted. D-107 is closed; the spec's open-design-question callout is removed
 in favour of a short confirmed-settled note. No code change, no new tests (nothing was ever built for the
 alternative reading to begin with). 756 unit tests (unchanged).
+
+## §131 - D-204: A Second, App-Specific ß Fold Convention - "gruse" for "Grüße" (v0.8.94)
+
+Reported: `"vieie gruse"` never becomes `"viele Grüße"`; separately, `"viele Gruße"` (ß typed, no umlaut)
+restores correctly at commit but the suggestion bar shows `"große"`/`"größe"` far ahead of `"Grüße"`.
+
+**First-pass diagnosis (superseded, kept here for the trail): frequency floor + ranking.** Confirmed against
+the real bundled data (not guessed) that `"Grüße"` has frequency 18 in `dict_de.tsv`, against `"große"`
+(11204) and `"Größe"` (2769) - and that `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY = 300L` (D-114,
+`AdaptKeyService.kt`) unconditionally drops any correction candidate below it, regardless of edit cost. For
+`"gruse"` specifically, this looked like the root cause: the only edit-cost-eligible candidate (`"Grüße"`, a
+single indel away under the existing ß→"ss" fold) was being vetoed by the frequency floor before ranking ever
+mattered.
+
+**User correction, and the actual root cause.** The user pointed out this diagnosis modelled the wrong typing
+convention: `"gruse"` is not a two-edit typo of `"Grüße"` at all - it is a **lazy long-press omission**. This
+app hosts `ß` as the long-press alternative directly on the `s` key (mirroring how `ä`/`ö`/`ü` already sit on
+`a`/`o`/`u`), so a bare `s` tap is a direct, position-preserving stand-in for `ß`, exactly as a bare `u` tap
+already is for `ü`. Checked character-by-character: `"gruse"` (g-r-u-s-e) and `"Grüße"` (G-r-ü-ß-e) line up
+1:1 - no missing/extra character at all. This is an **exact** diacritic match, not a fuzzy 2-edit one, and
+should never have reached the frequency-floored `bestCorrection()` path in the first place.
+
+The mismatch: `Umlaut.fold()` maps `ß` → `"ss"` (the formal orthographic/Swiss substitution - a real,
+independently tested convention: `"straße"`/`"strasse"`, `"ruß"`/`"russ"`), a *different* character count
+than the app's own long-press-hosted `s`. Both conventions are legitimate and must coexist without either
+crowding out the other.
+
+**Fixed** (`Umlaut.kt`): new `foldToHostKey()` (identical to `fold()` except `ß` → single `s`) and
+`foldVariants()` (both fold results, deduplicated - a plain word with no `ß` has exactly one variant).
+`DictionarySuggestionProvider.diacriticRestoration()` now accepts either variant on the candidate side
+(`Umlaut.foldVariants(lower).contains(folded)` instead of a single `Umlaut.fold(lower) == folded`) - the
+existing `"russ"`→`"ruß"` convention is unaffected (regression-tested), `"gruse"`→`"Grüße"` is now an equally
+exact match.
+
+**Also fixed, the position-1 requirement**: `AdaptKeyService.refreshSuggestions()`'s `pending` (S-06 preview
+chip) computation previously consulted only `provider.autocorrectFor()` - which *does* apply the D-114
+frequency floor unconditionally, regardless of edit cost. A comment left from D-111/D-112 assumed a
+diacritic-fold case was "already covered" there at cost 0; checked directly and confirmed false - the floor
+applies before cost is even considered. `pending` now consults `diacriticRestoration()` first, mirroring
+`finalizeAndCommit()`'s own existing `diacriticWord ?: autocorrected ?: ...` precedence, reusing
+`SuggestionController`'s existing S-06 mechanism (the pending replacement and its verbatim chip are always
+pinned ahead of the frequency-sorted list, exempt from S-03 stabilisation) - no new UI mechanism needed, this
+was a wiring gap, not a missing feature.
+
+6 new tests (`UmlautTest` 4, `DictionarySuggestionProviderTest` 2, incl. a `"gruse"`→`"Grüße"` case with the
+real corpus frequencies and a regression check that `"russ"`→`"ruß"` still works unchanged). 762 unit tests
+total (756 + 6). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## D-205 - Captured, Not Designed: Ranking Should Weigh Edit/Touch Proximity, Not Just Frequency
+
+Flagged by the user while discussing D-204, explicitly deferred ("dazu später") - not designed, not
+implemented. The user's position: for a correction/fuzzy candidate, how close it is to the actual mistake
+(keyboard-key distance, and ideally the raw touch-coordinate recording T-02/T-03) should matter more than how
+often the candidate word is used overall - the opposite of today's `score()` in
+`DictionarySuggestionProvider`, which ranks every fuzzy/prefix candidate purely by frequency (+ bigram bonus),
+with no edit-cost or touch-proximity term at all. `bestCorrection()` already ranks cost-first for the
+*autocorrect* decision (`compareBy({it.cost}, {-it.score})`) - the open question is whether/how to bring an
+equivalent proximity-aware ranking to the general suggestion-bar candidate list (`suggestionsFor()`), which
+today does not distinguish an exact-cost-0 candidate from a cost-2 one once both clear their respective gates.
+No direction chosen yet - needs its own design conversation before any implementation.
+
+## D-206 - Captured, Not Designed: Archaic/Pre-Reform Spelling Pollution in the Bundled Dictionary
+
+Flagged by the user while discussing D-204, explicitly deferred - not designed, not implemented. The bundled
+`dict_de.tsv` is built from a Wikipedia-derived corpus, which the user reports still contains pre-1996-reform
+spellings (their example: `"daß"`, the old spelling of `"dass"`) alongside various other archaic forms -
+unnecessarily inflating the dictionary, doing nothing for suggestion quality, and actively harmful when such
+a form is itself offered as a suggestion (a modern German user typing `"dass"` should never see `"daß"`
+proposed back at them). The user wants a plan, not a fix yet, covering at least two candidate directions:
+purge such entries from the dictionary build outright, or flag them and rank them far down in suggestions/
+autocorrect without removing them entirely (e.g. for the rare case of someone transcribing older text). The
+user explicitly noted this overlaps with D-204's own ß/"ss" territory (old-reform spelling conventions and
+the `ß`/`ss` fold-variant mechanism just built are closely related) - worth designing together, not in
+isolation. No scope, detection heuristic, or mechanism chosen yet.

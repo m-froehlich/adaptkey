@@ -95,4 +95,27 @@ class UmlautTest {
         assertTrue(candidates.size <= 32)
         assertTrue(candidates.contains("aaaaaaaaaaaaaaaaaaaa"))
     }
+    
+    @Test
+    fun `D-204 foldToHostKey folds sharp s to a single bare s`() {
+        assertEquals("gruse", Umlaut.foldToHostKey("grüße"))
+        assertEquals("strase", Umlaut.foldToHostKey("straße"))
+    }
+    
+    @Test
+    fun `D-204 foldToHostKey still folds ordinary umlauts 1-to-1 like fold`() {
+        assertEquals("grun", Umlaut.foldToHostKey("grün"))
+        assertEquals(Umlaut.fold("schön"), Umlaut.foldToHostKey("schön"))
+    }
+    
+    @Test
+    fun `D-204 foldVariants offers both the ss and the bare-s convention for sharp s`() {
+        assertEquals(listOf("grusse", "gruse"), Umlaut.foldVariants("grüße"))
+    }
+    
+    @Test
+    fun `D-204 foldVariants has exactly one entry when there is no sharp s`() {
+        assertEquals(listOf("grun"), Umlaut.foldVariants("grün"))
+        assertEquals(listOf("default"), Umlaut.foldVariants("default"))
+    }
 }

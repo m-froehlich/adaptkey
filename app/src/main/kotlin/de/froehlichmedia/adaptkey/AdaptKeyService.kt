@@ -3159,10 +3159,21 @@ class AdaptKeyService : InputMethodService() {
         val pending = if (duringRepeat) {
             null
         } else {
+            // D-204: mirrors finalizeAndCommit()'s own diacriticWord-first precedence - diacriticRestoration
+            // has no minAutocorrectFrequency floor at all (D-114), while autocorrectFor()/bestCorrection()
+            // always applies one, so a rare-but-exact diacritic match (e.g. "Grüße", frequency 18) must be
+            // consulted here separately rather than assumed to already be "covered" by the cost-0 case
+            // below - it previously was not, since that floor is unconditional there regardless of cost.
+            val diacriticCandidate = if (activeLanguage == Language.GERMAN) {
+                providers.getValue(Language.GERMAN).diacriticRestoration(input, previousWord)
+            } else {
+                null
+            }
             // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
             // language (mandatory English + every G-01-cycle language) - the active language's own
             // completions are still shown as usual, only the impending-autocorrect chip is suppressed.
-            val correctionCandidate = if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
+            val correctionCandidate = diacriticCandidate
+                ?: if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
             // D-111 / D-112: run the eventual committed form through the same §6 capitalisation
             // finalizeAndCommit() will apply, so a pending *case-only* change (D-111 - e.g. an ordinary noun
             // about to be auto-capitalised) is visible as the existing S-06 pending chip before it is ever

@@ -231,6 +231,28 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-204 diacriticRestoration recognises this app's own long-press-alternative typing convention`() {
+        // "Grüße" (frequency 18) is far below the production autocorrect frequency floor (300) and 2
+        // edits away from "große"/"größe" under the ordinary ss-fold convention - but "gruse" is this
+        // app's own lazy long-press-alternative shorthand (ü on u, ß on s, both reached by long-pressing
+        // the shown base key), so it must be recognised as an exact diacritic match, not a fuzzy one.
+        store.putWord(WordEntry("Grüße", 18L))
+        store.putWord(WordEntry("große", 11204L))
+        store.putWord(WordEntry("Größe", 2769L))
+        
+        assertEquals("Grüße", provider.diacriticRestoration("gruse", null))
+    }
+    
+    @Test
+    fun `D-204 diacriticRestoration still restores the formal ss convention for sharp s`() {
+        // The pre-existing "ruß"/"russ" convention (D-48) must keep working unchanged alongside D-204's
+        // new bare-s convention - neither fold variant may crowd out the other.
+        store.putWord(WordEntry("ruß", 30L))
+        
+        assertEquals("ruß", provider.diacriticRestoration("russ", null))
+    }
+    
+    @Test
     fun `autocorrectFor proposes the most frequent single-edit neighbour`() {
         store.putWord(WordEntry("der", 100L))
         store.putWord(WordEntry("den", 50L))

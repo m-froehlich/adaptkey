@@ -29,6 +29,14 @@ correct `konnen` → `können`, splits a word rather than restoring its umlaut, 
 oddly, etc.) is simply broken. This principle overrides convenience shortcuts and will shape several
 features (correction ranking, folding, split-vs-correct priority, suggestions).
 
+Two independent, equally legitimate conventions exist for typing a diacritic character without holding for
+it, and both must be recognised as an exact (not merely close) match: the formal orthographic substitution
+(`ß` → `"ss"`, e.g. `"straße"`/`"strasse"`, the spelling used when `ß` is genuinely unavailable) **and** this
+app's own long-press-alternative shorthand (`ß` sits as the long-press alternative directly on the `s` key,
+mirroring `ä`/`ö`/`ü` on `a`/`o`/`u` - a lazily-tapped bare `s` is a direct stand-in for it, e.g.
+`"gruse"` for `"Grüße"`). Neither convention may crowd out the other, and a match under either must never be
+demoted to a frequency-ranked fuzzy candidate - it is exact, and must be offered as such (see A-01/S-06).
+
 ### Guiding Principle - `onUpdateSelection`'s Self-Recognition Mechanism Is Foundational
 
 Getting `AdaptKeyService.onUpdateSelection()` to correctly recognise the IME's own edits took three full
@@ -272,8 +280,10 @@ chip (e.g. in quotation marks), pinned at the far left of the suggestion bar and
 stabilisation (S-03). The pending replacement is shown alongside it. Tapping the verbatim chip commits the
 literal input and cancels the pending change for this occurrence. This is the only case in which S-02 is
 overridden. Repeated verbatim confirmation of the same string feeds a learning signal and may add it to the
-personal dictionary (cf. B-03), after which it is no longer autocorrected. This affordance mirrors only the
-ordinary autocorrect candidate - it does not preview the rarer raw-coordinate fallback (T-02) or a
+personal dictionary (cf. B-03), after which it is no longer autocorrected. This affordance mirrors the
+ordinary autocorrect candidate and a pending diacritic restoration alike (see the "Umlauts Are Ordinary
+Characters" guiding principle) - the latter takes precedence whenever both would apply, matching what
+actually wins at commit time - but it does not preview the rarer raw-coordinate fallback (T-02) or a
 high-certainty tier-3 capitalisation exception.
 
 ### S-07 - Next-Word Prediction

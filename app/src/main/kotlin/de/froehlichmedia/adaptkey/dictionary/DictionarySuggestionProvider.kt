@@ -250,6 +250,11 @@ class DictionarySuggestionProvider(
      * more common same-bucket words before ever reaching the comparison below, e.g. "Gruße" failing to
      * restore to "Grüße" (frequency 18) while falling back to an unrelated fuzzy match instead.
      *
+     * D-204: the fold-equality check itself now accepts either of [Umlaut.foldVariants]' variants for the
+     * candidate side, not only [Umlaut.fold]'s own "ss" convention - so a token typed via this app's own
+     * long-press-alternative convention (e.g. "gruse" for "Grüße", `ß` reached by long-pressing `s`) is
+     * recognised as an equally exact match, not left to the edit-cost-budgeted/frequency-floored fuzzy path.
+     *
      * @param input the composing token (any case)
      * @param previousWord the preceding word, for bigram tie-breaking among matches; may be null
      * @return the diacritic-restored known word in canonical case, or null
@@ -264,7 +269,7 @@ class DictionarySuggestionProvider(
             .asSequence()
             .filter { candidate ->
                 val lower = candidate.lowercase()
-                lower != token && !store.isBlacklisted(candidate) && Umlaut.fold(lower) == folded
+                lower != token && !store.isBlacklisted(candidate) && Umlaut.foldVariants(lower).contains(folded)
             }
             .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
     }

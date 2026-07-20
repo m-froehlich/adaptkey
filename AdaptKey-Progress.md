@@ -37,6 +37,29 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§131 (v0.8.94): D-204 - a second, app-specific ß fold convention ("gruse" for "Grüße"); D-205/D-206
+  captured for later design rounds.** "vieie gruse" never autocorrected to "viele Grüße"; separately "viele
+  Gruße" restored correctly at commit but the bar showed "große"/"größe" far ahead of "Grüße". Root cause,
+  corrected mid-round by the user's own precise pushback: `"gruse"` isn't a 2-edit typo of `"Grüße"` at all -
+  this app hosts `ß` as `s`'s long-press alternative (mirroring `ä`/`ö`/`ü` on `a`/`o`/`u`), so a bare `s` tap
+  is a direct, position-preserving stand-in for it, lining up 1:1 with no missing/extra character - an exact
+  diacritic match, not a fuzzy one, so it should never have reached the frequency-floored (`MIN_AUTOCORRECT_
+  CANDIDATE_FREQUENCY=300L`, D-114) `bestCorrection()` path at all. Fixed: new `Umlaut.foldToHostKey()`/
+  `foldVariants()` (ß -> single `s`, alongside the existing, still-tested ß -> `"ss"` convention - neither
+  crowds out the other); `DictionarySuggestionProvider.diacriticRestoration()` now accepts either variant.
+  Also fixed the position-1 requirement: `refreshSuggestions()`'s S-06 `pending` chip previously consulted
+  only `autocorrectFor()` (which *does* apply the D-114 floor unconditionally) - a D-111/D-112 comment had
+  wrongly assumed a diacritic-fold case was "already covered" there; now consults `diacriticRestoration()`
+  first, mirroring `finalizeAndCommit()`'s own existing precedence, so the correction is pinned via the
+  existing S-06 mechanism instead of buried in the frequency-sorted list. 6 new tests (`UmlautTest` 4,
+  `DictionarySuggestionProviderTest` 2, incl. a `"russ"`->`"ruß"` regression check). 762 unit tests total
+  (756 + 6). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. **D-205/D-206
+  captured, not designed** (user explicitly deferred both, "dazu später"): D-205 - suggestion-bar ranking
+  should weigh edit/touch-proximity to the actual mistake, not just raw frequency (today's `score()` has no
+  cost term at all outside `bestCorrection()`'s own autocorrect-only cost-first ranking); D-206 - the bundled
+  Wikipedia-derived dictionary still contains pre-1996-reform spellings (e.g. `"daß"`) that inflate it and get
+  suggested back to modern users - user wants a plan (purge vs. flag-and-derank) before any fix, noted as
+  overlapping D-204's own ß/"ss" territory. See history §131.
 - **§130 (still v0.8.93, no code change): D-107 closed - S-05 highlight semantics confirmed settled.**
   User confirmed the current meaning (green = safe, no correction planned) is correct as-is; the previously
   floated reversal ("green = about to be auto-corrected") is not adopted. Spec §S-05's open-design-question
