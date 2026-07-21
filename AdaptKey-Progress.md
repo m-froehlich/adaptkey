@@ -70,6 +70,20 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§163 (v0.8.121): D-235 - the K-01 seeded touch zone no longer scales against a widened key's own**
+  **size; D-236 - T-06's visualisation no longer hides non-CHAR keys.** D-235: `PatternSeed` was scaling
+  every seeded horizontal spread/shift by the candidate key's *own* half-width - a deliberately widened key
+  (L-02's period/comma) got a proportionally *bigger* absolute tolerance zone for free, cancelling out the
+  reason it was widened. Fixed: a shared `referenceHalfWidth` (median across the geometry list) replaces
+  each candidate's own half-width in the horizontal formulas; vertical spread untouched (no comparable
+  height-widening exists to correct for). 1 new test proves a widened key now gets the same absolute
+  `stdDevX` as an ordinary one. D-236 (found while investigating): `drawTouchModel()` filtered to
+  `KeyCode.CHAR` only, silently hiding Shift/Backspace/Enter/Space and the calculator's `sin`/`deg` keys even
+  though `OffsetModel.record()` trains all of them identically - made D-231's/D-233's own fixes impossible to
+  actually see. Filter removed (the existing `spreadFor() ?: continue` already handles untrained keys
+  correctly); `capX`/`capY` now also consult the leftward/upward per-key overrides for full consistency with
+  D-109/D-133/D-231/D-233. No new tests for D-236 (View drawing glue). 783 unit tests (782 + 1).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Neither confirmed on device yet. See history §163.
 - **§162 (v0.8.120): D-233 - `m`'s learned touch zone capped against Backspace (horizontal axis); D-234 -**
   **user-facing autocorrect toggle, suggestions stay live, silent substitution does not.** D-233:
   `OffsetModel.Candidate` gained `maxRightwardOffsetFactor`/`maxLeftwardOffsetFactor` (mirroring D-231's

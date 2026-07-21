@@ -23,6 +23,14 @@ import kotlin.math.abs
  * seed directly: the expected strike point is nudged towards home, growing with reach, and for a thumb
  * also downwards (towards the home row) the closer a key is to the top row. Two-thumb typing keeps no
  * directional skew at all, matching its flat spread.
+ *
+ * D-235: the horizontal spread/shift is scaled against a single *reference* half-width (an ordinary letter
+ * key's, the median across [geometry]) rather than each key's own actual half-width. A key that is
+ * deliberately widened beyond that reference (L-02's period/comma) exists specifically to reduce mistaps -
+ * scaling its seeded tolerance by its own (larger) half-width would give it an even bigger absolute zone for
+ * free, exactly cancelling the reason it was widened in the first place, while a narrower key (e.g. a
+ * shrunk symbol-page key) would get an undeservedly tight one. Vertical spread still uses each key's own
+ * half-height - no comparable deliberate height-widening exists in this app to correct for.
  */
 object PatternSeed {
     
@@ -43,10 +51,13 @@ object PatternSeed {
         val keyboardWidth = (geometry.maxOf { it.centerX + it.halfWidth } - geometry.minOf { it.centerX - it.halfWidth }).toDouble()
         val minY = geometry.minOf { it.centerY }
         val maxY = geometry.maxOf { it.centerY }
+        // D-235: the median is robust against the handful of deliberately widened/narrowed outliers
+        // (period/comma, ...) that would otherwise skew a plain mean.
+        val referenceHalfWidth = geometry.map { it.halfWidth }.sorted().let { it[it.size / 2] }.toDouble()
         val result = HashMap<String, OffsetModel.Stat>()
         for (c in geometry) {
             val rowFraction = if (maxY > minY) ((c.centerY - minY) / (maxY - minY)).toDouble() else 0.0
-            val shape = shapeFor(pattern, c, keyboardWidth, rowFraction)
+            val shape = shapeFor(pattern, c, keyboardWidth, rowFraction, referenceHalfWidth)
             result[c.id] = OffsetModel.Stat(
                 count = SEED_COUNT,
                 meanDx = shape.meanDx,
@@ -62,10 +73,16 @@ object PatternSeed {
      * ([meanDx] / [meanDy], D-71) shifting the expected strike point away from the key's own centre. */
     private data class Shape(val stdDevX: Double, val stdDevY: Double, val meanDx: Double, val meanDy: Double)
     
-    private fun shapeFor(pattern: TypingPattern, c: OffsetModel.Candidate, keyboardWidth: Double, rowFraction: Double): Shape {
+    private fun shapeFor(
+        pattern: TypingPattern,
+        c: OffsetModel.Candidate,
+        keyboardWidth: Double,
+        rowFraction: Double,
+        referenceHalfWidth: Double
+    ): Shape {
         if (pattern == TypingPattern.TWO_THUMBS) {
             // No positional skew at all - flat spread, no directional bias.
-            return Shape(TWO_THUMBS_STD_X * c.halfWidth, TWO_THUMBS_STD_Y * c.halfHeight, 0.0, 0.0)
+            return Shape(TWO_THUMBS_STD_X * referenceHalfWidth, TWO_THUMBS_STD_Y * c.halfHeight, 0.0, 0.0)
         }
         val isThumb = pattern == TypingPattern.LEFT_THUMB || pattern == TypingPattern.RIGHT_THUMB
         val homeFraction = when (pattern) {
@@ -96,8 +113,8 @@ object PatternSeed {
             shiftXFactor += THUMB_TOP_ROW_SHIFT_GAIN * topRowPenalty
             meanDy = THUMB_TOP_ROW_SHIFT_GAIN * topRowPenalty * c.halfHeight
         }
-        val meanDx = if (awayFromHome > 0.0) -shiftXFactor * c.halfWidth else if (awayFromHome < 0.0) shiftXFactor * c.halfWidth else 0.0
-        return Shape(stdDevXFactor * c.halfWidth, stdDevYFactor * c.halfHeight, meanDx, meanDy)
+        val meanDx = if (awayFromHome > 0.0) -shiftXFactor * referenceHalfWidth else if (awayFromHome < 0.0) shiftXFactor * referenceHalfWidth else 0.0
+        return Shape(stdDevXFactor * referenceHalfWidth, stdDevYFactor * c.halfHeight, meanDx, meanDy)
     }
     
     // Seed sample count - just above OffsetModel.DEFAULT_WARMUP_SAMPLES (20), so resolve() uses the seeded

@@ -8131,3 +8131,39 @@ build one; flagged to the user as an open question rather than guessed at.
 
 4 new tests total (3 `OffsetModelTest` for D-233, 1 `SettingsMapperTest` for D-234). 782 unit tests (778 + 4).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Neither confirmed on device yet.
+
+## §163 - D-235: Seeded Touch-Zone Spread No Longer Scales Against a Widened Key's Own Size; D-236: T-06
+Visualisation No Longer Silently Hides Non-`CHAR` Keys (v0.8.121)
+
+**D-235**: user noticed the period key's initial (K-01-seeded) touch zone reached unusually far left, and
+correctly reasoned that `PatternSeed`'s formula was scaling the seed proportionally to the key's own
+half-width - confirmed exactly right by reading the code: every seeded `stdDevX`/`meanDx` was computed as
+`someFactor * c.halfWidth`, where `c` is the candidate key itself. Since L-02 deliberately widens the
+period/comma keys specifically *to reduce mistaps*, scaling their seed by their own (larger) half-width handed
+them a proportionally bigger absolute tolerance zone for free - exactly cancelling out the reason they were
+widened, while a narrower key would get an undeservedly tight one. Fixed: `PatternSeed.seed()` now computes a
+single `referenceHalfWidth` (the median half-width across the full `geometry` list - robust against the
+handful of deliberately widened/narrowed outliers) once, and `shapeFor()`'s horizontal spread/shift
+(`stdDevX`/`meanDx`, both branches, including `TWO_THUMBS`) now scale against that shared reference instead of
+each candidate's own `c.halfWidth`. Vertical spread (`stdDevY`/`meanDy`) is untouched - still scaled by each
+key's own `c.halfHeight`, since no comparable deliberate height-widening exists in this app to correct for. 1
+new test (`PatternSeedTest`: a widened key now gets the exact same absolute `stdDevX` as an ordinary key under
+`TWO_THUMBS`, proving the fix directly rather than just checking the formula compiles).
+
+**D-236**: while investigating the above, found (via a dedicated Explore pass) that the T-06 visualisation
+(`AdaptKeyboardView.drawTouchModel()`) filtered to `key.code == KeyCode.CHAR` only - silently hiding Shift,
+Backspace, Enter, and Space, plus the calculator page's `sin`/`deg` (`KeyCode.TEXT`) keys, even though
+`OffsetModel.record()` trains every one of them identically to any `CHAR` key (confirmed:
+`AdaptKeyboardView`'s own `ACTION_DOWN` handler calls `record()` unconditionally for whichever key resolved,
+never filtered by `KeyCode`). This made D-231's/D-233's own Enter/Backspace drift completely unobservable in
+the one screen meant to show it. Fixed by removing the filter entirely - `OffsetModel.spreadFor()` already
+returns null for a genuinely untrained (or hidden/unreachable) key, so no separate filter was ever needed; the
+existing `?: continue` already does the right thing for every key kind. Also fixed, for full consistency with
+D-109/D-133/D-231/D-233's own repeated "the visualisation must show the same cap resolution actually applies"
+reasoning: `capX`/`capY` (the negative-direction bounds) now also consult `leftwardOffsetFactorFor()`/
+`upwardOffsetFactorFor()`, not just `model.maxOffsetFactor` unconditionally - previously moot since Enter/
+Backspace were never drawn at all, but a real gap now that they are. No new tests (private `AdaptKeyboardView`
+drawing glue, the established gap for this layer).
+
+783 unit tests total (782 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Neither confirmed on
+device yet.

@@ -852,30 +852,33 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-24: draws the learned touch model over the keys - for each trained character key, a translucent
-     * ellipse of the tap spread (per-axis std deviation) centred on the expected strike point (key centre
-     * plus the learned mean offset), with a solid dot at that point.
+     * D-24: draws the learned touch model over the keys - for every key that has ever recorded a tap
+     * ([OffsetModel.record] runs for any resolved key, not only [KeyCode.CHAR] ones), a translucent ellipse
+     * of the tap spread (per-axis std deviation) centred on the expected strike point (key centre plus the
+     * learned mean offset), with a solid dot at that point.
      *
      * D-109: the centre uses [OffsetModel.cappedMeanOffset], the same bound [OffsetModel]'s own key
      * resolution applies internally - not the raw, uncapped [OffsetModel.Spread.meanDx]/`meanDy] - so the
      * visualisation never shows a drift more extreme than what the model will actually do when resolving
-     * a real tap. D-133: the bottom row's own harder downward bound is included too, for the same reason.
-     * D-233: `m`'s own harder rightward bound (against Backspace) is included too - unlike Enter/Backspace
-     * (D-231), `m` *is* a [KeyCode.CHAR] key, so it is actually drawn here and must stay consistent.
+     * a real tap. D-133/D-231/D-233: every one of the four directional bounds is included, for the same
+     * reason.
+     *
+     * D-236: previously filtered to `key.code == KeyCode.CHAR` only - silently hid Shift/Backspace/Enter/
+     * Space (and the calculator page's `sin`/`deg` [KeyCode.TEXT] keys) even though they are trained exactly
+     * like any other key, which made D-231's/D-233's own Enter/Backspace/`m` drift impossible to actually
+     * see. Removed entirely - [OffsetModel.spreadFor] already returns null for a genuinely untrained (or
+     * unreachable/hidden) key, so no separate filter is needed.
      */
     private fun drawTouchModel(canvas: Canvas) {
         val model = offsetModel ?: return
         val minRadius = dp(3f)
         for ((key, rect) in keyRects) {
-            if (key.code != KeyCode.CHAR) {
-                continue
-            }
             val spread = model.spreadFor(key.id) ?: continue
-            val capX = (rect.width() / 2f).toDouble() * model.maxOffsetFactor
-            val capY = (rect.height() / 2f).toDouble() * model.maxOffsetFactor
+            val capXLeft = (rect.width() / 2f).toDouble() * (leftwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+            val capYUp = (rect.height() / 2f).toDouble() * (upwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
             val capYDown = (rect.height() / 2f).toDouble() * (downwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
             val capXRight = (rect.width() / 2f).toDouble() * (rightwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
-            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capX, capY, capYDown, capXRight)
+            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capXLeft, capYUp, capYDown, capXRight)
             val cx = rect.centerX() + cappedDx.toFloat()
             val cy = rect.centerY() + cappedDy.toFloat()
             val rx = maxOf(spread.stdDevX.toFloat(), minRadius)

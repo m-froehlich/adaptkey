@@ -63,6 +63,21 @@ class PatternSeedTest {
     }
     
     @Test
+    fun `D-235 a deliberately widened key gets the same absolute spread as an ordinary key, not a proportionally larger one`() {
+        // Most keys share the same half-width; a deliberately widened key (e.g. L-02's period key) exists
+        // specifically to reduce mistaps - scaling its seeded tolerance by its own (larger) half-width would
+        // hand it an even bigger absolute zone for free, cancelling out the reason it was widened. Using
+        // TWO_THUMBS (flat, no reach dependency) isolates the width effect cleanly.
+        val ordinary = OffsetModel.Candidate("c:a", centerX = 20f, centerY = 0f, halfWidth = 20f, halfHeight = 20f)
+        val widened = OffsetModel.Candidate("c:period", centerX = 60f, centerY = 0f, halfWidth = 28f, halfHeight = 20f)
+        val other = OffsetModel.Candidate("c:c", centerX = 100f, centerY = 0f, halfWidth = 20f, halfHeight = 20f)
+        
+        val seed = PatternSeed.seed(TypingPattern.TWO_THUMBS, listOf(ordinary, widened, other))
+        
+        assertEquals(stdDevX(seed["c:a"]), stdDevX(seed["c:period"]), 1e-9)
+    }
+    
+    @Test
     fun `a thumb struggles more with the top row than the bottom row`() {
         val topRow = listOf(OffsetModel.Candidate("c:t", centerX = 20f, centerY = 0f, halfWidth = 20f, halfHeight = 20f))
         val bottomRow = listOf(OffsetModel.Candidate("c:b", centerX = 20f, centerY = 100f, halfWidth = 20f, halfHeight = 20f))
