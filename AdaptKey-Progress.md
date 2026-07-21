@@ -35,6 +35,25 @@ D-139 (§99-§101 in the spec) took three real device-log tracing rounds to actu
 sequencing around them must keep spec §99-§101's three stated invariants intact - see that section's
 "Guiding Principle" note before touching this area, not a full re-audit every time.
 
+## Reserve Ideas (Deferred, Not Forgotten)
+
+Design ideas that were seriously considered, confirmed technically workable, but deliberately not implemented
+because the problem they would solve turned out not to be the actual bottleneck. Kept here (not just buried in
+History.md's append-only log) so they are not lost if the situation that would justify them ever recurs.
+
+- **`android.os.CancellationSignal` for a genuine mid-query SQLite abort** (discussed during the D-212/WAL
+  round, see history §136). Confirmed technically real - Android wires it to `sqlite3_progress_handler`, a
+  true mid-query interrupt, not just a pre-check - and confirmed it would NOT need to break
+  `DictionarySuggestionProvider`/`DictionaryStore`'s deliberately Android-free testable abstraction: since all
+  SQL work already funnels through one single-threaded executor, the cancel state could live entirely local to
+  `SqliteDictionaryStore` itself via a narrow, additional (non-interface) method. **Status: not needed.** The
+  D-207-D-221 investigation (closed, history §145) found the real cost was synchronous computation itself
+  (redundant per-candidate queries, unbounded bucket scans, unconditional per-keystroke searches) - not
+  discarded/wasted background work a mid-query abort would have addressed; the existing cooperative
+  `isCancelled: () -> Boolean` polling (D-211/D-216) already covers the "stop a superseded background search
+  between candidates" case adequately. Revisit only if a future profiling round again points at wasted,
+  actually-superseded query time (not raw computation cost) as the dominant remaining factor.
+
 ## Current State
 
 - **§144 (v0.8.107): D-220 device-confirmed (bestCorrectionMs 186-404ms -> 68-90ms, the predicted 3-5x win);
