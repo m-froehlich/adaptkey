@@ -7370,3 +7370,37 @@ No new unit tests - pure diagnostic timing around existing, already-tested pure 
 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Awaits the user's next
 on-device repro of a slow SPACE/punctuation commit so the four stages' actual breakdown decides where D-220's
 real fix should go.
+
+## §143 - D-220 Fixed: bestCorrection() Queried frequencyOf() for Every Same-Bucket Candidate Before Checking
+Whether Its Edit Cost Even Qualified (v0.8.106)
+
+The D-220 timing log paid off immediately, one more time: a fresh pair of logs (fast and slow typing) showed
+`diacriticMs`/`splitMs`/`rawCorrectedMs` consistently at 0-3ms, while `bestCorrectionMs` alone dominated every
+slow commit - 186-404ms for `"Herzlichen"`, `"Glückwunsch"`, `"Geburtstag"` (all already-correct, common-
+initial-letter words), against just 0-19ms for `"übrihens"`/`"zum"` (an uncommon initial letter and a short,
+`suppressAutocorrect`-skipped token respectively).
+
+**Root-caused, not guessed.** `DictionarySuggestionProvider.diacriticRestoration()` checks `isKnownWord(token)`
+before doing anything else and returns immediately for an already-correct word - exactly why its own cost stayed
+near zero for `"Herzlichen"` etc. `bestCorrection()` has no equivalent early exit: it only consults
+`isKnownWord(token)` *after* the full search already ran, to decide whether A-01's known-word protection blocks
+the result it found - the search itself runs unconditionally regardless of whether the token turns out to be
+already known. Worse, inside that search's own `.mapNotNull{}`, `store.frequencyOf(candidate)` was called for
+*every* candidate in the token's own first-character bucket - unconditionally, before the cheap, pure-CPU
+`correctionCost()` check that would reject most of them was even consulted. D-209 deliberately left that bucket
+uncapped (for correctness, so a low-frequency word in a large bucket is still found), so a common German initial
+letter like H or G can hold hundreds of same-bucket entries - meaning hundreds of wasted SQLite round-trips on
+every single commit of an already-correctly-spelled, common-initial-letter word.
+
+**Fixed**: the `cost > maxCost` check now runs first inside the `.mapNotNull{}`, returning `null` immediately
+(via `return@mapNotNull`) before `store.frequencyOf(candidate)` is ever called for a candidate already outside
+the edit-cost budget; `frequencyOf()` is now only queried for the (typically far smaller) set of candidates that
+already qualify by cost. Purely a reordering of two already-independent checks (`cost` never depended on
+`frequency` or vice versa) - the final candidate set and the winning correction are unchanged, confirmed by
+every existing `bestCorrection`/`autocorrectFor`/`bestCorrectionFor` test passing unmodified.
+
+No new unit tests - a behaviour-preserving reordering of already-tested pure logic; the existing test suite is
+exactly what confirms nothing changed. 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green. Not yet device-confirmed - the D-220 timing log (`AdaptKeyHaptics`, `finalizeAndCommit: timing
+diacriticMs=... bestCorrectionMs=... splitMs=... rawCorrectedMs=...`) stays in place for the next repro to show
+`bestCorrectionMs` actually dropping for a common-initial-letter word.

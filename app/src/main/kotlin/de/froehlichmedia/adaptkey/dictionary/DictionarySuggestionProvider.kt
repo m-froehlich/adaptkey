@@ -392,10 +392,21 @@ class DictionarySuggestionProvider(
             .filter { it.lowercase() != token && !store.isBlacklisted(it) }
             .mapNotNull { candidate ->
                 val cost = correctionCost(folded, candidate.lowercase(), maxCost)
+                // D-220: the cost check runs before frequencyOf() is ever called, not after - the token's
+                // own first-character bucket is uncapped (D-209), so a common initial letter (e.g. H/G) can
+                // hold hundreds of candidates most of which the cheap, pure-CPU cost check alone already
+                // rejects; querying every one of them for its frequency regardless (the previous order) was
+                // measured (via D-217's handleKey timing) as the actual dominant cost of every commit -
+                // finalizeAndCommit()'s own new D-220 timing log showed bestCorrectionMs at 200-400ms for an
+                // already-correct, common-initial-letter word (isKnownWord() alone does not short-circuit
+                // this search - see the A-01 override check below - so the search always ran regardless).
+                if (cost > maxCost) {
+                    return@mapNotNull null
+                }
                 val frequency = store.frequencyOf(candidate)
                 // D-114: a candidate too rare to be a trustworthy silent autocorrect target is dropped
                 // outright, regardless of edit cost - see minAutocorrectFrequency.
-                if (cost > maxCost || frequency < minAutocorrectFrequency) {
+                if (frequency < minAutocorrectFrequency) {
                     null
                 } else {
                     CandidateCost(candidate, cost, score(candidate, frequency, previousWord))

@@ -37,6 +37,23 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§143 (v0.8.106): D-220 fixed - bestCorrection() queried frequencyOf() for every same-bucket candidate
+  before even checking whether its edit cost qualified.** The D-220 timing log paid off immediately: fresh
+  logs showed `bestCorrectionMs` alone dominating every slow commit (186-404ms for already-correct,
+  common-initial-letter words like "Herzlichen"/"Glückwunsch"/"Geburtstag"; 0-19ms for an uncommon initial
+  letter or a suppressAutocorrect-skipped token) while diacriticMs/splitMs/rawCorrectedMs stayed near 0.
+  Root cause: unlike `diacriticRestoration()` (which checks `isKnownWord(token)` up front and returns
+  immediately), `bestCorrection()` only consults `isKnownWord(token)` *after* its full search already ran -
+  and that search called `store.frequencyOf(candidate)` for every candidate in the token's own (D-209,
+  deliberately uncapped) first-character bucket *before* checking whether the cheap, pure-CPU
+  `correctionCost()` check would already reject it. A common initial letter (H, G) can hold hundreds of
+  same-bucket entries - hundreds of wasted SQLite round-trips per commit of an already-correct word. Fixed:
+  the cost check now runs first, `frequencyOf()` only queried for candidates already within budget - a pure
+  reordering (cost and frequency never depended on each other), confirmed behaviour-preserving by every
+  existing bestCorrection/autocorrectFor/bestCorrectionFor test passing unmodified. No new tests. 774 unit
+  tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. D-220's timing log stays in place
+  for the next repro to confirm `bestCorrectionMs` actually dropped. See history §143.
+
 - **§142 (v0.8.105): D-220 - diagnostics for the last remaining slow spot, device-confirmed to be
   finalizeAndCommit()'s own commit-time search chain.** D-217-D-219 confirmed a clear win ("Das Flashing ist
   super knackig und die Tastatur wirkt kaum noch träge", ordinary letters now 17-55ms, flash ~1 frame). The
