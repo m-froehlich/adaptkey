@@ -7899,3 +7899,37 @@ claim (Android's default composing-underline decoration is conditional on the IM
 CharSequence) is standard, well-documented platform behaviour, but could not be directly observed rendering in
 this environment (no emulator/device) - awaits the user's own on-device confirmation that the flicker is
 actually gone.
+
+## §157 - D-229 Device-Confirmed; D-230 Fixed - "darfst" -> "darf St" Was a Regression of the Same Class,
+Closed via MIN_PART (Which Also Retroactively Closes D-228's "Docker" Case) (v0.8.116)
+
+**D-229 confirmed working on device** - the composing-text underline flicker is gone. No code change for this
+part.
+
+**D-230**: user reported a new A-05 split regression, `"darfst"` -> `"darf St"`. Root-caused against the real
+data, not guessed: `"darfst"` (2nd person singular of the irregular/ablaut modal verb `"dürfen"` - `ich darf`,
+`du darfst`, vowel changing to `dürfen` in the plural) has no dictionary entry of its own, and
+`RegularVerbInflection` explicitly documents strong/ablaut verbs as out of its scope (it only strips a personal
+ending and re-appends `-en`, which for `"darf"` would need to reach `"darfen"`, not the real infinitive
+`"dürfen"` - a vowel change no suffix-stripping heuristic can bridge). Without that protection,
+`TokenRepair.candidateAt("darf", "st")` finds both: `"darf"` (1,761, `OTHER`) and `"St"` (5,939, `NOUN`) - not
+rejected by the both-nouns rule (only one side is a noun), both comfortably clear `MIN_SPLIT_HALF_FREQUENCY`,
+and it wins by default since nothing else resolves `"darfst"` at all.
+
+**Recognised as the same shape already investigated for D-228's `"Docker"` -> `"Dock er"`** (§152): a 2-letter
+half (`"st"`/`"er"`) that happens to be a hyper-frequent German function word/particle, paired with a half that
+isn't tagged noun, so the both-nouns rule never engages. §152 had already identified `MIN_PART` (2 -> 3) as a
+clean fix for exactly this shape - deliberately not implemented then, since the user's direction at the time was
+to accept the general "Docker" case rather than chase a partial fix. A second, independent real-world
+occurrence of the identical shape changes that calculus: **`MIN_PART` raised from 2 to 3.** Both the drop-a-
+character and missed-space split loops in `trySplit()`, plus `splitAtUnresolvedConnector()` and `candidateAt()`
+itself, already gate on `MIN_PART` uniformly, so this one constant change closes the entire class. Verified
+against every existing split-related test before adding new ones: every currently-valid split this app relies on
+(`"und"+"das"`, `"aber"+"das"`, `"immer"+"noch"`, `"der"+"kinderarzt"`, `"test"+"wort"`) already has both halves
+at 3+ characters, so nothing regressed - confirmed by the full existing suite passing unmodified. **Bonus**:
+since `"Dock"+"er"` has the identical 2-letter-half shape, this same change also closes D-228's `"Docker"` case
+retroactively, without needing its own separate fix - D-228 is hereby closed, not merely deferred. The
+backspace-restore-as-partial-learning-credit idea D-228 also captured remains open on its own merits (it was
+never specific to "Docker" as a word, just raised alongside it) and stays in the backlog. 2 new tests
+(`TokenRepairTest`: `"darfst"`, and `"Docker"` re-verified against the fixed constant). 778 unit tests total
+(776 + 2). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

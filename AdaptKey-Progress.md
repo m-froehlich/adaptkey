@@ -70,6 +70,19 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§157 (v0.8.116): D-229 device-confirmed; D-230 fixed - "darfst" -> "darf St" was the same class of**
+  **regression as D-228's "Docker", closed via `MIN_PART` (which also retroactively closes D-228).** Root-
+  caused: `"darfst"` (irregular/ablaut modal verb, `dürfen`/`darf`/`darfst`) has no dictionary entry and is
+  explicitly out of `RegularVerbInflection`'s documented scope (strong/ablaut verbs). Without that
+  protection, `"darf"` (OTHER) + `"St"` (NOUN) passes the both-nouns rule (only one side is a noun) and both
+  clear the frequency floor - identical shape to D-228's `"Dock"`+`"er"`. §152 had already identified
+  `MIN_PART` (2->3) as a clean fix for this exact shape but deferred it per the user's own "accept the
+  general case" direction at the time; a second independent real-world occurrence changed that calculus.
+  Fixed: `MIN_PART` raised to 3 - every currently-valid split already has both halves at 3+ characters
+  (confirmed by the full existing suite passing unmodified), so nothing regressed. **D-228 is now closed** as
+  a direct consequence (same 2-letter-half shape) - its own backspace-restore-partial-learning-credit idea
+  remains open on its own merits. 2 new tests (`TokenRepairTest`). 778 unit tests total (776 + 2).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §157.
 - **§156 (v0.8.115): D-229 fixed - the composing-text underline flicker root-caused to D-194's own**
   **debounced S-05 highlight, not a deliberate cue.** User reported a per-keystroke underline flash while
   typing, asking since when and to what purpose. Root-caused against the actual pre-D-194 (§125, v0.8.89)
