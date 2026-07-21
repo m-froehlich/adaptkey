@@ -465,6 +465,15 @@ optionally be added to the personal dictionary as a whole. Two candidate designs
 predictions across the hyphen boundary vs. learning the whole combination as one unit after repeated
 confirmation) with no decision yet on hop depth, promotion threshold, or UI mechanics.
 
+### B-04 - Underscore as a Word-Joining Character, Never a Separator
+Unlike every other punctuation mark - including the hyphen (B-01) - the underscore never ends the composing
+token: it extends it exactly like a letter, so a technical identifier (`MEINE_VARIABLE`) composes as a single
+token rather than being torn into fragments at every underscore. A token containing `_` is additionally treated
+as fully opaque technical content: no autocorrect, no fuzzy/compound-split suggestion, no §6 capitalisation
+transform, and no personal-dictionary learning of any kind applies to it - stronger than the hyphen's own
+segment-by-segment treatment, and closer in spirit to how an email/URL/login fragment bypasses §6 entirely
+(§10-§12), but scoped by token shape (contains `_`) rather than by field type.
+
 ---
 
 ## 9. Word Prediction & Adaptive Learning

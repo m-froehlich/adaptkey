@@ -1790,9 +1790,16 @@ class AdaptKeyService : InputMethodService() {
      * a [KeyCode.TEXT] key's alternatives are always symbols, regardless of script, since `cos`/`tan`/`log`
      * are ordinary Latin letters [AlternativeScript] would otherwise treat as genuine word text. See
      * [AlternativeScript] for why case is significant for the Greek case (Π ≠ π) but not for an ordinary word.
+     *
+     * D-225: `_` is the one non-letter symbol that also extends the composing token - a technical
+     * identifier ("MEINE_VARIABLE") is a single token, not two words joined by a delimiter, unlike every
+     * other punctuation mark this app treats as a word boundary. [finalizeAndCommit] separately recognises
+     * any token containing `_` and skips autocorrect/§6 capitalisation/token-repair/learning for it entirely.
      */
     private fun commitLongPressSymbol(ic: InputConnection, symbol: String, sourceCode: KeyCode) {
-        if (sourceCode != KeyCode.TEXT && AlternativeScript.extendsWord(symbol, activeLanguage == Language.GREEK)) {
+        val extendsWord = symbol == "_" ||
+            (sourceCode != KeyCode.TEXT && AlternativeScript.extendsWord(symbol, activeLanguage == Language.GREEK))
+        if (extendsWord) {
             appendLongPressLetter(ic, symbol)
         } else {
             finalizeAndCommit(ic, symbol)
@@ -2384,6 +2391,14 @@ class AdaptKeyService : InputMethodService() {
             return commitVerbatim(ic, delimiter)
         }
         val typed = composing.toString()
+        // D-225: a token containing `_` is a technical identifier, not prose - no autocorrect, §6
+        // capitalisation, token repair or dictionary learning of any kind must ever apply to it (unlike
+        // commitVerbatim() above, which still learns the word - this is deliberately stronger). Checked
+        // here, before dictChoice/diacriticWord/bestCorrection are even computed, so none of that search
+        // runs for a token that can never resolve to a real dictionary word anyway.
+        if ('_' in typed) {
+            return commitVerbatim(ic, delimiter, learn = false)
+        }
         // A-03: pick the dictionary/capitalisation for the recent context (German default, English or
         // Greek when explicitly active, English also auto-detected while German is active); suppress = a
         // confidently-foreign but unsupported language. D-106 stage 2: also suppressed when the token is
@@ -2651,17 +2666,22 @@ class AdaptKeyService : InputMethodService() {
      * no §6 capitalisation and no token repair. Used when the user fixed the token's casing explicitly
      * via a word-end Shift, which ranks as explicit input and must be preserved in both directions.
      *
+     * @param learn D-225: false for a technical token containing `_` - such a token must never be learned
+     *        into the personal dictionary either, unlike an ordinary hand-finished (G-05) word, which still
+     *        is. Defaults to true so every pre-existing call site is unaffected.
      * @return D-122: the number of characters committed (`word.length + delimiter.length`) - see
      *         [finalizeAndCommit]'s own return contract
      */
-    private fun commitVerbatim(ic: InputConnection, delimiter: String): Int {
+    private fun commitVerbatim(ic: InputConnection, delimiter: String, learn: Boolean = true): Int {
         val word = composing.toString()
         ic.setComposingText(word, 1)
         ic.finishComposingText()
         clearComposing()
         resetWordEndShift()
         ic.commitText(delimiter, 1)
-        learnWord(word)
+        if (learn) {
+            learnWord(word)
+        }
         clearUndo()
         // D-43: predict the next word instead of leaving the bar blank.
         showNextWordPredictions()
@@ -3223,6 +3243,13 @@ class AdaptKeyService : InputMethodService() {
         }
         val input = composing.toString()
         if (input.isEmpty()) {
+            clearSuggestions()
+            return
+        }
+        // D-225: a technical identifier containing `_` is never prose - no dictionary/fuzzy/compound-split
+        // suggestion and no pending-correction chip is ever useful for it, mirroring urlMode's own bypass
+        // above. Checked before the A-03 dictionary lookup so no store query runs for it at all.
+        if ('_' in input) {
             clearSuggestions()
             return
         }

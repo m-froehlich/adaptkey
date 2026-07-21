@@ -70,6 +70,24 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§154 (v0.8.113): D-225 implemented - `_` is now word-extending, and a token containing one is fully**
+  **shielded from correction/suggestion/learning.** Picked up next per explicit request, following §149's own
+  captured design. `commitLongPressSymbol()` (the only reachable path to `_`, which has no primary key
+  anywhere) now treats `symbol == "_"` as word-extending directly, alongside the pre-existing
+  `AlternativeScript` script check - `_` isn't genuine script text, so it was never routed through that check
+  itself, just given its own explicit condition. `finalizeAndCommit()` now short-circuits on `'_' in typed`
+  before any dictionary search runs, committing via a new `commitVerbatim(ic, delimiter, learn = false)`
+  parameter (default `true`, existing G-05 call site unaffected) - deliberately stronger than G-05's own
+  verbatim commit, which still learns the word; a `_`-containing token never does, per the user's own explicit
+  correction ("nichts korrigieren, nichts lernen"). `refreshSuggestions()` mirrors the existing `urlMode`
+  bypass for `'_' in input`, clearing the bar entirely. The live §47 split-preview needed no separate guard -
+  `_` can never fold to a real dictionary word, so `trySplit()` already can't find a candidate through it.
+  Recorded as new requirement `B-04` (§8) - genuinely new settled behaviour, unlike the D-210/D-226/D-227 bug
+  fixes. No new tests (private `AdaptKeyService`/`InputConnection` glue, the same established gap as every
+  other fix in this area). 776 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  Not yet device-confirmed. See history §154.
+- **§153 (still v0.8.112, no code change): D-222, D-223, D-224, D-226, D-227 device-confirmed** in one round
+  (URL key merge, release build, save-credentials toggle, "commits", "übrigens"). See history §153.
 - **§152 CAPTURED (still v0.8.112, no code change): D-228 - "Docker" -> "Dock er" accepted as unfixable in**
   **general; backspace-restore-as-partial-learning-credit captured for later.** Third real-world A-05 split
   example from the same feedback round as D-210/D-226/D-227, but structurally different: neither dictionary

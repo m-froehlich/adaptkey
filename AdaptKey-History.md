@@ -7768,3 +7768,54 @@ count) possibly needing to grow accordingly if partial credit is introduced. Lef
 
 No code change, no version bump (documentation-only capture, per this project's own established convention).
 776 unit tests (unchanged).
+
+## §153 (still v0.8.112, no code change): D-222, D-223, D-224, D-226, D-227 Device-Confirmed
+
+User confirmed all five on device in one round: the URL-mode `www.`/`https://` key merge (D-222), the signed
+release build installing and running correctly (D-223), the renamed "save credentials" toggle behaving as
+expected (D-224), `"commits"` no longer being torn into `"com"`+`"its"` (D-226), and `"übrigebs"` now correctly
+autocorrecting to `"übrigens"` (D-227). No code change, no version bump - confirmation only. 776 unit tests
+(unchanged).
+
+## §154 - D-225: `_` is Now Word-Extending and a Token Containing It Is Fully Shielded From
+Correction/Suggestion/Learning (v0.8.113)
+
+Implements §149's own captured design (D-225), picked up next per the user's explicit request.
+
+**Word-extending.** `_` has no primary key anywhere (long-press-only, see §149) and every reachable path runs
+through `commitLongPressSymbol()`. That function's word-extension check
+(`AlternativeScript.extendsWord(symbol, ...)`) is specifically about genuine *language script* (a Greek letter
+either while actually in Greek mode, or borrowed as a math symbol otherwise) - `_` is not a letter in any script
+and was never meant to be routed through it. Rather than stretching `AlternativeScript` to cover a
+non-script, non-letter character, `commitLongPressSymbol()` now checks `symbol == "_"` directly, alongside the
+existing `AlternativeScript` check, before falling through to `finalizeAndCommit()`. `appendLongPressLetter()`
+itself needed no change - `_`'s `uppercaseChar()` is a no-op on a non-letter, and its own D-62 mid-word-reclaim
+handling is character-agnostic.
+
+**Full pipeline shielding.** `finalizeAndCommit()` now checks `'_' in typed` immediately after computing `typed`
+(before `dictChoice`/`diacriticWord`/`bestCorrection`/`trySplit` are even computed, so no store search ever
+runs for a token that can never resolve to a real dictionary word anyway) and, when true, commits via
+`commitVerbatim(ic, delimiter, learn = false)` - a new `learn` parameter (default `true`, so the existing G-05
+word-end-Shift call site is unaffected) that skips the `learnWord()` call `commitVerbatim()` otherwise always
+made. This is deliberately *stronger* than the G-05 case it reuses the shape of: a hand-finished word via G-05
+is still learned, a `_`-containing token never is, matching the user's explicit correction mid-discussion
+("nichts korrigieren, nichts lernen" - not merely "no automatic correction while still learnable"). Separately,
+`refreshSuggestions()` now checks `'_' in input` right after computing `input`, before the A-03 dictionary
+lookup, clearing the suggestion bar exactly like the pre-existing `urlMode` bypass immediately above it - no
+dictionary/fuzzy/compound-split suggestion and no S-06 pending-correction chip is ever shown for such a token.
+
+**Why the live §47 split-preview/highlight needed no separate change**: `TokenRepair.trySplit()`'s
+`candidateAt()` requires both halves to resolve to a real dictionary entry via `resolveWord()` (umlaut/ß-fold
+aware, but `_` folds to nothing) - any split position whose half still contains the literal `_` character can
+never resolve, so the presence of `_` itself already defeats the live split-preview/highlight without needing
+an explicit guard; the highlight likewise never turns green (S-05) since such a token can never become a known
+word by construction.
+
+Recorded as a new requirement, `B-04` (§8, alongside the hyphen-handling B-01/B-02/B-03), since this - unlike
+the D-210/D-226/D-227 bug fixes - is genuinely new, settled behaviour the spec's "current, crystallised feature
+set" should describe.
+
+No new unit tests - every touched function (`commitLongPressSymbol`, `finalizeAndCommit`, `commitVerbatim`,
+`refreshSuggestions`) is private `AdaptKeyService`/Android `InputConnection` glue with no pure-function seam, the
+same established gap as every other fix in this area (D-119/D-120/D-154/D-155/D-226/D-227). 776 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
