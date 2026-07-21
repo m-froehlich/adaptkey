@@ -65,17 +65,14 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
-    fun diacriticCandidatesAreNotBoundedByFrequencyUnlikeCorrectionCandidatesInANeighbourBucket() {
-        val store = store("diacritic-cand.db")
-        // Six same-bucket ("h", length 4-6) words at descending frequency; "hobel" (the lowest) plays the
-        // role of a rare-but-correctly-spelled diacritic candidate (D-197 / spec §126) that
-        // correctionCandidates' frequency-truncated LIMIT would starve out before diacriticRestoration ever
-        // gets a chance to compare it against the token.
+    fun diacriticCandidatesAreBoundedByFrequencyInAnOrdinaryKeyboardNeighbourBucket() {
+        val store = store("diacritic-cand-neighbour.db")
+        // D-221: unlike the umlaut-variant bucket (see the dedicated test below), an ordinary keyboard-
+        // neighbour bucket unrelated to any umlaut variant now stays capped in diacriticCandidates() too,
+        // mirroring correctionCandidates()'s own D-209 reasoning - the double coincidence of a first-key
+        // typo AND that word also needing umlaut restoration is rarer still than a first-key typo alone.
         // D-209: the token itself ("zobel", not a real word) starts with 'z', not 'h' - so the 'h' bucket
-        // here is reached only as a synthetic keyboard-neighbour char, exercising the still-capped case
-        // (D-209 lifts the cap only for the token's own literal first-character bucket, not every bucket
-        // correctionCandidates searches - see correctionCandidatesAreNotBoundedByFrequencyInTheTokenSOwnBucket
-        // below for that other case).
+        // here is reached only as a synthetic keyboard-neighbour char, exercising the still-capped case.
         listOf("haupt" to 500L, "hafen" to 400L, "hallo" to 300L, "hemde" to 200L, "hitze" to 100L, "hobel" to 1L)
             .forEach { (word, freq) -> store.putWord(WordEntry(word, freq, emptySet())) }
         // A large synthetic firstChars set (only 'h' actually matches any seeded word; the other 399 are
@@ -85,10 +82,34 @@ class SqliteDictionaryStoreRoboTest {
         val firstChars = (setOf('h') + (1..399).map { offset -> Char(8000 + offset) }).toSet()
         
         val bounded = store.correctionCandidates("zobel", firstChars)
-        val unbounded = store.diacriticCandidates("zobel", firstChars)
+        val alsoBounded = store.diacriticCandidates("zobel", firstChars)
         
         assertFalse(bounded.contains("hobel"))
-        assertTrue(unbounded.containsAll(listOf("haupt", "hafen", "hallo", "hemde", "hitze", "hobel")))
+        assertFalse(alsoBounded.contains("hobel"))
+        store.close()
+    }
+    
+    @Test
+    fun diacriticCandidatesAreNotBoundedByFrequencyInTheUmlautVariantBucket() {
+        val store = store("diacritic-cand-umlaut.db")
+        // D-221: the umlaut-variant bucket ('ü' for a token starting with 'u') is not a rare edge case for
+        // diacritic restoration the way a keyboard-neighbour typo is - it is the *expected*, ordinary path,
+        // since a user typing the ASCII-folded form of an umlaut word (e.g. "uber" for "über") has their
+        // token classified under the plain letter while the real word lives under its own umlaut. Six
+        // same-bucket ("ü", length 4-6) words at descending frequency; "üobel" (the lowest) plays the role
+        // of a rare-but-correctly-spelled diacritic candidate (D-197 / spec §126) that a frequency-truncated
+        // LIMIT would starve out before diacriticRestoration ever gets a chance to compare it against the
+        // token - same structure as the keyboard-neighbour test above, just under 'ü' instead of 'h'.
+        listOf("üaupt" to 500L, "üafen" to 400L, "üallo" to 300L, "üemde" to 200L, "üitze" to 100L, "üobel" to 1L)
+            .forEach { (word, freq) -> store.putWord(WordEntry(word, freq, emptySet())) }
+        // Same large-synthetic-firstChars trick as above, now including both 'u' (the token's own literal
+        // first character - itself already uncapped, see correctionCandidatesAreNotBoundedByFrequencyInThe
+        // TokenSOwnBucket) and 'ü' (its umlaut variant, the one this test is actually about).
+        val firstChars = (setOf('u', 'ü') + (1..398).map { offset -> Char(8000 + offset) }).toSet()
+        
+        val unbounded = store.diacriticCandidates("uobel", firstChars)
+        
+        assertTrue(unbounded.containsAll(listOf("üaupt", "üafen", "üallo", "üemde", "üitze", "üobel")))
         store.close()
     }
     

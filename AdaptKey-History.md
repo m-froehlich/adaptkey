@@ -7404,3 +7404,52 @@ exactly what confirms nothing changed. 774 unit tests (unchanged). `:app:assembl
 green. Not yet device-confirmed - the D-220 timing log (`AdaptKeyHaptics`, `finalizeAndCommit: timing
 diacriticMs=... bestCorrectionMs=... splitMs=... rawCorrectedMs=...`) stays in place for the next repro to show
 `bestCorrectionMs` actually dropping for a common-initial-letter word.
+
+## §144 - D-220 Device-Confirmed, D-221 Fixed: diacriticRestoration() Uncapped Every Bucket, Not Just the Ones
+That Correctness Actually Required (v0.8.107)
+
+A fresh pair of logs (fast typing, then deliberately more typos) confirmed D-220 first: `bestCorrectionMs` for
+already-correct, common-initial-letter words (`"Herzlichen"`, `"Glückwunsch"`, `"Geburtstag"`) dropped from
+186-404ms to 68-90ms (often 0-8ms for short/known-word-protected tokens) - the predicted 3-5x win, device-
+confirmed. The user's own observation from the same log pointed at a second, distinct pattern: "Wenn man das
+Wort ungünstig falsch tippt, dauert der Commit länger" - genuine typos of common-initial-letter words
+(`"Glückwusf"`, `"Geburtstsf"`, `"Glückwunsfh"`, and a mid-typo split case) showed `diacriticMs` spiking to
+176-213ms, while correctly-typed words kept it near zero.
+
+**Root-caused, not guessed - and the obvious first fix idea turned out to be wrong, caught by re-reading the
+existing test suite before touching anything.** `diacriticRestoration()`'s `isKnownWord(token)` early exit
+(unlike `bestCorrection()`, see D-220) already skips the search entirely for a correctly-typed word - exactly
+why `diacriticMs` stayed near zero for `"Herzlichen"` etc. For an actual typo, the early exit does not fire, so
+`store.diacriticCandidates()` runs its full, deliberately unbounded (D-197) bucket scan - and unlike
+`correctionCandidates()` (which, per D-209, uncaps only the token's own literal first-character bucket, keeping
+every keyboard-neighbour/umlaut-variant bucket capped), `diacriticCandidates()` uncapped *every* searched bucket
+via a blanket `perBucketLimit = Int.MAX_VALUE`. `candidateFirstChars()` (D-38) returns the token's own char plus
+its keyboard neighbours plus, for a token starting with a/o/u, the umlaut variant (ä/ö/ü) - for a common
+initial letter like G or H, that is several full-size buckets scanned without any limit at all, not just one.
+
+The first fix idea considered - cap the diacriticCandidates() neighbour buckets exactly like
+correctionCandidates() already does - was disproven by the existing
+`diacriticCandidatesAreNotBoundedByFrequencyUnlikeCorrectionCandidatesInANeighbourBucket` test, which
+*deliberately* asserted the opposite. The reason: unlike a keyboard-neighbour typo (a genuinely rare edge case
+for correctionCandidates()), the umlaut-variant bucket is the *expected*, ordinary path for diacritic
+restoration itself - a user typing the ASCII-folded form of an umlaut word (e.g. "uber" for "über") has their
+token classified under the plain letter while the real word lives under its own umlaut. Capping that bucket
+would have silently reintroduced the exact "Grüße" bug D-197 exists to prevent, just reached via the
+umlaut-variant path instead of the primary-bucket path.
+
+**Fixed with the narrower distinction the naive version missed**: `correctionCandidatesInternal()`'s
+`uncappedChar: Char?` parameter became `uncappedChars: Set<Char>`, so more than one bucket can be exempted from
+the cap. `diacriticCandidates()` now derives *two* uncapped chars - the token's own literal first character
+(same as `correctionCandidates()`) and its umlaut variant (mirroring `candidateFirstChars()`'s own a/o/u -> ä/ö/ü
+mapping locally, rather than threading it through the `DictionaryStore` interface for three fixed character
+pairs) - while ordinary keyboard-neighbour buckets stay capped, exactly like `correctionCandidates()`.
+
+Test coverage updated to match the narrower guarantee: the old neighbour-bucket test (which asserted the
+now-removed blanket-uncap behaviour) was replaced by
+`diacriticCandidatesAreBoundedByFrequencyInAnOrdinaryKeyboardNeighbourBucket` (proving a genuine keyboard-
+neighbour bucket, unrelated to any umlaut variant, is capped exactly like `correctionCandidates()`'s own
+already-tested case) and a new `diacriticCandidatesAreNotBoundedByFrequencyInTheUmlautVariantBucket` (proving
+the umlaut-variant bucket specifically stays uncapped, the actual D-197 correctness guarantee this whole
+function exists for). 775 unit tests (774 - 1 replaced + 2 new). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green. Not yet device-confirmed - awaits the user's next repro of a common-initial-letter typo to show
+`diacriticMs` dropping while an umlaut-restoration case (e.g. "uber" -> "über") still resolves correctly.

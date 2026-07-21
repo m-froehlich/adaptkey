@@ -411,33 +411,58 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // buckets (reached only for a first-key typo, a much rarer case) - see correctionCandidatesInternal's
         // own KDoc for the reasoning and the real repro ("Kita", frequency 17, crowded out by 389 more
         // frequent same-letter/same-length-window words before ever reaching the edit-distance comparison).
-        return correctionCandidatesInternal(token, firstChars, perBucketLimit, uncappedChar = token.lowercase().firstOrNull())
+        return correctionCandidatesInternal(token, firstChars, perBucketLimit, uncappedChars = setOfNotNull(token.lowercase().firstOrNull()))
     }
     
     /**
-     * D-197: [correctionCandidates]' identical bucket search but with no per-bucket cap at all - see
-     * [DictionaryStore.diacriticCandidates]'s own KDoc for why a frequency-truncated search silently starved
-     * out a rare but correctly-spelled diacritic candidate (e.g. "Grüße", frequency 18, behind hundreds of
-     * more common same-bucket words) before diacritic restoration ever got to compare it against the token.
+     * D-197: [correctionCandidates]' identical bucket search, but with two buckets left uncapped instead of
+     * one - see [DictionaryStore.diacriticCandidates]'s own KDoc for why a frequency-truncated search
+     * silently starved out a rare but correctly-spelled diacritic candidate (e.g. "Grüße", frequency 18,
+     * behind hundreds of more common same-bucket words) before diacritic restoration ever got to compare it
+     * against the token.
+     *
+     * D-221: [correctionCandidatesInternal]'s own KDoc explains why the token's own literal first-character
+     * bucket stays uncapped, exactly as for [correctionCandidates]. The *umlaut-variant* bucket (ä/ö/ü for a
+     * token starting with a/o/u) is uncapped here too, though, unlike for [correctionCandidates] - that
+     * variant bucket is not a rare edge case for diacritic restoration the way a keyboard-neighbour typo is:
+     * it is the *expected*, ordinary path, since a user typing the ASCII-folded form of an umlaut word (e.g.
+     * "uber" for "über") has their token classified under the plain letter while the real word lives under
+     * its own umlaut. Capping that bucket would silently reintroduce the exact "Grüße" bug this function
+     * exists to prevent, just reached via the umlaut-variant path instead of the primary-bucket path. The
+     * ordinary keyboard-neighbour buckets stay capped, same as [correctionCandidates] - the double
+     * coincidence of a first-key typo *and* that word also needing umlaut restoration is rarer still than a
+     * first-key typo alone.
      */
     override fun diacriticCandidates(token: String, firstChars: Set<Char>): List<String> {
-        return correctionCandidatesInternal(token, firstChars, Int.MAX_VALUE)
+        val key = token.lowercase()
+        val ownChar = key.firstOrNull()
+        // Mirrors DictionarySuggestionProvider.candidateFirstChars()'s own a/o/u -> ä/ö/ü mapping - kept
+        // local rather than shared, since threading it through the DictionaryStore interface for three fixed
+        // character pairs would be a larger change than the mapping itself.
+        val umlautVariant = when (ownChar) {
+            'a' -> 'ä'
+            'o' -> 'ö'
+            'u' -> 'ü'
+            else -> null
+        }
+        val perBucketLimit = maxOf(1, CANDIDATE_LIMIT / firstChars.size)
+        return correctionCandidatesInternal(token, firstChars, perBucketLimit, uncappedChars = setOfNotNull(ownChar, umlautVariant))
     }
     
     /**
-     * D-209: [uncappedChar], when given, is searched without [perBucketLimit] at all - reserved for the
-     * token's own literal first character (not its keyboard-neighbour or umlaut-variant chars), the single
-     * bucket where a same-first-letter typo (the overwhelming common case) actually lives, and therefore
-     * the one bucket where silently dropping a rare-but-correct candidate is most costly. Deliberately
-     * scoped to only that one bucket, not every searched first-char - uncapping the neighbour buckets too
-     * would reopen the exact per-keystroke cost concern D-160/D-208 already address, for candidates that
-     * only ever matter for a first-key typo, a rarer case than an ordinary same-letter one.
+     * D-209 / D-221: every char in [uncappedChars] is searched without [perBucketLimit] at all - reserved
+     * for the bucket(s) where silently dropping a rare-but-correct candidate would be most costly (see
+     * [correctionCandidates]'s and [diacriticCandidates]'s own call sites for which chars each passes and
+     * why). Deliberately scoped to only those buckets, not every searched first-char - uncapping every
+     * keyboard-neighbour bucket too would reopen the exact per-keystroke cost concern D-160/D-208 already
+     * address, for candidates that only ever matter for a first-key typo, a rarer case than an ordinary
+     * same-letter one.
      */
     private fun correctionCandidatesInternal(
         token: String,
         firstChars: Set<Char>,
         perBucketLimit: Int,
-        uncappedChar: Char? = null
+        uncappedChars: Set<Char> = emptySet()
     ): List<String> {
         val key = token.lowercase()
         if (key.isEmpty() || firstChars.isEmpty()) {
@@ -459,7 +484,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             val codePoint = firstChar.code
             val lower = String(Character.toChars(codePoint))
             val upper = String(Character.toChars(codePoint + 1))
-            val limit = if (firstChar == uncappedChar) Int.MAX_VALUE else perBucketLimit
+            val limit = if (firstChar in uncappedChars) Int.MAX_VALUE else perBucketLimit
             result.addAll(bucketQuery(TABLE_WORDS, lower, upper, minLen, maxLen, limit))
             result.addAll(bucketQuery(TABLE_LEARNED, lower, upper, minLen, maxLen, limit))
         }

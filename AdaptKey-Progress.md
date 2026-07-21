@@ -37,6 +37,26 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§144 (v0.8.107): D-220 device-confirmed (bestCorrectionMs 186-404ms -> 68-90ms, the predicted 3-5x win);
+  D-221 fixed - diacriticRestoration() uncapped every searched bucket, not just the ones correctness actually
+  needed.** User's own observation from the same log: badly-mistyped, common-initial-letter words (e.g.
+  "Glückwusf", "Geburtstsf") still showed `diacriticMs` at 176-213ms. Cause: `diacriticRestoration()`'s
+  `isKnownWord()` early exit skips correctly-typed words (why D-220's fix alone didn't touch this), but for an
+  actual typo `store.diacriticCandidates()` runs its deliberately unbounded (D-197) bucket scan - and unlike
+  `correctionCandidates()` (D-209: only the token's own literal first-char bucket stays uncapped),
+  `diacriticCandidates()` uncapped *every* bucket (own char + keyboard neighbours + umlaut variant) via a
+  blanket `perBucketLimit = Int.MAX_VALUE`. First fix idea (cap neighbour buckets like correctionCandidates())
+  was disproven by an existing test that deliberately asserted the opposite - the umlaut-variant bucket (ä/ö/ü
+  for a/o/u) is diacritic restoration's *expected* path, not a rare edge case (a user typing "uber" has their
+  token classified under 'u' while the real word "über" lives under 'ü') - capping it would reintroduce the
+  exact "Grüße" bug D-197 prevents, via the umlaut path instead of the primary-bucket path. Fixed correctly:
+  `correctionCandidatesInternal()`'s single `uncappedChar` became `uncappedChars: Set<Char>`;
+  `diacriticCandidates()` now uncaps the token's own char *and* its umlaut variant, while ordinary
+  keyboard-neighbour buckets stay capped like `correctionCandidates()`. Old neighbour-bucket test (asserting
+  the removed blanket-uncap) replaced by two tests covering each bucket kind separately. 775 unit tests
+  (774 - 1 + 2). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history
+  §144.
+
 - **§143 (v0.8.106): D-220 fixed - bestCorrection() queried frequencyOf() for every same-bucket candidate
   before even checking whether its edit cost qualified.** The D-220 timing log paid off immediately: fresh
   logs showed `bestCorrectionMs` alone dominating every slow commit (186-404ms for already-correct,
