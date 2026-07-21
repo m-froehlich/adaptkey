@@ -70,6 +70,29 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§160 (v0.8.119): D-232 - D-230/D-228 closed via dictionary data instead of algorithm, a user-proposed**
+  **pragmatic alternative to §158's design deadlock.** Root cause of both regressions was simply "a real word
+  missing from the dictionary" - added the missing words instead of fighting the split algorithm.
+  **24 genuinely-missing irregular/ablaut-verb forms** added to `dict_de.tsv` (verified against the real file
+  first - most present-tense/preterite forms already existed; `darfst`/`gibst`/`nimmst`/`sprichst`/`fahre`/
+  `fährst`/`läufst`/`schlafe`/`schläfst`/`trägst`/`hältst`/`fällst`/`rätst`/`wäschst`/`empfehle`/`empfiehlst`/
+  `hilfst`/`stirbst`/`wirfst`/`triffst`/`brichst`/`stehle`/`stiehlst`/`warst` were the real gaps), tagged
+  `OTHER`, frequencies derived from each verb's own sibling form via the corpus's own observed ratio pattern.
+  **IT/programming terms**: architecture question answered first - stores are one full SQLite file per
+  language, not a shared table, so a third "#it" pseudo-dictionary would need a whole new store/provider and
+  still wouldn't be suggested while German is active (only the active language's provider serves ordinary
+  suggestions). User's call: add the missing pieces to **both** `dict_de.tsv` (14: `Kubernetes`/`Docker`/
+  `Microservice`/`Commit`/`Deployment`/`Endpoint`/`Refactoring`/`Gradle`/`Kotlin`/`Workflow`/`Codebase`/
+  `Bugfix`/`Changelog`/`Snapshot`) and `dict_en.tsv` (5: `Kubernetes`/`microservice`/`bugfix`/`changelog`/
+  `rollback`) - most candidate terms already existed in both files with real corpus frequencies. **Correction
+  to §152/§157/§158**: those entries claimed `"Docker"` has no entry in either bundled language - wrong, only
+  `dict_de.tsv` was ever checked; `dict_en.tsv` already had `Docker 13 OTHER`, meaning D-226 (already shipped
+  and device-confirmed) should already have protected it via `knownInOtherLanguage()` - never re-tested on
+  device since. `BUNDLED_DICTIONARY_VERSION` bumped 1->2 so this reaches the existing install (D-178's
+  mechanism); no `wkey` collisions introduced (verified). No new tests (pure data + one version constant,
+  matching the D-114/D-132 precedent for data-only rounds). 778 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - in particular whether
+  `"Docker"` was already fixed by D-226 alone, independent of this round. See history §160.
 - **§159 (v0.8.118): D-231 - Enter's learned touch zone capped against drifting into Backspace, mirroring**
   **D-109/D-133's bottom-row-vs-space-bar precedent.** User reported Enter's T-03 zone bleeding upward into
   Backspace, asking for a cap on both keys. Confirmed the geometry: Backspace sits at the right end of the

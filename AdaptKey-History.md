@@ -8004,3 +8004,71 @@ unlike the bottom-row letters D-133 already had to keep the visualisation consis
 
 1 new test (`OffsetModelTest`, mirroring D-133's own `resolve()`-level end-to-end proof, direction reversed).
 778 unit tests total (777 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §160 - D-232: D-230's "darfst"-Class Regression and D-228's IT-Vocabulary Gap Closed via Dictionary Data,
+Not Algorithm - a User-Proposed Pragmatic Alternative to the §158 Design Deadlock (v0.8.119)
+
+§158 left D-230 (and, by extension, D-228) at a genuine impasse: no cheap signal distinguishes a wanted split
+(`der`+`Kinderarzt`) from an unwanted one (`darf`+`St`, `Dock`+`er`) once both surface shapes are identical. The
+user proposed sidestepping the algorithm entirely: since the actual root cause in every one of these cases is
+simply *a real word missing from the dictionary* (an irregular verb conjugation, an IT term), just add the
+missing words - a token `TokenRepair.isAlreadyRecognised()` already protects unconditionally via plain
+`isKnownWord()`, no clever heuristic required. Directly precedented (D-114/D-115 already fixed missing-word
+gaps the same way).
+
+**Verb list verified against the real dictionary before writing anything, not guessed**: checked ~35 present-
+tense/preterite forms across the modal verbs, `sein`/`haben`/`werden`/`wissen`, and ~18 common present-tense
+stem-vowel-changing ("ablaut") strong verbs. Most already existed; genuinely missing (24 forms): `darfst`,
+`warst`, `gibst`, `nimmst`, `sprichst`, `fahre`, `fährst`, `läufst`, `schlafe`, `schläfst`, `trägst`, `hältst`,
+`fällst`, `rätst`, `wäschst`, `empfehle`, `empfiehlst`, `hilfst`, `stirbst`, `wirfst`, `triffst`, `brichst`,
+`stehle`, `stiehlst` - far fewer than the user's own "meinetwegen 300" ceiling. Added to `dict_de.tsv`, tagged
+`OTHER` (matching every existing verb-form entry - this dictionary has no separate `VERB` tag in practice,
+confirmed via the real POS-tag distribution: only `NOUN`/`OTHER`/`NOUN,OTHER` are ever used). Frequencies are
+not invented arbitrarily: derived from each verb's own already-present sibling form (e.g. `gibst` from
+`gibt`=21,834, `nimmst` from `nimmt`=2,732), using the ~0.3-2% ratio observed across genuine existing
+2nd-person/3rd-person sibling pairs already in the corpus (`kannst`/`kann`, `musst`/`muss`, `bist`/`ist`, etc.),
+floored around the corpus's own established minimum entry frequency (~8-16).
+
+**IT/programming term architecture question answered first, since it changed the plan**: `Language` stores are
+one full SQLite database file each (`adaptkey_dictionary_${code}.db`), not one shared table with a language
+column - a third "#it" pseudo-dictionary would need a whole new store/provider/`CapitalisationEngine`, and even
+then would not actually be *suggested* while German is active, since `suggestionsFor()` only ever consults the
+single active language's provider - `knownInOtherLanguage()` (cross-language protection) is a separate,
+narrower check never merged into ordinary suggestions. Simplest correct answer: put the terms directly in the
+dictionary that is actually active during normal typing. **User's final call: both** - add to whichever of
+`dict_de.tsv`/`dict_en.tsv` is missing each term, not just German.
+
+Checked ~30 candidate IT/programming terms against both real bundled files before adding anything - most
+already existed with real (if modest) Wikipedia-corpus frequencies (`Repository`, `Branch`, `Merge`,
+`Framework`, `Container`, `Pipeline`, `Cache`, `Cluster`, ...). Genuinely missing: **German** gained `Kubernetes`,
+`Docker`, `Microservice`, `Commit`, `Deployment`, `Endpoint`, `Refactoring`, `Gradle`, `Kotlin`, `Workflow`,
+`Codebase`, `Bugfix`, `Changelog`, `Snapshot` (14, tagged `NOUN`, capitalised per German noun orthography,
+matching every existing IT-term entry already in `dict_de.tsv`); **English** gained `Kubernetes`, `microservice`,
+`bugfix`, `changelog`, `rollback` (5, tagged `OTHER`, case matching the existing convention - a brand-shaped term
+capitalised like `Docker`/`Kotlin`, an ordinary common noun lowercase like `cache`/`cluster`).
+
+**A real correction to §152/§157/§158's own record, found while checking `dict_en.tsv` for the IT-term list**:
+those entries stated `"Docker"` has no entry in either bundled language - wrong, because that check only ever
+queried `dict_de.tsv`; `dict_en.tsv` already contained `Docker	13	OTHER` the whole time, confirmed only now by
+actually checking. Since `knownInOtherLanguage()` checks every *other* language's provider regardless of
+frequency, and D-226 (already shipped, already device-confirmed) made `trySplit()` respect that exact check,
+**typing `"Docker"` while German is active should already have been protected from splitting since D-226
+shipped** - independently of anything added this round. This was never verified on device after D-226 landed
+(the user's original `"Docker"` report predates it), so D-228's own "accepted as unfixable" framing may already
+have been moot before this round even started. Flagged here plainly rather than silently amended in the earlier
+entries, per this project's append-only convention for `AdaptKey-History.md`.
+
+**Reached every existing device install**: `DictionaryLoader.BUNDLED_DICTIONARY_VERSION` bumped 1 -> 2 (D-178's
+mechanism) - `resetBundledWords()` + reseed fires once per store on next load, touching only the bundled
+words/bigrams table, never the learned overlay/blacklist/pending marks. Verified no `wkey` (lowercase-key)
+collisions were introduced in either file before writing (a real risk, since `TABLE_WORDS`' primary key is the
+lowercased word - this is exactly why an already-existing entry like `"Laufe"` (the noun, frequency 2,377) was
+correctly left untouched rather than duplicated, since it already made lowercase `"laufe"` resolve as a known
+word regardless of the case mismatch against the 1st-person-singular verb form).
+
+No new unit tests - pure dictionary asset data plus one version-constant bump, no new logic (matches the
+established convention for data-only rounds, e.g. D-114/D-132). 778 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - in particular, the `"Docker"`
+finding above specifically needs a fresh on-device retest to know whether D-228 was already resolved by D-226
+alone, or whether this round's own new `Docker` entry (added independently either way, redundantly or not) is
+what actually fixes it.

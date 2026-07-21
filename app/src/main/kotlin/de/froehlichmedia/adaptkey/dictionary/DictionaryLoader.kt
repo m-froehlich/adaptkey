@@ -28,8 +28,13 @@ object DictionaryLoader {
     /** The languages that ship with a bundled dictionary (German default, English auto, Greek via G-01). */
     val LANGUAGES = listOf(Language.GERMAN, Language.ENGLISH, Language.GREEK)
     
-    /** D-178: bump to force a one-time reseed of the bundled tables on every existing install's next load. */
-    private const val BUNDLED_DICTIONARY_VERSION = 1
+    /**
+     * D-178: bump to force a one-time reseed of the bundled tables on every existing install's next load.
+     * D-232: bumped again - German gained 24 missing irregular/ablaut-verb conjugated forms (D-230's
+     * "darfst"-class split regression) plus 14 IT/programming terms; English gained 5 IT/programming terms
+     * German was missing (D-228's "Docker"-class regression, plus terms the user expects to type often).
+     */
+    private const val BUNDLED_DICTIONARY_VERSION = 2
     
     /**
      * D-186: bump to force a one-time [SqliteDictionaryStore.purgeBundledDuplicatesFromLearned] on every
