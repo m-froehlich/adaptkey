@@ -27,6 +27,15 @@ in every prompt.
   ```
 - A post-write hook normalises blank lines / CRLF and may reformat files after edits
   (do not fight it).
+- **D-223: `:app:assembleRelease` produces the real, day-to-day install artifact** -
+  `app/build/outputs/apk/release/AdaptKey.apk`, signed, `debuggable=false`, `isMinifyEnabled=false`
+  (deliberately no code shrinking/obfuscation). Needs `keystore.properties` at the project root (gitignored,
+  not checked in - holds `storeFile`/`storePassword`/`keyAlias`/`keyPassword` for the equally gitignored
+  `release.keystore`, also at the project root); `:app:assembleRelease` fails without it, everything else
+  configures fine regardless. **The release keystore is load-bearing once it has signed an installed build -
+  back it up.** Losing it means every future version needs an uninstall + reinstall, wiping the learned
+  dictionary/settings, since Android requires the same signing key to update in place. `app-debug.apk`
+  (`:app:assembleDebug`) still exists unchanged for actual on-device debugging if that is ever needed again.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
@@ -55,6 +64,17 @@ History.md's append-only log) so they are not lost if the situation that would j
   actually-superseded query time (not raw computation cost) as the dominant remaining factor.
 
 ## Current State
+
+- **§147 (v0.8.109): D-223 - a real, signed release build.** User asked whether sideloading `app-debug.apk`
+  still made sense given the USB/JDWP debugger it enables is never actually used - correctly distinguished
+  from native "debug symbols" (this project never generates any regardless, debug or release). Generated a
+  dedicated release keystore, wired signing through a new gitignored `keystore.properties` (mirrors
+  `local.properties`'s own placement/reasoning), renamed the release output to `AdaptKey.apk`. Deliberately
+  left `isMinifyEnabled=false` - code shrinking/obfuscation is a separate, riskier decision not asked for.
+  `:app:assembleRelease` verified signed (`apksigner verify`) and installable; `:app:assembleDebug` verified
+  unchanged. No Kotlin source touched - pure build-script/signing configuration. 775 unit tests (unchanged).
+  See history §147 for the "must back up the keystore" consequence and the build-doc section above for the
+  new command.
 
 - **§146 (v0.8.108): D-222 - the URL-mode `https://` and `www.` keys merged into one, restoring the space
   key to full width.** User: on a phone the URL/address bar is used for search queries far more often than

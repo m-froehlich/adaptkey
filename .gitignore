@@ -12,3 +12,4 @@ build/
 *.aab
 *.keystore
 !debug.keystore
+/keystore.properties

@@ -7523,3 +7523,44 @@ anymore). 775 unit tests (unchanged count - two renamed/rewritten, none added: t
 layout/weight glue with no new pure logic, the established untested-gap layer for pixel/weight geometry
 itself, though the *key list* KeyboardLayout produces is plain data and stays covered as before).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §147 - D-223: a Real, Signed Release Build - "AdaptKey.apk" Instead of the Debug Build, USB Debugger Never
+Used (v0.8.109)
+
+The user asked whether it still makes sense to keep sideloading `app-debug.apk` given the debugger it enables
+(`debuggable="true"`, USB/JDWP attach) is never actually used - no SDK/USB debugging session, ever. Correctly
+distinguished from native "debug symbols" in the strict sense: this project's own build never generates any
+(`mergeDebugNativeDebugMetadata` is a `NO-SOURCE` no-op even for the debug variant), so there was nothing to
+strip there regardless - the actual, meaningful switch is `debuggable` itself, a real (if modest) attack
+surface for an IME that sees every keystroke system-wide, closed off for no cost once nobody is actually using
+a debugger against it.
+
+**Implemented, deliberately not bundled with code shrinking/obfuscation.** The project already had an
+essentially inert `release` build type (`isMinifyEnabled = false`, ProGuard files referenced but never
+applied) with no signing config at all, so `:app:assembleRelease` had never actually produced an installable
+APK. Generated a dedicated release keystore (`keytool`, RSA 2048, ~30-year validity, `CN=AdaptKey, OU=Froehlich
+Media, O=Froehlich Media, C=DE`) and wired it in via a new, gitignored `keystore.properties` at the project
+root (same placement/reasoning as the already-gitignored `local.properties`) - `app/build.gradle.kts` loads it
+conditionally (`keystorePropertiesFile.exists()`), so a checkout without one still configures cleanly; only
+`:app:assembleRelease` itself would fail without it. `isMinifyEnabled` stays `false` - code shrinking/
+obfuscation is a separate, riskier decision (could make a future Logcat crash trace unreadable) the user did
+not ask for, so it was deliberately left alone rather than bundled in "for free". Release output renamed from
+AGP's own default `app-release.apk` to `AdaptKey.apk` (the actual thing asked for) via the classic
+`applicationVariants.all { outputs.all { ... outputFileName = ... } }` hook; debug keeps its unchanged
+`app-debug.apk` name, still occasionally useful and never the actual point of confusion.
+
+Verified end-to-end: `:app:assembleRelease` succeeds, `apksigner verify --print-certs` confirms the APK is
+signed with the new key (`keytool -printcert -jarfile` alone reported "no signed JAR file" - a false negative,
+since it only recognises the older JAR signing scheme, not the APK Signature Scheme v2/v3 AGP actually uses by
+default; `apksigner` is the tool that actually understands it), and `:app:assembleDebug` still produces its
+usual unchanged `app-debug.apk`, confirming the debug variant is untouched.
+
+**The release keystore is now load-bearing and must be backed up** - Android requires the exact same signing
+key to install an update over an existing install; losing this keystore means every future version would
+require an uninstall + reinstall first, wiping the local learned dictionary/settings. `release.keystore` and
+`keystore.properties` both live at the project root, both gitignored (`*.keystore`/`!debug.keystore` already
+covered the former; `/keystore.properties` newly added to `.gitignore`) - deliberately never committed, since
+the properties file holds the store/key passwords in plain text.
+
+No new unit tests - pure Gradle/signing build-script configuration, no Kotlin source changed at all. 775 unit
+tests (unchanged). `:app:assembleRelease`/`:app:assembleDebug`/`:app:testDebugUnitTest` all verified green.
