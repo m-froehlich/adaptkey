@@ -7190,3 +7190,52 @@ scan, not merely that its default no-op is harmless. (a)'s `entryOf()`-based rew
 all of which continued to pass unchanged, confirming behaviour preservation. 774 unit tests (772 + 2).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - awaits the user's next repeat
 of the same on-device test.
+
+## §139 - D-217: Diagnostics Now Show Actual Processing Time and Actual Flash-Paint Latency, Not Just Typing
+Speed (v0.8.102)
+
+Before re-testing D-214/D-215/D-216 on-device, the user asked for the diagnostics themselves to be sharpened:
+"Ich glaube, derzeit kannst du nur sehen, wie schnell ich tippe, aber nicht, wie schnell der Buchstabe
+tatsächlich verarbeitet wurde und nicht, wie schnell der flash-Effekt auf der Taste aktualisiert wurde." Correct
+- every existing `AdaptKeyJitter`/`AdaptKeyHaptics` timestamp so far only records *when a call happened*, from
+which typing cadence can be inferred, but nothing directly measures either (1) how long the keyboard's own
+processing of a single tap actually took, or (2) how long the visual flash acknowledgement actually took to
+reach the screen - exactly the two numbers this whole sluggishness investigation has been reasoning about
+indirectly from proxies (SQLite query counts, O(n×m) estimates) rather than measuring directly.
+
+**(1) Per-key processing time, in `AdaptKeyService.handleKey()`.** This is the single synchronous entry point
+every tap reaches after `AdaptKeyboardView` resolves it (called from `onTouchEvent`'s `ACTION_UP`), and it does
+all of the main-thread work a keystroke requires - `insertComposingChar()`, `updateComposing()`,
+`refreshSuggestions()`'s own synchronous portion - before returning control to the looper. The whole existing
+body (previously several independent `return` points: the ic-null guard, the A-07 undo branch, each `when`
+arm) is now wrapped in a `try`/`finally`, mirroring `diag()`'s own single-choke-point reasoning and the
+existing `ic.beginBatchEdit()`/`endBatchEdit()` try/finally already inside the `CHAR` branch - a start
+timestamp (`handledAt = SystemClock.uptimeMillis()`) is captured once at entry, and the elapsed time is logged
+unconditionally in `finally`, so every exit path is measured, not only the common one. New line, tag
+`AdaptKeyHaptics` (reused rather than adding a third tag, since it is still per-key diagnostic output the user
+already watches for): `handleKey: key=<code> '<char>' t=<start> processed in <n>ms`.
+
+**(2) Flash-paint latency, in `AdaptKeyboardView`.** `flash(key)` (called from `ACTION_UP`, immediately before
+the `onKeyListener?.onKey()` call that reaches (1) above) only *requests* the highlight - it sets `flashKey`
+and calls `invalidate()`, which merely schedules a redraw for whenever the system next services this view's
+draw pass; if the main thread is busy (e.g. still inside the very `handleKey()` call this same touch event
+triggers, or a queued message ahead of it), the actual paint can lag well behind the request, and previously
+nothing measured that gap at all - `invalidate()` returning promptly says nothing about when `onDraw()` will
+actually run. Added `flashRequestedAt`/`flashTimingPending`; `flash()` stamps the request time and arms the
+flag, and `drawKeys()` - at the exact point it selects `pressedKeyPaint` for `flashKey` - checks the flag,
+logs the elapsed time since the request, and clears it, so exactly one line is emitted per flash (not one per
+frame it stays lit for). `logHaptics()` gained an optional `prefix` parameter (default `"playKeyFeedback"`, so
+its four existing call sites are unchanged) so this new call site can pass `prefix = "flash"` instead - the
+old hardcoded `"playKeyFeedback: "` prefix would have mislabelled a line that has nothing to do with haptics.
+New line, same `AdaptKeyHaptics` tag: `flash: flash painted key=<id> requested at <t>, visible after <n>ms`.
+
+Together, a repro log now lets the two costs be told apart directly: a long `handleKey`-processing number
+points at main-thread computation (the ongoing D-214/D-215/D-216 territory); a long flash-visible number with a
+*short* handleKey number instead points at the main thread being busy with something else entirely (a queued
+touch/draw message, GC, a different pending Runnable) rather than the keystroke's own processing.
+
+Both are temporary diagnostics in the established D-139/D-193 style (dual-output via `diag()`/`logHaptics()` to
+logcat and the in-app rolling log, no behavioural change) and will be removed once D-217 (and by extension the
+whole sluggishness investigation) is closed. No new unit tests - purely Android View/`InputConnection`/logging
+glue, the established untested gap for this layer; no pure logic changed. 774 unit tests (unchanged).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green.

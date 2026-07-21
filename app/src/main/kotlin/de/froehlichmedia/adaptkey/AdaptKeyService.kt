@@ -1595,93 +1595,107 @@ class AdaptKeyService : InputMethodService() {
     
     private fun handleKey(key: Key, x: Float, y: Float, ambiguity: AmbiguityResult, weight: Double) {
         val ic = currentInputConnection ?: return
-        // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
-        if (undoTyped != null) {
-            if (key.code == KeyCode.DELETE) {
-                performAutocorrectUndo(ic)
-                return
-            }
-            clearUndo()
-        }
-        // G-05: resolve a pending word-end Shift against this key before it is handled normally. A Shift
-        // is left to fall through (it re-toggles via handleShift); every other key resolves here.
-        if (wordEndShiftPending && key.code != KeyCode.SHIFT) {
-            resolvePendingWordEndShift(key)
-        }
-        when (key.code) {
-            KeyCode.CHAR -> {
-                val raw = key.char ?: return
-                // A key is only alphabetic text when it actually lives on the letters surface - a Greek
-                // letter or other case-mapped glyph reused as a plain symbol on the calculator/catch-all
-                // pages (e.g. π, ƒ) is not a word-forming letter there, and must not be auto-capitalised
-                // or treated as continuing a composing word just because Char.isLetter() happens to be
-                // true for it.
-                val isWordLetter = raw.isLetter() && surface == InputSurface.LETTERS
-                // D-40: a digit typed between letters (composing non-empty) is almost certainly an unwanted
-                // key, so it is kept in the token and corrected like any other typo ("W8rt" -> "Wort");
-                // a leading or standalone digit keeps its normal delimiter behaviour.
-                val extendsToken = isWordLetter || (raw.isDigit() && composing.isNotEmpty())
-                if (extendsToken) {
-                    // D-87: a reclaim's own deleteSurroundingText() must not be allowed to reach the app as
-                    // a standalone edit - batched together with the setComposingText/setSelection that
-                    // follow, the app coalesces all three into one update and reports only the final,
-                    // consistent selection. Unbatched, its own onUpdateSelection callback can arrive after
-                    // composing/composingAnchor have already advanced, so onUpdateSelection's ownEdit check
-                    // (comparing against the now-current, not the delete-time, expected cursor) mismatches
-                    // and wipes the token it is itself in the middle of building.
-                    ic.beginBatchEdit()
-                    try {
-                        if (composing.isEmpty()) {
-                            captureTokenContext(ic)
-                            resetWordEndShift()
-                            // D-29: a new word after the accepted suggestion keeps its leading space (correct);
-                            // the eat-the-space rule was only for an immediately following punctuation.
-                            pendingSuggestionSpace = false
-                            // D-62: the caret may sit inside (or against) an already-committed word - reclaim
-                            // it so autocorrect/suggestions see the whole word, not just what gets typed from
-                            // here.
-                            reclaimSurroundingWord(ic, TapPoint(x, y, weight))
-                        }
-                        val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
-                        // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
-                        // character at the logical edit point (the end, unless a reclaim left a tail after it).
-                        insertComposingChar(ch, ambiguity.kind, TapPoint(x, y, weight))
-                        consumeShift()
-                        updateComposing(ic)
-                    } finally {
-                        ic.endBatchEdit()
-                    }
-                    refreshSuggestions()
-                } else {
-                    // Punctuation and a leading digit are delimiters; they finalise the current token.
-                    finalizeAndCommit(ic, raw.toString())
+        // D-217 (temporary diagnostic): the actual per-key processing cost the user asked to see alongside
+        // AdaptKeyJitter's own per-call timestamps - everything below runs synchronously on the main thread
+        // between the tap being resolved and this function returning, so `finally` (covering every branch's
+        // return, including the A-07 undo one right below) is the one choke point that always logs it,
+        // mirroring `diag()`'s own single-choke-point reasoning. Remove once D-217 is closed for good.
+        val handledAt = SystemClock.uptimeMillis()
+        try {
+            // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
+            if (undoTyped != null) {
+                if (key.code == KeyCode.DELETE) {
+                    performAutocorrectUndo(ic)
+                    return
                 }
+                clearUndo()
             }
-            
-            KeyCode.SPACE -> {
-                // T-05: a space tapped in the upper band carries the letter inferred for a possible merge (A-06).
-                // D-119: finalizeAndCommit() itself splits at the caret when it is mid-word.
-                val inferred = ambiguity.inferredChar.takeIf { ambiguity.kind == TapAmbiguity.LETTER_AMBIGUOUS }
-                finalizeAndCommit(ic, " ", inferred)
+            // G-05: resolve a pending word-end Shift against this key before it is handled normally. A Shift
+            // is left to fall through (it re-toggles via handleShift); every other key resolves here.
+            if (wordEndShiftPending && key.code != KeyCode.SHIFT) {
+                resolvePendingWordEndShift(key)
             }
-            
-            KeyCode.ENTER -> handleEnter(ic)
-            
-            KeyCode.DELETE -> handleBackspace(ic)
-            
-            KeyCode.SHIFT -> handleShift()
-            
-            // L-03 / §49: a tap toggles the ?123 layer (D-18's emoji-panel dual purpose retired - the
-            // emoji button now lives in the §48 extra row instead).
-            KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
-            
-            // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
-            KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
-            
-            // §53 (D-103/D-104): a multi-character key (e.g. the calculator page's sin/deg) commits its
-            // own label verbatim, exactly like any other symbol - finalising whatever token was in
-            // progress first, never extending it.
-            KeyCode.TEXT -> finalizeAndCommit(ic, key.label)
+            when (key.code) {
+                KeyCode.CHAR -> {
+                    val raw = key.char ?: return
+                    // A key is only alphabetic text when it actually lives on the letters surface - a Greek
+                    // letter or other case-mapped glyph reused as a plain symbol on the calculator/catch-all
+                    // pages (e.g. π, ƒ) is not a word-forming letter there, and must not be auto-capitalised
+                    // or treated as continuing a composing word just because Char.isLetter() happens to be
+                    // true for it.
+                    val isWordLetter = raw.isLetter() && surface == InputSurface.LETTERS
+                    // D-40: a digit typed between letters (composing non-empty) is almost certainly an unwanted
+                    // key, so it is kept in the token and corrected like any other typo ("W8rt" -> "Wort");
+                    // a leading or standalone digit keeps its normal delimiter behaviour.
+                    val extendsToken = isWordLetter || (raw.isDigit() && composing.isNotEmpty())
+                    if (extendsToken) {
+                        // D-87: a reclaim's own deleteSurroundingText() must not be allowed to reach the app as
+                        // a standalone edit - batched together with the setComposingText/setSelection that
+                        // follow, the app coalesces all three into one update and reports only the final,
+                        // consistent selection. Unbatched, its own onUpdateSelection callback can arrive after
+                        // composing/composingAnchor have already advanced, so onUpdateSelection's ownEdit check
+                        // (comparing against the now-current, not the delete-time, expected cursor) mismatches
+                        // and wipes the token it is itself in the middle of building.
+                        ic.beginBatchEdit()
+                        try {
+                            if (composing.isEmpty()) {
+                                captureTokenContext(ic)
+                                resetWordEndShift()
+                                // D-29: a new word after the accepted suggestion keeps its leading space (correct);
+                                // the eat-the-space rule was only for an immediately following punctuation.
+                                pendingSuggestionSpace = false
+                                // D-62: the caret may sit inside (or against) an already-committed word - reclaim
+                                // it so autocorrect/suggestions see the whole word, not just what gets typed from
+                                // here.
+                                reclaimSurroundingWord(ic, TapPoint(x, y, weight))
+                            }
+                            val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
+                            // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
+                            // character at the logical edit point (the end, unless a reclaim left a tail after it).
+                            insertComposingChar(ch, ambiguity.kind, TapPoint(x, y, weight))
+                            consumeShift()
+                            updateComposing(ic)
+                        } finally {
+                            ic.endBatchEdit()
+                        }
+                        refreshSuggestions()
+                    } else {
+                        // Punctuation and a leading digit are delimiters; they finalise the current token.
+                        finalizeAndCommit(ic, raw.toString())
+                    }
+                }
+                
+                KeyCode.SPACE -> {
+                    // T-05: a space tapped in the upper band carries the letter inferred for a possible merge (A-06).
+                    // D-119: finalizeAndCommit() itself splits at the caret when it is mid-word.
+                    val inferred = ambiguity.inferredChar.takeIf { ambiguity.kind == TapAmbiguity.LETTER_AMBIGUOUS }
+                    finalizeAndCommit(ic, " ", inferred)
+                }
+                
+                KeyCode.ENTER -> handleEnter(ic)
+                
+                KeyCode.DELETE -> handleBackspace(ic)
+                
+                KeyCode.SHIFT -> handleShift()
+                
+                // L-03 / §49: a tap toggles the ?123 layer (D-18's emoji-panel dual purpose retired - the
+                // emoji button now lives in the §48 extra row instead).
+                KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
+                
+                // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
+                KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
+                
+                // §53 (D-103/D-104): a multi-character key (e.g. the calculator page's sin/deg) commits its
+                // own label verbatim, exactly like any other symbol - finalising whatever token was in
+                // progress first, never extending it.
+                KeyCode.TEXT -> finalizeAndCommit(ic, key.label)
+            }
+        } finally {
+            diag(
+                "AdaptKeyHaptics",
+                "handleKey: key=${key.code}${key.char?.let { " '$it'" } ?: ""} t=$handledAt processed in " +
+                    "${SystemClock.uptimeMillis() - handledAt}ms"
+            )
         }
     }
     

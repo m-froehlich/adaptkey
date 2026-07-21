@@ -19,6 +19,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.os.Looper
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.util.Log
 import android.view.HapticFeedbackConstants
@@ -460,6 +461,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // short enough that typing feels snappy and a rapid double-tap shows two distinct blinks.
     private val flashDurationMs = 28L
     
+    // D-217 (temporary diagnostic): flash()'s own invalidate()->onDraw() latency, separate from the
+    // service's own AdaptKeyHaptics processing-time log - a busy main thread can just as easily delay the
+    // next frame being painted at all, even once handleKey() has already returned, so this is a genuinely
+    // distinct number from "how fast was the letter processed". flashTimingPending guards against logging
+    // every subsequent frame the flash stays lit for, not just the first one that actually shows it.
+    private var flashRequestedAt = 0L
+    private var flashTimingPending = false
+    
     // D-184: a same-key re-press arriving while [flashKey] is still lit from the immediately preceding
     // release used to merge into one continuous highlight - ACTION_DOWN sets pressedKey to the same key
     // before the single resulting invalidate() ever renders an "off" frame, so a fast double-tap never
@@ -789,6 +798,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 key === pressedKey || key === flashKey -> pressedKeyPaint
                 key.code == KeyCode.CHAR -> keyPaint
                 else -> specialKeyPaint
+            }
+            // D-217 (temporary diagnostic): the first frame that actually paints flashKey is the answer to
+            // "how fast did the flash effect update" - logged once per flash (flashTimingPending), not on
+            // every subsequent frame it stays lit for.
+            if (key === flashKey && flashTimingPending) {
+                flashTimingPending = false
+                logHaptics(
+                    "flash painted key=${key.id} requested at $flashRequestedAt, visible after " +
+                        "${SystemClock.uptimeMillis() - flashRequestedAt}ms",
+                    prefix = "flash"
+                )
             }
             canvas.drawRoundRect(rect, keyRadiusPx, keyRadiusPx, paint)
             
@@ -1178,6 +1198,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun flash(key: Key) {
         longPressHandler.removeCallbacks(flashRunnable)
         flashKey = key
+        // D-217 (temporary diagnostic): marks the moment the flash was requested, so drawKeys() can log how
+        // long it actually took to reach the screen once this invalidate() is serviced.
+        flashRequestedAt = SystemClock.uptimeMillis()
+        flashTimingPending = true
         invalidate()
         longPressHandler.postDelayed(flashRunnable, flashDurationMs)
     }
@@ -1243,9 +1267,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * tether. No password-field guard here (unlike the service's own `diag()`) - haptics fire identically
      * on every key regardless of field kind, and none of these messages ever include typed content. Remove
      * once D-193 is closed.
+     *
+     * D-217: [prefix] defaults to the original `playKeyFeedback` label; the flash-timing call site in
+     * [drawKeys] passes `"flash"` instead, since that log line has nothing to do with haptic feedback and
+     * the old hardcoded prefix would have been actively misleading there.
      */
-    private fun logHaptics(message: String, warn: Boolean = false) {
-        val full = "playKeyFeedback: $message"
+    private fun logHaptics(message: String, warn: Boolean = false, prefix: String = "playKeyFeedback") {
+        val full = "$prefix: $message"
         if (warn) Log.w("AdaptKeyHaptics", full) else Log.d("AdaptKeyHaptics", full)
         DiagnosticLog.record("[AdaptKeyHaptics] $full")
     }

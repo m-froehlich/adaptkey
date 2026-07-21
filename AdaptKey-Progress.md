@@ -37,6 +37,21 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§139 (v0.8.102): D-217 - diagnostics now measure actual processing time and actual flash-paint latency,
+  not just typing cadence.** User: existing logs only show *when* calls happen, not how long a tap actually
+  took to process or how long the flash acknowledgement took to reach the screen. Added: (1)
+  `AdaptKeyService.handleKey()` wraps its whole body (previously several independent early returns) in
+  `try`/`finally`, logging `handleKey: key=<code> '<char>' t=<start> processed in <n>ms` unconditionally on
+  every exit, tag `AdaptKeyHaptics`. (2) `AdaptKeyboardView`: `flash()` stamps a request time
+  (`flashRequestedAt`/`flashTimingPending`); `drawKeys()`, at the point it selects `pressedKeyPaint` for
+  `flashKey`, logs `flash: flash painted key=<id> requested at <t>, visible after <n>ms` the first frame that
+  actually paints it (once per flash, not per frame). `logHaptics()` gained an optional `prefix` param
+  (default unchanged) so this new line isn't mislabelled `"playKeyFeedback: "`. Lets a long handleKey number
+  (main-thread computation) be told apart from a long flash-visible number with a short handleKey number
+  (main thread busy with something else - a queued message, GC). Temporary D-139/D-193-style diagnostics, no
+  behavioural change, no new tests (Android glue). 774 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. See history §139.
+
 - **§138 (v0.8.101): D-214/D-215/D-216 - the real cost was O(n×m) computation, not stale requests.** Fifth
   repeat of the test, this time typing slowly (so no backlog of stale work could exist for D-211-D-213's
   cancellation to discard) - same per-character slowdown. User correctly diagnosed the whole investigation's
