@@ -54,8 +54,22 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
   `diacriticCandidates()` now uncaps the token's own char *and* its umlaut variant, while ordinary
   keyboard-neighbour buckets stay capped like `correctionCandidates()`. Old neighbour-bucket test (asserting
   the removed blanket-uncap) replaced by two tests covering each bucket kind separately. 775 unit tests
-  (774 - 1 + 2). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history
-  §144.
+  (774 - 1 + 2). `:app:assembleDebug`/`:app:testDebugUnitTest` green. **Device-confirmed** (see §145). See
+  history §144.
+
+- **§145: D-207-D-221 sluggishness investigation device-confirmed closed (no code change, confirmation only,
+  no version bump).** User's own verdict on a fresh log covering all three test words plus a badly-mistyped
+  "Geburtstsg" -> "Geburtstag": "Das sieht jetzt schon richtig gut aus... Beim vertippten 'Geburtstag' gab es
+  einen kleinen Lag. Aber das ist vollkommen vertretbar." Numbers: correctly-typed common-initial-letter words
+  now commit in bestCorrectionMs 87-105ms (down from the original 186-404ms); the worst remaining case, a
+  three-typo "Geburtstsg" needing the full autocorrect search, cost diacriticMs=77 + bestCorrectionMs=87 for a
+  183ms `handleKey` total (down from 638ms/500ms+ before D-220/D-221) - user-judged acceptable. Flash latency
+  stayed at 1-17ms throughout, fully decoupled from processing time (D-219). This closes the investigation arc
+  that started with the first "still sluggish" report and ran through D-207-D-219 (candidate search off the
+  main thread, WAL, composing-preview split highlight off the main thread, redundant-query elimination,
+  debounce restored, flash decoupled/shortened) and D-220/D-221 (finalizeAndCommit()'s own commit-time search
+  chain). D-210 (the deferred A-05 split regression, `"übrigebs"` -> `"übrig Ebs"`) remains the next open item,
+  explicitly set aside by the user until this investigation concluded.
 
 - **§143 (v0.8.106): D-220 fixed - bestCorrection() queried frequencyOf() for every same-bucket candidate
   before even checking whether its edit cost qualified.** The D-220 timing log paid off immediately: fresh

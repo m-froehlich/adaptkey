@@ -7453,3 +7453,33 @@ the umlaut-variant bucket specifically stays uncapped, the actual D-197 correctn
 function exists for). 775 unit tests (774 - 1 replaced + 2 new). `:app:assembleDebug`/`:app:testDebugUnitTest`
 green. Not yet device-confirmed - awaits the user's next repro of a common-initial-letter typo to show
 `diacriticMs` dropping while an umlaut-restoration case (e.g. "uber" -> "über") still resolves correctly.
+
+## §145 - D-207-D-221 Sluggishness Investigation Device-Confirmed Closed (No Code Change - Confirmation Only)
+
+A fresh log, covering the same three-word test plus a deliberately three-typo "Geburtstsg" (intended
+"Geburtstag"), brought the user's own closing verdict: "Das sieht jetzt schon richtig gut aus... Beim
+vertippten 'Geburtstag' gab es einen kleinen Lag. Aber das ist vollkommen vertretbar." The numbers back it up:
+`"Herzlichen"`/`"Glücjwubsch"`/`"übrigenszum"`-style correctly- or lightly-mistyped common-initial-letter words
+now commit with `bestCorrectionMs` at 87-105ms (down from the original 186-404ms this investigation started
+from); the worst surviving case in the log - `"Geburtstsg"`, three edits away from `"Geburtstag"`, forcing the
+full `diacriticRestoration()` + `bestCorrection()` chain to actually search - cost `diacriticMs=77` +
+`bestCorrectionMs=87` for a 183ms total `handleKey` time, down from the 638ms/500ms+ costs the same shape of
+input produced before D-220/D-221. Flash latency held at 1-17ms throughout, confirming D-219's decoupling from
+processing time regardless of how expensive that processing turns out to be.
+
+This closes the investigation arc that began with the first "das hat leider noch so gar nicht funktioniert"
+report and ran through, in order: D-207/D-208/D-209 (commit-time double search, fuzzy matching deferred, the
+Kita bucket-cap fix), D-211 (suggestion search off the main thread), D-212 (WAL), D-213 (composing-preview
+split highlight off the main thread), D-214 (TokenRepair's redundant per-candidate queries consolidated via
+`entryOf()`), D-215 (the debounce delay restored, reframed as a perceptibility gate rather than a main-thread
+guard), D-216 (`trySplit()`'s own cancellation), D-217 (the `handleKey`/flash timing diagnostics that made
+every subsequent finding in this list possible to root-cause rather than guess), D-218 (the impending-
+autocorrect/diacritic preview deferred off the keystroke path), D-219 (the flash effect decoupled from
+processing and shortened), D-220 (`bestCorrection()`'s wasted `frequencyOf()` queries eliminated) and D-221
+(`diacriticCandidates()`'s bucket-capping narrowed to preserve D-197's correctness while still capping the
+buckets that never needed to stay unbounded).
+
+No code change - a confirmation-only entry, no version bump per this project's own established convention for
+pure confirmation updates. D-210 (the deferred A-05 split regression, `"übrigebs"` -> `"übrig Ebs"`) is the
+next open item - explicitly set aside by the user back in §134/§137's own discussion until this investigation
+concluded, and now the natural next round to pick up.
