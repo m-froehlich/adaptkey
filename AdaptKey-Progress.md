@@ -70,6 +70,19 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§159 (v0.8.118): D-231 - Enter's learned touch zone capped against drifting into Backspace, mirroring**
+  **D-109/D-133's bottom-row-vs-space-bar precedent.** User reported Enter's T-03 zone bleeding upward into
+  Backspace, asking for a cap on both keys. Confirmed the geometry: Backspace sits at the right end of the
+  third row, Enter directly below it at the right end of the bottom row - the same vertically-adjacent shape
+  as the bottom letter row above the space bar. Implemented as a direct generalisation, not a new mechanism:
+  `OffsetModel.Candidate` gained `maxUpwardOffsetFactor` (mirrors the existing `maxDownwardOffsetFactor`),
+  `logLikelihood()`'s upward cap consults it the same way; `AdaptKeyboardView.downwardOffsetFactorFor()` now
+  also covers `KeyCode.DELETE` (Backspace, capped downward toward Enter), new `upwardOffsetFactorFor()` covers
+  `KeyCode.ENTER` (capped upward toward Backspace) - both share the same `ENTER_BACKSPACE_OFFSET_FACTOR = 0.25`
+  as `BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR`. T-06's visualisation needed no change (it only ever draws
+  `KeyCode.CHAR` keys, so Enter/Backspace were never shown there). 1 new test (`OffsetModelTest`, mirrors
+  D-133's own `resolve()`-level proof, direction reversed). 778 unit tests total (777 + 1).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §159.
 - **§158 (v0.8.117): D-230 reverted - `MIN_PART=3` was itself a regression; D-228/D-230 reopened.** User
   caught it immediately: raising `MIN_PART` also blocks any genuine missed-space split ending in a real
   2-letter German word (`"an"`/`"im"`/`"um"`/`"es"`/...) - `"gehtes"` -> `"geht"`+`"es"` would never be found

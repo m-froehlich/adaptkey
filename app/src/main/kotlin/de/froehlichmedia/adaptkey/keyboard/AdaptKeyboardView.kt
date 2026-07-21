@@ -1468,15 +1468,33 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * its bottom edge - a considered starting point, not yet device-tuned, easy to retune later (a single
      * constant, same precedent as this project's other threshold tunings).
      *
-     * @return the tighter downward factor for a bottom-row over-space-bar letter key, or null (meaning
-     *         "use the model's own [OffsetModel.maxOffsetFactor], same as every other direction") otherwise
+     * D-231: also applies to Backspace (`KeyCode.DELETE`), which sits directly above Enter at the same
+     * right-hand column (third row vs. the bottom row) - reported drifting down into Enter's own territory
+     * the same way the bottom letter row drifted into the space bar.
+     *
+     * @return the tighter downward factor for a bottom-row over-space-bar letter key or Backspace, or null
+     *         (meaning "use the model's own [OffsetModel.maxOffsetFactor], same as every other direction")
+     *         otherwise
      */
     private fun downwardOffsetFactorFor(key: Key): Double? {
-        return if (key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS) {
-            BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR
+        return if ((key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS) || key.code == KeyCode.DELETE) {
+            if (key.code == KeyCode.DELETE) ENTER_BACKSPACE_OFFSET_FACTOR else BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR
         } else {
             null
         }
+    }
+    
+    /**
+     * D-231: Enter (bottom row, right edge) gets a harder, direction-specific bound on its own learned
+     * *upward* drift, mirroring [downwardOffsetFactorFor]'s own reasoning - Backspace sits directly above it
+     * at the same column, one row up, and was reported bleeding into it the same way the bottom letter row
+     * bled into the space bar (D-109/D-133).
+     *
+     * @return the tighter upward factor for Enter, or null (meaning "use the model's own
+     *         [OffsetModel.maxOffsetFactor]") otherwise
+     */
+    private fun upwardOffsetFactorFor(key: Key): Double? {
+        return if (key.code == KeyCode.ENTER) ENTER_BACKSPACE_OFFSET_FACTOR else null
     }
     
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
@@ -1495,7 +1513,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val candidates = keyRects.map { (key, rect) ->
                 OffsetModel.Candidate(
                     key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f,
-                    maxDownwardOffsetFactor = downwardOffsetFactorFor(key)
+                    maxDownwardOffsetFactor = downwardOffsetFactorFor(key),
+                    maxUpwardOffsetFactor = upwardOffsetFactorFor(key)
                 )
             }
             val chosen = model.resolve(candidates, x, y)
@@ -1567,6 +1586,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // - the vertical midpoint between a key's own centre and its bottom edge, tighter than D-109's
         // general 0.5 isotropic cap. A considered starting point, not yet device-tuned.
         private const val BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR = 0.25
+        
+        // D-231: Enter (bottom row, right edge) and Backspace (third row, right edge) sit directly on top
+        // of each other - reported drifting into one another the same way the bottom letter row drifted
+        // into the space bar (D-109/D-133). Enter is capped upward (toward Backspace), Backspace downward
+        // (toward Enter); same considered-starting-point value and reasoning as BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR.
+        private const val ENTER_BACKSPACE_OFFSET_FACTOR = 0.25
         
         // D-05 / D-70 / D-83 / D-85: key-click sample playback volume (SoundPool's 0f..1f linear range -
         // not dB, so this is a much bigger perceived cut than the number alone suggests) and concurrent

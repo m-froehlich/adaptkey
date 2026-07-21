@@ -7977,3 +7977,30 @@ zero-vs-nonzero count - to use as a soft signal for words this rare).
 
 **Not implemented, left for the user's own design call**, per this project's own convention for exactly this
 kind of trade-off. 777 unit tests total (778 - 2 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+## §159 - D-231: Enter's Learned Touch Zone Capped Against Drifting Into Backspace, Mirroring D-109/D-133's
+Own Bottom-Row-vs-Space-Bar Precedent (v0.8.118)
+
+User reported the T-03 personal offset model letting Enter's own learned strike zone bleed upward into
+Backspace's territory, asking for a cap on both keys' drift toward each other - exactly the same class of
+problem D-109/D-133 already fixed for the bottom letter row (`c v b n m`) drifting downward into the space bar,
+just for a different key pair. Confirmed the geometry first, not assumed: on the letters surface, Backspace
+(`KeyCode.DELETE`) sits at the right end of the third row, and Enter (`KeyCode.ENTER`) sits at the right end of
+the bottom row directly below it - the two are vertically adjacent at the same column, the same shape as the
+bottom row sitting directly above the space bar.
+
+**Implemented as a direct generalisation of D-133's own mechanism**, not a new one: `OffsetModel.Candidate`
+gained a `maxUpwardOffsetFactor: Double?` (mirroring the existing `maxDownwardOffsetFactor` exactly), and
+`logLikelihood()`'s `capYUp` now consults it the same way `capYDown` already consults the downward one. In
+`AdaptKeyboardView`: `downwardOffsetFactorFor()` now also returns the (shared) `ENTER_BACKSPACE_OFFSET_FACTOR`
+for `KeyCode.DELETE` (Backspace capped against drifting down toward Enter); a new `upwardOffsetFactorFor()`
+returns the same constant for `KeyCode.ENTER` (Enter capped against drifting up toward Backspace) - both wired
+into `resolveKey()`'s candidate construction. `ENTER_BACKSPACE_OFFSET_FACTOR = 0.25`, matching
+`BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR`'s own value and "considered starting point, not yet device-tuned" status.
+
+The T-06 touch-zone visualisation (`drawTouchModel()`) needed no change: it only ever draws `KeyCode.CHAR` keys
+(`if (key.code != KeyCode.CHAR) continue`), so Enter/Backspace were never shown there in the first place,
+unlike the bottom-row letters D-133 already had to keep the visualisation consistent for.
+
+1 new test (`OffsetModelTest`, mirroring D-133's own `resolve()`-level end-to-end proof, direction reversed).
+778 unit tests total (777 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

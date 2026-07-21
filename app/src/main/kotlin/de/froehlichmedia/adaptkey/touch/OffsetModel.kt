@@ -77,6 +77,10 @@ class OffsetModel(
      *           bounds every axis isotropically; this tightens one direction further, for these keys only).
      *           Upward and both horizontal bounds are unaffected. Null (the default) means "use
      *           [maxOffsetFactor], same as every other direction".
+     * @property maxUpwardOffsetFactor D-231: the same idea, mirrored for the upward (-y) direction - e.g.
+     *           the Enter key's own harder bound against drifting up into Backspace's row above it (the two
+     *           sit directly on top of each other at the row's right edge). Downward and both horizontal
+     *           bounds are unaffected. Null (the default) means "use [maxOffsetFactor]".
      */
     data class Candidate(
         val id: String,
@@ -84,7 +88,8 @@ class OffsetModel(
         val centerY: Float,
         val halfWidth: Float,
         val halfHeight: Float,
-        val maxDownwardOffsetFactor: Double? = null
+        val maxDownwardOffsetFactor: Double? = null,
+        val maxUpwardOffsetFactor: Double? = null
     )
     
     private val stats = HashMap<String, Stat>()
@@ -422,8 +427,9 @@ class OffsetModel(
     private fun logLikelihood(candidate: Candidate, x: Float, y: Float): Double {
         val stat = stats[candidate.id]
         val capX = candidate.halfWidth * maxOffsetFactor
-        val capYUp = candidate.halfHeight * maxOffsetFactor
-        // D-133: a candidate may declare a harder, direction-specific bound on its own downward drift.
+        // D-133/D-231: a candidate may declare a harder, direction-specific bound on its own upward or
+        // downward drift.
+        val capYUp = candidate.halfHeight * (candidate.maxUpwardOffsetFactor ?: maxOffsetFactor)
         val capYDown = candidate.halfHeight * (candidate.maxDownwardOffsetFactor ?: maxOffsetFactor)
         val offsetX = (stat?.meanDx ?: 0.0).coerceIn(-capX, capX)
         val offsetY = (stat?.meanDy ?: 0.0).coerceIn(-capYUp, capYDown)
