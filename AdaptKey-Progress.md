@@ -56,6 +56,21 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§146 (v0.8.108): D-222 - the URL-mode `https://` and `www.` keys merged into one, restoring the space
+  key to full width.** User: on a phone the URL/address bar is used for search queries far more often than
+  real URLs, so D-143's own drastically-shrunk URL-mode space key (weight 1, vs the ordinary row's 3.2) is a
+  real annoyance in the common case. Proposed fix, implemented as-is: merge the two keys into one, labelled
+  `www.` (protocol rarely needs typing explicitly), long-press popup = the old protocol key's exact
+  alternative list (`https://`/`http://`/`ftp://`/`file://`), `https://` first so it's the pre-selected cell
+  (via the existing generic `preSelectedIndexFor()` index-0 fallback, no special-casing needed).
+  `urlBottomRow()` now returns 6 keys instead of 7. Freed width goes to space: mirrors D-158's own
+  "conserve the row's total weight" pattern (not D-143's own "grow the row") - `URL_WWW_KEY_WEIGHT = 1.8f` +
+  `proportions.spaceWeight` (now the ordinary, un-shrunk value) sum to the same 5.0 the old three keys did,
+  so symbol/slash/period/enter render at the exact same width as before. `GreekLayout` needed no change
+  (shares `urlBottomRow()` verbatim). Two tests renamed/rewritten to match the merged 6-key row. 775 unit
+  tests (unchanged count). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+  See history §146.
+
 - **§144 (v0.8.107): D-220 device-confirmed (bestCorrectionMs 186-404ms -> 68-90ms, the predicted 3-5x win);
   D-221 fixed - diacriticRestoration() uncapped every searched bucket, not just the ones correctness actually
   needed.** User's own observation from the same log: badly-mistyped, common-initial-letter words (e.g.

@@ -7483,3 +7483,43 @@ No code change - a confirmation-only entry, no version bump per this project's o
 pure confirmation updates. D-210 (the deferred A-05 split regression, `"übrigebs"` -> `"übrig Ebs"`) is the
 next open item - explicitly set aside by the user back in §134/§137's own discussion until this investigation
 concluded, and now the natural next round to pick up.
+
+## §146 - D-222: the URL-Mode Protocol and www Keys Merged, Restoring the Space Key to Full Width (v0.8.108)
+
+Ahead of D-210, the user asked for one more small thing: on a phone, the URL/address bar of a browser is used
+for search queries far more often than for actually typing a URL, so D-143's own drastically shrunk URL-mode
+space key (`URL_SPACE_WEIGHT = 1f`, versus the ordinary row's `3.2f`) is a real, felt annoyance in the far more
+common case - without wanting to lose either of the two other keys D-143 added for the rarer, genuine-URL case.
+The user's own proposed fix: merge the `https://` key and the `www.` key into one, labelled `www.` (the
+protocol is only rarely needed explicitly - most fields already default to `https`), with the merged key's own
+long-press popup holding exactly the previous protocol key's alternative list, `https://` ordered first so it
+lands as the pre-selected cell.
+
+**Implemented exactly as proposed.** `KeyboardLayout.urlBottomRow()` now returns 6 keys instead of 7:
+`textKey("www.", alternatives = URL_PROTOCOL_ALTERNATIVES, weight = URL_WWW_KEY_WEIGHT)` replaces both the old
+`textKey("https://", alternatives = URL_PROTOCOL_ALTERNATIVES, ...)` and `textKey("www.", ...)` (which
+previously had no popup of its own at all) in one key. `URL_PROTOCOL_ALTERNATIVES` itself is unchanged
+(`["https://", "http://", "ftp://", "file://"]`) - `https://` already led the list, and
+`AdaptKeyboardView.preSelectedIndexFor()`'s existing generic "falls back to index 0 when the key's own label
+is not among its alternatives" rule (`"www."` is never in that list) makes it the pre-selected popup cell with
+no special-casing needed, exactly the "first entry above the finger" the user asked for.
+
+The freed width goes straight back to the space key: mirrors D-158's own "conserve the row's total weight,
+don't grow it" pattern (used for the email-mode dash key) rather than D-143's own original "grow the row"
+approach - `URL_WWW_KEY_WEIGHT = 1.8f` plus the space key's own `proportions.spaceWeight` (the *ordinary*,
+full space weight, no longer a URL-mode-specific shrink) sum to exactly what the old protocol (2.5) + www
+(1.5) + shrunk-space (1) keys did (5.0 total) - so the row's other keys (symbol/slash/period/enter) render at
+exactly the same width as before, only the reclaimed chunk is redistributed differently. `URL_SPACE_WEIGHT`
+and `URL_PROTOCOL_KEY_WEIGHT` are gone; the URL row's space key now just reads `proportions.spaceWeight`
+directly, same as the ordinary bottom row's own space key. `GreekLayout` needed no change at all - it already
+shares `KeyboardLayout.urlBottomRow()` verbatim.
+
+Tests updated to match: `` `D-143 urlMode replaces the bottom row with the URL row` `` renamed to D-222 and
+now expects 6 keys (was 7) with `www.` at index 1; `` `D-143 the https key offers the other everyday
+protocols, www has neither hint nor alternatives` `` renamed and rewritten as
+`` `D-222 the merged www key's long-press popup offers the everyday protocols, https first` `` (asserts the
+single merged key's own alternatives list and null hint - there is no separate https key to assert about
+anymore). 775 unit tests (unchanged count - two renamed/rewritten, none added: this is Android View-facing
+layout/weight glue with no new pure logic, the established untested-gap layer for pixel/weight geometry
+itself, though the *key list* KeyboardLayout produces is plain data and stays covered as before).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

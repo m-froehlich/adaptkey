@@ -238,21 +238,19 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-143 urlMode replaces the bottom row with the URL row`() {
+    fun `D-222 urlMode replaces the bottom row with the URL row`() {
         val bottomRow = KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY).last()
         
-        assertEquals(7, bottomRow.size)
+        assertEquals(6, bottomRow.size)
         assertEquals(KeyCode.SYMBOL, bottomRow[0].code)
         assertEquals(KeyCode.TEXT, bottomRow[1].code)
-        assertEquals("https://", bottomRow[1].label)
-        assertEquals(KeyCode.TEXT, bottomRow[2].code)
-        assertEquals("www.", bottomRow[2].label)
-        assertEquals(KeyCode.CHAR, bottomRow[3].code)
-        assertEquals('/', bottomRow[3].char)
-        assertEquals(KeyCode.SPACE, bottomRow[4].code)
-        assertEquals(KeyCode.CHAR, bottomRow[5].code)
-        assertEquals('.', bottomRow[5].char)
-        assertEquals(KeyCode.ENTER, bottomRow[6].code)
+        assertEquals("www.", bottomRow[1].label)
+        assertEquals(KeyCode.CHAR, bottomRow[2].code)
+        assertEquals('/', bottomRow[2].char)
+        assertEquals(KeyCode.SPACE, bottomRow[3].code)
+        assertEquals(KeyCode.CHAR, bottomRow[4].code)
+        assertEquals('.', bottomRow[4].char)
+        assertEquals(KeyCode.ENTER, bottomRow[5].code)
     }
     
     @Test
@@ -269,14 +267,17 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-143 the https key offers the other everyday protocols, www has neither hint nor alternatives`() {
+    fun `D-222 the merged www key's long-press popup offers the everyday protocols, https first`() {
+        // D-222: the separate D-143 https:// key merged into this one - typing a bare URL almost always
+        // means https anyway, so the protocol only needs to be reachable via the long-press popup, not a key
+        // of its own. https:// stays the popup's first entry, so it is the pre-selected cell (see
+        // AdaptKeyboardView.preSelectedIndexFor's own "falls back to index 0" rule - "www." never appears in
+        // this list itself, so it always takes that fallback).
         val bottomRow = KeyboardLayout.rows(urlMode = true).last()
-        val httpsKey = bottomRow.first { it.code == KeyCode.TEXT && it.label == "https://" }
         val wwwKey = bottomRow.first { it.code == KeyCode.TEXT && it.label == "www." }
         
-        assertEquals(listOf("https://", "http://", "ftp://", "file://"), httpsKey.alternatives)
+        assertEquals(listOf("https://", "http://", "ftp://", "file://"), wwwKey.alternatives)
         assertNull(wwwKey.hint)
-        assertTrue(wwwKey.alternatives.isEmpty())
     }
     
     @Test

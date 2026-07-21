@@ -66,15 +66,22 @@ object KeyboardLayout {
      */
     val URL_SLASH_ALTERNATIVES = COMMA_ALTERNATIVES
     
-    /** D-143: the URL-mode `https://` key's long-press set - the other everyday protocols. */
+    /**
+     * D-222 (was D-143's own separate `https://` key's long-press set before the two keys merged): the
+     * URL-mode `www.` key's long-press set - the everyday protocols, `https://` first so it lands as the
+     * pre-selected cell (see [AdaptKeyboardView.preSelectedIndexFor]'s own "falls back to index 0" rule -
+     * `www.` never appears in this list, so it always takes that fallback).
+     */
     val URL_PROTOCOL_ALTERNATIVES = listOf("https://", "http://", "ftp://", "file://")
     
-    // D-143: a URL practically never needs a space, so the URL-mode bottom row shrinks it drastically and
-    // reinvests the freed width in the two new protocol / www keys instead - an eight-character label
-    // ("https://") needs noticeably more room than a plain glyph, "www." somewhat less.
-    private const val URL_PROTOCOL_KEY_WEIGHT = 2.5f
-    private const val URL_WWW_KEY_WEIGHT = 1.5f
-    private const val URL_SPACE_WEIGHT = 1f
+    // D-222 (was D-143's separate protocol + www keys, each its own key): the user rarely needs to type a
+    // protocol explicitly on a phone (almost every field defaults to https anyway), so the two keys merged
+    // into one - primary label "www.", the protocol only ever reached via its own long-press popup above -
+    // freeing the width for a full-size space key again instead of D-143's own drastic shrink, addressing
+    // the actually far more common case (typing a search query, not a URL) directly. Mirrors D-158's own
+    // "conserve the row's total weight, don't grow it" pattern: the merged key plus space add up to exactly
+    // what the old protocol + www + space keys did (2.5 + 1.5 + 1 = 5 = 1.8 + proportions.spaceWeight).
+    private const val URL_WWW_KEY_WEIGHT = 1.8f
     
     /**
      * D-158: the email-mode `@` key's long-press set - exactly [COMMA_ALTERNATIVES] unchanged (comma
@@ -191,14 +198,15 @@ object KeyboardLayout {
     }
     
     /**
-     * D-143: the URL-mode bottom row, shared by [KeyboardLayout] and [GreekLayout] (URL entry doesn't
+     * D-143/D-222: the URL-mode bottom row, shared by [KeyboardLayout] and [GreekLayout] (URL entry doesn't
      * depend on the active typing alphabet - both show identical URL keys). Replaces the ordinary
      * comma/space/period trio: `/` takes over the comma key's own primary position (its own alt popup
-     * unchanged, just demoted to an alternative - see [URL_SLASH_ALTERNATIVES]); a new `https://` key
-     * (§53 [KeyCode.TEXT], its alt popup the other everyday protocols) and a `www.` key are funded by
-     * shrinking the now barely-needed space key; the full-stop key's alt popup is a locale-resolved TLD
-     * list instead of the ordinary sentence terminators (a URL practically never needs `!`/`?`, see
-     * [UrlLocale]).
+     * unchanged, just demoted to an alternative - see [URL_SLASH_ALTERNATIVES]); a new `www.` key (§53
+     * [KeyCode.TEXT], its alt popup the everyday protocols, D-222) replaces D-143's own separate `https://`
+     * key - typing the protocol explicitly is rare enough on a phone that it does not need a key of its own,
+     * so the space key keeps its ordinary, full width instead of D-143's own drastic shrink; the full-stop
+     * key's alt popup is a locale-resolved TLD list instead of the ordinary sentence terminators (a URL
+     * practically never needs `!`/`?`, see [UrlLocale]).
      *
      * @param proportions the key-proportion configuration (C-01)
      * @param locale the system locale the period key's TLD popup is resolved from ([UrlLocale])
@@ -207,10 +215,9 @@ object KeyboardLayout {
     fun urlBottomRow(proportions: KeyProportions, locale: Locale): List<Key> {
         return listOf(
             Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight),
-            textKey("https://", alternatives = URL_PROTOCOL_ALTERNATIVES, weight = URL_PROTOCOL_KEY_WEIGHT),
-            textKey("www.", weight = URL_WWW_KEY_WEIGHT),
+            textKey("www.", alternatives = URL_PROTOCOL_ALTERNATIVES, weight = URL_WWW_KEY_WEIGHT),
             charKey('/', alternatives = URL_SLASH_ALTERNATIVES, weight = proportions.commaWeight),
-            Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = URL_SPACE_WEIGHT),
+            Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight),
             charKey('.', alternatives = UrlLocale.periodAlternatives(locale), weight = proportions.periodWeight),
             Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
         )

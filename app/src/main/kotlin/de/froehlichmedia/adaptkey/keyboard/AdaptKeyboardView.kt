@@ -316,10 +316,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
     
     /**
-     * D-143: whether the current field is a recognised URL-entry field - replaces the letters surface's
-     * bottom row (comma/space/period) with the URL-mode row (https:// / www. / / / a narrower space / a
-     * TLD-popup period). Stays on [InputSurface.LETTERS] - not a separate surface, since a URL still needs
-     * the full alphabet for its domain/path.
+     * D-143/D-222: whether the current field is a recognised URL-entry field - replaces the letters
+     * surface's bottom row (comma/space/period) with the URL-mode row (www. (with a protocol long-press
+     * popup) / / / a full-width space / a TLD-popup period). Stays on [InputSurface.LETTERS] - not a
+     * separate surface, since a URL still needs the full alphabet for its domain/path.
      */
     var urlMode: Boolean = false
         set(value) {
