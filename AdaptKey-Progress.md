@@ -21,21 +21,26 @@ in every prompt.
 - The only system JDK is Corretto 25, which the older Gradle dislikes → builds MUST
   use the Android Studio bundled JBR (JDK 21) as `JAVA_HOME`.
 - Android SDK at `D:\Android\Sdk` (in `local.properties`, gitignored).
-- Command (Git Bash, from the project dir):
+- Command (Git Bash, from the project dir) - **`:app:assembleRelease` since D-223** (produces the real,
+  day-to-day install artifact, `app/build/outputs/apk/release/AdaptKey.apk`; `:app:testDebugUnitTest` still
+  targets the debug variant regardless - the Kotlin source itself is identical between variants, there is no
+  separate "release" source set to test, so this is simply the established, no-signing-required unit-test
+  task and needs no change):
   ```
-  JAVA_HOME="/c/Program Files/Android/Android Studio/jbr" ANDROID_HOME=/d/Android/Sdk ./gradlew :app:assembleDebug :app:testDebugUnitTest
+  JAVA_HOME="/c/Program Files/Android/Android Studio/jbr" ANDROID_HOME=/d/Android/Sdk ./gradlew :app:assembleRelease :app:testDebugUnitTest
   ```
 - A post-write hook normalises blank lines / CRLF and may reformat files after edits
   (do not fight it).
-- **D-223: `:app:assembleRelease` produces the real, day-to-day install artifact** -
-  `app/build/outputs/apk/release/AdaptKey.apk`, signed, `debuggable=false`, `isMinifyEnabled=false`
-  (deliberately no code shrinking/obfuscation). Needs `keystore.properties` at the project root (gitignored,
-  not checked in - holds `storeFile`/`storePassword`/`keyAlias`/`keyPassword` for the equally gitignored
-  `release.keystore`, also at the project root); `:app:assembleRelease` fails without it, everything else
-  configures fine regardless. **The release keystore is load-bearing once it has signed an installed build -
-  back it up.** Losing it means every future version needs an uninstall + reinstall, wiping the learned
-  dictionary/settings, since Android requires the same signing key to update in place. `app-debug.apk`
-  (`:app:assembleDebug`) still exists unchanged for actual on-device debugging if that is ever needed again.
+- **D-223: `:app:assembleRelease` is now the default build target** (was `:app:assembleDebug` through D-222) -
+  signed, `debuggable=false`, `isMinifyEnabled=false` (deliberately no code shrinking/obfuscation). Needs
+  `keystore.properties` at the project root (gitignored, not checked in - holds
+  `storeFile`/`storePassword`/`keyAlias`/`keyPassword` for the equally gitignored `release.keystore`, also at
+  the project root); `:app:assembleRelease` fails without it, everything else configures fine regardless.
+  **The release keystore is load-bearing once it has signed an installed build - back it up.** Losing it
+  means every future version needs an uninstall + reinstall, wiping the learned dictionary/settings, since
+  Android requires the same signing key to update in place. `app-debug.apk` (`:app:assembleDebug`) still
+  exists unchanged for actual on-device debugging if that is ever needed again, but is no longer built by
+  default.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
