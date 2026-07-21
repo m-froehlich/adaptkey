@@ -37,6 +37,22 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§142 (v0.8.105): D-220 - diagnostics for the last remaining slow spot, device-confirmed to be
+  finalizeAndCommit()'s own commit-time search chain.** D-217-D-219 confirmed a clear win ("Das Flashing ist
+  super knackig und die Tastatur wirkt kaum noch träge", ordinary letters now 17-55ms, flash ~1 frame). The
+  user's own "hier und da nochmal minimal" pointed at every remaining `handleKey` spike sitting exactly on
+  SPACE/punctuation (100-685ms) - i.e. `finalizeAndCommit()`, never an ordinary letter. Located, not yet
+  root-caused: that function runs up to four real searches synchronously on every commit
+  (`diacriticRestoration()`, `bestCorrectionFor()`, conditionally `trySplit()`, conditionally
+  `rawCoordinateCorrection()`), none deferrable (a commit's correction must resolve before the delimiter
+  commits) and none touched by D-207-D-219. The 685ms outlier was a nonsense token forcing all four to run to
+  exhaustion. Per this project's own root-cause-before-fix rule, added per-stage timing only (no fix yet) -
+  two new `AdaptKeyHaptics` diag lines (`finalizeAndCommit: timing diacriticMs=... bestCorrectionMs=...
+  splitMs=... rawCorrectedMs=...`), one for the split-found early return, one for the ordinary path. No new
+  tests (pure diagnostic, no behaviour change). 774 unit tests (unchanged).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Awaits the next on-device repro to see the real
+  per-stage breakdown. See history §142.
+
 - **§141 (v0.8.104): D-219 - the flash effect decoupled from key processing and shortened, at the user's own
   explicit request.** Two asks: (1) the flash must paint independently of processing time, not just "faster
   processing eventually makes it faster too"; (2) it still felt too long - wants GBoard's near-instant popup

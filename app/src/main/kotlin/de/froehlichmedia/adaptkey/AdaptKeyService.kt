@@ -2430,24 +2430,43 @@ class AdaptKeyService : InputMethodService() {
         // words - Umlaut.fold() already round-trips both back to the bare ASCII form. Left off outside
         // German mode (G-01) - a user who explicitly switched to English/Greek does not want German umlaut
         // restoration forced onto their own explicit choice.
+        // D-220 (temporary diagnostic): D-217's own handleKey timing log pointed at SPACE/punctuation as the
+        // one keystroke class still slow after D-214/D-218 - this is the commit-time search chain behind it
+        // (diacriticRestoration/bestCorrectionFor/trySplit/rawCoordinateCorrection below), never touched by
+        // any of that work since a commit's own correction must stay synchronous. Timed per stage rather
+        // than guessed, matching this project's own root-cause-before-fix convention - `adb logcat -s
+        // AdaptKeyHaptics:D` shows the breakdown. Remove once D-220 is closed.
+        val diacriticStartedAt = SystemClock.uptimeMillis()
         val diacriticWord = if (activeLanguage == Language.GERMAN) {
             providers.getValue(Language.GERMAN).diacriticRestoration(typed, previousWord)
         } else {
             null
         }
+        val diacriticMs = SystemClock.uptimeMillis() - diacriticStartedAt
         // D-207: a single search now answers both "what's the best correction" and "is it high-confidence
         // enough to veto a split" - previously two independent bestCorrection() searches for the exact
         // same token (highConfidenceCorrection() then autocorrectFor()), each running its own
         // store.correctionCandidates() scan, on every single commit. Gated on diacriticWord too (not just
         // suppressAutocorrect, as the old highConfidenceWord alone was) - split is vetoed by diacriticWord
         // regardless, so computing this at all in that case was already pure waste.
+        val bestCorrectionStartedAt = SystemClock.uptimeMillis()
         val bestCorrection = if (diacriticWord != null || suppressAutocorrect) null else provider.bestCorrectionFor(typed, previousWord)
+        val bestCorrectionMs = SystemClock.uptimeMillis() - bestCorrectionStartedAt
+        val splitStartedAt = SystemClock.uptimeMillis()
         val split = if (diacriticWord != null || bestCorrection?.highConfidence == true) {
             null
         } else {
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
         }
+        val splitMs = SystemClock.uptimeMillis() - splitStartedAt
         if (split != null) {
+            // D-220: the split path returns before the dict=/suppressAutocorrect=/... diag further below is
+            // ever reached, so it gets its own timing line here instead.
+            diag(
+                "AdaptKeyHaptics",
+                "finalizeAndCommit: timing diacriticMs=$diacriticMs bestCorrectionMs=$bestCorrectionMs " +
+                    "splitMs=$splitMs (split found)"
+            )
             val committedLength = applySplit(ic, split, delimiter, typed)
             armShiftForNextWord(ic)
             return committedLength
@@ -2463,7 +2482,9 @@ class AdaptKeyService : InputMethodService() {
         // entirely in that case, not just as a tie-breaker, since an unambiguous umlaut restoration is a
         // strictly stronger signal than either.
         val autocorrected = bestCorrection?.word
+        val rawCorrectedStartedAt = SystemClock.uptimeMillis()
         val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
+        val rawCorrectedMs = SystemClock.uptimeMillis() - rawCorrectedStartedAt
         val corrected = diacriticWord ?: autocorrected ?: rawCorrected ?: typed
         // D-172 (temporary diagnostic): reported that an unknown-but-clearly-close-to-a-common-word token
         // (e.g. "aks" -> "als") sometimes never autocorrects at all, despite every gate traced by hand
@@ -2474,6 +2495,13 @@ class AdaptKeyService : InputMethodService() {
             "AdaptKeyJitter",
             "finalizeAndCommit: dict=${dictChoice.language} suppressAutocorrect=$suppressAutocorrect " +
                 "diacriticWord=$diacriticWord autocorrected=$autocorrected rawCorrected=$rawCorrected"
+        )
+        // D-220: see the split path's own timing line above for context - this is the same breakdown for
+        // the non-split path, the one D-217's own handleKey timing log actually pointed at.
+        diag(
+            "AdaptKeyHaptics",
+            "finalizeAndCommit: timing diacriticMs=$diacriticMs bestCorrectionMs=$bestCorrectionMs " +
+                "splitMs=$splitMs rawCorrectedMs=$rawCorrectedMs"
         )
         // D-140: when the D-39 raw-coordinate fallback (not an ordinary dictionary/diacritic correction)
         // produced this correction, capture the single tap it actually changed - before clearComposing()

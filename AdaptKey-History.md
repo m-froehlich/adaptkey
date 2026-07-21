@@ -7335,3 +7335,38 @@ next to it, which was not true before this round (the two numbers had been track
 No new unit tests - pure Android View touch/paint glue, the established untested gap for this layer; no pure
 logic changed. 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed.
+
+## §142 - D-220: Diagnostics for the Last Remaining Slow Spot - finalizeAndCommit()'s Own Commit-Time Search
+Chain (v0.8.105)
+
+D-217/D-218/D-219 were device-confirmed a clear success: "Das hat insgesamt richtig gut funktioniert. Das
+Flashing ist super knackig und die Tastatur wirkt kaum noch träge." A fresh pair of logs (fast and slow typing)
+showed ordinary letters now processing in 17-55ms (down from the 200-600ms this whole investigation started
+from) and flash latency consistently in the low single digits to ~17ms. The user's own "vielleicht hier und da
+nochmal minimal" pointed precisely at one remaining, clearly identifiable pattern: every `handleKey` spike left
+in either log sat exactly on a SPACE or punctuation delimiter (234/685/100/470/238/252/270ms), never on an
+ordinary letter - i.e. exactly the keystrokes that trigger `finalizeAndCommit()`.
+
+**Not yet root-caused with real numbers - only located to the right function.** `finalizeAndCommit()` runs a
+chain of up to four real, uncached searches synchronously on every commit, none of which D-207-D-219 ever
+touched (a commit's own correction has to be resolved before the delimiter is committed, so none of this chain
+can simply be deferred the way the composing-time previews were): `diacriticRestoration()`,
+`bestCorrectionFor()` (D-207's already-merged bestCorrection/highConfidence search), conditionally
+`tokenRepair.trySplit()` (D-214-optimised, still real work), and conditionally `rawCoordinateCorrection()` (D-39)
+when nothing else matched. The 685ms outlier (`"Glücjwunsvh"`/`"Glückwunsvh"`, a nonsense token across both
+rounds' logs) is the worst case: none of the four stages find anything, so every one of them runs to
+exhaustion. Per the project's own root-cause-before-fix convention, guessing which of the four stages actually
+dominates would be exactly the mistake this whole investigation already corrected once (the D-211-era "stale
+requests" framing) - so this round adds only measurement, no fix yet.
+
+Each of the four stages is now individually timed (`SystemClock.uptimeMillis()` around each call, matching
+D-217's own style) and reported via two new `AdaptKeyHaptics`-tagged `diag()` lines - one for the split-found
+early return (`applySplit()` returns before the existing `dict=.../diacriticWord=...` diag further down is ever
+reached), one for the ordinary path further down, reusing the same `diacriticMs`/`bestCorrectionMs`/`splitMs`
+locals plus a new `rawCorrectedMs`: `finalizeAndCommit: timing diacriticMs=X bestCorrectionMs=Y splitMs=Z
+rawCorrectedMs=W`. Temporary, D-139/D-193/D-217-style diagnostic - to be removed once D-220 is closed.
+
+No new unit tests - pure diagnostic timing around existing, already-tested pure logic; no behaviour changed.
+774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Awaits the user's next
+on-device repro of a slow SPACE/punctuation commit so the four stages' actual breakdown decides where D-220's
+real fix should go.
