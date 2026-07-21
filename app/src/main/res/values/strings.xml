@@ -129,8 +129,8 @@
     <string name="d142_credentials_title">Saved usernames &amp; emails</string>
     <string name="d142_credentials_summary">Review saved login values, remove one at a time, or clear them all.</string>
 
-    <string name="d190_never_record_credentials_title">Never save credentials</string>
-    <string name="d190_never_record_credentials_summary">Recognised usernames and email addresses are never saved for later suggestion. Never affects passwords - those are never recorded regardless of this setting. Already-saved values keep being suggested either way.</string>
+    <string name="d224_save_credentials_title">Save credentials</string>
+    <string name="d224_save_credentials_summary">Recognised usernames and email addresses are saved for later suggestion. Never affects passwords - those are never recorded regardless of this setting. Already-saved values keep being suggested either way.</string>
 
     <string name="d191_contacts_suggestions_title">Suggest contacts\' emails</string>
     <string name="d191_contacts_suggestions_summary">Offers email addresses from your address book alongside your saved credentials, once allowed. Your contacts are read live and never stored in this app. Turning this on asks for the Contacts permission once, right here.</string>

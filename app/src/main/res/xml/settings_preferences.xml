@@ -230,10 +230,10 @@
         </Preference>
 
         <SwitchPreferenceCompat
-            android:key="d190_never_record_credentials"
-            android:title="@string/d190_never_record_credentials_title"
-            android:summary="@string/d190_never_record_credentials_summary"
-            android:defaultValue="false" />
+            android:key="d224_save_credentials"
+            android:title="@string/d224_save_credentials_title"
+            android:summary="@string/d224_save_credentials_summary"
+            android:defaultValue="true" />
 
         <SwitchPreferenceCompat
             android:key="d191_contacts_suggestions_enabled"

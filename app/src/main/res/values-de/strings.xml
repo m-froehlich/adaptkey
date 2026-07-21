@@ -129,8 +129,8 @@
     <string name="d142_credentials_title">Gespeicherte Benutzernamen &amp; E-Mails</string>
     <string name="d142_credentials_summary">Gespeicherte Anmeldedaten ansehen, einzeln entfernen oder alle auf einmal löschen.</string>
 
-    <string name="d190_never_record_credentials_title">Anmeldedaten nie speichern</string>
-    <string name="d190_never_record_credentials_summary">Erkannte Benutzernamen und E-Mail-Adressen werden nie zur späteren Vorschlags-Nutzung gespeichert. Betrifft niemals Passwörter - diese werden unabhängig von dieser Einstellung nie aufgezeichnet. Bereits gespeicherte Werte werden weiterhin vorgeschlagen.</string>
+    <string name="d224_save_credentials_title">Anmeldedaten speichern</string>
+    <string name="d224_save_credentials_summary">Erkannte Benutzernamen und E-Mail-Adressen werden zur späteren Vorschlags-Nutzung gespeichert. Betrifft niemals Passwörter - diese werden unabhängig von dieser Einstellung nie aufgezeichnet. Bereits gespeicherte Werte werden weiterhin vorgeschlagen.</string>
 
     <string name="d191_contacts_suggestions_title">E-Mails aus Kontakten vorschlagen</string>
     <string name="d191_contacts_suggestions_summary">Bietet E-Mail-Adressen aus deinem Adressbuch zusätzlich zu deinen gespeicherten Zugangsdaten an, sobald erlaubt. Deine Kontakte werden live gelesen und nie in dieser App gespeichert. Beim Aktivieren wird hier einmalig die Kontakte-Berechtigung angefragt.</string>

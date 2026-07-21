@@ -76,6 +76,19 @@ History.md's append-only log) so they are not lost if the situation that would j
   See history §147 for the "must back up the keystore" consequence and the build-doc section above for the
   new command.
 
+- **§148 (v0.8.110): D-224 - the inverted "never save credentials" toggle flipped to a positively-phrased
+  "save credentials".** User: it reads backwards next to every other settings-screen toggle, where ON means
+  the feature is active - here ON meant it was suppressed. Renamed throughout:
+  `AdaptSettings.neverRecordCredentials: Boolean = false` -> `saveCredentials: Boolean = true` (same in
+  `SettingsMapper.RawSettings`); `SettingsStore.KEY_NEVER_RECORD_CREDENTIALS` ("d190_never_record_credentials")
+  -> `KEY_SAVE_CREDENTIALS` ("d224_save_credentials"), `defaultValue` flipped to `true` in
+  `settings_preferences.xml`; new `d224_save_credentials_title`/`_summary` strings (EN/DE/EL) replace the old
+  D-190 ones, same factual content reworded positively. `AdaptKeyService`'s two gate conditions inverted to
+  match. **No migration** - user's own call, since exactly one install of this app exists; an old stored value
+  under the legacy key is simply orphaned, the setting resets to its new default (saved = on) and can be
+  re-toggled if needed. One test renamed/repolarised. 775 unit tests (unchanged count).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §148.
+
 - **§146 (v0.8.108): D-222 - the URL-mode `https://` and `www.` keys merged into one, restoring the space
   key to full width.** User: on a phone the URL/address bar is used for search queries far more often than
   real URLs, so D-143's own drastically-shrunk URL-mode space key (weight 1, vs the ordinary row's 3.2) is a

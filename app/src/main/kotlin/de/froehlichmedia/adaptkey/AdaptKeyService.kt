@@ -1364,13 +1364,13 @@ class AdaptKeyService : InputMethodService() {
         // itself was never the problem (confirmed EMAIL in the same log). Falls back to credentialSnapshot
         // (an in-memory record of what was actually committed, unaffected by the connection dying) below.
         val kind = loginFieldKind
-        // D-190: PASSWORD is excluded unconditionally above, regardless of this setting - the toggle only
-        // ever gates whether a recognised USERNAME/EMAIL value gets saved.
-        if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured || settings.neverRecordCredentials) {
+        // D-190/D-224: PASSWORD is excluded unconditionally above, regardless of this setting - the toggle
+        // only ever gates whether a recognised USERNAME/EMAIL value gets saved.
+        if (kind == LoginFieldKind.NONE || kind == LoginFieldKind.PASSWORD || credentialCaptured || !settings.saveCredentials) {
             diag(
                 "AdaptKey",
                 "captureCredentialIfLoginField: skipped - kind=$kind credentialCaptured=$credentialCaptured " +
-                    "neverRecordCredentials=${settings.neverRecordCredentials}"
+                    "saveCredentials=${settings.saveCredentials}"
             )
             return
         }
@@ -2707,7 +2707,7 @@ class AdaptKeyService : InputMethodService() {
             // read back out of it, so a pure urlMode fragment is skipped to avoid pointlessly accumulating
             // it; likewise skipped outright when the user has disabled credential recording entirely - it
             // would never be read, only held in memory for nothing.
-            if (loginFieldKind != LoginFieldKind.NONE && !settings.neverRecordCredentials) {
+            if (loginFieldKind != LoginFieldKind.NONE && settings.saveCredentials) {
                 credentialSnapshot.append(beforeText).append(delimiter)
             }
             if (afterText.isNotEmpty()) {

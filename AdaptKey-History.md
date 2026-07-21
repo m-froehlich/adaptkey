@@ -7564,3 +7564,41 @@ the properties file holds the store/key passwords in plain text.
 
 No new unit tests - pure Gradle/signing build-script configuration, no Kotlin source changed at all. 775 unit
 tests (unchanged). `:app:assembleRelease`/`:app:assembleDebug`/`:app:testDebugUnitTest` all verified green.
+
+## §148 - D-224: the Inverted "Never Save Credentials" Toggle Flipped to a Positively-Phrased "Save Credentials"
+(v0.8.110)
+
+The user pointed out that D-190's own `neverRecordCredentials` setting reads backwards next to every other
+toggle on the settings screen - an imperative prohibition ("Anmeldedaten nie speichern"/"Never save
+credentials") where ON means the feature is *suppressed*, unlike every sibling toggle (`c04_highlight_enabled`,
+`d191_contacts_suggestions_enabled`, etc.) where ON means the feature is *active*. Agreed it is genuinely
+cognitively awkward to have one setting in a whole screen work backwards from the rest, for no functional
+reason - flipped it.
+
+Renamed throughout: `AdaptSettings.neverRecordCredentials: Boolean = false` -> `saveCredentials: Boolean =
+true` (and the same in `SettingsMapper.RawSettings`); `SettingsStore.KEY_NEVER_RECORD_CREDENTIALS =
+"d190_never_record_credentials"` -> `KEY_SAVE_CREDENTIALS = "d224_save_credentials"`; the `settings_preferences.xml`
+`SwitchPreferenceCompat` moved to the new key with `android:defaultValue="true"`; new
+`d224_save_credentials_title`/`_summary` string resources (all three locales - EN/DE/EL) replace the old
+`d190_never_record_credentials_*` ones, reworded positively while keeping the exact same factual content
+(password fields are still always excluded regardless of this setting; already-saved values still keep being
+suggested either way, only new capturing is gated). `AdaptKeyService.captureCredentialIfLoginField()`'s and the
+credential-snapshot mirroring's own gate conditions both inverted to match (`!settings.saveCredentials` /
+`settings.saveCredentials` respectively, replacing `settings.neverRecordCredentials` / `!settings.neverRecordCredentials`).
+
+**No migration written, deliberately** - the user's own call: exactly one installation of this app exists (the
+user's own device), so an existing stored value under the old preference key simply becomes orphaned/unused
+rather than needing a careful invert-and-carry-forward migration path; the setting resets to its new default
+(`saveCredentials = true`, i.e. credentials are saved) on next launch, which the user can simply re-toggle if
+they had actually turned the old one on. This is explicitly a one-off simplification for a single-user app, not
+a precedent for how a similarly-inverted setting would be renamed in a multi-install context - there the old
+key's stored value would need to seed the new key's value before the old key is ever read again, exactly the
+kind of migration that was drafted and then deliberately discarded here once the user confirmed it was
+unnecessary.
+
+Test updated to match: `` `D-190 neverRecordCredentials flag passes through unchanged, defaulting to off` ``
+renamed to `` `D-190-D-224 saveCredentials flag passes through unchanged, defaulting to on` `` (same
+pass-through assertions, inverted polarity and default). 775 unit tests (unchanged count). No `androidTest`/
+instrumented coverage existed for this setting before or after (the established gap for `SettingsStore`'s own
+Android-facing IO, same as every other preference in this store). `:app:assembleDebug`/`:app:testDebugUnitTest`
+green. Not yet device-confirmed.

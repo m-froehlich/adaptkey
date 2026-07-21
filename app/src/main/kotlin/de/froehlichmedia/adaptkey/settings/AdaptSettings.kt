@@ -49,11 +49,13 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           mark simply expires unused, rather than ever becoming a real, permanent blacklist entry -
  *           default 7 days. Exposed as a setting mainly so the mechanism itself is discoverable, not
  *           because frequent retuning is expected once a value has proven itself.
- * @property neverRecordCredentials D-190: whether [de.froehlichmedia.adaptkey.AdaptKeyService.captureCredentialIfLoginField]
- *           is disabled outright (default off, i.e. recording stays on) - never affects PASSWORD fields,
- *           which are never recorded regardless of this setting; only gates whether a recognised
- *           username/email value gets saved for later suggestion. Already-saved values keep being
- *           suggested either way - this only stops new ones from being added.
+ * @property saveCredentials D-190/D-224: whether [de.froehlichmedia.adaptkey.AdaptKeyService.captureCredentialIfLoginField]
+ *           is allowed to run at all (default **on**, matching every other toggle's own "on = feature
+ *           active" convention - renamed from the original, inverted `neverRecordCredentials`, whose "on
+ *           means suppressed" phrasing read backwards next to every other setting in this screen). Never
+ *           affects PASSWORD fields, which are never recorded regardless of this setting; only gates
+ *           whether a recognised username/email value gets saved for later suggestion. Already-saved
+ *           values keep being suggested either way - turning this off only stops new ones from being added.
  * @property contactsSuggestionsEnabled D-191: whether the address book's own email addresses are merged
  *           into the EMAIL-field credential suggestion list - default **off**, opt-in only. The user's
  *           stated preference, not a live permission check by itself; every actual read still re-checks
@@ -79,7 +81,7 @@ data class AdaptSettings(
     val tier3Enabled: Boolean = true,
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
-    val neverRecordCredentials: Boolean = false,
+    val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false
 ) {
     

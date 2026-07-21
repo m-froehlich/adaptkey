@@ -101,9 +101,9 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `D-190 neverRecordCredentials flag passes through unchanged, defaulting to off`() {
-        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).neverRecordCredentials)
-        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(neverRecordCredentials = true)).neverRecordCredentials)
+    fun `D-190-D-224 saveCredentials flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).saveCredentials)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(saveCredentials = false)).saveCredentials)
     }
     
     @Test

@@ -41,7 +41,7 @@ data class RawSettings(
     val tier3Enabled: Boolean = true,
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
-    val neverRecordCredentials: Boolean = false,
+    val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false
 )
 
@@ -189,7 +189,7 @@ object SettingsMapper {
             tier3Enabled = raw.tier3Enabled,
             diagnosticLogEnabled = raw.diagnosticLogEnabled,
             pendingBlacklistExpiryDays = raw.pendingBlacklistExpiryDays.coerceIn(MIN_PENDING_BLACKLIST_EXPIRY_DAYS, MAX_PENDING_BLACKLIST_EXPIRY_DAYS),
-            neverRecordCredentials = raw.neverRecordCredentials,
+            saveCredentials = raw.saveCredentials,
             contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled
         )
     }
