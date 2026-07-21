@@ -130,28 +130,15 @@ class TokenRepairTest {
     }
     
     @Test
-    fun `D-230 a 2-letter half is rejected even when not caught by the both-nouns rule (darfst to darf St)`() {
-        // "darfst" (2nd person singular of the irregular/ablaut modal verb "dürfen") has no dictionary entry
-        // of its own and is out of RegularVerbInflection's scope (documented there: strong/ablaut verbs are
-        // not covered). Without MIN_PART's own protection, "darf" (OTHER, not a noun) + "St" (NOUN) would
-        // pass the both-nouns rule (only one side is a noun) and clear the frequency floor easily, exactly
-        // reproducing the reported regression. Frequencies mirror the real dict_de.tsv values.
-        store.putWord(WordEntry("darf", frequency = 1_761L))
-        store.putWord(WordEntry("st", frequency = 5_939L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+    fun `D-230 reverted - a missed space before a genuine 2-letter function word must still split`() {
+        // A MIN_PART 2->3 bump was tried to close the "Docker"/"darfst" regressions but was itself a
+        // regression: it would also block this entirely ordinary case (e.g. "Wie geht es?" typed as
+        // "wiegehtes" losing the second space) - "es" is a real, common 2-letter German word, not a corpus
+        // artefact. MIN_PART stays 2; the "Docker"/"darfst" class needs a different, more targeted fix.
+        store.putWord(WordEntry("geht", frequency = 500L))
+        store.putWord(WordEntry("es", frequency = 400_000L))
         
-        assertNull(repair.trySplit("darfst", emptySet()))
-    }
-    
-    @Test
-    fun `D-230 a 2-letter half is rejected for the missed-space strategy too (Docker to Dock er)`() {
-        // "Docker" has no dictionary entry in either bundled language. "Dock" (NOUN) + "er" (OTHER, the
-        // German third-person pronoun, one of the most frequent tokens in the whole corpus) is not rejected
-        // by the both-nouns rule either (only one side is a noun) and both clear the frequency floor easily -
-        // MIN_PART alone is what closes this class now. Frequencies mirror the real dict_de.tsv values.
-        store.putWord(WordEntry("dock", frequency = 20L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
-        store.putWord(WordEntry("er", frequency = 120_975L))
-        
-        assertNull(repair.trySplit("docker", emptySet()))
+        assertEquals(SplitResult("geht", "es"), repair.trySplit("gehtes", emptySet()))
     }
     
     @Test

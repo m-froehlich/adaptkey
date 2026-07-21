@@ -70,6 +70,20 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§158 (v0.8.117): D-230 reverted - `MIN_PART=3` was itself a regression; D-228/D-230 reopened.** User
+  caught it immediately: raising `MIN_PART` also blocks any genuine missed-space split ending in a real
+  2-letter German word (`"an"`/`"im"`/`"um"`/`"es"`/...) - `"gehtes"` -> `"geht"`+`"es"` would never be found
+  again. §157's own verification only checked existing tests, none of which happened to exercise a 2-letter
+  right half. Reverted to `MIN_PART=2`; new test proves `"gehtes"` still splits; the 2 now-wrong
+  `"darfst"`/`"Docker"` tests removed. **D-228/D-230 both reopened** - unfixed again. The real difficulty,
+  laid out for the next design round (see history §158's table): the wanted case (`der`+`Kinderarzt`,
+  `geht`+`es`) and the unwanted case (`darf`+`St`, `Dock`+`er`) have an *identical* surface shape by every
+  signal this app can cheaply compute (frequency, both-nouns, bigram co-occurrence all zero either way) - the
+  actual distinguishing feature is word-order/grammatical-role plausibility (determiner-noun / verb-particle
+  vs. modal-verb-then-abbreviation / noun-then-bare-pronoun), which this dictionary's `OTHER` tag cannot
+  represent (articles/pronouns/prepositions/conjunctions all lumped together). Not implemented - left for the
+  user's own design call. 777 unit tests (778 - 2 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  See history §158.
 - **§157 (v0.8.116): D-229 device-confirmed; D-230 fixed - "darfst" -> "darf St" was the same class of**
   **regression as D-228's "Docker", closed via `MIN_PART` (which also retroactively closes D-228).** Root-
   caused: `"darfst"` (irregular/ablaut modal verb, `dürfen`/`darf`/`darfst`) has no dictionary entry and is

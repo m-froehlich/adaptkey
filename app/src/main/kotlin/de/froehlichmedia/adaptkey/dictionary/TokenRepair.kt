@@ -283,20 +283,13 @@ class TokenRepair(private val store: DictionaryStore) {
     companion object {
         
         /**
-         * D-230: minimum length of either part of a split or the token of a merge - raised from 2 to 3.
-         * A 2-letter half is disproportionately likely to be a hyper-frequent German function word/particle
-         * (`"st"`, `"er"`, `"in"`, `"an"`, `"zu"`, `"im"`, `"um"`, `"es"`...) that trivially appears as a
-         * suffix of countless unrelated tokens - confirmed by two independent real regressions sharing this
-         * exact shape: `"Docker"` -> `"Dock"`+`"er"` (D-228, an unlisted technical term) and `"darfst"` ->
-         * `"darf"`+`"St"` (D-230, an irregular ("ablaut") modal-verb conjugation [RegularVerbInflection]
-         * deliberately does not cover). Neither case is caught by [isNoun]'s both-nouns rule (`"er"`/`"darf"`
-         * are not tagged noun), and both wins purely because nothing else competes for a token neither
-         * dictionary/inflection check resolves. Every currently-valid split ("und"+"das", "aber"+"das",
-         * "immer"+"noch", "der"+"kinderarzt", "test"+"wort") already has both halves at 3+ characters, so
-         * this closes an entire class of false positive with zero effect on any real split this app already
-         * relies on.
+         * D-230 (reverted): a 2->3 bump was tried to close the `"Docker"`/`"darfst"` regressions (see history
+         * §157/§158) but was wrong - it also blocks every genuine missed-space split ending in a real
+         * 2-letter German function word (`"an"`, `"im"`, `"um"`, `"es"`, `"zu"`, ...), e.g. `"gehtes"` ->
+         * `"geht"` + `"es"`, which this app must still be able to find. Reverted to 2; the actual fix for
+         * `"Docker"`/`"darfst"` needs a different, more targeted strategy - see the open backlog discussion.
          */
-        const val MIN_PART = 3
+        const val MIN_PART = 2
         
         /** Minimum bigram count accepted as a "high-probability" continuation (A-06). */
         const val MIN_BIGRAM = 3L

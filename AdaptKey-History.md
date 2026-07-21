@@ -7933,3 +7933,47 @@ backspace-restore-as-partial-learning-credit idea D-228 also captured remains op
 never specific to "Docker" as a word, just raised alongside it) and stays in the backlog. 2 new tests
 (`TokenRepairTest`: `"darfst"`, and `"Docker"` re-verified against the fixed constant). 778 unit tests total
 (776 + 2). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §158 - D-230 Reverted - `MIN_PART=3` Blocks Genuine Splits Ending in a Real 2-Letter Function Word;
+D-228/D-230 Reopened, Pending a More Targeted Strategy (v0.8.117)
+
+User immediately caught a real gap in §157's own verification: raising `MIN_PART` to 3 does close
+`"Docker"`/`"darfst"`, but it also unconditionally blocks *any* genuine missed-space split whose right half is
+a real, common 2-letter German word - `"an"`, `"im"`, `"um"`, `"es"`, `"zu"`, `"ob"`, `"ja"`, `"so"`, `"da"`,
+`"wo"` and more all fall under this. `"gehtes"` -> `"geht"`+`"es"` (a missed space before "es", the common
+pronoun/particle) would never be tried again - §157's own verification only checked that *existing tests*
+still passed, which is not the same claim as "no legitimate case is affected"; it happened to miss this
+because no existing test exercised a 2-letter right half at all. **`MIN_PART` reverted to 2**; a new test
+(`` `D-230 reverted - a missed space before a genuine 2-letter function word must still split` ``) proves
+`"gehtes"` -> `"geht"`+`"es"` still splits, guarding directly against this exact regression recurring. The 2
+tests added in §157 for `"darfst"`/`"Docker"` (which asserted the now-wrong behaviour) are removed rather than
+kept as documentation of a rejected direction, since a failing-by-design assertion left in the suite would be
+confusing, not informative.
+
+**D-228 and D-230 are both reopened** - `"Docker"`/`"darfst"` are unfixed again, back to their pre-§157 state.
+
+**Why this is genuinely hard, laid out for the next design round rather than guessed at again**: every
+candidate signal tried so far fails to discriminate the wanted case from the unwanted ones, because the
+*surface* shape is identical:
+
+| | left | right | shape |
+|---|---|---|---|
+| wanted | `der` (OTHER, freq 1,004,234) | `Kinderarzt` (NOUN, freq 14) | short/hyper-frequent OTHER + rare NOUN |
+| wanted | `geht` (OTHER-ish) | `es` (OTHER, hyper-frequent) | ordinary word + short hyper-frequent OTHER |
+| unwanted | `darf` (OTHER, freq 1,761) | `St` (NOUN, freq 5,939) | OTHER + NOUN - same shape as `der`+`Kinderarzt` |
+| unwanted | `Dock` (NOUN, freq 20) | `er` (OTHER, freq 120,975) | rare NOUN + short hyper-frequent OTHER - same shape as `geht`+`es` |
+
+Bigram co-occurrence cannot help (all four pairs have zero recorded co-occurrence, §152/§157). A raw score/
+frequency floor cannot help (the magnitudes are comparable across wanted and unwanted pairs alike). The
+both-nouns rule cannot help (none of these four pairs has both halves tagged noun). The one feature that
+actually distinguishes them - `der`/`geht` are genuinely used adjacent to their right half in real German
+syntax (determiner-noun, verb-particle), while `darf`/`Dock` are not (a modal verb is not idiomatically
+followed by a bare place-name abbreviation; a noun is not idiomatically followed by a bare subject pronoun) -
+is a *word-order/grammatical-role* fact this dictionary's tagging cannot represent: `PartOfSpeech.OTHER` lumps
+articles, pronouns, prepositions and conjunctions together with no further distinction, and there is no
+recorded "these two words are actually used adjacent to each other in real text" signal weaker than exact
+bigram co-occurrence (which the D-203 case already proved is too strict to require, and too coarse - a
+zero-vs-nonzero count - to use as a soft signal for words this rare).
+
+**Not implemented, left for the user's own design call**, per this project's own convention for exactly this
+kind of trade-off. 777 unit tests total (778 - 2 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
