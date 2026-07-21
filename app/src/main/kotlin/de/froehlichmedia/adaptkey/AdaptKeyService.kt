@@ -2944,7 +2944,18 @@ class AdaptKeyService : InputMethodService() {
                 span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
             } else {
-                ic.setComposingText(text, 1)
+                // D-229: a bare String here (as opposed to every other branch above, which always sends a
+                // Spanned) is what makes the target editor apply its own default composing-text underline
+                // decoration - suppressed once the IME supplies any explicit character styling. Since D-194
+                // moved the S-05 highlight decision onto a ~200ms debounce, this branch is now what every
+                // keystroke sends *first* (the styled branches above only apply once the debounce catches
+                // up), so the editor's own underline now visibly flashes in and out on every keystroke that
+                // does not yet have a settled highlight decision - never a deliberate cue this app intended,
+                // just an accidental side effect of no longer sending a Spanned unconditionally. Wrapping in
+                // an unstyled SpannableString (identical rendering otherwise) keeps every keystroke already
+                // "styled" from the editor's point of view, so it never adds its own underline in the first
+                // place - regardless of whether a highlight is pending or never comes at all.
+                ic.setComposingText(SpannableString(text), 1)
             }
             if (needsCursorFixup) {
                 val absolute = composingAnchor + composingCursor

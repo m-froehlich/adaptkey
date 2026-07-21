@@ -7848,3 +7848,54 @@ No new unit tests - `drawLongPressPopup()`/`popupDisplayTextFor()`/`drawPopupCel
 drawing glue with no pure-function seam of their own; `AlternativeScript.extendsWord()` itself is unmodified and
 already covered by its own existing tests. 776 unit tests (unchanged). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §156 - D-229: the Composing-Text Underline Flicker Root-Caused to D-194's Own Debounced Highlight - Fixed
+by Always Sending a Spanned Composing Text (v0.8.115)
+
+User reported a per-keystroke underline flicker while typing that they had never noticed before ("Test":
+`T` underlined, `Te` also briefly underlined before the underline disappears and it turns green, repeating for
+every letter) - asked directly since when this has existed and what it is for.
+
+**Root-caused against the actual pre/post-D-194 code, not guessed** (`git show` against the commit right before
+`4693f8a`, D-194/§125, v0.8.89, 2026-07-20 - the round that introduced the sluggishness-driven debounce): before
+D-194, `updateComposing()`'s S-05 highlight decision (`shouldHighlightComposing()`) ran *synchronously* inside
+the very same call that pushed the composing text - a token's colour state (plain vs. green) was therefore
+always resolved and applied together, in one `setComposingText()` call, with no intermediate state ever
+rendered. D-194 (for performance, moving the expensive `isKnownWord()`/`trySplit()` lookups off the per-keystroke
+hot path) split this into two: the *plain* branch fires immediately on every keystroke (`composingPreviewFor`
+not yet matching the new text), and the *styled* (green) branch only fires later, once
+`composingPreviewRunnable`'s ~200ms debounce (`EXPENSIVE_SUGGESTION_DELAY_MS`) catches up for that exact text.
+
+The plain branch sent a bare, unstyled `String` to `ic.setComposingText()` - unlike every other branch in the
+same function, which always sends a `Spanned`. Standard Android `EditText`/`Editor` behaviour draws its own
+default underline decoration under composing text specifically when the IME has *not* supplied any explicit
+character styling, and skips that decoration once the IME has (the styled S-05/§47 branches already benefit
+from this implicitly, which is presumably why the green state itself was never reported as underlined). Once
+the debounce catches up and confirms the word is known, the *same* text is resent - now `Spanned` - and the
+editor's own underline decoration disappears in favour of the green colour. Confirmed against the real
+dictionary that this is not limited to genuinely complete words either: `"te"` (frequency 302/197 in
+`dict_de.tsv`/`dict_en.tsv`) and `"tes"` (11/21) are themselves marginal, corpus-artefact dictionary entries -
+so *every* intermediate prefix of `"Test"` can independently earn its own brief green flash once the debounce
+catches up to it, exactly matching the reported per-letter pattern, before the next keystroke resets the text to
+plain (and therefore underlined) again until the debounce catches up once more.
+
+**Not a deliberate cue** - §125's own history entry explicitly named and the user explicitly accepted the
+*colour* arriving up to 200ms later as a trade-off for the performance win, but the *underline flash* itself
+was never part of that discussion; it is a pure, unintended side effect of the plain branch stopping short of
+sending a `Spanned` unconditionally.
+
+**Fixed**: the plain branch now wraps `text` in an unstyled `SpannableString` before calling
+`ic.setComposingText()`, identical in every other respect - the composing text renders exactly as before
+(default colour, no span), but is now always `Spanned` from the editor's point of view, so its own default
+underline decoration is never triggered regardless of whether a highlight decision is pending, never lands, or
+lands later. Does not touch `composingAnchor`/`onUpdateSelection`/`reclaimSurroundingWord`/batch-edit sequencing
+at all, so the §1 guiding-principle guardrail is unaffected - purely a styling change to what is sent, not a
+timing or cursor change.
+
+No new unit tests - `updateComposing()` is private `AdaptKeyService`/`InputConnection` rendering glue, the same
+established gap as every other fix in this area. 776 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. **This is a hypothesis-based fix, honestly flagged as such**: the underlying
+claim (Android's default composing-underline decoration is conditional on the IME supplying an already-`Spanned`
+CharSequence) is standard, well-documented platform behaviour, but could not be directly observed rendering in
+this environment (no emulator/device) - awaits the user's own on-device confirmation that the flicker is
+actually gone.

@@ -70,6 +70,26 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§156 (v0.8.115): D-229 fixed - the composing-text underline flicker root-caused to D-194's own**
+  **debounced S-05 highlight, not a deliberate cue.** User reported a per-keystroke underline flash while
+  typing, asking since when and to what purpose. Root-caused against the actual pre-D-194 (§125, v0.8.89)
+  code via `git show`: before D-194, the highlight decision ran synchronously inside the same
+  `setComposingText()` call, so colour state was always resolved and applied together - no intermediate state
+  ever rendered. D-194 (a performance fix) split this into an immediate *plain* branch (fires on every
+  keystroke while the ~200ms debounce hasn't caught up yet) and a later *styled* (green) branch. The plain
+  branch sent a bare unstyled `String`, unlike every other branch, which always sends a `Spanned` - standard
+  Android `Editor` behaviour draws its own default composing-underline decoration specifically when the IME
+  hasn't supplied explicit character styling, and suppresses it once the IME has. Confirmed against real data
+  that this isn't limited to genuinely complete words either: `"te"`/`"tes"` are themselves marginal
+  dictionary entries (freq 302/197 and 11/21), so every intermediate prefix of `"Test"` can earn its own brief
+  green flash once the debounce catches up, before the next keystroke resets it to plain/underlined again.
+  Fixed: the plain branch now wraps the text in an unstyled `SpannableString` instead of a bare `String` -
+  identical rendering otherwise, but always `Spanned`, so the editor's own underline decoration is never
+  triggered. Does not touch `composingAnchor`/`onUpdateSelection`/`reclaimSurroundingWord`/batch-edit
+  sequencing - the §1 guardrail is unaffected. No new tests (private `AdaptKeyService` rendering glue). 776
+  unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. **Hypothesis-based, honestly
+  flagged**: the underlying platform-behaviour claim is standard/well-documented but unobservable in this
+  no-emulator environment - awaits device confirmation. See history §156.
 - **§155 (v0.8.114): D-168 fixed - a key's long-press popup alternatives now respect Shift/Caps Lock,**
   **scoped to genuine word-forming letters only.** Small tuck-in per direct request. Root cause was already
   on record (§105/§106): `drawPopupCell()` draws every alternative's raw text unchanged, unlike `labelFor()`'s
