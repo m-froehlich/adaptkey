@@ -70,6 +70,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§165 (v0.8.123): D-238 - a position-1 suggestion chip closes D-234's own disclosed gap for A-05**
+  **split/A-06 merge under a disabled autocorrect toggle.** Key simplification found while designing: when
+  `settings.autocorrectEnabled` is false, `suppressAutocorrect` is unconditionally true, which also forces
+  `diacriticWord`/`bestCorrection` to null in that state - so a live split preview needs no extra veto logic
+  of its own, a plain `trySplit()` call already matches what `finalizeAndCommit()` would have decided.
+  Reused rather than duplicated: `composingPreviewRunnable` (D-125/D-213's debounced background split
+  computation, previously gated on `config.highlightEnabled` alone) now also runs when autocorrect is
+  disabled, and `refreshSuggestions()` reads its cached `composingPreview.split` directly into a
+  `Suggestion("$left $right", MAX_PRIORITY_SUGGESTION_SCORE)` chip, mirroring D-122's own shape exactly -
+  tapping it needs zero new click-handling, since D-122's existing `item.word.contains(' ')` branch in
+  `onSuggestionClicked()` already routes any multi-word chip to `applySplit()`. A-06's merge chip is
+  single-word, so it can't be told apart from an ordinary completion by shape - computed cheaply and directly
+  from `pendingMergeChar`/`previousWord` via the existing `tokenRepair.tryMerge()`, and on tap re-derived
+  fresh and compared against the exact tapped text before routing to the existing `applyMerge()`; clears
+  `pendingMergeChar` so it can't double-apply later. No new tests (private service/`InputConnection` glue,
+  the same established gap D-122's own original implementation left untested). 784 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §165.
 - **§164 (v0.8.122): D-237 - `CalibrationActivity`/`TouchModelActivity` merged; the reset action no longer**
   **touches the chosen typing style.** Confirmed the reported bug first: the old top-level "reset learning &
   calibration" action called `OffsetStore.clear()`, wiping *both* the learned drift stats and the stored

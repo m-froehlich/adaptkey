@@ -464,12 +464,18 @@ class AdaptKeyService : InputMethodService() {
         val ambiguous = spaceAmbiguousIndices()
         val previous = previousWord
         val highlightEnabled = config.highlightEnabled
+        // D-238: also compute the split when autocorrect is disabled, even with the S-05 highlight off -
+        // this same cached value now also backs the position-1 split-suggestion chip that stands in for
+        // the silently-suppressed A-05 auto-apply (see refreshSuggestions()), so it must not depend on an
+        // otherwise-unrelated display preference.
+        val needsSplit = (highlightEnabled || !settings.autocorrectEnabled) && !editingMidWord
+        val autocorrectEnabled = settings.autocorrectEnabled
         val seq = expensiveSuggestionSeq.get()
         composingPreviewExecutor.execute {
             if (seq != expensiveSuggestionSeq.get()) {
                 return@execute
             }
-            val split = if (highlightEnabled && !editingMidWord) {
+            val split = if (needsSplit) {
                 tokenRepair.trySplit(expected, ambiguous, previous) { seq != expensiveSuggestionSeq.get() }
             } else {
                 null
@@ -481,6 +487,13 @@ class AdaptKeyService : InputMethodService() {
                     composingPreviewFor = expected
                     composingPreview = ComposingPreview(split, highlighted)
                     updateComposing(freshIc)
+                    // D-238: the split-suggestion chip is read directly from composingPreview inside
+                    // refreshSuggestions() - without this, it would only appear once the *next* keystroke
+                    // happened to call refreshSuggestions() again, not as soon as this debounced result
+                    // actually lands.
+                    if (!autocorrectEnabled) {
+                        refreshSuggestions()
+                    }
                 }
             }
         }
@@ -3321,7 +3334,38 @@ class AdaptKeyService : InputMethodService() {
         } else {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
         }
-        val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion)
+        // D-238: with autocorrect disabled, A-05/A-06 no longer auto-apply (see finalizeAndCommit()'s
+        // suppressAutocorrect/mergeChar gates) - "everything must go through the suggestions" (the user's
+        // own words) means the split/merge candidate that *would* have silently applied is instead offered
+        // as a position-1 chip, exactly like D-122's own mid-word connector-split chip. The split reads the
+        // already-computed, debounced composingPreviewRunnable result (D-125/D-213) rather than running
+        // trySplit() a second time - it is the exact same computation finalizeAndCommit() would have used,
+        // since suppressAutocorrect is unconditionally true in this state (no diacriticWord/bestCorrection
+        // veto ever applies here either). Tapping it is handled for free by the existing D-122
+        // `item.word.contains(' ')` branch in onSuggestionClicked() - no new click-handling needed.
+        val autocorrectSplitChip = if (!duringRepeat && !settings.autocorrectEnabled && composingPreviewFor == input) {
+            composingPreview.split?.let { split ->
+                val left = capitalisation.capitalise(split.left, contextFor(split.left))
+                val right = capitalisation.capitalise(split.right, followingPartContext())
+                Suggestion("$left $right", MAX_PRIORITY_SUGGESTION_SCORE)
+            }
+        } else {
+            null
+        }
+        // D-238: the A-06 counterpart - cheap enough (no diacritic/bestCorrection dependency) to compute
+        // directly here rather than via the debounced pipeline. Tapping it is handled by a dedicated check
+        // in onSuggestionClicked() (a merge candidate is a single word, unlike the split's own two-word
+        // text, so it cannot be told apart from an ordinary dictionary completion by shape alone).
+        val autocorrectMergeChip = if (!duringRepeat && !settings.autocorrectEnabled) {
+            pendingMergeChar?.let { mc ->
+                tokenRepair.tryMerge(previousWord, mc, input)?.let { merged ->
+                    Suggestion(capitalisation.capitalise(merged, contextFor(merged)), MAX_PRIORITY_SUGGESTION_SCORE)
+                }
+            }
+        } else {
+            null
+        }
+        val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion, autocorrectSplitChip, autocorrectMergeChip)
         // §125 / D-194: duringRepeat used to still call provider.autocorrectFor() here unconditionally -
         // the exact same expensive bestCorrection() search (a store query plus a banded edit-distance scan
         // per candidate) this function's own KDoc already gates everything else behind, simply missed when
@@ -3813,6 +3857,23 @@ class AdaptKeyService : InputMethodService() {
                 if (item.word.contains(' ')) {
                     applyMidWordSplitSuggestion(ic, item.word, trailingSpace)
                     return
+                }
+                // D-238: the position-1 A-06 merge-suggestion chip (autocorrect disabled, see
+                // refreshSuggestions()) is a single word, unlike the split chip above, so it cannot be told
+                // apart from an ordinary dictionary completion by shape - re-derive the merge fresh from
+                // pendingMergeChar/previousWord (cheap, deterministic) and only take this branch when it
+                // actually reproduces the exact tapped text, mirroring how the split branch above also
+                // trusts the tapped text rather than any separately cached state.
+                val mergeChar = pendingMergeChar
+                if (mergeChar != null) {
+                    val merged = tokenRepair.tryMerge(previousWord, mergeChar, composing.toString())
+                    if (merged != null && capitalisation.capitalise(merged, contextFor(merged)) == item.word) {
+                        pendingMergeChar = null
+                        applyMerge(ic, merged, trailingSpace)
+                        notifySuggestionAccepted(item.word)
+                        armShiftForNextWord(ic)
+                        return
+                    }
                 }
                 val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 ic.commitText(word + trailingSpace, 1)

@@ -8221,3 +8221,54 @@ into two cases (confirm actually persists; cancel reverts the preview) - both dr
 `ShadowDialog.getLatestDialog()` and `shadowOf(Looper.getMainLooper()).idle()` (needed for the dialog button's
 click listener, posted to the main looper, to actually run before the assertions). 784 unit tests total
 (783 - 1 + 2). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §165 - D-238: a Position-1 Suggestion Chip Closes D-234's Own Disclosed Gap - A-05 Split/A-06 Merge Now
+Reachable Through the Suggestion Bar When Autocorrect Is Disabled (v0.8.123)
+
+D-234's own KDoc had honestly flagged this gap rather than papering over it: with autocorrect off, A-05
+split/A-06 merge simply commit the token verbatim, uncorrected *and* unoffered, since neither had a
+suggestion-bar alternative outside a mid-word re-edit (D-122's `midWordConnectorSplitSuggestion()`, gated on
+`isEditingMidWord()`). User asked for exactly that - a position-1 chip, mirroring D-122's own precedent.
+
+**A key simplification found while designing this, not assumed**: when `settings.autocorrectEnabled` is
+false, `finalizeAndCommit()`'s `suppressAutocorrect` is unconditionally `true` (D-234 folds
+`!settings.autocorrectEnabled` into it) - which means the split gate's *other* two veto conditions
+(`diacriticWord != null`, `bestCorrection?.highConfidence == true`) can never independently matter in this
+state either, since both `diacriticWord` and `bestCorrection` are themselves forced to `null` whenever
+autocorrect is disabled. So a live split preview needs no separate veto logic of its own to match what
+`finalizeAndCommit()` would actually have decided in this state - a plain `tokenRepair.trySplit()` call is
+already the complete, faithful answer.
+
+**Reused rather than duplicated the existing debounced computation**: `composingPreviewRunnable` (D-125/D-213,
+the background pipeline that already computes `TokenRepair.trySplit()` for the S-05/§47 live colour preview)
+already runs the *exact* same call - it was previously gated on `config.highlightEnabled` alone, which would
+have coupled this chip's availability to an unrelated display preference. Widened the gate to
+`highlightEnabled || !settings.autocorrectEnabled`, so the split is computed whenever either consumer needs
+it, with no duplicate `trySplit()` call anywhere. `refreshSuggestions()` now reads the cached
+`composingPreview.split` directly (when `composingPreviewFor == input` and autocorrect is off) into a
+`Suggestion("$left $right", MAX_PRIORITY_SUGGESTION_SCORE)`, exactly mirroring D-122's own shape - and since
+the debounced background pass previously had no reason to re-trigger a suggestion-bar refresh once it landed,
+`composingPreviewRunnable` now also calls `refreshSuggestions()` itself in that case, so the chip appears as
+soon as the result is ready rather than waiting for the next keystroke.
+
+**Tapping the split chip needed zero new click-handling code**: its display text contains a space (`"$left
+$right"`), so it already flows through `onSuggestionClicked()`'s existing D-122 `item.word.contains(' ')`
+branch straight into `applyMidWordSplitSuggestion()`/`applySplit()` - no other suggestion source in this
+codebase ever produces a multi-word candidate, and this one is no exception.
+
+**A-06's merge chip needed one genuinely new thing**: unlike the split, a merge candidate is a single word, so
+it cannot be told apart from an ordinary dictionary completion by shape alone. Computed directly in
+`refreshSuggestions()` (cheap - no diacritic/bestCorrection dependency, unlike the split - so no debounced
+pipeline needed) from `pendingMergeChar`/`previousWord` via the existing `tokenRepair.tryMerge()`. On tap,
+`onSuggestionClicked()`'s `Kind.NORMAL` branch re-derives the merge fresh from the same
+`pendingMergeChar`/`previousWord` state (cheap, deterministic - mirroring how the split branch also trusts the
+tapped text over any separately cached value) and only takes the merge path when re-deriving it reproduces
+the *exact* tapped text; otherwise falls through to the ordinary single-word commit path unchanged. On a
+match, reuses the existing `applyMerge()` unchanged, clears `pendingMergeChar` so it cannot double-apply to a
+later, unrelated token, and mirrors the ordinary suggestion-accept feedback
+(`notifySuggestionAccepted`/`armShiftForNextWord`).
+
+No new unit tests - every touched function (`composingPreviewRunnable`, `refreshSuggestions()`,
+`onSuggestionClicked()`) is private `AdaptKeyService`/`InputConnection`-dependent glue with no pure-function
+seam, the same established gap D-122's own original implementation already left untested. 784 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
