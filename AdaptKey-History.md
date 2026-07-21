@@ -7114,3 +7114,79 @@ No new unit tests (Android threading/`InputConnection` glue, the established gap
 `TokenRepair.trySplit()`'s own pure logic was already covered when D-45/D-203 built it, unchanged here).
 772 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed -
 this is the fourth round of the same investigation; awaits the next repeat of the same test.
+
+## §138 - D-214/D-215/D-216: The Real Cost Was O(n×m) Computation, Not Stale Requests - Redundant Queries
+Cut, Debounce Restored, trySplit() Cancellable (v0.8.101)
+
+The user repeated the test a fifth time, deliberately typing *slowly* this time - and the same
+per-character slowdown was still there, even though slow, deliberate typing can never build up a backlog of
+stale/superseded background work for D-211/D-212/D-213's cancellation-and-cancel-on-restart machinery to
+discard. Direct quote, correctly diagnosing the whole investigation's framing as wrong: "Das heißt, wir sind
+möglicherweise etwas auf dem Holzweg. Das eigentliche Problem sind nicht veraltete Anfragen... Das eigentliche
+Problem ist, dass je länger das Wort wird der Aufwand vermutlich O(n*m) ist." The user was right: every prior
+round (D-207-D-213) had chased wasted/discarded work, but the dominant cost was genuine, non-wasted
+computation - each `trySplit()` call for an n-character token really does try on the order of n split
+positions, each running `candidateAt()`'s full store lookups, and that cost is paid in full even when the
+result is never stale. The user proposed, and this round implements, three distinct fixes:
+
+**(a) D-214 - cut the redundant SQLite re-fetches inside `candidateAt()` itself.** §137/D-213 had already
+identified that `candidateAt()` cost ~8 separate store reads per split position (`resolveWord()` x2,
+`frequencyOf()` x3, `partsOfSpeech()` x2, `bigramFrequency()`) but only moved that cost off the main thread,
+never reduced it. Both `SqliteDictionaryStore` and `InMemoryDictionaryStore` already had an identical private
+`entryOf(word): WordEntry?` helper internally merging the bundled+learned tables to answer `isKnownWord()`/
+`frequencyOf()`/`partsOfSpeech()` - promoted to a new public `DictionaryStore.entryOf()` interface method
+(placed after `partsOfSpeech()`, before `allKnownWords()`) so `TokenRepair` can fetch a word's full entry
+once and reuse it. `TokenRepair.resolveWord()` now returns the resolved `WordEntry?` itself (not just the
+canonical `String?`), and `candidateAt()`/`isNoun()`/`score()` were rewritten to consume that `WordEntry`
+directly instead of re-querying the store per fact - collapsing ~8 reads per split position down to 2
+(`resolveWord()` left/right) plus the two genuine `bigramFrequency()` calls `score()` still needs (bigram
+counts are not part of `WordEntry` and have no cheaper combined form to fetch). Both concrete stores' private
+`entryOf()` became `override fun entryOf()` with no logic change - purely a visibility change.
+
+**(b) D-215 - the debounce delay is restored, but for a different reason than it was originally removed
+for.** §135/D-211 and §137/D-213 dropped `EXPENSIVE_SUGGESTION_DELAY_MS` entirely on the reasoning that once
+the expensive work ran on a background thread, nothing was left for a fixed wait to protect the main thread
+against. That reasoning was correct as far as it went, but conflated two distinct things a debounce delay can
+be for: protecting the main thread from blocking (genuinely solved by D-211/D-213's background threads), and
+avoiding computation the user can never perceive because a fast subsequent keystroke will supersede it before
+the result would even be shown (not solved by moving the work to a background thread at all - a background
+thread still burns a full CPU core's worth of real work per keystroke while the user is typing quickly, work
+whose result is thrown away unseen the moment the next key lands). The user's own framing: defer the
+live-preview/split check the same way T-02/T-03 already defer raw-coordinate correction until a genuine
+pause, since during fast typing nothing needs it yet. Re-added `EXPENSIVE_SUGGESTION_DELAY_MS = 200L` and
+dispatch via `handler.postDelayed(..., EXPENSIVE_SUGGESTION_DELAY_MS)` again (instead of `handler.post`) for
+both `expensiveSuggestionRunnable` (`refreshSuggestions()`'s scheduling block) and `composingPreviewRunnable`
+(`scheduleComposingPreviewRefresh()`) - each still resets/removes any pending callback on every new keystroke
+exactly as before, so the delay only ever fires once typing actually pauses for 200ms, at which point the
+(still background-threaded, still cancellable) computation runs without ever having blocked the main thread
+during the fast-typing stretch that preceded it. `clearComposing()` now also cancels
+`expensiveSuggestionRunnable` (previously only cancelled `composingPreviewRunnable`), matching the pair
+symmetrically. KDoc/comments on the affected fields and methods were corrected to state the real reason for
+the delay (perceptibility/wasted-computation, not main-thread protection) rather than leave the now-inaccurate
+D-211/D-213 reasoning in place.
+
+**(c) D-216 - `trySplit()` gained its own cancellation check, independent of (a) and (b).** Even with (a)'s
+reduced per-position cost and (b)'s debounce ensuring it only runs after a genuine pause, a single `trySplit()`
+call for a long token can still, in principle, run long enough to be worth abandoning mid-scan if a fresh
+keystroke arrives while it is running on the background thread - the user asked for this "auf jeden Fall"
+regardless of how (a) and (b) turned out. `trySplit()` gained a new `isCancelled: () -> Boolean = { false }`
+parameter (defaulting to a no-op, so every existing call site and every existing pure-logic unit test needed
+no change) and its body was rewritten from the previous `.mapNotNull` chains over `dropIndices`/the missed-space
+range to explicit loops, each checking `isCancelled()` before evaluating the next split position and, if
+cancelled, returning the best candidate found so far (`candidates.maxByOrNull { it.second }?.first`) rather
+than continuing the scan - mirroring D-211's existing cooperative-cancellation shape (a lambda polled between
+units of work, never `Thread.stop()`). `AdaptKeyService.kt`'s `composingPreviewRunnable` now passes
+`{ seq != expensiveSuggestionSeq.get() }` into `trySplit()`, reusing the same `expensiveSuggestionSeq`
+staleness signal (b) and D-211/D-213 already share. `splitAtUnresolvedConnector()` was deliberately left
+unchanged - it runs synchronously on the main thread only during mid-word re-edit, is restricted to
+`OVER_SPACE_LETTERS` positions, and was judged out of scope for this round.
+
+Two new unit tests added directly for (c), in `TokenRepairTest.kt`, both reusing the existing §128
+`"undbald"` -> `"und"` + `"bald"` fixture: cancelling on the very first poll (`{ true }`) must yield `null`
+rather than the split trySplit would otherwise find, and an explicit always-false `isCancelled` (`{ false }`)
+must leave the result unchanged - proving the new parameter's cancellation path actually short-circuits the
+scan, not merely that its default no-op is harmless. (a)'s `entryOf()`-based rewrite of `candidateAt()`/
+`resolveWord()`/`isNoun()`/`score()` is exercised indirectly by every pre-existing `TokenRepairTest` case,
+all of which continued to pass unchanged, confirming behaviour preservation. 774 unit tests (772 + 2).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - awaits the user's next repeat
+of the same on-device test.

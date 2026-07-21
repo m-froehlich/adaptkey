@@ -82,12 +82,25 @@ class TokenRepair(private val store: DictionaryStore) {
      * nobody would plausibly have typed there. In all modes each half must also be non-blacklisted; among
      * every valid candidate from both strategies the highest-scoring split wins.
      *
+     * D-216: polls [isCancelled] once per split position tried - each position costs several store
+     * round-trips via [candidateAt] (D-214), so a token superseded partway through (this now runs on a
+     * background thread, see [de.froehlichmedia.adaptkey.AdaptKeyService]'s own `composingPreviewExecutor`)
+     * stops there instead of finishing every remaining position for a result nobody is waiting on any more.
+     * Whatever was already found is still returned rather than discarded - harmless either way, since the
+     * caller re-checks staleness again before ever applying it.
+     *
      * @param token the committed token (any case); a known word (or plausible inflection of one) is never split
      * @param spaceAmbiguousIndices the indices flagged space-ambiguous by the T-05 bands
      * @param previousWord the word committed before the token, for bigram scoring; may be null
+     * @param isCancelled polled once per split position; true stops trying further positions early
      * @return the split, or null when no valid linguistic split exists
      */
-    fun trySplit(token: String, spaceAmbiguousIndices: Set<Int>, previousWord: String? = null): SplitResult? {
+    fun trySplit(
+        token: String,
+        spaceAmbiguousIndices: Set<Int>,
+        previousWord: String? = null,
+        isCancelled: () -> Boolean = { false }
+    ): SplitResult? {
         val t = token.lowercase()
         if (t.length < 2 * MIN_PART || isAlreadyRecognised(t)) {
             return null
@@ -100,12 +113,21 @@ class TokenRepair(private val store: DictionaryStore) {
         val dropIndices = (spaceAmbiguousIndices + t.indices.filter { t[it] in OVER_SPACE_LETTERS })
             .filter { it in MIN_PART..t.length - 1 - MIN_PART }
             .toSet()
-        val dropped = dropIndices.mapNotNull { i -> candidateAt(t.substring(0, i), t.substring(i + 1), previousWord) }
+        val candidates = ArrayList<Pair<SplitResult, Double>>()
+        for (i in dropIndices) {
+            if (isCancelled()) {
+                return candidates.maxByOrNull { it.second }?.first
+            }
+            candidateAt(t.substring(0, i), t.substring(i + 1), previousWord)?.let { candidates.add(it) }
+        }
+        for (k in MIN_PART..t.length - MIN_PART) {
+            if (isCancelled()) {
+                return candidates.maxByOrNull { it.second }?.first
+            }
+            candidateAt(t.substring(0, k), t.substring(k), previousWord)?.let { candidates.add(it) }
+        }
         
-        val missed = (MIN_PART..t.length - MIN_PART)
-            .mapNotNull { k -> candidateAt(t.substring(0, k), t.substring(k), previousWord) }
-        
-        return (dropped + missed).maxByOrNull { it.second }?.first
+        return candidates.maxByOrNull { it.second }?.first
     }
     
     /**
@@ -198,15 +220,15 @@ class TokenRepair(private val store: DictionaryStore) {
         if (left.length < MIN_PART || right.length < MIN_PART) {
             return null
         }
-        val leftWord = resolveWord(left) ?: return null
-        val rightWord = resolveWord(right) ?: return null
-        if (store.frequencyOf(leftWord) < MIN_SPLIT_HALF_FREQUENCY || store.frequencyOf(rightWord) < MIN_SPLIT_HALF_FREQUENCY) {
+        val leftEntry = resolveWord(left) ?: return null
+        val rightEntry = resolveWord(right) ?: return null
+        if (leftEntry.frequency < MIN_SPLIT_HALF_FREQUENCY || rightEntry.frequency < MIN_SPLIT_HALF_FREQUENCY) {
             return null
         }
-        if (isNoun(leftWord) && isNoun(rightWord)) {
+        if (isNoun(leftEntry) && isNoun(rightEntry)) {
             return null
         }
-        return SplitResult(left, right) to score(leftWord, rightWord, previousWord)
+        return SplitResult(left, right) to score(leftEntry, rightEntry, previousWord)
     }
     
     /**
@@ -214,20 +236,28 @@ class TokenRepair(private val store: DictionaryStore) {
      * umlaut/ß-restored spelling ([Umlaut.unfoldCandidates]), so a half typed without its diacritic still
      * resolves to its real dictionary entry.
      *
+     * D-214: returns the resolved [WordEntry] itself, not just its word - [candidateAt] needs the
+     * frequency and part-of-speech [isNoun]/[score] would otherwise each independently re-fetch from the
+     * store for the very word this call just resolved.
+     *
      * @param raw the lower-cased, literally-typed half
-     * @return the matched canonical, non-blacklisted word, or null when no variant matches
+     * @return the matched, non-blacklisted entry, or null when no variant matches
      */
-    private fun resolveWord(raw: String): String? {
+    private fun resolveWord(raw: String): WordEntry? {
         for (candidate in Umlaut.unfoldCandidates(raw)) {
-            if (store.isKnownWord(candidate) && !store.isBlacklisted(candidate)) {
-                return candidate
+            if (store.isBlacklisted(candidate)) {
+                continue
+            }
+            val entry = store.entryOf(candidate)
+            if (entry != null) {
+                return entry
             }
         }
         return null
     }
     
     /**
-     * §128 / D-203: whether [word] resolves to a noun ([PartOfSpeech.NOUN] or [PartOfSpeech.PROPER_NOUN]),
+     * §128 / D-203: whether [entry] resolves to a noun ([PartOfSpeech.NOUN] or [PartOfSpeech.PROPER_NOUN]),
      * used by [candidateAt] to reject a both-nouns pair. Calibrated against the bundled dict_de.tsv for the
      * motivating "meinst" -> "mei"+"st" case: both "Mei" (frequency 16, tagged NOUN+OTHER) and "St"
      * (frequency 5939, tagged NOUN) individually clear [MIN_SPLIT_HALF_FREQUENCY] comfortably - frequency
@@ -235,15 +265,19 @@ class TokenRepair(private val store: DictionaryStore) {
      * being tagged as nouns is what actually sets this pair apart from an ordinary phrase like "der" (OTHER)
      * + "Kinderarzt" (NOUN) or "und" (OTHER) + "das" (OTHER).
      */
-    private fun isNoun(word: String): Boolean {
-        val pos = store.partsOfSpeech(word)
-        return pos.contains(PartOfSpeech.NOUN) || pos.contains(PartOfSpeech.PROPER_NOUN)
+    private fun isNoun(entry: WordEntry): Boolean {
+        return entry.partsOfSpeech.contains(PartOfSpeech.NOUN) || entry.partsOfSpeech.contains(PartOfSpeech.PROPER_NOUN)
     }
     
-    private fun score(left: String, right: String, previousWord: String?): Double {
-        val base = store.frequencyOf(left).toDouble() + store.frequencyOf(right).toDouble()
-        val contextBonus = previousWord?.let { store.bigramFrequency(it, left).toDouble() * BIGRAM_WEIGHT } ?: 0.0
-        return base + store.bigramFrequency(left, right).toDouble() * BIGRAM_WEIGHT + contextBonus
+    /**
+     * D-214: takes the already-resolved entries directly instead of re-fetching each half's frequency from
+     * the store a second time (candidateAt's own callers - trySplit/splitAtUnresolvedConnector - already
+     * paid for that lookup once via [resolveWord]). Only the bigram counts are genuinely new lookups here.
+     */
+    private fun score(left: WordEntry, right: WordEntry, previousWord: String?): Double {
+        val base = left.frequency.toDouble() + right.frequency.toDouble()
+        val contextBonus = previousWord?.let { store.bigramFrequency(it, left.word).toDouble() * BIGRAM_WEIGHT } ?: 0.0
+        return base + store.bigramFrequency(left.word, right.word).toDouble() * BIGRAM_WEIGHT + contextBonus
     }
     
     companion object {

@@ -58,6 +58,19 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-216 trySplit stops early and finds nothing once isCancelled returns true immediately`() {
+        // Same "undbald" -> "und" + "bald" split as the §128 test above, but cancelled on the very first
+        // poll: trySplit must give up before evaluating any split position at all, rather than still
+        // returning the split it would otherwise have found.
+        assertNull(repair.trySplit("undbald", emptySet()) { true })
+    }
+    
+    @Test
+    fun `D-216 an isCancelled that never returns true leaves the result unchanged`() {
+        assertEquals(SplitResult("und", "bald"), repair.trySplit("undbald", emptySet()) { false })
+    }
+    
+    @Test
     fun `an over-space letter is dropped as a likely space mis-tap even without a flag`() {
         // 'c' sits over the space bar on QWERTZ, so "undcdas" is treated as "und" + "das".
         assertEquals(SplitResult("und", "das"), repair.trySplit("undcdas", emptySet()))

@@ -165,7 +165,7 @@ class InMemoryDictionaryStore : DictionaryStore {
         return unigrams.isEmpty()
     }
     
-    private fun entryOf(word: String): WordEntry? {
+    override fun entryOf(word: String): WordEntry? {
         val key = word.lowercase()
         val bundled = unigrams[key]
         val personal = learned[key]

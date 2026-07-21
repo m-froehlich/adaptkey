@@ -372,11 +372,10 @@ class AdaptKeyService : InputMethodService() {
         showSuggestions()
     }
     
-    // D-211: replaces D-160's own Handler.postDelayed debounce entirely - that only ever delayed *when*
-    // the expensive fallback search ran on the main thread, never moved it off the main thread, so it
-    // still blocked the UI (and the key-press flash render) for however long the search took once the
-    // delay elapsed. The search now runs on this dedicated background thread instead (mirroring the
-    // existing tier3Executor precedent below), so it never blocks the main thread at all.
+    // D-211: the actual search now runs on this dedicated background thread (mirroring the existing
+    // tier3Executor precedent below), so it never blocks the main thread (or the key-press flash render)
+    // the way D-160's original Handler.postDelayed-on-the-main-thread debounce still did once its delay
+    // elapsed.
     //
     // A genuinely forced thread kill was considered and rejected: Thread.stop() has been deprecated since
     // Java 1.2 for good reason (it can tear a shared data structure - a SQLite cursor mid-iteration, a
@@ -389,8 +388,25 @@ class AdaptKeyService : InputMethodService() {
     // staleness a third time, on the main thread, right before it would ever be applied - so a callback
     // that still manages to "funk rein" late (the background thread finished just as, or just after,
     // another keystroke landed) is recognised as stale and discarded rather than overwriting a newer state.
+    //
+    // D-215: D-211/D-213 also removed the delay *before* dispatching to this executor entirely, reasoning
+    // that a background thread never blocks the main one, so nothing was left for a fixed wait to protect
+    // against - true, but incomplete: a real device log of genuinely *slow*, deliberate typing (so no
+    // stale-request backlog could exist to explain it) still showed the same per-character slowdown,
+    // proving the dominant cost was never wasted/discarded work in the first place, but the *necessary*
+    // computation itself scaling with token length (O(token length x per-position store round-trips) -
+    // see TokenRepair's own D-214 KDoc). The user's own diagnosis: while genuinely typing fast, the eyes
+    // are on the keyboard, not the suggestion bar - a fuzzy chip, a raw-coordinate correction chip (D-39/
+    // T-02/T-03), or a highlight colour that flashes in and out between keystrokes cannot be perceived or
+    // acted on in time, so computing any of it at all - even off-thread, even for a token that is *not*
+    // stale - is spent for nothing during a fast burst. The delay is restored below (dispatchExpensiveSuggestionSearch()),
+    // now purely to decide *whether it is worth computing this at all*, not to protect the main thread -
+    // that job stays with the background executor and the staleness checks above.
     private val expensiveSuggestionExecutor = Executors.newSingleThreadExecutor()
     private val expensiveSuggestionSeq = AtomicInteger(0)
+    private val expensiveSuggestionRunnable = Runnable {
+        dispatchExpensiveSuggestionSearch(composing.toString(), previousWord)
+    }
     
     /**
      * §125 / D-194: the cached result of the S-05/§47 split-preview/highlight colouring decision for
@@ -420,11 +436,14 @@ class AdaptKeyService : InputMethodService() {
     // D-213: composingPreviewRunnable's own InputConnection-touching work (isEditingMidWord, updateComposing)
     // stays on the main thread - Android's InputConnection contract expects the IME's own main thread, not
     // an arbitrary background one - only the dictionary computation (trySplit()/isKnownWord()) is dispatched
-    // to composingPreviewExecutor. No more artificial delay before dispatching either (see
-    // scheduleComposingPreviewRefresh): the background thread already never blocks the main one, so there is
-    // nothing left for a fixed wait to protect against - a fast, continuous typing burst now just produces a
-    // string of near-instant superseded dispatches instead of one still stalling the UI once it eventually
-    // fired. See ComposingPreview / scheduleComposingPreviewRefresh / updateComposing().
+    // to composingPreviewExecutor. D-215: dispatching itself still waits for EXPENSIVE_SUGGESTION_DELAY_MS
+    // of real stability (scheduleComposingPreviewRefresh) - D-213 had removed that delay on the reasoning
+    // that the background thread never blocks the main one, which is true but incomplete: a device log of
+    // genuinely slow, deliberate typing (so no stale-request backlog could explain it) still showed the
+    // same per-character slowdown, and while typing fast the eyes are on the keyboard anyway - a highlight
+    // colour flashing in and out between keystrokes cannot be seen in time, so it is not worth computing at
+    // all until there is real evidence of a pause, not just worth computing off-thread. See ComposingPreview
+    // / scheduleComposingPreviewRefresh / updateComposing().
     private var composingPreviewToken: String? = null
     private var composingPreviewFor: String? = null
     private var composingPreview = ComposingPreview(null, false)
@@ -451,7 +470,7 @@ class AdaptKeyService : InputMethodService() {
                 return@execute
             }
             val split = if (highlightEnabled && !editingMidWord) {
-                tokenRepair.trySplit(expected, ambiguous, previous)
+                tokenRepair.trySplit(expected, ambiguous, previous) { seq != expensiveSuggestionSeq.get() }
             } else {
                 null
             }
@@ -2871,13 +2890,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §125 / D-194 / D-213: (re-)schedules [composingPreviewRunnable] to compute the real S-05/§47 colour
-     * preview for [text], unless it is already scheduled for that exact text or already cached for it
-     * ([composingPreviewFor]). Called only from [updateComposing]'s non-repeat path, so the previous
+     * §125 / D-194 / D-213 / D-215: (re-)schedules [composingPreviewRunnable] to compute the real S-05/§47
+     * colour preview for [text], unless it is already scheduled for that exact text or already cached for
+     * it ([composingPreviewFor]). Called only from [updateComposing]'s non-repeat path, so the previous
      * pending callback (for whatever the token was before this keystroke) is implicitly superseded.
-     * D-213: dispatched immediately (`handler.post`, not `postDelayed`) - the runnable's own expensive part
-     * now runs on [composingPreviewExecutor], off the main thread, so there is no UI-blocking left for an
-     * artificial delay to protect against; staleness is handled by [expensiveSuggestionSeq] instead.
+     * D-215: waits [EXPENSIVE_SUGGESTION_DELAY_MS] before dispatching, restored after D-213 removed it -
+     * the runnable's own expensive part already runs off the main thread on [composingPreviewExecutor], so
+     * the delay is no longer about protecting the UI thread, only about not bothering to compute a colour
+     * nobody can see flash past mid-burst (see [expensiveSuggestionExecutor]'s own field KDoc for the full
+     * reasoning, which applies identically here).
      *
      * @param text the current composing token
      */
@@ -2887,7 +2908,7 @@ class AdaptKeyService : InputMethodService() {
         }
         handler.removeCallbacks(composingPreviewRunnable)
         composingPreviewToken = text
-        handler.post(composingPreviewRunnable)
+        handler.postDelayed(composingPreviewRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
     }
     
     /**
@@ -2901,10 +2922,11 @@ class AdaptKeyService : InputMethodService() {
         composingTaps.clear()
         composingCursor = 0
         composingAnchor = -1
-        // §125 / D-194: not required for correctness (composingPreviewFor is always compared against the
-        // current composing text before use) but avoids leaving a pointless callback scheduled for a token
-        // that no longer exists.
+        // §125 / D-194 / D-215: not required for correctness (composingPreviewFor/expensiveSuggestionSeq are
+        // always checked against the current composing text/generation before use) but avoids leaving a
+        // pointless callback scheduled for a token that no longer exists.
         handler.removeCallbacks(composingPreviewRunnable)
+        handler.removeCallbacks(expensiveSuggestionRunnable)
         composingPreviewToken = null
         composingPreviewFor = null
     }
@@ -3174,32 +3196,17 @@ class AdaptKeyService : InputMethodService() {
             precomputedExpensiveCandidates != null -> precomputedExpensiveCandidates
             else -> provider.suggestionsFor(input, previousWord, includeExpensiveFallbacks)
         }
-        // D-160/D-208/D-211: dispatch the deferred pass (fuzzy neighbours plus, once those also find
-        // nothing, the expensive last-resort fallbacks) to the background executor whenever the hot path
-        // ran without them - no longer gated on candidates.isEmpty(): D-208 moved fuzzy matching itself
-        // into this tier, so a prefix completion finding something on the hot path must not skip fuzzy's
-        // own chance to contribute too (D-12: "mut" must still surface "mit" alongside "mut"'s own prefix
-        // completions). D-211: runs on expensiveSuggestionExecutor, never the main thread - a superseded
-        // call bails before touching the database, or partway through its own candidate scan (see
-        // DictionarySuggestionProvider's own KDoc on isCancelled), so a fast, continuous typing burst never
-        // pays for finished-but-discarded work; the result is applied via one more refreshSuggestions()
-        // call, re-entering on the main thread through handler.post, only if still fresh at that point too.
+        // D-160/D-208/D-211/D-215: schedule the deferred pass (fuzzy neighbours plus, once those also find
+        // nothing, the expensive last-resort fallbacks) whenever the hot path ran without them - no longer
+        // gated on candidates.isEmpty(): D-208 moved fuzzy matching itself into this tier, so a prefix
+        // completion finding something on the hot path must not skip fuzzy's own chance to contribute too
+        // (D-12: "mut" must still surface "mit" alongside "mut"'s own prefix completions). D-215: waits for
+        // EXPENSIVE_SUGGESTION_DELAY_MS of real stability before dispatching anything at all - not to
+        // protect the main thread (expensiveSuggestionExecutor already does that, see its own field KDoc),
+        // but because none of this is perceivable mid-burst, so it is not worth computing yet either.
         if (!duringRepeat && !includeExpensiveFallbacks) {
-            val seq = expensiveSuggestionSeq.get()
-            val previous = previousWord
-            expensiveSuggestionExecutor.execute {
-                if (seq != expensiveSuggestionSeq.get()) {
-                    return@execute
-                }
-                val expanded = provider.suggestionsFor(input, previous, includeExpensiveFallbacks = true) {
-                    seq != expensiveSuggestionSeq.get()
-                }
-                handler.post {
-                    if (seq == expensiveSuggestionSeq.get() && composing.toString() == input) {
-                        refreshSuggestions(includeExpensiveFallbacks = true, precomputedExpensiveCandidates = expanded)
-                    }
-                }
-            }
+            handler.removeCallbacks(expensiveSuggestionRunnable)
+            handler.postDelayed(expensiveSuggestionRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
         }
         // D-122 / D-131: both kept out of `candidates` itself so neither ever enters the tier-1/tier-3
         // merge's own score normalisation (SuggestionMerger normalises every tier-1 score against the
@@ -3287,6 +3294,35 @@ class AdaptKeyService : InputMethodService() {
             handler.post {
                 if (seq == tier3RequestSeq && composing.toString() == input) {
                     applyTier3Outcome(input, pending, outcome, extras)
+                }
+            }
+        }
+    }
+    
+    /**
+     * D-211/D-215: the actual deferred-pass search, dispatched only once [expensiveSuggestionRunnable]
+     * fires (i.e. [input] has been stable for [EXPENSIVE_SUGGESTION_DELAY_MS]) - runs entirely on
+     * [expensiveSuggestionExecutor], never the main thread. A superseded call bails before touching the
+     * database, or partway through its own candidate scan (see [DictionarySuggestionProvider]'s own KDoc
+     * on `isCancelled`); the result is applied via one more [refreshSuggestions] call, re-entering on the
+     * main thread through `handler.post`, only if [expensiveSuggestionSeq] and the composing text are both
+     * still exactly what they were when this was dispatched.
+     *
+     * @param input the composing token this search is for
+     * @param previous the preceding word for n-gram context, or null at a fresh start
+     */
+    private fun dispatchExpensiveSuggestionSearch(input: String, previous: String?) {
+        val seq = expensiveSuggestionSeq.get()
+        expensiveSuggestionExecutor.execute {
+            if (seq != expensiveSuggestionSeq.get()) {
+                return@execute
+            }
+            val expanded = provider.suggestionsFor(input, previous, includeExpensiveFallbacks = true) {
+                seq != expensiveSuggestionSeq.get()
+            }
+            handler.post {
+                if (seq == expensiveSuggestionSeq.get() && composing.toString() == input) {
+                    refreshSuggestions(includeExpensiveFallbacks = true, precomputedExpensiveCandidates = expanded)
                 }
             }
         }
@@ -4087,6 +4123,16 @@ class AdaptKeyService : InputMethodService() {
         // it (typically single-digit milliseconds for a plain text field), short enough to keep the window
         // a malicious clipboard-reading app could grab it in small.
         private const val CLIPBOARD_CLEAR_DELAY_MS = 300L
+        
+        // D-160/D-215: how long the composing token must stay unchanged before the deferred, off-main-
+        // thread suggestion/preview searches (D-12 fuzzy matching, D-116/D-117/D-131 fallbacks, the S-05/
+        // §47 highlight/split preview) are even attempted - not to protect the main thread (D-211/D-213
+        // already moved the actual work off it), but because none of it is perceivable while genuinely
+        // typing fast (the user's own point, D-215): a chip or highlight colour that flashes in and out
+        // between keystrokes cannot be seen or acted on in time, so it is not worth computing at all until
+        // there is real evidence of a pause. Longer than the gap between keystrokes of fluent typing, short
+        // enough that the bar/preview still fills at any natural pause. A starting value, easy to retune.
+        private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
         
         // D-161: how long after the keyboard is shown windowInsetsRecheckRunnable re-verifies the real
         // padding - long enough that a normally-delivered onApplyWindowInsets callback has certainly

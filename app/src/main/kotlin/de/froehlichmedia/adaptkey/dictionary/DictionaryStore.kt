@@ -160,6 +160,19 @@ interface DictionaryStore {
     fun partsOfSpeech(word: String): Set<PartOfSpeech>
     
     /**
+     * D-214: [word]'s merged bundled+learned entry (frequency and part-of-speech together) from a single
+     * lookup - both concrete stores already assemble this internally to answer [isKnownWord]/[frequencyOf]/
+     * [partsOfSpeech] individually; exposed directly for a caller that needs more than one fact about the
+     * *same* word (e.g. [TokenRepair]'s own split-candidate gate), which would otherwise re-fetch this
+     * identical row three or four times over, once per fact, each its own store round-trip. Those three
+     * methods keep their own simpler single-fact shape for callers that only ever need one.
+     *
+     * @param word the word to look up
+     * @return the merged entry, or null when [word] is not known in either source
+     */
+    fun entryOf(word: String): WordEntry?
+    
+    /**
      * @return every known word in canonical case (used by the single-edit autocorrect search)
      */
     fun allKnownWords(): List<String>

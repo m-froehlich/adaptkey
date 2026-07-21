@@ -37,6 +37,28 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§138 (v0.8.101): D-214/D-215/D-216 - the real cost was O(n×m) computation, not stale requests.** Fifth
+  repeat of the test, this time typing slowly (so no backlog of stale work could exist for D-211-D-213's
+  cancellation to discard) - same per-character slowdown. User correctly diagnosed the whole investigation's
+  framing as wrong: "Das eigentliche Problem sind nicht veraltete Anfragen... der Aufwand [ist] vermutlich
+  O(n*m)." Three fixes, all user-proposed and confirmed ("Ja, bitte. Genau so."): **(a)** promoted the
+  concrete stores' existing private `entryOf(word): WordEntry?` merge helper to a public `DictionaryStore`
+  method; `TokenRepair.resolveWord()`/`candidateAt()`/`isNoun()`/`score()` rewritten to fetch a word's entry
+  once and reuse it instead of re-querying `isKnownWord()`/`frequencyOf()`/`partsOfSpeech()` separately -
+  ~8 reads per split position down to 2 (+2 genuine `bigramFrequency()` calls). **(b)** `EXPENSIVE_SUGGESTION_
+  DELAY_MS` (200ms) restored for both `expensiveSuggestionRunnable` and `composingPreviewRunnable`, dropped in
+  D-211/D-213 on the (correct but incomplete) reasoning that background threads protect the main thread - true,
+  but a debounce also exists to avoid burning real background-thread computation on a result a fast subsequent
+  keystroke will supersede before it's ever shown; that purpose was never actually solved by backgrounding the
+  work. `clearComposing()` now cancels both runnables (previously only one). **(c)** `trySplit()` gained an
+  `isCancelled: () -> Boolean = { false }` parameter (default no-op, no existing call site or pure-logic test
+  needed changes); rewritten from `.mapNotNull` chains to explicit loops checking `isCancelled()` before each
+  split position, returning the best candidate found so far when cancelled - mirrors D-211's cooperative-
+  cancellation shape. `composingPreviewRunnable` passes the shared `expensiveSuggestionSeq` staleness check in.
+  Two new tests in `TokenRepairTest.kt` (cancel-on-first-poll -> null; always-false isCancelled -> unchanged
+  result). 774 unit tests (772 + 2). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed - awaits the user's next repeat of the same on-device test. See history §138.
+
 - **§137 (v0.8.100): D-213 - the actual dominant cost found: trySplit()'s own main-thread dictionary
   reads, a completely different path from everything D-207-D-212 addressed.** Third repeat of the same
   test against the D-212 (WAL) build: "Leider war es das noch gar nicht... Es ist eigentlich schlimmer denn

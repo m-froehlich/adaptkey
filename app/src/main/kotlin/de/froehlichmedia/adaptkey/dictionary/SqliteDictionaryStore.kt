@@ -523,7 +523,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
     }
     
-    private fun entryOf(word: String): WordEntry? {
+    override fun entryOf(word: String): WordEntry? {
         val bundled = bundledEntryOf(word)
         val learned = learnedEntryOf(word)
         return when {
