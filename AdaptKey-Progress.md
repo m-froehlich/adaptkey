@@ -37,6 +37,27 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§140 (v0.8.103): D-218 - the real remaining sluggishness cost found, via D-217's own new timing log:
+  the impending-autocorrect/diacritic preview ran unconditionally on every keystroke, never touched by
+  D-207-D-217.** Fresh logs (fast and slow typing, same pattern either way) showed `handleKey` processing
+  time growing with token length regardless of typing speed (e.g. `"Glücjwunsvh"`: 218->615ms), and `flash`
+  visibility latency tracking it almost exactly - proving the flash lag is a direct consequence of the same
+  main-thread cost, not a separate rendering issue. Root cause: `refreshSuggestions()` (called synchronously
+  from every `handleKey()`) unconditionally computed the S-06 "impending autocorrect" chip via
+  `diacriticRestoration()`/`autocorrectFor()` - both real, uncached store searches (full bucket scan +
+  per-candidate edit distance + `frequencyOf()` query each) that D-207-D-217 never touched, since that whole
+  investigation focused on the suggestion-bar candidate search and the composing-preview split highlight.
+  Fixed by deferring the expensive half into the existing D-211/D-215 background/200ms-debounce pipeline: new
+  `pendingCorrectionCandidate()` runs inside `dispatchExpensiveSuggestionSearch()`'s existing background block
+  alongside its `suggestionsFor()` call; the hot/immediate path now shows only the cheap capitalisation-only
+  preview (sentence-start capital) computed directly from the input, with the expensive whole-word
+  replacement appearing once the token has been stable. `knownInOtherLanguage()` gained an explicit
+  `activeLang` parameter (default unchanged) so the background call passes a main-thread-snapshotted value
+  instead of racing a later keystroke's field reassignment. Side effect: also removes `pending` being
+  redundantly recomputed a second time when the deferred pass lands. No new tests (Android service glue).
+  774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+  See history §140.
+
 - **§139 (v0.8.102): D-217 - diagnostics now measure actual processing time and actual flash-paint latency,
   not just typing cadence.** User: existing logs only show *when* calls happen, not how long a tap actually
   took to process or how long the flash acknowledgement took to reach the screen. Added: (1)

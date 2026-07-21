@@ -3164,7 +3164,8 @@ class AdaptKeyService : InputMethodService() {
     private fun refreshSuggestions(
         duringRepeat: Boolean = false,
         includeExpensiveFallbacks: Boolean = false,
-        precomputedExpensiveCandidates: List<Suggestion>? = null
+        precomputedExpensiveCandidates: List<Suggestion>? = null,
+        precomputedPendingCandidate: String? = null
     ) {
         // D-211: any fresh (non-deferred) refresh reflects a state change that supersedes a background
         // expensive-fallback search already in flight - bumping the sequence here (before every early
@@ -3245,24 +3246,20 @@ class AdaptKeyService : InputMethodService() {
         // per candidate) this function's own KDoc already gates everything else behind, simply missed when
         // the duringRepeat branch was introduced (D-138/D-153). Its result (the impending-autocorrect
         // preview chip) is exactly as unreadable mid-repeat as every other lookup already skipped here.
+        //
+        // D-218: the same expensive diacriticRestoration()/autocorrectFor() search used to also run here
+        // unconditionally on every ordinary keystroke (not gated on includeExpensiveFallbacks at all) - it
+        // was never moved off this synchronous path by D-207-D-217, which all focused on `candidates` and
+        // the composing-preview split highlight; AdaptKeyHaptics's own new handleKey() timing log (D-217) is
+        // what actually pointed at it as the still-unaddressed dominant per-keystroke cost. The hot/immediate
+        // path now shows only the cheap capitalisation-only preview (e.g. a sentence-start capital, D-111/
+        // D-112) computed directly from `input`; the expensive whole-word replacement only appears once
+        // dispatchExpensiveSuggestionSearch() has actually searched for one on the background executor and
+        // supplied it as [precomputedPendingCandidate] - exactly as imperceptible mid-burst as every other
+        // expensive search this investigation already deferred.
         val pending = if (duringRepeat) {
             null
         } else {
-            // D-204: mirrors finalizeAndCommit()'s own diacriticWord-first precedence - diacriticRestoration
-            // has no minAutocorrectFrequency floor at all (D-114), while autocorrectFor()/bestCorrection()
-            // always applies one, so a rare-but-exact diacritic match (e.g. "Grüße", frequency 18) must be
-            // consulted here separately rather than assumed to already be "covered" by the cost-0 case
-            // below - it previously was not, since that floor is unconditional there regardless of cost.
-            val diacriticCandidate = if (activeLanguage == Language.GERMAN) {
-                providers.getValue(Language.GERMAN).diacriticRestoration(input, previousWord)
-            } else {
-                null
-            }
-            // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
-            // language (mandatory English + every G-01-cycle language) - the active language's own
-            // completions are still shown as usual, only the impending-autocorrect chip is suppressed.
-            val correctionCandidate = diacriticCandidate
-                ?: if (knownInOtherLanguage(input)) null else provider.autocorrectFor(input, previousWord)
             // D-111 / D-112: run the eventual committed form through the same §6 capitalisation
             // finalizeAndCommit() will apply, so a pending *case-only* change (D-111 - e.g. an ordinary noun
             // about to be auto-capitalised) is visible as the existing S-06 pending chip before it is ever
@@ -3271,7 +3268,7 @@ class AdaptKeyService : InputMethodService() {
             // only the autocorrectFor/diacritic-fold path (cost-0 within it, so already covered) and not the
             // rarer raw-coordinate-correction fallback, which needs the real composing taps/geometry and
             // isn't worth computing on every keystroke just for this preview.
-            val capitalizedPreview = capitalisation.capitalise(correctionCandidate ?: input, contextFor(input))
+            val capitalizedPreview = capitalisation.capitalise(precomputedPendingCandidate ?: input, contextFor(input))
             capitalizedPreview.takeIf { it != input }
         }
         val previous = previousWord
@@ -3322,11 +3319,19 @@ class AdaptKeyService : InputMethodService() {
      * main thread through `handler.post`, only if [expensiveSuggestionSeq] and the composing text are both
      * still exactly what they were when this was dispatched.
      *
+     * D-218: also runs [pendingCorrectionCandidate] here now, alongside `suggestionsFor` - the same
+     * background executor, the same staleness guard, and the same single `refreshSuggestions` call applies
+     * both results together, rather than a second independent dispatch that would recompute `activeLanguage`
+     * a second time for no reason. `language` is read once here, on the main thread, before the executor
+     * lambda even starts, exactly like [input]/[previous] themselves - see [knownInOtherLanguage]'s own KDoc
+     * for why a background read of the live field would not be safe.
+     *
      * @param input the composing token this search is for
      * @param previous the preceding word for n-gram context, or null at a fresh start
      */
     private fun dispatchExpensiveSuggestionSearch(input: String, previous: String?) {
         val seq = expensiveSuggestionSeq.get()
+        val language = activeLanguage
         expensiveSuggestionExecutor.execute {
             if (seq != expensiveSuggestionSeq.get()) {
                 return@execute
@@ -3334,12 +3339,48 @@ class AdaptKeyService : InputMethodService() {
             val expanded = provider.suggestionsFor(input, previous, includeExpensiveFallbacks = true) {
                 seq != expensiveSuggestionSeq.get()
             }
+            val pendingCandidate = pendingCorrectionCandidate(input, previous, language)
             handler.post {
                 if (seq == expensiveSuggestionSeq.get() && composing.toString() == input) {
-                    refreshSuggestions(includeExpensiveFallbacks = true, precomputedExpensiveCandidates = expanded)
+                    refreshSuggestions(
+                        includeExpensiveFallbacks = true,
+                        precomputedExpensiveCandidates = expanded,
+                        precomputedPendingCandidate = pendingCandidate
+                    )
                 }
             }
         }
+    }
+    
+    /**
+     * D-218: the raw (not yet capitalised) impending-autocorrect/diacritic-restoration replacement for
+     * [input] - the whole-word search half of [refreshSuggestions]'s own `pending` preview, split out so
+     * [dispatchExpensiveSuggestionSearch] can run it on the background executor exactly like it already does
+     * for [SuggestionProvider.suggestionsFor]. Capitalisation is deliberately not applied here - it reads
+     * [capsMode]/[tokenSentenceStart]/[tokenAfterHyphen]/[fieldMandateOverridden] (see [contextFor]), all
+     * mutable main-thread fields, so it stays a main-thread step applied once the result is back, exactly
+     * like [composingPreviewRunnable]'s own split result.
+     *
+     * @param input the composing token to search a replacement for
+     * @param previousWord the preceding word for n-gram tie-breaking, or null at a fresh start
+     * @param language the language to treat as active for this search (snapshotted by the caller - see
+     *        [knownInOtherLanguage]'s own KDoc)
+     * @return the replacement word in its own canonical case, or null when none applies
+     */
+    private fun pendingCorrectionCandidate(input: String, previousWord: String?, language: Language): String? {
+        // D-204: mirrors finalizeAndCommit()'s own diacriticWord-first precedence - diacriticRestoration has
+        // no minAutocorrectFrequency floor at all (D-114), while autocorrectFor()/bestCorrection() always
+        // applies one, so a rare-but-exact diacritic match (e.g. "Grüße", frequency 18) must be consulted
+        // separately rather than assumed to already be covered by the cost-0 case below.
+        val diacriticCandidate = if (language == Language.GERMAN) {
+            providers.getValue(Language.GERMAN).diacriticRestoration(input, previousWord)
+        } else {
+            null
+        }
+        // D-106 stage 2: never pend a silent replacement for a word already known in another consulted
+        // language (mandatory English + every G-01-cycle language) - the active language's own completions
+        // are still shown as usual, only the impending-autocorrect chip is suppressed.
+        return diacriticCandidate ?: if (knownInOtherLanguage(input, language)) null else provider.autocorrectFor(input, previousWord)
     }
     
     /**
@@ -3850,14 +3891,20 @@ class AdaptKeyService : InputMethodService() {
      * mentioned here only because it is seeded alongside "due"/"sue" in the same place
      * ([installStores]'s `seedBundledBlacklist`).
      *
+     * D-218: [activeLang] is an explicit parameter (defaulting to the live [activeLanguage] field for every
+     * existing call site) rather than always reading [activeLanguage] directly, so [pendingCorrectionCandidate]
+     * can pass in a value already snapshotted on the main thread before dispatching to the background
+     * executor - never racing a later keystroke's own reassignment of that field.
+     *
      * @param token the composing token (any case)
+     * @param activeLang the language to treat as "active" for this check
      * @return true when any non-active language's dictionary already knows this exact word
      */
-    private fun knownInOtherLanguage(token: String): Boolean {
+    private fun knownInOtherLanguage(token: String, activeLang: Language = activeLanguage): Boolean {
         if (dictionaryStore.isBlacklisted(token)) {
             return false
         }
-        return providers.any { (language, otherProvider) -> language != activeLanguage && otherProvider.isKnownWord(token) }
+        return providers.any { (language, otherProvider) -> language != activeLang && otherProvider.isKnownWord(token) }
     }
     
     private fun contextFor(typed: String): CapitalisationContext {

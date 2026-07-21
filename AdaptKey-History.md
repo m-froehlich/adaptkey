@@ -7239,3 +7239,58 @@ logcat and the in-app rolling log, no behavioural change) and will be removed on
 whole sluggishness investigation) is closed. No new unit tests - purely Android View/`InputConnection`/logging
 glue, the established untested gap for this layer; no pure logic changed. 774 unit tests (unchanged).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+## §140 - D-218: The Real Remaining Cost Found - the Impending-Autocorrect/Diacritic Preview Ran Unconditionally
+on Every Keystroke, Untouched by D-207-D-217 (v0.8.103)
+
+D-217's own new `AdaptKeyHaptics` `handleKey` timing log paid off immediately: a repeat of the standard test,
+once fast and once deliberately slow, both showed `handleKey: ... processed in Nms` growing with the composing
+token's own length regardless of typing speed - e.g. `"Glücjwunsvh"` (a nonsense string, since it never matches
+a real word): 218 -> 298 -> 353 -> 407 -> 457 -> 458 -> 450 -> 615ms; `"Geburtstag"`: 231 -> 303 -> 212 -> 244 ->
+500 -> 484 -> 283ms. The new `flash: ... visible after Nms` log tracked the same `handleKey` numbers almost
+exactly (e.g. `'r'` processed in 170ms, flash visible after 172ms) - confirming the flash lag is not a separate
+rendering-pipeline problem but a direct consequence of the same main-thread cost: the frame simply cannot be
+painted until `handleKey()` returns control to the looper.
+
+**Root-caused, not guessed - and genuinely untouched by D-207 through D-217, all of which addressed either the
+suggestion-bar candidate search or the composing-preview split highlight.** `AdaptKeyService.refreshSuggestions()`
+- called synchronously from every `handleKey()`, on every ordinary keystroke, never covered by the D-215
+debounce - unconditionally computed `pending` (the S-06 "impending autocorrect" chip) via
+`DictionarySuggestionProvider.diacriticRestoration()` and `autocorrectFor()`/`bestCorrection()`. Both run a real,
+uncached store search per keystroke: `store.correctionCandidates()`/`store.diacriticCandidates()` (the latter,
+per its own D-197 KDoc, "never frequency-truncated" - potentially larger than the already-large correction
+bucket) scanned in full, with a banded edit-distance computation and a separate `store.frequencyOf()` query for
+every candidate. Exactly the same cost shape D-214 already fixed inside `TokenRepair` - just at a completely
+different call site nobody had measured directly before D-217's own timing log existed to point at it.
+
+**Fixed by deferring the expensive half of `pending` into the existing D-211/D-215 background-executor/200ms-
+debounce pipeline**, mirroring `expensiveSuggestionRunnable`'s own `suggestionsFor()` dispatch exactly:
+`refreshSuggestions()`'s `pending` block now only applies `capitalisation.capitalise()` to a
+`precomputedPendingCandidate` (new parameter, null on the hot/immediate path and every `duringRepeat` call) - so
+the immediate keystroke path still shows the cheap, DB-free capitalisation-only preview (a sentence-start
+capital, D-111/D-112) exactly as before, but the expensive whole-word autocorrect/diacritic replacement only
+appears once the token has actually been stable for `EXPENSIVE_SUGGESTION_DELAY_MS`. The search itself moved
+into a new `pendingCorrectionCandidate(input, previousWord, language)`, called from
+`dispatchExpensiveSuggestionSearch()`'s existing background-executor block right alongside its `suggestionsFor()`
+call, sharing the same staleness guard (`expensiveSuggestionSeq`) and the same single `handler.post` back to
+`refreshSuggestions(includeExpensiveFallbacks = true, ...)` - so both results are applied together in one call,
+rather than a second independent round trip. Capitalisation itself deliberately stays a main-thread-only step
+(applied once the raw candidate is back), since it reads several mutable fields (`capsMode`, `tokenSentenceStart`,
+`tokenAfterHyphen`, `fieldMandateOverridden` via `contextFor()`) that are not safe to read from a background
+thread without the same snapshot-first discipline D-213 already established for `composingTaps`/`composingFlags`.
+`knownInOtherLanguage()` gained an explicit `activeLang` parameter (defaulting to the live field, so its one
+other call site in `finalizeAndCommit` is unchanged) for the same reason - `activeLanguage` is read once on the
+main thread in `dispatchExpensiveSuggestionSearch()`, before the executor lambda starts, and passed through
+rather than read live from the background thread.
+
+As a side effect this also removes a standing redundancy: `pending` used to be recomputed a second time,
+synchronously, when the deferred pass's own `refreshSuggestions(includeExpensiveFallbacks = true, ...)` call
+landed back on the main thread - it now simply consumes the already-computed `precomputedPendingCandidate`
+instead.
+
+No new unit tests - `refreshSuggestions()`/`dispatchExpensiveSuggestionSearch()`/`pendingCorrectionCandidate()`
+are Android-service glue depending on `InputConnection`/`Handler`/executor state, the established untested gap
+for this layer; `DictionarySuggestionProvider.diacriticRestoration()`/`autocorrectFor()` themselves are unchanged
+and already covered. 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed - awaits the user's next repeat of the same on-device test, this time expected to show `pending`
+no longer growing `handleKey`'s own processing time on the hot path.
