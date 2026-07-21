@@ -895,9 +895,29 @@ class AdaptKeyboardView @JvmOverloads constructor(
         var left = popupRowLeft
         popupAlternatives.forEachIndexed { index, text ->
             val cellWidth = popupCellWidths[index]
-            drawPopupCell(canvas, left, popupRowTop, cellWidth, text, index == popupSelectedIndex)
+            drawPopupCell(canvas, left, popupRowTop, cellWidth, popupDisplayTextFor(text), index == popupSelectedIndex)
             left += cellWidth
         }
+    }
+    
+    /**
+     * D-168: applies the same Shift/Caps-Lock case rule [labelFor] already applies to the main key label -
+     * but only to a genuine word-forming letter alternative, using the identical
+     * [AlternativeScript.extendsWord] predicate [commitLongPressSymbol][de.froehlichmedia.adaptkey.AdaptKeyService.commitLongPressSymbol]
+     * already consults to decide whether picking this alternative extends the composing word (a Greek
+     * accented vowel while actually in Greek mode: yes; a Greek letter borrowed as a math symbol, or any
+     * other punctuation/currency/corner-hint glyph: no). A §53 [KeyCode.TEXT] key's alternatives
+     * (`cos`/`tan`/`log`/`rad`) always commit as symbols regardless of script - excluded here the same way
+     * [de.froehlichmedia.adaptkey.AdaptKeyService.commitLongPressSymbol] excludes them, since
+     * [AlternativeScript.extendsWord] alone would otherwise wrongly accept them (they are ordinary Latin
+     * letters). Cell width stays based on the untransformed text (computed once in [openPopup]) - a
+     * negligible, purely cosmetic width difference for a single letter, not worth reflowing the row for.
+     */
+    private fun popupDisplayTextFor(text: String): String {
+        if (!(shifted || capsLock) || popupKey?.code == KeyCode.TEXT || !AlternativeScript.extendsWord(text, greek)) {
+            return text
+        }
+        return text.uppercase()
     }
     
     private fun drawPopupCell(canvas: Canvas, left: Float, top: Float, cellWidth: Float, text: String, selected: Boolean) {

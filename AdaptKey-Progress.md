@@ -70,6 +70,17 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§155 (v0.8.114): D-168 fixed - a key's long-press popup alternatives now respect Shift/Caps Lock,**
+  **scoped to genuine word-forming letters only.** Small tuck-in per direct request. Root cause was already
+  on record (§105/§106): `drawPopupCell()` draws every alternative's raw text unchanged, unlike `labelFor()`'s
+  own main-key case handling. The scoping this was deliberately deferred for (`Key.alternatives`/`hint` mixes
+  real letters with punctuation/currency/corner-hint glyphs, Greek-as-math-symbol picks, and §53 `TEXT`-key
+  multi-char labels) is resolved by reusing `commitLongPressSymbol()`'s own `AlternativeScript.extendsWord()`
+  predicate for the display decision too - new `popupDisplayTextFor()` uppercases only when
+  `(shifted || capsLock)`, the key isn't a `TEXT` key (excludes `"cos"`/`"tan"`/`"log"`/`"rad"`, which
+  `extendsWord()` alone would wrongly accept), and `extendsWord()` itself agrees. No new tests (private View
+  drawing glue, `AlternativeScript` itself unmodified and already tested). 776 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §155.
 - **§154 (v0.8.113): D-225 implemented - `_` is now word-extending, and a token containing one is fully**
   **shielded from correction/suggestion/learning.** Picked up next per explicit request, following §149's own
   captured design. `commitLongPressSymbol()` (the only reachable path to `_`, which has no primary key

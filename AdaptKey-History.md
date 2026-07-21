@@ -7819,3 +7819,32 @@ No new unit tests - every touched function (`commitLongPressSymbol`, `finalizeAn
 `refreshSuggestions`) is private `AdaptKeyService`/Android `InputConnection` glue with no pure-function seam, the
 same established gap as every other fix in this area (D-119/D-120/D-154/D-155/D-226/D-227). 776 unit tests
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §155 - D-168: a Key's Long-Press Popup Alternatives Now Respect Shift/Caps Lock, Scoped to Genuine
+Word-Forming Letters Only (v0.8.114)
+
+Picked up as a small, self-contained tuck-in per direct request. Root cause was already found and recorded
+when this was originally captured (§105/§106): `AdaptKeyboardView.drawPopupCell()` draws every
+`popupAlternatives` entry's raw text completely unchanged - unlike the main key label (`labelFor()`, which
+already applies `shifted`/`capsLock`) - so a key's umlaut/symbol popup always displays lower-case regardless of
+the keyboard's current case state.
+
+**The scoping this was deliberately deferred for**: `Key.alternatives`/`hint` mixes genuine letters (ä/ö/ü,
+Greek accented vowels) with content that must never be case-transformed - punctuation, currency glyphs, corner
+hints, Greek letters borrowed as math symbols on the Latin `p` key (§35), and §53's multi-character `TEXT`-key
+alternatives (`cos`/`tan`/`log`/`rad`, `https://`/`www.`/...). Fixed by reusing the exact same predicate
+`commitLongPressSymbol()` already uses to decide whether picking an alternative *extends the composing word* -
+`AlternativeScript.extendsWord(text, greek)` - for the *display* decision too: a new `popupDisplayTextFor(text)`
+uppercases only when `shifted || capsLock` is true, the originating `popupKey`'s code is not `KeyCode.TEXT` (the
+same exclusion `commitLongPressSymbol()` applies, since `extendsWord()` alone would wrongly accept `"cos"`/
+`"tan"`/`"log"` - ordinary Latin letters, no Greek script involved), and `extendsWord()` itself returns true.
+`"https://"`/`"ftp://"` etc. are already excluded by `extendsWord()`'s own "all characters must be letters"
+check regardless of the `TEXT` guard (they contain `:`/`/`); `_` (D-225) is also naturally excluded (not a
+letter), though its case is a no-op either way. Popup cell width stays based on the untransformed text (computed
+once in `openPopup()`, before any transform) - a negligible, purely cosmetic width difference for a single
+letter, not worth reflowing the row's geometry for.
+
+No new unit tests - `drawLongPressPopup()`/`popupDisplayTextFor()`/`drawPopupCell()` are private `AdaptKeyboardView`
+drawing glue with no pure-function seam of their own; `AlternativeScript.extendsWord()` itself is unmodified and
+already covered by its own existing tests. 776 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Not yet device-confirmed.
