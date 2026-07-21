@@ -402,19 +402,29 @@ class AdaptKeyService : InputMethodService() {
      */
     private data class ComposingPreview(val split: SplitResult?, val highlighted: Boolean)
     
-    // §125 / D-194: the S-05/§47 split-preview/highlight colouring inside updateComposing() used to call
-    // splitPreview()/shouldHighlightComposing() - each several uncached dictionary round-trips - on every
-    // single keystroke, unlike every other lookup this class already defers (D-160); the cost scales with
-    // the composing token's own length (trySplit() tries every split point) and never short-circuits for a
-    // token that never becomes a known word, exactly the reported "gets slower the longer/more garbled the
-    // word" symptom. Mirrors the token-based staleness check expensiveSuggestionExecutor's own dispatch
-    // uses (D-211), just still on a main-thread timer rather than a background thread - this preview is
-    // cheap enough (a single trySplit()/shouldHighlightComposing() pass, not a whole candidate-bucket scan)
-    // that D-211's own background-thread treatment was judged unnecessary for it, only the debounce itself:
-    // composingPreview only reflects composingPreviewFor's exact text, so every keystroke renders
-    // uncoloured (composingPreviewFor never matches the just-changed text) until typing actually pauses for
-    // EXPENSIVE_SUGGESTION_DELAY_MS, at which point composingPreviewRunnable computes the real preview once
-    // and re-renders. See ComposingPreview / scheduleComposingPreviewRefresh / updateComposing().
+    // D-213: §125/D-194 originally judged this "cheap enough" to leave on the main thread, debounced only
+    // (not backgrounded like D-211's own suggestion search) - wrong, confirmed only after D-211/D-212
+    // (background thread + WAL for the *suggestion* search) still showed no improvement on a fresh device
+    // log. Traced from there: trySplit() tries every split point of the composing token (candidateAt()'s
+    // own KDoc: up to ~8 store round-trips each - resolveWord() x2, frequencyOf() x3, partsOfSpeech() x2,
+    // bigramFrequency()), so a ~10-character token can cost 50+ SQLite reads in one call - the exact same
+    // "cost scales with token length, never short-circuits for an unresolved token" shape D-208 already
+    // fixed for fuzzy matching, just in a different function this project's own prior reasoning had not
+    // actually measured. Runs on this dedicated executor now, mirroring expensiveSuggestionExecutor's own
+    // shape and sharing its staleness signal (expensiveSuggestionSeq) - a fresh keystroke invalidates both
+    // kinds of deferred work identically, so one counter is enough. Kept as a *separate* executor (not
+    // reusing expensiveSuggestionExecutor itself) so the two searches can run concurrently with each other
+    // under WAL (D-212) instead of queueing behind one another on a shared thread.
+    private val composingPreviewExecutor = Executors.newSingleThreadExecutor()
+    
+    // D-213: composingPreviewRunnable's own InputConnection-touching work (isEditingMidWord, updateComposing)
+    // stays on the main thread - Android's InputConnection contract expects the IME's own main thread, not
+    // an arbitrary background one - only the dictionary computation (trySplit()/isKnownWord()) is dispatched
+    // to composingPreviewExecutor. No more artificial delay before dispatching either (see
+    // scheduleComposingPreviewRefresh): the background thread already never blocks the main one, so there is
+    // nothing left for a fixed wait to protect against - a fast, continuous typing burst now just produces a
+    // string of near-instant superseded dispatches instead of one still stalling the UI once it eventually
+    // fired. See ComposingPreview / scheduleComposingPreviewRefresh / updateComposing().
     private var composingPreviewToken: String? = null
     private var composingPreviewFor: String? = null
     private var composingPreview = ComposingPreview(null, false)
@@ -422,10 +432,38 @@ class AdaptKeyService : InputMethodService() {
         val expected = composingPreviewToken
         composingPreviewToken = null
         val ic = currentInputConnection
-        if (expected != null && ic != null && expected == composing.toString()) {
-            composingPreviewFor = expected
-            composingPreview = ComposingPreview(splitPreview(ic, expected), shouldHighlightComposing(ic, expected))
-            updateComposing(ic)
+        if (expected == null || ic == null || expected != composing.toString()) {
+            return@Runnable
+        }
+        // D-213: only the cheap, InputConnection-dependent reads happen here, on the main thread - the
+        // actual dictionary work (trySplit()/isKnownWord(), see splitPreview()/shouldHighlightComposing()'s
+        // own former bodies) is dispatched below. composingTaps/composingFlags are mutable fields the main
+        // thread keeps editing on every subsequent keystroke, so spaceAmbiguousIndices() must be snapshotted
+        // into a plain, no-longer-shared Set here too - reading it from the background thread later would
+        // be a genuine data race, not just a staleness risk.
+        val editingMidWord = isEditingMidWord(ic)
+        val ambiguous = spaceAmbiguousIndices()
+        val previous = previousWord
+        val highlightEnabled = config.highlightEnabled
+        val seq = expensiveSuggestionSeq.get()
+        composingPreviewExecutor.execute {
+            if (seq != expensiveSuggestionSeq.get()) {
+                return@execute
+            }
+            val split = if (highlightEnabled && !editingMidWord) {
+                tokenRepair.trySplit(expected, ambiguous, previous)
+            } else {
+                null
+            }
+            val highlighted = highlightEnabled && !editingMidWord && provider.isKnownWord(expected)
+            handler.post {
+                val freshIc = currentInputConnection
+                if (seq == expensiveSuggestionSeq.get() && freshIc != null && composing.toString() == expected) {
+                    composingPreviewFor = expected
+                    composingPreview = ComposingPreview(split, highlighted)
+                    updateComposing(freshIc)
+                }
+            }
         }
     }
     
@@ -1529,6 +1567,7 @@ class AdaptKeyService : InputMethodService() {
         persistOffsetModel()
         tier3Executor.shutdownNow()
         expensiveSuggestionExecutor.shutdownNow()
+        composingPreviewExecutor.shutdownNow()
         contactsExecutor.shutdownNow()
         onnxProvider?.close()
         onnxProvider = null
@@ -2798,10 +2837,11 @@ class AdaptKeyService : InputMethodService() {
             // half instead, with the dropped character / boundary left uncoloured between them - checked
             // first, since trySplit() never matches an already-known word (mutually exclusive by
             // construction with the single-word case below).
-            // §125 / D-194: neither lookup runs here anymore - both read composingPreview, which only ever
-            // reflects composingPreviewFor's own exact text (scheduleComposingPreviewRefresh keeps the two
-            // in lockstep), so a token still being actively typed renders uncoloured until it is stable for
-            // EXPENSIVE_SUGGESTION_DELAY_MS - see the field-level KDoc above composingPreviewRunnable.
+            // §125 / D-194 / D-213: neither lookup runs here anymore - both read composingPreview, which
+            // only ever reflects composingPreviewFor's own exact text (scheduleComposingPreviewRefresh keeps
+            // the two in lockstep), so a token still being actively typed renders uncoloured until
+            // composingPreviewExecutor's background computation actually finishes - see the field-level
+            // KDoc above composingPreviewRunnable.
             if (!duringRepeat) {
                 scheduleComposingPreviewRefresh(text)
             }
@@ -2831,12 +2871,13 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §125 / D-194: (re-)schedules [composingPreviewRunnable] to compute the real S-05/§47 colour preview
-     * for [text], unless it is already scheduled for that exact text or already cached for it
+     * §125 / D-194 / D-213: (re-)schedules [composingPreviewRunnable] to compute the real S-05/§47 colour
+     * preview for [text], unless it is already scheduled for that exact text or already cached for it
      * ([composingPreviewFor]). Called only from [updateComposing]'s non-repeat path, so the previous
-     * pending callback (for whatever the token was before this keystroke) is implicitly superseded -
-     * `postDelayed` after `removeCallbacks` always restarts the full delay, exactly the debounce this
-     * exists for.
+     * pending callback (for whatever the token was before this keystroke) is implicitly superseded.
+     * D-213: dispatched immediately (`handler.post`, not `postDelayed`) - the runnable's own expensive part
+     * now runs on [composingPreviewExecutor], off the main thread, so there is no UI-blocking left for an
+     * artificial delay to protect against; staleness is handled by [expensiveSuggestionSeq] instead.
      *
      * @param text the current composing token
      */
@@ -2846,7 +2887,7 @@ class AdaptKeyService : InputMethodService() {
         }
         handler.removeCallbacks(composingPreviewRunnable)
         composingPreviewToken = text
-        handler.postDelayed(composingPreviewRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
+        handler.post(composingPreviewRunnable)
     }
     
     /**
@@ -3049,40 +3090,12 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Whether the composing token should be shown in the recognised-word colour (C-04 / S-05): it must be
-     * enabled and a known word, and (D-26) the edit must not be inside an existing word - if a letter
-     * immediately follows the cursor we are correcting mid-word, and the fragment must not be coloured.
-     *
-     * @param ic the current input connection
-     * @param text the composing token
-     * @return true when the token should be coloured
-     */
-    private fun shouldHighlightComposing(ic: InputConnection, text: String): Boolean {
-        return config.highlightEnabled && provider.isKnownWord(text) && !isEditingMidWord(ic)
-    }
-    
-    /**
-     * §47: whether the composing token would currently A-05-split if finalised right now, for the live
-     * split-colour preview - gated the same way as [shouldHighlightComposing] (the highlight setting must
-     * be on, and D-26's mid-word rule applies equally here: a reclaimed fragment being edited mid-word must
-     * not be coloured). [TokenRepair.trySplit] itself already never matches an already-known word, so this
-     * and the single-word highlight are naturally mutually exclusive.
-     *
-     * @param ic the current input connection
-     * @param text the composing token
-     * @return the split preview, or null when none applies right now
-     */
-    private fun splitPreview(ic: InputConnection, text: String): SplitResult? {
-        if (!config.highlightEnabled || isEditingMidWord(ic)) {
-            return null
-        }
-        return tokenRepair.trySplit(text, spaceAmbiguousIndices(), previousWord)
-    }
-    
-    /**
      * D-26: whether the cursor sits inside an existing word rather than at its end - a letter immediately
      * following the cursor means the current edit is correcting mid-word, so the composing fragment must
-     * not be coloured (used by both [shouldHighlightComposing] and [splitPreview]).
+     * not be coloured (C-04/S-05). D-213: the highlight/split-colour decision itself (formerly
+     * `shouldHighlightComposing()`/`splitPreview()`) now lives inline in [composingPreviewRunnable], since
+     * both need this InputConnection-dependent check done on the main thread before the rest of the
+     * decision can move to [composingPreviewExecutor].
      */
     private fun isEditingMidWord(ic: InputConnection): Boolean {
         val after = ic.getTextAfterCursor(1, 0)
@@ -4074,12 +4087,6 @@ class AdaptKeyService : InputMethodService() {
         // it (typically single-digit milliseconds for a plain text field), short enough to keep the window
         // a malicious clipboard-reading app could grab it in small.
         private const val CLIPBOARD_CLEAR_DELAY_MS = 300L
-        
-        // D-160: how long the composing token must stay unchanged before the expensive suggestion
-        // fallbacks (D-116/D-117/D-131) run in their one deferred pass - longer than the gap between
-        // keystrokes of fluent typing (so they never run mid-word-flurry), short enough that the bar
-        // still fills at any natural pause. A starting value, easy to retune (§36/§37 precedent).
-        private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
         
         // D-161: how long after the keyboard is shown windowInsetsRecheckRunnable re-verifies the real
         // padding - long enough that a normally-delivered onApplyWindowInsets callback has certainly

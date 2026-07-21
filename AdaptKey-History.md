@@ -7063,3 +7063,54 @@ automatically on its next open. No new tests (Android/SQLite configuration, exer
 existing `SqliteDictionaryStoreRoboTest` case continuing to pass under WAL). 772 unit tests (unchanged).
 `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - awaits the next repeat of
 the same "Herzlichen Glückwunsch..." test to see what, if anything, is still left.
+
+## §137 - D-213: The Real Dominant Cost Found - trySplit()'s Own Main-Thread Dictionary Reads (v0.8.100)
+
+The user re-ran the exact same repeated test a third time against the D-212 (WAL) build - direct quote:
+"Leider war es das noch gar nicht... Es ist eigentlich schlimmer denn je." Precisely measured via the log's
+own raw timestamps exactly as the prior two rounds: "Geburtstag" still costs ~300-450ms/character - WAL
+alone did not resolve it either. (Two more apparent typos in this log, `"Herzlicjen"` for `"Herzlichen"`
+and `"Glückeunsch"` for `"Glückwunsch"`, were checked - h/j and w/e are both real QWERTZ neighbours,
+plausible ordinary mistypes; the first was correctly raw-coordinate-corrected, the second was not, but that
+is a dictionary-coverage question, not this round's concern.)
+
+**Root-caused, not guessed - and it was not the path any of D-207/D-208/D-209/D-211/D-212 had touched at
+all.** Re-examined `TokeRepair.candidateAt()` (called once per split position `trySplit()` tries) and
+counted its own real cost: `resolveWord()` twice (each trying every `Umlaut.unfoldCandidates()` variant
+against `store.isKnownWord()`), `frequencyOf()` three times (one of them redundant - already read once
+earlier in the same call), `partsOfSpeech()` twice, `bigramFrequency()` once - up to ~8 separate SQLite
+reads per split position. `trySplit()` itself tries every split position from `MIN_PART` to
+`length - MIN_PART` (`MIN_PART = 2`), so a 10-character token like "Geburtstag" costs roughly 7 positions
+x 8 reads = 50+ SQLite round-trips in a single call - for a token that has not even finished being typed
+yet, since `composingPreviewRunnable` fires on every settled pause, not only at commit.
+
+This is called from `composingPreviewRunnable` (the S-05/§47 live highlight/split-colour preview) - a
+completely different code path from the suggestion-bar search all of D-207 through D-212 addressed. §125/
+D-194's own original reasoning ("this preview is cheap enough... D-211's own background-thread treatment
+was judged unnecessary for it") was never actually measured against real data and turned out to be wrong -
+confirmed only now, after fixing the *other* path left this one as the sole remaining, now-dominant cost.
+
+**Fixed, mirroring D-211/D-212's own shape exactly**: new `composingPreviewExecutor`
+(`Executors.newSingleThreadExecutor()`, kept separate from `expensiveSuggestionExecutor` so the two searches
+run concurrently with each other under WAL rather than queueing behind one another on a shared thread) and
+reuses the existing `expensiveSuggestionSeq` as its staleness signal - a fresh keystroke invalidates both
+kinds of deferred work identically, so a second counter would have been redundant. `composingPreviewRunnable`
+now does only the cheap, `InputConnection`-dependent part on the main thread (`isEditingMidWord(ic)`, since
+Android's `InputConnection` contract expects the IME's own main thread) and snapshots the mutable state the
+background computation needs (`spaceAmbiguousIndices()` - `composingTaps`/`composingFlags` are mutable
+fields the main thread keeps editing on every subsequent keystroke, so reading them from a background
+thread without a snapshot first would have been a genuine data race, not just a staleness risk) before
+dispatching `tokenRepair.trySplit()`/`provider.isKnownWord()` to the background executor; the result is
+posted back via `handler.post`, re-checked for staleness, and only then applied via `updateComposing()`
+with a freshly re-read `currentInputConnection` (the one captured before dispatch could have gone stale by
+the time the background work finishes). `scheduleComposingPreviewRefresh()` also drops its own artificial
+`EXPENSIVE_SUGGESTION_DELAY_MS` debounce entirely (dispatches via `handler.post` instead of `postDelayed`),
+mirroring D-211's own reasoning: the background thread never blocks the main one, so nothing is left for a
+fixed wait to protect against. The now-dead `shouldHighlightComposing()`/`splitPreview()` helper functions
+(fully superseded by the inline computation in `composingPreviewRunnable`) and the now-unused
+`EXPENSIVE_SUGGESTION_DELAY_MS` constant were removed outright rather than left as dead code.
+
+No new unit tests (Android threading/`InputConnection` glue, the established gap for this layer -
+`TokenRepair.trySplit()`'s own pure logic was already covered when D-45/D-203 built it, unchanged here).
+772 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed -
+this is the fourth round of the same investigation; awaits the next repeat of the same test.

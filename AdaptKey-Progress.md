@@ -37,6 +37,29 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§137 (v0.8.100): D-213 - the actual dominant cost found: trySplit()'s own main-thread dictionary
+  reads, a completely different path from everything D-207-D-212 addressed.** Third repeat of the same
+  test against the D-212 (WAL) build: "Leider war es das noch gar nicht... Es ist eigentlich schlimmer denn
+  je" - "Geburtstag" still ~300-450ms/char. Root-caused: `TokenRepair.candidateAt()` (called once per split
+  position `trySplit()` tries) costs up to ~8 SQLite reads each (`resolveWord()` x2, `frequencyOf()` x3 -
+  one redundant, `partsOfSpeech()` x2, `bigramFrequency()`) - a 10-character token can cost 50+ reads in one
+  `trySplit()` call. This runs from `composingPreviewRunnable` (the S-05/§47 live highlight/split-colour
+  preview), a completely different code path from the suggestion-bar search D-207 through D-212 all
+  addressed - §125/D-194's own original "cheap enough to leave on the main thread" reasoning was never
+  actually measured and turned out to be wrong, only exposed as the dominant cost once the other path got
+  fixed. Fixed identically to D-211/D-212's own shape: new `composingPreviewExecutor` (kept separate from
+  `expensiveSuggestionExecutor` so both run concurrently under WAL instead of queueing on one thread),
+  reuses `expensiveSuggestionSeq` as a shared staleness signal. `composingPreviewRunnable` now does only the
+  cheap `InputConnection`-dependent part (`isEditingMidWord`) on the main thread, snapshots the mutable
+  `composingTaps`/`composingFlags`-derived state (a real data-race risk otherwise, not just staleness) before
+  dispatching `trySplit()`/`isKnownWord()` to the background executor, and re-validates freshness (including
+  a freshly re-read `currentInputConnection`) before ever applying the result. The artificial
+  `EXPENSIVE_SUGGESTION_DELAY_MS` debounce is gone too (dispatches immediately via `handler.post`), same
+  reasoning as D-211. Dead code removed: `shouldHighlightComposing()`/`splitPreview()` (superseded),
+  `EXPENSIVE_SUGGESTION_DELAY_MS` (now unused). No new tests (Android threading/InputConnection glue,
+  established gap; `TokenRepair.trySplit()`'s own pure logic unchanged, already covered). 772 unit tests
+  (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet device-confirmed - fourth round
+  of the same investigation. See history §137.
 - **§136 (v0.8.99): D-212 - WAL enabled; D-211 alone confirmed insufficient, root-caused to
   connection-level lock contention.** User re-ran §135's own test against the D-211 build: "Das hat
   leider noch so gar nicht funktioniert" - measured, "Geburtstag" still ~450ms/char, no better than before
