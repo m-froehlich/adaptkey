@@ -70,6 +70,18 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§150 (v0.8.111): D-226 fixed - trySplit() never respected suppressAutocorrect/knownInOtherLanguage, so
+  a real English loanword ("Commits") got torn apart against the German dictionary.** Second real A-05-split
+  regression from the same feedback round as D-210. Root-caused, not guessed: `"commits"` is a genuine
+  `dict_en.tsv` entry (freq 60) - exactly what `knownInOtherLanguage()` (D-106 stage 2) exists to protect - but
+  is absent from `dict_de.tsv` (only coincidental fragments `"com"`/`"its"` exist there). `finalizeAndCommit()`'s
+  `suppressAutocorrect` flag already correctly gates `bestCorrectionFor()`/`rawCoordinateCorrection()`, but the
+  `trySplit()` veto condition never checked it at all - a plain oversight, not a deliberate design choice - so
+  nothing stopped `"com"`+`"its"` from qualifying as a valid German split (same shape as D-210, but here an
+  existing protection mechanism simply wasn't wired in). Fixed with one added condition, mirroring the other
+  two call sites exactly. No new tests (private `AdaptKeyService` gating logic, no pure-function seam - the
+  established gap for this class of fix). 775 unit tests (unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See history §150.
 - **§149 CAPTURED (still v0.8.110, no code change): D-225 - `_` must stop acting as a delimiter; a token**
   **containing one must be fully shielded from correction/suggestion/learning.** User-flagged, confirmed
   against the code before capturing: `_` has no primary key anywhere in the app (long-press-only, on the

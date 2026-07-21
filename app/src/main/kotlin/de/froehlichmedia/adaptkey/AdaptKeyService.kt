@@ -2453,7 +2453,13 @@ class AdaptKeyService : InputMethodService() {
         val bestCorrection = if (diacriticWord != null || suppressAutocorrect) null else provider.bestCorrectionFor(typed, previousWord)
         val bestCorrectionMs = SystemClock.uptimeMillis() - bestCorrectionStartedAt
         val splitStartedAt = SystemClock.uptimeMillis()
-        val split = if (diacriticWord != null || bestCorrection?.highConfidence == true) {
+        // D-226: suppressAutocorrect/knownElsewhere must veto a split exactly like it already vetoes
+        // bestCorrection()/rawCoordinateCorrection() below - a token known in another consulted language
+        // (D-106 stage 2, e.g. "commits", a real English word split into "com"+"its" against the German
+        // dictionary) was never actually protected here, since this condition only ever checked
+        // diacriticWord/bestCorrection's own confidence, not the same suppression flag every other
+        // correction path in this function already respects.
+        val split = if (diacriticWord != null || bestCorrection?.highConfidence == true || suppressAutocorrect) {
             null
         } else {
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)

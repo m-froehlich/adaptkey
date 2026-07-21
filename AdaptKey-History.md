@@ -7649,3 +7649,35 @@ personal-dictionary entry, unlike an ordinary hyphenated compound under B-03).
 
 No code changed, no version bump (documentation-only capture, per this project's own established convention).
 775 unit tests (unchanged).
+
+## §150 - D-226: trySplit() Never Respected suppressAutocorrect/knownInOtherLanguage - "commits" Torn Into
+"com"+"its" Against the German Dictionary (v0.8.111)
+
+User supplied a second real-world A-05-split regression alongside D-210's own "übrigebs" case: typing
+`"Commits"` (a genuine, common developer/Git term) produced `"Com its"`. Traced against the actual bundled
+data, not guessed: `"commits"` **is** a real entry in `dict_en.tsv` (frequency 60, tagged `OTHER`) - exactly the
+kind of embedded loanword `knownInOtherLanguage()` (D-106 stage 2, built for the original "Word" case) exists to
+protect. It is not in `dict_de.tsv` at all; the only two matches there are coincidental unrelated fragments
+(`"com"` frequency 255/`OTHER`, `"its"` frequency 45/`NOUN,OTHER`).
+
+**Root cause, found by reading `finalizeAndCommit()` line by line, not assumed:** `suppressAutocorrect` (the OR
+of `dictChoice.suppressAutocorrect` and `knownInOtherLanguage(typed)`) already correctly gates `bestCorrectionFor()`
+(line 2453) and `rawCoordinateCorrection()` (line 2486) - but the `trySplit()` gate two lines below only ever
+checked `diacriticWord != null || bestCorrection?.highConfidence == true`. `suppressAutocorrect`/`knownElsewhere`
+was never part of that condition at all - a plain oversight from when D-106 stage 2 introduced the flag; every
+*other* correction path in this function was updated to respect it, `trySplit()` was simply never revisited.
+Since `"commits"` has no dictionary entry to protect it in the currently-active (German) dictionary and no
+correction candidate exists either, nothing stopped `TokenRepair.trySplit()` from finding `"com"`+`"its"` as a
+valid German-dictionary split (both clear `MIN_SPLIT_HALF_FREQUENCY`, not both nouns, zero bigram co-occurrence
+either way - same shape as the D-210 cases, but here there *was* an existing protection mechanism that simply
+wasn't wired in).
+
+**Fixed, one line**: `suppressAutocorrect` added to the `trySplit()` veto condition, mirroring exactly the
+condition `bestCorrectionFor()`/`rawCoordinateCorrection()` already use. A token recognised as belonging to
+another consulted language is now protected from A-05 splitting exactly as it already is from autocorrect and
+raw-coordinate correction - no new mechanism, closing a gap in an already-approved one.
+
+No new unit tests - this is `AdaptKeyService`'s own private `finalizeAndCommit()` gating logic, Android/
+`InputConnection`-context glue with no seam into a pure, independently-testable function (the same established
+gap as every other `finalizeAndCommit()`-internal fix in this project's history, e.g. D-119/D-120/D-154/D-155).
+775 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
