@@ -153,6 +153,12 @@
 
     <PreferenceCategory android:title="@string/cat_suggestions">
 
+        <SwitchPreferenceCompat
+            android:key="d234_autocorrect_enabled"
+            android:title="@string/d234_autocorrect_enabled_title"
+            android:summary="@string/d234_autocorrect_enabled_summary"
+            android:defaultValue="true" />
+
         <SeekBarPreference
             android:key="c02_resort_delay_ms"
             android:title="@string/c02_title"

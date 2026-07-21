@@ -2417,10 +2417,16 @@ class AdaptKeyService : InputMethodService() {
             "finalizeAndCommit: tokenContextBefore=\"$tokenContextBefore\" dictChoice.suppressAutocorrect=" +
                 "${dictChoice.suppressAutocorrect} knownInOtherLanguage=$knownElsewhere"
         )
-        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownElsewhere
+        // D-234: the user-facing autocorrect toggle folds into the exact same suppression flag D-106
+        // stage 2 already uses - bestCorrection/rawCoordinateCorrection/trySplit (below) all already gate on
+        // this one variable, so disabling autocorrect entirely reuses that existing architecture instead of
+        // threading a new check through each of them separately.
+        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownElsewhere || !settings.autocorrectEnabled
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
-        if (mergeChar != null) {
+        // D-234: also gated - a merge silently substitutes different text for what was typed, exactly the
+        // behaviour the toggle promises to suppress.
+        if (mergeChar != null && settings.autocorrectEnabled) {
             val merged = tokenRepair.tryMerge(previousWord, mergeChar, typed)
             if (merged != null) {
                 val committedLength = applyMerge(ic, merged, delimiter)
@@ -2452,7 +2458,10 @@ class AdaptKeyService : InputMethodService() {
         // than guessed, matching this project's own root-cause-before-fix convention - `adb logcat -s
         // AdaptKeyHaptics:D` shows the breakdown. Remove once D-220 is closed.
         val diacriticStartedAt = SystemClock.uptimeMillis()
-        val diacriticWord = if (activeLanguage == Language.GERMAN) {
+        // D-234: diacriticWord is deliberately independent of suppressAutocorrect (see the comment on its
+        // own use below) - the user-facing toggle is the one exception that must still gate it, since it is
+        // itself a silent substitution the toggle promises to suppress.
+        val diacriticWord = if (activeLanguage == Language.GERMAN && settings.autocorrectEnabled) {
             providers.getValue(Language.GERMAN).diacriticRestoration(typed, previousWord)
         } else {
             null

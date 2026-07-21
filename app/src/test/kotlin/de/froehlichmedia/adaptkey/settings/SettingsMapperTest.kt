@@ -112,6 +112,12 @@ class SettingsMapperTest {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings(contactsSuggestionsEnabled = true)).contactsSuggestionsEnabled)
     }
     
+    @Test
+    fun `D-234 autocorrectEnabled flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).autocorrectEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autocorrectEnabled = false)).autocorrectEnabled)
+    }
+    
     
     @Test
     fun `shiftGraceWindow is clamped into the spec range`() {

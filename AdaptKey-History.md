@@ -8072,3 +8072,62 @@ established convention for data-only rounds, e.g. D-114/D-132). 778 unit tests (
 finding above specifically needs a fresh on-device retest to know whether D-228 was already resolved by D-226
 alone, or whether this round's own new `Docker` entry (added independently either way, redundantly or not) is
 what actually fixes it.
+
+## §161 (still v0.8.119, no code change): D-230 and D-228 Device-Confirmed
+
+User confirmed both `"darfst"` and `"Docker"` work correctly on device after D-232's dictionary-data additions.
+D-230 and D-228 are closed. No code change, no version bump - confirmation only. 778 unit tests (unchanged).
+
+## §162 - D-233: `m`'s Learned Touch Zone Capped Against Drifting Into Backspace (Horizontal Axis); D-234:
+a User-Facing Autocorrect Toggle - Suggestions Stay, Silent Substitution Does Not (v0.8.120)
+
+**D-233**: user reported the seeded/learned touch zone for `m` reaching too far right into Backspace's own
+territory, making Backspace hard to hit - and asked for protection on both keys, mirroring D-231's Enter/
+Backspace fix but on the horizontal axis (`m` sits directly to the left of Backspace, at the end of the bottom
+letter row, in both QWERTY and QWERTZ - confirmed via `KeyboardLayout`'s `THIRD_ROW_LETTERS_QWERTY/QWERTZ`,
+both ending `...vbnm`). Implemented as a direct generalisation of the existing D-133/D-231 mechanism onto the
+X axis: `OffsetModel.Candidate` gained `maxRightwardOffsetFactor`/`maxLeftwardOffsetFactor` (mirroring
+`maxDownwardOffsetFactor`/`maxUpwardOffsetFactor` exactly); `logLikelihood()`'s `capX` split into
+`capXLeft`/`capXRight`, each consulting its own override; `cappedMeanOffset()` gained a `maxAbsXRight`
+parameter (mirroring `maxAbsYDown`) so the T-06 visualisation - which, unlike Enter/Backspace, *does* draw `m`
+(a real `KeyCode.CHAR` key) - stays consistent with what resolution actually applies, per the same reasoning
+D-133 already established. `AdaptKeyboardView` gained `rightwardOffsetFactorFor()` (`m`, capped toward
+Backspace) and `leftwardOffsetFactorFor()` (Backspace, capped toward `m`), both sharing a new
+`M_BACKSPACE_OFFSET_FACTOR = 0.25`, matching the other two offset-cap constants' own value and
+"considered starting point, not yet device-tuned" status. 3 new tests (`OffsetModelTest`: the two
+`cappedMeanOffset` cases mirroring D-133's own pair, plus a `resolve()`-level end-to-end proof mirroring
+D-231's own).
+
+**D-234**: user asked for a settings toggle disabling autocorrect generally (default on) - with the S-05
+highlight still live and every correction candidate still reachable via the suggestion bar, just never
+silently applied. New `AdaptSettings.autocorrectEnabled` (default true), threaded through
+`RawSettings`/`SettingsMapper`/`SettingsStore` (`d234_autocorrect_enabled`, `cat_suggestions` category,
+`SwitchPreferenceCompat`, all three locales) exactly like every other boolean setting. Wired into
+`finalizeAndCommit()` by reusing the *existing* `suppressAutocorrect` architecture rather than threading a new
+parameter through every individual correction path: `suppressAutocorrect` now also folds in
+`!settings.autocorrectEnabled`, which already gates `bestCorrectionFor()`/`rawCoordinateCorrection()`/
+`trySplit()` (D-106 stage 2, D-226) - the same one flag that already means "a token known in another language
+must never be silently corrected" now also means "the user turned autocorrect off entirely" for those three.
+`diacriticWord` is deliberately independent of `suppressAutocorrect` (documented reasoning in its own
+KDoc/D-154/D-155) so it needed its own explicit `&& settings.autocorrectEnabled` condition. The A-06 merge
+branch (checked earlier in the function, before `suppressAutocorrect` even exists) needed its own explicit
+`&& settings.autocorrectEnabled` guard too, since it is itself a silent substitution the toggle promises to
+suppress.
+
+Deliberately **not touched**: `refreshSuggestions()`'s own candidate computation (the ordinary suggestion bar,
+the S-06 pending-correction chip) and the S-05 composing-preview highlight (`composingPreviewRunnable`) are
+both already fully decoupled from `finalizeAndCommit()`'s own commit-time decision - neither reads
+`suppressAutocorrect` from this function nor any new state this round introduces, so both continue to work
+completely unaffected, exactly matching "darf gerne weiter grün gezeichnet werden... Es muss dann alles über
+die Vorschläge laufen" without needing to touch either mechanism at all.
+
+**A known, disclosed gap, not silently papered over**: A-05 split and A-06 merge have no suggestion-bar
+alternative today outside a mid-word re-edit (`midWordConnectorSplitSuggestion()`, D-122, gated on
+`isEditingMidWord()` - confirmed by reading it, it does not cover the ordinary end-of-word case at all). With
+autocorrect off, a missed/spurious space therefore commits exactly as typed, with no tappable alternative
+offered - not "über die Vorschläge" for that one specific class, since no such suggestion mechanism exists yet
+for it. Documented in `AdaptSettings.autocorrectEnabled`'s own KDoc rather than silently expanded in scope to
+build one; flagged to the user as an open question rather than guessed at.
+
+4 new tests total (3 `OffsetModelTest` for D-233, 1 `SettingsMapperTest` for D-234). 782 unit tests (778 + 4).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Neither confirmed on device yet.

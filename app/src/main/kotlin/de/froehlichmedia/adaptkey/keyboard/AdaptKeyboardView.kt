@@ -860,6 +860,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * resolution applies internally - not the raw, uncapped [OffsetModel.Spread.meanDx]/`meanDy] - so the
      * visualisation never shows a drift more extreme than what the model will actually do when resolving
      * a real tap. D-133: the bottom row's own harder downward bound is included too, for the same reason.
+     * D-233: `m`'s own harder rightward bound (against Backspace) is included too - unlike Enter/Backspace
+     * (D-231), `m` *is* a [KeyCode.CHAR] key, so it is actually drawn here and must stay consistent.
      */
     private fun drawTouchModel(canvas: Canvas) {
         val model = offsetModel ?: return
@@ -872,7 +874,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val capX = (rect.width() / 2f).toDouble() * model.maxOffsetFactor
             val capY = (rect.height() / 2f).toDouble() * model.maxOffsetFactor
             val capYDown = (rect.height() / 2f).toDouble() * (downwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
-            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capX, capY, capYDown)
+            val capXRight = (rect.width() / 2f).toDouble() * (rightwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+            val (cappedDx, cappedDy) = model.cappedMeanOffset(key.id, capX, capY, capYDown, capXRight)
             val cx = rect.centerX() + cappedDx.toFloat()
             val cy = rect.centerY() + cappedDy.toFloat()
             val rx = maxOf(spread.stdDevX.toFloat(), minRadius)
@@ -1497,6 +1500,30 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return if (key.code == KeyCode.ENTER) ENTER_BACKSPACE_OFFSET_FACTOR else null
     }
     
+    /**
+     * D-233: `m` (the last/rightmost letter of the bottom letter row, both QWERTY and QWERTZ - see
+     * [KeyboardLayout]) gets a harder, direction-specific bound on its own learned *rightward* drift -
+     * Backspace sits directly beside it at the row's right edge and was reported bleeding into it far
+     * enough to make Backspace hard to hit, the same class of problem as D-109/D-133/D-231, just on the
+     * horizontal axis this time.
+     *
+     * @return the tighter rightward factor for `m`, or null (meaning "use the model's own
+     *         [OffsetModel.maxOffsetFactor]") otherwise
+     */
+    private fun rightwardOffsetFactorFor(key: Key): Double? {
+        return if (key.code == KeyCode.CHAR && key.char == 'm') M_BACKSPACE_OFFSET_FACTOR else null
+    }
+    
+    /**
+     * D-233: Backspace gets the mirrored bound on its own learned *leftward* drift, toward `m`.
+     *
+     * @return the tighter leftward factor for Backspace, or null (meaning "use the model's own
+     *         [OffsetModel.maxOffsetFactor]") otherwise
+     */
+    private fun leftwardOffsetFactorFor(key: Key): Double? {
+        return if (key.code == KeyCode.DELETE) M_BACKSPACE_OFFSET_FACTOR else null
+    }
+    
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
         if (keyRects.isEmpty()) {
             return null
@@ -1514,7 +1541,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 OffsetModel.Candidate(
                     key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f,
                     maxDownwardOffsetFactor = downwardOffsetFactorFor(key),
-                    maxUpwardOffsetFactor = upwardOffsetFactorFor(key)
+                    maxUpwardOffsetFactor = upwardOffsetFactorFor(key),
+                    maxRightwardOffsetFactor = rightwardOffsetFactorFor(key),
+                    maxLeftwardOffsetFactor = leftwardOffsetFactorFor(key)
                 )
             }
             val chosen = model.resolve(candidates, x, y)
@@ -1592,6 +1621,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // into the space bar (D-109/D-133). Enter is capped upward (toward Backspace), Backspace downward
         // (toward Enter); same considered-starting-point value and reasoning as BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR.
         private const val ENTER_BACKSPACE_OFFSET_FACTOR = 0.25
+        
+        // D-233: `m` (bottom row, right edge) and Backspace (third row, right edge) sit directly beside
+        // each other horizontally - reported drifting into one another the same way Enter/Backspace already
+        // did vertically (D-231). `m` is capped rightward (toward Backspace), Backspace leftward (toward
+        // `m`); same considered-starting-point value and reasoning as the other two offset-cap constants.
+        private const val M_BACKSPACE_OFFSET_FACTOR = 0.25
         
         // D-05 / D-70 / D-83 / D-85: key-click sample playback volume (SoundPool's 0f..1f linear range -
         // not dB, so this is a much bigger perceived cut than the number alone suggests) and concurrent

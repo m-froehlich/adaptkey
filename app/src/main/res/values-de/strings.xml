@@ -89,6 +89,8 @@
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>
     <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 
+    <string name="d234_autocorrect_enabled_title">Autokorrektur</string>
+    <string name="d234_autocorrect_enabled_summary">Korrekturen, Umlaut-Wiederherstellung und automatische Trennungen werden beim Tippen sofort angewendet. Ausschalten, um jeden Kandidaten nur noch als antippbaren Vorschlag zu erhalten - Wörter werden dann nie mehr still verändert, allerdings wird eine fehlende oder überflüssige Leerstelle dann auch nicht mehr automatisch korrigiert.</string>
     <string name="c02_title">Re-Sort-Verzögerung</string>
     <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>
     <string name="c03_title">Maximale Vorschläge</string>

@@ -42,7 +42,8 @@ data class RawSettings(
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
-    val contactsSuggestionsEnabled: Boolean = false
+    val contactsSuggestionsEnabled: Boolean = false,
+    val autocorrectEnabled: Boolean = true
 )
 
 /**
@@ -190,7 +191,8 @@ object SettingsMapper {
             diagnosticLogEnabled = raw.diagnosticLogEnabled,
             pendingBlacklistExpiryDays = raw.pendingBlacklistExpiryDays.coerceIn(MIN_PENDING_BLACKLIST_EXPIRY_DAYS, MAX_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = raw.saveCredentials,
-            contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled
+            contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled,
+            autocorrectEnabled = raw.autocorrectEnabled
         )
     }
 }

@@ -252,6 +252,29 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `D-233 cappedMeanOffset applies a tighter rightward bound when given one`() {
+        // Mirrors the D-133 downward-bound test above, rotated to the horizontal axis - e.g. `m`'s own
+        // learned zone drifting right toward Backspace.
+        val model = OffsetModel()
+        model.record("c:m", 0f, 0f, 1000f, 0f)
+        
+        val (dxDefault, _) = model.cappedMeanOffset("c:m", maxAbsX = 20.0, maxAbsY = 10.0)
+        assertEquals(20.0, dxDefault, 1e-9)
+        
+        val (dxRight, _) = model.cappedMeanOffset("c:m", maxAbsX = 20.0, maxAbsY = 10.0, maxAbsXRight = 5.0)
+        assertEquals(5.0, dxRight, 1e-9)
+    }
+    
+    @Test
+    fun `D-233 cappedMeanOffset's rightward-only bound does not affect a leftward deviation`() {
+        val model = OffsetModel()
+        model.record("c:m", 0f, 0f, -1000f, 0f)
+        
+        val (dx, _) = model.cappedMeanOffset("c:m", maxAbsX = 20.0, maxAbsY = 10.0, maxAbsXRight = 5.0)
+        assertEquals(-20.0, dx, 1e-9)
+    }
+    
+    @Test
     fun `resolve returns null for empty candidates`() {
         assertNull(OffsetModel().resolve(emptyList(), 0f, 0f))
     }
@@ -321,6 +344,24 @@ class OffsetModelTest {
         // The tighter, direction-specific cap (0.05): A's predicted centre only reaches y=-1, now further
         // from the tap than B's home - B must win instead.
         assertEquals("B", model.resolve(listOf(cappedA, b), x = 0f, y = -50f)?.id)
+    }
+    
+    @Test
+    fun `D-233 a candidate's own maxRightwardOffsetFactor tightens its rightward cap independently of maxOffsetFactor`() {
+        // Mirrors the D-231/D-133 tests above, rotated to the horizontal axis - e.g. `m`'s own learned zone
+        // drifting right toward Backspace, the key directly beside it.
+        val model = OffsetModel()
+        repeat(30) { model.record("A", centerX = 0f, centerY = 0f, x = 100f, y = 0f) }
+        val bareA = OffsetModel.Candidate("A", 0f, 0f, halfWidth = 20f, halfHeight = 20f)
+        val cappedA = OffsetModel.Candidate("A", 0f, 0f, halfWidth = 20f, halfHeight = 20f, maxRightwardOffsetFactor = 0.05)
+        val b = OffsetModel.Candidate("B", 200f, 0f, halfWidth = 20f, halfHeight = 20f)
+        
+        // Ordinary isotropic cap (0.5): A's predicted centre moves to x=10 - still close enough to beat
+        // B's own (untrained, unmoved) home for a tap at x=50.
+        assertEquals("A", model.resolve(listOf(bareA, b), x = 50f, y = 0f)?.id)
+        // The tighter, direction-specific cap (0.05): A's predicted centre only reaches x=1, now further
+        // from the tap than B's home - B must win instead.
+        assertEquals("B", model.resolve(listOf(cappedA, b), x = 50f, y = 0f)?.id)
     }
     
     

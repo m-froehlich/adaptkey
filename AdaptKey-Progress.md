@@ -70,6 +70,27 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§162 (v0.8.120): D-233 - `m`'s learned touch zone capped against Backspace (horizontal axis); D-234 -**
+  **user-facing autocorrect toggle, suggestions stay live, silent substitution does not.** D-233:
+  `OffsetModel.Candidate` gained `maxRightwardOffsetFactor`/`maxLeftwardOffsetFactor` (mirroring D-231's
+  vertical pair exactly); `m` (end of the bottom letter row, both QWERTY/QWERTZ) capped rightward toward
+  Backspace, Backspace capped leftward toward `m`, both via a new `M_BACKSPACE_OFFSET_FACTOR = 0.25`; T-06's
+  visualisation updated too since (unlike Enter/Backspace) `m` is a real `KeyCode.CHAR` key it actually draws.
+  D-234: new `AdaptSettings.autocorrectEnabled` (default on) threaded through the usual settings pipeline
+  (`cat_suggestions`, all three locales); wired into `finalizeAndCommit()` by folding
+  `!settings.autocorrectEnabled` into the *existing* `suppressAutocorrect` flag (already gates
+  bestCorrection/rawCoordinateCorrection/trySplit since D-106 stage 2/D-226) plus explicit guards on
+  `diacriticWord` and the A-06 merge branch (both deliberately independent of `suppressAutocorrect`
+  otherwise). `refreshSuggestions()`/the S-05 highlight are untouched by design - both already decoupled from
+  `finalizeAndCommit()`'s own commit-time decision, so suggestions/highlighting keep working exactly as
+  before while the toggle is off. **Known, disclosed gap**: A-05 split/A-06 merge have no suggestion-bar
+  alternative outside a mid-word re-edit (D-122's own narrow scope, confirmed by reading
+  `midWordConnectorSplitSuggestion()`) - with autocorrect off, a missed/spurious space commits as typed with
+  no tappable alternative, flagged in the setting's own KDoc rather than silently built or hidden. 4 new
+  tests (3 `OffsetModelTest`, 1 `SettingsMapperTest`). 782 unit tests (778 + 4).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Neither confirmed on device yet. See history §162.
+- **§161 (still v0.8.119, no code change): D-230/D-228 device-confirmed** (`"darfst"`, `"Docker"`, both via
+  D-232's dictionary additions). See history §161.
 - **§160 (v0.8.119): D-232 - D-230/D-228 closed via dictionary data instead of algorithm, a user-proposed**
   **pragmatic alternative to §158's design deadlock.** Root cause of both regressions was simply "a real word
   missing from the dictionary" - added the missing words instead of fighting the split algorithm.

@@ -81,6 +81,13 @@ class OffsetModel(
      *           the Enter key's own harder bound against drifting up into Backspace's row above it (the two
      *           sit directly on top of each other at the row's right edge). Downward and both horizontal
      *           bounds are unaffected. Null (the default) means "use [maxOffsetFactor]".
+     * @property maxRightwardOffsetFactor D-233: the same idea again, for the rightward (+x) direction - e.g.
+     *           `m`'s own harder bound against drifting right into Backspace, which sits directly beside it
+     *           at the end of the same row. Every other direction is unaffected. Null (the default) means
+     *           "use [maxOffsetFactor]".
+     * @property maxLeftwardOffsetFactor D-233: mirrored for the leftward (-x) direction - e.g. Backspace's
+     *           own harder bound against drifting left into `m`. Every other direction is unaffected. Null
+     *           (the default) means "use [maxOffsetFactor]".
      */
     data class Candidate(
         val id: String,
@@ -89,7 +96,9 @@ class OffsetModel(
         val halfWidth: Float,
         val halfHeight: Float,
         val maxDownwardOffsetFactor: Double? = null,
-        val maxUpwardOffsetFactor: Double? = null
+        val maxUpwardOffsetFactor: Double? = null,
+        val maxRightwardOffsetFactor: Double? = null,
+        val maxLeftwardOffsetFactor: Double? = null
     )
     
     private val stats = HashMap<String, Stat>()
@@ -288,14 +297,22 @@ class OffsetModel(
      * @param maxAbsYDown D-133: maximum absolute y offset in the downward (positive) direction, when a
      *        harder direction-specific bound applies (e.g. the bottom letter row); defaults to [maxAbsY],
      *        i.e. the ordinary symmetric bound, for every existing caller
+     * @param maxAbsXRight D-233: the same idea for the rightward (positive) x direction, when a harder
+     *        direction-specific bound applies (e.g. `m` against Backspace); defaults to [maxAbsX]
      * @return the clamped (dx, dy) mean offset, or (0, 0) when the key is untrained
      */
-    fun cappedMeanOffset(id: String, maxAbsX: Double, maxAbsY: Double, maxAbsYDown: Double = maxAbsY): Pair<Double, Double> {
+    fun cappedMeanOffset(
+        id: String,
+        maxAbsX: Double,
+        maxAbsY: Double,
+        maxAbsYDown: Double = maxAbsY,
+        maxAbsXRight: Double = maxAbsX
+    ): Pair<Double, Double> {
         val stat = stats[id]
         if (stat == null || stat.count == 0L) {
             return 0.0 to 0.0
         }
-        return stat.meanDx.coerceIn(-maxAbsX, maxAbsX) to stat.meanDy.coerceIn(-maxAbsY, maxAbsYDown)
+        return stat.meanDx.coerceIn(-maxAbsX, maxAbsXRight) to stat.meanDy.coerceIn(-maxAbsY, maxAbsYDown)
     }
     
     /**
@@ -426,12 +443,13 @@ class OffsetModel(
     
     private fun logLikelihood(candidate: Candidate, x: Float, y: Float): Double {
         val stat = stats[candidate.id]
-        val capX = candidate.halfWidth * maxOffsetFactor
-        // D-133/D-231: a candidate may declare a harder, direction-specific bound on its own upward or
-        // downward drift.
+        // D-133/D-231/D-233: a candidate may declare a harder, direction-specific bound on any one of its
+        // four learned-drift directions.
+        val capXLeft = candidate.halfWidth * (candidate.maxLeftwardOffsetFactor ?: maxOffsetFactor)
+        val capXRight = candidate.halfWidth * (candidate.maxRightwardOffsetFactor ?: maxOffsetFactor)
         val capYUp = candidate.halfHeight * (candidate.maxUpwardOffsetFactor ?: maxOffsetFactor)
         val capYDown = candidate.halfHeight * (candidate.maxDownwardOffsetFactor ?: maxOffsetFactor)
-        val offsetX = (stat?.meanDx ?: 0.0).coerceIn(-capX, capX)
+        val offsetX = (stat?.meanDx ?: 0.0).coerceIn(-capXLeft, capXRight)
         val offsetY = (stat?.meanDy ?: 0.0).coerceIn(-capYUp, capYDown)
         val predictedX = candidate.centerX + offsetX
         val predictedY = candidate.centerY + offsetY

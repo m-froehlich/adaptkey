@@ -62,6 +62,16 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           `READ_CONTACTS` at the point of use (defence in depth against a permission revoked externally
  *           after this was turned on). Contacts are read fresh at suggestion time and never persisted -
  *           storing them locally would be redundant with the address book itself.
+ * @property autocorrectEnabled D-234: whether a commit may ever silently replace what was typed - diacritic
+ *           restoration, dictionary/raw-coordinate autocorrect, and the A-05/A-06 retroactive split/merge
+ *           (default **on**). With this off, every one of those candidates is still computed and offered
+ *           through the ordinary suggestion bar/S-06 chip (never suppressed - the corresponding checks live
+ *           in `refreshSuggestions()`, independent of this flag) and the composing-token S-05 highlight
+ *           still recognises a correct word live, but the token itself always commits exactly as typed;
+ *           applying a correction becomes a deliberate tap instead of an automatic substitution. The A-05
+ *           split and A-06 merge have no suggestion-bar alternative of their own yet outside a mid-word
+ *           re-edit (D-122) - with this off, that specific class of typo (a missed/spurious space) commits
+ *           uncorrected and unoffered, a known, disclosed gap rather than a silent one.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -82,7 +92,8 @@ data class AdaptSettings(
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
-    val contactsSuggestionsEnabled: Boolean = false
+    val contactsSuggestionsEnabled: Boolean = false,
+    val autocorrectEnabled: Boolean = true
 ) {
     
     companion object {

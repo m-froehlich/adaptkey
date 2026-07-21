@@ -89,6 +89,8 @@
     <string name="c01_shift_title">Extra shift width</string>
     <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
 
+    <string name="d234_autocorrect_enabled_title">Autocorrect</string>
+    <string name="d234_autocorrect_enabled_summary">Corrections, diacritic restoration, and missed-space fixes apply automatically while typing. Turn off to keep every candidate available only as a tap in the suggestion bar - words are never silently changed, but a missed or spurious space is not corrected either.</string>
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>
     <string name="c03_title">Maximum suggestions</string>
