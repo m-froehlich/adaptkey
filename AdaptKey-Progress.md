@@ -70,6 +70,22 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§149 CAPTURED (still v0.8.110, no code change): D-225 - `_` must stop acting as a delimiter; a token**
+  **containing one must be fully shielded from correction/suggestion/learning.** User-flagged, confirmed
+  against the code before capturing: `_` has no primary key anywhere in the app (long-press-only, on the
+  comma key's popup and symbol page 2's distributed `-` key), and every one of those paths runs through
+  `commitLongPressSymbol()` -> `AlternativeScript.extendsWord()` returns `false` for it (not a letter) ->
+  `finalizeAndCommit()`, i.e. `_` behaves exactly like ordinary punctuation today - inherited, not designed,
+  from D-35's generic "non-letter symbol ends the token" rule. An identifier like `MEINE_VARIABLE` is
+  therefore torn into three independent commits (`MEINE`, `_`, `VARIABLE`), each half individually
+  autocorrected/capitalised/learned as if it were an ordinary word. **User's direction (agreed, deferred until
+  after D-210, this round captures only):** (1) `_` becomes word-extending; (2) stronger than first proposed -
+  once a token contains `_`, the *entire* pipeline is disabled for it (no autocorrect, no suggestions, no §6
+  capitalisation, no D-37 learning at all - "nichts korrigieren, nichts lernen"), not merely the automatic
+  correction. Open questions for the implementation round: where exactly to gate ("contains `_`" detection
+  point vs. one shared short-circuit mirroring the existing login/URL-mode verbatim path); whether such a
+  token should ever be personally learned at all (leaning no). 775 unit tests (unchanged - documentation only,
+  no version bump per this project's own convention). See history §149.
 - **§147 (v0.8.109): D-223 - a real, signed release build.** User asked whether sideloading `app-debug.apk`
   still made sense given the USB/JDWP debugger it enables is never actually used - correctly distinguished
   from native "debug symbols" (this project never generates any regardless, debug or release). Generated a

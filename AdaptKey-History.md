@@ -7602,3 +7602,50 @@ pass-through assertions, inverted polarity and default). 775 unit tests (unchang
 instrumented coverage existed for this setting before or after (the established gap for `SettingsStore`'s own
 Android-facing IO, same as every other preference in this store). `:app:assembleDebug`/`:app:testDebugUnitTest`
 green. Not yet device-confirmed.
+
+## §149 CAPTURED - D-225: the Underscore Should Never Be a Delimiter, and a Token Containing One Must Be Fully
+Protected From Correction/Learning (No Code Change)
+
+User observation, confirmed against the actual code before capturing it (not guessed): `_` is never reachable as
+a primary key anywhere in the app - only via long-press (the comma key's popup on the letters/email surfaces,
+`SymbolLayout`'s distributed `-` key on symbol page 2). Every one of those paths runs through
+`commitLongPressSymbol()` (`AdaptKeyService.kt:1794`), and since `_` is not a letter,
+`AlternativeScript.extendsWord()` returns `false` for it unconditionally - there is no code path today on which
+`_` could ever extend a composing token. It therefore behaves exactly like ordinary punctuation: it finalises
+whatever preceded it (via `finalizeAndCommit()`) and commits as its own delimiter. This was never a deliberate
+delimiter design for `_` specifically - it simply inherited the generic "any non-letter symbol ends the token"
+rule from `AlternativeScript`/D-35, which was built for punctuation, math symbols, and Greek letters borrowed as
+symbols, never with technical identifiers in mind. A quick grep of the History/Spec confirms `_` was never
+discussed as a delimiter on its own merit; the only two prior mentions are both pure popup-placement notes
+(D-102).
+
+Consequence: an identifier like `MEINE_VARIABLE` is torn into two independent tokens (`MEINE`, then `_`, then
+`VARIABLE`), each individually subjected to autocorrect, §6 capitalisation, and D-37 learning as if it were an
+ordinary German/English word - never recognised, correctable, or learnable as the one technical term it
+actually is.
+
+**User's direction, agreed but explicitly deferred until after D-210 (this is its own backlog item, not
+implemented this round):**
+
+1. `_` becomes word-extending (added to whichever check decides a symbol continues versus finalises the
+   composing token), so an identifier composes as one token instead of being torn into fragments at every
+   underscore.
+2. Stronger than originally proposed: once a token contains `_`, **the entire correction/suggestion pipeline is
+   disabled for it, not merely autocorrect** - no dictionary/fuzzy/compound-split suggestions, no §6
+   capitalisation transform, and no D-37 learning of any kind (as opposed to only suppressing the automatic
+   correction while still suggesting/learning). The user was explicit: "nichts korrigieren, nichts lernen" - the
+   token is to be treated as fully opaque technical content, mirroring how email/URL/login fragments already
+   bypass §6 entirely (§10-§12), but scoped by token shape (contains `_`) rather than by field type.
+
+Open design questions for the eventual implementation round: exactly which check(s) need the word-extending
+change (`commitLongPressSymbol`'s `AlternativeScript.extendsWord` branch is the only currently-reachable path,
+since `_` has no primary key anywhere - but the primary `CHAR`-path `isWordLetter` check at
+`AdaptKeyService.kt:1626` would need the same treatment if a direct `_` key is ever added later); how "contains
+`_`" is detected and where the pipeline is actually short-circuited (per-function opt-out flags scattered
+through `finalizeAndCommit()`/`refreshSuggestions()`, versus one single early gate mirroring the existing
+login/URL-mode verbatim short-circuit); and whether such a token should still ever be *offered* back as a
+suggestion once typed once (the user's own wording leans toward "no learning at all", i.e. not even a
+personal-dictionary entry, unlike an ordinary hyphenated compound under B-03).
+
+No code changed, no version bump (documentation-only capture, per this project's own established convention).
+775 unit tests (unchanged).
