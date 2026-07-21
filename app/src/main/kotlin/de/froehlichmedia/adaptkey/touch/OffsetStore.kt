@@ -108,15 +108,4 @@ object OffsetStore {
             ?: return TypingPattern.UNKNOWN
         return runCatching { TypingPattern.valueOf(name) }.getOrDefault(TypingPattern.UNKNOWN)
     }
-    
-    /**
-     * Resets all learned touch data: the personal offset model (T-03) and the detected typing pattern
-     * (T-04). After this a fresh, unlearned model is loaded (pure geometry until it warms up again). Used
-     * by the settings "reset learning / calibration" action.
-     *
-     * @param context any valid context
-     */
-    fun clear(context: Context) {
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
-    }
 }

@@ -188,12 +188,13 @@
     <string name="onboarding_replay_done">Einführung wird beim nächsten Öffnen der Tastatur angezeigt.</string>
 
     <!-- Reset learned touch data (offset model T-03 + typing style T-04), double-confirmed. -->
-    <string name="reset_learning_title">Erlernung &amp; Kalibrierung zurücksetzen</string>
-    <string name="reset_learning_summary">Setzt den gelernten Tipp-Stil und die Touch-Kalibrierung zurück (nicht das Wörterbuch).</string>
-    <string name="reset_learning_confirm1_message">Der gelernte Tipp-Stil und die Touch-Kalibrierung werden gelöscht. Fortfahren?</string>
+    <string name="reset_learning_title">Touch-Kalibrierung zurücksetzen</string>
+    <string name="reset_learning_summary">Setzt deine gelernten Trefferzonen auf die Standardwerte deines aktuellen Tipp-Stils zurück - nicht den Stil selbst und nicht das Wörterbuch.</string>
+    <string name="reset_learning_confirm1_message">Deine gelernten Trefferzonen werden auf die Standardwerte deines aktuellen Tipp-Stils zurückgesetzt. Fortfahren?</string>
     <string name="reset_learning_confirm2_title">Endgültig zurücksetzen?</string>
     <string name="reset_learning_confirm2_message">Dieser Schritt kann nicht rückgängig gemacht werden.</string>
-    <string name="reset_learning_done">Erlernung &amp; Kalibrierung zurückgesetzt.</string>
+    <string name="reset_learning_done">Touch-Kalibrierung zurückgesetzt.</string>
+    <string name="k01_reset_button">Kalibrierung zurücksetzen</string>
 
     <!-- D-142: gespeicherte Benutzernamen/E-Mail-Adressen löschen (eigener Speicher, nie das Wörterbuch). -->
     <string name="d142_clear_credentials_title">Gespeicherte Benutzernamen &amp; E-Mails löschen</string>
@@ -212,16 +213,13 @@
     <string name="cat_calibration">Kalibrierung (K-01)</string>
     <string name="k01_title">Tipp-Stil</string>
     <string name="k01_summary">Sag AdaptKey, wie du tippst, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
+    <string name="k01_current_style">Aktuell: %1$s</string>
     <string name="k01_activity_title">Tipp-Stil</string>
     <string name="k01_intro">Wie tippst du normalerweise? Damit werden sofort realistische Trefferzonen für deine Finger eingerichtet; normales Tippen verfeinert sie danach behutsam weiter.</string>
     <string name="k01_skip">Überspringen</string>
-    <string name="k01_done_title">Tipp-Stil festgelegt</string>
-    <string name="k01_feedback_left_index">Trefferzonen für deinen linken Zeigefinger eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
-    <string name="k01_feedback_right_index">Trefferzonen für deinen rechten Zeigefinger eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
-    <string name="k01_feedback_left_thumb">Trefferzonen für deinen linken Daumen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
-    <string name="k01_feedback_right_thumb">Trefferzonen für deinen rechten Daumen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
-    <string name="k01_feedback_two_thumbs">Trefferzonen für beidhändiges Daumentippen eingerichtet. Ich verfeinere sie behutsam weiter, während du tippst.</string>
-    <string name="k01_feedback_unknown">Danke! Ich lerne behutsam weiter, während du tippst.</string>
+    <string name="k01_switch_confirm_title">Tipp-Stil wechseln?</string>
+    <string name="k01_switch_confirm_message">Die Touch-Kalibrierung wird auf sinnvolle Standardwerte für „%1$s“ zurückgesetzt. Fortfahren?</string>
+    <string name="k01_switch_done">Tipp-Stil aktualisiert.</string>
     <string name="k01_offer_title">Tipp-Stil festlegen?</string>
     <string name="k01_offer_message">Möchtest du AdaptKey sagen, wie du tippst? Das richtet sofort realistische Trefferzonen ein. Du kannst das jederzeit in den Einstellungen nachholen.</string>
     <string name="k01_offer_start">Jetzt festlegen</string>
@@ -267,12 +265,9 @@
     <string name="d06_haptics_summary">Kurze Vibration bei jedem Tastendruck (Standard: aus).</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
-    <string name="d24_title">Trefferzonen anzeigen</string>
-    <string name="d24_summary">Zeigt farbige Kreise über den Tasten, wo deine Anschläge im Schnitt landen.</string>
     <string name="d24_intro_1">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (der Punkt) und wie stark sie streuen (der Kreis).</string>
     <string name="d24_intro_2">So passt sich die Tastatur an dein Tippen an.</string>
     <string name="d24_empty">Noch keine Daten gelernt. Tippe eine Weile oder starte die Kalibrierung.</string>
-    <string name="d24_show_button">Trefferzonen anzeigen</string>
 
     <!-- D-139/D-110: In-App-Diagnoseprotokoll, eine Alternative zu adb logcat ohne PC-/USB-Verbindung. -->
     <string name="cat_diagnostics">Diagnose</string>

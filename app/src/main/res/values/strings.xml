@@ -188,12 +188,13 @@
     <string name="onboarding_replay_done">The introduction will be shown the next time you open the keyboard.</string>
 
     <!-- Reset learned touch data (offset model T-03 + typing style T-04), double-confirmed. -->
-    <string name="reset_learning_title">Reset learning &amp; calibration</string>
-    <string name="reset_learning_summary">Resets the learned typing style and touch calibration (not the dictionary).</string>
-    <string name="reset_learning_confirm1_message">The learned typing style and touch calibration will be deleted. Continue?</string>
+    <string name="reset_learning_title">Reset touch calibration</string>
+    <string name="reset_learning_summary">Resets your learned touch zones back to the defaults for your current typing style - not the style itself, and not the dictionary.</string>
+    <string name="reset_learning_confirm1_message">Your learned touch zones will be reset to the defaults for your current typing style. Continue?</string>
     <string name="reset_learning_confirm2_title">Reset permanently?</string>
     <string name="reset_learning_confirm2_message">This step cannot be undone.</string>
-    <string name="reset_learning_done">Learning &amp; calibration reset.</string>
+    <string name="reset_learning_done">Touch calibration reset.</string>
+    <string name="k01_reset_button">Reset calibration</string>
 
     <!-- D-142: clear the saved usernames/email addresses (a separate store, never the dictionary). -->
     <string name="d142_clear_credentials_title">Clear saved usernames &amp; emails</string>
@@ -212,16 +213,13 @@
     <string name="cat_calibration">Calibration (K-01)</string>
     <string name="k01_title">Typing style</string>
     <string name="k01_summary">Tell AdaptKey how you type, so key detection fits you from the start (K-01).</string>
+    <string name="k01_current_style">Currently: %1$s</string>
     <string name="k01_activity_title">Typing style</string>
     <string name="k01_intro">How do you usually type? This sets up realistic touch zones for your fingers right away; ordinary typing keeps refining them gently from there.</string>
     <string name="k01_skip">Skip</string>
-    <string name="k01_done_title">Typing style set</string>
-    <string name="k01_feedback_left_index">Touch zones set up for your left index finger. I\'ll keep refining them gently as you type.</string>
-    <string name="k01_feedback_right_index">Touch zones set up for your right index finger. I\'ll keep refining them gently as you type.</string>
-    <string name="k01_feedback_left_thumb">Touch zones set up for your left thumb. I\'ll keep refining them gently as you type.</string>
-    <string name="k01_feedback_right_thumb">Touch zones set up for your right thumb. I\'ll keep refining them gently as you type.</string>
-    <string name="k01_feedback_two_thumbs">Touch zones set up for two-thumb typing. I\'ll keep refining them gently as you type.</string>
-    <string name="k01_feedback_unknown">Thanks! I keep learning gently as you type.</string>
+    <string name="k01_switch_confirm_title">Switch typing style?</string>
+    <string name="k01_switch_confirm_message">Touch calibration resets to sensible defaults for %1$s. Continue?</string>
+    <string name="k01_switch_done">Typing style updated.</string>
     <string name="k01_offer_title">Set your typing style?</string>
     <string name="k01_offer_message">Would you like to tell AdaptKey how you type? It sets up realistic touch zones right away. You can do this any time in the settings.</string>
     <string name="k01_offer_start">Set it now</string>
@@ -266,12 +264,9 @@
     <string name="d06_haptics_summary">A short vibration on every key press (default: off).</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
-    <string name="d24_title">Show touch pattern</string>
-    <string name="d24_summary">Shows coloured circles over the keys where your taps land on average.</string>
     <string name="d24_intro_1">The coloured circles show where your key taps land on average (the dot) and how much they scatter (the circle).</string>
     <string name="d24_intro_2">This is how the keyboard adapts to your typing.</string>
     <string name="d24_empty">Nothing learned yet. Type for a while or start the calibration.</string>
-    <string name="d24_show_button">Show touch pattern</string>
 
     <!-- D-139/D-110: in-memory diagnostic log, an alternative to adb logcat that needs no PC/USB tether. -->
     <string name="cat_diagnostics">Diagnostics</string>

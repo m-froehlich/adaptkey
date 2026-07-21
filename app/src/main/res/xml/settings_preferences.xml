@@ -310,6 +310,8 @@
 
     <PreferenceCategory android:title="@string/cat_calibration">
 
+        <!-- D-237: the only top-level entry now - style picking, the live zone overlay, and the
+             reset action all live inside CalibrationActivity itself. -->
         <Preference
             android:key="k01_calibration"
             android:title="@string/k01_title"
@@ -318,20 +320,6 @@
                 android:targetPackage="de.froehlichmedia.adaptkey"
                 android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
         </Preference>
-
-        <Preference
-            android:key="d24_touch_model"
-            android:title="@string/d24_title"
-            android:summary="@string/d24_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.TouchModelActivity" />
-        </Preference>
-
-        <Preference
-            android:key="reset_learning"
-            android:title="@string/reset_learning_title"
-            android:summary="@string/reset_learning_summary" />
 
     </PreferenceCategory>
 

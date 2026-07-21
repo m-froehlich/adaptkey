@@ -8167,3 +8167,57 @@ drawing glue, the established gap for this layer).
 
 783 unit tests total (782 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Neither confirmed on
 device yet.
+
+## §164 - D-237: `CalibrationActivity` and `TouchModelActivity` Merged Into One Screen; the Reset Action No
+Longer Touches the Chosen Typing Style (v0.8.122)
+
+User raised a genuine bug and requested a larger settings reorganisation together. **Confirmed the bug first,
+by reading the actual code, not assumed**: the top-level "reset learning & calibration" action
+(`SettingsActivity`'s `reset_learning` preference) called `OffsetStore.clear()`, which wiped the *entire*
+`adaptkey_offset_model` SharedPreferences file in one call - both the learned drift statistics (`KEY_STATS`)
+*and* the stored typing-style choice (`KEY_PATTERN`), leaving the pattern at `TypingPattern.UNKNOWN` with no
+re-seed and no nudge back to the K-01 picker. The user's suspicion was correct: resetting stale calibration
+drift and re-choosing a typing style are two entirely different concerns that had been conflated into one
+irreversible action.
+
+**Reorganised as requested**: `CalibrationActivity` (the K-01 style picker) and `TouchModelActivity` (the D-24
+read-only zone overlay, a separate screen reached only via the calibration result dialog's "Show" button or a
+second top-level settings entry) are merged into one screen; `TouchModelActivity.kt` and its layout are
+deleted, and settings' `cat_calibration` category now has exactly one entry (`k01_calibration`), matching the
+user's "top-level darf es nur noch 'Tipp-Stil' geben."
+
+- The five style buttons stay, but the one matching `OffsetStore.loadDetectedPattern()` is now highlighted
+  (a `link_text`-tinted background) - `SettingsStore`'s equivalent D-16 enlargement-preset logic is untouched.
+- The embedded `AdaptKeyboardView` now always renders the D-24 zone overlay (`showTouchModel = true`) for
+  whichever model is currently shown - the actual persisted model by default, replacing the standalone
+  "Show touch pattern" setting/screen and the session-only extra-row toggle's own separate visualisation path
+  entirely (the extra-row toggle itself, D-156, is untouched - a quick live-preview convenience distinct from
+  this dedicated screen).
+- Tapping a style button no longer applies it immediately: it now previews that style's fresh `PatternSeed`
+  seed live on the same keyboard (without persisting) and asks for confirmation
+  (`k01_switch_confirm_title`/`_message`) before actually applying it; cancelling reverts the live view back
+  to the actually-persisted model. Confirming calls the existing `persistPattern()` unchanged (seed + save +
+  `saveDetectedPattern` + `SettingsStore.applyPatternEnlargement` - a genuine style *change* still deliberately
+  re-presets the D-16 enlargement default for the new hand, matching the original K-01 semantics).
+- **A new, spatially separated "Reset" button** (a divider + extra top margin, distinct from the five style
+  buttons) takes over the old top-level action's role - but fixed: it re-seeds only the *currently selected*
+  style's own `PatternSeed` defaults via `OffsetStore.save()` (which only ever touches `KEY_STATS`), **never**
+  calling `OffsetStore.clear()` or `saveDetectedPattern()` - the chosen style survives a reset intact, closing
+  the reported bug directly. Deliberately does **not** call `SettingsStore.applyPatternEnlargement()` either -
+  re-seeding the *same* style is not a style change, so a manually-tuned C-01 enlargement slider must not be
+  silently clobbered by it (a real, distinct risk the original `persistPattern()` reuse would have introduced
+  if reused here unchanged). Kept behind the same double-confirmation dialog sequence as before
+  (`reset_learning_*` strings, reworded to no longer claim the typing style is deleted).
+- `OffsetStore.clear()` deleted outright as genuinely dead code - it had exactly one caller, and that caller
+  no longer exists.
+- `SettingsActivity`'s `k01_calibration` entry now shows the currently selected style in its summary
+  (`k01_current_style`, refreshed both in `onCreatePreferences()` and `onResume()` - the latter needed so
+  returning from a style change updates the summary immediately, matching the existing `info_version`/
+  `d89_feature_overview` programmatic-summary precedent already used elsewhere in the same screen).
+
+Updated the existing `CalibrationActivityRoboTest` (a real Robolectric activity-lifecycle test, not just pure
+logic) to match the new preview-then-confirm flow instead of asserting immediate persistence, and split it
+into two cases (confirm actually persists; cancel reverts the preview) - both drive the real `AlertDialog` via
+`ShadowDialog.getLatestDialog()` and `shadowOf(Looper.getMainLooper()).idle()` (needed for the dialog button's
+click listener, posted to the main looper, to actually run before the assertions). 784 unit tests total
+(783 - 1 + 2). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.

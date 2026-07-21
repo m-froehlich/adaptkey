@@ -70,7 +70,8 @@
             android:label="@string/c08_editor_title"
             android:exported="false" />
 
-        <!-- Calibration / onboarding (K-01), offered on first launch and from the settings screen. -->
+        <!-- D-237: typing-style picker (K-01) and touch-zone visualisation (D-24) merged into one screen -
+             offered on first launch and reachable any time from the settings screen. -->
         <activity
             android:name=".settings.CalibrationActivity"
             android:label="@string/k01_activity_title"
@@ -80,12 +81,6 @@
         <activity
             android:name=".settings.Tier3ModelActivity"
             android:label="@string/c06_model_title"
-            android:exported="false" />
-
-        <!-- Touch-pattern visualisation (D-24), launched from settings / the calibration result. -->
-        <activity
-            android:name=".settings.TouchModelActivity"
-            android:label="@string/d24_title"
             android:exported="false" />
 
         <!-- Full feature overview (D-89), launched from the settings screen's Info & Privacy category. -->

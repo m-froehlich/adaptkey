@@ -23,6 +23,7 @@ import androidx.preference.SwitchPreferenceCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.onboarding.OnboardingStore
 import de.froehlichmedia.adaptkey.touch.OffsetStore
+import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * Settings entry point for the configurable parameters (C-01 … C-09).
@@ -107,10 +108,8 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
             
-            findPreference<Preference>("reset_learning")?.setOnPreferenceClickListener {
-                confirmResetLearning()
-                true
-            }
+            updateCalibrationSummary()
+            
             
             // D-191: the runtime permission dialog only appears the moment the user actually opts in here,
             // never proactively - turning the toggle on with the permission not yet granted blocks the
@@ -134,6 +133,10 @@ class SettingsActivity : AppCompatActivity() {
         override fun onResume() {
             super.onResume()
             maybeOfferCalibration()
+            // D-237: refreshes after returning from CalibrationActivity with a newly (or re-)chosen style -
+            // onCreatePreferences() alone would only ever show whatever was current the moment the screen
+            // was first built.
+            updateCalibrationSummary()
         }
         
         /**
@@ -158,29 +161,26 @@ class SettingsActivity : AppCompatActivity() {
         }
         
         /**
-         * Double-confirmed reset of the learned touch data (offset model T-03 + typing pattern T-04): a
-         * first confirmation, then a final irreversible confirmation, then the actual reset. Kept behind two
-         * dialogs so it can never be triggered by accident, while staying quick for deliberate test resets.
+         * D-237: appends the currently selected typing style to the `k01_calibration` entry's summary
+         * (programmatic, like [onCreatePreferences]'s own `info_version`/`d89_feature_overview` handling
+         * above - a plain XML summary string cannot carry a runtime-read value on its own).
          */
-        private fun confirmResetLearning() {
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.reset_learning_title)
-                .setMessage(R.string.reset_learning_confirm1_message)
-                .setPositiveButton(android.R.string.ok) { _, _ -> confirmResetLearningFinal() }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
+        private fun updateCalibrationSummary() {
+            val pattern = OffsetStore.loadDetectedPattern(requireContext())
+            val base = getString(R.string.k01_summary)
+            val current = getString(R.string.k01_current_style, getString(patternLabelRes(pattern)))
+            findPreference<Preference>("k01_calibration")?.summary = "$base\n$current"
         }
         
-        private fun confirmResetLearningFinal() {
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.reset_learning_confirm2_title)
-                .setMessage(R.string.reset_learning_confirm2_message)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    OffsetStore.clear(requireContext())
-                    Toast.makeText(requireContext(), R.string.reset_learning_done, Toast.LENGTH_SHORT).show()
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
+        private fun patternLabelRes(pattern: TypingPattern): Int {
+            return when (pattern) {
+                TypingPattern.LEFT_INDEX_FINGER -> R.string.t04_pattern_left_index
+                TypingPattern.RIGHT_INDEX_FINGER -> R.string.t04_pattern_right_index
+                TypingPattern.LEFT_THUMB -> R.string.t04_pattern_left_thumb
+                TypingPattern.RIGHT_THUMB -> R.string.t04_pattern_right_thumb
+                TypingPattern.TWO_THUMBS -> R.string.t04_pattern_two_thumbs
+                TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
+            }
         }
         
         companion object {

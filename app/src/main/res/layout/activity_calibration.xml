@@ -1,85 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/calibration_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/k01_intro" />
+        android:orientation="vertical">
 
-    <!-- D-73 / D-77: ordered by real-world prevalence - both thumbs is by far the most common pattern, so
-         it leads and doubles as the silent skip default (no "(recommended)" label - not useful to someone
-         who types differently, and anyone who does just picks their own pattern); the author's own
-         (uncommon) left-index-finger pattern is deliberately last. -->
-    <Button
-        android:id="@+id/calibration_two_thumbs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/t04_pattern_two_thumbs" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/k01_intro" />
 
-    <Button
-        android:id="@+id/calibration_right_thumb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_right_thumb" />
+        <!-- D-73/D-77/D-237: ordered by real-world prevalence - both thumbs is by far the most common
+             pattern, so it leads and doubles as the silent skip default. The button matching the currently
+             selected style is highlighted (see CalibrationActivity.highlightButtonFor()). -->
+        <Button
+            android:id="@+id/calibration_two_thumbs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/t04_pattern_two_thumbs" />
 
-    <Button
-        android:id="@+id/calibration_left_thumb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_left_thumb" />
+        <Button
+            android:id="@+id/calibration_right_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/t04_pattern_right_thumb" />
 
-    <Button
-        android:id="@+id/calibration_right_index"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_right_index" />
+        <Button
+            android:id="@+id/calibration_left_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/t04_pattern_left_thumb" />
 
-    <Button
-        android:id="@+id/calibration_left_index"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/t04_pattern_left_index" />
+        <Button
+            android:id="@+id/calibration_right_index"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/t04_pattern_right_index" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        <Button
+            android:id="@+id/calibration_left_index"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/t04_pattern_left_index" />
 
-    <Button
-        android:id="@+id/calibration_skip"
-        style="?android:attr/buttonBarButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/k01_skip" />
+        <Button
+            android:id="@+id/calibration_skip"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/k01_skip" />
 
-    <de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
-        android:id="@+id/calibration_keyboard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        <!-- D-237: the reset action, spatially separated from the style buttons above (extra top margin +
+             a divider) so it reads as a distinct, more consequential action rather than a sixth style
+             choice. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="24dp"
+            android:background="?android:attr/listDivider" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/calibration_reset"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/k01_reset_button" />
+
+        <!-- D-24/D-237: the live zone overlay replaces the old separate "show touch pattern" screen - it
+             always renders the currently selected (or just-previewed) style's zones. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="24dp"
+            android:textSize="16sp"
+            android:lineSpacingExtra="2dp"
+            android:text="@string/d24_intro_1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:lineSpacingExtra="2dp"
+            android:text="@string/d24_intro_2" />
+
+        <TextView
+            android:id="@+id/calibration_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textStyle="italic"
+            android:visibility="gone"
+            android:text="@string/d24_empty" />
+
+        <de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
+            android:id="@+id/calibration_keyboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -70,6 +70,22 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§164 (v0.8.122): D-237 - `CalibrationActivity`/`TouchModelActivity` merged; the reset action no longer**
+  **touches the chosen typing style.** Confirmed the reported bug first: the old top-level "reset learning &
+  calibration" action called `OffsetStore.clear()`, wiping *both* the learned drift stats and the stored
+  typing-style choice together, leaving the pattern at `UNKNOWN` with no re-seed or nudge back to K-01.
+  Reorganised per the user's spec: `cat_calibration` now has exactly one top-level entry (`k01_calibration`);
+  `TouchModelActivity` is deleted, fully absorbed into `CalibrationActivity`, which now always shows a live
+  D-24 zone overlay (for the actual persisted model by default) and highlights the currently selected style
+  button. Tapping a style now previews its fresh seed live and asks for confirmation before persisting
+  (cancel reverts to the actual model); a new, spatially separated "Reset" button re-seeds only the
+  *currently selected* style's own defaults via `OffsetStore.save()` - never touching the style choice or
+  calling the now-deleted `OffsetStore.clear()`, and deliberately skipping `applyPatternEnlargement()` too
+  (re-seeding isn't a style change, so a manually-tuned C-01 slider must survive it). `k01_calibration`'s
+  summary now shows the currently selected style, refreshed in both `onCreatePreferences()` and `onResume()`.
+  Updated the existing `CalibrationActivityRoboTest` (real Robolectric activity-lifecycle test) for the new
+  preview-then-confirm flow, split into confirm/cancel cases. 784 unit tests (783 - 1 + 2).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §164.
 - **§163 (v0.8.121): D-235 - the K-01 seeded touch zone no longer scales against a widened key's own**
   **size; D-236 - T-06's visualisation no longer hides non-CHAR keys.** D-235: `PatternSeed` was scaling
   every seeded horizontal spread/shift by the candidate key's *own* half-width - a deliberately widened key

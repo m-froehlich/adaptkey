@@ -188,12 +188,13 @@
     <string name="onboarding_replay_done">Η εισαγωγή θα εμφανιστεί την επόμενη φορά που θα ανοίξεις το πληκτρολόγιο.</string>
 
     <!-- Reset learned touch data (offset model T-03 + typing style T-04), double-confirmed. -->
-    <string name="reset_learning_title">Επαναφορά εκμάθησης &amp; βαθμονόμησης</string>
-    <string name="reset_learning_summary">Επαναφέρει το στυλ πληκτρολόγησης και τη βαθμονόμηση αφής (όχι το λεξικό).</string>
-    <string name="reset_learning_confirm1_message">Το στυλ πληκτρολόγησης και η βαθμονόμηση αφής θα διαγραφούν. Συνέχεια;</string>
+    <string name="reset_learning_title">Επαναφορά βαθμονόμησης αφής</string>
+    <string name="reset_learning_summary">Επαναφέρει τις ζώνες αφής που έχεις μάθει στις προεπιλογές του τρέχοντος στυλ πληκτρολόγησής σου - όχι το ίδιο το στυλ, ούτε το λεξικό.</string>
+    <string name="reset_learning_confirm1_message">Οι ζώνες αφής που έχεις μάθει θα επαναφερθούν στις προεπιλογές του τρέχοντος στυλ πληκτρολόγησής σου. Συνέχεια;</string>
     <string name="reset_learning_confirm2_title">Οριστική επαναφορά;</string>
     <string name="reset_learning_confirm2_message">Αυτό το βήμα δεν μπορεί να αναιρεθεί.</string>
-    <string name="reset_learning_done">Η εκμάθηση &amp; η βαθμονόμηση επαναφέρθηκαν.</string>
+    <string name="reset_learning_done">Η βαθμονόμηση αφής επαναφέρθηκε.</string>
+    <string name="k01_reset_button">Επαναφορά βαθμονόμησης</string>
 
     <!-- D-142: διαγραφή αποθηκευμένων ονομάτων χρήστη/διευθύνσεων email (ξεχωριστή αποθήκευση, ποτέ το λεξικό). -->
     <string name="d142_clear_credentials_title">Διαγραφή αποθηκευμένων ονομάτων χρήστη &amp; email</string>
@@ -212,16 +213,13 @@
     <string name="cat_calibration">Βαθμονόμηση (K-01)</string>
     <string name="k01_title">Στυλ πληκτρολόγησης</string>
     <string name="k01_summary">Πες στο AdaptKey πώς πληκτρολογείς, ώστε η αναγνώριση πλήκτρων να σου ταιριάζει από την αρχή (K-01).</string>
+    <string name="k01_current_style">Τρέχον: %1$s</string>
     <string name="k01_activity_title">Στυλ πληκτρολόγησης</string>
     <string name="k01_intro">Πώς πληκτρολογείς συνήθως; Έτσι ρυθμίζονται αμέσως ρεαλιστικές ζώνες αφής για τα δάχτυλά σου· το κανονικό πληκτρολόγημα τις βελτιώνει με μέτρο από εκεί και πέρα.</string>
     <string name="k01_skip">Παράλειψη</string>
-    <string name="k01_done_title">Το στυλ πληκτρολόγησης ορίστηκε</string>
-    <string name="k01_feedback_left_index">Ζώνες αφής ρυθμισμένες για τον αριστερό σου δείκτη. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
-    <string name="k01_feedback_right_index">Ζώνες αφής ρυθμισμένες για τον δεξιό σου δείκτη. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
-    <string name="k01_feedback_left_thumb">Ζώνες αφής ρυθμισμένες για τον αριστερό σου αντίχειρα. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
-    <string name="k01_feedback_right_thumb">Ζώνες αφής ρυθμισμένες για τον δεξιό σου αντίχειρα. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
-    <string name="k01_feedback_two_thumbs">Ζώνες αφής ρυθμισμένες για πληκτρολόγηση με τους δύο αντίχειρες. Θα τις βελτιώνω με μέτρο καθώς πληκτρολογείς.</string>
-    <string name="k01_feedback_unknown">Ευχαριστώ! Συνεχίζω να μαθαίνω με μέτρο καθώς πληκτρολογείς.</string>
+    <string name="k01_switch_confirm_title">Αλλαγή στυλ πληκτρολόγησης;</string>
+    <string name="k01_switch_confirm_message">Η βαθμονόμηση αφής επαναφέρεται σε λογικές προεπιλογές για «%1$s». Συνέχεια;</string>
+    <string name="k01_switch_done">Το στυλ πληκτρολόγησης ενημερώθηκε.</string>
     <string name="k01_offer_title">Ορισμός στυλ πληκτρολόγησης;</string>
     <string name="k01_offer_message">Θέλεις να πεις στο AdaptKey πώς πληκτρολογείς; Αυτό ρυθμίζει αμέσως ρεαλιστικές ζώνες αφής. Μπορείς να το κάνεις οποιαδήποτε στιγμή στις ρυθμίσεις.</string>
     <string name="k01_offer_start">Ορισμός τώρα</string>
@@ -267,12 +265,9 @@
     <string name="d06_haptics_summary">Σύντομη δόνηση σε κάθε πάτημα πλήκτρου (προεπιλογή: ανενεργό).</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
-    <string name="d24_title">Εμφάνιση μοτίβου αφής</string>
-    <string name="d24_summary">Δείχνει έγχρωμους κύκλους πάνω από τα πλήκτρα, εκεί που πέφτουν κατά μέσο όρο τα πατήματά σου.</string>
     <string name="d24_intro_1">Οι έγχρωμοι κύκλοι δείχνουν πού πέφτουν κατά μέσο όρο τα πατήματά σου (η κουκκίδα) και πόσο διασκορπίζονται (ο κύκλος).</string>
     <string name="d24_intro_2">Έτσι προσαρμόζεται το πληκτρολόγιο στην πληκτρολόγησή σου.</string>
     <string name="d24_empty">Δεν έχουν μαθευτεί δεδομένα ακόμη. Πληκτρολόγησε για λίγο ή ξεκίνα τη βαθμονόμηση.</string>
-    <string name="d24_show_button">Εμφάνιση μοτίβου αφής</string>
 
     <!-- D-139/D-110: εντός εφαρμογής αρχείο καταγραφής διαγνωστικών, εναλλακτική του adb logcat χωρίς σύνδεση με υπολογιστή. -->
     <string name="cat_diagnostics">Διαγνωστικά</string>
