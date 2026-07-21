@@ -37,6 +37,21 @@ sequencing around them must keep spec §99-§101's three stated invariants intac
 
 ## Current State
 
+- **§141 (v0.8.104): D-219 - the flash effect decoupled from key processing and shortened, at the user's own
+  explicit request.** Two asks: (1) the flash must paint independently of processing time, not just "faster
+  processing eventually makes it faster too"; (2) it still felt too long - wants GBoard's near-instant popup
+  snappiness. Fixed: `AdaptKeyboardView.onTouchEvent()`'s `ACTION_UP` now dispatches `onKeyListener?.onKey(...)`
+  via `longPressHandler.post { }` instead of calling it inline right after `flash(key)` - `invalidate()`'s own
+  sync barrier guarantees the pending frame paints before any regular `Handler` message posted afterwards, so
+  the flash is now genuinely independent of `handleKey()`'s own duration (Android's standard `post()`-after-
+  `invalidate()` pattern). `downX`/`downY`/`pendingAmbiguity`/`pendingRecordWeight` captured into locals before
+  posting (mutable view fields the next `ACTION_DOWN` could otherwise overwrite first); ordering between
+  keystrokes preserved (same serial `Handler`). `flashDurationMs` 28ms -> 16ms (one frame @ 60Hz). D-217's
+  `flash: ... visible after Nms` log is the number to watch next - should now read ~1 frame regardless of
+  `handleKey`'s own cost, unlike before this round where the two tracked each other almost exactly. No new
+  tests (pure View glue). 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+  See history §141.
+
 - **§140 (v0.8.103): D-218 - the real remaining sluggishness cost found, via D-217's own new timing log:
   the impending-autocorrect/diacritic preview ran unconditionally on every keystroke, never touched by
   D-207-D-217.** Fresh logs (fast and slow typing, same pattern either way) showed `handleKey` processing

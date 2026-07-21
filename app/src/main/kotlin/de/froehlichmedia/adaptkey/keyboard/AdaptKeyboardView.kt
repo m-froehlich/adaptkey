@@ -457,9 +457,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
         flashKey = null
         invalidate()
     }
-    // D-04 / D-28 (§13/§14): a very short, Gboard-like flash - just long enough to be seen (~2 frames) but
-    // short enough that typing feels snappy and a rapid double-tap shows two distinct blinks.
-    private val flashDurationMs = 28L
+    // D-04 / D-28 (§13/§14): a very short, Gboard-like flash - just long enough to be seen but short enough
+    // that typing feels snappy and a rapid double-tap shows two distinct blinks. D-219: shortened further at
+    // the user's own explicit request - GBoard's own acknowledgement (a popup, not a flash) dismisses almost
+    // instantly, and that snappiness, not merely a highlight that avoids looking sluggish, was the actual
+    // goal - one frame at a typical 60Hz refresh is the shortest duration still reliably visible at all.
+    private val flashDurationMs = 16L
     
     // D-217 (temporary diagnostic): flash()'s own invalidate()->onDraw() latency, separate from the
     // service's own AdaptKeyHaptics processing-time log - a busy main thread can just as easily delay the
@@ -1029,7 +1032,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     if (!consumed) {
                         // D-04: briefly flash the key so even a fast tap is visibly acknowledged.
                         flash(key)
-                        onKeyListener?.onKey(key, downX, downY, pendingAmbiguity, pendingRecordWeight)
+                        // D-219: the actual key processing is posted rather than called inline, so it can
+                        // never delay the flash's own paint - flash()'s invalidate() above schedules a
+                        // traversal behind a sync barrier that Android guarantees runs before any regular
+                        // Handler message posted afterwards (including this one), so the flashed frame is
+                        // always drawn first regardless of how long handleKey() takes downstream. Everything
+                        // the listener needs is captured into locals now, before posting - downX/downY/
+                        // pendingAmbiguity/pendingRecordWeight are view fields the very next ACTION_DOWN
+                        // could already have overwritten by the time this runs.
+                        val tapX = downX
+                        val tapY = downY
+                        val ambiguity = pendingAmbiguity
+                        val weight = pendingRecordWeight
+                        longPressHandler.post { onKeyListener?.onKey(key, tapX, tapY, ambiguity, weight) }
                     }
                 }
                 return true

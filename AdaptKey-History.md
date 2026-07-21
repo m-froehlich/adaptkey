@@ -7294,3 +7294,44 @@ for this layer; `DictionarySuggestionProvider.diacriticRestoration()`/`autocorre
 and already covered. 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed - awaits the user's next repeat of the same on-device test, this time expected to show `pending`
 no longer growing `handleKey`'s own processing time on the hot path.
+
+## §141 - D-219: the Flash Effect Decoupled from Key Processing and Shortened, at the User's Own Explicit
+Request (v0.8.104)
+
+Ahead of the next device re-test, the user asked for the flash acknowledgement itself to be reworked, on two
+independent points: (1) it should paint completely independently of how long processing takes, not merely
+"faster processing eventually makes the flash faster too" - even once D-207-D-218 are fully proven out, the
+flash should never again be at the mercy of whatever the main thread happens to be doing that keystroke; and
+(2) its ON duration itself still feels too long, wanting the GBoard-like snappiness of a popup that dismisses
+almost instantly, not just an eventually-fast highlight.
+
+**(1) Decoupling.** `AdaptKeyboardView.onTouchEvent()`'s `ACTION_UP` handler previously called `flash(key)`
+(which calls `invalidate()`) and then, in the very same synchronous call, `onKeyListener?.onKey(...)` -
+meaning the actual paint `invalidate()` merely *schedules* could not happen until this whole touch-event
+dispatch (including `onKey()` -> `handleKey()` -> everything D-207-D-218 have been trying to speed up)
+returned control to the looper. `onKeyListener?.onKey(...)` is now dispatched via `longPressHandler.post { }`
+(the same general-purpose main-looper `Handler` this class already uses for every other deferred callback)
+instead of called inline - `invalidate()`'s own `scheduleTraversals()` posts a sync barrier to the shared main
+Looper's message queue ahead of any ordinary `Handler` message, which is exactly why `View.post()`-after-
+`invalidate()` is Android's own standard pattern for "let this frame paint before doing the next (possibly
+slow) thing": the pending frame is guaranteed to draw before the posted `onKey()` call even starts, regardless
+of how long `handleKey()` takes. `downX`/`downY`/`pendingAmbiguity`/`pendingRecordWeight` are captured into
+locals before posting (not read inside the deferred lambda) - these are mutable view fields the very next
+tap's `ACTION_DOWN` could otherwise already have overwritten by the time the posted call actually runs; `key`
+was already a local (`val key = pressedKey`) for the same reason. Ordering between consecutive keystrokes is
+preserved regardless - both go through the same single-threaded `longPressHandler`, so two posted `onKey()`
+calls still fire in the order they were posted.
+
+**(2) Duration.** `flashDurationMs` lowered from 28ms to 16ms (one frame at a typical 60Hz refresh - the
+shortest duration still reliably visible at all) - the user's own framing was that GBoard's acknowledgement is
+a popup that dismisses almost instantly, and that snappiness itself (not merely avoiding a highlight that
+*looks* sluggish) was the actual goal.
+
+Together these make the flash's own timing fully independent of the still-ongoing D-207-D-218 processing-speed
+work - D-217's own `flash: ... visible after Nms` log is the number to watch on the next repro: it should now
+read close to one frame's worth of milliseconds regardless of what `handleKey: ... processed in Nms` says right
+next to it, which was not true before this round (the two numbers had been tracking each other almost exactly).
+
+No new unit tests - pure Android View touch/paint glue, the established untested gap for this layer; no pure
+logic changed. 774 unit tests (unchanged). `:app:assembleDebug`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.
