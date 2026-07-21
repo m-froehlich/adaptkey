@@ -70,6 +70,47 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§152 CAPTURED (still v0.8.112, no code change): D-228 - "Docker" -> "Dock er" accepted as unfixable in**
+  **general; backspace-restore-as-partial-learning-credit captured for later.** Third real-world A-05 split
+  example from the same feedback round as D-210/D-226/D-227, but structurally different: neither dictionary
+  has ever heard of `"Docker"` at all (unlike `"übrigens"`/`"commits"`, real words gated incorrectly). `"Dock"`
+  (freq 20, NOUN) + `"er"` (freq 120,975, OTHER - one of the single most frequent tokens in the whole corpus)
+  clears every existing gate with zero bigram co-occurrence and wins purely because nothing else competes.
+  Investigated and explicitly not pursued: a co-occurrence gate would also break D-203's own motivating
+  `"der"+"Kinderarzt"` case (zero co-occurrence there too, confirmed against `bigram_de.tsv`); an absolute
+  score floor can't discriminate either (same "hyper-frequent glue word + rare noun" shape, same magnitude);
+  the one real distinguishing feature (word order/grammatical role - determiner-leads-noun vs.
+  pronoun-trails-noun) isn't cheaply available from this dictionary's `OTHER`-lumped tagging. Raising
+  `MIN_PART` (2->3) would cleanly close this specific 2-letter-suffix shape without touching D-203, but
+  doesn't cover `"übrigebs"` and wasn't pursued in isolation per the user's own direction to accept the
+  general case. **User's decision**: accept, let the personal dictionary (and later, tier-3) absorb it -
+  deliberately not started until base dictionary-only autocorrect is judged solid. **Real gap surfaced,
+  captured only**: the wrong split applies silently, so `"Docker"` never reaches D-37's learn threshold via
+  ordinary confirmed use; A-07's backspace-undo restores the typed text but doesn't advance any pending-learn
+  counter. User's own proposed direction (explicitly deferred, not decided): backspace-restore should earn
+  *partial* learn credit, weaker than a full S-06-chip accept - illustrative starting numbers floated by the
+  user (chip-accept +2, backspace-restore +1), possibly needing the promotion threshold itself to grow if
+  partial credit is introduced. 776 unit tests (unchanged - documentation only, no version bump per this
+  project's own convention). See history §152.
+- **§151 (v0.8.112): D-227 fixed - the D-114 frequency floor was cost-blind; now also consults**
+  **part-of-speech.** User asked directly why a keyboard-neighbourhood check didn't already rescue
+  `"übrigebs"` (D-210's own split-regression report). Root-caused: `"übrigebs"` is a genuine cost-1
+  QWERTZ-adjacent typo (`b`/`n`) of `"übrigens"` - `bestCorrection()` does find it, but `dict_de.tsv` lists it
+  at frequency 79, below the production `minAutocorrectFrequency=300` floor (D-114), so it's dropped
+  regardless of its perfect edit cost, `highConfidence` never becomes true, and the low-quality A-05 split
+  wins by default. **First fix attempt (blanket cost-1 exemption, mirroring D-113's `shouldOverrideKnownWord`
+  cost distinction) was disproven immediately by the existing test suite**: D-114's own original bug
+  (`"Virhin"`->`"Virgin"`, freq 62) is *also* cost-1 (`h`/`g` adjacent) - cost alone can't tell the two cases
+  apart. Checked against the real corpus instead: `"Virgin"` is tagged `NOUN` (a Wikipedia-corpus proper-noun
+  artefact - exactly D-114's target), `"übrigens"` is tagged `OTHER` (an ordinary, merely corpus-under-counted
+  adverb). Fixed: `bestCorrection()` now fetches the full `WordEntry` (`entryOf()`, D-214-style single
+  round-trip) and only applies the frequency floor when the candidate is `NOUN`/`PROPER_NOUN`-tagged **or**
+  its cost exceeds `ADJACENT_SUB_COST` - a cost-1 non-noun candidate is exempt regardless of frequency. The
+  existing D-114 test had never actually set any part-of-speech on its synthetic `"Virgin"` entry (passed the
+  old cost-only check by coincidence, not by modelling the real bug) - corrected to add the real dictionary's
+  own `NOUN` tag rather than weakened; a new test proves the intended asymmetry (`"übrigens"`, `OTHER`-tagged,
+  still wins; `"Virgin"`, `NOUN`-tagged, still correctly rejected). 776 unit tests (775 + 1 net).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §151.
 - **§150 (v0.8.111): D-226 fixed - trySplit() never respected suppressAutocorrect/knownInOtherLanguage, so
   a real English loanword ("Commits") got torn apart against the German dictionary.** Second real A-05-split
   regression from the same feedback round as D-210. Root-caused, not guessed: `"commits"` is a genuine

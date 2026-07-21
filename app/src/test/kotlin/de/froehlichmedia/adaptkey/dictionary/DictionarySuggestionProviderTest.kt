@@ -166,19 +166,35 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
-    fun `D-114 a candidate below minAutocorrectFrequency is never offered, however good its edit cost`() {
+    fun `D-114 a noun-tagged candidate below minAutocorrectFrequency is never offered, however good its edit cost`() {
         // Reproduces the reported bug: "vorhin" is missing from the dictionary entirely, and "Virgin" (an
-        // English-proper-noun artefact of the German Wikipedia corpus) was the only candidate within the
-        // edit-cost budget - low-confidence, but nothing stopped it from winning by default.
+        // English-proper-noun artefact of the German Wikipedia corpus, tagged NOUN like the real
+        // dict_de.tsv entry) was the only candidate within the edit-cost budget - low-confidence, but
+        // nothing stopped it from winning by default.
         val guardedStore = InMemoryDictionaryStore()
         val guardedProvider = DictionarySuggestionProvider(guardedStore, minAutocorrectFrequency = 300)
-        guardedStore.putWord(WordEntry("Virgin", 62L))
+        guardedStore.putWord(WordEntry("Virgin", 62L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         guardedStore.putWord(WordEntry("Vorhinein", 11L))
         
         assertNull(guardedProvider.autocorrectFor("Virhin", null))
         // A candidate at or above the floor is unaffected.
         guardedStore.putWord(WordEntry("Wort", 300L))
         assertEquals("Wort", guardedProvider.autocorrectFor("W8rt", null))
+    }
+    
+    @Test
+    fun `D-227 a non-noun cost-1 candidate below minAutocorrectFrequency still wins, unlike a noun-tagged one`() {
+        // Reproduces the reported bug: "übrigebs" (a keyboard-adjacent b/n typo of "übrigens", tagged OTHER
+        // like the real dict_de.tsv entry) has no dictionary entry itself, and "übrigens" (frequency 79) sat
+        // below the 300 floor purely because the corpus under-counts it relative to hyper-frequent words -
+        // letting a low-quality A-05 split ("übrig"+"Ebs") win instead of this cost-1 correction. Contrasted
+        // directly against the D-114 case above: same cost tier and frequency range, but "übrigens" is
+        // tagged OTHER (an ordinary adverb), not NOUN, so it is exempt from the floor while "Virgin" is not.
+        val guardedStore = InMemoryDictionaryStore()
+        val guardedProvider = DictionarySuggestionProvider(guardedStore, minAutocorrectFrequency = 300)
+        guardedStore.putWord(WordEntry("übrigens", 79L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        
+        assertEquals("übrigens", guardedProvider.autocorrectFor("übrigebs", null))
     }
     
     @Test

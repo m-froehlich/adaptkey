@@ -20,11 +20,15 @@ import kotlin.math.pow
  *
  * @property store the backing dictionary store
  * @property maxCandidates the maximum number of suggestions returned
- * @property minAutocorrectFrequency D-114: a correction candidate below this absolute frequency is never
- *           offered by [autocorrectFor]/[highConfidenceCorrection], however good its edit cost otherwise
- *           looks - defaults to 0 (no floor) so a plain `DictionarySuggestionProvider(store)` behaves
- *           exactly as before; production call sites pass a real, corpus-calibrated value (see
- *           [de.froehlichmedia.adaptkey.AdaptKeyService])
+ * @property minAutocorrectFrequency D-114/D-227: a correction candidate below this absolute frequency is
+ *           never offered by [autocorrectFor]/[highConfidenceCorrection] - *unless* it is both a cost-1
+ *           neighbouring-key substitution away ([ADJACENT_SUB_COST]) and not tagged [PartOfSpeech.NOUN]/
+ *           [PartOfSpeech.PROPER_NOUN]. Cost alone is not enough to exempt a candidate - D-114's own
+ *           original bug ("Virgin", frequency 62) was itself a cost-1 edit, but is also a noun-tagged
+ *           Wikipedia-corpus artefact, unlike a genuinely common non-noun word the corpus simply
+ *           under-counts (e.g. "übrigens", frequency 79). Defaults to 0 (no floor) so a plain
+ *           `DictionarySuggestionProvider(store)` behaves exactly as before; production call sites pass a
+ *           real, corpus-calibrated value (see [de.froehlichmedia.adaptkey.AdaptKeyService])
  */
 class DictionarySuggestionProvider(
     private val store: DictionaryStore,
@@ -403,10 +407,22 @@ class DictionarySuggestionProvider(
                 if (cost > maxCost) {
                     return@mapNotNull null
                 }
-                val frequency = store.frequencyOf(candidate)
-                // D-114: a candidate too rare to be a trustworthy silent autocorrect target is dropped
-                // outright, regardless of edit cost - see minAutocorrectFrequency.
-                if (frequency < minAutocorrectFrequency) {
+                val entry = store.entryOf(candidate)
+                val frequency = entry?.frequency ?: store.frequencyOf(candidate)
+                // D-114/D-227: a candidate too rare to be a trustworthy silent autocorrect target is dropped
+                // outright - unless it is both a cost-1 neighbouring-key substitution AND not noun-tagged.
+                // A first attempt exempted every cost-1 candidate outright, but that reopened D-114's own
+                // original bug: "Virgin" (frequency 62, tagged NOUN - a Wikipedia-corpus proper-noun
+                // artefact) is *also* a cost-1 edit from "Virhin"/"vorhin", so cost alone cannot tell the two
+                // cases apart. What does: "übrigens" (frequency 79, tagged OTHER - an entirely ordinary,
+                // simply corpus-under-counted adverb) is not a noun. A rare NOUN/PROPER_NOUN in this
+                // Wikipedia-derived corpus is disproportionately a foreign/proper-noun artefact - exactly
+                // what this floor exists to filter - while a rare non-noun at cost-1 is far more likely a
+                // genuine, common word that is simply outnumbered by hyper-frequent words like "der"/"die".
+                val isNounLike = entry?.partsOfSpeech?.any {
+                    it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN
+                } ?: true
+                if (frequency < minAutocorrectFrequency && (cost > ADJACENT_SUB_COST || isNounLike)) {
                     null
                 } else {
                     CandidateCost(candidate, cost, score(candidate, frequency, previousWord))

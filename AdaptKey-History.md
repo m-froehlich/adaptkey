@@ -7681,3 +7681,90 @@ No new unit tests - this is `AdaptKeyService`'s own private `finalizeAndCommit()
 `InputConnection`-context glue with no seam into a pure, independently-testable function (the same established
 gap as every other `finalizeAndCommit()`-internal fix in this project's history, e.g. D-119/D-120/D-154/D-155).
 775 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §151 - D-227: the D-114 Frequency Floor Was Cost-Blind - Fixed by Also Consulting Part-of-Speech, not Cost
+Alone (v0.8.112)
+
+Continuing the same D-210 feedback round, the user asked directly why a keyboard-neighbourhood check didn't
+already rescue `"übrigebs"` (reported as a bad A-05 split, `"übrig"` + `"Ebs"`) - correctly suspecting the system
+already had the machinery to do this. Traced end to end, not guessed:
+
+`"übrigebs"` is a genuine cost-1 keyboard-adjacent typo of `"übrigens"` (`b`/`n` sit next to each other on the
+bottom QWERTZ row) - `bestCorrection()` does find this candidate, but `dict_de.tsv` lists `"übrigens"` at
+frequency 79, below the production `minAutocorrectFrequency = 300` floor (D-114) - so it is unconditionally
+dropped **regardless of its edit cost**, `bestCorrection()` returns null, `highConfidence` never becomes true,
+the `trySplit()` veto never fires, and the low-quality split wins by default as the only remaining candidate.
+
+**First fix attempt, disproven by the existing test suite before it ever reached device testing**: simply
+exempting every cost-1 (`ADJACENT_SUB_COST`) candidate from the floor, mirroring `shouldOverrideKnownWord()`'s
+own cost distinction (D-113). Running the existing suite immediately failed
+`` `D-114 a candidate below minAutocorrectFrequency is never offered, however good its edit cost` `` - because
+D-114's own original motivating bug, `"Virhin"` -> `"Virgin"` (frequency 62), is **itself** a cost-1 edit
+(`h`/`g` are QWERTZ-adjacent too). Cost alone cannot distinguish the two cases; a blanket cost-1 exemption would
+have silently reopened the exact bug D-114 exists to prevent.
+
+**What actually distinguishes them, checked against the real corpus**: `dict_de.tsv` tags `"Virgin"` as `NOUN` -
+a Wikipedia-derived-corpus proper-noun artefact, exactly the shape of entry D-114's floor is meant to catch -
+while `"übrigens"` is tagged `OTHER` (an ordinary adverb). A rare noun in this corpus is disproportionately a
+foreign/proper-noun artefact; a rare non-noun at cost-1 is far more likely a genuinely common word the corpus
+simply under-counts relative to hyper-frequent words like `"der"`/`"die"`.
+
+**Fixed accordingly**: `bestCorrection()` now fetches the candidate's full `WordEntry` (via `entryOf()`, not a
+bare `frequencyOf()` call - avoids a second store round-trip for the same word, matching D-214's own established
+"fetch the entry once" pattern) and only applies the frequency floor when the candidate is noun-tagged
+(`PartOfSpeech.NOUN`/`PartOfSpeech.PROPER_NOUN`) OR its cost exceeds `ADJACENT_SUB_COST` - a cost-1, non-noun
+candidate is now exempt regardless of frequency. The existing D-114 regression test was updated to add the
+real dictionary's own `NOUN` tag to `"Virgin"` (the test's synthetic `WordEntry` had never set any
+part-of-speech, so it happened to pass the old, cost-only check by coincidence rather than by faithfully
+modelling the real bug) rather than weakened. A new test proves the intended asymmetry directly: an
+`OTHER`-tagged, cost-1, below-floor candidate (`"übrigens"`) still wins, while the (corrected) `"Virgin"` case
+continues to fail exactly as before.
+
+1 test renamed/corrected (added the missing `NOUN` tag), 1 new test
+(`` `D-227 a non-noun cost-1 candidate below minAutocorrectFrequency still wins, unlike a noun-tagged one` ``).
+776 unit tests total (775 + 1 net). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed.
+
+## §152 CAPTURED - D-228: "Docker" -> "Dock er" Accepted as an Unfixable-in-General A-05 Split; Backspace-Restore
+as a Possible Future Learning Signal (No Code Change)
+
+The third real-world A-05-split example from the same feedback round, but structurally different from D-210's
+own two cases: `"Docker"` has no entry in either bundled dictionary (unlike `"übrigens"`/`"commits"`, which are
+real dictionary words just gated incorrectly). `"Dock"` (frequency 20, `NOUN`) + `"er"` (frequency 120,975,
+`OTHER` - one of the single most frequent tokens in the entire corpus, the German third-person pronoun) clears
+every existing gate (`MIN_SPLIT_HALF_FREQUENCY`, not-both-nouns) with zero bigram co-occurrence, and wins purely
+because nothing else competes for a token neither dictionary has ever heard of. Structurally broad exposure:
+roughly 145 `dict_de.tsv` entries with frequency > 1000 end in `-er`, and `"er"` itself is high enough in
+frequency that almost any unrecognised/foreign/technical word ending in `-er` whose prefix happens to
+independently resolve to any non-noun-paired dictionary entry is exposed to the same mechanism.
+
+**A real fix was investigated and explicitly not pursued this round.** A co-occurrence gate would look
+attractive, but D-203's own motivating case (`"der"` + `"Kinderarzt"`) has **zero** recorded bigram co-occurrence
+too (confirmed against `bigram_de.tsv`, not assumed) - reinstating that gate would resurrect the exact false
+negative D-203 was built to fix. An absolute score floor does not discriminate either: `"der"`
+(1,004,234) + `"Kinderarzt"` (14) and `"Dock"` (20) + `"er"` (120,975) are the same shape (one hyper-frequent
+function/glue word + one rare noun) and land in the same score magnitude. The only real distinguishing feature
+found - word order/grammatical role (a determiner leading a noun, `"der Kinderarzt"`, is ordinary German syntax;
+a free pronoun trailing one, `"Dock er"`, is not) - is not cheaply available from this dictionary's tagging,
+which lumps articles/pronouns/prepositions/conjunctions all under `PartOfSpeech.OTHER`. Raising `MIN_PART` (2 ->
+3) would cleanly close the specific "2-letter hyper-frequent suffix" shape of this bug without touching any
+existing test or the D-203 case - but does **not** address D-210's other case (`"übrigebs"` -> `"übrig"` +
+`"Ebs"`, a 3-letter half) and was not pursued in isolation, since the user's own direction this round was to
+accept the general case rather than chase a partial, narrower fix.
+
+**User's decision**: accept that not every case like this can be caught generically; let the personal
+dictionary absorb it over time instead (and, longer-term, the tier-3 mini-LLM once base dictionary-only
+autocorrect is judged solid enough to build on - explicitly deferred, not started). **A real gap surfaced while
+discussing this, captured rather than fixed**: there is currently no clean path for `"Docker"` to actually reach
+D-37's learning threshold, since the wrong split is applied *silently* (not merely offered as a suggestion),
+so the user never sees/confirms `"Docker"` as one word - A-07's backspace-undo restores the literal typed text
+and reverses the wrong split's own reinforcement, but does not itself advance any pending-learn counter for the
+correct word. **The user's own proposed direction, explicitly deferred for later discussion, not decided**: a
+backspace-restore should contribute a *partial* credit toward the learn threshold - weaker than a full
+S-06-chip "keep as typed" acceptance (worth the existing full pending-learn increment) - illustrative numbers
+floated by the user themselves as a starting point to discuss, not a decision: chip-accept +2, backspace-restore
++1, with the promotion threshold (`LEARN_THRESHOLD`/`COMPOUND_LEARN_THRESHOLD`, currently a flat occurrence
+count) possibly needing to grow accordingly if partial credit is introduced. Left as an open backlog item.
+
+No code change, no version bump (documentation-only capture, per this project's own established convention).
+776 unit tests (unchanged).
