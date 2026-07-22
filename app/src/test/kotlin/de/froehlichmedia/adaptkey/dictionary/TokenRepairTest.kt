@@ -142,6 +142,34 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-244 an acronym-shaped half needs a much higher frequency floor than an ordinary word`() {
+        // "übrigebs" -> "übrig"+"Ebs": "Ebs"/"EBS" (an acronym, stored all-uppercase) sits right at
+        // MIN_SPLIT_HALF_FREQUENCY's own floor (10) - a real dictionary entry nobody would plausibly have
+        // intended here. An ordinary word of the same frequency (not all-uppercase) must still split fine.
+        store.putWord(WordEntry("übrig", frequency = 325L))
+        store.putWord(WordEntry("EBS", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertNull(repair.trySplit("übrigebs", emptySet()))
+    }
+    
+    @Test
+    fun `D-244 an acronym-shaped half is accepted once it clears the higher acronym floor`() {
+        store.putWord(WordEntry("übrig", frequency = 325L))
+        store.putWord(WordEntry("EBS", frequency = TokenRepair.MIN_SPLIT_ACRONYM_FREQUENCY, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertEquals(SplitResult("übrig", "ebs"), repair.trySplit("übrigebs", emptySet()))
+    }
+    
+    @Test
+    fun `D-244 an ordinary mixed-case word of the same low frequency is unaffected by the acronym floor`() {
+        // "Dock" is capitalised (an ordinary noun), not all-uppercase - the acronym floor must not apply to it.
+        store.putWord(WordEntry("Dock", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("er", frequency = 120_975L))
+        
+        assertEquals(SplitResult("dock", "er"), repair.trySplit("docker", emptySet()))
+    }
+    
+    @Test
     fun `§128 a half below the frequency floor is rejected even though it is a known word`() {
         store.putWord(WordEntry("mini", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY - 1))
         store.putWord(WordEntry("wort", frequency = 500L))

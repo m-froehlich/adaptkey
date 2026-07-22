@@ -225,6 +225,18 @@ class TokenRepair(private val store: DictionaryStore) {
         if (leftEntry.frequency < MIN_SPLIT_HALF_FREQUENCY || rightEntry.frequency < MIN_SPLIT_HALF_FREQUENCY) {
             return null
         }
+        // D-244: an acronym-shaped half (stored all-uppercase, e.g. "EBS") needs a much higher bar than an
+        // ordinary word - confirmed against the real dict_de.tsv that 77% of all-caps entries sit below
+        // frequency 50, i.e. they are disproportionately obscure abbreviations nobody would plausibly have
+        // intended, unlike an ordinary lower/mixed-case half of the same low frequency. Reusing
+        // MIN_AUTOCORRECT_CANDIDATE_FREQUENCY's own established "trustworthy" bar (300, D-114) rather than
+        // inventing a new one.
+        if (isAcronym(leftEntry) && leftEntry.frequency < MIN_SPLIT_ACRONYM_FREQUENCY) {
+            return null
+        }
+        if (isAcronym(rightEntry) && rightEntry.frequency < MIN_SPLIT_ACRONYM_FREQUENCY) {
+            return null
+        }
         if (isNoun(leftEntry) && isNoun(rightEntry)) {
             return null
         }
@@ -254,6 +266,17 @@ class TokenRepair(private val store: DictionaryStore) {
             }
         }
         return null
+    }
+    
+    /**
+     * D-244: whether [entry]'s own canonical stored spelling is all-uppercase (an acronym/abbreviation,
+     * e.g. "EBS", "DDR") rather than an ordinary word or capitalised noun (e.g. "Dock", "Kinderarzt") - used
+     * by [candidateAt] to apply [MIN_SPLIT_ACRONYM_FREQUENCY] on top of the ordinary [MIN_SPLIT_HALF_FREQUENCY].
+     * A single-character entry is never flagged (nothing to distinguish "acronym" from "capital letter" at
+     * that length).
+     */
+    private fun isAcronym(entry: WordEntry): Boolean {
+        return entry.word.length >= MIN_PART && entry.word == entry.word.uppercase() && entry.word.any { it.isLetter() }
     }
     
     /**
@@ -303,6 +326,14 @@ class TokenRepair(private val store: DictionaryStore) {
          * instead, not from frequency alone.
          */
         const val MIN_SPLIT_HALF_FREQUENCY = 10L
+        
+        /**
+         * D-244: the minimum frequency an acronym-shaped half ([isAcronym]) must individually clear, on top
+         * of [MIN_SPLIT_HALF_FREQUENCY] - reuses the same "trustworthy" bar
+         * [de.froehlichmedia.adaptkey.AdaptKeyService]'s own `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY` (D-114)
+         * already established, rather than inventing a new threshold.
+         */
+        const val MIN_SPLIT_ACRONYM_FREQUENCY = 300L
         
         /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
         val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm')

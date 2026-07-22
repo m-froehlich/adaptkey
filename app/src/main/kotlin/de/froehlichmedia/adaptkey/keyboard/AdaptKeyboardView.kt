@@ -995,6 +995,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 } else {
                     1.0
                 }
+                // D-243: every raw ACTION_DOWN, resolved or ambiguous alike - lets the user see exactly
+                // where a tap actually landed relative to the key it resolved to (e.g. a chronically missed
+                // space bar) directly from the in-app log (Settings -> Diagnostics), no PC/`adb` needed.
+                logTouch(
+                    "rawTap: key=${key.id} x=${event.x} y=${event.y} centerX=${rect.centerX()} " +
+                        "centerY=${rect.centerY()} halfWidth=${rect.width() / 2f} halfHeight=${rect.height() / 2f} " +
+                        "ambiguity=${pendingAmbiguity.kind}" +
+                        (pendingAmbiguity.inferredChar?.let { " inferredChar=$it" } ?: "")
+                )
                 scheduleLongPress(key)
                 // D-07: holding the backspace key starts an accelerating repeat delete.
                 if (key.code == KeyCode.DELETE) {
@@ -1317,6 +1326,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val full = "$prefix: $message"
         if (warn) Log.w("AdaptKeyHaptics", full) else Log.d("AdaptKeyHaptics", full)
         DiagnosticLog.record("[AdaptKeyHaptics] $full")
+    }
+    
+    /**
+     * D-243: the raw-touch diagnostic (X-01) - user-requested, to analyse where a tap actually lands
+     * (e.g. missed space-bar taps) directly from the in-app log, without a PC/`adb` tether. Mirrors
+     * [logHaptics]'s own dual-output shape; no password-field guard needed for the same reason - a raw tap
+     * coordinate and which key it resolved to is never typed content.
+     */
+    private fun logTouch(message: String) {
+        Log.d("AdaptKeyTouch", message)
+        DiagnosticLog.record("[AdaptKeyTouch] $message")
     }
     
     /**

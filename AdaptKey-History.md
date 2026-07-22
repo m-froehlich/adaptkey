@@ -8386,3 +8386,51 @@ false whenever there is no cached preview for *any* prefix/suffix relationship w
 No new unit tests - `updateComposing()` is private `AdaptKeyService`/`InputConnection` rendering glue, the
 same established gap as every other fix in this area (D-229 immediately above it, for instance). 784 unit
 tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §169 - D-243: Raw Touch Coordinates Now Feed the X-01 Diagnostic Log; D-244: "Ohren" -> "Ihren" Root-Caused
+to an Overly Permissive Known-Word Override, and Acronym-Shaped Split Halves Now Need a Higher Bar (v0.8.127)
+
+**D-243**: user asked to record raw touch data in the existing X-01 diagnostic log (settings-gated, default
+off, viewable/exportable entirely on-device), specifically to analyse missed space-bar taps. Everything
+needed is already computed at `AdaptKeyboardView.onTouchEvent()`'s `ACTION_DOWN` handler - the raw tap
+(`event.x`/`event.y`), the resolved key and its centre, and the T-05 `TapAmbiguity` classification (plus the
+inferred letter for a letter-ambiguous space). Added a new `logTouch()` helper, mirroring `logHaptics()`'s own
+D-193 dual-output shape (logcat + in-app ring buffer) - deliberately no password-field guard, matching
+`logHaptics()`'s own reasoning: a raw tap coordinate and which key it resolved to is never typed content. One
+new line, `"rawTap: key=... x=... y=... centerX=... centerY=... halfWidth=... halfHeight=... ambiguity=..."`,
+logged for every `ACTION_DOWN` (resolved or ambiguous alike), matching the established log-line convention
+(bare tag, `event: key=value` fields, no manual timestamp - the ring buffer/viewer already handle that). No
+changes needed to `DiagnosticLogActivity` - it already renders whatever the ring buffer holds generically.
+
+**D-244, "Ohren" -> "Ihren"**: root-caused against the real dictionary, not guessed. `"Ohren"` (ears) is a
+perfectly ordinary, unambiguous German noun, already in the dictionary (frequency 170). `"Ihren"` ("your",
+formal) is extremely common (frequency 11,907) and exactly one QWERTZ-adjacent-key substitution away
+(`o`/`i`). §44/D-113's own A-01-override exception (a known word may still be silently corrected when a
+candidate is both a cost-1 adjacent-key edit *and* at least `KNOWN_WORD_OVERRIDE_RATIO` (50) times more
+frequent) fired here: 170 * 50 = 8,500 <= 11,907. The rule's own original assumption - "a genuine word pair
+never gets remotely close to 50x" - turned out to be wrong for this pair: 70x is nowhere near the actual
+blacklisted-confusable cases the rule was built for (`due`/`die` ~37,000x, `ddr`/`der` ~228x, both confirmed
+against the real corpus). Fixed by raising `KNOWN_WORD_OVERRIDE_RATIO` to 100 - comfortable headroom below the
+smallest genuine case (`ddr`/`der`, ~228x) while excluding the `Ohren`/`Ihren` case (70x). 2 new tests
+(`DictionarySuggestionProviderTest`: `ddr`/`der` still fires at the raised threshold; `Ohren`/`Ihren` no longer
+does).
+
+**D-244, acronym-shaped split halves**: revisited D-210/D-230's own recurring "Ebs"-class nonsense split
+(`"übrigebs"` -> `"übrig"` + `"Ebs"`) per the user's own request - `"EBS"` (an acronym nobody would plausibly
+have intended here) sits exactly at `MIN_SPLIT_HALF_FREQUENCY`'s own floor (10). Checked first whether "we've
+already detached splitting from frequency" as the user suspected - confirmed against the actual code that
+`MIN_SPLIT_HALF_FREQUENCY` is unchanged and still the primary numeric gate; D-227's own POS-aware refinement
+was to a *different* mechanism (the autocorrect frequency floor, not the split gate) and never touched this
+constant. Verified against the real corpus first, not guessed: of `dict_de.tsv`'s all-uppercase (acronym-
+shaped) entries, 77% sit below frequency 50 - disproportionately obscure compared to an ordinary word of the
+same low frequency. Fixed by adding `TokenRepair.isAcronym()` (an entry's canonical stored spelling is
+all-uppercase, e.g. `"EBS"`/`"DDR"`, as opposed to an ordinary word or capitalised noun like `"Dock"`/
+`"Kinderarzt"`) and a new `MIN_SPLIT_ACRONYM_FREQUENCY = 300` (reusing D-114's own established "trustworthy"
+bar rather than inventing a new number) applied on top of the existing `MIN_SPLIT_HALF_FREQUENCY` for either
+half. 3 new tests (`TokenRepairTest`: the acronym case rejected below the higher floor, accepted once it
+clears it, and an ordinary mixed-case word of the same low frequency confirmed unaffected - "Dock"+"er" still
+splits, since "Dock" is capitalised, not all-uppercase; this specific case is otherwise moot anyway since
+"Docker" is now a real dictionary entry per D-232).
+
+5 new tests total (2 + 3). 789 unit tests (784 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+Not yet device-confirmed.

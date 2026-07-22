@@ -157,6 +157,25 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-244 the raised ratio still fires for the real ddr to der case, at 228x`() {
+        store.putWord(WordEntry("ddr", 4_405L))
+        store.putWord(WordEntry("der", 1_004_234L))
+        
+        assertEquals("der", provider.autocorrectFor("ddr", null))
+    }
+    
+    @Test
+    fun `D-244 a modest 70x ratio no longer overrides A-01 (Ohren to Ihren regression)`() {
+        // Real bundled frequencies: "Ohren" (ears, an entirely ordinary German word) was silently
+        // autocorrected to "Ihren" ("o"/"i" are QWERTZ-adjacent, cost 1) purely because the old 50x bar was
+        // too permissive for a genuine, unrelated word pair with a merely modest frequency gap.
+        store.putWord(WordEntry("Ohren", 170L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Ihren", 11_907L))
+        
+        assertNull(provider.autocorrectFor("Ohren", null))
+    }
+    
+    @Test
     fun `D-114 minAutocorrectFrequency defaults to no floor - unaffected by the reported case's fix`() {
         // The shared no-floor provider (default constructor) still finds a low-frequency candidate, exactly
         // as before D-114 - the floor is opt-in via the constructor, not a blanket behaviour change.

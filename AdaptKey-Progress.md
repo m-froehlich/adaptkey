@@ -70,6 +70,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§169 (v0.8.127): D-243 - raw touch coordinates now feed the X-01 diagnostic log; D-244 - "Ohren" ->**
+  **"Ihren" root-caused to an overly permissive known-word override, and acronym-shaped split halves now**
+  **need a higher bar.** D-243: new `AdaptKeyboardView.logTouch()` (mirrors `logHaptics()`'s D-193
+  dual-output shape, no password guard needed - a raw tap/resolved key is never typed content) logs a
+  `rawTap: ...` line for every `ACTION_DOWN` (key, raw x/y, resolved key centre, T-05 ambiguity/inferred
+  char) - lets the user analyse missed space-bar taps directly from Settings -> Diagnostics. D-244 (two
+  independent fixes from the same round): (1) `"Ohren"` (freq 170, a perfectly ordinary word) was silently
+  overridden to `"Ihren"` (freq 11,907, `o`/`i` QWERTZ-adjacent) since 170*50 <= 11,907 - the old
+  `KNOWN_WORD_OVERRIDE_RATIO=50` bar's own assumption ("a genuine pair never gets remotely close") was wrong
+  for this 70x-ratio pair; raised to 100, comfortably below the smallest genuine case (`ddr`/`der`, ~228x).
+  (2) Revisited the recurring "Ebs"-class nonsense split - confirmed `MIN_SPLIT_HALF_FREQUENCY` is still the
+  primary gate (D-227's own POS refinement touched a different, unrelated mechanism); confirmed against real
+  data that 77% of all-uppercase (acronym-shaped) dictionary entries sit below frequency 50. New
+  `TokenRepair.isAcronym()` + `MIN_SPLIT_ACRONYM_FREQUENCY=300` (reusing D-114's own established bar) closes
+  it without touching ordinary capitalised-noun halves like "Dock". 5 new tests (2 + 3). 789 unit tests
+  (784 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history
+  §169.
 - **§168 (v0.8.126): D-241 - settled on a more subdued green after confirming the vivid one worked; D-242 -**
   **the S-05 highlight no longer flickers black between keystrokes on the same word.** D-241: confirmed
   `#00C853` (A700) was clearly distinguishable, then settled on Material Green 600 (`#43A047`) as the new

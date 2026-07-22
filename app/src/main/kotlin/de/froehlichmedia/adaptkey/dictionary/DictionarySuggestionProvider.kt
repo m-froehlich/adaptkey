@@ -453,13 +453,22 @@ class DictionarySuggestionProvider(
     }
     
     /**
-     * §44: a candidate overrides A-01 when it is at least [KNOWN_WORD_OVERRIDE_RATIO] times more frequent
-     * than [word] - deliberately extreme, so an ordinary pair of genuinely different, comparably common
-     * words never gets remotely close to it and A-01 keeps protecting every normal known word exactly as
-     * before. Without this, a stray adjacent-key slip that happens to also spell a real (but rare) word is
-     * permanently protected from correction: "due" (a rare loanword, frequency 24 in the bundled corpus)
-     * blocked any correction to "die" (frequency ~890000) outright, simply for existing in the dictionary
-     * at all - regardless of how implausible it is that "due" was actually intended over "die".
+     * §44 / D-244: a candidate overrides A-01 when it is at least [KNOWN_WORD_OVERRIDE_RATIO] times more
+     * frequent than [word] - deliberately extreme, so an ordinary pair of genuinely different, comparably
+     * common words never gets remotely close to it and A-01 keeps protecting every normal known word
+     * exactly as before. Without this, a stray adjacent-key slip that happens to also spell a real (but
+     * rare) word is permanently protected from correction: "due" (a rare loanword, frequency 24 in the
+     * bundled corpus) blocked any correction to "die" (frequency ~890000) outright, simply for existing in
+     * the dictionary at all - regardless of how implausible it is that "due" was actually intended over
+     * "die".
+     *
+     * D-244: raised from 50 to 100 after a real regression - "Ohren" (ears, frequency 170, an entirely
+     * ordinary, unambiguous German word) was silently overridden to "Ihren" (frequency 11,907 - `o`/`i` are
+     * QWERTZ-adjacent) purely because 170*50 <= 11,907. The original 50x bar assumed "a genuine word pair
+     * never gets remotely close" - wrong here: 70x is not remotely close to the 37,000x+ ratios the real
+     * blacklisted-confusable cases (`due`/`die`, `ddr`/`der`) actually sit at, confirmed against the real
+     * corpus, not guessed. 100 keeps comfortable headroom below the smallest genuine case (`ddr`/`der`,
+     * ~228x) while excluding the `Ohren`/`Ihren` case (70x) - a considered value, not device-tuned further.
      */
     override fun shouldOverrideKnownWord(word: String, candidate: String): Boolean {
         val wordFrequency = store.frequencyOf(word.lowercase())
@@ -521,7 +530,7 @@ class DictionarySuggestionProvider(
         
         // §44: how many times more frequent a correction candidate must be than the typed word before A-01's
         // "known word" protection is set aside. Deliberately extreme - see bestCorrection().
-        private const val KNOWN_WORD_OVERRIDE_RATIO = 50
+        private const val KNOWN_WORD_OVERRIDE_RATIO = 100
         
         // D-117: a considered, not-yet-device-tuned starting point for the wider, suggestion-only fallback
         // budget - loose enough to reach "erkamm" -> "erkannt" (cost 4: two adjacent-key substitutions plus
