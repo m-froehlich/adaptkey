@@ -70,6 +70,25 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§168 (v0.8.126): D-241 - settled on a more subdued green after confirming the vivid one worked; D-242 -**
+  **the S-05 highlight no longer flickers black between keystrokes on the same word.** D-241: confirmed
+  `#00C853` (A700) was clearly distinguishable, then settled on Material Green 600 (`#43A047`) as the new
+  default - only Green changed, the other 4 presets stay at the untested A700 tier. D-242: the brighter
+  colour made a pre-existing flicker newly obvious - typing "Test" slowly flashed green then black then
+  green per letter, since `updateComposing()`'s highlight only showed green on an *exact* match between the
+  debounced background computation (D-194/D-213, ~200ms) and the current text, which is false during
+  essentially all of a typing burst. Confirmed against real data that `"te"`/`"tes"` are themselves genuine,
+  if marginal, dictionary entries, so every intermediate prefix of "Test" independently qualified, making the
+  cycling especially visible. Fixed after discussing the trade-off with the user first: a new
+  `previewForSameToken` check (current text and the cached preview's own text are prefixes of one another)
+  replaces the exact-match requirement for the *plain* whole-word highlight only - the highlight now persists
+  across keystrokes on the same token instead of resetting to black, transitioning directly from old decision
+  to new. The §47 split-preview branch keeps its strict exact-match requirement (a stale split's span ranges
+  would be a real out-of-bounds risk on a since-changed-length token, not just a stale display). Accepted
+  trade-off: a token can stay shown as highlighted for up to one debounce cycle after it has actually stopped
+  being a real word. No new tests (private `AdaptKeyService`/`InputConnection` rendering glue). 784 unit
+  tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See
+  history §168.
 - **§167 (v0.8.125): D-240 - the S-05 highlight colour moved from a dark, muted tone to a brighter, more**
   **saturated one.** User's real complaint (after an initial back-and-forth): not contrast against the page
   background, but against ordinary black/dark-grey body text - a dark highlight colour clusters too close in

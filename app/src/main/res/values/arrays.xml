@@ -5,7 +5,8 @@
          D-240: moved from the dark/muted 700-800 Material tier to the brighter, more saturated Accent
          (A700) tier - a dark colour sits too close in lightness to ordinary black/dark-grey body text for
          the eye to reliably tell apart at a glance; see SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR's own
-         KDoc for the full reasoning. -->
+         KDoc for the full reasoning. D-241: Green alone confirmed on device and settled on the more subdued
+         Material Green 600 instead of A700 - the other four presets are still at the untested A700 tier. -->
     <string-array name="c04_color_labels">
         <item>Green</item>
         <item>Blue</item>
@@ -15,7 +16,7 @@
     </string-array>
 
     <string-array name="c04_color_values">
-        <item>#FF00C853</item>
+        <item>#FF43A047</item>
         <item>#FF2962FF</item>
         <item>#FFFF6D00</item>
         <item>#FFAA00FF</item>

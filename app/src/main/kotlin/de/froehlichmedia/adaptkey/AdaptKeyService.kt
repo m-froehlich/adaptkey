@@ -2966,22 +2966,35 @@ class AdaptKeyService : InputMethodService() {
             // half instead, with the dropped character / boundary left uncoloured between them - checked
             // first, since trySplit() never matches an already-known word (mutually exclusive by
             // construction with the single-word case below).
-            // §125 / D-194 / D-213: neither lookup runs here anymore - both read composingPreview, which
-            // only ever reflects composingPreviewFor's own exact text (scheduleComposingPreviewRefresh keeps
-            // the two in lockstep), so a token still being actively typed renders uncoloured until
-            // composingPreviewExecutor's background computation actually finishes - see the field-level
-            // KDoc above composingPreviewRunnable.
+            // §125 / D-194 / D-213: neither lookup runs here anymore - both read composingPreview, computed
+            // off-thread by composingPreviewRunnable (see its own field-level KDoc). D-242: the split
+            // preview still requires composingPreviewFor to exactly match text (a stale, different-length
+            // split's span ranges are not safe to reapply); the plain highlight instead tolerates a
+            // same-token-but-stale preview - see previewForSameToken below.
             if (!duringRepeat) {
                 scheduleComposingPreviewRefresh(text)
             }
             val split = if (!duringRepeat && composingPreviewFor == text) composingPreview.split else null
+            // D-242: the plain whole-word highlight (unlike the split preview just above, which needs an
+            // exact text match - applying stale span ranges to a since-changed-length token risks a real
+            // out-of-bounds/misplaced-span bug, not just a stale-looking display) now tolerates a
+            // *stale-but-still-the-same-token* preview: composingPreviewFor is a prefix of text (the user
+            // kept extending the token since the last completed background pass) or vice versa (a character
+            // was deleted since). Reported bug: typing slowly enough that each keystroke's gap exceeds the
+            // ~200ms debounce made the highlight flash green-black-green on every letter, since the old
+            // strict equality reset to plain the instant any keystroke landed, even mid-word. Confirmed
+            // accepted trade-off: a token can now stay shown as highlighted for up to one debounce cycle
+            // after it has actually stopped being a real word (e.g. "Test" then "x" appended) - user-approved
+            // as clearly preferable to the flicker.
+            val previewForSameToken = composingPreviewFor?.let { text.startsWith(it) || it.startsWith(text) } == true
+            val highlighted = !duringRepeat && previewForSameToken && composingPreview.highlighted
             if (split != null) {
                 val (leftRange, rightRange) = split.spanRanges(text)
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), leftRange.first, leftRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), rightRange.first, rightRange.last + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)
-            } else if (!duringRepeat && composingPreviewFor == text && composingPreview.highlighted) {
+            } else if (highlighted) {
                 val span = SpannableString(text)
                 span.setSpan(ForegroundColorSpan(config.highlightColor), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 ic.setComposingText(span, 1)

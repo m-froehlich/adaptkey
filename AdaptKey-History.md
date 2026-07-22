@@ -8345,3 +8345,44 @@ value changes, the existing `SuggestionConfigTest` already references the consta
 its literal value. 784 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed - this is exactly the kind of visual-perception change only a real look on-device can settle,
 per the user's own request to try it there directly.
+
+## §168 - D-241: Confirmed the Brighter Green, Settled on a More Subdued Shade; D-242: the S-05 Highlight No
+Longer Flickers Black Between Keystrokes on the Same Word (v0.8.126)
+
+**D-241**: user confirmed D-240's vivid `#00C853` (Material Green A700) was now clearly distinguishable from
+body text on device, then asked to try the more subdued alternative discussed earlier. Settled on Material
+Green 600 (`#43A047`) as the new default - still clearly brighter/more saturated than the original `#2E7D32`
+(Material Green 800), without reading as neon. Only the Green preset was changed (the only one actually
+tested); the other 4 C-04 presets stay at the untested Accent (A700) tier from D-240.
+
+**D-242**: the brighter colour made a second, pre-existing bug newly obvious - typing "Test" slowly, the
+"Te"/"Tes" prefixes flashed green, then reverted to black on the very next keystroke, then green again.
+Root-caused precisely, not guessed: `updateComposing()`'s S-05 highlight only shows green when
+`composingPreviewFor == text` (the ~200ms-debounced background computation, D-194/D-213, has landed for the
+*exact* current text) - since `text` changes on every keystroke, this exact-match condition is false during
+essentially all of a typing burst, and the code fell straight back to plain/black the instant any keystroke
+landed, with no notion of "this is still roughly the same token, just wait." Confirmed against real
+dictionary data (already known from an earlier investigation) that `"te"` (freq 302/197) and `"tes"` (freq
+11/21) are themselves genuine, if marginal, dictionary entries - so every intermediate prefix of "Test"
+independently qualified as "recognised," making the black-green cycling especially visible whenever a
+keystroke gap happened to exceed the debounce window (trivially true when typing deliberately slowly, exactly
+as reported).
+
+**Fixed by design discussion first, not a guessed timing tweak**: proposed persisting the *last known*
+highlight decision across keystrokes instead of resetting to plain the instant the exact-match check fails,
+transitioning directly from old decision to new decision with no plain/black flash in between - user confirmed
+this and explicitly accepted the resulting trade-off (a token can now stay shown as highlighted for up to one
+debounce cycle after it has actually stopped being a real word, e.g. "Test" then "x" appended, until the next
+background pass corrects it). Implemented narrowly: a new `previewForSameToken` check
+(`composingPreviewFor` is a prefix of the current text, or vice versa - i.e. the cached preview was computed
+for the *same* token mid-edit, just not yet caught up) replaces the exact-match requirement **only** for the
+plain whole-word highlight. The §47 split-preview branch deliberately keeps the strict exact-match
+requirement - reapplying a stale split's span ranges (character offsets) to a since-changed-length token risks
+a real out-of-bounds/misplaced-span bug, not merely a stale-looking display, so that branch was left
+untouched. `clearComposing()` already resets `composingPreviewFor` to `null` on every commit (confirmed by
+reading it, not assumed), so a brand-new token's first keystroke is unaffected - `previewForSameToken` is
+false whenever there is no cached preview for *any* prefix/suffix relationship with the new token.
+
+No new unit tests - `updateComposing()` is private `AdaptKeyService`/`InputConnection` rendering glue, the
+same established gap as every other fix in this area (D-229 immediately above it, for instance). 784 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
