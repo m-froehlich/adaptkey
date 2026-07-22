@@ -8492,3 +8492,63 @@ No new unit tests (private `AdaptKeyService`/`InputConnection` glue, the establi
 fix - matching D-87/D-114/D-182's own precedent, none of which added tests either). 789 unit tests
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not device-confirmed - awaits the user's
 own repeat of the exact repro (mid-word split chip, immediate punctuation) on a real device.
+
+## §171 - D-246: S-07 Next-Word Prediction Elevated by a Personal, Self-Growing Trigram Table (v0.8.129)
+
+User asked to improve S-07's word-guessing quality via a trigram/n-gram model (two words of context instead
+of one), independent of the tier-3 mini-LLM - explicitly flagged by the user as a non-trivial design decision
+(new SQLite schema, backoff strategy for an unseen trigram, interpolation weights, integration point in the
+existing `SuggestionMerger`/tier-1/tier-3 pipeline), so design was discussed and agreed before any code was
+written, per this project's own convention.
+
+**Design, as agreed**: (1) **Backoff** - fixed Stupid Backoff (Brants et al., "Large Language Models in
+Machine Translation", 2007) with the literature-standard `λ = 0.4`, rather than a from-scratch-tuned constant
+or a full Katz-/Kneser-Ney model (judged not worth the extra complexity for a small personal corpus). (2)
+**Data model** - a new `learned_trigrams` table (`w1key, w2key, wkey, count`) per language store, additive
+`CREATE TABLE IF NOT EXISTS` migration (D-177/D-178 precedent, no `DATABASE_VERSION` bump). Personal-only, no
+bundled seed - unlike the bigram tables, there is no bundled/learned split to maintain, since the table starts
+empty and grows purely from the user's own typing (the user's own observation: this also means the trigram
+table will fill in "invisibly" once tier-3 is in regular use, since every tier-3-confident commit already
+feeds the same adaptive-learning pipeline as any other confirmed word - S-09). (3) **Pipeline integration** -
+extended tier-1 (`SuggestionProvider.nextWordSuggestions()`/`DictionarySuggestionProvider`) internally rather
+than adding a fourth independent tier; the external suggestion-bar wiring is unaware anything changed beyond
+an extra optional parameter.
+
+**Implementation**: `DictionaryStore.learn()`/`unlearn()` gained an optional third `previousPreviousWord`
+parameter (default `null`, every existing call site/test compiles unchanged - the D-160 default-parameter
+precedent) that also writes/reverses the corresponding trigram count whenever both context words are given;
+new `trigramFrequency()`/`nextWordsTrigram()` mirror the existing `bigramFrequency()`/`nextWords()` shape
+exactly, implemented in both `InMemoryDictionaryStore` (a `learnedTrigrams: HashMap<String, Long>`, keyed like
+the existing bigram map but with one more segment) and `SqliteDictionaryStore` (the new table, queried the same
+way `bigramFrequencyIn()`/`nextWords()` already are).
+
+`AdaptKeyService` gained a second context slot, `previousPreviousWord`, shifted in lockstep with the existing
+`previousWord` everywhere it already gets reassigned (`learnWord()`, `learnWordStrong()`) and reset everywhere
+it already gets cleared (field change, an external caret move via `onUpdateSelection`, the G-02 whole-word
+delete) - no new reset mechanism, the existing one just grew a second slot. `LearnRecord` gained a
+`previousPreviousWord` field so A-07's undo (`unlearnWord()`) can reverse the trigram symmetrically, exactly
+like it already reverses the bigram. One subtlety in `performAutocorrectUndo()`: it sets `previousWord =
+typed` *before* calling `learnWord(typed)`/`learnWordStrong(typed)`, so those functions' own internal
+`previousPreviousWord = previousWord` shift would read the wrong (self-referential, already-overwritten)
+value in this one path - fixed by explicitly restoring `previousPreviousWord` afterward from
+`learnRecords.firstOrNull()?.previousWord`, the *original* context each `LearnRecord` had already captured
+before the now-rejected commit ever happened. `applySplit()`'s two `learnWord()` calls (left half, then right
+half) needed no special handling at all - the second call's own shift naturally picks up the first call's
+committed word as its immediate context, giving the right half a correct three-word window with no extra
+code.
+
+**Ranking** (`DictionarySuggestionProvider.nextWordSuggestions()`): trigram candidates (from
+`nextWordsTrigram()`) are scored by their own raw trigram count; every other bigram candidate not already
+covered by a trigram match is scored by its bigram count, discounted by `TRIGRAM_BACKOFF_WEIGHT = 0.4` -
+*only* when two-word context was actually available (a genuine backoff from a higher order that just didn't
+match this particular word); when `previousPreviousWord` is null, scoring is the plain, undiscounted bigram
+ranking, byte-for-byte the pre-D-246 behaviour (verified by a dedicated regression test). This keeps the
+existing S-01 "soft preference, not an absolute rule" philosophy (mirrors `scoreWithCost()`'s own
+`FUZZY_COST_DECAY` precedent): a sparse, real trigram match generally outranks a merely more frequent
+bigram-only word, but an overwhelmingly more frequent bigram-only word can still win.
+
+11 new tests (4 `InMemoryDictionaryStoreTest`, 3 `DictionarySuggestionProviderTest` - soft preference, exact
+scoring/dedup, and the no-context regression case - 4 `SqliteDictionaryStoreRoboTest`). 800 unit tests
+(789 + 11). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - a trigram needs
+real repeated two-word-context typing to accumulate before its effect is visible at all, so this will take
+longer than usual to judge on-device. See spec S-07.

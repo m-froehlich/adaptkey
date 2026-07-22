@@ -203,6 +203,48 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun learnWithTwoWordContextRecordsATrigramAlongsideTheBigram() {
+        val store = store("trigram-learn.db")
+        store.putWord(WordEntry("Nachbar", 3L, emptySet()))
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        
+        assertEquals(2L, store.trigramFrequency("ist", "der", "Nachbar"))
+        assertEquals(2L, store.bigramFrequency("der", "Nachbar"))
+        store.close()
+    }
+    
+    @Test
+    fun unlearnReversesATrigramExactlyOnceAndRemovesItAtZero() {
+        val store = store("trigram-unlearn.db")
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        store.unlearn("Nachbar", "der", "ist")
+        assertEquals(1L, store.trigramFrequency("ist", "der", "Nachbar"))
+        
+        store.unlearn("Nachbar", "der", "ist")
+        assertEquals(0L, store.trigramFrequency("ist", "der", "Nachbar"))
+        store.close()
+    }
+    
+    @Test
+    fun nextWordsTrigramReturnsCanonicalSuccessorsScopedToTheExactPair() {
+        val store = store("trigram-next.db")
+        store.putWord(WordEntry("Nachbar", 3L, emptySet()))
+        store.putWord(WordEntry("Nachbarin", 2L, emptySet()))
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbarin", "der", "ist")
+        // A different two-word context that must not leak in.
+        store.learn("Nachbarin", "der", "hier")
+        
+        assertEquals(listOf("Nachbar", "Nachbarin"), store.nextWordsTrigram("ist", "der", 10))
+        assertEquals(listOf("Nachbar"), store.nextWordsTrigram("ist", "der", 1))
+        assertTrue(store.nextWordsTrigram("unbekannt", "der", 10).isEmpty())
+        store.close()
+    }
+    
+    @Test
     fun isBundledWordDistinguishesBundledFromLearnedOnly() {
         val store = store("bundled-flag.db")
         store.putWord(WordEntry("hund", 3L))

@@ -318,17 +318,52 @@ class DictionarySuggestionProvider(
             .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
     }
     
-    override fun nextWordSuggestions(previousWord: String): List<Suggestion> {
+    /**
+     * D-246: elevates the existing bigram baseline with the personal trigram table when
+     * [previousPreviousWord] is known, via Stupid Backoff (Brants et al. 2007): a candidate with a real
+     * trigram match scores by its raw trigram count; a candidate reached only through the (bundled +
+     * personal) bigram signal scores by its bigram count discounted by [TRIGRAM_BACKOFF_WEIGHT] - a soft
+     * preference, not a hard "trigram always wins" rule (mirrors [scoreWithCost]'s own soft edit-cost
+     * discount), so an overwhelmingly more frequent bigram-only candidate can still outrank a barely-seen
+     * trigram one. A word already scored via its trigram match is never re-added via the bigram pass (the
+     * more specific signal always wins for that word, never blended with its own less-specific estimate).
+     *
+     * @param previousWord the most recently committed word
+     * @param previousPreviousWord the word committed two positions before, or null when unknown - falls
+     *        back to the plain bigram ranking, exactly as before D-246
+     * @return predicted next words, most likely first
+     */
+    override fun nextWordSuggestions(previousWord: String, previousPreviousWord: String?): List<Suggestion> {
         if (previousWord.isBlank()) {
             return emptyList()
         }
-        // The store already returns the successors ordered by bigram count; drop blacklisted words (A-04)
-        // and carry the count as the score so the bar ranking is consistent with the other tiers.
-        return store.nextWords(previousWord, maxCandidates)
+        val hasTrigramContext = !previousPreviousWord.isNullOrBlank()
+        val scores = LinkedHashMap<String, Double>()
+        if (hasTrigramContext) {
+            store.nextWordsTrigram(previousPreviousWord!!, previousWord, maxCandidates)
+                .asSequence()
+                .filter { !store.isBlacklisted(it) }
+                .forEach { word ->
+                    scores[word] = store.trigramFrequency(previousPreviousWord, previousWord, word).toDouble()
+                }
+        }
+        // The store already returns the successors ordered by bigram count; drop blacklisted words (A-04).
+        // A candidate already scored via its trigram match keeps that score; every other candidate carries
+        // its bigram count as the score - discounted by TRIGRAM_BACKOFF_WEIGHT only when two-word context
+        // was actually available (a genuine backoff from a higher order that just didn't match this word),
+        // never when previousPreviousWord is unknown - that case is plain bigram ranking, exactly as before
+        // D-246, not a backoff from anything.
+        store.nextWords(previousWord, maxCandidates)
             .asSequence()
-            .filter { !store.isBlacklisted(it) }
-            .map { word -> Suggestion(word, store.bigramFrequency(previousWord, word).toDouble()) }
-            .toList()
+            .filter { !store.isBlacklisted(it) && it !in scores }
+            .forEach { word ->
+                val bigramCount = store.bigramFrequency(previousWord, word).toDouble()
+                scores[word] = if (hasTrigramContext) bigramCount * TRIGRAM_BACKOFF_WEIGHT else bigramCount
+            }
+        return scores.entries
+            .sortedByDescending { it.value }
+            .take(maxCandidates)
+            .map { (word, value) -> Suggestion(word, value) }
     }
     
     override fun isKnownWord(word: String): Boolean {
@@ -519,6 +554,12 @@ class DictionarySuggestionProvider(
         private const val MIN_FUZZY_LENGTH = 3
         private const val SCAN_FACTOR = 2
         private const val BIGRAM_WEIGHT = 10.0
+        
+        // D-246: Stupid Backoff's own literature-established discount (Brants et al., "Large Language
+        // Models in Machine Translation", 2007) - applied to a bigram-only candidate's score whenever a
+        // trigram context was available but did not itself match that candidate, so a real (if sparse)
+        // trigram match is preferred, not blindly required, over a merely more frequent bigram-only word.
+        private const val TRIGRAM_BACKOFF_WEIGHT = 0.4
         
         // D-28 proximity-aware correction budget: a neighbouring-key substitution costs 1, any other
         // substitution or an insert/delete costs 2, and a candidate is accepted up to a total cost of 2 -

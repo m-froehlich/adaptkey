@@ -70,6 +70,22 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§171 (v0.8.129): D-246 - S-07 next-word prediction elevated by a personal, self-growing trigram table,**
+  **implemented after a design discussion (Stupid Backoff λ=0.4, personal-only `learned_trigrams` table, no**
+  **new tier - see spec S-07 and history §171 for the full design/trade-off writeup).** `DictionaryStore.
+  learn()`/`unlearn()` gained an optional `previousPreviousWord` parameter (default null, every existing call
+  site/test unchanged); new `trigramFrequency()`/`nextWordsTrigram()` mirror the existing bigram methods in
+  both `InMemoryDictionaryStore` and `SqliteDictionaryStore` (new additive table, no `DATABASE_VERSION` bump).
+  `AdaptKeyService` grew a second context slot (`previousPreviousWord`), shifted/reset in lockstep with the
+  existing `previousWord` everywhere it already changes; `LearnRecord`/A-07 undo reverse the trigram
+  symmetrically, with one explicit fix-up in `performAutocorrectUndo()` for a self-referential-context
+  subtlety in that one path (see history §171). `DictionarySuggestionProvider.nextWordSuggestions()` blends
+  trigram (raw count) and bigram (discounted by `TRIGRAM_BACKOFF_WEIGHT=0.4`, only when two-word context was
+  actually available) candidates - a soft preference, not an absolute rule, matching this project's existing
+  S-01 philosophy. 11 new tests (4 `InMemoryDictionaryStoreTest`, 3 `DictionarySuggestionProviderTest`, 4
+  `SqliteDictionaryStoreRoboTest`). 800 unit tests (789 + 11). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. Not yet device-confirmed - needs real accumulated two-word-context typing before its effect is even
+  visible, so this will take longer than usual to judge. See history §171.
 - **§170 (v0.8.128): D-245 - the D-122 mid-word split chip's own trailing space now survives correctly for**
   **D-29's punctuation-eating rule.** Root-caused via code tracing (no device this round): `applySplit()` did
   two unbatched `InputConnection` edits (`setComposingText("")` then, later, `commitText()`) instead of the

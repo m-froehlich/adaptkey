@@ -180,6 +180,10 @@ class AdaptKeyService : InputMethodService() {
     private lateinit var providers: Map<Language, DictionarySuggestionProvider>
     private lateinit var engines: Map<Language, CapitalisationEngine>
     private var previousWord: String? = null
+    // D-246: S-07 trigram support - the word committed two positions before previousWord, shifted in
+    // lockstep with it (see learnWord()/learnWordStrong()) and reset alongside it everywhere previousWord
+    // itself resets.
+    private var previousPreviousWord: String? = null
     
     // A-03: on-device language detector. Starts empty (every result UNKNOWN -> guard is a no-op) and is
     // replaced with the profile-backed classifier in onCreate. When the recent context is confidently
@@ -914,6 +918,7 @@ class AdaptKeyService : InputMethodService() {
         pendingMergeChar = null
         pendingSuggestionSpace = false
         previousWord = null
+        previousPreviousWord = null
         tokenContextBefore = ""
         // D-152: a fresh field's own initial selection is delivered via EditorInfo, not a guaranteed
         // onUpdateSelection callback beforehand - selectionCollapsed must not be left stale from whatever
@@ -1070,6 +1075,7 @@ class AdaptKeyService : InputMethodService() {
         resetWordEndShift()
         clearUndo()
         previousWord = null
+        previousPreviousWord = null
         clearSuggestions()
     }
     
@@ -2184,6 +2190,7 @@ class AdaptKeyService : InputMethodService() {
             }
         }
         previousWord = null
+        previousPreviousWord = null
     }
     
     private fun handleBackspace(ic: InputConnection) {
@@ -2943,6 +2950,11 @@ class AdaptKeyService : InputMethodService() {
             learnWord(typed)
         }
         previousWord = typed
+        // D-246: learnWord()/learnWordStrong() above just shifted previousPreviousWord from the transient
+        // (self-referential) state this function set at line 2925, not the real word that preceded the
+        // now-undone commit - restore it from the first LearnRecord's own previousWord, captured back when
+        // the original (now-rejected) commit actually happened, before undo touched anything.
+        previousPreviousWord = learnRecords.firstOrNull()?.previousWord
         // D-43: predict the next word (following the word the user insisted on) instead of a blank bar.
         showNextWordPredictions()
         armShiftForNextWord(ic)
@@ -3652,7 +3664,7 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         val previous = previousWord
-        val predictions = (if (previous == null) emptyList() else provider.nextWordSuggestions(previous)) +
+        val predictions = (if (previous == null) emptyList() else provider.nextWordSuggestions(previous, previousPreviousWord)) +
             listOfNotNull(timeSuggestion())
         if (predictions.isEmpty()) {
             clearSuggestions()
@@ -3717,7 +3729,12 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /** One word [learnWord] processed, with the context it used, for a precise [unlearnWord]. */
-    private data class LearnRecord(val word: String, val previousWord: String?, val outcome: LearnOutcome)
+    private data class LearnRecord(
+        val word: String,
+        val previousWord: String?,
+        val previousPreviousWord: String?,
+        val outcome: LearnOutcome
+    )
     
     /**
      * D-202: the D-37 promotion threshold to use for [word] - re-evaluated fresh on every call, never
@@ -3753,12 +3770,13 @@ class AdaptKeyService : InputMethodService() {
     private fun learnWord(word: String?): LearnRecord {
         // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (tier 1).
         if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
-            return LearnRecord(word ?: "", previousWord, LearnOutcome.SKIPPED)
+            return LearnRecord(word ?: "", previousWord, previousPreviousWord, LearnOutcome.SKIPPED)
         }
         // D-37: an already-*learned* word is reinforced immediately; a genuinely new word is only counted
         // up and promoted once it has been committed learnThresholdFor(word) times (D-202: higher for a
         // suspected unsplit compound), so a one-off typo is not eagerly learned as a real word.
         val context = previousWord
+        val contextContext = previousPreviousWord
         val outcome = if (dictionaryStore.isBundledWord(word)) {
             // D-186: a word already in the *bundled* dictionary (any casing - isBundledWord's own lookup
             // key is lowercased) must never be written to the learned overlay at all. D-177's original
@@ -3769,7 +3787,7 @@ class AdaptKeyService : InputMethodService() {
             LearnOutcome.SKIPPED
         } else if (provider.isKnownWord(word)) {
             // Not bundled, but already known - i.e. a genuinely previously-learned word - reinforce it.
-            dictionaryStore.learn(word, context)
+            dictionaryStore.learn(word, context, contextContext)
             LearnOutcome.LEARNED
         } else if (isPendingBlacklistRecurrence(word)) {
             // D-177: this exact word was provisionally forgotten (G-04 drag-to-trash, or the learned-words
@@ -3781,14 +3799,16 @@ class AdaptKeyService : InputMethodService() {
             dictionaryStore.clearPendingBlacklist(word)
             LearnOutcome.SKIPPED
         } else if (PendingLearnStore.increment(this, word) >= learnThresholdFor(word)) {
-            dictionaryStore.learn(word, context)
+            dictionaryStore.learn(word, context, contextContext)
             PendingLearnStore.clear(this, word)
             LearnOutcome.LEARNED
         } else {
             LearnOutcome.PENDING
         }
+        // D-246: shift the two-word trigram context in lockstep, oldest value first.
+        previousPreviousWord = previousWord
         previousWord = word
-        return LearnRecord(word, context, outcome)
+        return LearnRecord(word, context, contextContext, outcome)
     }
     
     /**
@@ -3821,7 +3841,7 @@ class AdaptKeyService : InputMethodService() {
     private fun unlearnWord(record: LearnRecord) {
         when (record.outcome) {
             LearnOutcome.SKIPPED -> {}
-            LearnOutcome.LEARNED -> dictionaryStore.unlearn(record.word, record.previousWord)
+            LearnOutcome.LEARNED -> dictionaryStore.unlearn(record.word, record.previousWord, record.previousPreviousWord)
             LearnOutcome.PENDING -> PendingLearnStore.decrement(this, record.word)
         }
     }
@@ -3836,8 +3856,9 @@ class AdaptKeyService : InputMethodService() {
         if (word.isNullOrEmpty() || !word.all { it.isLetter() } || dictionaryStore.isBundledWord(word)) {
             return
         }
-        dictionaryStore.learn(word, previousWord)
+        dictionaryStore.learn(word, previousWord, previousPreviousWord)
         PendingLearnStore.clear(this, word)
+        previousPreviousWord = previousWord
         previousWord = word
     }
     

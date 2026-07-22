@@ -76,6 +76,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         database.execSQL("DROP TABLE IF EXISTS $TABLE_BLACKLIST")
         database.execSQL("DROP TABLE IF EXISTS $TABLE_LEARNED")
         database.execSQL("DROP TABLE IF EXISTS $TABLE_LEARNED_BIGRAMS")
+        database.execSQL("DROP TABLE IF EXISTS $TABLE_LEARNED_TRIGRAMS")
         database.execSQL("DROP TABLE IF EXISTS $TABLE_PENDING_BLACKLIST")
         database.execSQL("DROP TABLE IF EXISTS $TABLE_META")
         onCreate(database)
@@ -87,6 +88,15 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         )
         database.execSQL(
             "CREATE TABLE IF NOT EXISTS $TABLE_LEARNED_BIGRAMS (prevkey TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY (prevkey, wkey))"
+        )
+        // D-246: S-07 trigram support - personal-only (no bundled counterpart, unlike the bigram tables),
+        // so there is only ever a single "learned" table here, not a bundled/learned pair. Additive/
+        // idempotent like every other table in this method, reaching an already-installed device without a
+        // DATABASE_VERSION bump.
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS $TABLE_LEARNED_TRIGRAMS " +
+                "(w1key TEXT NOT NULL, w2key TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, " +
+                "PRIMARY KEY (w1key, w2key, wkey))"
         )
         database.execSQL(
             "CREATE TABLE IF NOT EXISTS $TABLE_PENDING_BLACKLIST (wkey TEXT PRIMARY KEY, ts INTEGER NOT NULL)"
@@ -219,7 +229,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         putBigramInternal(TABLE_BIGRAMS, previousWord, word, count)
     }
     
-    override fun learn(word: String, previousWord: String?) {
+    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?) {
         // D-177: always the learned table, regardless of whether word is also a bundled entry - reinforcing
         // an already-bundled word (e.g. "der") adds/updates a small personal overlay here rather than ever
         // touching TABLE_WORDS, so the bundled asset stays swappable. frequencyOf()/isKnownWord() etc. sum
@@ -232,10 +242,17 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         putWordInternal(TABLE_LEARNED, canonical, frequency, pos)
         if (previousWord != null) {
             putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
+            // D-246: S-07 trigram support - personal-only, so only ever written here, never seeded.
+            if (previousPreviousWord != null) {
+                putTrigramInternal(
+                    previousPreviousWord, previousWord, word,
+                    trigramFrequency(previousPreviousWord, previousWord, word) + 1L
+                )
+            }
         }
     }
     
-    override fun unlearn(word: String, previousWord: String?) {
+    override fun unlearn(word: String, previousWord: String?, previousPreviousWord: String?) {
         val existing = learnedEntryOf(word)
         if (existing != null) {
             val frequency = existing.frequency - 1L
@@ -251,6 +268,17 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
                 db.delete(TABLE_LEARNED_BIGRAMS, "prevkey = ? AND wkey = ?", arrayOf(previousWord.lowercase(), word.lowercase()))
             } else {
                 putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, count)
+            }
+            if (previousPreviousWord != null) {
+                val trigramCount = trigramFrequency(previousPreviousWord, previousWord, word) - 1L
+                if (trigramCount <= 0L) {
+                    db.delete(
+                        TABLE_LEARNED_TRIGRAMS, "w1key = ? AND w2key = ? AND wkey = ?",
+                        arrayOf(previousPreviousWord.lowercase(), previousWord.lowercase(), word.lowercase())
+                    )
+                } else {
+                    putTrigramInternal(previousPreviousWord, previousWord, word, trigramCount)
+                }
             }
         }
     }
@@ -353,6 +381,31 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             .sortedByDescending { it.value }
             .take(limit)
             .map { (wkey, _) -> canonicalWordFor(wkey) }
+    }
+    
+    override fun trigramFrequency(previousPreviousWord: String, previousWord: String, word: String): Long {
+        db.rawQuery(
+            "SELECT count FROM $TABLE_LEARNED_TRIGRAMS WHERE w1key = ? AND w2key = ? AND wkey = ?",
+            arrayOf(previousPreviousWord.lowercase(), previousWord.lowercase(), word.lowercase())
+        ).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getLong(0) else 0L
+        }
+    }
+    
+    override fun nextWordsTrigram(previousPreviousWord: String, previousWord: String, limit: Int): List<String> {
+        if (previousPreviousWord.isEmpty() || previousWord.isEmpty() || limit <= 0) {
+            return emptyList()
+        }
+        val result = ArrayList<String>()
+        db.rawQuery(
+            "SELECT wkey FROM $TABLE_LEARNED_TRIGRAMS WHERE w1key = ? AND w2key = ? ORDER BY count DESC LIMIT ?",
+            arrayOf(previousPreviousWord.lowercase(), previousWord.lowercase(), limit.toString())
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(canonicalWordFor(cursor.getString(0)))
+            }
+        }
+        return result
     }
     
     private fun canonicalWordFor(wkey: String): String {
@@ -597,6 +650,16 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
     
+    private fun putTrigramInternal(previousPreviousWord: String, previousWord: String, word: String, count: Long) {
+        val values = ContentValues().apply {
+            put("w1key", previousPreviousWord.lowercase())
+            put("w2key", previousWord.lowercase())
+            put("wkey", word.lowercase())
+            put("count", count)
+        }
+        db.insertWithOnConflict(TABLE_LEARNED_TRIGRAMS, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+    
     private fun parsePos(raw: String): Set<PartOfSpeech> {
         if (raw.isBlank()) {
             return emptySet()
@@ -615,6 +678,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val TABLE_BLACKLIST = "blacklist"
         private const val TABLE_LEARNED = "learned"
         private const val TABLE_LEARNED_BIGRAMS = "learned_bigrams"
+        private const val TABLE_LEARNED_TRIGRAMS = "learned_trigrams"
         private const val TABLE_PENDING_BLACKLIST = "pending_blacklist"
         private const val TABLE_META = "meta"
         private const val META_KEY_BUNDLED_VERSION = "bundled_version"

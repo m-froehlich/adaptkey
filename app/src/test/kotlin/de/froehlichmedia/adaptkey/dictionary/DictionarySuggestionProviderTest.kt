@@ -101,6 +101,47 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-246 nextWordSuggestions ranks a trigram match by its own raw count, not blended with its bigram score`() {
+        store.putWord(WordEntry("Nachbar", 3L))
+        store.putWord(WordEntry("Auto", 3L))
+        repeat(5) { store.learn("Nachbar", "der", "ist") }
+        // Bigram-only competitor: no trigram entry at all for the "ist der" -> ? context.
+        store.putBigram("der", "Auto", 10L)
+        
+        val results = provider.nextWordSuggestions("der", "ist")
+        assertEquals(listOf("Nachbar", "Auto"), results.map { it.word })
+        // The trigram's own raw count (5), not summed with or replaced by its own bigram count (also 5).
+        assertEquals(5.0, results.first { it.word == "Nachbar" }.score)
+        // The bigram-only word is discounted (D-246: TRIGRAM_BACKOFF_WEIGHT = 0.4) since two-word context
+        // was available - 10 * 0.4 = 4, below the trigram match's raw 5.
+        assertEquals(4.0, results.first { it.word == "Auto" }.score)
+    }
+    
+    @Test
+    fun `D-246 the trigram preference is soft - an overwhelmingly frequent bigram-only word can still outrank it`() {
+        store.putWord(WordEntry("Nachbar", 3L))
+        store.putWord(WordEntry("Haus", 3L))
+        store.learn("Nachbar", "der", "ist")
+        store.putBigram("der", "Haus", 1000L)
+        
+        val words = provider.nextWordSuggestions("der", "ist").map { it.word }
+        assertEquals(listOf("Haus", "Nachbar"), words)
+    }
+    
+    @Test
+    fun `D-246 without previousPreviousWord, ranking falls back to plain undiscounted bigram counts`() {
+        store.putWord(WordEntry("Hund", 10L))
+        store.putWord(WordEntry("Hut", 10L))
+        store.putBigram("der", "Hund", 40L)
+        store.putBigram("der", "Hut", 5L)
+        
+        val results = provider.nextWordSuggestions("der", null)
+        assertEquals(listOf("Hund", "Hut"), results.map { it.word })
+        // Undiscounted - not multiplied by TRIGRAM_BACKOFF_WEIGHT, since there is no context to back off from.
+        assertEquals(40.0, results.first { it.word == "Hund" }.score)
+    }
+    
+    @Test
     fun `A-01 a known word is never autocorrected`() {
         store.putWord(WordEntry("Haus", 100L))
         assertNull(provider.autocorrectFor("haus", null))

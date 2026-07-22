@@ -98,13 +98,17 @@ interface SuggestionProvider {
     
     /**
      * Next-word predictions to show once a word has been committed and no token is being composed yet
-     * (D-43): the most likely words to follow [previousWord], by bigram probability. The default returns
-     * none, so a non-predicting provider simply leaves the bar empty.
+     * (D-43): the most likely words to follow [previousWord], by bigram probability - or, when
+     * [previousPreviousWord] is also known and a trigram match exists, elevated by that sparser but more
+     * specific two-word-context signal (D-246, S-07). The default returns none, so a non-predicting
+     * provider simply leaves the bar empty.
      *
      * @param previousWord the most recently committed word
+     * @param previousPreviousWord the word committed two positions before, or null when unknown/at a
+     *        fresh start - ignored by a provider with no trigram data source
      * @return predicted next words as ranked suggestions, most likely first
      */
-    fun nextWordSuggestions(previousWord: String): List<Suggestion> = emptyList()
+    fun nextWordSuggestions(previousWord: String, previousPreviousWord: String? = null): List<Suggestion> = emptyList()
     
     /**
      * §44: whether a known [word] should still be treated as correctable in favour of [candidate] - true

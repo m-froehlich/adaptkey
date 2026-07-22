@@ -292,7 +292,16 @@ high-certainty tier-3 capitalisation exception.
 
 ### S-07 - Next-Word Prediction
 A genuine next-word suggestion (not merely a completion of the current token) is offered before the next
-word is typed, using a bigram baseline elevated by tier-3 when available.
+word is typed, using a bigram baseline elevated by tier-3 when available. When a personal (learned-only, no
+bundled seed) two-word-context trigram match also exists, it is preferred over the bigram baseline via a
+Stupid Backoff blend (D-246): a candidate with a real trigram match scores by its own raw trigram count; a
+candidate reached only through the bigram signal is discounted, so a trigram match generally - but not
+absolutely - wins over a merely more frequent bigram-only candidate (an overwhelmingly more frequent
+bigram-only word can still outrank a barely-seen trigram one, matching this app's established soft-preference
+philosophy for a more-specific-but-sparser signal, see S-01/A-05). The trigram table starts empty and grows
+purely from the user's own typing (no bundled trigram data is shipped); a two-word context resets everywhere
+the existing one-word bigram context already does (field change, an external caret move, the G-02 whole-word
+delete).
 
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a

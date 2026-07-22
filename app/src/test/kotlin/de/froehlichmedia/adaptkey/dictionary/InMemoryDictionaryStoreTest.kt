@@ -107,6 +107,58 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `learn with two-word context records a trigram alongside the bigram - D-246`() {
+        store.putWord(WordEntry("Nachbar", 3L))
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        
+        assertEquals(2L, store.trigramFrequency("ist", "der", "Nachbar"))
+        assertEquals(2L, store.bigramFrequency("der", "Nachbar"))
+    }
+    
+    @Test
+    fun `learn without previousPreviousWord records no trigram - D-246`() {
+        store.learn("Nachbar", "der")
+        
+        assertEquals(0L, store.trigramFrequency("ist", "der", "Nachbar"))
+        assertEquals(1L, store.bigramFrequency("der", "Nachbar"))
+    }
+    
+    @Test
+    fun `unlearn reverses a trigram exactly once - D-246`() {
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        store.unlearn("Nachbar", "der", "ist")
+        
+        assertEquals(1L, store.trigramFrequency("ist", "der", "Nachbar"))
+        assertEquals(1L, store.bigramFrequency("der", "Nachbar"))
+    }
+    
+    @Test
+    fun `unlearn removes a trigram entry entirely once its count reaches zero - D-246`() {
+        store.learn("Nachbar", "der", "ist")
+        store.unlearn("Nachbar", "der", "ist")
+        
+        assertEquals(0L, store.trigramFrequency("ist", "der", "Nachbar"))
+    }
+    
+    @Test
+    fun `nextWordsTrigram returns canonical-case successors ordered by count, scoped to the exact pair - D-246`() {
+        store.putWord(WordEntry("Nachbar", 3L))
+        store.putWord(WordEntry("Nachbarin", 2L))
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbarin", "der", "ist")
+        // A different two-word context that must not leak in.
+        store.learn("Nachbarin", "der", "hier")
+        
+        assertEquals(listOf("Nachbar", "Nachbarin"), store.nextWordsTrigram("ist", "der", 10))
+        assertEquals(listOf("Nachbar"), store.nextWordsTrigram("ist", "der", 1))
+        assertEquals(emptyList<String>(), store.nextWordsTrigram("ist", "der", 0))
+        assertEquals(emptyList<String>(), store.nextWordsTrigram("", "der", 10))
+    }
+    
+    @Test
     fun `blacklist add check category and remove`() {
         store.blacklist("Daß", BlacklistCategory.OLD_SPELLING)
         

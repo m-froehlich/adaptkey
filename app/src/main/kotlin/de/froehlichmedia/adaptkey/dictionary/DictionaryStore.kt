@@ -32,27 +32,34 @@ interface DictionaryStore {
     
     /**
      * Records one observation of [word] (adaptive learning): increments its unigram frequency and,
-     * when [previousWord] is given, the corresponding bigram count. Unknown words are created.
+     * when [previousWord] is given, the corresponding bigram count - and, when [previousPreviousWord]
+     * is *also* given (D-246: S-07 trigram support), the corresponding trigram count. Unknown words are
+     * created. Trigrams are personal-only (no bundled seed, unlike the bigram table) - the trigram table
+     * starts empty and grows purely from the user's own typing.
      *
      * @param word the observed word
      * @param previousWord the word committed immediately before, or null
+     * @param previousPreviousWord the word committed two positions before, or null (ignored unless
+     *        [previousWord] is also given - a trigram needs both)
      */
-    fun learn(word: String, previousWord: String?)
+    fun learn(word: String, previousWord: String?, previousPreviousWord: String? = null)
     
     /**
      * Reverses exactly one prior [learn] observation of [word] (A-07 undo of a rejected
      * autocorrect/split): decrements its unigram frequency and, when [previousWord] is given, the
-     * corresponding bigram count, each by exactly one - removing the entry entirely once its count
-     * reaches zero, so a word [learn] had just created (frequency 1) is fully un-learned again rather
-     * than left behind as a zero-frequency ghost [isKnownWord] would still report as known. Never
-     * called on its own; always paired with the exact prior [learn] call it undoes, so the count can
-     * never go negative in practice. Only ever touches the learned lexicon (D-177) - a bundled word's
-     * own frequency is never affected, since [learn] never wrote there in the first place.
+     * corresponding bigram count, and, when [previousPreviousWord] is also given, the corresponding
+     * trigram count (D-246) - each by exactly one, removing the entry entirely once its count reaches
+     * zero, so a word [learn] had just created (frequency 1) is fully un-learned again rather than left
+     * behind as a zero-frequency ghost [isKnownWord] would still report as known. Never called on its
+     * own; always paired with the exact prior [learn] call it undoes, so the count can never go negative
+     * in practice. Only ever touches the learned lexicon (D-177) - a bundled word's own frequency is
+     * never affected, since [learn] never wrote there in the first place.
      *
      * @param word the word to reverse
      * @param previousWord the word committed immediately before, or null
+     * @param previousPreviousWord the word committed two positions before, or null
      */
-    fun unlearn(word: String, previousWord: String?)
+    fun unlearn(word: String, previousWord: String?, previousPreviousWord: String? = null)
     
     /**
      * D-177: permanently, irreversibly removes [word] from the learned lexicon regardless of its
@@ -140,6 +147,30 @@ interface DictionaryStore {
      * @return the successor words ordered by descending bigram count, in canonical case
      */
     fun nextWords(previousWord: String, limit: Int): List<String> = emptyList()
+    
+    /**
+     * D-246: the stored, personal-only trigram count for the sequence [previousPreviousWord] ->
+     * [previousWord] -> [word], or 0 when unknown/never observed.
+     *
+     * @param previousPreviousWord the word committed two positions before
+     * @param previousWord the word committed immediately before
+     * @param word the following word
+     * @return the stored trigram count, or 0 when unknown
+     */
+    fun trigramFrequency(previousPreviousWord: String, previousWord: String, word: String): Long = 0L
+    
+    /**
+     * D-246: S-07's own two-word-context lookup, mirroring [nextWords]'s single-word one - the most
+     * frequent successor words of the [previousPreviousWord] -> [previousWord] pair by personal trigram
+     * count, in canonical case. The default returns none (no trigram data source); the two concrete
+     * stores override it with a trigram lookup.
+     *
+     * @param previousPreviousWord the word committed two positions before (case-insensitive)
+     * @param previousWord the word committed immediately before (case-insensitive)
+     * @param limit the maximum number of successors to return
+     * @return the successor words ordered by descending trigram count, in canonical case
+     */
+    fun nextWordsTrigram(previousPreviousWord: String, previousWord: String, limit: Int): List<String> = emptyList()
     
     /**
      * @param word the word to look up

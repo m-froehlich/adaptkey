@@ -18,6 +18,8 @@ class InMemoryDictionaryStore : DictionaryStore {
     private val bigrams = HashMap<String, Long>()
     private val learned = HashMap<String, WordEntry>()
     private val learnedBigrams = HashMap<String, Long>()
+    // D-246: personal-only, no bundled counterpart - unlike bigrams, no seeded "trigrams" map exists.
+    private val learnedTrigrams = HashMap<String, Long>()
     private val blacklist = HashMap<String, BlacklistCategory>()
     private val pendingBlacklist = HashMap<String, Long>()
     
@@ -29,7 +31,7 @@ class InMemoryDictionaryStore : DictionaryStore {
         bigrams[bigramKey(previousWord, word)] = count
     }
     
-    override fun learn(word: String, previousWord: String?) {
+    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?) {
         val key = word.lowercase()
         val existing = learned[key]
         val canonical = existing?.word ?: unigrams[key]?.word ?: word
@@ -41,10 +43,14 @@ class InMemoryDictionaryStore : DictionaryStore {
         if (previousWord != null) {
             val bigramKey = bigramKey(previousWord, word)
             learnedBigrams[bigramKey] = (learnedBigrams[bigramKey] ?: 0L) + 1L
+            if (previousPreviousWord != null) {
+                val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
+                learnedTrigrams[trigramKey] = (learnedTrigrams[trigramKey] ?: 0L) + 1L
+            }
         }
     }
     
-    override fun unlearn(word: String, previousWord: String?) {
+    override fun unlearn(word: String, previousWord: String?, previousPreviousWord: String?) {
         val key = word.lowercase()
         val existing = learned[key]
         if (existing != null) {
@@ -62,6 +68,15 @@ class InMemoryDictionaryStore : DictionaryStore {
                 learnedBigrams.remove(bigramKey)
             } else {
                 learnedBigrams[bigramKey] = count
+            }
+            if (previousPreviousWord != null) {
+                val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
+                val trigramCount = (learnedTrigrams[trigramKey] ?: 0L) - 1L
+                if (trigramCount <= 0L) {
+                    learnedTrigrams.remove(trigramKey)
+                } else {
+                    learnedTrigrams[trigramKey] = trigramCount
+                }
             }
         }
     }
@@ -116,6 +131,23 @@ class InMemoryDictionaryStore : DictionaryStore {
         bigrams.forEach { (key, count) -> if (count > 0L && key.startsWith(prefix)) counts[key] = (counts[key] ?: 0L) + count }
         learnedBigrams.forEach { (key, count) -> if (count > 0L && key.startsWith(prefix)) counts[key] = (counts[key] ?: 0L) + count }
         return counts.entries
+            .sortedByDescending { it.value }
+            .map { it.key.substring(prefix.length) }
+            .map { successor -> learned[successor]?.word ?: unigrams[successor]?.word ?: successor }
+            .take(limit)
+    }
+    
+    override fun trigramFrequency(previousPreviousWord: String, previousWord: String, word: String): Long {
+        return learnedTrigrams[trigramKey(previousPreviousWord, previousWord, word)] ?: 0L
+    }
+    
+    override fun nextWordsTrigram(previousPreviousWord: String, previousWord: String, limit: Int): List<String> {
+        if (previousPreviousWord.isEmpty() || previousWord.isEmpty() || limit <= 0) {
+            return emptyList()
+        }
+        val prefix = previousPreviousWord.lowercase() + BIGRAM_SEPARATOR + previousWord.lowercase() + BIGRAM_SEPARATOR
+        return learnedTrigrams.entries
+            .filter { it.value > 0L && it.key.startsWith(prefix) }
             .sortedByDescending { it.value }
             .map { it.key.substring(prefix.length) }
             .map { successor -> learned[successor]?.word ?: unigrams[successor]?.word ?: successor }
@@ -178,6 +210,10 @@ class InMemoryDictionaryStore : DictionaryStore {
     
     private fun bigramKey(previousWord: String, word: String): String {
         return previousWord.lowercase() + BIGRAM_SEPARATOR + word.lowercase()
+    }
+    
+    private fun trigramKey(previousPreviousWord: String, previousWord: String, word: String): String {
+        return previousPreviousWord.lowercase() + BIGRAM_SEPARATOR + previousWord.lowercase() + BIGRAM_SEPARATOR + word.lowercase()
     }
     
     companion object {
