@@ -8310,3 +8310,38 @@ No new unit tests - `AdaptKeyService`'s own `SharedPreferences`/lifecycle wiring
 Android-glue gap as the rest of this class. 784 unit tests (unchanged). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. Not yet device-confirmed - this is precisely the kind of service-lifecycle
 timing bug that only a real device round-trip (open Settings, reset, return to typing) can truly confirm.
+
+## §167 - D-240: the S-05 Highlight Colour Moved From a Dark, Muted Tone to a Brighter, More Saturated One
+(v0.8.125)
+
+User reported the S-05 recognised-word highlight was hard to notice on an ordinary light background. First
+hypothesis (darker/more contrasting against the background) was corrected by the user: the issue was never
+contrast against the page background, but against **ordinary black/dark-grey body text** - the actual moment
+a word visibly changes colour was too subtle to catch. This reframes the fix entirely: a *darker* colour (the
+first idea explored and rejected) would have made it worse, not better - very dark colours cluster tightly in
+lightness regardless of hue, so a dark green sitting next to black text reads as "also just dark text," not
+"this word changed colour." Bold text was also considered and explicitly rejected (the user's own instinct,
+confirmed): the composing text renders inside whatever app is being typed into, using that app's own font,
+and most fonts have wider bold glyphs than regular - bolding could reflow/jitter the word on every highlight
+toggle, and weight does not fix a colour-contrast problem regardless. A background-colour highlight (the
+user's own third idea) was also ruled out without implementing it, since it would reverse D-25's own already
+explicitly confirmed decision ("colour the text, not the background... the alternative is not adopted") - not
+something to reopen silently.
+
+**Fixed by moving from the muted Material "700/800" tier to the brighter, more saturated "Accent (A700)"
+tier** - a colour that reads unambiguously as "changed" against black/dark-grey text while staying legible on
+a light background. Default green: `#2E7D32` (Material Green 800) -> `#00C853` (Material Green A700), chosen
+by the user directly after describing the two candidates (a more subdued Green 600 vs. this more vivid Accent
+option) and asking to try the more vivid one on device first. The other 4 C-04 presets were moved to the same
+tier for consistency with the same underlying reasoning, though only the new green default has been
+requested for an on-device look: Blue `#1565C0` -> `#2962FF`, Orange `#EF6C00` -> `#FF6D00` (flagged
+separately: orange's own Material Accent ceiling is inherently less saturated/vivid than the other four -
+a colorimetric limit of the hue itself, not a tuning choice), Purple `#6A1B9A` -> `#AA00FF`, Teal `#00838F`
+-> `#00BFA5`.
+
+Changed: `SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR`, the `c04_highlight_color` preference's own
+`android:defaultValue`, and all 5 `c04_color_values` entries. No new tests - pure colour-constant/resource
+value changes, the existing `SuggestionConfigTest` already references the constant symbolically rather than
+its literal value. 784 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed - this is exactly the kind of visual-perception change only a real look on-device can settle,
+per the user's own request to try it there directly.

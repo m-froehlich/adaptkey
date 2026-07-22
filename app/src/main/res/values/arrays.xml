@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- C-04 highlight colour presets (label / ARGB value). Labels localised per language. -->
+    <!-- C-04 highlight colour presets (label / ARGB value). Labels localised per language.
+         D-240: moved from the dark/muted 700-800 Material tier to the brighter, more saturated Accent
+         (A700) tier - a dark colour sits too close in lightness to ordinary black/dark-grey body text for
+         the eye to reliably tell apart at a glance; see SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR's own
+         KDoc for the full reasoning. -->
     <string-array name="c04_color_labels">
         <item>Green</item>
         <item>Blue</item>
@@ -11,11 +15,11 @@
     </string-array>
 
     <string-array name="c04_color_values">
-        <item>#FF2E7D32</item>
-        <item>#FF1565C0</item>
-        <item>#FFEF6C00</item>
-        <item>#FF6A1B9A</item>
-        <item>#FF00838F</item>
+        <item>#FF00C853</item>
+        <item>#FF2962FF</item>
+        <item>#FFFF6D00</item>
+        <item>#FFAA00FF</item>
+        <item>#FF00BFA5</item>
     </string-array>
 
     <!-- C-06 mini-LLM activation threshold (label / stored value). -->

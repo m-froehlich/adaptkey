@@ -25,7 +25,14 @@ data class SuggestionConfig(
     
     companion object {
         
-        /** Default recognised-word text colour (D-25): a readable medium green on typical backgrounds. */
-        const val DEFAULT_HIGHLIGHT_COLOR: Int = 0xFF2E7D32.toInt()
+        /**
+         * Default recognised-word text colour (D-25). D-240: moved from a dark, muted green (`#2E7D32`,
+         * Material Green 800) to a brighter, more saturated one (Material Green A700) - contrast against
+         * the light background was never the issue, but a *dark* green sits too close in lightness to
+         * ordinary black/dark-grey body text for the human eye to reliably tell apart at a glance; hue
+         * discrimination degrades sharply as lightness approaches either extreme. A brighter, more vivid
+         * colour reads unambiguously as "this word changed colour" instead.
+         */
+        const val DEFAULT_HIGHLIGHT_COLOR: Int = 0xFF00C853.toInt()
     }
 }

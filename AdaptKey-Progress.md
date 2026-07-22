@@ -70,6 +70,20 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§167 (v0.8.125): D-240 - the S-05 highlight colour moved from a dark, muted tone to a brighter, more**
+  **saturated one.** User's real complaint (after an initial back-and-forth): not contrast against the page
+  background, but against ordinary black/dark-grey body text - a dark highlight colour clusters too close in
+  lightness to black to read as "changed" at a glance. Darkening further (the first idea explored) would have
+  made it worse; bold was rejected too (most fonts have wider bold glyphs, risking reflow/jitter on every
+  highlight toggle in whatever app is being typed into, and weight doesn't fix colour contrast anyway); a
+  background-colour highlight was ruled out without implementing it, since it would reverse D-25's own
+  already-confirmed "colour the text, not the background" decision. Fixed by moving from the muted Material
+  700/800 tier to the brighter, more saturated Accent (A700) tier - default green `#2E7D32` -> `#00C853`,
+  the user's own pick after comparing it against a more subdued alternative; the other 4 C-04 presets moved
+  to the same tier for consistency (Orange's own Accent ceiling flagged as inherently less vivid than the
+  others - a colorimetric limit of the hue itself). No new tests (pure colour-constant/resource values). 784
+  unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed -
+  a visual-perception change the user wants to judge on-device directly. See history §167.
 - **§166 (v0.8.124): D-239 - a touch-calibration reset from `CalibrationActivity` never reliably reached**
   **the already-resident keyboard service.** Root-caused: `AdaptKeyService` (a classic long-lived
   `InputMethodService`, never restarted just because Settings was opened/closed) only pulled a fresh
