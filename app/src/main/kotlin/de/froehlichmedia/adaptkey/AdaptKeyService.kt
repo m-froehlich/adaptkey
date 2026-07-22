@@ -245,6 +245,16 @@ class AdaptKeyService : InputMethodService() {
         applySettings()
     }
     
+    /**
+     * D-239: lets this long-lived, resident service notice a touch-calibration change made from a
+     * completely different screen (`CalibrationActivity`'s style switch/reset) immediately, rather than
+     * only at this service's own fixed reload points (`onCreate`, a non-restarting `onStartInputView`) -
+     * see [reloadOffsetModel]'s own updated KDoc for why those alone were not reliably enough.
+     */
+    private val offsetModelPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+        reloadOffsetModel()
+    }
+    
     private val composing = StringBuilder()
     private val composingFlags = ArrayList<TapAmbiguity>()
     // D-39: the raw ACTION_DOWN tap for each composing character, in lockstep with composing/composingFlags
@@ -548,6 +558,7 @@ class AdaptKeyService : InputMethodService() {
         languageClassifier = LanguageProfileLoader.loadClassifier(this)
         loadTier3ProviderAsync()
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
+        OffsetStore.prefs(this).registerOnSharedPreferenceChangeListener(offsetModelPrefsListener)
     }
     
     /**
@@ -1552,8 +1563,16 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Reloads the personal offset model from storage and re-attaches it to the view, so a model the
-     * calibration screen merged (T-03 / K-01) is adopted even when this service instance was already
-     * resident. Only called on a fresh field, where the persisted model is up to date.
+     * calibration screen merged or reset (T-03 / K-01) is adopted even when this service instance was
+     * already resident.
+     *
+     * D-239: called from two independent triggers now, not just the `onStartInputView` one - a reported
+     * bug traced to the `!restarting` guard there being skipped exactly when Android reports the same field
+     * session as resuming (the common case right after returning from Settings), which left a fresh
+     * calibration-screen reset invisible to the live keyboard indefinitely. [offsetModelPrefsListener] fires
+     * on the actual underlying storage write itself, independent of that view-lifecycle nuance, and is the
+     * mechanism this bug actually needed - the `onStartInputView` call site is kept as a second, harmless
+     * belt-and-braces reload, not removed.
      */
     private fun reloadOffsetModel() {
         val model = OffsetStore.load(this)
@@ -1596,6 +1615,7 @@ class AdaptKeyService : InputMethodService() {
     override fun onDestroy() {
         handler.removeCallbacks(resortRunnable)
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
+        OffsetStore.prefs(this).unregisterOnSharedPreferenceChangeListener(offsetModelPrefsListener)
         persistOffsetModel()
         tier3Executor.shutdownNow()
         expensiveSuggestionExecutor.shutdownNow()

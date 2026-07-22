@@ -70,6 +70,22 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§166 (v0.8.124): D-239 - a touch-calibration reset from `CalibrationActivity` never reliably reached**
+  **the already-resident keyboard service.** Root-caused: `AdaptKeyService` (a classic long-lived
+  `InputMethodService`, never restarted just because Settings was opened/closed) only pulled a fresh
+  `OffsetModel` in `onCreate()` and in `onStartInputView()` when `restarting == false` - but returning to
+  typing after a Settings visit is frequently reported as `restarting = true`, skipping the reload entirely.
+  Compounding it, `persistOffsetModel()`'s own guard only detects a *different* stored pattern, so a
+  same-pattern "Reset" was invisible to it and the service's stale in-memory model got saved right back over
+  the fresh reset on the next save. No push/notify channel existed between the two screens at all - just two
+  on-disk `SharedPreferences` files with no listener on the touch-calibration one. Fixed generally: new
+  `OffsetStore.prefs()` (mirrors `SettingsStore.prefs()`) exposes the file; `AdaptKeyService` registers a new
+  `offsetModelPrefsListener` that calls `reloadOffsetModel()` on any write to it, independent of the
+  `onStartInputView`/`restarting` nuance entirely - also neutralising the `persistOffsetModel()` clobber risk
+  as a side effect, since the in-memory model is already back in sync by the time any later save runs. No new
+  tests (`AdaptKeyService` lifecycle/`SharedPreferences` glue, the established gap). 784 unit tests
+  (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history
+  §166.
 - **§165 (v0.8.123): D-238 - a position-1 suggestion chip closes D-234's own disclosed gap for A-05**
   **split/A-06 merge under a disabled autocorrect toggle.** Key simplification found while designing: when
   `settings.autocorrectEnabled` is false, `suppressAutocorrect` is unconditionally true, which also forces

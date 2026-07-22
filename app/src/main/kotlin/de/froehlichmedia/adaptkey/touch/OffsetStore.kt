@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.touch
 
 import android.content.Context
+import android.content.SharedPreferences
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -20,6 +21,21 @@ object OffsetStore {
     private const val PREFS = "adaptkey_offset_model"
     private const val KEY_STATS = "stats"
     private const val KEY_PATTERN = "typing_pattern"
+    
+    /**
+     * D-239: the backing {@link SharedPreferences} file itself, so a long-lived component (the running
+     * keyboard service) can register an {@link SharedPreferences.OnSharedPreferenceChangeListener} and
+     * notice a change made from a completely different screen (`CalibrationActivity`'s style switch/reset)
+     * live, instead of only ever re-reading this store at its own fixed lifecycle points (`onCreate`, a
+     * non-restarting `onStartInputView`) - which a reset performed while the service stayed resident could
+     * otherwise miss entirely, or (worse) have silently clobbered again on its own next save.
+     *
+     * @param context any valid context
+     * @return the shared preferences file backing this store
+     */
+    fun prefs(context: Context): SharedPreferences {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    }
     
     /**
      * Loads the persisted model.

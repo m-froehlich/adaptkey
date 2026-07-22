@@ -8272,3 +8272,41 @@ No new unit tests - every touched function (`composingPreviewRunnable`, `refresh
 `onSuggestionClicked()`) is private `AdaptKeyService`/`InputConnection`-dependent glue with no pure-function
 seam, the same established gap D-122's own original implementation already left untested. 784 unit tests
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+
+## §166 - D-239: a Touch-Calibration Reset From `CalibrationActivity` Never Reliably Reached the Already-
+Resident Keyboard Service (v0.8.124)
+
+User reported that D-237's own new reset flow (both the explicit "Reset" button and a style switch) did not
+stick - after leaving the settings screen, the live keyboard kept behaving according to the pre-reset data.
+
+**Root-caused precisely, via a dedicated investigation, not guessed**: `AdaptKeyService` is a classic
+long-lived `InputMethodService` - opening/closing a separate Settings activity never restarts it. It only
+ever pulls a fresh `OffsetModel` from `OffsetStore` at two points: unconditionally in `onCreate()` (a rare
+event once the IME is resident), and in `onStartInputView()`, but **only when `restarting == false`** - the
+existing comment's own stated assumption ("safe on a fresh field... storage is current") turned out to be
+exactly wrong in the reported scenario: returning to typing after a Settings-screen visit is frequently
+reported by Android as `restarting = true` (resuming the same field session), which skips
+`reloadOffsetModel()` entirely, leaving the live, in-memory model stale indefinitely. Compounding this,
+`persistOffsetModel()` (called from `onFinishInput()`/`onDestroy()`) only guards against overwriting a
+*different* stored typing pattern - a same-pattern "Reset" is invisible to that check, so the service's own
+stale in-memory model got written straight back over the freshly reset store on the very next save, silently
+undoing the reset in storage too, not just in the live view. There is no push/notify channel of any kind
+between `CalibrationActivity` and the running service - the two only ever communicate through two on-disk
+`SharedPreferences` files, with no listener registered on the touch-calibration one at all.
+
+**Fixed with the intentionally general mechanism that was missing**, not another special-cased reload point:
+`OffsetStore` gained `prefs(context)` (mirroring `SettingsStore.prefs()`'s own precedent exactly), exposing
+its backing `SharedPreferences` file so a listener can be registered on it. `AdaptKeyService` registers a new
+`offsetModelPrefsListener` in `onCreate()` (alongside the existing ordinary-settings `prefsListener`,
+unregistered in `onDestroy()` the same way) that calls `reloadOffsetModel()` the moment *any* write to that
+file happens - independent of `onStartInputView`'s `restarting` nuance entirely, since it reacts to the actual
+underlying storage change rather than a view-lifecycle callback whose semantics turned out not to match this
+scenario. This also neutralises `persistOffsetModel()`'s narrower pattern-only guard as a real risk for this
+case: by the time any later save runs, the listener has already brought the in-memory model back in sync with
+storage, so saving it again is an idempotent no-op rather than a clobber. The existing `onStartInputView`
+reload is kept as a harmless second reload path, not removed.
+
+No new unit tests - `AdaptKeyService`'s own `SharedPreferences`/lifecycle wiring, the same established
+Android-glue gap as the rest of this class. 784 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Not yet device-confirmed - this is precisely the kind of service-lifecycle
+timing bug that only a real device round-trip (open Settings, reset, return to typing) can truly confirm.
