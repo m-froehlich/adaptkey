@@ -70,6 +70,24 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§170 (v0.8.128): D-245 - the D-122 mid-word split chip's own trailing space now survives correctly for**
+  **D-29's punctuation-eating rule.** Root-caused via code tracing (no device this round): `applySplit()` did
+  two unbatched `InputConnection` edits (`setComposingText("")` then, later, `commitText()`) instead of the
+  ordinary chip path's single `commitText()` - an editor that reports these as two separate
+  `onUpdateSelection` callbacks (the same un-coalesced-batch-edit shape spec §1/D-87 already names) lets the
+  first, spurious callback consume the D-123 single-shot `suppressNextReclaimSpaceReset` guard, leaving the
+  second, real callback to hit the unguarded reset and silently clear `pendingSuggestionSpace` before the
+  next keystroke (a period right after the chip) ever saw it armed. The flag-arming logic itself was already
+  correct - fixed by wrapping `applySplit()`'s edit sequence in `ic.beginBatchEdit()`/`endBatchEdit()`,
+  mirroring the D-87 precedent exactly; `finalizeAndCommit()`'s own automatic A-05 split (the other caller)
+  gets the same fix for free. Honestly flagged as code-traced/mechanism-confirmed, not device-confirmed - no
+  test harness exists for this `InputConnection` glue and no device was available this round (mirrors the
+  D-229/§156 precedent for a reasoned-but-unobserved fix). **Noted, not fixed**: `applyMerge()` has the same
+  unbatched-multi-edit shape (worse - three discrete edits) but never arms `pendingSuggestionSpace`, so this
+  exact symptom can't manifest there; not otherwise investigated this round. No new tests (established
+  `AdaptKeyService`/`InputConnection` glue gap, matching D-87/D-114/D-182's own precedent). 789 unit tests
+  (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history
+  §170.
 - **§169 (v0.8.127): D-243 - raw touch coordinates now feed the X-01 diagnostic log; D-244 - "Ohren" ->**
   **"Ihren" root-caused to an overly permissive known-word override, and acronym-shaped split halves now**
   **need a higher bar.** D-243: new `AdaptKeyboardView.logTouch()` (mirrors `logHaptics()`'s D-193

@@ -8434,3 +8434,61 @@ splits, since "Dock" is capitalised, not all-uppercase; this specific case is ot
 
 5 new tests total (2 + 3). 789 unit tests (784 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
 Not yet device-confirmed.
+
+## §170 - D-245: A Mid-Word D-122 Split Chip's Own Trailing Space Silently Escaped D-29's Punctuation-Eating
+Rule, Root-Caused to an Unbatched Two-Callback Race, Not the Flag Logic Itself (v0.8.128)
+
+User-reported repro: with an existing mid-sentence word like `"dercNachbar"` (not artificially constructed -
+assumed already present, with more text following later, i.e. genuinely mid-document, not a contrived
+end-of-field case), tapping into it mid-word offers the D-122 connector-split chip (`"der Nachbar"`). Tapping
+it splits cleanly, adds its own trailing space, cursor lands directly after that space - confirmed (from the
+cursor position alone) that this is the *synthetic* space `applySplit()`'s own delimiter added, not a
+pre-existing document space (the D-144/D-183/D-201 "don't double an already-present space" check had
+correctly found nothing there to double against). Typing a period immediately afterward should, per D-29,
+delete that space and attach the period directly to "Nachbar" - exactly what already happens for an ordinary
+single-suggestion chip accepted mid-text. It did not: the space survived.
+
+Traced from the actual code, not guessed, per this project's own rule. `onSuggestionClicked()`'s `Kind.NORMAL`
+branch and `applyMidWordSplitSuggestion()` both correctly arm `pendingSuggestionSpace = true` after the split
+(delimiter non-empty, mirroring the ordinary chip path's identical D-29 arming) and set the D-123 single-shot
+`suppressNextReclaimSpaceReset` guard immediately afterward, so that the split's own `commitText()` echo
+(`onUpdateSelection` -> `reclaimWordAtCaret()`, composing already empty) does not itself clear the flag it just
+armed - structurally identical to the ordinary chip path, which is confirmed working. The actual asymmetry:
+the ordinary chip path performs exactly **one** `InputConnection` mutation (a single `commitText()`, composing
+cleared only locally beforehand, no separate edit). `applySplit()` performs **two**, unbatched:
+`ic.setComposingText("", 1)` (wipes the old composing token) followed later by `ic.commitText(committed +
+delimiter, 1)` (inserts the split result) - with no `beginBatchEdit()`/`endBatchEdit()` wrapping either call,
+unlike the D-87/D-114/D-182 precedent this project has hit (and fixed) repeatedly for exactly this class of
+gap (see spec §1's "Guiding Principle"). An editor that does not coalesce the two into one report (the same
+"un-coalesced batch edit" shape §1 already names) delivers **two** separate `onUpdateSelection` callbacks for
+what the code treats as a single logical commit. `reclaimWordAtCaret()` runs on *both* (composing is empty for
+both, by construction) - but `suppressNextReclaimSpaceReset` is single-shot: the first, spurious, intermediate
+callback (for the composing-wipe) consumes it, leaving the *second*, real callback (for the actual commit) to
+hit the unguarded `else` branch and silently reset `pendingSuggestionSpace = false` - before the next keystroke
+(the period) ever gets a chance to see it armed. Confirmed by the shape of the bug matching this project's own
+established precedent exactly, not by a fresh device log (no test harness exists for this `InputConnection`
+glue and no device was available this round) - flagged honestly as code-traced/mechanism-confirmed rather than
+device-confirmed, mirroring the D-229/§156 precedent for a reasoned-but-unobserved platform-behaviour claim.
+
+Fixed the same way D-87 was: `applySplit()`'s `setComposingText("")`/`finishComposingText()`/`commitText()`
+sequence is now wrapped in `ic.beginBatchEdit()`/`ic.endBatchEdit()`, so the target editor reports (at most)
+one update for the whole operation regardless of how many discrete `InputConnection` calls it took - the
+flag-arming logic in `onSuggestionClicked()`/`applyMidWordSplitSuggestion()` needed no change at all, since it
+was already correct. `capitalisation.capitalise(split.left, contextFor(split.left))` /
+`followingPartContext()` were hoisted above the batch (pure functions of `composing`-independent state -
+`contextFor()`/`followingPartContext()` never read `composing`, confirmed by reading them - so evaluating them
+before vs. after `clearComposing()` cannot change their result); this is a reordering only, not a behaviour
+change. `applySplit()`'s other caller (`finalizeAndCommit()`'s own automatic A-05 commit-time split) shares the
+same fix for free and was not observed to regress by the existing suite.
+
+**Noted, not fixed this round** (out of Task A's scope, flagged separately): `applyMerge()` (the A-06 merge
+counterpart) has the same unbatched-multi-edit shape, one step worse (`setComposingText("")`,
+`finishComposingText()`, a separate `deleteSurroundingText(1, 0)`, *then* `commitText()` - three discrete
+edits) - but never arms `pendingSuggestionSpace` at all today, so this specific space-eating symptom cannot
+manifest there; whether the same callback race causes a *different*, unnoticed symptom for a merge was not
+investigated this round.
+
+No new unit tests (private `AdaptKeyService`/`InputConnection` glue, the established gap for this class of
+fix - matching D-87/D-114/D-182's own precedent, none of which added tests either). 789 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not device-confirmed - awaits the user's
+own repeat of the exact repro (mid-word split chip, immediate punctuation) on a real device.

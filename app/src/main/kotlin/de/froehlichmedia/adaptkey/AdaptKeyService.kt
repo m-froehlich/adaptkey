@@ -2825,13 +2825,26 @@ class AdaptKeyService : InputMethodService() {
      *         [finalizeAndCommit]'s own return contract
      */
     private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String, typed: String): Int {
-        ic.setComposingText("", 1)
-        ic.finishComposingText()
-        clearComposing()
         val left = capitalisation.capitalise(split.left, contextFor(split.left))
         val right = capitalisation.capitalise(split.right, followingPartContext())
         val committed = left + " " + right
-        ic.commitText(committed + delimiter, 1)
+        // D-245: setComposingText("")/finishComposingText() and commitText() batched into one editor
+        // update - unbatched (as before), some editors report the intermediate "composing just wiped"
+        // state as its own onUpdateSelection callback, arriving before the real, final commit's own
+        // callback. reclaimWordAtCaret() runs on *both*, but the D-123 suppressNextReclaimSpaceReset guard
+        // is single-shot - the first (spurious, intermediate) callback consumed it, leaving the second
+        // (real) callback to hit the unguarded else branch and silently clear pendingSuggestionSpace before
+        // the next keystroke (e.g. a period right after the D-122 split chip) ever saw it armed. Mirrors the
+        // D-87 batching precedent (spec §1) - the app coalesces every batched edit into one reported update.
+        ic.beginBatchEdit()
+        try {
+            ic.setComposingText("", 1)
+            ic.finishComposingText()
+            clearComposing()
+            ic.commitText(committed + delimiter, 1)
+        } finally {
+            ic.endBatchEdit()
+        }
         val leftRecord = learnWord(left)
         val rightRecord = learnWord(right)
         // A-07: arm the undo so the next backspace reverts the split (see performAutocorrectUndo).
