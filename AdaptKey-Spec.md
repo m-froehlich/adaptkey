@@ -487,12 +487,13 @@ bar immediately. Never interferes with an A-07 undo already in progress right af
 compete for the same keystroke.
 
 This is a plain, symmetric reversal only - it never marks the word pending-blacklist and never blacklists it,
-unlike a deliberate forget through drag-to-trash (G-04), the "Gelernt: X" chip's own shallow "Vergessen" zone
-(W-03), or a removal from the Learned Words review screen (W-01), all three of which *do* mark the word
-pending-blacklist as a deliberate-intent signal. Backspacing back into a word is the opposite kind of signal -
-typically just a typo/false-start being cleaned up mid-flow, with no implication the word itself is unwanted -
-so treating it as a recurrence candidate would risk escalating an ordinary word straight to a permanent
-blacklist entry the next time it is typed (and, for the motivating half-typed-word case, it usually *is* typed
+unlike a deliberate forget through drag-to-trash (G-04) or a removal from the Learned Words review screen
+(W-01), both of which *do* mark the word pending-blacklist as a deliberate-intent signal (D-254: the "Gelernt:
+X" chip's own shallow "Vergessen" zone, W-03, is deliberately exempt from this too now, for the same reason -
+see W-03). Backspacing back into a word is the opposite kind of signal - typically just a typo/false-start
+being cleaned up mid-flow, with no implication the word itself is unwanted - so treating it as a recurrence
+candidate would risk escalating an ordinary word straight to a permanent blacklist entry the next time it is
+typed (and, for the motivating half-typed-word case, it usually *is* typed
 again immediately afterwards, correctly this time).
 
 ---
@@ -634,12 +635,18 @@ no information) shows a dedicated, distinctly-coloured "Gelernt: X" chip in the 
 of the ordinary next-word predictions rather than participating in their ranking. A plain tap dismisses it
 (nothing changes - "doing nothing" already means "stays learned", matching the rest of this affordance's own
 logic). Dragging it upward arms a two-zone variant of G-04's own drag-to-trash gesture, distinct from the
-single-zone behaviour every ordinary suggestion keeps: a shallow zone unlearns the word only (no blacklist
-mark, mirroring G-04's own self-taught-word branch exactly); a deeper zone blacklists it immediately and
-permanently, bypassing G-04's own bundled-vs-self-taught origin check entirely (a freshly-promoted word is
-never bundled, so that check would otherwise always resolve to the shallow outcome regardless of how far the
-drag travelled) - deliberately stronger than the shallow zone, for when the user is certain the word should
-never be reconsidered even if it recurs.
+single-zone behaviour every ordinary suggestion keeps: a shallow zone unlearns the word only - a plain,
+consequence-free forget with no blacklist involvement of any kind, not even the provisional pending-blacklist
+mark G-04's own ordinary drag-to-trash uses for a self-taught word (D-254: deliberately different here, not a
+mirror of G-04 as originally designed - this chip already offers its own explicit, immediate path to
+permanence one zone down, which makes G-04's own recurrence-escalation safety net redundant on this shallow
+zone, and actively surprising in practice: a word freshly promoted via a premature commit is often retyped
+correctly again moments later, and treating that as a "recurrence" of an unwanted word silently ended it up
+permanently blacklisted); a deeper zone blacklists it immediately and permanently, bypassing G-04's own
+bundled-vs-self-taught origin check entirely (a freshly-promoted word is never bundled, so that check would
+otherwise always resolve to the shallow outcome regardless of how far the drag travelled) - deliberately
+stronger than the shallow zone, for when the user is certain the word should never be reconsidered even if it
+recurs.
 
 ---
 

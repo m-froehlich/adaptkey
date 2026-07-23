@@ -8964,3 +8964,44 @@ No new unit tests - `learnWord()`/`learnWordStrong()` are `AdaptKeyService`-inte
 `AdaptKeyService`/Android-glue gap as A-07/G-04/D-122/D-238/A-11 (none of which added tests either). 813 unit
 tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - the
 user's own repro above is the exact scenario to re-run. See spec A-04 (clarified), A-11.
+
+## §180 - D-254: The "Gelernt: X" Chip's "Vergessen" Zone No Longer Marks Pending-Blacklist (v0.8.136)
+
+D-253's fix closed the *symptom* (a blacklisted word silently getting re-learned) but the user's own follow-up
+correctly pushed back on the diagnosis itself: "aber eigentlich soll ja auf diesem Pfad nie etwas in der
+Blacklist landen" - the whole learn/forget/re-learn/un-learn cycle around a word promoted via a premature
+Enter mid-word should never end up permanently blacklisted at all, not merely "not blacklisted again after
+already being blacklisted once."
+
+**Re-traced the user's own repro one level deeper**: the actual point something first lands on the blacklist
+is the "Vergessen" drag itself - `onForgetLearnedWord()` called `forgetSelfTaughtWord()` ([AdaptKeyService.kt]),
+which marks the word provisionally pending-blacklist exactly like G-04's own ordinary drag-to-trash does for a
+self-taught suggestion. That marking is what `isPendingBlacklistRecurrence()` later escalates to a real,
+permanent blacklist entry the moment the word is retyped again - D-253 only prevented a *further* re-learn
+after that escalation; it never questioned whether the escalation should have been armed in the first place
+for this specific chip.
+
+**The distinction the user drew, confirmed sound**: G-04's ordinary drag-to-trash has exactly one zone - no
+immediate "make this permanent" option at all - so the recurrence-escalation is its *only* eventual path to
+permanence, and remains the right design there (D-177's own original reasoning, untouched). The "Gelernt: X"
+chip (D-247) already has *two* zones - "Vergessen" (soft) and "Verbieten" (hard, immediate, permanent) - so
+the recurrence-escalation on the *shallow* zone is redundant with the deep zone's own explicit path, and
+actively wrong in practice: a word freshly promoted via a premature commit is typically retyped correctly
+again moments later (the exact A-11/D-248 scenario this chip exists for in the first place), and that
+retyping is not evidence the word is unwanted - it is evidence of the same typing accident recurring, which
+A-11 already handles gently. D-247's original design deliberately had "Vergessen" mirror G-04's self-taught
+branch exactly (for simplicity, reusing one function) - this round undoes exactly that one choice, confirmed
+with the user before implementing (a real, if small, design change to established D-247 behaviour, not a
+mechanical bugfix).
+
+**Implemented as a straight split**: `forgetSelfTaughtWord()` (still used by `onBlacklistWord()`'s G-04 path)
+is unchanged; `onForgetLearnedWord()` ("Vergessen") no longer calls it at all, replaced with a direct
+`dictionaryStore.forget(word)` - no `markPendingBlacklist()` call, so no later recurrence can ever escalate a
+word forgotten this way. `onForbidLearnedWord()` ("Verbieten") is untouched - still an immediate, unconditional
+`dictionaryStore.blacklist()`.
+
+No new unit tests - both changed functions are `AdaptKeyService`-internal glue over the already-tested
+`DictionaryStore` interface, the same established gap as D-247/D-253's own precedent. 813 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - the user's own
+full repro (2x commit+Enter, Vergessen, 3x commit+Enter, Backspace) is the exact scenario to re-run; the whole
+cycle should now leave the word simply forgotten, never blacklisted. See spec W-03 (revised), A-11 (revised).

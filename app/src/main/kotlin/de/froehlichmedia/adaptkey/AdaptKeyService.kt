@@ -897,11 +897,22 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-247: the self-taught half of [onBlacklistWord] (D-177), pulled out so the D-246 "Gelernt: X"
-     * confirmation chip's own shallow ("Vergessen") drag zone can reuse it directly - a just-promoted word
-     * is never bundled by construction ([learnWord]'s own [DictionaryStore.isBundledWord] check would have
-     * skipped learning it entirely otherwise), so [onBlacklistWord]'s own origin branching would always
-     * degenerate to this exact call anyway; calling it directly avoids re-deriving that already-known fact.
+     * D-177: the self-taught half of [onBlacklistWord] - forgets [word] outright and marks it provisionally
+     * pending-blacklist, so a genuine recurrence within the window escalates it to a real, permanent
+     * blacklist entry (see [learnWord]'s own [isPendingBlacklistRecurrence] check). Correct here: G-04's
+     * ordinary drag-to-trash has only one zone, no immediate "make this permanent" option at all, so the
+     * recurrence escalation is its *only* path to permanence.
+     *
+     * D-254: deliberately **not** reused by [onForgetLearnedWord] any more (D-247's original design had it
+     * share this exact function) - the D-246 "Gelernt: X" chip already offers an explicit, immediate
+     * permanent option of its own ("Verbieten", [onForbidLearnedWord]), which makes this function's own
+     * recurrence-escalation safety net redundant on that chip's shallow zone, and actively surprising: a
+     * word freshly promoted via a premature Enter mid-word (the very case A-11 exists to smooth over) is
+     * typically retyped correctly again moments later - the same "recurrence" the escalation is designed to
+     * catch for a genuinely unwanted *suggestion* here just means "still fumbling with the same typo", not
+     * "this word is unwanted". Confirmed against a real repro (see history D-253/D-254) before splitting the
+     * two: dragging "Vergessen" then retyping the word enough times to re-promote it, then un-teaching it
+     * again via A-11's own backspace unlearn, silently left it permanently blacklisted.
      */
     private fun forgetSelfTaughtWord(word: String) {
         dictionaryStore.forget(word)
@@ -909,9 +920,9 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-247: the D-246 "Gelernt: X" chip's shallow drag zone ("Vergessen") - unlearns a just-promoted word
-     * exactly like [onBlacklistWord] already does for a self-taught word, without needing to re-check its
-     * origin (see [forgetSelfTaughtWord]'s own KDoc).
+     * D-247 / D-254: the D-246 "Gelernt: X" chip's shallow drag zone ("Vergessen") - a plain, consequence-
+     * free forget, deliberately **not** [forgetSelfTaughtWord]'s own pending-blacklist marking (see that
+     * function's own KDoc for why the two must not share behaviour here, unlike D-247's original design).
      *
      * @param word the just-promoted word to unlearn
      */
@@ -919,7 +930,7 @@ class AdaptKeyService : InputMethodService() {
         if (word.isBlank() || !this::dictionaryStore.isInitialized) {
             return
         }
-        forgetSelfTaughtWord(word)
+        dictionaryStore.forget(word)
         showNextWordPredictions()
     }
     

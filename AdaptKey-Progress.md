@@ -70,6 +70,21 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§180 (v0.8.136): D-254 - the "Gelernt: X" chip's "Vergessen" (shallow) zone no longer marks pending-**
+  **blacklist at all, per direct user pushback on D-253's diagnosis ("auf diesem Pfad soll nie etwas in der**
+  **Blacklist landen").** Root cause one level deeper than D-253: `onForgetLearnedWord()` called
+  `forgetSelfTaughtWord()` (D-247's original design, deliberately mirroring G-04's own self-taught drag-to-
+  trash branch), which marks the word provisionally pending-blacklist - exactly what `isPendingBlacklistRecurrence()`
+  later escalates to a permanent blacklist entry on retyping. Confirmed sound distinction: G-04's ordinary
+  drag-to-trash has only one zone (no immediate permanent option), so its own recurrence-escalation is its
+  only path to permanence and stays unchanged; the "Gelernt: X" chip already has an explicit, immediate
+  "Verbieten" zone for permanence, making the shallow zone's own escalation redundant and actively wrong (a
+  word re-promoted via a premature commit is usually just being retyped correctly again, not "recurring as
+  unwanted"). `onForgetLearnedWord()` now calls `dictionaryStore.forget(word)` directly, no blacklist
+  involvement at all; `forgetSelfTaughtWord()`/G-04 and `onForbidLearnedWord()`/"Verbieten" unchanged. No new
+  tests (`AdaptKeyService`-internal glue). 813 unit tests (unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See history §180, spec W-03 (revised), A-11
+  (revised).
 - **§179 (v0.8.135): D-253 - a blacklisted word could silently get re-learned by ordinary retyping, root-**
   **caused against the user's own precise repro (2x "Gummib"+Enter -> Vergessen-drag -> 3x "Gummib"+Enter ->**
   **A-11 backspace-unlearn -> "Gummib" permanently blacklisted).** A-11 itself was never the bug - it correctly
