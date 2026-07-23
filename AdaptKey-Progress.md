@@ -70,6 +70,12 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§173 CAPTURED (still v0.8.130, no code change): four backlog items noted, not designed/implemented -**
+  **D-248 (D-247 extension: never learn an implausible line-end word, strategy still open), D-249 (`un-`/
+  `ent-` prefixes should never be split off by A-05/D-122), D-250 (retune D-161's WindowInsets recheck to 5x
+  @ 500ms, already concrete/ready to build), D-251 (a rough plan: a word-end reclaim should not reopen the
+  full suggestion pipeline - needs real device logs before any design, touches the spec §1 guardrail area).**
+  800 unit tests (unchanged). See history §173.
 - **§172 (v0.8.130): D-247 - a "Gelernt: X" promotion confirmation chip with its own two-zone drag**
   **("Vergessen"/"Verbieten"), closing the silent-nonsense-word-learning gap after a two-round design**
   **discussion (see history §172 for the full back-and-forth, including two user-driven corrections).**

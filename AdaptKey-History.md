@@ -8650,3 +8650,47 @@ established gap as G-04's own original implementation, D-122, and D-238 (none of
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real
 promotion (2-4 repeated commits of a genuinely new word) to trigger at all, so awaits its own dedicated
 on-device round rather than the next incidental one. See spec §13 (W-02/W-03) and §4 (G-04).
+
+## §173 CAPTURED (still v0.8.130, no code change): four backlog items noted per direct user request
+
+Four items, explicitly requested to be recorded for later rounds rather than designed/implemented now - no
+code touched this entry.
+
+**D-248 - D-247 extension: an implausible word should never be learned at all, even at the line-end/Enter
+case D-247 targets.** The user's own framing: needs a strategy for *what counts as implausible* before
+anything can be built - deliberately left open, not even a direction proposed yet. D-247 itself already
+excludes single letters (`MIN_LEARN_LENGTH`) and offers a post-hoc confirm/undo chip (W-03) for everything
+else; this would be a further, pre-emptive layer specifically for a line-end commit, on top of both.
+
+**D-249 - the inseparable German prefixes `un-`/`ent-` (and possibly others) should never be split off by
+A-05/D-122.** User's own assessment: splitting either off is "so gut wie immer falsch" (almost always wrong)
+- e.g. "unglücklich" -> "un glücklich", "entscheiden" -> "ent scheiden". Not yet traced against
+`TokenRepair.candidateAt()`'s actual gates (`MIN_SPLIT_HALF_FREQUENCY`/both-nouns-rejection/`MIN_PART`) to
+confirm why these currently pass, nor scoped (which other genuinely inseparable prefixes - `ver-`, `ge-`,
+`be-`, `er-`, `zer-` are the obvious German candidates - would need the same protection, and whether a
+prefix-based check risks the same "genuine two-word case starting with that same fragment" false-negative
+class D-249's own mechanism would need to rule out, mirroring the reasoning the next round's comparative-
+suffix fix (D-252, see below) already had to work through).
+
+**D-250 - retune D-161's WindowInsets recheck from a single one-shot check to five checks, 500ms apart.**
+User's own diagnosis: the existing `windowInsetsRecheckRunnable` (§104, one recheck `WINDOW_INSETS_RECHECK_
+DELAY_MS` = 1000ms after `onStartInputView()`) doesn't catch the race reliably enough. Proposed fix, already
+fairly concrete: repeat the same (already-cheap, already-idempotent - only corrects `inputRoot`'s padding when
+it actually differs) check five times at 500ms intervals instead of once, on the assumption that the repeated
+polling costs nothing worth worrying about. Not yet implemented - captured as specified, ready to build next
+round without further design discussion needed.
+
+**D-251 - a rough, not-yet-refined plan: a word-end reclaim should not reopen the full suggestion/autocorrect
+pipeline, only a narrower set of actions (e.g. G-05's own retroactive capitalisation).** User's own reasoning:
+once a word is committed and the caret merely returns to its own *end* (not genuinely mid-word), re-running
+the complete D-62 reclaim pipeline too often produces unwanted, incorrect auto-corrections on a word the user
+already considered finished - "meistens führt das zu ungewollten und falschen Auto-Korrekturen." Explicitly
+flagged by the user as needing further refinement before any implementation, not a ready spec. Touches exactly
+the composing-state/reclaim machinery spec §1's "Guiding Principle" names as this codebase's most sensitive,
+most-guarded area (three device-log tracing rounds for D-139 alone) - any future design round for this one
+needs real device logs of the current behaviour, not reasoning from the code alone, before changing anything.
+
+See spec's own open-question conventions (§7 A-05's already-existing "flagged, not fixed" callout for a
+different, structurally similar gap) for the established precedent of naming a real, acknowledged limitation
+without yet fixing it. 800 unit tests (unchanged - documentation only, no version bump per this project's own
+convention).
