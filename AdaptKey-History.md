@@ -8895,3 +8895,29 @@ tests either); `WordExtent.reclaim()` itself is unchanged and already covered. 8
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real accidental-Enter
 round (or any backspace-back-into-a-learned-word scenario) to trigger at all. See spec A-11 (new), §13
 (W-02/W-03), A-07.
+
+## §178 CONFIRMED (still v0.8.134, no code change): A-11's unlearn never touches the blacklist
+
+User's own follow-up concern: A-11's backspace-triggered unlearn must not put the word on the blacklist -
+explicitly named as a difference from unlearn/forget via the Learned Words screen (W-01).
+
+Verified against the real code rather than assumed - already correct as implemented, by construction, not by
+accident: `maybeUnlearnOnBackspaceReturn()` calls only the pre-existing `unlearnWord()`, whose three-way
+`LearnOutcome` dispatch (`SKIPPED` -> no-op, `LEARNED`/`PROMOTED` -> `dictionaryStore.unlearn()`, `PENDING` ->
+`PendingLearnStore.decrement()`) never calls `blacklist()` or `markPendingBlacklist()` in either backend
+(`InMemoryDictionaryStore`/`SqliteDictionaryStore`) or in `PendingLearnStore` itself - confirmed by reading
+every one of the five real call sites of `blacklist()`/`markPendingBlacklist()` in the codebase
+(`onBlacklistWord()`/G-04, `forgetSelfTaughtWord()` - shared by G-04's self-taught branch *and* the "Gelernt:
+X" chip's own shallow "Vergessen" zone, W-03 - `onForbidLearnedWord()`'s "Verbieten" deep zone, `Blacklist
+Activity`'s manual add, and `LearnedWordsActivity`'s own removal): none of them is reachable from A-11's code
+path. The distinction is real and deliberate, not incidental: a deliberate forget (drag-to-trash, "Vergessen",
+the Learned Words screen) is an explicit "I don't want this word" signal, worth a provisional pending-
+blacklist mark in case it recurs (A-04/G-04's own established reasoning) - backspacing back into a half-typed
+word is the opposite kind of signal, usually just a typo/false-start being cleaned up mid-flow with the intent
+to immediately retype it correctly, so treating it as a recurrence candidate would risk escalating an
+ordinary word straight to a permanent blacklist entry the very next time it is typed.
+
+Documented explicitly in spec A-11 (not merely left implicit) precisely because a future refactor could
+otherwise plausibly "simplify" by merging `unlearnWord()` with `forgetSelfTaughtWord()`, since the two look
+superficially similar. No code changed this round - 813 unit tests (unchanged), version unchanged (v0.8.134,
+per this project's own doc-only-round convention).

@@ -70,6 +70,13 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§178 CONFIRMED (still v0.8.134, no code change): A-11's backspace-triggered unlearn never touches the**
+  **blacklist, per direct user follow-up - verified already correct, not fixed.** `maybeUnlearnOnBackspaceReturn()`
+  only ever calls the pre-existing `unlearnWord()`, which never calls `blacklist()`/`markPendingBlacklist()` in
+  either backend - unlike a deliberate forget (G-04 drag-to-trash, the "Gelernt: X" chip's own "Vergessen"
+  zone, or a Learned Words screen removal), all three of which *do* mark the word pending-blacklist. Documented
+  explicitly in spec A-11 so a future refactor does not accidentally merge the two. 813 unit tests (unchanged).
+  See history §178.
 - **§177 (v0.8.134): D-248 - backspacing back into a recently-learned word now un-teaches it, sidestepping**
   **the original "what counts as an implausible word" question entirely, per the user's own two-round**
   **design (general mechanism, not scoped to the Enter-mid-word case that motivated it).** New

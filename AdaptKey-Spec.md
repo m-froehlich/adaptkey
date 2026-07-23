@@ -484,6 +484,15 @@ to undo. A "Gelernt: X" chip (W-03) still showing for a word that gets un-learne
 bar immediately. Never interferes with an A-07 undo already in progress right after a commit - the two never
 compete for the same keystroke.
 
+This is a plain, symmetric reversal only - it never marks the word pending-blacklist and never blacklists it,
+unlike a deliberate forget through drag-to-trash (G-04), the "Gelernt: X" chip's own shallow "Vergessen" zone
+(W-03), or a removal from the Learned Words review screen (W-01), all three of which *do* mark the word
+pending-blacklist as a deliberate-intent signal. Backspacing back into a word is the opposite kind of signal -
+typically just a typo/false-start being cleaned up mid-flow, with no implication the word itself is unwanted -
+so treating it as a recurrence candidate would risk escalating an ordinary word straight to a permanent
+blacklist entry the next time it is typed (and, for the motivating half-typed-word case, it usually *is* typed
+again immediately afterwards, correctly this time).
+
 ---
 
 ## 8. Hyphen Handling
