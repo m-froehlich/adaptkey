@@ -401,7 +401,9 @@ Blacklisting keeps a word typeable/known (quoting genuinely old text still works
 as its own suggestion again. The blacklist editor (C-05) shows only user-added entries by default - a bundled
 entry is rarely of interest and should rarely be removed at all - with an explicit toggle to reveal bundled
 entries too. Also interacts with the provisional pending-blacklist mechanism for a self-taught word
-(G-04/W-01).
+(G-04/W-01). The exclusion is lasting across every learning pipeline, not merely suggestions/autocorrect: a
+blacklisted word is never counted toward W-02's promotion threshold and never force-learned (D-13) either, so
+simply retyping it enough times cannot silently promote it straight back into the learned dictionary.
 
 ### A-05 - Retroactive Word Split on Missed Space
 When the current token is not a valid word and is not a plausible regular-verb inflection or adjective

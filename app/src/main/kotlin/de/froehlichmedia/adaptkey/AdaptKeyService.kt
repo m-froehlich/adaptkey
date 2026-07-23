@@ -3911,6 +3911,15 @@ class AdaptKeyService : InputMethodService() {
             dictionaryStore.blacklist(word, BlacklistCategory.USER)
             dictionaryStore.clearPendingBlacklist(word)
             LearnOutcome.SKIPPED
+        } else if (dictionaryStore.isBlacklisted(word)) {
+            // D-253: an already permanently blacklisted word (typically from the isPendingBlacklistRecurrence
+            // escalation just above, an earlier commit) must never be allowed to count back up through the
+            // ordinary PendingLearnStore path either - without this, simply retyping it enough times silently
+            // promoted it straight back into the learned dictionary, defeating the blacklist entirely. Also
+            // clears any stale pending count, so a later removal from the blacklist (BlacklistActivity) does
+            // not resume counting from wherever it happened to be left off.
+            PendingLearnStore.clear(this, word)
+            LearnOutcome.SKIPPED
         } else if (PendingLearnStore.increment(this, word) >= learnThresholdFor(word)) {
             dictionaryStore.learn(word, context, contextContext)
             PendingLearnStore.clear(this, word)
@@ -4014,11 +4023,14 @@ class AdaptKeyService : InputMethodService() {
      * Learns [word] authoritatively (D-13): a deliberate user correction (undoing a wrong split) promotes
      * the word to the dictionary immediately, bypassing the D-37 count-up threshold.
      *
+     * D-253: also bails out for a blacklisted word, mirroring [learnWord]'s own guard - blacklisting is
+     * meant to be a lasting exclusion from every learning pipeline, not merely the ordinary threshold one.
+     *
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
         if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() } ||
-            dictionaryStore.isBundledWord(word)
+            dictionaryStore.isBundledWord(word) || dictionaryStore.isBlacklisted(word)
         ) {
             return
         }

@@ -8921,3 +8921,46 @@ Documented explicitly in spec A-11 (not merely left implicit) precisely because 
 otherwise plausibly "simplify" by merging `unlearnWord()` with `forgetSelfTaughtWord()`, since the two look
 superficially similar. No code changed this round - 813 unit tests (unchanged), version unchanged (v0.8.134,
 per this project's own doc-only-round convention).
+
+## §179 - D-253: A Blacklisted Word Could Silently Get Re-Learned by Ordinary Retyping (v0.8.135)
+
+User's own precise repro, walked end-to-end before touching any code (not guessed):
+
+```
+2 x "Gummib" + Enter        -> pending count reaches W-02's threshold, "Gelernt: Gummib" chip shows
+drag the chip up ("Vergessen")  -> forgotten + marked provisionally pending-blacklist (G-04/W-01)
+3 x "Gummib" + Enter        -> "Gelernt: Gummib" chip shows again
+Backspace (A-11 unlearn)    -> "Gummib" ends up permanently blacklisted
+```
+
+Root-caused by tracing `learnWord()` against this exact sequence, not guessed: the first of the "3 x Gummib"
+retypes hits `isPendingBlacklistRecurrence()` (still armed from the "Vergessen" drag moments earlier) exactly
+as A-04/G-04 already intend - this correctly, permanently blacklists "Gummib" right there. That part is
+working precisely as designed and was never in question. The bug is what happens on the *next two* retypes:
+`learnWord()`'s `if/else if` chain has no branch at all that checks `dictionaryStore.isBlacklisted(word)` -
+after the recurrence branch's own `clearPendingBlacklist()` call, the word simply falls through to the
+ordinary `PendingLearnStore.increment(...) >= learnThresholdFor(...)` path exactly as if it had never been
+blacklisted, counts back up, and gets `PROMOTED` straight back into the learned dictionary on the third
+retype - hence the "Gelernt: Gummib" chip reappearing. A-11's own backspace-triggered unlearn then does
+exactly what it was built and confirmed (§178) to do - reverses only *that* `LearnRecord` (the just-created
+learned-table reinstatement) and never touches the blacklist - so the end state is a word correctly removed
+from the learned dictionary, but still (correctly, from the recurrence-escalation) on the blacklist. A-11
+was never the actual bug; it faithfully surfaced a pre-existing gap in `learnWord()` that predates D-248/A-11
+entirely (traces straight back to D-37's original threshold-learning design, which never anticipated a word
+being blacklisted *between* two ordinary commits of the same token).
+
+**Fixed by adding the missing gate**: a new `else if (dictionaryStore.isBlacklisted(word))` branch in
+`learnWord()`, positioned right after the recurrence-escalation branch (so an *escalating* commit still takes
+that branch first and actually performs the escalation) and before the `PendingLearnStore` counting branch -
+returns `SKIPPED` and clears any stale pending count via `PendingLearnStore.clear()`, so a word later removed
+from the blacklist (`BlacklistActivity`) does not resume counting from wherever it happened to be left off.
+`learnWordStrong()` (D-13's own authoritative force-learn, reached only via A-07's split-undo) had the exact
+same structural gap - already guarded against a bundled word but not a blacklisted one - closed the same way
+for consistency, completing the intended scope (every word-learning entry point, not only the one the repro
+happened to exercise).
+
+No new unit tests - `learnWord()`/`learnWordStrong()` are `AdaptKeyService`-internal, depending on
+`PendingLearnStore` (Android `SharedPreferences`) and the live `dictionaryStore` field, the same established
+`AdaptKeyService`/Android-glue gap as A-07/G-04/D-122/D-238/A-11 (none of which added tests either). 813 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - the
+user's own repro above is the exact scenario to re-run. See spec A-04 (clarified), A-11.

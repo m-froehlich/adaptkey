@@ -70,6 +70,19 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§179 (v0.8.135): D-253 - a blacklisted word could silently get re-learned by ordinary retyping, root-**
+  **caused against the user's own precise repro (2x "Gummib"+Enter -> Vergessen-drag -> 3x "Gummib"+Enter ->**
+  **A-11 backspace-unlearn -> "Gummib" permanently blacklisted).** A-11 itself was never the bug - it correctly
+  reversed only the just-created learned-table reinstatement and never touched the blacklist (§178 confirmed
+  this). The real gap: `learnWord()`'s `if/else if` chain had no branch checking `dictionaryStore.isBlacklisted
+  (word)` - after `isPendingBlacklistRecurrence()`'s own escalation correctly blacklisted the word, the *next*
+  retypes fell straight through to the ordinary `PendingLearnStore` counting path as if never blacklisted, and
+  got `PROMOTED` right back into the learned dictionary. Fixed with a new `else if (dictionaryStore.isBlacklisted
+  (word))` branch (returns `SKIPPED`, clears any stale pending count) positioned after the escalation branch and
+  before the counting branch; `learnWordStrong()` (D-13) had the identical structural gap, closed the same way
+  for consistency. No new tests (`AdaptKeyService`-internal, same established glue gap as A-07/G-04/A-11). 813
+  unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See
+  history §179, spec A-04 (clarified).
 - **§178 CONFIRMED (still v0.8.134, no code change): A-11's backspace-triggered unlearn never touches the**
   **blacklist, per direct user follow-up - verified already correct, not fixed.** `maybeUnlearnOnBackspaceReturn()`
   only ever calls the pre-existing `unlearnWord()`, which never calls `blacklist()`/`markPendingBlacklist()` in
