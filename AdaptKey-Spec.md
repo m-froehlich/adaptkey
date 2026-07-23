@@ -371,7 +371,10 @@ word is more frequent. This is not an absolute veto: a known word can be overrid
 candidate that is (a) a cost-1 (single adjacent-key) edit, **and** (b) at least 50× more frequent - a
 frequency floor additionally prevents any low-confidence candidate from winning regardless of edit cost. An
 unknown-but-plausible regular-verb inflection of a known infinitive (e.g. "beurteilst" from "beurteilen")
-is protected unconditionally, with no ratio check, since it has no independent frequency to compare. This
+is protected unconditionally, with no ratio check, since it has no independent frequency to compare. The
+same protection applies to an unknown-but-plausible regular adjective comparative/superlative of a known
+positive (e.g. "zuversichtlicher" from "zuversichtlich") - excluding a positive that resolves to a noun,
+since German nouns take no comparative/superlative degree at all. This
 protection is removed entirely for a blacklisted word (A-04) - the bundled blacklist deliberately includes a
 few cross-language confusables (e.g. `due`, `sue`, `ddr`, `aks`) specifically so ordinary autocorrect can win
 over them despite each being a genuine dictionary entry in some language.
@@ -401,8 +404,9 @@ entries too. Also interacts with the provisional pending-blacklist mechanism for
 (G-04/W-01).
 
 ### A-05 - Retroactive Word Split on Missed Space
-When the current token is not a valid word and is not a plausible regular-verb inflection, and it can be
-split into two dictionary words at (or near) the position of a space-ambiguous tap (T-05) or a fully missed
+When the current token is not a valid word and is not a plausible regular-verb inflection or adjective
+comparative/superlative (see A-01), and it can be split into two dictionary words at (or near) the position
+of a space-ambiguous tap (T-05) or a fully missed
 space, the offending character is replaced with a space (or a space is inserted) and the token is committed
 as two words. The current gating: each half must individually clear a minimum frequency floor; a split where
 **both** halves are nouns is rejected (a function-word-plus-noun pair, e.g. "und"/"das", is accepted); prior

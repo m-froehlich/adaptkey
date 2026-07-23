@@ -188,13 +188,23 @@ class TokenRepair(private val store: DictionaryStore) {
     
     /**
      * §128 / D-203: whether [t] is already recognised as a real word and must never be split - either
-     * literally ([DictionaryStore.isKnownWord]) or as a plausible regular-verb inflection of a known
-     * infinitive ([RegularVerbInflection]). The latter closes the historical "meinst" -> "mei" + "st" false
-     * positive at the source: "meinst" is never itself in the dictionary, so the old `isKnownWord(t)`-only
-     * guard let it fall through to split-candidate generation at all.
+     * literally ([DictionaryStore.isKnownWord]), as a plausible regular-verb inflection of a known
+     * infinitive ([RegularVerbInflection]), or as a plausible regular adjective comparative/superlative of
+     * a known positive ([AdjectiveInflection], D-252). The verb check closes the historical "meinst" ->
+     * "mei" + "st" false positive at the source: "meinst" is never itself in the dictionary, so the old
+     * `isKnownWord(t)`-only guard let it fall through to split-candidate generation at all - the adjective
+     * check closes the analogous "zuversichtlicher" -> "zuversichtlich er" false positive the same way.
+     *
+     * D-252: the adjective check's own stem test deliberately excludes a noun (`!isNoun(entry)`) - German
+     * nouns take no comparative/superlative degree at all, and without this exclusion a bare known-word
+     * check wrongly treats "docker" as a plausible comparative of "dock" (`NOUN`), blocking D-244's own
+     * already-established "dock"+"er" split before it can ever run (caught by the existing test suite, not
+     * guessed).
      */
     private fun isAlreadyRecognised(t: String): Boolean {
-        return store.isKnownWord(t) || RegularVerbInflection.isPlausibleInflection(t, store::isKnownWord)
+        return store.isKnownWord(t) ||
+            RegularVerbInflection.isPlausibleInflection(t, store::isKnownWord) ||
+            AdjectiveInflection.isPlausibleComparative(t) { stem -> resolveWord(stem)?.let { !isNoun(it) } == true }
     }
     
     /**

@@ -483,8 +483,27 @@ class DictionarySuggestionProvider(
             // literal known word, it has no recorded frequency of its own to compare against a candidate's,
             // so §44's ratio check would always trivially fire (0 * ratio <= anything) if applied here.
             return null
+        } else if (AdjectiveInflection.isPlausibleComparative(token, ::isPlausiblePositiveStem)) {
+            // D-252: the adjective counterpart of the verb-inflection protection above, same reasoning -
+            // "zuversichtlicher" (unknown, no dictionary entry of its own) must not lose to some other,
+            // cost-1-adjacent, more-frequent candidate the way "beurteilst" would without the verb check.
+            return null
         }
         return best
+    }
+    
+    /**
+     * D-252: whether [stem] is a plausible positive (base) adjective for [AdjectiveInflection] - known
+     * *and* not a noun, since German nouns take no comparative/superlative degree at all. Without the noun
+     * exclusion, a bare known-word check would treat "docker" as a plausible comparative of "dock"
+     * (`NOUN`), the same over-triggering [TokenRepair.isAlreadyRecognised] already had to guard against.
+     *
+     * @param stem the candidate reconstructed positive adjective (already lower-cased)
+     * @return true when [stem] is known and not tagged [PartOfSpeech.NOUN]/[PartOfSpeech.PROPER_NOUN]
+     */
+    private fun isPlausiblePositiveStem(stem: String): Boolean {
+        val entry = store.entryOf(stem) ?: return false
+        return !(entry.partsOfSpeech.contains(PartOfSpeech.NOUN) || entry.partsOfSpeech.contains(PartOfSpeech.PROPER_NOUN))
     }
     
     /**

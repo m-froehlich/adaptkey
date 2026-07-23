@@ -105,6 +105,22 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-252 an adjective comparative of a known positive is never split`() {
+        // Reproduces the reported bug at its actual source: "zuversichtlicher" is not itself in the
+        // dictionary, but strips its "er" ending to "zuversichtlich", a known positive adjective -
+        // AdjectiveInflection recognises it as a plausible comparative, so it is treated exactly like a
+        // literal known word and never even reaches split-candidate generation. Neither half is tagged as a
+        // noun here (matching the real dictionary's own OTHER tag for both) so this pair would otherwise
+        // pass the not-both-nouns check and split successfully - "er" (the German pronoun) is real,
+        // extremely frequent, and exactly why it kept winning as a split half - isolating that the
+        // comparative-inflection guard alone is what blocks it here.
+        store.putWord(WordEntry("zuversichtlich", frequency = 17L))
+        store.putWord(WordEntry("er", frequency = 120_975L))
+        
+        assertNull(repair.trySplit("zuversichtlicher", emptySet()))
+    }
+    
+    @Test
     fun `§128 a drop candidate where both halves are nouns is rejected, even when both are known words`() {
         // Reproduces the reported bug as it would appear without a covering verb inflection: "mei" and "st"
         // are each individually real (if obscure) dictionary entries, individually well above the

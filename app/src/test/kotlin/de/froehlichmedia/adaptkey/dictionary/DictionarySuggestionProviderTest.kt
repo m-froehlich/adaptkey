@@ -269,6 +269,17 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-252 an unknown adjective comparative is protected, not corrected to a different known word`() {
+        // The adjective counterpart of the D-115/D-125 verb-inflection test above: "zuversichtlicher"
+        // (comparative, not itself in the dictionary) must not autocorrect to a different known word just
+        // because it is within edit-cost budget and far more frequent.
+        store.putWord(WordEntry("zuversichtlich", 17L))
+        store.putWord(WordEntry("zuversichtliche", 50_000L))
+        
+        assertNull(provider.autocorrectFor("zuversichtlicher", null))
+    }
+    
+    @Test
     fun `autocorrectFor returns null for a too-short token`() {
         store.putWord(WordEntry("der", 100L))
         assertNull(provider.autocorrectFor("d", null))

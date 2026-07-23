@@ -70,6 +70,18 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§174 (v0.8.131): D-252 - "zuversichtlicher" -> "zuversichtlich er" closed via a new `AdjectiveInflection`**
+  **check, mirroring the existing `RegularVerbInflection` protection (design agreed with the user first,**
+  **see history §174 for the full root-cause + a real regression caught by the existing test suite).** New
+  `AdjectiveInflection.isPlausibleComparative()` strips a regular comparative/superlative ending and checks
+  the bare stem, wired into both `TokenRepair.isAlreadyRecognised()` (A-05 split protection) and
+  `DictionarySuggestionProvider.bestCorrection()` (A-01 autocorrect-override protection, mirroring
+  `RegularVerbInflection`'s own dual wiring). **Caught mid-implementation**: a bare known-word check broke
+  the existing D-244 "Docker" -> "dock"+"er" regression test outright (over-protected it as a plausible
+  comparative of "dock") - fixed by excluding a noun stem (German nouns take no comparative/superlative
+  degree), not by special-casing the one word. 8 new tests (`AdjectiveInflectionTest` 6, `TokenRepairTest` 1,
+  `DictionarySuggestionProviderTest` 1). 808 unit tests (800 + 8). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See history §174, spec A-01/A-05.
 - **§173 CAPTURED (still v0.8.130, no code change): four backlog items noted, not designed/implemented -**
   **D-248 (D-247 extension: never learn an implausible line-end word, strategy still open), D-249 (`un-`/
   `ent-` prefixes should never be split off by A-05/D-122), D-250 (retune D-161's WindowInsets recheck to 5x

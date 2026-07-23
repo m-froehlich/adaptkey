@@ -8694,3 +8694,55 @@ See spec's own open-question conventions (§7 A-05's already-existing "flagged, 
 different, structurally similar gap) for the established precedent of naming a real, acknowledged limitation
 without yet fixing it. 800 unit tests (unchanged - documentation only, no version bump per this project's own
 convention).
+
+## §174 - D-252: "zuversichtlicher" -> "zuversichtlich er" Closed via Comparative/Superlative Recognition,
+Mirroring the Existing Regular-Verb-Inflection Protection (v0.8.131)
+
+User's direct task, distinct from §173's backlog notes: "zuversichtlicher" (comparative of the adjective
+"zuversichtlich") was being split into "zuversichtlich" + "er" - user's own proposed direction: automatic
+comparative recognition, mirroring how `RegularVerbInflection` already protects an unknown verb inflection.
+
+Root-caused first, not guessed: `dict_de.tsv` has `zuversichtlich` (freq 17, `OTHER`) and `er` (freq 120,975,
+`OTHER` - the German 3rd-person pronoun). `TokenRepair.candidateAt()`'s existing gates all pass - both halves
+known, both above `MIN_SPLIT_HALF_FREQUENCY`, neither tagged `NOUN`/`PROPER_NOUN` so the both-nouns rejection
+never fires - `RegularVerbInflection` doesn't cover `"er"` (not in its ending list, and verb-focused
+reattachment logic doesn't apply to an adjective anyway). Confirmed separately: `PartOfSpeech.ADJECTIVE`
+exists in the enum but is used **zero** times across the entire bundled dictionary (120,040 entries) -
+`zuversichtlich` itself is `OTHER` - so any fix gated on that tag would be inert in production; had to work
+the same POS-free way `RegularVerbInflection` already does.
+
+**Design, agreed before implementing**: new `AdjectiveInflection` object, structurally mirroring
+`RegularVerbInflection` exactly - strip a candidate comparative/superlative ending, check the bare remaining
+stem directly against the dictionary (no reattachment needed, unlike the verb case's own `+"en"`
+reconstruction, since the positive adjective carries no suffix of its own). Ending list: comparative `er`/
+`ere`/`eren`/`erem`/`erer`/`eres`, superlative `ste`/`sten`/`stem`/`ster`/`stes` - the regular declension
+paradigm. Deliberately scoped to the *regular* case only, same as `RegularVerbInflection`'s own exclusion of
+strong/ablaut verbs (D-158): an umlaut-mutating comparative (`alt`->`älter`, `groß`->`größer`) is out of
+scope. Named trade-off before implementing: a short, common ending like `-er` could in principle over-protect
+a genuine compound-typo split - accepted as the same risk profile `RegularVerbInflection`'s own single/
+double-letter endings (`-e`/`-t`/`-st`) already tolerate, not a new one.
+
+**A real regression, caught by the existing test suite, not by review**: the first implementation (bare
+`isKnownWord` check on the stripped stem) broke `TokenRepairTest`'s own D-244 regression test outright -
+"Docker" (unknown) must still split into "dock" (`NOUN`, freq 20 in the real dictionary) + "er", but the new
+guard now treated "docker" as a plausible comparative of "dock" and blocked the split entirely, exactly the
+"over-protect a genuine split" risk named during design, now concretely demonstrated rather than theoretical.
+Root-caused immediately (not patched around): German nouns take no comparative/superlative degree at all, so
+the fix is a real linguistic exclusion, not a special case for this one word - `AdjectiveInflection.
+isPlausibleComparative()`'s stem predicate now requires *known and not a noun*, not merely known.
+`TokenRepair.isAlreadyRecognised()` passes `resolveWord(stem)?.let { !isNoun(it) } == true`; `Docker`'s own
+`NOUN`-tagged "dock" now correctly fails the predicate, falls through to ordinary split-candidate generation,
+and the pre-existing D-244 test passes again unmodified.
+
+**Extended to A-01's own autocorrect-override protection for symmetry** (not only the A-05 split path):
+`RegularVerbInflection` already guards both `TokenRepair.isAlreadyRecognised()` (A-05) and `DictionarySuggestionProvider.bestCorrection()` (A-01 - an unknown-but-plausible inflection must not lose to
+some other, cost-1-adjacent, more-frequent candidate) - `AdjectiveInflection` now guards the same two call
+sites, via a new `DictionarySuggestionProvider.isPlausiblePositiveStem()` mirroring `TokenRepair`'s own
+noun-exclusion predicate (the two classes don't share private helpers, so each gets its own small,
+independently-testable version).
+
+8 new tests (`AdjectiveInflectionTest`, 6 - the reported regression, both declension paradigms, the
+umlaut-scope exclusion, the no-match case, the empty-stem edge case - plus 1 `TokenRepairTest`: the "Docker"
+noun-exclusion regression reproduced end-to-end, plus 1 `DictionarySuggestionProviderTest`: the A-01
+autocorrect-override symmetry case). 808 unit tests (800 + 8; §173's own capture added none). `:app:
+assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See spec A-01/A-05.
