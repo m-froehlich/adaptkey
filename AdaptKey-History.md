@@ -8779,3 +8779,52 @@ open status as D-161 itself: a real occurrence either produces a logged correcti
 now, or the race still isn't being caught (in which case the hypothesis, not just the retry count, would need
 revisiting). See spec §1 (guiding-principle guardrail area is adjacent but not touched - no composing-state/
 `onUpdateSelection` code was involved in this change).
+
+## §176 - D-249: Inseparable German Verb/Negation Prefixes Protected From A-05/D-122 Splitting (v0.8.133)
+
+User's own direction, following the tiered candidate list discussed and agreed beforehand: implement Tier 1
+(`ver-`, `zer-`, `ent-`, `emp-`, `be-`, `ge-`, `miss-`) and Tier 2/3 (`er-`, `un-`, `ur-`, `wider-`) exactly as
+proposed; Tier 4 (the Wechselpräfixe `über-`/`um-`/`durch-`/`unter-`/`voll-`/`hinter-`/`wieder-`) correctly
+excluded by the user's own confirmation - each of those is also, itself, a common standalone German word
+(`"wieder holen"` vs. `"wiederholen"` is the textbook collision), so blocking them would reject far more
+genuine two-word missed-space splits than the compound-prefix false positives it would prevent.
+
+**Root-caused against the real dictionary first, not guessed** (§173's own note had left this unconfirmed):
+looked up every proposed prefix in the bundled `dict_de.tsv` directly. Seven of the eleven (`zer`, `ent`,
+`emp`, `be`, `miss`, `un`, `ur`) are not themselves dictionary entries at all, so `TokenRepair.candidateAt()`'s
+existing `resolveWord(left)` call already fails for them today - `isAlreadyRecognised()` also already blocks
+splitting many *already-known* compound words built from them (`entscheiden` 727, `unglücklich` 75,
+`erkennen` 1929, `verstehen` 1195, `gemacht` 2702, `widerstehen` 54, `entdecken` 156 are all themselves
+dictionary entries). But four of the eleven (`ver` 131, `ge` 250, `er` 120,975, `wider` 598) *are* themselves
+dictionary entries, and a concrete, currently-live false positive was found for one of them: `"widersagen"`
+(a real but less common German word, "to renounce/recant") is not itself in the dictionary, while both
+`"wider"` (598) and `"sagen"` (775) individually clear `MIN_SPLIT_HALF_FREQUENCY` and neither is tagged a
+noun - `candidateAt()`'s pre-existing gates do not catch this shape at all today, confirming the user's
+concern was concrete, not merely theoretical.
+
+**The real design tension, worked through before implementing** (mirroring the reasoning D-252 already had
+to apply to the "Docker"/"dock"+"er" case, per the user's own earlier note): `"er"` sits in the same
+dictionary-entry group as `"ver"`/`"ge"`/`"wider"`, but at frequency 120,975 - two-plus orders of magnitude
+above the other three (598 at the high end) - because it is, in ordinary use, overwhelmingly the personal
+pronoun ("er kommt"), not the verb prefix. A blanket block on `"er"` as a left half would have broken every
+genuine missed-space split of the shape `"erkommt"` -> `"er kommt"`, which must keep working. Resolved with a
+frequency-ceiling exemption (`PREFIX_COMMON_WORD_FREQUENCY_CEILING = 5,000`, sitting in the wide, two-order-
+of-magnitude gap between 598 and 120,975): a protected prefix is only blocked while its own standalone
+dictionary frequency stays at or below the ceiling - `"er"` clears it and is left ungoverned by this rule
+(falling through to the pre-existing gates exactly as before); `"ver"`/`"ge"`/`"wider"` do not, and are
+blocked; the seven prefixes absent from the dictionary entirely resolve to frequency 0 via
+`DictionaryStore.frequencyOf()` and are blocked unconditionally too.
+
+**Implemented as a new, dictionary-independent gate inside `candidateAt()`** (shared by both `trySplit()`/
+A-05 and `splitAtUnresolvedConnector()`/D-122, per the user's own "A-05/D-122" framing): a new
+`INSEPARABLE_PREFIXES` set and `PREFIX_COMMON_WORD_FREQUENCY_CEILING` constant; the check runs *before*
+`resolveWord()`, purely against `left`'s raw string and `store.frequencyOf(left)`, so it applies even to a
+prefix that is not currently a dictionary word at all (future-proofing against a later dictionary addition
+reopening the gap `isAlreadyRecognised()`'s own dual verb-inflection/adjective-comparative guards do not
+cover here, since those guard the *whole token*, not a candidate split's left half specifically).
+
+5 new tests (`TokenRepairTest`): the `un-` block on a prefix absent from the dictionary, the `wider-` block on
+a prefix present but below the ceiling, the `er-` exemption proving the legitimate `"erkommt"` split still
+works, an exact ceiling-boundary test (blocked at the ceiling, freed one above it), and one confirming the
+same block applies via `splitAtUnresolvedConnector()`. 813 unit tests (808 + 5). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Not yet device-confirmed. See spec A-05.

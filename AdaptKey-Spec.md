@@ -411,7 +411,16 @@ space, the offending character is replaced with a space (or a space is inserted)
 as two words. The current gating: each half must individually clear a minimum frequency floor; a split where
 **both** halves are nouns is rejected (a function-word-plus-noun pair, e.g. "und"/"das", is accepted); prior
 bigram co-occurrence between the two halves is a scoring signal only, never a gate, so a first-time-typed
-compound typo can still split correctly even with no recorded history. Half resolution also tries
+compound typo can still split correctly even with no recorded history. A left half that is one of a fixed set
+of German inseparable verb prefixes or productive negation/intensifying prefixes (`ver-`, `zer-`, `ent-`,
+`emp-`, `be-`, `ge-`, `miss-`, `er-`, `un-`, `ur-`, `wider-`) is rejected outright (e.g. "unglücklich" is never
+split into "un"/"glücklich") - deliberately excluding the variable separable-or-inseparable prefixes
+(`über-`/`um-`/`durch-`/`unter-`/`voll-`/`hinter-`/`wieder-`), each of which is also, itself, a common
+standalone German word, so blocking them would reject far more genuine two-word missed-space splits than the
+compound-prefix false positives it would prevent (`"wieder holen"` vs. `"wiederholen"` being the textbook
+case). A prefix in the protected set is itself exempted from this rule once its own standalone dictionary
+frequency exceeds a fixed ceiling - `er-` (the pronoun) is the one case in practice, since blocking it
+unconditionally would prevent a genuine split like "erkommt" -> "er kommt". Half resolution also tries
 umlaut/ß-unfolding (e.g. "uber" resolves via "über") before giving up, per the umlaut guiding principle - the
 committed text itself still carries the literal typed substring, not the unfolded form. A split is vetoed if
 it would lose to a high-confidence single-word correction instead. A live two-span colour preview is shown

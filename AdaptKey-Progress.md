@@ -70,6 +70,20 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§176 (v0.8.133): D-249 - the German inseparable verb/negation prefixes (`ver-`/`zer-`/`ent-`/`emp-`/**
+  **`be-`/`ge-`/`miss-`/`er-`/`un-`/`ur-`/`wider-`) are now protected from A-05/D-122 splitting, per the**
+  **user's own tiered candidate list agreed beforehand (Tier 4 - `über-`/`um-`/`durch-`/`unter-`/`voll-`/**
+  **`hinter-`/`wieder-` - correctly excluded).** Root-caused against the real `dict_de.tsv` first: a concrete
+  live false positive confirmed for `"widersagen"` -> `"wider"`+`"sagen"` (neither tagged a noun, both above
+  the frequency floor). New `TokenRepair.INSEPARABLE_PREFIXES` set and `PREFIX_COMMON_WORD_FREQUENCY_CEILING`
+  (5,000) gate inside the shared `candidateAt()` (covers both `trySplit`/A-05 and
+  `splitAtUnresolvedConnector`/D-122), checked before dictionary resolution so it also covers the seven
+  prefixes not themselves in the dictionary. `"er"` (frequency 120,975, the pronoun) is exempted from the
+  block via the frequency ceiling, since blocking it unconditionally would break genuine splits like
+  `"erkommt"` -> `"er kommt"` - the other three dictionary-entry prefixes (`"ver"` 131, `"ge"` 250, `"wider"`
+  598) sit well below the ceiling and are blocked normally. 5 new tests (`TokenRepairTest`). 813 unit tests
+  (808 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history
+  §176, spec A-05.
 - **§175 (v0.8.132): D-250 - D-161's WindowInsets recheck retuned from a single one-shot check to five,**
   **500ms apart, per the concrete spec §173 already captured (no further design round needed).**
   `windowInsetsRecheckRunnable` now reschedules itself (self-referencing lambda) up to a new

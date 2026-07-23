@@ -211,6 +211,54 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-249 the negation prefix un- is never accepted as a split's left half`() {
+        // "unglücklich" -> "un"+"glücklich": "un" is not itself a dictionary entry (confirmed against the
+        // real dict_de.tsv), but the block must be unconditional - checked before dictionary resolution, not
+        // merely a side effect of "un" happening to fail resolveWord - so a future dictionary addition could
+        // not silently reopen this.
+        store.putWord(WordEntry("glücklich", frequency = 150L))
+        assertNull(repair.trySplit("unglücklich", emptySet()))
+    }
+    
+    @Test
+    fun `D-249 the inseparable prefix wider- is rejected even though it is itself a rare dictionary word`() {
+        // "widersagen" -> "wider"+"sagen": both halves are real, individually well above the frequency
+        // floor (mirroring the real dict_de.tsv values - "wider" 598, "sagen" 775) and neither is a noun, so
+        // candidateAt's pre-existing gates alone would accept this split without the new prefix guard.
+        store.putWord(WordEntry("wider", frequency = 598L))
+        store.putWord(WordEntry("sagen", frequency = 775L))
+        assertNull(repair.trySplit("widersagen", emptySet()))
+    }
+    
+    @Test
+    fun `D-249 the pronoun er is exempt from the prefix guard since it is itself an extremely common word`() {
+        // Unlike "wider", "er" (frequency 120,975, the real dict_de.tsv value) sits far above
+        // PREFIX_COMMON_WORD_FREQUENCY_CEILING - the guard must not block it, or a genuine missed-space case
+        // like "erkommt" -> "er kommt" would regress.
+        store.putWord(WordEntry("er", frequency = 120_975L))
+        store.putWord(WordEntry("kommt", frequency = 500L))
+        assertEquals(SplitResult("er", "kommt"), repair.trySplit("erkommt", emptySet()))
+    }
+    
+    @Test
+    fun `D-249 a prefix-shaped left half is blocked right at the frequency ceiling and freed just above it`() {
+        store.putWord(WordEntry("wider", frequency = TokenRepair.PREFIX_COMMON_WORD_FREQUENCY_CEILING))
+        store.putWord(WordEntry("sagen", frequency = 775L))
+        assertNull(repair.trySplit("widersagen", emptySet()))
+        
+        store.putWord(WordEntry("wider", frequency = TokenRepair.PREFIX_COMMON_WORD_FREQUENCY_CEILING + 1))
+        assertEquals(SplitResult("wider", "sagen"), repair.trySplit("widersagen", emptySet()))
+    }
+    
+    @Test
+    fun `D-249 an inseparable prefix is never accepted via the D-122 connector-split path either`() {
+        // "entvwort" dropping the over-space-letter 'v' at index 3 -> "ent"+"wort": the shared candidateAt
+        // gate must block this exactly as it does for trySplit.
+        store.putWord(WordEntry("wort", frequency = 4_084L))
+        assertNull(repair.splitAtUnresolvedConnector("entvwort"))
+    }
+    
+    @Test
     fun `a split is rejected when a half is blacklisted`() {
         store.blacklist("das", BlacklistCategory.USER)
         assertNull(repair.trySplit("aberdas", emptySet()))

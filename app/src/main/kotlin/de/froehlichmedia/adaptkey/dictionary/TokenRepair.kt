@@ -221,6 +221,14 @@ class TokenRepair(private val store: DictionaryStore) {
      * - which maps back onto the exact characters of the currently displayed composing text - stays correct;
      * only the *resolved* forms are used for the frequency/noun/score lookups below.
      *
+     * D-249: rejects [left] outright when it is one of [INSEPARABLE_PREFIXES] and not also, itself, a
+     * genuinely common standalone word ([PREFIX_COMMON_WORD_FREQUENCY_CEILING]) - see that constant's own
+     * KDoc for why "er" is deliberately exempted from this rule while "ver"/"ge"/"wider" are not. Checked
+     * before [resolveWord] so it applies regardless of whether [left] happens to independently resolve to a
+     * dictionary entry (several of the protected prefixes, e.g. "ent"/"emp"/"be", are not themselves
+     * dictionary words at all - this still guards against a future dictionary addition making one of them
+     * resolvable).
+     *
      * @param left the left half exactly as typed (lower-cased)
      * @param right the right half exactly as typed (lower-cased)
      * @param previousWord the word committed before the token, for bigram scoring; may be null
@@ -228,6 +236,9 @@ class TokenRepair(private val store: DictionaryStore) {
      */
     private fun candidateAt(left: String, right: String, previousWord: String?): Pair<SplitResult, Double>? {
         if (left.length < MIN_PART || right.length < MIN_PART) {
+            return null
+        }
+        if (left in INSEPARABLE_PREFIXES && store.frequencyOf(left) <= PREFIX_COMMON_WORD_FREQUENCY_CEILING) {
             return null
         }
         val leftEntry = resolveWord(left) ?: return null
@@ -344,6 +355,35 @@ class TokenRepair(private val store: DictionaryStore) {
          * already established, rather than inventing a new threshold.
          */
         const val MIN_SPLIT_ACRONYM_FREQUENCY = 300L
+        
+        /**
+         * D-249: the German inseparable verb prefixes and productive negation/intensifying prefixes that
+         * must never be accepted as the left half of a split - splitting either off is "so gut wie immer
+         * falsch" (user's own assessment), e.g. "unglücklich" -> "un glücklich", "widersagen" -> "wider
+         * sagen". Confirmed against the real dict_de.tsv, not guessed: several of these (e.g. "widersagen",
+         * "entkoppeln") are not themselves dictionary entries while both the bare prefix ("wider", freq 598)
+         * and the remaining stem ("sagen", freq 775) individually clear [MIN_SPLIT_HALF_FREQUENCY] and
+         * neither is tagged a noun, so [candidateAt]'s pre-existing gates alone do not catch this shape.
+         * Deliberately excludes the Wechselpräfixe (über-/um-/durch-/unter-/voll-/hinter-/wieder-) - each of
+         * those is also, itself, a common standalone German preposition/adverb/adjective (e.g. "wieder
+         * holen" vs. "wiederholen" is the textbook case), so blocking them here would reject far more
+         * genuine two-word missed-space splits than the compound-prefix false positives it would prevent -
+         * left out deliberately, not merely forgotten.
+         */
+        val INSEPARABLE_PREFIXES = setOf("ver", "zer", "ent", "emp", "be", "ge", "miss", "er", "un", "ur", "wider")
+        
+        /**
+         * D-249: a member of [INSEPARABLE_PREFIXES] is exempted from the prefix-block rule entirely once its
+         * own standalone dictionary frequency exceeds this ceiling - "er" (the personal pronoun, frequency
+         * 120,975 in dict_de.tsv, by two-plus orders of magnitude the most frequent entry among the set) is
+         * the one confirmed case: blocking it unconditionally would reject far more genuine two-word missed-
+         * space splits (e.g. "erkommt" -> "er kommt") than the rare compound-verb false positive it would
+         * catch. The other three dictionary hits in the set ("ver" 131, "ge" 250, "wider" 598) sit well below
+         * this ceiling and are blocked normally; the remaining seven prefixes are not dictionary entries at
+         * all (frequency 0 via [DictionaryStore.frequencyOf]) and are blocked unconditionally too. Calibrated
+         * against the real dictionary's own frequency gap, not an arbitrary round number.
+         */
+        const val PREFIX_COMMON_WORD_FREQUENCY_CEILING = 5_000L
         
         /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
         val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
