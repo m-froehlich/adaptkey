@@ -36,6 +36,12 @@ import de.froehlichmedia.adaptkey.gesture.SwipeGesture
  * (A-04). The gesture is intentionally a deliberate upward drag (not a swipe) and never fires on the
  * verbatim chip, so it cannot be triggered accidentally while scrolling or tapping.
  *
+ * D-247: a [SuggestionController.Kind.LEARNED] chip ("Gelernt: X") gets its own, deliberately different
+ * two-zone variant of the same upward drag instead of G-04's single-zone one: a shallow "Vergessen" zone
+ * (green, [onForgetLearned] - unlearns only) and, past a second, deeper threshold, a "Verbieten" zone
+ * (reuses G-04's own red styling, [onForbidLearned] - permanent blacklist). Scoped to this one chip kind
+ * only - an ordinary suggestion keeps exactly G-04's original single-zone behaviour.
+ *
  * D-144: a downward swipe anywhere on the bar (any chip, the verbatim chip, or an empty gap) notifies
  * [onSwipeDown] - mirroring [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView]'s own G-03
  * swipe-down-to-dismiss, which previously only reacted on the keyboard's own key field, not this row.
@@ -58,6 +64,20 @@ class SuggestionBarView @JvmOverloads constructor(
         fun onBlacklist(word: String)
     }
     
+    /** D-247: invoked when a [SuggestionController.Kind.LEARNED] chip is dragged into its shallow
+     * "Vergessen" zone - unlearn only, no blacklist mark. */
+    fun interface OnForgetLearnedListener {
+        
+        fun onForgetLearned(word: String)
+    }
+    
+    /** D-247: invoked when a [SuggestionController.Kind.LEARNED] chip is dragged into its deep "Verbieten"
+     * zone - permanent blacklist, bypassing G-04's own bundled/self-taught origin check. */
+    fun interface OnForbidLearnedListener {
+        
+        fun onForbidLearned(word: String)
+    }
+    
     /** D-144: invoked when a downward swipe anywhere on the bar dismisses/closes, mirroring G-03. */
     fun interface OnSwipeDownListener {
         
@@ -67,6 +87,10 @@ class SuggestionBarView @JvmOverloads constructor(
     var onItemClick: OnItemClickListener? = null
     
     var onBlacklist: OnBlacklistListener? = null
+    
+    var onForgetLearned: OnForgetLearnedListener? = null
+    
+    var onForbidLearned: OnForbidLearnedListener? = null
     
     var onSwipeDown: OnSwipeDownListener? = null
     
@@ -79,15 +103,26 @@ class SuggestionBarView @JvmOverloads constructor(
     // can be mapped back to the suggestion it lands on (G-04).
     private val items = ArrayList<SuggestionController.DisplayItem>()
     
+    /** D-247: the drop zone currently armed by an upward drag - [BLACKLIST] is the only zone an ordinary
+     * (G-04) suggestion ever reaches; [FORGET] exists only for a [SuggestionController.Kind.LEARNED] chip. */
+    private enum class DragZone { NONE, FORGET, BLACKLIST }
+    
     // G-04 drag-to-trash state, and D-144's downward-swipe-to-dismiss - both track the same touch-down
     // point (dragDownX/dragDownY), just resolved against opposite vertical directions.
     private var dragDownX = 0f
     private var dragDownY = 0f
     private var dragWord: String? = null
+    // D-247: which kind is being dragged decides both the zone thresholds (zoneFor()) and what a release
+    // in each zone means (onTouchEvent's ACTION_UP branch) - null while nothing is being dragged.
+    private var dragKind: SuggestionController.Kind? = null
     private var dragIntercepting = false
     private var swipeDownIntercepting = false
-    private var trashArmed = false
+    private var dragZone = DragZone.NONE
+    // D-247: also G-04's own single-zone arm distance, reused as-is for a LEARNED chip's shallow "Vergessen"
+    // zone entry point per the user's own request ("das hat immer gut gepasst").
     private val dragThresholdPx = dp(48).toFloat()
+    // D-247: the LEARNED chip's own deeper "Verbieten" zone - double the shallow entry point.
+    private val learnedForbidThresholdPx = dragThresholdPx * 2f
     // D-144: the confirm distance for the downward dismiss swipe - matches AdaptKeyboardView's own
     // fieldSwipeThresholdPx, so the gesture feels consistent whether it starts on the keyboard body or here.
     private val swipeDownThresholdPx = dp(110).toFloat()
@@ -95,7 +130,7 @@ class SuggestionBarView @JvmOverloads constructor(
     // interception (which reacts at the much smaller system touch slop) as soon as the drag already
     // looks vertical-dominant - otherwise the scroll view wins the race well before dragThresholdPx is
     // ever reached and the upward drag can never arm. Claiming the gesture early only decides who owns
-    // it; whether it actually arms (shows the trash zone / commits on release) still needs dragThresholdPx.
+    // it; whether it actually arms (drop zone shown / release commits) still needs the zone's own threshold.
     private val interceptThresholdPx = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
     
     private val trashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -104,6 +139,18 @@ class SuggestionBarView @JvmOverloads constructor(
     
     private val trashTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.suggestion_trash_text)
+        textAlign = Paint.Align.CENTER
+        textSize = dp(16).toFloat()
+    }
+    
+    // D-247: the LEARNED chip's own shallow "Vergessen" zone - a fixed green, independent of the
+    // user-configurable C-04/S-05 highlight colour (see the colour resource's own comment).
+    private val forgetPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.suggestion_forget_background)
+    }
+    
+    private val forgetTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.suggestion_forget_text)
         textAlign = Paint.Align.CENTER
         textSize = dp(16).toFloat()
     }
@@ -149,7 +196,14 @@ class SuggestionBarView @JvmOverloads constructor(
     
     private fun chipFor(item: SuggestionController.DisplayItem): View {
         val verbatim = item.kind == SuggestionController.Kind.VERBATIM
-        val colorRes = if (verbatim) R.color.suggestion_verbatim_text else R.color.suggestion_text
+        // D-247: a fixed green, independent of the C-04/S-05 highlight colour (see the colour resource's
+        // own comment) - colours the text only, mirroring D-25's own "colour the text, not the background"
+        // precedent, same as the verbatim chip already does.
+        val colorRes = when {
+            verbatim -> R.color.suggestion_verbatim_text
+            item.kind == SuggestionController.Kind.LEARNED -> R.color.suggestion_learned_text
+            else -> R.color.suggestion_text
+        }
         return TextView(context).apply {
             text = item.text
             gravity = Gravity.CENTER
@@ -170,23 +224,25 @@ class SuggestionBarView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 dragDownX = ev.x
                 dragDownY = ev.y
-                // Only ordinary suggestions can be trashed (never the verbatim chip).
-                dragWord = normalWordAt(ev.x)
+                // Only an ordinary or LEARNED suggestion can be dragged (never the verbatim chip).
+                val draggable = draggableItemAt(ev.x)
+                dragWord = draggable?.word
+                dragKind = draggable?.kind
                 dragIntercepting = false
                 swipeDownIntercepting = false
-                setTrashArmed(false)
+                setDragZone(DragZone.NONE)
             }
             
             MotionEvent.ACTION_MOVE -> {
                 // D-64: claim the gesture at the small interceptThresholdPx, not the larger dragThresholdPx -
                 // otherwise HorizontalScrollView's own scroll interception (system touch slop) wins the race
-                // first and the drag can never take over. Once claimed, whether it is actually armed (trash
-                // zone shown / release commits) is still gated by the full dragThresholdPx.
+                // first and the drag can never take over. Once claimed, whether it is actually armed (drop
+                // zone shown / release commits) is still gated by zoneFor()'s own, larger thresholds.
                 val dx = ev.x - dragDownX
                 val dy = ev.y - dragDownY
                 if (dragWord != null && DragToTrash.isArmed(dx, dy, interceptThresholdPx)) {
                     dragIntercepting = true
-                    setTrashArmed(DragToTrash.isArmed(dx, dy, dragThresholdPx))
+                    setDragZone(zoneFor(dx, dy))
                     return true
                 }
                 // D-144: the same early-claim reasoning as G-04 above, mirrored for the opposite (downward)
@@ -200,20 +256,48 @@ class SuggestionBarView @JvmOverloads constructor(
         return super.onInterceptTouchEvent(ev)
     }
     
+    /**
+     * D-247: which [DragZone] the current displacement arms, given [dragKind] - [SuggestionController.
+     * Kind.LEARNED] gets the two-zone "Vergessen"/"Verbieten" variant, an ordinary suggestion (G-04) keeps
+     * the original single [DragZone.BLACKLIST] zone at [dragThresholdPx] with no [DragZone.FORGET] stage at
+     * all.
+     */
+    private fun zoneFor(dx: Float, dy: Float): DragZone {
+        return when (dragKind) {
+            SuggestionController.Kind.LEARNED -> when {
+                DragToTrash.isArmed(dx, dy, learnedForbidThresholdPx) -> DragZone.BLACKLIST
+                DragToTrash.isArmed(dx, dy, dragThresholdPx) -> DragZone.FORGET
+                else -> DragZone.NONE
+            }
+            SuggestionController.Kind.NORMAL -> if (DragToTrash.isArmed(dx, dy, dragThresholdPx)) DragZone.BLACKLIST else DragZone.NONE
+            else -> DragZone.NONE
+        }
+    }
+    
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         if (dragIntercepting) {
             when (ev.actionMasked) {
                 MotionEvent.ACTION_MOVE -> {
-                    setTrashArmed(DragToTrash.isArmed(ev.x - dragDownX, ev.y - dragDownY, dragThresholdPx))
+                    setDragZone(zoneFor(ev.x - dragDownX, ev.y - dragDownY))
                     return true
                 }
                 
                 MotionEvent.ACTION_UP -> {
                     val word = dragWord
-                    val commit = trashArmed
+                    val kind = dragKind
+                    val zone = dragZone
                     cancelDrag()
-                    if (commit && word != null) {
-                        onBlacklist?.onBlacklist(word)
+                    // D-247: a LEARNED chip's two zones route to two different listeners; an ordinary
+                    // suggestion only ever reaches BLACKLIST (zoneFor() never arms FORGET for it) and keeps
+                    // G-04's original onBlacklist callback exactly as before.
+                    if (word != null) {
+                        when {
+                            kind == SuggestionController.Kind.LEARNED && zone == DragZone.FORGET ->
+                                onForgetLearned?.onForgetLearned(word)
+                            kind == SuggestionController.Kind.LEARNED && zone == DragZone.BLACKLIST ->
+                                onForbidLearned?.onForbidLearned(word)
+                            zone == DragZone.BLACKLIST -> onBlacklist?.onBlacklist(word)
+                        }
                     }
                     return true
                 }
@@ -289,12 +373,27 @@ class SuggestionBarView @JvmOverloads constructor(
     
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
-        // G-04: while armed, paint the trash drop zone over the visible bar (drawn after the children,
-        // in view coordinates so it stays fixed regardless of horizontal scroll).
-        if (trashArmed) {
-            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), trashPaint)
-            val baseline = height / 2f - (trashTextPaint.descent() + trashTextPaint.ascent()) / 2f
-            canvas.drawText(context.getString(R.string.suggestion_trash_label), width / 2f, baseline, trashTextPaint)
+        // G-04 / D-247: while armed, paint the current drop zone over the visible bar (drawn after the
+        // children, in view coordinates so it stays fixed regardless of horizontal scroll). FORGET only
+        // ever arms for a LEARNED chip; BLACKLIST's own label differs by kind (an ordinary suggestion keeps
+        // G-04's original "🗑 Delete", a LEARNED chip's deeper zone reads "Verbieten" instead).
+        when (dragZone) {
+            DragZone.FORGET -> {
+                canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), forgetPaint)
+                val baseline = height / 2f - (forgetTextPaint.descent() + forgetTextPaint.ascent()) / 2f
+                canvas.drawText(context.getString(R.string.suggestion_forget_label), width / 2f, baseline, forgetTextPaint)
+            }
+            DragZone.BLACKLIST -> {
+                canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), trashPaint)
+                val labelRes = if (dragKind == SuggestionController.Kind.LEARNED) {
+                    R.string.suggestion_forbid_label
+                } else {
+                    R.string.suggestion_trash_label
+                }
+                val baseline = height / 2f - (trashTextPaint.descent() + trashTextPaint.ascent()) / 2f
+                canvas.drawText(context.getString(labelRes), width / 2f, baseline, trashTextPaint)
+            }
+            DragZone.NONE -> {}
         }
         // §56: the accepted word, if currently flying - drawn last so it is visible over the chips. Negative
         // y values (above the bar's own top edge) are deliberate and only reach the screen because root
@@ -353,38 +452,43 @@ class SuggestionBarView @JvmOverloads constructor(
     }
     
     /**
-     * Maps a touch x (in this view's coordinates) to the ordinary suggestion under it.
+     * Maps a touch x (in this view's coordinates) to the draggable suggestion under it (G-04 / D-247).
      *
      * @param viewX the touch x in view coordinates
-     * @return the word of the ordinary suggestion at that position, or null for the verbatim chip,
-     *         a gap, or an empty bar
+     * @return the ordinary or LEARNED entry at that position, or null for the verbatim chip, a
+     *         CLIPBOARD/CREDENTIAL chip, a gap, or an empty bar
      */
-    private fun normalWordAt(viewX: Float): String? {
+    private fun draggableItemAt(viewX: Float): SuggestionController.DisplayItem? {
         val contentX = viewX + scrollX
         for (index in 0 until container.childCount) {
             val child = container.getChildAt(index)
             if (contentX >= child.left && contentX <= child.right) {
                 val item = items.getOrNull(index) ?: return null
-                return if (item.kind == SuggestionController.Kind.NORMAL) item.word else null
+                return if (item.kind == SuggestionController.Kind.NORMAL || item.kind == SuggestionController.Kind.LEARNED) {
+                    item
+                } else {
+                    null
+                }
             }
         }
         return null
     }
     
-    private fun setTrashArmed(value: Boolean) {
-        if (trashArmed != value) {
-            trashArmed = value
+    private fun setDragZone(value: DragZone) {
+        if (dragZone != value) {
+            dragZone = value
             invalidate()
         }
     }
     
     private fun cancelDrag() {
         dragWord = null
+        dragKind = null
         dragIntercepting = false
         // D-144: setItems() (a fresh suggestion refresh mid-gesture) also calls this - a stale downward-swipe
         // interception should not carry over into whatever now occupies the bar.
         swipeDownIntercepting = false
-        setTrashArmed(false)
+        setDragZone(DragZone.NONE)
     }
     
     private fun dp(value: Int): Int {

@@ -70,6 +70,24 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§172 (v0.8.130): D-247 - a "Gelernt: X" promotion confirmation chip with its own two-zone drag**
+  **("Vergessen"/"Verbieten"), closing the silent-nonsense-word-learning gap after a two-round design**
+  **discussion (see history §172 for the full back-and-forth, including two user-driven corrections).**
+  New `MIN_LEARN_LENGTH = 2` excludes single letters from learning outright (the unambiguous case - a
+  fragment from an unintended Enter mid-word). Everything else relies on the new confirmation: `LearnOutcome`
+  gained `PROMOTED` (distinct from reinforcement-`LEARNED`), firing the chip exactly once, the commit a word
+  first crosses W-02's threshold. A plain tap dismisses it; dragging it upward arms a two-zone gesture
+  scoped **only** to this chip (ordinary G-04 suggestions keep their original single-zone behaviour
+  unchanged) - shallow (48dp, reuses G-04's own arm distance) = "Vergessen" (unlearn only, green, fixed
+  colour independent of C-04/S-05), deep (96dp) = "Verbieten" (immediate permanent blacklist, reuses G-04's
+  red styling). Both zones map onto `onBlacklistWord()`'s two pre-existing outcomes, now reachable directly
+  instead of only via origin (a freshly-promoted word is always self-taught, so the old origin check could
+  never reach the blacklist outcome for it). `SuggestionBarView`'s single `trashArmed` boolean generalised
+  into a three-state `DragZone`; new `Kind.LEARNED`, built and pushed directly to the bar (bypasses
+  `SuggestionController`'s own ranking, mirrors `CLIPBOARD`/`CREDENTIAL`). No new tests (established
+  `AdaptKeyService`/View glue gap, matching G-04/D-122/D-238's own precedent). 800 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real word
+  promotion to trigger at all. See history §172, spec §13 (W-02/W-03) and §4 (G-04).
 - **§171 (v0.8.129): D-246 - S-07 next-word prediction elevated by a personal, self-growing trigram table,**
   **implemented after a design discussion (Stupid Backoff λ=0.4, personal-only `learned_trigrams` table, no**
   **new tier - see spec S-07 and history §171 for the full design/trade-off writeup).** `DictionaryStore.

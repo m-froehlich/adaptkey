@@ -8,6 +8,12 @@
     <!-- Suggestion bar drag-to-trash (G-04). -->
     <string name="suggestion_trash_label">🗑  Delete</string>
 
+    <!-- D-247: the "Gelernt: X" confirmation chip and its own two-zone drag (shallow: unlearn only, deep:
+         permanent blacklist). -->
+    <string name="suggestion_learned_label">Learned: %1$s</string>
+    <string name="suggestion_forget_label">Forget</string>
+    <string name="suggestion_forbid_label">Forbid</string>
+
     <!-- Info & privacy category (shown first on the settings screen). -->
     <string name="cat_info">Info &amp; Privacy</string>
     <string name="info_privacy_title">No internet, no tracking</string>

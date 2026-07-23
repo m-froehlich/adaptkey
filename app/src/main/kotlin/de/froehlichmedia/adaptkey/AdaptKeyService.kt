@@ -688,6 +688,9 @@ class AdaptKeyService : InputMethodService() {
         val bar = SuggestionBarView(this)
         bar.onItemClick = SuggestionBarView.OnItemClickListener { item -> onSuggestionClicked(item) }
         bar.onBlacklist = SuggestionBarView.OnBlacklistListener { word -> onBlacklistWord(word) }
+        // D-247: the D-246 "Gelernt: X" chip's own two-zone drag (Kind.LEARNED only, see SuggestionBarView).
+        bar.onForgetLearned = SuggestionBarView.OnForgetLearnedListener { word -> onForgetLearnedWord(word) }
+        bar.onForbidLearned = SuggestionBarView.OnForbidLearnedListener { word -> onForbidLearnedWord(word) }
         // D-144: a downward swipe on the bar itself dismisses/closes too, not only on the keyboard body.
         bar.onSwipeDown = SuggestionBarView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         bar.visibility = View.VISIBLE
@@ -868,10 +871,52 @@ class AdaptKeyService : InputMethodService() {
         if (dictionaryStore.isBundledWord(word)) {
             dictionaryStore.blacklist(word, BlacklistCategory.USER)
         } else {
-            dictionaryStore.forget(word)
-            dictionaryStore.markPendingBlacklist(word, System.currentTimeMillis())
+            forgetSelfTaughtWord(word)
         }
         refreshSuggestions()
+    }
+    
+    /**
+     * D-247: the self-taught half of [onBlacklistWord] (D-177), pulled out so the D-246 "Gelernt: X"
+     * confirmation chip's own shallow ("Vergessen") drag zone can reuse it directly - a just-promoted word
+     * is never bundled by construction ([learnWord]'s own [DictionaryStore.isBundledWord] check would have
+     * skipped learning it entirely otherwise), so [onBlacklistWord]'s own origin branching would always
+     * degenerate to this exact call anyway; calling it directly avoids re-deriving that already-known fact.
+     */
+    private fun forgetSelfTaughtWord(word: String) {
+        dictionaryStore.forget(word)
+        dictionaryStore.markPendingBlacklist(word, System.currentTimeMillis())
+    }
+    
+    /**
+     * D-247: the D-246 "Gelernt: X" chip's shallow drag zone ("Vergessen") - unlearns a just-promoted word
+     * exactly like [onBlacklistWord] already does for a self-taught word, without needing to re-check its
+     * origin (see [forgetSelfTaughtWord]'s own KDoc).
+     *
+     * @param word the just-promoted word to unlearn
+     */
+    private fun onForgetLearnedWord(word: String) {
+        if (word.isBlank() || !this::dictionaryStore.isInitialized) {
+            return
+        }
+        forgetSelfTaughtWord(word)
+        showNextWordPredictions()
+    }
+    
+    /**
+     * D-247: the D-246 "Gelernt: X" chip's deep drag zone ("Verbieten") - blacklists a just-promoted word
+     * immediately and permanently, bypassing [onBlacklistWord]'s own origin check entirely (deliberately
+     * stronger than [onForgetLearnedWord]'s provisional mark, for when the user is certain the word should
+     * never be reconsidered even if it recurs).
+     *
+     * @param word the just-promoted word to blacklist
+     */
+    private fun onForbidLearnedWord(word: String) {
+        if (word.isBlank() || !this::dictionaryStore.isInitialized) {
+            return
+        }
+        dictionaryStore.blacklist(word, BlacklistCategory.USER)
+        showNextWordPredictions()
     }
     
     /**
@@ -2611,8 +2656,9 @@ class AdaptKeyService : InputMethodService() {
         } else {
             clearUndo()
         }
-        // D-43: predict the next word instead of leaving the bar blank.
-        showNextWordPredictions()
+        // D-43: predict the next word instead of leaving the bar blank. D-247: a genuinely fresh promotion
+        // this commit takes priority over the ordinary predictions (shown pinned ahead of them, not instead).
+        showNextWordPredictions(learnRecord.word.takeIf { learnRecord.outcome == LearnOutcome.PROMOTED })
         armShiftForNextWord(ic)
         trackSustainedEnglishUsage(ic, dictChoice.language)
         return finalWord.length + delimiter.length
@@ -2815,10 +2861,11 @@ class AdaptKeyService : InputMethodService() {
         ic.deleteSurroundingText(1, 0)
         val cased = capitalisation.capitalise(merged, contextFor(merged))
         ic.commitText(cased + delimiter, 1)
-        learnWord(cased)
+        val learnRecord = learnWord(cased)
         clearUndo()
-        // D-43: predict the next word instead of leaving the bar blank.
-        showNextWordPredictions()
+        // D-43: predict the next word instead of leaving the bar blank. D-247: pin the "Gelernt: X"
+        // confirmation ahead of it when this merge is what just crossed the promotion threshold.
+        showNextWordPredictions(learnRecord.word.takeIf { learnRecord.outcome == LearnOutcome.PROMOTED })
         return cased.length + delimiter.length - 1
     }
     
@@ -2864,8 +2911,13 @@ class AdaptKeyService : InputMethodService() {
         // involves the D-39 raw-coordinate path, so there is no touch-model sample to un-train here.
         undoLearnRecords = listOf(leftRecord, rightRecord)
         undoRawCorrection = null
-        // D-43: predict the next word (following the right-hand split part) instead of a blank bar.
-        showNextWordPredictions()
+        // D-43: predict the next word (following the right-hand split part) instead of a blank bar. D-247:
+        // pin the "Gelernt: X" confirmation ahead of it when either half just crossed the promotion
+        // threshold - the right half takes priority (it is the word actually adjacent to what comes next);
+        // both promoting in the very same commit is a rare enough edge case not to need its own UI.
+        val justPromoted = rightRecord.word.takeIf { rightRecord.outcome == LearnOutcome.PROMOTED }
+            ?: leftRecord.word.takeIf { leftRecord.outcome == LearnOutcome.PROMOTED }
+        showNextWordPredictions(justPromoted)
         return committed.length + delimiter.length
     }
     
@@ -3659,19 +3711,40 @@ class AdaptKeyService : InputMethodService() {
      * tier-3 mini-LLM refines the bar the moment the user starts typing the next token; this baseline just
      * makes the pause between words useful.
      */
-    private fun showNextWordPredictions() {
+    /**
+     * @param justPromoted D-247: when a word was just promoted to the learned dictionary this exact commit
+     *        (see [LearnOutcome.PROMOTED]), the D-246 "Gelernt: X" confirmation chip for it - pinned ahead
+     *        of the ordinary predictions below, never subject to their own ranking. Null (the default) for
+     *        every ordinary call site, which keeps this function's prior behaviour unchanged.
+     */
+    private fun showNextWordPredictions(justPromoted: String? = null) {
         handler.removeCallbacks(resortRunnable)
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         val previous = previousWord
         val predictions = (if (previous == null) emptyList() else provider.nextWordSuggestions(previous, previousPreviousWord)) +
             listOfNotNull(timeSuggestion())
+        controller.clear()
+        controller.update("", predictions, null)
+        if (justPromoted != null) {
+            // D-247: Kind.LEARNED needs its own DisplayItem, not just a high-scoring Suggestion, so it is
+            // built directly and prepended - the same "built outside SuggestionController" shape D-36/D-142's
+            // own CLIPBOARD/CREDENTIAL chips already use - regardless of whether any ordinary prediction
+            // exists to follow it (unlike the empty-predictions early-out below, this must never be silently
+            // dropped just because there happens to be nothing else to predict).
+            val chip = SuggestionController.DisplayItem(
+                text = getString(R.string.suggestion_learned_label, justPromoted),
+                kind = SuggestionController.Kind.LEARNED,
+                word = justPromoted
+            )
+            suggestionBar?.setItems(listOf(chip) + controller.displayed())
+            suggestionBar?.visibility = View.VISIBLE
+            return
+        }
         if (predictions.isEmpty()) {
             clearSuggestions()
             return
         }
-        controller.clear()
-        controller.update("", predictions, null)
         showSuggestions()
     }
     
@@ -3716,13 +3789,20 @@ class AdaptKeyService : InputMethodService() {
      * and nothing else.
      */
     private enum class LearnOutcome {
-        /** Not a letters-only token, or blank - [learnWord] did nothing. */
+        /** Not a letters-only token, too short (D-247), or blank - [learnWord] did nothing. */
         SKIPPED,
         
-        /** [DictionaryStore.learn] was called - either an already-known word was reinforced, or a new
-         * word was just promoted past [LEARN_THRESHOLD]. Both undo identically via
-         * [DictionaryStore.unlearn], so this single case covers both. */
+        /** [DictionaryStore.learn] was called to reinforce an *already-known* word (already learned or
+         * bundled-and-known regardless). Distinct from [PROMOTED] - see D-247's own confirmation chip,
+         * which must fire only on a genuinely new promotion, never on every reinforcement of a word
+         * already typed a hundred times before. Undoes via [DictionaryStore.unlearn], same as [PROMOTED]. */
         LEARNED,
+        
+        /** [DictionaryStore.learn] was called because a new word was just promoted past
+         * [LEARN_THRESHOLD]/[COMPOUND_LEARN_THRESHOLD] this exact commit (D-37) - the one moment D-247's
+         * "Gelernt: X" confirmation chip fires for. Undoes identically to [LEARNED] via
+         * [DictionaryStore.unlearn]. */
+        PROMOTED,
         
         /** The word was new and not yet promoted - only [PendingLearnStore] was incremented. */
         PENDING
@@ -3768,8 +3848,10 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun learnWord(word: String?): LearnRecord {
-        // Adaptive learning: only learn pure-letter tokens; updates the n-gram context (tier 1).
-        if (word.isNullOrEmpty() || !word.all { it.isLetter() }) {
+        // Adaptive learning: only learn pure-letter tokens of at least MIN_LEARN_LENGTH (D-247) - updates
+        // the n-gram context (tier 1). A single letter is never a real word; the most common source is a
+        // fragment left over from an unintended Enter mid-word, not anything meant to be learned.
+        if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() }) {
             return LearnRecord(word ?: "", previousWord, previousPreviousWord, LearnOutcome.SKIPPED)
         }
         // D-37: an already-*learned* word is reinforced immediately; a genuinely new word is only counted
@@ -3801,7 +3883,7 @@ class AdaptKeyService : InputMethodService() {
         } else if (PendingLearnStore.increment(this, word) >= learnThresholdFor(word)) {
             dictionaryStore.learn(word, context, contextContext)
             PendingLearnStore.clear(this, word)
-            LearnOutcome.LEARNED
+            LearnOutcome.PROMOTED
         } else {
             LearnOutcome.PENDING
         }
@@ -3841,7 +3923,8 @@ class AdaptKeyService : InputMethodService() {
     private fun unlearnWord(record: LearnRecord) {
         when (record.outcome) {
             LearnOutcome.SKIPPED -> {}
-            LearnOutcome.LEARNED -> dictionaryStore.unlearn(record.word, record.previousWord, record.previousPreviousWord)
+            LearnOutcome.LEARNED, LearnOutcome.PROMOTED ->
+                dictionaryStore.unlearn(record.word, record.previousWord, record.previousPreviousWord)
             LearnOutcome.PENDING -> PendingLearnStore.decrement(this, record.word)
         }
     }
@@ -3853,7 +3936,9 @@ class AdaptKeyService : InputMethodService() {
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
-        if (word.isNullOrEmpty() || !word.all { it.isLetter() } || dictionaryStore.isBundledWord(word)) {
+        if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() } ||
+            dictionaryStore.isBundledWord(word)
+        ) {
             return
         }
         dictionaryStore.learn(word, previousWord, previousPreviousWord)
@@ -4007,6 +4092,13 @@ class AdaptKeyService : InputMethodService() {
                 CredentialStore.learn(this, item.word, actualKind)
                 credentialCaptured = true
                 clearSuggestions()
+            }
+            
+            // D-247: purely informational + a drag target (see SuggestionBarView's own two-zone handling) -
+            // a plain tap commits nothing; it just dismisses the confirmation back to ordinary predictions,
+            // matching "if you do nothing, it stays learned" (doing nothing includes tapping it away).
+            SuggestionController.Kind.LEARNED -> {
+                showNextWordPredictions()
             }
         }
     }
@@ -4426,6 +4518,11 @@ class AdaptKeyService : InputMethodService() {
         // starts fixing it. A false positive here only delays an ordinary word's promotion by a couple more
         // repetitions - accepted as harmless (see learnThresholdFor's own KDoc).
         private const val COMPOUND_LEARN_THRESHOLD = 4
+        
+        // D-247: a single letter is never a real word - the most common source is a fragment left behind
+        // by an unintended Enter mid-word (autocomplete-triggered send, accidental keypress), not anything
+        // meant to be learned. Applies to learnWord()/learnWordStrong() alike.
+        private const val MIN_LEARN_LENGTH = 2
         
         // D-177: converts AdaptSettings.pendingBlacklistExpiryDays (whole days) to milliseconds.
         private const val DAY_MILLIS = 24 * 60 * 60 * 1000L

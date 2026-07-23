@@ -8,6 +8,12 @@
     <!-- Suggestion bar drag-to-trash (G-04). -->
     <string name="suggestion_trash_label">🗑  Διαγραφή</string>
 
+    <!-- D-247: η επιβεβαίωση "Έμαθα: X" και η δική της διβάθμια χειρονομία μεταφοράς (ρηχό: μόνο
+         απομάθηση, βαθύ: μόνιμη απαγόρευση). -->
+    <string name="suggestion_learned_label">Έμαθα: %1$s</string>
+    <string name="suggestion_forget_label">Απομάθηση</string>
+    <string name="suggestion_forbid_label">Απαγόρευση</string>
+
     <!-- Info & privacy category (shown first on the settings screen). -->
     <string name="cat_info">Πληροφορίες &amp; Απόρρητο</string>
     <string name="info_privacy_title">Χωρίς ίντερνετ, χωρίς παρακολούθηση</string>

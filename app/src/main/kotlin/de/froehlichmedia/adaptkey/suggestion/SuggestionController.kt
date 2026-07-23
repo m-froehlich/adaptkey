@@ -33,7 +33,14 @@ class SuggestionController(private val config: SuggestionConfig) {
          * this class's own [update]/[displayed] (S-03 position stabilisation is for smoothing prose-typing
          * suggestion flicker; a short, freshly-ranked credential list has no need for it), mirroring how
          * [CLIPBOARD] is already handled. */
-        CREDENTIAL
+        CREDENTIAL,
+        
+        /** D-247: a "Gelernt: X" confirmation, shown once right after [DisplayItem.word] was just promoted
+         * to the learned dictionary (D-37) - purely informational plus a drag target (see
+         * `SuggestionBarView`'s own two-zone "Vergessen"/"Verbieten" drag), never committed by a tap. Built
+         * and pushed directly to the suggestion bar, pinned ahead of the ordinary predictions, bypassing
+         * this class's own [update]/[displayed] the same way [CLIPBOARD]/[CREDENTIAL] already do. */
+        LEARNED
     }
     
     /**

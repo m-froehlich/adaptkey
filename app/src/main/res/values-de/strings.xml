@@ -8,6 +8,12 @@
     <!-- Suggestion bar drag-to-trash (G-04). -->
     <string name="suggestion_trash_label">🗑  Löschen</string>
 
+    <!-- D-247: die "Gelernt: X"-Bestätigung und ihre eigene zweistufige Drag-Geste (flach: nur entlernen,
+         tief: dauerhaft verbieten). -->
+    <string name="suggestion_learned_label">Gelernt: %1$s</string>
+    <string name="suggestion_forget_label">Vergessen</string>
+    <string name="suggestion_forbid_label">Verbieten</string>
+
     <!-- Info & privacy category (shown first on the settings screen). -->
     <string name="cat_info">Info &amp; Datenschutz</string>
     <string name="info_privacy_title">Kein Internet, kein Tracking</string>

@@ -14,4 +14,11 @@
     <color name="suggestion_trash_background">#D32F2F</color>
     <color name="suggestion_trash_text">#FFFFFF</color>
     <color name="link_text">#1565C0</color>
+    <!-- D-247: a plain, fixed green for the "Gelernt: X" chip and its own shallow "Vergessen" drag zone -
+         deliberately independent of the user-configurable C-04/S-05 highlight colour (settings.highlightColor
+         could be set to any of the other presets), reusing D-241's own device-confirmed-distinguishable
+         Material Green 600 shade as a fixed value, not a reference to the setting. -->
+    <color name="suggestion_learned_text">#43A047</color>
+    <color name="suggestion_forget_background">#43A047</color>
+    <color name="suggestion_forget_text">#FFFFFF</color>
 </resources>

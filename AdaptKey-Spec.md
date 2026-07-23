@@ -215,7 +215,9 @@ the keyboard learned from the user's own typing is instead un-learned and marked
 blacklist for a configurable window (default 7 days, editable 1-30); only a genuine recurrence within that
 window escalates it to a permanent blacklist entry, so a single accidental drag does not permanently condemn
 a self-taught word. Because a word matching the current input can never appear as a suggestion (S-02), a
-dedicated review screen (§13, W-01) exists as the only way to remove such a word directly.
+dedicated review screen (§13, W-01) exists as the only way to remove such a word directly. The W-03 promotion
+confirmation chip is the one exception to this single-zone behaviour, offering an explicit two-zone drag of
+its own instead - see §13.
 
 ### G-05 - Retroactive Capitalisation at Word End
 Pressing Shift at the end of a fully typed word toggles the capitalisation of its first character - in both directions: "Upper" becomes "upper", "lower" becomes "Lower". The outcome depends on the next key pressed:
@@ -582,7 +584,23 @@ A word is ordinarily promoted from "pending" to permanently learned after 2 unco
 recognised as a suspected unsplit compound, or one carrying an embedded mid-word capital, instead requires 4
 occurrences before promotion - both checks are re-evaluated fresh each time (nothing cached), so a later
 change in the detection logic reclassifies an already-pending word retroactively. A-07's undo correctly
-decrements this counter regardless of which threshold applies.
+decrements this counter regardless of which threshold applies. A single letter is never eligible for learning
+at all (D-247) - the most common source is a fragment left behind by an unintended Enter mid-word, not
+anything meant to be learned.
+
+### W-03 - "Gelernt: X" Promotion Confirmation *(D-247)*
+The moment a word is genuinely promoted to the learned dictionary (W-02's threshold crossed this exact
+commit - never on an ordinary reinforcement of an already-learned word, which would fire constantly and add
+no information) shows a dedicated, distinctly-coloured "Gelernt: X" chip in the suggestion bar, pinned ahead
+of the ordinary next-word predictions rather than participating in their ranking. A plain tap dismisses it
+(nothing changes - "doing nothing" already means "stays learned", matching the rest of this affordance's own
+logic). Dragging it upward arms a two-zone variant of G-04's own drag-to-trash gesture, distinct from the
+single-zone behaviour every ordinary suggestion keeps: a shallow zone unlearns the word only (no blacklist
+mark, mirroring G-04's own self-taught-word branch exactly); a deeper zone blacklists it immediately and
+permanently, bypassing G-04's own bundled-vs-self-taught origin check entirely (a freshly-promoted word is
+never bundled, so that check would otherwise always resolve to the shallow outcome regardless of how far the
+drag travelled) - deliberately stronger than the shallow zone, for when the user is certain the word should
+never be reconsidered even if it recurs.
 
 ---
 

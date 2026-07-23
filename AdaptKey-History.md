@@ -8552,3 +8552,101 @@ scoring/dedup, and the no-context regression case - 4 `SqliteDictionaryStoreRobo
 (789 + 11). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - a trigram needs
 real repeated two-word-context typing to accumulate before its effect is visible at all, so this will take
 longer than usual to judge on-device. See spec S-07.
+
+## §172 - D-247: A "Gelernt: X" Promotion Confirmation With Its Own Two-Zone Drag, Closing the Silent-Learning
+Gap Behind the User's Own Real Complaint (v0.8.130)
+
+User's actual problem, named directly: nonsense words getting learned, primarily from unintended Enter
+presses that commit a partial word mid-type (an autocomplete-triggered send in a messaging app is the
+concrete recurring case) - the fragment then goes through the exact same D-37 learning pipeline as a genuine
+word, with zero visibility until someone happens to check the separate Learned Words settings screen. Two
+ideas discussed and refined together before any code was written (per this project's own non-trivial-design
+convention), the user correcting course twice along the way:
+
+**Idea 1, accepted as-is**: exclude single letters from learning outright - confirmed against the actual code
+first (`learnWord()`'s guard had no length check at all) rather than assumed. New `MIN_LEARN_LENGTH = 2`
+constant, applied identically in `learnWord()`/`learnWordStrong()`. Deliberately not extended further (a
+2-letter German word - "an", "im", "es" - is often genuine, unlike a bare single letter, which never is) -
+the user's own framing: a cheap absolute rule only for the unambiguous case, a human-in-the-loop mechanism
+(idea 2) for everything else, since whether an Enter was accidental is not something the commit path can ever
+know synchronously.
+
+**Idea 2, round 1 - a "Gelernt: X" confirmation chip, drag up = trash (mirrors G-04), drag down = plain
+unlearn, with a dedicated trash icon appearing above the keyboard and a forget icon appearing in the keyboard
+area itself.** Assessed before implementing, grounded in the actual code (not assumed): G-04's existing
+two-outcome logic (`onBlacklistWord()` - bundled word -> immediate blacklist, self-taught word -> unlearn +
+provisional pending mark) already covers almost exactly what was wanted; a freshly-promoted word is *always*
+self-taught by construction (`learnWord()` skips a bundled word before promotion is ever possible), so reusing
+G-04 as-is for this new chip would only ever reach the provisional-unlearn branch, never a direct blacklist -
+identified as the one real gap needing new UI. The proposed drag-down-onto-the-keyboard icon was flagged as
+the expensive part of the plan: it needs live coordination between two separate view classes
+(`SuggestionBarView`, where the drag starts, and `AdaptKeyboardView`, where the icon would need to render) -
+nothing like it exists in the codebase today. Confirmed no permission gap either way (`AndroidManifest.xml`
+declares only `VIBRATE`/`READ_CONTACTS`, no `SYSTEM_ALERT_WINDOW`) and that "drawing above the keyboard" is
+already achievable without one - `ExtraRowView` already grows the IME's own window height via `ValueAnimator`
+or `requestLayout()`, exactly the trick Gboard's own trash icon almost certainly uses (its own IME window,
+not a true system overlay over the host app). Proposed alternative: replace the down-drag with a long-press
+dialog (mirrors the Remove-dialog pattern already used in `BlacklistActivity`/`LearnedWordsActivity`).
+
+**Idea 2, round 2 - the user's own, better refinement, replacing the long-press alternative.** Long-press was
+rejected by the user for a real, previously-unconsidered reason: a long-press timer fires time-based,
+independent of touch-slop movement, so it can trip *during* the early part of a slow drag, racing the drag
+gesture itself. Proposed instead: no downward drag at all - a single upward drag, two depth zones. Shallow
+(~1.5 row-heights, later retuned) shows a green "Vergessen" label; deeper shows "Verbieten" (or reusing
+G-04's own existing trash label, the user's own explicit fallback). Assessed as strictly better: no new
+gesture type, no cross-view coordination, and the two zones map exactly onto `onBlacklistWord()`'s two
+existing outcomes - shallow = the self-taught branch, deep = the bundled branch - made *explicitly selectable*
+by drag depth instead of automatically (and, for this one chip, uselessly) decided by origin. Scope question
+asked and answered directly by the user: the two-zone variant applies **only** to this new chip, not a
+universal G-04 replacement - the existing single-zone behaviour for every ordinary suggestion is untouched.
+Final calibration, also the user's own: reuse the existing G-04 arm distance (`dragThresholdPx`, 48dp)
+unchanged as the shallow zone's own entry point ("das hat immer gut gepasst"), double it for the deep zone.
+One more correction along the way: the chip's own text colour and the shallow zone's background are a plain,
+fixed green - explicitly *not* tied to the user-configurable C-04/S-05 highlight colour (which could be set to
+any of the other presets), reusing D-241's own device-confirmed Material Green 600 shade as an independent
+constant rather than a live reference to the setting.
+
+**Implementation.** `LearnOutcome` split `LEARNED` (reinforcement of an already-known word) from a new
+`PROMOTED` (the exact commit a word first crosses `LEARN_THRESHOLD`/`COMPOUND_LEARN_THRESHOLD`) - both still
+undo identically via `dictionaryStore.unlearn()`, only the confirmation-chip trigger cares about the
+distinction, at the exact point in `learnWord()`'s own if/else chain where the two cases already diverged (no
+new detection logic needed, just a different enum value returned). `LearnRecord`/`unlearnWord()` updated to
+match. `showNextWordPredictions()` gained an optional `justPromoted: String?` parameter (default null, every
+ordinary call site unchanged) - when set, builds a `SuggestionController.Kind.LEARNED` `DisplayItem` directly
+and prepends it ahead of `controller.displayed()`'s own ranked next-word predictions, bypassing the
+controller's own scoring the same way the existing `CLIPBOARD`/`CREDENTIAL` chips already do (built and
+pushed straight to the bar) - chosen over feeding it through `controller.update()` as a maximal-score
+`Suggestion` (S-08's own precedent) because this chip needs a genuinely distinct `Kind` for its own tap/drag
+semantics, not just a high score. Wired from all three `learnWord()`-driven commit paths that can promote a
+word: `finalizeAndCommit()` (the ordinary case, and the one the user's actual complaint targets),
+`applyMerge()`, and `applySplit()` (checking both halves, the right half taking priority as the word actually
+adjacent to what follows - both promoting in the same commit is a rare edge case not worth its own UI).
+
+`onBlacklistWord()`'s self-taught branch extracted into a shared `forgetSelfTaughtWord()`, reused by the new
+`onForgetLearnedWord()` (the chip's shallow zone) without re-deriving the already-known "never bundled" fact;
+a new `onForbidLearnedWord()` (the deep zone) calls `dictionaryStore.blacklist()` directly, bypassing the
+origin check entirely rather than routing through `onBlacklistWord()` (which would have degenerated to the
+shallow outcome regardless of drag depth, exactly the gap identified during design). `onSuggestionClicked()`'s
+new `Kind.LEARNED` branch is a no-op tap beyond dismissing back to ordinary predictions - the chip commits
+nothing, matching "doing nothing keeps it learned" (a tap is also "doing nothing" to the learn state).
+
+`SuggestionBarView` generalised its `normalWordAt()`/single `trashArmed` boolean into `draggableItemAt()`
+(now also recognises a `LEARNED` chip) and a three-state `DragZone` (`NONE`/`FORGET`/`BLACKLIST`) computed by
+`zoneFor()`, keyed off which `Kind` is being dragged: an ordinary suggestion's `zoneFor()` only ever reaches
+`BLACKLIST` at the original `dragThresholdPx` (byte-for-byte the pre-D-247 G-04 behaviour, confirmed by the
+full existing suite passing unmodified); a `LEARNED` chip's own `zoneFor()` adds the `FORGET` stage at the
+same threshold and moves `BLACKLIST` out to `learnedForbidThresholdPx = dragThresholdPx * 2`. `draw()` paints
+a new green `forgetPaint`/`forgetTextPaint` pair for `FORGET`; `BLACKLIST` reuses the existing red
+`trashPaint`/`trashTextPaint` for both chip kinds, only the label text differs ("🗑 Delete" for an ordinary
+suggestion, "Verbieten" for the `LEARNED` chip's own deeper zone - the user's own preferred wording, not the
+"reuse the existing label" fallback they also offered). Two new listener interfaces
+(`OnForgetLearnedListener`/`OnForbidLearnedListener`) mirror the existing `OnBlacklistListener` shape exactly.
+New DE/EN/EL strings (`suggestion_learned_label`, `suggestion_forget_label`, `suggestion_forbid_label`) and
+colours (`suggestion_learned_text`, `suggestion_forget_background`/`_text`).
+
+No new unit tests - every changed function is `AdaptKeyService`/`InputConnection`/View glue, the same
+established gap as G-04's own original implementation, D-122, and D-238 (none of which added tests either);
+`DragToTrash.isArmed()` itself is unchanged, only called with an additional threshold value. 800 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real
+promotion (2-4 repeated commits of a genuinely new word) to trigger at all, so awaits its own dedicated
+on-device round rather than the next incidental one. See spec §13 (W-02/W-03) and §4 (G-04).
