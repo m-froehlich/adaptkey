@@ -8746,3 +8746,36 @@ umlaut-scope exclusion, the no-match case, the empty-stem edge case - plus 1 `To
 noun-exclusion regression reproduced end-to-end, plus 1 `DictionarySuggestionProviderTest`: the A-01
 autocorrect-override symmetry case). 808 unit tests (800 + 8; §173's own capture added none). `:app:
 assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See spec A-01/A-05.
+
+## §175 - D-250: D-161's WindowInsets Recheck Retuned From One-Shot to Five Repeats (v0.8.132)
+
+§173's own capture already specified this one concretely, ready to build without further design discussion:
+`windowInsetsRecheckRunnable` (§104/§105, the self-healing mitigation for the suspected onApplyWindowInsets-
+not-yet-delivered race) ran exactly once, `WINDOW_INSETS_RECHECK_DELAY_MS` (500ms) after
+`onStartInputView()`. User's own diagnosis: a single check this early doesn't catch the race reliably enough
+in practice.
+
+**Implemented exactly as specified**: the runnable now reschedules itself, via its own captured reference in
+the property initializer (a plain, well-established Kotlin self-referencing-lambda pattern - no separate
+named function needed), for up to a new `WINDOW_INSETS_RECHECK_MAX_ATTEMPTS = 5` total checks,
+`WINDOW_INSETS_RECHECK_DELAY_MS` apart (so five checks land at 500/1000/1500/2000/2500ms after
+`onStartInputView()`). A new `windowInsetsRecheckAttempt` counter, reset to 0 alongside every
+`handler.removeCallbacks`/`postDelayed` pair already in `onStartInputView()` (so a fast field/app switch
+still only ever leaves the most recent run of retries pending, exactly as the pre-existing cancel-and-
+reschedule logic already guaranteed for the old one-shot version), tracks how many checks have fired and
+stops the chain once the limit is reached. No change to the check itself - still reads the real current
+insets directly via `ViewCompat.getRootWindowInsets()` and only logs/corrects when the implied padding
+actually differs from what `inputRoot` currently has, so a run of five checks against an already-correct
+padding stays a silent no-op exactly as before, matching the user's own "the repeated polling costs nothing
+worth worrying about" framing - deliberately not stopping the chain early on a successful correction either,
+since a genuinely flaky/duplicate insets delivery could in principle regress the padding between checks and
+the remaining, still-cheap rechecks are a strictly-better safety net than trusting the first correction to be
+final.
+
+No new tests - the same established Android view/window-inset glue gap as §104's own original landing
+(nothing here changed that isn't `androidx.core.view` glue over already-tested application logic). 808 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - same
+open status as D-161 itself: a real occurrence either produces a logged correction on one of the five checks
+now, or the race still isn't being caught (in which case the hypothesis, not just the retry count, would need
+revisiting). See spec §1 (guiding-principle guardrail area is adjacent but not touched - no composing-state/
+`onUpdateSelection` code was involved in this change).

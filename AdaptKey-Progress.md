@@ -70,6 +70,17 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§175 (v0.8.132): D-250 - D-161's WindowInsets recheck retuned from a single one-shot check to five,**
+  **500ms apart, per the concrete spec §173 already captured (no further design round needed).**
+  `windowInsetsRecheckRunnable` now reschedules itself (self-referencing lambda) up to a new
+  `WINDOW_INSETS_RECHECK_MAX_ATTEMPTS = 5` times, `WINDOW_INSETS_RECHECK_DELAY_MS` (500ms) apart; a new
+  `windowInsetsRecheckAttempt` counter is reset in `onStartInputView()` alongside the existing
+  `removeCallbacks`/`postDelayed` pair, so a fast field/app switch still only leaves the most recent run of
+  retries pending. The check itself is unchanged (still a silent no-op once the padding is already correct)
+  and the chain deliberately does not stop early on a successful correction - matches the user's own "costs
+  nothing worth worrying about" framing. No new tests (same established Android view/window-inset glue gap
+  as §104's original landing). 808 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. Not yet device-confirmed. See history §175.
 - **§174 (v0.8.131): D-252 - "zuversichtlicher" -> "zuversichtlich er" closed via a new `AdjectiveInflection`**
   **check, mirroring the existing `RegularVerbInflection` protection (design agreed with the user first,**
   **see history §174 for the full root-cause + a real regression caught by the existing test suite).** New

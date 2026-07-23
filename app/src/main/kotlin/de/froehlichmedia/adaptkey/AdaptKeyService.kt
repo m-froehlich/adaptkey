@@ -513,14 +513,21 @@ class AdaptKeyService : InputMethodService() {
         }
     }
     
-    // D-161: reported sporadically, no repro yet - the keyboard occasionally appears to render underneath
-    // the gesture navigation bar until the first touch. Candidate mechanism (from reading the code, not yet
-    // confirmed from a device log): onApplyWindowInsets is not guaranteed to be delivered before the input
-    // view's first visible frame, so applyWindowInsetsPadding() may not have run yet at that point. This
-    // one-shot recheck, scheduled from onStartInputView, re-reads the real current insets directly
+    // D-161/D-250: reported sporadically, no repro yet - the keyboard occasionally appears to render
+    // underneath the gesture navigation bar until the first touch. Candidate mechanism (from reading the
+    // code, not yet confirmed from a device log): onApplyWindowInsets is not guaranteed to be delivered
+    // before the input view's first visible frame, so applyWindowInsetsPadding() may not have run yet at
+    // that point. This recheck, scheduled from onStartInputView, re-reads the real current insets directly
     // (no dependency on a further callback) and self-heals a stale padding if one is found - logging only
     // when it actually corrects something, so a real occurrence is finally caught rather than guessed at.
-    private val windowInsetsRecheckRunnable = Runnable {
+    // D-250: a single one-shot check (§104) did not catch the race reliably enough - retuned to
+    // WINDOW_INSETS_RECHECK_MAX_ATTEMPTS repeats, WINDOW_INSETS_RECHECK_DELAY_MS apart, since the check
+    // itself is already cheap and idempotent (a no-op once the padding is already correct), so the repeated
+    // polling costs nothing worth worrying about. windowInsetsRecheckAttempt is reset to 0 alongside every
+    // (re)scheduling in onStartInputView, so a fast field/app switch always gets its own full run of retries.
+    private var windowInsetsRecheckAttempt = 0
+    
+    private val windowInsetsRecheckRunnable: Runnable = Runnable {
         val root = inputRoot
         if (root == null || !root.isAttachedToWindow) {
             return@Runnable
@@ -540,6 +547,10 @@ class AdaptKeyService : InputMethodService() {
                 warn = true
             )
             applyWindowInsetsPadding(root, insets)
+        }
+        windowInsetsRecheckAttempt++
+        if (windowInsetsRecheckAttempt < WINDOW_INSETS_RECHECK_MAX_ATTEMPTS) {
+            handler.postDelayed(windowInsetsRecheckRunnable, WINDOW_INSETS_RECHECK_DELAY_MS)
         }
     }
     
@@ -1160,9 +1171,11 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        // D-161: see windowInsetsRecheckRunnable's own KDoc - cancel any still-pending check from a
-        // previous, faster field/app switch before scheduling this one, so only the most recent survives.
+        // D-161/D-250: see windowInsetsRecheckRunnable's own comment - cancel any still-pending check from a
+        // previous, faster field/app switch before scheduling this one, so only the most recent survives, and
+        // reset the attempt counter so this field/app switch gets its own full run of retries.
         handler.removeCallbacks(windowInsetsRecheckRunnable)
+        windowInsetsRecheckAttempt = 0
         handler.postDelayed(windowInsetsRecheckRunnable, WINDOW_INSETS_RECHECK_DELAY_MS)
         // Pick up any changes made in the settings screen since the keyboard was last shown.
         settings = SettingsStore.load(this)
@@ -4496,12 +4509,17 @@ class AdaptKeyService : InputMethodService() {
         // enough that the bar/preview still fills at any natural pause. A starting value, easy to retune.
         private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
         
-        // D-161: how long after the keyboard is shown windowInsetsRecheckRunnable re-verifies the real
-        // padding - long enough that a normally-delivered onApplyWindowInsets callback has certainly
-        // already run, short enough that a real correction (the rare case) is barely noticeable. Retuned
-        // 1000->500ms per direct request - the user's own first keystroke usually lands before a full
-        // second elapses, which would make the correction moot by the time it ran.
+        // D-161: how long after the keyboard is shown, and D-250: how far apart each repeat check runs -
+        // long enough that a normally-delivered onApplyWindowInsets callback has certainly already run
+        // before the first check, short enough that a real correction (the rare case) is barely noticeable.
+        // Retuned 1000->500ms per direct request - the user's own first keystroke usually lands before a
+        // full second elapses, which would make the correction moot by the time it ran.
         private const val WINDOW_INSETS_RECHECK_DELAY_MS = 500L
+        
+        // D-250: a single one-shot check (§104) did not catch the race reliably enough - retuned to this
+        // many repeat checks, WINDOW_INSETS_RECHECK_DELAY_MS apart, on the assumption that the repeated
+        // polling costs nothing worth worrying about since each check is already cheap and idempotent.
+        private const val WINDOW_INSETS_RECHECK_MAX_ATTEMPTS = 5
         
         // §60: how much of a clipboard *file*'s content to read for the chip's own already-truncated
         // preview - generous relative to ClipboardPreview.MAX_LENGTH (24), but still a small, bounded read
