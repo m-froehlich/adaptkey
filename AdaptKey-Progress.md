@@ -70,6 +70,20 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§177 (v0.8.134): D-248 - backspacing back into a recently-learned word now un-teaches it, sidestepping**
+  **the original "what counts as an implausible word" question entirely, per the user's own two-round**
+  **design (general mechanism, not scoped to the Enter-mid-word case that motivated it).** New
+  `recentLearnRecords` (last `RECENT_LEARN_HISTORY_SIZE = 5` non-`SKIPPED` `LearnRecord`s, fed from a single
+  choke point inside `learnWord()`/`learnWordStrong()` covering all eight of their call sites) is checked by
+  a new `maybeUnlearnOnBackspaceReturn()`, called from `deleteOneBefore()` whenever `composing` was empty -
+  `WordExtent.reclaim(before, "").before` (an existing, previously D-62-only primitive) finds the exact
+  word-run touching the caret; a match calls the pre-existing `unlearnWord()` unchanged and refreshes the bar
+  (dropping a still-showing W-03 "Gelernt: X" chip for it). Survives any number of intervening keystrokes,
+  unlike A-07's own one-keystroke-only undo; structurally never competes with an A-07 undo already in
+  progress (A-07's own guard returns before the normal backspace path is ever reached). No new tests
+  (established `AdaptKeyService`/`InputConnection` glue gap, matching A-07/G-04/D-122/D-238's own precedent).
+  813 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed.
+  See history §177, spec A-11 (new).
 - **§176 (v0.8.133): D-249 - the German inseparable verb/negation prefixes (`ver-`/`zer-`/`ent-`/`emp-`/**
   **`be-`/`ge-`/`miss-`/`er-`/`un-`/`ur-`/`wider-`) are now protected from A-05/D-122 splitting, per the**
   **user's own tiered candidate list agreed beforehand (Tier 4 - `über-`/`um-`/`durch-`/`unter-`/`voll-`/**

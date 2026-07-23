@@ -8828,3 +8828,70 @@ a prefix present but below the ceiling, the `er-` exemption proving the legitima
 works, an exact ceiling-boundary test (blocked at the ceiling, freed one above it), and one confirming the
 same block applies via `splitAtUnresolvedConnector()`. 813 unit tests (808 + 5). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. Not yet device-confirmed. See spec A-05.
+
+## §177 - D-248: Backspacing Back Into a Recently-Learned Word Un-Teaches It (v0.8.134)
+
+§173's own capture had left D-248 open with "needs a strategy for what counts as implausible before anything
+can be built". User's own reframing, arrived at through two rounds of discussion, sidesteps that question
+entirely: rather than trying to judge in advance whether a line-end/Enter commit looks like a real word, just
+let the same mechanism that already exists for rejecting a wrong autocorrect (A-07) reverse it after the fact,
+the moment the user demonstrates - by backspacing back to it - that it was not what they meant. "So müssen wir
+uns gar keine Gedanken machen, ob das Wort unplausibel ist" (the user's own words) - the plausibility question
+D-248 was originally stuck on turns out not to need answering at all.
+
+**First round proposed scoping this narrowly to the Enter-mid-word case specifically** (arm on Enter firing
+with composing non-empty, survive further Enters, consume on the next Backspace). **User's own correction,
+second round**: broaden it to a general "backspacing back into a recently-learned word un-teaches it"
+mechanism, independent of what happened in between, matched against a small remembered history (proposed:
+last 5 learned words) rather than one single-purpose flag - "oft wird es kein gelerntes Wort sein. Aber wenn
+doch, wird es eben eins runtergezählt." This is both simpler (no Enter-specific arming/tracking at all) and
+strictly more general (also covers, e.g., backspacing back into a word that was auto-corrected-and-accepted
+several keystrokes ago, or a plain reinforcement of an already-known word) - confirmed workable against the
+real code before agreeing: [WordExtent.reclaim] (existing, currently only used by [reclaimSurroundingWord] to
+find the letter-run touching the caret when a *new* character is typed mid-word) is exactly the right pure
+primitive for "which word does the caret currently sit at the end of", with the same caret argument reused for
+"text before" instead of "before + after".
+
+**The A-07-non-interference requirement turned out to already hold structurally, not something that needed
+enforcing separately**: A-07's own undo check sits at the very top of `handleKey` and returns immediately
+for a DELETE keystroke whenever its own undo state is armed ([AdaptKeyService.kt] `handleKey`, the
+`if (undoTyped != null) { if (key.code == KeyCode.DELETE) { performAutocorrectUndo(ic); return } ... }` guard)
+- the ordinary backspace path (`handleBackspace` -> `deleteOneBefore`, where the new check lives) is simply
+never reached on that keystroke at all. No extra guard needed - confirmed by reading the call order, not
+assumed.
+
+**Implemented as a new, general mechanism, deliberately not built on top of A-07's own undo state** (which is
+tied to "restore the original typed text", not applicable here - a plain, uncorrected commit has no
+alternate text to restore, only a learning side effect to reverse):
+
+- New `recentLearnRecords: MutableList<LearnRecord>`, capped at a new `RECENT_LEARN_HISTORY_SIZE = 5`
+  (FIFO eviction), fed from a single new choke point, `rememberForBackspaceUnlearn()`, called from both
+  `learnWord()` and `learnWordStrong()` right before they return - per direct user confirmation ("alle"),
+  covering every one of their eight call sites (the ordinary word commit, both halves of an A-05 split,
+  A-07's own post-undo re-learn, D-13's authoritative promotion, ...) without touching any of them
+  individually. A `LearnOutcome.SKIPPED` record (nothing was actually learned - a bundled word, a
+  pending-blacklist escalation, a too-short token) is never remembered, so the five slots are not wasted on
+  ordinary already-known vocabulary that would otherwise dominate every commit.
+- New `maybeUnlearnOnBackspaceReturn()`, called from `deleteOneBefore()` whenever `composing` was empty at
+  the moment of the call (the plain "deleting into already-committed text" case, as opposed to
+  `deleteOneBefore()`'s other call site inside `deleteComposingChar()`, only reached while a token is still
+  actively being re-edited - not "returning" to a finished word). Reads the text before the cursor, applies
+  `WordExtent.reclaim(before, "").before` to isolate the exact word-run now touching the caret, and matches
+  it (case-sensitive, exact) against `recentLearnRecords`. A match is only possible for exactly one
+  keystroke by construction - one backspace earlier the run still carries a trailing character not yet
+  deleted, one backspace later it is already missing the word's own last letter - so this needs no separate
+  "already fired" guard beyond removing the matched record once used.
+- A match calls the pre-existing `unlearnWord()` unchanged (same three-way `LearnOutcome` dispatch A-07
+  already relies on: `LEARNED`/`PROMOTED` -> `dictionaryStore.unlearn()`, `PENDING` -> decrement the pending
+  counter, count-to-zero deletion behaviour identical, confirmed explicitly with the user rather than
+  assumed), then calls `showNextWordPredictions()` unconditionally to refresh the bar - the cheapest way to
+  guarantee a still-showing W-03 "Gelernt: X" chip for the just-unlearned word disappears, without needing
+  to track separately whether the chip actually happened to be showing for that exact word.
+
+No new unit tests - every changed/new function (`deleteOneBefore`, `learnWord`, `learnWordStrong`,
+`rememberForBackspaceUnlearn`, `maybeUnlearnOnBackspaceReturn`) is `AdaptKeyService`/`InputConnection` glue,
+the same established gap as A-07's own original implementation, G-04, D-122, and D-238 (none of which added
+tests either); `WordExtent.reclaim()` itself is unchanged and already covered. 813 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real accidental-Enter
+round (or any backspace-back-into-a-learned-word scenario) to trigger at all. See spec A-11 (new), §13
+(W-02/W-03), A-07.

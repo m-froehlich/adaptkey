@@ -380,6 +380,15 @@ class AdaptKeyService : InputMethodService() {
     // resolution error) can be un-trained on undo. Null whenever the correction was not raw-coordinate-based.
     private var undoRawCorrection: RawCorrectionUndo? = null
     
+    // D-248: the last few LearnRecords learnWord()/learnWordStrong() produced (every outcome except
+    // LearnOutcome.SKIPPED, which changed nothing) - unlike the A-07 undo state above, this deliberately
+    // survives any number of intervening keystrokes, not just the one directly after the commit. Checked by
+    // maybeUnlearnOnBackspaceReturn() whenever a plain backspace lands with the caret back at the end of one
+    // of these words - most commonly after backspacing back through one or more stray Enters that
+    // prematurely committed a half-typed word, but not scoped to that shape specifically. Newest last,
+    // capped at RECENT_LEARN_HISTORY_SIZE.
+    private val recentLearnRecords: MutableList<LearnRecord> = ArrayList()
+    
     private val handler = Handler(Looper.getMainLooper())
     private val resortRunnable = Runnable {
         controller.resort()
@@ -2345,6 +2354,11 @@ class AdaptKeyService : InputMethodService() {
      * editable (the cursor is at the very start of the entry), a real DEL key event is sent instead so
      * the editor can join with the previous line/entry if it supports it (D-10).
      *
+     * D-248: when [composing] is empty, this is a plain backspace into already-committed text (as opposed
+     * to this function's other call site inside [deleteComposingChar], reached only while [composing] is
+     * still non-empty, i.e. actively re-editing an already-open token, not "returning" to a finished word) -
+     * checked via [maybeUnlearnOnBackspaceReturn].
+     *
      * @return true when a character was removed from the editable, false when the DEL fallback was used
      */
     private fun deleteOneBefore(ic: InputConnection): Boolean {
@@ -2354,9 +2368,13 @@ class AdaptKeyService : InputMethodService() {
             sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
             return false
         }
+        val wasComposingEmpty = composing.isEmpty()
         val deleted = before[0]
         ic.deleteSurroundingText(1, 0)
         applyShiftAfterDelete(deleted)
+        if (wasComposingEmpty) {
+            maybeUnlearnOnBackspaceReturn(ic)
+        }
         return true
     }
     
@@ -3903,7 +3921,9 @@ class AdaptKeyService : InputMethodService() {
         // D-246: shift the two-word trigram context in lockstep, oldest value first.
         previousPreviousWord = previousWord
         previousWord = word
-        return LearnRecord(word, context, contextContext, outcome)
+        val record = LearnRecord(word, context, contextContext, outcome)
+        rememberForBackspaceUnlearn(record)
+        return record
     }
     
     /**
@@ -3943,6 +3963,54 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-248: remembers [record] for [maybeUnlearnOnBackspaceReturn], unless it is a [LearnOutcome.SKIPPED]
+     * no-op that changed nothing. Called from both [learnWord] and [learnWordStrong] - the single choke
+     * point behind every call site of either (finalizeAndCommit's ordinary word-commit path, an A-05 split's
+     * two halves, A-07's own re-learn of a restored word, D-13's authoritative promotion, ...), so none of
+     * them need their own bookkeeping. Oldest entry evicted once [RECENT_LEARN_HISTORY_SIZE] is exceeded.
+     */
+    private fun rememberForBackspaceUnlearn(record: LearnRecord) {
+        if (record.outcome == LearnOutcome.SKIPPED) {
+            return
+        }
+        recentLearnRecords.add(record)
+        while (recentLearnRecords.size > RECENT_LEARN_HISTORY_SIZE) {
+            recentLearnRecords.removeAt(0)
+        }
+    }
+    
+    /**
+     * D-248: whenever a plain backspace lands with composing empty (checked by the caller, [deleteOneBefore])
+     * - i.e. not a correction-undo, which A-07 short-circuits entirely before this is ever reached (see
+     * [handleKey]) - checks whether the caret now sits right at the end of one of [recentLearnRecords].
+     * [WordExtent.reclaim] finds the exact word-character run now touching the caret, purely from the
+     * already-committed text; a plain, case-sensitive match against a still-remembered record's own word is
+     * unlearned immediately (count--, exactly mirroring A-07's own [unlearnWord]) and dropped so it cannot
+     * fire twice. This is deliberately independent of whatever happened in between - most commonly reached
+     * by backspacing back through one or more stray Enters that prematurely committed a half-typed word, but
+     * not scoped to that shape specifically: the same "backspaced back into a recently-learned word" signal
+     * is just as valid regardless of the intervening keystrokes. Fires at most once per backspace, since a
+     * match is only possible for exactly one keystroke - one backspace earlier the trailing run still carries
+     * an extra character, one backspace later it is already missing the word's own last letter. A matched
+     * [LearnOutcome.PROMOTED] word's "Gelernt: X" chip (W-03), if still showing, is dropped along with it via
+     * the ordinary [showNextWordPredictions] refresh.
+     */
+    private fun maybeUnlearnOnBackspaceReturn(ic: InputConnection) {
+        if (recentLearnRecords.isEmpty()) {
+            return
+        }
+        val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0) ?: return
+        val wordAtCaret = WordExtent.reclaim(before, "").before
+        if (wordAtCaret.isEmpty()) {
+            return
+        }
+        val record = recentLearnRecords.lastOrNull { it.word == wordAtCaret } ?: return
+        unlearnWord(record)
+        recentLearnRecords.remove(record)
+        showNextWordPredictions()
+    }
+    
+    /**
      * Learns [word] authoritatively (D-13): a deliberate user correction (undoing a wrong split) promotes
      * the word to the dictionary immediately, bypassing the D-37 count-up threshold.
      *
@@ -3954,10 +4022,13 @@ class AdaptKeyService : InputMethodService() {
         ) {
             return
         }
-        dictionaryStore.learn(word, previousWord, previousPreviousWord)
+        val context = previousWord
+        val contextContext = previousPreviousWord
+        dictionaryStore.learn(word, context, contextContext)
         PendingLearnStore.clear(this, word)
         previousPreviousWord = previousWord
         previousWord = word
+        rememberForBackspaceUnlearn(LearnRecord(word, context, contextContext, LearnOutcome.LEARNED))
     }
     
     /**
@@ -4541,6 +4612,11 @@ class AdaptKeyService : InputMethodService() {
         // by an unintended Enter mid-word (autocomplete-triggered send, accidental keypress), not anything
         // meant to be learned. Applies to learnWord()/learnWordStrong() alike.
         private const val MIN_LEARN_LENGTH = 2
+        
+        // D-248: how many of the most recent learnWord()/learnWordStrong() outcomes maybeUnlearnOnBackspaceReturn()
+        // can still reach - a small, cheap bound, not tuned against any particular repro; five comfortably
+        // covers "typed a fragment, hit Enter by accident a few times while reaching for Backspace instead".
+        private const val RECENT_LEARN_HISTORY_SIZE = 5
         
         // D-177: converts AdaptSettings.pendingBlacklistExpiryDays (whole days) to milliseconds.
         private const val DAY_MILLIS = 24 * 60 * 60 * 1000L

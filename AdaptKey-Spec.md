@@ -469,6 +469,21 @@ While re-editing mid-word, an unresolved bottom-row connector character (`c v b 
 otherwise-recognisable halves is offered directly as a split suggestion, bypassing the ordinary bar-evidence
 ranking entirely.
 
+### A-11 - Backspacing Back Into a Recently-Learned Word Un-Teaches It
+The last few words the app's own learning pipeline actually acted on (reinforced, counted toward promotion,
+or promoted - whichever of A-07's own three outcomes applies) are remembered a while past the moment they were
+committed. Whenever a plain backspace subsequently lands with the caret sitting right at the end of one of
+these words again, it is un-learned on the spot - exactly the same reversal A-07 performs (count decremented,
+an entry removed outright once its count reaches zero), just triggered differently. Unlike A-07, this is not
+tied to the one keystroke directly after the commit: it survives any number of intervening keystrokes and
+fires whenever the caret eventually returns, most commonly after backspacing back through one or more stray
+line breaks that prematurely committed (and so, by the ordinary learning pipeline, also reinforced) a
+half-typed word. No judgement about whether the word "looks like" a real one is ever made - a word that was
+never actually reinforced or counted (e.g. one already shipped in the bundled dictionary) simply has nothing
+to undo. A "Gelernt: X" chip (W-03) still showing for a word that gets un-learned this way is removed from the
+bar immediately. Never interferes with an A-07 undo already in progress right after a commit - the two never
+compete for the same keystroke.
+
 ---
 
 ## 8. Hyphen Handling
