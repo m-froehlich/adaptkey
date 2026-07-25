@@ -2394,6 +2394,18 @@ class AdaptKeyService : InputMethodService() {
      * hold state. While a composing token is present its characters are removed first; afterwards the
      * committed text is deleted character-wise, switching to word-wise once [BackspaceRepeat.deletesWord].
      *
+     * D-255: [BackspaceRepeat.deletesWord] is checked *before* `composing.isNotEmpty()`, not after - once
+     * past the word-mode threshold, a whole word must be removed every tick regardless of whether §58's own
+     * reactive [reclaimWordAtCaret] (fired from the previous tick's own `onUpdateSelection` callback, since
+     * every plain single-character/word deletion below briefly leaves the caret collapsed on a word
+     * boundary) has since refilled [composing] with the next word. Confirmed via a real device log: once
+     * `backspaceHeldChars` crossed [BackspaceRepeat.WORD_MODE_AFTER_CHARS], the repeat cadence correctly
+     * slowed to [BackspaceRepeat.WORD_DELAY_MS] (proving `deletesWord` was already returning true), but
+     * deletion kept removing exactly one character per tick anyway - the reactive reclaim had refilled
+     * `composing` in between ticks, so the old branch order took the character-wise path unconditionally
+     * whenever `composing` was non-empty, permanently locking the hold into the slow, single-character
+     * cadence the word-mode switch was meant to avoid.
+     *
      * @param step the 0-based repeat index (0 resets the hold)
      * @return the delay in milliseconds before the next repeat tick
      */
@@ -2404,10 +2416,15 @@ class AdaptKeyService : InputMethodService() {
             clearUndo()
         }
         pendingMergeChar = null
-        if (composing.isNotEmpty()) {
-            deleteComposingChar(ic, duringRepeat = true)
-            backspaceHeldChars++
-        } else if (BackspaceRepeat.deletesWord(backspaceHeldChars)) {
+        if (BackspaceRepeat.deletesWord(backspaceHeldChars)) {
+            if (composing.isNotEmpty()) {
+                // D-255: discard a composing token §58 may have reactively reclaimed since the previous
+                // tick - finishComposingText() only un-marks it as composing, it does not change any
+                // characters, so the real document text (about to be read and bulk-deleted below) is
+                // unaffected either way.
+                ic.finishComposingText()
+                clearComposing()
+            }
             val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
             val count = WordBoundary.wordDeleteLength(before)
             if (count > 0) {
@@ -2417,6 +2434,9 @@ class AdaptKeyService : InputMethodService() {
                 // Nothing left in this editable: fall back to a DEL key event (D-10).
                 sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
             }
+        } else if (composing.isNotEmpty()) {
+            deleteComposingChar(ic, duringRepeat = true)
+            backspaceHeldChars++
         } else if (deleteOneBefore(ic)) {
             backspaceHeldChars++
         }

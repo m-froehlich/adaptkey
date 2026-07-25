@@ -70,6 +70,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§181 (v0.8.137): D-255 fixed; D-256/D-257/D-258/D-259 captured - five real device-log excerpts triaged**
+  **in one batch.** D-255 (fixed): an accelerating backspace hold got permanently stuck at the slow word-mode
+  cadence (300ms) but kept deleting only one character per tick instead of a whole word, because §58's
+  reactive `reclaimWordAtCaret()` kept refilling `composing` between ticks, and `handleBackspaceRepeat()`
+  checked `composing.isNotEmpty()` before `BackspaceRepeat.deletesWord()` - reordered so `deletesWord()` wins
+  once past threshold, discarding any reactively-refilled composing token first. D-256/D-257 (captured): two
+  "content destroyed" logs both show a genuine `EXTERNAL` composing-mismatch (§101/D-139's own guard, working
+  correctly - no data corrupted) but the *cause* of the mismatch itself (an unexplained caret jump with no
+  intervening AdaptKey-driven event) needs its own dedicated, isolated repro before touching this area again -
+  not guessed. D-258 (captured): "period swallowed after space" is inconclusive from the log alone - the
+  closest match actually looks like D-29's own correct space-eating behaviour, but suggestion-bar chip taps
+  aren't logged by the `AdaptKeyTouch` channel, so a chip-tap origin can't be ruled out either. D-259
+  (captured): feature request to show which raw tap produced a missed-space typo - X-01 already logs every
+  tap's coordinates, but no actual missed-space instance was found in the supplied log to point at; needs
+  either a concrete repro or a proper design round if a more convenient tap-to-typo correlation UI is wanted.
+  No new tests (D-255 is `AdaptKeyService`-internal glue, same established gap). 813 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. See history §181.
 - **§180 (v0.8.136): D-254 - the "Gelernt: X" chip's "Vergessen" (shallow) zone no longer marks pending-**
   **blacklist at all, per direct user pushback on D-253's diagnosis ("auf diesem Pfad soll nie etwas in der**
   **Blacklist landen").** Root cause one level deeper than D-253: `onForgetLearnedWord()` called

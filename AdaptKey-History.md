@@ -9005,3 +9005,96 @@ No new unit tests - both changed functions are `AdaptKeyService`-internal glue o
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - the user's own
 full repro (2x commit+Enter, Vergessen, 3x commit+Enter, Backspace) is the exact scenario to re-run; the whole
 cycle should now leave the word simply forgotten, never blacklisted. See spec W-03 (revised), A-11 (revised).
+
+## §181 - D-255 Fixed; D-256/D-257/D-258/D-259 Captured: Five Real Device Logs Triaged (v0.8.137)
+
+User supplied five real, unfiltered on-device diagnostic-log excerpts in one batch, each already labelled
+with the symptom observed at the time. Triaged individually against the actual code before deciding what to
+fix now versus capture - only D-255 had a root cause traceable with confidence from the log alone; the other
+four all land inside the `onUpdateSelection`/composing-race territory spec §1's guiding principle already
+names as this codebase's most sensitive area (D-139 took three full device-log rounds to close a *related*
+but distinct race shape) - implementing a guess there risks reintroducing exactly what D-139 already fixed,
+so each is captured with the precise log evidence instead of patched blind.
+
+### D-255 - fixed: an accelerating backspace hold got permanently stuck at word-mode cadence but character-wise granularity
+
+Log: a held Backspace deleting back through "die", "noch", "bitte", "ziehe" character-by-character, but at a
+visibly slow, unchanging pace throughout - never actually speeding up or jumping to whole-word deletion.
+
+Root-caused by reading `handleBackspaceRepeat()` and `BackspaceRepeat` together against the log's own timing:
+`BackspaceRepeat.nextDelayMs()` correctly returned the slow, fixed `WORD_DELAY_MS` (300ms) once
+`backspaceHeldChars` crossed `WORD_MODE_AFTER_CHARS` (16) - confirmed directly from the log's own inter-tick
+gaps widening to ~300ms partway through - proving `deletesWord()` was already true. But `handleBackspaceRepeat`
+checked `composing.isNotEmpty()` *first*, unconditionally, before ever checking `deletesWord()`: every time a
+word finished being deleted and the next tick's plain single-character delete removed the separating space,
+§58's own reactive `onUpdateSelection` -> `reclaimWordAtCaret()` (D-62's live mid-word-correction mechanism,
+completely unrelated in intent to an accelerating hold) fired and refilled `composing` with the *next* word
+before the following tick ran - so that tick, and every one after it, kept taking the character-wise branch
+regardless of the threshold. The word-mode slowdown fired exactly as designed; the actual whole-word deletion
+it was supposed to enable never did, once this reclaim-refill cycle got established.
+
+**Fixed by reordering**: `BackspaceRepeat.deletesWord(backspaceHeldChars)` is now checked first; when true, any
+composing token §58 reactively refilled since the previous tick is discarded first (`finishComposingText()` +
+`clearComposing()` - the former only un-marks it as composing, changing no characters, so the real document
+text the bulk delete reads immediately after is unaffected) before the existing word-wise `deleteSurroundingText`
+call runs. `composing.isNotEmpty()`/`deleteOneBefore()` moved to subsequent `else if` branches, unchanged
+otherwise. No new tests - `AdaptKeyService`-internal `InputConnection` glue, the same established gap as
+A-07/G-04/A-11's own precedent. 813 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. Not yet re-confirmed on-device - the user's own logged repro (hold Backspace through 3+ words) is the
+exact scenario to re-run.
+
+### D-256 CAPTURED - "content destroyed" #1: an EXTERNAL composing mismatch mid-backspace in the Gemini search field
+
+Log: typing "In flight prompts" then "wären" (autocorrected to "eaten" - itself a strange cross-language
+correction, not investigated this round), then backspacing. At `t=198989525`, a single Backspace tap expected
+the caret at 22 (`composing="eaten"`, anchor=18 + cursor=4) but the callback reported `new=[14,14]` - then a
+*second*, immediately following `onUpdateSelection` for the same edit reported `[18,18]` instead, disagreeing
+with its own prior callback. The `EXTERNAL` guard (§101/D-139) correctly detected the mismatch and safely
+tore down composing without corrupting the document - the defensive behaviour worked as intended - but *why*
+a single backspace produced two disagreeing selection reports 8 characters apart, in this specific field
+(`com.google.android.googlequicksearchbox`, hint "Frag Gemini" - already named in §1 as a field prone to this
+class of quirk), is not something this one excerpt can resolve. Needs a dedicated round with a minimal,
+isolated repro in this exact field, mirroring how D-139 itself was eventually closed - not a guess.
+
+### D-257 CAPTURED - "content destroyed" #2: repeated EXTERNAL composing mismatches in the Signal message field
+
+Log: several `EXTERNAL` events in the same session (`org.thoughtcrime.securesms`, hint "Signal-Nachricht"),
+e.g. `t=208046382`: composing "Das" expected the caret at 2, actual reported at 13 - an 11-character jump with
+no intervening AdaptKey-logged action at all (a ~0.8s gap in the log between the last keystroke and this
+callback). Later, `t=208058856`: composing "hiercsehrcsrressig" (18 chars) expected 44, actual reported 31 -
+also unexplained by anything AdaptKey itself did. Each case was correctly caught and safely handled by the
+same `EXTERNAL` guard as D-256. Given the total absence of any intervening AdaptKey-driven event before each
+jump, this looks more consistent with something *external* to the IME acting on the field (the app's own
+autocomplete/formatting, or similar) than a new AdaptKey-side bug - but this is not confirmed, only the most
+plausible reading of the evidence available. Same disposition as D-256: needs its own dedicated, isolated
+repro before any change, not guessed at from this log alone.
+
+### D-258 CAPTURED - "a period got swallowed after a space" - inconclusive from this excerpt
+
+Log: user's own label was "nach dem Space der Punkt verschluckt". The closest matching event found
+(`t=201202199`/`t=201202221`, two `onUpdateSelection` calls in immediate succession, cursor `19->18->19`)
+actually matches D-29's own documented "eat the preceding space before punctuation" behaviour exactly (net
+effect: a trailing space is replaced by the period, not swallowed) - which only arms via `pendingSuggestionSpace`,
+itself only set after accepting a *suggestion-bar* chip tap, which (unlike a keyboard-key tap) is not logged
+by the `AdaptKeyTouch` channel at all. Whether a chip was actually tapped just before this moment cannot be
+confirmed or ruled out from this excerpt - the 1.2s gap immediately preceding it (composing "Angeboz" silently
+clearing with no visible AdaptKey-logged cause) is itself unexplained the same way as D-256/D-257 above.
+Possibly this is D-29 working exactly as intended and the user's own read of "period disappeared" was actually
+"space silently replaced by period" (correct behaviour, easy to misread in the moment) - possibly a genuine
+bug in a path this log does not fully capture. Needs either a cleaner, minimal repro isolating just this one
+interaction, or a log that also captures suggestion-bar chip taps, before any diagnosis can be trusted.
+
+### D-259 CAPTURED - feature request: show which raw tap actually produced a missed-space typo
+
+User's own framing: after missing a space (two words glued together), they would like to know exactly where
+they tapped for it. X-01 already logs every raw tap's coordinates and resolved key (`AdaptKeyTouch: rawTap`),
+so the underlying data already exists in the diagnostic log for every keystroke - re-read this specific
+excerpt for an actual missed-space instance but did not find one where two committed words end up visibly
+glued together (every commit here reads as a correctly spelled, correctly spaced word); a couple of
+`SPACE_AMBIGUOUS`-flagged letter taps appear (e.g. the "m" mid-"prompts", the "n" mid-"eine") but both
+resolved correctly as letters, not missed spaces. Not fixed this round because there is nothing concrete yet
+to fix or build against - either the user can point to the specific glued word so the corresponding rawTap
+line can be looked up directly (the data already exists), or - if what is actually wanted is a *more
+convenient* way to correlate a specific typo with the tap(s) behind it, without manually cross-referencing
+timestamps - that would be a genuine new small feature (e.g. extending T-06's touch-zone view, or a
+tap-to-inspect affordance in the Diagnostics screen) worth designing properly, not bolting on guessed.
