@@ -201,13 +201,25 @@ class TokenRepairTest {
     @Test
     fun `§128 a half typed without its umlaut still resolves via the real diacritic spelling`() {
         // "uberwort" ("uber" typed without the umlaut + "wort") must still be recognised as "über" + "wort"
-        // (D-48: umlauts are ordinary characters) - the split's own halves stay the literal typed substrings
-        // (so §47's span-colouring math over the still-displayed composing text stays correct), but
-        // eligibility/frequency/noun-pair checks resolve through the real spelling.
+        // (D-48: umlauts are ordinary characters) - left/right stay the literal typed substrings (so §47's
+        // span-colouring math over the still-displayed composing text stays correct), but eligibility/
+        // frequency/noun-pair checks resolve through the real spelling, and D-268's resolvedLeft carries
+        // that real, umlaut-restored spelling through to what actually gets committed ("gehortes" must
+        // become "gehört es", not the literal "gehort es").
         store.putWord(WordEntry("über", frequency = 500L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
         store.putWord(WordEntry("wort", frequency = 4_084L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
-        assertEquals(SplitResult("uber", "wort"), repair.trySplit("uberwort", emptySet()))
+        assertEquals(SplitResult("uber", "wort", "über", "wort"), repair.trySplit("uberwort", emptySet()))
+    }
+    
+    @Test
+    fun `D-268 an umlaut-restored half is only marked on the side that actually needed it`() {
+        // "gehortes" ("gehort" without its umlaut + "es") - only the left half needed restoring; the right
+        // half ("es") is already the literal typed text and must not be needlessly touched.
+        store.putWord(WordEntry("gehört", frequency = 500L))
+        store.putWord(WordEntry("es", frequency = 400_000L))
+        
+        assertEquals(SplitResult("gehort", "es", "gehört", "es"), repair.trySplit("gehortes", emptySet()))
     }
     
     @Test

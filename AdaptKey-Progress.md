@@ -70,6 +70,21 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§187 (v0.8.142): D-268 - an A-05 split now commits the umlaut/ß-restored spelling of each half, not**
+  **the literal typed one ("gehortes" -> "gehört es", not "gehort es"), per a precise user report.**
+  Root-caused directly: `TokenRepair.candidateAt()` already resolves each half through
+  `Umlaut.unfoldCandidates()` for its frequency/POS gates, but the returned `SplitResult` kept the literal
+  typed substrings regardless, and all three commit/display sites (`applySplit()`,
+  `midWordConnectorSplitSuggestion()`, and the D-238 "autocorrect disabled" position-1 split chip - found by
+  grepping every remaining reference, not assuming the first two found were the only ones) capitalised and
+  committed exactly those literal substrings. Fixed additively: `SplitResult` gained `resolvedLeft`/
+  `resolvedRight` (default = `left`/`right`, so every existing call site/test keeps behaving identically when
+  nothing needed unfolding), populated from `leftEntry.word`/`rightEntry.word`; `left`/`right` themselves and
+  `spanRanges()` (the S-05/§47 live-preview colour-span math over the still-composing text) are untouched -
+  deliberately, since that constraint never applied to the post-commit text in the first place. One
+  pre-existing test's assertion corrected to match the now-fixed behaviour, one new test added mirroring the
+  user's own exact repro. 840 unit tests (839 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  Not yet device-confirmed. See history §187, spec A-05 (revised).
 - **§186 (v0.8.141): D-267 - the clear-clipboard button moved from the R-01 extra row into the suggestion**
   **bar itself, per direct user request (easier to reach, purpose obvious next to the chips it clears).**
   `SuggestionBarView` itself untouched (its touch-dispatch logic - G-04/D-247/D-144/D-64 - all keyed off

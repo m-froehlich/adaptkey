@@ -9,12 +9,20 @@ import de.froehlichmedia.adaptkey.suggestion.Umlaut
  * The two words a token was split into (A-05); both are returned in lower case, so the caller applies
  * the capitalisation hierarchy (§6) to each part.
  *
- * @property left the first word
- * @property right the second word
+ * @property left the first word, exactly as typed - kept as the literal substring (not umlaut/ß-restored)
+ *           specifically so [spanRanges]' length arithmetic over the still-displayed composing text stays
+ *           correct; use [resolvedLeft] for the text that should actually be committed
+ * @property right the second word, exactly as typed - see [left]
+ * @property resolvedLeft D-268: [left] with its umlaut/ß restored when that is what actually resolved it
+ *           to a real dictionary word (`resolveWord`'s own umlaut-aware lookup) - e.g. "gehort" -> "gehört".
+ *           Defaults to [left] itself when no unfolding was needed (the common case).
+ * @property resolvedRight the equivalent of [resolvedLeft] for [right]
  */
 data class SplitResult(
     val left: String,
-    val right: String
+    val right: String,
+    val resolvedLeft: String = left,
+    val resolvedRight: String = right
 ) {
     
     /**
@@ -272,7 +280,14 @@ class TokenRepair(private val store: DictionaryStore) {
         if (right == FEMININE_AGENT_SUFFIX && isFeminineAgentNounStem(left, leftEntry)) {
             return null
         }
-        return SplitResult(left, right) to score(leftEntry, rightEntry, previousWord)
+        // D-268: leftEntry/rightEntry already resolved through Umlaut.unfoldCandidates() above - their own
+        // .word carries the real, umlaut/ß-restored dictionary spelling (e.g. "gehört", not the typed
+        // "gehort") whenever that is what actually matched. Lower-cased back to match left/right's own
+        // always-lower-case contract (candidateAt/trySplit both operate on an already-lower-cased token) -
+        // the caller's own capitalisation pipeline decides final casing, exactly as it already does for
+        // left/right themselves.
+        return SplitResult(left, right, leftEntry.word.lowercase(), rightEntry.word.lowercase()) to
+            score(leftEntry, rightEntry, previousWord)
     }
     
     /**

@@ -438,9 +438,12 @@ Unlike the left-prefix case, no frequency-ceiling exemption applies here: "in" i
 standalone word regardless of context, so the same mechanism cannot separate a genuine "noun in" phrase from
 a feminine-noun false positive - checked, not guessed. Half resolution also tries
 umlaut/ß-unfolding (e.g. "uber" resolves via "über") before giving up, per the umlaut guiding principle - the
-committed text itself still carries the literal typed substring, not the unfolded form. A split is vetoed if
-it would lose to a high-confidence single-word correction instead. A live two-span colour preview is shown
-while composing (S-05). Spatial proximity alone is never sufficient - a valid linguistic split is required.
+restored, diacritic-complete spelling is what actually gets committed for that half (e.g. "gehortes" ->
+"gehört es", not the literal "gehort es"), while the still-composing preview's own colour spans (S-05) stay
+positioned over the literal typed characters, since that is what is actually on screen while the token is
+still being edited. A split is vetoed if it would lose to a high-confidence single-word correction instead.
+A live two-span colour preview is shown while composing (S-05). Spatial proximity alone is never sufficient -
+a valid linguistic split is required.
 
 > **Open design question (unresolved):** a split currently re-derives the two halves' capitalisation from
 > the generic rules rather than preserving whatever mid-word capitalisation the user had actually typed.

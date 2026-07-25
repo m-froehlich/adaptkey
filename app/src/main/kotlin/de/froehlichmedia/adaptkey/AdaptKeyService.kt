@@ -3185,8 +3185,12 @@ class AdaptKeyService : InputMethodService() {
      *         [finalizeAndCommit]'s own return contract
      */
     private fun applySplit(ic: InputConnection, split: SplitResult, delimiter: String, typed: String): Int {
-        val left = capitalisation.capitalise(split.left, contextFor(split.left))
-        val right = capitalisation.capitalise(split.right, followingPartContext())
+        // D-268: resolvedLeft/resolvedRight (not left/right) carry the umlaut/ß-restored spelling when
+        // that is what actually made the half resolve to a real word (e.g. "gehort" -> "gehört") - left/
+        // right themselves stay the literal typed substrings, needed only for spanRanges()' live-preview
+        // colouring over the still-composing text, not for what is actually committed here.
+        val left = capitalisation.capitalise(split.resolvedLeft, contextFor(split.resolvedLeft))
+        val right = capitalisation.capitalise(split.resolvedRight, followingPartContext())
         val committed = left + " " + right
         // D-263: a split always resolves any pending/locked G-05 word-end-Shift state - the token just
         // turned out to be two words, not one, so a case lock scoped to a single word's first character no
@@ -3770,8 +3774,10 @@ class AdaptKeyService : InputMethodService() {
         // `item.word.contains(' ')` branch in onSuggestionClicked() - no new click-handling needed.
         val autocorrectSplitChip = if (!duringRepeat && !settings.autocorrectEnabled && composingPreviewFor == input) {
             composingPreview.split?.let { split ->
-                val left = capitalisation.capitalise(split.left, contextFor(split.left))
-                val right = capitalisation.capitalise(split.right, followingPartContext())
+                // D-268: resolvedLeft/resolvedRight, matching applySplit()'s own note - this chip's text
+                // must not disagree with what tapping it (via applySplit()) actually commits.
+                val left = capitalisation.capitalise(split.resolvedLeft, contextFor(split.resolvedLeft))
+                val right = capitalisation.capitalise(split.resolvedRight, followingPartContext())
                 Suggestion("$left $right", MAX_PRIORITY_SUGGESTION_SCORE)
             }
         } else {
@@ -3969,8 +3975,10 @@ class AdaptKeyService : InputMethodService() {
             return null
         }
         val split = tokenRepair.splitAtUnresolvedConnector(input, previousWord) ?: return null
-        val left = capitalisation.capitalise(split.left, contextFor(split.left))
-        val right = capitalisation.capitalise(split.right, followingPartContext())
+        // D-268: see applySplit()'s own note - resolvedLeft/resolvedRight carry the umlaut/ß-restored
+        // spelling, matching exactly what applySplit()/applyMidWordSplitSuggestion() actually commit on tap.
+        val left = capitalisation.capitalise(split.resolvedLeft, contextFor(split.resolvedLeft))
+        val right = capitalisation.capitalise(split.resolvedRight, followingPartContext())
         return Suggestion("$left $right", MAX_PRIORITY_SUGGESTION_SCORE)
     }
     

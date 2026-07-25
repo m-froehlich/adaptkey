@@ -9558,3 +9558,40 @@ No new unit tests - entirely Android view/service glue (layout construction, `Vi
 established gap for this class of change; every pre-existing test passed unmodified (839, unchanged - no pure
 logic touched). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.140 -> 0.8.141. Not
 yet device-confirmed.
+
+## §187 - D-268: A-05 Split Now Commits The Umlaut/ß-Restored Spelling, Not The Literal Typed One (v0.8.142)
+
+User's own precise report: `"gehortes"` (missing its umlaut) correctly *splits* into two words - confirming
+the umlaut-unfold-before-giving-up half-resolution (D-48/§128) is working - but commits as `"gehort es"`
+instead of `"gehört es"`. Root-caused directly against the code, not guessed: `TokenRepair.candidateAt()`
+already resolves each half through `Umlaut.unfoldCandidates()` (`resolveWord()`) to check it against the
+dictionary, but only ever used the resolved `WordEntry` for the frequency/POS/noun-pair *gates* - the
+`SplitResult` it returned kept the literal typed substrings (`left`/`right`) regardless, and every commit-side
+consumer (`AdaptKeyService.applySplit()`, `midWordConnectorSplitSuggestion()`, and a third, easily-missed spot -
+the D-238 "autocorrect disabled" position-1 split chip) capitalised and committed exactly those literal
+substrings. This was **not** an oversight in isolation - `SplitResult`'s own KDoc already documented it as
+deliberate, specifically so `spanRanges()`'s length arithmetic over the still-*composing* text (used by the
+S-05/§47 live two-colour preview) stays correct - but the same literal-substring value was then reused for the
+*post-commit* text too, where that constraint does not apply at all (the text being committed is not required
+to line up character-for-character with anything still on screen).
+
+**Fix, not a redesign**: `SplitResult` gained two new fields, `resolvedLeft`/`resolvedRight` (default = `left`/
+`right`, so every 2-arg call site, including every pre-existing test, keeps compiling and behaving identically
+when no unfolding was actually needed - the overwhelmingly common case). `candidateAt()` now populates them
+from `leftEntry.word`/`rightEntry.word` (lower-cased, matching `left`/`right`'s own established always-lower-
+case contract) - the exact dictionary spelling that already made the half resolve, umlaut/ß restored, whether
+that was `left`/`right` themselves (nothing to unfold) or a genuine unfold candidate. `left`/`right` themselves,
+and `spanRanges()`, are completely untouched - the live preview still colours the literal on-screen characters,
+exactly as before. All three commit/display sites (`applySplit()`, `midWordConnectorSplitSuggestion()`, the
+D-238 position-1 split chip) now read `resolvedLeft`/`resolvedRight` instead - found the third one by grepping
+every remaining `split.left`/`split.right` reference in the service after fixing the first two, rather than
+assuming those were the only two.
+
+One pre-existing test asserted the very substring-fidelity behaviour this round changes (`SplitResult("uber",
+"wort")` for `"uberwort"` -> `"über"` + `"wort"`) - corrected to `SplitResult("uber", "wort", "über", "wort")`,
+its own comment updated to explain why (matches this project's own convention: a test asserting the old,
+now-confirmed-wrong behaviour is fixed, not left in place to avoid touching it). One new test added, mirroring
+the user's own exact repro (`"gehortes"` -> `resolvedLeft="gehört"`, `resolvedRight="es"` - unrestored, since
+"es" needed no unfolding). 840 unit tests (839 - 0 + 1, the one pre-existing test's assertion changed in place
+rather than being removed). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.141 ->
+0.8.142. Not yet device-confirmed.
