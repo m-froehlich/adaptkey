@@ -702,11 +702,11 @@ regardless of which one the user happens to type on a given occasion.
 ### R-01 - Extra Row
 An upward swipe anywhere on the keyboard reveals a row sitting above the suggestion bar, hosting: an
 always-visible emoji-panel button (no setting gates it - opening the emoji panel is described under L-03),
-a settings-app shortcut, a clear-clipboard button (§16), a session-only touch-zone-visualisation toggle
-(§17, T-06), a manual credential-mode toggle (also flashes on a weak login-field signal, §12), and a manual
-URL-mode toggle (visible only while a URL field is focused, §11). A downward swipe closes the row first,
-and a second downward swipe (with the row already closed) dismisses the keyboard (G-03). Activating a button
-in the row does not auto-close it.
+a settings-app shortcut, a session-only touch-zone-visualisation toggle (§17, T-06), a manual credential-mode
+toggle (also flashes on a weak login-field signal, §12), and a manual URL-mode toggle (visible only while a
+URL field is focused, §11). A downward swipe closes the row first, and a second downward swipe (with the row
+already closed) dismisses the keyboard (G-03). Activating a button in the row does not auto-close it. The
+clear-clipboard button that used to live here now sits in the suggestion bar itself instead (§16, V-03).
 
 ---
 
@@ -737,6 +737,14 @@ surrounding punctuation). Unlike V-01's native-paste action, both commit the ext
 native paste cannot paste only part of the clipboard. Sensitive-clip masking and the post-paste auto-clear
 both apply identically to these chips. An explicitly iterative feature - the "code" extraction in particular
 is expected to need further tuning as real examples surface, not a closed, exhaustively-designed parser.
+
+### V-03 - Clipboard-Bar Clear Button
+Whenever the suggestion bar shows at least one clipboard chip (V-01/V-02), a dedicated clear button occupies
+the bar's own right edge, reserved space so the chips themselves keep only the row's remaining, still
+horizontally-scrollable width. Tapping it wipes the clipboard (same effect as R-01's former clear-clipboard
+button, which this replaces) and the bar reverts to its own ordinary state, since there is nothing left to
+offer a chip for. Not shown at any other time - no space is reserved for it while the bar holds ordinary
+suggestions, a credential list, or a "Gelernt: X" chip.
 
 ---
 

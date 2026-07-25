@@ -9515,3 +9515,46 @@ order change has zero observable effect on any currently-reachable path today, a
 (829 + 10). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.139 -> 0.8.140. Not yet
 device-confirmed - needs a real acronym typed repeatedly to actually cross the W-02 threshold and show up as
 the suggestion-bar's own primary completion.
+
+## §186 - D-267: The Clear-Clipboard Button Moves From The Extra Row Into The Suggestion Bar (v0.8.141)
+
+User's own request, with a clear rationale: the R-01 extra-row button (§69/§83/§84) needed a swipe-up to even
+reach, and its purpose ("clear the clipboard") was less obvious sitting among five unrelated buttons than it
+would be right next to the very clipboard chips (V-01/V-02) it acts on. Moved rather than duplicated - the
+extra row's own button is gone outright, not kept as a second way to do the same thing.
+
+**Structural choice**: `SuggestionBarView` itself was deliberately left untouched - it already carries
+non-trivial touch-dispatch logic (G-04 drag-to-trash, D-247's two-zone LEARNED variant, D-144's swipe-down,
+D-64's early-claim-vs-`HorizontalScrollView` race), all keyed off `this` being the scroll view itself;
+restructuring it internally to carve out a fixed-width sibling region would have touched every one of those
+paths for a purely additive feature. Instead, wrapped one level up, at `AdaptKeyService`'s own view-construction
+site: a new horizontal `LinearLayout` (`suggestionRow`) holds the existing `bar` (`weight = 1f`, so it always
+gets whatever width the button is not currently using) and a new button (fixed width = the row's own height,
+square) - `root.addView(bar, ...)` became `root.addView(suggestionRow, ...)`, nothing inside `SuggestionBarView`
+changed at all.
+
+**Visibility, centralised at one choke point rather than scattered**: six different call sites already pushed
+content into the bar (`showClipboardChipIfAvailable`, `showCredentialSuggestions` ×2, `showSuggestions`,
+`clearSuggestions`, `showNextWordPredictions`) - remembering to separately toggle the button at every one of
+them would have been exactly the kind of "one call site forgets it" bug this project has hit before with
+similar multi-call-site state. Instead, all six now route through one new `setSuggestionBarItems(items)`
+wrapper, which sets the bar's items and derives the button's visibility from whether `items` contains any of
+the three clipboard `Kind`s (`CLIPBOARD`/`CLIPBOARD_FIRST_LINE`/`CLIPBOARD_FIRST_CODE`) in one place - correct
+by construction for every current and future call site, not by discipline.
+
+**The button itself**: rebuilt directly in `AdaptKeyService` (a plain `TextView`+badge `FrameLayout`, not a
+reusable component) reusing the exact "📋 base glyph + 🗑 corner badge" icon design from the original §83/§84
+extra-row button - already confirmed legible on-device once, no reason to redesign it. `ExtraRowView` lost
+`clearClipboardButton`/`OnClearClipboardClickListener`/`onClearClipboardClick` and the now-dead
+`badgedButtonFor()` helper + its `BADGE_SIZE_DP`/`BADGE_MARGIN_DP` constants entirely (not left as unused dead
+code); `touchZoneToggleButton` shifted into the freed slot directly left of the settings gear.
+`clearClipboardFromExtraRow()` became `clearClipboardFromSuggestionBar()`, now also calling `clearSuggestions()`
+after `clearClipboard()` - per the user's own spec, the bar must revert to its ordinary (empty) state
+immediately, the same state a fresh field would already show if the clipboard had been empty from the start
+(confirmed by tracing `onStartInput`'s own reset order: `clearSuggestions()` already runs before
+`showClipboardChipIfAvailable()` conditionally overwrites it).
+
+No new unit tests - entirely Android view/service glue (layout construction, `View` visibility), the
+established gap for this class of change; every pre-existing test passed unmodified (839, unchanged - no pure
+logic touched). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.140 -> 0.8.141. Not
+yet device-confirmed.

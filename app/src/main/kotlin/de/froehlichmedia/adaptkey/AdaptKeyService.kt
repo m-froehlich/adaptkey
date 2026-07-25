@@ -12,6 +12,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import android.os.Build
+import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Bundle
 import android.os.Handler
@@ -23,6 +24,8 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.util.Size
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -32,6 +35,7 @@ import android.view.inputmethod.InlineSuggestionsResponse
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import android.widget.inline.InlinePresentationSpec
 import androidx.annotation.RequiresApi
@@ -154,6 +158,9 @@ class AdaptKeyService : InputMethodService() {
     
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
+    // D-267: sits to the right of suggestionBar (see onCreateInputView) - VISIBLE only while the bar shows
+    // the clipboard chips it clears, see setSuggestionBarItems().
+    private var clearClipboardButtonView: View? = null
     private var emojiPanel: EmojiPanelView? = null
     private var extraRow: ExtraRowView? = null
     private var onboardingView: OnboardingView? = null
@@ -731,6 +738,18 @@ class AdaptKeyService : InputMethodService() {
         bar.visibility = View.VISIBLE
         suggestionBar = bar
         
+        // D-267: the clear-clipboard button used to live in the extra row (§69); moved here, right next to
+        // the clipboard chips it actually clears, so it is both easier to reach (no swipe-up needed) and
+        // self-explanatory (its purpose is obvious sitting directly beside them). GONE by default; shown
+        // only alongside the clipboard chips themselves (setSuggestionBarItems()).
+        val clearClipboard = clearClipboardButton()
+        clearClipboard.setOnClickListener { clearClipboardFromSuggestionBar() }
+        clearClipboardButtonView = clearClipboard
+        val suggestionRow = LinearLayout(this)
+        suggestionRow.orientation = LinearLayout.HORIZONTAL
+        suggestionRow.addView(bar, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
+        suggestionRow.addView(clearClipboard, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
+        
         // D-135: the inline-suggestions row occupies the same slot as the ordinary suggestion bar, shown
         // instead of it whenever a real autofill suggestion is available (see onInlineSuggestionsResponse).
         val inlineBar = InlineSuggestionsBarView(this)
@@ -742,7 +761,6 @@ class AdaptKeyService : InputMethodService() {
         val row = ExtraRowView(this)
         row.onEmojiClick = ExtraRowView.OnEmojiClickListener { openEmojiPanelFromExtraRow() }
         row.onSettingsClick = ExtraRowView.OnSettingsClickListener { openSettingsAppFromExtraRow() }
-        row.onClearClipboardClick = ExtraRowView.OnClearClipboardClickListener { clearClipboardFromExtraRow() }
         row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
         row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
         row.onUrlModeToggleClick = ExtraRowView.OnUrlModeToggleClickListener { toggleUrlModeFromExtraRow() }
@@ -753,7 +771,7 @@ class AdaptKeyService : InputMethodService() {
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         root.addView(onboarding, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f))
         root.addView(row, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0))
-        root.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
+        root.addView(suggestionRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
         root.addView(inlineBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, barHeight))
         root.addView(container, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         setOnboardingShown(!OnboardingStore.isCompleted(this))
@@ -1402,7 +1420,7 @@ class AdaptKeyService : InputMethodService() {
                 chips.add(SuggestionController.DisplayItem("🔡 $codeLabel", SuggestionController.Kind.CLIPBOARD_FIRST_CODE, ""))
             }
         }
-        suggestionBar?.setItems(chips)
+        setSuggestionBarItems(chips)
         suggestionBar?.visibility = View.VISIBLE
     }
     
@@ -1431,7 +1449,7 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         if (loginFieldKind == LoginFieldKind.PASSWORD) {
-            suggestionBar?.setItems(emptyList())
+            setSuggestionBarItems(emptyList())
             suggestionBar?.visibility = View.VISIBLE
             return
         }
@@ -1450,7 +1468,7 @@ class AdaptKeyService : InputMethodService() {
         val items = values
             .filterNot { it.equals(input, ignoreCase = true) }
             .map { SuggestionController.DisplayItem(it, SuggestionController.Kind.CREDENTIAL, it) }
-        suggestionBar?.setItems(items)
+        setSuggestionBarItems(items)
         suggestionBar?.visibility = View.VISIBLE
     }
     
@@ -1679,6 +1697,63 @@ class AdaptKeyService : InputMethodService() {
                 cm.setPrimaryClip(ClipData.newPlainText("", ""))
             }
         }
+    }
+    
+    /**
+     * D-267: the clipboard-chip row's own clear button - a "ligature" of two glyphs (📋 filling the whole
+     * button, a small 🗑 badge in the bottom-right corner), matching the icon design that already proved
+     * clear on the extra row (§83/§84) this button was moved from. GONE by default -
+     * [setSuggestionBarItems] shows it only alongside the clipboard chips it clears.
+     */
+    private fun clearClipboardButton(): View {
+        val base = TextView(this).apply {
+            text = "📋"
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(this@AdaptKeyService, R.color.suggestion_text))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        }
+        val badge = TextView(this).apply {
+            text = "🗑"
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(this@AdaptKeyService, R.color.suggestion_text))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+        }
+        val badgeSizePx = CLEAR_CLIPBOARD_BADGE_SIZE_DP.dpToPx()
+        val badgeMarginPx = CLEAR_CLIPBOARD_BADGE_MARGIN_DP.dpToPx()
+        return FrameLayout(this).apply {
+            background = GradientDrawable().apply {
+                setColor(ContextCompat.getColor(this@AdaptKeyService, R.color.key_background_special))
+                cornerRadius = CLEAR_CLIPBOARD_CORNER_RADIUS_DP.dpToPx().toFloat()
+            }
+            isClickable = true
+            visibility = View.GONE
+            addView(base, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            addView(
+                badge,
+                FrameLayout.LayoutParams(badgeSizePx, badgeSizePx, Gravity.BOTTOM or Gravity.END).apply {
+                    marginEnd = badgeMarginPx
+                    bottomMargin = badgeMarginPx
+                }
+            )
+        }
+    }
+    
+    /**
+     * D-267: the single choke point every suggestion-bar content update now goes through, instead of
+     * calling [SuggestionBarView.setItems] directly - keeps [clearClipboardButtonView]'s own visibility
+     * correctly in sync with whatever is actually displayed, without having to remember to toggle it at
+     * every call site individually. Shown exactly when [items] contains a clipboard chip
+     * ([SuggestionController.Kind.CLIPBOARD]/[SuggestionController.Kind.CLIPBOARD_FIRST_LINE]/
+     * [SuggestionController.Kind.CLIPBOARD_FIRST_CODE]), hidden otherwise.
+     */
+    private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
+        suggestionBar?.setItems(items)
+        val showsClipboard = items.any {
+            it.kind == SuggestionController.Kind.CLIPBOARD ||
+                it.kind == SuggestionController.Kind.CLIPBOARD_FIRST_LINE ||
+                it.kind == SuggestionController.Kind.CLIPBOARD_FIRST_CODE
+        }
+        clearClipboardButtonView?.visibility = if (showsClipboard) View.VISIBLE else View.GONE
     }
     
     /**
@@ -2282,13 +2357,16 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * §69: the extra row's clear-clipboard button - immediately wipes the clipboard, reusing the same
-     * [clearClipboard] the D-36/D-38 quick-paste flow already calls after a paste (P+ `clearPrimaryClip()`
-     * / the pre-P `newPlainText("", "")` fallback), just triggered directly by the user instead of
-     * automatically after a paste. D-187: no longer closes the row - see [closeExtraRow]'s own KDoc.
+     * D-267 (was §69's extra-row button, moved into the suggestion bar itself): immediately wipes the
+     * clipboard, reusing the same [clearClipboard] the D-36/D-38 quick-paste flow already calls after a
+     * paste (P+ `clearPrimaryClip()` / the pre-P `newPlainText("", "")` fallback), just triggered directly
+     * by the user instead of automatically after a paste. The clipboard chips this button sits next to are
+     * now stale (there is nothing left to show), so the bar reverts to its own ordinary empty state - the
+     * exact same state a fresh field opens with when the clipboard already happens to be empty.
      */
-    private fun clearClipboardFromExtraRow() {
+    private fun clearClipboardFromSuggestionBar() {
         clearClipboard()
+        clearSuggestions()
     }
     
     /**
@@ -3925,7 +4003,7 @@ class AdaptKeyService : InputMethodService() {
                 item
             }
         }
-        suggestionBar?.setItems(items)
+        setSuggestionBarItems(items)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.
         suggestionBar?.visibility = View.VISIBLE
@@ -3936,7 +4014,7 @@ class AdaptKeyService : InputMethodService() {
         controller.clear()
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
-        suggestionBar?.setItems(emptyList())
+        setSuggestionBarItems(emptyList())
         // D-50: keep the (now empty) bar visible rather than hiding it.
         suggestionBar?.visibility = View.VISIBLE
     }
@@ -3974,7 +4052,7 @@ class AdaptKeyService : InputMethodService() {
                 kind = SuggestionController.Kind.LEARNED,
                 word = justPromoted
             )
-            suggestionBar?.setItems(listOf(chip) + controller.displayed())
+            setSuggestionBarItems(listOf(chip) + controller.displayed())
             suggestionBar?.visibility = View.VISIBLE
             return
         }
@@ -4801,6 +4879,12 @@ class AdaptKeyService : InputMethodService() {
         
         // Height of the embedded suggestion strip.
         private const val SUGGESTION_BAR_HEIGHT_DP = 44
+        
+        // D-267: the clear-clipboard button's own badge sizing, matching the extra row's own former values.
+        private const val CLEAR_CLIPBOARD_BADGE_SIZE_DP = 18
+        private const val CLEAR_CLIPBOARD_BADGE_MARGIN_DP = 1
+        private const val CLEAR_CLIPBOARD_CORNER_RADIUS_DP = 8
+        
         
         // D-15: two Shift presses within this window engage Caps Lock.
         private const val DOUBLE_TAP_SHIFT_MS = 300L

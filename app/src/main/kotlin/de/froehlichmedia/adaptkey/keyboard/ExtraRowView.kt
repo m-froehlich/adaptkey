@@ -22,10 +22,13 @@ import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 
 /**
- * §48 / §51 / §69: the swipe-up extra row - the emoji button (left edge), a clear-clipboard button and
- * a settings gear (right edge, clear-clipboard immediately to its left), revealed above the suggestion bar
- * (the topmost row while open) by an upward swipe anywhere on the keyboard (mirroring G-03's
- * downward-dismiss-anywhere).
+ * §48 / §51: the swipe-up extra row - the emoji button (left edge) and a settings gear (right edge),
+ * revealed above the suggestion bar (the topmost row while open) by an upward swipe anywhere on the
+ * keyboard (mirroring G-03's downward-dismiss-anywhere).
+ *
+ * D-267: the clear-clipboard button (§69) that used to sit here moved into the suggestion bar itself,
+ * shown only alongside the clipboard chips it actually clears - see
+ * [de.froehlichmedia.adaptkey.suggestion.SuggestionBarView]'s own KDoc.
  *
  * D-189: renamed from `SettingsRowView` - the row grew well past its original settings-button-only purpose
  * (emoji/clear-clipboard/touch-zone/credential-mode/URL-mode buttons all followed), and "settings" as the
@@ -72,12 +75,6 @@ class ExtraRowView @JvmOverloads constructor(
         fun onSettingsClick()
     }
     
-    /** §69: invoked when the clear-clipboard button is tapped. */
-    fun interface OnClearClipboardClickListener {
-        
-        fun onClearClipboardClick()
-    }
-    
     /** D-142: invoked when the credential-mode button is tapped. */
     fun interface OnCredentialModeClickListener {
         
@@ -105,8 +102,6 @@ class ExtraRowView @JvmOverloads constructor(
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
-    
-    var onClearClipboardClick: OnClearClipboardClickListener? = null
     
     var onCredentialModeClick: OnCredentialModeClickListener? = null
     
@@ -189,10 +184,6 @@ class ExtraRowView @JvmOverloads constructor(
         visibility = View.GONE
     }
     
-    // Reported: a bare 🗑 gives no clue *what* it clears unless you already know - so nobody would ever
-    // press it. A clipboard glyph with a small trash badge overlaid in the corner reads as "clear the
-    // clipboard" directly, the same way a "ligature" of the two ideas would.
-    private val clearClipboardButton = badgedButtonFor("📋", "🗑") { onClearClipboardClick?.onClearClipboardClick() }
     private val content = FrameLayout(context)
     private var heightAnimator: ValueAnimator? = null
     private var credentialFlashAnimator: ValueAnimator? = null
@@ -224,20 +215,13 @@ class ExtraRowView @JvmOverloads constructor(
                 marginStart = slotMarginStart(2)
             }
         )
-        // §69: sits directly left of the settings gear, offset by the gear's own width plus one more
-        // button-margin's worth of gap so the two read as a distinct pair at the row's right edge.
-        content.addView(
-            clearClipboardButton,
-            LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
-                marginEnd = marginPx * 2 + buttonSizePx
-            }
-        )
-        // D-156: one more slot further left, same spacing convention as clearClipboardButton's own offset
-        // from the gear.
+        // D-156 / D-267: directly left of the settings gear, offset by the gear's own width plus one more
+        // button-margin's worth of gap so the two read as a distinct pair at the row's right edge - this
+        // slot used to belong to the clear-clipboard button (§69), moved into the suggestion bar itself.
         content.addView(
             touchZoneToggleButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
-                marginEnd = marginPx * 3 + buttonSizePx * 2
+                marginEnd = marginPx * 2 + buttonSizePx
             }
         )
         content.addView(
@@ -444,48 +428,6 @@ class ExtraRowView @JvmOverloads constructor(
         }
     }
     
-    /**
-     * A button whose icon is a "ligature" of two glyphs: [baseGlyph] fills the whole button, [badgeGlyph]
-     * sits as a small badge in the bottom-right corner - so the icon reads as "[badgeGlyph] applied to
-     * [baseGlyph]" (e.g. clipboard + trash = "clear the clipboard"), not as two unrelated symbols. A single
-     * overlaid emoji sequence was considered and rejected - there is no defined ZWJ combination for an
-     * arbitrary emoji pair, so it would just render as two separate glyphs with no visual relationship at
-     * all. Confirmed on-device that the badge needs no contrast background of its own to read clearly.
-     */
-    private fun badgedButtonFor(baseGlyph: String, badgeGlyph: String, onClick: () -> Unit): View {
-        val badgeSizePx = dp(BADGE_SIZE_DP)
-        val badgeMarginPx = dp(BADGE_MARGIN_DP)
-        val base = TextView(context).apply {
-            text = baseGlyph
-            gravity = Gravity.CENTER
-            setTextColor(ContextCompat.getColor(context, R.color.key_text))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-        }
-        // Confirmed on-device: the badge reads clearly on its own, no contrast pill needed underneath it.
-        val badge = TextView(context).apply {
-            text = badgeGlyph
-            gravity = Gravity.CENTER
-            setTextColor(ContextCompat.getColor(context, R.color.key_text))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-        }
-        return FrameLayout(context).apply {
-            background = GradientDrawable().apply {
-                setColor(ContextCompat.getColor(context, R.color.key_background_special))
-                cornerRadius = dp(BUTTON_CORNER_RADIUS_DP).toFloat()
-            }
-            isClickable = true
-            setOnClickListener { onClick() }
-            addView(base, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
-            addView(
-                badge,
-                LayoutParams(badgeSizePx, badgeSizePx, Gravity.BOTTOM or Gravity.END).apply {
-                    marginEnd = badgeMarginPx
-                    bottomMargin = badgeMarginPx
-                }
-            )
-        }
-    }
-    
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
     }
@@ -512,8 +454,6 @@ class ExtraRowView @JvmOverloads constructor(
         private const val FLASH_DURATION_MS = 220L
         private const val FLASH_REPEAT_COUNT = 3
         private const val BUTTON_CORNER_RADIUS_DP = 8
-        private const val BADGE_SIZE_DP = 18
-        private const val BADGE_MARGIN_DP = 1
         
         // D-58 precedent (AdaptKeyboardView's own page-slide): quick enough to stay snappy, slow enough
         // to actually be seen.

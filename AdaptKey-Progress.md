@@ -70,6 +70,18 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§186 (v0.8.141): D-267 - the clear-clipboard button moved from the R-01 extra row into the suggestion**
+  **bar itself, per direct user request (easier to reach, purpose obvious next to the chips it clears).**
+  `SuggestionBarView` itself untouched (its touch-dispatch logic - G-04/D-247/D-144/D-64 - all keyed off
+  `this` being the scroll view); wrapped one level up instead, in `AdaptKeyService`'s own view construction:
+  a new `suggestionRow` (`LinearLayout`) holds `bar` (`weight=1f`) plus a new fixed-width button at the row's
+  right edge. New `setSuggestionBarItems()` is now the single choke point all six suggestion-bar-content call
+  sites route through, deriving the button's visibility from whether the items contain a clipboard `Kind` -
+  correct by construction rather than by remembering to toggle it at each site. `ExtraRowView` lost the old
+  button, its listener, and the now-dead `badgedButtonFor()` helper entirely; `touchZoneToggleButton` took
+  over its freed slot. No new tests (Android view/service glue, established gap). 839 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §186, spec
+  R-01/V-03 (new).
 - **§185 (v0.8.140): D-264 - a differently-cased bundled word (e.g. a preferred all-caps acronym spelling**
   **like "MSCI"/"MCU") can now be learned as its own case-sensitive override, via a two-round design**
   **discussion.** Round 1 traced `wkey`'s case-insensitive lookup through the whole schema (ruling out a true
