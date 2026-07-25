@@ -9872,3 +9872,57 @@ rather than synthetic numbers. 843 unit tests (840 + 3 new). `:app:assembleRelea
 green. `AdaptKey-Spec.md` S-01 revised to describe both closeness forms (edit-distance for corrections,
 extra-character-count for prefix completion) under one soft-preference principle. Version bumped 0.8.145 ->
 0.8.146. Not yet device-confirmed.
+
+## §193 - D-274: The D-161 Window-Insets Self-Heal Has Permanently Disagreed With D-260's Own Padding Split Since D-260 Shipped, Causing Sporadic Post-Open Jitter/Grow (v0.8.147)
+
+Reported: since the D-260 revision specifically (v0.8.138, the space key's extended touch zone below it), the
+keyboard sometimes visibly jitters a few pixels up and down at its top edge right after opening, or - rarer -
+grows by roughly a full row above the number row with the suggestion bar left sitting on top of it. Never
+reproducible on demand, no useful device log possible (the symptom is view/window-layout timing, invisible to
+the existing `AdaptKey`/`AdaptKeyJitter` diagnostic channels, which only log input/composing state). The user
+was certain of the D-260 origin and separately reported that D-161's own "safely pull the keyboard out of the
+gesture bar on open" self-heal "klappt übrigens überhaupt nicht" (does not work at all) - asked to check both,
+specifically the D-260 revision's own diff, since that is where it started.
+
+**Root-caused by reading the two mechanisms side by side, not from a log - the bug is provable from the code
+alone.** `applyWindowInsetsPadding()` (§183/D-260) applies `bottomInset = maxOf(bars.bottom, gestures.bottom)
+- appliedExtensionPx` to `inputRoot` - deliberately less than the raw inset, since `appliedExtensionPx` of it
+was reclaimed as `AdaptKeyboardView`'s own padding instead (D-260's whole point). `windowInsetsRecheckRunnable`
+(§104/§105, D-161/D-250 - the self-heal that reapplies this same computation ~500ms after
+`onStartInputView()`, up to `WINDOW_INSETS_RECHECK_MAX_ATTEMPTS` (5) times) computed its own comparison
+baseline as the *raw*, un-subtracted `maxOf(bars.bottom, gestures.bottom)` - written before D-260 existed and
+never updated once D-260 introduced the subtraction. The two formulas diverge by exactly `appliedExtensionPx`
+- on any device with a real gesture-navigation strip (`appliedExtensionPx > 0`, the overwhelming majority of
+current devices), `root.paddingBottom` (correctly reduced) can therefore *never* equal the recheck's own
+"expected" value (never reduced), so the "is this stale?" check at the runnable's core permanently reads true
+regardless of whether anything is actually wrong. What was designed as a rare, one-shot self-heal became a
+guaranteed five-times-over-2.5-seconds re-application on every single keyboard open on affected devices -
+each one re-reading live insets and re-driving both `inputRoot`'s and `AdaptKeyboardView`'s padding through
+`setSpaceTouchExtension()`/`setPadding()` again. Real system-gesture-inset values are not perfectly static
+during an IME's own show/settle window (transitional values while the window animates in are a known,
+device-dependent behaviour) - so this repeated, needless re-application had every opportunity to visibly
+reflect whatever small natural inset fluctuation happened to be occurring at each of the five ticks, for a
+full 2.5 seconds after every open, exactly matching "manchmal" (device/timing-dependent, never reliably
+reproducible) jitter/grow at the keyboard's own top edge. This also directly explains the separate "klappt
+überhaupt nicht" report: a self-heal that permanently believes something is wrong even when it is not is not
+performing the single, clean, converging correction it was designed to do.
+
+**Fixed by giving the recheck the *actual* last-applied value instead of re-deriving a formula that had
+silently drifted out of sync with the real one.** New `lastAppliedSpaceExtensionPx` field, set every time
+`applyWindowInsetsPadding()` runs (alongside `appliedExtensionPx` itself, its own source of truth);
+`windowInsetsRecheckRunnable`'s `expectedBottom` now subtracts it too, mirroring `applyWindowInsetsPadding()`'s
+own computation exactly rather than duplicating (and being able to drift from) it a second time. The genuine
+D-161 race this mechanism exists for is unaffected: on a real early recheck tick before `applyWindowInsetsPadding()`
+has ever run, `lastAppliedSpaceExtensionPx` is still at its default 0, so the comparison correctly falls back
+to exactly the pre-D-260 formula for that case - a legitimate mismatch (root still at Android's default 0
+padding) is still caught and corrected exactly as before; only the *permanent, spurious* post-D-260
+mismatch is gone.
+
+No new unit tests - `AdaptKeyService`'s `View`/`WindowInsetsCompat` glue, the same established gap as
+D-136/D-161/D-250/D-260 (none of which added tests either); the divergence was confirmed by reading both
+formulas side by side against their own real inputs, not from a new test, for the same reason those
+precedents gave (exercising real `View` measurement/layout/`WindowInsets` end-to-end is outside this
+project's JVM-only test harness for this class). 843 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Version bumped 0.8.146 -> 0.8.147. Not yet device-confirmed - this is exactly
+the kind of fix that can only really be judged by continued use on a gesture-nav device across many keyboard
+opens, not a single repro.

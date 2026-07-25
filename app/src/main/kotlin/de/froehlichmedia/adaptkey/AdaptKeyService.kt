@@ -558,6 +558,13 @@ class AdaptKeyService : InputMethodService() {
     // (re)scheduling in onStartInputView, so a fast field/app switch always gets its own full run of retries.
     private var windowInsetsRecheckAttempt = 0
     
+    // D-274: the actual bottom padding applyWindowInsetsPadding() last applied to inputRoot reclaims
+    // lastAppliedSpaceExtensionPx of the raw inset for AdaptKeyboardView's own D-260 space-touch-extension
+    // padding instead - windowInsetsRecheckRunnable's own "expected" value must account for that same
+    // subtraction, or it permanently disagrees with the correct, already-applied padding (see the runnable's
+    // own comment for the full story). Updated only from applyWindowInsetsPadding() itself, never guessed.
+    private var lastAppliedSpaceExtensionPx = 0
+    
     private val windowInsetsRecheckRunnable: Runnable = Runnable {
         val root = inputRoot
         if (root == null || !root.isAttachedToWindow) {
@@ -569,7 +576,10 @@ class AdaptKeyService : InputMethodService() {
         val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
         val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
         val expectedTop = maxOf(statusBars.top, cutout.top)
-        val expectedBottom = maxOf(bars.bottom, gestures.bottom)
+        // D-274: mirrors applyWindowInsetsPadding()'s own bottomInset computation exactly, including its
+        // D-260 space-touch-extension subtraction - see lastAppliedSpaceExtensionPx's own comment above for
+        // why comparing against the raw, un-subtracted inset here was wrong.
+        val expectedBottom = maxOf(bars.bottom, gestures.bottom) - lastAppliedSpaceExtensionPx
         if (root.paddingTop != expectedTop || root.paddingBottom != expectedBottom) {
             diag(
                 "AdaptKey",
@@ -853,6 +863,9 @@ class AdaptKeyService : InputMethodService() {
         val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
         val reclaimableGestureZonePx = (gestures.bottom - bars.bottom).coerceAtLeast(0)
         val appliedExtensionPx = keyboardView?.setSpaceTouchExtension(reclaimableGestureZonePx) ?: 0
+        // D-274: recorded so windowInsetsRecheckRunnable's own "expected" computation can mirror this exact
+        // subtraction instead of permanently disagreeing with it - see that field's own comment.
+        lastAppliedSpaceExtensionPx = appliedExtensionPx
         val bottomInset = maxOf(bars.bottom, gestures.bottom) - appliedExtensionPx
         view.setPadding(0, maxOf(statusBars.top, cutout.top), 0, bottomInset)
     }

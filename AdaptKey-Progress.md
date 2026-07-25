@@ -70,6 +70,27 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§193 (v0.8.147): D-274 - the D-161 window-insets self-heal has permanently disagreed with D-260's own**
+  **padding split since D-260 shipped, causing sporadic post-open keyboard jitter/grow.** User-reported since
+  the D-260 revision specifically (space key's extended touch zone): occasional top-edge jitter right after
+  opening, or rarer, the keyboard growing by a row above the number row with suggestions on top - never
+  reproducible on demand, no useful log possible (view/layout timing, invisible to the existing diagnostic
+  channels). Root-caused from reading the code, not a log: `applyWindowInsetsPadding()` (D-260) applies
+  `bottomInset = rawInset - appliedExtensionPx` to `inputRoot` (part of the inset reclaimed as
+  `AdaptKeyboardView`'s own padding instead), but `windowInsetsRecheckRunnable` (D-161's self-heal, reapplies
+  the same computation up to 5x/500ms after every `onStartInputView()`) compared against the *raw*,
+  un-subtracted inset - written before D-260 existed, never updated once D-260 added the subtraction. On any
+  gesture-nav device the two formulas can never agree, so the "is this stale?" check permanently read true -
+  turning a rare, one-shot self-heal into a guaranteed 5x-over-2.5s re-application on every single open,
+  faithfully reflecting whatever small natural inset fluctuation the IME's own show animation produces at
+  each tick. Also directly explains the separate "self-heal doesn't work at all" report. Fixed: new
+  `lastAppliedSpaceExtensionPx` field records what `applyWindowInsetsPadding()` actually applied; the recheck
+  now subtracts it too instead of duplicating (and drifting from) the formula a second time. The genuine
+  D-161 race (early tick before any application has run, field still 0) still falls back to the original,
+  correct pre-D-260 comparison and is unaffected. No new unit tests (established Android view/insets-glue
+  gap, D-136/D-161/D-250/D-260 precedent). 843 unit tests (unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed - needs continued use across many opens, not a
+  single repro. See history §193.
 - **§192 (v0.8.146): D-272 (revised) - §191's narrow "natürlich" data fix replaced by a general**
   **prefix-distance ranking rule, before any device confirmation.** The user pushed back immediately: raising
   `"natürlich"`'s own frequency only fixed that one pair, not the general shape they meant - within a
