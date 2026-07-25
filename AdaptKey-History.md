@@ -9117,3 +9117,100 @@ channel/line for that window, or X-01's own ring buffer (§19, "a short rolling 
 the relevant entries by the time it was read. Needs either the complete, unfiltered log for this exact
 window, or a fresh, isolated repro exported immediately after it happens, before any conclusion (bug vs.
 genuine mis-tap) can be drawn. D-256/D-257/D-258 remain a separate, still-open cluster of their own.
+
+## §182 CAPTURED: Six Backlog Items Recorded Per Direct User Request (v0.8.137, no code change yet)
+
+Requested to be captured before D-260 (the D-259 space-touch-zone fix, next entry) is implemented.
+
+**D-261 - the German feminine-agent-noun suffix `-in` must never be split off by A-05/D-122, mirroring**
+**D-249's own concern but on the *right* half of a split, not the left.** User's own examples:
+"Schneiderin" -> "Schneider"+"in", "Zuschauerin" -> similar. Confirmed real via the actual dictionary, not
+guessed: `"in"` (the preposition) sits at frequency 522,240 in `dict_de.tsv` - the single highest-frequency
+entry checked in either D-249 or this round, comfortably clearing `MIN_SPLIT_HALF_FREQUENCY`, tagged `OTHER`
+(not a noun, so the not-both-nouns gate never blocks the pairing), and "Schneider" (360, NOUN) individually
+clears the floor too - `candidateAt()`'s existing gates do not catch this shape. **Structurally the mirror
+image of D-249, not a direct reuse of its fix**: D-249 guards the *left* half (`left in INSEPARABLE_PREFIXES`)
+against a small set of prefixes, exempting one (`er-`) once its own standalone frequency clears a ceiling,
+specifically because a prefix-shaped fragment is *usually* a genuine word only rarely, so a frequency-ceiling
+exemption for the one common outlier works. `-in` does not fit that same shape: it is *always* an extremely
+common standalone word (a preposition) regardless of whether it is also being misused as a suffix here, so a
+naive frequency-ceiling check mirrored from D-249 would leave it permanently exempt (undoing the fix rather
+than applying it) - the D-249 mechanism cannot be copied directly onto the right half; this needs its own
+design round to work out how to tell "in" (a genuine following word, e.g. "der Mann in") from "-in" (a
+feminine-agent suffix glued onto the preceding noun stem) - not obviously answerable from frequency alone.
+
+**D-262 - automatic space insertion after sentence punctuation, with a punctuation-run mode that lets**
+**consecutive punctuation glue together (`"!?!"`, `"..."`) before the space actually lands.** A new feature,
+not yet designed in any prior round - captured verbatim from the user's own specification since it is precise
+and complete enough to implement directly next time:
+
+- A sentence-ending punctuation mark auto-inserts a trailing space immediately (does not happen today).
+- If the *very next* key is itself punctuation, the just-auto-inserted space is removed first, so the two
+  punctuation marks land directly adjacent (`"!?"`, not `"! ?"`) - then the same auto-space is inserted again
+  after this new punctuation mark, so a run of any length (`"!?!"`, `"..."`) keeps gluing together with the
+  auto-space only ever trailing the whole run, never appearing mid-run.
+- If the user instead explicitly presses Space right after the punctuation, the auto-inserted space is not
+  duplicated - the explicit press is recognised as confirming/replacing the automatic one, not adding a second.
+- A Backspace at this exact point (auto-space still pending/unconfirmed) removes only the forced space and
+  exits this mode - it must not cascade into deleting the punctuation or the word before it.
+- Once the mode is exited (by an explicit Space or by this Backspace), further Space/punctuation presses are
+  handled entirely normally again, with a fresh punctuation-run mode arming only if new punctuation is typed.
+
+Touches the same general commit/delimiter-handling area as D-29 (existing space-eating-punctuation logic) and
+G-05/A-07's own "pending state that a following keystroke resolves" shape - worth designing with those two as
+reference points, not from scratch.
+
+**D-263 - a real timing race in the A-05 retroactive-split pipeline**: typing a glued-together typo
+("ImNacken", "dervNachbar") and immediately hitting the delimiter key does *not* trigger the automatic split,
+but re-editing the same token mid-word afterwards (D-122's own connector-split path) *does* find and apply it
+correctly. User's own precise, reproducible observation: inserting a short pause before the delimiter makes
+the automatic split apply immediately. This is consistent with (not yet confirmed against a device log) the
+existing debounced background split computation (D-160/D-215's `composingPreviewRunnable`,
+`EXPENSIVE_SUGGESTION_DELAY_MS` = 200ms, see `AdaptKeyService`) simply not having finished by the time
+`finalizeAndCommit()` runs synchronously on the delimiter keystroke - a delimiter arriving before the debounce
+window elapses would commit the raw, unsplit token, while re-editing later gives the same background
+computation time to actually complete first. Needs confirming against a real device log (exact timestamps
+between the last letter, the debounced computation's own completion, and the delimiter keystroke) before
+deciding whether the fix is "compute synchronously right before committing if the debounce hasn't fired yet"
+or something else - not guessed.
+
+**D-264 - no way to teach the dictionary a differently-cased spelling of a word/acronym that already exists**
+**under a different casing.** User's own examples: wants "MSCI"/"MCU" learned in their own preferred casing,
+but the dictionary already has a differently-cased entry for it; more generally, typing "schreiben" is never
+learned because "Schreiben" is already a bundled entry. Root cause confirmed directly in `learnWord()`
+(`AdaptKeyService.kt`): `dictionaryStore.isBundledWord(word)` - the very first check, unconditionally skipping
+learning entirely - looks the word up by a *lowercased* key (D-186's own explicit design: "any casing -
+isBundledWord's own lookup key is lowercased"), so any casing variant of an already-bundled word is
+permanently blocked from ever being learned, full stop. D-186's own reasoning (avoid flooding the Learned
+Words editor with plain vocabulary reinforcement) was aimed at *ordinary* words being reinforced verbatim, not
+at a deliberately-different-case spelling the user keeps typing on purpose - genuinely two different intents
+sharing one guard. Needs a real design round: how to tell "the user is just typing an ordinary word, case
+doesn't matter" from "the user has a specific casing preference and keeps confirming it" (repetition threshold?
+an explicit case-sensitive learn action? S-06 verbatim confirmation counting toward it, per its own existing
+"Repeated verbatim confirmation... may add it to the personal dictionary" language in spec S-06?) - and how a
+case-sensitive learned entry should then rank against/coexist with the bundled entry in suggestions.
+
+**D-265 - A-07's post-commit undo window is destroyed by an accidental Enter (or any keystroke) instead of**
+**surviving until the next genuine non-whitespace character.** Same underlying user frustration that motivated
+D-248/A-11 (fumbling Enter when meaning Backspace), but this time about A-07 itself (reverting an accepted
+*autocorrect*), not the separate unlearn-via-backspace mechanism A-11 already covers. Confirmed against the
+real code: `handleKey`'s own A-07 gate (`if (undoTyped != null) { if (key.code == KeyCode.DELETE) { ... } else
+{ clearUndo() } }`) clears the undo window on *any* non-Backspace key, including Enter/whitespace - so an
+accidental Enter right after a rejected autocorrect permanently forecloses the revert, even though the user's
+own intent (reach Backspace) never changed. User's own precise spec: the undo window should only be closed by
+the next genuine **non-whitespace** character, not by whitespace/Enter - structurally the same "survive
+intervening keystrokes, consumed by Backspace" shape already built for A-11 (`recentLearnRecords`,
+`rememberForBackspaceUnlearn`/`maybeUnlearnOnBackspaceReturn`, D-248) - likely reusable as a direct design
+precedent rather than a new mechanism from scratch, though A-07's own text-restoration semantics (not just an
+unlearn) need to be threaded through the same survive-across-whitespace window carefully.
+
+**D-266 - two new clipboard-paste chip kinds, "Erste Zeile" and "Erster Code", alongside V-01's existing**
+**start-of-clipboard chip.** "Erste Zeile" (first line) is straightforward. "Erster Code" is explicitly
+flagged by the user as needing real design/refinement, not a one-shot implementation: extract the first
+contiguous alphanumeric "code" token from the clipboard content. User's own proposed architecture: a chain of
+specialised parsers, tried in order, each free to fail and fall through to the next - the generic fallback
+(ignore surrounding control/punctuation characters, pull out the first contiguous alphanumeric run) sits
+*last*, not first. The first concrete specialised parser to build: URL-aware, extracting the last path segment
+or query-parameter value (`"...?code=SDF123rtert"` -> `"SDF123rtert"`). Examples given: `"<code123 foo"` should
+yield `"code123"`. User's own explicit expectation: this will often get it wrong at first and need tuning in
+later rounds - captured as an iterative, multi-round feature, not a single closed task.

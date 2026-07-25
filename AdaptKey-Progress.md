@@ -70,6 +70,20 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§182 CAPTURED (still v0.8.137, no code change): six backlog items recorded per direct user request,**
+  **before D-260 (the D-259 space-touch-zone fix) is implemented.** D-261: the `-in` feminine-agent-noun
+  suffix must never be split off by A-05/D-122 (mirrors D-249, but on the *right* half - the D-249 frequency-
+  ceiling mechanism can't be copied directly since "in" the preposition is always extremely common, unlike
+  D-249's own "er" outlier). D-262: a new auto-space-after-punctuation feature with a punctuation-run mode
+  (full spec captured verbatim from the user). D-263: a real timing race in A-05's split pipeline - a
+  delimiter typed too fast after a glued-together typo skips the split, likely the `EXPENSIVE_SUGGESTION_
+  DELAY_MS` debounce not finishing in time; needs a device-log confirmation. D-264: no way to learn a
+  differently-cased spelling of an already-bundled word (`learnWord()`'s `isBundledWord` check is
+  case-insensitive by design, D-186 - blocks this entirely, needs its own design round). D-265: A-07's undo
+  window should survive intervening whitespace/Enter (only a genuine non-whitespace character should close
+  it) - same shape as A-11/D-248's own survive-across-keystrokes design, likely reusable. D-266: two new
+  clipboard chips, "Erste Zeile" (simple) and "Erster Code" (a chain-of-parsers architecture, URL-aware parser
+  first, generic alphanumeric-token fallback last - explicitly a multi-round feature). See history §182.
 - **§181 (v0.8.137): D-255 fixed; D-256/D-257/D-258/D-259 captured - five real device-log excerpts triaged**
   **in one batch.** D-255 (fixed): an accelerating backspace hold got permanently stuck at the slow word-mode
   cadence (300ms) but kept deleting only one character per tick instead of a whole word, because §58's
