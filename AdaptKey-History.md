@@ -9084,28 +9084,36 @@ Possibly this is D-29 working exactly as intended and the user's own read of "pe
 bug in a path this log does not fully capture. Needs either a cleaner, minimal repro isolating just this one
 interaction, or a log that also captures suggestion-bar chip taps, before any diagnosis can be trusted.
 
-### D-259 CAPTURED (corrected) - a typed period+space right after an unexplained composing wipe: the space never landed
+### D-259 CAPTURED (corrected twice) - the space tap itself never reached the app at all, not a composing/data-loss issue
 
-Initial read of this log missed the actual spot - looked for two visibly glued *words*, found none, and wrongly
-filed this as a feature request. User's own direct correction: "einen Punkt getippt und danach ein Space. Und
-das kam nicht an" - the *space itself* (not a word boundary) failed to register. Re-read with that framing and
-found it: composing "Chri" (anchor=47, cursor=4, expected caret 51) silently became `composing=""` with the
-caret reported at 56 - a +5 jump - with **zero** intervening rawTap/keystroke logged between them, the same
-unexplained-external-jump shape as D-256/D-257/D-258 (a ~1.4s gap in the log, no AdaptKey-driven cause visible
-at all). The committed text later confirms "Christus" sits there, so the missing 4 characters ("stus") arrived
-from *somewhere* other than a logged keystroke. Immediately after, the period lands (`56->55->56`, the same
-delete-then-reinsert shape D-29's space-eating produces) and then the very next tap, SPACE, reports `56->57` -
-a normal-looking +1 - but the user's own on-device observation is that the space did not actually appear in
-the text. Since the composing/position tracking had already silently desynced from the real document one step
-earlier, a `+1`-looking internal delta here does not actually prove the real document also gained a character -
-this is the crux of why the `EXTERNAL` ground-truth guard exists at all (§1), and also why this one instance
-cannot be fully trusted from the log's own reported deltas alone.
+Two misreads in a row before landing on what the user actually reported, corrected each time on direct
+follow-up - recorded here in full rather than silently overwritten, since the false starts are exactly the
+kind of thing a future session should not blindly trust from a one-line summary:
 
-Reclassified: **not** a separate feature request - a fourth corroborating instance of the same unexplained
-composing-desync pattern already captured as D-256/D-257/D-258 (external caret jumps with no logged AdaptKey
-cause), this time manifesting as a swallowed space rather than a corrupted/lost composing token or a
-mysteriously-reappeared word. Four independent occurrences across at least two different apps in one batch of
-logs is itself a meaningful finding - this is evidently a real, recurring pattern, not a one-off - and
-strengthens the case for prioritising a dedicated, isolated-repro investigation into it (matching D-139's own
-precedent for this exact class of problem) over any of the four individual symptom reports on their own. See
-D-256/D-257/D-258 above for the full disposition; no code changed for any of the four.
+1. First read: looked for two visibly glued *words* in the committed text, found none, filed as a feature
+   request ("show me where I tapped"). Wrong - the user was not asking about a UI capability at all.
+2. Second read, after "der Punkt kam nicht an" was clarified to mean the *space specifically* failed to
+   register: found composing `"Chri"` (expected caret 51) silently becoming `composing=""` with the caret
+   reported at 56 shortly before the period, and reclassified this as a fifth data point in the same
+   `EXTERNAL`-composing-mismatch family as D-256/D-257/D-258. Also wrong, per the user's own direct
+   correction: this was never about the app receiving a space and later corrupting/losing it - the space
+   **never arrived at the app in the first place**, because the physical tap most likely landed just outside
+   the space key's registered touch zone (or, per the user's own suspicion, possibly *inside* it but got
+   resolved to the wrong key regardless) - a keyboard-side hit-testing/resolution question, not a composing-
+   state race at all. Different question, different mechanism, not the same bucket as D-256/D-257/D-258.
+
+**What the log actually shows for this exact moment**, re-checked once more against the raw pasted text: a
+genuine ~2.4s gap with **zero** `AdaptKeyTouch: rawTap` lines of any kind between the tap that completed
+`"Chri"` and the next logged tap (the period) - not a tap resolved to the wrong key, an *absence* of any
+logged tap at all for however many keystrokes the user believes they made in between (completing "Christus"
+and then reaching for space). This doesn't fit either of my two previous theories cleanly: if the user's
+finger genuinely missed every touch zone that many times in a row, nothing should have been typed at all,
+yet "Christus" ended up correctly spelled in the committed text - so *something* clearly did register, just
+without leaving the trail this excerpt shows. Not resolved - the pasted excerpt itself does not contain the
+raw tap coordinates needed to check them against the space key's zone
+(`centerX=540.0 centerY=680.5625 halfWidth=186.28 halfHeight=64.31`), which is exactly what the user is
+asking for. Two candidate explanations, both unconfirmed: the export the user copied did not include every
+channel/line for that window, or X-01's own ring buffer (§19, "a short rolling window") had already evicted
+the relevant entries by the time it was read. Needs either the complete, unfiltered log for this exact
+window, or a fresh, isolated repro exported immediately after it happens, before any conclusion (bug vs.
+genuine mis-tap) can be drawn. D-256/D-257/D-258 remain a separate, still-open cluster of their own.
