@@ -259,6 +259,47 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-261 a masculine agent noun ending in -er is never split from a bare in suffix`() {
+        // "Lehrerin" (missing from the dictionary) must not be torn into "lehrer" (a known, frequent NOUN)
+        // + "in" (an extremely frequent preposition) - the single most productive German feminisation
+        // pattern, confirmed against the real bigram_de.tsv: "lehrer"+"in" still co-occurs (45, genuine
+        // "Lehrer in Ausbildung"-style phrases), so a bigram gate alone could not have caught this.
+        store.putWord(WordEntry("lehrer", frequency = 5_000L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("in", frequency = 500_000L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
+        
+        assertNull(repair.trySplit("lehrerin", emptySet()))
+    }
+    
+    @Test
+    fun `D-261 a curated non-er feminine agent noun stem is never split from a bare in suffix`() {
+        store.putWord(WordEntry("nachbar", frequency = 3_000L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("in", frequency = 500_000L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
+        
+        assertNull(repair.trySplit("nachbarin", emptySet()))
+    }
+    
+    @Test
+    fun `D-261 an umlauted curated stem is matched via unfolding`() {
+        // "Ärztin" typed with its umlaut - "ärzt" unfolds to "arzt", a member of the curated stem set,
+        // exactly like resolveWord's own umlaut-aware lookup.
+        store.putWord(WordEntry("arzt", frequency = 2_000L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("in", frequency = 500_000L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
+        
+        assertNull(repair.trySplit("ärztin", emptySet()))
+    }
+    
+    @Test
+    fun `D-261 an ordinary noun not shaped like a feminine agent stem still splits before in`() {
+        // "Haus" does not end in "-er" and is not in the curated exception set - "hausin" (a genuine
+        // missed-space "Haus in") must still split, confirmed against the real bigram_de.tsv
+        // ("haus"+"in" = 404 co-occurrences) - the fix must not over-block ordinary noun+preposition phrases.
+        store.putWord(WordEntry("haus", frequency = 10_000L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("in", frequency = 500_000L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
+        
+        assertEquals(SplitResult("haus", "in"), repair.trySplit("hausin", emptySet()))
+    }
+    
+    @Test
     fun `a split is rejected when a half is blacklisted`() {
         store.blacklist("das", BlacklistCategory.USER)
         assertNull(repair.trySplit("aberdas", emptySet()))

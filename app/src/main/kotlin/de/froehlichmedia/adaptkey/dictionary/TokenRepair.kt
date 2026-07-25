@@ -261,6 +261,17 @@ class TokenRepair(private val store: DictionaryStore) {
         if (isNoun(leftEntry) && isNoun(rightEntry)) {
             return null
         }
+        // D-261: rejects a right half of exactly "in" when the left half is a plausible German masculine
+        // agent/relation noun stem - mirrors D-249's left-half prefix guard, but a frequency-ceiling
+        // exemption (D-249's own mechanism) cannot be reused here, since "in" the preposition is always
+        // extremely frequent on its own, unlike D-249's narrow "er" pronoun outlier. A bigram-co-occurrence
+        // gate was checked against the real bigram_de.tsv and disproven too: "lehrer"+"in" (45) and
+        // "spieler"+"in" (53) - genuine "Lehrer in Ausbildung"-style phrases - have real co-occurrence
+        // despite being exactly the feminine-noun false-positive shape, while "auto"+"in"/"firma"+"in" (both
+        // 0) - genuine, unrelated noun+preposition phrases - have none; no bigram threshold separates them.
+        if (right == FEMININE_AGENT_SUFFIX && isFeminineAgentNounStem(left, leftEntry)) {
+            return null
+        }
         return SplitResult(left, right) to score(leftEntry, rightEntry, previousWord)
     }
     
@@ -311,6 +322,26 @@ class TokenRepair(private val store: DictionaryStore) {
      */
     private fun isNoun(entry: WordEntry): Boolean {
         return entry.partsOfSpeech.contains(PartOfSpeech.NOUN) || entry.partsOfSpeech.contains(PartOfSpeech.PROPER_NOUN)
+    }
+    
+    /**
+     * D-261: whether [left] is a plausible German masculine agent/relation noun stem whose feminine
+     * counterpart is formed with a bare "+in" suffix - either the general, most productive pattern
+     * (a known noun ending in "-er": Lehrer -> Lehrerin, Spieler -> Spielerin, Fahrer -> Fahrerin), or one
+     * of a curated set of common non-"-er" nouns with the same formation ([FEMININE_AGENT_NOUN_STEMS]) -
+     * matched via [Umlaut.unfoldCandidates] since several take an umlaut vowel change in the feminine form
+     * (Arzt -> Ärztin, Koch -> Köchin, Graf -> Gräfin) that [resolveWord] already folds back to the bare
+     * stem for lookup, so [left] itself may already be the umlauted spelling. Not exhaustive - a
+     * calibrated, common-case list, not a full morphological rule (mirrors [INSEPARABLE_PREFIXES]).
+     */
+    private fun isFeminineAgentNounStem(left: String, leftEntry: WordEntry): Boolean {
+        if (!isNoun(leftEntry)) {
+            return false
+        }
+        if (left.endsWith(FEMININE_ER_SUFFIX)) {
+            return true
+        }
+        return Umlaut.unfoldCandidates(left).any { it in FEMININE_AGENT_NOUN_STEMS }
     }
     
     /**
@@ -387,6 +418,22 @@ class TokenRepair(private val store: DictionaryStore) {
         
         /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
         val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
+        
+        /** D-261: the German feminine-agent-noun-forming suffix - see [isFeminineAgentNounStem]. */
+        private const val FEMININE_AGENT_SUFFIX = "in"
+        
+        /** D-261: the most productive German feminisation ending - see [isFeminineAgentNounStem]. */
+        private const val FEMININE_ER_SUFFIX = "er"
+        
+        /**
+         * D-261: common German masculine agent/relation nouns, in their bare (un-umlauted) stem spelling,
+         * whose feminine counterpart is formed with "+in" but which do not end in [FEMININE_ER_SUFFIX] - see
+         * [isFeminineAgentNounStem]. Calibrated, not exhaustive.
+         */
+        private val FEMININE_AGENT_NOUN_STEMS = setOf(
+            "arzt", "chef", "koch", "nachbar", "student", "freund", "patient",
+            "präsident", "polizist", "journalist", "könig", "graf", "gott"
+        )
         
         private const val BIGRAM_WEIGHT = 10.0
     }

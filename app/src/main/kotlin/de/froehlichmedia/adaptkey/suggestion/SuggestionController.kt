@@ -27,6 +27,15 @@ class SuggestionController(private val config: SuggestionConfig) {
         /** D-36: a direct-paste chip showing (a preview of) the clipboard; tapping it pastes. */
         CLIPBOARD,
         
+        /** D-266: a preview of just the clipboard's first line; tapping it commits that line only,
+         * directly (not the native paste action [CLIPBOARD] uses, which cannot paste a mere substring). */
+        CLIPBOARD_FIRST_LINE,
+        
+        /** D-266: a preview of the first plausible "code" token found in the clipboard (via
+         * [de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction.firstCode]); tapping it commits that
+         * token only, directly, exactly like [CLIPBOARD_FIRST_LINE]. */
+        CLIPBOARD_FIRST_CODE,
+        
         /** D-142: a saved username/email/domain-completion value in a recognised login field; tapping it
          * commits [DisplayItem.word] verbatim (never §6-capitalised) and reinforces it in the credential
          * store, never the ordinary dictionary. Built and pushed directly to the suggestion bar, bypassing

@@ -70,6 +70,34 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§184 (v0.8.139): D-261/D-262/D-263/D-265/D-266 implemented; D-264 explicitly deferred at the user's**
+  **own request for a design discussion.** D-241/D-261 mix-up caught and confirmed with the user before
+  writing any code (D-241 was already closed, §168). **D-261**: the German feminine-agent-noun suffix `-in`
+  is never split off by A-05/D-122 - a bigram-gate idea was checked against the real `bigram_de.tsv` and
+  disproven first (`"lehrer"+"in"`=45/`"spieler"+"in"`=53 real co-occurrence despite being the false-positive
+  shape; ordinary nouns `"auto"`/`"firma"`/`"büro"` + `"in"` all sit at 0 too - no threshold separates them);
+  fixed instead via a new `TokenRepair.isFeminineAgentNounStem()` morphological guard (a known noun ending in
+  `-er`, the most productive pattern, **plus** a curated non-`-er` stem list - user chose the broader option
+  over `-er`-only) mirroring `INSEPARABLE_PREFIXES` structurally. **D-263**: re-diagnosed from scratch after
+  the user's own direct pushback on the first read of their device log (not a debounce timing race at all) -
+  root-caused to `composingCaseLocked` (G-05's camelCase lock) short-circuiting `finalizeAndCommit()` past
+  the entire A-05 split search, while the live §47/§49 preview never consulted the same flag and kept
+  showing the split as pending - a real preview/commit inconsistency. Fixed by letting `trySplit()` still run
+  for a case-locked token (autocorrect/single-word correction remain bypassed, matching G-05's own intent);
+  `applySplit()` now resets the case lock too. **D-262**: new A-12 - sentence punctuation (`.`/`!`/`?`)
+  auto-inserts its own trailing space, with a punctuation-run mode (glues `"!?!"`/`"..."` together, an
+  explicit Space confirms without duplicating, Backspace removes only the forced space) - implemented from
+  the user's own already-verbatim-captured spec; also had to route through `commitLongPressSymbol()`, not
+  just the ordinary CHAR path, since `!`/`?` are L-02 long-press-only. **D-265**: A-07's undo window now
+  survives Space/Enter (only a genuine non-whitespace character closes it) - new `undoTrailingChars` tracks
+  what those keys actually committed while the window stayed open, so `performAutocorrectUndo()` removes it
+  too, not just the originally-armed commit. **D-266**: new "Erste Zeile"/"Erster Code" clipboard chips - pure
+  `ClipboardExtraction.firstLine()`/`firstCode()` (a URL-aware query/path parser first, a generic
+  alphanumeric-run fallback last, per the user's own chain-of-parsers architecture), both verified against
+  the user's own two examples. 16 new tests (4 `TokenRepairTest`, 12 `ClipboardExtractionTest`). 829 unit
+  tests (813 + 16). `:app:assembleRelease`/`:app:testDebugUnitTest` green. None of this round's
+  `AdaptKeyService`-glue changes are device-confirmed yet. See history §184, spec A-05/A-07/A-12/G-05/V-02
+  (new).
 - **§183 (v0.8.138): D-260 - the space key's own touch zone now extends into the reclaimable part of the**
   **bottom gesture inset, per the user's own proposed mechanism for D-259.** Verified the geometry first:
   `layoutKeys()`'s bottom-anchoring formula (`top = height - paddingBottom - contentHeight + gapPx`, D-86) is

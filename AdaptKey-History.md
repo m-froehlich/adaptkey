@@ -9269,3 +9269,167 @@ real `View` measurement/layout/WindowInsets end-to-end is outside this project's
 for this class. 813 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
 device-confirmed - the user's own D-259 repro (or simply continued typing near the space bar's lower edge on a
 gesture-nav device) is the scenario to watch for recurrence.
+
+## §184 - D-261/D-262/D-263/D-265/D-266 Implemented, D-264 Deferred For Design (v0.8.139)
+
+Five of §182's six captured items, requested together in one round. D-264 (learning a differently-cased
+spelling of an already-bundled word) was explicitly excluded per the user's own request to discuss the
+approach first - still open, not designed this round.
+
+**D-241/D-261 mix-up caught before implementing anything**: the user's request named "D-241", which
+`AdaptKey-Progress.md` §168 already shows closed (v0.8.126, the S-05 highlight colour). Confirmed with the
+user rather than guessed - they meant D-261 (the `-in` feminine-agent-noun suffix, which sits thematically
+right next to D-262 through D-266 in §182). D-241 itself was untouched this round.
+
+### D-261 - The `-in` Feminine-Agent-Noun Suffix Is Never Split From A-05/D-122
+
+§182's own capture flagged that D-249's frequency-ceiling exemption mechanism cannot be reused here, since
+`"in"` (the preposition) is always extremely frequent regardless of context - confirmed and then quantified
+against the real `bigram_de.tsv`, not assumed: a bigram-co-occurrence gate was the first idea tried and was
+disproven by real numbers before writing any code. `"student"+"in"`, `"koch"+"in"`, `"chef"+"in"`,
+`"fahrer"+"in"`, `"nachbar"+"in"` all sit at **0** co-occurrences (exactly the problematic feminine-noun
+shape), while `"lehrer"+"in"` (45) and `"spieler"+"in"` (53) - genuine "Lehrer in Ausbildung"-style phrases -
+have real co-occurrence despite being exactly the false-positive shape a fix needs to catch; meanwhile
+ordinary nouns like `"auto"+"in"`/`"firma"+"in"`/`"büro"+"in"` also sit at 0, so a bigram threshold would
+reject genuine noun+preposition phrases while letting through the actual `-in` false positives it exists to
+block. No clean separating value exists - the same fundamental ambiguity §158 already flagged as unresolved
+for `"darf"+"St"` vs. `"der"+"Kinderarzt"` (identical surface shape, only word-order/grammatical-role
+plausibility distinguishes them, which this dictionary's tagging cannot represent).
+
+Presented the finding and a proposed morphological fix to the user rather than picking one unilaterally,
+since a wrong choice here has a real, demonstrable false-positive risk either direction: **-er-suffix rule**
+(`left` is a known noun ending in `-er` - Lehrer→Lehrerin, Spieler→Spielerin, Fahrer→Fahrerin, by far the
+most productive German feminisation pattern) as a V1-only fix, vs. broadening it with a curated list of
+common non-`-er` stems (Arzt, Chef, Koch, Nachbar, Student, ...). **User chose the broader option.**
+Implemented in `TokenRepair.candidateAt()` as a new guard (mirrors D-249's own left-prefix guard structurally,
+positioned the same way, but on the right half and via a different mechanism, since the frequency-ceiling
+trick doesn't transfer): `isFeminineAgentNounStem(left, leftEntry)` rejects the candidate when `right == "in"`
+and `left` is a known noun that either ends in `-er` or unfolds (via the existing `Umlaut.unfoldCandidates`,
+the same umlaut-aware lookup `resolveWord` already uses) to a member of a new curated
+`FEMININE_AGENT_NOUN_STEMS` set (`arzt`, `chef`, `koch`, `nachbar`, `student`, `freund`, `patient`,
+`präsident`, `polizist`, `journalist`, `könig`, `graf`, `gott`) - covers the umlaut-vowel-change cases
+(Arzt→**Ä**rztin, Koch→**Kö**chin, Graf→**Grä**fin) for free, since the same unfold path `resolveWord` already
+relies on finds `"ärzt"`→`"arzt"` etc. Deliberately not exhaustive, matching the `INSEPARABLE_PREFIXES`
+precedent - a calibrated, common-case list. Confirmed via a fourth data check that the fix does not
+over-block: `"haus"+"in"` (404 real co-occurrences, an ordinary noun not shaped like a feminine-agent stem)
+still splits correctly. 4 new tests (`TokenRepairTest`).
+
+### D-263 - Re-Diagnosed From Scratch After the User's Own Correction: Not a Timing Race At All
+
+§182's own capture guessed a debounce-timing race (`EXPENSIVE_SUGGESTION_DELAY_MS` not finishing before the
+delimiter commits). The user supplied a real device log and, critically, pushed back hard on the first
+diagnosis offered against it: the log showed the split being **correctly recognised** (the live S-05/§47
+colour preview did show it as pending) but **never applied** at commit, both live-typed attempts of
+`"DercNachbar"`, while it split correctly after Backspace → reclaim → Space with no new typing at all - the
+user's own read was that the bug is "not enough splitting happens on the direct path", not "too much
+splitting happens on the reclaim path", the opposite of the first framing offered. Re-questioned the
+diagnosis from scratch against the actual code rather than patching the wrong end, per this project's own
+established rule for a corrected diagnosis.
+
+**Root cause, traced through `AdaptKeyService.kt` line by line against the log's own timestamps**: both live
+attempts show the exact G-05 camelCase sequence (Shift pressed on `"Derc"`, then the letter `n` typed,
+resolving to `WordEndShift.Resolution.CAMEL_CASE`) - this sets `composingCaseLocked = true`
+(`handleWordEndShift()`), which stays true through `CAMEL_CASE`/`KEEP` (only `CANCEL` resets it). At commit,
+`finalizeAndCommit()`'s very first check (`if (composingCaseLocked) { return commitVerbatim(...) }`) bypassed
+the entire correction/split search chain outright - exactly matching the log's own suspiciously fast
+`handleKey` times for those two SPACE presses (18ms/20ms - too fast for the real
+`diacriticMs`/`bestCorrectionMs`/`splitMs` search that the eventual, reclaim-triggered success run actually
+shows, 94ms total). By contrast, the reclaim path (`reclaimSurroundingWord()`) never sets or restores
+`composingCaseLocked` - `commitVerbatim()` itself resets it via `resetWordEndShift()` right when the
+case-locked commit happens, so the *third* attempt (after Backspace-then-reclaim, no new characters typed)
+ran with `composingCaseLocked` already `false`, hit the ordinary full search chain, and found the split.
+
+**The actual mismatch, once found, is a genuine inconsistency, not a matter of picking a side**: the live
+§47/§49 composing-preview computation (`composingPreviewRunnable`/`splitPreview()`) was never gated on
+`composingCaseLocked` at all - it kept showing the split as pending throughout, while the commit path silently
+disagreed and committed the token unsplit. Spec G-05's own literal wording ("bypassing autocorrect,
+capitalisation (§6) **and token repair**") already covered this as intentional, but the real device evidence
+shows this is wrong in practice for the motivating case: a `Shift`-then-letter sequence pressed to correct an
+unwanted sentence-start capital can coincide, by pure accident, with a T-05 space-ambiguous mistouch (the
+stray `c` in `"Derc"`+`"Nachbar"`) that was never a deliberate camelCase composition at all. Fixed by moving
+the split check *ahead* of the case-locked short-circuit in `finalizeAndCommit()`: a case-locked token still
+tries `tokenRepair.trySplit()` (skipping `_`-tokens, matching B-04) before falling back to `commitVerbatim()` -
+autocorrect/diacritic restoration/single-word correction remain fully bypassed for a case-locked token exactly
+as before (the part of G-05's promise that's still correct - the user really did hand-finish this word's own
+casing), only the "is this genuinely two words" question is no longer suppressed by the lock. `applySplit()`
+now also calls `resetWordEndShift()` itself (mirroring `commitVerbatim()`'s own precedent), since it can now
+be reached directly from a case-locked commit and must not leave the lock dangling into the next word. Spec
+G-05 updated to state the exception explicitly. No new tests (established `AdaptKeyService`-internal glue gap,
+matching D-249/D-253/D-254's own precedent for this class of fix).
+
+### D-262 - Auto-Space After Sentence Punctuation, With a Punctuation-Run Mode
+
+Implemented exactly to the verbatim specification already captured in §182 (a new feature, not a bug fix, so
+no separate design round was needed - the user's own spec was precise and complete). New
+`handlePunctuationDelimiter(ic, raw)` wraps every punctuation commit - both the ordinary `CHAR` delimiter path
+and, since `!`/`?` are only ever reached through the full-stop key's own long-press popup (L-02), the
+`commitLongPressSymbol()` path too (a real gap that would have silently excluded exactly the two characters
+the user's own examples, `"!?!"`, need most, had it not been checked). New `pendingPunctuationSpace` flag
+(deliberately separate from D-29's own `pendingSuggestionSpace` - independent triggers that must not be
+conflated) tracks whether an auto-space is still unconfirmed: a further sentence-ending mark
+(`SENTENCE_PUNCTUATION = ".!?"`, narrower than D-29's own `SPACE_EATING_PUNCTUATION`, matching the user's own
+examples) removes it first and re-arms after the new mark, so a run glues together with the auto-space only
+ever trailing the whole run; an explicit Space commits an *empty* delimiter instead of a second `" "`
+(`finalizeAndCommit(ic, "")`, reusing every other consequence of an ordinary Space press - `clearUndo()`, the
+S-08 time-suggestion check, `pendingMergeChar`, `armShiftForNextWord()` - unchanged); a Backspace removes only
+the forced space and returns immediately, before `handleBackspace()`'s ordinary delete path can cascade into
+the punctuation or the word before it. Reset alongside `pendingSuggestionSpace` at every place that already
+resets it (`onStartInput`, `reclaimWordAtCaret`, a fresh word starting) plus `handleEnter()` (Enter is neither
+Space/punctuation/Backspace, so the auto-space just stays as ordinary text). Deliberately skipped for a
+login/URL field (a `.` inside an e-mail address must never grow a space into it) and for a mid-word delimiter
+(D-119/D-120's own split-at-caret path, where a trailing auto-space would land in the wrong place inside the
+reconstructed text, not at its visible end) - both checked via a `composingCursor == composing.length` /
+`loginFieldKind`/`urlMode` guard inside the new function. No new tests (established `AdaptKeyService`-internal
+glue gap, same class as the rest of this round).
+
+### D-265 - A-07's Undo Window Survives Space/Enter Now, Not Just Backspace
+
+Implemented per §182's own precise spec and its own suggested precedent (A-11/D-248's "survives any number of
+intervening keystrokes" shape), with the one extra subtlety §182 itself already flagged as needing care: a
+Space/Enter that no longer *closes* the window still *inserts real text*, which the eventual
+`performAutocorrectUndo()` must also remove, or its `deleteSurroundingText(undoCommitted.length +
+undoDelimiter.length, 0)` would delete the wrong span entirely once something sits between the cursor and the
+originally-armed commit. New `undoTrailingChars` (reset to 0 at both places `undoTyped` is armed) accumulates
+the length of every whitespace-or-empty delimiter committed while the window stays open (Space, multi-line
+Enter's `"\n"`, single-line Enter's `""`) - `handleKey()`'s own A-07 gate no longer clears the window for
+`KeyCode.SPACE`/`KeyCode.ENTER` (only `else -> clearUndo()` still does, for a genuine non-whitespace
+character), and `finalizeAndCommit()`'s composing-empty branch's own `clearUndo()` (previously unconditional -
+would have silently re-closed the window the *same* keystroke handleKey just preserved it for) now only fires
+when the delimiter actually committed contains a non-whitespace character, incrementing `undoTrailingChars`
+in the preserved case instead. `performAutocorrectUndo()` now deletes `undoTrailingChars +
+undoCommitted.length + undoDelimiter.length` characters before restoring the originally typed text - an
+accidental Enter/Space reached for while meaning Backspace is undone right along with the rejected correction
+itself, not left dangling. No new tests (established `AdaptKeyService`-internal glue gap).
+
+### D-266 - "Erste Zeile" and "Erster Code" Clipboard Chips
+
+New pure `suggestion/ClipboardExtraction` (`firstLine`/`firstCode`), unit-tested directly. `firstCode`
+implements the user's own proposed chain-of-parsers architecture: a URL-aware parser first (a query
+parameter's value, e.g. `"...?code=SDF123rtert"` -> `"SDF123rtert"`, takes priority over the last path
+segment, since a query value is far more often the actual "code" being shared), a generic
+first-contiguous-alphanumeric-run fallback last (`"<code123 foo"` -> `"code123"`, the user's own second
+example) - both examples verified passing. The URL-aware parser is gated on the clipboard text containing no
+whitespace at all (a real URL/URI is always one contiguous token) - a cheap, principled guard against
+misfiring onto ordinary prose that merely happens to contain a `?`, added after tracing through what the
+naive version would do to `"Is this ok? Thanks"` (extracts a meaningless path-segment fragment instead of
+falling through to the fallback). New `SuggestionController.Kind.CLIPBOARD_FIRST_LINE`/`CLIPBOARD_FIRST_CODE`;
+`showClipboardChipIfAvailable()` now builds a list (V-01's own chip first, then each new one only when its own
+extraction actually differs from the full clipboard text, so a single-line/single-token clipboard does not
+grow redundant duplicate chips) instead of always exactly one. New `commitClipboardExtraction()` commits the
+extracted substring directly via `ic.commitText()` - unlike V-01's own chip, which uses the native
+`performContextMenuAction(paste)` action (§38) precisely because a native paste has no way to paste only part
+of the clipboard - mirroring V-01's own sensitive-clip auto-clear identically. `SuggestionBarView`'s existing
+`when (dragKind)`/`draggableItemAt()` `else` branches already exclude the two new kinds from drag-to-trash
+eligibility with no code change needed there. 12 new tests (`ClipboardExtractionTest`). Explicitly flagged to
+the user as iterative per their own framing - `firstCode` in particular is expected to need tuning once more
+real clipboard content is tried against it.
+
+### Build/Test Summary
+
+829 unit tests (813 + 4 `TokenRepairTest` D-261 + 12 `ClipboardExtractionTest`). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Version bumped 0.8.138 -> 0.8.139 (one bundled round covering five items).
+None of this round's Android-service-glue changes (D-262/D-263/D-265/D-266's own service wiring) are
+device-confirmed yet; `ClipboardExtraction`/`TokenRepair`'s own pure logic is fully unit-tested.
+**D-264 remains open, explicitly deferred at the user's own request** - needs a design discussion on how to
+tell "the user is just typing an ordinary word" from "the user has a specific casing preference and keeps
+confirming it" before any implementation.

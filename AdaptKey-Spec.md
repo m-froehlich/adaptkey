@@ -228,6 +228,13 @@ Pressing Shift at the end of a fully typed word toggles the capitalisation of it
 The gesture only triggers when the caret is genuinely at the composing token's own end (not merely while
 some token happens to be composing), and only after a Caps-Lock-release check has first been ruled out.
 
+Committing a case-locked token still bypasses autocorrect, §6 capitalisation, and single-word correction
+entirely - "the user has hand-finished it" - **except** for A-05 retroactive word splitting: a case lock
+speaks only to the first character's own casing, not to whether the token is genuinely one word at all, so a
+genuine two-word split (e.g. a T-05 space-ambiguous mistouch that happened to coincide with the Shift press)
+is still found and applied. A token that does split this way is no longer case-locked - the split halves go
+through the ordinary per-half capitalisation like any other A-05 split.
+
 ### G-06 - Double-Tap Shift for Caps Lock
 Double-tapping Shift engages Caps Lock.
 
@@ -422,7 +429,14 @@ standalone German word, so blocking them would reject far more genuine two-word 
 compound-prefix false positives it would prevent (`"wieder holen"` vs. `"wiederholen"` being the textbook
 case). A prefix in the protected set is itself exempted from this rule once its own standalone dictionary
 frequency exceeds a fixed ceiling - `er-` (the pronoun) is the one case in practice, since blocking it
-unconditionally would prevent a genuine split like "erkommt" -> "er kommt". Half resolution also tries
+unconditionally would prevent a genuine split like "erkommt" -> "er kommt". Symmetrically, a right half of
+exactly `-in` is rejected when the left half is a plausible German masculine agent/relation noun stem - the
+single most productive German feminisation pattern (a known noun ending in `-er`: "Lehrerin", "Spielerin",
+"Fahrerin") plus a curated set of common non-`-er` stems (e.g. "Arzt"/"Chef"/"Koch"/"Nachbar"/"Student") -
+so "Schneiderin"/"Zuschauerin"-shaped words are never torn into a noun plus the standalone preposition "in".
+Unlike the left-prefix case, no frequency-ceiling exemption applies here: "in" is always an extremely common
+standalone word regardless of context, so the same mechanism cannot separate a genuine "noun in" phrase from
+a feminine-noun false positive - checked, not guessed. Half resolution also tries
 umlaut/ß-unfolding (e.g. "uber" resolves via "über") before giving up, per the umlaut guiding principle - the
 committed text itself still carries the literal typed substring, not the unfolded form. A split is vetoed if
 it would lose to a high-confidence single-word correction instead. A live two-span colour preview is shown
@@ -438,9 +452,14 @@ The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-
 ### A-07 - Post-Commit Autocorrect Undo
 After a commit that involved any correction - spelling autocorrect, diacritic/umlaut restoration, or an A-05
 split - a single backspace **tap** issued immediately afterwards restores the originally typed text,
-including rejoining a split back into one word. This applies only to a plain tap directly after the commit;
-it does not affect the whole-word delete gesture (G-02) or the ordinary shift-state-after-backspace
-behaviour (Addendum to G-05). The undo also:
+including rejoining a split back into one word. The undo window survives any number of intervening
+**whitespace** keystrokes (Space, Enter) rather than closing on the very next keystroke regardless of kind -
+only a genuine non-whitespace character (a letter, digit, or punctuation mark) closes it. Backspacing at
+this point undoes the intervening whitespace right along with the rejected correction itself, so an
+accidental Enter reached for while meaning Backspace does not permanently forfeit the revert. This applies
+only to a plain tap after the commit (immediate, or after surviving whitespace as above); it does not affect
+the whole-word delete gesture (G-02) or the ordinary shift-state-after-backspace behaviour (Addendum to
+G-05). The undo also:
 
 - **Un-learns the dictionary side** exactly, symmetrically reversing whatever unigram/bigram reinforcement
   or brand-new-entry creation that commit had just caused, deleting an entry outright if its count reaches
@@ -495,6 +514,23 @@ being cleaned up mid-flow, with no implication the word itself is unwanted - so 
 candidate would risk escalating an ordinary word straight to a permanent blacklist entry the next time it is
 typed (and, for the motivating half-typed-word case, it usually *is* typed
 again immediately afterwards, correctly this time).
+
+### A-12 - Auto-Space After Sentence Punctuation, With a Punctuation-Run Mode
+A sentence-ending punctuation mark (`.`, `!`, or `?`) auto-inserts a trailing space immediately after it
+commits - the user no longer has to press Space themselves before continuing. If the very next key is itself
+one of these three marks, the just-auto-inserted space is removed first, so the two land directly adjacent
+(`"!?"`, not `"! ?"`), and the same auto-space is inserted again after the new mark - a run of any length
+(`"!?!"`, `"..."`) keeps gluing together this way, with the auto-space only ever trailing the whole run, never
+appearing mid-run. If the user instead explicitly presses Space right after the punctuation, the auto-inserted
+space is not duplicated - the explicit press confirms it rather than adding a second one. A Backspace at this
+exact point (the auto-space still pending/unconfirmed) removes only the forced space and exits this mode; it
+never cascades into deleting the punctuation mark or the word before it. Once the mode is exited (by an
+explicit Space or by this Backspace, or by any other key, which simply leaves the auto-space as ordinary
+confirmed text), further Space/punctuation presses are handled entirely normally again, with a fresh
+punctuation-run mode arming only if new sentence-ending punctuation is typed. Does not apply inside a
+login/URL field (E-01/U-01/P-01) - a `.` inside an e-mail address or domain name must never grow an
+uninvited space into the middle of it - nor when the punctuation lands mid-word (re-editing an existing token,
+D-119/D-120's own split-at-caret case).
 
 ---
 
@@ -678,6 +714,18 @@ app-specific paste behaviour is preserved. The chip is suppressed for a stale cl
 and for a genuine non-text file clip. A sensitive clip (flagged by the platform) shows a masked preview.
 Clipboard content is auto-cleared after a deferred, content-matched check for sensitive material. A
 dedicated clear-clipboard button lives in the extra row (§14, R-01).
+
+### V-02 - "Erste Zeile" and "Erster Code" Chips
+Alongside V-01's own whole-clipboard chip, up to two further chips can appear in the same bar slot, each
+shown only when its own extraction actually differs from the full clipboard text (so a single-line/
+single-token clipboard does not grow redundant duplicate chips): "Erste Zeile" commits just the clipboard's
+first non-blank line; "Erster Code" commits the first plausible "code" token, found via a chain of
+specialised parsers tried in order (a URL-aware parser first, extracting a query-parameter's value or the
+last path segment; a generic fallback last, pulling the first contiguous alphanumeric run, ignoring
+surrounding punctuation). Unlike V-01's native-paste action, both commit the extracted text directly, since a
+native paste cannot paste only part of the clipboard. Sensitive-clip masking and the post-paste auto-clear
+both apply identically to these chips. An explicitly iterative feature - the "code" extraction in particular
+is expected to need further tuning as real examples surface, not a closed, exhaustively-designed parser.
 
 ---
 

@@ -105,6 +105,7 @@ import de.froehlichmedia.adaptkey.settings.CalibrationActivity
 import de.froehlichmedia.adaptkey.settings.SettingsActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
+import de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
 import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
@@ -364,6 +365,14 @@ class AdaptKeyService : InputMethodService() {
     // it exists for ever gets to run. Armed for exactly the one reclaim call that follows a suggestion tap.
     private var suppressNextReclaimSpaceReset = false
     
+    // D-262: armed right after a sentence-ending punctuation mark (SENTENCE_PUNCTUATION) auto-inserts its
+    // own trailing space - an immediately following sentence-ending punctuation mark removes that space
+    // first (so a punctuation run glues together, e.g. "!?!"), an explicit Space press does not duplicate
+    // it, and a Backspace removes only the forced space without cascading further. Cleared as soon as
+    // anything else is typed - a separate flag from pendingSuggestionSpace above, since the two triggers
+    // (an accepted suggestion vs. sentence punctuation) are independent and must not be conflated.
+    private var pendingPunctuationSpace = false
+    
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
     private var undoCommitted = ""
@@ -379,6 +388,12 @@ class AdaptKeyService : InputMethodService() {
     // (never the whole token - an ordinary dictionary/diacritic/split correction is never a touch-
     // resolution error) can be un-trained on undo. Null whenever the correction was not raw-coordinate-based.
     private var undoRawCorrection: RawCorrectionUndo? = null
+    // D-265: characters actually committed by a Space/Enter pressed *while the undo window is still open* -
+    // those keys no longer close the window (see handleKey's own A-07 gate), but they do still insert real
+    // text, which now sits between the cursor and undoCommitted/undoDelimiter. performAutocorrectUndo()
+    // deletes this many extra characters first, so an accidental Enter/Space in between does not throw off
+    // where the actually-armed commit is - only a genuine non-whitespace character closes the window outright.
+    private var undoTrailingChars = 0
     
     // D-248: the last few LearnRecords learnWord()/learnWordStrong() produced (every outcome except
     // LearnOutcome.SKIPPED, which changed nothing) - unlike the A-07 undo state above, this deliberately
@@ -1010,6 +1025,7 @@ class AdaptKeyService : InputMethodService() {
         resetWordEndShift()
         pendingMergeChar = null
         pendingSuggestionSpace = false
+        pendingPunctuationSpace = false
         previousWord = null
         previousPreviousWord = null
         tokenContextBefore = ""
@@ -1195,6 +1211,10 @@ class AdaptKeyService : InputMethodService() {
             } else {
                 pendingSuggestionSpace = false
             }
+            // D-262: the caret landing on a word elsewhere (not an immediately following Space/punctuation/
+            // Backspace) means the auto-space is no longer "pending" - it is now just ordinary confirmed
+            // text.
+            pendingPunctuationSpace = false
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
                 return
@@ -1349,6 +1369,11 @@ class AdaptKeyService : InputMethodService() {
      * anything replaces the chip with the normal suggestions. §40: nothing is offered once the clip is
      * older than [ClipboardPreview.MAX_AGE_MS] - a long-forgotten clipboard entry should not keep
      * resurfacing every time a field opens.
+     *
+     * D-266: two further chips - "Erste Zeile" (the clipboard's first line) and "Erster Code" (the first
+     * plausible "code" token, [ClipboardExtraction.firstCode]) - are appended whenever their own extraction
+     * actually differs from the full clipboard text, so a single-line/single-token clipboard does not grow
+     * redundant duplicate chips of the main one.
      */
     private fun showClipboardChipIfAvailable() {
         if (composing.isNotEmpty()) {
@@ -1362,9 +1387,22 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return
-        val label = ClipboardPreview.label(text, isSensitiveClip(clip)) ?: return
-        val chip = SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, "")
-        suggestionBar?.setItems(listOf(chip))
+        val sensitive = isSensitiveClip(clip)
+        val label = ClipboardPreview.label(text, sensitive) ?: return
+        val fullText = text.toString().trim()
+        val chips = ArrayList<SuggestionController.DisplayItem>()
+        chips.add(SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, ""))
+        ClipboardExtraction.firstLine(text)?.takeIf { it != fullText }?.let { line ->
+            ClipboardPreview.label(line, sensitive)?.let { lineLabel ->
+                chips.add(SuggestionController.DisplayItem("📄 $lineLabel", SuggestionController.Kind.CLIPBOARD_FIRST_LINE, ""))
+            }
+        }
+        ClipboardExtraction.firstCode(text)?.takeIf { it != fullText }?.let { code ->
+            ClipboardPreview.label(code, sensitive)?.let { codeLabel ->
+                chips.add(SuggestionController.DisplayItem("🔡 $codeLabel", SuggestionController.Kind.CLIPBOARD_FIRST_CODE, ""))
+            }
+        }
+        suggestionBar?.setItems(chips)
         suggestionBar?.visibility = View.VISIBLE
     }
     
@@ -1562,6 +1600,22 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-266: commits the result of running [extract] over the current clipboard's text directly
+     * ([ic.commitText]) rather than the native paste action [Kind.CLIPBOARD] uses - a native paste has no
+     * way to paste only part of the clipboard. A no-op when the clipboard is gone/empty or [extract] finds
+     * nothing. Mirrors [Kind.CLIPBOARD]'s own sensitive-clip auto-clear (§38).
+     */
+    private fun commitClipboardExtraction(ic: InputConnection, extract: (CharSequence) -> String?) {
+        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip?.takeIf { it.itemCount > 0 } ?: return
+        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return
+        val extracted = extract(text) ?: return
+        ic.commitText(extracted, 1)
+        if (isSensitiveClip(clip)) {
+            scheduleClipboardClear(text.toString())
+        }
+    }
+    
+    /**
      * D-124: whether [clip] genuinely declares a text-family MIME type - checked against its own concrete
      * declared type(s) directly, *not* via [ClipDescription.hasMimeType], whose documented wildcard
      * matching treats [ClipDescription.MIMETYPE_UNKNOWN] (a generic "unknown type" declaration some
@@ -1738,11 +1792,18 @@ class AdaptKeyService : InputMethodService() {
         try {
             // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
             if (undoTyped != null) {
-                if (key.code == KeyCode.DELETE) {
-                    performAutocorrectUndo(ic)
-                    return
+                when (key.code) {
+                    KeyCode.DELETE -> {
+                        performAutocorrectUndo(ic)
+                        return
+                    }
+                    // D-265: Space/Enter must not foreclose the undo window - only the next genuine
+                    // non-whitespace character should, mirroring A-11/D-248's own "survives any number of
+                    // intervening keystrokes, consumed only by the one that actually matters" shape. An
+                    // accidental Enter reaching for Backspace instead must not permanently lose the revert.
+                    KeyCode.SPACE, KeyCode.ENTER -> Unit
+                    else -> clearUndo()
                 }
-                clearUndo()
             }
             // G-05: resolve a pending word-end Shift against this key before it is handled normally. A Shift
             // is left to fall through (it re-toggles via handleShift); every other key resolves here.
@@ -1778,6 +1839,9 @@ class AdaptKeyService : InputMethodService() {
                                 // D-29: a new word after the accepted suggestion keeps its leading space (correct);
                                 // the eat-the-space rule was only for an immediately following punctuation.
                                 pendingSuggestionSpace = false
+                                // D-262: a letter typed next starts an ordinary new word - the sentence-
+                                // punctuation auto-space (if any) is already correctly in place as real text.
+                                pendingPunctuationSpace = false
                                 // D-62: the caret may sit inside (or against) an already-committed word - reclaim
                                 // it so autocorrect/suggestions see the whole word, not just what gets typed from
                                 // here.
@@ -1795,7 +1859,8 @@ class AdaptKeyService : InputMethodService() {
                         refreshSuggestions()
                     } else {
                         // Punctuation and a leading digit are delimiters; they finalise the current token.
-                        finalizeAndCommit(ic, raw.toString())
+                        // D-262: routed through a dedicated helper for the sentence-punctuation auto-space.
+                        handlePunctuationDelimiter(ic, raw)
                     }
                 }
                 
@@ -1803,7 +1868,14 @@ class AdaptKeyService : InputMethodService() {
                     // T-05: a space tapped in the upper band carries the letter inferred for a possible merge (A-06).
                     // D-119: finalizeAndCommit() itself splits at the caret when it is mid-word.
                     val inferred = ambiguity.inferredChar.takeIf { ambiguity.kind == TapAmbiguity.LETTER_AMBIGUOUS }
-                    finalizeAndCommit(ic, " ", inferred)
+                    // D-262: a Space pressed while a sentence-punctuation auto-space is still pending
+                    // confirms it instead of adding a second one - commit an empty delimiter (composing is
+                    // necessarily empty in this state) so every other consequence of a Space press
+                    // (clearUndo, the S-08 time suggestion, pendingMergeChar, armShiftForNextWord) still runs
+                    // exactly as normal.
+                    val spaceDelimiter = if (pendingPunctuationSpace) "" else " "
+                    pendingPunctuationSpace = false
+                    finalizeAndCommit(ic, spaceDelimiter, inferred)
                 }
                 
                 KeyCode.ENTER -> handleEnter(ic)
@@ -1842,6 +1914,9 @@ class AdaptKeyService : InputMethodService() {
      * ignored, so Enter appeared to do nothing.
      */
     private fun handleEnter(ic: InputConnection) {
+        // D-262: Enter is neither the Space/punctuation/Backspace this mode reacts to - the auto-space (if
+        // any) is already correctly in place as ordinary text; only the "still pending" bookkeeping ends.
+        pendingPunctuationSpace = false
         val editorInfo = currentInputEditorInfo
         val imeOptions = editorInfo?.imeOptions ?: 0
         val multiLine = ((editorInfo?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
@@ -1935,6 +2010,10 @@ class AdaptKeyService : InputMethodService() {
             (sourceCode != KeyCode.TEXT && AlternativeScript.extendsWord(symbol, activeLanguage == Language.GREEK))
         if (extendsWord) {
             appendLongPressLetter(ic, symbol)
+        } else if (symbol.length == 1) {
+            // D-262: "!" and "?" (L-02's own full-stop popup) reach the delimiter path through here, not
+            // through the ordinary CHAR handler - the sentence-punctuation auto-space must apply to them too.
+            handlePunctuationDelimiter(ic, symbol[0])
         } else {
             finalizeAndCommit(ic, symbol)
         }
@@ -2289,6 +2368,16 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun handleBackspace(ic: InputConnection) {
+        // D-262: a Backspace right after a still-pending sentence-punctuation auto-space removes only that
+        // forced space and exits the mode - it must not cascade into the ordinary deleteOneBefore() path
+        // below, which would go on to remove the punctuation mark (or the word before it) instead.
+        if (pendingPunctuationSpace) {
+            pendingPunctuationSpace = false
+            if (ic.getTextBeforeCursor(1, 0) == " ") {
+                ic.deleteSurroundingText(1, 0)
+            }
+            return
+        }
         // §41: a real, non-collapsed text selection takes priority over the ordinary single-character
         // delete below - Backspace must remove the selection itself, matching every other editor, not the
         // character before the cursor (which the selection may not even be adjacent to).
@@ -2475,6 +2564,43 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-262: commits a punctuation delimiter, then - for a sentence-ending mark (§6/[SentenceBoundary]'s
+     * own `.`/`!`/`?`) - auto-inserts its own trailing space and arms [pendingPunctuationSpace] so a
+     * further sentence-ending mark glues onto this one instead of leaving the auto-space stranded mid-run.
+     * When [pendingPunctuationSpace] is already armed (continuing a run, e.g. the `?` of `"!?"`) the
+     * previous auto-space is removed first, so the run's own trailing space only ever appears once, after
+     * the whole run - mirrors [isSpaceEatingPunctuation]'s existing "don't trust the space blindly" guard.
+     *
+     * D-119/D-120: deliberately skipped when the delimiter would land mid-word (the caret sits before the
+     * composing token's own end, so [finalizeAndCommit] delegates to `splitComposingAtCaretAndCommit`) - a
+     * mid-word delimiter inserts the mark somewhere in the *middle* of the reconstructed text, where a
+     * trailing auto-space would land in the wrong place entirely.
+     *
+     * E-01/U-01/P-01: also skipped entirely for a login/URL field - a `.` inside an e-mail address or a
+     * domain name must never grow an uninvited space into the middle of it.
+     *
+     * @param ic the current input connection
+     * @param raw the punctuation (or leading-digit) character that delimits the token
+     */
+    private fun handlePunctuationDelimiter(ic: InputConnection, raw: Char) {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode) {
+            finalizeAndCommit(ic, raw.toString())
+            return
+        }
+        val continuesRun = pendingPunctuationSpace && composing.isEmpty() && raw in SENTENCE_PUNCTUATION
+        if (continuesRun && ic.getTextBeforeCursor(1, 0) == " ") {
+            ic.deleteSurroundingText(1, 0)
+        }
+        pendingPunctuationSpace = false
+        val atTokenEnd = composingCursor == composing.length
+        finalizeAndCommit(ic, raw.toString())
+        if (atTokenEnd && raw in SENTENCE_PUNCTUATION) {
+            ic.commitText(" ", 1)
+            pendingPunctuationSpace = true
+        }
+    }
+    
+    /**
      * Finalises the composing token. First the retroactive token-repair rules are tried: a merge back
      * onto a preceding spurious letter-ambiguous space (A-06), then a split at a space-ambiguous tap or
      * a fully missed space (A-05). Failing those, the pending autocorrect and the capitalisation
@@ -2522,7 +2648,15 @@ class AdaptKeyService : InputMethodService() {
             }
             pendingSuggestionSpace = false
             ic.commitText(delimiter, 1)
-            clearUndo()
+            // D-265: only a genuine non-whitespace character closes the A-07 undo window - a Space or a
+            // blank Enter (delimiter "" or "\n") must not, so an accidental one reaching for Backspace
+            // instead does not permanently forfeit the revert; recorded so performAutocorrectUndo() removes
+            // it too, right along with the rejected correction, if a later Backspace does undo.
+            if (delimiter.isNotEmpty() && delimiter.any { !it.isWhitespace() }) {
+                clearUndo()
+            } else if (undoTyped != null) {
+                undoTrailingChars += delimiter.length
+            }
             // D-137: a standalone digit or punctuation mark - composing was already empty - is exactly how
             // typing a time ("14:30") actually reaches this function: per the KeyCode.CHAR handler's own
             // "a leading digit is a delimiter" rule, digits (and punctuation like `:`) never sit in
@@ -2549,12 +2683,26 @@ class AdaptKeyService : InputMethodService() {
         }
         pendingSuggestionSpace = false
         
-        // G-05: a word-end Shift made this token's casing explicit; commit it exactly as composed,
-        // bypassing autocorrect, capitalisation (§6) and token repair — the user has hand-finished it.
+        val typed = composing.toString()
+        // G-05 / D-263: a word-end Shift made this token's own casing explicit; commit it exactly as
+        // composed, bypassing autocorrect, capitalisation (§6) and single-word correction — the user has
+        // hand-finished it. This does NOT bypass A-05 split, though: a case lock only speaks to the FIRST
+        // character's casing, not to whether the token is genuinely one word at all. A T-05 space-ambiguous
+        // mistouch landing right where the user happens to press Shift can trigger the camelCase resolution
+        // (Shift, then the next letter) by coincidence even though the real intent was two separate words -
+        // root-caused from a real device log (see AdaptKey-History.md D-263): the live composing-preview
+        // (§47/§49) never consulted composingCaseLocked and kept showing the split as pending, while this
+        // function silently disagreed and committed the token verbatim, unsplit. Checked first, and only
+        // here, so the ordinary (non-case-locked) path below is untouched.
         if (composingCaseLocked) {
+            val split = if ('_' in typed) null else tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+            if (split != null) {
+                val committedLength = applySplit(ic, split, delimiter, typed)
+                armShiftForNextWord(ic)
+                return committedLength
+            }
             return commitVerbatim(ic, delimiter)
         }
-        val typed = composing.toString()
         // D-225: a token containing `_` is a technical identifier, not prose - no autocorrect, §6
         // capitalisation, token repair or dictionary learning of any kind must ever apply to it (unlike
         // commitVerbatim() above, which still learns the word - this is deliberately stronger). Checked
@@ -2730,6 +2878,7 @@ class AdaptKeyService : InputMethodService() {
             undoWasSplit = false
             undoLearnRecords = listOf(learnRecord)
             undoRawCorrection = rawCorrectionUndo
+            undoTrailingChars = 0
             // D-88: the word actually changed - this is an accepted correction, not a plain commit.
             notifySuggestionAccepted(finalWord)
         } else {
@@ -2961,6 +3110,11 @@ class AdaptKeyService : InputMethodService() {
         val left = capitalisation.capitalise(split.left, contextFor(split.left))
         val right = capitalisation.capitalise(split.right, followingPartContext())
         val committed = left + " " + right
+        // D-263: a split always resolves any pending/locked G-05 word-end-Shift state - the token just
+        // turned out to be two words, not one, so a case lock scoped to a single word's first character no
+        // longer applies to either half. Mirrors commitVerbatim()'s own reset; needed here now that this
+        // function can be reached directly from a case-locked commit (see finalizeAndCommit).
+        resetWordEndShift()
         // D-245: setComposingText("")/finishComposingText() and commitText() batched into one editor
         // update - unbatched (as before), some editors report the intermediate "composing just wiped"
         // state as its own onUpdateSelection callback, arriving before the real, final commit's own
@@ -2990,6 +3144,7 @@ class AdaptKeyService : InputMethodService() {
         // involves the D-39 raw-coordinate path, so there is no touch-model sample to un-train here.
         undoLearnRecords = listOf(leftRecord, rightRecord)
         undoRawCorrection = null
+        undoTrailingChars = 0
         // D-43: predict the next word (following the right-hand split part) instead of a blank bar. D-247:
         // pin the "Gelernt: X" confirmation ahead of it when either half just crossed the promotion
         // threshold - the right half takes priority (it is the word actually adjacent to what comes next);
@@ -3051,7 +3206,10 @@ class AdaptKeyService : InputMethodService() {
         val wasSplit = undoWasSplit
         val learnRecords = undoLearnRecords
         val rawCorrection = undoRawCorrection
-        ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
+        // D-265: an accidental Space/Enter pressed while the window stayed open is undone right along with
+        // the rejected correction itself - deleted first (it sits closest to the cursor), then the original
+        // committed text/delimiter.
+        ic.deleteSurroundingText(undoTrailingChars + undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
         previousWord = typed
         clearUndo()
@@ -4217,6 +4375,19 @@ class AdaptKeyService : InputMethodService() {
                 clearSuggestions()
             }
             
+            // D-266: unlike Kind.CLIPBOARD above, these commit only an extracted substring - a native
+            // paste has no way to paste part of the clipboard, so `commitText()` is the only option here.
+            SuggestionController.Kind.CLIPBOARD_FIRST_LINE -> {
+                commitClipboardExtraction(ic, ClipboardExtraction::firstLine)
+                clearSuggestions()
+            }
+            
+            SuggestionController.Kind.CLIPBOARD_FIRST_CODE -> {
+                commitClipboardExtraction(ic, ClipboardExtraction::firstCode)
+                clearSuggestions()
+            }
+            
+            
             // D-142: commits the tapped credential value exactly as stored - never §6-capitalised, and
             // reinforced in the credential store, never the ordinary dictionary (learnWord). item.word is
             // always the *whole* intended value (e.g. a full "local@domain" completion), but the field may
@@ -4541,6 +4712,7 @@ class AdaptKeyService : InputMethodService() {
         undoWasSplit = false
         undoLearnRecords = emptyList()
         undoRawCorrection = null
+        undoTrailingChars = 0
     }
     
     private fun capsModeFor(info: EditorInfo?): CapsMode {
@@ -4683,6 +4855,11 @@ class AdaptKeyService : InputMethodService() {
         
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
+        
+        // D-262: sentence-ending punctuation that auto-inserts (and, in a run, re-inserts) its own trailing
+        // space - deliberately narrower than SPACE_EATING_PUNCTUATION above (no comma/semicolon/colon/closing
+        // parenthesis), matching the user's own examples ("!?!", "...").
+        private const val SENTENCE_PUNCTUATION = ".!?"
         
         // D-176/D-181: seeded once per installStores() call into the German store - see
         // knownInOtherLanguage()'s own KDoc and installStores()'s seedBundledBlacklist() for the full
