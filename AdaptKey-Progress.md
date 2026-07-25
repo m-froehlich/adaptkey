@@ -70,6 +70,24 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§190 (v0.8.144): D-270 - three more real A-12 bugs found from the user's own device log; §188's fix**
+  **was real but incomplete.** **(1)** Sentence-start capitalisation never fired for a word typed straight
+  through the mode (no explicit Space) - `armShiftForNextWord()`'s call inside `finalizeAndCommit()` reads
+  the text *before* the auto-space exists, so it can never see the sentence boundary; now called a second
+  time, right after the auto-space actually lands. **(2)** Enter right after the auto-space left it
+  dangling forever - `handleEnter()` only cleared the bookkeeping flag, never the space itself; now mirrors
+  the Backspace guard and removes it first. **(3)** The double-space bug persisted after §188 - the user's
+  own log showed *three* `onUpdateSelection` callbacks for one `"."` + auto-space sequence (two separate,
+  unbatched `InputConnection` edits), not the usual two a single commit produces; §188's single-shot
+  `suppressNextReclaimSpaceReset` guard only protects the *first* of them, leaving the second free to clear
+  `pendingPunctuationSpace` before the user's own explicit Space arrives (confirmed directly against the
+  log's own caret-advance timing). Fixed structurally, mirroring the established D-87/D-245/D-263 batching
+  precedent: `handlePunctuationDelimiter()`'s whole sequence now runs inside one `beginBatchEdit()`/
+  `endBatchEdit()` pair, coalescing the callbacks back down to two - what the existing guard was already
+  designed for - rather than widening it into a fragile counter. No new tests (established
+  `AdaptKeyService`-internal glue gap). 840 unit tests (unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. None of the three fixes device-confirmed yet. See history §190, spec A-12
+  (revised).
 - **§189 CAPTURED (still v0.8.143, no code change): A-12's punctuation-run mode re-traced against a second**
   **reported symptom (explicit Space after the auto-space adding a duplicate) and found to be the same**
   **§188/D-269 root cause, not a new bug** - grepped every `pendingPunctuationSpace` reset site once more,

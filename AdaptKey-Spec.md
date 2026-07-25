@@ -536,12 +536,17 @@ gluing together this way, the auto-space only ever trailing the whole run, never
 - an explicit Space (absorbed, confirming the auto-space as final) and a Backspace right at this point (removes
 only the forced space, never cascading into the punctuation mark or the word before it) - leave the mode
 exited; explicitly moving the caret elsewhere (a tap, not this app's own reactive echo of the auto-space commit
-itself) exits it the same way. Once exited - by either of those, or by any other key, which simply leaves the
-auto-space as ordinary confirmed text - further Space/punctuation presses are handled entirely normally again,
-with a fresh mode arming only if new sentence-ending punctuation is typed. Does not apply inside a login/URL
-field (E-01/U-01/P-01) - a `.` inside an e-mail address or domain name must never grow an uninvited space into
-the middle of it - nor when the punctuation lands mid-word (re-editing an existing token, D-119/D-120's own
-split-at-caret case).
+itself) exits it the same way. A third exit exists specifically for Enter: pressed while the mode is still
+armed, it removes the pending auto-space first (mirroring the Backspace exit) rather than leaving a trailing
+space dangling at the end of the line - Enter is not itself part of the mode's own Space/punctuation reactions,
+but it must not leave stray whitespace behind either. Once exited - by any of the above, or by any other key,
+which simply leaves the auto-space as ordinary confirmed text - further Space/punctuation presses are handled
+entirely normally again, with a fresh mode arming only if new sentence-ending punctuation is typed. The
+auto-space itself counts as the sentence-delimiting whitespace for §6's own auto-capitalisation the moment it
+lands - a word typed straight after it (without an explicit Space) still gets its own sentence-start capital,
+exactly as if the user had pressed Space themselves. Does not apply inside a login/URL field (E-01/U-01/P-01) -
+a `.` inside an e-mail address or domain name must never grow an uninvited space into the middle of it - nor
+when the punctuation lands mid-word (re-editing an existing token, D-119/D-120's own split-at-caret case).
 
 ---
 

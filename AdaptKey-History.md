@@ -9682,3 +9682,52 @@ exactly the "caret stays put vs. moves elsewhere" distinction the user described
 implemented by §188's fix. Spec A-12 reworded to state this explicitly as a standing mode with its own precise
 arm/re-arm/exit conditions, rather than leaving the "mode" framing implicit - a clarification, not a behaviour
 change. No code touched this round; 840 unit tests (unchanged).
+
+## §190 - D-270: Three More A-12 Bugs Found From A Real Device Log - §188's Fix Was Incomplete (v0.8.144)
+
+The user's follow-up report ("nahezu unbenutzbar geworden") came with a real device log this time, not just a
+description - re-diagnosed all three points against it directly, per this project's own root-cause rule,
+finding §188's fix was real but insufficient.
+
+**1. Sentence-start capitalisation never fires after the auto-space.** Traced `armShiftForNextWord()`'s own
+call site inside `finalizeAndCommit()`'s ordinary commit tail: it runs immediately after committing the
+delimiter itself (e.g. `"."`), reading `getTextBeforeCursor()` to decide whether a sentence just ended
+(`SentenceBoundary.isSentenceStart()`, which requires *trailing whitespace* after the terminator to count it as
+one). At that exact moment the text ends in `"...Satz."` with **no** trailing space yet - `handlePunctuationDelimiter()`'s
+own auto-space insertion happens *afterward*, once `finalizeAndCommit()` has already returned - so the sentence
+boundary is invisible to this call and Shift is never armed. This worked before A-12 existed because the user's
+own explicit Space press supplied the trailing whitespace *before* `armShiftForNextWord()` ever ran (it is a
+plain, ordinary delimiter commit through the very same function). Fixed: `handlePunctuationDelimiter()` now
+calls `armShiftForNextWord(ic)` a second time, right after the auto-space actually lands - the next word typed
+straight through the mode (no explicit Space) now gets its own sentence-start capital exactly as if the user
+had pressed Space themselves.
+
+**2. Enter right after the auto-space leaves it dangling.** `handleEnter()` only ever cleared the
+`pendingPunctuationSpace` *bookkeeping* flag, never the space itself - every line/paragraph ended right after a
+sentence-ending mark accumulated a trailing space forever. Fixed by mirroring the existing Backspace guard
+exactly: Enter now removes the pending auto-space first, before proceeding with its own ordinary multi-line/
+single-line handling.
+
+**3. The double-space bug reported after §188's fix - still present, root-caused from the user's own log.**
+The log shows *three* separate `onUpdateSelection` callbacks landing for one `"."` + auto-space sequence
+(`[16,16]→[16,16]`, `→[17,17]`, `→[18,18]`), not the usual two (an echo, then the real position) a single
+ordinary commit produces - because `handlePunctuationDelimiter()` performs *two* separate, unbatched
+`InputConnection` edits (`finalizeAndCommit()`'s own delimiter commit, then a further, separate
+`ic.commitText(" ", 1)`), each generating its own callback. §188's `suppressNextReclaimSpaceReset` is a
+single-shot guard - only the *first* of the three callbacks' own reactive `reclaimWordAtCaret()` call finds it
+still armed; the *second* one finds it already consumed and clears `pendingPunctuationSpace` again, well before
+the user's own explicit Space arrives - confirmed directly against the log's own timing (the explicit Space at
+`-3.7s` advances the caret by a full character, `[18,18]→[19,19]`, which only happens if a real, un-absorbed
+space was inserted - a zero-length delimiter would never move the caret at all). §188's own fix was real and
+necessary (it does correctly protect the *first* echo), just insufficient for a sequence long enough to produce
+more than one. Fixed at the structural level, not by widening the guard into a counter: the whole
+`handlePunctuationDelimiter()` sequence (the run's previous-space removal, `finalizeAndCommit()`'s own edits,
+the new auto-space) is now wrapped in one `ic.beginBatchEdit()`/`endBatchEdit()` pair, mirroring the established
+D-87/D-245/D-263 batching precedent for exactly this class of problem - letting the editor coalesce the whole
+sequence back down to the ordinary two callbacks the existing single-shot guard was already designed for,
+rather than inventing a more fragile multi-shot mechanism.
+
+No new unit tests - all three fixes are `AdaptKeyService`-internal `InputConnection`/callback-timing glue, the
+same established gap as §188's own fix. 840 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Version bumped 0.8.143 -> 0.8.144. None of the three fixes are device-confirmed
+yet - the user's own next test of this exact scenario is what would confirm them.

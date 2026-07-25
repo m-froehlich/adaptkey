@@ -2004,9 +2004,15 @@ class AdaptKeyService : InputMethodService() {
      * ignored, so Enter appeared to do nothing.
      */
     private fun handleEnter(ic: InputConnection) {
-        // D-262: Enter is neither the Space/punctuation/Backspace this mode reacts to - the auto-space (if
-        // any) is already correctly in place as ordinary text; only the "still pending" bookkeeping ends.
-        pendingPunctuationSpace = false
+        // D-270: Enter right after a still-pending sentence-punctuation auto-space removes that space
+        // first, exactly like the matching Backspace guard already does - otherwise a trailing space is
+        // left dangling at the end of every line/paragraph the user ends right after a sentence-ending mark.
+        if (pendingPunctuationSpace) {
+            pendingPunctuationSpace = false
+            if (ic.getTextBeforeCursor(1, 0) == " ") {
+                ic.deleteSurroundingText(1, 0)
+            }
+        }
         val editorInfo = currentInputEditorInfo
         val imeOptions = editorInfo?.imeOptions ?: 0
         val multiLine = ((editorInfo?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
@@ -2692,6 +2698,21 @@ class AdaptKeyService : InputMethodService() {
      * E-01/U-01/P-01: also skipped entirely for a login/URL field - a `.` inside an e-mail address or a
      * domain name must never grow an uninvited space into the middle of it.
      *
+     * D-270: the whole sequence (removing a run's previous auto-space, [finalizeAndCommit]'s own internal
+     * edits, inserting the new auto-space) is wrapped in one batch edit - a real device log showed this
+     * otherwise generates *three* separate `onUpdateSelection` callbacks, not the usual two (an echo, then
+     * the real position), for what is conceptually one commit. Only the first of those three ever finds
+     * [suppressNextReclaimSpaceReset] still armed - the single-shot guard is consumed by it, leaving the
+     * *second* callback's own reactive `reclaimWordAtCaret()` free to clear [pendingPunctuationSpace] again
+     * before the user's very next keystroke, exactly the double-space/never-glues symptom reported. Batching
+     * lets the editor coalesce the whole sequence back down to the same two callbacks an ordinary single
+     * commit already produces, which the existing single-shot guard was designed for - the structural fix,
+     * not a bigger counter. Also re-arms Shift ([armShiftForNextWord]) *after* the auto-space actually lands
+     * - [finalizeAndCommit]'s own internal call reads the text *before* the auto-space exists, so it can
+     * never see the sentence-ending mark's trailing whitespace and therefore never arms it; without this
+     * second call, the next word typed straight after the auto-space (skipping an explicit Space) never gets
+     * its own sentence-start capital.
+     *
      * @param ic the current input connection
      * @param raw the punctuation (or leading-digit) character that delimits the token
      */
@@ -2700,23 +2721,28 @@ class AdaptKeyService : InputMethodService() {
             finalizeAndCommit(ic, raw.toString())
             return
         }
-        val continuesRun = pendingPunctuationSpace && composing.isEmpty() && raw in SENTENCE_PUNCTUATION
-        if (continuesRun && ic.getTextBeforeCursor(1, 0) == " ") {
-            ic.deleteSurroundingText(1, 0)
-        }
-        pendingPunctuationSpace = false
-        val atTokenEnd = composingCursor == composing.length
-        finalizeAndCommit(ic, raw.toString())
-        if (atTokenEnd && raw in SENTENCE_PUNCTUATION) {
-            ic.commitText(" ", 1)
-            pendingPunctuationSpace = true
-            // D-269: this commitText() above generates its own onUpdateSelection callback shortly, which -
-            // composing already empty by then - calls reclaimWordAtCaret(); guard it against clearing the
-            // flag just armed, since that callback is only the echo of this very commit, not a genuine
-            // subsequent caret move (mirrors the identical D-123 guard for pendingSuggestionSpace). Without
-            // this, a second sentence-ending mark typed right after never sees pendingPunctuationSpace still
-            // armed, so it never glues onto the first one.
-            suppressNextReclaimSpaceReset = true
+        ic.beginBatchEdit()
+        try {
+            val continuesRun = pendingPunctuationSpace && composing.isEmpty() && raw in SENTENCE_PUNCTUATION
+            if (continuesRun && ic.getTextBeforeCursor(1, 0) == " ") {
+                ic.deleteSurroundingText(1, 0)
+            }
+            pendingPunctuationSpace = false
+            val atTokenEnd = composingCursor == composing.length
+            finalizeAndCommit(ic, raw.toString())
+            if (atTokenEnd && raw in SENTENCE_PUNCTUATION) {
+                ic.commitText(" ", 1)
+                pendingPunctuationSpace = true
+                // D-269: guard the reactive reclaimWordAtCaret() this commit's own (now-batched, but still
+                // eventually delivered) callback triggers - it is only an echo of this very commit, not a
+                // genuine subsequent caret move (mirrors the identical D-123 guard for pendingSuggestionSpace).
+                suppressNextReclaimSpaceReset = true
+                // D-270: re-derive the sentence-start arm now that the auto-space genuinely precedes the
+                // caret - see this function's own KDoc for why finalizeAndCommit()'s own call could not.
+                armShiftForNextWord(ic)
+            }
+        } finally {
+            ic.endBatchEdit()
         }
     }
     
