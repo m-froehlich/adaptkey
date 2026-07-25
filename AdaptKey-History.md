@@ -9926,3 +9926,52 @@ project's JVM-only test harness for this class). 843 unit tests (unchanged). `:a
 `:app:testDebugUnitTest` green. Version bumped 0.8.146 -> 0.8.147. Not yet device-confirmed - this is exactly
 the kind of fix that can only really be judged by continued use on a gesture-nav device across many keyboard
 opens, not a single repro.
+
+## §194 - D-275: The D-161 Retry Chain Was Silently Dying On Its First Attempt, Explaining Why The Self-Heal Never Actually Caught Anything (v0.8.148)
+
+Asked directly, satisfied with §193's fix: why has the D-161 self-heal apparently never actually kicked in
+for the race it exists to catch (the keyboard occasionally rendering stuck under the gesture nav bar until
+first touch)? The user's own framing: the underlying race is rare and entirely tolerable on its own, so
+either get the self-heal genuinely working or remove it outright rather than keep a mechanism that does not
+work - both explicitly offered as acceptable outcomes.
+
+**A second, independent bug, found by re-reading `windowInsetsRecheckRunnable` on its own terms.** Both of
+its early-exit guards - `root == null || !root.isAttachedToWindow` and `ViewCompat.getRootWindowInsets(root)
+== null` - used a bare `return@Runnable`, which skips *everything* below them, including
+`windowInsetsRecheckAttempt++` and the `handler.postDelayed(...)` reschedule that keeps the retry chain
+alive. The whole point of §105's D-250 retune (5 attempts, 500ms apart, replacing a single one-shot check)
+was that one attempt landing at the wrong moment should not be fatal - but structurally, it still was:
+whichever tick happened to fire while the view was not yet attached, or before the system had delivered its
+very first `WindowInsets` dispatch, silently ended the *entire* remaining chain right there, no matter how
+many attempts were nominally left. And that condition - insets not delivered yet - is not an unlucky edge
+case for this mechanism, it is *definitionally* the exact race D-161 exists to outlast: the scenario most
+likely to trigger this early exit is the same scenario where a second, third, ... attempt is most needed.
+This is a fully sufficient, self-consistent explanation on its own for "never actually caught anything": if
+the very first scheduled check (500ms in) happens to land during a still-slow cold IME window creation - a
+plausible, not rare, moment for a "first frame not rendered yet" race - the mechanism gave up permanently
+right there, before ever getting the 1000ms/1500ms/... tries that were supposed to follow.
+
+Distinct from and complementary to §193's own finding: §193's bug (the recheck's own comparison formula never
+agreeing with D-260's correctly-reduced padding) caused *over*-firing - constant, spurious "corrections" of
+already-correct state, the visible jitter/grow. This bug caused *under*-firing - the one scenario where a
+correction was genuinely needed was also the scenario most likely to kill the retry chain before it could
+happen. Both bugs sat in the same function, discovered and fixed in the same investigation but logically
+independent of each other; §193 alone would not have explained "the self-heal never visibly fixes the actual
+stuck-keyboard case", and this fix alone would not have explained the reported jitter.
+
+**Fixed by restructuring, not by touching the retry-count/delay tuning**: the check/correct logic now sits
+*nested inside* the two guards instead of early-returning past the reschedule - `windowInsetsRecheckAttempt++`
+and the conditional `postDelayed` now unconditionally run every tick regardless of whether that particular
+tick found the view ready or not, exactly restoring D-250's own original "5 tries, 500ms apart" intent for
+real. A tick where the view/insets genuinely are not ready yet is now correctly treated as "try again shortly",
+not "give up".
+
+Kept the mechanism rather than recommending removal (the user's own fallback, explicitly offered): the bug was
+small, well-understood, and now demonstrably fixed at the structural level, and the mechanism's underlying
+purpose (bounding an otherwise-unbounded "stuck until the user touches something" worst case, per §104's own
+original framing) is still worth having once it can actually deliver on it. If the underlying race still
+somehow isn't caught after this, that would need a fresh log/repro to diagnose further, not another guess.
+
+No new unit tests - same established Android view/`Handler`/`WindowInsetsCompat` glue gap as §193 and its own
+precedents. 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped
+0.8.147 -> 0.8.148. Not yet device-confirmed.

@@ -566,28 +566,35 @@ class AdaptKeyService : InputMethodService() {
     private var lastAppliedSpaceExtensionPx = 0
     
     private val windowInsetsRecheckRunnable: Runnable = Runnable {
+        // D-275: the actual check/correct logic is nested inside these guards rather than early-returning
+        // out of the whole runnable, specifically because "the view is not attached yet" / "insets have not
+        // been delivered yet" is not a reason to skip - it is *exactly* the race this mechanism exists to
+        // outlast. An early return here used to also skip windowInsetsRecheckAttempt++/the reschedule below,
+        // silently abandoning the entire retry chain the moment the very first tick happened to land before
+        // the view was ready - which is precisely the scenario most likely to need a second, third, ... try.
         val root = inputRoot
-        if (root == null || !root.isAttachedToWindow) {
-            return@Runnable
-        }
-        val insets = ViewCompat.getRootWindowInsets(root) ?: return@Runnable
-        val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-        val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-        val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-        val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-        val expectedTop = maxOf(statusBars.top, cutout.top)
-        // D-274: mirrors applyWindowInsetsPadding()'s own bottomInset computation exactly, including its
-        // D-260 space-touch-extension subtraction - see lastAppliedSpaceExtensionPx's own comment above for
-        // why comparing against the raw, un-subtracted inset here was wrong.
-        val expectedBottom = maxOf(bars.bottom, gestures.bottom) - lastAppliedSpaceExtensionPx
-        if (root.paddingTop != expectedTop || root.paddingBottom != expectedBottom) {
-            diag(
-                "AdaptKey",
-                "windowInsetsRecheck: stale padding corrected - top ${root.paddingTop}->$expectedTop, " +
-                    "bottom ${root.paddingBottom}->$expectedBottom",
-                warn = true
-            )
-            applyWindowInsetsPadding(root, insets)
+        if (root != null && root.isAttachedToWindow) {
+            val insets = ViewCompat.getRootWindowInsets(root)
+            if (insets != null) {
+                val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+                val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+                val expectedTop = maxOf(statusBars.top, cutout.top)
+                // D-274: mirrors applyWindowInsetsPadding()'s own bottomInset computation exactly, including
+                // its D-260 space-touch-extension subtraction - see lastAppliedSpaceExtensionPx's own comment
+                // above for why comparing against the raw, un-subtracted inset here was wrong.
+                val expectedBottom = maxOf(bars.bottom, gestures.bottom) - lastAppliedSpaceExtensionPx
+                if (root.paddingTop != expectedTop || root.paddingBottom != expectedBottom) {
+                    diag(
+                        "AdaptKey",
+                        "windowInsetsRecheck: stale padding corrected - top ${root.paddingTop}->$expectedTop, " +
+                            "bottom ${root.paddingBottom}->$expectedBottom",
+                        warn = true
+                    )
+                    applyWindowInsetsPadding(root, insets)
+                }
+            }
         }
         windowInsetsRecheckAttempt++
         if (windowInsetsRecheckAttempt < WINDOW_INSETS_RECHECK_MAX_ATTEMPTS) {

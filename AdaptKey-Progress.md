@@ -70,6 +70,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§194 (v0.8.148): D-275 - the D-161 retry chain was silently dying on its first attempt, explaining why**
+  **the self-heal never actually caught the stuck-keyboard race it exists for.** Asked directly after §193:
+  why has it apparently never kicked in? Found a second, independent bug in `windowInsetsRecheckRunnable`:
+  both early-exit guards (`root` not attached, insets not yet delivered) used a bare `return@Runnable`,
+  skipping `windowInsetsRecheckAttempt++`/the `postDelayed` reschedule below - so whichever tick happened to
+  land while insets genuinely had not been delivered yet (which is *exactly* the race this mechanism exists
+  to outlast, not an unrelated edge case) silently killed the entire remaining retry chain right there,
+  regardless of how many of the 5 attempts were nominally left. Complementary to §193, not the same bug:
+  §193 caused *over*-firing (spurious corrections of already-correct state -> jitter); this caused
+  *under*-firing (the one case needing a real correction was also the case most likely to abort the retries).
+  Fixed by nesting the check/correct logic inside the guards instead of early-returning past the reschedule,
+  so every tick now unconditionally counts and reschedules regardless of whether that tick found the view
+  ready. Kept the mechanism (the user's own offered alternative was outright removal, since the underlying
+  race is rare and tolerable on its own) since the bug is now well-understood and structurally fixed, and the
+  "bounded self-heal instead of unbounded stuck-until-touched" purpose is worth having once it can actually
+  deliver on it. No new unit tests (same established Android glue gap). 843 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §194.
 - **§193 (v0.8.147): D-274 - the D-161 window-insets self-heal has permanently disagreed with D-260's own**
   **padding split since D-260 shipped, causing sporadic post-open keyboard jitter/grow.** User-reported since
   the D-260 revision specifically (space key's extended touch zone): occasional top-edge jitter right after
