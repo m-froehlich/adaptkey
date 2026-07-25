@@ -9084,17 +9084,28 @@ Possibly this is D-29 working exactly as intended and the user's own read of "pe
 bug in a path this log does not fully capture. Needs either a cleaner, minimal repro isolating just this one
 interaction, or a log that also captures suggestion-bar chip taps, before any diagnosis can be trusted.
 
-### D-259 CAPTURED - feature request: show which raw tap actually produced a missed-space typo
+### D-259 CAPTURED (corrected) - a typed period+space right after an unexplained composing wipe: the space never landed
 
-User's own framing: after missing a space (two words glued together), they would like to know exactly where
-they tapped for it. X-01 already logs every raw tap's coordinates and resolved key (`AdaptKeyTouch: rawTap`),
-so the underlying data already exists in the diagnostic log for every keystroke - re-read this specific
-excerpt for an actual missed-space instance but did not find one where two committed words end up visibly
-glued together (every commit here reads as a correctly spelled, correctly spaced word); a couple of
-`SPACE_AMBIGUOUS`-flagged letter taps appear (e.g. the "m" mid-"prompts", the "n" mid-"eine") but both
-resolved correctly as letters, not missed spaces. Not fixed this round because there is nothing concrete yet
-to fix or build against - either the user can point to the specific glued word so the corresponding rawTap
-line can be looked up directly (the data already exists), or - if what is actually wanted is a *more
-convenient* way to correlate a specific typo with the tap(s) behind it, without manually cross-referencing
-timestamps - that would be a genuine new small feature (e.g. extending T-06's touch-zone view, or a
-tap-to-inspect affordance in the Diagnostics screen) worth designing properly, not bolting on guessed.
+Initial read of this log missed the actual spot - looked for two visibly glued *words*, found none, and wrongly
+filed this as a feature request. User's own direct correction: "einen Punkt getippt und danach ein Space. Und
+das kam nicht an" - the *space itself* (not a word boundary) failed to register. Re-read with that framing and
+found it: composing "Chri" (anchor=47, cursor=4, expected caret 51) silently became `composing=""` with the
+caret reported at 56 - a +5 jump - with **zero** intervening rawTap/keystroke logged between them, the same
+unexplained-external-jump shape as D-256/D-257/D-258 (a ~1.4s gap in the log, no AdaptKey-driven cause visible
+at all). The committed text later confirms "Christus" sits there, so the missing 4 characters ("stus") arrived
+from *somewhere* other than a logged keystroke. Immediately after, the period lands (`56->55->56`, the same
+delete-then-reinsert shape D-29's space-eating produces) and then the very next tap, SPACE, reports `56->57` -
+a normal-looking +1 - but the user's own on-device observation is that the space did not actually appear in
+the text. Since the composing/position tracking had already silently desynced from the real document one step
+earlier, a `+1`-looking internal delta here does not actually prove the real document also gained a character -
+this is the crux of why the `EXTERNAL` ground-truth guard exists at all (§1), and also why this one instance
+cannot be fully trusted from the log's own reported deltas alone.
+
+Reclassified: **not** a separate feature request - a fourth corroborating instance of the same unexplained
+composing-desync pattern already captured as D-256/D-257/D-258 (external caret jumps with no logged AdaptKey
+cause), this time manifesting as a swallowed space rather than a corrupted/lost composing token or a
+mysteriously-reappeared word. Four independent occurrences across at least two different apps in one batch of
+logs is itself a meaningful finding - this is evidently a real, recurring pattern, not a one-off - and
+strengthens the case for prioritising a dedicated, isolated-repro investigation into it (matching D-139's own
+precedent for this exact class of problem) over any of the four individual symptom reports on their own. See
+D-256/D-257/D-258 above for the full disposition; no code changed for any of the four.

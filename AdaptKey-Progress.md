@@ -82,9 +82,11 @@ History.md's append-only log) so they are not lost if the situation that would j
   not guessed. D-258 (captured): "period swallowed after space" is inconclusive from the log alone - the
   closest match actually looks like D-29's own correct space-eating behaviour, but suggestion-bar chip taps
   aren't logged by the `AdaptKeyTouch` channel, so a chip-tap origin can't be ruled out either. D-259
-  (captured): feature request to show which raw tap produced a missed-space typo - X-01 already logs every
-  tap's coordinates, but no actual missed-space instance was found in the supplied log to point at; needs
-  either a concrete repro or a proper design round if a more convenient tap-to-typo correlation UI is wanted.
+  (captured, **corrected** after direct user follow-up - not a feature request as first read): a typed
+  period+space where the space never landed traces to the exact same unexplained composing-desync pattern as
+  D-256/D-257/D-258 (composing "Chri" silently became `""` with the caret +5 positions ahead, zero logged
+  keystrokes in between) happening one step earlier in the same sequence - a fourth corroborating instance,
+  not a separate issue; strengthens the case for a dedicated investigation into this recurring pattern.
   No new tests (D-255 is `AdaptKeyService`-internal glue, same established gap). 813 unit tests (unchanged).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. See history §181.
 - **§180 (v0.8.136): D-254 - the "Gelernt: X" chip's "Vergessen" (shallow) zone no longer marks pending-**
