@@ -34,7 +34,11 @@ class InMemoryDictionaryStore : DictionaryStore {
     override fun learn(word: String, previousWord: String?, previousPreviousWord: String?) {
         val key = word.lowercase()
         val existing = learned[key]
-        val canonical = existing?.word ?: unigrams[key]?.word ?: word
+        // D-264: a fresh learned entry uses the casing actually typed/committed, not the bundled entry's
+        // own (if any) - letting a deliberately different-cased spelling (e.g. a preferred all-caps
+        // acronym) become the one that wins in entryOf()/unigramsByPrefix() merges, instead of being
+        // silently discarded in favour of whatever the bundled asset happens to store.
+        val canonical = existing?.word ?: word
         learned[key] = if (existing != null) {
             existing.copy(frequency = existing.frequency + 1L)
         } else {
@@ -89,6 +93,15 @@ class InMemoryDictionaryStore : DictionaryStore {
         return unigrams.containsKey(word.lowercase())
     }
     
+    override fun bundledCasingOf(word: String): String? {
+        return unigrams[word.lowercase()]?.word
+    }
+    
+    override fun learnedCasingOf(word: String): String? {
+        return learned[word.lowercase()]?.word
+    }
+    
+    
     override fun learnedWords(): List<WordEntry> {
         return learned.values.sortedWith(compareByDescending<WordEntry> { it.frequency }.thenBy { it.word })
     }
@@ -111,7 +124,9 @@ class InMemoryDictionaryStore : DictionaryStore {
         unigrams.filterKeys { it.startsWith(normalized) }.forEach { (key, entry) -> merged[key] = entry }
         learned.filterKeys { it.startsWith(normalized) }.forEach { (key, entry) ->
             val existing = merged[key]
-            merged[key] = if (existing != null) existing.copy(frequency = existing.frequency + entry.frequency) else entry
+            // D-264: the learned entry's own casing wins over a bundled one when both exist for the same
+            // key (see learn()'s own note).
+            merged[key] = if (existing != null) entry.copy(frequency = existing.frequency + entry.frequency) else entry
         }
         return merged.values.sortedByDescending { it.frequency }.take(limit)
     }
@@ -204,7 +219,8 @@ class InMemoryDictionaryStore : DictionaryStore {
         return when {
             bundled == null -> personal
             personal == null -> bundled
-            else -> WordEntry(bundled.word, bundled.frequency + personal.frequency, bundled.partsOfSpeech + personal.partsOfSpeech)
+            // D-264: the learned entry's own casing wins when both exist for the same key.
+            else -> WordEntry(personal.word, bundled.frequency + personal.frequency, bundled.partsOfSpeech + personal.partsOfSpeech)
         }
     }
     

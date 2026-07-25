@@ -4096,16 +4096,21 @@ class AdaptKeyService : InputMethodService() {
         // suspected unsplit compound), so a one-off typo is not eagerly learned as a real word.
         val context = previousWord
         val contextContext = previousPreviousWord
-        val outcome = if (dictionaryStore.isBundledWord(word)) {
-            // D-186: a word already in the *bundled* dictionary (any casing - isBundledWord's own lookup
-            // key is lowercased) must never be written to the learned overlay at all. D-177's original
-            // design reinforced it there too ("frequency personalisation"), but every commit of an
-            // ordinary word ("die", "du", "immer", ...) hitting this branch flooded the Learned Words
-            // editor with plain vocabulary, defeating its purpose as a review list of what was actually
-            // *taught*. There is nothing to learn about a word the dictionary already ships with.
+        // D-264: a bundled word typed in its own exact bundled casing has nothing to learn (D-186's
+        // original reasoning, preserved exactly - avoids flooding the Learned Words editor with plain
+        // vocabulary reinforcement). Typed in a persistently *different* casing (e.g. a preferred all-caps
+        // acronym spelling the bundled asset happens to store differently), it is instead treated like any
+        // other not-yet-known word below - the same W-02 threshold applies, and once promoted it becomes
+        // its own, case-sensitive learned entry that wins over the bundled one in ranking/suggestions (see
+        // DictionaryStore.learn()/entryOf()/unigramsByPrefix()).
+        val bundledCasing = dictionaryStore.bundledCasingOf(word)
+        val outcome = if (bundledCasing == word) {
             LearnOutcome.SKIPPED
-        } else if (provider.isKnownWord(word)) {
-            // Not bundled, but already known - i.e. a genuinely previously-learned word - reinforce it.
+        } else if (dictionaryStore.learnedCasingOf(word) != null) {
+            // Already has a learned entry - either a genuinely previously-learned word (not bundled at
+            // all), or an already-established differently-cased override of a bundled one - reinforce it
+            // directly; learn() itself keeps that entry's own already-established casing fixed regardless
+            // of this exact call's casing (see its own KDoc).
             dictionaryStore.learn(word, context, contextContext)
             LearnOutcome.LEARNED
         } else if (isPendingBlacklistRecurrence(word)) {
@@ -4232,11 +4237,15 @@ class AdaptKeyService : InputMethodService() {
      * D-253: also bails out for a blacklisted word, mirroring [learnWord]'s own guard - blacklisting is
      * meant to be a lasting exclusion from every learning pipeline, not merely the ordinary threshold one.
      *
+     * D-264: bails out only when [word] matches the bundled entry's own exact casing, mirroring
+     * [learnWord]'s own distinction - a deliberate correction that happens to differ only in casing from a
+     * bundled entry is still worth promoting.
+     *
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
         if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() } ||
-            dictionaryStore.isBundledWord(word) || dictionaryStore.isBlacklisted(word)
+            dictionaryStore.bundledCasingOf(word) == word || dictionaryStore.isBlacklisted(word)
         ) {
             return
         }

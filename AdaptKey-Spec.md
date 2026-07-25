@@ -684,6 +684,17 @@ otherwise always resolve to the shallow outcome regardless of how far the drag t
 stronger than the shallow zone, for when the user is certain the word should never be reconsidered even if it
 recurs.
 
+### W-04 - Case-Sensitive Override of a Bundled Word's Own Casing
+A bundled word typed in its own already-canonical casing has nothing to learn (unchanged - see A-04's own
+learning-pipeline exclusions for the analogous blacklist case). Typed persistently in a *different* casing
+(e.g. a preferred all-caps acronym spelling - "MSCI", "MCU" - the bundled asset happens to store differently),
+it is instead promoted through the same W-02 threshold as any other not-yet-known word, becoming its own
+case-sensitive learned entry. Once such an override exists, it - not the bundled entry - is what the
+suggestion bar offers and what an edit-distance correction resolves to; the bundled entry's own frequency and
+part-of-speech tags still contribute to ranking underneath it. A-01's own case-insensitive "is this word
+known" check is unaffected either way - both the bundled and the overriding casing are always recognised
+regardless of which one the user happens to type on a given occasion.
+
 ---
 
 ## 14. Extra Row (Swipe-Up Panel)

@@ -9433,3 +9433,85 @@ device-confirmed yet; `ClipboardExtraction`/`TokenRepair`'s own pure logic is fu
 **D-264 remains open, explicitly deferred at the user's own request** - needs a design discussion on how to
 tell "the user is just typing an ordinary word" from "the user has a specific casing preference and keeps
 confirming it" before any implementation.
+
+## §185 - D-264: Case-Sensitive Learned Override For A Differently-Cased Bundled Word (v0.8.140)
+
+A genuine two-round design discussion, not a guess-then-build round - matches this project's own established
+convention for a non-trivial design decision.
+
+**Round 1 - splitting the problem before proposing anything.** Traced `isBundledWord`'s lowercased `wkey`
+lookup through the *entire* schema (`TABLE_WORDS`/`TABLE_LEARNED`/`TABLE_BLACKLIST`/`TABLE_PENDING_BLACKLIST`,
+all three language stores) before proposing a direction - confirmed there is exactly one row per lowercase
+spelling everywhere, so a genuine dual-casing *dictionary entry* (two independent rows, "MSCI" and "Msci"
+coexisting) would touch every lookup path in both `DictionaryStore` implementations, a large, risky rewrite.
+Flagged a real distinction in the user's own two motivating examples before proposing a fix: "MSCI"/"MCU"
+(acronyms - casing carries no meaning, purely a preference) vs. "schreiben"/"Schreiben" (a genuine German
+noun/verb minimal pair, orthographically distinguished only by case - already tagged `NOUN,OTHER` in the real
+`dict_de.tsv`, i.e. already ambiguous and already *not* auto-corrected per §6 rule 5, confirmed by checking the
+actual bundled data rather than assuming). Proposed a lightweight, separate casing-preference layer (Option A)
+over widening the dictionary schema to be case-sensitive (Option B, more invasive, contradicts D-186's own
+deliberate decision) as the safer, smaller-blast-radius direction for the acronym case specifically.
+
+**Round 2 - the user's own counter-proposals, evaluated against the real dictionary before choosing.** User
+confirmed the split store direction but pushed it further ("auch gut für vorne groß vs. vorne klein... wenn
+die andere Schreibweise existiert, darf keine Auto-Korrektur mehr passieren") and floated two alternatives to
+weigh: (1) a boolean "also occurs capitalised" dictionary column, (2) blanket-protect every `VERB`-tagged word
+from case autocorrection, floated as "vermutlich am pragmatischsten" and guessed to already cover the
+"schreiben" case. **Checked against the real bundled data before agreeing to either**: `dict_de.tsv`'s actual
+POS distribution is 87,989 `NOUN` + 37,511 `OTHER` and **zero** `VERB`/`ADJECTIVE` entries, despite both being
+real `PartOfSpeech` enum values - the corpus-derived tagging pipeline never actually assigns either tag in
+practice. Option (2) as literally proposed is therefore not buildable today without a data-pipeline rebuild
+(no corpus access in this environment) or a blunt morphological substitute (an "-en"/"-eln"/-ern" suffix
+heuristic) that would also catch many ordinary nouns (`Wagen`, `Boden`, `Garten`) sharing the same ending -
+reported back plainly rather than silently building the imprecise version. This also resolved the earlier
+"schreiben" concern on its own: since it is already tagged ambiguous, §6 rule 5 already protects it - the
+user's real, concrete ask narrowed to the acronym-casing-preference case specifically ("Meine Akronyme sind
+bereits jetzt geschützt. Sie werden mir aber nie vorgeschlagen").
+
+**A second real gap found while tracing the commit path itself, before writing any fix**: `CapitalisationEngine
+.capitalise()` only ever touches the token's *first* character (`replaceFirstChar`) - for an already-known
+word (A-01-protected, no substitution), the rest of what the user types is *never* replaced by any dictionary-
+stored spelling at all. This means an acronym typed correctly today already commits correctly, unchanged by
+this whole feature - the actual, confirmed gap is entirely on the **learning/ranking** side: `learnWord()`
+skips counting/promoting it at all, so it never reaches the "Gelernt: X" review list, and - the specific,
+concrete complaint - the *suggestion bar* keeps offering the bundled entry's own (wrong) casing while typing,
+because two separate merge functions silently discarded the learned casing in favour of the bundled one
+whenever both existed for the same key. Traced and fixed three such spots, not just the one `isBundledWord`
+gate, once found:
+
+1. **`DictionaryStore.learn()`** (both implementations): `canonical = existing?.word ?: bundledEntryOf(word)
+   ?.word ?: word` silently preferred the bundled casing for a *brand-new* learned entry - confirmed this was
+   already dead code today (no reachable caller ever calls `learn()` with an already-bundled word, both
+   `learnWord()`/`learnWordStrong()` gate on `isBundledWord` first), so simplifying it to `existing?.word ?:
+   word` is safe now and is exactly what D-264 needs going forward.
+2. **`DictionaryStore.entryOf()`** (both implementations): the both-exist merge branch returned `bundled.word`
+   - now `learned.word` wins, `learned.word`'s own casing carried into the summed-frequency/combined-POS
+   result.
+3. **`SqliteDictionaryStore.unigramsByPrefix()` / `InMemoryDictionaryStore.unigramsByPrefix()`** (the actual
+   S-01 prefix-completion path the suggestion bar reads from) - the merge kept whichever entry's `.word` was
+   inserted first into the `LinkedHashMap` (always the bundled one, queried first), only adding the learned
+   entry's frequency to it - **this was the concrete "nie vorgeschlagen" bug**, a real, previously-unnoticed
+   defect distinct from the `learnWord()` gate itself. Fixed the same way: the learned entry's own casing wins,
+   frequencies still sum.
+
+**Implementation**: two new `DictionaryStore` methods, `bundledCasingOf`/`learnedCasingOf` (the bundled/learned
+entry's own stored spelling, or null), added to both implementations. `AdaptKeyService.learnWord()` restructured
+around them: an exact casing match with the bundled entry still skips outright (D-186's original reasoning,
+unchanged); a word with an already-established learned entry (self-taught, or a prior differently-cased
+override) reinforces directly; anything else - including a bundled word now typed in a persistently different
+casing - falls through to the *same* W-02 pending-count/promotion machinery as any other new word, unchanged.
+`learnWordStrong()` (D-13) got the analogous fix (`bundledCasingOf(word) == word` replacing the unconditional
+`isBundledWord` bail-out), for the same reason. A-01's own hit-test stays fully case-insensitive throughout, by
+construction (`wkey` was never touched) - both the bundled and the overriding casing are always recognised as
+"known" regardless of which one is typed on a given occasion, exactly as required. Deliberately not built (the
+user's own framing: "schadet sicher nicht", not required): offering the bundled casing as a *second*, lower-
+priority suggestion chip alongside the learned one - would need `SuggestionController`/dedup changes beyond
+this round's scope; captured here if wanted later, not implemented.
+
+10 new tests (5 `InMemoryDictionaryStoreTest`, 5 `SqliteDictionaryStoreRoboTest`) - all pure/store-level; the
+`AdaptKeyService.learnWord()`/`learnWordStrong()` restructuring itself is the established untested service-glue
+gap, matching every other fix in this file. Every pre-existing test passed unmodified (confirming the merge-
+order change has zero observable effect on any currently-reachable path today, as traced). 839 unit tests
+(829 + 10). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.139 -> 0.8.140. Not yet
+device-confirmed - needs a real acronym typed repeatedly to actually cross the W-02 threshold and show up as
+the suggestion-bar's own primary completion.

@@ -268,4 +268,52 @@ class InMemoryDictionaryStoreTest {
         assertEquals(listOf("hund"), store.unigramsByPrefix("h", 10).map { it.word })
         assertEquals(5L, store.unigramsByPrefix("h", 10).first().frequency)
     }
+    
+    @Test
+    fun `bundledCasingOf reports the bundled entry's own stored spelling - D-264`() {
+        store.putWord(WordEntry("Msci", 12L))
+        
+        assertEquals("Msci", store.bundledCasingOf("msci"))
+        assertEquals("Msci", store.bundledCasingOf("MSCI"))
+        assertEquals(null, store.bundledCasingOf("unbekannt"))
+    }
+    
+    @Test
+    fun `learnedCasingOf reports the learned entry's own stored spelling - D-264`() {
+        assertEquals(null, store.learnedCasingOf("msci"))
+        
+        store.learn("MSCI", null)
+        
+        assertEquals("MSCI", store.learnedCasingOf("msci"))
+    }
+    
+    @Test
+    fun `learn on a word already bundled under a different casing keeps the typed casing - D-264`() {
+        // Previously fell back to the bundled entry's own casing ("Msci") - the whole point of a
+        // differently-cased learned override is that the typed casing wins instead.
+        store.putWord(WordEntry("Msci", 12L))
+        store.learn("MSCI", null)
+        
+        assertEquals("MSCI", store.learnedCasingOf("msci"))
+    }
+    
+    @Test
+    fun `entryOf prefers the learned entry's own casing over a differently-cased bundled one - D-264`() {
+        store.putWord(WordEntry("Msci", 12L))
+        store.learn("MSCI", null)
+        
+        val entry = store.entryOf("msci")
+        assertEquals("MSCI", entry?.word)
+        assertEquals(13L, entry?.frequency)
+    }
+    
+    @Test
+    fun `unigramsByPrefix prefers the learned entry's own casing over a differently-cased bundled one - D-264`() {
+        store.putWord(WordEntry("Msci", 12L))
+        store.learn("MSCI", null)
+        
+        val words = store.unigramsByPrefix("ms", 10)
+        assertEquals(listOf("MSCI"), words.map { it.word })
+        assertEquals(13L, words.first().frequency)
+    }
 }

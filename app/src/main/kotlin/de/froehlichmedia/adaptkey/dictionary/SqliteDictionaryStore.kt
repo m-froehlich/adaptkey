@@ -236,7 +236,11 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // both sources back together for ranking, so personalisation still works exactly as before from the
         // caller's perspective.
         val existing = learnedEntryOf(word)
-        val canonical = existing?.word ?: bundledEntryOf(word)?.word ?: word
+        // D-264: a fresh learned entry uses the casing actually typed/committed, not the bundled entry's
+        // own (if any) - letting a deliberately different-cased spelling (e.g. a preferred all-caps
+        // acronym) become the one that wins in entryOf()/unigramsByPrefix() merges, instead of being
+        // silently discarded in favour of whatever the bundled asset happens to store.
+        val canonical = existing?.word ?: word
         val frequency = (existing?.frequency ?: 0L) + 1L
         val pos = existing?.partsOfSpeech ?: emptySet()
         putWordInternal(TABLE_LEARNED, canonical, frequency, pos)
@@ -291,6 +295,15 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return bundledEntryOf(word) != null
     }
     
+    override fun bundledCasingOf(word: String): String? {
+        return bundledEntryOf(word)?.word
+    }
+    
+    override fun learnedCasingOf(word: String): String? {
+        return learnedEntryOf(word)?.word
+    }
+    
+    
     override fun learnedWords(): List<WordEntry> {
         val result = ArrayList<WordEntry>()
         db.rawQuery("SELECT word, freq, pos FROM $TABLE_LEARNED ORDER BY freq DESC, word ASC", null).use { cursor ->
@@ -325,7 +338,10 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         queryByPrefix(TABLE_LEARNED, prefix, limit).forEach { entry ->
             val key = entry.word.lowercase()
             val existing = merged[key]
-            merged[key] = if (existing != null) existing.copy(frequency = existing.frequency + entry.frequency) else entry
+            // D-264: the learned entry's own casing wins over a bundled one when both exist for the same
+            // key (see learn()'s own note) - e.g. a preferred all-caps acronym spelling must be what the
+            // suggestion bar actually offers, not a differently-cased bundled entry.
+            merged[key] = if (existing != null) entry.copy(frequency = existing.frequency + entry.frequency) else entry
         }
         return merged.values.sortedByDescending { it.frequency }.take(limit)
     }
@@ -607,7 +623,8 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return when {
             bundled == null -> learned
             learned == null -> bundled
-            else -> WordEntry(bundled.word, bundled.frequency + learned.frequency, bundled.partsOfSpeech + learned.partsOfSpeech)
+            // D-264: the learned entry's own casing wins when both exist for the same key.
+            else -> WordEntry(learned.word, bundled.frequency + learned.frequency, bundled.partsOfSpeech + learned.partsOfSpeech)
         }
     }
     

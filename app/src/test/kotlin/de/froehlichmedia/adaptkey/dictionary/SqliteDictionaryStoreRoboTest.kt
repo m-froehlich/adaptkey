@@ -319,6 +319,65 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun bundledCasingOfReportsTheBundledEntrysOwnStoredSpelling() {
+        val store = store("bundled-casing.db")
+        store.putWord(WordEntry("Msci", 12L))
+        
+        assertEquals("Msci", store.bundledCasingOf("msci"))
+        assertEquals("Msci", store.bundledCasingOf("MSCI"))
+        assertEquals(null, store.bundledCasingOf("unbekannt"))
+        store.close()
+    }
+    
+    @Test
+    fun learnedCasingOfReportsTheLearnedEntrysOwnStoredSpelling() {
+        val store = store("learned-casing.db")
+        assertEquals(null, store.learnedCasingOf("msci"))
+        
+        store.learn("MSCI", null)
+        
+        assertEquals("MSCI", store.learnedCasingOf("msci"))
+        store.close()
+    }
+    
+    @Test
+    fun learnOnAWordAlreadyBundledUnderADifferentCasingKeepsTheTypedCasing() {
+        // D-264: previously fell back to the bundled entry's own casing ("Msci") - a differently-cased
+        // learned override's whole point is that the typed casing wins instead.
+        val store = store("learn-different-casing.db")
+        store.putWord(WordEntry("Msci", 12L))
+        store.learn("MSCI", null)
+        
+        assertEquals("MSCI", store.learnedCasingOf("msci"))
+        store.close()
+    }
+    
+    @Test
+    fun entryOfPrefersTheLearnedEntrysOwnCasingOverADifferentlyCasedBundledOne() {
+        val store = store("entry-of-casing.db")
+        store.putWord(WordEntry("Msci", 12L))
+        store.learn("MSCI", null)
+        
+        val entry = store.entryOf("msci")
+        assertEquals("MSCI", entry?.word)
+        assertEquals(13L, entry?.frequency)
+        store.close()
+    }
+    
+    @Test
+    fun unigramsByPrefixPrefersTheLearnedEntrysOwnCasingOverADifferentlyCasedBundledOne() {
+        val store = store("prefix-casing.db")
+        store.putWord(WordEntry("Msci", 12L))
+        store.learn("MSCI", null)
+        
+        val words = store.unigramsByPrefix("ms", 10)
+        assertEquals(listOf("MSCI"), words.map { it.word })
+        assertEquals(13L, words.first().frequency)
+        store.close()
+    }
+    
+    
+    @Test
     fun bundledContentVersionDefaultsToZeroForAStoreThatNeverRecordedOne() {
         val store = store("version-default.db")
         

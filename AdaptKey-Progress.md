@@ -70,6 +70,27 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§185 (v0.8.140): D-264 - a differently-cased bundled word (e.g. a preferred all-caps acronym spelling**
+  **like "MSCI"/"MCU") can now be learned as its own case-sensitive override, via a two-round design**
+  **discussion.** Round 1 traced `wkey`'s case-insensitive lookup through the whole schema (ruling out a true
+  dual-casing dictionary entry as too invasive) and split the user's two examples into two different problems
+  - acronyms (pure casing preference) vs. "schreiben"/"Schreiben" (a genuine noun/verb minimal pair, already
+  correctly tagged `NOUN,OTHER`/ambiguous in the real `dict_de.tsv`, already protected by §6 rule 5). Round 2:
+  the user's own "protect every verb" counter-proposal was checked against the real bundled data and found not
+  buildable as literally stated - `dict_de.tsv` has **zero** `VERB`/`ADJECTIVE`-tagged entries despite both
+  existing in the `PartOfSpeech` enum, narrowing the actual scope back to the acronym case. Tracing the commit
+  path itself surfaced the real mechanism: `CapitalisationEngine.capitalise()` only ever touches the first
+  character, so a known acronym typed correctly already commits correctly today - the actual, confirmed gap was
+  entirely on the learning/ranking side, specifically a previously-unnoticed bug in
+  `unigramsByPrefix()` (both `DictionaryStore` implementations) that silently kept the bundled casing in the
+  merge, which is why an already-known acronym was never offered as its own suggestion. Fixed: new
+  `bundledCasingOf`/`learnedCasingOf` on `DictionaryStore`; `learnWord()`/`learnWordStrong()` now skip only on
+  an *exact* bundled-casing match (D-186 preserved), otherwise treat a differently-cased bundled word like any
+  new word through the same W-02 threshold; `learn()`/`entryOf()`/`unigramsByPrefix()` (both implementations)
+  now let the learned entry's own casing win over a bundled one. Hit-test (A-01) stays fully case-insensitive
+  throughout, unchanged. 10 new tests (5 `InMemoryDictionaryStoreTest`, 5 `SqliteDictionaryStoreRoboTest`) -
+  every pre-existing test passed unmodified. 839 unit tests (829 + 10). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Not yet device-confirmed. See history §185, spec W-04 (new).
 - **§184 (v0.8.139): D-261/D-262/D-263/D-265/D-266 implemented; D-264 explicitly deferred at the user's**
   **own request for a design discussion.** D-241/D-261 mix-up caught and confirmed with the user before
   writing any code (D-241 was already closed, §168). **D-261**: the German feminine-agent-noun suffix `-in`

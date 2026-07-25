@@ -86,6 +86,29 @@ interface DictionaryStore {
     fun isBundledWord(word: String): Boolean
     
     /**
+     * D-264: the bundled dictionary's own canonical spelling for [word] (independent of the learned
+     * overlay), or null when [word] is not a bundled entry at all. Lets a caller tell "the user typed this
+     * bundled word in its own already-canonical casing" (nothing to learn, [isBundledWord]'s original
+     * D-186 scope) apart from "the user typed a bundled word in a persistently different casing" (a
+     * genuine personal override, e.g. a preferred all-caps acronym spelling, worth learning like any other
+     * not-yet-known word).
+     *
+     * @param word the word to check (any case)
+     * @return the bundled entry's own stored spelling, or null when [word] is not bundled
+     */
+    fun bundledCasingOf(word: String): String?
+    
+    /**
+     * D-264: the learned overlay's own canonical spelling for [word] (independent of the bundled
+     * dictionary), or null when no learned entry exists for it - whether a genuinely self-taught word, or
+     * an established differently-cased override of an otherwise-bundled one ([bundledCasingOf]).
+     *
+     * @param word the word to check (any case)
+     * @return the learned entry's own stored spelling, or null when none exists
+     */
+    fun learnedCasingOf(word: String): String?
+    
+    /**
      * D-177: every word currently in the learned lexicon (never the bundled dictionary), in canonical
      * case with its learned frequency, for the learned-words editor - including a word that could never
      * be reached any other way (e.g. one matching the current input, which S-02 always excludes from
