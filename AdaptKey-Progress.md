@@ -70,6 +70,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§188 (v0.8.143): D-264/D-267/D-268 device-confirmed; D-269 - a genuine text selection now overrides**
+  **every special mechanism; a real D-262 regression fixed (second sentence-ending mark never glued onto**
+  **the first).** **D-269**: traced the actual `handleKey()` dispatch order - `handleBackspace()` already had
+  correct §41/D-149 selection-delete logic, but the A-07 `undoTyped != null` gate and D-262's own
+  `pendingPunctuationSpace` Backspace guard both sat *before* it and never checked for a selection at all;
+  the CHAR/SPACE/ENTER path had no selection-awareness whatsoever either. Fixed with one new check at the
+  very top of `handleKey()`: a real selection routes through new `consumeSelection(ic)` (deletes it, clears
+  every pending flag - merge/suggestion-space/punctuation-space/A-07 undo - in one place); Backspace returns
+  immediately, every other key falls through to ordinary handling against a now-clean caret.
+  **D-262 regression**: `handlePunctuationDelimiter()`'s own trailing auto-space `commitText()` triggers a
+  reactive `reclaimWordAtCaret()` whose original patch reset `pendingPunctuationSpace` *unconditionally*,
+  outside the pre-existing `suppressNextReclaimSpaceReset` guard D-29/D-123 already built for the identical
+  problem on `pendingSuggestionSpace` - so the flag D-262 had just armed was gone before the next keystroke
+  could see it, and a second `"."` never glued onto the first. Fixed by sharing the existing guard between
+  both flags and arming it after the auto-space commit, mirroring D-123 exactly. No new tests (established
+  `AdaptKeyService`-internal glue gap). 840 unit tests (unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Neither fix device-confirmed yet. See history §188, spec A-07 (revised).
 - **§187 (v0.8.142): D-268 - an A-05 split now commits the umlaut/ß-restored spelling of each half, not**
   **the literal typed one ("gehortes" -> "gehört es", not "gehort es"), per a precise user report.**
   Root-caused directly: `TokenRepair.candidateAt()` already resolves each half through

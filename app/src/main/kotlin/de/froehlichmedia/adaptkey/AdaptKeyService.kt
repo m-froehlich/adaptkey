@@ -1221,18 +1221,20 @@ class AdaptKeyService : InputMethodService() {
         try {
             captureTokenContext(ic)
             resetWordEndShift()
-            // D-123: skip the reset exactly once when this call is only the echo of a suggestion-bar tap's
-            // own commit, not a genuine subsequent caret move - otherwise D-29's space-eating flag never
-            // survives to see the punctuation it is meant to react to.
+            // D-123 / D-269: skip the reset exactly once when this call is only the echo of a suggestion-bar
+            // tap's or a D-262 auto-space's own commit, not a genuine subsequent caret move - otherwise
+            // D-29's space-eating flag (or D-262's own punctuation-run continuation) never survives to see
+            // the very keystroke it is meant to react to. Both pending-space flags share the one guard: only
+            // one of the two commits it guards against can ever be the most recent thing that happened.
             if (suppressNextReclaimSpaceReset) {
                 suppressNextReclaimSpaceReset = false
             } else {
                 pendingSuggestionSpace = false
+                // D-262: the caret landing on a word elsewhere (not an immediately following Space/
+                // punctuation/Backspace) means the auto-space is no longer "pending" - it is now just
+                // ordinary confirmed text.
+                pendingPunctuationSpace = false
             }
-            // D-262: the caret landing on a word elsewhere (not an immediately following Space/punctuation/
-            // Backspace) means the auto-space is no longer "pending" - it is now just ordinary confirmed
-            // text.
-            pendingPunctuationSpace = false
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
                 return
@@ -1865,6 +1867,19 @@ class AdaptKeyService : InputMethodService() {
         // mirroring `diag()`'s own single-choke-point reasoning. Remove once D-217 is closed for good.
         val handledAt = SystemClock.uptimeMillis()
         try {
+            // D-269: a genuine editor text selection takes priority over every other special mechanism
+            // (A-07 undo, D-262's pending-punctuation-space guard, ...) - Backspace must bluntly delete it,
+            // any other key must simply replace it, and neither may trigger anything else for this one
+            // keystroke; special handling resumes cleanly from the next keystroke. Checked before the A-07
+            // gate right below, which would otherwise hijack a Backspace meant for the selection.
+            val selected = if (!selectionCollapsed) ic.getSelectedText(0) else null
+            if (!selected.isNullOrEmpty()) {
+                consumeSelection(ic)
+                if (key.code == KeyCode.DELETE) {
+                    return
+                }
+                // Every other key continues below against a clean, collapsed caret.
+            }
             // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
             if (undoTyped != null) {
                 when (key.code) {
@@ -2445,6 +2460,26 @@ class AdaptKeyService : InputMethodService() {
         previousPreviousWord = null
     }
     
+    /**
+     * D-269: bluntly deletes a genuine, non-collapsed editor text selection and resets every pending
+     * special-behaviour flag along with it (A-07's undo window, D-29/D-262's own pending auto-spaces, A-06's
+     * pending merge char) - a selection takes priority over all of them, and none may fire for the
+     * keystroke that acts on it. Called from [handleKey] before any of those would otherwise get a chance
+     * to intercept the key first.
+     */
+    private fun consumeSelection(ic: InputConnection) {
+        if (composing.isNotEmpty()) {
+            ic.finishComposingText()
+            clearComposing()
+            clearSuggestions()
+        }
+        pendingMergeChar = null
+        pendingSuggestionSpace = false
+        pendingPunctuationSpace = false
+        clearUndo()
+        ic.commitText("", 1)
+    }
+    
     private fun handleBackspace(ic: InputConnection) {
         // D-262: a Backspace right after a still-pending sentence-punctuation auto-space removes only that
         // forced space and exits the mode - it must not cascade into the ordinary deleteOneBefore() path
@@ -2675,6 +2710,13 @@ class AdaptKeyService : InputMethodService() {
         if (atTokenEnd && raw in SENTENCE_PUNCTUATION) {
             ic.commitText(" ", 1)
             pendingPunctuationSpace = true
+            // D-269: this commitText() above generates its own onUpdateSelection callback shortly, which -
+            // composing already empty by then - calls reclaimWordAtCaret(); guard it against clearing the
+            // flag just armed, since that callback is only the echo of this very commit, not a genuine
+            // subsequent caret move (mirrors the identical D-123 guard for pendingSuggestionSpace). Without
+            // this, a second sentence-ending mark typed right after never sees pendingPunctuationSpace still
+            // armed, so it never glues onto the first one.
+            suppressNextReclaimSpaceReset = true
         }
     }
     

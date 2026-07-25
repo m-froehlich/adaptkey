@@ -479,6 +479,12 @@ This mechanism depends on the `onUpdateSelection` self-recognition guiding princ
 single-character delete immediately after a mid-word reclaim (never deleting the whole reclaimed word) - both
 must be kept intact by any future change in this area.
 
+A genuine, non-collapsed text selection always takes priority over this mechanism - and over every other
+pending special state (A-06's pending merge, D-262's own pending auto-space) - regardless of what happened
+just before it. Backspace on a selection bluntly deletes it; any other key bluntly replaces it. Neither
+triggers the undo (or any other special behaviour) for that one keystroke; ordinary handling, including
+whatever pending state a *later* commit newly arms, resumes cleanly from the next keystroke.
+
 ### A-08 - Compound-Word Peeling (Suggestion Only)
 For an unrecognised token, a known noun (4+ characters), optionally preceded by a German linking element
 (Fugenelement), is peeled off the token's front and offered as a compound-split suggestion. Never applied

@@ -9595,3 +9595,66 @@ the user's own exact repro (`"gehortes"` -> `resolvedLeft="gehört"`, `resolvedR
 "es" needed no unfolding). 840 unit tests (839 - 0 + 1, the one pre-existing test's assertion changed in place
 rather than being removed). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.141 ->
 0.8.142. Not yet device-confirmed.
+
+## §188 - D-269: A Genuine Selection Now Overrides Every Special Mechanism; D-262's Punctuation-Run Fixed (v0.8.143)
+
+D-264/D-267/D-268 device-confirmed working in one batch. Two further items in the same round: a new bug the
+user reported (D-269) and a real regression found in D-262 (§184) itself, still within its very first release.
+
+### D-269 - A Selection Must Bluntly Win Over A-07 Undo / D-262's Pending Space
+
+User's own precise framing: select some text, then press Backspace or type any other character - no special
+mechanism (A-07 undo named explicitly, but the request is general) may fire; Backspace must plainly delete the
+selection, any other key must plainly replace it, and only the *next* keystroke may see special behaviour
+again. Traced against the actual dispatch order in `handleKey()`, not guessed: `handleBackspace()` already had
+correct, dedicated selection-delete logic (§41/D-149, `selectionCollapsed`-gated), but it sits *after* two gates
+that never once checked for a selection at all before acting - the A-07 `if (undoTyped != null)` gate at the
+very top of `handleKey()` (would call `performAutocorrectUndo()` on a Backspace regardless of an unrelated
+active selection elsewhere) and, freshly introduced this same session, D-262's own `pendingPunctuationSpace`
+Backspace guard at the top of `handleBackspace()` (would try to delete "the pending space" instead of the
+actual selection). Grepped the whole file for `selectionCollapsed`/`getSelectedText` first to confirm §41 was
+genuinely the *only* place selection-awareness existed at all - the CHAR/SPACE/ENTER path had none whatsoever
+either, an equally real gap for "any other key must plainly replace it".
+
+Fixed with one new check at the very top of `handleKey()`'s own `try` block, before the A-07 gate: a real,
+non-collapsed selection (the same `selectionCollapsed`/`getSelectedText()` pairing §41/D-149 already trusts)
+routes through a new `consumeSelection(ic)` - deletes the selection, resets composing, and clears every pending
+flag this round is specifically about (`pendingMergeChar`, `pendingSuggestionSpace`, `pendingPunctuationSpace`,
+the whole A-07 undo state via `clearUndo()`) in one place. A Backspace returns immediately afterwards (the
+selection is now gone, nothing left to delete); every other key falls through to its own ordinary handling
+below, now against a clean, collapsed caret - which naturally satisfies "any other key simply replaces it"
+without needing separate logic for CHAR vs. SPACE vs. ENTER vs. TEXT. `handleBackspace()`'s own §41 branch is
+left in place, not removed, even though this new check makes it structurally unreachable via the one call site
+that reaches it (`handleKey()`'s own `KeyCode.DELETE` dispatch) - kept as a defensive second layer rather than
+relying on a single check being right, matching this codebase's own established layered-guard precedent (e.g.
+D-139's `onUpdateSelection` ground-truth re-verification). Scoped to `handleKey()`'s own tap dispatch only, not
+long-press or the backspace-hold-repeat path (`handleBackspaceRepeat()`) - neither was reported and both are
+separate entry points that would need their own investigation, not silently folded in.
+
+### D-262 Regression - A Second Sentence-Ending Mark No Longer Glues Onto The First
+
+User's own report, cross-checked against §184's own verbatim-captured spec (confirmed matching, not a
+misremembered requirement): the *first* `.` correctly grows its own trailing auto-space, but typing a *second*
+`.` right after does not remove that space and glue up against the first - exactly the punctuation-run
+continuation D-262 was built for. Root-caused, not guessed: `handlePunctuationDelimiter()`'s own trailing
+`ic.commitText(" ", 1)` (the auto-space itself) is a real document edit, which generates its own asynchronous
+`onUpdateSelection` callback; since composing is empty by the time it lands, that callback calls
+`reclaimWordAtCaret()` - which D-262's own original patch had made *unconditionally* reset
+`pendingPunctuationSpace = false`, right next to (but structurally outside) the pre-existing, correctly-guarded
+`if (suppressNextReclaimSpaceReset) { ... } else { pendingSuggestionSpace = false }` block that exists for the
+*exact same reason*, on the *exact same mechanism*, for D-29/D-123's own older `pendingSuggestionSpace` flag.
+D-262's own patch missed reusing that guard - the flag it had just armed a moment earlier was gone again before
+the user's next keystroke could ever see it.
+
+Fixed by moving `pendingPunctuationSpace = false` inside the existing guarded `else` branch (both flags now
+share the one `suppressNextReclaimSpaceReset` single-shot guard - only one of the two commits it protects
+against can ever be the most recent thing that happened, so sharing it is safe) and arming
+`suppressNextReclaimSpaceReset = true` right after `handlePunctuationDelimiter()`'s own auto-space commit,
+mirroring the D-123 suggestion-tap precedent exactly. A punctuation run (`"!?!"`, `"..."`) now correctly glues
+together as originally specified.
+
+No new unit tests - both fixes are `AdaptKeyService`-internal `InputConnection`/callback-timing glue, the
+established gap for this class (D-123's own original fix, the precedent both of these mirror, was never
+unit-tested either - no `InputConnection`/`onUpdateSelection` shadow exists in this environment). 840 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.142 -> 0.8.143.
+Neither fix is device-confirmed yet.
