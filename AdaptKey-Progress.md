@@ -70,6 +70,26 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§192 (v0.8.146): D-272 (revised) - §191's narrow "natürlich" data fix replaced by a general**
+  **prefix-distance ranking rule, before any device confirmation.** The user pushed back immediately: raising
+  `"natürlich"`'s own frequency only fixed that one pair, not the general shape they meant - within a
+  shared-prefix word family, the candidate closer to what has actually been typed (fewer additional
+  characters) should generally outrank a merely more frequent, longer sibling, the same principle D-205
+  already established for fuzzy-match candidates (edit distance) but never applied to plain prefix
+  completion. Reverted §191's `dict_de.tsv`/`BUNDLED_DICTIONARY_VERSION` edit first (user-agreed). A naive
+  direct reuse of D-205's `FUZZY_COST_DECAY` shape does **not** generalise safely - proven algebraically
+  against real corpus data: the decay strong enough to flip a close 1-character gap (`"wichtig"` vs.
+  `"wichtige"`, needs < ~0.31) would compound far too aggressively over the 4-7 extra characters an entirely
+  ordinary longer completion needs (`"Informationen"` vs. `"informiert"`, needs > ~0.55 to stay correctly
+  ordered) - the two required ranges do not overlap, so no single flat decay works. Fixed by capping the
+  decay's reach instead of weakening it: new `scoreWithPrefixDistance()` applies `PREFIX_LENGTH_DECAY = 0.3`
+  per extra character up to `PREFIX_LENGTH_DECAY_CAP = 4`, beyond which two candidates receive the identical
+  factor and fall back to plain, undistorted frequency ranking - `"natürlich"`/`"wichtig"`-style close gaps
+  get resolved correctly, `"Informationen"`-style long-but-legitimate completions are never crowded out.
+  Wired into `suggestionsFor()`'s prefix-completion loop only; fuzzy/wide-fuzzy/compound candidates untouched.
+  3 new unit tests using the real corpus frequencies directly (843 total, up from 840).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-01 revised to describe both closeness forms
+  under one soft-preference principle. Not yet device-confirmed. See history §192.
 - **§191 (v0.8.145): D-271/D-272/D-273 - three more bugs from the §190 device test; §190's own fixes all**
   **confirmed working first.** **D-271:** a sentence-start-capitalised ordinary word (`"das"` -> `"Das"`) was
   being learned in that capitalised spelling - `finalizeAndCommit()` calls `learnWord(finalWord)` with the
@@ -77,13 +97,13 @@ History.md's append-only log) so they are not lost if the situation that would j
   contextual recapitalisation as a deliberate casing override. Confirmed against `CapitalisationEngine`
   directly: every §6 rule except a field's `CapsMode.CHARACTERS` only ever recases the *first* character.
   Added `differsOnlyInFirstChar()` and excepted a first-character-only difference from both `learnWord()`'s
-  and `learnWordStrong()`'s D-264 promotion path. **D-272:** `"natürlich"` ranked behind `"natürliche"` in
-  suggestions - checked the real `dict_de.tsv` before assuming a ranking bug: `natürliche` genuinely outscores
-  `natürlich` on raw corpus frequency (1313 vs. 707, a Wikipedia-register artefact, same class as the
-  documented `"übrigens"` undercount) - the ranking code was correct against flawed data. Raised `natürlich`
-  to 1400, calibrated against comparable adverbs already in the corpus; also bumped `BUNDLED_DICTIONARY_VERSION`
-  2 -> 3 (D-178's non-destructive reseed-bundled-only mechanism) so the correction actually reaches an
-  already-installed device instead of silently never loading (per §105's own incidental finding). **D-273:**
+  and `learnWordStrong()`'s D-264 promotion path. **D-272 (superseded by §192, see above):** `"natürlich"`
+  ranked behind `"natürliche"` in suggestions - checked the real `dict_de.tsv` before assuming a ranking bug:
+  `natürliche` genuinely outscores `natürlich` on raw corpus frequency (1313 vs. 707, a Wikipedia-register
+  artefact, same class as the documented `"übrigens"` undercount). Originally fixed here by raising
+  `natürlich`'s own frequency to 1400 plus a `BUNDLED_DICTIONARY_VERSION` bump - the user pushed back before
+  device confirmation (a narrow, word-specific fix, not the general "closer wins" principle they meant) and
+  both were reverted in §192, replaced by a general prefix-distance ranking rule there. **D-273:**
   A-07's undo was hijacking the first Backspace after a split that also ended a sentence (`"ehvnicht."` ->
   `"eh nicht. "`), corrupting the revert into `"eehvnicht."` - `handleKey()`'s `undoTyped != null` gate ran
   before any check of A-12's own `pendingPunctuationSpace`, and `performAutocorrectUndo()`'s delete-length

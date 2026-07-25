@@ -52,12 +52,18 @@ class DictionarySuggestionProvider(
         // characters" principle for the one feature it names explicitly (suggestions). Umlaut.unfoldCandidates
         // tries every plausible unfolded spelling of the typed prefix - the literal token first (the
         // overwhelmingly common case, with nothing to unfold, costs exactly the one query it always did).
+        // D-272: discounted by scoreWithPrefixDistance, not score - a candidate needing fewer additional
+        // characters beyond what is already typed generally outranks one needing more, mirroring D-205's own
+        // "closeness over raw frequency" principle for the fuzzy-match path (see scoreWithPrefixDistance's
+        // own KDoc for why this needed its own, capped decay rather than reusing D-205's directly).
         for (prefixVariant in Umlaut.unfoldCandidates(token)) {
             for (entry in store.unigramsByPrefix(prefixVariant, maxCandidates * SCAN_FACTOR)) {
                 if (candidates.containsKey(entry.word) || store.isBlacklisted(entry.word)) {
                     continue // A-04
                 }
-                candidates[entry.word] = Suggestion(entry.word, score(entry.word, entry.frequency, previousWord))
+                val extraLength = entry.word.length - token.length
+                candidates[entry.word] =
+                    Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, extraLength))
             }
         }
         // D-12: also offer close real words - a single edit or an umlaut/ß variant - so a mistype or a
@@ -565,6 +571,42 @@ class DictionarySuggestionProvider(
         return score(word, frequency, previousWord) * FUZZY_COST_DECAY.pow(cost)
     }
     
+    /**
+     * D-272: [score], discounted by how many characters [word] still extends beyond the typed prefix - the
+     * user's own position, directly stated, that within a shared-prefix "family" the completion closer to
+     * what has actually been typed so far should generally win over a merely more frequent, longer one
+     * (`"natürlich"` before `"natürliche"` for a typed `"natürl"`), mirroring [scoreWithCost]'s already-
+     * shipped "closeness over raw frequency" principle for the fuzzy-match path - as a soft preference, not
+     * a hard rule, for the same reason [scoreWithCost] is soft: an overwhelmingly more frequent candidate can
+     * still win.
+     *
+     * Deliberately **not** [scoreWithCost]'s own [FUZZY_COST_DECAY] reused verbatim: checked against the real
+     * bundled `dict_de.tsv`, a flat per-character exponential decay strong enough to flip a close, 1-character
+     * German inflection pair (`"wichtig"` 1342 vs. `"wichtige"` 4330, needing a ratio below ~0.31) compounds
+     * far too aggressively over the 4-7 extra characters an entirely ordinary longer completion needs
+     * (`"Informationen"` 1913 vs. `"informiert"` 312 for a typed `"inform"` - `"Informationen"`'s own, correct
+     * frequency lead was getting *inverted*, near-erased behind a candidate needing 3 fewer characters).
+     * [PREFIX_LENGTH_DECAY_CAP] resolves this: the decay differentiates real closeness only up to that many
+     * extra characters: `"natürlich"`/`"natürliche"` (3 vs. 4, both under the cap) are still told apart, while
+     * `"informiert"`/`"Informationen"` (4 vs. 7, both at-or-past the cap) receive the *same* factor once
+     * capped and fall back to plain, undistorted frequency ranking against each other - exactly where the
+     * "how many more characters" signal genuinely stops being a meaningful proxy for likelihood. A considered
+     * starting point checked against several real word families, not exhaustively device-tuned - easy to
+     * retune here alone, no call site depends on its exact value.
+     *
+     * @param word the candidate word
+     * @param frequency the candidate's dictionary frequency
+     * @param previousWord the preceding word, for the same bigram bonus [score] applies
+     * @param extraLength how many characters longer [word] is than the typed prefix (0 for an exact/complete
+     *        match); a negative value (an umlaut-unfolded search variant briefly shorter than the literal
+     *        typed prefix) is treated as 0
+     * @return [score]'s own result, discounted by [PREFIX_LENGTH_DECAY] raised to the power of [extraLength]
+     *         clamped to [PREFIX_LENGTH_DECAY_CAP]
+     */
+    private fun scoreWithPrefixDistance(word: String, frequency: Long, previousWord: String?, extraLength: Int): Double {
+        return score(word, frequency, previousWord) * PREFIX_LENGTH_DECAY.pow(extraLength.coerceIn(0, PREFIX_LENGTH_DECAY_CAP))
+    }
+    
     companion object {
         
         private const val MIN_AUTOCORRECT_LENGTH = 2
@@ -602,5 +644,13 @@ class DictionarySuggestionProvider(
         // D-205: see scoreWithCost()'s own KDoc for the calibration reasoning against the real bundled
         // dict_de.tsv frequency range.
         private const val FUZZY_COST_DECAY = 0.01
+        
+        // D-272: see scoreWithPrefixDistance()'s own KDoc for the calibration reasoning against the real
+        // bundled dict_de.tsv - 0.3 flips every close, 1-character-gap inflection pair checked there, and the
+        // cap of 4 keeps a genuinely longer completion needing several more characters from being crowded out
+        // by a much rarer, merely-shorter one once both are past the point where "how many more characters"
+        // stops being a meaningful signal.
+        private const val PREFIX_LENGTH_DECAY = 0.3
+        private const val PREFIX_LENGTH_DECAY_CAP = 4
     }
 }

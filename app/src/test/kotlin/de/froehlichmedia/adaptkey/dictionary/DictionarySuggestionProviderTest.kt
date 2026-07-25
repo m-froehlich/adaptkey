@@ -448,6 +448,43 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-272 a closer prefix completion generally outranks a farther, more frequent one from the same family`() {
+        // Real bundled dict_de.tsv frequencies: "natürliche" (the adjective inflection) outscores
+        // "natürlich" (the adverb) on raw corpus frequency alone - a Wikipedia-register artefact ("natürliche
+        // Ressourcen" etc. is far more common in encyclopedic text than the everyday discourse-marker
+        // adverb) - but "natürlich" needs one fewer additional character beyond the typed "natürl"; the
+        // closer completion must still win.
+        store.putWord(WordEntry("natürlich", 707L))
+        store.putWord(WordEntry("natürliche", 1313L))
+        
+        assertEquals("natürlich", provider.suggestionsFor("natürl", null).first().word)
+    }
+    
+    @Test
+    fun `D-272 an overwhelmingly more frequent farther completion can still win - a soft preference`() {
+        // Same one-character gap as above, but the farther candidate is now frequent enough to overcome the
+        // decay - proving PREFIX_LENGTH_DECAY is a soft preference, not a hard "shorter always wins" rule,
+        // mirroring D-205's own soft-preference shape for the fuzzy-match path.
+        store.putWord(WordEntry("natürlich", 8L))
+        store.putWord(WordEntry("natürliche", 1_000_000L))
+        
+        assertEquals("natürliche", provider.suggestionsFor("natürl", null).first().word)
+    }
+    
+    @Test
+    fun `D-272 a much longer but far more frequent completion is not crowded out once both exceed the length cap`() {
+        // Real bundled dict_de.tsv frequencies for a typed "inform": "informiert" needs 4 more characters,
+        // "Informationen" needs 7 - both already past PREFIX_LENGTH_DECAY_CAP, so the decay must not keep
+        // compounding between them once capped. "Informationen" is both the far more frequent and, in
+        // practice, the far more plausible completion - it must not fall behind purely for needing 3 more
+        // characters than the cap already stops distinguishing.
+        store.putWord(WordEntry("informiert", 312L))
+        store.putWord(WordEntry("Informationen", 1913L))
+        
+        assertEquals("Informationen", provider.suggestionsFor("inform", null).first().word)
+    }
+    
+    @Test
     fun `D-38 a first-key typo is corrected (eerden to werden)`() {
         store.putWord(WordEntry("werden", 500L))
         

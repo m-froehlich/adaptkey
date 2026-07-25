@@ -9823,3 +9823,52 @@ and `InputConnection`/callback-priority glue respectively), the same established
 pure data correction with nothing new to unit-test. 840 unit tests (unchanged). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. Version bumped 0.8.144 -> 0.8.145. None of the three fixes are device-confirmed
 yet.
+
+## §192 - D-272 (revised): §191's Narrow "natürlich" Data Fix Replaced By A General Prefix-Distance Ranking Rule (v0.8.146)
+
+The user pushed back on §191's D-272 immediately, before any device confirmation: raising `"natürlich"`'s own
+frequency in `dict_de.tsv` only fixes that one word pair, not the general shape - "das einfache Wort, das
+näher an dem tatsächlich getippten [ist], muss immer Vorrang haben" (the simpler word, closer to what has
+actually been typed, must always take precedence). Correct read of the actual intent: within a shared-prefix
+word family, the candidate needing fewer additional characters beyond the typed prefix should generally
+outrank a merely more frequent, longer sibling - the same "closeness over raw frequency" principle D-205
+already established for the fuzzy-match path (`scoreWithCost`/`FUZZY_COST_DECAY`), just never applied to
+plain prefix completion (`score()`, no distance term at all).
+
+**Reverted §191's data-only fix first** (both agreed by the user): `dict_de.tsv`'s `"natürlich"` row back to
+707, `BUNDLED_DICTIONARY_VERSION` back to 2 - the general fix below covers this pair on its own, and the
+one-off data edit would only have been redundant noise once it did.
+
+**A naive, direct reuse of `FUZZY_COST_DECAY`'s own shape does not generalise safely - checked against the
+real corpus before implementing anything, not assumed.** The decay strong enough to flip a close,
+1-character-gap German inflection pair (`"wichtig"` 1342 vs. `"wichtige"` 4330 - needs a ratio below ~0.31 to
+flip at that 1-character gap) compounds far too aggressively over the 4-7 extra characters an entirely
+ordinary *longer* completion needs: for a typed `"inform"`, `"Informationen"` (1913, the correct, most useful
+completion) needs 7 more characters against `"informiert"`'s (312) 4 - at a flat decay of 0.3 this very nearly
+inverts their order (`0.3^7` vs `0.3^4` is itself already a 27x gap, more than enough to swallow their 6x
+frequency difference), which would have made the fix actively worse than doing nothing for that family. No
+single flat per-character exponential decay value satisfies both constraints at once - proven algebraically
+(a decay below ~0.31 is required to flip the 1-character `"wichtig"` gap; a decay above ~0.55 is required to
+preserve `"Informationen"`'s own correct ordering at its 3-character gap over `"informiert"` - the two ranges
+do not overlap), not just empirically observed on these two examples.
+
+**Fixed by capping the decay's reach, not by weakening it.** Added `scoreWithPrefixDistance()` (new sibling
+of `scoreWithCost()`): `score() * PREFIX_LENGTH_DECAY.pow(extraLength.coerceIn(0, PREFIX_LENGTH_DECAY_CAP))`,
+where `extraLength` is `candidate.length - typedPrefix.length`. `PREFIX_LENGTH_DECAY = 0.3` stays aggressive
+enough to flip every close, 1-character-gap pair checked (`"natürlich"`/`"natürliche"`,
+`"wichtig"`/`"wichtige"`); `PREFIX_LENGTH_DECAY_CAP = 4` means two candidates that are *both* already at or
+past 4 extra characters receive the *identical* decay factor once capped and fall back to plain, undistorted
+frequency ranking against each other - exactly where "how many more characters" stops being a meaningful
+proxy for likelihood in German's naturally variable-length morphology. Re-verified `"informiert"` vs.
+`"Informationen"` under the capped formula: both land on `0.3^4`, so `"Informationen"`'s real 6x frequency
+lead is preserved exactly, undistorted. Wired into `suggestionsFor()`'s prefix-completion loop in place of
+plain `score()`; every other candidate source (fuzzy, wide-fuzzy, compound) is untouched.
+
+Three new unit tests in `DictionarySuggestionProviderTest`, mirroring D-205's own three-part shape (a close
+completion generally wins; an overwhelmingly more frequent farther one can still win - the soft-preference
+proof; a much-longer-but-far-more-frequent completion is not crowded out once both exceed the cap), using the
+real `"natürlich"`/`"natürliche"` and `"informiert"`/`"Informationen"` frequencies from `dict_de.tsv` directly
+rather than synthetic numbers. 843 unit tests (840 + 3 new). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `AdaptKey-Spec.md` S-01 revised to describe both closeness forms (edit-distance for corrections,
+extra-character-count for prefix completion) under one soft-preference principle. Version bumped 0.8.145 ->
+0.8.146. Not yet device-confirmed.

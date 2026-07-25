@@ -248,14 +248,22 @@ When an uppercase character is deleted, Shift remains active - the next keystrok
 ### S-01 - Horizontally Scrollable, Configurable Maximum
 The bar shows as many ordinary (tier-1/tier-3) suggestions as are meaningful and scrolls horizontally.
 Default: 8 entries. Maximum is user-configurable (recommended range: 6-10). Sorted by descending
-probability; the most probable suggestion appears at the far left. For a correction/fuzzy candidate (as
-opposed to a plain prefix completion), "probability" is not raw dictionary frequency alone: how close the
-candidate actually is to the typed token weighs in too, as a soft preference (a much closer candidate
-generally outranks a farther one even when the farther one is far more frequent, though an overwhelmingly
-more frequent farther candidate can still occasionally win - never an absolute cost-first rule). The bar's
-row is always reserved even when momentarily empty. Depending on the focused field, the bar's slot can
-instead show a platform-rendered Autofill inline-suggestions row, or a credential-suggestion list (§12) -
-S-01's own scrolling/sorting behaviour describes the ordinary dictionary/tier-3 case specifically.
+probability; the most probable suggestion appears at the far left. "Probability" is not raw dictionary
+frequency alone: closeness to what has actually been typed so far weighs in too, always as a soft
+preference (a much closer candidate generally outranks a farther one even when the farther one is far more
+frequent, though an overwhelmingly more frequent farther candidate can still occasionally win - never an
+absolute cost-first rule), in two distinct forms depending on the candidate's own source. For a
+correction/fuzzy candidate, closeness means edit distance from the typed token. For a plain prefix
+completion (D-272), closeness means how many additional characters the candidate still needs beyond the
+prefix already typed - within a shared-prefix word family, the completion needing fewer further characters
+generally wins even over a more frequent, longer sibling (e.g. `"natürlich"` before `"natürliche"` for a
+typed `"natürl"`), though this only distinguishes candidates up to a handful of extra characters; two
+candidates that both still need substantially more than that fall back to plain, undistorted frequency
+ranking against each other, so a genuinely longer completion is never crowded out purely for its length once
+both are already "far" in this sense. The bar's row is always reserved even when momentarily empty.
+Depending on the focused field, the bar's slot can instead show a platform-rendered Autofill
+inline-suggestions row, or a credential-suggestion list (§12) - S-01's own scrolling/sorting behaviour
+describes the ordinary dictionary/tier-3 case specifically.
 
 ### S-02 - No Duplicate of the Current Input
 The word exactly as typed does not appear as a suggestion. That slot belongs to genuine alternatives.

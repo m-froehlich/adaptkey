@@ -33,11 +33,8 @@ object DictionaryLoader {
      * D-232: bumped again - German gained 24 missing irregular/ablaut-verb conjugated forms (D-230's
      * "darfst"-class split regression) plus 14 IT/programming terms; English gained 5 IT/programming terms
      * German was missing (D-228's "Docker"-class regression, plus terms the user expects to type often).
-     * D-272: bumped again - German's "natürlich" frequency corrected (707 -> 1400) so it outranks the
-     * corpus-inflated "natürliche" in suggestions; without this bump the corrected dict_de.tsv row would
-     * silently never reach an already-installed device (see loadStores()'s own KDoc).
      */
-    private const val BUNDLED_DICTIONARY_VERSION = 3
+    private const val BUNDLED_DICTIONARY_VERSION = 2
     
     /**
      * D-186: bump to force a one-time [SqliteDictionaryStore.purgeBundledDuplicatesFromLearned] on every
