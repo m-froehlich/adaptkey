@@ -9658,3 +9658,27 @@ established gap for this class (D-123's own original fix, the precedent both of 
 unit-tested either - no `InputConnection`/`onUpdateSelection` shadow exists in this environment). 840 unit
 tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.8.142 -> 0.8.143.
 Neither fix is device-confirmed yet.
+
+## §189 CAPTURED (still v0.8.143, no code change): A-12's Punctuation-Run Mode Precisely Restated By The User; Verified Already Matching, Not A New Gap
+
+The user reported a further D-262 symptom in the same round: an explicit Space typed right after the
+auto-inserted one adds a *second* space instead of being absorbed. Re-traced `KeyCode.SPACE`'s own
+`if (pendingPunctuationSpace) "" else " "` logic and grepped every `pendingPunctuationSpace` reset site once
+more, end to end - found no reset path beyond the ones already known, in particular the exact same
+`reclaimWordAtCaret()` race §188/D-269 had just fixed (the auto-space's own `commitText(" ", 1)` triggers a
+reactive `reclaimWordAtCaret()` call; before that fix it unconditionally cleared the flag before the user's
+very next keystroke - whichever kind - could ever see it armed). Concluded this second symptom is the same
+root cause manifesting a second way, not an independent bug, and asked the user to re-verify against the
+already-shipped §188 fix rather than speculatively changing anything further.
+
+The user then restated A-12's exact intended mechanics precisely, framed explicitly as a standing *mode*: as
+long as the caret simply remains sitting right after a sentence-ending mark's own auto-space (no explicit move
+elsewhere), the mode stays armed - the next Space is absorbed, the next sentence-ending mark glues on and
+re-arms the mode; either exit (an absorbed Space, or a Backspace removing just the forced space) leaves it
+exited, as does explicitly moving the caret elsewhere. Verified this precisely matches the already-fixed
+mechanism: `onUpdateSelection()` calls `reclaimWordAtCaret()` on *every* caret move while composing is empty
+(not only ones that land on a word) unless the single-shot `suppressNextReclaimSpaceReset` guard is armed -
+exactly the "caret stays put vs. moves elsewhere" distinction the user described, already correctly
+implemented by §188's fix. Spec A-12 reworded to state this explicitly as a standing mode with its own precise
+arm/re-arm/exit conditions, rather than leaving the "mode" framing implicit - a clarification, not a behaviour
+change. No code touched this round; 840 unit tests (unchanged).

@@ -526,20 +526,22 @@ again immediately afterwards, correctly this time).
 
 ### A-12 - Auto-Space After Sentence Punctuation, With a Punctuation-Run Mode
 A sentence-ending punctuation mark (`.`, `!`, or `?`) auto-inserts a trailing space immediately after it
-commits - the user no longer has to press Space themselves before continuing. If the very next key is itself
-one of these three marks, the just-auto-inserted space is removed first, so the two land directly adjacent
-(`"!?"`, not `"! ?"`), and the same auto-space is inserted again after the new mark - a run of any length
-(`"!?!"`, `"..."`) keeps gluing together this way, with the auto-space only ever trailing the whole run, never
-appearing mid-run. If the user instead explicitly presses Space right after the punctuation, the auto-inserted
-space is not duplicated - the explicit press confirms it rather than adding a second one. A Backspace at this
-exact point (the auto-space still pending/unconfirmed) removes only the forced space and exits this mode; it
-never cascades into deleting the punctuation mark or the word before it. Once the mode is exited (by an
-explicit Space or by this Backspace, or by any other key, which simply leaves the auto-space as ordinary
-confirmed text), further Space/punctuation presses are handled entirely normally again, with a fresh
-punctuation-run mode arming only if new sentence-ending punctuation is typed. Does not apply inside a
-login/URL field (E-01/U-01/P-01) - a `.` inside an e-mail address or domain name must never grow an
-uninvited space into the middle of it - nor when the punctuation lands mid-word (re-editing an existing token,
-D-119/D-120's own split-at-caret case).
+commits - the user no longer has to press Space themselves before continuing, and this arms a standing mode,
+not a single one-shot reaction. As long as the caret simply remains sitting right after that auto-space - no
+explicit move elsewhere in the meantime - the mode stays armed: the *next* Space is ignored (absorbed into the
+already-present auto-space, not added as a second one) and the *next* sentence-ending mark glues directly onto
+the previous one (`"!?"`, not `"! ?"`) rather than leaving the auto-space stranded between them, gaining its
+own fresh trailing auto-space and re-arming the mode again - so a run of any length (`"!?!"`, `"..."`) keeps
+gluing together this way, the auto-space only ever trailing the whole run, never appearing mid-run. Both exits
+- an explicit Space (absorbed, confirming the auto-space as final) and a Backspace right at this point (removes
+only the forced space, never cascading into the punctuation mark or the word before it) - leave the mode
+exited; explicitly moving the caret elsewhere (a tap, not this app's own reactive echo of the auto-space commit
+itself) exits it the same way. Once exited - by either of those, or by any other key, which simply leaves the
+auto-space as ordinary confirmed text - further Space/punctuation presses are handled entirely normally again,
+with a fresh mode arming only if new sentence-ending punctuation is typed. Does not apply inside a login/URL
+field (E-01/U-01/P-01) - a `.` inside an e-mail address or domain name must never grow an uninvited space into
+the middle of it - nor when the punctuation lands mid-word (re-editing an existing token, D-119/D-120's own
+split-at-caret case).
 
 ---
 

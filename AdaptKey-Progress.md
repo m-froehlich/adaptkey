@@ -70,6 +70,15 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§189 CAPTURED (still v0.8.143, no code change): A-12's punctuation-run mode re-traced against a second**
+  **reported symptom (explicit Space after the auto-space adding a duplicate) and found to be the same**
+  **§188/D-269 root cause, not a new bug** - grepped every `pendingPunctuationSpace` reset site once more,
+  found nothing beyond what §188 already fixed. The user then restated A-12's exact mechanics as a standing
+  mode (armed while the caret stays put after the auto-space; the next Space absorbs and exits, the next
+  sentence-ending mark glues and re-arms; an explicit caret move elsewhere also exits) - verified this
+  already matches the shipped mechanism precisely (`onUpdateSelection()`'s `reclaimWordAtCaret()` fires on
+  *every* caret move while composing is empty unless the single-shot guard is armed). Spec A-12 reworded to
+  state the mode explicitly. No code change; awaits the user's device re-test of §188.
 - **§188 (v0.8.143): D-264/D-267/D-268 device-confirmed; D-269 - a genuine text selection now overrides**
   **every special mechanism; a real D-262 regression fixed (second sentence-ending mark never glued onto**
   **the first).** **D-269**: traced the actual `handleKey()` dispatch order - `handleBackspace()` already had
