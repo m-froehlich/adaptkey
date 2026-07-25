@@ -70,6 +70,24 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§183 (v0.8.138): D-260 - the space key's own touch zone now extends into the reclaimable part of the**
+  **bottom gesture inset, per the user's own proposed mechanism for D-259.** Verified the geometry first:
+  `layoutKeys()`'s bottom-anchoring formula (`top = height - paddingBottom - contentHeight + gapPx`, D-86) is
+  algebraically invariant under `height += X, paddingBottom += X` for any row set, so shifting X from `root`'s
+  own bottom padding into `AdaptKeyboardView`'s own `paddingBottom` leaves every row pixel-identical on every
+  page - and, being surface-independent, needs no special handling for the page-switch slide animation either.
+  `applyWindowInsetsPadding()` computes `reclaimableGestureZonePx = (gestures.bottom - bars.bottom).coerceAtLeast(0)`
+  (zero with no gesture nav - the "must not shift" requirement, satisfied structurally); new
+  `AdaptKeyboardView.setSpaceTouchExtension()` applies `min(rowHeightPx * 0.25, availableGestureZonePx)` as its
+  own padding and *returns* the actually-applied value, which the service subtracts from its own padding (so
+  the two always sum back to the original inset regardless of which cap binds); new `isWithinSpaceHitZone()`
+  extends `resolveKey()`'s space-rect check into that strip, gated on `surface == LETTERS && !urlMode &&
+  !emailMode` exactly - other surfaces/modes untouched. Deliberately deferred:
+  `View.setSystemGestureExclusionRects()` (the "correct" API for reclaiming a region from the OS's own edge-
+  swipe detection) - user's own call to ship the simpler version first and see whether D-259's symptom
+  (missed taps, zero rawTap logged) recurs before adding that complexity. No new tests (Android view/
+  WindowInsets/touch glue, same established gap as D-136/D-161/D-250). 813 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §183.
 - **§182 CAPTURED (still v0.8.137, no code change): six backlog items recorded per direct user request,**
   **before D-260 (the D-259 space-touch-zone fix) is implemented.** D-261: the `-in` feminine-agent-noun
   suffix must never be split off by A-05/D-122 (mirrors D-249, but on the *right* half - the D-249 frequency-

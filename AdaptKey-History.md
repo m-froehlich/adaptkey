@@ -9214,3 +9214,58 @@ specialised parsers, tried in order, each free to fail and fall through to the n
 or query-parameter value (`"...?code=SDF123rtert"` -> `"SDF123rtert"`). Examples given: `"<code123 foo"` should
 yield `"code123"`. User's own explicit expectation: this will often get it wrong at first and need tuning in
 later rounds - captured as an iterative, multi-round feature, not a single closed task.
+
+## §183 - D-260: The Space Key's Own Touch Zone Now Extends Into the Reclaimable Part of the Gesture Inset (v0.8.138)
+
+User's own proposed mechanism for D-259 (the space tap that never reached the app at all): instead of pushing
+the whole keyboard up by the *full* bottom system-gesture inset, push it up by a quarter-row-height less, and
+keep exactly that height as an invisible, still-touchable strip beneath the space key specifically - visually
+identical position, but with real touchable area now reaching slightly further down. Explicitly scoped by the
+user before implementation: space only (the other keys were not reported showing this symptom); the shift
+must not happen at all on a device with no gesture navigation bar (would look wrong); letters-surface-only,
+not URL/email/symbol/calculator; and the page-switch slide animation must not visibly jump because of it.
+
+**Verified the geometry claim before writing any code, not assumed**: `AdaptKeyboardView.layoutKeys()` anchors
+every row to the view's own bottom edge (`top = height - paddingBottom - contentHeight + gapPx`, D-86). This
+expression is algebraically invariant under `height += X, paddingBottom += X` for *any* `contentHeight` - so
+growing the view's own `paddingBottom` by X while the caller shrinks its *parent*'s bottom padding by the same
+X leaves every row's actual screen position pixel-identical, on every surface/page, with no dependency on
+`rows.size` at all. This is also exactly why the change needed no special handling for the page-switch slide
+animation (D-76/D-86's own existing mechanism, which only reacts to *row-count* differences between pages):
+since the padding value itself never changes when `surface`/`symbolPage` change, it introduces nothing for
+that animation to react to in the first place.
+
+**Implemented as a clean split between "how much is safely reclaimable" (service) and "how the extra height is
+applied" (view)**: `AdaptKeyService.applyWindowInsetsPadding()` (D-136/D-161/D-250's own established, shared
+function) computes `reclaimableGestureZonePx = (gestures.bottom - bars.bottom).coerceAtLeast(0)` - only the
+part of the inset beyond the *opaque* nav bar/pill itself (already fully covered by `bars.bottom` alone) is a
+genuine gesture-recognition strip, not a rendered system UI element; zero on any device where
+`bars.bottom >= gestures.bottom` (3-button nav, or no gesture inset at all), which is precisely the "no
+gesture bar -> no shift" requirement, satisfied structurally rather than via a separate flag. New
+`AdaptKeyboardView.setSpaceTouchExtension(availableGestureZonePx)` applies `min(rowHeightPx * 0.25,
+availableGestureZonePx)` as its own `paddingBottom` and **returns the value it actually applied** - the
+service subtracts exactly that returned value (not its own `reclaimableGestureZonePx` input) from its own
+bottom padding, so the two always sum back to the original, unmodified inset regardless of which of the two
+caps (quarter-row vs. the inset's own size) ends up binding. New `AdaptKeyboardView.isWithinSpaceHitZone()`
+extends `resolveKey()`'s existing space-rect check (D-27) into that padding strip, gated on
+`surface == InputSurface.LETTERS && !urlMode && !emailMode` exactly (mirrors the existing space-glyph/label
+condition elsewhere in the same class) - URL mode, email mode, and every symbol/calculator/emoji surface are
+untouched, both visually (their own `paddingBottom` stays whatever it already was - unaffected, since the
+extension value itself does not vary by surface, only its *use* in hit-testing does) and functionally.
+
+Deliberately not addressed this round, per the user's own explicit framing: `View.setSystemGestureExclusionRects()`
+- flagged in the design discussion as the correct Android API for reclaiming a region from the OS's own edge-
+swipe gesture detection, since a tap with any drift inside the gesture strip could in principle still get
+intercepted mid-touch even with this extension in place. User's own call: ship the simpler geometry-only
+version first and observe whether the underlying D-259 symptom (missed taps with zero rawTap logged) actually
+recurs before adding exclusion-rect complexity - "vielleicht liegt alles am Ende ja wirklich nur an einem Tap,
+der fälschlich als abgebrochener Swipe erkannt wird. Wir werden sehen." If it does recur, `setSystemGestureExclusionRects()`
+on the extended space rect is the next thing to try, not a fresh mechanism.
+
+No new unit tests - both changed functions are Android view/`WindowInsets`/touch-hit-test glue, the same
+established gap as D-136/D-161/D-250's own precedent (none of which added tests either); the padding-invariance
+claim above was verified by hand against the real `layoutKeys()` formula, not by a new test, since exercising
+real `View` measurement/layout/WindowInsets end-to-end is outside this project's existing JVM-only test harness
+for this class. 813 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
+device-confirmed - the user's own D-259 repro (or simply continued typing near the space bar's lower edge on a
+gesture-nav device) is the scenario to watch for recurrence.

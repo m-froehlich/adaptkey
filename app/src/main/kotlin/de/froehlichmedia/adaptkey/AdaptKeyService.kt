@@ -798,13 +798,30 @@ class AdaptKeyService : InputMethodService() {
      * the full reasoning. Extracted so [windowInsetsRecheckRunnable] (D-161) can re-apply the exact same
      * computation from a fresh, synchronously-read [WindowInsetsCompat], not only from the listener's own
      * callback.
+     *
+     * D-260: `gestures.bottom` beyond `bars.bottom` is the OS's own gesture-recognition strip, not a
+     * rendered system UI element (the opaque nav bar/pill itself is already fully covered by `bars.bottom`
+     * alone) - a plain tap landing there should still reach the app, but nothing in this view's own bounds
+     * currently extends that far down to receive it (device log evidence for D-259: zero raw taps logged
+     * for several keystrokes in a row, consistent with the touch never reaching [AdaptKeyboardView.onTouchEvent]
+     * at all). [AdaptKeyboardView.setSpaceTouchExtension] reclaims part of that reclaimable strip as its own
+     * padding, extending only the space key's own hit zone into it (see that function's own KDoc for why this
+     * never shifts anything visually) - the *actual* amount it applied (capped by both a quarter row height
+     * and the reclaimable strip's own size) is subtracted from this view's own bottom padding below, so the
+     * two always sum back to exactly the original, full inset regardless of either cap. Zero on a device
+     * with no gesture navigation (`bars.bottom >= gestures.bottom` there) - deliberately: the shift must not
+     * happen at all when there is no gesture strip to reclaim, or the keyboard would visibly sit higher than
+     * the real nav bar for no reason.
      */
     private fun applyWindowInsetsPadding(view: View, insets: WindowInsetsCompat) {
         val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
         val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
         val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
         val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-        view.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
+        val reclaimableGestureZonePx = (gestures.bottom - bars.bottom).coerceAtLeast(0)
+        val appliedExtensionPx = keyboardView?.setSpaceTouchExtension(reclaimableGestureZonePx) ?: 0
+        val bottomInset = maxOf(bars.bottom, gestures.bottom) - appliedExtensionPx
+        view.setPadding(0, maxOf(statusBars.top, cutout.top), 0, bottomInset)
     }
     
     /**

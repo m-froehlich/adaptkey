@@ -1547,14 +1547,62 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return if (key.code == KeyCode.DELETE) M_BACKSPACE_OFFSET_FACTOR else null
     }
     
+    /**
+     * D-260: how far this view's own touchable bounds - via [paddingBottom] - reach past the drawn bottom
+     * edge of its last row, so a Space tap landing just past the visible key row (most plausibly inside the
+     * OS's own bottom gesture-recognition strip, which a plain tap should still reach) is not silently
+     * dropped before [onTouchEvent] is ever even called. [onMeasure]/[layoutKeys] already fold
+     * [paddingBottom] into `height` and into the row-anchoring math symmetrically (D-86's own bottom
+     * anchoring: `top = height - paddingBottom - contentHeight + gapPx`), so this is invariant under
+     * `height += X, paddingBottom += X` for any row set - growing it here never moves any row's actual
+     * screen position, on any surface/page, which is also why it is safe to leave constant across
+     * [switchPage]'s own slide animation rather than needing to be gated per-page itself (only
+     * [isWithinSpaceHitZone]'s *use* of it is surface-gated, not this value). Capped to a quarter of a row's
+     * own height, so even an unusually tall gesture inset never meaningfully changes the space bar's own
+     * footprint; the caller ([AdaptKeyService.applyWindowInsetsPadding]) is responsible for only ever
+     * passing a positive [availableGestureZonePx] when gesture navigation is genuinely active, and for
+     * subtracting the returned, *actually applied* value - not [availableGestureZonePx] itself - from its
+     * own bottom padding, so the two always sum back to the original, full inset regardless of either cap.
+     *
+     * @param availableGestureZonePx the reclaimable portion of the bottom inset (already computed by the
+     *        caller from the real WindowInsets); zero or negative leaves this view's own padding at 0
+     * @return the extension actually applied, in pixels - always `<= availableGestureZonePx`
+     */
+    fun setSpaceTouchExtension(availableGestureZonePx: Int): Int {
+        val extensionPx = minOf(rowHeightPx * SPACE_TOUCH_EXTENSION_FACTOR, availableGestureZonePx.toFloat().coerceAtLeast(0f)).toInt()
+        if (extensionPx != paddingBottom) {
+            setPadding(paddingLeft, paddingTop, paddingRight, extensionPx)
+        }
+        return extensionPx
+    }
+    
+    /**
+     * D-260: whether [x]/[y] hits [rect] directly, or falls within the space key's own extended zone -
+     * [paddingBottom] worth of invisible extra height below its drawn bottom edge (see
+     * [setSpaceTouchExtension]) - restricted to the main letters row exactly (mirrors the space glyph/label
+     * condition elsewhere in this class): not URL mode, not email mode, and not any symbol/calculator/emoji
+     * surface, all of which either lay their own bottom row out differently or do not have this space-key
+     * shape at all.
+     */
+    private fun isWithinSpaceHitZone(rect: RectF, x: Float, y: Float): Boolean {
+        if (rect.contains(x, y)) {
+            return true
+        }
+        if (paddingBottom <= 0 || surface != InputSurface.LETTERS || urlMode || emailMode) {
+            return false
+        }
+        return x >= rect.left && x <= rect.right && y > rect.bottom && y <= rect.bottom + paddingBottom
+    }
+    
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
         if (keyRects.isEmpty()) {
             return null
         }
         // D-27: a tap geometrically inside the (large) space bar always resolves to space - the personal
         // offset model must not pull a clear space tap, e.g. one near the space bar's top edge, up to the
-        // letter above it (c / v ...). The T-05 letter-ambiguity flag is still computed separately.
-        val spaceHit = keyRects.firstOrNull { it.first.code == KeyCode.SPACE && it.second.contains(x, y) }
+        // letter above it (c / v ...). The T-05 letter-ambiguity flag is still computed separately. D-260:
+        // also matches the space key's own extended zone (isWithinSpaceHitZone), not just its drawn rect.
+        val spaceHit = keyRects.firstOrNull { it.first.code == KeyCode.SPACE && isWithinSpaceHitZone(it.second, x, y) }
         if (spaceHit != null) {
             return spaceHit
         }
@@ -1650,6 +1698,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // did vertically (D-231). `m` is capped rightward (toward Backspace), Backspace leftward (toward
         // `m`); same considered-starting-point value and reasoning as the other two offset-cap constants.
         private const val M_BACKSPACE_OFFSET_FACTOR = 0.25
+        
+        // D-260: the maximum share of a row's own height the space key's touch zone may extend downward
+        // into the reclaimable part of the bottom gesture inset (setSpaceTouchExtension()'s own cap,
+        // alongside the inset's own actual size) - a considered starting point, not yet device-tuned.
+        private const val SPACE_TOUCH_EXTENSION_FACTOR = 0.25f
         
         // D-05 / D-70 / D-83 / D-85: key-click sample playback volume (SoundPool's 0f..1f linear range -
         // not dB, so this is a much bigger perceived cut than the number alone suggests) and concurrent
