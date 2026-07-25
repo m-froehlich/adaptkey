@@ -1880,6 +1880,18 @@ class AdaptKeyService : InputMethodService() {
                 }
                 // Every other key continues below against a clean, collapsed caret.
             }
+            // D-273: a still-pending A-12 sentence-punctuation auto-space takes priority over A-07's undo
+            // too, even when a split armed both at once (e.g. "ehvnicht." -> "eh nicht. ", which both splits
+            // - arming undoTyped - and ends a sentence - arming pendingPunctuationSpace). Per A-12's own
+            // mode, the first Backspace must only consume the pending space; the undo must not hijack it
+            // just because it happens to be armed too. handleBackspace() re-checks this flag itself and
+            // returns immediately, so calling it here and returning skips A-07/G-05 for this one keystroke,
+            // mirroring D-269's selection check right above. The undo stays armed for a later Backspace,
+            // once the space (and by then the delimiter) are actually gone from the document.
+            if (pendingPunctuationSpace && key.code == KeyCode.DELETE) {
+                handleBackspace(ic)
+                return
+            }
             // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
             if (undoTyped != null) {
                 when (key.code) {
@@ -4238,6 +4250,29 @@ class AdaptKeyService : InputMethodService() {
         return word.drop(1).any { it.isUpperCase() }
     }
     
+    /**
+     * D-271: whether [word] and [bundledCasing] are identical except possibly for their first character's
+     * case - exactly the shape every ordinary §6 capitalisation decision produces for an already-bundled
+     * word (sentence start, a pure/proper noun, an editor's field mandate all only ever touch the first
+     * character; see [de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine.capitalise]), as
+     * opposed to a genuinely different, deliberately typed casing (an acronym like "MSCI" vs. a bundled
+     * "Msci") which differs beyond the first character too. [learnWord]/[learnWordStrong] use this to tell
+     * "this word only looks differently-cased because it happened to start a sentence" apart from "the user
+     * is deliberately typing this word in its own, different casing" - without it, D-264's differently-cased
+     * learning path wrongly treated *every* sentence-start-capitalised ordinary word (bundled lower-case) as
+     * a deliberate casing override and started promoting it as one.
+     *
+     * Both strings always share the same length here (they come from the same case-insensitive dictionary
+     * key, and a case change never alters length), so no length check is needed beyond the empty guard.
+     *
+     * @param word the word actually committed/typed
+     * @param bundledCasing the bundled entry's own exact stored casing for the same word
+     * @return true when the two differ only in their first character's case (or not at all)
+     */
+    private fun differsOnlyInFirstChar(word: String, bundledCasing: String): Boolean {
+        return word.isNotEmpty() && word.drop(1) == bundledCasing.drop(1)
+    }
+    
     private fun learnWord(word: String?): LearnRecord {
         // Adaptive learning: only learn pure-letter tokens of at least MIN_LEARN_LENGTH (D-247) - updates
         // the n-gram context (tier 1). A single letter is never a real word; the most common source is a
@@ -4257,8 +4292,12 @@ class AdaptKeyService : InputMethodService() {
         // other not-yet-known word below - the same W-02 threshold applies, and once promoted it becomes
         // its own, case-sensitive learned entry that wins over the bundled one in ranking/suggestions (see
         // DictionaryStore.learn()/entryOf()/unigramsByPrefix()).
+        // D-271: a casing difference confined to the first character (differsOnlyInFirstChar) is excepted
+        // too - §6 (sentence start, a pure/proper noun, an editor's field mandate) only ever recases that
+        // one character, so a plain bundled-lowercase word that merely happened to start a sentence must not
+        // be mistaken for a deliberate casing override and start counting toward promotion.
         val bundledCasing = dictionaryStore.bundledCasingOf(word)
-        val outcome = if (bundledCasing == word) {
+        val outcome = if (bundledCasing == word || (bundledCasing != null && differsOnlyInFirstChar(word, bundledCasing))) {
             LearnOutcome.SKIPPED
         } else if (dictionaryStore.learnedCasingOf(word) != null) {
             // Already has a learned entry - either a genuinely previously-learned word (not bundled at
@@ -4395,12 +4434,19 @@ class AdaptKeyService : InputMethodService() {
      * [learnWord]'s own distinction - a deliberate correction that happens to differ only in casing from a
      * bundled entry is still worth promoting.
      *
+     * D-271: also bails out when the casing difference is confined to the first character
+     * ([differsOnlyInFirstChar]), mirroring [learnWord]'s own exception - see its KDoc.
+     *
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
         if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() } ||
-            dictionaryStore.bundledCasingOf(word) == word || dictionaryStore.isBlacklisted(word)
+            dictionaryStore.isBlacklisted(word)
         ) {
+            return
+        }
+        val bundledCasing = dictionaryStore.bundledCasingOf(word)
+        if (bundledCasing == word || (bundledCasing != null && differsOnlyInFirstChar(word, bundledCasing))) {
             return
         }
         val context = previousWord

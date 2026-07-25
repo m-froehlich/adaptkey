@@ -9731,3 +9731,95 @@ No new unit tests - all three fixes are `AdaptKeyService`-internal `InputConnect
 same established gap as §188's own fix. 840 unit tests (unchanged). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. Version bumped 0.8.143 -> 0.8.144. None of the three fixes are device-confirmed
 yet - the user's own next test of this exact scenario is what would confirm them.
+
+## §191 - D-271/D-272/D-273: Three More Bugs From The §190 Device Test (v0.8.145)
+
+The user confirmed all three §190 fixes worked ("Exzellent! Das hat alles funktioniert.") and immediately
+reported three new, unrelated issues.
+
+**D-271: a sentence-start-capitalised ordinary word was being learned in that capitalised spelling.** Traced
+directly: `finalizeAndCommit()` calls `learnWord(finalWord)` (line ~3017) with `finalWord` already run through
+`capitalisation.capitalise()` - i.e. *after* §6's own capitalisation hierarchy, not the raw typed word.
+D-264's own `learnWord()` guard (§185) treats `dictionaryStore.bundledCasingOf(word) != word` as "the user is
+typing this word in a persistently different casing than the bundled entry - promote it as a deliberate
+override". For an ordinary bundled-lowercase word (e.g. `"das"`) that simply happened to start a sentence,
+`finalWord` is `"Das"` - genuinely `!= "das"` by that same check, so D-264's path wrongly started counting
+*every* sentence-start-capitalised ordinary word toward promotion as if it were a deliberate `"MSCI"`-style
+casing preference. Confirmed against `CapitalisationEngine.capitalise()` directly (not guessed): every one of
+its recasing rules (`explicitFirstUpper`, `CapsMode.WORDS`, `sentenceStart`, `isProper`, `isPureNoun`,
+`llmForcesUpper`) only ever touches `word`'s *first* character via `replaceFirstChar` - only `CapsMode.CHARACTERS`
+(a field mandate) recases the whole word, a separate, rarer case not addressed here. This gives a precise,
+narrow distinguishing test: a casing difference confined to the first character is exactly the shape every
+ordinary §6 decision produces for an already-bundled word, while a genuinely different, deliberately typed
+casing (`"MSCI"` vs. a bundled `"Msci"`) differs beyond it too. Added `differsOnlyInFirstChar(word,
+bundledCasing)` and folded it into both `learnWord()`'s and `learnWordStrong()`'s (D-13's own authoritative
+promotion path, same latent bug) bundled-casing-skip check - a first-character-only difference is now excepted
+from D-264's learning path exactly like an exact match already was. `AdaptKey-Spec.md` W-04 updated with the
+exception; `dict_de.tsv` untouched (behavioural fix, not a data one).
+
+**D-272: "natürlich" ranked behind "natürliche"/"natürlicher" in suggestions.** The user asked "wie kommt es,
+dass das einfachere Wort später gelistet wird?" - checked the real bundled `dict_de.tsv` before assuming a
+ranking-algorithm bug (`DictionarySuggestionProvider.suggestionsFor()`'s prefix-completion path sorts purely
+by `score()`, itself frequency plus an n-gram bonus - no length or "simplicity" term exists to malfunction).
+The actual bundled frequencies: `natürliche` 1313, `natürlich` 707, `natürlicher` 278 - `natürliche` genuinely
+outscores `natürlich` on raw corpus frequency, so the ranking code was working exactly as designed against
+flawed input data, not buggy. Root cause: the Wikipedia-derived corpus disproportionately favours the
+inflected adjective form (`"natürliche Ressourcen"`, `"natürliche Auslese"`, `"natürliche Person"` - all
+common encyclopedic/legal phrases) over the everyday discourse-marker adverb `"natürlich"` ("of course"),
+which is comparatively rare in Wikipedia's formal register - the same class of corpus-undercounting the
+`minAutocorrectFrequency` KDoc already documents for `"übrigens"` (frequency 79). This project has direct
+precedent for correcting exactly this kind of corpus artefact in `dict_de.tsv` itself rather than special-
+casing the ranking code (D-114's `"vorhin"`, D-244's `"Ohren"`/`"Ihren"` recalibration, among several others -
+see §105's own "incidental finding" note). Calibrated against comparable common adverbs already in the corpus
+for a considered, not arbitrary, value (`allerdings` 12464, `tatsächlich` 2341, `eigentlich` 1513, `vielleicht`
+964, `wirklich` 646, `sicherlich` 157): raised `natürlich` from 707 to 1400 - just above `natürliche`'s 1313,
+comfortably inside the range its own semantic peers already occupy. `natürlicher` (278) was already correctly
+ranked below `natürlich` and needed no change.
+
+That same §105 finding also flagged the actual delivery mechanism: a bare `dict_de.tsv` edit alone never
+reaches an already-installed device (`DictionaryLoader.loadStores()` only seeds an empty store). The proper,
+non-destructive fix D-178 later built for exactly this - `BUNDLED_DICTIONARY_VERSION`, which triggers a
+`resetBundledWords()` + reseed of only the bundled table, leaving the learned overlay/blacklist/pending marks
+untouched - is bumped here too (2 -> 3), so this correction actually reaches the user's own device on next
+load instead of silently sitting unused in the repo.
+
+**D-273: A-07's undo was hijacking the first Backspace after a split that also ended a sentence, corrupting
+the revert.** Repro from the user: `"ehvnicht."` correctly splits+auto-spaces to `"eh nicht. "` (A-05 + A-12
+both fire off the same commit - the split arms `undoTyped`, the sentence end arms `pendingPunctuationSpace`).
+The very next Backspace should, per A-12's own mode, only remove the pending auto-space - instead it triggered
+`performAutocorrectUndo()` (the A-07 revert), which the user correctly identified as wrong ("der Revert sollte
+erst nach Löschen des Punktes passieren"). Root cause: `handleKey()`'s dispatch checks `undoTyped != null`
+*before* ever reaching `handleBackspace()`'s own `pendingPunctuationSpace` guard (§185's D-269 selection check
+sits before it, but the A-07 gate did not defer to A-12's own pending state the same way) - so an armed undo
+unconditionally wins the keystroke regardless of what else is pending. This also explains the reported
+`"eehvnicht."` corruption on its own, without a separate bug: `performAutocorrectUndo()`'s delete-length
+arithmetic (`undoTrailingChars + undoCommitted.length + undoDelimiter.length`) has no term at all for A-12's
+own auto-space, because that space is committed via a direct `ic.commitText(" ", 1)` call in
+`handlePunctuationDelimiter()`, entirely outside `finalizeAndCommit()`'s own delimiter bookkeeping that
+`undoTrailingChars` tracks. With the undo firing one character short of the real committed text
+(`"eh nicht. "`, 10 chars, vs. the computed 9), `deleteSurroundingText(9, 0)` left a stray leading `"e"`
+behind, and the following `commitText("ehvnicht" + ".", 1)` landed right after it - `"e"` + `"ehvnicht."`
+= `"eehvnicht."`, exactly the reported artefact. Fixed at the root, not by patching the arithmetic: moved a
+`pendingPunctuationSpace`-gated check to the very top of `handleKey()` (right after D-269's selection check,
+before the A-07 gate) that calls straight into `handleBackspace()` (whose own existing guard already does
+exactly the right thing) and returns - so the first Backspace now always consumes only the pending space
+first, regardless of whether an undo also happens to be armed. By the time a *later* Backspace does reach the
+undo, the auto-space is already gone from the document and `undoTrailingChars` no longer needs to account for
+it - `"eehvnicht."` cannot recur through this path. `AdaptKey-Spec.md` A-07 updated with the new priority note.
+
+The user's further-described cascade after the (now-fixed) corrupted state - "eeh" getting corrected to
+nonsense (explicitly called acceptable) and `"ehvnicht"` ending up learned afterwards (explicitly called
+unacceptable) - was downstream of the D-273 corruption and not independently re-diagnosed: once the corruption
+itself cannot occur, that exact cascade cannot occur either. A clean, correctly-timed second Backspace (space
+already gone) still reaches `performAutocorrectUndo()` normally, which still calls `learnWordStrong(typed)`
+for a split undo - D-13's own existing, deliberate design ("a real word the splitter mangled is trained and
+never split again"), unchanged here. Whether D-13's own scope should be narrowed for a rejoin that does not
+look like a real word (`"ehvnicht"` has no plausible German reading) is a separate, genuine design question,
+not something silently changed as a side effect of this fix - flagged for the user's next test to confirm
+whether it still reproduces cleanly (without the corruption) before deciding anything there.
+
+No new unit tests: D-271/D-273 are both `AdaptKeyService`-internal (`learnWord`/`learnWordStrong` casing logic
+and `InputConnection`/callback-priority glue respectively), the same established gap as §188/§190; D-272 is a
+pure data correction with nothing new to unit-test. 840 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Version bumped 0.8.144 -> 0.8.145. None of the three fixes are device-confirmed
+yet.

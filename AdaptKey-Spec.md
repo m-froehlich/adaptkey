@@ -485,6 +485,12 @@ just before it. Backspace on a selection bluntly deletes it; any other key blunt
 triggers the undo (or any other special behaviour) for that one keystroke; ordinary handling, including
 whatever pending state a *later* commit newly arms, resumes cleanly from the next keystroke.
 
+A-12's own still-pending auto-space also takes priority over this mechanism specifically, whenever both are
+armed by the same commit at once (an A-05 split that also happens to end a sentence, e.g. `"ehvnicht."` ->
+`"eh nicht. "`). The first Backspace only consumes the pending auto-space, per A-12's own mode; it does not
+also hijack that keystroke for the undo. A later Backspace, once the auto-space (and by then the delimiter
+itself) is actually gone from the document, triggers the undo normally.
+
 ### A-08 - Compound-Word Peeling (Suggestion Only)
 For an unrecognised token, a known noun (4+ characters), optionally preceded by a German linking element
 (Fugenelement), is peeled off the token's front and offered as a compound-split suggestion. Never applied
@@ -710,6 +716,13 @@ suggestion bar offers and what an edit-distance correction resolves to; the bund
 part-of-speech tags still contribute to ranking underneath it. A-01's own case-insensitive "is this word
 known" check is unaffected either way - both the bundled and the overriding casing are always recognised
 regardless of which one the user happens to type on a given occasion.
+
+A casing difference confined to the word's first character does *not* count as a persistently different
+casing and is never promoted this way - §6's own capitalisation hierarchy (sentence start, a pure/proper
+noun, an editor's field mandate) only ever recases that one character, so an ordinary bundled-lowercase word
+that merely happened to start a sentence (`"das"` -> `"Das"`) must not be mistaken for a deliberate override
+and start counting toward promotion. Only a difference reaching beyond the first character (as any genuine
+deliberately-typed casing like an acronym does) is eligible.
 
 ---
 

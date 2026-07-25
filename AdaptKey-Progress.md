@@ -70,6 +70,35 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§191 (v0.8.145): D-271/D-272/D-273 - three more bugs from the §190 device test; §190's own fixes all**
+  **confirmed working first.** **D-271:** a sentence-start-capitalised ordinary word (`"das"` -> `"Das"`) was
+  being learned in that capitalised spelling - `finalizeAndCommit()` calls `learnWord(finalWord)` with the
+  already-§6-capitalised word, and D-264's `bundledCasingOf(word) != word` check wrongly read every such
+  contextual recapitalisation as a deliberate casing override. Confirmed against `CapitalisationEngine`
+  directly: every §6 rule except a field's `CapsMode.CHARACTERS` only ever recases the *first* character.
+  Added `differsOnlyInFirstChar()` and excepted a first-character-only difference from both `learnWord()`'s
+  and `learnWordStrong()`'s D-264 promotion path. **D-272:** `"natürlich"` ranked behind `"natürliche"` in
+  suggestions - checked the real `dict_de.tsv` before assuming a ranking bug: `natürliche` genuinely outscores
+  `natürlich` on raw corpus frequency (1313 vs. 707, a Wikipedia-register artefact, same class as the
+  documented `"übrigens"` undercount) - the ranking code was correct against flawed data. Raised `natürlich`
+  to 1400, calibrated against comparable adverbs already in the corpus; also bumped `BUNDLED_DICTIONARY_VERSION`
+  2 -> 3 (D-178's non-destructive reseed-bundled-only mechanism) so the correction actually reaches an
+  already-installed device instead of silently never loading (per §105's own incidental finding). **D-273:**
+  A-07's undo was hijacking the first Backspace after a split that also ended a sentence (`"ehvnicht."` ->
+  `"eh nicht. "`), corrupting the revert into `"eehvnicht."` - `handleKey()`'s `undoTyped != null` gate ran
+  before any check of A-12's own `pendingPunctuationSpace`, and `performAutocorrectUndo()`'s delete-length
+  arithmetic has no term for A-12's auto-space (committed via a separate, untracked `ic.commitText(" ", 1)`
+  call), so firing one character early/short duplicated a leading character. Fixed at the root: a
+  `pendingPunctuationSpace`-gated check now sits at the very top of `handleKey()`, before the A-07 gate, so
+  the first Backspace always only consumes the pending space - by the time a later Backspace reaches the
+  undo, the auto-space is already gone and the arithmetic is correct again. The user's further-described
+  cascade (nonsense correction, then `"ehvnicht"` ending up learned) was downstream of this same corruption,
+  not independently re-diagnosed; a clean second Backspace still reaches D-13's own existing, deliberate
+  `learnWordStrong()` on a split rejoin, unchanged - whether *that* design should be narrowed for a
+  nonsense-looking rejoin is flagged as a separate open question, not decided here. No new unit tests (D-271/
+  D-273 are established `AdaptKeyService`-internal glue gaps; D-272 is pure data). 840 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. None of the three fixes device-confirmed yet. See
+  history §191, spec W-04/A-07 (both revised).
 - **§190 (v0.8.144): D-270 - three more real A-12 bugs found from the user's own device log; §188's fix**
   **was real but incomplete.** **(1)** Sentence-start capitalisation never fired for a word typed straight
   through the mode (no explicit Space) - `armShiftForNextWord()`'s call inside `finalizeAndCommit()` reads
