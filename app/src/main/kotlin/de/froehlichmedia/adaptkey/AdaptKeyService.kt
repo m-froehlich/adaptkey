@@ -2034,15 +2034,23 @@ class AdaptKeyService : InputMethodService() {
             if (undoTyped != null) {
                 when (key.code) {
                     KeyCode.DELETE -> {
-                        // D-277: a Backspace still finds trailing whitespace (a Space/Enter pressed earlier
-                        // while the window stayed open, per the case below) immediately before the caret -
-                        // remove only that one character ordinarily, the same as any other Backspace would,
-                        // and keep the window armed; the revert itself only ever fires once the caret is
-                        // genuinely back at the actual committed text, with nothing left in between.
-                        // performAutocorrectUndo() itself verifies that claim against the real document
-                        // before ever touching it (see its own KDoc) - no bookkeeping needed here beyond this
-                        // one live check.
-                        if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
+                        // D-286: only whitespace *beyond* the armed undoCommitted+undoDelimiter tail (an
+                        // extra Space/Enter pressed after the commit, while the window stayed open) is
+                        // pre-consumed ordinarily here - checked by comparing the real document against that
+                        // exact tail first. D-277's own single-character "is the preceding char whitespace"
+                        // check could not tell that apart from undoDelimiter's own whitespace (a plain " "
+                        // word delimiter, the overwhelmingly common case, or the split-commit delimiter
+                        // exactly the same way): it pre-consumed *that* too on the very first Backspace,
+                        // after which performAutocorrectUndo()'s own ground-truth check - which still expects
+                        // undoDelimiter's own character to be there - could never match again, permanently
+                        // discarding an otherwise perfectly live window. Only genuinely extra whitespace still
+                        // falls through to the ordinary single-character delete below; once the caret is
+                        // already exactly adjacent to the armed tail, the very first Backspace reverts
+                        // directly, matching A-07's own "a backspace issued after the commit restores the
+                        // originally typed text" (§7).
+                        val armedTail = undoCommitted + undoDelimiter
+                        val atArmedTail = ic.getTextBeforeCursor(armedTail.length, 0)?.toString() == armedTail
+                        if (!atArmedTail && ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
                             handleBackspace(ic)
                         } else if (!performAutocorrectUndo(ic)) {
                             // D-277: the window turned out to be stale (already discarded by
@@ -3530,6 +3538,16 @@ class AdaptKeyService : InputMethodService() {
      * separate accounting of that trailing whitespace is needed any more (dropped the old undoTrailingChars
      * counter entirely) - deleting exactly [undoCommitted]'s and [undoDelimiter]'s own combined length is
      * always correct, *provided* the text actually there still matches what was armed.
+     *
+     * D-286: that "already removed ordinarily" precondition itself was wrong whenever [undoDelimiter] is
+     * itself whitespace (an ordinary " " word delimiter, or a split's own - the overwhelmingly common case,
+     * not the exception) - the caller's own single-character check could not tell undoDelimiter's own
+     * whitespace apart from genuinely *extra* whitespace typed beyond it, so it pre-consumed undoDelimiter
+     * itself on the very first Backspace, after which the check below could never match again (it still
+     * expects that now-deleted character). Fixed at the call site, not here - see [handleKey]'s own D-286
+     * comment; this function's own contract (verify, then delete exactly [undoCommitted]/[undoDelimiter]'s
+     * combined length) did not need to change, only the caller's guarantee that the precondition actually
+     * holds before ever calling this.
      *
      * D-277: that proviso is verified here directly against the real document, synchronously, rather than
      * trusted blindly - a first attempt instead tried to detect "did the caret move away in the meantime" the

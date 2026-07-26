@@ -74,6 +74,28 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§209 (v0.9.4): D-286 - A-07's own revert silently broken for every ordinary space-delimited commit, not**
+  **just the reported "wird" -> "wi rd" split - traced by hand from the user's own two-part device report.**
+  `handleKey`'s A-07 gate pre-consumed exactly one whitespace character ordinarily before ever calling
+  `performAutocorrectUndo()`, meant only for genuinely *extra* whitespace typed after the commit - but its
+  single-character check could not tell that apart from `undoDelimiter`'s own character (an ordinary `" "`
+  word/split delimiter, not some rare case), so it silently ate the delimiter itself on the very first
+  Backspace; a second Backspace's ground-truth check then compared against a tail that no longer existed and
+  discarded the window as stale, falling back to an ordinary character delete instead of ever reverting. The
+  D-276/D-277 "Satzz." repro (§196/§197, still correctly device-confirmed) never exposed this - its own
+  delimiter is `"."`, never whitespace, so the buggy pre-check never engaged for it; the extra space consumed
+  there is A-12's own separate, unrelated `pendingPunctuationSpace` auto-space. Fixed by comparing the real
+  document against the *whole* armed `undoCommitted + undoDelimiter` tail first - the very first Backspace now
+  reverts directly whenever the caret is already exactly adjacent to it (the ordinary case), and only
+  genuinely extra whitespace still falls through to the pre-consume step, preserving D-276/D-277's own
+  "survives any number of intervening whitespace keystrokes" behaviour. No new unit tests (established
+  `AdaptKeyService`/`InputConnection` glue gap). 896 unit tests (unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Version bumped 0.9.3 -> 0.9.4. Not yet device-confirmed - needs a real
+  single-Backspace revert right after an ordinary autocorrect and right after a split, plus a re-check that
+  the "Satzz." multi-whitespace case still reverts correctly. **By explicit user request, the actual**
+  **"wird" -> "wi rd" split root cause is deliberately not addressed in this same round** - this revert fix is
+  meant to be verified on-device in isolation first; the split cause itself is already understood (see
+  history §209's own closing note) and queued as the very next step once this is confirmed. See history §209.
 - **§208 (v0.9.3): D-278 - export/import backup, designed with the user over two rounds (scope/format, then**
   **blacklist scope) before any code was written, per this project's own design-discussion rule.** One JSON
   file (already this codebase's own `org.json` persistence convention, no new dependency) with a

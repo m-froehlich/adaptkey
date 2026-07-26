@@ -10608,3 +10608,57 @@ language not installed on the importing device is skipped and reported, never ap
 green. Spec gained new §21/Y-01. Version bumped 0.9.2 -> 0.9.3. Not yet device-confirmed - needs a real
 export-then-import round trip on device, including the uninstalled-language-skip path (export with a language
 pack installed, remove the pack, then import the same file back).
+
+## §209 - D-286: A-07's Own Revert Silently Broken For Every Ordinary Space-Delimited Commit, Traced From The "wird" Split Report's Second Half (v0.9.4)
+
+Reported directly by the user alongside D-287 (§210, the actual "wird" -> "wi rd" split cause, fixed
+separately and in a second step at the user's own explicit request, so the revert fix below could be
+device-verified in isolation first): typing "wird" split it into "wi"+"rd", **and** Backspace could not
+revert the split at all. The user's own first guess - a regression from the D-276/D-277 punctuation-auto-
+space rework - turned out to point at the right code, if not quite the right mechanism.
+
+**Traced by hand, not guessed:** `handleKey`'s A-07 gate has one condition guarding the whole Backspace
+branch - `if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true)` pre-consumes exactly
+one character ordinarily (keeping the undo window armed) before ever calling `performAutocorrectUndo()`,
+per D-277's own documented intent: "only genuinely extra whitespace beyond the armed tail should be
+pre-consumed, not the delimiter itself." But the check as written cannot actually tell those two cases
+apart - it only asks "is the single character immediately before the caret whitespace", which is exactly as
+true for `undoDelimiter`'s own character (an ordinary `" "` word delimiter, or a split's own - the
+overwhelmingly common case, not some rare edge case) as it is for a genuinely extra Enter/Space pressed
+afterwards. Traced the exact "wi rd" repro by hand against the code: commit is `"wi rd" + " "`
+(`undoCommitted="wi rd"`, `undoDelimiter=" "`); first Backspace's pre-check sees a space immediately before
+the caret - true, but for the wrong reason - and consumes exactly `undoDelimiter`'s own only character via
+an ordinary `handleBackspace()`, correctly *not* clearing the window. Second Backspace: the pre-check now
+sees `"d"` (not whitespace) and calls `performAutocorrectUndo()` - whose own ground-truth check compares
+against `undoCommitted + undoDelimiter = "wi rd "`, a string that no longer exists in the document at all
+(its own trailing space was exactly what the first Backspace just deleted) - the comparison can never match
+again, so the window is discarded as "stale" and the Backspace falls back to an ordinary single-character
+delete of the "d" instead of ever reverting.
+
+Confirmed this is not split-specific at all: an entirely ordinary single-word autocorrect committed with an
+ordinary trailing space (`undoDelimiter=" "`, the `"hous"` -> `"haus "` shape, the single most common A-07
+trigger in the whole app) hits the exact same bug on the very first immediate Backspace. The
+D-276/D-277 "Satzz." repro that *is* covered by the existing device confirmation (§196/§197) never exposed
+this, purely by construction: its own `undoDelimiter` is `"."` (the punctuation mark itself, never
+whitespace), so the buggy pre-check never engages for it at all - the space consumed by that repro's own
+first Backspace is A-12's entirely separate `pendingPunctuationSpace` auto-space, intercepted by its own
+earlier, unrelated `handleKey` branch before this code is ever reached. The bug was invisible to that
+specific, already-confirmed repro and only surfaces for the vastly more common ordinary/split case - exactly
+why a fresh device report, not a re-litigation of the "Satzz." fix, was the right way to find it.
+
+**Fix:** the pre-check now compares the real document against the *whole* armed tail
+(`undoCommitted + undoDelimiter`) first - if the caret is already exactly adjacent to it (the ordinary case,
+nothing extra typed since the commit), the very first Backspace reverts directly, matching A-07's own "a
+backspace issued after the commit restores the originally typed text" at face value. Only when the document
+does *not* yet match (genuinely extra whitespace still sits in front of the armed tail) does the single-
+character ordinary-consume fallback still apply, preserving D-276/D-277's own "survives any number of
+intervening whitespace keystrokes" behaviour exactly as before. `performAutocorrectUndo()` itself needed no
+change - its own strict, unconditional ground-truth check was always correct; only the caller's guarantee
+that the precondition actually held before invoking it was wrong.
+
+No new unit tests (established `AdaptKeyService`/`InputConnection` glue gap, same as every prior A-07 round).
+896 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.3 ->
+0.9.4. Not yet device-confirmed - needs a real single-Backspace revert right after an ordinary autocorrect
+and right after a split, plus a re-check that the "Satzz."-style multi-whitespace case (§196/§197) still
+reverts correctly. The actual "wird" -> "wi rd" split cause is deliberately not addressed in this same round,
+per the user's own explicit request to verify this revert fix in isolation first - see §210.
