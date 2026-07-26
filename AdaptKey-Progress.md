@@ -74,6 +74,17 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§204 (v0.9.1): D-284 - a key's static corner hint glyph now uppercases under Shift/Caps Lock too,**
+  **matching what the long-press popup (D-168) already did.** New `AdaptKeyboardView.cornerHintDisplayTextFor()`
+  mirrors `popupDisplayTextFor()` exactly - gated on `AlternativeScript.extendsWord`, not a bare
+  `Char.isLetter()`, since `p`'s own `π` corner hint (a Greek letter borrowed as a math symbol) must stay
+  lower-case even under Shift, `Π` being a different symbol rather than an upper-case form of the same one.
+  Also restricted to `KeyCode.CHAR` on the letters surface, mirroring `labelFor()`'s identical guard. No new
+  unit tests (Android view drawing glue, established gap). 876 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not added to spec.md, matching how D-168 (the exact
+  analogous popup fix) was handled. Version bumped 0.9.0 -> 0.9.1. Not yet device-confirmed - needs a real
+  Shift/Caps-Lock check that `a`/`o`/`u`/`s` show uppercase corner hints while `p`'s own `π` stays lower-case.
+  See history §204.
 - **§203 (v0.9.0): D-283 - explicit user-requested minor-version bump, no code change.** Marks the
   D-280/D-281/D-282 multi-language rollout (English-only bundling, per-language language packs, per-language
   AltGr hints, dynamic popup direction) as its own milestone rather than a further `0.8.15x` patch step.

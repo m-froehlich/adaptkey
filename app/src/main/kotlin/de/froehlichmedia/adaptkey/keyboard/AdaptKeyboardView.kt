@@ -831,7 +831,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val suppressHint = key.code == KeyCode.SYMBOL
             if (hintsEnabled && !suppressHint) {
                 if (hint != null) {
-                    canvas.drawText(hint, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
+                    canvas.drawText(cornerHintDisplayTextFor(key, hint), rect.right - dp(6f), rect.top + dp(14f), hintPaint)
                 } else if (isSignFlipKey(key)) {
                     // D-129 (second pass): the calculator minus key's own long-press sign-flip (§31) has
                     // neither a hint nor alternatives - §31 deliberately kept it that way, since giving it
@@ -924,6 +924,24 @@ class AdaptKeyboardView @JvmOverloads constructor(
             return text
         }
         return text.uppercase()
+    }
+    
+    /**
+     * D-284: the same [popupDisplayTextFor] case rule, applied to a key's static corner hint glyph (L-05)
+     * instead of a long-press popup entry - a genuine letter hint (`ä`/`ö`/`ü`/`ß`, or any per-language
+     * equivalent, D-281) shows uppercase while Shift/Caps Lock is armed, matching [labelFor]'s own treatment
+     * of the key's main label, rather than only the popup that already did this (D-168). Gated on
+     * [AlternativeScript.extendsWord] - not a bare [Char.isLetter] check - for the identical reason D-168
+     * excludes a Greek letter borrowed as a math symbol (`p`'s own `π` hint): `Π` is a different symbol, not
+     * an upper-case form of the same one, so it must never be shown here. Restricted to the letters
+     * surface's own char keys, mirroring [labelFor]'s identical guard for the identical reason (a symbol/
+     * calculator-page key's hint must never gain a case it has no business having).
+     */
+    private fun cornerHintDisplayTextFor(key: Key, hint: String): String {
+        if (!(shifted || capsLock) || key.code != KeyCode.CHAR || surface != InputSurface.LETTERS || !AlternativeScript.extendsWord(hint, greek)) {
+            return hint
+        }
+        return hint.uppercase()
     }
     
     private fun drawPopupCell(canvas: Canvas, left: Float, top: Float, cellWidth: Float, text: String, selected: Boolean) {

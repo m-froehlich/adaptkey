@@ -10443,3 +10443,31 @@ D-280/D-281/D-282 multi-language rollout (English-only bundling with installable
 language AltGr hint defaults, dynamic long-press popup direction) as its own milestone. No source change;
 `:app:assembleRelease`/`:app:testDebugUnitTest` re-run to confirm nothing regressed from the version fields
 alone - still green, 876 unit tests (unchanged).
+
+## §204 - D-284: A Key's Static Corner Hint Glyph Now Uppercases Under Shift/Caps Lock Too, Matching The Popup (v0.9.1)
+
+Direct, small user request: the D-168 fix already made a long-press popup entry uppercase while Shift/Caps
+Lock is armed (e.g. `ä`'s popup shows `Ä`); the small static corner hint glyph drawn on the key itself
+(before any long-press) never got the same treatment and always showed its lower-case form regardless of
+Shift state.
+
+Traced to `drawKeys()` in `AdaptKeyboardView.kt`: the corner hint was drawn via a bare `canvas.drawText(hint,
+...)`, with no case handling at all - unlike the main key label (`labelFor()`) and the popup entries
+(`popupDisplayTextFor()`, D-168), both of which already apply the same Shift/Caps-Lock rule. Fixed by mirroring
+`popupDisplayTextFor()` exactly, not a fresh, simpler check: a new `cornerHintDisplayTextFor(key, hint)`
+gated on the identical [`AlternativeScript.extendsWord`] predicate, not a bare `Char.isLetter()` check - the
+distinction matters concretely here, since `p`'s own corner hint is `π` (a Greek letter borrowed as a math
+symbol, per D-90/§29), which `Char.isLetter()` would happily uppercase to `Π`, a genuinely different symbol,
+not an upper-case form of the same one. `AlternativeScript.extendsWord` already encodes exactly this
+distinction (a Greek letter is only a "real letter" while actually typing Greek). Also restricted to
+`KeyCode.CHAR` keys on the letters surface, mirroring `labelFor()`'s own identical guard against wrongly
+uppercasing a symbol/calculator-page key's hint.
+
+No new unit tests - `AdaptKeyboardView`'s drawing code is Android view glue, the same established untested
+gap as `drawKeys()`/`popupDisplayTextFor()`/every other function in this immediate area. 876 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not documented as its own spec.md
+sentence, matching how D-168 (the exact analogous popup fix) was handled - a visual-consistency detail, not
+a new requirement. Version bumped 0.9.0 -> 0.9.1 (back to the ordinary third-digit-per-release convention
+now that 0.9.0 marked its own milestone). Not yet device-confirmed - needs a real Shift/Caps-Lock check that
+`a`/`o`/`u`/`s` (and any per-language equivalent) show their uppercase corner hint, while `p`'s own `π` hint
+correctly stays lower-case.
