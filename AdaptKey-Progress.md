@@ -70,6 +70,17 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§198 CAPTURED (still v0.8.150, no code change): D-278 - full Settings/Blacklist/Learned-Words/Credentials**
+  **export & import, to carry the keyboard's personal state across two devices, per direct user request.**
+  Not designed yet - captured as a backlog item, same precedent as §173/§182. Scope as stated: user settings
+  (`SettingsStore`), the word blacklist (A-04), the learned-words store (W-01, including any still-pending
+  learn/promotion counts), and the credential/e-mail store (P-02) should all be coverable by one export/import
+  round-trip, so a user's trained state moves to a second device instead of starting cold there. Open design
+  questions, none decided yet: a single combined bundle vs. one file per store; whether the credential store -
+  genuinely sensitive, unlike every other store here - needs its own encryption/passphrase gate rather than a
+  plain-text export, and how that interacts with C-16 ("never save credentials"); where the export/import
+  action lives in Settings; schema versioning/compatibility if the two devices run different app versions. See
+  history §198.
 - **§196 (v0.8.150): D-277 - §195's caret-move guard (suppressNextUndoClear) broke A-07 outright; replaced**
   **with ground-truth verification at the point of use.** Device-tested immediately, failed immediately:
   "Das ist ein Satzz." -> autocorrects to "Satz" + auto-space; Backspace removes the space; a further Backspace
@@ -4029,6 +4040,8 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Remaining (per spec §11)
 
+- **D-278 (captured, §198): cross-device export/import** of settings, blacklist, learned words, and
+  credentials/e-mail store - not designed yet, see the Current State entry above for the open questions.
 - **Tier-3 — device work only:** validate + tune the inference runtime above on a real arm device (import
   the model via Settings → Info/Großschreibung → "Mini-LLM-Modell"), add instrumented tests, and confirm
   latency/battery. Everything code-side (orchestration, C-06 setting, §6 rule-6 hook, adaptive-learning,

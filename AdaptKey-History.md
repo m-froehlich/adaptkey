@@ -10102,3 +10102,35 @@ The user re-tested the exact `"Satzz."` repro that broke §195's `suppressNextUn
 ground-truth-verification replacement: "Perfekt, das hat funktioniert." A-07's undo (post-D-276/D-277 shape -
 whitespace consumed ordinarily before the revert fires, the revert itself verified against the real document
 immediately before touching anything) is confirmed working on-device.
+
+## §198 CAPTURED (still v0.8.150, no code change): D-278 - Full Cross-Device Export/Import of Settings, Blacklist, Learned Words, and Credentials
+
+Captured per direct user request, not designed or implemented yet - same "record it before it's lost, decide
+the mechanics later" precedent as §173/§182. Motivation stated plainly: the user wants to carry the keyboard's
+personal state across two physical devices rather than starting the touch model, dictionary, and every other
+learned/stored thing cold on a second install.
+
+Scope as stated, spanning four independently-persisted stores that currently have no shared serialisation path
+at all: `SettingsStore` (every C-xx preference), the word blacklist (A-04, itself already split bundled-vs-
+user), the learned-words store (W-01, including whatever pending-learn/promotion counts (W-02) are mid-flight
+at export time), and the credential/e-mail store (P-02). A single export/import round-trip covering all four is
+the stated goal, not four independent mechanisms the user has to run separately.
+
+Deliberately left open, none decided yet:
+
+- **Bundling:** one combined export file/blob covering all four stores, vs. one file per store. Affects the
+  import UX (all-or-nothing vs. picking which stores to bring over) and how partial/older exports degrade.
+- **Credential sensitivity:** the credential/e-mail store is genuinely sensitive - unlike the other three - so
+  a plain-text export sitting in, say, a cloud-synced Downloads folder is a real exposure risk distinct from
+  the rest of this feature. Whether the export needs its own encryption/passphrase gate (and how that squares
+  with C-16, "never save credentials", which a user who enabled it presumably still wants honoured for a
+  restore) is unresolved.
+- **UI surface:** where the export/import action actually lives in Settings, and what confirms a destructive
+  import (one that would overwrite/merge into an already-populated second device) before it runs.
+- **Schema compatibility:** what happens when the two devices are not running the exact same app version - a
+  forward/backward migration question for each of the four stores' own schemas, not previously a concern since
+  none of them has ever needed to leave the device it was created on.
+
+No code change. Version stays 0.8.150 (docs-only capture, per the established convention that a pure
+documentation update carries no version bump). See spec.md's "Configurable Parameters" (§20) and W-01/A-04/P-02
+for the stores this would eventually need to touch.
