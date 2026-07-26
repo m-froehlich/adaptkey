@@ -74,6 +74,10 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§203 (v0.9.0): D-283 - explicit user-requested minor-version bump, no code change.** Marks the
+  D-280/D-281/D-282 multi-language rollout (English-only bundling, per-language language packs, per-language
+  AltGr hints, dynamic popup direction) as its own milestone rather than a further `0.8.15x` patch step.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` still green (876 unit tests, unchanged). See history §203.
 - **§202 (v0.8.154): D-282 - long-press popup direction (§34/D-99/D-105) is now computed dynamically from**
   **real geometry, not hard-coded per character - direct user follow-up to D-281.** New
   `HorizontalLongPressPopup.wouldClampRight()` reuses `rowLeft()`'s own centring math to ask "would this

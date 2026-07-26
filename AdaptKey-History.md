@@ -10435,3 +10435,11 @@ hand-tuning for its own popup direction any more. Version bumped 0.8.153 -> 0.8.
 device-confirmed - needs a real long-press on `p` and `0` (still correct, computed instead of hard-coded)
 and, ideally, a deliberately-constructed test case with a wide popup on some other edge key to confirm the
 dynamic path actually engages beyond the two cases it was verified against here.
+
+## §203 - D-283: Minor Version Bump To 0.9.0, No Code Change (v0.9.0)
+
+Explicit user request: bump the version to 0.9.0 rather than the next `0.8.15x` patch step, to mark the
+D-280/D-281/D-282 multi-language rollout (English-only bundling with installable language packs, per-
+language AltGr hint defaults, dynamic long-press popup direction) as its own milestone. No source change;
+`:app:assembleRelease`/`:app:testDebugUnitTest` re-run to confirm nothing regressed from the version fields
+alone - still green, 876 unit tests (unchanged).

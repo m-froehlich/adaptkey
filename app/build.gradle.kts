@@ -28,8 +28,11 @@ android {
         // versionCode just keeps counting up by 1 per release regardless of the versionName - Android
         // requires it to strictly increase for updates to install, and it doesn't need to encode the
         // version number in any particular way.
-        versionCode = 276
-        versionName = "0.8.154"
+        // D-283: explicit user request bumped the minor version 0.8.154 -> 0.9.0 here (not a further third-
+        // digit step) to mark the D-280/D-281/D-282 multi-language rollout as its own milestone; no code
+        // change accompanies this bump.
+        versionCode = 277
+        versionName = "0.9.0"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
