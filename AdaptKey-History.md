@@ -10134,3 +10134,55 @@ Deliberately left open, none decided yet:
 No code change. Version stays 0.8.150 (docs-only capture, per the established convention that a pure
 documentation update carries no version bump). See spec.md's "Configurable Parameters" (§20) and W-01/A-04/P-02
 for the stores this would eventually need to touch.
+
+## §199 - D-279: A-12's Abandoned Auto-Space Is Now Actively Removed On A Caret Move Or Field Exit - Not Just Left As Confirmed Text (v0.8.151)
+
+Design discussed with the user first, over two rounds, before any code was written - matching this project's
+own established rule for a non-trivial mechanism change in the A-07/A-12 zone.
+
+**The gap:** per A-12 as it stood, an abandoned auto-space (the caret moved elsewhere, or the field lost focus,
+while `pendingPunctuationSpace` was still armed) simply had its pending flag cleared - the space itself was
+left in the document as ordinary text. The user wanted it actively removed in both cases instead.
+
+**Round 1 - where the mechanical risk actually lives.** By the time a genuine external caret move is detected
+(`onUpdateSelection`'s `composing.isEmpty()` branch -> `reclaimWordAtCaret()`), the cursor already sits at the
+*new* position - the auto-space's own location is not recoverable from that callback's `oldSelStart`/
+`newSelStart` parameters without threading them through, and this exact zone (D-269 through D-277) has already
+shown that callback-derived position/counting logic is the single most bug-prone class in the whole codebase.
+Proposed removing it via a repositioning dance (move to the old position, verify, delete, move back) instead.
+
+**The user's own counter-proposal, adopted as simpler and more robust:** since the mode already tracks that a
+space is pending, it should also just remember *where* that space is the moment it is armed - removing any
+need to reconstruct the position later from an unreliable callback at all. Implemented exactly that: new
+`pendingPunctuationSpacePos` (absolute document offset) is captured via a synchronous ground-truth
+`ExtractedText` read (`ComposingAnchor.resolve`, the same absolute-offset technique `onUpdateSelection`'s own
+mismatch branch already uses) in `handlePunctuationDelimiter()`, right when the space is committed - so removal
+never has to interpret a callback at all, only re-verify its own previously-recorded fact.
+
+**Round 2 - the user's own follow-up catch, before implementation:** a space armed while re-editing *mid-text*
+(the punctuation typed somewhere before already-existing content, not at the true end of what has been typed
+so far) is not "stranded" once abandoned - it is already serving as the real separator between the punctuation
+and the text that already follows it. Removing it unconditionally would pull that following text directly onto
+the punctuation mark (`"Er kam. Und ging weiter"` -> `"Er kam.Und ging weiter"`). Folded directly into the new
+mechanism as a second, mandatory precondition alongside the position-still-matches check.
+
+**Implementation:** new shared `consumeStrandedPunctuationSpace(ic)` - called from `reclaimWordAtCaret()`'s
+genuine-caret-move branch (replacing the old bare `pendingPunctuationSpace = false`) and newly from
+`onFinishInput()` (mirroring the existing D-142 "leaving a field without pressing Enter" pattern right next to
+it) - reads the caller's own current absolute selection first (ground truth, so it can be restored afterward),
+then temporarily repositions to `pendingPunctuationSpacePos + 1`, checked against the real document twice
+before ever deleting anything (D-277's own verify-before-mutate discipline, applied here to both preconditions
+at once): the character immediately before must still be the armed space, *and* nothing may already follow it.
+Only if both hold is it deleted, with the caller's own selection restored afterward, shifted back by one
+position if it sat after the deleted space. Either way, the whole repositioning dance runs inside a nested
+`beginBatchEdit()`/`endBatchEdit()` (Android's batch-edit calls nest safely) - deliberately not guarded by any
+new single-shot flag, since by the time any of its own reactive `onUpdateSelection` echoes eventually arrive,
+the document and selection are already back in their final, correct state and there is nothing left for a
+callback to misinterpret; this sidesteps the exact "single-shot guard consumed by the wrong one of several
+callbacks" bug class that caused D-270 and D-277 in this same area, rather than adding a new instance of it.
+
+Enter (D-270) and Backspace, both already correct (the caret never left in either case), are unchanged.
+
+No new unit tests - established `AdaptKeyService`/`InputConnection` glue gap, same as every other A-07/A-12
+round. 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `AdaptKey-Spec.md`
+A-12 revised. Version bumped 0.8.150 -> 0.8.151. Not yet device-confirmed.

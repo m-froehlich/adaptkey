@@ -70,6 +70,25 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§199 (v0.8.151): D-279 - an abandoned A-12 auto-space (caret moved elsewhere, or the field left) is now**
+  **actively removed, not just left as confirmed text - designed with the user over two rounds first.** The
+  user's own key idea: since `pendingPunctuationSpace` already tracks that a space is pending, it should also
+  record *where* that space is the moment it is armed, so removal never has to reconstruct the position from
+  an unreliable `onUpdateSelection` callback (the exact class of bug D-269-D-277 kept finding in this zone).
+  New `pendingPunctuationSpacePos` (absolute offset, ground-truth `ExtractedText` read via `ComposingAnchor.
+  resolve`) captured in `handlePunctuationDelimiter()` at arm time. The user's own follow-up catch before
+  implementation: a space armed while re-editing *mid-text* (already followed by real, pre-existing content)
+  must never be removed even once abandoned - it is the load-bearing separator between the punctuation and
+  what already follows it, and removing it would pull that text directly onto the punctuation mark. New
+  shared `consumeStrandedPunctuationSpace(ic)` (called from `reclaimWordAtCaret()`'s genuine-caret-move branch
+  and newly from `onFinishInput()`) verifies both preconditions against the real document immediately before
+  ever deleting (D-277's own discipline): the space is still there, *and* nothing already follows it. Runs
+  inside a nested batch edit, deliberately with no new single-shot guard - the document/selection are already
+  back in their final state by the time any of its own reactive echoes arrive, sidestepping the "guard
+  consumed by the wrong callback" bug class rather than adding a new instance of it. Enter/Backspace unchanged
+  (already correct). No new unit tests (established `AdaptKeyService`/`InputConnection` glue gap). 843 unit
+  tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-12 revised. Not yet
+  device-confirmed. See history §199.
 - **§198 CAPTURED (still v0.8.150, no code change): D-278 - full Settings/Blacklist/Learned-Words/Credentials**
   **export & import, to carry the keyboard's personal state across two devices, per direct user request.**
   Not designed yet - captured as a backlog item, same precedent as §173/§182. Scope as stated: user settings

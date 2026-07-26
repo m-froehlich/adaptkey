@@ -380,6 +380,13 @@ class AdaptKeyService : InputMethodService() {
     // (an accepted suggestion vs. sentence punctuation) are independent and must not be conflated.
     private var pendingPunctuationSpace = false
     
+    // D-279: the absolute document position of the auto-inserted space itself (not the caret after it),
+    // captured via a ground-truth ExtractedText read the moment pendingPunctuationSpace above is armed - so
+    // consumeStrandedPunctuationSpace() never has to derive that position from an onUpdateSelection
+    // callback's oldSelStart/newSelStart, which the D-269..D-277 saga already proved cannot be trusted for
+    // this. -1 whenever pendingPunctuationSpace is false or the ground-truth read failed at arm time.
+    private var pendingPunctuationSpacePos = -1
+    
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
     private var undoCommitted = ""
@@ -1244,10 +1251,11 @@ class AdaptKeyService : InputMethodService() {
                 suppressNextReclaimSpaceReset = false
             } else {
                 pendingSuggestionSpace = false
-                // D-262: the caret landing on a word elsewhere (not an immediately following Space/
-                // punctuation/Backspace) means the auto-space is no longer "pending" - it is now just
-                // ordinary confirmed text.
-                pendingPunctuationSpace = false
+                // D-279: the caret landing on a word elsewhere (not an immediately following Space/
+                // punctuation/Backspace) means the auto-space is abandoned - remove it if it is genuinely
+                // stranded at the end of the typed text (see consumeStrandedPunctuationSpace's own KDoc for
+                // why a mid-text auto-space, already followed by real content, must never be touched here).
+                consumeStrandedPunctuationSpace(ic)
             }
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
@@ -1258,6 +1266,57 @@ class AdaptKeyService : InputMethodService() {
             ic.endBatchEdit()
         }
         refreshSuggestions()
+    }
+    
+    /**
+     * D-279: removes a still-armed [pendingPunctuationSpace] auto-space that has been abandoned - the caret
+     * moved elsewhere ([reclaimWordAtCaret]) or the field is being left ([onFinishInput]) - without the user
+     * ever explicitly confirming (Space), gluing it into a run (further sentence punctuation), or removing
+     * it (Backspace/Enter, both already handled elsewhere). Uses the absolute position captured at arm time
+     * ([pendingPunctuationSpacePos]) rather than trying to re-derive it from the caller's own, by now
+     * unrelated, selection.
+     *
+     * Verifies twice against the real document before ever deleting anything, mirroring D-277's own
+     * verify-before-mutate discipline: the character actually at that position must still be the space that
+     * was armed (the document may have changed underneath in the meantime), and - critically - nothing may
+     * already follow it. A space inserted mid-text (re-editing before existing content) is not "stranded" at
+     * all once abandoned - it is the load-bearing separator between the punctuation and whatever already
+     * follows it, and deleting it would pull that following text directly onto the punctuation mark. Only a
+     * space genuinely at the end of what has been typed so far is ever removed here; anything else is simply
+     * left as ordinary confirmed text, exactly as before this mechanism existed.
+     *
+     * Always clears both [pendingPunctuationSpace] and [pendingPunctuationSpacePos], whether or not a
+     * deletion actually happens - the pending state is resolved, one way or the other, the moment this runs.
+     */
+    private fun consumeStrandedPunctuationSpace(ic: InputConnection) {
+        if (!pendingPunctuationSpace) {
+            return
+        }
+        val spacePos = pendingPunctuationSpacePos
+        pendingPunctuationSpace = false
+        pendingPunctuationSpacePos = -1
+        if (spacePos < 0) {
+            return
+        }
+        val callerExtracted = ic.getExtractedText(ExtractedTextRequest(), 0) ?: return
+        val callerStart = ComposingAnchor.resolve(callerExtracted.startOffset, callerExtracted.selectionStart, 0)
+        val callerEnd = ComposingAnchor.resolve(callerExtracted.startOffset, callerExtracted.selectionEnd, 0)
+        ic.beginBatchEdit()
+        try {
+            ic.setSelection(spacePos + 1, spacePos + 1)
+            val isArmedSpace = ic.getTextBeforeCursor(1, 0) == " "
+            val nothingFollows = ic.getTextAfterCursor(1, 0).isNullOrEmpty()
+            if (isArmedSpace && nothingFollows) {
+                ic.deleteSurroundingText(1, 0)
+                val restoredStart = if (callerStart > spacePos) callerStart - 1 else callerStart
+                val restoredEnd = if (callerEnd > spacePos) callerEnd - 1 else callerEnd
+                ic.setSelection(restoredStart, restoredEnd)
+            } else {
+                ic.setSelection(callerStart, callerEnd)
+            }
+        } finally {
+            ic.endBatchEdit()
+        }
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -1850,7 +1909,13 @@ class AdaptKeyService : InputMethodService() {
         super.onFinishInput()
         // D-142: catches leaving a login field WITHOUT pressing Enter (e.g. tapping an on-screen "Login"
         // button) - must run before the connection below is torn down, and before composing is cleared.
-        currentInputConnection?.let { captureCredentialIfLoginField(it) }
+        // D-279: same reasoning covers a still-armed A-12 auto-space - the field is being left without an
+        // explicit Space/Backspace/Enter ever resolving it, so it is abandoned exactly like a caret move
+        // elsewhere (see consumeStrandedPunctuationSpace's own KDoc for the mid-text exception).
+        currentInputConnection?.let { ic ->
+            captureCredentialIfLoginField(ic)
+            consumeStrandedPunctuationSpace(ic)
+        }
         composing.setLength(0)
         clearSuggestions()
         // D-68: the typing pattern (T-04) is no longer re-derived here - it is now an explicit user choice
@@ -2775,6 +2840,15 @@ class AdaptKeyService : InputMethodService() {
             if (atTokenEnd && raw in SENTENCE_PUNCTUATION) {
                 ic.commitText(" ", 1)
                 pendingPunctuationSpace = true
+                // D-279: ground-truth-capture the space's own absolute position right now, while it is
+                // guaranteed correct - see the field's own KDoc for why this must not be re-derived later
+                // from an onUpdateSelection callback instead.
+                val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
+                pendingPunctuationSpacePos = if (extracted != null) {
+                    ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, 1)
+                } else {
+                    -1
+                }
                 // D-269: guard the reactive reclaimWordAtCaret() this commit's own (now-batched, but still
                 // eventually delivered) callback triggers - it is only an echo of this very commit, not a
                 // genuine subsequent caret move (mirrors the identical D-123 guard for pendingSuggestionSpace).

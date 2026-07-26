@@ -568,9 +568,15 @@ exited; explicitly moving the caret elsewhere (a tap, not this app's own reactiv
 itself) exits it the same way. A third exit exists specifically for Enter: pressed while the mode is still
 armed, it removes the pending auto-space first (mirroring the Backspace exit) rather than leaving a trailing
 space dangling at the end of the line - Enter is not itself part of the mode's own Space/punctuation reactions,
-but it must not leave stray whitespace behind either. Once exited - by any of the above, or by any other key,
-which simply leaves the auto-space as ordinary confirmed text - further Space/punctuation presses are handled
-entirely normally again, with a fresh mode arming only if new sentence-ending punctuation is typed. The
+but it must not leave stray whitespace behind either. A genuine caret move elsewhere, or the field itself being
+left (submitted, or focus moving away, with no explicit resolution of the mode in between), now also *removes*
+the auto-space outright rather than merely leaving it as confirmed text - but only when the space genuinely
+sits at the end of whatever has been typed so far. A space inserted while re-editing mid-text - already
+followed by real, pre-existing content - is never removed this way even once abandoned: it is the load-bearing
+separator between the punctuation and that following text, and removing it would pull the following word
+directly onto the punctuation mark. Once exited - by any of the above, or by any other key, which simply
+leaves the auto-space as ordinary confirmed text - further Space/punctuation presses are handled entirely
+normally again, with a fresh mode arming only if new sentence-ending punctuation is typed. The
 auto-space itself counts as the sentence-delimiting whitespace for §6's own auto-capitalisation the moment it
 lands - a word typed straight after it (without an explicit Space) still gets its own sentence-start capital,
 exactly as if the user had pressed Space themselves. Does not apply inside a login/URL field (E-01/U-01/P-01) -
