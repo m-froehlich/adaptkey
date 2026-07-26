@@ -14,8 +14,9 @@ import java.util.zip.ZipInputStream
  * directory (D-280).
  *
  * The archive is a plain zip bundling a language's unigram (`dict_<code>.tsv`) and, optionally, bigram
- * (`bigram_<code>.tsv`) file - the same two files [DictionaryLoader] already reads for a bundled language,
- * just zipped together into one download/import step (the user's own choice over a two-file picker). The
+ * (`bigram_<code>.tsv`) and letter-hint (`hints_<code>.tsv`, D-281) files - the same files [DictionaryLoader]
+ * already reads for a bundled language, just zipped together into one download/import step (the user's own
+ * choice over a multi-file picker). The
  * Android layer opens an [InputStream] from the file the user picked (a system file picker / SAF Uri, so
  * no storage permission is needed) and hands it here. Each entry is copied to a temporary `.part` file
  * first and only renamed into place once the whole archive has been read successfully, so an interrupted
@@ -43,14 +44,17 @@ object LanguagePackInstaller {
         }
         val wordsName = "dict_${language.code}.tsv"
         val bigramsName = "bigram_${language.code}.tsv"
+        val hintsName = "hints_${language.code}.tsv"
         var words: ByteArray? = null
         var bigrams: ByteArray? = null
+        var hints: ByteArray? = null
         ZipInputStream(source).use { zip ->
             var entry = zip.nextEntry
             while (entry != null) {
                 when (entry.name) {
                     wordsName -> words = zip.readBytes()
                     bigramsName -> bigrams = zip.readBytes()
+                    hintsName -> hints = zip.readBytes()
                 }
                 zip.closeEntry()
                 entry = zip.nextEntry
@@ -59,6 +63,7 @@ object LanguagePackInstaller {
         val wordsBytes = words ?: throw IOException("archive is missing $wordsName")
         writeAtomically(File(packDir, wordsName), wordsBytes)
         bigrams?.let { writeAtomically(File(packDir, bigramsName), it) }
+        hints?.let { writeAtomically(File(packDir, hintsName), it) }
     }
     
     /**
@@ -72,7 +77,9 @@ object LanguagePackInstaller {
     fun clear(packDir: File, language: Language): Boolean {
         File(packDir, "dict_${language.code}.tsv" + TEMP_SUFFIX).delete()
         File(packDir, "bigram_${language.code}.tsv" + TEMP_SUFFIX).delete()
+        File(packDir, "hints_${language.code}.tsv" + TEMP_SUFFIX).delete()
         File(packDir, "bigram_${language.code}.tsv").delete()
+        File(packDir, "hints_${language.code}.tsv").delete()
         return File(packDir, "dict_${language.code}.tsv").delete()
     }
     

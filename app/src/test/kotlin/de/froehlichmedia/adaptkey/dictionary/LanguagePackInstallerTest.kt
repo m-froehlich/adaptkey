@@ -43,13 +43,23 @@ class LanguagePackInstallerTest {
     }
     
     @Test
-    fun `install accepts a words-only archive, bigrams stay absent`(@TempDir dir: File) {
+    fun `install accepts a words-only archive, bigrams and hints stay absent`(@TempDir dir: File) {
         val archive = zipOf("dict_fr.tsv" to "bonjour\t100\n")
         
         LanguagePackInstaller.install(archive, dir, Language.FRENCH)
         
         assertTrue(File(dir, "dict_fr.tsv").isFile)
         assertFalse(File(dir, "bigram_fr.tsv").exists())
+        assertFalse(File(dir, "hints_fr.tsv").exists())
+    }
+    
+    @Test
+    fun `install writes an optional hints file when the archive includes one`(@TempDir dir: File) {
+        val archive = zipOf("dict_de.tsv" to "der\t100\n", "hints_de.tsv" to "a=ä;s=ß")
+        
+        LanguagePackInstaller.install(archive, dir, Language.GERMAN)
+        
+        assertEquals("a=ä;s=ß", File(dir, "hints_de.tsv").readText())
     }
     
     @Test
@@ -90,19 +100,29 @@ class LanguagePackInstallerTest {
     
     @Test
     fun `install leaves no temporary part file behind`(@TempDir dir: File) {
-        LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n"), dir, Language.FRENCH)
+        LanguagePackInstaller.install(
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n", "hints_fr.tsv" to "a=à"),
+            dir,
+            Language.FRENCH
+        )
         assertFalse(File(dir, "dict_fr.tsv.part").exists())
         assertFalse(File(dir, "bigram_fr.tsv.part").exists())
+        assertFalse(File(dir, "hints_fr.tsv.part").exists())
     }
     
     @Test
-    fun `clear removes an installed pack and reports true`(@TempDir dir: File) {
-        LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n"), dir, Language.FRENCH)
+    fun `clear removes an installed pack including hints and reports true`(@TempDir dir: File) {
+        LanguagePackInstaller.install(
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n", "hints_fr.tsv" to "a=à"),
+            dir,
+            Language.FRENCH
+        )
         
         assertTrue(LanguagePackInstaller.clear(dir, Language.FRENCH))
         
         assertFalse(File(dir, "dict_fr.tsv").exists())
         assertFalse(File(dir, "bigram_fr.tsv").exists())
+        assertFalse(File(dir, "hints_fr.tsv").exists())
     }
     
     @Test

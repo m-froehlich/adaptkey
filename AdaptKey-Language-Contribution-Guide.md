@@ -10,24 +10,34 @@ If you only remember one thing: **run the two checklists below** (§1 for "my la
 
 ---
 
-## 0. The two things a language needs, and why they are separate
+## 0. The three things a language needs, and why they are separate
 
 AdaptKey ships **only English** inside the APK. Every other language - German and Greek included - is a
 **dictionary you install after the fact** (a small browser download + a system file picker, exactly like
 the optional mini-LLM model; the app never gets internet permission, so this is the only way to add data
-without breaking that guarantee). A **keyboard layout**, by contrast, is compiled Kotlin code - it cannot be
-downloaded, so it always needs a real code change and a real app release.
+without breaking that guarantee). A **keyboard row geometry** (which physical key sits where - QWERTY,
+QWERTZ, AZERTY, or a genuinely different alphabet), by contrast, is compiled Kotlin code - it cannot be
+downloaded, so a *new* geometry always needs a real code change and a real app release. The **AltGr/long-press
+symbol set** (D-281 - which secondary character each key offers on a long press, e.g. `ä` on `a`) sits
+between the two: it is data, shipped as part of the language pack (or bundled for English), so a language
+using an *existing* geometry needs no new layout code at all, only its own hint file.
 
 This split matters for how much work adding your language actually is:
 
-- If your language is written in the **Latin alphabet** (French, Spanish, Italian, Dutch, Portuguese, ... -
-  anything using the ordinary 26 letters, with or without accents), **it is already fully typeable today** -
-  `de.froehlichmedia.adaptkey.keyboard.LayoutRegistry` falls back to the ordinary QWERTY `KeyboardLayout` for
-  any language it does not special-case, so it needs no new layout code at all. Building and hosting the
-  dictionary (§3) plus one catalog entry (§4) is the *entire* job.
-- If your language uses a **different alphabet** (Cyrillic, Arabic, Han, ...), you additionally need a new
-  compiled layout, mirroring `GreekLayout.kt` - see §5. This is real work and needs an app release; skip
-  straight to §3 if this does not apply to you.
+- If your language already fits one of the app's existing row geometries - **QWERTY today covers most
+  Latin-script languages that do not have their own strong convention** (Spanish, Italian, Dutch, Portuguese,
+  ... - see `LayoutRegistry`) - **it is already fully typeable**, and needs no new layout code at all.
+  Building and hosting the dictionary (§3, including your own hint file) plus one catalog entry (§4) is the
+  *entire* job.
+- Some Latin-script languages have their own strong, expected physical layout convention distinct from
+  QWERTY/QWERTZ - **French's AZERTY is the obvious example**, and depending on the target audience a language
+  like Turkish may warrant one too. Do not assume QWERTY is good enough for these without checking what
+  users of that language actually expect; building a new *geometry* (still Latin letters, different physical
+  arrangement) is real work but the same *kind* of work as English/German's existing QWERTY/QWERTZ split -
+  see §5.
+- If your language uses a **genuinely different alphabet** (Cyrillic, Arabic, Han, ...), you additionally
+  need a new compiled layout, mirroring `GreekLayout.kt` - see §5. This is real work and needs an app
+  release; skip straight to §3 if this does not apply to you.
 
 ---
 
@@ -35,12 +45,18 @@ This split matters for how much work adding your language actually is:
 
 Check `app/src/main/kotlin/de/froehlichmedia/adaptkey/language/Language.kt` first. As of D-280 it already
 lists `GERMAN`, `ENGLISH`, `GREEK`, `FRENCH`, `SPANISH`, `ITALIAN`, `DUTCH`, `PORTUGUESE` (plus `UNKNOWN`).
+Being in the enum already does **not** by itself mean no layout work is needed - see §0's geometry question.
 If yours is already there:
 
-1. Confirm it is Latin-script (§0) - if so, you need **no Kotlin code change at all**. Skip to §3.
-2. Check `app/src/main/assets/language_profiles.tsv` - as of D-280 it already has character-trigram profile
+1. Decide whether it needs a *new* row geometry (§0/§5) - French is already in the enum specifically
+   *because* the language-detection classifier (§6) needed it, not because its AZERTY geometry has been
+   built; do not assume an enum entry means the layout question is already settled.
+2. If an existing geometry (QWERTY today, for most) is good enough, you need **no Kotlin code change at
+   all** for the layout itself. Skip to §3.
+3. Check `app/src/main/assets/language_profiles.tsv` - as of D-280 it already has character-trigram profile
    data for every one of the eight languages above (see §6). You likely need no change there either.
-3. Build the dictionary (§3), host it, and add one line to `LanguagePackCatalog` (§4). Done.
+4. Build the dictionary and your own hint file (§3), host it, and add one line to `LanguagePackCatalog`
+   (§4). Done.
 
 ## 2. Checklist: your language is not in the enum yet
 
@@ -55,11 +71,11 @@ If yours is already there:
 
 ---
 
-## 3. Building the dictionary
+## 3. Building the dictionary (and your own AltGr hint set)
 
-Two plain, tab-separated text files, UTF-8, one language:
+Up to three plain text files, UTF-8, one language:
 
-- **`dict_<code>.tsv`** (unigrams) - one word per line: `word<TAB>frequency<TAB>pos,tags,here`
+- **`dict_<code>.tsv`** (unigrams, required) - one word per line: `word<TAB>frequency<TAB>pos,tags,here`
   - `frequency` is a plain integer (relative rank; real corpus counts work best - see the existing
     `dictionaries/de/dict_de.tsv`/`dictionaries/el/dict_el.tsv` for real examples).
   - The POS column is optional (a line with just `word<TAB>frequency` is valid) and, when present, a
@@ -71,6 +87,16 @@ Two plain, tab-separated text files, UTF-8, one language:
     tag everything `OTHER` and skip this entirely).
 - **`bigram_<code>.tsv`** (optional, but strongly recommended - it drives S-07 next-word prediction and
   A-05's split-scoring signal): `previousWord<TAB>word<TAB>count`. See `DictionaryAssetParser.parseBigrams`.
+- **`hints_<code>.tsv`** (optional, D-281 - the AltGr/long-press secondary symbol on each letter key, L-05):
+  a single line in `key=symbol;key=symbol;...` form, e.g. `a=ä;e=€;s=ß` - exactly
+  `de.froehlichmedia.adaptkey.settings.LetterHints.encode()`'s own format (that same class's `parse()` reads
+  it back; see `dictionaries/de/hints_de.tsv` for the real German set, or `app/src/main/assets/hints_en.tsv`
+  for English's). **Do not just reuse another language's file** - German's own set (`ä`/`ö`/`ü`/`ß` on
+  `a`/`o`/`u`/`s`, plus `@`/`€`/`#`/`-`/`+`/`°`/`×`/`÷`/`/`/`*`/`ƒ`/`π` on `q`/`e`/`h`/`m`/`n`/`d`/`x`/`c`/`v`/
+  `b`/`f`/`p`) is specifically tuned for German and is very unlikely to be what your language's users expect;
+  design your own from what would actually help someone typing your language day to day. Without this file,
+  your language falls back to `KeyboardLayout.DEFAULT_LETTER_HINTS` (German's own set) - functional, but not
+  tailored to your language, so it is worth providing even though it is the one truly optional file here.
 
 Put your working files under a new `dictionaries/<code>/` folder at the repo root (mirroring
 `dictionaries/de/`, `dictionaries/el/`) so they stay in version control even though they never enter the
@@ -78,11 +104,11 @@ APK.
 
 ## 4. Packaging and hosting the language pack
 
-`de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your two
-files at its root - not inside a folder - named exactly `dict_<code>.tsv` and (optionally) `bigram_<code>.tsv`.
-Build one like the existing `language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip` (a one-line
-`zipfile.ZipFile(...).write(...)` in Python, or any ordinary zip tool - just make sure there is no directory
-prefix inside the archive).
+`de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your files at
+its root - not inside a folder - named exactly `dict_<code>.tsv`, and optionally `bigram_<code>.tsv`/
+`hints_<code>.tsv`. Build one like the existing `language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip`
+(a one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip tool - just make sure
+there is no directory prefix inside the archive).
 
 Host the resulting `.zip` somewhere stable and public - a GitHub Release asset on this repository is the
 recommended place (versioned, immutable once published); a raw file URL on the repo's default branch also
@@ -96,13 +122,20 @@ Entry(Language.YOUR_LANGUAGE, "https://.../adaptkey-lang-xx.zip")
 That one line is what makes your language appear in `LanguagePacksActivity` (Settings → Languages) and in
 the onboarding language-selection step. Nothing else references this list.
 
-## 5. Building a keyboard layout (non-Latin scripts only)
+## 5. Building a new row geometry (a new Latin arrangement, or a non-Latin script)
+
+Needed when an existing geometry genuinely is not good enough - a language with its own strong, expected
+physical layout convention (AZERTY for French; possibly a dedicated Turkish arrangement), or a script that
+is not Latin at all (Greek today; Cyrillic/Arabic/... tomorrow). Do not build this speculatively - if
+QWERTY is genuinely fine for your language's users, §0-§4 is the entire job.
 
 Mirror `app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/GreekLayout.kt`: a plain Kotlin `object`
 exposing a `rows(proportions, showNumberRow, urlMode, emailMode, locale): List<List<Key>>` function that
 builds your alphabet's three letter rows (number row, third-row shift/backspace, and the bottom row are all
 shared with the Latin layout via `KeyboardLayout.urlBottomRow`/`emailBottomRow` - only the letters differ).
-Then:
+A new Latin geometry (AZERTY) can still take `letterHints` as a parameter exactly like `KeyboardLayout`
+itself does, since the AltGr overlay (§3) still applies on top of it the same way; a non-Latin script
+(Greek) typically has its own accent system instead and does not need the parameter at all. Then:
 
 1. Add a new `LayoutKind` entry in `keyboard/LayoutRegistry.kt` and map your `Language` to it in `KINDS`.
 2. `AdaptKeyboardView`'s row-selection (`InputSurface.LETTERS -> if (greek) GreekLayout.rows(...) else

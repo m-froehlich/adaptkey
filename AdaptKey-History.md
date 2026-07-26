@@ -10311,3 +10311,64 @@ green; the release APK dropped from bundling both German and Greek dictionaries 
 `AdaptKey-Spec.md` L-01/G-01/§9/§20 revised. Version bumped 0.8.151 -> 0.8.152. Not yet device-confirmed -
 needs a real device run of onboarding's new step, a fresh install/remove cycle from Settings, and the G-01
 swipe cycling correctly once a pack is installed.
+
+## §201 - D-281: The AltGr/Long-Press Hint Set Is Now Per-Language Data, Not One German-Derived Global Default (v0.8.153)
+
+Direct user pushback on §200's own "every Latin-script language is already fully typeable, no new layout
+code needed" claim - correct for the compiled *row geometry*, but the L-05 AltGr overlay is a second,
+separate concern the previous round had not actually addressed: `DEFAULT_LETTER_HINTS` was (and still is,
+as the ultimate fallback) one single, hard-coded map - German's own set (`ä`/`ö`/`ü`/`ß` on `a`/`o`/`u`/`s`,
+plus a dozen symbol hints) - applied identically regardless of the active language. Confirmed live in the
+code, not just in principle: `AdaptKeyboardView.letterHints` is a single field, sourced from one global C-08
+setting, with no language dimension at all - so English *today*, before this round, showed German's umlaut
+hints too. The user's own examples (French/Spanish/Turkish needing their own accented-character sets) named
+exactly this gap, plus raised - and answered live - an APK-size question about doing this per language:
+measured `GreekLayout.class` at ~11 KB compiled; even ten more language layouts of that size would total
+~100-150 KB, three orders of magnitude below what D-280 had just removed in dictionary data. Code size was
+never actually the constraint here.
+
+**Design agreed with the user before implementing:** row geometry (QWERTY/QWERTZ/AZERTY/a distinct alphabet)
+stays compiled, provided by the app as a small set of base geometries - this is unchanged from D-280. The
+AltGr hint set for the *letters page*, however, becomes data sourced from the language pack (mirroring the
+dictionary itself), not further hard-coded Kotlin. English's own default: the user's explicit instruction -
+start from today's German set minus `ä`/`ö`/`ü`/`ß` (the four keys an anglophone user has no use for), kept
+as its own **fully redundant, standalone copy** (not derived from German's file at runtime) specifically so
+either language's set can be swapped independently later by the community or the user himself, without
+unpicking a derivation relationship.
+
+**Implementation, reusing the existing C-08 encode/decode core rather than inventing a second format:**
+`hints_<code>.tsv` is a single line in exactly `LetterHints.encode()`'s own format (`"a=ä;e=€;..."`), which
+`LetterHints.parse()` already reads back losslessly - no new parser needed. `LetterHints.decodeOrDefault()`
+gained a `default` parameter (was always `KeyboardLayout.DEFAULT_LETTER_HINTS` internally; defaults to it
+still, so every existing call site is unaffected). New `settings/LanguageLetterHintsLoader.kt` resolves a
+single language's own hint file - bundled asset for English (`DictionaryLoader.BUNDLED_LANGUAGES`), an
+installed pack file for every other language (new `LanguagePackStorage.hintsFile`/`readHints`,
+`LanguagePackInstaller` extracting a third, optional `hints_<code>.tsv` zip entry alongside dict/bigram).
+`SettingsStore.loadLetterHints(context, language = ActiveLanguageStore.load(context))` is the one place both
+the running keyboard (`SettingsStore.load()`'s own `RawSettings` construction) and the C-08 editor
+(`LetterHintsActivity`, unchanged - it already called `loadLetterHints(this)` with no language argument,
+which now resolves correctly via the new default parameter) resolve the effective set from - a genuine C-08
+user override still always wins, exactly as before; only what it falls back to changed, from always-German
+to whichever language is actually active. `AdaptKeyService.applyActiveLanguageToView()` (already the single
+per-language view-sync point from D-280) now also reapplies `keyboardView.letterHints` on every language
+switch, not only at the next settings reload.
+
+`dictionaries/de/hints_de.tsv` (German's set, byte-for-byte identical to `DEFAULT_LETTER_HINTS`) and
+`app/src/main/assets/hints_en.tsv` (German's set minus `a`/`o`/`u`/`s`) added; `language-packs/
+adaptkey-lang-de.zip` rebuilt to include the new file (Greek's own pack is untouched - `GreekLayout` never
+used `letterHints` to begin with). Both data files are verified by a new `LanguageLetterHintsDataTest`
+against the real bundled/repo files directly (not just the pure parsing core), so a future transcription
+mistake in the *data* would fail a test, not only show up on a real device. `AdaptKey-Language-Contribution-
+Guide.md` reworked: §0 now names three separate concerns (geometry / hint data / dictionary) instead of two,
+§3 documents the new optional third pack file with an explicit "do not just copy another language's file"
+note, §5 broadened from "non-Latin scripts only" to "a new row geometry, Latin or not" (French's AZERTY
+named explicitly, since being already in the `Language` enum does not by itself mean its geometry question
+is settled - corrected the §1 checklist, which had previously implied otherwise). `AdaptKey-Spec.md` L-01/L-05/
+§9 revised to describe the geometry-vs-hints split.
+
+5 new unit tests (`LetterHintsTest` +2, `LanguageLetterHintsDataTest` 2, `LanguagePackInstallerTest` +1); a
+few more existing tests extended in place with additional assertions rather than new methods. 871 unit tests
+(866 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+Version bumped 0.8.152 -> 0.8.153. Not yet device-confirmed - needs a real check that English no longer
+shows umlaut hints and that German's own hints are unchanged, in addition to D-280's own still-outstanding
+device checks.

@@ -699,15 +699,20 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-280: applies [activeLanguage]'s compiled-in layout kind ([LayoutRegistry]) to the keyboard view -
-     * the single place [AdaptKeyboardView.greek]/[AdaptKeyboardView.qwerty] are derived from
+     * D-280/D-281: applies [activeLanguage]'s compiled-in layout kind ([LayoutRegistry]) and its own
+     * default L-05/C-08 letter-hint set to the keyboard view - the single place
+     * [AdaptKeyboardView.greek]/[AdaptKeyboardView.qwerty]/[AdaptKeyboardView.letterHints] are derived from
      * [activeLanguage], instead of repeating the comparison at every call site ([onStartInputView],
-     * [toggleLanguage], and [installStores]'s own removed-language fallback above).
+     * [toggleLanguage], and [installStores]'s own removed-language fallback above). `applySettings()`
+     * separately reapplies the same [SettingsStore.loadLetterHints] result whenever any setting (including
+     * a genuine C-08 override) changes - both paths agree, since either resolves for the same
+     * [activeLanguage] and the same stored override.
      */
     private fun applyActiveLanguageToView() {
         val kind = LayoutRegistry.kindFor(activeLanguage)
         keyboardView?.greek = kind == LayoutKind.GREEK
         keyboardView?.qwerty = kind == LayoutKind.LATIN_QWERTY
+        keyboardView?.letterHints = SettingsStore.loadLetterHints(this, activeLanguage)
     }
     
     /**

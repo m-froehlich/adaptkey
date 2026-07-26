@@ -74,6 +74,29 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§201 (v0.8.153): D-281 - the AltGr/long-press hint set (L-05) is now per-language data, not one**
+  **German-derived global default - direct user pushback on §200's "no new layout code needed" claim.**
+  `AdaptKeyboardView.letterHints` was confirmed to be one single, German-oriented map applied regardless of
+  active language (English showed `ä`/`ö`/`ü`/`ß` hints too, before this round). APK-size question answered
+  concretely: `GreekLayout.class` measures ~11 KB compiled, so per-language layout *code* was never the real
+  constraint (unlike the multi-megabyte dictionary data D-280 addressed) - the actual fix needed is data, not
+  more compiled layouts. New `hints_<code>.tsv` (one line, `LetterHints.encode()`'s own format, reusing the
+  existing C-08 core rather than a new parser): bundled `hints_en.tsv` for English (German's set minus
+  `a`/`o`/`u`/`s`, the user's own instruction, kept as a fully redundant standalone file, not derived from
+  German's at runtime) and `dictionaries/de/hints_de.tsv` (identical to `DEFAULT_LETTER_HINTS`) added to the
+  German language pack. New `LanguageLetterHintsLoader`; `LetterHints.decodeOrDefault()` gained a `default`
+  parameter; `SettingsStore.loadLetterHints(context, language)` is the one resolution point both the running
+  keyboard and the C-08 editor use - a genuine user override still always wins, only the fallback changed
+  from always-German to whichever language is active. `AdaptKeyService.applyActiveLanguageToView()` also
+  reapplies hints on every G-01 switch now. Contribution guide reworked (three separate concerns: geometry /
+  hint data / dictionary; §5 broadened from "non-Latin only" to "a new geometry, Latin or not" - French's
+  AZERTY named explicitly, since an existing `Language` enum entry does not by itself mean the geometry
+  question is settled). 5 new unit tests (`LetterHintsTest` +2, `LanguageLetterHintsDataTest` 2,
+  `LanguagePackInstallerTest` +1) - the two new hint data files are verified directly against the real
+  bundled/repo content, not just the parsing core. 871 unit tests (866 + 5).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec L-01/L-05/§9 revised. Not yet device-confirmed
+  - needs a real check that English no longer shows umlaut hints and German's own are unchanged. See history
+  §201.
 - **§200 (v0.8.152): D-280 - multi-language support: only English bundled, German/Greek (and any further**
   **language) an installable language pack, with a contribution guide - planned with the user first, then**
   **implemented in full.** Mirrors the tier-3 model's own browser-download + SAF-import mechanism exactly
@@ -4091,11 +4114,15 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 - **D-278 (captured, §198): cross-device export/import** of settings, blacklist, learned words, and
   credentials/e-mail store - not designed yet, see the Current State entry above for the open questions.
-- **D-280 follow-ups (§200):** `FRENCH`/`SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language`
-  enum and already fully typeable, but none has a dictionary built/hosted yet - a genuine, ready-to-pick-up
-  community contribution opportunity (see `AdaptKey-Language-Contribution-Guide.md`). Separately, the Python
-  script that built `language_profiles.tsv` (A-03's trigram data) is not in this repository - reconstructing
-  it is only needed for a language outside the eight already covered there.
+- **D-280/D-281 follow-ups (§200/§201):** `SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the
+  `Language` enum and already fully typeable via QWERTY, but none has a dictionary or its own hint set
+  built/hosted yet - a genuine, ready-to-pick-up community contribution opportunity (see
+  `AdaptKey-Language-Contribution-Guide.md`). `FRENCH` is a separate case: already in the enum (for A-03's
+  classifier), but per the user's own D-281 pushback its AZERTY convention likely means QWERTY is not
+  actually good enough - still needs a real geometry decision (§5 of the guide) before it is genuinely done,
+  not only a dictionary. Separately, the Python script that built `language_profiles.tsv` (A-03's trigram
+  data) is not in this repository - reconstructing it is only needed for a language outside the eight
+  already covered there.
 - **Tier-3 — device work only:** validate + tune the inference runtime above on a real arm device (import
   the model via Settings → Info/Großschreibung → "Mini-LLM-Modell"), add instrumented tests, and confirm
   latency/battery. Everything code-side (orchestration, C-06 setting, §6 rule-6 hook, adaptive-learning,

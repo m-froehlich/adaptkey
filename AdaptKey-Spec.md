@@ -71,12 +71,17 @@ device logs, not code review alone, to find each time.
 ### L-01 - Base Layout: Language-Conditional
 German uses the Gboard QWERTZ layout as its base - key sizes, spacing, and access to special characters -
 except where this specification explicitly diverges. English uses its own QWERTY row layout (differing
-from German only in the `y`/`z` position); every further Latin-script language (see §9's language packs)
-also uses this same QWERTY layout unless it has its own explicit entry - it needs no dedicated layout code
-of its own to become typeable, only a dictionary. Greek uses a dedicated layout (see L-02 in §4/G-01 for
-language switching), the one non-Latin exception today. Because the personal offset model (T-03) is keyed by
-character identity, `y`/`z` carry over their German-position offsets for a short, self-healing period
-immediately after switching to English.
+from German only in the `y`/`z` position); every further Latin-script language (see §9's language packs) also
+uses this same QWERTY row geometry, unless its own physical-layout convention genuinely differs (French's
+AZERTY being the obvious case) - `LayoutRegistry` maps a language to its geometry, defaulting to QWERTY for
+anything without its own entry. A language that fits an existing geometry needs no dedicated layout code at
+all, only a dictionary and its own AltGr hint set (L-05/D-281); a language needing its own geometry (a new
+Latin arrangement, or a genuinely different alphabet) does need new, compiled layout code - see
+`AdaptKey-Language-Contribution-Guide.md` for exactly which case applies and why an existing `Language` enum
+entry does not by itself guarantee the geometry question is already settled. Greek uses a dedicated layout
+(see L-02 in §4/G-01 for language switching), the one non-Latin exception today. Because the personal offset
+model (T-03) is keyed by character identity, `y`/`z` carry over their German-position offsets for a short,
+self-healing period immediately after switching to English.
 
 ### L-02 - Narrower Space Bar, Wider Comma & Full Stop
 The space bar is narrower than the Gboard default; the comma and full-stop keys are widened accordingly.
@@ -103,15 +108,21 @@ is expected to reach that corner.
 ### L-05 - Secondary Symbols via Long-Press (AltGr-Style)
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ
-keyboard. The current default mapping: `@`/Q, `€`/E, `#`/H, `-`/M, `+`/N, `°`/D, `×`/X, `÷`/C, `/`/V, `*`/B,
-`ƒ`/F, `π`/P, plus a Greek-letter popup (`α β γ δ λ ω`) and a second alternative on `O` (`ö` then `Ø`).
-Symbols already carried by the number row (L-06) - such as `/` and `&` - are not duplicated here. Keys with
-more than one secondary alternative show a full popup (horizontal, centred over the stem key, growing into
-available screen space; an edge key's list is reversed so the key's own glyph stays nearest the finger), not
-just a single-tap hint; a key with several alternatives but no natural single hint glyph shows a small
-corner "more alternatives" triangle instead. The popup tolerates a small amount of finger movement during
-the hold without cancelling or mis-selecting. The per-key symbol set and whether hint glyphs are displayed
-are user-configurable (C-08). Together with L-03 and L-06 this removes the need to switch to `?123` for most
+keyboard. The default mapping is now per-language (D-281) rather than one single set for every language: it
+ships as data alongside the dictionary (bundled for English, part of the language pack for every other
+language - see `AdaptKey-Language-Contribution-Guide.md`), precisely because a set tuned for German
+(umlauts/ß on their own keys) is not what a language without those characters needs. German's own mapping -
+still the fallback used whenever no per-language set is available - remains: `@`/Q, `€`/E, `#`/H, `-`/M,
+`+`/N, `°`/D, `×`/X, `÷`/C, `/`/V, `*`/B, `ƒ`/F, `π`/P, `ä`/A, `ö`/O, `ü`/U, `ß`/S, plus a Greek-letter popup
+(`α β γ δ λ ω`) and a second alternative on `O` (`ö` then `Ø`) - Greek itself does not use this mechanism at
+all, having its own accent system instead (§4/G-01). Symbols already carried by the number row (L-06) - such
+as `/` and `&` - are not duplicated here. Keys with more than one secondary alternative show a full popup
+(horizontal, centred over the stem key, growing into available screen space; an edge key's list is reversed
+so the key's own glyph stays nearest the finger), not just a single-tap hint; a key with several alternatives
+but no natural single hint glyph shows a small corner "more alternatives" triangle instead. The popup
+tolerates a small amount of finger movement during the hold without cancelling or mis-selecting. Per-key
+symbols and whether hint glyphs are displayed remain user-configurable on top of the active language's own
+default (C-08). Together with L-03 and L-06 this removes the need to switch to `?123` for most
 everyday input.
 
 ### L-06 - Persistent Number Row
@@ -637,15 +648,18 @@ or disabled (default on) regardless of whether a model file happens to be instal
 ### Language Packs *(D-280)*
 Only English's dictionary (tier 1) ships inside the app - every further language's dictionary, including
 German's and Greek's, is an optional install, mirroring the tier-3 model's own browser-download-plus-
-file-picker mechanism exactly (no `INTERNET` permission needed for this either). A settings screen
-(reachable at any time, not only during onboarding) lists every language with a real, hosted pack, shows
-whether it is currently installed, and offers install/remove per language; installing or removing one takes
-effect immediately, without restarting the keyboard. First-run onboarding offers the same install step,
-pre-suggesting a language purely from the device's own configured system languages (no network call - the
-app already knows in code which languages it could ever offer). See
+file-picker mechanism exactly (no `INTERNET` permission needed for this either). A pack also carries that
+language's own AltGr/long-press hint set (L-05/D-281) alongside its dictionary, so a language's typing
+experience - not only its dictionary - is tailored to it, not a one-size-fits-all German-derived default.
+A settings screen (reachable at any time, not only during onboarding) lists every language with a real,
+hosted pack, shows whether it is currently installed, and offers install/remove per language; installing or
+removing one takes effect immediately, without restarting the keyboard. First-run onboarding offers the same
+install step, pre-suggesting a language purely from the device's own configured system languages (no network
+call - the app already knows in code which languages it could ever offer). See
 [`AdaptKey-Language-Contribution-Guide.md`](AdaptKey-Language-Contribution-Guide.md) for exactly what a new
-language needs (a dictionary always; a new compiled keyboard layout only for a non-Latin alphabet - see L-01)
-and how to contribute one.
+language needs (a dictionary and hint set always; a new compiled keyboard layout only when no existing row
+geometry - QWERTY, QWERTZ, ... - is suitable, e.g. a language expecting AZERTY or a non-Latin alphabet - see
+L-01) and how to contribute one.
 
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any

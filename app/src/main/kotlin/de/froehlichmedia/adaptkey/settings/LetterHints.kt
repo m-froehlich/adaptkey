@@ -118,14 +118,20 @@ object LetterHints {
     }
     
     /**
-     * Parses a persisted string and falls back to [KeyboardLayout.DEFAULT_LETTER_HINTS] when the result
-     * is empty, so the keyboard always has a usable secondary-symbol mapping.
+     * Parses a persisted string and falls back to [default] when the result is empty, so the keyboard
+     * always has a usable secondary-symbol mapping.
+     *
+     * D-281: [default] is now a parameter rather than always [KeyboardLayout.DEFAULT_LETTER_HINTS] -
+     * [SettingsStore.loadLetterHints] passes in whichever language is currently active's own default
+     * (German's own AltGr set is no longer the only one), so a user with no C-08 override of their own
+     * sees their active language's own set, not always German's.
      *
      * @param value the persisted string, or null
-     * @return the validated per-key map, or the default mapping when empty
+     * @param default the fallback mapping when [value] decodes to nothing usable
+     * @return the validated per-key map, or [default] when empty
      */
-    fun decodeOrDefault(value: String?): Map<Char, String> {
+    fun decodeOrDefault(value: String?, default: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS): Map<Char, String> {
         val parsed = parse(value)
-        return parsed.ifEmpty { KeyboardLayout.DEFAULT_LETTER_HINTS }
+        return parsed.ifEmpty { default }
     }
 }

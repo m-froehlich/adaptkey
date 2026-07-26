@@ -91,6 +91,19 @@ class LetterHintsTest {
     }
     
     @Test
+    fun `decodeOrDefault falls back to a given default instead of the German one`() {
+        val englishDefault = mapOf('q' to "@", 'e' to "€")
+        assertEquals(englishDefault, LetterHints.decodeOrDefault(null, englishDefault))
+        assertEquals(englishDefault, LetterHints.decodeOrDefault("1=!", englishDefault))
+    }
+    
+    @Test
+    fun `decodeOrDefault ignores the given default when a real override is stored`() {
+        val englishDefault = mapOf('q' to "@", 'e' to "€")
+        assertEquals(mapOf('z' to "!"), LetterHints.decodeOrDefault("z=!", englishDefault))
+    }
+    
+    @Test
     fun `the curated palette is non-empty unique and fully valid`() {
         assertFalse(LetterHints.PALETTE.isEmpty())
         assertEquals(LetterHints.PALETTE.size, LetterHints.PALETTE.toSet().size)

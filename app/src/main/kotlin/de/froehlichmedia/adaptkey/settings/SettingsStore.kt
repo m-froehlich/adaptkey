@@ -7,6 +7,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.preference.PreferenceManager
+import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
+import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
+import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.touch.TypingPattern
 
@@ -117,7 +120,7 @@ object SettingsStore {
             highlightColor = parseColor(p.getString(KEY_HIGHLIGHT_COLOR, null)),
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
             hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
-            letterHints = LetterHints.decodeOrDefault(p.getString(KEY_LETTER_HINTS, null)),
+            letterHints = loadLetterHints(context),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
             commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true),
             llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null),
@@ -138,14 +141,22 @@ object SettingsStore {
     }
     
     /**
-     * Loads the current C-08 per-key secondary-symbol map for the editor, applying the default
-     * fallback. This is the map the running keyboard resolves to as well (see [load]).
+     * Loads the current C-08 per-key secondary-symbol map, applying the default fallback. This is the map
+     * the running keyboard resolves to as well (see [load]), and what [LetterHintsActivity]'s editor shows
+     * as the starting point.
+     *
+     * D-281: the fallback is [language]'s own default hint set ([LanguageLetterHintsLoader]), not always
+     * German's - [language] defaults to whichever language is currently active ([ActiveLanguageStore]), so
+     * every existing call site (which never passed one) keeps working unchanged while now resolving
+     * correctly per language instead of always to German.
      *
      * @param context any valid context
-     * @return the validated per-key map, or the default mapping when none is stored
+     * @param language the language whose own default to fall back to when there is no user override
+     * @return the validated per-key map, or [language]'s own default mapping when none is stored
      */
-    fun loadLetterHints(context: Context): Map<Char, String> {
-        return LetterHints.decodeOrDefault(prefs(context).getString(KEY_LETTER_HINTS, null))
+    fun loadLetterHints(context: Context, language: Language = ActiveLanguageStore.load(context)): Map<Char, String> {
+        val languageDefault = LanguageLetterHintsLoader.loadFor(context, language) ?: KeyboardLayout.DEFAULT_LETTER_HINTS
+        return LetterHints.decodeOrDefault(prefs(context).getString(KEY_LETTER_HINTS, null), languageDefault)
     }
     
     /**

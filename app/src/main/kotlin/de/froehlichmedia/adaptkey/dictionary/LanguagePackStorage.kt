@@ -34,6 +34,13 @@ object LanguagePackStorage {
     fun bigramsFile(context: Context, language: Language): File = File(packDir(context), "bigram_${language.code}.tsv")
     
     /**
+     * D-281: the installed letter-hint default (L-05/C-08's per-language AltGr set) for [language], whether
+     * or not it actually exists yet - optional, unlike the unigram file, since a language pack without one
+     * simply falls back to [de.froehlichmedia.adaptkey.keyboard.KeyboardLayout.DEFAULT_LETTER_HINTS].
+     */
+    fun hintsFile(context: Context, language: Language): File = File(packDir(context), "hints_${language.code}.tsv")
+    
+    /**
      * @param context any valid context
      * @param language the language to check
      * @return true when a language pack is installed for [language] (its unigram file is present - a
@@ -51,6 +58,11 @@ object LanguagePackStorage {
         return runCatching { bigramsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
     }
     
+    /** @return the installed letter-hint file's content, or null when not installed / unreadable */
+    fun readHints(context: Context, language: Language): String? {
+        return runCatching { hintsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
+    }
+    
     /**
      * Removes [language]'s installed pack files (not the dictionary database itself - the caller is
      * responsible for also deleting that, see [DictionaryLoader.databaseName]).
@@ -61,5 +73,6 @@ object LanguagePackStorage {
     fun remove(context: Context, language: Language) {
         wordsFile(context, language).delete()
         bigramsFile(context, language).delete()
+        hintsFile(context, language).delete()
     }
 }
