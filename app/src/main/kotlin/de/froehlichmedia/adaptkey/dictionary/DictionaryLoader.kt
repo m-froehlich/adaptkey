@@ -4,16 +4,19 @@
 package de.froehlichmedia.adaptkey.dictionary
 
 import android.content.Context
+import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
 
 /**
- * Builds the per-language dictionary stores and, on first run, seeds each from its bundled asset
- * (real Wikipedia-derived lexicons: `dict_<code>.tsv` unigrams + `bigram_<code>.tsv` bigrams).
+ * Builds the per-language dictionary stores: [BUNDLED_LANGUAGES] are seeded on first run from their asset
+ * bundled inside the APK itself; every other, D-280-installed language is seeded from
+ * [LanguagePackStorage]'s copy on private storage instead (both are real Wikipedia-derived lexicons of the
+ * same shape - `dict_<code>.tsv` unigrams + `bigram_<code>.tsv` bigrams - just from a different source).
  *
  * One [SqliteDictionaryStore] per language, keyed by [Language]; the store keeps the same schema, so
  * all ranking / capitalisation logic is reused unchanged per language. Android-only glue; the parsing
- * itself is the pure, unit-tested [DictionaryAssetParser]. If a language's asset is missing the store
- * is left empty (and German additionally falls back to the small [SeedData] so it is never empty).
+ * itself is the pure, unit-tested [DictionaryAssetParser]. If a language's source is missing the store is
+ * simply left empty.
  *
  * D-178: [BUNDLED_DICTIONARY_VERSION] tracks the bundled asset content, separately from the store's own
  * schema ({@code SqliteDictionaryStore}'s {@code DATABASE_VERSION}). Bumping it forces exactly one
@@ -25,8 +28,14 @@ import de.froehlichmedia.adaptkey.language.Language
  */
 object DictionaryLoader {
     
-    /** The languages that ship with a bundled dictionary (German default, English auto, Greek via G-01). */
-    val LANGUAGES = listOf(Language.GERMAN, Language.ENGLISH, Language.GREEK)
+    /**
+     * D-280: the only language whose dictionary ships inside the APK itself - every other language (German
+     * and Greek included, both bundled through D-279) is now an optional, user-installed language pack (see
+     * the language-contribution guide), kept out of the APK to keep its size down for users who only need
+     * one or two languages. [loadStores] always includes this language, so onboarding/G-01 never start with
+     * a genuinely empty dictionary even before the user installs anything.
+     */
+    val BUNDLED_LANGUAGES = listOf(Language.ENGLISH)
     
     /**
      * D-178: bump to force a one-time reseed of the bundled tables on every existing install's next load.
@@ -58,17 +67,30 @@ object DictionaryLoader {
     private fun bigramsAsset(language: Language): String = "bigram_${language.code}.tsv"
     
     /**
+     * @param context any valid context
+     * @return [BUNDLED_LANGUAGES] plus every currently installed language ([InstalledLanguagesStore]), in
+     *         that order - the set [loadStores] builds a real store for, and the set
+     *         [de.froehlichmedia.adaptkey.AdaptKeyService] seeds its instant bootstrap in-memory stores
+     *         from before the real load finishes
+     */
+    fun activeLanguages(context: Context): List<Language> {
+        return (BUNDLED_LANGUAGES + InstalledLanguagesStore.load(context)).distinct()
+    }
+    
+    /**
      * @param context any valid context (the input method service)
-     * @return a store per supported language, each seeded from its asset when first created, and reseeded
-     * exactly once whenever [BUNDLED_DICTIONARY_VERSION] is bumped past what the store already holds
+     * @return a store for each of [activeLanguages], each seeded from its source when first created; a
+     *         bundled language is additionally reseeded whenever [BUNDLED_DICTIONARY_VERSION] is bumped
+     *         past what the store already holds - an installed language's own content only ever changes
+     *         through a fresh install (see [LanguagePackInstaller]), so that reseed does not apply to it
      */
     fun loadStores(context: Context): Map<Language, SqliteDictionaryStore> {
-        return LANGUAGES.associateWith { language ->
+        return activeLanguages(context).associateWith { language ->
             val store = SqliteDictionaryStore(context, databaseName(language))
             if (store.isEmpty()) {
                 seed(context, language, store)
                 store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
-            } else if (store.bundledContentVersion() < BUNDLED_DICTIONARY_VERSION) {
+            } else if (language in BUNDLED_LANGUAGES && store.bundledContentVersion() < BUNDLED_DICTIONARY_VERSION) {
                 store.resetBundledWords()
                 seed(context, language, store)
                 store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
@@ -82,13 +104,19 @@ object DictionaryLoader {
     }
     
     private fun seed(context: Context, language: Language, store: SqliteDictionaryStore) {
-        val words = readAsset(context, wordsAsset(language))?.let { DictionaryAssetParser.parseWords(it) } ?: emptyList()
-        val bigrams = readAsset(context, bigramsAsset(language))?.let { DictionaryAssetParser.parseBigrams(it) } ?: emptyList()
+        val wordsText: String?
+        val bigramsText: String?
+        if (language in BUNDLED_LANGUAGES) {
+            wordsText = readAsset(context, wordsAsset(language))
+            bigramsText = readAsset(context, bigramsAsset(language))
+        } else {
+            wordsText = LanguagePackStorage.readWords(context, language)
+            bigramsText = LanguagePackStorage.readBigrams(context, language)
+        }
+        val words = wordsText?.let { DictionaryAssetParser.parseWords(it) } ?: emptyList()
+        val bigrams = bigramsText?.let { DictionaryAssetParser.parseBigrams(it) } ?: emptyList()
         if (words.isNotEmpty()) {
             store.bulkImport(words, bigrams)
-        } else if (language == Language.GERMAN) {
-            // Never leave German empty, even if the asset is somehow unavailable.
-            SeedData.seed(store)
         }
     }
     

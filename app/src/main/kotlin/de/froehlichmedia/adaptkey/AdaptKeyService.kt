@@ -65,6 +65,7 @@ import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.InMemoryDictionaryStore
+import de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog
 import de.froehlichmedia.adaptkey.dictionary.PendingLearnStore
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
@@ -85,15 +86,19 @@ import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
+import de.froehlichmedia.adaptkey.keyboard.LayoutKind
+import de.froehlichmedia.adaptkey.keyboard.LayoutRegistry
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
 import de.froehlichmedia.adaptkey.keyboard.SignFlip
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
+import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
 import de.froehlichmedia.adaptkey.language.LanguageCycle
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
+import de.froehlichmedia.adaptkey.language.SuggestedLanguages
 import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
 import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
 import de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation
@@ -106,6 +111,7 @@ import de.froehlichmedia.adaptkey.prediction.onnx.OnnxTier3Provider
 import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
 import de.froehlichmedia.adaptkey.settings.AdaptSettings
 import de.froehlichmedia.adaptkey.settings.CalibrationActivity
+import de.froehlichmedia.adaptkey.settings.LanguagePacksActivity
 import de.froehlichmedia.adaptkey.settings.SettingsActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
@@ -217,10 +223,11 @@ class AdaptKeyService : InputMethodService() {
     private var lastTier3Result = Tier3Result.EMPTY
     private var lastCapProposal: CapitalisationProposal? = null
     
-    // G-01: the active alphabet/input language, toggled by the space-bar swipe. GERMAN shows the Latin
-    // QWERTZ layout with the German dictionary pipeline; GREEK shows the Greek alphabet and commits raw
-    // text (no Greek dictionary yet). Kept for the service lifetime; defaults to German on each start.
-    private var activeLanguage = Language.GERMAN
+    // G-01: the active alphabet/input language, toggled by the space-bar swipe (see LayoutRegistry for the
+    // layout each one uses). Kept for the service lifetime; this field-initialiser default is overwritten
+    // by onCreate()'s own ActiveLanguageStore.load() before anything else can read it - D-280: defaults to
+    // English here too, the one language DictionaryLoader.BUNDLED_LANGUAGES always guarantees is loaded.
+    private var activeLanguage = Language.ENGLISH
     
     // D-130: consecutive commits routed to English by A-03 while German/Greek stays active - once this
     // reaches SUSTAINED_ENGLISH_WORD_THRESHOLD, trackSustainedEnglishUsage() promotes it to a real switch.
@@ -265,6 +272,15 @@ class AdaptKeyService : InputMethodService() {
      */
     private val offsetModelPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         reloadOffsetModel()
+    }
+    
+    /**
+     * D-280: mirrors [offsetModelPrefsListener] - a language pack installed or removed from
+     * `LanguagePacksActivity` (or the D-280 onboarding step) reloads the dictionary stores right away,
+     * rather than only the next time this service happens to restart.
+     */
+    private val installedLanguagesPrefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+        loadDictionariesAsync()
     }
     
     private val composing = StringBuilder()
@@ -610,19 +626,24 @@ class AdaptKeyService : InputMethodService() {
         controller = SuggestionController(config)
         offsetModel = OffsetStore.load(this)
         offsetModelPattern = OffsetStore.loadDetectedPattern(this)
+        // Restore the alphabet the user last switched to (G-01), so it survives a service restart - loaded
+        // before the installStores() call below, which validates it against what is actually installed.
+        activeLanguage = ActiveLanguageStore.load(this)
         // Start with instant empty in-memory stores so the keyboard is responsive immediately, then load
         // the real per-language lexicons off the main thread — importing ~0.5M rows into SQLite on the
         // main thread would ANR. Until the load finishes (first run only) there are simply no suggestions.
-        installStores(DictionaryLoader.LANGUAGES.associateWith { InMemoryDictionaryStore() })
+        installStores(DictionaryLoader.activeLanguages(this).associateWith { InMemoryDictionaryStore() })
         loadDictionariesAsync()
         emojiDataset = EmojiDatasetLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
-        // Restore the alphabet the user last switched to (G-01), so it survives a service restart.
-        activeLanguage = ActiveLanguageStore.load(this)
         languageClassifier = LanguageProfileLoader.loadClassifier(this)
         loadTier3ProviderAsync()
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
         OffsetStore.prefs(this).registerOnSharedPreferenceChangeListener(offsetModelPrefsListener)
+        // D-280: a language pack installed/removed from LanguagePacksActivity while this long-lived service
+        // is already resident reloads the dictionary stores immediately, mirroring offsetModelPrefsListener's
+        // own "notice a change made from a completely different screen right away" reasoning.
+        InstalledLanguagesStore.prefs(this).registerOnSharedPreferenceChangeListener(installedLanguagesPrefsListener)
     }
     
     /**
@@ -650,19 +671,43 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Points the dictionary pipeline at [newStores]: builds a provider and a capitalisation engine per
-     * language and selects German as the initial active language. Called on the main thread with the
-     * instant empty stores first, then again once the real lexicons have loaded.
+     * language and bootstraps the active-language views onto English - the one language
+     * [DictionaryLoader.BUNDLED_LANGUAGES] guarantees is always present; [selectActiveDictionary] corrects
+     * the language per token immediately afterwards, so this is only ever the value in between. Called on
+     * the main thread with the instant empty stores first, then again once the real lexicons have loaded
+     * (D-280: and again whenever a language pack is installed/removed while this service stays resident).
+     *
+     * D-280: if [activeLanguage] itself is no longer among [newStores] - its own language pack having been
+     * removed since it was last persisted - it is reset to English here too, the single choke point this
+     * can happen from (a fresh load and a later reload alike).
      */
     private fun installStores(newStores: Map<Language, DictionaryStore>) {
         stores = newStores
         providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, MIN_AUTOCORRECT_CANDIDATE_FREQUENCY) }
         engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
-        val german = newStores.getValue(Language.GERMAN)
-        dictionaryStore = german
-        provider = providers.getValue(Language.GERMAN)
-        capitalisation = engines.getValue(Language.GERMAN)
-        tokenRepair = TokenRepair(german)
-        seedBundledBlacklist(german)
+        if (activeLanguage !in newStores) {
+            activeLanguage = Language.ENGLISH
+            ActiveLanguageStore.save(this, activeLanguage)
+            applyActiveLanguageToView()
+        }
+        val english = newStores.getValue(Language.ENGLISH)
+        dictionaryStore = english
+        provider = providers.getValue(Language.ENGLISH)
+        capitalisation = engines.getValue(Language.ENGLISH)
+        tokenRepair = TokenRepair(english)
+        newStores[Language.GERMAN]?.let { seedBundledBlacklist(it) }
+    }
+    
+    /**
+     * D-280: applies [activeLanguage]'s compiled-in layout kind ([LayoutRegistry]) to the keyboard view -
+     * the single place [AdaptKeyboardView.greek]/[AdaptKeyboardView.qwerty] are derived from
+     * [activeLanguage], instead of repeating the comparison at every call site ([onStartInputView],
+     * [toggleLanguage], and [installStores]'s own removed-language fallback above).
+     */
+    private fun applyActiveLanguageToView() {
+        val kind = LayoutRegistry.kindFor(activeLanguage)
+        keyboardView?.greek = kind == LayoutKind.GREEK
+        keyboardView?.qwerty = kind == LayoutKind.LATIN_QWERTY
     }
     
     /**
@@ -736,8 +781,16 @@ class AdaptKeyService : InputMethodService() {
         inputRoot = root
         val onboarding = OnboardingView(this)
         onboarding.onFinished = { hideOnboarding() }
+        onboarding.onOpenLanguagePacks = { launchFromKeyboard(LanguagePacksActivity::class.java) }
         onboarding.onOpenModelImport = { launchFromKeyboard(Tier3ModelActivity::class.java) }
         onboarding.onOpenCalibration = { launchFromKeyboard(CalibrationActivity::class.java) }
+        // D-280: purely offline - the device's own configured locales against the languages that actually
+        // have a real pack (LanguagePackCatalog), so the language-selection step can name a concrete
+        // suggestion (e.g. "Deutsch") instead of a generic prompt.
+        onboarding.suggestedLanguageNames = SuggestedLanguages.from(
+            resources.configuration.locales.let { list -> (0 until list.size()).map { list[it] } },
+            LanguagePackCatalog.ENTRIES.map { it.language }
+        ).map { it.endonym }
         onboardingView = onboarding
         
         // Suggestion bar (S-01…S-06) embedded as a row directly above the keyboard, rather than the
@@ -898,8 +951,9 @@ class AdaptKeyService : InputMethodService() {
             controller = SuggestionController(config)
             if (this::stores.isInitialized) {
                 providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, MIN_AUTOCORRECT_CANDIDATE_FREQUENCY) }
-                // Re-point the active provider; selectActiveDictionary corrects the language per token.
-                provider = providers.getValue(Language.GERMAN)
+                // Re-point the active provider onto English (always present); selectActiveDictionary
+                // corrects the language per token immediately afterwards, same reasoning as installStores.
+                provider = providers.getValue(Language.ENGLISH)
             }
         }
         keyboardView?.let { view ->
@@ -1331,8 +1385,7 @@ class AdaptKeyService : InputMethodService() {
         settings = SettingsStore.load(this)
         applySettings()
         // Reflect the active alphabet (G-01) on the freshly (re)created keyboard view.
-        keyboardView?.greek = activeLanguage == Language.GREEK
-        keyboardView?.qwerty = activeLanguage == Language.ENGLISH
+        applyActiveLanguageToView()
         // D-143: same defensive re-push, in case the view was (re)created after onStartInput already
         // computed this field's urlMode.
         keyboardView?.urlMode = urlMode
@@ -1927,6 +1980,7 @@ class AdaptKeyService : InputMethodService() {
         handler.removeCallbacks(resortRunnable)
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         OffsetStore.prefs(this).unregisterOnSharedPreferenceChangeListener(offsetModelPrefsListener)
+        InstalledLanguagesStore.prefs(this).unregisterOnSharedPreferenceChangeListener(installedLanguagesPrefsListener)
         persistOffsetModel()
         tier3Executor.shutdownNow()
         expensiveSuggestionExecutor.shutdownNow()
@@ -2309,11 +2363,11 @@ class AdaptKeyService : InputMethodService() {
         finalizeAndCommit(ic, "")
         // D-130: acknowledge the switch on the space bar - captures the outgoing label before it changes.
         keyboardView?.beginLanguageChangeFade()
-        activeLanguage = if (forward) LanguageCycle.next(activeLanguage) else LanguageCycle.previous(activeLanguage)
+        val installed = InstalledLanguagesStore.load(this)
+        activeLanguage = if (forward) LanguageCycle.next(activeLanguage, installed) else LanguageCycle.previous(activeLanguage, installed)
         // Persist the switch so the chosen alphabet survives a service restart.
         ActiveLanguageStore.save(this, activeLanguage)
-        keyboardView?.greek = activeLanguage == Language.GREEK
-        keyboardView?.qwerty = activeLanguage == Language.ENGLISH
+        applyActiveLanguageToView()
         // D-03: keep the space-bar language label in sync with the switch.
         updateSpaceLabel()
         clearSuggestions()
@@ -2330,19 +2384,14 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * The human-readable name of an input language, shown on the space bar (D-03) and in the G-01
-     * switch toast. D-106 stage 1: German, English and Greek are all user-selectable alphabets via the
-     * [LanguageCycle].
+     * switch toast. D-106 stage 1 / D-280: any [Language] can become user-selectable via the
+     * [LanguageCycle] once its language pack is installed - delegates to [Language.endonym], the single
+     * source of truth every language-selecting screen shares.
      *
      * @param language the active input language
      * @return the label to display
      */
-    private fun languageLabel(language: Language): String {
-        return when (language) {
-            Language.GREEK -> "Ελληνικά"
-            Language.ENGLISH -> "English"
-            else -> "Deutsch"
-        }
-    }
+    private fun languageLabel(language: Language): String = language.endonym
     
     /**
      * Handles a swipe gesture (§4 G-01 … G-03, the L-03 upward swipe to the symbol layer, and §48's
@@ -4788,12 +4837,17 @@ class AdaptKeyService : InputMethodService() {
     private data class DictChoice(val language: Language, val suppressAutocorrect: Boolean)
     
     /**
-     * A-03 / D-106 stage 1: chooses the dictionary for the recent [context]. Greek mode and English mode
-     * (both explicit G-01 language choices now, English promoted from an auto-detected-only fallback)
-     * force their own lexicon unconditionally; otherwise the detector decides while German is active — a
-     * confidently English context uses the English lexicon, a confidently other-foreign context (e.g.
-     * French, which has no bundled lexicon) keeps the German store but holds back autocorrect so the text
-     * is left as typed, and everything else defaults to German. Conservative by construction (see
+     * A-03 / D-106 stage 1 / D-280: chooses the dictionary for the recent [context]. Greek mode and English
+     * mode (both explicit G-01 language choices now, English promoted from an auto-detected-only fallback)
+     * force their own lexicon unconditionally; otherwise the detector decides while whichever *other*
+     * language is active (German, or any further installed language reached via [LanguageCycle]) - a
+     * confidently English context uses the English lexicon, a confidently other-foreign context (one the
+     * classifier's own limited [languageClassifier] profiles cannot place at all, e.g. French while it is
+     * not the active language) keeps the active store but holds back autocorrect so the text is left as
+     * typed, and everything else stays on the active language. D-280: generalised from an originally
+     * German-literal fallback to [activeLanguage] itself - the classifier only ever distinguishes German
+     * from English regardless of which other language is actually active, so this must route to whatever
+     * *is* active rather than assuming it is always German. Conservative by construction (see
      * [LanguageClassifier.isForeign]).
      */
     private fun resolveDict(context: String): DictChoice {
@@ -4804,13 +4858,13 @@ class AdaptKeyService : InputMethodService() {
             return DictChoice(Language.ENGLISH, suppressAutocorrect = false)
         }
         if (!languageClassifier.isForeign(context)) {
-            return DictChoice(Language.GERMAN, suppressAutocorrect = false)
+            return DictChoice(activeLanguage, suppressAutocorrect = false)
         }
         val best = languageClassifier.classify(LanguageClassifier.lastWords(context, LANGUAGE_WINDOW)).language
         return if (best == Language.ENGLISH) {
             DictChoice(Language.ENGLISH, suppressAutocorrect = false)
         } else {
-            DictChoice(Language.GERMAN, suppressAutocorrect = true)
+            DictChoice(activeLanguage, suppressAutocorrect = true)
         }
     }
     

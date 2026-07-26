@@ -71,9 +71,12 @@ device logs, not code review alone, to find each time.
 ### L-01 - Base Layout: Language-Conditional
 German uses the Gboard QWERTZ layout as its base - key sizes, spacing, and access to special characters -
 except where this specification explicitly diverges. English uses its own QWERTY row layout (differing
-from German only in the `y`/`z` position). Greek uses a dedicated layout (see L-02 in §4/G-01 for language
-switching). Because the personal offset model (T-03) is keyed by character identity, `y`/`z` carry over
-their German-position offsets for a short, self-healing period immediately after switching to English.
+from German only in the `y`/`z` position); every further Latin-script language (see §9's language packs)
+also uses this same QWERTY layout unless it has its own explicit entry - it needs no dedicated layout code
+of its own to become typeable, only a dictionary. Greek uses a dedicated layout (see L-02 in §4/G-01 for
+language switching), the one non-Latin exception today. Because the personal offset model (T-03) is keyed by
+character identity, `y`/`z` carry over their German-position offsets for a short, self-healing period
+immediately after switching to English.
 
 ### L-02 - Narrower Space Bar, Wider Comma & Full Stop
 The space bar is narrower than the Gboard default; the comma and full-stop keys are widened accordingly.
@@ -191,8 +194,11 @@ view after a (re-)selection.
 ## 4. Gestures
 
 ### G-01 - Language Switch
-Swiping left or right on the space bar cycles the active input language through German → English → Greek
-(direction determines forward/back). The gesture only fires on the letters surface's own space key; the
+Swiping left or right on the space bar cycles the active input language through English (always first, the
+one language always available) plus every currently installed language pack (§9), in a fixed declaration
+order (direction determines forward/back) - German and Greek before D-280 were the fixed, only-possible
+result of this cycle; installing or removing a language pack now changes what the cycle actually contains.
+The gesture only fires on the letters surface's own space key; the
 symbol/calculator pages and the dedicated URL-mode/email-mode space keys have no language of their own, so a
 swipe there falls through to the ordinary page-switch gesture (G-06... see D-19-style full-field swipe,
 §4 note below) instead. In addition to this manual switch, the active language switches automatically after
@@ -628,6 +634,19 @@ The tier-3 model is not bundled with the app: it is installed by the user via a 
 system file picker (no `INTERNET` permission is used by the app itself), and can be independently enabled
 or disabled (default on) regardless of whether a model file happens to be installed.
 
+### Language Packs *(D-280)*
+Only English's dictionary (tier 1) ships inside the app - every further language's dictionary, including
+German's and Greek's, is an optional install, mirroring the tier-3 model's own browser-download-plus-
+file-picker mechanism exactly (no `INTERNET` permission needed for this either). A settings screen
+(reachable at any time, not only during onboarding) lists every language with a real, hosted pack, shows
+whether it is currently installed, and offers install/remove per language; installing or removing one takes
+effect immediately, without restarting the keyboard. First-run onboarding offers the same install step,
+pre-suggesting a language purely from the device's own configured system languages (no network call - the
+app already knows in code which languages it could ever offer). See
+[`AdaptKey-Language-Contribution-Guide.md`](AdaptKey-Language-Contribution-Guide.md) for exactly what a new
+language needs (a dictionary always; a new compiled keyboard layout only for a non-Latin alphabet - see L-01)
+and how to contribute one.
+
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any
 other confirmed word. Because that learning signal is only generated when tier-1 didn't already know the
@@ -855,6 +874,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-16 | Never save credentials | On/Off | Off |
 | C-17 | Contact-derived email suggestions | On/Off (permission-gated) | Off |
 | C-18 | Pending-blacklist expiry window (G-04) | Days (1-30) | 7 |
+| C-19 | Installed language packs (§9) | Install/remove per language | English only |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.

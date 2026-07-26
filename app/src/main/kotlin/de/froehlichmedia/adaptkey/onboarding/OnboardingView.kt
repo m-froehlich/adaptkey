@@ -26,8 +26,26 @@ class OnboardingView(context: Context) : LinearLayout(context) {
     /** Invoked when the user opens the mini-LLM model import from the model step. */
     var onOpenModelImport: (() -> Unit)? = null
     
+    /** D-280: invoked when the user opens the language-pack screen from the language-selection step. */
+    var onOpenLanguagePacks: (() -> Unit)? = null
+    
     /** Invoked when the user starts the calibration from the calibration step. */
     var onOpenCalibration: (() -> Unit)? = null
+    
+    /**
+     * D-280: the device-locale-suggested languages ([de.froehlichmedia.adaptkey.language.
+     * SuggestedLanguages]), already resolved to their own [de.froehlichmedia.adaptkey.language.Language.
+     * endonym] display names by the caller (a plain Android [Context] concern, kept out of this view).
+     * Appended to the language-selection step's body when non-empty; re-renders immediately if set after
+     * that step is already showing.
+     */
+    var suggestedLanguageNames: List<String> = emptyList()
+        set(value) {
+            field = value
+            if (step == OnboardingStep.LANGUAGE_SELECTION) {
+                render()
+            }
+        }
     
     private var step = Onboarding.first()
     
@@ -93,6 +111,18 @@ class OnboardingView(context: Context) : LinearLayout(context) {
                 actionButton.visibility = View.GONE
             }
             
+            OnboardingStep.LANGUAGE_SELECTION -> {
+                titleView.setText(R.string.onboarding_language_title)
+                bodyView.text = if (suggestedLanguageNames.isEmpty()) {
+                    context.getString(R.string.onboarding_language_body)
+                } else {
+                    context.getString(R.string.onboarding_language_body) + "\n\n" +
+                        context.getString(R.string.onboarding_language_suggested, suggestedLanguageNames.joinToString(", "))
+                }
+                actionButton.setText(R.string.onboarding_language_action)
+                actionButton.visibility = View.VISIBLE
+            }
+            
             OnboardingStep.MODEL_IMPORT -> {
                 titleView.setText(R.string.onboarding_model_title)
                 bodyView.setText(R.string.onboarding_model_body)
@@ -112,6 +142,7 @@ class OnboardingView(context: Context) : LinearLayout(context) {
     
     private fun onAction() {
         when (step) {
+            OnboardingStep.LANGUAGE_SELECTION -> onOpenLanguagePacks?.invoke()
             OnboardingStep.MODEL_IMPORT -> onOpenModelImport?.invoke()
             OnboardingStep.CALIBRATION -> onOpenCalibration?.invoke()
             OnboardingStep.WELCOME -> Unit

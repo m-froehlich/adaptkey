@@ -83,6 +83,13 @@
             android:label="@string/c06_model_title"
             android:exported="false" />
 
+        <!-- D-280: language-pack install/remove screen, launched from the settings screen and from
+             onboarding's own language-selection step. -->
+        <activity
+            android:name=".settings.LanguagePacksActivity"
+            android:label="@string/d280_title"
+            android:exported="false" />
+
         <!-- Full feature overview (D-89), launched from the settings screen's Info & Privacy category. -->
         <activity
             android:name=".settings.FeatureOverviewActivity"

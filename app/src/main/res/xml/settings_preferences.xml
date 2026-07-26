@@ -199,6 +199,15 @@
     <PreferenceCategory android:title="@string/cat_dictionary">
 
         <Preference
+            android:key="d280_language_packs"
+            android:title="@string/d280_pref_title"
+            android:summary="@string/d280_pref_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.LanguagePacksActivity" />
+        </Preference>
+
+        <Preference
             android:key="c05_blacklist"
             android:title="@string/c05_title"
             android:summary="@string/c05_summary">

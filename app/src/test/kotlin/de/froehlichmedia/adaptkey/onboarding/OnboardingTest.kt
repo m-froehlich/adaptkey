@@ -15,14 +15,15 @@ import org.junit.jupiter.api.Test
 class OnboardingTest {
     
     @Test
-    fun `the flow starts at welcome and has three steps`() {
+    fun `the flow starts at welcome and has four steps`() {
         assertEquals(OnboardingStep.WELCOME, Onboarding.first())
-        assertEquals(3, Onboarding.count())
+        assertEquals(4, Onboarding.count())
     }
     
     @Test
     fun `next advances through the steps and ends after the last`() {
-        assertEquals(OnboardingStep.MODEL_IMPORT, Onboarding.next(OnboardingStep.WELCOME))
+        assertEquals(OnboardingStep.LANGUAGE_SELECTION, Onboarding.next(OnboardingStep.WELCOME))
+        assertEquals(OnboardingStep.MODEL_IMPORT, Onboarding.next(OnboardingStep.LANGUAGE_SELECTION))
         assertEquals(OnboardingStep.CALIBRATION, Onboarding.next(OnboardingStep.MODEL_IMPORT))
         assertNull(Onboarding.next(OnboardingStep.CALIBRATION))
     }
@@ -30,12 +31,14 @@ class OnboardingTest {
     @Test
     fun `isLast is only true for the final step`() {
         assertFalse(Onboarding.isLast(OnboardingStep.WELCOME))
+        assertFalse(Onboarding.isLast(OnboardingStep.LANGUAGE_SELECTION))
         assertTrue(Onboarding.isLast(OnboardingStep.CALIBRATION))
     }
     
     @Test
     fun `position is one-based`() {
         assertEquals(1, Onboarding.position(OnboardingStep.WELCOME))
-        assertEquals(3, Onboarding.position(OnboardingStep.CALIBRATION))
+        assertEquals(2, Onboarding.position(OnboardingStep.LANGUAGE_SELECTION))
+        assertEquals(4, Onboarding.position(OnboardingStep.CALIBRATION))
     }
 }

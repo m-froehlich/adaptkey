@@ -37,7 +37,11 @@ import de.froehlichmedia.adaptkey.language.Language
 class BlacklistActivity : AppCompatActivity() {
     
     private lateinit var store: SqliteDictionaryStore
-    private var language: Language = DictionaryLoader.LANGUAGES.first()
+    private var language: Language = Language.ENGLISH
+    // D-280: the selectable languages - English (always bundled) plus whatever is currently installed -
+    // resolved once in onCreate() rather than DictionaryLoader's own fixed constant, since which languages
+    // exist is now a runtime, per-device fact rather than a fixed 3-entry list.
+    private lateinit var languages: List<Language>
     private lateinit var listView: ListView
     private lateinit var emptyView: TextView
     private lateinit var adapter: ArrayAdapter<String>
@@ -72,6 +76,7 @@ class BlacklistActivity : AppCompatActivity() {
             insets
         }
         
+        languages = DictionaryLoader.activeLanguages(this)
         openStore(language)
         listView = findViewById(R.id.blacklist_list)
         emptyView = findViewById(R.id.blacklist_empty)
@@ -83,11 +88,11 @@ class BlacklistActivity : AppCompatActivity() {
         languageSpinner.adapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
-            DictionaryLoader.LANGUAGES.map { languageName(it) }
+            languages.map { languageName(it) }
         )
         languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selected = DictionaryLoader.LANGUAGES[position]
+                val selected = languages[position]
                 if (selected != language) {
                     openStore(selected)
                     refresh()
@@ -165,14 +170,7 @@ class BlacklistActivity : AppCompatActivity() {
      * @param language the language
      * @return its native name
      */
-    private fun languageName(language: Language): String {
-        return when (language) {
-            Language.GREEK -> "Ελληνικά"
-            Language.ENGLISH -> "English"
-            Language.GERMAN -> "Deutsch"
-            else -> language.name
-        }
-    }
+    private fun languageName(language: Language): String = language.endonym
     
     private fun refresh() {
         words.clear()

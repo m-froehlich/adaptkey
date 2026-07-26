@@ -10186,3 +10186,128 @@ Enter (D-270) and Backspace, both already correct (the caret never left in eithe
 No new unit tests - established `AdaptKeyService`/`InputConnection` glue gap, same as every other A-07/A-12
 round. 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `AdaptKey-Spec.md`
 A-12 revised. Version bumped 0.8.150 -> 0.8.151. Not yet device-confirmed.
+
+## §200 - D-280: Multi-Language Support - Only English Bundled, German/Greek (And Any Further Language) An Installable Language Pack, With A Contribution Guide (v0.8.152)
+
+A long-standing backlog item, tackled properly this round after the user laid out the full shape: the app
+should widen beyond its own author's personal DE/EL/EN needs without bloating the APK for everyone else, the
+"no internet permission, ever" guarantee must survive the change, and the path for a future community
+contributor (human or AI) to add their own language must be spelled out concretely, not left implicit.
+Planned first (summary + phased plan presented and agreed before any code), then implemented in full.
+
+**The three concrete decisions the user made up front:** (1) only English ships inside the APK; every other
+language - German and Greek included - becomes an optional, user-installed language pack; (2) the pack
+archive bundles its unigram + bigram files together (one download/import step, not two); (3) implement
+everything in one round, including a settings entry reachable any time (not only from onboarding).
+
+**Investigated before writing any code, not assumed:** `DictionaryLoader` already builds one SQLite store
+per `Language`, seeded from a `dict_<code>.tsv`/`bigram_<code>.tsv` asset pair - a clean, already-existing
+per-language boundary. The exact "browser download + SAF file picker, no `INTERNET` permission" mechanism
+already exists for the tier-3 model (`Tier3ModelActivity`/`Tier3ModelInstaller`/`Tier3ModelStorage`) and was
+mirrored directly rather than re-invented. Android bundles every file actually present under `assets/`
+regardless of whether code reads it, so shrinking the APK required physically moving `dict_de.tsv`/
+`dict_el.tsv`/their bigram files out of `app/src/main/assets/` (into a new, still version-controlled
+`dictionaries/de/`+`dictionaries/el/`), not just dropping them from a language list - the two together were
+worth roughly 9.35 MB of the previous ~14 MB `assets/` payload.
+
+**A real crash waiting to happen, found by tracing the actual code, not guessed:** `AdaptKeyService.
+installStores()` and `applySettings()` both bootstrapped the active-language pipeline onto `Language.GERMAN`
+unconditionally (`newStores.getValue(Language.GERMAN)`) - harmless while German was always bundled, but a
+guaranteed `NoSuchElementException` the moment a fresh install has no German pack. Fixed by bootstrapping on
+`Language.ENGLISH` (the one language `DictionaryLoader.BUNDLED_LANGUAGES` now guarantees) instead, with a new
+`installStores()` check that resets `activeLanguage` itself (and persists the correction) if it is no longer
+among the loaded stores - covers both a fresh install and a language pack removed later while the service
+stays resident. `seedBundledBlacklist()` (German-specific blacklist content: cross-language confusables,
+archaic pre-1996-spelling entries) is now called conditionally, only when a German store actually exists.
+
+**A second, subtler bug in the same trace:** `resolveDict()` (A-03's per-token dictionary routing) had
+`Language.GERMAN` hardcoded as its own "everything else" fallback in two branches - harmless while German
+was the only non-Greek/non-English language ever reachable, but would have silently routed e.g. French text
+through the German dictionary/autocorrect the moment French became installable and active. Generalised both
+branches to `activeLanguage` itself (byte-for-byte identical outcome while German is what's active, correct
+for any other installed language too) - the classifier's own job (German vs. English vs. "foreign,
+unclassified") never actually depended on assuming German specifically.
+
+**A third, cosmetic-but-real bug:** `AdaptKeyService.languageLabel()` had an `else -> "Deutsch"` catch-all -
+any newly-active language beyond German/English/Greek would have shown "Deutsch" on the space bar and in the
+G-01 toast. Fixed by making it deliberately exhaustive (no `else`) against `Language`, backed by a new
+per-entry `Language.endonym` property (`Deutsch`, `English`, `Ελληνικά`, `Français`, `Español`, `Italiano`,
+`Nederlands`, `Português`) - the single source of truth every language-selecting screen now shares
+(`BlacklistActivity`/`LearnedWordsActivity`'s own language spinners, which had the identical `DictionaryLoader.
+LANGUAGES`-is-now-gone compile break and the identical stale-`when`-with-`else` smell, fixed the same way).
+
+**What shipped, by area:**
+
+- **`keyboard/LayoutRegistry.kt`** (new): a single `Language -> LayoutKind` (`LATIN_QWERTZ`/`LATIN_QWERTY`/
+  `GREEK`) map, replacing the scattered `activeLanguage == Language.GREEK`/`== Language.ENGLISH` comparisons
+  at `AdaptKeyService`'s two view-flag call sites (now one shared `applyActiveLanguageToView()`). Confirmed
+  by reading `AdaptKeyboardView`'s actual row-selection first: every Latin-script language already falls back
+  to the ordinary QWERTY `KeyboardLayout` with zero new layout code - only Greek needed its own dedicated
+  layout, so that stays the one real exception. `AdaptKeyboardView` itself is unchanged; the contribution
+  guide (below) is explicit that a *second* non-Latin script is the point at which its own `greek`/`qwerty`
+  boolean pair should finally be generalised into a real `LayoutKind` switch, not before.
+- **`language/InstalledLanguagesStore.kt`** (new): the persisted set of installed languages beyond English,
+  in its own SharedPreferences file (mirrors `ActiveLanguageStore`) so `AdaptKeyService` can register its own
+  change listener and reload the dictionary stores immediately when a pack is installed/removed from
+  `LanguagePacksActivity` or onboarding - no manual keyboard restart needed.
+- **`language/LanguageCycle.kt`** (revised): `next()`/`previous()` now take the installed set explicitly and
+  build the cycle as English-first plus every installed language in `Language` declaration order (falls back
+  to English if the current language somehow is not in the cycle at all) - replaces the old fixed
+  German/English/Greek constant. `LanguageCycleTest` rewritten for the new signature plus new cases (English-
+  only cycle, a newly-installed language joining without disturbing existing ones, deterministic order
+  regardless of install order).
+- **`language/ActiveLanguageStore.kt`**: default changed from German to English (loading path and the class
+  field's own initial value in `AdaptKeyService` alike).
+- **`dictionary/DictionaryLoader.kt`**: `LANGUAGES` (fixed 3) replaced by `BUNDLED_LANGUAGES` (`[ENGLISH]`,
+  asset-seeded) plus a new `activeLanguages(context)` (bundled + `InstalledLanguagesStore`, the single place
+  this union is computed); `seed()` now reads from `LanguagePackStorage` for anything not bundled. The
+  `BUNDLED_DICTIONARY_VERSION`-triggered reseed is scoped to bundled languages only now - an installed pack's
+  content only ever changes through a fresh import, not an unrelated English asset fix. The old German-only
+  `SeedData` emergency fallback (never leave the store empty "even if the asset is somehow unavailable") was
+  dropped rather than ported to English - English's own asset is exactly as reliably bundled as German's
+  always was, and falling back to German *words* inside what is now the English store would have been wrong,
+  not merely redundant.
+- **`dictionary/LanguagePackStorage.kt`**/**`LanguagePackInstaller.kt`** (new): mirror
+  `Tier3ModelStorage`/`Tier3ModelInstaller` exactly, just for a zip archive instead of a single file -
+  `ZipInputStream`-based, validates the unigram entry is present before committing anything (bigram entry is
+  optional, matching the existing tolerance for a missing bundled bigram asset), atomic temp-file rename per
+  extracted entry. Fully unit-tested on the JVM (`LanguagePackInstallerTest`: well-formed archive, words-only
+  archive, missing-words-entry rejection, unrelated/other-language entries ignored, directory creation,
+  replace-on-reinstall, no leftover `.part` files, `clear()`).
+- **`dictionary/LanguagePackCatalog.kt`** (new): the languages with a real, hosted pack today (German, Greek)
+  and their download URL - deliberately not every `Language` enum value, since `FRENCH`/`SPANISH`/`ITALIAN`/
+  `DUTCH`/`PORTUGUESE` are already fully typeable (§0 above) but have no dictionary built and hosted yet;
+  listing a download button with nothing behind it would be worse than not listing them. Unit-tested
+  (`LanguagePackCatalogTest`).
+- **`settings/LanguagePacksActivity.kt`** (new) + `activity_language_packs.xml`: lists `LanguagePackCatalog`
+  entries with install state and download/import/remove actions per language, mirroring `Tier3ModelActivity`'s
+  browser-download-then-SAF-import flow; a successful install/removal also deletes any stale
+  `DictionaryLoader.databaseName(language)` SQLite file first, so the next load reseeds cleanly rather than
+  reusing old data. Registered in the manifest and as a new `cat_dictionary` settings entry (top of the
+  category, ahead of the blacklist editor).
+- **Onboarding**: new `OnboardingStep.LANGUAGE_SELECTION` (between `WELCOME` and `MODEL_IMPORT` - language
+  choice is more foundational than the optional mini-LLM). New pure `language/SuggestedLanguages.kt`
+  (unit-tested) intersects the device's own configured locales against `LanguagePackCatalog`'s available
+  languages, entirely offline; `AdaptKeyService` resolves this once and hands the resulting endonym names to
+  `OnboardingView`, which appends a concrete suggestion (e.g. "Based on your device, you might want:
+  Deutsch.") to the step's body when non-empty. The step's action button opens `LanguagePacksActivity`
+  directly. `OnboardingTest` updated for the new four-step sequence. The stale onboarding welcome-body claim
+  ("Three languages: German, English and Greek, each with its own dictionary.") was corrected in all three
+  locales to describe the new bundled-vs-installable split instead of silently going on record wrong.
+- **`AdaptKey-Language-Contribution-Guide.md`** (new, repo root): the concrete "what do I actually need to
+  do" reference for a future contributor (human or AI) - split into "already in the `Language` enum" vs. "not
+  yet" checklists, the exact `dict_<code>.tsv`/`bigram_<code>.tsv` format (ground-truthed against
+  `DictionaryAssetParser`/`PartOfSpeech`, not guessed), how to package and host a pack archive, when a new
+  compiled layout is actually needed vs. not, and an honest note that `language_profiles.tsv` (the A-03
+  auto-detection data) already covers eight languages including all five Latin "bonus" ones, but the Python
+  builder script that produced it is not currently in this repository - a real, named gap, not glossed over.
+  `AdaptKey-Spec.md` gained a matching "Language Packs" subsection under §9, a new C-19 configurable-parameter
+  row, and updated L-01/G-01 wording (no longer describing a fixed German/English/Greek set).
+
+23 new unit tests (`LanguagePackInstallerTest` 9, `LanguagePackCatalogTest` 4, `SuggestedLanguagesTest` 6,
+`LanguageCycleTest` net +4 after its rewrite for the new installed-set signature; `OnboardingTest` updated,
+unchanged in count) - 866 unit tests (843 + 23). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green; the release APK dropped from bundling both German and Greek dictionaries to neither, by design.
+`AdaptKey-Spec.md` L-01/G-01/§9/§20 revised. Version bumped 0.8.151 -> 0.8.152. Not yet device-confirmed -
+needs a real device run of onboarding's new step, a fresh install/remove cycle from Settings, and the G-01
+swipe cycling correctly once a pack is installed.

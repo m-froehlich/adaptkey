@@ -15,6 +15,10 @@ in every prompt.
   `androidx.preference:preference-ktx` 1.2.1.
 - Self-drawn `AdaptKeyboardView` (NOT the deprecated `android.inputmethodservice.KeyboardView`)
   because the spec needs raw `ACTION_DOWN` coordinates and free key proportions.
+- D-280: only English's dictionary is bundled in `app/src/main/assets/`; German/Greek/any further language
+  are installable language packs (`dictionaries/<code>/` + `language-packs/adaptkey-lang-<code>.zip` at the
+  repo root, hosted, downloaded via `LanguagePacksActivity`) - see `AdaptKey-Language-Contribution-Guide.md`
+  before assuming a language needs new layout code; most don't.
 
 ## Build (machine specifics)
 
@@ -70,6 +74,32 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§200 (v0.8.152): D-280 - multi-language support: only English bundled, German/Greek (and any further**
+  **language) an installable language pack, with a contribution guide - planned with the user first, then**
+  **implemented in full.** Mirrors the tier-3 model's own browser-download + SAF-import mechanism exactly
+  (no `INTERNET` permission needed). `dict_de.tsv`/`dict_el.tsv`/their bigram files moved out of
+  `app/src/main/assets/` (roughly 9.35 MB of the previous ~14 MB) into version-controlled
+  `dictionaries/de/`+`dictionaries/el/`, packaged as `language-packs/adaptkey-lang-{de,el}.zip`. New
+  `DictionaryLoader.BUNDLED_LANGUAGES`/`activeLanguages()`, `InstalledLanguagesStore`, `LanguagePackStorage`/
+  `LanguagePackInstaller`/`LanguagePackCatalog`, `LanguagePacksActivity` (Settings → Languages, reachable any
+  time), a new onboarding `LANGUAGE_SELECTION` step (device-locale-suggested, purely offline via new
+  `SuggestedLanguages`), and `keyboard/LayoutRegistry` (confirmed every Latin-script language already needs
+  no new layout code - only Greek does). **Two real bugs found by tracing the actual code before they could
+  ship**: `installStores()`/`applySettings()` both hardcoded `Language.GERMAN` as their bootstrap language -
+  a guaranteed crash the moment German is no longer always installed, fixed onto `Language.ENGLISH`;
+  `resolveDict()` (A-03) hardcoded `Language.GERMAN` as its own "everything else" fallback - would have
+  silently routed e.g. French through the German dictionary once installed, generalised to `activeLanguage`.
+  Also fixed in passing: `languageLabel()`'s `else -> "Deutsch"` catch-all (would have mislabelled any newly-
+  active language), replaced by a new exhaustive, shared `Language.endonym` per-entry property also now used
+  by `BlacklistActivity`/`LearnedWordsActivity`'s own language spinners (both had the same `DictionaryLoader.
+  LANGUAGES`-removed compile break, fixed the same way). New `AdaptKey-Language-Contribution-Guide.md` at the
+  repo root spells out exactly what a new language needs, ground-truthed against the real parser/enum, not
+  guessed - referenced from a new spec.md §9 "Language Packs" subsection. 23 new unit tests
+  (`LanguagePackInstallerTest` 9, `LanguagePackCatalogTest` 4, `SuggestedLanguagesTest` 6, `LanguageCycleTest`
+  net +4, `OnboardingTest` updated). 866 unit tests (843 + 23). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green; the release APK no longer bundles either German or Greek. Spec L-01/G-01/§9/§20 revised. Not yet
+  device-confirmed - needs a real onboarding run, a fresh install/remove cycle from Settings, and G-01
+  cycling correctly once a pack is installed. See history §200.
 - **§199 (v0.8.151): D-279 - an abandoned A-12 auto-space (caret moved elsewhere, or the field left) is now**
   **actively removed, not just left as confirmed text - designed with the user over two rounds first.** The
   user's own key idea: since `pendingPunctuationSpace` already tracks that a space is pending, it should also
@@ -4061,6 +4091,11 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 - **D-278 (captured, §198): cross-device export/import** of settings, blacklist, learned words, and
   credentials/e-mail store - not designed yet, see the Current State entry above for the open questions.
+- **D-280 follow-ups (§200):** `FRENCH`/`SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language`
+  enum and already fully typeable, but none has a dictionary built/hosted yet - a genuine, ready-to-pick-up
+  community contribution opportunity (see `AdaptKey-Language-Contribution-Guide.md`). Separately, the Python
+  script that built `language_profiles.tsv` (A-03's trigram data) is not in this repository - reconstructing
+  it is only needed for a language outside the eight already covered there.
 - **Tier-3 — device work only:** validate + tune the inference runtime above on a real arm device (import
   the model via Settings → Info/Großschreibung → "Mini-LLM-Modell"), add instrumented tests, and confirm
   latency/battery. Everything code-side (orchestration, C-06 setting, §6 rule-6 hook, adaptive-learning,

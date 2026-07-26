@@ -175,13 +175,32 @@
     <string name="c06_model_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>
     <string name="c06_model_privacy">Diese App besitzt keine Internet- und keine Speicher-Berechtigung. Der Download läuft über deinen Browser; die App liest nur die eine ausgewählte Datei.</string>
 
+    <!-- D-280 Sprachpakete (Browser-Download + Datei-Import, eines pro Sprache außer Englisch). -->
+    <string name="d280_pref_title">Sprachen</string>
+    <string name="d280_pref_summary">Weitere Eingabesprachen installieren oder entfernen (C-19).</string>
+    <string name="d280_title">Sprachpakete</string>
+    <string name="d280_intro">Englisch ist immer verfügbar. Jede weitere Sprache ist ein optionaler Download (ihr Wörterbuch liegt nicht in der App, damit sie klein bleibt) - einmalig im Browser herunterladen, dann die Datei importieren. Danach funktioniert es vollständig offline, wie alles andere hier auch.</string>
+    <string name="d280_status_installed">Installiert.</string>
+    <string name="d280_status_not_installed">Nicht installiert.</string>
+    <string name="d280_download">1. Herunterladen (im Browser)</string>
+    <string name="d280_import">2. Heruntergeladene Datei importieren</string>
+    <string name="d280_remove">Entfernen</string>
+    <string name="d280_imported">Sprache installiert.</string>
+    <string name="d280_import_failed">Import fehlgeschlagen.</string>
+    <string name="d280_removed">Sprache entfernt.</string>
+    <string name="d280_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>
+
     <!-- First-run onboarding (shown above the keyboard). -->
     <string name="onboarding_step_indicator">Schritt %1$d / %2$d</string>
     <string name="onboarding_next">Weiter</string>
     <string name="onboarding_finish">Fertig</string>
     <string name="onboarding_skip">Überspringen</string>
     <string name="onboarding_welcome_title">Willkommen bei AdaptKey</string>
-    <string name="onboarding_welcome_body">AdaptKey lernt, wie DU tippst – und bleibt dabei komplett offline.\n\n• Nachweisbar offline: gar keine Internet-Berechtigung – im System überprüfbar. Nichts wird je „nach Hause telefoniert\", kein Tracking.\n• Liest deine echten Tipp-Punkte, nicht nur die Buchstaben: merkt sich genau, wo jeder Tipp wirklich landet, und kann ein Wort selbst dann retten, wenn ein Vertipper komplett die falsche Taste getroffen hat – nicht nur die Nachbartaste. Eine kurze Kalibrierung sitzt von Anfang an.\n• Clevere Korrektur: behebt Vertipper auf Nachbartasten und fehlende Umlaute (z. B. „komplezz\" → „komplett\") und repariert vergessene oder versehentliche Leerzeichen.\n• Lernt behutsam mit: Vorschläge und Autokorrektur werden mit der Zeit besser, aber nur bei einem verlässlichen Muster – ein einzelner Ausrutscher wirft nichts um.\n• Drei Sprachen: Deutsch, Englisch und Griechisch, je mit eigenem Wörterbuch.\n• Optionale Mini-KI auf dem Gerät für noch bessere Vorschläge – einmal herunterladen, trotzdem kein Internet.\n• Freie Software (GPLv3), ohne Werbung, ohne Konto.</string>
+    <string name="onboarding_welcome_body">AdaptKey lernt, wie DU tippst – und bleibt dabei komplett offline.\n\n• Nachweisbar offline: gar keine Internet-Berechtigung – im System überprüfbar. Nichts wird je „nach Hause telefoniert\", kein Tracking.\n• Liest deine echten Tipp-Punkte, nicht nur die Buchstaben: merkt sich genau, wo jeder Tipp wirklich landet, und kann ein Wort selbst dann retten, wenn ein Vertipper komplett die falsche Taste getroffen hat – nicht nur die Nachbartaste. Eine kurze Kalibrierung sitzt von Anfang an.\n• Clevere Korrektur: behebt Vertipper auf Nachbartasten und fehlende Umlaute (z. B. „komplezz\" → „komplett\") und repariert vergessene oder versehentliche Leerzeichen.\n• Lernt behutsam mit: Vorschläge und Autokorrektur werden mit der Zeit besser, aber nur bei einem verlässlichen Muster – ein einzelner Ausrutscher wirft nichts um.\n• Englisch ist eingebaut; Deutsch, Griechisch und weitere Sprachen kannst du jederzeit als kleinen, von der Community gepflegten Download hinzufügen.\n• Optionale Mini-KI auf dem Gerät für noch bessere Vorschläge – einmal herunterladen, trotzdem kein Internet.\n• Freie Software (GPLv3), ohne Werbung, ohne Konto.</string>
+    <string name="onboarding_language_title">Deine Sprache hinzufügen</string>
+    <string name="onboarding_language_body">Englisch funktioniert sofort. Jede weitere Sprache - Deutsch, Griechisch und weitere, sobald die Community sie beisteuert - ist ein kleiner, optionaler Download, damit die App für alle klein bleibt. Sprachen kannst du jederzeit später in den Einstellungen hinzufügen oder entfernen.</string>
+    <string name="onboarding_language_suggested">Basierend auf deinem Gerät könntest du gebrauchen: %1$s.</string>
+    <string name="onboarding_language_action">Sprache hinzufügen</string>
     <string name="onboarding_model_title">Optionale Mini-KI</string>
     <string name="onboarding_model_body">Optional kann eine kleine KI (Mini-LLM) die Vorschläge verbessern, wenn das normale Modell unsicher ist – ausschließlich auf dem Gerät. Das Modell (~273 MB) ist nicht enthalten: du lädst es einmalig über den Browser herunter und importierst es. Danach bleibt alles offline. Du kannst das jetzt überspringen und jederzeit später nachholen.</string>
     <string name="onboarding_model_action">Modell einrichten</string>

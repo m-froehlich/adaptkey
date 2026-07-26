@@ -175,13 +175,32 @@
     <string name="c06_model_no_browser">No browser found. Please download and import the file manually.</string>
     <string name="c06_model_privacy">This app holds no internet and no storage permission. The download runs through your browser; the app only reads the one file you pick.</string>
 
+    <!-- D-280 language packs (browser download + file import, one per language beyond English). -->
+    <string name="d280_pref_title">Languages</string>
+    <string name="d280_pref_summary">Install or remove additional typing languages (C-19).</string>
+    <string name="d280_title">Language packs</string>
+    <string name="d280_intro">English is always available. Every other language is an optional download (its dictionary is not bundled in the app, to keep it small) - download it once in the browser, then import the file. Afterwards it works fully offline, like everything else here.</string>
+    <string name="d280_status_installed">Installed.</string>
+    <string name="d280_status_not_installed">Not installed.</string>
+    <string name="d280_download">1. Download (in the browser)</string>
+    <string name="d280_import">2. Import the downloaded file</string>
+    <string name="d280_remove">Remove</string>
+    <string name="d280_imported">Language installed.</string>
+    <string name="d280_import_failed">Import failed.</string>
+    <string name="d280_removed">Language removed.</string>
+    <string name="d280_no_browser">No browser found. Please download and import the file manually.</string>
+
     <!-- First-run onboarding (shown above the keyboard). -->
     <string name="onboarding_step_indicator">Step %1$d / %2$d</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_finish">Done</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_welcome_title">Welcome to AdaptKey</string>
-    <string name="onboarding_welcome_body">AdaptKey learns how YOU type — and stays completely offline while doing so.\n\n• Provably offline: no internet permission at all — you can check it in the system. Nothing is ever "phoned home", and there is no tracking.\n• Reads your actual taps, not just your typing: it remembers exactly where each tap really lands, so it can recover a word even when a slip landed on the wrong key entirely — not just a neighbouring letter. A short calibration gets it right from the start.\n• Smart correction: fixes typos on neighbouring keys and missing accents (e.g. "komplezz" → "komplett"), and repairs missed or accidental spaces.\n• Learns gently over time: suggestions and autocorrect keep improving, but only from a steady pattern — a single mistake never throws a key off.\n• Three languages: German, English and Greek, each with its own dictionary.\n• Optional on-device mini-AI for even better suggestions — downloaded once, still no internet.\n• Free software (GPLv3), no ads, no accounts.</string>
+    <string name="onboarding_welcome_body">AdaptKey learns how YOU type — and stays completely offline while doing so.\n\n• Provably offline: no internet permission at all — you can check it in the system. Nothing is ever "phoned home", and there is no tracking.\n• Reads your actual taps, not just your typing: it remembers exactly where each tap really lands, so it can recover a word even when a slip landed on the wrong key entirely — not just a neighbouring letter. A short calibration gets it right from the start.\n• Smart correction: fixes typos on neighbouring keys and missing accents (e.g. "komplezz" → "komplett"), and repairs missed or accidental spaces.\n• Learns gently over time: suggestions and autocorrect keep improving, but only from a steady pattern — a single mistake never throws a key off.\n• English is built in; add German, Greek or another language any time as a small download, kept up to date by the community.\n• Optional on-device mini-AI for even better suggestions — downloaded once, still no internet.\n• Free software (GPLv3), no ads, no accounts.</string>
+    <string name="onboarding_language_title">Add your language</string>
+    <string name="onboarding_language_body">English works right away. Every other language - German, Greek, and more as the community adds them - is a small, optional download, so the app stays small for everyone. You can add or remove languages any time later from Settings.</string>
+    <string name="onboarding_language_suggested">Based on your device, you might want: %1$s.</string>
+    <string name="onboarding_language_action">Add a language</string>
     <string name="onboarding_model_title">Optional mini-AI</string>
     <string name="onboarding_model_body">Optionally, a small AI (mini-LLM) can improve the suggestions when the normal model is unsure — entirely on the device. The model (~273 MB) is not included: you download it once via the browser and import it. Afterwards everything stays offline. You can skip this now and add it any time later.</string>
     <string name="onboarding_model_action">Set up model</string>

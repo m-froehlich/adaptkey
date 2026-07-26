@@ -6,11 +6,13 @@ package de.froehlichmedia.adaptkey.onboarding
 /**
  * The first-run onboarding steps, shown above the keyboard on first use and reachable again later.
  *
- * The order is the guided flow the user asked for: the app and its core promises first, then how to
+ * The order is the guided flow the user asked for: the app and its core promises first, then D-280's own
+ * language-pack step (only English types anything useful until this is at least looked at), then how to
  * optionally add the mini-LLM, then the initial touch calibration.
  */
 enum class OnboardingStep {
     WELCOME,
+    LANGUAGE_SELECTION,
     MODEL_IMPORT,
     CALIBRATION
 }
@@ -22,7 +24,12 @@ enum class OnboardingStep {
 object Onboarding {
     
     /** The steps in display order. */
-    val STEPS: List<OnboardingStep> = listOf(OnboardingStep.WELCOME, OnboardingStep.MODEL_IMPORT, OnboardingStep.CALIBRATION)
+    val STEPS: List<OnboardingStep> = listOf(
+        OnboardingStep.WELCOME,
+        OnboardingStep.LANGUAGE_SELECTION,
+        OnboardingStep.MODEL_IMPORT,
+        OnboardingStep.CALIBRATION
+    )
     
     /** @return the first step to show. */
     fun first(): OnboardingStep = STEPS.first()
