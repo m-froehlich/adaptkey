@@ -10662,3 +10662,61 @@ No new unit tests (established `AdaptKeyService`/`InputConnection` glue gap, sam
 and right after a split, plus a re-check that the "Satzz."-style multi-whitespace case (§196/§197) still
 reverts correctly. The actual "wird" -> "wi rd" split cause is deliberately not addressed in this same round,
 per the user's own explicit request to verify this revert fix in isolation first - see §210.
+
+## §210 - D-287: A-05/A-06/A-10 Silently Checked Every Token Against The English Dictionary Regardless Of The Active Language (v0.9.5)
+
+§209's D-286 fix confirmed working on device (both the ordinary-autocorrect and the split revert case) -
+green light to address the actual "wird" -> "wi rd" cause per the user's own two-step request. A second repro
+handed over in the same report: "Anfang" (a perfectly ordinary German noun) not merely losing to a split, but
+not being recognised at all and torn into "an" + "Fang" - traced together with "wird", since both turned out
+to be the exact same bug, not two.
+
+**Root-caused by hand against the real dictionary files, not guessed:** `AdaptKeyService.tokenRepair`
+(backing A-05 split, A-06 merge, and A-10's mid-word connector split) is constructed exactly once, in
+`installStores()` - `tokenRepair = TokenRepair(english)` - and never touched again anywhere else in the file.
+`provider`/`capitalisation`/`dictionaryStore` sit right next to it in that same block, get the identical
+English bootstrap, but are *also* correctly re-pointed to the active/detected language on every single commit
+by `selectActiveDictionary()` (A-03) - `installStores()`'s own KDoc says as much explicitly ("bootstraps the
+active-language views onto English... `selectActiveDictionary` corrects the language per token immediately
+afterwards, so this is only ever the value in between"), and `selectActiveDictionary()`'s own KDoc even
+already claimed "Re-points the active dictionary pipeline (provider / capitalisation / store)" - `tokenRepair`
+was simply never added to that list when the per-language `stores`/`providers`/`engines` maps were introduced
+(D-280), an outright omission, not a deliberate design choice document anywhere.
+
+Consequence: every `TokenRepair.trySplit()`/`tryMerge()`/`splitAtUnresolvedConnector()` call - both the
+synchronous commit-time one in `finalizeAndCommit()` and the debounced composing-preview one in
+`composingPreviewRunnable` - checked the token against the **English** dictionary the entire time, regardless
+of German (or any other language) being genuinely active. `isAlreadyRecognised()`'s own `isKnownWord()` guard
+(§128/D-203 - "a token that is already a known word... is never split at all") therefore never actually
+protected a German-only word at all: "wird" (frequency 82,883, `dict_de.tsv`) and "Anfang" (6,988) are not in
+`dict_en.tsv`, so both looked entirely unknown to `tokenRepair` and fell straight through to split-candidate
+generation. From there each repro is a real, if absurd, coincidence confirmed against the actual bundled
+`dict_en.tsv`: `"Wi"` (117, a `"Wi-Fi"`-shaped abbreviation entry) + `"rd"` (1,452, an ordinal/`"Rd"`-shaped
+entry) both clear `MIN_SPLIT_HALF_FREQUENCY`, are tagged `OTHER`, and are not the feminine-suffix or
+inseparable-prefix shape - nothing in `candidateAt()`'s own gates had any way to reject them once
+`isAlreadyRecognised("wird")` had already wrongly returned false. `"an"` (99,176, `OTHER`) + `"Fang"` (45,
+tagged `PROPER_NOUN` in the English dictionary - a surname/loanword entry) sailed through the very same way;
+the not-both-nouns gate (`isNoun` checks `NOUN`/`PROPER_NOUN`) could not catch this pair either, since only
+the *right* half is tagged a noun-class entry, not both. Neither repro has anything to do with T-05 touch
+ambiguity, umlaut folding, or any of `candidateAt()`'s own careful German-specific gates (D-249/D-261/D-244) -
+those were all irrelevant here; the token simply never reached the *German* store's own, correct `isKnownWord`
+check at all.
+
+**Fix:** `selectActiveDictionary()` now also re-points `tokenRepair` to `TokenRepair(dictionaryStore)`, right
+alongside the three fields it already corrects per token - one line, matching the exact pattern already
+established for the other three, not a new mechanism. `installStores()`'s own English bootstrap is
+deliberately left unchanged (still the correct, documented "value in between" until the first real
+`selectActiveDictionary()` call resolves it, exactly like `provider`/`capitalisation`/`dictionaryStore`
+already work). Read from a background executor (`composingPreviewExecutor`) while written on the main thread
+by `selectActiveDictionary()` - the exact same informally-synchronized mutable-field pattern `provider`/
+`dictionaryStore` already use for the identical reason (`provider.isKnownWord()` at the same call site), so
+this introduces no new category of concurrency risk, only extends the one already accepted here.
+
+No new unit tests (`AdaptKeyService`'s own per-token dictionary-pipeline wiring, the same established
+Android-glue gap every round in this file hits - `TokenRepair` itself, the pure logic actually exercising
+`isAlreadyRecognised`/`candidateAt`, is already fully unit-tested against `InMemoryDictionaryStore` and needed
+no change; the bug was entirely in which store instance got handed to it, not in the logic itself). 896 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.4 -> 0.9.5. Not
+yet device-confirmed - needs a real check that "wird" and "Anfang" (and any other German-only word) commit
+and are recognised correctly while German is active, without regressing genuine cross-language splits (e.g.
+an actual English phrase typed while German is active) or A-06/A-10's own equally-affected paths.

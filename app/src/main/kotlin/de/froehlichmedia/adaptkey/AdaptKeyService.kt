@@ -4892,10 +4892,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Re-points the active dictionary pipeline (provider / capitalisation / store) to the language of
-     * the recent [context] (A-03) and returns the full [DictChoice] - the caller reads
+     * Re-points the active dictionary pipeline (provider / capitalisation / store / token repair) to the
+     * language of the recent [context] (A-03) and returns the full [DictChoice] - the caller reads
      * [DictChoice.suppressAutocorrect] for the autocorrect gate and, since D-130, [DictChoice.language]
      * to track sustained per-token English routing towards a real active-language switch.
+     *
+     * D-287: [tokenRepair] was missing from this list entirely - [installStores] only ever bootstraps it
+     * onto English (like the other three, but unlike them, nothing ever corrected it afterwards), so A-05/
+     * A-06/A-10 silently kept checking every token against the English dictionary no matter which language
+     * was actually active. See that field's own KDoc for the full repro and root-cause trace.
      *
      * @param context the recent text (context before the token plus the token itself)
      * @return the resolved choice for this token
@@ -4905,6 +4910,7 @@ class AdaptKeyService : InputMethodService() {
         provider = providers.getValue(choice.language)
         capitalisation = engines.getValue(choice.language)
         dictionaryStore = stores.getValue(choice.language)
+        tokenRepair = TokenRepair(dictionaryStore)
         return choice
     }
     

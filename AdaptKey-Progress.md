@@ -74,6 +74,25 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§210 (v0.9.5): D-287 - A-05/A-06/A-10's own `tokenRepair` silently checked every token against the**
+  **English dictionary regardless of the active language - the actual "wird" -> "wi rd" / "Anfang" -> "an**
+  **Fang" cause, fixed as step 2 once §209's revert fix was device-confirmed.** `installStores()` constructs
+  `tokenRepair = TokenRepair(english)` once and nothing ever re-points it afterwards, unlike
+  `provider`/`capitalisation`/`dictionaryStore` sitting right next to it, which `selectActiveDictionary()`
+  (A-03) already correctly re-resolves to the active/detected language on every commit - `tokenRepair` was
+  simply never added to that list when the per-language stores were introduced (D-280), an outright omission.
+  So A-05's own `isAlreadyRecognised()` "a known word is never split" guard (§128/D-203) never actually saw
+  the German dictionary at all: "wird" (82,883 in `dict_de.tsv`) and "Anfang" (6,988) are not in `dict_en.tsv`,
+  looked entirely unknown, and fell through to split-candidate generation - which then genuinely found valid-
+  looking (if absurd) English candidates: `"Wi"` (117, a Wi-Fi-shaped entry) + `"rd"` (1,452, ordinal/`"Rd"`-
+  shaped), and `"an"` (99,176) + `"Fang"` (45, tagged `PROPER_NOUN` in English, evading the not-both-nouns
+  gate since only one half was noun-tagged). Fixed with one line - `selectActiveDictionary()` now also
+  re-points `tokenRepair` to `TokenRepair(dictionaryStore)`, exactly the pattern already used for the other
+  three fields. No new unit tests (the bug was entirely in which store instance `AdaptKeyService` handed to
+  `TokenRepair`, not in `TokenRepair`'s own already-unit-tested logic). 896 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real check that
+  "wird"/"Anfang" (and other German-only words) commit correctly while German is active, without regressing a
+  genuine cross-language split. See history §210.
 - **§209 (v0.9.4): D-286 - A-07's own revert silently broken for every ordinary space-delimited commit, not**
   **just the reported "wird" -> "wi rd" split - traced by hand from the user's own two-part device report.**
   `handleKey`'s A-07 gate pre-consumed exactly one whitespace character ordinarily before ever calling
