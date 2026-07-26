@@ -46,4 +46,10 @@ class AlternativeScriptTest {
     fun `an empty symbol never extends the word`() {
         assertFalse(AlternativeScript.extendsWord("", activeLanguageIsGreek = false))
     }
+    
+    @Test
+    fun `D-285 the function-symbol f never extends the word, like pi, even though it is Latin script`() {
+        assertFalse(AlternativeScript.extendsWord("ƒ", activeLanguageIsGreek = false))
+        assertFalse(AlternativeScript.extendsWord("ƒ", activeLanguageIsGreek = true))
+    }
 }

@@ -14,12 +14,22 @@ package de.froehlichmedia.adaptkey.keyboard
 object AlternativeScript {
     
     /**
+     * D-285: `ƒ` (U+0192, LATIN SMALL LETTER F WITH HOOK) passes [Char.isLetter] and is genuinely Latin
+     * script, so the [Character.UnicodeScript] check below alone cannot exclude it the way it excludes π -
+     * but in this app it is used exactly the same way, as `f`'s own borrowed function/currency-symbol corner
+     * hint (D-90/§29), never a real alphabetic letter. Not a script-based exclusion, since none exists for
+     * this case; a small, explicit, hand-curated set instead - extend it if a future per-language hint
+     * (D-281) introduces another Latin-script "letter" used purely as a symbol.
+     */
+    private val LATIN_SYMBOL_LETTERS = setOf('ƒ')
+    
+    /**
      * @param symbol a long-press alternative
      * @param activeLanguageIsGreek whether the keyboard is currently in Greek input mode
      * @return true when [symbol] should extend the composing word like ordinary typed text
      */
     fun extendsWord(symbol: String, activeLanguageIsGreek: Boolean): Boolean {
-        if (symbol.isEmpty() || !symbol.all { it.isLetter() }) {
+        if (symbol.isEmpty() || !symbol.all { it.isLetter() } || symbol.any { it in LATIN_SYMBOL_LETTERS }) {
             return false
         }
         if (activeLanguageIsGreek) {

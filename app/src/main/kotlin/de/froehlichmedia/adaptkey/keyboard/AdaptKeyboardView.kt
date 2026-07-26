@@ -923,7 +923,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (!(shifted || capsLock) || popupKey?.code == KeyCode.TEXT || !AlternativeScript.extendsWord(text, greek)) {
             return text
         }
-        return text.uppercase()
+        return uppercaseSingleGlyph(text, textPaint)
     }
     
     /**
@@ -932,16 +932,37 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * equivalent, D-281) shows uppercase while Shift/Caps Lock is armed, matching [labelFor]'s own treatment
      * of the key's main label, rather than only the popup that already did this (D-168). Gated on
      * [AlternativeScript.extendsWord] - not a bare [Char.isLetter] check - for the identical reason D-168
-     * excludes a Greek letter borrowed as a math symbol (`p`'s own `π` hint): `Π` is a different symbol, not
-     * an upper-case form of the same one, so it must never be shown here. Restricted to the letters
-     * surface's own char keys, mirroring [labelFor]'s identical guard for the identical reason (a symbol/
-     * calculator-page key's hint must never gain a case it has no business having).
+     * excludes a Greek letter borrowed as a math symbol (`p`'s own `π` hint, and, since D-285, `f`'s own `ƒ`
+     * function-symbol hint too): those are different symbols, not an upper-case form of the same one, so
+     * they must never be shown uppercased here. Restricted to the letters surface's own char keys, mirroring
+     * [labelFor]'s identical guard for the identical reason (a symbol/calculator-page key's hint must never
+     * gain a case it has no business having).
      */
     private fun cornerHintDisplayTextFor(key: Key, hint: String): String {
         if (!(shifted || capsLock) || key.code != KeyCode.CHAR || surface != InputSurface.LETTERS || !AlternativeScript.extendsWord(hint, greek)) {
             return hint
         }
-        return hint.uppercase()
+        return uppercaseSingleGlyph(hint, hintPaint)
+    }
+    
+    /**
+     * D-285: [String.uppercase]'s standard, locale-independent mapping for `ß` is the two-character `"SS"` -
+     * nonsensical for a single-glyph corner hint or popup cell, which is built around exactly one character
+     * per entry (D-144's own per-cell sizing notwithstanding). The single-character capital `ẞ` (U+1E9E) is
+     * the actual answer the user asked for, but no standard Char/String case-mapping function produces it
+     * (ß has no simple 1:1 uppercase mapping in the Unicode casing tables, only the locale-aware "SS" full
+     * mapping) - substituted explicitly here instead, and only when [paint]'s own typeface can actually
+     * render it ([Paint.hasGlyph]); otherwise `ß` is left exactly as typed rather than showing `"SS"`.
+     *
+     * @param text the already-lower-case glyph to uppercase for display
+     * @param paint the paint that will actually draw [text], whose typeface [Paint.hasGlyph] is checked
+     * @return [text] uppercased, `ẞ` for a renderable `ß`, or [text] unchanged for a non-renderable `ß`
+     */
+    private fun uppercaseSingleGlyph(text: String, paint: Paint): String {
+        if (text == SHARP_S) {
+            return if (paint.hasGlyph(CAPITAL_SHARP_S)) CAPITAL_SHARP_S else text
+        }
+        return text.uppercase()
     }
     
     private fun drawPopupCell(canvas: Canvas, left: Float, top: Float, cellWidth: Float, text: String, selected: Boolean) {
@@ -1767,5 +1788,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-129 (second pass): the calculator minus key's own sign-flip corner hint - a genuine plus/minus
         // ligature, not the generic "there's a popup" triangle a sign-flip never actually shows.
         private const val SIGN_FLIP_GLYPH = "±"
+        
+        // D-285: ß (U+00DF) and its own single-character capital ẞ (U+1E9E) - see uppercaseSingleGlyph()'s
+        // own KDoc for why this substitution has to be explicit rather than going through String.uppercase().
+        private const val SHARP_S = "ß"
+        private const val CAPITAL_SHARP_S = "ẞ"
     }
 }

@@ -10471,3 +10471,63 @@ a new requirement. Version bumped 0.9.0 -> 0.9.1 (back to the ordinary third-dig
 now that 0.9.0 marked its own milestone). Not yet device-confirmed - needs a real Shift/Caps-Lock check that
 `a`/`o`/`u`/`s` (and any per-language equivalent) show their uppercase corner hint, while `p`'s own `π` hint
 correctly stays lower-case.
+
+## §205 CAPTURED (still v0.9.1, no code change): Batch Device-Confirmation Round
+
+A single round of device feedback covering several still-open items at once:
+
+- **D-279 device-confirmed** (§199, the abandoned A-12 auto-space removal).
+- **D-281 device-confirmed** (§201, per-language AltGr hint defaults - English no longer shows umlaut hints).
+- **D-282 device-confirmed** (§202, dynamic long-press popup direction for `p`/`0`).
+- **D-271/D-272/D-273 device-confirmed** (§191/§192 - the sentence-start learning exception, the
+  prefix-distance suggestion ranking, and the A-07/A-12 undo-priority fix).
+- **D-274** (§193, the window-insets self-heal vs. D-260 padding-split disagreement): the user reports no
+  further problems observed - not treated as a full, exhaustive confirmation (no dedicated repro was re-run,
+  just continued ordinary use with nothing surfacing), but a real positive signal.
+- **D-275** (§194, the window-insets retry-chain-dying fix): **still not reliable** per the user's own direct
+  report - the opposite of a confirmation. Per this project's own established rule (re-question the
+  diagnosis itself on negative feedback for something already "fixed", rather than patching the same
+  approach again), this is deliberately left open rather than guessed at - a fresh device-log excerpt of the
+  actual current symptom is needed before touching this again, not a blind re-patch of §194's own fix.
+
+No code change; D-284's own follow-up bug report from the same round (ß/ƒ shown uppercase incorrectly) is
+handled separately, see the next entry.
+
+## §206 - D-285: D-284 Follow-Up - ß No Longer Shows "SS", And ƒ (Like π) Stays Lower-Case Under Shift (v0.9.2)
+
+Two concrete bugs in D-284's own new uppercase logic, reported immediately on device: the `ß` corner hint
+showed `"SS"` under Shift ("völliger Unsinn" - a two-character string is nonsense for a single-glyph corner
+hint), and the `ƒ` function-symbol hint on `f` was shown uppercased, which must stay lower-case exactly like
+`p`'s own `π` does, per the user's own direct comparison.
+
+**`ƒ` root cause:** `AlternativeScript.extendsWord()` (the shared predicate D-168/D-284 both use to decide
+"is this a real letter that should case-transform") excludes Greek-script characters specifically, since
+`π`/`α`/`β`/... are Latin-keyboard math-symbol hints borrowed from Greek, not real Greek text, while German
+is active. `ƒ` (U+0192, LATIN SMALL LETTER F WITH HOOK) is genuinely Latin script and passes `Char.isLetter()`,
+so the existing Greek-script check could never have excluded it - it needed its own explicit exclusion. New
+`AlternativeScript.LATIN_SYMBOL_LETTERS = setOf('ƒ')`, checked alongside the Greek-script test; a small,
+explicit, hand-curated set rather than a broader heuristic, since there is no principled Unicode property
+that distinguishes "a letter used as a borrowed symbol" from an ordinary one - documented as extendable if a
+future per-language hint (D-281) introduces another such case. This also transparently fixes the same latent
+bug in D-168's own popup uppercase logic for `f`'s single-hint preview popup, which shared the exact same
+predicate and had carried this bug unnoticed since it shipped, well before D-284 existed.
+
+**`ß`/`"SS"` root cause:** confirmed directly, not guessed - Kotlin's `String.uppercase()` (and Java's
+locale-aware full case mapping generally) maps lower-case `ß` to the two-character `"SS"`; this is the
+standard, deliberate backward-compatible behaviour (`ß` has no *simple*, 1:1 uppercase mapping in the
+Unicode casing tables at all, only this locale-aware *full* mapping), not a bug in the standard library. The
+single-character capital `ẞ` (U+1E9E) the user wants is a real, separately-encoded Unicode character, but no
+standard Char/String case-mapping function ever produces it from `ß`. New `AdaptKeyboardView.
+uppercaseSingleGlyph(text, paint)` (now the single call site both `popupDisplayTextFor()` and
+`cornerHintDisplayTextFor()` route through, replacing their own bare `.uppercase()` calls) special-cases `ß`
+directly: substitutes the literal `ẞ` character, but only when `paint.hasGlyph("ẞ")` confirms the current
+typeface can actually render it (`Paint.hasGlyph`, available since API 23, comfortably below this app's
+minSdk 26) - otherwise `ß` is left exactly as typed, per the user's own explicit fallback instruction,
+rather than ever falling back to the nonsensical `"SS"`.
+
+1 new unit test (`AlternativeScriptTest`: `ƒ` never extends the word, in or out of Greek mode). No dedicated
+test for the `ß`/`Paint.hasGlyph` path - Android view/`Paint` glue, the same established untested gap as the
+rest of this drawing code; the `ƒ` fix's own root cause (a predicate change) is fully covered instead. 877
+unit tests (876 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.1 -> 0.9.2.
+Not yet device-confirmed - needs a real Shift/Caps-Lock check that `s` shows a single `ẞ` (not `"SS"`) and
+that `f`'s own `ƒ` hint stays lower-case.

@@ -74,6 +74,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§206 (v0.9.2): D-285 - D-284 follow-up, two concrete bugs fixed on the spot from device feedback:**
+  **`ß` no longer shows nonsensical `"SS"`, and `ƒ` (like `π`) stays lower-case under Shift.** `ƒ`
+  (U+0192, genuinely Latin script) passed `Char.isLetter()` and slipped through `AlternativeScript.
+  extendsWord()`'s Greek-only exclusion - new explicit `LATIN_SYMBOL_LETTERS = setOf('ƒ')` set closes it
+  (also transparently fixes the same latent bug in D-168's own popup preview for `f`, unnoticed until now).
+  `ß`'s `"SS"` came from `String.uppercase()`'s standard locale-aware mapping (correct per Unicode, just
+  wrong for a single-glyph corner hint) - new `AdaptKeyboardView.uppercaseSingleGlyph()` (now the one call
+  site both `popupDisplayTextFor()`/`cornerHintDisplayTextFor()` route through) substitutes the real
+  single-character capital `ẞ` (U+1E9E) instead, gated on `Paint.hasGlyph("ẞ")` so it only shows when the
+  active typeface can actually render it, falling back to unchanged `ß` otherwise (never `"SS"`), per the
+  user's own explicit instruction. 1 new unit test (`AlternativeScriptTest`). 877 unit tests (876 + 1).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §206.
+- **§205 CAPTURED (still v0.9.1, no code change): batch device-confirmation round.** D-279/D-281/D-282/
+  D-271/D-272/D-273 all device-confirmed. D-274: no further problems reported (a positive signal, not an
+  exhaustive re-test). **D-275 still not reliable** per direct user report - left open rather than re-patched
+  blind, per this project's own rule about re-questioning the diagnosis on negative feedback; needs a fresh
+  device-log excerpt of the actual current symptom before it is touched again. See history §205.
 - **§204 (v0.9.1): D-284 - a key's static corner hint glyph now uppercases under Shift/Caps Lock too,**
   **matching what the long-press popup (D-168) already did.** New `AdaptKeyboardView.cornerHintDisplayTextFor()`
   mirrors `popupDisplayTextFor()` exactly - gated on `AlternativeScript.extendsWord`, not a bare
