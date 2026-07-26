@@ -72,8 +72,48 @@ History.md's append-only log) so they are not lost if the situation that would j
   between candidates" case adequately. Revisit only if a future profiling round again points at wasted,
   actually-superseded query time (not raw computation cost) as the dominant remaining factor.
 
+## Open TODOs / Known Limitations (Not Yet Actioned)
+
+Confirmed real, deliberately not fixed yet - flagged here so a future session does not have to rediscover
+them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
+non-trivial changes).
+
+- **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) is German-only.**
+  Found while auditing every place that does *not* route through the active-language pipeline (history §210's
+  own D-287 fix) - deliberately scoped to German today (that is the only curated list that exists), not a bug
+  in the D-287 sense. Revisit once a second installed language's own confusables against English are actually
+  curated - the seeding mechanism itself (`installStores()`) does not need to change shape, only gain a
+  per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
+  set per language.
+- **A URL field's own mid-field Shift re-arm after Backspace may still be affected by the same class of bug**
+  **D-288 (history §211) just fixed for field *entry*.** D-45's own "deleting a character back to a sentence
+  start re-arms Shift" logic (`handleBackspace()`, the `sentenceStartBefore(ic)` check right after
+  `deleteOneBefore`) does not check `urlMode`/`loginFieldKind` at all - a backspace landing right after a `.`
+  inside a domain (e.g. `example.com`) could in principle re-arm Shift the same way field entry used to.
+  Deliberately not fixed alongside D-288 - the user's own report was scoped to field *entry* specifically, and
+  this narrower, unconfirmed case was kept as a separate follow-up rather than silently bundled in. Needs a
+  real device check (backspace right after a domain's `.` in a URL field) before deciding whether it is worth
+  a matching guard.
+
 ## Current State
 
+- **§211 (v0.9.6): D-288 - a URL field (e.g. a browser address bar) auto-capitalised its very first**
+  **character, contradicting the spec's own already-agreed "commit verbatim, no capitalisation transform of**
+  **any kind" promise for E-01/U-01/P-01.** `finalizeAndCommit()`/`handlePunctuationDelimiter()` already
+  bypassed §6 verbatim for `loginFieldKind != LoginFieldKind.NONE || urlMode`, but `armShiftForNextWord()` -
+  the single choke point deciding the *keyboard's own Shift key state* for the next raw key press, not a §6
+  capitalisation-correction step - kept a narrower, D-163-era `loginFieldKind == LoginFieldKind.EMAIL` guard,
+  so an auto-armed Shift key still forced the very first character itself to arrive already-capitalised,
+  before the (already-correct) verbatim-commit bypass further downstream ever got a chance to matter. Fixed by
+  widening the guard to the exact `loginFieldKind != LoginFieldKind.NONE || urlMode` condition already used
+  consistently everywhere else in the file - also correctly stops the same auto-capitalisation for a
+  USERNAME/PASSWORD login field's first character, found while widening the condition, not separately
+  reported. A related but narrower, unconfirmed case (mid-field Backspace re-arm after a URL domain's own `.`)
+  deliberately left as an open TODO rather than bundled in - see the section above. No new unit tests
+  (established `AdaptKeyService`/`InputConnection` glue gap). 896 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real check that a
+  browser address bar's and a username/password field's first character no longer auto-capitalise, without
+  regressing ordinary sentence-start capitalisation elsewhere. See history §211.
 - **§210 (v0.9.5): D-287 - A-05/A-06/A-10's own `tokenRepair` silently checked every token against the**
   **English dictionary regardless of the active language - the actual "wird" -> "wi rd" / "Anfang" -> "an**
   **Fang" cause, fixed as step 2 once §209's revert fix was device-confirmed.** `installStores()` constructs

@@ -4993,7 +4993,18 @@ class AdaptKeyService : InputMethodService() {
         // user constantly. This runs after every commit as well as on field entry, so the one guard here
         // covers the whole field's lifetime, not only its very first word. A manually engaged Caps Lock
         // (D-15) is the user's own explicit choice and is untouched - only the automatic arm is suppressed.
-        if (loginFieldKind == LoginFieldKind.EMAIL) {
+        //
+        // D-288: widened from `loginFieldKind == LoginFieldKind.EMAIL` to every field E-01/U-01/P-01 already
+        // promise "commit verbatim, no capitalisation transform of any kind" for - the narrower check missed
+        // this guard's own actual effect entirely: even though finalizeAndCommit()'s own separate
+        // loginFieldKind/urlMode bypass already commits verbatim, an auto-armed Shift key changes what the
+        // very *next* raw key press itself produces (isUpperArmed() -> raw.uppercaseChar() in the CHAR
+        // handler) - before any composing/commit logic ever runs, so "commit verbatim" alone could not save a
+        // URL field's very first character from arriving pre-capitalised (reported directly: a browser
+        // address bar auto-capitalising its first letter). Matches the exact
+        // `loginFieldKind != LoginFieldKind.NONE || urlMode` condition already used consistently at every
+        // other §6-bypass point in this file (finalizeAndCommit, handlePunctuationDelimiter).
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode) {
             keyboardView?.shifted = false
             shiftGuardedArm = false
             shiftArmTime = SystemClock.uptimeMillis()

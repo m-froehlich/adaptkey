@@ -10720,3 +10720,51 @@ tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Versio
 yet device-confirmed - needs a real check that "wird" and "Anfang" (and any other German-only word) commit
 and are recognised correctly while German is active, without regressing genuine cross-language splits (e.g.
 an actual English phrase typed while German is active) or A-06/A-10's own equally-affected paths.
+
+## §211 - D-288: URL-Field Auto-Capitalisation At Field Entry, A Narrower Guard Than Its Own Established Sibling Condition (v0.9.6)
+
+Asked directly, purely informational: are there other places that do not route through the active-language
+dictionary pipeline (the D-287/§210 bug class)? Audited every `provider`/`dictionaryStore`/`capitalisation`/
+`tokenRepair` read and every `Language.GERMAN`/`Language.ENGLISH` literal in `AdaptKeyService.kt` by hand -
+none were the same class of bug; two are deliberate German-only features (diacritic restoration, the
+cross-language-confusables blacklist seed - the latter recorded as an open TODO in `AdaptKey-Progress.md`,
+per the user's own explicit request, not fixed), and `trackSustainedEnglishUsage`'s own English-only scope is
+a documented, pre-existing limitation of `LanguageClassifier` itself (German/English only), not this bug
+class either.
+
+Immediately after, a genuinely new, unrelated report: a URL field (e.g. a browser's own address bar)
+auto-capitalises its very first character, even though the spec's own §6 preamble already promises "This
+entire section (all of §6) is bypassed for email-mode, URL-mode, and login-field fragments... those commit
+verbatim, with no capitalisation transform of any kind" - so this is a real implementation gap against
+already-agreed spec text, not a new design question.
+
+**Root-caused by hand:** `finalizeAndCommit()`/`handlePunctuationDelimiter()` already correctly bypass §6 and
+commit verbatim for `loginFieldKind != LoginFieldKind.NONE || urlMode` - that part of the spec promise was
+already honoured. But `armShiftForNextWord()` (the single choke point deciding the *keyboard's own Shift key
+state* for the next raw key press - called both after every commit and once at field entry) carried a
+narrower, D-163-era guard: `if (loginFieldKind == LoginFieldKind.EMAIL)`. Every other §6-bypass point in this
+file already uses the full `loginFieldKind != LoginFieldKind.NONE || urlMode` condition; this one alone never
+got widened when U-01 (URL mode) was added. Consequence: an auto-armed Shift key changes what the *next raw
+key press itself produces* - `isUpperArmed()` -> `raw.uppercaseChar()` in the `KeyCode.CHAR` handler - before
+any composing/commit logic (including the already-correct verbatim-commit bypass) ever runs at all, so
+"commit verbatim" downstream could not save a URL field's very first character from being typed as already-
+capitalised.
+
+**Fix:** widened `armShiftForNextWord()`'s own guard to the exact same `loginFieldKind != LoginFieldKind.NONE
+|| urlMode` condition already established everywhere else in this file - one condition, reused, not a new
+mechanism. Beyond the reported URL case, this also correctly stops auto-capitalising the first character of a
+USERNAME/PASSWORD login field, which the same spec text (E-01/U-01/P-01) already covered but D-163's own
+narrower `== EMAIL` check had never actually reached - found while widening the condition, not separately
+reported.
+
+Not extended to D-45's own separate mid-field Backspace re-arm path (`handleBackspace()`'s
+`sentenceStartBefore(ic)` check after `deleteOneBefore`) - a backspace landing right after a `.` inside a URL
+domain could in principle hit the same class of bug, but the user's own report was scoped to field *entry*
+specifically; recorded as a separate, unconfirmed open TODO in `AdaptKey-Progress.md` rather than silently
+bundled into this fix.
+
+No new unit tests (established `AdaptKeyService`/`InputConnection` glue gap). 896 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.5 -> 0.9.6. Not yet device-confirmed
+- needs a real check that a browser address bar's first character, and a username/password field's first
+character, no longer auto-capitalise, without regressing ordinary sentence-start capitalisation in a normal
+text field.
