@@ -10043,3 +10043,55 @@ A-07 revised for both the whitespace-consumed-first behaviour and the caret-move
 Version bumped 0.8.148 -> 0.8.149. Not yet device-confirmed - the user's own five-Enter repro, the confirmed-
 auto-space case, and a genuine tap-elsewhere-then-Backspace are the three scenarios to watch for on the next
 test round.
+
+## §196 - D-277: §195's Caret-Move Guard (suppressNextUndoClear) Broke A-07 Outright - Replaced With Ground-Truth Verification At The Point Of Use (v0.8.150)
+
+Device-tested immediately, failed immediately: `"Das ist ein Satzz."` - `"Satzz"` correctly autocorrects to
+`"Satz"` on the `.`, the auto-space lands. Backspace removes the space (correct, per D-273). A further
+Backspace does nothing but delete the period - never reverts. The user reported the undo ticket was
+"apparently already discarded", and correctly identified that this happened *before* any Backspace was even
+pressed - Enter afterwards changed nothing either.
+
+**Root-caused precisely, not patched around.** `suppressNextUndoClear` (§195/D-276) was a *single-shot* echo
+guard: armed once per edit, consumed by the next `onUpdateSelection` callback. `handlePunctuationDelimiter()`'s
+own KDoc (D-270) already states the fact that broke it: "batching lets the editor coalesce the whole sequence
+back down to the same **two** callbacks an ordinary single commit already produces (an echo, then the real
+position)" - *two*, not one. The correction commit (`"Satzz"` -> `"Satz"`) armed the guard once; the *first* of
+the two resulting callbacks consumed it (correctly, no clear); the *second* callback found the guard already
+spent, `undoTyped` still non-null, and concluded - wrongly - that this was a genuine external caret move,
+discarding the window there and then, before the user had done anything at all. This is exactly the same class
+of bug D-270 itself had to fix for `suppressNextReclaimSpaceReset` (a single-shot guard consumed by the wrong
+one of several callbacks for one logical edit) - introduced fresh here by not accounting for it in the new
+guard.
+
+**Fixed by removing the reactive detection entirely, not by hardening it further.** A "did the caret move"
+guard fundamentally needs to survive an unknown, possibly-multiple number of callbacks per edit to be reliable
+- tuning delays or adding a counter would only be chasing the same class of bug again in a different shape.
+Instead, `performAutocorrectUndo()` now verifies its own precondition directly, synchronously, against the
+real document, exactly once, at the one moment it actually matters - immediately before ever calling
+`deleteSurroundingText()`: `ic.getTextBeforeCursor(undoCommitted.length + undoDelimiter.length, 0)` must
+exactly equal `undoCommitted + undoDelimiter`, or the revert is refused, the window discarded via `clearUndo()`,
+and the triggering Backspace falls back to an ordinary single-character delete instead of silently doing
+nothing. This does not depend on `onUpdateSelection` at all any more - immune to however many callbacks fire,
+in whatever order, for whatever reason (a tap elsewhere, a paste, a clipboard-chip insert, anything). `handleKey()`'s
+A-07 gate is unchanged from §195 otherwise (still checks for trailing whitespace first, ordinary-deleting it
+without ever calling `performAutocorrectUndo()` at all); the function's own return value (`Boolean`, true if it
+actually reverted) lets the caller fall back to an ordinary Backspace when it did not.
+
+Removed entirely: `suppressNextUndoClear` (the field, both arm sites in `finalizeAndCommit()`/`applySplit()`,
+the reset in `clearUndo()`), and the `onUpdateSelection` composing-empty branch reverts to its pre-§195 form -
+none of it is needed any more.
+
+The user's own point 3 requirement ("tippt man irgendwo anders hin, muss das Undo-Ticket komplett verworfen
+werden") is still satisfied, just by a different mechanism than originally proposed: rather than proactively
+closing the window the instant a move is detected, the window simply can never be *used* against the wrong
+text - the very next Backspace that would have tried to revert instead finds the mismatch, discards the stale
+window, and falls back to an ordinary delete. Functionally equivalent for the data-safety property that
+actually mattered (a revert can never corrupt unrelated text), and structurally simpler and more robust than
+the reactive alternative.
+
+No new unit tests - `AdaptKeyService`-internal `InputConnection` glue, the same established gap as A-07's
+other rounds. 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `AdaptKey-Spec.md`
+A-07's caret-move paragraph rewritten to describe the verify-before-use mechanism instead of the removed echo
+guard. Version bumped 0.8.149 -> 0.8.150. Not yet device-confirmed - the exact `"Satzz."` repro that broke
+§195 is the first thing to re-test.

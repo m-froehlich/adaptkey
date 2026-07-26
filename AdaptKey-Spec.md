@@ -505,10 +505,14 @@ confirmed as ordinary text (an explicit Space pressed while it was still pending
 way, since the whitespace-consuming Backspace behaviour above applies to it exactly the same as to any other
 trailing whitespace.
 
-Moving the caret away from an undo-eligible commit explicitly - a tap elsewhere, not this app's own reactive
-echo of its own whitespace-consuming edits above - discards the whole window outright, not just leaves it
-armed at the wrong position. A later Backspace at the new location is always an ordinary Backspace; it can
-never revert a commit the caret has since been moved away from.
+Moving the caret away from an undo-eligible commit explicitly - a tap elsewhere - never lets a later Backspace
+revert the wrong text. Rather than trying to catch the exact moment the caret moves (unreliable - an ordinary
+edit can itself generate more than one reactive selection-update callback, so a single "was this expected"
+check can be consumed by the wrong one and misfire), the revert verifies directly against the real document
+immediately before ever touching it: only if the text right before the caret still exactly matches what the
+window armed does the revert proceed; otherwise it is discarded outright and the Backspace falls back to an
+ordinary single-character delete instead, exactly as if no window had ever been armed. This also covers any
+other way the document could have changed underneath the window, not only an explicit tap.
 
 ### A-08 - Compound-Word Peeling (Suggestion Only)
 For an unrecognised token, a known noun (4+ characters), optionally preceded by a German linking element

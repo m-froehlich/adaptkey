@@ -70,6 +70,26 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§196 (v0.8.150): D-277 - §195's caret-move guard (suppressNextUndoClear) broke A-07 outright; replaced**
+  **with ground-truth verification at the point of use.** Device-tested immediately, failed immediately:
+  "Das ist ein Satzz." -> autocorrects to "Satz" + auto-space; Backspace removes the space; a further Backspace
+  only ever deleted the period, never reverted - the window was already discarded before the user did
+  anything. Root cause: `suppressNextUndoClear` was a single-shot echo guard, but an ordinary commit routinely
+  produces *two* `onUpdateSelection` callbacks (documented fact, D-270's own KDoc) - the first consumed the
+  guard correctly, the second found it already spent and wrongly discarded the window as if the caret had
+  moved externally. The same class of bug D-270 itself already had to fix once, for a different guard.
+  Fixed by removing the reactive callback-based detection entirely: `performAutocorrectUndo()` now verifies
+  its own precondition synchronously against the real document, exactly once, immediately before deleting
+  anything - `getTextBeforeCursor()` must exactly equal `undoCommitted + undoDelimiter`, or the revert is
+  refused, the window discarded, and the triggering Backspace falls back to an ordinary delete. Immune to
+  callback count/timing entirely, since it no longer depends on `onUpdateSelection` for this at all. Still
+  satisfies the user's "tap elsewhere must discard the ticket" requirement, just reactively at the point of
+  attempted use rather than proactively at the moment of the move - functionally equivalent for the actual
+  data-safety property that mattered. `suppressNextUndoClear` removed entirely (field, both arm sites,
+  `onUpdateSelection`'s composing-empty branch reverted to its pre-§195 form). No new unit tests (established
+  `InputConnection` glue gap). 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. Spec A-07 revised. Not yet device-confirmed - the exact repro that broke §195 is the first retest.
+  See history §196.
 - **§195 (v0.8.149): D-276 - A-07's undo redesigned: whitespace consumed before the revert fires, a fixed**
   **deletion range instead of a counter, and a genuine caret move now discards the window.** User requirement,
   confirmed before implementation: removing an auto-inserted post-punctuation space (or any whitespace,
