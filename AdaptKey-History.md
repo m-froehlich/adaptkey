@@ -9975,3 +9975,71 @@ somehow isn't caught after this, that would need a fresh log/repro to diagnose f
 No new unit tests - same established Android view/`Handler`/`WindowInsetsCompat` glue gap as §193 and its own
 precedents. 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped
 0.8.147 -> 0.8.148. Not yet device-confirmed.
+
+## §195 - D-276: A-07's Undo Redesigned - Whitespace Consumed Before The Revert Fires, A Fixed Deletion Range Instead Of A Counter, And A Genuine Caret Move Now Discards The Window (v0.8.149)
+
+User-reported requirement, stated precisely before any code was touched (per this project's own "confirm the
+logic before implementing" convention, honoured literally this round - the user explicitly asked for
+confirmation first): removing an auto-inserted post-punctuation space must not itself trigger a revert of the
+preceding autocorrect - more generally, *any* whitespace (including several Enters in a row) typed after a
+commit and then backspaced away again must be consumed ordinarily first; only once the caret is genuinely
+back at the actual committed text, with nothing left in between, should a further Backspace trigger the
+revert. A concrete worked example: commit, then five Enters, then five Backspaces removing them plus the
+original auto-space - the *sixth* Backspace (the one that would otherwise delete the real character after the
+word) should be the one that reverts, since no non-whitespace was typed in between and the window was never
+left.
+
+**Root-caused the gap precisely before proposing a fix.** `undoTrailingChars` (D-265) already correctly
+counted *forward* - every whitespace-only delimiter committed while the window stayed open (`finalizeAndCommit()`'s
+own composing-empty branch, reached by both a plain Enter and a plain Space) incremented it. The gap was
+purely in the *backward* direction: `handleKey()`'s A-07 gate triggered `performAutocorrectUndo()` on the
+very first Backspace unconditionally, with no awareness of `undoTrailingChars` at all - so any accumulated
+trailing whitespace was never consumed ordinarily first, and the revert fired (and mis-deleted) too early.
+Also found, while tracing the exact accounting: A-12's own auto-space, when *confirmed* as permanent text
+(an explicit Space pressed while it was still pending, absorbing it rather than removing it) rather than
+removed, was never counted into `undoTrailingChars` at all - it is committed via a direct `ic.commitText(" ",
+1)` inside `handlePunctuationDelimiter()`, entirely outside `finalizeAndCommit()`'s own tracked path. A revert
+firing at that point would have deleted one character too few, the same failure shape as the already-fixed
+`"eehvnicht."` bug (§191/D-273).
+
+**The user's own counter-proposal, simpler and correct**: since the redesigned Backspace handling (below)
+already guarantees the revert only ever fires once every trailing whitespace character has *already* been
+removed ordinarily, `performAutocorrectUndo()` never actually needs to know how much whitespace there was -
+the caret is always, by construction, exactly adjacent to the original committed range at that point. Dropped
+`undoTrailingChars` entirely; `performAutocorrectUndo()`'s deletion length is now the fixed
+`undoCommitted.length + undoDelimiter.length`, computed once at commit time and never touched again. This is
+strictly simpler than the counter it replaces *and* closes the confirmed-auto-space gap above as a direct
+consequence, with no separate fix needed there: whether the character sitting before the caret is an Enter's
+newline, an explicit Space, or a confirmed A-12 auto-space makes no difference to a live "is this whitespace?"
+check - it is removed ordinarily either way before the revert is ever reached.
+
+**Implementation**: `handleKey()`'s A-07 `KeyCode.DELETE` branch now checks
+`ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace()` before deciding what a Backspace does - true
+means an ordinary single-character delete (routed through the existing `handleBackspace()`, which already
+does exactly the right thing for a composing-empty Backspace) with the window left armed; false means the
+caret is genuinely back at the boundary, and `performAutocorrectUndo()` fires as before.
+
+**The user separately confirmed the related, larger gap flagged during the design discussion**: a genuine
+caret move away from an undo-eligible commit did not close the window at all while `composing` was empty -
+`reclaimWordAtCaret()` (fired by `onUpdateSelection` on every collapsed-selection update in that state) never
+touched `undoTyped`/`undoDelimiter`/`undoCommitted`, unlike the composing-*non*-empty branch, which already
+detects and reacts to a genuine external move via its own `composingAnchor`/`composingCursor` expected-position
+check. Without this, tapping to an unrelated part of the document and then pressing Backspace there would have
+tried to revert the original commit *at the new, unrelated location* - a real, if narrow, text-corruption risk,
+not merely a UX rough edge. Fixed with a new single-shot echo guard, `suppressNextUndoClear`, mirroring
+`suppressNextReclaimSpaceReset`'s own shape but kept as its own, separate flag - the two already guard
+different, potentially-concurrent commits, and `suppressNextReclaimSpaceReset` already documents its own "only
+one of the two commits it guards against can ever be the most recent thing" invariant, which a third,
+unrelated purpose would have broken. Armed at every one of the undo window's own edits (the original
+commit/split, a Space/Enter pressed while it stays open, the new ordinary-Backspace-through-whitespace path
+above) and consumed the next time `onUpdateSelection` reports a collapsed selection with `composing` empty; if
+`undoTyped != null` and the guard was *not* armed, the callback reflects a genuine external move, and the
+window is discarded via the ordinary `clearUndo()`.
+
+No new unit tests - all of this is `AdaptKeyService`-internal `InputConnection`/`onUpdateSelection` timing
+glue, the same established gap as A-07's own prior rounds (D-265/D-269/D-273 alike, none of which added tests
+either). 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `AdaptKey-Spec.md`
+A-07 revised for both the whitespace-consumed-first behaviour and the caret-move-discards-the-window addition.
+Version bumped 0.8.148 -> 0.8.149. Not yet device-confirmed - the user's own five-Enter repro, the confirmed-
+auto-space case, and a genuine tap-elsewhere-then-Backspace are the three scenarios to watch for on the next
+test round.

@@ -462,15 +462,18 @@ The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-
 
 ### A-07 - Post-Commit Autocorrect Undo
 After a commit that involved any correction - spelling autocorrect, diacritic/umlaut restoration, or an A-05
-split - a single backspace **tap** issued immediately afterwards restores the originally typed text,
-including rejoining a split back into one word. The undo window survives any number of intervening
-**whitespace** keystrokes (Space, Enter) rather than closing on the very next keystroke regardless of kind -
-only a genuine non-whitespace character (a letter, digit, or punctuation mark) closes it. Backspacing at
-this point undoes the intervening whitespace right along with the rejected correction itself, so an
-accidental Enter reached for while meaning Backspace does not permanently forfeit the revert. This applies
-only to a plain tap after the commit (immediate, or after surviving whitespace as above); it does not affect
-the whole-word delete gesture (G-02) or the ordinary shift-state-after-backspace behaviour (Addendum to
-G-05). The undo also:
+split - a backspace issued after the commit restores the originally typed text, including rejoining a split
+back into one word. The undo window survives any number of intervening **whitespace** keystrokes (Space,
+Enter) rather than closing on the very next keystroke regardless of kind - only a genuine non-whitespace
+character (a letter, digit, or punctuation mark) closes it, or the caret being moved away explicitly (see
+below). While any such whitespace still sits between the caret and the committed text, a Backspace removes
+only that one character ordinarily - exactly as any other Backspace would - and the window stays armed;
+only once the caret is genuinely back at the committed text itself, with nothing left in between, does a
+further Backspace trigger the actual revert. This is why an accidental Enter reached for while meaning
+Backspace, or several of them, does not permanently forfeit the revert - each is simply backspaced away
+normally first, the revert only firing once, at the real boundary. This applies only to a plain tap after the
+commit; it does not affect the whole-word delete gesture (G-02) or the ordinary shift-state-after-backspace
+behaviour (Addendum to G-05). The undo also:
 
 - **Un-learns the dictionary side** exactly, symmetrically reversing whatever unigram/bigram reinforcement
   or brand-new-entry creation that commit had just caused, deleting an entry outright if its count reaches
@@ -497,7 +500,15 @@ A-12's own still-pending auto-space also takes priority over this mechanism spec
 armed by the same commit at once (an A-05 split that also happens to end a sentence, e.g. `"ehvnicht."` ->
 `"eh nicht. "`). The first Backspace only consumes the pending auto-space, per A-12's own mode; it does not
 also hijack that keystroke for the undo. A later Backspace, once the auto-space (and by then the delimiter
-itself) is actually gone from the document, triggers the undo normally.
+itself) is actually gone from the document, triggers the undo normally - whether that auto-space was instead
+confirmed as ordinary text (an explicit Space pressed while it was still pending) makes no difference either
+way, since the whitespace-consuming Backspace behaviour above applies to it exactly the same as to any other
+trailing whitespace.
+
+Moving the caret away from an undo-eligible commit explicitly - a tap elsewhere, not this app's own reactive
+echo of its own whitespace-consuming edits above - discards the whole window outright, not just leaves it
+armed at the wrong position. A later Backspace at the new location is always an ordinary Backspace; it can
+never revert a commit the caret has since been moved away from.
 
 ### A-08 - Compound-Word Peeling (Suggestion Only)
 For an unrecognised token, a known noun (4+ characters), optionally preceded by a German linking element

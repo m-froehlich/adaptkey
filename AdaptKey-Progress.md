@@ -70,6 +70,27 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§195 (v0.8.149): D-276 - A-07's undo redesigned: whitespace consumed before the revert fires, a fixed**
+  **deletion range instead of a counter, and a genuine caret move now discards the window.** User requirement,
+  confirmed before implementation: removing an auto-inserted post-punctuation space (or any whitespace,
+  including several Enters in a row) must be consumed ordinarily first - only once the caret is genuinely back
+  at the actual committed text does a further Backspace trigger the revert. Root cause: `undoTrailingChars`
+  (D-265) counted forward correctly but `handleKey()`'s A-07 gate never consulted it before reverting, firing
+  on the very first Backspace regardless. Also found: A-12's auto-space, when *confirmed* via an explicit Space
+  rather than removed, was never counted at all (committed outside `finalizeAndCommit()`'s tracked path) - a
+  revert there would have mis-deleted by one character, the same shape as the `"eehvnicht."` bug. User's own
+  counter-proposal, adopted as simpler and correct: since the revert now only ever fires once all trailing
+  whitespace is already gone, `performAutocorrectUndo()` needs no counter at all - a fixed
+  `undoCommitted.length + undoDelimiter.length` is always correct, and this closes the confirmed-auto-space gap
+  automatically (a live "is this whitespace?" check treats a newline, an explicit space, and a confirmed
+  auto-space identically). `undoTrailingChars` removed entirely. Separately, user confirmed a related, larger
+  gap: a genuine caret move away from an undo-eligible commit did not close the window at all while composing
+  was empty - fixed with a new single-shot echo guard (`suppressNextUndoClear`, deliberately not reusing
+  `suppressNextReclaimSpaceReset`, which already serves two other purposes) mirroring the existing
+  expected-caret check the composing-non-empty branch already had. No new unit tests (established
+  `InputConnection`/`onUpdateSelection` glue gap, same as A-07's prior rounds). 843 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-07 revised. Not yet device-confirmed. See
+  history §195.
 - **§194 (v0.8.148): D-275 - the D-161 retry chain was silently dying on its first attempt, explaining why**
   **the self-heal never actually caught the stuck-keyboard race it exists for.** Asked directly after §193:
   why has it apparently never kicked in? Found a second, independent bug in `windowInsetsRecheckRunnable`:

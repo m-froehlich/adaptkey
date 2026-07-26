@@ -395,12 +395,18 @@ class AdaptKeyService : InputMethodService() {
     // (never the whole token - an ordinary dictionary/diacritic/split correction is never a touch-
     // resolution error) can be un-trained on undo. Null whenever the correction was not raw-coordinate-based.
     private var undoRawCorrection: RawCorrectionUndo? = null
-    // D-265: characters actually committed by a Space/Enter pressed *while the undo window is still open* -
-    // those keys no longer close the window (see handleKey's own A-07 gate), but they do still insert real
-    // text, which now sits between the cursor and undoCommitted/undoDelimiter. performAutocorrectUndo()
-    // deletes this many extra characters first, so an accidental Enter/Space in between does not throw off
-    // where the actually-armed commit is - only a genuine non-whitespace character closes the window outright.
-    private var undoTrailingChars = 0
+    // D-276: whether the *next* onUpdateSelection callback with an empty composing region is expected to be
+    // nothing but the reactive echo of an edit the A-07 undo window itself just performed (the original
+    // commit, a Space/Enter pressed while the window is still open, or handleKey()'s own ordinary Backspace
+    // through a trailing whitespace character) - consumed there exactly once. When undoTyped != null and this
+    // is *not* set, the callback reflects a genuine external caret move instead (a tap elsewhere, unrelated to
+    // anything this window did), which must close the window outright - see onUpdateSelection's own KDoc.
+    // Deliberately a separate flag from suppressNextReclaimSpaceReset, which already serves two other,
+    // narrower single-shot purposes of its own (D-269) - overloading it here would violate its own "only one
+    // of the commits it guards against can ever be the most recent thing that happened" invariant, since an
+    // undo-window edit and a space-eating commit are different, unrelated keystrokes that can each arm their
+    // own guard independently.
+    private var suppressNextUndoClear = false
     
     // D-248: the last few LearnRecords learnWord()/learnWordStrong() produced (every outcome except
     // LearnOutcome.SKIPPED, which changed nothing) - unlike the A-07 undo state above, this deliberately
@@ -1165,6 +1171,24 @@ class AdaptKeyService : InputMethodService() {
             // was only ever wired to run on the *next* keystroke; do it right now instead, so mid-word live
             // correction also works the instant the caret touches a word.
             if (newSelStart == newSelEnd) {
+                // D-276: mirrors the composing-non-empty branch's own expected-caret check further below, for
+                // the A-07 undo window specifically - that branch has composingAnchor/composingCursor to
+                // compare against; this one has nothing equivalent while composing is empty, so a single-shot
+                // echo guard stands in instead (armed by every one of the window's own edits: the original
+                // commit, a Space/Enter typed while it stayed open, an ordinary Backspace through trailing
+                // whitespace - see suppressNextUndoClear's own KDoc). A genuinely external caret move with the
+                // guard unarmed closes the window outright, per the user's own explicit requirement - moving
+                // the caret away from an undo-eligible commit must discard the whole window, not leave it
+                // dangling at the wrong position for a later Backspace to misapply. A non-collapsed selection
+                // forming instead is left alone here - D-269's own handleKey() check already discards the
+                // window unconditionally the moment any key is next pressed against it.
+                if (undoTyped != null) {
+                    if (suppressNextUndoClear) {
+                        suppressNextUndoClear = false
+                    } else {
+                        clearUndo()
+                    }
+                }
                 reclaimWordAtCaret()
             }
             return
@@ -1916,7 +1940,17 @@ class AdaptKeyService : InputMethodService() {
             if (undoTyped != null) {
                 when (key.code) {
                     KeyCode.DELETE -> {
-                        performAutocorrectUndo(ic)
+                        // D-276: a Backspace still finds trailing whitespace (a Space/Enter pressed earlier
+                        // while the window stayed open, per the case below) immediately before the caret -
+                        // remove only that one character ordinarily, the same as any other Backspace would,
+                        // and keep the window armed; the revert itself only ever fires once the caret is
+                        // genuinely back at the actual committed text, with nothing left in between.
+                        if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
+                            suppressNextUndoClear = true
+                            handleBackspace(ic)
+                        } else {
+                            performAutocorrectUndo(ic)
+                        }
                         return
                     }
                     // D-265: Space/Enter must not foreclose the undo window - only the next genuine
@@ -2826,14 +2860,19 @@ class AdaptKeyService : InputMethodService() {
             }
             pendingSuggestionSpace = false
             ic.commitText(delimiter, 1)
-            // D-265: only a genuine non-whitespace character closes the A-07 undo window - a Space or a
+            // D-276: only a genuine non-whitespace character closes the A-07 undo window - a Space or a
             // blank Enter (delimiter "" or "\n") must not, so an accidental one reaching for Backspace
-            // instead does not permanently forfeit the revert; recorded so performAutocorrectUndo() removes
-            // it too, right along with the rejected correction, if a later Backspace does undo.
+            // instead does not permanently forfeit the revert. Nothing needs recording any more (D-276
+            // dropped undoTrailingChars - see performAutocorrectUndo()'s own KDoc): the window's Backspace
+            // handling in handleKey() only ever reverts once every trailing whitespace character, including
+            // this one, has already been removed ordinarily, so performAutocorrectUndo() always finds the
+            // caret exactly adjacent to undoCommitted/undoDelimiter regardless of how much whitespace piled
+            // up in between. suppressNextUndoClear arms the same single-shot echo guard reclaimWordAtCaret()
+            // already uses for the space-eating flags, for this same commit's own onUpdateSelection echo.
             if (delimiter.isNotEmpty() && delimiter.any { !it.isWhitespace() }) {
                 clearUndo()
             } else if (undoTyped != null) {
-                undoTrailingChars += delimiter.length
+                suppressNextUndoClear = true
             }
             // D-137: a standalone digit or punctuation mark - composing was already empty - is exactly how
             // typing a time ("14:30") actually reaches this function: per the KeyCode.CHAR handler's own
@@ -3056,7 +3095,9 @@ class AdaptKeyService : InputMethodService() {
             undoWasSplit = false
             undoLearnRecords = listOf(learnRecord)
             undoRawCorrection = rawCorrectionUndo
-            undoTrailingChars = 0
+            // D-276: this very commit's own onUpdateSelection echo must not be mistaken for an external
+            // caret move and close the window it just armed - see suppressNextUndoClear's own KDoc.
+            suppressNextUndoClear = true
             // D-88: the word actually changed - this is an accepted correction, not a plain commit.
             notifySuggestionAccepted(finalWord)
         } else {
@@ -3326,7 +3367,9 @@ class AdaptKeyService : InputMethodService() {
         // involves the D-39 raw-coordinate path, so there is no touch-model sample to un-train here.
         undoLearnRecords = listOf(leftRecord, rightRecord)
         undoRawCorrection = null
-        undoTrailingChars = 0
+        // D-276: this very commit's own onUpdateSelection echo must not be mistaken for an external caret
+        // move and close the window it just armed - see suppressNextUndoClear's own KDoc.
+        suppressNextUndoClear = true
         // D-43: predict the next word (following the right-hand split part) instead of a blank bar. D-247:
         // pin the "Gelernt: X" confirmation ahead of it when either half just crossed the promotion
         // threshold - the right half takes priority (it is the word actually adjacent to what comes next);
@@ -3383,15 +3426,21 @@ class AdaptKeyService : InputMethodService() {
         return indices
     }
     
+    /**
+     * D-276: [handleKey]'s own A-07 gate only ever calls this once every whitespace character typed/inserted
+     * while the undo window stayed open has *already* been removed ordinarily (see that gate's own comment) -
+     * so the caret is always, by construction, exactly adjacent to [undoCommitted]/[undoDelimiter] here,
+     * regardless of how many Enters/Spaces piled up and were then backspaced away again in between. No
+     * separate accounting of that trailing whitespace is needed any more (dropped the old undoTrailingChars
+     * counter entirely) - deleting exactly [undoCommitted]'s and [undoDelimiter]'s own combined length is
+     * always correct.
+     */
     private fun performAutocorrectUndo(ic: InputConnection) {
         val typed = undoTyped ?: return
         val wasSplit = undoWasSplit
         val learnRecords = undoLearnRecords
         val rawCorrection = undoRawCorrection
-        // D-265: an accidental Space/Enter pressed while the window stayed open is undone right along with
-        // the rejected correction itself - deleted first (it sits closest to the cursor), then the original
-        // committed text/delimiter.
-        ic.deleteSurroundingText(undoTrailingChars + undoCommitted.length + undoDelimiter.length, 0)
+        ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
         previousWord = typed
         clearUndo()
@@ -4941,7 +4990,7 @@ class AdaptKeyService : InputMethodService() {
         undoWasSplit = false
         undoLearnRecords = emptyList()
         undoRawCorrection = null
-        undoTrailingChars = 0
+        suppressNextUndoClear = false
     }
     
     private fun capsModeFor(info: EditorInfo?): CapsMode {
