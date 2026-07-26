@@ -10768,3 +10768,11 @@ No new unit tests (established `AdaptKeyService`/`InputConnection` glue gap). 89
 - needs a real check that a browser address bar's first character, and a username/password field's first
 character, no longer auto-capitalise, without regressing ordinary sentence-start capitalisation in a normal
 text field.
+
+## §212 CAPTURED (still v0.9.6, no code change): The D-45 Mid-Field Backspace TODO Does Not Reproduce
+
+The user directly tested the narrower, deliberately-unfixed case §211/D-288 had flagged as an open TODO
+(`AdaptKey-Progress.md`): Backspace right after a domain's own `.` inside a URL field (e.g. `example.com`)
+does **not** re-arm Shift/auto-capitalise there. Confirmed no bug exists on this specific path - removed from
+`AdaptKey-Progress.md`'s "Open TODOs" list; no code change. The other open TODO from the same round (the
+German-only cross-language-confusables blacklist seed) remains open, untouched by this check.

@@ -85,15 +85,6 @@ non-trivial changes).
   curated - the seeding mechanism itself (`installStores()`) does not need to change shape, only gain a
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
-- **A URL field's own mid-field Shift re-arm after Backspace may still be affected by the same class of bug**
-  **D-288 (history §211) just fixed for field *entry*.** D-45's own "deleting a character back to a sentence
-  start re-arms Shift" logic (`handleBackspace()`, the `sentenceStartBefore(ic)` check right after
-  `deleteOneBefore`) does not check `urlMode`/`loginFieldKind` at all - a backspace landing right after a `.`
-  inside a domain (e.g. `example.com`) could in principle re-arm Shift the same way field entry used to.
-  Deliberately not fixed alongside D-288 - the user's own report was scoped to field *entry* specifically, and
-  this narrower, unconfirmed case was kept as a separate follow-up rather than silently bundled in. Needs a
-  real device check (backspace right after a domain's `.` in a URL field) before deciding whether it is worth
-  a matching guard.
 
 ## Current State
 
