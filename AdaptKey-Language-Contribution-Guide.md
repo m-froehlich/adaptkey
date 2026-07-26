@@ -97,6 +97,14 @@ Up to three plain text files, UTF-8, one language:
   design your own from what would actually help someone typing your language day to day. Without this file,
   your language falls back to `KeyboardLayout.DEFAULT_LETTER_HINTS` (German's own set) - functional, but not
   tailored to your language, so it is worth providing even though it is the one truly optional file here.
+  Note what this file covers and what it does not: one *single* secondary symbol per key (L-05). A key
+  offering *several* alternatives in one popup (e.g. `p`'s Greek-letter popup, a digit's shifted-symbol-plus-
+  superscript pair) is still built in compiled Kotlin (`KeyboardLayout.kt`/`GreekLayout.kt`), not yet part of
+  this data format - not something you need to worry about for an ordinary new language, only relevant if you
+  are adding this kind of multi-alternative popup yourself. Whichever key ends up with one, you do **not**
+  need to hand-tune its popup's left/right direction: D-282 made that automatic, based on the real popup
+  width and the key's actual screen position, not on which key it happens to be - it works the same whether
+  the alternatives came from this file or from hand-written Kotlin.
 
 Put your working files under a new `dictionaries/<code>/` folder at the repo root (mirroring
 `dictionaries/de/`, `dictionaries/el/`) so they stay in version control even though they never enter the

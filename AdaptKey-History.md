@@ -10372,3 +10372,66 @@ few more existing tests extended in place with additional assertions rather than
 Version bumped 0.8.152 -> 0.8.153. Not yet device-confirmed - needs a real check that English no longer
 shows umlaut hints and that German's own hints are unchanged, in addition to D-280's own still-outstanding
 device checks.
+
+## §202 - D-282: Long-Press Popup Direction Is Now Computed Dynamically From Real Geometry, Not Hard-Coded Per Character (v0.8.154)
+
+Direct user follow-up to D-281: a lot of care went into making the D-01/D-44 long-press popup grow in the
+right direction with the right entry landing over the finger (§34, D-99, D-105) - that must not get lost
+now that a key's own alternatives can come from per-language data (D-281) rather than only from hand-written
+Kotlin. The user's own framing: until now, popup direction was never regulated dynamically - a key whose
+base sits in the right half of its row simply had its (otherwise fixed) alternatives list reversed at the
+data level, by hand, per character. Asked explicitly to make this dynamic instead.
+
+**Root mechanism traced precisely before changing anything**, since the existing behaviour is subtle:
+`HorizontalLongPressPopup.rowLeft()` already centres the popup so the *pre-selected* cell sits over the key
+(`ideal = keyCenterX - offsetToPreSelectedCenter`), clamping into `[minLeft, maxLeft]` only when that ideal
+position would run off-screen. For `'p'` (Greek-letter popup) and `'0'` (shifted-symbol/superscript popup),
+the key's own value is never literally present among the alternatives, so `preSelectedIndexFor()` always
+falls back to index 0 regardless of list order - meaning reversing the array doesn't change *which* index is
+pre-selected, only *which symbol* sits at that index, and (since the popup is always drawn in list order,
+left to right) *where on screen* it ends up once clamping shifts the whole row. For a key near the row's
+right edge, clamping always pulls the row's right edge in first (there is no room to grow further right), so
+whichever entry sits at the *last* index ends up physically nearest the key - reversing the list means the
+entry the caller considers primary (conventionally listed first, e.g. `PI_ALTERNATIVES`' own `π`) is the one
+that lands there, instead of the least-relevant entry.
+
+**The fix generalises this exact reasoning instead of replacing it**, since it was already correct - only
+*how the reversal decision gets made* changes, from "is this literally the character `'p'` or `'0'`" to "does
+this popup's real geometry actually need it". New `HorizontalLongPressPopup.wouldClampRight(keyCenterX,
+cellWidths, preSelectedIndex, maxLeft): Boolean` reuses `rowLeft()`'s own `ideal` computation and reports
+whether it would exceed `maxLeft` - i.e. whether the row would actually be pulled leftward. `AdaptKeyboardView.
+openPopup()` calls this before doing anything else: when true, it reverses both `alternatives` and their
+matching `cellWidths` together, and re-derives `preSelected` for the now-reversed list (`size - 1 -
+preSelectedRaw`, since the same entry that was previously at index 0 now sits at the last index). `Keyboard
+Layout.topRowKey()`'s `'p'` case, `KeyboardLayout.numberKey()`'s `'0'` case, and `GreekLayout.numberKey()`'s
+identical duplicate all had their hard-coded `.reversed()` calls removed - every alternatives list is now
+built once, in its own natural (primary-first) order, regardless of where it ends up in a row.
+
+**Why this could not have been left as position-only (e.g. "reverse whenever the key's centre is in the
+right half of the row")**: checked against the actual data first - `'o'`'s own 2-cell Ø popup sits one key to
+the left of `'p'` in the same row and is *not* reversed today, yet a naive "right half of the row" position
+check would flag it too, since it is nearly as close to the edge. The real, existing distinguishing factor is
+the *popup's own width* relative to how much room is actually left at that position - `'o'`'s 2-cell popup
+is narrow enough to fit unclamped even that close to the edge, while `'p'`'s 7-cell Greek-letter popup is not.
+A pure position heuristic would have been a regression (needlessly reversing `'o'` too); computing the real
+clamp condition, as implemented, reproduces the existing, already-correct distinction exactly rather than
+guessing at a threshold.
+
+This also means the fix is not limited to the letters/number rows any more: `SymbolLayout`'s own calculator
+`π` key (which reuses `PI_ALTERNATIVES` unreversed, since it sits mid-row there) is now covered by the exact
+same, single code path in `AdaptKeyboardView` - previously each `KeyboardLayout`-family object would have
+needed its own hand-added special case if it ever put a wide popup on an edge key, as `GreekLayout` already
+had to duplicate for `'0'`.
+
+5 new unit tests (`HorizontalLongPressPopupTest`): a right-edge key with a wide popup clamps, a narrow popup
+at the same position does not, a mid-row key with a wide popup does not, the pre-selected index shifts the
+clamp point, and invalid input is rejected - mirroring the existing suite's own style. Three existing tests
+(`KeyboardLayoutTest`'s `'0'`-reversed and `'p'`-reversed assertions, `GreekLayoutTest`'s `'0'`-reversed
+assertion) updated to expect the natural, unreversed order at the data level, since the reversal has moved
+to the view. 876 unit tests (871 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`AdaptKey-Spec.md` L-05 and `AdaptKey-Language-Contribution-Guide.md` (§3) updated to describe the dynamic
+mechanism and to make clear that a future multi-alternative-popup key, wherever it comes from, needs no
+hand-tuning for its own popup direction any more. Version bumped 0.8.153 -> 0.8.154. Not yet
+device-confirmed - needs a real long-press on `p` and `0` (still correct, computed instead of hard-coded)
+and, ideally, a deliberately-constructed test case with a wide popup on some other edge key to confirm the
+dynamic path actually engages beyond the two cases it was verified against here.

@@ -74,6 +74,23 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§202 (v0.8.154): D-282 - long-press popup direction (§34/D-99/D-105) is now computed dynamically from**
+  **real geometry, not hard-coded per character - direct user follow-up to D-281.** New
+  `HorizontalLongPressPopup.wouldClampRight()` reuses `rowLeft()`'s own centring math to ask "would this
+  popup, at this key's real position with its real width, actually get clamped leftward?" -
+  `AdaptKeyboardView.openPopup()` reverses `alternatives`/`cellWidths` together (and re-derives
+  `preSelected`) only when that's true, instead of `KeyboardLayout`/`GreekLayout` baking a `.reversed()` in
+  for the hard-coded `'p'`/`'0'` cases at layout-build time (all three removed). Checked first that a naive
+  "right half of the row" position-only heuristic would have been wrong - `'o'`'s own narrow 2-cell Ø popup
+  sits almost as close to the edge as `'p'` but was never reversed, because its own popup is narrow enough
+  to fit unclamped there; the real fix reproduces exactly this existing distinction instead of guessing a
+  threshold. Bonus: `SymbolLayout`'s calculator `π` key is now covered by the same single code path too,
+  with no per-`Layout`-object special-casing needed if a future contribution ever puts a wide popup on an
+  edge key. 5 new unit tests (`HorizontalLongPressPopupTest`); 3 existing tests
+  (`KeyboardLayoutTest`/`GreekLayoutTest`) updated to expect the natural, unreversed order at the data
+  level. 876 unit tests (871 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec L-05 and the
+  contribution guide (§3) updated. Not yet device-confirmed - needs a real long-press on `p`/`0` (still
+  correct behaviour, now computed instead of hard-coded). See history §202.
 - **§201 (v0.8.153): D-281 - the AltGr/long-press hint set (L-05) is now per-language data, not one**
   **German-derived global default - direct user pushback on §200's "no new layout code needed" claim.**
   `AdaptKeyboardView.letterHints` was confirmed to be one single, German-oriented map applied regardless of

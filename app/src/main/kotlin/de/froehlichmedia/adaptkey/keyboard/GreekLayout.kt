@@ -126,11 +126,15 @@ object GreekLayout {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
     }
     
-    /** D-105: see [KeyboardLayout.numberKey] - identical treatment, including the `0` reversal. */
+    /**
+     * D-105: see [KeyboardLayout.numberKey] - identical treatment. D-282: the `0` reversal this KDoc used
+     * to mention is gone here too, for the same reason - [AdaptKeyboardView.openPopup] now handles it
+     * dynamically.
+     */
     private fun numberKey(c: Char): Key {
         val hint = NUMBER_HINTS[c]
         val superscript = NUMBER_SUPERSCRIPTS[c]
         val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
-        return charKey(c, hint, alternatives = if (c == '0') alternatives.reversed() else alternatives)
+        return charKey(c, hint, alternatives = alternatives)
     }
 }

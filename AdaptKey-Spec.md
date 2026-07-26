@@ -117,10 +117,14 @@ still the fallback used whenever no per-language set is available - remains: `@`
 (`α β γ δ λ ω`) and a second alternative on `O` (`ö` then `Ø`) - Greek itself does not use this mechanism at
 all, having its own accent system instead (§4/G-01). Symbols already carried by the number row (L-06) - such
 as `/` and `&` - are not duplicated here. Keys with more than one secondary alternative show a full popup
-(horizontal, centred over the stem key, growing into available screen space; an edge key's list is reversed
-so the key's own glyph stays nearest the finger), not just a single-tap hint; a key with several alternatives
-but no natural single hint glyph shows a small corner "more alternatives" triangle instead. The popup
-tolerates a small amount of finger movement during the hold without cancelling or mis-selecting. Per-key
+(horizontal, centred over the stem key, growing into available screen space), not just a single-tap hint; a
+key with several alternatives but no natural single hint glyph shows a small corner "more alternatives"
+triangle instead. Whenever the popup would run out of room to grow towards one side (a key near that edge of
+the row) it is drawn reversed instead (D-282), so the key's own primary glyph still ends up nearest the
+finger rather than pushed away by the clamp - determined dynamically from the actual popup width and the
+key's own screen position, not by which specific key it happens to be, so this holds for any key's popup
+regardless of what a language pack's own data puts on it. The popup tolerates a small amount of finger
+movement during the hold without cancelling or mis-selecting. Per-key
 symbols and whether hint glyphs are displayed remain user-configurable on top of the active language's own
 default (C-08). Together with L-03 and L-06 this removes the need to switch to `?123` for most
 everyday input.

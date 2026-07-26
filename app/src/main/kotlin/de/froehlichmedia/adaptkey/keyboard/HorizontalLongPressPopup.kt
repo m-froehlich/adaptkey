@@ -65,4 +65,31 @@ object HorizontalLongPressPopup {
         }
         return cellWidths.size - 1
     }
+    
+    /**
+     * D-282: whether centring [cellWidths] over [keyCenterX] (with [preSelectedIndex] as the pre-selected
+     * cell) would need [rowLeft] to clamp the row leftward - i.e. the popup has no room to grow rightward
+     * from the key's own position, exactly the geometry a key near a row's right edge runs into.
+     *
+     * [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView.openPopup] reverses the alternatives order
+     * first when this is true, so whichever entry the caller lists first (its own convention for "the
+     * primary one") ends up nearest the finger after the clamp instead of pushed away by it - a real,
+     * geometry-based check replacing D-99/D-105's own hand-picked per-character reversal (`'p'` in the
+     * letters row, `'0'` in the number row), which only ever covered those two specific keys and could not
+     * follow a key's own alternatives moving to per-language data (D-281).
+     *
+     * @param keyCenterX the x-centre of the pressed key
+     * @param cellWidths each cell's own width, left to right, in the caller's own (unreversed) order
+     * @param preSelectedIndex the pre-selected cell index in that same unreversed order; clamped into range
+     * @param maxLeft the largest allowed row-left (view width - row width - edge gap)
+     * @return true when the unclamped ideal position would exceed [maxLeft]
+     * @throws IllegalArgumentException when [cellWidths] is empty
+     */
+    fun wouldClampRight(keyCenterX: Float, cellWidths: List<Float>, preSelectedIndex: Int, maxLeft: Float): Boolean {
+        require(cellWidths.isNotEmpty()) { "cellWidths must not be empty" }
+        val index = preSelectedIndex.coerceIn(0, cellWidths.size - 1)
+        val offsetToPreSelectedCenter = cellWidths.take(index).sum() + cellWidths[index] / 2f
+        val ideal = keyCenterX - offsetToPreSelectedCenter
+        return ideal > maxLeft
+    }
 }

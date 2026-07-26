@@ -56,10 +56,10 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-105 the 0 key - at the row's right edge - has its alternatives reversed`() {
+    fun `D-105 the 0 key keeps its natural alternatives order - D-282 reverses it dynamically at popup time, not here`() {
         val numberRow = KeyboardLayout.rows().first()
         
-        assertEquals(listOf("⁰", "="), numberRow.byChar('0').alternatives)
+        assertEquals(listOf("=", "⁰"), numberRow.byChar('0').alternatives)
     }
     
     @Test
@@ -84,12 +84,13 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-99 the pi key offers a Greek-letter popup alongside pi itself`() {
+    fun `D-99 the pi key offers a Greek-letter popup alongside pi itself, in its natural order`() {
         val pKey = KeyboardLayout.rows()[1].byChar('p')
         
-        // §34: reversed relative to KeyboardLayout.PI_ALTERNATIVES - p sits at the row's right edge, where
-        // the popup grows leftward, so pi itself must be last (nearest the key) rather than first.
-        assertEquals(listOf("ω", "λ", "δ", "γ", "β", "α", "π"), pKey.alternatives)
+        // D-282: p sits at the row's right edge, but the reversal that used to live here (§34) now happens
+        // dynamically in AdaptKeyboardView.openPopup() instead - PI_ALTERNATIVES stays in its own natural
+        // order (pi first) at the data level.
+        assertEquals(KeyboardLayout.PI_ALTERNATIVES, pKey.alternatives)
     }
     
     @Test

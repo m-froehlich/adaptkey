@@ -1145,6 +1145,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * first alternative when the key's character is not among them) sits over the finger; the row is clamped
      * to stay within the view.
      *
+     * D-282: when that clamp would otherwise push the row leftward with no room to grow rightward - a key
+     * near the row's right edge with a wide enough popup, [HorizontalLongPressPopup.wouldClampRight] - the
+     * whole [alternatives] order (and its matching [cellWidths]) is reversed first, so whichever entry the
+     * caller lists first (its own convention for "the primary one", e.g. [KeyboardLayout.PI_ALTERNATIVES]'
+     * own π) ends up nearest the finger after the clamp instead of pushed away by it. This replaces
+     * D-99/D-105's own hand-picked reversal, hard-coded to exactly `'p'` (letters row) and `'0'` (number
+     * row) - a real geometry check here works for any key's popup, including one a language pack's own
+     * data (D-281) might put on a right-edge key that neither of those two hard-coded cases ever covered.
+     *
      * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
      * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
      * rather than clipped. D-54: a single-cell popup is nudged a few units towards the keyboard centre (right
@@ -1152,11 +1161,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
-        val preSelected = preSelectedIndexFor(key, alternatives)
+        val preSelectedRaw = preSelectedIndexFor(key, alternatives)
         // D-144: each cell sized to its own text content instead of a single uniform width, so wide entries
         // (a URL protocol popup's "https://"/"ftp://") are no longer cramped/overflowing.
-        val cellWidths = alternatives.map { popupCellWidthFor(it) }
-        val rowWidth = cellWidths.sum()
+        val cellWidthsRaw = alternatives.map { popupCellWidthFor(it) }
+        val rowWidth = cellWidthsRaw.sum()
         val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
         // D-54: only single-cell popups are nudged; multi-cell popups stay centred over the stem (D-44).
         val nudge = if (alternatives.size == 1) {
@@ -1164,13 +1173,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
         } else {
             0f
         }
-        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, cellWidths, preSelected, gapPx, maxLeft)
+        val reversed = alternatives.size >= 2 &&
+            HorizontalLongPressPopup.wouldClampRight(rect.centerX() + nudge, cellWidthsRaw, preSelectedRaw, maxLeft)
+        val finalAlternatives = if (reversed) alternatives.reversed() else alternatives
+        val finalCellWidths = if (reversed) cellWidthsRaw.reversed() else cellWidthsRaw
+        val preSelected = if (reversed) finalAlternatives.size - 1 - preSelectedRaw else preSelectedRaw
+        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, finalCellWidths, preSelected, gapPx, maxLeft)
         // D-53: always place the row above the key. For the number row this reaches above the keyboard, which
         // is fine: the service disables child-clipping on the container/root, so the popup draws over the
         // suggestion bar rather than being clipped.
         popupRowTop = rect.top - gapPx - popupCellHeightPx
-        popupAlternatives = alternatives
-        popupCellWidths = cellWidths
+        popupAlternatives = finalAlternatives
+        popupCellWidths = finalCellWidths
         popupSelectedIndex = preSelected
         popupKey = key
         invalidate()

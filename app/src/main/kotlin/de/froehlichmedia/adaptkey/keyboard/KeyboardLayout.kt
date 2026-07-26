@@ -280,17 +280,16 @@ object KeyboardLayout {
      * a user who has reassigned `p` or `o` via the C-08 editor keeps their own single-symbol long-press
      * instead of an unrelated popup.
      *
-     * §34: `p` is the last key of the top row, hard against the keyboard's right edge - the popup has no
-     * room to grow rightward from its stem, so [AdaptKeyboardView] clamps the whole row leftward instead,
-     * which (since the row is always drawn in list order, left to right) puts [PI_HINT] itself at the far
-     * end, away from the finger, and the least-relevant alternative right next to it. [PI_ALTERNATIVES] is
-     * shared with the calculator page's `π` key ([SymbolLayout]), which sits mid-row there and does not
-     * have this problem, so only this call site reverses the order rather than the shared constant itself.
+     * D-282: `p` sits at the row's right edge, where a wide popup like [PI_ALTERNATIVES] can run out of
+     * room to grow rightward and gets clamped leftward instead by [AdaptKeyboardView] - handled dynamically
+     * there now ([HorizontalLongPressPopup.wouldClampRight]), not by reversing the list here as §34/D-99
+     * originally did; [PI_ALTERNATIVES] is always passed in its natural, un-reversed order (`π` first),
+     * exactly like every other alternatives list.
      */
     private fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
         val hint = letterHints[c]
         return when {
-            c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES.reversed())
+            c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES)
             c == 'o' && hint == O_HINT -> charKey(c, hint, alternatives = O_ALTERNATIVES)
             else -> charKey(c, hint)
         }
@@ -309,15 +308,16 @@ object KeyboardLayout {
     /**
      * D-105: builds a number-row key with its existing shifted symbol (index 0, pre-selected - unchanged
      * from before) and its own superscript form (index 1) as a real D-01 two-cell popup, instead of the
-     * shifted symbol applying immediately on long-press. `0` sits at the row's right edge - the same
-     * problem §34 already fixed for the letters page's `p` key - so its popup has no room to grow
-     * rightward and gets clamped leftward instead; reversing its list keeps its own glyph nearest the
-     * finger, matching that precedent (only this one call site, not the shared constants).
+     * shifted symbol applying immediately on long-press.
+     *
+     * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
+     * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
+     * here.
      */
     private fun numberKey(c: Char): Key {
         val hint = NUMBER_HINTS[c]
         val superscript = NUMBER_SUPERSCRIPTS[c]
         val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
-        return charKey(c, hint, alternatives = if (c == '0') alternatives.reversed() else alternatives)
+        return charKey(c, hint, alternatives = alternatives)
     }
 }
