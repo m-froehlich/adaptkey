@@ -102,9 +102,7 @@ non-trivial changes).
   reported. A related but narrower, unconfirmed case (mid-field Backspace re-arm after a URL domain's own `.`)
   deliberately left as an open TODO rather than bundled in - see the section above. No new unit tests
   (established `AdaptKeyService`/`InputConnection` glue gap). 896 unit tests (unchanged).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real check that a
-  browser address bar's and a username/password field's first character no longer auto-capitalise, without
-  regressing ordinary sentence-start capitalisation elsewhere. See history §211.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. **Device-confirmed working (§213).** See history §211.
 - **§210 (v0.9.5): D-287 - A-05/A-06/A-10's own `tokenRepair` silently checked every token against the**
   **English dictionary regardless of the active language - the actual "wird" -> "wi rd" / "Anfang" -> "an**
   **Fang" cause, fixed as step 2 once §209's revert fix was device-confirmed.** `installStores()` constructs
@@ -121,9 +119,7 @@ non-trivial changes).
   re-points `tokenRepair` to `TokenRepair(dictionaryStore)`, exactly the pattern already used for the other
   three fields. No new unit tests (the bug was entirely in which store instance `AdaptKeyService` handed to
   `TokenRepair`, not in `TokenRepair`'s own already-unit-tested logic). 896 unit tests (unchanged).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed - needs a real check that
-  "wird"/"Anfang" (and other German-only words) commit correctly while German is active, without regressing a
-  genuine cross-language split. See history §210.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. **Device-confirmed working (§213).** See history §210.
 - **§209 (v0.9.4): D-286 - A-07's own revert silently broken for every ordinary space-delimited commit, not**
   **just the reported "wird" -> "wi rd" split - traced by hand from the user's own two-part device report.**
   `handleKey`'s A-07 gate pre-consumed exactly one whitespace character ordinarily before ever calling

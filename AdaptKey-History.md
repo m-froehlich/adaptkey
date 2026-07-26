@@ -10776,3 +10776,9 @@ The user directly tested the narrower, deliberately-unfixed case §211/D-288 had
 does **not** re-arm Shift/auto-capitalise there. Confirmed no bug exists on this specific path - removed from
 `AdaptKey-Progress.md`'s "Open TODOs" list; no code change. The other open TODO from the same round (the
 German-only cross-language-confusables blacklist seed) remains open, untouched by this check.
+
+## §213 CAPTURED (still v0.9.6, no code change): D-287 And D-288 Both Device-Confirmed
+
+The user re-tested both outstanding fixes on device: D-287 (§210 - "wird"/"Anfang" no longer split against
+the English dictionary while German is active) is confirmed working. D-288 (§211 - a URL/login field's first
+character no longer auto-capitalises) is confirmed good. No code change.
