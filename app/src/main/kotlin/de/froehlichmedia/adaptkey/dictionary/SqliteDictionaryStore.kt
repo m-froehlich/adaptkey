@@ -314,6 +314,120 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return result
     }
     
+    /**
+     * D-278: every learned bigram row, for the backup/export feature (§21). Keys are already lower-cased,
+     * exactly as [nextWords] itself reads them - canonical casing is resolved elsewhere, not carried by the
+     * bigram tables.
+     *
+     * @return every row of [TABLE_LEARNED_BIGRAMS], in no particular order
+     */
+    fun learnedBigramEntries(): List<DictionaryAssetParser.Bigram> {
+        val result = ArrayList<DictionaryAssetParser.Bigram>()
+        db.rawQuery("SELECT prevkey, wkey, count FROM $TABLE_LEARNED_BIGRAMS", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(DictionaryAssetParser.Bigram(cursor.getString(0), cursor.getString(1), cursor.getLong(2)))
+            }
+        }
+        return result
+    }
+    
+    /**
+     * D-278: every learned trigram row (S-07), for the backup/export feature (§21).
+     *
+     * @return every row of [TABLE_LEARNED_TRIGRAMS], in no particular order
+     */
+    fun learnedTrigramEntries(): List<TrigramEntry> {
+        val result = ArrayList<TrigramEntry>()
+        db.rawQuery("SELECT w1key, w2key, wkey, count FROM $TABLE_LEARNED_TRIGRAMS", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(TrigramEntry(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getLong(3)))
+            }
+        }
+        return result
+    }
+    
+    /**
+     * D-278: every [BlacklistCategory.USER] blacklist entry, for the backup/export feature (§21) - a bundled
+     * category is deliberately excluded, since [de.froehlichmedia.adaptkey.AdaptKeyService] already reseeds
+     * it idempotently on every service start (see [BlacklistCategory.BUNDLED]'s own KDoc), so it would only
+     * bloat the exported file with data the target device already has.
+     *
+     * @return every user-added blacklist word (lower-cased key, as stored), ordered alphabetically
+     */
+    fun userBlacklistedWords(): List<String> {
+        val result = ArrayList<String>()
+        db.rawQuery(
+            "SELECT wkey FROM $TABLE_BLACKLIST WHERE category = ? ORDER BY wkey ASC",
+            arrayOf(BlacklistCategory.USER.name)
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(cursor.getString(0))
+            }
+        }
+        return result
+    }
+    
+    /**
+     * D-278: every provisional-pending-blacklist mark (G-04/W-01), for the backup/export feature (§21).
+     *
+     * @return every row of [TABLE_PENDING_BLACKLIST], in no particular order
+     */
+    fun pendingBlacklistEntries(): List<PendingBlacklistEntry> {
+        val result = ArrayList<PendingBlacklistEntry>()
+        db.rawQuery("SELECT wkey, ts FROM $TABLE_PENDING_BLACKLIST", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(PendingBlacklistEntry(cursor.getString(0), cursor.getLong(1)))
+            }
+        }
+        return result
+    }
+    
+    /**
+     * D-278: additive merge of one imported learned-word row (backup/export, §21) - adds [frequencyDelta] to
+     * whatever this store already holds for [word] (0 if not yet known), the same resolution [learn] itself
+     * uses, rather than overwriting outright. This is what lets two devices' independently-learned counts
+     * combine on import instead of one clobbering the other.
+     *
+     * @param word the word exactly as exported (canonical case)
+     * @param frequencyDelta the exported frequency to add
+     * @param partsOfSpeech the exported tags, merged into whatever this store already has (in practice always
+     *        empty - [learn] never sets a tag on a learned entry - kept for fidelity with the exported row)
+     */
+    fun restoreLearnedWord(word: String, frequencyDelta: Long, partsOfSpeech: Set<PartOfSpeech>) {
+        val existing = learnedEntryOf(word)
+        val canonical = existing?.word ?: word
+        val frequency = (existing?.frequency ?: 0L) + frequencyDelta
+        val mergedPos = (existing?.partsOfSpeech ?: emptySet()) + partsOfSpeech
+        putWordInternal(TABLE_LEARNED, canonical, frequency, mergedPos)
+    }
+    
+    /**
+     * D-278: additive merge of one imported learned-bigram row (backup/export, §21), mirroring
+     * [restoreLearnedWord]'s own delta-merge resolution.
+     *
+     * @param previousWord the bigram's context word, exactly as exported
+     * @param word the predicted word, exactly as exported
+     * @param countDelta the exported count to add
+     */
+    fun restoreLearnedBigram(previousWord: String, word: String, countDelta: Long) {
+        val count = learnedBigramFrequency(previousWord, word) + countDelta
+        putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, count)
+    }
+    
+    /**
+     * D-278: additive merge of one imported learned-trigram row (S-07, backup/export §21), mirroring
+     * [restoreLearnedWord]'s own delta-merge resolution.
+     *
+     * @param previousPreviousWord the trigram's own first context word, exactly as exported
+     * @param previousWord the trigram's own second context word, exactly as exported
+     * @param word the predicted word, exactly as exported
+     * @param countDelta the exported count to add
+     */
+    fun restoreLearnedTrigram(previousPreviousWord: String, previousWord: String, word: String, countDelta: Long) {
+        val count = trigramFrequency(previousPreviousWord, previousWord, word) + countDelta
+        putTrigramInternal(previousPreviousWord, previousWord, word, count)
+    }
+    
     override fun markPendingBlacklist(word: String, timestampMillis: Long) {
         val values = ContentValues().apply {
             put("wkey", word.lowercase())

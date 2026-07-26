@@ -102,6 +102,12 @@
             android:label="@string/d_diag_activity_title"
             android:exported="false" />
 
+        <!-- D-278: export/import backup screen (§21), launched from the settings screen's Backup category. -->
+        <activity
+            android:name=".settings.BackupActivity"
+            android:label="@string/d278_title"
+            android:exported="false" />
+
     </application>
 
 </manifest>

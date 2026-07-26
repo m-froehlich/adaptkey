@@ -74,6 +74,32 @@ History.md's append-only log) so they are not lost if the situation that would j
 
 ## Current State
 
+- **§208 (v0.9.3): D-278 - export/import backup, designed with the user over two rounds (scope/format, then**
+  **blacklist scope) before any code was written, per this project's own design-discussion rule.** One JSON
+  file (already this codebase's own `org.json` persistence convention, no new dependency) with a
+  language-independent settings/credentials section plus a per-language section (learned words/bigrams/
+  trigrams, user-only blacklist entries, pending-blacklist marks). The user's own opening requirement - a
+  language pack can be uninstalled between export and import and this "must not klatschen" - traced first: one
+  SQLite database per language holds the bundled dictionary *and* the whole learned/blacklist overlay together,
+  and removing a language pack already `deleteDatabase()`s that whole file (§9), so the risk was real, not
+  hypothetical. Fixed by checking each language section against the *importing* device's own installed
+  languages before writing anything - a section for a language not installed there is skipped and reported
+  back (`BackupImporter.Result.skippedLanguages`), never force-applied, never silently dropped. Every merge
+  (learned words/bigrams/trigrams, blacklist, credentials) is additive - summed onto whatever the device
+  already has, mirroring `learn()`'s own resolution - except settings, the one single-valued exception where
+  import and overwrite are the same thing. Unencrypted by explicit user decision (saved usernames/emails alone
+  are "nicht alleine schützenswert"; passwords are never stored regardless, P-02). A `formatVersion` field is
+  checked on import (a newer file than this build understands is refused, nothing applied) even though nothing
+  branches on it beyond that yet, per direct user request "for later". New `backup` package
+  (`BackupBundle`/`LanguageSection`/`BackupJsonCodec`/`BackupExporter`/`BackupImporter`) plus new
+  `SqliteDictionaryStore`/`CredentialStore` read/restore methods and a new `BackupActivity` (Settings → Backup),
+  mirroring `LanguagePacksActivity`'s own SAF + background-thread pattern. 19 new unit tests
+  (`SqliteDictionaryStoreRoboTest` +8, `CredentialStoreRoboTest` +3, `BackupJsonCodecRoboTest` 5,
+  `BackupExporterImporterRoboTest` 3) - in particular the additive-reimport and skip-uninstalled-language
+  requirements are unit-tested directly, not left to manual device testing. 896 unit tests (877 + 19).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec gained new §21/Y-01. Not yet device-confirmed -
+  needs a real export-then-import round trip on device, including the uninstalled-language-skip path. See
+  history §208.
 - **§206 (v0.9.2): D-285 - D-284 follow-up, two concrete bugs fixed on the spot from device feedback:**
   **`ß` no longer shows nonsensical `"SS"`, and `ƒ` (like `π`) stays lower-case under Shift.** `ƒ`
   (U+0192, genuinely Latin script) passed `Char.isLetter()` and slipped through `AlternativeScript.

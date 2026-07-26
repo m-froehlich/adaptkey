@@ -100,6 +100,30 @@ object CredentialStore {
         return all(context).isEmpty()
     }
     
+    /**
+     * D-278: merges [imported] into whatever this store already holds, for the backup/export feature (§21).
+     * Matched by the same case-insensitive value identity [learn] uses; on a match, frequency is summed and
+     * [CredentialEntry.kind] takes the imported value (mirroring [learn]'s own "latest kind wins" rule), so
+     * two devices' independently-learned credential lists combine on import instead of one replacing the
+     * other outright.
+     *
+     * @param context any valid context (the input method service)
+     * @param imported the entries read back from an imported backup bundle
+     */
+    fun restoreAll(context: Context, imported: List<CredentialEntry>) {
+        val entries = all(context).toMutableList()
+        imported.forEach { entry ->
+            val index = entries.indexOfFirst { it.value.equals(entry.value, ignoreCase = true) }
+            if (index >= 0) {
+                val existing = entries[index]
+                entries[index] = existing.copy(value = entry.value, kind = entry.kind, frequency = existing.frequency + entry.frequency)
+            } else {
+                entries.add(entry)
+            }
+        }
+        save(context, entries)
+    }
+    
     private fun save(context: Context, entries: List<CredentialEntry>) {
         val array = JSONArray()
         entries.forEach { entry ->

@@ -10536,3 +10536,75 @@ that `f`'s own `ƒ` hint stays lower-case.
 
 The user re-tested on device: `ß` now shows the single capital `ẞ` under Shift/Caps Lock instead of `"SS"`,
 and `f`'s own `ƒ` function-symbol hint correctly stays lower-case, matching `π`. Confirmed working as designed.
+
+## §208 - D-278: Export / Import Backup, Designed With The User First Then Built In Full (v0.9.3)
+
+The §198-captured backlog item (D-278, carrying personal state across two devices) designed properly before
+any code was written, per this project's own rule for non-trivial design decisions - discussed over two
+rounds with the user rather than implemented straight from the original one-line request.
+
+**Round 1 (scope/format):** the user's own first instinct, before anything else was discussed, was the one
+real correctness risk the whole feature turns on: a language pack can be uninstalled between export and
+import (or between two devices), and importing that language's learned words/blacklist "must not klatschen"
+(crash). Investigated before proposing anything: `SqliteDictionaryStore` keeps exactly one SQLite database per
+language, holding the bundled dictionary *and* the learned overlay, blacklist, and pending-blacklist marks
+together in one file; `LanguagePacksActivity.removePack()` already calls `deleteDatabase(...)` on that whole
+file the moment a language is removed (§9) - so the user's concern was not a new edge case export/import
+invents, it is the direct, already-existing consequence of how this data is scoped per language. Proposed and
+agreed: one JSON file with sections (not N separate files), `org.json` (already this codebase's own
+established persistence format - `CredentialStore`/`RecentEmojiStore`/`OffsetStore` all already use it, no new
+dependency), a section per installed language plus a language-independent settings/credentials section, and -
+the concrete fix for the user's own concern - an import-time check against the *importing* device's own
+`InstalledLanguagesStore` before touching any per-language data; a section for a language not installed there
+is skipped and reported back, never force-applied and never silently dropped without telling the user.
+Unencrypted by explicit user decision (a saved username/email alone is "nicht alleine schützenswert", and a
+password is never stored by this app regardless, P-02) - simpler than the alternative considered (a passphrase
+gate) and correctly scoped to what is actually sensitive here. A format-version field was requested even
+though nothing branches on it yet ("das wird sich im weiteren Entwicklungsverlauf zeigen") - included as
+`formatVersion`, independent of `versionName`, checked on import: a file newer than the running build
+understands is refused outright, nothing applied.
+
+**Round 2 (blacklist scope):** found while reading `BlacklistCategory` that the blacklist table also holds the
+`BUNDLED` category (a small cross-language-confusables set reseeded idempotently on every service start, A-04)
+- exporting it would be redundant, since the target device already gets it back for free regardless of import.
+Proposed exporting only `BlacklistCategory.USER` entries; user agreed. `OLD_SPELLING`/`PROFANITY`/`OTHER` are
+currently unused enum values (grepped - never assigned anywhere in code), so this reduces in practice to a
+plain `category = 'USER'` filter.
+
+**Implementation**, once agreed: new `backup` package. `BackupBundle`/`LanguageSection` (pure data classes) -
+`formatVersion`, `appVersionName` (diagnostic only, read live via `PackageManager.getPackageInfo`, mirroring
+`SettingsActivity`'s own `info_version` resolution rather than a hand-maintained constant), `exportedAtEpochMillis`,
+`settings` (a raw `Map<String, Any>` dump/restore of the whole default `SharedPreferences` file, deliberately
+generic rather than enumerating every `SettingsStore.KEY_*` constant by hand - covers every current and future
+setting with no maintenance burden), `credentials`, and `languages` (keyed by `Language`). `BackupJsonCodec`
+(pure `encode`/`decode`, `org.json`) - `decode` never throws, `runCatching { ... }.getOrNull()`, so a corrupt or
+foreign file is rejected rather than crashing the importer. New `SqliteDictionaryStore` read methods
+(`learnedBigramEntries`/`learnedTrigramEntries`/`userBlacklistedWords`/`pendingBlacklistEntries`, new
+`TrigramEntry`/`PendingBlacklistEntry` data classes for the two new row shapes) and additive-merge restore
+methods (`restoreLearnedWord`/`restoreLearnedBigram`/`restoreLearnedTrigram`, each summing onto whatever this
+store already has, mirroring `learn()`'s own existing-entry resolution) - all outside the `DictionaryStore`
+interface, alongside the other store-administration methods that already live there (`bulkImport`,
+`resetBundledWords`). New `CredentialStore.restoreAll` mirrors `learn()`'s own case-insensitive identity/
+"latest kind wins" rule, summing frequency instead of always +1. `BackupExporter`/`BackupImporter` (Android-
+facing orchestration): export reads via `DictionaryLoader.loadStores()`/`activeLanguages()`, the exact same set
+the running keyboard itself uses; import applies settings unconditionally (the one non-additive case - a
+single-valued preference has no meaningful merge, the imported value simply wins), merges credentials/
+per-language data additively, and - the round-1 requirement - checks each language section against
+`DictionaryLoader.activeLanguages(context)` before writing anything, collecting skipped languages into
+`BackupImporter.Result` instead of touching a store that does not exist for them. A still-pending blacklist
+mark is only adopted if this device has no mark of its own yet for that word (never overwrites an existing
+mark's own timestamp, since G-04's expiry window is measured from it). New `BackupActivity` (Settings → Backup,
+own new category) - `ActivityResultContracts.CreateDocument`/`OpenDocument` (SAF, no storage permission),
+background `Thread` + busy flag, mirroring `LanguagePacksActivity`'s own established pattern exactly; UI glue,
+left untested per this project's established Android-view-glue gap.
+
+Round-trip correctness (particularly the two direct user requirements - additive re-import, and skip-not-
+discard for an uninstalled language) is unit-tested, not just the UI glue: a re-import of the same exported
+bundle doubles the previously-learned frequency rather than leaving it unchanged; a bundle section for a
+language not installed on the importing device is skipped and reported, never applied; a bundle with a newer
+`formatVersion` than this build understands is refused with nothing applied at all. 19 new unit tests
+(`SqliteDictionaryStoreRoboTest` +8, `CredentialStoreRoboTest` +3, `BackupJsonCodecRoboTest` 5,
+`BackupExporterImporterRoboTest` 3). 896 unit tests (877 + 19). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. Spec gained new §21/Y-01. Version bumped 0.9.2 -> 0.9.3. Not yet device-confirmed - needs a real
+export-then-import round trip on device, including the uninstalled-language-skip path (export with a language
+pack installed, remove the pack, then import the same file back).

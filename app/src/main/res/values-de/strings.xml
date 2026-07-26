@@ -307,4 +307,20 @@
     <string name="d_diag_clear">Leeren</string>
     <string name="d_diag_copied">In die Zwischenablage kopiert.</string>
     <string name="d_diag_cleared">Protokoll geleert.</string>
+
+    <!-- D-278: Export/Import-Sicherung (§21). -->
+    <string name="cat_backup">Sicherung</string>
+    <string name="d278_pref_title">Exportieren / Importieren</string>
+    <string name="d278_pref_summary">Alle Einstellungen, gespeicherten Benutzernamen/E-Mail-Adressen und gelernten Wörter in eine Datei sichern oder daraus wiederherstellen.</string>
+    <string name="d278_title">Sicherung &amp; Wiederherstellung</string>
+    <string name="d278_intro">Der Export sichert deine Einstellungen, gespeicherten Benutzernamen/E-Mail-Adressen, gelernten Wörter und die Wort-Blacklist in einer einzigen Datei. Der Import fügt eine zuvor exportierte Datei zusammen - vorhandene Daten auf diesem Gerät werden dabei nie ersetzt, nur ergänzt. Sprachdaten werden nur für ein hier bereits installiertes Sprachpaket importiert.</string>
+    <string name="d278_export_button">Exportieren</string>
+    <string name="d278_import_button">Importieren</string>
+    <string name="d278_export_success">Sicherung gespeichert.</string>
+    <string name="d278_export_failed">Sicherung konnte nicht gespeichert werden.</string>
+    <string name="d278_import_failed">Diese Datei konnte nicht gelesen werden - sie sieht nicht wie eine AdaptKey-Sicherung aus.</string>
+    <string name="d278_import_too_new">Diese Sicherung wurde mit einer neueren AdaptKey-Version erstellt und kann hier nicht importiert werden.</string>
+    <string name="d278_result_settings">Einstellungen und gespeicherte Benutzernamen/E-Mail-Adressen importiert.</string>
+    <string name="d278_result_imported">Importierte Sprachen: %1$s</string>
+    <string name="d278_result_skipped">Übersprungen (Sprachpaket hier nicht installiert - erst installieren, dann erneut importieren): %1$s</string>
 </resources>

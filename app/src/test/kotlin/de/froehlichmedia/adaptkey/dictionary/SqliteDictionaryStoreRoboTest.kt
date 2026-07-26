@@ -448,4 +448,96 @@ class SqliteDictionaryStoreRoboTest {
         assertTrue(store.isKnownWord("hund"))
         store.close()
     }
+    
+    @Test
+    fun learnedBigramEntriesReturnsEveryLearnedBigramRow() {
+        val store = store("backup-bigram-entries.db")
+        store.learn("Hund", "der")
+        store.learn("Hut", "der")
+        
+        val entries = store.learnedBigramEntries()
+        
+        assertEquals(2, entries.size)
+        assertTrue(entries.contains(DictionaryAssetParser.Bigram("der", "hund", 1L)))
+        assertTrue(entries.contains(DictionaryAssetParser.Bigram("der", "hut", 1L)))
+        store.close()
+    }
+    
+    @Test
+    fun learnedTrigramEntriesReturnsEveryLearnedTrigramRow() {
+        val store = store("backup-trigram-entries.db")
+        store.learn("Nachbar", "der", "ist")
+        store.learn("Nachbar", "der", "ist")
+        
+        val entries = store.learnedTrigramEntries()
+        
+        assertEquals(1, entries.size)
+        assertEquals(TrigramEntry("ist", "der", "nachbar", 2L), entries.single())
+        store.close()
+    }
+    
+    @Test
+    fun userBlacklistedWordsExcludesBundledEntries() {
+        val store = store("backup-user-blacklist.db")
+        store.blacklist("due", BlacklistCategory.BUNDLED)
+        store.blacklist("unwort", BlacklistCategory.USER)
+        
+        assertEquals(listOf("unwort"), store.userBlacklistedWords())
+        store.close()
+    }
+    
+    @Test
+    fun pendingBlacklistEntriesReturnsEveryMark() {
+        val store = store("backup-pending-entries.db")
+        store.markPendingBlacklist("aks", 111L)
+        store.markPendingBlacklist("bla", 222L)
+        
+        val entries = store.pendingBlacklistEntries().associate { it.word to it.timestampMillis }
+        
+        assertEquals(mapOf("aks" to 111L, "bla" to 222L), entries)
+        store.close()
+    }
+    
+    @Test
+    fun restoreLearnedWordAddsToAnAlreadyLearnedFrequencyInsteadOfOverwriting() {
+        val store = store("restore-learned-word.db")
+        store.learn("aks", null)
+        
+        store.restoreLearnedWord("aks", 4L, emptySet())
+        
+        assertEquals(5L, store.learnedWords().single { it.word == "aks" }.frequency)
+        store.close()
+    }
+    
+    @Test
+    fun restoreLearnedWordCreatesAFreshEntryWhenNotYetKnown() {
+        val store = store("restore-learned-word-fresh.db")
+        
+        store.restoreLearnedWord("aks", 3L, emptySet())
+        
+        assertEquals(3L, store.learnedWords().single { it.word == "aks" }.frequency)
+        store.close()
+    }
+    
+    @Test
+    fun restoreLearnedBigramAddsToAnAlreadyLearnedCount() {
+        val store = store("restore-learned-bigram.db")
+        store.learn("Hund", "der")
+        
+        store.restoreLearnedBigram("der", "hund", 4L)
+        
+        assertEquals(5L, store.bigramFrequency("der", "hund"))
+        store.close()
+    }
+    
+    @Test
+    fun restoreLearnedTrigramAddsToAnAlreadyLearnedCount() {
+        val store = store("restore-learned-trigram.db")
+        store.learn("Nachbar", "der", "ist")
+        
+        store.restoreLearnedTrigram("ist", "der", "nachbar", 4L)
+        
+        assertEquals(5L, store.trigramFrequency("ist", "der", "nachbar"))
+        store.close()
+    }
 }

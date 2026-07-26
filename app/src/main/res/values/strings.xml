@@ -306,4 +306,20 @@
     <string name="d_diag_clear">Clear</string>
     <string name="d_diag_copied">Copied to clipboard.</string>
     <string name="d_diag_cleared">Log cleared.</string>
+
+    <!-- D-278: export/import backup (§21). -->
+    <string name="cat_backup">Backup</string>
+    <string name="d278_pref_title">Export / import</string>
+    <string name="d278_pref_summary">Save all settings, saved usernames/emails, and learned words to a file, or restore them from one.</string>
+    <string name="d278_title">Backup &amp; restore</string>
+    <string name="d278_intro">Export saves your settings, saved usernames/emails, learned words, and word blacklist to a single file. Import merges a previously exported file back in - existing data on this device is never replaced, only added to. Language data is only imported for a language pack you already have installed here.</string>
+    <string name="d278_export_button">Export</string>
+    <string name="d278_import_button">Import</string>
+    <string name="d278_export_success">Backup saved.</string>
+    <string name="d278_export_failed">Could not save the backup.</string>
+    <string name="d278_import_failed">Could not read this file - it does not look like an AdaptKey backup.</string>
+    <string name="d278_import_too_new">This backup was created with a newer version of AdaptKey and cannot be imported here.</string>
+    <string name="d278_result_settings">Settings and saved usernames/emails imported.</string>
+    <string name="d278_result_imported">Imported languages: %1$s</string>
+    <string name="d278_result_skipped">Skipped (language pack not installed here - install it, then import again): %1$s</string>
 </resources>

@@ -125,4 +125,37 @@ class CredentialStoreRoboTest {
         
         assertEquals(1, CredentialStore.all(context).size)
     }
+    
+    @Test
+    fun restoreAllAddsAFreshEntryThatDidNotExistLocally() {
+        val context = RuntimeEnvironment.getApplication()
+        
+        CredentialStore.restoreAll(context, listOf(CredentialEntry("imported@example.com", LoginFieldKind.EMAIL, 3L)))
+        
+        val entries = CredentialStore.all(context)
+        assertEquals(1, entries.size)
+        assertEquals(3L, entries[0].frequency)
+    }
+    
+    @Test
+    fun restoreAllSumsFrequencyWithAnAlreadyExistingEntry() {
+        val context = RuntimeEnvironment.getApplication()
+        CredentialStore.learn(context, "user@example.com", LoginFieldKind.EMAIL)
+        CredentialStore.learn(context, "user@example.com", LoginFieldKind.EMAIL)
+        
+        CredentialStore.restoreAll(context, listOf(CredentialEntry("user@example.com", LoginFieldKind.EMAIL, 5L)))
+        
+        assertEquals(7L, CredentialStore.all(context).single().frequency)
+    }
+    
+    @Test
+    fun restoreAllMatchesExistingEntriesCaseInsensitively() {
+        val context = RuntimeEnvironment.getApplication()
+        CredentialStore.learn(context, "Peter@example.com", LoginFieldKind.EMAIL)
+        
+        CredentialStore.restoreAll(context, listOf(CredentialEntry("peter@example.com", LoginFieldKind.EMAIL, 2L)))
+        
+        assertEquals(1, CredentialStore.all(context).size)
+        assertEquals(3L, CredentialStore.all(context).single().frequency)
+    }
 }

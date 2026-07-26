@@ -8,7 +8,7 @@ This document describes the app's **current, crystallised feature set only** - w
 The reasoning behind *why* each feature looks the way it does - device-feedback rounds, rejected
 alternatives, bugs traced and fixed - lives separately in [`AdaptKey-History.md`](AdaptKey-History.md),
 an append-only design journal. Requirement IDs (`L-`/`T-`/`G-`/`S-`/`A-`/`B-`/`C-`/`K-`, plus the newer
-`E-`/`U-`/`P-`/`W-`/`R-`/`V-`/`N-`/`X-` domains below) are shared between both documents, so a `D-xx`/`§N`
+`E-`/`U-`/`P-`/`W-`/`R-`/`V-`/`N-`/`X-`/`Y-` domains below) are shared between both documents, so a `D-xx`/`§N`
 citation in the history can always be traced back to the requirement it ultimately shaped.
 
 ---
@@ -896,6 +896,45 @@ Unconditionally excludes any content typed into a password field, regardless of 
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
+
+---
+
+## 21. Backup & Restore
+
+### Y-01 - Export / Import (D-278)
+A dedicated Settings screen exports every genuinely personal piece of state - every configurable parameter
+(§20), the saved username/email store (§12/P-02), and each installed language's own learned-word overlay
+(W-01), learned bigrams/trigrams (S-07), user-added blacklist entries (A-04), and still-pending provisional-
+blacklist marks (G-04/W-01) - into a single JSON file, and imports one back in. Deliberately excludes the
+bundled dictionary/bigram data and bundled/pre-1996-spelling blacklist entries (A-04): those already ship
+with the app or a language pack and would only bloat the file with data the target device already has by
+other means.
+
+Import is additive, never a wholesale replace, for every kind of data it touches - a learned word's or
+bigram's/trigram's count is summed with whatever this device already has for it (mirroring how the ordinary
+learning pipeline itself accumulates); a blacklist entry or setting is upserted; a still-pending blacklist
+mark is only adopted when this device has no mark of its own yet for that word (so a re-import can never make
+an already-pending word look freshly marked, which would delay G-04's expiry window). A configurable
+parameter (§20) is the one exception where "import" and "overwrite" are the same operation, since a single-
+valued preference has no meaningful separate merge behaviour - the imported value simply wins, exactly as if
+the user had changed it themselves in Settings.
+
+A language section only ever exists in an *exported* file for a language the exporting device actually had
+installed at export time. On *import*, that section is only applied if the *importing* device currently has
+that same language installed (English, always bundled, always counts as installed) - a language pack the
+importing device lacks is skipped outright, listed back to the user, and never force-installed or silently
+discarded. This matters because every per-language personal store lives in that language's own SQLite
+database file, the same one a language-pack removal deletes outright (§9) - so the alternative (creating a
+store for an uninstalled language) would either silently resurrect data with no dictionary behind it, or
+require inventing a wholly separate "orphaned import" state this feature does not otherwise need.
+
+The file's own format carries a schema version, independent of the app's `versionName`, bumped only if the
+JSON shape itself ever changes; a file whose version is newer than the running app understands is refused
+outright, with nothing applied, rather than partially imported.
+
+Stored and transmitted as plain, unencrypted JSON, by explicit user decision: a saved username/email alone is
+not considered sensitive enough to warrant it, and password values are never stored by this app in the first
+place regardless of this setting (P-02).
 
 ---
 
