@@ -85,7 +85,8 @@ History.md's append-only log) so they are not lost if the situation that would j
   single-character capital `ẞ` (U+1E9E) instead, gated on `Paint.hasGlyph("ẞ")` so it only shows when the
   active typeface can actually render it, falling back to unchanged `ß` otherwise (never `"SS"`), per the
   user's own explicit instruction. 1 new unit test (`AlternativeScriptTest`). 877 unit tests (876 + 1).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §206.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. **Device-confirmed working (§207).** See history
+  §206/§207.
 - **§205 CAPTURED (still v0.9.1, no code change): batch device-confirmation round.** D-279/D-281/D-282/
   D-271/D-272/D-273 all device-confirmed. D-274: no further problems reported (a positive signal, not an
   exhaustive re-test). **D-275 still not reliable** per direct user report - left open rather than re-patched

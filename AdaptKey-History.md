@@ -10531,3 +10531,8 @@ rest of this drawing code; the `ƒ` fix's own root cause (a predicate change) is
 unit tests (876 + 1). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.1 -> 0.9.2.
 Not yet device-confirmed - needs a real Shift/Caps-Lock check that `s` shows a single `ẞ` (not `"SS"`) and
 that `f`'s own `ƒ` hint stays lower-case.
+
+## §207 CAPTURED (still v0.9.2, no code change): D-285 Device-Confirmed
+
+The user re-tested on device: `ß` now shows the single capital `ẞ` under Shift/Caps Lock instead of `"SS"`,
+and `f`'s own `ƒ` function-symbol hint correctly stays lower-case, matching `π`. Confirmed working as designed.
