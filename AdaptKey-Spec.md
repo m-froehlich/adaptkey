@@ -297,8 +297,10 @@ The visible top-N ordinary suggestions may not change position while the user is
 suggestions are appended at the right end of the scrollable list. Re-sorting only occurs after a
 configurable pause with no input. Several newer suggestion kinds are deliberately built outside this
 mechanism so as not to distort it: a mid-word connector-split suggestion (A-10), the raw-coordinate
-suggestion (T-02), the time-pattern "Uhr" suggestion (S-08), and the credential list (§12) are all appended
-at display time with a maximal score rather than participating in the ordinary ranking/stabilisation.
+suggestion (T-02), the time-pattern "Uhr" suggestion (S-08), the credential list (§12), and the B-03
+hyphen-compound chip are all appended at display time with a maximal score (or, for the hyphen-compound chip,
+pinned ahead of everything else without a score at all) rather than participating in the ordinary
+ranking/stabilisation.
 
 ### S-04 - Re-sort Delay *(configurable)*
 Slider from 0 to 600 ms. A value of 0 means immediate re-sorting. Default: 300 ms.
@@ -484,7 +486,10 @@ The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-
 ### A-07 - Post-Commit Autocorrect Undo
 After a commit that involved any correction - spelling autocorrect, diacritic/umlaut restoration, or an A-05
 split - a backspace issued after the commit restores the originally typed text, including rejoining a split
-back into one word. The undo window survives any number of intervening **whitespace** keystrokes (Space,
+back into one word. One deliberate exception widens this beyond "a correction": accepting a B-03
+hyphen-compound chip also arms this same window, even though it replaces typed text with something the user
+chose rather than something the app silently changed - see B-03 for why. The undo window survives any number
+of intervening **whitespace** keystrokes (Space,
 Enter) rather than closing on the very next keystroke regardless of kind - only a genuine non-whitespace
 character (a letter, digit, or punctuation mark) closes it, or the caret being moved away explicitly (see
 below). While any such whitespace still sits between the caret and the committed text, a Backspace removes
@@ -618,11 +623,36 @@ The segment following a hyphen is lowercase by default at commit time. Exception
 proper noun. A suggestion-bar chip for any candidate always displays its capitalised form through the same
 §6 pipeline the commit path uses, so a chip can never visually disagree with what will actually be committed.
 
-### B-03 - Optional Learning of Full Compounds *(designed, not built)*
-Not yet implemented. If the user confirms the same hyphenated combination multiple times, it could
-optionally be added to the personal dictionary as a whole. Two candidate designs exist (chaining next-word
-predictions across the hyphen boundary vs. learning the whole combination as one unit after repeated
-confirmation) with no decision yet on hop depth, promotion threshold, or UI mechanics.
+### B-03 - Proactive Completion Of A Repeated Hyphen-Compound
+Each individual segment of a hyphen-joined chain is still learned/suggested exactly as B-01 already
+describes - unchanged. Independently, the whole chain itself (two segments, or more - "Rhein-Main-Gebiet" is
+no different in kind from "Trogata-Team", just longer) is *also* learned as one combined unit once it has been
+typed out in full, unbroken by any non-hyphen delimiter, at least as many times as W-02's own existing
+"suspected compound" promotion threshold requires (4) - the same threshold, not a separate one, since a
+hyphen-joined chain genuinely already is that shape, with no heuristic guessing needed to recognise it as
+such. There is no cap on how many segments a chain may have; a longer chain simply needs more hyphens typed
+in an unbroken run to close.
+
+Once promoted, the full compound is offered proactively while typing a *prefix of its first segment alone* -
+e.g. typing "Trog" alone can already surface the complete "Trogata-Team" as a suggestion, before its own
+hyphen has been typed at all. This suggestion is a dedicated, always-pinned chip shown ahead of every ordinary
+suggestion for the same token - never competing with them by score, since a completion needing this many
+additional characters would otherwise be discounted far too aggressively by S-01's own prefix-distance
+ranking to reliably win. The first time a given compound is promoted, it gets the same "Gelernt: X"
+confirmation (W-03) an ordinary word's own promotion does.
+
+Tapping the compound chip commits it in full and, uniquely among every suggestion kind in this app, arms a
+dedicated A-07-style undo window of its own: an immediate Backspace right after reverts exactly that
+acceptance (restoring the partial prefix that was actually composing beforehand) and un-reinforces the
+compound's own count by exactly what accepting it just added. This is a deliberate exception to the rule that
+an ordinary suggestion-bar tap is never undoable (the user's own deliberate choice, not a correction) - a
+proactive whole-compound completion is a large enough, more surprising insertion that an immediate "take it
+back" is worth the exception.
+
+Typing the segments out normally (not via the chip) never triggers this undo, and never lets A-11 (backspacing
+back into a recently-learned word) un-teach the compound's own count either - only each individual segment's
+own count is affected the same way it always has been. The compound's own count is only ever reversed through
+the chip's own dedicated undo above.
 
 ### B-04 - Underscore as a Word-Joining Character, Never a Separator
 Unlike every other punctuation mark - including the hyphen (B-01) - the underscore never ends the composing

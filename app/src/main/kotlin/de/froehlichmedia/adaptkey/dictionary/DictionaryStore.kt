@@ -119,6 +119,18 @@ interface DictionaryStore {
     fun learnedWords(): List<WordEntry>
     
     /**
+     * B-03/D-289: every learned hyphen-joined compound (e.g. "Trogata-Team") whose key starts with [prefix] -
+     * the store side of the proactive compound-completion suggestion. The default returns none (fine for the
+     * small in-memory store used in tests, which has no such notion); [SqliteDictionaryStore] overrides it
+     * with an indexed query.
+     *
+     * @param prefix the current composing token (any case)
+     * @param limit the maximum number of entries to return
+     * @return matching compound entries, sorted by descending frequency
+     */
+    fun learnedHyphenCompoundsByPrefix(prefix: String, limit: Int): List<WordEntry> = emptyList()
+    
+    /**
      * D-177: marks [word] as provisionally forgotten, recorded with [timestampMillis] but never
      * surfaced in the visible blacklist ([blacklistedWords]) - the "naively unlearn it, but remember
      * for a while in case it comes back" refinement: if [word] gets learned again before the mark

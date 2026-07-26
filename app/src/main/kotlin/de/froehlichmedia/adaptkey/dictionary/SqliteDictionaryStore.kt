@@ -315,6 +315,31 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     /**
+     * B-03/D-289: every learned hyphen-joined compound (e.g. "Trogata-Team") whose key starts with [prefix] -
+     * the store side of the proactive compound-completion chip. A compound only ever exists in
+     * [TABLE_LEARNED] once it has actually been promoted past [de.froehlichmedia.adaptkey.AdaptKeyService]'s
+     * own compound threshold ([learn] is only ever called on promotion, never while merely pending), so no
+     * separate "is this actually promoted" filter is needed here - the row's mere presence already means it
+     * is.
+     *
+     * @param prefix the current composing token (any case)
+     * @param limit the maximum number of rows to return
+     * @return matching compound entries, ordered by descending frequency
+     */
+    override fun learnedHyphenCompoundsByPrefix(prefix: String, limit: Int): List<WordEntry> {
+        val result = ArrayList<WordEntry>()
+        db.rawQuery(
+            "SELECT word, freq, pos FROM $TABLE_LEARNED WHERE wkey LIKE ? AND wkey LIKE '%-%' ORDER BY freq DESC LIMIT ?",
+            arrayOf(prefix.lowercase() + "%", limit.toString())
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(WordEntry(cursor.getString(0), cursor.getLong(1), parsePos(cursor.getString(2))))
+            }
+        }
+        return result
+    }
+    
+    /**
      * D-278: every learned bigram row, for the backup/export feature (§21). Keys are already lower-cased,
      * exactly as [nextWords] itself reads them - canonical casing is resolved elsewhere, not carried by the
      * bigram tables.

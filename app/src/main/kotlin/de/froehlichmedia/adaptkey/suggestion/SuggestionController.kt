@@ -49,7 +49,16 @@ class SuggestionController(private val config: SuggestionConfig) {
          * `SuggestionBarView`'s own two-zone "Vergessen"/"Verbieten" drag), never committed by a tap. Built
          * and pushed directly to the suggestion bar, pinned ahead of the ordinary predictions, bypassing
          * this class's own [update]/[displayed] the same way [CLIPBOARD]/[CREDENTIAL] already do. */
-        LEARNED
+        LEARNED,
+        
+        /** B-03/D-289: a previously-learned hyphen-joined compound (e.g. "Trogata-Team") matching the
+         * current composing prefix; tapping it commits [DisplayItem.word] verbatim (already correctly
+         * cased, exactly as learned - never re-run through the ordinary §6 pipeline, which assumes a
+         * single, plain word). Built and pushed directly to the suggestion bar, pinned ahead of every
+         * ordinary suggestion (never ranked by score against them - see the design discussion this
+         * implements for why), the same "built outside SuggestionController" shape [CREDENTIAL]/[LEARNED]
+         * already use. */
+        COMPOUND
     }
     
     /**

@@ -88,6 +88,32 @@ non-trivial changes).
 
 ## Current State
 
+- **§214 (v0.9.7): D-289 - B-03 built: a repeated hyphen-compound (e.g. "Trogata-Team") is now learned as a**
+  **whole and proactively completed, with its own dedicated undo - designed with the user over two rounds**
+  **first.** Each segment still learns/suggests exactly as before (unchanged, B-01); the whole chain (any
+  length, no cap) is *additionally* learned as one unit once typed unbroken at least
+  `COMPOUND_LEARN_THRESHOLD` (4, W-02's own existing "compound" threshold, reused directly) times. A first
+  proposal to make it "always outrank" via a flat frequency multiplier was reconsidered after checking the
+  actual prefix-distance decay math (D-192/D-272) - a longer completion's own discount only gets worse, never
+  better, so no flat multiplier could reliably win; replaced with a dedicated, unranked, always-pinned
+  suggestion kind (`SuggestionController.Kind.COMPOUND`), the same "built outside `SuggestionController`"
+  shape `CREDENTIAL`/`LEARNED` already use. New, explicitly-confirmed architectural exception: tapping the
+  compound chip is the *only* suggestion-bar tap in the whole app that arms its own A-07-style undo window
+  (every other tap is the user's own deliberate choice, never undoable) - an immediate Backspace right after
+  reverts exactly that acceptance and un-reinforces the compound's own count, while typing the same segments
+  out normally never lets A-11 touch the compound's count at all, only each segment's own, exactly as it
+  always has. New `hyphenChain` (reset at the same three points `previousWord`/`previousPreviousWord`
+  themselves reset), `updateHyphenChain`/`learnHyphenCompound` (mirrors `learnWord()`'s own promotion logic,
+  minus the bigram-context/A-11 side effects), `DictionaryStore.learnedHyphenCompoundsByPrefix()` (new interface
+  method, `SqliteDictionaryStore` override + in-memory default), and a new `performAutocorrectUndo()` branch
+  that restores the pre-tap bigram context instead of treating the tapped-away partial prefix as a real word.
+  3 new unit tests (`SqliteDictionaryStoreRoboTest`); the rest is `AdaptKeyService`'s own established
+  Android-glue gap. 899 unit tests (896 + 3). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec B-03
+  rewritten from "designed, not built" to its actual shape; S-01/S-03/A-07 cross-referenced. Not yet
+  device-confirmed - needs a real round trip: promote a compound by typing it 4 times, confirm the "Gelernt: X"
+  chip and the proactive completion chip both appear pinned ahead of ordinary suggestions, confirm the tap
+  commits correctly, and confirm the dedicated undo reverts a chip acceptance while a normally-typed
+  occurrence leaves the compound's own count untouched by Backspace/A-11. See history §214.
 - **§211 (v0.9.6): D-288 - a URL field (e.g. a browser address bar) auto-capitalised its very first**
   **character, contradicting the spec's own already-agreed "commit verbatim, no capitalisation transform of**
   **any kind" promise for E-01/U-01/P-01.** `finalizeAndCommit()`/`handlePunctuationDelimiter()` already

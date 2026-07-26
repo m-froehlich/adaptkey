@@ -198,6 +198,11 @@ class AdaptKeyService : InputMethodService() {
     // lockstep with it (see learnWord()/learnWordStrong()) and reset alongside it everywhere previousWord
     // itself resets.
     private var previousPreviousWord: String? = null
+    // D-289 (B-03): the words committed so far in the currently-running, unbroken hyphen-joined chain (e.g.
+    // ["Trogata"] right after "Trogata-" commits, extended further for a three/four-part compound) - reset
+    // at exactly the same points previousWord/previousPreviousWord themselves reset, since it is the same
+    // kind of running-context state. See updateHyphenChain()'s own KDoc for how it grows and closes.
+    private val hyphenChain = mutableListOf<String>()
     
     // A-03: on-device language detector. Starts empty (every result UNKNOWN -> guard is a no-op) and is
     // replaced with the profile-backed classifier in onCreate. When the recent context is confidently
@@ -410,6 +415,12 @@ class AdaptKeyService : InputMethodService() {
     // D-13: set when the armed undo would revert an A-05 split; undoing it then learns the rejoined word,
     // so a real word the split mangled (e.g. "Backspace" -> "Back Space") is trained and never split again.
     private var undoWasSplit = false
+    // D-289: set when the armed undo would revert accepting a B-03 hyphen-compound chip - unlike an ordinary
+    // correction/split, undoCommitted's own "typed" counterpart is only the partial prefix that was composing
+    // at tap time (e.g. "Tro"), never a real, complete word, so performAutocorrectUndo() must not re-learn it
+    // or shift the bigram context onto it the way the ordinary/split branches do (see that function's own
+    // KDoc). Only ever set by onSuggestionClicked()'s Kind.COMPOUND branch.
+    private var undoWasCompound = false
     // D-140: exactly what learnWord() did for the committed word(s) - one entry for a plain correction,
     // two (left, right) for a split - so performAutocorrectUndo() can precisely un-learn it, rather than
     // leaving the rejected commit's dictionary/bigram reinforcement in place forever.
@@ -1126,6 +1137,7 @@ class AdaptKeyService : InputMethodService() {
         pendingPunctuationSpace = false
         previousWord = null
         previousPreviousWord = null
+        hyphenChain.clear()
         tokenContextBefore = ""
         // D-152: a fresh field's own initial selection is delivered via EditorInfo, not a guaranteed
         // onUpdateSelection callback beforehand - selectionCollapsed must not be left stale from whatever
@@ -1283,6 +1295,7 @@ class AdaptKeyService : InputMethodService() {
         clearUndo()
         previousWord = null
         previousPreviousWord = null
+        hyphenChain.clear()
         clearSuggestions()
     }
     
@@ -2633,6 +2646,7 @@ class AdaptKeyService : InputMethodService() {
         }
         previousWord = null
         previousPreviousWord = null
+        hyphenChain.clear()
     }
     
     /**
@@ -3203,6 +3217,7 @@ class AdaptKeyService : InputMethodService() {
             undoCommitted = finalWord
             undoDelimiter = delimiter
             undoWasSplit = false
+            undoWasCompound = false
             undoLearnRecords = listOf(learnRecord)
             undoRawCorrection = rawCorrectionUndo
             // D-88: the word actually changed - this is an accepted correction, not a plain commit.
@@ -3210,9 +3225,18 @@ class AdaptKeyService : InputMethodService() {
         } else {
             clearUndo()
         }
+        // B-03/D-289: the compound chain update runs regardless of whether this word's own correction/undo
+        // just got armed above - a hyphen chain's own promotion is a fully independent event from any
+        // single word's own A-07 window.
+        val compoundRecord = updateHyphenChain(finalWord, delimiter)
         // D-43: predict the next word instead of leaving the bar blank. D-247: a genuinely fresh promotion
         // this commit takes priority over the ordinary predictions (shown pinned ahead of them, not instead).
-        showNextWordPredictions(learnRecord.word.takeIf { learnRecord.outcome == LearnOutcome.PROMOTED })
+        // B-03/D-289: a fresh compound promotion takes priority over the ordinary word's own, mirroring how
+        // A-05's split already prioritises its own right half - both promoting in the same commit is a rare
+        // enough edge case not to need its own UI.
+        val justPromoted = compoundRecord?.word?.takeIf { compoundRecord.outcome == LearnOutcome.PROMOTED }
+            ?: learnRecord.word.takeIf { learnRecord.outcome == LearnOutcome.PROMOTED }
+        showNextWordPredictions(justPromoted)
         armShiftForNextWord(ic)
         trackSustainedEnglishUsage(ic, dictChoice.language)
         return finalWord.length + delimiter.length
@@ -3571,6 +3595,7 @@ class AdaptKeyService : InputMethodService() {
     private fun performAutocorrectUndo(ic: InputConnection): Boolean {
         val typed = undoTyped ?: return false
         val wasSplit = undoWasSplit
+        val wasCompound = undoWasCompound
         val learnRecords = undoLearnRecords
         val rawCorrection = undoRawCorrection
         val expectedTail = undoCommitted + undoDelimiter
@@ -3581,9 +3606,14 @@ class AdaptKeyService : InputMethodService() {
             clearUndo()
             return false
         }
+        // D-289: captured before anything below ever touches previousWord/previousPreviousWord - a B-03
+        // compound-chip acceptance never advanced either field in the first place (see
+        // learnHyphenCompound's own KDoc), so undoing one must restore them exactly as they already were,
+        // never whatever the ordinary/split path further below would otherwise compute for a real word.
+        val previousWordBeforeUndo = previousWord
+        val previousPreviousWordBeforeUndo = previousPreviousWord
         ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
-        previousWord = typed
         clearUndo()
         // D-140: un-learn exactly what the rejected commit persisted (whether it reinforced an
         // already-known word or newly promoted/counted an unknown one) before re-learning what the user
@@ -3604,6 +3634,19 @@ class AdaptKeyService : InputMethodService() {
                 rawCorrection.weight
             )
         }
+        if (wasCompound) {
+            // D-289: unlike the ordinary/split cases below, `typed` here is only the partial prefix that
+            // was composing at tap time (e.g. "Tro"), never a real, complete word - it must never be
+            // re-learned as one, and the context restored above is left untouched rather than pointed at
+            // it. The caret now sits right after that restored prefix; the existing D-62 reclaim-on-next-
+            // keystroke mechanism picks it back up into composing the moment the user resumes typing,
+            // exactly as it already does for any other plain text immediately before the caret.
+            previousWord = previousWordBeforeUndo
+            previousPreviousWord = previousPreviousWordBeforeUndo
+            clearSuggestions()
+            return true
+        }
+        previousWord = typed
         if (wasSplit) {
             // D-13: undoing a wrong A-05 split trains the rejoined word at once, so it is never split again.
             learnWordStrong(typed)
@@ -3612,7 +3655,7 @@ class AdaptKeyService : InputMethodService() {
         }
         previousWord = typed
         // D-246: learnWord()/learnWordStrong() above just shifted previousPreviousWord from the transient
-        // (self-referential) state this function set at line 2925, not the real word that preceded the
+        // (self-referential) state this function set just above, not the real word that preceded the
         // now-undone commit - restore it from the first LearnRecord's own previousWord, captured back when
         // the original (now-rejected) commit actually happened, before undo touched anything.
         previousPreviousWord = learnRecords.firstOrNull()?.previousWord
@@ -4302,10 +4345,38 @@ class AdaptKeyService : InputMethodService() {
                 item
             }
         }
-        setSuggestionBarItems(items)
+        // B-03/D-289: pinned ahead of everything else, the same "built outside SuggestionController, never
+        // ranked against the ordinary candidates" shape CREDENTIAL/LEARNED already use - see
+        // hyphenCompoundSuggestion()'s own KDoc for why a score-based approach could not reliably win here.
+        val withCompound = hyphenCompoundSuggestion()?.let { listOf(it) + items } ?: items
+        setSuggestionBarItems(withCompound)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.
         suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * B-03/D-289: a previously-learned hyphen-compound (e.g. "Trogata-Team") matching the current composing
+     * prefix, as a dedicated [SuggestionController.Kind.COMPOUND] chip - built directly rather than fed into
+     * [SuggestionController] as a highly-scored [Suggestion], since the existing prefix-distance ranking
+     * (D-272/D-192) discounts a candidate needing many more additional characters far too aggressively for a
+     * plain frequency multiplier to reliably overcome (a multi-segment compound needs several times as many
+     * extra characters as an ordinary same-prefix word, well past [DictionarySuggestionProvider]'s own
+     * decay cap) - a design discussion concluded a dedicated, unranked slot is the robust shape instead,
+     * mirroring how [SuggestionController.Kind.LEARNED]/[SuggestionController.Kind.CREDENTIAL] already bypass
+     * ranking entirely.
+     *
+     * @return the highest-frequency matching compound as a pinned chip, or null when composing is empty, the
+     *         field is a login/URL field (matching every other §6/learning bypass in this file), or no
+     *         compound matches the current prefix at all
+     */
+    private fun hyphenCompoundSuggestion(): SuggestionController.DisplayItem? {
+        val input = composing.toString()
+        if (input.isEmpty() || loginFieldKind != LoginFieldKind.NONE || urlMode) {
+            return null
+        }
+        val compound = dictionaryStore.learnedHyphenCompoundsByPrefix(input, 1).firstOrNull() ?: return null
+        return SuggestionController.DisplayItem(text = compound.word, kind = SuggestionController.Kind.COMPOUND, word = compound.word)
     }
     
     private fun clearSuggestions() {
@@ -4551,6 +4622,76 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * B-03/D-289: extends the running hyphen-compound chain ([hyphenChain]) by [word] - or, once [delimiter]
+     * genuinely ends it (anything but another hyphen) while at least one segment has already accumulated,
+     * appends [word] as the chain's closing segment and learns the whole joined compound
+     * ([learnHyphenCompound]) before resetting. A lone pending segment that never gets a second one (e.g.
+     * "Trogata-" followed directly by a plain space) is simply dropped - nothing meaningful to learn from a
+     * single segment alone. No cap on chain length (design decision: "in der Praxis kaum Relevanz, aber ein
+     * 5-teiliges Wort soll nicht zufällig enden").
+     *
+     * @param word the word [finalizeAndCommit] just committed
+     * @param delimiter the delimiter it committed with
+     * @return the compound's own [LearnRecord] the moment a chain of two or more segments actually closes,
+     *         so the caller can pin its own "Gelernt: X" confirmation the same way an ordinary word's does;
+     *         null otherwise (chain still open, or nothing closed this commit)
+     */
+    private fun updateHyphenChain(word: String, delimiter: String): LearnRecord? {
+        if (delimiter == "-") {
+            hyphenChain.add(word)
+            return null
+        }
+        val record = if (hyphenChain.isNotEmpty()) {
+            hyphenChain.add(word)
+            learnHyphenCompound(hyphenChain.joinToString("-"))
+        } else {
+            null
+        }
+        hyphenChain.clear()
+        return record
+    }
+    
+    /**
+     * B-03/D-289: learns [compound] (a full hyphen-joined chain, e.g. "Trogata-Team", already reconstructed
+     * exactly as typed/cased by [updateHyphenChain]) into the same learned-word overlay an ordinary word
+     * uses - directly reusing [COMPOUND_LEARN_THRESHOLD] (W-02's own existing "suspected compound" threshold)
+     * rather than a new constant, since a hyphen-joined chain genuinely *is* exactly that shape, no
+     * heuristic guess needed (design decision, confirmed with the user).
+     *
+     * Deliberately does not touch [previousWord]/[previousPreviousWord] - the compound is not itself "the
+     * previous word" for ordinary bigram/next-word purposes, each individual segment already updated that
+     * separately via its own [learnWord] call - and is never passed to [rememberForBackspaceUnlearn]: A-11
+     * must never un-teach the compound just because the caret backspaced back through a normally-typed
+     * segment, only [Kind.COMPOUND]'s own dedicated A-07-style undo (see [performAutocorrectUndo]) may ever
+     * reverse it (design decision, confirmed with the user).
+     *
+     * @param compound the full joined string to learn/reinforce
+     * @return the outcome, for the caller's own promotion-chip/undo-arming decision
+     */
+    private fun learnHyphenCompound(compound: String): LearnRecord {
+        if (dictionaryStore.isBlacklisted(compound)) {
+            return LearnRecord(compound, null, null, LearnOutcome.SKIPPED)
+        }
+        if (isPendingBlacklistRecurrence(compound)) {
+            dictionaryStore.forget(compound)
+            dictionaryStore.blacklist(compound, BlacklistCategory.USER)
+            dictionaryStore.clearPendingBlacklist(compound)
+            return LearnRecord(compound, null, null, LearnOutcome.SKIPPED)
+        }
+        val outcome = if (dictionaryStore.learnedCasingOf(compound) != null) {
+            dictionaryStore.learn(compound, null, null)
+            LearnOutcome.LEARNED
+        } else if (PendingLearnStore.increment(this, compound) >= COMPOUND_LEARN_THRESHOLD) {
+            dictionaryStore.learn(compound, null, null)
+            PendingLearnStore.clear(this, compound)
+            LearnOutcome.PROMOTED
+        } else {
+            LearnOutcome.PENDING
+        }
+        return LearnRecord(compound, null, null, outcome)
+    }
+    
+    /**
      * D-177: whether [word] currently carries an unexpired pending-blacklist mark
      * ([DictionaryStore.markPendingBlacklist]), checked before every promotion attempt in [learnWord] so a
      * recurring mistake escalates to a real blacklist entry instead of quietly being learned again. Also
@@ -4766,6 +4907,38 @@ class AdaptKeyService : InputMethodService() {
                 // which - composing already empty by then - calls reclaimWordAtCaret(); guard it against
                 // clearing the flag just armed, since that callback is only the echo of this very commit,
                 // not a genuine subsequent tap elsewhere.
+                suppressNextReclaimSpaceReset = true
+                armShiftForNextWord(ic)
+            }
+            
+            // B-03/D-289: accepts a proactively-suggested hyphen-compound (hyphenCompoundSuggestion()).
+            // Unlike every other suggestion kind, this arms its own dedicated undo window (see
+            // performAutocorrectUndo()'s own undoWasCompound branch) - a design decision, since a proactive
+            // completion is a bigger, more surprising insertion than an ordinary suggestion tap, so an
+            // immediate "take it back" affordance is worth the exception. item.word is already correctly
+            // cased exactly as learned - never re-run through capitalisation.capitalise(), which assumes a
+            // single, plain word, not a multi-segment compound.
+            SuggestionController.Kind.COMPOUND -> {
+                val priorComposing = composing.toString()
+                // D-144/D-183: identical "don't double an already-present space" check the NORMAL branch
+                // above already uses - see its own KDoc.
+                val remainingComposingChars = composing.length - composingCursor
+                val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
+                    ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
+                val trailingSpace = if (alreadySpaced) "" else " "
+                ic.commitText(item.word + trailingSpace, 1)
+                clearComposing()
+                val learnRecord = learnHyphenCompound(item.word)
+                notifySuggestionAccepted(item.word)
+                undoTyped = priorComposing
+                undoCommitted = item.word
+                undoDelimiter = trailingSpace
+                undoWasSplit = false
+                undoWasCompound = true
+                undoLearnRecords = listOf(learnRecord)
+                undoRawCorrection = null
+                showNextWordPredictions()
+                pendingSuggestionSpace = trailingSpace.isNotEmpty()
                 suppressNextReclaimSpaceReset = true
                 armShiftForNextWord(ic)
             }
@@ -5152,6 +5325,7 @@ class AdaptKeyService : InputMethodService() {
         undoCommitted = ""
         undoDelimiter = ""
         undoWasSplit = false
+        undoWasCompound = false
         undoLearnRecords = emptyList()
         undoRawCorrection = null
     }

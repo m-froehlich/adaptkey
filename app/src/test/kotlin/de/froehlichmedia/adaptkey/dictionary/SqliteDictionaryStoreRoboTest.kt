@@ -540,4 +540,37 @@ class SqliteDictionaryStoreRoboTest {
         assertEquals(5L, store.trigramFrequency("ist", "der", "nachbar"))
         store.close()
     }
+    
+    @Test
+    fun learnedHyphenCompoundsByPrefixFindsAMatchingCompound() {
+        val store = store("hyphen-compound-prefix.db")
+        store.learn("Trogata-Team", null)
+        
+        val matches = store.learnedHyphenCompoundsByPrefix("trog", 10)
+        
+        assertEquals(listOf("Trogata-Team"), matches.map { it.word })
+        store.close()
+    }
+    
+    @Test
+    fun learnedHyphenCompoundsByPrefixExcludesAnOrdinaryLearnedWordWithoutAHyphen() {
+        val store = store("hyphen-compound-prefix-exclude.db")
+        store.learn("Trogata", null)
+        
+        assertEquals(emptyList<String>(), store.learnedHyphenCompoundsByPrefix("trog", 10))
+        store.close()
+    }
+    
+    @Test
+    fun learnedHyphenCompoundsByPrefixOrdersByDescendingFrequency() {
+        val store = store("hyphen-compound-prefix-order.db")
+        store.learn("Trogata-Team", null)
+        store.learn("Trogata-Abteilung", null)
+        store.learn("Trogata-Abteilung", null)
+        
+        val matches = store.learnedHyphenCompoundsByPrefix("trog", 10)
+        
+        assertEquals(listOf("Trogata-Abteilung", "Trogata-Team"), matches.map { it.word })
+        store.close()
+    }
 }

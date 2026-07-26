@@ -10782,3 +10782,90 @@ German-only cross-language-confusables blacklist seed) remains open, untouched b
 The user re-tested both outstanding fixes on device: D-287 (§210 - "wird"/"Anfang" no longer split against
 the English dictionary while German is active) is confirmed working. D-288 (§211 - a URL/login field's first
 character no longer auto-capitalises) is confirmed good. No code change.
+
+## §214 - D-289: B-03 Built - Proactive Hyphen-Compound Completion With Its Own Dedicated Undo (v0.9.7)
+
+B-03 ("designed, not built") finally implemented, after a real, multi-round design discussion rather than
+implementing the original one-line backlog wording directly - the user's own motivating case: writing
+"Liebes Trogata-Team" often enough that retyping the hyphen every single time is real friction.
+
+**Round 1:** before proposing anything, traced what already exists - B-01 already treats a hyphen-committed
+segment identically to a space-committed one for bigram learning *and* S-07 next-word prediction, confirmed
+directly against `finalizeAndCommit()`/`learnWord()` (a hyphen is an ordinary `handlePunctuationDelimiter()`
+delimiter like any punctuation mark, so `previousWord`/`previousPreviousWord` already shift across it exactly
+as they do across a space). So "predict the word after the hyphen" was never the actual gap - the real one is
+completing the *whole* compound before its own hyphen is even typed. User's own concrete counter-proposal to
+my first sketch: keep learning/suggesting each segment exactly as today (unchanged), *additionally* learn the
+whole chain (two segments, or three/four) as one unit, and make it "always win" via double frequency.
+
+**Pushed back on "double frequency" with the actual numbers**, not just a feeling: S-01's own prefix-distance
+ranking (D-192/D-272) discounts a candidate by `PREFIX_LENGTH_DECAY.pow(extraLength.coerceIn(0, 4))` - for a
+same-prefix rival needing only 3 more characters vs. a compound needing 8, the rival's own decay factor is
+already ~3.3x more favourable, and the cap means *any* candidate needing more than 4 extra characters gets the
+exact same (worst) factor regardless of how much longer it actually is - a flat multiplier could not reliably
+win, and would only get relatively weaker for a longer (three/four-segment) compound, not stronger. Proposed
+instead: reuse the established "built outside `SuggestionController`, pinned ahead of everything, never
+ranked by score" shape `CREDENTIAL`/`LEARNED` (D-142/D-247) already use - user agreed ("versuchen wir das mal
+so").
+
+**Round 2, three concrete decisions:** (1) promotion threshold - W-02's existing `COMPOUND_LEARN_THRESHOLD`
+(4) reused directly, no new constant, since a hyphen-joined chain genuinely *is* that shape already, no
+heuristic guessing needed. (2) hop depth - deliberately uncapped ("in der Praxis kaum Relevanz, aber ein
+5-teiliges Wort soll nicht zufällig enden - das durchblickt keiner mehr"). (3) undo scope, the one genuinely
+new architectural point flagged back to the user for explicit confirmation before implementing: today *no*
+suggestion-bar tap is undoable at all (`onSuggestionClicked()` unconditionally calls `clearUndo()` at its own
+top - a deliberate design choice, since accepting a suggestion is the user's own choice, not a correction).
+The user wants exactly one exception: Backspace right after accepting the compound *via its own chip* should
+undo it; typing the same segments out normally must never let A-11 (backspacing back into a recently-learned
+word) touch the compound's own count, only each segment's own count as always. Confirmed and implemented as
+that one deliberate exception, not a general precedent.
+
+**Implementation.** New `hyphenChain: MutableList<String>` (reset at exactly the same three points
+`previousWord`/`previousPreviousWord` themselves reset - `onStartInput`, an external-caret-move
+`onUpdateSelection` branch, G-02's `deleteWord()`). `updateHyphenChain(word, delimiter)`, called from
+`finalizeAndCommit()`'s ordinary commit tail only (never split/merge/verbatim/suggestion-tap paths - a real
+hyphen chain is only ever built by literally typing the `-` character, `handlePunctuationDelimiter()`'s own
+path): appends while `delimiter == "-"`, closes and learns the joined chain the moment a real delimiter
+follows with at least one segment already pending, resets either way. `learnHyphenCompound(compound)` mirrors
+`learnWord()`'s own blacklist/pending-blacklist-recurrence/threshold-promotion logic exactly, but (a) always
+uses `COMPOUND_LEARN_THRESHOLD` directly rather than `learnThresholdFor()`'s own heuristic guess, (b) never
+touches `previousWord`/`previousPreviousWord` (the compound is not itself "the previous word" for ordinary
+bigram purposes - each segment already updated that via its own `learnWord()` call), and (c) is never passed
+to `rememberForBackspaceUnlearn()` - by construction, A-11 can never reach it. New
+`SqliteDictionaryStore.learnedHyphenCompoundsByPrefix()` (added to the `DictionaryStore` interface itself,
+default `emptyList()` for the in-memory test store, matching `nextWords`/`trigramFrequency`'s own existing
+pattern) - a compound only ever exists in the learned table once actually promoted (`learn()` is only called
+on the `LEARNED`/`PROMOTED` branches, never `PENDING`), so no separate "is this promoted" filter is needed at
+read time.
+
+New `SuggestionController.Kind.COMPOUND` - built directly in a new `hyphenCompoundSuggestion()` and prepended
+in `showSuggestions()` (ahead of everything, unconditionally), the same "built outside `SuggestionController`"
+shape `CREDENTIAL`/`LEARNED` already use, for exactly the reason Round 1 established. `onSuggestionClicked()`
+gained a `Kind.COMPOUND` branch: commits `item.word` verbatim (already correctly cased as learned, never
+re-run through `capitalisation.capitalise()`, which assumes a single plain word), reinforces it via
+`learnHyphenCompound()` again (the acceptance itself counts as one more confirmed occurrence), and - the
+Round-2-confirmed exception - arms a fresh A-07 window via a new `undoWasCompound` flag (`undoTyped` set to
+whatever was actually composing before the tap, e.g. `"Tro"`, not a real word).
+
+`performAutocorrectUndo()` gained a `wasCompound` branch, structurally parallel to the existing `wasSplit`
+one but deliberately *not* doing what it does: `typed` here is only a partial prefix fragment, never a real,
+complete word, so it must never be re-learned via `learnWord()`/`learnWordStrong()`, and the bigram context
+must be restored to exactly what it was *before* the tap (captured into two local vals at the very top of the
+function, before anything mutates either field) rather than pointed at the fragment - `armShiftForNextWord()`
+is skipped too for the same reason (the caret sits mid-word, not at a genuine next-word boundary). The
+existing D-62 "reclaim on next keystroke" mechanism already picks the restored prefix back up into composing
+the moment the user resumes typing, exactly as it does for any other plain text immediately before the caret
+- nothing new needed there.
+
+3 new unit tests (`SqliteDictionaryStoreRoboTest` - `learnedHyphenCompoundsByPrefix` finds a match, excludes
+a hyphen-less ordinary learned word, orders by descending frequency). The rest
+(`updateHyphenChain`/`learnHyphenCompound`/the two `onSuggestionClicked`/`performAutocorrectUndo` branches/
+`hyphenCompoundSuggestion()`) is `AdaptKeyService`'s own per-token orchestration - the same established
+Android-glue gap every round in this file hits, and genuinely hard to exercise meaningfully without the real
+`InputConnection`/suggestion-bar/tap plumbing around it. 899 unit tests (896 + 3).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec B-03 rewritten from "designed, not built" to its
+actual, now-implemented shape; S-01/S-03/A-07 cross-referenced. Version bumped 0.9.6 -> 0.9.7. Not yet
+device-confirmed - needs a real round trip: type a hyphen-compound 4 times to promote it, confirm the
+"Gelernt: X" chip and the proactive completion chip both appear (pinned ahead of ordinary suggestions),
+confirm tapping it commits correctly, and confirm the dedicated undo reverts a chip acceptance while an
+ordinary manually-typed occurrence of the same compound leaves its own count untouched by Backspace/A-11.
