@@ -88,8 +88,8 @@ History.md's append-only log) so they are not lost if the situation that would j
   data-safety property that mattered. `suppressNextUndoClear` removed entirely (field, both arm sites,
   `onUpdateSelection`'s composing-empty branch reverted to its pre-§195 form). No new unit tests (established
   `InputConnection` glue gap). 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. Spec A-07 revised. Not yet device-confirmed - the exact repro that broke §195 is the first retest.
-  See history §196.
+  green. Spec A-07 revised. **Device-confirmed working (§197)** - the exact `"Satzz."` repro that broke §195
+  now reverts correctly. See history §196/§197.
 - **§195 (v0.8.149): D-276 - A-07's undo redesigned: whitespace consumed before the revert fires, a fixed**
   **deletion range instead of a counter, and a genuine caret move now discards the window.** User requirement,
   confirmed before implementation: removing an auto-inserted post-punctuation space (or any whitespace,

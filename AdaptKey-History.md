@@ -10095,3 +10095,10 @@ other rounds. 843 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebug
 A-07's caret-move paragraph rewritten to describe the verify-before-use mechanism instead of the removed echo
 guard. Version bumped 0.8.149 -> 0.8.150. Not yet device-confirmed - the exact `"Satzz."` repro that broke
 §195 is the first thing to re-test.
+
+## §197 CAPTURED (still v0.8.150, no code change): D-277 Device-Confirmed
+
+The user re-tested the exact `"Satzz."` repro that broke §195's `suppressNextUndoClear` guard against §196's
+ground-truth-verification replacement: "Perfekt, das hat funktioniert." A-07's undo (post-D-276/D-277 shape -
+whitespace consumed ordinarily before the revert fires, the revert itself verified against the real document
+immediately before touching anything) is confirmed working on-device.
