@@ -11086,3 +11086,44 @@ of `c06_llm_threshold` ("LLM threshold") - both were already adjacent, just in t
 declarative reordering in `settings_preferences.xml`, no logic/string changes. 906 unit tests (unchanged).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (§20's own table is order-independent).
 Version bumped 0.9.12 -> 0.9.13. Not yet device-confirmed.
+
+## §221 - D-301: C-08 Per-Key Corner-Symbol Override Removed Entirely - Only The Per-Language Default Remains (v0.9.14)
+
+User asked to discuss the two open C-08 questions raised while cleaning up settings in §219 (whether the
+"Reset corner symbols" removal was safe, and whether per-key corner-symbol configurability still made sense
+now that hints come per language pack via D-281). Investigation confirmed a real, live bug rather than just
+a design smell: `SettingsStore.loadLetterHints()` resolved a single global `KEY_LETTER_HINTS` override
+across every language via `LetterHints.decodeOrDefault()`, whose fallback semantics are full-replace, not
+merge - `parse(value).ifEmpty { default }`. The instant a user customised even one letter's symbol anywhere,
+that one global override silently became the map for every language, permanently, reintroducing exactly the
+cross-language hint bleed D-281 was built to prevent - the customisation would never again fall back to
+German's `ä`/`ö`/`ü`/`ß` hints when typing German, or to any other language's own set, until the user found
+and used the separate "reset" action. Two remediation paths were presented: (A) remove per-key configurability
+entirely, keeping only the per-language bundled defaults; (B) make the override itself per-language (adds a
+language spinner to the editor, more work, preserves the feature). User chose (A) outright: "Entfernen wir es
+einfach komplett... Ich glaube ohnehin nicht, dass das jemand wirklich nutzen will."
+
+Removed: `LetterHintsActivity` (the per-key editor) and its `activity_letter_hints.xml` layout and manifest
+entry; the `c08_hints_enabled` ("Show corner symbols") and `c08_letter_hints_editor` ("Edit corner symbols")
+settings-list entries; `SettingsStore.KEY_LETTER_HINTS`/`KEY_HINTS_ENABLED`,
+`saveLetterHints()`/`resetLetterHints()`, and the override-resolution half of `loadLetterHints()`;
+`AdaptSettings`/`RawSettings`/`SettingsMapper`'s `hintsEnabled` field throughout; `AdaptKeyboardView.hintsEnabled`
+(corner hints are now drawn unconditionally, same as the long-press popup always was); and `LetterHints.PALETTE`/
+`encode()`/`decodeOrDefault()` (all three were only ever used by the now-removed editor and its persistence
+path). All `c08_*` editor/reset strings removed from all three locale `strings.xml` files. Kept unchanged and
+still the sole source of truth: `LanguageLetterHintsLoader` (D-281's per-language `hints_<code>.tsv` reader)
+and `LetterHints.parse()`/`sanitize()`/`isValidEntry()`, which that loader still relies on to read the bundled
+data files - this was a removal of the user-override *layer*, not of the per-language default mechanism
+itself, which was already working correctly and is unaffected. `AdaptKeyService.applyActiveLanguageToView()`/
+`applySettings()` now set `keyboardView.letterHints` alone, with no companion `hintsEnabled` assignment.
+Spec: L-05 reworded to state the mapping is always the active language's own default and is not
+user-configurable, with a pointer to this decision; the C-08 row removed from the §20 configurable-parameters
+table (not renumbered, matching the C-14-removal precedent from §219).
+
+`LetterHintsTest.kt` trimmed to just the still-relevant `parse`/`sanitize`/`isValidEntry` coverage (the
+encode/decodeOrDefault/palette tests were removed along with the code they tested); `SettingsMapperTest.kt`
+lost its `hintsEnabled` assertions. `LanguageLetterHintsDataTest.kt` needed no change - it only ever exercised
+`LetterHints.parse()` against the real bundled `hints_en.tsv`/`hints_de.tsv` data files, which is exactly the
+mechanism being kept. 896 unit tests (906 -> 896, the 10 removed tests above). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green (including `lintVitalRelease`, confirming no dangling `@string/c08_*`
+references anywhere). Version bumped 0.9.13 -> 0.9.14. Not yet device-confirmed.

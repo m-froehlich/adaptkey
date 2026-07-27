@@ -3,42 +3,16 @@
 
 package de.froehlichmedia.adaptkey.settings
 
-import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for the pure C-08 per-key symbol core: encode/decode round-trip, validation, default
- * fallback, and the curated palette invariants.
+ * Unit tests for the pure C-08 per-key symbol core: parsing and validation of the `hints_<code>.tsv`
+ * persisted format read by [LanguageLetterHintsLoader].
  */
 class LetterHintsTest {
-    
-    @Test
-    fun `encode then parse is a lossless round-trip for a valid map`() {
-        val map = mapOf('q' to "@", 'e' to "€", 'z' to "•")
-        val restored = LetterHints.parse(LetterHints.encode(map))
-        assertEquals(LetterHints.sanitize(map), restored)
-    }
-    
-    @Test
-    fun `the default mapping round-trips unchanged`() {
-        val encoded = LetterHints.encode(KeyboardLayout.DEFAULT_LETTER_HINTS)
-        assertEquals(LetterHints.sanitize(KeyboardLayout.DEFAULT_LETTER_HINTS), LetterHints.parse(encoded))
-    }
-    
-    @Test
-    fun `encode is deterministic and sorted by key`() {
-        val map = mapOf('z' to "•", 'a' to "@", 'm' to "-")
-        assertEquals("a=@;m=-;z=•", LetterHints.encode(map))
-    }
-    
-    @Test
-    fun `encode of an empty or fully invalid map is the empty string`() {
-        assertEquals("", LetterHints.encode(emptyMap()))
-        assertEquals("", LetterHints.encode(mapOf('1' to "@", 'q' to "")))
-    }
     
     @Test
     fun `sanitize lower-cases keys and drops invalid entries`() {
@@ -72,48 +46,9 @@ class LetterHintsTest {
     }
     
     @Test
-    fun `parse of null blank or fully invalid input is empty without fallback`() {
+    fun `parse of null blank or fully invalid input is empty`() {
         assertTrue(LetterHints.parse(null).isEmpty())
         assertTrue(LetterHints.parse("   ").isEmpty())
         assertTrue(LetterHints.parse("1=!;=x").isEmpty())
-    }
-    
-    @Test
-    fun `decodeOrDefault falls back to the default mapping when empty`() {
-        assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.decodeOrDefault(null))
-        assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.decodeOrDefault(""))
-        assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.decodeOrDefault("1=!"))
-    }
-    
-    @Test
-    fun `decodeOrDefault returns the parsed map when non-empty`() {
-        assertEquals(mapOf('q' to "!"), LetterHints.decodeOrDefault("q=!"))
-    }
-    
-    @Test
-    fun `decodeOrDefault falls back to a given default instead of the German one`() {
-        val englishDefault = mapOf('q' to "@", 'e' to "€")
-        assertEquals(englishDefault, LetterHints.decodeOrDefault(null, englishDefault))
-        assertEquals(englishDefault, LetterHints.decodeOrDefault("1=!", englishDefault))
-    }
-    
-    @Test
-    fun `decodeOrDefault ignores the given default when a real override is stored`() {
-        val englishDefault = mapOf('q' to "@", 'e' to "€")
-        assertEquals(mapOf('z' to "!"), LetterHints.decodeOrDefault("z=!", englishDefault))
-    }
-    
-    @Test
-    fun `the curated palette is non-empty unique and fully valid`() {
-        assertFalse(LetterHints.PALETTE.isEmpty())
-        assertEquals(LetterHints.PALETTE.size, LetterHints.PALETTE.toSet().size)
-        for (symbol in LetterHints.PALETTE) {
-            assertTrue(LetterHints.isValidEntry('q', symbol), "palette symbol must be assignable: $symbol")
-        }
-    }
-    
-    @Test
-    fun `every default symbol is offered by the palette`() {
-        assertTrue(LetterHints.PALETTE.containsAll(KeyboardLayout.DEFAULT_LETTER_HINTS.values.toSet()))
     }
 }

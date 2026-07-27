@@ -16,8 +16,8 @@ import de.froehlichmedia.adaptkey.language.Language
  * Latin AltGr hints to begin with) simply has none here, and the caller falls back to
  * [de.froehlichmedia.adaptkey.keyboard.KeyboardLayout.DEFAULT_LETTER_HINTS].
  *
- * The file content is exactly [LetterHints.encode]'s own format (`"a=ä;e=€;..."`) - deliberately reusing
- * the already-validated, already-tested encode/parse/sanitize core rather than inventing a second format.
+ * The file content is [LetterHints]'s own persisted format (`"a=ä;e=€;..."`) - deliberately reusing the
+ * already-validated, already-tested parse/sanitize core rather than inventing a second format.
  */
 object LanguageLetterHintsLoader {
     

@@ -277,21 +277,6 @@
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 
-        <SwitchPreferenceCompat
-            android:key="c08_hints_enabled"
-            android:title="@string/c08_hints_title"
-            android:summary="@string/c08_hints_summary"
-            android:defaultValue="true" />
-
-        <Preference
-            android:key="c08_letter_hints_editor"
-            android:title="@string/c08_editor_title"
-            android:summary="@string/c08_editor_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.LetterHintsActivity" />
-        </Preference>
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_feedback">

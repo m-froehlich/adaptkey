@@ -112,17 +112,6 @@
     <string name="d55_below_summary">Επιπλέον κενό κάτω από τα ψηφία, σε dp, για λιγότερα λάθη στην πάνω σειρά γραμμάτων (D-55).</string>
     <string name="d55_above_title">Κενό πάνω από το πλήκτρο διαστήματος</string>
     <string name="d55_above_summary">Επιπλέον κενό πάνω από τη σειρά διαστήματος/Enter, σε dp, για λιγότερα κατά λάθος Enter (D-55).</string>
-    <string name="c08_hints_title">Εμφάνιση συμβόλων γωνίας</string>
-    <string name="c08_hints_summary">Δευτερεύοντα σύμβολα παρατεταμένου πατήματος ως ένδειξη γωνίας (L-05). Το παρατεταμένο πάτημα λειτουργεί ούτως ή άλλως.</string>
-    <string name="c08_editor_title">Επεξεργασία συμβόλων γωνίας</string>
-    <string name="c08_editor_summary">Ορισμός ή αφαίρεση δευτερεύοντος συμβόλου ανά γράμμα (L-05).</string>
-    <string name="c08_editor_intro">Πάτησε ένα γράμμα για να επιλέξεις ή να αφαιρέσεις το σύμβολο παρατεταμένου πατήματος.</string>
-    <string name="c08_editor_none">— κανένα σύμβολο —</string>
-    <!-- In-editor reset action (LetterHintsActivity) - η καταχώριση στη λίστα ρυθμίσεων αφαιρέθηκε ως
-         περιττή για τόσο σπάνια ενέργεια· αυτό το κουμπί μέσα στην ίδια οθόνη παραμένει. -->
-    <string name="c08_reset_title">Επαναφορά στην προεπιλογή</string>
-    <string name="c08_reset_done">Τα σύμβολα γωνίας επαναφέρθηκαν στην προεπιλογή.</string>
-
     <string name="c05_title">Επεξεργασία λίστας αποκλεισμού</string>
     <string name="c05_summary">Μόνιμος αποκλεισμός λέξεων από προτάσεις και αυτόματη διόρθωση (A-04).</string>
 

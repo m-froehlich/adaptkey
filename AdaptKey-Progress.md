@@ -88,6 +88,23 @@ non-trivial changes).
 
 ## Current State
 
+- **§221 (v0.9.14): D-301 - C-08 per-key corner-symbol override removed entirely, answering §219's own**
+  **deferred question.** Investigation confirmed a real bug, not just a design smell: the single global
+  `KEY_LETTER_HINTS` override combined with `LetterHints.decodeOrDefault()`'s full-replace-not-merge fallback
+  meant customising even one letter's symbol anywhere silently became the map for every language permanently,
+  reintroducing exactly the cross-language hint bleed D-281 was built to prevent. Presented two options (A:
+  remove entirely; B: make the override per-language, more work); user chose A outright. Removed:
+  `LetterHintsActivity` + its layout + manifest entry, the "Show corner symbols"/"Edit corner symbols"
+  settings-list entries, `SettingsStore`'s `KEY_LETTER_HINTS`/`KEY_HINTS_ENABLED`/`saveLetterHints`/
+  `resetLetterHints`, `hintsEnabled` throughout (`AdaptSettings`/`RawSettings`/`SettingsMapper`/
+  `AdaptKeyboardView` - corner hints now always drawn), and `LetterHints.PALETTE`/`encode()`/`decodeOrDefault()`
+  (editor-only, now dead). Kept unchanged, still the sole source of truth: `LanguageLetterHintsLoader` (D-281)
+  and `LetterHints.parse()`/`sanitize()`/`isValidEntry()`, which it still relies on. All `c08_*` editor/reset
+  strings removed from all three locales. Spec L-05 reworded, C-08 row removed from §20's table (not
+  renumbered, matching the C-14 precedent). 896 unit tests (906 - 10, `LetterHintsTest.kt` trimmed to the
+  still-relevant parse/sanitize/isValidEntry coverage, `SettingsMapperTest.kt` lost its `hintsEnabled`
+  assertions). `:app:assembleRelease`/`:app:testDebugUnitTest` green, including `lintVitalRelease` (confirms
+  no dangling `@string/c08_*` references). Not yet device-confirmed. See history §221.
 - **§220 (v0.9.13): D-300 - two further reorder requests on §219's own settings screen, before device**
   **confirmation of that round: the number-row-through-long-press-delay block moved to the front of Layout**
   **(ahead of the C-01 key-proportion sliders), and "Mini-LLM (Tier 3)" moved directly ahead of "LLM**

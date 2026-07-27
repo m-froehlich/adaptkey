@@ -124,10 +124,11 @@ the row) it is drawn reversed instead (D-282), so the key's own primary glyph st
 finger rather than pushed away by the clamp - determined dynamically from the actual popup width and the
 key's own screen position, not by which specific key it happens to be, so this holds for any key's popup
 regardless of what a language pack's own data puts on it. The popup tolerates a small amount of finger
-movement during the hold without cancelling or mis-selecting. Per-key
-symbols and whether hint glyphs are displayed remain user-configurable on top of the active language's own
-default (C-08). Together with L-03 and L-06 this removes the need to switch to `?123` for most
-everyday input.
+movement during the hold without cancelling or mis-selecting. The mapping is always the active language's
+own default; it is not user-configurable (D-301: a former per-key override editor combined incorrectly with
+the per-language default above, silently reintroducing cross-language hint bleed the moment any single
+symbol was customised, so the override layer was removed entirely rather than fixed). Together with L-03 and
+L-06 this removes the need to switch to `?123` for most everyday input.
 
 ### L-06 - Persistent Number Row
 A dedicated number row (`1`-`0`) is shown at the top of the alpha view by default and can be toggled off in
@@ -921,7 +922,6 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled confusables + archaic-spelling set |
 | C-06 | LLM activation threshold, or "disabled" (D-297: folds the former separate tier-3-enabled toggle into this one list) | N-gram confidence value, or off | medium |
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
-| C-08 | Secondary long-press symbols & corner hint labels | Per-key map + on/off | see L-05 |
 | C-09 | Persistent number row (with shifted-symbol long-press) | On/Off | On |
 | C-10 | No sentence start after a comma-terminated line (§6, e-mail salutation) | On/Off | On |
 | C-11 | Long-press popup delay | Slider | see platform default |

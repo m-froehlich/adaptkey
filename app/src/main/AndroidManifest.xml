@@ -64,12 +64,6 @@
             android:label="@string/d142_credentials_title"
             android:exported="false" />
 
-        <!-- Per-key secondary-symbol editor (C-08), launched from the settings screen. -->
-        <activity
-            android:name=".settings.LetterHintsActivity"
-            android:label="@string/c08_editor_title"
-            android:exported="false" />
-
         <!-- D-237: typing-style picker (K-01) and touch-zone visualisation (D-24) merged into one screen -
              offered on first launch and reachable any time from the settings screen. -->
         <activity

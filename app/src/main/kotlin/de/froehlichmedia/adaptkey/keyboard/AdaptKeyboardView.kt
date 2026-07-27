@@ -340,18 +340,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
     
     
-    /** Per-letter secondary-symbol map drawn as corner hints (L-05 / C-08). */
+    /** Per-letter secondary-symbol map drawn as corner hints (L-05 / C-08), always [language]'s own default. */
     var letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS
         set(value) {
             field = value
             rebuildRows()
-        }
-    
-    /** Whether the corner hint glyphs are drawn (C-08); the long-press function stays active either way. */
-    var hintsEnabled: Boolean = true
-        set(value) {
-            field = value
-            invalidate()
         }
     
     /** D-24: draws the learned touch model (expected strike point + spread per key) as an overlay. */
@@ -829,7 +822,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val hint = key.hint
             // D-47 / §49: no "123" corner hint on the combined key - it always already reads "?123".
             val suppressHint = key.code == KeyCode.SYMBOL
-            if (hintsEnabled && !suppressHint) {
+            if (!suppressHint) {
                 if (hint != null) {
                     canvas.drawText(cornerHintDisplayTextFor(key, hint), rect.right - dp(6f), rect.top + dp(14f), hintPaint)
                 } else if (isSignFlipKey(key)) {

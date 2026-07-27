@@ -3,26 +3,21 @@
 
 package de.froehlichmedia.adaptkey.settings
 
-import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
-
 /**
- * Pure, Android-free encode/decode/validation core for the C-08 per-key secondary-symbol map (L-05).
+ * Pure, Android-free parse/validation core for the C-08 per-key secondary-symbol map (L-05).
  *
- * The map is persisted as a single string of the form {@code "q=@;e=€;h=#"} under
- * [SettingsStore.KEY_LETTER_HINTS]. This object owns both directions of that translation plus the
- * validation that protects the keyboard from corrupt or hostile stored values, and it exposes the
- * curated symbol [PALETTE] the editor offers. Like [SettingsMapper], it is the unit-tested core of
- * the settings layer; the Android-facing IO around it ([SettingsStore]) is left to instrumented tests.
+ * Each language's own default hint set is bundled as a `hints_<code>.tsv` file in exactly this
+ * object's persisted string form ({@code "q=@;e=€;h=#"}), read via [LanguageLetterHintsLoader] and
+ * parsed here. There is no user-facing override any more (D-281's per-language defaults are the sole
+ * source); this object's job is purely to parse and validate that bundled data, protecting the
+ * keyboard from a corrupt or malformed data file. Like [SettingsMapper], it is the unit-tested core of
+ * the settings layer.
  *
- * Validation (applied in [sanitize], hence to every parse and encode):
+ * Validation (applied in [sanitize], hence to every parse):
  * - keys are letters {@code a}-{@code z}; an upper-case key is lower-cased, anything else is dropped,
  * - symbols are non-blank, at most [MAX_SYMBOL_LENGTH] characters, and may not contain the
  *   [ENTRY_SEPARATOR] or [KEY_VALUE_SEPARATOR] used by the storage format,
  * - invalid or duplicate entries are discarded (last valid wins per key).
- *
- * An empty result falls back to [KeyboardLayout.DEFAULT_LETTER_HINTS] in [decodeOrDefault], matching
- * the spec decision that the keyboard never ends up with no secondary symbols at all; removing every
- * symbol therefore reverts to the default mapping on the next load.
  */
 object LetterHints {
     
@@ -34,19 +29,6 @@ object LetterHints {
     
     /** Maximum length of a secondary symbol; the spec calls for a single or short glyph. */
     const val MAX_SYMBOL_LENGTH = 2
-    
-    /**
-     * The curated set of secondary symbols the editor offers (no free-text entry). All entries are
-     * single glyphs and none contain the storage delimiters, so every palette symbol is a valid
-     * assignment for any letter. Ordered roughly by everyday usefulness for German input.
-     */
-    val PALETTE: List<String> = listOf(
-        "@", "€", "£", "$", "#", "%", "&", "§", "°", "*",
-        "+", "-", "_", "~", "^", "|", "/", "\\", "(", ")",
-        "[", "]", "{", "}", "<", ">", "!", "?", "\"", "'",
-        "…", "•", "©", "®", "™", "µ", "±", "×", "÷", "π", "«", "»", "ƒ",
-        "ä", "ö", "ü", "ß"
-    )
     
     /**
      * Tests whether a single key/symbol pair is a storable secondary-symbol assignment.
@@ -84,21 +66,9 @@ object LetterHints {
     }
     
     /**
-     * Encodes a per-key map into its persisted string form. The map is sanitised first, so the output
-     * is always valid and deterministically ordered; an empty (or fully invalid) map encodes to "".
-     *
-     * @param map the per-key map to encode
-     * @return the persisted string, e.g. {@code "e=€;q=@"}
-     */
-    fun encode(map: Map<Char, String>): String {
-        return sanitize(map).entries.joinToString(ENTRY_SEPARATOR.toString()) { (key, symbol) ->
-            "$key$KEY_VALUE_SEPARATOR$symbol"
-        }
-    }
-    
-    /**
-     * Parses a persisted string back into a validated per-key map, without applying the default
-     * fallback. A null, blank, or fully invalid input yields an empty map.
+     * Parses a persisted string back into a validated per-key map. A null, blank, or fully invalid
+     * input yields an empty map - the caller ([LanguageLetterHintsLoader]) falls back to the compiled-in
+     * default in that case.
      *
      * @param value the persisted string, or null
      * @return the validated per-key map (possibly empty)
@@ -115,23 +85,5 @@ object LetterHints {
             }
         }
         return sanitize(raw)
-    }
-    
-    /**
-     * Parses a persisted string and falls back to [default] when the result is empty, so the keyboard
-     * always has a usable secondary-symbol mapping.
-     *
-     * D-281: [default] is now a parameter rather than always [KeyboardLayout.DEFAULT_LETTER_HINTS] -
-     * [SettingsStore.loadLetterHints] passes in whichever language is currently active's own default
-     * (German's own AltGr set is no longer the only one), so a user with no C-08 override of their own
-     * sees their active language's own set, not always German's.
-     *
-     * @param value the persisted string, or null
-     * @param default the fallback mapping when [value] decodes to nothing usable
-     * @return the validated per-key map, or [default] when empty
-     */
-    fun decodeOrDefault(value: String?, default: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS): Map<Char, String> {
-        val parsed = parse(value)
-        return parsed.ifEmpty { default }
     }
 }

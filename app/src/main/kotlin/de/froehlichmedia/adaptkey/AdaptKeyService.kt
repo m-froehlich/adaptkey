@@ -722,9 +722,8 @@ class AdaptKeyService : InputMethodService() {
      * [AdaptKeyboardView.greek]/[AdaptKeyboardView.qwerty]/[AdaptKeyboardView.letterHints] are derived from
      * [activeLanguage], instead of repeating the comparison at every call site ([onStartInputView],
      * [toggleLanguage], and [installStores]'s own removed-language fallback above). `applySettings()`
-     * separately reapplies the same [SettingsStore.loadLetterHints] result whenever any setting (including
-     * a genuine C-08 override) changes - both paths agree, since either resolves for the same
-     * [activeLanguage] and the same stored override.
+     * separately reapplies the same [SettingsStore.loadLetterHints] result whenever any setting changes -
+     * both paths agree, since either resolves for the same [activeLanguage].
      */
     private fun applyActiveLanguageToView() {
         val kind = LayoutRegistry.kindFor(activeLanguage)
@@ -983,7 +982,6 @@ class AdaptKeyService : InputMethodService() {
             view.proportions = s.keyProportions
             view.showNumberRow = s.showNumberRow
             view.letterHints = s.letterHints
-            view.hintsEnabled = s.hintsEnabled
             // D-05 / D-06: optional key-press sound + haptics (both default off).
             view.soundEnabled = s.keySoundEnabled
             view.hapticsEnabled = s.keyHapticsEnabled

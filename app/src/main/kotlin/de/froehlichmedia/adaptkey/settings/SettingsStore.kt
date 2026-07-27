@@ -37,8 +37,6 @@ object SettingsStore {
     const val KEY_MAX_SUGGESTIONS = "c03_max_suggestions"
     const val KEY_HIGHLIGHT_COLOR = "c04_highlight_color"
     const val KEY_NUMBER_ROW = "c09_number_row"
-    const val KEY_HINTS_ENABLED = "c08_hints_enabled"
-    const val KEY_LETTER_HINTS = "c08_letter_hints"
     const val KEY_SHIFT_GRACE = "c07_shift_grace_ms"
     const val KEY_COMMA_LINE_NOT_SENTENCE_START = "c10_comma_line_not_sentence_start"
     const val KEY_LLM_THRESHOLD = "c06_llm_threshold"
@@ -118,7 +116,6 @@ object SettingsStore {
             highlightEnabled = highlightColorRaw != NO_HIGHLIGHT_VALUE,
             highlightColor = parseColor(highlightColorRaw),
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
-            hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
             letterHints = loadLetterHints(context),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
             commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true),
@@ -139,43 +136,19 @@ object SettingsStore {
     }
     
     /**
-     * Loads the current C-08 per-key secondary-symbol map, applying the default fallback. This is the map
-     * the running keyboard resolves to as well (see [load]), and what [LetterHintsActivity]'s editor shows
-     * as the starting point.
-     *
-     * D-281: the fallback is [language]'s own default hint set ([LanguageLetterHintsLoader]), not always
-     * German's - [language] defaults to whichever language is currently active ([ActiveLanguageStore]), so
-     * every existing call site (which never passed one) keeps working unchanged while now resolving
-     * correctly per language instead of always to German.
+     * Loads the C-08 per-key secondary-symbol map, always [language]'s own bundled default - no longer
+     * user-configurable (the former per-key override editor combined incorrectly with a per-language
+     * default, silently reintroducing cross-language hint bleed the moment any single symbol was
+     * customised, so it was removed entirely rather than fixed; see D-281 for the per-language default
+     * mechanism itself).
      *
      * @param context any valid context
-     * @param language the language whose own default to fall back to when there is no user override
-     * @return the validated per-key map, or [language]'s own default mapping when none is stored
+     * @param language the language whose own default hint set to resolve; defaults to whichever language
+     *        is currently active ([ActiveLanguageStore])
+     * @return [language]'s own default per-key map, or the compiled-in default when [language] has none
      */
     fun loadLetterHints(context: Context, language: Language = ActiveLanguageStore.load(context)): Map<Char, String> {
-        val languageDefault = LanguageLetterHintsLoader.loadFor(context, language) ?: KeyboardLayout.DEFAULT_LETTER_HINTS
-        return LetterHints.decodeOrDefault(prefs(context).getString(KEY_LETTER_HINTS, null), languageDefault)
-    }
-    
-    /**
-     * Persists an edited C-08 per-key secondary-symbol map. The map is sanitised and encoded by
-     * [LetterHints]; writing the [KEY_LETTER_HINTS] key triggers the service's preference listener, so
-     * the change reaches the live keyboard (hints + long-press) on the next input view.
-     *
-     * @param context any valid context
-     * @param hints the edited per-key map
-     */
-    fun saveLetterHints(context: Context, hints: Map<Char, String>) {
-        prefs(context).edit().putString(KEY_LETTER_HINTS, LetterHints.encode(hints)).apply()
-    }
-    
-    /**
-     * Restores the C-08 per-key symbols to the default mapping (the settings "reset hints" action).
-     *
-     * @param context any valid context
-     */
-    fun resetLetterHints(context: Context) {
-        prefs(context).edit().remove(KEY_LETTER_HINTS).apply()
+        return LanguageLetterHintsLoader.loadFor(context, language) ?: KeyboardLayout.DEFAULT_LETTER_HINTS
     }
     
     /**

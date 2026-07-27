@@ -25,7 +25,6 @@ class SettingsMapperTest {
         assertEquals(KeyProportions.DEFAULT, resolved.keyProportions)
         assertEquals(SuggestionConfig(), resolved.suggestionConfig)
         assertTrue(resolved.showNumberRow)
-        assertTrue(resolved.hintsEnabled)
         assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, resolved.letterHints)
         assertEquals(AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS, resolved.shiftGraceWindowMs)
         assertTrue(resolved.commaLineNotSentenceStart)
@@ -161,10 +160,9 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `number row and hints toggles pass through`() {
-        val resolved = SettingsMapper.toAdaptSettings(RawSettings(showNumberRow = false, hintsEnabled = false))
+    fun `number row toggle passes through`() {
+        val resolved = SettingsMapper.toAdaptSettings(RawSettings(showNumberRow = false))
         assertFalse(resolved.showNumberRow)
-        assertFalse(resolved.hintsEnabled)
     }
     
     @Test
