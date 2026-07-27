@@ -573,4 +573,28 @@ class SqliteDictionaryStoreRoboTest {
         assertEquals(listOf("Trogata-Abteilung", "Trogata-Team"), matches.map { it.word })
         store.close()
     }
+    
+    @Test
+    fun recaseLearnedWordChangesCasingWhileKeepingFrequencyAndPos() {
+        val store = store("recase-learned-word.db")
+        store.learn("msci", null)
+        store.learn("msci", null)
+        
+        store.recaseLearnedWord("msci", "MSCI")
+        
+        val entry = store.learnedWords().single()
+        assertEquals("MSCI", entry.word)
+        assertEquals(2L, entry.frequency)
+        store.close()
+    }
+    
+    @Test
+    fun recaseLearnedWordIsANoOpWhenTheWordIsNotLearned() {
+        val store = store("recase-learned-word-missing.db")
+        
+        store.recaseLearnedWord("nachbar", "Nachbar")
+        
+        assertTrue(store.learnedWords().isEmpty())
+        store.close()
+    }
 }

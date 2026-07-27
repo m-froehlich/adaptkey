@@ -4654,9 +4654,12 @@ class AdaptKeyService : InputMethodService() {
     /**
      * B-03/D-289: learns [compound] (a full hyphen-joined chain, e.g. "Trogata-Team", already reconstructed
      * exactly as typed/cased by [updateHyphenChain]) into the same learned-word overlay an ordinary word
-     * uses - directly reusing [COMPOUND_LEARN_THRESHOLD] (W-02's own existing "suspected compound" threshold)
-     * rather than a new constant, since a hyphen-joined chain genuinely *is* exactly that shape, no
-     * heuristic guess needed (design decision, confirmed with the user).
+     * uses - promoted after only [HYPHEN_COMPOUND_LEARN_THRESHOLD] confirmations, deliberately lower than
+     * [COMPOUND_LEARN_THRESHOLD] (D-291): an accidentally-typed hyphen chain in exactly this spelling,
+     * repeated this many times, is vanishingly unlikely - unlike an *ordinary* word merely *suspected* of
+     * being an unsplit compound (where a false-positive-prone heuristic, not a literal typed hyphen, is
+     * doing the guessing, so the higher bar exists to protect against it) (design decision, confirmed with
+     * the user).
      *
      * Deliberately does not touch [previousWord]/[previousPreviousWord] - the compound is not itself "the
      * previous word" for ordinary bigram/next-word purposes, each individual segment already updated that
@@ -4681,7 +4684,7 @@ class AdaptKeyService : InputMethodService() {
         val outcome = if (dictionaryStore.learnedCasingOf(compound) != null) {
             dictionaryStore.learn(compound, null, null)
             LearnOutcome.LEARNED
-        } else if (PendingLearnStore.increment(this, compound) >= COMPOUND_LEARN_THRESHOLD) {
+        } else if (PendingLearnStore.increment(this, compound) >= HYPHEN_COMPOUND_LEARN_THRESHOLD) {
             dictionaryStore.learn(compound, null, null)
             PendingLearnStore.clear(this, compound)
             LearnOutcome.PROMOTED
@@ -5460,6 +5463,12 @@ class AdaptKeyService : InputMethodService() {
         // starts fixing it. A false positive here only delays an ordinary word's promotion by a couple more
         // repetitions - accepted as harmless (see learnThresholdFor's own KDoc).
         private const val COMPOUND_LEARN_THRESHOLD = 4
+        
+        // D-291 (B-03): a literal, deliberately-typed hyphen chain needs far less evidence than an ordinary
+        // word merely *suspected* of being an unsplit compound (COMPOUND_LEARN_THRESHOLD above) - the user's
+        // own reasoning: an accidental hyphen chain in exactly this spelling, repeated this many times, is
+        // vanishingly unlikely, so there is no false-positive risk this higher bar exists to guard against.
+        private const val HYPHEN_COMPOUND_LEARN_THRESHOLD = 2
         
         // D-247: a single letter is never a real word - the most common source is a fragment left behind
         // by an unintended Enter mid-word (autocomplete-triggered send, accidental keypress), not anything

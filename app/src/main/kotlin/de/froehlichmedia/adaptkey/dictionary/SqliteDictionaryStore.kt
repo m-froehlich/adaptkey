@@ -303,6 +303,21 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return learnedEntryOf(word)?.word
     }
     
+    /**
+     * D-292: updates an already-learned word's own stored casing, keeping its frequency and part-of-speech
+     * tags exactly as they were - the Learned Words editor's own "fix only the casing" action. A no-op when
+     * [word] is not currently a learned entry at all. The caller is responsible for ensuring [newCasing] is
+     * case-insensitively identical to [word] before calling - this method itself does not re-check that,
+     * matching every other store method's "caller enforces intent" contract; since both share the same
+     * lower-cased key, the underlying row is updated in place rather than creating a second entry.
+     *
+     * @param word the learned word to re-case (any case)
+     * @param newCasing the corrected spelling to store instead
+     */
+    fun recaseLearnedWord(word: String, newCasing: String) {
+        val existing = learnedEntryOf(word) ?: return
+        putWordInternal(TABLE_LEARNED, newCasing, existing.frequency, existing.partsOfSpeech)
+    }
     
     override fun learnedWords(): List<WordEntry> {
         val result = ArrayList<WordEntry>()

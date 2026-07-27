@@ -7,9 +7,14 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
@@ -36,6 +41,12 @@ import de.froehlichmedia.adaptkey.language.Language
  * own KDoc for why. Structurally mirrors [BlacklistActivity] (language spinner, list, tap-to-remove with
  * confirmation); backed directly by SQLite, so - like the other Android-facing store layers - it is covered
  * by instrumented rather than unit tests.
+ *
+ * D-292: tapping an entry now also lets its own casing be corrected in place ([SqliteDictionaryStore.
+ * recaseLearnedWord]) - deliberately restricted to a casing-only edit (Save stays disabled unless the edited
+ * text is case-insensitively identical to the original), so this can never be used to sneak an entirely
+ * different word into the learned lexicon under someone else's frequency/history; a genuinely different word
+ * still has to be typed and learned normally.
  */
 class LearnedWordsActivity : AppCompatActivity() {
     
@@ -99,26 +110,83 @@ class LearnedWordsActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
         
-        listView.setOnItemClickListener { _, _, position, _ -> confirmRemove(words[position]) }
+        listView.setOnItemClickListener { _, _, position, _ -> showEntryDialog(words[position]) }
         
         refresh()
     }
     
-    private fun confirmRemove(entry: WordEntry) {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.learned_words_remove_confirm_title, entry.word))
-            .setPositiveButton(R.string.learned_words_remove_confirm_action) { _, _ ->
-                // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly - every
-                // word listed here is by definition already in the learned lexicon (learnedWords() itself
-                // never returns a bundled one), so there is no isBundledWord() branch to make here at all.
-                store.forget(entry.word)
-                store.markPendingBlacklist(entry.word, System.currentTimeMillis())
-                Toast.makeText(this, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
-                refresh()
-            }
+    /**
+     * D-292: the per-entry dialog - an editable casing field (Save/Cancel, the dialog's own built-in
+     * buttons) plus Copy/Forget as two extra buttons inside the custom view, since [AlertDialog.Builder]
+     * itself only ever offers three button slots and this dialog needs four actions.
+     *
+     * @param entry the learned-word entry tapped
+     */
+    private fun showEntryDialog(entry: WordEntry) {
+        lateinit var dialog: AlertDialog
+        val editText = EditText(this).apply {
+            setText(entry.word)
+            setSelection(text.length)
+        }
+        val hint = TextView(this).apply {
+            text = getString(R.string.learned_words_edit_hint)
+            setPadding(0, dp(4), 0, dp(12))
+        }
+        val actions = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(Button(this@LearnedWordsActivity).apply {
+                text = getString(R.string.copy_to_clipboard_action)
+                setOnClickListener { copyToClipboard(editText.text.toString()) }
+            })
+            addView(Button(this@LearnedWordsActivity).apply {
+                text = getString(R.string.learned_words_remove_confirm_action)
+                setOnClickListener {
+                    // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly -
+                    // every word listed here is by definition already in the learned lexicon (learnedWords()
+                    // itself never returns a bundled one), so there is no isBundledWord() branch to make here.
+                    store.forget(entry.word)
+                    store.markPendingBlacklist(entry.word, System.currentTimeMillis())
+                    Toast.makeText(this@LearnedWordsActivity, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
+                    refresh()
+                    dialog.dismiss()
+                }
+            })
+        }
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val padding = dp(20)
+            setPadding(padding, dp(8), padding, 0)
+            addView(editText)
+            addView(hint)
+            addView(actions)
+        }
+        dialog = AlertDialog.Builder(this)
+            .setTitle(entry.word)
+            .setView(container)
+            .setPositiveButton(R.string.learned_words_save_action, null)
             .setNegativeButton(android.R.string.cancel, null)
-            .setNeutralButton(R.string.copy_to_clipboard_action) { _, _ -> copyToClipboard(entry.word) }
-            .show()
+            .create()
+        dialog.setOnShowListener {
+            val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            fun updateSaveEnabled() {
+                // D-292: case-insensitively identical to the original only - the whole point is that this
+                // can fix casing alone, never sneak an entirely different word in under this entry's own
+                // frequency/history.
+                saveButton.isEnabled = editText.text.toString().equals(entry.word, ignoreCase = true)
+            }
+            updateSaveEnabled()
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+                override fun afterTextChanged(s: Editable?) = updateSaveEnabled()
+            })
+            saveButton.setOnClickListener {
+                store.recaseLearnedWord(entry.word, editText.text.toString())
+                refresh()
+                dialog.dismiss()
+            }
+        }
+        dialog.show()
     }
     
     private fun copyToClipboard(value: String) {
@@ -126,6 +194,8 @@ class LearnedWordsActivity : AppCompatActivity() {
         clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.learned_words_title), value))
         Toast.makeText(this, getString(R.string.copy_to_clipboard_done, value), Toast.LENGTH_SHORT).show()
     }
+    
+    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
     
     /**
      * (Re)opens the SQLite store for [language], closing any previously open one. The store name matches

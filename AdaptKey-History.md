@@ -10869,3 +10869,52 @@ device-confirmed - needs a real round trip: type a hyphen-compound 4 times to pr
 "Gelernt: X" chip and the proactive completion chip both appear (pinned ahead of ordinary suggestions),
 confirm tapping it commits correctly, and confirm the dedicated undo reverts a chip acceptance while an
 ordinary manually-typed occurrence of the same compound leaves its own count untouched by Backspace/A-11.
+
+## §215 - D-291/D-292: B-03 Device-Confirmed Working, Then Two Follow-Ups From The Same Report (v0.9.8)
+
+§214 (D-289) confirmed working end to end on device ("Das hat super geklappt") - no code change for that part.
+Two small, unrelated follow-ups requested in the same message:
+
+**D-291 - the hyphen-compound promotion threshold is too high.** Shipped reusing `COMPOUND_LEARN_THRESHOLD`
+(4, W-02's own "suspected compound" heuristic threshold) directly, per the original design discussion's own
+"no heuristic guessing needed" reasoning - but the user's own follow-up point is sharper: that shared
+threshold's higher bar exists specifically to protect against a *heuristic guessing wrong* about an ordinary
+token (`hasEmbeddedCapital`/`looksLikeUnsplitCompound`, both approximations); a hyphen chain is never a guess
+at all - the user *literally typed the hyphen character* - so there is no comparable false-positive risk to
+guard against, and reusing the higher bar anyway was overly cautious. New, dedicated
+`HYPHEN_COMPOUND_LEARN_THRESHOLD = 2` (deliberately not reusing the ordinary `LEARN_THRESHOLD`'s own name/
+concept either, despite sharing its value today, since the two threshold *reasons* are unrelated and could
+diverge later) - `learnHyphenCompound()` now checks against this instead of `COMPOUND_LEARN_THRESHOLD`. Spec
+B-03 updated to state the concrete promotion count (2) and the actual reasoning, rather than "reuses W-02's
+threshold".
+
+**D-292 - the Learned Words editor's per-entry dialog should allow fixing a casing mistake.** Motivating case
+(implicit, not stated but the obvious one): a word learned in the wrong casing (e.g. an acronym that slipped
+in lower-case before a deliberate all-caps override, D-264/W-04's own mechanism, ever got established) had no
+way to be corrected short of forgetting it and re-teaching it from scratch. Explicit constraint from the user:
+editable, but Save must stay disabled unless the edited text is case-insensitively identical to the original -
+a deliberate guard against this becoming a backdoor to silently substitute a completely different word under
+an existing entry's own accumulated frequency/history.
+
+New `SqliteDictionaryStore.recaseLearnedWord(word, newCasing)`: since both share the same lower-cased key,
+writing the new casing via the existing `putWordInternal` machinery updates the row in place (frequency/POS
+untouched) rather than creating a second entry - a plain data fix, no learning-pipeline/threshold logic
+involved, matching how this Activity already manipulates the store directly (`forget()`/`markPendingBlacklist()`)
+bypassing `AdaptKeyService` entirely. `LearnedWordsActivity`'s tap dialog rebuilt: `AlertDialog.Builder` only
+ever offers three button slots, but this dialog now needs four (Save/Cancel/Copy/Forget) - Save/Cancel use the
+dialog's own built-in positive/negative buttons; Copy/Forget became two explicit buttons inside the custom
+view instead (the previous three-button dialog's own "Forget"/"Copy"/"Cancel" simply redistributed, nothing
+dropped). The old `learned_words_remove_confirm_title` ("Forget 'X'?") string retired - no longer accurate
+once the dialog's primary framing shifted from "confirm a deletion" to "edit an entry"; the dialog's title is
+now just the word itself. Save's own enabled state is recomputed on every keystroke via a `TextWatcher`
+comparing the field against the original word, case-insensitively.
+
+2 new unit tests (`SqliteDictionaryStoreRoboTest` - `recaseLearnedWord` changes casing while keeping frequency/
+POS, is a no-op when the word is not learned; the dialog/`TextWatcher` wiring itself is `LearnedWordsActivity`'s
+own Android-view glue, the same established gap every settings-screen dialog in this codebase already has).
+901 unit tests (899 + 2, D-291 alone needed no new test - a bare threshold-constant change already covered by
+the existing D-289 shape). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Spec B-03/W-01 revised. Version bumped 0.9.7 -> 0.9.8. Not yet device-confirmed
+- needs a real check that a compound now promotes after 2 occurrences, not 4, and that the Learned Words
+edit dialog's Save button stays disabled for any change beyond casing while enabling correctly for a pure
+casing fix.

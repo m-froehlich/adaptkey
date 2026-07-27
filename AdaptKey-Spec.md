@@ -627,11 +627,11 @@ proper noun. A suggestion-bar chip for any candidate always displays its capital
 Each individual segment of a hyphen-joined chain is still learned/suggested exactly as B-01 already
 describes - unchanged. Independently, the whole chain itself (two segments, or more - "Rhein-Main-Gebiet" is
 no different in kind from "Trogata-Team", just longer) is *also* learned as one combined unit once it has been
-typed out in full, unbroken by any non-hyphen delimiter, at least as many times as W-02's own existing
-"suspected compound" promotion threshold requires (4) - the same threshold, not a separate one, since a
-hyphen-joined chain genuinely already is that shape, with no heuristic guessing needed to recognise it as
-such. There is no cap on how many segments a chain may have; a longer chain simply needs more hyphens typed
-in an unbroken run to close.
+typed out in full, unbroken by any non-hyphen delimiter, at least twice. Deliberately lower than W-02's own
+"suspected compound" threshold (4): that higher bar exists to protect against a heuristic *guessing* wrong
+about an ordinary token, whereas a literal, deliberately-typed hyphen chain repeated in exactly this spelling
+carries no such false-positive risk - an accidental match is vanishingly unlikely. There is no cap on how many
+segments a chain may have; a longer chain simply needs more hyphens typed in an unbroken run to close.
 
 Once promoted, the full compound is offered proactively while typing a *prefix of its first segment alone* -
 e.g. typing "Trog" alone can already surface the complete "Trogata-Team" as a suggestion, before its own
@@ -771,7 +771,12 @@ Every word the keyboard has personally learned from typing lives in its own stor
 from the bundled dictionary so that a bundled-dictionary update or reimport can never affect it. A dedicated
 review/edit screen lists and allows removing learned words directly - the only way to remove a word that
 currently matches the live input, since S-02 prevents such a word from ever appearing as a suggestion (and
-therefore from ever being reachable via drag-to-trash, G-04).
+therefore from ever being reachable via drag-to-trash, G-04). Tapping an entry also allows its own casing to
+be corrected in place (e.g. fixing a preferred all-caps acronym spelling that was learned with the wrong
+casing) - deliberately restricted to a casing-only edit: the save action stays disabled unless the edited text
+is case-insensitively identical to the original entry, so this can never be used to substitute an entirely
+different word under the original's own frequency/history. A genuinely different word still has to be typed
+and learned normally.
 
 ### W-02 - Variable Learn-Promotion Threshold
 A word is ordinarily promoted from "pending" to permanently learned after 2 uncorrected occurrences. A token

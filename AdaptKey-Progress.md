@@ -88,6 +88,25 @@ non-trivial changes).
 
 ## Current State
 
+- **§215 (v0.9.8): D-291/D-292 - two follow-ups after §214's B-03 was confirmed working end to end on**
+  **device.** D-291: the hyphen-compound promotion threshold was too high - it reused
+  `COMPOUND_LEARN_THRESHOLD` (4, W-02's own "suspected compound" *heuristic-guess* threshold), but a
+  literally-typed hyphen chain is never a guess, so there is no comparable false-positive risk to protect
+  against. New, dedicated `HYPHEN_COMPOUND_LEARN_THRESHOLD = 2` (deliberately its own named constant, not a
+  reuse of `LEARN_THRESHOLD` despite sharing its value today - the two reasons are unrelated and could diverge
+  later). D-292: the Learned Words editor's per-entry dialog now lets a word's own casing be corrected in
+  place (`SqliteDictionaryStore.recaseLearnedWord()` - an in-place row update via the existing
+  `putWordInternal` machinery, frequency/POS untouched, no learning-pipeline logic involved) - deliberately
+  restricted to a casing-only edit: Save stays disabled unless the edited text is case-insensitively identical
+  to the original, a guard against silently substituting a different word under an existing entry's own
+  accumulated frequency/history. `LearnedWordsActivity`'s tap dialog rebuilt to fit four actions (Save/Cancel/
+  Copy/Forget) into `AlertDialog`'s three button slots - Save/Cancel use the built-in slots, Copy/Forget are
+  now explicit buttons inside the custom view; nothing dropped, just redistributed. 2 new unit tests
+  (`SqliteDictionaryStoreRoboTest`, for `recaseLearnedWord`); the dialog/`TextWatcher` wiring itself is
+  established `LearnedWordsActivity` Android-view glue. 901 unit tests (899 + 2).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec B-03/W-01 revised. Not yet device-confirmed -
+  needs a real check that a compound now promotes after 2 occurrences, and that the edit dialog's Save button
+  correctly stays disabled for anything beyond a pure casing change. See history §215.
 - **§214 (v0.9.7): D-289 - B-03 built: a repeated hyphen-compound (e.g. "Trogata-Team") is now learned as a**
   **whole and proactively completed, with its own dedicated undo - designed with the user over two rounds**
   **first.** Each segment still learns/suggests exactly as before (unchanged, B-01); the whole chain (any
