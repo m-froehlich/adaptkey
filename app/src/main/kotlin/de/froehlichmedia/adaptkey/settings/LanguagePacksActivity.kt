@@ -85,12 +85,14 @@ class LanguagePacksActivity : AppCompatActivity() {
     }
     
     /**
-     * D-307: a language pack row now has three states, not two - not installed, installed and current, or
-     * installed but a newer [LanguagePackCatalog.Entry.version] than what
-     * [InstalledLanguagesStore.installedVersion] recorded is available. The update state reuses the exact
-     * same Download+Import buttons/flow a fresh install already uses - [LanguagePackInstaller.install]
-     * always fully overwrites the previous pack file, so re-running the identical steps is already the
-     * correct "apply the update" action, nothing update-specific needed there.
+     * D-307/D-308: a language pack row shows three status texts - not installed, installed and current, or
+     * installed with a newer [LanguagePackCatalog.Entry.version] than what
+     * [InstalledLanguagesStore.installedVersion] recorded (a lightweight, no-download-needed hint; only
+     * moves when this app itself is updated, see that property's own KDoc). Download+Import are always
+     * shown regardless of that hint - D-308's own point is that the *authoritative* version lives inside
+     * the archive itself, not in this app's compiled-in catalog, so a manual re-check must always be
+     * possible even when the hint says "current" (e.g. a community contributor revised the hosted pack
+     * without a matching app release).
      */
     private fun buildRow(entry: LanguagePackCatalog.Entry, installed: Boolean): View {
         val updateAvailable = installed && InstalledLanguagesStore.installedVersion(this, entry.language) < entry.version
@@ -120,21 +122,19 @@ class LanguagePacksActivity : AppCompatActivity() {
                 setOnClickListener { removePack(entry.language) }
             })
         }
-        if (!installed || updateAvailable) {
-            row.addView(Button(this).apply {
-                setText(R.string.d280_download)
-                isEnabled = !busy
-                setOnClickListener { openDownloadPage(entry.downloadUrl) }
-            })
-            row.addView(Button(this).apply {
-                setText(R.string.d280_import)
-                isEnabled = !busy
-                setOnClickListener {
-                    pendingImportEntry = entry
-                    openDocument.launch(arrayOf("*/*"))
-                }
-            })
-        }
+        row.addView(Button(this).apply {
+            setText(R.string.d280_download)
+            isEnabled = !busy
+            setOnClickListener { openDownloadPage(entry.downloadUrl) }
+        })
+        row.addView(Button(this).apply {
+            setText(R.string.d280_import)
+            isEnabled = !busy
+            setOnClickListener {
+                pendingImportEntry = entry
+                openDocument.launch(arrayOf("*/*"))
+            }
+        })
         return row
     }
     
@@ -147,31 +147,52 @@ class LanguagePacksActivity : AppCompatActivity() {
         }
     }
     
+    /**
+     * D-308: the authoritative version is now the freshly-picked archive's own [LanguagePackInstaller.
+     * ParsedPack.version] (its `version_<code>.txt` entry), never [LanguagePackCatalog.Entry.version] (that stays
+     * only a compiled-in "you might want to check" hint, see [buildRow]). For a language already installed,
+     * the archive is only actually applied when its version is strictly newer than
+     * [InstalledLanguagesStore.installedVersion] - otherwise nothing on disk changes and the user is told
+     * it is already current, so a re-check never silently downgrades or redundantly reseeds the dictionary
+     * database. A language not yet installed at all always applies unconditionally - there is nothing to
+     * compare against yet.
+     *
+     * @param uri the picked archive
+     * @param entry the row whose Download/Import buttons were tapped - only [LanguagePackCatalog.Entry.
+     *        language] is actually used for the install itself; [LanguagePackCatalog.Entry.version] is not
+     *        consulted here at all
+     */
     private fun importPack(uri: Uri, entry: LanguagePackCatalog.Entry) {
         if (busy) {
             return
         }
         val language = entry.language
+        val alreadyInstalled = language in InstalledLanguagesStore.load(this)
         setBusy(true)
         Thread {
-            val result = runCatching {
+            // null result = skipped, the picked archive was not newer than what is already installed.
+            val result = runCatching<Int?> {
                 contentResolver.openInputStream(uri).use { input ->
                     requireNotNull(input) { "cannot open $uri" }
-                    LanguagePackInstaller.install(input, LanguagePackStorage.packDir(this), language)
+                    val pack = LanguagePackInstaller.parse(input, language)
+                    if (alreadyInstalled && pack.version <= InstalledLanguagesStore.installedVersion(this, language)) {
+                        return@use null
+                    }
+                    LanguagePackInstaller.write(LanguagePackStorage.packDir(this), pack)
+                    // Deletes any stale database from a previous install of this same language, so the next
+                    // dictionary load reseeds cleanly from the file just imported rather than reusing old data.
+                    deleteDatabase(DictionaryLoader.databaseName(language))
+                    InstalledLanguagesStore.add(this, language, pack.version)
+                    pack.version
                 }
-                // Deletes any stale database from a previous install of this same language, so the next
-                // dictionary load reseeds cleanly from the file just imported rather than reusing old data.
-                deleteDatabase(DictionaryLoader.databaseName(language))
-                // D-307: records the version just imported, not always entry.version - the file the user
-                // actually picked might not be the current catalog version at all (an old download sitting
-                // in their Downloads folder from before an update shipped), but this store's only source of
-                // truth for "what version is this" is the catalog entry passed in from whichever row's own
-                // Download/Import buttons were tapped, so it is the best available signal either way.
-                InstalledLanguagesStore.add(this, language, entry.version)
             }
             runOnUiThread {
                 setBusy(false)
-                val message = if (result.isSuccess) R.string.d280_imported else R.string.d280_import_failed
+                val message = when {
+                    result.isFailure -> R.string.d280_import_failed
+                    result.getOrNull() == null -> R.string.d280_already_current
+                    else -> R.string.d280_imported
+                }
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 rebuild()
             }

@@ -98,6 +98,19 @@ non-trivial changes).
 
 ## Current State
 
+- **§228 (v0.9.21): D-308 - closed D-307's own remaining gap: language-pack updates are now detected from**
+  **the archive itself, not only from this app's compiled-in hint - a community-revised pack no longer needs**
+  **an AdaptKey app release to be picked up.** `LanguagePackInstaller` split into `parse()` (reads a `.zip`
+  fully into memory, including a new `version_<code>.txt` entry, without touching disk) and `write()`
+  (applies it); `install()` stays as the existing convenience wrapper. `LanguagePacksActivity.importPack()`
+  now only actually overwrites an *already-installed* language when the freshly parsed archive's own version
+  is strictly newer, otherwise shows "already up to date" and touches nothing; a fresh install still always
+  applies unconditionally. Download/Import are now always visible (not hidden once "current"), so a manual
+  re-check is always possible. Both real `.zip`s rebuilt with their own version files (German `2`, Greek `1`);
+  Contribution Guide revised to document the file and warn that omitting it permanently blocks future
+  re-import updates (`1 <= 1` forever) short of a full remove+reinstall. 6 new tests. 915 unit tests
+  (909 + 6). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280 section revised. Not yet
+  device-confirmed - needs a real re-import round-trip against the rebuilt German pack. See history §228.
 - **§227 (v0.9.20): D-307 - language-pack update mechanism built, explicitly requested right after D-306.**
   **Purely local version comparison, no new permission** (the app deliberately carries no `INTERNET`
   permission at all, D-135/D-280 - user chose this over an active network-polling alternative that would have

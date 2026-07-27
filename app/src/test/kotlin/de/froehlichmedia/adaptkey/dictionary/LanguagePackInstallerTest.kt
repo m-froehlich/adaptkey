@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -128,5 +129,60 @@ class LanguagePackInstallerTest {
     @Test
     fun `clear on an absent pack reports nothing removed`(@TempDir dir: File) {
         assertFalse(LanguagePackInstaller.clear(dir, Language.FRENCH))
+    }
+    
+    @Test
+    fun `D-308 install returns the archive's own version`(@TempDir dir: File) {
+        val version = LanguagePackInstaller.install(
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_fr.txt" to "3"),
+            dir,
+            Language.FRENCH
+        )
+        assertEquals(3, version)
+    }
+    
+    @Test
+    fun `D-308 install falls back to DEFAULT_VERSION when the archive has no version file`(@TempDir dir: File) {
+        val version = LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "bonjour\t100\n"), dir, Language.FRENCH)
+        assertEquals(InstalledLanguagesStore.DEFAULT_VERSION, version)
+    }
+    
+    @Test
+    fun `D-308 install falls back to DEFAULT_VERSION when the version file is unparseable`(@TempDir dir: File) {
+        val version = LanguagePackInstaller.install(
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_fr.txt" to "not-a-number"),
+            dir,
+            Language.FRENCH
+        )
+        assertEquals(InstalledLanguagesStore.DEFAULT_VERSION, version)
+    }
+    
+    @Test
+    fun `D-308 a different language's version file is ignored`(@TempDir dir: File) {
+        val version = LanguagePackInstaller.install(
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_es.txt" to "9"),
+            dir,
+            Language.FRENCH
+        )
+        assertEquals(InstalledLanguagesStore.DEFAULT_VERSION, version)
+    }
+    
+    @Test
+    fun `D-308 parse reads the archive without writing anything to disk`(@TempDir dir: File) {
+        val pack = LanguagePackInstaller.parse(zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_fr.txt" to "5"), Language.FRENCH)
+        
+        assertEquals("bonjour\t100\n", String(pack.words, Charsets.UTF_8))
+        assertEquals(5, pack.version)
+        assertFalse(File(dir, "dict_fr.tsv").exists())
+    }
+    
+    @Test
+    fun `D-308 write applies an already-parsed pack to disk`(@TempDir dir: File) {
+        val pack = LanguagePackInstaller.parse(zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n"), Language.FRENCH)
+        
+        LanguagePackInstaller.write(dir, pack)
+        
+        assertEquals("bonjour\t100\n", File(dir, "dict_fr.tsv").readText())
+        assertEquals("a\tb\t1\n", File(dir, "bigram_fr.tsv").readText())
     }
 }

@@ -11352,3 +11352,44 @@ version). 909 unit tests (902 + 7). `:app:assembleRelease`/`:app:testDebugUnitTe
 section revised with the D-307 mechanism. Version bumped 0.9.19 -> 0.9.20. Not yet device-confirmed - needs a
 real look at the language-packs screen to confirm German now shows "update available" (this device's own
 prior install, if any, predates the mechanism and should read as version 1 against the catalog's version 2).
+
+## §228 - D-308: Language-Pack Updates Now Authoritatively Detected From The Archive Itself, Not Just This App's Own Compiled-In Hint (v0.9.21)
+
+Direct follow-up to D-307, explicitly requested once the user reasoned through its own remaining gap: D-307's
+compiled-in version comparison can only ever notice a language-pack update at the moment *this app itself* is
+released, since the "known latest version" lives in `LanguagePackCatalog`'s own source code. As the project
+matures towards 1.0, a real scenario was named directly: a community contributor revising an already-listed
+language's dictionary (the example given: Swahili) without any AdaptKey app release at all - D-307 alone can
+never surface that. Confirmed as a real, permanent architectural gap, not a hypothetical - fixed by moving
+the *authoritative* version check into the archive itself.
+
+`LanguagePackInstaller` split into `parse()` (reads a `.zip` fully into memory, including a new
+`version_<code>.txt` entry - a single plain integer, falling back to `InstalledLanguagesStore.DEFAULT_VERSION`
+when absent or unparseable - without writing anything to disk) and `write()` (applies an already-parsed
+`ParsedPack` unconditionally); `install()` stays as the simple `write(packDir, parse(...))` convenience
+wrapper every existing test already used, unchanged. `LanguagePacksActivity.importPack()` now parses first,
+and - only for a language that is *already installed* - compares the archive's own version against
+`InstalledLanguagesStore.installedVersion()`: strictly newer applies it (overwrites the pack files, reseeds
+the dictionary database, records the new version); anything else changes nothing on disk and shows "already
+up to date" instead. A language not yet installed at all always applies unconditionally, matching a fresh
+install's own existing behaviour. Download/Import are now shown for *every* row regardless of the D-307 hint
+(previously hidden once "installed and current") - a user must always be able to manually re-check, since the
+authoritative signal now lives outside this app's own knowledge.
+
+Both real hosted archives (`language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip`) rebuilt with their
+own `version_de.txt`(`2`)/`version_el.txt`(`1`) entries, matching each language's current
+`LanguagePackCatalog.Entry.version`; the same two files added to `dictionaries/de/`/`dictionaries/el/` as
+committed source content, mirroring every other per-language file already tracked there. New
+`d280_already_current` string (all three locales). `AdaptKey-Language-Contribution-Guide.md` revised: the
+version file documented as its own numbered item, the catalog-entry snippet updated with `version = 1`, and
+an explicit warning that omitting the version file silently blocks every future re-import from ever being
+recognised as an update (both sides permanently compare `1 <= 1`) until the language is fully removed and
+reinstalled - a real trap for a maintainer who only adds the file starting with their *second* release.
+
+6 new tests in `LanguagePackInstallerTest.kt` (version read from the archive, default-version fallback for a
+missing/unparseable version file, a differently-language-suffixed version file correctly ignored, `parse()`
+writes nothing to disk, `write()` applies an already-parsed pack). 915 unit tests (909 + 6).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green (`lintVitalRelease` confirms the new
+`d280_already_current` string resolves). Spec's D-280 section revised with the D-308 mechanism, distinguished
+from D-307's own compiled-in hint. Version bumped 0.9.20 -> 0.9.21. Not yet device-confirmed - needs a real
+re-import round-trip (skip-when-not-newer, apply-when-newer) against the actual rebuilt German pack.

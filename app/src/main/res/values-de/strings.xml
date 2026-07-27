@@ -173,6 +173,7 @@
     <string name="d280_import">2. Heruntergeladene Datei importieren</string>
     <string name="d280_remove">Entfernen</string>
     <string name="d280_imported">Sprache installiert.</string>
+    <string name="d280_already_current">Bereits aktuell.</string>
     <string name="d280_import_failed">Import fehlgeschlagen.</string>
     <string name="d280_removed">Sprache entfernt.</string>
     <string name="d280_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>

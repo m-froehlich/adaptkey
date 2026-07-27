@@ -31,8 +31,8 @@ android {
         // D-283: explicit user request bumped the minor version 0.8.154 -> 0.9.0 here (not a further third-
         // digit step) to mark the D-280/D-281/D-282 multi-language rollout as its own milestone; no code
         // change accompanies this bump.
-        versionCode = 297
-        versionName = "0.9.20"
+        versionCode = 298
+        versionName = "0.9.21"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing

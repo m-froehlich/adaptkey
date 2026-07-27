@@ -720,10 +720,22 @@ D-307: since the app has no `INTERNET` permission at all, a language pack's own 
 entirely locally - each catalog entry carries a version number, bumped by hand whenever its hosted content
 actually changes (e.g. D-306's dictionary-data cleanup), and compared against whatever version was recorded
 at the last successful install. An already-installed pack whose catalog version has since moved on shows
-"update available" instead of "installed", offering the identical download-then-import flow a fresh install
-uses - no separate "check for updates" network step, and no polling. An install predating this mechanism is
-simply assumed to be version 1 (every pack's own starting version), so it reads correctly the moment its
-catalog version moves past 1, without needing any migration step of its own.
+"update available" instead of "installed" - a lightweight, no-download-needed hint, requiring an AdaptKey app
+release to move (the version lives in this app's own compiled code) - no separate "check for updates" network
+step, and no polling. An install predating this mechanism is simply assumed to be version 1 (every pack's own
+starting version), so it reads correctly the moment its catalog version moves past 1, without needing any
+migration step of its own.
+
+D-308: the *authoritative* version is not this compiled-in hint, but a `version_<code>.txt` entry inside the
+archive itself, so a language pack can be revised by its own maintainer (e.g. a community contribution)
+without requiring a new AdaptKey release at all. The Download/Import buttons stay available for every
+language at any time, even one that already reads as "installed" with no hint of an update - re-importing
+always re-reads the freshly downloaded archive's own version and only actually applies it (overwriting the
+installed files, reseeding the dictionary database) when that version is strictly newer than what was last
+recorded; otherwise nothing on disk changes and the user is told it is already current. An archive with no
+version file at all is treated as version 1, matching a first install's own default - see the language
+contribution guide for why this makes omitting the file a real, if not fatal, mistake for a maintainer who
+intends to ever revise their pack later.
 
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any

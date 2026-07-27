@@ -73,7 +73,7 @@ If yours is already there:
 
 ## 3. Building the dictionary (and your own AltGr hint set)
 
-Up to three plain text files, UTF-8, one language:
+Up to four plain text files, UTF-8, one language:
 
 - **`dict_<code>.tsv`** (unigrams, required) - one word per line: `word<TAB>frequency<TAB>pos,tags,here`
   - `frequency` is a plain integer (relative rank; real corpus counts work best - see the existing
@@ -111,6 +111,20 @@ Up to three plain text files, UTF-8, one language:
   need to hand-tune its popup's left/right direction: D-282 made that automatic, based on the real popup
   width and the key's actual screen position, not on which key it happens to be - it works the same whether
   the alternatives came from this file or from hand-written Kotlin.
+- **`version_<code>.txt`** (optional but strongly recommended, D-308): a single plain integer, e.g. `1` -
+  this pack's own version, bumped by *you* every time you publish a revised `dict_<code>.tsv`/
+  `bigram_<code>.tsv`/`hints_<code>.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
+  buttons stay available at any time (even for an already-installed language) so a user can always manually
+  re-check; re-importing only actually applies the freshly downloaded archive when *its own* version is
+  strictly newer than what is already installed, otherwise nothing changes and the user is told it is
+  already current. Start at `1` for your language's first release and increment by 1 every time you publish
+  a real content change. **A missing version file is not neutral - it actively blocks future updates from
+  ever being picked up by re-import**: an archive with no version file is always treated as version `1`
+  (same as a fresh install with nothing recorded yet), so once a language is installed, every later
+  re-import of a version-less archive compares `1 <= 1` and is always skipped as "already current", no
+  matter how different the actual content is - the only way such an update then reaches an existing install
+  is the user fully removing and reinstalling the language. If you intend to ever revise your pack after its
+  first release, include this file from the start.
 
 Put your working files under a new `dictionaries/<code>/` folder at the repo root (mirroring
 `dictionaries/de/`, `dictionaries/el/`) so they stay in version control even though they never enter the
@@ -120,9 +134,9 @@ APK.
 
 `de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your files at
 its root - not inside a folder - named exactly `dict_<code>.tsv`, and optionally `bigram_<code>.tsv`/
-`hints_<code>.tsv`. Build one like the existing `language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip`
-(a one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip tool - just make sure
-there is no directory prefix inside the archive).
+`hints_<code>.tsv`/`version_<code>.txt`. Build one like the existing `language-packs/adaptkey-lang-de.zip`/
+`adaptkey-lang-el.zip` (a one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip
+tool - just make sure there is no directory prefix inside the archive).
 
 Host the resulting `.zip` somewhere stable and public - a GitHub Release asset on this repository is the
 recommended place (versioned, immutable once published); a raw file URL on the repo's default branch also
@@ -130,11 +144,20 @@ works and is what German/Greek currently use, but will change if the file is eve
 entry to `de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog.ENTRIES`:
 
 ```kotlin
-Entry(Language.YOUR_LANGUAGE, "https://.../adaptkey-lang-xx.zip")
+Entry(Language.YOUR_LANGUAGE, "https://.../adaptkey-lang-xx.zip", version = 1)
 ```
 
-That one line is what makes your language appear in `LanguagePacksActivity` (Settings → Languages) and in
-the onboarding language-selection step. Nothing else references this list.
+That `version` here (D-308) is a *separate*, compiled-in copy of the same number you put in your own
+`version_<code>.txt` - it only drives the lightweight "update available" hint `LanguagePacksActivity` shows
+immediately on screen, without anyone downloading anything; the archive's own `version_<code>.txt` is what
+actually gates whether a re-import applies. The two are expected to drift apart between your own releases
+and AdaptKey's own app releases - that is fine, the hint is advisory, the archive's own file is authoritative
+- but when you *do* bump your pack's version, bump this catalog line too so the next AdaptKey release
+correctly hints at your update, and open a pull request for that one-line change (you cannot publish it
+yourself the way you can your own hosted `.zip`).
+
+That one `Entry(...)` line is what makes your language appear in `LanguagePacksActivity` (Settings →
+Languages) and in the onboarding language-selection step. Nothing else references this list.
 
 ## 5. Building a new row geometry (a new Latin arrangement, or a non-Latin script)
 

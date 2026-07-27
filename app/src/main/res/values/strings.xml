@@ -173,6 +173,7 @@
     <string name="d280_import">2. Import the downloaded file</string>
     <string name="d280_remove">Remove</string>
     <string name="d280_imported">Language installed.</string>
+    <string name="d280_already_current">Already up to date.</string>
     <string name="d280_import_failed">Import failed.</string>
     <string name="d280_removed">Language removed.</string>
     <string name="d280_no_browser">No browser found. Please download and import the file manually.</string>

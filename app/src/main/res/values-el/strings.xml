@@ -173,6 +173,7 @@
     <string name="d280_import">2. Εισαγωγή του αρχείου που κατέβηκε</string>
     <string name="d280_remove">Αφαίρεση</string>
     <string name="d280_imported">Η γλώσσα εγκαταστάθηκε.</string>
+    <string name="d280_already_current">Ήδη ενημερωμένο.</string>
     <string name="d280_import_failed">Η εισαγωγή απέτυχε.</string>
     <string name="d280_removed">Η γλώσσα αφαιρέθηκε.</string>
     <string name="d280_no_browser">Δεν βρέθηκε περιηγητής. Κατέβασε και εισήγαγε το αρχείο χειροκίνητα.</string>
