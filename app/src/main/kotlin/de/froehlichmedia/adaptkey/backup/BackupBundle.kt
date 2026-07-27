@@ -25,8 +25,10 @@ import de.froehlichmedia.adaptkey.language.Language
  * @property appVersionName the exporting app's `versionName`, carried purely for diagnostic purposes; import
  *           logic does not currently branch on it
  * @property exportedAtEpochMillis when this bundle was created ([System.currentTimeMillis] at export time)
- * @property settings every raw preference key/value pair from [de.froehlichmedia.adaptkey.settings.SettingsStore]'s
- *           own shared-preferences file
+ * @property settings every exportable preference key/value pair
+ *           ([de.froehlichmedia.adaptkey.settings.SettingsStore.exportableSettings]), in the settings
+ *           screen's own display order - deliberately excludes the diagnostics-logging toggle (D-304), a
+ *           per-device debugging aid that should never travel with a backup
  * @property credentials every learned username/email entry ([de.froehlichmedia.adaptkey.credential.CredentialStore])
  * @property languages per-language personal data, keyed by the language it belongs to
  */

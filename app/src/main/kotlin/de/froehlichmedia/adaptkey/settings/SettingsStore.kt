@@ -195,4 +195,61 @@ object SettingsStore {
      * colouring the C-04 preference row/dialog (D-302).
      */
     const val NO_HIGHLIGHT_VALUE = "none"
+    
+    /**
+     * D-278/D-304: the settings screen's own current category/row order (`res/xml/settings_preferences.xml`),
+     * used by [exportableSettings] so an exported backup file's settings section reads in the same order the
+     * user actually sees on screen, not [SharedPreferences.getAll]'s own arbitrary hash order.
+     * [KEY_DIAGNOSTIC_LOG_ENABLED] is deliberately absent - see [exportableSettings]'s own KDoc for why.
+     */
+    private val EXPORT_SETTINGS_KEY_ORDER: List<String> = listOf(
+        KEY_PENDING_BLACKLIST_EXPIRY_DAYS,
+        KEY_SAVE_CREDENTIALS,
+        KEY_CONTACTS_SUGGESTIONS_ENABLED,
+        KEY_AUTOCORRECT_ENABLED,
+        KEY_HIGHLIGHT_COLOR,
+        KEY_RESORT_DELAY,
+        KEY_MAX_SUGGESTIONS,
+        KEY_COMMA_LINE_NOT_SENTENCE_START,
+        KEY_SHIFT_GRACE,
+        KEY_LLM_THRESHOLD,
+        KEY_NUMBER_ROW,
+        KEY_SYMBOL_KEY,
+        KEY_SPACE_BELOW_NUMBER_ROW,
+        KEY_SPACE_ABOVE_SPACE_ROW,
+        KEY_LONGPRESS_DELAY,
+        KEY_SPACE_WEIGHT,
+        KEY_COMMA_WEIGHT,
+        KEY_PERIOD_WEIGHT,
+        KEY_BACKSPACE_EXTRA,
+        KEY_SHIFT_EXTRA,
+        KEY_KEY_SOUND,
+        KEY_KEY_HAPTICS
+    )
+    
+    /**
+     * D-278/D-304: every currently-stored preference value meant for the export/import backup (§21), in
+     * [EXPORT_SETTINGS_KEY_ORDER]'s own display order - [de.froehlichmedia.adaptkey.backup.BackupExporter]'s
+     * source for the bundle's settings section, replacing a raw [SharedPreferences.getAll] dump (whose
+     * iteration order is an implementation-detail hash order, not the settings screen's own order, and would
+     * carry [KEY_DIAGNOSTIC_LOG_ENABLED] along with everything else).
+     *
+     * [KEY_DIAGNOSTIC_LOG_ENABLED] is always excluded: whether this *device* records a diagnostic log is a
+     * per-device debugging aid, not a preference the user is choosing on the exporting device's behalf for
+     * whichever device the backup is later imported onto.
+     *
+     * Any stored key this build's [EXPORT_SETTINGS_KEY_ORDER] does not (yet) list - a future preference this
+     * list has not been updated for, or a stray leftover from a removed one - is still included, appended
+     * afterwards in alphabetical order, so a gap in that list can never silently drop data from an export.
+     *
+     * @param context any valid context
+     * @return the exportable settings, key-value pairs in display order
+     */
+    fun exportableSettings(context: Context): Map<String, Any> {
+        val all = (prefs(context).all.filterValues { it != null }.mapValues { it.value as Any }) - KEY_DIAGNOSTIC_LOG_ENABLED
+        val result = LinkedHashMap<String, Any>()
+        EXPORT_SETTINGS_KEY_ORDER.forEach { key -> all[key]?.let { result[key] = it } }
+        (all.keys - result.keys).sorted().forEach { key -> result[key] = all.getValue(key) }
+        return result
+    }
 }

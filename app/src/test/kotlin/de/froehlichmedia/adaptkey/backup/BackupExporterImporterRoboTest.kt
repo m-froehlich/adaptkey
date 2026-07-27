@@ -89,6 +89,62 @@ class BackupExporterImporterRoboTest {
     }
     
     @Test
+    fun exportedSettingsFollowTheSettingsScreensOwnDisplayOrderNotAnArbitraryHashOrder() {
+        val context = RuntimeEnvironment.getApplication()
+        // Deliberately written in reverse-of-screen-order, so a hash-based (or insertion-based) export
+        // order would not accidentally happen to match the expected one below.
+        val prefs = SettingsStore.prefs(context).edit()
+        prefs.putBoolean(SettingsStore.KEY_KEY_HAPTICS, true)
+        prefs.putInt(SettingsStore.KEY_SHIFT_EXTRA, 5)
+        prefs.putInt(SettingsStore.KEY_MAX_SUGGESTIONS, 6)
+        prefs.putBoolean(SettingsStore.KEY_SAVE_CREDENTIALS, false)
+        prefs.apply()
+        
+        val bundle = BackupExporter.export(context)
+        
+        // D-304: KEY_SAVE_CREDENTIALS precedes KEY_MAX_SUGGESTIONS precedes KEY_SHIFT_EXTRA precedes
+        // KEY_KEY_HAPTICS on the settings screen itself - the export must reproduce exactly that relative
+        // order for these four keys, regardless of the order they were written above.
+        val orderedKeys = bundle.settings.keys.filter {
+            it in setOf(SettingsStore.KEY_SAVE_CREDENTIALS, SettingsStore.KEY_MAX_SUGGESTIONS, SettingsStore.KEY_SHIFT_EXTRA, SettingsStore.KEY_KEY_HAPTICS)
+        }
+        assertEquals(
+            listOf(SettingsStore.KEY_SAVE_CREDENTIALS, SettingsStore.KEY_MAX_SUGGESTIONS, SettingsStore.KEY_SHIFT_EXTRA, SettingsStore.KEY_KEY_HAPTICS),
+            orderedKeys
+        )
+    }
+    
+    @Test
+    fun exportNeverIncludesTheDiagnosticLogToggle() {
+        val context = RuntimeEnvironment.getApplication()
+        SettingsStore.prefs(context).edit().putBoolean(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED, true).apply()
+        
+        val bundle = BackupExporter.export(context)
+        
+        assertFalse(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED in bundle.settings)
+    }
+    
+    @Test
+    fun importingABundleNeverTouchesTheTargetDevicesOwnDiagnosticLogSetting() {
+        val context = RuntimeEnvironment.getApplication()
+        SettingsStore.prefs(context).edit().putBoolean(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED, true).apply()
+        val bundle = BackupBundle(
+            formatVersion = BackupBundle.CURRENT_FORMAT_VERSION,
+            appVersionName = "0.9.16",
+            exportedAtEpochMillis = 0L,
+            // Simulates an old export file from before D-304 that still carried this key, or a hand-edited
+            // one - even then, import must not let it override the importing device's own value.
+            settings = mapOf(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED to false),
+            credentials = emptyList(),
+            languages = emptyMap()
+        )
+        
+        BackupImporter.import(context, bundle)
+        
+        assertTrue(SettingsStore.prefs(context).getBoolean(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED, false))
+    }
+    
+    @Test
     fun importRefusesABundleWithANewerFormatVersionAndAppliesNothing() {
         val context = RuntimeEnvironment.getApplication()
         SettingsStore.prefs(context).edit().putInt(SettingsStore.KEY_MAX_SUGGESTIONS, 8).apply()

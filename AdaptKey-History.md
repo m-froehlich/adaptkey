@@ -11207,3 +11207,38 @@ bug was in a boolean's *scope*, not in any pure, extractable logic a unit test w
 896 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6 revised with a
 pointer to this decision. Version bumped 0.9.15 -> 0.9.16. Not yet device-confirmed - the original report
 (Google Keep) is the priority re-test.
+
+## §224 - D-303 Confirmed; D-304: Backup Export Now Follows The Settings Screen's Own Order And Never Carries The Diagnostics Toggle (v0.9.17)
+
+D-303 confirmed working: "Ja, wunderbar. Das hat geklappt. Es geht wieder." - Google Keep re-tested,
+suggestions/autocorrect/capitalisation all restored.
+
+Two follow-up requests on the D-278 backup/export feature (§21), prompted by the user's own satisfaction with
+the settings screen's now-finished reorganisation (§219/§220): (1) verify the exported file actually reflects
+that same order rather than some stale/arbitrary one; (2) never let the "Diagnoseprotokoll aufzeichnen"
+toggle (C-... diagnostics logging) travel via export at all.
+
+Investigation confirmed (1) was a real, if previously-unnoticed, gap: `BackupExporter.export()` built the
+settings section straight from `SharedPreferences.getAll()`, whose iteration order is an unspecified
+implementation-detail hash order - never tied to `settings_preferences.xml`'s own order at any point, before
+or after the reorg, so the exported file's settings section has always read in a fairly arbitrary order (not
+a "legacy" order specifically preserved from before, but not the current screen order either). Fixed by a new
+`SettingsStore.exportableSettings(context)`, backed by a new private `EXPORT_SETTINGS_KEY_ORDER` list mirroring
+the settings screen's exact current row order (reusing the existing `KEY_*` constants, not new string
+literals) - `BackupExporter.export()` now calls this instead of reading `SharedPreferences.getAll()` directly.
+Any stored key not (yet) listed there - a future preference, or a stray leftover - is still exported, appended
+afterwards in alphabetical order, so a gap in the list can never silently drop data.
+
+(2): `KEY_DIAGNOSTIC_LOG_ENABLED` is now unconditionally excluded from `exportableSettings()`'s own output, and
+- for defence in depth against a pre-D-304 export file or a hand-edited one that still carries it -
+`BackupImporter.importSettings()` now also explicitly skips that one key even if present in the bundle being
+applied. Reasoning: whether *this* device records a diagnostic log (a per-device debugging aid, D-139/D-110)
+is never something a backup taken on a different device should decide on this one's behalf.
+
+Three new Robolectric tests in `BackupExporterImporterRoboTest.kt`: settings written in reverse-of-screen-order
+still export in the correct relative order; the diagnostics toggle never appears in an export even when set;
+importing a bundle that still carries that key (simulating a pre-D-304 file) never overrides the importing
+device's own value. 899 unit tests (896 + 3). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §21
+(Y-01) revised with both points. Version bumped 0.9.16 -> 0.9.17. Not yet device-confirmed - needs a real
+export/import round-trip to confirm the file itself now reads in the expected order and never lists the
+diagnostics key.

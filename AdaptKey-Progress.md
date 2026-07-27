@@ -99,8 +99,18 @@ non-trivial changes).
   exactly as validated for the Learned Words field, but can no longer match any third-party field regardless
   of which flags it declares. No new unit tests (Android-glue field-classification wiring, not extractable
   pure logic). 896 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6
-  revised. Not yet device-confirmed - the original report (Google Keep) is the priority re-test. See history
-  §223.
+  revised. **Device-confirmed working** (re-tested in Google Keep). See history §223.
+- **§224 (v0.9.17): D-304 - the D-278 backup export now writes settings in the settings screen's own**
+  **current display order (was an arbitrary `SharedPreferences.getAll()` hash order, never actually tied to**
+  **the screen's own order at any point), and never carries the diagnostics-logging toggle at all.** New
+  `SettingsStore.exportableSettings(context)` (backed by a private `EXPORT_SETTINGS_KEY_ORDER` list of the
+  existing `KEY_*` constants) replaces `BackupExporter`'s direct `SharedPreferences.getAll()` read; any key
+  not yet in that list still exports, appended alphabetically, so nothing can silently vanish from a future
+  addition. `KEY_DIAGNOSTIC_LOG_ENABLED` is excluded from export and, for defence in depth, also skipped on
+  import even if a bundle still carries it (an old pre-D-304 file, or a hand-edited one) - a per-device
+  debugging aid must never be decided by a backup taken elsewhere. 3 new tests. 899 unit tests (896 + 3).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §21 (Y-01) revised. Not yet device-confirmed -
+  needs a real export/import round-trip. See history §224.
 - **§222 (v0.9.15): D-302 - the C-04 highlight-colour preference now previews each choice as its own text**
   **colour, both in the settings row's summary and in the picker dialog's entries.** Row summary: dropped
   `useSimpleSummaryProvider`, replaced with a `SpannableString`/`ForegroundColorSpan` summary set in

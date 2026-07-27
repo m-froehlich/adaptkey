@@ -35,7 +35,7 @@ object BackupExporter {
             formatVersion = BackupBundle.CURRENT_FORMAT_VERSION,
             appVersionName = currentAppVersionName(context),
             exportedAtEpochMillis = System.currentTimeMillis(),
-            settings = SettingsStore.prefs(context).all.filterValues { it != null }.mapValues { it.value as Any },
+            settings = SettingsStore.exportableSettings(context),
             credentials = CredentialStore.all(context),
             languages = languages
         )

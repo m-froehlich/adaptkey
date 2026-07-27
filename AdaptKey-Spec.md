@@ -976,6 +976,12 @@ The file's own format carries a schema version, independent of the app's `versio
 JSON shape itself ever changes; a file whose version is newer than the running app understands is refused
 outright, with nothing applied, rather than partially imported.
 
+D-304: the exported configurable-parameter section is written in the settings screen's own current display
+order (§20), not an arbitrary storage-order dump, so an exported file reads the way the screen itself does.
+The diagnostics-logging toggle (§20) is never included in an export and never applied on import even if
+present in an older or hand-edited file - whether a given device records a diagnostic log is that device's
+own debugging aid, not a preference a backup should carry to a second device.
+
 Stored and transmitted as plain, unencrypted JSON, by explicit user decision: a saved username/email alone is
 not considered sensitive enough to warrant it, and password values are never stored by this app in the first
 place regardless of this setting (P-02).
