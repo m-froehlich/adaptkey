@@ -250,6 +250,13 @@ class AdaptKeyService : InputMethodService() {
     // refreshSuggestions) - a domain/path is not natural-language prose either.
     private var urlMode = false
     
+    // D-293: whether the currently-focused field explicitly declares InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+    // - re-determined fresh per field in onStartInput, mirroring urlMode. Treated the same as a login/URL
+    // field by every §6/learning/suggestion bypass in this file (verbatim commit, no learning, no
+    // suggestions) - a field that has explicitly opted out of suggestions this way (e.g. this app's own
+    // Learned Words casing-edit field) must never feed back into the dictionary either.
+    private var noSuggestionsField = false
+    
     // D-158: whether the currently-focused field is a recognised email-address field - unlike urlMode,
     // this is *derived* from loginFieldKind (already reliably detected via InputType for D-142's own
     // purposes, see LoginFieldDetector's KDoc) rather than re-parsing EditorInfo a second time; re-derived
@@ -1158,6 +1165,11 @@ class AdaptKeyService : InputMethodService() {
         // inside switchPage()) already reads the correct value.
         urlMode = isUrlField(info)
         keyboardView?.urlMode = urlMode
+        // D-293: a field explicitly declaring TYPE_TEXT_FLAG_NO_SUGGESTIONS (the standard Android signal a
+        // text field uses to opt out of autocorrect/suggestions entirely, e.g. this app's own Learned Words
+        // casing-edit field) is treated the same as a login/URL field for every §6/learning/suggestion
+        // bypass in this file - see each call site's own "|| noSuggestionsField" for exactly where.
+        noSuggestionsField = ((info?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0
         emailMode = isEmailField(info)
         keyboardView?.emailMode = emailMode
         // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens
@@ -2900,7 +2912,7 @@ class AdaptKeyService : InputMethodService() {
      * @param raw the punctuation (or leading-digit) character that delimits the token
      */
     private fun handlePunctuationDelimiter(ic: InputConnection, raw: Char) {
-        if (loginFieldKind != LoginFieldKind.NONE || urlMode) {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             finalizeAndCommit(ic, raw.toString())
             return
         }
@@ -2966,7 +2978,7 @@ class AdaptKeyService : InputMethodService() {
         // field's own committed text (see captureCredentialIfLoginField), never here - a URL is simply
         // never learned into the dictionary at all, matching how it is never suggested from either
         // (refreshSuggestions).
-        if (loginFieldKind != LoginFieldKind.NONE || urlMode) {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             if (composing.isEmpty()) {
                 ic.commitText(delimiter, 1)
                 clearUndo()
@@ -4025,8 +4037,9 @@ class AdaptKeyService : InputMethodService() {
             expensiveSuggestionSeq.incrementAndGet()
         }
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
-        // useful while entering one, so the bar simply stays empty.
-        if (urlMode) {
+        // useful while entering one, so the bar simply stays empty. D-293: a field explicitly opted out of
+        // suggestions (TYPE_TEXT_FLAG_NO_SUGGESTIONS) gets the identical bare-bar treatment.
+        if (urlMode || noSuggestionsField) {
             clearSuggestions()
             return
         }
@@ -4372,7 +4385,7 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun hyphenCompoundSuggestion(): SuggestionController.DisplayItem? {
         val input = composing.toString()
-        if (input.isEmpty() || loginFieldKind != LoginFieldKind.NONE || urlMode) {
+        if (input.isEmpty() || loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             return null
         }
         val compound = dictionaryStore.learnedHyphenCompoundsByPrefix(input, 1).firstOrNull() ?: return null
@@ -5178,9 +5191,9 @@ class AdaptKeyService : InputMethodService() {
         // handler) - before any composing/commit logic ever runs, so "commit verbatim" alone could not save a
         // URL field's very first character from arriving pre-capitalised (reported directly: a browser
         // address bar auto-capitalising its first letter). Matches the exact
-        // `loginFieldKind != LoginFieldKind.NONE || urlMode` condition already used consistently at every
+        // `loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField` condition already used consistently at every
         // other §6-bypass point in this file (finalizeAndCommit, handlePunctuationDelimiter).
-        if (loginFieldKind != LoginFieldKind.NONE || urlMode) {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             keyboardView?.shifted = false
             shiftGuardedArm = false
             shiftArmTime = SystemClock.uptimeMillis()

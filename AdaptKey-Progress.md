@@ -88,6 +88,23 @@ non-trivial changes).
 
 ## Current State
 
+- **§216 (v0.9.9): D-293/D-294 - Learned Words edit dialog redesigned (Cancel/Forget as the dialog's own**
+  **buttons, Copy/Save moved beside the casing field), plus a real, previously-unaddressed gap the redesign**
+  **surfaced.** D-294 (asked as a question first, then built in the same round - no real blocker): emoji
+  glyphs (📋/💾) rather than new vector-drawable icon assets (this app has never shipped a custom icon
+  before), real `Button`s kept (not hand-rolled icon touch targets) specifically so Save's disabled state
+  still greys out automatically. D-293, the more substantive one: `AdaptKeyService` had *no* existing
+  mechanism at all for "suppress suggestions/learning for this specific field" beyond login/URL/email
+  `InputType`-variation detection - without a fix, editing a word's casing here (with AdaptKey itself as the
+  active keyboard) would have run the ordinary autocorrect/learning pipeline against the very field meant to
+  fix a casing mistake. Fixed generically via the standard `InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS` flag - new
+  `noSuggestionsField`, added to the same `loginFieldKind != LoginFieldKind.NONE || urlMode` condition already
+  used everywhere else in the file. Noted, not fixed: `BlacklistActivity`'s own "add word" field has the
+  identical gap and does not yet set this flag either - only Learned Words was reported, but the mechanism to
+  fix it the same way now exists if ever needed. No new unit tests (established `AdaptKeyService`/Android-view
+  glue gap). 901 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6
+  preamble/W-01 revised. Not yet device-confirmed - needs a real check of the new layout and that typing into
+  the casing field produces no suggestion bar/no dictionary side effects. See history §216.
 - **§215 (v0.9.8): D-291/D-292 - two follow-ups after §214's B-03 was confirmed working end to end on**
   **device.** D-291: the hyphen-compound promotion threshold was too high - it reused
   `COMPOUND_LEARN_THRESHOLD` (4, W-02's own "suspected compound" *heuristic-guess* threshold), but a

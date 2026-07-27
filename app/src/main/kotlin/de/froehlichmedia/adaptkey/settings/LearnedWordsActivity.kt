@@ -8,7 +8,9 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
+import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -116,75 +118,85 @@ class LearnedWordsActivity : AppCompatActivity() {
     }
     
     /**
-     * D-292: the per-entry dialog - an editable casing field (Save/Cancel, the dialog's own built-in
-     * buttons) plus Copy/Forget as two extra buttons inside the custom view, since [AlertDialog.Builder]
-     * itself only ever offers three button slots and this dialog needs four actions.
+     * D-292/D-294: the per-entry dialog. [AlertDialog.Builder]'s own two built-in buttons are Forget
+     * (positive) / Cancel (negative), matching the original single-purpose confirm dialog exactly; Copy and
+     * Save moved into the custom view instead, as two compact buttons directly beside the (weighted, so it
+     * fills the remaining width) casing field - Save still needs to visibly grey out when disabled, which a
+     * real [Button] already does automatically, unlike a hand-rolled icon-only touch target.
+     *
+     * D-293: the field itself opts out of [de.froehlichmedia.adaptkey.AdaptKeyService]'s own suggestion/
+     * learning pipeline entirely via `TYPE_TEXT_FLAG_NO_SUGGESTIONS` - editing a word's casing here must
+     * never itself feed back into the dictionary or show a suggestion bar.
      *
      * @param entry the learned-word entry tapped
      */
     private fun showEntryDialog(entry: WordEntry) {
-        lateinit var dialog: AlertDialog
         val editText = EditText(this).apply {
             setText(entry.word)
             setSelection(text.length)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        // D-294: plain emoji glyphs rather than new vector-drawable icon assets - this app has none yet, and
+        // an emoji needs no per-locale string resource of its own; the localised action name still carries
+        // the accessible label via contentDescription.
+        val copyButton = Button(this).apply {
+            text = COPY_GLYPH
+            contentDescription = getString(R.string.copy_to_clipboard_action)
+            setOnClickListener { copyToClipboard(editText.text.toString()) }
+        }
+        val saveButton = Button(this).apply {
+            text = SAVE_GLYPH
+            contentDescription = getString(R.string.learned_words_save_action)
+        }
+        val fieldRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(editText)
+            addView(copyButton)
+            addView(saveButton)
         }
         val hint = TextView(this).apply {
             text = getString(R.string.learned_words_edit_hint)
-            setPadding(0, dp(4), 0, dp(12))
-        }
-        val actions = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            addView(Button(this@LearnedWordsActivity).apply {
-                text = getString(R.string.copy_to_clipboard_action)
-                setOnClickListener { copyToClipboard(editText.text.toString()) }
-            })
-            addView(Button(this@LearnedWordsActivity).apply {
-                text = getString(R.string.learned_words_remove_confirm_action)
-                setOnClickListener {
-                    // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly -
-                    // every word listed here is by definition already in the learned lexicon (learnedWords()
-                    // itself never returns a bundled one), so there is no isBundledWord() branch to make here.
-                    store.forget(entry.word)
-                    store.markPendingBlacklist(entry.word, System.currentTimeMillis())
-                    Toast.makeText(this@LearnedWordsActivity, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
-                    refresh()
-                    dialog.dismiss()
-                }
-            })
+            setPadding(0, dp(4), 0, 0)
         }
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val padding = dp(20)
             setPadding(padding, dp(8), padding, 0)
-            addView(editText)
+            addView(fieldRow)
             addView(hint)
-            addView(actions)
         }
-        dialog = AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(entry.word)
             .setView(container)
-            .setPositiveButton(R.string.learned_words_save_action, null)
+            .setPositiveButton(R.string.learned_words_remove_confirm_action) { _, _ ->
+                // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly - every
+                // word listed here is by definition already in the learned lexicon (learnedWords() itself
+                // never returns a bundled one), so there is no isBundledWord() branch to make here at all.
+                store.forget(entry.word)
+                store.markPendingBlacklist(entry.word, System.currentTimeMillis())
+                Toast.makeText(this, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
+                refresh()
+            }
             .setNegativeButton(android.R.string.cancel, null)
             .create()
-        dialog.setOnShowListener {
-            val saveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            fun updateSaveEnabled() {
-                // D-292: case-insensitively identical to the original only - the whole point is that this
-                // can fix casing alone, never sneak an entirely different word in under this entry's own
-                // frequency/history.
-                saveButton.isEnabled = editText.text.toString().equals(entry.word, ignoreCase = true)
-            }
-            updateSaveEnabled()
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-                override fun afterTextChanged(s: Editable?) = updateSaveEnabled()
-            })
-            saveButton.setOnClickListener {
-                store.recaseLearnedWord(entry.word, editText.text.toString())
-                refresh()
-                dialog.dismiss()
-            }
+        fun updateSaveEnabled() {
+            // D-292: case-insensitively identical to the original only - the whole point is that this can
+            // fix casing alone, never sneak an entirely different word in under this entry's own
+            // frequency/history.
+            saveButton.isEnabled = editText.text.toString().equals(entry.word, ignoreCase = true)
+        }
+        updateSaveEnabled()
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) = updateSaveEnabled()
+        })
+        saveButton.setOnClickListener {
+            store.recaseLearnedWord(entry.word, editText.text.toString())
+            refresh()
+            dialog.dismiss()
         }
         dialog.show()
     }
@@ -231,5 +243,10 @@ class LearnedWordsActivity : AppCompatActivity() {
     override fun onDestroy() {
         store.close()
         super.onDestroy()
+    }
+    
+    private companion object {
+        private const val COPY_GLYPH = "📋"
+        private const val SAVE_GLYPH = "💾"
     }
 }

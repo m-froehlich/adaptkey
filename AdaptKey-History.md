@@ -10918,3 +10918,48 @@ the existing D-289 shape). `:app:assembleRelease`/
 - needs a real check that a compound now promotes after 2 occurrences, not 4, and that the Learned Words
 edit dialog's Save button stays disabled for any change beyond casing while enabling correctly for a pure
 casing fix.
+
+## §216 - D-293/D-294: Learned Words Edit Dialog Redesigned Around The Casing Field, Plus A Real Gap It Surfaced (v0.9.9)
+
+Two follow-ups on §215's dialog, in the same message.
+
+**D-294 - layout redesign, asked as a question first ("Passt das besser? Oder spricht technisch etwas
+dagegen?"), not a direct instruction - answered, then built in the same round rather than a further
+back-and-forth, since nothing about it was actually blocking.** User's proposal: only Cancel/Forget as the
+dialog's own two buttons; Copy and Save move to sit directly beside the casing field itself. Technical read
+given before building: no real blocker, but two implementation calls were made explicitly rather than assumed
+- (1) "beside the field" (the field weighted to fill remaining width, pushing the two buttons to its actual
+right edge) rather than a true icon overlay *inside* the field's own bounds (`TextInputLayout`'s single
+end-icon slot does not stretch to two icons, and a hand-rolled overlay would need its own touch-region
+handling for no real benefit here); (2) plain emoji glyphs (📋/💾) rather than new vector-drawable icon
+assets - this app has never shipped a custom icon before (`ls drawable/` confirmed: launcher icons only), and
+a real `Button` (not a hand-rolled icon-only touch target) was kept specifically because it greys out
+automatically when disabled, which a bespoke icon widget would have to reimplement by hand for no benefit.
+`AlertDialog.Builder`'s own two slots go back to exactly their original pre-§215 assignment (Forget=positive,
+Cancel=negative) - the dialog's overall shape is now closer to the very first version again, just with a
+capable field instead of a read-only title.
+
+**D-293 - "beim Editieren dieses Wortes muss das Lernen komplett abgeschaltet sein. Kein Lernen, keine
+Vorschläge" - a real, unaddressed gap the redesign surfaced, not previously noticed.** Confirmed by tracing
+the code, not assumed: `AdaptKeyService` had *zero* existing mechanism for "suppress suggestions/learning for
+this specific field" beyond the login/URL/email `InputType`-variation detection - so without a fix, editing a
+word's casing in this dialog (using AdaptKey itself as the active system keyboard, as it would be on the
+device that built it) would have run the ordinary suggestion/autocorrect/learning pipeline against the
+casing-edit field itself, capitalising or "correcting" the very casing being fixed and reinforcing it a
+second time into the dictionary. Fixed generically, not with an app-specific special case: new
+`noSuggestionsField`, detected once per field in `onStartInput()` from the standard Android
+`InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS` flag (the same signal any well-behaved text field, in any app, uses
+to opt out of suggestions) - added to the exact same `loginFieldKind != LoginFieldKind.NONE || urlMode`
+condition already used consistently at every §6/learning/suggestion bypass point in the file (mechanical,
+uniform `replace_all` across all four occurrences, plus `refreshSuggestions()`'s own separate `if (urlMode)`
+early-return, which gets the identical bare-bar treatment). `LearnedWordsActivity`'s own `EditText` sets this
+flag on itself. A side effect, not separately requested: any *other* AdaptKey settings screen with a plain
+text field (e.g. `BlacklistActivity`'s own "add word" field) does **not** yet set this flag and is therefore
+still unprotected by this same gap - out of scope for this round, since only the Learned Words field was
+reported, but the mechanism to fix it the same way now exists.
+
+No new unit tests (`AdaptKeyService`'s own per-field `InputType` detection and `LearnedWordsActivity`'s own
+dialog/button wiring are both the established Android-glue gap this file already has throughout). 901 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6 preamble and W-01 revised.
+Version bumped 0.9.8 -> 0.9.9. Not yet device-confirmed - needs a real check that the redesigned dialog looks
+right, and that typing into the casing field produces no suggestion bar and no dictionary side effects at all.

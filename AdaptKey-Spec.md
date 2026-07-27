@@ -370,8 +370,10 @@ silently resolved).
 Rules 2-4's outcome is now visible in the suggestion bar *before* it silently applies, via S-06's extended
 scope covering pending capitalisation-only changes - not only pending spelling substitutions.
 
-This entire section (all of §6) is bypassed for email-mode, URL-mode, and login-field fragments (§10-§12):
-those commit verbatim, with no capitalisation transform of any kind.
+This entire section (all of §6) is bypassed for email-mode, URL-mode, and login-field fragments (§10-§12),
+and for any field that explicitly declares itself opted out of suggestions (`TYPE_TEXT_FLAG_NO_SUGGESTIONS`,
+the standard Android signal for this - e.g. the app's own Learned-Words casing-edit field, W-01): all of
+these commit verbatim, with no capitalisation transform, autocorrect, or dictionary learning of any kind.
 
 ### Addendum to G-05 - Shift State After Backspace
 See §4.
