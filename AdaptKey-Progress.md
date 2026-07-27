@@ -86,8 +86,38 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
+- **No update-check mechanism exists for an already-installed downloadable language pack (German/Greek,**
+  **D-280).** Confirmed missing while fixing D-306 (the "til" dictionary-data bug) - the fix updates the
+  *hosted* `language-packs/adaptkey-lang-de.zip`, but a device that already downloaded German before this fix
+  has no way to learn a newer version exists short of manually deleting and reinstalling the language via
+  `LanguagePacksActivity`. User explicitly wants this built as a real feature - needs its own design
+  discussion (a version number per pack? a manifest file the app polls? UI to notify + prompt an update?)
+  before implementation, not something to improvise inline with a data fix.
+
+- **D-306's dictionary cleanup only removed *untagged* entries (missing part-of-speech) - it did not attempt**
+  **a broader sweep of entries that carry a valid tag but are still dubious** (foreign proper nouns, obscure
+  fragments) **the way "til" itself was before its manual fix.** A narrow probe (short, low-frequency,
+  `OTHER`-tagged German entries) turned up ~490 further candidates in a single quick check - almost certainly
+  an undercount of the true scope across the full ~210k-row combined dictionary. Not attempted in D-306: no
+  reliable automated signal distinguishes a genuine rare/foreign word from data-extraction noise once it
+  already carries *some* tag, and manual review at that scale is not tractable in one session. Revisit with
+  better tooling (a proper reference-wordlist cross-check per language, as D-306 improvised for the
+  untagged-only English pass) if this class of false-positive split is reported again.
+
 ## Current State
 
+- **§226 (v0.9.19): D-306 - root-caused and fixed "Tippstil" splitting into "Tipp"/"til": both bundled**
+  **dictionaries carried thousands of untagged Wikipedia-extraction-noise entries that could never be**
+  **protected by A-05's "not both nouns" split gate.** 84 German + ~15,503 English untagged rows reviewed
+  (German by hand; English cross-referenced against a reference wordlist) - confirmed junk removed (43 DE /
+  10,362 EN), genuine words kept and retagged (41 DE / 5,141 EN). "til" itself retagged `NOUN` directly.
+  `language-packs/adaptkey-lang-de.zip` rebuilt from the cleaned `dict_de.tsv`. New
+  `BundledDictionaryDataTest.kt` (real data, not synthetic) - both regression-guards the untagged-row class
+  and directly verifies the reported split no longer happens. 902 unit tests (899 + 3).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-05 + the Language Contribution Guide revised.
+  Two follow-ups flagged in Open TODOs above (broader dubious-but-tagged cleanup; language-pack update
+  mechanism, explicitly requested next). Not yet device-confirmed - German is a downloaded pack, so needs
+  either a manual reinstall or the not-yet-built update mechanism to actually land. See history §226.
 - **§225 (v0.9.18): D-305 - the §224 TODO (`k01_calibration_offered` travelling via export) actioned on**
   **direct request, the same way as the diagnostics toggle.** `KEY_CALIBRATION_OFFERED` moved from a private
   `SettingsActivity` constant to `SettingsStore.KEY_CALIBRATION_OFFERED`; `SettingsStore.EXPORT_EXCLUDED_KEYS`

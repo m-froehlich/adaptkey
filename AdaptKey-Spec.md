@@ -486,6 +486,17 @@ still being edited. A split is vetoed if it would lose to a high-confidence sing
 A live two-span colour preview is shown while composing (S-05). Spatial proximity alone is never sufficient -
 a valid linguistic split is required.
 
+D-306: the "not both nouns" gate is only as good as the bundled dictionaries' own part-of-speech tags - a
+mistagged or untagged entry can defeat it. Reported directly: a learned compound ("Tippstil") split into
+"Tipp"/"til" because "til" (a rare given-name fragment, frequency 26) carried no proper-noun tag at all.
+Root-caused to a bundled-dictionary data-quality issue, not a code bug: both `dict_de.tsv`/`dict_en.tsv` are
+Wikipedia-corpus extractions and carried thousands of untagged rows (markup tokens, foreign proper nouns,
+scientific epithets, software names) that could never be rejected by this gate in the first place, since an
+empty part-of-speech set can never match "noun". Cleaned up once (D-306) - every remaining entry in both
+dictionaries carries a valid tag - but a mistagged-yet-tagged entry (like "til" itself, retagged `NOUN`) could
+still recur; a bundled-dictionary contribution should always carry a real part-of-speech tag, never leave it
+blank, per `AdaptKey-Language-Contribution-Guide.md`.
+
 > **Open design question (unresolved):** a split currently re-derives the two halves' capitalisation from
 > the generic rules rather than preserving whatever mid-word capitalisation the user had actually typed.
 > Flagged, not fixed.

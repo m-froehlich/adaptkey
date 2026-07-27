@@ -11264,3 +11264,59 @@ No new unit tests (the generalised D-304 tests already exercise both keys; net t
 tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §21 (Y-01) revised. Progress's
 own flagged TODO from §224 removed (actioned, not just resolved-and-forgotten). Version bumped 0.9.17 -> 0.9.18.
 Not yet device-confirmed.
+
+## §226 - D-306: "Tippstil" Split Into "Tipp"/"til" Root-Caused To Bundled-Dictionary Extraction Noise, Both Dictionaries Cleaned Up (v0.9.19)
+
+Reported: typing "Tippstil" (already a learned word) split into "Tipp"/"til". First correction from the
+user mid-investigation: it had only just been learned as part of this very test, so [TokenRepair]'s "a known
+word is never split" guarantee (A-01/A-05) was never actually violated - confirmed working once the word was
+genuinely learned. Second correction: "til" is not a cross-language artifact (the user's own first guess) -
+`TokenRepair` only ever consults one dictionary per token (whichever `AdaptKeyService.selectActiveDictionary`
+picked, D-287), never several at once - "til" (freq 26) is a real, if obscure, entry in `dict_de.tsv` itself,
+tagged `OTHER`, satisfying A-05's split gates against "Tipp" (freq 10, `NOUN`) purely within German's own
+data.
+
+Investigating why led to the real root cause: both `dict_de.tsv` (120,040 rows) and `dict_en.tsv` (100,388
+rows) are Wikipedia-corpus extractions, and a meaningful fraction of each carries **no part-of-speech tag at
+all** - 84 German rows, ~15,503 English rows (15%!). An untagged entry can never be recognised as `NOUN` by
+A-05's own "not both nouns" gate, so it is structurally *more* dangerous than a properly-tagged one - exactly
+the shape of bug this was. Sampling the untagged rows in both languages confirmed they are overwhelmingly
+extraction noise: MediaWiki markup tokens (`NOEDITSECTION`, `rowspan`, `reflist`), foreign surnames/place
+names extracted from biography/geography articles (`Auden`, `Mencken`, `Jagiełło`, `Rákóczi`), Latin
+scientific species epithets (`boisei`, `histolytica`, `rerio`, `rudolfensis`), and software/product names
+(`phpMyAdmin`, `AbiWord`) - but a genuine minority are real words the tagging pipeline simply missed
+(`Sterbeziffer`, `bemerkenswerterweise`, `contrarily`, `relatedly`).
+
+Cleanup, by scale: the 84 German untagged rows were individually reviewed by hand (fully tractable at that
+size) - 43 confirmed junk removed, 41 genuine words kept and retagged (25 `NOUN`, 16 `OTHER`, matching the
+only two tags this corpus actually uses in practice). The ~15,503 English untagged rows were cross-referenced
+against a standard, permissively-licensed English wordlist (`dwyl/english-words`, ~370k entries, fetched for
+this one-off classification pass, not vendored) - not in the reference list -> removed (10,362), in the list
+-> kept and retagged `OTHER` (5,141). "til" itself (properly tagged `OTHER`, not part of either untagged
+batch) was retagged `NOUN` directly - cross-referenced against a canonical German spell-check wordlist
+(`davidak/wortliste`) confirming it as the genuine (if rare) given-name fragment "Til", which should have
+been treated as a noun for A-05's own gate all along.
+
+Scope explicitly not attempted: a broader semantic sweep of every *properly-tagged-but-still-dubious* entry
+(a narrow slice check - short, low-frequency, `OTHER`-tagged German entries - turned up ~490 more candidates
+in a single quick probe, an unbounded, error-prone effort at full-dictionary scale without much better
+reference/tooling) - flagged in Progress.md as a possible future, more careful round, not attempted
+half-heartedly here.
+
+Mechanics: `dictionaries/de/dict_de.tsv` edited directly and `language-packs/adaptkey-lang-de.zip` rebuilt
+from it (plus the unchanged `bigram_de.tsv`/`hints_de.tsv`, confirmed byte-identical to the zip's prior
+copies before rebuilding) - German is a downloaded language pack (D-280), not bundled in the APK, so the
+already-hosted zip is what future downloads actually receive; **no update-check mechanism exists yet for an
+already-installed pack to pick this up** - explicitly flagged by the user as the next thing to design/build,
+not part of this round. `app/src/main/assets/dict_en.tsv` edited directly (bundled in the APK, takes effect
+on the next install/update, no separate packaging step). New `BundledDictionaryDataTest.kt` (real bundled/
+repo data, matching `LanguageLetterHintsDataTest`'s own established pattern): (1)/(2) assert neither
+dictionary has any untagged row left (a regression guard against a future contribution silently
+reintroducing this class of bug - see the updated `AdaptKey-Language-Contribution-Guide.md`, POS tags now
+documented as also load-bearing for A-05, not just §6 capitalisation); (3) loads the real `dict_de.tsv` into
+an `InMemoryDictionaryStore` and asserts `TokenRepair.trySplit("Tippstil", setOf(4))` is now `null` - the
+actual reported bug, verified against real data, not just inspected by eye. 3 new tests. 902 unit tests
+(899 + 3). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-05 section revised with a pointer to
+this decision. Version bumped 0.9.18 -> 0.9.19. Not yet device-confirmed - needs both a real re-test of
+"Tippstil" and, since German is a downloaded pack, either a manual pack reinstall or the not-yet-built update
+mechanism to actually receive the fix.

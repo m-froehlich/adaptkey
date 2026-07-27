@@ -82,9 +82,15 @@ Up to three plain text files, UTF-8, one language:
     comma-separated subset of `de.froehlichmedia.adaptkey.dictionary.PartOfSpeech`: `NOUN`, `VERB`,
     `ADJECTIVE`, `PREPOSITION`, `PROPER_NOUN`, `OTHER`. An unrecognised tag is silently dropped, not an
     error - see `DictionaryAssetParser.parseWords`, the authoritative parser.
-  - POS tags only actually matter for §6 of `AdaptKey-Spec.md`'s capitalisation rules (a language that
-    capitalises nouns the way German does benefits from accurate `NOUN` tags; a language that doesn't can
-    tag everything `OTHER` and skip this entirely).
+  - POS tags matter for §6 of `AdaptKey-Spec.md`'s capitalisation rules (a language that capitalises nouns
+    the way German does benefits from accurate `NOUN` tags; a language that doesn't can tag everything
+    `OTHER`) - **and, since D-306, also for A-05's own "not both nouns" split-safety gate**: an entry with
+    no POS tag at all can never be recognised as a noun, so it can never be protected by that gate either,
+    regardless of what it actually is. Leaving the column blank is technically valid (silently parsed as "no
+    tags") but **discouraged** - it is exactly what let a mistagged low-frequency entry ("til", a rare
+    given-name fragment with no tag at all) defeat the split gate on a real device (see
+    `AdaptKey-History.md` §D-306). Prefer `OTHER` over leaving the column empty for anything that is not
+    itself a noun.
 - **`bigram_<code>.tsv`** (optional, but strongly recommended - it drives S-07 next-word prediction and
   A-05's split-scoring signal): `previousWord<TAB>word<TAB>count`. See `DictionaryAssetParser.parseBigrams`.
 - **`hints_<code>.tsv`** (optional, D-281 - the AltGr/long-press secondary symbol on each letter key, L-05):
