@@ -298,18 +298,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         animator.start()
     }
     
-    /** Whether the letter surface shows the Greek alphabet (G-01) instead of the Latin layout. */
-    var greek: Boolean = false
-        set(value) {
-            field = value
-            rebuildRows()
-        }
-    
     /**
-     * D-106 stage 1: whether the Latin letter surface uses the English QWERTY layout (y/z swapped)
-     * instead of German QWERTZ. Only meaningful when [greek] is false.
+     * D-280/D-314: which compiled-in letters-surface geometry is active ([LayoutRegistry]) - German
+     * QWERTZ, English/most-languages QWERTY, French AZERTY, or the Greek alphabet (G-01). Replaced the
+     * former separate `greek`/`qwerty` booleans once a second non-QWERTZ-variant geometry (AZERTY) needed
+     * its own row set, per the language-contribution guide's own §5 instruction to generalise at that point
+     * rather than add a third ad-hoc flag.
      */
-    var qwerty: Boolean = false
+    var layoutKind: LayoutKind = LayoutKind.LATIN_QWERTZ
         set(value) {
             field = value
             rebuildRows()
@@ -662,12 +658,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun rowsFor(targetSurface: InputSurface, targetSymbolPage: Int): List<List<Key>> {
         return when (targetSurface) {
-            // G-01: the letter surface is the Greek alphabet, or the Latin layout (German QWERTZ, or
-            // English QWERTY - D-106 stage 1).
-            InputSurface.LETTERS -> if (greek) {
-                GreekLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
-            } else {
-                KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty, urlMode, emailMode, systemLocale)
+            // G-01/D-314: the letter surface is the Greek alphabet, French AZERTY, or the Latin QWERTZ/
+            // QWERTY layout (D-106 stage 1's own y/z-swap variant flag).
+            InputSurface.LETTERS -> when (layoutKind) {
+                LayoutKind.GREEK -> GreekLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
+                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale)
+                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale)
+                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale)
             }
             
             InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)
@@ -913,7 +910,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * negligible, purely cosmetic width difference for a single letter, not worth reflowing the row for.
      */
     private fun popupDisplayTextFor(text: String): String {
-        if (!(shifted || capsLock) || popupKey?.code == KeyCode.TEXT || !AlternativeScript.extendsWord(text, greek)) {
+        if (!(shifted || capsLock) || popupKey?.code == KeyCode.TEXT || !AlternativeScript.extendsWord(text, layoutKind == LayoutKind.GREEK)) {
             return text
         }
         return uppercaseSingleGlyph(text, textPaint)
@@ -932,7 +929,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * gain a case it has no business having).
      */
     private fun cornerHintDisplayTextFor(key: Key, hint: String): String {
-        if (!(shifted || capsLock) || key.code != KeyCode.CHAR || surface != InputSurface.LETTERS || !AlternativeScript.extendsWord(hint, greek)) {
+        if (!(shifted || capsLock) || key.code != KeyCode.CHAR || surface != InputSurface.LETTERS || !AlternativeScript.extendsWord(hint, layoutKind == LayoutKind.GREEK)) {
             return hint
         }
         return uppercaseSingleGlyph(hint, hintPaint)

@@ -48,9 +48,10 @@ lists `GERMAN`, `ENGLISH`, `GREEK`, `FRENCH`, `SPANISH`, `ITALIAN`, `DUTCH`, `PO
 Being in the enum already does **not** by itself mean no layout work is needed - see §0's geometry question.
 If yours is already there:
 
-1. Decide whether it needs a *new* row geometry (§0/§5) - French is already in the enum specifically
-   *because* the language-detection classifier (§6) needed it, not because its AZERTY geometry has been
-   built; do not assume an enum entry means the layout question is already settled.
+1. Decide whether it needs a *new* row geometry (§0/§5) - French's own AZERTY geometry is built as of D-314
+   (`AzertyLayout.kt`, wired up in `LayoutRegistry`), but do not generalise from that: French only got there
+   because someone actually built it, not because an enum entry implies a matching layout exists - a language
+   newly added to the enum still needs its own §0/§5 decision, exactly as before.
 2. If an existing geometry (QWERTY today, for most) is good enough, you need **no Kotlin code change at
    all** for the layout itself. Skip to §3.
 3. Check `app/src/main/assets/language_profiles.tsv` - as of D-280 it already has character-trigram profile
@@ -166,27 +167,30 @@ Languages) and in the onboarding language-selection step. Nothing else reference
 ## 5. Building a new row geometry (a new Latin arrangement, or a non-Latin script)
 
 Needed when an existing geometry genuinely is not good enough - a language with its own strong, expected
-physical layout convention (AZERTY for French; possibly a dedicated Turkish arrangement), or a script that
-is not Latin at all (Greek today; Cyrillic/Arabic/... tomorrow). Do not build this speculatively - if
-QWERTY is genuinely fine for your language's users, §0-§4 is the entire job.
+physical layout convention (French's AZERTY - built in D-314, see below; possibly a dedicated Turkish
+arrangement), or a script that is not Latin at all (Greek today; Cyrillic/Arabic/... tomorrow). Do not build
+this speculatively - if QWERTY is genuinely fine for your language's users, §0-§4 is the entire job.
 
-Mirror `app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/GreekLayout.kt`: a plain Kotlin `object`
-exposing a `rows(proportions, showNumberRow, urlMode, emailMode, locale): List<List<Key>>` function that
-builds your alphabet's three letter rows (number row, third-row shift/backspace, and the bottom row are all
-shared with the Latin layout via `KeyboardLayout.urlBottomRow`/`emailBottomRow` - only the letters differ).
-A new Latin geometry (AZERTY) can still take `letterHints` as a parameter exactly like `KeyboardLayout`
-itself does, since the AltGr overlay (§3) still applies on top of it the same way; a non-Latin script
-(Greek) typically has its own accent system instead and does not need the parameter at all. Then:
+Mirror `app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/GreekLayout.kt` (a genuinely different
+alphabet) or `AzertyLayout.kt` (a Latin arrangement, D-314 - the concrete reference if your language needs a
+new *Latin* geometry, since a within-row letter swap like German's QWERTZ isn't the only shape this can
+take: AZERTY moves `q`/`w`/`a`/`z`/`m` across rows entirely, not just two letters within one): a plain Kotlin
+`object` exposing a `rows(proportions, showNumberRow, urlMode, emailMode, locale): List<List<Key>>` function
+that builds your alphabet's three letter rows (number row, third-row shift/backspace, and the bottom row are
+all shared with the Latin layout via `KeyboardLayout.urlBottomRow`/`emailBottomRow` - only the letters
+differ). A new Latin geometry can still take `letterHints` as a parameter exactly like `KeyboardLayout`
+itself does, since the AltGr overlay (§3) still applies on top of it the same way - `AzertyLayout.rows()`
+also reuses `KeyboardLayout.topRowKey()` directly so `p`/`o` keep their existing math-symbol/average-symbol
+popups (D-99/§29) wherever those two letters land in your row; a non-Latin script (Greek) typically has its
+own accent system instead and does not need the `letterHints` parameter at all. Then:
 
 1. Add a new `LayoutKind` entry in `keyboard/LayoutRegistry.kt` and map your `Language` to it in `KINDS`.
-2. `AdaptKeyboardView`'s row-selection (`InputSurface.LETTERS -> if (greek) GreekLayout.rows(...) else
-   KeyboardLayout.rows(...)`) is, as of D-280, still a plain boolean pair (`greek`/`qwerty`) rather than a
-   generic `LayoutKind` switch - because only one non-Latin script existed to generalise against. **If you
-   are the second one, generalise this properly** (a `when (LayoutRegistry.kindFor(activeLanguage))` in the
-   view, replacing both booleans) rather than adding a third ad-hoc flag - that is the point at which the
-   abstraction actually earns its cost.
-3. `AdaptKeyService.applyActiveLanguageToView()` is the single place that currently derives `greek`/`qwerty`
-   from `activeLanguage` - update it in lockstep with step 2.
+2. `AdaptKeyboardView`'s row-selection (`InputSurface.LETTERS -> when (layoutKind) { ... }`) is, since D-314,
+   a genuine `LayoutKind` switch rather than the old `greek`/`qwerty` boolean pair - add your own `when`
+   branch calling your new layout object's `rows(...)`.
+3. `AdaptKeyService.applyActiveLanguageToView()` (`keyboardView?.layoutKind = LayoutRegistry.kindFor(...)`)
+   needs no change for an ordinary new entry - it already derives `layoutKind` generically from
+   `activeLanguage` via `LayoutRegistry`.
 
 ## 6. Language-profile data for automatic detection (optional)
 

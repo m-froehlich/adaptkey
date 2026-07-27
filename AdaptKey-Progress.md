@@ -96,8 +96,34 @@ non-trivial changes).
   better tooling (a proper reference-wordlist cross-check per language, as D-306 improvised for the
   untagged-only English pass) if this class of false-positive split is reported again.
 
+- **D-314 built French's AZERTY *geometry* only - no `dictionaries/fr/` pack (dict/bigram/hints/version)**
+  **exists yet, and `LanguagePackCatalog.ENTRIES` has no `Language.FRENCH` entry.** French is now fully
+  typeable (the layout is real, compiled, and wired to `Language.FRENCH`) but not yet usable end to end as a
+  language pack - a French speaker gets the right keys but no dictionary/autocorrect/suggestions until
+  someone builds and hosts one, following the Contribution Guide's own §3/§4. Not started; flagging so a
+  future session (or an actual French-speaking contributor) doesn't have to rediscover that the geometry and
+  the content are two separate, independently-completed pieces of this feature.
+
 ## Current State
 
+- **§233 (v0.9.26): D-314 - French AZERTY built and wired up, confirmed as the last missing common Latin**
+  **keyboard geometry before building it.** Confirmed first: `Language.FRENCH` was already in the enum, no
+  AZERTY existed anywhere in compiled code, and every existing AZERTY mention in the Contribution
+  Guide/Spec already treated it as the standing "still needed, not yet built" example. Real French AZERTY
+  reorders letters *across* rows (`q`/`w`/`a`/`z`/`m` all move rows, `M` lands on the home row not the
+  third), unlike German QWERTZ's within-row `y`/`z` swap, so it cannot reuse `KeyboardLayout`'s existing
+  variant-flag mechanism - new `AzertyLayout.kt` instead, mirroring `GreekLayout.kt`'s own approach (own
+  letter rows; number row and control/bottom row shared with `KeyboardLayout`). Still Latin script, so it
+  keeps the `letterHints` (L-05/C-08) parameter and reuses `KeyboardLayout.topRowKey()` directly (made
+  non-private for this) so `p`/`o` keep their existing π/Ø popups (D-99/§29) unchanged. New
+  `LayoutKind.LATIN_AZERTY`, mapped from `Language.FRENCH` in `LayoutRegistry`. Per the Guide's own §5
+  instruction for "the second" new geometry, `AdaptKeyboardView`'s row-selection generalised from the old
+  `greek`/`qwerty` boolean pair to a single `layoutKind: LayoutKind` property driving a real `when` switch;
+  `AdaptKeyService.applyActiveLanguageToView()` and the sustained-English-usage auto-switch updated to match.
+  17 new tests (`AzertyLayoutTest.kt`). 936 unit tests (919 + 17). `:app:compileDebugKotlin`/
+  `:app:testDebugUnitTest` green. Guide's §5/§1 revised to reflect the built layout instead of the
+  hypothetical. No French dictionary/hint content shipped - only the compiled geometry; a real
+  `dictionaries/fr/` pack is a separate future task. Not yet device-confirmed. See history §233.
 - **§232 (v0.9.25): D-312/D-313 - two Shift-state bugs fixed, both in `AdaptKeyService.handleShift()`/**
   **`reclaimWordAtCaret()`.** D-313: tapping the caret mid-word into already-typed text (to swap a letter)
   left Shift stuck at whatever it was *before* the tap instead of re-deriving it from the new caret's own

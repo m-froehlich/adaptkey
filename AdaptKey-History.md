@@ -11520,3 +11520,52 @@ tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
 with pointers to both decisions. Version bumped 0.9.24 -> 0.9.25. Not yet device-confirmed - both need a real
 re-test of their own reported repro (mid-word tap-to-edit after a sentence-start capital; SHIFT/letter/rapid-
 double-SHIFT for Caps Lock).
+
+## §233 - D-314: French AZERTY - The Last Missing Common Latin Keyboard Geometry, Built And Wired Up (v0.9.26)
+
+Requested directly: build AZERTY so the community has every common Latin physical-layout convention available
+for its own language packs (French specifically named), conditioned on first confirming it really is the last
+one missing. Confirmed before writing any code: `Language.kt` already lists `FRENCH`, `LayoutRegistry.kt` had
+only `LATIN_QWERTZ`/`LATIN_QWERTY`/`GREEK` (no AZERTY anywhere in compiled code), and every existing AZERTY
+reference in `AdaptKey-Language-Contribution-Guide.md`/`AdaptKey-Spec.md` already called it out as *the*
+standing example of a still-needed-but-not-yet-built Latin geometry - never something actually built. That
+confirms the premise.
+
+Unlike German's QWERTZ (a variant flag on `KeyboardLayout.rows()` - only `y`/`z` swap position within
+otherwise-identical rows), real French AZERTY reorders letters *across* rows: `q`/`w`/`a`/`z`/`m` all move to a
+different row, not just swap within one (top row `AZERTYUIOP`, home row `QSDFGHJKLM` - `M` lives here, not on
+the third row - third row `WXCVBN`, six letters not seven). That cannot be expressed as a boolean flag the way
+QWERTY/QWERTZ share one function; it needs its own row geometry, mirroring `GreekLayout.kt`'s existing
+approach instead. New `AzertyLayout.kt`: a plain object exposing the same
+`rows(proportions, showNumberRow, letterHints, urlMode, emailMode, locale)` shape, sharing the number row's
+`NUMBER_HINTS`/`NUMBER_SUPERSCRIPTS` maps and the control/bottom row (`KeyboardLayout.urlBottomRow`/
+`emailBottomRow`/`COMMA_ALTERNATIVES`/`PERIOD_ALTERNATIVES`) exactly like `GreekLayout.kt` already does for
+its own three-row structure - only the letter rows differ. Unlike Greek (a genuinely different alphabet),
+AZERTY is still Latin script, so it keeps the `letterHints` (L-05/C-08) parameter `KeyboardLayout` itself
+takes, defaulting to `KeyboardLayout.DEFAULT_LETTER_HINTS` the same documented way any language without its
+own `hints.tsv` already falls back for QWERTY; French's own tailored hint set is a future dictionary-building
+task (§3 of the guide), out of scope here. `p`/`o` sit at the same top-row positions AZERTY as they do in
+QWERTY/QWERTZ, so `KeyboardLayout.topRowKey()` (made non-private for this reuse, D-314) is called directly
+rather than duplicating its π/Ø-popup special-casing - both keep their existing D-99/§29 popups unchanged.
+
+`LayoutKind` gained `LATIN_AZERTY`; `LayoutRegistry.KINDS` maps `Language.FRENCH -> LayoutKind.LATIN_AZERTY`.
+Per the guide's own §5 instruction for "the second" new geometry needing generalisation, `AdaptKeyboardView`'s
+row-selection - previously a plain `greek`/`qwerty` boolean pair, sufficient only because QWERTY/QWERTZ's own
+difference was expressible as one flag - is now a genuine `layoutKind: LayoutKind` property driving a real
+`when` switch across all four kinds; `AdaptKeyService.applyActiveLanguageToView()` (and the one other direct
+call site, the sustained-English-usage auto-switch) updated to set it in one assignment instead of two. The
+two `AlternativeScript.extendsWord(text, greek)` call sites (D-168/D-284 popup and corner-hint case rules)
+now derive the same boolean inline (`layoutKind == LayoutKind.GREEK`) - that predicate is genuinely about
+script, not geometry, and stays correct for AZERTY (still Latin) without any changes of its own.
+
+New `AzertyLayoutTest.kt` (17 tests, mirroring `GreekLayoutTest.kt`'s/`KeyboardLayoutTest.kt`'s own coverage
+style): row structure (the actual AZERTY letter arrangement, `m` confirmed on the home row not the third),
+AltGr hints following the character wherever it lands, the reused p/π and o/Ø popups (asserted identical to
+`KeyboardLayout`'s own), number row, third-row shift/backspace weighting, and url/email bottom-row parity with
+the Latin layout. 936 unit tests (up from 919). Guide's §5 rewritten from "mirror GreekLayout.kt" to also
+reference `AzertyLayout.kt` as the concrete Latin-geometry example, and its own now-outdated "generalise the
+booleans if you're the second one" instruction replaced with the already-generalised `when` switch's actual
+shape; §1's stale "French's AZERTY geometry has [not] been built" aside corrected. `:app:compileDebugKotlin`/
+`:app:testDebugUnitTest` green. Version bumped 0.9.25 -> 0.9.26. No French dictionary/hint content shipped
+yet - only the compiled geometry; a real `dictionaries/fr/` pack (§3/§4 of the guide) is a separate, future
+task. Not yet device-confirmed.

@@ -285,8 +285,11 @@ object KeyboardLayout {
      * there now ([HorizontalLongPressPopup.wouldClampRight]), not by reversing the list here as §34/D-99
      * originally did; [PI_ALTERNATIVES] is always passed in its natural, un-reversed order (`π` first),
      * exactly like every other alternatives list.
+     *
+     * D-314: not private - [AzertyLayout] reuses this directly for its own top row (which still carries
+     * `p`/`o` at the same row positions QWERTY/QWERTZ do), rather than duplicating the p/o special-casing.
      */
-    private fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
+    fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
         val hint = letterHints[c]
         return when {
             c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES)
