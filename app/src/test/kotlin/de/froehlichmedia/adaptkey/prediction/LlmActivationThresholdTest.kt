@@ -36,4 +36,15 @@ class LlmActivationThresholdTest {
         assertEquals(LlmActivationThreshold.DEFAULT, LlmActivationThreshold.fromKey("   "))
         assertEquals(LlmActivationThreshold.DEFAULT, LlmActivationThreshold.fromKey("bogus"))
     }
+    
+    @Test
+    fun `D-297 the disabled key resolves explicitly, never as a fallback`() {
+        assertEquals(LlmActivationThreshold.DISABLED, LlmActivationThreshold.fromKey("disabled"))
+        assertEquals(LlmActivationThreshold.DISABLED, LlmActivationThreshold.fromKey("DISABLED"))
+    }
+    
+    @Test
+    fun `D-297 disabled's own threshold sits outside the valid confidence range`() {
+        assertTrue(LlmActivationThreshold.DISABLED.confidenceThreshold < 0.0)
+    }
 }

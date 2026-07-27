@@ -38,4 +38,10 @@ class Tier3ActivationTest {
         assertTrue(Tier3Activation.shouldActivate(0.6, LlmActivationThreshold.HIGH, providerAvailable = true))
         assertFalse(Tier3Activation.shouldActivate(0.6, LlmActivationThreshold.LOW, providerAvailable = true))
     }
+    
+    @Test
+    fun `D-297 DISABLED never activates, regardless of confidence or availability`() {
+        assertFalse(Tier3Activation.shouldActivate(0.0, LlmActivationThreshold.DISABLED, providerAvailable = true))
+        assertFalse(Tier3Activation.shouldActivate(1.0, LlmActivationThreshold.DISABLED, providerAvailable = true))
+    }
 }

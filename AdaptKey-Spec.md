@@ -917,9 +917,9 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-01 | Key proportions (space bar / comma / full stop / backspace) + the two L-02 spacing sliders | Slider | Gboard-like |
 | C-02 | Suggestion re-sort delay | 0-600 ms | 300 ms |
 | C-03 | Maximum number of suggestions | Integer (6-10) | 8 |
-| C-04 | Word confirmation highlight | On/Off + colour | **On** |
+| C-04 | Word confirmation highlight colour, or "no highlighting" (D-298: folds the former separate on/off toggle into this one list) | Colour, or off | Green |
 | C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled confusables + archaic-spelling set |
-| C-06 | LLM activation threshold | N-gram confidence value | medium |
+| C-06 | LLM activation threshold, or "disabled" (D-297: folds the former separate tier-3-enabled toggle into this one list) | N-gram confidence value, or off | medium |
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
 | C-08 | Secondary long-press symbols & corner hint labels | Per-key map + on/off | see L-05 |
 | C-09 | Persistent number row (with shifted-symbol long-press) | On/Off | On |
@@ -927,7 +927,6 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-11 | Long-press popup delay | Slider | see platform default |
 | C-12 | Key sound | On/Off | Off |
 | C-13 | Haptic feedback | On/Off | Off |
-| C-14 | Tier-3 (mini-LLM) enabled | On/Off | On |
 | C-15 | Diagnostic log enabled | On/Off | Off |
 | C-16 | Never save credentials | On/Off | Off |
 | C-17 | Contact-derived email suggestions | On/Off (permission-gated) | Off |

@@ -6,6 +6,8 @@ package de.froehlichmedia.adaptkey.settings
 import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -42,5 +44,33 @@ class SettingsStoreRoboTest {
         assertEquals(LlmActivationThreshold.HIGH, settings.llmActivationThreshold)
         assertEquals(SettingsMapper.MAX_MAX_SUGGESTIONS, settings.suggestionConfig.maxSuggestions)
         assertEquals(false, settings.commaLineNotSentenceStart)
+    }
+    
+    @Test
+    fun highlightDefaultsOnWithNothingStored() {
+        val context = RuntimeEnvironment.getApplication()
+        assertTrue(SettingsStore.load(context).suggestionConfig.highlightEnabled)
+    }
+    
+    @Test
+    fun d298TheNoHighlightSentinelDisablesHighlightingWithoutTouchingTheStoredColour() {
+        val context = RuntimeEnvironment.getApplication()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(SettingsStore.KEY_HIGHLIGHT_COLOR, "none")
+            .commit()
+        
+        assertFalse(SettingsStore.load(context).suggestionConfig.highlightEnabled)
+    }
+    
+    @Test
+    fun aRealStoredColourEnablesHighlighting() {
+        val context = RuntimeEnvironment.getApplication()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(SettingsStore.KEY_HIGHLIGHT_COLOR, "#FF2962FF")
+            .commit()
+        
+        val settings = SettingsStore.load(context)
+        assertTrue(settings.suggestionConfig.highlightEnabled)
+        assertEquals(0xFF2962FF.toInt(), settings.suggestionConfig.highlightColor)
     }
 }

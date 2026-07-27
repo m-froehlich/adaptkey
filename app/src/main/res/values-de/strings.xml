@@ -82,9 +82,8 @@
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Tasten</string>
-    <string name="cat_suggestions">Vorschläge</string>
     <string name="cat_dictionary">Wörterbuch</string>
-    <string name="cat_capitalisation">Großschreibung</string>
+    <string name="cat_capitalisation">Korrektur &amp; Vorschläge</string>
 
     <string name="c01_space_title">Breite der Leertaste</string>
     <string name="c01_space_summary">Schmaler reduziert versehentliche Leerzeichen statt Komma (L-02).</string>
@@ -96,14 +95,12 @@
     <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 
     <string name="d234_autocorrect_enabled_title">Autokorrektur</string>
-    <string name="d234_autocorrect_enabled_summary">Korrekturen, Umlaut-Wiederherstellung und automatische Trennungen werden beim Tippen sofort angewendet. Ausschalten, um jeden Kandidaten nur noch als antippbaren Vorschlag zu erhalten - Wörter werden dann nie mehr still verändert, allerdings wird eine fehlende oder überflüssige Leerstelle dann auch nicht mehr automatisch korrigiert.</string>
+    <string name="d234_autocorrect_enabled_summary">Wendet Korrekturen automatisch beim Tippen an. Aus: jede Korrektur wird nur noch als antippbarer Vorschlag angeboten, nichts wird still verändert.</string>
+    <string name="c04_color_title">Highlight-Farbe</string>
     <string name="c02_title">Re-Sort-Verzögerung</string>
     <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>
     <string name="c03_title">Maximale Vorschläge</string>
-    <string name="c03_summary">Anzahl gleichzeitig stabilisierter Vorschläge (6–10).</string>
-    <string name="c04_enabled_title">Wort-Bestätigungs-Highlight</string>
-    <string name="c04_enabled_summary">Hebt ein erkanntes, vollständiges Wort beim Tippen hervor (S-05).</string>
-    <string name="c04_color_title">Highlight-Farbe</string>
+    <string name="c03_summary">Anzahl gleichzeitig angebotener Vorschläge (6–10).</string>
 
     <string name="c09_title">Nummernreihe</string>
     <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
@@ -117,13 +114,14 @@
     <string name="d55_above_summary">Zusätzlicher Abstand über der Leer-/Enter-Reihe, in dp, gegen versehentliche Enter-Tipps (D-55).</string>
     <string name="c08_hints_title">Eck-Symbole anzeigen</string>
     <string name="c08_hints_summary">Sekundäre Long-Press-Symbole als Eck-Hinweis (L-05). Long-Press-Funktion folgt.</string>
-    <string name="c08_reset_title">Eck-Symbole zurücksetzen</string>
-    <string name="c08_reset_summary">Setzt die Per-Tasten-Belegung auf die Standardzuordnung zurück.</string>
-    <string name="c08_reset_done">Eck-Symbole auf Standard zurückgesetzt.</string>
     <string name="c08_editor_title">Eck-Symbole bearbeiten</string>
     <string name="c08_editor_summary">Sekundärsymbol pro Buchstabe festlegen oder entfernen (L-05).</string>
     <string name="c08_editor_intro">Tippe einen Buchstaben an, um sein Long-Press-Symbol zu wählen oder zu entfernen.</string>
     <string name="c08_editor_none">— kein Symbol —</string>
+    <!-- In-editor reset action (LetterHintsActivity) - der Settings-Listeneintrag dafür wurde als
+         redundant für eine so seltene Aktion entfernt; dieser kontextbezogene Button im Editor bleibt. -->
+    <string name="c08_reset_title">Auf Standard zurücksetzen</string>
+    <string name="c08_reset_done">Eck-Symbole auf Standard zurückgesetzt.</string>
 
     <string name="c05_title">Blacklist bearbeiten</string>
     <string name="c05_summary">Wörter dauerhaft von Vorschlägen und Autokorrektur ausschließen (A-04).</string>
@@ -151,17 +149,16 @@
     <string name="c10_summary">Nach einer mit Komma endenden Zeile (z. B. Mail-Anrede) wird die nächste Zeile nicht großgeschrieben.</string>
 
     <string name="c06_title">LLM-Schwellwert</string>
-    <string name="c06_summary">Ab welcher N-Gramm-Sicherheit das Mini-LLM zugeschaltet wird (C-06). Das LLM-Backend ist noch nicht eingebunden.</string>
+    <string name="c06_summary">Wie bereitwillig die Mini-KI hinzugezogen wird, oder Aus zum vollständigen Deaktivieren, auch bei installiertem Modell.</string>
+    <string name="c06_threshold_disabled">Aus</string>
     <string name="c06_threshold_low">Niedrig</string>
     <string name="c06_threshold_medium">Mittel</string>
     <string name="c06_threshold_high">Hoch</string>
 
     <!-- C-06 tier-3 model management (browser download + file import). -->
-    <string name="c06_model_pref_title">Mini-LLM-Modell (Tier 3)</string>
+    <string name="c06_model_pref_title">Mini-LLM (Tier 3)</string>
     <string name="c06_model_pref_summary">Optionales On-Device-Modell herunterladen und importieren (C-06).</string>
-    <string name="d126_title">Mini-KI aktiviert</string>
-    <string name="d126_summary">Wenn aus, läuft die Mini-KI nie, auch wenn ein Modell installiert ist - nützlich, um Akku/Latenz zu sparen, ohne das Modell zu löschen.</string>
-    <string name="c06_model_title">Mini-LLM-Modell</string>
+    <string name="c06_model_title">Mini-LLM</string>
     <string name="c06_model_intro">Das Tier-3-Mini-LLM (C-06) ist optional. Das Modell (~273 MB) ist nicht in der App enthalten. Lade es einmalig herunter und importiere es anschließend – danach arbeitet die App weiterhin vollständig offline.</string>
     <string name="c06_model_present">Modell installiert.</string>
     <string name="c06_model_absent">Kein Modell installiert. Tier 3 ist inaktiv, die Tastatur arbeitet wie gewohnt.</string>

@@ -89,12 +89,6 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `D-126 tier3Enabled flag passes through unchanged, defaulting to on`() {
-        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).tier3Enabled)
-        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(tier3Enabled = false)).tier3Enabled)
-    }
-    
-    @Test
     fun `D-139 diagnosticLogEnabled flag passes through unchanged, defaulting to off`() {
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).diagnosticLogEnabled)
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings(diagnosticLogEnabled = true)).diagnosticLogEnabled)

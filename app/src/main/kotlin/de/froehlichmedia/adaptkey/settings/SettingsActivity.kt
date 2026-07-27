@@ -52,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     
-    /** The preference screen itself, including the non-declarative C-08 reset action. */
+    /** The preference screen itself. */
     class SettingsFragment : PreferenceFragmentCompat() {
         
         // D-191: must be registered unconditionally during Fragment initialisation (the documented
@@ -94,12 +94,6 @@ class SettingsActivity : AppCompatActivity() {
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                     )
                 }
-            }
-            
-            findPreference<Preference>("c08_reset_hints")?.setOnPreferenceClickListener {
-                SettingsStore.resetLetterHints(requireContext())
-                Toast.makeText(requireContext(), R.string.c08_reset_done, Toast.LENGTH_SHORT).show()
-                true
             }
             
             findPreference<Preference>("onboarding_replay")?.setOnPreferenceClickListener {

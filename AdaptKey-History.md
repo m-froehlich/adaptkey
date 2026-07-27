@@ -11013,3 +11013,65 @@ No new unit tests (Android-view glue). 901 unit tests (unchanged). `:app:assembl
 `:app:testDebugUnitTest` green. No spec change (a pure visual-density adjustment to an already-specified
 behaviour). Version bumped 0.9.10 -> 0.9.11. Not yet device-confirmed - needs a real look that Copy/Save are
 now square and no longer dominate the dialog's own width.
+
+## §219 - D-297/D-298/D-299: Settings Screen Cleanup - Two Dead/Redundant Toggles Folded Away, Category Reorg, Trimmed Prose (v0.9.12)
+
+A batch of settings-screen cleanup requests in one message, worked through systematically.
+
+**D-297 - "Mini KI aktivieren" (`d126_tier3_enabled`) removed entirely, folded into a new "Disabled" entry on**
+**the existing C-06 LLM-threshold list.** Traced before folding anything: `AdaptSettings.tier3Enabled` was
+persisted (`SettingsStore`/`RawSettings`/`SettingsMapper` all carried it faithfully) but **never actually read
+anywhere in the activation path** - `Tier3Activation.shouldActivate(tier1Confidence, threshold,
+providerAvailable)` has no `tier3Enabled` parameter at all and never did. The toggle was dead code, not a
+real gate, confirmed by grep before touching anything, not assumed. New `LlmActivationThreshold.DISABLED`
+enum constant, with `confidenceThreshold = -1.0` - deliberately outside the valid `[0, 1]` confidence range, so
+the *existing* `tier1Confidence < threshold.confidenceThreshold` comparison in `Tier3Activation` already never
+fires for it, with zero changes needed to that function itself. This is a genuine fix, not just a rename: for
+the first time, "disable the mini-LLM" now actually disables it. Removed `tier3Enabled` from
+`RawSettings`/`AdaptSettings`/`SettingsMapper`/`SettingsStore` (`KEY_TIER3_ENABLED`) entirely, along with its
+own now-superseded unit test. The C-06 list preference dropped `app:useSimpleSummaryProvider` (which only
+ever showed the current selection, "Medium" etc.) in favour of a static `android:summary`, adapted from
+`d126`'s own retired description, since the user wanted an actual description carried over, not just the live
+value - the trade-off (losing the at-a-glance current-selection display) is a direct, accepted consequence.
+
+**D-298 - "Highlighting" (`c04_highlight_enabled`) removed entirely, folded into a new "No highlighting"**
+**entry (first) on the existing C-04 colour list.** `RawSettings.highlightEnabled`/`SuggestionConfig`'s own
+shape is untouched (still two separate fields, `AdaptKeyService`'s two real call sites unchanged) - only how
+`SettingsStore.load()` *derives* `highlightEnabled` changed: from a second stored boolean to whether the
+single stored colour value equals a new sentinel (`NO_HIGHLIGHT_VALUE = "none"`), added as the color list's
+own first entry/value pair (added to `c04_color_labels`/`c04_color_values` in all three locale files - German/
+Greek needed a fully-translated "no highlighting" label added directly, since those color-label arrays are
+plain per-locale literal text, unlike the `c06_threshold_labels` array's own `@string` indirection).
+
+**D-299 - the rest, mechanical.** `c08_reset_hints` (the settings-list "Reset corner symbols" row) removed as
+redundant for such a rare action - found in passing that `LetterHintsActivity`'s own in-editor Reset button
+shares the exact same `c08_reset_title`/`c08_reset_done` strings, so those two were kept (re-added after the
+first attempt broke the build removing them outright) with a trimmed label ("Reset to default", no longer
+needing to repeat "corner symbols" while already inside that exact editor) rather than removed along with the
+settings-list row - the two are genuinely different UI elements sharing strings by coincidence, not one
+action in two places. `d234_autocorrect_enabled_summary` trimmed (the "a missed or spurious space is not
+corrected either" clause dropped, per direct instruction that it was superfluous); `c03_summary` reworded
+("gleichzeitig stabilisierter Vorschläge" -> "gleichzeitig angebotener Vorschläge", the original German
+phrasing read as unparseable jargon); `c06_model_pref_title`/`c06_model_title` trimmed ("Mini-LLM-Modell" ->
+"Mini-LLM" / "Mini-LLM model" -> "Mini-LLM" - "LLM" already ends in "Model", so appending "-Modell"/" model"
+again was literally redundant). Settings screen reordered: Info & Privacy, Typing Style (moved directly under
+Info), Dictionary (moved up), Correction & Suggestions (renamed from "Capitalisation", *merged* with the
+former separate "Suggestions" category - Autocorrect first, Highlight directly under it per direct
+instruction, then the rest of both former categories unreordered relative to each other), Layout, Feedback,
+Backup (moved before Diagnostics per direct instruction), Diagnostics. Layout/Feedback's own position was not
+specified by the user - kept in their existing relative order after the merged category, flagged back as a
+judgement call rather than assumed silently. Config table (§20) updated: C-04/C-06 reworded to describe the
+merged "or off"/"or disabled" shape; the now-fully-retired C-14 row removed outright (not renumbered - no
+other spec.md text ever cited C-14 through C-19 by number, confirmed by grep, so no renumbering risk).
+
+Explicitly *not* acted on, flagged back as its own architectural question rather than decided unilaterally:
+whether C-08's whole per-key corner-symbol configurability still makes sense now that hint sets come bundled
+per language pack (D-281) - a genuinely different, larger question than "this one redundant button", left
+for a dedicated design discussion.
+
+6 new unit tests (`LlmActivationThresholdTest` +2 for `DISABLED`, `Tier3ActivationTest` +1, `SettingsStoreRoboTest`
++3 for the highlight-sentinel derivation) minus 1 retired (`SettingsMapperTest`'s own dead `tier3Enabled`
+case) = net +5. 906 unit tests (901 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §20
+config table revised. Version bumped 0.9.11 -> 0.9.12. Not yet device-confirmed - needs a real look at the
+reordered/merged settings screen, the two new "off" list entries actually suppressing highlighting/tier-3, and
+the in-editor Reset button (Settings → Layout → Edit corner symbols) still working with its trimmed label.

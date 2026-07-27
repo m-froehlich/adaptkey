@@ -37,6 +37,154 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/cat_calibration">
+
+        <!-- D-237: the only top-level entry now - style picking, the live zone overlay, and the
+             reset action all live inside CalibrationActivity itself. -->
+        <Preference
+            android:key="k01_calibration"
+            android:title="@string/k01_title"
+            android:summary="@string/k01_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_dictionary">
+
+        <Preference
+            android:key="d280_language_packs"
+            android:title="@string/d280_pref_title"
+            android:summary="@string/d280_pref_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.LanguagePacksActivity" />
+        </Preference>
+
+        <Preference
+            android:key="c05_blacklist"
+            android:title="@string/c05_title"
+            android:summary="@string/c05_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.BlacklistActivity" />
+        </Preference>
+
+        <Preference
+            android:key="d177_learned_words"
+            android:title="@string/d177_learned_words_title"
+            android:summary="@string/d177_learned_words_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.LearnedWordsActivity" />
+        </Preference>
+
+        <SeekBarPreference
+            android:key="d177_pending_blacklist_expiry_days"
+            android:title="@string/d177_expiry_title"
+            android:summary="@string/d177_expiry_summary"
+            android:defaultValue="7"
+            android:max="30"
+            app:min="1"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <Preference
+            android:key="d142_credentials"
+            android:title="@string/d142_credentials_title"
+            android:summary="@string/d142_credentials_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.CredentialsActivity" />
+        </Preference>
+
+        <SwitchPreferenceCompat
+            android:key="d224_save_credentials"
+            android:title="@string/d224_save_credentials_title"
+            android:summary="@string/d224_save_credentials_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="d191_contacts_suggestions_enabled"
+            android:title="@string/d191_contacts_suggestions_title"
+            android:summary="@string/d191_contacts_suggestions_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/cat_capitalisation">
+
+        <SwitchPreferenceCompat
+            android:key="d234_autocorrect_enabled"
+            android:title="@string/d234_autocorrect_enabled_title"
+            android:summary="@string/d234_autocorrect_enabled_summary"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="c04_highlight_color"
+            android:title="@string/c04_color_title"
+            android:entries="@array/c04_color_labels"
+            android:entryValues="@array/c04_color_values"
+            android:defaultValue="#FF43A047"
+            app:useSimpleSummaryProvider="true" />
+
+        <SeekBarPreference
+            android:key="c02_resort_delay_ms"
+            android:title="@string/c02_title"
+            android:summary="@string/c02_summary"
+            android:defaultValue="300"
+            android:max="600"
+            app:min="0"
+            app:seekBarIncrement="50"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="c03_max_suggestions"
+            android:title="@string/c03_title"
+            android:summary="@string/c03_summary"
+            android:defaultValue="8"
+            android:max="10"
+            app:min="6"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="c10_comma_line_not_sentence_start"
+            android:title="@string/c10_title"
+            android:summary="@string/c10_summary"
+            android:defaultValue="true" />
+
+        <SeekBarPreference
+            android:key="c07_shift_grace_ms"
+            android:title="@string/c07_title"
+            android:summary="@string/c07_summary"
+            android:defaultValue="300"
+            android:max="500"
+            app:min="0"
+            app:seekBarIncrement="50"
+            app:showSeekBarValue="true" />
+
+        <ListPreference
+            android:key="c06_llm_threshold"
+            android:title="@string/c06_title"
+            android:summary="@string/c06_summary"
+            android:entries="@array/c06_threshold_labels"
+            android:entryValues="@array/c06_threshold_values"
+            android:defaultValue="medium" />
+
+        <Preference
+            android:key="c06_model"
+            android:title="@string/c06_model_pref_title"
+            android:summary="@string/c06_model_pref_summary">
+            <intent
+                android:targetPackage="de.froehlichmedia.adaptkey"
+                android:targetClass="de.froehlichmedia.adaptkey.settings.Tier3ModelActivity" />
+        </Preference>
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/cat_layout">
 
         <SeekBarPreference
@@ -144,161 +292,6 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.LetterHintsActivity" />
         </Preference>
 
-        <Preference
-            android:key="c08_reset_hints"
-            android:title="@string/c08_reset_title"
-            android:summary="@string/c08_reset_summary" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/cat_suggestions">
-
-        <SwitchPreferenceCompat
-            android:key="d234_autocorrect_enabled"
-            android:title="@string/d234_autocorrect_enabled_title"
-            android:summary="@string/d234_autocorrect_enabled_summary"
-            android:defaultValue="true" />
-
-        <SeekBarPreference
-            android:key="c02_resort_delay_ms"
-            android:title="@string/c02_title"
-            android:summary="@string/c02_summary"
-            android:defaultValue="300"
-            android:max="600"
-            app:min="0"
-            app:seekBarIncrement="50"
-            app:showSeekBarValue="true" />
-
-        <SeekBarPreference
-            android:key="c03_max_suggestions"
-            android:title="@string/c03_title"
-            android:summary="@string/c03_summary"
-            android:defaultValue="8"
-            android:max="10"
-            app:min="6"
-            app:seekBarIncrement="1"
-            app:showSeekBarValue="true" />
-
-        <SwitchPreferenceCompat
-            android:key="c04_highlight_enabled"
-            android:title="@string/c04_enabled_title"
-            android:summary="@string/c04_enabled_summary"
-            android:defaultValue="true" />
-
-        <ListPreference
-            android:key="c04_highlight_color"
-            android:title="@string/c04_color_title"
-            android:entries="@array/c04_color_labels"
-            android:entryValues="@array/c04_color_values"
-            android:defaultValue="#FF43A047"
-            app:useSimpleSummaryProvider="true"
-            android:dependency="c04_highlight_enabled" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/cat_dictionary">
-
-        <Preference
-            android:key="d280_language_packs"
-            android:title="@string/d280_pref_title"
-            android:summary="@string/d280_pref_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.LanguagePacksActivity" />
-        </Preference>
-
-        <Preference
-            android:key="c05_blacklist"
-            android:title="@string/c05_title"
-            android:summary="@string/c05_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.BlacklistActivity" />
-        </Preference>
-
-        <Preference
-            android:key="d177_learned_words"
-            android:title="@string/d177_learned_words_title"
-            android:summary="@string/d177_learned_words_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.LearnedWordsActivity" />
-        </Preference>
-
-        <SeekBarPreference
-            android:key="d177_pending_blacklist_expiry_days"
-            android:title="@string/d177_expiry_title"
-            android:summary="@string/d177_expiry_summary"
-            android:defaultValue="7"
-            android:max="30"
-            app:min="1"
-            app:seekBarIncrement="1"
-            app:showSeekBarValue="true" />
-
-        <Preference
-            android:key="d142_credentials"
-            android:title="@string/d142_credentials_title"
-            android:summary="@string/d142_credentials_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.CredentialsActivity" />
-        </Preference>
-
-        <SwitchPreferenceCompat
-            android:key="d224_save_credentials"
-            android:title="@string/d224_save_credentials_title"
-            android:summary="@string/d224_save_credentials_summary"
-            android:defaultValue="true" />
-
-        <SwitchPreferenceCompat
-            android:key="d191_contacts_suggestions_enabled"
-            android:title="@string/d191_contacts_suggestions_title"
-            android:summary="@string/d191_contacts_suggestions_summary"
-            android:defaultValue="false" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/cat_capitalisation">
-
-        <SwitchPreferenceCompat
-            android:key="c10_comma_line_not_sentence_start"
-            android:title="@string/c10_title"
-            android:summary="@string/c10_summary"
-            android:defaultValue="true" />
-
-        <SeekBarPreference
-            android:key="c07_shift_grace_ms"
-            android:title="@string/c07_title"
-            android:summary="@string/c07_summary"
-            android:defaultValue="300"
-            android:max="500"
-            app:min="0"
-            app:seekBarIncrement="50"
-            app:showSeekBarValue="true" />
-
-        <ListPreference
-            android:key="c06_llm_threshold"
-            android:title="@string/c06_title"
-            android:entries="@array/c06_threshold_labels"
-            android:entryValues="@array/c06_threshold_values"
-            android:defaultValue="medium"
-            app:useSimpleSummaryProvider="true" />
-
-        <Preference
-            android:key="c06_model"
-            android:title="@string/c06_model_pref_title"
-            android:summary="@string/c06_model_pref_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.Tier3ModelActivity" />
-        </Preference>
-
-        <SwitchPreferenceCompat
-            android:key="d126_tier3_enabled"
-            android:title="@string/d126_title"
-            android:summary="@string/d126_summary"
-            android:defaultValue="true" />
-
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_feedback">
@@ -317,17 +310,15 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_calibration">
+    <PreferenceCategory android:title="@string/cat_backup">
 
-        <!-- D-237: the only top-level entry now - style picking, the live zone overlay, and the
-             reset action all live inside CalibrationActivity itself. -->
         <Preference
-            android:key="k01_calibration"
-            android:title="@string/k01_title"
-            android:summary="@string/k01_summary">
+            android:key="d278_backup"
+            android:title="@string/d278_pref_title"
+            android:summary="@string/d278_pref_summary">
             <intent
                 android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
+                android:targetClass="de.froehlichmedia.adaptkey.settings.BackupActivity" />
         </Preference>
 
     </PreferenceCategory>
@@ -347,19 +338,6 @@
             <intent
                 android:targetPackage="de.froehlichmedia.adaptkey"
                 android:targetClass="de.froehlichmedia.adaptkey.settings.DiagnosticLogActivity" />
-        </Preference>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/cat_backup">
-
-        <Preference
-            android:key="d278_backup"
-            android:title="@string/d278_pref_title"
-            android:summary="@string/d278_pref_summary">
-            <intent
-                android:targetPackage="de.froehlichmedia.adaptkey"
-                android:targetClass="de.froehlichmedia.adaptkey.settings.BackupActivity" />
         </Preference>
 
     </PreferenceCategory>

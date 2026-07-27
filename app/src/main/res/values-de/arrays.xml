@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- C-04 highlight colour preset labels (German). -->
+    <!-- C-04 highlight colour preset labels (German). D-298: "Kein Highlighting" first, matching the base
+         array's own new "no highlighting" entry and stored value order. -->
     <string-array name="c04_color_labels">
+        <item>Kein Highlighting</item>
         <item>Grün</item>
         <item>Blau</item>
         <item>Orange</item>

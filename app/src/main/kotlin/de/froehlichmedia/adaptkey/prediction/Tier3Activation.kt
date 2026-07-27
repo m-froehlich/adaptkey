@@ -10,6 +10,9 @@ package de.froehlichmedia.adaptkey.prediction
  * Tier 3 is consulted only when a backend is actually available and the tier-1 confidence is strictly
  * below the configured threshold. Keeping this a tiny pure function makes the "when does the LLM wake
  * up" decision independently testable and impossible to get subtly wrong in the Android glue.
+ *
+ * D-297: [LlmActivationThreshold.DISABLED] needs no special case here - its own threshold sits outside
+ * the valid confidence range, so the ordinary comparison below already never activates for it.
  */
 object Tier3Activation {
     

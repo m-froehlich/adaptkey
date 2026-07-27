@@ -88,6 +88,29 @@ non-trivial changes).
 
 ## Current State
 
+- **§219 (v0.9.12): D-297/D-298/D-299 - settings screen cleanup batch: two dead/redundant toggles folded**
+  **into existing lists, categories reordered/merged/renamed, several strings trimmed.** D-297: "Mini KI
+  aktivieren" removed - traced first and confirmed genuinely dead code (`AdaptSettings.tier3Enabled` was
+  persisted but `Tier3Activation.shouldActivate()` never actually read it), folded into a new
+  `LlmActivationThreshold.DISABLED` entry on the C-06 threshold list (`confidenceThreshold = -1.0`, outside
+  the valid range, so the existing comparison already never fires - no new gating logic needed) - this is a
+  genuine fix, not just a rename, since "disable the mini-LLM" now actually does something for the first
+  time. D-298: the separate highlight on/off toggle removed, folded into a new "No highlighting" first entry
+  on the C-04 colour list (`SettingsStore` derives `highlightEnabled` from a `"none"` sentinel colour value
+  instead of a second stored boolean; `SuggestionConfig`'s own two-field shape untouched). D-299: settings
+  reordered (Info & Privacy, Typing Style, Dictionary, "Correction & Suggestions" - renamed from
+  "Capitalisation" and merged with the former separate "Suggestions" category, Autocorrect then Highlight
+  first per direct instruction, Layout, Feedback, Backup moved before Diagnostics, Diagnostics), the
+  settings-list "Reset corner symbols" row removed as redundant (its own in-editor counterpart in
+  `LetterHintsActivity` kept, sharing strings by coincidence, not the same UI element), several summaries
+  trimmed (Autocorrect, max-suggestions count, redundant "LLM-Modell" -> "LLM"), config table (§20) revised
+  and the now-fully-retired C-14 row removed (not renumbered - no other spec text ever cited C-14 through
+  C-19 by number). Explicitly *not* acted on: whether C-08's whole per-key corner-symbol configurability
+  still makes sense now that hints come per language pack - flagged back as its own architectural question,
+  not decided unilaterally. Net +5 unit tests (6 new - 1 retired dead `tier3Enabled` case). 906 unit tests
+  (901 + 5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §20 revised. Not yet
+  device-confirmed - needs a real look at the reordered/merged screen and that both new "off" entries
+  actually suppress highlighting/tier-3. See history §219.
 - **§218 (v0.9.11): D-296 - the Learned Words dialog's Copy/Save buttons (D-294) made square instead of**
   **wide, after §217's D-295 was confirmed working on device.** Root cause: still ordinary `Button(this)`
   instances, inheriting the platform Button style's own minimum width/generous padding regardless of the

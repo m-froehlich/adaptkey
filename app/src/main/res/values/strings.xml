@@ -82,9 +82,8 @@
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Keys</string>
-    <string name="cat_suggestions">Suggestions</string>
     <string name="cat_dictionary">Dictionary</string>
-    <string name="cat_capitalisation">Capitalisation</string>
+    <string name="cat_capitalisation">Correction &amp; Suggestions</string>
 
     <string name="c01_space_title">Space bar width</string>
     <string name="c01_space_summary">Narrower reduces accidental spaces instead of commas (L-02).</string>
@@ -96,14 +95,12 @@
     <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
 
     <string name="d234_autocorrect_enabled_title">Autocorrect</string>
-    <string name="d234_autocorrect_enabled_summary">Corrections, diacritic restoration, and missed-space fixes apply automatically while typing. Turn off to keep every candidate available only as a tap in the suggestion bar - words are never silently changed, but a missed or spurious space is not corrected either.</string>
+    <string name="d234_autocorrect_enabled_summary">Applies corrections automatically while typing. Off: every correction is offered as a tap instead, nothing is changed silently.</string>
+    <string name="c04_color_title">Highlight colour</string>
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>
     <string name="c03_title">Maximum suggestions</string>
-    <string name="c03_summary">Number of simultaneously stabilised suggestions (6–10).</string>
-    <string name="c04_enabled_title">Word confirmation highlight</string>
-    <string name="c04_enabled_summary">Highlights a recognised, complete word while typing (S-05).</string>
-    <string name="c04_color_title">Highlight colour</string>
+    <string name="c03_summary">Number of suggestions offered at once (6–10).</string>
 
     <string name="c09_title">Number row</string>
     <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
@@ -117,13 +114,14 @@
     <string name="d55_above_summary">Extra gap above the space/enter row, in dp, to reduce accidental Enter presses (D-55).</string>
     <string name="c08_hints_title">Show corner symbols</string>
     <string name="c08_hints_summary">Secondary long-press symbols as a corner hint (L-05). Long-press still works either way.</string>
-    <string name="c08_reset_title">Reset corner symbols</string>
-    <string name="c08_reset_summary">Resets the per-key assignment to the default mapping.</string>
-    <string name="c08_reset_done">Corner symbols reset to default.</string>
     <string name="c08_editor_title">Edit corner symbols</string>
     <string name="c08_editor_summary">Set or remove a secondary symbol per letter (L-05).</string>
     <string name="c08_editor_intro">Tap a letter to choose or remove its long-press symbol.</string>
     <string name="c08_editor_none">— no symbol —</string>
+    <!-- In-editor reset action (LetterHintsActivity) - the settings-list entry for this was removed as
+         redundant for such a rare action; this contextual in-screen button stays. -->
+    <string name="c08_reset_title">Reset to default</string>
+    <string name="c08_reset_done">Corner symbols reset to default.</string>
 
     <string name="c05_title">Edit blacklist</string>
     <string name="c05_summary">Permanently exclude words from suggestions and autocorrect (A-04).</string>
@@ -151,17 +149,16 @@
     <string name="c10_summary">After a line ending with a comma (e.g. a mail salutation), the next line is not capitalised.</string>
 
     <string name="c06_title">LLM threshold</string>
-    <string name="c06_summary">The n-gram confidence below which the mini-LLM is consulted (C-06). The LLM backend is not wired in yet.</string>
+    <string name="c06_summary">How eagerly the mini-LLM is consulted, or Off to disable it entirely even with a model installed.</string>
+    <string name="c06_threshold_disabled">Off</string>
     <string name="c06_threshold_low">Low</string>
     <string name="c06_threshold_medium">Medium</string>
     <string name="c06_threshold_high">High</string>
 
     <!-- C-06 tier-3 model management (browser download + file import). -->
-    <string name="c06_model_pref_title">Mini-LLM model (tier 3)</string>
+    <string name="c06_model_pref_title">Mini-LLM (tier 3)</string>
     <string name="c06_model_pref_summary">Download and import the optional on-device model (C-06).</string>
-    <string name="d126_title">Mini-LLM enabled</string>
-    <string name="d126_summary">When off, the mini-LLM never runs, even if a model is installed - useful to save battery/latency without deleting the model.</string>
-    <string name="c06_model_title">Mini-LLM model</string>
+    <string name="c06_model_title">Mini-LLM</string>
     <string name="c06_model_intro">The tier-3 mini-LLM (C-06) is optional. The model (~273 MB) is not bundled in the app. Download it once and then import it — afterwards the app keeps working fully offline.</string>
     <string name="c06_model_present">Model installed.</string>
     <string name="c06_model_absent">No model installed. Tier 3 is inactive; the keyboard works as usual.</string>

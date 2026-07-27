@@ -35,7 +35,6 @@ object SettingsStore {
     const val KEY_SHIFT_EXTRA = "c01_shift_extra"
     const val KEY_RESORT_DELAY = "c02_resort_delay_ms"
     const val KEY_MAX_SUGGESTIONS = "c03_max_suggestions"
-    const val KEY_HIGHLIGHT_ENABLED = "c04_highlight_enabled"
     const val KEY_HIGHLIGHT_COLOR = "c04_highlight_color"
     const val KEY_NUMBER_ROW = "c09_number_row"
     const val KEY_HINTS_ENABLED = "c08_hints_enabled"
@@ -49,7 +48,6 @@ object SettingsStore {
     const val KEY_SPACE_BELOW_NUMBER_ROW = "d55_space_below_number_row"
     const val KEY_SPACE_ABOVE_SPACE_ROW = "d55_space_above_space_row"
     const val KEY_SYMBOL_KEY = "d59_symbol_key"
-    const val KEY_TIER3_ENABLED = "d126_tier3_enabled"
     const val KEY_DIAGNOSTIC_LOG_ENABLED = "d_diag_enabled"
     const val KEY_PENDING_BLACKLIST_EXPIRY_DAYS = "d177_pending_blacklist_expiry_days"
     const val KEY_SAVE_CREDENTIALS = "d224_save_credentials"
@@ -108,6 +106,7 @@ object SettingsStore {
      */
     fun load(context: Context): AdaptSettings {
         val p = prefs(context)
+        val highlightColorRaw = p.getString(KEY_HIGHLIGHT_COLOR, null)
         val raw = RawSettings(
             spaceWeight = p.getInt(KEY_SPACE_WEIGHT, DEF_SPACE_WEIGHT) / WEIGHT_SCALE,
             commaWeight = p.getInt(KEY_COMMA_WEIGHT, DEF_COMMA_WEIGHT) / WEIGHT_SCALE,
@@ -116,8 +115,8 @@ object SettingsStore {
             shiftExtra = p.getInt(KEY_SHIFT_EXTRA, DEF_SHIFT_EXTRA) / WEIGHT_SCALE,
             maxSuggestions = p.getInt(KEY_MAX_SUGGESTIONS, DEF_MAX_SUGGESTIONS),
             reSortDelayMs = p.getInt(KEY_RESORT_DELAY, DEF_RESORT_DELAY).toLong(),
-            highlightEnabled = p.getBoolean(KEY_HIGHLIGHT_ENABLED, true),
-            highlightColor = parseColor(p.getString(KEY_HIGHLIGHT_COLOR, null)),
+            highlightEnabled = highlightColorRaw != NO_HIGHLIGHT_VALUE,
+            highlightColor = parseColor(highlightColorRaw),
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
             hintsEnabled = p.getBoolean(KEY_HINTS_ENABLED, true),
             letterHints = loadLetterHints(context),
@@ -130,7 +129,6 @@ object SettingsStore {
             extraSpaceBelowNumberRowDp = p.getInt(KEY_SPACE_BELOW_NUMBER_ROW, DEF_EXTRA_SPACING),
             extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),
             symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true),
-            tier3Enabled = p.getBoolean(KEY_TIER3_ENABLED, true),
             diagnosticLogEnabled = p.getBoolean(KEY_DIAGNOSTIC_LOG_ENABLED, false),
             pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = p.getBoolean(KEY_SAVE_CREDENTIALS, true),
@@ -209,9 +207,16 @@ object SettingsStore {
     }
     
     private fun parseColor(value: String?): Int {
-        if (value.isNullOrBlank()) {
+        if (value.isNullOrBlank() || value == NO_HIGHLIGHT_VALUE) {
             return SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR
         }
         return runCatching { Color.parseColor(value) }.getOrDefault(SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR)
     }
+    
+    /**
+     * D-298: the C-04 "no highlighting" list entry's own stored value - folds [RawSettings.highlightEnabled]
+     * into the single `c04_highlight_color` preference instead of a separate switch, since a colour picker
+     * that already has to list every real choice can list "none" as one more of them just as easily.
+     */
+    private const val NO_HIGHLIGHT_VALUE = "none"
 }

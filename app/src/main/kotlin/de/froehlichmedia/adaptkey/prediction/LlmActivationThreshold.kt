@@ -11,10 +11,18 @@ package de.froehlichmedia.adaptkey.prediction
  * setting makes the LLM more eager (it activates even for fairly confident tier-1 predictions) and a
  * lower setting more reluctant (only a near-blank tier-1 wakes it). The spec default is [MEDIUM].
  *
+ * D-297: [DISABLED] folds in the former, separate "tier-3 enabled" toggle (D-126) - that toggle was
+ * confirmed dead code before removal (`AdaptSettings.tier3Enabled` was persisted but never actually read
+ * anywhere in the activation path). [DISABLED]'s own [confidenceThreshold] is deliberately outside the
+ * valid `[0, 1]` confidence range, so [Tier3Activation.shouldActivate]'s existing `<` comparison already
+ * never fires for it - no separate "is this disabled" branch needed there at all.
+ *
  * @property confidenceThreshold the tier-1 confidence in [0, 1] below which tier 3 activates
  */
 enum class LlmActivationThreshold(val confidenceThreshold: Double) {
     
+    /** D-297: never activates - see this enum's own KDoc for why no special-casing is needed elsewhere. */
+    DISABLED(-1.0),
     LOW(0.25),
     MEDIUM(0.50),
     HIGH(0.75);
