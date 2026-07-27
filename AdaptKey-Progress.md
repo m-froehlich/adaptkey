@@ -86,19 +86,17 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
-- **`k01_calibration_offered` (the one-time K-01 calibration-offer flag) travels via the D-278 backup export**
-  **and would suppress that offer on a fresh device that imports it, even though the actual calibration data**
-  **itself never travels (`OffsetStore` uses its own, separate, not-exported preferences file).** Found while
-  building D-304's `EXPORT_SETTINGS_KEY_ORDER` - it is the one key in the default `SharedPreferences` file
-  `SettingsStore.exportableSettings()` reads that is not a `settings_preferences.xml` row at all, so it still
-  falls through to the "unlisted keys, appended alphabetically" fallback and gets exported today. Out of scope
-  for D-304 (only asked about ordering and the diagnostics toggle specifically) - revisit if ever asked to
-  make the export/import feature fully "fresh device" correct: likely fix is excluding this key from export
-  the same way `KEY_DIAGNOSTIC_LOG_ENABLED` now is, so a freshly imported-into device still gets the one-time
-  offer.
-
 ## Current State
 
+- **§225 (v0.9.18): D-305 - the §224 TODO (`k01_calibration_offered` travelling via export) actioned on**
+  **direct request, the same way as the diagnostics toggle.** `KEY_CALIBRATION_OFFERED` moved from a private
+  `SettingsActivity` constant to `SettingsStore.KEY_CALIBRATION_OFFERED`; `SettingsStore.EXPORT_EXCLUDED_KEYS`
+  (now a shared, non-private set covering both this key and `KEY_DIAGNOSTIC_LOG_ENABLED`) replaces D-304's
+  single-key exclusion, referenced identically by `exportableSettings()` (export) and
+  `BackupImporter.importSettings()` (import-side defence in depth). The two D-304 tests specific to the
+  diagnostics key were generalised to iterate the whole set instead. 899 unit tests (unchanged - the
+  generalised tests replace the diagnostics-specific ones 1:1). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. Spec §21 (Y-01) revised. Not yet device-confirmed. See history §225.
 - **§223 (v0.9.16): D-303 - fixed a serious regression: D-293's `TYPE_TEXT_FLAG_NO_SUGGESTIONS` bypass**
   **(meant only for the Learned Words casing-edit field) was silently firing in real third-party apps too,**
   **killing suggestions/autocorrect/capitalisation there entirely.** Root-caused from a real device

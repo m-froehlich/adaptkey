@@ -168,10 +168,10 @@ class SettingsActivity : AppCompatActivity() {
          */
         private fun maybeOfferCalibration() {
             val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-            if (prefs.getBoolean(KEY_CALIBRATION_OFFERED, false)) {
+            if (prefs.getBoolean(SettingsStore.KEY_CALIBRATION_OFFERED, false)) {
                 return
             }
-            prefs.edit().putBoolean(KEY_CALIBRATION_OFFERED, true).apply()
+            prefs.edit().putBoolean(SettingsStore.KEY_CALIBRATION_OFFERED, true).apply()
             AlertDialog.Builder(requireContext())
                 .setTitle(R.string.k01_offer_title)
                 .setMessage(R.string.k01_offer_message)
@@ -284,10 +284,5 @@ class SettingsActivity : AppCompatActivity() {
             return if (typedValue.resourceId != 0) ContextCompat.getColor(requireContext(), typedValue.resourceId) else typedValue.data
         }
         
-        companion object {
-            
-            // Default-prefs flag marking that the one-time K-01 calibration offer has been shown.
-            private const val KEY_CALIBRATION_OFFERED = "k01_calibration_offered"
-        }
     }
 }

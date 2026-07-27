@@ -52,6 +52,14 @@ object SettingsStore {
     const val KEY_CONTACTS_SUGGESTIONS_ENABLED = "d191_contacts_suggestions_enabled"
     const val KEY_AUTOCORRECT_ENABLED = "d234_autocorrect_enabled"
     
+    /**
+     * D-304: the one-time K-01 calibration-offer flag ([SettingsActivity.SettingsFragment.maybeOfferCalibration]) -
+     * not a `settings_preferences.xml` row at all, but still stored in this same default preferences file.
+     * Moved here (from a private constant on that fragment) so [exportableSettings] can exclude it by name
+     * instead of it silently falling through that function's own "any other stored key" fallback.
+     */
+    const val KEY_CALIBRATION_OFFERED = "k01_calibration_offered"
+    
     // C-01 weights are stored as hundredths of the float weight (e.g. 3.20 -> 320) so they fit a SeekBar.
     const val WEIGHT_SCALE = 100f
     
@@ -199,8 +207,8 @@ object SettingsStore {
     /**
      * D-278/D-304: the settings screen's own current category/row order (`res/xml/settings_preferences.xml`),
      * used by [exportableSettings] so an exported backup file's settings section reads in the same order the
-     * user actually sees on screen, not [SharedPreferences.getAll]'s own arbitrary hash order.
-     * [KEY_DIAGNOSTIC_LOG_ENABLED] is deliberately absent - see [exportableSettings]'s own KDoc for why.
+     * user actually sees on screen, not [SharedPreferences.getAll]'s own arbitrary hash order. Every key in
+     * [EXPORT_EXCLUDED_KEYS] is deliberately absent - see that set's own KDoc for why.
      */
     private val EXPORT_SETTINGS_KEY_ORDER: List<String> = listOf(
         KEY_PENDING_BLACKLIST_EXPIRY_DAYS,
@@ -228,25 +236,34 @@ object SettingsStore {
     )
     
     /**
+     * D-304: stored keys in this default preferences file that must never leave this device via export -
+     * either a per-device debugging aid ([KEY_DIAGNOSTIC_LOG_ENABLED]) or internal one-time-offer bookkeeping
+     * ([KEY_CALIBRATION_OFFERED], whose own underlying data - [de.froehlichmedia.adaptkey.touch.OffsetStore] -
+     * lives in a wholly separate, never-exported preferences file anyway; importing this flag alone would
+     * only ever suppress the one-time K-01 offer on a device that has none of the calibration data behind it).
+     *
+     * Not private: [de.froehlichmedia.adaptkey.backup.BackupImporter] also excludes these, for defence in
+     * depth against a pre-D-304 export file or a hand-edited one that still carries either key.
+     */
+    val EXPORT_EXCLUDED_KEYS = setOf(KEY_DIAGNOSTIC_LOG_ENABLED, KEY_CALIBRATION_OFFERED)
+    
+    /**
      * D-278/D-304: every currently-stored preference value meant for the export/import backup (§21), in
      * [EXPORT_SETTINGS_KEY_ORDER]'s own display order - [de.froehlichmedia.adaptkey.backup.BackupExporter]'s
      * source for the bundle's settings section, replacing a raw [SharedPreferences.getAll] dump (whose
      * iteration order is an implementation-detail hash order, not the settings screen's own order, and would
-     * carry [KEY_DIAGNOSTIC_LOG_ENABLED] along with everything else).
+     * carry every one of [EXPORT_EXCLUDED_KEYS] along with everything else).
      *
-     * [KEY_DIAGNOSTIC_LOG_ENABLED] is always excluded: whether this *device* records a diagnostic log is a
-     * per-device debugging aid, not a preference the user is choosing on the exporting device's behalf for
-     * whichever device the backup is later imported onto.
-     *
-     * Any stored key this build's [EXPORT_SETTINGS_KEY_ORDER] does not (yet) list - a future preference this
-     * list has not been updated for, or a stray leftover from a removed one - is still included, appended
-     * afterwards in alphabetical order, so a gap in that list can never silently drop data from an export.
+     * Any stored key this build's [EXPORT_SETTINGS_KEY_ORDER] does not (yet) list, and that is not one of
+     * [EXPORT_EXCLUDED_KEYS] either - a future preference this list has not been updated for, or a stray
+     * leftover from a removed one - is still included, appended afterwards in alphabetical order, so a gap in
+     * that list can never silently drop data from an export.
      *
      * @param context any valid context
      * @return the exportable settings, key-value pairs in display order
      */
     fun exportableSettings(context: Context): Map<String, Any> {
-        val all = (prefs(context).all.filterValues { it != null }.mapValues { it.value as Any }) - KEY_DIAGNOSTIC_LOG_ENABLED
+        val all = (prefs(context).all.filterValues { it != null }.mapValues { it.value as Any }) - EXPORT_EXCLUDED_KEYS
         val result = LinkedHashMap<String, Any>()
         EXPORT_SETTINGS_KEY_ORDER.forEach { key -> all[key]?.let { result[key] = it } }
         (all.keys - result.keys).sorted().forEach { key -> result[key] = all.getValue(key) }

@@ -978,9 +978,12 @@ outright, with nothing applied, rather than partially imported.
 
 D-304: the exported configurable-parameter section is written in the settings screen's own current display
 order (§20), not an arbitrary storage-order dump, so an exported file reads the way the screen itself does.
-The diagnostics-logging toggle (§20) is never included in an export and never applied on import even if
-present in an older or hand-edited file - whether a given device records a diagnostic log is that device's
-own debugging aid, not a preference a backup should carry to a second device.
+Two internal flags are never included in an export and never applied on import even if present in an older
+or hand-edited file: the diagnostics-logging toggle (§20) - whether a given device records a diagnostic log
+is that device's own debugging aid, not a preference a backup should carry to a second device - and the
+one-time K-01 calibration-offer flag, whose own underlying calibration data never travels with a backup
+either (it lives in its own, separate, never-exported preferences file), so carrying only the "already
+offered" flag would silently suppress that one-time offer on a device that has no calibration data behind it.
 
 Stored and transmitted as plain, unencrypted JSON, by explicit user decision: a saved username/email alone is
 not considered sensitive enough to warrant it, and password values are never stored by this app in the first

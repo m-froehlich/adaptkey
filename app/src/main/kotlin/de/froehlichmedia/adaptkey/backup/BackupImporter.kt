@@ -87,10 +87,9 @@ object BackupImporter {
         val editor = SettingsStore.prefs(context).edit()
         settings.forEach { (key, value) ->
             // D-304: never applied even if present - a pre-D-304 export, or a hand-edited file, could still
-            // carry this key; whether *this* device records a diagnostic log must stay this device's own
-            // choice regardless of what an imported file says (see SettingsStore.exportableSettings's own
-            // KDoc for why it is excluded from export in the first place).
-            if (key == SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED) {
+            // carry one of these keys; see SettingsStore.EXPORT_EXCLUDED_KEYS's own KDoc for why each one is
+            // excluded from export in the first place.
+            if (key in SettingsStore.EXPORT_EXCLUDED_KEYS) {
                 return@forEach
             }
             when (value) {

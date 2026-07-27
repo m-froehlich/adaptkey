@@ -115,33 +115,41 @@ class BackupExporterImporterRoboTest {
     }
     
     @Test
-    fun exportNeverIncludesTheDiagnosticLogToggle() {
+    fun exportNeverIncludesAnyExcludedKey() {
         val context = RuntimeEnvironment.getApplication()
-        SettingsStore.prefs(context).edit().putBoolean(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED, true).apply()
+        val prefs = SettingsStore.prefs(context).edit()
+        SettingsStore.EXPORT_EXCLUDED_KEYS.forEach { key -> prefs.putBoolean(key, true) }
+        prefs.apply()
         
         val bundle = BackupExporter.export(context)
         
-        assertFalse(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED in bundle.settings)
+        SettingsStore.EXPORT_EXCLUDED_KEYS.forEach { key ->
+            assertFalse("$key must never be exported", key in bundle.settings)
+        }
     }
     
     @Test
-    fun importingABundleNeverTouchesTheTargetDevicesOwnDiagnosticLogSetting() {
+    fun importingABundleNeverTouchesTheTargetDevicesOwnValueForAnExcludedKey() {
         val context = RuntimeEnvironment.getApplication()
-        SettingsStore.prefs(context).edit().putBoolean(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED, true).apply()
+        val prefs = SettingsStore.prefs(context).edit()
+        SettingsStore.EXPORT_EXCLUDED_KEYS.forEach { key -> prefs.putBoolean(key, true) }
+        prefs.apply()
         val bundle = BackupBundle(
             formatVersion = BackupBundle.CURRENT_FORMAT_VERSION,
             appVersionName = "0.9.16",
             exportedAtEpochMillis = 0L,
-            // Simulates an old export file from before D-304 that still carried this key, or a hand-edited
-            // one - even then, import must not let it override the importing device's own value.
-            settings = mapOf(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED to false),
+            // Simulates a pre-D-304 export, or a hand-edited file, that still carries these keys - even then,
+            // import must not let either override the importing device's own value.
+            settings = SettingsStore.EXPORT_EXCLUDED_KEYS.associateWith { false as Any },
             credentials = emptyList(),
             languages = emptyMap()
         )
         
         BackupImporter.import(context, bundle)
         
-        assertTrue(SettingsStore.prefs(context).getBoolean(SettingsStore.KEY_DIAGNOSTIC_LOG_ENABLED, false))
+        SettingsStore.EXPORT_EXCLUDED_KEYS.forEach { key ->
+            assertTrue("$key must keep the importing device's own value", SettingsStore.prefs(context).getBoolean(key, false))
+        }
     }
     
     @Test

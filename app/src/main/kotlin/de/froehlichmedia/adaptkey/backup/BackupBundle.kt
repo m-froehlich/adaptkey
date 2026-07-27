@@ -27,8 +27,8 @@ import de.froehlichmedia.adaptkey.language.Language
  * @property exportedAtEpochMillis when this bundle was created ([System.currentTimeMillis] at export time)
  * @property settings every exportable preference key/value pair
  *           ([de.froehlichmedia.adaptkey.settings.SettingsStore.exportableSettings]), in the settings
- *           screen's own display order - deliberately excludes the diagnostics-logging toggle (D-304), a
- *           per-device debugging aid that should never travel with a backup
+ *           screen's own display order - deliberately excludes the diagnostics-logging toggle and the
+ *           one-time K-01 calibration-offer flag (D-304)
  * @property credentials every learned username/email entry ([de.froehlichmedia.adaptkey.credential.CredentialStore])
  * @property languages per-language personal data, keyed by the language it belongs to
  */

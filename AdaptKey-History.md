@@ -11242,3 +11242,25 @@ device's own value. 899 unit tests (896 + 3). `:app:assembleRelease`/`:app:testD
 (Y-01) revised with both points. Version bumped 0.9.16 -> 0.9.17. Not yet device-confirmed - needs a real
 export/import round-trip to confirm the file itself now reads in the expected order and never lists the
 diagnostics key.
+
+## §225 - D-305: The Flagged `k01_calibration_offered` TODO From §224 Actioned The Same Way As The Diagnostics Toggle (v0.9.18)
+
+User confirmed the §224 TODO note was worth acting on immediately: "Du hast Recht, calibration_offered darf
+nicht in den Export. Mach das gerne." Same underlying reasoning as `KEY_DIAGNOSTIC_LOG_ENABLED` - the flag's
+own data (the touch-calibration model itself, `OffsetStore`) lives in a wholly separate, never-exported
+preferences file, so carrying only the "already offered" bookkeeping flag would silently suppress the
+one-time K-01 offer on a freshly imported-into device that has none of the calibration data behind it.
+
+`KEY_CALIBRATION_OFFERED` moved from a private constant on `SettingsActivity.SettingsFragment` to a new public
+`SettingsStore.KEY_CALIBRATION_OFFERED` (mirroring every other preference key's home), so `exportableSettings()`
+can name it directly. `SettingsStore.EXPORT_EXCLUDED_KEYS` replaces the single-key `KEY_DIAGNOSTIC_LOG_ENABLED`
+literal from D-304 with a set of both excluded keys, referenced identically from `exportableSettings()` (export
+side) and `BackupImporter.importSettings()` (import-side defence in depth); made non-private specifically so
+`BackupImporter` can share it rather than duplicating the exclusion list a second time. The two D-304 tests
+that were specific to the diagnostics key were generalised to iterate `EXPORT_EXCLUDED_KEYS` instead of
+duplicating near-identical assertions per key - now automatically covers any future addition to that set too.
+
+No new unit tests (the generalised D-304 tests already exercise both keys; net test count unchanged). 899 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §21 (Y-01) revised. Progress's
+own flagged TODO from §224 removed (actioned, not just resolved-and-forgotten). Version bumped 0.9.17 -> 0.9.18.
+Not yet device-confirmed.
