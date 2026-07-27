@@ -258,10 +258,26 @@ is still found and applied. A token that does split this way is no longer case-l
 through the ordinary per-half capitalisation like any other A-05 split.
 
 ### G-06 - Double-Tap Shift for Caps Lock
-Double-tapping Shift engages Caps Lock.
+Double-tapping Shift engages Caps Lock. D-312: this takes priority over G-05's own word-end gesture even
+when the second tap of the pair would otherwise also satisfy G-05's own trigger condition (the caret sitting
+at the composing token's own end, the ordinary state right after typing any letter) - without this priority,
+a deliberate rapid double-tap right after a word's first letter could never reach Caps Lock at all, since
+G-05 would already have claimed the first of the two taps. If the first tap already applied a provisional
+G-05 first-letter toggle, the second (double-tap-confirming) tap undoes it before Caps Lock engages - a
+genuine double-tap means "Caps Lock, no side effect on the word", not "G-05 toggle, then also Caps Lock".
 
-### Addendum to G-05 - Shift State After Backspace
+### Addendum to G-05 - Shift State After Backspace, and After a Caret Tap Into Existing Text
 When an uppercase character is deleted, Shift remains active - the next keystroke will produce an uppercase character. Deleting the space immediately to the left of a just-deleted uppercase character also counts as "deleting uppercase" for this purpose, since the uppercase context ended at that word boundary. When a lowercase character is deleted, Shift behaves as usual (context-driven by the autocorrect hierarchy).
+
+D-313: tapping the caret into an already-typed word (e.g. to swap one letter mid-word, §58/D-62's reclaim)
+re-derives Shift fresh from the caret's own new position, the same way a delimiter-driven word boundary
+already does - mostly lowercase, uppercase only where the position genuinely is a line/sentence start. Before
+this, whatever Shift state happened to be active *before* the tap (e.g. auto-armed after a sentence-ending
+period) stayed exactly as it was, since nothing recomputed it purely from a caret move with no keystroke of
+its own - reported directly: editing mid-word after a sentence-start auto-capital left the next inserted
+character wrongly uppercase, and deleting a lowercase character there did not self-correct it either (deleting
+a lowercase character is, correctly, a no-op for Shift state - the bug was the stale starting value itself,
+not the deletion handling above).
 
 ---
 

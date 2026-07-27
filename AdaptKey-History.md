@@ -11484,3 +11484,39 @@ exercised it. Spec's D-310 paragraph trimmed of the now-inapplicable cleanup sen
 (922 - 3). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.23 -> 0.9.24. Not yet
 device-confirmed (no functional change to confirm beyond "the app still builds and runs" - this round was
 pure removal).
+
+## §232 - D-312/D-313: Two Shift-State Bugs - Rapid Double-Tap Losing To G-05, And A Caret Tap Into Existing Text Not Re-Deriving Shift (v0.9.25)
+
+Two related but independently-root-caused Shift-state bugs, reported together. D-313: after a sentence-start
+auto-capital armed Shift, tapping the caret mid-word into an already-typed word (to swap one letter) left
+Shift stuck exactly as it was before the tap - nothing re-derived it from the *new* caret's own local
+context, so the next character typed there was wrongly capitalised, and deleting a (correctly non-capital)
+character there did not self-correct it either, since deleting a lowercase character is itself correctly a
+Shift no-op - the bug was the stale starting value, confirmed by re-reading `reclaimWordAtCaret()` (§58's
+tap-triggered mid-word reclaim, D-62): it reset the G-05 pending-flip state on every caret tap but never
+touched the Shift-armed state itself. Fixed by calling the same `armShiftForNextWord()` a delimiter-driven
+word boundary already uses to derive Shift fresh from `sentenceStartBefore()` - correct by construction for
+"mostly lowercase, uppercase only at a genuine line/sentence start", exactly the rule described - it simply
+had never been wired into this second place a caret can land needing the same fresh derivation.
+
+D-312: reported and confirmed from a real device log - `SHIFT`, `a`->`"A"`, then two rapid `SHIFT` taps
+(~100ms apart) intended as a Caps-Lock double-tap instead each independently re-toggled G-05's own
+first-letter flip, ending indistinguishable from a single deliberate extra Shift press (the user's own
+separately-described, accepted "aB" quirk) rather than engaging Caps Lock at all. Traced to two compounding
+issues in `handleShift()`: (1) G-05's own trigger condition (`composingCursor == composing.length`) is the
+ordinary state right after typing any letter, and was checked *before* the double-tap-timing check, so it
+unconditionally claimed the first of any two rapid taps that happened to follow a letter; (2) the G-05
+branch never updated `lastShiftTime`, so even the *second* rapid tap could not correctly measure its own
+gap against the first - it was still comparing against whatever shift press happened *before* that. Fixed:
+`lastShiftTime` is now read-and-updated unconditionally at the top of every call, and the double-tap check
+now runs before G-05's own - a genuine rapid double-tap always wins and engages Caps Lock, undoing any
+provisional G-05 flip the (superseded) first tap already applied, so the outcome is "Caps Lock, no side
+effect on the word" rather than a flip-then-lock hybrid.
+
+No new unit tests - both fixes live entirely in `AdaptKeyService.kt`'s own untested Android-glue orchestration
+(calling already pure-tested logic, `WordEndShift`/`ShiftGrace`/`SentenceBoundary`, differently - neither fix
+touches that pure logic itself), the same category as every other fix in this file this session. 919 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's G-05/G-06 sections revised
+with pointers to both decisions. Version bumped 0.9.24 -> 0.9.25. Not yet device-confirmed - both need a real
+re-test of their own reported repro (mid-word tap-to-edit after a sentence-start capital; SHIFT/letter/rapid-
+double-SHIFT for Caps Lock).

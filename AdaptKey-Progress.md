@@ -98,6 +98,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§232 (v0.9.25): D-312/D-313 - two Shift-state bugs fixed, both in `AdaptKeyService.handleShift()`/**
+  **`reclaimWordAtCaret()`.** D-313: tapping the caret mid-word into already-typed text (to swap a letter)
+  left Shift stuck at whatever it was *before* the tap instead of re-deriving it from the new caret's own
+  local context - fixed by wiring the existing `armShiftForNextWord()` (already correct for a delimiter-
+  driven word boundary) into `reclaimWordAtCaret()`'s own §58/D-62 caret-tap-reclaim path too. D-312: a
+  genuine rapid double-tap Shift (intended as Caps Lock) right after a word's first letter was always
+  swallowed by G-05's own word-end-recasing gesture instead, because (a) G-05's trigger condition was
+  checked before the double-tap-timing check, and (b) G-05's own branch never updated `lastShiftTime`, so a
+  second rapid tap could never correctly measure its gap against the first - fixed by updating the timestamp
+  unconditionally and checking double-tap timing first, undoing any provisional G-05 flip the superseded
+  first tap already applied. No new unit tests (both fixes are `AdaptKeyService`'s own untested Android-glue
+  orchestration). 919 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
+  G-05/G-06 sections revised. Not yet device-confirmed - needs a real re-test of both original repros. See
+  history §232.
 - **§231 (v0.9.24): D-311 - D-310's legacy-flat-file cleanup removed, confirmed no longer needed.** User
   confirmed D-310 "hat gut geklappt" and that `LanguagePackStorage.cleanupLegacyFlatFiles()` (built
   specifically to sweep up the user's own then-existing old-layout install) has served its purpose. Removed:

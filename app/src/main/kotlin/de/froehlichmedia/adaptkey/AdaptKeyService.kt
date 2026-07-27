@@ -1329,6 +1329,18 @@ class AdaptKeyService : InputMethodService() {
      * the same D-87 reason: [reclaimSurroundingWord]'s own `deleteSurroundingText()` must not reach the app
      * as a standalone edit, or its callback can arrive after `composing` has already advanced and wipe what
      * this very call just built.
+     *
+     * D-313: also re-derives the Shift-armed state for wherever the caret actually landed, via
+     * [armShiftForNextWord] - before this, a tap into an already-typed word (e.g. to swap one letter) left
+     * whatever Shift state happened to be active from *before* the tap untouched, so a field/sentence-start
+     * auto-capital armed earlier in the field could stay stuck active deep inside an unrelated word, silently
+     * uppercasing the next character typed there. [armShiftForNextWord] already does exactly the right
+     * thing for this - re-reading [sentenceStartBefore] fresh from the real caret position - it was simply
+     * never called from this, the other place besides a delimiter-driven word boundary that a caret can end
+     * up needing a freshly-derived Shift state. Read before [reclaimSurroundingWord] runs, while the caret is
+     * still exactly where the user tapped - the reclaim below only re-marks existing text as composing, it
+     * does not move anything, so the ordering does not matter for correctness, but reads more naturally this
+     * way (derive Shift for the position first, then act on it).
      */
     private fun reclaimWordAtCaret() {
         val ic = currentInputConnection ?: return
@@ -1336,6 +1348,7 @@ class AdaptKeyService : InputMethodService() {
         try {
             captureTokenContext(ic)
             resetWordEndShift()
+            armShiftForNextWord(ic)
             // D-123 / D-269: skip the reset exactly once when this call is only the echo of a suggestion-bar
             // tap's or a D-262 auto-space's own commit, not a genuine subsequent caret move - otherwise
             // D-29's space-eating flag (or D-262's own punctuation-run continuation) never survives to see
@@ -5225,6 +5238,13 @@ class AdaptKeyService : InputMethodService() {
     private fun handleShift() {
         val view = keyboardView ?: return
         val now = SystemClock.uptimeMillis()
+        // D-312: read and updated unconditionally, right at the top, so every branch below (including G-05's
+        // own) leaves an accurate timestamp for the *next* press to measure a genuine double-tap against -
+        // previously only the Caps-Lock-release and ordinary-toggle branches updated it, so once G-05 fired
+        // even once, a following rapid double-tap could never be measured against the right previous press
+        // at all (see the D-312 branch below for the full story).
+        val sincePreviousShift = now - lastShiftTime
+        lastShiftTime = now
         // D-15 / D-121: a press while Caps Lock is on always releases it - checked first, before the G-05
         // word-end gesture below, so a Caps-Lock-off press mid-word (e.g. right after typing "MCU" with
         // Caps Lock still on, before any delimiter) is never swallowed by G-05 instead, leaving Caps Lock
@@ -5232,7 +5252,28 @@ class AdaptKeyService : InputMethodService() {
         if (view.capsLock) {
             view.capsLock = false
             view.shifted = false
-            lastShiftTime = now
+            return
+        }
+        // D-312: a genuine rapid double-tap always means Caps Lock, checked *before* G-05's own word-end
+        // gesture below - composingCursor sitting at composing's own end (G-05's own trigger condition) is
+        // the ordinary state right after typing any letter, so without this check first, a deliberate
+        // double-tap immediately after a word's first letter could never reach Caps Lock at all: the first
+        // of the two taps would already have been claimed by G-05, and (before this fix) the second tap's
+        // own timestamp was never compared against the first's, since G-05's branch never updated
+        // [lastShiftTime] to begin with. Reported directly, confirmed from a real device log: SHIFT, "a" ->
+        // "A", then two rapid SHIFT taps intended as Caps Lock instead each independently re-toggled G-05's
+        // own first-letter flip, ending indistinguishably from a single deliberate extra Shift press.
+        //
+        // If the *previous* press already applied a provisional G-05 flip, undo it first - a genuine
+        // double-tap means "Caps Lock, no side effect on the word", not "G-05 toggle, then also Caps Lock".
+        if (sincePreviousShift <= DOUBLE_TAP_SHIFT_MS) {
+            if (wordEndShiftPending) {
+                flipFirstInComposing()
+                currentInputConnection?.let { updateComposing(it) }
+                resetWordEndShift()
+            }
+            view.capsLock = true
+            view.shifted = false
             return
         }
         // G-05 / D-121: Shift at the end of a fully typed word toggles the word's first-letter case - the
@@ -5244,13 +5285,6 @@ class AdaptKeyService : InputMethodService() {
             handleWordEndShift(view)
             return
         }
-        if (now - lastShiftTime <= DOUBLE_TAP_SHIFT_MS) {
-            view.capsLock = true
-            view.shifted = false
-            lastShiftTime = now
-            return
-        }
-        lastShiftTime = now
         val elapsed = now - shiftArmTime
         if (ShiftGrace.suppressesShiftPress(shiftGuardedArm, view.shifted, settings.shiftGraceWindowMs, elapsed)) {
             return
