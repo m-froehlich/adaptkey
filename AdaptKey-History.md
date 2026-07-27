@@ -11075,3 +11075,14 @@ case) = net +5. 906 unit tests (901 + 5). `:app:assembleRelease`/`:app:testDebug
 config table revised. Version bumped 0.9.11 -> 0.9.12. Not yet device-confirmed - needs a real look at the
 reordered/merged settings screen, the two new "off" list entries actually suppressing highlighting/tier-3, and
 the in-editor Reset button (Settings → Layout → Edit corner symbols) still working with its trimmed label.
+
+## §220 - D-300: Two Further Settings Reorder Requests From §219's Own Round (v0.9.13)
+
+Two follow-up reorder requests on §219's own reorganised screen, before device confirmation of that round.
+(1) In Layout: the number-row-through-long-press-delay block (`c09_number_row` … `d32_longpress_delay_ms` -
+already contiguous in that exact order) moved to the very front of the category, ahead of the C-01 key-
+proportion sliders. (2) In Correction & Suggestions: `c06_model` ("Mini-LLM (Tier 3)") moved directly ahead
+of `c06_llm_threshold` ("LLM threshold") - both were already adjacent, just in the opposite order. Purely
+declarative reordering in `settings_preferences.xml`, no logic/string changes. 906 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (§20's own table is order-independent).
+Version bumped 0.9.12 -> 0.9.13. Not yet device-confirmed.

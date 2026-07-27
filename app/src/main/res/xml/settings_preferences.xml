@@ -166,14 +166,6 @@
             app:seekBarIncrement="50"
             app:showSeekBarValue="true" />
 
-        <ListPreference
-            android:key="c06_llm_threshold"
-            android:title="@string/c06_title"
-            android:summary="@string/c06_summary"
-            android:entries="@array/c06_threshold_labels"
-            android:entryValues="@array/c06_threshold_values"
-            android:defaultValue="medium" />
-
         <Preference
             android:key="c06_model"
             android:title="@string/c06_model_pref_title"
@@ -183,9 +175,59 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.Tier3ModelActivity" />
         </Preference>
 
+        <ListPreference
+            android:key="c06_llm_threshold"
+            android:title="@string/c06_title"
+            android:summary="@string/c06_summary"
+            android:entries="@array/c06_threshold_labels"
+            android:entryValues="@array/c06_threshold_values"
+            android:defaultValue="medium" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/cat_layout">
+
+        <SwitchPreferenceCompat
+            android:key="c09_number_row"
+            android:title="@string/c09_title"
+            android:summary="@string/c09_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="d59_symbol_key"
+            android:title="@string/d59_title"
+            android:summary="@string/d59_summary"
+            android:defaultValue="true" />
+
+        <SeekBarPreference
+            android:key="d55_space_below_number_row"
+            android:title="@string/d55_below_title"
+            android:summary="@string/d55_below_summary"
+            android:defaultValue="7"
+            android:max="25"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="d55_space_above_space_row"
+            android:title="@string/d55_above_title"
+            android:summary="@string/d55_above_summary"
+            android:defaultValue="7"
+            android:max="25"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="d32_longpress_delay_ms"
+            android:title="@string/d32_title"
+            android:summary="@string/d32_summary"
+            android:defaultValue="320"
+            android:max="600"
+            app:min="150"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
 
         <SeekBarPreference
             android:key="c01_space_weight"
@@ -233,48 +275,6 @@
             android:max="50"
             app:min="0"
             app:seekBarIncrement="1"
-            app:showSeekBarValue="true" />
-
-        <SwitchPreferenceCompat
-            android:key="c09_number_row"
-            android:title="@string/c09_title"
-            android:summary="@string/c09_summary"
-            android:defaultValue="true" />
-
-        <SwitchPreferenceCompat
-            android:key="d59_symbol_key"
-            android:title="@string/d59_title"
-            android:summary="@string/d59_summary"
-            android:defaultValue="true" />
-
-        <SeekBarPreference
-            android:key="d55_space_below_number_row"
-            android:title="@string/d55_below_title"
-            android:summary="@string/d55_below_summary"
-            android:defaultValue="7"
-            android:max="25"
-            app:min="0"
-            app:seekBarIncrement="1"
-            app:showSeekBarValue="true" />
-
-        <SeekBarPreference
-            android:key="d55_space_above_space_row"
-            android:title="@string/d55_above_title"
-            android:summary="@string/d55_above_summary"
-            android:defaultValue="7"
-            android:max="25"
-            app:min="0"
-            app:seekBarIncrement="1"
-            app:showSeekBarValue="true" />
-
-        <SeekBarPreference
-            android:key="d32_longpress_delay_ms"
-            android:title="@string/d32_title"
-            android:summary="@string/d32_summary"
-            android:defaultValue="320"
-            android:max="600"
-            app:min="150"
-            app:seekBarIncrement="10"
             app:showSeekBarValue="true" />
 
         <SwitchPreferenceCompat

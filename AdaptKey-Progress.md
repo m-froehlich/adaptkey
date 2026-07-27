@@ -88,6 +88,12 @@ non-trivial changes).
 
 ## Current State
 
+- **§220 (v0.9.13): D-300 - two further reorder requests on §219's own settings screen, before device**
+  **confirmation of that round: the number-row-through-long-press-delay block moved to the front of Layout**
+  **(ahead of the C-01 key-proportion sliders), and "Mini-LLM (Tier 3)" moved directly ahead of "LLM**
+  **threshold" in Correction & Suggestions.** Purely declarative XML reordering, no logic/string changes.
+  906 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. Not yet
+  device-confirmed. See history §220.
 - **§219 (v0.9.12): D-297/D-298/D-299 - settings screen cleanup batch: two dead/redundant toggles folded**
   **into existing lists, categories reordered/merged/renamed, several strings trimmed.** D-297: "Mini KI
   aktivieren" removed - traced first and confirmed genuinely dead code (`AdaptSettings.tier3Enabled` was
