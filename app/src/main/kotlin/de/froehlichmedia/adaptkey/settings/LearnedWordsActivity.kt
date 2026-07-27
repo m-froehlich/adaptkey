@@ -29,6 +29,7 @@ import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.WordEntry
+import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
 
 /**
@@ -87,7 +88,13 @@ class LearnedWordsActivity : AppCompatActivity() {
         }
         
         languages = DictionaryLoader.activeLanguages(this)
-        openStore(language)
+        // D-295: defaults to whichever language the keyboard itself currently/last had active, not always
+        // the first entry (English) - falls back to the first available language on the vanishingly rare
+        // chance the persisted active language's own pack was removed without AdaptKeyService having run
+        // since (it would otherwise already have self-corrected ActiveLanguageStore back to English itself,
+        // see installStores()'s own KDoc).
+        val initialLanguage = ActiveLanguageStore.load(this).takeIf { it in languages } ?: languages.first()
+        openStore(initialLanguage)
         listView = findViewById(R.id.learned_words_list)
         emptyView = findViewById(R.id.learned_words_empty)
         
@@ -100,6 +107,7 @@ class LearnedWordsActivity : AppCompatActivity() {
             android.R.layout.simple_spinner_dropdown_item,
             languages.map { languageName(it) }
         )
+        languageSpinner.setSelection(languages.indexOf(initialLanguage))
         languageSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selected = languages[position]

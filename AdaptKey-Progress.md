@@ -88,6 +88,19 @@ non-trivial changes).
 
 ## Current State
 
+- **§217 (v0.9.10): D-295 - the Learned Words and Blacklist editors' language selector now defaults to**
+  **whichever language the keyboard itself currently/last had active (G-01), not always English.** Neither
+  screen ever consulted `ActiveLanguageStore` - the spinner and its backing `language` field both silently
+  fell back to `Language.ENGLISH`'s own declared initial value / a fresh `Spinner`'s own position-0 default,
+  never anything derived from the keyboard's real state; "sehr unpraktisch" for anyone whose actually-used
+  language is an installed pack (never the first/bundled entry, D-280). Fixed identically in both Activities:
+  `ActiveLanguageStore.load(this)` resolved once in `onCreate()` (falling back to the first available language
+  on the rare chance the persisted one's own pack was since removed), opened directly (no wasted
+  English-then-reopen round trip), and reflected in the spinner via `setSelection()` called before the item
+  listener is attached, so it can never itself trigger a redundant reopen. No new unit tests (established
+  Android-glue gap). 901 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec
+  A-04/W-01 revised. Not yet device-confirmed - needs a real check on a device with a non-English language
+  actually active that both screens now open on it. See history §217.
 - **§216 (v0.9.9): D-293/D-294 - Learned Words edit dialog redesigned (Cancel/Forget as the dialog's own**
   **buttons, Copy/Save moved beside the casing field), plus a real, previously-unaddressed gap the redesign**
   **surfaced.** D-294 (asked as a question first, then built in the same round - no real blocker): emoji

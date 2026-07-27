@@ -10963,3 +10963,29 @@ dialog/button wiring are both the established Android-glue gap this file already
 tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6 preamble and W-01 revised.
 Version bumped 0.9.8 -> 0.9.9. Not yet device-confirmed - needs a real check that the redesigned dialog looks
 right, and that typing into the casing field produces no suggestion bar and no dictionary side effects at all.
+
+## §217 - D-295: Learned Words / Blacklist Language Selector Now Defaults To The Keyboard's Own Active Language (v0.9.10)
+
+Reported directly: opening either editor always started the language spinner on English - the first entry in
+`DictionaryLoader.activeLanguages()` - regardless of which language the keyboard itself was actually last
+using, "sehr unpraktisch" for a German-first user with German installed as a language pack (never the
+first/bundled entry, D-280).
+
+Root cause was simply that neither `onCreate()` ever consulted `ActiveLanguageStore` (G-01's own persisted
+"which language is the keyboard currently on" state, the same source `AdaptKeyService` itself reads/writes) -
+the spinner and its backing `language` field both silently defaulted to whatever `Language.ENGLISH` (the
+field's own declared initial value) and a fresh `ArrayAdapter`/`Spinner` naturally default to (position 0),
+never anything derived from the keyboard's real state.
+
+Fixed identically in both `LearnedWordsActivity` and `BlacklistActivity`: `ActiveLanguageStore.load(this)`
+resolved once in `onCreate()`, falling back to `languages.first()` on the vanishingly rare chance the
+persisted active language's own pack was removed without `AdaptKeyService` having run since to self-correct
+it (`installStores()` already does this the moment it next loads stores - see its own KDoc) - opened via
+`openStore()` directly (no wasted English-then-reopen round trip) and reflected in the spinner via
+`setSelection()`, called *before* `onItemSelectedListener` is attached so it can never itself trigger a
+redundant reopen/refresh.
+
+No new unit tests (established Android-glue gap, `Spinner`/`ActiveLanguageStore` wiring). 901 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-04/W-01 revised. Version bumped
+0.9.9 -> 0.9.10. Not yet device-confirmed - needs a real check that both screens now open on the language
+currently active in the keyboard, not English, on a device with a non-English language actually active.

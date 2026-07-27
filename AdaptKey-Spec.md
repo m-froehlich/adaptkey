@@ -440,7 +440,9 @@ proper noun/surname/place name sharing the same ß-vs-ss shape, whose own spelli
 Blacklisting keeps a word typeable/known (quoting genuinely old text still works) while it can never surface
 as its own suggestion again. The blacklist editor (C-05) shows only user-added entries by default - a bundled
 entry is rarely of interest and should rarely be removed at all - with an explicit toggle to reveal bundled
-entries too. Also interacts with the provisional pending-blacklist mechanism for a self-taught word
+entries too. Its own language selector opens on whichever language the keyboard itself currently/last had
+active (G-01), not always the first entry in the list - the same default the Learned Words editor (W-01) also
+uses. Also interacts with the provisional pending-blacklist mechanism for a self-taught word
 (G-04/W-01). The exclusion is lasting across every learning pipeline, not merely suggestions/autocorrect: a
 blacklisted word is never counted toward W-02's promotion threshold and never force-learned (D-13) either, so
 simply retyping it enough times cannot silently promote it straight back into the learned dictionary.
@@ -778,7 +780,8 @@ be corrected in place (e.g. fixing a preferred all-caps acronym spelling that wa
 casing) - deliberately restricted to a casing-only edit: the save action stays disabled unless the edited text
 is case-insensitively identical to the original entry, so this can never be used to substitute an entirely
 different word under the original's own frequency/history. A genuinely different word still has to be typed
-and learned normally.
+and learned normally. The screen's own language selector opens on whichever language the keyboard itself
+currently/last had active (G-01), not always the first entry in the list.
 
 ### W-02 - Variable Learn-Promotion Threshold
 A word is ordinarily promoted from "pending" to permanently learned after 2 uncorrected occurrences. A token
