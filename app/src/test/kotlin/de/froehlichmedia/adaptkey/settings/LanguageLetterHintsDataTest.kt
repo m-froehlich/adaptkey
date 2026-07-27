@@ -23,14 +23,14 @@ class LanguageLetterHintsDataTest {
     
     @Test
     fun `hints_en matches the default German set minus the umlauts and ss`() {
-        val parsed = LetterHints.parse(read("src/main/assets/hints_en.tsv", "app/src/main/assets/hints_en.tsv"))
+        val parsed = LetterHints.parse(read("src/main/assets/en/hints.tsv", "app/src/main/assets/en/hints.tsv"))
         val expected = KeyboardLayout.DEFAULT_LETTER_HINTS - setOf('a', 'o', 'u', 's')
         assertEquals(expected, parsed)
     }
     
     @Test
     fun `hints_de matches the compiled-in default German set exactly`() {
-        val parsed = LetterHints.parse(read("../dictionaries/de/hints_de.tsv", "dictionaries/de/hints_de.tsv"))
+        val parsed = LetterHints.parse(read("../dictionaries/de/hints.tsv", "dictionaries/de/hints.tsv"))
         assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, parsed)
     }
 }

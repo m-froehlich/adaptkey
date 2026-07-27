@@ -73,11 +73,13 @@ If yours is already there:
 
 ## 3. Building the dictionary (and your own AltGr hint set)
 
-Up to four plain text files, UTF-8, one language:
+Up to four plain text files, UTF-8, one language - D-310: every file here uses a fixed, un-suffixed name
+(`dict.tsv`, not `dict_<code>.tsv`), since each archive/folder is already scoped to exactly one language by
+its own location, not by its filenames:
 
-- **`dict_<code>.tsv`** (unigrams, required) - one word per line: `word<TAB>frequency<TAB>pos,tags,here`
+- **`dict.tsv`** (unigrams, required) - one word per line: `word<TAB>frequency<TAB>pos,tags,here`
   - `frequency` is a plain integer (relative rank; real corpus counts work best - see the existing
-    `dictionaries/de/dict_de.tsv`/`dictionaries/el/dict_el.tsv` for real examples).
+    `dictionaries/de/dict.tsv`/`dictionaries/el/dict.tsv` for real examples).
   - The POS column is optional (a line with just `word<TAB>frequency` is valid) and, when present, a
     comma-separated subset of `de.froehlichmedia.adaptkey.dictionary.PartOfSpeech`: `NOUN`, `VERB`,
     `ADJECTIVE`, `PREPOSITION`, `PROPER_NOUN`, `OTHER`. An unrecognised tag is silently dropped, not an
@@ -91,12 +93,12 @@ Up to four plain text files, UTF-8, one language:
     given-name fragment with no tag at all) defeat the split gate on a real device (see
     `AdaptKey-History.md` §D-306). Prefer `OTHER` over leaving the column empty for anything that is not
     itself a noun.
-- **`bigram_<code>.tsv`** (optional, but strongly recommended - it drives S-07 next-word prediction and
+- **`bigram.tsv`** (optional, but strongly recommended - it drives S-07 next-word prediction and
   A-05's split-scoring signal): `previousWord<TAB>word<TAB>count`. See `DictionaryAssetParser.parseBigrams`.
-- **`hints_<code>.tsv`** (optional, D-281 - the AltGr/long-press secondary symbol on each letter key, L-05):
+- **`hints.tsv`** (optional, D-281 - the AltGr/long-press secondary symbol on each letter key, L-05):
   a single line in `key=symbol;key=symbol;...` form, e.g. `a=ä;e=€;s=ß` - exactly
   `de.froehlichmedia.adaptkey.settings.LetterHints.encode()`'s own format (that same class's `parse()` reads
-  it back; see `dictionaries/de/hints_de.tsv` for the real German set, or `app/src/main/assets/hints_en.tsv`
+  it back; see `dictionaries/de/hints.tsv` for the real German set, or `app/src/main/assets/en/hints.tsv`
   for English's). **Do not just reuse another language's file** - German's own set (`ä`/`ö`/`ü`/`ß` on
   `a`/`o`/`u`/`s`, plus `@`/`€`/`#`/`-`/`+`/`°`/`×`/`÷`/`/`/`*`/`ƒ`/`π` on `q`/`e`/`h`/`m`/`n`/`d`/`x`/`c`/`v`/
   `b`/`f`/`p`) is specifically tuned for German and is very unlikely to be what your language's users expect;
@@ -112,35 +114,33 @@ Up to four plain text files, UTF-8, one language:
   width and the key's actual screen position, not on which key it happens to be - it works the same whether
   the alternatives came from this file or from hand-written Kotlin.
 - **`version.txt`** (optional but strongly recommended, D-308): a single plain integer, e.g. `1` - this
-  pack's own version, bumped by *you* every time you publish a revised `dict_<code>.tsv`/`bigram_<code>.tsv`/
-  `hints_<code>.tsv` under the same hosted URL. Deliberately **not** `version_<code>.txt` - unlike the other
-  three files, it is never written to the device's own shared per-language-pack storage (it is read once at
-  import time and immediately discarded), so there is nothing for it to collide with and no need for the
-  `<code>` suffix those three genuinely require. `LanguagePacksActivity`'s Download/Import
-  buttons stay available at any time (even for an already-installed language) so a user can always manually
-  re-check; re-importing only actually applies the freshly downloaded archive when *its own* version is
-  strictly newer than what is already installed, otherwise nothing changes and the user is told it is
-  already current. Start at `1` for your language's first release and increment by 1 every time you publish
-  a real content change. **A missing version file is not neutral - it actively blocks future updates from
-  ever being picked up by re-import**: an archive with no version file is always treated as version `1`
-  (same as a fresh install with nothing recorded yet), so once a language is installed, every later
-  re-import of a version-less archive compares `1 <= 1` and is always skipped as "already current", no
-  matter how different the actual content is - the only way such an update then reaches an existing install
-  is the user fully removing and reinstalling the language. If you intend to ever revise your pack after its
-  first release, include this file from the start.
+  pack's own version, bumped by *you* every time you publish a revised `dict.tsv`/`bigram.tsv`/`hints.tsv`
+  under the same hosted URL. `LanguagePacksActivity`'s Download/Import buttons stay available at any time
+  (even for an already-installed language) so a user can always manually re-check; re-importing only
+  actually applies the freshly downloaded archive when *its own* version is strictly newer than what is
+  already installed, otherwise nothing changes and the user is told it is already current. Start at `1` for
+  your language's first release and increment by 1 every time you publish a real content change. **A
+  missing version file is not neutral - it actively blocks future updates from ever being picked up by
+  re-import**: an archive with no version file is always treated as version `1` (same as a fresh install
+  with nothing recorded yet), so once a language is installed, every later re-import of a version-less
+  archive compares `1 <= 1` and is always skipped as "already current", no matter how different the actual
+  content is - the only way such an update then reaches an existing install is the user fully removing and
+  reinstalling the language. If you intend to ever revise your pack after its first release, include this
+  file from the start.
 
 Put your working files under a new `dictionaries/<code>/` folder at the repo root (mirroring
-`dictionaries/de/`, `dictionaries/el/`) so they stay in version control even though they never enter the
-APK.
+`dictionaries/de/`, `dictionaries/el/` - both already using these exact fixed names) so they stay in version
+control even though they never enter the APK; the same `<code>` folder is what makes fixed filenames
+unambiguous both here and inside your `.zip` below.
 
 ## 4. Packaging and hosting the language pack
 
 `de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your files at
-its root - not inside a folder - named exactly `dict_<code>.tsv`, and optionally `bigram_<code>.tsv`/
-`hints_<code>.tsv`/`version.txt` (that last one deliberately without a `<code>` suffix - see its own bullet
-above for why). Build one like the existing `language-packs/adaptkey-lang-de.zip`/
-`adaptkey-lang-el.zip` (a one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip
-tool - just make sure there is no directory prefix inside the archive).
+its root - not inside a folder - named exactly `dict.tsv`, and optionally `bigram.tsv`/`hints.tsv`/
+`version.txt`. Build one like the existing `language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip` (a
+one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip tool - just make sure
+there is no directory prefix inside the archive itself; `LanguagePackInstaller.write()` is what creates the
+`<code>/` folder on the receiving device, not something your own archive needs to contain).
 
 Host the resulting `.zip` somewhere stable and public - a GitHub Release asset on this repository is the
 recommended place (versioned, immutable once published); a raw file URL on the repo's default branch also

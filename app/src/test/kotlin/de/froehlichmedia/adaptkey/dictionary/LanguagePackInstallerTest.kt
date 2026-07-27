@@ -18,7 +18,11 @@ import java.io.IOException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-/** Unit tests for the D-280 language-pack installer. */
+/**
+ * Unit tests for the D-280 language-pack installer. D-310: every archive entry is a fixed name
+ * (`dict.tsv`/`bigram.tsv`/`hints.tsv`/`version.txt`, no `<code>` suffix), and [LanguagePackInstaller.write]
+ * extracts into a per-language subfolder (`<dir>/<code>/`) rather than directly into [dir].
+ */
 class LanguagePackInstallerTest {
     
     private fun zipOf(vararg entries: Pair<String, String>): ByteArrayInputStream {
@@ -34,96 +38,102 @@ class LanguagePackInstallerTest {
     }
     
     @Test
-    fun `install writes both files from a well-formed archive`(@TempDir dir: File) {
-        val archive = zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "bonjour\tle monde\t5\n")
+    fun `install writes both files from a well-formed archive into the language's own subfolder`(@TempDir dir: File) {
+        val archive = zipOf("dict.tsv" to "bonjour\t100\n", "bigram.tsv" to "bonjour\tle monde\t5\n")
         
         LanguagePackInstaller.install(archive, dir, Language.FRENCH)
         
-        assertEquals("bonjour\t100\n", File(dir, "dict_fr.tsv").readText())
-        assertEquals("bonjour\tle monde\t5\n", File(dir, "bigram_fr.tsv").readText())
+        assertEquals("bonjour\t100\n", File(dir, "fr/dict.tsv").readText())
+        assertEquals("bonjour\tle monde\t5\n", File(dir, "fr/bigram.tsv").readText())
     }
     
     @Test
     fun `install accepts a words-only archive, bigrams and hints stay absent`(@TempDir dir: File) {
-        val archive = zipOf("dict_fr.tsv" to "bonjour\t100\n")
+        val archive = zipOf("dict.tsv" to "bonjour\t100\n")
         
         LanguagePackInstaller.install(archive, dir, Language.FRENCH)
         
-        assertTrue(File(dir, "dict_fr.tsv").isFile)
-        assertFalse(File(dir, "bigram_fr.tsv").exists())
-        assertFalse(File(dir, "hints_fr.tsv").exists())
+        assertTrue(File(dir, "fr/dict.tsv").isFile)
+        assertFalse(File(dir, "fr/bigram.tsv").exists())
+        assertFalse(File(dir, "fr/hints.tsv").exists())
     }
     
     @Test
     fun `install writes an optional hints file when the archive includes one`(@TempDir dir: File) {
-        val archive = zipOf("dict_de.tsv" to "der\t100\n", "hints_de.tsv" to "a=ä;s=ß")
+        val archive = zipOf("dict.tsv" to "der\t100\n", "hints.tsv" to "a=ä;s=ß")
         
         LanguagePackInstaller.install(archive, dir, Language.GERMAN)
         
-        assertEquals("a=ä;s=ß", File(dir, "hints_de.tsv").readText())
+        assertEquals("a=ä;s=ß", File(dir, "de/hints.tsv").readText())
     }
     
     @Test
     fun `install rejects an archive missing the words entry`(@TempDir dir: File) {
-        val archive = zipOf("bigram_fr.tsv" to "bonjour\tle monde\t5\n")
+        val archive = zipOf("bigram.tsv" to "bonjour\tle monde\t5\n")
         
         assertThrows(IOException::class.java) { LanguagePackInstaller.install(archive, dir, Language.FRENCH) }
     }
     
     @Test
-    fun `install ignores unrelated entries and entries for a different language`(@TempDir dir: File) {
-        val archive = zipOf(
-            "dict_fr.tsv" to "bonjour\t100\n",
-            "dict_es.tsv" to "hola\t100\n",
-            "README.md" to "not a dictionary"
-        )
+    fun `install ignores unrelated entries`(@TempDir dir: File) {
+        val archive = zipOf("dict.tsv" to "bonjour\t100\n", "README.md" to "not a dictionary")
         
         LanguagePackInstaller.install(archive, dir, Language.FRENCH)
         
-        assertTrue(File(dir, "dict_fr.tsv").isFile)
-        assertFalse(File(dir, "dict_es.tsv").exists())
+        assertTrue(File(dir, "fr/dict.tsv").isFile)
         assertFalse(File(dir, "README.md").exists())
+        assertFalse(File(dir, "fr/README.md").exists())
     }
     
     @Test
-    fun `install creates the directory when absent`(@TempDir parent: File) {
+    fun `install keeps two languages' packs fully separate under the same parent directory`(@TempDir dir: File) {
+        LanguagePackInstaller.install(zipOf("dict.tsv" to "bonjour\t100\n"), dir, Language.FRENCH)
+        LanguagePackInstaller.install(zipOf("dict.tsv" to "hola\t100\n"), dir, Language.SPANISH)
+        
+        assertEquals("bonjour\t100\n", File(dir, "fr/dict.tsv").readText())
+        assertEquals("hola\t100\n", File(dir, "es/dict.tsv").readText())
+    }
+    
+    @Test
+    fun `install creates the directory tree when absent`(@TempDir parent: File) {
         val dir = File(parent, "language_packs")
-        LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "bonjour\t100\n"), dir, Language.FRENCH)
-        assertTrue(File(dir, "dict_fr.tsv").isFile)
+        LanguagePackInstaller.install(zipOf("dict.tsv" to "bonjour\t100\n"), dir, Language.FRENCH)
+        assertTrue(File(dir, "fr/dict.tsv").isFile)
     }
     
     @Test
     fun `install replaces an existing pack`(@TempDir dir: File) {
-        LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "old\t1\n"), dir, Language.FRENCH)
-        LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "new\t2\n"), dir, Language.FRENCH)
-        assertEquals("new\t2\n", File(dir, "dict_fr.tsv").readText())
+        LanguagePackInstaller.install(zipOf("dict.tsv" to "old\t1\n"), dir, Language.FRENCH)
+        LanguagePackInstaller.install(zipOf("dict.tsv" to "new\t2\n"), dir, Language.FRENCH)
+        assertEquals("new\t2\n", File(dir, "fr/dict.tsv").readText())
     }
     
     @Test
     fun `install leaves no temporary part file behind`(@TempDir dir: File) {
         LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n", "hints_fr.tsv" to "a=à"),
+            zipOf("dict.tsv" to "bonjour\t100\n", "bigram.tsv" to "a\tb\t1\n", "hints.tsv" to "a=à"),
             dir,
             Language.FRENCH
         )
-        assertFalse(File(dir, "dict_fr.tsv.part").exists())
-        assertFalse(File(dir, "bigram_fr.tsv.part").exists())
-        assertFalse(File(dir, "hints_fr.tsv.part").exists())
+        assertFalse(File(dir, "fr/dict.tsv.part").exists())
+        assertFalse(File(dir, "fr/bigram.tsv.part").exists())
+        assertFalse(File(dir, "fr/hints.tsv.part").exists())
     }
     
     @Test
-    fun `clear removes an installed pack including hints and reports true`(@TempDir dir: File) {
+    fun `clear removes an installed pack including hints and its own subfolder, reports true`(@TempDir dir: File) {
         LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n", "hints_fr.tsv" to "a=à"),
+            zipOf("dict.tsv" to "bonjour\t100\n", "bigram.tsv" to "a\tb\t1\n", "hints.tsv" to "a=à"),
             dir,
             Language.FRENCH
         )
         
         assertTrue(LanguagePackInstaller.clear(dir, Language.FRENCH))
         
-        assertFalse(File(dir, "dict_fr.tsv").exists())
-        assertFalse(File(dir, "bigram_fr.tsv").exists())
-        assertFalse(File(dir, "hints_fr.tsv").exists())
+        assertFalse(File(dir, "fr/dict.tsv").exists())
+        assertFalse(File(dir, "fr/bigram.tsv").exists())
+        assertFalse(File(dir, "fr/hints.tsv").exists())
+        assertFalse(File(dir, "fr").exists())
     }
     
     @Test
@@ -134,7 +144,7 @@ class LanguagePackInstallerTest {
     @Test
     fun `D-308 install returns the archive's own version`(@TempDir dir: File) {
         val version = LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "3"),
+            zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "3"),
             dir,
             Language.FRENCH
         )
@@ -143,14 +153,14 @@ class LanguagePackInstallerTest {
     
     @Test
     fun `D-308 install falls back to DEFAULT_VERSION when the archive has no version file`(@TempDir dir: File) {
-        val version = LanguagePackInstaller.install(zipOf("dict_fr.tsv" to "bonjour\t100\n"), dir, Language.FRENCH)
+        val version = LanguagePackInstaller.install(zipOf("dict.tsv" to "bonjour\t100\n"), dir, Language.FRENCH)
         assertEquals(InstalledLanguagesStore.DEFAULT_VERSION, version)
     }
     
     @Test
     fun `D-308 install falls back to DEFAULT_VERSION when the version file is unparseable`(@TempDir dir: File) {
         val version = LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "not-a-number"),
+            zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "not-a-number"),
             dir,
             Language.FRENCH
         )
@@ -158,35 +168,33 @@ class LanguagePackInstallerTest {
     }
     
     @Test
-    fun `D-308 the version entry is unsuffixed - unlike dict bigram and hints, it never collides across languages`(@TempDir dir: File) {
-        // version.txt carries no <code> suffix (unlike dict_fr.tsv itself) because, unlike those three, it
-        // is never written into LanguagePackStorage's shared per-device directory - read once here and
-        // immediately discarded past that, so there is nothing for a same-named entry to collide with.
+    fun `D-310 the version entry is never written to disk, unlike dict bigram and hints`(@TempDir dir: File) {
         val version = LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "4"),
+            zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "4"),
             dir,
             Language.FRENCH
         )
         assertEquals(4, version)
         assertFalse(File(dir, "version.txt").exists())
+        assertFalse(File(dir, "fr/version.txt").exists())
     }
     
     @Test
     fun `D-308 parse reads the archive without writing anything to disk`(@TempDir dir: File) {
-        val pack = LanguagePackInstaller.parse(zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "5"), Language.FRENCH)
+        val pack = LanguagePackInstaller.parse(zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "5"), Language.FRENCH)
         
         assertEquals("bonjour\t100\n", String(pack.words, Charsets.UTF_8))
         assertEquals(5, pack.version)
-        assertFalse(File(dir, "dict_fr.tsv").exists())
+        assertFalse(File(dir, "fr/dict.tsv").exists())
     }
     
     @Test
     fun `D-308 write applies an already-parsed pack to disk`(@TempDir dir: File) {
-        val pack = LanguagePackInstaller.parse(zipOf("dict_fr.tsv" to "bonjour\t100\n", "bigram_fr.tsv" to "a\tb\t1\n"), Language.FRENCH)
+        val pack = LanguagePackInstaller.parse(zipOf("dict.tsv" to "bonjour\t100\n", "bigram.tsv" to "a\tb\t1\n"), Language.FRENCH)
         
         LanguagePackInstaller.write(dir, pack)
         
-        assertEquals("bonjour\t100\n", File(dir, "dict_fr.tsv").readText())
-        assertEquals("a\tb\t1\n", File(dir, "bigram_fr.tsv").readText())
+        assertEquals("bonjour\t100\n", File(dir, "fr/dict.tsv").readText())
+        assertEquals("a\tb\t1\n", File(dir, "fr/bigram.tsv").readText())
     }
 }

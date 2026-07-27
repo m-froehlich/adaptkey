@@ -55,6 +55,11 @@ class LanguagePacksActivity : AppCompatActivity() {
         setContentView(R.layout.activity_language_packs)
         title = getString(R.string.d280_title)
         
+        // D-310: opportunistic, harmless-if-nothing-to-do cleanup of any pre-D-310 flat pack files - this
+        // screen is the one place a stale install actually gets noticed/reinstalled, so it is the natural
+        // place to also sweep up their now-unused old-layout leftovers.
+        LanguagePackStorage.cleanupLegacyFlatFiles(this)
+        
         // D-188: same edge-to-edge inset fix as BlacklistActivity's own K-01-derived fix (§13).
         val root = findViewById<View>(R.id.language_packs_root)
         val basePadding = root.paddingTop

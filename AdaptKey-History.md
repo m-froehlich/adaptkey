@@ -11420,3 +11420,51 @@ correctly *and* never written to disk (the actual property that makes the suffix
 place), rather than just deleted outright. 915 unit tests (unchanged - a straight swap). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. Spec/Contribution-Guide revised. Version bumped 0.9.21 -> 0.9.22. Not yet
 device-confirmed.
+
+## §230 - D-310: Every Language-Pack File Now Uses A Fixed Name In Its Own Per-Language Folder, Not A `_<code>` Suffix In One Shared Directory (v0.9.23)
+
+Direct follow-up question after D-309's `version.txt` rename: if the file naming can be simplified once,
+why not generally - bundle every language's pack files into their own folder, so *every* file (not just
+`version.txt`) can use a plain, fixed name? Investigated rather than assumed: the `_<code>` suffix on
+`dict`/`bigram`/`hints` existed because [LanguagePackStorage] wrote every installed language's files into
+*one shared* flat directory, and bundled English shares `app/src/main/assets/` the same way - both are real
+collision risks a plain name alone would not survive. A per-language folder removes that risk structurally,
+making the suffix unnecessary everywhere, not just for `version.txt`.
+
+Confirmed with the user before touching the live storage layout (not the `version.txt` rename's "definitely
+no real installs" situation this time): a real language pack *is* currently installed on the user's own
+device under the old flat layout, but no migration was wanted - "it's not a problem if something gets
+destroyed, it would just need to be cleaned up" - so this ships as a clean cut, not a migration.
+
+Scope, at the user's explicit request, covers *both* halves for full consistency: the downloaded-pack side
+(`LanguagePackStorage`) *and* the bundled-English side (`app/src/main/assets/`) - previously these two
+already shared one naming convention (`dict_<code>.tsv` everywhere), and doing only one side would have left
+two different conventions instead of one, worse than not doing this at all.
+
+Bundled assets physically moved: `assets/dict_en.tsv`/`bigram_en.tsv`/`hints_en.tsv` -> `assets/en/dict.tsv`/
+`bigram.tsv`/`hints.tsv`. `LanguagePackStorage` gained `languageDir()` (`<packDir>/<code>/`) and every path
+function now resolves under it with a fixed name; `remove()` also deletes the now-empty subfolder.
+`LanguagePackInstaller.parse()`/`write()`/`clear()` read/write the same fixed entry names
+(`dict.tsv`/`bigram.tsv`/`hints.tsv`/`version.txt`) and `write()`/`clear()` operate on the per-language
+subfolder instead of `packDir` directly. `DictionaryLoader`'s bundled-asset path builders and
+`LanguageLetterHintsLoader`'s equivalent both updated to `<code>/dict.tsv` etc. Both real hosted `.zip`s
+rebuilt again with the fixed entry names; their mirrored `dictionaries/de/`/`dictionaries/el/` source files
+renamed to match (`dict.tsv`/`bigram.tsv`/`hints.tsv`, `version.txt` already unsuffixed from D-309).
+
+Cleanup (not migration) for the confirmed real existing install: new
+`LanguagePackStorage.cleanupLegacyFlatFiles()` - a best-effort, harmless-if-nothing-to-do sweep of the old
+flat `_<code>`-suffixed files, wired into `LanguagePacksActivity.onCreate()` since that is the one screen a
+stale install actually gets noticed and reinstalled from. Does not touch
+`InstalledLanguagesStore`'s own "installed" flag - a language whose files predate D-310 still shows as
+installed until the user re-imports, at which point it reseeds cleanly into the new layout.
+
+`LanguagePackInstallerTest.kt` substantially rewritten for fixed names + subfolder assertions (one new test:
+two languages' packs stay fully separate under the same parent directory). New
+`LanguagePackStorageTest.kt` (6 tests: path construction, install/read round-trip, `remove()` clears the
+subfolder too, `cleanupLegacyFlatFiles()` behaviour). `BundledDictionaryDataTest.kt`/
+`LanguageLetterHintsDataTest.kt` candidate paths updated to the moved bundled assets. 922 unit tests
+(915 + 7). `:app:assembleRelease`/`:app:testDebugUnitTest` green - confirmed directly by inspecting the built
+APK's own `assets/` entries, not just trusting the build succeeded. Spec's D-280 section and the Language
+Contribution Guide both revised. Version bumped 0.9.22 -> 0.9.23. Not yet device-confirmed - the user's own
+existing German install predates this layout and will need reinstalling regardless (expected and accepted,
+not a regression).

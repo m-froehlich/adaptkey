@@ -727,9 +727,7 @@ starting version), so it reads correctly the moment its catalog version moves pa
 migration step of its own.
 
 D-308: the *authoritative* version is not this compiled-in hint, but a `version.txt` entry inside the
-archive itself (deliberately no `<code>` suffix, unlike every other file in the archive - it is never
-written to the device's own shared per-language storage, only read once at import time, so it has nothing to
-collide with), so a language pack can be revised by its own maintainer (e.g. a community contribution)
+archive itself, so a language pack can be revised by its own maintainer (e.g. a community contribution)
 without requiring a new AdaptKey release at all. The Download/Import buttons stay available for every
 language at any time, even one that already reads as "installed" with no hint of an update - re-importing
 always re-reads the freshly downloaded archive's own version and only actually applies it (overwriting the
@@ -738,6 +736,14 @@ recorded; otherwise nothing on disk changes and the user is told it is already c
 version file at all is treated as version 1, matching a first install's own default - see the language
 contribution guide for why this makes omitting the file a real, if not fatal, mistake for a maintainer who
 intends to ever revise their pack later.
+
+D-310: every file inside a language-pack archive (`dict.tsv`/`bigram.tsv`/`hints.tsv`/`version.txt`) uses a
+fixed, un-suffixed name - a downloaded pack is extracted into its own per-language subfolder on the device
+rather than a shared flat directory, and the same fixed names are used for the bundled-English assets too
+(one naming convention regardless of whether a language ships inside the APK or is downloaded separately).
+The pre-D-310 flat, `_<code>`-suffixed layout an already-installed pack might still be sitting in is swept up
+opportunistically (not migrated - the language simply needs reinstalling) whenever the language-packs screen
+opens.
 
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any

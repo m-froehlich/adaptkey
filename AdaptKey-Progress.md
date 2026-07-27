@@ -98,6 +98,21 @@ non-trivial changes).
 
 ## Current State
 
+- **§230 (v0.9.23): D-310 - every language-pack file now uses a fixed name inside its own per-language**
+  **folder, not a `_<code>` suffix in one shared directory - covers both the downloaded-pack side**
+  **(`LanguagePackStorage`) and the bundled-English assets, at the user's explicit request for full**
+  **consistency.** Confirmed the real reason for the old suffix (a genuinely shared flat directory - both
+  `LanguagePackStorage`'s device storage and `app/src/main/assets/`) before removing it. A real language pack
+  *is* currently installed on the user's own device under the old layout; user explicitly declined a
+  migration ("nicht schlimm, wenn etwas zerstört wird... es müsste nur aufgeräumt werden") - handled via a
+  new best-effort `LanguagePackStorage.cleanupLegacyFlatFiles()`, wired into `LanguagePacksActivity.onCreate()`,
+  rather than a real migration; the language will show as installed but needs reinstalling to actually reseed
+  under the new layout. Bundled English assets physically moved (`assets/dict_en.tsv` etc ->
+  `assets/en/dict.tsv` etc); both real hosted `.zip`s rebuilt again; `dictionaries/de/`/`dictionaries/el/`
+  source files renamed to match. 7 new tests (`LanguagePackStorageTest.kt` new; `LanguagePackInstallerTest.kt`
+  substantially rewritten). 922 unit tests (915 + 7). `:app:assembleRelease`/`:app:testDebugUnitTest` green -
+  also confirmed the built APK's own `assets/` entries directly. Spec/Contribution-Guide revised. Not yet
+  device-confirmed - the user's existing German install will need reinstalling (expected). See history §230.
 - **§229 (v0.9.22): D-309 - the D-308 version-file entry renamed `version.txt`, dropping the `<code>`**
   **suffix, after the user asked why it was there at all.** Investigated and confirmed: unlike
   `dict_<code>.tsv`/`bigram_<code>.tsv`/`hints_<code>.tsv` (which genuinely need it - `LanguagePackStorage`

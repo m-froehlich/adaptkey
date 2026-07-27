@@ -11,7 +11,9 @@ import de.froehlichmedia.adaptkey.language.Language
  * Builds the per-language dictionary stores: [BUNDLED_LANGUAGES] are seeded on first run from their asset
  * bundled inside the APK itself; every other, D-280-installed language is seeded from
  * [LanguagePackStorage]'s copy on private storage instead (both are real Wikipedia-derived lexicons of the
- * same shape - `dict_<code>.tsv` unigrams + `bigram_<code>.tsv` bigrams - just from a different source).
+ * same shape - a per-language folder holding `dict.tsv` unigrams + `bigram.tsv` bigrams, D-310 - just from a
+ * different source: `app/src/main/assets/<code>/` here, [LanguagePackStorage]'s own per-device directory
+ * there).
  *
  * One [SqliteDictionaryStore] per language, keyed by [Language]; the store keeps the same schema, so
  * all ranking / capitalisation logic is reused unchanged per language. Android-only glue; the parsing
@@ -62,9 +64,12 @@ object DictionaryLoader {
      */
     fun databaseName(language: Language): String = "adaptkey_dictionary_${language.code}.db"
     
-    private fun wordsAsset(language: Language): String = "dict_${language.code}.tsv"
+    // D-310: a per-language subfolder with fixed filenames, mirroring LanguagePackStorage's own layout for
+    // an installed pack - see that object's own KDoc for why (a single shared naming/pathing convention
+    // regardless of whether a language is bundled or downloaded).
+    private fun wordsAsset(language: Language): String = "${language.code}/dict.tsv"
     
-    private fun bigramsAsset(language: Language): String = "bigram_${language.code}.tsv"
+    private fun bigramsAsset(language: Language): String = "${language.code}/bigram.tsv"
     
     /**
      * @param context any valid context
