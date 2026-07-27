@@ -88,6 +88,19 @@ non-trivial changes).
 
 ## Current State
 
+- **§223 (v0.9.16): D-303 - fixed a serious regression: D-293's `TYPE_TEXT_FLAG_NO_SUGGESTIONS` bypass**
+  **(meant only for the Learned Words casing-edit field) was silently firing in real third-party apps too,**
+  **killing suggestions/autocorrect/capitalisation there entirely.** Root-caused from a real device
+  diagnostic log: Google Keep's own note-body field sets `TYPE_TEXT_FLAG_NO_SUGGESTIONS` on itself for its
+  own unrelated reasons, and AdaptKey's D-293 bypass treated that identically to its own internal field -
+  every commit there silently took the "commit verbatim, no capitalisation/autocorrect/suggestions" path.
+  Fix: `noSuggestionsField` in `AdaptKeyService.onStartInput()` now additionally requires
+  `info.packageName == packageName` (this app's own) before the flag is honoured - the mechanism still works
+  exactly as validated for the Learned Words field, but can no longer match any third-party field regardless
+  of which flags it declares. No new unit tests (Android-glue field-classification wiring, not extractable
+  pure logic). 896 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6
+  revised. Not yet device-confirmed - the original report (Google Keep) is the priority re-test. See history
+  §223.
 - **§222 (v0.9.15): D-302 - the C-04 highlight-colour preference now previews each choice as its own text**
   **colour, both in the settings row's summary and in the picker dialog's entries.** Row summary: dropped
   `useSimpleSummaryProvider`, replaced with a `SpannableString`/`ForegroundColorSpan` summary set in

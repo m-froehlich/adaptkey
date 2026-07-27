@@ -250,11 +250,21 @@ class AdaptKeyService : InputMethodService() {
     // refreshSuggestions) - a domain/path is not natural-language prose either.
     private var urlMode = false
     
-    // D-293: whether the currently-focused field explicitly declares InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-    // - re-determined fresh per field in onStartInput, mirroring urlMode. Treated the same as a login/URL
+    // D-293/D-303: whether the currently-focused field is one of THIS APP's OWN fields that explicitly
+    // declares InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS (e.g. the Learned Words casing-edit field) -
+    // re-determined fresh per field in onStartInput, mirroring urlMode. Treated the same as a login/URL
     // field by every §6/learning/suggestion bypass in this file (verbatim commit, no learning, no
-    // suggestions) - a field that has explicitly opted out of suggestions this way (e.g. this app's own
-    // Learned Words casing-edit field) must never feed back into the dictionary either.
+    // suggestions).
+    //
+    // D-303: MUST also check the field's own package against this app's - TYPE_TEXT_FLAG_NO_SUGGESTIONS
+    // alone is not a reliable "disable AdaptKey's own smart typing" signal in the wild. A real device log
+    // caught Google Keep's own note-body field setting this exact flag on itself (almost certainly only to
+    // suppress Android's native spell-checker underline, not to opt out of IME-level autocorrect/
+    // capitalisation/suggestions) - without the package check, D-293's bypass silently degraded every such
+    // third-party field to verbatim-only commits, the reported regression: suggestions, autocorrect, and
+    // even sentence/field-start capitalisation all stopped working there. Scoping to this app's own package
+    // keeps the mechanism doing exactly what D-293 was actually built and confirmed for (the Learned Words
+    // field) without ever matching an unrelated third-party field again.
     private var noSuggestionsField = false
     
     // D-158: whether the currently-focused field is a recognised email-address field - unlike urlMode,
@@ -1163,11 +1173,13 @@ class AdaptKeyService : InputMethodService() {
         // inside switchPage()) already reads the correct value.
         urlMode = isUrlField(info)
         keyboardView?.urlMode = urlMode
-        // D-293: a field explicitly declaring TYPE_TEXT_FLAG_NO_SUGGESTIONS (the standard Android signal a
-        // text field uses to opt out of autocorrect/suggestions entirely, e.g. this app's own Learned Words
-        // casing-edit field) is treated the same as a login/URL field for every §6/learning/suggestion
-        // bypass in this file - see each call site's own "|| noSuggestionsField" for exactly where.
-        noSuggestionsField = ((info?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0
+        // D-293/D-303: one of THIS APP's OWN fields (e.g. the Learned Words casing-edit field) explicitly
+        // declaring TYPE_TEXT_FLAG_NO_SUGGESTIONS is treated the same as a login/URL field for every §6/
+        // learning/suggestion bypass in this file - see each call site's own "|| noSuggestionsField" for
+        // exactly where. D-303: the package check is load-bearing, not defensive - see [noSuggestionsField]'s
+        // own field KDoc for the real-device regression (Google Keep) this guards against.
+        noSuggestionsField = info != null && info.packageName == packageName &&
+            (info.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0
         emailMode = isEmailField(info)
         keyboardView?.emailMode = emailMode
         // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens

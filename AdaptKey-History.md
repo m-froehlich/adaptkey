@@ -11164,3 +11164,46 @@ tests (Android-view/dialog glue, same category as the rest of `SettingsActivity.
 pointer to this decision. Version bumped 0.9.14 -> 0.9.15. Not yet device-confirmed - needs a real look at
 both the settings-list row and the open dialog to confirm the colours read clearly in both light and dark
 theme.
+
+## §223 - D-303: D-293's `TYPE_TEXT_FLAG_NO_SUGGESTIONS` Bypass Was Firing In Real Third-Party Apps, Not Just The Learned Words Field It Was Built For (v0.9.16)
+
+Reported regression, right after installing v0.9.15: suggestions never appeared, autocorrect never applied,
+and auto-capitalisation (both field-start and sentence-start) stopped working - everywhere, from the very
+first keystroke of a fresh keyboard session, in an ordinary third-party app. The report came with a strong
+prior guess (a "Querschläger" from the D-293/§216 Learned Words casing-edit field's own suggestion
+suppression) but the user's own answer to a follow-up question ruled that exact theory out: the regression
+was present from a completely fresh session that had never touched the Learned Words screen at all.
+
+Root-caused from a real device diagnostic log (Settings -> Diagnose), not guessed. Extensive diffing of
+every commit since the last confirmed-good build (v0.9.6) found no bug in the obvious places (`noSuggestionsField`/
+`urlMode`/`loginFieldKind` are all freshly recomputed per field with no leak; `capsModeFor`/`armShiftForNextWord`'s
+core logic was untouched since v0.9.6; the `RawSettings`/`AdaptSettings` field removals from §221/§222 all use
+named constructor arguments, ruling out a positional-shift corruption). The log itself then supplied the
+actual answer directly: typing in Google Keep (`com.google.android.keep`), the field's own logged
+`inputType=0x2ac001` decodes to `TYPE_CLASS_TEXT | TYPE_TEXT_FLAG_CAP_SENTENCES | TYPE_TEXT_FLAG_AUTO_CORRECT
+| TYPE_TEXT_FLAG_MULTI_LINE | TYPE_TEXT_FLAG_NO_SUGGESTIONS` - Keep's own note-body field sets
+`TYPE_TEXT_FLAG_NO_SUGGESTIONS` on itself (almost certainly only to suppress Android's native spell-checker
+underline, not to opt out of IME-level smart typing), and every one of the ~15 words typed during the
+capture showed zero `finalizeAndCommit:` diagnostic lines - confirming every commit took D-293's own
+"treat like a login/URL field, commit verbatim" bypass, which fires on that flag alone regardless of which
+app declared it.
+
+D-293's own design was validated only against the one field it was built for (Learned Words); it was never
+checked against real third-party apps, and `TYPE_TEXT_FLAG_NO_SUGGESTIONS` turned out to be a far more
+commonly-set, more loosely-meant flag in the wild than assumed - other apps legitimately use it for reasons
+that do not imply "give me no smart typing at all". Fix: `noSuggestionsField`'s computation in
+`AdaptKeyService.onStartInput()` now also requires `info.packageName == packageName` (this app's own) before
+the flag is honoured at all - `info != null && info.packageName == packageName && (info.inputType and
+InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0`. This keeps the mechanism doing exactly what D-293 was built
+and actually confirmed for (the Learned Words field, still within this app's own package) while making it
+categorically impossible for a third-party field to ever match it again, regardless of which flags that field
+declares. All five `|| noSuggestionsField` call sites (`handlePunctuationDelimiter`, `finalizeAndCommit`,
+`refreshSuggestions`, `hyphenCompoundSuggestion`, `armShiftForNextWord`) are fixed by this one change, since
+they all read the same field.
+
+No new unit tests - this is `AdaptKeyService`'s own untested Android-glue orchestration (the field-focus/
+`EditorInfo` wiring), the same category as the rest of the D-293/D-142 field-classification logic; the actual
+bug was in a boolean's *scope*, not in any pure, extractable logic a unit test would exercise differently.
+896 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6 revised with a
+pointer to this decision. Version bumped 0.9.15 -> 0.9.16. Not yet device-confirmed - the original report
+(Google Keep) is the priority re-test.
