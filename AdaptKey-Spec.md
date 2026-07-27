@@ -716,6 +716,15 @@ language needs (a dictionary and hint set always; a new compiled keyboard layout
 geometry - QWERTY, QWERTZ, ... - is suitable, e.g. a language expecting AZERTY or a non-Latin alphabet - see
 L-01) and how to contribute one.
 
+D-307: since the app has no `INTERNET` permission at all, a language pack's own update state is tracked
+entirely locally - each catalog entry carries a version number, bumped by hand whenever its hosted content
+actually changes (e.g. D-306's dictionary-data cleanup), and compared against whatever version was recorded
+at the last successful install. An already-installed pack whose catalog version has since moved on shows
+"update available" instead of "installed", offering the identical download-then-import flow a fresh install
+uses - no separate "check for updates" network step, and no polling. An install predating this mechanism is
+simply assumed to be version 1 (every pack's own starting version), so it reads correctly the moment its
+catalog version moves past 1, without needing any migration step of its own.
+
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any
 other confirmed word. Because that learning signal is only generated when tier-1 didn't already know the

@@ -11320,3 +11320,35 @@ actual reported bug, verified against real data, not just inspected by eye. 3 ne
 this decision. Version bumped 0.9.18 -> 0.9.19. Not yet device-confirmed - needs both a real re-test of
 "Tippstil" and, since German is a downloaded pack, either a manual pack reinstall or the not-yet-built update
 mechanism to actually receive the fix.
+
+## §227 - D-307: Language-Pack Update Mechanism (v0.9.20)
+
+Explicitly requested follow-up to D-306: an already-installed language pack had no way to learn a newer
+version was hosted short of the user manually deleting and reinstalling it. Design discussion first (this
+project's own established practice for a new feature, not a bug fix): the app deliberately carries no
+`INTERNET` permission at all (D-135/D-280's own browser-download-plus-file-picker design) - a mechanism that
+silently polls a server for the latest version would require adding it, a real permission/privacy trade-off
+not to be decided unilaterally. Presented two options: (A) a purely local version-number comparison, no new
+permission, but only surfaces a new pack the moment the *app itself* is updated (acceptable given this
+project's own workflow already bumps the app version on essentially every round); (B) an active "check for
+updates" fetch against a small hosted manifest, needing real `INTERNET` permission. User chose (A).
+
+`LanguagePackCatalog.Entry` gained a `version: Int` (German bumped to 2 for D-306's cleanup; Greek stays at
+1, untouched). `InstalledLanguagesStore` gained per-language version tracking (`installedVersion()`, `add()`
+now takes an optional `version` parameter defaulting to a new `DEFAULT_VERSION = 1` constant - deliberately
+1, not 0 or "unknown": every pack's own real starting version, so an install predating this mechanism reads
+as version 1 and correctly shows "update available" the instant a language's catalog version moves past 1,
+with no explicit migration step needed). `LanguagePacksActivity`'s row now has three states instead of two -
+not installed / installed and current / installed with an update available - the update state reuses the
+*exact same* Download+Import buttons and flow a fresh install already uses (re-importing always fully
+overwrites the previous pack file, so nothing update-specific was needed in `LanguagePackInstaller` itself).
+`importPack()` now threads the whole `LanguagePackCatalog.Entry` through (not just the `Language`) so the
+version being installed is known at the point `InstalledLanguagesStore.add()` is called.
+
+New `d280_status_update_available` string (all three locales). New tests:
+`InstalledLanguagesStoreTest.kt` (Robolectric, 6 tests: default/explicit/overwritten version, remove clears
+it, per-language independence) and one more in `LanguagePackCatalogTest.kt` (every entry has a positive
+version). 909 unit tests (902 + 7). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280
+section revised with the D-307 mechanism. Version bumped 0.9.19 -> 0.9.20. Not yet device-confirmed - needs a
+real look at the language-packs screen to confirm German now shows "update available" (this device's own
+prior install, if any, predates the mechanism and should read as version 1 against the catalog's version 2).

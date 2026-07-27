@@ -167,6 +167,7 @@
     <string name="d280_title">Sprachpakete</string>
     <string name="d280_intro">Englisch ist immer verfügbar. Jede weitere Sprache ist ein optionaler Download (ihr Wörterbuch liegt nicht in der App, damit sie klein bleibt) - einmalig im Browser herunterladen, dann die Datei importieren. Danach funktioniert es vollständig offline, wie alles andere hier auch.</string>
     <string name="d280_status_installed">Installiert.</string>
+    <string name="d280_status_update_available">Installiert - Update verfügbar.</string>
     <string name="d280_status_not_installed">Nicht installiert.</string>
     <string name="d280_download">1. Herunterladen (im Browser)</string>
     <string name="d280_import">2. Heruntergeladene Datei importieren</string>

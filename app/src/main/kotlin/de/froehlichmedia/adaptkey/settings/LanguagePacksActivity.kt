@@ -40,13 +40,13 @@ import de.froehlichmedia.adaptkey.language.Language
 class LanguagePacksActivity : AppCompatActivity() {
     
     private lateinit var container: LinearLayout
-    private var pendingImportLanguage: Language? = null
+    private var pendingImportEntry: LanguagePackCatalog.Entry? = null
     private var busy = false
     
     private val openDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        val language = pendingImportLanguage
-        if (uri != null && language != null) {
-            importPack(uri, language)
+        val entry = pendingImportEntry
+        if (uri != null && entry != null) {
+            importPack(uri, entry)
         }
     }
     
@@ -84,7 +84,16 @@ class LanguagePacksActivity : AppCompatActivity() {
         }
     }
     
+    /**
+     * D-307: a language pack row now has three states, not two - not installed, installed and current, or
+     * installed but a newer [LanguagePackCatalog.Entry.version] than what
+     * [InstalledLanguagesStore.installedVersion] recorded is available. The update state reuses the exact
+     * same Download+Import buttons/flow a fresh install already uses - [LanguagePackInstaller.install]
+     * always fully overwrites the previous pack file, so re-running the identical steps is already the
+     * correct "apply the update" action, nothing update-specific needed there.
+     */
     private fun buildRow(entry: LanguagePackCatalog.Entry, installed: Boolean): View {
+        val updateAvailable = installed && InstalledLanguagesStore.installedVersion(this, entry.language) < entry.version
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -96,7 +105,13 @@ class LanguagePacksActivity : AppCompatActivity() {
             setTypeface(typeface, Typeface.BOLD)
         })
         row.addView(TextView(this).apply {
-            setText(if (installed) R.string.d280_status_installed else R.string.d280_status_not_installed)
+            setText(
+                when {
+                    updateAvailable -> R.string.d280_status_update_available
+                    installed -> R.string.d280_status_installed
+                    else -> R.string.d280_status_not_installed
+                }
+            )
         })
         if (installed) {
             row.addView(Button(this).apply {
@@ -104,7 +119,8 @@ class LanguagePacksActivity : AppCompatActivity() {
                 isEnabled = !busy
                 setOnClickListener { removePack(entry.language) }
             })
-        } else {
+        }
+        if (!installed || updateAvailable) {
             row.addView(Button(this).apply {
                 setText(R.string.d280_download)
                 isEnabled = !busy
@@ -114,7 +130,7 @@ class LanguagePacksActivity : AppCompatActivity() {
                 setText(R.string.d280_import)
                 isEnabled = !busy
                 setOnClickListener {
-                    pendingImportLanguage = entry.language
+                    pendingImportEntry = entry
                     openDocument.launch(arrayOf("*/*"))
                 }
             })
@@ -131,10 +147,11 @@ class LanguagePacksActivity : AppCompatActivity() {
         }
     }
     
-    private fun importPack(uri: Uri, language: Language) {
+    private fun importPack(uri: Uri, entry: LanguagePackCatalog.Entry) {
         if (busy) {
             return
         }
+        val language = entry.language
         setBusy(true)
         Thread {
             val result = runCatching {
@@ -145,7 +162,12 @@ class LanguagePacksActivity : AppCompatActivity() {
                 // Deletes any stale database from a previous install of this same language, so the next
                 // dictionary load reseeds cleanly from the file just imported rather than reusing old data.
                 deleteDatabase(DictionaryLoader.databaseName(language))
-                InstalledLanguagesStore.add(this, language)
+                // D-307: records the version just imported, not always entry.version - the file the user
+                // actually picked might not be the current catalog version at all (an old download sitting
+                // in their Downloads folder from before an update shipped), but this store's only source of
+                // truth for "what version is this" is the catalog entry passed in from whichever row's own
+                // Download/Import buttons were tapped, so it is the best available signal either way.
+                InstalledLanguagesStore.add(this, language, entry.version)
             }
             runOnUiThread {
                 setBusy(false)

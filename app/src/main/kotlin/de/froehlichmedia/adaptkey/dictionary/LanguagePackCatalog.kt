@@ -27,18 +27,28 @@ object LanguagePackCatalog {
      * @property downloadUrl a stable, public URL for the zipped pack (see the language-contribution guide
      *           for the expected archive shape - a `dict_<code>.tsv` entry, optionally a `bigram_<code>.tsv`
      *           one)
+     * @property version D-307: this pack's own version, bumped by hand whenever its *hosted* content
+     *           actually changes (a dictionary-data fix like D-306, a new/updated bigram set, ...) -
+     *           compared against [de.froehlichmedia.adaptkey.language.InstalledLanguagesStore.installedVersion]
+     *           to tell an already-installed device an update exists. Deliberately not tied to the app's own
+     *           `versionCode`/`versionName` - a language pack can be revised (or not) independently of any
+     *           given app release, and this project's own workflow already bumps *something* on every round
+     *           regardless, so a manual per-pack counter is simplest.
      */
-    data class Entry(val language: Language, val downloadUrl: String)
+    data class Entry(val language: Language, val downloadUrl: String, val version: Int)
     
     /** All available language packs, in display order. */
     val ENTRIES: List<Entry> = listOf(
         Entry(
             Language.GERMAN,
-            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-de.zip"
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-de.zip",
+            // D-306: dict_de.tsv cleaned of 43 confirmed Wikipedia-extraction-noise entries.
+            version = 2
         ),
         Entry(
             Language.GREEK,
-            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-el.zip"
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-el.zip",
+            version = 1
         )
     )
 }

@@ -167,6 +167,7 @@
     <string name="d280_title">Language packs</string>
     <string name="d280_intro">English is always available. Every other language is an optional download (its dictionary is not bundled in the app, to keep it small) - download it once in the browser, then import the file. Afterwards it works fully offline, like everything else here.</string>
     <string name="d280_status_installed">Installed.</string>
+    <string name="d280_status_update_available">Installed - update available.</string>
     <string name="d280_status_not_installed">Not installed.</string>
     <string name="d280_download">1. Download (in the browser)</string>
     <string name="d280_import">2. Import the downloaded file</string>

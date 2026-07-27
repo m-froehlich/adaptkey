@@ -86,14 +86,6 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
-- **No update-check mechanism exists for an already-installed downloadable language pack (German/Greek,**
-  **D-280).** Confirmed missing while fixing D-306 (the "til" dictionary-data bug) - the fix updates the
-  *hosted* `language-packs/adaptkey-lang-de.zip`, but a device that already downloaded German before this fix
-  has no way to learn a newer version exists short of manually deleting and reinstalling the language via
-  `LanguagePacksActivity`. User explicitly wants this built as a real feature - needs its own design
-  discussion (a version number per pack? a manifest file the app polls? UI to notify + prompt an update?)
-  before implementation, not something to improvise inline with a data fix.
-
 - **D-306's dictionary cleanup only removed *untagged* entries (missing part-of-speech) - it did not attempt**
   **a broader sweep of entries that carry a valid tag but are still dubious** (foreign proper nouns, obscure
   fragments) **the way "til" itself was before its manual fix.** A narrow probe (short, low-frequency,
@@ -106,6 +98,17 @@ non-trivial changes).
 
 ## Current State
 
+- **§227 (v0.9.20): D-307 - language-pack update mechanism built, explicitly requested right after D-306.**
+  **Purely local version comparison, no new permission** (the app deliberately carries no `INTERNET`
+  permission at all, D-135/D-280 - user chose this over an active network-polling alternative that would have
+  needed one). `LanguagePackCatalog.Entry` gained `version: Int` (German bumped to 2 for D-306; Greek stays
+  1); `InstalledLanguagesStore` gained `installedVersion()`/a versioned `add()` (`DEFAULT_VERSION = 1` so a
+  pre-existing install reads correctly without any migration step). `LanguagePacksActivity`'s row now has
+  three states (not installed / installed & current / update available), the update state reusing the
+  identical Download+Import flow a fresh install already uses. 909 unit tests (902 + 7).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280 section revised. Not yet
+  device-confirmed - needs a look at the language-packs screen (German should now show "update available").
+  See history §227.
 - **§226 (v0.9.19): D-306 - root-caused and fixed "Tippstil" splitting into "Tipp"/"til": both bundled**
   **dictionaries carried thousands of untagged Wikipedia-extraction-noise entries that could never be**
   **protected by A-05's "not both nouns" split gate.** 84 German + ~15,503 English untagged rows reviewed

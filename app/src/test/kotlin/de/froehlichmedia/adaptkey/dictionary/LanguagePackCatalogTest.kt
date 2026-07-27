@@ -36,4 +36,11 @@ class LanguagePackCatalogTest {
         val languages = LanguagePackCatalog.ENTRIES.map { it.language }
         assertTrue(languages.containsAll(listOf(Language.GERMAN, Language.GREEK)))
     }
+    
+    @Test
+    fun `D-307 every entry has a positive version`() {
+        LanguagePackCatalog.ENTRIES.forEach { entry ->
+            assertTrue(entry.version > 0, "${entry.language} has a non-positive version: ${entry.version}")
+        }
+    }
 }
