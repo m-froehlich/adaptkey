@@ -86,6 +86,17 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
+- **`k01_calibration_offered` (the one-time K-01 calibration-offer flag) travels via the D-278 backup export**
+  **and would suppress that offer on a fresh device that imports it, even though the actual calibration data**
+  **itself never travels (`OffsetStore` uses its own, separate, not-exported preferences file).** Found while
+  building D-304's `EXPORT_SETTINGS_KEY_ORDER` - it is the one key in the default `SharedPreferences` file
+  `SettingsStore.exportableSettings()` reads that is not a `settings_preferences.xml` row at all, so it still
+  falls through to the "unlisted keys, appended alphabetically" fallback and gets exported today. Out of scope
+  for D-304 (only asked about ordering and the diagnostics toggle specifically) - revisit if ever asked to
+  make the export/import feature fully "fresh device" correct: likely fix is excluding this key from export
+  the same way `KEY_DIAGNOSTIC_LOG_ENABLED` now is, so a freshly imported-into device still gets the one-time
+  offer.
+
 ## Current State
 
 - **§223 (v0.9.16): D-303 - fixed a serious regression: D-293's `TYPE_TEXT_FLAG_NO_SUGGESTIONS` bypass**
