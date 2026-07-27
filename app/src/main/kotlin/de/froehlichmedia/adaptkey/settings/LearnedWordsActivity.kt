@@ -145,18 +145,16 @@ class LearnedWordsActivity : AppCompatActivity() {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
-        // D-294: plain emoji glyphs rather than new vector-drawable icon assets - this app has none yet, and
-        // an emoji needs no per-locale string resource of its own; the localised action name still carries
-        // the accessible label via contentDescription.
-        val copyButton = Button(this).apply {
-            text = COPY_GLYPH
-            contentDescription = getString(R.string.copy_to_clipboard_action)
+        // D-294/D-296: plain emoji glyphs rather than new vector-drawable icon assets - this app has none
+        // yet, and an emoji needs no per-locale string resource of its own; the localised action name still
+        // carries the accessible label via contentDescription. Square (width == height), not the ordinary
+        // wide/padded Button look - borderlessButtonStyle drops the raised Material chrome that would
+        // otherwise look wrong squeezed this small, and the explicit square LayoutParams (not WRAP_CONTENT)
+        // is what actually guarantees the square shape regardless of the glyph's own measured width.
+        val copyButton = squareIconButton(COPY_GLYPH, getString(R.string.copy_to_clipboard_action)).apply {
             setOnClickListener { copyToClipboard(editText.text.toString()) }
         }
-        val saveButton = Button(this).apply {
-            text = SAVE_GLYPH
-            contentDescription = getString(R.string.learned_words_save_action)
-        }
+        val saveButton = squareIconButton(SAVE_GLYPH, getString(R.string.learned_words_save_action))
         val fieldRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -218,6 +216,30 @@ class LearnedWordsActivity : AppCompatActivity() {
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
     
     /**
+     * D-296: a compact, square (width == height) [Button] for a glyph-only action - the ordinary [Button]
+     * style's own minimum width/generous padding is exactly what made [showEntryDialog]'s Copy/Save pair
+     * needlessly wide; still a real [Button] (not a hand-rolled touch target), so [Button.isEnabled] still
+     * greys the glyph out automatically, matching D-294's own reasoning.
+     *
+     * @param glyph the button's own label (an emoji glyph)
+     * @param description the accessible name ([View.setContentDescription]), since the visible label itself
+     *        is a glyph, not descriptive text
+     * @return the configured button, side length [SQUARE_ICON_BUTTON_SIZE_DP], not yet added to any parent
+     */
+    private fun squareIconButton(glyph: String, description: String): Button {
+        return Button(this, null, android.R.attr.borderlessButtonStyle).apply {
+            text = glyph
+            contentDescription = description
+            minWidth = 0
+            minimumWidth = 0
+            minHeight = 0
+            minimumHeight = 0
+            setPadding(0, 0, 0, 0)
+            layoutParams = LinearLayout.LayoutParams(dp(SQUARE_ICON_BUTTON_SIZE_DP), dp(SQUARE_ICON_BUTTON_SIZE_DP))
+        }
+    }
+    
+    /**
      * (Re)opens the SQLite store for [language], closing any previously open one. The store name matches
      * the one the running keyboard uses for that language ([DictionaryLoader]), so edits take effect there.
      *
@@ -256,5 +278,9 @@ class LearnedWordsActivity : AppCompatActivity() {
     private companion object {
         private const val COPY_GLYPH = "📋"
         private const val SAVE_GLYPH = "💾"
+        
+        // D-296: a standard-sized touch target (matches the Android accessibility guideline minimum),
+        // just square instead of the ordinary Button's own wide/padded shape.
+        private const val SQUARE_ICON_BUTTON_SIZE_DP = 48
     }
 }

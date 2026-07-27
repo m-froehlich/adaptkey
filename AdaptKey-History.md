@@ -10987,5 +10987,29 @@ redundant reopen/refresh.
 
 No new unit tests (established Android-glue gap, `Spinner`/`ActiveLanguageStore` wiring). 901 unit tests
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-04/W-01 revised. Version bumped
-0.9.9 -> 0.9.10. Not yet device-confirmed - needs a real check that both screens now open on the language
-currently active in the keyboard, not English, on a device with a non-English language actually active.
+0.9.9 -> 0.9.10. **Device-confirmed working (§218).**
+
+## §218 - D-296: D-295 Confirmed; Learned Words' Copy/Save Buttons Made Square, Not Wide (v0.9.11)
+
+D-295 (§217, the language-selector default) confirmed working on device - no code change for that part.
+
+Direct follow-up on §216's own redesigned dialog, seen for the first time on device: the Copy/Save buttons
+(D-294) were still much wider than tall - "die Buttons müssen wirklich nicht so riesig sein... genau so breit
+wie hoch". Root cause: they were still ordinary `Button(this)` instances, which inherit the platform Button
+style's own minimum width and generous horizontal padding regardless of how short the label (a single emoji
+glyph) actually is - explaining the "riesig" width despite the compact-looking content.
+
+New `squareIconButton(glyph, description)`: constructs the `Button` with `android.R.attr.
+borderlessButtonStyle` as its `defStyleAttr` (drops the raised Material chrome, which would look wrong
+squeezed this small), zeroes both `TextView.minWidth`/`View.minimumWidth` and all padding, and sets an
+explicit square `LinearLayout.LayoutParams` (`SQUARE_ICON_BUTTON_SIZE_DP = 48`, matching the standard Android
+accessibility minimum touch-target size) rather than `WRAP_CONTENT` - the explicit fixed size is what actually
+guarantees the square shape regardless of the glyph's own measured width; the zeroed padding/minimums exist so
+nothing tries to push the button wider than that box. Still a real `Button` underneath (not a hand-rolled
+touch target), so `Button.isEnabled` continues to grey the glyph out automatically for Save - D-294's own
+original reasoning for keeping it a `Button` at all, unchanged.
+
+No new unit tests (Android-view glue). 901 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. No spec change (a pure visual-density adjustment to an already-specified
+behaviour). Version bumped 0.9.10 -> 0.9.11. Not yet device-confirmed - needs a real look that Copy/Save are
+now square and no longer dominate the dialog's own width.

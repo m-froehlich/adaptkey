@@ -88,9 +88,19 @@ non-trivial changes).
 
 ## Current State
 
-- **§217 (v0.9.10): D-295 - the Learned Words and Blacklist editors' language selector now defaults to**
-  **whichever language the keyboard itself currently/last had active (G-01), not always English.** Neither
-  screen ever consulted `ActiveLanguageStore` - the spinner and its backing `language` field both silently
+- **§218 (v0.9.11): D-296 - the Learned Words dialog's Copy/Save buttons (D-294) made square instead of**
+  **wide, after §217's D-295 was confirmed working on device.** Root cause: still ordinary `Button(this)`
+  instances, inheriting the platform Button style's own minimum width/generous padding regardless of the
+  single-glyph label's own short content. New `squareIconButton()` - `borderlessButtonStyle` as the
+  `defStyleAttr` (drops the raised chrome), zeroed padding/minimums, and an explicit square
+  `LinearLayout.LayoutParams` (48dp, the standard Android touch-target minimum) instead of `WRAP_CONTENT` -
+  the explicit fixed size is what actually forces the square shape. Still a real `Button`, so `isEnabled`
+  keeps greying Save out automatically. No new unit tests (Android-view glue). 901 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. Not yet device-confirmed - needs a
+  real look that the buttons are now square. See history §218.
+- **§217 (v0.9.10, device-confirmed): D-295 - the Learned Words and Blacklist editors' language selector now**
+  **defaults to whichever language the keyboard itself currently/last had active (G-01), not always English.**
+  Neither screen ever consulted `ActiveLanguageStore` - the spinner and its backing `language` field both silently
   fell back to `Language.ENGLISH`'s own declared initial value / a fresh `Spinner`'s own position-0 default,
   never anything derived from the keyboard's real state; "sehr unpraktisch" for anyone whose actually-used
   language is an installed pack (never the first/bundled entry, D-280). Fixed identically in both Activities:
