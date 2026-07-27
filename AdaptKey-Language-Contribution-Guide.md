@@ -111,9 +111,12 @@ Up to four plain text files, UTF-8, one language:
   need to hand-tune its popup's left/right direction: D-282 made that automatic, based on the real popup
   width and the key's actual screen position, not on which key it happens to be - it works the same whether
   the alternatives came from this file or from hand-written Kotlin.
-- **`version_<code>.txt`** (optional but strongly recommended, D-308): a single plain integer, e.g. `1` -
-  this pack's own version, bumped by *you* every time you publish a revised `dict_<code>.tsv`/
-  `bigram_<code>.tsv`/`hints_<code>.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
+- **`version.txt`** (optional but strongly recommended, D-308): a single plain integer, e.g. `1` - this
+  pack's own version, bumped by *you* every time you publish a revised `dict_<code>.tsv`/`bigram_<code>.tsv`/
+  `hints_<code>.tsv` under the same hosted URL. Deliberately **not** `version_<code>.txt` - unlike the other
+  three files, it is never written to the device's own shared per-language-pack storage (it is read once at
+  import time and immediately discarded), so there is nothing for it to collide with and no need for the
+  `<code>` suffix those three genuinely require. `LanguagePacksActivity`'s Download/Import
   buttons stay available at any time (even for an already-installed language) so a user can always manually
   re-check; re-importing only actually applies the freshly downloaded archive when *its own* version is
   strictly newer than what is already installed, otherwise nothing changes and the user is told it is
@@ -134,7 +137,8 @@ APK.
 
 `de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your files at
 its root - not inside a folder - named exactly `dict_<code>.tsv`, and optionally `bigram_<code>.tsv`/
-`hints_<code>.tsv`/`version_<code>.txt`. Build one like the existing `language-packs/adaptkey-lang-de.zip`/
+`hints_<code>.tsv`/`version.txt` (that last one deliberately without a `<code>` suffix - see its own bullet
+above for why). Build one like the existing `language-packs/adaptkey-lang-de.zip`/
 `adaptkey-lang-el.zip` (a one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip
 tool - just make sure there is no directory prefix inside the archive).
 
@@ -148,8 +152,8 @@ Entry(Language.YOUR_LANGUAGE, "https://.../adaptkey-lang-xx.zip", version = 1)
 ```
 
 That `version` here (D-308) is a *separate*, compiled-in copy of the same number you put in your own
-`version_<code>.txt` - it only drives the lightweight "update available" hint `LanguagePacksActivity` shows
-immediately on screen, without anyone downloading anything; the archive's own `version_<code>.txt` is what
+`version.txt` - it only drives the lightweight "update available" hint `LanguagePacksActivity` shows
+immediately on screen, without anyone downloading anything; the archive's own `version.txt` is what
 actually gates whether a re-import applies. The two are expected to drift apart between your own releases
 and AdaptKey's own app releases - that is fine, the hint is advisory, the archive's own file is authoritative
 - but when you *do* bump your pack's version, bump this catalog line too so the next AdaptKey release

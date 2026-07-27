@@ -134,7 +134,7 @@ class LanguagePackInstallerTest {
     @Test
     fun `D-308 install returns the archive's own version`(@TempDir dir: File) {
         val version = LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_fr.txt" to "3"),
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "3"),
             dir,
             Language.FRENCH
         )
@@ -150,7 +150,7 @@ class LanguagePackInstallerTest {
     @Test
     fun `D-308 install falls back to DEFAULT_VERSION when the version file is unparseable`(@TempDir dir: File) {
         val version = LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_fr.txt" to "not-a-number"),
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "not-a-number"),
             dir,
             Language.FRENCH
         )
@@ -158,18 +158,22 @@ class LanguagePackInstallerTest {
     }
     
     @Test
-    fun `D-308 a different language's version file is ignored`(@TempDir dir: File) {
+    fun `D-308 the version entry is unsuffixed - unlike dict bigram and hints, it never collides across languages`(@TempDir dir: File) {
+        // version.txt carries no <code> suffix (unlike dict_fr.tsv itself) because, unlike those three, it
+        // is never written into LanguagePackStorage's shared per-device directory - read once here and
+        // immediately discarded past that, so there is nothing for a same-named entry to collide with.
         val version = LanguagePackInstaller.install(
-            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_es.txt" to "9"),
+            zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "4"),
             dir,
             Language.FRENCH
         )
-        assertEquals(InstalledLanguagesStore.DEFAULT_VERSION, version)
+        assertEquals(4, version)
+        assertFalse(File(dir, "version.txt").exists())
     }
     
     @Test
     fun `D-308 parse reads the archive without writing anything to disk`(@TempDir dir: File) {
-        val pack = LanguagePackInstaller.parse(zipOf("dict_fr.tsv" to "bonjour\t100\n", "version_fr.txt" to "5"), Language.FRENCH)
+        val pack = LanguagePackInstaller.parse(zipOf("dict_fr.tsv" to "bonjour\t100\n", "version.txt" to "5"), Language.FRENCH)
         
         assertEquals("bonjour\t100\n", String(pack.words, Charsets.UTF_8))
         assertEquals(5, pack.version)

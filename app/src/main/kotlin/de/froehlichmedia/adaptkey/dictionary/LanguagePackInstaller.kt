@@ -15,11 +15,15 @@ import java.util.zip.ZipInputStream
  * directory (D-280).
  *
  * The archive is a plain zip bundling a language's unigram (`dict_<code>.tsv`) and, optionally, bigram
- * (`bigram_<code>.tsv`), letter-hint (`hints_<code>.tsv`, D-281), and version (`version_<code>.txt`, D-308)
- * files - the same files [DictionaryLoader] already reads for a bundled language, just zipped together into one
- * download/import step (the user's own choice over a multi-file picker). The Android layer opens an
- * [InputStream] from the file the user picked (a system file picker / SAF Uri, so no storage permission is
- * needed) and hands it here. Each entry is copied to a temporary `.part` file first and only renamed into
+ * (`bigram_<code>.tsv`), letter-hint (`hints_<code>.tsv`, D-281), and version (`version.txt`, D-308) files -
+ * the first three are the same files [DictionaryLoader] already reads for a bundled language, just zipped
+ * together into one download/import step (the user's own choice over a multi-file picker); `version.txt`
+ * deliberately carries **no** `<code>` suffix, unlike the other three - it is read once in [parse] and never
+ * itself written to [LanguagePackStorage]'s shared per-device directory (where several languages' files
+ * really do coexist and need the suffix to avoid colliding), so there is nothing for it to collide with.
+ * The Android layer opens an [InputStream] from the file the user picked (a system file picker / SAF Uri, so
+ * no storage permission is needed) and hands it here. Each entry is copied to a temporary `.part` file first
+ * and only renamed into
  * place once the whole archive has been read successfully, so an interrupted or malformed import can never
  * leave a half-written file that looks complete - mirroring
  * [de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelInstaller]'s own atomic-rename approach. Kept over
@@ -34,6 +38,9 @@ object LanguagePackInstaller {
     
     private const val TEMP_SUFFIX = ".part"
     
+    /** D-308: deliberately unsuffixed - see the class-level KDoc for why. */
+    private const val VERSION_ENTRY_NAME = "version.txt"
+    
     /**
      * A fully-parsed archive, read entirely into memory - nothing has been written to disk yet.
      *
@@ -41,7 +48,7 @@ object LanguagePackInstaller {
      * @property words the unigram file's raw bytes (always present - [parse] throws otherwise)
      * @property bigrams the optional bigram file's raw bytes
      * @property hints the optional letter-hint file's raw bytes
-     * @property version D-308: the pack's own version, read from its `version_<code>.txt` entry - falls back to
+     * @property version D-308: the pack's own version, read from its `version.txt` entry - falls back to
      *           [InstalledLanguagesStore.DEFAULT_VERSION] when the entry is absent or unparseable (an
      *           archive built before this convention existed, or a malformed one). The project is young
      *           enough today that there is no real "unknown/legacy pack" case in practice - every pack
@@ -89,7 +96,6 @@ object LanguagePackInstaller {
         val wordsName = "dict_${language.code}.tsv"
         val bigramsName = "bigram_${language.code}.tsv"
         val hintsName = "hints_${language.code}.tsv"
-        val versionName = "version_${language.code}.txt"
         var words: ByteArray? = null
         var bigrams: ByteArray? = null
         var hints: ByteArray? = null
@@ -101,7 +107,7 @@ object LanguagePackInstaller {
                     wordsName -> words = zip.readBytes()
                     bigramsName -> bigrams = zip.readBytes()
                     hintsName -> hints = zip.readBytes()
-                    versionName -> versionBytes = zip.readBytes()
+                    VERSION_ENTRY_NAME -> versionBytes = zip.readBytes()
                 }
                 zip.closeEntry()
                 entry = zip.nextEntry

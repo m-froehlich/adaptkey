@@ -726,8 +726,10 @@ step, and no polling. An install predating this mechanism is simply assumed to b
 starting version), so it reads correctly the moment its catalog version moves past 1, without needing any
 migration step of its own.
 
-D-308: the *authoritative* version is not this compiled-in hint, but a `version_<code>.txt` entry inside the
-archive itself, so a language pack can be revised by its own maintainer (e.g. a community contribution)
+D-308: the *authoritative* version is not this compiled-in hint, but a `version.txt` entry inside the
+archive itself (deliberately no `<code>` suffix, unlike every other file in the archive - it is never
+written to the device's own shared per-language storage, only read once at import time, so it has nothing to
+collide with), so a language pack can be revised by its own maintainer (e.g. a community contribution)
 without requiring a new AdaptKey release at all. The Download/Import buttons stay available for every
 language at any time, even one that already reads as "installed" with no hint of an update - re-importing
 always re-reads the freshly downloaded archive's own version and only actually applies it (overwriting the

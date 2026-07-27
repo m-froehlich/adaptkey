@@ -149,7 +149,7 @@ class LanguagePacksActivity : AppCompatActivity() {
     
     /**
      * D-308: the authoritative version is now the freshly-picked archive's own [LanguagePackInstaller.
-     * ParsedPack.version] (its `version_<code>.txt` entry), never [LanguagePackCatalog.Entry.version] (that stays
+     * ParsedPack.version] (its `version.txt` entry), never [LanguagePackCatalog.Entry.version] (that stays
      * only a compiled-in "you might want to check" hint, see [buildRow]). For a language already installed,
      * the archive is only actually applied when its version is strictly newer than
      * [InstalledLanguagesStore.installedVersion] - otherwise nothing on disk changes and the user is told

@@ -11393,3 +11393,30 @@ writes nothing to disk, `write()` applies an already-parsed pack). 915 unit test
 `d280_already_current` string resolves). Spec's D-280 section revised with the D-308 mechanism, distinguished
 from D-307's own compiled-in hint. Version bumped 0.9.20 -> 0.9.21. Not yet device-confirmed - needs a real
 re-import round-trip (skip-when-not-newer, apply-when-newer) against the actual rebuilt German pack.
+
+## §229 - D-309: The D-308 Version File Renamed `version.txt`, Dropping The Redundant `<code>` Suffix (v0.9.22)
+
+Direct question from the user right after D-308 shipped: why `version_<code>.txt` at all, given it always
+lives inside exactly one language's own zip? Investigated rather than just asserted: `dict_<code>.tsv`/
+`bigram_<code>.tsv`/`hints_<code>.tsv` genuinely need their suffix because [LanguagePackStorage] writes all
+three into *one shared* per-device directory holding every installed language's files side by side (and the
+bundled-English case shares `app/src/main/assets/` the same way) - a real collision risk without the suffix.
+`version.txt` was never subject to that reasoning at all: [LanguagePackInstaller.parse] reads it once and
+converts it straight to an `Int`; [LanguagePackInstaller.write] never writes it anywhere, so it never reaches
+that shared directory and has nothing to collide with. The `<code>` suffix on it was copied from the other
+three purely for surface consistency, not because it was load-bearing - confirmed, not just agreed with in
+principle, before renaming.
+
+Renamed throughout: `LanguagePackInstaller`'s internal `VERSION_ENTRY_NAME` constant, both real hosted
+archives (`language-packs/adaptkey-lang-de.zip`/`-el.zip`, rebuilt again), their mirrored source files
+(`dictionaries/de/version_de.txt` -> `dictionaries/de/version.txt`, same for `el`), the
+Language-Contribution-Guide's own three references, and the test suite. No migration needed - confirmed
+directly with the user that the D-307/D-308 mechanism had not yet been exercised on any real device, so there
+was no already-imported pack anywhere depending on the old, now-abandoned filename.
+
+One test (`a different language's version file is ignored`) no longer made sense once there was no
+language-specific name left to test against - replaced with a test asserting the unsuffixed entry is read
+correctly *and* never written to disk (the actual property that makes the suffix unnecessary in the first
+place), rather than just deleted outright. 915 unit tests (unchanged - a straight swap). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Spec/Contribution-Guide revised. Version bumped 0.9.21 -> 0.9.22. Not yet
+device-confirmed.

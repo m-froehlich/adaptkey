@@ -98,6 +98,16 @@ non-trivial changes).
 
 ## Current State
 
+- **§229 (v0.9.22): D-309 - the D-308 version-file entry renamed `version.txt`, dropping the `<code>`**
+  **suffix, after the user asked why it was there at all.** Investigated and confirmed: unlike
+  `dict_<code>.tsv`/`bigram_<code>.tsv`/`hints_<code>.tsv` (which genuinely need it - `LanguagePackStorage`
+  writes all three into one shared per-device directory holding every installed language's files), the
+  version file is read once in `LanguagePackInstaller.parse()` and never itself written anywhere, so it has
+  nothing to collide with - the suffix was copied from the other three for surface consistency only. Renamed
+  everywhere (code constant, both real hosted `.zip`s rebuilt, their mirrored `dictionaries/<code>/` source
+  files, the Contribution Guide, tests). No migration needed - confirmed with the user that D-307/D-308 had
+  not yet been exercised on any real device. 915 unit tests (unchanged, a straight swap).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §229.
 - **§228 (v0.9.21): D-308 - closed D-307's own remaining gap: language-pack updates are now detected from**
   **the archive itself, not only from this app's compiled-in hint - a community-revised pack no longer needs**
   **an AdaptKey app release to be picked up.** `LanguagePackInstaller` split into `parse()` (reads a `.zip`
