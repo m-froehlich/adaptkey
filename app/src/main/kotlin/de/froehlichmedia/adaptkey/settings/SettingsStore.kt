@@ -190,6 +190,9 @@ object SettingsStore {
      * D-298: the C-04 "no highlighting" list entry's own stored value - folds [RawSettings.highlightEnabled]
      * into the single `c04_highlight_color` preference instead of a separate switch, since a colour picker
      * that already has to list every real choice can list "none" as one more of them just as easily.
+     *
+     * Not private: [SettingsActivity.SettingsFragment] also needs it to recognise the sentinel when
+     * colouring the C-04 preference row/dialog (D-302).
      */
-    private const val NO_HIGHLIGHT_VALUE = "none"
+    const val NO_HIGHLIGHT_VALUE = "none"
 }

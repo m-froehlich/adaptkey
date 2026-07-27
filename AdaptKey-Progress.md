@@ -88,6 +88,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§222 (v0.9.15): D-302 - the C-04 highlight-colour preference now previews each choice as its own text**
+  **colour, both in the settings row's summary and in the picker dialog's entries.** Row summary: dropped
+  `useSimpleSummaryProvider`, replaced with a `SpannableString`/`ForegroundColorSpan` summary set in
+  `updateHighlightColorSummary()` (called on create and from a preference-change listener); "no highlighting"
+  keeps a plain label, nothing to preview. Dialog: `onDisplayPreferenceDialog()` intercepts just this one
+  preference key and shows a plain `AlertDialog` (matching the K-01 offer dialog's own existing pattern)
+  instead of the default `ListPreference` dialog, with a custom `ArrayAdapter` tinting each
+  `CheckedTextView` row via `colorForEntryValue()`; picking a value still goes through
+  `callChangeListener`/`ListPreference.value` exactly like the stock dialog, so persistence is unchanged.
+  Deliberately did not subclass androidx.preference's internal `ListPreferenceDialogFragmentCompat` - its
+  `newInstance()` bundle-argument key is not public API. `SettingsStore.NO_HIGHLIGHT_VALUE` made
+  non-private so the settings fragment can recognise the same sentinel. No new unit tests (Android-view/
+  dialog glue). 896 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §20's
+  C-04 row updated. Not yet device-confirmed - needs a look in both light and dark theme. See history §222.
 - **§221 (v0.9.14): D-301 - C-08 per-key corner-symbol override removed entirely, answering §219's own**
   **deferred question.** Investigation confirmed a real bug, not just a design smell: the single global
   `KEY_LETTER_HINTS` override combined with `LetterHints.decodeOrDefault()`'s full-replace-not-merge fallback

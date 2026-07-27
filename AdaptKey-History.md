@@ -11127,3 +11127,40 @@ lost its `hintsEnabled` assertions. `LanguageLetterHintsDataTest.kt` needed no c
 mechanism being kept. 896 unit tests (906 -> 896, the 10 removed tests above). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green (including `lintVitalRelease`, confirming no dangling `@string/c08_*`
 references anywhere). Version bumped 0.9.13 -> 0.9.14. Not yet device-confirmed.
+
+## §222 - D-302: C-04 Highlight-Colour Preference Now Previews Each Choice As Its Own Text Colour (v0.9.15)
+
+User asked for the C-04 highlight-colour setting to show its own colour directly: the settings row's summary
+text in the currently selected colour, and each entry in the colour picker dialog in its own respective
+colour - a direct visual preview instead of just reading a colour name.
+
+The row summary: `app:useSimpleSummaryProvider` removed from the `c04_highlight_color` `ListPreference` in
+`settings_preferences.xml` (it would otherwise overwrite any summary set programmatically on every bind) and
+replaced with `SettingsFragment.updateHighlightColorSummary()`, which wraps the selected entry's label in a
+`SpannableString`/`ForegroundColorSpan` of its own parsed colour - the same spannable-summary technique
+already used for `d89_feature_overview`'s "Learn more" hint. Called once from `onCreatePreferences()` and
+again from a `setOnPreferenceChangeListener` on the preference, so it stays correct after every change. The
+"no highlighting" sentinel entry has no colour to preview and keeps a plain-coloured label.
+
+The dialog: rather than subclassing androidx.preference's internal `ListPreferenceDialogFragmentCompat` (its
+`onPrepareDialogBuilder`/`onDialogClosed` hooks exist for exactly this, but doing so means depending on a
+`newInstance()` bundle-argument contract (`"key"`) that is not actually public API in that library), the
+`PreferenceFragmentCompat.onDisplayPreferenceDialog()` override intercepts only the C-04 key and shows a
+plain `AlertDialog.Builder` instead of calling `super` - the same direct-`AlertDialog` pattern this file
+already uses for the K-01 calibration offer. `setSingleChoiceItems()` takes a custom `ArrayAdapter` (backed
+by `android.R.layout.simple_list_item_single_choice`, whose root `CheckedTextView` is `Checkable` as the
+single-choice list requires) that tints each row via `colorForEntryValue()` in `getView()`; the "no
+highlighting" row falls back to the current theme's own default alert-dialog list-item text colour
+(`android.R.attr.textColorAlertDialogListItem`, resolved once per dialog build) rather than inheriting a
+stale tint from a recycled convertView. Picking an entry still goes through
+`preference.callChangeListener(value)` then `preference.value = value`, so persistence and the change
+listener above (hence the summary re-colouring) both fire exactly as the default dialog would have triggered
+them - only the visual presentation changed, not the persistence path.
+
+`SettingsStore.NO_HIGHLIGHT_VALUE` changed from `private` to internal-visible `const val` so
+`SettingsFragment` can recognise the same sentinel without duplicating the literal `"none"`. No new unit
+tests (Android-view/dialog glue, same category as the rest of `SettingsActivity.kt`). 896 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §20's C-04 row updated with a
+pointer to this decision. Version bumped 0.9.14 -> 0.9.15. Not yet device-confirmed - needs a real look at
+both the settings-list row and the open dialog to confirm the colours read clearly in both light and dark
+theme.

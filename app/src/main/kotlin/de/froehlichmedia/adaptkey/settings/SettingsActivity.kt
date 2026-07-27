@@ -6,16 +6,23 @@ package de.froehlichmedia.adaptkey.settings
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.CheckedTextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
@@ -104,6 +111,14 @@ class SettingsActivity : AppCompatActivity() {
             
             updateCalibrationSummary()
             
+            // D-302: the C-04 highlight-colour preference shows its own colour as the summary's text
+            // colour (and, via [onDisplayPreferenceDialog], as each dialog entry's text colour too) - a
+            // direct visual preview instead of just a colour name.
+            updateHighlightColorSummary()
+            findPreference<ListPreference>(SettingsStore.KEY_HIGHLIGHT_COLOR)?.setOnPreferenceChangeListener { _, newValue ->
+                updateHighlightColorSummary(newValue as String)
+                true
+            }
             
             // D-191: the runtime permission dialog only appears the moment the user actually opts in here,
             // never proactively - turning the toggle on with the permission not yet granted blocks the
@@ -122,6 +137,19 @@ class SettingsActivity : AppCompatActivity() {
                     true
                 }
             }
+        }
+        
+        /**
+         * D-302: intercepts the C-04 highlight-colour preference's own dialog to show each entry in its
+         * own colour instead of the default [ListPreference] dialog's plain-text list; every other
+         * preference dialog is untouched.
+         */
+        override fun onDisplayPreferenceDialog(preference: Preference) {
+            if (preference.key == SettingsStore.KEY_HIGHLIGHT_COLOR && preference is ListPreference) {
+                showHighlightColorDialog(preference)
+                return
+            }
+            super.onDisplayPreferenceDialog(preference)
         }
         
         override fun onResume() {
@@ -175,6 +203,85 @@ class SettingsActivity : AppCompatActivity() {
                 TypingPattern.TWO_THUMBS -> R.string.t04_pattern_two_thumbs
                 TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
             }
+        }
+        
+        /**
+         * D-302: colours the C-04 preference row's own summary in the currently selected highlight
+         * colour, so the label itself previews what it names (no colour for the "no highlighting"
+         * sentinel, whose entry has nothing to preview).
+         *
+         * @param value the newly chosen stored value, or null to re-derive from the preference's current
+         *        (already-persisted) value - used both from [onCreatePreferences] and from the preference's
+         *        own change listener
+         */
+        private fun updateHighlightColorSummary(value: String? = null) {
+            val preference = findPreference<ListPreference>(SettingsStore.KEY_HIGHLIGHT_COLOR) ?: return
+            val current = value ?: preference.value ?: return
+            val index = preference.findIndexOfValue(current)
+            val label = if (index >= 0) preference.entries[index].toString() else current
+            val color = colorForEntryValue(current)
+            preference.summary = if (color != null) {
+                SpannableString(label).apply {
+                    setSpan(ForegroundColorSpan(color), 0, label.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+            } else {
+                label
+            }
+        }
+        
+        /**
+         * D-302: shows the C-04 colour list as a plain [AlertDialog] (bypassing the default
+         * [ListPreference] dialog flow entirely) whose [android.widget.CheckedTextView] rows are tinted in
+         * their own colour via a custom [ArrayAdapter]. Applying a choice goes through
+         * [Preference.callChangeListener] / [ListPreference.setValue] exactly like the standard dialog
+         * would, so persistence and [updateHighlightColorSummary] (wired as the change listener in
+         * [onCreatePreferences]) both still fire normally.
+         *
+         * @param preference the C-04 list preference
+         */
+        private fun showHighlightColorDialog(preference: ListPreference) {
+            val entries = preference.entries ?: return
+            val entryValues = preference.entryValues ?: return
+            val defaultTextColor = resolveDefaultListItemTextColor()
+            val adapter = object : ArrayAdapter<CharSequence>(requireContext(), android.R.layout.simple_list_item_single_choice, entries) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as CheckedTextView
+                    view.setTextColor(colorForEntryValue(entryValues[position].toString()) ?: defaultTextColor)
+                    return view
+                }
+            }
+            AlertDialog.Builder(requireContext())
+                .setTitle(preference.title)
+                .setSingleChoiceItems(adapter, preference.findIndexOfValue(preference.value)) { dialog, which ->
+                    val value = entryValues[which].toString()
+                    if (preference.callChangeListener(value)) {
+                        preference.value = value
+                    }
+                    dialog.dismiss()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+        }
+        
+        /**
+         * @param value a C-04 stored entry value
+         * @return the parsed ARGB colour, or null for the "no highlighting" sentinel / an unparseable value
+         */
+        private fun colorForEntryValue(value: String): Int? {
+            if (value == SettingsStore.NO_HIGHLIGHT_VALUE) {
+                return null
+            }
+            return runCatching { Color.parseColor(value) }.getOrNull()
+        }
+        
+        /** @return the current theme's own default alert-dialog list-item text colour. */
+        private fun resolveDefaultListItemTextColor(): Int {
+            val typedValue = TypedValue()
+            val resolved = requireContext().theme.resolveAttribute(android.R.attr.textColorAlertDialogListItem, typedValue, true)
+            if (!resolved) {
+                return ContextCompat.getColor(requireContext(), android.R.color.black)
+            }
+            return if (typedValue.resourceId != 0) ContextCompat.getColor(requireContext(), typedValue.resourceId) else typedValue.data
         }
         
         companion object {

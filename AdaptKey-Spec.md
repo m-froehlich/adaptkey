@@ -918,7 +918,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-01 | Key proportions (space bar / comma / full stop / backspace) + the two L-02 spacing sliders | Slider | Gboard-like |
 | C-02 | Suggestion re-sort delay | 0-600 ms | 300 ms |
 | C-03 | Maximum number of suggestions | Integer (6-10) | 8 |
-| C-04 | Word confirmation highlight colour, or "no highlighting" (D-298: folds the former separate on/off toggle into this one list) | Colour, or off | Green |
+| C-04 | Word confirmation highlight colour, or "no highlighting" (D-298: folds the former separate on/off toggle into this one list); the settings row and its picker dialog preview each colour directly as its own entry's text colour (D-302) | Colour, or off | Green |
 | C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled confusables + archaic-spelling set |
 | C-06 | LLM activation threshold, or "disabled" (D-297: folds the former separate tier-3-enabled toggle into this one list) | N-gram confidence value, or off | medium |
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
