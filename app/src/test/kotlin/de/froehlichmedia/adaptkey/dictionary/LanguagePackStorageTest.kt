@@ -18,10 +18,7 @@ import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-/**
- * Robolectric test (JVM, real filesystem) for [LanguagePackStorage] - in particular D-310's per-language
- * subfolder layout and the [LanguagePackStorage.cleanupLegacyFlatFiles] sweep for the pre-D-310 flat one.
- */
+/** Robolectric test (JVM, real filesystem) for [LanguagePackStorage]'s D-310 per-language subfolder layout. */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class LanguagePackStorageTest {
@@ -72,34 +69,5 @@ class LanguagePackStorageTest {
         
         assertFalse(LanguagePackStorage.isInstalled(context, Language.GERMAN))
         assertFalse(LanguagePackStorage.languageDir(context, Language.GERMAN).exists())
-    }
-    
-    @Test
-    fun `cleanupLegacyFlatFiles removes a pre-D-310 flat file sitting directly in packDir`() {
-        val context = RuntimeEnvironment.getApplication()
-        val packDir = LanguagePackStorage.packDir(context)
-        packDir.mkdirs()
-        val legacyDict = File(packDir, "dict_de.tsv")
-        legacyDict.writeText("der\t100\n")
-        
-        LanguagePackStorage.cleanupLegacyFlatFiles(context)
-        
-        assertFalse(legacyDict.exists())
-    }
-    
-    @Test
-    fun `cleanupLegacyFlatFiles never touches the new per-language subfolder layout`() {
-        val context = RuntimeEnvironment.getApplication()
-        LanguagePackInstaller.install(zipOf("dict.tsv" to "der\t100\n"), LanguagePackStorage.packDir(context), Language.GERMAN)
-        
-        LanguagePackStorage.cleanupLegacyFlatFiles(context)
-        
-        assertTrue(LanguagePackStorage.isInstalled(context, Language.GERMAN))
-    }
-    
-    @Test
-    fun `cleanupLegacyFlatFiles is harmless when there is nothing to clean up`() {
-        val context = RuntimeEnvironment.getApplication()
-        LanguagePackStorage.cleanupLegacyFlatFiles(context)
     }
 }

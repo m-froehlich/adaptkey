@@ -98,6 +98,13 @@ non-trivial changes).
 
 ## Current State
 
+- **§231 (v0.9.24): D-311 - D-310's legacy-flat-file cleanup removed, confirmed no longer needed.** User
+  confirmed D-310 "hat gut geklappt" and that `LanguagePackStorage.cleanupLegacyFlatFiles()` (built
+  specifically to sweep up the user's own then-existing old-layout install) has served its purpose. Removed:
+  the function + its three `legacy*File()` helpers, the `LanguagePacksActivity.onCreate()` call site, the 3
+  tests exercising it; Spec's D-310 paragraph trimmed. 919 unit tests (922 - 3).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Pure removal round, nothing new to device-confirm.
+  See history §231.
 - **§230 (v0.9.23): D-310 - every language-pack file now uses a fixed name inside its own per-language**
   **folder, not a `_<code>` suffix in one shared directory - covers both the downloaded-pack side**
   **(`LanguagePackStorage`) and the bundled-English assets, at the user's explicit request for full**

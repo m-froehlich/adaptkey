@@ -11468,3 +11468,19 @@ APK's own `assets/` entries, not just trusting the build succeeded. Spec's D-280
 Contribution Guide both revised. Version bumped 0.9.22 -> 0.9.23. Not yet device-confirmed - the user's own
 existing German install predates this layout and will need reinstalling regardless (expected and accepted,
 not a regression).
+
+## §231 - D-311: D-310's Legacy-Flat-File Cleanup Removed - No Longer Needed (v0.9.24)
+
+Confirmed by the user that D-310 "hat gut geklappt" (worked well) and that
+`LanguagePackStorage.cleanupLegacyFlatFiles()` - the best-effort sweep of pre-D-310 flat `_<code>`-suffixed
+pack files, built specifically because a real language pack existed on the user's own device under the old
+layout - is no longer needed now that it has served its purpose. Removed rather than left in place: dead code
+that exists only to guard against a transitional state that has already passed provides no further value and
+is one more thing to explain later.
+
+Removed: `LanguagePackStorage.cleanupLegacyFlatFiles()` and its three private `legacy*File()` path helpers;
+the call site in `LanguagePacksActivity.onCreate()`; the three tests in `LanguagePackStorageTest.kt` that
+exercised it. Spec's D-310 paragraph trimmed of the now-inapplicable cleanup sentence. 919 unit tests
+(922 - 3). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Version bumped 0.9.23 -> 0.9.24. Not yet
+device-confirmed (no functional change to confirm beyond "the app still builds and runs" - this round was
+pure removal).

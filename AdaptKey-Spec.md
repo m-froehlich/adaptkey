@@ -741,9 +741,6 @@ D-310: every file inside a language-pack archive (`dict.tsv`/`bigram.tsv`/`hints
 fixed, un-suffixed name - a downloaded pack is extracted into its own per-language subfolder on the device
 rather than a shared flat directory, and the same fixed names are used for the bundled-English assets too
 (one naming convention regardless of whether a language ships inside the APK or is downloaded separately).
-The pre-D-310 flat, `_<code>`-suffixed layout an already-installed pack might still be sitting in is swept up
-opportunistically (not migrated - the language simply needs reinstalling) whenever the language-packs screen
-opens.
 
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any

@@ -7,11 +7,6 @@ import android.content.Context
 import de.froehlichmedia.adaptkey.language.Language
 import java.io.File
 
-// D-310: the pre-D-310 flat filenames a stray leftover file might still use - see cleanupLegacyFlatFiles.
-private fun legacyWordsFile(packDir: File, language: Language) = File(packDir, "dict_${language.code}.tsv")
-private fun legacyBigramsFile(packDir: File, language: Language) = File(packDir, "bigram_${language.code}.tsv")
-private fun legacyHintsFile(packDir: File, language: Language) = File(packDir, "hints_${language.code}.tsv")
-
 /**
  * D-280: resolves the app-private directory that holds a user-installed language pack (an unigram + a
  * bigram TSV file per language, downloaded via the browser and imported through
@@ -91,26 +86,5 @@ object LanguagePackStorage {
         // Best-effort: File.delete() on a directory only succeeds when it is already empty, exactly the
         // state the three deletes above just left it in (barring a stray unrelated file, harmless either way).
         languageDir(context, language).delete()
-    }
-    
-    /**
-     * D-310: one-time, best-effort cleanup of the pre-D-310 flat file layout (`dict_<code>.tsv` etc. sitting
-     * directly in [packDir], not yet moved into a per-language subfolder) - safe to call unconditionally,
-     * including when there is nothing to clean up. Does not attempt to migrate or preserve the old data
-     * itself; a language whose files predate D-310 simply needs reinstalling (its own flat files are
-     * removed here, but [de.froehlichmedia.adaptkey.language.InstalledLanguagesStore]'s own "installed"
-     * flag is untouched, so the language still shows as installed - re-importing via
-     * [de.froehlichmedia.adaptkey.settings.LanguagePacksActivity] is what actually reseeds it into the new
-     * layout).
-     *
-     * @param context any valid context
-     */
-    fun cleanupLegacyFlatFiles(context: Context) {
-        val dir = packDir(context)
-        Language.entries.forEach { language ->
-            legacyWordsFile(dir, language).delete()
-            legacyBigramsFile(dir, language).delete()
-            legacyHintsFile(dir, language).delete()
-        }
     }
 }
