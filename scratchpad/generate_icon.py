@@ -12,12 +12,17 @@ too, not the other way around). The dot sits at the keycap's own true geometric 
 on the key", not centred in the halo. The halo is a wide, short, semi-transparent OVAL - not a circle -
 that bleeds out past the keycap's own left edge, the mistouch scenario T-03/T-05 exist for.
 
-The keycap fills the full official adaptive-icon safe zone (a 66x66dp square centred in the 108x108dp
-canvas, per Android's own adaptive-icon spec - the area guaranteed never clipped by any launcher mask
-shape), not the much smaller 46x46 square used in earlier drafts - there was significant unused margin
-before. Only the halo's own deliberate bleed is allowed to cross past that boundary, since it is a
-secondary/decorative element, not core content - some minor clipping of just that sliver on an aggressive
-launcher mask is an accepted, common trade-off, unlike the keycap+letter which must stay fully safe.
+Card size (v7, reverted after real-device evidence): briefly enlarged to a 66x66dp square filling
+Android's documented adaptive-icon safe zone (the *square* Google's own docs describe as "guaranteed
+never clipped by any launcher mask"), on the theory that was more room than the original 46x46 needed.
+The user then actually saw the built APK's icon in a file manager and found the opposite - the card's own
+corners were visibly clipped by *that* renderer's circular crop, leaving a bare blue sliver top/bottom/
+right. Root cause: the documented 66x66 *square* safe zone is evidently not honoured by every real-world
+icon renderer - a file manager's APK-icon preview is not going through a compliant AdaptiveIconDrawable
+mask pipeline at all, and apparently applies its own tighter circular crop instead. The original 46x46
+card is exactly the largest square that fits inside a 66dp-*diameter circle* (not square) centred in the
+canvas - the more conservative reading of "safe zone" - which is why it was never clipped. Reverted to
+46x46 on that real evidence rather than trusting the documented square guarantee further.
 
 Colours are not invented for the icon; they are the same hue as the exact Paint values
 AdaptKeyboardView.kt already uses on-device for this overlay (touchModelFillPaint/touchModelStrokePaint/
@@ -76,9 +81,10 @@ def composited(canvas: Image.Image, draw_fn) -> Image.Image:
 def build(size: int, out_path: str) -> None:
     canvas = Image.new("RGBA", (SUPERSAMPLE, SUPERSAMPLE), BRAND_BLUE)
 
-    # Keycap fills the full 66x66dp adaptive-icon safe zone (21,21)-(87,87), centred in the 108x108
-    # canvas - corner radius scaled up from the old 46-wide card in the same proportion (9/46 of width).
-    CARD_LO, CARD_HI = 21.0, 87.0
+    # Reverted to the original 46x46 card (31,31)-(77,77) - see the module docstring for why: it fits
+    # inside a 66dp-diameter *circle* centred on the canvas, which real-world evidence (a file manager's
+    # own APK-icon preview) shows is the actual constraint that matters, not the documented 66x66 square.
+    CARD_LO, CARD_HI = 31.0, 77.0
     CARD_RADIUS = 9.0 * (CARD_HI - CARD_LO) / 46.0
 
     # Keycap drop shadow (soft, offset down) for a little physical depth - blur the shadow shape on its
@@ -123,13 +129,13 @@ def build(size: int, out_path: str) -> None:
     # (which always puts the dot at the same cx,cy as the oval), the dot here is deliberately decoupled
     # and sits at the keycap's own true geometric centre (54,54) - "central on the key" - while the
     # oval's own centre sits further left so the bleed is meaningful.
-    zone_cx, zone_cy, zone_rx, zone_ry = 45.0, 54.0, 33.0, 19.0
+    zone_cx, zone_cy, zone_rx, zone_ry = 44.0, 55.0, 22.0, 13.0
     halo_box = box(zone_cx - zone_rx, zone_cy - zone_ry, zone_cx + zone_rx, zone_cy + zone_ry)
     canvas = composited(canvas, lambda d: (
         d.ellipse(halo_box, fill=HALO_FILL),
-        d.ellipse(halo_box, outline=HALO_STROKE, width=max(1, round(2.4 * SCALE))),
+        d.ellipse(halo_box, outline=HALO_STROKE, width=max(1, round(1.8 * SCALE))),
     ))
-    dot_cx, dot_cy, dot_r = 54.0, 54.0, 6.0
+    dot_cx, dot_cy, dot_r = 54.0, 54.0, 4.2
     dot_box = box(dot_cx - dot_r, dot_cy - dot_r, dot_cx + dot_r, dot_cy + dot_r)
     canvas = composited(canvas, lambda d: d.ellipse(dot_box, fill=STRIKE_DOT))
 

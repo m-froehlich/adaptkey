@@ -11997,3 +11997,35 @@ launcher icon has no testable logic). No spec section change (app iconography is
 requirement). `versionCode` 309 -> 310, `versionName` `"1.0.5"` -> `"1.0.6"`. Not yet device-confirmed -
 needs a real launcher check that the enlarged card and the bleeding halo aren't clipped on the user's own
 actual launcher/mask shape.
+
+## §244 - D-322: Card Size Reverted 66x66 -> 46x46 - Real-Device Evidence Beat the Documented Safe Zone (v1.0.7)
+
+D-321's device-confirmation request was answered directly: the user installed the built APK and viewed its
+icon in a file manager (the actual real-world way this app is normally installed, not via F-Droid). The
+enlarged 66x66dp card's own corners were visibly clipped by that renderer's circular crop, leaving a bare
+blue sliver top/bottom/right - exactly the failure mode D-321's own safe-zone research was meant to rule
+out.
+
+**Root cause, reasoned from the observed clipping geometry, not guessed:** Google's adaptive-icon docs
+(fetched live during D-321, not assumed from memory) describe the 66x66dp safe zone as a *square*,
+"guaranteed never clipped by any launcher mask shape." The file manager's own APK-icon preview
+demonstrably does not honour that guarantee - it is not going through a compliant
+`AdaptiveIconDrawable` mask pipeline at all (that only exists for installed, launched icons on API 26+
+launchers), just some ad-hoc circular crop of the flattened `ic_launcher` bitmap. Checked which circle
+the original (pre-D-321) 46x46 card actually satisfies: it is exactly the largest square inscribable in a
+66dp-*diameter circle* centred on the 108x108 canvas (46.67 vs the chosen 46) - the more conservative
+reading of "safe zone" that predates/coexists with the newer square guidance, and evidently the one this
+renderer (and plausibly others) actually implements. The 66x66 *square*'s own corners sit at ~46.67dp from
+centre - inside the documented square, but outside a 66dp-diameter circle (radius 33) - matching the
+clipping observed exactly.
+
+**Fix:** `scratchpad/generate_icon.py`'s `CARD_LO`/`CARD_HI` reverted from `(21,87)` back to `(31,77)`;
+`ic_launcher_foreground.xml` rebuilt to match (keycap + "A" glyph path data back to their original D-320-
+era coordinates, unscaled). D-321's other refinements are all kept unchanged: the boosted halo alpha
+(150/230 vs the in-app 51/136), the halo's own left-edge bleed past the card, and the dot's placement at
+the keycap's true centre rather than the halo's own centre. Same PNG re-placed in all three
+`fastlane/metadata/android/{en-US,de-DE,el-GR}/images/icon.png`. 956 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 310 -> 311, `versionName` `"1.0.6"` ->
+`"1.0.7"`. User could not immediately re-confirm on-device - the same launcher/file-manager position still
+showed the old (cached) icon bitmap, a known Android icon-cache behaviour, not a sign the fix didn't take;
+accepted as-is on the reasoning above rather than waiting out the cache.

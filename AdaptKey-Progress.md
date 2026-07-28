@@ -165,6 +165,19 @@ non-trivial changes).
 
 ## Current State
 
+- **§244 (v1.0.7): D-322 - card size reverted 66x66 -> 46x46, on real-device evidence: the user saw the**
+  **built APK's icon in a file manager and its corners were clipped by that renderer's own circular crop.**
+  Root cause: Google's documented 66x66dp safe *square* is evidently not honoured by every real-world icon
+  renderer (a file manager's APK preview isn't going through a compliant `AdaptiveIconDrawable` mask
+  pipeline at all); the original 46x46 card is exactly the largest square inscribable in a 66dp-*diameter
+  circle* instead - the more conservative reading, and apparently the one that actually matters here.
+  `ic_launcher_foreground.xml`/`scratchpad/generate_icon.py` reverted to that geometry; D-321's other
+  refinements (boosted halo contrast, left-edge bleed, dot at the keycap's true centre) all kept. Same PNG
+  re-placed in all three `fastlane/metadata/android/<locale>/images/icon.png`. 956 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 310 -> 311, `versionName` `"1.0.6"`
+  -> `"1.0.7"`. User accepted as-is despite not being able to immediately re-confirm on-device (the
+  file manager still showed a cached older icon bitmap - known Android behaviour, not evidence the fix
+  didn't work). See history §244.
 - **§243 (v1.0.6): D-321 - real app icon (and F-Droid store-listing icon) built for the first time: an**
   **"A" keycap with the T-06 touch-zone visualisation on top, replacing the launcher art that was**
   **explicitly still a placeholder.** Design chosen collaboratively over several rounds - the touch-zone
