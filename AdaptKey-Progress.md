@@ -87,15 +87,27 @@ in every prompt.
     content at `metadata/de.froehlichmedia.adaptkey.yml`, entirely via the GitLab web UI (no local
     checkout needed for this step). This is state that lives entirely outside this repo/session - the MR
     URL and its review status are not tracked here; check GitLab directly for the current status.
+  - App icon done (D-321/D-322) - the "Optional: app icon" item below is now only about screenshots.
+  - **Tags backfilled for v1.0.5/v1.0.6/v1.0.7** (versionCode 309/310/311), added locally after three more
+    releases landed while the icon work was in progress - same pattern as the earlier v1.0.3/v1.0.4 gap,
+    now a recurring risk worth naming explicitly: any session doing F-Droid-adjacent work should re-check
+    `git tag -l` against the actual `versionCode` in `app/build.gradle.kts` before trusting this list, not
+    assume it's complete. The scratchpad `fdroiddata-metadata-*.yml` draft's `Builds`/`CurrentVersion`
+    updated to match (now lists through 1.0.7) - **the already-open MR itself still only lists through
+    1.0.4 and needs the same update pushed to it** (GitLab web UI, same file/branch as the original MR).
 - **Still open:**
+  - Push the new `v1.0.5`/`v1.0.6`/`v1.0.7` tags (the user pushes; not done automatically here).
+  - Update the actual `fdroiddata` MR (not just the local scratchpad draft) with the three new `Builds`
+    entries and the bumped `CurrentVersion`/`CurrentVersionCode` - see the scratchpad file for the exact
+    content to paste in.
   - Watch the MR's CI pipeline (lint + scanner + a real trial build of at least the current version) and
     fix anything it flags by editing the file again in the GitLab web UI, pushed to the same branch.
   - Respond to F-Droid maintainer review feedback if/when it comes (first-time inclusion review commonly
     takes weeks, sometimes months).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
-  - Optional: app icon/screenshots under `fastlane/metadata/android/<locale>/images/` - not required for
-    the initial submission, improves the listing.
+  - Optional: store-listing screenshots under `fastlane/metadata/android/<locale>/images/phoneScreenshots/`
+    - not required for the initial submission, improves the listing.
   - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
     against F-Droid's own docs/`fdroiddata` at MR time - both were checked against the live F-Droid docs
     and `config/categories.yml` this session, but that project's conventions can move on.

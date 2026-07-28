@@ -42,7 +42,25 @@ Builds:
     gradle:
       - yes
 
+  - versionName: '1.0.5'
+    versionCode: 309
+    commit: 1a29d21faa422aa7b7c0bf7aa9c01a879fc77333
+    gradle:
+      - yes
+
+  - versionName: '1.0.6'
+    versionCode: 310
+    commit: c3c546b97f7b3e77e690ce786d33fc22a3ff67dd
+    gradle:
+      - yes
+
+  - versionName: '1.0.7'
+    versionCode: 311
+    commit: e1fab370a636333ef3c635ca370683be1cfeff34
+    gradle:
+      - yes
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '1.0.4'
-CurrentVersionCode: 308
+CurrentVersion: '1.0.7'
+CurrentVersionCode: 311
