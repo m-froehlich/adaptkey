@@ -42,9 +42,18 @@ class EmojiPanelView @JvmOverloads constructor(
         fun onBack()
     }
     
+    /** D-317: the search tab was tapped - the panel itself hosts no search UI; the host switches to its
+     * own live-search capture mode (see [de.froehlichmedia.adaptkey.AdaptKeyService]). */
+    fun interface OnSearchListener {
+        
+        fun onSearchRequested()
+    }
+    
     var onEmojiSelectedListener: OnEmojiSelectedListener? = null
     
     var onBackListener: OnBackListener? = null
+    
+    var onSearchListener: OnSearchListener? = null
     
     /** The bundled dataset (L-03); defaults to empty until [EmojiDatasetLoader] hands one in. */
     var dataset: EmojiDataset = EmojiDataset.EMPTY
@@ -101,6 +110,7 @@ class EmojiPanelView @JvmOverloads constructor(
     private fun rebuildTabs() {
         tabBar.removeAllViews()
         tabBar.addView(tabButton(BACK_ICON) { onBackListener?.onBack() })
+        tabBar.addView(tabButton(SEARCH_ICON) { onSearchListener?.onSearchRequested() })
         tabBar.addView(tabButton(RECENT_ICON) { selectTab(null) })
         for (category in EmojiCategory.entries) {
             tabBar.addView(tabButton(category.icon) { selectTab(category) })
@@ -162,6 +172,7 @@ class EmojiPanelView @JvmOverloads constructor(
         private const val EMOJI_TEXT_SIZE_SP = 22f
         private const val TAB_TEXT_SIZE_SP = 18f
         private const val BACK_ICON = "⌨"
+        private const val SEARCH_ICON = "🔍"
         private const val RECENT_ICON = "🕐"
     }
 }

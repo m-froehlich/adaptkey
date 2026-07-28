@@ -36,6 +36,18 @@ The character-n-gram language-identification profiles (A-03) were derived from t
 A curated list of Unicode emoji code points grouped by category. Emoji are Unicode characters; the
 curated grouping is part of AdaptKey.
 
+## Emoji search keywords (`app/src/main/assets/emoji_keywords.tsv`)
+
+The per-emoji search terms used by the emoji-search feature (L-03, D-317) - both the German and English
+short names and full keyword-synonym lists - were extracted from the **Unicode CLDR** annotation data
+(`common/annotations/de.xml`, `common/annotations/en.xml`).
+
+- Source: Unicode CLDR — https://github.com/unicode-org/cldr
+- Licence: **Unicode License v3** — https://www.unicode.org/license.txt
+- The extraction was performed by the throwaway builder script kept with the project notes
+  (`scratchpad/build_emoji_keywords.py`); only the emoji already bundled in `emoji_dataset.tsv` are
+  covered.
+
 ## Tier-3 mini-LLM tokenizer (`app/src/main/assets/tier3/vocab.json`, `merges.txt`)
 
 The byte-level BPE tokenizer vocabulary and merges bundled for the optional tier-3 mini-LLM (§9 / C-06)

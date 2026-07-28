@@ -58,7 +58,14 @@ class SuggestionController(private val config: SuggestionConfig) {
          * ordinary suggestion (never ranked by score against them - see the design discussion this
          * implements for why), the same "built outside SuggestionController" shape [CREDENTIAL]/[LEARNED]
          * already use. */
-        COMPOUND
+        COMPOUND,
+        
+        /** D-317: a live emoji-search match (L-03) - [DisplayItem.text] and [DisplayItem.word] are both
+         * the emoji itself; tapping it commits the emoji and leaves search mode. Built and pushed directly
+         * to the suggestion bar from the local search buffer, bypassing this class's own [update]/
+         * [displayed] entirely, the same "built outside SuggestionController" shape [CREDENTIAL]/[LEARNED]
+         * already use - there is no composing token to rank these against. */
+        EMOJI_SEARCH_RESULT
     }
     
     /**

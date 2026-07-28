@@ -98,6 +98,19 @@ function does **not** live on this key - it is reached exclusively via the alway
 the swipe-up extra row (§14, R-01), which needs no setting of its own since it costs no keyboard-row space
 while closed.
 
+**Emoji search (D-317):** a dedicated magnifying-glass tab in the emoji panel's own tab bar (alongside the
+category tabs and the recent-emoji tab) starts a live text search over every bundled emoji's own search
+terms - both German and English, derived from Unicode CLDR - so a colloquial term (e.g. English "poop") and
+a formal one (e.g. German "Kothaufen") both find the same entry. Tapping it leaves the emoji panel's own
+grid and switches back to the ordinary letter keyboard for typing, with the live matches shown where the
+suggestion bar's ordinary word suggestions normally appear (S-01's own "the bar's slot can show alternate
+content" precedent, alongside Autofill/credentials) - keys typed while searching never reach the actual
+document; only Space, Backspace and letters/digits/punctuation are active (no long-press popups, no swipe
+gestures, no symbol layer) while search is active. Tapping a result commits it exactly like an ordinary
+emoji-panel tap and leaves search mode; a dedicated cancel button next to the suggestion bar, and Enter, are
+the two other ways back to ordinary typing - search mode is also defensively cleared whenever the field
+itself is left, so it can never carry over into the next field.
+
 ### L-04 - Enlarged Backspace
 The backspace key is widened relative to the Gboard default (recommended ~10%) to reduce mis-hits. The
 additional width is taken from its neighbours within the third row and is independent of the bottom-row

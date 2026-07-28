@@ -104,6 +104,32 @@ non-trivial changes).
 
 ## Current State
 
+- **§238 (v1.0.2): D-317 - emoji search, SwiftKey-style: a magnifying-glass tab in the emoji panel finds an**
+  **emoji by typed search term (the user's own example: "poop" -> 💩), German+English via CLDR.** Data source
+  chosen with the user across three decisions: CLDR (not hand-curated) -> full keyword-synonym lists, not
+  just the short name (caught before implementing that "poop" itself is only in CLDR's synonym list, not the
+  short name "pile of poo"/"Kothaufen" - the short-names-only design would have failed the user's own
+  example) -> fixed DE+EN scope regardless of active typing language. New `app/src/main/assets/
+  emoji_keywords.tsv` (508 entries, 44.5 KB) built by throwaway `scratchpad/build_emoji_keywords.py` from the
+  real CLDR annotation XML; `CREDITS.md` gained a Unicode-License-v3 section. Found and fixed in passing: 💩
+  itself was missing from the 507-entry `emoji_dataset.tsv` curated list entirely - added.
+  Bigger design question (discussed before implementing): the emoji panel hides the letter keyboard
+  entirely, so typing a query needed either a new mini-keyboard inside the panel (rejected - would need its
+  own umlaut long-press handling duplicated from scratch) or reusing the real keyboard + the suggestion
+  bar's own slot for live results (chosen - S-01 already documents that slot showing alternate content,
+  e.g. Autofill/credentials). `AdaptKeyboardView`'s five key listeners are swapped to a narrow search-only
+  handler (letters/Space/Backspace/Enter; long-press/swipe/popup/backspace-repeat all `null`, a deliberate
+  scope-vs-safety trade-off - no long-press umlauts while searching) and restored via the same
+  `wireLetterKeyListeners()` both paths now share. Per the user's explicit "no side effects returning to
+  normal typing" requirement: three independent, idempotent ways back (a dedicated cancel button next to the
+  suggestion bar, Enter, picking a result) plus a defensive fourth (`onFinishInput()` always exits search on
+  field change). New `SuggestionController.Kind.EMOJI_SEARCH_RESULT`; existing drag-to-trash logic already
+  matches kinds explicitly, so it is automatically inert for the new kind. 11 new tests
+  (`EmojiKeywordParserTest.kt`, `EmojiKeywordIndexTest.kt`). 947 unit tests (936 + 11).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green - confirmed both emoji assets present in the built
+  APK. Spec's L-03 revised. Version bumped 1.0.1 -> 1.0.2. Not yet device-confirmed - needs a real search
+  round-trip and specifically a check that leaving the field mid-search never strands the next field. See
+  history §238.
 - **§236 (v1.0.1): D-316 - feature-overview catalog (`FeatureCatalog.kt`) refreshed again, same method as**
   **D-192's own first refresh: `git log` confirmed it was untouched since D-192 (v0.8.87), then every commit/**
   **spec-section since was checked for genuine new user-facing capability not yet catalogued.** Seven were

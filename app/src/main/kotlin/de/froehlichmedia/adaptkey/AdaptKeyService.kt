@@ -71,6 +71,8 @@ import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
 import de.froehlichmedia.adaptkey.emoji.EmojiDataset
 import de.froehlichmedia.adaptkey.emoji.EmojiDatasetLoader
+import de.froehlichmedia.adaptkey.emoji.EmojiKeywordIndex
+import de.froehlichmedia.adaptkey.emoji.EmojiKeywordLoader
 import de.froehlichmedia.adaptkey.emoji.EmojiPanelView
 import de.froehlichmedia.adaptkey.emoji.RecentEmojiStore
 import de.froehlichmedia.adaptkey.emoji.RecentEmojis
@@ -167,6 +169,9 @@ class AdaptKeyService : InputMethodService() {
     // D-267: sits to the right of suggestionBar (see onCreateInputView) - VISIBLE only while the bar shows
     // the clipboard chips it clears, see setSuggestionBarItems().
     private var clearClipboardButtonView: View? = null
+    // D-317: sits to the right of suggestionBar, mirroring clearClipboardButtonView - VISIBLE only while
+    // emoji-search capture mode is active (see enterEmojiSearch()/exitEmojiSearch()).
+    private var cancelEmojiSearchButtonView: View? = null
     private var emojiPanel: EmojiPanelView? = null
     private var extraRow: ExtraRowView? = null
     private var onboardingView: OnboardingView? = null
@@ -277,6 +282,12 @@ class AdaptKeyService : InputMethodService() {
     private var emailMode = false
     private lateinit var emojiDataset: EmojiDataset
     private var recentEmojis: List<String> = emptyList()
+    // D-317: L-03's emoji search (CLDR-derived, DE+EN merged). Loaded once, alongside emojiDataset.
+    private lateinit var emojiKeywordIndex: EmojiKeywordIndex
+    // D-317: whether the keyboard is currently capturing keystrokes into emojiSearchQuery instead of the
+    // real InputConnection - see enterEmojiSearch()/exitEmojiSearch() for the listener-swap mechanism.
+    private var emojiSearchActive = false
+    private var emojiSearchQuery = ""
     
     // D-36: system clipboard, for the direct-paste chip.
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
@@ -663,6 +674,7 @@ class AdaptKeyService : InputMethodService() {
         installStores(DictionaryLoader.activeLanguages(this).associateWith { InMemoryDictionaryStore() })
         loadDictionariesAsync()
         emojiDataset = EmojiDatasetLoader.load(this)
+        emojiKeywordIndex = EmojiKeywordLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
         languageClassifier = LanguageProfileLoader.loadClassifier(this)
         loadTier3ProviderAsync()
@@ -777,18 +789,15 @@ class AdaptKeyService : InputMethodService() {
         
         val view = AdaptKeyboardView(this)
         view.offsetModel = offsetModel
-        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, x, y, ambiguity, weight -> handleKey(key, x, y, ambiguity, weight) }
-        view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
-        view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
-        view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
-        view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
         keyboardView = view
+        wireLetterKeyListeners()
         
         val panel = EmojiPanelView(this)
         panel.dataset = emojiDataset
         panel.setRecentEmojis(recentEmojis)
         panel.onEmojiSelectedListener = EmojiPanelView.OnEmojiSelectedListener { emoji -> commitEmoji(emoji) }
         panel.onBackListener = EmojiPanelView.OnBackListener { setSurface(InputSurface.LETTERS) }
+        panel.onSearchListener = EmojiPanelView.OnSearchListener { enterEmojiSearch() }
         panel.visibility = View.GONE
         emojiPanel = panel
         
@@ -846,10 +855,19 @@ class AdaptKeyService : InputMethodService() {
         val clearClipboard = clearClipboardButton()
         clearClipboard.setOnClickListener { clearClipboardFromSuggestionBar() }
         clearClipboardButtonView = clearClipboard
+        
+        // D-317: the one, always-visible way back to ordinary typing while emoji-search capture mode is
+        // active (see enterEmojiSearch()) - a gesture-only escape (e.g. G-03's swipe-down-to-dismiss) would
+        // leave no obvious path back to *typing* rather than closing the keyboard outright. GONE by default.
+        val cancelEmojiSearch = cancelEmojiSearchButton()
+        cancelEmojiSearch.setOnClickListener { exitEmojiSearch() }
+        cancelEmojiSearchButtonView = cancelEmojiSearch
+        
         val suggestionRow = LinearLayout(this)
         suggestionRow.orientation = LinearLayout.HORIZONTAL
         suggestionRow.addView(bar, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
         suggestionRow.addView(clearClipboard, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
+        suggestionRow.addView(cancelEmojiSearch, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
         
         // D-135: the inline-suggestions row occupies the same slot as the ordinary suggestion bar, shown
         // instead of it whenever a real autofill suggestion is available (see onInlineSuggestionsResponse).
@@ -1918,6 +1936,29 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-317: the emoji-search capture mode's own always-visible way back to ordinary typing - a plain "✕"
+     * on the same button styling [clearClipboardButton] already established for this row. GONE by default;
+     * [enterEmojiSearch]/[exitEmojiSearch] are the only two places that toggle it.
+     */
+    private fun cancelEmojiSearchButton(): View {
+        val glyph = TextView(this).apply {
+            text = "✕"
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(this@AdaptKeyService, R.color.suggestion_text))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        }
+        return FrameLayout(this).apply {
+            background = GradientDrawable().apply {
+                setColor(ContextCompat.getColor(this@AdaptKeyService, R.color.key_background_special))
+                cornerRadius = CLEAR_CLIPBOARD_CORNER_RADIUS_DP.dpToPx().toFloat()
+            }
+            isClickable = true
+            visibility = View.GONE
+            addView(glyph, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        }
+    }
+    
+    /**
      * D-267: the single choke point every suggestion-bar content update now goes through, instead of
      * calling [SuggestionBarView.setItems] directly - keeps [clearClipboardButtonView]'s own visibility
      * correctly in sync with whatever is actually displayed, without having to remember to toggle it at
@@ -2011,6 +2052,11 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onFinishInput() {
         super.onFinishInput()
+        // D-317: never carry emoji-search capture mode over into the next field - leaving the field entirely
+        // (e.g. the target app finishes, or focus moves via any path other than this keyboard's own cancel
+        // button/Enter) must not strand the next field's keyboard with keystrokes still being captured
+        // instead of reaching it. Idempotent; a no-op when search was not active.
+        exitEmojiSearch()
         // D-142: catches leaving a login field WITHOUT pressing Enter (e.g. tapping an on-screen "Login"
         // button) - must run before the connection below is torn down, and before composing is cleared.
         // D-279: same reasoning covers a still-armed A-12 auto-space - the field is being left without an
@@ -2380,6 +2426,99 @@ class AdaptKeyService : InputMethodService() {
         recentEmojis = RecentEmojis.recordUse(recentEmojis, emoji)
         RecentEmojiStore.save(this, recentEmojis)
         emojiPanel?.setRecentEmojis(recentEmojis)
+    }
+    
+    /**
+     * Wires [keyboardView]'s five listeners to their ordinary handlers - the ones that read the real
+     * [currentInputConnection] and touch composing state. Factored out of [onCreateInputView] so
+     * [exitEmojiSearch] can restore exactly the same wiring [enterEmojiSearch] replaced, without
+     * duplicating the five listener assignments in two places.
+     */
+    private fun wireLetterKeyListeners() {
+        val view = keyboardView ?: return
+        view.onKeyListener = AdaptKeyboardView.OnKeyListener { key, x, y, ambiguity, weight -> handleKey(key, x, y, ambiguity, weight) }
+        view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
+        view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
+        view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
+        view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
+    }
+    
+    /**
+     * D-317: leaves the emoji panel's own category grid and switches to the letter keyboard in a dedicated
+     * search-capture mode - SwiftKey-style emoji search. [keyboardView]'s listeners are swapped to
+     * [handleEmojiSearchKey] (letters/backspace/space only) and `null` for everything else
+     * ([wireLetterKeyListeners]'s long-press/swipe/backspace-repeat/popup handlers), so nothing from those
+     * paths can reach the real [currentInputConnection] or composing state while search is active - the
+     * guarantee this mode depends on, since a typed search query must never land in the actual document.
+     * The suggestion bar - normally word suggestions - shows the live matching emoji instead, exactly the
+     * same "alternate content in the same slot" shape S-01 already documents for Autofill/credentials.
+     */
+    private fun enterEmojiSearch() {
+        emojiSearchActive = true
+        emojiSearchQuery = ""
+        setSurface(InputSurface.LETTERS)
+        val view = keyboardView
+        view?.onKeyListener = AdaptKeyboardView.OnKeyListener { key, _, _, _, _ -> handleEmojiSearchKey(key) }
+        view?.onLongPressListener = null
+        view?.onSwipeListener = null
+        view?.onBackspaceRepeatListener = null
+        view?.onLongPressPopupListener = null
+        cancelEmojiSearchButtonView?.visibility = View.VISIBLE
+        updateEmojiSearchResults()
+    }
+    
+    /**
+     * D-317: the one safe way back to ordinary typing - restores every listener [enterEmojiSearch]
+     * replaced ([wireLetterKeyListeners]) and clears the search buffer/results. Idempotent (a no-op when
+     * search is not active), so every call site - the dedicated cancel button, picking a result
+     * ([onSuggestionClicked]'s `EMOJI_SEARCH_RESULT` branch), Enter ([handleEmojiSearchKey]), and the
+     * defensive reset in [onFinishInput] - can call it unconditionally without checking [emojiSearchActive]
+     * itself first.
+     */
+    private fun exitEmojiSearch() {
+        if (!emojiSearchActive) {
+            return
+        }
+        emojiSearchActive = false
+        emojiSearchQuery = ""
+        wireLetterKeyListeners()
+        cancelEmojiSearchButtonView?.visibility = View.GONE
+        clearSuggestions()
+    }
+    
+    /**
+     * D-317: the emoji-search capture mode's own key handler - deliberately narrow (letters, digits and
+     * punctuation via [KeyCode.CHAR], [KeyCode.SPACE], [KeyCode.DELETE], [KeyCode.ENTER] to leave search)
+     * and never touches [currentInputConnection]. Every other key ([KeyCode.SHIFT] - search is already
+     * case-insensitive - [KeyCode.SYMBOL]/[KeyCode.LETTERS]/[KeyCode.TEXT]) is a no-op: the letters surface
+     * is shown purely for its key geometry here, not for symbol-page/case navigation.
+     */
+    private fun handleEmojiSearchKey(key: Key) {
+        when (key.code) {
+            KeyCode.CHAR -> key.char?.let { emojiSearchQuery += it }
+            KeyCode.SPACE -> emojiSearchQuery += ' '
+            KeyCode.DELETE -> if (emojiSearchQuery.isNotEmpty()) emojiSearchQuery = emojiSearchQuery.dropLast(1)
+            KeyCode.ENTER -> {
+                exitEmojiSearch()
+                return
+            }
+            else -> return
+        }
+        updateEmojiSearchResults()
+    }
+    
+    /**
+     * D-317: re-filters [emojiKeywordIndex] against [emojiSearchQuery] and pushes the matches directly to
+     * the suggestion bar, bypassing [controller] entirely - the same "built outside SuggestionController"
+     * shape [Kind.CREDENTIAL]/[Kind.CLIPBOARD] already use, since there is no composing token to rank
+     * these against.
+     */
+    private fun updateEmojiSearchResults() {
+        val items = emojiKeywordIndex.search(emojiSearchQuery).map { emoji ->
+            SuggestionController.DisplayItem(emoji, SuggestionController.Kind.EMOJI_SEARCH_RESULT, emoji)
+        }
+        setSuggestionBarItems(items)
+        suggestionBar?.visibility = View.VISIBLE
     }
     
     /**
@@ -5043,6 +5182,14 @@ class AdaptKeyService : InputMethodService() {
             // matching "if you do nothing, it stays learned" (doing nothing includes tapping it away).
             SuggestionController.Kind.LEARNED -> {
                 showNextWordPredictions()
+            }
+            
+            // D-317: item.word/item.text are both the emoji itself (updateEmojiSearchResults()) - commit it
+            // exactly like an ordinary emoji-panel grid tap, then leave search mode the same safe way the
+            // cancel button does.
+            SuggestionController.Kind.EMOJI_SEARCH_RESULT -> {
+                commitEmoji(item.word)
+                exitEmojiSearch()
             }
         }
     }

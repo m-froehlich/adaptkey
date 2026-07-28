@@ -11644,3 +11644,121 @@ version, it doesn't get its own special-cased bump).
 User confirmed D-316's refreshed catalog on device. No code change, no version bump (pure confirmation, per
 this project's own documentation rule) - only `AdaptKey-Progress.md`'s §236 bullet updated in place from "Not
 yet device-confirmed" to "Device-confirmed (2026-07-28)".
+
+## §238 - D-317: Emoji Search, SwiftKey-Style ("poop" Finds 💩) (v1.0.2)
+
+Explicit user request: SwiftKey lets a user type a search term (its own example: "poop") to find an emoji
+(the pile-of-poo emoji) instead of hunting through category tabs. Numbering note: a parallel session had
+already used D-316 for the unrelated feature-catalog refresh (§236/§237) by the time this round started -
+confirmed via `git log` before picking a number, this round is D-317.
+
+**Data source - three sequential decisions, refined as real gaps surfaced (design discussed with the user
+before implementing, per this project's own convention for non-trivial decisions):**
+
+1. **Where do search terms come from at all?** Considered Unicode CLDR annotations (official, multi-language,
+   needs a one-time extraction script) vs. a hand-curated short list (fast, but lastingly incomplete).
+   User chose CLDR.
+2. **CLDR short names only, or the full keyword-synonym lists?** First built against `type="tts"` (the one
+   official short name per language, e.g. "pile of poo"/"Kothaufen") for a smaller, more precise dataset.
+   Before writing any Kotlin, spot-checked the user's own concrete example against the real CLDR data
+   (`https://raw.githubusercontent.com/unicode-org/cldr/main/common/annotations/en.xml`) and found "poop"
+   itself is **only** in CLDR's full keyword-synonym annotation (`bs | comic | doo | dung | face | fml |
+   monster | pile | poo | poop | smelly | smh | stink | stinks | stinky | turd`), not the short name - the
+   short-names-only design would have silently failed the user's own motivating example. Flagged immediately
+   rather than shipping it and letting the user discover the gap; user chose to switch to the full
+   keyword-synonym lists for both languages, merged and deduplicated per emoji (`kot|kothaufen|mist|bs|comic|
+   doo|dung|face|fml|monster|pile|poo|poop|smelly|smh|stink|stinks|stinky|turd|pile of poo` for 💩), accepting
+   the larger, noisier dataset this implies (some very generic terms like "face" now match many emoji) as the
+   necessary trade-off for actually covering colloquial searches.
+3. **Scope:** fixed German + English, independent of the active typing language (G-01) - mirrors N-01's own
+   app-chrome language scope; searching for an emoji is "what do I mean", not document-language-dependent.
+
+**A pre-existing dataset gap, found and fixed in passing:** the pile-of-poo emoji itself was not in
+`emoji_dataset.tsv` at all (507 curated emoji, none of them 💩) - the user's own search example would have
+had nothing to find regardless of the search feature. Added under `SMILEYS_PEOPLE`, right after 🙄 and before
+the hand-gesture block starts (no established curation-order rule found in the history for exactly where a
+new entry belongs; this placement groups it with the other face-like entries). No broader audit of what else
+might be missing from the 507-entry list was attempted - out of scope for this round, flagged only for the
+one emoji directly implicated by the user's own example.
+
+**Extraction:** `scratchpad/build_emoji_keywords.py` (throwaway, kept per this project's established
+`scratchpad/build_*.py` convention - see `CREDITS.md`) fetches `common/annotations/{de,en}.xml` from the
+CLDR repository, strips CLDR's own `U+FE0F` normalisation (the file's own header note: "All cp values have
+U+FE0F characters removed") before matching against `emoji_dataset.tsv`'s emoji, and merges every `tts` +
+keyword-list term per language into one deduplicated, lowercased, pipe-separated line per emoji ->
+`app/src/main/assets/emoji_keywords.tsv` (44.5 KB, 508 entries - full coverage, no emoji from the dataset
+came back without at least one CLDR term in either language). Raw CLDR XML is not committed, matching how
+`build_dict.py`'s own Wikipedia dumps are not; only the script and its derived output are. `CREDITS.md`
+gained a new section (Unicode License v3, permissive - no ShareAlike/redistribution obligation, unlike the
+CC-BY-SA dictionaries).
+
+**The bigger design question: how does a user actually *type* a search query?** The emoji panel
+(`EmojiPanelView`) completely hides the letter keyboard (`AdaptKeyService.setSurface(EMOJI)` sets
+`keyboardView.visibility = GONE`) while shown - there is no way to type anything inside it as originally
+built. Two options were presented to the user:
+
+- **(A, chosen) Reuse the full letter keyboard + the suggestion bar's own slot.** Tapping the panel's new
+  search tab leaves the emoji grid entirely and returns to `InputSurface.LETTERS`; live matching emoji are
+  shown where ordinary word suggestions normally appear - S-01 already documents this exact slot showing
+  different content depending on context (Autofill inline row, credential list), so an emoji-search result
+  list is one more case of an existing, already-understood pattern, not a new UI concept. Typed keys are
+  captured into a local buffer, never reaching the real document.
+- **(B, rejected) A small dedicated key row built inside `EmojiPanelView` itself**, never touching
+  `AdaptKeyService`'s central key routing at all. Would have needed its own long-press/umlaut handling
+  duplicated from scratch (German search terms need `ä`/`ö`/`ü`) for a cramped, worse typing experience.
+
+User picked A, with one explicit follow-up requirement: **a guaranteed, safe way back to ordinary typing,
+with no side effects ("keine Querschläger") leaking from the search exception into normal typing
+afterwards.**
+
+**Implementation, built to satisfy exactly that requirement:**
+
+- `AdaptKeyboardView` already exposes its five key-event listeners (`onKeyListener`, `onLongPressListener`,
+  `onSwipeListener`, `onBackspaceRepeatListener`, `onLongPressPopupListener`) as public, independently
+  nullable vars - the five lines wiring them in `onCreateInputView()` were extracted into
+  `wireLetterKeyListeners()`, now the single place that both the initial setup and `exitEmojiSearch()` call,
+  so "restore normal typing" can never accidentally restore a stale or partial subset.
+- `enterEmojiSearch()` swaps `onKeyListener` to a narrow `handleEmojiSearchKey()` (letters/digits/
+  punctuation, Space, Backspace, Enter only) and sets the other four listeners to `null` outright - not to
+  a search-aware variant of each. This was a deliberate simplicity/safety trade-off over supporting
+  long-press umlaut popups during search (a real, accepted limitation: `ä`/`ö`/`ü` cannot be typed via
+  long-press while searching, only if they happen to be reachable another way) in exchange for a much
+  smaller surface that provably cannot reach `handleLongPress`/`handleSwipe`/`handleLongPressAlternative` -
+  and therefore cannot reach `currentInputConnection` or composing state - while search is active.
+- `handleEmojiSearchKey()` itself never calls `currentInputConnection` - it only ever mutates the local
+  `emojiSearchQuery` string field and re-runs `EmojiKeywordIndex.search()`, pushed to the bar via
+  `setSuggestionBarItems()` exactly like the existing `CREDENTIAL`/`CLIPBOARD` "built outside
+  `SuggestionController`" chips already do (no composing token exists to rank these against).
+- **Three independent, defensive ways back to ordinary typing**, each calling the same idempotent
+  `exitEmojiSearch()`: a dedicated "✕" button next to the suggestion bar (mirroring `clearClipboardButton`'s
+  own styling/placement, D-267) - the primary, always-visible, gesture-independent affordance the user's
+  "keine Querschläger" requirement specifically called for; `KeyCode.ENTER` inside
+  `handleEmojiSearchKey()`; and picking a result (`onSuggestionClicked`'s new `EMOJI_SEARCH_RESULT` branch:
+  `commitEmoji(item.word)` then `exitEmojiSearch()`, i.e. the exact same commit path an ordinary emoji-panel
+  grid tap already uses). A fourth, purely defensive path: `onFinishInput()` now calls `exitEmojiSearch()`
+  unconditionally on every field exit (a no-op when search was never active), so leaving the field entirely
+  by any means - not only this keyboard's own controls - can never strand the *next* field's keyboard still
+  capturing keystrokes instead of typing into it.
+- T-03's own offset-model training (`OffsetModel.record()`) already happens inside `AdaptKeyboardView` at
+  `ACTION_DOWN`, before the view ever calls out to any of the swapped listeners - confirmed by reading the
+  call site before relying on it, rather than assuming - so search-mode key taps still train the touch model
+  exactly like ordinary typing does, with zero special-casing needed for this.
+- New `SuggestionController.Kind.EMOJI_SEARCH_RESULT`. Existing `SuggestionBarView` drag-to-trash/two-zone
+  logic only ever matches `NORMAL`/`LEARNED` explicitly (checked, not assumed), so the new kind is
+  automatically inert there with no code change - an emoji-search chip cannot be accidentally dragged to
+  blacklist.
+
+`EmojiPanelView` itself gained only a new search tab (magnifying glass, alongside the existing back/recent/
+category tabs) and an `OnSearchListener` - it hosts no search UI of its own; the panel's only job is telling
+the service "search was requested."
+
+11 new tests (`EmojiKeywordParserTest.kt`, `EmojiKeywordIndexTest.kt` - substring/case-insensitivity/
+whitespace-trimming/blank-query/multi-word-phrase coverage for the pure index and parser).
+`AdaptKeyService`'s own capture-mode wiring is untested Android-glue orchestration, the same category as
+every other `AdaptKeyService`-level fix in this file. 947 unit tests (936 + 11). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green - confirmed the built APK's own `assets/` entries directly (both
+`emoji_dataset.tsv` and the new `emoji_keywords.tsv` present). Spec's L-03 revised. `CREDITS.md` gained the
+CLDR section. Version bumped 1.0.1 -> 1.0.2. Not yet device-confirmed - needs a real search round-trip
+(typing "poop", tapping the result, confirming ordinary typing resumes cleanly afterwards with no leftover
+state) and specifically a check that leaving the field mid-search (e.g. tapping away) does not strand the
+next field.
