@@ -119,9 +119,8 @@ non-trivial changes).
   ever needed again" - dozens of releases since D-223 have all shipped via `:app:assembleRelease` with no
   debug APK ever actually needed, so the speculative sentence was removed. `FeatureCatalogTest`'s assertions
   are entry-count-agnostic, no test changes needed. 936 unit tests (unchanged). `versionCode` 304 -> 305,
-  `versionName` `"1.0.0"` -> `"1.0.1"`. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
-  device-confirmed - needs a look at the feature-overview screen (all 33 entries, all three locales) and the
-  extra row itself to confirm f26's corrected description matches. See history §236.
+  `versionName` `"1.0.0"` -> `"1.0.1"`. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  **Device-confirmed (2026-07-28).** See history §236/§237.
 - **§234 (v1.0.0): D-315 - version bumped to `1.0.0`, an explicit user-requested milestone marker right**
   **after D-314 (AZERTY) closed the multi-language rollout's last open layout gap.** Mirrors D-283's own
   precedent (`0.8.154 -> 0.9.0`) - no source change beyond `app/build.gradle.kts` (`versionCode` 303 -> 304,

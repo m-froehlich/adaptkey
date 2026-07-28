@@ -11637,6 +11637,10 @@ Progress.md pass - see that section, already up to date.
 No new tests. `versionCode` 304 -> 305, `versionName` 1.0.0 -> 1.0.1 (ordinary third-release-since-milestone
 step - the "1.0.0 is a milestone, not a ceiling" precedent D-283/D-315 already established for the minor/major
 jumps applies in reverse here: an ordinary doc/content round after a milestone still just takes the next
-version, it doesn't get its own special-cased bump). Not yet device-confirmed - needs a look at the Settings
-feature-overview screen itself (all 33 entries, all three locales) and a scroll through the extra row to
-confirm f26's corrected description actually matches what is shown.
+version, it doesn't get its own special-cased bump).
+
+## §237 - D-316 Confirmed: Feature-Overview Screen Checked On Device (no code change)
+
+User confirmed D-316's refreshed catalog on device. No code change, no version bump (pure confirmation, per
+this project's own documentation rule) - only `AdaptKey-Progress.md`'s §236 bullet updated in place from "Not
+yet device-confirmed" to "Device-confirmed (2026-07-28)".
