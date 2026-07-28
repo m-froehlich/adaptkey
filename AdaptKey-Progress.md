@@ -195,14 +195,12 @@ in every prompt.
   `AutoName: AdaptKey` (after `IssueTracker`, before `RepoType`, matching the CI's own proposed diff
   exactly) and re-verified locally against real `rewritemeta` output again - still an exact, stable match.
   Handed over the same way (file upload, not paste) to keep the CRLF fix intact.
+- **CI pipeline fully green** after the `AutoName` push - `build`, `checkupdates`, and `rewritemeta` all
+  passed. The MR is now technically complete and waiting purely on human maintainer review; no further
+  content work is expected unless a reviewer asks for something new.
 - **Still open:**
-  - Push this newest fix (`AutoName: AdaptKey`) into the MR's `metadata/de.froehlichmedia.adaptkey.yml` via
-    GitLab's "Replace file"/Web IDE upload (not copy/paste), and re-run the pipeline - if all three jobs
-    pass this time, the MR is technically ready and just waiting on human maintainer review.
   - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
     to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
-  - Watch the MR's CI pipeline and fix anything further it flags by editing the file again in the GitLab
-    web UI, pushed to the same branch.
   - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
     commonly takes weeks, sometimes months).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
