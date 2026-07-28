@@ -11569,3 +11569,13 @@ shape; §1's stale "French's AZERTY geometry has [not] been built" aside correct
 `:app:testDebugUnitTest` green. Version bumped 0.9.25 -> 0.9.26. No French dictionary/hint content shipped
 yet - only the compiled geometry; a real `dictionaries/fr/` pack (§3/§4 of the guide) is a separate, future
 task. Not yet device-confirmed.
+
+## §234 - D-315: Version Bumped To 1.0.0, A Milestone Marker - No Code Change (v1.0.0)
+
+Explicit user request, made right after §233/D-314 closed out the multi-language rollout's last open layout
+gap (AZERTY): bump the version to `1.0.0`. Mirrors D-283's own precedent (`0.8.154 -> 0.9.0` marking the
+D-280/D-281/D-282 multi-language rollout itself) - a deliberate minor/major-version step instead of the
+ordinary per-release third-digit increment, to mark a milestone rather than to accompany a feature. No source
+change beyond `app/build.gradle.kts`: `versionCode` 303 -> 304 (Android's own strictly-increasing requirement,
+unrelated to the `versionName` scheme), `versionName` `"0.9.26"` -> `"1.0.0"`. 936 unit tests (unchanged - no
+code touched). `:app:assembleRelease`/`:app:testDebugUnitTest` green.

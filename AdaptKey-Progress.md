@@ -106,6 +106,11 @@ non-trivial changes).
 
 ## Current State
 
+- **§234 (v1.0.0): D-315 - version bumped to `1.0.0`, an explicit user-requested milestone marker right**
+  **after D-314 (AZERTY) closed the multi-language rollout's last open layout gap.** Mirrors D-283's own
+  precedent (`0.8.154 -> 0.9.0`) - no source change beyond `app/build.gradle.kts` (`versionCode` 303 -> 304,
+  `versionName` `"0.9.26"` -> `"1.0.0"`). 936 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. See history §234.
 - **§233 (v0.9.26): D-314 - French AZERTY built and wired up, confirmed as the last missing common Latin**
   **keyboard geometry before building it.** Confirmed first: `Language.FRENCH` was already in the enum, no
   AZERTY existed anywhere in compiled code, and every existing AZERTY mention in the Contribution
