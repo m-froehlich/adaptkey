@@ -12131,3 +12131,41 @@ No new unit tests - pure logging additions to already-untested `AdaptKeyService`
 tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (diagnostic-only,
 no behaviour change). `versionCode` 312 -> 313, `versionName` `"1.0.8"` -> `"1.0.9"`. Next step: reproduce with
 the in-app diagnostic log recording, then read back the `onStartInput`/`onStartInputView` timestamp pairing.
+
+## §248 - D-324: The Real Log Directly Refutes the "restarting=true" Hypothesis; Deeper Diagnostic Logging Added Instead of a Second Guess (v1.0.10)
+
+The user reproduced the bug and supplied a real device log. It directly disproves §247's own hypothesis:
+every single `onStartInput` in the captured sequence (Signal messenger, `org.thoughtcrime.securesms`) reports
+`restarting=false` - twice, 19 ms apart, each immediately followed by its own `onStartInputView` (also
+`restarting=false`) - so the "a restart fires without a paired `onStartInputView`" theory does not hold; the
+pairing was intact throughout. Per this project's own rule (re-question the diagnosis on negative evidence,
+don't patch the same theory), the hypothesis is dropped rather than defended.
+
+**What the log does show, read carefully against the reported timeline:** after the first two paired
+onStartInput/onStartInputView calls (t=333282023..043), nothing at all is logged for a full 6 seconds, then a
+*lone* `onStartInputView` fires at t=333288032 with no `onStartInput` immediately before it in the capture -
+itself unexplained by anything logged so far (a real, distinct anomaly worth its own future look, but not
+demonstrated to be the cause of the reported disappearance). A further ~2.5s of silence follows, then the
+user's first actual keystroke (`rawTap: key=c:j`). Per V-01's own documented behaviour ("typing anything
+replaces the chip with the normal suggestions"), the chip vanishing *once typing starts* would be correct,
+expected behaviour, not a bug - so the keystroke itself cannot be what the user is reporting. The genuinely
+unexplained window is the ~8.5s of near-silence *before* that keystroke, during which the existing two
+lifecycle logs (`onStartInput`/`onStartInputView`) give no visibility into whether/when the clipboard chip's
+own *content* changed - neither log says whether `showClipboardChipIfAvailable()` actually added a chip, bailed
+out (and why), or whether something else called `setSuggestionBarItems()` in between and wiped it before the
+user ever got to type.
+
+**Added targeted logging to close exactly that gap**, rather than guessing a second root cause: (1)
+`showClipboardChipIfAvailable()` now logs on entry (with `composing` state) and at every one of its five
+early-return bail points (composing not empty, no primary clip, empty clip, stale clip, unresolved
+text/label) - previously silent, so a bail there was indistinguishable from never being called at all; (2)
+`setSuggestionBarItems()` - D-267's own single choke point every ordinary suggestion-bar content update
+funnels through, roughly ten call sites - now logs item count and kinds on every call, so the *next* capture
+shows the bar's full content history over time, not just the two view-lifecycle events already logged, making
+it possible to see exactly which caller (if any) clears the chip before typing starts.
+
+No new unit tests - pure logging additions to already-untested `AdaptKeyService` glue, same category as D-324's
+own first round. 956 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec
+change. `versionCode` 313 -> 314, `versionName` `"1.0.9"` -> `"1.0.10"`. Next step: reproduce again with
+diagnostics enabled and share the new log - the `setSuggestionBarItems`/`showClipboardChipIfAvailable` lines
+should now show directly what happens to the chip during the ~8.5s window before any typing starts.

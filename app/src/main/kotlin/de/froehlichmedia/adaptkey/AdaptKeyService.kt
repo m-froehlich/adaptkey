@@ -1621,19 +1621,39 @@ class AdaptKeyService : InputMethodService() {
      * redundant duplicate chips of the main one.
      */
     private fun showClipboardChipIfAvailable() {
+        // D-324 (temporary diagnostic): every call, plus the exact bail reason when it doesn't end up
+        // showing a chip - narrows the "clipboard chip flashes then disappears" report past the two
+        // lifecycle-callback logs already added, since neither of those shows *why* the chip's own content
+        // stopped being shown. Remove once D-324 is closed.
+        diag("AdaptKey", "showClipboardChipIfAvailable: enter t=${SystemClock.uptimeMillis()} composing=\"$composing\"")
         if (composing.isNotEmpty()) {
+            diag("AdaptKey", "showClipboardChipIfAvailable: bail - composing not empty")
             return
         }
-        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return
+        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip
+        if (clip == null) {
+            diag("AdaptKey", "showClipboardChipIfAvailable: bail - no primary clip")
+            return
+        }
         if (clip.itemCount == 0) {
+            diag("AdaptKey", "showClipboardChipIfAvailable: bail - itemCount 0")
             return
         }
         if (!ClipboardPreview.isFresh(clip.description.timestamp, System.currentTimeMillis())) {
+            diag("AdaptKey", "showClipboardChipIfAvailable: bail - stale (timestamp=${clip.description.timestamp})")
             return
         }
-        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return
+        val text = resolveClipboardText(clip, clip.getItemAt(0))
+        if (text == null) {
+            diag("AdaptKey", "showClipboardChipIfAvailable: bail - resolveClipboardText null")
+            return
+        }
         val sensitive = isSensitiveClip(clip)
-        val label = ClipboardPreview.label(text, sensitive) ?: return
+        val label = ClipboardPreview.label(text, sensitive)
+        if (label == null) {
+            diag("AdaptKey", "showClipboardChipIfAvailable: bail - no label")
+            return
+        }
         val fullText = text.toString().trim()
         val chips = ArrayList<SuggestionController.DisplayItem>()
         chips.add(SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, ""))
@@ -2007,6 +2027,16 @@ class AdaptKeyService : InputMethodService() {
      * this complements, not replaces.
      */
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
+        // D-324 (temporary diagnostic): this is D-267's own single choke point every ordinary suggestion-bar
+        // content update funnels through, so logging here (item count + kinds + timestamp) shows every
+        // content change over time, not just the two lifecycle callbacks already logged - narrows the
+        // "clipboard chip flashes then disappears" report down to whichever caller actually wipes it, since
+        // this function has ~10 call sites and the log line alone does not say which one fired. Remove once
+        // D-324 is closed.
+        diag(
+            "AdaptKey",
+            "setSuggestionBarItems: t=${SystemClock.uptimeMillis()} count=${items.size} kinds=${items.joinToString { it.kind.name }}"
+        )
         suggestionBar?.setItems(items)
         inlineSuggestionsBar?.visibility = View.GONE
         // D-323: the mirror of the line above - this is the one choke point every ordinary suggestion update

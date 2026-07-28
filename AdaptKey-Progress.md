@@ -177,6 +177,18 @@ non-trivial changes).
 
 ## Current State
 
+- **§248 (v1.0.10): D-324 continued - the user's real device log directly refuted §247's "restarting=true"**
+  **hypothesis: every `onStartInput` in the capture reports `restarting=false`, each immediately paired with**
+  **its own `onStartInputView`.** Dropped per this project's own "re-question on negative evidence" rule
+  instead of defending it. The log does show ~8.5s of near-silence between the initial field-open pair and the
+  user's first keystroke, including one unexplained *lone* `onStartInputView` mid-window - but neither existing
+  log line says anything about the clipboard chip's own *content* changing during that window, so the actual
+  mechanism is still unconfirmed. Added deeper logging instead of guessing again:
+  `showClipboardChipIfAvailable()` now logs entry + every one of its 5 bail reasons; `setSuggestionBarItems()`
+  (D-267's single choke point, ~10 call sites) now logs item count/kinds on every call. 956 unit tests
+  (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 313 -> 314, `versionName`
+  `"1.0.9"` -> `"1.0.10"`. **Next step: reproduce again with diagnostics enabled and share the new log** - it
+  should now show the bar's full content history through the previously-silent window. See history §248.
 - **§247 (v1.0.9): D-324 - new report right after §246: clipboard chip flashes then disappears on field**
   **entry.** First hypothesis (Autofill precedence, per §246's own discussion) was directly ruled out by the
   user ("das Textfeld ist ja noch leer") and confirmed wrong by code reading too (`onUpdateSelection`'s own
