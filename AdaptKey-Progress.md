@@ -126,12 +126,15 @@ in every prompt.
       universal APK ships both `arm64-v8a`/`armeabi-v7a`). User confirmed (per the maintainer's own MR
       template) these are "recommended", not required for inclusion - left undone for now, not silently
       checked off.
+- **The MR itself lives at `gitlab.com/fdroid/fdroiddata/-/merge_requests/44142`** (the upstream project's
+  own namespace, not `gitlab.com/m-froehlich/fdroiddata/...` - a merge request from a fork is numbered
+  under the *target* project, which cost some real back-and-forth to track down when a plain 404 gave no
+  clue why). Source branch: `m-froehlich-master-patch-41126`.
+- **Done:** the MR's `metadata/de.froehlichmedia.adaptkey.yml` updated to the current scratchpad draft
+  content (through `1.0.10`) via the GitLab web UI, committed on that same branch.
 - **Still open:**
   - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
     to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
-  - Update the actual `fdroiddata` MR (not just the local scratchpad draft) with the new `Builds` entries
-    (through 1.0.10) and the bumped `CurrentVersion`/`CurrentVersionCode` - see the scratchpad file for the
-    exact content to paste in.
   - Watch the MR's CI pipeline (lint + scanner + a real trial build of at least the current version) and
     fix anything it flags by editing the file again in the GitLab web UI, pushed to the same branch.
   - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
