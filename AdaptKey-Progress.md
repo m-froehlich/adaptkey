@@ -281,6 +281,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§250 (v1.0.12): D-324/D-325 closed - root cause confirmed from a real log (Signal's message field gets a**
+  **genuinely unstable Autofill response - offered, retracted, re-offered every few hundred ms for several**
+  **seconds, each cycle hiding/restoring the clipboard chip), Google Keep/K9 never trigger Autofill at all in**
+  **the same capture.** Discussed the trade-off before fixing (this project's own convention): real, stable
+  Autofill content should still win, delay included - but AdaptKey cannot inspect what an inline suggestion
+  actually renders (`InlineSuggestion.inflate()` is a deliberate opaque/remote-rendering privacy boundary), so
+  content-based "is this empty" detection is not possible; *response stability* is the practical, log-grounded
+  proxy instead. User approved. Fix: new `inlineSuggestionsGeneration` counter debounces the takeover
+  (`INLINE_SUGGESTIONS_DEBOUNCE_MS = 400L`) - a response must go unchallenged by a newer one (empty or not)
+  for that long before it evicts the ordinary bar; a stale/superseded response's own late callbacks
+  self-cancel via the generation check, no tracked `Runnable` needed. Also removed every D-324-round temporary
+  diagnostic log now that the root cause is confirmed and fixed (they would otherwise spam X-01's own short
+  retained window for unrelated future investigations) - kept only the lightweight
+  `onStartInput`/`onStartInputView` `restarting=`/timestamp additions (generically useful) and one new
+  low-noise line logged only when a debounced takeover actually fires. 956 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's P-06 revised. `versionCode` 315 -> 316,
+  `versionName` `"1.0.11"` -> `"1.0.12"`. **Not yet device-confirmed** - needs the exact reported Signal
+  sequence re-tested. See history §250.
 - **§249 (v1.0.11): D-324 continued - two more real repro logs, each correcting the last.** Log 1: the chip
   bailed `stale` throughout - not a bug, that particular clip was genuinely past V-01's 5-minute freshness
   window. Log 2: user re-scoped precisely - height now stable, chip "zuverlässig" shown, but flashes then

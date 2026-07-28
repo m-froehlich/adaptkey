@@ -184,6 +184,10 @@ class AdaptKeyService : InputMethodService() {
     // D-135: platform-rendered Autofill inline suggestions (a saved username/password), shown instead of
     // the ordinary suggestion bar whenever at least one is available for the current field.
     private var inlineSuggestionsBar: InlineSuggestionsBarView? = null
+    // D-325: bumped on every onInlineSuggestionsResponse() call (and by resetInlineSuggestions() on a field
+    // change) so a delayed takeover (see that function's own KDoc) can recognise it has been superseded by a
+    // newer call and quietly no-op, without needing a tracked Runnable reference to cancel.
+    private var inlineSuggestionsGeneration = 0
     private var inputRoot: LinearLayout? = null
     private var offsetModel: OffsetModel? = null
     // D-74: the typing pattern the currently-held offsetModel was loaded under, so a later save can detect
@@ -1540,12 +1544,6 @@ class AdaptKeyService : InputMethodService() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {
-        // D-324 (temporary diagnostic): never logged before this round - the one code path that can hide
-        // suggestionRow/suggestionBar without going through setSuggestionBarItems() (see
-        // onInlineSuggestionsResponse's own new log below), so a real repro's log previously showed no
-        // suggestion-bar content change at all even when the chip visibly disappeared. Remove once D-324
-        // is closed.
-        diag("AdaptKey", "onCreateInlineSuggestionsRequest: t=${SystemClock.uptimeMillis()}")
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         val style = UiVersions.newStylesBuilder()
             .addStyle(InlineSuggestionUi.newStyleBuilder().build())
@@ -1567,19 +1565,32 @@ class AdaptKeyService : InputMethodService() {
      * as long as at least one is present; reverts to the ordinary bar once cleared (a fresh, empty response,
      * or the field changing via [resetInlineSuggestions]).
      *
+     * D-325: taking over the slot is debounced by [INLINE_SUGGESTIONS_DEBOUNCE_MS] rather than immediate - a
+     * real device log (Signal's message-compose field, some active autofill service on that device) showed a
+     * genuinely unstable responder: a non-empty response immediately followed, within a couple hundred
+     * milliseconds, by an empty one, then another non-empty one, repeating for several seconds - each
+     * non-empty response hid [suggestionRow] (evicting e.g. a V-01 clipboard chip) only for the very next
+     * empty one to restore it, over and over, read by the user as the whole row visibly flickering. AdaptKey
+     * cannot inspect what an inline suggestion actually renders ([InlineSuggestion.inflate] delivers an opaque,
+     * remotely-drawn [View] by design - a deliberate privacy boundary, not something this app can see into),
+     * so "was this suggestion actually worth showing" is not answerable directly; *stability* is the
+     * closest available proxy, and directly targets what the log actually showed. [inlineSuggestionsGeneration]
+     * is bumped on every call (empty or not); the delayed commit below only takes effect if nothing has bumped
+     * it again by the time it fires - a newer call arriving first (superseding this response, empty or not)
+     * makes the check below a no-op, naturally cancelling the pending takeover without needing a tracked
+     * [Runnable] reference to remove. A genuinely stable, real suggestion (the ordinary login-field case this
+     * mechanism exists for) is delayed by only [INLINE_SUGGESTIONS_DEBOUNCE_MS] before still winning, same as
+     * before.
+     *
      * @return true only when at least one suggestion is being shown - false (nothing to display) when the
      *         response is empty, per the API contract
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onInlineSuggestionsResponse(response: InlineSuggestionsResponse): Boolean {
         val bar = inlineSuggestionsBar ?: return false
+        val myGeneration = ++inlineSuggestionsGeneration
         bar.clearSuggestions()
         val suggestions = response.inlineSuggestions
-        // D-324 (temporary diagnostic): this call's own arrival (with count) was never logged before this
-        // round - the missing half of the picture for the "chip flashes then disappears" report, since this
-        // is the one path that hides suggestionRow/suggestionBar directly, bypassing setSuggestionBarItems()'s
-        // own already-logged choke point entirely. Remove once D-324 is closed.
-        diag("AdaptKey", "onInlineSuggestionsResponse: t=${SystemClock.uptimeMillis()} count=${suggestions.size}")
         if (suggestions.isEmpty()) {
             bar.visibility = View.GONE
             suggestionRow?.visibility = View.VISIBLE
@@ -1590,12 +1601,17 @@ class AdaptKeyService : InputMethodService() {
         val size = Size(INLINE_SUGGESTION_WIDTH_DP.dpToPx(), barHeight)
         for (suggestion in suggestions.take(INLINE_SUGGESTION_MAX_COUNT)) {
             suggestion.inflate(this, size, mainExecutor) { view ->
-                if (view == null) {
-                    diag("AdaptKey", "onInlineSuggestionsResponse: inflate callback with null view - skipped")
+                // D-325: a stale, already-superseded response's own late-arriving inflate must not add its
+                // view into a bar a newer response has already cleared/is building its own content into.
+                if (view == null || myGeneration != inlineSuggestionsGeneration) {
                     return@inflate
                 }
-                diag("AdaptKey", "onInlineSuggestionsResponse: inflate callback t=${SystemClock.uptimeMillis()} - hiding suggestionRow/suggestionBar")
                 bar.addSuggestion(view)
+            }
+        }
+        handler.postDelayed({
+            if (myGeneration == inlineSuggestionsGeneration) {
+                diag("AdaptKey", "onInlineSuggestionsResponse: response stable after ${INLINE_SUGGESTIONS_DEBOUNCE_MS}ms - taking over the slot")
                 bar.visibility = View.VISIBLE
                 // D-323: suggestionRow (the whole ordinary-bar row, a fixed-height sibling of this bar in
                 // inputRoot) never collapsed on its own just because suggestionBar inside it went GONE - it
@@ -1604,7 +1620,7 @@ class AdaptKeyService : InputMethodService() {
                 suggestionRow?.visibility = View.GONE
                 suggestionBar?.visibility = View.GONE
             }
-        }
+        }, INLINE_SUGGESTIONS_DEBOUNCE_MS)
         return true
     }
     
@@ -1613,8 +1629,13 @@ class AdaptKeyService : InputMethodService() {
         return (this * resources.displayMetrics.density).toInt()
     }
     
-    /** D-135: clears any inline suggestions and restores the ordinary suggestion bar. */
+    /**
+     * D-135: clears any inline suggestions and restores the ordinary suggestion bar. D-325: also bumps
+     * [inlineSuggestionsGeneration], so a still-pending debounced takeover from the *previous* field can
+     * never fire after the field has already changed underneath it.
+     */
     private fun resetInlineSuggestions() {
+        inlineSuggestionsGeneration++
         inlineSuggestionsBar?.clearSuggestions()
         inlineSuggestionsBar?.visibility = View.GONE
         suggestionRow?.visibility = View.VISIBLE
@@ -1634,39 +1655,19 @@ class AdaptKeyService : InputMethodService() {
      * redundant duplicate chips of the main one.
      */
     private fun showClipboardChipIfAvailable() {
-        // D-324 (temporary diagnostic): every call, plus the exact bail reason when it doesn't end up
-        // showing a chip - narrows the "clipboard chip flashes then disappears" report past the two
-        // lifecycle-callback logs already added, since neither of those shows *why* the chip's own content
-        // stopped being shown. Remove once D-324 is closed.
-        diag("AdaptKey", "showClipboardChipIfAvailable: enter t=${SystemClock.uptimeMillis()} composing=\"$composing\"")
         if (composing.isNotEmpty()) {
-            diag("AdaptKey", "showClipboardChipIfAvailable: bail - composing not empty")
             return
         }
-        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip
-        if (clip == null) {
-            diag("AdaptKey", "showClipboardChipIfAvailable: bail - no primary clip")
-            return
-        }
+        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return
         if (clip.itemCount == 0) {
-            diag("AdaptKey", "showClipboardChipIfAvailable: bail - itemCount 0")
             return
         }
         if (!ClipboardPreview.isFresh(clip.description.timestamp, System.currentTimeMillis())) {
-            diag("AdaptKey", "showClipboardChipIfAvailable: bail - stale (timestamp=${clip.description.timestamp})")
             return
         }
-        val text = resolveClipboardText(clip, clip.getItemAt(0))
-        if (text == null) {
-            diag("AdaptKey", "showClipboardChipIfAvailable: bail - resolveClipboardText null")
-            return
-        }
+        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return
         val sensitive = isSensitiveClip(clip)
-        val label = ClipboardPreview.label(text, sensitive)
-        if (label == null) {
-            diag("AdaptKey", "showClipboardChipIfAvailable: bail - no label")
-            return
-        }
+        val label = ClipboardPreview.label(text, sensitive) ?: return
         val fullText = text.toString().trim()
         val chips = ArrayList<SuggestionController.DisplayItem>()
         chips.add(SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, ""))
@@ -2040,16 +2041,6 @@ class AdaptKeyService : InputMethodService() {
      * this complements, not replaces.
      */
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
-        // D-324 (temporary diagnostic): this is D-267's own single choke point every ordinary suggestion-bar
-        // content update funnels through, so logging here (item count + kinds + timestamp) shows every
-        // content change over time, not just the two lifecycle callbacks already logged - narrows the
-        // "clipboard chip flashes then disappears" report down to whichever caller actually wipes it, since
-        // this function has ~10 call sites and the log line alone does not say which one fired. Remove once
-        // D-324 is closed.
-        diag(
-            "AdaptKey",
-            "setSuggestionBarItems: t=${SystemClock.uptimeMillis()} count=${items.size} kinds=${items.joinToString { it.kind.name }}"
-        )
         suggestionBar?.setItems(items)
         inlineSuggestionsBar?.visibility = View.GONE
         // D-323: the mirror of the line above - this is the one choke point every ordinary suggestion update
@@ -5854,6 +5845,13 @@ class AdaptKeyService : InputMethodService() {
         // the actual rendered content within it).
         private const val INLINE_SUGGESTION_MAX_COUNT = 3
         private const val INLINE_SUGGESTION_WIDTH_DP = 160
+        
+        // D-325: how long a non-empty Autofill inline-suggestions response must remain uncontested by a
+        // newer call (empty or not) before it actually takes over the ordinary suggestion bar's slot - see
+        // onInlineSuggestionsResponse's own KDoc for the real device log (an unstable responder flickering
+        // the row) this debounce answers. Short enough that a genuinely stable, real suggestion is delayed
+        // imperceptibly; comfortably above the ~100-200ms oscillation the log actually showed.
+        private const val INLINE_SUGGESTIONS_DEBOUNCE_MS = 400L
         
         // D-122 / D-137: comfortably above any real dictionary frequency (the largest bundled entries sit
         // around 1e6, see MIN_AUTOCORRECT_CANDIDATE_FREQUENCY's own comment) so a synthesised, always-right

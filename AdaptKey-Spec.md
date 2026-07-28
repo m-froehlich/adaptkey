@@ -858,7 +858,15 @@ long-press remove action offering a "Copy" option first.
 ### P-06 - Autofill Inline Suggestions
 On API 30+, a field eligible for Android Autofill can render the platform's own opaque, platform-drawn
 inline-suggestions view in the suggestion bar's slot (e.g. surfacing a password manager's own entries)
-instead of AdaptKey's ordinary suggestions.
+instead of AdaptKey's ordinary suggestions. D-325: a non-empty response only actually takes over the slot
+once it has gone unchallenged (by a further response, empty or not) for a short debounce window - a real
+device log showed at least one autofill responder answering unstably for an ordinary text field (a
+suggestion offered, then retracted, then re-offered, repeating over several seconds), which otherwise visibly
+flickered whatever the ordinary bar was showing (e.g. a V-01 clipboard chip) in and out. AdaptKey has no way
+to inspect what an inline suggestion actually renders - the view is opaque, drawn remotely by the autofill
+service itself - so response *stability* is used as the closest available proxy for "is this worth
+displaying" rather than any content inspection. A genuinely stable suggestion (the ordinary case this feature
+exists for) is simply delayed by the debounce window before still winning.
 
 ---
 

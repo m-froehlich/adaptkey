@@ -12217,3 +12217,51 @@ No new unit tests - pure logging, same established gap as every other D-324 roun
 `"1.0.10"` -> `"1.0.11"`. Next step: reproduce once more in Signal with a fresh clipboard chip and diagnostics
 enabled, then share the log - the two new Autofill-specific lines should now show directly whether that is
 the actual mechanism.
+
+## §250 - D-324/D-325: Root Cause Confirmed From a Real Log (an Unstable Autofill Responder in Signal), Debounced Instead of Content-Inspected (v1.0.12)
+
+The user reproduced once more with the new logging in place, and this log is conclusive. Around
+`t=335836415`, Signal's message field receives a genuine `onInlineSuggestionsResponse: count=2` - 16ms later,
+two `inflate callback ... - hiding suggestionRow/suggestionBar` lines fire, exactly the moment the clipboard
+chip visibly disappeared. The same cycle (`count=2` -> hide -> `count=0` -> fresh request -> `count=2` -> hide)
+then repeats roughly every few hundred milliseconds for several seconds. Google Keep and K9's own fields never
+produce a single `onInlineSuggestionsResponse` in the same capture window - confirming Signal's field
+genuinely is treated as Autofill-relevant by some active service on this device, unlike the other two apps.
+
+Asked the user directly what "autofill" even means here, since the next decision hinged on it (this project's
+own convention: discuss non-trivial trade-offs before implementing). Clarified: real, stable Autofill content
+should still win outright, delay included - the actual complaint is that content the responder itself
+immediately retracts ("leer") should not be allowed to win over an already-shown clipboard chip. Explained the
+real constraint before proposing anything: `InlineSuggestion.inflate()` hands AdaptKey an opaque, remotely-
+rendered `View` - a deliberate Autofill Framework privacy boundary, not a gap in this app's own code - so there
+is no reliable way to inspect whether a given suggestion is visually "empty" from the IME side. What *is*
+directly measurable from the log is the responder's own instability (the rapid non-empty/empty/non-empty
+cycling) - proposed treating that as the practical proxy: debounce the takeover so a response must survive
+uncontested for a short window before it's allowed to evict the ordinary bar. User confirmed this framing and
+approved it directly.
+
+**Implementation:** new `inlineSuggestionsGeneration` (bumped on every `onInlineSuggestionsResponse` call and
+by `resetInlineSuggestions()` on a field change) lets a delayed commit recognise it has been superseded without
+needing a tracked `Runnable` to cancel - `handler.postDelayed({ if (myGeneration == inlineSuggestionsGeneration) { ...take over... } }, INLINE_SUGGESTIONS_DEBOUNCE_MS)` is simply a no-op once a newer call (empty or not)
+has already bumped the counter past it. `INLINE_SUGGESTIONS_DEBOUNCE_MS = 400L` - comfortably above the
+~100-200ms oscillation the real log showed, short enough that a genuinely stable suggestion is delayed
+imperceptibly. Each suggestion's own `inflate()` callback still adds its view into the (still-hidden)
+`inlineSuggestionsBar` eagerly (mirroring a stale, superseded inflate's own generation check, so it can never
+leak into a newer response's bar) - only the actual visibility swap (hiding `suggestionRow`/`suggestionBar`,
+showing the inline bar) is gated behind the debounce.
+
+**Diagnostic cleanup, not just the fix:** every D-324-round temporary log added purely to narrow this down
+(the five `showClipboardChipIfAvailable` bail-reason lines, `setSuggestionBarItems`' own per-call item dump,
+`onCreateInlineSuggestionsRequest`'s own log, `onInlineSuggestionsResponse`'s own count/inflate logs) is
+removed now that the root cause is confirmed and fixed - left in, they would have spammed the diagnostic
+log's own short retained window (X-01) for every future, unrelated investigation. Kept: the small
+`onStartInput`/`onStartInputView` `restarting=`/timestamp additions from §247/§248 (lightweight, once per
+field focus, of standing value for any future field-lifecycle question - not specific to this bug) and a
+single new low-noise line, logged only when the debounced takeover actually fires (mirroring
+`windowInsetsRecheckRunnable`'s own "log only when something actually happens" precedent).
+
+No new unit tests - `AdaptKeyService`'s own `Handler`/Autofill-callback glue, the same established gap as
+D-135/D-319/D-323. 956 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
+P-06 revised. `versionCode` 315 -> 316, `versionName` `"1.0.11"` -> `"1.0.12"`. Not yet device-confirmed -
+needs the exact reported Signal sequence re-tested to confirm the clipboard chip no longer flickers, while a
+genuine, stable Autofill suggestion (if testable) still wins after the short delay.
