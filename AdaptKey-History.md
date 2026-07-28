@@ -12040,3 +12040,49 @@ digit-glue case - the user confirmed "Beides" (both): the comma now gets its own
 like `.`/`!`/`?` with no wrongful capitalisation of the next word, and the digit-glue exception correctly
 produces a clean decimal number for both `.` and `,` (no stray space typing a number digit-by-digit). No code
 change - see history §242 for the original implementation.
+
+## §246 - D-323: The D-319 "Doubled Bar" Bug Had a Second Half - suggestionRow Itself Never Collapsed When Autofill Took Over the Slot (v1.0.8)
+
+Reported: "beim Einstieg in die App zuverlässig die Höhe zappelt... eine komplett leere Reihe oben drauf und
+wieder weg. Bis ich eine erste Taste drücke und die Vorschläge erstmalig gefüllt werden." (reliably, on
+entering the app, the height jitters - a completely empty row appears on top and goes away again, until the
+first key press fills the suggestions for the first time). Root-caused entirely from the layout code, no
+device log needed - the same method D-274 used for a comparable view-layout timing bug.
+
+**The actual structure, read directly from `onCreateInputView()`:** `suggestionRow` (a `LinearLayout` hosting
+`suggestionBar` plus the clipboard-clear/emoji-search-cancel buttons) and `inlineSuggestionsBar` (D-135, the
+platform-rendered Autofill row) are *siblings* in `inputRoot`, each added with the identical fixed
+`LinearLayout.LayoutParams(MATCH_PARENT, barHeight)` - neither one's own height depends on its children's
+visibility at all. D-319 (§241) already fixed the two of them being visible *at once* by having every write
+path set the *other* bar's visibility to `GONE` - but every one of those fixes only ever touched
+`suggestionBar` (the `SuggestionBarView` *inside* `suggestionRow`), never `suggestionRow` itself. `suggestionRow`'s
+own `.visibility` was never set anywhere in the file (Kotlin's default `VISIBLE`, never touched again after
+construction) - so whenever `inlineSuggestionsBar` genuinely became visible (a real Autofill suggestion
+arriving, common with an active password manager on almost any recognised field), `suggestionRow` kept
+occupying its own full `barHeight` right alongside it, now empty-looking inside (its own `suggestionBar` child
+correctly `GONE`) - a second, blank reserved row stacked on top of the real Autofill row, exactly the
+"completely empty row" reported. This is the mirror-image gap of D-319's own bug (that one stacked two
+*populated* rows; this one stacks one real row on top of one silently-empty one) - the ordinary
+`setSuggestionBarItems()` swap back (typing anything routes through it, D-267's own single choke point) already
+correctly re-shows `suggestionBar`, which is exactly why the symptom reliably clears "once the first key press
+fills the suggestions" - not because of anything about suggestions themselves, but because that is the first
+moment anything hides `inlineSuggestionsBar`/re-shows the ordinary row's contents again, and Autofill typically
+stops offering suggestions the instant real typing starts anyway.
+
+**Fix:** `suggestionRow` promoted from a local variable to a stored field (`private var suggestionRow:
+LinearLayout? = null`, set once in `onCreateInputView()`), then toggled everywhere `inlineSuggestionsBar`
+already was - `onInlineSuggestionsResponse()`'s empty-response branch and its per-suggestion `inflate()`
+callback, `resetInlineSuggestions()`, and (the actual load-bearing one, matching every ordinary suggestion
+update, not just the D-135-specific call sites) `setSuggestionBarItems()` itself - mirroring its existing
+`inlineSuggestionsBar?.visibility = View.GONE` line with a new `suggestionRow?.visibility = View.VISIBLE`, so
+the one choke point every keystroke's suggestion update already funnels through also undoes the Autofill
+takeover's own row-hiding, not only the inline bar's own hiding.
+
+No new unit tests - `AdaptKeyService`'s own `View`/`LinearLayout` visibility orchestration, the same established
+gap as D-135/D-267/D-319 (none of which added tests either, for the identical reason: this class of view-layout
+interaction sits outside the project's JVM-only test harness). 956 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (a bug fix restoring already-documented
+P-06/D-135 "instead of" behaviour, not a new requirement - same category as D-319 itself). `versionCode`
+311 -> 312, `versionName` `"1.0.7"` -> `"1.0.8"`. Not yet device-confirmed - needs a real repeat of the
+reported sequence (focus a field where Autofill genuinely offers something, e.g. a saved-login field) to
+confirm the empty second row no longer appears.

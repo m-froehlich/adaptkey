@@ -177,6 +177,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§246 (v1.0.8): D-323 - fixed a real "empty row jitters open and closed on every field entry" regression,**
+  **the mirror-image of D-319's own "doubled bar" bug.** Root-caused from the layout code alone (no device log
+  needed, same method as D-274): `suggestionRow` (hosting `suggestionBar` + the clipboard-clear/emoji-search-
+  cancel buttons) and `inlineSuggestionsBar` (D-135, Autofill) are fixed-height siblings in `inputRoot` - D-319
+  already made every write path hide/show the *other* bar whenever one took over, but only ever touched
+  `suggestionBar` itself, never its parent `suggestionRow`, whose own visibility was never set anywhere and
+  so never collapsed. Whenever Autofill genuinely offered something (common with an active password manager),
+  `suggestionRow` kept reserving its own full height, now empty-looking, stacked right on top of the real
+  Autofill row - the "empty row" reported. Explains the "goes away on the first key press" correlation too:
+  that is simply the first moment `setSuggestionBarItems()` (D-267's own choke point) runs again and hides
+  Autofill's row, not anything about suggestions themselves. Fix: `suggestionRow` promoted to a stored field,
+  toggled everywhere `inlineSuggestionsBar` already was, plus (the load-bearing part) inside
+  `setSuggestionBarItems()` itself, so every ordinary suggestion update undoes the takeover correctly. No new
+  tests (Android `View`/`LinearLayout` visibility glue, same established gap as D-135/D-267/D-319). 956 unit
+  tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (bug fix, not a new
+  requirement). `versionCode` 311 -> 312, `versionName` `"1.0.7"` -> `"1.0.8"`. Not yet device-confirmed -
+  needs a real field where Autofill genuinely offers something (e.g. a saved-login field) to confirm the
+  empty second row is gone. See history §246.
 - **§244 (v1.0.7): D-322 - card size reverted 66x66 -> 46x46, on real-device evidence: the user saw the**
   **built APK's icon in a file manager and its corners were clipped by that renderer's own circular crop.**
   Root cause: Google's documented 66x66dp safe *square* is evidently not honoured by every real-world icon

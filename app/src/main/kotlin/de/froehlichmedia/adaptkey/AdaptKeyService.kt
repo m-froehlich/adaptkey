@@ -166,6 +166,12 @@ class AdaptKeyService : InputMethodService() {
     
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
+    // D-323: the fixed-height row hosting suggestionBar plus clearClipboardButtonView/cancelEmojiSearchButtonView
+    // (see onCreateInputView) - a sibling of inlineSuggestionsBar in inputRoot with its own non-zero height that
+    // never depended on its children's visibility, so hiding only suggestionBar left this row's own reserved
+    // height standing empty whenever inlineSuggestionsBar took over the slot. Now toggled together with
+    // inlineSuggestionsBar wherever that field is (see onInlineSuggestionsResponse/resetInlineSuggestions).
+    private var suggestionRow: LinearLayout? = null
     // D-267: sits to the right of suggestionBar (see onCreateInputView) - VISIBLE only while the bar shows
     // the clipboard chips it clears, see setSuggestionBarItems().
     private var clearClipboardButtonView: View? = null
@@ -867,6 +873,7 @@ class AdaptKeyService : InputMethodService() {
         
         val suggestionRow = LinearLayout(this)
         suggestionRow.orientation = LinearLayout.HORIZONTAL
+        this.suggestionRow = suggestionRow
         suggestionRow.addView(bar, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
         suggestionRow.addView(clearClipboard, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
         suggestionRow.addView(cancelEmojiSearch, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
@@ -1550,6 +1557,7 @@ class AdaptKeyService : InputMethodService() {
         val suggestions = response.inlineSuggestions
         if (suggestions.isEmpty()) {
             bar.visibility = View.GONE
+            suggestionRow?.visibility = View.VISIBLE
             suggestionBar?.visibility = View.VISIBLE
             return false
         }
@@ -1562,6 +1570,11 @@ class AdaptKeyService : InputMethodService() {
                 }
                 bar.addSuggestion(view)
                 bar.visibility = View.VISIBLE
+                // D-323: suggestionRow (the whole ordinary-bar row, a fixed-height sibling of this bar in
+                // inputRoot) never collapsed on its own just because suggestionBar inside it went GONE - it
+                // must be hidden explicitly, or its own reserved height stacks on top of this bar's as a
+                // second, empty row.
+                suggestionRow?.visibility = View.GONE
                 suggestionBar?.visibility = View.GONE
             }
         }
@@ -1577,6 +1590,7 @@ class AdaptKeyService : InputMethodService() {
     private fun resetInlineSuggestions() {
         inlineSuggestionsBar?.clearSuggestions()
         inlineSuggestionsBar?.visibility = View.GONE
+        suggestionRow?.visibility = View.VISIBLE
         suggestionBar?.visibility = View.VISIBLE
     }
     
@@ -1981,6 +1995,10 @@ class AdaptKeyService : InputMethodService() {
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
         suggestionBar?.setItems(items)
         inlineSuggestionsBar?.visibility = View.GONE
+        // D-323: the mirror of the line above - this is the one choke point every ordinary suggestion update
+        // funnels through (D-267), so it is also the one place that must undo onInlineSuggestionsResponse()'s
+        // own suggestionRow?.visibility = GONE once real content replaces the inline-suggestions takeover.
+        suggestionRow?.visibility = View.VISIBLE
         val showsClipboard = items.any {
             it.kind == SuggestionController.Kind.CLIPBOARD ||
                 it.kind == SuggestionController.Kind.CLIPBOARD_FIRST_LINE ||
