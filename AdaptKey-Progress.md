@@ -281,6 +281,22 @@ non-trivial changes).
 
 ## Current State
 
+- **§249 (v1.0.11): D-324 continued - two more real repro logs, each correcting the last.** Log 1: the chip
+  bailed `stale` throughout - not a bug, that particular clip was genuinely past V-01's 5-minute freshness
+  window. Log 2: user re-scoped precisely - height now stable, chip "zuverlässig" shown, but flashes then
+  disappears specifically in Signal (not Google Keep, where it stays). Compared both apps' sequences: the
+  lifecycle-callback pattern is identical in both, and the already-instrumented window-insets-padding-
+  correction line never appears at all - both ruled out empirically. The actual finding: after one genuine
+  Signal repro with a successfully-shown chip, no further `setSuggestionBarItems` call appears before the next
+  keystroke, yet the chip visibly disappeared - since that function is the one choke point for every ordinary
+  content change, whatever hid the chip must be `onInlineSuggestionsResponse()` (D-135), the only other path
+  that can hide `suggestionRow`/`suggestionBar`, and the one path never instrumented so far - a genuine
+  diagnostic blind spot, not a re-guess of the Autofill theory already ruled out in the earlier, different
+  (empty-field height-jitter) context. Added logging to `onCreateInlineSuggestionsRequest()` and
+  `onInlineSuggestionsResponse()` (including its inflate callback) - still no fix, no confirmed root cause yet.
+  956 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 314 -> 315,
+  `versionName` `"1.0.10"` -> `"1.0.11"`. **Next step: reproduce once more in Signal with a fresh clipboard
+  chip and diagnostics enabled, share the log.** See history §249.
 - **§248 (v1.0.10): D-324 continued - the user's real device log directly refuted §247's "restarting=true"**
   **hypothesis: every `onStartInput` in the capture reports `restarting=false`, each immediately paired with**
   **its own `onStartInputView`.** Dropped per this project's own "re-question on negative evidence" rule

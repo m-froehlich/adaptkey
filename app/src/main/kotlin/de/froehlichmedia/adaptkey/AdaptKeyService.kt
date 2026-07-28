@@ -1540,6 +1540,12 @@ class AdaptKeyService : InputMethodService() {
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {
+        // D-324 (temporary diagnostic): never logged before this round - the one code path that can hide
+        // suggestionRow/suggestionBar without going through setSuggestionBarItems() (see
+        // onInlineSuggestionsResponse's own new log below), so a real repro's log previously showed no
+        // suggestion-bar content change at all even when the chip visibly disappeared. Remove once D-324
+        // is closed.
+        diag("AdaptKey", "onCreateInlineSuggestionsRequest: t=${SystemClock.uptimeMillis()}")
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         val style = UiVersions.newStylesBuilder()
             .addStyle(InlineSuggestionUi.newStyleBuilder().build())
@@ -1569,6 +1575,11 @@ class AdaptKeyService : InputMethodService() {
         val bar = inlineSuggestionsBar ?: return false
         bar.clearSuggestions()
         val suggestions = response.inlineSuggestions
+        // D-324 (temporary diagnostic): this call's own arrival (with count) was never logged before this
+        // round - the missing half of the picture for the "chip flashes then disappears" report, since this
+        // is the one path that hides suggestionRow/suggestionBar directly, bypassing setSuggestionBarItems()'s
+        // own already-logged choke point entirely. Remove once D-324 is closed.
+        diag("AdaptKey", "onInlineSuggestionsResponse: t=${SystemClock.uptimeMillis()} count=${suggestions.size}")
         if (suggestions.isEmpty()) {
             bar.visibility = View.GONE
             suggestionRow?.visibility = View.VISIBLE
@@ -1580,8 +1591,10 @@ class AdaptKeyService : InputMethodService() {
         for (suggestion in suggestions.take(INLINE_SUGGESTION_MAX_COUNT)) {
             suggestion.inflate(this, size, mainExecutor) { view ->
                 if (view == null) {
+                    diag("AdaptKey", "onInlineSuggestionsResponse: inflate callback with null view - skipped")
                     return@inflate
                 }
+                diag("AdaptKey", "onInlineSuggestionsResponse: inflate callback t=${SystemClock.uptimeMillis()} - hiding suggestionRow/suggestionBar")
                 bar.addSuggestion(view)
                 bar.visibility = View.VISIBLE
                 // D-323: suggestionRow (the whole ordinary-bar row, a fixed-height sibling of this bar in

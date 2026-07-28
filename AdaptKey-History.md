@@ -12169,3 +12169,51 @@ own first round. 956 unit tests (unchanged). `:app:assembleRelease`/`:app:testDe
 change. `versionCode` 313 -> 314, `versionName` `"1.0.9"` -> `"1.0.10"`. Next step: reproduce again with
 diagnostics enabled and share the new log - the `setSuggestionBarItems`/`showClipboardChipIfAvailable` lines
 should now show directly what happens to the chip during the ~8.5s window before any typing starts.
+
+## §249 - D-324: Two Real Repro Logs Narrowed the Report to Signal-Only, Then Found a Genuine Blind Spot in the Diagnostic Coverage (v1.0.11)
+
+Two further real device logs from the user, each correcting the previous round rather than confirming it -
+exactly the iterative, evidence-first process this project's own rules call for.
+
+**Log 1:** the clipboard chip bailed `stale` on every single call throughout - not a bug, the clip genuinely
+was older than V-01's own 5-minute freshness window in that particular capture (the same fixed timestamp
+recurred across the whole session). Confirmed with the user and re-tested with fresh clipboard content.
+
+**Log 2 (much longer, spanning Google Keep, the launcher, Signal, and back):** the user re-scoped the report
+precisely - height now stays "absolut stabil", the clipboard chip is "jetzt zuverlässig" shown, but the chip
+"blitzen kurz auf und verschwinden sofort wieder" specifically in Signal (`org.thoughtcrime.securesms`),
+while in Google Keep the exact same chip "bleiben" (stays). Compared the two apps' logged sequences
+side by side: the `onStartInput`/`onStartInputView` lifecycle pattern (a double-fire ~17ms apart, then a lone
+`onStartInputView` ~3.6-4s later with no `onStartInput` before it) is *identical* in both apps - ruling out
+the lifecycle-callback angle as the differentiator. The already-instrumented `windowInsetsRecheck: stale
+padding corrected` line (the old D-274/D-275 padding-jitter class) never appears anywhere in the log either -
+ruling that mechanism out too, empirically, not by assumption.
+
+**The actual finding:** in the one genuine Signal repro with a fresh, successfully-shown chip
+(`setSuggestionBarItems: count=2 kinds=CLIPBOARD, CLIPBOARD_FIRST_CODE` at t=335563012), no further
+`setSuggestionBarItems` call appears anywhere before the user's next keystroke (~3.2s later) - yet the user
+reports the chip visibly disappearing in that exact window. Since `setSuggestionBarItems()` is D-267's own
+single choke point for *every* ordinary content change, and the log shows it was never called again, whatever
+hid the chip did not go through it - meaning it must be `onInlineSuggestionsResponse()` (D-135), the *only*
+other code path in the entire file that can set `suggestionBar`/`suggestionRow` to `GONE`, and the one path
+this diagnostic round had never actually instrumented. This is a real, previously-unnoticed gap in the
+diagnostic coverage itself, not a re-guess of the Autofill theory the user had already ruled out in a
+*different* context (the earlier, now-closed empty-field height-jitter report, §247) - here the chip is
+confirmed genuinely showing first, then disappearing with stable height, which is exactly what an
+Autofill-takeover (same fixed row height, content swap) would look like, and nothing else remaining in the
+file can produce that specific signature.
+
+**Added the missing logging**, not a fix - still no confirmed root cause, only a confirmed blind spot in the
+evidence: `onCreateInlineSuggestionsRequest()` now logs its own invocation (previously silent - the log could
+never show whether the platform even asked AdaptKey for Autofill inline suggestions on this field);
+`onInlineSuggestionsResponse()` now logs the response's own suggestion count on arrival, and its per-suggestion
+`inflate()` callback logs both the null-view skip case and the moment it actually hides
+`suggestionRow`/`suggestionBar`. If Signal's field is genuinely more Autofill-relevant than Keep's (plausible -
+different `inputType`/variation between a note field and a message-compose field), these new lines should show
+a real response arriving for Signal and never for Keep in the next capture, closing this out for good.
+
+No new unit tests - pure logging, same established gap as every other D-324 round. 956 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. `versionCode` 314 -> 315, `versionName`
+`"1.0.10"` -> `"1.0.11"`. Next step: reproduce once more in Signal with a fresh clipboard chip and diagnostics
+enabled, then share the log - the two new Autofill-specific lines should now show directly whether that is
+the actual mechanism.
