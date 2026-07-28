@@ -187,9 +187,8 @@ non-trivial changes).
   refinements (boosted halo contrast, left-edge bleed, dot at the keycap's true centre) all kept. Same PNG
   re-placed in all three `fastlane/metadata/android/<locale>/images/icon.png`. 956 unit tests (unchanged).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 310 -> 311, `versionName` `"1.0.6"`
-  -> `"1.0.7"`. User accepted as-is despite not being able to immediately re-confirm on-device (the
-  file manager still showed a cached older icon bitmap - known Android behaviour, not evidence the fix
-  didn't work). See history §244.
+  -> `"1.0.7"`. **Device-confirmed** ("Die Größe ist perfekt auf dem Gerät") once the launcher/file-manager's
+  icon cache caught up - the 46x46 card is not clipped. See history §244.
 - **§243 (v1.0.6): D-321 - real app icon (and F-Droid store-listing icon) built for the first time: an**
   **"A" keycap with the T-06 touch-zone visualisation on top, replacing the launcher art that was**
   **explicitly still a placeholder.** Design chosen collaboratively over several rounds - the touch-zone

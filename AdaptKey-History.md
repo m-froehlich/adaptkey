@@ -12026,6 +12026,8 @@ era coordinates, unscaled). D-321's other refinements are all kept unchanged: th
 the keycap's true centre rather than the halo's own centre. Same PNG re-placed in all three
 `fastlane/metadata/android/{en-US,de-DE,el-GR}/images/icon.png`. 956 unit tests (unchanged).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 310 -> 311, `versionName` `"1.0.6"` ->
-`"1.0.7"`. User could not immediately re-confirm on-device - the same launcher/file-manager position still
-showed the old (cached) icon bitmap, a known Android icon-cache behaviour, not a sign the fix didn't take;
-accepted as-is on the reasoning above rather than waiting out the cache.
+`"1.0.7"`. At the time, the user could not immediately re-confirm on-device - the same launcher/file-manager
+position still showed the old (cached) icon bitmap, a known Android icon-cache behaviour, not a sign the fix
+didn't take; accepted as-is on the reasoning above rather than waiting out the cache. **Device-confirmed**
+once the cache caught up: "Die Größe ist perfekt auf dem Gerät" - the reverted 46x46 card is not clipped,
+vindicating the real-device-evidence-over-documented-spec reasoning this entry is built on.
