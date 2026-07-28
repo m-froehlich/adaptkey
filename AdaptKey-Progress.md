@@ -95,19 +95,43 @@ in every prompt.
     assume it's complete. The scratchpad `fdroiddata-metadata-*.yml` draft's `Builds`/`CurrentVersion`
     updated to match (now lists through 1.0.7) - **the already-open MR itself still only lists through
     1.0.4 and needs the same update pushed to it** (GitLab web UI, same file/branch as the original MR).
+  - **First real maintainer feedback arrived (`licaon-kter`)**, both addressed:
+    - A stray duplicate metadata file (`metadata/metadata/de.froehlichmedia.adaptkey.yml` - doubled path
+      from a GitLab "New file" UI slip, plus a first attempt committed straight to the fork's `master`
+      before remembering to branch) - user removed both copies via the GitLab web UI.
+    - `phoneScreenshots/` requested at `fastlane/metadata/android/en-US/images/` **in this repo**, not the
+      `fdroiddata` fork - screenshots live with the app's own source since F-Droid reads Fastlane metadata
+      directly from `Repo:`. 5 phone screenshots added as `1.png`-`5.png` (user's own device captures,
+      chronological order preserved).
+    - A signed release APK matching the `v1.0.7` tag exactly was requested for
+      `github.com/m-froehlich/adaptkey/releases/tag/v1.0.7`. Built via an isolated `git worktree` checked
+      out at the `v1.0.7` tag (kept the main checkout, already at v1.0.10, untouched) - the gitignored
+      `keystore.properties`/`release.keystore` were copied in just for that build and removed again
+      afterward. Verified signed with the real AdaptKey/Froehlich Media certificate via `apksigner verify`.
+      Handed to the user to attach to the GitHub Release themselves (publishing to the public repo is the
+      user's own action, not done from here).
+    - Three further checklist items in the MR's own template (`External repos are added as git submodules
+      instead of srclibs`, `Enable Reproducible Builds`, `Multiple apks for native code`) are all
+      genuinely **not** satisfied today - not just unchecked boxes to tick. No submodules exist (N/A,
+      nothing to do); Reproducible Builds was the alternative explicitly declined at the very start of
+      this work (F-Droid signs instead, see above); multi-APK-per-ABI splitting isn't configured (one
+      universal APK ships both `arm64-v8a`/`armeabi-v7a`). User confirmed (per the maintainer's own MR
+      template) these are "recommended", not required for inclusion - left undone for now, not silently
+      checked off.
 - **Still open:**
-  - Push the new `v1.0.5`/`v1.0.6`/`v1.0.7` tags (the user pushes; not done automatically here).
+  - Push the new `v1.0.5`/`v1.0.6`/`v1.0.7` tags, this round's screenshot commit, and (once created)
+    upload the already-built signed APK to the `v1.0.7` GitHub Release (the user pushes/publishes; not
+    done automatically here).
   - Update the actual `fdroiddata` MR (not just the local scratchpad draft) with the three new `Builds`
     entries and the bumped `CurrentVersion`/`CurrentVersionCode` - see the scratchpad file for the exact
     content to paste in.
   - Watch the MR's CI pipeline (lint + scanner + a real trial build of at least the current version) and
     fix anything it flags by editing the file again in the GitLab web UI, pushed to the same branch.
-  - Respond to F-Droid maintainer review feedback if/when it comes (first-time inclusion review commonly
-    takes weeks, sometimes months).
+  - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
+    commonly takes weeks, sometimes months).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
-  - Optional: store-listing screenshots under `fastlane/metadata/android/<locale>/images/phoneScreenshots/`
-    - not required for the initial submission, improves the listing.
+  - Optional, still not done: screenshots for `de-DE`/`el-GR` (only `en-US` was requested/added so far).
   - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
     against F-Droid's own docs/`fdroiddata` at MR time - both were checked against the live F-Droid docs
     and `config/categories.yml` this session, but that project's conventions can move on.
