@@ -199,9 +199,11 @@ class SuggestionBarView @JvmOverloads constructor(
         // D-247: a fixed green, independent of the C-04/S-05 highlight colour (see the colour resource's
         // own comment) - colours the text only, mirroring D-25's own "colour the text, not the background"
         // precedent, same as the verbatim chip already does.
+        val query = item.kind == SuggestionController.Kind.EMOJI_SEARCH_QUERY
         val colorRes = when {
             verbatim -> R.color.suggestion_verbatim_text
             item.kind == SuggestionController.Kind.LEARNED -> R.color.suggestion_learned_text
+            query -> R.color.suggestion_search_query_text
             else -> R.color.suggestion_text
         }
         return TextView(context).apply {
@@ -211,6 +213,10 @@ class SuggestionBarView @JvmOverloads constructor(
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             if (verbatim) {
                 setTypeface(typeface, Typeface.BOLD)
+            }
+            // D-318: italic marks it as "what you typed", not another tappable emoji result next to it.
+            if (query) {
+                setTypeface(typeface, Typeface.ITALIC)
             }
             setPadding(dp(16), 0, dp(16), 0)
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)

@@ -11762,3 +11762,48 @@ CLDR section. Version bumped 1.0.1 -> 1.0.2. Not yet device-confirmed - needs a 
 (typing "poop", tapping the result, confirming ordinary typing resumes cleanly afterwards with no leftover
 state) and specifically a check that leaving the field mid-search (e.g. tapping away) does not strand the
 next field.
+
+## §239 - D-318: Emoji Search Discoverability - Framed Action Icons, Visible Query Chip (v1.0.3)
+
+D-317's search "grundsätzlich funktioniert das" (basically works) on device, but two real usability gaps
+came back from that same session, both about the mode being hard to notice/use, not about the search logic
+itself:
+
+1. **The search tab was poorly discoverable.** The panel's own keyboard/back icon "war schon nicht
+   abgesetzt" (was already not set apart) even before D-317, but "noch halbwegs intuitiv" (still fairly
+   intuitive) on its own; adding the plain-text magnifying-glass tab right next to it, with the same
+   unstyled look as every ordinary category tab, made neither read as an actionable button any more.
+2. **"Sonst tippt man ins nichts"** (otherwise you're typing into nothing) - once search mode is entered,
+   nothing on screen shows what has actually been typed into the local capture buffer (`emojiSearchQuery`)
+   until a match happens to appear in the result list; an empty or non-matching query looks identical to a
+   frozen/broken screen.
+
+**Fix 1 - framed action icons (`EmojiPanelView.tabButton()`):** a new `framed: Boolean` parameter wraps the
+back and search glyphs in a rounded, bordered `GradientDrawable` background (`key_background_special` fill,
+`key_hint` stroke, matching the existing corner-radius convention `AdaptKeyService`'s own
+`clearClipboardButton()`/`cancelEmojiSearchButton()` already established for this app's other icon buttons)
+with a small margin so the frame does not collide with the tab bar's own edges. Every ordinary category/
+recent tab is deliberately left unframed - they are a tab-selection group, not an action, and framing all of
+them would just recreate the original "nothing stands out" problem one level up.
+
+**Fix 2 - a pinned, always-visible query chip:** `updateEmojiSearchResults()` now prepends a new
+`SuggestionController.Kind.EMOJI_SEARCH_QUERY` item (`"🔍 $emojiSearchQuery"`, trimmed) ahead of the ordinary
+`EMOJI_SEARCH_RESULT` chips - shown even while the query is still empty (right when `enterEmojiSearch()`
+first calls it), so the bar never looks empty/frozen the instant search mode starts, before the mode is even
+confirmed to *have* worked. Styled in `SuggestionBarView.chipFor()` with a new, dedicated
+`suggestion_search_query_text` colour (reuses `key_hint`'s own muted grey - deliberately distinct from both
+the verbatim chip's blue and the "Gelernt: X" chip's green, so it reads as "this is context, not a
+result/action") plus italics; a tap is a no-op (`onSuggestionClicked`'s new `EMOJI_SEARCH_QUERY` branch),
+mirroring how the existing `LEARNED` chip is already informational-only. `SuggestionBarView`'s drag-to-trash
+`draggableItemAt()`/`zoneFor()` already match kinds explicitly (`NORMAL`/`LEARNED` only), so the new kind is
+automatically excluded from dragging with no code change needed there, the same as `EMOJI_SEARCH_RESULT`
+already was.
+
+No new tests - both changes are Android-view/glue rendering (`EmojiPanelView`'s button styling,
+`SuggestionBarView`'s chip styling, `AdaptKeyService`'s chip-construction orchestration), the same category
+every other change in this file at this layer already is; `SuggestionController.Kind`'s own two new
+enum entries need no dedicated test (the enum itself carries no logic, only the callers do, and those callers
+are the untested Android-glue layer). 947 unit tests (unchanged). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Spec's L-03 addendum extended. Version bumped 1.0.2 -> 1.0.3. Not yet
+device-confirmed - needs a real look at both the framed icons and the query chip on device, in both light and
+dark theme.

@@ -2514,10 +2514,19 @@ class AdaptKeyService : InputMethodService() {
      * these against.
      */
     private fun updateEmojiSearchResults() {
-        val items = emojiKeywordIndex.search(emojiSearchQuery).map { emoji ->
+        // D-318: pinned first, always shown (even for an as-yet-empty query, right when search mode is
+        // entered) - reported as "typing into nothing" otherwise, since the capture buffer has no on-screen
+        // representation of its own. word is unused (onSuggestionClicked's EMOJI_SEARCH_QUERY branch is a
+        // no-op), so it just carries the query text again for consistency with DisplayItem's own shape.
+        val queryChip = SuggestionController.DisplayItem(
+            "$EMOJI_SEARCH_ICON $emojiSearchQuery".trimEnd(),
+            SuggestionController.Kind.EMOJI_SEARCH_QUERY,
+            emojiSearchQuery
+        )
+        val results = emojiKeywordIndex.search(emojiSearchQuery).map { emoji ->
             SuggestionController.DisplayItem(emoji, SuggestionController.Kind.EMOJI_SEARCH_RESULT, emoji)
         }
-        setSuggestionBarItems(items)
+        setSuggestionBarItems(listOf(queryChip) + results)
         suggestionBar?.visibility = View.VISIBLE
     }
     
@@ -5191,6 +5200,9 @@ class AdaptKeyService : InputMethodService() {
                 commitEmoji(item.word)
                 exitEmojiSearch()
             }
+            
+            // D-318: purely informational (the query typed so far) - a tap does nothing, mirroring LEARNED.
+            SuggestionController.Kind.EMOJI_SEARCH_QUERY -> Unit
         }
     }
     
@@ -5616,6 +5628,9 @@ class AdaptKeyService : InputMethodService() {
         private const val CLEAR_CLIPBOARD_BADGE_SIZE_DP = 18
         private const val CLEAR_CLIPBOARD_BADGE_MARGIN_DP = 1
         private const val CLEAR_CLIPBOARD_CORNER_RADIUS_DP = 8
+        
+        // D-318: prefixes the emoji-search query chip (updateEmojiSearchResults()).
+        private const val EMOJI_SEARCH_ICON = "🔍"
         
         
         // D-15: two Shift presses within this window engage Caps Lock.

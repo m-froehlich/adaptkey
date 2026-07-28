@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.emoji
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -109,8 +110,11 @@ class EmojiPanelView @JvmOverloads constructor(
     
     private fun rebuildTabs() {
         tabBar.removeAllViews()
-        tabBar.addView(tabButton(BACK_ICON) { onBackListener?.onBack() })
-        tabBar.addView(tabButton(SEARCH_ICON) { onSearchListener?.onSearchRequested() })
+        // D-318: back/search are actions, not category tabs like everything else in this bar - framed with
+        // a visible button border so they read as "tap to leave/search", not as one more grid to select.
+        // Reported as poorly discoverable once the search tab sat plainly next to the back icon.
+        tabBar.addView(tabButton(BACK_ICON, framed = true) { onBackListener?.onBack() })
+        tabBar.addView(tabButton(SEARCH_ICON, framed = true) { onSearchListener?.onSearchRequested() })
         tabBar.addView(tabButton(RECENT_ICON) { selectTab(null) })
         for (category in EmojiCategory.entries) {
             tabBar.addView(tabButton(category.icon) { selectTab(category) })
@@ -145,16 +149,33 @@ class EmojiPanelView @JvmOverloads constructor(
         }
     }
     
-    private fun tabButton(icon: String, onClick: () -> Unit): View {
+    /**
+     * @param framed D-318: draws a rounded, bordered button frame around the glyph (back/search) instead of
+     *        the plain unadorned label every ordinary category/recent tab keeps, so the two action icons
+     *        read as buttons rather than one more tab to select.
+     */
+    private fun tabButton(icon: String, framed: Boolean = false, onClick: () -> Unit): View {
         return TextView(context).apply {
             text = icon
             gravity = Gravity.CENTER
             setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_TEXT_SIZE_SP)
             setTextColor(ContextCompat.getColor(context, R.color.key_text))
             setPadding(dp(TAB_PADDING_DP), 0, dp(TAB_PADDING_DP), 0)
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT).apply {
+                if (framed) {
+                    val margin = dp(FRAMED_TAB_MARGIN_DP)
+                    setMargins(margin, margin, margin, margin)
+                }
+            }
             isClickable = true
             setOnClickListener { onClick() }
+            if (framed) {
+                background = GradientDrawable().apply {
+                    setColor(ContextCompat.getColor(context, R.color.key_background_special))
+                    setStroke(dp(FRAMED_TAB_STROKE_DP), ContextCompat.getColor(context, R.color.key_hint))
+                    cornerRadius = dp(FRAMED_TAB_CORNER_RADIUS_DP).toFloat()
+                }
+            }
         }
     }
     
@@ -169,6 +190,9 @@ class EmojiPanelView @JvmOverloads constructor(
         private const val GRID_HEIGHT_DP = 216
         private const val CELL_SIZE_DP = 40
         private const val TAB_PADDING_DP = 10
+        private const val FRAMED_TAB_MARGIN_DP = 5
+        private const val FRAMED_TAB_STROKE_DP = 1
+        private const val FRAMED_TAB_CORNER_RADIUS_DP = 8
         private const val EMOJI_TEXT_SIZE_SP = 22f
         private const val TAB_TEXT_SIZE_SP = 18f
         private const val BACK_ICON = "⌨"

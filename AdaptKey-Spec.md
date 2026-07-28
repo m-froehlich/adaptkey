@@ -109,7 +109,11 @@ document; only Space, Backspace and letters/digits/punctuation are active (no lo
 gestures, no symbol layer) while search is active. Tapping a result commits it exactly like an ordinary
 emoji-panel tap and leaves search mode; a dedicated cancel button next to the suggestion bar, and Enter, are
 the two other ways back to ordinary typing - search mode is also defensively cleared whenever the field
-itself is left, so it can never carry over into the next field.
+itself is left, so it can never carry over into the next field. D-318: the back and search tabs are drawn
+with a visible rounded button frame (unlike the plain category/recent tabs), so the two actions read as
+buttons rather than one more tab to select; the query typed so far is always shown as its own pinned,
+italicised, non-tappable chip at the left of the result list (even while still empty, right when search
+mode is entered), so search never runs with no visible feedback of what has been typed.
 
 ### L-04 - Enlarged Backspace
 The backspace key is widened relative to the Gboard default (recommended ~10%) to reduce mis-hits. The

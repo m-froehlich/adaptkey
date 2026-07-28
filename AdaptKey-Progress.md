@@ -104,6 +104,19 @@ non-trivial changes).
 
 ## Current State
 
+- **§239 (v1.0.3): D-318 - emoji search discoverability fixes, from real device feedback on D-317: "works,**
+  **but the search tab is hard to notice, and typing shows no feedback."** Two fixes: (1) `EmojiPanelView`'s
+  back/search tabs now draw a rounded button-border frame (`tabButton(framed = true)`) - every ordinary
+  category/recent tab deliberately stays unframed, so only the two actions stand out. (2)
+  `updateEmojiSearchResults()` now always pins a new `SuggestionController.Kind.EMOJI_SEARCH_QUERY` chip
+  first (`"🔍 <query>"`, shown even while still empty) ahead of the emoji results, styled in
+  `SuggestionBarView` with a new `suggestion_search_query_text` colour (`key_hint`'s grey) + italics,
+  purely informational like the existing `LEARNED` chip - fixes "sonst tippt man ins nichts" (otherwise
+  you're typing into nothing). No new tests (both changes are Android-view/glue rendering, the same category
+  as the rest of D-317's own service-level orchestration). 947 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's L-03 addendum extended. Version bumped
+  1.0.2 -> 1.0.3. Not yet device-confirmed - needs a real look at both fixes on device, light and dark theme.
+  See history §239.
 - **§238 (v1.0.2): D-317 - emoji search, SwiftKey-style: a magnifying-glass tab in the emoji panel finds an**
   **emoji by typed search term (the user's own example: "poop" -> 💩), German+English via CLDR.** Data source
   chosen with the user across three decisions: CLDR (not hand-curated) -> full keyword-synonym lists, not

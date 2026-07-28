@@ -65,7 +65,12 @@ class SuggestionController(private val config: SuggestionConfig) {
          * to the suggestion bar from the local search buffer, bypassing this class's own [update]/
          * [displayed] entirely, the same "built outside SuggestionController" shape [CREDENTIAL]/[LEARNED]
          * already use - there is no composing token to rank these against. */
-        EMOJI_SEARCH_RESULT
+        EMOJI_SEARCH_RESULT,
+        
+        /** D-318: pinned first, ahead of every [EMOJI_SEARCH_RESULT] - shows the emoji-search query typed
+         * so far (D-317's capture buffer has no on-screen representation of its own otherwise, reported as
+         * "typing into nothing"). Purely informational, like [LEARNED]; a tap does nothing. */
+        EMOJI_SEARCH_QUERY
     }
     
     /**

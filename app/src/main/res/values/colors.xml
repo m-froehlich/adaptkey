@@ -21,4 +21,8 @@
     <color name="suggestion_learned_text">#43A047</color>
     <color name="suggestion_forget_background">#43A047</color>
     <color name="suggestion_forget_text">#FFFFFF</color>
+    <!-- D-318: the emoji-search query chip (what has been typed so far) - reuses key_hint's own muted grey,
+         the same shade already used elsewhere for "context, not a value" text, so it reads as informational
+         rather than another tappable emoji. -->
+    <color name="suggestion_search_query_text">#7A7E83</color>
 </resources>
