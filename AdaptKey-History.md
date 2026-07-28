@@ -11870,3 +11870,56 @@ No spec change (this is a bug fix restoring already-documented P-06/D-135 behavi
 "beside" - not a new requirement). Version bumped 1.0.3 -> 1.0.4. Not yet device-confirmed - needs a real
 repeat of the reported sequence (a field with real Autofill inline suggestions, then a field with clipboard
 content) to confirm the row no longer doubles.
+
+## §242 - D-320: Comma Now Arms A-12's Auto-Space Exactly Like `.`/`!`/`?`, Plus a Digit-Glue Exception for Decimal Numbers (v1.0.5)
+
+Two requests in the same session, the second building directly on the first. First, a real root-cause trace
+("fir" doesn't autocorrect to "dir" - why?), no fix requested this round: confirmed against the actual bundled
+data, not guessed - `dictionaries/de/dict.tsv` carries `fir` as its own entry (frequency 12, tagged
+`NOUN,OTHER`), the same class of Wikipedia-extraction noise D-306 (§226) already root-caused for `"til"`. `f`/`d`
+are adjacent QWERTZ keys (`KeyboardProximity`), so A-01's cost-1 edit condition is satisfied, but the frequency
+ratio (`dir` at 273, `fir` at 12 - about 22.75x) falls far short of `KNOWN_WORD_OVERRIDE_RATIO = 100`
+(`DictionarySuggestionProvider.kt`, D-244), so A-01's known-word protection correctly stands. `git show`
+confirmed `fir`'s entry is byte-identical before and after D-306's own commit (`9e600f3`) - D-306 only ever
+swept *untagged* rows by design, and `fir` already carried a (misleading) tag, so it was categorically out of
+that pass's scope, exactly the gap Progress.md's own Open TODOs already flagged in the abstract. **Also found
+in passing:** Spec.md's A-01 text still said "50x" - stale since D-244 raised the live constant to 100; fixed
+in this same round (a factual documentation correction, not a design change, so no separate discussion was
+needed for that part).
+
+Second, a real feature request following directly from the same conversation: "wir sollten noch eine
+Sonderlocke bauen" - the user's own observation that A-12's period auto-space, followed immediately by a second
+digit, leaves a stray space in the middle of a decimal number (`"3"` `"."` `"1"` `"4"` -> `"3. 14"`, not
+`"3.14"`), and asked whether a comma should get the identical treatment. Design discussed before implementing,
+per this project's own convention for non-trivial mechanisms: traced that comma, contrary to what "genau so"
+implied, currently arms **no** auto-space at all (`SENTENCE_PUNCTUATION = ".!?"` deliberately excluded it, per
+the D-262 comment on record at the time - "matching the user's own examples") - so the decimal-glue problem as
+described did not actually already exist for comma; typing `"3"` `","` `"14"` already produced the correct
+`"3,14"` today, simply because there was never a space to remove. Presented this finding plus the trade-offs
+(digit-glue restricted to `.`/`,` only, never `!`/`?`, which carry no numeric meaning; the accepted, rare
+false-glue risk of a fresh sentence starting with a bare digit right after a numbered enumerator, e.g.
+`"Kapitel 3."` -> `"2 Punkte..."`) and asked for an explicit go before touching any code. User confirmed: comma
+should be armed exactly like `.`/`!`/`?` for the auto-space itself, "abgesehen von der anschließenden
+automatischen Großschreibung" (except for the following auto-capitalisation) - already true for free, since
+`armShiftForNextWord()` re-derives the sentence-start decision fresh from the real document text
+(`SentenceBoundary`, which only ever recognises `.`/`!`/`?`/a genuine new line as a sentence start) rather than
+from which punctuation armed the space, so simply broadening the shared constant could not accidentally also
+arm capitalisation after a comma.
+
+**Implementation:** `SENTENCE_PUNCTUATION` broadened from `".!?"` to `".!?,"` - the one constant both the
+auto-space-arm condition and the punctuation-run-continuation check (`continuesRun`) already shared, so comma
+now participates in both identically to `.`/`!`/`?`, with no other code path change needed for the parity half
+of the request. New `PunctuationSpaceGlue` (top-level, pure, alongside `ComposingAnchor`/`SelectionTruth`) holds
+the digit-glue decision: given the three characters immediately before the cursor (read fresh via
+`getTextBeforeCursor(3, 0)` at decision time, never cached state - mirroring A-07's own "verify against ground
+truth" philosophy), returns true when they are, in order, a digit, a `.`/`,`, and the auto-inserted space.
+Wired into `handlePunctuationDelimiter()` as a new `gluesDigit` condition alongside the existing `continuesRun`,
+sharing the same space-removal branch - a digit that glues consumes the stranded space exactly the way a
+further sentence-ending mark already does when continuing a run. Once the first digit glues, `pendingPunctuationSpace`
+is already cleared, so a second digit typed right after is just an ordinary append with nothing left to glue
+against - `"3.14"`/`"3,14"` fall out correctly with no further special-casing. 9 new tests
+(`PunctuationSpaceGlueTest.kt`). 956 unit tests (947 + 9). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. Spec's A-12 revised (comma parity, the digit-glue exception and its accepted false-glue risk, and the
+capitalisation carve-out); A-01's stale "50x" corrected to "100x" in the same pass. Not yet device-confirmed -
+needs a real decimal-number typing round-trip (both `.` and `,`) and a plain comma-in-a-sentence check to
+confirm the trailing space still appears and is still capitalisation-neutral.

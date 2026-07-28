@@ -149,7 +149,11 @@ non-trivial changes).
   reliable automated signal distinguishes a genuine rare/foreign word from data-extraction noise once it
   already carries *some* tag, and manual review at that scale is not tractable in one session. Revisit with
   better tooling (a proper reference-wordlist cross-check per language, as D-306 improvised for the
-  untagged-only English pass) if this class of false-positive split is reported again.
+  untagged-only English pass) if this class of false-positive split is reported again. **Confirmed to recur**
+  (2026-07-28, see history §242): `"fir"` (German dict, frequency 12, tagged `NOUN,OTHER`) blocks
+  `"fir"` -> `"dir"` autocorrect the same way, since 273/12 ≈ 22.75x falls short of the 100x override ratio -
+  `git show` confirmed D-306 never touched this entry (already tagged, out of that pass's scope). Not fixed,
+  same reasoning as above.
 
 - **D-314 built French's AZERTY *geometry* only - no `dictionaries/fr/` pack (dict/bigram/hints/version)**
   **exists yet, and `LanguagePackCatalog.ENTRIES` has no `Language.FRENCH` entry.** French is now fully
@@ -161,6 +165,31 @@ non-trivial changes).
 
 ## Current State
 
+- **§242 (v1.0.5): D-320 - comma now arms A-12's auto-space exactly like `.`/`!`/`?`, plus a digit-glue**
+  **exception so a decimal number typed digit-by-digit no longer gets a stray space in the middle.** Started
+  from a real root-cause trace (no fix): `"fir"` doesn't autocorrect to `"dir"` because `fir` is itself a
+  German dict entry (frequency 12, `NOUN,OTHER` - Wikipedia-extraction noise, the same class D-306 fixed for
+  `"til"`) and 273/12 falls short of the 100x A-01 override ratio; confirmed via `git show` that D-306 never
+  touched this entry (already tagged, out of that pass's own untagged-only scope) - see the Open TODOs entry
+  above, now updated with this concrete recurrence. Also found and fixed in passing: Spec's A-01 text still
+  said "50x", stale since D-244 raised the live constant to 100. Second, the user's own request: "eine
+  Sonderlocke" so digit-after-punctuation-auto-space glues onto a preceding digit (`"3.14"`, not `"3. 14"`),
+  and comma treated exactly like the period. Design discussed first (per this project's own convention):
+  found comma currently arms **no** auto-space at all, so the decimal-glue problem didn't actually exist for
+  comma yet; presented the trade-offs (restrict digit-glue to `.`/`,` only, accept a rare false-glue risk for
+  a sentence starting with a bare digit right after a numbered enumerator) and got explicit go-ahead, including
+  confirmation that capitalisation should stay untouched for comma (already true for free -
+  `armShiftForNextWord()` re-derives sentence-start fresh from real document text, never from which punctuation
+  armed the space). `SENTENCE_PUNCTUATION` broadened to `".!?,"` (the one constant both the arm condition and
+  the run-continuation check already shared - comma parity needed no other code change). New top-level pure
+  `PunctuationSpaceGlue` (alongside `ComposingAnchor`/`SelectionTruth`) decides the digit-glue case from a
+  fresh `getTextBeforeCursor` read, wired into `handlePunctuationDelimiter()` as a `gluesDigit` condition
+  sharing the existing space-removal branch. 9 new tests (`PunctuationSpaceGlueTest.kt`). 956 unit tests
+  (947 + 9). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's A-12 (comma parity, digit-glue
+  exception, capitalisation carve-out) and A-01 (the 50x -> 100x correction) revised. `versionCode` 308 -> 309,
+  `versionName` `"1.0.4"` -> `"1.0.5"`. Not yet device-confirmed - needs a real decimal-number round-trip
+  (both `.` and `,`) and a plain comma-in-a-sentence check (trailing space present, next word not
+  capitalised). See history §242.
 - **§241 (v1.0.4): D-319 - fixed a real "doubled suggestion bar" regression, reported as tied to clipboard**
   **content but actually a pre-existing D-135/D-267 gap, unrelated to D-317/D-318's own row-width change**
   **the user first suspected.** Root cause: `setSuggestionBarItems()` (D-267's own "single choke point" for

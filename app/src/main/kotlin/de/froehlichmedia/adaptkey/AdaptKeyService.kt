@@ -421,12 +421,14 @@ class AdaptKeyService : InputMethodService() {
     // it exists for ever gets to run. Armed for exactly the one reclaim call that follows a suggestion tap.
     private var suppressNextReclaimSpaceReset = false
     
-    // D-262: armed right after a sentence-ending punctuation mark (SENTENCE_PUNCTUATION) auto-inserts its
-    // own trailing space - an immediately following sentence-ending punctuation mark removes that space
-    // first (so a punctuation run glues together, e.g. "!?!"), an explicit Space press does not duplicate
-    // it, and a Backspace removes only the forced space without cascading further. Cleared as soon as
-    // anything else is typed - a separate flag from pendingSuggestionSpace above, since the two triggers
-    // (an accepted suggestion vs. sentence punctuation) are independent and must not be conflated.
+    // D-262/D-320: armed right after a mark in SENTENCE_PUNCTUATION (`.!?,`) auto-inserts its own trailing
+    // space - an immediately following mark from the same set removes that space first (so a punctuation
+    // run glues together, e.g. "!?!"), an explicit Space press does not duplicate it, and a Backspace
+    // removes only the forced space without cascading further. D-320: a digit glues onto a `.`/`,` instead
+    // (see PunctuationSpaceGlue) when the punctuation itself followed a digit - a decimal number, not a new
+    // sentence. Cleared as soon as anything else is typed - a separate flag from pendingSuggestionSpace
+    // above, since the two triggers (an accepted suggestion vs. sentence punctuation) are independent and
+    // must not be conflated.
     private var pendingPunctuationSpace = false
     
     // D-279: the absolute document position of the auto-inserted space itself (not the caret after it),
@@ -3058,12 +3060,15 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-262: commits a punctuation delimiter, then - for a sentence-ending mark (§6/[SentenceBoundary]'s
-     * own `.`/`!`/`?`) - auto-inserts its own trailing space and arms [pendingPunctuationSpace] so a
-     * further sentence-ending mark glues onto this one instead of leaving the auto-space stranded mid-run.
-     * When [pendingPunctuationSpace] is already armed (continuing a run, e.g. the `?` of `"!?"`) the
-     * previous auto-space is removed first, so the run's own trailing space only ever appears once, after
-     * the whole run - mirrors [isSpaceEatingPunctuation]'s existing "don't trust the space blindly" guard.
+     * D-262: commits a punctuation delimiter, then - for a mark in `SENTENCE_PUNCTUATION` (`.!?,`, D-320
+     * added the comma alongside §6/[SentenceBoundary]'s own `.`/`!`/`?`) - auto-inserts its own trailing
+     * space and arms [pendingPunctuationSpace] so a further such mark glues onto this one instead of leaving
+     * the auto-space stranded mid-run. When [pendingPunctuationSpace] is already armed (continuing a run,
+     * e.g. the `?` of `"!?"`) the previous auto-space is removed first, so the run's own trailing space only
+     * ever appears once, after the whole run - mirrors [isSpaceEatingPunctuation]'s existing "don't trust
+     * the space blindly" guard. D-320: the same removal also fires when [raw] is a digit and
+     * [PunctuationSpaceGlue] recognises a decimal number in progress (`3.14`/`3,14`), gluing the digit
+     * directly onto the punctuation instead of confirming the auto-space.
      *
      * D-119/D-120: deliberately skipped when the delimiter would land mid-word (the caret sits before the
      * composing token's own end, so [finalizeAndCommit] delegates to `splitComposingAtCaretAndCommit`) - a
@@ -3099,7 +3104,12 @@ class AdaptKeyService : InputMethodService() {
         ic.beginBatchEdit()
         try {
             val continuesRun = pendingPunctuationSpace && composing.isEmpty() && raw in SENTENCE_PUNCTUATION
-            if (continuesRun && ic.getTextBeforeCursor(1, 0) == " ") {
+            // D-320: a digit right after the auto-space glues onto the punctuation instead of confirming
+            // the space, when the punctuation itself followed a digit - a decimal number ("3.14"/"3,14"),
+            // not a new sentence. Read fresh from the document rather than cached state, same as continuesRun.
+            val gluesDigit = pendingPunctuationSpace && composing.isEmpty() && raw.isDigit() &&
+                PunctuationSpaceGlue.gluesDigit(ic.getTextBeforeCursor(3, 0)?.toString() ?: "")
+            if ((continuesRun || gluesDigit) && ic.getTextBeforeCursor(1, 0) == " ") {
                 ic.deleteSurroundingText(1, 0)
             }
             pendingPunctuationSpace = false
@@ -5713,10 +5723,12 @@ class AdaptKeyService : InputMethodService() {
         // D-29: sentence / clause punctuation that absorbs an accepted suggestion's trailing space.
         private const val SPACE_EATING_PUNCTUATION = ".,!?;:)"
         
-        // D-262: sentence-ending punctuation that auto-inserts (and, in a run, re-inserts) its own trailing
-        // space - deliberately narrower than SPACE_EATING_PUNCTUATION above (no comma/semicolon/colon/closing
-        // parenthesis), matching the user's own examples ("!?!", "...").
-        private const val SENTENCE_PUNCTUATION = ".!?"
+        // D-262/D-320: punctuation that auto-inserts (and, in a run, re-inserts) its own trailing space -
+        // narrower than SPACE_EATING_PUNCTUATION above (still no semicolon/colon/closing parenthesis). D-320
+        // added the comma to this set at the user's explicit request, to be treated exactly like `.`/`!`/`?`
+        // for the auto-space itself - armShiftForNextWord() re-derives capitalisation fresh from the real
+        // document text (SentenceBoundary), so a comma never arms an auto-capital purely by being in this set.
+        private const val SENTENCE_PUNCTUATION = ".!?,"
         
         // D-176/D-181: seeded once per installStores() call into the German store - see
         // knownInOtherLanguage()'s own KDoc and installStores()'s seedBundledBlacklist() for the full

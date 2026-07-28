@@ -447,7 +447,8 @@ A period does **not** start a new sentence when it terminates a known abbreviati
 ### A-01 - Valid Words Are Protected, With a Bounded Override
 If the typed word exists in the dictionary, no automatic substitution occurs by default - even if a similar
 word is more frequent. This is not an absolute veto: a known word can be overridden by a correction
-candidate that is (a) a cost-1 (single adjacent-key) edit, **and** (b) at least 50× more frequent - a
+candidate that is (a) a cost-1 (single adjacent-key) edit, **and** (b) at least 100× more frequent (D-244,
+raised from an original 50× after a real regression, see `AdaptKey-History.md`) - a
 frequency floor additionally prevents any low-confidence candidate from winning regardless of edit cost. An
 unknown-but-plausible regular-verb inflection of a known infinitive (e.g. "beurteilst" from "beurteilen")
 is protected unconditionally, with no ratio check, since it has no independent frequency to compare. The
@@ -634,14 +635,27 @@ typed (and, for the motivating half-typed-word case, it usually *is* typed
 again immediately afterwards, correctly this time).
 
 ### A-12 - Auto-Space After Sentence Punctuation, With a Punctuation-Run Mode
-A sentence-ending punctuation mark (`.`, `!`, or `?`) auto-inserts a trailing space immediately after it
-commits - the user no longer has to press Space themselves before continuing, and this arms a standing mode,
-not a single one-shot reaction. As long as the caret simply remains sitting right after that auto-space - no
-explicit move elsewhere in the meantime - the mode stays armed: the *next* Space is ignored (absorbed into the
-already-present auto-space, not added as a second one) and the *next* sentence-ending mark glues directly onto
-the previous one (`"!?"`, not `"! ?"`) rather than leaving the auto-space stranded between them, gaining its
-own fresh trailing auto-space and re-arming the mode again - so a run of any length (`"!?!"`, `"..."`) keeps
-gluing together this way, the auto-space only ever trailing the whole run, never appearing mid-run. Both exits
+A sentence-ending punctuation mark (`.`, `!`, or `?`) - and, since D-320, a comma too, treated identically for
+the auto-space itself (see below for the one respect in which it differs) - auto-inserts a trailing space
+immediately after it commits - the user no longer has to press Space themselves before continuing, and this
+arms a standing mode, not a single one-shot reaction. As long as the caret simply remains sitting right after
+that auto-space - no explicit move elsewhere in the meantime - the mode stays armed: the *next* Space is
+ignored (absorbed into the already-present auto-space, not added as a second one) and the *next* mark from
+this same set glues directly onto the previous one (`"!?"`, not `"! ?"`) rather than leaving the auto-space
+stranded between them, gaining its own fresh trailing auto-space and re-arming the mode again - so a run of
+any length (`"!?!"`, `"..."`, `".,"`) keeps gluing together this way, the auto-space only ever trailing the
+whole run, never appearing mid-run.
+
+D-320: a digit typed right after the auto-space is a further, narrower exception - when the punctuation that
+armed the mode was specifically `.` or `,` (never `!`/`?`, which carry no numeric meaning) **and** the
+character immediately before that punctuation was itself a digit, the digit glues directly onto the
+punctuation instead of confirming the auto-space, so a decimal number typed digit-by-digit (`"3"` `"."` `"1"`
+`"4"`, or the German `"3"` `","` `"14"`) comes out as `"3.14"`/`"3,14"`, not `"3. 14"`/`"3, 14"`. This is a
+soft, position-based heuristic, not a semantic one: it never chases multi-digit lookback or thousands-grouping
+context, and a genuine new sentence that happens to start with a bare digit immediately after a numbered
+enumerator (e.g. `"Kapitel 3."` followed by a fresh sentence `"2 Punkte..."`) is a rare, accepted false-glue
+risk, matching this app's established soft-preference philosophy elsewhere (S-01/A-05/S-07) rather than an
+absolute rule. Both exits
 - an explicit Space (absorbed, confirming the auto-space as final) and a Backspace right at this point (removes
 only the forced space, never cascading into the punctuation mark or the word before it) - leave the mode
 exited; explicitly moving the caret elsewhere (a tap, not this app's own reactive echo of the auto-space commit
@@ -656,10 +670,14 @@ followed by real, pre-existing content - is never removed this way even once aba
 separator between the punctuation and that following text, and removing it would pull the following word
 directly onto the punctuation mark. Once exited - by any of the above, or by any other key, which simply
 leaves the auto-space as ordinary confirmed text - further Space/punctuation presses are handled entirely
-normally again, with a fresh mode arming only if new sentence-ending punctuation is typed. The
-auto-space itself counts as the sentence-delimiting whitespace for §6's own auto-capitalisation the moment it
-lands - a word typed straight after it (without an explicit Space) still gets its own sentence-start capital,
-exactly as if the user had pressed Space themselves. Does not apply inside a login/URL field (E-01/U-01/P-01) -
+normally again, with a fresh mode arming only if new sentence-ending punctuation is typed. For a `.`/`!`/`?`,
+the auto-space itself counts as the sentence-delimiting whitespace for §6's own auto-capitalisation the moment
+it lands - a word typed straight after it (without an explicit Space) still gets its own sentence-start
+capital, exactly as if the user had pressed Space themselves. A comma's own auto-space never does this -
+[SentenceBoundary] only ever treats `.`/`!`/`?` (or a genuine new line) as a sentence start, so a word typed
+straight after a comma's auto-space is capitalised no differently than after any ordinary Space, matching how
+a comma is never a sentence terminator regardless of what triggers the space after it. Does not apply inside
+a login/URL field (E-01/U-01/P-01) -
 a `.` inside an e-mail address or domain name must never grow an uninvited space into the middle of it - nor
 when the punctuation lands mid-word (re-editing an existing token, D-119/D-120's own split-at-caret case).
 
