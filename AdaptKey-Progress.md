@@ -44,6 +44,38 @@ in every prompt.
   means every future version needs an uninstall + reinstall, wiping the learned dictionary/settings, since
   Android requires the same signing key to update in place.
 
+## Release Channels
+
+- **F-Droid (official, sole channel by explicit user decision, 2026-07-28).** IzzyOnDroid and a
+  self-hosted repo were both considered and explicitly declined in favour of official F-Droid only,
+  weighing discoverability against review latency and signing continuity. F-Droid will build and sign
+  the app with its own key (also an explicit choice over pursuing Reproducible Builds); anyone who has
+  sideloaded a self-signed `:app:assembleRelease` build will need one uninstall + reinstall to switch
+  once the F-Droid release goes live - export via the Y-01 backup screen first to avoid losing learned
+  words/settings.
+- **Prerequisites already satisfied:** GPL-3.0-or-later with SPDX headers, public GitHub repo
+  (`github.com/m-froehlich/adaptkey`), no `INTERNET` permission at all (so no tracking/ads/Play-Services
+  anti-feature applies), every runtime dependency Apache-2.0/MIT, every bundled data asset under a free
+  licence (see `CREDITS.md`) - including the optional tier-3 SmolLM2-360M model itself, not just its
+  bundled tokenizer, confirmed Apache-2.0 on its Hugging Face model card, so no `NonFreeAssets`
+  anti-feature is needed either.
+- **Done so far:**
+  - `fastlane/metadata/android/{en-US,de-DE,el-GR}/` scaffold added (`title.txt`,
+    `short_description.txt`, `full_description.txt`, `changelogs/<versionCode>.txt`) - both F-Droid and
+    other fastlane-aware repos read the store listing directly from these files in the repo, so a future
+    listing/changelog update needs no separate submission, just a commit.
+  - Annotated git tag `v1.0.2` added locally on the current HEAD (versionCode 306) - the first tag in
+    the repo. Going forward, a tag per release (`vX.Y.Z` on the version-bump commit) joins the existing
+    release routine, since F-Droid's `UpdateCheckMode: Tags` / `AutoUpdateMode: Version` needs it to
+    detect and build new versions automatically after the initial submission.
+- **Still open:**
+  - Push the `v1.0.2` tag (the user pushes; not done automatically here).
+  - Fork `fdroiddata`, write `metadata/de.froehlichmedia.adaptkey.yml` (repo URL, build recipe, at least
+    the v1.0.2 build entry, `AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), open the merge request.
+  - Optional: app icon/screenshots under `fastlane/metadata/android/<locale>/images/` - not required for
+    the initial submission, improves the listing.
+  - Await F-Droid maintainer review (expect weeks, not days, for first inclusion).
+
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
 D-139 (§99-§101 in the spec) took three real device-log tracing rounds to actually fix. Any change to

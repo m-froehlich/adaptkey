@@ -1,0 +1,1 @@
+Privacy-first Android keyboard that learns your typing style. Fully offline.

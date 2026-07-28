@@ -1,0 +1,1 @@
+Emoji-Suche: ein Emoji per Stichwort finden (Deutsch oder Englisch), über einen neuen Lupe-Tab im Emoji-Panel.

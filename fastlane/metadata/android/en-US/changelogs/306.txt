@@ -1,0 +1,1 @@
+Emoji search: find an emoji by typing a search term (German or English, e.g. "poop" finds the pile-of-poo emoji), via a new magnifying-glass tab in the emoji panel.

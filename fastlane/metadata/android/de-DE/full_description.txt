@@ -1,0 +1,26 @@
+AdaptKey ist eine adaptive Android-Tastatur (IME), die lernt, wie du tippst - konsequent auf Privatsphäre ausgelegt.
+
+Nachweislich offline. Kein Nach-Hause-Telefonieren.
+
+AdaptKey besitzt überhaupt keine Internet-Berechtigung. Das ist kein Versprechen, dem man einfach glauben muss - es wird von Android selbst erzwungen und ist für jeden nachprüfbar: Im App-Manifest steht keine INTERNET-Berechtigung, wodurch das Betriebssystem der App eine Netzwerkverbindung technisch unmöglich macht. Keine Telemetrie, keine Analyse, keine "anonymen Nutzungsstatistiken", keine Werbung, keine Cloud-Synchronisation.
+
+* Keine Internet-Berechtigung - vom System erzwungen, keine Frage des Vertrauens.
+* Keine Speicher-Berechtigung - das optionale lokale KI-Modell wird über den System-Dateiauswähler importiert, der nur Zugriff auf genau diese eine Datei gewährt.
+* Alles läuft auf dem Gerät. Wörterbücher, Autokorrektur, Spracherkennung und das optionale Mini-LLM laufen vollständig lokal.
+* Freie Software, lizenziert unter GPL-3.0-or-later - jede Zeile selbst prüfbar.
+
+Funktionen
+
+* Gboard-artiges QWERTZ/QWERTY-Layout mit frei konfigurierbaren Tastenproportionen (Leertaste, Komma, Punkt, Rücktaste), einer dauerhaften Zahlenreihe und Sonderzeichen per Long-Press auf jeder Taste.
+* Lernt dein Tippmuster. Ein personalisiertes Versatzmodell pro Taste passt die Trefferzonen an deine tatsächliche Tippweise an; ein optionaler Kalibrierungsschritt initialisiert es.
+* Intelligente Vorschläge und Autokorrektur aus einem persönlichen, lokalen Wörterbuch, mit stabilisierter Vorschlagsleiste, einer "So wie getippt behalten"-Option und Rückgängig-Funktion per Rücktaste direkt nach dem Absenden.
+* Echte mehrsprachige Wörterbücher als optionale, herunterladbare Sprachpakete (Deutsch, Englisch und Griechisch von Anfang an, weitere folgen), mit automatischer Spracherkennung, die den gesamten Wortschatz je nach Sprache umschaltet.
+* Griechische Eingabe mit eigenem Layout und Akzent per Long-Press.
+* Deutsche Groß-/Kleinschreibung richtig gemacht: Satzanfänge, Substantive vs. andere Wortarten, Bindestrich-Segmente, die Komma-Regel bei der E-Mail-Anrede, Abkürzungen und ein konfigurierbares Zeitfenster für die Umschalttaste.
+* Rückwirkende Korrekturen: nachträgliche Worttrennung bei vergessenem Leerzeichen und Zusammenführung bei versehentlichem Leerzeichen, gesteuert über die Tipp-Unschärfe.
+* Gesten: Wischen zum Löschen eines ganzen Worts, Wischen nach unten zum Schließen, ein Vorschlag zum Verwerfen in den Papierkorb ziehen, Umschalttaste am Wortende für Groß-/Kleinschreibung bzw. camelCase.
+* Emoji-Panel mit zuletzt verwendeten Emojis und einer Live-Stichwortsuche (Deutsch und Englisch).
+* Optionales lokales Mini-LLM (opt-in, in Entwicklung): Ist sich das lokale Wörterbuch unsicher, kann ein kleines lokales Sprachmodell die Vorschläge verbessern. Es wird nie von der App gebündelt oder heruntergeladen - du importierst es selbst über den Dateiauswähler, danach läuft alles weiterhin vollständig offline.
+* Sicherung und Wiederherstellung deiner gelernten Wörter, Einstellungen und der Sperrliste als einzelne Datei.
+
+AdaptKey wird aktiv weiterentwickelt. Rückmeldungen und Fehlermeldungen sind im Quellcode-Repository willkommen.
