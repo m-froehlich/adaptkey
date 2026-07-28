@@ -1,24 +1,3 @@
-# Draft for fdroiddata's metadata/de.froehlichmedia.adaptkey.yml
-#
-# This file is NOT consumed by this repo's own build - it is the exact content to place at
-# metadata/de.froehlichmedia.adaptkey.yml in a fork of https://gitlab.com/fdroid/fdroiddata,
-# as part of the initial F-Droid submission merge request. Kept here (scratchpad) as the durable,
-# version-controlled source of truth for every future update to that file, since the canonical
-# copy lives in a different repository this project does not control.
-#
-# Commit hashes below are the dereferenced targets of the vX.Y.Z annotated tags (see `git tag -l -n1`
-# / `git show <tag>` in this repo) - fdroiddata's `commit:` field requires a full commit hash, not a
-# tag name.
-#
-# `scandelete` on every entry: F-Droid's build-time scanner rejects any binary archive found anywhere
-# in the checked-out source tree, regardless of whether the Gradle build actually references it. This
-# repo ships two prebuilt language-pack ZIPs at the root (language-packs/adaptkey-lang-{de,el}.zip) -
-# real, intentional downloadable content for the app's own language-pack feature (see
-# AdaptKey-Language-Contribution-Guide.md), not a build input. First CI run on this MR failed with
-# "Found ZIP file archive at language-packs/adaptkey-lang-de.zip" (and -el.zip) for exactly this
-# reason - scandelete tells fdroidserver to remove them before scanning/building, since the compiled
-# APK never needs them.
-
 Categories:
   - Keyboard & IME
 License: GPL-3.0-or-later

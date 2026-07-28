@@ -176,10 +176,29 @@ in every prompt.
   a Windows copy/paste can reintroduce CRLF from a file opened locally, the corrected content was handed
   over inline in chat instead of via "open this file" - lower risk of picking up stray `\r` again, though
   not a hard guarantee across every OS/browser clipboard.
+- **The chat-paste route still came back CRLF** (confirmed by re-downloading the MR's raw file via `curl`
+  and byte-counting `\r`, not assumed) - Windows' clipboard convention for plain text is CRLF regardless of
+  the source, so pasting from a chat message doesn't actually avoid it. Concretely proven, not just
+  theorised: the CI's own `build` job failed with `location=-1` from a `grep -n '^    versionCode:\ 306$'`
+  that could no longer match once a stray `\r` sat before the line's real end. Fixed properly this time by
+  sidestepping copy/paste entirely - handed the user a real `.yml` file (`scratchpad/
+  de.froehlichmedia.adaptkey.yml`, confirmed 0 `\r` bytes) to upload via GitLab's own "Replace file" (or
+  Web IDE drag-and-drop), which commits the file's actual bytes rather than clipboard text. This worked -
+  next pipeline run: `build` and `rewritemeta` both passed, only `checkupdates` still failed.
+- **`checkupdates`'s own remaining failure was a real, single missing field, not a repeat of anything**
+  **earlier:** it clones the actual tagged source and reads the real `AndroidManifest.xml` to auto-detect
+  the app's display name (`autoname 'AdaptKey'`), then fails a `git diff --exit-code` check because adding
+  `AutoName: AdaptKey` to the metadata would change the file. This is exactly why the much earlier,
+  seemingly-contradictory "+AutoName: AdaptKey" line noticed in an early CI diff (dismissed at the time as
+  probably stale) was in fact real: `checkupdates` can see the real manifest, this session's local
+  `rewritemeta` reproduction never could, since it never had an actual repo checkout to read from. Added
+  `AutoName: AdaptKey` (after `IssueTracker`, before `RepoType`, matching the CI's own proposed diff
+  exactly) and re-verified locally against real `rewritemeta` output again - still an exact, stable match.
+  Handed over the same way (file upload, not paste) to keep the CRLF fix intact.
 - **Still open:**
-  - Push this newest fix (the `output:` field, and clean LF endings) into the MR's
-    `metadata/de.froehlichmedia.adaptkey.yml` via the GitLab web UI, same branch as before, and re-run the
-    pipeline.
+  - Push this newest fix (`AutoName: AdaptKey`) into the MR's `metadata/de.froehlichmedia.adaptkey.yml` via
+    GitLab's "Replace file"/Web IDE upload (not copy/paste), and re-run the pipeline - if all three jobs
+    pass this time, the MR is technically ready and just waiting on human maintainer review.
   - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
     to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
   - Watch the MR's CI pipeline and fix anything further it flags by editing the file again in the GitLab
