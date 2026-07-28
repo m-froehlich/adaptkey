@@ -64,12 +64,16 @@ in every prompt.
     `short_description.txt`, `full_description.txt`, `changelogs/<versionCode>.txt`) - both F-Droid and
     other fastlane-aware repos read the store listing directly from these files in the repo, so a future
     listing/changelog update needs no separate submission, just a commit.
-  - Annotated git tag `v1.0.2` added locally on the current HEAD (versionCode 306) - the first tag in
-    the repo. Going forward, a tag per release (`vX.Y.Z` on the version-bump commit) joins the existing
-    release routine, since F-Droid's `UpdateCheckMode: Tags` / `AutoUpdateMode: Version` needs it to
-    detect and build new versions automatically after the initial submission.
+  - Annotated git tags `v1.0.2`/`v1.0.3`/`v1.0.4` added locally on their respective version-bump commits
+    (versionCode 306/307/308) - the first tags in the repo, backfilled onto commits that already existed
+    when this work started (v1.0.3/v1.0.4 landed in this same repo while the fastlane scaffold was being
+    built, so the initial `v1.0.2`-only tag/changelog work had to be corrected once that was noticed - see
+    `git log`/`git tag -l` for the authoritative current set, never assume this list is still complete).
+    Going forward, a tag per release (`vX.Y.Z` on the version-bump commit) joins the existing release
+    routine, since F-Droid's `UpdateCheckMode: Tags` / `AutoUpdateMode: Version` needs it to detect and
+    build new versions automatically after the initial submission.
 - **Still open:**
-  - Push the `v1.0.2` tag (the user pushes; not done automatically here).
+  - Push the `v1.0.2`/`v1.0.3`/`v1.0.4` tags (the user pushes; not done automatically here).
   - Fork `fdroiddata`, write `metadata/de.froehlichmedia.adaptkey.yml` (repo URL, build recipe, at least
     the v1.0.2 build entry, `AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), open the merge request.
   - Optional: app icon/screenshots under `fastlane/metadata/android/<locale>/images/` - not required for

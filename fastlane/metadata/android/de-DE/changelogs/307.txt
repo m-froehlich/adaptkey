@@ -1,0 +1,1 @@
+Die Emoji-Suche ist jetzt leichter zu finden (der Such-Tab hat einen sichtbaren Rahmen) und zeigt beim Tippen einen Chip mit dem aktuellen Suchbegriff, damit klar ist, wonach gesucht wird.

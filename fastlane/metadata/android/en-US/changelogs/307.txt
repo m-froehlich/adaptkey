@@ -1,0 +1,1 @@
+Emoji search is easier to find (the search tab now has a visible button frame) and shows a live query chip while you type, so you always see what you're searching for.

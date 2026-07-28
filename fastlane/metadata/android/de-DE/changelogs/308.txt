@@ -1,0 +1,1 @@
+Fehler behoben, bei dem die Vorschlagsleiste nach dem Wechsel von einem Feld mit Autofill-Vorschlägen zu einem anderen Feld doppelt angezeigt werden konnte.

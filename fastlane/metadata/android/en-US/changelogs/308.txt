@@ -1,0 +1,1 @@
+Fixed a bug where the suggestion bar could show doubled/duplicated content after switching from a field with autofill suggestions to another field.
