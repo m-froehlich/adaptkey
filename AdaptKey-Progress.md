@@ -128,7 +128,8 @@ non-trivial changes).
   17 new tests (`AzertyLayoutTest.kt`). 936 unit tests (919 + 17). `:app:compileDebugKotlin`/
   `:app:testDebugUnitTest` green. Guide's §5/§1 revised to reflect the built layout instead of the
   hypothetical. No French dictionary/hint content shipped - only the compiled geometry; a real
-  `dictionaries/fr/` pack is a separate future task. Not yet device-confirmed. See history §233.
+  `dictionaries/fr/` pack is a separate future task. **Device-confirmed** (2026-07-28) - AZERTY layout
+  confirmed working on-device. See history §233.
 - **§232 (v0.9.25): D-312/D-313 - two Shift-state bugs fixed, both in `AdaptKeyService.handleShift()`/**
   **`reclaimWordAtCaret()`.** D-313: tapping the caret mid-word into already-typed text (to swap a letter)
   left Shift stuck at whatever it was *before* the tap instead of re-deriving it from the new caret's own
@@ -141,8 +142,8 @@ non-trivial changes).
   unconditionally and checking double-tap timing first, undoing any provisional G-05 flip the superseded
   first tap already applied. No new unit tests (both fixes are `AdaptKeyService`'s own untested Android-glue
   orchestration). 919 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
-  G-05/G-06 sections revised. Not yet device-confirmed - needs a real re-test of both original repros. See
-  history §232.
+  G-05/G-06 sections revised. **Device-confirmed** (2026-07-28) - both original repros re-tested and fixed.
+  See history §232.
 - **§231 (v0.9.24): D-311 - D-310's legacy-flat-file cleanup removed, confirmed no longer needed.** User
   confirmed D-310 "hat gut geklappt" and that `LanguagePackStorage.cleanupLegacyFlatFiles()` (built
   specifically to sweep up the user's own then-existing old-layout install) has served its purpose. Removed:
@@ -163,8 +164,9 @@ non-trivial changes).
   `assets/en/dict.tsv` etc); both real hosted `.zip`s rebuilt again; `dictionaries/de/`/`dictionaries/el/`
   source files renamed to match. 7 new tests (`LanguagePackStorageTest.kt` new; `LanguagePackInstallerTest.kt`
   substantially rewritten). 922 unit tests (915 + 7). `:app:assembleRelease`/`:app:testDebugUnitTest` green -
-  also confirmed the built APK's own `assets/` entries directly. Spec/Contribution-Guide revised. Not yet
-  device-confirmed - the user's existing German install will need reinstalling (expected). See history §230.
+  also confirmed the built APK's own `assets/` entries directly. Spec/Contribution-Guide revised.
+  **Device-confirmed** (2026-07-28) - German pack reinstalled successfully under the new per-language
+  layout. See history §230.
 - **§229 (v0.9.22): D-309 - the D-308 version-file entry renamed `version.txt`, dropping the `<code>`**
   **suffix, after the user asked why it was there at all.** Investigated and confirmed: unlike
   `dict_<code>.tsv`/`bigram_<code>.tsv`/`hints_<code>.tsv` (which genuinely need it - `LanguagePackStorage`
@@ -174,7 +176,7 @@ non-trivial changes).
   everywhere (code constant, both real hosted `.zip`s rebuilt, their mirrored `dictionaries/<code>/` source
   files, the Contribution Guide, tests). No migration needed - confirmed with the user that D-307/D-308 had
   not yet been exercised on any real device. 915 unit tests (unchanged, a straight swap).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet device-confirmed. See history §229.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. **Device-confirmed** (2026-07-28). See history §229.
 - **§228 (v0.9.21): D-308 - closed D-307's own remaining gap: language-pack updates are now detected from**
   **the archive itself, not only from this app's compiled-in hint - a community-revised pack no longer needs**
   **an AdaptKey app release to be picked up.** `LanguagePackInstaller` split into `parse()` (reads a `.zip`
@@ -186,8 +188,9 @@ non-trivial changes).
   re-check is always possible. Both real `.zip`s rebuilt with their own version files (German `2`, Greek `1`);
   Contribution Guide revised to document the file and warn that omitting it permanently blocks future
   re-import updates (`1 <= 1` forever) short of a full remove+reinstall. 6 new tests. 915 unit tests
-  (909 + 6). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280 section revised. Not yet
-  device-confirmed - needs a real re-import round-trip against the rebuilt German pack. See history §228.
+  (909 + 6). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280 section revised.
+  **Device-confirmed** (2026-07-28) - re-import round-trip against the rebuilt German pack tested. See
+  history §228.
 - **§227 (v0.9.20): D-307 - language-pack update mechanism built, explicitly requested right after D-306.**
   **Purely local version comparison, no new permission** (the app deliberately carries no `INTERNET`
   permission at all, D-135/D-280 - user chose this over an active network-polling alternative that would have
@@ -196,9 +199,9 @@ non-trivial changes).
   pre-existing install reads correctly without any migration step). `LanguagePacksActivity`'s row now has
   three states (not installed / installed & current / update available), the update state reusing the
   identical Download+Import flow a fresh install already uses. 909 unit tests (902 + 7).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280 section revised. Not yet
-  device-confirmed - needs a look at the language-packs screen (German should now show "update available").
-  See history §227.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's D-280 section revised. **Device-confirmed**
+  (2026-07-28) - the language-packs screen showed "update available" for German as expected. See history
+  §227.
 - **§226 (v0.9.19): D-306 - root-caused and fixed "Tippstil" splitting into "Tipp"/"til": both bundled**
   **dictionaries carried thousands of untagged Wikipedia-extraction-noise entries that could never be**
   **protected by A-05's "not both nouns" split gate.** 84 German + ~15,503 English untagged rows reviewed
@@ -209,8 +212,8 @@ non-trivial changes).
   and directly verifies the reported split no longer happens. 902 unit tests (899 + 3).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec A-05 + the Language Contribution Guide revised.
   Two follow-ups flagged in Open TODOs above (broader dubious-but-tagged cleanup; language-pack update
-  mechanism, explicitly requested next). Not yet device-confirmed - German is a downloaded pack, so needs
-  either a manual reinstall or the not-yet-built update mechanism to actually land. See history §226.
+  mechanism, explicitly requested next). **Device-confirmed** (2026-07-28) - reinstalled the German pack via
+  the now-built update mechanism. See history §226.
 - **§225 (v0.9.18): D-305 - the §224 TODO (`k01_calibration_offered` travelling via export) actioned on**
   **direct request, the same way as the diagnostics toggle.** `KEY_CALIBRATION_OFFERED` moved from a private
   `SettingsActivity` constant to `SettingsStore.KEY_CALIBRATION_OFFERED`; `SettingsStore.EXPORT_EXCLUDED_KEYS`
@@ -219,7 +222,7 @@ non-trivial changes).
   `BackupImporter.importSettings()` (import-side defence in depth). The two D-304 tests specific to the
   diagnostics key were generalised to iterate the whole set instead. 899 unit tests (unchanged - the
   generalised tests replace the diagnostics-specific ones 1:1). `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. Spec §21 (Y-01) revised. Not yet device-confirmed. See history §225.
+  green. Spec §21 (Y-01) revised. **Device-confirmed** (2026-07-28). See history §225.
 - **§223 (v0.9.16): D-303 - fixed a serious regression: D-293's `TYPE_TEXT_FLAG_NO_SUGGESTIONS` bypass**
   **(meant only for the Learned Words casing-edit field) was silently firing in real third-party apps too,**
   **killing suggestions/autocorrect/capitalisation there entirely.** Root-caused from a real device
@@ -241,8 +244,8 @@ non-trivial changes).
   addition. `KEY_DIAGNOSTIC_LOG_ENABLED` is excluded from export and, for defence in depth, also skipped on
   import even if a bundle still carries it (an old pre-D-304 file, or a hand-edited one) - a per-device
   debugging aid must never be decided by a backup taken elsewhere. 3 new tests. 899 unit tests (896 + 3).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §21 (Y-01) revised. Not yet device-confirmed -
-  needs a real export/import round-trip. See history §224.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §21 (Y-01) revised. **Device-confirmed**
+  (2026-07-28) - export/import round-trip tested. See history §224.
 - **§222 (v0.9.15): D-302 - the C-04 highlight-colour preference now previews each choice as its own text**
   **colour, both in the settings row's summary and in the picker dialog's entries.** Row summary: dropped
   `useSimpleSummaryProvider`, replaced with a `SpannableString`/`ForegroundColorSpan` summary set in

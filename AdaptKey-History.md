@@ -11579,3 +11579,18 @@ ordinary per-release third-digit increment, to mark a milestone rather than to a
 change beyond `app/build.gradle.kts`: `versionCode` 303 -> 304 (Android's own strictly-increasing requirement,
 unrelated to the `versionName` scheme), `versionName` `"0.9.26"` -> `"1.0.0"`. 936 unit tests (unchanged - no
 code touched). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+## §235 - Device-Confirmation Batch: D-304 Through D-314 All Confirmed Working (no code change)
+
+The user confirmed on-device, in one batch, every round that had been sitting in the "not yet
+device-confirmed" backlog since D-303 (the last individually-confirmed round): D-304 (backup-export display
+order), D-305 (calibration-offer flag excluded from export), D-306 (dictionary-tagging fix for the
+"Tippstil" split), D-307/D-308/D-309/D-310 (the language-pack update mechanism end to end, including
+reinstalling the German pack under the new per-language file layout), D-312/D-313 (both Shift-state repros
+re-tested directly), and D-314 (French AZERTY typing on-device). D-311 and D-315 needed no confirmation of
+their own (pure removal / version-only rounds respectively) and were already noted as such.
+
+No code change, no version bump (pure confirmation, per this project's own documentation rule) - only
+`AdaptKey-Progress.md`'s per-round "Not yet device-confirmed" notes updated to "Device-confirmed" in place,
+since that file is the living status, not an append-only log. This entry exists so the confirmation itself -
+and that it happened as one batch rather than per-round - is preserved here too.
