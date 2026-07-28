@@ -83,10 +83,17 @@ in every prompt.
     keystore, no network beyond Maven Central dependency resolution). D-223's existing
     `keystorePropertiesFile.exists()` guards already handle this correctly - no source change was needed.
     `keystore.properties` was restored immediately afterward.
+  - **User forked `fdroiddata` on GitLab and opened the merge request** with the scratchpad draft's
+    content at `metadata/de.froehlichmedia.adaptkey.yml`, entirely via the GitLab web UI (no local
+    checkout needed for this step). This is state that lives entirely outside this repo/session - the MR
+    URL and its review status are not tracked here; check GitLab directly for the current status.
 - **Still open:**
-  - Fork `fdroiddata`, copy the scratchpad draft into `metadata/de.froehlichmedia.adaptkey.yml`, open the
-    merge request - this is a submission to a third-party project under the user's own account, not
-    something done from here.
+  - Watch the MR's CI pipeline (lint + scanner + a real trial build of at least the current version) and
+    fix anything it flags by editing the file again in the GitLab web UI, pushed to the same branch.
+  - Respond to F-Droid maintainer review feedback if/when it comes (first-time inclusion review commonly
+    takes weeks, sometimes months).
+  - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
+    the client - merged is not yet live.
   - Optional: app icon/screenshots under `fastlane/metadata/android/<locale>/images/` - not required for
     the initial submission, improves the listing.
   - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
