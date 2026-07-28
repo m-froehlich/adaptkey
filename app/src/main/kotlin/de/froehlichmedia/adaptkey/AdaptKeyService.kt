@@ -1965,9 +1965,20 @@ class AdaptKeyService : InputMethodService() {
      * every call site individually. Shown exactly when [items] contains a clipboard chip
      * ([SuggestionController.Kind.CLIPBOARD]/[SuggestionController.Kind.CLIPBOARD_FIRST_LINE]/
      * [SuggestionController.Kind.CLIPBOARD_FIRST_CODE]), hidden otherwise.
+     *
+     * D-319: also unconditionally hides [inlineSuggestionsBar] - every call site here is, by definition,
+     * about to show ordinary suggestion-bar content, which the D-135 Autofill inline row must never be
+     * visible alongside (P-06: it occupies "the same slot ... instead of" the ordinary bar, not beside it).
+     * [onInlineSuggestionsResponse] still has the final say for its own field - it runs asynchronously,
+     * always after this method's own synchronous callers, and does not go through this method itself - so
+     * this only closes the actual gap: a stale, still-visible inline row left over from a *previous* field
+     * (never reset by this method before) staying up at the same time this method now shows the new field's
+     * own ordinary content, doubling the row visually. See [resetInlineSuggestions] for the field-change case
+     * this complements, not replaces.
      */
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
         suggestionBar?.setItems(items)
+        inlineSuggestionsBar?.visibility = View.GONE
         val showsClipboard = items.any {
             it.kind == SuggestionController.Kind.CLIPBOARD ||
                 it.kind == SuggestionController.Kind.CLIPBOARD_FIRST_LINE ||

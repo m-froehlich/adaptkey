@@ -104,6 +104,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§241 (v1.0.4): D-319 - fixed a real "doubled suggestion bar" regression, reported as tied to clipboard**
+  **content but actually a pre-existing D-135/D-267 gap, unrelated to D-317/D-318's own row-width change**
+  **the user first suspected.** Root cause: `setSuggestionBarItems()` (D-267's own "single choke point" for
+  ordinary bar content) never hid `inlineSuggestionsBar` (D-135's Autofill inline-suggestions row) - only
+  `onInlineSuggestionsResponse()`/`resetInlineSuggestions()` ever paired the two correctly. A stale inline
+  row left over from a previous field's real Autofill suggestion could still be `VISIBLE` when the next
+  field's `showClipboardChipIfAvailable()` (or any of `setSuggestionBarItems()`'s six other call sites)
+  forced the ordinary bar `VISIBLE` too, before that field's own (asynchronous) Autofill response had
+  resolved - both rows stacked at once. Fixed at the one choke point rather than patching each call site:
+  `setSuggestionBarItems()` now also unconditionally sets `inlineSuggestionsBar?.visibility = View.GONE`.
+  No new tests (Android-glue visibility orchestration). 947 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (restores already-documented P-06/
+  D-135 "instead of" behaviour). Version bumped 1.0.3 -> 1.0.4. Not yet device-confirmed - needs a repeat of
+  the reported sequence (Autofill-suggestion field, then a clipboard-content field). See history §241.
 - **§239 (v1.0.3): D-318 - emoji search discoverability fixes, from real device feedback on D-317: "works,**
   **but the search tab is hard to notice, and typing shows no feedback."** Two fixes: (1) `EmojiPanelView`'s
   back/search tabs now draw a rounded button-border frame (`tabButton(framed = true)`) - every ordinary
@@ -115,8 +129,7 @@ non-trivial changes).
   you're typing into nothing). No new tests (both changes are Android-view/glue rendering, the same category
   as the rest of D-317's own service-level orchestration). 947 unit tests (unchanged).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's L-03 addendum extended. Version bumped
-  1.0.2 -> 1.0.3. Not yet device-confirmed - needs a real look at both fixes on device, light and dark theme.
-  See history §239.
+  1.0.2 -> 1.0.3. **Device-confirmed** (2026-07-28). See history §239.
 - **§238 (v1.0.2): D-317 - emoji search, SwiftKey-style: a magnifying-glass tab in the emoji panel finds an**
   **emoji by typed search term (the user's own example: "poop" -> 💩), German+English via CLDR.** Data source
   chosen with the user across three decisions: CLDR (not hand-curated) -> full keyword-synonym lists, not

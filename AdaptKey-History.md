@@ -11807,3 +11807,66 @@ are the untested Android-glue layer). 947 unit tests (unchanged). `:app:assemble
 `:app:testDebugUnitTest` green. Spec's L-03 addendum extended. Version bumped 1.0.2 -> 1.0.3. Not yet
 device-confirmed - needs a real look at both the framed icons and the query chip on device, in both light and
 dark theme.
+
+## §240 - D-318 Confirmed: Framed Action Icons + Query Chip Checked On Device (no code change)
+
+User confirmed D-318's two discoverability fixes on device ("Perfekt!"). No code change, no version bump
+(pure confirmation) - only `AdaptKey-Progress.md`'s §239 bullet updated in place to "Device-confirmed
+(2026-07-28)".
+
+## §241 - D-319: Fixed a Real Regression - Suggestion Bar "Doubled" Whenever Autofill Inline Suggestions Were Left Over From a Previous Field (v1.0.4)
+
+Reported directly, in the same session as the §240 confirmation above: "es gibt aber... eine Regression...
+die Vorschlagsleiste [ist] gedoppelt... solange irgendetwas im Clipboard steht" - happening often. The
+user's own working hypothesis was that D-317/D-318's `suggestionRow` width change (adding the `cancelEmojiSearch`
+button alongside `clearClipboard`) had broken the row's space distribution. Investigated before accepting that
+hypothesis (per this project's own "prove the cause, don't guess" rule) - traced the actual visibility state
+machine instead of the layout math, since a `GONE` `LinearLayout` child (the D-317 button, hidden whenever
+search is not active) contributes zero width/height regardless of how many siblings it has, so the reported
+symptom could not mechanically follow from that change at all.
+
+**Actual root cause, unrelated to D-317/D-318 and pre-dating both by a wide margin (D-135/D-36):**
+`onInlineSuggestionsResponse()` (D-135, the platform Autofill inline-suggestions row) and
+`setSuggestionBarItems()` (D-267, "the single choke point every suggestion-bar content update goes through" -
+its own doc comment) each independently manage `suggestionBar`/`inlineSuggestionsBar` visibility, and only
+the former ever paired the two: `onInlineSuggestionsResponse()`'s own two branches (empty response / a real
+suggestion inflated) both correctly set one bar `VISIBLE` and the other `GONE` together, and
+`resetInlineSuggestions()` (already wired into every field change, `onStartInput()`) also pairs them
+correctly. `setSuggestionBarItems()`, however, only ever set `suggestionBar` itself `VISIBLE`
+(via each of its seven call sites' own trailing `suggestionBar?.visibility = View.VISIBLE` line) and never
+touched `inlineSuggestionsBar` at all - the one asymmetric gap in an otherwise consistently-paired system.
+
+**Why this reproduces specifically "whenever clipboard content is present":** `showClipboardChipIfAvailable()`
+(D-36) is the exact call site that fires only when the clipboard actually holds fresh text - so a report tied
+to "clipboard present" was really pointing at *one specific, easily-reached* call site of the shared bug, not
+at clipboard-specific logic itself. Sequence that reproduces it: field A has real Autofill inline suggestions
+-> `onInlineSuggestionsResponse()` shows `inlineSuggestionsBar` (`VISIBLE`) and hides `suggestionBar`
+(`GONE`) for field A, correctly. The user moves to field B; `onStartInput()`'s `resetInlineSuggestions()` does
+reset both bars correctly for the *start* of field B - but field B's own Autofill round-trip
+(`onCreateInlineSuggestionsRequest`/`onInlineSuggestionsResponse`) is asynchronous and has not resolved yet by
+the time `onStartInputView()` synchronously calls `showClipboardChipIfAvailable()` (clipboard still holds
+something from earlier) -> `setSuggestionBarItems()` sets `suggestionBar` `VISIBLE`, `inlineSuggestionsBar`
+untouched. If field B's own Autofill response also happens to resolve to "a real suggestion" shortly after,
+`onInlineSuggestionsResponse()` runs *its own* `bar.visibility = VISIBLE` (correctly, for field B) but by then
+`suggestionBar` is also still `VISIBLE` from the clipboard-chip call moments earlier - both rows now stacked in
+`root` at once, the reported "doubled" bar. Every one of `setSuggestionBarItems()`'s other six call sites
+(credential suggestions, emoji search, ordinary word suggestions, clearSuggestions, the "Gelernt: X" chip) has
+the identical latent gap; clipboard just happens to be the easiest one to trigger repeatedly on demand.
+
+**Fix:** `setSuggestionBarItems()` itself now also sets `inlineSuggestionsBar?.visibility = View.GONE`
+unconditionally - the single choke point it already is for `clearClipboardButtonView` now also owns this,
+closing the gap at its one true source instead of patching seven individual call sites (and risking an eighth
+one someday repeating the same mistake, exactly as D-317/D-318's own new `updateEmojiSearchResults()` call site
+silently did by following the existing, incomplete pattern faithfully). Confirmed safe against
+`onInlineSuggestionsResponse()`'s own authority for its own field: that method is always the *last* one to run
+for a genuine, freshly-arrived suggestion (Autofill responses are inherently asynchronous, arriving after every
+synchronous `onStartInputView()`-time call), so it always still gets the final say for its own field - this fix
+only closes the specific gap of a *stale* row surviving from *before* that method's own next call.
+
+No new tests - this is `AdaptKeyService`'s own Android-glue view-visibility orchestration, the same category
+as the rest of this file's `AdaptKeyService`-level fixes; `InlineSuggestionsBarView`/`SuggestionBarView`
+themselves are unchanged. 947 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+No spec change (this is a bug fix restoring already-documented P-06/D-135 behaviour - "instead of", not
+"beside" - not a new requirement). Version bumped 1.0.3 -> 1.0.4. Not yet device-confirmed - needs a real
+repeat of the reported sequence (a field with real Autofill inline suggestions, then a field with clipboard
+content) to confirm the row no longer doubles.
