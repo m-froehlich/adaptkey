@@ -11923,3 +11923,77 @@ green. Spec's A-12 revised (comma parity, the digit-glue exception and its accep
 capitalisation carve-out); A-01's stale "50x" corrected to "100x" in the same pass. Not yet device-confirmed -
 needs a real decimal-number typing round-trip (both `.` and `,`) and a plain comma-in-a-sentence check to
 confirm the trailing space still appears and is still capitalisation-neutral.
+
+## §243 - D-321: Real App Icon + F-Droid Store-Listing Icon - an "A" Keycap With the T-06 Touch-Zone Visualisation, Replacing the Placeholder Glyph (v1.0.6)
+
+Prompted by the F-Droid submission work (§235-§237-adjacent sessions): the F-Droid listing needed an icon
+under `fastlane/metadata/android/<locale>/images/icon.png`, and `ic_launcher_foreground.xml`'s own code
+comment already flagged itself as "placeholder launcher art for the scaffold" - so there was, in fact, no
+real icon anywhere yet, not even the one actually installed on the user's device.
+
+**Design process (collaborative, several rounds, per this project's own convention for non-trivial design
+decisions):**
+
+1. First draft: a bold white "A" on the brand blue (`colors.xml`'s `ic_launcher_background`, `#1565C0`,
+   already reused elsewhere in the real UI for `link_text`/`suggestion_verbatim_text`) - functional but
+   generic, indistinguishable from any other single-letter app icon.
+2. User's own suggestion, and the actual turning point: work the T-06 touch-zone visualisation into the
+   icon, since it "symbolisiert den Charakter der App ziemlich gut" - this app's actual defining feature
+   (the personal per-key offset model, T-03) rather than a generic letter mark. Colours for the halo/dot
+   were not invented for the icon; they are the same hue as `AdaptKeyboardView.kt`'s own real
+   `touchModelFillPaint`/`touchModelStrokePaint`/`touchModelDotPaint` (D-24) - a faithful miniature of
+   something the app genuinely draws, not just a matching palette.
+3. Halo intentionally bleeds out past the keycap's own left edge - the user's own framing: "das trifft den
+   Fall gut, der ursprünglich abgedeckt werden sollte", i.e. the actual T-03/T-05 mistouch scenario (a real
+   tap lands away from the key's own geometric box), not just a decorative circle sitting neatly inside it.
+4. Correction: the dot must sit centrally **on the key** (the keycap's own true geometric centre, 54,54),
+   not centred **in the halo** - unlike `drawTouchModel()`'s own real same-centre pairing of the oval and
+   the dot, this is a deliberate stylisation for the icon specifically, decoupling the two.
+5. Correction: the "A" made thinner/lighter-weight so the halo reads clearly where the two overlap - the
+   first bold version visually buried the halo under the letter.
+6. Z-order fixed to match the real app exactly: `AdaptKeyboardView.onDraw()` calls `drawKeys()` (key
+   background + label) before `drawTouchModel()` (the overlay), so the icon draws the "A" first and the
+   halo/dot on top of it too - not the reverse, which the earlier drafts had.
+7. User's own question, and a real finding: is the blue background actually part of the icon, or just a
+   preview backdrop? Confirmed it **is** the real `ic_launcher_background` - and its luminance turned out
+   close enough to the halo's teal that the real in-app alpha values (0x33/0x88, correct for a light
+   keyboard background, never used against dark blue in practice) were nearly invisible once the halo bled
+   onto it. Fixed by boosting the halo's own alpha (fill 51->150/255, stroke 136->230/255) rather than
+   touching the established brand blue - the hue stays identical to the real Paint values, only the
+   contrast for this specific dark-background use case changes.
+8. User's own observation: the keycap wasted too much of the canvas ("kein uni-blaues Icon mit einem
+   winzigen Bild in der Mitte"). Checked Android's actual current adaptive-icon spec (not assumed from
+   memory) rather than guessing a bigger number: canvas is 108x108dp, with a 66x66dp safe zone centred in
+   it, guaranteed never clipped by any launcher mask shape - the original 46x46 keycap was far more
+   conservative than that. Card enlarged to fill the full 66x66 safe zone (a real +43% area, not the
+   literal "almost 100%" the user floated, since going further would risk real clipping on some launcher
+   masks) - explained this trade-off rather than silently picking a number. Only the halo's own deliberate
+   bleed is allowed to cross past the safe-zone boundary, as a secondary/decorative accent, not core
+   content.
+
+**Real bug found and fixed along the way, unrelated to the design iteration itself:** the first few raster
+drafts (built with a throwaway Pillow script, `scratchpad/generate_icon.py`, same convention as
+`build_dict.py`/`build_emoji_keywords.py`) drew translucent shapes directly onto the RGBA canvas via
+`ImageDraw`. Confirmed by inspecting actual saved pixel values (identical raw RGBA regardless of what was
+underneath, and a non-255 alpha baked into the exported PNG) that `ImageDraw` does not alpha-blend against
+existing pixels at all - it overwrites them, silently baking genuine (and wrong) partial transparency into
+the file instead of the intended opaque blended colour. Fixed by drawing every translucent shape on its
+own transparent layer and compositing it onto the canvas with `Image.alpha_composite()`, which correctly
+blends and - since the canvas is already fully opaque by the time any translucent shape is composited -
+provably always yields a fully opaque result (verified: every pixel in the final PNG has alpha 255).
+
+**Implementation:** `app/src/main/res/drawable/ic_launcher_foreground.xml` rebuilt as a VectorDrawable
+using the same 108-unit coordinates as the raster script (`ic_launcher_background.xml` untouched - it was
+already just the flat colour fill). No baked-in drop shadow in the vector version (present in the raster/
+store-listing PNG for a little polish) - VectorDrawable has no native blur primitive, and a hard-edged
+fake shadow would have looked worse than no shadow at all; adaptive icons are conventionally flat vector
+art for exactly this reason. Cross-checked the VectorDrawable's own `pathData` against the approved raster
+design by rendering the identical path data as inline SVG in the browser before committing (path syntax is
+compatible) - caught one real transcription bug this way, a malformed ARGB hex value in the halo fill
+color. The same final PNG (`scratchpad/icon_draft_512.png`) placed as `icon.png` in all three
+`fastlane/metadata/android/{en-US,de-DE,el-GR}/images/`. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green (confirms the new VectorDrawable parses/compiles cleanly under AAPT). 956 unit tests (unchanged - a
+launcher icon has no testable logic). No spec section change (app iconography isn't a numbered spec
+requirement). `versionCode` 309 -> 310, `versionName` `"1.0.5"` -> `"1.0.6"`. Not yet device-confirmed -
+needs a real launcher check that the enlarged card and the bleeding halo aren't clipped on the user's own
+actual launcher/mask shape.

@@ -4,8 +4,32 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Simple "A" glyph centred in the safe zone; placeholder launcher art for the scaffold. -->
+    <!-- D-321: an "A" keycap with the T-06 touch-zone visualisation on top, replacing the placeholder
+         glyph - see AdaptKey-History.md D-321 for the design rationale. Card fills the official 66x66dp
+         adaptive-icon safe zone (21,21)-(87,87). -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,30 L70,78 L62,78 L58.5,67 L49.5,67 L46,78 L38,78 Z M51.5,60 L56.5,60 L54,51 Z" />
+        android:pathData="M33.91,21 L74.09,21 A12.91,12.91 0 0 1 87,33.91 L87,74.09 A12.91,12.91 0 0 1 74.09,87 L33.91,87 A12.91,12.91 0 0 1 21,74.09 L21,33.91 A12.91,12.91 0 0 1 33.91,21 Z" />
+    <!-- Bold "A", same colour as the background so it reads as engraved into the white keycap. -->
+    <path
+        android:fillColor="#1565C0"
+        android:pathData="M58.30,31.04 L82.70,76.96 L75.52,76.96 L61.17,59.74 L55.43,59.74 L41.09,76.96 L33.91,76.96 Z" />
+    <!-- Touch-zone halo, same hue as AdaptKeyboardView.kt's real touchModelFillPaint/touchModelStrokePaint
+         (0,121,107 / #00796B, D-24), alpha boosted for contrast against this icon's own dark background -
+         the real in-app overlay is only ever drawn over a light keyboard background. Bleeds left past the
+         card's own edge on purpose (the T-03/T-05 mistouch scenario), drawn on top of the letter to match
+         AdaptKeyboardView.onDraw()'s real z-order (key/label first, touch-model overlay on top). -->
+    <path
+        android:fillColor="#00796B"
+        android:fillAlpha="0.588"
+        android:strokeColor="#00796B"
+        android:strokeAlpha="0.902"
+        android:strokeWidth="2.4"
+        android:pathData="M12,54 A33,19 0 1,0 78,54 A33,19 0 1,0 12,54 Z" />
+    <!-- Strike-point dot, deliberately at the keycap's own true centre (54,54) - "central on the key" -
+         not centred in the halo above, unlike drawTouchModel()'s own same-centre pairing. -->
+    <path
+        android:fillColor="#D32F2F"
+        android:fillAlpha="0.878"
+        android:pathData="M48,54 A6,6 0 1,0 60,54 A6,6 0 1,0 48,54 Z" />
 </vector>

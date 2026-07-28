@@ -165,6 +165,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§243 (v1.0.6): D-321 - real app icon (and F-Droid store-listing icon) built for the first time: an**
+  **"A" keycap with the T-06 touch-zone visualisation on top, replacing the launcher art that was**
+  **explicitly still a placeholder.** Design chosen collaboratively over several rounds - the touch-zone
+  motif (not a generic letter) was the user's own idea, since it actually reflects the app's defining
+  feature (T-03); halo/dot colours reused verbatim from `AdaptKeyboardView.kt`'s real `touchModelFillPaint`/
+  `touchModelStrokePaint`/`touchModelDotPaint` (D-24) rather than invented; halo deliberately bleeds past
+  the keycap's own left edge (the actual T-03/T-05 mistouch scenario); dot sits at the keycap's true centre
+  (not the halo's centre, unlike the real in-app pairing - a deliberate icon-only stylisation); z-order
+  matches `onDraw()`'s real key-then-overlay order; card enlarged to fill Android's actual 66x66dp
+  adaptive-icon safe zone (checked live, not assumed) instead of the far more conservative 46x46 first
+  draft. Found and fixed in passing: the draft raster script was baking genuine wrong partial transparency
+  into the PNG (PIL's `ImageDraw` doesn't alpha-blend against existing pixels) - fixed via proper
+  `Image.alpha_composite()` layering. `ic_launcher_foreground.xml` rebuilt as a VectorDrawable (background
+  drawable untouched); same PNG placed in all three `fastlane/metadata/android/<locale>/images/icon.png`.
+  956 unit tests (unchanged - no testable logic). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 309 -> 310, `versionName` `"1.0.5"` -> `"1.0.6"`. Not yet device-confirmed - needs a real
+  launcher check that the enlarged card/bleeding halo aren't clipped on the user's own mask shape. See
+  history §243.
 - **§242 (v1.0.5): D-320 - comma now arms A-12's auto-space exactly like `.`/`!`/`?`, plus a digit-glue**
   **exception so a decimal number typed digit-by-digit no longer gets a stray space in the middle.** Started
   from a real root-cause trace (no fix): `"fir"` doesn't autocorrect to `"dir"` because `fir` is itself a
