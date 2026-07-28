@@ -12308,3 +12308,13 @@ established gap as D-135/D-319/D-323/D-325. 956 unit tests (unchanged).
 `versionName` `"1.0.12"` -> `"1.0.13"`. Not yet device-confirmed - needs the exact reported Signal sequence
 re-tested to confirm no Autofill request is even sent for that field and the clipboard chip stays put
 throughout.
+
+## §252 - D-326 Confirmed: Signal's Clipboard Chip Now Stays Put, Closing the D-323..D-326 Suggestion-Bar/Autofill Saga (no code change)
+
+User confirmed directly: "Ja, das funktioniert. So lassen wir es." - the exact reported Signal sequence
+re-tested, the clipboard chip no longer flickers or gets evicted. Closes the multi-round investigation that
+started with §246's own "empty row jitters open and closed on field entry" report (D-323) and, once that
+symptom was fixed, surfaced this distinct clipboard-chip-eviction issue (D-324/D-325/D-326) underneath it -
+each round corrected by real device evidence rather than assumption, ending on the user's own proposed root
+fix (restrict Autofill inline suggestions to real credential fields) rather than the initially-proposed
+debounce alone. No code change - see history §251 for the fix itself.

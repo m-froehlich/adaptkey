@@ -296,8 +296,8 @@ non-trivial changes).
   field whose own responder might still be flaky. Fix: `onCreateInlineSuggestionsRequest()` returns `null`
   outright when `loginFieldKind == NONE`, before building anything. 956 unit tests (unchanged).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's P-06 revised. `versionCode` 316 -> 317,
-  `versionName` `"1.0.12"` -> `"1.0.13"`. **Not yet device-confirmed** - needs the exact reported Signal
-  sequence re-tested. See history §251.
+  `versionName` `"1.0.12"` -> `"1.0.13"`. **Device-confirmed** (2026-07-28) - "Ja, das funktioniert. So lassen
+  wir es." Closes the D-323..D-326 suggestion-bar/Autofill saga. See history §251/§252.
 - **§250 (v1.0.12): D-324/D-325 closed - root cause confirmed from a real log (Signal's message field gets a**
   **genuinely unstable Autofill response - offered, retracted, re-offered every few hundred ms for several**
   **seconds, each cycle hiding/restoring the clipboard chip), Google Keep/K9 never trigger Autofill at all in**
