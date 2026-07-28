@@ -105,11 +105,19 @@ in every prompt.
       chronological order preserved).
     - A signed release APK matching the `v1.0.7` tag exactly was requested for
       `github.com/m-froehlich/adaptkey/releases/tag/v1.0.7`. Built via an isolated `git worktree` checked
-      out at the `v1.0.7` tag (kept the main checkout, already at v1.0.10, untouched) - the gitignored
-      `keystore.properties`/`release.keystore` were copied in just for that build and removed again
-      afterward. Verified signed with the real AdaptKey/Froehlich Media certificate via `apksigner verify`.
-      Handed to the user to attach to the GitHub Release themselves (publishing to the public repo is the
-      user's own action, not done from here).
+      out at the `v1.0.7` tag (kept the main checkout, at the time already ahead, untouched) - the
+      gitignored `keystore.properties`/`release.keystore` were copied in just for that build and removed
+      again afterward. Verified signed with the real AdaptKey/Froehlich Media certificate via `apksigner
+      verify`. By the time the user got to actually publishing it, development had moved on far enough
+      (v1.0.10) that chasing the now-stale v1.0.7 release no longer made sense - superseded rather than
+      published. Instead: `v1.0.10` tagged and pushed (`versionCode` 314 - the last two intermediate
+      versions, 1.0.9/`versionCode` 313, were themselves just temporary diagnostic-logging commits for an
+      in-progress clipboard-chip bug investigation, not release-worthy on their own - consistent with the
+      earlier "only tag release-worthy versions" discussion, deliberately left untagged), and a matching
+      signed APK rebuilt directly in the main checkout (already at that exact commit) and handed to the
+      user - publishing the GitHub Release itself is the user's own action, not done from here. The
+      scratchpad metadata-yml draft's `Builds`/`CurrentVersion` updated to add 1.0.8 and 1.0.10 (skipping
+      the untagged 1.0.9), now current through `1.0.10`/314.
     - Three further checklist items in the MR's own template (`External repos are added as git submodules
       instead of srclibs`, `Enable Reproducible Builds`, `Multiple apks for native code`) are all
       genuinely **not** satisfied today - not just unchecked boxes to tick. No submodules exist (N/A,
@@ -119,12 +127,11 @@ in every prompt.
       template) these are "recommended", not required for inclusion - left undone for now, not silently
       checked off.
 - **Still open:**
-  - Push the new `v1.0.5`/`v1.0.6`/`v1.0.7` tags, this round's screenshot commit, and (once created)
-    upload the already-built signed APK to the `v1.0.7` GitHub Release (the user pushes/publishes; not
-    done automatically here).
-  - Update the actual `fdroiddata` MR (not just the local scratchpad draft) with the three new `Builds`
-    entries and the bumped `CurrentVersion`/`CurrentVersionCode` - see the scratchpad file for the exact
-    content to paste in.
+  - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
+    to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
+  - Update the actual `fdroiddata` MR (not just the local scratchpad draft) with the new `Builds` entries
+    (through 1.0.10) and the bumped `CurrentVersion`/`CurrentVersionCode` - see the scratchpad file for the
+    exact content to paste in.
   - Watch the MR's CI pipeline (lint + scanner + a real trial build of at least the current version) and
     fix anything it flags by editing the file again in the GitLab web UI, pushed to the same branch.
   - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
