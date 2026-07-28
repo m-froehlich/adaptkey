@@ -177,6 +177,21 @@ non-trivial changes).
 
 ## Current State
 
+- **§247 (v1.0.9): D-324 - new report right after §246: clipboard chip flashes then disappears on field**
+  **entry.** First hypothesis (Autofill precedence, per §246's own discussion) was directly ruled out by the
+  user ("das Textfeld ist ja noch leer") and confirmed wrong by code reading too (`onUpdateSelection`'s own
+  `clearSuggestions()` branch sits behind a `composing.isEmpty()` early return, structurally can't fire on an
+  untouched field). Re-diagnosed from scratch per this project's own "re-question the diagnosis, don't patch
+  the same theory" rule. New working hypothesis, grounded in an already-device-confirmed precedent in this app
+  (D-239/§166): a second `onStartInput(restarting=true)` can fire without a matching `onStartInputView()` -
+  `onStartInput()`'s trailing `clearSuggestions()` runs unconditionally every time, but only
+  `onStartInputView()` restores the clipboard chip, so a lone restart wipes it with nothing to repopulate it
+  until real typing triggers the ordinary suggestion pipeline for an unrelated reason. Not yet fixed - added
+  temporary diagnostic logging instead (`onStartInput`/`onStartInputView` both now log `restarting` + a
+  timestamp, mirroring D-110/D-139's own precedent) so the next repro with Settings -> Diagnostics enabled
+  confirms or refutes this before any fix is written. 956 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 312 -> 313, `versionName` `"1.0.8"` ->
+  `"1.0.9"`. **Next step: reproduce with the diagnostic log recording, then share the log.** See history §247.
 - **§246 (v1.0.8): D-323 - fixed a real "empty row jitters open and closed on every field entry" regression,**
   **the mirror-image of D-319's own "doubled bar" bug.** Root-caused from the layout code alone (no device log
   needed, same method as D-274): `suggestionRow` (hosting `suggestionBar` + the clipboard-clear/emoji-search-

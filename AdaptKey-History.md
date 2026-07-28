@@ -12086,3 +12086,48 @@ P-06/D-135 "instead of" behaviour, not a new requirement - same category as D-31
 311 -> 312, `versionName` `"1.0.7"` -> `"1.0.8"`. Not yet device-confirmed - needs a real repeat of the
 reported sequence (focus a field where Autofill genuinely offers something, e.g. a saved-login field) to
 confirm the empty second row no longer appears.
+
+## §247 - D-324: A New "Clipboard Chip Flashes Then Disappears" Report - First Hypothesis (Autofill) Directly Ruled Out by the User, Temporary Diagnostic Logging Added Instead of Guessing Again (v1.0.9)
+
+Reported right after §246's own fix: "wenn ich die App betrete und etwas im Clipboard ist, blitzt der Inhalt
+in der Suggestion Bar nur kurz auf und verschwindet dann wieder" (the clipboard content flashes briefly in the
+suggestion bar then disappears again). First hypothesis offered: the same Autofill-vs-ordinary-bar precedence
+(P-06) §246 had just been discussing for the empty-row case, now manifesting as the clipboard chip specifically
+being the ordinary content Autofill's real response displaces. **The user directly ruled this out**: "Ich
+glaube nicht, dass es hier um Autofill geht. Das Textfeld ist ja noch leer." (I don't think this is about
+Autofill - the text field is still empty.) Per this project's own convention for exactly this situation
+(negative feedback on a hypothesis means re-question the diagnosis, not patch the same theory) - re-examined
+from scratch rather than defending the Autofill guess.
+
+Re-traced `onUpdateSelection()`'s own `clearSuggestions()` call (§101/D-139's "EXTERNAL caret move" branch) as
+a second candidate - ruled out by code reading alone: that branch sits behind `composing.isEmpty()`'s own
+early return, so it structurally cannot fire while the field is genuinely empty and nothing has been typed,
+exactly matching the user's own observation.
+
+**Actual working hypothesis, grounded in a real, already-device-confirmed precedent in this exact codebase**
+(D-239/§166): `onStartInput(info, restarting)` can fire a *second* time, `restarting = true`, for the very
+same field/session, without a matching `onStartInputView()` necessarily following - D-239 already proved this
+exact restarting=true pattern happens on real devices in this app (there, for "returning to typing after
+visiting Settings"; here, plausibly the target app's own view/content initialization settling shortly after
+first focus, even for an empty field - a field's *content* being empty says nothing about whether the host
+app still restarts its input connection once more right after). `onStartInput()`'s own trailing
+`clearSuggestions()` runs unconditionally, on every call, restarting or not - but only `onStartInputView()`
+calls `showClipboardChipIfAvailable()`/`showCredentialSuggestions()` to repopulate the bar. If a second
+`onStartInput(restarting=true)` fires without its own `onStartInputView()`, the chip is wiped with nothing to
+restore it - it would only reappear once the user actually types, at which point the ordinary suggestion
+pipeline (`refreshSuggestions()`) repopulates the bar for an entirely different reason. This fits every
+reported detail (the field being empty is irrelevant to this mechanism; "flashes then disappears" is exactly
+"shown once, wiped once, nothing repopulates it") without needing Autofill at all.
+
+**Not yet fixed** - this is a hypothesis, not a confirmed root cause, and this project's own rule is evidence
+first. Added temporary diagnostic logging (mirroring D-110/D-139's own "temporary diagnostic, remove once
+closed" precedent) instead of coding a fix against an unconfirmed guess a second time: `onStartInput()`'s
+existing diagnostic log line gained `restarting=$restarting t=$uptimeMillis`; `onStartInputView()` gained an
+equivalent new log line (it had none before). Once reproduced with Settings -> Diagnostics enabled, the two
+timestamped lines will show directly whether a second `onStartInput` genuinely fires without a paired
+`onStartInputView` in the reported sequence, confirming or refuting this hypothesis before any fix is written.
+
+No new unit tests - pure logging additions to already-untested `AdaptKeyService` lifecycle glue. 956 unit
+tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (diagnostic-only,
+no behaviour change). `versionCode` 312 -> 313, `versionName` `"1.0.8"` -> `"1.0.9"`. Next step: reproduce with
+the in-app diagnostic log recording, then read back the `onStartInput`/`onStartInputView` timestamp pairing.

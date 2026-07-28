@@ -1165,10 +1165,16 @@ class AdaptKeyService : InputMethodService() {
         // capsModeFor()/D-142's field-kind detection actually consult, so a `adb logcat -s AdaptKey:D` (or
         // the in-app diagnostic log, Settings -> Diagnostics) while focusing that field can finally confirm
         // or rule out a deeper cause. Remove once D-110 is closed.
+        // D-324 (temporary diagnostic): restarting added - working hypothesis for the reported "clipboard
+        // chip flashes then disappears" symptom is a second onStartInput(restarting=true) firing (this
+        // function's own unconditional clearSuggestions() below wipes the chip) with no following
+        // onStartInputView() to restore it (see that function's own D-324 diag call) - confirmed real in
+        // this app before, on a different field (D-239/§166), just not yet tied to this symptom.
         diag(
             "AdaptKey",
             "onStartInput: package=${info?.packageName} fieldName=${info?.fieldName} " +
-                "inputType=0x${Integer.toHexString(info?.inputType ?: 0)} hintText=${info?.hintText}"
+                "inputType=0x${Integer.toHexString(info?.inputType ?: 0)} hintText=${info?.hintText} " +
+                "restarting=$restarting t=${SystemClock.uptimeMillis()}"
         )
         clearComposing()
         resetWordEndShift()
@@ -1453,6 +1459,14 @@ class AdaptKeyService : InputMethodService() {
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        // D-324 (temporary diagnostic): every call logged with a timestamp, matched against onStartInput's
+        // own D-324 log line by t= to see whether the two ever fall out of the 1:1 pairing this function's
+        // own showClipboardChipIfAvailable()/showCredentialSuggestions() call below implicitly assumes -
+        // remove once D-324 is closed.
+        diag(
+            "AdaptKey",
+            "onStartInputView: package=${info?.packageName} restarting=$restarting t=${SystemClock.uptimeMillis()}"
+        )
         // D-161/D-250: see windowInsetsRecheckRunnable's own comment - cancel any still-pending check from a
         // previous, faster field/app switch before scheduling this one, so only the most recent survives, and
         // reset the attempt counter so this field/app switch gets its own full run of retries.
