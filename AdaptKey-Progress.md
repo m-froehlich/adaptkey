@@ -152,9 +152,22 @@ in every prompt.
     and before `Builds`), and `versionName`/`CurrentVersion` values unquoted (`1.0.2`, not `'1.0.2'` - YAML
     doesn't need the quotes there and rewritemeta strips them). Verified the fix is a stable fixed point
     (running `rewritemeta` again on its own output changes nothing) before updating the scratchpad draft.
+  - User pushed that fix to the MR (commit "Excluding some language packs") - confirmed byte-identical to
+    the scratchpad draft via `curl`'d raw file diff before saying so, not just assumed.
+- **Second CI run: `scandelete` fixed the scanner rejection - Gradle now runs to a genuine "BUILD**
+  **SUCCESSFUL" - but a new, later failure appeared: `ERROR: Could not build app de.froehlichmedia.adaptkey:**
+  **Failed to find any output apks`.** Root cause: D-223's own `applicationVariants.all { outputFileName =
+  "AdaptKey.apk" }` customisation (a deliberate, documented choice - the day-to-day install artifact
+  shouldn't leak AGP's default "app-release-unsigned.apk" naming) means the built APK doesn't land where
+  fdroidserver's own build tool expects it by convention. Fixed with the `output:` Build field (F-Droid's
+  own documented mechanism for exactly this - "a glob path where the resulting unsigned release APK...
+  should be", for builds using custom output locations) pointing at
+  `app/build/outputs/apk/release/AdaptKey.apk` - confirmed as the real path via this project's own earlier
+  clean-room build test (D-321/D-322 prep). Re-verified canonical formatting with local `rewritemeta` again
+  after adding it - still a stable fixed point.
 - **Still open:**
-  - Push the corrected content (see the scratchpad file) into the MR's `metadata/de.froehlichmedia.adaptkey.yml`
-    via the GitLab web UI, same branch as before, and re-run the pipeline.
+  - Push this newest fix (the `output:` field) into the MR's `metadata/de.froehlichmedia.adaptkey.yml` via
+    the GitLab web UI, same branch as before, and re-run the pipeline.
   - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
     to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
   - Watch the MR's CI pipeline and fix anything further it flags by editing the file again in the GitLab

@@ -35,6 +35,7 @@ Builds:
     commit: d59d66733fb5901cc4ff032d48c446f4175ea76f
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -44,6 +45,7 @@ Builds:
     commit: 1f6cd0b768ee2c94b080f70d6000c379c6d3ba66
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -53,6 +55,7 @@ Builds:
     commit: 2b2c3cf430d563ec1efaa65ce2f945b97d1af7f6
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -62,6 +65,7 @@ Builds:
     commit: 1a29d21faa422aa7b7c0bf7aa9c01a879fc77333
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -71,6 +75,7 @@ Builds:
     commit: c3c546b97f7b3e77e690ce786d33fc22a3ff67dd
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -80,6 +85,7 @@ Builds:
     commit: e1fab370a636333ef3c635ca370683be1cfeff34
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -89,6 +95,7 @@ Builds:
     commit: 45dbb3d34b97a4b64f6c897e418b2529e1047029
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
@@ -98,6 +105,7 @@ Builds:
     commit: cc281fa299e65818cc347b88c5919005ab2949f0
     gradle:
       - yes
+    output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
