@@ -58,8 +58,8 @@
     <string name="d89_f15_desc">Die Vorschlagsleiste sagt ein wahrscheinliches nächstes Wort voraus, noch bevor du auch nur einen Buchstaben davon getippt hast.</string>
     <string name="d89_f16_title">Optionale KI auf dem Gerät</string>
     <string name="d89_f16_desc">Ein kleines Sprachmodell lässt sich einmalig herunterladen und einbinden, um Vorschläge weiter zu verbessern – es läuft vollständig auf dem Gerät, an der Offline-Garantie ändert sich nichts.</string>
-    <string name="d89_f17_title">Drei Sprachen, automatisch erkannt</string>
-    <string name="d89_f17_desc">Deutsch, Englisch und Griechisch haben je ein eigenes Wörterbuch; welche Sprache gerade aktiv ist, wird automatisch aus dem Geschriebenen erkannt.</string>
+    <string name="d89_f17_title">Mehrere Sprachen, automatisch erkannt</string>
+    <string name="d89_f17_desc">Jede installierte Sprache hat ihr eigenes Wörterbuch; fünf aufeinanderfolgende Wörter in einer anderen Sprache schalten die aktive Sprache automatisch um, zusätzlich zum manuellen Wisch auf der Leertaste.</string>
     <string name="d89_f18_title">Nachweisbar offline</string>
     <string name="d89_f18_desc">Diese Tastatur fordert überhaupt keine Internet-Berechtigung an – das lässt sich in den System-App-Einstellungen selbst nachprüfen.</string>
 
@@ -78,7 +78,21 @@
     <string name="d89_f25_title">Schlägt das fehlende Leerzeichen vor</string>
     <string name="d89_f25_desc">Zwei ohne Leerzeichen zusammengetippte Wörter werden als normaler Vorschlag wieder getrennt angeboten.</string>
     <string name="d89_f26_title">Nach oben wischen für die Extra-Zeile</string>
-    <string name="d89_f26_desc">Ein Wisch nach oben auf der Tastatur öffnet eine Zeile mit zusätzlichen Aktionen - Emoji-Auswahl, Zwischenablage leeren und eine Live-Ansicht deines persönlichen Tipp-Zonen-Modells.</string>
+    <string name="d89_f26_desc">Ein Wisch nach oben auf der Tastatur öffnet eine Zeile mit zusätzlichen Aktionen - Emoji-Auswahl, ein Einstellungen-Kurzbefehl, eine Live-Ansicht deines persönlichen Tipp-Zonen-Modells und manuelle Umschalter für Anmelde- und URL/E-Mail-Modus, wenn diese relevant sind.</string>
+    <string name="d89_f27_title">Einstellungen sichern und wiederherstellen</string>
+    <string name="d89_f27_desc">Exportiere deine Einstellungen, gespeicherten Benutzernamen/E-Mails und alles, was die Tastatur gelernt hat, in eine einzige Datei, und importiere sie auf einem anderen Gerät wieder - Passwörter sind nie enthalten, da sie ohnehin nie gespeichert werden.</string>
+    <string name="d89_f28_title">Weitere Sprachen installieren</string>
+    <string name="d89_f28_desc">Nur Englisch ist in der App enthalten; weitere Sprachen werden als eigene, optionale Sprachpakete aus den Einstellungen heruntergeladen und importiert, ohne dass die App selbst eine Internet-Berechtigung benötigt.</string>
+    <string name="d89_f29_title">Vervollständigt ein wiederholtes Bindestrich-Wort</string>
+    <string name="d89_f29_desc">Sobald du ein zusammengesetztes Wort wie "Rhein-Main-Gebiet" ein paar Mal vollständig getippt hast, bietet schon dessen Anfang das ganze Wort als angehefteten Vorschlag an - antippen, und eine schnelle Rückschritttaste macht genau das rückgängig, falls es nicht gemeint war.</string>
+    <string name="d89_f30_title">Bestätigung "Gelernt: X"</string>
+    <string name="d89_f30_desc">In dem Moment, in dem ein neues Wort dauerhaft gelernt wird, zeigt ein Chip genau welches - ein kleines Stück nach oben ziehen vergisst es wieder, weiter ziehen setzt es direkt auf die Verbotsliste, damit ein Versehen nie stillschweigend gemerkt bleibt.</string>
+    <string name="d89_f31_title">Nur die erste Zeile oder den ersten Code einfügen</string>
+    <string name="d89_f31_desc">Neben dem Einfügen der gesamten Zwischenablage können zwei weitere Chips nur deren erste Zeile oder den ersten gefundenen URL-/Code-artigen Abschnitt anbieten, wann immer sich diese tatsächlich vom vollständigen Text unterscheiden.</string>
+    <string name="d89_f32_title">Eingebauter Taschenrechner</string>
+    <string name="d89_f32_desc">Ein eigenes Taschenrechner-Layout - Ziffern, Operatoren sowie sin/cos/tan/log - ist einen Wisch von der Symbolseite entfernt, Währungs- und Dezimaltrennzeichen richten sich nach der Ländereinstellung des Geräts.</string>
+    <string name="d89_f33_title">Doppeltipp auf Umschalt für Feststelltaste</string>
+    <string name="d89_f33_desc">Zweimal schnell auf Umschalt tippen aktiviert die Feststelltaste, statt sie halten oder vor jedem einzelnen Buchstaben antippen zu müssen.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Tasten</string>

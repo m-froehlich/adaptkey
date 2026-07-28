@@ -58,8 +58,8 @@
     <string name="d89_f15_desc">The suggestion bar predicts a likely next word before you\'ve typed a single letter of it.</string>
     <string name="d89_f16_title">Optional on-device mini-AI</string>
     <string name="d89_f16_desc">A small language model can be downloaded once and imported to sharpen suggestions further — it runs entirely on the device, so the offline guarantee never changes.</string>
-    <string name="d89_f17_title">Three languages, detected automatically</string>
-    <string name="d89_f17_desc">German, English and Greek each have their own dictionary; the active one is detected automatically from what you\'re actually writing.</string>
+    <string name="d89_f17_title">Multiple languages, detected automatically</string>
+    <string name="d89_f17_desc">Every installed language has its own dictionary; typing five consecutive words in a different one switches the active language automatically, on top of the manual space-bar swipe.</string>
     <string name="d89_f18_title">Provably offline</string>
     <string name="d89_f18_desc">This keyboard requests no internet permission at all — check it yourself in the system\'s app settings.</string>
 
@@ -78,7 +78,21 @@
     <string name="d89_f25_title">Suggests the missing space in run-together words</string>
     <string name="d89_f25_desc">Two words typed without a space in between are offered back apart, as a normal suggestion-bar tap.</string>
     <string name="d89_f26_title">Swipe up for the extra row</string>
-    <string name="d89_f26_desc">An upward swipe on the keyboard reveals a row of extra actions — emoji panel, clearing the clipboard, and a live view of your personal touch-zone model.</string>
+    <string name="d89_f26_desc">An upward swipe on the keyboard reveals a row of extra actions — the emoji panel, a settings shortcut, a live view of your personal touch-zone model, and manual toggles for credential and URL/email mode when they\'re relevant.</string>
+    <string name="d89_f27_title">Back up and restore your settings</string>
+    <string name="d89_f27_desc">Export your settings, saved usernames/emails, and everything the keyboard has learned to a single file, and import it again on another device — passwords are never included, since they\'re never stored in the first place.</string>
+    <string name="d89_f28_title">Install additional languages</string>
+    <string name="d89_f28_desc">Only English ships with the app; further languages are downloaded and imported as separate, optional language packs from settings, with no internet permission needed by the app itself.</string>
+    <string name="d89_f29_title">Completes a repeated hyphenated word</string>
+    <string name="d89_f29_desc">Once you\'ve typed a hyphenated compound like "Rhein-Main-Gebiet" in full a couple of times, its first few letters alone offer the whole thing as a pinned suggestion — tap it, then a quick backspace undoes just that if it wasn\'t what you meant.</string>
+    <string name="d89_f30_title">"Learned: X" confirmation</string>
+    <string name="d89_f30_desc">The moment a new word is learned for good, a chip shows exactly which one — drag it up a little to forget it, or further to blacklist it outright, so a mistake never quietly stays remembered.</string>
+    <string name="d89_f31_title">Paste just the first line or the first code</string>
+    <string name="d89_f31_desc">Alongside pasting the whole clipboard, two extra chips can offer just its first line or the first URL/code-like token found in it, whenever those actually differ from the full text.</string>
+    <string name="d89_f32_title">Built-in calculator layer</string>
+    <string name="d89_f32_desc">A dedicated calculator keyboard — digits, operators, and sin/cos/tan/log — is one swipe away from the symbol page, currency and decimal separators matching your device\'s own locale.</string>
+    <string name="d89_f33_title">Double-tap Shift for Caps Lock</string>
+    <string name="d89_f33_desc">Tapping Shift twice quickly locks it on, instead of having to hold it or tap it before every single letter.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_layout">Layout &amp; Keys</string>

@@ -42,9 +42,7 @@ in every prompt.
   the project root); `:app:assembleRelease` fails without it, everything else configures fine regardless.
   **The release keystore is load-bearing once it has signed an installed build - back it up.** Losing it
   means every future version needs an uninstall + reinstall, wiping the learned dictionary/settings, since
-  Android requires the same signing key to update in place. `app-debug.apk` (`:app:assembleDebug`) still
-  exists unchanged for actual on-device debugging if that is ever needed again, but is no longer built by
-  default.
+  Android requires the same signing key to update in place.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
@@ -106,6 +104,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§236 (v1.0.1): D-316 - feature-overview catalog (`FeatureCatalog.kt`) refreshed again, same method as**
+  **D-192's own first refresh: `git log` confirmed it was untouched since D-192 (v0.8.87), then every commit/**
+  **spec-section since was checked for genuine new user-facing capability not yet catalogued.** Seven were
+  missing - backup/restore (Y-01/D-278), installable language packs (D-280/D-307/D-308/D-310), proactive
+  hyphen-compound completion (B-03/D-289), the "Gelernt: X" chip (W-03/D-247), the two clipboard-extraction
+  chips (V-02/D-266), the calculator layer (L-07, apparently never catalogued at all), and double-tap-Shift
+  Caps Lock (G-06) - `FeatureCatalog.ENTRIES` grew from 26 to 33 (`d89_f27`…`d89_f33`), all three locales
+  (DE/EN/EL). Two existing entries (f17, f26) were also corrected: both had gone stale describing behaviour
+  that changed since they were written (f17's fixed "three languages" claim predates D-280's open-ended
+  language packs; f26 still mentioned a clear-clipboard action that D-267/V-03 moved elsewhere, and never
+  listed the settings shortcut or credential/URL-mode toggles the extra row has long carried). Same session:
+  fixed a stale Build-section note in this file claiming `app-debug.apk` might still be needed "if that is
+  ever needed again" - dozens of releases since D-223 have all shipped via `:app:assembleRelease` with no
+  debug APK ever actually needed, so the speculative sentence was removed. `FeatureCatalogTest`'s assertions
+  are entry-count-agnostic, no test changes needed. 936 unit tests (unchanged). `versionCode` 304 -> 305,
+  `versionName` `"1.0.0"` -> `"1.0.1"`. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not yet
+  device-confirmed - needs a look at the feature-overview screen (all 33 entries, all three locales) and the
+  extra row itself to confirm f26's corrected description matches. See history §236.
 - **§234 (v1.0.0): D-315 - version bumped to `1.0.0`, an explicit user-requested milestone marker right**
   **after D-314 (AZERTY) closed the multi-language rollout's last open layout gap.** Mirrors D-283's own
   precedent (`0.8.154 -> 0.9.0`) - no source change beyond `app/build.gradle.kts` (`versionCode` 303 -> 304,

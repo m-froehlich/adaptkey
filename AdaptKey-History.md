@@ -11594,3 +11594,49 @@ No code change, no version bump (pure confirmation, per this project's own docum
 `AdaptKey-Progress.md`'s per-round "Not yet device-confirmed" notes updated to "Device-confirmed" in place,
 since that file is the living status, not an append-only log. This entry exists so the confirmation itself -
 and that it happened as one batch rather than per-round - is preserved here too.
+
+## §236 - D-316: Feature Catalog Refreshed Again; Two Stale Progress-Doc Notes Fixed (v1.0.1)
+
+### D-316 - the feature-overview catalog was stale since D-192 (v0.8.87)
+Asked directly whether the Settings feature list (`FeatureCatalog.kt`, shown on `FeatureOverviewActivity`)
+was still complete - the same question D-192 (§123) answered once before. Same method as D-192: `git log`
+on `FeatureCatalog.kt` itself confirmed it was untouched since the D-192 commit; walked every commit since
+(`git log 75f175b..HEAD`) and every spec section touched in that range, filtering pure bug fixes/refinements
+(not catalog-worthy) from genuine new user-facing capability. Seven were missing: cross-device backup/restore
+of settings, credentials, and learned data (Y-01/D-278), installable language packs - only English ships in
+the app now, everything else is a separate download (D-280/D-307/D-308/D-310) - proactive hyphen-compound
+completion with its own dedicated undo (B-03/D-289), the "Gelernt: X" learn-promotion confirmation chip with
+its two-zone forget/blacklist drag (W-03/D-247), the two clipboard-extraction chips for just the first line or
+first code-like token (V-02/D-266), the calculator layer reachable from the symbol pages (L-07, apparently
+never catalogued even though it predates D-192), and double-tap-Shift for Caps Lock (G-06/D-16-turned-D-312).
+`FeatureCatalog.ENTRIES` grew from 26 to 33 (`d89_f27` … `d89_f33`, continuing the existing numbering), all
+three shipped locales (DE/EN/EL).
+
+Two existing entries were also corrected, not just left in place, because the audit surfaced them as actively
+wrong rather than merely incomplete: f17 ("Three languages, detected automatically") hard-coded German/
+English/Greek and a fixed count of three, both untrue since D-280 made the language list open-ended and only
+English ships by default - reworded to describe the mechanism (every installed language has its own
+dictionary; five consecutive words in another one switches automatically, per G-01's own addendum) without
+naming or counting languages. f26 (the extra-row entry) still described a "clearing the clipboard" action that
+D-267/V-03 moved into the suggestion bar itself over a year of device-feedback rounds ago, and never mentioned
+the settings shortcut or the credential-mode/URL-mode toggles the row has carried since even before D-192 -
+both fixed to match R-01's current, actual contents.
+
+`FeatureCatalogTest`'s own assertions are entry-count-agnostic, so no test changes were needed, matching
+D-192's own precedent. 936 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+### D-316 also - two stale notes fixed in `AdaptKey-Progress.md`, found in the same pass
+(1) The Build section's D-223 paragraph still ended with a sentence about `app-debug.apk` "existing unchanged
+... if that is ever needed again" - written when the release build first replaced debug as the default target
+(v0.8.101) and never revisited since; with dozens of releases since then all built and installed via
+`:app:assembleRelease` and no debug APK ever actually needed again, the sentence was pure speculation left
+stale rather than a fact worth keeping - removed, the keystore-backup warning right before it is unaffected.
+(2) The §235 device-confirmation batch (D-304 through D-314) is separately confirmed done in this same
+Progress.md pass - see that section, already up to date.
+
+No new tests. `versionCode` 304 -> 305, `versionName` 1.0.0 -> 1.0.1 (ordinary third-release-since-milestone
+step - the "1.0.0 is a milestone, not a ceiling" precedent D-283/D-315 already established for the minor/major
+jumps applies in reverse here: an ordinary doc/content round after a milestone still just takes the next
+version, it doesn't get its own special-cased bump). Not yet device-confirmed - needs a look at the Settings
+feature-overview screen itself (all 33 entries, all three locales) and a scroll through the extra row to
+confirm f26's corrected description actually matches what is shown.

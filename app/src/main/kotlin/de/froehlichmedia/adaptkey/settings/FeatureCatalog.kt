@@ -49,6 +49,15 @@ object FeatureCatalog {
         Entry(R.string.d89_f23_title, R.string.d89_f23_desc),
         Entry(R.string.d89_f24_title, R.string.d89_f24_desc),
         Entry(R.string.d89_f25_title, R.string.d89_f25_desc),
-        Entry(R.string.d89_f26_title, R.string.d89_f26_desc)
+        Entry(R.string.d89_f26_title, R.string.d89_f26_desc),
+        // D-316: catalog refreshed again - these cover everything user-facing added since the D-192 refresh
+        // (v0.8.87) through D-315 (v1.0.0), none of which had ever been added here.
+        Entry(R.string.d89_f27_title, R.string.d89_f27_desc),
+        Entry(R.string.d89_f28_title, R.string.d89_f28_desc),
+        Entry(R.string.d89_f29_title, R.string.d89_f29_desc),
+        Entry(R.string.d89_f30_title, R.string.d89_f30_desc),
+        Entry(R.string.d89_f31_title, R.string.d89_f31_desc),
+        Entry(R.string.d89_f32_title, R.string.d89_f32_desc),
+        Entry(R.string.d89_f33_title, R.string.d89_f33_desc)
     )
 }
