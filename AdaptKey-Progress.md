@@ -165,9 +165,21 @@ in every prompt.
   `app/build/outputs/apk/release/AdaptKey.apk` - confirmed as the real path via this project's own earlier
   clean-room build test (D-321/D-322 prep). Re-verified canonical formatting with local `rewritemeta` again
   after adding it - still a stable fixed point.
+- **The `checkupdates`/`rewritemeta` jobs were still failing on the same pushed commit, and this time it**
+  **was a real gap in this session's own verification, not a new content issue.** The CI diff showed every
+  line of the user's version ending in `^M` (CRLF) - this repo's own post-write hook normalises edited
+  files to CRLF (correct for the actual Kotlin/Java source, wrong for this GitLab-bound scratch file), and
+  the earlier local `rewritemeta` stability check had used `tr -d '\r'` before comparing, which silently
+  hid exactly this discrepancy instead of catching it. A later `sed -i` edit (adding the `output:` field)
+  happened to flip the scratchpad file back to pure LF as a side effect, confirmed byte-exact
+  (`\r` count 0) - but the CRLF version is what the user had already pasted into GitLab. Given how easily
+  a Windows copy/paste can reintroduce CRLF from a file opened locally, the corrected content was handed
+  over inline in chat instead of via "open this file" - lower risk of picking up stray `\r` again, though
+  not a hard guarantee across every OS/browser clipboard.
 - **Still open:**
-  - Push this newest fix (the `output:` field) into the MR's `metadata/de.froehlichmedia.adaptkey.yml` via
-    the GitLab web UI, same branch as before, and re-run the pipeline.
+  - Push this newest fix (the `output:` field, and clean LF endings) into the MR's
+    `metadata/de.froehlichmedia.adaptkey.yml` via the GitLab web UI, same branch as before, and re-run the
+    pipeline.
   - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
     to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
   - Watch the MR's CI pipeline and fix anything further it flags by editing the file again in the GitLab
