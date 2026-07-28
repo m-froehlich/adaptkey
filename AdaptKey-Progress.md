@@ -281,6 +281,23 @@ non-trivial changes).
 
 ## Current State
 
+- **§251 (v1.0.13): D-326 - debounce (D-325) alone wasn't good enough per the user's own on-device verdict**
+  **("jetzt wird der Clipboard Chip halt ein paar Millisekunden später versteckt") - a delay still evicts the**
+  **chip every time, just slower.** Disabling Microsoft Authenticator as an autofill service made no
+  difference (narrows it to Google Password Manager or something else - beside the point either way, a
+  password has no business in a Signal message field). Two options discussed: a pinned icon revealing
+  Autofill on tap (real added complexity, mostly subsumed by the other option anyway) vs. the user's own idea
+  - only ever request Autofill inline suggestions for a field P-01 already reliably classifies as a real
+  credential field (`loginFieldKind != NONE`). Chose the latter. Follow-up worked through: since
+  `loginFieldKind` is known synchronously in `onStartInput()`, an ordinary field now never even sends an
+  Autofill request at all - nothing left to debounce against for that field, so the clipboard chip shows
+  immediately with zero risk, no "wait and see" needed. D-325's debounce is now mostly redundant (confirmed
+  with the user) but kept anyway, at their explicit choice, as a cheap safety net for a genuine credential
+  field whose own responder might still be flaky. Fix: `onCreateInlineSuggestionsRequest()` returns `null`
+  outright when `loginFieldKind == NONE`, before building anything. 956 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's P-06 revised. `versionCode` 316 -> 317,
+  `versionName` `"1.0.12"` -> `"1.0.13"`. **Not yet device-confirmed** - needs the exact reported Signal
+  sequence re-tested. See history §251.
 - **§250 (v1.0.12): D-324/D-325 closed - root cause confirmed from a real log (Signal's message field gets a**
   **genuinely unstable Autofill response - offered, retracted, re-offered every few hundred ms for several**
   **seconds, each cycle hiding/restoring the clipboard chip), Google Keep/K9 never trigger Autofill at all in**

@@ -12265,3 +12265,46 @@ D-135/D-319/D-323. 956 unit tests (unchanged). `:app:assembleRelease`/`:app:test
 P-06 revised. `versionCode` 315 -> 316, `versionName` `"1.0.11"` -> `"1.0.12"`. Not yet device-confirmed -
 needs the exact reported Signal sequence re-tested to confirm the clipboard chip no longer flickers, while a
 genuine, stable Autofill suggestion (if testable) still wins after the short delay.
+
+## §251 - D-326: Autofill Inline Suggestions Now Only Requested For a Real Credential Field - the Debounce Alone Wasn't Good Enough (v1.0.13)
+
+User's own verdict on §250's debounce, tested on-device: "so wirklich gut ist das jetzt auch irgendwie nicht -
+jetzt wird der Clipboard Chip halt ein paar Millisekunden später versteckt" - correct and fair: a debounce
+only delays the eviction, it never actually stops it, and Signal's field still ends up losing the clipboard
+chip to Autofill every time, just slower. Also investigated on the user's own initiative: disabling Microsoft
+Authenticator as an autofill service made no difference, narrowing it to Google's Password Manager or
+something else entirely - though which specific service answers is beside the point raised next: a password
+has no business being suggested into a Signal message field at all.
+
+Two alternatives discussed, per this project's own "confirm the design before implementing" convention. **Option
+A** (a small pinned icon revealing the Autofill view on tap, so the ordinary bar stays usable and Autofill
+becomes opt-in) - technically feasible but real added complexity (a new button state, click handling, and the
+icon's own appearance would still need the same stability question D-325 already answers, or it would flicker
+itself) for a benefit Option B mostly subsumes anyway. **Option B** (the user's own idea, chosen): only ever
+request Autofill inline suggestions for a field P-01 already reliably classifies as a real credential field
+(`loginFieldKind != NONE`) - Signal's message field is `NONE`, so it would simply never be asked in the first
+place. Recommended over Option A and confirmed by the user.
+
+**A further refinement, also the user's own idea:** could the clipboard chip instead be shown only once it's
+known whether Autofill will respond, so nothing ever flickers at all? Worked through directly: with Option B in
+place this question resolves itself - `loginFieldKind` is known *synchronously*, in `onStartInput()`, well
+before any Autofill round-trip could even begin, so for an ordinary field there is nothing to wait for at all
+(no request is ever sent) and the chip can show immediately with zero risk. For a genuine credential field, a
+brief flash before a real Autofill suggestion wins is the intended behaviour, not something to hide the chip
+from pre-emptively. The user's own follow-up instinct - that D-325's debounce becomes "fast überflüssig" once
+Option B lands - was confirmed as fundamentally right; kept anyway as a cheap safety net for the one remaining
+case (a genuine credential field whose own real autofill responder happens to be flaky too), at the user's own
+explicit choice to keep both layered together.
+
+**Implementation:** `onCreateInlineSuggestionsRequest()` now returns `null` outright when `loginFieldKind ==
+LoginFieldKind.NONE`, before building anything - the platform's own documented way to decline inline
+suggestions for the current field entirely, so `onInlineSuggestionsResponse()` is never even invoked for an
+ordinary field afterwards. One `if` at the top of an existing function; D-325's debounce mechanism inside
+`onInlineSuggestionsResponse()`/`resetInlineSuggestions()` is otherwise untouched.
+
+No new unit tests - one more line in already-untested `AdaptKeyService`/Autofill-callback glue, same
+established gap as D-135/D-319/D-323/D-325. 956 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's P-06 revised. `versionCode` 316 -> 317,
+`versionName` `"1.0.12"` -> `"1.0.13"`. Not yet device-confirmed - needs the exact reported Signal sequence
+re-tested to confirm no Autofill request is even sent for that field and the clipboard chip stays put
+throughout.

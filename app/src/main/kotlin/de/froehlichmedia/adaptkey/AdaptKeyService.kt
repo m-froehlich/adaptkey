@@ -1541,9 +1541,24 @@ class AdaptKeyService : InputMethodService() {
      * field is autofill-relevant. One shared [InlinePresentationSpec] sized to the ordinary suggestion
      * bar's own height, with the standard [UiVersions] v1 style so the active autofill service renders a
      * suggestion compatible with what most services already expect.
+     *
+     * D-326: only actually requests anything for a field P-01 already classifies as a real credential field
+     * ([LoginFieldKind.USERNAME]/[LoginFieldKind.EMAIL]/[LoginFieldKind.PASSWORD]) - a real device log traced
+     * an active autofill service answering for an entirely ordinary field (Signal's message compose box,
+     * `loginFieldKind == NONE`) with a genuinely unstable response, repeatedly evicting a V-01 clipboard chip
+     * (D-324/D-325). Since [loginFieldKind] is already known synchronously by the time this is called (set in
+     * `onStartInput()`, well before any Autofill round-trip could ever begin), declining outright for an
+     * ordinary field is both simpler and stronger than D-325's own debounce: no request is ever sent, so
+     * [onInlineSuggestionsResponse] is never even invoked for that field, and the ordinary suggestion bar
+     * (including a clipboard chip) can be shown immediately with no risk of a later eviction at all - nothing
+     * to debounce against in the first place. Returning `null` is the platform's own documented way to decline
+     * inline suggestions for the current field entirely.
      */
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreateInlineSuggestionsRequest(uiExtras: Bundle): InlineSuggestionsRequest? {
+        if (loginFieldKind == LoginFieldKind.NONE) {
+            return null
+        }
         val barHeight = (SUGGESTION_BAR_HEIGHT_DP * resources.displayMetrics.density).toInt()
         val style = UiVersions.newStylesBuilder()
             .addStyle(InlineSuggestionUi.newStyleBuilder().build())
