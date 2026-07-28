@@ -71,13 +71,27 @@ in every prompt.
     `git log`/`git tag -l` for the authoritative current set, never assume this list is still complete).
     Going forward, a tag per release (`vX.Y.Z` on the version-bump commit) joins the existing release
     routine, since F-Droid's `UpdateCheckMode: Tags` / `AutoUpdateMode: Version` needs it to detect and
-    build new versions automatically after the initial submission.
+    build new versions automatically after the initial submission. All three tags and the two fastlane
+    scaffold commits are now pushed to `origin/main`.
+  - Draft `metadata/de.froehlichmedia.adaptkey.yml` written to
+    `scratchpad/fdroiddata-metadata-de.froehlichmedia.adaptkey.yml` (not consumed by this repo's own
+    build - it is the exact content to place in a fork of `fdroiddata`), covering all three tagged
+    versions, `Categories: [Keyboard & IME]`, `AutoUpdateMode: Version` / `UpdateCheckMode: Tags`.
+  - **Confirmed by an actual clean-room build**, not assumed: `keystore.properties` was moved aside and
+    `:app:assembleRelease` re-run - it succeeds and produces an unsigned `AdaptKey.apk` in the normal
+    `app/build/outputs/apk/release/` location, exactly the environment F-Droid's own build server has (no
+    keystore, no network beyond Maven Central dependency resolution). D-223's existing
+    `keystorePropertiesFile.exists()` guards already handle this correctly - no source change was needed.
+    `keystore.properties` was restored immediately afterward.
 - **Still open:**
-  - Push the `v1.0.2`/`v1.0.3`/`v1.0.4` tags (the user pushes; not done automatically here).
-  - Fork `fdroiddata`, write `metadata/de.froehlichmedia.adaptkey.yml` (repo URL, build recipe, at least
-    the v1.0.2 build entry, `AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), open the merge request.
+  - Fork `fdroiddata`, copy the scratchpad draft into `metadata/de.froehlichmedia.adaptkey.yml`, open the
+    merge request - this is a submission to a third-party project under the user's own account, not
+    something done from here.
   - Optional: app icon/screenshots under `fastlane/metadata/android/<locale>/images/` - not required for
     the initial submission, improves the listing.
+  - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
+    against F-Droid's own docs/`fdroiddata` at MR time - both were checked against the live F-Droid docs
+    and `config/categories.yml` this session, but that project's conventions can move on.
   - Await F-Droid maintainer review (expect weeks, not days, for first inclusion).
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State

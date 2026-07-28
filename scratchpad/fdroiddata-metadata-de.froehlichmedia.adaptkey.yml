@@ -1,0 +1,48 @@
+# Draft for fdroiddata's metadata/de.froehlichmedia.adaptkey.yml
+#
+# This file is NOT consumed by this repo's own build - it is the exact content to place at
+# metadata/de.froehlichmedia.adaptkey.yml in a fork of https://gitlab.com/fdroid/fdroiddata,
+# as part of the initial F-Droid submission merge request. Kept here (scratchpad) as the durable,
+# version-controlled source of truth for every future update to that file, since the canonical
+# copy lives in a different repository this project does not control.
+#
+# Commit hashes below are the dereferenced targets of the vX.Y.Z annotated tags (see `git tag -l -n1`
+# / `git show <tag>` in this repo) - fdroiddata's `commit:` field requires a full commit hash, not a
+# tag name.
+
+Categories:
+  - Keyboard & IME
+
+License: GPL-3.0-or-later
+
+AuthorName: Froehlich Media
+
+SourceCode: https://github.com/m-froehlich/adaptkey
+IssueTracker: https://github.com/m-froehlich/adaptkey/issues
+
+RepoType: git
+Repo: https://github.com/m-froehlich/adaptkey.git
+
+Builds:
+  - versionName: '1.0.2'
+    versionCode: 306
+    commit: d59d66733fb5901cc4ff032d48c446f4175ea76f
+    gradle:
+      - yes
+
+  - versionName: '1.0.3'
+    versionCode: 307
+    commit: 1f6cd0b768ee2c94b080f70d6000c379c6d3ba66
+    gradle:
+      - yes
+
+  - versionName: '1.0.4'
+    versionCode: 308
+    commit: 2b2c3cf430d563ec1efaa65ce2f945b97d1af7f6
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0.4'
+CurrentVersionCode: 308
