@@ -12031,3 +12031,12 @@ position still showed the old (cached) icon bitmap, a known Android icon-cache b
 didn't take; accepted as-is on the reasoning above rather than waiting out the cache. **Device-confirmed**
 once the cache caught up: "Die Größe ist perfekt auf dem Gerät" - the reverted 46x46 card is not clipped,
 vindicating the real-device-evidence-over-documented-spec reasoning this entry is built on.
+
+## §245 - D-320 Confirmed: Comma Parity and the Digit-Glue Decimal Case Both Checked On Device (no code change)
+
+User confirmed directly: "Das mit dem Komma funktioniert perfekt!" Asked which half of §242's two-part change
+this covered, since a plain "the comma thing works" could plausibly mean only the auto-space parity or only the
+digit-glue case - the user confirmed "Beides" (both): the comma now gets its own trailing auto-space exactly
+like `.`/`!`/`?` with no wrongful capitalisation of the next word, and the digit-glue exception correctly
+produces a clean decimal number for both `.` and `,` (no stray space typing a number digit-by-digit). No code
+change - see history §242 for the original implementation.

@@ -229,9 +229,8 @@ non-trivial changes).
   sharing the existing space-removal branch. 9 new tests (`PunctuationSpaceGlueTest.kt`). 956 unit tests
   (947 + 9). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's A-12 (comma parity, digit-glue
   exception, capitalisation carve-out) and A-01 (the 50x -> 100x correction) revised. `versionCode` 308 -> 309,
-  `versionName` `"1.0.4"` -> `"1.0.5"`. Not yet device-confirmed - needs a real decimal-number round-trip
-  (both `.` and `,`) and a plain comma-in-a-sentence check (trailing space present, next word not
-  capitalised). See history §242.
+  `versionName` `"1.0.4"` -> `"1.0.5"`. **Device-confirmed** (2026-07-28) - both the comma auto-space parity
+  and the digit-glue decimal case ("Beides") checked on-device. See history §242/§245.
 - **§241 (v1.0.4): D-319 - fixed a real "doubled suggestion bar" regression, reported as tied to clipboard**
   **content but actually a pre-existing D-135/D-267 gap, unrelated to D-317/D-318's own row-width change**
   **the user first suspected.** Root cause: `setSuggestionBarItems()` (D-267's own "single choke point" for
