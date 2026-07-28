@@ -9,14 +9,20 @@
 # Commit hashes below are the dereferenced targets of the vX.Y.Z annotated tags (see `git tag -l -n1`
 # / `git show <tag>` in this repo) - fdroiddata's `commit:` field requires a full commit hash, not a
 # tag name.
+#
+# `scandelete` on every entry: F-Droid's build-time scanner rejects any binary archive found anywhere
+# in the checked-out source tree, regardless of whether the Gradle build actually references it. This
+# repo ships two prebuilt language-pack ZIPs at the root (language-packs/adaptkey-lang-{de,el}.zip) -
+# real, intentional downloadable content for the app's own language-pack feature (see
+# AdaptKey-Language-Contribution-Guide.md), not a build input. First CI run on this MR failed with
+# "Found ZIP file archive at language-packs/adaptkey-lang-de.zip" (and -el.zip) for exactly this
+# reason - scandelete tells fdroidserver to remove them before scanning/building, since the compiled
+# APK never needs them.
 
 Categories:
   - Keyboard & IME
-
 License: GPL-3.0-or-later
-
 AuthorName: Froehlich Media
-
 SourceCode: https://github.com/m-froehlich/adaptkey
 IssueTracker: https://github.com/m-froehlich/adaptkey/issues
 
@@ -24,55 +30,79 @@ RepoType: git
 Repo: https://github.com/m-froehlich/adaptkey.git
 
 Builds:
-  - versionName: '1.0.2'
+  - versionName: 1.0.2
     versionCode: 306
     commit: d59d66733fb5901cc4ff032d48c446f4175ea76f
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.3'
+  - versionName: 1.0.3
     versionCode: 307
     commit: 1f6cd0b768ee2c94b080f70d6000c379c6d3ba66
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.4'
+  - versionName: 1.0.4
     versionCode: 308
     commit: 2b2c3cf430d563ec1efaa65ce2f945b97d1af7f6
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.5'
+  - versionName: 1.0.5
     versionCode: 309
     commit: 1a29d21faa422aa7b7c0bf7aa9c01a879fc77333
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.6'
+  - versionName: 1.0.6
     versionCode: 310
     commit: c3c546b97f7b3e77e690ce786d33fc22a3ff67dd
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.7'
+  - versionName: 1.0.7
     versionCode: 311
     commit: e1fab370a636333ef3c635ca370683be1cfeff34
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.8'
+  - versionName: 1.0.8
     versionCode: 312
     commit: 45dbb3d34b97a4b64f6c897e418b2529e1047029
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
-  - versionName: '1.0.10'
+  - versionName: 1.0.10
     versionCode: 314
     commit: cc281fa299e65818cc347b88c5919005ab2949f0
     gradle:
       - yes
+    scandelete:
+      - language-packs/adaptkey-lang-de.zip
+      - language-packs/adaptkey-lang-el.zip
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '1.0.10'
+CurrentVersion: 1.0.10
 CurrentVersionCode: 314

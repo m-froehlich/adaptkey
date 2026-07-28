@@ -132,11 +132,33 @@ in every prompt.
   clue why). Source branch: `m-froehlich-master-patch-41126`.
 - **Done:** the MR's `metadata/de.froehlichmedia.adaptkey.yml` updated to the current scratchpad draft
   content (through `1.0.10`) via the GitLab web UI, committed on that same branch.
+- **First CI pipeline run failed with "Identity verification is required in order to run CI jobs"** - a
+  GitLab.com anti-abuse gate on the user's own account, unrelated to this repo's content (0 jobs even ran).
+  User verified their identity via GitLab's own account settings; retrying the pipeline then actually ran
+  the real checks.
+- **That real run produced 3 genuine failures, both diagnosed and fixed in the scratchpad draft:**
+  - `build` job: F-Droid's scanner rejects any binary archive anywhere in the checked-out source tree,
+    regardless of whether the Gradle build references it - flagged
+    `language-packs/adaptkey-lang-{de,el}.zip` (the real, intentional downloadable language-pack content
+    this repo ships at its root, not a build input). Fixed by adding `scandelete` (removes the named files
+    before scanning/building - the documented fdroidserver field for exactly this case) to every `Builds`
+    entry.
+  - `test`/`checkupdates` + `test`/`fdroid rewritemeta` jobs: both compare the submitted YAML against
+    fdroidserver's own canonical auto-formatted form and fail if it doesn't already match exactly. Rather
+    than reverse-engineer the exact spacing from a noisy CI log, installed `fdroidserver` locally (`pip
+    install fdroidserver`) and ran `fdroid rewritemeta` against a minimal local copy of the file to get the
+    real canonical output directly, then diffed it against the draft to find the precise deltas: no blank
+    lines between `Categories`/`License`/`AuthorName`/`SourceCode`/`IssueTracker` (only before `RepoType`
+    and before `Builds`), and `versionName`/`CurrentVersion` values unquoted (`1.0.2`, not `'1.0.2'` - YAML
+    doesn't need the quotes there and rewritemeta strips them). Verified the fix is a stable fixed point
+    (running `rewritemeta` again on its own output changes nothing) before updating the scratchpad draft.
 - **Still open:**
+  - Push the corrected content (see the scratchpad file) into the MR's `metadata/de.froehlichmedia.adaptkey.yml`
+    via the GitLab web UI, same branch as before, and re-run the pipeline.
   - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
     to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
-  - Watch the MR's CI pipeline (lint + scanner + a real trial build of at least the current version) and
-    fix anything it flags by editing the file again in the GitLab web UI, pushed to the same branch.
+  - Watch the MR's CI pipeline and fix anything further it flags by editing the file again in the GitLab
+    web UI, pushed to the same branch.
   - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
     commonly takes weeks, sometimes months).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
