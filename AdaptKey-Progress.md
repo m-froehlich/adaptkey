@@ -198,14 +198,20 @@ in every prompt.
 - **CI pipeline fully green** after the `AutoName` push - `build`, `checkupdates`, and `rewritemeta` all
   passed. The MR is now technically complete and waiting purely on human maintainer review; no further
   content work is expected unless a reviewer asks for something new.
+- **GitHub Release `v1.0.10` ("AdaptKey first official release") confirmed live**, with the signed
+  `AdaptKey.apk` (36.9 MB) attached - checked via the GitHub API directly (`.../releases/tags/v1.0.10`),
+  not just assumed from the page rendering.
+- **Known, deliberately-deferred quirk:** the 5 `phoneScreenshots` under
+  `fastlane/metadata/android/en-US/images/` are actually German-language captures, not English - the user
+  noticed and explicitly chose to leave this as-is for now ("das soll erstmal egal sein, damit kommt jeder
+  klar"). Not a bug to silently "fix" by moving them to `de-DE/` in a future session - revisit only if the
+  user raises it again.
 - **Still open:**
-  - Create the GitHub Release for `v1.0.10` and attach the already-built, already-handed-over signed APK
-    to it (the user publishes; not done automatically here) - `v1.0.7`'s own release is no longer needed.
   - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
     commonly takes weeks, sometimes months).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
-  - Optional, still not done: screenshots for `de-DE`/`el-GR` (only `en-US` was requested/added so far).
+  - Optional, still not done: real English `en-US` screenshots, and/or `de-DE`/`el-GR` screenshot sets.
   - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
     against F-Droid's own docs/`fdroiddata` at MR time - both were checked against the live F-Droid docs
     and `config/categories.yml` this session, but that project's conventions can move on.
