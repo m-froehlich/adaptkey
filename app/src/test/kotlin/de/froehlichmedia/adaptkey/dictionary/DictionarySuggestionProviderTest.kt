@@ -55,6 +55,50 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-328 a single-position keyboard-neighbour typo still surfaces the completion mid-word`() {
+        store.putWord(WordEntry("vermutlich", 500L))
+        store.putWord(WordEntry("vermuten", 300L))
+        
+        // "vetmut" (6 chars, typo at position 3: t for r) shares no literal prefix with "vermut..." at all,
+        // so the ordinary prefix scan finds nothing; the full-token edit-distance search is still far out of
+        // budget while the word is only partially typed. The neighbour-prefix escalation reaches it.
+        val words = provider.suggestionsFor("vetmut", null).map { it.word }
+        assertTrue(words.contains("vermutlich"))
+    }
+    
+    @Test
+    fun `D-328 a neighbour typo plus a missing umlaut are resolved together in one pass`() {
+        store.putWord(WordEntry("tatsächlich", 500L))
+        
+        // "twtsachl": typo at position 2 (w for a) AND the ä omitted. The neighbour-substituted prefix
+        // "tatsachl" fed back through Umlaut.unfoldCandidates reaches "tatsächlich".
+        val words = provider.suggestionsFor("twtsachl", null).map { it.word }
+        assertTrue(words.contains("tatsächlich"))
+    }
+    
+    @Test
+    fun `D-328 the neighbour-prefix escalation does not fire on a short token below the minimum length`() {
+        store.putWord(WordEntry("werden", 500L))
+        
+        // L = 3 ("wqr") is below MIN_NEIGHBOUR_PREFIX_LENGTH (5), so the escalation is skipped; a neighbour
+        // substitution on a 3-letter token would match far too much. The ordinary fuzzy search still handles
+        // short tokens at the full-word stage.
+        val words = provider.suggestionsFor("wqr", null).map { it.word }
+        assertFalse(words.contains("werden"))
+    }
+    
+    @Test
+    fun `D-328 the escalation fires at the minimum length boundary of 5`() {
+        store.putWord(WordEntry("vermutlich", 500L))
+        store.putWord(WordEntry("vermuten", 300L))
+        
+        // L = 5 is exactly the inclusive lower bound; the neighbour variant "vermu" (t->r at position 2)
+        // reaches both completions.
+        val words = provider.suggestionsFor("vetmu", null).map { it.word }
+        assertTrue(words.contains("vermutlich"))
+    }
+    
+    @Test
     fun `A-04 blacklisted words are excluded from suggestions`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putWord(WordEntry("Haus", 100L))

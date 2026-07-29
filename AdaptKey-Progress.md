@@ -281,6 +281,17 @@ non-trivial changes).
 
 ## Current State
 
+- **§254 (v1.0.15): D-328 - early typo recovery via neighbour-substituted prefix completion escalation.** A
+  single keyboard-neighbour typo early in a long word ("vetmut…" for "vermut…") was invisible to both the
+  literal prefix scan (no shared prefix) and the full-token edit-distance search (far over budget while
+  partial), so the intended completion only appeared once the whole token was typed. Fix: when the literal
+  prefix found nothing and the token is ≥ 5 chars, every single-position neighbour-substituted prefix is also
+  tried, each fed through the same Umlaut.unfoldCandidates + unigramsByPrefix loop (resolves typo + missing
+  umlaut together). Digit neighbours skipped, variant count capped at 24. Suggestion-only, runs in the
+  deferred/background pass (no main-thread cost). 4 new tests (963 -> 967).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-09 added. `versionCode` 318 -> 319,
+  `versionName` `"1.0.14"` -> `"1.0.15"`. **Not yet device-confirmed** - needs a real "vetmut…" typing
+  session to confirm "vermutlich" appears mid-word. See history §254.
 - **§253 (v1.0.14): D-327 - bigram/trigram context learning was silently skipped for every bundled word in**
   **canonical casing (the D-186/D-264 unigram-skip path also skipped the n-gram context inside `learn()`),**
   **so next-word prediction (S-07) never accumulated for ordinary everyday vocabulary - "Mein Schatz" typed**
@@ -292,9 +303,9 @@ non-trivial changes).
   Learned Words editor. Plus `mein -> kampf` removed from the bundled corpus, plus a versioned runtime
   `purgeBigram()` cleanup for existing installs (removable in a future version per the user's own request).
   7 new tests (956 -> 963). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-07 and W-04
-  revised. `versionCode` 317 -> 318, `versionName` `"1.0.13"` -> `"1.0.14"`. **Not yet device-confirmed** -
+  revised. `versionCode` 317 -> 318, `versionName` `"1.0.13"` -> `"1.0.14"`.   **Not yet device-confirmed** -
   needs a real "Mein Schatz" round-trip to confirm "Schatz" now appears after "Mein" and "Kampf" never does.
-  See history §253.
+  See history §253. **Device-confirmed** (2026-07-29) - "Schatz" now appears after "Mein", "Kampf" gone.
 - **§251 (v1.0.13): D-326 - debounce (D-325) alone wasn't good enough per the user's own on-device verdict**
   **("jetzt wird der Clipboard Chip halt ein paar Millisekunden später versteckt") - a delay still evicts the**
   **chip every time, just slower.** Disabling Microsoft Authenticator as an autofill service made no

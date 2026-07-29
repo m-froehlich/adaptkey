@@ -389,6 +389,18 @@ defeating S-07's own purpose for the most common words in the language.
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking.
 
+### S-09 - Early Typo Recovery via Neighbour-Prefix Escalation (D-328)
+A single keyboard-neighbour typo early in a long word ("vetmut…" for "vermut…") is invisible to both the
+literal prefix scan (no shared prefix) and the full-token edit-distance search (still far out of budget while
+the word is only partially typed), so the intended completion would not surface until the whole token was
+typed. D-328 adds an escalation: when the literal (and umlaut-unfolded, D-144) prefix found nothing at all
+and the token is at least 5 characters long, prefix completions of every single-position neighbour-substituted
+prefix are also tried (e.g. "vetmut" → "vermut" → "vermutlich"), each fed back through the same
+Umlaut.unfoldCandidates + unigramsByPrefix loop, so a typo plus a missing umlaut is resolved together
+("twtsachl" → "tatsächlich"). Digit neighbours are skipped (never a word-initial letter); the number of
+variants is capped. Suggestion-only by construction — S-02 (never the exact input) and A-04 (blacklist) apply
+unchanged. Runs in the deferred/background pass (no main-thread cost), so it adds no per-keystroke latency.
+
 ---
 
 ## 6. Capitalisation

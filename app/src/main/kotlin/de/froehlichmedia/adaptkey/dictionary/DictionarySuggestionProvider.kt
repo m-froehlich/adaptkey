@@ -14,10 +14,10 @@ import kotlin.math.pow
 /**
  * Tier-1 suggestion provider over a {@link DictionaryStore}: personal n-gram completion with a
  * bigram context bonus, the blacklist (A-04) and the "valid words are not overwritten" rule (A-01).
- *
+ * 
  * Depends only on the {@link DictionaryStore} abstraction, so the ranking and policy are unit-tested
  * with the in-memory store; the SQLite store supplies the same behaviour on device.
- *
+ * 
  * @property store the backing dictionary store
  * @property maxCandidates the maximum number of suggestions returned
  * @property minAutocorrectFrequency D-114/D-227: a correction candidate below this absolute frequency is
@@ -64,6 +64,37 @@ class DictionarySuggestionProvider(
                 val extraLength = entry.word.length - token.length
                 candidates[entry.word] =
                     Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, extraLength))
+            }
+        }
+        // D-328: escalation - when the literal (and umlaut-unfolded) prefix found nothing at all, also try
+        // prefix completions of keyboard-neighbour-substituted prefixes, so a typo early in a long word
+        // ("vetmut..." -> "vermut...") still surfaces the intended completion mid-word rather than only once
+        // the whole token is typed and the full-token edit-distance search (fuzzyNeighbours below) finally
+        // comes within budget. Gated like D-116/D-117 on candidates being empty (the literal prefix already
+        // had its chance) and on a longer minimum length (a neighbour substitution on a short token would
+        // match far too much); capped like D-144's own unfold combinatorics so a long token cannot blow up
+        // the number of indexed prefix scans. Each variant is fed through the same Umlaut.unfoldCandidates +
+        // unigramsByPrefix loop as the literal token, so a typo plus a missing umlaut ("twtsach..." ->
+        // "tatsächlich") is resolved in one pass. Suggestion-only by construction - it populates the same
+        // candidates map, so S-02 (never the exact input) and A-04 (blacklist) apply unchanged.
+        if (includeExpensiveFallbacks && candidates.isEmpty() && token.length >= MIN_NEIGHBOUR_PREFIX_LENGTH) {
+            for (prefixVariant in neighbourPrefixVariants(token)) {
+                if (isCancelled()) {
+                    break
+                }
+                for (unfolded in Umlaut.unfoldCandidates(prefixVariant)) {
+                    if (isCancelled()) {
+                        break
+                    }
+                    for (entry in store.unigramsByPrefix(unfolded, maxCandidates)) {
+                        if (candidates.containsKey(entry.word) || store.isBlacklisted(entry.word)) {
+                            continue // A-04
+                        }
+                        val extraLength = entry.word.length - token.length
+                        candidates[entry.word] =
+                            Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, extraLength))
+                    }
+                }
             }
         }
         // D-12: also offer close real words - a single edit or an umlaut/ß variant - so a mistype or a
@@ -129,7 +160,7 @@ class DictionarySuggestionProvider(
      * split point itself can be genuinely ambiguous between two equally valid readings (the classic German
      * compound-splitting counterexample "Wachstube" as "Wachs"+"tube" vs. "Wach"+"Stube"); offering a wrong
      * guess in the bar is harmless, silently committing one is not.
-     *
+     * 
      * @param token the lower-cased composing token
      * @param previousWord the preceding word, threaded through to the rest correction's own bigram scoring
      * @return the reconstructed compound in natural German casing (capitalised first part, lower-case
@@ -160,17 +191,17 @@ class DictionarySuggestionProvider(
      * the token once German umlauts / ß are folded on both sides, so a diacritic-less typing matches its
      * correct form. The token itself is excluded (S-02 handles the verbatim case). Uses the same bounded,
      * indexed candidate set as the autocorrect, so it stays cheap per keystroke.
-     *
+     * 
      * D-205: returns each candidate's own edit cost alongside it - [suggestionsFor] discounts [score] by it
      * ([scoreWithCost]) instead of ranking purely by frequency, so a candidate genuinely close to the typed
      * token generally outranks a farther one even when the farther one is far more frequent.
-     *
+     * 
      * D-211: polls [isCancelled] once per candidate - the search runs on a background thread now (D-208),
      * so a superseded call stops partway through the (potentially large, D-209-uncapped) candidate list
      * instead of finishing pointless work; whatever was already gathered is still returned rather than
      * discarded, since a spent cycle can at least contribute what it found, but the caller checks staleness
      * again before ever applying it (see [de.froehlichmedia.adaptkey.AdaptKeyService]'s own KDoc).
-     *
+     * 
      * @param token the lower-cased composing token
      * @param isCancelled polled once per candidate; true stops the scan early
      * @return the neighbouring known words in canonical case, each paired with its edit cost
@@ -206,9 +237,9 @@ class DictionarySuggestionProvider(
      * first-character bucket (its own letter or a keyboard neighbour), so a token whose very *first* letter
      * is also badly garbled is still out of reach; a genuinely open question (see D-117's own spec entry),
      * not attempted here.
-     *
+     * 
      * D-211: polls [isCancelled] once per candidate - see [fuzzyNeighbours]'s own KDoc for the reasoning.
-     *
+     * 
      * @param token the lower-cased composing token
      * @param isCancelled polled once per candidate; true stops the scan early
      * @return the neighbouring known words in canonical case, each paired with its edit cost (D-205)
@@ -240,7 +271,7 @@ class DictionarySuggestionProvider(
      * The initial letters to search for correction candidates of [token] (D-38): its own first character,
      * its keyboard neighbours (so a first-key typo like `eerden` -> `werden` is reachable) and its umlaut
      * variant when it starts with `a` / `o` / `u` (so `Uberblick` -> `Überblick`).
-     *
+     * 
      * @param token the lower-cased token
      * @return the set of initial letters to search
      */
@@ -258,17 +289,44 @@ class DictionarySuggestionProvider(
     }
     
     /**
+     * D-328: every single-position keyboard-neighbour substitution of [token] (e.g. "vetmut" -> "vermut"),
+     * capped at [MAX_NEIGHBOUR_PREFIX_VARIANTS]. Each variant, once fed back through
+     * [Umlaut.unfoldCandidates] and [DictionaryStore.unigramsByPrefix] by the caller, reaches completions
+     * whose real spelling the user mistyped at exactly one position - the prefix-completion counterpart of
+     * [candidateFirstChars]'s own first-character neighbour broadening, extended to every position. Used only
+     * as an escalation when the literal prefix found nothing, so a correctly-typed word never pays for it.
+     * 
+     * @param token the lower-cased composing token (already length-checked by the caller)
+     * @return the distinct single-substitution variants, never including [token] itself
+     */
+    private fun neighbourPrefixVariants(token: String): List<String> {
+        val results = LinkedHashSet<String>()
+        for (i in token.indices) {
+            for (neighbour in KeyboardProximity.neighboursOf(token[i])) {
+                if (!neighbour.isLetter()) {
+                    continue // Digits are never a plausible word-initial letter.
+                }
+                if (results.size >= MAX_NEIGHBOUR_PREFIX_VARIANTS) {
+                    return results.toList()
+                }
+                results.add(token.substring(0, i) + neighbour + token.substring(i + 1))
+            }
+        }
+        return results.toList()
+    }
+    
+    /**
      * The proximity-aware weighted edit cost between the folded token and a candidate (D-28 / D-38): a
      * neighbouring-key substitution costs [ADJACENT_SUB_COST], any other substitution or an insert/delete
      * [SUB_COST] / [INDEL_COST]. Used both to gate candidates and to rank the autocorrect by lowest cost.
-     *
+     * 
      * §125 / D-194: [maxCost] is threaded straight into [EditDistance.weightedDistance]'s own banding -
      * every call site here only ever compares the result against a fixed ceiling anyway (see its own
      * KDoc), so passing that same ceiling in lets the DP stay within a band around it instead of scanning
      * the whole token/candidate pair, which is what actually mattered for the per-keystroke cost on long
      * tokens. Callers must pass their own real ceiling, not a stand-in - a narrower one here than the one
      * actually compared against downstream would wrongly clip candidates that should have qualified.
-     *
+     * 
      * @param foldedToken the umlaut-folded, lower-cased typed token
      * @param candidateLower the lower-cased candidate word
      * @param maxCost the same cost ceiling the caller will compare the result against
@@ -289,22 +347,22 @@ class DictionarySuggestionProvider(
      * form equals the folded token but that carries the diacritics the user omitted (D-48: umlauts are
      * first-class characters): `konnen` → `können`, `russ` → `ruß`. Returns null when the token is already a
      * known word (A-01) or no pure-diacritic match exists.
-     *
+     * 
      * Such a restoration must take precedence over an A-05 split, so a real umlaut word (`konnen`) is
      * corrected to `können`, never cut into fragments (`ko nen`).
-     *
+     * 
      * D-197: draws candidates from [DictionaryStore.diacriticCandidates], not [DictionaryStore.correctionCandidates]
      * - this is an exact fold-equality test, not a weighted edit-distance search, so it needs the *complete*
      * length/first-character window, not [correctionCandidates]' frequency-truncated one. A rare but
      * correctly-spelled diacritic word was previously crowded out of the bounded candidate set by hundreds of
      * more common same-bucket words before ever reaching the comparison below, e.g. "Gruße" failing to
      * restore to "Grüße" (frequency 18) while falling back to an unrelated fuzzy match instead.
-     *
+     * 
      * D-204: the fold-equality check itself now accepts either of [Umlaut.foldVariants]' variants for the
      * candidate side, not only [Umlaut.fold]'s own "ss" convention - so a token typed via this app's own
      * long-press-alternative convention (e.g. "gruse" for "Grüße", `ß` reached by long-pressing `s`) is
      * recognised as an equally exact match, not left to the edit-cost-budgeted/frequency-floored fuzzy path.
-     *
+     * 
      * @param input the composing token (any case)
      * @param previousWord the preceding word, for bigram tie-breaking among matches; may be null
      * @return the diacritic-restored known word in canonical case, or null
@@ -333,7 +391,7 @@ class DictionarySuggestionProvider(
      * discount), so an overwhelmingly more frequent bigram-only candidate can still outrank a barely-seen
      * trigram one. A word already scored via its trigram match is never re-added via the bigram pass (the
      * more specific signal always wins for that word, never blended with its own less-specific estimate).
-     *
+     * 
      * @param previousWord the most recently committed word
      * @param previousPreviousWord the word committed two positions before, or null when unknown - falls
      *        back to the plain bigram ranking, exactly as before D-246
@@ -399,7 +457,7 @@ class DictionarySuggestionProvider(
      * substitution or better (D-67). Used to veto an A-05 split so a split never beats a much safer
      * whole-word correction, e.g. `kleiben` -> `kleinen` (a single adjacent `b`/`n` slip) must win over
      * `klei` + `en`.
-     *
+     * 
      * @param input the current composing token
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
      * @return the high-confidence autocorrect replacement, or null when none qualifies
@@ -416,11 +474,11 @@ class DictionarySuggestionProvider(
      * also search neighbour / umlaut first-char buckets, and rank by the lowest edit cost first (frequency
      * only breaks ties), so "dasy" corrects to "dass" (one adjacent edit) rather than the more frequent
      * "das" (a deletion).
-     *
+     * 
      * D-207: returns the winning candidate's own edit cost alongside it (not just the word) - lets
      * [bestCorrectionFor] answer the high-confidence question from this one search's own result, instead
      * of running a second, narrower search over the same candidates purely to re-derive it.
-     *
+     * 
      * @param input the current composing token
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
      * @param maxCost the inclusive edit-cost ceiling a candidate must stay within
@@ -503,7 +561,7 @@ class DictionarySuggestionProvider(
      * *and* not a noun, since German nouns take no comparative/superlative degree at all. Without the noun
      * exclusion, a bare known-word check would treat "docker" as a plausible comparative of "dock"
      * (`NOUN`), the same over-triggering [TokenRepair.isAlreadyRecognised] already had to guard against.
-     *
+     * 
      * @param stem the candidate reconstructed positive adjective (already lower-cased)
      * @return true when [stem] is known and not tagged [PartOfSpeech.NOUN]/[PartOfSpeech.PROPER_NOUN]
      */
@@ -521,7 +579,7 @@ class DictionarySuggestionProvider(
      * bundled corpus) blocked any correction to "die" (frequency ~890000) outright, simply for existing in
      * the dictionary at all - regardless of how implausible it is that "due" was actually intended over
      * "die".
-     *
+     * 
      * D-244: raised from 50 to 100 after a real regression - "Ohren" (ears, frequency 170, an entirely
      * ordinary, unambiguous German word) was silently overridden to "Ihren" (frequency 11,907 - `o`/`i` are
      * QWERTZ-adjacent) purely because 170*50 <= 11,907. The original 50x bar assumed "a genuine word pair
@@ -560,7 +618,7 @@ class DictionarySuggestionProvider(
      * cost-0 one to outrank it, a cost-2 candidate ~10,000x - both achievable at the corpus's extremes, not
      * as a matter of course. A considered starting point, not yet device-tuned - easy to retune here alone,
      * no call site depends on its exact value.
-     *
+     * 
      * @param word the candidate word
      * @param frequency the candidate's dictionary frequency
      * @param previousWord the preceding word, for the same bigram bonus [score] applies
@@ -579,7 +637,7 @@ class DictionarySuggestionProvider(
      * shipped "closeness over raw frequency" principle for the fuzzy-match path - as a soft preference, not
      * a hard rule, for the same reason [scoreWithCost] is soft: an overwhelmingly more frequent candidate can
      * still win.
-     *
+     * 
      * Deliberately **not** [scoreWithCost]'s own [FUZZY_COST_DECAY] reused verbatim: checked against the real
      * bundled `dict_de.tsv`, a flat per-character exponential decay strong enough to flip a close, 1-character
      * German inflection pair (`"wichtig"` 1342 vs. `"wichtige"` 4330, needing a ratio below ~0.31) compounds
@@ -593,7 +651,7 @@ class DictionarySuggestionProvider(
      * "how many more characters" signal genuinely stops being a meaningful proxy for likelihood. A considered
      * starting point checked against several real word families, not exhaustively device-tuned - easy to
      * retune here alone, no call site depends on its exact value.
-     *
+     * 
      * @param word the candidate word
      * @param frequency the candidate's dictionary frequency
      * @param previousWord the preceding word, for the same bigram bonus [score] applies
@@ -652,5 +710,13 @@ class DictionarySuggestionProvider(
         // stops being a meaningful signal.
         private const val PREFIX_LENGTH_DECAY = 0.3
         private const val PREFIX_LENGTH_DECAY_CAP = 4
+        
+        // D-328: neighbour-substituted prefix escalation - a typo early in a long word ("vetmut..." for
+        // "vermut...") is invisible to both the literal prefix scan (no shared prefix) and the full-token
+        // edit-distance search (too far while still partial). Only trying prefix completions of a corrected
+        // prefix reaches it mid-word. L >= 5 keeps the neighbour substitution specific enough to be useful
+        // (on a 2-3 letter token it would match far too much); the variant cap bounds the indexed scans.
+        private const val MIN_NEIGHBOUR_PREFIX_LENGTH = 5
+        private const val MAX_NEIGHBOUR_PREFIX_VARIANTS = 24
     }
 }

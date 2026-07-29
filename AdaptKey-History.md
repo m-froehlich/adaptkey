@@ -12387,3 +12387,48 @@ case-insensitive; bigramCleanupVersion round-trip).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-07 and W-04 revised. `versionCode` 317 ->
 318, `versionName` `"1.0.13"` -> `"1.0.14"`. Not yet device-confirmed - needs a real "Mein Schatz" round-trip
 to confirm "Schatz" now appears after "Mein" and "Kampf" never does.
+
+## §254 - D-328 Early Typo Recovery: Neighbour-Substituted Prefix Completion Escalation
+
+### Root Cause
+
+The user reported that typos like "vetmutlich" (t for r at position 3) or "twtsachlich" (w for a at position
+2) only produced a correction chip once the word was fully typed, not mid-word. Two structural reasons, both
+code-confirmed:
+
+**1. Prefix completion requires an exact prefix.** `unigramsByPrefix` (the only search on the synchronous
+hot path) finds only words sharing the typed prefix literally. "vet…" is not a prefix of "vermut…" at all, so
+no completion appears. D-144's `Umlaut.unfoldCandidates` generates only umlaut/ß variants (a↔ä, ss↔ß) — not
+keyboard-neighbour variants — so a t/r slip overcomes this path entirely.
+
+**2. The full-token edit-distance search (fuzzyNeighbours) is gated behind budget.** `correctionCost` computes
+complete edit distance against the full token, gated at `MAX_CORRECTION_COST = 2`. While "vetmut" is only
+6 of 10 characters, the distance to "vermutlich" is ~5 (4 insertions + 1 substitution) — far over budget.
+Only once the full word is typed does the single substitution fall within cost 1.
+
+### Fix
+
+New escalation in `DictionarySuggestionProvider.suggestionsFor()`: when the literal (and umlaut-unfolded)
+prefix found nothing at all and the token is ≥ 5 characters, prefix completions of every single-position
+keyboard-neighbour-substituted prefix are also tried — the prefix-completion counterpart of
+`candidateFirstChars`'s own first-character neighbour broadening (D-38), extended to every position. Each
+variant is fed back through the same `Umlaut.unfoldCandidates` + `unigramsByPrefix` loop as the literal token,
+so a typo plus a missing umlaut is resolved in one pass ("twtsachl" → "tatsächlich"). Digit neighbours are
+skipped (never a plausible word-initial letter); the variant count is capped at 24. Suggestion-only by
+construction — S-02 and A-04 apply unchanged. Runs in the deferred/background pass
+(`includeExpensiveFallbacks`), so it adds no per-keystroke main-thread cost.
+
+Initial implementation had `MAX_NEIGHBOUR_PREFIX_VARIANTS = 12`, which was too small: the digit neighbours
+from the number row (e.g. `3`/`4`/`5` as neighbours of `t`) consumed the cap before the typo position was
+reached (5+8 neighbours for positions 0-1 already exceeded 12, so position 2 — where `t`→`r` would have
+produced "vermut" — was never tried). Fixed by skipping digit neighbours and raising the cap to 24.
+
+### Tests
+
+4 new tests in `DictionarySuggestionProviderTest`: single-position neighbour typo surfaces completion
+mid-word; typo plus missing umlaut resolved together; escalation fires at the L=5 boundary; short token below
+minimum length is not escalated. 963 → 967 tests.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-09 added. `versionCode` 318 -> 319,
+`versionName` `"1.0.14"` -> `"1.0.15"`. Not yet device-confirmed - needs a real "vetmut…" typing session to
+confirm "vermutlich" appears mid-word.
