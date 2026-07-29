@@ -6,7 +6,7 @@ package de.froehlichmedia.adaptkey.dictionary
 /**
  * In-memory {@link DictionaryStore}, free of Android dependencies for unit testing and as a simple
  * reference implementation. Lookups are case-insensitive; entries keep their canonical case.
- *
+ * 
  * D-177: mirrors {@link SqliteDictionaryStore}'s split between the bundled dictionary ([unigrams] /
  * [bigrams], written by [putWord] / [putBigram]) and the user's own learned vocabulary ([learned] /
  * [learnedBigrams], written only by [learn] / [unlearn] / [forget]) - see that class's own KDoc for the
@@ -44,6 +44,18 @@ class InMemoryDictionaryStore : DictionaryStore {
         } else {
             WordEntry(word = canonical, frequency = 1L)
         }
+        if (previousWord != null) {
+            val bigramKey = bigramKey(previousWord, word)
+            learnedBigrams[bigramKey] = (learnedBigrams[bigramKey] ?: 0L) + 1L
+            if (previousPreviousWord != null) {
+                val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
+                learnedTrigrams[trigramKey] = (learnedTrigrams[trigramKey] ?: 0L) + 1L
+            }
+        }
+    }
+    
+    override fun learnContext(word: String, previousWord: String?, previousPreviousWord: String?) {
+        // D-327: only the n-gram context, never the unigram - see the interface KDoc.
         if (previousWord != null) {
             val bigramKey = bigramKey(previousWord, word)
             learnedBigrams[bigramKey] = (learnedBigrams[bigramKey] ?: 0L) + 1L

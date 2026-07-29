@@ -14,12 +14,12 @@ import de.froehlichmedia.adaptkey.language.Language
  * same shape - a per-language folder holding `dict.tsv` unigrams + `bigram.tsv` bigrams, D-310 - just from a
  * different source: `app/src/main/assets/<code>/` here, [LanguagePackStorage]'s own per-device directory
  * there).
- *
+ * 
  * One [SqliteDictionaryStore] per language, keyed by [Language]; the store keeps the same schema, so
  * all ranking / capitalisation logic is reused unchanged per language. Android-only glue; the parsing
  * itself is the pure, unit-tested [DictionaryAssetParser]. If a language's source is missing the store is
  * simply left empty.
- *
+ * 
  * D-178: [BUNDLED_DICTIONARY_VERSION] tracks the bundled asset content, separately from the store's own
  * schema ({@code SqliteDictionaryStore}'s {@code DATABASE_VERSION}). Bumping it forces exactly one
  * [SqliteDictionaryStore.resetBundledWords] + reseed per store on the next load, without touching the
@@ -56,9 +56,18 @@ object DictionaryLoader {
     private const val LEARNED_CLEANUP_VERSION = 1
     
     /**
+     * D-327: bump to force a one-time [SqliteDictionaryStore.purgeBigram] on every existing install's next
+     * load - flushes a specific bundled bigram row that should never have shipped ("mein" -> "kampf", a
+     * Wikipedia-corpus extraction artefact, not anything a user typed). Runs across every language store but
+     * is a harmless no-op for any store that never held the row. Removable in a future version once every
+     * existing install has run it once (the recorded meta row then simply stays behind, harmless).
+     */
+    private const val BIGRAM_CLEANUP_VERSION = 1
+    
+    /**
      * The SQLite database file backing [language]'s dictionary. Public so the C-05 blacklist editor can
      * open the very store the running keyboard uses for that language.
-     *
+     * 
      * @param language the dictionary language
      * @return the per-language database file name
      */
@@ -103,6 +112,10 @@ object DictionaryLoader {
             if (store.learnedCleanupVersion() < LEARNED_CLEANUP_VERSION) {
                 store.purgeBundledDuplicatesFromLearned()
                 store.setLearnedCleanupVersion(LEARNED_CLEANUP_VERSION)
+            }
+            if (store.bigramCleanupVersion() < BIGRAM_CLEANUP_VERSION) {
+                store.purgeBigram("mein", "kampf")
+                store.setBigramCleanupVersion(BIGRAM_CLEANUP_VERSION)
             }
             store
         }

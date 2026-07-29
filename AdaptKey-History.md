@@ -12318,3 +12318,72 @@ symptom was fixed, surfaced this distinct clipboard-chip-eviction issue (D-324/D
 each round corrected by real device evidence rather than assumption, ending on the user's own proposed root
 fix (restrict Autofill inline suggestions to real credential fields) rather than the initially-proposed
 debounce alone. No code change - see history §251 for the fix itself.
+
+## §253 - D-327 Bigram/Trigram Context Learning Was Silently Skipped for Every Bundled Word in Canonical Casing; "mein kampf" Bundled Bigram Purged
+
+### Root Cause (code-traced, not guessed)
+
+The user reported that "Mein Schatz" - typed dozens of times - never produced a "Schatz" next-word
+suggestion after "Mein", while "Kampf" consistently appeared instead. Two independent defects, both
+code-confirmed:
+
+**1. "Kampf" came from the bundled bigram corpus, not from learning.** `dictionaries/de/bigram.tsv:19017`
+contained `mein\tkampf\t93` - a Wikipedia-corpus extraction artefact (the same provenance as `dict.tsv`,
+per Progress.md), not anything the user had typed and not a code-level seed (`SeedData.kt` holds only 5
+harmless bigram seeds: der/Hund, die/Katze, das/Haus, ein/Auto, über/Berlin). `nextWordSuggestions("Mein")`
+walked `store.nextWords("Mein")`, which returned the bundled successors ordered by count - "kampf" (93),
+"leben" (44), "name" (26) - and "kampf" won as the highest-count successor. The user had never typed "Mein
+Kampf" with this app; the suggestion was entirely corpus-derived.
+
+**2. "Schatz" was never learned because the D-186/D-264 unigram-skip path also skipped the n-gram context.**
+"Schatz" is a bundled dictionary word (`dict.tsv:14119`, frequency 134, NOUN). In `learnWord()`
+(`AdaptKeyService.kt:4864-4866`), a bundled word typed in its own bundled casing hits `LearnOutcome.SKIPPED`
+- the D-186/D-264 design decision that deliberately does not reinforce a bundled word's *unigram* frequency
+(to keep the Learned Words editor free of plain vocabulary). But the bigram/trigram context recording happens
+*inside* `DictionaryStore.learn()` (`SqliteDictionaryStore.kt:247-256`), which the SKIPPED path never calls.
+So for every bundled word in canonical casing - the most common case in ordinary typing - no bigram or
+trigram was ever recorded, no matter how many times the user typed the phrase. This directly defeated S-07's
+own stated purpose (next-word prediction from learned bigrams) for exactly the vocabulary that needs it most.
+
+The two defects compounded: "Kampf" appeared (from the bundled corpus) while "Schatz" could never displace
+it (because its bigram was never learned), making the bundled artefact look like a permanent, unoverridable
+suggestion.
+
+### Fix
+
+**A (the real fix - n-gram learning must run):** new `DictionaryStore.learnContext(word, previousWord,
+previousPreviousWord)` method - records only the bigram and trigram (mirroring `learn()`'s own n-gram block
+exactly), omitting only the unigram write. Called from the SKIPPED path in `learnWord()` (guarded by the
+same `!isBlacklisted(word)` check `learn()` itself relies on its caller for), so a bundled word in canonical
+casing now accumulates its next-word context without flooding the Learned Words editor. Implemented in both
+`InMemoryDictionaryStore` and `SqliteDictionaryStore`; the interface gained the method with a full KDoc.
+With this, "Mein Schatz" typed once records `mein -> schatz` (count 1), and `nextWordSuggestions("Mein")`
+returns it immediately (count > 0 suffices, `DictionarySuggestionProvider.kt:366-368`).
+
+**B (the symptom - "mein kampf" removed from the bundled corpus):** the line `mein\tkampf\t93` deleted from
+`dictionaries/de/bigram.tsv`. A alone would eventually let a learned "Schatz" outrank a stale bundled
+"kampf" (a learned bigram count of 1 vs. a bundled count of 93 would not, in fact, win on its own - but the
+Stupid Backoff blend and the soft-preference philosophy mean a genuinely personal signal should not have to
+fight a corpus artefact at all). B alone would have left "Schatz" still never learned. Both are needed.
+
+**C (runtime cleanup for existing installs):** `mein -> kampf` may already sit in a user's *learned*
+bigram table (if a pre-D-327 build's D-186 skip path had a different shape, or if the user somehow
+reinforced it). New `SqliteDictionaryStore.purgeBigram(previousWord, word)` deletes the row from both
+`TABLE_BIGRAMS` (bundled) and `TABLE_LEARNED_BIGRAMS` (personal), gated by a new versioned meta key
+(`bigram_cleanup_version`, mirroring the existing `learned_cleanup_version` pattern from D-186).
+`DictionaryLoader.loadStores()` runs it once per store on the next load after the version bump, then never
+again. Removable in a future version once every existing install has run it once - the user explicitly
+requested this as a temporary measure ("Ich kann die Bereinigung mit einer der nächsten Version wieder
+entfernen").
+
+### Tests
+
+7 new unit tests (956 -> 963): 4 in `InMemoryDictionaryStoreTest` (learnContext records bigram without
+unigram reinforcement; learnContext with two-word context records trigram; learnContext without
+previousWord records nothing; learnContext lets a bundled word surface as next-word suggestion), 3 in
+`SqliteDictionaryStoreRoboTest` (learnContext on SQLite; purgeBigram removes both bundled and learned rows,
+case-insensitive; bigramCleanupVersion round-trip).
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-07 and W-04 revised. `versionCode` 317 ->
+318, `versionName` `"1.0.13"` -> `"1.0.14"`. Not yet device-confirmed - needs a real "Mein Schatz" round-trip
+to confirm "Schatz" now appears after "Mein" and "Kampf" never does.

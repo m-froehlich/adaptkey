@@ -143,6 +143,42 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `learnContext records a bigram without reinforcing the unigram - D-327`() {
+        store.putWord(WordEntry("Schatz", 134L, setOf(PartOfSpeech.NOUN)))
+        store.learnContext("Schatz", "mein")
+        store.learnContext("Schatz", "mein")
+        
+        // The unigram is deliberately not reinforced (D-186/D-327) - only its n-gram context is.
+        assertEquals(134L, store.frequencyOf("Schatz"))
+        assertEquals(2L, store.bigramFrequency("mein", "Schatz"))
+    }
+    
+    @Test
+    fun `learnContext with two-word context records a trigram alongside the bigram - D-327`() {
+        store.learnContext("Schatz", "mein", "ach")
+        
+        assertEquals(1L, store.bigramFrequency("mein", "Schatz"))
+        assertEquals(1L, store.trigramFrequency("ach", "mein", "Schatz"))
+    }
+    
+    @Test
+    fun `learnContext without previousWord records nothing - D-327`() {
+        store.putWord(WordEntry("Schatz", 134L, setOf(PartOfSpeech.NOUN)))
+        store.learnContext("Schatz", null, "ach")
+        
+        assertEquals(134L, store.frequencyOf("Schatz"))
+        assertEquals(0L, store.bigramFrequency("ach", "Schatz"))
+    }
+    
+    @Test
+    fun `learnContext lets a bundled word surface as a next-word suggestion - D-327`() {
+        store.putWord(WordEntry("Schatz", 134L, setOf(PartOfSpeech.NOUN)))
+        store.learnContext("Schatz", "mein")
+        
+        assertEquals(listOf("Schatz"), store.nextWords("mein", 10))
+    }
+    
+    @Test
     fun `nextWordsTrigram returns canonical-case successors ordered by count, scoped to the exact pair - D-246`() {
         store.putWord(WordEntry("Nachbar", 3L))
         store.putWord(WordEntry("Nachbarin", 2L))

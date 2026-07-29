@@ -10,12 +10,12 @@ import android.database.sqlite.SQLiteOpenHelper
 
 /**
  * Persistent {@link DictionaryStore} backed by SQLite (A-04: survives app updates).
- *
+ * 
  * A thin data-access layer: all ranking and policy live in {@link DictionarySuggestionProvider}.
  * Case-insensitive matching uses an explicit lower-cased key column (rather than {@code COLLATE
  * NOCASE}, which does not fold German umlauts). This class is exercised by instrumented tests; the
  * store-independent logic is unit-tested through {@link InMemoryDictionaryStore}.
- *
+ * 
  * D-177: the bundled dictionary ({@link #TABLE_WORDS} / {@link #TABLE_BIGRAMS}, seeded once from the
  * asset) and the user's own learned vocabulary ({@link #TABLE_LEARNED} / {@link #TABLE_LEARNED_BIGRAMS},
  * written only by {@link #learn}/{@link #unlearn}/{@link #forget}) are kept in entirely separate
@@ -117,7 +117,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * Bulk-imports a real dictionary (unigrams + bigrams) in a single transaction, for the one-time
      * first-run seeding from the bundled asset. Far faster than individual [putWord] / [putBigram]
      * calls for the ~100k-entry lexicons. Always the bundled tables - never the learned ones.
-     *
+     * 
      * @param words the unigram entries to insert
      * @param bigrams the bigram rows to insert
      */
@@ -155,7 +155,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     /**
      * D-178: the bundled dictionary content version last seeded into this store, or 0 if never recorded
      * (every store that predates this mechanism).
-     *
+     * 
      * @return the recorded version, or 0 if none is recorded yet
      */
     fun bundledContentVersion(): Int {
@@ -167,7 +167,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     /**
      * Records the bundled dictionary content version this store now holds, so a later
      * [DictionaryLoader.loadStores] call does not reseed it again until the constant is bumped further.
-     *
+     * 
      * @param version the version to record
      */
     fun setBundledContentVersion(version: Int) {
@@ -201,7 +201,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * D-186: the learned-overlay cleanup version last applied to this store, or 0 if never recorded -
      * mirrors [bundledContentVersion]'s own versioning scheme, but for [purgeBundledDuplicatesFromLearned]
      * instead of a bundled reseed.
-     *
+     * 
      * @return the recorded version, or 0 if none is recorded yet
      */
     fun learnedCleanupVersion(): Int {
@@ -214,12 +214,69 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * Records the learned-overlay cleanup version this store now holds, so a later
      * [DictionaryLoader.loadStores] call does not run [purgeBundledDuplicatesFromLearned] again until the
      * constant is bumped further.
-     *
+     * 
      * @param version the version to record
      */
     fun setLearnedCleanupVersion(version: Int) {
         val values = ContentValues().apply {
             put("key", META_KEY_LEARNED_CLEANUP_VERSION)
+            put("value", version.toString())
+        }
+        db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+    
+    /**
+     * D-327: removes the [previousWord] -> [word] bigram from BOTH the bundled table ([TABLE_BIGRAMS]) and
+     * the personal learned table ([TABLE_LEARNED_BIGRAMS]) - a one-time, versioned purge for a specific
+     * bundled bigram row that should never have shipped (e.g. "mein" -> "kampf", a Wikipedia-corpus
+     * extraction artefact, not anything a user typed). Idempotent and a harmless no-op for a store that
+     * never held the row, so it runs uniformly across every language store without a per-language guard.
+     * Never touches unigrams, trigrams, the blacklist, or any other bigram.
+     * 
+     * @param previousWord the bigram's context word (any case)
+     * @param word the predicted word (any case)
+     */
+    fun purgeBigram(previousWord: String, word: String) {
+        val database = db
+        database.beginTransaction()
+        try {
+            database.execSQL(
+                "DELETE FROM $TABLE_BIGRAMS WHERE prevkey = ? AND wkey = ?",
+                arrayOf(previousWord.lowercase(), word.lowercase())
+            )
+            database.execSQL(
+                "DELETE FROM $TABLE_LEARNED_BIGRAMS WHERE prevkey = ? AND wkey = ?",
+                arrayOf(previousWord.lowercase(), word.lowercase())
+            )
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+    
+    /**
+     * D-327: the bigram-purge cleanup version last applied to this store, or 0 if never recorded -
+     * mirrors [bundledContentVersion]'s own versioning scheme, but for [purgeBigram] instead of a bundled
+     * reseed.
+     * 
+     * @return the recorded version, or 0 if none is recorded yet
+     */
+    fun bigramCleanupVersion(): Int {
+        db.rawQuery("SELECT value FROM $TABLE_META WHERE key = ?", arrayOf(META_KEY_BIGRAM_CLEANUP_VERSION)).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getString(0).toIntOrNull() ?: 0 else 0
+        }
+    }
+    
+    /**
+     * Records the bigram-purge cleanup version this store now holds, so a later
+     * [DictionaryLoader.loadStores] call does not run [purgeBigram] again until the constant is bumped
+     * further.
+     * 
+     * @param version the version to record
+     */
+    fun setBigramCleanupVersion(version: Int) {
+        val values = ContentValues().apply {
+            put("key", META_KEY_BIGRAM_CLEANUP_VERSION)
             put("value", version.toString())
         }
         db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
@@ -247,6 +304,20 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         if (previousWord != null) {
             putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
             // D-246: S-07 trigram support - personal-only, so only ever written here, never seeded.
+            if (previousPreviousWord != null) {
+                putTrigramInternal(
+                    previousPreviousWord, previousWord, word,
+                    trigramFrequency(previousPreviousWord, previousWord, word) + 1L
+                )
+            }
+        }
+    }
+    
+    override fun learnContext(word: String, previousWord: String?, previousPreviousWord: String?) {
+        // D-327: only the n-gram context, never the unigram - mirrors learn()'s own n-gram block exactly,
+        // omitting only the putWordInternal(TABLE_LEARNED, ...) above. See the interface KDoc.
+        if (previousWord != null) {
+            putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
             if (previousPreviousWord != null) {
                 putTrigramInternal(
                     previousPreviousWord, previousWord, word,
@@ -310,7 +381,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * case-insensitively identical to [word] before calling - this method itself does not re-check that,
      * matching every other store method's "caller enforces intent" contract; since both share the same
      * lower-cased key, the underlying row is updated in place rather than creating a second entry.
-     *
+     * 
      * @param word the learned word to re-case (any case)
      * @param newCasing the corrected spelling to store instead
      */
@@ -336,7 +407,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * own compound threshold ([learn] is only ever called on promotion, never while merely pending), so no
      * separate "is this actually promoted" filter is needed here - the row's mere presence already means it
      * is.
-     *
+     * 
      * @param prefix the current composing token (any case)
      * @param limit the maximum number of rows to return
      * @return matching compound entries, ordered by descending frequency
@@ -358,7 +429,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * D-278: every learned bigram row, for the backup/export feature (§21). Keys are already lower-cased,
      * exactly as [nextWords] itself reads them - canonical casing is resolved elsewhere, not carried by the
      * bigram tables.
-     *
+     * 
      * @return every row of [TABLE_LEARNED_BIGRAMS], in no particular order
      */
     fun learnedBigramEntries(): List<DictionaryAssetParser.Bigram> {
@@ -373,7 +444,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     
     /**
      * D-278: every learned trigram row (S-07), for the backup/export feature (§21).
-     *
+     * 
      * @return every row of [TABLE_LEARNED_TRIGRAMS], in no particular order
      */
     fun learnedTrigramEntries(): List<TrigramEntry> {
@@ -391,7 +462,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * category is deliberately excluded, since [de.froehlichmedia.adaptkey.AdaptKeyService] already reseeds
      * it idempotently on every service start (see [BlacklistCategory.BUNDLED]'s own KDoc), so it would only
      * bloat the exported file with data the target device already has.
-     *
+     * 
      * @return every user-added blacklist word (lower-cased key, as stored), ordered alphabetically
      */
     fun userBlacklistedWords(): List<String> {
@@ -409,7 +480,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     
     /**
      * D-278: every provisional-pending-blacklist mark (G-04/W-01), for the backup/export feature (§21).
-     *
+     * 
      * @return every row of [TABLE_PENDING_BLACKLIST], in no particular order
      */
     fun pendingBlacklistEntries(): List<PendingBlacklistEntry> {
@@ -427,7 +498,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * whatever this store already holds for [word] (0 if not yet known), the same resolution [learn] itself
      * uses, rather than overwriting outright. This is what lets two devices' independently-learned counts
      * combine on import instead of one clobbering the other.
-     *
+     * 
      * @param word the word exactly as exported (canonical case)
      * @param frequencyDelta the exported frequency to add
      * @param partsOfSpeech the exported tags, merged into whatever this store already has (in practice always
@@ -444,7 +515,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     /**
      * D-278: additive merge of one imported learned-bigram row (backup/export, §21), mirroring
      * [restoreLearnedWord]'s own delta-merge resolution.
-     *
+     * 
      * @param previousWord the bigram's context word, exactly as exported
      * @param word the predicted word, exactly as exported
      * @param countDelta the exported count to add
@@ -457,7 +528,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     /**
      * D-278: additive merge of one imported learned-trigram row (S-07, backup/export §21), mirroring
      * [restoreLearnedWord]'s own delta-merge resolution.
-     *
+     * 
      * @param previousPreviousWord the trigram's own first context word, exactly as exported
      * @param previousWord the trigram's own second context word, exactly as exported
      * @param word the predicted word, exactly as exported
@@ -643,7 +714,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * silently starved out a rare but correctly-spelled diacritic candidate (e.g. "Grüße", frequency 18,
      * behind hundreds of more common same-bucket words) before diacritic restoration ever got to compare it
      * against the token.
-     *
+     * 
      * D-221: [correctionCandidatesInternal]'s own KDoc explains why the token's own literal first-character
      * bucket stays uncapped, exactly as for [correctionCandidates]. The *umlaut-variant* bucket (ä/ö/ü for a
      * token starting with a/o/u) is uncapped here too, though, unlike for [correctionCandidates] - that
@@ -854,6 +925,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val TABLE_META = "meta"
         private const val META_KEY_BUNDLED_VERSION = "bundled_version"
         private const val META_KEY_LEARNED_CLEANUP_VERSION = "learned_cleanup_version"
+        private const val META_KEY_BIGRAM_CLEANUP_VERSION = "bigram_cleanup_version"
         
         // Upper bound on autocorrect candidates scanned per keystroke (bounds worst-case latency).
         private const val CANDIDATE_LIMIT = 2000

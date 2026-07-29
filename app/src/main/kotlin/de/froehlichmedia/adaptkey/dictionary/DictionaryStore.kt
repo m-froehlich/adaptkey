@@ -6,7 +6,7 @@ package de.froehlichmedia.adaptkey.dictionary
 /**
  * Data-access abstraction for the personal dictionary (tier-1 n-gram), the blacklist (A-04) and
  * part-of-speech annotations (§6).
- *
+ * 
  * All word arguments are matched case-insensitively; stored entries keep their canonical case.
  * Two implementations exist: {@link InMemoryDictionaryStore} (pure Kotlin, used for unit tests)
  * and {@link SqliteDictionaryStore} (the persistent on-device store). Ranking and policy live in
@@ -16,14 +16,14 @@ interface DictionaryStore {
     
     /**
      * Inserts or replaces a unigram entry (used for seeding and imports).
-     *
+     * 
      * @param entry the entry to store
      */
     fun putWord(entry: WordEntry)
     
     /**
      * Inserts or replaces a bigram count.
-     *
+     * 
      * @param previousWord the preceding word
      * @param word the following word
      * @param count the co-occurrence count
@@ -36,13 +36,29 @@ interface DictionaryStore {
      * is *also* given (D-246: S-07 trigram support), the corresponding trigram count. Unknown words are
      * created. Trigrams are personal-only (no bundled seed, unlike the bigram table) - the trigram table
      * starts empty and grows purely from the user's own typing.
-     *
+     * 
      * @param word the observed word
      * @param previousWord the word committed immediately before, or null
      * @param previousPreviousWord the word committed two positions before, or null (ignored unless
      *        [previousWord] is also given - a trigram needs both)
      */
     fun learn(word: String, previousWord: String?, previousPreviousWord: String? = null)
+    
+    /**
+     * D-327: records only the n-gram context (bigram + trigram) of one observation of [word], WITHOUT
+     * reinforcing its unigram frequency - the counterpart to [learn] for a word whose unigram is
+     * deliberately skipped (a bundled word typed in its own bundled casing, D-186), so its next-word
+     * context is still learned (S-07) even though the word itself is not reinforced into the Learned Words
+     * editor. Mirrors [learn]'s own n-gram logic exactly; only the unigram write is omitted. Without this,
+     * no next-word prediction ever accumulated for ordinary bundled vocabulary typed in its canonical casing
+     * (e.g. "Mein Schatz" typed dozens of times never produced a "Schatz" suggestion after "Mein").
+     * 
+     * @param word the observed word
+     * @param previousWord the word committed immediately before, or null (no bigram to record when null)
+     * @param previousPreviousWord the word committed two positions before, or null (ignored unless
+     *        [previousWord] is also given - a trigram needs both)
+     */
+    fun learnContext(word: String, previousWord: String?, previousPreviousWord: String? = null)
     
     /**
      * Reverses exactly one prior [learn] observation of [word] (A-07 undo of a rejected
@@ -54,7 +70,7 @@ interface DictionaryStore {
      * own; always paired with the exact prior [learn] call it undoes, so the count can never go negative
      * in practice. Only ever touches the learned lexicon (D-177) - a bundled word's own frequency is
      * never affected, since [learn] never wrote there in the first place.
-     *
+     * 
      * @param word the word to reverse
      * @param previousWord the word committed immediately before, or null
      * @param previousPreviousWord the word committed two positions before, or null
@@ -67,7 +83,7 @@ interface DictionaryStore {
      * leaves the rest intact. Never touches the bundled dictionary (nothing to remove there in the
      * first place - see [isBundledWord]). Used when the user rejects a self-taught word outright (the
      * G-04 drag-to-trash gesture, or the learned-words editor), not to undo a single commit.
-     *
+     * 
      * @param word the word to forget entirely
      */
     fun forget(word: String)
@@ -79,7 +95,7 @@ interface DictionaryStore {
      * can simply remove outright. A word can be both (e.g. a common bundled word the user has also
      * personally reinforced); this reports true regardless, since the bundled fact alone is what
      * matters for that decision.
-     *
+     * 
      * @param word the word to check
      * @return true when [word] exists in the bundled dictionary
      */
@@ -92,7 +108,7 @@ interface DictionaryStore {
      * D-186 scope) apart from "the user typed a bundled word in a persistently different casing" (a
      * genuine personal override, e.g. a preferred all-caps acronym spelling, worth learning like any other
      * not-yet-known word).
-     *
+     * 
      * @param word the word to check (any case)
      * @return the bundled entry's own stored spelling, or null when [word] is not bundled
      */
@@ -102,7 +118,7 @@ interface DictionaryStore {
      * D-264: the learned overlay's own canonical spelling for [word] (independent of the bundled
      * dictionary), or null when no learned entry exists for it - whether a genuinely self-taught word, or
      * an established differently-cased override of an otherwise-bundled one ([bundledCasingOf]).
-     *
+     * 
      * @param word the word to check (any case)
      * @return the learned entry's own stored spelling, or null when none exists
      */
@@ -113,7 +129,7 @@ interface DictionaryStore {
      * case with its learned frequency, for the learned-words editor - including a word that could never
      * be reached any other way (e.g. one matching the current input, which S-02 always excludes from
      * the suggestion bar, so G-04's drag-to-trash structurally can never reach it either).
-     *
+     * 
      * @return the learned words, sorted by descending frequency
      */
     fun learnedWords(): List<WordEntry>
@@ -123,7 +139,7 @@ interface DictionaryStore {
      * the store side of the proactive compound-completion suggestion. The default returns none (fine for the
      * small in-memory store used in tests, which has no such notion); [SqliteDictionaryStore] overrides it
      * with an indexed query.
-     *
+     * 
      * @param prefix the current composing token (any case)
      * @param limit the maximum number of entries to return
      * @return matching compound entries, sorted by descending frequency
@@ -137,7 +153,7 @@ interface DictionaryStore {
      * expires, that is treated as a genuinely recurring mistake (not a one-off typo/test word) and the
      * caller promotes it to a real, permanent blacklist entry instead of learning it again. Replaces
      * any existing mark for the same word (a fresh forget resets the expiry window).
-     *
+     * 
      * @param word the word to mark
      * @param timestampMillis when it was marked (epoch millis)
      */
@@ -154,7 +170,7 @@ interface DictionaryStore {
     /**
      * Clears a pending-blacklist mark for [word] - either because it expired unused, or because it was
      * just promoted to a real, permanent blacklist entry.
-     *
+     * 
      * @param word the word to clear
      */
     fun clearPendingBlacklist(word: String)
@@ -176,7 +192,7 @@ interface DictionaryStore {
     /**
      * The most frequent successor words of [previousWord] by bigram count (D-43 next-word prediction), in
      * canonical case. The default returns none; both concrete stores override it with a bigram lookup.
-     *
+     * 
      * @param previousWord the preceding word (case-insensitive)
      * @param limit the maximum number of successors to return
      * @return the successor words ordered by descending bigram count, in canonical case
@@ -186,7 +202,7 @@ interface DictionaryStore {
     /**
      * D-246: the stored, personal-only trigram count for the sequence [previousPreviousWord] ->
      * [previousWord] -> [word], or 0 when unknown/never observed.
-     *
+     * 
      * @param previousPreviousWord the word committed two positions before
      * @param previousWord the word committed immediately before
      * @param word the following word
@@ -199,7 +215,7 @@ interface DictionaryStore {
      * frequent successor words of the [previousPreviousWord] -> [previousWord] pair by personal trigram
      * count, in canonical case. The default returns none (no trigram data source); the two concrete
      * stores override it with a trigram lookup.
-     *
+     * 
      * @param previousPreviousWord the word committed two positions before (case-insensitive)
      * @param previousWord the word committed immediately before (case-insensitive)
      * @param limit the maximum number of successors to return
@@ -232,7 +248,7 @@ interface DictionaryStore {
      * *same* word (e.g. [TokenRepair]'s own split-candidate gate), which would otherwise re-fetch this
      * identical row three or four times over, once per fact, each its own store round-trip. Those three
      * methods keep their own simpler single-fact shape for callers that only ever need one.
-     *
+     * 
      * @param word the word to look up
      * @return the merged entry, or null when [word] is not known in either source
      */
@@ -249,7 +265,7 @@ interface DictionaryStore {
      * differs in length by at most one, so a store may return just those; the caller still applies the
      * exact edit-distance test. The default implementation returns the whole lexicon (fine for the small
      * in-memory store used in tests); the SQLite store overrides it with an indexed query.
-     *
+     * 
      * @param token the (case-insensitive) typed token being corrected
      * @return a superset of the edit-distance-1 words, in canonical case
      */
@@ -261,7 +277,7 @@ interface DictionaryStore {
      * first-key typo (`eerden` -> `werden`) or a missing initial umlaut (`Uberblick` -> `Überblick`) can be
      * found. The default ignores [firstChars] (fine for the small in-memory store, which returns the whole
      * lexicon); the SQLite store overrides it with one indexed query per bucket.
-     *
+     * 
      * @param token the (case-insensitive) typed token being corrected
      * @param firstChars the initial letters to search (should include the token's own first character)
      * @return a superset of the in-budget correction candidates, in canonical case
@@ -279,7 +295,7 @@ interface DictionaryStore {
      * to compare it. The default implementation is identical to [correctionCandidates] (fine for the small
      * in-memory store, which is never frequency-truncated to begin with); the SQLite store overrides it with
      * an unbounded version of the same indexed bucket query.
-     *
+     * 
      * @param token the (case-insensitive) typed token being corrected
      * @param firstChars the initial letters to search (should include the token's own first character)
      * @return every candidate in the length/first-character window, in canonical case
@@ -288,7 +304,7 @@ interface DictionaryStore {
     
     /**
      * Adds [word] to the blacklist under [category] (A-04).
-     *
+     * 
      * @param word the word to exclude
      * @param category the blacklist category
      */
@@ -296,7 +312,7 @@ interface DictionaryStore {
     
     /**
      * Removes [word] from the blacklist if present.
-     *
+     * 
      * @param word the word to re-admit
      */
     fun unblacklist(word: String)
@@ -315,7 +331,7 @@ interface DictionaryStore {
     
     /**
      * Lists all currently blacklisted words (A-04 / C-05), e.g. for the settings editor.
-     *
+     * 
      * @return the blacklisted words in their stored (lower-cased) key form, sorted alphabetically
      */
     fun blacklistedWords(): List<String>

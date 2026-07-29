@@ -281,6 +281,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§253 (v1.0.14): D-327 - bigram/trigram context learning was silently skipped for every bundled word in**
+  **canonical casing (the D-186/D-264 unigram-skip path also skipped the n-gram context inside `learn()`),**
+  **so next-word prediction (S-07) never accumulated for ordinary everyday vocabulary - "Mein Schatz" typed**
+  **dozens of times never produced a "Schatz" suggestion after "Mein".** Compounding this, the bundled
+  `dictionaries/de/bigram.tsv` contained `mein -> kampf` (count 93, a Wikipedia-corpus extraction artefact,
+  not user-typed and not a code seed), so "Kampf" consistently appeared instead. Fix: new
+  `DictionaryStore.learnContext()` records only the bigram/trigram (not the unigram), called from the
+  SKIPPED path so bundled words in canonical casing now learn their next-word context without flooding the
+  Learned Words editor. Plus `mein -> kampf` removed from the bundled corpus, plus a versioned runtime
+  `purgeBigram()` cleanup for existing installs (removable in a future version per the user's own request).
+  7 new tests (956 -> 963). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-07 and W-04
+  revised. `versionCode` 317 -> 318, `versionName` `"1.0.13"` -> `"1.0.14"`. **Not yet device-confirmed** -
+  needs a real "Mein Schatz" round-trip to confirm "Schatz" now appears after "Mein" and "Kampf" never does.
+  See history §253.
 - **§251 (v1.0.13): D-326 - debounce (D-325) alone wasn't good enough per the user's own on-device verdict**
   **("jetzt wird der Clipboard Chip halt ein paar Millisekunden später versteckt") - a delay still evicts the**
   **chip every time, just slower.** Disabling Microsoft Authenticator as an autofill service made no

@@ -450,6 +450,43 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun learnContextRecordsABigramWithoutReinforcingTheUnigram() {
+        val store = store("learn-context.db")
+        store.putWord(WordEntry("kampf", 1917L, setOf(PartOfSpeech.NOUN)))
+        
+        store.learnContext("kampf", "mein")
+        
+        assertEquals(1917L, store.frequencyOf("kampf"))
+        assertEquals(1L, store.bigramFrequency("mein", "kampf"))
+        store.close()
+    }
+    
+    @Test
+    fun purgeBigramRemovesTheBundledAndLearnedBigramRows() {
+        val store = store("purge-bigram.db")
+        store.putBigram("mein", "kampf", 93L)
+        store.learn("kampf", "mein")
+        
+        // Case-insensitive lookup, like every other store query.
+        store.purgeBigram("Mein", "Kampf")
+        
+        assertEquals(0L, store.bigramFrequency("mein", "kampf"))
+        store.close()
+    }
+    
+    @Test
+    fun setBigramCleanupVersionAndBigramCleanupVersionRoundTrip() {
+        val store = store("bigram-cleanup-version-roundtrip.db")
+        
+        store.setBigramCleanupVersion(1)
+        assertEquals(1, store.bigramCleanupVersion())
+        
+        store.setBigramCleanupVersion(2)
+        assertEquals(2, store.bigramCleanupVersion())
+        store.close()
+    }
+    
+    @Test
     fun learnedBigramEntriesReturnsEveryLearnedBigramRow() {
         val store = store("backup-bigram-entries.db")
         store.learn("Hund", "der")

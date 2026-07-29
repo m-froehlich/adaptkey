@@ -372,10 +372,18 @@ Stupid Backoff blend (D-246): a candidate with a real trigram match scores by it
 candidate reached only through the bigram signal is discounted, so a trigram match generally - but not
 absolutely - wins over a merely more frequent bigram-only candidate (an overwhelmingly more frequent
 bigram-only word can still outrank a barely-seen trigram one, matching this app's established soft-preference
-philosophy for a more-specific-but-sparser signal, see S-01/A-05). The trigram table starts empty and grows
+philosophy for a more-specific-but-sparse signal, see S-01/A-05). The trigram table starts empty and grows
 purely from the user's own typing (no bundled trigram data is shipped); a two-word context resets everywhere
 the existing one-word bigram context already does (field change, an external caret move, the G-02 whole-word
 delete).
+
+D-327: the bigram and trigram context is learned for *every* committed word, including a bundled word typed
+in its own already-canonical casing (W-04) - only its *unigram* frequency is deliberately not reinforced (to
+keep the Learned Words editor free of plain vocabulary), but which word follows it is still recorded, so
+next-word prediction accumulates for ordinary everyday vocabulary ("Mein" -> "Schatz") the same way it does
+for a genuinely self-taught word. Before D-327, the unigram-skip path also skipped the n-gram context
+entirely, so no next-word prediction ever built up for bundled vocabulary typed in its canonical casing -
+defeating S-07's own purpose for the most common words in the language.
 
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
@@ -921,7 +929,9 @@ recurs.
 
 ### W-04 - Case-Sensitive Override of a Bundled Word's Own Casing
 A bundled word typed in its own already-canonical casing has nothing to learn (unchanged - see A-04's own
-learning-pipeline exclusions for the analogous blacklist case). Typed persistently in a *different* casing
+learning-pipeline exclusions for the analogous blacklist case) - except that its *n-gram context* (which
+word follows it) is still recorded (D-327, see S-07), so next-word prediction works for ordinary bundled
+vocabulary too. Typed persistently in a *different* casing
 (e.g. a preferred all-caps acronym spelling - "MSCI", "MCU" - the bundled asset happens to store differently),
 it is instead promoted through the same W-02 threshold as any other not-yet-known word, becoming its own
 case-sensitive learned entry. Once such an override exists, it - not the bundled entry - is what the
