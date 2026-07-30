@@ -36,6 +36,13 @@ class TokenRepairTest {
         val result = repair.trySplit("undxdas", setOf(3))
         assertEquals(SplitResult("und", "das"), result)
     }
+
+    @Test
+    fun `an over-space letter splits even without a T-05 ambiguity flag`() {
+        // 'x' physically sits over the space bar, so it is a drop candidate even without a T-05 flag.
+        val result = repair.trySplit("undxdas", emptySet())
+        assertEquals(SplitResult("und", "das"), result)
+    }
     
     @Test
     fun `a fully missed space is split by inserting a space`() {
@@ -78,8 +85,8 @@ class TokenRepairTest {
     
     @Test
     fun `a non-over-space interior letter is not dropped without a flag`() {
-        // 'x' is not over the space bar and is not flagged, so "undxdas" is left alone.
-        assertNull(repair.trySplit("undxdas", emptySet()))
+        // 'q' is not over the space bar and is not flagged, so "undqdas" is left alone.
+        assertNull(repair.trySplit("undqdas", emptySet()))
     }
     
     @Test
@@ -405,8 +412,8 @@ class TokenRepairTest {
     fun `D-122 a non-over-space letter is never treated as a connector`() {
         store.putWord(WordEntry("test", frequency = 500L))
         store.putWord(WordEntry("wort", frequency = 4_084L))
-        // 'x' is not one of TokenRepair.OVER_SPACE_LETTERS, unlike 'v'.
-        assertNull(repair.splitAtUnresolvedConnector("testxwort"))
+        // 'q' is not one of TokenRepair.OVER_SPACE_LETTERS, unlike 'v'/'x'.
+        assertNull(repair.splitAtUnresolvedConnector("testqwort"))
     }
     
     @Test

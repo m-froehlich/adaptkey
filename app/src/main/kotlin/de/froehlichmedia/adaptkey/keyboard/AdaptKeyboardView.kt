@@ -1723,7 +1723,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     companion object {
         
         // The bottom letter keys that sit directly above the space bar (T-05 ambiguity zone).
-        private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
+        private val BOTTOM_ROW_LETTERS = setOf('c', 'v', 'b', 'n', 'm', 'x')
         
         // D-133: caps how far these keys' own learned centre may drift *downward* (toward the space bar)
         // - the vertical midpoint between a key's own centre and its bottom edge, tighter than D-109's

@@ -115,7 +115,7 @@ class TokenRepair(private val store: DictionaryStore) {
         }
         
         // Drop-a-character split: the removed character is either a T-05 space-ambiguous tap or a letter
-        // that physically sits over the space bar (c/v/b/n/m on QWERTZ) — both are plausible "hit a letter
+        // that physically sits over the space bar (c/v/b/n/m/x on QWERTZ) — both are plausible "hit a letter
         // instead of space" mis-taps. The over-space set makes this work even without touch calibration,
         // where the T-05 flags are unreliable. Each half must still clear candidateAt's own gates.
         val dropIndices = (spaceAmbiguousIndices + t.indices.filter { t[it] in OVER_SPACE_LETTERS })
@@ -432,7 +432,7 @@ class TokenRepair(private val store: DictionaryStore) {
         const val PREFIX_COMMON_WORD_FREQUENCY_CEILING = 5_000L
         
         /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
-        val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm')
+        val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm', 'x')
         
         /** D-261: the German feminine-agent-noun-forming suffix - see [isFeminineAgentNounStem]. */
         private const val FEMININE_AGENT_SUFFIX = "in"

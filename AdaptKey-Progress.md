@@ -279,8 +279,92 @@ non-trivial changes).
   future session (or an actual French-speaking contributor) doesn't have to rediscover that the geometry and
   the content are two separate, independently-completed pieces of this feature.
 
+- **D-330 fixed `deine`/`deiner`/`deinen`/`deinem`/`deines` against their `seinX` counterparts, but the**
+  **bare, uninflected `dein` (no suffix, e.g. "dein Buch") shows the identical Wikipedia-corpus**
+  **register-skew ratio and was only found while verifying the already-rebuilt archive, too late to fold**
+  **into that round's already-agreed scope:** `dein` 139 vs `sein` 28942 (~208x), past the 100x
+  `KNOWN_WORD_OVERRIDE_RATIO` bar, `d`/`s` adjacent - almost certainly autocorrects `dein` -> `sein` today by
+  the same mechanism, unconfirmed on-device. Deliberately left unfixed pending explicit go-ahead, same
+  convention as D-330's own initial scoping. Revisit with the same fix shape (raise `dein`'s frequency by a
+  comparable ~1.5x-over-minimum margin, e.g. into the low-to-mid hundreds, plus the usual pack rebuild/version
+  bump) if confirmed or raised again - and worth a fresh, deliberate full audit of every remaining
+  `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` pair at that point, rather than continuing to fix this one paradigm
+  one report at a time.
+
 ## Current State
 
+- **§259 (v1.0.20): D-333 - double-tap Shift for Caps Lock did not engage at a sentence start.** With
+  **auto-capitalisation armed (keyboard showing uppercase) at the start of a field or line, a double-tap of**
+  **Shift did not engage Caps Lock (D-15).** Root cause traced exhaustively through `handleShift()`: the
+  double-tap detection logic is correct in principle (D-312's `lastShiftTime` is updated unconditionally
+  before any branch, the double-tap check runs before G-05/C-07). No code path prevents the second tap from
+  being detected. The only consistent explanation: `DOUBLE_TAP_SHIFT_MS` was 300ms (Android's own
+  `ViewConfiguration.getDoubleTapTimeout()`), and at a sentence start the user taps slightly more deliberately
+  (resolving the already-uppercase visual state), pushing the second tap just past 300ms — the first tap
+  toggles auto-cap off (true→false), the second is another ordinary toggle (false→true), Caps Lock never
+  engages. Fix: `DOUBLE_TAP_SHIFT_MS` widened from 300 to 400ms — a one-line constant change. If 400ms proves
+  insufficient on device, next step is diagnostic logging rather than further blind tuning. No new tests
+  (`handleShift` is View-glue, untested). 968 unit tests (unchanged).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (D-15 specifies no timing window).
+  Same version as §258. **Not yet device-confirmed** — needs a real double-tap Shift at a sentence start.
+  See history §259.
+- **§258 (v1.0.20): D-332 - "x" was not treated as a possible unintended separator.** "Nichtxnochmal" was
+  **not split at the `x` even though `x` sits in the bottom letter row directly over the space bar (QWERTZ**
+  **row 3: `y x c v b n m`).** Root-caused to two hardcoded sets that both excluded `x`:
+  `TokenRepair.OVER_SPACE_LETTERS` (the A-05 "fully missed space" fallback — a clearly-typed `x` was never a
+  drop candidate) and `AdaptKeyboardView.BOTTOM_ROW_LETTERS` (the T-05 ambiguity-band filter — a tap on `x`'s
+  lower edge was never classified `SPACE_AMBIGUOUS`). Neither derived the "over space" property from the
+  actual key geometry at runtime. A dynamic geometry-derivation approach (the user's original suggestion) was
+  discussed but rejected for now: `OVER_SPACE_LETTERS` lives Android-free in `TokenRepair` for testability
+  and would need restructuring into an injected parameter; the user confirmed no language dependency exists
+  (`y`/`z` don't sit over space, `x` does), so a hardcoded set suffices. `x` added to both sets; `y`/`z`
+  deliberately not. Side effect acknowledged: `BOTTOM_ROW_LETTERS` is also used by `downwardOffsetCapFor()`
+  (D-133), so `x` now gets the tighter 0.25 downward-drift cap — correct, same row/position. 1 new test +
+  2 adapted (967 -> 968). `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (A-05/T-05
+  describe the boundary abstractly, not a letter list). `versionCode` 323 -> 324, `versionName` `"1.0.19"`
+  -> `"1.0.20"`. **Not yet device-confirmed** - needs a real "Nichtxnochmal" typing session. See history
+  §258.
+- **§257 (v1.0.19): D-331 - reverted word was immediately unlearned by the next backspace.** Root-caused**
+  **from a real device log: the A-07 undo itself worked (the `[4,4]→[0,0]→[4,4]` onUpdateSelection pattern is**
+  **exactly `deleteSurroundingText` + `commitText("GLM ")`), and `learnWord("GLM")` IS called inside**
+  `performAutocorrectUndo` — but the immediately following *second* backspace (the user's natural "get back
+  to GLM" keystroke) fires `deleteOneBefore` → `maybeUnlearnOnBackspaceReturn` (D-248), which finds the
+  just-learned "GLM" in `recentLearnRecords` and immediately calls `unlearnWord`, decrementing the pending
+  count from 1 back to 0 before the user ever types again. The cycle repeats every time: revert (count 1) →
+  second backspace (count 0) → re-type "GLM" → autocorrect to "Vom" again → revert → count 1 → second
+  backspace → count 0 → ... Root cause is a design gap between D-248's `maybeUnlearnOnBackspaceReturn`
+  (designed for "user typed a word then backspaced, rejecting it") and the revert path's `learnWord` (the
+  user explicitly *chose* this word over the autocorrection) — both share the same `recentLearnRecords`
+  bookkeeping. Fix: in `performAutocorrectUndo`, after `learnWord(typed)`/`learnWordStrong(typed)`, remove
+  the just-added record from `recentLearnRecords` so D-248's next-backspace check does not fire on it.
+  Also added a temporary diagnostic log line in `performAutocorrectUndo` for on-device confirmation. No new
+  tests (Android-glue path). 967 unit tests (unchanged). `versionCode` 322 -> 323, `versionName` `"1.0.18"` ->
+  `"1.0.19"`. No spec change. Not yet device-confirmed - needs a real "GLM" → space → backspace (revert) →
+  backspace → re-type cycle. See history §257.
+- **§256 (v1.0.18): D-330 - "deine" always autocorrected to "seine"; root-caused to Wikipedia-corpus register**
+  **skew (a data problem), not a logic bug** - extended to the whole `dein-` inflection family once found.
+  `shouldOverrideKnownWord()`'s existing A-01/D-244 100x-ratio override fired correctly for the data it had:
+  `deine` (frequency 160) vs `seine` (32038) is ~200x, past the bar, `d`/`s` QWERTZ-adjacent (cost-1).
+  Confirmed the whole 1st/2nd-person possessive paradigm is under-represented the same way (`meine` 557,
+  `unsere` 418 vs `seine`/`ihre` in the tens of thousands) - Wikipedia's encyclopedic register barely uses
+  direct/first-person address, unlike real chat typing. Also clarified two design questions raised during
+  discussion: the override is a deliberate policy (D-244), not a performance/early-cutoff artifact (the
+  candidate search is cheap and bounded regardless); and S-06/A-07 already offer a tap-to-keep/backspace-undo
+  escape hatch, though still easy to miss in normal flow. Declined raising `KNOWN_WORD_OVERRIDE_RATIO`
+  globally (discussed) - `ddr`/`der`'s own intended-override case sits at only ~228x, too little headroom
+  above `deine`/`seine`'s ~200x to widen safely. Checking the rest of the paradigm found the identical, even
+  worse skew in `deiner`/`deinen`/`deinem`/`deines` (~340x-680x against their `seinX` counterparts) - flagged
+  to the user, who confirmed fixing all four in the same round rather than the single reported pair. Fix:
+  `dictionaries/de/dict.tsv` `deine` 160 -> 600, `deiner` 43 -> 440, `deinen` 33 -> 240, `deinem` 25 -> 225,
+  `deines` 21 -> 105 (each ~1.5x above its own required-minimum ratio, order preserved) + `deine` retagged
+  `NOUN,OTHER` -> `OTHER` (the other four were already plain `OTHER`); `language-packs/adaptkey-lang-de.zip`
+  rebuilt and `version.txt`/`LanguagePackCatalog.ENTRIES` both bumped 3 -> 5 in the same round (learned from
+  D-329, not skipped this time). No new tests (data-only). 967 unit tests (unchanged). `versionCode` 320 ->
+  322, `versionName` `"1.0.16"` -> `"1.0.18"`. No spec change. Not yet device-confirmed. **The bare,
+  uninflected `dein` (139 vs `sein` 28942, ~208x) shows the identical pattern and was found only while**
+  **verifying the rebuilt archive - deliberately left unfixed pending the user's own go-ahead** (discovered
+  after this round's scope was already agreed); see Open TODOs below. **Still needs the rebuilt `.zip` pushed**
+  **to `origin/main`**, same outstanding step as D-329. See history §256.
 - **§255 (v1.0.16): D-329 - German language pack rebuilt and version-bumped; D-327's fix had only reached**
   **the repo source (`dictionaries/de/bigram.tsv`) and the app-side runtime purge, not the hosted archive.**
   User asked whether a new pack release should have shipped with D-327 - verified it hadn't:

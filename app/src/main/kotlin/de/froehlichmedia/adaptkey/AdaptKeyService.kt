@@ -3897,6 +3897,9 @@ class AdaptKeyService : InputMethodService() {
         ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
         ic.commitText(typed + undoDelimiter, 1)
         clearUndo()
+        // D-331 (temporary diagnostic): log the revert so the user can confirm the fix on-device -
+        // whether the undo actually fired, what was re-learned, and the pending count afterwards.
+        diag("AdaptKeyJitter", "performAutocorrectUndo: typed=\"$typed\" committedWas=\"$undoCommitted\" wasSplit=$wasSplit wasCompound=$wasCompound")
         // D-140: un-learn exactly what the rejected commit persisted (whether it reinforced an
         // already-known word or newly promoted/counted an unknown one) before re-learning what the user
         // insisted on - otherwise a wrong correction/pairing keeps being reinforced every time it is
@@ -3932,8 +3935,21 @@ class AdaptKeyService : InputMethodService() {
         if (wasSplit) {
             // D-13: undoing a wrong A-05 split trains the rejoined word at once, so it is never split again.
             learnWordStrong(typed)
+            // D-331: the just-reverted word was explicitly chosen by the user over the autocorrection/split,
+            // not merely committed and then accidentally backspaced into - remove the record
+            // rememberForBackspaceUnlearn added inside learnWordStrong so a subsequent plain
+            // backspace (the user getting back to the word) does not fire maybeUnlearnOnBackspaceReturn
+            // (D-248) and immediately unlearn what the revert just learned. Without this, every revert's
+            // pending count is zeroed on the very next backspace, so a cost-2 word like "GLM" (compound
+            // threshold 4) never accumulates past 1 and is autocorrected to "vom" every single time.
+            recentLearnRecords.removeLastOrNull()
         } else {
-            learnWord(typed)
+            val revertRecord = learnWord(typed)
+            // D-331: see the split branch above - same reasoning. Only non-SKIPPED outcomes add to
+            // recentLearnRecords (rememberForBackspaceUnlearn bails on SKIPPED), so only remove then.
+            if (revertRecord.outcome != LearnOutcome.SKIPPED) {
+                recentLearnRecords.remove(revertRecord)
+            }
         }
         previousWord = typed
         // D-246: learnWord()/learnWordStrong() above just shifted previousPreviousWord from the transient
@@ -5744,8 +5760,13 @@ class AdaptKeyService : InputMethodService() {
         private const val EMOJI_SEARCH_ICON = "🔍"
         
         
-        // D-15: two Shift presses within this window engage Caps Lock.
-        private const val DOUBLE_TAP_SHIFT_MS = 300L
+        // D-15: two Shift presses within this window engage Caps Lock. D-333: widened from 300ms to 400ms
+        // after a real-device report that double-tap Shift at a sentence start (auto-capitalisation armed)
+        // never engaged Caps Lock - the first tap visibly toggled the auto-cap off, and if the second tap
+        // landed just past 300ms it was another ordinary toggle rather than a double-tap, so Caps Lock never
+        // engaged. 400ms keeps it well within the range where two distinct Shift presses would not be
+        // mistaken for a double-tap while giving a sentence-start double-tap enough room to complete.
+        private const val DOUBLE_TAP_SHIFT_MS = 400L
         
         // §38: how long a sensitive clipboard paste is left in place before it is auto-cleared - long
         // enough for the target app's async performContextMenuAction(paste) handling to have actually read

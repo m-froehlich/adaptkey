@@ -12475,3 +12475,274 @@ No new tests - a data-only pack rebuild plus a version-int bump, no new testable
 existing mechanism was applied correctly, not revised). `versionCode` 319 -> 320, `versionName` `"1.0.15"` ->
 `"1.0.16"`. The rebuilt `.zip` still needs to be pushed to `origin/main` before the hosted URL actually
 serves the corrected content - local rebuild only, push is the user's own action.
+
+## §256 - D-330 "deine" Always Autocorrected to "seine" - Wikipedia-Corpus Register Skew, Not a Logic Bug
+
+### Root Cause
+
+User report: typing "deine" (your, informal) always autocorrects to "seine" (his/its). Traced to
+`DictionarySuggestionProvider.shouldOverrideKnownWord()` (A-01's D-244 bounded-override rule):
+`wordFrequency * KNOWN_WORD_OVERRIDE_RATIO <= candidateFrequency`, `KNOWN_WORD_OVERRIDE_RATIO = 100`. `deine`
+(`dictionaries/de/dict.tsv`, frequency 160) vs `seine` (frequency 32038) is a ~200x ratio, well past the
+100x bar, and `d`/`s` are QWERTZ-adjacent (cost-1 substitution) - both A-01 override conditions are met, so
+the correction fires exactly as D-244 intends it to for a genuinely rare/implausible known word (the
+`due`/`die`, `ddr`/`der` precedent). The code is not misbehaving; the underlying frequency data is.
+
+Confirmed the actual cause by comparing the whole possessive-determiner paradigm in the same file: every
+1st/2nd-person form is (correctly, but far more severely than expected) under-represented relative to its
+3rd-person counterpart - `meine` 557 vs `ihre`/`seine` in the tens of thousands, `unsere` 418, `deine` 160 -
+because the bundled dictionary is a Wikipedia-corpus extraction, and Wikipedia's encyclopedic register
+essentially never addresses a reader directly ("deine") or narrates in first person ("meine"/"unsere"),
+while third-person possessives ("seine"/"ihre") are everywhere in ordinary descriptive text. For an actual
+keyboard's real usage (chat/messages), direct second-person address is common - the corpus frequency is not
+a plausible proxy for real typed usage here, unlike most of the lexicon. `deine` was also mistagged
+`NOUN,OTHER` (should be plain `OTHER`, like `seine`/`meine`/`ihre`/`keine`/`feine` all already are) - not the
+cause of this specific bug (`shouldOverrideKnownWord` only reads frequency, not tags), but the same class of
+data-quality gap already flagged in the Open TODOs.
+
+Also answered two follow-up questions raised during discussion, both from reading the actual code (not
+guessed): (1) the override is a deliberate, considered policy decision (D-244), not a performance-driven
+early cutoff - `bestCorrection()`'s candidate search is a small, bounded scan (`CANDIDATE_LIMIT = 2000`,
+per-bucket `ORDER BY freq DESC LIMIT`) regardless, cheap even before any A-01 check runs. (2) the "silent
+correction" concern is already partly addressed by an existing affordance: S-06 already pins the literal
+typed word as a dedicated, tappable "keep as typed" chip at the far left whenever an autocorrection is
+pending, and A-07 lets a post-commit backspace restore it - the override was never truly silent/final, just
+easy to miss in normal typing flow, which is exactly why a genuinely-common word being misjudged as
+"implausible" is still worth fixing at the data level rather than accepting as "the escape hatch exists".
+
+### Fix
+
+`dictionaries/de/dict.tsv`: `deine` frequency `160` -> `600` (same order of magnitude as `meine`, the closest
+comparable 1st/2nd-person form) and part-of-speech `NOUN,OTHER` -> `OTHER`. `600 * 100 = 60000 > 32038`, so
+A-01's override no longer fires for this pair. Rejected raising `KNOWN_WORD_OVERRIDE_RATIO` itself
+(discussed and declined): the smallest genuine intended-override case (`ddr`/`der`) sits at only ~228x
+headroom above the current 100x bar - `deine`/`seine`'s own ~200x ratio was already uncomfortably close to
+that ceiling, so widening the global bar further would have left an even thinner, more fragile margin for
+future cases rather than fixing the one bad data point.
+
+Checking the rest of the paradigm surfaced the identical skew in `deine`'s own inflected siblings, at even
+worse ratios: `deiner` 43 vs `seiner` 29361 (~683x), `deinen` 33 vs `seinen` 16196 (~491x), `deinem` 25 vs
+`seinem` 14970 (~599x), `deines` 21 vs `seines` 7106 (~338x) - all four almost certainly autocorrected to
+their `seinX` counterpart by the identical mechanism. Flagged to the user and confirmed to fix all four in
+the same round, rather than the single reported pair only. Chosen values keep the same ~1.5x safety margin
+above each pair's own required-minimum frequency (`requiredMin = seinX / 100`, e.g. `seiner`'s 293.6
+minimum -> `deiner` set to 440), rather than merely clearing the bar exactly - `deine` itself was already
+given roughly this much headroom (600 against a 320.4 minimum). Order preserved (`deiner` > `deinen` >
+`deinem` > `deines`, matching the original file's own relative shape): `deiner` 43 -> 440, `deinen` 33 ->
+240, `deinem` 25 -> 225, `deines` 21 -> 105. Tags for all four were already plain `OTHER` (only `deine`
+itself carried the stray `NOUN` tag).
+
+Rebuilt `language-packs/adaptkey-lang-de.zip` from the corrected `dictionaries/de/` (confirmed via
+extraction: `dict.tsv` now reads `deine 600`/`deiner 440`/`deinen 240`/`deinem 225`/`deines 105`, all
+`OTHER`) - learned from D-329 in the same session to not skip this step again, twice over. Bumped
+`dictionaries/de/version.txt` `3` -> `5` (through the intermediate `4` for the `deine`-only step) and
+`LanguagePackCatalog.ENTRIES`' German `Entry.version` `3` -> `5` to match.
+
+**Newly flagged while verifying the rebuilt archive, not yet actioned:** the bare, uninflected `dein` (no
+suffix, e.g. "dein Buch") shows the same pattern and was not part of what the user asked to fix - frequency
+139 vs `sein` (bare "his", frequency 28942) is ~208x, past the 100x bar, `d`/`s` adjacent, so `dein` -> `sein`
+almost certainly autocorrects today by the identical mechanism. Left alone pending the user's own go-ahead,
+per this round's own scoping discussion. Revisit together with a fresh, full audit of every `dein-`/`sein-`
+pair rather than fixing entries one report at a time.
+
+### Tests
+
+No new tests - a data-only frequency/tag correction, no new testable logic; `shouldOverrideKnownWord()`'s
+own behaviour (already covered) is unchanged. 967 unit tests (unchanged).
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` not yet run this round. No spec change (A-01/D-244's existing
+policy was applied correctly against corrected data, not revised). `versionCode` 320 -> 322, `versionName`
+`"1.0.16"` -> `"1.0.18"` (321/`"1.0.17"` was this D-330 round's own `deine`-only intermediate step, superseded
+within the same session, before any commit, once the sibling fix was approved). Not yet device-confirmed -
+needs a real "deine"/"deiner"/"deinen"/"deinem"/"deines" typing round-trip. The rebuilt `.zip` still needs
+pushing to `origin/main`, same as D-329.
+
+## §257 - D-331 Reverted Word Was Immediately Unlearned by the Next Backspace - maybeUnlearnOnBackspaceReturn (D-248) Fired on a Word Just Learned by performAutocorrectUndo
+
+### Root Cause
+
+User report: typing "GLM" always autocorrects to "Vom", no matter how often the correction is reverted.
+Traced from a real device log (not guessed): the A-07 undo itself works correctly (the `[4,4]→[0,0]→[4,4]`
+`onUpdateSelection` pattern at -7.1s is exactly `deleteSurroundingText` + `commitText("GLM ")`), and
+`learnWord("GLM")` IS called inside `performAutocorrectUndo` — but the immediately following *second*
+backspace (the user's natural "get back to GLM" keystroke) fires `deleteOneBefore` →
+`maybeUnlearnOnBackspaceReturn` (D-248), which finds the just-learned "GLM" in `recentLearnRecords` and
+immediately calls `unlearnWord`, decrementing the pending count from 1 back to 0 before the user ever types
+again. The cycle repeats every time: revert (count 1) → second backspace (count 0) → re-type "GLM" →
+autocorrect to "Vom" again → revert → count 1 → second backspace → count 0 → ...
+
+The root cause is a design gap between two otherwise-correct mechanisms: D-248's
+`maybeUnlearnOnBackspaceReturn` is designed for the case where a user types a word, commits it, then
+immediately backspaces (indicating they did not mean it). `performAutocorrectUndo`'s `learnWord(typed)`
+adds to the same `recentLearnRecords` list D-248 reads, but the revert path's learning signal has the
+opposite semantics — the user explicitly *chose* this word over the autocorrection. The second backspace
+that follows every revert (to delete the trailing space and get back to the word) is not "rejecting" the
+word; it is ordinary editing. D-248 could not distinguish the two because both share the same
+`recentLearnRecords` bookkeeping.
+
+Also confirmed from the code: "glm" → "vom" is cost 2 (two adjacent-key substitutions: `g↔v` and `l↔o`,
+both QWERTZ-adjacent), not cost 1 — the user had initially estimated two substitutions, which was correct.
+Since "glm" is not a known word (an acronym, not in the German dictionary), A-01's known-word protection
+never applies at all — the correction fires unconditionally via `bestCorrection` once a cost-2 candidate
+exists, with no frequency-ratio check. "GLM" also has an embedded capital (`hasEmbeddedCapital` → true),
+so `learnThresholdFor` returns `COMPOUND_LEARN_THRESHOLD = 4` rather than the ordinary `LEARN_THRESHOLD =
+2` — meaning even without the unlearn bug, it would have taken 4 successful reverts to promote. With the
+bug, it never reached even 1 net.
+
+### Fix
+
+In `performAutocorrectUndo`, after calling `learnWord(typed)` (ordinary path) or `learnWordStrong(typed)`
+(split path), remove the just-added entry from `recentLearnRecords` so D-248's
+`maybeUnlearnOnBackspaceReturn` does not fire on it from the immediately following backspace. Both
+`learnWord` and `learnWordStrong` call `rememberForBackspaceUnlearn` internally, which is the single choke
+point that adds to that list — removing the record right after undoes that side effect without touching the
+actual learning itself (the pending count / learned-table entry stays). For the `learnWord` path, the
+returned `LearnRecord` is captured and removed only when its outcome is not `SKIPPED` (a SKIPPED outcome
+never adds to `recentLearnRecords` in the first place — `rememberForBackspaceUnlearn` bails on it). For the
+`learnWordStrong` path, `learnWordStrong` always adds a non-SKIPPED `LEARNED` record, so the last entry is
+removed unconditionally.
+
+Also added a temporary diagnostic log line in `performAutocorrectUndo` (matching D-247–D-250's own
+precedent) so the user can confirm on-device that the revert fires and the second backspace no longer
+unlearns — to be removed once confirmed.
+
+### Tests
+
+No new tests — `performAutocorrectUndo` and `maybeUnlearnOnBackspaceReturn` are both
+Android-`InputConnection`/`View`-glue paths (the established untested gap, same as D-135/D-267/D-319). 967
+unit tests (unchanged).
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` not yet run this round. No spec change (A-07/D-248's
+existing policies applied correctly once the revert's learning is no longer immediately unlearned).
+`versionCode` 322 -> 323, `versionName` `"1.0.18"` -> `"1.0.19"`. Not yet device-confirmed — needs a real
+"GLM" → space → backspace (revert) → backspace → re-type cycle to confirm "GLM" eventually stops being
+autocorrected to "Vom" after enough reverts (compound threshold 4, so 4 clean revert cycles without an
+intervening second-backspace-unlearn).
+
+---
+
+## §258 - D-332 "x" Was Not Treated as a Possible Unintended Separator - Both Over-Space Sets Hardcoded `c v b n m` Only
+
+### Report
+
+The user typed "Nichtxnochmal" and the word was not split into "nicht" + "nochmal" at the `x`, even though
+`x` sits in the bottom letter row directly over the space bar (QWERTZ row 3: `y x c v b n m`) — the exact
+class of "hit a letter instead of space" mis-tap that A-05's retroactive word split is designed to recover.
+The `x` was committed as an ordinary letter, and no split was attempted at its position.
+
+### Root Cause (code-traced, not guessed)
+
+Two independent hardcoded sets both excluded `x`, and neither derived the "over space" property from the
+actual key geometry at runtime:
+
+1. **`TokenRepair.OVER_SPACE_LETTERS`** (`setOf('c', 'v', 'b', 'n', 'm')`, `TokenRepair.kt:435`) — the
+   fallback set used by `trySplit()` for the "drop-a-character" A-05 path. When a letter was typed *clearly as
+   a letter* (no T-05 space-ambiguous touch flag from the lower ambiguity band), this set is the only thing
+   that still lets it be treated as a possible space mis-tap — it makes the split work even without touch
+   calibration, where the T-05 flags are unreliable. `x` was absent, so a clearly-typed `x` was never a
+   drop candidate. An existing unit test (`TokenRepairTest` "D-122 a non-over-space letter is never treated
+   as a connector") documented this exclusion explicitly: `'x' is not one of
+   TokenRepair.OVER_SPACE_LETTERS, unlike 'v'`. The original assumption was that only `c v b n m` physically
+   sit over the space bar, but `x` sits immediately to the left of `c` in the same row and, per the user's
+   own on-device observation, does lie over the space bar with AdaptKey's narrower space bar (L-02).
+
+2. **`AdaptKeyboardView.BOTTOM_ROW_LETTERS`** (`setOf('c', 'v', 'b', 'n', 'm')`, `AdaptKeyboardView.kt:1726`)
+   — the set that `bottomLetterBoxes()` filters on to decide which keys are fed to `AmbiguityBands.classify()`
+   for the T-05 space/letter ambiguity classification. `x` was absent, so a tap on `x`'s lower edge band was
+   never classified as `SPACE_AMBIGUOUS`, even though `AmbiguityBands` itself is purely geometric and would
+   accept any `KeyBox`. The geometry was already available — it was just never consulted to derive the set.
+
+### Design Discussion (per this project's non-trivial-change convention)
+
+Three approaches were discussed before implementing:
+
+- **A) Dynamic geometry derivation (the user's original suggestion):** filter `bottomLetterBoxes()` by
+  horizontal overlap with `spaceBox()`, and derive `OVER_SPACE_LETTERS` at runtime from the actual laid-out
+  key geometry rather than a hardcoded set. This would be correct per language/proportion automatically.
+  Rejected for now: `OVER_SPACE_LETTERS` lives Android-free inside `TokenRepair` (no view access, by design
+  for testability) and would need restructuring into an injected parameter — a larger change than the bug
+  warrants. The user confirmed there is no language dependency here (`y`/`z` do not sit over space; `x` does),
+  so a hardcoded set is sufficient.
+
+- **B) Add `x` to both hardcoded sets (chosen):** minimal, directly fixes the reported case. Side effect
+  acknowledged: `BOTTOM_ROW_LETTERS` is also consumed by `downwardOffsetCapFor()` (D-133), so `x` now gets the
+  same tighter 0.25 downward-drift cap as the other over-space letters — correct, since `x` sits in the same
+  row over the space bar and is subject to the same drift-into-space-bar risk.
+
+- **C) Decouple split candidacy from "over space" entirely:** allow all row-3 letters as drop candidates
+  and rely solely on `candidateAt`'s linguistic gates. Rejected: more false-positive split candidates than
+  the over-space set justifies — `y`/`z` at the far edges are not plausible space mis-taps.
+
+`n` was already in both sets — only `x` was missing.
+
+### Fix
+
+`x` added to both `OVER_SPACE_LETTERS` (`TokenRepair.kt`) and `BOTTOM_ROW_LETTERS`
+(`AdaptKeyboardView.kt`). `y`/`z` deliberately not added (do not sit over the space bar). The inline comment
+in `trySplit()` updated from `c/v/b/n/m` to `c/v/b/n/m/x`.
+
+### Tests
+
+1 new test (`an over-space letter splits even without a T-05 ambiguity flag` — confirms `x` at a split
+position yields a split with an empty flag set, exercising the `OVER_SPACE_LETTERS` path directly). 2
+existing tests adapted (both used `x` as their "not over the space bar" example — the D-122
+"non-over-space connector" test and the "non-over-space interior letter is not dropped" test — switched
+to `q`, since `x` is now an over-space letter). 967 -> 968 unit tests. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green.
+
+### Spec
+
+No change. A-05 and T-05 describe the over-space boundary abstractly ("the boundary between the space bar
+and the bottom letter row"), not as a specific letter list. `AmbiguityBands`' own KDoc mentions `c v b n m`
+as an example, but the class is purely geometric and consumes whatever bounds it is given.
+
+`versionCode` 323 -> 324, `versionName` `"1.0.19"` -> `"1.0.20"`. Not yet device-confirmed — needs a real
+"Nichtxnochmal" typing session to confirm the split now fires at the `x`.
+
+---
+
+## §259 - D-333 Double-Tap Shift for Caps Lock Did Not Engage at a Sentence Start (Auto-Capitalisation Active)
+
+### Report
+
+At the start of an input field or a line, with auto-capitalisation armed (the keyboard showing uppercase),
+a double-tap of Shift did not engage Caps Lock (D-15). The user observed that Caps Lock simply "didn't
+work" in this specific context.
+
+### Root Cause Analysis
+
+`handleShift()` was traced exhaustively. The double-tap detection logic is correct in principle: the
+first Shift press records `lastShiftTime` unconditionally (D-312, line 5530, before any branch), toggles
+`shifted` from the auto-armed `true` to `false` (ordinary toggle), and the second press checks
+`sincePreviousShift <= DOUBLE_TAP_SHIFT_MS` — if within the window, Caps Lock engages. This check runs
+before the G-05 word-end gesture and the C-07 grace guard, so neither can swallow the second tap.
+
+No code path was found that would prevent the double-tap from being detected. The only remaining
+explanation consistent with the user's "never works at a sentence start" report: the double-tap window
+`DOUBLE_TAP_SHIFT_MS` was 300ms — the same as Android's own `ViewConfiguration.getDoubleTapTimeout()`.
+At a sentence start, the auto-armed Shift is already visibly uppercase; a user double-tapping Shift there
+taps slightly more deliberately (resolving the "already uppercase" visual state) than they would mid-word,
+and the first tap's visible toggle to lowercase adds a moment of visual processing. A double-tap landing
+just past 300ms fails the window: the first tap toggles auto-cap off (true→false), the second tap is
+another ordinary toggle (false→true) — the keyboard flickers lowercase-then-uppercase and Caps Lock never
+engages. The "never works" phrasing is consistent with a consistent tapping speed just over the threshold.
+
+### Fix
+
+`DOUBLE_TAP_SHIFT_MS` widened from 300ms to 400ms. This keeps it well within the range where two genuinely
+separate Shift presses (e.g. capitalise a letter, then later capitalise another) would not be mistaken for
+a double-tap, while giving a sentence-start double-tap enough room to complete. A one-line constant change
+with no logic change — if 400ms proves insufficient on device, the next step is diagnostic logging in
+`handleShift()` to capture the actual `sincePreviousShift` values, rather than further blind tuning.
+
+### Tests
+
+No new tests — `handleShift()` is an Android-`InputConnection`/`View`-glue path (the established untested
+gap). 968 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+### Spec
+
+No change. D-15 describes Caps Lock as "double-tap of Shift" without specifying a timing window.
+
+Same version as §258 (`versionCode` 324, `versionName` `"1.0.20"`) — both fixes shipped together. Not yet
+device-confirmed — needs a real double-tap Shift at a sentence start to confirm Caps Lock now engages.
