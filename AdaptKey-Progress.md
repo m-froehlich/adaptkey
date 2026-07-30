@@ -281,6 +281,21 @@ non-trivial changes).
 
 ## Current State
 
+- **§255 (v1.0.16): D-329 - German language pack rebuilt and version-bumped; D-327's fix had only reached**
+  **the repo source (`dictionaries/de/bigram.tsv`) and the app-side runtime purge, not the hosted archive.**
+  User asked whether a new pack release should have shipped with D-327 - verified it hadn't:
+  `language-packs/adaptkey-lang-de.zip` still predated the `bigram.tsv` fix by a day and, once extracted,
+  still contained `mein -> kampf` verbatim; `dictionaries/de/version.txt` and the compiled
+  `LanguagePackCatalog.ENTRIES` German `version` were both still `2`. D-327's fix itself was not wrong -
+  `DictionaryLoader`'s unconditional post-seed `purgeBigram()` already corrected every install regardless of
+  source - but the hosted pack itself was left stale/out of sync with the repo. Fix: rebuilt the `.zip` from
+  current `dictionaries/de/` (flat archive, confirmed via extraction that `mein`/`kampf` is gone and
+  `version.txt` reads `3`); bumped `dictionaries/de/version.txt` and `LanguagePackCatalog.ENTRIES`' German
+  `version` both `2` -> `3` (D-307/D-308's existing mechanism, applied correctly rather than revised). No new
+  tests (data-only rebuild + version-int bump). 967 unit tests (unchanged). `versionCode` 319 -> 320,
+  `versionName` `"1.0.15"` -> `"1.0.16"`. No spec change. **Still needs the rebuilt `.zip` pushed to
+  `origin/main`** before the hosted raw-GitHub URL actually serves the corrected content - that push is the
+  user's own action. See history §255.
 - **§254 (v1.0.15): D-328 - early typo recovery via neighbour-substituted prefix completion escalation.** A
   single keyboard-neighbour typo early in a long word ("vetmut…" for "vermut…") was invisible to both the
   literal prefix scan (no shared prefix) and the full-token edit-distance search (far over budget while

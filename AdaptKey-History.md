@@ -12432,3 +12432,46 @@ minimum length is not escalated. 963 → 967 tests.
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-09 added. `versionCode` 318 -> 319,
 `versionName` `"1.0.14"` -> `"1.0.15"`. Not yet device-confirmed - needs a real "vetmut…" typing session to
 confirm "vermutlich" appears mid-word.
+
+## §255 - D-329 German Language Pack Rebuilt and Version-Bumped - D-327's Fix Had Only Reached the Repo Source and the Runtime Purge, Not the Hosted Archive
+
+### Root Cause
+
+The user asked whether D-327's removal of the bundled `mein -> kampf` bigram should have shipped as a new
+language-pack release, since none was observed. Verified rather than assumed: `dictionaries/de/bigram.tsv`
+(the repo source) genuinely no longer contains the row, but `language-packs/adaptkey-lang-de.zip` (the
+actual hosted archive `LanguagePacksActivity` downloads) had a `LastWriteTime` of 2026-07-27, a full day
+*before* D-327's 2026-07-29 edit to `bigram.tsv` - it was never rebuilt. Extracting it confirmed its
+`bigram.tsv` still carried `mein	kampf	93` verbatim. `dictionaries/de/version.txt` (D-308's authoritative
+in-archive version) and the compiled `LanguagePackCatalog.ENTRIES` German `version` (D-307's advisory hint)
+were both still `2`, unchanged since before the fix.
+
+This did not make D-327 incorrect: `DictionaryLoader.loadStores()` runs `SqliteDictionaryStore.purgeBigram()`
+unconditionally after seeding, for every store regardless of source (bundled or installed) or content
+version, so both existing installs and a fresh/re-imported German pack seeded from the stale archive were
+already corrected in the local database either way. What was missing was the language pack itself being
+kept in sync with the repo - the archive and its `version.txt`/catalog entry are the "authoritative" pack
+per D-308's own scheme, and leaving them stale means any future revision to the German pack would still be
+diffing against pre-D-327 content, and a maintainer inspecting the hosted `.zip` directly (outside the app)
+would see the wrong data.
+
+### Fix
+
+Rebuilt `language-packs/adaptkey-lang-de.zip` from the current `dictionaries/de/dict.tsv`/`bigram.tsv`/
+`hints.tsv`/`version.txt` (flat archive, no directory prefix, per the Contribution Guide's own packaging
+rule) - confirmed by re-extracting it that `bigram.tsv` no longer contains the `mein`/`kampf` row and
+`version.txt` reads `3`. Bumped `dictionaries/de/version.txt` `2` -> `3` and
+`LanguagePackCatalog.ENTRIES`' German `Entry.version` `2` -> `3` to match, so `LanguagePacksActivity` now
+correctly shows "update available" for an already-installed device (D-307), and a manual re-import now
+actually re-applies the freshly downloaded archive (D-308) instead of comparing `2 <= 2` and skipping it as
+already current.
+
+### Tests
+
+No new tests - a data-only pack rebuild plus a version-int bump, no new testable logic.
+`LanguagePackCatalogTest` makes no assumption about the specific version number. 967 unit tests (unchanged).
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` not yet run this round. No spec change (D-307/D-308's
+existing mechanism was applied correctly, not revised). `versionCode` 319 -> 320, `versionName` `"1.0.15"` ->
+`"1.0.16"`. The rebuilt `.zip` still needs to be pushed to `origin/main` before the hosted URL actually
+serves the corrected content - local rebuild only, push is the user's own action.
