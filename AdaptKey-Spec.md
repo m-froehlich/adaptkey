@@ -1137,6 +1137,17 @@ turns out to be stale relative to the compiled-in catalog version.
 
 ---
 
+## 23. Backspace-Shift Carry (D-335)
+
+D-335: deleting an uppercase character must leave Shift armed so the next keystroke reproduces an uppercase
+character (the G-05 addendum). The reactive `onUpdateSelection`-triggered reclaim path (§58) must not
+overwrite that delete-derived Shift state with a fresh sentence-start derivation, since the caret sitting
+where a capital just was is not a sentence start in the common case. A one-shot flag (`shiftArmedByDelete`)
+records that the current armed state came from a backspace, consumed by the next `reclaimWordAtCaret` to skip
+its own `armShiftForNextWord` derivation; a subsequent genuine caret move re-derives Shift normally (D-313).
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

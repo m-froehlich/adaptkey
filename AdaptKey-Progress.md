@@ -293,6 +293,23 @@ non-trivial changes).
 
 ## Current State
 
+- **§261 (v1.0.22): D-335 - Shift not re-armed after deleting a capital (regression after D-313).** Typing an**
+  **uppercase letter then Backspace-deleting it should leave Shift armed (G-05 addendum), but the next**
+  **keystroke arrived lowercase.** Root-caused from a real device log: ``applyShiftAfterDelete('A')`` correctly
+  sets ``keyboardView.shifted = true``, but the immediately following ``onUpdateSelection`` (composing now
+  empty) calls ``reclaimWordAtCaret()``, where D-313's ``armShiftForNextWord(ic)`` re-derives Shift from
+  ``sentenceStartBefore(ic)`` - and the caret where the capital just was is not a sentence start, so
+  ``ShiftGrace.autoArmAtWordStart(capsMode, false)`` returns false, un-arming the Shift that
+  ``applyShiftAfterDelete`` had just armed. D-313's addition was correct for its own case (genuine
+  tap-into-word caret move) but ``onUpdateSelection`` cannot distinguish that from a backspace that just
+  emptied composing - both arrive as a collapsed caret with ``composing`` empty. Fix: one-shot
+  ``shiftArmedByDelete`` flag set by ``applyShiftAfterDelete`` when the deleted character was uppercase,
+  consumed by ``reclaimWordAtCaret`` to skip its own ``armShiftForNextWord`` derivation for that one reclaim
+  only; a subsequent genuine caret move re-derives Shift normally (D-313 untouched). Safety-net clear at top of
+  ``handleKey`` for the case no reclaim fires. No new tests (Android-glue path). 976 unit tests (unchanged).
+  ``:app:assembleRelease``/`:app:testDebugUnitTest` green. Spec's §23 added. ``versionCode`` 325 → 326,
+  ``versionName`` ``"1.0.21"`` → ``"1.0.22"``. **Not yet device-confirmed** - needs: type uppercase letter,
+  Backspace it away, confirm next letter is still uppercase. See history §261.
 - **§260 (v1.0.21): D-334 - language pack update wiped learned words + stale "update available" hint never**
   **cleared.** Two problems reported after the D-330 ``deine``/``seine`` dictionary fix shipped, both traced
   from real evidence. (1) The language-packs screen showed "update available" for German (catalog 5 vs

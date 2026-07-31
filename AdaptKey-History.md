@@ -12830,3 +12830,44 @@ D-308 mechanism.
 `versionCode` 324 → 325, `versionName` `"1.0.20"` → `"1.0.21"`. Not yet device-confirmed - needs a
 real German pack re-import to confirm (a) learned words survive the update, (b) the "update available" hint
 clears after a stale check.
+
+## §261 - D-335 Shift Not Re-Armed After Deleting a Capital (regression after D-313)
+
+### Report
+
+After typing an uppercase letter and deleting it, the keyboard should remain in Shift-armed (uppercase) mode
+because the last deleted character was uppercase (G-05 addendum). This stopped working: typing `A`, then
+Backspace twice, then `a` produced a lowercase `a` instead of `A`.
+
+### Root Cause
+
+Traced from a real device log: the sequence `SHIFT` → `A` → `b` → `DELETE` → `DELETE` → `a`
+shows the second Backspace removes the `A` (uppercase), which should re-arm Shift. The code path is correct:
+`deleteOneBefore` → `applyShiftAfterDelete('A')` → `keyboardView.shifted = true`. But immediately after,
+`onUpdateSelection` fires (composing is now empty), taking the `composing.isEmpty()` branch which calls
+`reclaimWordAtCaret()` (D-62). D-313 added `armShiftForNextWord(ic)` to that reclaim path (line 1386) to
+fix a different regression (tap-into-word leaving stale Shift state). `armShiftForNextWord` re-derives
+Shift from `sentenceStartBefore(ic)` - and the caret sitting where the just-deleted capital was is NOT a
+sentence start, so `ShiftGrace.autoArmAtWordStart(capsMode, false)` returns false for SENTENCES/NONE modes,
+un-arming the Shift that `applyShiftAfterDelete` had just correctly armed. The very next keystroke (`a`)
+arrives lowercase.
+
+D-313's addition was correct for its own case (genuine caret move into a word), but `onUpdateSelection`
+cannot distinguish that from a backspace that just emptied composing - both arrive as a collapsed caret with
+`composing` empty.
+
+### Fix
+
+One-shot `shiftArmedByDelete` flag, set by `applyShiftAfterDelete` when the deleted character was
+uppercase, consumed by `reclaimWordAtCaret` to skip its own `armShiftForNextWord` derivation for that one
+reclaim only. A subsequent genuine caret move re-derives Shift normally (D-313's own purpose is untouched).
+Safety-net clear at the top of `handleKey` for the case no reclaim fires (CallbackBurstGuard tripped, or
+composing stayed non-empty).
+
+### Tests
+
+No new tests (Android `InputConnection`/`View`-glue path, the established untested gap). 976 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §23 added.
+
+`versionCode` 325 → 326, `versionName` `"1.0.21"` → `"1.0.22"`. **Not yet device-confirmed** - needs
+the exact repro: type an uppercase letter, Backspace it away, confirm the next letter is still uppercase.

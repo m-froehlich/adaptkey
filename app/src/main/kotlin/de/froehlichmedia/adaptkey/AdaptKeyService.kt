@@ -417,6 +417,15 @@ class AdaptKeyService : InputMethodService() {
     // D-15: time of the last Shift press, for detecting a double-tap that engages Caps Lock.
     private var lastShiftTime = 0L
     
+    // D-335: set by applyShiftAfterDelete() when the deleted character was uppercase, so the immediately
+    // following reclaimWordAtCaret() (triggered by onUpdateSelection once composing empties) does not call
+    // armShiftForNextWord() and overwrite the delete-derived Shift state with a fresh sentence-start
+    // derivation - the D-313 armShiftForNextWord call in reclaimWordAtCaret was added for tap-into-word
+    // caret moves, but onUpdateSelection cannot distinguish that from a backspace that just emptied
+    // composing, so it clobbered the G-05 addendum's re-arm every time. Consumed once in reclaimWordAtCaret,
+    // and also cleared at the top of handleKey as a safety net for the case no reclaim fires.
+    private var shiftArmedByDelete = false
+    
     // D-07: characters removed during the current accelerating backspace hold; drives the switch from
     // character-wise to word-wise deletion once roughly three words have gone.
     private var backspaceHeldChars = 0
@@ -1383,7 +1392,18 @@ class AdaptKeyService : InputMethodService() {
         try {
             captureTokenContext(ic)
             resetWordEndShift()
-            armShiftForNextWord(ic)
+            // D-335: when a backspace just deleted an uppercase character (applyShiftAfterDelete armed Shift
+            // and set shiftArmedByDelete), skip the fresh sentence-start derivation here - it would
+            // overwrite the delete-derived Shift state with whatever sentenceStartBefore() reports for the
+            // caret's current position, which is not a sentence start in the common case (the cursor sits
+            // where the just-deleted capital was), un-arming Shift and lowercasing the user's very next
+            // keystroke. The flag is consumed here so a subsequent genuine tap-into-word reclaim still
+            // re-derives Shift normally (D-313's own purpose).
+            if (shiftArmedByDelete) {
+                shiftArmedByDelete = false
+            } else {
+                armShiftForNextWord(ic)
+            }
             // D-123 / D-269: skip the reset exactly once when this call is only the echo of a suggestion-bar
             // tap's or a D-262 auto-space's own commit, not a genuine subsequent caret move - otherwise
             // D-29's space-eating flag (or D-262's own punctuation-run continuation) never survives to see
@@ -2184,6 +2204,10 @@ class AdaptKeyService : InputMethodService() {
     
     private fun handleKey(key: Key, x: Float, y: Float, ambiguity: AmbiguityResult, weight: Double) {
         val ic = currentInputConnection ?: return
+        // D-335: safety-net clear for shiftArmedByDelete - if reclaimWordAtCaret never fired (e.g. the
+        // CallbackBurstGuard tripped, or composing stayed non-empty), the flag must not persist past this
+        // keystroke and suppress a later genuine tap-into-word Shift derivation.
+        shiftArmedByDelete = false
         // D-217 (temporary diagnostic): the actual per-key processing cost the user asked to see alongside
         // AdaptKeyJitter's own per-call timestamps - everything below runs synchronously on the main thread
         // between the tap being resolved and this function returning, so `finally` (covering every branch's
@@ -3135,7 +3159,10 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun applyShiftAfterDelete(deleted: Char) {
         when {
-            deleted.isUpperCase() -> keyboardView?.shifted = true
+            deleted.isUpperCase() -> {
+                keyboardView?.shifted = true
+                shiftArmedByDelete = true
+            }
             deleted.isWhitespace() -> keyboardView?.shifted = false
         }
     }
