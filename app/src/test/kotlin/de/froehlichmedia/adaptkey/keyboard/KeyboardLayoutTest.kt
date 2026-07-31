@@ -117,6 +117,54 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-336 the a key offers the Nordic ligatures alongside its umlaut`() {
+        val aKey = KeyboardLayout.rows()[2].byChar('a')
+        
+        assertEquals("ä", aKey.hint)
+        assertEquals(listOf("ä", "æ", "å"), aKey.alternatives)
+    }
+    
+    @Test
+    fun `D-336 the e key offers the French diacritics alongside the euro sign`() {
+        val eKey = KeyboardLayout.rows()[1].byChar('e')
+        
+        assertEquals("€", eKey.hint)
+        assertEquals(listOf("€", "é", "è", "ê", "ë"), eKey.alternatives)
+    }
+    
+    @Test
+    fun `D-336 the n key offers the Spanish tilde-n alongside the plus sign`() {
+        val nKey = KeyboardLayout.rows()[3].byChar('n')
+        
+        assertEquals("+", nKey.hint)
+        assertEquals(listOf("+", "ñ"), nKey.alternatives)
+    }
+    
+    @Test
+    fun `D-336 a reassigned a key loses the Nordic popup`() {
+        val aKey = KeyboardLayout.rows(letterHints = mapOf('a' to "!"))[2].byChar('a')
+        
+        assertEquals("!", aKey.hint)
+        assertTrue(aKey.alternatives.isEmpty())
+    }
+    
+    @Test
+    fun `D-336 a reassigned e key loses the French-diacritic popup`() {
+        val eKey = KeyboardLayout.rows(letterHints = mapOf('e' to "!"))[1].byChar('e')
+        
+        assertEquals("!", eKey.hint)
+        assertTrue(eKey.alternatives.isEmpty())
+    }
+    
+    @Test
+    fun `D-336 a reassigned n key loses the tilde-n popup`() {
+        val nKey = KeyboardLayout.rows(letterHints = mapOf('n' to "!"))[3].byChar('n')
+        
+        assertEquals("!", nKey.hint)
+        assertTrue(nKey.alternatives.isEmpty())
+    }
+    
+    @Test
     fun `longPressSymbol returns the secondary for character keys and null otherwise`() {
         val rows = KeyboardLayout.rows()
         

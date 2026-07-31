@@ -293,6 +293,21 @@ non-trivial changes).
 
 ## Current State
 
+- **§262/§263 (v1.0.24): D-336 extended long-press popups on a/e/n + D-337 Caps-Lock border highlight.** Two**
+  **features shipped together.** (1) D-336: the German QWERTZ layout (and AZERTY, which reuses the same
+  letter-key builder) gained additional long-press popup alternatives on three letters: `æ`/`å` on `a`
+  (after `ä`), `é`/`è`/`ê`/`ë` on `e` (after `€`), `ñ` on `n` (after `+`). Upper-case forms apply
+  automatically via the existing case machinery (`popupDisplayTextFor`/`appendLongPressLetter`). The former
+  top-row-only `topRowKey` was generalised into a row-agnostic `letterKey` (same (char, hint) → alternatives
+  decision + weight param) so letters in any row gain popups; `topRowKey` stays as a weight-defaulted
+  delegate. AZERTY's middle/third rows switched from bare `charKey` to `letterKey`. 9 new tests (976 → 985).
+  (2) D-337: while Caps Lock is engaged, the Shift key draws a bold 3dp stroked border in accent blue
+  (`#1565C0`) — Option A (user-chosen), visually distinct from the light-blue momentary press flash
+  (`#A6C8FF`). Overlay stroke only, no size/position change. No new tests (Canvas drawing path). Spec's §24
+  (D-336) and §25 (D-337) added. ``:app:assembleRelease``/`:app:testDebugUnitTest` green. ``versionCode``
+  326 → 328, ``versionName`` ``"1.0.22"`` → ``"1.0.24"``. **Not yet device-confirmed** — (a) long-press a/e/n
+  shows the new popups, upper-case forms work under Shift/Caps Lock; (b) Caps Lock shows the border,
+  distinct from a momentary Shift press. See history §262/§263.
 - **§261 (v1.0.22): D-335 - Shift not re-armed after deleting a capital (regression after D-313).** Typing an**
   **uppercase letter then Backspace-deleting it should leave Shift armed (G-05 addendum), but the next**
   **keystroke arrived lowercase.** Root-caused from a real device log: ``applyShiftAfterDelete('A')`` correctly

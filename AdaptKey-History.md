@@ -12871,3 +12871,65 @@ No new tests (Android `InputConnection`/`View`-glue path, the established untest
 
 `versionCode` 325 → 326, `versionName` `"1.0.21"` → `"1.0.22"`. **Not yet device-confirmed** - needs
 the exact repro: type an uppercase letter, Backspace it away, confirm the next letter is still uppercase.
+
+## §262 - D-336 Extended Long-Press Popups on a/e/n (German QWERTZ + AZERTY)
+
+### Report
+
+The German layout's long-press popups were limited to a few keys (p's Greek letters, o's Ø). The user
+requested additional AltGr-style alternatives on three more letters: æ/å on  (after ä), é/è/ê/
+ë on e (after €), and ñ on 
+ (after +). Upper-case forms should apply automatically.
+
+### Design
+
+Both the display path (AdaptKeyboardView.popupDisplayTextFor, gated on AlternativeScript.extendsWord)
+and the commit path (AdaptKeyService.appendLongPressLetter via isUpperArmed()) already uppercase genuine
+Latin letters when Shift/Caps Lock is armed — no per-entry casing data was needed, only the alternative
+lists. The existing 	opRowKey special-cased only p/o (both top-row keys); generalising it into a
+row-agnostic letterKey (same (char, hint) → alternatives decision, plus a weight parameter) lets 
+(middle row in QWERTZ, top row in AZERTY), e (top row) and 
+ (third row) all gain popups without
+duplicating the special-casing per layout. 	opRowKey stays as a weight-defaulted delegate so AZERTY's
+existing call sites are unchanged. AZERTY's middle and third rows were switched from bare charKey to
+letterKey so they benefit identically.
+
+### Tests
+
+9 new tests (976 → 985): 6 in KeyboardLayoutTest (a/e/n popup contents + reassignment-loses-popup for
+each), 3 in AzertyLayoutTest (a/e/n popup contents on the AZERTY geometry). :app:assembleRelease/
+:app:testDebugUnitTest green.
+
+### Spec
+
+New §24 added. `versionCode` 326 → 328 (combined with D-337, see §263), `versionName` `"1.0.22"` →
+`"1.0.24"`. Not yet device-confirmed.
+
+
+## §263 - D-337 Caps-Lock Border Highlight on the Shift Key
+
+### Report
+
+When Caps Lock was engaged, the Shift key showed only a glyph change (⇧ → ⇪, D-15) but no background or
+border distinction — hard to notice at a glance versus the ordinary armed (Shift-pressed) state.
+
+### Design
+
+Option A (user-chosen): a bold stroked border drawn around the Shift key while capsLock is true. Uses the
+app's dark accent blue (#1565C0, already link_text/suggestion_verbatim_text/ic_launcher_background)
+as a 3dp Paint.Style.STROKE overlay — distinct from the light-blue key_background_pressed (#A6C8FF)
+fill flash of a momentary press. Drawn in drawKeys after the background fill (so the stroke sits on top)
+and before the label glyph (so ⇪ stays clear). No size or position change — the key's hit-target and
+neighbour keys are completely unaffected. A brief press still flashes with pressedKeyPaint as before; the
+persistent border is the additional Caps-Lock-only cue.
+
+### Tests
+
+No new tests (pure Android View/Canvas drawing path, the established untested gap). 985 unit tests
+(unchanged from D-336). :app:assembleRelease/:app:testDebugUnitTest green.
+
+### Spec
+
+New §25 added. Same version as §262 (`versionCode` 328, `versionName` `"1.0.24"`) — both shipped
+together. Not yet device-confirmed — needs engaging Caps Lock and confirming the border is visible and
+distinct from a momentary Shift press.

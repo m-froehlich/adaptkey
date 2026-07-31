@@ -71,12 +71,12 @@ object AzertyLayout {
         }
         
         result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints) })
-        result.add(MIDDLE_ROW.map { c -> charKey(c, letterHints[c]) })
+        result.add(MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints) })
         
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            THIRD_ROW.forEach { c -> add(charKey(c, letterHints[c], weight = thirdRowLetterWeight)) }
+            THIRD_ROW.forEach { c -> add(KeyboardLayout.letterKey(c, letterHints, weight = thirdRowLetterWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         

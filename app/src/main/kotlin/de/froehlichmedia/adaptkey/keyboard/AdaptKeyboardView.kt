@@ -572,6 +572,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         color = ContextCompat.getColor(context, R.color.key_background_pressed)
     }
     
+    // D-337: a bold stroked border drawn around the Shift key while Caps Lock is engaged (Option A: a
+    // persistent frame, visually distinct from the momentary pressedKeyPaint fill flash). Does not change the
+    // key's size or position - only an overlay stroke, so neighbour keys and hit-targets stay untouched.
+    private val capsLockBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.caps_lock_border)
+        style = Paint.Style.STROKE
+        strokeWidth = dp(3f)
+    }
+    
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.key_text)
         textAlign = Paint.Align.CENTER
@@ -804,6 +813,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 )
             }
             canvas.drawRoundRect(rect, keyRadiusPx, keyRadiusPx, paint)
+            // D-337: a bold border around the Shift key while Caps Lock is engaged - drawn after the
+            // background fill so the stroke sits on top of it, but before the label so the glyph stays clear.
+            if (key.code == KeyCode.SHIFT && capsLock) {
+                canvas.drawRoundRect(rect, keyRadiusPx, keyRadiusPx, capsLockBorderPaint)
+            }
             
             val label = labelFor(key)
             val cx = rect.centerX()

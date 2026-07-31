@@ -1148,6 +1148,39 @@ its own `armShiftForNextWord` derivation; a subsequent genuine caret move re-der
 
 ---
 
+## 24. Extended Letter Long-Press Popups (D-336)
+
+D-336: the German QWERTZ layout (and AZERTY, which reuses the same letter-key builder) gained additional
+long-press popup alternatives on three letters, appended after each key's existing single secondary hint:
+
+- **a** — `ä` (umlaut, the existing corner hint) plus the Nordic ligatures `æ` and `å`.
+- **e** — `€` (currency, the existing corner hint) plus the French diacritics `é`, `è`, `ê`, `ë`.
+- **n** — `+` (plus, the existing corner hint) plus the Spanish tilde-n `ñ`.
+
+Each popup pre-selects the key's own secondary hint (the first entry), so a straight-up release still types
+the familiar secondary. The remaining entries are reached by sliding. Upper-case forms (`Æ`/`Å`, `É`/`È`/`Ê`/
+`Ë`, `Ñ`) are produced automatically when Shift or Caps Lock is armed — the existing case machinery
+(`popupDisplayTextFor` for display, `appendLongPressLetter` via `isUpperArmed()` for commit) already
+uppercases genuine Latin letters, no per-entry casing data was needed. A user who reassigns a key via the
+C-08 editor loses the popup (same invariant as the existing `p`/`o` popups).
+
+The row-agnostic `letterKey` builder (generalised from the former top-row-only `topRowKey`) applies the
+(char, hint) → alternatives decision regardless of which row a letter sits in — `a` is QWERTZ middle row but
+AZERTY top row, `n` is third row, `e` is top row; the popup set never depended on row position.
+
+---
+
+## 25. Caps-Lock Border Highlight (D-337)
+
+D-337: while Caps Lock is engaged, the Shift key draws a bold stroked border (accent blue `#1565C0`,
+3dp stroke) around itself — visually distinct from the momentary light-blue fill flash of a plain key press
+(`key_background_pressed` `#A6C8FF`). The border is an overlay stroke only; the key's size, position and
+hit-target are unchanged, so neighbour keys are unaffected. Drawn after the background fill and before the
+label glyph, so the `⇪` lock indicator stays clear. A brief press still flashes with `pressedKeyPaint` as
+before; the persistent border is the additional Caps-Lock-only cue.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

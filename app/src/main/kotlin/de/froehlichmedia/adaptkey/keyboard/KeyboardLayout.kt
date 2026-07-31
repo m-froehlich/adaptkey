@@ -110,19 +110,37 @@ object KeyboardLayout {
      *  (average) - chosen as the most intuitive host since Ø is visually a stylised O. */
     private val O_ALTERNATIVES = listOf(O_HINT, "Ø")
     
+    /** D-336: the a key's own corner hint (the umlaut). */
+    private const val A_HINT = "ä"
+    
+    /** D-336: the a key's long-press popup - ä plus the Nordic æ/å ligatures, common in loanwords and names. */
+    private val A_ALTERNATIVES = listOf(A_HINT, "æ", "å")
+    
+    /** D-336: the e key's own corner hint (the currency symbol). */
+    private const val E_HINT = "€"
+    
+    /** D-336: the e key's long-press popup - € plus the four common French diacritic variants. */
+    private val E_ALTERNATIVES = listOf(E_HINT, "é", "è", "ê", "ë")
+    
+    /** D-336: the n key's own corner hint (the plus sign). */
+    private const val N_HINT = "+"
+    
+    /** D-336: the n key's long-press popup - + plus the Spanish ñ (tilde n). */
+    private val N_ALTERNATIVES = listOf(N_HINT, "ñ")
+    
     /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
      * layer can offer it as the reset baseline for the configurable per-key map.
      */
     val DEFAULT_LETTER_HINTS = mapOf(
-        'q' to "@", 'e' to "€", 'h' to "#", 'm' to "-", 'n' to "+", 'd' to "°",
+        'q' to "@", 'e' to E_HINT, 'h' to "#", 'm' to "-", 'n' to N_HINT, 'd' to "°",
         // D-90: the math-symbol hint on p, alongside the original AltGr-style set above.
         'p' to PI_HINT,
         // D-96: reorganised math-symbol hints - × moved to x, ÷ moved to c, v gets /, b gets *.
         'x' to "×", 'c' to "÷", 'v' to "/", 'b' to "*",
         // §29 follow-up: f was still free - the function symbol goes here.
         'f' to "ƒ",
-        'a' to "ä", 'o' to O_HINT, 'u' to "ü", 's' to "ß"
+        'a' to A_HINT, 'o' to O_HINT, 'u' to "ü", 's' to "ß"
     )
     
     /**
@@ -162,14 +180,14 @@ object KeyboardLayout {
         
         val topRowLetters = if (qwerty) TOP_ROW_QWERTY else TOP_ROW_QWERTZ
         val thirdRowLetters = if (qwerty) THIRD_ROW_LETTERS_QWERTY else THIRD_ROW_LETTERS_QWERTZ
-        result.add(topRowLetters.map { c -> topRowKey(c, letterHints) })
-        result.add("asdfghjkl".map { c -> charKey(c, letterHints[c]) })
+        result.add(topRowLetters.map { c -> letterKey(c, letterHints) })
+        result.add("asdfghjkl".map { c -> letterKey(c, letterHints) })
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(thirdRowLetters.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            thirdRowLetters.forEach { c -> add(charKey(c, letterHints[c], weight = thirdRowLetterWeight)) }
+            thirdRowLetters.forEach { c -> add(letterKey(c, letterHints, weight = thirdRowLetterWeight)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -275,10 +293,11 @@ object KeyboardLayout {
     }
     
     /**
-     * D-99 / §29 follow-up: builds a top-row key, giving `p` its Greek-letter popup ([PI_ALTERNATIVES])
-     * and `o` its Ø popup ([O_ALTERNATIVES]) - but only while each still carries its own default hint, so
-     * a user who has reassigned `p` or `o` via the C-08 editor keeps their own single-symbol long-press
-     * instead of an unrelated popup.
+     * D-99 / §29 follow-up / D-336: builds a letter key, giving `p` its Greek-letter popup
+     * ([PI_ALTERNATIVES]), `o` its Ø popup ([O_ALTERNATIVES]), `a` its æ/å popup ([A_ALTERNATIVES]), `e` its
+     * é/è/ê/ë popup ([E_ALTERNATIVES]) and `n` its ñ popup ([N_ALTERNATIVES]) - but only while each still
+     * carries its own default hint, so a user who has reassigned the key via the C-08 editor keeps their own
+     * single-symbol long-press instead of an unrelated popup.
      *
      * D-282: `p` sits at the row's right edge, where a wide popup like [PI_ALTERNATIVES] can run out of
      * room to grow rightward and gets clamped leftward instead by [AdaptKeyboardView] - handled dynamically
@@ -286,17 +305,30 @@ object KeyboardLayout {
      * originally did; [PI_ALTERNATIVES] is always passed in its natural, un-reversed order (`π` first),
      * exactly like every other alternatives list.
      *
-     * D-314: not private - [AzertyLayout] reuses this directly for its own top row (which still carries
-     * `p`/`o` at the same row positions QWERTY/QWERTZ do), rather than duplicating the p/o special-casing.
+     * D-314 / D-336: not private - [AzertyLayout] reuses this directly for its own letter rows, rather than
+     * duplicating the special-casing. Generalised in D-336 from the top-row-only `topRowKey` into a
+     * row-agnostic `letterKey` so the same (char, hint) → alternatives decision applies regardless of which
+     * row a letter sits in (e.g. `a` is QWERTZ/QWERTY middle row but AZERTY top row, `n` is third row,
+     * `e` is top row) - the popup set never depended on row position, only on the letter and its hint.
      */
-    fun topRowKey(c: Char, letterHints: Map<Char, String>): Key {
+    fun letterKey(c: Char, letterHints: Map<Char, String>, weight: Float = 1f): Key {
         val hint = letterHints[c]
-        return when {
-            c == 'p' && hint == PI_HINT -> charKey(c, hint, alternatives = PI_ALTERNATIVES)
-            c == 'o' && hint == O_HINT -> charKey(c, hint, alternatives = O_ALTERNATIVES)
-            else -> charKey(c, hint)
+        val alternatives = when {
+            c == 'p' && hint == PI_HINT -> PI_ALTERNATIVES
+            c == 'o' && hint == O_HINT -> O_ALTERNATIVES
+            c == 'a' && hint == A_HINT -> A_ALTERNATIVES
+            c == 'e' && hint == E_HINT -> E_ALTERNATIVES
+            c == 'n' && hint == N_HINT -> N_ALTERNATIVES
+            else -> emptyList()
         }
+        return charKey(c, hint, alternatives = alternatives, weight = weight)
     }
+    
+    /**
+     * D-314: the top-row entry point - a weight-defaulted delegate to [letterKey], kept so [AzertyLayout]'s
+     * own top-row call sites read naturally and stay unchanged.
+     */
+    fun topRowKey(c: Char, letterHints: Map<Char, String>): Key = letterKey(c, letterHints)
     
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {

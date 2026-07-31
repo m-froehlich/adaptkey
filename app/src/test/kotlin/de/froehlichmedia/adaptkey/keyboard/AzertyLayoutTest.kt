@@ -86,6 +86,27 @@ class AzertyLayoutTest {
     }
     
     @Test
+    fun `D-336 the a key offers the Nordic ligatures, same as the Latin layout, at the AZERTY top row`() {
+        val aKey = AzertyLayout.rows()[1].byChar('a')
+        
+        assertEquals(listOf("ä", "æ", "å"), aKey.alternatives)
+    }
+    
+    @Test
+    fun `D-336 the e key offers the French diacritics, same as the Latin layout`() {
+        val eKey = AzertyLayout.rows()[1].byChar('e')
+        
+        assertEquals(listOf("€", "é", "è", "ê", "ë"), eKey.alternatives)
+    }
+    
+    @Test
+    fun `D-336 the n key offers the Spanish tilde-n, same as the Latin layout, at the AZERTY third row`() {
+        val nKey = AzertyLayout.rows()[3].byChar('n')
+        
+        assertEquals(listOf("+", "ñ"), nKey.alternatives)
+    }
+    
+    @Test
     fun `a custom hint map drives the long-press secondary`() {
         val rows = AzertyLayout.rows(letterHints = mapOf('a' to "!"))
         
