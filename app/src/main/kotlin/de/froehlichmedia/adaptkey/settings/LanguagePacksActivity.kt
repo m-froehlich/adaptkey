@@ -93,9 +93,16 @@ class LanguagePacksActivity : AppCompatActivity() {
      * the archive itself, not in this app's compiled-in catalog, so a manual re-check must always be
      * possible even when the hint says "current" (e.g. a community contributor revised the hosted pack
      * without a matching app release).
+     *
+     * D-334: the hint is additionally suppressed when [InstalledLanguagesStore.suppressedCatalogVersion]
+     * matches or exceeds the catalog's own version - the user already attempted an import that turned out
+     * to be already current (the hosted archive was stale), and the hint must not reappear until a future
+     * app release raises the catalog version past what was dismissed.
      */
     private fun buildRow(entry: LanguagePackCatalog.Entry, installed: Boolean): View {
-        val updateAvailable = installed && InstalledLanguagesStore.installedVersion(this, entry.language) < entry.version
+        val updateAvailable = installed &&
+            InstalledLanguagesStore.installedVersion(this, entry.language) < entry.version &&
+            InstalledLanguagesStore.suppressedCatalogVersion(this, entry.language) < entry.version
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
@@ -157,10 +164,19 @@ class LanguagePacksActivity : AppCompatActivity() {
      * database. A language not yet installed at all always applies unconditionally - there is nothing to
      * compare against yet.
      *
+     * D-334: the old [android.content.Context.deleteDatabase] call that preceded the install is gone - it
+     * wiped the entire SQLite database including every learned word, blacklist entry, and pending-blacklist
+     * mark on every real pack update. The reseed itself now lives in [DictionaryLoader.loadStores], which
+     * wipes only the seeded tables (the same [SqliteDictionaryStore.resetBundledWords] path the bundled
+     * languages already use), leaving the learned overlay intact. When the picked archive turns out not to
+     * be newer (the stale-hosted-archive case), [InstalledLanguagesStore.suppressCatalogVersion] records the
+     * dismissed catalog version so the "update available" hint does not reappear until the catalog itself
+     * moves past it in a future app release.
+     *
      * @param uri the picked archive
      * @param entry the row whose Download/Import buttons were tapped - only [LanguagePackCatalog.Entry.
      *        language] is actually used for the install itself; [LanguagePackCatalog.Entry.version] is not
-     *        consulted here at all
+     *        consulted for the apply-or-skip decision, only recorded as the suppressed version on a skip
      */
     private fun importPack(uri: Uri, entry: LanguagePackCatalog.Entry) {
         if (busy) {
@@ -176,12 +192,13 @@ class LanguagePacksActivity : AppCompatActivity() {
                     requireNotNull(input) { "cannot open $uri" }
                     val pack = LanguagePackInstaller.parse(input, language)
                     if (alreadyInstalled && pack.version <= InstalledLanguagesStore.installedVersion(this, language)) {
+                        // D-334: the hosted archive is stale relative to the catalog's claimed version -
+                        // suppress the "update available" hint for this exact catalog version so it does not
+                        // reappear on every rebuild() until a future app release raises the catalog further.
+                        InstalledLanguagesStore.suppressCatalogVersion(this, language, entry.version)
                         return@use null
                     }
                     LanguagePackInstaller.write(LanguagePackStorage.packDir(this), pack)
-                    // Deletes any stale database from a previous install of this same language, so the next
-                    // dictionary load reseeds cleanly from the file just imported rather than reusing old data.
-                    deleteDatabase(DictionaryLoader.databaseName(language))
                     InstalledLanguagesStore.add(this, language, pack.version)
                     pack.version
                 }

@@ -21,6 +21,7 @@ object InstalledLanguagesStore {
     private const val PREFS = "adaptkey_installed_languages"
     private const val KEY_INSTALLED = "installed"
     private const val KEY_VERSION_PREFIX = "version_"
+    private const val KEY_SUPPRESSED_CATALOG_PREFIX = "suppressed_catalog_"
     
     /**
      * D-307: the default version assumed for an install with no version recorded at all - every language
@@ -81,6 +82,34 @@ object InstalledLanguagesStore {
     }
     
     /**
+     * D-334: the catalog version whose "update available" hint the user has already dismissed by
+     * attempting an import that turned out to be already current (the hosted archive was stale relative to
+     * the compiled-in [de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog.Entry.version]), or 0 when
+     * no dismissal has been recorded. A future app release with a higher catalog version re-arms the hint
+     * automatically, since the suppression only matches the exact version the user already checked.
+     * 
+     * @param context any valid context
+     * @param language the language to check
+     * @return the suppressed catalog version, or 0 if none is recorded
+     */
+    fun suppressedCatalogVersion(context: Context, language: Language): Int {
+        return prefs(context).getInt(KEY_SUPPRESSED_CATALOG_PREFIX + language.name, 0)
+    }
+    
+    /**
+     * D-334: records that the user has already checked for an update to [language] at [catalogVersion] and
+     * found the hosted archive not newer than what is installed, so the "update available" hint stays
+     * suppressed until the catalog itself moves past [catalogVersion].
+     * 
+     * @param context any valid context
+     * @param language the language whose hint to suppress
+     * @param catalogVersion the catalog version the user dismissed
+     */
+    fun suppressCatalogVersion(context: Context, language: Language, catalogVersion: Int) {
+        prefs(context).edit().putInt(KEY_SUPPRESSED_CATALOG_PREFIX + language.name, catalogVersion).apply()
+    }
+    
+    /**
      * Marks [language] as no longer installed.
      *
      * @param context any valid context
@@ -88,7 +117,10 @@ object InstalledLanguagesStore {
      */
     fun remove(context: Context, language: Language) {
         save(context, load(context) - language)
-        prefs(context).edit().remove(KEY_VERSION_PREFIX + language.name).apply()
+        prefs(context).edit()
+            .remove(KEY_VERSION_PREFIX + language.name)
+            .remove(KEY_SUPPRESSED_CATALOG_PREFIX + language.name)
+            .apply()
     }
     
     private fun save(context: Context, languages: Set<Language>) {

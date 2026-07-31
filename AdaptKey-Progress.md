@@ -293,6 +293,36 @@ non-trivial changes).
 
 ## Current State
 
+- **§260 (v1.0.21): D-334 - language pack update wiped learned words + stale "update available" hint never**
+  **cleared.** Two problems reported after the D-330 ``deine``/``seine`` dictionary fix shipped, both traced
+  from real evidence. (1) The language-packs screen showed "update available" for German (catalog 5 vs
+  installed 3); importing the downloaded archive reported "already current" but the hint reappeared on every
+  rebuild - a dead loop. Root cause: the hosted ``language-packs/adaptkey-lang-de.zip`` was never re-pushed
+  after D-329/D-330 (live download confirmed it still reads ``version.txt = 3`` while repo source and catalog
+  are both 5), AND no path in ``LanguagePacksActivity.importPack`` ever raised ``installedVersion`` to match
+  the catalog on a skipped (stale) import, so the hint could never clear. (2) The attempted update silently
+  reset the user's entire German learned-word overlay. Root cause: ``importPack`` called
+  ``deleteDatabase(DictionaryLoader.databaseName(language))`` before recording the install - on every real
+  pack update this deleted the entire SQLite DB including ``TABLE_LEARNED``/``TABLE_LEARNED_BIGRAMS``/
+  ``TABLE_LEARNED_TRIGRAMS``/``TABLE_BLACKLIST``/``TABLE_PENDING_BLACKLIST``; the bundled-language path
+  (D-178's ``resetBundledWords`` + reseed, learned overlay untouched) was never extended to installed
+  languages. Fix: (1) removed ``deleteDatabase``; added ``installed_pack_version`` meta row to
+  ``SqliteDictionaryStore`` (mirrors ``bundled_version``, no DB-version bump); ``DictionaryLoader.loadStores``
+  now reseeds an installed language the same way it reseeds a bundled one - ``resetBundledWords()`` + ``seed()``
+  (seeded tables only) when ``installedVersion`` moves past the recorded ``installed_pack_version``, learned
+  overlay untouched. (2) Added ``suppressedCatalogVersion``/``suppressCatalogVersion`` to
+  ``InstalledLanguagesStore``; on a skipped (stale) import the catalog version is recorded as suppressed;
+  ``buildRow`` shows "update available" only when ``installedVersion < entry.version`` AND
+  ``suppressedCatalogVersion < entry.version`` - clears after a stale check, re-arms when a future app release
+  raises the catalog. ``installedVersion`` stays the real archive version (never faked), so a later genuine
+  same-version update is still correctly accepted. (3) ``language-packs/adaptkey-lang-de.zip`` rebuilt from
+  current ``dictionaries/de/`` (now ``version.txt = 5``, D-330/D-329 fixes inside). 8 new tests (968 → 976):
+  5 ``InstalledLanguagesStoreTest``, 3 ``SqliteDictionaryStoreRoboTest``. Spec's §22 added.
+  ``:app:assembleRelease``/``:app:testDebugUnitTest`` green. ``versionCode`` 324 → 325, ``versionName``
+  ``"1.0.20"`` → ``"1.0.21"``. **Not yet device-confirmed** - needs a real German pack re-import to confirm
+  (a) learned words survive, (b) the "update available" hint clears after a stale check. **The rebuilt
+  ``.zip`` still needs to be pushed to ``origin/main``** before the hosted raw-GitHub URL serves version 5 -
+  that push is the user's own action. See history §260.
 - **§259 (v1.0.20): D-333 - double-tap Shift for Caps Lock did not engage at a sentence start.** With
   **auto-capitalisation armed (keyboard showing uppercase) at the start of a field or line, a double-tap of**
   **Shift did not engage Caps Lock (D-15).** Root cause traced exhaustively through `handleShift()`: the

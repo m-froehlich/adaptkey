@@ -179,6 +179,37 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     /**
+     * D-334: the version of the installed language-pack content last seeded into this store's
+     * [TABLE_WORDS]/[TABLE_BIGRAMS], or 0 if never recorded (every store that predates this mechanism, or
+     * a bundled-language store that is never tracked this way). Mirrors [bundledContentVersion]'s own
+     * scheme, but for a D-280-installed pack rather than a bundled asset - lets [DictionaryLoader] reseed
+     * only the seeded tables (leaving the learned overlay intact) when a newer pack was imported, instead of
+     * the previous [android.content.Context.deleteDatabase] wipe that destroyed every learned word.
+     * 
+     * @return the recorded installed-pack version, or 0 if none is recorded yet
+     */
+    fun installedPackVersion(): Int {
+        db.rawQuery("SELECT value FROM $TABLE_META WHERE key = ?", arrayOf(META_KEY_INSTALLED_PACK_VERSION)).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getString(0).toIntOrNull() ?: 0 else 0
+        }
+    }
+    
+    /**
+     * Records the installed language-pack version this store now holds, so a later
+     * [DictionaryLoader.loadStores] call does not reseed it again until [InstalledLanguagesStore.
+     * installedVersion] moves further.
+     * 
+     * @param version the version to record
+     */
+    fun setInstalledPackVersion(version: Int) {
+        val values = ContentValues().apply {
+            put("key", META_KEY_INSTALLED_PACK_VERSION)
+            put("value", version.toString())
+        }
+        db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+    
+    /**
      * D-186: removes every [TABLE_LEARNED] / [TABLE_LEARNED_BIGRAMS] row whose key also exists in
      * [TABLE_WORDS] - a one-time flush for installs that accumulated bundled-word duplicates in the
      * learned overlay before [learn] stopped writing them there at all (see [learn]'s own KDoc). Never
@@ -924,6 +955,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val TABLE_PENDING_BLACKLIST = "pending_blacklist"
         private const val TABLE_META = "meta"
         private const val META_KEY_BUNDLED_VERSION = "bundled_version"
+        private const val META_KEY_INSTALLED_PACK_VERSION = "installed_pack_version"
         private const val META_KEY_LEARNED_CLEANUP_VERSION = "learned_cleanup_version"
         private const val META_KEY_BIGRAM_CLEANUP_VERSION = "bigram_cleanup_version"
         

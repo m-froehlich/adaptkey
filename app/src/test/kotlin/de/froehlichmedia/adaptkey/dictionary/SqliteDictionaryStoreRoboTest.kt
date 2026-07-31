@@ -398,6 +398,37 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun D334installedPackVersionDefaultsToZeroForAStoreThatNeverRecordedOne() {
+        val store = store("pack-version-default.db")
+        
+        assertEquals(0, store.installedPackVersion())
+        store.close()
+    }
+    
+    @Test
+    fun D334setInstalledPackVersionAndInstalledPackVersionRoundTrip() {
+        val store = store("pack-version-roundtrip.db")
+        
+        store.setInstalledPackVersion(3)
+        assertEquals(3, store.installedPackVersion())
+        
+        store.setInstalledPackVersion(5)
+        assertEquals(5, store.installedPackVersion())
+        store.close()
+    }
+    
+    @Test
+    fun D334installedPackVersionIsIndependentFromBundledContentVersion() {
+        val store = store("pack-version-independent.db")
+        store.setBundledContentVersion(2)
+        store.setInstalledPackVersion(5)
+        
+        assertEquals(2, store.bundledContentVersion())
+        assertEquals(5, store.installedPackVersion())
+        store.close()
+    }
+    
+    @Test
     fun resetBundledWordsWipesOnlyTheBundledTablesLeavingLearnedWordsIntact() {
         val store = store("reset-bundled.db")
         store.putWord(WordEntry("hund", 3L))

@@ -66,4 +66,45 @@ class InstalledLanguagesStoreTest {
         assertEquals(2, InstalledLanguagesStore.installedVersion(context, Language.GERMAN))
         assertEquals(1, InstalledLanguagesStore.installedVersion(context, Language.GREEK))
     }
+    
+    @Test
+    fun `D-334 suppressedCatalogVersion defaults to zero when nothing was suppressed`() {
+        val context = RuntimeEnvironment.getApplication()
+        assertEquals(0, InstalledLanguagesStore.suppressedCatalogVersion(context, Language.GERMAN))
+    }
+    
+    @Test
+    fun `D-334 suppressCatalogVersion records exactly the given catalog version`() {
+        val context = RuntimeEnvironment.getApplication()
+        InstalledLanguagesStore.suppressCatalogVersion(context, Language.GERMAN, 5)
+        assertEquals(5, InstalledLanguagesStore.suppressedCatalogVersion(context, Language.GERMAN))
+    }
+    
+    @Test
+    fun `D-334 suppressCatalogVersion overwrites a previously suppressed version`() {
+        val context = RuntimeEnvironment.getApplication()
+        InstalledLanguagesStore.suppressCatalogVersion(context, Language.GERMAN, 5)
+        InstalledLanguagesStore.suppressCatalogVersion(context, Language.GERMAN, 6)
+        assertEquals(6, InstalledLanguagesStore.suppressedCatalogVersion(context, Language.GERMAN))
+    }
+    
+    @Test
+    fun `D-334 each language tracks its own suppressed catalog version independently`() {
+        val context = RuntimeEnvironment.getApplication()
+        InstalledLanguagesStore.suppressCatalogVersion(context, Language.GERMAN, 5)
+        InstalledLanguagesStore.suppressCatalogVersion(context, Language.GREEK, 1)
+        assertEquals(5, InstalledLanguagesStore.suppressedCatalogVersion(context, Language.GERMAN))
+        assertEquals(1, InstalledLanguagesStore.suppressedCatalogVersion(context, Language.GREEK))
+    }
+    
+    @Test
+    fun `D-334 remove clears the suppressed catalog version alongside the installed version`() {
+        val context = RuntimeEnvironment.getApplication()
+        InstalledLanguagesStore.add(context, Language.GERMAN, version = 3)
+        InstalledLanguagesStore.suppressCatalogVersion(context, Language.GERMAN, 5)
+        
+        InstalledLanguagesStore.remove(context, Language.GERMAN)
+        
+        assertEquals(0, InstalledLanguagesStore.suppressedCatalogVersion(context, Language.GERMAN))
+    }
 }

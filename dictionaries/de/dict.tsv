@@ -12095,7 +12095,7 @@ Maastricht	161	NOUN
 Schwedens	161	NOUN
 IKRK	161	NOUN
 Sachsenhausen	161	NOUN
-deine	160	NOUN,OTHER
+deine	600	OTHER
 Jr	160	NOUN,OTHER
 Sr	160	NOUN
 radioaktive	160	OTHER
@@ -34852,7 +34852,7 @@ Losung	43	NOUN
 Chhattisgarh	43	NOUN
 Ansteckung	43	NOUN
 Sarastro	43	NOUN
-deiner	43	OTHER
+deiner	440	OTHER
 Radiostationen	43	NOUN
 Lavigne	43	NOUN
 Sonnenstein	43	NOUN
@@ -42535,7 +42535,7 @@ Liane	33	NOUN
 Apolda	33	NOUN
 Fasch	33	NOUN
 Wanda	33	NOUN
-deinen	33	OTHER
+deinen	240	OTHER
 Falcon	33	NOUN
 Salvator	33	NOUN
 Fohlen	33	NOUN
@@ -52033,7 +52033,7 @@ kursächsische	25	OTHER
 Montessori	25	NOUN
 Sitzordnung	25	NOUN
 einlassen	25	OTHER
-deinem	25	OTHER
+deinem	225	OTHER
 Hintertreffen	25	NOUN
 unbestimmter	25	OTHER
 Sprachgemeinschaft	25	NOUN
@@ -58386,7 +58386,7 @@ Fortis	21	NOUN,OTHER
 Navarras	21	NOUN
 Walfänger	21	NOUN
 Tücher	21	NOUN
-deines	21	OTHER
+deines	105	OTHER
 umgearbeitet	21	OTHER
 Datenträgers	21	NOUN
 Bildfläche	21	NOUN

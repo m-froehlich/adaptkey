@@ -1114,6 +1114,29 @@ place regardless of this setting (P-02).
 
 ---
 
+## 22. Language Pack Update Safety (D-334)
+
+D-334: installing a newer language-pack archive (§9, D-280) must never destroy the user's own learned data,
+and the "update available" hint must clear once the user has actually checked, even when the hosted archive
+turns out to be stale relative to the compiled-in catalog version.
+
+- **Learned-data preservation on pack update.** Reseeding a pack's bundled tables
+  (`TABLE_WORDS`/`TABLE_BIGRAMS`) after a real update wipes only those seeded tables and rewrites them from
+  the freshly-imported TSV files - the learned overlay (`TABLE_LEARNED`/`TABLE_LEARNED_BIGRAMS`/
+  `TABLE_LEARNED_TRIGRAMS`), the blacklist, and the pending-blacklist marks all stay untouched, exactly as the
+  bundled-language reseed (§9, D-178) already does. A whole-database wipe (`deleteDatabase`) is never used for
+  an update of an already-installed language - only for a clean removal (§9), where losing learned data is the
+  explicit intent.
+
+- **Update-hint suppression after a stale check.** When the user imports an archive that turns out not to be
+  newer than what is already installed (the hosted `.zip` is behind the compiled-in catalog version, a known
+  operational gap while a rebuilt archive is awaiting its push to `origin/main`), the "update available" hint is
+  suppressed for that exact catalog version. The hint re-arms automatically once a future app release raises the
+  catalog version past what was dismissed - the user is never permanently stuck with a hint they cannot clear,
+  nor silently shown one they already dismissed.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

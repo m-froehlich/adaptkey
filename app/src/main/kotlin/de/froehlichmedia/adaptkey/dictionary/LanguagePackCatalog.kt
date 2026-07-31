@@ -45,7 +45,10 @@ object LanguagePackCatalog {
             // D-306: dict_de.tsv cleaned of 43 confirmed Wikipedia-extraction-noise entries.
             // D-329: bigram_de.tsv rebuilt without the "mein" -> "kampf" row (D-327's own fix had only
             // corrected the repo source file and the app-side runtime purge, not the hosted archive itself).
-            version = 3
+            // D-330: "deine" frequency corrected 160 -> 600 (was letting A-01's cost-1/100x override
+            // auto-correct it to "seine" every time) and retagged NOUN,OTHER -> OTHER; same fix extended to
+            // "deiner"/"deinen"/"deinem"/"deines" against their "seinX" counterparts.
+            version = 5
         ),
         Entry(
             Language.GREEK,

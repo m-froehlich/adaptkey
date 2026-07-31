@@ -12746,3 +12746,87 @@ No change. D-15 describes Caps Lock as "double-tap of Shift" without specifying 
 
 Same version as §258 (`versionCode` 324, `versionName` `"1.0.20"`) — both fixes shipped together. Not yet
 device-confirmed — needs a real double-tap Shift at a sentence start to confirm Caps Lock now engages.
+
+## §260 - D-334 Language Pack Update Wiped Learned Words + Stale "Update Available" Hint Never Cleared
+
+### Report
+
+After the D-330 `deine`/`seine` dictionary-data fix shipped, two new problems surfaced on the device:
+
+1. The language-packs screen showed "update available" for German (catalog version 5 vs installed version
+   3). Downloading and importing the archive reported "already current", yet the "update available" hint
+   reappeared immediately on screen rebuild - a dead loop the user could never clear.
+2. The attempted update silently reset the user's entire learned-word overlay - every personally-taught word,
+   learned bigram/trigram, blacklist entry, and pending-blacklist mark for German was gone, without any
+   structural reason or warning.
+
+### Root Cause
+
+Both were traced from real evidence, not guessed.
+
+**Versions diverging (problem 1):** the hosted `language-packs/adaptkey-lang-de.zip` was downloaded live and
+extracted - its `version.txt` read `3`, while the compiled-in `LanguagePackCatalog.ENTRIES` German entry
+and the repo source `dictionaries/de/version.txt` both read `5`. The Progress file (§255/§256) had already
+noted "Still needs the rebuilt `.zip` pushed to `origin/main`" as an outstanding step - the rebuild after
+D-329/D-330 was never actually pushed to the hosting branch, so every device still downloads version 3.
+
+The UI loop itself was then traced through `LanguagePacksActivity`: `buildRow` flags "update available"
+when `installedVersion < entry.version` (3 < 5 → true). `importPack` parses the stale archive (version 3),
+finds `pack.version(3) <= installedVersion(3)` → skips the write and returns `null` → "already current"
+toast. `rebuild()` re-reads `installedVersion(3) < entry.version(5)` → the hint never clears, because no
+path ever raises `installedVersion` to match the catalog on a skipped import.
+
+**Learned-word wipe (problem 2):** `LanguagePacksActivity.importPack` called
+`deleteDatabase(DictionaryLoader.databaseName(language))` immediately before recording the install - on every
+real pack update (`pack.version > installedVersion`), this deleted the entire SQLite database file, including
+`TABLE_LEARNED`/`TABLE_LEARNED_BIGRAMS`/`TABLE_LEARNED_TRIGRAMS`/`TABLE_BLACKLIST`/
+`TABLE_PENDING_BLACKLIST`. The contrast with the bundled-language path was stark:
+`DictionaryLoader.loadStores` already had the correct pattern for English (D-178) - `resetBundledWords()`
+wipes only `TABLE_WORDS`/`TABLE_BIGRAMS`, then reseeds from the asset, leaving the learned overlay
+untouched. That pattern was simply never extended to installed languages, which got the brutal
+`deleteDatabase` instead.
+
+### Fix
+
+Three changes, each addressing one traced cause:
+
+1. **Learned-data preservation.** Removed the `deleteDatabase` call from `importPack` entirely. Added a
+   new additive meta row `installed_pack_version` to `SqliteDictionaryStore`'s `TABLE_META` (mirroring
+   the existing `bundled_version` scheme, no `DATABASE_VERSION` bump). `DictionaryLoader.loadStores` now
+   reseeds an installed language the same way it already reseeds a bundled one: when
+   `InstalledLanguagesStore.installedVersion` moves past the store's recorded
+   `installed_pack_version`, it calls `resetBundledWords()` + `seed()` (seeded tables only) and records
+   the new version. The learned overlay, blacklist, and pending-blacklist marks stay untouched - exactly the
+   D-178 invariant the bundled path already guaranteed.
+
+2. **Update-hint suppression.** Added `suppressedCatalogVersion`/`suppressCatalogVersion` to
+   `InstalledLanguagesStore`. When an import is skipped because the archive was not newer than what is
+   installed, the current catalog version is recorded as suppressed. `buildRow` now only shows "update
+   available" when `installedVersion < entry.version` AND `suppressedCatalogVersion < entry.version` - so
+   the hint clears after a stale check, and re-arms automatically once a future app release raises the catalog
+   version past what was dismissed. `installedVersion` itself stays the real archive version (never faked
+   upward), so a later genuine update to the same version is still correctly accepted rather than falsely
+   rejected. `remove` clears the suppression alongside the install record, so a reinstall starts fresh.
+
+3. **Rebuilt hosted archive.** `language-packs/adaptkey-lang-de.zip` rebuilt from current
+   `dictionaries/de/` (now contains `version.txt = 5`, the D-330 `deine`-family frequency corrections,
+   and the D-329 `mein` → `kampf` bigram removal). Pushing the rebuilt `.zip` to `origin/main` remains
+   the user's own action, same outstanding step as §255/§256.
+
+### Tests
+
+8 new tests (968 → 976): 5 in `InstalledLanguagesStoreTest` (`suppressedCatalogVersion` default/record/
+overwrite/per-language-independence/clear-on-remove), 3 in `SqliteDictionaryStoreRoboTest`
+(`installedPackVersion` default/round-trip/independence-from-bundled-version).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `importPack`/`buildRow` are Android-view glue,
+not unit-tested (the established gap, same as every other settings-screen path).
+
+### Spec
+
+New §22 "Language Pack Update Safety (D-334)" added - the learned-data preservation invariant and the
+update-hint suppression behaviour are now explicit requirements, not just implementation details of the D-307/
+D-308 mechanism.
+
+`versionCode` 324 → 325, `versionName` `"1.0.20"` → `"1.0.21"`. Not yet device-confirmed - needs a
+real German pack re-import to confirm (a) learned words survive the update, (b) the "update available" hint
+clears after a stale check.

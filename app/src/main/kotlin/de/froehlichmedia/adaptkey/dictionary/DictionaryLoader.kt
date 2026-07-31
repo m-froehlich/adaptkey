@@ -95,8 +95,11 @@ object DictionaryLoader {
      * @param context any valid context (the input method service)
      * @return a store for each of [activeLanguages], each seeded from its source when first created; a
      *         bundled language is additionally reseeded whenever [BUNDLED_DICTIONARY_VERSION] is bumped
-     *         past what the store already holds - an installed language's own content only ever changes
-     *         through a fresh install (see [LanguagePackInstaller]), so that reseed does not apply to it
+     *         past what the store already holds. D-334: an installed language is reseeded (the seeded
+     *         tables only, never the learned overlay) whenever [InstalledLanguagesStore.installedVersion]
+     *         moves past the version the store last seeded from - the same resetBundledWords + reseed
+     *         pattern the bundled path already used, replacing the old deleteDatabase wipe that destroyed
+     *         every learned word on every pack update.
      */
     fun loadStores(context: Context): Map<Language, SqliteDictionaryStore> {
         return activeLanguages(context).associateWith { language ->
@@ -104,10 +107,21 @@ object DictionaryLoader {
             if (store.isEmpty()) {
                 seed(context, language, store)
                 store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
+                if (language !in BUNDLED_LANGUAGES) {
+                    store.setInstalledPackVersion(InstalledLanguagesStore.installedVersion(context, language))
+                }
             } else if (language in BUNDLED_LANGUAGES && store.bundledContentVersion() < BUNDLED_DICTIONARY_VERSION) {
                 store.resetBundledWords()
                 seed(context, language, store)
                 store.setBundledContentVersion(BUNDLED_DICTIONARY_VERSION)
+            } else if (language !in BUNDLED_LANGUAGES && store.installedPackVersion() < InstalledLanguagesStore.installedVersion(context, language)) {
+                // D-334: a newer pack was imported (LanguagePackInstaller wrote fresh TSVs and
+                // InstalledLanguagesStore recorded the new version). Reseed only the seeded tables - the
+                // learned overlay, blacklist, and pending-blacklist marks stay untouched, exactly like the
+                // bundled reseed above.
+                store.resetBundledWords()
+                seed(context, language, store)
+                store.setInstalledPackVersion(InstalledLanguagesStore.installedVersion(context, language))
             }
             if (store.learnedCleanupVersion() < LEARNED_CLEANUP_VERSION) {
                 store.purgeBundledDuplicatesFromLearned()
