@@ -53,6 +53,7 @@ object SettingsStore {
     const val KEY_SAVE_CREDENTIALS = "d224_save_credentials"
     const val KEY_CONTACTS_SUGGESTIONS_ENABLED = "d191_contacts_suggestions_enabled"
     const val KEY_AUTOCORRECT_ENABLED = "d234_autocorrect_enabled"
+    const val KEY_DOUBLE_TAP_BACKSPACE_UNDO = "d348_double_tap_backspace_undo"
     
     /**
      * D-304: the one-time K-01 calibration-offer flag ([SettingsActivity.SettingsFragment.maybeOfferCalibration]) -
@@ -101,6 +102,9 @@ object SettingsStore {
     /** Default stored integer for both D-55 extra-row-spacing sliders (7 dp). */
     const val DEF_EXTRA_SPACING = AdaptSettings.DEFAULT_EXTRA_SPACING_DP
     
+    /** Default stored boolean for the D-348 double-tap Backspace undo toggle (off). */
+    const val DEF_DOUBLE_TAP_BACKSPACE_UNDO = false
+    
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
@@ -148,7 +152,8 @@ object SettingsStore {
             pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = p.getBoolean(KEY_SAVE_CREDENTIALS, true),
             contactsSuggestionsEnabled = p.getBoolean(KEY_CONTACTS_SUGGESTIONS_ENABLED, false),
-            autocorrectEnabled = p.getBoolean(KEY_AUTOCORRECT_ENABLED, true)
+            autocorrectEnabled = p.getBoolean(KEY_AUTOCORRECT_ENABLED, true),
+            doubleTapBackspaceUndo = p.getBoolean(KEY_DOUBLE_TAP_BACKSPACE_UNDO, DEF_DOUBLE_TAP_BACKSPACE_UNDO)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -225,6 +230,7 @@ object SettingsStore {
         KEY_SAVE_CREDENTIALS,
         KEY_CONTACTS_SUGGESTIONS_ENABLED,
         KEY_AUTOCORRECT_ENABLED,
+        KEY_DOUBLE_TAP_BACKSPACE_UNDO,
         KEY_HIGHLIGHT_COLOR,
         KEY_RESORT_DELAY,
         KEY_MAX_SUGGESTIONS,

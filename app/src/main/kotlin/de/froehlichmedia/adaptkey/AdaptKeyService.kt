@@ -416,6 +416,10 @@ class AdaptKeyService : InputMethodService() {
     // character (G-05). The double-tap window length is configurable via settings.doubleTapDelayMs.
     private var lastShiftTime = 0L
     
+    // D-348: time of the last Backspace press, for detecting a double-tap that triggers A-07's undo
+    // when settings.doubleTapBackspaceUndo is on. Reuses the same doubleTapDelayMs window as G-05.
+    private var lastBackspaceTime = 0L
+    
     // D-335: set by applyShiftAfterDelete() when the deleted character was uppercase, so the immediately
     // following reclaimWordAtCaret() (triggered by onUpdateSelection once composing empties) does not call
     // armShiftForNextWord() and overwrite the delete-derived Shift state with a fresh sentence-start
@@ -528,6 +532,12 @@ class AdaptKeyService : InputMethodService() {
     private val expensiveSuggestionRunnable = Runnable {
         dispatchExpensiveSuggestionSearch(composing.toString(), previousWord)
     }
+    
+    // D-346: true while a deferred expensive-suggestion search is scheduled (or in flight) and its result
+    // has not yet been applied back on the main thread. Drives the "…" loading placeholder in the bar when
+    // the hot path found nothing - cleared when the deferred result lands, when composing is cleared, or
+    // when a backspace-repeat suppresses the deferred pass entirely.
+    private var expensiveSuggestionPending = false
     
     /**
      * §125 / D-194: the cached result of the S-05/§47 split-preview/highlight colouring decision for
@@ -2245,6 +2255,35 @@ class AdaptKeyService : InputMethodService() {
             if (undoTyped != null) {
                 when (key.code) {
                     KeyCode.DELETE -> {
+                        // D-348: when double-tap-backspace-undo is on, a single Backspace at the armed tail
+                        // is a no-op (the key re-flashes as a visual hint "press again"); only a second
+                        // Backspace within the doubleTapDelayMs window fires the revert. Trailing whitespace
+                        // beyond the armed tail is still consumed ordinarily by the first press. When off,
+                        // the original single-Backspace revert behaviour (D-286/D-277 below) is unchanged.
+                        val now = SystemClock.uptimeMillis()
+                        val isDoubleTap = now - lastBackspaceTime <= settings.doubleTapDelayMs
+                        lastBackspaceTime = now
+                        if (settings.doubleTapBackspaceUndo) {
+                            if (isDoubleTap) {
+                                // Double-tap: attempt revert. performAutocorrectUndo's own ground-truth
+                                // check ensures this only fires when the armed tail is still intact (which
+                                // it always is here - the first press never deleted from it).
+                                if (!performAutocorrectUndo(ic)) {
+                                    handleBackspace(ic)
+                                }
+                                return
+                            }
+                            // Single tap: no revert. Consume trailing whitespace if present, otherwise
+                            // no-op at the armed tail (flash the key as a visual hint "press again").
+                            val armedTailDt = undoCommitted + undoDelimiter
+                            val atArmedTailDt = ic.getTextBeforeCursor(armedTailDt.length, 0)?.toString() == armedTailDt
+                            if (!atArmedTailDt && ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
+                                handleBackspace(ic)
+                            } else {
+                                keyboardView?.flashKey(key)
+                            }
+                            return
+                        }
                         // D-286: only whitespace *beyond* the armed undoCommitted+undoDelimiter tail (an
                         // extra Space/Enter pressed after the commit, while the window stayed open) is
                         // pre-consumed ordinarily here - checked by comparing the real document against that
@@ -4121,6 +4160,8 @@ class AdaptKeyService : InputMethodService() {
         handler.removeCallbacks(expensiveSuggestionRunnable)
         composingPreviewToken = null
         composingPreviewFor = null
+        // D-346: no token left to search for - any pending deferred search is now moot.
+        expensiveSuggestionPending = false
     }
     
     /**
@@ -4408,6 +4449,11 @@ class AdaptKeyService : InputMethodService() {
         if (!duringRepeat && !includeExpensiveFallbacks) {
             handler.removeCallbacks(expensiveSuggestionRunnable)
             handler.postDelayed(expensiveSuggestionRunnable, EXPENSIVE_SUGGESTION_DELAY_MS)
+            expensiveSuggestionPending = true
+        } else if (duringRepeat) {
+            // D-346: a backspace-repeat refresh never schedules a deferred pass (and just bumped the seq
+            // above), so any previously-pending search is now stale with no replacement scheduled.
+            expensiveSuggestionPending = false
         }
         // D-122 / D-131: both kept out of `candidates` itself so neither ever enters the tier-1/tier-3
         // merge's own score normalisation (SuggestionMerger normalises every tier-1 score against the
@@ -4561,6 +4607,9 @@ class AdaptKeyService : InputMethodService() {
             val pendingCandidate = pendingCorrectionCandidate(input, previous, language)
             handler.post {
                 if (seq == expensiveSuggestionSeq.get() && composing.toString() == input) {
+                    // D-346: the deferred search's result is about to be applied - the loading placeholder
+                    // (if shown) will be replaced by the real results (or an empty bar) in refreshSuggestions.
+                    expensiveSuggestionPending = false
                     refreshSuggestions(
                         includeExpensiveFallbacks = true,
                         precomputedExpensiveCandidates = expanded,
@@ -4678,7 +4727,17 @@ class AdaptKeyService : InputMethodService() {
         // ranked against the ordinary candidates" shape CREDENTIAL/LEARNED already use - see
         // hyphenCompoundSuggestion()'s own KDoc for why a score-based approach could not reliably win here.
         val withCompound = hyphenCompoundSuggestion()?.let { listOf(it) + items } ?: items
-        setSuggestionBarItems(withCompound)
+        // D-346: when the bar would otherwise be empty and a deferred fuzzy/expensive search is still in
+        // flight, show a "…" placeholder so the user knows the keyboard is still looking - replaced by the
+        // real results (or an empty bar) once the deferred search completes (expensiveSuggestionPending is
+        // cleared before the deferred refreshSuggestions re-enters, so this never shows alongside real
+        // results, nor lingers after the search is done).
+        val withLoading = if (withCompound.isEmpty() && expensiveSuggestionPending) {
+            listOf(SuggestionController.DisplayItem(text = "…", kind = SuggestionController.Kind.LOADING, word = ""))
+        } else {
+            withCompound
+        }
+        setSuggestionBarItems(withLoading)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.
         suggestionBar?.visibility = View.VISIBLE
@@ -5360,6 +5419,9 @@ class AdaptKeyService : InputMethodService() {
             
             // D-318: purely informational (the query typed so far) - a tap does nothing, mirroring LEARNED.
             SuggestionController.Kind.EMOJI_SEARCH_QUERY -> Unit
+            
+            // D-346: purely informational placeholder - a tap does nothing.
+            SuggestionController.Kind.LOADING -> Unit
         }
     }
     

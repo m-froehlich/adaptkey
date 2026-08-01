@@ -291,7 +291,35 @@ non-trivial changes).
   `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` pair at that point, rather than continuing to fix this one paradigm
   one report at a time.
 
+- **D-344 (download directory control, spec §30): the app's approach to ensuring browser-downloaded**
+  **language packs and LLM models land where AdaptKey can find them is not yet decided.** Three options
+  (HTTP header control, SAF/file-picker API, raw repo path) are documented in the spec; practical testing
+  is needed before choosing.
+
+- **D-345 (dictionary noise scan, spec §31): "Bri" must be blacklisted or removed, and the full bundled**
+  **dictionary scanned for every remaining Wikipedia-extraction-noise entry (fragments, obscure acronyms,**
+  **markup tokens).** Extends D-306's scope from *untagged* entries to also cover dubious *tagged* entries.
+  Each candidate should be listed for user confirmation before removal.
+
 ## Current State
+
+- **New backlog items (2026-08-01) — not yet designed or implemented, captured for discussion:**
+  D-342 (German dict NOUN_OR_VERB rework), D-343 (Caps Lock vibration direct Vibrator + subtle),
+  D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist),
+  D-347 (Gemini app cursor nub). See spec §28-§31, §33.
+
+- **§266 (v1.0.27): D-340/D-341/D-346/D-348 - four backlog items shipped together.** (1) D-340:**
+  **backspace hold continues after slide-off - `cancelBackspaceRepeat` gated on `!backspaceRepeated`,**
+  **so only a swipe before the first tick cancels; once the hold is active it runs until finger lift.**
+  **(2) D-341: `à`/`À` appended to the `a` key's popup alternatives (after `ä`/`æ`/`å`); uppercase via**
+  **the existing case machinery, no per-entry data needed. 2 layout tests updated. (3) D-346: "…" loading**
+  **indicator in the suggestion bar when the deferred fuzzy search is pending and the bar would otherwise**
+  **be empty - new `expensiveSuggestionPending` flag + `Kind.LOADING` chip, grey italic, non-tappable.**
+  **(4) D-348: optional double-tap Backspace for A-07 revert (setting C-20, default off, reuses**
+  **`doubleTapDelayMs`); first tap at armed tail = no-op + key flash, second tap = revert; trailing**
+  **whitespace still consumed ordinarily. 1 new `SettingsMapperTest`. `:app:assembleRelease`/**
+  **`:app:testDebugUnitTest` green. `versionCode` 330 → 331, `versionName` `"1.0.26"` → `"1.0.27"`.**
+  **Not yet device-confirmed** - see history §266.
 
 - **§265 (v1.0.26): D-339 - repeated double-tap word toggle did not work (composing emptied after first**
   **toggle).** Root cause: `toggleWordStartImmediate` called `finalizeAndCommit(ic, "")`, which committed

@@ -122,6 +122,12 @@
             android:summary="@string/d234_autocorrect_enabled_summary"
             android:defaultValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="d348_double_tap_backspace_undo"
+            android:title="@string/d348_double_tap_backspace_undo_title"
+            android:summary="@string/d348_double_tap_backspace_undo_summary"
+            android:defaultValue="false" />
+
         <ListPreference
             android:key="c04_highlight_color"
             android:title="@string/c04_color_title"

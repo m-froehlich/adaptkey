@@ -113,8 +113,8 @@ object KeyboardLayout {
     /** D-336: the a key's own corner hint (the umlaut). */
     private const val A_HINT = "ä"
     
-    /** D-336: the a key's long-press popup - ä plus the Nordic æ/å ligatures, common in loanwords and names. */
-    private val A_ALTERNATIVES = listOf(A_HINT, "æ", "å")
+    /** D-336/D-341: the a key's long-press popup - ä plus the Nordic æ/å ligatures and the French à. */
+    private val A_ALTERNATIVES = listOf(A_HINT, "æ", "å", "à")
     
     /** D-336: the e key's own corner hint (the currency symbol). */
     private const val E_HINT = "€"

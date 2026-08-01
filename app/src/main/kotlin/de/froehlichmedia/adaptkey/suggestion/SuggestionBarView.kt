@@ -200,10 +200,12 @@ class SuggestionBarView @JvmOverloads constructor(
         // own comment) - colours the text only, mirroring D-25's own "colour the text, not the background"
         // precedent, same as the verbatim chip already does.
         val query = item.kind == SuggestionController.Kind.EMOJI_SEARCH_QUERY
+        val loading = item.kind == SuggestionController.Kind.LOADING
         val colorRes = when {
             verbatim -> R.color.suggestion_verbatim_text
             item.kind == SuggestionController.Kind.LEARNED -> R.color.suggestion_learned_text
             query -> R.color.suggestion_search_query_text
+            loading -> R.color.suggestion_search_query_text
             else -> R.color.suggestion_text
         }
         return TextView(context).apply {
@@ -216,6 +218,10 @@ class SuggestionBarView @JvmOverloads constructor(
             }
             // D-318: italic marks it as "what you typed", not another tappable emoji result next to it.
             if (query) {
+                setTypeface(typeface, Typeface.ITALIC)
+            }
+            // D-346: italic + grey marks the loading placeholder as a status indicator, not a suggestion.
+            if (loading) {
                 setTypeface(typeface, Typeface.ITALIC)
             }
             setPadding(dp(16), 0, dp(16), 0)

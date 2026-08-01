@@ -111,6 +111,12 @@ class SettingsMapperTest {
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autocorrectEnabled = false)).autocorrectEnabled)
     }
     
+    @Test
+    fun `D-348 doubleTapBackspaceUndo flag passes through unchanged, defaulting to off`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).doubleTapBackspaceUndo)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(doubleTapBackspaceUndo = true)).doubleTapBackspaceUndo)
+    }
+    
     
     @Test
     fun `shiftGraceWindow is clamped into the spec range`() {

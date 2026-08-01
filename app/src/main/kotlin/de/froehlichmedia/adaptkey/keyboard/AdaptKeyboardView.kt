@@ -1081,11 +1081,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // actually left the pressed key's own bounds must not cancel a pending long-press - only
                 // leaving the key does. Backspace repeat still reacts to the tighter system touch-slop
                 // (a swipe on backspace is a deliberate G-02 word-delete gesture, not a hold, and should
-                // still be recognised promptly).
+                // still be recognised promptly) - but only before the first repeat tick has fired
+                // (D-340): once the hold is genuinely active, sliding the finger off the key must not
+                // abort the repeat; it continues until the finger is lifted (ACTION_UP/ACTION_CANCEL).
                 if (pressedKey != null && movedOutsideKey(event.x, event.y)) {
                     cancelPendingLongPress()
                 }
-                if (pressedKey != null && movedBeyondSlop(event.x, event.y)) {
+                if (pressedKey != null && !backspaceRepeated && movedBeyondSlop(event.x, event.y)) {
                     cancelBackspaceRepeat()
                 }
                 return true
@@ -1326,6 +1328,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun cancelFlash() {
         longPressHandler.removeCallbacks(flashRunnable)
         flashKey = null
+    }
+    
+    /**
+     * D-348: public entry point so [de.froehlichmedia.adaptkey.AdaptKeyService] can re-flash a key as a
+     * visual hint (e.g. the no-op first Backspace in double-tap-revert mode, signalling "press again").
+     */
+    fun flashKey(key: Key) {
+        flash(key)
     }
     
     /**

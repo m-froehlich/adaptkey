@@ -13083,3 +13083,80 @@ No new tests (Android-glue path, per convention). 983 unit tests (unchanged).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 329 → 330, `versionName` `"1.0.25"`
 → `"1.0.26"`. **Not yet device-confirmed** — needs a repeated double-tap on the same word (upper → lower
 → upper) mid-word and at word end.
+
+## §266 - D-340/D-341/D-346/D-348: Backspace Slide-Off, `à` Popup, Loading Indicator, Double-Tap Undo
+
+Four backlog items shipped together in one round, each discussed and confirmed with the user before
+implementation.
+
+### D-340 - Backspace Hold Continues After Slide-Off
+
+**Report:** when holding backspace and sliding the finger off the key, the repeat stopped immediately —
+the user expects it to keep deleting until the finger is lifted, like a hardware key.
+
+**Root cause:** `cancelBackspaceRepeat()` was wired to `movedBeyondSlop(event.x, event.y)` in
+`AdaptKeyboardView.onTouchEvent`'s ACTION_MOVE — the system touch-slop (~8 px), far tighter than leaving
+the key bounds. A small smear already killed the hold. This was originally intentional (a swipe on
+backspace is the G-02 word-delete gesture, not a hold), but the user wants the hold to survive a slide-off.
+
+**Fix:** gated the cancel on `!backspaceRepeated` — only before the first repeat tick fires can a finger
+movement still cancel the hold (preserving G-02's prompt recognition for a genuine swipe that happens
+before the 400 ms INITIAL_DELAY_MS). Once at least one tick has fired (`backspaceRepeated = true`), the
+repeat runs until ACTION_UP/ACTION_CANCEL, regardless of where the finger moves.
+
+### D-341 - `à`/`À` Added to the 'a' Key Popup
+
+**Report:** the `a` key's long-press popup should offer `à` (lowercase) and `À` (uppercase) alongside the
+existing `ä`/`æ`/`å`.
+
+**Fix:** appended `"à"` to `A_ALTERNATIVES` in `KeyboardLayout.kt` (`listOf(A_HINT, "æ", "å", "à")`). No
+other change needed — `AlternativeScript.extendsWord("à")` returns true (it's a Latin letter), so both the
+display-time `popupDisplayTextFor` and the commit-time `appendLongPressLetter`/`isUpperArmed` paths
+already uppercase it to `À` under Shift/Caps Lock, exactly as `ä`/`æ`/`å` already do. Two existing tests
+(`KeyboardLayoutTest`, `AzertyLayoutTest`) updated to expect the 4-entry list.
+
+### D-346 - "…" Loading Indicator in the Suggestion Bar
+
+**Report:** when typing a token like "vetmu" where the literal prefix finds nothing and the deferred
+neighbour-prefix escalation (D-328/S-09) hasn't run yet, the bar is empty with no indication the keyboard
+is still looking.
+
+**Fix:** new `expensiveSuggestionPending` flag set true when `refreshSuggestions` schedules the deferred
+pass (`handler.postDelayed(expensiveSuggestionRunnable, ...)`) and cleared when the deferred result lands
+on the main thread (before re-entering `refreshSuggestions`), when a backspace-repeat refresh bumps the seq
+(no replacement scheduled), and in `clearComposing()`. New `SuggestionController.Kind.LOADING` renders as a
+grey italic "…" chip (`suggestion_search_query_text` colour, same as the D-318 emoji-search query chip).
+Shown only in `showSuggestions()` when the bar would otherwise be empty (`withCompound.isEmpty() &&
+expensiveSuggestionPending`) — never alongside real suggestions. A tap does nothing (LOADING → Unit in
+`onSuggestionClicked`). No new tests (Android-view/service glue); the flag logic is a simple boolean
+tracking the existing scheduling/clearing points.
+
+### D-348 - Optional Double-Tap Backspace for Autocorrect Revert
+
+**Report:** a single Backspace after an autocorrect commit sometimes conflicts with the user's intent to
+just delete one character. A deliberate double-tap would be a clearer, less surprising trigger for the
+revert.
+
+**Fix (opt-in, default off):** new `doubleTapBackspaceUndo` setting (C-20) threaded through all 5 settings
+layers. New `lastBackspaceTime` field in `AdaptKeyService` mirrors G-05's `lastShiftTime` pattern, reusing
+the same `settings.doubleTapDelayMs` window (no separate delay setting). When on, the A-07 gate in
+`handleKey`'s `KeyCode.DELETE` branch:
+- **First tap (not a double-tap):** if the caret is at the armed undo tail, it's a no-op — the key
+  re-flashes via a new public `AdaptKeyboardView.flashKey(key)` as a visual hint ("press again to
+  revert"). If trailing whitespace sits beyond the armed tail, it's consumed ordinarily (same as the
+  single-tap mode's D-286 logic). The undo window stays armed either way.
+- **Second tap (within the window):** `performAutocorrectUndo(ic)` fires. Its own ground-truth check
+  (`getTextBeforeCursor == undoCommitted + undoDelimiter`) is the safety net — since the first tap never
+  deleted from the armed tail, this always matches when the caret is still there.
+When off, the original single-Backspace revert (D-286/D-277) is completely unchanged. 1 new
+`SettingsMapperTest` case (default off, pass-through). The `EXPORT_SETTINGS_KEY_ORDER` list gained the new
+key (placed right after `KEY_AUTOCORRECT_ENABLED`, matching the settings screen's own row order).
+
+### Tests
+
+1 new unit test (`SettingsMapperTest`). 2 existing layout tests updated (D-341's 4-entry assertion).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 330 → 331, `versionName` `"1.0.26"`
+→ `"1.0.27"`. **Not yet device-confirmed** — needs: (a) backspace hold + slide-off keeps deleting; (b)
+long-press `a` shows `à`, uppercase works under Shift/Caps Lock; (c) "…" appears for a deferred-search
+token like "vetmu" then disappears when results land; (d) with the setting on, single Backspace flashes
+(no revert), double-tap reverts; with it off, single-Backspace revert works as before.

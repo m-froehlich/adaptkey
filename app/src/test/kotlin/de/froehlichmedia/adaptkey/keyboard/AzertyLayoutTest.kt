@@ -89,7 +89,7 @@ class AzertyLayoutTest {
     fun `D-336 the a key offers the Nordic ligatures, same as the Latin layout, at the AZERTY top row`() {
         val aKey = AzertyLayout.rows()[1].byChar('a')
         
-        assertEquals(listOf("ä", "æ", "å"), aKey.alternatives)
+        assertEquals(listOf("ä", "æ", "å", "à"), aKey.alternatives)
     }
     
     @Test

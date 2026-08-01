@@ -43,7 +43,8 @@ data class RawSettings(
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
-    val autocorrectEnabled: Boolean = true
+    val autocorrectEnabled: Boolean = true,
+    val doubleTapBackspaceUndo: Boolean = false
 )
 
 /**
@@ -198,7 +199,8 @@ object SettingsMapper {
             pendingBlacklistExpiryDays = raw.pendingBlacklistExpiryDays.coerceIn(MIN_PENDING_BLACKLIST_EXPIRY_DAYS, MAX_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = raw.saveCredentials,
             contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled,
-            autocorrectEnabled = raw.autocorrectEnabled
+            autocorrectEnabled = raw.autocorrectEnabled,
+            doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo
         )
     }
 }

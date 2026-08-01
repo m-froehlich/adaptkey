@@ -1066,6 +1066,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-17 | Contact-derived email suggestions | On/Off (permission-gated) | Off |
 | C-18 | Pending-blacklist expiry window (G-04) | Days (1-30) | 7 |
 | C-19 | Installed language packs (§9) | Install/remove per language | English only |
+| C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | Off |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
@@ -1184,6 +1185,129 @@ D-337: while Caps Lock is engaged, the Shift key draws a bold stroked border (ac
 hit-target are unchanged, so neighbour keys are unaffected. Drawn after the background fill and before the
 label glyph, so the `⇪` lock indicator stays clear. A brief press still flashes with `pressedKeyPaint` as
 before; the persistent border is the additional Caps-Lock-only cue.
+
+---
+
+## 26. Backspace Hold — Slide-Off Continuation (D-340)
+
+D-340: when the user holds backspace and slides their finger off the key without lifting it, the
+accelerating backspace-repeat behaviour continues as long as the finger remains in contact with the
+touch surface anywhere on the keyboard, only stopping once the finger is actually lifted (`ACTION_UP` /
+`ACTION_CANCEL`). A slide-off never aborts the repeat mid-deletion — broadly equivalent to how a
+hardware key's auto-repeat stays active while any part of the finger remains down. The repeat's
+slide-off cancellation (which previously fired on the system touch-slop, so a small smear already
+killed the hold) is now gated on `!backspaceRepeated`: only before the first repeat tick has fired can
+a finger movement still cancel it (matching the G-02 word-delete swipe gesture's own prompt
+recognition). Refines D-07/D-31/D-56.
+
+---
+
+## 27. Additional Long-Press `à`/`À` on the 'a' Key (D-341)
+
+D-341: the German QWERTZ layout's `a` key has `à` (lowercase) and `À` (uppercase) as an additional
+alternative at the end of its long-press popup, after the existing entries (`ä`, `æ`, `å` and their
+upper-case forms). Extends D-336's popup set.
+
+---
+
+## 28. German Dictionary — NOUN_OR_VERB Rework (D-342)
+
+D-342: the German bundled dictionary must be reworked so that every word that can serve as both a verb
+and a noun is:
+- stored in lowercase as the base form,
+- attributed with a new compound tag `NOUN_OR_VERB`.
+
+Verb nominalisations (e.g. "Stelle" as the noun derived from "stellen") must be handled the same way.
+The goal is to eliminate unwanted automatic capitalisation corrections for words in this class: when a
+token like "stelle" is typed and the dictionary knows it can be both the imperative verb "stelle" (lowercase)
+and the noun "Stelle" (uppercase), no single autocorrect direction is unambiguous — instead the word is
+handled like the existing §6 rule 5 (ambiguous words): two suggestion chips (lowercase and capitalised)
+appear, and no automatic capitalisation correction is applied. This is a data-driven fix, not primarily a
+code change; the `PartOfSpeech` enum and the split/autocorrect gates that consult POS tags may need
+extension to recognise the new compound tag. See also the existing §6 rule 5 / A-05 "not both nouns" gate.
+
+---
+
+## 29. Caps Lock Vibration — Direct Vibrator, Subtle Effect (D-343)
+
+D-343: the short vibration that confirms Caps Lock engagement (G-06/D-337) must use the direct `Vibrator`
+path (bypassing the system's own touch-vibration toggle), so it fires even when system haptics are
+disabled. The vibration effect itself must be distinctly more subtle than the ordinary per-key haptic
+(D-06) — a shorter pulse, lower amplitude, or both — so the user can feel the confirmation without it
+being startling. Refines G-06/D-337.
+
+---
+
+## 30. Download Directory Control for Dictionaries / LLM Model (D-344)
+
+D-344: the app needs better control over where a browser-downloaded language pack or tier-3 LLM model
+file lands on the device, so AdaptKey can find it directly without the user having to manually locate it
+in a file picker. Three approaches to evaluate (not mutually exclusive):
+
+1. **HTTP header control.** Set `Content-Disposition: attachment; filename="xyz.zip"` and
+   `Content-Type: application/octet-stream` on the hosted download. Samsung One UI has been observed to
+   route files into an app-specific sandbox when these headers are absent or set to browser-inline types;
+   forcing `attachment`/`octet-stream` may keep the file in the standard Downloads directory instead.
+2. **Storage Access Framework / File-Picker API.** Use the platform's own `GET_CONTENT` or `OPEN_DOCUMENT`
+   intent so the user picks the file from wherever their browser (or file manager) placed it — no download
+   path guessing at all.
+3. **Raw repository path or Release Asset.** Host the archive directly at a stable, guessable URL within
+   the repository itself (e.g. a `Releases` asset), and let the app construct the expected local path
+   itself after the user's browser finishes downloading.
+
+Decision deferred — the approach (or combination) that works reliably on the widest range of devices and
+browsers should be chosen after practical testing.
+
+---
+
+## 31. Dictionary Noise — "Bri" Blacklist + Candidate Scan (D-345)
+
+D-345: "Bri" must be added to the bundled blacklist or removed from the bundled German dictionary
+outright — it is not a real word and at best an obscure abbreviation, causing only false-positive
+autocorrect/split interference. More broadly, the bundled German (and English) dictionaries should be
+scanned for every remaining Wikipedia-corpus-extraction-noise entry of the same class: fragments, obscure
+acronyms, and markup tokens that carry no real linguistic value. Each candidate should be listed and
+confirmed with the user before removal (to avoid silently dropping a genuine rare word someone might type).
+Truly obscure acronyms can always be learned individually by the user on demand (D-13/W-01). Extends the
+data-quality work started in D-306.
+
+---
+
+## 32. Fuzzy Search Loading Indicator in the Suggestion Bar (D-346)
+
+D-346: when S-09's neighbour-prefix escalation (D-328) — or any other deferred/background fuzzy search —
+is still running and has not yet returned a result for the current token, and the hot path found
+nothing (the bar would otherwise be empty), the suggestion bar shows a brief, unobtrusive "…"
+(ellipsis) placeholder pinned in the bar's slot. Once the background search either finds a candidate
+or definitively finds nothing, the indicator is replaced by the ordinary bar content (or an empty bar).
+The indicator never appears alongside real suggestions, never blocks user input, and never delays the
+next keystroke.
+
+---
+
+## 33. Gemini App — Cursor Nub Keeps Disappearing (D-347)
+
+D-347: in the Gemini app (Google's own conversational AI app), the cursor-positioning nub (the small
+handle above the insertion caret used to drag the cursor around) flickers briefly and then disappears,
+making cursor positioning effectively unusable. Reported by the user on their device, observed with
+AdaptKey as the active IME. The root cause is not yet diagnosed — possible factors include the composing
+state life cycle, an `onUpdateSelection` interaction, or a view-layer timing issue specific to Gemini's
+own editor rendering. Investigation deferred; needs a real device-log capture from within Gemini to
+establish the exact sequence of IME callbacks before any fix is attempted.
+
+---
+
+## 34. Optional Double-Tap Backspace for Autocorrect Revert (D-348)
+
+D-348: an optional setting (default off) changes A-07's post-commit undo trigger from a single Backspace
+to a double-tap — two Backspace presses within the existing `doubleTapDelayMs` window (G-05, 200-800 ms,
+default 400 ms). When on, the first Backspace at the armed undo tail is a no-op that re-flashes the key
+as a visual hint ("press again to revert"); only the second Backspace within the window fires the revert.
+Trailing whitespace beyond the armed tail is still consumed ordinarily by the first press (same as the
+single-tap mode's own D-286/D-277 whitespace consumption). When off (the default), the original
+single-Backspace revert behaviour is unchanged. The motivation: a single-Backspace revert can conflict
+with the user's intent to simply delete one character, and a deliberate double-tap is a clearer, less
+surprising trigger for an action that replaces an entire word.
 
 ---
 

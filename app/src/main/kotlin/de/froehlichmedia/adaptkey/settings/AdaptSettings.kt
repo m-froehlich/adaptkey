@@ -68,6 +68,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           split and A-06 merge have no suggestion-bar alternative of their own yet outside a mid-word
  *           re-edit (D-122) - with this off, that specific class of typo (a missed/spurious space) commits
  *           uncorrected and unoffered, a known, disclosed gap rather than a silent one.
+ * @property doubleTapBackspaceUndo D-348: whether A-07's post-commit undo requires a double-tap of
+ *           Backspace instead of a single press (default **off**). When on, the first Backspace at the
+ *           armed undo tail is a no-op (the key re-flashes as a visual hint); only a second Backspace
+ *           within the [doubleTapDelayMs] window fires the revert. Trailing whitespace beyond the armed
+ *           tail is still consumed ordinarily by the first press. Reuses the G-05 double-tap delay setting.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -89,7 +94,8 @@ data class AdaptSettings(
     val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
-    val autocorrectEnabled: Boolean = true
+    val autocorrectEnabled: Boolean = true,
+    val doubleTapBackspaceUndo: Boolean = false
 ) {
     
     companion object {

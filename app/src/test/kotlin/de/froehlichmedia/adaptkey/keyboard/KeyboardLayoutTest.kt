@@ -121,7 +121,7 @@ class KeyboardLayoutTest {
         val aKey = KeyboardLayout.rows()[2].byChar('a')
         
         assertEquals("ä", aKey.hint)
-        assertEquals(listOf("ä", "æ", "å"), aKey.alternatives)
+        assertEquals(listOf("ä", "æ", "å", "à"), aKey.alternatives)
     }
     
     @Test

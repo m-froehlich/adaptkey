@@ -110,6 +110,8 @@
 
     <string name="d234_autocorrect_enabled_title">Autokorrektur</string>
     <string name="d234_autocorrect_enabled_summary">Wendet Korrekturen automatisch beim Tippen an. Aus: jede Korrektur wird nur noch als antippbarer Vorschlag angeboten, nichts wird still verändert.</string>
+    <string name="d348_double_tap_backspace_undo_title">Doppel-Tipp Backspace zum Zurücksetzen</string>
+    <string name="d348_double_tap_backspace_undo_summary">Wenn aktiv, löscht ein einzelner Backspace nach einer Autokorrektur nur ein Zeichen; drücke Backspace zweimal schnell hintereinander, um die Korrektur zurückzunehmen.</string>
     <string name="c04_color_title">Highlight-Farbe</string>
     <string name="c02_title">Re-Sort-Verzögerung</string>
     <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>

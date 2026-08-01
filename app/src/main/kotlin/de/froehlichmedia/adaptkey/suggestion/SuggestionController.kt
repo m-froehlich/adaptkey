@@ -70,7 +70,13 @@ class SuggestionController(private val config: SuggestionConfig) {
         /** D-318: pinned first, ahead of every [EMOJI_SEARCH_RESULT] - shows the emoji-search query typed
          * so far (D-317's capture buffer has no on-screen representation of its own otherwise, reported as
          * "typing into nothing"). Purely informational, like [LEARNED]; a tap does nothing. */
-        EMOJI_SEARCH_QUERY
+        EMOJI_SEARCH_QUERY,
+        
+        /** D-346: a placeholder "…" shown when the bar would otherwise be empty and a deferred/background
+         * fuzzy search is still in flight, so the user knows the keyboard is still looking. Purely
+         * informational; a tap does nothing. Replaced by real results (or an empty bar) once the search
+         * completes. */
+        LOADING
     }
     
     /**
