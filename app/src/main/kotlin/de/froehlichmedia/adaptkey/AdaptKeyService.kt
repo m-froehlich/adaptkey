@@ -2266,21 +2266,34 @@ class AdaptKeyService : InputMethodService() {
                         if (settings.doubleTapBackspaceUndo) {
                             if (isDoubleTap) {
                                 // Double-tap: attempt revert. performAutocorrectUndo's own ground-truth
-                                // check ensures this only fires when the armed tail is still intact (which
-                                // it always is here - the first press never deleted from it).
-                                if (!performAutocorrectUndo(ic)) {
+                                // check tolerates a already-consumed whitespace delimiter (the first tap
+                                // may have deleted it) by re-checking against just undoCommitted alone.
+                                if (!performAutocorrectUndo(ic, allowConsumedDelimiter = true)) {
                                     handleBackspace(ic)
                                 }
                                 return
                             }
-                            // Single tap: no revert. Consume trailing whitespace if present, otherwise
-                            // no-op at the armed tail (flash the key as a visual hint "press again").
-                            val armedTailDt = undoCommitted + undoDelimiter
-                            val atArmedTailDt = ic.getTextBeforeCursor(armedTailDt.length, 0)?.toString() == armedTailDt
-                            if (!atArmedTailDt && ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
-                                handleBackspace(ic)
+                            // Single tap: no revert. The caret is "at the armed tail" when it sits
+                            // directly adjacent to undoCommitted (the committed word) — whether the
+                            // undoDelimiter (typically a space) is still there or has already been
+                            // consumed by a prior single tap in this mode. Only then is this a no-op
+                            // (flash the key as a visual hint "press again to revert"); anywhere else
+                            // the user is editing normally, so delete ordinarily and clear the window.
+                            val atCommitted = ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
+                            if (atCommitted) {
+                                // Trailing whitespace beyond the committed word (the undoDelimiter, or
+                                // extra Space/Enter pressed after the commit) is consumed ordinarily so
+                                // a second tap can reach the bare committed word — but only when the
+                                // character immediately before the caret is whitespace; once the caret
+                                // sits flush against undoCommitted itself, it's the no-op flash.
+                                if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
+                                    handleBackspace(ic)
+                                } else {
+                                    keyboardView?.flashKey(key)
+                                }
                             } else {
-                                keyboardView?.flashKey(key)
+                                clearUndo()
+                                handleBackspace(ic)
                             }
                             return
                         }
@@ -3943,28 +3956,40 @@ class AdaptKeyService : InputMethodService() {
      *         caret (the window is discarded either way - a stale window is never left armed after a
      *         Backspace attempted to use it)
      */
-    private fun performAutocorrectUndo(ic: InputConnection): Boolean {
+    private fun performAutocorrectUndo(ic: InputConnection, allowConsumedDelimiter: Boolean = false): Boolean {
         val typed = undoTyped ?: return false
         val wasSplit = undoWasSplit
         val wasCompound = undoWasCompound
         val learnRecords = undoLearnRecords
         val rawCorrection = undoRawCorrection
         val expectedTail = undoCommitted + undoDelimiter
-        if (ic.getTextBeforeCursor(expectedTail.length, 0)?.toString() != expectedTail) {
+        val tailPresent = ic.getTextBeforeCursor(expectedTail.length, 0)?.toString() == expectedTail
+        // D-348: in double-tap-backspace-undo mode, the first tap may have already consumed the
+        // undoDelimiter (when it was whitespace) to bring the caret flush against undoCommitted. The
+        // revert then only needs to delete undoCommitted's length and re-commit the typed word without
+        // the delimiter (which is still there in the document as the char the first tap deleted - no, it
+        // was deleted, so we must NOT re-commit it either: the caret sits directly before where the
+        // delimiter used to be, and undoCommitted is what precedes it).
+        val delimiterConsumed = allowConsumedDelimiter && !tailPresent &&
+            undoDelimiter.isNotEmpty() &&
+            ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
+        if (!tailPresent && !delimiterConsumed) {
             // The caret is not actually where the window assumes - moved away since it was armed (a tap
             // elsewhere), or the document changed unexpectedly underneath it. Reverting blindly here would
             // corrupt whatever text genuinely precedes the caret now; discard the window instead.
             clearUndo()
             return false
         }
+        val deleteLen = if (delimiterConsumed) undoCommitted.length else undoCommitted.length + undoDelimiter.length
+        val commitText = if (delimiterConsumed) typed else typed + undoDelimiter
         // D-289: captured before anything below ever touches previousWord/previousPreviousWord - a B-03
         // compound-chip acceptance never advanced either field in the first place (see
         // learnHyphenCompound's own KDoc), so undoing one must restore them exactly as they already were,
         // never whatever the ordinary/split path further below would otherwise compute for a real word.
         val previousWordBeforeUndo = previousWord
         val previousPreviousWordBeforeUndo = previousPreviousWord
-        ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
-        ic.commitText(typed + undoDelimiter, 1)
+        ic.deleteSurroundingText(deleteLen, 0)
+        ic.commitText(commitText, 1)
         clearUndo()
         // D-331 (temporary diagnostic): log the revert so the user can confirm the fix on-device -
         // whether the undo actually fired, what was re-learned, and the pending count afterwards.

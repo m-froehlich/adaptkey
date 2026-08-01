@@ -13160,3 +13160,66 @@ key (placed right after `KEY_AUTOCORRECT_ENABLED`, matching the settings screen'
 long-press `a` shows `à`, uppercase works under Shift/Caps Lock; (c) "…" appears for a deferred-search
 token like "vetmu" then disappears when results land; (d) with the setting on, single Backspace flashes
 (no revert), double-tap reverts; with it off, single-Backspace revert works as before.
+
+### Device confirmation (2026-08-01)
+
+D-340 (backspace slide-off) and D-341 (`à`/`À` popup) confirmed working on device.
+
+## §267 - D-348 Fix: Single Backspace Ignored Several Times After Autocorrect Commit
+
+### Report
+
+With the D-348 double-tap-backspace-undo option on, the revert itself worked on a double-tap, but
+ordinary single Backspace presses were silently ignored several times in a row after an autocorrect
+commit — the user had to press Backspace many times before anything actually deleted.
+
+### Root Cause
+
+The first-tap path (single, non-double-tap Backspace while `undoTyped != null`) had its no-op+flash
+condition inverted relative to intent. The original logic was:
+
+```
+if (!atArmedTail && preceding char is whitespace) → handleBackspace   // consume trailing whitespace
+else → flashKey (no-op)                                               // ← the bug
+```
+
+The `else` branch (no-op+flash) fired whenever the caret was *not* at the armed tail *and* the preceding
+char was *not* whitespace. That covers the very common case where the user, after an autocorrect commit,
+moves the caret elsewhere (a tap, an arrow key) and then presses Backspace to delete an ordinary
+character — `undoTyped` is still armed (nothing cleared it, since no non-whitespace char was typed), the
+caret is not at the armed tail, and the preceding char is not whitespace. Result: every such Backspace
+was swallowed as a no-op+flash, with no deletion and no window cleanup. The window only ever cleared
+once a non-whitespace character was typed (the `else -> clearUndo()` branch in the outer `when`), so the
+user was stuck pressing Backspace to no effect until they typed something.
+
+### Fix
+
+Restructured the first-tap path so the no-op+flash fires **only** when the caret is directly adjacent to
+`undoCommitted` (the committed word itself), regardless of whether the `undoDelimiter` is still present
+or has already been consumed by a prior single tap in this mode:
+
+```
+if caret is at undoCommitted:
+    if preceding char is whitespace → handleBackspace   // consume delimiter / extra whitespace
+    else → flashKey (no-op)                              // "press again to revert"
+else:
+    clearUndo() + handleBackspace                        // ordinary delete, window no longer applies
+```
+
+This means: at the committed word, the first tap consumes any trailing whitespace (bringing the caret
+flush against `undoCommitted`), then subsequent single taps flash as a hint until the double-tap fires
+the revert. Anywhere else, Backspace deletes normally and clears the stale window.
+
+Because the first tap may now consume the whitespace `undoDelimiter`, the double-tap revert's ground-truth
+check in `performAutocorrectUndo` (which expected `undoCommitted + undoDelimiter` to still be present)
+would fail. Added an `allowConsumedDelimiter` parameter: when true (only the double-tap path passes it),
+the check falls back to verifying just `undoCommitted` alone, and deletes/commits without the delimiter
+(the delimiter was already removed by the first tap, so it must not be re-deleted or re-committed).
+
+### Tests
+
+No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 331 → 332, `versionName` `"1.0.27"` → `"1.0.28"`. **Not yet device-confirmed** — needs a
+repeat of the D-348 scenarios, especially: (a) single Backspace away from the committed word deletes
+normally; (b) double-tap at the committed word reverts even after the delimiter was consumed by the
+first tap; (c) single-Backspace revert still works with the option off.

@@ -308,6 +308,19 @@ non-trivial changes).
   D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist),
   D-347 (Gemini app cursor nub). See spec §28-§31, §33.
 
+- **§267 (v1.0.28): D-348 fix - single Backspace was ignored several times after an autocorrect commit**
+  when the double-tap-undo option was on. Root cause: the first-tap no-op path flashed the key for
+  *any* Backspace while `undoTyped` was armed and the caret was not at the armed tail, instead of only
+  when the caret actually sat at `undoCommitted`. Once the user moved the caret elsewhere, every
+  subsequent Backspace was silently swallowed. Fix: no-op+flash now fires only when the caret is
+  directly adjacent to `undoCommitted`; anywhere else, `clearUndo()` + ordinary `handleBackspace` runs.
+  Also taught `performAutocorrectUndo` an `allowConsumedDelimiter` parameter so the double-tap revert
+  still works after the first tap consumed the whitespace delimiter. No new tests (Android-glue path).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 331 → 332, `versionName`
+  `"1.0.27"` → `"1.0.28"`. **Not yet device-confirmed** - see history §267.
+
+- **Device-confirmed (2026-08-01): D-340 (backspace slide-off), D-341 (`à`/`À` popup).**
+
 - **§266 (v1.0.27): D-340/D-341/D-346/D-348 - four backlog items shipped together.** (1) D-340:**
   **backspace hold continues after slide-off - `cancelBackspaceRepeat` gated on `!backspaceRepeated`,**
   **so only a swipe before the first tick cancels; once the hold is active it runs until finger lift.**
