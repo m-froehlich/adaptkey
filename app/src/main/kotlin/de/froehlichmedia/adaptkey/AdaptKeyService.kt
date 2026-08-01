@@ -2274,18 +2274,24 @@ class AdaptKeyService : InputMethodService() {
                                 return
                             }
                             // Single tap: no revert. The caret is "at the armed tail" when it sits
-                            // directly adjacent to undoCommitted (the committed word) — whether the
-                            // undoDelimiter (typically a space) is still there or has already been
-                            // consumed by a prior single tap in this mode. Only then is this a no-op
-                            // (flash the key as a visual hint "press again to revert"); anywhere else
-                            // the user is editing normally, so delete ordinarily and clear the window.
-                            val atCommitted = ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
-                            if (atCommitted) {
-                                // Trailing whitespace beyond the committed word (the undoDelimiter, or
-                                // extra Space/Enter pressed after the commit) is consumed ordinarily so
-                                // a second tap can reach the bare committed word — but only when the
-                                // character immediately before the caret is whitespace; once the caret
-                                // sits flush against undoCommitted itself, it's the no-op flash.
+                            // directly adjacent to undoCommitted — either with the undoDelimiter (typically
+                            // a space) still present (the full armed tail), or with it already consumed by a
+                            // prior single tap in this mode (just undoCommitted). Note: getTextBeforeCursor
+                            // counts back from the caret, so when the delimiter is still there the last
+                            // undoCommitted.length chars are NOT undoCommitted (they're shifted by the
+                            // delimiter) — both positions must be checked explicitly. Only at the armed
+                            // tail is this a no-op (flash the key as a visual hint "press again to
+                            // revert"); anywhere else the user is editing normally, so delete ordinarily
+                            // and clear the window.
+                            val fullTail = undoCommitted + undoDelimiter
+                            val atFullTail = ic.getTextBeforeCursor(fullTail.length, 0)?.toString() == fullTail
+                            val atBareCommitted = !atFullTail && undoDelimiter.isNotEmpty() &&
+                                ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
+                            if (atFullTail || atBareCommitted) {
+                                // Trailing whitespace (the undoDelimiter, or extra Space/Enter pressed
+                                // after the commit) is consumed ordinarily so a second tap can reach the
+                                // bare committed word; once the caret sits flush against undoCommitted
+                                // itself (no whitespace left), it's the no-op flash.
                                 if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
                                     handleBackspace(ic)
                                 } else {

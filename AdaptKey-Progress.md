@@ -308,6 +308,16 @@ non-trivial changes).
   D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist),
   D-347 (Gemini app cursor nub). See spec §28-§31, §33.
 
+- **§268 (v1.0.29): D-348 fix v2 - double-tap revert stopped working after the v1.0.28 fix.** Root
+  cause: the `atCommitted` check used `getTextBeforeCursor(undoCommitted.length)`, but when the
+  undoDelimiter (space) was still present, the caret sat after `"Vom "` and the last 3 chars were
+  `"om "` ≠ `"Vom"` — so `atCommitted` was false, the code cleared the undo window and deleted the
+  space, and the second tap never saw a double-tap. Fix: `atArmedTail` now checks both the full tail
+  (`undoCommitted + undoDelimiter`) and the bare `undoCommitted` (delimiter already consumed), so the
+  no-op/flash path correctly recognises both positions. No new tests (Android-glue path).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 332 → 333, `versionName`
+  `"1.0.28"` → `"1.0.29"`. **Not yet device-confirmed** - see history §268.
+
 - **§267 (v1.0.28): D-348 fix - single Backspace was ignored several times after an autocorrect commit**
   when the double-tap-undo option was on. Root cause: the first-tap no-op path flashed the key for
   *any* Backspace while `undoTyped` was armed and the caret was not at the armed tail, instead of only

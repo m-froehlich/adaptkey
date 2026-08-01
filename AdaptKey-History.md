@@ -13223,3 +13223,57 @@ No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:t
 repeat of the D-348 scenarios, especially: (a) single Backspace away from the committed word deletes
 normally; (b) double-tap at the committed word reverts even after the delimiter was consumed by the
 first tap; (c) single-Backspace revert still works with the option off.
+
+## §268 - D-348 Fix v2: Double-Tap Revert Stopped Working After the v1.0.28 Fix
+
+### Report
+
+After the v1.0.28 fix (§267) fixed the "single Backspace ignored" bug, the double-tap revert itself
+stopped working entirely — pressing Backspace twice did nothing.
+
+### Root Cause
+
+The §267 fix's `atCommitted` check was:
+
+```kotlin
+val atCommitted = ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
+```
+
+`getTextBeforeCursor(n)` returns the **last `n` characters before the caret**. After a typical
+autocorrect commit of `"Vom "` (committed word `"Vom"` + delimiter `" "`), the caret sits at position
+4 (after the space). `getTextBeforeCursor(3)` returns `"om "` (the last 3 chars: `o`, `m`, ` `) — not
+`"Vom"`. So `atCommitted` was **false** even though the caret was exactly at the armed tail, the code
+fell into the `else` branch, called `clearUndo()` + `handleBackspace` (deleting the space), and the
+undo window was gone before the second tap could fire a double-tap.
+
+The check only would have matched `undoCommitted` when the delimiter had already been deleted — but
+that deletion was itself supposed to happen inside the `atCommitted == true` branch, creating a
+chicken-and-egg deadlock: the first tap could never reach the consume-delimiter path because it never
+recognised the caret as being at the armed tail.
+
+### Fix
+
+`atArmedTail` now checks **both** positions explicitly:
+
+```kotlin
+val atFullTail = getTextBeforeCursor(undoCommitted.length + undoDelimiter.length) == undoCommitted + undoDelimiter
+val atBareCommitted = !atFullTail && undoDelimiter.isNotEmpty() &&
+    getTextBeforeCursor(undoCommitted.length) == undoCommitted
+```
+
+- `atFullTail` — delimiter still present (caret after `"Vom "`): the last 4 chars are `"Vom "`, matches
+  the full armed tail. First tap consumes the trailing whitespace.
+- `atBareCommitted` — delimiter already consumed (caret after `"Vom"`): the last 3 chars are `"Vom"`,
+  matches `undoCommitted`. First tap is the no-op flash.
+- Neither — caret elsewhere: `clearUndo()` + ordinary `handleBackspace`.
+
+The two conditions are mutually exclusive when `undoDelimiter` is non-empty (the last `n` chars shift
+by the delimiter length), and collapse to the same check when it's empty.
+
+### Tests
+
+No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 332 → 333, `versionName` `"1.0.28"` → `"1.0.29"`. **Not yet device-confirmed** — needs the
+full D-348 scenario set: (a) double-tap reverts after the delimiter is consumed by the first tap;
+(b) single Backspace away from the committed word deletes normally; (c) single-Backspace revert with
+the option off still works.
