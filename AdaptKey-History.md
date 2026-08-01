@@ -13277,3 +13277,58 @@ No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:t
 full D-348 scenario set: (a) double-tap reverts after the delimiter is consumed by the first tap;
 (b) single Backspace away from the committed word deletes normally; (c) single-Backspace revert with
 the option off still works.
+
+## §269 - D-348 Fix v3: Double-Tap Duplicated the Reverted Word
+
+### Report
+
+After the v1.0.29 fix (§268), the double-tap revert fired but duplicated the typed word — instead of
+"Vom" → "glm", the result was "glmglm" (or "Vomglm").
+
+### Root Cause
+
+The entire `allowConsumedDelimiter` mechanism (introduced in §267, patched in §268) was fundamentally
+wrong. The design had the first tap consume the whitespace delimiter (via `handleBackspace`), then
+relied on `performAutocorrectUndo`'s `allowConsumedDelimiter` fallback to handle the now-missing
+delimiter. But that fallback computed `deleteLen` and `commitText` with wrong offsets:
+
+- When `delimiterConsumed` was true, it deleted only `undoCommitted.length` chars and committed only
+  `typed` (without delimiter). But the reclaim flow triggered by the first tap's `handleBackspace`
+  (via `onUpdateSelection` → `reclaimWordAtCaret`) could have re-committed or re-composed the word in
+  the meantime, so `deleteSurroundingText` deleted from the wrong position, and `commitText` inserted
+  the typed word alongside whatever was still in the document — producing the duplication.
+
+The deeper mistake: the first tap should **never** delete from the armed tail. The armed tail
+(`undoCommitted + undoDelimiter`) is the exact byte sequence `performAutocorrectUndo`'s ground-truth
+check verifies before reverting. Any deletion from it — even just the delimiter — breaks that check,
+forcing a fallback path that can only ever be a fragile approximation.
+
+### Fix
+
+Removed `allowConsumedDelimiter` entirely; reverted `performAutocorrectUndo` to its original,
+unchanged form (signature, ground-truth check, delete/commit lengths all exactly as before D-348).
+
+The first-tap path is now:
+
+```
+if atArmedTail (getTextBeforeCursor(undoCommitted + undoDelimiter) == undoCommitted + undoDelimiter):
+    no-op + flash          // DON'T touch the delimiter — ground truth must stay intact
+elif preceding char is whitespace:
+    handleBackspace         // consume trailing whitespace BEYOND the armed tail
+else:
+    clearUndo() + handleBackspace  // editing elsewhere
+```
+
+The second tap calls `performAutocorrectUndo(ic)` — the original method, no parameters. Its
+ground-truth check passes because the first tap never modified the armed tail. If the check fails
+(e.g. the caret moved between taps), it returns false and `handleBackspace` is the fallback — the
+window is cleared either way.
+
+### Tests
+
+No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 333 → 334, `versionName` `"1.0.29"` → `"1.0.30"`. **Not yet device-confirmed** — needs
+the full D-348 scenario set: (a) double-tap at the committed word reverts correctly (no duplication);
+(b) single Backspace away from the committed word deletes normally; (c) trailing whitespace beyond
+the armed tail is consumed by the first tap, then double-tap reverts; (d) single-Backspace revert
+with the option off still works.

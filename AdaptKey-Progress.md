@@ -308,6 +308,19 @@ non-trivial changes).
   D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist),
   D-347 (Gemini app cursor nub). See spec §28-§31, §33.
 
+- **§269 (v1.0.30): D-348 fix v3 - double-tap duplicated the reverted word.** Root cause: the
+  `allowConsumedDelimiter` mechanism (added in v1.0.28 to tolerate the first tap deleting the
+  delimiter) was fundamentally wrong — the first tap's deletion of the delimiter broke the
+  ground-truth check, and the `allowConsumedDelimiter` fallback path then deleted/committed with
+  wrong offsets, causing the typed word to be inserted without the committed word being fully
+  removed. Fix: removed `allowConsumedDelimiter` entirely; reverted `performAutocorrectUndo` to its
+  original form. The first tap at the armed tail is now a pure no-op+flash that NEVER touches the
+  delimiter, so the second tap's `performAutocorrectUndo` ground-truth check always matches. Trailing
+  whitespace *beyond* the armed tail is still consumed ordinarily by the first tap; anywhere else,
+  `clearUndo()` + ordinary delete. No new tests (Android-glue path).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 333 → 334, `versionName`
+  `"1.0.29"` → `"1.0.30"`. **Not yet device-confirmed** - see history §269.
+
 - **§268 (v1.0.29): D-348 fix v2 - double-tap revert stopped working after the v1.0.28 fix.** Root
   cause: the `atCommitted` check used `getTextBeforeCursor(undoCommitted.length)`, but when the
   undoDelimiter (space) was still present, the caret sat after `"Vom "` and the last 3 chars were

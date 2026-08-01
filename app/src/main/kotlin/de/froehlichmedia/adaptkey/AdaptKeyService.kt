@@ -2265,38 +2265,30 @@ class AdaptKeyService : InputMethodService() {
                         lastBackspaceTime = now
                         if (settings.doubleTapBackspaceUndo) {
                             if (isDoubleTap) {
-                                // Double-tap: attempt revert. performAutocorrectUndo's own ground-truth
-                                // check tolerates a already-consumed whitespace delimiter (the first tap
-                                // may have deleted it) by re-checking against just undoCommitted alone.
-                                if (!performAutocorrectUndo(ic, allowConsumedDelimiter = true)) {
+                                // Double-tap: fire the revert via the original, unmodified
+                                // performAutocorrectUndo. Its ground-truth check verifies the armed tail
+                                // is intact — which it always is here, because the first tap (below) never
+                                // deletes from the armed tail itself. If the check fails (e.g. the caret
+                                // moved away between the two taps), fall back to an ordinary delete.
+                                if (!performAutocorrectUndo(ic)) {
                                     handleBackspace(ic)
                                 }
                                 return
                             }
-                            // Single tap: no revert. The caret is "at the armed tail" when it sits
-                            // directly adjacent to undoCommitted — either with the undoDelimiter (typically
-                            // a space) still present (the full armed tail), or with it already consumed by a
-                            // prior single tap in this mode (just undoCommitted). Note: getTextBeforeCursor
-                            // counts back from the caret, so when the delimiter is still there the last
-                            // undoCommitted.length chars are NOT undoCommitted (they're shifted by the
-                            // delimiter) — both positions must be checked explicitly. Only at the armed
-                            // tail is this a no-op (flash the key as a visual hint "press again to
-                            // revert"); anywhere else the user is editing normally, so delete ordinarily
-                            // and clear the window.
-                            val fullTail = undoCommitted + undoDelimiter
-                            val atFullTail = ic.getTextBeforeCursor(fullTail.length, 0)?.toString() == fullTail
-                            val atBareCommitted = !atFullTail && undoDelimiter.isNotEmpty() &&
-                                ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
-                            if (atFullTail || atBareCommitted) {
-                                // Trailing whitespace (the undoDelimiter, or extra Space/Enter pressed
-                                // after the commit) is consumed ordinarily so a second tap can reach the
-                                // bare committed word; once the caret sits flush against undoCommitted
-                                // itself (no whitespace left), it's the no-op flash.
-                                if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
-                                    handleBackspace(ic)
-                                } else {
-                                    keyboardView?.flashKey(key)
-                                }
+                            // Single tap: no revert. The caret is "at the armed tail" when it sits exactly
+                            // after undoCommitted + undoDelimiter (the full committed word plus its
+                            // delimiter). Only then is this a no-op (flash the key as a visual hint
+                            // "press again to revert") — the first tap must NOT delete the delimiter, so
+                            // the ground-truth check in the second tap's performAutocorrectUndo still
+                            // matches. Trailing whitespace *beyond* the armed tail (extra Space/Enter
+                            // pressed after the commit) is still consumed ordinarily; anywhere else, the
+                            // user is editing normally, so delete ordinarily and clear the window.
+                            val armedTailDt = undoCommitted + undoDelimiter
+                            val atArmedTailDt = ic.getTextBeforeCursor(armedTailDt.length, 0)?.toString() == armedTailDt
+                            if (atArmedTailDt) {
+                                keyboardView?.flashKey(key)
+                            } else if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
+                                handleBackspace(ic)
                             } else {
                                 clearUndo()
                                 handleBackspace(ic)
@@ -3962,40 +3954,28 @@ class AdaptKeyService : InputMethodService() {
      *         caret (the window is discarded either way - a stale window is never left armed after a
      *         Backspace attempted to use it)
      */
-    private fun performAutocorrectUndo(ic: InputConnection, allowConsumedDelimiter: Boolean = false): Boolean {
+    private fun performAutocorrectUndo(ic: InputConnection): Boolean {
         val typed = undoTyped ?: return false
         val wasSplit = undoWasSplit
         val wasCompound = undoWasCompound
         val learnRecords = undoLearnRecords
         val rawCorrection = undoRawCorrection
         val expectedTail = undoCommitted + undoDelimiter
-        val tailPresent = ic.getTextBeforeCursor(expectedTail.length, 0)?.toString() == expectedTail
-        // D-348: in double-tap-backspace-undo mode, the first tap may have already consumed the
-        // undoDelimiter (when it was whitespace) to bring the caret flush against undoCommitted. The
-        // revert then only needs to delete undoCommitted's length and re-commit the typed word without
-        // the delimiter (which is still there in the document as the char the first tap deleted - no, it
-        // was deleted, so we must NOT re-commit it either: the caret sits directly before where the
-        // delimiter used to be, and undoCommitted is what precedes it).
-        val delimiterConsumed = allowConsumedDelimiter && !tailPresent &&
-            undoDelimiter.isNotEmpty() &&
-            ic.getTextBeforeCursor(undoCommitted.length, 0)?.toString() == undoCommitted
-        if (!tailPresent && !delimiterConsumed) {
+        if (ic.getTextBeforeCursor(expectedTail.length, 0)?.toString() != expectedTail) {
             // The caret is not actually where the window assumes - moved away since it was armed (a tap
             // elsewhere), or the document changed unexpectedly underneath it. Reverting blindly here would
             // corrupt whatever text genuinely precedes the caret now; discard the window instead.
             clearUndo()
             return false
         }
-        val deleteLen = if (delimiterConsumed) undoCommitted.length else undoCommitted.length + undoDelimiter.length
-        val commitText = if (delimiterConsumed) typed else typed + undoDelimiter
         // D-289: captured before anything below ever touches previousWord/previousPreviousWord - a B-03
         // compound-chip acceptance never advanced either field in the first place (see
         // learnHyphenCompound's own KDoc), so undoing one must restore them exactly as they already were,
         // never whatever the ordinary/split path further below would otherwise compute for a real word.
         val previousWordBeforeUndo = previousWord
         val previousPreviousWordBeforeUndo = previousPreviousWord
-        ic.deleteSurroundingText(deleteLen, 0)
-        ic.commitText(commitText, 1)
+        ic.deleteSurroundingText(undoCommitted.length + undoDelimiter.length, 0)
+        ic.commitText(typed + undoDelimiter, 1)
         clearUndo()
         // D-331 (temporary diagnostic): log the revert so the user can confirm the fix on-device -
         // whether the undo actually fired, what was re-learned, and the pending count afterwards.
