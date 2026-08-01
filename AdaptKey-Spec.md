@@ -258,30 +258,34 @@ dedicated review screen (§13, W-01) exists as the only way to remove such a wor
 confirmation chip is the one exception to this single-zone behaviour, offering an explicit two-zone drag of
 its own instead - see §13.
 
-### G-05 - Retroactive Capitalisation at Word End
-Pressing Shift at the end of a fully typed word toggles the capitalisation of its first character - in both directions: "Upper" becomes "upper", "lower" becomes "Lower". The outcome depends on the next key pressed:
+### G-05 - Double-Tap Shift to Toggle Word-Start Capitalisation
+A double-tap on Shift (two presses within the configurable double-tap delay, default 400 ms, range 200-800 ms)
+toggles the capitalisation of the current word's first character — in both directions: "Upper" becomes
+"upper", "lower" becomes "Lower". The toggle is **immediate**: the word is committed verbatim the moment the
+double-tap completes, bypassing autocorrect, §6 capitalisation, and single-word correction entirely. There
+is no provisional state and no camelCase continuation — the three Shift intents (Caps Lock via long-press,
+word-start toggle via double-tap, next-letter case via single tap) no longer compete with each other.
 
-- **Next key is a space, punctuation, or line break:** The first character is toggled as described; the rest of the word is unchanged.
-- **Next key is a letter:** The toggle of the first character is discarded; instead, the new letter is inserted as an uppercase character within the word (camelCase / PascalCase).
+The double-tap works regardless of where the caret sits within the composing token (not only at its end, as
+the former single-tap word-end gesture required). When no word is currently composing, the double-tap simply
+disarms the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot uppercase.
 
-The gesture only triggers when the caret is genuinely at the composing token's own end (not merely while
-some token happens to be composing), and only after a Caps-Lock-release check has first been ruled out.
+The double-tap delay is configurable via a slider in the Layout settings category, placed directly below the
+long-press delay slider. Default: 400 ms. Range: 200-800 ms, in 10 ms steps.
 
-Committing a case-locked token still bypasses autocorrect, §6 capitalisation, and single-word correction
-entirely - "the user has hand-finished it" - **except** for A-05 retroactive word splitting: a case lock
-speaks only to the first character's own casing, not to whether the token is genuinely one word at all, so a
-genuine two-word split (e.g. a T-05 space-ambiguous mistouch that happened to coincide with the Shift press)
-is still found and applied. A token that does split this way is no longer case-locked - the split halves go
-through the ordinary per-half capitalisation like any other A-05 split.
+Committing a case-locked token (one toggled via this gesture) still bypasses autocorrect, §6 capitalisation,
+and single-word correction entirely — "the user has hand-finished it" — **except** for A-05 retroactive word
+splitting: a case lock speaks only to the first character's own casing, not to whether the token is genuinely
+one word at all, so a genuine two-word split is still found and applied. A token that does split this way is
+no longer case-locked — the split halves go through the ordinary per-half capitalisation like any other A-05
+split.
 
-### G-06 - Double-Tap Shift for Caps Lock
-Double-tapping Shift engages Caps Lock. D-312: this takes priority over G-05's own word-end gesture even
-when the second tap of the pair would otherwise also satisfy G-05's own trigger condition (the caret sitting
-at the composing token's own end, the ordinary state right after typing any letter) - without this priority,
-a deliberate rapid double-tap right after a word's first letter could never reach Caps Lock at all, since
-G-05 would already have claimed the first of the two taps. If the first tap already applied a provisional
-G-05 first-letter toggle, the second (double-tap-confirming) tap undoes it before Caps Lock engages - a
-genuine double-tap means "Caps Lock, no side effect on the word", not "G-05 toggle, then also Caps Lock".
+### G-06 - Long-Press Shift for Caps Lock
+Holding the Shift key past the long-press timeout engages Caps Lock (persistent uppercase). A simple tap on
+Shift while Caps Lock is engaged releases it. When Caps Lock engages, a short vibration confirms it — this
+haptic feedback is governed by a separate setting ("Caps Lock vibration", default on) in the Feedback
+category, independent of whether the per-key vibration (D-06) is enabled. The vibration uses the same direct
+`Vibrator` path as D-06, bypassing the system "touch vibration" toggle.
 
 ### Addendum to G-05 - Shift State After Backspace, and After a Caret Tap Into Existing Text
 When an uppercase character is deleted, Shift remains active - the next keystroke will produce an uppercase character. Deleting the space immediately to the left of a just-deleted uppercase character also counts as "deleting uppercase" for this purpose, since the uppercase context ended at that word boundary. When a lowercase character is deleted, Shift behaves as usual (context-driven by the autocorrect hierarchy).

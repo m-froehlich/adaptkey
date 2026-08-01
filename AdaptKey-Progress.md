@@ -293,6 +293,25 @@ non-trivial changes).
 
 ## Current State
 
+- **§264 (v1.0.25): Shift-Handling Redesign — non-competing intents.** Three Shift intents that formerly**
+  **competed in a single `handleShift()` method are now cleanly separated by input modality.** (1) **Caps Lock
+  via long-press** (G-06): Shift gained a long-press action (`KeyboardLayout.hasLongPressAction` now includes
+  `KeyCode.SHIFT`; `handleLongPress` sets `capsLock = true`). Replaces the former double-tap-for-Caps-Lock
+  (D-15/D-312). D-337's border highlight still fires on the same `capsLock` flag, now engaged via long-press.
+  (2) **Word-start toggle via double-tap** (G-05): two Shift presses within the configurable
+  `doubleTapDelayMs` toggle the current word's first-character case and immediately commit verbatim — no
+  provisional state, no camelCase continuation. Works regardless of caret position. The entire provisional-
+  state machine (`wordEndShiftPending`, `handleWordEndShift`, `resolvePendingWordEndShift`, `nextKeyClass`,
+  `WordEndShift.NextKey`/`Resolution`/`resolveNextKey`) was removed. (3) **Single tap = next-letter case**
+  (ordinary toggle, C-07 grace guard unchanged). Two new settings: **double-tap Shift delay** (200-800 ms,
+  default 400, Layout category below long-press delay) and **Caps Lock vibration** (default on, Feedback
+  category below D-06, independent of per-key haptics, uses direct `Vibrator` path). `DOUBLE_TAP_SHIFT_MS`
+  hardcoded constant removed.   985 → 983 unit tests (4 `WordEndShift` resolution tests dropped, `flipFirst` tests retained, 2 new
+  `SettingsMapper` tests for `doubleTapDelayMs` clamping + `capsLockHapticsEnabled`). `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's G-05 and G-06 rewritten.
+  `versionCode` 328 → 329, `versionName` `"1.0.24"` → `"1.0.25"`. **Not yet device-confirmed** — (a) long-press
+  Shift engages Caps Lock + vibration; (b) double-tap Shift toggles word-start case + immediate commit;
+  (c) single-tap Shift arms next-letter case normally; (d) Caps Lock border highlight still shows. See history
+  §264.
 - **§262/§263 (v1.0.24): D-336 extended long-press popups on a/e/n + D-337 Caps-Lock border highlight.** Two**
   **features shipped together.** (1) D-336: the German QWERTZ layout (and AZERTY, which reuses the same
   letter-key builder) gained additional long-press popup alternatives on three letters: `æ`/`å` on `a`

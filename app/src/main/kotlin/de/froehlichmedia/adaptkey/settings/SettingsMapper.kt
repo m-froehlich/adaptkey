@@ -10,7 +10,7 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 
 /**
  * Raw, primitive settings values exactly as read from persistent storage, before validation.
- *
+ * 
  * Each field defaults to its spec default, so a freshly installed app (no stored values) resolves to
  * [AdaptSettings.DEFAULT]. The float weights are already decoded from their slider integer encoding by
  * the storage layer; clamping into the spec ranges is the job of [SettingsMapper], keeping this a plain
@@ -34,6 +34,8 @@ data class RawSettings(
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
     val longPressDelayMs: Long = AdaptSettings.DEFAULT_LONGPRESS_DELAY_MS,
+    val doubleTapDelayMs: Long = AdaptSettings.DEFAULT_DOUBLE_TAP_DELAY_MS,
+    val capsLockHapticsEnabled: Boolean = true,
     val extraSpaceBelowNumberRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val symbolKeyEnabled: Boolean = true,
@@ -76,6 +78,12 @@ object SettingsMapper {
     /** D-32 maximum long-press delay in ms. */
     const val MAX_LONGPRESS_DELAY_MS = 600L
     
+    /** G-05 minimum double-tap Shift delay in ms. */
+    const val MIN_DOUBLE_TAP_DELAY_MS = 200L
+    
+    /** G-05 maximum double-tap Shift delay in ms. */
+    const val MAX_DOUBLE_TAP_DELAY_MS = 800L
+    
     /** D-55 minimum extra row spacing in dp. */
     const val MIN_EXTRA_SPACING_DP = 0
     
@@ -110,7 +118,7 @@ object SettingsMapper {
      * Maps the C-01 weights, clamping each into its keyboard-sane range. Only the four spec-listed
      * weights (space, comma, full stop, backspace surcharge) are configurable; the remaining
      * [KeyProportions] weights keep their defaults.
-     *
+     * 
      * @param raw the raw stored values
      * @return a valid [KeyProportions]
      */
@@ -127,7 +135,7 @@ object SettingsMapper {
     /**
      * Maps the C-02 / C-03 / C-04 suggestion settings, clamping the count and the delay into their
      * spec ranges. Any int is a valid ARGB highlight colour, so it is passed through unchanged.
-     *
+     * 
      * @param raw the raw stored values
      * @return a valid [SuggestionConfig]
      */
@@ -142,7 +150,7 @@ object SettingsMapper {
     
     /**
      * Clamps the C-07 shift grace window into its spec range (0-500 ms).
-     *
+     * 
      * @param raw the raw stored values
      * @return the clamped grace window in ms
      */
@@ -153,7 +161,7 @@ object SettingsMapper {
     /**
      * Resolves the C-06 mini-LLM activation threshold, falling back to the spec default for an unknown,
      * blank or missing stored value (the validation point for this enum-valued setting; §9 / §10).
-     *
+     * 
      * @param raw the raw stored values
      * @return the resolved [LlmActivationThreshold]
      */
@@ -164,7 +172,7 @@ object SettingsMapper {
     /**
      * Resolves the full validated configuration. An empty per-key hint map falls back to the default
      * mapping so the keyboard never ends up with no secondary symbols at all.
-     *
+     * 
      * @param raw the raw stored values
      * @return the validated [AdaptSettings]
      */
@@ -181,6 +189,8 @@ object SettingsMapper {
             keySoundEnabled = raw.keySoundEnabled,
             keyHapticsEnabled = raw.keyHapticsEnabled,
             longPressDelayMs = raw.longPressDelayMs.coerceIn(MIN_LONGPRESS_DELAY_MS, MAX_LONGPRESS_DELAY_MS),
+            doubleTapDelayMs = raw.doubleTapDelayMs.coerceIn(MIN_DOUBLE_TAP_DELAY_MS, MAX_DOUBLE_TAP_DELAY_MS),
+            capsLockHapticsEnabled = raw.capsLockHapticsEnabled,
             extraSpaceBelowNumberRowDp = raw.extraSpaceBelowNumberRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             extraSpaceAboveSpaceRowDp = raw.extraSpaceAboveSpaceRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             symbolKeyEnabled = raw.symbolKeyEnabled,

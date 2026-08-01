@@ -120,6 +120,8 @@
     <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
     <string name="d32_title">Long-press delay</string>
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
+    <string name="double_tap_delay_title">Double-tap Shift delay</string>
+    <string name="double_tap_delay_summary">Maximum time between two Shift taps to toggle the current word\'s first-letter case, in ms.</string>
     <string name="d59_title">\?123/ABC key</string>
     <string name="d59_summary">Show the combined ?123 key. With this off, the key disappears and its slot stays empty (D-59).</string>
     <string name="d55_below_title">Space below number row</string>
@@ -290,6 +292,8 @@
     <string name="d05_sound_summary">Plays a short click on every key press (default: off).</string>
     <string name="d06_haptics_title">Vibration</string>
     <string name="d06_haptics_summary">A short vibration on every key press (default: off).</string>
+    <string name="caps_lock_haptics_title">Caps Lock vibration</string>
+    <string name="caps_lock_haptics_summary">Caps Lock is engaged via long-press on Shift. A short vibration confirms it, independent of whether vibration is enabled for the other keys.</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
     <string name="d24_intro_1">The coloured circles show where your key taps land on average (the dot) and how much they scatter (the circle).</string>

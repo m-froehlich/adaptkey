@@ -10,12 +10,12 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 
 /**
  * Fully resolved and validated keyboard configuration (C-01 … C-10).
- *
+ * 
  * This is the bundle the running keyboard consumes: it is produced from the raw, persisted values by
  * [SettingsMapper], which clamps every value into the spec ranges (§10) so a corrupt or out-of-range
  * stored value can never violate the data-class init contracts of [KeyProportions] / [SuggestionConfig].
  * C-05 (the blacklist) lives in the SQLite dictionary, not here.
- *
+ * 
  * @property keyProportions the key-proportion configuration (C-01)
  * @property suggestionConfig the suggestion-bar configuration (C-02 / C-03 / C-04)
  * @property showNumberRow whether the persistent number row is shown (C-09)
@@ -80,6 +80,8 @@ data class AdaptSettings(
     val keySoundEnabled: Boolean = false,
     val keyHapticsEnabled: Boolean = false,
     val longPressDelayMs: Long = DEFAULT_LONGPRESS_DELAY_MS,
+    val doubleTapDelayMs: Long = DEFAULT_DOUBLE_TAP_DELAY_MS,
+    val capsLockHapticsEnabled: Boolean = true,
     val extraSpaceBelowNumberRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val symbolKeyEnabled: Boolean = true,
@@ -97,6 +99,9 @@ data class AdaptSettings(
         
         /** Default long-press delay (D-32, ~20 % below the typical system timeout). */
         const val DEFAULT_LONGPRESS_DELAY_MS = 320L
+        
+        /** Default double-tap Shift delay (G-05, matching the former hardcoded 400 ms). */
+        const val DEFAULT_DOUBLE_TAP_DELAY_MS = 400L
         
         /** Default extra row spacing in dp (D-55). */
         const val DEFAULT_EXTRA_SPACING_DP = 7

@@ -15,14 +15,14 @@ import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * Thin storage layer for the configurable parameters (C-01 … C-09).
- *
+ * 
  * Reads from the same default [SharedPreferences] file that the {@code androidx.preference} screen
  * writes to (via [PreferenceManager.getDefaultSharedPreferences]), so the UI and the running keyboard
  * stay in sync automatically and the service can observe changes with a single
  * [SharedPreferences.OnSharedPreferenceChangeListener]. The slider integers are decoded here and the
  * validated configuration is produced by the pure [SettingsMapper]; that mapping is what the unit tests
  * exercise, while this Android-facing IO is left to instrumented tests (like the other store layers).
- *
+ * 
  * C-05 (the blacklist) is not stored here - it lives in the SQLite dictionary.
  */
 object SettingsStore {
@@ -43,6 +43,8 @@ object SettingsStore {
     const val KEY_KEY_SOUND = "d05_key_sound"
     const val KEY_KEY_HAPTICS = "d06_key_haptics"
     const val KEY_LONGPRESS_DELAY = "d32_longpress_delay_ms"
+    const val KEY_DOUBLE_TAP_DELAY = "double_tap_delay_ms"
+    const val KEY_CAPS_LOCK_HAPTICS = "caps_lock_haptics_enabled"
     const val KEY_SPACE_BELOW_NUMBER_ROW = "d55_space_below_number_row"
     const val KEY_SPACE_ABOVE_SPACE_ROW = "d55_space_above_space_row"
     const val KEY_SYMBOL_KEY = "d59_symbol_key"
@@ -90,6 +92,12 @@ object SettingsStore {
     /** Default stored integer for the long-press delay slider (D-32, 320 ms). */
     const val DEF_LONGPRESS_DELAY = 320
     
+    /** Default stored integer for the double-tap Shift delay slider (G-05, 400 ms). */
+    const val DEF_DOUBLE_TAP_DELAY = 400
+    
+    /** Default stored boolean for the Caps Lock haptic feedback (G-06, on). */
+    const val DEF_CAPS_LOCK_HAPTICS = true
+    
     /** Default stored integer for both D-55 extra-row-spacing sliders (7 dp). */
     const val DEF_EXTRA_SPACING = AdaptSettings.DEFAULT_EXTRA_SPACING_DP
     
@@ -106,7 +114,7 @@ object SettingsStore {
     
     /**
      * Loads and validates the full configuration.
-     *
+     * 
      * @param context any valid context (the input method service)
      * @return the resolved [AdaptSettings]; missing or corrupt values fall back to the spec defaults
      */
@@ -131,6 +139,8 @@ object SettingsStore {
             keySoundEnabled = p.getBoolean(KEY_KEY_SOUND, false),
             keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
             longPressDelayMs = p.getInt(KEY_LONGPRESS_DELAY, DEF_LONGPRESS_DELAY).toLong(),
+            doubleTapDelayMs = p.getInt(KEY_DOUBLE_TAP_DELAY, DEF_DOUBLE_TAP_DELAY).toLong(),
+            capsLockHapticsEnabled = p.getBoolean(KEY_CAPS_LOCK_HAPTICS, DEF_CAPS_LOCK_HAPTICS),
             extraSpaceBelowNumberRowDp = p.getInt(KEY_SPACE_BELOW_NUMBER_ROW, DEF_EXTRA_SPACING),
             extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),
             symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true),
@@ -149,7 +159,7 @@ object SettingsStore {
      * default, silently reintroducing cross-language hint bleed the moment any single symbol was
      * customised, so it was removed entirely rather than fixed; see D-281 for the per-language default
      * mechanism itself).
-     *
+     * 
      * @param context any valid context
      * @param language the language whose own default hint set to resolve; defaults to whichever language
      *        is currently active ([ActiveLanguageStore])
@@ -165,7 +175,7 @@ object SettingsStore {
      * right-hand typist an enlarged shift (left side). Writing the preferences reaches the live keyboard via
      * the service's change listener; the user can still adjust both afterwards. TWO_THUMBS / UNKNOWN have no
      * natural asymmetry and leave the current settings untouched.
-     *
+     * 
      * @param context any valid context
      * @param pattern the chosen typing pattern
      */
@@ -198,7 +208,7 @@ object SettingsStore {
      * D-298: the C-04 "no highlighting" list entry's own stored value - folds [RawSettings.highlightEnabled]
      * into the single `c04_highlight_color` preference instead of a separate switch, since a colour picker
      * that already has to list every real choice can list "none" as one more of them just as easily.
-     *
+     * 
      * Not private: [SettingsActivity.SettingsFragment] also needs it to recognise the sentinel when
      * colouring the C-04 preference row/dialog (D-302).
      */
@@ -226,13 +236,15 @@ object SettingsStore {
         KEY_SPACE_BELOW_NUMBER_ROW,
         KEY_SPACE_ABOVE_SPACE_ROW,
         KEY_LONGPRESS_DELAY,
+        KEY_DOUBLE_TAP_DELAY,
         KEY_SPACE_WEIGHT,
         KEY_COMMA_WEIGHT,
         KEY_PERIOD_WEIGHT,
         KEY_BACKSPACE_EXTRA,
         KEY_SHIFT_EXTRA,
         KEY_KEY_SOUND,
-        KEY_KEY_HAPTICS
+        KEY_KEY_HAPTICS,
+        KEY_CAPS_LOCK_HAPTICS
     )
     
     /**
@@ -241,7 +253,7 @@ object SettingsStore {
      * ([KEY_CALIBRATION_OFFERED], whose own underlying data - [de.froehlichmedia.adaptkey.touch.OffsetStore] -
      * lives in a wholly separate, never-exported preferences file anyway; importing this flag alone would
      * only ever suppress the one-time K-01 offer on a device that has none of the calibration data behind it).
-     *
+     * 
      * Not private: [de.froehlichmedia.adaptkey.backup.BackupImporter] also excludes these, for defence in
      * depth against a pre-D-304 export file or a hand-edited one that still carries either key.
      */
@@ -253,12 +265,12 @@ object SettingsStore {
      * source for the bundle's settings section, replacing a raw [SharedPreferences.getAll] dump (whose
      * iteration order is an implementation-detail hash order, not the settings screen's own order, and would
      * carry every one of [EXPORT_EXCLUDED_KEYS] along with everything else).
-     *
+     * 
      * Any stored key this build's [EXPORT_SETTINGS_KEY_ORDER] does not (yet) list, and that is not one of
      * [EXPORT_EXCLUDED_KEYS] either - a future preference this list has not been updated for, or a stray
      * leftover from a removed one - is still included, appended afterwards in alphabetical order, so a gap in
      * that list can never silently drop data from an export.
-     *
+     * 
      * @param context any valid context
      * @return the exportable settings, key-value pairs in display order
      */

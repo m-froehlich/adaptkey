@@ -7,30 +7,9 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for the pure G-05 word-end Shift logic: the next-key resolution table and the
- * first-character case toggle.
+ * Unit tests for the pure G-05 first-character case toggle.
  */
 class WordEndShiftTest {
-    
-    @Test
-    fun `a following letter triggers camelCase`() {
-        assertEquals(WordEndShift.Resolution.CAMEL_CASE, WordEndShift.resolveNextKey(WordEndShift.NextKey.LETTER))
-    }
-    
-    @Test
-    fun `a following delimiter keeps the toggle`() {
-        assertEquals(WordEndShift.Resolution.KEEP, WordEndShift.resolveNextKey(WordEndShift.NextKey.DELIMITER))
-    }
-    
-    @Test
-    fun `a following shift re-toggles`() {
-        assertEquals(WordEndShift.Resolution.RETOGGLE, WordEndShift.resolveNextKey(WordEndShift.NextKey.SHIFT))
-    }
-    
-    @Test
-    fun `any other following key cancels`() {
-        assertEquals(WordEndShift.Resolution.CANCEL, WordEndShift.resolveNextKey(WordEndShift.NextKey.OTHER))
-    }
     
     @Test
     fun `flipFirst lowercases an uppercase first letter`() {

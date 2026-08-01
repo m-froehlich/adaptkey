@@ -120,6 +120,8 @@
     <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
     <string name="d32_title">Long-Press-Verzögerung</string>
     <string name="d32_summary">Wie lange eine Taste gehalten werden muss, bis die Alternativen erscheinen, in ms (D-32).</string>
+    <string name="double_tap_delay_title">Doppeltipp-Shift-Verzögerung</string>
+    <string name="double_tap_delay_summary">Maximale Zeit zwischen zwei Shift-Tipps, um die Groß-/Kleinschreibung des aktuellen Wortanfangs umzuschalten, in ms.</string>
     <string name="d59_title">\?123/ABC-Taste</string>
     <string name="d59_summary">Die kombinierte ?123-Taste anzeigen. Wenn diese aus ist, verschwindet die Taste und ihr Platz bleibt leer (D-59).</string>
     <string name="d55_below_title">Abstand unter der Ziffernreihe</string>
@@ -291,6 +293,8 @@
     <string name="d05_sound_summary">Spielt bei jedem Tastendruck einen kurzen Klick (Standard: aus).</string>
     <string name="d06_haptics_title">Vibration</string>
     <string name="d06_haptics_summary">Kurze Vibration bei jedem Tastendruck (Standard: aus).</string>
+    <string name="caps_lock_haptics_title">Caps-Lock-Vibration</string>
+    <string name="caps_lock_haptics_summary">Caps Lock wird durch Long-Press auf Shift aktiviert. Eine kurze Vibration bestätigt das, unabhängig davon, ob die Vibration für die restlichen Tasten aktiviert ist.</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
     <string name="d24_intro_1">Die farbigen Kreise zeigen, wo deine Tastenanschläge im Schnitt landen (der Punkt) und wie stark sie streuen (der Kreis).</string>

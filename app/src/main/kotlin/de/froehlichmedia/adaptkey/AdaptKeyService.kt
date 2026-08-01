@@ -352,10 +352,8 @@ class AdaptKeyService : InputMethodService() {
     // a fresh InputConnection.getSelectedText(0) call.
     private var selectionCollapsed = true
     
-    // G-05: a word-end Shift is pending — the first character has been provisionally toggled and the
-    // next key decides the outcome (camelCase vs. keep). composingCaseLocked marks a token whose casing
-    // the user fixed explicitly, so it is committed verbatim (bypassing autocorrect and §6).
-    private var wordEndShiftPending = false
+    // composingCaseLocked marks a token whose casing the user fixed explicitly (G-05 double-tap Shift
+    // toggle), so it is committed verbatim (bypassing autocorrect and §6).
     private var composingCaseLocked = false
     
     private var capsMode = CapsMode.NONE
@@ -414,7 +412,8 @@ class AdaptKeyService : InputMethodService() {
     private var shiftGuardedArm = false
     private var fieldMandateOverridden = false
     
-    // D-15: time of the last Shift press, for detecting a double-tap that engages Caps Lock.
+    // Time of the last Shift press, for detecting a double-tap that toggles the current word's first
+    // character (G-05). The double-tap window length is configurable via settings.doubleTapDelayMs.
     private var lastShiftTime = 0L
     
     // D-335: set by applyShiftAfterDelete() when the deleted character was uppercase, so the immediately
@@ -1033,6 +1032,8 @@ class AdaptKeyService : InputMethodService() {
             // D-05 / D-06: optional key-press sound + haptics (both default off).
             view.soundEnabled = s.keySoundEnabled
             view.hapticsEnabled = s.keyHapticsEnabled
+            // G-06: Caps Lock haptic confirmation (separate from per-key haptics).
+            view.capsLockHapticsEnabled = s.capsLockHapticsEnabled
             // D-32: configurable long-press delay.
             view.longPressDelayMs = s.longPressDelayMs
             // D-59: the combined ?123 key can be disabled, in which case it disappears entirely.
@@ -2279,11 +2280,6 @@ class AdaptKeyService : InputMethodService() {
                     else -> clearUndo()
                 }
             }
-            // G-05: resolve a pending word-end Shift against this key before it is handled normally. A Shift
-            // is left to fall through (it re-toggles via handleShift); every other key resolves here.
-            if (wordEndShiftPending && key.code != KeyCode.SHIFT) {
-                resolvePendingWordEndShift(key)
-            }
             when (key.code) {
                 KeyCode.CHAR -> {
                     val raw = key.char ?: return
@@ -2421,8 +2417,9 @@ class AdaptKeyService : InputMethodService() {
     /**
      * Handles a long-press (L-05 / L-06 secondary symbols: finalises the current token, so a held key
      * mid-word commits the word first, then commits the symbol exactly like typing a delimiter; L-03:
-     * holding the combined emoji / ?123 key switches straight to the numeric/symbol layer; or §31: holding
-     * the calculator's minus key flips the sign of the number before the caret instead of committing text).
+     * holding the combined emoji / ?123 key switches straight to the numeric/symbol layer; §31: holding
+     * the calculator's minus key flips the sign of the number before the caret instead of committing text;
+     * or G-06: holding the Shift key engages Caps Lock).
      */
     private fun handleLongPress(key: Key) {
         when (key.code) {
@@ -2437,6 +2434,12 @@ class AdaptKeyService : InputMethodService() {
                 val ic = currentInputConnection ?: return
                 clearUndo()
                 commitLongPressSymbol(ic, symbol, key.code)
+            }
+            
+            KeyCode.SHIFT -> {
+                val view = keyboardView ?: return
+                view.capsLock = true
+                view.shifted = false
             }
             
             KeyCode.SYMBOL -> setSurface(PanelNavigation.onSwitchToSymbols())
@@ -5541,58 +5544,32 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Handles a Shift key press through the C-07 grace guard: ignores a press that would lower a
-     * field-mandated uppercase within the grace window, otherwise toggles. A press that deliberately
-     * lowers a guarded arm after the window marks the field mandate as overridden for this word.
+     * Handles a Shift key press. Three non-competing intents, resolved by input modality:
+     * 
+     * 1. **Caps Lock release** — a simple tap while Caps Lock is engaged releases it.
+     * 2. **Double-tap** — two Shift presses within [settings.doubleTapDelayMs] toggle the first
+     *    character's case of the current composing word, then immediately commit it verbatim.
+     *    Works regardless of cursor position within the word. No provisional state.
+     * 3. **Ordinary toggle** — a single tap toggles Shift for the next letter (subject to the C-07
+     *    grace guard against surprising field-mandated capitalisation).
+     * 
+     * Caps Lock itself is engaged via *long-press* on Shift, not double-tap — see [handleLongPress].
      */
     private fun handleShift() {
         val view = keyboardView ?: return
         val now = SystemClock.uptimeMillis()
-        // D-312: read and updated unconditionally, right at the top, so every branch below (including G-05's
-        // own) leaves an accurate timestamp for the *next* press to measure a genuine double-tap against -
-        // previously only the Caps-Lock-release and ordinary-toggle branches updated it, so once G-05 fired
-        // even once, a following rapid double-tap could never be measured against the right previous press
-        // at all (see the D-312 branch below for the full story).
         val sincePreviousShift = now - lastShiftTime
         lastShiftTime = now
-        // D-15 / D-121: a press while Caps Lock is on always releases it - checked first, before the G-05
-        // word-end gesture below, so a Caps-Lock-off press mid-word (e.g. right after typing "MCU" with
-        // Caps Lock still on, before any delimiter) is never swallowed by G-05 instead, leaving Caps Lock
-        // stuck on.
+        // Caps Lock engaged: a simple tap releases it (checked first).
         if (view.capsLock) {
             view.capsLock = false
             view.shifted = false
             return
         }
-        // D-312: a genuine rapid double-tap always means Caps Lock, checked *before* G-05's own word-end
-        // gesture below - composingCursor sitting at composing's own end (G-05's own trigger condition) is
-        // the ordinary state right after typing any letter, so without this check first, a deliberate
-        // double-tap immediately after a word's first letter could never reach Caps Lock at all: the first
-        // of the two taps would already have been claimed by G-05, and (before this fix) the second tap's
-        // own timestamp was never compared against the first's, since G-05's branch never updated
-        // [lastShiftTime] to begin with. Reported directly, confirmed from a real device log: SHIFT, "a" ->
-        // "A", then two rapid SHIFT taps intended as Caps Lock instead each independently re-toggled G-05's
-        // own first-letter flip, ending indistinguishably from a single deliberate extra Shift press.
-        //
-        // If the *previous* press already applied a provisional G-05 flip, undo it first - a genuine
-        // double-tap means "Caps Lock, no side effect on the word", not "G-05 toggle, then also Caps Lock".
-        if (sincePreviousShift <= DOUBLE_TAP_SHIFT_MS) {
-            if (wordEndShiftPending) {
-                flipFirstInComposing()
-                currentInputConnection?.let { updateComposing(it) }
-                resetWordEndShift()
-            }
-            view.capsLock = true
-            view.shifted = false
-            return
-        }
-        // G-05 / D-121: Shift at the end of a fully typed word toggles the word's first-letter case - the
-        // caret must genuinely sit at the composing token's own end (composingCursor == composing.length),
-        // not merely "composing is non-empty": a mid-word Backspace (e.g. removing a leading character to
-        // re-edit it) leaves composing non-empty with the caret elsewhere, and a Shift press there is an
-        // ordinary case-toggle-for-the-next-letter, not this word-end gesture.
-        if (composing.isNotEmpty() && composingCursor == composing.length) {
-            handleWordEndShift(view)
+        // Double-tap: toggle the first character's case of the current word and commit immediately.
+        // The first tap armed Shift (ordinary toggle); this undoes that arm and applies the toggle instead.
+        if (sincePreviousShift <= settings.doubleTapDelayMs) {
+            toggleWordStartImmediate(view)
             return
         }
         val elapsed = now - shiftArmTime
@@ -5607,50 +5584,19 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Applies a word-end Shift (G-05): provisionally toggles the case of the composing token's first
-     * character, arms the next letter to uppercase (so a following letter produces camelCase) and marks
-     * the token's casing as explicitly user-set. Pressing Shift again simply re-toggles.
+     * G-05: toggles the case of the composing token's first character and immediately commits it
+     * verbatim (bypassing autocorrect and §6 capitalisation). No provisional state, no camelCase
+     * continuation — the toggle is final the moment the double-tap completes. A no-op (just disarming
+     * Shift) when no word is currently composing.
      */
-    private fun handleWordEndShift(view: AdaptKeyboardView) {
-        flipFirstInComposing()
-        updateComposing(currentInputConnection ?: return)
-        wordEndShiftPending = true
-        composingCaseLocked = true
-        view.shifted = true
-    }
-    
-    /**
-     * Resolves a pending word-end Shift (G-05) against the next key: a letter discards the first-char
-     * toggle and continues as camelCase, a delimiter keeps the toggle, anything else cancels the gesture.
-     * The token stays case-locked for the camelCase and keep outcomes, so it is committed verbatim.
-     */
-    private fun resolvePendingWordEndShift(key: Key) {
-        when (WordEndShift.resolveNextKey(nextKeyClass(key))) {
-            // The provisional toggle is discarded; the upcoming letter is inserted uppercase (camelCase).
-            WordEndShift.Resolution.CAMEL_CASE -> {
-                flipFirstInComposing()
-                currentInputConnection?.let { updateComposing(it) }
-                wordEndShiftPending = false
-            }
-            
-            // The toggle stands; the token will be committed verbatim by the following delimiter.
-            WordEndShift.Resolution.KEEP -> wordEndShiftPending = false
-            
-            // Backspace or other keys abandon the gesture; the token is no longer case-locked.
-            WordEndShift.Resolution.CANCEL -> resetWordEndShift()
-            
-            // Re-toggling is handled by handleShift, never reached here (Shift is excluded by the caller).
-            WordEndShift.Resolution.RETOGGLE -> Unit
+    private fun toggleWordStartImmediate(view: AdaptKeyboardView) {
+        val ic = currentInputConnection
+        if (composing.isNotEmpty() && ic != null) {
+            flipFirstInComposing()
+            composingCaseLocked = true
+            finalizeAndCommit(ic, "")
         }
-    }
-    
-    private fun nextKeyClass(key: Key): WordEndShift.NextKey {
-        return when (key.code) {
-            KeyCode.CHAR -> if (key.char?.isLetter() == true) WordEndShift.NextKey.LETTER else WordEndShift.NextKey.DELIMITER
-            KeyCode.SPACE, KeyCode.ENTER, KeyCode.TEXT -> WordEndShift.NextKey.DELIMITER
-            KeyCode.SHIFT -> WordEndShift.NextKey.SHIFT
-            else -> WordEndShift.NextKey.OTHER
-        }
+        view.shifted = false
     }
     
     private fun flipFirstInComposing() {
@@ -5663,7 +5609,6 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun resetWordEndShift() {
-        wordEndShiftPending = false
         composingCaseLocked = false
     }
     
@@ -5786,14 +5731,6 @@ class AdaptKeyService : InputMethodService() {
         // D-318: prefixes the emoji-search query chip (updateEmojiSearchResults()).
         private const val EMOJI_SEARCH_ICON = "🔍"
         
-        
-        // D-15: two Shift presses within this window engage Caps Lock. D-333: widened from 300ms to 400ms
-        // after a real-device report that double-tap Shift at a sentence start (auto-capitalisation armed)
-        // never engaged Caps Lock - the first tap visibly toggled the auto-cap off, and if the second tap
-        // landed just past 300ms it was another ordinary toggle rather than a double-tap, so Caps Lock never
-        // engaged. 400ms keeps it well within the range where two distinct Shift presses would not be
-        // mistaken for a double-tap while giving a sentence-start double-tap enough room to complete.
-        private const val DOUBLE_TAP_SHIFT_MS = 400L
         
         // §38: how long a sensitive clipboard paste is left in place before it is auto-cleared - long
         // enough for the target app's async performContextMenuAction(paste) handling to have actually read

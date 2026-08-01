@@ -229,6 +229,16 @@
             app:showSeekBarValue="true" />
 
         <SeekBarPreference
+            android:key="double_tap_delay_ms"
+            android:title="@string/double_tap_delay_title"
+            android:summary="@string/double_tap_delay_summary"
+            android:defaultValue="400"
+            android:max="800"
+            app:min="200"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
             android:key="c01_space_weight"
             android:title="@string/c01_space_title"
             android:summary="@string/c01_space_summary"
@@ -291,6 +301,12 @@
             android:title="@string/d06_haptics_title"
             android:summary="@string/d06_haptics_summary"
             android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="caps_lock_haptics_enabled"
+            android:title="@string/caps_lock_haptics_title"
+            android:summary="@string/caps_lock_haptics_summary"
+            android:defaultValue="true" />
 
     </PreferenceCategory>
 

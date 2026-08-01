@@ -12933,3 +12933,116 @@ No new tests (pure Android View/Canvas drawing path, the established untested ga
 New §25 added. Same version as §262 (`versionCode` 328, `versionName` `"1.0.24"`) — both shipped
 together. Not yet device-confirmed — needs engaging Caps Lock and confirming the border is visible and
 distinct from a momentary Shift press.
+
+---
+
+## §264 - Shift-Handling Redesign: Non-Competing Intents (Long-Press Caps Lock, Double-Tap Word Toggle, Single-Tap Next-Letter)
+
+### Background
+
+The former Shift handling (`handleShift()` in `AdaptKeyService`) entangled three competing intents in a
+single method, resolved only by careful ordering and one D-312 workaround:
+
+1. **Caps Lock release** — a simple tap while Caps Lock is on.
+2. **Double-tap → Caps Lock** (D-15/D-312) — two Shift presses within `DOUBLE_TAP_SHIFT_MS` (hardcoded
+   400 ms, widened from 300 ms in D-333 after a real-device report of Caps Lock not engaging at a sentence
+   start). This check ran *before* G-05's word-end gesture, because the ordinary state right after typing
+   any letter (caret at composing's own end) also satisfies G-05's trigger condition — without the
+   pre-check, the first tap of a deliberate double-tap would already have been claimed by G-05.
+3. **G-05 word-end toggle** (single tap at composing's end) — provisionally flips the first character's
+   case, then a resolution machine (`wordEndShiftPending` / `resolvePendingWordEndShift` / `WordEndShift`
+   enum) decides the outcome from the next key: LETTER → camelCase (flip reverted, letter uppercase),
+   DELIMITER → KEEP (flip committed, case-locked), SHIFT → RETOGGLE, otherwise → CANCEL.
+
+The provisional state machine was the root of the competition: the same Shift key press could mean "Caps
+Lock" (if a second tap followed), "toggle the word's first letter" (if at composing's end), or "arm the
+next letter uppercase" (ordinary). D-312's workaround (checking double-tap before G-05, reverting a
+provisional G-05 flip if the second tap arrives) was correct but added real complexity. D-333's 300→400 ms
+widening was a tuning patch on top of the same design.
+
+### Design Decision
+
+Redesign the three intents so each has its own, non-competing input modality:
+
+- **Caps Lock**: **long-press** on Shift (G-06). This was a pure new implementation — Shift previously had
+  no long-press action at all (`KeyboardLayout.hasLongPressAction` excluded `KeyCode.SHIFT`). Added
+  `KeyCode.SHIFT` to `hasLongPressAction`, a new `KeyCode.SHIFT` case in `handleLongPress()` that sets
+  `view.capsLock = true; view.shifted = false`, and a dedicated haptic confirmation
+  (`playCapsLockHaptic()`) governed by a new separate setting `capsLockHapticsEnabled` (default on),
+  independent of the per-key `keyHapticsEnabled`. The haptic uses the same direct `Vibrator` path as
+  D-06 (`VibrationEffect` + `USAGE_TOUCH` on API 33+), not the system `performHapticFeedback(LONG_PRESS)`
+  that the other long-press keys use — because the Caps-Lock haptic must fire regardless of whether per-key
+  haptics are enabled, a setting the system feedback cannot be conditioned on.
+
+- **Word-start toggle**: **double-tap** on Shift (G-05). Two presses within the configurable
+  `doubleTapDelayMs` (new setting, default 400 ms, range 200-800 ms, slider in the Layout category directly
+  below the long-press delay). The first tap arms Shift (ordinary toggle); the second undoes that arm and
+  instead calls `toggleWordStartImmediate()` — flips the first character's case via
+  `WordEndShift.flipFirst`, marks `composingCaseLocked = true`, and immediately calls
+  `finalizeAndCommit(ic, "")` (verbatim, no autocorrect, no §6 capitalisation). **No provisional state, no
+  camelCase continuation** — the toggle is final the moment the double-tap completes. Works regardless of
+  caret position within the word (not only at composing's end, as the former single-tap gesture required).
+
+- **Next-letter case**: **single tap** on Shift (ordinary toggle, subject to the C-07 grace guard against
+  surprising field-mandated capitalisation). Unchanged from before, minus the double-tap and word-end
+  pre-checks that used to compete.
+
+The user's explicit goal ("ohne konkurrierende Intents") drove this: each input modality (long-press,
+double-tap, single-tap) maps to exactly one intent, and no intent's check needs to run before another's
+to "claim" the press.
+
+### Removed Code
+
+- `DOUBLE_TAP_SHIFT_MS` constant (hardcoded 400 ms) — replaced by the configurable `settings.doubleTapDelayMs`.
+- `wordEndShiftPending` field — no provisional state exists.
+- `handleWordEndShift()`, `resolvePendingWordEndShift()`, `nextKeyClass()` — the entire provisional-state
+  resolution machine.
+- `WordEndShift.NextKey` enum, `WordEndShift.Resolution` enum, `WordEndShift.resolveNextKey()` — the pure
+  logic no longer has a "resolve against next key" step, since the toggle is immediate.
+- `resolvePendingWordEndShift` call in `handleKey()` — the block that resolved a pending G-05 against the
+  next key before handling it.
+- 4 WordEndShiftTest tests for the removed resolution/NextKey enums; `flipFirst` tests retained (7 tests
+  → 7 tests, the 4 resolution tests dropped).
+
+### Kept Unchanged
+
+- `composingCaseLocked` field and its use in `finalizeAndCommit` (verbatim commit + A-05 split exception) —
+  the toggle still sets it, just immediately rather than provisionally.
+- `resetWordEndShift()` (now just `composingCaseLocked = false`) — all 13 call sites unchanged, they clear
+  the lock when a new token starts or a reclaim fires.
+- `flipFirstInComposing()` — still the method that applies `WordEndShift.flipFirst` to the composing buffer.
+- D-337 Caps-Lock border highlight — triggers the same way (via the `capsLock` boolean), now engaged via
+  long-press instead of double-tap. Drawing code in `AdaptKeyboardView` unchanged.
+- `lastShiftTime` — still updated on every Shift press for the double-tap measurement.
+- C-07 grace guard, `armShiftForNextWord`, `sentenceStartBefore`, `shiftArmedByDelete` (D-335),
+  `applyShiftAfterDelete` — all auto-capitalisation machinery unchanged.
+- URL/email/login-field bypass — Shift is disarmed there exactly as before.
+
+### Settings
+
+Two new settings:
+
+1. **Double-tap Shift delay** (`double_tap_delay_ms`): SeekBarPreference, 200-800 ms, default 400, 10 ms
+   steps. Placed in the Layout category directly below the long-press delay slider. Documented in the
+   summary as "Maximum time between two Shift taps to toggle the current word's first-letter case."
+
+2. **Caps Lock vibration** (`caps_lock_haptics_enabled`): SwitchPreferenceCompat, default on. Placed in
+   the Feedback category below the per-key vibration (D-06). Summary documents: "Caps Lock is engaged via
+   long-press on Shift. A short vibration confirms it, independent of whether vibration is enabled for
+   the other keys."
+
+Both are included in the export/import backup order (`EXPORT_SETTINGS_KEY_ORDER`), strings in all three
+locales (en/de/el).
+
+### Tests
+
+7 WordEndShiftTest tests (4 resolution tests dropped, 7 flipFirst tests retained — net -4, 985 → 981).
+`SettingsMapperTest` gains double-tap-delay clamping coverage. No new tests for the Android-glue
+`handleShift`/`handleLongPress`/`toggleWordStartImmediate` paths (per the established convention: View-/
+InputConnection-Glue-Logik bleibt ungetestet).
+
+### Spec
+
+G-05 and G-06 rewritten (§4). G-05 Addendum (Shift after Backspace / caret tap) unchanged. §25 (D-337
+border highlight) unchanged — the `capsLock` flag it reads is still set the same way, just via long-press
+now.

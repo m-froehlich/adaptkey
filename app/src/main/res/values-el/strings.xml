@@ -120,6 +120,8 @@
     <string name="c09_summary">Μόνιμη σειρά ψηφίων πάνω από τα γράμματα (L-06).</string>
     <string name="d32_title">Καθυστέρηση παρατεταμένου πατήματος</string>
     <string name="d32_summary">Πόση ώρα να κρατηθεί ένα πλήκτρο μέχρι να εμφανιστούν οι εναλλακτικές, σε ms (D-32).</string>
+    <string name="double_tap_delay_title">Καθυστέρηση διπλού πατήματος Shift</string>
+    <string name="double_tap_delay_summary">Μέγιστος χρόνος μεταξύ δύο πατημάτων Shift για εναλλαγή πεζών/κεφαλαίων στην αρχή της τρέχουσας λέξης, σε ms.</string>
     <string name="d59_title">Πλήκτρο ?123/ABC</string>
     <string name="d59_summary">Εμφάνιση του συνδυασμένου πλήκτρου ?123. Όταν αυτό είναι ανενεργό, το πλήκτρο εξαφανίζεται και η θέση του μένει κενή (D-59).</string>
     <string name="d55_below_title">Κενό κάτω από τη σειρά αριθμών</string>
@@ -291,6 +293,8 @@
     <string name="d05_sound_summary">Παίζει ένα σύντομο κλικ σε κάθε πάτημα πλήκτρου (προεπιλογή: ανενεργό).</string>
     <string name="d06_haptics_title">Δόνηση</string>
     <string name="d06_haptics_summary">Σύντομη δόνηση σε κάθε πάτημα πλήκτρου (προεπιλογή: ανενεργό).</string>
+    <string name="caps_lock_haptics_title">Δόνηση Caps Lock</string>
+    <string name="caps_lock_haptics_summary">Το Caps Lock ενεργοποιείται με παρατεταμένο πάτημα του Shift. Μια σύντομη δόνηση το επιβεβαιώνει, ανεξάρτητα από το αν η δόνηση είναι ενεργοποιημένη για τα υπόλοιπα πλήκτρα.</string>
 
     <!-- Touch-pattern visualisation (D-24). -->
     <string name="d24_intro_1">Οι έγχρωμοι κύκλοι δείχνουν πού πέφτουν κατά μέσο όρο τα πατήματά σου (η κουκκίδα) και πόσο διασκορπίζονται (ο κύκλος).</string>

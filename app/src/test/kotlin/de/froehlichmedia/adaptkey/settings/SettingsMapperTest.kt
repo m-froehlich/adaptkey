@@ -120,6 +120,20 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `G-05 doubleTapDelay is clamped into the 200-800 range`() {
+        assertEquals(SettingsMapper.MIN_DOUBLE_TAP_DELAY_MS, SettingsMapper.toAdaptSettings(RawSettings(doubleTapDelayMs = 50L)).doubleTapDelayMs)
+        assertEquals(SettingsMapper.MAX_DOUBLE_TAP_DELAY_MS, SettingsMapper.toAdaptSettings(RawSettings(doubleTapDelayMs = 9_000L)).doubleTapDelayMs)
+        assertEquals(AdaptSettings.DEFAULT_DOUBLE_TAP_DELAY_MS, SettingsMapper.toAdaptSettings(RawSettings()).doubleTapDelayMs)
+        assertEquals(350L, SettingsMapper.toAdaptSettings(RawSettings(doubleTapDelayMs = 350L)).doubleTapDelayMs)
+    }
+    
+    @Test
+    fun `G-06 capsLockHapticsEnabled defaults on and passes through`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).capsLockHapticsEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(capsLockHapticsEnabled = false)).capsLockHapticsEnabled)
+    }
+    
+    @Test
     fun `out-of-range weights are clamped and never violate the KeyProportions contract`() {
         val raw = RawSettings(
             spaceWeight = 99f,

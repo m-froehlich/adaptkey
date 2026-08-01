@@ -7,7 +7,7 @@ import java.util.Locale
 
 /**
  * QWERTZ key map (L-01).
- *
+ * 
  * Each key carries its secondary long-press symbol as [Key.hint]: the persistent number row (L-06)
  * uses the German-QWERTZ shifted symbols and letters use the AltGr-style map (L-05 / C-08). The hint
  * is always populated so the long-press function works even when the corner glyphs are hidden; only
@@ -145,7 +145,7 @@ object KeyboardLayout {
     
     /**
      * Builds the keyboard for the given configuration.
-     *
+     * 
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
      * @param letterHints the per-letter secondary-symbol map (L-05 / C-08); defaults to [DEFAULT_LETTER_HINTS]
@@ -225,7 +225,7 @@ object KeyboardLayout {
      * so the space key keeps its ordinary, full width instead of D-143's own drastic shrink; the full-stop
      * key's alt popup is a locale-resolved TLD list instead of the ordinary sentence terminators (a URL
      * practically never needs `!`/`?`, see [UrlLocale]).
-     *
+     * 
      * @param proportions the key-proportion configuration (C-01)
      * @param locale the system locale the period key's TLD popup is resolved from ([UrlLocale])
      * @return the row as a list of [Key] from left to right
@@ -249,7 +249,7 @@ object KeyboardLayout {
      * `_` as its single D-01 long-press secondary) is funded by narrowing the now less-needed space key;
      * the full-stop key's alt popup is the locale-resolved TLD list [urlBottomRow] uses, plus an
      * email-only `.net` entry ([UrlLocale.emailPeriodAlternatives] - explicitly not shared with URL mode).
-     *
+     * 
      * @param proportions the key-proportion configuration (C-01)
      * @param locale the system locale the period key's TLD popup is resolved from ([UrlLocale])
      * @return the row as a list of [Key] from left to right
@@ -268,7 +268,7 @@ object KeyboardLayout {
     /**
      * The symbol a long-press on [key] should emit (L-05 / L-06): a character key's secondary
      * [Key.hint], or null when the key has no secondary or is a control key.
-     *
+     * 
      * @param key the pressed key
      * @return the secondary symbol to commit on long-press, or null when there is none
      */
@@ -280,15 +280,17 @@ object KeyboardLayout {
      * Whether holding [key] past the long-press timeout has an action at all: a character or §53 [TEXT]
      * key's single secondary symbol (L-05 / L-06, see [longPressSymbol]), its multi-alternative popup
      * (D-01, two or more [Key.alternatives]), the combined emoji / ?123 key switching to the numeric/symbol
-     * layer (L-03), or §31's calculator minus key, which flips the sign of the number before the caret
-     * instead of committing text - it carries neither a hint nor alternatives, so it needs its own case here.
-     *
+     * layer (L-03), §31's calculator minus key, which flips the sign of the number before the caret
+     * instead of committing text - it carries neither a hint nor alternatives, so it needs its own case here -
+     * or the Shift key, whose long-press engages Caps Lock (G-06).
+     * 
      * @param key the pressed key
      * @return true when a long-press on this key should be scheduled
      */
     fun hasLongPressAction(key: Key): Boolean {
         return ((key.code == KeyCode.CHAR || key.code == KeyCode.TEXT) && (key.hint != null || key.alternatives.size >= 2)) ||
             key.code == KeyCode.SYMBOL ||
+            key.code == KeyCode.SHIFT ||
             (key.code == KeyCode.CHAR && key.char == SymbolLayout.MINUS_SIGN)
     }
     
@@ -298,13 +300,13 @@ object KeyboardLayout {
      * é/è/ê/ë popup ([E_ALTERNATIVES]) and `n` its ñ popup ([N_ALTERNATIVES]) - but only while each still
      * carries its own default hint, so a user who has reassigned the key via the C-08 editor keeps their own
      * single-symbol long-press instead of an unrelated popup.
-     *
+     * 
      * D-282: `p` sits at the row's right edge, where a wide popup like [PI_ALTERNATIVES] can run out of
      * room to grow rightward and gets clamped leftward instead by [AdaptKeyboardView] - handled dynamically
      * there now ([HorizontalLongPressPopup.wouldClampRight]), not by reversing the list here as §34/D-99
      * originally did; [PI_ALTERNATIVES] is always passed in its natural, un-reversed order (`π` first),
      * exactly like every other alternatives list.
-     *
+     * 
      * D-314 / D-336: not private - [AzertyLayout] reuses this directly for its own letter rows, rather than
      * duplicating the special-casing. Generalised in D-336 from the top-row-only `topRowKey` into a
      * row-agnostic `letterKey` so the same (char, hint) → alternatives decision applies regardless of which
@@ -344,7 +346,7 @@ object KeyboardLayout {
      * D-105: builds a number-row key with its existing shifted symbol (index 0, pre-selected - unchanged
      * from before) and its own superscript form (index 1) as a real D-01 two-cell popup, instead of the
      * shifted symbol applying immediately on long-press.
-     *
+     * 
      * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
      * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
      * here.

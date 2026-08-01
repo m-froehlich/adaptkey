@@ -41,19 +41,19 @@ import de.froehlichmedia.adaptkey.touch.TapAmbiguity
 
 /**
  * Self-drawn keyboard view.
- *
+ * 
  * Lays each row out horizontally by [Key.weight] (proportions from [proportions], L-02 / L-04)
  * and resolves a tap from the initial contact point only (T-01): the key is decided at
  * [MotionEvent.ACTION_DOWN]; subsequent movement is ignored and does not trigger swipe
  * behaviour. When an [offsetModel] is attached it both refines the resolution (T-03) and is fed
  * the confirmed tap so it keeps learning. The raw down coordinates are also forwarded to the
  * listener for later token-level correction (T-02).
- *
+ * 
  * The resolved character is emitted on release ([MotionEvent.ACTION_UP]); holding a key past the
  * long-press timeout instead fires [onLongPressListener] (L-05 / L-06 secondary symbols, or the L-03
  * combined key switching to the numeric/symbol layer) and suppresses the tap. Resolution and
  * offset-model learning still happen at ACTION_DOWN, so T-01 / T-03 are unaffected.
- *
+ * 
  * [surface] selects which layout is drawn: the letter view or the [SymbolLayout] numeric/symbol
  * layer (L-03); the emoji panel itself is a separate view swapped in by the caller.
  */
@@ -65,7 +65,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * Callback invoked once per resolved tap, on release (carrying the ACTION_DOWN coordinates).
-     *
+     * 
      * @param weight D-159: the weight [OffsetModel.record] applied to this tap at ACTION_DOWN time (`1.0`
      *        when no model was recorded into at all, e.g. an ambiguous T-05 tap) - the caller must retain
      *        this alongside the coordinates if it may ever need to [OffsetModel.unrecord] this exact
@@ -233,7 +233,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * page in from the **left**; backward is the mirror image. A no-op switch (already showing the target)
      * is skipped, and the very first switch - before the view has a width to animate across - falls back to
      * an immediate change.
-     *
+     * 
      * D-76 / D-86: letters and the numeric/symbol layer do not have the same row count (the number row is
      * optional on letters but always shown on symbols), so [surface] / [symbolPage]'s own `requestLayout()`
      * (via [rebuildRows]) needs care around the slide: resizing *immediately* when growing into more rows
@@ -246,7 +246,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * clips key drawing to the view's own bounds as a last-resort safety net against the brief mismatch
      * window `requestLayout()`'s inherently asynchronous re-measure leaves even for the "resize immediately"
      * case.
-     *
+     * 
      * @param newSurface the surface to show
      * @param newSymbolPage the numeric/symbol page to show; only meaningful when [newSurface] is
      *        [InputSurface.SYMBOLS]
@@ -402,6 +402,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /** D-06: whether a short vibration fires on each key press (default off). */
     var hapticsEnabled: Boolean = false
+    
+    /** G-06: whether a short vibration fires when Caps Lock engages via long-press on Shift (default on,
+     *  independent of [hapticsEnabled]). */
+    var capsLockHapticsEnabled: Boolean = true
     
     private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
@@ -860,13 +864,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * ([OffsetModel.record] runs for any resolved key, not only [KeyCode.CHAR] ones), a translucent ellipse
      * of the tap spread (per-axis std deviation) centred on the expected strike point (key centre plus the
      * learned mean offset), with a solid dot at that point.
-     *
+     * 
      * D-109: the centre uses [OffsetModel.cappedMeanOffset], the same bound [OffsetModel]'s own key
      * resolution applies internally - not the raw, uncapped [OffsetModel.Spread.meanDx]/`meanDy] - so the
      * visualisation never shows a drift more extreme than what the model will actually do when resolving
      * a real tap. D-133/D-231/D-233: every one of the four directional bounds is included, for the same
      * reason.
-     *
+     * 
      * D-236: previously filtered to `key.code == KeyCode.CHAR` only - silently hid Shift/Backspace/Enter/
      * Space (and the calculator page's `sin`/`deg` [KeyCode.TEXT] keys) even though they are trained exactly
      * like any other key, which made D-231's/D-233's own Enter/Backspace/`m` drift impossible to actually
@@ -957,7 +961,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * (ß has no simple 1:1 uppercase mapping in the Unicode casing tables, only the locale-aware "SS" full
      * mapping) - substituted explicitly here instead, and only when [paint]'s own typeface can actually
      * render it ([Paint.hasGlyph]); otherwise `ß` is left exactly as typed rather than showing `"SS"`.
-     *
+     * 
      * @param text the already-lower-case glyph to uppercase for display
      * @param paint the paint that will actually draw [text], whose typeface [Paint.hasGlyph] is checked
      * @return [text] uppercased, `ẞ` for a renderable `ß`, or [text] unchanged for a non-renderable `ß`
@@ -1148,11 +1152,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val runnable = Runnable {
             if (pressedKey === key) {
                 longPressFired = true
-                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                // G-06: the Shift long-press engages Caps Lock — its haptic confirmation is governed by
+                // capsLockHapticsEnabled (a separate setting), not the system long-press feedback.
+                if (key.code == KeyCode.SHIFT) {
+                    playCapsLockHaptic()
+                } else {
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                }
                 // D-01 / D-14: any key with an alternative shows the popup - a visible on-keyboard preview
                 // (Gboard-style) that confirms the long-press and commits on release. A single-alternative
-                // key shows a one-cell popup; a key with no alternative (the combined ?123 key) falls back
-                // to its listener action (switching to the numeric/symbol layer).
+                // key shows a one-cell popup; a key with no alternative (the combined ?123 key, or Shift)
+                // falls back to its listener action.
                 val alternatives = popupAlternativesFor(key)
                 if (alternatives.isNotEmpty()) {
                     openPopup(key, alternatives)
@@ -1170,7 +1180,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * present, otherwise its single [Key.hint] as a one-item list for a character or §53 [KeyCode.TEXT] key.
      * Empty for a key with no secondary (e.g. the combined ?123 key), which falls back to its listener
      * action.
-     *
+     * 
      * @param key the pressed key
      * @return the alternatives to show in the popup, or empty when there is none
      */
@@ -1187,7 +1197,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * the key. The row is centred over the stem so the pre-selected cell (the key's own character, or the
      * first alternative when the key's character is not among them) sits over the finger; the row is clamped
      * to stay within the view.
-     *
+     * 
      * D-282: when that clamp would otherwise push the row leftward with no room to grow rightward - a key
      * near the row's right edge with a wide enough popup, [HorizontalLongPressPopup.wouldClampRight] - the
      * whole [alternatives] order (and its matching [cellWidths]) is reversed first, so whichever entry the
@@ -1196,7 +1206,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * D-99/D-105's own hand-picked reversal, hard-coded to exactly `'p'` (letters row) and `'0'` (number
      * row) - a real geometry check here works for any key's popup, including one a language pack's own
      * data (D-281) might put on a right-edge key that neither of those two hard-coded cases ever covered.
-     *
+     * 
      * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
      * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
      * rather than clipped. D-54: a single-cell popup is nudged a few units towards the keyboard centre (right
@@ -1238,7 +1248,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * §53, a [KeyCode.TEXT] key's own [Key.label], e.g. `sin` among `sin`/`cos`/`tan`/`log`), so a
      * straight-up release types the key's normal glyph; falls back to the first alternative (index 0) when
      * that self-value is not in the list (e.g. a letter whose only alternative is its umlaut).
-     *
+     * 
      * D-145: the one exception is the URL-mode period key, whose alternatives deliberately never contain
      * `.` itself (D-144 - repeating it would be redundant) - the generic index-0 fallback would wrongly
      * pre-select a mere top-level-domain default there. [UrlLocale.periodAlternatives] places the
@@ -1369,12 +1379,42 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * G-06: plays a short vibration when Caps Lock engages via long-press on Shift. Governed by
+     * [capsLockHapticsEnabled] (default on), independent of [hapticsEnabled] — confirming a deliberate
+     * Caps Lock engagement should feel the same whether or not per-key haptics are turned on. Uses the
+     * same direct [Vibrator] path as [playKeyFeedback]'s haptic branch, bypassing the system "touch
+     * vibration" toggle that silenced [performHapticFeedback] on device (D-06/D-34).
+     */
+    private fun playCapsLockHaptic() {
+        if (!capsLockHapticsEnabled) {
+            return
+        }
+        val v = vibrator
+        if (v == null || !v.hasVibrator()) {
+            logHaptics("no vibrator available - vibrator=$v hasVibrator=${v?.hasVibrator()}", warn = true, prefix = "playCapsLockHaptic")
+        } else {
+            runCatching {
+                val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
+                    logHaptics("vibrate() called with USAGE_TOUCH, sdk=${Build.VERSION.SDK_INT}", prefix = "playCapsLockHaptic")
+                } else {
+                    v.vibrate(effect)
+                    logHaptics("vibrate() called without attributes, sdk=${Build.VERSION.SDK_INT} (< 33)", prefix = "playCapsLockHaptic")
+                }
+            }.onFailure { e ->
+                logHaptics("vibrate() threw ${e::class.simpleName}: ${e.message}", warn = true, prefix = "playCapsLockHaptic")
+            }
+        }
+    }
+    
+    /**
      * D-193 (temporary diagnostic): dual-output like `AdaptKeyService.diag()` - logcat (`adb logcat -s
      * AdaptKeyHaptics:D`) plus the in-app rolling log (Settings -> Diagnostics), so a repro needs no PC/USB
      * tether. No password-field guard here (unlike the service's own `diag()`) - haptics fire identically
      * on every key regardless of field kind, and none of these messages ever include typed content. Remove
      * once D-193 is closed.
-     *
+     * 
      * D-217: [prefix] defaults to the original `playKeyFeedback` label; the flash-timing call site in
      * [drawKeys] passes `"flash"` instead, since that log line has nothing to do with haptic feedback and
      * the old hardcoded prefix would have been actively misleading there.
@@ -1486,7 +1526,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * space-bar language swipe (G-01), a three-key-width distance (D-46; D-57: -15%) for the horizontal page
      * swipe, and the plain [fieldSwipeThresholdPx] three-key-width distance for the vertical field gestures
      * (dismiss-down, up-to-symbols). Returns true when the listener consumed the swipe.
-     *
+     * 
      * @param key the key the swipe started on
      * @param dx the horizontal release displacement
      * @param dy the vertical release displacement
@@ -1532,7 +1572,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * Geometry of the char keys, for typing-pattern detection (T-04). Empty until the view is laid out.
-     *
+     * 
      * @return one [OffsetModel.Candidate] per char key, with the centre and half-size in view pixels
      */
     fun charKeyGeometry(): List<OffsetModel.Candidate> {
@@ -1550,11 +1590,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * keeps the learned centre from ever drifting past the vertical middle between a key's own centre and
      * its bottom edge - a considered starting point, not yet device-tuned, easy to retune later (a single
      * constant, same precedent as this project's other threshold tunings).
-     *
+     * 
      * D-231: also applies to Backspace (`KeyCode.DELETE`), which sits directly above Enter at the same
      * right-hand column (third row vs. the bottom row) - reported drifting down into Enter's own territory
      * the same way the bottom letter row drifted into the space bar.
-     *
+     * 
      * @return the tighter downward factor for a bottom-row over-space-bar letter key or Backspace, or null
      *         (meaning "use the model's own [OffsetModel.maxOffsetFactor], same as every other direction")
      *         otherwise
@@ -1572,7 +1612,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * *upward* drift, mirroring [downwardOffsetFactorFor]'s own reasoning - Backspace sits directly above it
      * at the same column, one row up, and was reported bleeding into it the same way the bottom letter row
      * bled into the space bar (D-109/D-133).
-     *
+     * 
      * @return the tighter upward factor for Enter, or null (meaning "use the model's own
      *         [OffsetModel.maxOffsetFactor]") otherwise
      */
@@ -1586,7 +1626,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * Backspace sits directly beside it at the row's right edge and was reported bleeding into it far
      * enough to make Backspace hard to hit, the same class of problem as D-109/D-133/D-231, just on the
      * horizontal axis this time.
-     *
+     * 
      * @return the tighter rightward factor for `m`, or null (meaning "use the model's own
      *         [OffsetModel.maxOffsetFactor]") otherwise
      */
@@ -1596,7 +1636,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-233: Backspace gets the mirrored bound on its own learned *leftward* drift, toward `m`.
-     *
+     * 
      * @return the tighter leftward factor for Backspace, or null (meaning "use the model's own
      *         [OffsetModel.maxOffsetFactor]") otherwise
      */
@@ -1620,7 +1660,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * passing a positive [availableGestureZonePx] when gesture navigation is genuinely active, and for
      * subtracting the returned, *actually applied* value - not [availableGestureZonePx] itself - from its
      * own bottom padding, so the two always sum back to the original, full inset regardless of either cap.
-     *
+     * 
      * @param availableGestureZonePx the reclaimable portion of the bottom inset (already computed by the
      *        caller from the real WindowInsets); zero or negative leaves this view's own padding at 0
      * @return the extension actually applied, in pixels - always `<= availableGestureZonePx`
