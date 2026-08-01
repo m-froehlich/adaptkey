@@ -5584,17 +5584,18 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * G-05: toggles the case of the composing token's first character and immediately commits it
-     * verbatim (bypassing autocorrect and §6 capitalisation). No provisional state, no camelCase
-     * continuation — the toggle is final the moment the double-tap completes. A no-op (just disarming
-     * Shift) when no word is currently composing.
+     * G-05: toggles the case of the composing token's first character and updates the live composing
+     * text immediately (visible at once, no waiting for a delimiter). The token is marked case-locked,
+     * so the next delimiter or letter commits it verbatim — no autocorrect, no §6 capitalisation, no
+     * camelCase continuation. The token stays composing, so a further double-tap toggles the same word
+     * again (upper → lower → upper …). A no-op (just disarming Shift) when no word is currently composing.
      */
     private fun toggleWordStartImmediate(view: AdaptKeyboardView) {
         val ic = currentInputConnection
         if (composing.isNotEmpty() && ic != null) {
             flipFirstInComposing()
             composingCaseLocked = true
-            finalizeAndCommit(ic, "")
+            updateComposing(ic)
         }
         view.shifted = false
     }

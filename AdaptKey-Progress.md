@@ -293,6 +293,17 @@ non-trivial changes).
 
 ## Current State
 
+- **§265 (v1.0.26): D-339 - repeated double-tap word toggle did not work (composing emptied after first**
+  **toggle).** Root cause: `toggleWordStartImmediate` called `finalizeAndCommit(ic, "")`, which committed
+  the word and emptied `composing` — the second double-tap found `composing` empty and did nothing. Fix:
+  replaced `finalizeAndCommit` with `updateComposing(ic)` — the flipped text is immediately visible as
+  composing, and the token stays composing so a further double-tap toggles it again (upper → lower →
+  upper …). `composingCaseLocked = true` still ensures verbatim commit on the next delimiter/letter (no
+  autocorrect, no camelCase). The `onUpdateSelection` ownEdit check recognises the `setComposingText` as
+  the IME's own edit and does not reset `composingCaseLocked`. No new tests (Android-glue path).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 329 → 330, `versionName` `"1.0.25"`
+  → `"1.0.26"`. **Not yet device-confirmed** — needs a repeated double-tap on the same word (upper → lower
+  → upper) mid-word and at word end. See history §265.
 - **§264 (v1.0.25): Shift-Handling Redesign — non-competing intents.** Three Shift intents that formerly**
   **competed in a single `handleShift()` method are now cleanly separated by input modality.** (1) **Caps Lock
   via long-press** (G-06): Shift gained a long-press action (`KeyboardLayout.hasLongPressAction` now includes

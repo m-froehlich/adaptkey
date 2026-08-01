@@ -13046,3 +13046,40 @@ InputConnection-Glue-Logik bleibt ungetestet).
 G-05 and G-06 rewritten (§4). G-05 Addendum (Shift after Backspace / caret tap) unchanged. §25 (D-337
 border highlight) unchanged — the `capsLock` flag it reads is still set the same way, just via long-press
 now.
+
+---
+
+## §265 - D-339 Double-Tap Word Toggle: Repeated Toggle Did Not Work (composing Emptied After First Toggle)
+
+### Report
+
+The double-tap word-start toggle (§264/D-338) worked for the first toggle but not for a repeated one: a
+second double-tap on the same word did not toggle the first character back, but instead armed Shift for
+the next letter behind the cursor. Reported directly: "Wenn der erste Buchstabe groß ist, kann ich ihn mit
+double tab Mid Word klein machen. Erneutes Double Tab macht aber nicht diesen wieder groß, sondern
+Buchstaben hinter dem Cursor."
+
+### Root Cause
+
+`toggleWordStartImmediate` called `finalizeAndCommit(ic, "")` after flipping the first character, which
+committed the word verbatim and called `clearComposing()` — emptying `composing`. The second double-tap
+then found `composing.isEmpty()` and treated it as a no-op (just disarming Shift), leaving the first tap's
+ordinary Shift arm in place for the next letter instead of toggling the word again.
+
+### Fix
+
+Replaced `finalizeAndCommit(ic, "")` with `updateComposing(ic)` — the flipped text is pushed to the editor
+as composing text (immediately visible), and the token stays composing so a further double-tap toggles it
+again. `composingCaseLocked = true` ensures the next delimiter or letter still commits the token verbatim
+(no autocorrect, no camelCase) — the same behaviour the user originally chose ("sofortiger Commit" meant
+"no waiting for a delimiter, no camelCase continuation", not "composing must be emptied immediately"). The
+`onUpdateSelection` ownEdit check (§99-§101) recognises the `setComposingText` as the IME's own edit and
+does not trigger `reclaimWordAtCaret()` → `resetWordEndShift()`, so `composingCaseLocked` survives the
+callback.
+
+### Tests
+
+No new tests (Android-glue path, per convention). 983 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 329 → 330, `versionName` `"1.0.25"`
+→ `"1.0.26"`. **Not yet device-confirmed** — needs a repeated double-tap on the same word (upper → lower
+→ upper) mid-word and at word end.

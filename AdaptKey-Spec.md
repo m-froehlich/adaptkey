@@ -261,14 +261,16 @@ its own instead - see §13.
 ### G-05 - Double-Tap Shift to Toggle Word-Start Capitalisation
 A double-tap on Shift (two presses within the configurable double-tap delay, default 400 ms, range 200-800 ms)
 toggles the capitalisation of the current word's first character — in both directions: "Upper" becomes
-"upper", "lower" becomes "Lower". The toggle is **immediate**: the word is committed verbatim the moment the
-double-tap completes, bypassing autocorrect, §6 capitalisation, and single-word correction entirely. There
-is no provisional state and no camelCase continuation — the three Shift intents (Caps Lock via long-press,
-word-start toggle via double-tap, next-letter case via single tap) no longer compete with each other.
+"upper", "lower" becomes "Lower". The flip is **immediately visible** in the composing text, and the token is
+marked case-locked so the next delimiter or letter commits it verbatim — bypassing autocorrect, §6
+capitalisation, and single-word correction entirely. There is no camelCase continuation, and the three Shift
+intents (Caps Lock via long-press, word-start toggle via double-tap, next-letter case via single tap) no
+longer compete with each other.
 
-The double-tap works regardless of where the caret sits within the composing token (not only at its end, as
-the former single-tap word-end gesture required). When no word is currently composing, the double-tap simply
-disarms the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot uppercase.
+The token stays composing after the toggle, so a further double-tap toggles the same word again (upper →
+lower → upper …), regardless of where the caret sits within it. When no word is currently composing, the
+double-tap simply disarms the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot
+uppercase.
 
 The double-tap delay is configurable via a slider in the Layout settings category, placed directly below the
 long-press delay slider. Default: 400 ms. Range: 200-800 ms, in 10 ms steps.
