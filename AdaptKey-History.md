@@ -13332,3 +13332,57 @@ the full D-348 scenario set: (a) double-tap at the committed word reverts correc
 (b) single Backspace away from the committed word deletes normally; (c) trailing whitespace beyond
 the armed tail is consumed by the first tap, then double-tap reverts; (d) single-Backspace revert
 with the option off still works.
+
+## §270 - D-348 Fix v4: Correct Design Per User Spec
+
+### Report
+
+After three failed fix attempts (§267-§269), the user specified the exact desired behaviour:
+
+> Ich commite ein Wort mit einem Trennzeichen. Es wird auto-korrigiert.
+> Ich tippe doppel backspace im armed Modus -> Der erste löscht das Trennzeichen, der zweite revertet
+> die Korrektur.
+> Ich tipp stattdessen ein einfaches Backspace, nur das Trennzeichen wird gelöscht oder das punctuation
+> Space. Denn es war ja ein einfaches Backspace.
+
+### Root Cause of All Three Prior Bugs
+
+The three prior fixes each had a different fundamental flaw:
+
+1. **v1.0.27 (§266 original):** first tap was a no-op+flash for ANY Backspace while `undoTyped` was
+   armed and the caret wasn't at the armed tail — so Backspace was silently swallowed anywhere else.
+2. **v1.0.28/29 (§267/§268):** first tap consumed the delimiter, second tap called
+   `performAutocorrectUndo(allowConsumedDelimiter = true)` — but the reclaim triggered by the first
+   tap's `onUpdateSelection` could re-enter composing for the committed word, and an active composing
+   span made `commitText` re-insert the committed word alongside the typed one → **duplication**.
+3. **v1.0.30 (§269):** first tap was a pure no-op+flash (never deleted the delimiter) — so single
+   Backspace did nothing, contradicting the user's spec.
+
+### Fix
+
+Implemented the user's spec exactly:
+
+**First tap (not a double-tap):** an ordinary single-character delete via `handleBackspace(ic)`. No
+no-op, no flash. The undo window STAYS armed while the deleted character is whitespace (the delimiter,
+or extra Space/Enter typed after the commit) — matching "single Backspace just deletes the delimiter".
+Once the character before the caret is non-whitespace (eating into the committed word or editing
+elsewhere), `clearUndo()` + `handleBackspace` runs — the window no longer applies.
+
+**Second tap (within the window):** `finishComposingText()` + `clearComposing()` first (defensive —
+clears any composing span the inter-tap reclaim may have set, so `commitText` doesn't re-insert the
+committed word), then `performAutocorrectUndo(ic, allowConsumedDelimiter = true)`.
+
+**`allowConsumedDelimiter` in `performAutocorrectUndo`:** when the full armed tail
+(`undoCommitted + undoDelimiter`) is not present (the first tap deleted the delimiter), falls back to
+verifying just `undoCommitted` alone, and deletes/commits without the delimiter (it was already removed
+by the user's deliberate single-Backspace — re-adding it would contradict that).
+
+The unused `flashKey` public method (added in §266 for the no-op+flash approach) was removed.
+
+### Tests
+
+No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 334 → 335, `versionName` `"1.0.30"` → `"1.0.31"`. **Not yet device-confirmed** — needs the
+full D-348 scenario set: (a) single Backspace at armed tail deletes the delimiter; (b) double-tap
+reverts correctly (no duplication, no missing revert); (c) single Backspace away from the committed
+word deletes normally; (d) single-Backspace revert with the option off still works.

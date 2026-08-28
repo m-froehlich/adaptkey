@@ -308,6 +308,19 @@ non-trivial changes).
   D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist),
   D-347 (Gemini app cursor nub). See spec §28-§31, §33.
 
+- **§270 (v1.0.31): D-348 fix v4 - correct design per user spec.** First tap is now an ordinary
+  single-character delete (the delimiter/space), NOT a no-op — matching the user's explicit spec:
+  single Backspace deletes the delimiter, double-tap reverts. Undo window stays armed while deleting
+  whitespace (delimiter or extra spaces), clears once non-whitespace is reached. Second tap (within
+  window) finishes composing first (prevents duplication caused by an active composing span making
+  commitText re-insert the committed word), then calls performAutocorrectUndo with allowConsumedDelimiter
+  (delimiter was deleted by the first tap). Removed the unused flashKey method. Root cause of all three
+  prior bugs: (1) v1.0.27 first tap was no-op for any non-armed-tail position; (2) v1.0.28/29
+  allowConsumedDelimiter path duplicated because an active composing span (reclaimed between taps) made
+  commitText re-insert the committed word; (3) v1.0.30 first tap was pure no-op (never deleted).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 334 → 335, `versionName`
+  `"1.0.30"` → `"1.0.31"`. **Not yet device-confirmed** - see history §270.
+
 - **§269 (v1.0.30): D-348 fix v3 - double-tap duplicated the reverted word.** Root cause: the
   `allowConsumedDelimiter` mechanism (added in v1.0.28 to tolerate the first tap deleting the
   delimiter) was fundamentally wrong — the first tap's deletion of the delimiter broke the

@@ -1331,14 +1331,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-348: public entry point so [de.froehlichmedia.adaptkey.AdaptKeyService] can re-flash a key as a
-     * visual hint (e.g. the no-op first Backspace in double-tap-revert mode, signalling "press again").
-     */
-    fun flashKey(key: Key) {
-        flash(key)
-    }
-    
-    /**
      * D-05 / D-06: plays the optional key-press feedback, each gated by its own setting (both default
      * off). Both go straight to hardware - a bundled sample via [SoundPool] and a direct [Vibrator.vibrate]
      * call - bypassing the system "touch sounds" / "touch vibration" toggles that silenced
