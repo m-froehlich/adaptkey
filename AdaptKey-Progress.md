@@ -303,6 +303,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§278 (v1.0.36): D-405 implemented - sentence-start capitalisation is now a purely live typing aid,**
+  **never re-applied as a commit-time override.** `CapitalisationEngine.capitalise()` dropped its standalone
+  `context.sentenceStart -> true` branch; `explicitFirstUpper` alone now decides both directions symmetrically
+  (an explicit lower-case choice, e.g. a deliberate Shift-disarm of the pre-armed capital, is no longer
+  silently overwritten at commit). A substantial inline comment documents the finding and points any future
+  regression at the live-arming path (`armShiftForNextWord`/`ShiftGrace`, D-45/D-313/D-335) rather than at
+  reinstating the removed branch - the user's own explicit request, so a partial reintroduction stays cheap
+  if the accepted trade-off (a live-arming gap now surfaces directly instead of being masked) ever proves
+  wrong. `CapitalisationContext.sentenceStart` is kept on the data class, deliberately unused inside
+  `capitalise()` itself, for the same reason. Spec §6/§35/S-06/W-04 updated to match. 1 existing test
+  corrected in place (not removed), 984 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `versionCode` 339 -> 340, `versionName` `"1.0.35"` -> `"1.0.36"`. Not yet device-confirmed. See
+  history §278.
+
 - **§277 (still v1.0.35, no code change): design discussion on D-352-D-356/D-403 - a real, unified**
   **confidence metric agreed as the direction (two thresholds: auto-apply / chip-offer, tied to a new**
   **three-level autocorrect-aggressiveness setting), plus several concrete findings - nothing implemented**

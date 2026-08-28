@@ -8,7 +8,12 @@ package de.froehlichmedia.adaptkey.capitalisation
  *
  * @property explicitFirstUpper the user explicitly typed/shifted the first letter as uppercase;
  *           an explicit uppercase is never lowercased (hierarchy rule 1)
- * @property sentenceStart the token starts a sentence (field start, or after `.`/`!`/`?` + space)
+ * @property sentenceStart the token starts a sentence (field start, or after `.`/`!`/`?` + space) - D-405:
+ *           kept on this class and still populated by every caller, but deliberately no longer read inside
+ *           [CapitalisationEngine.capitalise] itself; sentence-start capitalisation is applied live instead
+ *           (see [ShiftGrace]), never as a commit-time override. Retained here so a future, narrower,
+ *           context-aware reintroduction (should live arming ever prove insufficient on its own) stays a
+ *           small, local change rather than needing this whole plumbing rebuilt from scratch.
  * @property capsMode the editor-mandated capitalisation, ranking directly below explicit input
  * @property afterHyphen the token is the segment following a hyphen (B-02: lowercase unless proper)
  */

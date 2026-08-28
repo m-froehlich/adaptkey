@@ -358,8 +358,8 @@ auto-corrected") is not adopted.
 
 ### S-06 - Verbatim "Keep As Typed" Affordance
 Whenever autocorrect intends to replace the current token on the next delimiter - including a pending
-capitalisation-only change (e.g. an ordinary noun about to be auto-capitalised, or a correction whose case
-must match sentence-start context) - the literal typed string is surfaced as a dedicated, visually distinct
+capitalisation-only change (e.g. an ordinary noun about to be auto-capitalised) - the literal typed string
+is surfaced as a dedicated, visually distinct
 chip (e.g. in quotation marks), pinned at the far left of the suggestion bar and exempt from position
 stabilisation (S-03). The pending replacement is shown alongside it. Tapping the verbatim chip commits the
 literal input and cancels the pending change for this occurrence. This is the only case in which S-02 is
@@ -413,8 +413,8 @@ unchanged. Runs in the deferred/background pass (no main-thread cost), so it add
 
 ### Autocorrect Hierarchy
 
-1. **Explicit user input always wins.** An uppercase letter is never corrected to lowercase. A lowercase letter is only corrected when rules 2-4 apply unambiguously.
-2. **Sentence start:** The first word after `.`, `!`, or `?` followed by a space is capitalised. A deliberate line break also begins a new sentence and is capitalised (see the comma-terminated-line exception below).
+1. **Explicit user input always wins.** The token's own first character, exactly as it stands once typed, is never changed by any rule below - symmetric in both directions (D-405): an explicit uppercase is never lowercased, and an explicit lowercase is never uppercased either.
+2. **Sentence start is a *live* typing aid only, never a commit-time correction (D-405).** The first word after `.`, `!`, or `?` followed by a space - or after a deliberate line break, which also begins a new sentence (see the comma-terminated-line exception below) - has Shift pre-armed *before* the word is typed, so an ordinary "forgot to capitalise" keystroke already lands upper-case without any further action. This is the entire mechanism: once a token reaches commit, whatever casing it already carries **is** the answer, under rule 1 above - there is no second, independent re-derivation from sentence position at commit time any more. A user who explicitly Shift-disarms the pre-armed capital and types lower-case on purpose gets exactly that, permanently, not silently overwritten back. (Before D-405, this rule doubled as a commit-time override with no protection for a deliberate lower-case choice - the change is a bug fix, not a new feature: rule 1's "explicit input always wins" was never actually symmetric until now.)
 3. **Pure nouns:** A word that exists exclusively as a noun (no verb, adjective, or preposition form) is capitalised automatically.
 4. **Known proper nouns:** Are capitalised.
 5. **Ambiguous words** (existing as both a noun and another part of speech): No automatic correction. Capitalisation is offered as a suggestion in the bar (S-06). Example: "gegenüber" (opposite/facing) - its prepositional use is far more frequent than its nominal use, so no intervention occurs.
@@ -427,8 +427,10 @@ homograph pairs have been re-tagged to the ambiguous case; a scan found roughly 
 of the same shape, deliberately left unfixed as an open safety-vs-fluency product decision, not a bug to be
 silently resolved).
 
-Rules 2-4's outcome is now visible in the suggestion bar *before* it silently applies, via S-06's extended
-scope covering pending capitalisation-only changes - not only pending spelling substitutions.
+Rules 3/4's outcome is now visible in the suggestion bar *before* it silently applies, via S-06's extended
+scope covering pending capitalisation-only changes - not only pending spelling substitutions. Rule 2 has no
+equivalent pending state to preview any more (D-405) - it is resolved live, before the word is even typed,
+so there is nothing left pending by the time a suggestion could show one.
 
 This entire section (all of §6) is bypassed for email-mode, URL-mode, and login-field fragments (§10-§12),
 and for one of the app's *own* fields that explicitly declares itself opted out of suggestions
@@ -444,7 +446,7 @@ autocorrect/capitalisation in ordinary third-party apps.
 See §4.
 
 ### Editor-Mandated Capitalisation
-When the target field declares `TYPE_TEXT_FLAG_CAP_SENTENCES`, `TYPE_TEXT_FLAG_CAP_WORDS`, or `TYPE_TEXT_FLAG_CAP_CHARACTERS` (read from `EditorInfo` and queried per position via `InputConnection.getCursorCapsMode()`), the case the field requires is treated as an authoritative baseline, ranking directly below explicit user input (hierarchy rule 1). The linguistic rules (sentence start, nouns, proper nouns, ambiguous words) never lowercase a position the field requires to be capitalised. A field reporting no caps flag at all (`CapsMode.NONE`) is still armed at a genuine sentence start, exactly as if the field had requested sentence-case - AdaptKey's own rules apply regardless of what the target field requests, unless overridden by the email/URL/login bypass above.
+When the target field declares `TYPE_TEXT_FLAG_CAP_SENTENCES`, `TYPE_TEXT_FLAG_CAP_WORDS`, or `TYPE_TEXT_FLAG_CAP_CHARACTERS` (read from `EditorInfo` and queried per position via `InputConnection.getCursorCapsMode()`), the case the field requires is treated as an authoritative baseline, ranking directly below explicit user input (hierarchy rule 1). The remaining linguistic rules (nouns, proper nouns, ambiguous words) never lowercase a position the field requires to be capitalised. A field reporting no caps flag at all (`CapsMode.NONE`) still gets Shift live-armed at a genuine sentence start, exactly as if the field had requested sentence-case (D-405: this is the same live-arming mechanism rule 2 above now relies on exclusively, not a separate commit-time behaviour) - AdaptKey's own rules apply regardless of what the target field requests, unless overridden by the email/URL/login bypass above.
 
 ### Delayed Shift Against Surprising Field Capitalisation *(configurable)*
 With `TYPE_TEXT_FLAG_CAP_WORDS` or `TYPE_TEXT_FLAG_CAP_CHARACTERS`, every word start is auto-armed to uppercase - including mid-sentence words, which is surprising relative to normal typing. A user who reflexively presses Shift to capitalise the next word would instead toggle the already-armed uppercase back to lowercase. To prevent this, a Shift press that would switch from a field-mandated uppercase to lowercase is ignored during a short grace window after the word start. Once the window elapses, Shift toggles normally, so a deliberate lowercase override remains possible. The guard applies only to field-mandated capitalisation outside a regular sentence start; ordinary sentence-start capitalisation is unaffected. The window length is configurable via a slider from 0 to 500 ms (C-07); a value of 0 disables the guard entirely.
@@ -959,8 +961,9 @@ known" check is unaffected either way - both the bundled and the overriding casi
 regardless of which one the user happens to type on a given occasion.
 
 A casing difference confined to the word's first character does *not* count as a persistently different
-casing and is never promoted this way - §6's own capitalisation hierarchy (sentence start, a pure/proper
-noun, an editor's field mandate) only ever recases that one character, so an ordinary bundled-lowercase word
+casing and is never promoted this way - every mechanism that can recase a word (live sentence-start Shift
+arming, D-405; a pure/proper noun via §6's own hierarchy; an editor's field mandate) only ever touches that
+one character, so an ordinary bundled-lowercase word
 that merely happened to start a sentence (`"das"` -> `"Das"`) must not be mistaken for a deliberate override
 and start counting toward promotion. Only a difference reaching beyond the first character (as any genuine
 deliberately-typed casing like an acronym does) is eligible.
@@ -1338,6 +1341,34 @@ single-tap mode's own D-286/D-277 whitespace consumption). When off (the default
 single-Backspace revert behaviour is unchanged. The motivation: a single-Backspace revert can conflict
 with the user's intent to simply delete one character, and a deliberate double-tap is a clearer, less
 surprising trigger for an action that replaces an entire word.
+
+---
+
+## 35. Sentence-Start Capitalisation Is A Live-Only Mechanism, Never A Commit-Time Override (D-405)
+
+D-405: before this change, §6 hierarchy rule 1 ("explicit user input always wins") only ever protected an
+*uppercase* choice - a token starting a sentence/line was force-capitalised again at commit regardless of
+what was actually typed, silently overwriting a deliberate lower-case choice (e.g. explicitly Shift-disarming
+a pre-armed capital and typing lower-case on purpose). Root-caused from a real device log: composing stayed
+`"test"` throughout typing, yet the committed result was `"Test"` anyway.
+
+Fixed by making rule 1 genuinely symmetric: sentence/line-start capitalisation is now applied **only** live,
+by pre-arming Shift before the word is typed (the existing `armShiftForNextWord`/`ShiftGrace` mechanism,
+unchanged) - the ordinary "forgot to capitalise" case is already fully handled by the time the first
+keystroke lands, since the pre-armed Shift makes that keystroke land upper-case without any further user
+action. `CapitalisationEngine.capitalise()` no longer independently re-derives capitalisation from sentence
+position at commit time at all - whatever casing the token already carries by then is final, exactly like an
+explicit uppercase already was. Every other §6 rule (editor-mandated `CapsMode`, proper/pure noun, B-02,
+the LLM rule-6 exception) is unaffected - this is scoped specifically to the sentence-start mechanism.
+
+A real trade-off, accepted deliberately: the removed commit-time check was also an unconditional backstop
+for any *unrelated* gap in the live-arming path itself (this project has hit several such gaps before -
+D-45, D-313, D-335) - such a gap would previously have been silently papered over by the commit-time
+override; it now surfaces directly as a visible under-capitalised sentence start instead, which is
+considered the more honest failure mode (traceable and fixable at its actual source, rather than masked).
+If a genuine live-arming gap resurfaces, the fix is to trace and repair `armShiftForNextWord`/
+`sentenceStartBefore`, not to reinstate a blanket commit-time override, which would silently reopen this
+exact issue for every deliberate lower-case choice again.
 
 ---
 

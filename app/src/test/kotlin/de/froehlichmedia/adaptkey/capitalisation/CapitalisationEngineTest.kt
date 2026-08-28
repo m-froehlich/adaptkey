@@ -59,8 +59,8 @@ class CapitalisationEngineTest {
     }
     
     @Test
-    fun `sentence start capitalises a non-noun`() {
-        assertEquals("Gehen", engine.capitalise("gehen", ctx(sentenceStart = true)))
+    fun `D-405 sentence start alone no longer capitalises at commit - only live Shift-arming does that now`() {
+        assertEquals("gehen", engine.capitalise("gehen", ctx(sentenceStart = true)))
     }
     
     @Test

@@ -13977,3 +13977,40 @@ code.
 
 No code changed this round, no version bump (design discussion only, per this project's own established
 convention). 984 unit tests (unchanged).
+
+## §278 - D-405 Implemented: Sentence-Start Capitalisation Is Now Purely A Live Typing Aid (v1.0.36)
+
+User gave explicit go on §277's own D-405 direction, including its flagged trade-off ("Entferne gerne auch
+das Sicherheitsnetz"), with one explicit request: leave a comment explaining what was removed and how to
+reinstate a narrower version if it is ever needed again.
+
+**Implemented exactly as discussed.** `CapitalisationEngine.capitalise()`'s `when` block dropped its
+standalone `context.sentenceStart -> true` branch - `explicitFirstUpper` (the literal typed first character's
+own current case) now decides both directions symmetrically, with no independent re-derivation from sentence
+position at commit time. A substantial inline comment was left exactly where the branch used to sit,
+explaining the D-405 finding, why the branch was removed, and - per the user's explicit request - that a
+future regression should be traced and fixed in the live-arming path (`armShiftForNextWord`/
+`sentenceStartBefore`/`ShiftGrace`, with D-45/D-313/D-335 named as this area's own prior bug history) rather
+than by blindly reinstating `context.sentenceStart -> true`, which would silently reopen the exact issue
+D-405 fixes. `CapitalisationContext.sentenceStart` itself is deliberately kept on the data class and still
+populated by every caller (not deleted) - its own KDoc now explains it is currently unread inside
+`capitalise()`, retained specifically so a future, narrower, context-aware reintroduction stays a small,
+local change rather than needing this plumbing rebuilt from scratch. The class-level KDoc's own hierarchy
+list and `CapitalisationContext`'s field doc were both updated to match.
+
+Also updated in `AdaptKey-Spec.md`: §6 rule 1 (now genuinely symmetric) and rule 2 (now explicitly described
+as live-only, no commit-time outcome to preview), the "Editor-Mandated Capitalisation" paragraph (sentence
+start no longer listed among the linguistic rules `CapitalisationEngine` itself applies), S-06 (dropped the
+now-inapplicable "a correction whose case must match sentence-start context" example), W-04 (reworded the
+parenthetical list of first-character-only recasing mechanisms), and a new §35 section recording the decision
+and its accepted trade-off in full.
+
+1 existing test corrected in place, not removed (matching this project's own convention for a confirmed
+behaviour flip, e.g. §86's `ShiftGraceTest` precedent): `` `sentence start capitalises a non-noun` `` ->
+`` `D-405 sentence start alone no longer capitalises at commit - only live Shift-arming does that now` ``,
+asserting `"gehen"` now stays `"gehen"` under `sentenceStart = true` instead of becoming `"Gehen"`. 984 unit
+tests (unchanged - a corrected assertion, not a new test). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `versionCode` 339 -> 340, `versionName` `"1.0.35"` -> `"1.0.36"`. Not yet device-confirmed - needs the
+exact repro from §277's own log (an empty field, explicit Shift-disarm, type lower-case, confirm the commit
+keeps it lower-case) plus a plain, ordinary sentence-start commit (no Shift touched) to confirm the live-arm
+alone still capitalises it correctly.
