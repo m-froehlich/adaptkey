@@ -282,6 +282,19 @@ class AdaptKeyService : InputMethodService() {
     // field) without ever matching an unrelated third-party field again.
     private var noSuggestionsField = false
     
+    // D-351: whether the reactive D-62 reclaim-on-caret-move (reclaimWordAtCaretRunnable, D-350) is
+    // suppressed for the currently-focused field - re-determined fresh per field in onStartInput. A
+    // confirmed, Gemini-specific quirk (this exact field has behaved unusually around composing-state
+    // changes since the D-139/§99-101 saga): calling ic.setComposingRegion() from a reactive caret-move
+    // reclaim - even once the D-350 debounce has settled - makes the field's own cursor-handle disappear and
+    // its drag gesture stop mid-motion. Scoped to this one package by name, not a general mechanism: no
+    // structural EditorInfo signal distinguishes "this field's handle cannot tolerate a composing-region
+    // change" from an ordinary one, and every other tested app tolerates it fine. Typing-triggered reclaim
+    // (handleKey's CHAR branch, appendLongPressLetter) is unaffected either way - only the D-62 "instant live
+    // correction the moment the caret lands on a word with nothing typed" convenience is lost, in this one
+    // app. Flagged as a special case to keep watching, not a settled, final answer - see spec §33.
+    private var reclaimOnCaretMoveSuppressed = false
+    
     // D-158: whether the currently-focused field is a recognised email-address field - unlike urlMode,
     // this is *derived* from loginFieldKind (already reliably detected via InputType for D-142's own
     // purposes, see LoginFieldDetector's KDoc) rather than re-parsing EditorInfo a second time; re-derived
@@ -1244,6 +1257,8 @@ class AdaptKeyService : InputMethodService() {
         // own field KDoc for the real-device regression (Google Keep) this guards against.
         noSuggestionsField = info != null && info.packageName == packageName &&
             (info.inputType and InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) != 0
+        // D-351: see reclaimOnCaretMoveSuppressed's own field KDoc.
+        reclaimOnCaretMoveSuppressed = info?.packageName == GEMINI_PACKAGE_NAME
         emailMode = isEmailField(info)
         keyboardView?.emailMode = emailMode
         // A field that primarily wants digits (phone number, plain numeric entry, date/time) opens
@@ -1326,7 +1341,10 @@ class AdaptKeyService : InputMethodService() {
             // KDoc for why (a cursor-handle drag reports many intermediate positions in quick succession, and
             // reactively reclaiming every one of them was observed corrupting - and, once that was fixed,
             // stalling - the Gemini search field's own drag-handle rendering).
-            if (newSelStart == newSelEnd) {
+            // D-351: even the debounced reclaim above still calls setComposingRegion() once it fires, which
+            // stops the Gemini search field's own cursor-handle drag dead - see reclaimOnCaretMoveSuppressed's
+            // own field KDoc.
+            if (newSelStart == newSelEnd && !reclaimOnCaretMoveSuppressed) {
                 handler.removeCallbacks(reclaimWordAtCaretRunnable)
                 handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
             }
@@ -5879,6 +5897,11 @@ class AdaptKeyService : InputMethodService() {
         // fluent typing does, so a shorter delay is both sufficient to let a drag pass through untouched and
         // still short enough that an ordinary settled tap reads as instant.
         private const val RECLAIM_DEBOUNCE_MS = 100L
+        
+        // D-351: see reclaimOnCaretMoveSuppressed's own field KDoc - the one package this app has confirmed
+        // cannot tolerate a reactive setComposingRegion() call from a caret move without losing its own
+        // cursor-handle drag.
+        private const val GEMINI_PACKAGE_NAME = "com.google.android.googlequicksearchbox"
         
         // D-161: how long after the keyboard is shown, and D-250: how far apart each repeat check runs -
         // long enough that a normally-delivered onApplyWindowInsets callback has certainly already run

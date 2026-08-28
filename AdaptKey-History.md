@@ -13536,3 +13536,51 @@ internal `InputConnection`/`Handler` glue, the same established gap as every oth
 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 337 → 338,
 `versionName` `"1.0.33"` → `"1.0.34"`. Not yet device-confirmed - needs the exact nub-drag repro again,
 watching specifically for whether the handle now tracks smoothly across word boundaries.
+
+## §274 - D-351: The Debounce Alone Isn't Enough - Any setComposingRegion() Call Stops Gemini's Drag Dead, so the Reactive Reclaim Is Now Suppressed for That One Field
+
+### Report
+
+§273's debounce confirmed a real improvement (the nub can now be dragged, no longer stuck mid-motion for
+long stretches), but the user's own precise framing of what remained: "Sobald der Reclaim tatsächlich
+durchgeführt wird, verschwindet der Nub und der Drag stoppt" - the moment the debounced reclaim actually
+fires (the caret briefly settles), the handle disappears and the drag ends right there, regardless of
+whether the user intended to keep dragging.
+
+### Why a Longer Debounce Cannot Fix This
+
+The IME has no signal at all for "has the finger actually lifted" - only selection-update callbacks. A
+longer delay only postpones when the reclaim fires; it does not change what happens the moment it does,
+which is what the user's report actually describes. Confirmed consistent with §273's own root cause: it is
+specifically `ic.setComposingRegion()` - called whenever a reclaim finds a word - that stops the drag,
+independent of timing; the one caret position that never calls it (nothing adjacent to reclaim, e.g. right
+after a period) has never shown this symptom, at any point across every log captured for D-347.
+
+### Design (discussed with the user, per this project's own convention)
+
+Two options were presented: (A) suppress the reactive D-62 caret-move reclaim specifically for this one
+field, by package name, since no other app has shown this behaviour despite extensive testing across this
+project's history and no structural `EditorInfo` signal exists to detect it generally; (B) remove the
+reactive reclaim-on-caret-move mechanism entirely, app-wide, falling back to typing-triggered reclaim only
+everywhere. The user chose (A) - the smaller blast radius, keeping §58/D-62's actual benefit (a large body
+of work across this project's own history) everywhere except the one field confirmed unable to tolerate it,
+explicitly asked to be recorded as a special case to keep observing, not a final, closed answer.
+
+### Fix
+
+New `reclaimOnCaretMoveSuppressed: Boolean`, re-determined fresh per field in `onStartInput()` from
+`info?.packageName == GEMINI_PACKAGE_NAME` (`"com.google.android.googlequicksearchbox"`) - mirrors the
+existing `urlMode`/`noSuggestionsField` per-field-flag pattern exactly, just keyed on a third-party
+package name rather than an `InputType` signal, since no such signal exists for this quirk.
+`onUpdateSelection`'s composing-empty branch now only schedules the D-350 debounced
+`reclaimWordAtCaretRunnable` when this flag is false; the flag has no effect on any typing-triggered reclaim
+call site (`handleKey`'s `CHAR` branch, `appendLongPressLetter()`), which never went through this debounce
+at all and remains unaffected everywhere, including Gemini itself.
+
+### Tests
+
+No new tests - `AdaptKeyService`-internal per-field state, the same established gap as `urlMode`/
+`noSuggestionsField`'s own precedent (neither of which has a dedicated test either). 984 unit tests
+(unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 338 → 339, `versionName`
+`"1.0.34"` → `"1.0.35"`. Not yet device-confirmed - needs the exact nub-drag repro once more, confirming the
+handle now survives being dragged across word boundaries without disappearing at all.

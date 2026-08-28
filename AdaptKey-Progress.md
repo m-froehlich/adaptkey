@@ -321,8 +321,25 @@ non-trivial changes).
   current once the caret has been still that long is ever reclaimed. `reclaimWordAtCaret()` gained a
   `composing.isNotEmpty()` guard (state may have changed during the delay); `clearComposing()` cancels the
   pending callback so it can never fire into a later field session. No new tests. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 337 → 338, `versionName` `"1.0.33"` → `"1.0.34"`. **Not yet
-  device-confirmed.** See history §273, spec §33.
+  `:app:testDebugUnitTest` green. `versionCode` 337 → 338, `versionName` `"1.0.33"` → `"1.0.34"`.
+  **Device-confirmed as a real improvement** (the nub no longer freezes for long stretches while dragging)
+  **but not sufficient alone** - see §274, the very next round. See history §273, spec §33.
+
+- **§274 (v1.0.35): D-351 - the debounce alone wasn't enough; any `setComposingRegion()` call stops**
+  **Gemini's drag dead regardless of timing, so the reactive D-62 reclaim is now suppressed entirely for**
+  **that one field, by package name.** The user's own precise report: the moment the debounced reclaim
+  actually fires (the caret briefly settles), the handle disappears and the drag ends right there - a
+  longer delay only postpones this, since the IME has no signal at all for "has the finger actually
+  lifted". Two options discussed: (A, chosen) suppress the reactive caret-move reclaim only for
+  `com.google.android.googlequicksearchbox` (no other app has shown this in this project's own extensive
+  testing history, and no structural `EditorInfo` signal exists to detect it generally); (B, declined) drop
+  the reactive reclaim mechanism app-wide. New `reclaimOnCaretMoveSuppressed` flag, set fresh per field in
+  `onStartInput()`, mirrors the existing `urlMode`/`noSuggestionsField` pattern; typing-triggered reclaim
+  (mid-word live correction once a character is actually typed) is unaffected everywhere, including
+  Gemini. **Explicitly recorded as a special case the user is monitoring in real-world use, not a settled,
+  final answer** - see spec §33. No new tests. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 338 → 339, `versionName` `"1.0.34"` → `"1.0.35"`. **Not yet device-confirmed.** See history
+  §274.
 
 - **§272 (v1.0.33): D-347 fix v2 - `before`/`after` still non-atomic even read back-to-back; derived from**
   **the single `getExtractedText()` call instead.** §271's fix (narrowing the gap between two separate

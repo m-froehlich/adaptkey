@@ -1309,10 +1309,21 @@ cause class: the D-62 reactive reclaim (`reclaimWordAtCaret()`) fired synchronou
 intermediate caret position reported while the nub was being dragged, and each firing that found a word to
 reclaim called `setComposingRegion()` on the real, already-committed text - the Gemini field's own
 drag-handle tracking stalls whenever that happens (confirmed: a position where nothing is reclaimed, e.g.
-right after a period, never stalls). Fixed by debouncing the reclaim (100ms, tuned down from the usual
-200ms elsewhere in this app since a drag reports positions much faster than fluent typing does) - a
-settled tap into a word still reads as instant, but an active drag never triggers a reclaim (and so never
-touches the composing region) until it actually stops moving.
+right after a period, never stalls). Debouncing the reclaim (100ms, tuned down from the usual 200ms
+elsewhere in this app since a drag reports positions much faster than fluent typing does) removed the
+churn *during* continuous movement, but confirmed on device: even the debounced call, the moment it
+actually fires once the caret briefly settles, still stops the drag dead right there - Gemini's own handle
+appears unable to tolerate a `setComposingRegion()` call at all while a drag might still be in progress,
+regardless of timing.
+
+**D-351: the reactive caret-move reclaim is now suppressed entirely for this one field**, identified by
+package name (`com.google.android.googlequicksearchbox`) - no structural `EditorInfo` signal distinguishes
+"this field's handle cannot tolerate a composing-region change" from an ordinary one, and no other tested
+app has shown this behaviour. Typing-triggered reclaim (mid-word live correction once a character is
+actually typed) is unaffected everywhere, including Gemini; only the D-62 "instant live correction the
+moment the caret lands on a word with nothing typed" convenience is lost in this one app. Explicitly a
+special case to keep watching, not a settled, final answer - the user is monitoring real-world use before
+deciding whether anything further is needed.
 
 ---
 
