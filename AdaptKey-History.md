@@ -13446,3 +13446,37 @@ other fix in this guarded area (D-87/D-149/D-182/D-269/D-277). 984 unit tests (u
 `"1.0.32"`. Not yet device-confirmed - needs the exact reported repro (drag the cursor nub across a
 multi-word Gemini field) to confirm the text no longer corrupts, plus a separate look at whether the nub
 itself still flickers/disappears.
+
+## §272 - D-347 Fix v2: `before`/`after` Are Still Non-Atomic Reads Even Back-to-Back - Derived From a Single `getExtractedText()` Call Instead
+
+### Report
+
+§271's fix (reading `before` immediately before `after`/the anchor, instead of trusting a field captured
+earlier) did not resolve D-347: the user re-tested and supplied a second real device log showing the
+identical class of corruption, now `before="Tes" after="st"` producing `composing="Tesst"` (5 characters,
+a duplicated `s`) instead of the real 4-character word.
+
+### Root Cause
+
+`ic.getTextBeforeCursor(...)` and `ic.getTextAfterCursor(...)` are two separate `InputConnection` calls -
+each its own Binder round-trip to the target app's process - regardless of how close together they sit in
+source code. §271 narrowed the window between them (by removing the IPC-heavy calls that used to sit in
+between) but did not close it: during an actively-dragged cursor, the live caret can still move again in
+the gap between these two specific calls returning, exactly reproducing the same before/after-from-two-
+different-positions splice §271 had already root-caused, just with a smaller (but still nonzero) window.
+
+### Fix
+
+`reclaimSurroundingWord()` already makes a third call, `ic.getExtractedText(...)`, purely for the anchor -
+this single call already returns the field's current text *and* selection together, from one atomic
+round-trip. `before`/`after` are now derived by slicing that same `ExtractedText.text` at its own
+`selectionStart`/`selectionEnd`, instead of via two further, separately-timed calls - `getTextBeforeCursor`/
+`getTextAfterCursor` are no longer called at all in this function. All three values (`before`, `after`, the
+anchor) now provably come from the exact same document snapshot, closing the race structurally rather than
+by narrowing a timing window that can never be proven safe.
+
+### Tests
+
+No new tests - same established `InputConnection`-glue gap as §271. 984 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 336 → 337, `versionName` `"1.0.32"` →
+`"1.0.33"`. Not yet device-confirmed - needs the exact reported nub-drag repro again.

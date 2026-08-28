@@ -1295,14 +1295,17 @@ AdaptKey as the active IME.
 A related, more serious data-loss bug was found and fixed from a real device log captured while
 reproducing this: dragging the nub could corrupt the surrounding text outright (e.g. `"Test test. "`
 losing its space and gaining a duplicated character). Root-caused to `reclaimSurroundingWord()` (§58)
-combining a `before` fragment read at one caret position with an `after` fragment read moments later at a
-*different* caret position - the live caret can genuinely move again, mid-drag, during the several
-`InputConnection` round-trips `reclaimWordAtCaret()` performs between capturing the two. Fixed by reading
-`before` immediately alongside `after`/the anchor, removing the gap rather than narrowing it. The
-original flicker/disappear symptom itself - plausibly a side effect of the composing region being
-repeatedly torn down and rebuilt on every intermediate drag position, though not independently confirmed
-- has not been separately verified as resolved; needs a fresh on-device retest of the nub-drag gesture on
-its own merits.
+combining a `before` fragment with an `after` fragment read from two different caret positions - the live
+caret can genuinely move again, mid-drag, between two separate `InputConnection` reads. A first fix
+narrowed the gap (reading `before` immediately before `after`/the anchor) but a second real device log
+showed the identical corruption again - two calls issued back-to-back in source are still two independent
+round-trips, with a real gap a fast drag can still move through. Fixed for real by deriving `before` and
+`after` from the single `getExtractedText()` call already made for the anchor (its own `.text`, sliced at
+its own `.selectionStart`/`.selectionEnd`) - one atomic read instead of several, so both fragments
+provably describe the same document snapshot. The original flicker/disappear symptom itself - plausibly a
+side effect of the composing region being repeatedly torn down and rebuilt on every intermediate drag
+position, though not independently confirmed - has not been separately verified as resolved; needs a
+fresh on-device retest of the nub-drag gesture on its own merits.
 
 ---
 

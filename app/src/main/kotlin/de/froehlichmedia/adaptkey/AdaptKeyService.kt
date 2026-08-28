@@ -4226,24 +4226,26 @@ class AdaptKeyService : InputMethodService() {
      * @param tap the raw tap to record for the reclaimed characters, or null to leave them untracked
      */
     private fun reclaimSurroundingWord(ic: InputConnection, tap: TapPoint?) {
-        // D-347: `before` is read fresh here, immediately alongside `after`/`extracted`, rather than trusting
-        // the tokenContextBefore field captureTokenContext() set earlier. reclaimWordAtCaret() runs
-        // armShiftForNextWord()/consumeStrandedPunctuationSpace() - both real InputConnection round-trips -
-        // between its own captureTokenContext() call and this one; during an active cursor-drag gesture (the
-        // reported Gemini "nub" case) the live caret can genuinely move again in that gap, so combining an
-        // older `before` with a newer `after`/anchor spliced text read at two different caret positions into
-        // one corrupted composing token, then overwrote the wrong document range with it - confirmed from a
-        // real device log (before="test" from the caret's earlier position, after="t" from its later one).
-        // Reading all three together removes the gap instead of narrowing it at one call site.
-        val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
-        val after = ic.getTextAfterCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
-        val reclaim = WordExtent.reclaim(before, after)
-        // D-87 / D-159: see ComposingAnchor for why startOffset must be added, not just selectionStart
-        // alone. Read before any mutation below, matching this class's established read-before-mutating
-        // convention (see splitComposingAtCaretAndCommit's own D-122 note).
+        // D-347 (v2): before/after and the anchor must come from ONE atomic InputConnection round-trip, not
+        // several. The v1 fix (reading before/after back-to-back, still two separate calls) was disproven by a
+        // second real device log showing the identical splice-from-two-caret-positions corruption while the
+        // cursor nub was being actively dragged - two calls issued right next to each other in source are
+        // still two independent Binder round-trips, with a real gap between them a fast-moving drag can still
+        // move through. getExtractedText() already returns text and selection together in a single round-trip
+        // (read before any mutation below, matching this class's established read-before-mutating convention -
+        // see splitComposingAtCaretAndCommit's own D-122 note); deriving both fragments from its own `.text`
+        // (sliced at its own `.selectionStart`/`.selectionEnd`) guarantees they describe the exact same
+        // document snapshot, closing the race for real instead of merely narrowing it further.
         val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
+        val text = extracted?.text ?: ""
+        val selStart = (extracted?.selectionStart ?: 0).coerceIn(0, text.length)
+        val selEnd = (extracted?.selectionEnd ?: selStart).coerceIn(selStart, text.length)
+        val before = text.subSequence(0, selStart).toString()
+        val after = text.subSequence(selEnd, text.length).toString()
+        val reclaim = WordExtent.reclaim(before, after)
+        // D-87 / D-159: see ComposingAnchor for why startOffset must be added, not just selectionStart alone.
         val anchor = if (extracted != null) {
-            ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, reclaim.before.length)
+            ComposingAnchor.resolve(extracted.startOffset, selStart, reclaim.before.length)
         } else {
             -1
         }

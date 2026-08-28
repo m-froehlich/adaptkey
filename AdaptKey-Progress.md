@@ -309,18 +309,20 @@ non-trivial changes).
   (D-343 may already be covered by §264's Caps Lock haptics work - not re-checked against this note,
   flagged so a future pass verifies rather than assumes either way.)
 
-- **§271 (v1.0.32): D-347 root-caused and fixed - reclaimSurroundingWord() spliced `before`/`after` text**
-  **read at two different caret positions during an active cursor-drag, corrupting the document.** From a
-  real device log: dragging the Gemini nub moved the live caret again *during* the several
-  `InputConnection` round-trips `reclaimWordAtCaret()` performs between capturing `before` (via
-  `captureTokenContext()`) and reading `after`/the anchor inside `reclaimSurroundingWord()` -
-  `armShiftForNextWord()`/`consumeStrandedPunctuationSpace()` both do real IPC calls in between. Confirmed
-  exactly against the log's own numbers (`before="test" after="t" anchor=4`). Fixed by reading `before`
-  fresh, synchronously, alongside `after`/`extracted` inside `reclaimSurroundingWord()` itself, closing the
-  gap generally rather than at just this one call site. No new tests (established `InputConnection`-glue
-  gap). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 335 → 336, `versionName`
-  `"1.0.31"` → `"1.0.32"`. **Not yet device-confirmed** - the original nub flicker/disappear symptom is
-  not separately confirmed resolved by this. See history §271, spec §33.
+- **§272 (v1.0.33): D-347 fix v2 - `before`/`after` still non-atomic even read back-to-back; derived from**
+  **the single `getExtractedText()` call instead.** §271's fix (narrowing the gap between two separate
+  `getTextBeforeCursor()`/`getTextAfterCursor()` calls) was disproven by a second real device log showing
+  the identical corruption (`before="Tes" after="st"` → `"Tesst"`) - two calls, however close in source,
+  are still two independent Binder round-trips a fast drag can move through. Fixed structurally:
+  `reclaimSurroundingWord()` no longer calls `getTextBeforeCursor`/`getTextAfterCursor` at all - both
+  fragments are now sliced from the single `getExtractedText()` call already made for the anchor (its own
+  `.text` at its own `.selectionStart`/`.selectionEnd`), so all three values provably share one atomic
+  snapshot. No new tests. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 336 → 337,
+  `versionName` `"1.0.32"` → `"1.0.33"`. **Not yet device-confirmed** - needs the exact nub-drag repro
+  again; the original flicker/disappear symptom is still separately unconfirmed. See history §272, spec §33.
+
+- **§271 (v1.0.32, superseded by §272): D-347 fix v1 - narrowed but did not close the before/after race.**
+  See history §271, spec §33.
 
 - **§270 (v1.0.31): D-348 fix v4 - correct design per user spec.** First tap is now an ordinary
   single-character delete (the delimiter/space), NOT a no-op — matching the user's explicit spec:
