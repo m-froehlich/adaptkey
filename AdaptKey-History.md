@@ -13664,9 +13664,14 @@ guesses and open design questions, exactly as this project's own established cap
   so it clearly outranks its morphological relatives (this may be the same underlying issue as D-368's own
   frequency question, or the natural next step after D-368's family - a fresh look this round, not re-derived
   from the earlier `"natürlich"`/`"natürliche"` prefix-distance fix, §192).
-- **D-368 - A capitalised word that also exists in another language's dictionary should still be *learnable*
-  as a noun, not merely shielded/blocked.** Named examples: `"Sage"` (a German noun that must be learnable
-  capitalised, not just cross-language-protected) and `"Weg"`, similarly.
+- **D-368 - Corrected in §277 - a case-neutral dictionary entry, tagged with a combination of parts of
+  speech (NOUN/VERB/ADJECTIVE/...), should be accepted and suggested in *either* casing depending on which
+  one was actually typed, rather than one casing shielding/hiding the other.** Originally mis-captured here
+  as a cross-language issue ("a word that also exists in another language's dictionary") - the user's own
+  named examples (`"Sage"`/`"sage"`, `"Weg"`/`"weg"`) are same-language homographs distinguished purely by
+  case and part of speech (a noun reading vs. a different, non-noun reading), not a cross-language
+  confusable. See §277 for the corrected framing and the connection to D-403's own withdrawn "dual-casing
+  chip" example.
 - **D-369 - Accepting a suggestion chip must not insert a space when punctuation already immediately
   follows.**
 - **D-370 - Double-quote handling needs real design work, not a quick patch.** Requested: an auto-space after
@@ -13808,6 +13813,22 @@ guesses and open design questions, exactly as this project's own established cap
   - `"ah"` and `"Oh"` should be added to the dictionary.
   - `"agentisch"`, with its inflected forms, should be added.
   - `"erstaunlicherweise"` should be added.
+  - `"aberkennen"` is missing and needs adding (surfaced while discussing D-354 in §277 - deliberately
+    deferred to this same cleanup pass rather than fixed in isolation, so the dictionary is only touched
+    once).
+  - **§277 confirmed the root cause for five of the splits reported above, directly against the real
+    dictionary data - explicitly flagged so these specific entries are not overlooked in the eventual pass**:
+    `"en"` (frequency **1207**, `OTHER` - almost certainly a corpus-tokeniser artefact, not a real
+    standalone word), `"ell"` (16, `OTHER`), `"lich"` (16, `NOUN,OTHER`) and `"ische"` (15, `OTHER`) are all
+    genuine dictionary entries that pass A-05's "both halves must resolve" gate despite not being real words
+    - this alone explains `"gesparten"` → `"gespart"`+`"en"`, `"Traditionell"` → `"Tradition"`+`"ell"`,
+    `"neulich"` → `"neu"`+`"lich"`, `"Beugungen"` → `"Beugung"`+`"en"` and `"Robotische"` →
+    `"Robot"`+`"ische"` completely - `"Robot"` (20, `NOUN`) and `"heiße"` (182, `OTHER`, from the
+    `"Scheiße"` → `"Sc"`+`"heiße"` case) are themselves genuine words, so those two splits fail only on
+    their *other* half (`"ische"`/`"Sc"`). Confirms the user's own hypothesis that this class of bad split
+    is a pure dictionary-data problem, not an algorithm defect - see D-352's own note that this must be
+    re-checked against a fixed set of pre-cleanup examples once the pass lands, and §277 for the full
+    discussion.
 - **D-403 - Uppercase acronyms are apparently never learned, and support for them generally needs to be
   better.** Several related observations, all pointing at the same underlying gap:
   - General request: better support and better suggestion-ranking for uppercase acronyms specifically, which
@@ -13843,3 +13864,116 @@ guesses and open design questions, exactly as this project's own established cap
 
 No code changed, no version bump (documentation-only capture, per this project's own established convention
 for a batch this size - see §115/§173/§182/§198's own precedent). 984 unit tests (unchanged).
+
+## §277 - Design Discussion On D-352-D-356/D-403: A Real Confidence Metric, Not Just Boolean Gates - Direction Agreed, Not Yet Implemented
+
+The user picked D-352-D-356 and D-403 from §276's own batch for a first design round, per this project's
+own convention for a non-trivial decision (discuss trade-offs before implementing). Investigated the real
+code first, not guessed - `DictionarySuggestionProvider.bestCorrection()`, `finalizeAndCommit()`,
+`learnWord()`/`performAutocorrectUndo()`, `CapitalisationEngine`, `RegularVerbInflection`. Nothing in this
+section is implemented yet.
+
+### The core finding: there is no unified confidence metric today, only a chain of boolean gates
+Confirmed by reading the code: `bestCorrection()` combines edit cost (`ADJACENT_SUB_COST`/`MAX_CORRECTION_COST`),
+an absolute frequency floor (`MIN_AUTOCORRECT_CANDIDATE_FREQUENCY = 300`, exempted for a cost-1 non-noun
+candidate, D-227) and a known-word override ratio (`KNOWN_WORD_OVERRIDE_RATIO = 100`, D-244) as independent
+`if`/`else` checks, not as inputs to one combined score. This directly explains why autocorrect "fires too
+often without genuine unambiguity" (D-353): an unknown token that happens to be a cost-1 neighbour-key
+substitution of *any* sufficiently common non-noun word is silently replaced, with nothing considering
+whether the *typed* token itself looks like a plausible word.
+
+**User's own direction, agreed:** build a real `CorrectionConfidence` that folds these signals (known/unknown
++ its own frequency, edit cost, candidate frequency/noun-tag, and the new prefix-plausibility signal below)
+into one score, compared against two thresholds instead of one pass/fail gate - an **auto-apply threshold**
+and a lower **chip-offer threshold** (a token whose confidence clears the auto threshold is silently
+corrected; below that but above the chip threshold, only offered as a suggestion; below both, left alone).
+**The user's own extension**: tie the auto-apply threshold to a new three-level autocorrect-aggressiveness
+setting ("aggressiv" lowers it, "leicht" raises it, "medium" balanced) - mirrors the existing
+`LlmActivationThreshold` enum-with-named-tiers precedent (C-06) structurally, so no new UI pattern is needed,
+only a new enum + setting for this specific gate. Not designed in full detail (exact signal weights/formula)
+- the two-threshold shape and the settings tie-in are agreed; the concrete scoring function is the next
+design step once picked up for implementation.
+
+### D-354 refined: a prefix-changing edit is a *confidence-reducing signal*, not a hard block requiring a known stem
+The originally-proposed `PrefixedVerbInflection` (known prefix + known verb stem = fully protected, mirroring
+`RegularVerbInflection`/`AdjectiveInflection`) was too narrow per the user's own correction: **if the
+correction changes what was a plausible German prefix at the token's own start, confidence must drop well
+below the auto-apply threshold - even when the remaining stem itself is not a known dictionary word.** This
+is a softer, broader signal than "known stem required," and folds directly into the confidence metric above
+as one more input, rather than being its own separate boolean gate.
+`"aberkennen"` (confirmed missing from `dict.tsv`; `"anerkennen"`, 165, `OTHER`, is a cost-1 `b`/`n`
+neighbour-key edit away) is added to the D-402 dictionary-cleanup pass's own word list (see there) rather
+than fixed in isolation - the user's own explicit call, so the dictionary asset is only touched once for
+this whole batch of findings.
+
+### D-403 resolved into two parts; the "dual-casing chip" idea withdrawn, redirected to a corrected D-368
+1. **Agreed as originally proposed**: `shouldOverrideKnownWord`'s 100x-ratio override (D-244, calibrated
+   for a rare *bundled* corpus confusable like `due`/`die`) must never fire against a `TABLE_LEARNED` entry -
+   confirmed from the code that `learn()` sets a freshly-promoted word's own frequency to exactly its
+   reinforcement count (starting at 1), which is why *any* personally-learned word is currently defenceless
+   against this ratio check regardless of promotion status - this is the confirmed root cause behind both
+   the `"kWp"`/`"AVD"` reports in D-403 and the closely related D-359 (not itself picked for this round, but
+   the same fix covers it).
+2. **The user's own "dual-casing, always chip" idea, proposed for this same D-403 in the prior round, is
+   withdrawn as a bad fit for its own motivating example**: `"Weg"`/`"weg"` was offered as a case where a
+   bundled and a learned casing collide - but `"weg"` is not a learned override at all, it is the far more
+   common *bundled* reading the user deliberately wants to keep typing, the reverse of what the proposal
+   assumed. The user identified this as actually belonging to a different, already-captured backlog item -
+   D-368, corrected above in this same round: a case-neutral dictionary entry tagged with a *combination* of
+   parts of speech (e.g. `NOUN,VERB` - "sage"/"Sage", "weg"/"Weg") should be accepted and suggested in
+   *either* casing depending on which one is actually typed, rather than either shielding the other. D-368's
+   own original capture (§276) wrongly framed this as a cross-language issue - corrected in place. No new
+   concrete example for the original bundled-vs-learned-casing collision scenario exists yet (the user could
+   not think of one on the spot) - left open, not designed further, revisit if/when a genuine example turns
+   up.
+
+### D-352 confirmed as specified - three-way setting (Automatic / Chip-only / Off), ready to build once picked up
+No further design needed; implementation-ready. The "at least one split half is not a real word" failure
+mode is now root-caused (see the new D-402 bullet above) rather than merely hypothesised - re-test against
+the same fixed set of examples once the D-402 cleanup lands, per the user's own explicit sequencing request.
+
+### D-355 - the supplied device log is real, but demonstrates a *different*, not-yet-numbered issue - captured fresh as D-405, D-355 stays open and separate
+The user supplied a real device log (Google Keep, a fresh empty field) while trying to give a D-355 repro,
+then immediately flagged it themselves as actually belonging to a different backlog point they could not
+place a number to. Read together with the user's own follow-up clarification (**not** "track the Shift-tap
+explicitly" - simpler: sentence/line-start auto-capitalisation is only ever a *live typing aid* for the
+*next* word about to be typed, never something that should be re-derived and re-applied at commit time
+against whatever casing the token actually arrived with) - this is captured as its own new item, **D-405**,
+explicitly *not* folded into D-355 (per the user's own direct instruction: "wenn wir das fixen, darf D-355
+nicht abgehakt werden, weil es etwas anderes ist"). D-355 itself remains open, unconfirmed, awaiting its own
+dedicated log when it recurs; D-356 likewise remains open, awaiting an example.
+
+**D-405 - sentence/line-start auto-capitalisation must never be re-applied as a commit-time override once a
+token has actually been typed.** Traced directly against the supplied log: an empty field arms Shift for the
+first word (`armShiftForNextWord`); the user taps SHIFT once, explicitly disarming it; `"test"` is then typed
+and stays lower-case throughout composing (`updateComposing: text="t"`/`"te"`/`"tes"`/`"test"`, confirmed by
+the log's own lines); at commit, `finalizeAndCommit` logs `typed="test" -> finalWord="Test"` - the explicit
+disarm is overridden anyway. Root-caused in `CapitalisationEngine.capitalise()`: `context.explicitFirstUpper`
+(derived from the literal typed first character) is checked first and protects an explicit *uppercase*
+choice (§6 rule 1) - but `context.sentenceStart -> true` sits as its own, unconditional branch further down
+the same `when`, so a token that starts lower-case at a recognised sentence/line start is *always* forced
+upper-case again at commit, with no equivalent protection for a deliberate lower-case choice at all.
+
+The user's own framing of the fix, restated to confirm the reading is correct (their own closing question):
+§6's sentence-start rule should only ever operate *live*, by arming Shift before/while the word is being
+typed (already how `armShiftForNextWord` works) - by the time a token reaches commit, whatever casing it
+actually carries **is** the answer; `sentenceStart` should not independently re-decide it a second time.
+Concretely, this reads as: drop the standalone `context.sentenceStart -> true` branch from
+`CapitalisationEngine`'s hierarchy - `explicitFirstUpper` alone (now simply "the token's own current first
+character is upper-case", regardless of *why*) already covers the ordinary case, since live Shift-arming
+already makes the very next keystroke land upper-case without any further action from the user. Every other
+rule (field-mandated `CapsMode`, proper/pure-noun, §6 rule 6's `llmForcesUpper`) is explicitly untouched by
+this - the user was clear this is scoped to the sentence/line-start mechanism only.
+
+**Trade-off flagged, not yet resolved with the user**: the commit-time `sentenceStart` branch is not only a
+redundant backstop for the ordinary case - this project's own history shows several *separate*, real bugs
+in the live-arming path itself that this same backstop was silently masking or intersecting with (D-45's
+restore-after-deleting-a-punctuation-at-line-start, D-313's re-derivation on a mid-word caret tap, D-335's
+regression after D-313, the G-05 addendum's own shift-after-backspace rules) - removing the commit-time
+override entirely means any *future* gap in live-arming coverage would produce a directly visible,
+under-capitalised sentence start instead of being quietly caught here. Presented to the user as an accepted
+consequence to confirm, not a reason to reject the direction - awaiting their explicit go before touching any
+code.
+
+No code changed this round, no version bump (design discussion only, per this project's own established
+convention). 984 unit tests (unchanged).

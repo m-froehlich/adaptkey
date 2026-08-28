@@ -303,6 +303,34 @@ non-trivial changes).
 
 ## Current State
 
+- **§277 (still v1.0.35, no code change): design discussion on D-352-D-356/D-403 - a real, unified**
+  **confidence metric agreed as the direction (two thresholds: auto-apply / chip-offer, tied to a new**
+  **three-level autocorrect-aggressiveness setting), plus several concrete findings - nothing implemented**
+  **yet.** Root-caused directly against the code: there is no unified confidence score today, only
+  independent boolean gates (`MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`/`ADJACENT_SUB_COST`/
+  `KNOWN_WORD_OVERRIDE_RATIO`) - explains why autocorrect fires too eagerly (D-353). D-354's prefix idea
+  refined from "known prefix + known stem = fully protected" to a softer confidence-reducing signal
+  ("a prefix-changing edit where a plausible German prefix was recognisable beforehand" - feeds the metric,
+  not a separate gate); `"aberkennen"` deferred into D-402's own dictionary-cleanup word list rather than
+  fixed alone. D-403's `shouldOverrideKnownWord`-vs-learned-words fix agreed (a freshly-learned word's
+  frequency literally equals its reinforcement count, D-403's own root cause, confirmed in `learn()`); its
+  "dual-casing chip" idea withdrawn as a bad fit for its own `"Weg"`/`"weg"` example and redirected to a
+  corrected D-368 (case-neutral entries tagged with a POS *combination*, accepted/suggested per typed
+  casing - D-368's original capture wrongly framed this as cross-language, fixed in place). D-352's
+  three-way setting (Auto/Chip-only/Off) confirmed as specified, implementation-ready; its "non-word split
+  half" failure mode is now root-caused against real dictionary data (`"en"`=1207!, `"ell"`=16, `"lich"`=16,
+  `"ische"`=15 - all pass A-05's "resolves in the dictionary" gate despite being fragments, not words) -
+  folded into D-402's own list so these specific entries are not missed in the cleanup pass. **D-355's own
+  supplied log turned out to demonstrate a different, previously unnumbered bug - captured fresh as D-405**
+  (sentence/line-start auto-capitalisation must only ever be a *live* typing aid, never re-applied as a
+  commit-time override once a token has actually been typed/explicitly disarmed via Shift) - D-355 itself
+  stays open and separate, per the user's own explicit instruction not to conflate the two; D-356 also still
+  open, awaiting an example. A real trade-off was flagged for D-405, not yet confirmed with the user: removing
+  the commit-time `sentenceStart` override in `CapitalisationEngine` means any future gap in live Shift-arming
+  coverage (a class of bug this project has hit several times before - D-45/D-313/D-335) would surface
+  directly instead of being silently masked. Full write-up: history §277. No code changed, no version bump.
+  984 unit tests (unchanged). **Awaiting the user's go before any implementation.**
+
 - **§276 (still v1.0.35, no code change): large backlog batch from real-world vacation usage - D-352 through**
   **D-404, captured only, nothing designed or implemented.** User returned from a trip with an extensive,
   unfiltered list of bugs/ideas found while actually using the app; explicitly asked for a pure backlog
