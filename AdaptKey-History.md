@@ -13480,3 +13480,59 @@ by narrowing a timing window that can never be proven safe.
 No new tests - same established `InputConnection`-glue gap as §271. 984 unit tests (unchanged).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 336 → 337, `versionName` `"1.0.32"` →
 `"1.0.33"`. Not yet device-confirmed - needs the exact reported nub-drag repro again.
+
+## §273 - D-350: The Nub-Drag Corruption Is Fixed - But Reactively Reclaiming Every Intermediate Drag Position Stalls the Gemini Field's Own Handle Tracking
+
+### Report
+
+§272's fix confirmed working: the nub can now be dragged without corrupting the text. A new, distinct
+symptom surfaced in the same session: the nub itself gets stuck while being dragged, most often at word
+boundaries. The user separately observed that positioning it at the very end of the field (right after a
+period) leaves it stable/visible, while anywhere else it disappears almost immediately - and noted both
+problems are specific to the Gemini app, not observed elsewhere.
+
+### Root Cause (traced against a real device log, not guessed)
+
+The supplied log showed exactly one `reclaimSurroundingWord` firing, followed by 1.4 seconds of complete
+silence (no further `onUpdateSelection` at all) before the user gave up and typed a letter instead - the
+drag itself had stopped producing any visible effect right after that single reclaim.
+
+This matches the "stable at the end, unstable elsewhere" observation precisely: `WordExtent.reclaim()`
+returns empty `before`/`after` when the caret sits next to no letter (e.g. right after a period) - that
+case in `reclaimSurroundingWord()` only records `composingAnchor` and returns, making **no**
+`InputConnection` call at all. Landing on or next to a word, by contrast, calls
+`ic.setComposingRegion(...)` - a real span change on the already-committed text. `reclaimWordAtCaret()` was
+wired to run synchronously, once per `onUpdateSelection` callback, and a cursor-handle drag reports many
+such callbacks in quick succession as the finger moves - so every intermediate position along the drag path
+that happened to land near a word re-touched the composing region, mid-gesture. The Gemini field's own
+handle-drag tracking appears not to tolerate a composing-region change while a drag is in progress (not
+independently provable without Gemini's own source, but mechanistically consistent with every observed
+detail: Gemini-only, worse at word boundaries where reclaims fire most often, stable exactly where no
+`InputConnection` call happens at all).
+
+### Fix (design confirmed with the user first)
+
+`reclaimWordAtCaret()` is no longer called synchronously from `onUpdateSelection`'s composing-empty branch -
+a new `reclaimWordAtCaretRunnable`, scheduled via `handler.postDelayed`/cancelled via
+`handler.removeCallbacks` on every fresh caret-move callback (the same debounce shape already established
+for `composingPreviewRunnable`/`expensiveSuggestionRunnable`, D-160/D-213/D-215), only actually runs once
+the caret has been still for `RECLAIM_DEBOUNCE_MS`. The user's own explicit request: shorter than the
+existing `EXPENSIVE_SUGGESTION_DELAY_MS` (200ms) precedent, since a drag reports positions much faster than
+fluent typing does - set to **100ms**. During an active drag the timer keeps resetting on every new
+position, so no reclaim (and therefore no `setComposingRegion()` call) happens until the drag actually
+stops; an ordinary settled tap into a word still reclaims well within a human's perception of "instant".
+
+`reclaimWordAtCaret()` itself gained a `composing.isNotEmpty()` guard at its top, since by the time the
+debounced call fires the user may already have started typing a real token in the meantime (this must
+never append reclaimed text onto it). `clearComposing()` now also cancels
+`reclaimWordAtCaretRunnable` - unlike the two existing cancellations there (hygiene only, per their own
+KDoc), this one is load-bearing: it is the only thing that prevents a still-pending debounced reclaim from
+firing into a different field session after `onStartInput` resets everything for a fresh field.
+
+### Tests
+
+No new tests - `reclaimWordAtCaret()`/`onUpdateSelection`'s own debounce wiring is `AdaptKeyService`-
+internal `InputConnection`/`Handler` glue, the same established gap as every other fix in this area. 984
+unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 337 → 338,
+`versionName` `"1.0.33"` → `"1.0.34"`. Not yet device-confirmed - needs the exact nub-drag repro again,
+watching specifically for whether the handle now tracks smoothly across word boundaries.

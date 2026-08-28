@@ -309,6 +309,21 @@ non-trivial changes).
   (D-343 may already be covered by §264's Caps Lock haptics work - not re-checked against this note,
   flagged so a future pass verifies rather than assumes either way.)
 
+- **§273 (v1.0.34): D-350 - reactively reclaiming every intermediate drag position stalled the Gemini**
+  **field's own cursor-handle tracking; the D-62 reclaim-on-caret-move is now debounced (100ms).** After
+  §272's corruption fix, a new device log showed the nub freezing mid-drag - traced to
+  `reclaimWordAtCaret()` firing synchronously on every intermediate drag position and calling
+  `ic.setComposingRegion()` whenever it landed near a word (never when it landed somewhere with nothing to
+  reclaim, e.g. right after a period - matching the user's own "stable at the end, unstable elsewhere"
+  observation exactly). Fixed by debouncing via the same `handler.postDelayed`/`removeCallbacks` shape
+  already used for `composingPreviewRunnable`/`expensiveSuggestionRunnable`, at the user's own explicit
+  100ms (shorter than the usual 200ms, since a drag moves faster than typing) - only the position still
+  current once the caret has been still that long is ever reclaimed. `reclaimWordAtCaret()` gained a
+  `composing.isNotEmpty()` guard (state may have changed during the delay); `clearComposing()` cancels the
+  pending callback so it can never fire into a later field session. No new tests. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 337 → 338, `versionName` `"1.0.33"` → `"1.0.34"`. **Not yet
+  device-confirmed.** See history §273, spec §33.
+
 - **§272 (v1.0.33): D-347 fix v2 - `before`/`after` still non-atomic even read back-to-back; derived from**
   **the single `getExtractedText()` call instead.** §271's fix (narrowing the gap between two separate
   `getTextBeforeCursor()`/`getTextAfterCursor()` calls) was disproven by a second real device log showing
@@ -318,8 +333,10 @@ non-trivial changes).
   fragments are now sliced from the single `getExtractedText()` call already made for the anchor (its own
   `.text` at its own `.selectionStart`/`.selectionEnd`), so all three values provably share one atomic
   snapshot. No new tests. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 336 → 337,
-  `versionName` `"1.0.32"` → `"1.0.33"`. **Not yet device-confirmed** - needs the exact nub-drag repro
-  again; the original flicker/disappear symptom is still separately unconfirmed. See history §272, spec §33.
+  `versionName` `"1.0.32"` → `"1.0.33"`. **Device-confirmed: the corruption is gone, the nub can be
+  dragged.** A separate, distinct symptom - the nub freezing mid-drag - surfaced in the same round; see
+  §273. The original flicker/disappear symptom D-347 was first reported for is still separately
+  unconfirmed. See history §272, spec §33.
 
 - **§271 (v1.0.32, superseded by §272): D-347 fix v1 - narrowed but did not close the before/after race.**
   See history §271, spec §33.

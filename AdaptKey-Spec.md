@@ -1302,10 +1302,17 @@ showed the identical corruption again - two calls issued back-to-back in source 
 round-trips, with a real gap a fast drag can still move through. Fixed for real by deriving `before` and
 `after` from the single `getExtractedText()` call already made for the anchor (its own `.text`, sliced at
 its own `.selectionStart`/`.selectionEnd`) - one atomic read instead of several, so both fragments
-provably describe the same document snapshot. The original flicker/disappear symptom itself - plausibly a
-side effect of the composing region being repeatedly torn down and rebuilt on every intermediate drag
-position, though not independently confirmed - has not been separately verified as resolved; needs a
-fresh on-device retest of the nub-drag gesture on its own merits.
+provably describe the same document snapshot. Confirmed on device: the corruption is gone.
+
+The original flicker/disappear symptom itself turned out to be a distinct, real issue with the same root
+cause class: the D-62 reactive reclaim (`reclaimWordAtCaret()`) fired synchronously on every single
+intermediate caret position reported while the nub was being dragged, and each firing that found a word to
+reclaim called `setComposingRegion()` on the real, already-committed text - the Gemini field's own
+drag-handle tracking stalls whenever that happens (confirmed: a position where nothing is reclaimed, e.g.
+right after a period, never stalls). Fixed by debouncing the reclaim (100ms, tuned down from the usual
+200ms elsewhere in this app since a drag reports positions much faster than fluent typing does) - a
+settled tap into a word still reads as instant, but an active drag never triggers a reclaim (and so never
+touches the composing region) until it actually stops moving.
 
 ---
 

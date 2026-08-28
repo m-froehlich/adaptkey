@@ -496,6 +496,15 @@ class AdaptKeyService : InputMethodService() {
         controller.resort()
         showSuggestions()
     }
+    // D-347/D-350: debounces the D-62 reactive reclaim-on-caret-move (reclaimWordAtCaret(), scheduled below
+    // whenever composing is empty and the caret lands somewhere new) - firing it synchronously on every
+    // single intermediate position during an active cursor-handle drag repeatedly touched the composing
+    // region (setComposingRegion()) in the Gemini search field, which - confirmed from a real device log -
+    // stalled that field's own drag-handle tracking (not observed elsewhere). Only the position that is
+    // still current once the debounce elapses is ever reclaimed; an ordinary single tap into a word settles
+    // well within the delay and reads as instant. Cancelled in clearComposing() so a stale reclaim can never
+    // fire once the caret has since moved on to something else (a keystroke, a fresh field).
+    private val reclaimWordAtCaretRunnable = Runnable { reclaimWordAtCaret() }
     
     // D-211: the actual search now runs on this dedicated background thread (mirroring the existing
     // tier3Executor precedent below), so it never blocks the main thread (or the key-press flash render)
@@ -1313,8 +1322,13 @@ class AdaptKeyService : InputMethodService() {
             // backspace removing a trailing delimiter - with no new character typed at all. D-62's reclaim
             // was only ever wired to run on the *next* keystroke; do it right now instead, so mid-word live
             // correction also works the instant the caret touches a word.
+            // D-347/D-350: debounced rather than fired synchronously - see reclaimWordAtCaretRunnable's own
+            // KDoc for why (a cursor-handle drag reports many intermediate positions in quick succession, and
+            // reactively reclaiming every one of them was observed corrupting - and, once that was fixed,
+            // stalling - the Gemini search field's own drag-handle rendering).
             if (newSelStart == newSelEnd) {
-                reclaimWordAtCaret()
+                handler.removeCallbacks(reclaimWordAtCaretRunnable)
+                handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
             }
             return
         }
@@ -1399,6 +1413,12 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun reclaimWordAtCaret() {
         val ic = currentInputConnection ?: return
+        // D-347/D-350: this call is now debounced (see reclaimWordAtCaretRunnable) - by the time it actually
+        // fires, a keystroke may already have started a real composing token in the meantime, which this
+        // function must not append reclaimed text onto.
+        if (composing.isNotEmpty()) {
+            return
+        }
         ic.beginBatchEdit()
         try {
             captureTokenContext(ic)
@@ -4182,6 +4202,12 @@ class AdaptKeyService : InputMethodService() {
         // pointless callback scheduled for a token that no longer exists.
         handler.removeCallbacks(composingPreviewRunnable)
         handler.removeCallbacks(expensiveSuggestionRunnable)
+        // D-347/D-350: unlike the two above, this one *is* required for correctness - reclaimWordAtCaret()'s
+        // own composing.isEmpty() guard only protects against a keystroke starting a new token in the
+        // meantime, not against this exact field session ending; cancelling here (reached from onStartInput
+        // on every fresh field, among other paths) keeps a debounced reclaim from ever firing into whatever
+        // comes next.
+        handler.removeCallbacks(reclaimWordAtCaretRunnable)
         composingPreviewToken = null
         composingPreviewFor = null
         // D-346: no token left to search for - any pending deferred search is now moot.
@@ -5846,6 +5872,13 @@ class AdaptKeyService : InputMethodService() {
         // there is real evidence of a pause. Longer than the gap between keystrokes of fluent typing, short
         // enough that the bar/preview still fills at any natural pause. A starting value, easy to retune.
         private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
+        
+        // D-347/D-350: how long the caret must sit still (composing empty) before reclaimWordAtCaret() runs -
+        // see reclaimWordAtCaretRunnable's own field KDoc. Shorter than EXPENSIVE_SUGGESTION_DELAY_MS at the
+        // user's own explicit request: a cursor-handle drag reports intermediate positions much faster than
+        // fluent typing does, so a shorter delay is both sufficient to let a drag pass through untouched and
+        // still short enough that an ordinary settled tap reads as instant.
+        private const val RECLAIM_DEBOUNCE_MS = 100L
         
         // D-161: how long after the keyboard is shown, and D-250: how far apart each repeat check runs -
         // long enough that a normally-delivered onApplyWindowInsets callback has certainly already run
