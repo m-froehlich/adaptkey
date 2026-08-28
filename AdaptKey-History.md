@@ -13593,3 +13593,253 @@ fixed in §271/§272, the drag-stall fixed in §273/§274). No code change - the
 the reactive D-62 caret-move reclaim (§274) stands as implemented, still explicitly flagged in spec §33 as
 a special case to keep monitoring, not a closed investigation, per the user's own framing when it was
 agreed.
+
+## §276 CAPTURED (still v1.0.35, no code change): Large Backlog Batch From Real-World Vacation Usage - D-352 through D-404
+
+User used the app extensively while travelling and returned with a large, unfiltered list of bugs and
+improvement ideas, explicitly requesting a pure backlog capture this round - "nimm diese zunächst nur ins
+Backlog auf. Ich wähle nachher die neuen Aufgaben daraus aus." No tracing, root-causing, or implementation
+was done for any item; each is recorded here as the user described it, including their own diagnostic
+guesses and open design questions, exactly as this project's own established capture convention (§115,
+§173, §182, §198) already does for a batch this size. No code changed, no version bump.
+
+- **D-352 - Auto-split needs its own setting; may need to become chip-only, or a third option.** A-05's
+  automatic retroactive split "funktioniert zu oft falsch und zu oft nicht" - the user is unsure it can be
+  reliably tamed and wants a dedicated toggle (auto vs. chip-only vs. a third option still to be found),
+  plus the ability to still surface a chip afterward even when auto-apply is off. **A specific, unacceptable
+  failure mode named**: two words get split apart where at least one half is not a real word at all - "das
+  darf nie passieren." The user's own hypothesis is that this may already improve once the dictionary is
+  cleaned of noise (see D-403) - but explicitly asks that this be checked **before** any dictionary cleanup
+  lands, so the split-quality effect can be isolated and confirmed rather than accidentally masked by the
+  cleanup.
+- **D-353 - Autocorrect still fires too often without genuine unambiguity.** Correction should only ever
+  auto-apply "wenn absolut zweifelsfrei Eindeutigkeit besteht ODER die Konfidenz extrem hoch ist" - `"fur"`
+  → `"für"` must keep working as an example of a case that should stay auto-applied. Not a concrete task
+  yet - the user's own first ask is an analysis of *why* autocorrect currently engages too eagerly, before
+  any fix is designed.
+- **D-354 - Meaning-changing silent autocorrections (e.g. `"aberkennen"` → `"anerkennen"`) must never apply
+  automatically without a chip.** These can flip a sentence's meaning entirely and often go unnoticed.
+  Requested: evaluate what a general rule to catch this class could look like.
+- **D-355 - A word must never be retroactively autocorrected in casing purely from line/sentence-start
+  context.** If a word was explicitly typed lower-case, that must survive commit unchanged - more generally,
+  the user believes this kind of retroactive re-casing should never happen at commit time at all.
+- **D-356 - A typed umlaut should not be carelessly reverted by autocorrect.** A typed umlaut is presumably
+  intentional and correct; a candidate word containing the same umlaut (plus whatever other correction) should
+  generally be considered more likely than one that drops it.
+- **D-357 - Mid-word edit + double-tap Shift capitalises the wrong letter.** Reported repro: place the caret
+  mid-word in an existing word, delete two letters, type two new ones, then double-tap Shift - the *first of
+  the two newly-typed letters* gets capitalised instead of the word's own start.
+- **D-358 - Double-tap Backspace revert does not work right after punctuation.**
+- **D-359 - A word reverted via double-tap Backspace is often immediately re-autocorrected on the very next
+  Space.** Needs a guard against re-applying the exact same correction to a word that was just, deliberately,
+  reverted.
+- **D-360 - A commit + autocorrect that happened right before an Enter/newline must still be revertible by a
+  plain Backspace afterward.**
+- **D-361 - Fast Backspace typing should not let neighbour keys react within the double-tap window; ideally
+  Backspace's own touch zone temporarily grows (by roughly one row's height/width) while typing fast, shrinking
+  back once the window elapses - possibly its own setting.** A further, more aggressive idea floated by the
+  user: while typing fast near Backspace, a tap that actually lands on a neighbour could itself be interpreted
+  as Backspace, retroactively removing the two or three characters it had just registered as - also possibly
+  worth its own setting. Enter is named explicitly as one of the neighbours this should cover too.
+- **D-362 - The "…" loading-indicator chip (D-346, shown while the deferred fuzzy search is still pending) is
+  far too small/subtle.** Typing something like `"tatsa"` deliberately waits for the debounced background
+  search (to protect the hot path) - the indicator during that wait should be bold and noticeably larger,
+  possibly animated (e.g. a pale dot travelling across the three dots).
+- **D-363 - Colon and semicolon should arm the same A-12 punctuation-auto-space (with no-op on the next
+  explicit Space) that `.`/`!`/`?`/`,` already do - but need a time-of-day exception:** a digit immediately
+  before the colon must suppress the auto-space (so `"14:30"` is not disturbed). The user explicitly asks for
+  further refinement suggestions on this exception, not just the base behaviour.
+- **D-364 - Typing `"Teyt"` offers two separate chips for `"Text"`** - a duplicate that should collapse to one.
+- **D-365 - Question, not yet answered: what frequency do seeded/bundled bigrams carry, and shouldn't a
+  self-learned bigram always outweigh a seeded one?**
+- **D-366 - A learned bigram's next-word prediction (S-07) works for the blank-slate case, but is dropped
+  entirely the moment the user starts typing that predicted word themselves.** The bigram signal should keep
+  influencing prefix-completion ranking (not just the empty-input next-word slot) and should meaningfully
+  shift chip ranking and autocorrect probability toward the predicted word as it is typed, not just disappear
+  the instant a character lands.
+- **D-367 - `"natu"` prefix-completion ranking needs several corrections.** The chips shown are not wrong, but
+  `"natürlich"` ranks far too low; `"Nature"` should not appear at all; `"natürliche"`/`"natürlichen"` should
+  rank behind `"natürlich"` (being longer); `"Natura"` is a legitimate word but, once umlaut-unfolded, should
+  carry a noticeably lower frequency than `"natürlich"`; `"natürlich"`'s own frequency should be raised further
+  so it clearly outranks its morphological relatives (this may be the same underlying issue as D-368's own
+  frequency question, or the natural next step after D-368's family - a fresh look this round, not re-derived
+  from the earlier `"natürlich"`/`"natürliche"` prefix-distance fix, §192).
+- **D-368 - A capitalised word that also exists in another language's dictionary should still be *learnable*
+  as a noun, not merely shielded/blocked.** Named examples: `"Sage"` (a German noun that must be learnable
+  capitalised, not just cross-language-protected) and `"Weg"`, similarly.
+- **D-369 - Accepting a suggestion chip must not insert a space when punctuation already immediately
+  follows.**
+- **D-370 - Double-quote handling needs real design work, not a quick patch.** Requested: an auto-space after
+  committing a closing double-quote should be removable; more ambitiously, *every* space directly before a
+  closing quote should be removable - but only when a genuine *preceding* opening double-quote is nearby,
+  otherwise the mechanism would wrongly delete the space *before* the quoted word instead of the one *after*
+  it, which the user explicitly flags as the trap to avoid ("Denke bitte mit"). Open design question posed
+  directly to be thought through: how far back to search for the matching opening quote - a fixed lookback
+  (e.g. 10 words), or a better approach entirely?
+- **D-371 - A word ending in a digit should never be silently autocorrected - possibly its own setting, and
+  possibly a slider (aggressiveness) rather than a plain boolean.** A chip offering the correction is still
+  fine; only silent auto-apply is the concern.
+- **D-372 - A diagonally-adjacent key should also count as a keyboard neighbour for correction purposes** -
+  named example: `g` and `b`.
+- **D-373 - Appending a hyphen after a capitalised word should re-arm auto-capitalisation for the next
+  segment** (mirrors B-02's "no automatic capitalisation after a hyphen" default, for the specific case where
+  the *preceding* segment was itself capitalised).
+- **D-374 - Removing the trailing auto-space no longer works, at least in Google Keep.**
+- **D-375 - `"sollendafur"` gets auto-unfolded and split silently; the user believes it should instead be
+  offered as a chip, since the result is not identical to what was typed - explicitly flagged as possibly
+  conflicting with other rules, asked to be evaluated rather than assumed compatible.**
+- **D-376 - After `"km"` (and, separately, after a `/`), a `"km/h"` completion chip should be offered.**
+- **D-377 - A potentially expensive but valuable fallback: recover a badly garbled mid-word mistake where a
+  Backspace was missed and a *neighbouring* key was hit instead, producing something like `"welxmche"`
+  (intended: a correction typed mid-word, with `x` an accidental neighbour-key hit that should have been
+  Backspace).** The user's own worked reasoning: if the `m` is treated as the missed Backspace, it collapses
+  together with the preceding `x`; `x` is itself a neighbour of `c`, which raises confidence further; the
+  original garbled token is nonsense by construction, so there is little downside to trying. Proposes this
+  could yield at least a chip, possibly even a silent autocorrect, when nothing else in the pipeline resolves
+  the token at all - explicitly named as expensive, only worth running as a last resort.
+- **D-378 - While capitalisation is active (whether auto-armed or explicit), a quote character must not reset
+  it.**
+- **D-379 - `"bzgl."` is missing from the known-abbreviation list, so a sentence start is wrongly assumed right
+  after it.**
+- **D-380 - A long-press smear too small to trigger a swipe/page-change should still open the alt popup** - the
+  `o` key is named as the one that frequently fails to do this, which the user suspects is the actual
+  mechanism behind a recurring complaint about it.
+- **D-381 - A learned word's part-of-speech tag should be user-editable.** The user speculates the tier-3 LLM
+  could determine it reasonably reliably when active, but without it the tag would need to stay a manual
+  decision.
+- **D-382 - The `2` key is missing an apostrophe among its long-press alternatives, and should also offer
+  subscript `₂` alongside the existing superscript `²`.**
+- **D-383 - In Google Keep's list mode, placing the caret before a word and pressing Enter (to push the rest
+  of the line into a new list item) deletes that word.**
+- **D-384 - Typing a minus preceded by a space should also get its own trailing A-12-style auto-space** (with
+  the usual lock against a second, manual one) - **but only when a space already precedes the minus**; no
+  auto-space when it does not.
+- **D-385 - German should go back to being a bundled language, not an installable pack - and nothing may be
+  lost in the process** (presumably the user's own learned German data, currently tied to the language-pack
+  install).
+- **D-386 - Dictionary/model import should look for newer alternately-named files near the one picked** (e.g.
+  a `(1)`-suffixed duplicate or similar) **and prefer those if found; the picked file should be deleted after
+  import if it is at most 60 seconds old.**
+- **D-387 - Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages** - know each
+  language's base letters and their own diacritic variants.
+- **D-388 - The Learned Words and Blacklist editor screens need sortable views, case-insensitive/folded
+  alphanumeric by default, with a "most recently used first" mode too.**
+- **D-389 - Learned words could expire and be forgotten after a configurable period of disuse, so the list
+  does not grow forever.** Proposed default: 3 months, or maybe a year; frequent use should extend the window,
+  so a name learned just once is not forgotten too quickly. The user's own suggestion for the control itself:
+  probably not a raw duration but a coarse früh/mittel/spät (early/medium/late) setting.
+- **D-390 - Sentence-start auto-capitalisation must tolerate multi-part abbreviations like `"p. a."`/`"i. d.
+  R."` - after the abbreviation completes, a wrongly-applied capital must be retroactively corrected back.**
+  Explicitly asked to think about a *general* rule for multi-part (spaced) abbreviations rather than a special
+  case for this one example.
+- **D-391 - The retroactive split (A-05) idea extended to the reverse direction, mirroring the same
+  auto/chip-only setting split proposed for D-352: if the current or the preceding word makes no sense alone,
+  but inserting one of the bottom-row connector letters (`y x c v b n m`, over the space bar) between them
+  produces a sensible combined word, that should be recognised** (i.e. a generalisation of A-06 merge beyond
+  its current scope).
+- **D-392 - Auto-capitalisation should re-engage after Caps Lock is turned off.**
+- **D-393 - In the Google Play Store's own search bar, Enter does not act as Submit.**
+- **D-394 - Mirror the calculator/number-pad's digit block vertically** - mobile keyboards have converged on
+  the reversed (phone-style) digit order - **and show the T9 letter mapping as a long-press alt on each
+  digit while at it.**
+- **D-395 - The distance kept from the system gesture-navigation bar should be configurable.** The user
+  reports the gesture has become far more sensitive on their current Android version, causing accidental
+  app-hide/app-switch when a tap near the space bar's lower edge is caught by the gesture instead.
+- **D-396 - Classify per-key vibration into three distinct levels**: engaging/mode-switch actions (Caps Lock,
+  etc.) as Level 1, autocorrect/chip-acceptance as Level 2, ordinary key feedback as Level 3.
+- **D-397 - Touch zones should generally bleed less into the rows above/below, not only for the bottom letter
+  row (D-109/D-133/D-231/D-233's existing directional caps).** Named example: the `q` key currently reaches
+  far enough downward to frequently produce an unwanted `q` instead of the intended `a` below it - the user
+  believes this class of cross-row bleed is worth tightening everywhere, not just the cases already capped.
+- **D-398 - The automatic language-switch threshold (currently a fixed 5 consecutive foreign words, D-130)
+  should become a slider setting from 0 (off) to 8, placed directly under the language section in the
+  Dictionary settings category.**
+- **D-399 - The maximum-suggestions range (C-03) should include 3, not only start at some higher floor** -
+  the user notes 3 is currently not selectable but might genuinely be wanted, since it fits the suggestion
+  bar particularly well.
+- **D-400 - Reconsidered: should an automatic language switch (D-130) into another Latin-script language also
+  switch the keyboard *layout* (QWERTZ/QWERTY/...)?** The user's own conclusion, stated as a real doubt worth
+  resolving: probably not - what is actually wanted is only that the *dictionary* and word recognition switch,
+  not the physical key layout ("niemand will plötzlich von QWERTZ auf QWERTY wechseln"). More generally, the
+  user proposes the keyboard layout should not depend on the *active typing language* at all, but on the
+  *system's own locale* - a German user always expects QWERTZ regardless of which language they happen to be
+  typing at a given moment.
+- **D-401 - New feature concept, captured verbatim as specified by the user: a cursor/selection mode reached
+  via a long-press on the space bar.** Recorded in full since the shape is already precise:
+  1. **Mode activation:** long-press on Space → a vibration, every key fades to 30% opacity, a short
+     explanation appears in the suggestion bar, and a crosshair appears under the finger as the origin (0,0).
+  2. **Stage 1 - cursor control:** swiping moves the cursor, scaled to the swipe distance. Holding still for
+     800ms switches to Stage 2 (a second vibration, the crosshair changes colour, the explanation updates).
+  3. **Stage 2 - selection mode:** swiping extends a text selection from the current caret. A tap ends the
+     mode and collapses the selection.
+  4. **Lifting and re-placing the finger:** lifting keeps the mode active for ~1000ms; the crosshair fades
+     (250ms) back to the geometric centre. Re-touching within that 1000ms window makes the crosshair jump
+     instantly to the new touch point (a fresh (0,0) origin, free to swipe in any direction from there). If
+     no touch arrives within 1000ms, the mode ends, the keyboard returns to normal, and - if a selection is
+     active - the platform's own text-selection context menu is shown.
+- **D-402 - The bundled German dictionary needs a real cleanup pass (noise removal) plus missing-word
+  additions - many words appear to be split for no good reason, and the user suspects this is directly caused
+  by the same noise D-306/D-206 already partially addressed.** A long list of concrete, individually-checked
+  examples, all reported directly by the user, none yet traced against the actual dictionary data:
+  - `"Wessen"` appears to be missing - needs adding.
+  - `"drüber"` and `"drunter"` are missing - need adding.
+  - `"Mur"` is not a real word and must be removed from the German dictionary outright; if it exists in the
+    English dictionary, it should instead be added to the German bundled blacklist (mirroring `due`/`sue`/
+    `ddr`/`aks`, A-04). The same treatment for `"Bdi"`.
+  - `"aggressive"` must not outrank `"aggressiv"`.
+  - `"gesparten"` splits into `"gespart"` + `"en"` - even if the whole word is genuinely missing from the
+    dictionary, `"en"` almost certainly should not be a standalone entry at all, or if it is, should carry
+    such a low (Wikipedia-noise) frequency that it can never win this split. Needs analysis, not just a
+    frequency tweak.
+  - `"Wegerecht"` splits into `"we"` + `"gerecht"` - `"we"` only exists via the *English* dictionary, which
+    alone should not be sufficient grounds for a German split; the user separately expects the German-side
+    confidence for this pairing to be vanishingly small regardless.
+  - `"Vorm"` (short for "vor dem") becomes `"Form"` - needs adding to the dictionary.
+  - `"tue"` is missing from the German dictionary and gets corrected to `"the"` - the user asks directly which
+    rule/mechanism is actually responsible for that specific wrong target.
+  - Which dictionary contains `"Dee"` at all? It should be removed, especially from German.
+  - `"neulich"` is missing from the German dictionary and splits into `"neu"` + `"lich"` - asked directly why.
+  - `"vertan"` becomes `"vert an"` - asked directly why.
+  - `"Robotische"` → `"Robot ische"`.
+  - `"Scheiße"` → `"Sc heiße"`.
+  - `"Traditionell"` → `"Tradition ell"`.
+  - `"Beugungen"` → `"Beugung en"`.
+  - The abbreviation `"Stk."` must be recognised.
+  - `"ah"` and `"Oh"` should be added to the dictionary.
+  - `"agentisch"`, with its inflected forms, should be added.
+  - `"erstaunlicherweise"` should be added.
+- **D-403 - Uppercase acronyms are apparently never learned, and support for them generally needs to be
+  better.** Several related observations, all pointing at the same underlying gap:
+  - General request: better support and better suggestion-ranking for uppercase acronyms specifically, which
+    currently are not offered well at all.
+  - Broader than acronyms alone: whenever a typed word/acronym gets silently corrected to something
+    completely different at commit, a subsequent revert (A-07) must count as a learning signal - and the
+    *next* commit of the same original text must never be auto-corrected again, "völlig egal, ob es noch auf
+    1 steht" (regardless of whether its pending-learn count is still at 1) - otherwise the count can never
+    advance past 1, and it is also simply confusing that the same word keeps getting silently corrected away
+    every time. This reads as closely related to, but broader in scope than, D-359's own "don't
+    re-autocorrect a just-reverted word" request - worth designing together, not as two separate mechanisms.
+  - Concrete repro: `"kWp"` is never learned because it is always corrected to `"Kap"`, a revert does not
+    count as learning it, and immediately after the revert the very next delimiter re-triggers the same wrong
+    correction - "Ich habe keine Chance, es ins Wörterbuch zu bringen." The user believes this applies to
+    essentially every abbreviation/unit in the same shape.
+  - Interesting side-observation, cause unclear even to the user: `"AVD"` has somehow already ended up in the
+    Learned Words list, yet still gets silently autocorrected to something else at commit - i.e. being
+    already-learned does not currently protect it either.
+  - Typing `"etf"` (lower-case) does not surface the already-learned acronym `"ETF"` as a chip, but typing
+    `"ETF"` (upper-case) does. This should be irrelevant to the typed case - typing `"etf"` should surface the
+    `"ETF"` chip too, pinned at the very front.
+- **D-404 - Inflected forms of verbs/nouns should, where possible, not flood the Learned Words list.** Several
+  related asks:
+  - An `-s` or `-e` appended to an already-known noun/name must never become its own, separate learned word.
+  - When an inflected form is typed, the pipeline should try to learn the *base/stem* form instead; an
+    inflection should only ever land in the learned-words list as a visible derivative of that stem, not as
+    its own independent entry.
+  - Open design question, explicitly posed: could such morphological rules be packaged as per-language-bundle
+    data (mirroring how `hints_<code>.tsv`/dictionaries themselves already ship per language, D-281)? And are
+    there already comparable rules/behaviours in the codebase (e.g. `RegularVerbInflection`/`AdjectiveInflection`,
+    D-115/D-125/D-252) that logically belong moved into the German language bundle rather than staying as
+    hardcoded Kotlin? Not answered or decided this round - captured as the open question it was asked as.
+
+No code changed, no version bump (documentation-only capture, per this project's own established convention
+for a batch this size - see §115/§173/§182/§198's own precedent). 984 unit tests (unchanged).

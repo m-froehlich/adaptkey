@@ -303,6 +303,22 @@ non-trivial changes).
 
 ## Current State
 
+- **§276 (still v1.0.35, no code change): large backlog batch from real-world vacation usage - D-352 through**
+  **D-404, captured only, nothing designed or implemented.** User returned from a trip with an extensive,
+  unfiltered list of bugs/ideas found while actually using the app; explicitly asked for a pure backlog
+  capture this round ("nimm diese zunächst nur ins Backlog auf") - no tracing, no root-causing, no
+  implementation. Roughly 50 items across: autocorrect being too eager / too silent / reverting-then-
+  re-firing (D-353/D-354/D-355/D-356/D-359/D-403's own acronym-learning cluster); A-05 split quality and a
+  settings split for auto-vs-chip-only (D-352, explicitly to be re-checked **before** any dictionary cleanup
+  so the effect isn't masked - D-403 is the matching cleanup ask); several Shift/Backspace/A-07/A-12 edge
+  cases (D-357/D-358/D-360/D-361/D-378/D-392); suggestion-bar/ranking issues (D-364/D-365/D-366/D-367/D-369/
+  D-370/D-376/D-380/D-382/D-383); a fully-specified new feature concept (D-401, a long-press-space cursor/
+  selection mode); a large German-dictionary noise/missing-word list (D-402); and settings/UX asks (touch-zone
+  bleed D-397, gesture-bar distance D-395, language-switch slider D-398, numpad mirror D-394, vibration
+  levels D-396, layout-follows-system-locale D-400, and more). Full itemised list with the user's own
+  reasoning preserved per item: history §276. No code changed, no version bump. 984 unit tests (unchanged).
+  **Not yet triaged into an implementation order** - the user will pick items from this batch next.
+
 - **New backlog items (2026-08-01) — not yet designed or implemented, captured for discussion:**
   D-342 (German dict NOUN_OR_VERB rework), D-343 (Caps Lock vibration direct Vibrator + subtle),
   D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist). See spec §28-§31.
