@@ -4226,8 +4226,18 @@ class AdaptKeyService : InputMethodService() {
      * @param tap the raw tap to record for the reclaimed characters, or null to leave them untracked
      */
     private fun reclaimSurroundingWord(ic: InputConnection, tap: TapPoint?) {
+        // D-347: `before` is read fresh here, immediately alongside `after`/`extracted`, rather than trusting
+        // the tokenContextBefore field captureTokenContext() set earlier. reclaimWordAtCaret() runs
+        // armShiftForNextWord()/consumeStrandedPunctuationSpace() - both real InputConnection round-trips -
+        // between its own captureTokenContext() call and this one; during an active cursor-drag gesture (the
+        // reported Gemini "nub" case) the live caret can genuinely move again in that gap, so combining an
+        // older `before` with a newer `after`/anchor spliced text read at two different caret positions into
+        // one corrupted composing token, then overwrote the wrong document range with it - confirmed from a
+        // real device log (before="test" from the caret's earlier position, after="t" from its later one).
+        // Reading all three together removes the gap instead of narrowing it at one call site.
+        val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
         val after = ic.getTextAfterCursor(MAX_CONTEXT_LOOKBACK, 0) ?: ""
-        val reclaim = WordExtent.reclaim(tokenContextBefore, after)
+        val reclaim = WordExtent.reclaim(before, after)
         // D-87 / D-159: see ComposingAnchor for why startOffset must be added, not just selectionStart
         // alone. Read before any mutation below, matching this class's established read-before-mutating
         // convention (see splitComposingAtCaretAndCommit's own D-122 note).
@@ -4267,7 +4277,7 @@ class AdaptKeyService : InputMethodService() {
         // built later (refreshSuggestions(), finalizeAndCommit()). That duplication was silently confusing
         // the A-03 language classifier into misreading the context as foreign and suppressing suggestions
         // and autocorrect entirely for the rest of the token - the reported "no suggestions at all" bug.
-        tokenContextBefore = tokenContextBefore.dropLast(reclaim.before.length)
+        tokenContextBefore = before.dropLast(reclaim.before.length)
         composing.append(reclaim.before)
         composingFlags.addAll(List(reclaim.before.length) { TapAmbiguity.NONE })
         if (tap != null) {

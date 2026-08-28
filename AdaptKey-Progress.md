@@ -305,8 +305,22 @@ non-trivial changes).
 
 - **New backlog items (2026-08-01) — not yet designed or implemented, captured for discussion:**
   D-342 (German dict NOUN_OR_VERB rework), D-343 (Caps Lock vibration direct Vibrator + subtle),
-  D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist),
-  D-347 (Gemini app cursor nub). See spec §28-§31, §33.
+  D-344 (download directory control), D-345 (dictionary noise scan / "Bri" blacklist). See spec §28-§31.
+  (D-343 may already be covered by §264's Caps Lock haptics work - not re-checked against this note,
+  flagged so a future pass verifies rather than assumes either way.)
+
+- **§271 (v1.0.32): D-347 root-caused and fixed - reclaimSurroundingWord() spliced `before`/`after` text**
+  **read at two different caret positions during an active cursor-drag, corrupting the document.** From a
+  real device log: dragging the Gemini nub moved the live caret again *during* the several
+  `InputConnection` round-trips `reclaimWordAtCaret()` performs between capturing `before` (via
+  `captureTokenContext()`) and reading `after`/the anchor inside `reclaimSurroundingWord()` -
+  `armShiftForNextWord()`/`consumeStrandedPunctuationSpace()` both do real IPC calls in between. Confirmed
+  exactly against the log's own numbers (`before="test" after="t" anchor=4`). Fixed by reading `before`
+  fresh, synchronously, alongside `after`/`extracted` inside `reclaimSurroundingWord()` itself, closing the
+  gap generally rather than at just this one call site. No new tests (established `InputConnection`-glue
+  gap). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 335 → 336, `versionName`
+  `"1.0.31"` → `"1.0.32"`. **Not yet device-confirmed** - the original nub flicker/disappear symptom is
+  not separately confirmed resolved by this. See history §271, spec §33.
 
 - **§270 (v1.0.31): D-348 fix v4 - correct design per user spec.** First tap is now an ordinary
   single-character delete (the delimiter/space), NOT a no-op — matching the user's explicit spec:

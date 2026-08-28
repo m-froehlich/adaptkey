@@ -13386,3 +13386,63 @@ No new tests (Android-glue path, per convention). `:app:assembleRelease`/`:app:t
 full D-348 scenario set: (a) single Backspace at armed tail deletes the delimiter; (b) double-tap
 reverts correctly (no duplication, no missing revert); (c) single Backspace away from the committed
 word deletes normally; (d) single-Backspace revert with the option off still works.
+
+## §271 - D-347 Root-Caused and Fixed: reclaimSurroundingWord() Spliced `before`/`after` Text Read at Two Different Caret Positions During an Active Cursor-Drag
+
+### Report
+
+D-347 (spec §33) was reported as the Gemini app's cursor-positioning nub flickering and disappearing.
+Two real device logs were supplied for further investigation: the first showed the nub being dragged with
+no visible data loss; the second showed the same gesture, but this time "der Text komplett zerstört" (the
+text completely destroyed) - the user explicitly flagged this might be related to the original nub report.
+
+### Root Cause (traced against the real code and the log's own numbers, not guessed)
+
+`reclaimWordAtCaret()` (§58) runs, in order: `captureTokenContext(ic)` (reads `ic.getTextBeforeCursor()`
+into `tokenContextBefore` - call this T1), `armShiftForNextWord(ic)` (which itself calls
+`sentenceStartBefore(ic)`, another `InputConnection` read), then `consumeStrandedPunctuationSpace(ic)`
+(D-279 - per its own KDoc, reads the selection, temporarily repositions, verifies twice against the real
+document, restores - several more round-trips), and only then `reclaimSurroundingWord(ic, tap = null)`,
+which reads `after = ic.getTextAfterCursor(...)` and `extracted = ic.getExtractedText(...)` (call this
+T2) and passes the *already-captured* `tokenContextBefore` (from T1) into `WordExtent.reclaim(before,
+after)` - which has no way to tell whether `before` and `after` still describe the same caret position.
+
+While the cursor nub is being actively dragged, the live caret can genuinely move again during the
+`InputConnection` round-trips between T1 and T2. Verified precisely against the second log's own numbers:
+at T1 the document read `"Test test."` with the caret at position 9 (directly after `"test"`), so
+`tokenContextBefore` ended in `"test"`. By T2 the real caret had already moved to position 8 (one earlier,
+mid-drag) - `after` read from there starts with the still-letter `'t'` (the last character of `"test"`)
+before hitting the following `'.'`, giving `after="t"`; the anchor computed from the T2 `extracted` read
+(`selectionStart=8`) minus the T1-based `reclaim.before.length` (4) came out to `4` - both numbers
+(`before="test" after="t"` and `anchor=4`) match the captured log exactly. The resulting composing text,
+`"test"+"t"="testt"`, was then written via `setComposingRegion(4, 9)` over the real document range `[4,9)`
+(which actually held `" test"`, a space plus the second `"test"`) - destroying the space and duplicating a
+character, exactly the reported corruption.
+
+This gap exists only in `reclaimWordAtCaret()`'s own call path: the other two `reclaimSurroundingWord()`
+callers (the ordinary mid-word `CHAR` handler, `appendLongPressLetter()`) call `captureTokenContext()`
+immediately before it with no intervening `InputConnection` calls, so `tokenContextBefore` is already
+fresh there and no drag gesture can be in progress mid-keystroke.
+
+### Fix
+
+`reclaimSurroundingWord()` now reads `before` fresh, synchronously, immediately alongside `after` and
+`extracted`, instead of trusting the `tokenContextBefore` field captured earlier - closing the gap
+generally rather than narrowing it at the one call site that exposed it. `tokenContextBefore` itself is
+now trimmed from this freshly-read value (`before.dropLast(reclaim.before.length)`) rather than from its
+own prior (possibly stale) value.
+
+The original flicker/disappear symptom D-347 was reported for is not separately confirmed fixed by this -
+it may be a side effect of the same repeated composing-region churn during a drag (each intermediate drag
+position finishes and rebuilds the composing span), but that was not independently traced; spec §33
+updated to record both the confirmed fix and this open question.
+
+### Tests
+
+No new tests - `reclaimSurroundingWord()`/`reclaimWordAtCaret()` are `AdaptKeyService`-internal
+`InputConnection`/`onUpdateSelection` glue with no pure-function seam, the same established gap as every
+other fix in this guarded area (D-87/D-149/D-182/D-269/D-277). 984 unit tests (unchanged).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 335 → 336, `versionName` `"1.0.31"` →
+`"1.0.32"`. Not yet device-confirmed - needs the exact reported repro (drag the cursor nub across a
+multi-word Gemini field) to confirm the text no longer corrupts, plus a separate look at whether the nub
+itself still flickers/disappears.
