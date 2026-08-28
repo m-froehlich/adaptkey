@@ -13584,3 +13584,12 @@ No new tests - `AdaptKeyService`-internal per-field state, the same established 
 (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 338 → 339, `versionName`
 `"1.0.34"` → `"1.0.35"`. Not yet device-confirmed - needs the exact nub-drag repro once more, confirming the
 handle now survives being dragged across word boundaries without disappearing at all.
+
+## §275 CAPTURED (still v1.0.35, no code change): D-351 Device-Confirmed - Gemini's Cursor Handle Now Behaves Correctly
+
+User confirmed directly ("Perfekt! Jetzt verhält sich das in Gemini korrekt."): the cursor-handle drag in
+the Gemini search field now works as expected, closing out the whole D-347/D-350/D-351 saga (corruption
+fixed in §271/§272, the drag-stall fixed in §273/§274). No code change - the package-scoped suppression of
+the reactive D-62 caret-move reclaim (§274) stands as implemented, still explicitly flagged in spec §33 as
+a special case to keep monitoring, not a closed investigation, per the user's own framing when it was
+agreed.

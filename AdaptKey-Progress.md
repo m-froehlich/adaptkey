@@ -338,8 +338,8 @@ non-trivial changes).
   (mid-word live correction once a character is actually typed) is unaffected everywhere, including
   Gemini. **Explicitly recorded as a special case the user is monitoring in real-world use, not a settled,
   final answer** - see spec §33. No new tests. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
-  `versionCode` 338 → 339, `versionName` `"1.0.34"` → `"1.0.35"`. **Not yet device-confirmed.** See history
-  §274.
+  `versionCode` 338 → 339, `versionName` `"1.0.34"` → `"1.0.35"`. **Device-confirmed (§275): "Perfekt! Jetzt
+  verhält sich das in Gemini korrekt."** Closes the whole D-347/D-350/D-351 nub saga. See history §274/§275.
 
 - **§272 (v1.0.33): D-347 fix v2 - `before`/`after` still non-atomic even read back-to-back; derived from**
   **the single `getExtractedText()` call instead.** §271's fix (narrowing the gap between two separate
