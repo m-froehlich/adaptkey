@@ -10385,7 +10385,7 @@ Flughafens	192	NOUN
 anzupassen	192	OTHER
 erscheinenden	192	OTHER
 praktizierten	192	OTHER
-Halt	192	NOUN
+Halt	192	NOUN,VERB
 mäßig	192	OTHER
 virtuellen	192	OTHER
 neuem	192	OTHER
@@ -10675,7 +10675,7 @@ Repertoire	186	NOUN
 strukturelle	186	OTHER
 Lucius	186	NOUN
 böhmische	186	OTHER
-Schlaf	186	NOUN
+Schlaf	186	NOUN,VERB
 aufrecht	186	OTHER
 Mobilität	186	NOUN
 kinetische	186	OTHER
@@ -11112,7 +11112,7 @@ zuverlässig	177	OTHER
 angeordneten	177	OTHER
 fehlten	177	OTHER
 Konföderierten	177	NOUN,OTHER
-Hass	177	NOUN
+Hass	177	NOUN,VERB
 Cousin	177	NOUN
 Einkaufszentrum	177	NOUN
 Rau	177	NOUN,OTHER
@@ -11731,7 +11731,7 @@ konzentrierten	166	OTHER
 Paramount	166	NOUN
 erarbeitete	166	OTHER
 sorgfältig	166	OTHER
-Back	166	NOUN,OTHER
+Back	166	NOUN,OTHER,VERB
 Modifikation	166	NOUN
 brauchen	166	OTHER
 Bodens	166	NOUN
@@ -11931,7 +11931,7 @@ zwingen	163	OTHER
 bestätigten	163	OTHER
 Mercedes	163	NOUN
 strebt	163	OTHER
-Schau	163	NOUN
+Schau	163	NOUN,VERB
 Märkten	163	NOUN
 formulieren	163	OTHER
 Empedokles	163	NOUN
@@ -13012,7 +13012,7 @@ Strafgesetzbuch	148	NOUN
 gem	148	OTHER
 Knotenpunkt	148	NOUN
 Tiergarten	148	NOUN
-Schleife	148	NOUN
+Schleife	148	NOUN,VERB
 Fähren	148	NOUN
 Pazifismus	148	NOUN
 Fell	148	NOUN
@@ -13925,7 +13925,7 @@ gleichberechtigt	136	OTHER
 Hintergründe	136	NOUN
 Fan	136	NOUN
 Aserbaidschan	136	NOUN
-Schmelze	136	NOUN
+Schmelze	136	NOUN,VERB
 Dual	136	NOUN,OTHER
 längerem	136	OTHER
 Lagerstätten	136	NOUN
@@ -13959,7 +13959,7 @@ Benutzeroberfläche	136	NOUN
 angestiegen	136	OTHER
 Beschaffung	136	NOUN
 Stadträte	136	NOUN
-Zeuge	136	NOUN
+Zeuge	136	NOUN,VERB
 Neugestaltung	136	NOUN
 Protektorat	136	NOUN
 unregelmäßigen	136	OTHER
@@ -14103,7 +14103,7 @@ auszudrücken	134	OTHER
 letzterem	134	OTHER
 egal	134	OTHER
 Geschwistern	134	NOUN
-Besuche	134	NOUN
+Besuche	134	NOUN,VERB
 freundlich	134	OTHER
 Morde	134	NOUN
 Fixierung	134	NOUN
@@ -14294,7 +14294,7 @@ Oberbefehl	132	NOUN
 Baby	132	NOUN
 kanonischen	132	OTHER
 Wisconsin	132	NOUN
-Senke	132	NOUN
+Senke	132	NOUN,VERB
 Natural	132	NOUN
 Bauwesen	132	NOUN
 Verwaltungseinheit	132	NOUN
@@ -16609,7 +16609,7 @@ Schnellfahrstrecke	111	NOUN
 überschreitet	111	OTHER
 Mays	111	NOUN
 Kevin	111	NOUN
-Sing	111	NOUN
+Sing	111	NOUN,VERB
 Abfahrt	111	NOUN
 Allende	111	NOUN
 VW	111	NOUN
@@ -16715,7 +16715,7 @@ Kooperationen	110	NOUN
 Schaffhausen	110	NOUN
 Widerstandskämpfer	110	NOUN
 Television	110	NOUN
-Weide	110	NOUN
+Weide	110	NOUN,VERB
 Orthographie	110	NOUN
 Friedenau	110	NOUN
 Reichsgründung	110	NOUN
@@ -16736,7 +16736,7 @@ gezüchtet	110	OTHER
 Mittelstadt	110	NOUN
 Xbox	110	NOUN
 marxistische	110	OTHER
-Deck	110	NOUN
+Deck	110	NOUN,VERB
 Schlucht	110	NOUN
 Eizelle	110	NOUN
 Galaxie	110	NOUN
@@ -17078,7 +17078,7 @@ Mahler	107	NOUN
 Kyōto	107	NOUN
 zustimmen	107	OTHER
 AmigaOS	107	NOUN
-Buche	107	NOUN
+Buche	107	NOUN,VERB
 voraussichtlich	107	OTHER
 KP	107	NOUN,OTHER
 Spiritualität	107	NOUN
@@ -17131,7 +17131,7 @@ humanitären	106	OTHER
 Jenny	106	NOUN
 Brustkrebs	106	NOUN
 Ideenlehre	106	NOUN
-Wachs	106	NOUN
+Wachs	106	NOUN,VERB
 süß	106	NOUN,OTHER
 innenpolitische	106	OTHER
 Abstimmungen	106	NOUN
@@ -17811,7 +17811,7 @@ Bezugnahme	101	NOUN
 kaiserlich	101	OTHER
 tauschen	101	OTHER
 Weiterführung	101	NOUN
-Stoß	101	NOUN
+Stoß	101	NOUN,VERB
 Sieges	101	NOUN
 erworbene	101	OTHER
 mehrjährigen	101	OTHER
@@ -17830,7 +17830,7 @@ Zähnen	101	NOUN
 Patenschaft	101	NOUN
 Hochmeister	101	NOUN
 festhielt	101	OTHER
-Stütze	101	NOUN
+Stütze	101	NOUN,VERB
 Cape	101	NOUN
 verminderte	101	OTHER
 Vorstufe	101	NOUN
@@ -19617,7 +19617,7 @@ Windgeschwindigkeit	90	NOUN
 Okular	90	NOUN
 Amiens	90	NOUN
 Königswahl	90	NOUN
-Schütze	90	NOUN,OTHER
+Schütze	90	NOUN,OTHER,VERB
 Frankenthal	90	NOUN
 Guyana	90	NOUN
 Landsgemeinde	90	NOUN
@@ -19878,7 +19878,7 @@ verbrannten	88	OTHER
 Schalter	88	NOUN
 Eingangs	88	NOUN,OTHER
 PF	88	NOUN,OTHER
-Tank	88	NOUN
+Tank	88	NOUN,VERB
 Mehl	88	NOUN
 Flügels	88	NOUN
 Kapitals	88	NOUN
@@ -20094,7 +20094,7 @@ Recherche	87	NOUN
 Viktoria	87	NOUN
 Klarinette	87	NOUN
 wertvoll	87	OTHER
-Fang	87	NOUN
+Fang	87	NOUN,VERB
 Folk	87	NOUN
 blaues	87	OTHER
 Schabowski	87	NOUN
@@ -20676,7 +20676,7 @@ samstags	84	OTHER
 Pfeile	84	NOUN
 Stadtrates	84	NOUN
 Umberto	84	NOUN
-Warte	84	NOUN
+Warte	84	NOUN,VERB
 Internierungslager	84	NOUN
 Wisente	84	NOUN
 antwortet	84	OTHER
@@ -21250,7 +21250,7 @@ Verpflegung	81	NOUN
 Drohung	81	NOUN
 Hildebrand	81	NOUN
 Phänomens	81	NOUN
-Schreib	81	NOUN
+Schreib	81	NOUN,VERB
 CPUs	81	NOUN
 bereitzustellen	81	OTHER
 Kingston	81	NOUN
@@ -21638,7 +21638,7 @@ Südwestafrika	79	NOUN
 Deal	79	NOUN
 Upper	79	NOUN
 völliger	79	OTHER
-Spende	79	NOUN
+Spende	79	NOUN,VERB
 Forbes	79	NOUN
 neuerlichen	79	OTHER
 allerlei	79	OTHER
@@ -22643,7 +22643,7 @@ landet	75	OTHER
 Heerstraße	75	NOUN
 Oberstufe	75	NOUN
 nebenstehenden	75	OTHER
-Pack	75	NOUN
+Pack	75	NOUN,VERB
 Schelde	75	NOUN
 sprechende	75	OTHER
 Beschädigung	75	NOUN
@@ -23837,7 +23837,7 @@ Judenverfolgung	70	NOUN
 misslang	70	OTHER
 Astrachan	70	NOUN
 Mitstreiter	70	NOUN
-Bremse	70	NOUN
+Bremse	70	NOUN,VERB
 Hierarchien	70	NOUN
 Tarnung	70	NOUN
 Zustands	70	NOUN
@@ -24098,7 +24098,7 @@ Georgi	69	NOUN
 Culture	69	NOUN,OTHER
 Datteln	69	NOUN
 Landesmeister	69	NOUN
-Kürze	69	NOUN
+Kürze	69	NOUN,VERB
 Nutzdaten	69	NOUN
 Anteilnahme	69	NOUN
 Agatha	69	NOUN
@@ -24737,7 +24737,7 @@ Hauptmanns	67	NOUN
 poln	67	OTHER
 Wandgemälde	67	NOUN
 aussprach	67	OTHER
-Dreh	67	NOUN
+Dreh	67	NOUN,VERB
 übergreifende	67	OTHER
 misshandelt	67	OTHER
 Krupp	67	NOUN
@@ -25076,7 +25076,7 @@ Schlesiens	65	NOUN
 Subkontinent	65	NOUN
 ausbreitete	65	OTHER
 kosteten	65	OTHER
-Schätze	65	NOUN,OTHER
+Schätze	65	NOUN,OTHER,VERB
 aufbrechen	65	OTHER
 Kirchenvater	65	NOUN
 übereinstimmend	65	OTHER
@@ -27041,7 +27041,7 @@ Anonymität	59	NOUN
 lexikalischen	59	OTHER
 Forschungsgemeinschaft	59	NOUN
 Ureinwohnern	59	NOUN
-Wiege	59	NOUN
+Wiege	59	NOUN,VERB
 aussprachen	59	NOUN,OTHER
 Bewachung	59	NOUN
 empfindlichen	59	OTHER
@@ -27229,7 +27229,7 @@ Zauberei	59	NOUN
 Koexistenz	59	NOUN
 Sack	59	NOUN
 lokales	59	OTHER
-Scheide	59	NOUN
+Scheide	59	NOUN,VERB
 hierüber	59	OTHER
 Anwärter	59	NOUN
 Gänze	59	NOUN
@@ -27513,7 +27513,7 @@ Sümpfe	58	NOUN
 Jahrgang	58	NOUN
 verzweifelt	58	OTHER
 begegneten	58	OTHER
-Lade	58	NOUN
+Lade	58	NOUN,VERB
 Entlehnung	58	NOUN
 vorgenommenen	58	OTHER
 Quoten	58	NOUN
@@ -27872,7 +27872,7 @@ Nukleinsäuren	57	NOUN
 periphere	57	OTHER
 Blende	57	NOUN
 Zauber	57	NOUN
-Blase	57	NOUN
+Blase	57	NOUN,VERB
 Tasche	57	NOUN
 sternförmig	57	OTHER
 Mess	57	NOUN
@@ -28128,7 +28128,7 @@ Foot	56	NOUN,OTHER
 Curium	56	NOUN
 Eleonore	56	NOUN
 Körperverletzung	56	NOUN
-Stopp	56	NOUN
+Stopp	56	NOUN,VERB
 Verbrechens	56	NOUN
 Gefolgsmann	56	NOUN
 Semiramis	56	NOUN
@@ -28574,7 +28574,7 @@ Sowjetrussland	55	NOUN
 identischer	55	OTHER
 Regenfälle	55	NOUN
 Bescheid	55	NOUN
-Schenk	55	NOUN
+Schenk	55	NOUN,VERB
 erschoss	55	OTHER
 Tagesschau	55	NOUN,OTHER
 Dialogs	55	NOUN
@@ -29465,7 +29465,7 @@ Verfassers	53	NOUN
 definierter	53	OTHER
 Elastizität	53	NOUN
 Tools	53	NOUN
-Funke	53	NOUN
+Funke	53	NOUN,VERB
 brennende	53	OTHER
 Computerprogramme	53	NOUN
 Bildbearbeitung	53	NOUN
@@ -29970,7 +29970,7 @@ Straßenzug	52	NOUN
 Integer	52	NOUN,OTHER
 Corvey	52	NOUN
 Säle	52	NOUN
-Bade	52	NOUN
+Bade	52	NOUN,VERB
 Scherz	52	NOUN
 Kunstausstellungen	52	NOUN
 Überflutung	52	NOUN
@@ -30659,7 +30659,7 @@ Sozialpsychologie	50	NOUN
 jahreszeitlichen	50	OTHER
 anzufertigen	50	OTHER
 Punjab	50	NOUN
-Geh	50	NOUN,OTHER
+Geh	50	NOUN,OTHER,VERB
 grausamen	50	OTHER
 christianisiert	50	OTHER
 Hardy	50	NOUN
@@ -30676,7 +30676,7 @@ situ	50	OTHER
 Armand	50	NOUN
 Halbierung	50	NOUN
 mitteilte	50	OTHER
-Schraube	50	NOUN
+Schraube	50	NOUN,VERB
 Cremona	50	NOUN
 vollkommener	50	OTHER
 verwirft	50	OTHER
@@ -30950,7 +30950,7 @@ Pérez	50	NOUN
 Generalsekretärs	50	NOUN
 Wortsinn	50	NOUN
 Drehzahlen	50	NOUN
-Hexe	50	NOUN
+Hexe	50	NOUN,VERB
 Jedi	50	NOUN
 Wechselkurse	50	NOUN
 Brandstiftung	50	NOUN

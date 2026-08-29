@@ -15022,3 +15022,43 @@ No new unit tests (dictionary content + comment only). 1058 unit tests unchanged
 above). `versionCode` 354 -> 355, `versionName` `"1.0.50"` -> `"1.0.51"`. Not yet device-confirmed - same
 repro shape as the prior D-368 rounds, now covering 97 words total. Everything below frequency 200 remains
 explicitly open.
+
+## §299 - D-368 Round 7: The Whole 50-199 Band In One Sitting (v1.0.52)
+
+User asked directly: could the entire remaining candidate pool (8,067 mechanical hits below frequency 200)
+be done in one go, or should this fall back to the 50-199 sub-range? Counted the actual remaining volume by
+sub-band first rather than guessing: 150-199 (428), 100-149 (776), 50-99 (1,599), 20-49 (2,743), 10-19
+(2,017), 5-9 (504) - 8,067 total, not the ~8,800 estimated in round 6's writeup. Doing all 8,067 with real
+per-word linguistic review in one sitting was not realistic (the 501-word 200-299 band alone had already
+taken a full dense review pass); took the user's own explicit fallback instead - the 50-199 band, 428 + 776
++ 1,599 = 2,803 candidates, generated and reviewed the same way as every prior round, in three sub-passes
+(150-199, 100-149, 50-99) to keep the review tractable, with the retag list only compiled and applied once
+at the end.
+
+39 confirmed real out of 2,803 (~1.4%) - a shade below the ~2% seen at higher frequencies, but still the
+same flat noise-floor shape established in round 6, not a resumed decline. All but four are ordinary
+1st-person-present collisions on `-e`-ending nouns (`Schmelze`/`Besuche`/`Senke`/`Weide`/`Buche`/`Stütze`/
+`Warte`/`Bremse`/`Kürze`/`Wiege`/`Scheide`/`Lade`/`Blase`/`Schenk`/`Funke`/`Bade`/`Schraube`/`Hexe`/`Zeuge`/
+`Spende`) or the informal drop-the-`-e` imperative on stem-only nouns (`Halt`/`Schlaf`/`Hass`/`Schau`/`Sing`/
+`Deck`/`Wachs`/`Stoß`/`Tank`/`Fang`/`Schreib`/`Pack`/`Dreh`/`Stopp`) - `Halt`/`Schlaf`/`Sing`/`Schreib`/`Fang`/
+`Stopp` in particular are very high-frequency, everyday imperatives ("Halt!", "Schlaf gut!", "Stopp!"). Four
+entries were already `NOUN,OTHER` and got upgraded to the specific `NOUN,OTHER,VERB` now that the verb
+reading is confirmed (`Back`/backen, `Schütze`/schützen, `Schätze`/schätzen, `Geh`/gehen - the last one's own
+noun reading is dubious as a standalone German word, likely a Wikipedia-extraction artifact, but tagging it
+`VERB` only helps disambiguation and costs nothing if so).
+
+Applied via the same small Python verification script pattern as prior rounds (asserts each word's *current*
+tag matches what was read during review before overwriting - fails loudly on any drift rather than trusting
+a blind replace); `git diff --stat` confirmed exactly 39 lines changed both ways.
+`dictionaries/de/version.txt` 10 -> 11, pack rebuilt and verified (unzipped back, version and a total count
+of 136 `NOUN,VERB`/`NOUN,OTHER,VERB` rows confirmed). `LanguagePackCatalog`'s German entry `version` 10 -> 11.
+
+Also answered a side question from the user: the local JDK default (`JAVA_HOME`) drifting to 25.0.1 since
+round 6 is environment drift on this machine, not a project regression - JDK 21 is still installed
+alongside it, so pointing `JAVA_HOME` at it per-build (as round 6 already did) remains a full workaround with
+no actual blocker; not fixed at the project level since no committed file pins a JDK version.
+
+No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green (via JDK 21).
+`versionCode` 355 -> 356, `versionName` `"1.0.51"` -> `"1.0.52"`. Not yet device-confirmed - same repro shape
+as the prior D-368 rounds, now covering 136 words total. Everything below frequency 50 remains explicitly
+open (2,743 in 20-49, 2,017 in 10-19, 504 in 5-9 - no mechanical hits at frequency ≤4).

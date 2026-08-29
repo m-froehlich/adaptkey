@@ -85,7 +85,16 @@ object LanguagePackCatalog {
             // (1st-person/imperative - "Mach"/"mach" being the colloquial imperative of "machen"), and Drang
             // (preterite - "Drang" the noun vs "drang" = preterite of "dringen"; Drang was already
             // NOUN,OTHER, now NOUN,OTHER,VERB). Everything below frequency 200 remains open.
-            version = 10
+            // D-368 (round 7): the whole 50-199 band (2,803 hits) reviewed in one sitting per explicit user
+            // request. Hit rate ~1.4% (39/2803), slightly below the ~2% seen at higher frequencies but still
+            // the same flat-noise-floor shape, not a resumed decline. 39 more confirmed real and retagged
+            // NOUN,VERB (136 total now) - almost entirely 1st-person-present/imperative collisions: Halt/
+            // Schlaf/Hass/Schau/Schleife/Schmelze/Zeuge/Besuche/Senke/Sing/Weide/Deck/Buche/Wachs/Stoß/
+            // Stütze/Tank/Fang/Warte/Schreib/Spende/Pack/Bremse/Kürze/Dreh/Wiege/Scheide/Lade/Blase/Stopp/
+            // Schenk/Funke/Bade/Schraube/Hexe, plus four already-NOUN,OTHER entries upgraded to the specific
+            // NOUN,OTHER,VERB (Back/backen, Schütze/schützen, Schätze/schätzen, Geh/gehen). Everything below
+            // frequency 50 remains open.
+            version = 11
         ),
         Entry(
             Language.GREEK,
