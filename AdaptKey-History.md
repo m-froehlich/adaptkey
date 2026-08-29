@@ -14314,3 +14314,39 @@ D-407 too. `versionCode` 343 -> 344, `versionName` `"1.0.39"` -> `"1.0.40"`.
 Not yet device-confirmed - needs the settings screen opened, the slider dragged through all four positions,
 and the resulting behaviour spot-checked (Off: nothing silently applied, suggestions/chips still appear;
 each real level: matches what §36/D-353 already describe).
+
+## §285 - D-408: Slider Descender Clipping Fixed; Word-Splitting Also Made A Slider (v1.0.41)
+
+User's first on-device look at D-407's new slider caught a real rendering bug, then asked for the same
+widget on one more setting.
+
+### Descender clipping
+The value label's `g`/`j` descenders (e.g. in "Vorsichtig"/"Aggressiv") were visibly cut off. Root cause:
+`labeled_seekbar_value`'s `layout_height="match_parent"` inside the `wrap_content` row stretched/squeezed it
+to the `SeekBar`'s own shorter intrinsic height, clipping the text's descent below that shrunk bound.
+Invisible in `androidx.preference.SeekBarPreference`'s own original layout this was copied from - a raw
+numeric value label has no descenders in any digit, so the same underlying height-constraint issue there
+never had anything to visibly clip. Fixed by switching the value `TextView` to `layout_height="wrap_content"`
+(letting it size to its own real text metrics) with `gravity="center_vertical"` moved onto the containing
+row instead of the TextView itself, so vertical centring is unaffected.
+
+While there, also widened the gap between the summary text and the slider row itself (`layout_marginTop`
+added) - flush against the summary read as visibly more cramped than this screen's other, plain
+`SeekBarPreference` sliders, whose larger built-in touch-target padding creates that breathing room
+implicitly; this custom layout needed it added explicitly.
+
+### D-352 word-splitting is now a slider too
+Same request as D-407, applied to the other 3-way setting on this screen: `d352_auto_split_mode`'s
+`ListPreference` swapped for `LabeledSeekBarPreference` in `settings_preferences.xml`, wired via a new,
+shared `SettingsFragment.setupLabeledSlider()` helper (factored out of what was D-407's own one-off
+`onCreatePreferences` block, now used for both this and C-22). No change needed to `AutoSplitMode` itself,
+`SettingsMapper`, or `SettingsStore` at all - unlike D-407's C-22 merge, `AutoSplitMode`'s three positions
+(Automatic/Chip only/Off) were already a single, genuine 3-member enum with no separate boolean to fold in;
+this was purely a widget swap.
+
+No test changes (Android UI/layout glue, untested per convention) - 1020 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 344 -> 345, `versionName` `"1.0.40"` ->
+`"1.0.41"`. No spec change - purely a rendering fix and a widget-choice change, not a behavioural one; §36/§20
+already describe C-22 accurately, and A-05's D-352 description was never about which widget renders it.
+
+Not yet device-confirmed.

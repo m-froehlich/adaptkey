@@ -303,6 +303,19 @@ non-trivial changes).
 
 ## Current State
 
+- **§285 (v1.0.41): D-408 - slider descender clipping fixed; D-352 word-splitting also converted to a**
+  **slider.** The C-22 slider's value label (`labeled_seekbar_value`) had `layout_height="match_parent"`,
+  which squeezed it to the `SeekBar`'s own shorter height and clipped descenders (`g`/`j` in "Vorsichtig"/
+  "Aggressiv") - invisible in the original AndroidX layout this was copied from, since no digit has a
+  descender. Fixed via `layout_height="wrap_content"` + `gravity="center_vertical"` moved to the row.
+  Also widened the summary-to-slider gap (`layout_marginTop`) to match this screen's other, plain
+  `SeekBarPreference` sliders. `d352_auto_split_mode` swapped from `ListPreference` to
+  `LabeledSeekBarPreference` too (pure widget change - `AutoSplitMode`/`SettingsMapper`/`SettingsStore`
+  untouched, already a genuine 3-member enum with nothing to merge). New shared `setupLabeledSlider()`
+  helper in `SettingsActivity` wires both sliders' labels/values now. No test/spec changes (UI glue).
+  1020 unit tests unchanged, green. `versionCode` 344 -> 345, `versionName` `"1.0.40"` -> `"1.0.41"`. Not
+  yet device-confirmed. See history §285.
+
 - **§282 (v1.0.39): D-406 implemented - Auto-Caps is now consistently re-derived at every position reached,**
   **closing two live-arming gaps D-405 predicted.** Real repro: period -> auto-space arms Shift -> tap back
   into the previous word to fix a typo -> first Backspace silently swallowed -> second Backspace deletes but

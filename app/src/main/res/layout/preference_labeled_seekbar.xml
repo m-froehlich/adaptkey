@@ -56,12 +56,17 @@
             android:maxLines="4"
         />
 
+        <!-- D-408: layout_marginTop widened - flush against the summary read as cramped, unlike this
+             screen's other (plain androidx.preference.SeekBarPreference) sliders, whose SeekBar's own
+             larger touch-target padding creates that breathing room implicitly. -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@android:id/summary"
+            android:layout_marginTop="10dp"
             android:layout_alignStart="@android:id/title"
             android:layout_alignLeft="@android:id/title"
+            android:gravity="center_vertical"
             android:clipChildren="false"
             android:clipToPadding="false"
         >
@@ -79,11 +84,15 @@
                 android:background="@null"
             />
 
+            <!-- D-408: wrap_content, not match_parent - stretching this TextView to match the SeekBar's
+                 own (shorter) intrinsic height clipped descenders (g/j in "Vorsichtig"/"Aggressiv") against
+                 its squeezed bounds. Invisible in AndroidX's own original numeric value label (no digit has
+                 a descender), only surfaced once this label started showing real words. -->
             <TextView
                 android:id="@+id/labeled_seekbar_value"
                 android:layout_width="88dp"
-                android:layout_height="match_parent"
-                android:gravity="end|center_vertical"
+                android:layout_height="wrap_content"
+                android:gravity="end"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textAppearance="?android:attr/textAppearanceMedium"

@@ -122,12 +122,10 @@
             android:summary="@string/d353_autocorrect_aggressiveness_summary"
             android:defaultValue="medium" />
 
-        <ListPreference
+        <de.froehlichmedia.adaptkey.settings.LabeledSeekBarPreference
             android:key="d352_auto_split_mode"
             android:title="@string/d352_auto_split_mode_title"
             android:summary="@string/d352_auto_split_mode_summary"
-            android:entries="@array/d352_auto_split_mode_labels"
-            android:entryValues="@array/d352_auto_split_mode_values"
             android:defaultValue="automatic" />
 
         <SwitchPreferenceCompat

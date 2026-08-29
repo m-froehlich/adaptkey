@@ -79,13 +79,20 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
             
-            // D-407: labels/values aren't XML attributes on LabeledSeekBarPreference (no custom-attribute
-            // declaration exists for it, unlike ListPreference's built-in android:entries/entryValues) - set
-            // here instead, the same place info_version/d89_feature_overview's own programmatic setup lives.
-            findPreference<LabeledSeekBarPreference>(SettingsStore.KEY_AUTOCORRECT_AGGRESSIVENESS)?.apply {
-                labels = resources.getStringArray(R.array.d353_autocorrect_aggressiveness_labels).toList()
-                values = resources.getStringArray(R.array.d353_autocorrect_aggressiveness_values).toList()
-            }
+            // D-407/D-408: labels/values aren't XML attributes on LabeledSeekBarPreference (no custom-
+            // attribute declaration exists for it, unlike ListPreference's built-in android:entries/
+            // entryValues) - set here instead, the same place info_version/d89_feature_overview's own
+            // programmatic setup lives.
+            setupLabeledSlider(
+                SettingsStore.KEY_AUTOCORRECT_AGGRESSIVENESS,
+                R.array.d353_autocorrect_aggressiveness_labels,
+                R.array.d353_autocorrect_aggressiveness_values
+            )
+            setupLabeledSlider(
+                SettingsStore.KEY_AUTO_SPLIT_MODE,
+                R.array.d352_auto_split_mode_labels,
+                R.array.d352_auto_split_mode_values
+            )
             
             // Read live from the actual installed package rather than a hand-maintained string resource,
             // which would inevitably drift out of sync with the real versionName in app/build.gradle.kts.
@@ -144,6 +151,22 @@ class SettingsActivity : AppCompatActivity() {
                 } else {
                     true
                 }
+            }
+        }
+        
+        /**
+         * D-407/D-408: wires a [LabeledSeekBarPreference]'s [LabeledSeekBarPreference.labels]/
+         * [LabeledSeekBarPreference.values] from the given string-array resources - shared by every such
+         * slider in this screen (C-22 autocorrect, D-352 word splitting) rather than duplicated per site.
+         *
+         * @param key the preference's own key
+         * @param labelsRes the localised, displayed labels array (slider order)
+         * @param valuesRes the persisted value array, same order as [labelsRes]
+         */
+        private fun setupLabeledSlider(key: String, labelsRes: Int, valuesRes: Int) {
+            findPreference<LabeledSeekBarPreference>(key)?.apply {
+                labels = resources.getStringArray(labelsRes).toList()
+                values = resources.getStringArray(valuesRes).toList()
             }
         }
         
