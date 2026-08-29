@@ -130,6 +130,14 @@
             android:entryValues="@array/d352_auto_split_mode_values"
             android:defaultValue="automatic" />
 
+        <ListPreference
+            android:key="d353_autocorrect_aggressiveness"
+            android:title="@string/d353_autocorrect_aggressiveness_title"
+            android:summary="@string/d353_autocorrect_aggressiveness_summary"
+            android:entries="@array/d353_autocorrect_aggressiveness_labels"
+            android:entryValues="@array/d353_autocorrect_aggressiveness_values"
+            android:defaultValue="medium" />
+
         <SwitchPreferenceCompat
             android:key="d348_double_tap_backspace_undo"
             android:title="@string/d348_double_tap_backspace_undo_title"

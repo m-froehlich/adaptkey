@@ -117,6 +117,11 @@
     <string name="d352_auto_split_mode_automatic">Automatic</string>
     <string name="d352_auto_split_mode_chip_only">Chip only</string>
     <string name="d352_auto_split_mode_off">Off</string>
+    <string name="d353_autocorrect_aggressiveness_title">Autocorrect confidence</string>
+    <string name="d353_autocorrect_aggressiveness_summary">How confident a correction must be before it is applied silently instead of merely suggested. Cautious applies fewer corrections automatically; Aggressive applies more.</string>
+    <string name="d353_autocorrect_aggressiveness_cautious">Cautious</string>
+    <string name="d353_autocorrect_aggressiveness_medium">Medium</string>
+    <string name="d353_autocorrect_aggressiveness_aggressive">Aggressive</string>
     <string name="c04_color_title">Highlight colour</string>
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>

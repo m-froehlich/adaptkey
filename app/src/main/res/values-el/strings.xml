@@ -115,6 +115,11 @@
     <string name="d352_auto_split_mode_automatic">Αυτόματο</string>
     <string name="d352_auto_split_mode_chip_only">Μόνο πρόταση</string>
     <string name="d352_auto_split_mode_off">Ανενεργό</string>
+    <string name="d353_autocorrect_aggressiveness_title">Βεβαιότητα αυτόματης διόρθωσης</string>
+    <string name="d353_autocorrect_aggressiveness_summary">Πόσο βέβαιη πρέπει να είναι μια διόρθωση πριν εφαρμοστεί σιωπηλά αντί να προταθεί απλώς. Το Προσεκτικό εφαρμόζει λιγότερες διορθώσεις αυτόματα· το Επιθετικό εφαρμόζει περισσότερες.</string>
+    <string name="d353_autocorrect_aggressiveness_cautious">Προσεκτικό</string>
+    <string name="d353_autocorrect_aggressiveness_medium">Μεσαίο</string>
+    <string name="d353_autocorrect_aggressiveness_aggressive">Επιθετικό</string>
     <string name="d348_double_tap_backspace_undo_title">Διπλό πάτημα Backspace για αναίρεση</string>
     <string name="d348_double_tap_backspace_undo_summary">Όταν είναι ενεργό, ένα απλό Backspace μετά από αυτόματη διόρθωση διαγράφει μόνο έναν χαρακτήρα· πατήστε Backspace δύο φορές γρήγορα για να αναιρέσετε τη διόρθωση.</string>
     <string name="c04_color_title">Χρώμα επισήμανσης</string>

@@ -115,6 +115,11 @@
     <string name="d352_auto_split_mode_automatic">Automatisch</string>
     <string name="d352_auto_split_mode_chip_only">Nur Chip</string>
     <string name="d352_auto_split_mode_off">Aus</string>
+    <string name="d353_autocorrect_aggressiveness_title">Autokorrektur-Konfidenz</string>
+    <string name="d353_autocorrect_aggressiveness_summary">Wie sicher eine Korrektur sein muss, bevor sie still angewendet statt nur vorgeschlagen wird. Vorsichtig wendet weniger Korrekturen automatisch an; Aggressiv wendet mehr an.</string>
+    <string name="d353_autocorrect_aggressiveness_cautious">Vorsichtig</string>
+    <string name="d353_autocorrect_aggressiveness_medium">Mittel</string>
+    <string name="d353_autocorrect_aggressiveness_aggressive">Aggressiv</string>
     <string name="d348_double_tap_backspace_undo_title">Doppel-Tipp Backspace zum Zurücksetzen</string>
     <string name="d348_double_tap_backspace_undo_summary">Wenn aktiv, löscht ein einzelner Backspace nach einer Autokorrektur nur ein Zeichen; drücke Backspace zweimal schnell hintereinander, um die Korrektur zurückzunehmen.</string>
     <string name="c04_color_title">Highlight-Farbe</string>

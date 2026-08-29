@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
+import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -131,6 +132,27 @@ class SettingsMapperTest {
     @Test
     fun `D-352 an unknown autoSplitMode key falls back to the default`() {
         assertEquals(AutoSplitMode.DEFAULT, SettingsMapper.toAutoSplitMode(RawSettings(autoSplitModeKey = "bogus")))
+    }
+    
+    @Test
+    fun `D-353 autocorrectAggressiveness resolves from the stored key, defaulting to MEDIUM`() {
+        assertEquals(AutocorrectAggressiveness.MEDIUM, SettingsMapper.toAdaptSettings(RawSettings()).autocorrectAggressiveness)
+        assertEquals(
+            AutocorrectAggressiveness.CAUTIOUS,
+            SettingsMapper.toAdaptSettings(RawSettings(autocorrectAggressivenessKey = "cautious")).autocorrectAggressiveness
+        )
+        assertEquals(
+            AutocorrectAggressiveness.AGGRESSIVE,
+            SettingsMapper.toAutocorrectAggressiveness(RawSettings(autocorrectAggressivenessKey = "aggressive"))
+        )
+    }
+    
+    @Test
+    fun `D-353 an unknown autocorrectAggressiveness key falls back to the default`() {
+        assertEquals(
+            AutocorrectAggressiveness.DEFAULT,
+            SettingsMapper.toAutocorrectAggressiveness(RawSettings(autocorrectAggressivenessKey = "bogus"))
+        )
     }
     
     

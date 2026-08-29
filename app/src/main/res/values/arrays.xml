@@ -50,6 +50,19 @@
         <item>@string/d352_auto_split_mode_off</item>
     </string-array>
 
+    <!-- D-353 autocorrect aggressiveness (label / stored value, matching AutocorrectAggressiveness's own enum names). -->
+    <string-array name="d353_autocorrect_aggressiveness_labels">
+        <item>@string/d353_autocorrect_aggressiveness_cautious</item>
+        <item>@string/d353_autocorrect_aggressiveness_medium</item>
+        <item>@string/d353_autocorrect_aggressiveness_aggressive</item>
+    </string-array>
+
+    <string-array name="d353_autocorrect_aggressiveness_values">
+        <item>cautious</item>
+        <item>medium</item>
+        <item>aggressive</item>
+    </string-array>
+
     <string-array name="d352_auto_split_mode_values">
         <item>automatic</item>
         <item>chip_only</item>

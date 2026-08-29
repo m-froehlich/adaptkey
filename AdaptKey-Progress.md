@@ -303,6 +303,28 @@ non-trivial changes).
 
 ## Current State
 
+- **§281 (v1.0.38): D-353/D-354 implemented - a unified `CorrectionConfidence` score replaces autocorrect's**
+  **ad hoc gates.** New pure `CorrectionConfidence` object (`dictionary` package): for an unknown typed token,
+  `costFactor × frequencyFactor` (frequency reference 25 for a non-noun candidate, 2,000 for a noun-tagged
+  one - a two-tier reference, not a flat noun penalty, so a common noun like "Jahren" isn't punished like a
+  rare proper-noun artefact like "Virgin"); for a known typed token (A-01 override), a log-scaled frequency-
+  ratio score reaching 1.0 at 500x, replacing D-244's flat 100x cutoff. D-354: a correction that changes the
+  typed token's own recognisable leading German prefix (`aberkennen` -> `anerkennen`) has its score capped at
+  0.55 - below every level's auto-apply threshold, above every level's chip-offer threshold, so it's never
+  silently applied but always still offered as a suggestion. New `AutocorrectAggressiveness` enum (C-22,
+  `d353_autocorrect_aggressiveness`), 3 levels each with an auto-apply/chip-offer threshold pair: CAUTIOUS
+  (0.90/0.40), MEDIUM (0.75/0.30, default, reproduces pre-D-353 behaviour exactly), AGGRESSIVE (0.70/0.20).
+  Every level's auto threshold sits strictly above the confirmed-bad "Ohren"/"Ihren" regression's own score
+  (~0.68) - a design decision explicitly requested mid-discussion: a more aggressive setting may only ever
+  admit more of the untested grey zone, never reopen an already-confirmed false positive; a standing test
+  guards this against AGGRESSIVE (the most permissive level) directly. `DictionarySuggestionProvider`'s old
+  `minAutocorrectFrequency` constructor parameter (opt-in, defaulted to no floor) is gone - the confidence
+  gate is now always active, at the configured aggressiveness. `fuzzyNeighbours()` (D-12 suggestion path,
+  previously unfiltered) now also requires the chip-offer threshold. 26 new/changed tests, 1018 unit tests
+  total (was 992). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 341 -> 342,
+  `versionName` `"1.0.37"` -> `"1.0.38"`. Spec A-01/§20/new §36 revised. Not yet device-confirmed. See
+  history §281.
+
 - **§280 (v1.0.37): D-403/D-352 implemented together.** D-403: `DictionarySuggestionProvider.
   shouldOverrideKnownWord()` now returns `false` outright whenever `store.learnedCasingOf(word) != null` -
   a learned word (fully self-taught, or a deliberately different-cased W-04 override) can no longer be

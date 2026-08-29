@@ -14083,3 +14083,97 @@ green. Spec's A-01 (D-403), A-05
 (D-352) and §20 (new C-21 row) revised. `versionCode` 340 -> 341, `versionName` `"1.0.36"` -> `"1.0.37"`. Not
 yet device-confirmed - needs a real "kWp"/acronym-relearning round-trip for D-403, and all three
 `AutoSplitMode` values exercised on-device for D-352 (a genuine missed-space repro under each setting).
+
+## §281 - D-353/D-354 Implemented: A Unified Confidence Metric Replaces Autocorrect's Ad Hoc Gates (v1.0.38)
+
+### Design discussion
+User asked for a concrete proposal for the confidence metric §277 had agreed the *shape* of (two thresholds,
+tied to a new three-level aggressiveness setting) but never designed in detail. Proposed a pure
+`CorrectionConfidence` `[0, 1]` score computed two different ways depending on whether the typed token is
+itself a known word (D-244's own ratio-override case) or unknown (D-114/D-227's own frequency-floor case),
+with D-354's prefix-plausibility idea folded in as a **cap** on the auto-relevant score rather than a
+multiplier - so a prefix-changing correction (`aberkennen` -> `anerkennen`, the exact motivating case) always
+still clears the (lower) chip-offer threshold and stays a tappable suggestion, while never clearing any
+auto-apply threshold. Walked the design against the app's own established regression corpus (`due`/`die`,
+`ddr`/`der`, `Ohren`/`Ihren`, `übrigens`, `Virgin`) to show illustrative threshold numbers could separate them
+correctly.
+
+**User's one objection:** the first draft's "aggressive" level's auto threshold sat *below* the `Ohren`/`Ihren`
+regression's own score - meaning the most permissive setting would have silently reopened a confirmed, already
+device-reported annoyance. Explicitly rejected this as an acceptable trade-off of "more aggressive means more
+false positives" - a level may only ever widen the untested grey zone, never resurrect a specific, already-fixed
+mistake. Agreed approach: calibrate every threshold against the full existing regression corpus rather than
+picking numbers by feel, with the confirmed-bad cases acting as a **hard floor beneath every aggressiveness
+level's auto threshold, not only the default one** - plus a standing regression test asserting this floor
+directly against the most permissive level, so a future retuning cannot silently cross it again unnoticed.
+
+### Implementation
+New `CorrectionConfidence` (`dictionary` package, pure/JVM-testable) computes the `[0, 1]` score:
+
+- **Unknown token** (`forUnknownToken`): `costFactor(cost) × frequencyFactor(candidateFrequency, isNounLike)`.
+  `costFactor` is 1.0 at cost 1, 0.85 beyond it. `frequencyFactor` is a log-scaled ramp to 1.0 at a reference
+  frequency - **25** for a non-noun candidate, **2,000** for a noun-tagged one. The two-tier reference
+  (not a flat noun *penalty*) was the key calibration fix: a flat 0.5× multiplier for any noun candidate
+  would have wrongly punished "Jahren" (frequency 2,000, a perfectly ordinary noun A-08's own compound-rest
+  correction already relies on) exactly as much as "Virgin" (frequency 62, D-114's own proper-noun corpus
+  artefact) - caught by a real, pre-existing test (`D-116 an unlisted compound is reconstructed...`) going red
+  during implementation, not by inspection.
+- **Known token** (`forKnownWordOverride`): 0.0 outright beyond a cost-1 edit (D-113's own exclusion, unchanged
+  in spirit); otherwise a log-scaled ratio score reaching 1.0 at **500×**, replacing D-244's flat 100× cutoff.
+- **D-354** (`prefixShiftsAway`): a new, deliberately broader-than-A-05's-own prefix set (adds `ab-`, `an-`,
+  `auf-`, `aus-`, `ein-`, `mit-`, `nach-`, `vor-`, `weg-`, `zu-`, `los-`, `bei-` to A-05's existing inseparable
+  set, plus the Wechselpräfixe A-05 deliberately excludes for a different, split-specific reason that does not
+  apply here) - when the correction changes the typed token's own recognisable leading prefix, the score is
+  capped at **0.55**, chosen to sit strictly between every aggressiveness level's chip and auto thresholds.
+
+New `AutocorrectAggressiveness` enum (mirrors `LlmActivationThreshold`'s `fromKey`/`DEFAULT` shape), three
+levels, each carrying both thresholds:
+
+| Level | Auto-apply | Chip-offer |
+|---|---|---|
+| CAUTIOUS | 0.90 | 0.40 |
+| MEDIUM (default) | 0.75 | 0.30 |
+| AGGRESSIVE | 0.70 | 0.20 |
+
+MEDIUM's own auto threshold (0.75) reproduces the pre-D-353 behaviour exactly against the full existing
+corpus - boxed in on both sides by real cases, not chosen freely (must exceed `Ohren`/`Ihren`'s ~0.68 and
+`Virgin`'s ~0.54; must not exceed `komplett`'s 0.85 or `ddr`/`der`'s ~0.87). AGGRESSIVE's own auto threshold
+(0.70) is the direct result of the design-discussion floor rule: the smallest value still above `Ohren`/
+`Ihren`'s score, leaving AGGRESSIVE genuinely (if narrowly) more permissive than MEDIUM without ever crossing
+the floor. CAUTIOUS is otherwise unconstrained by any existing test (new behaviour, no regression risk) and
+was set high enough to additionally exclude ordinary cost-2 corrections, matching its "fewer, more certain"
+intent.
+
+`DictionarySuggestionProvider`'s constructor `minAutocorrectFrequency: Long` parameter is gone, replaced by
+`aggressiveness: AutocorrectAggressiveness` (default `AutocorrectAggressiveness.DEFAULT`) - the confidence
+gate is no longer opt-in, every provider now applies it. `bestCorrection()`'s per-candidate frequency-floor
+rejection (previously applied to every scanned candidate) is replaced by a single confidence check on the
+already-selected winner, mirroring how the known-word branch already worked; `shouldOverrideKnownWord()` now
+derives from `CorrectionConfidence.forKnownWordOverride` instead of the flat ratio, with D-403's learned-word
+exemption unchanged and checked first. `fuzzyNeighbours()` (the D-12 suggestion-bar fuzzy path, previously
+unfiltered by frequency at all) now also requires the chip-offer threshold - the same formula answering both
+"should this silently apply" and "should this even be suggested," just against the two different thresholds.
+
+New setting **C-22** (`d353_autocorrect_aggressiveness`, `ListPreference`, EN/DE/EL, placed right after C-21
+in the Correction & Suggestions category), threaded through `RawSettings`/`SettingsMapper`/`AdaptSettings`/
+`SettingsStore`/`EXPORT_SETTINGS_KEY_ORDER`. `AdaptKeyService`: a new `autocorrectAggressiveness` field tracks
+the last-applied level (mirroring the existing `config` field) - needed because `applySettings()`'s existing
+provider-rebuild guard only compared `suggestionConfig`, which would have silently never picked up a changed
+aggressiveness level on its own until some unrelated setting happened to change too; the guard now also
+compares this field.
+
+26 new tests: `CorrectionConfidenceTest` (13, covering both formulas' calibration against the real corpus plus
+D-354's cap), `AutocorrectAggressivenessTest` (6, including the explicit Ohren/Ihren floor-at-AGGRESSIVE
+regression guard), 2 new `SettingsMapperTest` cases, plus `DictionarySuggestionProviderTest` gained/lost a net
+handful (D-114/D-227's own `minAutocorrectFrequency`-constructed tests rewritten against the now-always-on
+default provider; one obsolete "defaults to no floor" test removed, its premise no longer holding; new D-116
+noun-reference-tier test, D-354 end-to-end test, and two AGGRESSIVE-level end-to-end tests added). 1018 unit
+tests total (992 before this round). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+Spec: A-01 (§7) rewritten to describe the graduated measure instead of the flat ratio; new **§36** section
+added, documenting the full mechanism (mirrors §35's depth for a comparably-sized behavioural change); §20
+gained the C-22 row. `versionCode` 341 -> 342, `versionName` `"1.0.37"` -> `"1.0.38"`.
+
+Not yet device-confirmed - needs a real on-device re-test of a case like `Ohren`/`Ihren` at each of the three
+C-22 levels (confirming AGGRESSIVE still protects it), plus a genuine `aberkennen`-shaped prefix-typo case
+confirming it now appears as a suggestion rather than silently misfiring.

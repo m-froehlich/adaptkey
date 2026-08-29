@@ -295,44 +295,46 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
-    fun `D-114 minAutocorrectFrequency defaults to no floor - unaffected by the reported case's fix`() {
-        // The shared no-floor provider (default constructor) still finds a low-frequency candidate, exactly
-        // as before D-114 - the floor is opt-in via the constructor, not a blanket behaviour change.
-        store.putWord(WordEntry("Virgin", 62L))
-        
-        assertEquals("Virgin", provider.autocorrectFor("Virhin", null))
-    }
-    
-    @Test
-    fun `D-114 a noun-tagged candidate below minAutocorrectFrequency is never offered, however good its edit cost`() {
+    fun `D-114 D-353 a noun-tagged candidate at a low confidence is never offered, however good its edit cost`() {
         // Reproduces the reported bug: "vorhin" is missing from the dictionary entirely, and "Virgin" (an
         // English-proper-noun artefact of the German Wikipedia corpus, tagged NOUN like the real
         // dict_de.tsv entry) was the only candidate within the edit-cost budget - low-confidence, but
-        // nothing stopped it from winning by default.
-        val guardedStore = InMemoryDictionaryStore()
-        val guardedProvider = DictionarySuggestionProvider(guardedStore, minAutocorrectFrequency = 300)
-        guardedStore.putWord(WordEntry("Virgin", 62L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
-        guardedStore.putWord(WordEntry("Vorhinein", 11L))
+        // nothing stopped it from winning by default. D-353: the confidence gate is no longer opt-in via a
+        // constructor parameter - every provider now applies it, at the default (MEDIUM) aggressiveness.
+        store.putWord(WordEntry("Virgin", 62L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Vorhinein", 11L))
         
-        assertNull(guardedProvider.autocorrectFor("Virhin", null))
-        // A candidate at or above the floor is unaffected.
-        guardedStore.putWord(WordEntry("Wort", 300L))
-        assertEquals("Wort", guardedProvider.autocorrectFor("W8rt", null))
+        assertNull(provider.autocorrectFor("Virhin", null))
+        // A common, non-noun candidate is unaffected.
+        store.putWord(WordEntry("Wort", 300L))
+        assertEquals("Wort", provider.autocorrectFor("W8rt", null))
     }
     
     @Test
-    fun `D-227 a non-noun cost-1 candidate below minAutocorrectFrequency still wins, unlike a noun-tagged one`() {
+    fun `D-227 D-353 a non-noun cost-1 candidate still wins at a frequency where a noun-tagged one would not`() {
         // Reproduces the reported bug: "übrigebs" (a keyboard-adjacent b/n typo of "übrigens", tagged OTHER
         // like the real dict_de.tsv entry) has no dictionary entry itself, and "übrigens" (frequency 79) sat
-        // below the 300 floor purely because the corpus under-counts it relative to hyper-frequent words -
-        // letting a low-quality A-05 split ("übrig"+"Ebs") win instead of this cost-1 correction. Contrasted
-        // directly against the D-114 case above: same cost tier and frequency range, but "übrigens" is
-        // tagged OTHER (an ordinary adverb), not NOUN, so it is exempt from the floor while "Virgin" is not.
-        val guardedStore = InMemoryDictionaryStore()
-        val guardedProvider = DictionarySuggestionProvider(guardedStore, minAutocorrectFrequency = 300)
-        guardedStore.putWord(WordEntry("übrigens", 79L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        // below the old 300 floor purely because the corpus under-counts it relative to hyper-frequent
+        // words - letting a low-quality A-05 split ("übrig"+"Ebs") win instead of this cost-1 correction.
+        // Contrasted directly against the D-114 case above: same cost tier and frequency range, but
+        // "übrigens" is tagged OTHER (an ordinary adverb), not NOUN, so [CorrectionConfidence] holds it to
+        // a far lower frequency bar than a noun.
+        store.putWord(WordEntry("übrigens", 79L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
         
-        assertEquals("übrigens", guardedProvider.autocorrectFor("übrigebs", null))
+        assertEquals("übrigens", provider.autocorrectFor("übrigebs", null))
+    }
+    
+    @Test
+    fun `D-116 D-353 a common, correctly-tagged noun is not held to the same bar as a rare one`() {
+        // The compound-reconstruction path (D-116) routes its own "rest" correction through the exact same
+        // bestCorrection() confidence gate ("jahreb" -> "Jahren", cost 1, tagged NOUN) - a flat noun penalty
+        // would have wrongly punished this, ordinary, correctly-recognised noun exactly as much as a rare
+        // proper-noun corpus artefact like "Virgin" above; CorrectionConfidence instead holds nouns to a
+        // much higher (not unreachable) frequency bar - see its own KDoc.
+        store.putWord(WordEntry("Beitrag", 500L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        store.putWord(WordEntry("Jahren", 2_000L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertTrue(provider.suggestionsFor("beitragsjahreb", null).map { it.word }.contains("Beitragsjahren"))
     }
     
     @Test
@@ -796,5 +798,36 @@ class DictionarySuggestionProviderTest {
         val words = provider.suggestionsFor("bein", null, includeExpensiveFallbacks = true) { false }.map { it.word }
         
         assertEquals(setOf("vein", "nein", "fein"), words.toSet())
+    }
+    
+    @Test
+    fun `D-354 a prefix-changing correction is never silently applied, but still offered as a suggestion`() {
+        // "aberkennen" ("ab-" + "erkennen") is unknown to the dictionary; "anerkennen" ("an-" + "erkennen")
+        // is a real, far more frequent cost-1 neighbour. The typed token may itself be a genuine, simply
+        // unlisted, prefixed word - never silently discarded, but still surfaced as an ordinary suggestion.
+        store.putWord(WordEntry("anerkennen", 165L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        
+        assertNull(provider.autocorrectFor("aberkennen", null))
+        assertTrue(provider.suggestionsFor("aberkennen", null).map { it.word }.contains("anerkennen"))
+    }
+    
+    @Test
+    fun `D-353 the Ohren to Ihren regression stays blocked end-to-end even at the most permissive aggressiveness`() {
+        val aggressiveStore = InMemoryDictionaryStore()
+        val aggressiveProvider = DictionarySuggestionProvider(aggressiveStore, aggressiveness = AutocorrectAggressiveness.AGGRESSIVE)
+        aggressiveStore.putWord(WordEntry("Ohren", 170L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        aggressiveStore.putWord(WordEntry("Ihren", 11_907L))
+        
+        assertNull(aggressiveProvider.autocorrectFor("Ohren", null))
+    }
+    
+    @Test
+    fun `D-353 a higher aggressiveness level still autocorrects a case the default one already did`() {
+        val aggressiveStore = InMemoryDictionaryStore()
+        val aggressiveProvider = DictionarySuggestionProvider(aggressiveStore, aggressiveness = AutocorrectAggressiveness.AGGRESSIVE)
+        aggressiveStore.putWord(WordEntry("ddr", 4_405L))
+        aggressiveStore.putWord(WordEntry("der", 1_004_234L))
+        
+        assertEquals("der", aggressiveProvider.autocorrectFor("ddr", null))
     }
 }

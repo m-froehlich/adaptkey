@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
+import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -46,7 +47,8 @@ data class RawSettings(
     val contactsSuggestionsEnabled: Boolean = false,
     val autocorrectEnabled: Boolean = true,
     val doubleTapBackspaceUndo: Boolean = false,
-    val autoSplitModeKey: String? = null
+    val autoSplitModeKey: String? = null,
+    val autocorrectAggressivenessKey: String? = null
 )
 
 /**
@@ -184,6 +186,17 @@ object SettingsMapper {
     }
     
     /**
+     * Resolves the D-353 autocorrect aggressiveness, falling back to the spec default for an unknown,
+     * blank or missing stored value (the validation point for this enum-valued setting).
+     *
+     * @param raw the raw stored values
+     * @return the resolved [AutocorrectAggressiveness]
+     */
+    fun toAutocorrectAggressiveness(raw: RawSettings): AutocorrectAggressiveness {
+        return AutocorrectAggressiveness.fromKey(raw.autocorrectAggressivenessKey)
+    }
+    
+    /**
      * Resolves the full validated configuration. An empty per-key hint map falls back to the default
      * mapping so the keyboard never ends up with no secondary symbols at all.
      * 
@@ -214,7 +227,8 @@ object SettingsMapper {
             contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled,
             autocorrectEnabled = raw.autocorrectEnabled,
             doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo,
-            autoSplitMode = toAutoSplitMode(raw)
+            autoSplitMode = toAutoSplitMode(raw),
+            autocorrectAggressiveness = toAutocorrectAggressiveness(raw)
         )
     }
 }

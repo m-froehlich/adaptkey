@@ -20,20 +20,16 @@ import kotlin.math.pow
  * 
  * @property store the backing dictionary store
  * @property maxCandidates the maximum number of suggestions returned
- * @property minAutocorrectFrequency D-114/D-227: a correction candidate below this absolute frequency is
- *           never offered by [autocorrectFor]/[highConfidenceCorrection] - *unless* it is both a cost-1
- *           neighbouring-key substitution away ([ADJACENT_SUB_COST]) and not tagged [PartOfSpeech.NOUN]/
- *           [PartOfSpeech.PROPER_NOUN]. Cost alone is not enough to exempt a candidate - D-114's own
- *           original bug ("Virgin", frequency 62) was itself a cost-1 edit, but is also a noun-tagged
- *           Wikipedia-corpus artefact, unlike a genuinely common non-noun word the corpus simply
- *           under-counts (e.g. "übrigens", frequency 79). Defaults to 0 (no floor) so a plain
- *           `DictionarySuggestionProvider(store)` behaves exactly as before; production call sites pass a
- *           real, corpus-calibrated value (see [de.froehlichmedia.adaptkey.AdaptKeyService])
+ * @property aggressiveness D-353: how eagerly [bestCorrection]/[fuzzyNeighbours] trust a correction
+ *           candidate - see [AutocorrectAggressiveness] and [CorrectionConfidence] for the full mechanism
+ *           this replaces D-114/D-227's frequency floor and D-244's flat ratio bar with. Defaults to
+ *           [AutocorrectAggressiveness.DEFAULT]; production call sites pass the user's own configured
+ *           level (see [de.froehlichmedia.adaptkey.AdaptKeyService])
  */
 class DictionarySuggestionProvider(
     private val store: DictionaryStore,
     private val maxCandidates: Int = 12,
-    private val minAutocorrectFrequency: Long = 0
+    private val aggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT
 ) : SuggestionProvider {
     
     override fun suggestionsFor(
@@ -221,11 +217,38 @@ class DictionarySuggestionProvider(
                 continue
             }
             val cost = correctionCost(folded, lower, MAX_CORRECTION_COST)
-            if (cost <= MAX_CORRECTION_COST) {
+            // D-353: a candidate must still clear the chip-offer confidence floor - see this class's own
+            // companion KDoc / CorrectionConfidence for why this is the same formula bestCorrection() uses
+            // for its own (higher) auto-apply decision, just compared against the lower of the two
+            // thresholds - an implausible enough candidate (e.g. D-117's wider fallback deliberately stays
+            // outside this, see its own KDoc) should not clutter the suggestion bar either, not just never
+            // silently apply.
+            if (cost <= MAX_CORRECTION_COST && candidateConfidence(token, candidate, lower, cost) >= aggressiveness.chipOfferThreshold) {
                 result.add(candidate to cost)
             }
         }
         return result
+    }
+    
+    /**
+     * D-353: [CorrectionConfidence.forUnknownToken] for [candidate] as a replacement for [token], looking
+     * up its frequency/noun-tag/prefix-shift signals from [store]. Shared between [fuzzyNeighbours]' own
+     * chip-offer filter and [bestCorrection]'s auto-apply decision so both are always answering the exact
+     * same question about the exact same candidate, just against different thresholds.
+     *
+     * @param token the lower-cased typed token
+     * @param candidate the candidate in its canonical (dictionary) case
+     * @param candidateLower [candidate], already lower-cased by the caller (avoids a repeat lowercase() call)
+     * @param cost the candidate's edit cost from [token]
+     * @return the confidence in `[0, 1]`
+     */
+    private fun candidateConfidence(token: String, candidate: String, candidateLower: String, cost: Int): Double {
+        val entry = store.entryOf(candidate)
+        val frequency = entry?.frequency ?: store.frequencyOf(candidate)
+        val isNounLike = entry?.partsOfSpeech?.any {
+            it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN
+        } ?: true
+        return CorrectionConfidence.forUnknownToken(cost, frequency, isNounLike, CorrectionConfidence.prefixShiftsAway(token, candidateLower))
     }
     
     /**
@@ -506,26 +529,8 @@ class DictionarySuggestionProvider(
                 if (cost > maxCost) {
                     return@mapNotNull null
                 }
-                val entry = store.entryOf(candidate)
-                val frequency = entry?.frequency ?: store.frequencyOf(candidate)
-                // D-114/D-227: a candidate too rare to be a trustworthy silent autocorrect target is dropped
-                // outright - unless it is both a cost-1 neighbouring-key substitution AND not noun-tagged.
-                // A first attempt exempted every cost-1 candidate outright, but that reopened D-114's own
-                // original bug: "Virgin" (frequency 62, tagged NOUN - a Wikipedia-corpus proper-noun
-                // artefact) is *also* a cost-1 edit from "Virhin"/"vorhin", so cost alone cannot tell the two
-                // cases apart. What does: "übrigens" (frequency 79, tagged OTHER - an entirely ordinary,
-                // simply corpus-under-counted adverb) is not a noun. A rare NOUN/PROPER_NOUN in this
-                // Wikipedia-derived corpus is disproportionately a foreign/proper-noun artefact - exactly
-                // what this floor exists to filter - while a rare non-noun at cost-1 is far more likely a
-                // genuine, common word that is simply outnumbered by hyper-frequent words like "der"/"die".
-                val isNounLike = entry?.partsOfSpeech?.any {
-                    it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN
-                } ?: true
-                if (frequency < minAutocorrectFrequency && (cost > ADJACENT_SUB_COST || isNounLike)) {
-                    null
-                } else {
-                    CandidateCost(candidate, cost, score(candidate, frequency, previousWord))
-                }
+                val frequency = store.entryOf(candidate)?.frequency ?: store.frequencyOf(candidate)
+                CandidateCost(candidate, cost, score(candidate, frequency, previousWord))
             }
             .minWithOrNull(compareBy({ it.cost }, { -it.score }))
             ?: return null
@@ -552,6 +557,11 @@ class DictionarySuggestionProvider(
             // "zuversichtlicher" (unknown, no dictionary entry of its own) must not lose to some other,
             // cost-1-adjacent, more-frequent candidate the way "beurteilst" would without the verb check.
             return null
+        } else if (candidateConfidence(token, best.candidate, best.candidate.lowercase(), best.cost) < aggressiveness.autoApplyThreshold) {
+            // D-353: replaces D-114/D-227's own per-candidate frequency-floor rejection (previously applied
+            // during the scan above, to every candidate) with a single confidence check on the winner - see
+            // CorrectionConfidence/AutocorrectAggressiveness for the graduated measure and its calibration.
+            return null
         }
         return best
     }
@@ -571,40 +581,49 @@ class DictionarySuggestionProvider(
     }
     
     /**
-     * §44 / D-244: a candidate overrides A-01 when it is at least [KNOWN_WORD_OVERRIDE_RATIO] times more
-     * frequent than [word] - deliberately extreme, so an ordinary pair of genuinely different, comparably
-     * common words never gets remotely close to it and A-01 keeps protecting every normal known word
-     * exactly as before. Without this, a stray adjacent-key slip that happens to also spell a real (but
-     * rare) word is permanently protected from correction: "due" (a rare loanword, frequency 24 in the
-     * bundled corpus) blocked any correction to "die" (frequency ~890000) outright, simply for existing in
-     * the dictionary at all - regardless of how implausible it is that "due" was actually intended over
-     * "die".
-     * 
-     * D-244: raised from 50 to 100 after a real regression - "Ohren" (ears, frequency 170, an entirely
-     * ordinary, unambiguous German word) was silently overridden to "Ihren" (frequency 11,907 - `o`/`i` are
-     * QWERTZ-adjacent) purely because 170*50 <= 11,907. The original 50x bar assumed "a genuine word pair
-     * never gets remotely close" - wrong here: 70x is not remotely close to the 37,000x+ ratios the real
-     * blacklisted-confusable cases (`due`/`die`, `ddr`/`der`) actually sit at, confirmed against the real
-     * corpus, not guessed. 100 keeps comfortable headroom below the smallest genuine case (`ddr`/`der`,
-     * ~228x) while excluding the `Ohren`/`Ihren` case (70x) - a considered value, not device-tuned further.
+     * §44 / D-244 / D-353: a candidate overrides A-01 when [CorrectionConfidence.forKnownWordOverride]'s
+     * frequency-ratio score clears [AutocorrectAggressiveness.autoApplyThreshold] - deliberately extreme by
+     * construction (see that object's own KDoc for the log-scaled ratio calibration), so an ordinary pair
+     * of genuinely different, comparably common words never gets remotely close to it and A-01 keeps
+     * protecting every normal known word exactly as before. Without this, a stray adjacent-key slip that
+     * happens to also spell a real (but rare) word is permanently protected from correction: "due" (a rare
+     * loanword, frequency 24 in the bundled corpus) blocked any correction to "die" (frequency ~890000)
+     * outright, simply for existing in the dictionary at all - regardless of how implausible it is that
+     * "due" was actually intended over "die".
+     *
+     * D-244 / D-353: originally a flat 100x bar, replaced by [CorrectionConfidence]'s log-scaled ratio
+     * curve after a real regression - "Ohren" (ears, frequency 170, an entirely ordinary, unambiguous
+     * German word) was silently overridden to "Ihren" (frequency 11,907 - `o`/`i` are QWERTZ-adjacent)
+     * purely because 170*50 <= 11,907 under the original, even looser 50x bar. Confirmed against the real
+     * corpus, not guessed: 70x (`Ohren`/`Ihren`) is not remotely close to the 37,000x+ ratios the real
+     * blacklisted-confusable cases (`due`/`die`, `ddr`/`der`, ~228x) actually sit at. D-353 additionally
+     * guarantees this floor holds at *every* [AutocorrectAggressiveness] level, not only the default one -
+     * see that enum's own KDoc for the exact calibration.
      *
      * D-403: never overrides a word the user has personally taught the keyboard - checked via
      * [DictionaryStore.learnedCasingOf], true for both a fully self-taught word and a deliberately
-     * different-cased override of an otherwise-bundled entry (D-264) alike. This ratio was calibrated above
-     * against *bundled* corpus rarity (a genuinely rare but real dictionary word); a learned word's own
-     * frequency is a fundamentally different kind of number by construction - [DictionaryStore.learn] sets
-     * it to exactly the word's own reinforcement count, starting at 1 - so without this exemption, almost
-     * any freshly-promoted word (an acronym like "kWp"/"AVD", an abbreviation, anything) stayed permanently
-     * defenceless against this override for any ordinary, moderately common cost-1-adjacent word, no matter
-     * how many times it had already been deliberately taught.
+     * different-cased override of an otherwise-bundled entry (D-264) alike, before the ratio is even
+     * computed. This ratio was calibrated against *bundled* corpus rarity (a genuinely rare but real
+     * dictionary word); a learned word's own frequency is a fundamentally different kind of number by
+     * construction - [DictionaryStore.learn] sets it to exactly the word's own reinforcement count,
+     * starting at 1 - so without this exemption, almost any freshly-promoted word (an acronym like
+     * "kWp"/"AVD", an abbreviation, anything) stayed permanently defenceless against this override for any
+     * ordinary, moderately common cost-1-adjacent word, no matter how many times it had already been
+     * deliberately taught.
      */
     override fun shouldOverrideKnownWord(word: String, candidate: String): Boolean {
         if (store.learnedCasingOf(word) != null) {
             return false
         }
-        val wordFrequency = store.frequencyOf(word.lowercase())
-        val candidateFrequency = store.frequencyOf(candidate.lowercase())
-        return wordFrequency * KNOWN_WORD_OVERRIDE_RATIO <= candidateFrequency
+        val wordLower = word.lowercase()
+        val candidateLower = candidate.lowercase()
+        val confidence = CorrectionConfidence.forKnownWordOverride(
+            ADJACENT_SUB_COST,
+            store.frequencyOf(wordLower),
+            store.frequencyOf(candidateLower),
+            CorrectionConfidence.prefixShiftsAway(wordLower, candidateLower)
+        )
+        return confidence >= aggressiveness.autoApplyThreshold
     }
     
     /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */
@@ -700,10 +719,6 @@ class DictionarySuggestionProvider(
         private const val SUB_COST = 2
         private const val INDEL_COST = 2
         private const val MAX_CORRECTION_COST = 2
-        
-        // §44: how many times more frequent a correction candidate must be than the typed word before A-01's
-        // "known word" protection is set aside. Deliberately extreme - see bestCorrection().
-        private const val KNOWN_WORD_OVERRIDE_RATIO = 100
         
         // D-117: a considered, not-yet-device-tuned starting point for the wider, suggestion-only fallback
         // budget - loose enough to reach "erkamm" -> "erkannt" (cost 4: two adjacent-key substitutions plus

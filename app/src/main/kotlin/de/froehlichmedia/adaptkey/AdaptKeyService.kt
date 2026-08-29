@@ -61,6 +61,7 @@ import de.froehlichmedia.adaptkey.credential.LoginFieldDetector
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
+import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
@@ -199,6 +200,10 @@ class AdaptKeyService : InputMethodService() {
     
     private var settings = AdaptSettings.DEFAULT
     private var config = SuggestionConfig()
+    // D-353: tracked separately from config/suggestionConfig (a different AdaptSettings field entirely) so
+    // applySettings() can tell whether the providers need rebuilding even when suggestionConfig itself
+    // hasn't changed - see applySettings()'s own rebuild condition.
+    private var autocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT
     private var controller = SuggestionController(config)
     // The active-language views of the dictionary pipeline; re-pointed per token by selectActiveDictionary.
     private lateinit var dictionaryStore: DictionaryStore
@@ -784,7 +789,8 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun installStores(newStores: Map<Language, DictionaryStore>) {
         stores = newStores
-        providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, MIN_AUTOCORRECT_CANDIDATE_FREQUENCY) }
+        autocorrectAggressiveness = settings.autocorrectAggressiveness
+        providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness) }
         engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
         if (activeLanguage !in newStores) {
             activeLanguage = Language.ENGLISH
@@ -1056,11 +1062,15 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun applySettings() {
         val s = settings
-        if (config != s.suggestionConfig) {
+        // D-353: also rebuilds when only autocorrectAggressiveness changed - a separate AdaptSettings field
+        // from suggestionConfig, so the original suggestionConfig-only guard would silently never apply a
+        // changed aggressiveness level to the live providers until some other setting happened to change too.
+        if (config != s.suggestionConfig || autocorrectAggressiveness != s.autocorrectAggressiveness) {
             config = s.suggestionConfig
+            autocorrectAggressiveness = s.autocorrectAggressiveness
             controller = SuggestionController(config)
             if (this::stores.isInitialized) {
-                providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, MIN_AUTOCORRECT_CANDIDATE_FREQUENCY) }
+                providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness) }
                 // Re-point the active provider onto English (always present); selectActiveDictionary
                 // corrects the language per token immediately afterwards, same reasoning as installStores.
                 provider = providers.getValue(Language.ENGLISH)
@@ -4748,8 +4758,8 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun pendingCorrectionCandidate(input: String, previousWord: String?, language: Language): String? {
         // D-204: mirrors finalizeAndCommit()'s own diacriticWord-first precedence - diacriticRestoration has
-        // no minAutocorrectFrequency floor at all (D-114), while autocorrectFor()/bestCorrection() always
-        // applies one, so a rare-but-exact diacritic match (e.g. "Grüße", frequency 18) must be consulted
+        // no confidence gate at all (D-114), while autocorrectFor()/bestCorrection() always applies one
+        // (D-353), so a rare-but-exact diacritic match (e.g. "Grüße", frequency 18) must be consulted
         // separately rather than assumed to already be covered by the cost-0 case below.
         val diacriticCandidate = if (language == Language.GERMAN) {
             providers.getValue(Language.GERMAN).diacriticRestoration(input, previousWord)
@@ -6020,17 +6030,6 @@ class AdaptKeyService : InputMethodService() {
             "haß", "gewiß", "kuß", "bißchen", "häßlich"
         )
         
-        // D-114: an autocorrect candidate below this absolute frequency is never trustworthy enough to
-        // silently apply, however good its edit cost otherwise looks - reported case: "vorhin" (missing
-        // from the dictionary entirely) autocorrected to "Virgin" (an English-proper-noun artefact of the
-        // German Wikipedia corpus, frequency 62), when no candidate here should have won at all. Calibrated
-        // against the bundled dict_de.tsv: every legitimate correction target this session already relies
-        // on sits far above this floor (komplett 881, Sankt 968, Standard 1534, kleinen 3748, Wort 4084,
-        // können 23227, werden 93866), while known bad low-confidence candidates sit far below it (Virgin
-        // 62, Vorhinein 11) - a candidate this rare is dropped from autocorrect consideration outright
-        // (though it can still surface in the broader suggestion-bar prefix/fuzzy list, unaffected).
-        private const val MIN_AUTOCORRECT_CANDIDATE_FREQUENCY = 300L
-        
         // D-130: consecutive commits routed to English (while German/Greek stays active) before
         // trackSustainedEnglishUsage() promotes it to a real active-language switch.
         private const val SUSTAINED_ENGLISH_WORD_THRESHOLD = 5
@@ -6049,7 +6048,7 @@ class AdaptKeyService : InputMethodService() {
         private const val INLINE_SUGGESTIONS_DEBOUNCE_MS = 400L
         
         // D-122 / D-137: comfortably above any real dictionary frequency (the largest bundled entries sit
-        // around 1e6, see MIN_AUTOCORRECT_CANDIDATE_FREQUENCY's own comment) so a synthesised, always-right
+        // around 1e6) so a synthesised, always-right
         // suggestion (the mid-word connector-split candidate; the "Uhr" time suggestion) always sorts
         // first, without using an extreme value (Double.MAX_VALUE) that could risk odd behaviour in any
         // future score arithmetic.

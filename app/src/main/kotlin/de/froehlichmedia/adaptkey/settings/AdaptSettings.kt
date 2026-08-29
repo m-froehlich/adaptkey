@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
+import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -79,6 +80,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           offers a split as a suggestion chip, never silently applying it; [AutoSplitMode.OFF] disables
  *           the mechanism outright, chip included. Scoped to A-05 alone - A-06 merge and the D-122 mid-word
  *           connector-split suggestion (a deliberate re-edit, not ordinary forward typing) are unaffected.
+ * @property autocorrectAggressiveness D-353: how eagerly the dictionary autocorrect (including the A-01
+ *           known-word override, §44/D-244) may silently apply a correction versus merely offering it as a
+ *           suggestion-bar candidate (default [AutocorrectAggressiveness.MEDIUM], reproducing the pre-D-353
+ *           behaviour exactly). See [AutocorrectAggressiveness] and
+ *           [de.froehlichmedia.adaptkey.dictionary.CorrectionConfidence] for the full mechanism.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -102,7 +108,8 @@ data class AdaptSettings(
     val contactsSuggestionsEnabled: Boolean = false,
     val autocorrectEnabled: Boolean = true,
     val doubleTapBackspaceUndo: Boolean = false,
-    val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT
+    val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,
+    val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT
 ) {
     
     companion object {

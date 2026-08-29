@@ -55,6 +55,7 @@ object SettingsStore {
     const val KEY_AUTOCORRECT_ENABLED = "d234_autocorrect_enabled"
     const val KEY_DOUBLE_TAP_BACKSPACE_UNDO = "d348_double_tap_backspace_undo"
     const val KEY_AUTO_SPLIT_MODE = "d352_auto_split_mode"
+    const val KEY_AUTOCORRECT_AGGRESSIVENESS = "d353_autocorrect_aggressiveness"
     
     /**
      * D-304: the one-time K-01 calibration-offer flag ([SettingsActivity.SettingsFragment.maybeOfferCalibration]) -
@@ -155,7 +156,8 @@ object SettingsStore {
             contactsSuggestionsEnabled = p.getBoolean(KEY_CONTACTS_SUGGESTIONS_ENABLED, false),
             autocorrectEnabled = p.getBoolean(KEY_AUTOCORRECT_ENABLED, true),
             doubleTapBackspaceUndo = p.getBoolean(KEY_DOUBLE_TAP_BACKSPACE_UNDO, DEF_DOUBLE_TAP_BACKSPACE_UNDO),
-            autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null)
+            autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null),
+            autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -233,6 +235,7 @@ object SettingsStore {
         KEY_CONTACTS_SUGGESTIONS_ENABLED,
         KEY_AUTOCORRECT_ENABLED,
         KEY_AUTO_SPLIT_MODE,
+        KEY_AUTOCORRECT_AGGRESSIVENESS,
         KEY_DOUBLE_TAP_BACKSPACE_UNDO,
         KEY_HIGHLIGHT_COLOR,
         KEY_RESORT_DELAY,

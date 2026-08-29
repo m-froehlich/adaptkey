@@ -475,9 +475,10 @@ A period does **not** start a new sentence when it terminates a known abbreviati
 ### A-01 - Valid Words Are Protected, With a Bounded Override
 If the typed word exists in the dictionary, no automatic substitution occurs by default - even if a similar
 word is more frequent. This is not an absolute veto: a known word can be overridden by a correction
-candidate that is (a) a cost-1 (single adjacent-key) edit, **and** (b) at least 100× more frequent (D-244,
-raised from an original 50× after a real regression, see `AdaptKey-History.md`) - a
-frequency floor additionally prevents any low-confidence candidate from winning regardless of edit cost. An
+candidate that is (a) a cost-1 (single adjacent-key) edit, **and** (b) confident enough per D-353's own
+graduated confidence measure (§36) - originally a flat "100× more frequent" bar (D-244, raised from an
+original 50× after a real regression, see `AdaptKey-History.md`), now a log-scaled ratio score compared
+against C-22's own configurable threshold, calibrated to the same real cases the flat bar was. An
 unknown-but-plausible regular-verb inflection of a known infinitive (e.g. "beurteilst" from "beurteilen")
 is protected unconditionally, with no ratio check, since it has no independent frequency to compare. The
 same protection applies to an unknown-but-plausible regular adjective comparative/superlative of a known
@@ -1088,6 +1089,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-19 | Installed language packs (§9) | Install/remove per language | English only |
 | C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | Off |
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
+| C-22 | Autocorrect confidence / aggressiveness (A-01, §36, D-353) | Cautious / Medium / Aggressive | Medium |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
@@ -1387,6 +1389,57 @@ considered the more honest failure mode (traceable and fixable at its actual sou
 If a genuine live-arming gap resurfaces, the fix is to trace and repair `armShiftForNextWord`/
 `sentenceStartBefore`, not to reinstate a blanket commit-time override, which would silently reopen this
 exact issue for every deliberate lower-case choice again.
+
+---
+
+## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354)
+
+D-353: the dictionary autocorrect previously decided whether to trust a candidate through several
+independent, ad hoc gates evolved one at a time over many rounds - D-114/D-227's absolute frequency floor
+(with a noun-tagged exemption), D-244's flat 100× A-01 override ratio, D-113's cost-2 override exclusion.
+Each was individually correct against the case that motivated it, but the pile as a whole had no single
+place answering "how confident are we in this specific correction" - which made both device-reported false
+positives (e.g. D-244's own "Ohren"→"Ihren" regression) and the new C-22 setting below hard to reason about.
+
+Replaced by `CorrectionConfidence`, a pure `[0, 1]` score computed one of two ways depending on the typed
+token:
+
+- **Unknown token** (no dictionary entry of its own): confidence is the edit cost (a cost-2 correction
+  scores lower than an otherwise-identical cost-1 one) times how far the candidate's own frequency clears a
+  reference point - a *much* higher reference for a noun-tagged candidate than a non-noun one, since a rare
+  noun in the bundled Wikipedia-derived corpus is disproportionately a proper-noun artefact (D-227's own
+  finding), while a common, correctly-recognised noun ("Jahren", A-08's own compound-rest correction) is not
+  penalised once its own frequency clears that higher bar - a flat noun penalty would have punished both
+  alike.
+- **Known token** (A-01's own override case): confidence is the edit cost times a log-scaled function of how
+  many times more frequent the candidate is than the typed word itself, replacing D-244's flat 100× cutoff -
+  calibrated so the confirmed-bad "Ohren"/"Ihren" case (70×) sits below the score every C-22 level requires,
+  while the confirmed-good "ddr"/"der" (228×) and "due"/"die" (37,000×+) cases clear it.
+
+Two thresholds, both exposed through **C-22 (Autocorrect confidence)** - Cautious / Medium (default) /
+Aggressive - govern what the score is used for: at or above the **auto-apply** threshold, the correction is
+applied silently at commit exactly as before; at or above the (always lower) **chip-offer** threshold, it is
+still surfaced as an ordinary suggestion-bar candidate even when it falls short of silent application - an
+unwanted suggestion is merely ignorable, unlike an unwanted silent replacement. Medium reproduces the
+pre-D-353 behaviour exactly against every existing regression case; Cautious/Aggressive are new, bounded by
+one rule that holds regardless of which level is chosen: **no level may silently apply a correction shape
+already confirmed to be a false positive** (the "Ohren"/"Ihren" case specifically) - Aggressive only ever
+admits more of the previously-*untested* grey zone above that floor, never reopens a confirmed mistake purely
+because a more permissive level was chosen. A standing regression test asserts this floor directly against
+Aggressive (the most permissive level), so a future retuning of the formula's own constants cannot silently
+reopen it again without that test failing first.
+
+D-354: a typed token that is not itself a dictionary word may still be a genuine, simply unlisted German word
+- most commonly, one built from a common prefix (`ab-`, `an-`, `ent-`, `über-`, `wieder-`, and similar) the
+dictionary happens not to carry every combination of. When a correction candidate changes that recognisable
+leading prefix (e.g. "aberkennen" → "anerkennen": "ab-" replaced by "an-"), the candidate's score is capped
+below every C-22 level's auto-apply threshold - deliberately a cap on the auto-relevant score alone, not a
+reduction applied uniformly, so the candidate still clears every level's chip-offer threshold and remains an
+ordinary tappable suggestion; it is only ever silent application that is foreclosed. This prefix set is
+deliberately broader than A-05's own `ver-`/`zer-`/`ent-`/etc. list (§7) - that list exists to gate a *split*,
+where the variable separable prefixes (`über-`/`um-`/`durch-`/etc.) are deliberately excluded because each is
+also a common standalone word; that reasoning does not apply to a soft plausibility cap on a whole-word
+substitution, so the broader set is used here without contradiction.
 
 ---
 
