@@ -305,7 +305,7 @@ non-trivial changes).
 
 - **§286 (v1.0.42): D-409 - D-352's word-splitting slider reordered, "Off" leftmost**, matching C-22's own
   slider convention. Display-order-only change (`arrays.xml`); persisted values and `AutoSplitMode.fromKey()`
-  resolution unaffected. Not yet device-confirmed. See history §286.
+  resolution unaffected. **Device-confirmed.** See history §286/§287.
 
 - **§285 (v1.0.41): D-408 - slider descender clipping fixed; D-352 word-splitting also converted to a**
   **slider.** The C-22 slider's value label (`labeled_seekbar_value`) had `layout_height="match_parent"`,
@@ -317,8 +317,8 @@ non-trivial changes).
   `LabeledSeekBarPreference` too (pure widget change - `AutoSplitMode`/`SettingsMapper`/`SettingsStore`
   untouched, already a genuine 3-member enum with nothing to merge). New shared `setupLabeledSlider()`
   helper in `SettingsActivity` wires both sliders' labels/values now. No test/spec changes (UI glue).
-  1020 unit tests unchanged, green. `versionCode` 344 -> 345, `versionName` `"1.0.40"` -> `"1.0.41"`. Not
-  yet device-confirmed. See history §285.
+  1020 unit tests unchanged, green. `versionCode` 344 -> 345, `versionName` `"1.0.40"` -> `"1.0.41"`.
+  **Device-confirmed.** See history §285/§287.
 
 - **§282 (v1.0.39): D-406 implemented - Auto-Caps is now consistently re-derived at every position reached,**
   **closing two live-arming gaps D-405 predicted.** Real repro: period -> auto-space arms Shift -> tap back
@@ -356,8 +356,8 @@ non-trivial changes).
   ranking sensibly while autocorrect is off, matching the pre-merge behaviour where the boolean never
   affected the suggestion-bar confidence gate at all. No migration of old stored values (explicit request).
   3 new/changed tests. 1020 unit tests total (was 1018). `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. `versionCode` 343 -> 344, `versionName` `"1.0.39"` -> `"1.0.40"`. Spec §20/§36 updated. Not yet
-  device-confirmed. See history §284.
+  green. `versionCode` 343 -> 344, `versionName` `"1.0.39"` -> `"1.0.40"`. Spec §20/§36 updated.
+  **Device-confirmed** (together with D-408/D-409, §285/§286). See history §284/§287.
 
 - **§281 (v1.0.38): D-353/D-354 implemented - a unified `CorrectionConfidence` score replaces autocorrect's**
   **ad hoc gates.** New pure `CorrectionConfidence` object (`dictionary` package): for an unknown typed token,

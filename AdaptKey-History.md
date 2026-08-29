@@ -14363,3 +14363,8 @@ No test/spec changes. 1020 unit tests unchanged, green. `:app:assembleRelease`/`
 green. `versionCode` 345 -> 346, `versionName` `"1.0.41"` -> `"1.0.42"`.
 
 Not yet device-confirmed.
+
+## §287 - D-407/D-408/D-409 Device-Confirmed (No Code Change)
+
+User confirmed the C-22 slider merge, the descender/spacing fix, and the word-splitting slider (including
+its reordered "Off" position) all work on device.
