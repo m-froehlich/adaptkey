@@ -14495,3 +14495,81 @@ untested per this project's established convention.
 1047 unit tests total (was 1020). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 346 ->
 347, `versionName` `"1.0.42"` -> `"1.0.43"`. Not yet device-confirmed - the one behaviour actually visible on
 device is the "Uhr" suggestion no longer appearing while English/French/Greek is active.
+
+## §289 - D-403/D-359 Finished, D-358 Fixed: A Revert Gets Exactly One Unimpeded Retry, Learning Nothing Itself (v1.0.44)
+
+### The design discussion - three rounds, each one simplifying the last
+User picked up D-403's own unfinished half ("a revert must count as a learning signal, and the same word
+must never be auto-corrected again") together with D-359 ("a reverted word is often immediately
+re-autocorrected on the very next Space") - both real, both traced back in §277 to the same root cause: a
+word that was just reverted has no way to ever actually reach the learned-words table, because every fresh
+retry gets auto-corrected away again before its own `learnWord()` call can register.
+
+**Round 1 (this session's own first proposal, too heavy):** mirror G-04's pending-blacklist shape exactly -
+a new persistent, multi-day-window store marking the reverted word, and an immediate *full* `learn()` on a
+matching retry (skip the ordinary threshold entirely). User pushed back: no new persistent store or window
+is actually needed - a revert is naturally followed either by continued typing that reclaims the same text
+back into composing, or not at all; nothing needs to survive across a field/app restart. **Round 2**, in
+response: a single, in-memory one-shot flag set on revert, consumed by the very next commit of the exact
+same text, still granting an *immediate full learn* on match.
+
+**Round 3 - the user's own correction, the one that actually shipped:** pointed out that `performAutocorrectUndo()`
+*already* calls `learnWord(typed)` on an ordinary (non-split) revert (confirmed directly in the code, not
+assumed) - so a revert followed by one unimpeded retry (which reaches the ordinary `finalizeAndCommit()` ->
+`learnWord()` path once autocorrect is suppressed for it) would net **two** independent `learnWord()` calls,
+i.e. +2 towards promotion. For the ordinary 2-strike threshold (`MIN_LEARN_LENGTH`/W-02's default) this
+*happens* to land exactly on "already promoted" - but only by coincidence, since a 4-strike compound-suspect
+word would not have been affected the same way, and the user was explicit that this must not be an accident
+of arithmetic: "mich stört an dem Ansatz, dass dieser Effekt zufällig eintritt und nicht by-design." The
+fix: the revert itself learns *nothing* any more (not even n-gram context - the user's own call, since the
+confirmed retry will learn exactly that context anyway, and skipping it "verhindert im Zweifelsfall, dass
+Mist gelernt wird"); only the confirmed retry's own, completely ordinary `learnWord()` call inside
+`finalizeAndCommit()` counts, exactly +1, exactly like any other first-time, never-corrected word. A
+deliberate escalation (jump straight to the threshold) is left as a clearly-flagged, not-yet-taken option in
+the code comment, should it ever be wanted later - never a silent side effect again.
+
+The `wasSplit` revert branch (`learnWordStrong()`, an existing, already-deliberate immediate force-learn for
+a wrongly-split real word) is explicitly left untouched - user's own call: "da hat mich bisher nichts
+gestört," a distinct, already-settled design decision, not the same accidental-arithmetic problem.
+
+### Implementation
+New transient field `revertSuppressedWord: String?` ([AdaptKeyService.kt](adapt-key/app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt))
+- armed with `typed` by `performAutocorrectUndo()`'s ordinary (non-split, non-compound) branch in place of
+its former `learnWord(typed)` call; the now-unnecessary `recentLearnRecords.remove(revertRecord)` cleanup
+(nothing is added to it any more) is removed along with it. Reset on `onStartInput()` (a fresh field must
+never inherit a stale suppression from a previous one), mirroring the existing `clearUndo()`/`previousWord`
+reset pattern there.
+
+Consumed in `finalizeAndCommit()`: `val revertConfirmed = typed == revertSuppressedWord` computed and the
+field cleared immediately - one-shot, regardless of match, so it can never protect anything beyond this one
+next commit. `revertConfirmed` folds into the exact same `suppressAutocorrect` variable D-234's own
+autocorrect-toggle already uses (D-234's own comment already documents this pattern: "bestCorrection/
+rawCoordinateCorrection/trySplit... all already gate on this one variable" - reused verbatim rather than
+threading a new check through each independently), which automatically covers `bestCorrection`,
+`rawCoordinateCorrection`, and the A-05 split. `diacriticWord` and the A-06 merge check both sit deliberately
+outside `suppressAutocorrect` (same reason the toggle itself needs its own explicit check there) and got
+their own explicit `!revertConfirmed` guard each, mirroring the existing precedent exactly. Capitalisation
+(§6) is deliberately untouched by this - out of scope, the case-lock mechanism (G-05) already exists for a
+user who wants a fully verbatim commit including casing.
+
+### D-358 - double-tap-Backspace revert broken right after punctuation - root-caused, not guessed
+User flagged this as needed for the round above to actually be usable (reverting, then retyping, needs the
+revert itself to work reliably). Traced directly in the code: the double-tap-undo single-tap branch decided
+whether to keep the undo window armed by checking `ic.getTextBeforeCursor(1,0)?.isWhitespace()` - but
+`undoDelimiter` (set from `finalizeAndCommit`'s own `delimiter` parameter) is not always whitespace; a word
+committed directly by a punctuation mark (e.g. a period) sets `undoDelimiter = "."`. The very first Backspace
+tap then saw a non-whitespace character immediately before the caret, wrongly concluded it was already
+eating into real content, and discarded the window outright via `clearUndo()` - before a second tap ever got
+a chance to fire the revert. Fixed by checking against the same `armedTail = undoCommitted + undoDelimiter`
+construction the non-double-tap branch immediately below already uses (`atArmedTail`) - the window now stays
+armed both when the caret sits exactly at that tail (the delimiter not yet touched, whatever character it
+is) and when it is genuinely extra whitespace beyond it, matching the non-double-tap branch's own established
+distinction exactly.
+
+No new unit tests - all of this is Android `InputMethodService`/`InputConnection` glue code, untested per
+this project's established convention. 1047 unit tests unchanged, all green. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 347 -> 348, `versionName` `"1.0.43"` -> `"1.0.44"`. Not yet
+device-confirmed - needs: (1) an unknown word getting auto-corrected, double-tap-Backspace reverted, then
+typed again unchanged and committed - confirm no re-correction and that its pending count now sits at exactly
+1 (not "already learned"); (2) the same word typed a second, separate time afterward promotes it normally;
+(3) the double-tap revert specifically after a word committed via punctuation (not a space).

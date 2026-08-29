@@ -502,6 +502,16 @@ class AdaptKeyService : InputMethodService() {
     // resolution error) can be un-trained on undo. Null whenever the correction was not raw-coordinate-based.
     private var undoRawCorrection: RawCorrectionUndo? = null
     
+    // D-403/D-359: armed by performAutocorrectUndo() with the exact text just reverted to - the very next
+    // finalizeAndCommit() call for a matching token bypasses every correction mechanism (diacritic
+    // restoration, autocorrect, A-05 split, A-06 merge) so it reaches the ordinary learnWord() path
+    // uncorrected, giving the reverted word a fair, ordinary +1 towards promotion instead of being silently
+    // re-corrected away again before it can ever count a second time. Consumed (cleared) by the very next
+    // finalizeAndCommit() call regardless of whether it actually matches - a one-shot protection for exactly
+    // one retry, never a standing suppression; a retry that differs from the reverted text in any way is
+    // simply not protected, and ordinary correction rules apply to it immediately.
+    private var revertSuppressedWord: String? = null
+    
     // D-248: the last few LearnRecords learnWord()/learnWordStrong() produced (every outcome except
     // LearnOutcome.SKIPPED, which changed nothing) - unlike the A-07 undo state above, this deliberately
     // survives any number of intervening keystrokes, not just the one directly after the commit. Checked by
@@ -1268,6 +1278,7 @@ class AdaptKeyService : InputMethodService() {
         selectionCollapsed = true
         capsMode = capsModeFor(info)
         clearUndo()
+        revertSuppressedWord = null
         keyboardView?.shifted = false
         // D-15: a new field starts without Caps Lock.
         keyboardView?.capsLock = false
@@ -2354,12 +2365,20 @@ class AdaptKeyService : InputMethodService() {
                                 return
                             }
                             // Single tap: an ordinary single-character delete — no revert, no no-op.
-                            // When the char before the caret is whitespace (the undoDelimiter, or extra
-                            // Space/Enter typed after the commit), it is deleted and the undo window
-                            // STAYS armed, so a second tap within the window can still revert. Once the
-                            // user starts eating into non-whitespace (the committed word itself, or text
-                            // elsewhere), the window no longer applies and is cleared.
-                            if (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
+                            // D-358: undoDelimiter is not always whitespace - a word can be committed
+                            // directly by a punctuation mark (e.g. a period), and checking only "is the
+                            // preceding character whitespace" wrongly treated that punctuation as real
+                            // content and closed the window on this very first tap, before a second tap
+                            // ever got a chance to fire the revert. Checked against the full armed tail
+                            // instead (mirrors the atArmedTail check in the non-double-tap branch below):
+                            // still exactly at undoCommitted+undoDelimiter (the delimiter not yet touched,
+                            // whatever character it is) or genuinely extra whitespace typed beyond it (an
+                            // A-12 auto-space, a manual extra Space/Enter) both keep the window armed;
+                            // anything else (already eating into the committed word itself, or unrelated
+                            // text) closes it.
+                            val armedTail = undoCommitted + undoDelimiter
+                            val atArmedTail = ic.getTextBeforeCursor(armedTail.length, 0)?.toString() == armedTail
+                            if (atArmedTail || ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isWhitespace() == true) {
                                 handleBackspace(ic)
                             } else {
                                 clearUndo()
@@ -3492,6 +3511,12 @@ class AdaptKeyService : InputMethodService() {
         pendingSuggestionSpace = false
         
         val typed = composing.toString()
+        // D-403/D-359: a word just reverted via A-07 (performAutocorrectUndo) gets exactly one further,
+        // unimpeded attempt at being committed as originally typed - see revertSuppressedWord's own KDoc.
+        // Consumed here unconditionally, one-shot, regardless of whether it actually matches typed, so it
+        // can never protect anything beyond this one next commit.
+        val revertConfirmed = typed == revertSuppressedWord
+        revertSuppressedWord = null
         // G-05 / D-263: a word-end Shift made this token's own casing explicit; commit it exactly as
         // composed, bypassing autocorrect, capitalisation (§6) and single-word correction — the user has
         // hand-finished it. This does NOT bypass A-05 split, though: a case lock only speaks to the FIRST
@@ -3547,13 +3572,16 @@ class AdaptKeyService : InputMethodService() {
         // D-234: the user-facing autocorrect toggle folds into the exact same suppression flag D-106
         // stage 2 already uses - bestCorrection/rawCoordinateCorrection/trySplit (below) all already gate on
         // this one variable, so disabling autocorrect entirely reuses that existing architecture instead of
-        // threading a new check through each of them separately.
-        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownElsewhere || !settings.autocorrectEnabled
+        // threading a new check through each of them separately. D-403/D-359: revertConfirmed folds into
+        // the exact same variable for the exact same reason - a confirmed revert-retry is verbatim exactly
+        // like the toggle-off case, it just needs one commit's worth of it rather than a standing setting.
+        val suppressAutocorrect = dictChoice.suppressAutocorrect || knownElsewhere || !settings.autocorrectEnabled || revertConfirmed
         
         // A-06: merge the token onto a preceding spurious letter-ambiguous space, when linguistically valid.
         // D-234: also gated - a merge silently substitutes different text for what was typed, exactly the
-        // behaviour the toggle promises to suppress.
-        if (mergeChar != null && settings.autocorrectEnabled) {
+        // behaviour the toggle promises to suppress. D-403/D-359: revertConfirmed gated the same way, for
+        // the same reason.
+        if (mergeChar != null && settings.autocorrectEnabled && !revertConfirmed) {
             val merged = tokenRepair.tryMerge(previousWord, mergeChar, typed)
             if (merged != null) {
                 val committedLength = applyMerge(ic, merged, delimiter)
@@ -3587,8 +3615,10 @@ class AdaptKeyService : InputMethodService() {
         val diacriticStartedAt = SystemClock.uptimeMillis()
         // D-234: diacriticWord is deliberately independent of suppressAutocorrect (see the comment on its
         // own use below) - the user-facing toggle is the one exception that must still gate it, since it is
-        // itself a silent substitution the toggle promises to suppress.
-        val diacriticWord = if (activeLanguage == Language.GERMAN && settings.autocorrectEnabled) {
+        // itself a silent substitution the toggle promises to suppress. D-403/D-359: revertConfirmed is a
+        // second, narrower such exception, for the same reason - checked explicitly rather than folded into
+        // suppressAutocorrect, mirroring how the toggle itself is handled.
+        val diacriticWord = if (!revertConfirmed && activeLanguage == Language.GERMAN && settings.autocorrectEnabled) {
             providers.getValue(Language.GERMAN).diacriticRestoration(typed, previousWord)
         } else {
             null
@@ -4154,12 +4184,15 @@ class AdaptKeyService : InputMethodService() {
             // threshold 4) never accumulates past 1 and is autocorrected to "vom" every single time.
             recentLearnRecords.removeLastOrNull()
         } else {
-            val revertRecord = learnWord(typed)
-            // D-331: see the split branch above - same reasoning. Only non-SKIPPED outcomes add to
-            // recentLearnRecords (rememberForBackspaceUnlearn bails on SKIPPED), so only remove then.
-            if (revertRecord.outcome != LearnOutcome.SKIPPED) {
-                recentLearnRecords.remove(revertRecord)
-            }
+            // D-403/D-359: the revert itself deliberately learns nothing at all any more - it previously
+            // called learnWord(typed) here, which combined with the ordinary learnWord() call the very next
+            // successful retry would also trigger to silently double-count, reaching the ordinary promotion
+            // threshold by coincidence (exactly matching a 2-strike threshold, not by design - a 4-strike
+            // compound-suspect word would not have been affected the same way). Arming
+            // revertSuppressedWord instead defers the entire learning decision to that one ordinary retry
+            // commit in finalizeAndCommit() - an ordinary +1 towards promotion, exactly like any other
+            // first-time, never-corrected word, never a shortcut around the usual threshold.
+            revertSuppressedWord = typed
         }
         previousWord = typed
         // D-246: learnWord()/learnWordStrong() above just shifted previousPreviousWord from the transient

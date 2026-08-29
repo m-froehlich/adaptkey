@@ -303,6 +303,31 @@ non-trivial changes).
 
 ## Current State
 
+- **§289 (v1.0.44): D-403/D-359 finished - a revert now gets exactly one unimpeded retry, but learns**
+  **nothing itself; D-358 fixed - double-tap-Backspace revert broken right after punctuation.** Three-round
+  design discussion, each round simplifying the last (full write-up: history §289): started from a
+  pending-blacklist-style persistent multi-day marker + immediate full learn on retry, simplified to an
+  in-memory one-shot flag, then corrected once more by the user - `performAutocorrectUndo()` already calls
+  `learnWord(typed)` on an ordinary revert, so an immediate full learn on the confirmed retry would silently
+  double-count (+2), reaching the ordinary 2-strike threshold only by coincidence, not by design. Fixed:
+  reverting now learns nothing at all (not even n-gram context - deliberately, "verhindert im Zweifelsfall,
+  dass Mist gelernt wird"); a new one-shot `revertSuppressedWord` field instead lets the next matching commit
+  reach the entirely ordinary `learnWord()` path in `finalizeAndCommit()` uncorrected, for one ordinary +1 -
+  exactly like any other first-time word, no shortcut. `revertConfirmed` folds into the existing
+  `suppressAutocorrect` variable (same architecture D-234's own toggle already reuses) plus two explicit
+  guards (`diacriticWord`, the A-06 merge) that deliberately sit outside it, mirroring D-234's own precedent
+  exactly. The `wasSplit` revert branch (`learnWordStrong()`) is explicitly left untouched - user's own call,
+  a different, already-settled decision. D-358: root-caused directly in the code - the double-tap-undo single
+  tap's "keep the window armed" check tested `isWhitespace()` on the character before the caret, but a word
+  committed directly by punctuation (not a space) sets `undoDelimiter` to that punctuation mark, so the very
+  first tap wrongly saw "real content" and discarded the window before a second tap could ever fire. Fixed by
+  checking against the same `armedTail` construction the non-double-tap branch already uses. No new tests
+  (Android IME glue, untested per convention); 1047 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 347 -> 348, `versionName` `"1.0.43"` ->
+  `"1.0.44"`. Not yet device-confirmed - needs a revert + unchanged retry (no re-correction, pending count
+  exactly 1, not already-learned), a second separate typing promoting it normally, and a double-tap revert
+  specifically after a punctuation-committed word.
+
 - **§288 (v1.0.43): D-410 implemented - a `LanguageRules` seam separates German-specific grammar from core**
   **logic; a runtime plugin-loading design was discussed and explicitly rejected.** User asked how to cleanly
   package the app's German-only behaviours - physically into the language pack (like the dictionary), or

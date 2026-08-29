@@ -639,6 +639,17 @@ behaviour (Addendum to G-05). The undo also:
   ordinary word, 4 for a token recognised as a suspected unsplit compound or carrying an embedded mid-word
   capital).
 
+D-403/D-359: the revert itself learns nothing towards the originally-typed word - not the unigram, not even
+its n-gram context (the next confirmed retry, below, learns that anyway, so nothing is lost by not doing it
+twice). Instead, exactly one further commit of that same, unchanged text is granted a single unimpeded
+attempt: every correction mechanism (autocorrect, diacritic restoration, A-05 split, A-06 merge) is bypassed
+for it, so it reaches the ordinary commit-time learning pipeline uncorrected - an ordinary +1 towards
+promotion, identical to any other first-time, never-corrected word, never a shortcut around W-02's usual
+threshold. This one-shot protection is consumed by the very next commit regardless of whether it actually
+matches the reverted text - typing anything different in the meantime simply is not protected, and ordinary
+correction rules apply to it immediately. (This exception is scoped to an ordinary corrected-word revert; a
+revert of a wrongly-applied A-05 split still force-learns the rejoined word immediately, as it always has.)
+
 This mechanism depends on the `onUpdateSelection` self-recognition guiding principle (§1) and on a correct
 single-character delete immediately after a mid-word reclaim (never deleting the whole reclaimed word) - both
 must be kept intact by any future change in this area.
@@ -1380,13 +1391,20 @@ deciding whether anything further is needed.
 
 D-348: an optional setting (default off) changes A-07's post-commit undo trigger from a single Backspace
 to a double-tap — two Backspace presses within the existing `doubleTapDelayMs` window (G-05, 200-800 ms,
-default 400 ms). When on, the first Backspace at the armed undo tail is a no-op that re-flashes the key
-as a visual hint ("press again to revert"); only the second Backspace within the window fires the revert.
-Trailing whitespace beyond the armed tail is still consumed ordinarily by the first press (same as the
-single-tap mode's own D-286/D-277 whitespace consumption). When off (the default), the original
+default 400 ms). When on, the first Backspace at the armed undo tail is an ordinary single-character delete
+of the delimiter (D-348 v4: not a no-op — matches the plain single-tap behaviour exactly for that one
+character) while the window stays armed; only the second Backspace within the window fires the actual
+revert. Trailing whitespace beyond the armed tail is still consumed ordinarily by the first press (same as
+the single-tap mode's own D-286/D-277 whitespace consumption). When off (the default), the original
 single-Backspace revert behaviour is unchanged. The motivation: a single-Backspace revert can conflict
 with the user's intent to simply delete one character, and a deliberate double-tap is a clearer, less
 surprising trigger for an action that replaces an entire word.
+
+D-358: the delimiter a word was committed with is not always whitespace — a word committed directly by a
+punctuation mark (e.g. a period) has that punctuation as its own delimiter. The first tap's "keep the window
+armed" decision is judged against the delimiter's own real character, whatever it is, not merely "is it
+whitespace" — otherwise a punctuation-committed word's very first tap wrongly reads as eating into real
+content and discards the window before a second tap ever gets the chance to revert it.
 
 ---
 
