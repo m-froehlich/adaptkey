@@ -108,7 +108,30 @@ object LanguagePackCatalog {
             // VERB tag alongside its existing noun tag). This completes the systematic D-368 homograph scan
             // that began in round 3: the entire ~120k-row dictionary has now been checked against the weak-
             // verb-infinitive hypothesis end to end.
-            version = 12
+            // D-402/D-306-followup/D-345 (garbage cleanup): 348 confirmed Wikipedia-extraction-noise entries
+            // removed outright from dict.tsv - not retagged, deleted. Covers the entries already named in
+            // spec/history (Mur, BDI, Dee outright removed - no English pack exists to blacklist against
+            // instead; en/ell/lich/ische, the four confirmed corpus-tokeniser split artefacts from §277;
+            // fir, the confirmed "fir"->"dir" autocorrect-noise entry) plus a systematic probe of the whole
+            // dictionary for every short (<=5 chars), low-frequency (<=100), pure-OTHER-tagged entry (1,061
+            // candidates - OTHER being the catch-all tag where noise concentrates, unlike a specific POS tag)
+            // reviewed individually with real linguistic judgement, not a mechanical filter. The large
+            // majority of that probe turned out to be genuine German word-forms simply missing a specific
+            // POS tag (conjugated verbs, declined adjectives, colloquial contractions, unit abbreviations) -
+            // kept untouched. Confirmed removed: literal LaTeX/math markup command names leaked from
+            // Wikipedia's math rendering (cfrac/hline/bigl/bigr/nabla/wedge/qquad/bmod/pmod/dotsb/dotsm/
+            // vdots/oplus/vdash/sdot/hbar/sinh/cot/cosh/sgn/notin/binom and more), programming/Unix keyword
+            // and command-name leaks (void/bool/const/sort/grep/chmod/gzip/xmlns/args/attr/obj/ptr and more),
+            // Latin citation-fragment leaks from academic/legal footnotes (iure/quem/sunt/omnes/rebus/causa/
+            // civis/bovis and more), other-language function-word leaks (French/Dutch/Scandinavian/Slavic:
+            // aux/qui/dans/avec/vous/degli/sopra/dla and more), and Arabic/Sanskrit/other transliteration
+            // and IPA-phonetic fragments (ʿAbd/ʿUmar/ḥaqq/kartī/īl and more) - the latter category located
+            // programmatically via a "contains a character outside the German alphabet plus recognised unit
+            // symbols (µ, ², ³)" filter rather than hand-transcribed, to avoid Unicode transcription errors.
+            // Explicitly kept despite superficially looking dubious: heiße (182, OTHER) - genuinely the real
+            // word "ich heiße", confirmed real back in §277, not touched. `git diff --stat` confirmed exactly
+            // 348 lines removed and nothing else changed.
+            version = 13
         ),
         Entry(
             Language.GREEK,

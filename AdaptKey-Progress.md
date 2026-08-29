@@ -257,19 +257,23 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
-- **D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 are to be done together, in one combined**
-  **dictionary-cleanup round - agreed explicitly, not yet started.** All of them touch the exact same
-  `dict_de.tsv`/`bigram_de.tsv` rebuild/version-bump/language-pack-republish cycle, so doing them as
-  separate rounds would mean repeating that cycle for no benefit:
-  - **D-402** (spec §31/history batch): the already-collected word list itself - missing words (`"Wessen"`,
-    `"drüber"`, `"drunter"`, `"Vorm"`, `"tue"`, `"neulich"`, `"aberkennen"`, `"ah"`/`"Oh"`, `"agentisch"`,
-    `"erstaunlicherweise"`, more), noise entries to remove/blacklist (`"Mur"`, `"Bdi"`, `"Dee"`), and the
-    five splits already root-caused directly against real data in §277 (`"en"` freq 1207 `OTHER`, `"ell"`
-    16, `"lich"` 16 mistagged `NOUN`, `"ische"` 15, `"heiße"` 182 - all corpus-tokeniser artefacts, not real
-    words).
-  - **D-306-followup** and **D-345**: see their own bullets below - both extend D-306's original untagged-
-    only pass to dubious-but-tagged entries; effectively the same task as D-402 from a different entry
-    point.
+- **D-402/D-306-followup/D-345/D-330-followup/D-367 - the noise-removal portion is now done (§301,**
+  **v1.0.54); the missing-word/frequency-correction portions are not.** Originally agreed to bundle all of
+  D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into one combined cleanup round since they all touch
+  the same `dict_de.tsv` rebuild/version-bump/pack-republish cycle - D-368 (homograph tagging) was finished
+  separately across its own eight rounds (see its own bullet below), and the user then asked for the noise
+  side specifically ("Mülltrennung"), fully automatically rather than per-candidate confirmation, which §301
+  completed: `Mur`/`BDI`/`Dee` and the four genuine corpus-tokeniser split-artefacts (`en`/`ell`/`lich`/
+  `ische` - `heiße` confirmed real, left alone) removed outright, plus 344 more found via a systematic probe
+  of the whole dictionary (see §301/history for the full method and category breakdown). **Still open**:
+  - **D-402's own missing-word list** (`"Wessen"`, `"drüber"`, `"drunter"`, `"Vorm"`, `"tue"`, `"neulich"`,
+    `"aberkennen"`, `"ah"`/`"Oh"`, `"agentisch"`, `"erstaunlicherweise"`, more) - these need *adding*, not
+    removing, so §301's automatic-removal pass didn't touch this.
+  - **D-306-followup** and **D-345**: their probes are now effectively superseded by §301's broader one (a
+    1,061-candidate scoped probe - short, low-frequency, pure-`OTHER`-tagged - reviewed individually, not
+    D-306-followup's narrower original ~490). Not a provably exhaustive sweep of the whole dictionary for
+    every noise pattern though (see the note below on scope) - if further garbage is reported later, treat
+    it the same way rather than assuming §301 caught everything.
   - **D-330-followup**: see its own bullet below - the `dein`/`sein` register-skew fix, plus the proposed
     full `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` audit.
   - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
@@ -329,22 +333,24 @@ non-trivial changes).
     for a purpose beyond this one. Worth keeping in mind for *any* future feature that might want to rely on
     a `VERB` tag meaning something for German - today, outside of these 210 words, it simply never does.
 
-  As with D-402's own existing convention, every candidate in this combined round should be listed for the
-  user's explicit confirmation before the dictionary file is actually touched.
+  D-402's own original convention (list every candidate for explicit user confirmation before touching the
+  file) was the default until §301, where the user explicitly asked for the noise-removal pass specifically
+  to run fully automatically instead, with a summary only at the end - not a standing change to the
+  convention, just this one round's explicit instruction. Default back to per-candidate confirmation for any
+  future round unless told otherwise again.
 
-- **D-306's dictionary cleanup only removed *untagged* entries (missing part-of-speech) - it did not attempt**
-  **a broader sweep of entries that carry a valid tag but are still dubious** (foreign proper nouns, obscure
-  fragments) **the way "til" itself was before its manual fix.** A narrow probe (short, low-frequency,
-  `OTHER`-tagged German entries) turned up ~490 further candidates in a single quick check - almost certainly
-  an undercount of the true scope across the full ~210k-row combined dictionary. Not attempted in D-306: no
-  reliable automated signal distinguishes a genuine rare/foreign word from data-extraction noise once it
-  already carries *some* tag, and manual review at that scale is not tractable in one session. Revisit with
-  better tooling (a proper reference-wordlist cross-check per language, as D-306 improvised for the
-  untagged-only English pass) if this class of false-positive split is reported again. **Confirmed to recur**
-  (2026-07-28, see history §242): `"fir"` (German dict, frequency 12, tagged `NOUN,OTHER`) blocks
-  `"fir"` -> `"dir"` autocorrect the same way, since 273/12 ≈ 22.75x falls short of the 100x override ratio -
-  `git show` confirmed D-306 never touched this entry (already tagged, out of that pass's scope). Not fixed,
-  same reasoning as above.
+- **D-306's dictionary cleanup only removed *untagged* entries (missing part-of-speech) - RESOLVED for**
+  **German by §301's broader sweep (v1.0.54).** D-306 itself did not attempt a broader sweep of entries that
+  carry a valid tag but are still dubious (foreign proper nouns, obscure fragments) the way "til" itself was
+  before its manual fix - a narrow probe at the time (short, low-frequency, `OTHER`-tagged German entries)
+  turned up ~490 further candidates, never individually reviewed. §301 regenerated that same style of probe
+  (1,061 candidates, same short/low-frequency/pure-`OTHER` shape) and reviewed every one individually,
+  removing 348 confirmed noise entries including `"fir"` (12, `NOUN,OTHER`) itself, which was confirmed back
+  in 2026-07-28 (history §242) to block `"fir"` -> `"dir"` autocorrect the same way `"til"` once did. Not
+  claimed to be a provably exhaustive sweep of the whole ~210k-row combined dictionary for every possible
+  noise pattern - only English's original D-306 pass and German's §301 probe have been done; if this class of
+  false-positive split is reported again (for German or any other bundled language), treat it the same way
+  rather than assuming §301 caught everything.
 
 - **D-314 built French's AZERTY *geometry* only - no `dictionaries/fr/` pack (dict/bigram/hints/version)**
   **exists yet, and `LanguagePackCatalog.ENTRIES` has no `Language.FRENCH` entry.** French is now fully
@@ -371,11 +377,14 @@ non-trivial changes).
   (HTTP header control, SAF/file-picker API, raw repo path) are documented in the spec; practical testing
   is needed before choosing.
 
-- **D-345 (dictionary noise scan, spec §31): "Bri" must be blacklisted or removed, and the full bundled**
-  **dictionary scanned for every remaining Wikipedia-extraction-noise entry (fragments, obscure acronyms,**
-  **markup tokens).** Extends D-306's scope from *untagged* entries to also cover dubious *tagged* entries.
-  Each candidate should be listed for user confirmation before removal. Bundle with D-402's own combined
-  cleanup round (see that bullet above) - same file, same rebuild cycle.
+- **D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54), with one open question.** The
+  broader scan for Wikipedia-extraction-noise entries (fragments, obscure acronyms, markup tokens) that §345
+  called for is exactly what §301's probe did (see the D-402/D-306-followup/D-345 bullet above for the full
+  method and results). One loose end: `"Bri"` itself, the entry that originally prompted D-345, was checked
+  directly against the current `dict.tsv` before this round and was **not found** (case-insensitive) - either
+  it was already removed in some earlier untracked change, or the original report used different casing/
+  context that doesn't match a literal `"Bri"` row. Not chased further since the entry that would need fixing
+  isn't actually present to fix; worth a fresh look if the original wrong-suggestion is ever reproduced again.
 
 - **D-404 (inflected forms flooding the Learned Words list, and more broadly the bundled dictionaries too -**
   **e.g. "Kugel"/"Kugeln" both present, risking the plural's frequency silently outranking and replacing**
@@ -410,6 +419,24 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§301 (v1.0.54): D-402/D-306-followup/D-345 dictionary garbage cleanup - 348 noise entries removed,**
+  **fully automatically at the user's explicit request.** Removed the already-named noise from spec/history
+  outright (`Mur`/`BDI`/`Dee` - no English pack exists to blacklist against instead; `en`/`ell`/`lich`/
+  `ische`, the four confirmed corpus-tokeniser split-artefacts from §277 - `heiße`, the fifth and genuinely
+  real one, explicitly left alone; `fir`, the confirmed `"fir"`->`"dir"` autocorrect-noise entry). For the
+  broader sweep, regenerated D-306-followup's probe as short (<=5 chars), low-frequency (<=100), pure-`OTHER`
+  entries (1,061 candidates) and reviewed each individually with real linguistic judgement - most turned out
+  to be genuine German word-forms simply missing a specific POS tag and were correctly left untouched. 348
+  confirmed real noise: LaTeX/math markup command names leaked from Wikipedia math rendering, programming/
+  Unix keyword leaks, Latin citation-fragment leaks, and other-language function-word/transliteration
+  fragments (the last category located programmatically via an alphabet-filter script rather than hand-typed,
+  to avoid Unicode transcription errors). Applied via the same fail-loud verification pattern as D-368,
+  checking both tag and frequency before deleting each row. `git diff --stat` confirmed exactly 348 lines
+  removed. `dictionaries/de/dict.tsv` 119,997 -> 119,649 rows, `version.txt` 12 -> 13, pack rebuilt/verified,
+  `LanguagePackCatalog` version 12 -> 13. No new tests (data + comment only); full suite re-run to confirm the
+  row removal itself broke nothing. 1058 unit tests unchanged, all green (via JDK 21). `versionCode` 357 ->
+  358, `versionName` `"1.0.53"` -> `"1.0.54"`. Not yet device-confirmed. See history §301.
 
 - **§300 (v1.0.53): D-368 round 8 - the entire remaining pool in one sitting; the systematic scan is now**
   **complete.** User asked to finish the rest at once. Reviewed all three remaining bands (20-49: 2,743,

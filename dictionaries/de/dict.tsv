@@ -1794,7 +1794,6 @@ sonst	1210	OTHER
 Kanton	1210	NOUN
 DNA	1208	NOUN
 stellten	1207	OTHER
-en	1207	OTHER
 Trennung	1206	NOUN
 Veröffentlichung	1206	NOUN
 Politiker	1205	NOUN
@@ -16965,7 +16964,6 @@ Austin	108	NOUN
 Krefeld	108	NOUN
 epsilon	108	OTHER
 Mast	108	NOUN
-Mur	108	NOUN
 Zusammenschlüsse	108	NOUN
 SQL	108	NOUN
 Pommerellen	108	NOUN
@@ -18113,7 +18111,6 @@ bemannte	99	OTHER
 eineinhalb	99	OTHER
 Neil	99	NOUN
 realistisch	99	OTHER
-aux	99	OTHER
 morphologische	99	OTHER
 Vermessung	99	NOUN
 Wanderweg	99	NOUN
@@ -18859,7 +18856,6 @@ Staatskanzlei	94	NOUN
 Bündnisse	94	NOUN
 Fahrzeugs	94	NOUN
 vorschlug	94	OTHER
-ou	94	OTHER
 vertauscht	94	OTHER
 subseteq	94	OTHER
 reformatorischen	94	OTHER
@@ -19313,7 +19309,6 @@ fortgeschrittene	91	OTHER
 stilistischen	91	OTHER
 Idealfall	91	NOUN
 Tarantino	91	NOUN
-jap	91	OTHER
 modernere	91	OTHER
 gefertigte	91	OTHER
 Nebenprodukt	91	NOUN
@@ -19363,7 +19358,6 @@ religiöses	91	OTHER
 Ausweg	91	NOUN
 Emmanuel	91	NOUN
 Sanssouci	91	NOUN
-hoc	91	OTHER
 atmosphärischen	91	OTHER
 gestreift	91	OTHER
 Einwände	91	NOUN
@@ -19407,7 +19401,6 @@ Buße	91	NOUN
 grafisch	91	OTHER
 euklidische	91	OTHER
 Umbruch	91	NOUN
-ius	91	OTHER
 ausgewiesene	91	OTHER
 Tilly	91	NOUN
 gefallene	91	OTHER
@@ -19448,7 +19441,6 @@ Malcolm	91	NOUN
 Einnahmequelle	91	NOUN
 gehindert	91	OTHER
 XHTML	91	NOUN
-size	91	OTHER
 Komintern	91	NOUN
 Zeichensatz	91	NOUN
 Circle	91	NOUN,OTHER
@@ -19849,7 +19841,6 @@ Neuwahl	88	NOUN
 erfahrenen	88	OTHER
 erreichbare	88	OTHER
 Zweifeln	88	NOUN,OTHER
-qui	88	OTHER
 Abwertung	88	NOUN
 Tonart	88	NOUN
 Heimatland	88	NOUN
@@ -20137,7 +20128,6 @@ Reichsteil	87	NOUN
 Graphentheorie	87	NOUN
 fl	87	NOUN,OTHER
 Guerilla	87	NOUN
-dotsb	87	OTHER
 Dionysos	87	NOUN
 Biennale	87	NOUN
 Ljubljana	87	NOUN
@@ -20488,7 +20478,6 @@ bündeln	85	OTHER
 Gemeindeteile	85	NOUN
 Ressource	85	NOUN
 Kronach	85	NOUN
-void	85	OTHER
 chirurgischen	85	OTHER
 Verkleinerung	85	NOUN
 Marvel	85	NOUN
@@ -20496,7 +20485,6 @@ soziologische	85	OTHER
 Winkler	85	NOUN
 wahrer	85	OTHER
 Zauberflöte	85	NOUN
-cases	85	OTHER
 Diagonale	85	NOUN
 Ilm	85	NOUN
 registrieren	85	OTHER
@@ -21714,7 +21702,6 @@ Arteria	79	NOUN
 Stempel	79	NOUN
 Wissenschaftsgeschichte	79	NOUN
 Symbiose	79	NOUN
-break	79	OTHER
 Philosophical	79	NOUN
 Quadratwurzel	79	NOUN
 Rationalität	79	NOUN
@@ -23032,7 +23019,6 @@ vorzustellen	73	OTHER
 amtierender	73	OTHER
 Stimmzettel	73	NOUN
 Arkansas	73	NOUN
-have	73	OTHER
 schulische	73	OTHER
 Zeitlang	73	NOUN
 offenkundig	73	OTHER
@@ -23638,7 +23624,6 @@ vermeidet	71	OTHER
 exp	71	OTHER
 RISC	71	NOUN
 Altai	71	NOUN
-degli	71	OTHER
 Verheißung	71	NOUN
 VA	71	NOUN,OTHER
 Sekundarstufe	71	NOUN
@@ -23991,7 +23976,6 @@ Rajons	70	NOUN
 Simenons	70	NOUN
 Niklas	69	NOUN
 pragmatischen	69	OTHER
-false	69	OTHER
 Budgets	69	NOUN
 Erlös	69	NOUN
 psychologisch	69	OTHER
@@ -24394,7 +24378,6 @@ Kerze	68	NOUN
 Verhütung	68	NOUN
 Wassily	68	NOUN
 Festlegungen	68	NOUN
-while	68	OTHER
 lebenslangen	68	OTHER
 Professional	68	NOUN
 Codierung	68	NOUN
@@ -25027,7 +25010,6 @@ Weigel	66	NOUN
 Herrin	66	NOUN
 Herrenberg	66	NOUN
 methodistischen	66	OTHER
-tif	66	OTHER
 Westrand	66	NOUN
 Wirbelsäule	66	NOUN
 Copyleft	66	NOUN
@@ -25481,7 +25463,6 @@ Kräuter	64	NOUN
 Bindegewebe	64	NOUN
 Guanin	64	NOUN
 Adolphe	64	NOUN
-hbar	64	OTHER
 Südwestdeutschland	64	NOUN
 Urheberschaft	64	NOUN
 Sonderformen	64	NOUN
@@ -25597,7 +25578,6 @@ Kryptographie	64	NOUN
 kartesische	64	OTHER
 Februarrevolution	64	NOUN
 Farbigkeit	64	NOUN
-vdots	64	OTHER
 Seitenflächen	64	NOUN
 Musikhochschule	64	NOUN
 südkoreanischen	64	OTHER
@@ -26304,7 +26284,6 @@ berühmtes	61	OTHER
 beizutragen	61	OTHER
 Zettel	61	NOUN
 Gemeinsamkeit	61	NOUN
-une	61	OTHER
 Godard	61	NOUN
 Dilemma	61	NOUN
 Sponsoren	61	NOUN
@@ -26764,7 +26743,6 @@ Sonn	60	NOUN
 Sediment	60	NOUN
 gekrümmt	60	OTHER
 Generalfeldmarschall	60	NOUN
-title	60	OTHER
 Dienstzeit	60	NOUN
 gleichberechtigten	60	OTHER
 Fluges	60	NOUN
@@ -26818,7 +26796,6 @@ Koreanisch	60	NOUN,OTHER
 Opladen	60	NOUN
 Rechtsbegriff	60	NOUN
 Emerson	60	NOUN
-upon	60	OTHER
 eigentlicher	60	OTHER
 Brennerei	60	NOUN
 lockeren	60	OTHER
@@ -27630,7 +27607,6 @@ Wasserweg	58	NOUN
 topologische	58	OTHER
 char	58	OTHER
 Drehungen	58	NOUN
-const	58	OTHER
 Buchse	58	NOUN
 Längengrad	58	NOUN
 Exilanten	58	NOUN
@@ -28294,7 +28270,6 @@ Südbahn	56	NOUN
 Energiebedarf	56	NOUN
 Neutrino	56	NOUN
 NABU	56	NOUN
-déco	56	OTHER
 blühenden	56	OTHER
 obiger	56	OTHER
 ungestört	56	OTHER
@@ -28767,7 +28742,6 @@ Harden	55	NOUN
 Desinfektion	55	NOUN
 gesteuerten	55	OTHER
 Debütalbum	55	NOUN
-causa	55	OTHER
 Rosengarten	55	NOUN
 Frauentag	55	NOUN
 Wassereis	55	NOUN
@@ -28939,7 +28913,6 @@ Befreier	54	NOUN
 kahl	54	OTHER
 signiert	54	OTHER
 Ehrenbürgerwürde	54	NOUN
-ye	54	OTHER
 kälter	54	OTHER
 Monitoring	54	NOUN
 fünfjährige	54	OTHER
@@ -29071,7 +29044,6 @@ Eddie	54	NOUN
 Benchmarking	54	NOUN
 Nördlinger	54	NOUN
 Puppenkiste	54	NOUN
-asv	54	OTHER
 brutale	54	OTHER
 zurückgeben	54	OTHER
 institutionell	54	OTHER
@@ -29155,7 +29127,6 @@ Scipio	54	NOUN
 beschneiden	54	OTHER
 Cal	54	NOUN,OTHER
 Föderative	54	NOUN,OTHER
-vis	54	OTHER
 Hose	54	NOUN
 Lichtstärke	54	NOUN
 Medicine	54	NOUN
@@ -29218,7 +29189,6 @@ Galois	54	NOUN
 nahtlos	54	OTHER
 Quadraten	54	NOUN
 Amrum	54	NOUN
-ʿAbd	54	OTHER
 Biotope	54	NOUN
 Diepgen	54	NOUN
 angetriebene	54	OTHER
@@ -29374,7 +29344,6 @@ Radikalisierung	53	NOUN
 vertikaler	53	OTHER
 Cecil	53	NOUN
 willigte	53	OTHER
-libri	53	OTHER
 jährig	53	OTHER
 leistungsfähiger	53	OTHER
 Industrienationen	53	NOUN
@@ -29672,7 +29641,6 @@ Bergung	53	NOUN
 Trotha	53	NOUN
 Mauna	53	NOUN
 Burgruine	53	NOUN
-mundi	53	OTHER
 Sendeleistung	53	NOUN
 Luftfahrzeuge	53	NOUN
 idealer	53	OTHER
@@ -29713,7 +29681,6 @@ Zwischenablage	53	NOUN
 Sebald	53	NOUN
 Künzelsau	53	NOUN
 Sagan	53	NOUN
-ji	53	OTHER
 Bauteils	53	NOUN
 Lutherkirche	53	NOUN
 bürokratischen	53	OTHER
@@ -29940,7 +29907,6 @@ justify	52	OTHER
 Fusionen	52	NOUN
 Westerwald	52	NOUN
 unterschiedliches	52	OTHER
-ya	52	OTHER
 Binnenmarkt	52	NOUN
 passives	52	OTHER
 Eizellen	52	NOUN
@@ -30402,7 +30368,6 @@ Khartum	51	NOUN
 Verhör	51	NOUN
 ätherischen	51	OTHER
 unzureichenden	51	OTHER
-dans	51	OTHER
 Stoker	51	NOUN
 weitverbreiteten	51	OTHER
 Indy	51	NOUN
@@ -30653,7 +30618,6 @@ kubische	50	OTHER
 Lanthanoiden	50	NOUN
 Oxidationszahl	50	NOUN
 langlebige	50	OTHER
-logie	50	OTHER
 gewiss	50	OTHER
 Sozialpsychologie	50	NOUN
 jahreszeitlichen	50	OTHER
@@ -30672,7 +30636,6 @@ Geldwirtschaft	50	NOUN
 Mecklenburgs	50	NOUN
 WC	50	NOUN
 Come	50	NOUN,OTHER
-situ	50	OTHER
 Armand	50	NOUN
 Halbierung	50	NOUN
 mitteilte	50	OTHER
@@ -30703,7 +30666,6 @@ positionierte	50	OTHER
 Nachrichtenmagazin	50	NOUN
 Gepäck	50	NOUN
 Kaufkraftparität	50	NOUN
-ve	50	OTHER
 säkulare	50	OTHER
 überdauert	50	OTHER
 beitrat	50	OTHER
@@ -30863,7 +30825,6 @@ tibetische	50	OTHER
 Tuwa	50	NOUN
 prachtvolle	50	OTHER
 zugewanderten	50	OTHER
-sozio	50	OTHER
 Poor	50	NOUN
 Edelmetallen	50	NOUN
 Serbokroatisch	50	NOUN,OTHER
@@ -30969,10 +30930,8 @@ Gemeindemitglieder	50	NOUN
 Färöern	50	NOUN
 adaptierte	50	OTHER
 Kirchberg	50	NOUN
-teal	50	OTHER
 indo	50	NOUN,OTHER
 Zinssatz	50	NOUN
-que	50	OTHER
 Iljitsch	50	NOUN
 biographischen	50	OTHER
 Unterbach	50	NOUN
@@ -30995,7 +30954,6 @@ Ghanas	50	NOUN
 Gruppenphase	50	NOUN
 Kabinen	50	NOUN
 Lichtstrahlen	50	NOUN
-fer	50	OTHER
 zurückgelassen	50	OTHER
 Wassermengen	50	NOUN
 frühmittelalterliche	50	OTHER
@@ -31473,7 +31431,6 @@ Konditionen	49	NOUN
 Quantentheorie	49	NOUN
 Bürgergesellschaft	49	NOUN
 Datensätze	49	NOUN
-hda	49	OTHER
 Widerständen	49	NOUN
 eingeschleppte	49	OTHER
 orthogonalen	49	OTHER
@@ -31561,7 +31518,6 @@ SMB	49	NOUN
 Queue	49	NOUN,OTHER
 Somoza	49	NOUN
 Groucho	49	NOUN
-gov	49	OTHER
 Senftenberger	49	NOUN
 Suppè	49	NOUN
 Tonzeichen	49	NOUN
@@ -32719,7 +32675,6 @@ Sozialversicherung	46	NOUN
 erzwang	46	OTHER
 Tarent	46	NOUN
 notgedrungen	46	OTHER
-rerum	46	OTHER
 ungeheure	46	OTHER
 erwacht	46	OTHER
 Gondwana	46	NOUN
@@ -32919,7 +32874,6 @@ Umdenken	46	NOUN
 Bibeln	46	NOUN
 Gleichnis	46	NOUN
 versank	46	OTHER
-ʿUmar	46	OTHER
 Rückgewinnung	46	NOUN
 belgischer	46	OTHER
 Kampfflugzeuge	46	NOUN
@@ -33607,7 +33561,6 @@ Thälmanns	45	NOUN
 Carrara	45	NOUN
 läge	45	OTHER
 Landflächen	45	NOUN
-cfrac	45	OTHER
 Unterlage	45	NOUN
 Chipsatz	45	NOUN
 TWh	45	NOUN
@@ -33830,7 +33783,6 @@ Webern	44	NOUN
 angenehme	44	OTHER
 Bishop	44	NOUN
 Endzeit	44	NOUN
-dō	44	OTHER
 abzusehen	44	OTHER
 Vorgehensweisen	44	NOUN
 Harmonisierung	44	NOUN
@@ -33885,7 +33837,6 @@ Wasserwirtschaft	44	NOUN
 Erscheinungsjahr	44	NOUN
 Akkumulator	44	NOUN
 Kondensatoren	44	NOUN
-barra	44	OTHER
 Elektroautos	44	NOUN
 Überhitzung	44	NOUN
 Domkapitels	44	NOUN
@@ -34384,7 +34335,6 @@ Quincy	43	NOUN
 unterlegene	43	OTHER
 Reservate	43	NOUN
 Washingtons	43	NOUN
-laude	43	OTHER
 geratenen	43	OTHER
 RWE	43	NOUN
 beantwortete	43	OTHER
@@ -34484,7 +34434,6 @@ Eitelkeit	43	NOUN
 Werkausgabe	43	NOUN
 planaren	43	OTHER
 Alkali	43	NOUN
-noaa	43	OTHER
 aufgelöste	43	OTHER
 Lind	43	NOUN
 Griffin	43	NOUN
@@ -34506,7 +34455,6 @@ sinnvoller	43	OTHER
 Anarchie	43	NOUN
 Femme	43	NOUN,OTHER
 Einzeller	43	NOUN
-qquad	43	OTHER
 Monuments	43	NOUN
 Delacroix	43	NOUN
 afro	43	NOUN,OTHER
@@ -35499,10 +35447,8 @@ Wilna	42	NOUN
 Gram	42	NOUN
 Überhöhung	42	NOUN
 Turners	42	NOUN
-sung	42	OTHER
 Zwangsarbeitern	42	NOUN
 Trolltech	42	NOUN
-binom	42	OTHER
 Sieden	42	NOUN,OTHER
 Lazarus	42	NOUN
 Spendung	42	NOUN
@@ -36117,7 +36063,6 @@ Pärnu	41	NOUN
 Zeitmaschine	41	NOUN
 Kensington	41	NOUN
 Morgendämmerung	41	NOUN
-ʿAlī	41	OTHER
 Zusatzprotokolls	41	NOUN
 Wassermoleküle	41	NOUN
 RKI	41	NOUN
@@ -36717,7 +36662,6 @@ Büderich	40	NOUN
 Auferstehungskirche	40	NOUN
 Heinsberg	40	NOUN
 Buchführung	40	NOUN
-Dee	40	NOUN
 Hufeisen	40	NOUN
 Jungvögel	40	NOUN
 Anthropologe	40	NOUN
@@ -36853,7 +36797,6 @@ PVAP	40	NOUN
 Mehrheitsgesellschaft	40	NOUN
 Palamas	40	NOUN
 Marinetti	40	NOUN
-uteri	40	OTHER
 Penetration	40	NOUN
 Zonenzeit	40	NOUN
 Abbrüche	40	NOUN
@@ -38179,7 +38122,6 @@ Saxo	38	NOUN
 anboten	38	OTHER
 Einbände	38	NOUN
 ungesättigten	38	OTHER
-nabla	38	OTHER
 Stutthof	38	NOUN
 ausgewachsene	38	OTHER
 Außenwand	38	NOUN
@@ -38936,7 +38878,6 @@ Auslese	37	NOUN
 astrologischen	37	OTHER
 Brunos	37	NOUN
 nonverbale	37	OTHER
-cong	37	OTHER
 Etruskern	37	NOUN
 Stähle	37	NOUN
 Festkörperphysik	37	NOUN
@@ -39056,7 +38997,6 @@ Studienreise	37	NOUN
 assimilieren	37	OTHER
 anschliessend	37	OTHER
 Tschetschenen	37	NOUN
-buffa	37	OTHER
 Waal	37	NOUN
 Katharinenkloster	37	NOUN
 Winnipeg	37	NOUN
@@ -39080,7 +39020,6 @@ Villacher	37	NOUN
 Zahnstangen	37	NOUN
 Schottky	37	NOUN
 Rigaer	37	NOUN
-seria	37	OTHER
 verwaister	37	OTHER
 Spock	37	NOUN
 Weishaupt	37	NOUN
@@ -39680,7 +39619,6 @@ Augenhöhe	36	NOUN
 Verkehrsanbindung	36	NOUN
 Ullrich	36	NOUN
 Belastbarkeit	36	NOUN
-peek	36	OTHER
 auflagenstärkste	36	OTHER
 Nordschleswig	36	NOUN
 Umschreibungen	36	NOUN
@@ -41042,7 +40980,6 @@ Heimcomputern	34	NOUN
 zurückgekehrten	34	OTHER
 VVD	34	NOUN
 verdeutlichte	34	OTHER
-gallo	34	OTHER
 Sonntagen	34	NOUN
 Adlers	34	NOUN
 Kriminalromane	34	NOUN
@@ -41358,7 +41295,6 @@ Karzinom	34	NOUN
 übersichtlich	34	OTHER
 Trägermaterial	34	NOUN
 Landeslisten	34	NOUN
-empty	34	OTHER
 Algebren	34	NOUN
 between	34	OTHER
 parlamentarisch	34	OTHER
@@ -42639,7 +42575,6 @@ Rehme	33	NOUN
 Erkelenzer	33	NOUN
 asiatisch	32	OTHER
 Lin	32	NOUN
-vel	32	OTHER
 Weltruhm	32	NOUN
 auswandern	32	OTHER
 anspruchsvoller	32	OTHER
@@ -43277,7 +43212,6 @@ fix	32	OTHER
 Druckfarben	32	NOUN
 Trigger	32	NOUN
 Erbkrankheiten	32	NOUN
-gzip	32	OTHER
 schräge	32	OTHER
 Kolberg	32	NOUN
 Silbersee	32	NOUN
@@ -44606,7 +44540,6 @@ Meyrink	31	NOUN
 Wizebsk	31	NOUN
 Mahiljou	31	NOUN
 Dwina	31	NOUN
-štít	31	OTHER
 Leeraner	31	NOUN
 Kunrei	31	NOUN
 Nanoröhren	31	NOUN
@@ -44885,7 +44818,6 @@ Mandeln	30	NOUN
 Weinanbaugebiet	30	NOUN
 Mendoza	30	NOUN
 breitesten	30	OTHER
-vos	30	OTHER
 Mauricio	30	NOUN
 abtrünnige	30	OTHER
 Streitereien	30	NOUN
@@ -45257,7 +45189,6 @@ verbünden	30	OTHER
 Schaffensphase	30	NOUN
 vorbehaltlos	30	OTHER
 Exit	30	NOUN,OTHER
-desc	30	OTHER
 Betriebsart	30	NOUN
 Retikulum	30	NOUN
 Gallenblase	30	NOUN
@@ -45571,7 +45502,6 @@ Jerome	30	NOUN
 CCM	30	NOUN
 Kaliumnitrat	30	NOUN
 Drehmomente	30	NOUN
-dä	30	OTHER
 geschlechtsreif	30	OTHER
 Stamps	30	NOUN
 Verrats	30	NOUN
@@ -45810,7 +45740,6 @@ Springfield	29	NOUN
 Sklavenhandels	29	NOUN
 Afroamerikanern	29	NOUN
 widerspreche	29	OTHER
-crop	29	OTHER
 dreimonatigen	29	OTHER
 ebendiese	29	OTHER
 härtere	29	OTHER
@@ -45844,7 +45773,6 @@ Supermarkt	29	NOUN
 leninistischen	29	OTHER
 Gleichbehandlung	29	NOUN
 Nothing	29	NOUN,OTHER
-rasa	29	OTHER
 ziehe	29	OTHER
 überprüfbar	29	OTHER
 Lam	29	NOUN,OTHER
@@ -45915,7 +45843,6 @@ Gesamtumsatz	29	NOUN
 Menüs	29	NOUN
 Simpsons	29	NOUN
 betriebswirtschaftlichen	29	OTHER
-vivo	29	OTHER
 Kabeln	29	NOUN
 zustehenden	29	OTHER
 Bundeskartellamt	29	NOUN
@@ -46035,7 +45962,6 @@ vergessenen	29	OTHER
 Some	29	NOUN,OTHER
 Least	29	NOUN,OTHER
 Evolutionsbiologie	29	NOUN
-awk	29	OTHER
 zeilenweise	29	OTHER
 Brennan	29	NOUN
 emuliert	29	OTHER
@@ -46561,7 +46487,6 @@ Elea	29	NOUN
 Astarte	29	NOUN
 Proportionalitätsfaktor	29	NOUN
 sowjetisches	29	OTHER
-noirs	29	OTHER
 Höflichkeit	29	NOUN
 Herrschafts	29	NOUN
 Raumfahrttechnik	29	NOUN
@@ -46587,7 +46512,6 @@ Holzstich	29	NOUN
 GPLv	29	NOUN
 Schramm	29	NOUN
 schworen	29	OTHER
-pn	29	OTHER
 Sprachforscher	29	NOUN
 abgeschoben	29	OTHER
 Tórshavn	29	NOUN
@@ -46773,7 +46697,6 @@ ukr	29	OTHER
 Phraseologismen	29	NOUN
 Cassegrain	29	NOUN
 widehat	29	OTHER
-cot	29	OTHER
 ungeschriebenen	29	OTHER
 Wyborcza	29	NOUN
 Penicilline	29	NOUN
@@ -47254,7 +47177,6 @@ Bezugspersonen	28	NOUN
 Vertrautheit	28	NOUN
 traumatische	28	OTHER
 Sklerose	28	NOUN
-offs	28	OTHER
 Hilberts	28	NOUN
 Fahrzeiten	28	NOUN
 stattgegeben	28	OTHER
@@ -47268,7 +47190,6 @@ Eclipse	28	NOUN
 Absinthe	28	NOUN,OTHER
 Tischen	28	NOUN
 codierten	28	OTHER
-spec	28	OTHER
 Arbeitsschritte	28	NOUN
 Keuper	28	NOUN
 Vogelschutzgebiete	28	NOUN
@@ -48250,7 +48171,6 @@ Emotion	27	NOUN
 Syllogismen	27	NOUN
 Urbilder	27	NOUN
 Menschsein	27	NOUN
-eidos	27	OTHER
 immateriell	27	OTHER
 suspekt	27	OTHER
 philologisch	27	OTHER
@@ -48340,7 +48260,6 @@ Großonkel	27	NOUN
 Nubien	27	NOUN
 Iunius	27	NOUN
 Machtbefugnisse	27	NOUN
-pares	27	OTHER
 niederlegen	27	OTHER
 durchschaut	27	OTHER
 Friedensordnung	27	NOUN
@@ -48427,7 +48346,6 @@ Ostafrikas	27	NOUN
 Methionin	27	NOUN
 klärte	27	OTHER
 Gattungsnamen	27	NOUN
-quem	27	OTHER
 Commune	27	NOUN,OTHER
 vernommen	27	OTHER
 Ackerbaus	27	NOUN
@@ -48581,7 +48499,6 @@ Better	27	NOUN,OTHER
 unterbreiten	27	OTHER
 Polizeibehörden	27	NOUN
 Podcasts	27	NOUN
-sches	27	OTHER
 definiertes	27	OTHER
 magmatische	27	OTHER
 Kernreaktion	27	NOUN
@@ -48676,7 +48593,6 @@ Schrank	27	NOUN
 Rosenzweig	27	NOUN
 Einheitsübersetzung	27	NOUN
 Allahs	27	NOUN
-iure	27	OTHER
 Bundesministers	27	NOUN
 Liège	27	NOUN
 Sambre	27	NOUN
@@ -48880,7 +48796,6 @@ Prüfziffer	27	NOUN
 Landesvermessung	27	NOUN
 asymptotische	27	OTHER
 Liniendienst	27	NOUN
-float	27	OTHER
 Greek	27	NOUN
 Nordvietnam	27	NOUN
 imposante	27	OTHER
@@ -48889,7 +48804,6 @@ Totenbett	27	NOUN
 überwältigenden	27	OTHER
 Botticelli	27	NOUN
 Jahrhundertmitte	27	NOUN
-kin	27	OTHER
 Walküre	27	NOUN
 GNUstep	27	NOUN
 Endoplasmatischen	27	NOUN,OTHER
@@ -48956,7 +48870,6 @@ Geselligkeit	27	NOUN
 sensorischen	27	OTHER
 EAN	27	NOUN
 LibreOffice	27	NOUN
-eff	27	OTHER
 SMTP	27	NOUN
 TLS	27	NOUN
 abführen	27	OTHER
@@ -49143,7 +49056,6 @@ Halacha	27	NOUN
 drohender	27	OTHER
 Wagenknecht	27	NOUN
 Messfehler	27	NOUN
-stub	27	OTHER
 Camping	27	NOUN
 Herrengasse	27	NOUN
 verspielt	27	OTHER
@@ -49359,7 +49271,6 @@ Rzeczpospolita	27	NOUN
 Jarosław	27	NOUN
 Prälat	27	NOUN
 Humanae	27	NOUN,OTHER
-bmod	27	OTHER
 malerisch	27	OTHER
 Horta	27	NOUN
 LBS	27	NOUN,OTHER
@@ -49811,7 +49722,6 @@ lebendigem	26	OTHER
 präpariert	26	OTHER
 Indianapolis	26	NOUN
 Götzen	26	NOUN
-yah	26	OTHER
 Rundkurs	26	NOUN
 Nachahmungen	26	NOUN
 Fernwirkung	26	NOUN
@@ -50017,7 +49927,6 @@ Pyrénées	26	NOUN
 steinzeitlichen	26	OTHER
 tolerierte	26	OTHER
 formatiert	26	OTHER
-ext	26	OTHER
 Developer	26	NOUN
 Preisbildung	26	NOUN
 institutionalisierten	26	OTHER
@@ -50563,7 +50472,6 @@ Lotterie	26	NOUN
 Kantonsregierung	26	NOUN
 Pfäffikon	26	NOUN
 DTP	26	NOUN
-dit	26	OTHER
 Picardie	26	NOUN
 ruach	26	NOUN,OTHER
 paulinische	26	OTHER
@@ -50823,7 +50731,6 @@ Nibelungenliedes	26	NOUN
 Telemachos	26	NOUN
 DKW	26	NOUN
 Neubaustrecken	26	NOUN
-św	26	OTHER
 Papias	26	NOUN
 Straßberg	26	NOUN
 Hallādsch	26	NOUN
@@ -51498,7 +51405,6 @@ zivilrechtlichen	25	OTHER
 Katalanen	25	NOUN
 Rauchs	25	NOUN
 modularen	25	OTHER
-bes	25	OTHER
 maßgebenden	25	OTHER
 Großbanken	25	NOUN
 tibetischer	25	OTHER
@@ -51524,7 +51430,6 @@ Kohlevorkommen	25	NOUN
 teleskopmasten	25	NOUN
 CTIF	25	NOUN
 Primarschule	25	NOUN
-voor	25	OTHER
 Adriaküste	25	NOUN
 Großgemeinden	25	NOUN
 Standardvarietäten	25	NOUN
@@ -51757,7 +51662,6 @@ Selbstverständnisses	25	NOUN
 Reichwein	25	NOUN
 Ideenwelt	25	NOUN
 grenzende	25	OTHER
-try	25	OTHER
 Density	25	NOUN,OTHER
 Sprites	25	NOUN
 Oszillatoren	25	NOUN
@@ -52304,7 +52208,6 @@ Blasinstrumenten	25	NOUN
 Oberhessen	25	NOUN
 malaysischen	25	OTHER
 Plac	25	NOUN,OTHER
-pmod	25	OTHER
 Pandemien	25	NOUN
 Kgl	25	NOUN,OTHER
 Fado	25	NOUN
@@ -52432,8 +52335,6 @@ Thesaban	25	NOUN
 Weinrebs	25	NOUN
 IBGP	25	NOUN
 Friaulischen	25	NOUN,OTHER
-tū	25	OTHER
-kartī	25	OTHER
 Drewermanns	25	NOUN
 Ogi	25	NOUN
 überzieht	24	OTHER
@@ -52500,7 +52401,6 @@ Chu	24	NOUN
 behandelnde	24	OTHER
 Schwämme	24	NOUN
 Kassenärztliche	24	NOUN,OTHER
-zi	24	OTHER
 forensische	24	OTHER
 Rechtsmedizin	24	NOUN
 Städter	24	NOUN
@@ -53132,7 +53032,6 @@ Zubau	24	NOUN
 Urvater	24	NOUN
 StVZO	24	NOUN
 darüberliegenden	24	OTHER
-avec	24	OTHER
 Mittelweg	24	NOUN
 Masterstudium	24	NOUN
 herkömmlich	24	OTHER
@@ -53622,7 +53521,6 @@ Hirschberg	24	NOUN
 Magnon	24	NOUN
 Judenverfolgungen	24	NOUN
 Fallbeschleunigung	24	NOUN
-perp	24	OTHER
 Nordmark	24	NOUN
 bescheidenes	24	OTHER
 Neuigkeiten	24	NOUN
@@ -53772,7 +53670,6 @@ Küster	24	NOUN
 konjugierte	24	OTHER
 Kohlrabi	24	NOUN
 Unterkiefers	24	NOUN
-moi	24	OTHER
 Romanistik	24	NOUN
 Gretchens	24	NOUN
 Gonzalo	24	NOUN
@@ -53888,7 +53785,6 @@ Hirschau	24	NOUN
 Wipper	24	NOUN
 unpraktisch	24	OTHER
 Mečiar	24	NOUN
-vnd	24	OTHER
 vordringenden	24	OTHER
 GMT	24	NOUN
 Glyphen	24	NOUN
@@ -54539,7 +54435,6 @@ mineralischer	23	OTHER
 Kuppen	23	NOUN
 bedeutenderen	23	OTHER
 Bauerschaft	23	NOUN
-eius	23	OTHER
 Filmmuseum	23	NOUN
 Blasmusik	23	NOUN
 Geschiebe	23	NOUN
@@ -54806,7 +54701,6 @@ Altenpflege	23	NOUN
 symmetrischer	23	OTHER
 anwandte	23	OTHER
 gleichwertigen	23	OTHER
-ddd	23	OTHER
 mäßiger	23	OTHER
 zurücknehmen	23	OTHER
 sprachgeschichtlich	23	OTHER
@@ -55256,7 +55150,6 @@ Hubschraubers	23	NOUN
 Kampfflugzeugen	23	NOUN
 Jungfernflug	23	NOUN
 zusammenfließen	23	OTHER
-daz	23	OTHER
 Sansculotten	23	NOUN
 Vorhöfe	23	NOUN
 aufrichten	23	OTHER
@@ -55400,7 +55293,6 @@ Nuklearwaffen	23	NOUN
 MAM	23	NOUN
 Metaboliten	23	NOUN
 siedet	23	OTHER
-shek	23	OTHER
 Husain	23	NOUN
 NW	23	NOUN
 Militärbasis	23	NOUN
@@ -55647,7 +55539,6 @@ Sem	23	NOUN,OTHER
 Energiesparlampen	23	NOUN
 Bauernkriegs	23	NOUN
 Basisvektoren	23	NOUN
-iota	23	OTHER
 Evangelikalismus	23	NOUN
 Altkreise	23	NOUN
 Handelsniederlassungen	23	NOUN
@@ -55704,7 +55595,6 @@ Kunsthistorikern	23	NOUN
 Paraphilie	23	NOUN
 Guernsey	23	NOUN
 Ameisenigel	23	NOUN
-dju	23	OTHER
 Witzel	23	NOUN
 gesehene	23	OTHER
 Sommernachtstraum	23	NOUN
@@ -55814,7 +55704,6 @@ Sesotho	23	NOUN
 Nationalsynode	23	NOUN
 Zielfernrohr	23	NOUN
 FinTS	23	NOUN
-mãi	23	OTHER
 Aalsmeer	23	NOUN
 fertigstellte	22	OTHER
 allgemeingültig	22	OTHER
@@ -56685,7 +56574,6 @@ Hanseatischen	22	NOUN,OTHER
 Antithese	22	NOUN
 Großräumen	22	NOUN
 Weltpolitik	22	NOUN
-belli	22	OTHER
 Piso	22	NOUN
 Wagenrennen	22	NOUN
 einvernehmlichen	22	OTHER
@@ -56741,7 +56629,6 @@ Legendre	22	NOUN
 DHL	22	NOUN
 Flex	22	NOUN,OTHER
 zurückgibt	22	OTHER
-bool	22	OTHER
 Carla	22	NOUN
 Joaquin	22	NOUN
 Carrie	22	NOUN
@@ -57330,7 +57217,6 @@ Universitätsgebäude	22	NOUN
 Simson	22	NOUN
 ausgereiften	22	OTHER
 Landesmuseums	22	NOUN
-bint	22	OTHER
 Tālib	22	NOUN
 Schilddrüsenhormone	22	NOUN
 Rantzau	22	NOUN
@@ -58681,7 +58567,6 @@ sorgsam	21	OTHER
 Häute	21	NOUN
 Konkurrenzkampf	21	NOUN
 Streitgespräch	21	NOUN
-their	21	OTHER
 Liedtexten	21	NOUN
 wechselndem	21	OTHER
 stabileren	21	OTHER
@@ -58726,7 +58611,6 @@ Trott	21	NOUN
 Namenspatron	21	NOUN
 auszugsweise	21	OTHER
 namespace	21	OTHER
-cmd	21	OTHER
 Need	21	NOUN,OTHER
 EPROMs	21	NOUN
 kompatibler	21	OTHER
@@ -58742,7 +58626,6 @@ Verhaltensweise	21	NOUN
 annähert	21	OTHER
 Signs	21	NOUN,OTHER
 semantisches	21	OTHER
-foo	21	OTHER
 Iterationen	21	NOUN
 passierbar	21	OTHER
 gefestigte	21	OTHER
@@ -59005,7 +58888,6 @@ Neukaledonien	21	NOUN
 Wiesel	21	NOUN
 Dordrecht	21	NOUN
 Weh	21	NOUN,OTHER
-zw	21	OTHER
 Encyclopædia	21	NOUN
 Gorgias	21	NOUN
 krankhaften	21	OTHER
@@ -59122,7 +59004,6 @@ Vorfluter	21	NOUN
 Inquiry	21	NOUN
 Silberminen	21	NOUN
 Taschenrechnern	21	NOUN
-fak	21	OTHER
 Binet	21	NOUN
 ansteigender	21	OTHER
 Demonstrativpronomen	21	NOUN
@@ -59196,7 +59077,6 @@ Olsen	21	NOUN
 Handelsmonopol	21	NOUN
 Hafenanlage	21	NOUN
 Baukultur	21	NOUN
-chō	21	OTHER
 vormodernen	21	OTHER
 Oboisten	21	NOUN
 vielfältigsten	21	OTHER
@@ -59304,7 +59184,6 @@ Beyoğlu	21	NOUN
 bestandenen	21	OTHER
 entstellt	21	OTHER
 Postleitzahlen	21	NOUN
-sort	21	OTHER
 Golanhöhen	21	NOUN
 Stimmhaftigkeit	21	NOUN
 Neuankömmlinge	21	NOUN
@@ -59500,7 +59379,6 @@ rustica	21	OTHER
 Panthera	21	NOUN
 Steuerhinterziehung	21	NOUN
 Pfeilen	21	NOUN
-amore	21	OTHER
 Transceiver	21	NOUN
 Datenbanksystem	21	NOUN
 Otello	21	NOUN
@@ -60689,7 +60567,6 @@ Phasenumwandlung	20	NOUN
 Manu	20	NOUN,OTHER
 Playhouse	20	NOUN
 Albino	20	NOUN
-them	20	OTHER
 Evil	20	NOUN
 NES	20	NOUN,OTHER
 zögernd	20	OTHER
@@ -60905,7 +60782,6 @@ Steinkohlenbergbau	20	NOUN
 Düsen	20	NOUN
 Farbmittel	20	NOUN
 Vollbild	20	NOUN
-på	20	OTHER
 Jer	20	NOUN
 Bühl	20	NOUN
 Transkriptionsfaktoren	20	NOUN
@@ -61246,8 +61122,6 @@ lebensbedrohlich	20	OTHER
 Isoglossen	20	NOUN
 CBD	20	NOUN
 ansprechend	20	OTHER
-bigl	20	OTHER
-bigr	20	OTHER
 Fürbitte	20	NOUN
 Baxter	20	NOUN
 Pneumokokken	20	NOUN
@@ -61498,7 +61372,6 @@ Urbarmachung	20	NOUN
 Steinitz	20	NOUN
 Slawistik	20	NOUN
 Banten	20	NOUN
-regni	20	OTHER
 entkräften	20	OTHER
 Privatbank	20	NOUN
 urslawischen	20	NOUN,OTHER
@@ -61517,7 +61390,6 @@ klingonische	20	OTHER
 Lactose	20	NOUN
 Buttermilch	20	NOUN
 Rothaargebirge	20	NOUN
-even	20	OTHER
 Kastor	20	NOUN
 bodennahen	20	OTHER
 Luftreinhaltung	20	NOUN
@@ -61586,7 +61458,6 @@ Stängeln	20	NOUN
 geschnitzt	20	OTHER
 ARGE	20	NOUN
 feinste	20	OTHER
-BDI	20	NOUN
 Nucleus	20	NOUN
 Inselstaates	20	NOUN
 Idstein	20	NOUN
@@ -61922,7 +61793,6 @@ Panarthropoda	20	NOUN
 Wahlalter	20	NOUN
 Dildo	20	NOUN
 Manipurs	20	NOUN
-thī	20	OTHER
 Nitzer	20	NOUN
 len	19	NOUN,OTHER
 Stillschweigen	19	NOUN
@@ -62097,7 +61967,6 @@ Streitfrage	19	NOUN
 abträglich	19	OTHER
 mimetischen	19	OTHER
 gelesene	19	OTHER
-omnes	19	OTHER
 verschlang	19	OTHER
 Macon	19	NOUN
 Kriegspolitik	19	NOUN
@@ -62804,7 +62673,6 @@ Pschyrembel	19	NOUN
 Turmbau	19	NOUN
 Gaze	19	NOUN
 Larsa	19	NOUN
-uṣur	19	OTHER
 Bop	19	NOUN
 Hollys	19	NOUN
 Textzeile	19	NOUN
@@ -63050,7 +62918,6 @@ Schädelknochen	19	NOUN
 Muenchen	19	NOUN
 Collector	19	NOUN,OTHER
 überladen	19	OTHER
-any	19	OTHER
 Konstruktor	19	NOUN
 POW	19	NOUN,OTHER
 exception	19	NOUN,OTHER
@@ -63072,7 +62939,6 @@ Frobenius	19	NOUN
 drittem	19	OTHER
 Interpretant	19	NOUN
 Fehlermeldungen	19	NOUN
-skip	19	OTHER
 untergegangene	19	OTHER
 aufgelisteten	19	OTHER
 vielversprechende	19	OTHER
@@ -63528,7 +63394,6 @@ Drehwinkel	19	NOUN
 astronomia	19	NOUN,OTHER
 Calbe	19	NOUN
 Goldvorkommen	19	NOUN
-dotsm	19	OTHER
 Folgenglieder	19	NOUN
 versiegt	19	OTHER
 Asse	19	NOUN
@@ -63883,7 +63748,6 @@ Verpfändung	19	NOUN
 Vernichtungslagers	19	NOUN
 Sammellager	19	NOUN
 oberschlesische	19	OTHER
-webm	19	OTHER
 Seitenflügeln	19	NOUN
 übliches	19	OTHER
 Kommandozeilen	19	NOUN
@@ -64072,7 +63936,6 @@ Beckum	19	NOUN
 Bernini	19	NOUN
 Zurzach	19	NOUN
 optimus	19	NOUN,OTHER
-regna	19	OTHER
 Walentina	19	NOUN
 Kantenmenge	19	NOUN
 demütigen	19	OTHER
@@ -64324,7 +64187,6 @@ Camorra	19	NOUN
 Wladikawkas	19	NOUN
 Neuenkirchen	19	NOUN
 Gräfenberg	19	NOUN
-və	19	OTHER
 VEW	19	NOUN
 Karateka	19	NOUN
 Diepholzer	19	NOUN
@@ -64343,8 +64205,6 @@ Klingenstadt	19	NOUN
 Trinovanten	19	NOUN
 Fahrkunst	19	NOUN
 Veljanov	19	NOUN
-hãi	19	OTHER
-gī	19	OTHER
 Sedisvakantismus	19	NOUN
 Timischl	19	NOUN
 Schiffkowitz	19	NOUN
@@ -65858,7 +65718,6 @@ freigegebene	18	OTHER
 Klassenkameraden	18	NOUN
 gewaltlose	18	OTHER
 Überfamilie	18	NOUN
-ddots	18	OTHER
 abgeschwächten	18	OTHER
 Krankheitsfälle	18	NOUN
 Grundkörper	18	NOUN
@@ -66755,7 +66614,6 @@ Tulln	18	NOUN
 Sündenstrafen	18	NOUN
 Gruffydd	18	NOUN
 Kils	18	NOUN,OTHER
-redir	18	OTHER
 Gamelan	18	NOUN
 Almsick	18	NOUN
 Conways	18	NOUN
@@ -67609,7 +67467,6 @@ Spülen	17	NOUN,OTHER
 Geochemie	17	NOUN
 BTU	17	NOUN
 Gallone	17	NOUN
-yield	17	OTHER
 Equity	17	NOUN
 Beirats	17	NOUN
 Umweltverbände	17	NOUN
@@ -67629,7 +67486,6 @@ Gesamtkunstwerks	17	NOUN
 aufrechter	17	OTHER
 Hügellandes	17	NOUN
 Zechstein	17	NOUN
-tonig	17	OTHER
 subventionierten	17	OTHER
 Grabmäler	17	NOUN
 dokumentarische	17	OTHER
@@ -68316,7 +68172,6 @@ LANs	17	NOUN
 Fake	17	NOUN,OTHER
 Riesa	17	NOUN
 dahingegen	17	OTHER
-sunt	17	OTHER
 hernach	17	OTHER
 Großverbände	17	NOUN
 Umfassungsmauern	17	NOUN
@@ -68675,7 +68530,6 @@ Plebejer	17	NOUN
 Gütergemeinschaft	17	NOUN
 zielenden	17	OTHER
 Kennzeichens	17	NOUN
-exist	17	OTHER
 zweistellig	17	OTHER
 extremes	17	OTHER
 justiert	17	OTHER
@@ -68876,7 +68730,6 @@ entgegennahm	17	OTHER
 nordalpinen	17	OTHER
 Siedlungsreste	17	NOUN
 Kaukasuskrieg	17	NOUN
-mph	17	OTHER
 Schlossinsel	17	NOUN
 Rüdersdorf	17	NOUN
 Tiergartens	17	NOUN
@@ -69030,7 +68883,6 @@ jähes	17	OTHER
 Rechnernetzen	17	NOUN
 SSD	17	NOUN
 Lyotard	17	NOUN
-mou	17	OTHER
 Lai	17	NOUN
 Transoxanien	17	NOUN
 Malayalam	17	NOUN
@@ -69281,7 +69133,6 @@ Renaissancezeit	17	NOUN
 Pasing	17	NOUN
 Alpinismus	17	NOUN
 MMA	17	NOUN
-dBase	17	OTHER
 komplettiert	17	OTHER
 Hebewerk	17	NOUN
 Freizeiteinrichtungen	17	NOUN
@@ -69336,7 +69187,6 @@ kodierte	17	OTHER
 Schattierungen	17	NOUN
 Balg	17	NOUN
 Kompatibilitätsgründen	17	NOUN
-lst	17	OTHER
 sterile	17	OTHER
 Landeskrankenhaus	17	NOUN
 Gesundheitsamt	17	NOUN
@@ -69373,7 +69223,6 @@ Neurosen	17	NOUN
 transformierten	17	OTHER
 Gerichtsverhandlungen	17	NOUN
 Einsatzgruppe	17	NOUN
-aan	17	OTHER
 Rieses	17	NOUN
 Geopark	17	NOUN
 OEEC	17	NOUN
@@ -69471,7 +69320,6 @@ Wiesbadens	17	NOUN
 müßte	17	OTHER
 exegetischen	17	OTHER
 Hüterin	17	NOUN
-fib	17	OTHER
 Hiskija	17	NOUN
 Seeburg	17	NOUN
 Hospitalkirche	17	NOUN
@@ -69583,7 +69431,6 @@ FB	17	NOUN,OTHER
 Tiers	17	NOUN
 Transversalwellen	17	NOUN
 gleichgerichtet	17	OTHER
-imath	17	OTHER
 Skate	17	NOUN
 hinterer	17	NOUN,OTHER
 Fendant	17	NOUN
@@ -69660,7 +69507,6 @@ Riker	17	NOUN
 Chorin	17	NOUN
 Liebenwerda	17	NOUN
 Kirchstraße	17	NOUN
-fli	17	OTHER
 Finowkanal	17	NOUN
 Finsterwalder	17	NOUN
 Pritzwalk	17	NOUN
@@ -69676,7 +69522,6 @@ Auvers	17	NOUN
 Demoiselles	17	NOUN
 Änderungsgesetz	17	NOUN
 Sonderwirtschaftszonen	17	NOUN
-ſs	17	OTHER
 Tempelrolle	17	NOUN
 Michal	17	NOUN
 Esdras	17	NOUN
@@ -70202,7 +70047,6 @@ auslöschen	16	OTHER
 FLN	16	NOUN
 schmutzigen	16	NOUN,OTHER
 Stimmanteil	16	NOUN
-cadre	16	OTHER
 Amethyst	16	NOUN
 Ölfeldern	16	NOUN
 Auslandsinvestitionen	16	NOUN
@@ -70398,7 +70242,6 @@ Dachsprache	16	NOUN
 Sprachbau	16	NOUN
 stimmloser	16	OTHER
 dialektal	16	OTHER
-fī	16	OTHER
 Schuljahren	16	NOUN
 Excel	16	NOUN
 Handwerkskammern	16	NOUN
@@ -70920,7 +70763,6 @@ Schlösschen	16	NOUN
 Cinq	16	NOUN,OTHER
 Autograph	16	NOUN
 hermeneutischen	16	OTHER
-après	16	OTHER
 beispielgebend	16	OTHER
 Päckchen	16	NOUN
 Tab	16	NOUN
@@ -71003,7 +70845,6 @@ Gerichtssaal	16	NOUN
 Stadtgründer	16	NOUN
 Nikias	16	NOUN
 aufgewiesen	16	OTHER
-wedge	16	OTHER
 Ehrlichs	16	NOUN
 Neuroleptika	16	NOUN
 Remission	16	NOUN
@@ -71192,7 +71033,6 @@ verschachtelte	16	OTHER
 Sleep	16	NOUN
 Aufzählungen	16	NOUN
 wähle	16	OTHER
-args	16	OTHER
 remove	16	OTHER
 synthetisierten	16	OTHER
 koronare	16	OTHER
@@ -71346,7 +71186,6 @@ segmentiert	16	OTHER
 ängstlich	16	OTHER
 Implantaten	16	NOUN
 festgehaltene	16	OTHER
-exFAT	16	OTHER
 Abbildern	16	NOUN
 GIMP	16	NOUN
 Sicherheitsupdates	16	NOUN
@@ -71493,7 +71332,6 @@ Dramaturgen	16	NOUN
 Schlingen	16	NOUN
 meisterhaft	16	OTHER
 Samenanlage	16	NOUN
-ell	16	OTHER
 Basisfunktionen	16	NOUN
 MLK	16	NOUN
 Knuths	16	NOUN
@@ -71971,7 +71809,6 @@ Nahverkehrszüge	16	NOUN
 KiKA	16	NOUN
 PSV	16	NOUN
 Julija	16	NOUN
-quae	16	OTHER
 Epistula	16	NOUN
 Laven	16	NOUN
 Sulcus	16	NOUN
@@ -72553,7 +72390,6 @@ förmliches	16	OTHER
 Identifier	16	NOUN
 Apollons	16	NOUN
 Bauerndorf	16	NOUN
-lich	16	NOUN,OTHER
 Scirocco	16	NOUN
 vorislamischer	16	OTHER
 turnusmäßige	16	OTHER
@@ -72651,7 +72487,6 @@ Schwerpunktsetzung	16	NOUN
 Fadenwürmer	16	NOUN
 Strömungswiderstand	16	NOUN
 Zügel	16	NOUN
-param	16	OTHER
 Hindenburgstraße	16	NOUN
 Wohnheim	16	NOUN
 Lehenshoheit	16	NOUN
@@ -73077,7 +72912,6 @@ Kusanagi	16	NOUN
 Fischauge	16	NOUN
 Provinzialwahl	16	NOUN
 Dietendorf	16	NOUN
-chmod	16	OTHER
 Cimoszewicz	16	NOUN
 Kenobi	16	NOUN
 Broda	16	NOUN
@@ -73097,7 +72931,6 @@ Steenke	16	NOUN
 Trioden	16	NOUN
 Pfeilwürmer	16	NOUN
 Leasingvertrag	16	NOUN
-kā	16	OTHER
 Gentiana	16	NOUN
 Fausta	16	NOUN
 Medini	16	NOUN
@@ -73394,7 +73227,6 @@ Beraters	15	NOUN
 Nachfolgeorganisationen	15	NOUN
 Memoirs	15	NOUN
 waza	15	OTHER
-kyō	15	OTHER
 angedeuteten	15	OTHER
 Uke	15	NOUN
 Bewegungsmuster	15	NOUN
@@ -74483,7 +74315,6 @@ Berufsschifffahrt	15	NOUN
 Präprozessor	15	NOUN
 zurückfiel	15	OTHER
 enum	15	NOUN,OTHER
-gets	15	OTHER
 Hours	15	NOUN,OTHER
 Affrikate	15	NOUN
 tschech	15	OTHER
@@ -74657,7 +74488,6 @@ konditioniert	15	OTHER
 hastig	15	OTHER
 kaschiert	15	OTHER
 gelange	15	OTHER
-apt	15	OTHER
 Contract	15	NOUN,OTHER
 SLS	15	NOUN
 dazugehörende	15	OTHER
@@ -74815,7 +74645,6 @@ steuerbaren	15	OTHER
 Entwicklungszentrum	15	NOUN
 SYS	15	NOUN,OTHER
 hierarchisches	15	OTHER
-proc	15	OTHER
 LPT	15	NOUN
 intuitiver	15	OTHER
 Kongobecken	15	NOUN
@@ -74913,7 +74742,6 @@ photoelektrischen	15	OTHER
 tabellarisch	15	OTHER
 CX	15	NOUN,OTHER
 iy	15	OTHER
-bene	15	OTHER
 Krypto	15	NOUN,OTHER
 Elektrogeräte	15	NOUN
 Gedenkplatte	15	NOUN
@@ -75246,7 +75074,6 @@ Rückwirkung	15	NOUN
 Tätigkeitsfeld	15	NOUN
 Islām	15	NOUN,OTHER
 Rabbinern	15	NOUN
-quia	15	OTHER
 Geheimgesellschaften	15	NOUN
 Prädatoren	15	NOUN
 Hafner	15	NOUN
@@ -75257,7 +75084,6 @@ DG	15	NOUN
 Messwesen	15	NOUN
 Rømer	15	NOUN
 Sentenzen	15	NOUN
-sopra	15	OTHER
 Prozessakten	15	NOUN
 verschlingen	15	OTHER
 Ramelow	15	NOUN
@@ -75368,7 +75194,6 @@ Schaper	15	NOUN
 Graubündens	15	NOUN
 Bündnerromanischen	15	NOUN,OTHER
 unterkühlten	15	OTHER
-rūḥ	15	OTHER
 Hegelsche	15	NOUN,OTHER
 Seelenteil	15	NOUN
 Weltgeistes	15	NOUN
@@ -75645,7 +75470,6 @@ erwerbsfähigen	15	OTHER
 Festungsbauten	15	NOUN
 nordindische	15	OTHER
 Allerheiligsten	15	NOUN,OTHER
-dello	15	OTHER
 altisländisch	15	OTHER
 Seherin	15	NOUN
 Tastenkombinationen	15	NOUN
@@ -75744,7 +75568,6 @@ Schwingungsebene	15	NOUN
 Bildungsanstalt	15	NOUN
 Tutor	15	NOUN
 Rektorat	15	NOUN
-buf	15	OTHER
 Vorfalls	15	NOUN
 Kesselschlacht	15	NOUN
 Fanclub	15	NOUN
@@ -75784,7 +75607,6 @@ Abschlusses	15	NOUN
 Ökonomik	15	NOUN
 Mehrwerts	15	NOUN
 ableitenden	15	OTHER
-ʿAmr	15	OTHER
 entrissen	15	OTHER
 Sarkophage	15	NOUN
 Pilgerfahrten	15	NOUN
@@ -76110,7 +75932,6 @@ Hornberg	15	NOUN
 düsteres	15	OTHER
 verfrachtet	15	OTHER
 Mulisch	15	NOUN
-ische	15	OTHER
 Oker	15	NOUN
 Lappwald	15	NOUN
 Rheiderland	15	NOUN
@@ -76328,7 +76149,6 @@ Musketen	15	NOUN
 Liparischen	15	NOUN
 Garibaldis	15	NOUN
 Marinesen	15	NOUN
-sinh	15	OTHER
 Oranjestad	15	NOUN
 hES	15	NOUN,OTHER
 EFQM	15	NOUN
@@ -76691,7 +76511,6 @@ zugelost	15	OTHER
 LVM	15	NOUN
 knotenZ	15	OTHER
 Raddurchmesser	15	NOUN
-īl	15	OTHER
 Dioptrien	15	NOUN
 Zylinderkopf	15	NOUN
 Brassert	15	NOUN
@@ -76833,7 +76652,6 @@ Gefühlswelt	14	NOUN
 Bronson	14	NOUN
 Grundtöne	14	NOUN
 Travolta	14	NOUN
-tert	14	OTHER
 wasserfreie	14	OTHER
 Ulvaeus	14	NOUN
 Erdhülle	14	NOUN
@@ -77121,7 +76939,6 @@ Glücksspielen	14	NOUN
 Felsbrocken	14	NOUN
 Reymond	14	NOUN
 Versagens	14	NOUN
-whole	14	OTHER
 verschmutzen	14	OTHER
 zufallen	14	OTHER
 abgereist	14	OTHER
@@ -77437,7 +77254,6 @@ Menhire	14	NOUN
 votiert	14	OTHER
 Baetica	14	NOUN
 Selbstbau	14	NOUN
-ler	14	OTHER
 subversiven	14	NOUN,OTHER
 aufgewachsene	14	OTHER
 Aktionsformen	14	NOUN
@@ -77657,7 +77473,6 @@ ATPase	14	NOUN
 Motorenbau	14	NOUN
 Gew	14	NOUN
 viskose	14	OTHER
-given	14	OTHER
 Ivy	14	NOUN
 BKH	14	NOUN
 produzierendes	14	OTHER
@@ -77951,7 +77766,6 @@ Zöliakie	14	NOUN
 Nivellierung	14	NOUN
 Albi	14	NOUN
 Wilfrid	14	NOUN
-urbe	14	OTHER
 Patristik	14	NOUN
 Sakraments	14	NOUN
 liturgisches	14	OTHER
@@ -78246,7 +78060,6 @@ Gemetzel	14	NOUN
 Mehraufwand	14	NOUN
 gefangengesetzt	14	OTHER
 Gesichtszügen	14	NOUN
-regum	14	OTHER
 vorbringen	14	OTHER
 auskam	14	OTHER
 charismatisch	14	OTHER
@@ -78391,7 +78204,6 @@ Linksbündnis	14	NOUN
 Botschaftern	14	NOUN
 unveröffentlichtes	14	OTHER
 Ikon	14	NOUN
-nem	14	OTHER
 lösenden	14	OTHER
 innewohnende	14	OTHER
 vereinfachende	14	OTHER
@@ -78667,9 +78479,7 @@ Kriegszustandes	14	NOUN
 Exporteure	14	NOUN
 Sicherheitskontrollen	14	NOUN
 Coupe	14	NOUN
-tout	14	OTHER
 Daus	14	NOUN
-sinc	14	OTHER
 Audiosignale	14	NOUN
 Soundkarten	14	NOUN
 Petroselinum	14	NOUN
@@ -78866,7 +78676,6 @@ Klüften	14	NOUN
 Bittenfeld	14	NOUN
 mittelschweren	14	OTHER
 Arzneimittelprüfung	14	NOUN
-seu	14	OTHER
 Nebentätigkeiten	14	NOUN
 Rezitator	14	NOUN
 Hermsdorf	14	NOUN
@@ -79122,7 +78931,6 @@ Farbinformationen	14	NOUN
 Großhirn	14	NOUN
 Pawlows	14	NOUN
 Symbolisierung	14	NOUN
-usr	14	OTHER
 aufruft	14	OTHER
 Logical	14	NOUN
 Sirup	14	NOUN
@@ -79478,7 +79286,6 @@ aufgerufenen	14	OTHER
 Wahlkapitulation	14	NOUN
 Reichskleinodien	14	NOUN
 Ruprechts	14	NOUN
-vil	14	OTHER
 Religionsfrage	14	NOUN
 Landständen	14	NOUN
 Reichskammergerichts	14	NOUN
@@ -79562,7 +79369,6 @@ Naturerbe	14	NOUN
 Meru	14	NOUN
 Velha	14	NOUN
 Sitar	14	NOUN,OTHER
-vina	14	OTHER
 Odishas	14	NOUN
 Malla	14	NOUN
 Importgüter	14	NOUN
@@ -80914,7 +80720,6 @@ Eyquem	14	NOUN
 Krauthammer	14	NOUN
 Weigels	14	NOUN
 folgeknoten	14	OTHER
-mẽ	14	OTHER
 Schutzalters	14	NOUN
 Vachss	14	NOUN
 Meerbuscher	14	NOUN
@@ -81134,7 +80939,6 @@ Castlereagh	13	NOUN
 Umsturzes	13	NOUN
 Marquês	13	NOUN
 Unterrichtsfach	13	NOUN
-forme	13	OTHER
 Himmelserscheinungen	13	NOUN
 Wayland	13	NOUN
 Eheleuten	13	NOUN
@@ -81246,7 +81050,6 @@ dionysischen	13	OTHER
 angenommener	13	OTHER
 Boyer	13	NOUN
 Kehre	13	NOUN,OTHER
-weak	13	OTHER
 Klingeln	13	NOUN,OTHER
 Grafikers	13	NOUN
 Demokratieindex	13	NOUN
@@ -81264,7 +81067,6 @@ Wettkampfsport	13	NOUN
 Teststatus	13	NOUN
 atonalen	13	OTHER
 Entflechtung	13	NOUN
-grata	13	OTHER
 anglikanisch	13	OTHER
 Hausunterricht	13	NOUN
 Ness	13	NOUN
@@ -81623,7 +81425,6 @@ eingibt	13	OTHER
 rechnergestützte	13	OTHER
 Chaucer	13	NOUN
 vorliegender	13	OTHER
-ʿAin	13	OTHER
 Silbenstruktur	13	NOUN
 irakisch	13	NOUN,OTHER
 Lissa	13	NOUN,OTHER
@@ -82016,7 +81817,6 @@ Fachkliniken	13	NOUN
 Melitta	13	NOUN
 Seitenlinien	13	NOUN
 Schlagmann	13	NOUN
-throw	13	OTHER
 Anaheim	13	NOUN
 GutsMuths	13	NOUN
 olympisch	13	OTHER
@@ -82034,7 +81834,6 @@ Spieleentwickler	13	NOUN
 unrealistische	13	OTHER
 Interessenverband	13	NOUN
 Themenfelder	13	NOUN
-bíos	13	OTHER
 Compendium	13	NOUN,OTHER
 Beimischungen	13	NOUN
 Cholesterins	13	NOUN
@@ -82086,7 +81885,6 @@ Forschungsmeinung	13	NOUN
 Schutzschild	13	NOUN
 Theophanes	13	NOUN
 Oaks	13	NOUN
-út	13	OTHER
 vorausgegangene	13	OTHER
 Regierungstätigkeit	13	NOUN
 Porphyrogennetos	13	NOUN
@@ -82224,7 +82022,6 @@ Marga	13	NOUN
 Wichita	13	NOUN
 Studiomusiker	13	NOUN
 Halls	13	NOUN
-both	13	OTHER
 Tonaufnahme	13	NOUN
 Eigenkompositionen	13	NOUN
 Rhesusfaktor	13	NOUN
@@ -82637,7 +82434,6 @@ Grégoire	13	NOUN
 Magica	13	NOUN,OTHER
 unterfränkischen	13	OTHER
 Sippenhaft	13	NOUN
-cout	13	OTHER
 Typparameter	13	NOUN
 Typumwandlung	13	NOUN
 ToString	13	NOUN
@@ -82656,7 +82452,6 @@ Bildsignal	13	NOUN
 Attrappe	13	NOUN
 Gussformen	13	NOUN
 Polygonen	13	NOUN
-culpa	13	OTHER
 Kreuzers	13	NOUN
 Unternehmensberater	13	NOUN
 Nui	13	NOUN
@@ -83014,7 +82809,6 @@ Wildkräuter	13	NOUN
 Zeitintervallen	13	NOUN
 PID	13	NOUN
 Dona	13	NOUN,OTHER
-urbs	13	OTHER
 Luwischen	13	NOUN,OTHER
 hexadezimalen	13	OTHER
 Kerngebieten	13	NOUN
@@ -83305,7 +83099,6 @@ Hartknoch	13	NOUN
 sozialkritischer	13	OTHER
 Laserstrahlen	13	NOUN
 dielektrischen	13	OTHER
-jmath	13	OTHER
 Ladungsdichte	13	NOUN
 Tscherenkow	13	NOUN
 Rüsseltiere	13	NOUN
@@ -83603,7 +83396,6 @@ Mariahilf	13	NOUN
 Ebing	13	NOUN
 Rechtsmediziner	13	NOUN
 verwehrte	13	OTHER
-unum	13	OTHER
 Georgengarten	13	NOUN
 Salviati	13	NOUN
 Grassi	13	NOUN
@@ -84478,7 +84270,6 @@ Doderer	13	NOUN
 MSN	13	NOUN
 Dolce	13	NOUN,OTHER
 Advertising	13	NOUN,OTHER
-could	13	OTHER
 Career	13	NOUN
 Melodrams	13	NOUN
 Diplomprüfung	13	NOUN
@@ -84495,7 +84286,6 @@ Schauspielausbildung	13	NOUN
 doppeltem	13	OTHER
 Tiny	13	NOUN
 Unwettern	13	NOUN
-albus	13	OTHER
 Personenbahnhof	13	NOUN
 Dienstort	13	NOUN
 MPG	13	NOUN
@@ -84744,7 +84534,6 @@ Nebenfigur	13	NOUN
 Großspenden	13	NOUN
 linksextremistische	13	OTHER
 Außenwänden	13	NOUN
-autem	13	OTHER
 Diophantos	13	NOUN
 Servlets	13	NOUN
 rationalem	13	OTHER
@@ -84973,7 +84762,6 @@ Kulturroute	13	NOUN
 Saaleck	13	NOUN
 Bornhöved	13	NOUN
 Hochbrücke	13	NOUN
-xmlns	13	OTHER
 animieren	13	OTHER
 Broterwerb	13	NOUN
 Bracht	13	NOUN
@@ -85066,7 +84854,6 @@ Verkehrsträgern	13	NOUN
 Unmenschlichkeit	13	NOUN
 Somalier	13	NOUN
 Schari	13	NOUN
-ngoma	13	OTHER
 Dummkopf	13	NOUN
 Ehrenkodex	13	NOUN
 Juristin	13	NOUN
@@ -85103,7 +84890,6 @@ Scheibenbremsen	13	NOUN
 Gravettien	13	NOUN
 ČSFR	13	NOUN
 Zeman	13	NOUN
-palác	13	OTHER
 strana	13	NOUN,OTHER
 Fahrradfahren	13	NOUN
 Hurrikane	13	NOUN
@@ -85260,7 +85046,6 @@ Mähne	13	NOUN
 Schüssen	13	NOUN
 Stammtöne	13	NOUN
 Lowland	13	NOUN
-mwka	13	OTHER
 Parzival	13	NOUN
 Schnees	13	NOUN
 Kartoffelsorten	13	NOUN
@@ -85393,7 +85178,6 @@ liberianischen	13	OTHER
 Townships	13	NOUN
 Kriegsgräberfürsorge	13	NOUN
 Conté	13	NOUN
-muros	13	OTHER
 Erzählband	13	NOUN
 BMF	13	NOUN
 Geltendmachung	13	NOUN
@@ -85685,8 +85469,6 @@ Bilaspur	13	NOUN
 Haryanas	13	NOUN
 Bärengraben	13	NOUN
 KNN	13	NOUN
-kartā	13	OTHER
-lī	13	OTHER
 Inodes	13	NOUN,OTHER
 Guérard	13	NOUN
 Schmidberger	13	NOUN
@@ -85948,7 +85730,6 @@ Fragenden	12	NOUN,OTHER
 unangemessene	12	OTHER
 banal	12	OTHER
 Stufung	12	NOUN
-archē	12	OTHER
 Meteoren	12	NOUN
 zweigeteilten	12	OTHER
 Untergattungen	12	NOUN
@@ -85972,7 +85753,6 @@ soldatischen	12	OTHER
 fanatischer	12	OTHER
 Indianerterritorium	12	NOUN
 Geburtsstätte	12	NOUN
-été	12	OTHER
 getrocknetes	12	OTHER
 Nursultan	12	NOUN
 ungebremst	12	OTHER
@@ -86076,7 +85856,6 @@ desertierte	12	OTHER
 Unmoral	12	NOUN
 Sexualpraktik	12	NOUN
 Vanity	12	NOUN
-shall	12	OTHER
 Besant	12	NOUN
 Krumm	12	NOUN,OTHER
 Hanni	12	NOUN
@@ -86269,7 +86048,6 @@ Wertverlust	12	NOUN
 Zeitintervalle	12	NOUN
 Fischsterben	12	NOUN
 schwererer	12	OTHER
-auff	12	OTHER
 gefiederten	12	OTHER
 Jehol	12	NOUN
 Signalgeber	12	NOUN
@@ -86748,7 +86526,6 @@ Steinblöcke	12	NOUN
 oktaedrische	12	OTHER
 Trinkwasserverordnung	12	NOUN
 Tombak	12	NOUN
-sel	12	OTHER
 aromatischer	12	OTHER
 Bleiweiß	12	NOUN
 gelöstes	12	OTHER
@@ -87622,7 +87399,6 @@ Generalstabsoffizier	12	NOUN
 Sfax	12	NOUN
 Carthago	12	NOUN
 Solz	12	NOUN
-ptr	12	OTHER
 unsinnige	12	OTHER
 Mehrfachvererbung	12	NOUN
 Dateiendungen	12	NOUN
@@ -87666,7 +87442,6 @@ Zeichentheorie	12	NOUN
 Zusammentragen	12	NOUN,OTHER
 Compilerbau	12	NOUN
 Austauschformat	12	NOUN
-lès	12	OTHER
 Wolfsrudel	12	NOUN
 nordirischen	12	OTHER
 Antimykotika	12	NOUN
@@ -87715,7 +87490,6 @@ Schuldenkrise	12	NOUN
 Sapt	12	NOUN
 entgeht	12	OTHER
 abgefasste	12	OTHER
-ille	12	OTHER
 ostwestfälischen	12	OTHER
 Rheinlands	12	NOUN
 Kriegsschuld	12	NOUN
@@ -88122,7 +87896,6 @@ Erfolgsserie	12	NOUN
 Verbindungsbüro	12	NOUN
 Tausendkorngewicht	12	NOUN
 Mischwäldern	12	NOUN
-fir	12	NOUN,OTHER
 Lend	12	NOUN,OTHER
 Ettore	12	NOUN
 Kernforschungszentrum	12	NOUN
@@ -88465,7 +88238,6 @@ Hochachse	12	NOUN
 aerodynamischer	12	OTHER
 Ultraleichtflugzeug	12	NOUN
 Mikojan	12	NOUN
-pix	12	OTHER
 Aéronautique	12	NOUN,OTHER
 Mustang	12	NOUN
 asymmetrisches	12	OTHER
@@ -88665,7 +88437,6 @@ Schmiedestraße	12	NOUN
 Referenzzählung	12	NOUN
 Novize	12	NOUN
 zahlloser	12	OTHER
-opere	12	OTHER
 Prohibitorum	12	NOUN,OTHER
 Gegensätzlichkeit	12	NOUN
 Gnadengesuch	12	NOUN
@@ -89228,7 +88999,6 @@ Palladio	12	NOUN
 Unterhaltungen	12	NOUN
 sentimentalische	12	OTHER
 Verliebtheit	12	NOUN
-seize	12	OTHER
 Sinnenwelt	12	NOUN
 Realist	12	NOUN
 Essayisten	12	NOUN
@@ -89795,7 +89565,6 @@ GK	12	NOUN,OTHER
 Monopolkommission	12	NOUN
 Tuschmalerei	12	NOUN
 Maltechniken	12	NOUN
-fdisk	12	OTHER
 Datenträgersignatur	12	NOUN
 Zellschichten	12	NOUN
 Knochenmetastasen	12	NOUN
@@ -89919,7 +89688,6 @@ Höhenzugs	12	NOUN
 Verkehrsraum	12	NOUN
 Logitech	12	NOUN
 Schrotrauschen	12	NOUN
-bij	12	OTHER
 Urnenfelderkultur	12	NOUN
 ledige	12	OTHER
 ran	12	OTHER
@@ -90037,7 +89805,6 @@ Tomasz	12	NOUN
 Weltverbände	12	NOUN
 Laubmoose	12	NOUN
 Wirtszellen	12	NOUN
-attr	12	OTHER
 Winfield	12	NOUN
 Delfinen	12	NOUN
 Legionären	12	NOUN
@@ -90102,7 +89869,6 @@ Einheitsquaternion	12	NOUN
 Mariachi	12	NOUN
 Soldier	12	NOUN,OTHER
 Nutte	12	NOUN
-hide	12	OTHER
 Bezogenheit	12	NOUN
 belässt	12	OTHER
 dekorativer	12	OTHER
@@ -90110,7 +89876,6 @@ Pompadour	12	NOUN
 Textfassungen	12	NOUN
 Novelas	12	NOUN
 Bombast	12	NOUN
-chez	12	OTHER
 Textsorten	12	NOUN
 unbeholfen	12	OTHER
 Mahnmals	12	NOUN
@@ -90251,7 +90016,6 @@ Bandar	12	NOUN
 Wenningstedt	12	NOUN
 Munkmarsch	12	NOUN
 eingelassenen	12	OTHER
-lutea	12	OTHER
 Saisonarbeiter	12	NOUN
 Haitianer	12	NOUN
 Sénégal	12	NOUN
@@ -90269,7 +90033,6 @@ Radek	12	NOUN
 Walcker	12	NOUN
 Reihenschwingkreis	12	NOUN
 Bodenfunde	12	NOUN
-acide	12	OTHER
 rundenbasierte	12	OTHER
 Kreationismus	12	NOUN
 Zuwanderungen	12	NOUN
@@ -90326,7 +90089,6 @@ RCS	12	NOUN
 Flusshafen	12	NOUN
 eulerscher	12	OTHER
 Massenpunkt	12	NOUN
-cosh	12	OTHER
 Containerformat	12	NOUN
 Wirkleistung	12	NOUN
 Schwarzmeerraum	12	NOUN
@@ -90419,7 +90181,6 @@ Kindertagen	12	NOUN
 herannahenden	12	OTHER
 Autorensysteme	12	NOUN
 Schardscha	12	NOUN
-diff	12	OTHER
 Aschen	12	NOUN
 Pompeii	12	NOUN
 Clearance	12	NOUN,OTHER
@@ -90811,7 +90572,6 @@ Außengebiet	12	NOUN
 reift	12	OTHER
 Vangelis	12	NOUN
 Scratching	12	NOUN
-vrch	12	OTHER
 Platanus	12	NOUN
 Breloh	12	NOUN
 Thessalonich	12	NOUN
@@ -91005,7 +90765,6 @@ Problemgröße	12	NOUN
 BlitzPlus	12	NOUN
 Stallupönen	12	NOUN
 genitalen	12	OTHER
-sedlo	12	OTHER
 Umgreifenden	12	NOUN
 Wehrpflichtgesetz	12	NOUN
 Jonsdorf	12	NOUN
@@ -91172,8 +90931,6 @@ Imphal	12	NOUN
 AIADMK	12	NOUN
 Uttarakhands	12	NOUN
 Westbengalens	12	NOUN
-āp	12	OTHER
-rahī	12	OTHER
 Meditierenden	12	NOUN
 Mårbacka	12	NOUN
 Polycarpi	12	NOUN
@@ -91596,7 +91353,6 @@ Rechtsgebiet	11	NOUN
 Bewerbers	11	NOUN
 Mitbestimmungsrecht	11	NOUN
 Rechtsträger	11	NOUN
-ater	11	OTHER
 Konsekration	11	NOUN
 cisalpina	11	OTHER
 Narbonensis	11	NOUN,OTHER
@@ -91978,7 +91734,6 @@ Arabistik	11	NOUN
 drittletzten	11	OTHER
 Schams	11	NOUN,OTHER
 reziprok	11	OTHER
-mā	11	OTHER
 Vokalisierung	11	NOUN
 Spatial	11	NOUN,OTHER
 Dateiformats	11	NOUN
@@ -92223,8 +91978,6 @@ adsorbieren	11	OTHER
 krebserzeugend	11	OTHER
 Verarbeitungs	11	NOUN
 Ytterby	11	NOUN
-used	11	OTHER
-found	11	OTHER
 Quants	11	NOUN
 Hexahydrat	11	NOUN
 kubischer	11	OTHER
@@ -93202,7 +92955,6 @@ Bästlein	11	NOUN
 Stroustrup	11	NOUN
 IEnumerable	11	NOUN
 finally	11	OTHER
-uint	11	OTHER
 Lesezugriff	11	NOUN
 Mustermann	11	NOUN
 volatile	11	OTHER
@@ -93226,7 +92978,6 @@ anzusteuern	11	OTHER
 vertretenden	11	OTHER
 spärlicher	11	OTHER
 Rechtsgrund	11	NOUN
-actio	11	OTHER
 schuldhaft	11	NOUN,OTHER
 Kausalzusammenhang	11	NOUN
 Tarapacá	11	NOUN
@@ -93578,7 +93329,6 @@ direktdemokratischen	11	OTHER
 Friedensforscher	11	NOUN
 Sorgeberechtigten	11	NOUN,OTHER
 eigne	11	OTHER
-fait	11	OTHER
 systembedingt	11	OTHER
 segmentierte	11	OTHER
 zivilgesellschaftlichen	11	OTHER
@@ -93593,7 +93343,6 @@ Massendemonstration	11	NOUN
 Konsistoriums	11	NOUN
 Stockum	11	NOUN
 Sondergemeinschaften	11	NOUN
-loco	11	OTHER
 Gear	11	NOUN
 Studienort	11	NOUN
 Ruff	11	NOUN,OTHER
@@ -93721,7 +93470,6 @@ beeinflusse	11	OTHER
 Wechselkursen	11	NOUN
 Partnerländer	11	NOUN
 fünfzigsten	11	OTHER
-issue	11	OTHER
 Fünfer	11	NOUN
 Geldinstitute	11	NOUN
 Saarabstimmung	11	NOUN
@@ -93777,7 +93525,6 @@ Knallen	11	NOUN,OTHER
 fotografisches	11	OTHER
 Granma	11	NOUN
 nordvietnamesischen	11	OTHER
-eː	11	OTHER
 Verbes	11	NOUN
 Obdachlosigkeit	11	NOUN
 Oberförsterei	11	NOUN
@@ -94955,7 +94702,6 @@ Albright	11	NOUN
 Leinwanddebüt	11	NOUN
 ärmlich	11	OTHER
 Dekans	11	NOUN
-didn	11	OTHER
 Fürchtegott	11	NOUN
 Kunstverständnis	11	NOUN
 Gründungsdokument	11	NOUN
@@ -94973,7 +94719,6 @@ Rotlichtviertel	11	NOUN
 serverseitige	11	OTHER
 Sprachumfang	11	NOUN
 Kurzschreibweise	11	NOUN
-obj	11	OTHER
 Yverdon	11	NOUN
 Saales	11	NOUN
 fabelhafte	11	OTHER
@@ -94993,7 +94738,6 @@ Cinna	11	NOUN
 Rechtsbrüche	11	NOUN
 Bibracte	11	NOUN
 Alesia	11	NOUN
-alea	11	OTHER
 Veni	11	NOUN,OTHER
 Apophthegmata	11	NOUN
 okzidentalen	11	OTHER
@@ -95525,7 +95269,6 @@ Betriebsgesellschaft	11	NOUN
 essentia	11	OTHER
 geläufigste	11	OTHER
 Motala	11	NOUN
-ström	11	OTHER
 Nkrumah	11	NOUN
 Bartenwalen	11	NOUN
 Tümmler	11	NOUN
@@ -95569,7 +95312,6 @@ Nachsilbe	11	NOUN
 erübrigte	11	OTHER
 Sequenzanalyse	11	NOUN
 Kupferzeit	11	NOUN
-rebus	11	OTHER
 Treppenhauses	11	NOUN
 vernahm	11	OTHER
 Begleitumstände	11	NOUN
@@ -95653,7 +95395,6 @@ Sprosses	11	NOUN
 Kernteilungen	11	NOUN
 Garderoben	11	NOUN
 Lichtspielhaus	11	NOUN
-hline	11	OTHER
 Lausanner	11	NOUN
 marokkanischer	11	OTHER
 eingeschobenen	11	OTHER
@@ -95924,7 +95665,6 @@ Persönlichkeits	11	NOUN
 Filzlaus	11	NOUN
 Größenunterschied	11	NOUN
 Brutkolonie	11	NOUN
-each	11	OTHER
 Breitensuche	11	NOUN
 Tlingit	11	NOUN
 driften	11	OTHER
@@ -96089,7 +95829,6 @@ Magnetrons	11	NOUN
 Antennengewinn	11	NOUN
 boldsymbol	11	OTHER
 Tatzeit	11	NOUN
-poena	11	OTHER
 Götze	11	NOUN
 nachgeschlagen	11	OTHER
 Gedankenstrich	11	NOUN
@@ -96279,7 +96018,6 @@ Pfarrhof	11	NOUN
 Wellmich	11	NOUN
 Primärkreislauf	11	NOUN
 suchend	11	OTHER
-né	11	OTHER
 altiranischen	11	OTHER
 Syros	11	NOUN
 Hypostase	11	NOUN
@@ -96484,7 +96222,6 @@ Ermächtigungsgesetze	11	NOUN
 Temporal	11	NOUN,OTHER
 Wasserhaushaltsgesetz	11	NOUN
 Traminer	11	NOUN
-nozze	11	OTHER
 subkulturelle	11	OTHER
 Fricktal	11	NOUN
 Walburga	11	NOUN
@@ -96998,7 +96735,6 @@ Kursbuchstrecke	11	NOUN
 Holzblasinstrumenten	11	NOUN
 Tetanus	11	NOUN
 Voerde	11	NOUN
-ideae	11	OTHER
 Berichtsjahr	11	NOUN
 Weinbeeren	11	NOUN
 Karteninhabers	11	NOUN
@@ -97405,7 +97141,6 @@ Vidhan	11	NOUN
 splice	11	OTHER
 Tripuras	11	NOUN
 Parasitoide	11	NOUN,OTHER
-hũ	11	OTHER
 Heegewaldt	11	NOUN
 Klarsfelds	11	NOUN
 Ölands	11	NOUN
@@ -97665,7 +97400,6 @@ Paddington	10	NOUN
 Großnichte	10	NOUN
 Plaque	10	NOUN,OTHER
 hisste	10	OTHER
-lógos	10	OTHER
 einteilt	10	OTHER
 Sprengladungen	10	NOUN
 habilitiert	10	OTHER
@@ -98172,7 +97906,6 @@ austauscht	10	OTHER
 Kasussystem	10	NOUN
 adverbiale	10	OTHER
 absolutus	10	OTHER
-kī	10	OTHER
 sprachgeschichtlichen	10	OTHER
 zähflüssige	10	OTHER
 Lecce	10	NOUN
@@ -98804,7 +98537,6 @@ Teamim	10	NOUN
 Josuas	10	NOUN
 Zunz	10	NOUN
 Bibelkritik	10	NOUN
-ʿĪsā	10	OTHER
 Rhomäer	10	NOUN
 Christusmonogramm	10	NOUN
 neupersischen	10	NOUN,OTHER
@@ -99411,7 +99143,6 @@ Staatskult	10	NOUN
 Verschärfungen	10	NOUN
 Untaten	10	NOUN
 Archivar	10	NOUN
-atque	10	OTHER
 Herrscherkult	10	NOUN
 Gentilnamen	10	NOUN
 finanzpolitischen	10	OTHER
@@ -99923,7 +99654,6 @@ organisierenden	10	OTHER
 unterfüttert	10	OTHER
 Brill	10	NOUN
 Ridder	10	NOUN
-faba	10	OTHER
 Wöhrd	10	NOUN
 Mindel	10	NOUN
 Ilz	10	NOUN
@@ -100209,7 +99939,6 @@ domestica	10	OTHER
 religionsgeschichtliche	10	OTHER
 Werturteilen	10	NOUN
 Wirtschaftsethik	10	NOUN
-bonum	10	OTHER
 Transzendentalien	10	NOUN
 Entscheidungssituationen	10	NOUN
 Segnatura	10	NOUN
@@ -101193,7 +100922,6 @@ Missbrauchsfällen	10	NOUN
 Crescendo	10	NOUN
 Chaitin	10	NOUN
 antikatholische	10	OTHER
-oplus	10	OTHER
 Farbspektrum	10	NOUN
 allumfassende	10	OTHER
 Carabinieri	10	NOUN
@@ -102164,7 +101892,6 @@ Forschungsfragen	10	NOUN
 syllogistischen	10	OTHER
 disziplinierten	10	OTHER
 Gleb	10	NOUN
-parte	10	OTHER
 Stickstoffdünger	10	NOUN
 Palisander	10	NOUN
 Blauwals	10	NOUN
@@ -102568,7 +102295,6 @@ Repressionsmaßnahmen	10	NOUN
 annehmbar	10	OTHER
 ungelöstes	10	OTHER
 unerträgliche	10	OTHER
-virtù	10	OTHER
 tatenlos	10	OTHER
 Geschäftsreisen	10	NOUN
 Ippolito	10	NOUN
@@ -102829,7 +102555,6 @@ Hultschiner	10	NOUN
 epileptischer	10	OTHER
 MSD	10	NOUN
 Sesquiterpene	10	NOUN
-molle	10	OTHER
 SLV	10	NOUN
 zarter	10	OTHER
 Unabhängigkeitskriege	10	NOUN
@@ -103363,7 +103088,6 @@ Mährer	10	NOUN
 Vratislav	10	NOUN
 republiky	10	OTHER
 Malá	10	NOUN
-obec	10	OTHER
 Beeke	10	NOUN
 VIIa	10	NOUN
 Dictys	10	NOUN
@@ -103776,7 +103500,6 @@ NPP	10	NOUN
 Sekondi	10	NOUN
 Ghazālīs	10	NOUN
 Halladsch	10	NOUN
-ḥaqq	10	OTHER
 javanischen	10	NOUN,OTHER
 Botenstoffen	10	NOUN
 Gobierno	10	NOUN,OTHER
@@ -104596,7 +104319,6 @@ Inuvik	10	NOUN
 Iqaluit	10	NOUN
 Eidinghausen	10	NOUN
 Werste	10	NOUN
-wîp	10	OTHER
 Notfunkbaken	10	NOUN
 Wasgau	10	NOUN
 Helveticat	10	NOUN
@@ -104607,7 +104329,6 @@ Schweineartigen	10	NOUN
 Tabellenführung	10	NOUN
 Nanomaterialien	10	NOUN
 McAuliffe	10	NOUN
-edges	10	OTHER
 Chongqings	10	NOUN
 Facharztbezeichnung	10	NOUN
 Tönisberg	10	NOUN
@@ -104660,9 +104381,6 @@ corv	10	OTHER
 Verbandsdirektor	10	NOUN
 Zuchering	10	NOUN
 Grimhild	10	NOUN
-ādmī	10	OTHER
-thā	10	OTHER
-gā	10	OTHER
 Latimeria	10	NOUN
 Esico	10	NOUN
 Belvederer	10	NOUN
@@ -104699,7 +104417,6 @@ Taiwans	9	NOUN
 Starbesetzung	9	NOUN
 nichtklassische	9	OTHER
 Modallogik	9	NOUN
-vdash	9	OTHER
 unentscheidbar	9	OTHER
 Gaumont	9	NOUN
 Laemmle	9	NOUN
@@ -104772,7 +104489,6 @@ mutagene	9	NOUN,OTHER
 hellgelb	9	OTHER
 Schmelzpunkten	9	NOUN
 stimmliche	9	OTHER
-meets	9	OTHER
 gediegener	9	OTHER
 Kryolith	9	NOUN
 Verformbarkeit	9	NOUN
@@ -104910,7 +104626,6 @@ Soult	9	NOUN
 reorganisierten	9	OTHER
 vorrückte	9	OTHER
 Vitoria	9	NOUN
-ciel	9	OTHER
 Frühlingsvollmond	9	NOUN
 Kitchen	9	NOUN
 Denzel	9	NOUN
@@ -105115,7 +104830,6 @@ Konfliktsituation	9	NOUN
 perfektionieren	9	OTHER
 Kanō	9	NOUN
 Fersen	9	NOUN
-domo	9	OTHER
 Abukir	9	NOUN
 Wunderheiler	9	NOUN
 Oströmern	9	NOUN
@@ -105155,7 +104869,6 @@ kinderreiche	9	OTHER
 Tomis	9	NOUN
 Kantabrischen	9	NOUN
 Diarrhoe	9	NOUN
-quis	9	OTHER
 Bassus	9	NOUN
 Lebenshälfte	9	NOUN
 Sueskanals	9	NOUN
@@ -105300,7 +105013,6 @@ Finest	9	NOUN,OTHER
 Filocalus	9	NOUN
 Friedensfest	9	NOUN
 Flüssigkeitssäule	9	NOUN
-sacer	9	OTHER
 Martialis	9	NOUN
 introvertiert	9	OTHER
 Dorstfeld	9	NOUN
@@ -105650,7 +105362,6 @@ Arbeitsmärkten	9	NOUN
 tariflich	9	OTHER
 Plz	9	NOUN,OTHER
 Execution	9	NOUN,OTHER
-mov	9	OTHER
 Gerätetreibern	9	NOUN
 unvermeidbaren	9	OTHER
 Intervallschachtelung	9	NOUN
@@ -105796,7 +105507,6 @@ Differenzialgleichungen	9	NOUN
 Nährstoffmangel	9	NOUN
 haltbarer	9	OTHER
 Monkeys	9	NOUN
-makes	9	OTHER
 genormter	9	OTHER
 Betankung	9	NOUN
 Hutchison	9	NOUN
@@ -105960,7 +105670,6 @@ Britzer	9	NOUN
 Literaturnobelpreisträgerin	9	NOUN
 Ipswich	9	NOUN
 Soloalben	9	NOUN
-leave	9	OTHER
 orchestralen	9	OTHER
 Airports	9	NOUN
 nai	9	NOUN,OTHER
@@ -106427,7 +106136,6 @@ KrV	9	NOUN
 Blackmore	9	NOUN
 Gnostizismus	9	NOUN
 Einzelstück	9	NOUN
-dž	9	OTHER
 detailgetreu	9	OTHER
 Achat	9	NOUN
 Bitterfelder	9	NOUN
@@ -106488,7 +106196,6 @@ Széchenyi	9	NOUN
 aufflammenden	9	OTHER
 Kriegsphase	9	NOUN
 Vörösmarty	9	NOUN
-tér	9	OTHER
 Nemzeti	9	NOUN
 zweiterfolgreichste	9	OTHER
 Konditoreien	9	NOUN
@@ -106874,7 +106581,6 @@ Patsy	9	NOUN
 Kirchengemeinschaften	9	NOUN
 Ehrenvorrang	9	NOUN
 Glaubensaussagen	9	NOUN
-curae	9	OTHER
 Todesgefahr	9	NOUN
 Schuldfrage	9	NOUN
 Versicherungsgruppe	9	NOUN
@@ -107120,7 +106826,6 @@ Jacobson	9	NOUN
 Ilya	9	NOUN
 Kernaufgabe	9	NOUN
 Funktionseinheiten	9	NOUN
-eval	9	OTHER
 Leinster	9	NOUN
 Bangor	9	NOUN
 Brigantia	9	NOUN
@@ -107484,7 +107189,6 @@ Fehlerquote	9	NOUN
 skandinavisch	9	OTHER
 festlandskandinavischen	9	OTHER
 Fars	9	NOUN
-jeg	9	OTHER
 Rig	9	NOUN
 Satzteil	9	NOUN
 Puccinia	9	NOUN
@@ -107965,7 +107669,6 @@ generalüberholt	9	OTHER
 Glühbirne	9	NOUN
 Nordwestseite	9	NOUN
 Léo	9	NOUN
-pieds	9	OTHER
 Attacks	9	NOUN
 Schleppe	9	NOUN
 Bauprinzip	9	NOUN
@@ -108415,7 +108118,6 @@ Klassifikators	9	NOUN
 correct	9	OTHER
 kombinierter	9	OTHER
 Signifikanztest	9	NOUN
-notin	9	OTHER
 dezidierte	9	OTHER
 Großflughafen	9	NOUN
 reparierte	9	OTHER
@@ -108544,7 +108246,6 @@ ansprechenden	9	OTHER
 Testperson	9	NOUN
 Rhomboeder	9	NOUN
 Filesystem	9	NOUN,OTHER
-gz	9	OTHER
 UMSDOS	9	NOUN
 Sicherungskopie	9	NOUN
 Ghadames	9	NOUN
@@ -108899,7 +108600,6 @@ Ertrags	9	NOUN
 Erfolgswahrscheinlichkeit	9	NOUN
 chien	9	NOUN,OTHER
 Šamaš	9	NOUN
-sîn	9	OTHER
 Ziusudra	9	NOUN
 Megiddo	9	NOUN
 bedrückenden	9	OTHER
@@ -108964,7 +108664,6 @@ Legnano	9	NOUN
 Bouvines	9	NOUN
 Hausmachtkomplex	9	NOUN
 Kurfürstenwürde	9	NOUN
-statu	9	OTHER
 gelenkter	9	OTHER
 Versorgungsengpässen	9	NOUN
 väterliches	9	OTHER
@@ -109337,7 +109036,6 @@ Chālid	9	NOUN
 Tschadsees	9	NOUN
 Usbek	9	NOUN,OTHER
 Religionsgelehrten	9	NOUN
-mūn	9	OTHER
 herrscherliche	9	OTHER
 Speisevorschriften	9	NOUN
 Schriftbesitzer	9	NOUN
@@ -109519,7 +109217,6 @@ Swifts	9	NOUN
 poetologische	9	OTHER
 einmischte	9	OTHER
 Leserinnen	9	NOUN
-schw	9	OTHER
 ganzheitliches	9	OTHER
 Bassgitarre	9	NOUN
 Lovett	9	NOUN
@@ -109537,7 +109234,6 @@ Reformbemühungen	9	NOUN
 venetianischen	9	OTHER
 Gewaltexzesse	9	NOUN
 Grundsatzfragen	9	NOUN
-vous	9	OTHER
 inniger	9	OTHER
 Problematisierung	9	NOUN
 unzerstörbaren	9	OTHER
@@ -110373,7 +110069,6 @@ Kleinsäuger	9	NOUN
 Djenné	9	NOUN
 theokratische	9	OTHER
 Azawad	9	NOUN
-juin	9	OTHER
 Goldminen	9	NOUN
 Gemeindeverwaltungen	9	NOUN
 Mobilières	9	NOUN
@@ -110536,7 +110231,6 @@ Programmstart	9	NOUN
 Blattfläche	9	NOUN
 einerlei	9	OTHER
 conv	9	NOUN,OTHER
-sdot	9	OTHER
 Zellwänden	9	NOUN
 Mnemosyne	9	NOUN
 Litochoro	9	NOUN
@@ -110547,7 +110241,6 @@ Fürsterzbischof	9	NOUN
 Spedition	9	NOUN
 Systemgrenzen	9	NOUN
 Fernmetastasen	9	NOUN
-cells	9	OTHER
 Energiesicherheit	9	NOUN
 gastiert	9	OTHER
 ungestraft	9	OTHER
@@ -110737,7 +110430,6 @@ Skinners	9	NOUN
 betone	9	OTHER
 Abbottabad	9	NOUN
 Vorbemerkung	9	NOUN
-huset	9	OTHER
 Infinitivendung	9	NOUN
 neuenglischen	9	OTHER
 umgestürzt	9	OTHER
@@ -111226,10 +110918,8 @@ Günstlinge	9	NOUN
 Spätklassizismus	9	NOUN
 artenarme	9	OTHER
 Teilergebnisse	9	NOUN
-älv	9	OTHER
 Maränen	9	NOUN
 Wehrdienstleistenden	9	NOUN
-för	9	OTHER
 Tanzform	9	NOUN
 Charlottesville	9	NOUN
 Kimi	9	NOUN
@@ -111432,7 +111122,6 @@ typischem	9	OTHER
 Regionalentwicklung	9	NOUN
 exportorientierten	9	OTHER
 Freiheitsberaubung	9	NOUN
-biti	9	OTHER
 Vergangenheitsformen	9	NOUN
 abgegriffen	9	OTHER
 IHO	9	NOUN
@@ -111447,7 +111136,6 @@ Solna	9	NOUN
 Stadtinsel	9	NOUN
 Ritterhaus	9	NOUN
 Buchstabenverbindungen	9	NOUN
-är	9	OTHER
 Meereswasser	9	NOUN
 Landsäugetier	9	NOUN
 Landreformen	9	NOUN
@@ -111507,7 +111195,6 @@ Rollback	9	NOUN
 Bashir	9	NOUN
 Amtskollege	9	NOUN
 Menschenrechtsgruppen	9	NOUN
-pitā	9	OTHER
 periphrastische	9	OTHER
 diözische	9	OTHER
 Hebewerke	9	NOUN
@@ -111891,7 +111578,6 @@ antikolonialen	9	OTHER
 Radiogeräte	9	NOUN
 Waldbrüder	9	NOUN
 Blutmahlzeit	9	NOUN
-civis	9	OTHER
 startIndex	9	OTHER
 Horeb	9	NOUN
 Selbstoffenbarung	9	NOUN
@@ -111999,7 +111685,6 @@ External	9	NOUN,OTHER
 europapolitische	9	OTHER
 Brünigbahn	9	NOUN
 Rothorn	9	NOUN
-intl	9	OTHER
 Diac	9	NOUN
 Mulatte	9	NOUN
 Zweisimmen	9	NOUN
@@ -112089,7 +111774,6 @@ Stuttgartensia	9	NOUN
 masoretischer	9	OTHER
 Consecutivum	9	NOUN
 Arabic	9	NOUN
-ḥadīṯ	9	OTHER
 Bildhöhe	9	NOUN
 Playboys	9	NOUN
 Nanzhao	9	NOUN
@@ -112353,7 +112037,6 @@ Steckenpferd	9	NOUN
 Tanning	9	NOUN
 Gesellschaftskreisen	9	NOUN
 ausgehungert	9	OTHER
-bovis	9	OTHER
 Anzeigepflicht	9	NOUN
 balancierte	9	OTHER
 speicherprogrammierbaren	9	OTHER
@@ -112622,7 +112305,6 @@ VTE	9	NOUN
 Kontrastgesellschaft	9	NOUN
 Tirthankaras	9	NOUN
 Kriegshandwerk	9	NOUN
-dla	9	OTHER
 Painters	9	NOUN
 erhängte	9	OTHER
 moabitischen	9	OTHER
@@ -112864,7 +112546,6 @@ Silbergroschen	9	NOUN
 Bezahlfernsehen	9	NOUN
 Mux	9	NOUN
 Grundverschlüsselung	9	NOUN
-dBµV	9	OTHER
 Ahr	9	NOUN
 Ketamin	9	NOUN
 Lastenluftschiff	9	NOUN
@@ -113072,7 +112753,6 @@ Rusovce	9	NOUN
 Ružinov	9	NOUN
 Sängerfest	9	NOUN
 Landschaftsbegriff	9	NOUN
-rrcl	9	OTHER
 Dąbie	9	NOUN
 Puszcza	9	NOUN
 Pomorski	9	NOUN
@@ -113174,7 +112854,6 @@ Lomnický	9	NOUN
 Vyšné	9	NOUN
 Königsbodens	9	NOUN
 DFDR	9	NOUN
-miska	9	OTHER
 Bessarabiendeutschen	9	NOUN,OTHER
 Murrumbidgee	9	NOUN
 Buschhausen	9	NOUN
@@ -113486,7 +113165,6 @@ Mizorams	9	NOUN
 Scheideneingang	9	NOUN
 Mytikas	9	NOUN
 Fehlerrückführung	9	NOUN
-ün	9	OTHER
 liye	9	OTHER
 Porrentruy	9	NOUN
 Beckenendlage	9	NOUN
@@ -113622,8 +113300,6 @@ Kindler	8	NOUN
 Frankie	8	NOUN
 Kuhl	8	NOUN,OTHER
 Stibnit	8	NOUN
-vini	8	OTHER
-vinum	8	OTHER
 vino	8	NOUN,OTHER
 Dreifachbindungen	8	NOUN
 Numbered	8	NOUN,OTHER
@@ -113880,7 +113556,6 @@ Altweibersommer	8	NOUN
 sprachgeschichtliche	8	OTHER
 Landarbeitern	8	NOUN
 Erdbebengefahr	8	NOUN
-rite	8	OTHER
 Ischia	8	NOUN
 vorhergehender	8	OTHER
 BPA	8	NOUN,OTHER
@@ -113964,7 +113639,6 @@ Selbstmordattentate	8	NOUN
 Expräsident	8	NOUN
 Einzelstimmgebung	8	NOUN
 Hazara	8	NOUN
-ally	8	OTHER
 gerächt	8	OTHER
 Rohstoffabbau	8	NOUN
 Viehbestände	8	NOUN
@@ -114089,7 +113763,6 @@ lizenzieren	8	OTHER
 Freescale	8	NOUN
 Apfels	8	NOUN
 Mikrochips	8	NOUN
-bite	8	OTHER
 Cue	8	NOUN
 Sequencing	8	NOUN,OTHER
 Videobearbeitung	8	NOUN
@@ -114103,7 +113776,6 @@ Materialwahl	8	NOUN
 gefräst	8	OTHER
 uigurischer	8	OTHER
 Aktienoptionen	8	NOUN
-att	8	OTHER
 Viviane	8	NOUN
 Reding	8	NOUN
 Bezahlsystem	8	NOUN
@@ -114530,7 +114202,6 @@ Eyed	8	NOUN
 Hauptunterschiede	8	NOUN
 Systematiker	8	NOUN
 zoon	8	NOUN,OTHER
-suo	8	OTHER
 Duhem	8	NOUN
 Verschiedenheiten	8	NOUN
 arbiträr	8	OTHER
@@ -114542,7 +114213,6 @@ mehrzellige	8	OTHER
 zusammenzusetzen	8	OTHER
 Anweisungsblock	8	NOUN
 Suchmuster	8	NOUN
-grep	8	OTHER
 Coppet	8	NOUN
 Bettinas	8	NOUN
 traumhafte	8	OTHER
@@ -114643,7 +114313,6 @@ Extremereignisse	8	NOUN
 Wertpapiers	8	NOUN
 Aussetzungen	8	NOUN
 Listing	8	NOUN
-nâṣir	8	OTHER
 Tukulti	8	NOUN
 Schwefligen	8	NOUN,OTHER
 Elastomeren	8	NOUN
@@ -115606,7 +115275,6 @@ Dissipation	8	NOUN
 Reibungskräfte	8	NOUN
 Wirkprinzipien	8	NOUN
 Hauslehrern	8	NOUN
-vide	8	OTHER
 zugeschriebener	8	OTHER
 herablassend	8	OTHER
 hervorgebrachte	8	OTHER
@@ -116243,8 +115911,6 @@ override	8	NOUN,OTHER
 Wrapper	8	NOUN
 ternären	8	OTHER
 durchgegangen	8	OTHER
-fixed	8	OTHER
-init	8	OTHER
 Cholesterinwerte	8	NOUN
 belebter	8	OTHER
 Reaktionsschritte	8	NOUN
@@ -116365,7 +116031,6 @@ irrelevante	8	OTHER
 Psychoakustik	8	NOUN
 Qualitätsunterschiede	8	NOUN
 Bildinhalts	8	NOUN
-zlib	8	OTHER
 Farbwert	8	NOUN
 appellieren	8	OTHER
 Kriminalfilme	8	NOUN
@@ -117193,7 +116858,6 @@ hochfrequenter	8	OTHER
 sitchensis	8	OTHER
 McAllister	8	NOUN
 AGIL	8	NOUN,OTHER
-quid	8	OTHER
 Zielkonflikte	8	NOUN
 Willensakt	8	NOUN
 teleologischer	8	OTHER
@@ -117578,7 +117242,6 @@ Kleinteile	8	NOUN
 Nippur	8	NOUN
 Geometer	8	NOUN
 megalithische	8	OTHER
-pes	8	OTHER
 Frankonia	8	NOUN
 Studienkollege	8	NOUN
 Fröhlicher	8	NOUN,OTHER
@@ -117648,7 +117311,6 @@ DELAG	8	NOUN
 Maag	8	NOUN
 Schaltgetriebe	8	NOUN
 unbelastete	8	OTHER
-eGmbH	8	OTHER
 Körperbehinderte	8	NOUN
 Wissenschaftsministerium	8	NOUN
 Zellstoffherstellung	8	NOUN
@@ -118225,7 +117887,6 @@ Weinbergs	8	NOUN
 Lizard	8	NOUN
 ausgeschüttete	8	OTHER
 Kapitalmärkten	8	NOUN
-conf	8	OTHER
 gewerkschaftlicher	8	OTHER
 Zuglauf	8	NOUN
 Lutatius	8	NOUN
@@ -118435,7 +118096,6 @@ Zeitverlust	8	NOUN
 herabfallenden	8	OTHER
 unmessbar	8	OTHER
 Pharmakologen	8	NOUN
-usu	8	OTHER
 unumstößlich	8	OTHER
 Gesunderhaltung	8	NOUN
 unnd	8	OTHER
@@ -118486,7 +118146,6 @@ Gemeindepartnerschaft	8	NOUN
 Froschschenkel	8	NOUN
 durchlässigen	8	OTHER
 Gewinnanteil	8	NOUN
-sgn	8	OTHER
 Hoepfner	8	NOUN
 Langtrieben	8	NOUN
 Anspruchslosigkeit	8	NOUN
@@ -119241,7 +118900,6 @@ zusammenfassender	8	OTHER
 kommunikativ	8	OTHER
 deskriptiver	8	OTHER
 Lebensentwurf	8	NOUN
-facie	8	OTHER
 Misslingen	8	NOUN
 hintergangen	8	OTHER
 missachte	8	OTHER
@@ -119535,16 +119193,13 @@ Caesarius	8	NOUN
 Akkons	8	NOUN
 Sinowatz	8	NOUN
 oberstem	8	NOUN,OTHER
-pénal	8	OTHER
 missliebigen	8	OTHER
 Polytechnikums	8	NOUN
 Maschinenmodells	8	NOUN
 Steuergeräte	8	NOUN
 Knotenschrift	8	NOUN
-knot	8	OTHER
 Fusionsreaktor	8	NOUN
 nächstliegenden	8	OTHER
-unus	8	OTHER
 brechenden	8	OTHER
 Produktregel	8	NOUN
 belehrende	8	OTHER
@@ -119707,7 +119362,6 @@ Kalendersystem	8	NOUN
 ornamentierten	8	OTHER
 Himmelssphäre	8	NOUN
 Spatha	8	NOUN
-pepo	8	OTHER
 sukkulente	8	OTHER
 Erdferkel	8	NOUN
 Laubblatt	8	NOUN
@@ -119739,7 +119393,6 @@ Kriegsgebieten	8	NOUN
 zurückzufinden	8	OTHER
 Kriegsursachen	8	NOUN
 Autogas	8	NOUN
-prec	8	OTHER
 Einsprüchen	8	NOUN
 Kaffees	8	NOUN
 Kenyatta	8	NOUN
@@ -119912,7 +119565,6 @@ renaturierte	8	OTHER
 Armack	8	NOUN
 Schwabenkrieg	8	NOUN
 Motionen	8	NOUN
-morio	8	OTHER
 schleppt	8	OTHER
 minderwertiges	8	OTHER
 grundlegendsten	8	OTHER

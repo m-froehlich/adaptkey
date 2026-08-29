@@ -15107,3 +15107,66 @@ from round 2 remains its own, separate, not-yet-started task.
 No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green (via JDK 21).
 `versionCode` 356 -> 357, `versionName` `"1.0.52"` -> `"1.0.53"`. Not yet device-confirmed - same repro shape
 as the prior D-368 rounds, now covering 210 words total.
+
+## §301 - D-402/D-306-followup/D-345: Dictionary Garbage Cleanup - 348 Noise Entries Removed (v1.0.54)
+
+User asked to run the dictionary "Mülltrennung" (garbage sort) fully automatically - no per-candidate
+confirmation this time, explicit trust not to remove any genuine word, report a summary at the end.
+
+Started with the already-named noise from spec/history: `Mur`/`BDI`/`Dee` (spec's own "not a real word, must
+be removed... same treatment for Bdi" instruction) - checked whether an English pack exists to blacklist
+against instead (the spec's stated alternative for words that *are* real in another shipped language); it
+does not (only `de`/`el` exist), so removed outright rather than blacklisted. `en`/`ell`/`ische` (the three
+of §277's five root-caused split-artefacts that are pure `OTHER` fragments) and `lich` (the fourth, tagged
+`NOUN,OTHER`) removed the same way - `heiße` (182, `OTHER`), §277's fifth entry, is genuinely the real word
+"ich heiße" and was explicitly left untouched. `fir` (12, `NOUN,OTHER`, confirmed causing wrong `"fir"` ->
+`"dir"` autocorrect) removed too.
+
+For the broader sweep (D-306-followup's own ~490-candidate probe, never actually reviewed; D-345's "scan the
+full dictionary for fragments/acronyms/markup tokens"): regenerated the probe as short (<=5 characters),
+low-frequency (<=100), *pure* `OTHER`-tagged entries - `OTHER` being the catch-all tag with no specific part
+of speech, where noise concentrates, versus a word carrying a definite `NOUN`/`VERB`/etc. tag. 1,061
+candidates. Reviewed individually with real German-language (and Latin/French/programming-literacy)
+judgement - **not** a mechanical filter, since "is this a real word" has no reliable spelling-pattern test the
+way D-368's verb-collision check did. Turned out the large majority of the 1,061 were genuine German
+word-forms that simply never got a specific part-of-speech tag beyond the catch-all (conjugated verbs like
+`denke`/`fährt`, declined adjectives like `naive`/`bunte`, colloquial contractions like `dran`/`gehn`, real
+unit/language abbreviations like `hPa`/`bzgl`/`mhd`) - correctly left untouched.
+
+348 confirmed genuine noise, in four rough categories:
+- **Literal LaTeX/math markup command names** leaked from Wikipedia's math rendering source, never real
+  words in any language: `cfrac`/`hline`/`bigl`/`bigr`/`nabla`/`wedge`/`qquad`/`bmod`/`pmod`/`dotsb`/`dotsm`/
+  `ddots`/`vdots`/`oplus`/`vdash`/`sdot`/`hbar`/`sinh`/`cot`/`cosh`/`sgn`/`notin`/`binom`/`cong`/`imath`/
+  `jmath`, and more. (Genuine German/international math notation actually used in running text - `exp`,
+  `lim`, `div`, `mod`, `sic` - was explicitly kept; the line was drawn at "is this ever written standalone in
+  German prose" versus "is this only a LaTeX macro name that leaked from unrendered markup".)
+- **Programming/Unix keyword and command-name leaks**, presumably from code snippets or technical articles:
+  `void`/`bool`/`const`/`sort`/`grep`/`chmod`/`gzip`/`zlib`/`xmlns`/`args`/`attr`/`obj`/`ptr`/`uint`/`fdisk`,
+  and more.
+- **Latin citation-fragment leaks** from academic/legal footnote conventions, never integrated into German
+  vocabulary: `iure`/`quem`/`sunt`/`omnes`/`rebus`/`causa`/`civis`/`bovis`/`actio`/`poena`/`unus`, and more.
+  (Genuinely-used Latin loanwords like `ergo`, `qua`, and `sic` were kept.)
+- **Other-language function-word and transliteration-fragment leaks**: French/Dutch/Scandinavian/Slavic
+  function words (`aux`/`qui`/`dans`/`avec`/`vous`/`degli`/`sopra`/`dla`, and more) and Arabic/Sanskrit/other
+  transliteration plus IPA-phonetic fragments (`ʿAbd`/`ʿUmar`/`ḥaqq`/`kartī`/`īl`, and more) - the latter
+  located **programmatically** (a "contains a character outside the German alphabet plus recognised unit
+  symbols µ/²/³" filter run directly against the candidate file) rather than hand-transcribed, specifically
+  to avoid Unicode transcription errors on unfamiliar diacritics.
+
+Applied via the same fail-loud Python verification pattern as every D-368 round, extended to check both tag
+*and* frequency per word before deleting the row (not just retagging this time - full removal). One
+transcription near-miss avoided by design: the diacritic-heavy words were never typed by hand at all, so
+there was nothing to get wrong there; the plain-ASCII portion of the list (292 words) verified clean against
+the candidate file on the first pass, zero mismatches. `git diff --stat` confirmed exactly 348 lines removed
+and nothing else touched. One incidental fix along the way: removing rows shifted the file such that the
+final line's trailing newline was dropped by the same split/join pattern used since D-368 (never surfaced
+before because prior rounds only ever retagged existing lines in place, never changed the line count) -
+restored before committing.
+
+`dictionaries/de/dict.tsv` 119,997 -> 119,649 rows (before the trailing-newline fix; 119,649 after, correctly
+matching 119,997 - 348). `dictionaries/de/version.txt` 12 -> 13, pack rebuilt and verified.
+`LanguagePackCatalog`'s German entry `version` 12 -> 13.
+
+No new unit tests (dictionary content + comment only) - full suite re-run to confirm nothing broke from the
+row removal itself. 1058 unit tests unchanged, all green (via JDK 21). `versionCode` 357 -> 358, `versionName`
+`"1.0.53"` -> `"1.0.54"`. Not yet device-confirmed.
