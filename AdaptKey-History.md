@@ -15170,3 +15170,79 @@ matching 119,997 - 348). `dictionaries/de/version.txt` 12 -> 13, pack rebuilt an
 No new unit tests (dictionary content + comment only) - full suite re-run to confirm nothing broke from the
 row removal itself. 1058 unit tests unchanged, all green (via JDK 21). `versionCode` 357 -> 358, `versionName`
 `"1.0.53"` -> `"1.0.54"`. Not yet device-confirmed.
+
+## §302 - D-402/D-367: Missing-Word Additions And Frequency Corrections (v1.0.55)
+
+User asked to continue with D-402's own missing-word list plus D-367's `natürlich`-family frequency fix.
+
+Checked every word on D-402's original list live against the current `dict.tsv` before touching anything
+(several turned out to already exist, presumably added in some earlier untracked change - `tue` (48),
+`vorm` (30, lowercase), `wessen` (20, lowercase) were all already present). Given the case-insensitive-key
+dictionary architecture (one row per case-insensitive key, confirmed back in D-368), the lowercase `vorm`/
+`wessen` rows already cover the capitalised `Vorm`/`Wessen` reports too - no separate capitalised row needed.
+
+Read `CorrectionConfidence.kt` directly rather than trusting the stale "100x flat bar" description still in
+`AdaptKey-Progress.md`'s own D-330-followup bullet - D-353 replaced that with a log-scaled curve
+(`ratioFactor = ln(candidateFreq/typedFreq) / ln(500)`, capped `[0,1]`) compared against
+`AutocorrectAggressiveness`'s per-level thresholds (MEDIUM's default auto-apply threshold is 0.75). Computed
+the live ratios for the three already-present-but-suspiciously-rare words against their most frequent cost-1
+neighbour:
+- `vorm` (30) vs `Form` (10141): ratio 338x, score ≈0.937 - comfortably clears MEDIUM's auto-apply threshold,
+  so the reported `"Vorm"` -> `"Form"` bug is very likely still live today.
+- `tue` (48) vs `The` (7983 - a German-Wikipedia band/title-name artefact, not obviously noise, left alone)):
+  ratio 166x, score ≈0.823 - also clears MEDIUM.
+- `wessen` (20): no specific wrong-target was ever reported, and its most similar-looking neighbours
+  (`dessen` 12467, `deren` 13964) are not adjacent-key typos of it, so no confirmed live collision - raised
+  anyway since 20 is unrealistically low for how common the word actually is.
+
+Applied the same fix shape D-330 established for `dein`/`sein`: raise the too-rare known word's frequency
+comfortably clear of the ratio threshold rather than lower the genuinely-common competing word. `vorm`
+30 -> 200 (ratio drops to 51x, score ≈0.63, clear of every level), `tue` 48 -> 250 (ratio 32x, score ≈0.56),
+`wessen` 20 -> 90 (no urgent ratio to clear, just a more realistic frequency for a core grammatical word).
+Also fixed `"aggressive"` (119) outranking `"aggressiv"` (80), exactly as D-402 reported: raised `aggressiv`
+to 300 rather than touching `aggressive` (minimal-diff - only one side of the pair needed to move).
+
+Checked `AdjectiveInflection.kt` before deciding whether `"agentisch"` needed its declined forms added
+individually or would be covered automatically - confirmed it only protects *comparative/superlative* forms
+of a known positive adjective (`-er`/`-ere`/`-sten`/etc.), never plain case/gender declension of the positive
+form itself, so `"agentische"`/`"agentischen"`/etc. would **not** have been recognised from the bare
+infinitive alone. Added all six regular forms by hand as the report explicitly asked ("mit den
+Flexionsformen"): `agentisch`/`agentische`/`agentischen`/`agentischem`/`agentischer`/`agentisches`.
+
+Checked `DictionarySuggestionProviderTest.kt` before adding `"aberkennen"` - a dedicated D-354 regression test
+uses this exact word as its own motivating example, asserting it is *not* known to a synthetic in-memory
+store built inside the test itself. Confirmed no conflict: that test's `store` is constructed fresh with its
+own `WordEntry` data and never reads the real bundled `dict.tsv`, so adding `"aberkennen"` to the real
+dictionary has no effect on it - and conceptually the outcome is exactly right, since a typed `"aberkennen"`
+recognised as its own known word no longer needs the unknown-token correction path at all. Added at frequency
+25 (comfortably below `"anerkennen"`'s 165, reflecting that it is the rarer, more formal/legal-register verb).
+
+Remaining additions, all genuinely missing and calibrated against comparable existing entries rather than
+guessed blind (`kürzlich`/62, `verbraucht`/187, `möglicherweise`/1775, `Ach`/118 used as reference points):
+`drüber`/15, `drunter`/15 (colloquial contractions, similar register to the already-present `drauf`/12,
+`drin`/16, `dran`/20), `neulich`/40, `vertan`/45, `ah`/60, `Oh`/90 (kept the exact casing D-402's own report
+used), `erstaunlicherweise`/20.
+
+D-367's own fix: confirmed live - `natürlich` (707, `OTHER`) was indeed ranked *below* its own inflected
+forms `natürlichen` (1512) and `natürliche` (1313), exactly as reported. Raised `natürlich` to 2500 (clearly
+above both, comparable to other very common adverbs like `verloren`/2260). `"Nature"` (148, `NOUN,OTHER` -
+confirmed to be the English-loanword/journal-citation artefact, not any form of the German adverb family)
+removed outright per the report's explicit "should not appear at all". `"Natura"` (131 - the real Natura-2000
+nature-reserve term, unrelated to this family beyond spelling) left alone, now safely outranked by the fixed
+`natürlich`.
+
+Applied via the same fail-loud Python verification pattern as every prior round - additions checked to not
+already exist, corrections/removal checked against their exact current tag and frequency before touching.
+`git diff --stat` confirmed exactly 19 insertions/6 deletions (14 new rows + 5 corrected rows shown as
+delete+insert + 1 removed row); `dictionaries/de/dict.tsv` row count 119,649 -> 119,662 (+14 additions -1
+removal), matching exactly. `dictionaries/de/version.txt` 13 -> 14, pack rebuilt/verified,
+`LanguagePackCatalog` version 13 -> 14.
+
+Still open from D-402's original list (deliberately not touched this round): the `"Wegerecht"` -> `"we
+gerecht"` split (the `"we"` half only resolves via the *English* dictionary - a cross-language algorithmic
+question, not a simple word addition); the `"Stk."` abbreviation-recognition request (not yet investigated
+whether this is even a dictionary-data matter or a separate code mechanism); and D-330-followup's own
+`dein-`/`sein-`/`mein-`/`unser-`/`ihr-` full audit (not part of this round's ask).
+
+No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green (via JDK 21).
+`versionCode` 358 -> 359, `versionName` `"1.0.54"` -> `"1.0.55"`. Not yet device-confirmed.

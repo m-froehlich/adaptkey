@@ -257,28 +257,31 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
-- **D-402/D-306-followup/D-345/D-330-followup/D-367 - the noise-removal portion is now done (§301,**
-  **v1.0.54); the missing-word/frequency-correction portions are not.** Originally agreed to bundle all of
-  D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into one combined cleanup round since they all touch
-  the same `dict_de.tsv` rebuild/version-bump/pack-republish cycle - D-368 (homograph tagging) was finished
-  separately across its own eight rounds (see its own bullet below), and the user then asked for the noise
-  side specifically ("Mülltrennung"), fully automatically rather than per-candidate confirmation, which §301
-  completed: `Mur`/`BDI`/`Dee` and the four genuine corpus-tokeniser split-artefacts (`en`/`ell`/`lich`/
-  `ische` - `heiße` confirmed real, left alone) removed outright, plus 344 more found via a systematic probe
-  of the whole dictionary (see §301/history for the full method and category breakdown). **Still open**:
-  - **D-402's own missing-word list** (`"Wessen"`, `"drüber"`, `"drunter"`, `"Vorm"`, `"tue"`, `"neulich"`,
-    `"aberkennen"`, `"ah"`/`"Oh"`, `"agentisch"`, `"erstaunlicherweise"`, more) - these need *adding*, not
-    removing, so §301's automatic-removal pass didn't touch this.
-  - **D-306-followup** and **D-345**: their probes are now effectively superseded by §301's broader one (a
-    1,061-candidate scoped probe - short, low-frequency, pure-`OTHER`-tagged - reviewed individually, not
-    D-306-followup's narrower original ~490). Not a provably exhaustive sweep of the whole dictionary for
-    every noise pattern though (see the note below on scope) - if further garbage is reported later, treat
-    it the same way rather than assuming §301 caught everything.
+- **D-402/D-306-followup/D-345/D-367 - all done now (§301 v1.0.54 + §302 v1.0.55); only D-330-followup**
+  **remains open.** Originally agreed to bundle D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into
+  one combined cleanup round since they all touch the same `dict_de.tsv` rebuild/version-bump/pack-republish
+  cycle - D-368 (homograph tagging) was finished separately across its own eight rounds (see its own bullet
+  below). §301 then handled the noise-removal side ("Mülltrennung", fully automatic per explicit user
+  request): `Mur`/`BDI`/`Dee` and the four genuine corpus-tokeniser split-artefacts removed outright, plus
+  344 more via a systematic probe (see §301/history). §302 then handled the rest of D-402's own list (missing
+  words: `Wessen`/`drüber`/`drunter`/`Vorm`/`tue`/`neulich`/`aberkennen`/`ah`/`Oh`/`agentisch`/
+  `erstaunlicherweise` - several already existed with too-low frequencies and were corrected rather than
+  re-added) plus D-367's `natürlich`-family frequency fix (see §302/history for the full method, including
+  the live `CorrectionConfidence.kt`/`AdjectiveInflection.kt` checks done before each fix). D-306-followup and
+  D-345's own probes are superseded by §301's broader one - not provably exhaustive for every noise pattern,
+  but the best done so far; treat any future noise report the same way rather than assuming it's exhaustive.
+  **Still open**:
   - **D-330-followup**: see its own bullet below - the `dein`/`sein` register-skew fix, plus the proposed
-    full `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` audit.
-  - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
-    of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
-    adjustments in the same file, same shape as D-330-followup.
+    full `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` audit. Its own bullet's description of the override
+    mechanism as a flat "100x bar" is now stale - D-353 replaced that with a log-scaled curve (see
+    `CorrectionConfidence.kt`, and §302/history for the up-to-date formula) - re-derive the live ratio/score
+    from the current code rather than trusting that bullet's own numbers when this is picked up.
+  - **`"Wegerecht"` -> `"we gerecht"`**: the `"we"` half only resolves via the *English* dictionary - a
+    cross-language algorithmic question (should a German split ever accept an English-only half?), not a
+    simple word addition. Surfaced by D-402's original report, not yet investigated.
+  - **The `"Stk."` abbreviation-recognition request** from D-402's original report - not yet investigated
+    whether this is even a dictionary-data matter or a separate code mechanism (abbreviation handling may
+    live outside `dict.tsv` entirely).
   - **D-368 (case-neutral homograph tagging) - COMPLETE, eight rounds done** (§294-§300, v1.0.47-1.0.53):
     **210** words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`),
     26 further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised
@@ -419,6 +422,31 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§302 (v1.0.55): D-402 missing-word additions + D-367 `natürlich`-frequency fix.** Checked every word on
+  D-402's list live first - several (`tue`/48, `vorm`/30, `wessen`/20, all lowercase) already existed, likely
+  from an earlier untracked change; the case-insensitive-key architecture means those lowercase rows already
+  cover the capitalised `Vorm`/`Wessen` reports too. Read `CorrectionConfidence.kt` directly (not the stale
+  "100x flat bar" text still in the D-330-followup bullet below - D-353 replaced that with a log-scaled
+  curve, `ln(ratio)/ln(500)` against `AutocorrectAggressiveness`'s thresholds) and confirmed `vorm`/`tue`
+  still had a live override risk against `Form`(10141)/`The`(7983) at MEDIUM's default 0.75 threshold - fixed
+  the same way D-330 fixed `dein`/`sein`: raised the too-rare word's frequency (`vorm` 30->200, `tue`
+  48->250, `wessen` 20->90 with no confirmed live collision but unrealistically low regardless). Also fixed
+  `"aggressive"`(119) outranking `"aggressiv"`(80) exactly as D-402 reported (`aggressiv` 80->300). Checked
+  `AdjectiveInflection.kt` before adding `"agentisch"` - confirmed it only protects comparative/superlative
+  forms, never plain positive-degree declension, so added all six regular forms by hand as the report asked.
+  Checked the D-354 regression test before adding `"aberkennen"` - confirmed no conflict (that test's store
+  is synthetic, never reads the real dict). Remaining genuinely-missing words added with frequencies
+  calibrated against comparable existing entries: `drüber`/15, `drunter`/15, `neulich`/40, `vertan`/45,
+  `ah`/60, `Oh`/90, `erstaunlicherweise`/20. D-367: confirmed `natürlich`(707) really was ranked below its
+  own `natürlichen`(1512)/`natürliche`(1313) - raised to 2500; `"Nature"`(148, the English-loanword/citation
+  artefact) removed outright per the explicit "should not appear" instruction, `"Natura"`(131, the real
+  Natura-2000 term) left alone. `git diff --stat`: 19 insertions/6 deletions exactly (14 additions + 5
+  corrections + 1 removal); `dict.tsv` 119,649 -> 119,662 rows. `version.txt` 13 -> 14, pack rebuilt/verified,
+  `LanguagePackCatalog` version 13 -> 14. Still open: `"Wegerecht"`->`"we gerecht"` (cross-language, needs its
+  own investigation), the `"Stk."` abbreviation request, and D-330-followup's full audit - none touched this
+  round. No new tests. 1058 unit tests unchanged, all green (via JDK 21). `versionCode` 358 -> 359,
+  `versionName` `"1.0.54"` -> `"1.0.55"`. Not yet device-confirmed. See history §302.
 
 - **§301 (v1.0.54): D-402/D-306-followup/D-345 dictionary garbage cleanup - 348 noise entries removed,**
   **fully automatically at the user's explicit request.** Removed the already-named noise from spec/history

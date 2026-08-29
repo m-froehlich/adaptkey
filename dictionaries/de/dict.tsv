@@ -3114,7 +3114,7 @@ mehrheitlich	708	OTHER
 Eduard	708	NOUN
 Geburtstag	708	NOUN
 Helmut	708	NOUN
-natürlich	707	OTHER
+natürlich	2500	OTHER
 Schnitt	707	NOUN,VERB
 Geschichten	707	NOUN
 verschoben	707	OTHER
@@ -12979,7 +12979,6 @@ grundsätzlichen	148	OTHER
 Kernenergie	148	NOUN
 Galerien	148	NOUN
 Kupferstich	148	NOUN
-Nature	148	NOUN,OTHER
 konstanter	148	OTHER
 abgeschaltet	148	OTHER
 Unterhalt	148	NOUN
@@ -21401,7 +21400,7 @@ unterschätzt	80	OTHER
 geschoben	80	OTHER
 unterstreicht	80	OTHER
 Cassini	80	NOUN
-aggressiv	80	OTHER
+aggressiv	300	OTHER
 Entwicklungshilfe	80	NOUN
 Ga	80	NOUN,OTHER
 lieh	80	OTHER
@@ -31572,7 +31571,7 @@ Ammonium	48	NOUN
 illustrieren	48	OTHER
 Herrscherhaus	48	NOUN
 propagandistisch	48	OTHER
-tue	48	OTHER
+tue	250	OTHER
 moralisches	48	OTHER
 klug	48	OTHER
 einhellig	48	OTHER
@@ -45318,7 +45317,7 @@ unverheiratete	30	OTHER
 Maud	30	NOUN
 messende	30	OTHER
 vorherrschender	30	OTHER
-vorm	30	OTHER
+vorm	200	OTHER
 Eulenspiegel	30	NOUN
 Manifeste	30	NOUN,OTHER
 Pleura	30	NOUN
@@ -60737,7 +60736,7 @@ Erin	20	NOUN
 Militärarzt	20	NOUN
 entluden	20	OTHER
 gesamteuropäischen	20	OTHER
-wessen	20	OTHER
+wessen	90	OTHER
 Bethlen	20	NOUN
 Erstattung	20	NOUN
 besorgten	20	OTHER
@@ -119647,3 +119646,17 @@ Codebase	20	NOUN
 Bugfix	20	NOUN
 Changelog	15	NOUN
 Snapshot	30	NOUN
+drüber	15	OTHER
+drunter	15	OTHER
+neulich	40	OTHER
+vertan	45	OTHER
+ah	60	OTHER
+Oh	90	OTHER
+agentisch	15	OTHER
+agentische	8	OTHER
+agentischen	8	OTHER
+agentischem	6	OTHER
+agentischer	6	OTHER
+agentisches	6	OTHER
+erstaunlicherweise	20	OTHER
+aberkennen	25	OTHER

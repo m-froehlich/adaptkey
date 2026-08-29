@@ -131,7 +131,21 @@ object LanguagePackCatalog {
             // Explicitly kept despite superficially looking dubious: heiße (182, OTHER) - genuinely the real
             // word "ich heiße", confirmed real back in §277, not touched. `git diff --stat` confirmed exactly
             // 348 lines removed and nothing else changed.
-            version = 13
+            // D-402/D-367 (missing-word additions and frequency corrections): 14 genuinely missing words
+            // added (drüber/drunter/neulich/vertan/ah/Oh/erstaunlicherweise/aberkennen, plus agentisch and
+            // its five regular declined forms) with frequencies calibrated against comparable existing
+            // entries, not guessed blind. Five already-present-but-too-rare entries had their frequency
+            // raised to escape CorrectionConfidence's log-scaled known-word-override ratio against a much
+            // more frequent cost-1 neighbour (the same register-skew shape D-330 first fixed for "dein"):
+            // vorm (30->200, vs "Form" 10141), tue (48->250, vs "The" 7983 - German-Wikipedia band/title
+            // noise, not itself removed since it is plausibly genuine extraction content), wessen (20->90,
+            // no confirmed live collision but far too low for how common the word actually is), aggressiv
+            // (80->300, was letting its own inflected form "aggressive" outrank it), and natürlich (707->2500,
+            // was letting its own inflected forms "natürliche"/"natürlichen" outrank it). "Nature" (148,
+            // NOUN,OTHER - the English-loanword misparse, not the German adverb family) removed outright per
+            // the explicit "should not appear at all" instruction; "Natura" (131, the real Natura-2000 nature-
+            // reserve term) left alone, now safely outranked by the corrected "natürlich".
+            version = 14
         ),
         Entry(
             Language.GREEK,
