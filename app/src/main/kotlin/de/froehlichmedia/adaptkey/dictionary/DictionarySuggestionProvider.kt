@@ -587,8 +587,21 @@ class DictionarySuggestionProvider(
      * blacklisted-confusable cases (`due`/`die`, `ddr`/`der`) actually sit at, confirmed against the real
      * corpus, not guessed. 100 keeps comfortable headroom below the smallest genuine case (`ddr`/`der`,
      * ~228x) while excluding the `Ohren`/`Ihren` case (70x) - a considered value, not device-tuned further.
+     *
+     * D-403: never overrides a word the user has personally taught the keyboard - checked via
+     * [DictionaryStore.learnedCasingOf], true for both a fully self-taught word and a deliberately
+     * different-cased override of an otherwise-bundled entry (D-264) alike. This ratio was calibrated above
+     * against *bundled* corpus rarity (a genuinely rare but real dictionary word); a learned word's own
+     * frequency is a fundamentally different kind of number by construction - [DictionaryStore.learn] sets
+     * it to exactly the word's own reinforcement count, starting at 1 - so without this exemption, almost
+     * any freshly-promoted word (an acronym like "kWp"/"AVD", an abbreviation, anything) stayed permanently
+     * defenceless against this override for any ordinary, moderately common cost-1-adjacent word, no matter
+     * how many times it had already been deliberately taught.
      */
     override fun shouldOverrideKnownWord(word: String, candidate: String): Boolean {
+        if (store.learnedCasingOf(word) != null) {
+            return false
+        }
         val wordFrequency = store.frequencyOf(word.lowercase())
         val candidateFrequency = store.frequencyOf(candidate.lowercase())
         return wordFrequency * KNOWN_WORD_OVERRIDE_RATIO <= candidateFrequency

@@ -487,6 +487,16 @@ protection is removed entirely for a blacklisted word (A-04) - the bundled black
 few cross-language confusables (e.g. `due`, `sue`, `ddr`, `aks`) specifically so ordinary autocorrect can win
 over them despite each being a genuine dictionary entry in some language.
 
+D-403: the 100× override above never fires against a word the user has personally taught the keyboard -
+whether fully self-taught (W-01) or a deliberately different-cased override of an otherwise-bundled entry
+(W-04) - regardless of how low its own frequency is. This is a deliberate exception to the ratio itself, not
+merely a higher bar: a freshly-learned word's own frequency is set to exactly its reinforcement count
+(starting at 1, see W-02), a fundamentally different kind of number than a bundled dictionary's real corpus
+frequency, the thing the 100× ratio was actually calibrated against - without this exception, almost any
+newly-promoted word (an acronym, an abbreviation) stayed permanently vulnerable to being silently corrected
+away by any ordinary, moderately common cost-1-adjacent word, no matter how many times it had already been
+deliberately taught.
+
 ### A-02 - Punctuation Is Not a Context Reset
 A comma does not clear the prediction context. N-gram patterns such as `", dass"` or `", die"` are trained and suggested as independent entries. The mini-LLM sees the full sentence and is not subject to this limitation in any case.
 
@@ -547,6 +557,13 @@ positioned over the literal typed characters, since that is what is actually on 
 still being edited. A split is vetoed if it would lose to a high-confidence single-word correction instead.
 A live two-span colour preview is shown while composing (S-05). Spatial proximity alone is never sufficient -
 a valid linguistic split is required.
+
+D-352: a configurable mode (C-21) governs how eagerly this whole mechanism may act, independent of the
+gating above - **Automatic** (the default, described above), **Chip only** (a found split is never applied
+silently; it is instead offered as a pinned, position-1 suggestion chip - S-01's own "a mid-word connector
+split" precedent, D-122 - so the user decides), or **Off** (the mechanism does not run at all, no chip
+either). Scoped to A-05 alone; A-06 and D-122's own mid-word connector-split suggestion (triggered only by
+the user deliberately re-editing an existing word, never by ordinary forward typing) are unaffected.
 
 D-306: the "not both nouns" gate is only as good as the bundled dictionaries' own part-of-speech tags - a
 mistagged or untagged entry can defeat it. Reported directly: a learned compound ("Tippstil") split into
@@ -1070,6 +1087,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-18 | Pending-blacklist expiry window (G-04) | Days (1-30) | 7 |
 | C-19 | Installed language packs (§9) | Install/remove per language | English only |
 | C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | Off |
+| C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.

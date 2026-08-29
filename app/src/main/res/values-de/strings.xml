@@ -110,6 +110,11 @@
 
     <string name="d234_autocorrect_enabled_title">Autokorrektur</string>
     <string name="d234_autocorrect_enabled_summary">Wendet Korrekturen automatisch beim Tippen an. Aus: jede Korrektur wird nur noch als antippbarer Vorschlag angeboten, nichts wird still verändert.</string>
+    <string name="d352_auto_split_mode_title">Worttrennung</string>
+    <string name="d352_auto_split_mode_summary">Wie ein fehlendes Leerzeichen zwischen zwei Wörtern behandelt wird. Automatisch wendet es still an; Nur Chip bietet es immer nur als antippbaren Vorschlag an; Aus deaktiviert die Funktion vollständig.</string>
+    <string name="d352_auto_split_mode_automatic">Automatisch</string>
+    <string name="d352_auto_split_mode_chip_only">Nur Chip</string>
+    <string name="d352_auto_split_mode_off">Aus</string>
     <string name="d348_double_tap_backspace_undo_title">Doppel-Tipp Backspace zum Zurücksetzen</string>
     <string name="d348_double_tap_backspace_undo_summary">Wenn aktiv, löscht ein einzelner Backspace nach einer Autokorrektur nur ein Zeichen; drücke Backspace zweimal schnell hintereinander, um die Korrektur zurückzunehmen.</string>
     <string name="c04_color_title">Highlight-Farbe</string>

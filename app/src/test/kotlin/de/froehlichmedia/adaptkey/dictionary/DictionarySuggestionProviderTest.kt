@@ -261,6 +261,40 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-403 a learned word is never overridden by the ratio check, however low its own frequency`() {
+        // A freshly-learned word's own frequency equals exactly its reinforcement count (learn() sets it to
+        // 1 on first promotion) - well within a common word's 100x reach on its own, which is exactly why
+        // this exemption exists: the ratio rule was calibrated against bundled corpus rarity, not a
+        // personally-taught word's own necessarily tiny count.
+        store.learn("kwp", null, null)
+        store.putWord(WordEntry("Kap", 500L))
+        
+        assertFalse(provider.shouldOverrideKnownWord("kwp", "Kap"))
+    }
+    
+    @Test
+    fun `D-403 a learned word's own autocorrect protection survives an extreme frequency gap`() {
+        store.learn("avd", null, null)
+        // "d"/"s" are QWERTZ-adjacent (home row), so "avs" is a genuine cost-1 rival for the learned "avd" -
+        // exercises the real end-to-end autocorrectFor() path, not just the ratio check in isolation.
+        store.putWord(WordEntry("avs", 50_000L))
+        
+        assertNull(provider.autocorrectFor("avd", null))
+    }
+    
+    @Test
+    fun `D-403 the exemption is scoped to learned words only - a bundled word at the same low frequency is still overridden`() {
+        // Regression guard: confirms the new learnedCasingOf() check does not accidentally widen the
+        // existing bundled-word ratio override (D-244's own "due"/"ddr" cases already cover this
+        // structurally, via store.putWord alone, never store.learn - this test makes the distinction
+        // explicit rather than relying on that being noticed incidentally).
+        store.putWord(WordEntry("due", 1L))
+        store.putWord(WordEntry("die", 500L))
+        
+        assertTrue(provider.shouldOverrideKnownWord("due", "die"))
+    }
+    
+    @Test
     fun `D-114 minAutocorrectFrequency defaults to no floor - unaffected by the reported case's fix`() {
         // The shared no-floor provider (default constructor) still finds a low-frequency candidate, exactly
         // as before D-114 - the floor is opt-in via the constructor, not a blanket behaviour change.

@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -115,6 +116,21 @@ class SettingsMapperTest {
     fun `D-348 doubleTapBackspaceUndo flag passes through unchanged, defaulting to off`() {
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).doubleTapBackspaceUndo)
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings(doubleTapBackspaceUndo = true)).doubleTapBackspaceUndo)
+    }
+    
+    @Test
+    fun `D-352 autoSplitMode resolves from the stored key, defaulting to AUTOMATIC`() {
+        assertEquals(AutoSplitMode.AUTOMATIC, SettingsMapper.toAdaptSettings(RawSettings()).autoSplitMode)
+        assertEquals(
+            AutoSplitMode.CHIP_ONLY,
+            SettingsMapper.toAdaptSettings(RawSettings(autoSplitModeKey = "chip_only")).autoSplitMode
+        )
+        assertEquals(AutoSplitMode.OFF, SettingsMapper.toAutoSplitMode(RawSettings(autoSplitModeKey = "off")))
+    }
+    
+    @Test
+    fun `D-352 an unknown autoSplitMode key falls back to the default`() {
+        assertEquals(AutoSplitMode.DEFAULT, SettingsMapper.toAutoSplitMode(RawSettings(autoSplitModeKey = "bogus")))
     }
     
     

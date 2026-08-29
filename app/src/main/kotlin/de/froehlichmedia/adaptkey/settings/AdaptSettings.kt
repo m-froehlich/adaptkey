@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -73,6 +74,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           armed undo tail is a no-op (the key re-flashes as a visual hint); only a second Backspace
  *           within the [doubleTapDelayMs] window fires the revert. Trailing whitespace beyond the armed
  *           tail is still consumed ordinarily by the first press. Reuses the G-05 double-tap delay setting.
+ * @property autoSplitMode D-352: how eagerly the A-05 retroactive word split may act (default
+ *           [AutoSplitMode.AUTOMATIC], unchanged A-05 behaviour). [AutoSplitMode.CHIP_ONLY] still finds and
+ *           offers a split as a suggestion chip, never silently applying it; [AutoSplitMode.OFF] disables
+ *           the mechanism outright, chip included. Scoped to A-05 alone - A-06 merge and the D-122 mid-word
+ *           connector-split suggestion (a deliberate re-edit, not ordinary forward typing) are unaffected.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -95,7 +101,8 @@ data class AdaptSettings(
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
     val autocorrectEnabled: Boolean = true,
-    val doubleTapBackspaceUndo: Boolean = false
+    val doubleTapBackspaceUndo: Boolean = false,
+    val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT
 ) {
     
     companion object {

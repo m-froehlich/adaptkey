@@ -110,6 +110,11 @@
 
     <string name="d234_autocorrect_enabled_title">Αυτόματη διόρθωση</string>
     <string name="d234_autocorrect_enabled_summary">Εφαρμόζει διορθώσεις αυτόματα κατά την πληκτρολόγηση. Ανενεργό: κάθε διόρθωση προσφέρεται μόνο ως πρόταση προς επιλογή, τίποτα δεν αλλάζει σιωπηλά.</string>
+    <string name="d352_auto_split_mode_title">Διαχωρισμός λέξεων</string>
+    <string name="d352_auto_split_mode_summary">Πώς αντιμετωπίζεται ένα κενό που λείπει ανάμεσα σε δύο λέξεις. Αυτόματο το εφαρμόζει σιωπηλά· Μόνο πρόταση το προσφέρει πάντα μόνο ως επιλογή προς πάτημα· Ανενεργό απενεργοποιεί τη λειτουργία εντελώς.</string>
+    <string name="d352_auto_split_mode_automatic">Αυτόματο</string>
+    <string name="d352_auto_split_mode_chip_only">Μόνο πρόταση</string>
+    <string name="d352_auto_split_mode_off">Ανενεργό</string>
     <string name="d348_double_tap_backspace_undo_title">Διπλό πάτημα Backspace για αναίρεση</string>
     <string name="d348_double_tap_backspace_undo_summary">Όταν είναι ενεργό, ένα απλό Backspace μετά από αυτόματη διόρθωση διαγράφει μόνο έναν χαρακτήρα· πατήστε Backspace δύο φορές γρήγορα για να αναιρέσετε τη διόρθωση.</string>
     <string name="c04_color_title">Χρώμα επισήμανσης</string>

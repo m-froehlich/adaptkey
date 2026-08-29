@@ -122,6 +122,14 @@
             android:summary="@string/d234_autocorrect_enabled_summary"
             android:defaultValue="true" />
 
+        <ListPreference
+            android:key="d352_auto_split_mode"
+            android:title="@string/d352_auto_split_mode_title"
+            android:summary="@string/d352_auto_split_mode_summary"
+            android:entries="@array/d352_auto_split_mode_labels"
+            android:entryValues="@array/d352_auto_split_mode_values"
+            android:defaultValue="automatic" />
+
         <SwitchPreferenceCompat
             android:key="d348_double_tap_backspace_undo"
             android:title="@string/d348_double_tap_backspace_undo_title"

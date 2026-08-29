@@ -303,6 +303,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§280 (v1.0.37): D-403/D-352 implemented together.** D-403: `DictionarySuggestionProvider.
+  shouldOverrideKnownWord()` now returns `false` outright whenever `store.learnedCasingOf(word) != null` -
+  a learned word (fully self-taught, or a deliberately different-cased W-04 override) can no longer be
+  silently corrected away by the 100x-ratio check (D-244), which was only ever calibrated against genuine
+  bundled-corpus rarity - a freshly-promoted word's own frequency equals exactly its reinforcement count
+  (starts at 1), so it was previously defenceless against almost any ordinary cost-1-adjacent word. D-352:
+  new `AutoSplitMode` enum (AUTOMATIC/CHIP_ONLY/OFF, mirrors `LlmActivationThreshold`) wired through the full
+  settings pipeline as C-21 (`d352_auto_split_mode`, Correction & Suggestions category, right after the D-234
+  autocorrect toggle); gates A-05's two `trySplit()` call sites in `finalizeAndCommit()` (ordinary + the
+  G-05/D-263 case-locked path) to AUTOMATIC only, and reuses the existing D-238 split-suggestion-chip
+  mechanism (`composingPreviewRunnable`'s `needsSplit`/`refreshSuggestions()`'s `autocorrectSplitChip`) so
+  CHIP_ONLY offers the same chip independent of the global autocorrect toggle, and OFF suppresses both the
+  chip and the live split-colour preview entirely. Deliberately scoped to A-05 only - A-06 merge and D-122's
+  mid-word connector-split suggestion are untouched. 8 new tests (3 `DictionarySuggestionProviderTest` for
+  D-403, 2 `SettingsMapperTest` + 3 `AutoSplitModeTest` for D-352). 992 unit tests total (was 984).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 340 -> 341, `versionName` `"1.0.36"` ->
+  `"1.0.37"`. Spec A-01/A-05/§20 revised. Not yet device-confirmed. See history §280.
+
 - **§278 (v1.0.36): D-405 implemented - sentence-start capitalisation is now a purely live typing aid,**
   **never re-applied as a commit-time override.** `CapitalisationEngine.capitalise()` dropped its standalone
   `context.sentenceStart -> true` branch; `explicitFirstUpper` alone now decides both directions symmetrically

@@ -14027,3 +14027,59 @@ affected by coincidence and could never have shown the fix either way. Re-tested
 (explicit Shift-disarm, lower-case typed, confirmed it now stays lower-case at commit) - **confirmed working
 as intended.** No code change this entry - see history §278 for the fix itself, §277 for the original
 design discussion.
+
+## §280 - D-403/D-352 Implemented: Learned Words Now Outrank The Known-Word Override; A-05 Split Gets A Three-Way Setting (v1.0.37)
+
+User picked both of §277's own "ready to implement" items for this round.
+
+### D-403 - `shouldOverrideKnownWord()` never fires against a learned word
+Implemented exactly as agreed: `DictionarySuggestionProvider.shouldOverrideKnownWord()` now returns `false`
+immediately whenever `store.learnedCasingOf(word) != null` - true for both a fully self-taught word and a
+deliberately different-cased override of an otherwise-bundled entry (D-264/W-04 alike), before the existing
+100×-ratio check (D-244) ever runs. The ratio itself is untouched and still applies exactly as before to a
+purely bundled word (verified directly: `due`/`die` at the same low frequency as a learned-word test case
+still overrides, confirming the exemption's scope is precisely the learned table, not a general loosening).
+
+3 new tests (`DictionarySuggestionProviderTest`): a learned word's own ratio-check is never overridden however
+low its frequency; the same protection survives the real end-to-end `autocorrectFor()` path against an
+extreme frequency gap (`"avd"` vs. a 50,000-frequency cost-1 rival, `"avs"` - `d`/`s` genuinely QWERTZ-adjacent,
+confirmed against the real layout data rather than assumed); a bundled-only word at the same low frequency is
+still overridden, as an explicit regression guard for the new exemption's own scope.
+
+### D-352 - A-05 gets a three-way setting (C-21): Automatic / Chip only / Off
+New `AutoSplitMode` enum (`dictionary` package, mirroring `LlmActivationThreshold`'s own `fromKey`/`DEFAULT`
+shape), threaded through the full `RawSettings`/`AdaptSettings`/`SettingsMapper`/`SettingsStore` pipeline
+(`d352_auto_split_mode`, a `ListPreference` in the Correction & Suggestions category right after the D-234
+autocorrect toggle - matching thematic placement) - all three locales (EN/DE/EL), added to
+`EXPORT_SETTINGS_KEY_ORDER` for the Y-01 backup.
+
+**Scoped to A-05 alone**, per the setting's own design (§277): A-06 merge and D-122's mid-word connector-split
+suggestion (triggered only by the user deliberately re-editing an existing word, never by ordinary forward
+typing) are both untouched by this setting.
+
+Three call sites in `AdaptKeyService` updated:
+- `finalizeAndCommit()`'s two `trySplit()` call sites (the ordinary path and the G-05/D-263 case-locked-commit
+  path, which still checks for a split per its own documented exception) both now also require
+  `settings.autoSplitMode == AutoSplitMode.AUTOMATIC` before silently applying a found split - `CHIP_ONLY`/
+  `OFF` both fall through to committing verbatim, exactly like every other veto this function already checks.
+- `composingPreviewRunnable`'s own `needsSplit` gate (previously `(highlightEnabled || !autocorrectEnabled) &&
+  !editingMidWord`) now also computes the split whenever the mode is explicitly `CHIP_ONLY`, and - the
+  `OFF` case - never computes it at all regardless of the other two conditions, so `OFF` genuinely means off
+  (no live preview, no chip), not merely "no longer silently applied."
+- `refreshSuggestions()`'s existing D-238 `autocorrectSplitChip` (built for "autocorrect entirely disabled")
+  now also fires for `CHIP_ONLY` - no separate `OFF` exclusion needed there, since `composingPreview.split`
+  is already `null` in that case by construction (`needsSplit` above never computed it).
+
+Reused the *exact* existing D-238 chip mechanism (reading the already-debounced `composingPreviewRunnable`
+result, tapped via the existing D-122 `item.word.contains(' ')` branch in `onSuggestionClicked()`) rather than
+building a second, parallel chip path - `CHIP_ONLY` and "autocorrect globally off" are now simply two
+independent reasons the same one mechanism engages.
+
+2 new `SettingsMapperTest` cases (default/resolution/unknown-key fallback, mirroring the C-06
+`LlmActivationThreshold` precedent exactly) and a new, dedicated `AutoSplitModeTest` (3 cases, mirroring
+`LlmActivationThresholdTest`'s own shape). 992 unit tests total (984 before this round + 3 D-403 provider
+tests + 2 `SettingsMapperTest` + 3 `AutoSplitModeTest`). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. Spec's A-01 (D-403), A-05
+(D-352) and §20 (new C-21 row) revised. `versionCode` 340 -> 341, `versionName` `"1.0.36"` -> `"1.0.37"`. Not
+yet device-confirmed - needs a real "kWp"/acronym-relearning round-trip for D-403, and all three
+`AutoSplitMode` values exercised on-device for D-352 (a genuine missed-space repro under each setting).

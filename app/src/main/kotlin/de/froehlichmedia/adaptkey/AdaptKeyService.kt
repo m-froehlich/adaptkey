@@ -60,6 +60,7 @@ import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.credential.LoginFieldDetector
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
+import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
@@ -617,12 +618,20 @@ class AdaptKeyService : InputMethodService() {
         val ambiguous = spaceAmbiguousIndices()
         val previous = previousWord
         val highlightEnabled = config.highlightEnabled
+        val autoSplitMode = settings.autoSplitMode
         // D-238: also compute the split when autocorrect is disabled, even with the S-05 highlight off -
         // this same cached value now also backs the position-1 split-suggestion chip that stands in for
-        // the silently-suppressed A-05 auto-apply (see refreshSuggestions()), so it must not depend on an
-        // otherwise-unrelated display preference.
-        val needsSplit = (highlightEnabled || !settings.autocorrectEnabled) && !editingMidWord
-        val autocorrectEnabled = settings.autocorrectEnabled
+        // the silently-suppressed A-05 auto-apply (see refreshSuggestions()). D-352: also computed whenever
+        // the mode is explicitly CHIP_ONLY, independent of the highlight/autocorrect settings - and never
+        // computed at all when the mode is OFF, regardless of either of those (an explicit "off" must mean
+        // off, not merely "no longer auto-applied"). Must not otherwise depend on the unrelated highlight
+        // display preference.
+        val needsSplit = autoSplitMode != AutoSplitMode.OFF &&
+            (highlightEnabled || !settings.autocorrectEnabled || autoSplitMode == AutoSplitMode.CHIP_ONLY) &&
+            !editingMidWord
+        // D-352: the split-chip refresh (below) must also fire for CHIP_ONLY, not only the older
+        // "autocorrect disabled entirely" case.
+        val needsSplitChipRefresh = !settings.autocorrectEnabled || autoSplitMode == AutoSplitMode.CHIP_ONLY
         val seq = expensiveSuggestionSeq.get()
         composingPreviewExecutor.execute {
             if (seq != expensiveSuggestionSeq.get()) {
@@ -640,11 +649,11 @@ class AdaptKeyService : InputMethodService() {
                     composingPreviewFor = expected
                     composingPreview = ComposingPreview(split, highlighted)
                     updateComposing(freshIc)
-                    // D-238: the split-suggestion chip is read directly from composingPreview inside
+                    // D-238/D-352: the split-suggestion chip is read directly from composingPreview inside
                     // refreshSuggestions() - without this, it would only appear once the *next* keystroke
                     // happened to call refreshSuggestions() again, not as soon as this debounced result
                     // actually lands.
-                    if (!autocorrectEnabled) {
+                    if (needsSplitChipRefresh) {
                         refreshSuggestions()
                     }
                 }
@@ -3439,7 +3448,14 @@ class AdaptKeyService : InputMethodService() {
         // function silently disagreed and committed the token verbatim, unsplit. Checked first, and only
         // here, so the ordinary (non-case-locked) path below is untouched.
         if (composingCaseLocked) {
-            val split = if ('_' in typed) null else tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+            // D-352: a case-locked commit still respects the auto-split mode - only AUTOMATIC still applies
+            // a found split silently here; CHIP_ONLY/OFF fall through to the plain commitVerbatim() below,
+            // exactly like the ordinary (non-case-locked) path further down.
+            val split = if ('_' in typed || settings.autoSplitMode != AutoSplitMode.AUTOMATIC) {
+                null
+            } else {
+                tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+            }
             if (split != null) {
                 val committedLength = applySplit(ic, split, delimiter, typed)
                 armShiftForNextWord(ic)
@@ -3539,7 +3555,15 @@ class AdaptKeyService : InputMethodService() {
         // dictionary) was never actually protected here, since this condition only ever checked
         // diacriticWord/bestCorrection's own confidence, not the same suppression flag every other
         // correction path in this function already respects.
-        val split = if (diacriticWord != null || bestCorrection?.highConfidence == true || suppressAutocorrect) {
+        // D-352: CHIP_ONLY/OFF must never silently apply a split at commit either - the CHIP_ONLY case still
+        // offers it via refreshSuggestions()'s own autocorrectSplitChip (reading the same debounced
+        // composingPreviewRunnable result), never computed a second time here.
+        val split = if (
+            diacriticWord != null ||
+            bestCorrection?.highConfidence == true ||
+            suppressAutocorrect ||
+            settings.autoSplitMode != AutoSplitMode.AUTOMATIC
+        ) {
             null
         } else {
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
@@ -4561,7 +4585,14 @@ class AdaptKeyService : InputMethodService() {
         // since suppressAutocorrect is unconditionally true in this state (no diacriticWord/bestCorrection
         // veto ever applies here either). Tapping it is handled for free by the existing D-122
         // `item.word.contains(' ')` branch in onSuggestionClicked() - no new click-handling needed.
-        val autocorrectSplitChip = if (!duringRepeat && !settings.autocorrectEnabled && composingPreviewFor == input) {
+        // D-352: also shown whenever autoSplitMode is explicitly CHIP_ONLY, independent of the global
+        // autocorrect toggle - composingPreview.split is already null when autoSplitMode is OFF (see
+        // composingPreviewRunnable's own needsSplit gate), so no separate OFF exclusion is needed here.
+        val autocorrectSplitChip = if (
+            !duringRepeat &&
+            (!settings.autocorrectEnabled || settings.autoSplitMode == AutoSplitMode.CHIP_ONLY) &&
+            composingPreviewFor == input
+        ) {
             composingPreview.split?.let { split ->
                 // D-268: resolvedLeft/resolvedRight, matching applySplit()'s own note - this chip's text
                 // must not disagree with what tapping it (via applySplit()) actually commits.

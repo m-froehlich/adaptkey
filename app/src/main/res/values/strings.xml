@@ -112,6 +112,11 @@
     <string name="d234_autocorrect_enabled_summary">Applies corrections automatically while typing. Off: every correction is offered as a tap instead, nothing is changed silently.</string>
     <string name="d348_double_tap_backspace_undo_title">Double-tap Backspace to revert</string>
     <string name="d348_double_tap_backspace_undo_summary">When on, a single Backspace after an autocorrect just deletes a character; press Backspace twice quickly to revert the correction.</string>
+    <string name="d352_auto_split_mode_title">Word splitting</string>
+    <string name="d352_auto_split_mode_summary">How a missed space between two words is handled. Automatic applies it silently; Chip only always offers it as a tap instead; Off disables it entirely.</string>
+    <string name="d352_auto_split_mode_automatic">Automatic</string>
+    <string name="d352_auto_split_mode_chip_only">Chip only</string>
+    <string name="d352_auto_split_mode_off">Off</string>
     <string name="c04_color_title">Highlight colour</string>
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>
