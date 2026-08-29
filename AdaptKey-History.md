@@ -14573,3 +14573,8 @@ device-confirmed - needs: (1) an unknown word getting auto-corrected, double-tap
 typed again unchanged and committed - confirm no re-correction and that its pending count now sits at exactly
 1 (not "already learned"); (2) the same word typed a second, separate time afterward promotes it normally;
 (3) the double-tap revert specifically after a word committed via punctuation (not a space).
+
+## §290 - D-403/D-359/D-358 Device-Confirmed (No Code Change)
+
+User confirmed the revert-then-retry learning behaviour and the punctuation double-tap-Backspace fix both
+work on device.

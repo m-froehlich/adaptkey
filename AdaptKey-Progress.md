@@ -324,9 +324,7 @@ non-trivial changes).
   checking against the same `armedTail` construction the non-double-tap branch already uses. No new tests
   (Android IME glue, untested per convention); 1047 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 347 -> 348, `versionName` `"1.0.43"` ->
-  `"1.0.44"`. Not yet device-confirmed - needs a revert + unchanged retry (no re-correction, pending count
-  exactly 1, not already-learned), a second separate typing promoting it normally, and a double-tap revert
-  specifically after a punctuation-committed word.
+  `"1.0.44"`. **Device-confirmed.** See history §289/§290.
 
 - **§288 (v1.0.43): D-410 implemented - a `LanguageRules` seam separates German-specific grammar from core**
   **logic; a runtime plugin-loading design was discussed and explicitly rejected.** User asked how to cleanly
