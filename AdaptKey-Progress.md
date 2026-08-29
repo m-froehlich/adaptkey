@@ -275,11 +275,13 @@ non-trivial changes).
   - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
     of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
     adjustments in the same file, same shape as D-330-followup.
-  - **D-368 (case-neutral homograph tagging) - seven rounds done** (§294-§299, v1.0.47-1.0.52): **136**
-    words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`), 26
-    further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised infinitive
-    `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - rounds 3-7 - **106
-    more found via a real, systematic scan of the whole dictionary** rather than a recalled list (see below).
+  - **D-368 (case-neutral homograph tagging) - COMPLETE, eight rounds done** (§294-§300, v1.0.47-1.0.53):
+    **210** words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`),
+    26 further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised
+    infinitive `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - rounds
+    3-8 - **180 more found via a real, systematic scan of the whole dictionary** rather than a recalled list
+    (see below). The systematic scan itself is now finished end to end (see below) - nothing further remains
+    open for this specific homograph pattern.
     `dank` gained a `NOUN` tag alongside its existing `OTHER` (the reverse direction - the noun reading was
     untagged, not the verb one). Pack rebuilt/republished each round, confirmed zero code change needed.
 
@@ -296,16 +298,15 @@ non-trivial changes).
     `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`/300 this session had cited from memory early on and confirmed no
     longer exists in the code: ≥2000 (204 candidates, 30 confirmed, ~15% hit rate), 500-1999 (717 candidates,
     16 confirmed, ~2.2%), 300-499 (524 candidates, 10 confirmed, ~1.9%), 200-299 (501 candidates, 11
-    confirmed, ~2.2%), 50-199 (2,803 candidates, 39 confirmed, ~1.4%). The hit rate fell sharply once below
-    the ≥2000 tier but has since held **flat** (roughly 1.4-2.2%) rather than continuing to fall - confirms
-    the own-plural artefact is a grammar property, not a frequency one, so the remaining lower bands should be
-    expected to cost about the same per find, not get cheaper. **Everything below frequency 50 remains
-    explicitly open** (2,743 in 20-49, 2,017 in 10-19, 504 in 5-9, none at frequency ≤4 - 5,264 total) - the
-    mechanical candidate list itself is not persisted anywhere in the repo (regenerated ad hoc each round); a
-    future continuation should re-run the same scan and keep working down through lower frequency bands, same
-    shape as these rounds, rather than assuming completeness. Given the flat noise rate, the review cost per
-    find is not expected to improve with further rounds - a future session should weigh that steady cost
-    against the remaining 5,264 mechanical candidates before committing to reviewing all of them.
+    confirmed, ~2.2%), 50-199 (2,803 candidates, 39 confirmed, ~1.4%), 20-49 (2,743 candidates, 38 confirmed,
+    ~1.4%), 10-19 (2,017 candidates, 23 confirmed, ~1.1%), 5-9 (504 candidates, 13 confirmed, ~2.6%) - and
+    nothing at all below frequency 5. The hit rate fell sharply once below the ≥2000 tier but held **flat**
+    (roughly 1.1-2.6%) across every band all the way down to the bottom, confirming - now conclusively, not
+    just hypothesised - that the own-plural artefact is a grammar property, not a frequency one. **The
+    mechanical scan is complete**: every band down to where it stops finding candidates at all has been
+    reviewed. The candidate lists themselves are not persisted anywhere in the repo (regenerated ad hoc each
+    round, discarded after use); if the dictionary content changes materially in the future, re-running the
+    same scan from scratch would be the way to check for new candidates, not resuming from a saved list.
 
     **New, explicitly deferred follow-up from the user, unrelated to the above**: the nominalised-infinitive
     pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`, `leben`/`Leben`, and others) was
@@ -318,15 +319,15 @@ non-trivial changes).
 
   - **The German dictionary carried zero `VERB` tags anywhere, across all ~120,000 rows, before D-368**
     **started this session** - a genuine, standalone structural data-quality finding from the original
-    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 136 `NOUN,VERB`
-    entries that exist today are ones added across D-368's seven rounds. This does **not** mean ordinary verbs
+    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 210 `NOUN,VERB`
+    entries that exist today are ones added across D-368's eight rounds. This does **not** mean ordinary verbs
     are missing as words - `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` (checked directly) are all
     present with real frequencies, just tagged the catch-all `OTHER` instead of `VERB` specifically, since
     they have no noun collision to resolve. D-368 only ever tags `VERB` where a homograph exists to
     disambiguate - giving every genuine German verb its own `VERB` tag regardless of collision is a separate,
     larger, not-yet-started question, and would only matter once some future feature actually reads `VERB`
     for a purpose beyond this one. Worth keeping in mind for *any* future feature that might want to rely on
-    a `VERB` tag meaning something for German - today, outside of these 86 words, it simply never does.
+    a `VERB` tag meaning something for German - today, outside of these 210 words, it simply never does.
 
   As with D-402's own existing convention, every candidate in this combined round should be listed for the
   user's explicit confirmation before the dictionary file is actually touched.
@@ -409,6 +410,24 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§300 (v1.0.53): D-368 round 8 - the entire remaining pool in one sitting; the systematic scan is now**
+  **complete.** User asked to finish the rest at once. Reviewed all three remaining bands (20-49: 2,743,
+  10-19: 2,017, 5-9: 504 - the scan finds nothing below frequency 5) in one sitting, 5,264 candidates total.
+  74 confirmed real (~1.4%, still flat - now confirmed flat across five bands running, settling that this
+  noise floor is a permanent grammar property, not something that would have gotten cheaper by waiting).
+  210 `NOUN,VERB`/`NOUN,OTHER,VERB` words total now, across all eight D-368 rounds - including several very
+  high-frequency everyday imperatives (`Zieh`/`Hau`/`Hör`/`Lach`/`Wasch`/`Renn`/`Spring`/`Steh`/`Trink`/
+  `Fahr`) and ten entries that were themselves already lowercase conjugated verb forms mistagged as nouns
+  (Wikipedia-extraction artefacts, corrected at zero cost). Two hand-transcription slips (`Steig`, `Hau`)
+  caught by the fail-loud verification script before anything was written - fixed by generating the retag
+  mapping programmatically from a fresh grep instead of retyping it. `git diff --stat` confirmed exactly 74
+  lines changed; `dictionaries/de/version.txt` 11 -> 12, pack rebuilt/verified, `LanguagePackCatalog` version
+  11 -> 12. **This closes D-368's systematic scan** - every `NOUN`-tagged entry in the dictionary has now
+  been checked against the weak-verb-infinitive hypothesis down to where the mechanical check stops finding
+  anything. No new tests (data + comment only). 1058 unit tests unchanged, all green (via JDK 21).
+  `versionCode` 356 -> 357, `versionName` `"1.0.52"` -> `"1.0.53"`. Not yet device-confirmed. See history
+  §300.
 
 - **§299 (v1.0.52): D-368 round 7 - the whole 50-199 band in one sitting (39 more homographs, 136 total).**
   User asked whether the entire remaining 8,067-candidate pool could be done at once; counted the real

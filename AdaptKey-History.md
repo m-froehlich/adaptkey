@@ -15062,3 +15062,48 @@ No new unit tests (dictionary content + comment only). 1058 unit tests unchanged
 `versionCode` 355 -> 356, `versionName` `"1.0.51"` -> `"1.0.52"`. Not yet device-confirmed - same repro shape
 as the prior D-368 rounds, now covering 136 words total. Everything below frequency 50 remains explicitly
 open (2,743 in 20-49, 2,017 in 10-19, 504 in 5-9 - no mechanical hits at frequency ≤4).
+
+## §300 - D-368 Round 8: The Entire Remaining Pool In One Sitting - The Scan Is Now Complete (v1.0.53)
+
+User asked to finish "den Rest auf einmal, wenn es geht" after round 7's status update. Generated the three
+remaining bands the same way as every prior round - 20-49 (2,743 candidates), 10-19 (2,017), 5-9 (504) - and
+confirmed the scan finds nothing below frequency 5 (the mechanical own-plural/weak-verb-infinitive check
+needs both the noun and a matching verb infinitive to individually clear the extraction threshold, which
+stops happening below that point). 5,264 candidates total, reviewed band by band across three long passes
+with real German-language judgment on each entry, exactly as in every prior round - no mechanical shortcut,
+no sampling.
+
+74 confirmed real out of 5,264 (~1.4%) - 38/2,743 in 20-49, 23/2,017 in 10-19, 13/504 in 5-9. The rate never
+fell further at the lowest frequencies either; it has now been flat across five bands running (300-499
+through 5-9), which settles the question raised in round 6/7's writeups: this noise floor is not a
+frequency-dependent artefact a future session could "wait out" by working only the high-value bands - it is
+a permanent property of German's dative-plural/weak-verb-infinitive spelling collision, present at every
+frequency this dictionary has words for.
+
+74 words retagged `NOUN,VERB` or `NOUN,OTHER,VERB` (210 total across all eight D-368 rounds now) - the same
+two collision shapes as every prior round (1st-person-present on `-e`-ending nouns, informal dropped-`-e`
+imperative on stem-only nouns), including several very high-frequency everyday imperatives (`Zieh`/`Hau`/
+`Hör`/`Lach`/`Wasch`/`Renn`/`Spring`/`Steh`/`Trink`/`Fahr`). A notable subgroup this round: ten entries
+(`danke`/`wachse`/`zeichne`/`störe`/`schenke`/`singe`/`bring`/`bleib`/`rette`/`bezahle`) were themselves
+already lowercase, plainly conjugated verb forms sitting in the dictionary tagged only as nouns - clear
+Wikipedia-extraction artefacts rather than genuine noun/verb ambiguity, but correcting them costs nothing and
+only helps.
+
+Applied via the same fail-loud Python verification pattern as every prior round, this time built directly
+from a freshly re-grepped snapshot of the 74 lines' current tags (two earlier attempts at hand-transcribing
+that snapshot into the script had stale/wrong tags for `Steig` and `Hau` and were caught by the assertion
+before anything was written - fixed by generating the mapping programmatically from the grep output instead
+of retyping it by hand). `git diff --stat` confirmed exactly 74 lines changed both ways; total `VERB`-tagged
+rows confirmed at 210 (136 + 74) by direct count. `dictionaries/de/version.txt` 11 -> 12, pack rebuilt and
+verified. `LanguagePackCatalog`'s German entry `version` 11 -> 12.
+
+This closes out D-368's systematic scan: every `NOUN`-tagged entry in the ~120k-row German dictionary has now
+been checked against the weak-verb-infinitive hypothesis, band by band, down to the point where the
+mechanical check stops finding anything (frequency 5). Nothing further remains open for this specific
+pattern; a *different* homograph pattern (not weak-verb-infinitive vs noun) would need its own separate scan
+if pursued later, and the deferred nominalised-infinitive pattern (`essen`/`Essen`, `leben`/`Leben`, ...)
+from round 2 remains its own, separate, not-yet-started task.
+
+No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green (via JDK 21).
+`versionCode` 356 -> 357, `versionName` `"1.0.52"` -> `"1.0.53"`. Not yet device-confirmed - same repro shape
+as the prior D-368 rounds, now covering 210 words total.

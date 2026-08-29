@@ -94,7 +94,21 @@ object LanguagePackCatalog {
             // Schenk/Funke/Bade/Schraube/Hexe, plus four already-NOUN,OTHER entries upgraded to the specific
             // NOUN,OTHER,VERB (Back/backen, Schütze/schützen, Schätze/schätzen, Geh/gehen). Everything below
             // frequency 50 remains open.
-            version = 11
+            // D-368 (round 8): the entire remaining mechanical candidate pool (5,264 hits across 20-49,
+            // 10-19, and 5-9 - the scan found none below frequency 5) reviewed in one sitting per explicit
+            // user request to finish the rest at once. Hit rate held flat at ~1.4% (74/5264: 38/2743, 23/2017,
+            // 13/504) - the noise floor never fell further down to the lowest frequencies either, confirming
+            // this is a permanent property of the dataset, not something later rounds would have made
+            // cheaper by waiting. 74 more confirmed real and retagged NOUN,VERB or NOUN,OTHER,VERB (210 total
+            // now, all six-plus rounds combined) - the same two shapes as every prior round (1st-person-
+            // present on `-e`-nouns, informal dropped-`-e` imperative on stem nouns), including several very
+            // common everyday imperatives (Zieh/Hau/Hör/Lach/Wasch/Renn/Spring/Steh/Trink) and a number of
+            // dictionary entries that were themselves already lowercase inflected forms mistagged as nouns
+            // (danke/wachse/zeichne/störe/schenke/singe/bring/bleib/rette/bezahle - each simply gained the
+            // VERB tag alongside its existing noun tag). This completes the systematic D-368 homograph scan
+            // that began in round 3: the entire ~120k-row dictionary has now been checked against the weak-
+            // verb-infinitive hypothesis end to end.
+            version = 12
         ),
         Entry(
             Language.GREEK,
