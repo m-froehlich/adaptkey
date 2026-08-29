@@ -11,8 +11,12 @@ package de.froehlichmedia.adaptkey.dictionary
  * [bigrams], written by [putWord] / [putBigram]) and the user's own learned vocabulary ([learned] /
  * [learnedBigrams], written only by [learn] / [unlearn] / [forget]) - see that class's own KDoc for the
  * full reasoning. Every "does the keyboard know this word" read merges both sources.
+ *
+ * @param clock D-411: how [learnedTouch] stamps "now" - defaults to the real wall clock; tests inject a
+ *        fixed/controllable value instead, mirroring [DictionarySuggestionProvider]'s own `now` parameter,
+ *        so [LearnedFrequencyBoost]'s recency behaviour stays deterministic under test.
  */
-class InMemoryDictionaryStore : DictionaryStore {
+class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTimeMillis() }) : DictionaryStore {
     
     private val unigrams = HashMap<String, WordEntry>()
     private val bigrams = HashMap<String, Long>()
@@ -22,6 +26,9 @@ class InMemoryDictionaryStore : DictionaryStore {
     private val learnedTrigrams = HashMap<String, Long>()
     private val blacklist = HashMap<String, BlacklistCategory>()
     private val pendingBlacklist = HashMap<String, Long>()
+    // D-411: last-touched epoch millis per learned entry, mirroring SqliteDictionaryStore's own
+    // last_touched column - stamped by every learned/unlearn write, uniformly, same reasoning as there.
+    private val learnedTouch = HashMap<String, Long>()
     
     override fun putWord(entry: WordEntry) {
         unigrams[entry.word.lowercase()] = entry
@@ -45,6 +52,7 @@ class InMemoryDictionaryStore : DictionaryStore {
         } else {
             WordEntry(word = canonical, frequency = seedFrequency)
         }
+        learnedTouch[key] = clock()
         if (previousWord != null) {
             val bigramKey = bigramKey(previousWord, word)
             learnedBigrams[bigramKey] = (learnedBigrams[bigramKey] ?: 0L) + 1L
@@ -74,8 +82,10 @@ class InMemoryDictionaryStore : DictionaryStore {
             val frequency = existing.frequency - 1L
             if (frequency <= 0L) {
                 learned.remove(key)
+                learnedTouch.remove(key)
             } else {
                 learned[key] = existing.copy(frequency = frequency)
+                learnedTouch[key] = clock()
             }
         }
         if (previousWord != null) {
@@ -99,7 +109,9 @@ class InMemoryDictionaryStore : DictionaryStore {
     }
     
     override fun forget(word: String) {
-        learned.remove(word.lowercase())
+        val key = word.lowercase()
+        learned.remove(key)
+        learnedTouch.remove(key)
     }
     
     override fun isBundledWord(word: String): Boolean {
@@ -112,6 +124,12 @@ class InMemoryDictionaryStore : DictionaryStore {
     
     override fun learnedCasingOf(word: String): String? {
         return learned[word.lowercase()]?.word
+    }
+    
+    override fun learnedFrequencyOf(word: String): LearnedFrequency? {
+        val key = word.lowercase()
+        val entry = learned[key] ?: return null
+        return LearnedFrequency(entry.frequency, learnedTouch[key] ?: 0L)
     }
     
     

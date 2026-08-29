@@ -844,4 +844,29 @@ class DictionarySuggestionProviderTest {
         
         assertEquals("der", aggressiveProvider.autocorrectFor("ddr", null))
     }
+    
+    @Test
+    fun `D-411 a heavily and recently used personal word now outranks a moderately common bundled word`() {
+        val now = 1_000_000_000L
+        val boostStore = InMemoryDictionaryStore(clock = { now })
+        val boostProvider = DictionarySuggestionProvider(boostStore, now = { now })
+        boostStore.putWord(WordEntry("an", 2_000L))
+        boostStore.learn("az", null, seedFrequency = 50L)
+        
+        val words = boostProvider.suggestionsFor("a", null).map { it.word }
+        assertTrue(words.indexOf("az") < words.indexOf("an"))
+    }
+    
+    @Test
+    fun `D-411 a rarely used, long-untouched personal word still does not outrank a common bundled word`() {
+        // now is well past the 14-day recency window from the touched-at-0 seed below.
+        val now = 100L * 24 * 60 * 60 * 1000
+        val boostStore = InMemoryDictionaryStore(clock = { 0L })
+        val boostProvider = DictionarySuggestionProvider(boostStore, now = { now })
+        boostStore.putWord(WordEntry("an", 2_000L))
+        boostStore.learn("ay", null, seedFrequency = 2L)
+        
+        val words = boostProvider.suggestionsFor("a", null).map { it.word }
+        assertTrue(words.indexOf("an") < words.indexOf("ay"))
+    }
 }

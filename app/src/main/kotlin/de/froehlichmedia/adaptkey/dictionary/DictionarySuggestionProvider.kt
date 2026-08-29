@@ -33,12 +33,16 @@ import kotlin.math.pow
  *           existing caller that does not pass one explicitly keeps this class's historical behaviour
  *           unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
  *           resolves and passes the value matching the actually active language.
+ * @property now D-411: "now", for [LearnedFrequencyBoost]'s own recency check inside [score] - threaded
+ *           through rather than read directly, so a caller's own tests stay deterministic (mirrors
+ *           [InMemoryDictionaryStore]'s identical `clock` parameter). Defaults to the real wall clock.
  */
 class DictionarySuggestionProvider(
     private val store: DictionaryStore,
     private val maxCandidates: Int = 12,
     private val aggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
-    private val languageRules: LanguageRules = GermanRules
+    private val languageRules: LanguageRules = GermanRules,
+    private val now: () -> Long = { System.currentTimeMillis() }
 ) : SuggestionProvider {
     
     override fun suggestionsFor(
@@ -638,12 +642,41 @@ class DictionarySuggestionProvider(
     /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */
     private data class CandidateCost(val candidate: String, val cost: Int, val score: Double)
     
+    /**
+     * D-411: [frequency] (the caller's own already-merged bundled+learned figure, e.g. from [DictionaryStore.
+     * entryOf]/[DictionaryStore.unigramsByPrefix]/[DictionaryStore.frequencyOf]) with its learned component
+     * replaced by [LearnedFrequencyBoost]'s scaled, ranking-only equivalent - see [rankingFrequency]'s own
+     * KDoc for why this is safe to apply here, at the single shared root every ranking score passes through,
+     * without ever touching a correctness-affecting decision.
+     */
     private fun score(word: String, frequency: Long, previousWord: String?): Double {
-        val base = frequency.toDouble()
+        val base = rankingFrequency(word, frequency)
         if (previousWord == null) {
             return base
         }
         return base + store.bigramFrequency(previousWord, word).toDouble() * BIGRAM_WEIGHT
+    }
+    
+    /**
+     * D-411: [mergedFrequency] with its learned contribution ([DictionaryStore.learnedFrequencyOf]'s own raw
+     * count) removed and replaced by [LearnedFrequencyBoost]'s scaled, recency-aware equivalent - the bundled
+     * contribution (if any) passes through untouched. [score] is the *only* place this runs, and [score] is
+     * used solely for ranking/ordering already-accepted candidates against each other (prefix completion,
+     * fuzzy-suggestion ordering, and - only as a cost tiebreaker, never a gate - [bestCorrection]/
+     * [diacriticRestoration]'s own candidate selection). Every correctness-affecting frequency read in this
+     * class ([candidateConfidence], [shouldOverrideKnownWord], [isPlausiblePositiveStem]) calls
+     * [DictionaryStore.entryOf]/[DictionaryStore.frequencyOf] directly instead, never through [score], so
+     * this boost can never change what gets silently auto-applied - only how candidates already cleared for
+     * display are ordered.
+     *
+     * @param word the candidate word
+     * @param mergedFrequency the already-merged bundled+learned frequency the caller looked up
+     * @return [mergedFrequency] as a [Double], with its learned share replaced by the boosted equivalent
+     */
+    private fun rankingFrequency(word: String, mergedFrequency: Long): Double {
+        val learned = store.learnedFrequencyOf(word) ?: return mergedFrequency.toDouble()
+        val bundledOnly = mergedFrequency - learned.frequency
+        return bundledOnly + LearnedFrequencyBoost.boost(learned.frequency, learned.lastTouched, now())
     }
     
     /**

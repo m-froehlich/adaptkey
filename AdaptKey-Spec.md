@@ -340,7 +340,21 @@ generally wins even over a more frequent, longer sibling (e.g. `"natürlich"` be
 typed `"natürl"`), though this only distinguishes candidates up to a handful of extra characters; two
 candidates that both still need substantially more than that fall back to plain, undistorted frequency
 ranking against each other, so a genuinely longer completion is never crowded out purely for its length once
-both are already "far" in this sense. The bar's row is always reserved even when momentarily empty.
+both are already "far" in this sense.
+
+D-411: "frequency" for ranking purposes is not a learned word's own raw personal-use count either - that
+count (single/low-double digits in practice) would never meaningfully compete against the bundled
+dictionary's own corpus-scale frequencies (up to roughly 1,000,000) otherwise, so a genuinely often-typed
+personal word could never rank near the front no matter how often it is used. Instead it is log-scaled to a
+value that competes naturally alongside bundled frequencies once genuinely well-established (calibrated so
+a word used 50 times reaches a value comparable to an ordinary, moderately common dictionary word - not
+automatically ahead of a common one), with a further, temporary boost (×1.5) while the word was last
+touched within the past 14 days - a word used heavily long ago settles back to its plain scaled value once
+that window passes, rather than staying inflated forever. Deliberately ranking-only: this adjustment plays
+no part in any correctness decision (A-01's known-word-override check, S-06's pending-replacement logic) -
+those still read a word's real, unscaled frequency directly, exactly as before.
+
+The bar's row is always reserved even when momentarily empty.
 Depending on the focused field, the bar's slot can instead show a platform-rendered Autofill
 inline-suggestions row, or a credential-suggestion list (§12) - S-01's own scrolling/sorting behaviour
 describes the ordinary dictionary/tier-3 case specifically.

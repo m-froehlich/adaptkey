@@ -131,6 +131,18 @@ interface DictionaryStore {
     fun learnedCasingOf(word: String): String?
     
     /**
+     * D-411: [word]'s own learned-only frequency and last-touched timestamp, separate from [entryOf]'s
+     * merged bundled+learned view - exclusively for [DictionarySuggestionProvider]'s own ranking-only
+     * recency/scale boost ([LearnedFrequencyBoost]). Never used for anything correctness-affecting (A-01's
+     * known-word-override check, D-353's `CorrectionConfidence`) - those keep reading frequency from
+     * [entryOf]/[frequencyOf] directly, unaffected by this method's existence.
+     *
+     * @param word the word to check (any case)
+     * @return the learned frequency and last-touched epoch millis, or null when no learned entry exists
+     */
+    fun learnedFrequencyOf(word: String): LearnedFrequency?
+    
+    /**
      * D-177: every word currently in the learned lexicon (never the bundled dictionary), in canonical
      * case with its learned frequency, for the learned-words editor - including a word that could never
      * be reached any other way (e.g. one matching the current input, which S-02 always excludes from

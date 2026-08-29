@@ -14654,3 +14654,69 @@ project's established convention. 1049 unit tests total (was 1047). `:app:assemb
 W-02 updated. Not yet device-confirmed - needs: the sort picker's two modes on a real Learned Words list, the
 migration actually running once on an existing installed database, and a fresh promotion's seeded frequency
 matching the pending count it actually took.
+
+## §292 - D-411 Implemented: A Log-Scaled, Recency-Aware Boost For Learned Words' Live Suggestion Ranking (v1.0.46)
+
+### The design discussion
+User's own opening framing, precise and load-bearing for everything below: learned words must not be
+categorically preferred in the suggestion bar - but once a word genuinely earns it (crosses a usage
+threshold), it should be able to rank near the front; and a word heavily used long ago should not stay
+inflated forever purely from historical use, so recency should also matter. User's own proposed shape:
+`frequency * FACTOR * T`, `T` a step multiplier (~1.5 within a recent window, 1.0 otherwise) - and asked
+directly whether a way exists to fold raw personal-use counts into something that "naturally sits alongside"
+the bundled dictionary's own frequency scale.
+
+Investigated the actual merge mechanism before proposing anything (not guessed): `entryOf()`/
+`unigramsByPrefix()` in `SqliteDictionaryStore` sum bundled + learned frequency raw, and that exact merged
+figure already feeds *every* frequency-based decision in the app, not just suggestion-bar ranking - A-01's
+known-word-override check, `TokenRepair`'s split-frequency floor, `CorrectionConfidence`. Confirmed this
+mattered: `DictionarySuggestionProvider`'s own `score()` function turned out to be the single, narrow choke
+point every ranking use (prefix completion, fuzzy-suggestion ordering, and - only as a tiebreaker among
+equal-cost candidates, never a gate - `bestCorrection`/`diacriticRestoration`'s own candidate selection)
+already passes through, while every correctness-affecting frequency read (`candidateConfidence`,
+`shouldOverrideKnownWord`, `isPlausiblePositiveStem`) calls `store.entryOf`/`store.frequencyOf` directly,
+never through `score()` - meaning the boost could be centralised in exactly one place without risking any
+correctness-gate interaction, confirmed by tracing every call site rather than assumed.
+
+Proposed a log-scaled bridge (`REFERENCE_FREQUENCY * ln(1 + count) / ln(1 + REFERENCE_COUNT)`) instead of a
+flat linear multiplier - explicitly citing D-353's own log-scaled ratio as precedent for the same class of
+problem (bridging two very different frequency scales without a hard cliff): at `count = REFERENCE_COUNT` the
+value lands exactly on `REFERENCE_FREQUENCY`; below that it ramps up gradually (a barely-used word gets
+almost no boost, matching the user's own "not categorically preferred" requirement); above it, growth
+continues but tapers, never running away unboundedly. The recency multiplier stayed exactly the user's own
+step-function proposal - no need for a smoother decay curve, per their own explicit lean towards simplicity.
+
+**Calibration, confirmed directly with the user, not guessed**: `REFERENCE_FREQUENCY = 5000` (comfortably
+above `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`'s 300 "trustworthy" bar, well under a genuinely common word's
+real corpus frequency - competes with ordinary nouns, does not automatically outrank common function words),
+`REFERENCE_COUNT = 50` personal uses, a 14-day recency window, ×1.5 recency factor. User's own closing
+assessment, recorded verbatim as the acceptance bar for this round: "Ich vermute, man merkt davon in der
+Praxis nur so wenig, dass halbwegs gute Werte hier schon ein sehr gutes... Ergebnis liefern" - i.e. exact
+calibration precision was explicitly *not* the goal, a reasonable starting point was.
+
+### Implementation
+New `LearnedFrequency(frequency, lastTouched)` + `DictionaryStore.learnedFrequencyOf(word)`, exposing the
+learned-only component and its D-388 `last_touched` timestamp separately from `entryOf()`'s merged view -
+implemented in both `SqliteDictionaryStore` (a direct `TABLE_LEARNED` query) and `InMemoryDictionaryStore`
+(a new `learnedTouch` map, stamped by `learn()`/`unlearn()` exactly where `TABLE_LEARNED`'s own writes
+already stamp `last_touched`, D-388's identical reasoning). `InMemoryDictionaryStore` gained an injectable
+`clock: () -> Long` constructor parameter (default the real wall clock) so its own recency behaviour stays
+deterministic under test - mirrors `DictionarySuggestionProvider`'s own new `now: () -> Long` parameter.
+
+New pure `LearnedFrequencyBoost.boost(learnedFrequency, lastTouched, now)` object implementing the formula
+above. `DictionarySuggestionProvider.score()` - the single choke point identified during the discussion - now
+routes its `frequency` argument through a new private `rankingFrequency()`: the merged figure's learned
+share is subtracted back out and replaced by the boosted equivalent, leaving any bundled contribution
+untouched. Every correctness-affecting frequency read in the class continues to bypass `score()` entirely,
+exactly as confirmed during the design discussion - unaffected by construction, not merely by convention.
+
+7 new `LearnedFrequencyBoostTest` cases (zero-frequency no-op, exact-reference-count calibration point,
+sub-reference under-boost, tapering growth well past the reference, the recency window's both edges).
+2 new `DictionarySuggestionProviderTest` cases demonstrating the actual effect end-to-end: a heavily and
+recently used personal word now outranks a moderately common bundled word sharing its prefix; a rarely-used,
+long-untouched one still does not - the user's own "not categorically preferred" requirement, verified, not
+merely asserted in a comment. 1058 unit tests total (was 1049). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `versionCode` 349 -> 350, `versionName` `"1.0.45"` -> `"1.0.46"`. Spec's S-01 revised. Not yet
+device-confirmed - the effect is subtle by design (per the user's own stated expectation above), so
+confirmation here likely means "no regression in ordinary suggestion ranking" more than a dramatic visible
+change.

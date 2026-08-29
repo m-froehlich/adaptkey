@@ -451,6 +451,18 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return learnedEntryOf(word)?.word
     }
     
+    override fun learnedFrequencyOf(word: String): LearnedFrequency? {
+        db.rawQuery(
+            "SELECT freq, last_touched FROM $TABLE_LEARNED WHERE wkey = ?",
+            arrayOf(word.lowercase())
+        ).use { cursor ->
+            if (!cursor.moveToFirst()) {
+                return null
+            }
+            return LearnedFrequency(cursor.getLong(0), cursor.getLong(1))
+        }
+    }
+    
     /**
      * D-292: updates an already-learned word's own stored casing, keeping its frequency and part-of-speech
      * tags exactly as they were - the Learned Words editor's own "fix only the casing" action. A no-op when

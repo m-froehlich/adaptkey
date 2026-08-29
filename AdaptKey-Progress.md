@@ -303,6 +303,33 @@ non-trivial changes).
 
 ## Current State
 
+- **§292 (v1.0.46): D-411 implemented - a log-scaled, recency-aware boost lets a genuinely well-used**
+  **learned word compete in the live suggestion bar, without categorically favouring learned words.** User's
+  own framing: not a blanket preference, but a word that crosses a real usage threshold should be able to
+  rank near the front, and a word heavily used long ago should fade back rather than staying inflated
+  forever. Traced the actual frequency-merge mechanism first: `SqliteDictionaryStore.entryOf()`/
+  `unigramsByPrefix()` sum bundled+learned frequency raw, and that figure already feeds every
+  frequency-based decision in the app (A-01, `TokenRepair`, `CorrectionConfidence`) - but
+  `DictionarySuggestionProvider.score()` turned out to be the single choke point every *ranking* use passes
+  through, while every correctness-affecting read bypasses it entirely (confirmed by tracing every call
+  site) - so the boost could be centralised there with zero risk of touching a correctness gate. Formula:
+  `REFERENCE_FREQUENCY * ln(1 + count) / ln(1 + REFERENCE_COUNT)` (log-scaled, mirroring D-353's own
+  precedent for bridging two very different frequency scales), further multiplied by 1.5 when the word was
+  touched within the last 14 days. Calibrated directly with the user: `REFERENCE_FREQUENCY = 5000`,
+  `REFERENCE_COUNT = 50` - user's own explicit acceptance bar: "man merkt davon in der Praxis nur so
+  wenig, dass halbwegs gute Werte hier schon ein sehr gutes Ergebnis liefern," i.e. exact precision was
+  explicitly not the goal. New `DictionaryStore.learnedFrequencyOf()` exposes a word's learned-only
+  frequency + D-388's `last_touched` timestamp separately from the merged view (implemented in both stores;
+  `InMemoryDictionaryStore` gained an injectable `clock` for deterministic tests, mirroring
+  `DictionarySuggestionProvider`'s new `now` parameter). New pure `LearnedFrequencyBoost` object; `score()`
+  now routes frequency through a new `rankingFrequency()` that swaps the raw learned share for the boosted
+  one, bundled contribution untouched. 7 new `LearnedFrequencyBoostTest` cases plus 2
+  `DictionarySuggestionProviderTest` cases proving the effect end-to-end (a heavily/recently used personal
+  word now outranks a moderately common bundled word; a rarely-used, long-untouched one still does not).
+  1058 unit tests total (was 1049). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 349
+  -> 350, `versionName` `"1.0.45"` -> `"1.0.46"`. Spec's S-01 revised. Not yet device-confirmed - the effect
+  is subtle by design. See history §292.
+
 - **§291 (v1.0.45): D-388 implemented - Learned Words/Blacklist/Credentials editors are sortable, with a**
   **new `last_touched` column; the user's own proposed pending/learned table merge was investigated and**
   **declined as too risky.** Ist-Zustand check first (per the user's own request): Learned Words was sorted
