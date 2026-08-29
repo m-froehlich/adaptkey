@@ -70,7 +70,16 @@ object LanguagePackCatalog {
             // surfaced class, preterite-form collisions (Stand/Begriff/Schloss/Betrieb/Band/Unterschied/
             // Widerstand - e.g. "Band" vs "band" = preterite of "binden"). Everything below frequency 2000
             // remains open - see AdaptKey-Progress.md's own Open TODOs.
-            version = 8
+            // D-368 (round 4/5): continued the same systematic scan down through frequency 300 (717 hits in
+            // 500-1999, 524 in 300-499) - the false-positive rate held steady (~2%, not falling) since the
+            // dominant noise (a noun's own dative plural) is a grammar property, not a frequency one. 26 more
+            // confirmed real and retagged NOUN,VERB (86 total now): Park/Rat/Spiel/Rede/Falle/Koch/Ruf/Wende/
+            // Grab/Erbe/Boot/Antwort/Gestalt/Wein/Tanz/Gewinn/Ruhe/Heirat/Salz/Pass (1st-person/imperative),
+            // Schnitt/Verband/Klang/zwang (preterite - e.g. "Klang" vs "klang" = preterite of "klingen"), and
+            // Bitte/vergleiche (both already NOUN,OTHER, upgraded to the specific NOUN,VERB now that the
+            // verb reading - "bitten"/"ich vergleiche" - is confirmed). Everything below frequency 300
+            // remains open.
+            version = 9
         ),
         Entry(
             Language.GREEK,

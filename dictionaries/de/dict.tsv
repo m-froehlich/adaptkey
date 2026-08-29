@@ -1117,7 +1117,7 @@ Herbst	1931	NOUN
 erkennen	1929	OTHER
 Pflanzen	1929	NOUN
 hergestellt	1928	OTHER
-Park	1928	NOUN
+Park	1928	NOUN,VERB
 Zusammenarbeit	1925	NOUN
 Japan	1925	NOUN
 höchsten	1925	OTHER
@@ -1125,7 +1125,7 @@ höchsten	1925	OTHER
 Württemberg	1919	NOUN
 Kampf	1917	NOUN
 Praxis	1917	NOUN
-Rat	1916	NOUN
+Rat	1916	NOUN,VERB
 zwölf	1916	OTHER
 Wissenschaft	1915	NOUN
 Dresden	1915	NOUN
@@ -1228,7 +1228,7 @@ auftreten	1771	OTHER
 versucht	1769	OTHER
 folgten	1767	OTHER
 stärker	1766	OTHER
-Spiel	1766	NOUN
+Spiel	1766	NOUN,VERB
 km²	1765	OTHER
 Freiheit	1764	NOUN
 römische	1763	OTHER
@@ -1383,7 +1383,7 @@ Zeiten	1588	NOUN
 Gemeinschaft	1588	NOUN
 Studien	1585	NOUN
 hierzu	1583	OTHER
-Rede	1578	NOUN
+Rede	1578	NOUN,VERB
 Innenstadt	1576	NOUN
 Frühjahr	1574	NOUN
 geschaffen	1573	OTHER
@@ -1480,7 +1480,7 @@ Universitäten	1483	NOUN
 weisen	1482	OTHER
 Glauben	1482	NOUN,OTHER
 Anspruch	1481	NOUN
-Verband	1479	NOUN,OTHER
+Verband	1479	NOUN,VERB
 Nürnberg	1478	NOUN
 könnten	1477	OTHER
 militärischen	1477	OTHER
@@ -1970,7 +1970,7 @@ reicht	1105	OTHER
 Plan	1104	NOUN
 abgelehnt	1103	OTHER
 bisherigen	1103	OTHER
-Gestalt	1103	NOUN
+Gestalt	1103	NOUN,VERB
 ursprüngliche	1102	OTHER
 Gegenwart	1102	NOUN
 Heer	1102	NOUN
@@ -2085,7 +2085,7 @@ Paulus	1050	NOUN
 Kommunikation	1049	NOUN
 schlug	1049	OTHER
 verlegt	1049	OTHER
-Falle	1048	NOUN
+Falle	1048	NOUN,VERB
 städtischen	1047	OTHER
 Kulturen	1045	NOUN
 Rand	1045	NOUN
@@ -2690,8 +2690,8 @@ Einteilung	820	NOUN
 Bakterien	820	NOUN
 änderte	820	OTHER
 Feuer	819	NOUN
-Wende	819	NOUN
-Grab	818	NOUN
+Wende	819	NOUN,VERB
+Grab	818	NOUN,VERB
 Texten	818	NOUN
 Lübeck	818	NOUN
 genauer	817	OTHER
@@ -2743,7 +2743,7 @@ längere	804	OTHER
 befanden	804	OTHER
 berufen	803	OTHER
 Heidelberg	803	NOUN
-Ruf	803	NOUN
+Ruf	803	NOUN,VERB
 legt	803	OTHER
 hinein	803	OTHER
 Bürgerkrieg	803	NOUN
@@ -3116,7 +3116,7 @@ Eduard	708	NOUN
 Geburtstag	708	NOUN
 Helmut	708	NOUN
 natürlich	707	OTHER
-Schnitt	707	NOUN
+Schnitt	707	NOUN,VERB
 Geschichten	707	NOUN
 verschoben	707	OTHER
 Bundesstaaten	707	NOUN
@@ -3230,14 +3230,14 @@ führende	681	OTHER
 Hitlers	681	NOUN
 Statistik	681	NOUN
 Goldene	680	NOUN,OTHER
-Antwort	680	NOUN
+Antwort	680	NOUN,VERB
 welchem	680	OTHER
 Synonym	680	NOUN,OTHER
 Teilnahme	680	NOUN
 unterstellt	680	OTHER
 verkehren	680	OTHER
 vereinzelt	679	OTHER
-Boot	679	NOUN
+Boot	679	NOUN,VERB
 Kolonie	679	NOUN
 wonach	678	OTHER
 Jahrhunderten	678	NOUN
@@ -3405,7 +3405,7 @@ Act	642	NOUN
 Bäume	642	NOUN
 Dateien	642	NOUN
 Kapelle	642	NOUN
-Koch	641	NOUN
+Koch	641	NOUN,VERB
 Merkmal	641	NOUN
 Edward	641	NOUN
 Begründer	641	NOUN
@@ -3540,7 +3540,7 @@ ausgebildet	610	OTHER
 gegliedert	610	OTHER
 Flusses	609	NOUN
 besonderer	609	OTHER
-Wein	609	NOUN
+Wein	609	NOUN,VERB
 Prüfung	609	NOUN
 Jünger	609	NOUN,OTHER
 Brücken	609	NOUN
@@ -3551,7 +3551,7 @@ gespeichert	608	OTHER
 kleines	608	OTHER
 Begriffen	608	NOUN,OTHER
 erwies	607	OTHER
-Erbe	607	NOUN
+Erbe	607	NOUN,VERB
 Gebäuden	607	NOUN
 zeitlich	607	OTHER
 jährliche	607	OTHER
@@ -4557,7 +4557,7 @@ sonstige	472	OTHER
 Haft	472	NOUN
 finanziell	472	OTHER
 Disziplin	472	NOUN
-Bitte	472	NOUN,OTHER
+Bitte	472	NOUN,VERB
 Sklaverei	472	NOUN
 Beatles	472	NOUN
 besagt	471	OTHER
@@ -4628,7 +4628,7 @@ jüdischer	464	OTHER
 Germanen	464	NOUN
 israelischen	464	OTHER
 Ortsteile	464	NOUN
-Tanz	463	NOUN
+Tanz	463	NOUN,VERB
 Grammatik	463	NOUN
 Beliebtheit	463	NOUN
 gerichtet	463	OTHER
@@ -4655,7 +4655,7 @@ seltenen	461	OTHER
 endlich	461	OTHER
 Rose	461	NOUN
 entworfen	461	OTHER
-Gewinn	461	NOUN
+Gewinn	461	NOUN,VERB
 betragen	461	OTHER
 Programmen	461	NOUN
 hessischen	460	NOUN,OTHER
@@ -4910,7 +4910,7 @@ Mannes	437	NOUN
 Universum	437	NOUN
 demselben	437	OTHER
 orientierten	437	OTHER
-Klang	437	NOUN
+Klang	437	NOUN,VERB
 vollkommen	437	OTHER
 Grimm	437	NOUN
 do	437	OTHER
@@ -4977,7 +4977,7 @@ Bundesland	432	NOUN
 Ensemble	431	NOUN
 unbedingt	431	OTHER
 feiern	431	NOUN,OTHER
-zwang	431	NOUN,OTHER
+zwang	431	NOUN,VERB
 Instituts	431	NOUN
 Descartes	431	NOUN
 erlassen	431	OTHER
@@ -4989,7 +4989,7 @@ RAID	431	NOUN
 FPÖ	431	NOUN
 André	430	NOUN
 scheinbar	430	OTHER
-Ruhe	430	NOUN
+Ruhe	430	NOUN,VERB
 Militärs	430	NOUN
 Symbole	430	NOUN
 Alkohol	430	NOUN
@@ -5274,7 +5274,7 @@ Artikeln	408	NOUN
 angehören	408	OTHER
 behaupten	408	OTHER
 bildenden	408	OTHER
-vergleiche	408	NOUN,OTHER
+vergleiche	408	NOUN,VERB
 Spanier	408	NOUN
 Abbildungen	408	NOUN
 trennen	407	OTHER
@@ -5306,7 +5306,7 @@ Gegenteil	405	NOUN
 Ideal	405	NOUN,OTHER
 greift	405	OTHER
 ausführlich	405	OTHER
-Heirat	405	NOUN
+Heirat	405	NOUN,VERB
 entfernten	405	OTHER
 eingebaut	405	OTHER
 Quadrat	405	NOUN
@@ -5489,7 +5489,7 @@ Schifffahrt	391	NOUN
 Staats	391	NOUN
 KI	391	NOUN
 Fahrer	391	NOUN
-Salz	391	NOUN
+Salz	391	NOUN,VERB
 Chopin	391	NOUN
 dortige	390	OTHER
 spiegelt	390	OTHER
@@ -6616,7 +6616,7 @@ Victoria	320	NOUN
 Corps	320	NOUN
 Costa	320	NOUN
 Münze	320	NOUN
-Pass	320	NOUN
+Pass	320	NOUN,VERB
 Virus	320	NOUN
 Bundesstaates	320	NOUN
 Berchtesgaden	320	NOUN

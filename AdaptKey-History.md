@@ -14934,3 +14934,54 @@ No new unit tests (dictionary content + comment only). 1058 unit tests unchanged
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 352 -> 353, `versionName` `"1.0.48"` ->
 `"1.0.49"`. Not yet device-confirmed - same repro shape as the prior two D-368 rounds, now covering 60 words
 total.
+
+## §297 - D-368 Rounds 4/5: Down Through Frequency 300; A Failed Filter Experiment; The "Zero VERB Tags" Question Answered (v1.0.50)
+
+### Two side questions, answered before continuing
+User asked mid-round what "zero pre-existing `VERB` tags" actually means - is this fixed once every `NOUN`
+that is also a `VERB` has been found? Answered directly: no. Ordinary, unambiguous verbs with no noun
+collision at all (`gehen`, `kommen`, `haben`, `können`, `machen`, `sprechen` - checked directly, all present
+with real frequencies) were never "missing" as words - they are simply tagged `OTHER`, the catch-all bucket,
+not `VERB` specifically. This session's D-368 work only ever tags `VERB` where a noun collision exists to
+resolve (the narrow, load-bearing reason `§6` needs the tag at all); giving every ordinary German verb a
+`VERB` tag regardless of collision is a separate, larger question this session did not attempt, since nothing
+in the current codebase consumes `VERB` for any purpose beyond this exact homograph disambiguation.
+
+User also asked (with the previous round's build overhead fresh in mind) whether an improved mechanical
+pre-filter could shrink the remaining ~9,800-candidate pool before further manual review. Built one: for
+"pattern B" candidates (a noun not ending in `-e`, hypothesised infinitive = noun + `"en"`), check whether
+`noun + "e"` already exists as its own `NOUN` entry - if so, treat the `noun+en` hit as explained by the
+noun's own regular plural rather than an unrelated verb, and exclude it automatically. **This failed**: tested
+against `Krieg`/`kriegen` (already confirmed real - `kriegen`, "to get", is a genuine common verb) - `Krieg`'s
+own real plural is `Kriege`, so the filter's own `noun+"e"` check (`"kriege"`) also happens to exist as a
+`NOUN` entry, so the filter would have silently discarded a confirmed-good candidate. The two facts (a noun
+having its own regular plural, and its `-en` form coincidentally also being an unrelated real verb) are
+independent and can both be true at once - there is no way to mechanically tell them apart from spelling
+alone without an actual German morphological analyser, which this project does not have. Abandoned; manual
+review, band by band, remains the only reliable method.
+
+### Continuing the systematic review
+Generated the 500-1999 band (717 candidates) and the 300-499 band (524 candidates) the same way as round 3,
+and reviewed both individually with real German-language knowledge before applying anything - per the user's
+own request to take as many bands as practical in one sitting, deferring the (costly) build/rebuild/commit
+cycle to a single pass at the end rather than one per band. Confirmed 16 real from the 717 (500-1999) and 10
+real from the 524 (300-499) - a **falling** hit rate (15% at the ≥2000 tier, ~2% and ~1.9% at these two lower
+tiers), exactly as expected once the own-plural filter experiment above confirmed the dominant noise source
+is frequency-independent (a property of German grammar, not of how common a word is).
+
+26 more words retagged `NOUN,VERB` (86 total across all five D-368 rounds now): ordinary 1st-person-present/
+imperative collisions (`Park`/`Rat`/`Spiel`/`Rede`/`Falle`/`Koch`/`Ruf`/`Wende`/`Grab`/`Erbe`/`Boot`/
+`Antwort`/`Gestalt`/`Wein`/`Tanz`/`Gewinn`/`Ruhe`/`Heirat`/`Salz`/`Pass`), more preterite-form collisions
+(`Schnitt`/`Verband`/`Klang`/`zwang`), and two entries that were already `NOUN,OTHER` and got upgraded to the
+specific `NOUN,VERB` now that the verb reading is confirmed (`Bitte` = "die Bitte"/"ich bitte"; `vergleiche`
+= "die Vergleiche"/"ich vergleiche"). Everything below frequency 300 remains explicitly open.
+
+`dictionaries/de/version.txt` 8 -> 9, `language-packs/adaptkey-lang-de.zip` rebuilt once (not once per band,
+per the user's own request) and verified - unzipped back, version and a total count of 86 `NOUN,VERB` rows
+confirmed. `LanguagePackCatalog`'s German entry `version` 8 -> 9, with a comment covering both bands' worth
+of retagged words and the falling hit-rate finding.
+
+No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 353 -> 354, `versionName` `"1.0.49"` ->
+`"1.0.50"`. Not yet device-confirmed - same repro shape as the prior D-368 rounds, now covering 86 words
+total.

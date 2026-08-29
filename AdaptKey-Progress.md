@@ -275,26 +275,34 @@ non-trivial changes).
   - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
     of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
     adjustments in the same file, same shape as D-330-followup.
-  - **D-368 (case-neutral homograph tagging) - three rounds done** (§294/§295/§296, v1.0.47-1.0.49): **60**
+  - **D-368 (case-neutral homograph tagging) - five rounds done** (§294-§297, v1.0.47-1.0.50): **86**
     words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`), 26
     further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised infinitive
-    `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - round 3 - **30 more
-    found via a real, systematic scan of the whole dictionary** rather than a recalled list (see below).
+    `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - rounds 3-5 - **56
+    more found via a real, systematic scan of the whole dictionary** rather than a recalled list (see below).
     `dank` gained a `NOUN` tag alongside its existing `OTHER` (the reverse direction - the noun reading was
     untagged, not the verb one). Pack rebuilt/republished each round, confirmed zero code change needed.
 
-    **Round 3 method, worth recording precisely since it changes how any future continuation should work**:
-    every `NOUN`-tagged entry checked against a hypothesised weak-verb infinitive (`+"n"`/`+"en"`) - 87,985
-    entries checked, 10,013 mechanical hits, but the overwhelming majority were false positives explained by
-    a noun's own regular dative-plural form (formally identical in spelling to a weak-verb infinitive - not
-    mechanically distinguishable from spelling alone). Restricted to the 204 hits at or above
-    `CorrectionConfidence`'s own live `NOUN_REFERENCE_FREQUENCY` (2000.0 - not the removed, historical
-    `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`/300 this session had cited from memory earlier and confirmed no
-    longer exists in the code) and reviewed individually; 30 confirmed real. **Everything below frequency
-    2000 remains explicitly open** - the mechanical list still exists (not persisted anywhere in the repo,
-    only generated ad hoc this session) but was never reviewed below that cutoff; a future continuation
-    should re-run the same scan and work down through progressively lower frequency bands, same shape as
-    this round, rather than assuming completeness.
+    **Method, worth recording precisely since it changes how any future continuation should work**: every
+    `NOUN`-tagged entry checked against a hypothesised weak-verb infinitive (`+"n"`/`+"en"`) - 87,985 entries
+    checked, 10,013 mechanical hits, but the overwhelming majority were false positives explained by a noun's
+    own regular dative-plural form (formally identical in spelling to a weak-verb infinitive - not
+    mechanically distinguishable from spelling alone; a later attempt to build an automated "own-plural"
+    filter for this was tried and **failed** - `Krieg`/`kriegen` is a confirmed-real verb collision, but
+    `Krieg`'s own regular plural `Kriege` also exists, so the filter would have wrongly discarded it too - the
+    two facts are independent and cannot be told apart from spelling alone without a real morphological
+    analyser this project does not have). Reviewed in frequency bands, each against `CorrectionConfidence`'s
+    own live `NOUN_REFERENCE_FREQUENCY` (2000.0) as the starting anchor - not the removed, historical
+    `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`/300 this session had cited from memory early on and confirmed no
+    longer exists in the code: ≥2000 (204 candidates, 30 confirmed, ~15% hit rate), 500-1999 (717 candidates,
+    16 confirmed, ~2.2%), 300-499 (524 candidates, 10 confirmed, ~1.9%). The hit rate falls with frequency but
+    the noise rate does not - confirms the own-plural artefact is a grammar property, not a frequency one.
+    **Everything below frequency 300 remains explicitly open** - the mechanical candidate list itself is not
+    persisted anywhere in the repo (regenerated ad hoc each round); a future continuation should re-run the
+    same scan and keep working down through lower frequency bands, same shape as these rounds, rather than
+    assuming completeness. Given the falling hit rate and unchanging noise rate, a future session should
+    weigh the review cost of the remaining ~9,300 mechanical candidates against the shrinking real yield
+    before committing to reviewing all of them.
 
     **New, explicitly deferred follow-up from the user, unrelated to the above**: the nominalised-infinitive
     pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`, `leben`/`Leben`, and others) was
@@ -307,10 +315,15 @@ non-trivial changes).
 
   - **The German dictionary carried zero `VERB` tags anywhere, across all ~120,000 rows, before D-368**
     **started this session** - a genuine, standalone structural data-quality finding from the original
-    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 60 `NOUN,VERB`
-    entries that exist today are ones added across D-368's three rounds. Worth keeping in mind for *any*
-    future feature that might want to rely on a `VERB` tag meaning something for German - today, outside of
-    these 60 words, it simply never does.
+    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 86 `NOUN,VERB`
+    entries that exist today are ones added across D-368's five rounds. This does **not** mean ordinary verbs
+    are missing as words - `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` (checked directly) are all
+    present with real frequencies, just tagged the catch-all `OTHER` instead of `VERB` specifically, since
+    they have no noun collision to resolve. D-368 only ever tags `VERB` where a homograph exists to
+    disambiguate - giving every genuine German verb its own `VERB` tag regardless of collision is a separate,
+    larger, not-yet-started question, and would only matter once some future feature actually reads `VERB`
+    for a purpose beyond this one. Worth keeping in mind for *any* future feature that might want to rely on
+    a `VERB` tag meaning something for German - today, outside of these 86 words, it simply never does.
 
   As with D-402's own existing convention, every candidate in this combined round should be listed for the
   user's explicit confirmation before the dictionary file is actually touched.
@@ -393,6 +406,26 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§297 (v1.0.50): D-368 rounds 4/5 - down through frequency 300 (26 more homographs, 86 total); a**
+  **mechanical own-plural filter was tried and failed; the "zero VERB tags" question answered directly.**
+  User asked whether the missing `VERB` tags meant we're done once every `NOUN`-also-`VERB` word is found -
+  answered no: ordinary verbs with no noun collision (`gehen`/`kommen`/`haben`/`können`, checked directly)
+  were never missing as words, just tagged `OTHER` instead of `VERB` - D-368 only tags `VERB` where a
+  collision needs resolving, giving *every* verb its own tag regardless of collision is a separate, larger,
+  not-yet-started question nothing currently consumes. Also tried to build a mechanical pre-filter (exclude a
+  candidate when its own regular plural also exists) to cut review cost before going lower - it failed:
+  `Krieg`/`kriegen` (confirmed real) would have been wrongly discarded too, since `Krieg`'s own real plural
+  `Kriege` also exists - the two facts are independent, not mechanically distinguishable without a real
+  morphological analyser. Continued the same manual review instead, in two more bands (500-1999: 717
+  candidates, 16 confirmed; 300-499: 524 candidates, 10 confirmed) - hit rate fell from ~15% to ~2%, but the
+  noise rate held steady, confirming the own-plural artefact is frequency-independent. One rebuild/commit for
+  both bands together (per the user's own request to bundle several bands per build cycle). Everything below
+  frequency 300 remains explicitly open, with an explicit note for a future session to weigh review cost
+  against shrinking yield before committing to the remaining ~9,300 mechanical candidates. No new tests
+  (data + comment only). 1058 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `versionCode` 353 -> 354, `versionName` `"1.0.49"` -> `"1.0.50"`. Not yet device-confirmed. See
+  history §297.
 
 - **§296 (v1.0.49): D-368 round 3 - a real systematic whole-dictionary scan (not a recalled list) found 30**
   **more homographs; the German dictionary's zero pre-existing `VERB` tags recorded as its own finding.**
