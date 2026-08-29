@@ -14177,3 +14177,71 @@ gained the C-22 row. `versionCode` 341 -> 342, `versionName` `"1.0.37"` -> `"1.0
 Not yet device-confirmed - needs a real on-device re-test of a case like `Ohren`/`Ihren` at each of the three
 C-22 levels (confirming AGGRESSIVE still protects it), plus a genuine `aberkennen`-shaped prefix-typo case
 confirming it now appears as a suggestion rather than silently misfiring.
+
+## §282 - D-406 Implemented: Auto-Caps Closes The Live-Arming Gaps D-405 Predicted (v1.0.39)
+
+### The repro and the design discussion
+User reported a real regression from D-405 (which made §6 rule 2's sentence-start capitalisation live-only,
+no commit-time backstop): type a sentence-ending period (auto-space, Shift arms for the next word); tap back
+into the previous word to fix a typo; the stale "armed" state survives the tap; the first Backspace is
+silently swallowed entirely; a second Backspace deletes correctly but Shift stays wrongly armed, so the next
+typed character lands uppercase mid-word; tapping back afterward to the genuine sentence start then shows
+Shift wrongly *off*.
+
+Walked this against the code across several rounds before touching anything, per this project's own
+"discuss, don't guess" convention for a fix touching a shared, easy-to-get-subtly-wrong mechanism. User's own
+framing, confirmed correct against the code and against §6/G-05's own already-stated intent: Auto-Caps is a
+**position property**, re-derived every time a position is reached (typed forward, tapped, dragged, an
+arrow-key move) - not a state an *event* (typing punctuation, entering a field) sets once and leaves standing.
+One deliberate, explicitly-confirmed exception: a position reached specifically **by Backspace** does not use
+context derivation at all - the deleted character's own case is the sole signal (deleted uppercase -> Shift
+on; deleted lowercase -> Shift off), *unless* the deleted character was punctuation/whitespace/a digit, in
+which case ordinary context derivation applies exactly as for every other trigger (confirmed explicitly: no
+separate hard "off" step needed there either, since context derivation alone already answers both directions
+correctly - simpler than an initially-proposed intermediate design that would have force-set "off" first).
+
+Traced three concrete, independent gaps against this model:
+1. `onUpdateSelection`'s "external caret move while a composing token was still active" branch (distinct from
+   `reclaimWordAtCaret()`, which D-313 already fixed for the "composing was empty" case) never called
+   `armShiftForNextWord()` at all.
+2. `handleBackspace()`'s D-262 pending-auto-space guard trusted the flag unconditionally - a Backspace
+   pressed faster than `reclaimWordAtCaret()`'s own 100ms debounce (`RECLAIM_DEBOUNCE_MS`, D-347/D-350) could
+   hit this guard with a caret that had already moved away, silently swallowing the keystroke.
+3. `applyShiftAfterDelete()` had no branch at all for a deleted lowercase letter (fell through, leaving Shift
+   unchanged rather than off) - and separately, the pre-existing D-45 fix only ever re-armed Shift *on* when
+   deleting a character revealed a genuine sentence start, with no symmetric "off" direction, from one single
+   call site.
+
+Exactly the scenario §35 (D-405) itself predicted: the removed commit-time override used to silently paper
+over gaps like these; without it, they surface directly instead.
+
+### Implementation
+`applyShiftAfterDelete(deleted: Char, ic: InputConnection)` (now takes `ic`, threaded through from both call
+sites, `deleteComposingChar()`/`deleteOneBefore()`) reduced to two cases: a deleted letter is the hard,
+deliberate exception (uppercase -> on + `shiftArmedByDelete`, unchanged; lowercase -> off, was previously
+missing); anything else delegates to `armShiftForNextWord(ic)` - the exact same context re-derivation every
+other newly-reached position already uses. This single change subsumes D-45's own former standalone
+`sentenceStartBefore()` re-check in `handleBackspace()` (removed outright - it only ever covered the "on"
+direction from this one call site; the unified `applyShiftAfterDelete()` now covers both directions from
+every call site).
+
+`onUpdateSelection`'s "EXTERNAL" branch (composing was still active when the caret moved away) now also calls
+`armShiftForNextWord(ic)` after wiping the stale composing state - closing the second, previously-untouched
+half of D-313's own "re-derive Shift on any caret arrival" fix.
+
+`handleBackspace()`'s D-262 guard now verifies the space is genuinely still there (`getTextBeforeCursor(1,0)
+== " "`) *before* intercepting and returning; when it isn't (a stale flag from a caret move during the
+debounce window), the flag is still cleared but the keystroke falls through to the ordinary
+delete/re-derive path instead of being silently swallowed.
+
+No new unit tests - this is Android `InputConnection`/`onUpdateSelection` glue code, left untested per this
+project's established convention (no emulator in this environment); 1018 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+Spec: the "Addendum to G-05" section (§4) rewritten to describe the corrected two-case model; new **§37**
+section added (mirrors §35/§36's depth for a comparably-sized behavioural fix), with a forward-pointer added
+from §35's own trade-off paragraph. `versionCode` 342 -> 343, `versionName` `"1.0.38"` -> `"1.0.39"`.
+
+Not yet device-confirmed - needs the exact repro re-tested (period -> tap into previous word -> Backspace
+twice -> tap back to the real sentence start), plus a plain arrow-key/drag-handle move into and out of a
+word as a variant of the same trigger.

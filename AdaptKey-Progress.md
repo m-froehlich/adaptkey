@@ -303,6 +303,29 @@ non-trivial changes).
 
 ## Current State
 
+- **§282 (v1.0.39): D-406 implemented - Auto-Caps is now consistently re-derived at every position reached,**
+  **closing two live-arming gaps D-405 predicted.** Real repro: period -> auto-space arms Shift -> tap back
+  into the previous word to fix a typo -> first Backspace silently swallowed -> second Backspace deletes but
+  Shift stays wrongly armed -> next char wrongly uppercase -> tapping back to the real sentence start then
+  shows Shift wrongly off. Confirmed model (several discussion rounds): a position is a property, re-derived
+  fresh on every arrival (typed, tapped, dragged, arrow-keyed) via the existing `armShiftForNextWord`/
+  `sentenceStartBefore` mechanism - **except** a position reached by Backspace, where the deleted character's
+  own case is the sole signal (deleted uppercase -> on, deleted lowercase -> off), unless the deleted
+  character was punctuation/whitespace/a digit, in which case ordinary context derivation applies exactly as
+  for every other trigger. Three gaps closed: (1) `onUpdateSelection`'s "external caret move while composing
+  was still active" branch never called `armShiftForNextWord()` at all (D-313 only fixed the other,
+  composing-was-empty path via `reclaimWordAtCaret()`); (2) `handleBackspace()`'s D-262 pending-auto-space
+  guard trusted a flag that could go stale within `reclaimWordAtCaret()`'s own 100ms debounce window,
+  silently swallowing the keystroke; (3) `applyShiftAfterDelete()` had no branch for a deleted lowercase
+  letter at all (fell through, left unchanged) and the separate pre-existing D-45 fix only ever handled the
+  "re-arm on" direction from one call site. Fixed by unifying `applyShiftAfterDelete()` into two cases
+  (deleted letter = hard exception; anything else = `armShiftForNextWord()`, same as any other position
+  arrival), which subsumes and replaces D-45's own standalone check. No new tests (Android IME glue code,
+  untested per convention); 1018 unit tests unchanged, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 342 -> 343, `versionName` `"1.0.38"` -> `"1.0.39"`. Spec's
+  G-05 addendum rewritten, new §37 added, §35 gained a forward-pointer. Not yet device-confirmed. See
+  history §282.
+
 - **§281 (v1.0.38): D-353/D-354 implemented - a unified `CorrectionConfidence` score replaces autocorrect's**
   **ad hoc gates.** New pure `CorrectionConfidence` object (`dictionary` package): for an unknown typed token,
   `costFactor × frequencyFactor` (frequency reference 25 for a non-noun candidate, 2,000 for a noun-tagged

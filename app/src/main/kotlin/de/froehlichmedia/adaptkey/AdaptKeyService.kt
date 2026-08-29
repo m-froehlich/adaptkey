@@ -1425,6 +1425,12 @@ class AdaptKeyService : InputMethodService() {
         previousPreviousWord = null
         hyphenChain.clear()
         clearSuggestions()
+        // D-406: this is the *other* place (besides reclaimWordAtCaret(), D-313) a caret can land on a
+        // genuinely new position with no keystroke of its own - reached only while composing was still
+        // active when the external move happened (reclaimWordAtCaret's own debounced path only ever fires
+        // while composing is already empty). D-313 never covered this one - Shift was left exactly as it
+        // was before the move, the same class of stale-state bug D-313 fixed for the other path.
+        armShiftForNextWord(ic)
     }
     
     /**
@@ -3084,12 +3090,21 @@ class AdaptKeyService : InputMethodService() {
         // D-262: a Backspace right after a still-pending sentence-punctuation auto-space removes only that
         // forced space and exits the mode - it must not cascade into the ordinary deleteOneBefore() path
         // below, which would go on to remove the punctuation mark (or the word before it) instead.
+        //
+        // D-406: only when the caret is actually still sitting right after that auto-space - verified fresh
+        // here, not merely inferred from the flag. A caret move away from that position (e.g. a tap back
+        // into the previous word to fix a typo) is meant to be consumed by reclaimWordAtCaret()'s own
+        // pendingPunctuationSpace reset, but that reclaim is debounced (RECLAIM_DEBOUNCE_MS) - a Backspace
+        // pressed faster than the debounce window used to still hit this branch with a now-stale flag,
+        // silently swallowing the keystroke entirely (neither deleting the intended character nor falling
+        // through to re-derive Shift for the real caret position). Falling through instead of returning lets
+        // this keystroke behave like an ordinary Backspace once the flag is confirmed stale.
         if (pendingPunctuationSpace) {
             pendingPunctuationSpace = false
             if (ic.getTextBeforeCursor(1, 0) == " ") {
                 ic.deleteSurroundingText(1, 0)
+                return
             }
-            return
         }
         // §41: a real, non-collapsed text selection takes priority over the ordinary single-character
         // delete below - Backspace must remove the selection itself, matching every other editor, not the
@@ -3118,16 +3133,16 @@ class AdaptKeyService : InputMethodService() {
         }
         // A backspace breaks the immediate context a pending merge (A-06) would have relied on.
         pendingMergeChar = null
+        // D-45 / D-406: deleting a character (typically the punctuation just typed at a line/sentence
+        // start) can leave the cursor back at a sentence start, where auto-capital must re-arm - this used
+        // to be a standalone re-check right here, only for this one call site and only in the "re-arm on"
+        // direction; folded into applyShiftAfterDelete() itself (called from both deleteComposingChar() and
+        // deleteOneBefore() below), which now re-derives Shift fully, in both directions, for every deleted
+        // character that is not itself a letter - see its own KDoc.
         if (composing.isNotEmpty()) {
             deleteComposingChar(ic)
         } else {
             deleteOneBefore(ic)
-            // D-45: deleting a character (typically the punctuation just typed at a line/sentence start)
-            // can leave the cursor back at a sentence start, where auto-capital must re-arm — otherwise the
-            // first letter of the fresh sentence stays lowercase.
-            if (composing.isEmpty() && sentenceStartBefore(ic)) {
-                keyboardView?.shifted = ShiftGrace.autoArmAtWordStart(capsMode, true)
-            }
         }
     }
     
@@ -3176,7 +3191,7 @@ class AdaptKeyService : InputMethodService() {
             updateComposing(ic, duringRepeat)
             refreshSuggestions(duringRepeat)
         }
-        applyShiftAfterDelete(deleted)
+        applyShiftAfterDelete(deleted, ic)
     }
     
     /**
@@ -3201,7 +3216,7 @@ class AdaptKeyService : InputMethodService() {
         val wasComposingEmpty = composing.isEmpty()
         val deleted = before[0]
         ic.deleteSurroundingText(1, 0)
-        applyShiftAfterDelete(deleted)
+        applyShiftAfterDelete(deleted, ic)
         if (wasComposingEmpty) {
             maybeUnlearnOnBackspaceReturn(ic)
         }
@@ -3264,18 +3279,38 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Addendum to G-05 (+ D-08): when the deleted character was uppercase, Shift is re-armed so the next
-     * keystroke reproduces an uppercase character — the case information is carried by the deleted character
-     * itself. Deleting whitespace (e.g. the space to the left of a just-deleted capital) counts as deleting a
-     * lowercase character and shifts back to lowercase. A deleted lowercase letter leaves Shift as it was.
+     * D-406: what Shift should become once the position right before it is reached by deleting [deleted],
+     * per §6/G-05's own two-tier model - a position reached by deleting a *letter* is a deliberate exception
+     * to the ordinary "derive from context" rule (the deleted letter's own case is the only signal, so a
+     * delete-then-retype reproduces exactly what was there); a position reached by deleting anything else
+     * (punctuation, whitespace, a digit) is not special at all and gets the same context re-derivation any
+     * other newly-reached position does ([armShiftForNextWord]).
+     *
+     * Addendum to G-05 (+ D-08): when the deleted character was an uppercase letter, Shift is re-armed so
+     * the next keystroke reproduces an uppercase character. A deleted lowercase letter sets Shift off
+     * outright - not merely left alone, which is the exact bug this reworks: a stale "on" from elsewhere
+     * (e.g. a sentence-start arm that never got the chance to re-derive before the delete) must not survive
+     * past deleting an ordinary lowercase letter, since a plain letter deletion is never itself a sentence
+     * start.
+     *
+     * D-406: no longer a third, hard "off" branch for whitespace - the deliberately-simpler fix. Deleting
+     * punctuation or whitespace was never actually a sentence-start signal by itself (unlike a deleted
+     * letter, whose own case *is* the whole signal) - re-deriving from [armShiftForNextWord] already yields
+     * the right answer in both directions (on when the resulting position genuinely is a sentence start,
+     * off otherwise) without a separate hard-coded "off" step first. This also folds in and replaces D-45's
+     * former standalone re-check in [handleBackspace] (which only ever handled the "on" direction, gated to
+     * one call site) - every caller of this function now gets the same full, bidirectional re-derivation.
+     *
+     * @param ic threaded through to [armShiftForNextWord] for the non-letter case
      */
-    private fun applyShiftAfterDelete(deleted: Char) {
+    private fun applyShiftAfterDelete(deleted: Char, ic: InputConnection) {
         when {
             deleted.isUpperCase() -> {
                 keyboardView?.shifted = true
                 shiftArmedByDelete = true
             }
-            deleted.isWhitespace() -> keyboardView?.shifted = false
+            deleted.isLowerCase() -> keyboardView?.shifted = false
+            else -> armShiftForNextWord(ic)
         }
     }
     

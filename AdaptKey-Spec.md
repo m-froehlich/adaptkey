@@ -290,17 +290,36 @@ category, independent of whether the per-key vibration (D-06) is enabled. The vi
 `Vibrator` path as D-06, bypassing the system "touch vibration" toggle.
 
 ### Addendum to G-05 - Shift State After Backspace, and After a Caret Tap Into Existing Text
-When an uppercase character is deleted, Shift remains active - the next keystroke will produce an uppercase character. Deleting the space immediately to the left of a just-deleted uppercase character also counts as "deleting uppercase" for this purpose, since the uppercase context ended at that word boundary. When a lowercase character is deleted, Shift behaves as usual (context-driven by the autocorrect hierarchy).
+D-406: a position is reached one of two ways, each with its own rule - both ultimately answered by
+[armShiftForNextWord], §6 rule 2's own live-arming mechanism, reused verbatim rather than re-derived
+separately:
 
-D-313: tapping the caret into an already-typed word (e.g. to swap one letter mid-word, §58/D-62's reclaim)
-re-derives Shift fresh from the caret's own new position, the same way a delimiter-driven word boundary
-already does - mostly lowercase, uppercase only where the position genuinely is a line/sentence start. Before
-this, whatever Shift state happened to be active *before* the tap (e.g. auto-armed after a sentence-ending
-period) stayed exactly as it was, since nothing recomputed it purely from a caret move with no keystroke of
-its own - reported directly: editing mid-word after a sentence-start auto-capital left the next inserted
-character wrongly uppercase, and deleting a lowercase character there did not self-correct it either (deleting
-a lowercase character is, correctly, a no-op for Shift state - the bug was the stale starting value itself,
-not the deletion handling above).
+- **Deleting a letter** is a deliberate exception to ordinary context derivation: the deleted letter's own
+  case is the only signal. An uppercase letter deleted arms Shift on - the next keystroke reproduces an
+  uppercase character, the case information is carried by the deleted character itself. A lowercase letter
+  deleted sets Shift off outright, unconditionally - not merely "left as it was" (a stale "on" from
+  elsewhere must not survive past deleting an ordinary lowercase letter).
+- **Deleting anything else** (punctuation, whitespace, a digit) is not special at all - the resulting
+  position gets the same context re-derivation any other newly-reached position does (see below), in both
+  directions: on when the resulting position genuinely is a sentence start, off otherwise. No separate
+  hard-coded "off" step is needed first - re-deriving from context alone already answers both directions
+  correctly.
+
+D-313 / D-406: reaching a new caret position with **no keystroke of its own** - a tap into an already-typed
+word (§58/D-62's reclaim), a drag, an arrow-key move, or an external caret change while a composing token
+was still active - re-derives Shift fresh from the caret's own new position exactly the same way, via
+[armShiftForNextWord]: mostly lowercase, uppercase only where the position genuinely is a line/sentence
+start. D-313 originally fixed only the "composing was already empty" side of this (the reactive
+[reclaimWordAtCaret] path); D-406 closed the other side - an external caret move away while a composing
+token was *still* active (handled inline in `onUpdateSelection`, not via [reclaimWordAtCaret] at all) never
+re-derived Shift either, the identical class of stale-state bug reaching the position by a different route.
+D-406 also fixed a related timing gap: a Backspace pressed faster than [reclaimWordAtCaret]'s own debounce
+window could still hit a now-stale pending-auto-space guard in `handleBackspace()` and be silently swallowed
+- consuming the flag without deleting anything and without ever reaching the delete-driven re-derivation
+above. All three symptoms were reported together from one real repro: typing a sentence-ending period (which
+arms Shift for the next word), tapping back into the previous word to fix a typo, and backspacing to correct
+it - the first Backspace was silently swallowed, the second deleted correctly but left Shift wrongly armed,
+and the wrongly-capitalised state then persisted even after tapping back to the genuine sentence start.
 
 ---
 
@@ -1390,6 +1409,10 @@ If a genuine live-arming gap resurfaces, the fix is to trace and repair `armShif
 `sentenceStartBefore`, not to reinstate a blanket commit-time override, which would silently reopen this
 exact issue for every deliberate lower-case choice again.
 
+D-406 is exactly this predicted scenario materialising - two genuine live-arming gaps, previously masked by
+the removed commit-time override, surfaced directly once it was gone. See §37 for the fix (which stays true
+to the "repair the live-arming path, don't reinstate the override" instruction above).
+
 ---
 
 ## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354)
@@ -1440,6 +1463,49 @@ deliberately broader than A-05's own `ver-`/`zer-`/`ent-`/etc. list (§7) - that
 where the variable separable prefixes (`über-`/`um-`/`durch-`/etc.) are deliberately excluded because each is
 also a common standalone word; that reasoning does not apply to a soft plausibility cap on a whole-word
 substitution, so the broader set is used here without contradiction.
+
+---
+
+## 37. Auto-Caps Is A Position Property, Not An Event - Closing D-405's Predicted Live-Arming Gaps (D-406)
+
+D-406: a real device repro exposed that Auto-Caps had, in practice, drifted from the model §6/G-05 already
+describe (a position's Shift state is derived fresh every time that position is reached) toward something
+closer to "an event (typing punctuation, entering a field) sets a state that then persists" - the two are
+usually indistinguishable, since the position most commonly *is* reached right after the triggering event,
+but diverge sharply the moment a caret move or a delete lands somewhere else first. Three gaps, found by
+tracing one real repro end to end (type a sentence-ending period, tap back into the previous word to fix a
+typo, Backspace to correct it):
+
+1. **A caret reaching a new position with no keystroke of its own** is only re-derived
+   ([armShiftForNextWord]) on one of its two code paths. `reclaimWordAtCaret()` (§58/D-62, reached while no
+   composing token was active) already did this correctly since D-313. The other path - an external caret
+   move away while a composing token *was* still active, handled inline inside `onUpdateSelection` itself -
+   never re-derived Shift at all; whatever state happened to be active before the move simply stayed.
+2. **A stale pending-auto-space guard could swallow a Backspace entirely.** `handleBackspace()`'s existing
+   D-262 guard (a Backspace right after a still-pending sentence-punctuation auto-space removes only that
+   space) trusted the pending flag unconditionally. `reclaimWordAtCaret()`'s own debounce
+   (`RECLAIM_DEBOUNCE_MS`, tuned for an unrelated reason, D-347/D-350) means a Backspace pressed faster than
+   that window could still hit this guard with a caret that had already moved away - consuming the flag,
+   deleting nothing, and returning before ever reaching the ordinary delete/re-derive path below. Fixed by
+   verifying the caret is genuinely still at the auto-space position before intercepting the keystroke;
+   otherwise the flag is treated as stale and the keystroke falls through to an ordinary Backspace.
+3. **Deleting a non-letter character had no re-derivation at all in the "off" direction.** The pre-existing
+   D-45 fix only ever re-armed Shift *on* when deleting a character revealed a genuine sentence start
+   (checked via one standalone, single-call-site re-check); there was no equivalent for the "not a sentence
+   start" direction, so a stale "on" could survive deleting punctuation or whitespace unchanged.
+
+The fix generalises rather than patches each symptom individually - `applyShiftAfterDelete()` (Addendum to
+G-05) now has exactly two cases: a deleted **letter** is a genuine, deliberate exception to context
+derivation (its own case is the only signal - uppercase arms Shift on, lowercase sets it off outright, never
+merely "left as it was"); a deleted **anything else** (punctuation, whitespace, a digit) is not special at
+all and gets the exact same [armShiftForNextWord] re-derivation every other newly-reached position gets, in
+both directions. This single change subsumes D-45's own former standalone re-check (removed - it only ever
+covered the "on" direction, from one call site) and applies consistently everywhere a character is deleted,
+not only the one path D-45 originally patched.
+
+Together with (1) and (2) above, every way a caret can reach a new position - typed forward, tapped, dragged,
+moved by an arrow key, or backspaced into - now consistently answers the same question the same way: what
+should Shift be *at this position*, derived fresh, never carried over from wherever it happened to be before.
 
 ---
 
