@@ -79,7 +79,13 @@ object LanguagePackCatalog {
             // Bitte/vergleiche (both already NOUN,OTHER, upgraded to the specific NOUN,VERB now that the
             // verb reading - "bitten"/"ich vergleiche" - is confirmed). Everything below frequency 300
             // remains open.
-            version = 9
+            // D-368 (round 6): continued into the 200-299 band (501 hits) - hit rate held at 11/501 (~2.2%),
+            // confirming the noise floor is flat rather than tapering off. 11 more confirmed real and
+            // retagged NOUN,VERB (97 total now): Rauch/Rate/Box/Ernte/Brauch/Heil/Fülle/Mach/Leid/Decke
+            // (1st-person/imperative - "Mach"/"mach" being the colloquial imperative of "machen"), and Drang
+            // (preterite - "Drang" the noun vs "drang" = preterite of "dringen"; Drang was already
+            // NOUN,OTHER, now NOUN,OTHER,VERB). Everything below frequency 200 remains open.
+            version = 10
         ),
         Entry(
             Language.GREEK,

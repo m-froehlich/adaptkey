@@ -278,7 +278,7 @@ non-trivial changes).
   - **D-368 (case-neutral homograph tagging) - five rounds done** (§294-§297, v1.0.47-1.0.50): **86**
     words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`), 26
     further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised infinitive
-    `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - rounds 3-5 - **56
+    `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - rounds 3-6 - **67
     more found via a real, systematic scan of the whole dictionary** rather than a recalled list (see below).
     `dank` gained a `NOUN` tag alongside its existing `OTHER` (the reverse direction - the noun reading was
     untagged, not the verb one). Pack rebuilt/republished each round, confirmed zero code change needed.
@@ -295,14 +295,16 @@ non-trivial changes).
     own live `NOUN_REFERENCE_FREQUENCY` (2000.0) as the starting anchor - not the removed, historical
     `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`/300 this session had cited from memory early on and confirmed no
     longer exists in the code: ≥2000 (204 candidates, 30 confirmed, ~15% hit rate), 500-1999 (717 candidates,
-    16 confirmed, ~2.2%), 300-499 (524 candidates, 10 confirmed, ~1.9%). The hit rate falls with frequency but
-    the noise rate does not - confirms the own-plural artefact is a grammar property, not a frequency one.
-    **Everything below frequency 300 remains explicitly open** - the mechanical candidate list itself is not
-    persisted anywhere in the repo (regenerated ad hoc each round); a future continuation should re-run the
-    same scan and keep working down through lower frequency bands, same shape as these rounds, rather than
-    assuming completeness. Given the falling hit rate and unchanging noise rate, a future session should
-    weigh the review cost of the remaining ~9,300 mechanical candidates against the shrinking real yield
-    before committing to reviewing all of them.
+    16 confirmed, ~2.2%), 300-499 (524 candidates, 10 confirmed, ~1.9%), 200-299 (501 candidates, 11
+    confirmed, ~2.2%). The hit rate fell sharply once below the ≥2000 tier but has since held **flat** around
+    ~2% rather than continuing to fall - confirms the own-plural artefact is a grammar property, not a
+    frequency one, so the remaining lower bands should be expected to cost about the same per find, not get
+    cheaper. **Everything below frequency 200 remains explicitly open** - the mechanical candidate list itself
+    is not persisted anywhere in the repo (regenerated ad hoc each round); a future continuation should re-run
+    the same scan and keep working down through lower frequency bands, same shape as these rounds, rather than
+    assuming completeness. Given the flat noise rate, the review cost per find is not expected to improve with
+    further rounds - a future session should weigh that steady cost against the remaining ~8,800 mechanical
+    candidates before committing to reviewing all of them.
 
     **New, explicitly deferred follow-up from the user, unrelated to the above**: the nominalised-infinitive
     pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`, `leben`/`Leben`, and others) was
@@ -315,8 +317,8 @@ non-trivial changes).
 
   - **The German dictionary carried zero `VERB` tags anywhere, across all ~120,000 rows, before D-368**
     **started this session** - a genuine, standalone structural data-quality finding from the original
-    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 86 `NOUN,VERB`
-    entries that exist today are ones added across D-368's five rounds. This does **not** mean ordinary verbs
+    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 97 `NOUN,VERB`
+    entries that exist today are ones added across D-368's six rounds. This does **not** mean ordinary verbs
     are missing as words - `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` (checked directly) are all
     present with real frequencies, just tagged the catch-all `OTHER` instead of `VERB` specifically, since
     they have no noun collision to resolve. D-368 only ever tags `VERB` where a homograph exists to
@@ -406,6 +408,23 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§298 (v1.0.51): D-368 round 6 - the 200-299 band (11 more homographs, 97 total); hit rate confirmed**
+  **flat rather than falling.** Continued the manual review one more band per the user's "mach das gerne noch
+  weiter": 200-299 (501 candidates), 11 confirmed real (~2.2%) - essentially the same rate as the 300-499
+  band's ~1.9%, not a continued decline from the 500-1999 band's ~2%. Confirms the false-positive rate is a
+  property of German grammar (the dative-plural/weak-verb-infinitive spelling collision), not of word
+  frequency, so the remaining lower bands should be expected to cost about the same per find rather than get
+  cheaper. 11 words retagged `NOUN,VERB` (97 total): `Rauch`/`Rate`/`Box`/`Ernte`/`Brauch`/`Heil`/`Fülle`/
+  `Leid`/`Decke` (1st-person/imperative), `Mach` ("Mach" the physics unit vs "mach" = colloquial imperative of
+  "machen"), and `Drang` (preterite - "der Drang" vs "ich drang" = preterite of "dringen"; was already
+  `NOUN,OTHER`, now `NOUN,OTHER,VERB`). `dictionaries/de/version.txt` 9 -> 10, pack rebuilt/verified,
+  `LanguagePackCatalog` version 9 -> 10. Environment note: local JDK default drifted to 25.0.1, which Gradle
+  8.11.1 cannot run against yet (bare `25.0.1` error, no diagnostics) - worked around with `JAVA_HOME` pointed
+  at the still-installed JDK 21 for this build; not fixed at the project level. No new tests (data + comment
+  only). 1058 unit tests unchanged, all green (via JDK 21). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `versionCode` 354 -> 355, `versionName` `"1.0.50"` -> `"1.0.51"`. Not yet device-confirmed. Everything
+  below frequency 200 remains explicitly open. See history §298.
 
 - **§297 (v1.0.50): D-368 rounds 4/5 - down through frequency 300 (26 more homographs, 86 total); a**
   **mechanical own-plural filter was tried and failed; the "zero VERB tags" question answered directly.**

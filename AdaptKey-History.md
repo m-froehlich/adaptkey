@@ -14985,3 +14985,40 @@ No new unit tests (dictionary content + comment only). 1058 unit tests unchanged
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 353 -> 354, `versionName` `"1.0.49"` ->
 `"1.0.50"`. Not yet device-confirmed - same repro shape as the prior D-368 rounds, now covering 86 words
 total.
+
+## §298 - D-368 Round 6: The 200-299 Band; Hit Rate Confirmed Flat, Not Falling (v1.0.51)
+
+Continued the same systematic review per the user's explicit "mach das gerne noch weiter" - one more band,
+generated and reviewed the same way as rounds 3-5: 200-299 (501 candidates), reviewed individually with real
+German-language knowledge, no mechanical shortcut (the own-plural pre-filter attempted in round 3 was already
+confirmed unsound and not revisited).
+
+11 confirmed real out of 501 (~2.2%) - essentially identical to the 300-499 band's ~1.9%, not the continued
+decline the 500-1999 -> 300-499 drop (15% -> ~2%) might have suggested. This confirms the earlier hypothesis
+directly: the false-positive rate is a property of German grammar (the regular dative-plural `-en`/`-n`
+ending colliding with the weak-verb infinitive ending), not of word frequency, so it should be expected to
+stay roughly flat through the remaining lower bands rather than tapering toward zero.
+
+11 words retagged `NOUN,VERB` (97 total across all six D-368 rounds now): ordinary 1st-person-present/
+imperative collisions (`Rauch`/`Rate`/`Box`/`Ernte`/`Brauch`/`Heil`/`Fülle`/`Leid`/`Decke`, plus `Mach` -
+"Mach" the physics unit vs "mach" as the extremely common colloquial imperative of "machen", e.g. "Mach
+das!"), and one more preterite-form collision (`Drang` - "der Drang"/urge vs "ich drang" = preterite of
+"dringen"; `Drang` was already `NOUN,OTHER`, now `NOUN,OTHER,VERB`).
+
+`dictionaries/de/version.txt` 9 -> 10, `language-packs/adaptkey-lang-de.zip` rebuilt and verified (unzipped
+back, version and a total count of 97 `NOUN,VERB`/`NOUN,OTHER,VERB` rows confirmed).
+`LanguagePackCatalog`'s German entry `version` 9 -> 10, with a comment covering this band's retagged words
+and the flat-hit-rate finding.
+
+Environment note: the local JDK default drifted to 25.0.1 since the last round (`JAVA_HOME` now points at
+`C:\Program Files\eclipse\java\jdk-25`), which the pinned Gradle 8.11.1 wrapper cannot run against yet - it
+failed immediately with a bare `25.0.1` error and no further diagnostics. Worked around by pointing
+`JAVA_HOME` at the still-installed `jdk-21` for this build only; the project's own `compileOptions`/
+`kotlinOptions` remain targeted at Java 17 and are unaffected. Not fixed at the project level (no committed
+file pins a JDK), so a future session hitting the same bare `25.0.1` failure should try the same JDK-21
+workaround rather than assuming a code regression.
+
+No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green (via JDK 21, see
+above). `versionCode` 354 -> 355, `versionName` `"1.0.50"` -> `"1.0.51"`. Not yet device-confirmed - same
+repro shape as the prior D-368 rounds, now covering 97 words total. Everything below frequency 200 remains
+explicitly open.

@@ -7625,7 +7625,7 @@ reines	272	OTHER
 Arzneimittel	272	NOUN
 Populationen	272	NOUN
 kämpften	272	OTHER
-Drang	272	NOUN,OTHER
+Drang	272	NOUN,OTHER,VERB
 Sure	272	NOUN
 gezielte	272	OTHER
 beschriebene	272	OTHER
@@ -8018,7 +8018,7 @@ erwartete	257	OTHER
 Interaktion	257	NOUN
 erschließen	257	OTHER
 gelassen	257	OTHER
-Rauch	257	NOUN
+Rauch	257	NOUN,VERB
 Zähne	257	NOUN
 fordern	257	OTHER
 Freundin	257	NOUN
@@ -8354,7 +8354,7 @@ Vision	246	NOUN
 magische	246	OTHER
 Feuerbach	246	NOUN
 Student	246	NOUN
-Rate	246	NOUN
+Rate	246	NOUN,VERB
 Brüdern	246	NOUN
 schwankt	246	OTHER
 Beschleunigung	246	NOUN
@@ -9006,7 +9006,7 @@ Markgraf	227	NOUN
 Proteinen	227	NOUN
 Freikirchen	227	NOUN
 Dürer	227	NOUN
-Box	227	NOUN
+Box	227	NOUN,VERB
 return	227	OTHER
 Gmünd	227	NOUN
 Lima	227	NOUN
@@ -9024,7 +9024,7 @@ mechanisch	226	OTHER
 überschreiten	226	OTHER
 gerichtete	226	OTHER
 Bemühen	226	NOUN,OTHER
-Ernte	226	NOUN
+Ernte	226	NOUN,VERB
 grundsätzliche	226	OTHER
 zeitlebens	226	OTHER
 einzuführen	226	OTHER
@@ -9138,7 +9138,7 @@ Hund	224	NOUN
 Individuums	224	NOUN
 MP	224	NOUN
 Sojus	224	NOUN
-Brauch	224	NOUN
+Brauch	224	NOUN,VERB
 Gazastreifen	224	NOUN
 Tel	224	NOUN
 Arafat	224	NOUN
@@ -9159,7 +9159,7 @@ hilft	223	OTHER
 inmitten	223	OTHER
 anhaltenden	223	OTHER
 trieb	223	OTHER
-Heil	223	NOUN
+Heil	223	NOUN,VERB
 Vorderseite	223	NOUN
 verständlich	223	OTHER
 nebst	223	OTHER
@@ -9251,7 +9251,7 @@ Panzer	220	NOUN
 moralisch	220	OTHER
 angelsächsischen	220	OTHER
 auftrat	220	OTHER
-Fülle	220	NOUN
+Fülle	220	NOUN,VERB
 gesprochene	220	OTHER
 regierten	220	OTHER
 malen	220	NOUN,OTHER
@@ -9261,7 +9261,7 @@ Kanon	220	NOUN
 Bangladesch	220	NOUN
 fern	220	OTHER
 liefen	220	OTHER
-Mach	220	NOUN
+Mach	220	NOUN,VERB
 Italiener	220	NOUN
 Musée	220	NOUN
 rationale	220	OTHER
@@ -9750,7 +9750,7 @@ verwickelt	207	OTHER
 befreundet	207	OTHER
 Square	207	NOUN,OTHER
 Kaiserreichs	207	NOUN
-Leid	207	NOUN
+Leid	207	NOUN,VERB
 komme	207	OTHER
 Wahrung	207	NOUN
 Heim	207	NOUN,OTHER
@@ -9817,7 +9817,7 @@ Median	206	NOUN
 ethnisch	206	OTHER
 erkannten	206	OTHER
 Steinen	206	NOUN
-Decke	206	NOUN
+Decke	206	NOUN,VERB
 Verlage	206	NOUN
 Adlige	206	NOUN,OTHER
 Manhattan	206	NOUN
