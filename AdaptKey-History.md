@@ -14014,3 +14014,16 @@ green. `versionCode` 339 -> 340, `versionName` `"1.0.35"` -> `"1.0.36"`. Not yet
 exact repro from §277's own log (an empty field, explicit Shift-disarm, type lower-case, confirm the commit
 keeps it lower-case) plus a plain, ordinary sentence-start commit (no Shift touched) to confirm the live-arm
 alone still capitalises it correctly.
+
+## §279 CAPTURED (still v1.0.36, no code change): D-405 Device-Confirmed - After Diagnosing A Confounded First Re-Test
+
+The user's first on-device re-test used `"test"` (the exact word from §277's own original log) and reported
+"nothing changed" - investigated rather than assumed working: `git show HEAD` confirmed the removed
+`context.sentenceStart -> true` branch was genuinely absent from the built commit, and a direct dictionary
+lookup found the actual reason the re-test looked unchanged - `"Test"` is itself tagged a pure `NOUN`
+(frequency 601) in the German dictionary, so §6 rule 3 (unrelated to D-405, never touched by it) independently
+capitalises it regardless of sentence position or Shift state. The user's chosen test word was doubly
+affected by coincidence and could never have shown the fix either way. Re-tested with a non-noun word
+(explicit Shift-disarm, lower-case typed, confirmed it now stays lower-case at commit) - **confirmed working
+as intended.** No code change this entry - see history §278 for the fix itself, §277 for the original
+design discussion.

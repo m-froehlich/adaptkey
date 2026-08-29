@@ -314,8 +314,10 @@ non-trivial changes).
   wrong. `CapitalisationContext.sentenceStart` is kept on the data class, deliberately unused inside
   `capitalise()` itself, for the same reason. Spec §6/§35/S-06/W-04 updated to match. 1 existing test
   corrected in place (not removed), 984 unit tests (unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. `versionCode` 339 -> 340, `versionName` `"1.0.35"` -> `"1.0.36"`. Not yet device-confirmed. See
-  history §278.
+  green. `versionCode` 339 -> 340, `versionName` `"1.0.35"` -> `"1.0.36"`. **Device-confirmed (2026-08-28)** -
+  the user's first re-test used `"test"`, coincidentally also a pure-`NOUN`-tagged word (§6 rule 3, unrelated
+  to D-405) that looked unchanged for a different reason; re-tested with a non-noun word and confirmed
+  working. See history §278/§279.
 
 - **§277 (still v1.0.35, no code change): design discussion on D-352-D-356/D-403 - a real, unified**
   **confidence metric agreed as the direction (two thresholds: auto-apply / chip-offer, tied to a new**
