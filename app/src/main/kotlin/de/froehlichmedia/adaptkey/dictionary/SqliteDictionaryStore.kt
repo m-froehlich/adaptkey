@@ -40,6 +40,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // bundled-blacklist seeding. Also covers the ordinary fresh-install path, where onCreate() below
         // already created everything and this is a harmless no-op.
         ensureAdditiveSchema(db)
+        ensureLastTouchedColumn(db)
     }
     
     /**
@@ -107,6 +108,47 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         database.execSQL(
             "CREATE TABLE IF NOT EXISTS $TABLE_META (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
         )
+    }
+    
+    /**
+     * D-388: adds [TABLE_LEARNED]'s `last_touched` column (epoch millis, stamped on every write - see
+     * [putWordInternal]) when this database predates it - guarded, not blindly re-run every open, since
+     * SQLite's own `ALTER TABLE ADD COLUMN` fails outright if the column already exists (unlike
+     * [ensureAdditiveSchema]'s `CREATE TABLE IF NOT EXISTS` calls, which are naturally idempotent).
+     * Existing rows are seeded with strictly increasing timestamps, one second apart, in alphabetical
+     * order - not the arbitrary order SQLite would otherwise leave them in - so a fresh "most recently
+     * used" view over already-existing data reads as a stable, alphabetically-ordered block (the
+     * oldest-looking entries) rather than looking shuffled. Any word actually learned after this
+     * migration gets a real [System.currentTimeMillis] timestamp, astronomically larger than this seed
+     * range, so it naturally sorts above every seeded row without any further work.
+     */
+    private fun ensureLastTouchedColumn(database: SQLiteDatabase) {
+        val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_LEARNED)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { if (cursor.moveToNext()) cursor.getString(nameIndex) else null }.any { it == "last_touched" }
+        }
+        if (hasColumn) {
+            return
+        }
+        database.execSQL("ALTER TABLE $TABLE_LEARNED ADD COLUMN last_touched INTEGER NOT NULL DEFAULT 0")
+        val wkeys = ArrayList<String>()
+        database.rawQuery("SELECT wkey FROM $TABLE_LEARNED", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                wkeys.add(cursor.getString(0))
+            }
+        }
+        database.beginTransaction()
+        try {
+            wkeys.sorted().forEachIndexed { index, wkey ->
+                database.execSQL(
+                    "UPDATE $TABLE_LEARNED SET last_touched = ? WHERE wkey = ?",
+                    arrayOf(index.toLong() * SEED_TIMESTAMP_STEP_MS, wkey)
+                )
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
     }
     
     override fun putWord(entry: WordEntry) {
@@ -317,7 +359,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         putBigramInternal(TABLE_BIGRAMS, previousWord, word, count)
     }
     
-    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?) {
+    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?, seedFrequency: Long) {
         // D-177: always the learned table, regardless of whether word is also a bundled entry - reinforcing
         // an already-bundled word (e.g. "der") adds/updates a small personal overlay here rather than ever
         // touching TABLE_WORDS, so the bundled asset stays swappable. frequencyOf()/isKnownWord() etc. sum
@@ -329,9 +371,13 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // acronym) become the one that wins in entryOf()/unigramsByPrefix() merges, instead of being
         // silently discarded in favour of whatever the bundled asset happens to store.
         val canonical = existing?.word ?: word
-        val frequency = (existing?.frequency ?: 0L) + 1L
+        // D-388: a genuinely new entry starts at seedFrequency (the caller's own choice - e.g. the pending
+        // count already accumulated before promotion, see AdaptKeyService.learnWord()) rather than always
+        // 1; an already-existing entry is reinforced exactly as before, ignoring seedFrequency entirely -
+        // it only ever seeds a fresh row, never overrides an ongoing count.
+        val frequency = existing?.let { it.frequency + 1L } ?: seedFrequency
         val pos = existing?.partsOfSpeech ?: emptySet()
-        putWordInternal(TABLE_LEARNED, canonical, frequency, pos)
+        putWordInternal(TABLE_LEARNED, canonical, frequency, pos, lastTouched = System.currentTimeMillis())
         if (previousWord != null) {
             putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
             // D-246: S-07 trigram support - personal-only, so only ever written here, never seeded.
@@ -365,7 +411,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             if (frequency <= 0L) {
                 db.delete(TABLE_LEARNED, "wkey = ?", arrayOf(word.lowercase()))
             } else {
-                putWordInternal(TABLE_LEARNED, existing.word, frequency, existing.partsOfSpeech)
+                putWordInternal(TABLE_LEARNED, existing.word, frequency, existing.partsOfSpeech, lastTouched = System.currentTimeMillis())
             }
         }
         if (previousWord != null) {
@@ -418,7 +464,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      */
     fun recaseLearnedWord(word: String, newCasing: String) {
         val existing = learnedEntryOf(word) ?: return
-        putWordInternal(TABLE_LEARNED, newCasing, existing.frequency, existing.partsOfSpeech)
+        putWordInternal(TABLE_LEARNED, newCasing, existing.frequency, existing.partsOfSpeech, lastTouched = System.currentTimeMillis())
     }
     
     override fun learnedWords(): List<WordEntry> {
@@ -430,6 +476,27 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
         return result
     }
+    
+    /**
+     * D-388: [learnedWords] plus each entry's own `last_touched` stamp, for [de.froehlichmedia.adaptkey.
+     * settings.LearnedWordsActivity]'s own sortable view - not part of the shared [DictionaryStore]
+     * interface (frequency-only ordering, via [learnedWords], is all every other caller needs, e.g.
+     * [de.froehlichmedia.adaptkey.backup.BackupExporter]), and not added onto [WordEntry] itself, which is
+     * shared far too widely across the suggestion/correction engine to carry a field only this one screen
+     * cares about. Unordered - the caller decides the actual display order (alphabetical or by recency).
+     *
+     * @return every learned entry with its own last-touched timestamp (epoch millis)
+     */
+    fun learnedWordsWithTimestamp(): List<LearnedWordEntry> {
+        val result = ArrayList<LearnedWordEntry>()
+        db.rawQuery("SELECT word, freq, last_touched FROM $TABLE_LEARNED", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(LearnedWordEntry(cursor.getString(0), cursor.getLong(1), cursor.getLong(2)))
+            }
+        }
+        return result
+    }
+    
     
     /**
      * B-03/D-289: every learned hyphen-joined compound (e.g. "Trogata-Team") whose key starts with [prefix] -
@@ -540,7 +607,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         val canonical = existing?.word ?: word
         val frequency = (existing?.frequency ?: 0L) + frequencyDelta
         val mergedPos = (existing?.partsOfSpeech ?: emptySet()) + partsOfSpeech
-        putWordInternal(TABLE_LEARNED, canonical, frequency, mergedPos)
+        putWordInternal(TABLE_LEARNED, canonical, frequency, mergedPos, lastTouched = System.currentTimeMillis())
     }
     
     /**
@@ -904,12 +971,22 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
     }
     
-    private fun putWordInternal(table: String, word: String, frequency: Long, pos: Set<PartOfSpeech>) {
+    /**
+     * @param lastTouched D-388: epoch millis to stamp into [TABLE_LEARNED]'s own `last_touched` column -
+     *        null for [TABLE_WORDS] (bundled), which has no such column at all. Every [TABLE_LEARNED]
+     *        write is a full `INSERT OR REPLACE`, so this must always be passed explicitly for that table
+     *        - an omitted value would silently reset the column back to its schema default instead of
+     *        leaving it untouched.
+     */
+    private fun putWordInternal(table: String, word: String, frequency: Long, pos: Set<PartOfSpeech>, lastTouched: Long? = null) {
         val values = ContentValues().apply {
             put("wkey", word.lowercase())
             put("word", word)
             put("freq", frequency)
             put("pos", pos.joinToString(",") { it.name })
+            if (lastTouched != null) {
+                put("last_touched", lastTouched)
+            }
         }
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
@@ -946,6 +1023,10 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         
         private const val DATABASE_NAME = "adaptkey_dictionary.db"
         private const val DATABASE_VERSION = 1
+        
+        // D-388: the gap between consecutive migration-seeded last_touched values - see
+        // ensureLastTouchedColumn's own KDoc.
+        private const val SEED_TIMESTAMP_STEP_MS = 1000L
         private const val TABLE_WORDS = "words"
         private const val TABLE_BIGRAMS = "bigrams"
         private const val TABLE_BLACKLIST = "blacklist"

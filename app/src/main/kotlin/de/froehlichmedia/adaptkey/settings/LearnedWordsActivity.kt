@@ -27,10 +27,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
+import de.froehlichmedia.adaptkey.dictionary.LearnedWordEntry
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
-import de.froehlichmedia.adaptkey.dictionary.WordEntry
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
+import java.text.Collator
+import java.util.Locale
 
 /**
  * D-177: lists the words the keyboard has learned purely from the user's own typing (never the bundled
@@ -62,7 +64,13 @@ class LearnedWordsActivity : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var emptyView: TextView
     private lateinit var adapter: ArrayAdapter<String>
-    private val words = ArrayList<WordEntry>()
+    private val words = ArrayList<LearnedWordEntry>()
+    // D-388: how the list is currently ordered - see the sort spinner in onCreate(). Alphabetical by
+    // default (browsing/searching for a specific word, this screen's primary use, per the user's own
+    // framing - frequency was explicitly ruled out as a user-facing criterion for this list).
+    private var sortMode = SortMode.ALPHA
+    
+    private enum class SortMode { RECENT, ALPHA }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,6 +128,29 @@ class LearnedWordsActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) = Unit
         }
         
+        // D-388: short, user-facing labels only - "Recent" (last touched, newest first) and "A-Z"
+        // (alphabetical, case-insensitive/locale-folded via Collator in refresh()). Frequency is
+        // deliberately not offered here - see this class's own KDoc update / the design discussion this
+        // came out of.
+        val sortSpinner = findViewById<Spinner>(R.id.learned_words_sort_spinner)
+        sortSpinner.adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_dropdown_item,
+            listOf(getString(R.string.learned_words_sort_recent), getString(R.string.learned_words_sort_alpha))
+        )
+        sortSpinner.setSelection(SortMode.entries.indexOf(sortMode))
+        sortSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selected = SortMode.entries[position]
+                if (selected != sortMode) {
+                    sortMode = selected
+                    refresh()
+                }
+            }
+            
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+        
         listView.setOnItemClickListener { _, _, position, _ -> showEntryDialog(words[position]) }
         
         refresh()
@@ -138,7 +169,7 @@ class LearnedWordsActivity : AppCompatActivity() {
      *
      * @param entry the learned-word entry tapped
      */
-    private fun showEntryDialog(entry: WordEntry) {
+    private fun showEntryDialog(entry: LearnedWordEntry) {
         val editText = EditText(this).apply {
             setText(entry.word)
             setSelection(text.length)
@@ -261,11 +292,25 @@ class LearnedWordsActivity : AppCompatActivity() {
      */
     private fun languageName(language: Language): String = language.endonym
     
+    /**
+     * D-388: re-reads and re-sorts the list per [sortMode] - "Recent" (newest [LearnedWordEntry.lastTouched]
+     * first) or "A-Z" (a [Collator] for the currently open [language], not raw [String] comparison, so
+     * umlauts/accents sort at their natural alphabetic position rather than by raw UTF-8 byte value).
+     * Frequency is deliberately not shown - it is internal bookkeeping (the promotion/reinforcement count),
+     * not something a normal user reviewing this list needs to see.
+     */
     private fun refresh() {
         words.clear()
-        words.addAll(store.learnedWords())
+        words.addAll(store.learnedWordsWithTimestamp())
+        when (sortMode) {
+            SortMode.RECENT -> words.sortByDescending { it.lastTouched }
+            SortMode.ALPHA -> {
+                val collator = Collator.getInstance(Locale(language.code))
+                words.sortWith(compareBy(collator) { it.word })
+            }
+        }
         adapter.clear()
-        adapter.addAll(words.map { entry -> "${entry.word}  (${entry.frequency})" })
+        adapter.addAll(words.map { entry -> entry.word })
         adapter.notifyDataSetChanged()
         emptyView.visibility = if (words.isEmpty()) TextView.VISIBLE else TextView.GONE
     }

@@ -973,6 +973,16 @@ different word under the original's own frequency/history. A genuinely different
 and learned normally. The screen's own language selector opens on whichever language the keyboard itself
 currently/last had active (G-01), not always the first entry in the list.
 
+D-388: a second selector next to it sorts the list either alphanumerically (case-insensitive, locale-aware -
+an umlaut/accent sorts at its natural alphabetic position, not by raw byte value) or by recency (most
+recently touched - promoted, reinforced, re-cased, or restored from a backup - first), defaulting to
+alphanumeric (this screen's primary use is browsing/searching for a specific word, not reviewing recent
+activity). Frequency is not shown at all - internal bookkeeping the promotion threshold uses, not something a
+user reviewing this list needs to see - and is not offered as a sort option either. The Blacklist editor
+(C-05) and the saved-credentials screen (D-142) are both always sorted the same alphanumeric, case-insensitive
+way, with no picker of their own - both stay small enough that browsing them any other way was never asked
+for.
+
 ### W-02 - Variable Learn-Promotion Threshold
 A word is ordinarily promoted from "pending" to permanently learned after 2 uncorrected occurrences. A token
 recognised as a suspected unsplit compound, or one carrying an embedded mid-word capital, instead requires 4
@@ -981,6 +991,10 @@ change in the detection logic reclassifies an already-pending word retroactively
 decrements this counter regardless of which threshold applies. A single letter is never eligible for learning
 at all (D-247) - the most common source is a fragment left behind by an unintended Enter mid-word, not
 anything meant to be learned.
+
+D-388: a word's frequency, once promoted, starts at however many times it was actually seen while pending
+(2 or 4, per the threshold above) rather than always resetting to 1 - a small fidelity fix with no effect on
+promotion timing itself, only on the starting count a freshly-promoted word carries forward.
 
 ### W-03 - "Gelernt: X" Promotion Confirmation *(D-247)*
 The moment a word is genuinely promoted to the learned dictionary (W-02's threshold crossed this exact

@@ -27,6 +27,8 @@ import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
+import java.text.Collator
+import java.util.Locale
 
 /**
  * Minimal blacklist editor (C-05 / A-04): lists the persisted blacklist, adds a word under a chosen
@@ -177,12 +179,21 @@ class BlacklistActivity : AppCompatActivity() {
      */
     private fun languageName(language: Language): String = language.endonym
     
+    /**
+     * D-388: always alphanumeric, case-insensitive - `wkey` (what [SqliteDictionaryStore.blacklistedWords]
+     * returns) is already lower-cased at storage time, so nothing to fold there; the remaining gap is
+     * locale-aware ordering (a [Collator] for the currently open [language], so an umlaut/accent sorts at
+     * its natural alphabetic position) rather than raw [String] comparison's UTF-8 byte order. No sort
+     * picker here - unlike Learned Words, this list stays small and is only ever browsed alphabetically.
+     */
     private fun refresh() {
         words.clear()
         // D-206: hide BUNDLED entries by default (showBundled = false) - a bundled entry (e.g. the
         // archaic-spelling seed, or the cross-language confusables of §107/§113) is rarely of interest and
         // should rarely be removed at all, unlike a USER entry a person deliberately added themselves.
         words.addAll(store.blacklistedWords().filter { showBundled || store.blacklistCategory(it) == BlacklistCategory.USER })
+        val collator = Collator.getInstance(Locale(language.code))
+        words.sortWith(compareBy(collator) { it })
         adapter.clear()
         adapter.addAll(words.map { word -> "$word  (${store.blacklistCategory(word)?.name ?: ""})" })
         adapter.notifyDataSetChanged()

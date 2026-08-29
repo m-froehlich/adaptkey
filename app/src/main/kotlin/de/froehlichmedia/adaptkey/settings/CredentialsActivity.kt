@@ -20,6 +20,8 @@ import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.credential.CredentialEntry
 import de.froehlichmedia.adaptkey.credential.CredentialStore
+import java.text.Collator
+import java.util.Locale
 
 /**
  * D-180: lists every saved username/email (D-142's own [CredentialStore]) so each can be reviewed and
@@ -110,9 +112,16 @@ class CredentialsActivity : AppCompatActivity() {
         Toast.makeText(this, getString(R.string.copy_to_clipboard_done, value), Toast.LENGTH_SHORT).show()
     }
     
+    /**
+     * D-388: always alphanumeric, case-insensitive, via a [Collator] on the device's own default locale -
+     * this list has no per-language concept of its own (unlike Learned Words/Blacklist), and, like those,
+     * stays small and is only ever browsed alphabetically - no sort picker.
+     */
     private fun refresh() {
         entries.clear()
         entries.addAll(CredentialStore.all(this))
+        val collator = Collator.getInstance(Locale.getDefault())
+        entries.sortWith(compareBy(collator) { it.value })
         adapter.clear()
         adapter.addAll(entries.map { entry -> "${entry.value}  (${entry.kind.name}, ${entry.frequency})" })
         adapter.notifyDataSetChanged()

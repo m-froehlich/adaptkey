@@ -303,6 +303,34 @@ non-trivial changes).
 
 ## Current State
 
+- **§291 (v1.0.45): D-388 implemented - Learned Words/Blacklist/Credentials editors are sortable, with a**
+  **new `last_touched` column; the user's own proposed pending/learned table merge was investigated and**
+  **declined as too risky.** Ist-Zustand check first (per the user's own request): Learned Words was sorted
+  frequency-first (not alphabetical at all), Blacklist was alphabetical but byte-order (not locale-aware -
+  umlauts sorted by raw UTF-8 value, not their natural alphabetic position), neither had a sort picker, and
+  "most recently used" was technically impossible - no timestamp column existed anywhere. The user's own
+  assumption that pending words already lived with a timestamp inside the learned table surfaced a bigger
+  fact first: `PendingLearnStore` is a wholly separate SharedPreferences counter. Their proposed fix (merge
+  the two tables, filter by frequency at read time) was traced against the code and declined - `TABLE_LEARNED`
+  presence is the ground-truth "is this word known" signal at 6+ call sites across the whole suggestion
+  engine (including the just-shipped D-403 `learnedCasingOf` protection); replicating the threshold filter
+  at every one of those sites risked reopening D-37's exact original bug. User agreed once this was laid out
+  concretely - `PendingLearnStore` stays untouched. Shipped instead: a guarded, additive `last_touched`
+  column on `TABLE_LEARNED` only (stamped by every write; existing rows seeded with 1-second-apart,
+  alphabetically-ordered timestamps per the user's own suggestion, so a first recency view of legacy data
+  isn't arbitrary); a short two-option sort picker on Learned Words only ("Recent"/"A-Z", short labels per
+  explicit request, defaulting to alphabetical); `java.text.Collator`-based locale-aware alphabetical
+  sorting on all three screens (the actual fix for the byte-order gap); frequency dropped from the Learned
+  Words display entirely; and `DictionaryStore.learn()` gained a `seedFrequency` parameter so a freshly
+  promoted word starts at however many times it was actually seen pending (2 or 4, per W-02), not always a
+  flat 1. A separate, mid-discussion clarification - "frequency and recency, weighted, for chip ranking" -
+  turned out to mean the *live* suggestion bar while typing, not these review screens; explicitly deferred to
+  its own future design round, comparable in scope to D-353. 2 new `InMemoryDictionaryStoreTest` cases for
+  `seedFrequency`; no tests for the three Activities or the SQLite migration itself (Android/`SQLiteOpenHelper`
+  glue, instrumented-test territory). 1049 unit tests total (was 1047). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 348 -> 349, `versionName` `"1.0.44"` -> `"1.0.45"`. Spec's
+  W-01/W-02 updated. Not yet device-confirmed. See history §291.
+
 - **§289 (v1.0.44): D-403/D-359 finished - a revert now gets exactly one unimpeded retry, but learns**
   **nothing itself; D-358 fixed - double-tap-Backspace revert broken right after punctuation.** Three-round
   design discussion, each round simplifying the last (full write-up: history §289): started from a

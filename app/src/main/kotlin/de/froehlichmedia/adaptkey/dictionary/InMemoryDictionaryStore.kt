@@ -31,7 +31,7 @@ class InMemoryDictionaryStore : DictionaryStore {
         bigrams[bigramKey(previousWord, word)] = count
     }
     
-    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?) {
+    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?, seedFrequency: Long) {
         val key = word.lowercase()
         val existing = learned[key]
         // D-264: a fresh learned entry uses the casing actually typed/committed, not the bundled entry's
@@ -39,10 +39,11 @@ class InMemoryDictionaryStore : DictionaryStore {
         // acronym) become the one that wins in entryOf()/unigramsByPrefix() merges, instead of being
         // silently discarded in favour of whatever the bundled asset happens to store.
         val canonical = existing?.word ?: word
+        // D-388: a genuinely new entry starts at seedFrequency, not always 1 - see the interface's own KDoc.
         learned[key] = if (existing != null) {
             existing.copy(frequency = existing.frequency + 1L)
         } else {
-            WordEntry(word = canonical, frequency = 1L)
+            WordEntry(word = canonical, frequency = seedFrequency)
         }
         if (previousWord != null) {
             val bigramKey = bigramKey(previousWord, word)

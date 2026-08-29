@@ -14578,3 +14578,79 @@ typed again unchanged and committed - confirm no re-correction and that its pend
 
 User confirmed the revert-then-retry learning behaviour and the punctuation double-tap-Backspace fix both
 work on device.
+
+## §291 - D-388 Implemented: Learned Words/Blacklist/Credentials Are Now Sortable, With A `last_touched` Column (v1.0.45)
+
+### The Ist-Zustand pass, and where it led
+User asked to capture the actual current sort behaviour of the Learned Words and Blacklist editors before
+deciding anything - traced directly in the code, not assumed: Learned Words sorted `freq DESC, word ASC`
+(frequency-primary, alphabetical only as a tiebreaker, using SQLite's plain byte-order collation - no umlaut
+folding); Blacklist sorted `wkey ASC` (already effectively case-insensitive, since `wkey` is always stored
+lower-cased, but with the same byte-order-not-locale-aware gap). Neither screen had any sort picker at all.
+"Most recently used" turned out to be technically impossible with the existing schema - neither `TABLE_LEARNED`
+nor `TABLE_BLACKLIST` carries a timestamp column of any kind.
+
+The user's own follow-up assumption - that pending words were already tracked with a timestamp inside the
+learned-words table itself - surfaced a bigger question first: `PendingLearnStore` is a *separate*
+SharedPreferences-backed counter, not part of `TABLE_LEARNED` at all. The user's own proposed fix (merge the
+two: insert every word immediately, filter by frequency at read time everywhere) was investigated and
+explicitly declined - `TABLE_LEARNED` presence is the ground-truth "is this word known" signal at no fewer
+than six call sites across the whole suggestion/correction engine (`isKnownWord`, `entryOf`,
+`learnedCasingOf` - the last of which the just-shipped D-403 fix directly depends on -, prefix completion,
+compound lookup, fuzzy-correction bucket queries), each of which would need its own added threshold filter
+to avoid reopening D-37's exact original bug (a one-off typo treated as a real, protected word before it is
+actually confirmed). The user agreed the risk was too high once this was laid out concretely and dropped the
+merge idea outright - `PendingLearnStore` stays exactly as it is, untouched.
+
+### What shipped instead
+1. **A `last_touched` column added to `TABLE_LEARNED` only** (epoch millis, stamped by every write:
+   `learn()`'s own reinforcement/promotion, `unlearn()`'s decrement, `recaseLearnedWord()`, and the backup
+   restore path - deliberately uniform, no attempt to distinguish "positive" touches from an unlearn-reversal,
+   since threading a preserved-vs-stamped distinction through SQLite's REPLACE-based upsert would have added
+   real complexity for a distinction the user never actually asked for). Guarded migration (`PRAGMA
+   table_info` check before `ALTER TABLE ADD COLUMN`, since - unlike `ensureAdditiveSchema`'s `CREATE TABLE
+   IF NOT EXISTS` calls - a column add is not naturally idempotent and errors outright on a second run).
+   Existing rows are seeded with the user's own suggested scheme: strictly increasing timestamps, one second
+   apart, assigned in alphabetical order - not left at an identical epoch value, which would sort arbitrarily
+   under "most recent first" - so a first recency-sorted view of legacy data reads as a stable alphabetical
+   block rather than shuffled; any word learned after the migration gets a real "now" timestamp, astronomically
+   larger, so it naturally sorts above every seeded row with no further logic needed.
+2. **A new sort picker on the Learned Words screen only** - two short labels the user explicitly asked to
+   keep terse ("Recent" / "A-Z" in English, "Neueste"/"A-Z" in German, "Πρόσφατα"/"Α-Ω" in Greek), defaulting
+   to alphabetical (the user's own stated goal for this screen was browsing/finding a word, not reviewing
+   recent activity - frequency was explicitly ruled out as a user-facing criterion entirely: "kein relevantes
+   Kriterium... bringt mich nicht weiter"). Alphabetical sorting on all three screens (Learned Words,
+   Blacklist, Credentials) uses `java.text.Collator` for the relevant locale, not raw `String` comparison, so
+   umlauts/accents sort at their natural alphabetic position instead of by raw UTF-8 byte value - the actual
+   fix for the "not really alphabetical" gap found during the Ist-Zustand pass. Blacklist and Credentials get
+   no picker at all, always alphabetical, case-insensitive - the user's own call ("wird nie furchtbar riesig
+   wachsen... will sicher immer nur alphabetisch sortieren").
+3. **Frequency is no longer displayed** in the Learned Words list at all (`"${word} (${frequency})"` -> just
+   the word) - "interne technische Info, die den normalen Benutzer... nicht interessiert."
+4. **A word promoted from pending now seeds its learned frequency with the pending count it actually took to
+   promote** (2 or 4, per W-02's threshold), not always a flat 1 - `DictionaryStore.learn()` gained a
+   `seedFrequency: Long = 1L` parameter (default preserves every existing caller's behaviour unchanged;
+   `AdaptKeyService.learnWord()`/`learnHyphenCompound()`'s own promotion branches are the two production call
+   sites that now pass the accumulated `PendingLearnStore.increment()` result).
+5. **A confirmed, separately-scoped correction to my own earlier framing**: I had reported the Blacklist
+   screen's display-as-lowercase as a possible bug (losing the original typed casing). Re-checked directly
+   against the schema - `TABLE_BLACKLIST` has no `word` column at all, only `wkey` - there never was an
+   original casing to lose. The user confirmed this is exactly how they want it (a blacklist forbids every
+   casing of a word, so casing is genuinely irrelevant there) - not a bug, withdrawn.
+
+**Deliberately not touched, flagged for its own future round**: partway through this discussion the user
+clarified that "frequency and recency, weighted, should also govern the chip ordering" refers to the *live*
+suggestion bar while typing (`DictionarySuggestionProvider`'s own ranking, and by extension `CredentialRanking`
+for login-field chips), not these three review screens. That is a genuine ranking-algorithm design question
+in its own right - comparable in scope to D-353's `CorrectionConfidence` work - and was explicitly deferred to
+a separate, dedicated design round rather than folded into this one.
+
+### Tests / build
+2 new `InMemoryDictionaryStoreTest` cases for `learn()`'s new `seedFrequency` parameter (seeds a brand-new
+word; ignored when reinforcing an already-learned one). No tests for the three Activities or the SQLite
+migration itself - Android UI/`SQLiteOpenHelper` glue, covered by instrumented rather than unit tests per this
+project's established convention. 1049 unit tests total (was 1047). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 348 -> 349, `versionName` `"1.0.44"` -> `"1.0.45"`. Spec's W-01/
+W-02 updated. Not yet device-confirmed - needs: the sort picker's two modes on a real Learned Words list, the
+migration actually running once on an existing installed database, and a fresh promotion's seeded frequency
+matching the pending count it actually took.

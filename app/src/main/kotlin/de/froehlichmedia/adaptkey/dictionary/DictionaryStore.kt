@@ -41,8 +41,14 @@ interface DictionaryStore {
      * @param previousWord the word committed immediately before, or null
      * @param previousPreviousWord the word committed two positions before, or null (ignored unless
      *        [previousWord] is also given - a trigram needs both)
+     * @param seedFrequency D-388: the frequency a genuinely new entry starts at (ignored when [word] is
+     *        already learned - an existing entry is always reinforced by exactly one, regardless of this
+     *        value). Defaults to 1, the historical behaviour; a caller promoting [word] from an
+     *        accumulated pending count (see [de.froehlichmedia.adaptkey.AdaptKeyService.learnWord]) may
+     *        pass that count instead, so the new entry starts reflecting how many times it was actually
+     *        seen, not always exactly 1.
      */
-    fun learn(word: String, previousWord: String?, previousPreviousWord: String? = null)
+    fun learn(word: String, previousWord: String?, previousPreviousWord: String? = null, seedFrequency: Long = 1L)
     
     /**
      * D-327: records only the n-gram context (bigram + trigram) of one observation of [word], WITHOUT

@@ -31,6 +31,19 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `D-388 learn seeds a brand new word with the given seedFrequency instead of one`() {
+        store.learn("kwp", null, seedFrequency = 4L)
+        assertEquals(4L, store.frequencyOf("kwp"))
+    }
+    
+    @Test
+    fun `D-388 learn ignores seedFrequency when reinforcing an already-learned word`() {
+        store.learn("neu", null)
+        store.learn("neu", null, seedFrequency = 99L)
+        assertEquals(2L, store.frequencyOf("neu"))
+    }
+    
+    @Test
     fun `learn increments an existing word and its bigram`() {
         store.putWord(WordEntry("hund", 3L))
         store.learn("hund", "der")

@@ -5208,12 +5208,18 @@ class AdaptKeyService : InputMethodService() {
             // not resume counting from wherever it happened to be left off.
             PendingLearnStore.clear(this, word)
             LearnOutcome.SKIPPED
-        } else if (PendingLearnStore.increment(this, word) >= learnThresholdFor(word)) {
-            dictionaryStore.learn(word, context, contextContext)
-            PendingLearnStore.clear(this, word)
-            LearnOutcome.PROMOTED
         } else {
-            LearnOutcome.PENDING
+            val pendingCount = PendingLearnStore.increment(this, word)
+            if (pendingCount >= learnThresholdFor(word)) {
+                // D-388: seeds the new entry's frequency with the pending count it actually took to
+                // promote it (e.g. 4 for a compound-suspect word), rather than always resetting to 1 - the
+                // word was genuinely seen this many times already, not once.
+                dictionaryStore.learn(word, context, contextContext, seedFrequency = pendingCount.toLong())
+                PendingLearnStore.clear(this, word)
+                LearnOutcome.PROMOTED
+            } else {
+                LearnOutcome.PENDING
+            }
         }
         // D-246: shift the two-word trigram context in lockstep, oldest value first.
         previousPreviousWord = previousWord
@@ -5286,12 +5292,16 @@ class AdaptKeyService : InputMethodService() {
         val outcome = if (dictionaryStore.learnedCasingOf(compound) != null) {
             dictionaryStore.learn(compound, null, null)
             LearnOutcome.LEARNED
-        } else if (PendingLearnStore.increment(this, compound) >= HYPHEN_COMPOUND_LEARN_THRESHOLD) {
-            dictionaryStore.learn(compound, null, null)
-            PendingLearnStore.clear(this, compound)
-            LearnOutcome.PROMOTED
         } else {
-            LearnOutcome.PENDING
+            val pendingCount = PendingLearnStore.increment(this, compound)
+            if (pendingCount >= HYPHEN_COMPOUND_LEARN_THRESHOLD) {
+                // D-388: see learnWord()'s own identical reasoning.
+                dictionaryStore.learn(compound, null, null, seedFrequency = pendingCount.toLong())
+                PendingLearnStore.clear(this, compound)
+                LearnOutcome.PROMOTED
+            } else {
+                LearnOutcome.PENDING
+            }
         }
         return LearnRecord(compound, null, null, outcome)
     }
