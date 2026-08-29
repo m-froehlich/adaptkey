@@ -513,7 +513,7 @@ Straße	3782	NOUN
 Kilometer	3778	NOUN
 Arbeiten	3774	NOUN,OTHER
 erschien	3773	OTHER
-Weg	3768	NOUN
+Weg	3768	NOUN,VERB
 Polen	3767	NOUN
 deutsch	3763	NOUN,OTHER
 Höhe	3763	NOUN
@@ -552,7 +552,7 @@ Mann	3518	NOUN
 Vereinigten	3509	NOUN
 Grenze	3499	NOUN
 bestimmten	3498	OTHER
-Stelle	3497	NOUN,OTHER
+Stelle	3497	NOUN,VERB
 Sachsen	3493	NOUN
 daneben	3488	OTHER
 amerikanischen	3485	OTHER
@@ -5039,7 +5039,7 @@ ggf	427	OTHER
 Jahrtausend	427	NOUN
 weitesten	427	OTHER
 Erweiterungen	427	NOUN
-Sage	427	NOUN
+Sage	427	NOUN,VERB
 Opern	427	NOUN
 portugiesischen	427	OTHER
 herrschenden	427	OTHER

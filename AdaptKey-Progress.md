@@ -276,13 +276,14 @@ non-trivial changes).
     of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
     adjustments in the same file, same shape as D-330-followup.
   - **D-368** (case-neutral homograph tagging, e.g. `"stelle"`/`"Stelle"` as NOUN+VERB instead of only one
-    casing existing at all): **scoped down to the already-confirmed concrete cases** (`stelle`/`Stelle`,
-    `sage`/`Sage`, `weg`/`Weg`) for this round - not an exhaustive sweep of the whole ~210k-row dictionary
-    for every noun/verb homograph, which would be its own, much larger future project (same "needs better
-    tooling" shape as D-306-followup). **Confirmed directly against the code, not assumed: this needs zero
-    code change** - `CapitalisationEngine`'s own `isPureNoun`/`isAmbiguousNoun` split (`isPureNoun` requires
-    the *entire* tag set to be NOUN/PROPER_NOUN only) already routes a `NOUN,VERB`-tagged entry to §6 rule 5
-    (ambiguous - S-06 chip only, never auto-capitalised) correctly. Pure data retagging.
+    casing existing at all): **the three originally-confirmed cases are done** (§294, v1.0.47) -
+    `stelle`/`Stelle`, `sage`/`Sage`, `weg`/`Weg` retagged `NOUN,VERB`, pack rebuilt/republished, confirmed
+    zero code change needed. A further, verified candidate list (more words showing the identical weak-verb-
+    1st-person-singular-vs-noun pattern, e.g. `frage`/`Frage`, `liebe`/`Liebe`, `sorge`/`Sorge`,
+    `pflege`/`Pflege`, plus plural cases like `grüße`/`Grüße`) was handed to the user for review in §294 -
+    **not yet applied**, awaiting their go-ahead on which (if any) to also retag. Not an exhaustive sweep of
+    the whole ~210k-row dictionary - that remains its own, much larger future project (same "needs better
+    tooling" shape as D-306-followup).
 
   As with D-402's own existing convention, every candidate in this combined round should be listed for the
   user's explicit confirmation before the dictionary file is actually touched.
@@ -365,6 +366,24 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§294 (v1.0.47): D-368 started - "Weg"/"Stelle"/"Sage" retagged `NOUN,VERB` in the German dictionary;**
+  **a verified candidate list compiled for more (not yet applied).** `dictionaries/de/dict.tsv` retagged
+  (Stelle's vague `NOUN,OTHER` replaced by the specific `NOUN,VERB`; Weg/Sage `NOUN` -> `NOUN,VERB`);
+  confirmed no code change needed (`CapitalisationEngine.isPureNoun`/`isAmbiguousNoun` already routes a
+  `NOUN,VERB` entry to §6 rule 5, S-06 chip only). `dictionaries/de/version.txt` 5 -> 6,
+  `language-packs/adaptkey-lang-de.zip` rebuilt and verified by unzipping it back, `LanguagePackCatalog`'s
+  German entry `version` 5 -> 6. Confirmed mechanically that `dict.tsv` has zero case-only-differing
+  duplicate keys - no further homograph pairs are free/mechanical to find, so a candidate list for more was
+  instead generated from the same productive pattern (weak-verb 1st-person-singular colliding with a common
+  noun, singular and plural) and verified word-by-word against the real file - handed to the user for review
+  (see chat), not yet applied. One nuance flagged: the user's fuller ask (both castings actively offered as
+  suggestions, not just neither forced) needs its own small mechanism beyond this data fix - the schema
+  stores exactly one row per case-insensitive key, confirmed directly. No new tests (data + version/comment
+  only). 1058 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 350 -> 351, `versionName` `"1.0.46"` -> `"1.0.47"`. Not yet device-confirmed - needs a real
+  pack re-import plus typing "stelle"/"sage"/"weg" fresh and confirming no forced capitalisation. See history
+  §294.
 
 - **§293 (still v1.0.46, no code change): backlog reconciliation - which open items belong in the D-402**
   **dictionary-cleanup round, and D-404 split into three tiers.** D-352 (the item originally named as a hard

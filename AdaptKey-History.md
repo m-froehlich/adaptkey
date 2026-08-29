@@ -14775,3 +14775,59 @@ existing D-306/D-330/D-345 bullets, plus a new three-tier D-404 bullet) so a fut
 reconciled scope directly there rather than having to re-derive it from this discussion. No code changed, no
 version bump (pure backlog reconciliation, per this project's own established convention for a discussion-only
 round). 1058 unit tests unchanged.
+
+## §294 - D-368 Started: "Weg"/"Stelle"/"Sage" Retagged NOUN,VERB; A Verified Candidate List Compiled For More (v1.0.47)
+
+User asked to start with D-368's own confirmed cases (per §293's scoping) and, separately, whether a *broader*
+- but not necessarily exhaustive - pass over the rest of the dictionary could turn up more of the same pattern,
+explicitly acknowledging a full 120k-row sweep was never on the table.
+
+### The three confirmed cases
+`dictionaries/de/dict.tsv` retagged directly: `Weg` (`NOUN` -> `NOUN,VERB`), `Stelle` (`NOUN,OTHER` ->
+`NOUN,VERB` - the vague `OTHER` replaced by the actually-correct, specific tag now that it's known), `Sage`
+(`NOUN` -> `NOUN,VERB`). Stored casing left untouched (still capitalised) - a minimal-diff choice, and §6
+rule 1 ("explicit input always wins") already means the dictionary's own stored casing never forces anything
+at commit time regardless. Confirmed via `CapitalisationEngine`'s own `isPureNoun`/`isAmbiguousNoun` split
+(verified in §293, re-confirmed here) that this alone routes all three to §6 rule 5 (S-06 chip only, never
+forced) with zero code change.
+
+One nuance surfaced and flagged, not silently claimed solved: the user's own fuller ask ("beide vorgeschlagen
+werden" - both castings actively offered as suggestions) is not fully achievable by this data fix alone. The
+schema stores exactly one row per case-insensitive key (confirmed: zero case-only-differing duplicate keys
+exist anywhere in the real `dict.tsv`, checked directly, not assumed) - so there is structurally only one
+dictionary-driven completion available per key today, regardless of tagging. What the tag fix *does*
+guarantee: whichever casing the user actually types is never overridden. Offering *both* forms simultaneously
+as distinct suggestions would need its own small mechanism - not attempted here, flagged for if/when it is
+actually wanted.
+
+### The rebuild
+`dictionaries/de/version.txt` 5 -> 6, `language-packs/adaptkey-lang-de.zip` rebuilt from the updated source
+(Python's `zipfile`, matching the Language Contribution Guide's own documented build step exactly - no
+folder prefix inside the archive) and verified by unzipping it back and grepping for the three fixed rows
+plus the version file's own new content, not merely assumed. `LanguagePackCatalog.ENTRIES`'s German entry
+`version` 5 -> 6 with a comment recording the change, matching D-306/D-329/D-330's own established
+precedent for this exact field.
+
+### The broader candidate search
+Confirmed first, mechanically, that the source file itself holds no free win: zero lowercase-key collisions
+exist in `dict.tsv` (each case-insensitive key already reduced to exactly one row well before this app ever
+sees it), so no further homograph pairs are mechanically discoverable from the file alone - finding more
+requires actual German-language knowledge, checked against the real data rather than asserted from it.
+Generated a candidate list from the same productive pattern `stelle`/`sage`/`weg` already demonstrate (a
+German weak verb's 1st-person-singular form colliding with an unrelated, common noun - both singular
+"ich frage" vs "die Frage" and plural "ich grüße" vs "die Grüße" shaped), then verified every single
+candidate directly against the real `dict.tsv` (word, frequency, current tag) rather than trusting the
+generated list on its own. Handed to the user as a to-review list (see chat), split into: genuine, currently
+NOUN-only candidates worth the same `NOUN,VERB` retagging; entries already correctly tagged (`plane`,
+`bitte`, `danke`, `wünsche` are already `NOUN,OTHER`, confirmed fine, no action needed); and one real gap in
+the other direction (`dank`, stored lowercase `OTHER` only - the noun reading "Dank" has no row of its own at
+all, unlike the others where the *noun* reading already existed and the *verb* reading was missing). Not
+applied yet - awaiting the user's own review before touching the dictionary further, same convention as
+every other cleanup item in this combined round.
+
+No new unit tests (dictionary-content-only change plus a version/comment bump, no new logic - `CapitalisationEngine`'s
+own `isPureNoun`/`isAmbiguousNoun` behaviour was already covered before this round). 1058 unit tests unchanged,
+all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 350 -> 351, `versionName`
+`"1.0.46"` -> `"1.0.47"`. Not yet device-confirmed - needs a real German-pack re-import (the app's own
+"update available" flow, `LanguagePacksActivity`) followed by typing "stelle"/"sage"/"weg" in a fresh
+sentence and confirming neither gets force-capitalised.

@@ -48,7 +48,11 @@ object LanguagePackCatalog {
             // D-330: "deine" frequency corrected 160 -> 600 (was letting A-01's cost-1/100x override
             // auto-correct it to "seine" every time) and retagged NOUN,OTHER -> OTHER; same fix extended to
             // "deiner"/"deinen"/"deinem"/"deines" against their "seinX" counterparts.
-            version = 5
+            // D-368: "Weg"/"Stelle"/"Sage" retagged NOUN,VERB (was NOUN / NOUN,OTHER) - these are genuine
+            // noun/verb homographs ("ich stelle", "ich sage", "weg sein"), and CapitalisationEngine's own
+            // isPureNoun/isAmbiguousNoun split already routes a NOUN,VERB entry to §6 rule 5 (S-06 chip
+            // only, never forced) with no code change needed - confirmed directly, not assumed.
+            version = 6
         ),
         Entry(
             Language.GREEK,
