@@ -14878,3 +14878,59 @@ logic this all exercises was already covered before D-368 started). 1058 unit te
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 351 -> 352, `versionName` `"1.0.47"` ->
 `"1.0.48"`. Not yet device-confirmed - same repro shape as §294 (real pack re-import, then type a sample of
 the newly-retagged words fresh and confirm none gets force-capitalised), now covering a much larger sample.
+
+## §296 - D-368 Round 3: A Systematic Whole-Dictionary Scan, Not A Recalled List (v1.0.49)
+
+### The question that started this round
+User noticed §294/§295's candidate lists were not samples of a larger systematic search - they were the
+*entire* result of what this session generated from its own German-language knowledge, verified against the
+data but never derived *from* it. Asked directly: how do we actually reach completeness, and what criteria
+was the search even using - "zufällige Listen?"
+
+### The mechanical attempt, and why it initially failed badly
+Ran a real scan: for every `NOUN`-tagged (non-`VERB`) entry across the whole ~120k-row dictionary, hypothesise
+its weak-verb infinitive (`+"n"` if it already ends in `e`, `+"en"` otherwise) and check whether that
+hypothesised infinitive already exists as its own dictionary entry. Result: 87,985 `NOUN` entries checked,
+**10,013 mechanical hits** - far too many to be real. Inspecting the top of the list showed why: `Jahr` ->
+`jahren` is not a verb collision at all, it is `Jahr`'s own regular dative plural (`Jahre` + dative `-n`) -
+German's regular dative-plural formation (`-en`/`-n`) is *formally identical* to the weak-verb infinitive
+ending the check was looking for, so the two are mechanically indistinguishable from spelling alone. Compounding
+this: a direct check found **zero** pre-existing `VERB` tags anywhere in the entire dictionary before this
+D-368 work started (all 60 `NOUN,VERB` entries that exist today are ones this session added across §294-§296)
+- so there was no reliable existing signal to cross-validate a hypothesis against either. Confirmed this is the
+same missing-tooling gap D-306-followup's own Open TODOs entry already named ("no reliable automated signal
+distinguishes a genuine rare/foreign word from data-extraction noise... needs better tooling").
+
+### The bounded, still-systematic compromise
+Restricted review to the 204 hits at or above `CorrectionConfidence`'s own **live** `NOUN_REFERENCE_FREQUENCY`
+(2000.0) - not the removed, historical `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY` (300) this session had cited from
+memory a few rounds earlier and confirmed no longer exists in the codebase at all - user's own reasoning:
+pick the cutoff at "ab welcher Frequenz ein Wort üblicherweise für eine Ersetzung in Betracht kommt," i.e. an
+actual live, currently-meaningful threshold, not an arbitrary round number. Reviewed all 204 individually
+against real German-language knowledge (not further automation, since no reliable automated signal exists) -
+roughly 85% were still the same dative-plural artefact (or an adjective declension, or a proper noun coincidence)
+and excluded; 30 confirmed real and applied (see §295's own entry above for the reasoning behind each - notably
+including a genuinely new subtype, preterite-form collisions like `Macht`/`macht` and `Band`/`band`, that this
+session's own earlier, memory-generated candidate lists (§294) had not surfaced at all, precisely *because*
+this pass worked from the real noun list outward instead of recalling verbs first).
+
+Every candidate at or below the 2000 threshold remains open, recorded explicitly as a TODO (Progress.md), per
+the user's own instruction not to let it look silently finished.
+
+### The "zero VERB tags" finding, recorded as its own significant fact
+User flagged this specifically, not merely as a footnote to D-368: the entire German dictionary - a
+Wikipedia-corpus extraction - carried not one single `VERB` tag before this session, across ~120,000 rows.
+Recorded here and in Progress.md as a standalone, structural data-quality fact about the original extraction,
+not folded silently into D-368's own narrower framing.
+
+`dictionaries/de/version.txt` 7 -> 8, `language-packs/adaptkey-lang-de.zip` rebuilt and verified (unzipped
+back, version + a total count of 60 `NOUN,VERB` rows now present across all three D-368 rounds).
+`LanguagePackCatalog`'s German entry `version` 7 -> 8, with a comment recording the scan methodology and every
+word retagged this round, corrected once in place after an initial mis-classification (`Macht`/`macht` is a
+3rd-person-present collision, not preterite - `Mal`/`Ziel` belong with the ordinary 1st-person group, not the
+preterite one - caught and fixed before committing, not left wrong in the repo's own permanent record).
+
+No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 352 -> 353, `versionName` `"1.0.48"` ->
+`"1.0.49"`. Not yet device-confirmed - same repro shape as the prior two D-368 rounds, now covering 60 words
+total.

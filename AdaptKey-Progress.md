@@ -275,20 +275,42 @@ non-trivial changes).
   - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
     of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
     adjustments in the same file, same shape as D-330-followup.
-  - **D-368 (case-neutral homograph tagging) - done for this round** (§294/§295, v1.0.47/1.0.48): 31 words
-    retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`), 26 further
-    weak-verb-1st-person-singular-vs-noun candidates (singular and plural) verified against the real
-    dictionary before applying, and the nominalised infinitive `lachen`/`Lachen` (added on the user's own
-    redirection from a dead-end `lache`). `dank` gained a `NOUN` tag alongside its existing `OTHER` (the
-    reverse direction - the noun reading was untagged, not the verb one). Pack rebuilt/republished both
-    times, confirmed zero code change needed either time. **New, explicitly deferred follow-up from the
-    user**: the nominalised-infinitive pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`,
-    `leben`/`Leben`, and others) was deliberately left as a single example - "später können wir dann die
-    anderen Beugungsformen davon und von anderen Wörtern hinzufügen." Not started; a future session should
-    treat this as its own small candidate-search round, same shape as this one, rather than assuming it is
-    covered by the 31 already done. Still not an exhaustive sweep of the whole ~210k-row dictionary for
-    every possible homograph pattern - that remains its own, much larger future project (same "needs better
-    tooling" shape as D-306-followup).
+  - **D-368 (case-neutral homograph tagging) - three rounds done** (§294/§295/§296, v1.0.47-1.0.49): **60**
+    words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`), 26
+    further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised infinitive
+    `lachen`/`Lachen` (added on the user's own redirection from a dead-end `lache`), and - round 3 - **30 more
+    found via a real, systematic scan of the whole dictionary** rather than a recalled list (see below).
+    `dank` gained a `NOUN` tag alongside its existing `OTHER` (the reverse direction - the noun reading was
+    untagged, not the verb one). Pack rebuilt/republished each round, confirmed zero code change needed.
+
+    **Round 3 method, worth recording precisely since it changes how any future continuation should work**:
+    every `NOUN`-tagged entry checked against a hypothesised weak-verb infinitive (`+"n"`/`+"en"`) - 87,985
+    entries checked, 10,013 mechanical hits, but the overwhelming majority were false positives explained by
+    a noun's own regular dative-plural form (formally identical in spelling to a weak-verb infinitive - not
+    mechanically distinguishable from spelling alone). Restricted to the 204 hits at or above
+    `CorrectionConfidence`'s own live `NOUN_REFERENCE_FREQUENCY` (2000.0 - not the removed, historical
+    `MIN_AUTOCORRECT_CANDIDATE_FREQUENCY`/300 this session had cited from memory earlier and confirmed no
+    longer exists in the code) and reviewed individually; 30 confirmed real. **Everything below frequency
+    2000 remains explicitly open** - the mechanical list still exists (not persisted anywhere in the repo,
+    only generated ad hoc this session) but was never reviewed below that cutoff; a future continuation
+    should re-run the same scan and work down through progressively lower frequency bands, same shape as
+    this round, rather than assuming completeness.
+
+    **New, explicitly deferred follow-up from the user, unrelated to the above**: the nominalised-infinitive
+    pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`, `leben`/`Leben`, and others) was
+    deliberately left as a single example - "später können wir dann die anderen Beugungsformen davon und von
+    anderen Wörtern hinzufügen." Not started.
+
+    Still not an exhaustive sweep of the whole ~210k-row combined dictionary for every possible homograph
+    *type* (only the weak-verb-infinitive-vs-noun pattern has been systematically scanned at all) - that
+    remains its own, much larger future project (same "needs better tooling" shape as D-306-followup).
+
+  - **The German dictionary carried zero `VERB` tags anywhere, across all ~120,000 rows, before D-368**
+    **started this session** - a genuine, standalone structural data-quality finding from the original
+    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 60 `NOUN,VERB`
+    entries that exist today are ones added across D-368's three rounds. Worth keeping in mind for *any*
+    future feature that might want to rely on a `VERB` tag meaning something for German - today, outside of
+    these 60 words, it simply never does.
 
   As with D-402's own existing convention, every candidate in this combined round should be listed for the
   user's explicit confirmation before the dictionary file is actually touched.
@@ -371,6 +393,26 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§296 (v1.0.49): D-368 round 3 - a real systematic whole-dictionary scan (not a recalled list) found 30**
+  **more homographs; the German dictionary's zero pre-existing `VERB` tags recorded as its own finding.**
+  User pushed back on §294/§295: those were not samples of a larger search, they were the entire result of
+  what this session generated from memory. Ran an actual scan: every `NOUN`-tagged entry checked against a
+  hypothesised weak-verb infinitive - 87,985 entries checked, 10,013 mechanical hits, but ~85% were false
+  positives (German's regular dative-plural ending is formally identical to the weak-verb infinitive ending,
+  so `Jahr` -> `jahren` mechanically looks like a hit but is just `Jahr`'s own plural, not a verb). Also
+  confirmed directly: zero `VERB` tags existed anywhere in the whole ~120k-row dictionary before this
+  session - no reliable existing signal to cross-check a hypothesis against either, the same missing-tooling
+  gap D-306-followup already named. Restricted review to the 204 hits at or above `CorrectionConfidence`'s
+  own live `NOUN_REFERENCE_FREQUENCY` (2000, not the removed historical 300 this session had cited from
+  memory) and reviewed each individually; 30 confirmed real and retagged `NOUN,VERB` (60 total across all
+  three D-368 rounds now) - including a genuinely new subtype this session's earlier memory-based lists never
+  surfaced: preterite-form collisions (`Band`/`band` = "bound", `Macht`/`macht` = "does/makes", etc.).
+  Everything below frequency 2000 explicitly recorded as still open (see Open TODOs). Pack rebuilt/verified,
+  `LanguagePackCatalog` version 7 -> 8 (one in-place correction made to the version comment before committing
+  - `Macht`/`macht` is present-tense, not preterite, as first mis-written). No new tests (data + comment
+  only). 1058 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 352 -> 353, `versionName` `"1.0.48"` -> `"1.0.49"`. Not yet device-confirmed. See history §296.
 
 - **§295 (v1.0.48): D-368 finished for this round - the full candidate list applied (28 more entries), plus**
   **"lachen"/"Lachen" added on the user's own redirection.** User approved §294's candidate list as

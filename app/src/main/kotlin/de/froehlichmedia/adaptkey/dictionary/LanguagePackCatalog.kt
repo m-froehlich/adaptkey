@@ -58,7 +58,19 @@ object LanguagePackCatalog {
             // infinitive Lachen) plus "dank" gaining the NOUN tag alongside its existing OTHER (the
             // "Dank"/gratitude reading had no tag at all before, unlike the others where only the verb
             // reading was missing).
-            version = 7
+            // D-368 (round 3): a systematic scan of every NOUN-tagged entry against a hypothesised weak-verb
+            // infinitive (own value + "n"/"en") found 10,013 mechanical hits across the whole dictionary -
+            // the overwhelming majority explained by a noun's own regular dative-plural form, not a real
+            // verb (the German dictionary carried zero VERB tags before D-368, so nothing existing could be
+            // cross-checked against). Restricted to the 204 hits at or above CorrectionConfidence's own live
+            // NOUN_REFERENCE_FREQUENCY (2000) and reviewed individually; 30 confirmed real and retagged
+            // NOUN,VERB - ordinary 1st-person-present/imperative collisions (Teil/Form/Land/Rolle/Zahl/Krieg/
+            // Reich/Film/Folge/text/Arbeit/Teile/Sitz/Buch/Bau/Nähe/Bad/Druck/Strecke/Lehre/Mal/Ziel), one
+            // 3rd-person-present collision ("Macht" the noun vs "macht" = "er/sie/es macht"), and a newly
+            // surfaced class, preterite-form collisions (Stand/Begriff/Schloss/Betrieb/Band/Unterschied/
+            // Widerstand - e.g. "Band" vs "band" = preterite of "binden"). Everything below frequency 2000
+            // remains open - see AdaptKey-Progress.md's own Open TODOs.
+            version = 8
         ),
         Entry(
             Language.GREEK,
