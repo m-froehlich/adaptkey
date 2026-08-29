@@ -105,7 +105,7 @@ ihrer	16206	OTHER
 seinen	16196	OTHER
 erste	16016	OTHER
 keine	15927	OTHER
-Ende	15847	NOUN
+Ende	15847	NOUN,VERB
 weitere	15678	OTHER
 sehr	15635	OTHER
 dann	15406	OTHER
@@ -381,7 +381,7 @@ hin	4792	OTHER
 Arbeit	4790	NOUN
 Einfluss	4781	NOUN
 direkt	4772	OTHER
-Fall	4765	NOUN
+Fall	4765	NOUN,VERB
 zeigt	4762	OTHER
 Frau	4756	NOUN
 dar	4707	OTHER
@@ -508,7 +508,7 @@ kleine	3813	OTHER
 darin	3807	OTHER
 Wert	3802	NOUN
 zehn	3799	OTHER
-Frage	3796	NOUN
+Frage	3796	NOUN,VERB
 Straße	3782	NOUN
 Kilometer	3778	NOUN
 Arbeiten	3774	NOUN,OTHER
@@ -1616,7 +1616,7 @@ einiger	1349	OTHER
 Handeln	1348	NOUN,OTHER
 Rang	1348	NOUN
 Bereichen	1348	NOUN
-Reise	1347	NOUN
+Reise	1347	NOUN,VERB
 Übersetzung	1347	NOUN
 Hessen	1347	NOUN
 Niederlande	1347	NOUN
@@ -1689,7 +1689,7 @@ hinsichtlich	1284	OTHER
 Typ	1284	NOUN
 üblicherweise	1283	OTHER
 praktisch	1282	OTHER
-Liebe	1281	NOUN
+Liebe	1281	NOUN,VERB
 Angriff	1281	NOUN
 geringe	1280	OTHER
 Düsseldorf	1280	NOUN
@@ -1748,7 +1748,7 @@ durchaus	1239	OTHER
 Punkte	1237	NOUN
 polnische	1237	OTHER
 nennen	1236	OTHER
-Spiele	1236	NOUN
+Spiele	1236	NOUN,VERB
 mögliche	1235	OTHER
 Kräfte	1234	NOUN
 Monaten	1234	NOUN
@@ -1845,7 +1845,7 @@ verbreitete	1171	OTHER
 Los	1169	NOUN,OTHER
 Schwarze	1169	NOUN,OTHER
 Friedhof	1169	NOUN
-Ziele	1168	NOUN
+Ziele	1168	NOUN,VERB
 uns	1167	OTHER
 falls	1167	OTHER
 Feld	1167	NOUN
@@ -2159,7 +2159,7 @@ Freiburg	1012	NOUN
 positiv	1011	OTHER
 Bedarf	1011	NOUN,OTHER
 Könige	1011	NOUN
-Suche	1011	NOUN
+Suche	1011	NOUN,VERB
 jene	1009	OTHER
 BIP	1007	NOUN
 unterstützte	1006	OTHER
@@ -2317,7 +2317,7 @@ Lied	947	NOUN
 Versionen	946	NOUN
 Verteilung	946	NOUN
 ja	945	OTHER
-dank	945	OTHER
+dank	945	NOUN,OTHER
 generell	945	OTHER
 Militär	945	NOUN
 Synagoge	945	NOUN
@@ -3144,7 +3144,7 @@ Firmen	702	NOUN
 nächste	702	OTHER
 umfassende	702	OTHER
 Zentren	702	NOUN
-Lauf	702	NOUN
+Lauf	702	NOUN,VERB
 leisten	702	OTHER
 datiert	702	OTHER
 Ausstellungen	702	NOUN
@@ -3267,7 +3267,7 @@ gesichert	671	OTHER
 Gerechtigkeit	671	NOUN
 Beobachtung	671	NOUN
 unternahm	671	OTHER
-Preise	670	NOUN
+Preise	670	NOUN,VERB
 niemals	670	OTHER
 Territorien	670	NOUN
 Diktatur	670	NOUN
@@ -3734,7 +3734,7 @@ King	576	NOUN
 Schiffen	576	NOUN
 desto	576	OTHER
 transportiert	576	OTHER
-Glaube	576	NOUN,OTHER
+Glaube	576	NOUN,VERB
 einheitliche	576	OTHER
 rechtliche	576	OTHER
 zweitgrößte	576	OTHER
@@ -4171,7 +4171,7 @@ Vorbereitung	520	NOUN
 bat	519	OTHER
 einziger	519	OTHER
 einander	518	OTHER
-Kämpfe	518	NOUN
+Kämpfe	518	NOUN,VERB
 Ford	518	NOUN
 Diskussionen	518	NOUN
 Flüssigkeit	518	NOUN
@@ -4510,7 +4510,7 @@ Aufteilung	478	NOUN
 Amiga	478	NOUN
 offensichtlich	477	OTHER
 Not	477	NOUN,OTHER
-Kauf	477	NOUN
+Kauf	477	NOUN,VERB
 konservative	477	OTHER
 Buches	477	NOUN
 Blüte	477	NOUN
@@ -4938,7 +4938,7 @@ biologischen	435	OTHER
 optischen	435	OTHER
 sammeln	435	OTHER
 Umstand	435	NOUN
-Pflege	435	NOUN
+Pflege	435	NOUN,VERB
 Dokument	435	NOUN
 ungarische	435	OTHER
 Web	435	NOUN
@@ -6145,7 +6145,7 @@ Wetter	348	NOUN
 Maschinenbau	348	NOUN
 verwirklicht	348	OTHER
 fliegen	348	NOUN,OTHER
-Klage	348	NOUN
+Klage	348	NOUN,VERB
 dauerhafte	348	OTHER
 Central	348	NOUN
 Plätzen	348	NOUN
@@ -7567,7 +7567,7 @@ Jahreszeiten	275	NOUN
 Halberstadt	275	NOUN
 Syntax	274	NOUN
 gebrochen	274	OTHER
-Male	274	NOUN
+Male	274	NOUN,VERB
 hervorging	274	OTHER
 steigern	274	OTHER
 Trump	274	NOUN
@@ -7633,7 +7633,7 @@ Spalten	272	NOUN,OTHER
 möglicher	272	OTHER
 lehnten	272	OTHER
 beschränken	272	OTHER
-Sorge	272	NOUN
+Sorge	272	NOUN,VERB
 Großstädten	272	NOUN
 Machtergreifung	272	NOUN
 Vorträge	272	NOUN
@@ -8663,7 +8663,7 @@ Gate	236	NOUN
 weitergeführt	236	OTHER
 Enzym	236	NOUN
 Admiral	236	NOUN
-Schlag	236	NOUN
+Schlag	236	NOUN,VERB
 italienischer	236	OTHER
 Jahrhundertwende	236	NOUN
 Arbeiterbewegung	236	NOUN
@@ -15867,7 +15867,7 @@ haltbar	117	OTHER
 Lampen	117	NOUN
 Landesdurchschnitt	117	NOUN
 Zufuhr	117	NOUN
-Reize	117	NOUN
+Reize	117	NOUN,VERB
 Pont	117	NOUN
 Reflexionen	117	NOUN
 Zwerg	117	NOUN
@@ -17607,7 +17607,7 @@ Stimmberechtigten	103	NOUN,OTHER
 Assam	103	NOUN
 Sturmfluten	103	NOUN
 Paprika	103	NOUN
-Lese	103	NOUN,OTHER
+Lese	103	NOUN,VERB
 Turn	103	NOUN
 Weihrauch	103	NOUN
 Quark	103	NOUN
@@ -19765,7 +19765,7 @@ Verdoppelung	89	NOUN
 Hildesheimer	89	NOUN
 Switch	89	NOUN,OTHER
 Carmen	89	NOUN
-Lachen	89	NOUN,OTHER
+Lachen	89	NOUN,VERB
 Content	89	NOUN,OTHER
 purple	89	NOUN,OTHER
 Printmedien	89	NOUN
@@ -21126,7 +21126,7 @@ Tagesspiegel	82	NOUN
 fungierten	82	OTHER
 Krankenpflege	82	NOUN
 Bokmål	82	NOUN
-Rufe	82	NOUN
+Rufe	82	NOUN,VERB
 Archipels	82	NOUN
 Literaturkritik	82	NOUN
 gekommenen	82	OTHER
@@ -21838,7 +21838,7 @@ Regierungsantritt	78	NOUN
 Gefangennahme	78	NOUN
 gesandt	78	OTHER
 Überquerung	78	NOUN
-Wache	78	NOUN
+Wache	78	NOUN,VERB
 westwärts	78	OTHER
 Zeitgenosse	78	NOUN
 schildern	78	OTHER
@@ -31364,7 +31364,7 @@ Brighton	49	NOUN
 verkleinerten	49	OTHER
 Trial	49	NOUN
 Zugänglichkeit	49	NOUN
-Wette	49	NOUN
+Wette	49	NOUN,VERB
 plastisch	49	OTHER
 Agglomerationen	49	NOUN
 Winterspielen	49	NOUN
@@ -65926,7 +65926,7 @@ Zynismus	18	NOUN
 Dimethylsulfat	18	NOUN
 nautischen	18	OTHER
 Drehmoments	18	NOUN
-Grüße	18	NOUN
+Grüße	18	NOUN,VERB
 Métropole	18	NOUN
 Felsmalereien	18	NOUN
 Rollo	18	NOUN
@@ -67570,7 +67570,7 @@ fördernde	17	OTHER
 BDOS	17	NOUN
 Propagandafilm	17	NOUN
 kriegszerstörten	17	OTHER
-Küsse	17	NOUN
+Küsse	17	NOUN,VERB
 Antwortbrief	17	NOUN
 Ehrerbietung	17	NOUN
 Westwood	17	NOUN
@@ -74955,7 +74955,7 @@ Lamine	15	NOUN
 antifranzösischen	15	OTHER
 Auberginen	15	NOUN
 Matin	15	NOUN
-Schreie	15	NOUN
+Schreie	15	NOUN,VERB
 Kojoten	15	NOUN
 Bühnenmusik	15	NOUN
 Südjütisch	15	NOUN,OTHER

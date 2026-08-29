@@ -275,14 +275,19 @@ non-trivial changes).
   - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
     of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
     adjustments in the same file, same shape as D-330-followup.
-  - **D-368** (case-neutral homograph tagging, e.g. `"stelle"`/`"Stelle"` as NOUN+VERB instead of only one
-    casing existing at all): **the three originally-confirmed cases are done** (§294, v1.0.47) -
-    `stelle`/`Stelle`, `sage`/`Sage`, `weg`/`Weg` retagged `NOUN,VERB`, pack rebuilt/republished, confirmed
-    zero code change needed. A further, verified candidate list (more words showing the identical weak-verb-
-    1st-person-singular-vs-noun pattern, e.g. `frage`/`Frage`, `liebe`/`Liebe`, `sorge`/`Sorge`,
-    `pflege`/`Pflege`, plus plural cases like `grüße`/`Grüße`) was handed to the user for review in §294 -
-    **not yet applied**, awaiting their go-ahead on which (if any) to also retag. Not an exhaustive sweep of
-    the whole ~210k-row dictionary - that remains its own, much larger future project (same "needs better
+  - **D-368 (case-neutral homograph tagging) - done for this round** (§294/§295, v1.0.47/1.0.48): 31 words
+    retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`), 26 further
+    weak-verb-1st-person-singular-vs-noun candidates (singular and plural) verified against the real
+    dictionary before applying, and the nominalised infinitive `lachen`/`Lachen` (added on the user's own
+    redirection from a dead-end `lache`). `dank` gained a `NOUN` tag alongside its existing `OTHER` (the
+    reverse direction - the noun reading was untagged, not the verb one). Pack rebuilt/republished both
+    times, confirmed zero code change needed either time. **New, explicitly deferred follow-up from the
+    user**: the nominalised-infinitive pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`,
+    `leben`/`Leben`, and others) was deliberately left as a single example - "später können wir dann die
+    anderen Beugungsformen davon und von anderen Wörtern hinzufügen." Not started; a future session should
+    treat this as its own small candidate-search round, same shape as this one, rather than assuming it is
+    covered by the 31 already done. Still not an exhaustive sweep of the whole ~210k-row dictionary for
+    every possible homograph pattern - that remains its own, much larger future project (same "needs better
     tooling" shape as D-306-followup).
 
   As with D-402's own existing convention, every candidate in this combined round should be listed for the
@@ -366,6 +371,20 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§295 (v1.0.48): D-368 finished for this round - the full candidate list applied (28 more entries), plus**
+  **"lachen"/"Lachen" added on the user's own redirection.** User approved §294's candidate list as
+  proposed (`lade` left out, `dank` handled separately) and additionally asked for `lache` - redirected by
+  the user themselves to the *real* pair, the nominalised infinitive `lachen`/`Lachen` ("das Lachen"), framed
+  explicitly as the first instance of a further, distinct pattern (infinitive-as-noun) to extend later, not
+  swept now. Retagged via a small verification script (fails loudly on any missing/duplicate target rather
+  than trusting a blind replace) - 16 singular + 10 plural weak-verb/noun homographs `NOUN`/`NOUN,OTHER` ->
+  `NOUN,VERB`, `Lachen` `NOUN,OTHER` -> `NOUN,VERB`, `dank` `OTHER` -> `NOUN,OTHER` (the one entry going the
+  other direction - noun reading was untagged, not the verb). `git diff --stat` confirmed exactly 28 lines
+  changed. `dictionaries/de/version.txt` 6 -> 7, pack rebuilt and verified (unzipped back, version + a count
+  of 30 `NOUN,VERB` rows checked), `LanguagePackCatalog` version 6 -> 7. No new tests (data + comment only).
+  1058 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  351 -> 352, `versionName` `"1.0.47"` -> `"1.0.48"`. Not yet device-confirmed. See history §295.
 
 - **§294 (v1.0.47): D-368 started - "Weg"/"Stelle"/"Sage" retagged `NOUN,VERB` in the German dictionary;**
   **a verified candidate list compiled for more (not yet applied).** `dictionaries/de/dict.tsv` retagged

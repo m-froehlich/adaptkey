@@ -14831,3 +14831,50 @@ all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 
 `"1.0.46"` -> `"1.0.47"`. Not yet device-confirmed - needs a real German-pack re-import (the app's own
 "update available" flow, `LanguagePacksActivity`) followed by typing "stelle"/"sage"/"weg" in a fresh
 sentence and confirming neither gets force-capitalised.
+
+## §295 - D-368 Round 2: The Full Candidate List Applied, Plus "lachen"/"Lachen" (v1.0.48)
+
+User reviewed §294's candidate list directly ("Da sieht so gut aus, dass ich ein hohes Vertrauen habe") and
+approved applying it as proposed - including leaving `lade`/`Lade` out (the one flagged lower-confidence
+case) and handling `dank`/`Dank` separately, both exactly as scoped in §294.
+
+**One redirection from the user, worth recording precisely**: asked to also add `lache` - but pointed out
+directly that `lache` itself has no real noun collision; the actual pair is the *nominalised infinitive*
+`lachen`/`Lachen` ("das Lachen" = the laughing/laughter, a fully productive German construction - any
+infinitive can be capitalised into a noun this way, e.g. "das Essen", "das Leben"). Explicitly framed as the
+first instance of a *further* pattern (infinitive-as-noun, distinct from the weak-verb-1st-person-singular
+pattern the rest of this round covers) - deliberately left as a single example for now, not systematically
+swept: "später können wir dann die anderen Beugungsformen davon und von anderen Wörtern hinzufügen." Checked
+directly: `Lachen` already existed, tagged `NOUN,OTHER` (89) - the vague `OTHER` already accidentally gave it
+§6 rule 5's ambiguous-word protection (same situation `Stelle` was in before §294's own fix), replaced with
+the specific `NOUN,VERB` for precision and consistency with the rest of this batch.
+
+### What was retagged
+All 28 entries retagged via a small, throwaway verification script (`scratchpad/retag_de.py` - reads every
+target word by its *exact* stored spelling, replaces only the tag column, and hard-fails if any target is
+missing or matched more than once, rather than trusting a blind find-and-replace) - `git diff --stat`
+confirmed exactly 28 lines changed afterward, nothing else touched:
+
+- **Singular** (`NOUN` -> `NOUN,VERB`, or `NOUN,OTHER` -> `NOUN,VERB` for `Glaube`/`Lese` which already had
+  the vague tag): `Frage`, `Fall`, `Ende`, `Liebe`, `Reise`, `Suche`, `Pflege`, `Sorge`, `Kauf`, `Lauf`,
+  `Glaube`, `Klage`, `Schlag`, `Wache`, `Wette`, `Lese`.
+- **Plural** (weak-verb 1st person vs. plural noun, same pattern): `Preise`, `Ziele`, `Kämpfe`, `Spiele`,
+  `Male`, `Reize`, `Rufe`, `Grüße`, `Küsse`, `Schreie`.
+- **`Lachen`**: `NOUN,OTHER` -> `NOUN,VERB` (see above).
+- **`dank`**: `OTHER` -> `NOUN,OTHER` - the one entry in this whole round going the *other* direction (the
+  noun reading "Dank" had no tag at all before, rather than the verb reading being the missing one).
+
+`Lade`/`lade` deliberately left untouched, per §294's own lower-confidence flag, not revisited.
+
+### The rebuild
+`dictionaries/de/version.txt` 6 -> 7, `language-packs/adaptkey-lang-de.zip` rebuilt from the updated source
+and verified by unzipping it back (version file content, and a count of 30 `NOUN,VERB`-tagged rows now
+present - the 3 from §294 plus the 27 of this round's 28 that landed on that exact tag, `dank` being the one
+exception at `NOUN,OTHER`). `LanguagePackCatalog`'s German entry `version` 6 -> 7 with a comment listing every
+word retagged this round.
+
+No new unit tests (dictionary content + a version/comment bump only - the underlying `CapitalisationEngine`
+logic this all exercises was already covered before D-368 started). 1058 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 351 -> 352, `versionName` `"1.0.47"` ->
+`"1.0.48"`. Not yet device-confirmed - same repro shape as §294 (real pack re-import, then type a sample of
+the newly-retagged words fresh and confirm none gets force-capitalised), now covering a much larger sample.

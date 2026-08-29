@@ -52,7 +52,13 @@ object LanguagePackCatalog {
             // noun/verb homographs ("ich stelle", "ich sage", "weg sein"), and CapitalisationEngine's own
             // isPureNoun/isAmbiguousNoun split already routes a NOUN,VERB entry to §6 rule 5 (S-06 chip
             // only, never forced) with no code change needed - confirmed directly, not assumed.
-            version = 6
+            // D-368 (round 2): 27 further weak-verb/noun homographs retagged NOUN,VERB (singular:
+            // Frage/Fall/Ende/Liebe/Reise/Suche/Pflege/Sorge/Kauf/Lauf/Glaube/Klage/Schlag/Wache/Wette/Lese;
+            // plural: Preise/Ziele/Kämpfe/Spiele/Male/Reize/Rufe/Grüße/Küsse/Schreie; the nominalised
+            // infinitive Lachen) plus "dank" gaining the NOUN tag alongside its existing OTHER (the
+            // "Dank"/gratitude reading had no tag at all before, unlike the others where only the verb
+            // reading was missing).
+            version = 7
         ),
         Entry(
             Language.GREEK,
