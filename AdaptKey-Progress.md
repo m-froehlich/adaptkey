@@ -257,6 +257,36 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
+- **D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 are to be done together, in one combined**
+  **dictionary-cleanup round - agreed explicitly, not yet started.** All of them touch the exact same
+  `dict_de.tsv`/`bigram_de.tsv` rebuild/version-bump/language-pack-republish cycle, so doing them as
+  separate rounds would mean repeating that cycle for no benefit:
+  - **D-402** (spec §31/history batch): the already-collected word list itself - missing words (`"Wessen"`,
+    `"drüber"`, `"drunter"`, `"Vorm"`, `"tue"`, `"neulich"`, `"aberkennen"`, `"ah"`/`"Oh"`, `"agentisch"`,
+    `"erstaunlicherweise"`, more), noise entries to remove/blacklist (`"Mur"`, `"Bdi"`, `"Dee"`), and the
+    five splits already root-caused directly against real data in §277 (`"en"` freq 1207 `OTHER`, `"ell"`
+    16, `"lich"` 16 mistagged `NOUN`, `"ische"` 15, `"heiße"` 182 - all corpus-tokeniser artefacts, not real
+    words).
+  - **D-306-followup** and **D-345**: see their own bullets below - both extend D-306's original untagged-
+    only pass to dubious-but-tagged entries; effectively the same task as D-402 from a different entry
+    point.
+  - **D-330-followup**: see its own bullet below - the `dein`/`sein` register-skew fix, plus the proposed
+    full `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` audit.
+  - **D-367**: `"natu"` prefix-completion frequency corrections (`"natürlich"` needs to rank clearly ahead
+    of `"natürliche"`/`"natürlichen"`/`"Natura"`; `"Nature"` should not appear at all) - pure frequency-value
+    adjustments in the same file, same shape as D-330-followup.
+  - **D-368** (case-neutral homograph tagging, e.g. `"stelle"`/`"Stelle"` as NOUN+VERB instead of only one
+    casing existing at all): **scoped down to the already-confirmed concrete cases** (`stelle`/`Stelle`,
+    `sage`/`Sage`, `weg`/`Weg`) for this round - not an exhaustive sweep of the whole ~210k-row dictionary
+    for every noun/verb homograph, which would be its own, much larger future project (same "needs better
+    tooling" shape as D-306-followup). **Confirmed directly against the code, not assumed: this needs zero
+    code change** - `CapitalisationEngine`'s own `isPureNoun`/`isAmbiguousNoun` split (`isPureNoun` requires
+    the *entire* tag set to be NOUN/PROPER_NOUN only) already routes a `NOUN,VERB`-tagged entry to §6 rule 5
+    (ambiguous - S-06 chip only, never auto-capitalised) correctly. Pure data retagging.
+
+  As with D-402's own existing convention, every candidate in this combined round should be listed for the
+  user's explicit confirmation before the dictionary file is actually touched.
+
 - **D-306's dictionary cleanup only removed *untagged* entries (missing part-of-speech) - it did not attempt**
   **a broader sweep of entries that carry a valid tag but are still dubious** (foreign proper nouns, obscure
   fragments) **the way "til" itself was before its manual fix.** A narrow probe (short, low-frequency,
@@ -299,9 +329,56 @@ non-trivial changes).
 - **D-345 (dictionary noise scan, spec §31): "Bri" must be blacklisted or removed, and the full bundled**
   **dictionary scanned for every remaining Wikipedia-extraction-noise entry (fragments, obscure acronyms,**
   **markup tokens).** Extends D-306's scope from *untagged* entries to also cover dubious *tagged* entries.
-  Each candidate should be listed for user confirmation before removal.
+  Each candidate should be listed for user confirmation before removal. Bundle with D-402's own combined
+  cleanup round (see that bullet above) - same file, same rebuild cycle.
+
+- **D-404 (inflected forms flooding the Learned Words list, and more broadly the bundled dictionaries too -**
+  **e.g. "Kugel"/"Kugeln" both present, risking the plural's frequency silently outranking and replacing**
+  **the singular) - evaluated and deliberately split into three tiers of very different size, not one task:**
+  1. **Full generative morphology** - reduce the dictionary to only irregular forms, generate regular
+     plurals/inflections algorithmically at runtime. A real NLP-engineering project of uncertain feasibility
+     (the user's own stated doubt) - German noun pluralisation has several major classes plus umlaut
+     mutation and gender-dependent variation, far messier than `RegularVerbInflection`/`AdjectiveInflection`'s
+     own already-narrow "regular case only" scope (D-115/D-125/D-252, which only ever *protect*, never
+     generate, and explicitly exclude strong/ablaut forms). Deliberately **not** folded into the D-402
+     cleanup round above - needs its own dedicated design discussion later, comparable in weight to
+     D-353/D-410.
+  2. **A lighter cross-reference/lemma-link approach** - keep both inflected forms as separate dictionary
+     rows, but link them so ranking/A-01's override-protection logic can tell "same word family" apart from
+     "coincidentally similar, unrelated word" (today nothing distinguishes those two cases at all). More
+     tractable than tier 1, but still a real data-curation task (a lemma mapping across the dictionary) plus
+     real code work (`shouldOverrideKnownWord` and friends) - its own future design round, not attempted here.
+  3. **The minimum bar, scoped to the Learned Words list specifically**: link inflected forms of an
+     already-learned word at learn time so they collapse in the editor's own display (D-388's sortable
+     view), instead of flooding it with near-duplicate entries for what is conceptually one word. Pure code,
+     touches no dictionary data at all - would naturally extend the `LanguageRules` mechanism (D-410) the
+     same way `RegularVerbInflection`/`AdjectiveInflection` already live there, reused for "is this an
+     inflected form of an already-learned word" rather than only "protect from autocorrect". Independent of
+     the D-402 cleanup round - no sequencing dependency either direction, can be picked up separately
+     whenever convenient.
+
+     **Explicit constraint for whenever tier 3 is implemented, from the user directly**: it must **never**
+     reset or wipe the existing Learned Words list - real entries have already accumulated there that the
+     user does not want to lose. Needs a genuine migration path that consolidates already-accumulated
+     entries under their shared base form (mirroring D-388's own `last_touched` column migration as the
+     precedent for "add new structure to an existing table without discarding what's already there"), not a
+     fresh start.
 
 ## Current State
+
+- **§293 (still v1.0.46, no code change): backlog reconciliation - which open items belong in the D-402**
+  **dictionary-cleanup round, and D-404 split into three tiers.** D-352 (the item originally named as a hard
+  prerequisite for the cleanup) is shipped and device-confirmed, so that blocker is cleared. D-306-followup/
+  D-345/D-330-followup/D-367/D-368(scoped) bundled into one combined cleanup round with D-402 itself - all
+  touch the same dictionary file/rebuild cycle; D-368 confirmed to need zero code change (`CapitalisationEngine`'s
+  `isPureNoun` already routes a `NOUN,VERB`-tagged entry to the ambiguous-word rule correctly). D-404 (inflected
+  forms flooding the dictionary/Learned Words) split into three genuinely different-sized tiers - full
+  generative morphology (deferred, its own future design round, uncertain feasibility), a lighter lemma-link
+  approach (also deferred), and a minimum bar scoped to collapsing inflected forms in the Learned Words editor
+  alone (pure code, no dictionary data, independent of the cleanup round) - with an explicit user constraint
+  that the eventual Learned Words fix must migrate, never reset, the existing list. Full reconciled scope now
+  recorded in this file's own "Open TODOs" section. No code changed, no version bump. 1058 unit tests
+  unchanged. See history §293.
 
 - **§292 (v1.0.46): D-411 implemented - a log-scaled, recency-aware boost lets a genuinely well-used**
   **learned word compete in the live suggestion bar, without categorically favouring learned words.** User's

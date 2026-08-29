@@ -14720,3 +14720,58 @@ green. `versionCode` 349 -> 350, `versionName` `"1.0.45"` -> `"1.0.46"`. Spec's 
 device-confirmed - the effect is subtle by design (per the user's own stated expectation above), so
 confirmation here likely means "no regression in ordinary suggestion ranking" more than a dramatic visible
 change.
+
+## §293 - Backlog Reconciliation: Dictionary-Cleanup Sequencing And D-404's Three Tiers (No Code Change)
+
+User asked which still-open backlog items should sensibly happen before the German dictionary cleanup
+(D-402). Answered from the actual current state, not memory: D-352 (the item originally named as a hard
+prerequisite - "check the split-quality effect before any cleanup lands, so it isn't masked") has since
+shipped and been device-confirmed (§287), so that blocker is cleared. Investigated which *other* open items
+touch the same `dict_de.tsv`/`bigram_de.tsv` file and would need the identical rebuild/version-bump/pack-
+republish cycle: D-306's own follow-up (~490 further dubious-but-tagged candidates, plus the confirmed-
+recurring `"fir"`/`"dir"` case), D-345 (noise scan, `"Bri"`), D-330's own follow-up (`dein`/`sein` register
+skew, plus a proposed full audit of similar pairs), and D-367 (`"natu"` prefix-completion frequency
+corrections) - recommended bundling all of these plus D-402's own already-collected list into one combined
+round, rather than several separate rounds each repeating the same rebuild cycle for no benefit. Confirmed
+every other open item is independent either way - no sequencing dependency in either direction.
+
+User then raised D-368 (case-neutral homograph tagging - `"stelle"`/`"Stelle"` should be one entry tagged
+`NOUN,VERB`, not force-capitalised, both castings suggested per what was typed) as a candidate for the same
+round, and separately D-404 (inflected forms flooding the dictionary/Learned Words - `"Kugel"`/`"Kugeln"`
+both present, risking the plural's frequency silently outranking the singular), asking for an assessment of
+both before deciding.
+
+**D-368**: agreed to fold in, scoped to the already-confirmed concrete cases only (not an exhaustive
+homograph sweep, which would be its own future project, same shape as D-306-followup's own "needs better
+tooling" deferral). Checked directly against the code before promising anything: `CapitalisationEngine`'s
+`isPureNoun` (`hasNoun && pos.all { it == NOUN || it == PROPER_NOUN }`) already requires the *entire* tag set
+to be noun-only - a `NOUN,VERB`-tagged entry already falls to `isAmbiguousNoun`, §6 rule 5 (S-06 chip only,
+never forced-capitalised), with **zero code change needed**. Purely a data-retagging task, confirming it
+belongs with the rest of the combined cleanup round.
+
+**D-404**: assessed as three tiers of genuinely different size, explicitly *not* one task:
+1. Full generative morphology (reduce the dictionary to only irregular forms, generate regular inflections
+   at runtime) - a real NLP-engineering project of uncertain feasibility, matching the user's own stated
+   doubt. German noun pluralisation (several major classes, umlaut mutation, gender-dependent variation) is
+   materially messier than `RegularVerbInflection`/`AdjectiveInflection`'s own deliberately narrow "regular
+   case only, protection not generation" scope. Explicitly kept **out** of the D-402 cleanup round - its own
+   future design discussion, comparable in weight to D-353/D-410.
+2. A lighter lemma-link approach (both inflected forms stay as separate rows, but linked so ranking/A-01's
+   override protection can tell "same word family" apart from "coincidentally similar unrelated word") -
+   more tractable than tier 1, still its own future round (a real data-curation task plus real code work).
+3. The minimum bar, scoped to the Learned Words list only: link an already-learned word's inflected forms at
+   learn time so they collapse in the D-388 editor's own display instead of flooding it. Pure code, no
+   dictionary data touched - a natural extension of the `LanguageRules` mechanism (D-410), reusing the same
+   shape `RegularVerbInflection`/`AdjectiveInflection` already established there. Independent of the D-402
+   round - no sequencing dependency either way.
+
+**User's own explicit constraint for tier 3, whenever it is eventually implemented**: it must never reset or
+wipe the existing Learned Words list - real accumulated entries must not be lost. Needs a genuine migration
+that consolidates existing entries under their shared base form, mirroring D-388's own `last_touched` column
+migration as the "add structure without discarding data" precedent - not a fresh start.
+
+All of the above recorded in Progress.md's own "Open TODOs" section (a new combined-round bullet ahead of the
+existing D-306/D-330/D-345 bullets, plus a new three-tier D-404 bullet) so a future session finds the
+reconciled scope directly there rather than having to re-derive it from this discussion. No code changed, no
+version bump (pure backlog reconciliation, per this project's own established convention for a discussion-only
+round). 1058 unit tests unchanged.
