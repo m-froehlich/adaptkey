@@ -44,10 +44,11 @@
     </string-array>
 
     <!-- D-352 auto-split mode (label / stored value, matching AutoSplitMode's own enum names). -->
+    <!-- D-409: "Off" leftmost, matching C-22's own slider order (see below). -->
     <string-array name="d352_auto_split_mode_labels">
-        <item>@string/d352_auto_split_mode_automatic</item>
-        <item>@string/d352_auto_split_mode_chip_only</item>
         <item>@string/d352_auto_split_mode_off</item>
+        <item>@string/d352_auto_split_mode_chip_only</item>
+        <item>@string/d352_auto_split_mode_automatic</item>
     </string-array>
 
     <!-- D-353/D-407 autocorrect aggressiveness (label / stored value): position 0 is C-22's own "Off"
@@ -69,9 +70,9 @@
     </string-array>
 
     <string-array name="d352_auto_split_mode_values">
-        <item>automatic</item>
-        <item>chip_only</item>
         <item>off</item>
+        <item>chip_only</item>
+        <item>automatic</item>
     </string-array>
 
 </resources>

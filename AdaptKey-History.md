@@ -14350,3 +14350,16 @@ No test changes (Android UI/layout glue, untested per convention) - 1020 unit te
 already describe C-22 accurately, and A-05's D-352 description was never about which widget renders it.
 
 Not yet device-confirmed.
+
+## §286 - D-409: Word-Splitting Slider Reordered, "Off" Leftmost (v1.0.42)
+
+D-352's new slider (D-408) kept its original `ListPreference` entry order (Automatic, Chip only, Off) -
+inconsistent with C-22's own slider, where Off sits leftmost as the "least" position. Reordered both
+`d352_auto_split_mode_labels`/`_values` (`arrays.xml`) to Off, Chip only, Automatic. Purely a display-order
+change - the persisted string values themselves ("off"/"chip_only"/"automatic") are unchanged, and
+`AutoSplitMode.fromKey()` resolves by name regardless of array position, so no Kotlin change was needed.
+
+No test/spec changes. 1020 unit tests unchanged, green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `versionCode` 345 -> 346, `versionName` `"1.0.41"` -> `"1.0.42"`.
+
+Not yet device-confirmed.

@@ -303,6 +303,10 @@ non-trivial changes).
 
 ## Current State
 
+- **§286 (v1.0.42): D-409 - D-352's word-splitting slider reordered, "Off" leftmost**, matching C-22's own
+  slider convention. Display-order-only change (`arrays.xml`); persisted values and `AutoSplitMode.fromKey()`
+  resolution unaffected. Not yet device-confirmed. See history §286.
+
 - **§285 (v1.0.41): D-408 - slider descender clipping fixed; D-352 word-splitting also converted to a**
   **slider.** The C-22 slider's value label (`labeled_seekbar_value`) had `layout_height="match_parent"`,
   which squeezed it to the `SeekBar`'s own shorter height and clipped descenders (`g`/`j` in "Vorsichtig"/
