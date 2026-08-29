@@ -303,6 +303,38 @@ non-trivial changes).
 
 ## Current State
 
+- **§288 (v1.0.43): D-410 implemented - a `LanguageRules` seam separates German-specific grammar from core**
+  **logic; a runtime plugin-loading design was discussed and explicitly rejected.** User asked how to cleanly
+  package the app's German-only behaviours - physically into the language pack (like the dictionary), or
+  activated-per-language like the keyboard layout. A research pass found this is more than a data-placement
+  question: several genuinely German grammar/orthography algorithms (`TokenRepair`'s inseparable-prefix and
+  feminine-`-in` split vetoes, D-116/D-115/D-125/D-252's compound/verb/adjective morphology checks) ran
+  **unconditionally regardless of active language** - no code branch gated them at all - and S-08's "Uhr"
+  time suggestion had no language gate whatsoever. The user's own follow-up question - could the concrete
+  rules implementation live inside the downloadable language-pack ZIP and be loaded at runtime
+  (`DexClassLoader`) - was discussed and rejected: it would reverse this project's own deliberate
+  no-`INTERNET`-permission design (language packs are inert data a human places, never executed code),
+  directly conflict with the in-progress F-Droid submission's reproducible-build premise (MR #44142), and
+  turn the worst case for a bad language-pack file from "parser fails" into "arbitrary code execution inside
+  an IME." Chosen instead: `LanguageRules` as a **compile-time** plugin registry
+  (`Map<Language, LanguageRules>`, new `language/LanguageRules.kt` + `language/GermanRules.kt`), generalising
+  `LayoutRegistry`'s existing per-language pattern - German resolves to the real `GermanRules`, every other
+  language to `NoOpLanguageRules`. Rewired `TokenRepair`, `DictionarySuggestionProvider`,
+  `seedBundledBlacklist`, the Uhr-suggestion (**the one user-visible fix**: no longer offered while a
+  non-German language is active), and `PunctuationSpaceGlue`'s decimal-comma-glue exception - all via a
+  `languageRules`/`includeComma` parameter defaulting to the historical German behaviour, so every existing
+  caller/test is unchanged except the few production call sites in `AdaptKeyService` that now resolve per the
+  actually active language. Deliberately left ungated, with reasoning (see history §288): `Umlaut` folding
+  (near-zero real leak risk, deeply embedded in the most sensitive class), `Abbreviations`/`SentenceBoundary`
+  (sits inside the Auto-Caps live-arming mechanism this project has repeatedly flagged as fragile - D-405/
+  D-406/D-407), `KeyboardLayout.DEFAULT_LETTER_HINTS` (a harmless last-resort fallback, not a correctness
+  bug). 21 new tests in `LanguageRulesTest` plus demonstration tests in `TokenRepairTest`/
+  `DictionarySuggestionProviderTest`/`PunctuationSpaceGlueTest` proving the actual fix (the same fixture data
+  is protected under `GermanRules` but not under `NoOpLanguageRules`). 1047 unit tests total (was 1020).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 346 -> 347, `versionName` `"1.0.42"` ->
+  `"1.0.43"`. Not yet device-confirmed - the one observable behaviour is "Uhr" no longer appearing while
+  English/French/Greek is active. See history §288.
+
 - **§286 (v1.0.42): D-409 - D-352's word-splitting slider reordered, "Off" leftmost**, matching C-22's own
   slider convention. Display-order-only change (`arrays.xml`); persisted values and `AutoSplitMode.fromKey()`
   resolution unaffected. **Device-confirmed.** See history §286/§287.

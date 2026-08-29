@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.language.NoOpLanguageRules
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -346,6 +347,19 @@ class DictionarySuggestionProviderTest {
         store.putWord(WordEntry("beurteilt", 306L))
         
         assertNull(provider.autocorrectFor("beurteilst", null))
+    }
+    
+    @Test
+    fun `D-410 the verb-inflection protection above is German-specific - a non-German provider does not apply it`() {
+        // Same data/token as the D-115/D-125 test above, but built with the no-op language rules a
+        // non-German store now resolves to (LanguageRulesRegistry) - the protection must not fire, so the
+        // token is free to autocorrect to the closer, more frequent known word exactly as any other
+        // unrecognised token would.
+        val noOpProvider = DictionarySuggestionProvider(store, languageRules = NoOpLanguageRules)
+        store.putWord(WordEntry("beurteilen", 139L))
+        store.putWord(WordEntry("beurteilt", 306L))
+        
+        assertEquals("beurteilt", noOpProvider.autocorrectFor("beurteilst", null))
     }
     
     @Test

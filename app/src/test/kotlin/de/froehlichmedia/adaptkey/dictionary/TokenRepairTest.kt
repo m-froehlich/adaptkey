@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.language.GermanRules
+import de.froehlichmedia.adaptkey.language.NoOpLanguageRules
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -36,7 +38,7 @@ class TokenRepairTest {
         val result = repair.trySplit("undxdas", setOf(3))
         assertEquals(SplitResult("und", "das"), result)
     }
-
+    
     @Test
     fun `an over-space letter splits even without a T-05 ambiguity flag`() {
         // 'x' physically sits over the space bar, so it is a drop candidate even without a T-05 flag.
@@ -240,6 +242,17 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-410 the inseparable-prefix veto above is German-specific - a non-German store does not apply it`() {
+        // Same shape as the un- test above, but with the no-op language rules a non-German store now
+        // resolves to (LanguageRulesRegistry) - the veto must not fire, so the split succeeds once "un"
+        // is itself a known (non-noun) word clearing the ordinary frequency floor.
+        val noOpRepair = TokenRepair(store, NoOpLanguageRules)
+        store.putWord(WordEntry("un", frequency = 100L))
+        store.putWord(WordEntry("glücklich", frequency = 150L))
+        assertEquals(SplitResult("un", "glücklich"), noOpRepair.trySplit("unglücklich", emptySet()))
+    }
+    
+    @Test
     fun `D-249 the inseparable prefix wider- is rejected even though it is itself a rare dictionary word`() {
         // "widersagen" -> "wider"+"sagen": both halves are real, individually well above the frequency
         // floor (mirroring the real dict_de.tsv values - "wider" 598, "sagen" 775) and neither is a noun, so
@@ -261,11 +274,11 @@ class TokenRepairTest {
     
     @Test
     fun `D-249 a prefix-shaped left half is blocked right at the frequency ceiling and freed just above it`() {
-        store.putWord(WordEntry("wider", frequency = TokenRepair.PREFIX_COMMON_WORD_FREQUENCY_CEILING))
+        store.putWord(WordEntry("wider", frequency = GermanRules.PREFIX_COMMON_WORD_FREQUENCY_CEILING))
         store.putWord(WordEntry("sagen", frequency = 775L))
         assertNull(repair.trySplit("widersagen", emptySet()))
         
-        store.putWord(WordEntry("wider", frequency = TokenRepair.PREFIX_COMMON_WORD_FREQUENCY_CEILING + 1))
+        store.putWord(WordEntry("wider", frequency = GermanRules.PREFIX_COMMON_WORD_FREQUENCY_CEILING + 1))
         assertEquals(SplitResult("wider", "sagen"), repair.trySplit("widersagen", emptySet()))
     }
     

@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.language.GermanRules
+import de.froehlichmedia.adaptkey.language.LanguageRules
 import de.froehlichmedia.adaptkey.suggestion.Correction
 import de.froehlichmedia.adaptkey.suggestion.EditDistance
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
@@ -25,11 +27,18 @@ import kotlin.math.pow
  *           this replaces D-114/D-227's frequency floor and D-244's flat ratio bar with. Defaults to
  *           [AutocorrectAggressiveness.DEFAULT]; production call sites pass the user's own configured
  *           level (see [de.froehlichmedia.adaptkey.AdaptKeyService])
+ * @property languageRules D-410: the active language's own compound-split/verb-inflection/adjective-
+ *           inflection protections (see [LanguageRules]) - delegated rather than hardcoded so a non-German
+ *           store is never subject to German-specific morphology. Defaults to [GermanRules] so every
+ *           existing caller that does not pass one explicitly keeps this class's historical behaviour
+ *           unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
+ *           resolves and passes the value matching the actually active language.
  */
 class DictionarySuggestionProvider(
     private val store: DictionaryStore,
     private val maxCandidates: Int = 12,
-    private val aggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT
+    private val aggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
+    private val languageRules: LanguageRules = GermanRules
 ) : SuggestionProvider {
     
     override fun suggestionsFor(
@@ -166,7 +175,7 @@ class DictionarySuggestionProvider(
         if (isKnownWord(token)) {
             return null
         }
-        val result = CompoundSplit.split(
+        val result = languageRules.splitCompound(
             token,
             isKnownNoun = { candidate -> isKnownWord(candidate) && store.partsOfSpeech(candidate).contains(PartOfSpeech.NOUN) },
             resolveRest = { rest -> if (isKnownWord(rest)) rest else highConfidenceCorrection(rest, previousWord) }
@@ -546,13 +555,13 @@ class DictionarySuggestionProvider(
             if (!(best.cost <= ADJACENT_SUB_COST && shouldOverrideKnownWord(token, best.candidate))) {
                 return null
             }
-        } else if (RegularVerbInflection.isPlausibleInflection(token, ::isKnownWord)) {
+        } else if (languageRules.isPlausibleVerbInflection(token, ::isKnownWord)) {
             // D-115 / D-125: an unknown but regular ("weak") verb inflection of a known infinitive
             // ("beurteilst" of "beurteilen") is protected outright, with no ratio-override - unlike a
             // literal known word, it has no recorded frequency of its own to compare against a candidate's,
             // so §44's ratio check would always trivially fire (0 * ratio <= anything) if applied here.
             return null
-        } else if (AdjectiveInflection.isPlausibleComparative(token, ::isPlausiblePositiveStem)) {
+        } else if (languageRules.isPlausibleAdjectiveComparative(token, ::isPlausiblePositiveStem)) {
             // D-252: the adjective counterpart of the verb-inflection protection above, same reasoning -
             // "zuversichtlicher" (unknown, no dictionary entry of its own) must not lose to some other,
             // cost-1-adjacent, more-frequent candidate the way "beurteilst" would without the verb check.

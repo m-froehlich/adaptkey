@@ -102,6 +102,7 @@ import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
 import de.froehlichmedia.adaptkey.language.LanguageCycle
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
+import de.froehlichmedia.adaptkey.language.LanguageRulesRegistry
 import de.froehlichmedia.adaptkey.language.SuggestedLanguages
 import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
 import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
@@ -790,7 +791,9 @@ class AdaptKeyService : InputMethodService() {
     private fun installStores(newStores: Map<Language, DictionaryStore>) {
         stores = newStores
         autocorrectAggressiveness = settings.autocorrectAggressiveness
-        providers = newStores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness) }
+        providers = newStores.mapValues { (language, store) ->
+            DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness, LanguageRulesRegistry.rulesFor(language))
+        }
         engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
         if (activeLanguage !in newStores) {
             activeLanguage = Language.ENGLISH
@@ -801,7 +804,7 @@ class AdaptKeyService : InputMethodService() {
         dictionaryStore = english
         provider = providers.getValue(Language.ENGLISH)
         capitalisation = engines.getValue(Language.ENGLISH)
-        tokenRepair = TokenRepair(english)
+        tokenRepair = TokenRepair(english, LanguageRulesRegistry.rulesFor(Language.ENGLISH))
         newStores[Language.GERMAN]?.let { seedBundledBlacklist(it) }
     }
     
@@ -822,15 +825,17 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-176: seeds the small, reviewed set of app-bundled German blacklist entries - see
      * [BlacklistCategory.BUNDLED]'s own KDoc and [knownInOtherLanguage]'s for the full reasoning behind
-     * each word. Called from every [installStores] - both the initial synchronous in-memory stores and the
-     * real SQLite stores once [loadDictionariesAsync] finishes - so a fresh install, an already-populated
-     * existing install, and even the transient in-memory placeholder all end up with these entries, with no
-     * `DATABASE_VERSION` bump (and the destructive full reimport that would entail) needed. `blacklist()`
-     * is a plain upsert (`INSERT OR REPLACE`), so calling this on every install is cheap and idempotent -
-     * never wipes or duplicates anything.
+     * each word; the word list itself lives in [de.froehlichmedia.adaptkey.language.GermanRules]
+     * (D-410) alongside every other German-specific rule. Called from every [installStores] - both the
+     * initial synchronous in-memory stores and the real SQLite stores once [loadDictionariesAsync]
+     * finishes - so a fresh install, an already-populated existing install, and even the transient
+     * in-memory placeholder all end up with these entries, with no `DATABASE_VERSION` bump (and the
+     * destructive full reimport that would entail) needed. `blacklist()` is a plain upsert (`INSERT OR
+     * REPLACE`), so calling this on every install is cheap and idempotent - never wipes or duplicates
+     * anything.
      */
     private fun seedBundledBlacklist(german: DictionaryStore) {
-        for (word in BUNDLED_GERMAN_BLACKLIST) {
+        for (word in LanguageRulesRegistry.rulesFor(Language.GERMAN).bundledConfusablesBlacklist()) {
             german.blacklist(word, BlacklistCategory.BUNDLED)
         }
     }
@@ -1070,7 +1075,9 @@ class AdaptKeyService : InputMethodService() {
             autocorrectAggressiveness = s.autocorrectAggressiveness
             controller = SuggestionController(config)
             if (this::stores.isInitialized) {
-                providers = stores.mapValues { (_, store) -> DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness) }
+                providers = stores.mapValues { (language, store) ->
+                    DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness, LanguageRulesRegistry.rulesFor(language))
+                }
                 // Re-point the active provider onto English (always present); selectActiveDictionary
                 // corrects the language per token immediately afterwards, same reasoning as installStores.
                 provider = providers.getValue(Language.ENGLISH)
@@ -3363,7 +3370,10 @@ class AdaptKeyService : InputMethodService() {
             // the space, when the punctuation itself followed a digit - a decimal number ("3.14"/"3,14"),
             // not a new sentence. Read fresh from the document rather than cached state, same as continuesRun.
             val gluesDigit = pendingPunctuationSpace && composing.isEmpty() && raw.isDigit() &&
-                PunctuationSpaceGlue.gluesDigit(ic.getTextBeforeCursor(3, 0)?.toString() ?: "")
+                PunctuationSpaceGlue.gluesDigit(
+                    ic.getTextBeforeCursor(3, 0)?.toString() ?: "",
+                    LanguageRulesRegistry.rulesFor(activeLanguage).decimalCommaGluesDigits()
+                )
             if ((continuesRun || gluesDigit) && ic.getTextBeforeCursor(1, 0) == " ") {
                 ic.deleteSurroundingText(1, 0)
             }
@@ -4978,27 +4988,33 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-137: a typed time (`14:30`) is essentially always followed by "Uhr" in German, regardless of what
-     * (if anything) the bigram table happens to know about that exact, effectively unique digit token -
-     * offered with a deliberately maximal score, same reasoning as D-122's split suggestion, so it always
-     * sorts first among whatever [showNextWordPredictions] otherwise finds.
-     * 
-     * @return the "Uhr" suggestion, or null when the text just committed does not end in a time
+     * D-137 / D-410: a typed time (`14:30`) is essentially always followed by a fixed word in a language
+     * that has one ("Uhr" in German - see [de.froehlichmedia.adaptkey.language.LanguageRules.
+     * timeSuggestionWord]) - offered with a deliberately maximal score, same reasoning as D-122's split
+     * suggestion, so it always sorts first among whatever [showNextWordPredictions] otherwise finds. Null
+     * for a language with no such convention (D-410 fix: previously offered unconditionally regardless of
+     * [activeLanguage]).
+     *
+     * @return the time-suggestion word, or null when the text just committed does not end in a time or the
+     *         active language has no such convention
      */
     private fun timeSuggestion(): Suggestion? {
+        val word = LanguageRulesRegistry.rulesFor(activeLanguage).timeSuggestionWord() ?: return null
         val before = currentInputConnection?.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return null
-        return if (TimePattern.endsWithTime(before)) Suggestion(UHR, MAX_PRIORITY_SUGGESTION_SCORE) else null
+        return if (TimePattern.endsWithTime(before)) Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) else null
     }
     
     /**
-     * D-137: the empty-composing branch's own equivalent of [timeSuggestion] - called right after a
+     * D-137 / D-410: the empty-composing branch's own equivalent of [timeSuggestion] - called right after a
      * standalone digit/punctuation commit (see [finalizeAndCommit]'s own call site for why that path, not
-     * [showNextWordPredictions], is what actually needs this for a typed time).
-     * 
+     * [showNextWordPredictions], is what actually needs this for a typed time). Null for a language with
+     * no time-suggestion word, same as [timeSuggestion].
+     *
      * @param ic the current input connection
-     * @return true when a time was found and the suggestion bar now shows the "Uhr" prediction
+     * @return true when a time was found and the suggestion bar now shows the time-suggestion prediction
      */
     private fun showTimeSuggestion(ic: InputConnection): Boolean {
+        val word = LanguageRulesRegistry.rulesFor(activeLanguage).timeSuggestionWord() ?: return false
         val before = ic.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return false
         if (!TimePattern.endsWithTime(before)) {
             return false
@@ -5007,7 +5023,7 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         controller.clear()
-        controller.update("", listOf(Suggestion(UHR, MAX_PRIORITY_SUGGESTION_SCORE)), null)
+        controller.update("", listOf(Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE)), null)
         showSuggestions()
         return true
     }
@@ -5653,7 +5669,7 @@ class AdaptKeyService : InputMethodService() {
         provider = providers.getValue(choice.language)
         capitalisation = engines.getValue(choice.language)
         dictionaryStore = stores.getValue(choice.language)
-        tokenRepair = TokenRepair(dictionaryStore)
+        tokenRepair = TokenRepair(dictionaryStore, LanguageRulesRegistry.rulesFor(choice.language))
         return choice
     }
     
@@ -6036,35 +6052,6 @@ class AdaptKeyService : InputMethodService() {
         // document text (SentenceBoundary), so a comma never arms an auto-capital purely by being in this set.
         private const val SENTENCE_PUNCTUATION = ".!?,"
         
-        // D-176/D-181: seeded once per installStores() call into the German store - see
-        // knownInOtherLanguage()'s own KDoc and installStores()'s seedBundledBlacklist() for the full
-        // reasoning. "aks" (D-172): a genuine bundled English dictionary entry ("AKS", a Wikipedia-derived
-        // acronym, freq 18, PROPER_NOUN) was tripping knownInOtherLanguage()'s cross-language shield and
-        // blocking "Aks" -> "als" - the identical failure mode as "due"/"sue", fixed the identical way.
-        //
-        // D-206: pre-1996-spelling-reform relics of otherwise ordinary, high-frequency common words - a
-        // curated subset of dict_de.tsv's own ß-containing entries, hand-picked (not a blanket rule) by
-        // checking each candidate against the real corpus frequencies: kept only where the modern ss-form
-        // is the dominant, living spelling in the very same corpus (e.g. "daß" 868 vs. "dass" 61892) -
-        // never a genuinely modern long-vowel ß word that merely has a rarer Swiss-spelling ss-counterpart
-        // present too (e.g. "große"/"grosse", "außerdem"/"ausserdem" - those stay untouched, ß is correct
-        // and current there). Deliberately excludes proper nouns/surnames/place names sharing the same
-        // ß-vs-ss shape (e.g. "Keßler", "Reuß", "Elsaß") - a person's or place's own spelling is not an
-        // error to silently correct - and excludes two outright coincidental collisions between different
-        // words that the naive ß->ss substitution alone cannot tell apart ("Maße" != "Masse", "Buße" !=
-        // "Busse"). Blacklisting (not purging from the dictionary) keeps each word typeable/known - so
-        // quoting genuinely old text still works - while it can never surface as its own suggestion again;
-        // the existing ß->"ss" fold (Umlaut.fold, unrelated to D-204's own newer host-key fold) already
-        // makes each of these a cost-0 match for its modern form, so autocorrect can still silently fix a
-        // live typing of one of these to the modern spelling via the existing §44 known-word override.
-        private val BUNDLED_GERMAN_BLACKLIST = setOf(
-            "due", "sue", "ddr", "aks",
-            "daß", "muß", "mußt", "mußte", "müßte", "wußte", "läßt", "laß", "laßt",
-            "einfluß", "anschluß", "schluß", "fluß", "prozeß", "kongreß", "rußland",
-            "bewußt", "bewußtsein", "bewußtseins", "unbewußten",
-            "haß", "gewiß", "kuß", "bißchen", "häßlich"
-        )
-        
         // D-130: consecutive commits routed to English (while German/Greek stays active) before
         // trackSustainedEnglishUsage() promotes it to a real active-language switch.
         private const val SUSTAINED_ENGLISH_WORD_THRESHOLD = 5
@@ -6084,16 +6071,14 @@ class AdaptKeyService : InputMethodService() {
         
         // D-122 / D-137: comfortably above any real dictionary frequency (the largest bundled entries sit
         // around 1e6) so a synthesised, always-right
-        // suggestion (the mid-word connector-split candidate; the "Uhr" time suggestion) always sorts
-        // first, without using an extreme value (Double.MAX_VALUE) that could risk odd behaviour in any
-        // future score arithmetic.
+        // suggestion (the mid-word connector-split candidate; the language's own time suggestion word) always
+        // sorts first, without using an extreme value (Double.MAX_VALUE) that could risk odd behaviour in
+        // any future score arithmetic.
         private const val MAX_PRIORITY_SUGGESTION_SCORE = 1_000_000_000.0
         
         // D-137: how far back to look for a trailing typed time - long enough for "14:30" plus a
         // reasonable amount of trailing punctuation/whitespace, short enough to stay a cheap read.
         private const val TIME_LOOKBACK = 16
-        
-        private const val UHR = "Uhr"
         
         // D-142: how far back to read for a login field's own value - generous enough for a realistic
         // email address or username, short enough to stay a cheap read.

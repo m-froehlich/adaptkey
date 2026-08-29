@@ -412,7 +412,9 @@ defeating S-07's own purpose for the most common words in the language.
 
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
-completion, independent of the ordinary dictionary/n-gram ranking.
+completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language
+(D-410: previously offered regardless of active language, a genuine cross-language leak, not a deliberate
+design choice).
 
 ### S-09 - Early Typo Recovery via Neighbour-Prefix Escalation (D-328)
 A single keyboard-neighbour typo early in a long word ("vetmut…" for "vermut…") is invisible to both the
@@ -546,6 +548,11 @@ blacklisted word is never counted toward W-02's promotion threshold and never fo
 simply retyping it enough times cannot silently promote it straight back into the learned dictionary.
 
 ### A-05 - Retroactive Word Split on Missed Space
+D-410: the inseparable-verb-prefix veto, the feminine-`-in` exception, and the regular-verb/adjective-
+inflection protections described below are all specifically German grammar - they apply only while German is
+the active language (`LanguageRules`, resolved per active language; every other language gets a no-op that
+never vetoes a split on these grounds). Before D-410 these ran unconditionally regardless of active language.
+
 When the current token is not a valid word and is not a plausible regular-verb inflection or adjective
 comparative/superlative (see A-01), and it can be split into two dictionary words at (or near) the position
 of a space-ambiguous tap (T-05) or a fully missed

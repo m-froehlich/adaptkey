@@ -14368,3 +14368,130 @@ Not yet device-confirmed.
 
 User confirmed the C-22 slider merge, the descender/spacing fix, and the word-splitting slider (including
 its reordered "Off" position) all work on device.
+
+## §288 - D-410 Implemented: A `LanguageRules` Seam Separates German-Specific Grammar From Core Logic (v1.0.43)
+
+### The question and the design discussion
+User's own observation, prompted by a status check-in: "not a few" behaviours in this codebase are actually
+German-specific rather than genuinely language-agnostic, and asked how to package that cleanly - physically
+move the code into each language pack (like the dictionary/bigram/hints data), or treat it like the keyboard
+layout (compiled into the base app, activated per language)?
+
+A dedicated research pass (Explore agent, not guessed) inventoried every genuinely German-specific piece of
+**code** (not already-externalized data - the dictionary/bigram/hints/layout precedent from D-280/D-281/D-314
+was explicitly out of scope, since that question was already settled). Findings, categorised:
+- **(a) hardcoded Kotlin data lists** that could plausibly move to a data file: `Abbreviations.GERMAN`,
+  `TokenRepair`'s `INSEPARABLE_PREFIXES`/`FEMININE_AGENT_NOUN_STEMS`, `AdaptKeyService`'s `UHR` constant and
+  `BUNDLED_GERMAN_BLACKLIST`, `KeyboardLayout.DEFAULT_LETTER_HINTS`.
+- **(b) genuine German grammar/orthography algorithms**, not reducible to a lookup table: `Umlaut`'s
+  combinatorial ä/ö/ü/ß fold/unfold search, `CompoundSplit`'s Fugenelemente combinatorics (D-116),
+  `RegularVerbInflection`/`AdjectiveInflection`'s ending-stripping morphology (D-115/D-125/D-252),
+  `TokenRepair`'s prefix-frequency-ceiling exemption and feminine-`-in` gating logic.
+- **(c) generic code that only fires meaningfully for German today**: `CapitalisationEngine` - no
+  `Language` branch anywhere, the noun-capitalisation behaviour falls out purely from which dictionary's own
+  POS tags happen to look that way.
+
+The real finding that made this more than a tidiness question: almost none of category (b) was gated by
+active language at all - `TokenRepair`, `CompoundSplit`, `RegularVerbInflection`, `AdjectiveInflection` ran
+identically regardless of whether German, English, French, or Greek was active (only the two explicit
+`diacriticRestoration` call sites were correctly gated). A live English/French/Greek session was silently
+subject to German morphology rules - low real-world severity (most of these rarely produce a false match
+against a foreign-language dictionary) but not correct by design, and one clearly-observable exception:
+S-08's "Uhr" time suggestion had **no gate at all** and would fire for any active language.
+
+**The plugin-loading question, considered and rejected.** The user's own follow-up asked specifically whether
+the concrete `LanguageRules` implementation could live *inside* the downloadable language-pack ZIP and be
+loaded at runtime (Android's `DexClassLoader`/`PathClassLoader` make this technically possible) rather than
+compiled into the base APK. Rejected for reasons specific to this project, not a generic "dynamic loading is
+scary" reflex:
+1. **Conflicts with the project's own no-`INTERNET`-permission design.** Language packs are deliberately
+   downloaded via the system browser, not by the app itself, specifically so the app needs no network
+   permission at all (see Progress.md's F-Droid section) - the whole pipeline is built around "the app only
+   ever reads an inert data file a human placed there." A plugin containing executable code reverses that
+   premise outright.
+2. **Conflicts directly with the in-progress F-Droid submission** (MR #44142, mid-review at the time of this
+   discussion). F-Droid's core premise is that *its own* build server compiles and signs the app from source;
+   an app that loads and executes code from outside that build - even correctly-built code the app itself
+   never touched - undermines that premise regardless of intent, and is exactly the kind of thing a
+   first-time-inclusion reviewer flags hard or rejects outright.
+3. **A different security-model category, not a bigger version of the existing one.** Today's worst case for
+   a corrupt language-pack file is "the parser fails, the dictionary doesn't load." With loadable code, the
+   worst case becomes "arbitrary code execution inside an IME that observes every keystroke" - not a
+   proportionate cost for what this would buy.
+4. **No real payoff yet.** Only German has any of this logic today; there is no second contributor this
+   would currently help.
+
+Chosen instead: `LanguageRules` as a **compile-time** plugin registry - `Map<Language, LanguageRules>`,
+resolved at build time, exactly generalising `LayoutRegistry`'s existing `Map<Language, LayoutKind>` pattern
+(confirmed as the only existing per-language pluggability precedent in the codebase; there is no
+`LanguageRules`-shaped interface anywhere prior to this). A future language's own grammar rules become a
+normal source-tree PR (a new `FooRules.kt` + one registry line), the same contribution shape the
+Language-Contribution-Guide already establishes for layouts/dictionaries - not a downloaded artifact.
+
+A middle ground was also discussed and deliberately deferred, not implemented: only the **parameter
+lists** (endings, prefixes, Fugenelemente, abbreviations) could later move into per-language data files
+(mirroring `hints_<code>.tsv`, D-281) while the algorithm shape stays in Kotlin - genuine "data in the
+package, code in the core," matching the layout analogy for the (a)-shaped parts only. Left for a future
+round if/when a second language with similar morphology actually needs it; premature today.
+
+### Scope of this round - what moved, what was deliberately left out
+New `language/LanguageRules.kt`: the `LanguageRules` interface (`blocksAsSplitPrefix`,
+`blocksAsFeminineAgentException`, `isPlausibleVerbInflection`, `isPlausibleAdjectiveComparative`,
+`splitCompound`, `timeSuggestionWord`, `bundledConfusablesBlacklist`, `decimalCommaGluesDigits`),
+`NoOpLanguageRules` (every check returns "does not apply"), and `LanguageRulesRegistry.rulesFor(language)`
+(German -> `GermanRules`, everything else -> `NoOpLanguageRules`) - the same `Map<Language, X>` shape as
+`LayoutRegistry.kindFor`. New `language/GermanRules.kt` consolidates every moved constant/behaviour, with
+its existing KDoc/history commentary carried over unchanged.
+
+Rewired consumers, each gaining a `languageRules: LanguageRules = GermanRules` (or equivalent) constructor
+parameter/call - the default preserves every existing caller's and test's historical behaviour unchanged;
+only `AdaptKeyService`'s own three provider-construction sites (`installStores()`, `applySettings()`'s
+aggressiveness-change rebuild) and two `TokenRepair` construction sites (`installStores()`,
+`selectActiveDictionary()`) now resolve and pass the value matching the actually active language:
+- `TokenRepair` - the inseparable-prefix veto and feminine-`-in` exception (D-249/D-261).
+- `DictionarySuggestionProvider` - the compound-split suggestion (D-116) and the verb/adjective-inflection
+  protections (D-115/D-125/D-252) in `bestCorrection()`.
+- `AdaptKeyService.seedBundledBlacklist()` - now reads `LanguageRulesRegistry.rulesFor(GERMAN)
+  .bundledConfusablesBlacklist()` instead of a local constant.
+- `timeSuggestion()`/`showTimeSuggestion()` - now null (no suggestion) for a language with no
+  `timeSuggestionWord()`. **This is the one user-visible correctness fix in this round** - previously "Uhr"
+  was suggested after any typed time regardless of active language.
+- `PunctuationSpaceGlue.gluesDigit()` gained an `includeComma: Boolean = true` parameter (default preserves
+  existing behaviour/tests) - `AdaptKeyService`'s own call site now passes
+  `LanguageRulesRegistry.rulesFor(activeLanguage).decimalCommaGluesDigits()`. The period-glue case is
+  untouched (a genuinely universal decimal convention); only the comma-as-decimal-separator case is
+  German-specific.
+
+**Deliberately excluded from this round, with reasoning** (not silently narrowed - flagged explicitly):
+- **`Umlaut` fold/unfold** (used unconditionally, 9+ call sites deep inside `DictionarySuggestionProvider`'s
+  core fuzzy-matching pipeline) was left ungated. It only ever touches `ä`/`ö`/`ü`/`ß`, which structurally do
+  not occur in the English/French/Greek dictionaries' own entries - gating it would touch the single most
+  heavily-tested, most behaviour-sensitive class in the app for a near-zero realistic correctness gain.
+- **`Abbreviations`/`SentenceBoundary`** (the `usw.`/`z.B.`-shaped non-terminal-period recognition) was left
+  ungated. `SentenceBoundary` sits directly inside the Auto-Caps live-arming mechanism this project has
+  explicitly flagged as fragile and expensive to get right (three device-log tracing rounds historically,
+  most recently D-405/D-406/D-407/§1's own guiding-principle note) - threading a language parameter through
+  it is exactly the kind of invasive touch that deserves its own dedicated, careful round, not a bundled
+  architecture-cleanup pass. The realistic leak (an English/French/Greek user typing a German abbreviation
+  string) is also low-probability.
+- **`KeyboardLayout.DEFAULT_LETTER_HINTS`** was left in place. It is purely the last-resort fallback used
+  only when no language-pack `hints_<code>.tsv` exists at all (already correctly overridden per-language via
+  D-281's real mechanism when one does) - not a correctness bug, just a data constant sitting in a
+  UI-glue file. Moving it would touch 8 files of untested Android-glue code for zero behavioural change.
+
+### Test coverage
+New `language/LanguageRulesTest.kt` (21 tests): `LanguageRulesRegistry` resolution for German vs. every
+other bundled language, every `NoOpLanguageRules` method's inert default, and `GermanRules`'s own behaviour
+for each interface method (including the frequency-ceiling boundary and the feminine-agent-stem cases).
+Added one demonstration test each to `TokenRepairTest`/`DictionarySuggestionProviderTest` proving the actual
+correctness fix: the same fixture data that is correctly protected/blocked under the default `GermanRules`
+is *not* protected/blocked when the same class is built with `NoOpLanguageRules` - i.e. confirming a
+non-German store no longer silently inherits German grammar. Three new cases in
+`PunctuationSpaceGlueTest` for the new `includeComma` parameter.
+
+Android `InputMethodService` glue (the `AdaptKeyService` call-site rewiring itself, the "Uhr" gating) is
+untested per this project's established convention.
+
+1047 unit tests total (was 1020). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 346 ->
+347, `versionName` `"1.0.42"` -> `"1.0.43"`. Not yet device-confirmed - the one behaviour actually visible on
+device is the "Uhr" suggestion no longer appearing while English/French/Greek is active.

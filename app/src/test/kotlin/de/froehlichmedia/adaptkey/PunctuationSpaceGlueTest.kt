@@ -58,4 +58,19 @@ class PunctuationSpaceGlueTest {
     fun `empty text never glues`() {
         assertFalse(PunctuationSpaceGlue.gluesDigit(""))
     }
+    
+    @Test
+    fun `D-410 a comma still glues by default, matching this app's historical German-only behaviour`() {
+        assertTrue(PunctuationSpaceGlue.gluesDigit("3, "))
+    }
+    
+    @Test
+    fun `D-410 a comma does not glue when includeComma is false`() {
+        assertFalse(PunctuationSpaceGlue.gluesDigit("3, ", includeComma = false))
+    }
+    
+    @Test
+    fun `D-410 a period still glues when includeComma is false`() {
+        assertTrue(PunctuationSpaceGlue.gluesDigit("3. ", includeComma = false))
+    }
 }

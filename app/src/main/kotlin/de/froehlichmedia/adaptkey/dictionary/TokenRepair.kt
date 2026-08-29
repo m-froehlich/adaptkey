@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.language.GermanRules
+import de.froehlichmedia.adaptkey.language.LanguageRules
 import de.froehlichmedia.adaptkey.suggestion.Umlaut
 
 /**
@@ -72,9 +74,17 @@ data class SplitResult(
  * [score] exactly as before, so a candidate *with* co-occurrence evidence still wins over one without, but
  * a plausible novel pairing is no longer rejected outright for lacking prior evidence.
  *
+ * D-410: every genuinely language-specific grammar/orthography rule this class applies (the inseparable-
+ * prefix and feminine-agent-suffix split vetoes, the verb/adjective inflection protections) is delegated to
+ * [languageRules] rather than hardcoded here - see [LanguageRules] for the full rationale. Defaults to
+ * [GermanRules] so every existing caller that does not pass one explicitly keeps this class's historical
+ * behaviour unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
+ * resolves and passes the value matching the actually active language.
+ *
  * @property store the backing dictionary store
+ * @property languageRules the active language's own split/inflection rules (see class KDoc above)
  */
-class TokenRepair(private val store: DictionaryStore) {
+class TokenRepair(private val store: DictionaryStore, private val languageRules: LanguageRules = GermanRules) {
     
     /**
      * Attempts to split [token] into two words (A-05).
@@ -211,8 +221,8 @@ class TokenRepair(private val store: DictionaryStore) {
      */
     private fun isAlreadyRecognised(t: String): Boolean {
         return store.isKnownWord(t) ||
-            RegularVerbInflection.isPlausibleInflection(t, store::isKnownWord) ||
-            AdjectiveInflection.isPlausibleComparative(t) { stem -> resolveWord(stem)?.let { !isNoun(it) } == true }
+            languageRules.isPlausibleVerbInflection(t, store::isKnownWord) ||
+            languageRules.isPlausibleAdjectiveComparative(t) { stem -> resolveWord(stem)?.let { !isNoun(it) } == true }
     }
     
     /**
@@ -229,13 +239,13 @@ class TokenRepair(private val store: DictionaryStore) {
      * - which maps back onto the exact characters of the currently displayed composing text - stays correct;
      * only the *resolved* forms are used for the frequency/noun/score lookups below.
      *
-     * D-249: rejects [left] outright when it is one of [INSEPARABLE_PREFIXES] and not also, itself, a
-     * genuinely common standalone word ([PREFIX_COMMON_WORD_FREQUENCY_CEILING]) - see that constant's own
-     * KDoc for why "er" is deliberately exempted from this rule while "ver"/"ge"/"wider" are not. Checked
-     * before [resolveWord] so it applies regardless of whether [left] happens to independently resolve to a
-     * dictionary entry (several of the protected prefixes, e.g. "ent"/"emp"/"be", are not themselves
-     * dictionary words at all - this still guards against a future dictionary addition making one of them
-     * resolvable).
+     * D-249 / D-410: [languageRules] rejects [left] outright when it is a known inseparable prefix and not
+     * also, itself, a genuinely common standalone word - see
+     * [de.froehlichmedia.adaptkey.language.GermanRules]'s own KDoc for why "er" is deliberately exempted
+     * from this rule while "ver"/"ge"/"wider" are not. Checked before [resolveWord] so it applies regardless
+     * of whether [left] happens to independently resolve to a dictionary entry (several of the protected
+     * prefixes, e.g. "ent"/"emp"/"be", are not themselves dictionary words at all - this still guards
+     * against a future dictionary addition making one of them resolvable).
      *
      * @param left the left half exactly as typed (lower-cased)
      * @param right the right half exactly as typed (lower-cased)
@@ -246,7 +256,7 @@ class TokenRepair(private val store: DictionaryStore) {
         if (left.length < MIN_PART || right.length < MIN_PART) {
             return null
         }
-        if (left in INSEPARABLE_PREFIXES && store.frequencyOf(left) <= PREFIX_COMMON_WORD_FREQUENCY_CEILING) {
+        if (languageRules.blocksAsSplitPrefix(left, store.frequencyOf(left))) {
             return null
         }
         val leftEntry = resolveWord(left) ?: return null
@@ -277,7 +287,7 @@ class TokenRepair(private val store: DictionaryStore) {
         // "spieler"+"in" (53) - genuine "Lehrer in Ausbildung"-style phrases - have real co-occurrence
         // despite being exactly the feminine-noun false-positive shape, while "auto"+"in"/"firma"+"in" (both
         // 0) - genuine, unrelated noun+preposition phrases - have none; no bigram threshold separates them.
-        if (right == FEMININE_AGENT_SUFFIX && isFeminineAgentNounStem(left, leftEntry)) {
+        if (languageRules.blocksAsFeminineAgentException(right, left, isNoun(leftEntry))) {
             return null
         }
         // D-268: leftEntry/rightEntry already resolved through Umlaut.unfoldCandidates() above - their own
@@ -340,26 +350,6 @@ class TokenRepair(private val store: DictionaryStore) {
     }
     
     /**
-     * D-261: whether [left] is a plausible German masculine agent/relation noun stem whose feminine
-     * counterpart is formed with a bare "+in" suffix - either the general, most productive pattern
-     * (a known noun ending in "-er": Lehrer -> Lehrerin, Spieler -> Spielerin, Fahrer -> Fahrerin), or one
-     * of a curated set of common non-"-er" nouns with the same formation ([FEMININE_AGENT_NOUN_STEMS]) -
-     * matched via [Umlaut.unfoldCandidates] since several take an umlaut vowel change in the feminine form
-     * (Arzt -> Ärztin, Koch -> Köchin, Graf -> Gräfin) that [resolveWord] already folds back to the bare
-     * stem for lookup, so [left] itself may already be the umlauted spelling. Not exhaustive - a
-     * calibrated, common-case list, not a full morphological rule (mirrors [INSEPARABLE_PREFIXES]).
-     */
-    private fun isFeminineAgentNounStem(left: String, leftEntry: WordEntry): Boolean {
-        if (!isNoun(leftEntry)) {
-            return false
-        }
-        if (left.endsWith(FEMININE_ER_SUFFIX)) {
-            return true
-        }
-        return Umlaut.unfoldCandidates(left).any { it in FEMININE_AGENT_NOUN_STEMS }
-    }
-    
-    /**
      * D-214: takes the already-resolved entries directly instead of re-fetching each half's frequency from
      * the store a second time (candidateAt's own callers - trySplit/splitAtUnresolvedConnector - already
      * paid for that lookup once via [resolveWord]). Only the bigram counts are genuinely new lookups here.
@@ -402,53 +392,8 @@ class TokenRepair(private val store: DictionaryStore) {
          */
         const val MIN_SPLIT_ACRONYM_FREQUENCY = 300L
         
-        /**
-         * D-249: the German inseparable verb prefixes and productive negation/intensifying prefixes that
-         * must never be accepted as the left half of a split - splitting either off is "so gut wie immer
-         * falsch" (user's own assessment), e.g. "unglücklich" -> "un glücklich", "widersagen" -> "wider
-         * sagen". Confirmed against the real dict_de.tsv, not guessed: several of these (e.g. "widersagen",
-         * "entkoppeln") are not themselves dictionary entries while both the bare prefix ("wider", freq 598)
-         * and the remaining stem ("sagen", freq 775) individually clear [MIN_SPLIT_HALF_FREQUENCY] and
-         * neither is tagged a noun, so [candidateAt]'s pre-existing gates alone do not catch this shape.
-         * Deliberately excludes the Wechselpräfixe (über-/um-/durch-/unter-/voll-/hinter-/wieder-) - each of
-         * those is also, itself, a common standalone German preposition/adverb/adjective (e.g. "wieder
-         * holen" vs. "wiederholen" is the textbook case), so blocking them here would reject far more
-         * genuine two-word missed-space splits than the compound-prefix false positives it would prevent -
-         * left out deliberately, not merely forgotten.
-         */
-        val INSEPARABLE_PREFIXES = setOf("ver", "zer", "ent", "emp", "be", "ge", "miss", "er", "un", "ur", "wider")
-        
-        /**
-         * D-249: a member of [INSEPARABLE_PREFIXES] is exempted from the prefix-block rule entirely once its
-         * own standalone dictionary frequency exceeds this ceiling - "er" (the personal pronoun, frequency
-         * 120,975 in dict_de.tsv, by two-plus orders of magnitude the most frequent entry among the set) is
-         * the one confirmed case: blocking it unconditionally would reject far more genuine two-word missed-
-         * space splits (e.g. "erkommt" -> "er kommt") than the rare compound-verb false positive it would
-         * catch. The other three dictionary hits in the set ("ver" 131, "ge" 250, "wider" 598) sit well below
-         * this ceiling and are blocked normally; the remaining seven prefixes are not dictionary entries at
-         * all (frequency 0 via [DictionaryStore.frequencyOf]) and are blocked unconditionally too. Calibrated
-         * against the real dictionary's own frequency gap, not an arbitrary round number.
-         */
-        const val PREFIX_COMMON_WORD_FREQUENCY_CEILING = 5_000L
-        
         /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
         val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm', 'x')
-        
-        /** D-261: the German feminine-agent-noun-forming suffix - see [isFeminineAgentNounStem]. */
-        private const val FEMININE_AGENT_SUFFIX = "in"
-        
-        /** D-261: the most productive German feminisation ending - see [isFeminineAgentNounStem]. */
-        private const val FEMININE_ER_SUFFIX = "er"
-        
-        /**
-         * D-261: common German masculine agent/relation nouns, in their bare (un-umlauted) stem spelling,
-         * whose feminine counterpart is formed with "+in" but which do not end in [FEMININE_ER_SUFFIX] - see
-         * [isFeminineAgentNounStem]. Calibrated, not exhaustive.
-         */
-        private val FEMININE_AGENT_NOUN_STEMS = setOf(
-            "arzt", "chef", "koch", "nachbar", "student", "freund", "patient",
-            "präsident", "polizist", "journalist", "könig", "graf", "gott"
-        )
         
         private const val BIGRAM_WEIGHT = 10.0
     }
