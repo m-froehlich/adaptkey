@@ -60,16 +60,21 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           `READ_CONTACTS` at the point of use (defence in depth against a permission revoked externally
  *           after this was turned on). Contacts are read fresh at suggestion time and never persisted -
  *           storing them locally would be redundant with the address book itself.
- * @property autocorrectEnabled D-234: whether a commit may ever silently replace what was typed - diacritic
- *           restoration, dictionary/raw-coordinate autocorrect, and the A-05/A-06 retroactive split/merge
- *           (default **on**). With this off, every one of those candidates is still computed and offered
- *           through the ordinary suggestion bar/S-06 chip (never suppressed - the corresponding checks live
- *           in `refreshSuggestions()`, independent of this flag) and the composing-token S-05 highlight
- *           still recognises a correct word live, but the token itself always commits exactly as typed;
- *           applying a correction becomes a deliberate tap instead of an automatic substitution. The A-05
- *           split and A-06 merge have no suggestion-bar alternative of their own yet outside a mid-word
- *           re-edit (D-122) - with this off, that specific class of typo (a missed/spurious space) commits
- *           uncorrected and unoffered, a known, disclosed gap rather than a silent one.
+ * @property autocorrectEnabled D-234/D-407: whether a commit may ever silently replace what was typed -
+ *           diacritic restoration, dictionary/raw-coordinate autocorrect, and the A-05/A-06 retroactive
+ *           split/merge (default **on**). D-407: no longer its own stored toggle - derived from
+ *           [autocorrectAggressiveness]'s own raw stored value being exactly C-22's "Off" position
+ *           ([de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness.OFF_KEY], merged into the same
+ *           slider so there is one setting to reason about, not two that could disagree); see
+ *           [de.froehlichmedia.adaptkey.settings.SettingsMapper.toAutocorrectEnabled] for the resolution.
+ *           With this off, every one of those candidates is still computed and offered through the ordinary
+ *           suggestion bar/S-06 chip (never suppressed - the corresponding checks live in
+ *           `refreshSuggestions()`, independent of this flag) and the composing-token S-05 highlight still
+ *           recognises a correct word live, but the token itself always commits exactly as typed; applying a
+ *           correction becomes a deliberate tap instead of an automatic substitution. The A-05 split and A-06
+ *           merge have no suggestion-bar alternative of their own yet outside a mid-word re-edit (D-122) -
+ *           with this off, that specific class of typo (a missed/spurious space) commits uncorrected and
+ *           unoffered, a known, disclosed gap rather than a silent one.
  * @property doubleTapBackspaceUndo D-348: whether A-07's post-commit undo requires a double-tap of
  *           Backspace instead of a single press (default **off**). When on, the first Backspace at the
  *           armed undo tail is a no-op (the key re-flashes as a visual hint); only a second Backspace
@@ -84,7 +89,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           known-word override, §44/D-244) may silently apply a correction versus merely offering it as a
  *           suggestion-bar candidate (default [AutocorrectAggressiveness.MEDIUM], reproducing the pre-D-353
  *           behaviour exactly). See [AutocorrectAggressiveness] and
- *           [de.froehlichmedia.adaptkey.dictionary.CorrectionConfidence] for the full mechanism.
+ *           [de.froehlichmedia.adaptkey.dictionary.CorrectionConfidence] for the full mechanism. D-407: C-22's
+ *           slider also carries the "Off" position [autocorrectEnabled] is derived from - this field itself
+ *           only ever resolves to one of the three real levels ([AutocorrectAggressiveness.OFF_KEY] falls
+ *           back to [AutocorrectAggressiveness.DEFAULT] here), so suggestion ranking stays sensible even
+ *           while [autocorrectEnabled] is off.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,

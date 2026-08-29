@@ -45,7 +45,6 @@ data class RawSettings(
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
-    val autocorrectEnabled: Boolean = true,
     val doubleTapBackspaceUndo: Boolean = false,
     val autoSplitModeKey: String? = null,
     val autocorrectAggressivenessKey: String? = null
@@ -197,6 +196,21 @@ object SettingsMapper {
     }
     
     /**
+     * D-407: whether autocorrect may ever silently apply a correction - derived from the *same* raw C-22
+     * value [toAutocorrectAggressiveness] resolves, not a separate stored toggle any more (D-234's original,
+     * now-merged setting). False only for the literal [AutocorrectAggressiveness.OFF_KEY]; every other
+     * value (including unrecognised/corrupt ones, which [toAutocorrectAggressiveness] already degrades to
+     * [AutocorrectAggressiveness.DEFAULT]) leaves autocorrect enabled, matching D-234's own original
+     * fail-safe default.
+     *
+     * @param raw the raw stored values
+     * @return true unless the stored value is exactly "off"
+     */
+    fun toAutocorrectEnabled(raw: RawSettings): Boolean {
+        return raw.autocorrectAggressivenessKey?.trim()?.equals(AutocorrectAggressiveness.OFF_KEY, ignoreCase = true) != true
+    }
+    
+    /**
      * Resolves the full validated configuration. An empty per-key hint map falls back to the default
      * mapping so the keyboard never ends up with no secondary symbols at all.
      * 
@@ -225,7 +239,7 @@ object SettingsMapper {
             pendingBlacklistExpiryDays = raw.pendingBlacklistExpiryDays.coerceIn(MIN_PENDING_BLACKLIST_EXPIRY_DAYS, MAX_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = raw.saveCredentials,
             contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled,
-            autocorrectEnabled = raw.autocorrectEnabled,
+            autocorrectEnabled = toAutocorrectEnabled(raw),
             doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo,
             autoSplitMode = toAutoSplitMode(raw),
             autocorrectAggressiveness = toAutocorrectAggressiveness(raw)

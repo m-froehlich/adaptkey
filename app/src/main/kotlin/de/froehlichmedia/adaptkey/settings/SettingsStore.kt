@@ -52,9 +52,10 @@ object SettingsStore {
     const val KEY_PENDING_BLACKLIST_EXPIRY_DAYS = "d177_pending_blacklist_expiry_days"
     const val KEY_SAVE_CREDENTIALS = "d224_save_credentials"
     const val KEY_CONTACTS_SUGGESTIONS_ENABLED = "d191_contacts_suggestions_enabled"
-    const val KEY_AUTOCORRECT_ENABLED = "d234_autocorrect_enabled"
     const val KEY_DOUBLE_TAP_BACKSPACE_UNDO = "d348_double_tap_backspace_undo"
     const val KEY_AUTO_SPLIT_MODE = "d352_auto_split_mode"
+    // D-407: the former, separate D-234 "d234_autocorrect_enabled" toggle is gone - merged into this one
+    // slider's own "Off" position (AutocorrectAggressiveness.OFF_KEY), no migration of any old stored value.
     const val KEY_AUTOCORRECT_AGGRESSIVENESS = "d353_autocorrect_aggressiveness"
     
     /**
@@ -154,7 +155,6 @@ object SettingsStore {
             pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = p.getBoolean(KEY_SAVE_CREDENTIALS, true),
             contactsSuggestionsEnabled = p.getBoolean(KEY_CONTACTS_SUGGESTIONS_ENABLED, false),
-            autocorrectEnabled = p.getBoolean(KEY_AUTOCORRECT_ENABLED, true),
             doubleTapBackspaceUndo = p.getBoolean(KEY_DOUBLE_TAP_BACKSPACE_UNDO, DEF_DOUBLE_TAP_BACKSPACE_UNDO),
             autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null),
             autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null)
@@ -233,7 +233,6 @@ object SettingsStore {
         KEY_PENDING_BLACKLIST_EXPIRY_DAYS,
         KEY_SAVE_CREDENTIALS,
         KEY_CONTACTS_SUGGESTIONS_ENABLED,
-        KEY_AUTOCORRECT_ENABLED,
         KEY_AUTO_SPLIT_MODE,
         KEY_AUTOCORRECT_AGGRESSIVENESS,
         KEY_DOUBLE_TAP_BACKSPACE_UNDO,

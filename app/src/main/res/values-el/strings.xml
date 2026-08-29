@@ -108,15 +108,14 @@
     <string name="c01_shift_title">Πρόσθετο πλάτος Shift</string>
     <string name="c01_shift_summary">Ποσοστιαία προσαύξηση για το πλήκτρο Shift (D-16). Προρυθμίζεται από τη βαθμονόμηση· ρυθμιζόμενο.</string>
 
-    <string name="d234_autocorrect_enabled_title">Αυτόματη διόρθωση</string>
-    <string name="d234_autocorrect_enabled_summary">Εφαρμόζει διορθώσεις αυτόματα κατά την πληκτρολόγηση. Ανενεργό: κάθε διόρθωση προσφέρεται μόνο ως πρόταση προς επιλογή, τίποτα δεν αλλάζει σιωπηλά.</string>
     <string name="d352_auto_split_mode_title">Διαχωρισμός λέξεων</string>
     <string name="d352_auto_split_mode_summary">Πώς αντιμετωπίζεται ένα κενό που λείπει ανάμεσα σε δύο λέξεις. Αυτόματο το εφαρμόζει σιωπηλά· Μόνο πρόταση το προσφέρει πάντα μόνο ως επιλογή προς πάτημα· Ανενεργό απενεργοποιεί τη λειτουργία εντελώς.</string>
     <string name="d352_auto_split_mode_automatic">Αυτόματο</string>
     <string name="d352_auto_split_mode_chip_only">Μόνο πρόταση</string>
     <string name="d352_auto_split_mode_off">Ανενεργό</string>
-    <string name="d353_autocorrect_aggressiveness_title">Βεβαιότητα αυτόματης διόρθωσης</string>
-    <string name="d353_autocorrect_aggressiveness_summary">Πόσο βέβαιη πρέπει να είναι μια διόρθωση πριν εφαρμοστεί σιωπηλά αντί να προταθεί απλώς. Το Προσεκτικό εφαρμόζει λιγότερες διορθώσεις αυτόματα· το Επιθετικό εφαρμόζει περισσότερες.</string>
+    <string name="d353_autocorrect_aggressiveness_title">Αυτόματη διόρθωση</string>
+    <string name="d353_autocorrect_aggressiveness_summary">Πόσο πρόθυμα εφαρμόζεται μια διόρθωση. Ανενεργό: τίποτα δεν αλλάζει σιωπηλά, μόνο ως πρόταση. Προσεκτικό εφαρμόζει λιγότερες διορθώσεις αυτόματα, Επιθετικό περισσότερες.</string>
+    <string name="d353_autocorrect_aggressiveness_off">Ανενεργό</string>
     <string name="d353_autocorrect_aggressiveness_cautious">Προσεκτικό</string>
     <string name="d353_autocorrect_aggressiveness_medium">Μεσαίο</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Επιθετικό</string>

@@ -108,15 +108,14 @@
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>
     <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 
-    <string name="d234_autocorrect_enabled_title">Autokorrektur</string>
-    <string name="d234_autocorrect_enabled_summary">Wendet Korrekturen automatisch beim Tippen an. Aus: jede Korrektur wird nur noch als antippbarer Vorschlag angeboten, nichts wird still verändert.</string>
     <string name="d352_auto_split_mode_title">Worttrennung</string>
     <string name="d352_auto_split_mode_summary">Wie ein fehlendes Leerzeichen zwischen zwei Wörtern behandelt wird. Automatisch wendet es still an; Nur Chip bietet es immer nur als antippbaren Vorschlag an; Aus deaktiviert die Funktion vollständig.</string>
     <string name="d352_auto_split_mode_automatic">Automatisch</string>
     <string name="d352_auto_split_mode_chip_only">Nur Chip</string>
     <string name="d352_auto_split_mode_off">Aus</string>
-    <string name="d353_autocorrect_aggressiveness_title">Autokorrektur-Konfidenz</string>
-    <string name="d353_autocorrect_aggressiveness_summary">Wie sicher eine Korrektur sein muss, bevor sie still angewendet statt nur vorgeschlagen wird. Vorsichtig wendet weniger Korrekturen automatisch an; Aggressiv wendet mehr an.</string>
+    <string name="d353_autocorrect_aggressiveness_title">Autokorrektur</string>
+    <string name="d353_autocorrect_aggressiveness_summary">Wie bereitwillig eine Korrektur angewendet wird. Aus: nichts wird still verändert, nur als Vorschlag angeboten. Vorsichtig wendet weniger automatisch an, Aggressiv mehr.</string>
+    <string name="d353_autocorrect_aggressiveness_off">Aus</string>
     <string name="d353_autocorrect_aggressiveness_cautious">Vorsichtig</string>
     <string name="d353_autocorrect_aggressiveness_medium">Mittel</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Aggressiv</string>

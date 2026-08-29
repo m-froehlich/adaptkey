@@ -108,9 +108,22 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `D-234 autocorrectEnabled flag passes through unchanged, defaulting to on`() {
+    fun `D-234 D-407 autocorrectEnabled is derived from the merged C-22 value, defaulting to on`() {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).autocorrectEnabled)
-        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autocorrectEnabled = false)).autocorrectEnabled)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(autocorrectAggressivenessKey = "aggressive")).autocorrectEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autocorrectAggressivenessKey = "off")).autocorrectEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autocorrectAggressivenessKey = "  OFF ")).autocorrectEnabled)
+    }
+    
+    @Test
+    fun `D-407 autocorrectAggressiveness still resolves to a real level when the merged value is off`() {
+        // "off" only ever disables autocorrectEnabled - suggestion ranking must still use a sensible,
+        // real confidence level (falls back to AutocorrectAggressiveness.DEFAULT, same as any other
+        // unrecognised key), not something that would starve every suggestion.
+        assertEquals(
+            AutocorrectAggressiveness.DEFAULT,
+            SettingsMapper.toAdaptSettings(RawSettings(autocorrectAggressivenessKey = "off")).autocorrectAggressiveness
+        )
     }
     
     @Test

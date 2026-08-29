@@ -323,8 +323,24 @@ non-trivial changes).
   arrival), which subsumes and replaces D-45's own standalone check. No new tests (Android IME glue code,
   untested per convention); 1018 unit tests unchanged, all green. `:app:assembleRelease`/
   `:app:testDebugUnitTest` green. `versionCode` 342 -> 343, `versionName` `"1.0.38"` -> `"1.0.39"`. Spec's
-  G-05 addendum rewritten, new §37 added, §35 gained a forward-pointer. Not yet device-confirmed. See
-  history §282.
+  G-05 addendum rewritten, new §37 added, §35 gained a forward-pointer. **Device-confirmed.** See history
+  §282/§283.
+
+- **§284 (v1.0.40): D-407 implemented - D-234's boolean "Autocorrect" toggle and D-353's three-level**
+  **"Autocorrect confidence" list merged into one C-22 slider (Off / Cautious / Medium / Aggressive).** New
+  `LabeledSeekBarPreference` (a discrete, string-valued slider, persists like `ListPreference` does; not a
+  `SeekBarPreference` subclass, which owns its seek listener/state privately) shows the selected level's
+  name beside the thumb, not a raw number - its own layout widens the value label to 88dp (fits
+  "Vorsichtig"/"Aggressive") and lets the `SeekBar` (`layout_weight="1"`) shrink automatically to whatever
+  width remains. `AutocorrectAggressiveness` itself is unchanged (still exactly 3 real levels) - "Off" is
+  not a 4th level, it's `AdaptSettings.autocorrectEnabled` (D-234) now derived from the same one stored
+  value via a new `AutocorrectAggressiveness.OFF_KEY` constant; `fromKey("off")` already fell back to
+  `DEFAULT` (Medium) as an unrecognised key, which is exactly the desired behaviour - suggestions/chips keep
+  ranking sensibly while autocorrect is off, matching the pre-merge behaviour where the boolean never
+  affected the suggestion-bar confidence gate at all. No migration of old stored values (explicit request).
+  3 new/changed tests. 1020 unit tests total (was 1018). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `versionCode` 343 -> 344, `versionName` `"1.0.39"` -> `"1.0.40"`. Spec §20/§36 updated. Not yet
+  device-confirmed. See history §284.
 
 - **§281 (v1.0.38): D-353/D-354 implemented - a unified `CorrectionConfidence` score replaces autocorrect's**
   **ad hoc gates.** New pure `CorrectionConfidence` object (`dictionary` package): for an unknown typed token,

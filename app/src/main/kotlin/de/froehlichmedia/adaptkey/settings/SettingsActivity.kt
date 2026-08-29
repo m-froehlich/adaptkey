@@ -79,6 +79,14 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
             
+            // D-407: labels/values aren't XML attributes on LabeledSeekBarPreference (no custom-attribute
+            // declaration exists for it, unlike ListPreference's built-in android:entries/entryValues) - set
+            // here instead, the same place info_version/d89_feature_overview's own programmatic setup lives.
+            findPreference<LabeledSeekBarPreference>(SettingsStore.KEY_AUTOCORRECT_AGGRESSIVENESS)?.apply {
+                labels = resources.getStringArray(R.array.d353_autocorrect_aggressiveness_labels).toList()
+                values = resources.getStringArray(R.array.d353_autocorrect_aggressiveness_values).toList()
+            }
+            
             // Read live from the actual installed package rather than a hand-maintained string resource,
             // which would inevitably drift out of sync with the real versionName in app/build.gradle.kts.
             findPreference<Preference>("info_version")?.summary = runCatching {

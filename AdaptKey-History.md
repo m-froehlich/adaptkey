@@ -14245,3 +14245,72 @@ from §35's own trade-off paragraph. `versionCode` 342 -> 343, `versionName` `"1
 Not yet device-confirmed - needs the exact repro re-tested (period -> tap into previous word -> Backspace
 twice -> tap back to the real sentence start), plus a plain arrow-key/drag-handle move into and out of a
 word as a variant of the same trigger.
+
+## §283 - D-406 Device-Confirmed (No Code Change)
+
+User confirmed the fix works on device, mid-message while requesting the next round below (message read
+"D-405", but the whole preceding round of discussion and the fix just shipped were both D-406 - D-405 itself
+was already separately confirmed back in §279; treated as referring to D-406, the fix actually being tested).
+
+## §284 - D-407 Implemented: C-22's "Off" And Aggressiveness Levels Merged Into One Slider Setting (v1.0.40)
+
+### The ask
+While the D-406 fix was being tested on device, user asked for a settings-screen cleanup, unrelated to any
+bug: D-234's original boolean "Autocorrect" toggle and D-353's three-level "Autocorrect confidence"
+`ListPreference` sit two rows apart and are really the same underlying knob - merge them into one setting,
+rendered as a slider with four discrete positions (Off / Cautious / Medium / Aggressive), the slider itself
+narrow enough that the selected position's name still fits beside it. Explicitly no migration of the old
+stored values required.
+
+### Design
+Kept `AutocorrectAggressiveness` itself unchanged - still exactly three real levels (Cautious/Medium/
+Aggressive), each with its own auto-apply/chip-offer threshold pair (D-353). "Off" is not a fourth level of
+that enum at all - it answers a different question (does autocorrect ever apply silently at all) than *how*
+confident a still-permitted correction must be, and making it a real level would have starved the S-06
+preview chip/suggestion-bar entirely while off (both read `AutocorrectAggressiveness`'s own thresholds via
+`DictionarySuggestionProvider`, which - by original design - keeps offering candidates as suggestions even
+with the master toggle off, so the user can still tap-accept them; that behaviour needed to survive the
+merge, not just the "never applies silently" half).
+
+Instead: `AdaptSettings.autocorrectEnabled` (D-234, already a real field, every existing `AdaptKeyService`
+call site untouched) is now *derived* from the exact same one raw stored string
+`autocorrectAggressivenessKey` that `autocorrectAggressiveness` itself resolves from -
+`SettingsMapper.toAutocorrectEnabled()` returns false only for the literal `"off"`
+(`AutocorrectAggressiveness.OFF_KEY`, a new companion constant, documented in one place both resolvers refer
+to). `AutocorrectAggressiveness.fromKey("off")` doesn't recognise it as a member either, so it falls back to
+`DEFAULT` (Medium) via the *existing* unrecognised-key fallback - already exactly the desired behaviour
+(suggestions/chips keep ranking sensibly while nothing may apply silently), not a new special case.
+
+New `LabeledSeekBarPreference` (`settings` package): a discrete, string-valued slider - persists a String via
+`persistString`/`getPersistedString` exactly like `ListPreference` does (not a subclass of
+`androidx.preference.SeekBarPreference`, which owns its own internal seek listener/state privately with no
+supported hook to swap its numeric value label for text without fighting the library). Its own
+`preference_labeled_seekbar.xml` mirrors AndroidX's `preference_widget_seekbar.xml` layout, except the value
+label is a fixed 88dp wide (enough for "Vorsichtig"/"Aggressive" without clipping) instead of AndroidX's own
+narrow numeric-value width - the `SeekBar` (`layout_weight="1"`, `layout_width="0dp"`) automatically shrinks
+to whatever width remains, achieving the requested "short enough that the value still fits" without any
+manual width arithmetic. `labels`/`values` are plain public properties set from
+`SettingsFragment.onCreatePreferences()` (reusing the existing `d353_autocorrect_aggressiveness_labels`/
+`_values` string-arrays, now with "Off"/`"off"` prepended) - later than the framework's own
+`onSetInitialValue()` call during inflation, which needs `values` to resolve the persisted string into a
+slider position; `values`' own property setter re-resolves the position from storage whenever it's set, so
+the two calls don't need to happen in a particular order. Value only persists on `onStopTrackingTouch` (not
+every intermediate drag position), matching this screen's other sliders' own convention.
+
+`d234_autocorrect_enabled`'s `SwitchPreferenceCompat` row and its now-dead strings/key removed outright (no
+migration, per the request - the old stored boolean is simply orphaned, harmless). The merged widget sits at
+that row's former position; `d352_auto_split_mode` (unrelated, untouched) keeps its own row after it.
+
+2 new/changed `SettingsMapperTest` cases (derivation from "off"/other keys, medium fallback while off) and 1
+new `AutocorrectAggressivenessTest` case (`OFF_KEY` falls back to `DEFAULT`). 1020 unit tests total (1018
+before this round). `:app:assembleRelease`/`:app:testDebugUnitTest` green - `LabeledSeekBarPreference`/its
+layout are Android UI glue, left untested per this project's convention, same as every other custom
+`Preference`/dialog in `SettingsActivity`.
+
+Spec: §20's C-22 row updated (four positions now); §36 gained a D-407 paragraph explaining the "Off is not a
+real confidence level" design and cross-referencing the new slider widget; section title updated to credit
+D-407 too. `versionCode` 343 -> 344, `versionName` `"1.0.39"` -> `"1.0.40"`.
+
+Not yet device-confirmed - needs the settings screen opened, the slider dragged through all four positions,
+and the resulting behaviour spot-checked (Off: nothing silently applied, suggestions/chips still appear;
+each real level: matches what §36/D-353 already describe).

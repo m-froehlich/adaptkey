@@ -32,6 +32,11 @@ class AutocorrectAggressivenessTest {
     }
     
     @Test
+    fun `D-407 OFF_KEY is not a member of this enum - falls back to the default like any other key it does not recognise`() {
+        assertEquals(AutocorrectAggressiveness.DEFAULT, AutocorrectAggressiveness.fromKey(AutocorrectAggressiveness.OFF_KEY))
+    }
+    
+    @Test
     fun `levels are ordered from most to least cautious`() {
         assertTrue(AutocorrectAggressiveness.CAUTIOUS.autoApplyThreshold > AutocorrectAggressiveness.MEDIUM.autoApplyThreshold)
         assertTrue(AutocorrectAggressiveness.MEDIUM.autoApplyThreshold > AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold)

@@ -1108,7 +1108,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-19 | Installed language packs (§9) | Install/remove per language | English only |
 | C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | Off |
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
-| C-22 | Autocorrect confidence / aggressiveness (A-01, §36, D-353) | Cautious / Medium / Aggressive | Medium |
+| C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
@@ -1415,7 +1415,7 @@ to the "repair the live-arming path, don't reinstate the override" instruction a
 
 ---
 
-## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354)
+## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354/D-407)
 
 D-353: the dictionary autocorrect previously decided whether to trust a candidate through several
 independent, ad hoc gates evolved one at a time over many rounds - D-114/D-227's absolute frequency floor
@@ -1439,18 +1439,26 @@ token:
   calibrated so the confirmed-bad "Ohren"/"Ihren" case (70×) sits below the score every C-22 level requires,
   while the confirmed-good "ddr"/"der" (228×) and "due"/"die" (37,000×+) cases clear it.
 
-Two thresholds, both exposed through **C-22 (Autocorrect confidence)** - Cautious / Medium (default) /
-Aggressive - govern what the score is used for: at or above the **auto-apply** threshold, the correction is
-applied silently at commit exactly as before; at or above the (always lower) **chip-offer** threshold, it is
-still surfaced as an ordinary suggestion-bar candidate even when it falls short of silent application - an
-unwanted suggestion is merely ignorable, unlike an unwanted silent replacement. Medium reproduces the
-pre-D-353 behaviour exactly against every existing regression case; Cautious/Aggressive are new, bounded by
-one rule that holds regardless of which level is chosen: **no level may silently apply a correction shape
-already confirmed to be a false positive** (the "Ohren"/"Ihren" case specifically) - Aggressive only ever
-admits more of the previously-*untested* grey zone above that floor, never reopens a confirmed mistake purely
-because a more permissive level was chosen. A standing regression test asserts this floor directly against
-Aggressive (the most permissive level), so a future retuning of the formula's own constants cannot silently
-reopen it again without that test failing first.
+Two thresholds, both exposed through **C-22 (Autocorrect)** - Off / Cautious / Medium (default) / Aggressive -
+govern what the score is used for: at or above the **auto-apply** threshold, the correction is applied
+silently at commit exactly as before; at or above the (always lower) **chip-offer** threshold, it is still
+surfaced as an ordinary suggestion-bar candidate even when it falls short of silent application - an unwanted
+suggestion is merely ignorable, unlike an unwanted silent replacement. Medium reproduces the pre-D-353
+behaviour exactly against every existing regression case; Cautious/Aggressive are new, bounded by one rule
+that holds regardless of which level is chosen: **no level may silently apply a correction shape already
+confirmed to be a false positive** (the "Ohren"/"Ihren" case specifically) - Aggressive only ever admits more
+of the previously-*untested* grey zone above that floor, never reopens a confirmed mistake purely because a
+more permissive level was chosen. A standing regression test asserts this floor directly against Aggressive
+(the most permissive level), so a future retuning of the formula's own constants cannot silently reopen it
+again without that test failing first.
+
+D-407: **Off** merges in the former, separate D-234 "Autocorrect" toggle - one slider instead of two settings
+that could otherwise disagree. It is not a fifth confidence level at all (`AutocorrectAggressiveness` itself
+still has exactly the three real levels above) - it independently disables silent application altogether
+([AdaptSettings.autocorrectEnabled], derived from the same one stored value), while the underlying confidence
+level used for ranking suggestions/chips still falls back to Medium, so the suggestion bar stays just as
+useful with autocorrect off as it always was. Rendered as a slider (`LabeledSeekBarPreference`) rather than a
+list, narrow enough that the selected level's name still fits beside it.
 
 D-354: a typed token that is not itself a dictionary word may still be a genuine, simply unlisted German word
 - most commonly, one built from a common prefix (`ab-`, `an-`, `ent-`, `über-`, `wieder-`, and similar) the

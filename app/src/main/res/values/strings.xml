@@ -108,8 +108,6 @@
     <string name="c01_shift_title">Extra shift width</string>
     <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
 
-    <string name="d234_autocorrect_enabled_title">Autocorrect</string>
-    <string name="d234_autocorrect_enabled_summary">Applies corrections automatically while typing. Off: every correction is offered as a tap instead, nothing is changed silently.</string>
     <string name="d348_double_tap_backspace_undo_title">Double-tap Backspace to revert</string>
     <string name="d348_double_tap_backspace_undo_summary">When on, a single Backspace after an autocorrect just deletes a character; press Backspace twice quickly to revert the correction.</string>
     <string name="d352_auto_split_mode_title">Word splitting</string>
@@ -117,8 +115,9 @@
     <string name="d352_auto_split_mode_automatic">Automatic</string>
     <string name="d352_auto_split_mode_chip_only">Chip only</string>
     <string name="d352_auto_split_mode_off">Off</string>
-    <string name="d353_autocorrect_aggressiveness_title">Autocorrect confidence</string>
-    <string name="d353_autocorrect_aggressiveness_summary">How confident a correction must be before it is applied silently instead of merely suggested. Cautious applies fewer corrections automatically; Aggressive applies more.</string>
+    <string name="d353_autocorrect_aggressiveness_title">Autocorrect</string>
+    <string name="d353_autocorrect_aggressiveness_summary">How eagerly a correction is applied. Off: nothing is ever changed silently, only offered as a tap. Cautious applies fewer corrections automatically, Aggressive more.</string>
+    <string name="d353_autocorrect_aggressiveness_off">Off</string>
     <string name="d353_autocorrect_aggressiveness_cautious">Cautious</string>
     <string name="d353_autocorrect_aggressiveness_medium">Medium</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Aggressive</string>

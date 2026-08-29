@@ -54,10 +54,24 @@ enum class AutocorrectAggressiveness(val autoApplyThreshold: Double, val chipOff
         val DEFAULT = MEDIUM
         
         /**
+         * D-407: C-22's own "Off" slider position - not a member of this enum at all, since it disables
+         * silent application entirely (independent of confidence), a different question than *how*
+         * confident a still-permitted correction must be. Recognised here, not just in
+         * {@link de.froehlichmedia.adaptkey.settings.SettingsMapper}, so the one stored value both
+         * {@link de.froehlichmedia.adaptkey.settings.SettingsMapper#toAutocorrectEnabled} and [fromKey]
+         * resolve from has a single, named place documenting what "off" means to each of them - [fromKey]
+         * falls back to [DEFAULT] for it like any other value it does not recognise, which is exactly the
+         * desired result: suggestions/chips still rank by a real, sensible confidence level even while
+         * nothing may apply silently.
+         */
+        const val OFF_KEY = "off"
+        
+        /**
          * Resolves a stored preference value to a level, tolerating case and unknown/blank input.
          *
          * @param key the stored value (e.g. "cautious" / "medium" / "aggressive"), or null when unset
-         * @return the matching level, or [DEFAULT] when [key] is null, blank or unrecognised
+         * @return the matching level, or [DEFAULT] when [key] is null, blank or unrecognised (including
+         *         [OFF_KEY] - see its own KDoc)
          */
         fun fromKey(key: String?): AutocorrectAggressiveness {
             if (key.isNullOrBlank()) {
