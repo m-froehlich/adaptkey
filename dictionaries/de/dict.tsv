@@ -54589,20 +54589,20 @@ Sprachgebrauchs	23	NOUN	Sprachgebrauch
 Millionenstädte	23	NOUN	Millionenstadt
 tibetobirmanische	23	OTHER
 Einkammerparlament	23	NOUN
-Blockaden	23	NOUN
+Blockaden	23	NOUN	Blockade
 Literaturszene	23	NOUN
 verfolge	23	OTHER
 schenkten	23	VERB
 Desinformation	23	NOUN
 weiterleitet	23	OTHER
 Betriebsdauer	23	NOUN
-Außenwände	23	NOUN
+Außenwände	23	NOUN	Außenwand
 Dürreperioden	23	NOUN
 Ret	23	NOUN
 fantastische	23	OTHER
 Verifizierung	23	NOUN
-Korridore	23	NOUN
-Aufforderungen	23	NOUN
+Korridore	23	NOUN	Korridor
+Aufforderungen	23	NOUN	Aufforderung
 klimatischer	23	OTHER
 Nuss	23	NOUN
 Bete	23	NOUN,OTHER
@@ -54612,33 +54612,33 @@ Landschaftsgarten	23	NOUN
 architektonisches	23	OTHER
 Umnutzung	23	NOUN
 Schwimm	23	NOUN,VERB
-Rheinischer	23	NOUN,OTHER
+Rheinischer	23	NOUN,OTHER	Rheinisch
 Umleitung	23	NOUN
 Hauptverkehrszeit	23	NOUN
 Nachtbuslinien	23	NOUN
 marginal	23	OTHER
 dpa	23	OTHER
 Ölberg	23	NOUN
-Brettspielen	23	NOUN
+Brettspielen	23	NOUN	Brettspiel
 Seat	23	NOUN
 ebnen	23	VERB
 unberührte	23	OTHER
-Bagdads	23	NOUN
+Bagdads	23	NOUN	Bagdad
 parthischen	23	OTHER
 Großbauten	23	NOUN
 Huren	23	NOUN
 Prägejahr	23	NOUN
 Kursmünzen	23	NOUN
-Missbildungen	23	NOUN
+Missbildungen	23	NOUN	Missbildung
 präventiv	23	OTHER
 KC	23	NOUN
 bewusstlos	23	OTHER
 bewusstes	23	OTHER
-Graupapageien	23	NOUN
+Graupapageien	23	NOUN	Graupapagei
 Standardvarietät	23	NOUN
 unreife	23	OTHER
-Einzelstücke	23	NOUN
-Lärchen	23	NOUN
+Einzelstücke	23	NOUN	Einzelstück
+Lärchen	23	NOUN	Lärche
 brüchig	23	OTHER
 Zelluloid	23	NOUN
 umfangreichem	23	OTHER
@@ -54650,13 +54650,13 @@ Gemarkungsgrenze	23	NOUN
 Königsteiner	23	NOUN
 Abstellen	23	NOUN,OTHER
 Hauptwache	23	NOUN
-Landschaftsparks	23	NOUN
+Landschaftsparks	23	NOUN	Landschaftspark
 Wiederbesiedlung	23	NOUN
 Besatzungsbehörden	23	NOUN
 tausendjährigen	23	OTHER
 achteckigen	23	OTHER
 Musikakademie	23	NOUN
-Nationaltheaters	23	NOUN
+Nationaltheaters	23	NOUN	Nationaltheater
 Erdgases	23	NOUN
 Bauunternehmer	23	NOUN
 Blutfluss	23	NOUN
@@ -54677,7 +54677,7 @@ markgräflichen	23	OTHER
 Etienne	23	NOUN
 Ludwigstraße	23	NOUN
 Gelöbnis	23	NOUN
-Wahlbezirken	23	NOUN
+Wahlbezirken	23	NOUN	Wahlbezirk
 Sammel	23	NOUN
 Brauer	23	NOUN
 festmachen	23	VERB
@@ -54687,10 +54687,10 @@ Kindergeld	23	NOUN
 Doppelfunktion	23	NOUN
 gezähnt	23	OTHER
 Geschlechtes	23	NOUN
-Tragblätter	23	NOUN
+Tragblätter	23	NOUN	Tragblatt
 Fruchtblatt	23	NOUN
 EEPROM	23	NOUN
-Partitionstabellen	23	NOUN
+Partitionstabellen	23	NOUN	Partitionstabelle
 algorithmisch	23	OTHER
 Bärlapppflanzen	23	NOUN
 sterilen	23	OTHER
@@ -54699,7 +54699,7 @@ schützend	23	OTHER
 befallenen	23	OTHER
 zurücklegt	23	OTHER
 fehlerhafter	23	OTHER
-Vergrößerungen	23	NOUN
+Vergrößerungen	23	NOUN	Vergrößerung
 parteiloser	23	OTHER
 Altenpflege	23	NOUN
 symmetrischer	23	OTHER
@@ -54710,18 +54710,18 @@ zurücknehmen	23	VERB
 sprachgeschichtlich	23	OTHER
 umschließenden	23	OTHER
 Rösch	23	NOUN
-Hausrinder	23	NOUN
-Seitenwände	23	NOUN
+Hausrinder	23	NOUN	Hausrind
+Seitenwände	23	NOUN	Seitenwand
 Sohle	23	NOUN
 feinem	23	OTHER
 Bruchstück	23	NOUN
 WSW	23	NOUN
 Traumata	23	NOUN
 versinnbildlichen	23	VERB
-Kontexte	23	NOUN
+Kontexte	23	NOUN	Kontext
 Kalligrafie	23	NOUN
 intelligenter	23	OTHER
-Messgrößen	23	NOUN
+Messgrößen	23	NOUN	Messgröße
 einzugeben	23	VERB
 langsamere	23	OTHER
 obigem	23	OTHER
@@ -54734,7 +54734,7 @@ Marcia	23	NOUN
 übergroße	23	OTHER
 Vernehmung	23	NOUN
 Calciumoxid	23	NOUN
-Putzen	23	NOUN,OTHER
+Putzen	23	NOUN,OTHER	Putz
 Didym	23	NOUN
 Verhärtung	23	NOUN
 dünnere	23	OTHER
@@ -54748,7 +54748,7 @@ unruhig	23	OTHER
 Zuhören	23	NOUN,OTHER
 Concord	23	NOUN
 Interactive	23	NOUN
-Auszubildenden	23	NOUN
+Auszubildenden	23	NOUN	Auszubildende
 Humanities	23	NOUN,OTHER
 ununterbrochenen	23	OTHER
 Staatsrecht	23	NOUN
@@ -54774,22 +54774,22 @@ Lohnkosten	23	NOUN
 Chiffre	23	NOUN
 Kryptologie	23	NOUN
 gläubig	23	OTHER
-Sakramenten	23	NOUN
+Sakramenten	23	NOUN	Sakrament
 Apostolica	23	NOUN,OTHER
-Heils	23	NOUN
+Heils	23	NOUN	Heil
 gentium	23	OTHER
 Adventgemeinde	23	NOUN
 Saalbau	23	NOUN
 sehenswerten	23	OTHER
 Lauterer	23	NOUN
-Webbrowsern	23	NOUN
+Webbrowsern	23	NOUN	Webbrowser
 gebissen	23	VERB
 Harderwijk	23	NOUN
 mitgegeben	23	VERB
 Naturhistorische	23	NOUN,OTHER
 Tölz	23	NOUN
 Meran	23	NOUN
-Kletterpflanzen	23	NOUN
+Kletterpflanzen	23	NOUN	Kletterpflanze
 Valdivia	23	NOUN
 ausarbeitete	23	OTHER
 anlockt	23	OTHER
@@ -54799,12 +54799,12 @@ historique	23	OTHER
 Wire	23	NOUN,OTHER
 Reklame	23	NOUN
 Gong	23	NOUN
-Subsysteme	23	NOUN
+Subsysteme	23	NOUN	Subsystem
 Fruit	23	NOUN
 Victory	23	NOUN
 Geographic	23	NOUN
 bedachten	23	VERB,OTHER
-Sammelbände	23	NOUN
+Sammelbände	23	NOUN	Sammelband
 Klondike	23	NOUN
 angreift	23	OTHER
 zirkulieren	23	VERB
@@ -54821,15 +54821,15 @@ stationärer	23	OTHER
 seitwärts	23	OTHER
 Audiodateien	23	NOUN
 amtieren	23	VERB
-Staatshaushalts	23	NOUN
+Staatshaushalts	23	NOUN	Staatshaushalt
 Missbilligung	23	NOUN
 Kreditvergabe	23	NOUN
 Familienwappen	23	NOUN
 Archivalien	23	NOUN
 Braunfels	23	NOUN
-Taschenuhren	23	NOUN
-Kommas	23	NOUN
-Verfahrensweisen	23	NOUN
+Taschenuhren	23	NOUN	Taschenuhr
+Kommas	23	NOUN	Komma
+Verfahrensweisen	23	NOUN	Verfahrensweise
 Angriffskrieges	23	NOUN
 Rittmeister	23	NOUN
 implementierte	23	OTHER
@@ -54850,7 +54850,7 @@ Urzustand	23	NOUN
 Grammar	23	NOUN
 Lexem	23	NOUN
 Sauberkeit	23	NOUN
-Missionars	23	NOUN
+Missionars	23	NOUN	Missionar
 kontrolliertes	23	OTHER
 Strip	23	NOUN,OTHER
 Punch	23	NOUN
@@ -54864,17 +54864,17 @@ Goetz	23	NOUN
 Oberhausener	23	NOUN
 Impact	23	NOUN
 Xenotim	23	NOUN
-Tisches	23	NOUN
+Tisches	23	NOUN	Tisch
 erfindet	23	OTHER
 Herbeiführung	23	NOUN
 Okzitanisch	23	NOUN,OTHER
 militant	23	NOUN,OTHER
 aufgezwungen	23	VERB
-Fackeln	23	NOUN
+Fackeln	23	NOUN	Fackel
 nichtjüdische	23	OTHER
 Verharmlosung	23	NOUN
 rechtwinkliges	23	OTHER
-Klosterkirchen	23	NOUN
+Klosterkirchen	23	NOUN	Klosterkirche
 Münch	23	NOUN
 Olpe	23	NOUN
 gruppierten	23	VERB,OTHER
@@ -54886,7 +54886,7 @@ Nordostecke	23	NOUN
 SPNV	23	NOUN
 innerstädtisch	23	OTHER
 Rothe	23	NOUN
-Frauenvereine	23	NOUN
+Frauenvereine	23	NOUN	Frauenverein
 amtiert	23	OTHER
 wiedergegründet	23	OTHER
 Reunion	23	NOUN
@@ -54895,17 +54895,17 @@ habsburgisch	23	OTHER
 Reichshofrat	23	NOUN
 Reichsarmee	23	NOUN
 Kurköln	23	NOUN
-Kontingenten	23	NOUN,OTHER
-Friedensverträge	23	NOUN
+Kontingenten	23	NOUN,OTHER	Kontingent
+Friedensverträge	23	NOUN	Friedensvertrag
 Burkhardt	23	NOUN
 Dosse	23	NOUN
 entgegenzustellen	23	VERB
 Arlington	23	NOUN
 ostafrikanische	23	NOUN,OTHER
 autokratische	23	OTHER
-Mitstreitern	23	NOUN
+Mitstreitern	23	NOUN	Mitstreiter
 Fertigkeit	23	NOUN
-Problemlösungen	23	NOUN
+Problemlösungen	23	NOUN	Problemlösung
 Werkzeugmaschinen	23	NOUN
 Wettervorhersage	23	NOUN
 übertragener	23	OTHER
@@ -54937,19 +54937,19 @@ Senta	23	NOUN
 Schablone	23	NOUN
 fakultativen	23	OTHER
 Grenznähe	23	NOUN
-Tanten	23	NOUN
+Tanten	23	NOUN	Tante
 faul	23	OTHER
 until	23	OTHER
 LIS	23	NOUN
 Getreidesorten	23	NOUN
 Desoxyribose	23	NOUN
-Zellkernen	23	NOUN
-Furchen	23	NOUN
+Zellkernen	23	NOUN	Zellkern
+Furchen	23	NOUN	Furche
 Tempera	23	NOUN
 sorgfältigen	23	OTHER
 Whitehall	23	NOUN
 Zinnen	23	NOUN
-Petitionen	23	NOUN
+Petitionen	23	NOUN	Petition
 Emser	23	NOUN
 Schwarzwälder	23	NOUN
 entspringende	23	OTHER
@@ -54957,23 +54957,23 @@ Seeadler	23	NOUN
 maurische	23	OTHER
 Traiana	23	NOUN
 Samtenen	23	NOUN
-Wohnvierteln	23	NOUN
+Wohnvierteln	23	NOUN	Wohnviertel
 unveränderte	23	OTHER
 Salam	23	NOUN
 RSC	23	NOUN
 Kitzingen	23	NOUN
 Radroute	23	NOUN
-Supermärkte	23	NOUN
+Supermärkte	23	NOUN	Supermarkt
 Kalendertag	23	NOUN
 Deixis	23	NOUN
-Zahlenfolgen	23	NOUN
+Zahlenfolgen	23	NOUN	Zahlenfolge
 Sexagesimalsystem	23	NOUN
-Babyloniern	23	NOUN
-Pillen	23	NOUN
+Babyloniern	23	NOUN	Babylonier
+Pillen	23	NOUN	Pille
 Quantengravitation	23	NOUN
 Schachtel	23	NOUN
-Preisniveaus	23	NOUN
-Produktionskapazitäten	23	NOUN
+Preisniveaus	23	NOUN	Preisniveau
+Produktionskapazitäten	23	NOUN	Produktionskapazität
 Datenfernübertragung	23	NOUN
 Ältestenrat	23	NOUN
 abrupte	23	OTHER
@@ -54992,14 +54992,14 @@ Antilopen	23	NOUN
 Gaslaternen	23	NOUN
 Kunsthandel	23	NOUN
 Querverbindung	23	NOUN
-Gehwegen	23	NOUN
+Gehwegen	23	NOUN	Gehweg
 Telekommunikationsunternehmen	23	NOUN
 gegenseitiges	23	OTHER
 Leaf	23	NOUN,OTHER
 stufenlos	23	OTHER
 italienischsprachigen	23	OTHER
 Netzspannung	23	NOUN
-Operationsverstärkers	23	NOUN
+Operationsverstärkers	23	NOUN	Operationsverstärker
 Mastdarm	23	NOUN
 zweigte	23	OTHER
 überflüssigen	23	OTHER
@@ -55012,10 +55012,10 @@ agglutinierende	23	OTHER
 Ethnologue	23	NOUN
 mitgearbeitet	23	OTHER
 Nordfriesisch	23	NOUN,OTHER
-Baustoffen	23	NOUN
-Magnetfeldern	23	NOUN
+Baustoffen	23	NOUN	Baustoff
+Magnetfeldern	23	NOUN	Magnetfeld
 Platinmetalle	23	NOUN
-Nebenprodukte	23	NOUN
+Nebenprodukte	23	NOUN	Nebenprodukt
 Kohlekraftwerk	23	NOUN
 Bewegungszustand	23	NOUN
 Exergie	23	NOUN
@@ -55032,7 +55032,7 @@ hinzugekommenen	23	OTHER
 Teddy	23	NOUN
 Tiefenwasser	23	NOUN
 Weather	23	NOUN
-Studentinnen	23	NOUN
+Studentinnen	23	NOUN	Studentin
 Bundestagswahlkampf	23	NOUN
 Klangerzeuger	23	NOUN
 sinusförmigen	23	OTHER
@@ -55051,7 +55051,7 @@ Knall	23	NOUN
 Abiturprüfung	23	NOUN
 Luís	23	NOUN
 Verbstamm	23	NOUN
-Strahlungen	23	NOUN
+Strahlungen	23	NOUN	Strahlung
 Klett	23	NOUN
 Subduktionszone	23	NOUN
 Gefrieren	23	NOUN,OTHER
@@ -55059,16 +55059,16 @@ vorausgehen	23	VERB
 gefrorenen	23	OTHER
 Verglühen	23	NOUN,OTHER
 siderische	23	OTHER
-Biotopen	23	NOUN
+Biotopen	23	NOUN	Biotop
 Mondbahn	23	NOUN
 überstrahlt	23	OTHER
 zurückgelassenen	23	OTHER
 mitgeführten	23	OTHER
 vorhersagbar	23	OTHER
-Sumpfgebiete	23	NOUN
-Küstengewässern	23	NOUN
+Sumpfgebiete	23	NOUN	Sumpfgebiet
+Küstengewässern	23	NOUN	Küstengewässer
 rechtmäßiger	23	OTHER
-Mangos	23	NOUN
+Mangos	23	NOUN	Mango
 Cathédrale	23	NOUN,OTHER
 Forschungsanstalt	23	NOUN
 Zusammenklang	23	NOUN
@@ -55079,21 +55079,21 @@ gewölbten	23	OTHER
 Töchterschule	23	NOUN
 Blutzuckerspiegel	23	NOUN
 aleutischen	23	OTHER
-Prinzessinnen	23	NOUN
-Highlights	23	NOUN
+Prinzessinnen	23	NOUN	Prinzessin
+Highlights	23	NOUN	Highlight
 zeitgenössisches	23	OTHER
 Botanic	23	NOUN
 Mattioli	23	NOUN
 Epigramm	23	NOUN
 Hönggerberg	23	NOUN
-Anwenders	23	NOUN
+Anwenders	23	NOUN	Anwender
 musische	23	OTHER
 TAS	23	NOUN,OTHER
 überwogen	23	VERB
 Terentius	23	NOUN
 sprachwissenschaftlich	23	OTHER
 katholischem	23	OTHER
-Anwälten	23	NOUN
+Anwälten	23	NOUN	Anwalt
 erschüttern	23	VERB
 enormes	23	OTHER
 Ayurveda	23	NOUN
@@ -55113,20 +55113,20 @@ typografische	23	OTHER
 Ecce	23	NOUN
 Marshallplan	23	NOUN
 Regierungsübernahme	23	NOUN
-Lokalitäten	23	NOUN
+Lokalitäten	23	NOUN	Lokalität
 Ölindustrie	23	NOUN
 Bonität	23	NOUN
 abgebrannte	23	OTHER
 elsässische	23	OTHER
-Profils	23	NOUN
+Profils	23	NOUN	Profil
 Tuchmacher	23	NOUN
 Ángel	23	NOUN
 leninistische	23	OTHER
 Häuserzeile	23	NOUN
-Handlungs	23	NOUN
+Handlungs	23	NOUN	Handlung
 gipfelt	23	OTHER
 Kreissparkasse	23	NOUN
-Sonderschulen	23	NOUN
+Sonderschulen	23	NOUN	Sonderschule
 Luftschifffahrt	23	NOUN
 Maybach	23	NOUN
 Luftschiffbau	23	NOUN
@@ -55141,24 +55141,24 @@ Konstantinos	23	NOUN
 Hydrierung	23	NOUN
 Syagrius	23	NOUN
 Bruderkrieg	23	NOUN
-Fehlschläge	23	NOUN
+Fehlschläge	23	NOUN	Fehlschlag
 Mekkaner	23	NOUN
 Warenaustausch	23	NOUN
 Doktorand	23	NOUN
-Polizeibeamten	23	NOUN
+Polizeibeamten	23	NOUN	Polizeibeamte
 Wiedergründung	23	NOUN
 Generationswechsel	23	NOUN
 Cirrus	23	NOUN
 Fluggeschwindigkeit	23	NOUN
-Hubschraubers	23	NOUN
-Kampfflugzeugen	23	NOUN
+Hubschraubers	23	NOUN	Hubschrauber
+Kampfflugzeugen	23	NOUN	Kampfflugzeug
 Jungfernflug	23	NOUN
 zusammenfließen	23	VERB
 Sansculotten	23	NOUN
-Vorhöfe	23	NOUN
+Vorhöfe	23	NOUN	Vorhof
 aufrichten	23	VERB
 Schalttag	23	NOUN
-Metriken	23	NOUN
+Metriken	23	NOUN	Metrik
 fußen	23	VERB
 textkritische	23	OTHER
 Schublade	23	NOUN
@@ -55168,40 +55168,40 @@ Mattheson	23	NOUN
 Abstecher	23	NOUN
 Fixpunkt	23	NOUN
 Halbzeit	23	NOUN
-Vollmitglieder	23	NOUN
+Vollmitglieder	23	NOUN	Vollmitglied
 Diktion	23	NOUN
 abgewandten	23	OTHER
 Trägheitskraft	23	NOUN
-Sommertagen	23	NOUN
+Sommertagen	23	NOUN	Sommertage
 Haupteinheit	23	NOUN
-Graniten	23	NOUN
+Graniten	23	NOUN	Granit
 Weilbach	23	NOUN
 Freiwirtschaft	23	NOUN
 gravierender	23	OTHER
 PEP	23	NOUN
 Kiosk	23	NOUN
 melancholischen	23	OTHER
-Konsultationen	23	NOUN
-Warften	23	NOUN
+Konsultationen	23	NOUN	Konsultation
+Warften	23	NOUN	Warft
 neuhochdeutsch	23	OTHER
 Paterson	23	NOUN
 psychologisches	23	OTHER
 kopierten	23	VERB,OTHER
 allseitig	23	OTHER
-Fachs	23	NOUN
+Fachs	23	NOUN	Fach
 Gebirgs	23	NOUN
 treuer	23	OTHER
 Veritas	23	NOUN
 schmutzig	23	OTHER
 Hartley	23	NOUN
 Aktivismus	23	NOUN
-Stadtparks	23	NOUN
+Stadtparks	23	NOUN	Stadtpark
 Puch	23	NOUN
 Kanalnetz	23	NOUN
 mechanistische	23	OTHER
 Barberini	23	NOUN
 Implantation	23	NOUN
-Geschehnissen	23	NOUN
+Geschehnissen	23	NOUN	Geschehnisse
 absorbierte	23	OTHER
 Bildungsminister	23	NOUN
 Wednesday	23	NOUN
@@ -55211,7 +55211,7 @@ Dichotomie	23	NOUN
 Königszeit	23	NOUN
 Keimbahn	23	NOUN
 Dreiheit	23	NOUN
-Eigentümlichkeiten	23	NOUN
+Eigentümlichkeiten	23	NOUN	Eigentümlichkeit
 Polarkoordinaten	23	NOUN
 Hashfunktion	23	NOUN
 Thatcherismus	23	NOUN
@@ -55221,29 +55221,29 @@ Umorientierung	23	NOUN
 erkämpfen	23	VERB
 eigenartige	23	OTHER
 Lokalsender	23	NOUN
-Gemischen	23	NOUN
+Gemischen	23	NOUN	Gemisch
 Dangerous	23	NOUN
 Bützow	23	NOUN
 Beteiligungsgesellschaft	23	NOUN
 Milchwirtschaft	23	NOUN
 Osterfestes	23	NOUN
 Nidwalden	23	NOUN
-Empires	23	NOUN
+Empires	23	NOUN	Empire
 Aristarchos	23	NOUN
-Giraffen	23	NOUN
-Lachse	23	NOUN
+Giraffen	23	NOUN	Giraffe
+Lachse	23	NOUN	Lachs
 Glasplatte	23	NOUN
 Lepanto	23	NOUN
 Forelle	23	NOUN
 Kō	23	NOUN
-Geodäten	23	NOUN
+Geodäten	23	NOUN	Geodäte
 Wiles	23	NOUN
 beginne	23	OTHER
 übermenschliche	23	OTHER
 Härtel	23	NOUN
 Worcester	23	NOUN
 erodierte	23	OTHER
-Satellitenstaaten	23	NOUN
+Satellitenstaaten	23	NOUN	Satellitenstaat
 Bahnkurve	23	NOUN
 Messmethode	23	NOUN
 Handelsniederlassung	23	NOUN
@@ -55257,7 +55257,7 @@ zeichnerische	23	OTHER
 Theologiestudenten	23	NOUN
 Eingeständnis	23	NOUN
 abverlangt	23	OTHER
-Wirtschaftswachstums	23	NOUN
+Wirtschaftswachstums	23	NOUN	Wirtschaftswachstum
 Sammelbecken	23	NOUN
 Parteilinie	23	NOUN
 strukturschwachen	23	OTHER
@@ -55279,15 +55279,15 @@ Schimpanse	23	NOUN
 Maische	23	NOUN
 Fab	23	NOUN
 Hein	23	NOUN
-Katharinen	23	NOUN
+Katharinen	23	NOUN	Katharine
 Nordheide	23	NOUN
-Bezirksamts	23	NOUN
+Bezirksamts	23	NOUN	Bezirksamt
 Verstopfung	23	NOUN
 Blasinstrument	23	NOUN
 Bloomsbury	23	NOUN
 Markup	23	NOUN
 Libraries	23	NOUN
-Dienern	23	NOUN
+Dienern	23	NOUN	Diener
 zusammenführen	23	VERB
 Trupp	23	NOUN
 Bedeutsamkeit	23	NOUN
@@ -55307,25 +55307,25 @@ Vicenza	23	NOUN
 Neubearbeitung	23	NOUN
 Miraflores	23	NOUN
 Amtsenthebungsverfahren	23	NOUN
-Tageszeiten	23	NOUN
+Tageszeiten	23	NOUN	Tageszeit
 Fernsehstationen	23	NOUN
 Meersalz	23	NOUN
 Schoeck	23	NOUN
-Polysaccharide	23	NOUN
+Polysaccharide	23	NOUN	Polysaccharid
 altgermanischen	23	OTHER
 Přemysl	23	NOUN
-Fundes	23	NOUN
+Fundes	23	NOUN	Fund
 Peterhof	23	NOUN
 Schiffsbau	23	NOUN
-Berufungen	23	NOUN
-Haien	23	NOUN
+Berufungen	23	NOUN	Berufung
+Haien	23	NOUN	Hai
 Wega	23	NOUN
 verbriefte	23	OTHER
 aushandeln	23	VERB
 Bronzeguss	23	NOUN
 Walz	23	NOUN
 Gdynia	23	NOUN
-Verkehrsaufkommens	23	NOUN
+Verkehrsaufkommens	23	NOUN	Verkehrsaufkommen
 Andocken	23	NOUN,OTHER
 Streulicht	23	NOUN
 Hufeland	23	NOUN
@@ -55337,17 +55337,17 @@ somalische	23	OTHER
 Okarina	23	NOUN
 ebendieser	23	OTHER
 Schwenk	23	NOUN
-Hauptverkehrsstraßen	23	NOUN
+Hauptverkehrsstraßen	23	NOUN	Hauptverkehrsstraße
 Landtagswahlkreis	23	NOUN
-Nüssen	23	NOUN
+Nüssen	23	NOUN	Nuss
 Grenzbahnhof	23	NOUN
-Teilaspekte	23	NOUN
+Teilaspekte	23	NOUN	Teilaspekt
 Appetit	23	NOUN
 Moosburg	23	NOUN
 Godavari	23	NOUN
 Agra	23	NOUN,OTHER
-Fürstenstaaten	23	NOUN
-Pflanzenöle	23	NOUN
+Fürstenstaaten	23	NOUN	Fürstenstaat
+Pflanzenöle	23	NOUN	Pflanzenöl
 geographisches	23	OTHER
 eisenzeitlichen	23	OTHER
 Istituto	23	NOUN
@@ -55363,15 +55363,15 @@ gestohlenen	23	OTHER
 hessischer	23	OTHER
 Dümmer	23	NOUN
 Rufname	23	NOUN
-Hoftheaters	23	NOUN
+Hoftheaters	23	NOUN	Hoftheater
 Giselher	23	NOUN
 Schwergewicht	23	NOUN
 Diplomarbeit	23	NOUN
 Ausbildungszentrum	23	NOUN
 Tyrannenmord	23	NOUN
-Singularitäten	23	NOUN
+Singularitäten	23	NOUN	Singularität
 Volksbefreiungsarmee	23	NOUN
-Liebigs	23	NOUN
+Liebigs	23	NOUN	Liebig
 glänzen	23	VERB
 Westhoff	23	NOUN
 Violoncelli	23	NOUN
@@ -55390,10 +55390,10 @@ Menlo	23	NOUN
 unmündigen	23	OTHER
 Seegebiet	23	NOUN
 merkwürdigen	23	OTHER
-Motivationen	23	NOUN
+Motivationen	23	NOUN	Motivation
 Krankheitswert	23	NOUN
 Hünfeld	23	NOUN
-Piers	23	NOUN
+Piers	23	NOUN	Pier
 LGBT	23	NOUN
 kBq	23	OTHER
 Kopplungskonstante	23	NOUN
@@ -55402,7 +55402,7 @@ Laube	23	NOUN
 Wallraf	23	NOUN
 markanteste	23	OTHER
 Entry	23	NOUN,OTHER
-Laufvögeln	23	NOUN
+Laufvögeln	23	NOUN	Laufvögel
 Plantage	23	NOUN
 Blendung	23	NOUN
 beizustehen	23	VERB
@@ -55413,8 +55413,8 @@ Fillmore	23	NOUN
 Fischzucht	23	NOUN
 indianischer	23	OTHER
 Kündigungsfrist	23	NOUN
-Nationalrats	23	NOUN
-Teilfürstentümer	23	NOUN
+Nationalrats	23	NOUN	Nationalrat
+Teilfürstentümer	23	NOUN	Teilfürstentum
 Herbig	23	NOUN
 Indonesisch	23	NOUN,OTHER
 überholten	23	VERB,OTHER
@@ -55429,31 +55429,31 @@ regeneriert	23	OTHER
 Bourguiba	23	NOUN
 oberständigen	23	OTHER
 Neueinteilung	23	NOUN
-Supermächte	23	NOUN
-Hurrikans	23	NOUN
-Kenias	23	NOUN
+Supermächte	23	NOUN	Supermacht
+Hurrikans	23	NOUN	Hurrikan
+Kenias	23	NOUN	Kenia
 Ammerland	23	NOUN
 Hitzig	23	NOUN,OTHER
-Kreistags	23	NOUN
+Kreistags	23	NOUN	Kreistag
 Beleuchtungsstärke	23	NOUN
 Veganer	23	NOUN,OTHER
 Leonberger	23	NOUN
-Hospitals	23	NOUN
+Hospitals	23	NOUN	Hospital
 Milo	23	NOUN
 mille	23	NOUN,OTHER
-Kreisgebiets	23	NOUN
+Kreisgebiets	23	NOUN	Kreisgebiet
 Grundmoräne	23	NOUN
 Hirzel	23	NOUN
 Schenker	23	NOUN
 Eigenzustand	23	NOUN
 Gauche	23	NOUN,OTHER
-Wähleranteile	23	NOUN
+Wähleranteile	23	NOUN	Wähleranteil
 Patras	23	NOUN
 Livorno	23	NOUN
 landesherrliche	23	OTHER
 Audimax	23	NOUN
-Canarias	23	NOUN
-Gesamtsystems	23	NOUN
+Canarias	23	NOUN	Canaria
+Gesamtsystems	23	NOUN	Gesamtsystem
 typografischen	23	OTHER
 Raumluft	23	NOUN
 Hélène	23	NOUN
@@ -55477,32 +55477,32 @@ Leistungsaufnahme	23	NOUN
 autokephalen	23	OTHER
 überkommene	23	OTHER
 VMRO	23	NOUN
-Schocken	23	NOUN
-Johanniterordens	23	NOUN
+Schocken	23	NOUN	Schock
+Johanniterordens	23	NOUN	Johanniterorden
 Fahrschein	23	NOUN
 Vierung	23	NOUN
 Alsfeld	23	NOUN
 SPARC	23	NOUN
-Kadetten	23	NOUN
+Kadetten	23	NOUN	Kadett
 Rive	23	NOUN
 Kernzone	23	NOUN
 FSK	23	NOUN
 Weingärten	23	NOUN
 Huftiere	23	NOUN
-Lamas	23	NOUN
+Lamas	23	NOUN	Lama
 Minotauros	23	NOUN
 abkühlt	23	OTHER
 oo	23	NOUN,OTHER
 Mittelwellensender	23	NOUN
-Bezirksregierungen	23	NOUN
+Bezirksregierungen	23	NOUN	Bezirksregierung
 epileptischen	23	OTHER
 Euthydemos	23	NOUN
-Neutronensterns	23	NOUN
-Schleusenkammern	23	NOUN
+Neutronensterns	23	NOUN	Neutronenstern
+Schleusenkammern	23	NOUN	Schleusenkammer
 niederfränkische	23	OTHER
-Gesundheitssystems	23	NOUN
+Gesundheitssystems	23	NOUN	Gesundheitssystem
 Tecklenburg	23	NOUN
-Lichtverhältnissen	23	NOUN
+Lichtverhältnissen	23	NOUN	Lichtverhältnisse
 gewöhnliches	23	OTHER
 Wiederzulassung	23	NOUN
 möchtest	23	OTHER
@@ -55511,7 +55511,7 @@ Auswurf	23	NOUN
 Sotho	23	NOUN
 Xhosa	23	NOUN
 gleitenden	23	OTHER
-Kernaufgaben	23	NOUN
+Kernaufgaben	23	NOUN	Kernaufgabe
 avancierten	23	VERB
 Leibesfrucht	23	NOUN
 Rideau	23	NOUN
@@ -55522,11 +55522,11 @@ Bachforelle	23	NOUN
 zweitkleinste	23	OTHER
 Proxima	23	NOUN
 Wiederansiedlung	23	NOUN
-Bildröhren	23	NOUN
+Bildröhren	23	NOUN	Bildröhre
 serienmäßig	23	OTHER
 MF	23	NOUN
 RBMK	23	NOUN
-Halbtonschritte	23	NOUN
+Halbtonschritte	23	NOUN	Halbtonschritt
 Zentralpolen	23	NOUN
 Zwangsumsiedlung	23	NOUN
 Branicki	23	NOUN
@@ -55541,13 +55541,13 @@ Wahrscheinlichkeitsdichte	23	NOUN
 Jakobi	23	NOUN
 Sem	23	NOUN,OTHER
 Energiesparlampen	23	NOUN
-Bauernkriegs	23	NOUN
+Bauernkriegs	23	NOUN	Bauernkrieg
 Basisvektoren	23	NOUN
 Evangelikalismus	23	NOUN
-Altkreise	23	NOUN
-Handelsniederlassungen	23	NOUN
-Landesverfassungen	23	NOUN
-Unterseiten	23	NOUN
+Altkreise	23	NOUN	Altkreis
+Handelsniederlassungen	23	NOUN	Handelsniederlassung
+Landesverfassungen	23	NOUN	Landesverfassung
+Unterseiten	23	NOUN	Unterseite
 Holzhausen	23	NOUN
 Baldachin	23	NOUN
 Kreolen	23	NOUN
@@ -55566,7 +55566,7 @@ Romandie	23	NOUN
 RSI	23	NOUN
 Panke	23	NOUN
 Coruña	23	NOUN
-Gewehren	23	NOUN
+Gewehren	23	NOUN	Gewehr
 Blason	23	NOUN
 erkämpfte	23	OTHER
 Kandidatenturnier	23	NOUN
@@ -55587,7 +55587,7 @@ Olomouc	23	NOUN
 Karlovy	23	NOUN
 Snap	23	NOUN
 Tensorprodukt	23	NOUN
-georgischer	23	NOUN,OTHER
+georgischer	23	NOUN,OTHER	georgisch
 Poljana	23	NOUN
 bleibender	23	OTHER
 Polke	23	NOUN
@@ -55595,7 +55595,7 @@ Asowsche	23	NOUN
 Westukraine	23	NOUN
 Saporoger	23	NOUN
 Denikin	23	NOUN
-Kunsthistorikern	23	NOUN
+Kunsthistorikern	23	NOUN	Kunsthistoriker
 Paraphilie	23	NOUN
 Guernsey	23	NOUN
 Ameisenigel	23	NOUN
@@ -55603,15 +55603,15 @@ Witzel	23	NOUN
 gesehene	23	OTHER
 Sommernachtstraum	23	NOUN
 personenbezogener	23	OTHER
-Papiermühlen	23	NOUN
+Papiermühlen	23	NOUN	Papiermühle
 Farbauftrag	23	NOUN
 Wienfluss	23	NOUN
 Josepha	23	NOUN
 Zecke	23	NOUN
-Dekalogs	23	NOUN
+Dekalogs	23	NOUN	Dekalog
 Cápac	23	NOUN
 Chulalongkorn	23	NOUN
-Ohnesorgs	23	NOUN
+Ohnesorgs	23	NOUN	Ohnesorg
 Lengede	23	NOUN
 Tenochtitlan	23	NOUN
 Großkhan	23	NOUN
@@ -55622,8 +55622,8 @@ Prasat	23	NOUN
 Kruja	23	NOUN
 Paik	23	NOUN
 Veldeke	23	NOUN
-Rabbinen	23	NOUN
-Müntzers	23	NOUN
+Rabbinen	23	NOUN	Rabbi
+Müntzers	23	NOUN	Müntzer
 Nordwestrussland	23	NOUN
 Garizim	23	NOUN
 Apia	23	NOUN
@@ -55642,8 +55642,8 @@ Epiphanias	23	NOUN
 Jungfrauengeburt	23	NOUN
 Schnürsenkel	23	NOUN
 Schönhausen	23	NOUN
-Harrisons	23	NOUN
-Einzelausstellungen	23	NOUN
+Harrisons	23	NOUN	Harrison
+Einzelausstellungen	23	NOUN	Einzelausstellung
 Ethnozentrismus	23	NOUN
 Pulsar	23	NOUN
 Amida	23	NOUN
@@ -55652,21 +55652,21 @@ DGL	23	NOUN,OTHER
 Khipu	23	NOUN
 Perikope	23	NOUN
 Beatboxing	23	NOUN
-Bultmanns	23	NOUN
+Bultmanns	23	NOUN	Bultmann
 Lia	23	NOUN
 Cymru	23	NOUN
-Schieles	23	NOUN
+Schieles	23	NOUN	Schiele
 Urfahr	23	NOUN
 Euphonium	23	NOUN
-Phylen	23	NOUN
+Phylen	23	NOUN	Phyle
 Freyung	23	NOUN
 Emitter	23	NOUN
 Mähen	23	NOUN,OTHER
 Musikethnologie	23	NOUN
 Petrosawodsk	23	NOUN
-Pulsare	23	NOUN
+Pulsare	23	NOUN	Pulsar
 Trusted	23	NOUN
-Dornbirns	23	NOUN
+Dornbirns	23	NOUN	Dornbirn
 Anlong	23	NOUN
 Veng	23	NOUN
 Teilgraph	23	NOUN
@@ -55676,19 +55676,19 @@ Transsib	23	NOUN
 Kysyl	23	NOUN
 Hörschel	23	NOUN
 Fehmarnsund	23	NOUN
-Oldenburgs	23	NOUN
+Oldenburgs	23	NOUN	Oldenburg
 Hexentanzplatz	23	NOUN
 Schwellenspannung	23	NOUN
 Dünaburg	23	NOUN
 Testbild	23	NOUN
-Gambas	23	NOUN
+Gambas	23	NOUN	Gamba
 Glotz	23	NOUN
 Nullarbor	23	NOUN
 Jablonec	23	NOUN
 Cirksena	23	NOUN
 Kamelie	23	NOUN
 Folgesaison	23	NOUN
-Kirchentages	23	NOUN
+Kirchentages	23	NOUN	Kirchentag
 Funktionsvorschrift	23	NOUN
 Trökes	23	NOUN
 Fachinformatiker	23	NOUN
@@ -55701,7 +55701,7 @@ Bünder	23	NOUN
 Heftung	23	NOUN
 Schirmgitter	23	NOUN
 Höhscheid	23	NOUN
-Catweazles	23	NOUN
+Catweazles	23	NOUN	Catweazle
 Numerarier	23	NOUN
 Morosini	23	NOUN
 Sesotho	23	NOUN
@@ -55717,12 +55717,12 @@ CBE	22	NOUN
 Eyes	22	NOUN,OTHER
 Argwohn	22	NOUN
 vielschichtige	22	OTHER
-Programmkinos	22	NOUN
+Programmkinos	22	NOUN	Programmkino
 Kassenschlager	22	NOUN
 zuviel	22	OTHER
 ungewohnt	22	OTHER
 spürte	22	OTHER
-Auftraggebern	22	NOUN
+Auftraggebern	22	NOUN	Auftraggeber
 Nierenversagen	22	NOUN
 antreibt	22	OTHER
 unwesentliche	22	OTHER
@@ -55736,16 +55736,16 @@ Clément	22	NOUN
 retrospektiv	22	NOUN,OTHER
 Reminiszenz	22	NOUN
 aufgekommene	22	OTHER
-Franchises	22	NOUN
+Franchises	22	NOUN	Franchise
 eingefügten	22	OTHER
 vervielfacht	22	OTHER
 befruchtete	22	OTHER
 einladen	22	VERB
-Phenole	22	NOUN
+Phenole	22	NOUN	Phenol
 Trivialname	22	NOUN
 Carbonsäure	22	NOUN
 Sauerstoffatom	22	NOUN
-Fingers	22	NOUN
+Fingers	22	NOUN	Finger
 Aluminiumlegierungen	22	NOUN
 Passivierung	22	NOUN
 Elektroneneinfang	22	NOUN
@@ -55784,10 +55784,10 @@ Bearbeiter	22	NOUN
 Selbstbeherrschung	22	NOUN
 wahnsinnigen	22	NOUN,OTHER
 Tüchtigkeit	22	NOUN
-Ausformungen	22	NOUN
+Ausformungen	22	NOUN	Ausformung
 tugendhaften	22	OTHER
 Nachhall	22	NOUN
-Fisches	22	NOUN
+Fisches	22	NOUN	Fisch
 uraufgeführten	22	OTHER
 Staatenwelt	22	NOUN
 Byzantion	22	NOUN
@@ -55801,10 +55801,10 @@ Dolmen	22	NOUN
 Grabung	22	NOUN
 Schwab	22	NOUN
 Flinders	22	NOUN
-Handbuchs	22	NOUN
+Handbuchs	22	NOUN	Handbuch
 Katalogisierung	22	NOUN
 hermeneutische	22	OTHER
-Ausgrabungsstätten	22	NOUN
+Ausgrabungsstätten	22	NOUN	Ausgrabungsstätte
 präkolumbischen	22	OTHER
 Dendrochronologie	22	NOUN
 Ugarit	22	NOUN
@@ -55826,11 +55826,11 @@ István	22	NOUN
 Naturlehre	22	NOUN
 fremdem	22	OTHER
 nützliches	22	OTHER
-Terms	22	NOUN,OTHER
+Terms	22	NOUN,OTHER	Term
 modale	22	OTHER
 definierbar	22	OTHER
 hervortritt	22	OTHER
-Sinneseindrücke	22	NOUN
+Sinneseindrücke	22	NOUN	Sinneseindruck
 Averroes	22	NOUN
 platonisch	22	OTHER
 Feldarbeit	22	NOUN
@@ -55842,7 +55842,7 @@ Wahlversprechen	22	NOUN
 prägnant	22	OTHER
 Ambrose	22	NOUN
 Nachkriegsordnung	22	NOUN
-Themengebieten	22	NOUN
+Themengebieten	22	NOUN	Themengebiet
 Omnibuslinien	22	NOUN
 Bundestagsmandat	22	NOUN
 Reaktorsicherheit	22	NOUN
@@ -55853,7 +55853,7 @@ bescherten	22	VERB
 komfortablen	22	OTHER
 Amoklauf	22	NOUN
 Freiwilligenarmee	22	NOUN
-Atomkraftwerke	22	NOUN
+Atomkraftwerke	22	NOUN	Atomkraftwerk
 EnBW	22	NOUN
 eingereichte	22	OTHER
 Rechtsanspruch	22	NOUN
@@ -55863,12 +55863,12 @@ kürte	22	OTHER
 ostdeutscher	22	OTHER
 Alicia	22	NOUN
 Comicfigur	22	NOUN
-Sultanats	22	NOUN
+Sultanats	22	NOUN	Sultanat
 KKP	22	NOUN
 monumental	22	OTHER
 Beschimpfung	22	NOUN
-Dachverbände	22	NOUN
-Märtyrern	22	NOUN
+Dachverbände	22	NOUN	Dachverband
+Märtyrern	22	NOUN	Märtyrer
 Wollust	22	NOUN
 gegenüberstellt	22	OTHER
 unverzichtbaren	22	OTHER
@@ -55876,7 +55876,7 @@ Antje	22	NOUN
 Renn	22	NOUN,VERB
 Gasriesen	22	NOUN
 Mudschaheddin	22	NOUN
-Ehemänner	22	NOUN
+Ehemänner	22	NOUN	Ehemann
 erließen	22	VERB
 Hamid	22	NOUN
 länderübergreifend	22	OTHER
@@ -55898,7 +55898,7 @@ Ursprünglichkeit	22	NOUN
 Sensei	22	NOUN
 Jitsu	22	NOUN
 fortgeschrittener	22	OTHER
-Dehnungs	22	NOUN
+Dehnungs	22	NOUN	Dehnung
 Wüstenklima	22	NOUN
 Alhambra	22	NOUN
 Dancing	22	NOUN
@@ -55908,19 +55908,19 @@ Nehmer	22	NOUN
 Dienstverhältnis	22	NOUN
 Eindeutschung	22	NOUN
 Halde	22	NOUN
-Zuwächse	22	NOUN
+Zuwächse	22	NOUN	Zuwachs
 Glyptothek	22	NOUN
 Skrupel	22	NOUN
 Bekräftigung	22	NOUN
 Stieftochter	22	NOUN
 senatorische	22	OTHER
 vorzuschlagen	22	VERB
-Amtshandlungen	22	NOUN
+Amtshandlungen	22	NOUN	Amtshandlung
 faschistischer	22	OTHER
 divergierenden	22	OTHER
 Renata	22	NOUN
 Handelshaus	22	NOUN
-Polemiken	22	NOUN
+Polemiken	22	NOUN	Polemik
 allmächtig	22	OTHER
 mahnt	22	OTHER
 pessimistischen	22	OTHER
@@ -55933,7 +55933,7 @@ entlud	22	OTHER
 Startkapital	22	NOUN
 überlappende	22	OTHER
 außergerichtlichen	22	OTHER
-Stores	22	NOUN
+Stores	22	NOUN	Store
 beißen	22	VERB
 Oberflächenstruktur	22	NOUN
 Textverarbeitungsprogramm	22	NOUN
@@ -55950,10 +55950,10 @@ Kahr	22	NOUN
 ultimativ	22	OTHER
 Gesamtsumme	22	NOUN
 Verfassungsbruch	22	NOUN
-Eisernes	22	NOUN
+Eisernes	22	NOUN	Eiserne
 Haftzeit	22	NOUN
 Judenvernichtung	22	NOUN
-Großkirchen	22	NOUN
+Großkirchen	22	NOUN	Großkirche
 Reichsparteitag	22	NOUN
 deutschlandweite	22	OTHER
 Staatsangehöriger	22	NOUN
@@ -55970,7 +55970,7 @@ Zickzack	22	NOUN
 belagern	22	VERB
 konsolidiert	22	OTHER
 delegieren	22	VERB
-Fehlentscheidungen	22	NOUN
+Fehlentscheidungen	22	NOUN	Fehlentscheidung
 unwahrscheinlicher	22	OTHER
 festnehmen	22	VERB
 erwirkt	22	OTHER
@@ -55990,7 +55990,7 @@ Missverhältnis	22	NOUN
 Anthemius	22	NOUN
 aufgekündigt	22	OTHER
 betrieblich	22	OTHER
-Amerikaners	22	NOUN
+Amerikaners	22	NOUN	Amerikaner
 Songtexte	22	NOUN
 Marxist	22	NOUN
 Mondumlaufbahn	22	NOUN
@@ -56000,7 +56000,7 @@ Nemesis	22	NOUN
 Entropiekodierung	22	NOUN
 Assistenz	22	NOUN
 Lärmbelastung	22	NOUN
-Nutzungsmöglichkeiten	22	NOUN
+Nutzungsmöglichkeiten	22	NOUN	Nutzungsmöglichkeit
 Fortbewegungsmittel	22	NOUN
 Nutzfahrzeuge	22	NOUN
 vermeidbar	22	OTHER
@@ -56013,49 +56013,49 @@ Essai	22	NOUN
 Scienze	22	NOUN,OTHER
 invers	22	OTHER
 Haxthausen	22	NOUN
-Schwagers	22	NOUN
+Schwagers	22	NOUN	Schwager
 Friedhofskapelle	22	NOUN
 Vielschichtigkeit	22	NOUN
-Schriftstellerinnen	22	NOUN
+Schriftstellerinnen	22	NOUN	Schriftstellerin
 Kollegin	22	NOUN
 gedrucktes	22	OTHER
 Feldspat	22	NOUN
 ausliefern	22	VERB
 µmol	22	OTHER
 dialektisch	22	OTHER
-Blattachseln	22	NOUN
+Blattachseln	22	NOUN	Blattachsel
 Wasserspeicher	22	NOUN
 Launch	22	NOUN
 Kosmonaut	22	NOUN
-Landeplätze	22	NOUN
+Landeplätze	22	NOUN	Landeplatz
 Ballaststoffe	22	NOUN
-Versuchstiere	22	NOUN
+Versuchstiere	22	NOUN	Versuchstier
 aufgetretene	22	OTHER
 erneutem	22	OTHER
 exotischer	22	OTHER
-Harzen	22	NOUN
+Harzen	22	NOUN	Harz
 unbehandelt	22	OTHER
-Abbauprodukte	22	NOUN
+Abbauprodukte	22	NOUN	Abbauprodukt
 sortierte	22	OTHER
 aromatisch	22	OTHER
 Garen	22	NOUN,OTHER
 Chauken	22	NOUN
 Tauglichkeit	22	NOUN
 Hutten	22	NOUN
-Regionalverbände	22	NOUN
+Regionalverbände	22	NOUN	Regionalverband
 Schanze	22	NOUN
 Kamil	22	NOUN
 Schwelm	22	NOUN
 Nixdorf	22	NOUN
-Großreichs	22	NOUN
+Großreichs	22	NOUN	Großreich
 Kleidungsstück	22	NOUN
 SOV	22	NOUN
-Frikative	22	NOUN
-Affrikaten	22	NOUN
-Substantivs	22	NOUN
+Frikative	22	NOUN	Frikativ
+Affrikaten	22	NOUN	Affrikate
+Substantivs	22	NOUN	Substantiv
 erläuterten	22	VERB,OTHER
 Küstenabschnitt	22	NOUN
-Stahls	22	NOUN
+Stahls	22	NOUN	Stahl
 Paraná	22	NOUN
 Armutsquote	22	NOUN
 afrikanisches	22	OTHER
@@ -56063,32 +56063,32 @@ berechtigen	22	VERB
 Wettrüsten	22	NOUN
 neoliberale	22	OTHER
 rechtspopulistische	22	OTHER
-Regionalparteien	22	NOUN
+Regionalparteien	22	NOUN	Regionalpartei
 Revolucionario	22	NOUN
-Großraums	22	NOUN
+Großraums	22	NOUN	Großraum
 Grupo	22	NOUN
 Guillermo	22	NOUN
-Militärregierungen	22	NOUN
-Antigenen	22	NOUN
+Militärregierungen	22	NOUN	Militärregierung
+Antigenen	22	NOUN	Antigen
 Umlagerung	22	NOUN
 Birnen	22	NOUN
 Mathematikerin	22	NOUN
 Visionär	22	NOUN,OTHER
-Webstühle	22	NOUN
+Webstühle	22	NOUN	Webstuhl
 anstellen	22	VERB
 extrazelluläre	22	OTHER
-Strängen	22	NOUN
+Strängen	22	NOUN	Strang
 schwächt	22	OTHER
 Marly	22	NOUN
 Jour	22	NOUN,OTHER
 Hippocraticum	22	NOUN
-Obduktionen	22	NOUN
-Intellekts	22	NOUN
+Obduktionen	22	NOUN	Obduktion
+Intellekts	22	NOUN	Intellekt
 habsburgischer	22	OTHER
 angetragen	22	VERB
-Außenseiten	22	NOUN
+Außenseiten	22	NOUN	Außenseite
 Schallausbreitung	22	NOUN
-Gehörs	22	NOUN
+Gehörs	22	NOUN	Gehör
 Langevin	22	NOUN
 verwandtes	22	OTHER
 Wortgleichungen	22	NOUN
@@ -56107,7 +56107,7 @@ abgrenzbar	22	OTHER
 Recommendation	22	NOUN
 eingeprägt	22	OTHER
 Russel	22	NOUN
-Unterprogramme	22	NOUN
+Unterprogramme	22	NOUN	Unterprogramm
 formalisierte	22	OTHER
 unlösbar	22	OTHER
 Konsonantentext	22	NOUN
@@ -56117,24 +56117,24 @@ abspeichern	22	NOUN,OTHER
 Einsteiger	22	NOUN
 Auslandsreise	22	NOUN
 Banca	22	NOUN
-Austern	22	NOUN
+Austern	22	NOUN	Auster
 durchgehendes	22	OTHER
 Samenleiter	22	NOUN
-Katheten	22	NOUN
+Katheten	22	NOUN	Kathete
 zustimmend	22	OTHER
 leihen	22	VERB
-Bleis	22	NOUN
+Bleis	22	NOUN	Blei
 Vieux	22	NOUN
 Knospe	22	NOUN
 Kehrseite	22	NOUN
 kulminierte	22	OTHER
 Congo	22	NOUN
-Flüssigkristalle	22	NOUN
+Flüssigkristalle	22	NOUN	Flüssigkristall
 Ruhelage	22	NOUN
 Eisschicht	22	NOUN
 anziehend	22	OTHER
-Mitspracherechte	22	NOUN
-Mikrocontrollern	22	NOUN
+Mitspracherechte	22	NOUN	Mitspracherecht
+Mikrocontrollern	22	NOUN	Mikrocontroller
 ausführbaren	22	OTHER
 Startup	22	NOUN
 Frauenordination	22	NOUN
@@ -56142,22 +56142,22 @@ Bischöfin	22	NOUN
 paradiesischen	22	OTHER
 Urgrund	22	NOUN
 Mondjahr	22	NOUN
-Priesterinnen	22	NOUN
+Priesterinnen	22	NOUN	Priesterin
 alltäglicher	22	OTHER
 befänden	22	OTHER
 schwebend	22	OTHER
 ergingen	22	VERB
-Erlasses	22	NOUN
+Erlasses	22	NOUN	Erlass
 Firmament	22	NOUN
 einsortiert	22	OTHER
-Umlaufs	22	NOUN
+Umlaufs	22	NOUN	Umlauf
 Bahnneigung	22	NOUN
 umläuft	22	OTHER
 inschriftlich	22	OTHER
 Hämmer	22	NOUN
 Bauplatz	22	NOUN
 Übergreifen	22	NOUN,OTHER
-Verwaltungsreformen	22	NOUN
+Verwaltungsreformen	22	NOUN	Verwaltungsreform
 Heeresversuchsanstalt	22	NOUN
 selbsttätig	22	OTHER
 Brennkammer	22	NOUN
@@ -56172,15 +56172,15 @@ Oliveira	22	NOUN
 FAA	22	NOUN
 Mitgliedsstaat	22	NOUN
 leidende	22	OTHER
-Texturen	22	NOUN
+Texturen	22	NOUN	Textur
 Folsäure	22	NOUN
-Säuglings	22	NOUN
+Säuglings	22	NOUN	Säugling
 Erzherzogtum	22	NOUN
 Aufkleber	22	NOUN
 Hintereinanderausführung	22	NOUN
 meistgenutzte	22	OTHER
 Naturschützer	22	NOUN
-Sozialversicherungen	22	NOUN
+Sozialversicherungen	22	NOUN	Sozialversicherung
 verbucht	22	OTHER
 Anlagevermögen	22	NOUN
 Marktreife	22	NOUN
@@ -56196,7 +56196,7 @@ Heiler	22	NOUN
 Biowissenschaften	22	NOUN
 blies	22	NOUN,OTHER
 Philosophiae	22	NOUN,OTHER
-Steroide	22	NOUN
+Steroide	22	NOUN	Steroid
 Gesellschaftswissenschaften	22	NOUN
 Stottern	22	NOUN
 Armageddon	22	NOUN
@@ -56221,20 +56221,20 @@ erkämpften	22	VERB,OTHER
 Bretten	22	NOUN
 Verfassunggebende	22	NOUN,OTHER
 Bundesinnenministerium	22	NOUN
-Hessisches	22	NOUN,OTHER
+Hessisches	22	NOUN,OTHER	Hessische
 Seedorf	22	NOUN
-Anziehungspunkte	22	NOUN
+Anziehungspunkte	22	NOUN	Anziehungspunkt
 Modal	22	NOUN
 Bildungsangebot	22	NOUN
 Filmakademie	22	NOUN
 textbasierte	22	OTHER
 Pull	22	NOUN
 Stalag	22	NOUN
-Flops	22	NOUN
-Bezugspunkte	22	NOUN
+Flops	22	NOUN	Flop
+Bezugspunkte	22	NOUN	Bezugspunkt
 imitierte	22	OTHER
-Filmprojekte	22	NOUN
-Modernisierungen	22	NOUN
+Filmprojekte	22	NOUN	Filmprojekt
+Modernisierungen	22	NOUN	Modernisierung
 Greenaway	22	NOUN
 Silent	22	NOUN
 Bundeskriminalamt	22	NOUN
@@ -56246,7 +56246,7 @@ MIPS	22	NOUN
 Kernforschung	22	NOUN
 geröstet	22	OTHER
 Tasse	22	NOUN
-Inhaltsstoffen	22	NOUN
+Inhaltsstoffen	22	NOUN	Inhaltsstoff
 föderal	22	OTHER
 Landesrat	22	NOUN
 Höchststrafe	22	NOUN
@@ -56261,25 +56261,25 @@ genossenschaftlichen	22	OTHER
 aufgegebene	22	OTHER
 Schmerzmittel	22	NOUN
 Lounge	22	NOUN
-Frakturen	22	NOUN
+Frakturen	22	NOUN	Fraktur
 durchgeführter	22	OTHER
 Bekleidungsindustrie	22	NOUN
-Accessoires	22	NOUN
+Accessoires	22	NOUN	Accessoire
 Baugeschichte	22	NOUN
 Chormusik	22	NOUN
-Universitätsklinikums	22	NOUN
+Universitätsklinikums	22	NOUN	Universitätsklinikum
 ausstrahlt	22	OTHER
-Nennungen	22	NOUN
+Nennungen	22	NOUN	Nennung
 Verlandung	22	NOUN
-Pegelstände	22	NOUN
-Wasserständen	22	NOUN
+Pegelstände	22	NOUN	Pegelstand
+Wasserständen	22	NOUN	Wasserstand
 Begleiterscheinung	22	NOUN
 sehende	22	OTHER
 Kondominium	22	NOUN
 dringlich	22	OTHER
 normalisiert	22	OTHER
-Gewächshäuser	22	NOUN
-Inspektionen	22	NOUN
+Gewächshäuser	22	NOUN	Gewächshaus
+Inspektionen	22	NOUN	Inspektion
 libertäre	22	NOUN,OTHER
 Baldur	22	NOUN
 Eckhard	22	NOUN
@@ -56297,9 +56297,9 @@ Clapton	22	NOUN
 vorschrieb	22	OTHER
 bildhaft	22	OTHER
 Viersektorenstadt	22	NOUN
-Kontrollrats	22	NOUN
+Kontrollrats	22	NOUN	Kontrollrat
 kreuzenden	22	OTHER
-Ultimatums	22	NOUN
+Ultimatums	22	NOUN	Ultimatum
 verantwortete	22	OTHER
 Gartenschläger	22	NOUN
 Kittel	22	NOUN
@@ -56311,21 +56311,21 @@ subtropisches	22	OTHER
 gebadet	22	OTHER
 lockerte	22	OTHER
 Entscheidungsgewalt	22	NOUN
-Bellas	22	NOUN
+Bellas	22	NOUN	Bella
 Blanco	22	NOUN
-Badeorte	22	NOUN
+Badeorte	22	NOUN	Badeort
 Einbahnstraßen	22	NOUN
 Weserufer	22	NOUN
 Hella	22	NOUN
 Hude	22	NOUN
-Chausseen	22	NOUN
+Chausseen	22	NOUN	Chaussee
 Radioprogramm	22	NOUN
 Spielfeldes	22	NOUN
-Spielzüge	22	NOUN
+Spielzüge	22	NOUN	Spielzug
 Freizeitbeschäftigung	22	NOUN
 Draft	22	NOUN
 exzessiver	22	OTHER
-Guards	22	NOUN
+Guards	22	NOUN	Guard
 Divisions	22	NOUN
 Harrelson	22	NOUN
 stoffliche	22	OTHER
@@ -56338,21 +56338,21 @@ beträchtliches	22	OTHER
 Codename	22	NOUN
 Rechtsnorm	22	NOUN
 Ahndung	22	NOUN
-Handelsplätze	22	NOUN
-Derivaten	22	NOUN
+Handelsplätze	22	NOUN	Handelsplatz
+Derivaten	22	NOUN	Derivat
 Volksfrömmigkeit	22	NOUN
 Großschreibung	22	NOUN
 Prophetenbücher	22	NOUN
 Bekenntnisschriften	22	NOUN
-Bibeltexte	22	NOUN
+Bibeltexte	22	NOUN	Bibeltext
 kraftvollen	22	OTHER
 Suda	22	NOUN
 zusammenarbeitet	22	OTHER
 außergewöhnliches	22	OTHER
-Bundesministern	22	NOUN
+Bundesministern	22	NOUN	Bundesminister
 Maximinus	22	NOUN
-Notlagen	22	NOUN
-Niederschlags	22	NOUN
+Notlagen	22	NOUN	Notlage
+Niederschlags	22	NOUN	Niederschlag
 Rode	22	NOUN,OTHER
 Brabanter	22	NOUN
 industrialisiert	22	OTHER
@@ -56361,12 +56361,12 @@ Versicherungsgesellschaft	22	NOUN
 Koninklijke	22	NOUN
 Pommes	22	NOUN
 Aufwind	22	NOUN
-Buchhandlungen	22	NOUN
+Buchhandlungen	22	NOUN	Buchhandlung
 Karst	22	NOUN
 Bärlauch	22	NOUN
 Lexik	22	NOUN
 Herrschertitel	22	NOUN
-Neolithikums	22	NOUN
+Neolithikums	22	NOUN	Neolithikum
 Petar	22	NOUN
 multiethnischen	22	OTHER
 SDP	22	NOUN
@@ -56378,7 +56378,7 @@ Granate	22	NOUN
 Gesamtanzahl	22	NOUN
 chancenlos	22	OTHER
 weltbekannten	22	OTHER
-Kreuzfahrten	22	NOUN
+Kreuzfahrten	22	NOUN	Kreuzfahrt
 Calciumhydroxid	22	NOUN
 Gesetzesinitiative	22	NOUN
 Verkehrsachse	22	NOUN
@@ -56420,17 +56420,17 @@ Gebetszeiten	22	NOUN
 monastische	22	OTHER
 Kirsche	22	NOUN
 Clodius	22	NOUN
-Rheinlandes	22	NOUN
+Rheinlandes	22	NOUN	Rheinland
 Arboretum	22	NOUN
-Turnhallen	22	NOUN
+Turnhallen	22	NOUN	Turnhalle
 weltanschaulicher	22	OTHER
 Abendstunden	22	NOUN
 Härtebereich	22	NOUN
 qualifizierter	22	OTHER
-Arbeitslosenquoten	22	NOUN
+Arbeitslosenquoten	22	NOUN	Arbeitslosenquote
 ser	22	NOUN,OTHER
 BMVg	22	NOUN
-Amtsgerichte	22	NOUN
+Amtsgerichte	22	NOUN	Amtsgericht
 Corte	22	NOUN
 ausgefallenen	22	OTHER
 interaktives	22	OTHER
@@ -56447,7 +56447,7 @@ skyblue	22	OTHER
 Sue	22	NOUN
 RIP	22	NOUN
 vererbten	22	VERB
-Einzelwissenschaften	22	NOUN
+Einzelwissenschaften	22	NOUN	Einzelwissenschaft
 türkisches	22	OTHER
 glatter	22	OTHER
 Luxusgüter	22	NOUN
@@ -56461,7 +56461,7 @@ durchquerten	22	VERB
 Kinderheim	22	NOUN
 Thermalbad	22	NOUN
 Schwimmbecken	22	NOUN
-Erholungs	22	NOUN
+Erholungs	22	NOUN	Erholung
 christianisierten	22	VERB,OTHER
 Kettenbrücke	22	NOUN
 Horthy	22	NOUN
@@ -56470,7 +56470,7 @@ Lajos	22	NOUN
 Badekultur	22	NOUN
 Zugverbindung	22	NOUN
 Blutverlust	22	NOUN
-Neuentwicklungen	22	NOUN
+Neuentwicklungen	22	NOUN	Neuentwicklung
 Migros	22	NOUN
 Einspeisevergütung	22	NOUN
 ungestörten	22	OTHER
@@ -56481,14 +56481,14 @@ Evangelista	22	NOUN
 heimatlichen	22	OTHER
 Vertraulichkeit	22	NOUN
 Einsammeln	22	NOUN,OTHER
-Rentiere	22	NOUN
+Rentiere	22	NOUN	Rentier
 verseucht	22	OTHER
 Vietnamkrieges	22	NOUN
 Swerdlowsk	22	NOUN
 Kreuzfahrerstaaten	22	NOUN
 abrufen	22	VERB
 angezeigten	22	OTHER
-Bestellungen	22	NOUN
+Bestellungen	22	NOUN	Bestellung
 Load	22	NOUN
 Knoppix	22	NOUN
 lebenswichtige	22	OTHER
@@ -56503,7 +56503,7 @@ Prachtbauten	22	NOUN
 Staminodien	22	NOUN
 Lianen	22	NOUN
 Epiphyten	22	NOUN
-Achseln	22	NOUN
+Achseln	22	NOUN	Achsel
 vierziger	22	OTHER
 aufklären	22	VERB
 autosomal	22	OTHER
@@ -56529,26 +56529,26 @@ Diastole	22	NOUN
 Verstehens	22	NOUN
 Herwegh	22	NOUN
 findenden	22	OTHER
-Grenzgebieten	22	NOUN
+Grenzgebieten	22	NOUN	Grenzgebiet
 Westungarn	22	NOUN
-Skeletten	22	NOUN
+Skeletten	22	NOUN	Skelett
 unwidersprochen	22	OTHER
 unterband	22	OTHER
 Zeitverlauf	22	NOUN
-Dachse	22	NOUN
-Idole	22	NOUN
+Dachse	22	NOUN	Dachs
+Idole	22	NOUN	Idol
 rechteckig	22	OTHER
 Arbeitsaufwand	22	NOUN
 Alsace	22	NOUN
 Muschelschalen	22	NOUN
-Kleidungsstücken	22	NOUN
+Kleidungsstücken	22	NOUN	Kleidungsstück
 Adonis	22	NOUN
-Massengräbern	22	NOUN
+Massengräbern	22	NOUN	Massengrab
 verallgemeinernd	22	OTHER
 Überalterung	22	NOUN
 späterem	22	OTHER
-Levels	22	NOUN
-Diebe	22	NOUN
+Levels	22	NOUN	Level
+Diebe	22	NOUN	Dieb
 BAFTA	22	NOUN
 namenlosen	22	OTHER
 Halunken	22	NOUN
@@ -56561,9 +56561,9 @@ begründeter	22	OTHER
 Mosander	22	NOUN
 Primo	22	NOUN
 Zinnober	22	NOUN
-Fahrgeschäften	22	NOUN
+Fahrgeschäften	22	NOUN	Fahrgeschäfte
 Riesenrad	22	NOUN
-Cards	22	NOUN
+Cards	22	NOUN	Card
 Jazzclub	22	NOUN
 Studioaufnahmen	22	NOUN
 Bobo	22	NOUN
@@ -56574,9 +56574,9 @@ Odyssey	22	NOUN
 Bots	22	NOUN
 MMORPG	22	NOUN
 entliehen	22	VERB
-Hanseatischen	22	NOUN,OTHER
+Hanseatischen	22	NOUN,OTHER	Hanseatische
 Antithese	22	NOUN
-Großräumen	22	NOUN
+Großräumen	22	NOUN	Großraum
 Weltpolitik	22	NOUN
 Piso	22	NOUN
 Wagenrennen	22	NOUN
@@ -56587,7 +56587,7 @@ abstoßenden	22	OTHER
 Voreingenommenheit	22	NOUN
 Statistical	22	NOUN
 Associate	22	NOUN
-Observatoriums	22	NOUN
+Observatoriums	22	NOUN	Observatorium
 VAG	22	NOUN
 Presbyterianer	22	NOUN
 Itz	22	NOUN,OTHER
@@ -56602,14 +56602,14 @@ Query	22	NOUN
 Sinowjew	22	NOUN
 Gottschalk	22	NOUN
 Produktqualität	22	NOUN
-Verwaltungsbeamten	22	NOUN
+Verwaltungsbeamten	22	NOUN	Verwaltungsbeamte
 Auftragsarbeit	22	NOUN
 Bronchitis	22	NOUN
 Druckbogen	22	NOUN
 selbstgebauten	22	OTHER
 kühlte	22	OTHER
 Effects	22	NOUN,OTHER
-Schreibern	22	NOUN
+Schreibern	22	NOUN	Schreiber
 Dassault	22	NOUN
 Ersatzteile	22	NOUN
 Guam	22	NOUN
@@ -56619,14 +56619,14 @@ Weihnachtsgeschichte	22	NOUN
 spannt	22	OTHER
 Mitgefangenen	22	NOUN
 Heimkehrer	22	NOUN
-Atollen	22	NOUN
+Atollen	22	NOUN	Atoll
 Juliana	22	NOUN
 Kreuzrippengewölbe	22	NOUN
-Vermessungen	22	NOUN
-Halterungen	22	NOUN
+Vermessungen	22	NOUN	Vermessung
+Halterungen	22	NOUN	Halterung
 tragfähig	22	OTHER
 kreisrunde	22	OTHER
-Fusionsreaktionen	22	NOUN
+Fusionsreaktionen	22	NOUN	Fusionsreaktion
 Universitätsprofessor	22	NOUN
 Witwer	22	NOUN
 Legendre	22	NOUN
@@ -56637,7 +56637,7 @@ Carla	22	NOUN
 Joaquin	22	NOUN
 Carrie	22	NOUN
 Verdunstungsrate	22	NOUN
-Anfängern	22	NOUN
+Anfängern	22	NOUN	Anfänger
 Lösungsweg	22	NOUN
 autokratisch	22	OTHER
 künftiges	22	OTHER
@@ -56649,45 +56649,45 @@ Wartenburg	22	NOUN
 umgewandelten	22	OTHER
 Leberzellen	22	NOUN
 Cholesterinspiegel	22	NOUN
-Redakteuren	22	NOUN
+Redakteuren	22	NOUN	Redakteur
 Build	22	NOUN,OTHER
-Peripheriegeräten	22	NOUN
-Kabels	22	NOUN
+Peripheriegeräten	22	NOUN	Peripheriegeräte
+Kabels	22	NOUN	Kabel
 kompilieren	22	VERB
 Sisters	22	NOUN
 Scooter	22	NOUN
 untermalt	22	OTHER
 ordentlich	22	OTHER
-Magnituden	22	NOUN
+Magnituden	22	NOUN	Magnitude
 bevölkern	22	VERB
 Nachrichtensendung	22	NOUN
 Aufenthaltserlaubnis	22	NOUN
 vulgär	22	OTHER
 rechtskonservativen	22	OTHER
 verschütteten	22	VERB,OTHER
-Anbaugebieten	22	NOUN
+Anbaugebieten	22	NOUN	Anbaugebiet
 Lira	22	NOUN
 prestigeträchtigen	22	OTHER
 Vizeweltmeister	22	NOUN
 EDA	22	NOUN
-Kontinuums	22	NOUN
+Kontinuums	22	NOUN	Kontinuum
 darlegt	22	OTHER
 Mathematics	22	NOUN
 arbeitsteilig	22	OTHER
 Unterscheidbarkeit	22	NOUN
 Erzählens	22	NOUN
 Matrize	22	NOUN
-Pits	22	NOUN
+Pits	22	NOUN	Pit
 Feinheit	22	NOUN
 Unwucht	22	NOUN
-Ortsbezeichnungen	22	NOUN
+Ortsbezeichnungen	22	NOUN	Ortsbezeichnung
 nichtleere	22	OTHER
 erzwingt	22	OTHER
 Golem	22	NOUN
 Mabuse	22	NOUN
 Sünderin	22	NOUN
 Romy	22	NOUN
-Fernsehgeräten	22	NOUN
+Fernsehgeräten	22	NOUN	Fernsehgerät
 umgestalten	22	VERB
 Eisenberg	22	NOUN
 überwältigen	22	VERB
@@ -56703,16 +56703,16 @@ eingewanderte	22	OTHER
 Zamość	22	NOUN
 Edelweißpiraten	22	NOUN
 Jahresabschluss	22	NOUN
-Schwerte	22	NOUN
-Dominikanerklosters	22	NOUN
-Ausrichtungen	22	NOUN
+Schwerte	22	NOUN	Schwert
+Dominikanerklosters	22	NOUN	Dominikanerkloster
+Ausrichtungen	22	NOUN	Ausrichtung
 Uhde	22	NOUN
 Volkskongress	22	NOUN
 Botta	22	NOUN
 zweigeschossige	22	OTHER
-Cats	22	NOUN
+Cats	22	NOUN	Cat
 besticht	22	OTHER
-Spielplätze	22	NOUN
+Spielplätze	22	NOUN	Spielplatz
 bronzenen	22	OTHER
 Winterberg	22	NOUN
 Handelsblatt	22	NOUN
@@ -56726,11 +56726,11 @@ beizubringen	22	VERB
 Öffnungswinkel	22	NOUN
 Welterfolg	22	NOUN
 isolierende	22	OTHER
-Aussterbens	22	NOUN
+Aussterbens	22	NOUN	Aussterben
 preisgekrönte	22	OTHER
-Parts	22	NOUN,OTHER
+Parts	22	NOUN,OTHER	Part
 Treverorum	22	NOUN
-Sekretärs	22	NOUN
+Sekretärs	22	NOUN	Sekretär
 flavischen	22	OTHER
 Wahrsager	22	NOUN
 herrschaftliche	22	OTHER
@@ -56740,7 +56740,7 @@ grenzüberschreitend	22	OTHER
 Tonfall	22	NOUN
 transparenter	22	OTHER
 Wahlverhalten	22	NOUN
-Gehirne	22	NOUN
+Gehirne	22	NOUN	Gehirn
 GFDL	22	NOUN
 Zeitstempel	22	NOUN
 ändernde	22	OTHER
@@ -56758,14 +56758,14 @@ begehbaren	22	OTHER
 Kirchenraum	22	NOUN
 Boleslav	22	NOUN
 MPI	22	NOUN
-Monsters	22	NOUN
+Monsters	22	NOUN	Monster
 eiserner	22	OTHER
 hiesige	22	OTHER
-Dampfturbinen	22	NOUN
+Dampfturbinen	22	NOUN	Dampfturbine
 Dampfer	22	NOUN
 kühlere	22	OTHER
-Seefahrers	22	NOUN
-Kollegs	22	NOUN
+Seefahrers	22	NOUN	Seefahrer
+Kollegs	22	NOUN	Kolleg
 Danske	22	NOUN,OTHER
 Wortfolge	22	NOUN
 Neuschöpfung	22	NOUN
@@ -56786,7 +56786,7 @@ Signet	22	NOUN
 Wehrturm	22	NOUN
 Neustift	22	NOUN
 Regionalstudio	22	NOUN
-Schuljahres	22	NOUN
+Schuljahres	22	NOUN	Schuljahr
 Feldartillerie	22	NOUN
 Geldscheine	22	NOUN
 Zielscheibe	22	NOUN
@@ -56804,9 +56804,9 @@ Sozialkritik	22	NOUN
 Foxtrott	22	NOUN
 romanisiert	22	OTHER
 antikem	22	OTHER
-Volksrepubliken	22	NOUN
+Volksrepubliken	22	NOUN	Volksrepublik
 überschaubaren	22	OTHER
-Unterorganisationen	22	NOUN
+Unterorganisationen	22	NOUN	Unterorganisation
 Wirtschaftsliberalismus	22	NOUN
 weltberühmte	22	OTHER
 pflanzte	22	OTHER
@@ -56818,7 +56818,7 @@ Polski	22	NOUN
 ausgeschenkt	22	OTHER
 Lacrosse	22	NOUN
 Velbert	22	NOUN
-Steuerungs	22	NOUN
+Steuerungs	22	NOUN	Steuerung
 Inode	22	NOUN
 Moïse	22	NOUN
 démocratique	22	NOUN,OTHER
@@ -56827,30 +56827,30 @@ Fernsteuerung	22	NOUN
 Grenzfrequenz	22	NOUN
 diskreter	22	OTHER
 Rektum	22	NOUN
-Durchblutungsstörungen	22	NOUN
+Durchblutungsstörungen	22	NOUN	Durchblutungsstörung
 Künstlerkollegen	22	NOUN
 Bassin	22	NOUN
 Flusslaufes	22	NOUN
 vernehmen	22	VERB
 gängigste	22	OTHER
 Hippolyt	22	NOUN
-Reuchlins	22	NOUN
+Reuchlins	22	NOUN	Reuchlin
 Rosenkreuzer	22	NOUN
 herauskam	22	OTHER
-Berührungspunkte	22	NOUN
+Berührungspunkte	22	NOUN	Berührungspunkt
 Eisenbahner	22	NOUN
 Menschengruppen	22	NOUN
-Farbfernsehens	22	NOUN
-Basalte	22	NOUN
+Farbfernsehens	22	NOUN	Farbfernsehen
+Basalte	22	NOUN	Basalt
 Eisenverhüttung	22	NOUN
 Abydos	22	NOUN
-Buntsandsteins	22	NOUN
+Buntsandsteins	22	NOUN	Buntsandstein
 Ruheenergie	22	NOUN
 elektrotechnische	22	OTHER
 fließender	22	OTHER
 Austausches	22	NOUN
 Stagflation	22	NOUN
-Kommissionspräsidenten	22	NOUN
+Kommissionspräsidenten	22	NOUN	Kommissionspräsident
 Eurobanknoten	22	NOUN
 Karlspreis	22	NOUN
 Spartakus	22	NOUN
@@ -56889,10 +56889,10 @@ Karikaturist	22	NOUN
 Wiedau	22	NOUN
 Schirach	22	NOUN
 Maltechnik	22	NOUN
-Dokumentations	22	NOUN
+Dokumentations	22	NOUN	Dokumentation
 Gautier	22	NOUN
 Victoire	22	NOUN
-Sturms	22	NOUN
+Sturms	22	NOUN	Sturm
 Ausreißer	22	NOUN
 Peugeot	22	NOUN
 Sapporo	22	NOUN
@@ -56908,13 +56908,13 @@ hormonellen	22	OTHER
 aushalten	22	VERB
 Aleuten	22	NOUN
 Piräus	22	NOUN
-Reduktionen	22	NOUN
-Endoskope	22	NOUN
-Schwenken	22	NOUN,OTHER
+Reduktionen	22	NOUN	Reduktion
+Endoskope	22	NOUN	Endoskop
+Schwenken	22	NOUN,OTHER	Schwenk
 einwirkt	22	OTHER
 bejagt	22	OTHER
 Mykorrhiza	22	NOUN
-Züchtungen	22	NOUN
+Züchtungen	22	NOUN	Züchtung
 Verteiler	22	NOUN
 schöpft	22	OTHER
 Mäeutik	22	NOUN
@@ -56932,9 +56932,9 @@ Formenreichtum	22	NOUN
 Rebell	22	NOUN
 allerersten	22	OTHER
 Steiger	22	NOUN
-Schulklassen	22	NOUN
+Schulklassen	22	NOUN	Schulklasse
 Schichtdicke	22	NOUN
-Elektronenpaare	22	NOUN
+Elektronenpaare	22	NOUN	Elektronenpaar
 Theologiestudium	22	NOUN
 Banalität	22	NOUN
 Klimabedingungen	22	NOUN
@@ -56943,7 +56943,7 @@ Elsässisch	22	NOUN,OTHER
 langues	22	OTHER
 Languedoc	22	NOUN
 holländischer	22	OTHER
-Koalitionskriegen	22	NOUN
+Koalitionskriegen	22	NOUN	Koalitionskrieg
 AAA	22	NOUN
 Weinbrenner	22	NOUN
 Verteidigungsrede	22	NOUN
@@ -56951,7 +56951,7 @@ imperialistische	22	OTHER
 konterrevolutionäre	22	OTHER
 verputzt	22	OTHER
 Glaubensflüchtlinge	22	NOUN
-Oberamts	22	NOUN
+Oberamts	22	NOUN	Oberamt
 Loipen	22	NOUN
 mehrtägige	22	OTHER
 musiziert	22	OTHER
@@ -56976,14 +56976,14 @@ Ostgotenreich	22	NOUN
 Northumbria	22	NOUN
 Schia	22	NOUN
 Hildebrandslied	22	NOUN
-Holzkirchen	22	NOUN
+Holzkirchen	22	NOUN	Holzkirche
 Emmeram	22	NOUN
 Frankenkönig	22	NOUN
 gespiegelten	22	OTHER
-Fermatschen	22	NOUN,OTHER
+Fermatschen	22	NOUN,OTHER	Fermatsche
 Bourgogne	22	NOUN
 Fälligkeit	22	NOUN
-Steuerelemente	22	NOUN
+Steuerelemente	22	NOUN	Steuerelement
 Segelflugzeug	22	NOUN
 Draw	22	NOUN,OTHER
 Soccer	22	NOUN,OTHER
@@ -56998,21 +56998,21 @@ sympathisierten	22	VERB
 Girondins	22	NOUN
 Révolution	22	NOUN,OTHER
 Milderung	22	NOUN
-Frühjahrs	22	NOUN
+Frühjahrs	22	NOUN	Frühjahr
 Fouriertransformation	22	NOUN
 schlimmen	22	OTHER
 Cours	22	NOUN
-Ouvertüren	22	NOUN
+Ouvertüren	22	NOUN	Ouvertüre
 Fahrmotoren	22	NOUN
-Treffern	22	NOUN
+Treffern	22	NOUN	Treffer
 Offenbacher	22	NOUN
 verschlossene	22	OTHER
-Justizministeriums	22	NOUN
+Justizministeriums	22	NOUN	Justizministerium
 Organizations	22	NOUN,OTHER
 Rotliegend	22	NOUN
 Wicker	22	NOUN
 Grundrente	22	NOUN
-Anstöße	22	NOUN
+Anstöße	22	NOUN	Anstoß
 vorbereitenden	22	OTHER
 Netzwerkprotokoll	22	NOUN
 Bauchseite	22	NOUN
@@ -57030,18 +57030,18 @@ gewesenen	22	OTHER
 tbinom	22	OTHER
 regulierte	22	OTHER
 symptomatisch	22	OTHER
-Lösungsmittels	22	NOUN
+Lösungsmittels	22	NOUN	Lösungsmittel
 Wandergesellen	22	NOUN
 kaputt	22	OTHER
-Nasale	22	NOUN,OTHER
+Nasale	22	NOUN,OTHER	Nasal
 Favre	22	NOUN
 Hafiz	22	NOUN
-Mundes	22	NOUN
-Zweiges	22	NOUN
-Informationssysteme	22	NOUN
+Mundes	22	NOUN	Mund
+Zweiges	22	NOUN	Zweig
+Informationssysteme	22	NOUN	Informationssystem
 Vokabel	22	NOUN
 Himmelreich	22	NOUN
-Siliciums	22	NOUN
+Siliciums	22	NOUN	Silicium
 verschobene	22	OTHER
 jur	22	NOUN,OTHER
 Unterausschuss	22	NOUN
@@ -57056,14 +57056,14 @@ durchbrachen	22	VERB
 Stadtpalais	22	NOUN
 Zahlensymbolik	22	NOUN
 Privatklinik	22	NOUN
-Laufräder	22	NOUN
+Laufräder	22	NOUN	Laufrad
 Tramway	22	NOUN
 HTL	22	NOUN
 Hannoveraner	22	NOUN
 Ornament	22	NOUN
-Staatsmänner	22	NOUN
-Rechenschiebers	22	NOUN
-Jesuitenordens	22	NOUN
+Staatsmänner	22	NOUN	Staatsmann
+Rechenschiebers	22	NOUN	Rechenschieber
+Jesuitenordens	22	NOUN	Jesuitenorden
 Gefäßchirurgie	22	NOUN
 zeitnahe	22	OTHER
 Salinität	22	NOUN
@@ -57072,13 +57072,13 @@ Dust	22	NOUN
 Dustin	22	NOUN
 Diaz	22	NOUN
 texanische	22	OTHER
-Kinofilms	22	NOUN
+Kinofilms	22	NOUN	Kinofilm
 Ainu	22	NOUN
 Frühform	22	NOUN
 spendet	22	OTHER
 Kantenzahl	22	NOUN
 Ganglienzellen	22	NOUN
-Römers	22	NOUN
+Römers	22	NOUN	Römer
 Diskriminante	22	NOUN,OTHER
 Subgenre	22	NOUN
 Wah	22	NOUN
@@ -57091,29 +57091,29 @@ Ortsbürgermeister	22	NOUN
 Witzenhausen	22	NOUN
 gotisches	22	OTHER
 Rutte	22	NOUN
-Trips	22	NOUN
+Trips	22	NOUN	Trip
 Motorenwerke	22	NOUN
 Mungo	22	NOUN,OTHER
-Wards	22	NOUN,OTHER
+Wards	22	NOUN,OTHER	Ward
 durchzog	22	OTHER
 Überbauung	22	NOUN
 Jammeh	22	NOUN
 Casamance	22	NOUN
 Sorghum	22	NOUN
 Anlagerung	22	NOUN
-Schützenvereine	22	NOUN
+Schützenvereine	22	NOUN	Schützenverein
 Daum	22	NOUN
 gravitativ	22	OTHER
-Unzen	22	NOUN
+Unzen	22	NOUN	Unze
 Szeged	22	NOUN
-Bünden	22	NOUN
+Bünden	22	NOUN	Bund
 Gunzenhausen	22	NOUN
 Inuktitut	22	NOUN
-Fjorden	22	NOUN
+Fjorden	22	NOUN	Fjord
 Bedecktsamer	22	NOUN
-Dorfgemeinschaften	22	NOUN
+Dorfgemeinschaften	22	NOUN	Dorfgemeinschaft
 untergebrachte	22	OTHER
-Strategiespielen	22	NOUN
+Strategiespielen	22	NOUN	Strategiespiel
 Brettes	22	NOUN
 Hohenlohekreis	22	NOUN
 Schnittlauch	22	NOUN
@@ -57129,22 +57129,22 @@ Culm	22	NOUN
 Chrobry	22	NOUN
 ertrank	22	OTHER
 vermählt	22	OTHER
-Kameruns	22	NOUN
+Kameruns	22	NOUN	Kamerun
 Gewaltverbrechen	22	NOUN
 Brink	22	NOUN
 Arbeitslosenzahlen	22	NOUN
 ausgegebene	22	OTHER
 schüren	22	NOUN,OTHER
-Marinos	22	NOUN
+Marinos	22	NOUN	Marino
 hinwegtäuschen	22	VERB
 Università	22	NOUN
 Moro	22	NOUN
 entwicklungsgeschichtlich	22	OTHER
 Related	22	NOUN,OTHER
-Herzmuskels	22	NOUN
+Herzmuskels	22	NOUN	Herzmuskel
 Kentauren	22	NOUN
 klärt	22	OTHER
-Sporophyten	22	NOUN
+Sporophyten	22	NOUN	Sporophyt
 PSK	22	NOUN
 Bitrate	22	NOUN
 Schulleiter	22	NOUN
@@ -57154,17 +57154,17 @@ bestrahlten	22	VERB,OTHER
 Rückstoß	22	NOUN
 unmittelbarem	22	OTHER
 Ehlers	22	NOUN
-Landesverrats	22	NOUN
+Landesverrats	22	NOUN	Landesverrat
 Steinhoff	22	NOUN
 Ungläubige	22	NOUN
 Klei	22	NOUN
 Tivoli	22	NOUN
 Radschnellweg	22	NOUN
-Nelsons	22	NOUN
+Nelsons	22	NOUN	Nelson
 kämpfende	22	OTHER
 Inthronisation	22	NOUN
-Agenden	22	NOUN
-Fischaugen	22	NOUN
+Agenden	22	NOUN	Agende
+Fischaugen	22	NOUN	Fischauge
 axiale	22	OTHER
 Mittellandes	22	NOUN
 Myra	22	NOUN
@@ -57172,7 +57172,7 @@ Fachklinik	22	NOUN
 McMillan	22	NOUN
 Hippocampus	22	NOUN
 Ramones	22	NOUN
-Stadtansichten	22	NOUN
+Stadtansichten	22	NOUN	Stadtansicht
 Waldland	22	NOUN
 ungeteilten	22	OTHER
 zahlenmäßigen	22	OTHER
@@ -57187,18 +57187,18 @@ Unicodeblock	22	NOUN
 MDC	22	NOUN
 Creole	22	NOUN
 Reparaturarbeiten	22	NOUN
-Sandstrände	22	NOUN
+Sandstrände	22	NOUN	Sandstrand
 rebellische	22	OTHER
 Zamora	22	NOUN
 reichsunmittelbaren	22	OTHER
 Ellenlang	22	NOUN,OTHER
 Rahsegel	22	NOUN
 Handelsschiff	22	NOUN
-Reisezeiten	22	NOUN
+Reisezeiten	22	NOUN	Reisezeit
 Romero	22	NOUN
 PCC	22	NOUN
 Containerhafen	22	NOUN
-Zusammenschlüssen	22	NOUN
+Zusammenschlüssen	22	NOUN	Zusammenschluss
 Sedierung	22	NOUN
 Phospholipide	22	NOUN
 Ethikrates	22	NOUN
@@ -57206,10 +57206,10 @@ Großhirnrinde	22	NOUN
 Cookie	22	NOUN
 geheiligt	22	OTHER
 fingierten	22	VERB,OTHER
-Theresias	22	NOUN
+Theresias	22	NOUN	Theresia
 Höckerschwan	22	NOUN
 kraftvoll	22	OTHER
-Handwerke	22	NOUN
+Handwerke	22	NOUN	Handwerk
 Welterbestätte	22	NOUN
 Raserei	22	NOUN
 Tintoretto	22	NOUN
@@ -57220,7 +57220,7 @@ forstwirtschaftliche	22	OTHER
 Universitätsgebäude	22	NOUN
 Simson	22	NOUN
 ausgereiften	22	OTHER
-Landesmuseums	22	NOUN
+Landesmuseums	22	NOUN	Landesmuseum
 Tālib	22	NOUN
 Schilddrüsenhormone	22	NOUN
 Rantzau	22	NOUN
@@ -57238,7 +57238,7 @@ Kastensystem	22	NOUN
 Rajasthan	22	NOUN
 Gupta	22	NOUN
 Maurya	22	NOUN
-Nordindiens	22	NOUN
+Nordindiens	22	NOUN	Nordindien
 Meitei	22	NOUN
 Föten	22	NOUN
 Erwerber	22	NOUN
@@ -57247,7 +57247,7 @@ Glycogen	22	NOUN
 Dachauer	22	NOUN
 Heldentum	22	NOUN
 IMAX	22	NOUN
-Kazans	22	NOUN
+Kazans	22	NOUN	Kazan
 entschließen	22	VERB
 Dioskuren	22	NOUN
 zeitweiliger	22	OTHER
@@ -57257,8 +57257,8 @@ zieren	22	VERB
 Keyboarder	22	NOUN
 Ellington	22	NOUN
 Mimi	22	NOUN
-Prototyps	22	NOUN
-Marats	22	NOUN
+Prototyps	22	NOUN	Prototyp
+Marats	22	NOUN	Marat
 Dim	22	NOUN,OTHER
 Schulfreund	22	NOUN
 Einschub	22	NOUN
@@ -57268,20 +57268,20 @@ eigenwillige	22	OTHER
 interessierter	22	OTHER
 nahezubringen	22	VERB
 Michaeliskirche	22	NOUN
-Eurasiens	22	NOUN
-Tokios	22	NOUN
+Eurasiens	22	NOUN	Eurasien
+Tokios	22	NOUN	Tokio
 ortsfeste	22	OTHER
 Megalithanlagen	22	NOUN
 Kapitalist	22	NOUN
 galizischen	22	OTHER
-Offenbachs	22	NOUN
+Offenbachs	22	NOUN	Offenbach
 fanatischen	22	OTHER
 Grablage	22	NOUN
 Stimmlage	22	NOUN
 Mirror	22	NOUN
 Schreyer	22	NOUN
 Jameson	22	NOUN
-Ritterordens	22	NOUN
+Ritterordens	22	NOUN	Ritterorden
 Bewegungsgleichung	22	NOUN
 Rosemarie	22	NOUN
 Hermelin	22	NOUN
@@ -57289,7 +57289,7 @@ bereut	22	OTHER
 Ärmel	22	NOUN
 Maha	22	NOUN,OTHER
 Kirsten	22	NOUN
-Jahrbüchern	22	NOUN
+Jahrbüchern	22	NOUN	Jahrbuch
 täuscht	22	OTHER
 auffangen	22	NOUN,OTHER
 Kebab	22	NOUN
@@ -57304,14 +57304,14 @@ koreanischer	22	OTHER
 Korrespondenztheorie	22	NOUN
 Kreuzzeichen	22	NOUN
 Menelik	22	NOUN
-Halbachsen	22	NOUN
+Halbachsen	22	NOUN	Halbachse
 Punt	22	NOUN
-Rechtsakte	22	NOUN
-Zuwachsraten	22	NOUN
+Rechtsakte	22	NOUN	Rechtsakt
+Zuwachsraten	22	NOUN	Zuwachsrate
 Meeresbucht	22	NOUN
 Vakanz	22	NOUN
 Tarimbecken	22	NOUN
-Kirschen	22	NOUN
+Kirschen	22	NOUN	Kirsche
 Kylix	22	NOUN
 Kolonialtruppen	22	NOUN
 Kwan	22	NOUN
@@ -57321,26 +57321,26 @@ HPV	22	NOUN
 Scotty	22	NOUN
 Dschinn	22	NOUN
 aufgelassenen	22	OTHER
-Landwirbeltieren	22	NOUN
+Landwirbeltieren	22	NOUN	Landwirbeltiere
 Auftragnehmer	22	NOUN
 Hopliten	22	NOUN
 Kinderprostitution	22	NOUN
 Zeitachse	22	NOUN
 Kerngeschäft	22	NOUN
 gemeinfrei	22	OTHER
-Kreistagswahlen	22	NOUN
+Kreistagswahlen	22	NOUN	Kreistagswahl
 Lil	22	NOUN
 Leicester	22	NOUN
-Wegbereitern	22	NOUN
+Wegbereitern	22	NOUN	Wegbereiter
 Chaux	22	NOUN
-Reichskreises	22	NOUN
-Studentenlieder	22	NOUN
+Reichskreises	22	NOUN	Reichskreis
+Studentenlieder	22	NOUN	Studentenlied
 Seebecken	22	NOUN
 entgingen	22	VERB
 Sonderlandeplatz	22	NOUN
 Gesundheitswirtschaft	22	NOUN
-Testfahrten	22	NOUN
-Gefälles	22	NOUN
+Testfahrten	22	NOUN	Testfahrt
+Gefälles	22	NOUN	Gefälle
 Ökologen	22	NOUN
 Schultheiss	22	NOUN
 konvexen	22	OTHER
@@ -57358,7 +57358,7 @@ geschichtliches	22	OTHER
 Gotthardbahn	22	NOUN
 QAM	22	NOUN,OTHER
 Karlsplatz	22	NOUN
-Geheimdiensten	22	NOUN
+Geheimdiensten	22	NOUN	Geheimdienst
 Bezirksstadt	22	NOUN
 Ashton	22	NOUN
 Binnenmeer	22	NOUN
@@ -57366,23 +57366,23 @@ unsichtbarer	22	OTHER
 Zingst	22	NOUN
 Malchow	22	NOUN
 Tollensesee	22	NOUN
-Seebäder	22	NOUN
+Seebäder	22	NOUN	Seebad
 Nordwestmecklenburg	22	NOUN
 Strasburg	22	NOUN
 Triathleten	22	NOUN
-Binnenseen	22	NOUN
+Binnenseen	22	NOUN	Binnensee
 evidenzbasierte	22	OTHER
 Einspritzung	22	NOUN
 lebendes	22	OTHER
 Weltgericht	22	NOUN
 slawo	22	OTHER
-Joche	22	NOUN
+Joche	22	NOUN	Joch
 Ricinus	22	NOUN,OTHER
-Fischbestände	22	NOUN
+Fischbestände	22	NOUN	Fischbestand
 Somma	22	NOUN
 radiologische	22	OTHER
 Kommunikationssatelliten	22	NOUN
-Modellvarianten	22	NOUN
+Modellvarianten	22	NOUN	Modellvariante
 Pershing	22	NOUN
 Bergführer	22	NOUN
 zurückbleibt	22	OTHER
@@ -57399,39 +57399,39 @@ Prism	22	NOUN,OTHER
 Groninger	22	NOUN
 Maar	22	NOUN
 Katarakt	22	NOUN
-Wasserfällen	22	NOUN
+Wasserfällen	22	NOUN	Wasserfall
 Scharmbeck	22	NOUN
 Vogeler	22	NOUN
 Tettsted	22	NOUN
 Murat	22	NOUN
-Laubbäume	22	NOUN
+Laubbäume	22	NOUN	Laubbaum
 Adressat	22	NOUN
 Nandu	22	NOUN
-Badenden	22	NOUN,OTHER
-Seerosen	22	NOUN
+Badenden	22	NOUN,OTHER	Badende
+Seerosen	22	NOUN	Seerose
 Stadtbildes	22	NOUN
 Laissez	22	NOUN
-Schneeschuhe	22	NOUN
-Orlandos	22	NOUN
+Schneeschuhe	22	NOUN	Schneeschuh
+Orlandos	22	NOUN	Orlando
 Umhang	22	NOUN
 Jägersprache	22	NOUN
 Diakonissen	22	NOUN
 Klausur	22	NOUN
 Intermediate	22	NOUN
-Berufes	22	NOUN
+Berufes	22	NOUN	Beruf
 Punkband	22	NOUN
 unecht	22	OTHER
 Nyssa	22	NOUN
 Marsellus	22	NOUN
 Soon	22	NOUN,OTHER
-Riesengebirges	22	NOUN
+Riesengebirges	22	NOUN	Riesengebirge
 Staw	22	NOUN
 TVP	22	NOUN
 Lactam	22	NOUN
 Hammelburg	22	NOUN
 aufgeforstet	22	OTHER
 Traumdeutung	22	NOUN
-Halbbilder	22	NOUN
+Halbbilder	22	NOUN	Halbbild
 Hay	22	NOUN
 Lyonel	22	NOUN
 Friese	22	NOUN
@@ -57442,7 +57442,7 @@ Courths	22	NOUN
 Landeck	22	NOUN
 Personenkilometer	22	NOUN
 konkav	22	OTHER
-Freislers	22	NOUN
+Freislers	22	NOUN	Freisler
 Hinterhaus	22	NOUN
 Bildrauschen	22	NOUN
 Rohrkolben	22	NOUN
@@ -57465,12 +57465,12 @@ Chomeini	22	NOUN
 nen	22	OTHER
 Diskursanalyse	22	NOUN
 Oppida	22	NOUN,OTHER
-Galiciens	22	NOUN
+Galiciens	22	NOUN	Galicien
 Arnstein	22	NOUN
 studentischer	22	OTHER
 Mehrheitsmeinung	22	NOUN
 Gnadauer	22	NOUN
-Pekings	22	NOUN
+Pekings	22	NOUN	Peking
 Henrichenburg	22	NOUN
 Züchtigung	22	NOUN
 Schwimmverein	22	NOUN
@@ -57478,18 +57478,18 @@ Tiberias	22	NOUN
 Friedenstein	22	NOUN
 Loh	22	NOUN
 Striptease	22	NOUN
-Herzls	22	NOUN
+Herzls	22	NOUN	Herzl
 Farbladung	22	NOUN
 Mariendorf	22	NOUN
 Parteisekretär	22	NOUN
 Nová	22	NOUN
 gehüllt	22	OTHER
 Küng	22	NOUN
-Tiecks	22	NOUN
+Tiecks	22	NOUN	Tieck
 isch	22	OTHER
-Hallenkirchen	22	NOUN
+Hallenkirchen	22	NOUN	Hallenkirche
 Transkarpatien	22	NOUN
-Oblaste	22	NOUN
+Oblaste	22	NOUN	Oblast
 Psalterium	22	NOUN
 Chorda	22	NOUN
 Laufrichtung	22	NOUN
@@ -57503,7 +57503,7 @@ Enid	22	NOUN
 Grimani	22	NOUN
 Burjaten	22	NOUN
 Pesne	22	NOUN
-Pennsylvanias	22	NOUN
+Pennsylvanias	22	NOUN	Pennsylvania
 Viertaktmotor	22	NOUN
 Werneck	22	NOUN
 Starý	22	NOUN
@@ -57517,13 +57517,13 @@ Kruskal	22	NOUN
 Hebraica	22	NOUN
 Raschi	22	NOUN
 frühgotische	22	OTHER
-Sprachcodes	22	NOUN
+Sprachcodes	22	NOUN	Sprachcode
 Inzucht	22	NOUN
 Pionen	22	NOUN
 Linkshänder	22	NOUN
 Goll	22	NOUN
 Kunstwelt	22	NOUN
-Livlands	22	NOUN
+Livlands	22	NOUN	Livland
 Prawda	22	NOUN
 Unterentwicklung	22	NOUN
 Scheidenvorhof	22	NOUN
@@ -57531,13 +57531,13 @@ täuferischen	22	OTHER
 Montagne	22	NOUN
 Kyrillos	22	NOUN
 Jinan	22	NOUN
-Dildos	22	NOUN
-Kongruenzen	22	NOUN
+Dildos	22	NOUN	Dildo
+Kongruenzen	22	NOUN	Kongruenz
 Kaschgar	22	NOUN
 UZ	22	NOUN,OTHER
 Buderus	22	NOUN
 Zulassungsverordnung	22	NOUN
-Plaketten	22	NOUN
+Plaketten	22	NOUN	Plakette
 Ruel	22	NOUN
 Gramatté	22	NOUN
 dpt	22	OTHER
@@ -57545,12 +57545,12 @@ Zeesen	22	NOUN
 Edelkastanie	22	NOUN
 Kurmandschi	22	NOUN
 Eintrittspupille	22	NOUN
-Knobelsdorffs	22	NOUN
-Nabis	22	NOUN
+Knobelsdorffs	22	NOUN	Knobelsdorff
+Nabis	22	NOUN	Nabi
 Jonglieren	22	NOUN,OTHER
 Parteikader	22	NOUN
 Wrangel	22	NOUN
-Janeiros	22	NOUN
+Janeiros	22	NOUN	Janeiro
 Dé	22	NOUN
 Querbalken	22	NOUN
 Fondue	22	NOUN
@@ -57564,7 +57564,7 @@ Affoltern	22	NOUN
 Moldova	22	NOUN
 IIe	22	NOUN
 Flaschengärung	22	NOUN
-Bebels	22	NOUN
+Bebels	22	NOUN	Bebel
 Lehrberuf	22	NOUN
 PPS	22	NOUN
 Ludowe	22	NOUN
@@ -57582,10 +57582,10 @@ Workbench	22	NOUN
 Balkarien	22	NOUN
 drusischen	22	OTHER
 Benningen	22	NOUN
-Mercurys	22	NOUN
+Mercurys	22	NOUN	Mercury
 Gablonz	22	NOUN
 Vorsaison	22	NOUN
-Olivers	22	NOUN
+Olivers	22	NOUN	Oliver
 Mordwinien	22	NOUN
 Sohar	22	NOUN
 Darth	22	NOUN
@@ -57595,7 +57595,7 @@ Yahtzee	22	NOUN
 Außentank	22	NOUN
 Milbradt	22	NOUN
 Leasinggeber	22	NOUN
-Xinjiangs	22	NOUN
+Xinjiangs	22	NOUN	Xinjiang
 Ackerman	22	NOUN
 Franchising	22	NOUN
 KSCV	22	NOUN
@@ -57606,9 +57606,9 @@ Erstling	21	NOUN
 Teilaussagen	21	NOUN
 Konditional	21	NOUN
 Zellweger	21	NOUN
-Trusts	21	NOUN
+Trusts	21	NOUN	Trust
 Distributoren	21	NOUN
-Verkäufen	21	NOUN
+Verkäufen	21	NOUN	Verkauf
 anwerben	21	VERB
 dreistellige	21	OTHER
 Koproduktion	21	NOUN
@@ -57631,12 +57631,12 @@ stete	21	OTHER
 Aki	21	NOUN,OTHER
 Matti	21	NOUN
 reduziertes	21	OTHER
-Fetische	21	NOUN
-Einzelbildern	21	NOUN
+Fetische	21	NOUN	Fetisch
+Einzelbildern	21	NOUN	Einzelbild
 mitfinanziert	21	OTHER
 Nachbearbeitung	21	NOUN
 synchronisierte	21	OTHER
-Schießereien	21	NOUN
+Schießereien	21	NOUN	Schießerei
 Schusswaffe	21	NOUN
 Weaver	21	NOUN
 Besson	21	NOUN
@@ -57644,50 +57644,50 @@ Elsholtz	21	NOUN
 vorangestellte	21	OTHER
 Molekülmasse	21	NOUN
 anorganischer	21	OTHER
-Estern	21	NOUN
+Estern	21	NOUN	Ester
 Deluxe	21	NOUN
 Schmelzflusselektrolyse	21	NOUN
 glückte	21	OTHER
 Systemnummer	21	NOUN
-Hüttenwerke	21	NOUN
+Hüttenwerke	21	NOUN	Hüttenwerk
 abschrecken	21	VERB
-Bleche	21	NOUN
+Bleche	21	NOUN	Blech
 Raffination	21	NOUN
-Scheinwerfern	21	NOUN
+Scheinwerfern	21	NOUN	Scheinwerfer
 Osteoporose	21	NOUN
 Erdwärme	21	NOUN
 Alf	21	NOUN
 Regulus	21	NOUN
 graues	21	OTHER
-Gitterparametern	21	NOUN
-Ebers	21	NOUN
+Gitterparametern	21	NOUN	Gitterparameter
+Ebers	21	NOUN	Eber
 effektivere	21	OTHER
 Gasgemisch	21	NOUN
 eingespritzt	21	OTHER
 anreichert	21	OTHER
 gefahrlos	21	OTHER
-Nichtmetalle	21	NOUN
+Nichtmetalle	21	NOUN	Nichtmetall
 Nikolaos	21	NOUN
 konsumierten	21	OTHER
-Ions	21	NOUN
+Ions	21	NOUN	Ion
 Entkopplung	21	NOUN
 Magnetit	21	NOUN
 geladenes	21	OTHER
 konservieren	21	VERB
 Kalle	21	NOUN
 ausgefällt	21	OTHER
-Reaktionsprodukte	21	NOUN
+Reaktionsprodukte	21	NOUN	Reaktionsprodukt
 Rare	21	NOUN,OTHER
 Endlagerung	21	NOUN
 beständiger	21	OTHER
 Amalgam	21	NOUN
 Cäsium	21	NOUN
 Philippine	21	NOUN
-Krankenversicherungen	21	NOUN
+Krankenversicherungen	21	NOUN	Krankenversicherung
 Fachgesellschaft	21	NOUN
-Meditationen	21	NOUN
+Meditationen	21	NOUN	Meditation
 Geschichtlichkeit	21	NOUN
-Herangehensweisen	21	NOUN
+Herangehensweisen	21	NOUN	Herangehensweise
 unterschiedenen	21	OTHER
 informationelle	21	OTHER
 Psychosomatik	21	NOUN
@@ -57698,9 +57698,9 @@ Parmenion	21	NOUN
 Phönizien	21	NOUN
 Handelsmetropole	21	NOUN
 vereiteln	21	VERB
-Mitregenten	21	NOUN
+Mitregenten	21	NOUN	Mitregent
 avanciert	21	OTHER
-Adjutanten	21	NOUN
+Adjutanten	21	NOUN	Adjutant
 diplomatisches	21	OTHER
 enttarnt	21	OTHER
 Ungereimtheiten	21	NOUN
@@ -57710,7 +57710,7 @@ Endlichkeit	21	NOUN
 musicale	21	NOUN,OTHER
 Nordwesteuropa	21	NOUN
 Indienhandel	21	NOUN
-Diokletians	21	NOUN
+Diokletians	21	NOUN	Diokletian
 Föderierten	21	NOUN
 Michelson	21	NOUN
 Reziprozität	21	NOUN
@@ -57718,24 +57718,24 @@ Muße	21	NOUN
 Arbeitspflicht	21	NOUN
 pragmatischer	21	OTHER
 calvinistisch	21	OTHER
-Freiräume	21	NOUN
+Freiräume	21	NOUN	Freiraum
 Gärtnerei	21	NOUN
 Dorfgemeinschaft	21	NOUN
 Account	21	NOUN,OTHER
 Pardon	21	NOUN,OTHER
 beibrachte	21	OTHER
 Tennisspieler	21	NOUN
-Browns	21	NOUN
+Browns	21	NOUN	Brown
 jungsteinzeitliche	21	OTHER
-Vesuvs	21	NOUN
+Vesuvs	21	NOUN	Vesuv
 großartigen	21	OTHER
 erstklassige	21	OTHER
 Diskreditierung	21	NOUN
 Gero	21	NOUN
-Seitenbänder	21	NOUN
+Seitenbänder	21	NOUN	Seitenband
 Röntgenbild	21	NOUN
 Zwischenform	21	NOUN
-Alphabetes	21	NOUN
+Alphabetes	21	NOUN	Alphabet
 arabisches	21	OTHER
 phönizisch	21	OTHER
 Marshal	21	NOUN
@@ -57750,7 +57750,7 @@ Krebspatienten	21	NOUN
 Pappos	21	NOUN
 beladenen	21	OTHER
 zusammenstellte	21	OTHER
-Übersetzern	21	NOUN
+Übersetzern	21	NOUN	Übersetzer
 Dialogform	21	NOUN
 Isokrates	21	NOUN
 eigentümlichen	21	OTHER
@@ -57758,8 +57758,8 @@ Druckausgabe	21	NOUN
 undeutlich	21	OTHER
 Entstehungsprozess	21	NOUN
 Kreisbewegung	21	NOUN
-Bezugs	21	NOUN
-Meerestieren	21	NOUN
+Bezugs	21	NOUN	Bezug
+Meerestieren	21	NOUN	Meerestiere
 wissentlich	21	OTHER
 vorgebeugt	21	OTHER
 unreinen	21	OTHER
@@ -57775,8 +57775,8 @@ Bundesrichter	21	NOUN
 Eigentumsrecht	21	NOUN
 ausgetretenen	21	OTHER
 geschahen	21	VERB
-Stephens	21	NOUN
-Wilkes	21	NOUN
+Stephens	21	NOUN	Stephen
+Wilkes	21	NOUN	Wilke
 zeitlichem	21	OTHER
 Theatersaal	21	NOUN
 Krai	21	NOUN
@@ -57788,7 +57788,7 @@ Betroffenheit	21	NOUN
 dreigeteilt	21	OTHER
 Landesvorsitzende	21	NOUN
 Bundestagsabgeordneter	21	NOUN
-Wahllokale	21	NOUN
+Wahllokale	21	NOUN	Wahllokal
 Regierungsarbeit	21	NOUN
 Autonomiebestrebungen	21	NOUN
 innerparteilich	21	OTHER
@@ -57797,9 +57797,9 @@ zusammenhalten	21	VERB
 Konfliktlösung	21	NOUN
 Emotionalität	21	NOUN
 Bestsellerliste	21	NOUN
-Hethitern	21	NOUN
-Grenzgebiete	21	NOUN
-Busbahnhöfe	21	NOUN
+Hethitern	21	NOUN	Hethiter
+Grenzgebiete	21	NOUN	Grenzgebiet
+Busbahnhöfe	21	NOUN	Busbahnhof
 atheistisch	21	OTHER
 gelebte	21	OTHER
 Astrophysiker	21	NOUN
@@ -57812,20 +57812,20 @@ regulative	21	OTHER
 frohe	21	NOUN,OTHER
 Generalkonsulat	21	NOUN
 Kunsthandlung	21	NOUN
-Westwinde	21	NOUN
+Westwinde	21	NOUN	Westwind
 Nadir	21	NOUN
 tadschikische	21	NOUN,OTHER
 Mogulreich	21	NOUN
 Tribal	21	NOUN,OTHER
 Mudschahedin	21	NOUN
 Raschid	21	NOUN
-Schlüsselpositionen	21	NOUN
+Schlüsselpositionen	21	NOUN	Schlüsselposition
 betreibe	21	OTHER
 Überweidung	21	NOUN
-Gehaltes	21	NOUN
+Gehaltes	21	NOUN	Gehalt
 kulinarischen	21	OTHER
 Tschechow	21	NOUN
-Talkshows	21	NOUN
+Talkshows	21	NOUN	Talkshow
 nuit	21	NOUN,OTHER
 gleichsetzt	21	OTHER
 Blavatsky	21	NOUN
@@ -57838,12 +57838,12 @@ Eingangstor	21	NOUN
 Musiklabel	21	NOUN
 Melissa	21	NOUN
 Hertzsprung	21	NOUN
-Radioteleskope	21	NOUN
-Labore	21	NOUN
+Radioteleskope	21	NOUN	Radioteleskop
+Labore	21	NOUN	Labor
 reiht	21	OTHER
 Erfolgsaussichten	21	NOUN
 Bevölkerungsexplosion	21	NOUN
-Ölfelder	21	NOUN
+Ölfelder	21	NOUN	Ölfeld
 beitraten	21	VERB
 Freistellung	21	NOUN
 Auslagerung	21	NOUN
@@ -57860,9 +57860,9 @@ Paterculus	21	NOUN
 Ajax	21	NOUN
 Wendt	21	NOUN
 umrunden	21	VERB
-Breitengraden	21	NOUN
+Breitengraden	21	NOUN	Breitengrad
 Choleraepidemie	21	NOUN
-Upanishaden	21	NOUN
+Upanishaden	21	NOUN	Upanishad
 Brahman	21	NOUN
 staatenlos	21	OTHER
 durchgemacht	21	OTHER
@@ -57872,11 +57872,11 @@ Günstling	21	NOUN
 Stringtheorie	21	NOUN
 Mauszeiger	21	NOUN
 Entwicklungskosten	21	NOUN
-Zugewinne	21	NOUN
-Markenrechte	21	NOUN
-Rabatte	21	NOUN
+Zugewinne	21	NOUN	Zugewinn
+Markenrechte	21	NOUN	Markenrecht
+Rabatte	21	NOUN	Rabatt
 einfarbig	21	OTHER
-Aktionären	21	NOUN
+Aktionären	21	NOUN	Aktionär
 Frontend	21	NOUN
 Vector	21	NOUN,OTHER
 Dynamic	21	NOUN,OTHER
@@ -57885,9 +57885,9 @@ Widerständler	21	NOUN
 Waldviertel	21	NOUN
 Massenerschießungen	21	NOUN
 uneins	21	OTHER
-Soldatenräte	21	NOUN
+Soldatenräte	21	NOUN	Soldatenrat
 Aufkauf	21	NOUN
-Entscheidungsprozessen	21	NOUN
+Entscheidungsprozessen	21	NOUN	Entscheidungsprozess
 monarchistisch	21	OTHER
 Seeckt	21	NOUN
 Hermine	21	NOUN
@@ -57899,17 +57899,17 @@ mittelbaren	21	OTHER
 Preußenschlag	21	NOUN
 Propagandaminister	21	NOUN
 anzugleichen	21	VERB
-Telefonate	21	NOUN
-Reichsführers	21	NOUN
+Telefonate	21	NOUN	Telefonat
+Reichsführers	21	NOUN	Reichsführer
 Neurath	21	NOUN
 entfesselte	21	OTHER
 abhänge	21	OTHER
 verzweigtes	21	OTHER
 Fronteinsatz	21	NOUN
 Todesumstände	21	NOUN
-Verhöre	21	NOUN
-Schulsystems	21	NOUN
-Korsaren	21	NOUN
+Verhöre	21	NOUN	Verhör
+Schulsystems	21	NOUN	Schulsystem
+Korsaren	21	NOUN	Korsar
 raubten	21	VERB
 Befreiungsfront	21	NOUN
 APS	21	NOUN
@@ -57918,7 +57918,7 @@ Kohlenwasserstoff	21	NOUN
 Agence	21	NOUN
 Adressbus	21	NOUN
 kreuzten	21	VERB
-Speicherbereiche	21	NOUN
+Speicherbereiche	21	NOUN	Speicherbereich
 Datenbus	21	NOUN
 sinnvollerweise	21	OTHER
 Dreyer	21	NOUN
@@ -57938,8 +57938,8 @@ Hirnblutung	21	NOUN
 zurückgelegten	21	OTHER
 Gotthelf	21	NOUN
 Gleitflug	21	NOUN
-Übergangsformen	21	NOUN
-Skeletts	21	NOUN
+Übergangsformen	21	NOUN	Übergangsform
+Skeletts	21	NOUN	Skelett
 erstattete	21	OTHER
 achtes	21	OTHER
 amorphen	21	OTHER
@@ -57956,53 +57956,53 @@ Berend	21	NOUN
 implizierte	21	OTHER
 verlebte	21	OTHER
 tiefem	21	OTHER
-Dominikanern	21	NOUN
+Dominikanern	21	NOUN	Dominikaner
 unaufhörlich	21	OTHER
 Namenkalender	21	NOUN
-Schüben	21	NOUN
+Schüben	21	NOUN	Schub
 Flüssiggas	21	NOUN
 Stickoxide	21	NOUN
 Sojabohne	21	NOUN
 MAK	21	NOUN
 Bakteriologie	21	NOUN
-Pilzes	21	NOUN
+Pilzes	21	NOUN	Pilz
 Streptokokken	21	NOUN
-Chiefs	21	NOUN
+Chiefs	21	NOUN	Chief
 zurückblieb	21	OTHER
 Fehlfunktion	21	NOUN
 Sites	21	NOUN
 Canaveral	21	NOUN
-Süßkartoffeln	21	NOUN
+Süßkartoffeln	21	NOUN	Süßkartoffel
 allergischen	21	OTHER
 Paracetamol	21	NOUN
 Granulozyten	21	NOUN
 Serin	21	NOUN
 Valin	21	NOUN
 Seitenkette	21	NOUN
-Peptiden	21	NOUN
+Peptiden	21	NOUN	Peptid
 Nährwert	21	NOUN,OTHER
 Würfelspiel	21	NOUN
-Landmarks	21	NOUN
+Landmarks	21	NOUN	Landmark
 Oberleitungsbusse	21	NOUN
 Okrug	21	NOUN,OTHER
-Nadelwälder	21	NOUN
+Nadelwälder	21	NOUN	Nadelwald
 sommerliche	21	OTHER
-Volkskommissare	21	NOUN
+Volkskommissare	21	NOUN	Volkskommissar
 Nudeln	21	NOUN
-Waschmaschinen	21	NOUN
-Managern	21	NOUN
+Waschmaschinen	21	NOUN	Waschmaschine
+Managern	21	NOUN	Manager
 loses	21	NOUN,OTHER
 Rösten	21	NOUN
 Tabakwaren	21	NOUN
 Marktmacht	21	NOUN
 Herrschaftszentrum	21	NOUN
 Anomie	21	NOUN
-Hammurapis	21	NOUN
+Hammurapis	21	NOUN	Hammurapi
 DMG	21	NOUN
 prachtvoll	21	OTHER
 Grundwortschatz	21	NOUN
 Mörser	21	NOUN
-Schutzzonen	21	NOUN
+Schutzzonen	21	NOUN	Schutzzone
 Ästuar	21	NOUN
 Stadtzentren	21	NOUN
 argentinischer	21	OTHER
@@ -58023,7 +58023,7 @@ metallenen	21	OTHER
 somatische	21	OTHER
 Kolophonium	21	NOUN
 verdaut	21	OTHER
-Byrons	21	NOUN
+Byrons	21	NOUN	Byron
 Wundheilung	21	NOUN
 Epic	21	NOUN
 Backpulver	21	NOUN
@@ -58039,7 +58039,7 @@ Marsilio	21	NOUN
 Theaterbühne	21	NOUN
 flektierenden	21	OTHER
 konsonantischen	21	OTHER
-Madagaskars	21	NOUN
+Madagaskars	21	NOUN	Madagaskar
 abwerfen	21	NOUN,OTHER
 Leitfossilien	21	NOUN
 vorkommender	21	OTHER
@@ -58051,12 +58051,12 @@ nachkam	21	OTHER
 Galvani	21	NOUN
 Abfüllung	21	NOUN
 Legionslager	21	NOUN
-Verlusts	21	NOUN
+Verlusts	21	NOUN	Verlust
 dorisch	21	NOUN,OTHER
 Wortgruppe	21	NOUN
 verliere	21	OTHER
 typologischen	21	OTHER
-Verläufe	21	NOUN
+Verläufe	21	NOUN	Verlauf
 Wilkins	21	NOUN
 monophyletisch	21	OTHER
 wahllos	21	OTHER
@@ -58080,11 +58080,11 @@ Cleopatra	21	NOUN
 Päderastie	21	NOUN
 keynesianische	21	OTHER
 generis	21	OTHER
-Eingangssignale	21	NOUN
+Eingangssignale	21	NOUN	Eingangssignal
 reziproke	21	OTHER
 verlustfreie	21	OTHER
 Linearität	21	NOUN
-Bandbreiten	21	NOUN
+Bandbreiten	21	NOUN	Bandbreite
 altkirchliche	21	OTHER
 Denominationen	21	NOUN
 Sixtinische	21	NOUN
@@ -58093,12 +58093,12 @@ Grundproblem	21	NOUN
 Urstoff	21	NOUN
 Frühstadium	21	NOUN
 NZ	21	NOUN,OTHER
-Belichtungszeiten	21	NOUN
+Belichtungszeiten	21	NOUN	Belichtungszeit
 Lichtkurve	21	NOUN
 Publizität	21	NOUN
 Tauschmittel	21	NOUN
 Wirkmechanismus	21	NOUN
-Spurenelemente	21	NOUN
+Spurenelemente	21	NOUN	Spurenelement
 pauschalen	21	OTHER
 Probenvorbereitung	21	NOUN
 Milliliter	21	NOUN
@@ -58120,10 +58120,10 @@ Körpersprache	21	NOUN
 autistischen	21	OTHER
 autistische	21	OTHER
 ritualisierte	21	OTHER
-Übersichtsarbeiten	21	NOUN
+Übersichtsarbeiten	21	NOUN	Übersichtsarbeit
 Gegenmodell	21	NOUN
 Chorherren	21	NOUN
-Namenszusätze	21	NOUN
+Namenszusätze	21	NOUN	Namenszusatz
 diskursiven	21	OTHER
 diu	21	NOUN,OTHER
 Besiedlungsdichte	21	NOUN
@@ -58144,32 +58144,32 @@ Verantwortungsbereich	21	NOUN
 Glossar	21	NOUN
 hergestellter	21	OTHER
 Löffel	21	NOUN
-Taras	21	NOUN
-Rezepturen	21	NOUN
+Taras	21	NOUN	Tara
+Rezepturen	21	NOUN	Rezeptur
 Lifestyle	21	NOUN
 ausfüllt	21	OTHER
 juristisches	21	OTHER
 Ausbildungsgänge	21	NOUN
 Myers	21	NOUN
 nützt	21	OTHER
-Schwabens	21	NOUN
+Schwabens	21	NOUN	Schwaben
 Altmühl	21	NOUN
 Wiedererstarken	21	NOUN
-Spielräume	21	NOUN
+Spielräume	21	NOUN	Spielraum
 Plebiszit	21	NOUN
-Wirtschaftswunders	21	NOUN
+Wirtschaftswunders	21	NOUN	Wirtschaftswunder
 beharrlich	21	OTHER
 Gábor	21	NOUN
 abgeschlagen	21	VERB
 Kicker	21	NOUN
-Regionalzügen	21	NOUN
+Regionalzügen	21	NOUN	Regionalzug
 Weihnachtsfeiertag	21	NOUN
-Baskets	21	NOUN
+Baskets	21	NOUN	Basket
 Greis	21	NOUN
 ESV	21	NOUN
 Kochel	21	NOUN
-Kantenlängen	21	NOUN
-Großräume	21	NOUN
+Kantenlängen	21	NOUN	Kantenlänge
+Großräume	21	NOUN	Großraum
 Wimpfen	21	NOUN
 württembergischer	21	NOUN,OTHER
 Landesflagge	21	NOUN
@@ -58181,49 +58181,49 @@ Crosby	21	NOUN
 Nahaufnahme	21	NOUN
 durchstoßen	21	VERB
 Produktionsbedingungen	21	NOUN
-Landesparlamente	21	NOUN
+Landesparlamente	21	NOUN	Landesparlament
 Borax	21	NOUN
 Überspannung	21	NOUN
 Theresienwiese	21	NOUN
 Gerichtsprozess	21	NOUN
-Gesetzgebers	21	NOUN
+Gesetzgebers	21	NOUN	Gesetzgeber
 fortdauernde	21	OTHER
 Staatsziel	21	NOUN
-Fahrgastschiffe	21	NOUN
+Fahrgastschiffe	21	NOUN	Fahrgastschiff
 Landwehrkanal	21	NOUN
 Landmarke	21	NOUN
-Kurparks	21	NOUN
+Kurparks	21	NOUN	Kurpark
 Nachkriegsjahre	21	NOUN
 Birth	21	NOUN
 Südkreuz	21	NOUN
 Suffolk	21	NOUN
 Strategy	21	NOUN,OTHER
-Buildings	21	NOUN
+Buildings	21	NOUN	Building
 Warp	21	NOUN
 Together	21	NOUN
 Ferrer	21	NOUN
 Jarmusch	21	NOUN
-Worlds	21	NOUN
+Worlds	21	NOUN	World
 monarchistischen	21	OTHER
-Verfechtern	21	NOUN
+Verfechtern	21	NOUN	Verfechter
 Geschiebemergel	21	NOUN
 Ringwall	21	NOUN
 Eggegebirge	21	NOUN
 Tanztheater	21	NOUN
 TAM	21	NOUN,OTHER
 Altenbeken	21	NOUN
-Nebenstrecken	21	NOUN
-Stadtbahnlinien	21	NOUN
+Nebenstrecken	21	NOUN	Nebenstrecke
+Stadtbahnlinien	21	NOUN	Stadtbahnlinie
 Alpenrhein	21	NOUN
 Grabfunde	21	NOUN
 Sumpfgebiet	21	NOUN
 Zeitlinie	21	NOUN
 Brutpaare	21	NOUN
 Gewässerschutz	21	NOUN
-Rundfahrten	21	NOUN
-Bergbahnen	21	NOUN
+Rundfahrten	21	NOUN	Rundfahrt
+Bergbahnen	21	NOUN	Bergbahn
 Sedimentschichten	21	NOUN
-Wehranlagen	21	NOUN
+Wehranlagen	21	NOUN	Wehranlage
 Parteigründung	21	NOUN
 einmischen	21	VERB
 Radikalismus	21	NOUN
@@ -58231,7 +58231,7 @@ babylonischer	21	OTHER
 Wahlprogramm	21	NOUN
 zwittrige	21	OTHER
 therapeutischer	21	OTHER
-Hitparaden	21	NOUN
+Hitparaden	21	NOUN	Hitparade
 Bone	21	NOUN
 Hansi	21	NOUN
 Vaughan	21	NOUN
@@ -58240,19 +58240,19 @@ Scarlatti	21	NOUN
 Bratsche	21	NOUN
 bewegtes	21	OTHER
 unantastbar	21	OTHER
-Gittern	21	NOUN
+Gittern	21	NOUN	Gitter
 Rezitativ	21	NOUN
 Vingt	21	NOUN,OTHER
 verschmilzt	21	OTHER
 ausgiebige	21	OTHER
-Fachkräften	21	NOUN
-Sicherungen	21	NOUN
+Fachkräften	21	NOUN	Fachkräfte
+Sicherungen	21	NOUN	Sicherung
 Unterbindung	21	NOUN
-Schadens	21	NOUN
+Schadens	21	NOUN	Schaden
 Reisefreiheit	21	NOUN
-Vorfällen	21	NOUN
+Vorfällen	21	NOUN	Vorfall
 Keßler	21	NOUN
-Beilagen	21	NOUN
+Beilagen	21	NOUN	Beilage
 Jahresniederschlagsmenge	21	NOUN
 Catedral	21	NOUN
 Trolleybusse	21	NOUN
@@ -58261,7 +58261,7 @@ Versandung	21	NOUN
 Focke	21	NOUN
 Nordstrand	21	NOUN
 geworfenen	21	OTHER
-Innings	21	NOUN
+Innings	21	NOUN	Inning
 Handschuh	21	NOUN
 belehrt	21	OTHER
 Fehlentscheidung	21	NOUN
@@ -58274,20 +58274,20 @@ Hauptfach	21	NOUN
 Maisstärke	21	NOUN
 eukaryotische	21	OTHER
 Fortis	21	NOUN,OTHER
-Navarras	21	NOUN
+Navarras	21	NOUN	Navarra
 Walfänger	21	NOUN
-Tücher	21	NOUN
+Tücher	21	NOUN	Tuch
 deines	105	OTHER
 umgearbeitet	21	OTHER
-Datenträgers	21	NOUN
+Datenträgers	21	NOUN	Datenträger
 Bildfläche	21	NOUN
 Krach	21	NOUN
-Wertpapierbörsen	21	NOUN
-Baryonen	21	NOUN
-Grundlinien	21	NOUN
+Wertpapierbörsen	21	NOUN	Wertpapierbörse
+Baryonen	21	NOUN	Baryon
+Grundlinien	21	NOUN	Grundlinie
 Herrscherhauses	21	NOUN
 Leerraum	21	NOUN
-Vorformen	21	NOUN
+Vorformen	21	NOUN	Vorform
 Kohelet	21	NOUN
 Bemühung	21	NOUN
 Maryam	21	NOUN
@@ -58305,9 +58305,9 @@ epischer	21	OTHER
 sechstes	21	OTHER
 Bildband	21	NOUN
 Ostbelgien	21	NOUN
-Fallwinde	21	NOUN
+Fallwinde	21	NOUN	Fallwind
 territorialer	21	OTHER
-Standardsprachen	21	NOUN
+Standardsprachen	21	NOUN	Standardsprache
 Kohlebergbau	21	NOUN
 getrenntes	21	OTHER
 Weltspitze	21	NOUN
@@ -58320,24 +58320,24 @@ Beheizung	21	NOUN
 Mata	21	NOUN,OTHER
 Montgolfier	21	NOUN
 abgedichtet	21	OTHER
-Weltrekorde	21	NOUN
+Weltrekorde	21	NOUN	Weltrekord
 Bartsch	21	NOUN
 Stapellauf	21	NOUN
 Winddruck	21	NOUN
 aufgeschlagen	21	VERB
-Dokumentarfilms	21	NOUN
+Dokumentarfilms	21	NOUN	Dokumentarfilm
 Überlebender	21	NOUN,OTHER
-Chemikers	21	NOUN
+Chemikers	21	NOUN	Chemiker
 Traoré	21	NOUN
 Flussaue	21	NOUN
 Sporn	21	NOUN
 verlaufend	21	OTHER
 abspaltete	21	OTHER
 Kriechen	21	NOUN,OTHER
-Pantheons	21	NOUN
+Pantheons	21	NOUN	Pantheon
 Birs	21	NOUN
 entgegenzunehmen	21	VERB
-Finanzministers	21	NOUN
+Finanzministers	21	NOUN	Finanzminister
 Dienstwohnung	21	NOUN
 Exzellenz	21	NOUN
 verwirklichten	21	VERB
@@ -58347,28 +58347,28 @@ Dieselkraftstoff	21	NOUN
 nichtnegativen	21	OTHER
 trainierten	21	OTHER
 Mangrovenwälder	21	NOUN
-Pythons	21	NOUN
+Pythons	21	NOUN	Python
 Garo	21	NOUN
 Kaution	21	NOUN
 NCP	21	NOUN
-Einbrüche	21	NOUN
+Einbrüche	21	NOUN	Einbruch
 Twenty	21	NOUN
 DPS	21	NOUN
 altkirchenslawischen	21	NOUN,OTHER
 Balkankrieg	21	NOUN
 Wahlpflicht	21	NOUN
-Druckwasserreaktoren	21	NOUN
+Druckwasserreaktoren	21	NOUN	Druckwasserreaktor
 buntes	21	OTHER
 Längsflöte	21	NOUN
-Europapokals	21	NOUN
+Europapokals	21	NOUN	Europapokal
 sechsmonatigen	21	OTHER
 verschwundene	21	OTHER
 Vorweihnachtszeit	21	NOUN
 Zuladung	21	NOUN
 Winterzeit	21	NOUN
-Anbaus	21	NOUN
+Anbaus	21	NOUN	Anbau
 geänderter	21	OTHER
-Alltagslebens	21	NOUN
+Alltagslebens	21	NOUN	Alltagsleben
 Prosper	21	NOUN
 geflügeltes	21	OTHER
 Erbse	21	NOUN
@@ -58384,14 +58384,14 @@ Kofi	21	NOUN
 Discofox	21	NOUN
 Schützengräben	21	NOUN
 Survival	21	NOUN
-Ausstellungsstücken	21	NOUN
+Ausstellungsstücken	21	NOUN	Ausstellungsstück
 Drucktechnik	21	NOUN
 Gesetzeswerk	21	NOUN
 eindämmen	21	VERB
-Staatsoberhaupts	21	NOUN
+Staatsoberhaupts	21	NOUN	Staatsoberhaupt
 Vorgruppe	21	NOUN
 Clovis	21	NOUN
-Fernsehauftritte	21	NOUN
+Fernsehauftritte	21	NOUN	Fernsehauftritt
 Solokünstler	21	NOUN
 Peterson	21	NOUN
 Blumenberg	21	NOUN
@@ -58409,7 +58409,7 @@ Kurische	21	NOUN,OTHER
 Südwestfrankreich	21	NOUN
 gestehen	21	VERB
 abgebrochene	21	OTHER
-Kunstobjekte	21	NOUN
+Kunstobjekte	21	NOUN	Kunstobjekt
 beliebigem	21	OTHER
 Austauschteilchen	21	NOUN
 Heilquellen	21	NOUN
@@ -58420,7 +58420,7 @@ Verwaltungsangelegenheiten	21	NOUN
 verhüllt	21	OTHER
 zugängliches	21	OTHER
 Weltmeisterschaftskampf	21	NOUN
-Samstagen	21	NOUN
+Samstagen	21	NOUN	Samstag
 Partialdruck	21	NOUN
 umfangreicheren	21	OTHER
 Todeszeichen	21	NOUN
@@ -58433,7 +58433,7 @@ Kutscher	21	NOUN
 brieflichen	21	OTHER
 Konterfei	21	NOUN
 Erkennens	21	NOUN
-Lagerkommandanten	21	NOUN
+Lagerkommandanten	21	NOUN	Lagerkommandant
 Abgesandte	21	NOUN
 Hochkommissar	21	NOUN
 Ahnenkult	21	NOUN
@@ -58444,7 +58444,7 @@ Schlinge	21	NOUN
 Fehlersuche	21	NOUN
 Neptunbrunnen	21	NOUN
 Markgräfin	21	NOUN
-Bergs	21	NOUN
+Bergs	21	NOUN	Berg
 Gentlemen	21	NOUN
 Dienerschaft	21	NOUN
 verkleideten	21	VERB
@@ -58466,13 +58466,13 @@ Minimalismus	21	NOUN
 gewesene	21	OTHER
 Magnoliopsida	21	NOUN
 immergrün	21	OTHER
-Klimaten	21	NOUN
+Klimaten	21	NOUN	Klimate
 fleischige	21	OTHER
 Unified	21	NOUN
 inkompatiblen	21	OTHER
 Recovery	21	NOUN
 minimales	21	OTHER
-Grundfunktionen	21	NOUN
+Grundfunktionen	21	NOUN	Grundfunktion
 schief	21	OTHER
 Hands	21	NOUN,OTHER
 Detection	21	NOUN
@@ -58485,22 +58485,22 @@ Baumgartner	21	NOUN
 tabellarische	21	OTHER
 Quellenmaterial	21	NOUN
 Einselement	21	NOUN
-Theorems	21	NOUN
+Theorems	21	NOUN	Theorem
 Compliance	21	NOUN
 Gewichtszunahme	21	NOUN
 versieht	21	OTHER
 Verfassungsstaat	21	NOUN
 auffallenden	21	OTHER
-Stiere	21	NOUN
+Stiere	21	NOUN	Stier
 Vaihingen	21	NOUN
-Wällen	21	NOUN
+Wällen	21	NOUN	Wall
 Wandstärke	21	NOUN
-Fluktuationen	21	NOUN
+Fluktuationen	21	NOUN	Fluktuation
 Konkretisierung	21	NOUN
 Haram	21	NOUN
 Terrorgruppe	21	NOUN
 Zeitverhalten	21	NOUN
-Flags	21	NOUN
+Flags	21	NOUN	Flag
 Alchemist	21	NOUN
 Salomé	21	NOUN
 fortführte	21	OTHER
@@ -58514,13 +58514,13 @@ Filmstar	21	NOUN
 Befürwortung	21	NOUN
 Kameraführung	21	NOUN
 althergebrachte	21	OTHER
-Schlaganfälle	21	NOUN
+Schlaganfälle	21	NOUN	Schlaganfall
 hellbraun	21	OTHER
-Permanentmagneten	21	NOUN
+Permanentmagneten	21	NOUN	Permanentmagnete
 uf	21	NOUN,OTHER
 verfestigen	21	VERB
 Phasengeschwindigkeit	21	NOUN
-Heilungen	21	NOUN
+Heilungen	21	NOUN	Heilung
 abzuwägen	21	VERB
 Olympus	21	NOUN
 Freitagabend	21	NOUN
@@ -58532,21 +58532,21 @@ Interaktivität	21	NOUN
 volljährigen	21	OTHER
 spielerischen	21	OTHER
 verschicken	21	VERB
-Grafikprozessoren	21	NOUN
-Umfelds	21	NOUN
+Grafikprozessoren	21	NOUN	Grafikprozessor
+Umfelds	21	NOUN	Umfeld
 Plettenberg	21	NOUN
 Avant	21	NOUN,OTHER
 verzichte	21	OTHER
-Bekanntschaften	21	NOUN
-Eintritts	21	NOUN
+Bekanntschaften	21	NOUN	Bekanntschaft
+Eintritts	21	NOUN	Eintritt
 geendet	21	OTHER
 dirigieren	21	NOUN,OTHER
-Machtansprüche	21	NOUN
+Machtansprüche	21	NOUN	Machtanspruch
 diskriminierenden	21	OTHER
 Partisan	21	NOUN
-Gedankengänge	21	NOUN
+Gedankengänge	21	NOUN	Gedankengang
 Gewaltherrscher	21	NOUN
-Wohnorte	21	NOUN
+Wohnorte	21	NOUN	Wohnort
 Verus	21	NOUN
 herangeführt	21	OTHER
 erzürnt	21	OTHER
@@ -58569,18 +58569,18 @@ Bodenstation	21	NOUN
 Helsingborg	21	NOUN
 Abkömmling	21	NOUN
 sorgsam	21	OTHER
-Häute	21	NOUN
+Häute	21	NOUN	Haut
 Konkurrenzkampf	21	NOUN
 Streitgespräch	21	NOUN
-Liedtexten	21	NOUN
+Liedtexten	21	NOUN	Liedtext
 wechselndem	21	OTHER
 stabileren	21	OTHER
 kontraproduktiv	21	OTHER
-Hochchinesischen	21	NOUN
+Hochchinesischen	21	NOUN	Hochchinesisch
 Yue	21	NOUN
 einsilbige	21	OTHER
 verpachtete	21	OTHER
-Ölfarben	21	NOUN
+Ölfarben	21	NOUN	Ölfarbe
 hervorgetan	21	VERB
 Farce	21	NOUN
 Montréal	21	NOUN
@@ -58593,33 +58593,33 @@ Schlaflosigkeit	21	NOUN
 Studienfreund	21	NOUN
 méthode	21	NOUN,OTHER
 Andeutung	21	NOUN
-Kräne	21	NOUN
+Kräne	21	NOUN	Kran
 unsigned	21	OTHER
 Thread	21	NOUN
-Quellcodes	21	NOUN
+Quellcodes	21	NOUN	Quellcode
 protosinaitischen	21	OTHER
 Appius	21	NOUN
 Engstelle	21	NOUN
-Wartungs	21	NOUN
+Wartungs	21	NOUN	Wartung
 Machtzentren	21	NOUN
-Schuldners	21	NOUN
+Schuldners	21	NOUN	Schuldner
 Verschwiegenheit	21	NOUN
 Fiesole	21	NOUN
-Ruhms	21	NOUN
+Ruhms	21	NOUN	Ruhm
 ernsthafter	21	OTHER
 gewürzt	21	OTHER
 tragfähige	21	OTHER
 infinitesimalen	21	OTHER
-Stauffenbergs	21	NOUN
+Stauffenbergs	21	NOUN	Stauffenberg
 Sauerbruch	21	NOUN
 Trott	21	NOUN
 Namenspatron	21	NOUN
 auszugsweise	21	OTHER
 namespace	21	OTHER
 Need	21	NOUN,OTHER
-EPROMs	21	NOUN
+EPROMs	21	NOUN	EPROM
 kompatibler	21	OTHER
-Computerzeitschriften	21	NOUN
+Computerzeitschriften	21	NOUN	Computerzeitschrift
 mitgeführte	21	OTHER
 Inkareich	21	NOUN
 abgeschiedenen	21	OTHER
@@ -58629,9 +58629,9 @@ Porträtmaler	21	NOUN
 TVN	21	NOUN
 Verhaltensweise	21	NOUN
 annähert	21	OTHER
-Signs	21	NOUN,OTHER
+Signs	21	NOUN,OTHER	Sign
 semantisches	21	OTHER
-Iterationen	21	NOUN
+Iterationen	21	NOUN	Iteration
 passierbar	21	OTHER
 gefestigte	21	OTHER
 karzinogen	21	OTHER
@@ -58646,8 +58646,8 @@ Trennzeichen	21	NOUN
 Jannings	21	NOUN
 läuten	21	VERB
 gleichnamigem	21	OTHER
-Mörders	21	NOUN
-Einfamilienhäusern	21	NOUN
+Mörders	21	NOUN	Mörder
+Einfamilienhäusern	21	NOUN	Einfamilienhäuser
 Wilmington	21	NOUN
 wiederzufinden	21	VERB
 DLF	21	NOUN
@@ -58658,9 +58658,9 @@ umlaufende	21	OTHER
 Goldreserven	21	NOUN
 bayrische	21	OTHER
 zustimmten	21	VERB
-Kriegsvorbereitungen	21	NOUN
+Kriegsvorbereitungen	21	NOUN	Kriegsvorbereitung
 Kindesmissbrauch	21	NOUN
-Rücksichten	21	NOUN
+Rücksichten	21	NOUN	Rücksicht
 Wochenschau	21	NOUN
 vordem	21	OTHER
 codierte	21	OTHER
@@ -58676,7 +58676,7 @@ Spar	21	NOUN,VERB
 Rotkäppchen	21	NOUN
 Sarrazin	21	NOUN
 Vulnerable	21	NOUN,OTHER
-Suchanfragen	21	NOUN
+Suchanfragen	21	NOUN	Suchanfrage
 Hilfsdienst	21	NOUN
 Celebration	21	NOUN
 Nottingham	21	NOUN
@@ -58697,7 +58697,7 @@ mittelbare	21	OTHER
 Kornett	21	NOUN
 Jacobsen	21	NOUN
 Odeon	21	NOUN
-Guldens	21	NOUN
+Guldens	21	NOUN	Gulden
 consilium	21	OTHER
 Prokurator	21	NOUN
 barrierefreien	21	OTHER
@@ -58714,9 +58714,9 @@ besetztes	21	OTHER
 ausgelobt	21	OTHER
 umstrittenes	21	OTHER
 Gesamtgröße	21	NOUN
-Supraleitern	21	NOUN
+Supraleitern	21	NOUN	Supraleiter
 ey	21	NOUN,OTHER
-Startups	21	NOUN
+Startups	21	NOUN	Startup
 gelernten	21	OTHER
 Berufsverkehr	21	NOUN
 Radwanderweg	21	NOUN
@@ -58731,7 +58731,7 @@ Badende	21	NOUN
 Dangast	21	NOUN
 nichtnegative	21	OTHER
 Zee	21	NOUN
-Aufzügen	21	NOUN
+Aufzügen	21	NOUN	Aufzug
 stürmischen	21	OTHER
 ostpreußische	21	OTHER
 schroffen	21	OTHER
@@ -58744,17 +58744,17 @@ Ostseeinsel	21	NOUN
 Altenglische	21	NOUN,OTHER
 Egg	21	NOUN,OTHER
 vornehm	21	OTHER
-Stichwörtern	21	NOUN
+Stichwörtern	21	NOUN	Stichwort
 betonter	21	OTHER
 Aussagesatz	21	NOUN
-Anbaugebiete	21	NOUN
+Anbaugebiete	21	NOUN	Anbaugebiet
 Nukleotidsequenz	21	NOUN
 zirkulär	21	OTHER
 stückweise	21	OTHER
 Figurengruppe	21	NOUN
 gedämpfte	21	OTHER
 Äxte	21	NOUN
-Höflinge	21	NOUN
+Höflinge	21	NOUN	Höfling
 redigierte	21	OTHER
 Besatzungsmächten	21	NOUN
 abgeholzt	21	OTHER
