@@ -17555,20 +17555,20 @@ vermehrte	103	OTHER
 Mitteilung	103	NOUN
 Lok	103	NOUN
 Bundesbahn	103	NOUN
-Zeremonien	103	NOUN
-Epidemien	103	NOUN
-Verbrennungsmotoren	103	NOUN
-Schwingen	103	NOUN,OTHER
-Hütten	103	NOUN
+Zeremonien	103	NOUN	Zeremonie
+Epidemien	103	NOUN	Epidemie
+Verbrennungsmotoren	103	NOUN	Verbrennungsmotor
+Schwingen	103	NOUN,OTHER	Schwinge
+Hütten	103	NOUN	Hütte
 trainiert	103	OTHER
 Kisch	103	NOUN
 argentinischen	103	OTHER
 hierher	103	OTHER
 Rezeptor	103	NOUN
 Gabriele	103	NOUN
-Tschechiens	103	NOUN
+Tschechiens	103	NOUN	Tschechien
 biblischer	103	OTHER
-Nullstellen	103	NOUN
+Nullstellen	103	NOUN	Nullstelle
 Rouen	103	NOUN
 Kanzel	103	NOUN
 unabhängiges	103	OTHER
@@ -17577,24 +17577,24 @@ bundesweite	103	OTHER
 Gesellschaftsordnung	103	NOUN
 ökonomischer	103	OTHER
 Hämoglobin	103	NOUN
-Zweitstimmen	103	NOUN
+Zweitstimmen	103	NOUN	Zweitstimme
 ländlich	103	OTHER
 zählenden	103	OTHER
 Forest	103	NOUN
 Mo	103	NOUN,OTHER
 schießen	103	NOUN,OTHER
 CPC	103	NOUN
-Labels	103	NOUN
-Kiefern	103	NOUN
+Labels	103	NOUN	Label
+Kiefern	103	NOUN	Kiefer
 Schiedsrichter	103	NOUN
 realisierte	103	OTHER
-Humboldts	103	NOUN
+Humboldts	103	NOUN	Humboldt
 lädt	103	OTHER
-JHWHs	103	NOUN
+JHWHs	103	NOUN	JHWH
 alleinigen	103	OTHER
 Stimmberechtigten	103	NOUN,OTHER
 Assam	103	NOUN
-Sturmfluten	103	NOUN
+Sturmfluten	103	NOUN	Sturmflut
 Paprika	103	NOUN
 Lese	103	NOUN,VERB
 Turn	103	NOUN
@@ -17606,7 +17606,7 @@ Kronberg	103	NOUN
 Epitaph	103	NOUN
 Souverän	103	NOUN,OTHER
 Jacobi	103	NOUN
-Zwiebeln	103	NOUN
+Zwiebeln	103	NOUN	Zwiebel
 Grundsteinlegung	103	NOUN
 Herdecke	103	NOUN
 Karstadt	103	NOUN
@@ -17616,7 +17616,7 @@ friesischen	103	OTHER
 Apache	103	NOUN
 Hahnemann	103	NOUN
 Behring	103	NOUN
-Neuapostolischen	103	NOUN,OTHER
+Neuapostolischen	103	NOUN,OTHER	Neuapostolische
 Hellersdorf	103	NOUN
 Nichtjuden	103	NOUN
 Siebenbürger	103	NOUN
@@ -17628,7 +17628,7 @@ geeignetes	102	OTHER
 sinnvolle	102	OTHER
 Kurzfilm	102	NOUN
 erschwerte	102	OTHER
-Wettbewerbs	102	NOUN
+Wettbewerbs	102	NOUN	Wettbewerb
 verlängerte	102	OTHER
 störend	102	OTHER
 Baker	102	NOUN
@@ -17648,14 +17648,14 @@ herausstellte	102	OTHER
 abgespalten	102	OTHER
 vereinbaren	102	OTHER
 Einwilligung	102	NOUN
-Berufs	102	NOUN
+Berufs	102	NOUN	Beruf
 Revolte	102	NOUN
 töteten	102	OTHER
 vorübergehende	102	OTHER
 derweil	102	OTHER
 wahrscheinlicher	102	OTHER
 Rückgriff	102	NOUN
-Schilderungen	102	NOUN
+Schilderungen	102	NOUN	Schilderung
 Alessandro	102	NOUN
 gallischen	102	OTHER
 neuzeitliche	102	OTHER
@@ -17670,24 +17670,24 @@ Frühsommer	102	NOUN
 Spinnen	102	NOUN
 BK	102	NOUN
 Middle	102	NOUN,OTHER
-Zuwendungen	102	NOUN
-Bäder	102	NOUN
+Zuwendungen	102	NOUN	Zuwendung
+Bäder	102	NOUN	Bad
 angeblicher	102	OTHER
 einnahm	102	OTHER
 Miliz	102	NOUN
-Clans	102	NOUN
+Clans	102	NOUN	Clan
 Bakr	102	NOUN
-Tonarten	102	NOUN
+Tonarten	102	NOUN	Tonart
 Now	102	NOUN,OTHER
 Schlesische	102	NOUN,OTHER
-Entwicklungsländer	102	NOUN
+Entwicklungsländer	102	NOUN	Entwicklungsland
 Bombe	102	NOUN
 weiterführenden	102	OTHER
 TÜV	102	NOUN
 westafrikanischen	102	OTHER
 resultieren	102	OTHER
 Gewichtskraft	102	NOUN
-Ingenieurwissenschaften	102	NOUN
+Ingenieurwissenschaften	102	NOUN	Ingenieurwissenschaft
 Differentialgleichung	102	NOUN
 Hülshoff	102	NOUN
 Widmung	102	NOUN
@@ -17701,30 +17701,30 @@ landschaftlich	102	OTHER
 sonntags	102	OTHER
 primitiven	102	OTHER
 knüpft	102	OTHER
-Turksprachen	102	NOUN
+Turksprachen	102	NOUN	Turksprache
 Gefäß	102	NOUN
 exklusiv	102	OTHER
 Aufspaltung	102	NOUN
 Anfänger	102	NOUN
 Cousine	102	NOUN
-Kubas	102	NOUN
+Kubas	102	NOUN	Kuba
 Bundesverband	102	NOUN
 einmaligen	102	OTHER
 Tauber	102	NOUN
 Syrisch	102	NOUN,OTHER
-Formaten	102	NOUN
+Formaten	102	NOUN	Format
 Treptow	102	NOUN
-Verkehrsbetriebe	102	NOUN
+Verkehrsbetriebe	102	NOUN	Verkehrsbetrieb
 Schul	102	NOUN
 RIAS	102	NOUN
 Zollverein	102	NOUN
-Hannovers	102	NOUN
+Hannovers	102	NOUN	Hannover
 Historie	102	NOUN
 Madison	102	NOUN
 Drive	102	NOUN
-Westeuropas	102	NOUN
-DVDs	102	NOUN
-Meeresspiegels	102	NOUN
+Westeuropas	102	NOUN	Westeuropa
+DVDs	102	NOUN	DVD
+Meeresspiegels	102	NOUN	Meeresspiegel
 Vorsteher	102	NOUN
 Kärntner	102	NOUN
 aufwendige	102	OTHER
@@ -17735,7 +17735,7 @@ Schutzmaßnahmen	102	NOUN
 besprochen	102	OTHER
 Erkelenz	102	NOUN
 Gotland	102	NOUN
-Ratsmitglieder	102	NOUN
+Ratsmitglieder	102	NOUN	Ratsmitglied
 License	102	NOUN
 Entspannung	102	NOUN
 Hauptachse	102	NOUN
@@ -17748,7 +17748,7 @@ Düssel	102	NOUN
 Dill	102	NOUN
 diskrete	102	OTHER
 Hôtel	102	NOUN
-Eulers	102	NOUN
+Eulers	102	NOUN	Euler
 Nachbargemeinde	102	NOUN
 Pedal	102	NOUN
 ÖBB	102	NOUN
@@ -17801,13 +17801,13 @@ kaiserlich	101	OTHER
 tauschen	101	VERB
 Weiterführung	101	NOUN
 Stoß	101	NOUN,VERB
-Sieges	101	NOUN
+Sieges	101	NOUN	Sieg
 erworbene	101	OTHER
 mehrjährigen	101	OTHER
-Kaufmanns	101	NOUN
+Kaufmanns	101	NOUN	Kaufmann
 GUI	101	NOUN
 Bahnhofstraße	101	NOUN
-Identitäten	101	NOUN
+Identitäten	101	NOUN	Identität
 behinderten	101	VERB,OTHER
 zugreifen	101	OTHER
 entwerfen	101	VERB
@@ -17815,7 +17815,7 @@ Spielraum	101	NOUN
 Kulisse	101	NOUN
 Orbiter	101	NOUN
 schwedischer	101	OTHER
-Zähnen	101	NOUN
+Zähnen	101	NOUN	Zahn
 Patenschaft	101	NOUN
 Hochmeister	101	NOUN
 festhielt	101	OTHER
@@ -17829,15 +17829,15 @@ mischen	101	VERB
 quantitativen	101	OTHER
 Konsistenz	101	NOUN
 Quarz	101	NOUN
-Atomkerne	101	NOUN
+Atomkerne	101	NOUN	Atomkern
 Wichtigkeit	101	NOUN
 zeitlicher	101	OTHER
 Geograph	101	NOUN
 Conference	101	NOUN
 melden	101	VERB
-Anschlussstellen	101	NOUN
-Attraktionen	101	NOUN
-Karikaturen	101	NOUN
+Anschlussstellen	101	NOUN	Anschlussstelle
+Attraktionen	101	NOUN	Attraktion
+Karikaturen	101	NOUN	Karikatur
 Job	101	NOUN
 verabschiedeten	101	VERB,OTHER
 Grundbesitz	101	NOUN
@@ -17852,12 +17852,12 @@ Esra	101	NOUN
 Good	101	NOUN,OTHER
 LaTeX	101	NOUN
 Braille	101	NOUN
-Regenwälder	101	NOUN
-Sommerspielen	101	NOUN
+Regenwälder	101	NOUN	Regenwald
+Sommerspielen	101	NOUN	Sommerspiele
 Golfkrieg	101	NOUN
 Chengdu	101	NOUN
 Herne	101	NOUN
-Fachbereiche	101	NOUN
+Fachbereiche	101	NOUN	Fachbereich
 gridcolor	101	OTHER
 Jerry	101	NOUN
 Utans	101	NOUN
@@ -17875,7 +17875,7 @@ verschlüsselt	101	OTHER
 Dämpfung	101	NOUN
 Hausaufgaben	101	NOUN
 Nibelungenlied	101	NOUN
-Stiche	101	NOUN
+Stiche	101	NOUN	Stich
 Kulturhauptstadt	101	NOUN
 Winslet	101	NOUN
 Tennō	101	NOUN
@@ -17891,7 +17891,7 @@ ausdrückt	100	OTHER
 kreativen	100	OTHER
 inspirierten	100	VERB,OTHER
 Standardwerk	100	NOUN
-Ehefrauen	100	NOUN
+Ehefrauen	100	NOUN	Ehefrau
 Way	100	NOUN,OTHER
 kristallisiert	100	OTHER
 geringes	100	OTHER
@@ -17900,7 +17900,7 @@ Verminderung	100	NOUN
 terrestrischen	100	OTHER
 getrunken	100	VERB
 griech	100	OTHER
-Grundzüge	100	NOUN
+Grundzüge	100	NOUN	Grundzug
 Schlachtfeld	100	NOUN
 Euphrat	100	NOUN
 Begräbnis	100	NOUN
@@ -17911,7 +17911,7 @@ attischen	100	NOUN,OTHER
 erstaunlich	100	OTHER
 eingeschrieben	100	VERB
 abgeworfen	100	VERB
-Premierministers	100	NOUN
+Premierministers	100	NOUN	Premierminister
 Camille	100	NOUN
 aufwändigen	100	OTHER
 Schuss	100	NOUN
@@ -17940,30 +17940,30 @@ Page	100	NOUN,OTHER
 gelenkt	100	OTHER
 Banden	100	NOUN,OTHER
 Marius	100	NOUN
-Rändern	100	NOUN
+Rändern	100	NOUN	Rand
 anspruchsvolle	100	OTHER
 Judith	100	NOUN
 Erdboden	100	NOUN
 CEO	100	NOUN
-Entwicklern	100	NOUN
+Entwicklern	100	NOUN	Entwickler
 Adapter	100	NOUN
 speichert	100	OTHER
-Ausschüsse	100	NOUN
-Nächte	100	NOUN
+Ausschüsse	100	NOUN	Ausschuss
+Nächte	100	NOUN	Nacht
 Seeleute	100	NOUN
 Überschuss	100	NOUN
 Layout	100	NOUN
 ausgerechnet	100	OTHER
 vorhergesagt	100	OTHER
-Spielers	100	NOUN
+Spielers	100	NOUN	Spieler
 Regina	100	NOUN
 Vol	100	NOUN
-Mäusen	100	NOUN
+Mäusen	100	NOUN	Maus
 Abfassung	100	NOUN
 gutem	100	OTHER
 Heft	100	NOUN
 Konklave	100	NOUN
-Diktaturen	100	NOUN
+Diktaturen	100	NOUN	Diktatur
 Partido	100	NOUN
 Alberto	100	NOUN
 Linkspartei	100	NOUN
@@ -17973,8 +17973,8 @@ Konjugation	100	NOUN
 Öfteren	100	NOUN
 spezifischer	100	OTHER
 versteigert	100	OTHER
-Soziologen	100	NOUN
-Schottlands	100	NOUN
+Soziologen	100	NOUN	Soziologe
+Schottlands	100	NOUN	Schottland
 herbeizuführen	100	VERB
 Atlantic	100	NOUN
 Fahrbahn	100	NOUN
@@ -17987,18 +17987,18 @@ Nationaltheater	100	NOUN
 Bliss	100	NOUN
 ausgleichen	100	VERB
 möchten	100	VERB
-Inszenierungen	100	NOUN
+Inszenierungen	100	NOUN	Inszenierung
 modelliert	100	OTHER
 Musikwissenschaft	100	NOUN
 weltlicher	100	OTHER
 Mielke	100	NOUN
 Mix	100	NOUN
-Eisbären	100	NOUN
+Eisbären	100	NOUN	Eisbär
 Save	100	NOUN
 gemäss	100	OTHER
 jüdisches	100	OTHER
 Dienstleister	100	NOUN
-Hexen	100	NOUN
+Hexen	100	NOUN	Hexe
 Mbit	100	NOUN
 königlicher	100	OTHER
 indigener	100	OTHER
@@ -18008,11 +18008,11 @@ Zurückhaltung	100	NOUN
 NAK	100	NOUN
 Pieck	100	NOUN
 Tempus	100	NOUN
-Linguisten	100	NOUN
+Linguisten	100	NOUN	Linguist
 RSA	100	NOUN
 Semper	100	NOUN
 Quadriga	100	NOUN
-Geldautomaten	100	NOUN
+Geldautomaten	100	NOUN	Geldautomat
 Hausdorff	100	NOUN
 Finnisch	100	NOUN,OTHER
 Endspiel	100	NOUN
@@ -18031,21 +18031,21 @@ abzuschließen	99	VERB
 Privatleben	99	NOUN
 Tageslicht	99	NOUN
 Marion	99	NOUN
-Sendern	99	NOUN
-Staffeln	99	NOUN
+Sendern	99	NOUN	Sender
+Staffeln	99	NOUN	Staffel
 derzeitige	99	OTHER
 SiO	99	NOUN
 angezogen	99	VERB
-Unfällen	99	NOUN
-Reserven	99	NOUN
+Unfällen	99	NOUN	Unfall
+Reserven	99	NOUN	Reserve
 stationäre	99	OTHER
-Erze	99	NOUN
+Erze	99	NOUN	Erz
 vergleichende	99	NOUN,OTHER
 qualitative	99	OTHER
 reicher	99	OTHER
 unerheblich	99	OTHER
 Severus	99	NOUN
-Koalitionen	99	NOUN
+Koalitionen	99	NOUN	Koalition
 entgegengesetzte	99	OTHER
 Umweg	99	NOUN
 Paolo	99	NOUN
@@ -18055,9 +18055,9 @@ Umrechnung	99	NOUN
 Justizminister	99	NOUN
 unterbunden	99	VERB
 voraussetzt	99	OTHER
-Gewichte	99	NOUN
+Gewichte	99	NOUN	Gewicht
 anfertigen	99	VERB
-Seienden	99	NOUN,OTHER
+Seienden	99	NOUN,OTHER	Seiende
 Afroamerikaner	99	NOUN
 mythologischen	99	OTHER
 Europawahl	99	NOUN
@@ -18065,7 +18065,7 @@ untersagte	99	OTHER
 konsequente	99	OTHER
 orthodox	99	OTHER
 flächendeckend	99	OTHER
-Glaubensgemeinschaften	99	NOUN
+Glaubensgemeinschaften	99	NOUN	Glaubensgemeinschaft
 Machine	99	NOUN,OTHER
 Tabu	99	NOUN,OTHER
 Sachlichkeit	99	NOUN
@@ -18075,7 +18075,7 @@ Dürre	99	NOUN
 konstitutionellen	99	OTHER
 einzuordnen	99	VERB
 belassen	99	VERB
-Wiederholungen	99	NOUN
+Wiederholungen	99	NOUN	Wiederholung
 Bauteil	99	NOUN
 heimgesucht	99	OTHER
 Bevorzugung	99	NOUN
@@ -18091,11 +18091,11 @@ Wut	99	NOUN
 Henning	99	NOUN
 aufgefunden	99	VERB
 Statut	99	NOUN
-Lochkarten	99	NOUN
+Lochkarten	99	NOUN	Lochkarte
 Landesebene	99	NOUN
 sicherten	99	VERB
 schwerwiegenden	99	OTHER
-Passagieren	99	NOUN
+Passagieren	99	NOUN	Passagier
 ersetzten	99	VERB,OTHER
 Maske	99	NOUN
 Sputnik	99	NOUN
@@ -18108,17 +18108,17 @@ Vermessung	99	NOUN
 Wanderweg	99	NOUN
 Erdgeschichte	99	NOUN
 vulkanische	99	OTHER
-Klappen	99	NOUN
+Klappen	99	NOUN	Klappe
 potenziell	99	OTHER
-Übertragungen	99	NOUN
+Übertragungen	99	NOUN	Übertragung
 Historic	99	NOUN
-Vertretungen	99	NOUN
+Vertretungen	99	NOUN	Vertretung
 Luxus	99	NOUN
 verwalteten	99	VERB,OTHER
 Cs	99	NOUN
 installieren	99	VERB
-Jahrtausende	99	NOUN
-Verwendungen	99	NOUN
+Jahrtausende	99	NOUN	Jahrtausend
+Verwendungen	99	NOUN	Verwendung
 Muttersprachler	99	NOUN
 homogen	99	OTHER
 angeordnete	99	OTHER
@@ -18128,23 +18128,23 @@ Berufsausbildung	99	NOUN
 therapeutischen	99	OTHER
 Bundesgesetz	99	NOUN
 Unterfranken	99	NOUN
-Teilungen	99	NOUN
+Teilungen	99	NOUN	Teilung
 erneuter	99	OTHER
 Haufen	99	NOUN
 Karton	99	NOUN
 Oberlandesgericht	99	NOUN
-Märkischen	99	NOUN,OTHER
-Sträucher	99	NOUN
+Märkischen	99	NOUN,OTHER	Märkisch
+Sträucher	99	NOUN	Strauch
 Individualität	99	NOUN
-Wanderwege	99	NOUN
+Wanderwege	99	NOUN	Wanderweg
 eingeweihte	99	OTHER
 umgesiedelt	99	OTHER
 rechteckigen	99	OTHER
 neutestamentlichen	99	OTHER
-Amtszeiten	99	NOUN
+Amtszeiten	99	NOUN	Amtszeit
 Charleroi	99	NOUN
 mystischen	99	OTHER
-pommerschen	99	NOUN,OTHER
+pommerschen	99	NOUN,OTHER	pommersche
 Stadtarchiv	99	NOUN
 Mittelland	99	NOUN
 Futurismus	99	NOUN
@@ -18155,7 +18155,7 @@ Dada	99	NOUN
 Antoninus	99	NOUN
 Osterinsel	99	NOUN
 konstruierten	99	VERB,OTHER
-Momente	99	NOUN
+Momente	99	NOUN	Moment
 Departement	99	NOUN
 Feldstärke	99	NOUN
 Tettnang	99	NOUN
@@ -18163,7 +18163,7 @@ parteilos	99	OTHER
 Falco	99	NOUN
 Ivan	98	NOUN
 Nächstes	98	NOUN,OTHER
-Atoms	98	NOUN
+Atoms	98	NOUN	Atom
 Feature	98	NOUN
 festigte	98	OTHER
 finde	98	OTHER
@@ -18183,7 +18183,7 @@ km³	98	OTHER
 wandeln	98	VERB
 ungerade	98	OTHER
 widersprüchlich	98	OTHER
-Ärztinnen	98	NOUN
+Ärztinnen	98	NOUN	Ärztin
 wohnt	98	OTHER
 molekulare	98	OTHER
 makedonischen	98	OTHER
@@ -18198,17 +18198,17 @@ What	98	NOUN,OTHER
 Battista	98	NOUN
 ordentliche	98	OTHER
 Clement	98	NOUN
-Fronten	98	NOUN
+Fronten	98	NOUN	Front
 Belle	98	NOUN
 Woods	98	NOUN
 Lineal	98	NOUN
-Strände	98	NOUN
-Adressaten	98	NOUN
+Strände	98	NOUN	Strand
+Adressaten	98	NOUN	Adressat
 Dante	98	NOUN
 entsenden	98	VERB
 Wählerstimmen	98	NOUN
 Atlanta	98	NOUN
-Partners	98	NOUN
+Partners	98	NOUN	Partner
 promovierte	98	OTHER
 Wahlergebnis	98	NOUN
 Opel	98	NOUN
@@ -18217,11 +18217,11 @@ Neuauflage	98	NOUN
 Nomaden	98	NOUN
 Wiederkehr	98	NOUN
 Breton	98	NOUN
-Nachbarländer	98	NOUN
+Nachbarländer	98	NOUN	Nachbarland
 Airways	98	NOUN
 Intention	98	NOUN
 Aphrodite	98	NOUN
-Rezensionen	98	NOUN
+Rezensionen	98	NOUN	Rezension
 Christenheit	98	NOUN
 Wicca	98	NOUN
 Marquis	98	NOUN
@@ -18239,7 +18239,7 @@ Pavia	98	NOUN
 Chamberlain	98	NOUN
 Tränen	98	NOUN
 meines	98	OTHER
-Uniformen	98	NOUN
+Uniformen	98	NOUN	Uniform
 beklagt	98	OTHER
 Calais	98	NOUN
 Atoll	98	NOUN
@@ -18267,13 +18267,13 @@ monumentalen	98	OTHER
 Beeren	98	NOUN
 Telekommunikation	98	NOUN
 Rheinprovinz	98	NOUN
-Spulen	98	NOUN
-Kommandanten	98	NOUN
+Spulen	98	NOUN	Spule
+Kommandanten	98	NOUN	Kommandant
 Cover	98	NOUN
 rechtsrheinischen	98	OTHER
 Ligen	98	NOUN
 Oberschwaben	98	NOUN
-Dateisysteme	98	NOUN
+Dateisysteme	98	NOUN	Dateisystem
 Heimcomputer	98	NOUN
 bäuerliche	98	OTHER
 Elektrode	98	NOUN
@@ -18281,13 +18281,13 @@ Freikirchliche	98	NOUN,OTHER
 innerstädtische	98	OTHER
 fusionierten	98	VERB,OTHER
 Kempen	98	NOUN
-Luxemburgs	98	NOUN
+Luxemburgs	98	NOUN	Luxemburg
 Gesetzentwurf	98	NOUN
 Frauenanteil	98	NOUN
 Kurpark	98	NOUN
 Dienststelle	98	NOUN
-Fremdwörtern	98	NOUN
-Schamanen	98	NOUN
+Fremdwörtern	98	NOUN	Fremdwort
+Schamanen	98	NOUN	Schamane
 Hochebene	98	NOUN
 tauchten	98	VERB
 ungarischer	98	OTHER
@@ -18295,14 +18295,14 @@ Schwestergruppe	98	NOUN
 Märzrevolution	98	NOUN
 DDP	98	NOUN
 Sommersemester	98	NOUN
-Kafkas	98	NOUN
+Kafkas	98	NOUN	Kafka
 lokalisiert	98	OTHER
-Ausdrucksformen	98	NOUN
+Ausdrucksformen	98	NOUN	Ausdrucksform
 Giscard	98	NOUN
 akut	98	NOUN,OTHER
 blickt	98	OTHER
 Tech	98	NOUN
-Vorstädte	98	NOUN
+Vorstädte	98	NOUN	Vorstadt
 Gebietskörperschaft	98	NOUN
 Ranicki	98	NOUN
 Mieszko	98	NOUN
@@ -18317,13 +18317,13 @@ zerlegen	97	VERB
 Isle	97	NOUN
 bezahlten	97	VERB,OTHER
 beendeten	97	VERB,OTHER
-Präfixe	97	NOUN
+Präfixe	97	NOUN	Präfix
 Vielfache	97	NOUN,OTHER
-Spielfilme	97	NOUN
+Spielfilme	97	NOUN	Spielfilm
 Jade	97	NOUN
 adaptiert	97	OTHER
 Ville	97	NOUN,OTHER
-Kontexten	97	NOUN
+Kontexten	97	NOUN	Kontext
 Ceres	97	NOUN
 Sol	97	NOUN,OTHER
 nachgesagt	97	OTHER
@@ -18335,7 +18335,7 @@ belagerte	97	OTHER
 verkünden	97	VERB
 Berthold	97	NOUN
 Betrachtungsweise	97	NOUN
-Bürgerkriege	97	NOUN
+Bürgerkriege	97	NOUN	Bürgerkrieg
 begrifflich	97	OTHER
 Amateur	97	NOUN
 Babbage	97	NOUN
@@ -18371,7 +18371,7 @@ Militarismus	97	NOUN
 französisches	97	OTHER
 funktionierende	97	OTHER
 delle	97	OTHER
-Weihen	97	NOUN,OTHER
+Weihen	97	NOUN,OTHER	Weihe
 Assembly	97	NOUN
 Gabun	97	NOUN
 widersprüchliche	97	OTHER
@@ -18380,23 +18380,23 @@ Verwaltungsgebäude	97	NOUN
 Kreml	97	NOUN
 aramäischen	97	OTHER
 Geschehens	97	NOUN
-Venezuelas	97	NOUN
+Venezuelas	97	NOUN	Venezuela
 verbuchen	97	VERB
 Popular	97	NOUN,OTHER
 Italia	97	NOUN
 Release	97	NOUN
-Rechnungen	97	NOUN
+Rechnungen	97	NOUN	Rechnung
 prä	97	NOUN,OTHER
 Arrondissement	97	NOUN
 Alexandra	97	NOUN
 kursiv	97	OTHER
 Entstehungsgeschichte	97	NOUN
-Neuseelands	97	NOUN
+Neuseelands	97	NOUN	Neuseeland
 Mexico	97	NOUN
 Lebensalter	97	NOUN
 steinernen	97	OTHER
-Lichtquellen	97	NOUN
-Meyers	97	NOUN
+Lichtquellen	97	NOUN	Lichtquelle
+Meyers	97	NOUN	Meyer
 Biotechnologie	97	NOUN
 unnötig	97	OTHER
 Kristall	97	NOUN
@@ -18413,49 +18413,49 @@ Durchfahrt	97	NOUN
 erschlagen	97	VERB
 Anzeiger	97	NOUN
 Buffalo	97	NOUN,OTHER
-Verschiebungen	97	NOUN
-Studiengängen	97	NOUN
+Verschiebungen	97	NOUN	Verschiebung
+Studiengängen	97	NOUN	Studiengang
 eintraf	97	OTHER
 Get	97	NOUN,OTHER
 DP	97	NOUN
 flämischen	97	OTHER
 Missachtung	97	NOUN
 Jazeera	97	NOUN
-Überfalls	97	NOUN
+Überfalls	97	NOUN	Überfall
 Zucht	97	NOUN
 anstehenden	97	OTHER
 Mobil	97	NOUN,OTHER
 Landesinnere	97	NOUN
 Alfonso	97	NOUN
 Abbey	97	NOUN
-Schranken	97	NOUN
+Schranken	97	NOUN	Schranke
 Siegburg	97	NOUN
-Raubtiere	97	NOUN
+Raubtiere	97	NOUN	Raubtier
 Gibson	97	NOUN
 Verkehrsgesellschaft	97	NOUN
 infiziert	97	OTHER
 Jelzin	97	NOUN
 Schiiten	97	NOUN
-Wallensteins	97	NOUN
+Wallensteins	97	NOUN	Wallenstein
 Saxophon	97	NOUN
 Ranges	97	NOUN
-Mormonen	97	NOUN
+Mormonen	97	NOUN	Mormon
 Wallfahrt	97	NOUN
 Innenseite	97	NOUN
 Niob	97	NOUN
-Datentypen	97	NOUN
+Datentypen	97	NOUN	Datentyp
 Dienstag	97	NOUN
 Umsiedlung	97	NOUN
 gejagt	97	OTHER
-Esten	97	NOUN
+Esten	97	NOUN	Este
 Advent	97	NOUN
-Attilas	97	NOUN
+Attilas	97	NOUN	Attila
 Twain	97	NOUN
 Mastercard	97	NOUN
 Landesstraße	97	NOUN
 Vaduz	97	NOUN
-Jacksons	97	NOUN
-Barbarossas	97	NOUN
+Jacksons	97	NOUN	Jackson
+Barbarossas	97	NOUN	Barbarossa
 Charkiw	97	NOUN
 Hiragana	97	NOUN
 Reuss	97	NOUN
@@ -18468,9 +18468,9 @@ Coppola	96	NOUN
 Frame	96	NOUN
 Doris	96	NOUN
 vorbereitete	96	OTHER
-Fortsetzungen	96	NOUN
+Fortsetzungen	96	NOUN	Fortsetzung
 Aufzählung	96	NOUN
-Raten	96	NOUN,OTHER
+Raten	96	NOUN,OTHER	Rate
 Recycling	96	NOUN
 Niederschlesien	96	NOUN
 Rückstand	96	NOUN
@@ -18478,7 +18478,7 @@ Rückstand	96	NOUN
 vorbereiten	96	VERB
 georgische	96	OTHER
 Vega	96	NOUN
-Trägern	96	NOUN
+Trägern	96	NOUN	Träger
 frühmittelalterlichen	96	OTHER
 Mitmenschen	96	NOUN
 Vandalismus	96	NOUN,OTHER
@@ -18487,20 +18487,20 @@ befragt	96	OTHER
 signifikanten	96	OTHER
 Arizona	96	NOUN
 Beistand	96	NOUN
-Punktes	96	NOUN
+Punktes	96	NOUN	Punkt
 Seil	96	NOUN
-Verweise	96	NOUN,OTHER
+Verweise	96	NOUN,OTHER	Verweis
 widmeten	96	VERB
-Blutgefäße	96	NOUN
+Blutgefäße	96	NOUN	Blutgefäß
 Spencer	96	NOUN
 zurückhaltend	96	OTHER
 wärmsten	96	OTHER
-Vierteln	96	NOUN
+Vierteln	96	NOUN	Viertel
 Verwaltungszentrum	96	NOUN
 Religiosität	96	NOUN
 Bezugssystem	96	NOUN
 Uneinigkeit	96	NOUN
-Verlages	96	NOUN
+Verlages	96	NOUN	Verlag
 Education	96	NOUN
 Bewässerung	96	NOUN
 Dirigent	96	NOUN
@@ -18515,7 +18515,7 @@ Multitasking	96	NOUN
 deckte	96	OTHER
 abbrechen	96	VERB
 Nicolaus	96	NOUN
-Bruchstücke	96	NOUN
+Bruchstücke	96	NOUN	Bruchstück
 armenischen	96	OTHER
 Europapokal	96	NOUN
 Generaldirektor	96	NOUN
@@ -18527,9 +18527,9 @@ quantenmechanischen	96	OTHER
 sinkenden	96	OTHER
 Leuna	96	NOUN
 Shan	96	NOUN
-Verbs	96	NOUN
+Verbs	96	NOUN	Verb
 Diakon	96	NOUN
-Verzerrungen	96	NOUN
+Verzerrungen	96	NOUN	Verzerrung
 verfallen	96	VERB
 Schmalspurbahn	96	NOUN
 dl	96	OTHER
@@ -18571,7 +18571,7 @@ Ortszeit	96	NOUN
 Origenes	96	NOUN
 Sicherheitsgründen	96	NOUN
 Spieltheorie	96	NOUN
-Landgemeinden	96	NOUN
+Landgemeinden	96	NOUN	Landgemeinde
 ausgeschrieben	96	VERB
 Privateigentum	96	NOUN
 Sophienkirche	96	NOUN
@@ -18588,10 +18588,10 @@ Campbell	96	NOUN
 Plattdeutsch	96	NOUN,OTHER
 Petersburger	96	NOUN
 Uhrzeit	96	NOUN
-Kronprinzen	96	NOUN
-Kings	96	NOUN
+Kronprinzen	96	NOUN	Kronprinz
+Kings	96	NOUN	King
 Anthroposophie	96	NOUN
-Anhalts	96	NOUN
+Anhalts	96	NOUN	Anhalt
 Raumfähre	96	NOUN
 Nischni	96	NOUN
 Hanoi	96	NOUN
@@ -18601,7 +18601,7 @@ funktional	95	OTHER
 absehbar	95	OTHER
 Barry	95	NOUN
 strikten	95	OTHER
-Mordes	95	NOUN
+Mordes	95	NOUN	Mord
 Part	95	NOUN,OTHER
 Teresa	95	NOUN
 Geräusch	95	NOUN
@@ -18612,7 +18612,7 @@ Village	95	NOUN
 erläuterte	95	OTHER
 weiterentwickelte	95	OTHER
 Glycerin	95	NOUN
-Pigmente	95	NOUN
+Pigmente	95	NOUN	Pigment
 Absterben	95	NOUN,OTHER
 erfundene	95	OTHER
 Arbeitszeit	95	NOUN
@@ -18622,7 +18622,7 @@ junges	95	OTHER
 dasjenige	95	OTHER
 erfundenen	95	OTHER
 Zwischenfall	95	NOUN
-edlen	95	NOUN,OTHER
+edlen	95	NOUN,OTHER	edle
 Vasco	95	NOUN
 breiteten	95	VERB
 bedurfte	95	OTHER
@@ -18630,7 +18630,7 @@ Entgelt	95	NOUN
 erledigt	95	OTHER
 aufgewertet	95	OTHER
 Sprachwissenschaftler	95	NOUN
-Baumaßnahmen	95	NOUN
+Baumaßnahmen	95	NOUN	Baumaßnahme
 rd	95	OTHER
 Gemäldegalerie	95	NOUN
 Verachtung	95	NOUN
@@ -18642,25 +18642,25 @@ vergab	95	OTHER
 Geburtsjahr	95	NOUN
 aufgehängt	95	OTHER
 Eisenbahngesellschaft	95	NOUN
-Towers	95	NOUN
-Bundestagswahlen	95	NOUN
+Towers	95	NOUN	Tower
+Bundestagswahlen	95	NOUN	Bundestagswahl
 Klausel	95	NOUN
 beschleunigten	95	VERB,OTHER
 Tiefpunkt	95	NOUN
-Gelegenheiten	95	NOUN
+Gelegenheiten	95	NOUN	Gelegenheit
 Seilbahn	95	NOUN
 gründlich	95	OTHER
 Frühwerk	95	NOUN
-Niederschlagsmengen	95	NOUN
+Niederschlagsmengen	95	NOUN	Niederschlagsmenge
 gerichtlich	95	OTHER
 belastete	95	OTHER
 ärmsten	95	OTHER
 Tonleiter	95	NOUN
 Konkurs	95	NOUN
-Vereinigtes	95	NOUN
+Vereinigtes	95	NOUN	Vereinigte
 Stilrichtung	95	NOUN
-Industrieländern	95	NOUN
-Weiterentwicklungen	95	NOUN
+Industrieländern	95	NOUN	Industrieland
+Weiterentwicklungen	95	NOUN	Weiterentwicklung
 inoffiziell	95	OTHER
 verheerende	95	OTHER
 GiB	95	NOUN,OTHER
@@ -18677,8 +18677,8 @@ Vaterunser	95	NOUN
 abgesagt	95	OTHER
 Galen	95	NOUN
 informellen	95	OTHER
-Generale	95	NOUN,OTHER
-Zölle	95	NOUN
+Generale	95	NOUN,OTHER	General
+Zölle	95	NOUN	Zoll
 Haltbarkeit	95	NOUN
 Programmieren	95	NOUN,OTHER
 Bestellung	95	NOUN
@@ -18691,7 +18691,7 @@ Tangente	95	NOUN
 Kasseler	95	NOUN
 mühsam	95	NOUN,OTHER
 Kirchenväter	95	NOUN
-Moleküls	95	NOUN
+Moleküls	95	NOUN	Molekül
 einjährige	95	OTHER
 Herkules	95	NOUN
 Sonderstatus	95	NOUN
@@ -18705,9 +18705,9 @@ Mikrofon	95	NOUN
 Chat	95	NOUN
 beschließt	95	OTHER
 binären	95	OTHER
-Befreiungskriege	95	NOUN
+Befreiungskriege	95	NOUN	Befreiungskrieg
 Albedo	95	NOUN
-Geburtstages	95	NOUN
+Geburtstages	95	NOUN	Geburtstag
 Menschenwürde	95	NOUN
 Schub	95	NOUN
 durchsetzt	95	OTHER
@@ -18721,9 +18721,9 @@ zweitgrößten	95	OTHER
 Kirchturm	95	NOUN
 Reichenau	95	NOUN
 Ski	95	NOUN
-Trends	95	NOUN
+Trends	95	NOUN	Trend
 Sherlock	95	NOUN
-Ansiedlungen	95	NOUN
+Ansiedlungen	95	NOUN	Ansiedlung
 weitläufigen	95	OTHER
 Lost	95	NOUN
 Genfersee	95	NOUN
@@ -18738,12 +18738,12 @@ Clan	95	NOUN
 Fremdenverkehr	95	NOUN
 Vokativ	95	NOUN
 Verkehrsunternehmen	95	NOUN
-Abfälle	95	NOUN
+Abfälle	95	NOUN	Abfall
 Datenrate	95	NOUN
 Extremfall	95	NOUN
 Ostbahn	95	NOUN
-Fortschreibungen	95	NOUN
-Präferenzen	95	NOUN
+Fortschreibungen	95	NOUN	Fortschreibung
+Präferenzen	95	NOUN	Präferenz
 Schill	95	NOUN
 Völkerschlacht	95	NOUN
 bemerken	95	VERB
@@ -18756,38 +18756,38 @@ Stereo	95	NOUN
 blauem	95	OTHER
 senkrechte	95	OTHER
 Schalke	95	NOUN
-Landtages	95	NOUN
+Landtages	95	NOUN	Landtag
 Bergleute	95	NOUN
-Subjekts	95	NOUN
+Subjekts	95	NOUN	Subjekt
 finno	95	OTHER
 katalanische	95	OTHER
 Colmar	95	NOUN
 Gnesen	95	NOUN
 Regler	95	NOUN
 ausserdem	95	OTHER
-Niedersachsens	95	NOUN
+Niedersachsens	95	NOUN	Niedersachsen
 Alster	95	NOUN
 THC	95	NOUN
 Nowosibirsk	95	NOUN
-Cézannes	95	NOUN
+Cézannes	95	NOUN	Cézanne
 ÖPP	95	NOUN
 Sebnitz	95	NOUN
 sendete	94	OTHER
-Halbwertszeiten	94	NOUN
+Halbwertszeiten	94	NOUN	Halbwertszeit
 sinnlos	94	OTHER
 verneint	94	OTHER
 einfachere	94	OTHER
-Umwälzungen	94	NOUN
+Umwälzungen	94	NOUN	Umwälzung
 Vorhang	94	NOUN
 unterstreichen	94	VERB
-Zitaten	94	NOUN
+Zitaten	94	NOUN	Zitat
 Schwarzweiß	94	NOUN
-Beobachtern	94	NOUN
+Beobachtern	94	NOUN	Beobachter
 Geowissenschaften	94	NOUN
-Datums	94	NOUN
+Datums	94	NOUN	Datum
 farbig	94	OTHER
 fossiler	94	OTHER
-Brennstoffe	94	NOUN
+Brennstoffe	94	NOUN	Brennstoff
 strukturierten	94	VERB,OTHER
 gegnerische	94	OTHER
 wendete	94	OTHER
@@ -18804,7 +18804,7 @@ Euripides	94	NOUN
 kompatible	94	OTHER
 abgelegenen	94	OTHER
 zusammenarbeiten	94	VERB
-Teleskope	94	NOUN
+Teleskope	94	NOUN	Teleskop
 gewisses	94	OTHER
 Straftat	94	NOUN
 Hormon	94	NOUN
@@ -18816,7 +18816,7 @@ unbegrenzt	94	OTHER
 vertieft	94	OTHER
 Proklamation	94	NOUN
 nächster	94	OTHER
-Turms	94	NOUN
+Turms	94	NOUN	Turm
 gipfelte	94	OTHER
 Eurozone	94	NOUN
 Umlage	94	NOUN
@@ -18834,28 +18834,28 @@ Warburg	94	NOUN
 Buchdruck	94	NOUN
 übertragene	94	OTHER
 aufzuheben	94	VERB
-Vorarbeiten	94	NOUN
+Vorarbeiten	94	NOUN	Vorarbeit
 gesund	94	OTHER
 Putschversuch	94	NOUN
 erzwingen	94	VERB
 Ostfront	94	NOUN
 Heeresgruppe	94	NOUN
-Ostgebieten	94	NOUN
+Ostgebieten	94	NOUN	Ostgebiete
 Know	94	NOUN,OTHER
 Société	94	NOUN
-Spezifikationen	94	NOUN
+Spezifikationen	94	NOUN	Spezifikation
 Staatskanzlei	94	NOUN
 Bündnisse	94	NOUN
-Fahrzeugs	94	NOUN
+Fahrzeugs	94	NOUN	Fahrzeug
 vorschlug	94	OTHER
 vertauscht	94	OTHER
 subseteq	94	OTHER
 reformatorischen	94	OTHER
-Urteils	94	NOUN
+Urteils	94	NOUN	Urteil
 behaart	94	OTHER
-Immunsystems	94	NOUN
+Immunsystems	94	NOUN	Immunsystem
 Pharmazie	94	NOUN
-Etagen	94	NOUN
+Etagen	94	NOUN	Etage
 Volkswagen	94	NOUN
 senkt	94	OTHER
 Camera	94	NOUN,OTHER
@@ -18866,19 +18866,19 @@ Stadtregierung	94	NOUN
 Assembler	94	NOUN
 Iris	94	NOUN
 Wolgast	94	NOUN
-Außenstellen	94	NOUN
+Außenstellen	94	NOUN	Außenstelle
 Grenzverlauf	94	NOUN
 Starnberg	94	NOUN
 Nordgrenze	94	NOUN
 alemannischen	94	OTHER
-Gemarkungen	94	NOUN
+Gemarkungen	94	NOUN	Gemarkung
 traditionsreiche	94	OTHER
-Magazins	94	NOUN
+Magazins	94	NOUN	Magazin
 duale	94	OTHER
 Bernardo	94	NOUN
 Tagebau	94	NOUN
 zufälligen	94	OTHER
-Protokolls	94	NOUN
+Protokolls	94	NOUN	Protokoll
 völkerrechtliche	94	OTHER
 Oberzentrum	94	NOUN
 Ast	94	NOUN,OTHER
@@ -18890,18 +18890,18 @@ Polymerase	94	NOUN
 Kerngebiet	94	NOUN
 gemachten	94	OTHER
 Zuckerrohr	94	NOUN
-Mexikos	94	NOUN
+Mexikos	94	NOUN	Mexiko
 Garnisonsstadt	94	NOUN
-Meisters	94	NOUN
+Meisters	94	NOUN	Meister
 Olga	94	NOUN
 dominant	94	OTHER
 Lampe	94	NOUN
 verbleibende	94	OTHER
-Gaststätten	94	NOUN
-Blütenstände	94	NOUN
+Gaststätten	94	NOUN	Gaststätte
+Blütenstände	94	NOUN	Blütenstand
 EC	94	NOUN
 Staatenbund	94	NOUN
-Siedlungsgebiete	94	NOUN
+Siedlungsgebiete	94	NOUN	Siedlungsgebiet
 gefährlicher	94	OTHER
 totalitären	94	OTHER
 vertont	94	OTHER
@@ -18913,16 +18913,16 @@ Frames	94	NOUN
 Hansa	94	NOUN
 Thüringens	94	NOUN
 Schnitzler	94	NOUN
-Objektes	94	NOUN
+Objektes	94	NOUN	Objekt
 Erdachse	94	NOUN
 Kosinus	94	NOUN
 Verwaltungsgemeinschaft	94	NOUN
 AWO	94	NOUN
-Schafen	94	NOUN
+Schafen	94	NOUN	Schaf
 Selbstbildnis	94	NOUN
 Ritterorden	94	NOUN
 Rhodan	94	NOUN
-Boas	94	NOUN
+Boas	94	NOUN	Boa
 Güstrow	94	NOUN
 herleiten	93	VERB
 formaler	93	OTHER
@@ -18943,13 +18943,13 @@ Like	93	NOUN,OTHER
 gepresst	93	OTHER
 Essigsäure	93	NOUN
 elementares	93	OTHER
-Kernen	93	NOUN
-Entzündungen	93	NOUN
+Kernen	93	NOUN	Kern
+Entzündungen	93	NOUN	Entzündung
 anorganische	93	OTHER
 seelischen	93	OTHER
 Staatsexamen	93	NOUN
-Psychotherapeuten	93	NOUN
-Instituten	93	NOUN
+Psychotherapeuten	93	NOUN	Psychotherapeut
+Instituten	93	NOUN	Institut
 Genetik	93	NOUN
 rechtlicher	93	OTHER
 Gerüst	93	NOUN
@@ -18961,7 +18961,7 @@ versetzte	93	OTHER
 Fernhandel	93	NOUN
 eskalierte	93	OTHER
 bunten	93	OTHER
-Lehnwörtern	93	NOUN
+Lehnwörtern	93	NOUN	Lehnwort
 Bahnsteig	93	NOUN
 geschafft	93	OTHER
 Denkmalpflege	93	NOUN
@@ -18973,8 +18973,8 @@ unbestritten	93	OTHER
 Ödipus	93	NOUN
 Führungsrolle	93	NOUN
 milden	93	OTHER
-Bundesministeriums	93	NOUN
-Apostels	93	NOUN
+Bundesministeriums	93	NOUN	Bundesministerium
+Apostels	93	NOUN	Apostel
 methodische	93	OTHER
 Jay	93	NOUN
 Bloch	93	NOUN
@@ -18982,7 +18982,7 @@ hinduistischen	93	OTHER
 reflektierte	93	OTHER
 abstrakt	93	OTHER
 drohten	93	VERB
-Verzögerungen	93	NOUN
+Verzögerungen	93	NOUN	Verzögerung
 Megawatt	93	NOUN
 Symbolismus	93	NOUN
 alpinen	93	OTHER
@@ -19000,7 +19000,7 @@ Schleiermacher	93	NOUN
 gestoßen	93	VERB
 Fontane	93	NOUN
 andauerte	93	OTHER
-Displays	93	NOUN
+Displays	93	NOUN	Display
 vorgeführt	93	OTHER
 rechtsextremen	93	OTHER
 spontanen	93	OTHER
@@ -19008,7 +19008,7 @@ Schlichter	93	NOUN,OTHER
 Sufismus	93	NOUN
 Handelspartner	93	NOUN
 Folie	93	NOUN
-Modulen	93	NOUN
+Modulen	93	NOUN	Modul
 schnelleren	93	OTHER
 Firmware	93	NOUN
 gefüllte	93	OTHER
@@ -19017,7 +19017,7 @@ slowenische	93	OTHER
 Darmstädter	93	NOUN
 Just	93	NOUN,OTHER
 Westgrenze	93	NOUN
-Unternehmungen	93	NOUN
+Unternehmungen	93	NOUN	Unternehmung
 Evidenz	93	NOUN
 Schulsystem	93	NOUN
 verschärften	93	VERB,OTHER
@@ -19025,22 +19025,22 @@ ausgebauten	93	OTHER
 ursprünglicher	93	OTHER
 fokussiert	93	OTHER
 Beerdigung	93	NOUN
-Haftstrafen	93	NOUN
+Haftstrafen	93	NOUN	Haftstrafe
 Peano	93	NOUN
 Wirkstoff	93	NOUN
-Dukaten	93	NOUN
+Dukaten	93	NOUN	Dukat
 serielle	93	OTHER
 dat	93	NOUN,OTHER
 zugrundeliegende	93	OTHER
-Serbiens	93	NOUN
+Serbiens	93	NOUN	Serbien
 Allan	93	NOUN
-Organellen	93	NOUN
+Organellen	93	NOUN	Organell
 Oktoberfest	93	NOUN
 Brenner	93	NOUN
 Bauernkrieg	93	NOUN
 Disk	93	NOUN
 widerspiegeln	93	VERB
-Bedarfs	93	NOUN
+Bedarfs	93	NOUN	Bedarf
 hervorgegangenen	93	OTHER
 Naherholungsgebiet	93	NOUN
 Barriere	93	NOUN
@@ -19048,11 +19048,11 @@ Gaststätte	93	NOUN
 Landratsamt	93	NOUN
 Sexismus	93	NOUN
 Rubens	93	NOUN
-Kantaten	93	NOUN
+Kantaten	93	NOUN	Kantate
 Alexanderplatz	93	NOUN
 Auswanderer	93	NOUN
 mittelbar	93	OTHER
-Jakobs	93	NOUN
+Jakobs	93	NOUN	Jakob
 Vaticanus	93	NOUN
 Ausschusses	93	NOUN
 Bosniaken	93	NOUN
@@ -19060,7 +19060,7 @@ Slowenen	93	NOUN
 Verwaltungsgliederung	93	NOUN
 TS	93	NOUN,OTHER
 sichert	93	OTHER
-Wölfen	93	NOUN
+Wölfen	93	NOUN	Wolf
 Miozän	93	NOUN
 unbewusst	93	OTHER
 Nordfriesland	93	NOUN
@@ -19076,13 +19076,13 @@ Vorbehalt	93	NOUN
 Mühlhausen	93	NOUN
 Dionysius	93	NOUN
 ökumenische	93	NOUN,OTHER
-Perus	93	NOUN
-Manns	93	NOUN
+Perus	93	NOUN	Peru
+Manns	93	NOUN	Mann
 Lisp	93	NOUN
 kastilischen	93	OTHER
 Zenit	93	NOUN
 Großpolen	93	NOUN
-Sparkassen	93	NOUN
+Sparkassen	93	NOUN	Sparkasse
 Rostow	93	NOUN
 Bülow	93	NOUN
 Körperbau	93	NOUN
@@ -19118,19 +19118,19 @@ Full	92	NOUN,OTHER
 benachteiligt	92	OTHER
 ausreichen	92	VERB
 veranstalten	92	VERB
-Werkstoffe	92	NOUN
+Werkstoffe	92	NOUN	Werkstoff
 metallischen	92	OTHER
 Föderationskreis	92	NOUN
 zunutze	92	OTHER
 roh	92	NOUN,OTHER
 Blutkörperchen	92	NOUN
-Ozeanen	92	NOUN
+Ozeanen	92	NOUN	Ozean
 agiert	92	OTHER
 Kettenreaktion	92	NOUN
 gasförmigen	92	OTHER
 Wirtschaftlichkeit	92	NOUN
 theologischer	92	OTHER
-Einsichten	92	NOUN
+Einsichten	92	NOUN	Einsicht
 zurückverfolgen	92	VERB
 Abschrift	92	NOUN
 Feindschaft	92	NOUN
@@ -19141,30 +19141,30 @@ hervorragend	92	OTHER
 Mutterland	92	NOUN
 bewahrte	92	OTHER
 Lexika	92	NOUN
-Irlands	92	NOUN
+Irlands	92	NOUN	Irland
 technologische	92	OTHER
 etwaige	92	OTHER
-Therapien	92	NOUN
+Therapien	92	NOUN	Therapie
 unbrauchbar	92	OTHER
 entlastet	92	OTHER
-Ports	92	NOUN
+Ports	92	NOUN	Port
 Kanonen	92	NOUN
 ernste	92	OTHER
 wiegen	92	VERB
 Vormund	92	NOUN
-Vorgängern	92	NOUN
+Vorgängern	92	NOUN	Vorgänger
 anzulegen	92	VERB
-Feuers	92	NOUN
+Feuers	92	NOUN	Feuer
 Königsherrschaft	92	NOUN
-Verbote	92	NOUN
+Verbote	92	NOUN	Verbot
 nördlichsten	92	OTHER
 Westfront	92	NOUN
 Ausstieg	92	NOUN
 islamisch	92	OTHER
 Übertritt	92	NOUN
 Aneignung	92	NOUN
-Ministers	92	NOUN
-Turniere	92	NOUN
+Ministers	92	NOUN	Minister
+Turniere	92	NOUN	Turnier
 vertiefte	92	OTHER
 Vergeltung	92	NOUN
 Gesetzbuch	92	NOUN
@@ -19174,11 +19174,11 @@ zurückging	92	OTHER
 Hippo	92	NOUN
 erheblichem	92	OTHER
 Final	92	NOUN,OTHER
-Vorwürfen	92	NOUN
+Vorwürfen	92	NOUN	Vorwurf
 Privatsphäre	92	NOUN
-Aquarelle	92	NOUN
+Aquarelle	92	NOUN	Aquarell
 Stimmenanteil	92	NOUN
-Dutzende	92	NOUN,OTHER
+Dutzende	92	NOUN,OTHER	Dutzend
 rechtfertigte	92	OTHER
 Archangelsk	92	NOUN
 Ausrottung	92	NOUN
@@ -19198,18 +19198,18 @@ fortgeschritten	92	VERB
 geöffneten	92	OTHER
 alkoholische	92	OTHER
 Willkür	92	NOUN
-Kathedralen	92	NOUN
+Kathedralen	92	NOUN	Kathedrale
 Plata	92	NOUN
 Cruz	92	NOUN
-Gladiatoren	92	NOUN
+Gladiatoren	92	NOUN	Gladiator
 Schmiede	92	NOUN
 Bohr	92	NOUN
 abgelagert	92	OTHER
 Abel	92	NOUN
 ablöste	92	OTHER
-Litern	92	NOUN
+Litern	92	NOUN	Liter
 Modem	92	NOUN
-Landesverbände	92	NOUN
+Landesverbände	92	NOUN	Landesverband
 versehene	92	OTHER
 flüchteten	92	VERB
 aufgesucht	92	OTHER
@@ -19233,7 +19233,7 @@ Matt	92	NOUN,OTHER
 Kulturkreis	92	NOUN
 Hochfläche	92	NOUN
 großzügige	92	OTHER
-Baumes	92	NOUN
+Baumes	92	NOUN	Baum
 Industriestadt	92	NOUN
 Fachwerk	92	NOUN
 Partnerstadt	92	NOUN
@@ -19247,7 +19247,7 @@ Südspitze	92	NOUN
 Radierung	92	NOUN
 Begehren	92	NOUN,OTHER
 Perm	92	NOUN
-Rekorde	92	NOUN
+Rekorde	92	NOUN	Rekord
 Fleck	92	NOUN
 zurücktreten	92	VERB
 lustig	92	OTHER
@@ -19268,17 +19268,17 @@ Potter	92	NOUN
 befahrbar	92	OTHER
 Manufaktur	92	NOUN
 Spannweite	92	NOUN
-Tragflächen	92	NOUN
-Attributen	92	NOUN
+Tragflächen	92	NOUN	Tragfläche
+Attributen	92	NOUN	Attribut
 sperren	92	NOUN,OTHER
 stecken	92	VERB
 SPS	92	NOUN
 Broadcast	92	NOUN
 kehren	92	VERB
-Estlands	92	NOUN
+Estlands	92	NOUN	Estland
 Delaunay	92	NOUN
 Seitenlänge	92	NOUN
-Titanen	92	NOUN
+Titanen	92	NOUN	Titan
 Finnen	92	NOUN
 Fuge	92	NOUN
 Orangerie	92	NOUN
@@ -19317,9 +19317,9 @@ Erschöpfung	91	NOUN
 Stammbaum	91	NOUN
 legitimen	91	OTHER
 Gerücht	91	NOUN
-Verwundeten	91	NOUN,OTHER
+Verwundeten	91	NOUN,OTHER	Verwundete
 Leserschaft	91	NOUN
-Erfolgs	91	NOUN
+Erfolgs	91	NOUN	Erfolg
 Provokation	91	NOUN
 Nicäa	91	NOUN
 fortschreitende	91	OTHER
@@ -19338,13 +19338,13 @@ Kentucky	91	NOUN
 Nationalbank	91	NOUN
 nachvollziehen	91	VERB
 rechtes	91	NOUN,OTHER
-Republikanern	91	NOUN
+Republikanern	91	NOUN	Republikaner
 Entmachtung	91	NOUN
 verhandelte	91	OTHER
 Children	91	NOUN
 auseinandersetzen	91	VERB
 Handelszentrum	91	NOUN
-Atheisten	91	NOUN
+Atheisten	91	NOUN	Atheist
 göttlicher	91	OTHER
 religiöses	91	OTHER
 Ausweg	91	NOUN
@@ -19352,17 +19352,17 @@ Emmanuel	91	NOUN
 Sanssouci	91	NOUN
 atmosphärischen	91	OTHER
 gestreift	91	OTHER
-Einwände	91	NOUN
-Staubblätter	91	NOUN
+Einwände	91	NOUN	Einwand
+Staubblätter	91	NOUN	Staubblatt
 Vancouver	91	NOUN
 Pension	91	NOUN
-Scheine	91	NOUN,OTHER
+Scheine	91	NOUN,OTHER	Schein
 Atem	91	NOUN
 Planetarium	91	NOUN
 Eurasien	91	NOUN
 Nordküste	91	NOUN
 Ovid	91	NOUN
-Aufenthaltes	91	NOUN
+Aufenthaltes	91	NOUN	Aufenthalt
 Editionen	91	NOUN
 Währungsreform	91	NOUN
 Putsches	91	NOUN
@@ -19375,7 +19375,7 @@ kostenlosen	91	OTHER
 leichtere	91	OTHER
 Niedrigwasser	91	NOUN
 Depot	91	NOUN
-Jubiläums	91	NOUN
+Jubiläums	91	NOUN	Jubiläum
 Schock	91	NOUN
 zulässigen	91	OTHER
 Constantin	91	NOUN
@@ -19383,8 +19383,8 @@ Novalis	91	NOUN
 Sakralbauten	91	NOUN
 Smartphone	91	NOUN
 angefügt	91	OTHER
-Arterien	91	NOUN
-Abschnitts	91	NOUN
+Arterien	91	NOUN	Arterie
+Abschnitts	91	NOUN	Abschnitt
 Burundi	91	NOUN
 Athena	91	NOUN
 transportierten	91	VERB,OTHER
@@ -19397,7 +19397,7 @@ ausgewiesene	91	OTHER
 Tilly	91	NOUN
 gefallene	91	OTHER
 Pfälzer	91	NOUN
-Europameisterschaften	91	NOUN
+Europameisterschaften	91	NOUN	Europameisterschaft
 Vogesen	91	NOUN
 andernorts	91	OTHER
 Esslingen	91	NOUN
@@ -19406,7 +19406,7 @@ Falken	91	NOUN
 Large	91	NOUN
 temporär	91	OTHER
 Bitterfeld	91	NOUN
-Buchten	91	NOUN
+Buchten	91	NOUN	Bucht
 Stängel	91	NOUN
 Hauptkirche	91	NOUN
 Flusslauf	91	NOUN
@@ -19417,7 +19417,7 @@ Pflanzenwelt	91	NOUN
 Amphitheater	91	NOUN
 Regierungspräsidium	91	NOUN
 involviert	91	OTHER
-Metropoliten	91	NOUN
+Metropoliten	91	NOUN	Metropolit
 wehrte	91	OTHER
 Ofen	91	NOUN
 Sprengung	91	NOUN
@@ -19442,12 +19442,12 @@ García	91	NOUN
 Fernsehprogramm	91	NOUN
 Domkapitel	91	NOUN
 jähriges	91	OTHER
-Franklins	91	NOUN
+Franklins	91	NOUN	Franklin
 breitet	91	OTHER
 Mauren	91	NOUN
 Eisenhüttenstadt	91	NOUN
 Kammermusik	91	NOUN
-Wohnplätze	91	NOUN
+Wohnplätze	91	NOUN	Wohnplatz
 Zedler	91	NOUN
 SLD	91	NOUN
 Wałęsa	91	NOUN
@@ -19462,15 +19462,15 @@ isolieren	90	VERB
 Scotland	90	NOUN
 abwärts	90	OTHER
 Kunstform	90	NOUN
-Morden	90	NOUN
+Morden	90	NOUN	Mord
 Fetischismus	90	NOUN
 einbringen	90	NOUN,OTHER
 künstlerisches	90	OTHER
 nuklearen	90	OTHER
 Sorbonne	90	NOUN
 andern	90	OTHER
-Reizen	90	NOUN,OTHER
-Arbeitnehmern	90	NOUN
+Reizen	90	NOUN,OTHER	Reiz
+Arbeitnehmern	90	NOUN	Arbeitnehmer
 Futter	90	NOUN
 thermisch	90	OTHER
 Rückgrat	90	NOUN
@@ -19489,13 +19489,13 @@ Kopfes	90	NOUN
 Waterloo	90	NOUN
 Krypta	90	NOUN
 Colin	90	NOUN
-Hilfsorganisationen	90	NOUN
+Hilfsorganisationen	90	NOUN	Hilfsorganisation
 Kodex	90	NOUN
 Taxonomie	90	NOUN
 plädiert	90	OTHER
 Oregon	90	NOUN
 einschloss	90	OTHER
-Fernstraßen	90	NOUN
+Fernstraßen	90	NOUN	Fernstraße
 Justice	90	NOUN,OTHER
 Sezession	90	NOUN
 Kriegsschauplatz	90	NOUN
@@ -19504,20 +19504,20 @@ Obergrenze	90	NOUN
 Ultimatum	90	NOUN
 positioniert	90	OTHER
 Vatikanische	90	NOUN
-hunderten	90	NOUN,OTHER
+hunderten	90	NOUN,OTHER	hunderte
 durchflossen	90	VERB
 sowjetisch	90	OTHER
 bezogenen	90	OTHER
 Hermes	90	NOUN
-Anfälle	90	NOUN
-Salons	90	NOUN
+Anfälle	90	NOUN	Anfall
+Salons	90	NOUN	Salon
 Vergnügen	90	NOUN
 IE	90	NOUN,OTHER
 Stiller	90	NOUN,OTHER
 Lebensstandard	90	NOUN
 Wechselkurs	90	NOUN
-Beobachters	90	NOUN
-Lieferanten	90	NOUN
+Beobachters	90	NOUN	Beobachter
+Lieferanten	90	NOUN	Lieferant
 ap	90	NOUN,OTHER
 beschließen	90	VERB
 Übergangszeit	90	NOUN
@@ -19530,20 +19530,20 @@ Unabhängigkeitsbewegung	90	NOUN
 how	90	NOUN,OTHER
 GW	90	NOUN
 Regierungsgeschäfte	90	NOUN
-Sitzplätze	90	NOUN
-Klimawandels	90	NOUN
+Sitzplätze	90	NOUN	Sitzplatz
+Klimawandels	90	NOUN	Klimawandel
 ausreicht	90	OTHER
 Steigung	90	NOUN
 lim	90	OTHER
-Dichtern	90	NOUN
-Domes	90	NOUN
+Dichtern	90	NOUN	Dichter
+Domes	90	NOUN	Dom
 auszeichnen	90	VERB
 Pioneer	90	NOUN
 erforschte	90	OTHER
 Verdauung	90	NOUN
 Niccolò	90	NOUN
 Bethlehem	90	NOUN
-Assoziationen	90	NOUN
+Assoziationen	90	NOUN	Assoziation
 aramäische	90	NOUN,OTHER
 Erreichung	90	NOUN
 analysierte	90	OTHER
@@ -19554,7 +19554,7 @@ morphologisch	90	OTHER
 Banks	90	NOUN
 Blasen	90	NOUN,OTHER
 Kaninchen	90	NOUN
-Hasen	90	NOUN
+Hasen	90	NOUN	Hase
 Vollmond	90	NOUN
 fotografiert	90	OTHER
 feststellbar	90	OTHER
@@ -19584,7 +19584,7 @@ geteilten	90	OTHER
 Künstlergruppe	90	NOUN
 Grosser	90	NOUN,OTHER
 Sakrament	90	NOUN
-Klassikern	90	NOUN
+Klassikern	90	NOUN	Klassiker
 Dictionary	90	NOUN
 Trommel	90	NOUN
 Kastell	90	NOUN
@@ -19594,7 +19594,7 @@ Titelrolle	90	NOUN
 Staatsrat	90	NOUN
 entzieht	90	OTHER
 Judäa	90	NOUN
-Quinten	90	NOUN
+Quinten	90	NOUN	Quinte
 gespannt	90	OTHER
 Bücherei	90	NOUN
 Windgeschwindigkeit	90	NOUN
@@ -19611,10 +19611,10 @@ Dozent	89	NOUN
 Griffith	89	NOUN
 Einheitensystem	89	NOUN
 Saul	89	NOUN
-Masken	89	NOUN
+Masken	89	NOUN	Maske
 importierte	89	OTHER
 konsumiert	89	OTHER
-Alkohole	89	NOUN
+Alkohole	89	NOUN	Alkohol
 tertiären	89	OTHER
 Hauptgruppe	89	NOUN
 aufbereitet	89	OTHER
@@ -19631,8 +19631,8 @@ Karthager	89	NOUN
 Evakuierung	89	NOUN
 vollkommenen	89	OTHER
 Quellenlage	89	NOUN
-Befestigungen	89	NOUN
-Geiste	89	NOUN
+Befestigungen	89	NOUN	Befestigung
+Geiste	89	NOUN	Geist
 kapitalistische	89	OTHER
 optischer	89	OTHER
 Banknote	89	NOUN
@@ -19642,20 +19642,20 @@ eingezeichnet	89	OTHER
 Rückschlag	89	NOUN
 schönste	89	OTHER
 Spionage	89	NOUN
-Schiffs	89	NOUN
+Schiffs	89	NOUN	Schiff
 Dennis	89	NOUN
 Timaios	89	NOUN
 Ontologie	89	NOUN
 Wahlmänner	89	NOUN
 Stoiber	89	NOUN
-Landesgrenzen	89	NOUN
+Landesgrenzen	89	NOUN	Landesgrenze
 russisches	89	NOUN,OTHER
 Besatzungstruppen	89	NOUN
 Schnellstraße	89	NOUN
 Ironie	89	NOUN
 Staatsmann	89	NOUN
 Monographie	89	NOUN
-Signaturen	89	NOUN
+Signaturen	89	NOUN	Signatur
 völkerrechtlichen	89	OTHER
 Magic	89	NOUN
 Trinität	89	NOUN
@@ -19676,7 +19676,7 @@ Terrasse	89	NOUN
 Kollaps	89	NOUN
 bekennt	89	OTHER
 proklamiert	89	OTHER
-Todesfällen	89	NOUN
+Todesfällen	89	NOUN	Todesfall
 Fürsorge	89	NOUN
 unterer	89	OTHER
 underline	89	OTHER
@@ -19689,7 +19689,7 @@ erfreute	89	OTHER
 verwandelte	89	OTHER
 Site	89	NOUN,OTHER
 anderthalb	89	OTHER
-Hunden	89	NOUN
+Hunden	89	NOUN	Hund
 Placebo	89	NOUN
 Warna	89	NOUN
 angeflogen	89	VERB
@@ -19700,9 +19700,9 @@ schlichten	89	VERB,OTHER
 Fahrplan	89	NOUN
 Bourbon	89	NOUN
 Muskel	89	NOUN
-Untereinheiten	89	NOUN
+Untereinheiten	89	NOUN	Untereinheit
 hinunter	89	OTHER
-Drüsen	89	NOUN
+Drüsen	89	NOUN	Drüse
 Fries	89	NOUN
 Appell	89	NOUN
 Europarat	89	NOUN
@@ -19716,7 +19716,7 @@ Zuweisung	89	NOUN
 Magma	89	NOUN
 modulo	89	OTHER
 rekursiv	89	OTHER
-Bulgariens	89	NOUN
+Bulgariens	89	NOUN	Bulgarien
 Fatah	89	NOUN
 Umweltbedingungen	89	NOUN
 linksrheinischen	89	OTHER
@@ -19724,25 +19724,25 @@ AEG	89	NOUN
 demontiert	89	OTHER
 oberer	89	NOUN,OTHER
 Nutzfläche	89	NOUN
-Salzen	89	NOUN
+Salzen	89	NOUN	Salz
 Eifel	89	NOUN
-Kohlenwasserstoffe	89	NOUN
+Kohlenwasserstoffe	89	NOUN	Kohlenwasserstoff
 Schuppen	89	NOUN
 Verwaltungsgericht	89	NOUN
 Reederei	89	NOUN
 legendäre	89	OTHER
 BMI	89	NOUN
-Fichten	89	NOUN
+Fichten	89	NOUN	Fichte
 Walker	89	NOUN
-Trompeten	89	NOUN
-Konstantinopels	89	NOUN
+Trompeten	89	NOUN	Trompete
+Konstantinopels	89	NOUN	Konstantinopel
 kreuzt	89	OTHER
 Verankerung	89	NOUN
 Webserver	89	NOUN
 Anhöhe	89	NOUN
 Gross	89	NOUN,OTHER
 flogen	89	VERB
-Zünfte	89	NOUN
+Zünfte	89	NOUN	Zunft
 Postmoderne	89	NOUN,OTHER
 Lignin	89	NOUN
 Verdoppelung	89	NOUN
@@ -19769,7 +19769,7 @@ Esther	89	NOUN
 Michaelis	89	NOUN
 Farbfotografie	89	NOUN
 Bolesław	89	NOUN
-Händels	89	NOUN
+Händels	89	NOUN	Händel
 Waldenser	89	NOUN
 Lübke	89	NOUN
 Kleinpolen	89	NOUN
@@ -19788,11 +19788,11 @@ wussten	88	VERB
 kreative	88	OTHER
 demonstrativ	88	OTHER
 Ehrendoktorwürde	88	NOUN
-Produktions	88	NOUN
-Erläuterungen	88	NOUN
+Produktions	88	NOUN	Produktion
+Erläuterungen	88	NOUN	Erläuterung
 Screen	88	NOUN
 gefertigten	88	OTHER
-Transformatoren	88	NOUN
+Transformatoren	88	NOUN	Transformator
 Energiequelle	88	NOUN
 eintragen	88	VERB
 lebenslang	88	OTHER
@@ -19815,14 +19815,14 @@ rechtsextreme	88	OTHER
 Psychoanalytiker	88	NOUN
 Strafverfolgung	88	NOUN
 potenziellen	88	OTHER
-Georgs	88	NOUN
+Georgs	88	NOUN	Georg
 authentische	88	OTHER
 Salt	88	NOUN
 Stones	88	NOUN
 traditionelles	88	OTHER
-Buchdrucks	88	NOUN
+Buchdrucks	88	NOUN	Buchdruck
 bekämpften	88	VERB,OTHER
-Matrosen	88	NOUN
+Matrosen	88	NOUN	Matrose
 Bewirtschaftung	88	NOUN
 energisch	88	OTHER
 Obhut	88	NOUN
@@ -19832,55 +19832,55 @@ schwankte	88	OTHER
 Neuwahl	88	NOUN
 erfahrenen	88	OTHER
 erreichbare	88	OTHER
-Zweifeln	88	NOUN,OTHER
+Zweifeln	88	NOUN,OTHER	Zweifel
 Abwertung	88	NOUN
 Tonart	88	NOUN
 Heimatland	88	NOUN
-Apotheken	88	NOUN
+Apotheken	88	NOUN	Apotheke
 zurückzuziehen	88	VERB
 zügig	88	OTHER
 Wasserkraftwerk	88	NOUN
 Sons	88	NOUN
 dargelegt	88	OTHER
-Ritualen	88	NOUN
+Ritualen	88	NOUN	Ritual
 verwahrt	88	OTHER
 ausgeführte	88	OTHER
 Erkundung	88	NOUN
 Pazifikküste	88	NOUN
-Bodenschätzen	88	NOUN
+Bodenschätzen	88	NOUN	Bodenschätze
 Zersplitterung	88	NOUN
 Geschichtswerk	88	NOUN
 Würdenträger	88	NOUN
 Bahamas	88	NOUN
 Wayne	88	NOUN
-Aktionäre	88	NOUN
+Aktionäre	88	NOUN	Aktionär
 Festnahme	88	NOUN
-Reichstags	88	NOUN
-Indikatoren	88	NOUN
+Reichstags	88	NOUN	Reichstag
+Indikatoren	88	NOUN	Indikator
 verbrannten	88	VERB,OTHER
 Schalter	88	NOUN
-Eingangs	88	NOUN,OTHER
+Eingangs	88	NOUN,OTHER	Eingang
 PF	88	NOUN,OTHER
 Tank	88	NOUN,VERB
 Mehl	88	NOUN
-Flügels	88	NOUN
-Kapitals	88	NOUN
+Flügels	88	NOUN	Flügel
+Kapitals	88	NOUN	Kapital
 Kehrwert	88	NOUN
 empfundene	88	OTHER
 tiefgreifende	88	OTHER
 demonstrierten	88	VERB,OTHER
 Außenhandel	88	NOUN
-Fertigkeiten	88	NOUN
+Fertigkeiten	88	NOUN	Fertigkeit
 Bsp	88	NOUN
 einhundert	88	OTHER
 SU	88	NOUN,OTHER
-Abschlüsse	88	NOUN
+Abschlüsse	88	NOUN	Abschluss
 warnt	88	OTHER
 institutionellen	88	OTHER
 forcierte	88	OTHER
-Verbindlichkeiten	88	NOUN
+Verbindlichkeiten	88	NOUN	Verbindlichkeit
 Spaß	88	NOUN
-Schallwellen	88	NOUN
+Schallwellen	88	NOUN	Schallwelle
 Müll	88	NOUN
 ungünstig	88	OTHER
 Header	88	NOUN
@@ -19892,13 +19892,13 @@ Schiefergebirge	88	NOUN
 Water	88	NOUN,OTHER
 verkürzte	88	OTHER
 operieren	88	VERB
-Kneipen	88	NOUN
+Kneipen	88	NOUN	Kneipe
 Hannes	88	NOUN
 bayerischer	88	NOUN,OTHER
 Benno	88	NOUN
 Mittelfranken	88	NOUN
 Staatstheater	88	NOUN
-Impressionisten	88	NOUN
+Impressionisten	88	NOUN	Impressionist
 Str	88	NOUN
 Organization	88	NOUN
 Tribut	88	NOUN
@@ -19907,19 +19907,19 @@ Synthesizer	88	NOUN
 städtebauliche	88	OTHER
 Nordufer	88	NOUN
 Michigan	88	NOUN
-Führungen	88	NOUN
-Shows	88	NOUN
-Vororten	88	NOUN
-Werften	88	NOUN
+Führungen	88	NOUN	Führung
+Shows	88	NOUN	Show
+Vororten	88	NOUN	Vorort
+Werften	88	NOUN	Werft
 Stollen	88	NOUN
 Enklave	88	NOUN
-Fermionen	88	NOUN
+Fermionen	88	NOUN	Fermion
 masoretischen	88	OTHER
 krönen	88	VERB
 Gothic	88	NOUN
 Sicherheitspolitik	88	NOUN
 Limburger	88	NOUN
-Fernsehprogramme	88	NOUN
+Fernsehprogramme	88	NOUN	Fernsehprogramm
 Stella	88	NOUN
 Torpedo	88	NOUN
 gewahrt	88	OTHER
@@ -19929,7 +19929,7 @@ gravierende	88	OTHER
 Bulgarisch	88	NOUN,OTHER
 Guatemala	88	NOUN
 Kirchenbauten	88	NOUN
-Eiern	88	NOUN
+Eiern	88	NOUN	Eier
 Königshauses	88	NOUN
 Narkose	88	NOUN
 Gleichspannung	88	NOUN
@@ -19938,7 +19938,7 @@ terrestrische	88	OTHER
 Festigung	88	NOUN
 Flörsheim	88	NOUN
 Leitbild	88	NOUN
-Brandenburgs	88	NOUN
+Brandenburgs	88	NOUN	Brandenburg
 Olmütz	88	NOUN
 Bornholm	88	NOUN
 orthogonal	88	OTHER
@@ -19953,24 +19953,24 @@ Knobelsdorff	88	NOUN
 Zeven	88	NOUN
 Jagger	88	NOUN
 Rama	88	NOUN
-Pfeifen	88	NOUN
-Morrisons	88	NOUN
+Pfeifen	88	NOUN	Pfeife
+Morrisons	88	NOUN	Morrison
 zurückzog	87	OTHER
 gedrehten	87	OTHER
 Braunschweiger	87	NOUN
-Maßen	87	NOUN,OTHER
+Maßen	87	NOUN,OTHER	Maß
 Implikation	87	NOUN
 verkürzen	87	VERB
 getroffenen	87	OTHER
-Hollywoods	87	NOUN
-Gerichtshofs	87	NOUN
+Hollywoods	87	NOUN	Hollywood
+Gerichtshofs	87	NOUN	Gerichtshof
 feierten	87	VERB
-Maßeinheiten	87	NOUN
-Kostüme	87	NOUN
+Maßeinheiten	87	NOUN	Maßeinheit
+Kostüme	87	NOUN	Kostüm
 konzipierten	87	VERB,OTHER
 Reputation	87	NOUN
 Short	87	NOUN,OTHER
-Gewohnheiten	87	NOUN
+Gewohnheiten	87	NOUN	Gewohnheit
 diene	87	OTHER
 Computerspiel	87	NOUN
 herausgebracht	87	OTHER
@@ -19980,9 +19980,9 @@ Harvey	87	NOUN
 brennenden	87	OTHER
 Said	87	NOUN
 Neutrum	87	NOUN
-Initialen	87	NOUN,OTHER
+Initialen	87	NOUN,OTHER	Initial
 Astrid	87	NOUN
-Lanthanoide	87	NOUN
+Lanthanoide	87	NOUN	Lanthanoid
 oberstes	87	OTHER
 zugelassene	87	OTHER
 analytisch	87	OTHER
@@ -19991,7 +19991,7 @@ erfüllten	87	VERB,OTHER
 aufwendigen	87	OTHER
 Hesiod	87	NOUN
 Seneca	87	NOUN
-Korans	87	NOUN
+Korans	87	NOUN	Koran
 Monotheismus	87	NOUN
 anzusiedeln	87	VERB
 Sophokles	87	NOUN
@@ -20001,8 +20001,8 @@ metrische	87	OTHER
 nächtliche	87	OTHER
 schöner	87	OTHER
 gestohlen	87	VERB
-Geologen	87	NOUN
-Buchstabens	87	NOUN
+Geologen	87	NOUN	Geologe
+Buchstabens	87	NOUN	Buchstabe
 Thing	87	NOUN
 Industrieanlagen	87	NOUN
 Parabel	87	NOUN
@@ -20028,17 +20028,17 @@ Terry	87	NOUN
 Faber	87	NOUN,OTHER
 Hercules	87	NOUN
 Sonnenwind	87	NOUN
-Naturkatastrophen	87	NOUN
+Naturkatastrophen	87	NOUN	Naturkatastrophe
 Bodenschätze	87	NOUN
 ausgebreitet	87	OTHER
 geopfert	87	OTHER
-Entsprechungen	87	NOUN
+Entsprechungen	87	NOUN	Entsprechung
 kaiserlicher	87	OTHER
 Magnetismus	87	NOUN
 trigonometrischen	87	OTHER
 gefährdete	87	OTHER
-Pauls	87	NOUN
-Talern	87	NOUN
+Pauls	87	NOUN	Paul
+Talern	87	NOUN	Taler
 Nibelungen	87	NOUN
 erhofften	87	VERB
 Geheimnisse	87	NOUN
@@ -20060,7 +20060,7 @@ umschließt	87	OTHER
 rekursive	87	OTHER
 Datentyp	87	NOUN
 eingelegt	87	OTHER
-Erwähnungen	87	NOUN
+Erwähnungen	87	NOUN	Erwähnung
 himmlischen	87	OTHER
 Einschalten	87	NOUN
 Indizes	87	NOUN
@@ -20068,9 +20068,9 @@ handwerklichen	87	OTHER
 Fackel	87	NOUN
 deutlichsten	87	OTHER
 Stadtwald	87	NOUN
-Kroatiens	87	NOUN
+Kroatiens	87	NOUN	Kroatien
 Habitat	87	NOUN
-Gründungen	87	NOUN
+Gründungen	87	NOUN	Gründung
 annektierte	87	OTHER
 plötzliche	87	OTHER
 Recherche	87	NOUN
@@ -20082,15 +20082,15 @@ Folk	87	NOUN
 blaues	87	OTHER
 Schabowski	87	NOUN
 tschechoslowakische	87	NOUN,OTHER
-Dienststellen	87	NOUN
-Wasserflächen	87	NOUN
+Dienststellen	87	NOUN	Dienststelle
+Wasserflächen	87	NOUN	Wasserfläche
 Stadtgründung	87	NOUN
 geschichtlich	87	OTHER
 Arbeitslager	87	NOUN
-Operetten	87	NOUN
+Operetten	87	NOUN	Operette
 Lebensmittelindustrie	87	NOUN
-Dominikanischen	87	NOUN
-Benutzern	87	NOUN
+Dominikanischen	87	NOUN	Dominikanische
+Benutzern	87	NOUN	Benutzer
 wörtliche	87	OTHER
 legitime	87	OTHER
 EP	87	NOUN
@@ -20104,18 +20104,18 @@ sichtbares	87	OTHER
 semantischen	87	OTHER
 gerundet	87	OTHER
 Mingus	87	NOUN
-Schmitts	87	NOUN
+Schmitts	87	NOUN	Schmitt
 Tahiti	87	NOUN
 Guderian	87	NOUN
 Osmium	87	NOUN
 mod	87	OTHER
 durchbrochen	87	VERB
-Weltkriegen	87	NOUN
+Weltkriegen	87	NOUN	Weltkrieg
 Sforza	87	NOUN
 starre	87	OTHER
 Rauxel	87	NOUN
 Stephanus	87	NOUN
-Jugendstils	87	NOUN
+Jugendstils	87	NOUN	Jugendstil
 Reichsteil	87	NOUN
 Graphentheorie	87	NOUN
 fl	87	NOUN,OTHER
@@ -20124,12 +20124,12 @@ Dionysos	87	NOUN
 Biennale	87	NOUN
 Ljubljana	87	NOUN
 Bann	87	NOUN
-Galileis	87	NOUN
+Galileis	87	NOUN	Galilei
 Kegel	87	NOUN
 Grosz	87	NOUN
 Störtebeker	87	NOUN
 Gewand	87	NOUN
-Computerspielen	86	NOUN
+Computerspielen	86	NOUN	Computerspiel
 äquivalente	86	OTHER
 aufstrebende	86	OTHER
 Tell	86	NOUN
@@ -20140,27 +20140,27 @@ Massenproduktion	86	NOUN
 zunehmen	86	VERB
 weiterverarbeitet	86	OTHER
 gestreut	86	OTHER
-Wunden	86	NOUN
+Wunden	86	NOUN	Wunde
 Erbrechen	86	NOUN
 Mumie	86	NOUN
 Rauchen	86	NOUN,OTHER
 einzuhalten	86	VERB
 Inventar	86	NOUN
 vergleichbarer	86	OTHER
-Altertums	86	NOUN
+Altertums	86	NOUN	Altertum
 abgelesen	86	VERB
 einfacheren	86	OTHER
 Becher	86	NOUN
-Talente	86	NOUN
+Talente	86	NOUN	Talent
 Prometheus	86	NOUN
 Fremdherrschaft	86	NOUN
-Veteranen	86	NOUN
+Veteranen	86	NOUN	Veteran
 wem	86	OTHER
 Kaaba	86	NOUN
 Ägäis	86	NOUN
 archaischen	86	OTHER
 meinten	86	VERB
-Wörterbüchern	86	NOUN
+Wörterbüchern	86	NOUN	Wörterbuch
 wagte	86	OTHER
 manuelle	86	OTHER
 Waage	86	NOUN
@@ -20175,10 +20175,10 @@ Ockham	86	NOUN
 einschränken	86	VERB
 Kalifat	86	NOUN
 verübten	86	VERB,OTHER
-Misshandlungen	86	NOUN
+Misshandlungen	86	NOUN	Misshandlung
 Emir	86	NOUN
 privatisiert	86	OTHER
-Flugplätze	86	NOUN
+Flugplätze	86	NOUN	Flugplatz
 Igor	86	NOUN
 Bergsteiger	86	NOUN
 Military	86	NOUN
@@ -20187,7 +20187,7 @@ Mentor	86	NOUN
 Market	86	NOUN
 Sultanat	86	NOUN
 Five	86	NOUN
-Meinungsverschiedenheiten	86	NOUN
+Meinungsverschiedenheiten	86	NOUN	Meinungsverschiedenheit
 Kollegium	86	NOUN
 Kriegführung	86	NOUN
 Machtstellung	86	NOUN
@@ -20211,7 +20211,7 @@ gehörig	86	OTHER
 polare	86	NOUN,OTHER
 Collège	86	NOUN
 eingewandert	86	OTHER
-Bewertungen	86	NOUN
+Bewertungen	86	NOUN	Bewertung
 russ	86	OTHER
 Oil	86	NOUN
 Casino	86	NOUN
@@ -20219,7 +20219,7 @@ bestimmenden	86	OTHER
 Nomina	86	NOUN
 Esel	86	NOUN
 Besserung	86	NOUN
-Geweben	86	NOUN
+Geweben	86	NOUN	Gewebe
 Bildqualität	86	NOUN
 hervorragenden	86	OTHER
 Fürstbischof	86	NOUN
@@ -20227,15 +20227,15 @@ Parole	86	NOUN
 aufbaut	86	OTHER
 Mn	86	NOUN,OTHER
 mentale	86	OTHER
-Vorlieben	86	NOUN
+Vorlieben	86	NOUN	Vorliebe
 Normalverteilung	86	NOUN
-Diphthonge	86	NOUN
+Diphthonge	86	NOUN	Diphthong
 seitliche	86	NOUN,OTHER
 woher	86	OTHER
 Kirchenprovinz	86	NOUN
 Römerbrief	86	NOUN
-Bedrohungen	86	NOUN
-Börsen	86	NOUN
+Bedrohungen	86	NOUN	Bedrohung
+Börsen	86	NOUN	Börse
 PP	86	NOUN,OTHER
 Gesundheitsausgaben	86	NOUN
 exponentiell	86	OTHER
@@ -20243,18 +20243,18 @@ Lac	86	NOUN,OTHER
 Ticket	86	NOUN
 AStA	86	NOUN
 Plakat	86	NOUN
-Handwerks	86	NOUN
+Handwerks	86	NOUN	Handwerk
 Regnitz	86	NOUN
 Flusssystem	86	NOUN
 absolutistischen	86	OTHER
-Regierungsbezirken	86	NOUN
+Regierungsbezirken	86	NOUN	Regierungsbezirk
 territorial	86	OTHER
 Murrhardt	86	NOUN
 Maier	86	NOUN
 Routing	86	NOUN
 Baltimore	86	NOUN
 Margarethe	86	NOUN
-Steuerungen	86	NOUN
+Steuerungen	86	NOUN	Steuerung
 Technetium	86	NOUN
 zurückgenommen	86	VERB
 Brake	86	NOUN
@@ -20264,17 +20264,17 @@ Oratorium	86	NOUN
 Barockzeit	86	NOUN
 Vizekönig	86	NOUN
 Entwässerung	86	NOUN
-Straßenbahnlinien	86	NOUN
+Straßenbahnlinien	86	NOUN	Straßenbahnlinie
 maßgebend	86	OTHER
 zwölften	86	OTHER
 Reykjavík	86	NOUN
 Luftstreitkräfte	86	NOUN
 Ing	86	NOUN,OTHER
 Endphase	86	NOUN
-Quartiere	86	NOUN
+Quartiere	86	NOUN	Quartier
 zählende	86	OTHER
 Labyrinth	86	NOUN
-Magistrats	86	NOUN
+Magistrats	86	NOUN	Magistrat
 zeichneten	86	VERB
 Katalanisch	86	NOUN,OTHER
 Resistenz	86	NOUN
@@ -20286,21 +20286,21 @@ wiedergibt	86	OTHER
 KGB	86	NOUN
 mittelständische	86	OTHER
 CCC	86	NOUN
-Regimenter	86	NOUN
+Regimenter	86	NOUN	Regiment
 Forth	86	NOUN
 mitteleuropäische	86	OTHER
 Anraten	86	NOUN
-Flamingos	86	NOUN
+Flamingos	86	NOUN	Flamingo
 Grünewald	86	NOUN
-Superhelden	86	NOUN
+Superhelden	86	NOUN	Superheld
 Denkschrift	86	NOUN
 Christuskirche	86	NOUN
 Karikatur	86	NOUN
-Domains	86	NOUN
-Ausläufern	86	NOUN
+Domains	86	NOUN	Domain
+Ausläufern	86	NOUN	Ausläufer
 Handelsregister	86	NOUN
 Nathan	86	NOUN
-Dampfmaschinen	86	NOUN
+Dampfmaschinen	86	NOUN	Dampfmaschine
 Cavendish	86	NOUN
 betrieblichen	86	OTHER
 Beneš	86	NOUN
@@ -20309,8 +20309,8 @@ Südteil	86	NOUN
 Tannenberg	86	NOUN
 Kinzig	86	NOUN
 HVV	86	NOUN
-Hamiltons	86	NOUN
-Verwaltungsgemeinschaften	86	NOUN
+Hamiltons	86	NOUN	Hamilton
+Verwaltungsgemeinschaften	86	NOUN	Verwaltungsgemeinschaft
 Biedenkopf	86	NOUN
 Lauterbrunnen	86	NOUN
 Indymedia	86	NOUN,OTHER
@@ -20321,26 +20321,26 @@ verwendbar	85	OTHER
 Picture	85	NOUN
 Korrektheit	85	NOUN
 projiziert	85	OTHER
-Wintermonaten	85	NOUN
+Wintermonaten	85	NOUN	Wintermonate
 Weltmarkt	85	NOUN
 Number	85	NOUN,OTHER
 Stummfilm	85	NOUN
 gespielten	85	OTHER
 rekonstruierte	85	OTHER
 wahrnimmt	85	OTHER
-Stereotype	85	NOUN,OTHER
+Stereotype	85	NOUN,OTHER	Stereotyp
 AV	85	NOUN,OTHER
 einfließen	85	VERB
 Bartholomäus	85	NOUN
 polaren	85	OTHER
-Bauteilen	85	NOUN
+Bauteilen	85	NOUN	Bauteil
 Diamant	85	NOUN
 hemmt	85	OTHER
 Löslichkeit	85	NOUN
 benachbarter	85	OTHER
 Aas	85	NOUN
 modifizierten	85	VERB,OTHER
-Spektrallinien	85	NOUN
+Spektrallinien	85	NOUN	Spektrallinie
 weicher	85	OTHER
 sauber	85	OTHER
 Chirurg	85	NOUN
@@ -20352,30 +20352,30 @@ verschuldet	85	OTHER
 bildliche	85	OTHER
 Diokletian	85	NOUN
 Aufklärer	85	NOUN
-Vielfachen	85	NOUN,OTHER
+Vielfachen	85	NOUN,OTHER	Vielfache
 generellen	85	OTHER
 ägyptischer	85	OTHER
 unwesentlich	85	OTHER
 Subjektivität	85	NOUN
-Schläge	85	NOUN
+Schläge	85	NOUN	Schlag
 ausbrach	85	OTHER
 thematischen	85	OTHER
 Sonnen	85	NOUN
 übersetzten	85	VERB,OTHER
-Terme	85	NOUN
+Terme	85	NOUN	Term
 sinnlichen	85	OTHER
 synchron	85	OTHER
 Paarung	85	NOUN
 Lebensform	85	NOUN
 Fi	85	NOUN,OTHER
 Ratifizierung	85	NOUN
-Köpfen	85	NOUN
+Köpfen	85	NOUN	Kopf
 Wohnviertel	85	NOUN
 Wolkenkratzer	85	NOUN
 Dhabi	85	NOUN
 Misstrauensvotum	85	NOUN
 jahrelangen	85	OTHER
-Ladens	85	NOUN
+Ladens	85	NOUN	Laden
 Brüsseler	85	NOUN
 Grundhaltung	85	NOUN
 Stadtplanung	85	NOUN
@@ -20386,7 +20386,7 @@ schädliche	85	OTHER
 einhergehen	85	VERB
 dreifache	85	NOUN,OTHER
 kürzesten	85	OTHER
-Hybriden	85	NOUN,OTHER
+Hybriden	85	NOUN,OTHER	Hybrid
 Betrüger	85	NOUN
 Polarität	85	NOUN
 Seth	85	NOUN
@@ -20403,20 +20403,20 @@ Reorganisation	85	NOUN
 wiegt	85	OTHER
 Freisler	85	NOUN
 Maghreb	85	NOUN
-Terminals	85	NOUN
+Terminals	85	NOUN	Terminal
 Endrunde	85	NOUN
-Kopfschmerzen	85	NOUN
+Kopfschmerzen	85	NOUN	Kopfschmerz
 arithmetischen	85	OTHER
 vermindern	85	VERB
 komplizierter	85	OTHER
 dokumentierten	85	VERB,OTHER
-Antigene	85	NOUN
+Antigene	85	NOUN	Antigen
 Eigenart	85	NOUN
 assyrischen	85	OTHER
 Phonologie	85	NOUN
 psychiatrische	85	OTHER
-Fetten	85	NOUN,OTHER
-Schnecken	85	NOUN
+Fetten	85	NOUN,OTHER	Fett
+Schnecken	85	NOUN	Schnecke
 molekularen	85	OTHER
 Naturwissenschaftler	85	NOUN
 Curt	85	NOUN
@@ -20434,17 +20434,17 @@ Tempelhofer	85	NOUN
 Techniker	85	NOUN
 Kasten	85	NOUN
 Biosphärenreservat	85	NOUN
-Wahlrechts	85	NOUN
+Wahlrechts	85	NOUN	Wahlrecht
 Blank	85	NOUN,OTHER
 Reichenhall	85	NOUN
 Aschermittwoch	85	NOUN
 Hochschulreife	85	NOUN
-Servern	85	NOUN
+Servern	85	NOUN	Server
 Nachbildung	85	NOUN
-Rogers	85	NOUN
+Rogers	85	NOUN	Roger
 Determinismus	85	NOUN
 Handelsplatz	85	NOUN
-Geburtstags	85	NOUN
+Geburtstags	85	NOUN	Geburtstag
 Haltestelle	85	NOUN
 einzigartigen	85	OTHER
 Wassertemperatur	85	NOUN
@@ -20461,13 +20461,13 @@ Eozän	85	NOUN
 kyrillischen	85	OTHER
 Stream	85	NOUN
 Gewaltherrschaft	85	NOUN
-Synapsen	85	NOUN
+Synapsen	85	NOUN	Synapse
 kräftige	85	OTHER
 Spalt	85	NOUN
 Ortsvorsteher	85	NOUN
 Quantencomputer	85	NOUN
 bündeln	85	VERB
-Gemeindeteile	85	NOUN
+Gemeindeteile	85	NOUN	Gemeindeteil
 Ressource	85	NOUN
 Kronach	85	NOUN
 chirurgischen	85	OTHER
@@ -20485,14 +20485,14 @@ Seoul	85	NOUN
 Hochwasserschutz	85	NOUN
 Beugung	85	NOUN
 Tulpen	85	NOUN
-Quaternionen	85	NOUN
+Quaternionen	85	NOUN	Quaternion
 Klettern	85	NOUN,OTHER
-Radierungen	85	NOUN
+Radierungen	85	NOUN	Radierung
 Granada	85	NOUN
-Introns	85	NOUN
+Introns	85	NOUN	Intron
 WP	85	NOUN
 Mittelmächte	85	NOUN
-Diakone	85	NOUN
+Diakone	85	NOUN	Diakon
 ICQ	85	NOUN
 Abeba	85	NOUN
 Bondage	85	NOUN
@@ -20501,16 +20501,16 @@ Nationalratswahl	85	NOUN
 Herzebrock	85	NOUN
 elementar	84	OTHER
 pragmatische	84	OTHER
-Prämissen	84	NOUN
+Prämissen	84	NOUN	Prämisse
 Filmproduzent	84	NOUN
 ausgelagert	84	OTHER
 Graffiti	84	NOUN
 unterstrichen	84	VERB
 fahrenden	84	OTHER
-Hauptfiguren	84	NOUN
+Hauptfiguren	84	NOUN	Hauptfigur
 Lew	84	NOUN
 unsichtbare	84	OTHER
-Trommeln	84	NOUN
+Trommeln	84	NOUN	Trommel
 Timothy	84	NOUN
 stillgelegten	84	OTHER
 begleiteten	84	VERB,OTHER
@@ -20518,9 +20518,9 @@ aufteilen	84	VERB
 Gewichtung	84	NOUN
 wässriger	84	OTHER
 Oxide	84	NOUN
-Arzneimitteln	84	NOUN
+Arzneimitteln	84	NOUN	Arzneimittel
 metallisches	84	OTHER
-Präparate	84	NOUN
+Präparate	84	NOUN	Präparat
 Wasserstoffperoxid	84	NOUN
 zersetzt	84	OTHER
 Migräne	84	NOUN
@@ -20528,7 +20528,7 @@ rechtskräftig	84	OTHER
 Zellwand	84	NOUN
 beruhten	84	OTHER
 strafrechtlich	84	OTHER
-Fachrichtungen	84	NOUN
+Fachrichtungen	84	NOUN	Fachrichtung
 eingearbeitet	84	OTHER
 gefassten	84	OTHER
 hervorgehen	84	VERB
@@ -20539,11 +20539,11 @@ einflussreicher	84	OTHER
 gebliebene	84	OTHER
 ergebenden	84	OTHER
 verrichtet	84	OTHER
-Mischformen	84	NOUN
-Entlehnungen	84	NOUN
+Mischformen	84	NOUN	Mischform
+Entlehnungen	84	NOUN	Entlehnung
 Haftstrafe	84	NOUN
-Baudenkmäler	84	NOUN
-Simulationen	84	NOUN
+Baudenkmäler	84	NOUN	Baudenkmal
+Simulationen	84	NOUN	Simulation
 Flexion	84	NOUN
 bestimmende	84	OTHER
 Politikerin	84	NOUN
@@ -20557,7 +20557,7 @@ gekannt	84	OTHER
 revidiert	84	OTHER
 Foster	84	NOUN
 Parteichef	84	NOUN
-Oppositionsparteien	84	NOUN
+Oppositionsparteien	84	NOUN	Oppositionspartei
 Rechtslage	84	NOUN
 Zustrom	84	NOUN
 Rüstungsindustrie	84	NOUN
@@ -20566,7 +20566,7 @@ ergänzende	84	OTHER
 volkstümlichen	84	OTHER
 verpflichtend	84	OTHER
 Genealogie	84	NOUN
-Gesteins	84	NOUN
+Gesteins	84	NOUN	Gestein
 Flugverkehr	84	NOUN
 pK	84	OTHER
 jure	84	OTHER
@@ -20585,7 +20585,7 @@ schwacher	84	OTHER
 Tiefgang	84	NOUN
 brasilianische	84	OTHER
 Hendrik	84	NOUN
-Gefängnissen	84	NOUN
+Gefängnissen	84	NOUN	Gefängnisse
 getauscht	84	OTHER
 Beschwerde	84	NOUN
 Räterepublik	84	NOUN
@@ -20595,17 +20595,17 @@ naher	84	OTHER
 toleriert	84	OTHER
 Jahresbeginn	84	NOUN
 Pilz	84	NOUN
-Messwerte	84	NOUN
+Messwerte	84	NOUN	Messwert
 Teppich	84	NOUN
 Konvergenz	84	NOUN
 Gothaer	84	NOUN
-Tanks	84	NOUN
+Tanks	84	NOUN	Tank
 Dienstgrad	84	NOUN
 veränderter	84	OTHER
 feindlich	84	OTHER
 erwirtschaftete	84	OTHER
 Außenseite	84	NOUN
-Argentiniens	84	NOUN
+Argentiniens	84	NOUN	Argentinien
 sch	84	OTHER
 beheben	84	VERB
 Skorbut	84	NOUN
@@ -20626,23 +20626,23 @@ angeborenen	84	OTHER
 Quantenfeldtheorie	84	NOUN
 Fugger	84	NOUN
 käme	84	OTHER
-Gruben	84	NOUN
+Gruben	84	NOUN	Grube
 Wasserqualität	84	NOUN
 Cantor	84	NOUN
 APO	84	NOUN
 inwiefern	84	OTHER
 fusioniert	84	OTHER
 Lesbarkeit	84	NOUN
-Sande	84	NOUN
+Sande	84	NOUN	Sand
 Reichspogromnacht	84	NOUN
 Musiktheater	84	NOUN
 Trinkwasserversorgung	84	NOUN
 gleichberechtigte	84	OTHER
 Athanasius	84	NOUN
 anbringen	84	NOUN,OTHER
-Weblinks	84	NOUN
+Weblinks	84	NOUN	Weblink
 Baskenland	84	NOUN
-baskischen	84	NOUN,OTHER
+baskischen	84	NOUN,OTHER	baskische
 Kapellmeister	84	NOUN
 Download	84	NOUN
 Apokryphen	84	NOUN,OTHER
@@ -20652,16 +20652,16 @@ Miete	84	NOUN
 sozialistischer	84	OTHER
 Azteken	84	NOUN
 samstags	84	OTHER
-Pfeile	84	NOUN
+Pfeile	84	NOUN	Pfeil
 Stadtrates	84	NOUN
 Umberto	84	NOUN
 Warte	84	NOUN,VERB
 Internierungslager	84	NOUN
-Wisente	84	NOUN
+Wisente	84	NOUN	Wisent
 antwortet	84	OTHER
 Gage	84	NOUN
 Nevada	84	NOUN
-Sekten	84	NOUN
+Sekten	84	NOUN	Sekte
 Typografie	84	NOUN
 unterlassen	84	VERB
 linearer	84	OTHER
@@ -20675,11 +20675,11 @@ Mitose	84	NOUN
 Wasserführung	84	NOUN
 Landschaftsschutzgebiet	84	NOUN
 Landeshauptmann	84	NOUN
-Amplituden	84	NOUN
+Amplituden	84	NOUN	Amplitude
 Ephraim	84	NOUN
 Lou	84	NOUN
-Schmetterlinge	84	NOUN
-Sternbilder	84	NOUN
+Schmetterlinge	84	NOUN	Schmetterling
+Sternbilder	84	NOUN	Sternbild
 Gemeindehaus	84	NOUN
 Freyburg	84	NOUN
 Gretchen	84	NOUN
@@ -20690,21 +20690,21 @@ Dehio	84	NOUN
 Card	83	NOUN
 Verräter	83	NOUN
 denke	83	OTHER
-Blutungen	83	NOUN
-Klischees	83	NOUN
+Blutungen	83	NOUN	Blutung
+Klischees	83	NOUN	Klischee
 Julie	83	NOUN
-Londons	83	NOUN
-Vergewaltigungen	83	NOUN
-Meistern	83	NOUN,OTHER
+Londons	83	NOUN	London
+Vergewaltigungen	83	NOUN	Vergewaltigung
+Meistern	83	NOUN,OTHER	Meister
 Truffaut	83	NOUN
 Taxi	83	NOUN
 Faszination	83	NOUN
-Toiletten	83	NOUN
+Toiletten	83	NOUN	Toilette
 Reed	83	NOUN
 Kenneth	83	NOUN
 Huston	83	NOUN
 Pantheon	83	NOUN
-Designs	83	NOUN
+Designs	83	NOUN	Design
 halfen	83	VERB
 gleichgeschlechtliche	83	OTHER
 katalysiert	83	OTHER
@@ -20712,13 +20712,13 @@ Substitution	83	NOUN
 Affinität	83	NOUN
 Tonne	83	NOUN
 Weiterverarbeitung	83	NOUN
-Strömen	83	NOUN,OTHER
+Strömen	83	NOUN,OTHER	Strom
 Imperial	83	NOUN
 geformte	83	OTHER
 Gallium	83	NOUN
-Isotopen	83	NOUN
+Isotopen	83	NOUN	Isotop
 innerlich	83	OTHER
-Akkumulatoren	83	NOUN
+Akkumulatoren	83	NOUN	Akkumulator
 Übelkeit	83	NOUN
 Anreicherung	83	NOUN
 Bestrahlung	83	NOUN
@@ -20728,7 +20728,7 @@ Weltliteratur	83	NOUN
 Nachschub	83	NOUN
 angehalten	83	VERB
 Peloponnes	83	NOUN
-Bündnisses	83	NOUN
+Bündnisses	83	NOUN	Bündnisse
 segelte	83	OTHER
 ostwärts	83	OTHER
 zweijährigen	83	OTHER
@@ -20736,7 +20736,7 @@ unterworfenen	83	OTHER
 dienende	83	OTHER
 Andersen	83	NOUN
 gemeinen	83	NOUN,OTHER
-Historikers	83	NOUN
+Historikers	83	NOUN	Historiker
 Asia	83	NOUN
 historischem	83	OTHER
 revolutionärer	83	OTHER
@@ -20759,7 +20759,7 @@ Naturalis	83	NOUN,OTHER
 produktiv	83	OTHER
 demgemäß	83	OTHER
 zuteil	83	OTHER
-Lehrbücher	83	NOUN
+Lehrbücher	83	NOUN	Lehrbuch
 Todd	83	NOUN
 Potomac	83	NOUN
 Trocknen	83	NOUN,OTHER
@@ -20767,7 +20767,7 @@ Financial	83	NOUN
 Regierungspartei	83	NOUN
 Regierungskoalition	83	NOUN
 Koalitionsregierung	83	NOUN
-Kabinetts	83	NOUN
+Kabinetts	83	NOUN	Kabinett
 Spitzenkandidat	83	NOUN
 Alexei	83	NOUN
 gekürt	83	OTHER
@@ -20780,8 +20780,8 @@ präsentierten	83	VERB,OTHER
 Unregelmäßigkeiten	83	NOUN
 erhofft	83	OTHER
 investierte	83	OTHER
-Wasserkraftwerke	83	NOUN
-Tieres	83	NOUN
+Wasserkraftwerke	83	NOUN	Wasserkraftwerk
+Tieres	83	NOUN	Tier
 gebar	83	OTHER
 Temple	83	NOUN
 Bön	83	NOUN
@@ -20793,21 +20793,21 @@ Aktie	83	NOUN
 erneuerbarer	83	OTHER
 notfalls	83	OTHER
 Papers	83	NOUN
-Gedenktafeln	83	NOUN
+Gedenktafeln	83	NOUN	Gedenktafel
 Schülerin	83	NOUN
-Führers	83	NOUN
+Führers	83	NOUN	Führer
 getragenen	83	OTHER
 autoritäre	83	OTHER
-Bankiers	83	NOUN
-Tunnels	83	NOUN
+Bankiers	83	NOUN	Bankier
+Tunnels	83	NOUN	Tunnel
 protestierten	83	VERB,OTHER
 Montesquieu	83	NOUN
 Kolonisierung	83	NOUN
-Keramiken	83	NOUN
+Keramiken	83	NOUN	Keramik
 Small	83	NOUN,OTHER
 Erscheinens	83	NOUN
 Zahlzeichen	83	NOUN
-Magnetfelder	83	NOUN
+Magnetfelder	83	NOUN	Magnetfeld
 verdankte	83	OTHER
 Summenformel	83	NOUN
 pt	83	NOUN,OTHER
@@ -20824,26 +20824,26 @@ untergeordneten	83	OTHER
 nordöstliche	83	OTHER
 drittens	83	OTHER
 Drehimpuls	83	NOUN
-Vulkans	83	NOUN
+Vulkans	83	NOUN	Vulkan
 Mobilisierung	83	NOUN
 hervorbringen	83	VERB
 Südsudan	83	NOUN
-Gottesdiensten	83	NOUN
+Gottesdiensten	83	NOUN	Gottesdienst
 normales	83	OTHER
 betreute	83	OTHER
 Erschaffung	83	NOUN
 schädlichen	83	OTHER
 additive	83	OTHER
 Bromberg	83	NOUN
-Triebwerke	83	NOUN
+Triebwerke	83	NOUN	Triebwerk
 Rechtssystem	83	NOUN
 Kriegshandlungen	83	NOUN
 Pittsburgh	83	NOUN
-Kreuzungen	83	NOUN
+Kreuzungen	83	NOUN	Kreuzung
 ausrichten	83	VERB
 anzeigt	83	OTHER
 Watzmann	83	NOUN
-Stauseen	83	NOUN
+Stauseen	83	NOUN	Stausee
 Haager	83	NOUN
 Parma	83	NOUN
 Darlehen	83	NOUN
@@ -20858,16 +20858,16 @@ Kircher	83	NOUN
 verzichteten	83	VERB
 beschnitten	83	VERB
 Schlamm	83	NOUN
-Diagonalen	83	NOUN
+Diagonalen	83	NOUN	Diagonale
 Streckenabschnitt	83	NOUN
 Este	83	NOUN
-Wettkämpfen	83	NOUN
+Wettkämpfen	83	NOUN	Wettkampf
 Event	83	NOUN,OTHER
 Zeta	83	NOUN,OTHER
 venezianische	83	OTHER
 Trockenzeit	83	NOUN
 Unterrichtssprache	83	NOUN
-Beschlüssen	83	NOUN
+Beschlüssen	83	NOUN	Beschluss
 Vojvodina	83	NOUN
 Waadt	83	NOUN
 Regierender	83	NOUN,OTHER
@@ -20895,15 +20895,15 @@ Grammy	83	NOUN
 Pogrom	83	NOUN
 Disc	83	NOUN
 gotisch	83	OTHER
-Farbstoffe	83	NOUN
+Farbstoffe	83	NOUN	Farbstoff
 siegreich	83	OTHER
 Antiteilchen	83	NOUN
 Deutschlandfunk	83	NOUN
 Zero	83	NOUN,OTHER
-Kreditkarten	83	NOUN
+Kreditkarten	83	NOUN	Kreditkarte
 Administrator	83	NOUN
-Winkels	83	NOUN
-Pinguine	83	NOUN
+Winkels	83	NOUN	Winkel
+Pinguine	83	NOUN	Pinguin
 par	83	OTHER
 Józef	83	NOUN
 Centrum	83	NOUN
@@ -20911,7 +20911,7 @@ brüten	83	VERB
 MD	83	NOUN,OTHER
 Ortskern	83	NOUN
 Kleinbahn	83	NOUN
-Löchern	83	NOUN
+Löchern	83	NOUN	Loch
 Carnot	83	NOUN
 ZF	83	NOUN
 schliesslich	83	OTHER
@@ -20919,11 +20919,11 @@ Stadtschloss	83	NOUN
 Sumatra	83	NOUN
 Paarhufer	83	NOUN
 Ejakulation	83	NOUN
-Maltas	83	NOUN
+Maltas	83	NOUN	Malta
 Mikrotubuli	83	NOUN
 Bleeker	83	NOUN
 Dunkeln	82	NOUN
-Mathematikern	82	NOUN
+Mathematikern	82	NOUN	Mathematiker
 aufgegangen	82	VERB
 hochwertigen	82	OTHER
 locker	82	OTHER
@@ -20932,10 +20932,10 @@ zugesagt	82	OTHER
 gesamtes	82	OTHER
 Cinema	82	NOUN
 erholen	82	VERB
-Plakate	82	NOUN
-Regisseuren	82	NOUN
+Plakate	82	NOUN	Plakat
+Regisseuren	82	NOUN	Regisseur
 geworben	82	VERB
-Filmfestspielen	82	NOUN
+Filmfestspielen	82	NOUN	Filmfestspiele
 Studioalbum	82	NOUN
 Reduktionsmittel	82	NOUN
 Gefüge	82	NOUN
@@ -20949,7 +20949,7 @@ Doctor	82	NOUN
 hierarchische	82	OTHER
 fachen	82	OTHER
 gerichtlichen	82	OTHER
-Sichtweisen	82	NOUN
+Sichtweisen	82	NOUN	Sichtweise
 Schwiegervater	82	NOUN
 Unstimmigkeiten	82	NOUN
 Aufständische	82	NOUN,OTHER
@@ -20979,7 +20979,7 @@ perfekte	82	OTHER
 Nordstaaten	82	NOUN
 Präsidentenamt	82	NOUN
 Amtseinführung	82	NOUN
-Konfliktes	82	NOUN
+Konfliktes	82	NOUN	Konflikt
 Freilichtmuseum	82	NOUN
 FK	82	NOUN
 Templin	82	NOUN
@@ -21001,22 +21001,22 @@ asphaltiert	82	OTHER
 rhythmische	82	OTHER
 erbte	82	OTHER
 Analverkehr	82	NOUN
-Öffnungen	82	NOUN
-Gleichgewichts	82	NOUN
+Öffnungen	82	NOUN	Öffnung
+Gleichgewichts	82	NOUN	Gleichgewicht
 Ackerland	82	NOUN
 alsbald	82	OTHER
 Wohngebäude	82	NOUN
 zurückerobert	82	OTHER
 bindend	82	OTHER
-Vollmachten	82	NOUN
+Vollmachten	82	NOUN	Vollmacht
 väterlichen	82	OTHER
 Wassertiefe	82	NOUN
 Sklavenhandel	82	NOUN
 Aufenthaltsort	82	NOUN
 Romani	82	NOUN
-Stückzahlen	82	NOUN
+Stückzahlen	82	NOUN	Stückzahl
 verehrte	82	OTHER
-Parteimitglieder	82	NOUN
+Parteimitglieder	82	NOUN	Parteimitglied
 konfessionelle	82	OTHER
 Schwindel	82	NOUN
 eigenhändig	82	OTHER
@@ -21025,12 +21025,12 @@ fehlerhaft	82	OTHER
 Hybrid	82	NOUN
 Hauptplatine	82	NOUN
 Hispanien	82	NOUN
-Sitzplätzen	82	NOUN
+Sitzplätzen	82	NOUN	Sitzplatz
 GUS	82	NOUN
-Neros	82	NOUN
+Neros	82	NOUN	Nero
 Roggen	82	NOUN
 Sprengstoff	82	NOUN
-Transporte	82	NOUN
+Transporte	82	NOUN	Transport
 versehentlich	82	OTHER
 Shelley	82	NOUN
 umgangssprachliche	82	OTHER
@@ -21038,12 +21038,12 @@ kompakten	82	OTHER
 Sammelbezeichnung	82	NOUN
 Übermittlung	82	NOUN
 Injektion	82	NOUN
-Spielzeiten	82	NOUN
+Spielzeiten	82	NOUN	Spielzeit
 Großgrundbesitzer	82	NOUN
 Rezession	82	NOUN
 Alain	82	NOUN
 Beduinen	82	NOUN
-Transformationen	82	NOUN
+Transformationen	82	NOUN	Transformation
 Geoffrey	82	NOUN
 Fokussierung	82	NOUN
 strömt	82	OTHER
@@ -21057,10 +21057,10 @@ Angleichung	82	NOUN
 Erbfolge	82	NOUN
 Landschaftsbild	82	NOUN
 Bayernpartei	82	NOUN
-Sportveranstaltungen	82	NOUN
+Sportveranstaltungen	82	NOUN	Sportveranstaltung
 BfV	82	NOUN
-Events	82	NOUN
-Fundstellen	82	NOUN
+Events	82	NOUN	Event
+Fundstellen	82	NOUN	Fundstelle
 Table	82	NOUN,OTHER
 Verwaltungsbezirk	82	NOUN
 Kunstschule	82	NOUN
@@ -21073,7 +21073,7 @@ konstatiert	82	OTHER
 durchdringen	82	VERB
 Rosenkranz	82	NOUN
 faschistische	82	OTHER
-Mieten	82	NOUN,OTHER
+Mieten	82	NOUN,OTHER	Miete
 gleichgültig	82	OTHER
 anfallenden	82	OTHER
 Angeklagte	82	NOUN
@@ -21081,11 +21081,11 @@ durchs	82	OTHER
 Colonia	82	NOUN
 Challenger	82	NOUN
 Jesaja	82	NOUN
-Gitarristen	82	NOUN
+Gitarristen	82	NOUN	Gitarrist
 Birmingham	82	NOUN
-Hessens	82	NOUN
+Hessens	82	NOUN	Hessen
 Wiesbadener	82	NOUN
-Hauptbahnhofs	82	NOUN
+Hauptbahnhofs	82	NOUN	Hauptbahnhof
 namensgebend	82	OTHER
 Käfer	82	NOUN
 anmelden	82	VERB
@@ -21105,8 +21105,8 @@ Tagesspiegel	82	NOUN
 fungierten	82	VERB
 Krankenpflege	82	NOUN
 Bokmål	82	NOUN
-Rufe	82	NOUN,VERB
-Archipels	82	NOUN
+Rufe	82	NOUN,VERB	Ruf
+Archipels	82	NOUN	Archipel
 Literaturkritik	82	NOUN
 gekommenen	82	OTHER
 Safran	82	NOUN
@@ -21119,10 +21119,10 @@ Sahne	82	NOUN
 Dithmarschen	82	NOUN
 Elberfeld	82	NOUN
 Nadu	82	NOUN
-Sufis	82	NOUN
+Sufis	82	NOUN	Sufi
 binomischen	82	OTHER
 Escher	82	NOUN
-Koreas	82	NOUN
+Koreas	82	NOUN	Korea
 Prußen	82	NOUN
 Amazonas	82	NOUN
 Grenzfläche	82	NOUN
@@ -21139,28 +21139,28 @@ wahrzunehmen	81	VERB
 wöchentliche	81	OTHER
 Vera	81	NOUN
 katastrophalen	81	OTHER
-Defizite	81	NOUN
+Defizite	81	NOUN	Defizit
 voranzutreiben	81	VERB
 musikalisches	81	OTHER
 Method	81	NOUN
-Kinofilme	81	NOUN
+Kinofilme	81	NOUN	Kinofilm
 thematische	81	OTHER
 Survey	81	NOUN
-Workshops	81	NOUN
+Workshops	81	NOUN	Workshop
 Kate	81	NOUN
 Lutz	81	NOUN
 Krypton	81	NOUN
 giftige	81	OTHER
 LD	81	NOUN
-Raumsonden	81	NOUN
+Raumsonden	81	NOUN	Raumsonde
 Milet	81	NOUN
-Feldzügen	81	NOUN
+Feldzügen	81	NOUN	Feldzug
 Grausamkeit	81	NOUN
 Ganges	81	NOUN
-Hochzeiten	81	NOUN
+Hochzeiten	81	NOUN	Hochzeit
 unzähligen	81	OTHER
 Forschungsstand	81	NOUN
-Drucke	81	NOUN
+Drucke	81	NOUN	Druck
 Akropolis	81	NOUN
 zeitweilige	81	OTHER
 Stromes	81	NOUN
@@ -21172,22 +21172,22 @@ Wrack	81	NOUN
 Abkühlen	81	NOUN,OTHER
 Davos	81	NOUN
 statisch	81	OTHER
-Umfangs	81	NOUN
+Umfangs	81	NOUN	Umfang
 grundlegendes	81	OTHER
 ernsten	81	OTHER
-Künsten	81	NOUN
+Künsten	81	NOUN	Kunst
 Häresie	81	NOUN
-Lincolns	81	NOUN
-Verbots	81	NOUN
+Lincolns	81	NOUN	Lincoln
+Verbots	81	NOUN	Verbot
 Besitzes	81	NOUN
 Witterung	81	NOUN
 slowenisch	81	NOUN,OTHER
 Arbeitskreis	81	NOUN
 Positionierung	81	NOUN
 versicherte	81	NOUN,OTHER
-Rechtsnormen	81	NOUN
+Rechtsnormen	81	NOUN	Rechtsnorm
 Silvio	81	NOUN
-Theateraufführungen	81	NOUN
+Theateraufführungen	81	NOUN	Theateraufführung
 Ass	81	NOUN
 städtebaulichen	81	OTHER
 verfassungsrechtlich	81	OTHER
@@ -21207,13 +21207,13 @@ Eiger	81	NOUN
 Typhus	81	NOUN
 favorisierte	81	OTHER
 restaurierte	81	OTHER
-Hauptwerke	81	NOUN
-Schriftrollen	81	NOUN
+Hauptwerke	81	NOUN	Hauptwerk
+Schriftrollen	81	NOUN	Schriftrolle
 Schirmherrschaft	81	NOUN
 bewältigt	81	OTHER
 Umweltverschmutzung	81	NOUN
-Rats	81	NOUN
-Weisungen	81	NOUN
+Rats	81	NOUN	Rat
+Weisungen	81	NOUN	Weisung
 erstmalige	81	OTHER
 Bekanntwerden	81	NOUN
 kümmert	81	OTHER
@@ -21228,19 +21228,19 @@ sofortigen	81	OTHER
 Verpflegung	81	NOUN
 Drohung	81	NOUN
 Hildebrand	81	NOUN
-Phänomens	81	NOUN
+Phänomens	81	NOUN	Phänomen
 Schreib	81	NOUN,VERB
-CPUs	81	NOUN
+CPUs	81	NOUN	CPU
 bereitzustellen	81	VERB
 Kingston	81	NOUN
 Aëtius	81	NOUN
-Rädern	81	NOUN
+Rädern	81	NOUN	Rad
 Auftretens	81	NOUN
 meldeten	81	VERB
 obligatorischen	81	OTHER
 Ostrand	81	NOUN
 partiellen	81	OTHER
-Familienmitglieder	81	NOUN
+Familienmitglieder	81	NOUN	Familienmitglied
 Bibliothekar	81	NOUN
 Tertiär	81	NOUN
 hinausgehende	81	OTHER
@@ -21254,12 +21254,12 @@ argentinische	81	OTHER
 Rafael	81	NOUN
 Guggenheim	81	NOUN
 erkennbaren	81	OTHER
-Geschlechtsorgane	81	NOUN
+Geschlechtsorgane	81	NOUN	Geschlechtsorgan
 Perlen	81	NOUN
 Aussichtsplattform	81	NOUN
 liegend	81	OTHER
 Transportmittel	81	NOUN
-Verwechslungen	81	NOUN
+Verwechslungen	81	NOUN	Verwechslung
 Nische	81	NOUN
 XXIII	81	NOUN
 geweckt	81	OTHER
@@ -21268,8 +21268,8 @@ Erbsünde	81	NOUN
 altnordischen	81	NOUN,OTHER
 Kissingen	81	NOUN
 schlimmsten	81	OTHER
-Hansestädte	81	NOUN
-Gewerbegebiete	81	NOUN
+Hansestädte	81	NOUN	Hansestadt
+Gewerbegebiete	81	NOUN	Gewerbegebiet
 Blanc	81	NOUN
 schlechtem	81	OTHER
 Freising	81	NOUN
@@ -21286,20 +21286,20 @@ Promenade	81	NOUN
 zusammensetzen	81	VERB
 Uni	81	NOUN
 Wasserwerk	81	NOUN
-Netzwerks	81	NOUN
+Netzwerks	81	NOUN	Netzwerk
 konfessionellen	81	OTHER
 Volksaufstand	81	NOUN
-Einkommens	81	NOUN
+Einkommens	81	NOUN	Einkommen
 zwingt	81	OTHER
 neunte	81	OTHER
-Albaniens	81	NOUN
+Albaniens	81	NOUN	Albanien
 Miranda	81	NOUN
 royale	81	NOUN,OTHER
 Halbjahr	81	NOUN
 Kabelfernsehen	81	NOUN
-Reedereien	81	NOUN
+Reedereien	81	NOUN	Reederei
 Pleistozän	81	NOUN
-Friedhofs	81	NOUN
+Friedhofs	81	NOUN	Friedhof
 Info	81	NOUN,OTHER
 Ingeborg	81	NOUN
 Renovierung	81	NOUN
@@ -21322,20 +21322,20 @@ normativen	81	OTHER
 REM	81	NOUN,OTHER
 Minna	81	NOUN
 Ganymed	81	NOUN
-Cosimos	81	NOUN
-Defekte	81	NOUN,OTHER
+Cosimos	81	NOUN	Cosimo
+Defekte	81	NOUN,OTHER	Defekt
 versammeln	81	VERB
 erneuern	81	VERB
 mährischen	81	OTHER
-Küstenregionen	81	NOUN
+Küstenregionen	81	NOUN	Küstenregion
 Ruß	81	NOUN
 Aquarell	81	NOUN
 Edvard	81	NOUN
-Dirigenten	81	NOUN
-Gemäldes	81	NOUN
-Goldmünzen	81	NOUN
+Dirigenten	81	NOUN	Dirigent
+Gemäldes	81	NOUN	Gemälde
+Goldmünzen	81	NOUN	Goldmünze
 Ketzer	81	NOUN
-Eulerschen	81	NOUN,OTHER
+Eulerschen	81	NOUN,OTHER	Eulersche
 Meereshöhe	81	NOUN
 Jacobsohn	81	NOUN
 Allenstein	81	NOUN
@@ -21343,18 +21343,18 @@ Messina	81	NOUN
 Gemeindereform	81	NOUN
 Mischna	81	NOUN
 Ringstraße	81	NOUN
-Ferdinands	81	NOUN
+Ferdinands	81	NOUN	Ferdinand
 Taut	81	NOUN
 AO	81	NOUN
-Hybride	81	NOUN,OTHER
+Hybride	81	NOUN,OTHER	Hybrid
 Schrödinger	81	NOUN
-Hannoversche	81	NOUN,OTHER
+Hannoversche	81	NOUN,OTHER	Hannoversch
 Spacey	81	NOUN
 albanische	81	OTHER
 Stadthagen	81	NOUN
 Phra	81	NOUN
 BKA	81	NOUN
-Heraklits	81	NOUN
+Heraklits	81	NOUN	Heraklit
 Bermuda	81	NOUN
 Haselünne	81	NOUN
 Kristallisation	80	NOUN
@@ -21368,13 +21368,13 @@ gelockert	80	OTHER
 Nitrat	80	NOUN,OTHER
 Davy	80	NOUN
 überarbeiteten	80	VERB,OTHER
-Folien	80	NOUN
+Folien	80	NOUN	Folie
 Salzwasser	80	NOUN
 ungehindert	80	OTHER
 flüssiges	80	OTHER
 feiner	80	OTHER
-Lungen	80	NOUN
-Enzymen	80	NOUN
+Lungen	80	NOUN	Lunge
+Enzymen	80	NOUN	Enzym
 zehnmal	80	OTHER
 schwereren	80	OTHER
 Menschenbild	80	NOUN
@@ -21400,30 +21400,30 @@ Erwachsenenalter	80	NOUN
 konstituiert	80	OTHER
 ul	80	NOUN,OTHER
 privilegierten	80	VERB,OTHER
-Geheimdienste	80	NOUN
+Geheimdienste	80	NOUN	Geheimdienst
 Nationalgarde	80	NOUN
 kalifornischen	80	OTHER
 schwerpunktmäßig	80	OTHER
-Anlässe	80	NOUN
+Anlässe	80	NOUN	Anlass
 überzeugend	80	OTHER
-Rindern	80	NOUN
+Rindern	80	NOUN	Rind
 bedeute	80	OTHER
-Verlaufe	80	NOUN
-Politikers	80	NOUN
+Verlaufe	80	NOUN	Verlauf
+Politikers	80	NOUN	Politiker
 höchstwahrscheinlich	80	OTHER
 Sar	80	NOUN
 chromatische	80	OTHER
 mythologische	80	OTHER
-Gatten	80	NOUN
+Gatten	80	NOUN	Gatte
 sitzenden	80	OTHER
-Kommentaren	80	NOUN
+Kommentaren	80	NOUN	Kommentar
 Wurf	80	NOUN
 verdeckte	80	OTHER
 Suezkanal	80	NOUN
 Musen	80	NOUN
 Geburtsstunde	80	NOUN
 Seidenstraße	80	NOUN
-Bergbaus	80	NOUN
+Bergbaus	80	NOUN	Bergbau
 Kollege	80	NOUN
 Fantasie	80	NOUN
 sachlich	80	OTHER
@@ -21431,9 +21431,9 @@ auswärtiges	80	OTHER
 Packard	80	NOUN
 informelle	80	OTHER
 Freikorps	80	NOUN
-Vorrechte	80	NOUN
+Vorrechte	80	NOUN	Vorrecht
 rassistischen	80	OTHER
-Sudetendeutschen	80	NOUN,OTHER
+Sudetendeutschen	80	NOUN,OTHER	Sudetendeutsche
 ergebnislos	80	OTHER
 Harbor	80	NOUN
 zehnte	80	OTHER
@@ -21441,13 +21441,13 @@ islamistischen	80	OTHER
 Nachrichtenagentur	80	NOUN
 umbenannte	80	OTHER
 pharmazeutische	80	OTHER
-Fahrgästen	80	NOUN
+Fahrgästen	80	NOUN	Fahrgast
 Gagarin	80	NOUN
 mediale	80	OTHER
 beziffert	80	OTHER
 Treibhauseffekt	80	NOUN
 ablösen	80	VERB
-Mitteilungen	80	NOUN
+Mitteilungen	80	NOUN	Mitteilung
 Volksarmee	80	NOUN
 aufgesetzt	80	OTHER
 steigert	80	OTHER
@@ -21456,7 +21456,7 @@ Erbgut	80	NOUN
 beläuft	80	OTHER
 unberührt	80	OTHER
 verstaatlicht	80	OTHER
-Getränken	80	NOUN
+Getränken	80	NOUN	Getränk
 elektromagnetischer	80	OTHER
 Blickfeld	80	NOUN
 Ohm	80	NOUN
@@ -21477,10 +21477,10 @@ Backnang	80	NOUN
 zusammenhängend	80	OTHER
 Fortschreibung	80	NOUN
 Lise	80	NOUN
-Nuklide	80	NOUN
+Nuklide	80	NOUN	Nuklid
 begehrt	80	OTHER
 atmosphärische	80	OTHER
-Seminare	80	NOUN
+Seminare	80	NOUN	Seminar
 Gütersloh	80	NOUN
 denkmalgeschützte	80	OTHER
 Südufer	80	NOUN
@@ -21492,7 +21492,7 @@ Ole	80	NOUN
 aristokratischen	80	OTHER
 Strang	80	NOUN
 höfische	80	OTHER
-Jahrestages	80	NOUN
+Jahrestages	80	NOUN	Jahrestag
 Schwimmer	80	NOUN
 erledigen	80	VERB
 europäisch	80	OTHER
@@ -21500,23 +21500,23 @@ Milchsäure	80	NOUN
 Replikation	80	NOUN
 Feuerwerk	80	NOUN
 Exodus	80	NOUN
-Büsten	80	NOUN
+Büsten	80	NOUN	Büste
 hervorbrachte	80	OTHER
 Tito	80	NOUN
-Föderativen	80	NOUN,OTHER
+Föderativen	80	NOUN,OTHER	Föderative
 Wu	80	NOUN
 Dienstsitz	80	NOUN
 säkularen	80	OTHER
-Mischungen	80	NOUN
+Mischungen	80	NOUN	Mischung
 Fahrplanwechsel	80	NOUN
 Universitätsklinikum	80	NOUN
 Cepheiden	80	NOUN
 Eppstein	80	NOUN
 BSE	80	NOUN
-Richters	80	NOUN
+Richters	80	NOUN	Richter
 Richelieu	80	NOUN
 Guillotine	80	NOUN
-Wandmalereien	80	NOUN
+Wandmalereien	80	NOUN	Wandmalerei
 Vormundschaft	80	NOUN
 sämtlich	80	OTHER
 verbindlichen	80	OTHER
@@ -21524,16 +21524,16 @@ Gesandtschaft	80	NOUN
 Local	80	NOUN,OTHER
 Widerstandsgruppe	80	NOUN
 Ilse	80	NOUN
-Ghettos	80	NOUN
+Ghettos	80	NOUN	Ghetto
 Warhol	80	NOUN
-Wikis	80	NOUN
+Wikis	80	NOUN	Wiki
 VG	80	NOUN
 Waldfriedhof	80	NOUN
 Thetis	80	NOUN
 Eidgenössische	80	NOUN,OTHER
 skandinavische	80	OTHER
 Karpfen	80	NOUN
-Pferdes	80	NOUN
+Pferdes	80	NOUN	Pferd
 Andrej	80	NOUN
 Message	80	NOUN
 Neugeborene	80	NOUN,OTHER
