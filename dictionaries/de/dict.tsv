@@ -25263,66 +25263,66 @@ verhafteten	65	NOUN,OTHER
 Halbton	65	NOUN
 Australia	65	NOUN
 dörflichen	65	OTHER
-Browsern	65	NOUN
-Gezeitenkräfte	65	NOUN
+Browsern	65	NOUN	Browser
+Gezeitenkräfte	65	NOUN	Gezeitenkraft
 Duck	65	NOUN
 soviel	65	OTHER
 Andorra	65	NOUN
 Munster	65	NOUN
-Landgerichts	65	NOUN
+Landgerichts	65	NOUN	Landgericht
 Dalí	65	NOUN
 Harnack	65	NOUN
-Rundfunkanstalten	65	NOUN
+Rundfunkanstalten	65	NOUN	Rundfunkanstalt
 Cyberpunk	65	NOUN
 Kokoschka	65	NOUN
 Noether	65	NOUN
 Minerva	65	NOUN
 polizeiliche	65	OTHER
 Hettstedt	65	NOUN
-Bürgerhäuser	65	NOUN
+Bürgerhäuser	65	NOUN	Bürgerhaus
 sinkende	65	OTHER
 Umschreibung	65	NOUN
 fotografische	65	OTHER
 Białystok	65	NOUN
 graphischen	65	OTHER
-Redewendungen	65	NOUN
+Redewendungen	65	NOUN	Redewendung
 Pound	65	NOUN,OTHER
-Hundertjährigen	65	NOUN
+Hundertjährigen	65	NOUN	Hundertjährige
 Goldberg	65	NOUN
 Königswürde	65	NOUN
 verwüstete	65	OTHER
 Johannesevangelium	65	NOUN
 Weierstraß	65	NOUN
 amp	65	NOUN,OTHER
-Gedenkstätten	65	NOUN
-Bushs	65	NOUN
+Gedenkstätten	65	NOUN	Gedenkstätte
+Bushs	65	NOUN	Bush
 Civilization	65	NOUN
 Francke	65	NOUN
 WAP	65	NOUN
 Shaw	65	NOUN
 SAG	65	NOUN,OTHER
-Zeitzonen	65	NOUN
+Zeitzonen	65	NOUN	Zeitzone
 Transnistrien	65	NOUN
 Boudicca	65	NOUN
-Vorpommerns	65	NOUN
+Vorpommerns	65	NOUN	Vorpommern
 barset	65	OTHER
 Subway	65	NOUN
 Visp	65	NOUN
 Welf	65	NOUN
-Bezirkes	65	NOUN
+Bezirkes	65	NOUN	Bezirk
 Jekaterinburg	65	NOUN
 Ostrava	65	NOUN
 Sukhothai	65	NOUN
 Euratom	65	NOUN
 Wetzlarer	65	NOUN
-Zerfalls	64	NOUN
+Zerfalls	64	NOUN	Zerfall
 Forschungsgebiet	64	NOUN
 syntaktische	64	OTHER
 boolesche	64	OTHER
-Produktionsstätten	64	NOUN
+Produktionsstätten	64	NOUN	Produktionsstätte
 ausmachte	64	OTHER
 Normung	64	NOUN
-Landkarten	64	NOUN
+Landkarten	64	NOUN	Landkarte
 Seymour	64	NOUN
 beruflich	64	OTHER
 Juno	64	NOUN
@@ -25330,9 +25330,9 @@ Bekunden	64	NOUN,OTHER
 Beichte	64	NOUN
 Eisenstein	64	NOUN
 Vague	64	NOUN
-Kompromisse	64	NOUN
+Kompromisse	64	NOUN	Kompromiss
 siebziger	64	OTHER
-Tabus	64	NOUN
+Tabus	64	NOUN	Tabu
 Frühphase	64	NOUN
 Angelo	64	NOUN
 use	64	NOUN,OTHER
@@ -25366,7 +25366,7 @@ Chemical	64	NOUN
 unterstrich	64	OTHER
 Schiefer	64	NOUN
 Schriftsystem	64	NOUN
-Ernten	64	NOUN,OTHER
+Ernten	64	NOUN,OTHER	Ernte
 alliierter	64	OTHER
 Pistole	64	NOUN
 Susanna	64	NOUN
@@ -25377,33 +25377,33 @@ Phänotyp	64	NOUN
 göttliches	64	OTHER
 anvertraut	64	OTHER
 Hannibal	64	NOUN
-Anwälte	64	NOUN
+Anwälte	64	NOUN	Anwalt
 grausam	64	OTHER
-Roosevelts	64	NOUN
+Roosevelts	64	NOUN	Roosevelt
 Slowakisch	64	NOUN,OTHER
 Fäden	64	NOUN
-Zentralasiens	64	NOUN
-Schnellstraßen	64	NOUN
+Zentralasiens	64	NOUN	Zentralasien
+Schnellstraßen	64	NOUN	Schnellstraße
 Bundestagswahlkreis	64	NOUN
 Buchara	64	NOUN
 kältesten	64	OTHER
-Vertreibungen	64	NOUN
+Vertreibungen	64	NOUN	Vertreibung
 sakrale	64	OTHER
-Aberglauben	64	NOUN
-Handelswege	64	NOUN
+Aberglauben	64	NOUN	Aberglaube
+Handelswege	64	NOUN	Handelsweg
 Verbündeter	64	NOUN
-Überresten	64	NOUN
+Überresten	64	NOUN	Überrest
 Individualismus	64	NOUN
 verarbeiteten	64	VERB,OTHER
 Kampfkunst	64	NOUN
 kontinentale	64	OTHER
 festlegte	64	OTHER
 paganen	64	OTHER
-Einfälle	64	NOUN
-sumerische	64	NOUN,OTHER
+Einfälle	64	NOUN	Einfall
+sumerische	64	NOUN,OTHER	sumerisch
 südostasiatischen	64	OTHER
 Mitbestimmung	64	NOUN
-Absprachen	64	NOUN
+Absprachen	64	NOUN	Absprache
 provisorisch	64	OTHER
 Romana	64	NOUN
 vernichteten	64	VERB,OTHER
@@ -25413,7 +25413,7 @@ Denkweise	64	NOUN
 Egoismus	64	NOUN
 Lem	64	NOUN
 rächen	64	VERB
-Umsätze	64	NOUN
+Umsätze	64	NOUN	Umsatz
 schützte	64	OTHER
 Folgetag	64	NOUN
 überschwemmt	64	OTHER
@@ -25428,12 +25428,12 @@ Ausstoß	64	NOUN
 Freiberger	64	NOUN
 Archaeopteryx	64	NOUN
 Knabe	64	NOUN
-Leitern	64	NOUN
+Leitern	64	NOUN	Leiter
 Dankbarkeit	64	NOUN
 Tatort	64	NOUN
 Spannungsfeld	64	NOUN
 Atemwege	64	NOUN
-Offiziers	64	NOUN
+Offiziers	64	NOUN	Offizier
 Guard	64	NOUN
 Mittelteil	64	NOUN
 einzustufen	64	VERB
@@ -25446,29 +25446,29 @@ wöchentlichen	64	OTHER
 Uruk	64	NOUN
 verwurzelt	64	OTHER
 Kongruenz	64	NOUN
-Rebsorten	64	NOUN
+Rebsorten	64	NOUN	Rebsorte
 angestammten	64	OTHER
 Quechua	64	NOUN
 reversibel	64	OTHER
-Affären	64	NOUN
-Kräuter	64	NOUN
+Affären	64	NOUN	Affäre
+Kräuter	64	NOUN	Kraut
 Bindegewebe	64	NOUN
 Guanin	64	NOUN
 Adolphe	64	NOUN
 Südwestdeutschland	64	NOUN
 Urheberschaft	64	NOUN
-Sonderformen	64	NOUN
+Sonderformen	64	NOUN	Sonderform
 gesonderte	64	OTHER
 Standardmodell	64	NOUN
 Allah	64	NOUN
-Objektivs	64	NOUN
+Objektivs	64	NOUN	Objektiv
 Titelseite	64	NOUN
 Schimmel	64	NOUN
 Yellow	64	NOUN,OTHER
 wirke	64	OTHER
 sphärischen	64	OTHER
-Gouverneure	64	NOUN
-Zeitraums	64	NOUN
+Gouverneure	64	NOUN	Gouverneur
+Zeitraums	64	NOUN	Zeitraum
 heraldisch	64	OTHER
 Altersgruppe	64	NOUN
 Gewohnheitsrecht	64	NOUN
@@ -25477,10 +25477,10 @@ trivial	64	OTHER
 Vladimir	64	NOUN
 Lund	64	NOUN
 passierte	64	OTHER
-Husseins	64	NOUN
+Husseins	64	NOUN	Hussein
 entstandenes	64	OTHER
 eukaryotischen	64	OTHER
-Privathaushalte	64	NOUN
+Privathaushalte	64	NOUN	Privathaushalt
 Wilfried	64	NOUN
 Kempten	64	NOUN
 entmachtet	64	OTHER
@@ -25502,7 +25502,7 @@ südslawischen	64	OTHER
 Rapper	64	NOUN
 ungefähre	64	OTHER
 verständigen	64	VERB
-Sonderausstellungen	64	NOUN
+Sonderausstellungen	64	NOUN	Sonderausstellung
 Karel	64	NOUN
 Raster	64	NOUN
 Feuerwehrleute	64	NOUN
@@ -25510,17 +25510,17 @@ komponierten	64	VERB,OTHER
 Luftraum	64	NOUN
 vereinheitlicht	64	OTHER
 Mittelrhein	64	NOUN
-Cups	64	NOUN
+Cups	64	NOUN	Cup
 Fötus	64	NOUN
-Isolatoren	64	NOUN
+Isolatoren	64	NOUN	Isolator
 postulierten	64	VERB,OTHER
 Wilhelmshöhe	64	NOUN
-Verwüstungen	64	NOUN
+Verwüstungen	64	NOUN	Verwüstung
 Shannon	64	NOUN
 verstandenen	64	OTHER
 Stadtratswahl	64	NOUN
-Birken	64	NOUN
-Elisabeths	64	NOUN
+Birken	64	NOUN	Birke
+Elisabeths	64	NOUN	Elisabeth
 Matterhorn	64	NOUN
 Stimmabgabe	64	NOUN
 Varnhagen	64	NOUN
@@ -25528,7 +25528,7 @@ Multiple	64	NOUN,OTHER
 Kost	64	NOUN
 erstgenannten	64	OTHER
 fortwährend	64	OTHER
-Tagebüchern	64	NOUN
+Tagebüchern	64	NOUN	Tagebuch
 präzisen	64	OTHER
 Unitarier	64	NOUN
 Compact	64	NOUN
@@ -25547,10 +25547,10 @@ Zivilrecht	64	NOUN
 Soest	64	NOUN
 Budweis	64	NOUN
 Transmission	64	NOUN
-Stadttoren	64	NOUN
+Stadttoren	64	NOUN	Stadttor
 Treene	64	NOUN
 horizontaler	64	OTHER
-Jüngern	64	NOUN
+Jüngern	64	NOUN	Jünger
 jiddische	64	OTHER
 nackten	64	OTHER
 Grenzfall	64	NOUN
@@ -25570,7 +25570,7 @@ Kryptographie	64	NOUN
 kartesische	64	OTHER
 Februarrevolution	64	NOUN
 Farbigkeit	64	NOUN
-Seitenflächen	64	NOUN
+Seitenflächen	64	NOUN	Seitenfläche
 Musikhochschule	64	NOUN
 südkoreanischen	64	OTHER
 Kyklopen	64	NOUN
@@ -25585,7 +25585,7 @@ Jhd	64	OTHER
 Bloom	64	NOUN
 Organist	64	NOUN
 Jangtsekiang	64	NOUN
-Klonen	64	NOUN
+Klonen	64	NOUN	Klon
 Wildkatze	64	NOUN
 Polymerisation	64	NOUN
 OCT	64	NOUN
@@ -25600,7 +25600,7 @@ Zinnowitz	64	NOUN
 Hinrunde	64	NOUN
 gleichwertige	63	OTHER
 Einwand	63	NOUN
-Klippen	63	NOUN
+Klippen	63	NOUN	Klippe
 siebzehn	63	OTHER
 Bergman	63	NOUN
 Anruf	63	NOUN
@@ -25610,13 +25610,13 @@ Autorschaft	63	NOUN
 realistischer	63	OTHER
 vermarkten	63	VERB
 Belieben	63	NOUN
-Kubricks	63	NOUN
-Schauspielers	63	NOUN
+Kubricks	63	NOUN	Kubrick
+Schauspielers	63	NOUN	Schauspieler
 Gusseisen	63	NOUN
 Blech	63	NOUN
 Rinne	63	NOUN
 Hepatitis	63	NOUN
-Edelgase	63	NOUN
+Edelgase	63	NOUN	Edelgas
 Haber	63	NOUN
 Adsorption	63	NOUN
 stabiles	63	OTHER
@@ -25626,7 +25626,7 @@ privilegierte	63	OTHER
 mediterranen	63	OTHER
 Ausschlag	63	NOUN
 blockierte	63	OTHER
-Heiligtümer	63	NOUN
+Heiligtümer	63	NOUN	Heiligtum
 Talkessel	63	NOUN
 ausrufen	63	VERB
 bitter	63	OTHER
@@ -25645,8 +25645,8 @@ rehabilitiert	63	OTHER
 Hunt	63	NOUN
 honor	63	NOUN,OTHER
 geschilderten	63	OTHER
-Auswertungen	63	NOUN
-Gewebes	63	NOUN
+Auswertungen	63	NOUN	Auswertung
+Gewebes	63	NOUN	Gewebe
 ungünstige	63	OTHER
 Sortierung	63	NOUN
 zahllosen	63	OTHER
@@ -25656,25 +25656,25 @@ Telescope	63	NOUN
 Vorhof	63	NOUN
 individuelles	63	OTHER
 lit	63	OTHER
-Spätmittelalters	63	NOUN
-Haltungen	63	NOUN
+Spätmittelalters	63	NOUN	Spätmittelalter
+Haltungen	63	NOUN	Haltung
 rhetorischen	63	OTHER
 Bündelung	63	NOUN
 örtlicher	63	OTHER
 belebten	63	VERB,OTHER
 Widerlegung	63	NOUN
 verfälscht	63	OTHER
-Präsidentschaftskandidaten	63	NOUN
+Präsidentschaftskandidaten	63	NOUN	Präsidentschaftskandidat
 Our	63	NOUN,OTHER
 intensiviert	63	OTHER
-Volksglauben	63	NOUN
+Volksglauben	63	NOUN	Volksglaube
 vereinzelten	63	VERB,OTHER
 einhergehend	63	OTHER
-Merkels	63	NOUN
-Institutes	63	NOUN
+Merkels	63	NOUN	Merkel
+Institutes	63	NOUN	Institut
 Beantwortung	63	NOUN
 Nebenlinie	63	NOUN
-Religions	63	NOUN
+Religions	63	NOUN	Religion
 Eifer	63	NOUN
 einbinden	63	NOUN,OTHER
 elterlichen	63	OTHER
@@ -25696,31 +25696,31 @@ Judenfrage	63	NOUN
 abzulehnen	63	OTHER
 Wiederaufstieg	63	NOUN
 nachmittags	63	OTHER
-Gaskammern	63	NOUN
+Gaskammern	63	NOUN	Gaskammer
 Kautschuk	63	NOUN
 ausdrücklichen	63	OTHER
 erschießen	63	VERB
 ignorierte	63	OTHER
 zögerlich	63	OTHER
 Wernher	63	NOUN
-Sonden	63	NOUN
+Sonden	63	NOUN	Sonde
 Leasing	63	NOUN
 asymmetrische	63	OTHER
 Oktaeder	63	NOUN
-Skandinaviens	63	NOUN
-Quotienten	63	NOUN
+Skandinaviens	63	NOUN	Skandinavien
+Quotienten	63	NOUN	Quotient
 biografische	63	OTHER
 Cyanobakterien	63	NOUN
-Wirbellosen	63	NOUN,OTHER
+Wirbellosen	63	NOUN,OTHER	Wirbellose
 zahlten	63	VERB
 bewilligt	63	OTHER
 Kelch	63	NOUN
 Formgebung	63	NOUN
 Saft	63	NOUN
-Proteins	63	NOUN
+Proteins	63	NOUN	Protein
 Noradrenalin	63	NOUN
 Pier	63	NOUN
-Zigaretten	63	NOUN
+Zigaretten	63	NOUN	Zigarette
 Herunterladen	63	NOUN,OTHER
 gehörigen	63	OTHER
 Obliquus	63	NOUN
@@ -25730,7 +25730,7 @@ Neujahr	63	NOUN
 Computerprogramm	63	NOUN
 wirksamer	63	OTHER
 chronisch	63	OTHER
-Dreiecken	63	NOUN
+Dreiecken	63	NOUN	Dreieck
 Triumphbogen	63	NOUN
 Arsenal	63	NOUN
 Marin	63	NOUN,OTHER
@@ -25743,7 +25743,7 @@ Erd	63	NOUN
 sinnliche	63	OTHER
 heterogene	63	OTHER
 Bundesagentur	63	NOUN
-Hitlisten	63	NOUN
+Hitlisten	63	NOUN	Hitliste
 Jungennamen	63	NOUN
 orthodoxer	63	OTHER
 unterzubringen	63	VERB
@@ -25754,27 +25754,27 @@ DSM	63	NOUN
 Elternteil	63	NOUN
 GPa	63	NOUN
 irgendeine	63	OTHER
-Vorschlägen	63	NOUN
+Vorschlägen	63	NOUN	Vorschlag
 Anwohner	63	NOUN
 Fermentation	63	NOUN
 Aufgabenstellung	63	NOUN
-Siedlungs	63	NOUN
-Trachten	63	NOUN
+Siedlungs	63	NOUN	Siedlung
+Trachten	63	NOUN	Tracht
 Stadtstaat	63	NOUN
 ostfränkischen	63	OTHER
 gesetzgebende	63	OTHER
 Aufwendungen	63	NOUN
-Flaggen	63	NOUN
+Flaggen	63	NOUN	Flagge
 Verwaltungsbehörde	63	NOUN
 Wintersport	63	NOUN
 Europameister	63	NOUN
 Sigmaringen	63	NOUN
-Besucherzahlen	63	NOUN
+Besucherzahlen	63	NOUN	Besucherzahl
 zurücklegen	63	VERB
 Ansteuerung	63	NOUN
 unterzog	63	OTHER
 bezeichnend	63	OTHER
-Geschosse	63	NOUN
+Geschosse	63	NOUN	Geschoss
 Konjunktur	63	NOUN
 Stephansdom	63	NOUN
 abziehen	63	VERB
@@ -25784,10 +25784,10 @@ Versand	63	NOUN
 parlamentarischer	63	OTHER
 zuzüglich	63	OTHER
 Todesjahr	63	NOUN
-Baums	63	NOUN
-Bächen	63	NOUN
+Baums	63	NOUN	Baum
+Bächen	63	NOUN	Bach
 Kirchplatz	63	NOUN
-Förderschulen	63	NOUN
+Förderschulen	63	NOUN	Förderschule
 Wallfahrtskirche	63	NOUN
 Landestheater	63	NOUN
 Öko	63	NOUN
@@ -25800,19 +25800,19 @@ Nicola	63	NOUN
 Cembalo	63	NOUN
 Orpheus	63	NOUN
 Partitur	63	NOUN
-Grenzkontrollen	63	NOUN
+Grenzkontrollen	63	NOUN	Grenzkontrolle
 Montreux	63	NOUN
 Verkehrsfläche	63	NOUN
-Baudenkmale	63	NOUN
+Baudenkmale	63	NOUN	Baudenkmal
 Mahlzeit	63	NOUN
 Pool	63	NOUN
 EA	63	NOUN
 Nukleinsäure	63	NOUN
-Kassen	63	NOUN
+Kassen	63	NOUN	Kasse
 föderale	63	OTHER
 Sekundarschule	63	NOUN
 Banja	63	NOUN
-Grabsteine	63	NOUN
+Grabsteine	63	NOUN	Grabstein
 Stroh	63	NOUN
 Simplon	63	NOUN
 monoton	63	OTHER
@@ -25833,7 +25833,7 @@ Glücksspiel	63	NOUN
 Zentralbibliothek	63	NOUN
 Züchtung	63	NOUN
 belehnt	63	OTHER
-Interessenten	63	NOUN
+Interessenten	63	NOUN	Interessent
 fassten	63	VERB
 Stadtbücherei	63	NOUN
 speist	63	OTHER
@@ -25842,19 +25842,19 @@ Datenstruktur	63	NOUN
 verzweigt	63	OTHER
 mehrjährige	63	OTHER
 Überhangmandate	63	NOUN
-Umzüge	63	NOUN
+Umzüge	63	NOUN	Umzug
 zweidimensionale	63	OTHER
 Tcl	63	NOUN
 Komplementär	63	NOUN,OTHER
-Rollenspiele	63	NOUN
+Rollenspiele	63	NOUN	Rollenspiel
 verzeichneten	63	VERB,OTHER
 dynastischen	63	OTHER
 Vorland	63	NOUN
 Herrenmannschaft	63	NOUN
 regulieren	63	VERB
-Jupiters	63	NOUN
+Jupiters	63	NOUN	Jupiter
 Badenweiler	63	NOUN
-Walthers	63	NOUN
+Walthers	63	NOUN	Walther
 Rockefeller	63	NOUN
 Qingdao	63	NOUN
 exe	63	NOUN,OTHER
@@ -25863,7 +25863,7 @@ Endstation	63	NOUN
 Apoptose	63	NOUN
 transformiert	63	OTHER
 LZ	63	NOUN
-Nachkriegsjahren	63	NOUN
+Nachkriegsjahren	63	NOUN	Nachkriegsjahre
 Velvet	63	NOUN
 Kriegsdienstverweigerung	63	NOUN
 Kleinbauern	63	NOUN
@@ -25873,12 +25873,12 @@ Gefieder	63	NOUN
 Hypertext	63	NOUN
 Langhans	63	NOUN
 Lindenberg	63	NOUN
-Summanden	63	NOUN
+Summanden	63	NOUN	Summand
 Wesendonck	63	NOUN
 Verstaatlichung	63	NOUN
-Witze	63	NOUN
+Witze	63	NOUN	Witz
 relativistischen	63	OTHER
-Lochs	63	NOUN
+Lochs	63	NOUN	Loch
 Handelsweg	63	NOUN
 DECT	63	NOUN
 Schwarzenberg	63	NOUN
@@ -25887,13 +25887,13 @@ Rosenthal	63	NOUN
 Corday	63	NOUN
 Sopran	63	NOUN
 Alpenraum	63	NOUN
-Grimms	63	NOUN
+Grimms	63	NOUN	Grimm
 Bydgoszcz	63	NOUN
 slawisch	63	OTHER
 Wolof	63	NOUN
 Exxon	63	NOUN
 Snowboard	63	NOUN
-Highlands	63	NOUN
+Highlands	63	NOUN	Highland
 Äquatorialguinea	63	NOUN
 DTD	63	NOUN
 Cellulose	63	NOUN
@@ -25904,8 +25904,8 @@ Jungfräulichkeit	63	NOUN
 Plattenfirma	63	NOUN
 Saragossa	63	NOUN
 Ruthenen	63	NOUN
-Neandertalern	63	NOUN
-Besatzern	63	NOUN
+Neandertalern	63	NOUN	Neandertal
+Besatzern	63	NOUN	Besatzer
 Hochaltar	63	NOUN
 Eswatini	63	NOUN
 Sassnitz	63	NOUN
@@ -25915,9 +25915,9 @@ Jahrhunderthälfte	63	NOUN
 Raytracing	63	NOUN
 Krasnojarsk	63	NOUN
 HBCI	63	NOUN
-Lovecrafts	63	NOUN
+Lovecrafts	63	NOUN	Lovecraft
 Logienquelle	63	NOUN
-Thatchers	63	NOUN
+Thatchers	63	NOUN	Thatcher
 Ochtrup	63	NOUN
 logischer	62	OTHER
 umgekehrter	62	OTHER
@@ -25932,31 +25932,31 @@ gefilmt	62	OTHER
 Grundprinzipien	62	NOUN
 Newman	62	NOUN
 Unterhaltungsmusik	62	NOUN
-Gesichter	62	NOUN
-Organisten	62	NOUN
+Gesichter	62	NOUN	Gesicht
+Organisten	62	NOUN	Organist
 Work	62	NOUN,OTHER
 Machtposition	62	NOUN
 Palme	62	NOUN
-Missverständnissen	62	NOUN
+Missverständnissen	62	NOUN	Missverständnisse
 amerikanischem	62	OTHER
 vorbereiteten	62	VERB,OTHER
-Mangas	62	NOUN
+Mangas	62	NOUN	Manga
 begleitende	62	OTHER
 Benachteiligung	62	NOUN
-Berufsgruppen	62	NOUN
+Berufsgruppen	62	NOUN	Berufsgruppe
 aufgebrochen	62	VERB
 Verzahnung	62	NOUN
 Stallone	62	NOUN
 When	62	NOUN,OTHER
 Ausbeute	62	NOUN
 plastische	62	OTHER
-Einsatzgebiete	62	NOUN
+Einsatzgebiete	62	NOUN	Einsatzgebiet
 schlechtere	62	OTHER
 punktuell	62	OTHER
-Halogenen	62	NOUN
+Halogenen	62	NOUN	Halogen
 Ausgangsstoff	62	NOUN
 flüchtige	62	OTHER
-Schädigungen	62	NOUN
+Schädigungen	62	NOUN	Schädigung
 geläufige	62	OTHER
 kürzlich	62	OTHER
 pathologische	62	OTHER
@@ -25964,11 +25964,11 @@ Strahler	62	NOUN
 Leibarzt	62	NOUN
 Versicherten	62	NOUN,OTHER
 vergangener	62	OTHER
-Spartas	62	NOUN
+Spartas	62	NOUN	Sparta
 Hektor	62	NOUN
 riesiges	62	OTHER
-Kriegsschiffen	62	NOUN
-Führern	62	NOUN
+Kriegsschiffen	62	NOUN	Kriegsschiff
+Führern	62	NOUN	Führer
 Bote	62	NOUN
 würdigen	62	VERB
 stoische	62	OTHER
@@ -25982,19 +25982,19 @@ Pluralismus	62	NOUN
 Meile	62	NOUN
 Fortbildung	62	NOUN
 Privatrecht	62	NOUN
-Teleskopen	62	NOUN
+Teleskopen	62	NOUN	Teleskop
 Faches	62	NOUN
 zweckmäßig	62	OTHER
 Heritage	62	NOUN
 Anamnese	62	NOUN
-Umlaute	62	NOUN
+Umlaute	62	NOUN	Umlaut
 flächendeckende	62	OTHER
-Konzeptes	62	NOUN
+Konzeptes	62	NOUN	Konzept
 Enthüllung	62	NOUN
 geholfen	62	VERB
 Cornwall	62	NOUN
 Pitt	62	NOUN
-Gründers	62	NOUN
+Gründers	62	NOUN	Gründer
 zweijährige	62	OTHER
 Verlobung	62	NOUN
 derartiges	62	OTHER
@@ -26011,22 +26011,22 @@ Rockband	62	NOUN
 fotografieren	62	VERB
 terroristischen	62	OTHER
 Burganlage	62	NOUN
-Begründungen	62	NOUN
+Begründungen	62	NOUN	Begründung
 beobachtbaren	62	OTHER
 strafrechtliche	62	OTHER
 häuslichen	62	OTHER
 verdammt	62	OTHER
-Minderheitensprachen	62	NOUN
+Minderheitensprachen	62	NOUN	Minderheitensprache
 pakistanischen	62	OTHER
 Evangelist	62	NOUN
-Gründungsmitgliedern	62	NOUN
+Gründungsmitgliedern	62	NOUN	Gründungsmitglied
 abgehaltenen	62	OTHER
 bestärkte	62	OTHER
 vorzulegen	62	VERB
 zahlt	62	OTHER
 Tundra	62	NOUN
-Grundgedanken	62	NOUN
-Schadstoffe	62	NOUN
+Grundgedanken	62	NOUN	Grundgedanke
+Schadstoffe	62	NOUN	Schadstoff
 Dekan	62	NOUN
 erzwungen	62	VERB
 Pannonien	62	NOUN
@@ -26037,7 +26037,7 @@ Triple	62	NOUN
 Sperrung	62	NOUN
 paramilitärische	62	OTHER
 betrachte	62	OTHER
-Kanzlers	62	NOUN
+Kanzlers	62	NOUN	Kanzler
 Sowjetarmee	62	NOUN
 Zeughaus	62	NOUN
 Milan	62	NOUN
@@ -26046,32 +26046,32 @@ Beilegung	62	NOUN
 Stolpe	62	NOUN
 Trittin	62	NOUN
 Dampflokomotive	62	NOUN
-Kosmonauten	62	NOUN
+Kosmonauten	62	NOUN	Kosmonaut
 veränderliche	62	OTHER
 bezeugte	62	OTHER
-Kraftstoffe	62	NOUN
+Kraftstoffe	62	NOUN	Kraftstoff
 Stellenwertsystem	62	NOUN
 Namensbestandteil	62	NOUN
 Funktionentheorie	62	NOUN
-Zeiträumen	62	NOUN
+Zeiträumen	62	NOUN	Zeitraum
 einstmals	62	OTHER
 biochemischen	62	OTHER
-Antikörpern	62	NOUN
+Antikörpern	62	NOUN	Antikörper
 Bäcker	62	NOUN
 Capitol	62	NOUN
 neigte	62	OTHER
-Handelsrouten	62	NOUN
+Handelsrouten	62	NOUN	Handelsroute
 dreijährige	62	OTHER
-Milieus	62	NOUN
+Milieus	62	NOUN	Milieu
 Tribunal	62	NOUN
 anstreben	62	VERB
 fröhlich	62	NOUN,OTHER
 Säugetierarten	62	NOUN
 Lebensumstände	62	NOUN
 ruhiger	62	OTHER
-Kristallen	62	NOUN
+Kristallen	62	NOUN	Kristall
 ausschalten	62	NOUN,OTHER
-Bogens	62	NOUN
+Bogens	62	NOUN	Bogen
 Samos	62	NOUN
 ausbreitet	62	OTHER
 koptische	62	OTHER
@@ -26087,7 +26087,7 @@ modellieren	62	VERB
 schickten	62	VERB
 ham	62	NOUN,OTHER
 lyrische	62	OTHER
-Bekenntnisses	62	NOUN
+Bekenntnisses	62	NOUN	Bekenntnisse
 Sommerresidenz	62	NOUN
 datierten	62	VERB,OTHER
 Produktionsmittel	62	NOUN
@@ -26104,7 +26104,7 @@ Saba	62	NOUN
 Windpark	62	NOUN
 Fastnacht	62	NOUN
 HB	62	NOUN
-Benutzers	62	NOUN
+Benutzers	62	NOUN	Benutzer
 Visconti	62	NOUN
 Rita	62	NOUN
 Strahlenschutz	62	NOUN
@@ -26112,11 +26112,11 @@ Hering	62	NOUN
 Hufen	62	NOUN
 Leopoldshöhe	62	NOUN
 Hissflagge	62	NOUN
-Diesellokomotiven	62	NOUN
+Diesellokomotiven	62	NOUN	Diesellokomotive
 Sälen	62	NOUN
 Münzstätte	62	NOUN
 winzige	62	OTHER
-Raupen	62	NOUN
+Raupen	62	NOUN	Raupe
 rötlich	62	OTHER
 blicken	62	VERB
 Vormittag	62	NOUN
@@ -26130,15 +26130,15 @@ Sancho	62	NOUN
 EE	62	NOUN,OTHER
 FTP	62	NOUN
 Mesonen	62	NOUN
-Bibelübersetzungen	62	NOUN
+Bibelübersetzungen	62	NOUN	Bibelübersetzung
 Bassist	62	NOUN
 Virgin	62	NOUN
-Montenegros	62	NOUN
-Rahmens	62	NOUN
-Einschätzungen	62	NOUN
+Montenegros	62	NOUN	Montenegro
+Rahmens	62	NOUN	Rahmen
+Einschätzungen	62	NOUN	Einschätzung
 Wahrscheinlichkeitstheorie	62	NOUN
 Bamako	62	NOUN
-Staatsangehörigen	62	NOUN
+Staatsangehörigen	62	NOUN	Staatsangehörige
 Bihar	62	NOUN
 properties	62	OTHER
 Staatengemeinschaft	62	NOUN
@@ -26146,19 +26146,19 @@ Kriegsrecht	62	NOUN
 Rechtsstaatlichkeit	62	NOUN
 Almanach	62	NOUN
 Bogart	62	NOUN
-Missionaren	62	NOUN
+Missionaren	62	NOUN	Missionar
 Oberkassel	62	NOUN
 hauptamtlicher	62	OTHER
 wiederzubeleben	62	VERB
 Lena	62	NOUN
-Wachen	62	NOUN,OTHER
+Wachen	62	NOUN,OTHER	Wache
 abgespielt	62	OTHER
 Neid	62	NOUN
 normalem	62	OTHER
 Nidda	62	NOUN
 Boxer	62	NOUN
-Ochsen	62	NOUN
-Datenmengen	62	NOUN
+Ochsen	62	NOUN	Ochs
+Datenmengen	62	NOUN	Datenmenge
 Pappe	62	NOUN
 Galiläa	62	NOUN
 leerer	62	OTHER
@@ -26172,13 +26172,13 @@ Dorn	62	NOUN
 Dachorganisation	62	NOUN
 Emmer	62	NOUN
 Fabian	62	NOUN
-Niederungen	62	NOUN
+Niederungen	62	NOUN	Niederung
 Kernphysik	62	NOUN
 McLaren	62	NOUN
 verfeindeten	62	VERB,OTHER
 Schlossplatz	62	NOUN
 gereicht	62	OTHER
-Sportstätten	62	NOUN
+Sportstätten	62	NOUN	Sportstätte
 anzusprechen	62	VERB
 Hertha	62	NOUN
 Travemünde	62	NOUN
@@ -26193,12 +26193,12 @@ Manual	62	NOUN
 VIC	62	NOUN
 Lebenswelt	62	NOUN
 Matching	62	NOUN
-Brechts	62	NOUN
-Plateaus	62	NOUN
-Schutzes	62	NOUN
+Brechts	62	NOUN	Brecht
+Plateaus	62	NOUN	Plateau
+Schutzes	62	NOUN	Schutz
 versorgten	62	VERB,OTHER
 Daseinsvorsorge	62	NOUN
-Sportanlagen	62	NOUN
+Sportanlagen	62	NOUN	Sportanlage
 Liedermacher	62	NOUN
 Pfalzgraf	62	NOUN
 Gottorf	62	NOUN
@@ -26211,27 +26211,27 @@ Dallas	62	NOUN
 Kunstkritiker	62	NOUN
 offenbarte	62	OTHER
 Förde	62	NOUN
-Dürers	62	NOUN
+Dürers	62	NOUN	Dürer
 Weltnaturerbe	62	NOUN
 Venture	62	NOUN
 Dieburg	62	NOUN
 Landwehr	62	NOUN
 Geba	62	NOUN
 stagnierte	62	OTHER
-Gesellschafts	62	NOUN
+Gesellschafts	62	NOUN	Gesellschaft
 Berufsakademie	62	NOUN
 Weltmusik	62	NOUN
 Dodo	62	NOUN
 Pico	62	NOUN
-Befürchtungen	62	NOUN
-Einsteins	62	NOUN
+Befürchtungen	62	NOUN	Befürchtung
+Einsteins	62	NOUN	Einstein
 IATA	62	NOUN
 Kubaner	62	NOUN
 Neumond	62	NOUN
-Grönlands	62	NOUN
+Grönlands	62	NOUN	Grönland
 Stirling	62	NOUN
 GPRS	62	NOUN
-Quadrats	62	NOUN
+Quadrats	62	NOUN	Quadrat
 Suriname	62	NOUN
 Fried	62	NOUN
 Arche	62	NOUN
@@ -26242,28 +26242,28 @@ Smiths	62	NOUN
 Friedberg	62	NOUN
 Zeeland	62	NOUN
 Dili	62	NOUN,OTHER
-Konfliktparteien	62	NOUN
-Gandhis	62	NOUN
+Konfliktparteien	62	NOUN	Konfliktpartei
+Gandhis	62	NOUN	Gandhi
 Rheydt	62	NOUN
 Hoyerswerda	62	NOUN
-Südkoreas	62	NOUN
+Südkoreas	62	NOUN	Südkorea
 Prignitz	62	NOUN
 pommersche	62	NOUN,OTHER
 Drenthe	62	NOUN
-Riveras	62	NOUN
+Riveras	62	NOUN	Rivera
 HTR	62	NOUN
 Kefalonia	62	NOUN
-Grifflöchern	62	NOUN
+Grifflöchern	62	NOUN	Griffloch
 Zielona	62	NOUN
 Inguschen	62	NOUN
 Gefäßflöte	62	NOUN
-Wiehengebirges	62	NOUN
-Filmfestivals	61	NOUN
+Wiehengebirges	62	NOUN	Wiehengebirge
+Filmfestivals	61	NOUN	Filmfestival
 Positivismus	61	NOUN
 Gegenpol	61	NOUN
 Filmstudio	61	NOUN
 Filmmaterial	61	NOUN
-Restriktionen	61	NOUN
+Restriktionen	61	NOUN	Restriktion
 billigen	61	VERB,OTHER
 technischem	61	OTHER
 Patricia	61	NOUN
@@ -26271,24 +26271,24 @@ aktuelles	61	OTHER
 Leichtigkeit	61	NOUN
 Abgrund	61	NOUN
 Kuchen	61	NOUN
-Dokumentarfilme	61	NOUN
+Dokumentarfilme	61	NOUN	Dokumentarfilm
 berühmtes	61	OTHER
 beizutragen	61	OTHER
 Zettel	61	NOUN
 Gemeinsamkeit	61	NOUN
 Godard	61	NOUN
 Dilemma	61	NOUN
-Sponsoren	61	NOUN
-Spezialeffekte	61	NOUN
+Sponsoren	61	NOUN	Sponsor
+Spezialeffekte	61	NOUN	Spezialeffekt
 Critics	61	NOUN
 Nahrungsmittelindustrie	61	NOUN
 Gesamtmasse	61	NOUN
 Massenanteil	61	NOUN
-Gemische	61	NOUN
+Gemische	61	NOUN	Gemisch
 Promille	61	NOUN
 Verdauungstrakt	61	NOUN
 wässrige	61	OTHER
-Vergiftungen	61	NOUN
+Vergiftungen	61	NOUN	Vergiftung
 transparenten	61	OTHER
 Knoblauch	61	NOUN
 anfänglicher	61	OTHER
@@ -26297,21 +26297,21 @@ Approbation	61	NOUN
 Parsons	61	NOUN
 Kybernetik	61	NOUN
 Strukturierung	61	NOUN
-Delegationen	61	NOUN
+Delegationen	61	NOUN	Delegation
 Sold	61	NOUN
 Herat	61	NOUN
-Bürgerkriegen	61	NOUN
+Bürgerkriegen	61	NOUN	Bürgerkrieg
 außerordentlicher	61	OTHER
-Tragödien	61	NOUN
+Tragödien	61	NOUN	Tragödie
 Grundidee	61	NOUN
 währenden	61	OTHER
 absolutes	61	OTHER
 Arbeitslose	61	NOUN,OTHER
 Gefängnisse	61	NOUN
-Mathematikers	61	NOUN
-Geheimdienstes	61	NOUN
+Mathematikers	61	NOUN	Mathematiker
+Geheimdienstes	61	NOUN	Geheimdienst
 verstorbener	61	NOUN,OTHER
-Rekonstruktionen	61	NOUN
+Rekonstruktionen	61	NOUN	Rekonstruktion
 ziviler	61	OTHER
 gebilligt	61	OTHER
 operativ	61	OTHER
@@ -26319,7 +26319,7 @@ Kulturpolitik	61	NOUN
 Landsitz	61	NOUN
 naive	61	OTHER
 Hemingway	61	NOUN
-Spiegels	61	NOUN
+Spiegels	61	NOUN	Spiegel
 arrangierte	61	OTHER
 Disputation	61	NOUN
 vorlag	61	OTHER
@@ -26338,7 +26338,7 @@ Heinemann	61	NOUN
 Personenkult	61	NOUN
 stamme	61	OTHER
 Konfuzianismus	61	NOUN
-Machthabern	61	NOUN
+Machthabern	61	NOUN	Machthaber
 Religionskritik	61	NOUN
 Unmöglichkeit	61	NOUN
 gesonderten	61	OTHER
@@ -26347,7 +26347,7 @@ Schar	61	NOUN
 faire	61	OTHER
 diskriminiert	61	OTHER
 Geber	61	NOUN
-Photovoltaikanlagen	61	NOUN
+Photovoltaikanlagen	61	NOUN	Photovoltaikanlage
 Telecom	61	NOUN
 befolgen	61	VERB
 Trance	61	NOUN
@@ -26362,14 +26362,14 @@ Iulia	61	NOUN
 republikanisch	61	OTHER
 Mindestalter	61	NOUN
 Patron	61	NOUN
-Schopenhauers	61	NOUN
+Schopenhauers	61	NOUN	Schopenhauer
 elastischen	61	OTHER
 vernünftigen	61	OTHER
 Sander	61	NOUN
 erhältlichen	61	OTHER
-Konzernen	61	NOUN
-Hindenburgs	61	NOUN
-Pakts	61	NOUN
+Konzernen	61	NOUN	Konzern
+Hindenburgs	61	NOUN	Hindenburg
+Pakts	61	NOUN	Pakt
 erprobte	61	OTHER
 Harrer	61	NOUN
 Verhängung	61	NOUN
@@ -26385,26 +26385,26 @@ dienenden	61	OTHER
 Piraterie	61	NOUN
 Referenden	61	NOUN
 ausgestoßen	61	VERB
-Verwaltungsbezirke	61	NOUN
+Verwaltungsbezirke	61	NOUN	Verwaltungsbezirk
 Informationstechnologie	61	NOUN
 Speichermedien	61	NOUN
 traditionsreichen	61	OTHER
 unbeschadet	61	OTHER
-Wagens	61	NOUN
+Wagens	61	NOUN	Wagen
 Eichstätt	61	NOUN
 unvollständige	61	OTHER
 Sepp	61	NOUN
 Abdruck	61	NOUN
 Kirchenordnung	61	NOUN
 sanft	61	OTHER
-Impfungen	61	NOUN
+Impfungen	61	NOUN	Impfung
 bakterielle	61	OTHER
 pflanzlicher	61	OTHER
 arrangiert	61	OTHER
 Ata	61	NOUN
-Gletschern	61	NOUN
+Gletschern	61	NOUN	Gletscher
 Zirkus	61	NOUN
-Kuppeln	61	NOUN
+Kuppeln	61	NOUN	Kuppel
 Kay	61	NOUN
 schalten	61	VERB
 Wächter	61	NOUN
@@ -26413,7 +26413,7 @@ abzuwehren	61	VERB
 progressiven	61	OTHER
 assoziierte	61	OTHER
 vitro	61	OTHER
-Lebensjahres	61	NOUN
+Lebensjahres	61	NOUN	Lebensjahr
 Kollagen	61	NOUN
 Mortalität	61	NOUN
 Sensibilität	61	NOUN
@@ -26421,38 +26421,38 @@ leistungsfähige	61	OTHER
 Windsor	61	NOUN
 Entwicklungsgeschichte	61	NOUN
 sakralen	61	OTHER
-Benennungen	61	NOUN
+Benennungen	61	NOUN	Benennung
 Ursprache	61	NOUN
 Quantität	61	NOUN
 Ausschüttung	61	NOUN
 Biden	61	NOUN
 Milben	61	NOUN
 Biosphäre	61	NOUN
-Vorteilen	61	NOUN
+Vorteilen	61	NOUN	Vorteil
 hebr	61	NOUN,OTHER
 Generalgouvernement	61	NOUN
 angekündigte	61	OTHER
 tiefgreifenden	61	OTHER
 Intonation	61	NOUN
 Gesundheitssystem	61	NOUN
-Realitäten	61	NOUN
+Realitäten	61	NOUN	Realität
 Charakteristikum	61	NOUN
 Piero	61	NOUN
-Arbeitsgruppen	61	NOUN
+Arbeitsgruppen	61	NOUN	Arbeitsgruppe
 Aviation	61	NOUN
 Chlorophyll	61	NOUN
 Biber	61	NOUN
-Ostkirchen	61	NOUN
+Ostkirchen	61	NOUN	Ostkirche
 Erlanger	61	NOUN
-Barocks	61	NOUN
+Barocks	61	NOUN	Barock
 Ostersonntag	61	NOUN
 Christa	61	NOUN
 Feldberg	61	NOUN
 Wirtschaftswissenschaftler	61	NOUN
 Gebhard	61	NOUN
 Tk	61	NOUN
-Realschulen	61	NOUN
-Datenstrukturen	61	NOUN
+Realschulen	61	NOUN	Realschule
+Datenstrukturen	61	NOUN	Datenstruktur
 Dominique	61	NOUN
 Abschirmung	61	NOUN
 Popularisierung	61	NOUN
@@ -26463,13 +26463,13 @@ Handarbeit	61	NOUN
 Tribüne	61	NOUN
 Pfarrgemeinde	61	NOUN
 großformatige	61	OTHER
-Schmidts	61	NOUN
+Schmidts	61	NOUN	Schmidt
 niederschlug	61	OTHER
 Sperrklausel	61	NOUN
 Beust	61	NOUN
-Erlebnissen	61	NOUN
+Erlebnissen	61	NOUN	Erlebnisse
 Fagott	61	NOUN
-Tonhöhen	61	NOUN
+Tonhöhen	61	NOUN	Tonhöhe
 Gilles	61	NOUN
 Hofkapelle	61	NOUN
 Westsektoren	61	NOUN
@@ -26489,24 +26489,24 @@ plastischen	61	OTHER
 Ölkrise	61	NOUN
 Umkehrfunktion	61	NOUN
 Skat	61	NOUN
-Irans	61	NOUN
+Irans	61	NOUN	Iran
 Catan	61	NOUN
 bescheinigte	61	OTHER
 Burma	61	NOUN
 Baltic	61	NOUN
-Wassermassen	61	NOUN
+Wassermassen	61	NOUN	Wassermasse
 Linotype	61	NOUN
 Provider	61	NOUN
 rotiert	61	OTHER
-Keime	61	NOUN
+Keime	61	NOUN	Keim
 Georgen	61	NOUN
-Engländern	61	NOUN
+Engländern	61	NOUN	Engländer
 Plauen	61	NOUN
 Schulhaus	61	NOUN
 Kunstmarkt	61	NOUN
-Gerichtes	61	NOUN
+Gerichtes	61	NOUN	Gericht
 PE	61	NOUN,OTHER
-Moosen	61	NOUN
+Moosen	61	NOUN	Moos
 vartheta	61	OTHER
 verdoppeln	61	VERB
 Aristophanes	61	NOUN
@@ -26520,11 +26520,11 @@ eingespeist	61	OTHER
 Indochina	61	NOUN
 Radom	61	NOUN
 implizite	61	OTHER
-Klängen	61	NOUN
+Klängen	61	NOUN	Klang
 Magnitude	61	NOUN
-Eckpunkte	61	NOUN
+Eckpunkte	61	NOUN	Eckpunkt
 Schulbesuch	61	NOUN
-Exponaten	61	NOUN
+Exponaten	61	NOUN	Exponat
 Dekkan	61	NOUN
 Robotik	61	NOUN
 Erna	61	NOUN
@@ -26532,11 +26532,11 @@ Kirchenjahr	61	NOUN
 Aufzug	61	NOUN
 Färöisch	61	NOUN
 nennenswert	61	OTHER
-Künstlerinnen	61	NOUN
-Kirchgemeinden	61	NOUN
+Künstlerinnen	61	NOUN	Künstlerin
+Kirchgemeinden	61	NOUN	Kirchgemeinde
 Zipfel	61	NOUN
-Energiequellen	61	NOUN
-Poppers	61	NOUN
+Energiequellen	61	NOUN	Energiequelle
+Poppers	61	NOUN	Popper
 Glashütte	61	NOUN
 protestantischer	61	OTHER
 Meerbusch	61	NOUN
@@ -26544,7 +26544,7 @@ Friedenskirche	61	NOUN
 Wirtschaftsstruktur	61	NOUN
 Wurst	61	NOUN
 leitender	61	OTHER
-Flanken	61	NOUN
+Flanken	61	NOUN	Flanke
 angelsächsische	61	OTHER
 Bildungszentrum	61	NOUN
 Laub	61	NOUN
@@ -26555,7 +26555,7 @@ Cusanus	61	NOUN
 Lovis	61	NOUN
 Gilly	61	NOUN
 Benue	61	NOUN
-Schleswigs	61	NOUN
+Schleswigs	61	NOUN	Schleswig
 Serra	61	NOUN
 Honda	61	NOUN
 Nowgoroder	61	NOUN
@@ -26580,7 +26580,7 @@ nass	60	OTHER
 Folgerung	60	NOUN
 umgangssprachlichen	60	OTHER
 Principia	60	NOUN
-Zuordnungen	60	NOUN
+Zuordnungen	60	NOUN	Zuordnung
 beschränkter	60	OTHER
 Rubrik	60	NOUN
 entsetzt	60	OTHER
@@ -26590,7 +26590,7 @@ kostengünstig	60	OTHER
 Pattern	60	NOUN,OTHER
 begangenen	60	OTHER
 Beschützer	60	NOUN
-Einführungen	60	NOUN
+Einführungen	60	NOUN	Einführung
 Boyle	60	NOUN
 Painting	60	NOUN
 nahegelegene	60	OTHER
@@ -26604,17 +26604,17 @@ gelegentliche	60	OTHER
 French	60	NOUN
 Colonel	60	NOUN
 Acid	60	NOUN,OTHER
-Pressen	60	NOUN,OTHER
+Pressen	60	NOUN,OTHER	Presse
 Kenntnisstand	60	NOUN
 Normalbedingungen	60	NOUN
 Hrsg	60	NOUN,OTHER
 ozeanischen	60	OTHER
 grausame	60	OTHER
 Ausscheidung	60	NOUN
-Vorstufen	60	NOUN
+Vorstufen	60	NOUN	Vorstufe
 lebenslanger	60	OTHER
 Laboratorium	60	NOUN
-Kernkraftwerken	60	NOUN
+Kernkraftwerken	60	NOUN	Kernkraftwerk
 mangelhafte	60	OTHER
 unbestimmt	60	OTHER
 Maxime	60	NOUN
@@ -26639,28 +26639,28 @@ konstruktiv	60	OTHER
 Adverbien	60	NOUN
 Begnadigung	60	NOUN
 entschuldigte	60	OTHER
-Kataloge	60	NOUN
+Kataloge	60	NOUN	Katalog
 Fundstelle	60	NOUN
 Qin	60	NOUN
 Anfertigung	60	NOUN
 Satzzeichen	60	NOUN
 bedingen	60	VERB
 britisches	60	OTHER
-Weggefährten	60	NOUN
+Weggefährten	60	NOUN	Weggefährte
 Zahlensystem	60	NOUN
 Isidor	60	NOUN
 erregen	60	VERB
 Wettstreit	60	NOUN
-Hauptgruppen	60	NOUN
+Hauptgruppen	60	NOUN	Hauptgruppe
 Spot	60	NOUN
 gestatten	60	VERB
-Streits	60	NOUN
+Streits	60	NOUN	Streit
 Stolperstein	60	NOUN
 Nordwand	60	NOUN
-Zwergen	60	NOUN
+Zwergen	60	NOUN	Zwerg
 skizziert	60	OTHER
 Kanzlerschaft	60	NOUN
-Gewalttaten	60	NOUN
+Gewalttaten	60	NOUN	Gewalttat
 mangelhaft	60	OTHER
 Ostjerusalem	60	NOUN
 diesbezügliche	60	OTHER
@@ -26671,7 +26671,7 @@ Ziege	60	NOUN
 präzisiert	60	OTHER
 Karma	60	NOUN
 ständiges	60	OTHER
-Personengruppen	60	NOUN
+Personengruppen	60	NOUN	Personengruppe
 eingeweihten	60	OTHER
 Volumenprozent	60	NOUN
 autorisierte	60	OTHER
@@ -26685,8 +26685,8 @@ schriftstellerischen	60	OTHER
 trainieren	60	VERB
 beigemessen	60	VERB
 Mittelmeeres	60	NOUN
-Kolonialmächte	60	NOUN
-Eisenbahnlinien	60	NOUN
+Kolonialmächte	60	NOUN	Kolonialmacht
+Eisenbahnlinien	60	NOUN	Eisenbahnlinie
 Kaspische	60	NOUN
 Brunei	60	NOUN
 rasante	60	OTHER
@@ -26701,34 +26701,34 @@ unveränderlich	60	OTHER
 Einzelgänger	60	NOUN
 ausmachten	60	VERB
 Gore	60	NOUN
-Baureihen	60	NOUN
+Baureihen	60	NOUN	Baureihe
 Scanner	60	NOUN
 Guide	60	NOUN
 weigert	60	OTHER
 eingeliefert	60	OTHER
 großzügigen	60	OTHER
-Marxisten	60	NOUN
+Marxisten	60	NOUN	Marxist
 Algier	60	NOUN
 rechtmäßig	60	OTHER
-Besuchs	60	NOUN
+Besuchs	60	NOUN	Besuch
 libyschen	60	OTHER
 kt	60	OTHER
-Krediten	60	NOUN
+Krediten	60	NOUN	Kredit
 Achtelfinale	60	NOUN
 Reichspolitik	60	NOUN
 Zubehör	60	NOUN
 VO	60	NOUN,OTHER
 Krankenschwester	60	NOUN
-Stereotypen	60	NOUN,OTHER
+Stereotypen	60	NOUN,OTHER	Stereotyp
 Umsteigen	60	NOUN,OTHER
-Heiliges	60	NOUN,OTHER
+Heiliges	60	NOUN,OTHER	Heilig
 Personenkraftwagen	60	NOUN
 defekten	60	NOUN,OTHER
 räumlicher	60	OTHER
 verwertet	60	OTHER
 Vorwerk	60	NOUN
 Flugsaurier	60	NOUN
-Gläsern	60	NOUN
+Gläsern	60	NOUN	Glas
 verallgemeinern	60	VERB
 dimensionalen	60	OTHER
 Sonn	60	NOUN
@@ -26745,12 +26745,12 @@ Lokalisierung	60	NOUN
 Mikrobiologie	60	NOUN
 Oranje	60	NOUN
 Unternehmensgruppe	60	NOUN
-Gouverneurs	60	NOUN
+Gouverneurs	60	NOUN	Gouverneur
 afroasiatischen	60	NOUN,OTHER
-Morpheme	60	NOUN
+Morpheme	60	NOUN	Morphem
 prominentesten	60	OTHER
 para	60	OTHER
-Musikstile	60	NOUN
+Musikstile	60	NOUN	Musikstil
 González	60	NOUN
 verarbeitenden	60	OTHER
 Verherrlichung	60	NOUN
@@ -26758,13 +26758,13 @@ Kaiserhof	60	NOUN
 hingerichteten	60	NOUN,OTHER
 Lehramt	60	NOUN
 Ortung	60	NOUN
-Atomkernen	60	NOUN
+Atomkernen	60	NOUN	Atomkern
 Larve	60	NOUN
 neurologischen	60	OTHER
 Nasser	60	NOUN
 Datensatz	60	NOUN
 Vorstandsmitglied	60	NOUN
-Umsetzungen	60	NOUN
+Umsetzungen	60	NOUN	Umsetzung
 Tales	60	NOUN
 Datenaustausch	60	NOUN
 sphärische	60	OTHER
@@ -26774,14 +26774,14 @@ Maschinensprache	60	NOUN
 Bezeichner	60	NOUN
 Kennlinie	60	NOUN
 Namenswahl	60	NOUN
-Wertpapiere	60	NOUN
+Wertpapiere	60	NOUN	Wertpapier
 Asen	60	NOUN
 Wadi	60	NOUN
 ausgemacht	60	OTHER
 Inzidenz	60	NOUN
 ausschied	60	OTHER
 Streckenlänge	60	NOUN
-Nachrichtenagenturen	60	NOUN
+Nachrichtenagenturen	60	NOUN	Nachrichtenagentur
 exklusiven	60	OTHER
 ausgebautes	60	OTHER
 Koreanisch	60	NOUN,OTHER
@@ -26793,7 +26793,7 @@ Brennerei	60	NOUN
 lockeren	60	OTHER
 Rentenversicherung	60	NOUN
 keltisch	60	OTHER
-Josephs	60	NOUN
+Josephs	60	NOUN	Joseph
 Volksbefragung	60	NOUN
 Kaufkraftstandards	60	NOUN
 Haupteingang	60	NOUN
@@ -26805,12 +26805,12 @@ Laufzeitumgebung	60	NOUN
 ausgetragenen	60	OTHER
 einherging	60	OTHER
 Wärmekapazität	60	NOUN
-Anzahlen	60	NOUN
+Anzahlen	60	NOUN	Anzahl
 aufzutreten	60	VERB
 Flechten	60	NOUN
-Pfade	60	NOUN
+Pfade	60	NOUN	Pfad
 einzuschränken	60	VERB
-Jets	60	NOUN
+Jets	60	NOUN	Jet
 Stiel	60	NOUN
 Karbon	60	NOUN
 Kunstgewerbe	60	NOUN
@@ -26820,7 +26820,7 @@ Wangen	60	NOUN
 saisonal	60	OTHER
 Sommerhalbjahr	60	NOUN
 Yacht	60	NOUN
-Arrangements	60	NOUN
+Arrangements	60	NOUN	Arrangement
 Droge	60	NOUN
 Requiem	60	NOUN
 moderierte	60	OTHER
@@ -26829,7 +26829,7 @@ altkatholische	60	NOUN,OTHER
 schlechteren	60	OTHER
 variabler	60	OTHER
 Bird	60	NOUN
-Patriarchats	60	NOUN
+Patriarchats	60	NOUN	Patriarchat
 Herrschaftsanspruch	60	NOUN
 römischem	60	OTHER
 überkommenen	60	OTHER
@@ -26846,31 +26846,31 @@ Musikfestival	60	NOUN
 Abgleich	60	NOUN
 Fasnacht	60	NOUN
 Bindemittel	60	NOUN
-Grundbegriffe	60	NOUN
+Grundbegriffe	60	NOUN	Grundbegriff
 legalisiert	60	OTHER
 Erwachsenenbildung	60	NOUN
 Kirchenschiff	60	NOUN
-Waldflächen	60	NOUN
+Waldflächen	60	NOUN	Waldfläche
 produzierende	60	OTHER
-Kataloniens	60	NOUN
+Kataloniens	60	NOUN	Katalonien
 canvas	60	OTHER
 ewiges	60	OTHER
 Botanischer	60	NOUN,OTHER
-Harzes	60	NOUN
+Harzes	60	NOUN	Harz
 ausgelesen	60	VERB
 Kurhaus	60	NOUN
-Stadträten	60	NOUN
+Stadträten	60	NOUN	Stadtrat
 lohnt	60	OTHER
 Trocknung	60	NOUN
 Duc	60	NOUN,OTHER
 Obduktion	60	NOUN
-Massenvernichtungswaffen	60	NOUN
+Massenvernichtungswaffen	60	NOUN	Massenvernichtungswaffe
 Geistwesen	60	NOUN
 Gans	60	NOUN
 Comte	60	NOUN
-Hauptwohnsitze	60	NOUN
+Hauptwohnsitze	60	NOUN	Hauptwohnsitz
 europäischem	60	OTHER
-Pensionen	60	NOUN
+Pensionen	60	NOUN	Pension
 abzuschaffen	60	VERB
 kreisförmigen	60	OTHER
 Programmierschnittstelle	60	NOUN
@@ -26878,15 +26878,15 @@ Screening	60	NOUN
 Prado	60	NOUN
 befristet	60	OTHER
 Leitmotiv	60	NOUN
-Wandels	60	NOUN
-Ränder	60	NOUN
+Wandels	60	NOUN	Wandel
+Ränder	60	NOUN	Rand
 Koller	60	NOUN
 Teller	60	NOUN
 medial	60	OTHER
 Quarte	60	NOUN
 Tanzmusik	60	NOUN
 Feuchtwanger	60	NOUN
-Machiavellis	60	NOUN
+Machiavellis	60	NOUN	Machiavelli
 verallgemeinerte	60	OTHER
 Geschichtsphilosophie	60	NOUN
 Sekundärliteratur	60	NOUN
@@ -26898,27 +26898,27 @@ Odense	60	NOUN
 Italienzug	60	NOUN
 Abfrage	60	NOUN
 verringerten	60	VERB,OTHER
-Kriegszeiten	60	NOUN
+Kriegszeiten	60	NOUN	Kriegszeit
 Karlsbader	60	NOUN
 Ennepe	60	NOUN
-Reiters	60	NOUN
+Reiters	60	NOUN	Reiter
 Distanzierung	60	NOUN
-Dungeons	60	NOUN
+Dungeons	60	NOUN	Dungeon
 färöische	60	OTHER
 mtDNA	60	OTHER
 Luftstrom	60	NOUN
 quert	60	OTHER
-moldauischen	60	NOUN,OTHER
-Kraftwerks	60	NOUN
+moldauischen	60	NOUN,OTHER	moldauische
+Kraftwerks	60	NOUN	Kraftwerk
 Musikwissenschaftler	60	NOUN
 Artikulation	60	NOUN
 kreisfrei	60	OTHER
-Passanten	60	NOUN
+Passanten	60	NOUN	Passant
 Ordner	60	NOUN
 Flussdichte	60	NOUN
 archiviert	60	OTHER
 Thomasius	60	NOUN
-Semestern	60	NOUN
+Semestern	60	NOUN	Semester
 Ouagadougou	60	NOUN
 Yin	60	NOUN
 Johannesburg	60	NOUN
@@ -26930,7 +26930,7 @@ Jenaer	60	NOUN
 Neheim	60	NOUN
 Barnabas	60	NOUN
 Adelheid	60	NOUN
-Überfälle	60	NOUN
+Überfälle	60	NOUN	Überfall
 gespielte	60	OTHER
 geprägtes	60	OTHER
 Ponte	60	NOUN
@@ -26945,19 +26945,19 @@ Hain	60	NOUN
 Hafnium	60	NOUN
 ez	60	NOUN,OTHER
 Ortega	60	NOUN
-Livländischen	60	NOUN,OTHER
+Livländischen	60	NOUN,OTHER	Livländische
 GAZ	60	NOUN
 Mossul	60	NOUN
-Referendums	60	NOUN
+Referendums	60	NOUN	Referendum
 BSG	60	NOUN
 Kimchi	60	NOUN
 Kattowitz	60	NOUN
-Therapeuten	60	NOUN
+Therapeuten	60	NOUN	Therapeut
 Raleigh	60	NOUN
 Pyruvat	60	NOUN
 Gustloff	60	NOUN
-Galeeren	60	NOUN
-Neckars	60	NOUN
+Galeeren	60	NOUN	Galeere
+Neckars	60	NOUN	Neckar
 Thierse	60	NOUN
 RhB	60	NOUN
 Murillo	60	NOUN
@@ -26968,7 +26968,7 @@ UPN	60	NOUN
 Spade	60	NOUN
 Alleinspieler	60	NOUN
 Stummelfüßer	60	NOUN
-Adaptionen	59	NOUN
+Adaptionen	59	NOUN	Adaption
 Wahrheitswert	59	NOUN
 auskommt	59	OTHER
 Komplexitätstheorie	59	NOUN
@@ -26977,7 +26977,7 @@ Telegraph	59	NOUN
 stumm	59	OTHER
 abzusetzen	59	VERB
 perfekten	59	OTHER
-Skripte	59	NOUN
+Skripte	59	NOUN	Skript
 Diät	59	NOUN
 Quentin	59	NOUN
 Buñuel	59	NOUN
@@ -26989,15 +26989,15 @@ Nikita	59	NOUN
 Hydroxygruppe	59	NOUN
 verlängerten	59	VERB,OTHER
 Guangdong	59	NOUN
-Supernovae	59	NOUN
+Supernovae	59	NOUN	Supernova
 Tetra	59	NOUN
-Applikationen	59	NOUN
+Applikationen	59	NOUN	Applikation
 bösartigen	59	OTHER
 Kieselgur	59	NOUN
 Spätherbst	59	NOUN
 sechsjährige	59	OTHER
 Zustandes	59	NOUN
-Teilgebieten	59	NOUN
+Teilgebieten	59	NOUN	Teilgebiet
 Einbettung	59	NOUN
 Diesseits	59	NOUN,OTHER
 Babylonien	59	NOUN
@@ -27009,17 +27009,17 @@ industrialisierten	59	VERB,OTHER
 Anonymität	59	NOUN
 lexikalischen	59	OTHER
 Forschungsgemeinschaft	59	NOUN
-Ureinwohnern	59	NOUN
+Ureinwohnern	59	NOUN	Ureinwohner
 Wiege	59	NOUN,VERB
 aussprachen	59	NOUN,OTHER
 Bewachung	59	NOUN
 empfindlichen	59	OTHER
 Ciudad	59	NOUN
-Meilensteine	59	NOUN
-Helfern	59	NOUN
+Meilensteine	59	NOUN	Meilenstein
+Helfern	59	NOUN	Helfer
 zweijähriger	59	OTHER
 Nekropole	59	NOUN
-Konzeptionen	59	NOUN
+Konzeptionen	59	NOUN	Konzeption
 eingedrungen	59	VERB
 Tyrannei	59	NOUN
 Brasília	59	NOUN
@@ -27029,15 +27029,15 @@ Schäuble	59	NOUN
 Frühstück	59	NOUN
 Aufdeckung	59	NOUN
 Kartografie	59	NOUN
-Friedhöfen	59	NOUN
+Friedhöfen	59	NOUN	Friedhof
 Religionsausübung	59	NOUN
-Bevölkerungsteile	59	NOUN
+Bevölkerungsteile	59	NOUN	Bevölkerungsteil
 unklaren	59	OTHER
 Privatschule	59	NOUN
-Lichtjahren	59	NOUN
+Lichtjahren	59	NOUN	Lichtjahr
 willkürlichen	59	OTHER
 zehnjährigen	59	OTHER
-Medienberichten	59	NOUN
+Medienberichten	59	NOUN	Medienberichte
 Vodafone	59	NOUN
 Quellfluss	59	NOUN
 Literatursprache	59	NOUN
@@ -27046,19 +27046,19 @@ aufgebraucht	59	OTHER
 Ceylon	59	NOUN
 bedrängt	59	OTHER
 Gerard	59	NOUN
-Anschuldigungen	59	NOUN
+Anschuldigungen	59	NOUN	Anschuldigung
 Theosophischen	59	NOUN,OTHER
 Hampshire	59	NOUN
 Facetten	59	NOUN
 hinfällig	59	OTHER
-Hafenanlagen	59	NOUN
+Hafenanlagen	59	NOUN	Hafenanlage
 Umayyaden	59	NOUN
-Sprachgruppen	59	NOUN
+Sprachgruppen	59	NOUN	Sprachgruppe
 Fluch	59	NOUN
 einseitigen	59	OTHER
 Geltungsbereich	59	NOUN
 Nachrichtendienst	59	NOUN
-Oberrheinischen	59	NOUN
+Oberrheinischen	59	NOUN	Oberrheinische
 Reichskanzlei	59	NOUN
 Aufnahmeprüfung	59	NOUN
 abnahm	59	OTHER
@@ -27071,14 +27071,14 @@ Terrororganisation	59	NOUN
 Abschalten	59	NOUN,OTHER
 experimentiert	59	OTHER
 Mikroelektronik	59	NOUN
-Zugriffe	59	NOUN
+Zugriffe	59	NOUN	Zugriff
 Emmerich	59	NOUN
 freundete	59	OTHER
-Umlaufbahnen	59	NOUN
+Umlaufbahnen	59	NOUN	Umlaufbahn
 begeistern	59	VERB
 Lyndon	59	NOUN
 gelandet	59	OTHER
-Italienern	59	NOUN
+Italienern	59	NOUN	Italiener
 mobilisieren	59	VERB
 Telefonie	59	NOUN
 AH	59	NOUN,OTHER
@@ -27086,9 +27086,9 @@ Nazionale	59	NOUN
 Tupel	59	NOUN
 Meersburg	59	NOUN
 Thurn	59	NOUN
-Haydns	59	NOUN
+Haydns	59	NOUN	Haydn
 Heimatort	59	NOUN
-Münsters	59	NOUN
+Münsters	59	NOUN	Münster
 Literaturarchiv	59	NOUN
 Aussaat	59	NOUN
 Annales	59	NOUN
@@ -27104,12 +27104,12 @@ Rindfleisch	59	NOUN
 getretene	59	OTHER
 Hyperinflation	59	NOUN
 Pendler	59	NOUN
-Windgeschwindigkeiten	59	NOUN
+Windgeschwindigkeiten	59	NOUN	Windgeschwindigkeit
 heißem	59	OTHER
 Rangfolge	59	NOUN
 Temperaturerhöhung	59	NOUN
 verbesserter	59	OTHER
-Einwirkungen	59	NOUN
+Einwirkungen	59	NOUN	Einwirkung
 Triomphe	59	NOUN
 Ju	59	NOUN
 Schneeschmelze	59	NOUN
@@ -27125,14 +27125,14 @@ Computergrafik	59	NOUN
 Manet	59	NOUN
 thermischer	59	OTHER
 repräsentativer	59	OTHER
-Ikonen	59	NOUN
+Ikonen	59	NOUN	Ikone
 ANSI	59	NOUN
 Alphabetisierungsrate	59	NOUN
-Familienangehörigen	59	NOUN
+Familienangehörigen	59	NOUN	Familienangehörige
 ungleiche	59	OTHER
-Risikofaktoren	59	NOUN
-Vorwahlen	59	NOUN
-Vietnams	59	NOUN
+Risikofaktoren	59	NOUN	Risikofaktor
+Vorwahlen	59	NOUN	Vorwahl
+Vietnams	59	NOUN	Vietnam
 Lockheed	59	NOUN
 Morbus	59	NOUN
 verfassungsrechtlichen	59	OTHER
@@ -27142,7 +27142,7 @@ Mitteldeutsche	59	NOUN,OTHER
 Königskrone	59	NOUN
 beheimateten	59	VERB,OTHER
 zurückblicken	59	VERB
-Badens	59	NOUN
+Badens	59	NOUN	Baden
 Landesverfassung	59	NOUN
 Lichtenstein	59	NOUN
 Speicherbereich	59	NOUN
@@ -27159,9 +27159,9 @@ reformierter	59	OTHER
 inner	59	OTHER
 Künast	59	NOUN
 minimiert	59	OTHER
-Unternehmers	59	NOUN
-Tons	59	NOUN
-Musikstücke	59	NOUN
+Unternehmers	59	NOUN	Unternehmer
+Tons	59	NOUN	Ton
+Musikstücke	59	NOUN	Musikstück
 Duett	59	NOUN
 nirgendwo	59	OTHER
 Seehandel	59	NOUN
@@ -27171,7 +27171,7 @@ weitverbreitete	59	OTHER
 Pädagoge	59	NOUN
 Nick	59	NOUN
 Rekombination	59	NOUN
-Sultans	59	NOUN
+Sultans	59	NOUN	Sultan
 herunter	59	OTHER
 feudalen	59	OTHER
 Scharping	59	NOUN
@@ -27184,7 +27184,7 @@ Staatlichkeit	59	NOUN
 alarmiert	59	OTHER
 organisch	59	OTHER
 Windrichtung	59	NOUN
-Exils	59	NOUN
+Exils	59	NOUN	Exil
 Very	59	NOUN,OTHER
 nordfriesischen	59	OTHER
 tierischer	59	OTHER
@@ -27203,9 +27203,9 @@ hierüber	59	OTHER
 Anwärter	59	NOUN
 Gänze	59	NOUN
 Dinkel	59	NOUN
-Beutetiere	59	NOUN
+Beutetiere	59	NOUN	Beutetier
 anderseits	59	OTHER
-Vorgangs	59	NOUN
+Vorgangs	59	NOUN	Vorgang
 Pointe	59	NOUN
 Widerruf	59	NOUN
 Telegramm	59	NOUN
@@ -27223,36 +27223,36 @@ umgegliedert	59	OTHER
 objektorientierte	59	OTHER
 gesetzte	59	OTHER
 nachgedruckt	59	OTHER
-Meisterwerke	59	NOUN
+Meisterwerke	59	NOUN	Meisterwerk
 Möller	59	NOUN
 Kuratorium	59	NOUN
 stürzt	59	OTHER
 Konten	59	NOUN
 Bücherverbrennung	59	NOUN
 verspottet	59	OTHER
-Drohnen	59	NOUN
+Drohnen	59	NOUN	Drohne
 zurückzuerobern	59	VERB
 automatisierte	59	OTHER
 Pillnitz	59	NOUN
-Augusts	59	NOUN
+Augusts	59	NOUN	August
 Giebel	59	NOUN
 angeschlagen	59	VERB
-Begrifflichkeiten	59	NOUN
+Begrifflichkeiten	59	NOUN	Begrifflichkeit
 Reichsrat	59	NOUN
 Banater	59	NOUN
-Pässe	59	NOUN
+Pässe	59	NOUN	Pass
 Wass	59	NOUN
-Renten	59	NOUN
+Renten	59	NOUN	Rente
 Kol	59	NOUN
 Häretiker	59	NOUN
 Freimaurerei	59	NOUN
 ukrainischer	59	OTHER
-Amtsgerichts	59	NOUN
+Amtsgerichts	59	NOUN	Amtsgericht
 Amateurfunk	59	NOUN
 Volksfront	59	NOUN
 Ganzton	59	NOUN
 Ankläger	59	NOUN
-Savannen	59	NOUN
+Savannen	59	NOUN	Savanne
 empor	59	OTHER
 Grippe	59	NOUN
 Saalfeld	59	NOUN
@@ -27261,8 +27261,8 @@ Advance	59	NOUN
 Minos	59	NOUN
 Homepage	59	NOUN
 Borland	59	NOUN
-Spinozas	59	NOUN
-Zufallsvariablen	59	NOUN
+Spinozas	59	NOUN	Spinoza
+Zufallsvariablen	59	NOUN	Zufallsvariable
 Bindestrich	59	NOUN
 Nuntius	59	NOUN
 Bariton	59	NOUN
@@ -27281,43 +27281,43 @@ minimaler	59	OTHER
 Aussteller	59	NOUN
 Leda	59	NOUN
 Kirchgemeinde	59	NOUN
-Schnellzüge	59	NOUN
+Schnellzüge	59	NOUN	Schnellzug
 Oschersleben	59	NOUN
 Norrköping	59	NOUN
 Rahm	59	NOUN
-Lippischen	59	NOUN,OTHER
+Lippischen	59	NOUN,OTHER	Lippische
 XSLT	59	NOUN
 Gernrode	59	NOUN
 Adar	59	NOUN
 Krimtataren	59	NOUN
 Ziesar	59	NOUN
 Eilenriede	59	NOUN
-Zusammenhangs	58	NOUN
+Zusammenhangs	58	NOUN	Zusammenhang
 umzugehen	58	VERB
 erwirtschaften	58	VERB
-Dollars	58	NOUN
-Dekorationen	58	NOUN
+Dollars	58	NOUN	Dollar
+Dekorationen	58	NOUN	Dekoration
 vordergründig	58	OTHER
-Agenturen	58	NOUN
+Agenturen	58	NOUN	Agentur
 süße	58	OTHER
 fallende	58	OTHER
-Fernsehproduktionen	58	NOUN
+Fernsehproduktionen	58	NOUN	Fernsehproduktion
 Actors	58	NOUN
 Himbeere	58	NOUN
 wasserlöslich	58	OTHER
-Sängerinnen	58	NOUN
+Sängerinnen	58	NOUN	Sängerin
 Soda	58	NOUN
 Koks	58	NOUN
 Beschichtung	58	NOUN
 Atmen	58	NOUN,OTHER
-Isotops	58	NOUN
+Isotops	58	NOUN	Isotop
 eingeschränkter	58	OTHER
 Bismut	58	NOUN
 Ablagerung	58	NOUN
 Kirgisistan	58	NOUN
 reichenden	58	OTHER
-Hühner	58	NOUN
-Schweinen	58	NOUN
+Hühner	58	NOUN	Huhn
+Schweinen	58	NOUN	Schwein
 steirischen	58	OTHER
 Durchfall	58	NOUN
 Cu	58	NOUN
@@ -27330,7 +27330,7 @@ experimenteller	58	OTHER
 komplexeren	58	OTHER
 Komposita	58	NOUN
 hinzugekommen	58	VERB
-Gehälter	58	NOUN
+Gehälter	58	NOUN	Gehalt
 existiere	58	OTHER
 interdisziplinären	58	OTHER
 Gerhardt	58	NOUN
@@ -27357,8 +27357,8 @@ konkurrierten	58	VERB,OTHER
 Hallstattzeit	58	NOUN
 Missverständnisse	58	NOUN
 Silhouette	58	NOUN
-Bombardierungen	58	NOUN
-Talsperren	58	NOUN
+Bombardierungen	58	NOUN	Bombardierung
+Talsperren	58	NOUN	Talsperre
 Sonnenjahr	58	NOUN
 Kid	58	NOUN
 Sean	58	NOUN
@@ -27367,10 +27367,10 @@ bewundert	58	OTHER
 Banū	58	NOUN
 worüber	58	OTHER
 problematischen	58	OTHER
-Diagrammen	58	NOUN
+Diagrammen	58	NOUN	Diagramm
 unsterblich	58	OTHER
-Kommentatoren	58	NOUN
-Zugangs	58	NOUN
+Kommentatoren	58	NOUN	Kommentator
+Zugangs	58	NOUN	Zugang
 Sezessionskrieg	58	NOUN
 Clay	58	NOUN
 Ridge	58	NOUN
@@ -27386,7 +27386,7 @@ Steinmeier	58	NOUN
 Mehrwertsteuer	58	NOUN
 Osama	58	NOUN
 Ramadan	58	NOUN
-Vorfälle	58	NOUN
+Vorfälle	58	NOUN	Vorfall
 Premierministerin	58	NOUN
 öffneten	58	VERB
 begriffliche	58	OTHER
@@ -27394,16 +27394,16 @@ Gould	58	NOUN
 ausschloss	58	OTHER
 Befolgung	58	NOUN
 Südasien	58	NOUN
-Tötungen	58	NOUN
+Tötungen	58	NOUN	Tötung
 Kindersterblichkeit	58	NOUN
-Siedlungsgebieten	58	NOUN
+Siedlungsgebieten	58	NOUN	Siedlungsgebiet
 Kommilitonen	58	NOUN
 Satanismus	58	NOUN
 alphabetischer	58	OTHER
-Zeitpunkten	58	NOUN
+Zeitpunkten	58	NOUN	Zeitpunkt
 tropischer	58	OTHER
 ermutigt	58	OTHER
-Arbeitnehmers	58	NOUN
+Arbeitnehmers	58	NOUN	Arbeitnehmer
 rechtmäßige	58	OTHER
 vorzeitigen	58	OTHER
 Verstandes	58	NOUN
@@ -27417,7 +27417,7 @@ FireWire	58	NOUN
 gerichtliche	58	OTHER
 Stadtpfarrkirche	58	NOUN
 Deutschnationalen	58	NOUN,OTHER
-Verstößen	58	NOUN
+Verstößen	58	NOUN	Verstoß
 untergraben	58	VERB
 Altonaer	58	NOUN
 überstieg	58	OTHER
@@ -27432,12 +27432,12 @@ Adressierung	58	NOUN
 aufgehen	58	VERB
 verspätet	58	OTHER
 agierende	58	OTHER
-Altars	58	NOUN
-Todesursachen	58	NOUN
+Altars	58	NOUN	Altar
+Todesursachen	58	NOUN	Todesursache
 bezifferte	58	OTHER
 Erstveröffentlichung	58	NOUN
 Körperlänge	58	NOUN
-Skelette	58	NOUN
+Skelette	58	NOUN	Skelett
 Antoinette	58	NOUN
 Kerner	58	NOUN
 malerische	58	OTHER
@@ -27467,7 +27467,7 @@ Erythrozyten	58	NOUN
 Lichtausbeute	58	NOUN
 ruhenden	58	OTHER
 Tiefsee	58	NOUN
-Erzeugnissen	58	NOUN
+Erzeugnissen	58	NOUN	Erzeugnisse
 ante	58	OTHER
 Verabreichung	58	NOUN
 dicker	58	OTHER
@@ -27476,36 +27476,36 @@ sehenswerte	58	OTHER
 angestoßen	58	VERB
 stiften	58	VERB
 Antoni	58	NOUN
-Walen	58	NOUN
+Walen	58	NOUN	Wal
 dividiert	58	OTHER
-Sümpfe	58	NOUN
+Sümpfe	58	NOUN	Sumpf
 Jahrgang	58	NOUN
 verzweifelt	58	OTHER
 begegneten	58	VERB,OTHER
 Lade	58	NOUN,VERB
 Entlehnung	58	NOUN
 vorgenommenen	58	OTHER
-Quoten	58	NOUN
+Quoten	58	NOUN	Quote
 portugiesischer	58	OTHER
-Arbeiterinnen	58	NOUN
+Arbeiterinnen	58	NOUN	Arbeiterin
 Rezept	58	NOUN
 Möbius	58	NOUN
 Alpenvorland	58	NOUN
 Pinakothek	58	NOUN
-Landräte	58	NOUN
+Landräte	58	NOUN	Landrat
 parteilose	58	OTHER
 Altötting	58	NOUN
 Softball	58	NOUN
 elsässischen	58	OTHER
 überwindet	58	OTHER
 dezentrale	58	OTHER
-Zeitpunkte	58	NOUN
+Zeitpunkte	58	NOUN	Zeitpunkt
 Fédération	58	NOUN
 Budapester	58	NOUN
 angeregte	58	OTHER
 Ausblick	58	NOUN
 abbauen	58	VERB
-Heilpflanzen	58	NOUN
+Heilpflanzen	58	NOUN	Heilpflanze
 erwärmen	58	NOUN,OTHER
 vorzeitige	58	OTHER
 Harzer	58	NOUN
@@ -27519,31 +27519,31 @@ ausgewiesenen	58	OTHER
 Plankton	58	NOUN
 Zweckverband	58	NOUN
 BWV	58	NOUN
-Betriebes	58	NOUN
-Wirtschaften	58	NOUN,OTHER
+Betriebes	58	NOUN	Betrieb
+Wirtschaften	58	NOUN,OTHER	Wirtschaft
 artikuliert	58	OTHER
 Instrumentarium	58	NOUN
 Jalta	58	NOUN
 Staatsführung	58	NOUN
 Salzgitter	58	NOUN
-Attentate	58	NOUN
+Attentate	58	NOUN	Attentat
 Hamme	58	NOUN
 Abwärme	58	NOUN
-Ausgangs	58	NOUN
+Ausgangs	58	NOUN	Ausgang
 Take	58	NOUN,OTHER
-Genome	58	NOUN
+Genome	58	NOUN	Genom
 Prior	58	NOUN
 Schabbat	58	NOUN
 Bergpredigt	58	NOUN
 Geschlossenheit	58	NOUN
 oval	58	NOUN,OTHER
-Schiefergebirges	58	NOUN
+Schiefergebirges	58	NOUN	Schiefergebirge
 Kolonialreich	58	NOUN
 tektonischen	58	OTHER
 wehrten	58	VERB
 Blickpunkt	58	NOUN
 unwirksam	58	OTHER
-Regenwäldern	58	NOUN
+Regenwäldern	58	NOUN	Regenwald
 Eigenbedarf	58	NOUN
 exportierte	58	OTHER
 Oligarchen	58	NOUN
@@ -27564,14 +27564,14 @@ Rathausplatz	58	NOUN
 Durchgangsverkehr	58	NOUN
 Aussagekraft	58	NOUN
 verwerten	58	VERB
-Erfordernissen	58	NOUN
+Erfordernissen	58	NOUN	Erfordernisse
 Sonnenenergie	58	NOUN
 UMTS	58	NOUN
 Gegenrichtung	58	NOUN
 Years	58	NOUN,OTHER
 limitiert	58	OTHER
 Turnverein	58	NOUN
-Terrassen	58	NOUN
+Terrassen	58	NOUN	Terrasse
 Samenpflanzen	58	NOUN
 Sprossachse	58	NOUN
 Entscheidungsfindung	58	NOUN
@@ -27584,11 +27584,11 @@ ionisierende	58	OTHER
 Yttrium	58	NOUN
 Molaren	58	NOUN,OTHER
 Mile	58	NOUN,OTHER
-Filmproduzenten	58	NOUN
+Filmproduzenten	58	NOUN	Filmproduzent
 Suzuki	58	NOUN
 irrational	58	OTHER
 Frequenzverhältnis	58	NOUN
-Radios	58	NOUN
+Radios	58	NOUN	Radio
 Schützenfest	58	NOUN
 Buslinie	58	NOUN
 Nymphe	58	NOUN
@@ -27598,26 +27598,26 @@ Trick	58	NOUN
 Wasserweg	58	NOUN
 topologische	58	OTHER
 char	58	OTHER
-Drehungen	58	NOUN
+Drehungen	58	NOUN	Drehung
 Buchse	58	NOUN
 Längengrad	58	NOUN
 Exilanten	58	NOUN
 Gundermann	58	NOUN
 Rhea	58	NOUN
 Wirbel	58	NOUN
-Robotern	58	NOUN
+Robotern	58	NOUN	Roboter
 Maynard	58	NOUN
-Paketen	58	NOUN
+Paketen	58	NOUN	Paket
 Root	58	NOUN,OTHER
 Dürrenberg	58	NOUN
 Pillau	58	NOUN
 Parliament	58	NOUN
-Winkeln	58	NOUN
+Winkeln	58	NOUN	Winkel
 Staudamm	58	NOUN
 Verk	58	NOUN
 Erbach	58	NOUN
 Radfernweg	58	NOUN
-Aristokraten	58	NOUN
+Aristokraten	58	NOUN	Aristokrat
 Innerrhoden	58	NOUN
 Parlamentarier	58	NOUN
 Albanisch	58	NOUN,OTHER
@@ -27626,7 +27626,7 @@ losen	58	OTHER
 jiddischen	58	NOUN,OTHER
 Fernstraße	58	NOUN
 Mumbai	58	NOUN
-Verdachts	58	NOUN
+Verdachts	58	NOUN	Verdacht
 erhobene	58	OTHER
 Zündung	58	NOUN
 distanzierten	58	VERB,OTHER
@@ -27635,18 +27635,18 @@ grönländische	58	OTHER
 Jagiellonen	58	NOUN
 Powiat	58	NOUN
 Bottrop	58	NOUN
-Geographen	58	NOUN
+Geographen	58	NOUN	Geograph
 interkulturelle	58	OTHER
 Nachbarkreise	58	NOUN
 küstennahen	58	OTHER
 Reue	58	NOUN
-Fachschulen	58	NOUN
+Fachschulen	58	NOUN	Fachschule
 Imam	58	NOUN
-Kundgebungen	58	NOUN
+Kundgebungen	58	NOUN	Kundgebung
 Weihnachtsmann	58	NOUN
 Geyer	58	NOUN
 Sarazenen	58	NOUN
-Halleschen	58	NOUN,OTHER
+Halleschen	58	NOUN,OTHER	Hallesche
 Fallersleben	58	NOUN
 Dauphin	58	NOUN
 Fujimori	58	NOUN
@@ -27654,13 +27654,13 @@ Ottokar	58	NOUN
 Lada	58	NOUN
 Falkenstein	58	NOUN
 Schlossgarten	58	NOUN
-Seitenlängen	58	NOUN
+Seitenlängen	58	NOUN	Seitenlänge
 scheduled	58	OTHER
 Wirtschaftswissenschaft	58	NOUN
 Kreisky	58	NOUN
 oberösterreichischen	58	OTHER
 Deutz	58	NOUN
-Androiden	58	NOUN
+Androiden	58	NOUN	Android
 Werkverzeichnis	58	NOUN
 Umgehungsstraße	58	NOUN
 Nannen	58	NOUN
@@ -27671,7 +27671,7 @@ Farrow	58	NOUN
 Aton	58	NOUN
 dayunknown	58	OTHER
 Cortes	58	NOUN
-Zecken	58	NOUN
+Zecken	58	NOUN	Zecke
 Nipkow	58	NOUN
 PrP	58	NOUN
 Polygon	58	NOUN
@@ -27682,22 +27682,22 @@ pragmatisch	57	OTHER
 Anwendbarkeit	57	NOUN
 autobiografischen	57	OTHER
 berüchtigt	57	OTHER
-Dächern	57	NOUN
+Dächern	57	NOUN	Dach
 Ärger	57	NOUN
-Andrews	57	NOUN
+Andrews	57	NOUN	Andrew
 vorlegte	57	OTHER
 Landsleute	57	NOUN
 schieben	57	VERB
 Zulässigkeit	57	NOUN
 gängiger	57	OTHER
 gedrehte	57	OTHER
-Gepflogenheiten	57	NOUN
+Gepflogenheiten	57	NOUN	Gepflogenheit
 Hingabe	57	NOUN
 meiden	57	VERB
 Polar	57	NOUN,OTHER
 Korrosion	57	NOUN
-Rohre	57	NOUN
-Werkstoffen	57	NOUN
+Rohre	57	NOUN	Rohr
+Werkstoffen	57	NOUN	Werkstoff
 Aulus	57	NOUN
 umwandelt	57	OTHER
 fortlaufenden	57	OTHER
@@ -27708,7 +27708,7 @@ Petroleum	57	NOUN
 Beständigkeit	57	NOUN
 beständigen	57	OTHER
 latinisierte	57	OTHER
-Adelsfamilien	57	NOUN
+Adelsfamilien	57	NOUN	Adelsfamilie
 gekostet	57	OTHER
 Amudarja	57	NOUN
 Prophezeiung	57	NOUN
@@ -27719,7 +27719,7 @@ mazedonische	57	OTHER
 religiösem	57	OTHER
 Knossos	57	NOUN
 Gallier	57	NOUN
-Domitians	57	NOUN
+Domitians	57	NOUN	Domitian
 durchlief	57	OTHER
 foederati	57	OTHER
 reges	57	OTHER
@@ -27733,22 +27733,22 @@ HMS	57	NOUN
 Statik	57	NOUN
 Fernsehsendung	57	NOUN
 esoterischen	57	OTHER
-Trojas	57	NOUN
+Trojas	57	NOUN	Troja
 schönes	57	OTHER
 geradlinig	57	OTHER
 darstellende	57	OTHER
 fertigten	57	VERB
-Unterrichts	57	NOUN
+Unterrichts	57	NOUN	Unterricht
 widersprachen	57	VERB
 gemachte	57	OTHER
 Wahlmännerstimmen	57	NOUN
 provozieren	57	VERB
-Jeffersons	57	NOUN
+Jeffersons	57	NOUN	Jefferson
 Parlamentsgebäude	57	NOUN
 Regierungsgebäude	57	NOUN
 dauerhafter	57	OTHER
 Ironman	57	NOUN
-Hauptstraßen	57	NOUN
+Hauptstraßen	57	NOUN	Hauptstraße
 Adlershof	57	NOUN
 Oppositionspartei	57	NOUN
 Finanzministerium	57	NOUN
@@ -27757,11 +27757,11 @@ geschrumpft	57	OTHER
 Zacharias	57	NOUN
 Leslie	57	NOUN
 nützliche	57	OTHER
-Witwen	57	NOUN
+Witwen	57	NOUN	Witwe
 südöstliche	57	OTHER
 buddhistischer	57	OTHER
 ausdrückte	57	OTHER
-Zierpflanzen	57	NOUN
+Zierpflanzen	57	NOUN	Zierpflanze
 bloßer	57	OTHER
 Ordo	57	NOUN,OTHER
 hegte	57	OTHER
@@ -27769,52 +27769,52 @@ hinduistische	57	OTHER
 Yoga	57	NOUN
 Selbsttötung	57	NOUN
 hinwies	57	OTHER
-Dome	57	NOUN
+Dome	57	NOUN	Dom
 Bobby	57	NOUN
 Lenkung	57	NOUN
 zersplittert	57	OTHER
-Industrieländer	57	NOUN
+Industrieländer	57	NOUN	Industrieland
 entwickelnde	57	OTHER
 sozialem	57	OTHER
 Lock	57	NOUN
 Sextus	57	NOUN
-Legaten	57	NOUN
+Legaten	57	NOUN	Legat
 Regia	57	NOUN,OTHER
 baldigen	57	OTHER
-Manuskripts	57	NOUN
+Manuskripts	57	NOUN	Manuskript
 bloßes	57	OTHER
 LG	57	NOUN,OTHER
 zertifiziert	57	OTHER
-Augenzeugen	57	NOUN
+Augenzeugen	57	NOUN	Augenzeuge
 optimierte	57	OTHER
 aufwuchs	57	OTHER
 gekleidet	57	OTHER
 begrüßten	57	VERB
-Mussolinis	57	NOUN
+Mussolinis	57	NOUN	Mussolini
 sprang	57	OTHER
-Angebots	57	NOUN
+Angebots	57	NOUN	Angebot
 Hochverrat	57	NOUN
 ansiedeln	57	VERB
 bestärkt	57	OTHER
 erleidet	57	OTHER
 totalitäre	57	OTHER
-Rückstände	57	NOUN
+Rückstände	57	NOUN	Rückstand
 Kontinentaleuropa	57	NOUN
 aufrief	57	OTHER
-Ergebnisses	57	NOUN
+Ergebnisses	57	NOUN	Ergebnisse
 Viehhaltung	57	NOUN
 Hauptspeicher	57	NOUN
 MiB	57	NOUN
-Ingenieuren	57	NOUN
+Ingenieuren	57	NOUN	Ingenieur
 Rangierbahnhof	57	NOUN
-Schauplätze	57	NOUN
+Schauplätze	57	NOUN	Schauplatz
 Erbin	57	NOUN
-Raumschiffs	57	NOUN
+Raumschiffs	57	NOUN	Raumschiff
 Triebwerk	57	NOUN
 induzierte	57	OTHER
 Kaufpreis	57	NOUN
-Brennstoffen	57	NOUN
-Abgase	57	NOUN
+Brennstoffen	57	NOUN	Brennstoff
+Abgase	57	NOUN	Abgas
 Naturkunde	57	NOUN
 eingefroren	57	VERB
 Plansprache	57	NOUN
@@ -27825,18 +27825,18 @@ Ohnmacht	57	NOUN
 betritt	57	OTHER
 Kimbern	57	NOUN
 verortet	57	OTHER
-Luchse	57	NOUN
+Luchse	57	NOUN	Luchs
 Oberleitungsbus	57	NOUN
 Hervorhebung	57	NOUN
 kauft	57	OTHER
-Bourbonen	57	NOUN
+Bourbonen	57	NOUN	Bourbon
 Karol	57	NOUN
 Pinochet	57	NOUN
 konjugiert	57	OTHER
 SJ	57	NOUN
 sesshaft	57	OTHER
 FIA	57	NOUN
-Nukleinsäuren	57	NOUN
+Nukleinsäuren	57	NOUN	Nukleinsäure
 periphere	57	OTHER
 Blende	57	NOUN
 Zauber	57	NOUN
@@ -27844,12 +27844,12 @@ Blase	57	NOUN,VERB
 Tasche	57	NOUN
 sternförmig	57	OTHER
 Mess	57	NOUN
-Datierungen	57	NOUN
+Datierungen	57	NOUN	Datierung
 Wortwahl	57	NOUN
 Fassungsvermögen	57	NOUN
 Abk	57	NOUN
 Regnum	57	NOUN,OTHER
-Prionen	57	NOUN
+Prionen	57	NOUN	Prion
 kompiliert	57	OTHER
 Grundrechenarten	57	NOUN
 Programmcode	57	NOUN
@@ -27858,8 +27858,8 @@ Indikativ	57	NOUN
 bewogen	57	VERB
 irischer	57	OTHER
 zeitgenössisch	57	OTHER
-Kommunikations	57	NOUN
-Auflösungen	57	NOUN
+Kommunikations	57	NOUN	Kommunikation
+Auflösungen	57	NOUN	Auflösung
 Trauung	57	NOUN
 Herrlichkeit	57	NOUN
 aufgefallen	57	VERB
@@ -27868,31 +27868,31 @@ eingewiesen	57	VERB
 Snorri	57	NOUN
 ScaleMinor	57	NOUN
 Bilirubin	57	NOUN
-Spielfilmen	57	NOUN
+Spielfilmen	57	NOUN	Spielfilm
 begrenztem	57	OTHER
 Gehörlose	57	NOUN,OTHER
 Canyon	57	NOUN
 Wacholder	57	NOUN
 kompakter	57	OTHER
 Simplex	57	NOUN,OTHER
-Vorhangs	57	NOUN
+Vorhangs	57	NOUN	Vorhang
 Landesverwaltung	57	NOUN
 Gesamtleistung	57	NOUN
 Philharmoniker	57	NOUN
 Mittelschule	57	NOUN
-Kreisstädte	57	NOUN
+Kreisstädte	57	NOUN	Kreisstadt
 Neubaustrecke	57	NOUN
 Fußballstadion	57	NOUN
 Mikroprozessor	57	NOUN
 POSIX	57	NOUN
 zeitnah	57	OTHER
-Missbrauchs	57	NOUN
+Missbrauchs	57	NOUN	Missbrauch
 Vincenzo	57	NOUN
 Halske	57	NOUN
-Moderatoren	57	NOUN
+Moderatoren	57	NOUN	Moderator
 Shandong	57	NOUN
 Mobilmachung	57	NOUN
-Stockwerken	57	NOUN
+Stockwerken	57	NOUN	Stockwerk
 Baluschek	57	NOUN
 Suppe	57	NOUN
 Bon	57	NOUN,OTHER
@@ -27908,7 +27908,7 @@ Kontrollrat	57	NOUN
 Havemann	57	NOUN
 Kommandantur	57	NOUN
 Erreichbarkeit	57	NOUN
-Kompanien	57	NOUN
+Kompanien	57	NOUN	Kompanie
 dekorative	57	OTHER
 Streckenführung	57	NOUN
 Diamond	57	NOUN
@@ -27924,16 +27924,16 @@ Baruch	57	NOUN
 Nazareth	57	NOUN
 Weltkarte	57	NOUN
 keltischer	57	OTHER
-Leopolds	57	NOUN
+Leopolds	57	NOUN	Leopold
 Sprachgruppe	57	NOUN
 TGV	57	NOUN
 Urwald	57	NOUN
 professioneller	57	OTHER
 Muschelkalk	57	NOUN
-Unterkünfte	57	NOUN
+Unterkünfte	57	NOUN	Unterkunft
 Calciumcarbonat	57	NOUN
 pod	57	OTHER
-Befehls	57	NOUN
+Befehls	57	NOUN	Befehl
 ewiger	57	OTHER
 Entstalinisierung	57	NOUN
 Gesamtkosten	57	NOUN
@@ -27943,9 +27943,9 @@ Freifläche	57	NOUN
 ausreichte	57	OTHER
 anknüpfend	57	OTHER
 Grillen	57	NOUN
-Tourneen	57	NOUN
+Tourneen	57	NOUN	Tournee
 Ausfluss	57	NOUN
-Tsunamis	57	NOUN
+Tsunamis	57	NOUN	Tsunami
 Prof	57	NOUN
 erhebliches	57	OTHER
 gelblich	57	OTHER
@@ -27955,7 +27955,7 @@ genommene	57	OTHER
 neugeschaffenen	57	OTHER
 Riemenschneider	57	NOUN
 Haftbefehl	57	NOUN
-Gewalten	57	NOUN
+Gewalten	57	NOUN	Gewalt
 geflügelte	57	OTHER
 Briefwahl	57	NOUN
 emptyset	57	OTHER
@@ -27965,7 +27965,7 @@ Zeitabschnitt	57	NOUN
 Industrieproduktion	57	NOUN
 Chinese	57	NOUN
 Anion	57	NOUN
-Zimmern	57	NOUN
+Zimmern	57	NOUN	Zimmer
 Iwanowitsch	57	NOUN
 interagieren	57	VERB
 Gönner	57	NOUN
@@ -27978,16 +27978,16 @@ Moos	57	NOUN
 Morphem	57	NOUN
 Verweildauer	57	NOUN
 Latin	57	NOUN
-Redoxreaktionen	57	NOUN
-Gremiums	57	NOUN
-Führungspositionen	57	NOUN
+Redoxreaktionen	57	NOUN	Redoxreaktion
+Gremiums	57	NOUN	Gremium
+Führungspositionen	57	NOUN	Führungsposition
 GEOS	57	NOUN
-Abtreibungen	57	NOUN
-Kardinals	57	NOUN
-Tolkiens	57	NOUN
+Abtreibungen	57	NOUN	Abtreibung
+Kardinals	57	NOUN	Kardinal
+Tolkiens	57	NOUN	Tolkien
 EMI	57	NOUN
 Wohlergehen	57	NOUN
-Schenkungen	57	NOUN
+Schenkungen	57	NOUN	Schenkung
 Heimspielstätte	57	NOUN
 Heimstätte	57	NOUN
 vorgehalten	57	VERB
@@ -28001,7 +28001,7 @@ Schönbrunn	57	NOUN
 Voß	57	NOUN
 leuchtende	57	OTHER
 Überschuldung	57	NOUN
-Fugen	57	NOUN
+Fugen	57	NOUN	Fuge
 außereuropäischen	57	OTHER
 MIME	57	NOUN
 Dateiname	57	NOUN,OTHER
@@ -28009,7 +28009,7 @@ Savanne	57	NOUN
 asymmetrisch	57	OTHER
 Agamemnon	57	NOUN
 naturräumliche	57	OTHER
-Keimzellen	57	NOUN
+Keimzellen	57	NOUN	Keimzelle
 Gnosis	57	NOUN
 Manichäismus	57	NOUN
 Mystiker	57	NOUN
@@ -28021,18 +28021,18 @@ dirigierte	57	OTHER
 abgewandelt	57	OTHER
 Messgröße	57	NOUN
 homöopathische	57	OTHER
-Marokkos	57	NOUN
+Marokkos	57	NOUN	Marokko
 Vereisung	57	NOUN
 Vegetarismus	57	NOUN
 Vercingetorix	57	NOUN
 Bundesvorsitzender	57	NOUN
 Theophanu	57	NOUN
 Finck	57	NOUN
-Gesängen	57	NOUN
+Gesängen	57	NOUN	Gesang
 Loki	57	NOUN
 Rapperswil	57	NOUN
-Klienten	57	NOUN
-Platzierungen	57	NOUN
+Klienten	57	NOUN	Klient
+Platzierungen	57	NOUN	Platzierung
 Hurrikan	57	NOUN
 verabschieden	57	VERB
 Naga	57	NOUN
@@ -28041,7 +28041,7 @@ Ausserrhoden	57	NOUN
 Gon	57	NOUN,OTHER
 Wetterstation	57	NOUN
 Puttgarden	57	NOUN
-Gottesnamen	57	NOUN
+Gottesnamen	57	NOUN	Gottesname
 Balduin	57	NOUN
 IJssel	57	NOUN
 Tischbein	57	NOUN
@@ -28050,16 +28050,16 @@ Frühlingspunkt	57	NOUN
 Cádiz	57	NOUN
 Courbet	57	NOUN
 Spawn	57	NOUN
-Grifflöcher	57	NOUN
+Grifflöcher	57	NOUN	Griffloch
 Filesharing	57	NOUN
 Kitts	57	NOUN
 Nay	57	NOUN
 Petrograd	57	NOUN
-Foucaults	57	NOUN
+Foucaults	57	NOUN	Foucault
 ksh	57	OTHER
 Wachenheim	57	NOUN
 Cusco	57	NOUN
-Liebermanns	57	NOUN
+Liebermanns	57	NOUN	Liebermann
 Mueang	57	NOUN
 Podgorica	57	NOUN
 aussieht	56	OTHER
@@ -28074,7 +28074,7 @@ Kill	56	NOUN,OTHER
 Abholzung	56	NOUN
 vollwertige	56	OTHER
 auszugeben	56	VERB
-Ringes	56	NOUN
+Ringes	56	NOUN	Ring
 sive	56	OTHER
 Angel	56	NOUN
 Sicherheitspolizei	56	NOUN
@@ -28097,7 +28097,7 @@ Curium	56	NOUN
 Eleonore	56	NOUN
 Körperverletzung	56	NOUN
 Stopp	56	NOUN,VERB
-Verbrechens	56	NOUN
+Verbrechens	56	NOUN	Verbrechen
 Gefolgsmann	56	NOUN
 Semiramis	56	NOUN
 Diodor	56	NOUN
@@ -28111,7 +28111,7 @@ Wiedererrichtung	56	NOUN
 Joch	56	NOUN
 Rast	56	NOUN,OTHER
 Schriftbild	56	NOUN
-Verfassungsänderungen	56	NOUN
+Verfassungsänderungen	56	NOUN	Verfassungsänderung
 eliminieren	56	VERB
 bedauerte	56	OTHER
 Fundstätte	56	NOUN
@@ -28125,17 +28125,17 @@ Blood	56	NOUN
 Darkness	56	NOUN
 Novel	56	NOUN
 publica	56	OTHER
-Sphären	56	NOUN
+Sphären	56	NOUN	Sphäre
 gebrachte	56	OTHER
 rechtfertigt	56	OTHER
 hinzukommen	56	VERB
 scheidet	56	OTHER
 missverstanden	56	VERB
-Spitzenkandidaten	56	NOUN
+Spitzenkandidaten	56	NOUN	Spitzenkandidat
 Rechtssicherheit	56	NOUN
 Schadensersatz	56	NOUN
 Präsidentschaftskandidat	56	NOUN
-Stadtvierteln	56	NOUN
+Stadtvierteln	56	NOUN	Stadtviertel
 Desaster	56	NOUN
 maßgeblicher	56	OTHER
 Forschungsinstitut	56	NOUN
@@ -28148,7 +28148,7 @@ Podcast	56	NOUN
 Galater	56	NOUN
 Industries	56	NOUN
 beträchtlicher	56	OTHER
-Thermen	56	NOUN
+Thermen	56	NOUN	Therme
 Pantheismus	56	NOUN
 freiheitliche	56	OTHER
 ontologischen	56	OTHER
@@ -28160,7 +28160,7 @@ umgebauten	56	OTHER
 Stan	56	NOUN,OTHER
 fortschrittliche	56	OTHER
 Abdul	56	NOUN
-Gegenkandidaten	56	NOUN
+Gegenkandidaten	56	NOUN	Gegenkandidat
 Hohepriester	56	NOUN
 indisch	56	OTHER
 unterschreiben	56	VERB
@@ -28181,10 +28181,10 @@ eingefärbt	56	OTHER
 Genius	56	NOUN
 Centro	56	NOUN
 Instant	56	NOUN
-Notebooks	56	NOUN
-Landesbehörden	56	NOUN
+Notebooks	56	NOUN	Notebook
+Landesbehörden	56	NOUN	Landesbehörde
 Belegschaft	56	NOUN
-Decknamen	56	NOUN
+Decknamen	56	NOUN	Deckname
 antisemitisch	56	OTHER
 Fritsch	56	NOUN
 eingesperrt	56	OTHER
@@ -28193,20 +28193,20 @@ Gleiwitz	56	NOUN
 gravierenden	56	OTHER
 Entnazifizierung	56	NOUN
 Werdegang	56	NOUN
-Raubzüge	56	NOUN
+Raubzüge	56	NOUN	Raubzug
 Datenmenge	56	NOUN
 Innsbrucker	56	NOUN
 Avitus	56	NOUN
 zögerte	56	OTHER
 Anhieb	56	NOUN
-Schaltkreise	56	NOUN
+Schaltkreise	56	NOUN	Schaltkreis
 Motte	56	NOUN
 sortieren	56	NOUN,OTHER
 Femininum	56	NOUN
 Benzol	56	NOUN
-Revisionen	56	NOUN
-Niveaus	56	NOUN
-Brennstoffzellen	56	NOUN
+Revisionen	56	NOUN	Revision
+Niveaus	56	NOUN	Niveau
+Brennstoffzellen	56	NOUN	Brennstoffzelle
 topologischen	56	OTHER
 vierjährigen	56	OTHER
 Harnstoff	56	NOUN
@@ -28226,13 +28226,13 @@ Roi	56	NOUN,OTHER
 SN	56	NOUN
 erforschten	56	VERB,OTHER
 Tizian	56	NOUN
-Kräutern	56	NOUN
+Kräutern	56	NOUN	Kraut
 hinderte	56	OTHER
 Wirkungsweise	56	NOUN
 wertet	56	OTHER
 nachgestellt	56	OTHER
 wechselnder	56	OTHER
-Radionuklide	56	NOUN
+Radionuklide	56	NOUN	Radionuklid
 Knopf	56	NOUN
 Malweise	56	NOUN
 urheberrechtlich	56	OTHER
@@ -28241,17 +28241,17 @@ gratis	56	OTHER
 betitelt	56	OTHER
 Schotten	56	NOUN
 heterosexuellen	56	OTHER
-Auslesen	56	NOUN,OTHER
+Auslesen	56	NOUN,OTHER	Auslese
 Teilbarkeit	56	NOUN
 geplanter	56	OTHER
-Staatsgebiets	56	NOUN
-Parkplätze	56	NOUN
-Waldgebieten	56	NOUN
+Staatsgebiets	56	NOUN	Staatsgebiet
+Parkplätze	56	NOUN	Parkplatz
+Waldgebieten	56	NOUN	Waldgebiet
 objektorientierten	56	OTHER
 Kunstszene	56	NOUN
-Magazinen	56	NOUN
+Magazinen	56	NOUN	Magazin
 Nahrungsangebot	56	NOUN
-Resistenzen	56	NOUN
+Resistenzen	56	NOUN	Resistenz
 ausgeschöpft	56	OTHER
 eingeholt	56	OTHER
 Hofgarten	56	NOUN
@@ -28274,10 +28274,10 @@ Osterweiterung	56	NOUN
 Kunstmusik	56	NOUN
 Sonate	56	NOUN
 Militäradministration	56	NOUN
-Hauptstädten	56	NOUN
+Hauptstädten	56	NOUN	Hauptstadt
 Paradox	56	NOUN,OTHER
 Sonnenstunden	56	NOUN
-Bombenangriffe	56	NOUN
+Bombenangriffe	56	NOUN	Bombenangriff
 Röm	56	NOUN
 Batter	56	NOUN
 widerrufen	56	VERB
@@ -28293,21 +28293,21 @@ Rogier	56	NOUN
 Verarmung	56	NOUN
 Yves	56	NOUN
 Franck	56	NOUN
-Berufsschulen	56	NOUN
+Berufsschulen	56	NOUN	Berufsschule
 vernünftige	56	OTHER
 ausgeblendet	56	OTHER
 Verteidigungsfall	56	NOUN
-Überflutungen	56	NOUN
+Überflutungen	56	NOUN	Überflutung
 Demokrat	56	NOUN
 Hauptsprache	56	NOUN
-Ordensgemeinschaften	56	NOUN
+Ordensgemeinschaften	56	NOUN	Ordensgemeinschaft
 Buchtitel	56	NOUN
-Kongresse	56	NOUN
-Schutzgebieten	56	NOUN
+Kongresse	56	NOUN	Kongress
+Schutzgebieten	56	NOUN	Schutzgebiet
 Municipal	56	NOUN
 Matter	56	NOUN,OTHER
 Twin	56	NOUN
-Patientinnen	56	NOUN
+Patientinnen	56	NOUN	Patientin
 Bahnhofsgebäude	56	NOUN
 glich	56	OTHER
 indogermanisch	56	OTHER
@@ -28316,13 +28316,13 @@ Krankensalbung	56	NOUN
 ausgedehnter	56	OTHER
 Paradigmen	56	NOUN
 Elektrizitätswerk	56	NOUN
-Dämme	56	NOUN
+Dämme	56	NOUN	Damm
 allgemeinbildenden	56	OTHER
 Kätzchen	56	NOUN
-Quadranten	56	NOUN
+Quadranten	56	NOUN	Quadrant
 einsehen	56	VERB
 Möllemann	56	NOUN
-Täufers	56	NOUN
+Täufers	56	NOUN	Täufer
 biographische	56	OTHER
 magisch	56	OTHER
 relationalen	56	OTHER
@@ -28331,17 +28331,17 @@ Rolls	56	NOUN
 Lutetium	56	NOUN
 Coltrane	56	NOUN
 vernetzte	56	OTHER
-Oktaven	56	NOUN
-Kapitalisten	56	NOUN
-Flugzeugs	56	NOUN
+Oktaven	56	NOUN	Oktave
+Kapitalisten	56	NOUN	Kapitalist
+Flugzeugs	56	NOUN	Flugzeug
 Oklahoma	56	NOUN
-Ungehorsams	56	NOUN
+Ungehorsams	56	NOUN	Ungehorsam
 Bretton	56	NOUN
 Romeo	56	NOUN
 Südende	56	NOUN
 übergangen	56	VERB
 Tractatus	56	NOUN
-Malereien	56	NOUN
+Malereien	56	NOUN	Malerei
 Förster	56	NOUN
 Fragebogen	56	NOUN
 Behrens	56	NOUN
@@ -28352,20 +28352,20 @@ auseinandersetzt	56	OTHER
 Finn	56	NOUN,OTHER
 Südsee	56	NOUN
 det	56	OTHER
-Feuchtgebiete	56	NOUN
+Feuchtgebiete	56	NOUN	Feuchtgebiet
 lindern	56	VERB
-Verlegers	56	NOUN
+Verlegers	56	NOUN	Verleger
 Weltmeistertitel	56	NOUN
 Harnröhre	56	NOUN
 Saarlouis	56	NOUN
-Parodien	56	NOUN
+Parodien	56	NOUN	Parodie
 Narva	56	NOUN
-Lawinen	56	NOUN
-Hochebenen	56	NOUN
+Lawinen	56	NOUN	Lawine
+Hochebenen	56	NOUN	Hochebene
 Farbtemperatur	56	NOUN
 Baumaterialien	56	NOUN
 Lehrplan	56	NOUN
-Redakteure	56	NOUN
+Redakteure	56	NOUN	Redakteur
 koordinierten	56	VERB,OTHER
 anliegenden	56	OTHER
 Elbląg	56	NOUN
@@ -28376,14 +28376,14 @@ Gemeindeteil	56	NOUN
 Wallfahrtsort	56	NOUN
 julianische	56	OTHER
 austreten	56	VERB
-Schuberts	56	NOUN
-Rennens	56	NOUN
+Schuberts	56	NOUN	Schubert
+Rennens	56	NOUN	Rennen
 Altdorf	56	NOUN
-Violinen	56	NOUN
+Violinen	56	NOUN	Violine
 Johanniskirche	56	NOUN
 Doha	56	NOUN
 Wachstumsrate	56	NOUN
-Wittgensteins	56	NOUN
+Wittgensteins	56	NOUN	Wittgenstein
 Hohenschönhausen	56	NOUN
 Renner	56	NOUN
 nachhaltiger	56	OTHER
@@ -28392,13 +28392,13 @@ Salome	56	NOUN
 Polyethylen	56	NOUN
 Altkreis	56	NOUN
 spätgotischen	56	OTHER
-Döblins	56	NOUN
+Döblins	56	NOUN	Döblin
 Niue	56	NOUN
 Hurtigruten	56	NOUN
 BVerfGG	56	NOUN
 Krill	56	NOUN
 Ballenstedt	56	NOUN
-Siebenbürgens	56	NOUN
+Siebenbürgens	56	NOUN	Siebenbürgen
 Zivilschutz	56	NOUN
 Bellotto	56	NOUN
 Daugavpils	56	NOUN
@@ -28408,7 +28408,7 @@ Ohre	56	NOUN
 Littau	56	NOUN
 kausalen	55	OTHER
 adäquat	55	OTHER
-Theaterstücken	55	NOUN
+Theaterstücken	55	NOUN	Theaterstück
 Nacken	55	NOUN
 DK	55	NOUN,OTHER
 elegante	55	OTHER
@@ -28425,34 +28425,34 @@ restaurierten	55	VERB,OTHER
 Erscheinungsform	55	NOUN
 prominent	55	OTHER
 Brien	55	NOUN
-Optimierungen	55	NOUN
+Optimierungen	55	NOUN	Optimierung
 weiches	55	OTHER
-Stäbe	55	NOUN
+Stäbe	55	NOUN	Stab
 Verschleiß	55	NOUN
 farblose	55	OTHER
 Präparat	55	NOUN
-Volumens	55	NOUN
+Volumens	55	NOUN	Volumen
 Kolonne	55	NOUN
 Chloroform	55	NOUN
-Fundstätten	55	NOUN
-Meeren	55	NOUN
-Krankheitserregern	55	NOUN
+Fundstätten	55	NOUN	Fundstätte
+Meeren	55	NOUN	Meer
+Krankheitserregern	55	NOUN	Krankheitserreger
 Rice	55	NOUN
 coli	55	OTHER
 Kinderbuch	55	NOUN
 Lane	55	NOUN
 Alphateilchen	55	NOUN
-Wasserstoffs	55	NOUN
+Wasserstoffs	55	NOUN	Wasserstoff
 Californium	55	NOUN
 Glenn	55	NOUN
 spekulativen	55	OTHER
 Krankheitsbild	55	NOUN
-Kämpfern	55	NOUN
+Kämpfern	55	NOUN	Kämpfer
 begnadigt	55	OTHER
 verehren	55	VERB
 favorisiert	55	OTHER
 armenisch	55	NOUN,OTHER
-Festlands	55	NOUN
+Festlands	55	NOUN	Festland
 Bevölkerungszuwachs	55	NOUN
 weströmische	55	OTHER
 Glut	55	NOUN
@@ -28461,7 +28461,7 @@ gesteigerten	55	OTHER
 Zusammengehörigkeit	55	NOUN
 Heyerdahl	55	NOUN
 gerissen	55	OTHER
-Wohngebieten	55	NOUN
+Wohngebieten	55	NOUN	Wohngebiet
 erntete	55	OTHER
 füllt	55	OTHER
 Liebesgeschichte	55	NOUN
@@ -28469,13 +28469,13 @@ Waisenhaus	55	NOUN
 adoptiert	55	OTHER
 Prayer	55	NOUN
 schwimmende	55	OTHER
-Bälle	55	NOUN
-Schicksals	55	NOUN
+Bälle	55	NOUN	Ball
+Schicksals	55	NOUN	Schicksal
 Kommentierung	55	NOUN
-Prädikate	55	NOUN
+Prädikate	55	NOUN	Prädikat
 empfindet	55	OTHER
 entstehe	55	OTHER
-Vorgehens	55	NOUN
+Vorgehens	55	NOUN	Vorgehen
 unbeliebt	55	OTHER
 signalisieren	55	VERB
 Vereidigung	55	NOUN
@@ -28499,14 +28499,14 @@ aufzuweisen	55	OTHER
 Expansionspolitik	55	NOUN
 späteres	55	OTHER
 entsandten	55	VERB,OTHER
-Welterbes	55	NOUN
+Welterbes	55	NOUN	Welterbe
 Pilgerfahrt	55	NOUN
 Vorrunde	55	NOUN
 Visualisierung	55	NOUN
 Fuller	55	NOUN
 Working	55	NOUN
 Aikido	55	NOUN
-Lebewesens	55	NOUN
+Lebewesens	55	NOUN	Lebewesen
 nutzlos	55	OTHER
 Drehbewegung	55	NOUN
 Stephenson	55	NOUN
@@ -28520,9 +28520,9 @@ dreifachen	55	OTHER
 XVIII	55	NOUN
 erschienenes	55	OTHER
 Sammelband	55	NOUN
-atlantische	55	NOUN,OTHER
+atlantische	55	NOUN,OTHER	atlantisch
 Hoorn	55	NOUN
-Mahlzeiten	55	NOUN
+Mahlzeiten	55	NOUN	Mahlzeit
 geschützter	55	OTHER
 Verwaltungsrat	55	NOUN
 Lieferkette	55	NOUN
@@ -28536,7 +28536,7 @@ Schmitz	55	NOUN
 edle	55	NOUN,OTHER
 Führungsanspruch	55	NOUN
 Hitlerjugend	55	NOUN
-Westmächten	55	NOUN
+Westmächten	55	NOUN	Westmächte
 Sowjetrussland	55	NOUN
 identischer	55	OTHER
 Regenfälle	55	NOUN
@@ -28544,44 +28544,44 @@ Bescheid	55	NOUN
 Schenk	55	NOUN,VERB
 erschoss	55	OTHER
 Tagesschau	55	NOUN,OTHER
-Dialogs	55	NOUN
+Dialogs	55	NOUN	Dialog
 forciert	55	OTHER
-Hülsenfrüchte	55	NOUN
+Hülsenfrüchte	55	NOUN	Hülsenfrucht
 Gbit	55	NOUN
 kurzzeitigen	55	OTHER
 Cannstatter	55	NOUN
-Neonazis	55	NOUN
+Neonazis	55	NOUN	Neonazi
 erarbeiteten	55	OTHER
-Kennedys	55	NOUN
+Kennedys	55	NOUN	Kennedy
 Eagle	55	NOUN
 Fra	55	NOUN
 zweisprachigen	55	OTHER
 motorisierte	55	OTHER
-Opferzahlen	55	NOUN
-Reparaturen	55	NOUN
+Opferzahlen	55	NOUN	Opferzahl
+Reparaturen	55	NOUN	Reparatur
 massenhafte	55	OTHER
 Zoologische	55	NOUN,OTHER
 Bose	55	NOUN
 überbrücken	55	VERB
 Alembert	55	NOUN
 Fräulein	55	NOUN
-Jürgens	55	NOUN
+Jürgens	55	NOUN	Jürgen
 Vorrichtung	55	NOUN
 bewilligte	55	OTHER
 Schleimhaut	55	NOUN
 vermerkte	55	OTHER
 Topografie	55	NOUN
 HK	55	NOUN
-Gebrauchs	55	NOUN
+Gebrauchs	55	NOUN	Gebrauch
 Präposition	55	NOUN
-Vorstädten	55	NOUN
+Vorstädten	55	NOUN	Vorstadt
 Instituto	55	NOUN
 Alonso	55	NOUN
 widersprüchlichen	55	OTHER
 populärste	55	OTHER
 Klon	55	NOUN
 herausgearbeitet	55	OTHER
-Orangen	55	NOUN,OTHER
+Orangen	55	NOUN,OTHER	Orange
 selektive	55	OTHER
 Epidermis	55	NOUN
 Minderung	55	NOUN
@@ -28591,8 +28591,8 @@ Greenberg	55	NOUN
 Verstädterung	55	NOUN
 zionistischen	55	OTHER
 Studentenverbindung	55	NOUN
-Arrondissements	55	NOUN
-Amphoren	55	NOUN
+Arrondissements	55	NOUN	Arrondissement
+Amphoren	55	NOUN	Amphore
 Schemata	55	NOUN
 bundesdeutsche	55	OTHER
 Ingo	55	NOUN
@@ -28605,7 +28605,7 @@ Architecture	55	NOUN
 Nieuwe	55	NOUN
 Cornelis	55	NOUN
 Postamt	55	NOUN
-Leidens	55	NOUN
+Leidens	55	NOUN	Leiden
 sokratische	55	OTHER
 Bewegungsenergie	55	NOUN
 Bauelement	55	NOUN
@@ -28618,21 +28618,21 @@ Ausrichter	55	NOUN
 Grete	55	NOUN
 isomorph	55	OTHER
 Jeremias	55	NOUN
-Ortsgruppen	55	NOUN
+Ortsgruppen	55	NOUN	Ortsgruppe
 entschlüsselt	55	OTHER
 Allgäuer	55	NOUN
 eiszeitlichen	55	OTHER
 überlässt	55	OTHER
 Symbolfigur	55	NOUN
-Durchschnitts	55	NOUN
+Durchschnitts	55	NOUN	Durchschnitt
 Garmisch	55	NOUN
 Gründonnerstag	55	NOUN
-Gesamtschulen	55	NOUN
+Gesamtschulen	55	NOUN	Gesamtschule
 Schwabing	55	NOUN
-Kreisstraßen	55	NOUN
+Kreisstraßen	55	NOUN	Kreisstraße
 Unschärfe	55	NOUN
 Schultheiß	55	NOUN
-Editoren	55	NOUN
+Editoren	55	NOUN	Editor
 PDP	55	NOUN
 lauffähig	55	OTHER
 Input	55	NOUN,OTHER
@@ -28641,7 +28641,7 @@ zerrissen	55	VERB
 keV	55	OTHER
 Waschen	55	NOUN,OTHER
 aufgefangen	55	OTHER
-Fraktale	55	NOUN,OTHER
+Fraktale	55	NOUN,OTHER	Fraktal
 Grunewald	55	NOUN
 ausschließt	55	OTHER
 Chin	55	NOUN,OTHER
@@ -28650,7 +28650,7 @@ Sterilisation	55	NOUN
 Fußballmannschaft	55	NOUN
 Schloß	55	NOUN
 verpachtet	55	OTHER
-Wasserstände	55	NOUN
+Wasserstände	55	NOUN	Wasserstand
 bebaute	55	OTHER
 Literaturpreis	55	NOUN
 Hanauer	55	NOUN
@@ -28664,13 +28664,13 @@ Vertragsstaaten	55	NOUN
 einsehbar	55	OTHER
 Jahrestemperatur	55	NOUN
 Stader	55	NOUN
-Befreiungskriegen	55	NOUN
+Befreiungskriegen	55	NOUN	Befreiungskrieg
 geistliches	55	OTHER
 SL	55	NOUN
 Worpswede	55	NOUN
 Adenin	55	NOUN
 Urform	55	NOUN
-Manipulationen	55	NOUN
+Manipulationen	55	NOUN	Manipulation
 Beutel	55	NOUN
 italiana	55	NOUN,OTHER
 annektierten	55	VERB,OTHER
@@ -28682,12 +28682,12 @@ hindeutet	55	OTHER
 Oligozän	55	NOUN
 Brod	55	NOUN
 abstimmen	55	OTHER
-Papiers	55	NOUN
+Papiers	55	NOUN	Papier
 gestiegene	55	OTHER
 Lesben	55	NOUN
 Hector	55	NOUN
-Gregors	55	NOUN
-Niederrheinischen	55	NOUN,OTHER
+Gregors	55	NOUN	Gregor
+Niederrheinischen	55	NOUN,OTHER	Niederrheinisch
 Wupper	55	NOUN
 Busnetz	55	NOUN
 währte	55	OTHER
@@ -28700,8 +28700,8 @@ Provinzial	55	NOUN
 Damgarten	55	NOUN
 gefälschte	55	OTHER
 magnetischer	55	OTHER
-Ortsbezirke	55	NOUN
-Stöße	55	NOUN
+Ortsbezirke	55	NOUN	Ortsbezirk
+Stöße	55	NOUN	Stoß
 Verlierer	55	NOUN
 Fjodor	55	NOUN
 Corvinus	55	NOUN
@@ -28709,19 +28709,19 @@ Florin	55	NOUN
 Gruß	55	NOUN
 Zeitreise	55	NOUN
 minütigen	55	OTHER
-Zugänge	55	NOUN
+Zugänge	55	NOUN	Zugang
 Lhasa	55	NOUN
 ortsansässigen	55	OTHER
-Nationalliberalen	55	NOUN,OTHER
+Nationalliberalen	55	NOUN,OTHER	Nationalliberale
 thüringische	55	OTHER
 Schiefe	55	NOUN,OTHER
-Buchhandels	55	NOUN
+Buchhandels	55	NOUN	Buchhandel
 Manierismus	55	NOUN
 Dadaismus	55	NOUN
 wechselständig	55	OTHER
-Fruchtblätter	55	NOUN
+Fruchtblätter	55	NOUN	Fruchtblatt
 funktionsfähig	55	OTHER
-Passwörter	55	NOUN
+Passwörter	55	NOUN	Passwort
 txt	55	OTHER
 übergibt	55	OTHER
 indiziert	55	OTHER
@@ -28729,7 +28729,7 @@ Pflanzenfresser	55	NOUN
 Gutachter	55	NOUN
 porträtiert	55	OTHER
 Aufgang	55	NOUN
-Herders	55	NOUN
+Herders	55	NOUN	Herder
 Harden	55	NOUN
 Desinfektion	55	NOUN
 gesteuerten	55	OTHER
@@ -28738,18 +28738,18 @@ Rosengarten	55	NOUN
 Frauentag	55	NOUN
 Wassereis	55	NOUN
 Chester	55	NOUN
-Gehilfen	55	NOUN
+Gehilfen	55	NOUN	Gehilfe
 obschon	55	OTHER
 Pinyin	55	NOUN
 Dijon	55	NOUN
 Schrader	55	NOUN
 Notstand	55	NOUN
 Moabit	55	NOUN
-Speichers	55	NOUN
+Speichers	55	NOUN	Speicher
 Koordinate	55	NOUN
 lizenzierte	55	OTHER
 Sampler	55	NOUN
-Dekrete	55	NOUN
+Dekrete	55	NOUN	Dekret
 Schweinefleisch	55	NOUN
 Amor	55	NOUN,OTHER
 fortlaufende	55	OTHER
@@ -28760,15 +28760,15 @@ entartet	55	OTHER
 Auslöschung	55	NOUN
 Steinbach	55	NOUN
 einstellte	55	OTHER
-Redaktionen	55	NOUN
+Redaktionen	55	NOUN	Redaktion
 Vereinsregister	55	NOUN
-Administratoren	55	NOUN
+Administratoren	55	NOUN	Administrator
 Dömitz	55	NOUN
 Noah	55	NOUN
 Verwerfung	55	NOUN
 Ill	55	NOUN
 waagerecht	55	OTHER
-Leonardos	55	NOUN
+Leonardos	55	NOUN	Leonardo
 moldauische	55	NOUN,OTHER
 binomische	55	OTHER
 Disco	55	NOUN
@@ -28796,9 +28796,9 @@ Psychose	55	NOUN
 Kulturbesitz	55	NOUN
 Unterkiefer	55	NOUN
 SDAP	55	NOUN
-Nymphen	55	NOUN
+Nymphen	55	NOUN	Nymphe
 Schauenburg	55	NOUN
-Lübecks	55	NOUN
+Lübecks	55	NOUN	Lübeck
 Hirntod	55	NOUN
 Reha	55	NOUN
 Nagaland	55	NOUN
@@ -28806,7 +28806,7 @@ Thale	55	NOUN
 reformieren	55	VERB
 DICOM	55	NOUN
 Wingolf	55	NOUN
-Nandus	55	NOUN
+Nandus	55	NOUN	Nandu
 Coca	55	NOUN
 Cité	55	NOUN
 Mecklenburger	55	NOUN
@@ -28814,19 +28814,19 @@ Marienwerder	55	NOUN
 Fachwerkbauten	55	NOUN
 Beuteltiere	55	NOUN
 Osseten	55	NOUN
-Aserbaidschanische	55	NOUN,OTHER
+Aserbaidschanische	55	NOUN,OTHER	Aserbaidschanisch
 Phraya	55	NOUN
 Zirkumzision	55	NOUN
 Sherry	55	NOUN
 Hesychasmus	55	NOUN
 Kirkenes	55	NOUN
 Hannawald	55	NOUN
-Mercators	55	NOUN
+Mercators	55	NOUN	Mercator
 inflorescence	55	OTHER
 Fällung	54	NOUN
 Wirtschaftssystem	54	NOUN
 stünde	54	OTHER
-Konstrukte	54	NOUN
+Konstrukte	54	NOUN	Konstrukt
 Nine	54	NOUN
 größtmögliche	54	OTHER
 kürzen	54	VERB
@@ -28840,22 +28840,22 @@ Verleih	54	NOUN
 Synchronsprecher	54	NOUN
 Sonja	54	NOUN
 Beverly	54	NOUN
-Wasserstoffatome	54	NOUN
+Wasserstoffatome	54	NOUN	Wasserstoffatom
 gediegen	54	OTHER
 Troposphäre	54	NOUN
 Guss	54	NOUN
 Kraftfahrzeug	54	NOUN
 verfestigt	54	OTHER
 MiG	54	NOUN
-Rissen	54	NOUN,OTHER
+Rissen	54	NOUN,OTHER	Risse
 fortschreitender	54	OTHER
 eingespart	54	OTHER
 Belt	54	NOUN,OTHER
 Abgas	54	NOUN
 Normaldruck	54	NOUN
 Atmungskette	54	NOUN
-Alkalimetalle	54	NOUN
-Zusammensetzungen	54	NOUN
+Alkalimetalle	54	NOUN	Alkalimetall
+Zusammensetzungen	54	NOUN	Zusammensetzung
 Kontinuum	54	NOUN
 Naturgeschichte	54	NOUN
 Fachrichtung	54	NOUN
@@ -28864,7 +28864,7 @@ Phänomenologie	54	NOUN
 vorgelagerte	54	OTHER
 einzudringen	54	VERB
 Weiser	54	NOUN,OTHER
-Söldnern	54	NOUN
+Söldnern	54	NOUN	Söldner
 attische	54	OTHER
 eigenmächtig	54	OTHER
 persischer	54	OTHER
@@ -28875,7 +28875,7 @@ Arbeitsleistung	54	NOUN
 medikamentöse	54	OTHER
 Britannia	54	NOUN
 Flying	54	NOUN
-Dächer	54	NOUN
+Dächer	54	NOUN	Dach
 Fontainebleau	54	NOUN
 glaubhaft	54	OTHER
 Choice	54	NOUN
@@ -28884,8 +28884,8 @@ Biblioteca	54	NOUN
 Syllogismus	54	NOUN
 Gedankenexperiment	54	NOUN
 Philosophiegeschichte	54	NOUN
-Fehlers	54	NOUN
-Niedergangs	54	NOUN
+Fehlers	54	NOUN	Fehler
+Niedergangs	54	NOUN	Niedergang
 Urenkel	54	NOUN
 meteorologische	54	OTHER
 Kontinentalklima	54	NOUN
@@ -28895,11 +28895,11 @@ Fraktionsvorsitzender	54	NOUN
 Staatsbesuch	54	NOUN
 Unversehrtheit	54	NOUN
 Assad	54	NOUN
-Formats	54	NOUN
+Formats	54	NOUN	Format
 Raute	54	NOUN
 üppigen	54	OTHER
-Viertels	54	NOUN
-NGOs	54	NOUN
+Viertels	54	NOUN	Viertel
+NGOs	54	NOUN	NGO
 gegenteilige	54	OTHER
 Befreier	54	NOUN
 kahl	54	OTHER
@@ -28911,22 +28911,22 @@ fünfjährige	54	OTHER
 ICC	54	NOUN
 Solarenergie	54	NOUN
 federführend	54	OTHER
-Sippen	54	NOUN
+Sippen	54	NOUN	Sippe
 Lebenskraft	54	NOUN
-Versuchs	54	NOUN
+Versuchs	54	NOUN	Versuch
 Reuß	54	NOUN
 verklagte	54	OTHER
 verschleiern	54	VERB
-Monographien	54	NOUN
+Monographien	54	NOUN	Monographie
 widerstehen	54	VERB
 Hafenbecken	54	NOUN
 Wehen	54	NOUN,OTHER
 Aufladung	54	NOUN
 Gesetzesänderung	54	NOUN
-Aufstiegs	54	NOUN
+Aufstiegs	54	NOUN	Aufstieg
 Philippi	54	NOUN
 teilhaben	54	VERB
-Atlantiks	54	NOUN
+Atlantiks	54	NOUN	Atlantik
 derartig	54	OTHER
 Hauptfriedhof	54	NOUN
 wisse	54	OTHER
@@ -28936,7 +28936,7 @@ innehat	54	OTHER
 Touch	54	NOUN,OTHER
 inch	54	NOUN,OTHER
 Remote	54	NOUN,OTHER
-Reichskanzlers	54	NOUN
+Reichskanzlers	54	NOUN	Reichskanzler
 Hofhaltung	54	NOUN
 Mimik	54	NOUN
 Staatspartei	54	NOUN
@@ -28948,7 +28948,7 @@ Gräueltaten	54	NOUN
 Molotow	54	NOUN
 Jugendzeit	54	NOUN
 Fraenkel	54	NOUN
-Innenministeriums	54	NOUN
+Innenministeriums	54	NOUN	Innenministerium
 extensive	54	OTHER
 adressiert	54	OTHER
 UEFI	54	NOUN
