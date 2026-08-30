@@ -208,7 +208,31 @@ object LanguagePackCatalog {
             // §320 (v1.0.73): D-412's lemma column populated for the first time - noun-inflection
             // project round 1, the >=2000 frequency band (124 mechanical candidates, 79 individually
             // confirmed and linked to their base form).
-            version = 31
+            // §321 (v1.0.74): the noun-inflection-linking project completed end to end - every
+            // remaining frequency band (500-1999, 200-499, 50-199, 20-49, 10-19, 5-9) worked through
+            // round by round per explicit user instruction to continue autonomously without stopping
+            // for interim builds. ~20,024 mechanical candidates individually reviewed across the whole
+            // sweep (124 in round 1 already counted in §320); 14,976 lemma links confirmed in total
+            // (79 from §320 plus 14,897 in this closing pass), the remainder rejected using the same
+            // taxonomy established in §320: derivational demonyms (Berliner/Schweizer-style place-to-
+            // person forms), agent-noun -er derivations (Politiker/Lehrer-style "one who does X"),
+            // short-stem/coincidental collisions with an unrelated real word, cross-category pairs
+            // (a nominalised-infinitive vs. a plain noun sharing a root), foreign/English-spelled
+            // plurals, and proper-noun genitives that are themselves standalone surnames. A handful of
+            // established person-noun plural exceptions from §320 (Franzose/Grieche/Russe/Chinese/
+            // Este/Lette/Ire/Apache) were extended case by case where a genuinely already-accepted
+            // person-noun's own plural came up again in a later band. Chain candidates continue to
+            // resolve to the true deepest root rather than an intermediate mechanical hop, with several
+            // dozen manual corrections per round where the mechanical chain landed on a spurious
+            // fragment, a false umlaut-reversal, or a semantically unrelated intermediate word instead
+            // of the real lemma. `git diff --stat`/`--numstat` confirmed each round's exact line count
+            // before every commit; the write script's fail-loud asserts (target is `NOUN`-tagged,
+            // currently has an empty `lemma`, chosen base exists as its own row) never fired across any
+            // of the 27 rounds after round 5c's script fix. `dictionaries/de/version.txt` 31 -> 32, pack
+            // rebuilt, `LanguagePackCatalog` version 31 -> 32. No new tests (data-only; `lemma` still
+            // has zero code readers - this remains groundwork for D-404 Tier 1). `versionCode` 377 ->
+            // 378, `versionName` `"1.0.73"` -> `"1.0.74"`. Not yet device-confirmed.
+            version = 32
         ),
         Entry(
             Language.GREEK,

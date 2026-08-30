@@ -802,6 +802,46 @@ non-trivial changes).
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
 
+- **§321 (v1.0.74): the noun-inflection-linking project completed end to end - every remaining**
+  **frequency band worked through to closure.** Continuation of §320's round 1, per explicit user
+  instruction to proceed autonomously band by band without stopping for interim builds. Bands
+  processed this pass: `500-1999` (408 links), `200-499` (770), `50-199` (3,113 across 6 rounds),
+  `20-49` (4,597 across 8 rounds), `10-19` (5,238 across 10 rounds), `5-9` (771 across 2 rounds) - the
+  last of these confirmed empty below frequency 5 by the same generator script used throughout. Total
+  across the whole sweep (§320's round 1 included): ~20,024 mechanical candidates individually
+  reviewed, 14,976 confirmed and linked to their base form (verified directly: `awk` count of non-empty
+  `lemma` rows in `dict.tsv` matches the sum of every round's own reported link count exactly). Same
+  taxonomy as §320 throughout, refined round to round as new patterns appeared: **rejected** -
+  derivational demonyms (`Berliner`->`Berlin`-style place-to-person forms, per the original explicit
+  exclusion), agent-noun `-er` derivations (`Politiker`/`Lehrer`-style "one who does X" from a root that
+  is not itself what's being inflected), short-stem/coincidental collisions with an unrelated real word
+  (`Mais`≠`Mai`, `Kohlen`≠`Kohl`, `Ulmen`≠`Ulm`), cross-category pairs (a nominalised-infinitive vs. a
+  plain noun sharing a root, e.g. `Schälen`≠`Schal`), foreign/English-spelled plurals kept out for
+  safety (`Divisions`, `Operas`, `Chains`), and proper-noun genitives that are themselves standalone
+  surnames rather than derived forms (`Carlsen`, `Johannsen`, `Andresen`). **Accepted** beyond plain
+  case/number inflection - adjective declension where both sides already carry `NOUN` (nominalised
+  adjectives), genitive-of-name/surname unless the `-s` form is itself an independent surname, archaic/
+  dialectal doublets of an already-established word (`Lichter`/`Licht`, `Türe`/`Tür`), and a small,
+  case-by-case-verified set of person-noun plural exceptions extending §320's own list
+  (`Zwangsarbeiterinnen`->`Zwangsarbeiter`, `Franziskanerinnen`->`Franziskaner`,
+  `Soldatinnen`->`Soldat`) where the base itself was already an accepted person-noun, never a fresh
+  place-to-demonym derivation. Chain candidates continued to resolve to the true deepest root rather
+  than an intermediate mechanical hop, per the pattern §320 established, with several dozen manual
+  corrections per round where the mechanical umlaut-reversal or suffix-strip landed on a spurious
+  fragment or a semantically unrelated intermediate word instead of the real lemma (e.g.
+  `Ulmen`->`Ulme` not `Ulm`, `Kohlen`->`Kohle` not `Kohl`, `Baches`->`Bach` skipping the false
+  intermediate `Bache`=female wild boar). Write script's fail-loud asserts (target is `NOUN`-tagged,
+  currently has an empty `lemma`, chosen base actually exists as its own row) never fired across any of
+  the 27 rounds committed this pass. `git diff --stat`/`--numstat` confirmed each round's exact
+  2x-line-count before every commit, all committed individually (27 data-only commits, no version bump
+  per round per the explicit "don't stop for interim builds" instruction). `dictionaries/de/
+  version.txt` 31 -> 32, pack rebuilt, `LanguagePackCatalog` version 31 -> 32. No new tests (data-only;
+  `lemma` still has zero code readers - this remains pure groundwork for D-404 Tier 1). 1064 unit tests
+  unchanged, all green (via JDK 21). `versionCode` 377 -> 378, `versionName` `"1.0.73"` -> `"1.0.74"`.
+  Not yet device-confirmed. **This closes the entire noun-inflection-linking project** - `lemma` is now
+  populated for every noun inflection the mechanical suffix/umlaut heuristic could find and a human
+  could individually confirm, across the full frequency range down to 5.
+
 - **§320 (v1.0.73): kicked off the German noun-inflection-linking project - D-412's `lemma` column**
   **populated for the first time (0 rows -> 79), round 1 of the `>=2000` frequency band.** New effort,
   requested explicitly and scoped via `AskUserQuestion` before starting (mirroring how the verb project
