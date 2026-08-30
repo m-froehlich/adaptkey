@@ -6,7 +6,8 @@ package de.froehlichmedia.adaptkey.dictionary
 /**
  * Pure parser for the bundled per-language dictionary assets (real Wikipedia-derived lexicons).
  *
- * Word lines are `<word>\t<frequency>\t<pos,comma,separated>` (the POS field may be empty); bigram
+ * Word lines are `<word>\t<frequency>\t<pos,comma,separated>\t<lemma>` (the POS field may be empty; the
+ * lemma field, D-412, is optional and omitted from most rows - see {@link WordEntry#lemma}); bigram
  * lines are `<previousWord>\t<word>\t<count>`. Blank lines, malformed lines and unknown POS names are
  * skipped so one bad line never aborts the import. A stray carriage return is tolerated. Only parsing
  * lives here; the actual bulk insert into SQLite is done by {@link SqliteDictionaryStore}.
@@ -35,7 +36,8 @@ object DictionaryAssetParser {
             }
             val frequency = parts[1].toLongOrNull() ?: return@forEach
             val pos = if (parts.size >= 3) parsePos(parts[2]) else emptySet()
-            result.add(WordEntry(parts[0], frequency, pos))
+            val lemma = if (parts.size >= 4) parts[3].ifEmpty { null } else null
+            result.add(WordEntry(parts[0], frequency, pos, lemma))
         }
         return result
     }

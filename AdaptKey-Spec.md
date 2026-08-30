@@ -1570,6 +1570,42 @@ should Shift be *at this position*, derived fresh, never carried over from where
 
 ---
 
+## 38. Bundled-Dictionary Lemma Link (D-412)
+
+D-412: `WordEntry` gained an optional `lemma` field - for a bundled entry that is itself an inflected
+form of another bundled word (e.g. `ging` of `gehen`), that base form's own key; `null` for a base form
+itself or any entry with no recorded link. Bundled-dictionary-only (`SqliteDictionaryStore`'s
+`TABLE_WORDS`) - never set on a learned entry, and the learned table (`TABLE_LEARNED`) gained no such
+column at all. `dict.tsv`'s word-line format gained a matching optional 4th column
+(`<word>\t<freq>\t<pos>\t<lemma>`), parsed by `DictionaryAssetParser` exactly like the POS column: absent
+or empty means no link, backward-compatible with every existing row in every language's asset.
+
+Motivation: laid down as groundwork for D-404 Tier 1 (generative morphology) while the German dictionary's
+verb-inflection tagging work (D-412's own sibling effort, see `AdaptKey-Progress.md`) is under way anyway -
+the base-form link for each inflected form found during that work is recorded directly as a byproduct,
+rather than needing a separate future pass to re-derive it. As of this writing the field has **no reader
+anywhere in the app** - purely descriptive metadata until a future feature consumes it, the same status
+D-368's own `VERB` tag had before this round.
+
+Migration mechanics deliberately mirror D-388's `last_touched` column precedent, not the more destructive
+`onUpgrade`/`DATABASE_VERSION` path: this project never bumps `DATABASE_VERSION`, since `onUpgrade` drops
+every table including `TABLE_LEARNED` (the user's real, irreplaceable learned words and blacklist) and
+rebuilds it empty - a guarded `ALTER TABLE ADD COLUMN` in a new `ensureLemmaColumn()`, called unconditionally
+from `init {}` exactly like `ensureLastTouchedColumn()`, is the safe, established pattern for evolving this
+schema without ever risking that data. Unlike `last_touched`, no existing-row backfill is needed: `TABLE_WORDS`
+is entirely reseedable from the language-pack asset (`resetBundledWords()` + `bulkImport()`), so a `NULL`
+default for every pre-existing row is simply correct until the next reimport populates real links.
+
+The lemma value itself is stored as a plain word string (matching how `dict.tsv`/the TSV parser already
+treat the POS field, not as a `rowid`/integer foreign key) - `TABLE_WORDS.wkey` is already the indexed
+primary key, so a text-keyed lookup is no slower in practice, and every other cross-reference in this schema
+(`TABLE_BIGRAMS`, `TABLE_LEARNED_TRIGRAMS`, `TABLE_BLACKLIST`) already keys by the same lower-cased text
+form rather than by rowid - a rowid-based reference would also not survive `TABLE_WORDS`'s routine
+wipe-and-reseed cycle in any well-defined way, since SQLite gives no guarantee that rowids are stable across
+a `DELETE`+bulk-`INSERT` pair.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

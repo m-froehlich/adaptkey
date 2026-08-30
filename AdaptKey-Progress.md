@@ -439,6 +439,47 @@ non-trivial changes).
 
 ## Current State
 
+- **§305 (v1.0.58): D-412 - a bundled-only `lemma` link column, laid down as groundwork for the**
+  **in-progress German verb-tagging project (see below) and, further out, D-404 Tier 1.** `WordEntry` gained
+  `lemma: String? = null`; `dict.tsv`'s word-line format gained a matching optional 4th column, parsed
+  exactly like the POS column (absent/empty = no link, fully backward-compatible with every existing row in
+  every language's asset). `SqliteDictionaryStore` schema: `TABLE_WORDS` alone gained the column (`lemma
+  TEXT`, `CREATE TABLE` for fresh installs plus a new guarded `ensureLemmaColumn()` - same `PRAGMA
+  table_info`-checked `ALTER TABLE ADD COLUMN` pattern as D-388's `ensureLastTouchedColumn()`, called
+  unconditionally from `init {}`) - deliberately **not** `TABLE_LEARNED`, and deliberately not via a
+  `DATABASE_VERSION`/`onUpgrade` bump, since `onUpgrade` drops every table including `TABLE_LEARNED` (the
+  user's real learned words/blacklist) and this project has apparently never actually exercised that path for
+  exactly that reason. Every `TABLE_WORDS` read/write path (`putWord`, `bulkImport`, `entryOfIn`,
+  `queryByPrefix`) threads the column through; both of `entryOf`'s and `unigramsByPrefix`'s merge-with-learned
+  branches were fixed to keep the bundled entry's own `lemma` rather than silently losing it to the learned
+  entry's always-null one (mirrored in `InMemoryDictionaryStore` too). Value stored as a plain word string,
+  not a `rowid`/integer FK - discussed directly with the user (who asked about using the table's implicit
+  SQLite `rowid` for a cheaper lookup): `TABLE_WORDS.wkey` is already the indexed primary key so a text
+  lookup is no slower, every other cross-reference in this schema already keys by lower-cased text
+  (`TABLE_BIGRAMS`, `TABLE_LEARNED_TRIGRAMS`, `TABLE_BLACKLIST`), and a rowid has no stability guarantee
+  across `TABLE_WORDS`'s routine `resetBundledWords()`+`bulkImport()` wipe-and-reseed cycle. 6 new tests
+  (`DictionaryAssetParserTest` lemma-column parsing, `InMemoryDictionaryStoreTest` put/`entryOf`/
+  `unigramsByPrefix` round-trip and merge-survival). 1064 unit tests total (was 1058), all green (via JDK 21).
+  `versionCode` 361 -> 362, `versionName` `"1.0.57"` -> `"1.0.58"`. Spec gained new §38. **Zero readers of
+  `lemma` exist yet** - same groundwork-only status D-368's own `VERB` tag had. Not yet device-confirmed (no
+  device-observable change expected). See history (this session).
+
+  **Still queued, not yet applied to `dict.tsv`:** the actual German verb-in-`OTHER` tagging project this
+  column exists to support. Scope agreed with the user: infinitives *and* already-present inflected forms
+  (not just base forms), found via a heuristic candidate pool (lowercase, `OTHER`-only, ends in `-en`/`-eln`/
+  `-ern`/`-n` - 10,925 candidates total, banded by frequency) reviewed individually, D-368-style. The ≥2000
+  band (181 candidates) has been fully classified but not yet written: ~76 clear-cut verbs ready to tag,
+  4 genuine dual-meaning words (`einigen`/`sieben`/`gleichen`/`bestimmten`) agreed to tag as `OTHER,VERB`,
+  3 rare/archaic verb readings (`sondern`/`freien`/`langen`) agreed to skip. Präsens-Partizip-as-adjective
+  forms (`folgenden`, `genannten`, ...) are explicitly out of scope - agreed as "generativ gut greifbar"
+  (regenerable later, not worth tagging now). For genuinely irregular (strong-verb) inflected forms - which
+  do **not** share a usable prefix with their infinitive's stem (empirically checked: 8 of 10 sampled strong
+  participles share zero leading characters with the infinitive, e.g. `gehen`/`gegangen`) - a curated
+  reference table of German strong-verb principal parts (a small, closed, well-documented class, ~150-200
+  verbs) is the agreed approach, checked by exact match against the candidate pool, not by any prefix search.
+  Next step: apply the ≥2000 band, then continue through the remaining bands (500-1999: 455, 200-499: 788,
+  50-199: 2290, 10-49: 6138, <10: 1073).
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with

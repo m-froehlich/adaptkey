@@ -365,4 +365,32 @@ class InMemoryDictionaryStoreTest {
         assertEquals(listOf("MSCI"), words.map { it.word })
         assertEquals(13L, words.first().frequency)
     }
+    
+    @Test
+    fun `D-412 putWord stores and entryOf returns a lemma link`() {
+        store.putWord(WordEntry("gehen", 500L, setOf(PartOfSpeech.OTHER, PartOfSpeech.VERB)))
+        store.putWord(WordEntry("ging", 100L, setOf(PartOfSpeech.OTHER, PartOfSpeech.VERB), lemma = "gehen"))
+        
+        assertEquals("gehen", store.entryOf("ging")?.lemma)
+        assertEquals(null, store.entryOf("gehen")?.lemma)
+    }
+    
+    @Test
+    fun `D-412 a bundled entry's lemma survives entryOf's merge with a learned override of the same word`() {
+        store.putWord(WordEntry("Ging", 100L, setOf(PartOfSpeech.OTHER, PartOfSpeech.VERB), lemma = "gehen"))
+        store.learn("GING", null)
+        
+        val entry = store.entryOf("ging")
+        assertEquals("GING", entry?.word)
+        assertEquals("gehen", entry?.lemma)
+    }
+    
+    @Test
+    fun `D-412 a bundled entry's lemma survives unigramsByPrefix's merge with a learned override`() {
+        store.putWord(WordEntry("Ging", 100L, setOf(PartOfSpeech.OTHER, PartOfSpeech.VERB), lemma = "gehen"))
+        store.learn("GING", null)
+        
+        val words = store.unigramsByPrefix("gin", 10)
+        assertEquals("gehen", words.first().lemma)
+    }
 }

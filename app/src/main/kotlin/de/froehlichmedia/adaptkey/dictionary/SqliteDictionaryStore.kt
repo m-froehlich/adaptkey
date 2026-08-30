@@ -41,6 +41,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // already created everything and this is a harmless no-op.
         ensureAdditiveSchema(db)
         ensureLastTouchedColumn(db)
+        ensureLemmaColumn(db)
     }
     
     /**
@@ -60,7 +61,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     
     override fun onCreate(database: SQLiteDatabase) {
         database.execSQL(
-            "CREATE TABLE $TABLE_WORDS (wkey TEXT PRIMARY KEY, word TEXT NOT NULL, freq INTEGER NOT NULL, pos TEXT NOT NULL)"
+            "CREATE TABLE $TABLE_WORDS (wkey TEXT PRIMARY KEY, word TEXT NOT NULL, freq INTEGER NOT NULL, pos TEXT NOT NULL, lemma TEXT)"
         )
         database.execSQL(
             "CREATE TABLE $TABLE_BIGRAMS (prevkey TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY (prevkey, wkey))"
@@ -151,8 +152,28 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
     }
     
+    /**
+     * D-412: adds [TABLE_WORDS]'s `lemma` column when this database predates it - same guarded-`ALTER
+     * TABLE` pattern as [ensureLastTouchedColumn] (`PRAGMA table_info` presence check, since `ADD COLUMN`
+     * fails outright if the column already exists). Unlike that migration, no existing-row backfill is
+     * needed: [TABLE_WORDS] is entirely reseedable from the language-pack asset ([resetBundledWords] +
+     * [bulkImport]), so a `NULL` default for every pre-existing row is simply correct until the next
+     * reimport populates the real links - never [TABLE_LEARNED], which has no `lemma` column at all and
+     * must never be touched by this bundled-only migration.
+     */
+    private fun ensureLemmaColumn(database: SQLiteDatabase) {
+        val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_WORDS)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { if (cursor.moveToNext()) cursor.getString(nameIndex) else null }.any { it == "lemma" }
+        }
+        if (hasColumn) {
+            return
+        }
+        database.execSQL("ALTER TABLE $TABLE_WORDS ADD COLUMN lemma TEXT")
+    }
+    
     override fun putWord(entry: WordEntry) {
-        putWordInternal(TABLE_WORDS, entry.word, entry.frequency, entry.partsOfSpeech)
+        putWordInternal(TABLE_WORDS, entry.word, entry.frequency, entry.partsOfSpeech, lemma = entry.lemma)
     }
     
     /**
@@ -167,7 +188,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         val database = db
         database.beginTransaction()
         try {
-            words.forEach { putWordInternal(TABLE_WORDS, it.word, it.frequency, it.partsOfSpeech) }
+            words.forEach { putWordInternal(TABLE_WORDS, it.word, it.frequency, it.partsOfSpeech, lemma = it.lemma) }
             bigrams.forEach { putBigramInternal(TABLE_BIGRAMS, it.previousWord, it.word, it.count) }
             database.setTransactionSuccessful()
         } finally {
@@ -675,20 +696,29 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             val existing = merged[key]
             // D-264: the learned entry's own casing wins over a bundled one when both exist for the same
             // key (see learn()'s own note) - e.g. a preferred all-caps acronym spelling must be what the
-            // suggestion bar actually offers, not a differently-cased bundled entry.
-            merged[key] = if (existing != null) entry.copy(frequency = existing.frequency + entry.frequency) else entry
+            // suggestion bar actually offers, not a differently-cased bundled entry. D-412: lemma is
+            // bundled-only, so the bundled entry's own value (if any) is kept rather than lost to the
+            // learned entry's always-null one.
+            merged[key] = if (existing != null) {
+                entry.copy(frequency = existing.frequency + entry.frequency, lemma = existing.lemma)
+            } else {
+                entry
+            }
         }
         return merged.values.sortedByDescending { it.frequency }.take(limit)
     }
     
     private fun queryByPrefix(table: String, prefix: String, limit: Int): List<WordEntry> {
+        val hasLemma = table == TABLE_WORDS
+        val columns = if (hasLemma) "word, freq, pos, lemma" else "word, freq, pos"
         val result = ArrayList<WordEntry>()
         db.rawQuery(
-            "SELECT word, freq, pos FROM $table WHERE wkey LIKE ? ORDER BY freq DESC LIMIT ?",
+            "SELECT $columns FROM $table WHERE wkey LIKE ? ORDER BY freq DESC LIMIT ?",
             arrayOf(prefix.lowercase() + "%", limit.toString())
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                result.add(WordEntry(cursor.getString(0), cursor.getLong(1), parsePos(cursor.getString(2))))
+                val lemma = if (hasLemma) cursor.getString(3) else null
+                result.add(WordEntry(cursor.getString(0), cursor.getLong(1), parsePos(cursor.getString(2)), lemma))
             }
         }
         return result
@@ -958,8 +988,14 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return when {
             bundled == null -> learned
             learned == null -> bundled
-            // D-264: the learned entry's own casing wins when both exist for the same key.
-            else -> WordEntry(learned.word, bundled.frequency + learned.frequency, bundled.partsOfSpeech + learned.partsOfSpeech)
+            // D-264: the learned entry's own casing wins when both exist for the same key. D-412: lemma is
+            // bundled-only (TABLE_LEARNED has no such column, so learned.lemma is always null here anyway).
+            else -> WordEntry(
+                learned.word,
+                bundled.frequency + learned.frequency,
+                bundled.partsOfSpeech + learned.partsOfSpeech,
+                lemma = bundled.lemma
+            )
         }
     }
     
@@ -971,15 +1007,21 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return entryOfIn(TABLE_LEARNED, word)
     }
     
+    /**
+     * D-412: [TABLE_WORDS] alone carries a `lemma` column - [TABLE_LEARNED] has none, so selecting it
+     * there would fail outright.
+     */
     private fun entryOfIn(table: String, word: String): WordEntry? {
+        val columns = if (table == TABLE_WORDS) "word, freq, pos, lemma" else "word, freq, pos"
         db.rawQuery(
-            "SELECT word, freq, pos FROM $table WHERE wkey = ?",
+            "SELECT $columns FROM $table WHERE wkey = ?",
             arrayOf(word.lowercase())
         ).use { cursor ->
             if (!cursor.moveToFirst()) {
                 return null
             }
-            return WordEntry(cursor.getString(0), cursor.getLong(1), parsePos(cursor.getString(2)))
+            val lemma = if (table == TABLE_WORDS) cursor.getString(3) else null
+            return WordEntry(cursor.getString(0), cursor.getLong(1), parsePos(cursor.getString(2)), lemma)
         }
     }
     
@@ -989,8 +1031,17 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      *        write is a full `INSERT OR REPLACE`, so this must always be passed explicitly for that table
      *        - an omitted value would silently reset the column back to its schema default instead of
      *        leaving it untouched.
+     * @param lemma D-412: the base-form key to stamp into [TABLE_WORDS]'s own `lemma` column - ignored
+     *        for any other table, which has no such column at all (mirrors [lastTouched] above).
      */
-    private fun putWordInternal(table: String, word: String, frequency: Long, pos: Set<PartOfSpeech>, lastTouched: Long? = null) {
+    private fun putWordInternal(
+        table: String,
+        word: String,
+        frequency: Long,
+        pos: Set<PartOfSpeech>,
+        lastTouched: Long? = null,
+        lemma: String? = null
+    ) {
         val values = ContentValues().apply {
             put("wkey", word.lowercase())
             put("word", word)
@@ -998,6 +1049,9 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             put("pos", pos.joinToString(",") { it.name })
             if (lastTouched != null) {
                 put("last_touched", lastTouched)
+            }
+            if (table == TABLE_WORDS) {
+                put("lemma", lemma)
             }
         }
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)

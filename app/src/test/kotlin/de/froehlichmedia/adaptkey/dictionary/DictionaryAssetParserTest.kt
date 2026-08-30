@@ -40,6 +40,28 @@ class DictionaryAssetParserTest {
     }
     
     @Test
+    fun `parses an optional lemma column`() {
+        val words = DictionaryAssetParser.parseWords("ging\t100\tOTHER,VERB\tgehen")
+        
+        assertEquals(WordEntry("ging", 100, setOf(PartOfSpeech.OTHER, PartOfSpeech.VERB), "gehen"), words[0])
+    }
+    
+    @Test
+    fun `an empty lemma field yields no lemma`() {
+        val words = DictionaryAssetParser.parseWords("gehen\t200\tVERB\t")
+        
+        assertEquals(WordEntry("gehen", 200, setOf(PartOfSpeech.VERB)), words[0])
+        assertTrue(words[0].lemma == null)
+    }
+    
+    @Test
+    fun `a word line without a lemma column has no lemma`() {
+        val words = DictionaryAssetParser.parseWords("Haus\t400\tNOUN")
+        
+        assertTrue(words[0].lemma == null)
+    }
+    
+    @Test
     fun `blank lines, bad frequencies and unknown POS names are skipped`() {
         val raw = "\ngut\tNOTANUMBER\tADJECTIVE\nHaus\t400\tNOUN,BOGUS\r"
         

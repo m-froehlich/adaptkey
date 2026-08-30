@@ -156,8 +156,13 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         learned.filterKeys { it.startsWith(normalized) }.forEach { (key, entry) ->
             val existing = merged[key]
             // D-264: the learned entry's own casing wins over a bundled one when both exist for the same
-            // key (see learn()'s own note).
-            merged[key] = if (existing != null) entry.copy(frequency = existing.frequency + entry.frequency) else entry
+            // key (see learn()'s own note). D-412: lemma is bundled-only, so the bundled entry's own value
+            // (if any) is kept rather than lost to the learned entry's always-null one.
+            merged[key] = if (existing != null) {
+                entry.copy(frequency = existing.frequency + entry.frequency, lemma = existing.lemma)
+            } else {
+                entry
+            }
         }
         return merged.values.sortedByDescending { it.frequency }.take(limit)
     }
@@ -250,8 +255,14 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         return when {
             bundled == null -> personal
             personal == null -> bundled
-            // D-264: the learned entry's own casing wins when both exist for the same key.
-            else -> WordEntry(personal.word, bundled.frequency + personal.frequency, bundled.partsOfSpeech + personal.partsOfSpeech)
+            // D-264: the learned entry's own casing wins when both exist for the same key. D-412: lemma is
+            // bundled-only (a learned entry's own lemma is always null), so bundled.lemma is kept as-is.
+            else -> WordEntry(
+                personal.word,
+                bundled.frequency + personal.frequency,
+                bundled.partsOfSpeech + personal.partsOfSpeech,
+                lemma = bundled.lemma
+            )
         }
     }
     
