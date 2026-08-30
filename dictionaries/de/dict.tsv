@@ -85037,8 +85037,8 @@ Mechanorezeptoren	13	NOUN
 Dying	13	NOUN,OTHER
 Soles	13	NOUN	Sole
 Linn	13	NOUN,OTHER
-Nationalbibliotheken	13	NOUN
-Moros	13	NOUN,OTHER
+Nationalbibliotheken	13	NOUN	Nationalbibliothek
+Moros	13	NOUN,OTHER	Moro
 Guanabara	13	NOUN
 Sausenberg	13	NOUN
 Kickoff	13	NOUN
@@ -85052,7 +85052,7 @@ Glosse	13	NOUN
 impressions	13	OTHER
 Hochrad	13	NOUN
 Endreim	13	NOUN
-Cordays	13	NOUN
+Cordays	13	NOUN	Corday
 Saʿd	13	NOUN
 intoniert	13	OTHER
 Hochkomma	13	NOUN
@@ -85060,22 +85060,22 @@ Schmutzwasser	13	NOUN
 Deutschnamibier	13	NOUN
 albertinische	13	OTHER
 reformatorischer	13	OTHER
-Kreishauptmannschaften	13	NOUN
+Kreishauptmannschaften	13	NOUN	Kreishauptmannschaft
 Ludwigsdorf	13	NOUN
 Mähne	13	NOUN
-Schüssen	13	NOUN
+Schüssen	13	NOUN	Schuss
 Stammtöne	13	NOUN
 Lowland	13	NOUN
 Parzival	13	NOUN
-Schnees	13	NOUN
-Kartoffelsorten	13	NOUN
+Schnees	13	NOUN	Schnee
+Kartoffelsorten	13	NOUN	Kartoffelsorte
 abgegrenztes	13	OTHER
 Tehillim	13	NOUN
 Buchrolle	13	NOUN
-Sowjetrusslands	13	NOUN
+Sowjetrusslands	13	NOUN	Sowjetrussland
 Ruts	13	NOUN
 Majakowski	13	NOUN
-Fachbüchern	13	NOUN
+Fachbüchern	13	NOUN	Fachbuch
 Südostküste	13	NOUN
 Windthorst	13	NOUN
 Bankenkonsortium	13	NOUN
@@ -85093,13 +85093,13 @@ Bistritz	13	NOUN
 Mediasch	13	NOUN
 Pio	13	NOUN
 Mitgliedsgemeinde	13	NOUN
-Colorados	13	NOUN
+Colorados	13	NOUN	Colorado
 Vázquez	13	NOUN
-Fujimoris	13	NOUN
+Fujimoris	13	NOUN	Fujimori
 Rundfunkstationen	13	NOUN
 Addo	13	NOUN
 Blantyre	13	NOUN
-Fußballklubs	13	NOUN
+Fußballklubs	13	NOUN	Fußballklub
 Dschunaid	13	NOUN
 Sepien	13	NOUN
 CUF	13	NOUN
@@ -85111,8 +85111,8 @@ dimittis	13	OTHER
 Gillingham	13	NOUN
 Biedermeierzeit	13	NOUN
 Thimig	13	NOUN
-Andrejs	13	NOUN
-Rostows	13	NOUN
+Andrejs	13	NOUN	Andrej
+Rostows	13	NOUN	Rostow
 Goncourt	13	NOUN
 Mansart	13	NOUN
 Permoser	13	NOUN
@@ -85143,9 +85143,9 @@ Starostin	13	NOUN
 Postposition	13	NOUN
 Schriftgrad	13	NOUN
 euphemistischen	13	OTHER
-Wehners	13	NOUN
+Wehners	13	NOUN	Wehner
 Forstwissenschaft	13	NOUN
-Gruppenausstellungen	13	NOUN
+Gruppenausstellungen	13	NOUN	Gruppenausstellung
 Aufsichtsrates	13	NOUN
 Kaltnadel	13	NOUN
 Abdampf	13	NOUN
@@ -85157,7 +85157,7 @@ Dolorosa	13	NOUN
 causae	13	NOUN,OTHER
 Satellitenbild	13	NOUN
 Wangchuck	13	NOUN
-Äquinoktiums	13	NOUN
+Äquinoktiums	13	NOUN	Äquinoktium
 Himmelspol	13	NOUN
 gewerbsmäßige	13	OTHER
 Psalmodie	13	NOUN
@@ -85176,7 +85176,7 @@ Quilitz	13	NOUN
 Rinaldi	13	NOUN
 schräger	13	OTHER
 Eisenspalterei	13	NOUN
-Senftenbergs	13	NOUN
+Senftenbergs	13	NOUN	Senftenberg
 Elbtalaue	13	NOUN
 Rüstkammer	13	NOUN
 Jüterboger	13	NOUN
@@ -85186,16 +85186,16 @@ Achterbahn	13	NOUN
 Golan	13	NOUN
 Zwitter	13	NOUN
 Hydrogensulfat	13	NOUN
-Gotteshäusern	13	NOUN
+Gotteshäusern	13	NOUN	Gotteshaus
 Hébuterne	13	NOUN
 Landschaftsgemälde	13	NOUN
 Pietist	13	NOUN
 Zierker	13	NOUN
-Hagelkörner	13	NOUN
+Hagelkörner	13	NOUN	Hagelkorn
 Werbeverbot	13	NOUN
 Unwort	13	NOUN
 liberianischen	13	OTHER
-Townships	13	NOUN
+Townships	13	NOUN	Township
 Kriegsgräberfürsorge	13	NOUN
 Conté	13	NOUN
 Erzählband	13	NOUN
@@ -85205,7 +85205,7 @@ OÖ	13	NOUN
 Ensikat	13	NOUN
 Nicoya	13	NOUN
 singhalesische	13	NOUN,OTHER
-Beutelwölfe	13	NOUN
+Beutelwölfe	13	NOUN	Beutelwolf
 Gorky	13	NOUN
 Efraim	13	NOUN
 unbeschnittenen	13	OTHER
@@ -85219,14 +85219,14 @@ Leibl	13	NOUN
 Jongleure	13	NOUN
 Wolfsburger	13	NOUN
 Staatsbad	13	NOUN
-Fahrrads	13	NOUN
+Fahrrads	13	NOUN	Fahrrad
 Sellin	13	NOUN
 Graece	13	NOUN
-Doppelwerks	13	NOUN
+Doppelwerks	13	NOUN	Doppelwerk
 Ephraemi	13	NOUN
 Rescriptus	13	NOUN,OTHER
-Johannesbriefe	13	NOUN
-Falträder	13	NOUN
+Johannesbriefe	13	NOUN	Johannesbrief
+Falträder	13	NOUN	Faltrad
 CHAP	13	NOUN
 osttimoresische	13	OTHER
 Ständerates	13	NOUN
@@ -85238,11 +85238,11 @@ Krusenstern	13	NOUN
 pom	13	NOUN,OTHER
 Zytokinese	13	NOUN
 Symmetrieoperationen	13	NOUN
-Items	13	NOUN
+Items	13	NOUN	Item
 Lirich	13	NOUN
 kanalisierte	13	OTHER
 Ostturkestan	13	NOUN
-Zulassungs	13	NOUN
+Zulassungs	13	NOUN	Zulassung
 SecuRasta	13	NOUN
 Urokinase	13	NOUN
 Gutscheine	13	NOUN
@@ -85263,55 +85263,55 @@ wiederzusehen	13	VERB
 Schmoller	13	NOUN
 Styrum	13	NOUN
 Žilina	13	NOUN
-Empfangsgeräten	13	NOUN
+Empfangsgeräten	13	NOUN	Empfangsgerät
 Niš	13	NOUN
 Tischri	13	NOUN
 Drall	13	NOUN
-Ingenieurhochschulen	13	NOUN
+Ingenieurhochschulen	13	NOUN	Ingenieurhochschule
 Talmühle	13	NOUN
-Jünglings	13	NOUN
+Jünglings	13	NOUN	Jüngling
 flotter	13	NOUN,OTHER
-Seemächte	13	NOUN
+Seemächte	13	NOUN	Seemacht
 Kaeo	13	NOUN
 Chakri	13	NOUN
 Galka	13	NOUN
 Rückversicherer	13	NOUN
-Behrings	13	NOUN
+Behrings	13	NOUN	Behring
 Malts	13	NOUN
 Fibrillen	13	NOUN
 Ewigkeitssonntag	13	NOUN
-Magdalenas	13	NOUN
+Magdalenas	13	NOUN	Magdalena
 Quartventil	13	NOUN
 Basshorn	13	NOUN
 EBGP	13	NOUN
 Rosenkranzgebet	13	NOUN
-Biosphärenreservates	13	NOUN
+Biosphärenreservates	13	NOUN	Biosphärenreservat
 abwehrenden	13	OTHER
-Wetzlars	13	NOUN
+Wetzlars	13	NOUN	Wetzlar
 Vanunu	13	NOUN
-Vereines	13	NOUN
-Bewegungsfreiheiten	13	NOUN
-Diskettenlaufwerks	13	NOUN
+Vereines	13	NOUN	Verein
+Bewegungsfreiheiten	13	NOUN	Bewegungsfreiheit
+Diskettenlaufwerks	13	NOUN	Diskettenlaufwerk
 Preisempfehlung	13	NOUN
 poligen	13	OTHER
 Totila	13	NOUN
-Straßenfahrzeugen	13	NOUN
+Straßenfahrzeugen	13	NOUN	Straßenfahrzeuge
 Dampfspeicherlokomotive	13	NOUN
 Bruchrechnung	13	NOUN
 Ventilposaune	13	NOUN
 Lauriers	13	NOUN
 Bachmeier	13	NOUN
 Schnabelschuhe	13	NOUN
-CargoLifters	13	NOUN
+CargoLifters	13	NOUN	CargoLifter
 Satzungsänderung	13	NOUN
 Dillinger	13	NOUN
 Reisz	13	NOUN
 Flurbereinigung	13	NOUN
 HRE	13	NOUN
-Kartausen	13	NOUN
+Kartausen	13	NOUN	Kartause
 Frauenzentren	13	NOUN
 Helligkeitssignal	13	NOUN
-Aberrationen	13	NOUN
+Aberrationen	13	NOUN	Aberration
 Fangspiegel	13	NOUN
 Mattscheibe	13	NOUN
 Schärfeebene	13	NOUN
@@ -85319,28 +85319,28 @@ CGRP	13	NOUN
 Feldblende	13	NOUN
 Amaler	13	NOUN
 Abendmahlsgemeinschaft	13	NOUN
-Stators	13	NOUN
+Stators	13	NOUN	Stator
 Synchronmaschine	13	NOUN
 Glâne	13	NOUN
 simultanen	13	OTHER
 Caniden	13	NOUN
 Festwoche	13	NOUN
-Obersorbische	13	NOUN,OTHER
+Obersorbische	13	NOUN,OTHER	Obersorbisch
 Pomoranen	13	NOUN
 Jolle	13	NOUN
-Kambodschanern	13	NOUN
-Inspektoren	13	NOUN
+Kambodschanern	13	NOUN	Kambodschaner
+Inspektoren	13	NOUN	Inspektor
 Telamon	13	NOUN,OTHER
 cogens	13	OTHER
-Hidalgos	13	NOUN,OTHER
+Hidalgos	13	NOUN,OTHER	Hidalgo
 Nlaka	13	NOUN
 pamux	13	OTHER
-Chiffren	13	NOUN
+Chiffren	13	NOUN	Chiffre
 Hoyos	13	NOUN
 Revaler	13	NOUN
-Eintonflöten	13	NOUN
-Angelos	13	NOUN,OTHER
-Büchmanns	13	NOUN
+Eintonflöten	13	NOUN	Eintonflöte
+Angelos	13	NOUN,OTHER	Angelo
+Büchmanns	13	NOUN	Büchmann
 Räikkönen	13	NOUN
 Schikane	13	NOUN
 Wirbelkasten	13	NOUN
@@ -85366,22 +85366,22 @@ Fährbahnhof	13	NOUN
 Wittingen	13	NOUN
 Signa	13	NOUN
 Elbmarsch	13	NOUN
-Rothenburgs	13	NOUN
-Griffins	13	NOUN
+Rothenburgs	13	NOUN	Rothenburg
+Griffins	13	NOUN	Griffin
 Minoritätsladungsträger	13	NOUN
 Molenbeek	13	NOUN
 Verdopplungszeit	13	NOUN
 Harmonikabauer	13	NOUN
 BlitzMax	13	NOUN
 Ahlem	13	NOUN
-Persönlichkeitsstörungen	13	NOUN
+Persönlichkeitsstörungen	13	NOUN	Persönlichkeitsstörung
 Pöltner	13	NOUN
-Frazers	13	NOUN
+Frazers	13	NOUN	Frazer
 Antwortmöglichkeiten	13	NOUN
 Kupferberg	13	NOUN
 Wierch	13	NOUN
 Oblastverwaltung	13	NOUN
-Žižeks	13	NOUN
+Žižeks	13	NOUN	Žižek
 GAA	13	NOUN
 Ückendorf	13	NOUN
 Kosel	13	NOUN
@@ -85389,12 +85389,12 @@ Langmaier	13	NOUN
 Fornsbach	13	NOUN
 Erdmannhausen	13	NOUN
 genitale	13	NOUN,OTHER
-Quartärs	13	NOUN
+Quartärs	13	NOUN	Quartär
 Pfullendorf	13	NOUN
 Espelkamp	13	NOUN
 Hiddenhausen	13	NOUN
-Aurichs	13	NOUN
-Weinbrenners	13	NOUN
+Aurichs	13	NOUN	Aurich
+Weinbrenners	13	NOUN	Weinbrenner
 Emmendinger	13	NOUN
 Hochwachtturm	13	NOUN
 Neustadter	13	NOUN
@@ -85403,40 +85403,40 @@ Mutlangen	13	NOUN
 Porroprismen	13	NOUN
 Ludgeri	13	NOUN
 Amersfoort	13	NOUN
-Chorals	13	NOUN
-Fagotts	13	NOUN
+Chorals	13	NOUN	Choral
+Fagotts	13	NOUN	Fagott
 Saluen	13	NOUN
-Produktplatzierungen	13	NOUN
+Produktplatzierungen	13	NOUN	Produktplatzierung
 Qibla	13	NOUN,OTHER
 Malabo	13	NOUN
 Dämmerungsphasen	13	NOUN
 myQueue	13	OTHER
-Piecks	13	NOUN
+Piecks	13	NOUN	Pieck
 Spangenberg	13	NOUN
 Lispenhausen	13	NOUN
-Naumburgs	13	NOUN
+Naumburgs	13	NOUN	Naumburg
 Baumberger	13	NOUN
 CLR	13	NOUN
 Emmenberger	13	NOUN
 Güllen	13	NOUN
 Toskischen	13	NOUN,OTHER
-Nobilitierungen	13	NOUN
+Nobilitierungen	13	NOUN	Nobilitierung
 Tscherkessien	13	NOUN
 Moorniederung	13	NOUN
 Braker	13	NOUN
 Granvelle	13	NOUN
-Kaufvertrags	13	NOUN
+Kaufvertrags	13	NOUN	Kaufvertrag
 Rauchkammer	13	NOUN
 yōgana	13	OTHER
-Korporationsverbände	13	NOUN
+Korporationsverbände	13	NOUN	Korporationsverband
 Oleksy	13	NOUN
-Langgalerien	13	NOUN
+Langgalerien	13	NOUN	Langgalerie
 Todesstern	13	NOUN
 Fermiers	13	NOUN
 Aasfresser	13	NOUN
 rahe	13	OTHER
 Fahreignungsregister	13	NOUN
-Flohmärkten	13	NOUN
+Flohmärkten	13	NOUN	Flohmarkt
 GIFs	13	NOUN
 IFOAM	13	NOUN
 Karbala	13	NOUN
@@ -85449,8 +85449,8 @@ Burgholzhausen	13	NOUN
 Turpan	13	NOUN
 Ausspiel	13	NOUN
 NASCAR	13	NOUN
-Skulls	13	NOUN
-Friedensgesellschaften	13	NOUN
+Skulls	13	NOUN	Skull
+Friedensgesellschaften	13	NOUN	Friedensgesellschaft
 Nebenachse	13	NOUN
 Dzurinda	13	NOUN
 Kluane	13	NOUN
@@ -85458,7 +85458,7 @@ Tagish	13	NOUN
 Tagelied	13	NOUN
 Schwemmkanal	13	NOUN
 Stębark	13	NOUN
-Schneen	13	NOUN
+Schneen	13	NOUN	Schnee
 Lozada	13	NOUN
 Stollhofen	13	NOUN
 Abstiegsplatz	13	NOUN
@@ -85466,7 +85466,7 @@ Liverollenspiel	13	NOUN
 Nicrophorus	13	NOUN
 Fain	13	NOUN
 Gorani	13	NOUN
-Weishaupts	13	NOUN
+Weishaupts	13	NOUN	Weishaupt
 Klootschießer	13	NOUN
 robes	13	OTHER
 Ausgangsstrom	13	NOUN
@@ -85476,9 +85476,9 @@ Hekhalot	13	NOUN
 DFlipflop	13	NOUN
 Brustvergrößerung	13	NOUN
 Kryptobiose	13	NOUN
-Vierwaldstättersees	13	NOUN
+Vierwaldstättersees	13	NOUN	Vierwaldstättersee
 Wingolfsbundes	13	NOUN
-Witwenverbrennungen	13	NOUN
+Witwenverbrennungen	13	NOUN	Witwenverbrennung
 Brüderunität	13	NOUN
 Maxie	13	NOUN
 Mamertiner	13	NOUN
@@ -85486,20 +85486,20 @@ Sarine	13	NOUN
 Hassbecker	13	NOUN
 Hoysala	13	NOUN
 Bilaspur	13	NOUN
-Haryanas	13	NOUN
+Haryanas	13	NOUN	Haryana
 Bärengraben	13	NOUN
 KNN	13	NOUN
-Inodes	13	NOUN,OTHER
+Inodes	13	NOUN,OTHER	Inode
 Guérard	13	NOUN
 Schmidberger	13	NOUN
 Borrelien	13	NOUN
 Bockwitz	13	NOUN
 laotische	13	OTHER
-Aachens	13	NOUN
-Ayutthayas	13	NOUN
+Aachens	13	NOUN	Aachen
+Ayutthayas	13	NOUN	Ayutthaya
 djedet	13	OTHER
-Boudiccas	13	NOUN
-Pseudonyms	12	NOUN
+Boudiccas	13	NOUN	Boudicca
+Pseudonyms	12	NOUN	Pseudonym
 Hulk	12	NOUN
 Taking	12	NOUN,OTHER
 Konkurrenzverhältnis	12	NOUN
@@ -85512,7 +85512,7 @@ Looking	12	NOUN,OTHER
 Carolyn	12	NOUN
 hervorgehobenen	12	OTHER
 Dickson	12	NOUN
-Independents	12	NOUN
+Independents	12	NOUN	Independent
 beraubte	12	OTHER
 Marge	12	NOUN
 Lasky	12	NOUN
@@ -85531,12 +85531,12 @@ Melodrama	12	NOUN
 lohnende	12	OTHER
 Lehman	12	NOUN
 Tricktechnik	12	NOUN
-Finanziers	12	NOUN
+Finanziers	12	NOUN	Finanzier
 entspannten	12	VERB,OTHER
 Verdächtigungen	12	NOUN
 Nekrophilie	12	NOUN
-Thrillern	12	NOUN
-Gegenspielers	12	NOUN
+Thrillern	12	NOUN	Thriller
+Gegenspielers	12	NOUN	Gegenspieler
 verdrehen	12	NOUN,OTHER
 Fließband	12	NOUN
 Experimentierfreude	12	NOUN
@@ -85552,7 +85552,7 @@ Thalberg	12	NOUN
 Parteilichkeit	12	NOUN
 Filmzeitschrift	12	NOUN
 empirisches	12	OTHER
-Arbeitsweisen	12	NOUN
+Arbeitsweisen	12	NOUN	Arbeitsweise
 Toei	12	NOUN
 Gewinnerzielung	12	NOUN
 Produktgruppe	12	NOUN
@@ -85560,13 +85560,13 @@ Charakterzeichnung	12	NOUN
 OVA	12	NOUN,OTHER
 Andersartigkeit	12	NOUN
 massenweise	12	OTHER
-Transportmitteln	12	NOUN
-Penns	12	NOUN
+Transportmitteln	12	NOUN	Transportmittel
+Penns	12	NOUN	Penn
 Filmpartner	12	NOUN
 Säurestärke	12	NOUN
 Acidität	12	NOUN
 wasserfreien	12	OTHER
-Aldehyden	12	NOUN
+Aldehyden	12	NOUN	Aldehyd
 Karzinogene	12	NOUN,OTHER
 überschattete	12	OTHER
 Done	12	NOUN,OTHER
@@ -85582,7 +85582,7 @@ Körnung	12	NOUN
 Knetlegierungen	12	NOUN
 gelötet	12	OTHER
 Neugeborener	12	NOUN,OTHER
-Spurenelementen	12	NOUN
+Spurenelementen	12	NOUN	Spurenelement
 Normalwert	12	NOUN
 Nierenfunktion	12	NOUN
 aufgetragenen	12	OTHER
@@ -85601,7 +85601,7 @@ Amino	12	NOUN
 Synthetase	12	NOUN
 Arbeitsplatzes	12	NOUN
 erhärtet	12	OTHER
-Atommassen	12	NOUN
+Atommassen	12	NOUN	Atommasse
 Langmuir	12	NOUN
 Gino	12	NOUN
 salzartige	12	OTHER
@@ -85609,25 +85609,25 @@ Mendelevium	12	NOUN
 xrightarrow	12	OTHER
 vierfacher	12	OTHER
 unreflektiert	12	OTHER
-Schichtungen	12	NOUN
-Anästhesisten	12	NOUN
+Schichtungen	12	NOUN	Schichtung
+Anästhesisten	12	NOUN	Anästhesist
 Schweigepflicht	12	NOUN
 Diplomingenieur	12	NOUN
-Übergangsregelungen	12	NOUN
+Übergangsregelungen	12	NOUN	Übergangsregelung
 approbierte	12	OTHER
 Anrechnung	12	NOUN
-Beratungsunternehmens	12	NOUN
+Beratungsunternehmens	12	NOUN	Beratungsunternehmen
 Sozialanthropologie	12	NOUN
 ausformuliert	12	OTHER
 Einübung	12	NOUN
-Spezialgebiete	12	NOUN
+Spezialgebiete	12	NOUN	Spezialgebiet
 vergelten	12	VERB
 abzuwerfen	12	VERB
 Agis	12	NOUN
 Arrian	12	NOUN
 Südhafen	12	NOUN
 Söldnertruppen	12	NOUN
-Lagerhallen	12	NOUN
+Lagerhallen	12	NOUN	Lagerhalle
 Agesilaos	12	NOUN
 Tenedos	12	NOUN
 Rachefeldzug	12	NOUN
@@ -85645,7 +85645,7 @@ zusammentrug	12	OTHER
 moralischem	12	OTHER
 Seelenruhe	12	NOUN
 Schulbuch	12	NOUN
-Prosawerke	12	NOUN
+Prosawerke	12	NOUN	Prosawerk
 Pfaffen	12	NOUN
 hochmütig	12	OTHER
 Götzendiener	12	NOUN
@@ -85660,7 +85660,7 @@ Kleisthenes	12	NOUN
 Perserkriege	12	NOUN
 Themistokles	12	NOUN
 Achaiischen	12	NOUN
-Römerstraßen	12	NOUN
+Römerstraßen	12	NOUN	Römerstraße
 Streckenposten	12	NOUN
 Popularen	12	NOUN
 Soldatenkaiser	12	NOUN
@@ -85669,7 +85669,7 @@ metrisches	12	OTHER
 Plantation	12	NOUN,OTHER
 MEW	12	NOUN
 Lebensaufgabe	12	NOUN
-Forschungsbereiche	12	NOUN
+Forschungsbereiche	12	NOUN	Forschungsbereich
 sittlicher	12	OTHER
 vertrug	12	OTHER
 drückenden	12	OTHER
@@ -85680,39 +85680,39 @@ Sprachqualität	12	NOUN
 verhöhnte	12	OTHER
 Olbers	12	NOUN
 Stoney	12	NOUN
-Rätseln	12	NOUN
+Rätseln	12	NOUN	Rätsel
 Brew	12	NOUN
-Hodges	12	NOUN
+Hodges	12	NOUN	Hodge
 Crescent	12	NOUN
 Altertumskunde	12	NOUN
 Ausgraben	12	NOUN,OTHER
 Sendschreiben	12	NOUN
-Fundstücken	12	NOUN
+Fundstücken	12	NOUN	Fundstücke
 Gorge	12	NOUN
 Anch	12	NOUN,OTHER
-Befundes	12	NOUN
-Winckelmanns	12	NOUN
+Befundes	12	NOUN	Befund
+Winckelmanns	12	NOUN	Winckelmann
 bildlicher	12	OTHER
 elastischer	12	OTHER
-Alphabetschriften	12	NOUN
+Alphabetschriften	12	NOUN	Alphabetschrift
 hebräisches	12	OTHER
 phonetisches	12	OTHER
 JT	12	NOUN
 Baronet	12	NOUN
-Großbrände	12	NOUN
+Großbrände	12	NOUN	Großbrand
 Flugabwehr	12	NOUN
 Gomorrha	12	NOUN
 bombardieren	12	VERB
-Bunkern	12	NOUN
+Bunkern	12	NOUN	Bunker
 Companion	12	NOUN
 Hauptmacht	12	NOUN
-Wellingtons	12	NOUN
+Wellingtons	12	NOUN	Wellington
 Kantabrien	12	NOUN
 Familiensitz	12	NOUN
 Studienrichtung	12	NOUN
 katalogisieren	12	VERB
 Astrobiologie	12	NOUN
-Jolies	12	NOUN
+Jolies	12	NOUN	Jolie
 verspüren	12	VERB
 blickte	12	OTHER
 nett	12	OTHER
@@ -85727,14 +85727,14 @@ freue	12	OTHER
 spendeten	12	VERB
 Kongressabgeordneten	12	NOUN
 Gesetzesvorhaben	12	NOUN
-Governors	12	NOUN
+Governors	12	NOUN	Governor
 Filmpartnerin	12	NOUN
 Diary	12	NOUN
 verdienenden	12	OTHER
 Quästor	12	NOUN
 Archeologico	12	NOUN
 Entern	12	NOUN,OTHER
-Gegenargumente	12	NOUN
+Gegenargumente	12	NOUN	Gegenargument
 entferntes	12	OTHER
 Ioannis	12	NOUN
 Dampfkraft	12	NOUN
@@ -85750,19 +85750,19 @@ Fragenden	12	NOUN,OTHER
 unangemessene	12	OTHER
 banal	12	OTHER
 Stufung	12	NOUN
-Meteoren	12	NOUN
+Meteoren	12	NOUN	Meteor
 zweigeteilten	12	OTHER
-Untergattungen	12	NOUN
+Untergattungen	12	NOUN	Untergattung
 Trächtigkeit	12	NOUN
 Präformationslehre	12	NOUN
 Mischverfassung	12	NOUN
 Lehrsystem	12	NOUN
-Herzkammern	12	NOUN
+Herzkammern	12	NOUN	Herzkammer
 Langenscheidt	12	NOUN
 Defoe	12	NOUN
 aufzusetzen	12	VERB
 ermutigten	12	VERB,OTHER
-Wahlkämpfen	12	NOUN
+Wahlkämpfen	12	NOUN	Wahlkampf
 unverhohlen	12	OTHER
 absprach	12	OTHER
 tonangebenden	12	OTHER
@@ -85783,7 +85783,7 @@ Arbeitsumgebung	12	NOUN
 Ziller	12	NOUN
 Hintze	12	NOUN
 aufzuarbeiten	12	VERB
-Stoibers	12	NOUN
+Stoibers	12	NOUN	Stoiber
 einschneidender	12	OTHER
 verstimmt	12	OTHER
 Verfassungsvertrag	12	NOUN
@@ -85791,7 +85791,7 @@ Nachbarschaftspolitik	12	NOUN
 OVG	12	NOUN
 Röttgen	12	NOUN
 Sondierungsgespräche	12	NOUN
-Jusos	12	NOUN
+Jusos	12	NOUN	Juso
 Guterres	12	NOUN
 AKW	12	NOUN
 Latif	12	NOUN
@@ -85799,9 +85799,9 @@ breche	12	OTHER
 Unachtsamkeit	12	NOUN
 Olmert	12	NOUN
 Baschar	12	NOUN
-Sketchen	12	NOUN
+Sketchen	12	NOUN	Sketch
 Reloaded	12	NOUN,OTHER
-Kopfhörern	12	NOUN
+Kopfhörern	12	NOUN	Kopfhörer
 Leadsänger	12	NOUN
 TriStar	12	NOUN
 Doo	12	NOUN
@@ -85810,7 +85810,7 @@ Riley	12	NOUN
 vegane	12	OTHER
 Kitab	12	NOUN
 Ankyra	12	NOUN
-Weinanbaugebiete	12	NOUN
+Weinanbaugebiete	12	NOUN	Weinanbaugebiet
 abbasidischen	12	OTHER
 Manzikert	12	NOUN
 Anadolu	12	NOUN
@@ -85820,11 +85820,11 @@ Allgemeinbevölkerung	12	NOUN
 Freiheitsentzug	12	NOUN
 sozialpsychologischen	12	OTHER
 Entwicklungsprozesses	12	NOUN
-Ethiken	12	NOUN
+Ethiken	12	NOUN	Ethik
 Samadhi	12	NOUN
 theoretischem	12	OTHER
-Gottesbilder	12	NOUN
-Stoikern	12	NOUN
+Gottesbilder	12	NOUN	Gottesbild
+Stoikern	12	NOUN	Stoiker
 erstritt	12	OTHER
 Theophrastus	12	NOUN
 Lettre	12	NOUN,OTHER
@@ -85833,10 +85833,10 @@ produziere	12	OTHER
 konkretisieren	12	VERB
 Umwertung	12	NOUN
 Referenzpunkt	12	NOUN
-Einordnungen	12	NOUN
+Einordnungen	12	NOUN	Einordnung
 Wolfhart	12	NOUN
 Bauträger	12	NOUN
-Badeorten	12	NOUN
+Badeorten	12	NOUN	Badeort
 Krull	12	NOUN
 konterrevolutionärer	12	OTHER
 unsystematisch	12	OTHER
@@ -85845,7 +85845,7 @@ meistgespielte	12	OTHER
 Alina	12	NOUN
 Safed	12	NOUN
 Schmuckstein	12	NOUN
-Dattelpalmen	12	NOUN
+Dattelpalmen	12	NOUN	Dattelpalme
 Paschtunen	12	NOUN
 unnötiger	12	OTHER
 Ausbildungsmöglichkeiten	12	NOUN
@@ -85860,13 +85860,13 @@ Binnenlage	12	NOUN
 irregulär	12	OTHER
 Ease	12	NOUN
 Kupfererz	12	NOUN
-Gasfelder	12	NOUN
+Gasfelder	12	NOUN	Gasfeld
 Hochspannungsleitung	12	NOUN
 Stromanschluss	12	NOUN
 Dieselgeneratoren	12	NOUN
-Derwische	12	NOUN
+Derwische	12	NOUN	Derwisch
 Cricketturnier	12	NOUN
-Klavierstücke	12	NOUN
+Klavierstücke	12	NOUN	Klavierstück
 Templi	12	NOUN
 mittelständisch	12	OTHER
 Brethren	12	NOUN
@@ -85886,9 +85886,9 @@ reproduktive	12	OTHER
 irrige	12	OTHER
 praktizierender	12	OTHER
 selbsternannte	12	OTHER
-Pentagramms	12	NOUN
+Pentagramms	12	NOUN	Pentagramm
 postumen	12	OTHER
-Satanischen	12	NOUN,OTHER
+Satanischen	12	NOUN,OTHER	Satanische
 Scarlet	12	NOUN
 Magdalen	12	NOUN
 Lebensenergie	12	NOUN
@@ -85901,13 +85901,13 @@ Chalkedon	12	NOUN
 nachweist	12	OTHER
 Nabi	12	NOUN,OTHER
 Marsa	12	NOUN
-Naturwissenschaftlern	12	NOUN
-Weltraumteleskope	12	NOUN
+Naturwissenschaftlern	12	NOUN	Naturwissenschaftler
+Weltraumteleskope	12	NOUN	Weltraumteleskop
 kosmologischer	12	OTHER
 Strafbestimmungen	12	NOUN
-Arbeitskämpfe	12	NOUN
+Arbeitskämpfe	12	NOUN	Arbeitskampf
 Doppelkontinent	12	NOUN
-Zugehörigkeiten	12	NOUN
+Zugehörigkeiten	12	NOUN	Zugehörigkeit
 Volksgesundheit	12	NOUN
 Südwestasien	12	NOUN
 Empfindens	12	NOUN
@@ -85917,23 +85917,23 @@ Rätebewegung	12	NOUN
 arbeitsrechtlichen	12	OTHER
 entgeltliche	12	OTHER
 TVG	12	NOUN
-Betriebsrats	12	NOUN
+Betriebsrats	12	NOUN	Betriebsrat
 Setzer	12	NOUN
-Arbeitsniederlegungen	12	NOUN
+Arbeitsniederlegungen	12	NOUN	Arbeitsniederlegung
 Nola	12	NOUN
 Oberpriester	12	NOUN
 urbi	12	NOUN,OTHER
 Salvius	12	NOUN
 Caesarmörder	12	NOUN
-Magistraten	12	NOUN
+Magistraten	12	NOUN	Magistrat
 Staatsschatz	12	NOUN
 schadlos	12	OTHER
 Terentia	12	NOUN
 Waldgirmes	12	NOUN
 aussichtsreicher	12	OTHER
-Regierungsgeschäften	12	NOUN
+Regierungsgeschäften	12	NOUN	Regierungsgeschäfte
 fides	12	NOUN,OTHER
-Religionsstifters	12	NOUN
+Religionsstifters	12	NOUN	Religionsstifter
 Caesares	12	NOUN
 Doppelherrschaft	12	NOUN
 Annobón	12	NOUN
@@ -85941,7 +85941,7 @@ zureichenden	12	OTHER
 geistesgeschichtlichen	12	OTHER
 Urteilsspruch	12	NOUN
 zügeln	12	VERB
-Berühmtheiten	12	NOUN
+Berühmtheiten	12	NOUN	Berühmtheit
 Melancholia	12	NOUN
 Mitwisser	12	NOUN
 überzusetzen	12	VERB
@@ -85952,25 +85952,25 @@ Lugdunensis	12	NOUN
 Wertheimer	12	NOUN
 Dmitrijewitsch	12	NOUN
 Eternal	12	NOUN,OTHER
-Wettbewerbern	12	NOUN
-Marktanteilen	12	NOUN
+Wettbewerbern	12	NOUN	Wettbewerber
+Marktanteilen	12	NOUN	Marktanteil
 Unternehmenskultur	12	NOUN
 Erzrivalen	12	NOUN
 erzähle	12	VERB
 einfarbige	12	OTHER
 Kare	12	NOUN,OTHER
-Regale	12	NOUN
+Regale	12	NOUN	Regal
 schüttete	12	OTHER
 Restbestände	12	NOUN
 Weitwinkel	12	NOUN
 Produktdesign	12	NOUN
-Absichtserklärungen	12	NOUN
+Absichtserklärungen	12	NOUN	Absichtserklärung
 Insider	12	NOUN
 Leutheusser	12	NOUN
 Schnarrenberger	12	NOUN
 Steuervorteile	12	NOUN
 Margrethe	12	NOUN
-Polizeikräften	12	NOUN
+Polizeikräften	12	NOUN	Polizeikräfte
 Arbeitsbeschaffungsmaßnahmen	12	NOUN
 Parteieintritt	12	NOUN
 Auflösungserscheinungen	12	NOUN
@@ -85978,21 +85978,21 @@ lesend	12	OTHER
 Amann	12	NOUN
 Haffner	12	NOUN
 Geldgier	12	NOUN
-Empfängen	12	NOUN
+Empfängen	12	NOUN	Empfang
 anzeigte	12	OTHER
 umstellt	12	OTHER
 Feuergefecht	12	NOUN
 Befehlsverweigerung	12	NOUN
 Volksgericht	12	NOUN
-Geiselnahmen	12	NOUN
+Geiselnahmen	12	NOUN	Geiselnahme
 Rechtsbeugung	12	NOUN
 trachteten	12	VERB
 versklaven	12	VERB
-Parteiprogramms	12	NOUN
+Parteiprogramms	12	NOUN	Parteiprogramm
 tagespolitische	12	OTHER
 ungesetzlichen	12	OTHER
 siegt	12	OTHER
-Monologe	12	NOUN
+Monologe	12	NOUN	Monolog
 Vertuschung	12	NOUN
 Briefgeheimnis	12	NOUN
 Koog	12	NOUN
@@ -86001,7 +86001,7 @@ Monumentalbauten	12	NOUN
 bestärkten	12	VERB,OTHER
 Manstein	12	NOUN
 vorgestoßen	12	VERB
-Panzerdivisionen	12	NOUN
+Panzerdivisionen	12	NOUN	Panzerdivision
 Thamer	12	NOUN
 unzerstörte	12	OTHER
 Obergruppenführer	12	NOUN
@@ -86009,7 +86009,7 @@ Ehle	12	NOUN
 einzogen	12	VERB
 charakterliche	12	OTHER
 Aversion	12	NOUN
-Invaliden	12	NOUN
+Invaliden	12	NOUN	Invalide
 Manko	12	NOUN
 Seeräuberei	12	NOUN
 salafistische	12	OTHER
@@ -86020,12 +86020,12 @@ DRS	12	NOUN
 IOM	12	NOUN
 IAEA	12	NOUN
 territoriales	12	OTHER
-Produktgruppen	12	NOUN
+Produktgruppen	12	NOUN	Produktgruppe
 Crédit	12	NOUN,OTHER
 widerstandsfähigen	12	OTHER
 Baustoffindustrie	12	NOUN
 Prüf	12	NOUN,VERB
-Schienenverkehrs	12	NOUN
+Schienenverkehrs	12	NOUN	Schienenverkehr
 ALG	12	NOUN
 zuteilen	12	VERB
 Datentransfer	12	NOUN
@@ -86054,18 +86054,18 @@ Teilfläche	12	NOUN
 Ergotismus	12	NOUN
 Antoniusfeuer	12	NOUN
 Mutterkornalkaloide	12	NOUN
-Versuchungen	12	NOUN
+Versuchungen	12	NOUN	Versuchung
 Abbaye	12	NOUN
-Übeln	12	NOUN
+Übeln	12	NOUN	Übel
 ausgeteilt	12	OTHER
 Verbrüderung	12	NOUN
-Kompressionsraten	12	NOUN
+Kompressionsraten	12	NOUN	Kompressionsrate
 arithmetisches	12	OTHER
-Zweiräder	12	NOUN
+Zweiräder	12	NOUN	Zweirad
 Antiblockiersystem	12	NOUN
 ESP	12	NOUN
 Wertverlust	12	NOUN
-Zeitintervalle	12	NOUN
+Zeitintervalle	12	NOUN	Zeitintervall
 Fischsterben	12	NOUN
 schwererer	12	OTHER
 gefiederten	12	OTHER
@@ -86075,22 +86075,22 @@ rezenter	12	OTHER
 Fossils	12	NOUN
 graduelle	12	OTHER
 wiederaufladbaren	12	OTHER
-Stromstärken	12	NOUN
+Stromstärken	12	NOUN	Stromstärke
 Bleiakkumulatoren	12	NOUN
 Lichtmaschine	12	NOUN
 Bourg	12	NOUN
 erlahmte	12	OTHER
 stromdurchflossenen	12	OTHER
 Lichtjahr	12	NOUN
-Grenzwerts	12	NOUN
-Funktionsgraphen	12	NOUN
+Grenzwerts	12	NOUN	Grenzwert
+Funktionsgraphen	12	NOUN	Funktionsgraph
 abstrakteren	12	OTHER
 Fréchet	12	NOUN
 Lebensspanne	12	NOUN
 rasenden	12	OTHER
 geistreiche	12	OTHER
 zurückgezogenes	12	OTHER
-Freundeskreises	12	NOUN
+Freundeskreises	12	NOUN	Freundeskreis
 Apeldoorn	12	NOUN
 Simrock	12	NOUN
 hochbegabten	12	OTHER
@@ -86102,7 +86102,7 @@ unmerklich	12	OTHER
 Tapiau	12	NOUN
 Heeresfolge	12	NOUN
 beschlagen	12	OTHER
-Ammoniaks	12	NOUN
+Ammoniaks	12	NOUN	Ammoniak
 ungiftigen	12	OTHER
 Versuchsbetrieb	12	NOUN
 Ertl	12	NOUN
@@ -86110,7 +86110,7 @@ Ammoniumsulfat	12	NOUN
 mittl	12	OTHER
 Glutaminsäure	12	NOUN
 Massentierhaltung	12	NOUN
-Hausrindern	12	NOUN
+Hausrindern	12	NOUN	Hausrind
 npn	12	OTHER
 gefärbter	12	OTHER
 beschichteten	12	VERB,OTHER
@@ -86131,13 +86131,13 @@ Strukturmerkmale	12	NOUN
 proteinogene	12	OTHER
 Tagesdosis	12	NOUN
 Isoleucin	12	NOUN
-Teilschritte	12	NOUN
+Teilschritte	12	NOUN	Teilschritt
 Stereoisomere	12	NOUN
 Aminoacyl	12	NOUN
 essenzielle	12	OTHER
 ungebundene	12	OTHER
 polarer	12	OTHER
-Naturstoffen	12	NOUN
+Naturstoffen	12	NOUN	Naturstoffe
 Maillard	12	NOUN
 Botenstoff	12	NOUN
 Grenzzone	12	NOUN
@@ -86148,7 +86148,7 @@ Großgruppe	12	NOUN
 Opa	12	NOUN
 kosmopolitische	12	OTHER
 Zarenzeit	12	NOUN
-Straßenschilder	12	NOUN
+Straßenschilder	12	NOUN	Straßenschild
 Allerheiligste	12	NOUN,OTHER
 Mirza	12	NOUN
 Getränkehersteller	12	NOUN
@@ -86166,19 +86166,19 @@ Dopplung	12	NOUN
 Nim	12	NOUN,OTHER
 weggehen	12	VERB
 gerinnen	12	NOUN,OTHER
-Verfeinerungen	12	NOUN
+Verfeinerungen	12	NOUN	Verfeinerung
 Stockfisch	12	NOUN
 bergige	12	OTHER
 Foggia	12	NOUN
 Olive	12	NOUN
-Militärdiktaturen	12	NOUN
+Militärdiktaturen	12	NOUN	Militärdiktatur
 Salta	12	NOUN
 Wohlstandsgefälle	12	NOUN
 ausgeklügeltes	12	OTHER
 Mossad	12	NOUN
 Wohlstandsniveau	12	NOUN
 privatisieren	12	OTHER
-Ankäufe	12	NOUN
+Ankäufe	12	NOUN	Ankauf
 Obrero	12	NOUN
 Personalstärke	12	NOUN
 Spitzengruppe	12	NOUN
@@ -86186,7 +86186,7 @@ Tren	12	NOUN,OTHER
 klimatisierten	12	VERB,OTHER
 Casares	12	NOUN
 geselliger	12	OTHER
-Personalausweise	12	NOUN
+Personalausweise	12	NOUN	Personalausweis
 Exterior	12	NOUN,OTHER
 Tiempo	12	NOUN,OTHER
 jeweiliges	12	OTHER
@@ -86194,18 +86194,18 @@ eingedrungenen	12	OTHER
 Helferzellen	12	NOUN
 dendritische	12	OTHER
 folgerten	12	VERB
-Forscherinnen	12	NOUN
+Forscherinnen	12	NOUN	Forscherin
 hydrolysieren	12	VERB
 Mallory	12	NOUN
 Gesellschaftsleben	12	NOUN
 Webstuhl	12	NOUN
-Vitamins	12	NOUN
+Vitamins	12	NOUN	Vitamin
 Tiermodell	12	NOUN
 Haworth	12	NOUN
-Erkältungen	12	NOUN
+Erkältungen	12	NOUN	Erkältung
 Gleichgewichtsreaktion	12	NOUN
 Kernspinresonanzspektroskopie	12	NOUN
-photographischen	12	NOUN,OTHER
+photographischen	12	NOUN,OTHER	photographische
 Hydroxylase	12	NOUN
 Hydroxylierung	12	NOUN
 Cofaktor	12	NOUN
@@ -86213,12 +86213,12 @@ Cholesterol	12	NOUN
 Niacin	12	NOUN
 Phagozytose	12	NOUN
 Halogenid	12	NOUN
-Dosierungen	12	NOUN
+Dosierungen	12	NOUN	Dosierung
 Titration	12	NOUN
 abgelehnte	12	OTHER
 anspruchslos	12	OTHER
 Linsenaugen	12	NOUN
-Lochblenden	12	NOUN
+Lochblenden	12	NOUN	Lochblende
 Assoziativität	12	NOUN
 Rundungsfehler	12	NOUN
 Brahmanas	12	NOUN
@@ -86239,12 +86239,12 @@ Primärzweig	12	NOUN
 emphatisch	12	OTHER
 altägyptisch	12	OTHER
 unmarkiert	12	OTHER
-Affixen	12	NOUN
+Affixen	12	NOUN	Affix
 Reflexivität	12	NOUN
 vorkolonialer	12	OTHER
-Bindungsenergien	12	NOUN
+Bindungsenergien	12	NOUN	Bindungsenergie
 Kernort	12	NOUN
-Rutherfords	12	NOUN
+Rutherfords	12	NOUN	Rutherford
 Ausbuchtung	12	NOUN
 Kitt	12	NOUN
 undurchlässig	12	OTHER
@@ -86279,7 +86279,7 @@ Ordnungsnummer	12	NOUN
 Ligurien	12	NOUN
 Südfrüchte	12	NOUN
 Etrurien	12	NOUN
-Wortgruppen	12	NOUN
+Wortgruppen	12	NOUN	Wortgruppe
 Bright	12	NOUN,OTHER
 Verwender	12	NOUN
 BAföG	12	NOUN
@@ -86312,24 +86312,24 @@ Lerner	12	NOUN
 MSA	12	NOUN,OTHER
 unterster	12	OTHER
 Arbeitsplatzrechner	12	NOUN
-Mittelstands	12	NOUN
+Mittelstands	12	NOUN	Mittelstand
 Heinsius	12	NOUN
-Titelseiten	12	NOUN
+Titelseiten	12	NOUN	Titelseite
 Durchlicht	12	NOUN
-Notare	12	NOUN
+Notare	12	NOUN	Notar
 Universitätsmuseum	12	NOUN
 beigefügten	12	OTHER
 unterlief	12	OTHER
 Einbildung	12	NOUN
-Sehnervs	12	NOUN
+Sehnervs	12	NOUN	Sehnerv
 Clusius	12	NOUN
 Liebeslyrik	12	NOUN
 Strahlungsantrieb	12	NOUN
 Biskra	12	NOUN
 parodistischen	12	OTHER
 trotzkistischen	12	OTHER
-IDEs	12	NOUN
-Heisenbergschen	12	NOUN
+IDEs	12	NOUN	IDE
+Heisenbergschen	12	NOUN	Heisenbergsche
 ortsfest	12	OTHER
 Aufstiegschancen	12	NOUN
 verlustbehaftet	12	OTHER
@@ -86350,19 +86350,19 @@ beschnittene	12	OTHER
 monatlicher	12	OTHER
 Barmherzige	12	NOUN,OTHER
 Weltganzen	12	NOUN
-Wirkkräfte	12	NOUN
+Wirkkräfte	12	NOUN	Wirkkraft
 Grundposition	12	NOUN
 Jenischen	12	NOUN,OTHER
 Zigeunerlager	12	NOUN
 Auswahlkriterium	12	NOUN
 unentdeckten	12	OTHER
-Emulsionen	12	NOUN
+Emulsionen	12	NOUN	Emulsion
 potenziert	12	OTHER
 Dynastiewechsel	12	NOUN
 Hofbeamten	12	NOUN
-Anlegern	12	NOUN
+Anlegern	12	NOUN	Anleger
 Trading	12	NOUN,OTHER
-Umsätzen	12	NOUN
+Umsätzen	12	NOUN	Umsatz
 assyrischer	12	OTHER
 Salmānu	12	NOUN
 Nachlassen	12	NOUN,OTHER
@@ -86372,7 +86372,7 @@ Melanom	12	NOUN
 Darmbakterien	12	NOUN
 Hypertension	12	NOUN
 Analogrechner	12	NOUN
-Herberts	12	NOUN
+Herberts	12	NOUN	Herbert
 Ansari	12	NOUN
 rechtschaffenen	12	OTHER
 Aris	12	NOUN
@@ -86380,23 +86380,23 @@ eklatanten	12	OTHER
 Kolonialkrieg	12	NOUN
 Amtsjahr	12	NOUN
 Sozialausgaben	12	NOUN
-Schiffsverbindungen	12	NOUN
+Schiffsverbindungen	12	NOUN	Schiffsverbindung
 Mário	12	NOUN
 Pinto	12	NOUN
 brasilianisch	12	OTHER
-Savants	12	NOUN,OTHER
+Savants	12	NOUN,OTHER	Savant
 gestörter	12	OTHER
 repetitiven	12	OTHER
 abschätzbar	12	OTHER
 Geschlechterverteilung	12	NOUN
 Benzodiazepine	12	NOUN
 Grunderkrankung	12	NOUN
-Gesundheitsgefahren	12	NOUN
+Gesundheitsgefahren	12	NOUN	Gesundheitsgefahr
 erstritten	12	VERB
 Herrscherdynastie	12	NOUN
-Axiomensystems	12	NOUN
+Axiomensystems	12	NOUN	Axiomensystem
 titelgebenden	12	OTHER
-Eselsbrücken	12	NOUN
+Eselsbrücken	12	NOUN	Eselsbrücke
 Zentralamt	12	NOUN
 Richtungsfahrbahnen	12	NOUN
 Fahrradfahrer	12	NOUN
@@ -86408,10 +86408,10 @@ drittlängste	12	OTHER
 Plattensee	12	NOUN
 Unfallzahlen	12	NOUN
 Verschnitt	12	NOUN
-Politologen	12	NOUN
+Politologen	12	NOUN	Politologe
 bereithalten	12	VERB
 Feminist	12	NOUN,OTHER
-Fertigprodukten	12	NOUN
+Fertigprodukten	12	NOUN	Fertigprodukte
 übersichtlichen	12	OTHER
 Fremdkapital	12	NOUN
 Northampton	12	NOUN
@@ -86420,7 +86420,7 @@ Asylum	12	NOUN
 Vokaltrakt	12	NOUN
 Gehörlosigkeit	12	NOUN
 Chalil	12	NOUN
-Saudis	12	NOUN
+Saudis	12	NOUN	Saudi
 ANO	12	NOUN,OTHER
 dystopische	12	OTHER
 Nebenläufigkeit	12	NOUN
@@ -86433,7 +86433,7 @@ halluzinogene	12	NOUN,OTHER
 soldatische	12	OTHER
 Meisterbrief	12	NOUN
 Nebentätigkeit	12	NOUN
-Grundsteine	12	NOUN
+Grundsteine	12	NOUN	Grundstein
 Vererbungslehre	12	NOUN
 Pflanzenzucht	12	NOUN
 Biozönose	12	NOUN
@@ -86441,12 +86441,12 @@ Brückenschlag	12	NOUN
 strukturiertes	12	OTHER
 Hauptinstrument	12	NOUN
 Randall	12	NOUN
-Filmsets	12	NOUN
+Filmsets	12	NOUN	Filmset
 Every	12	NOUN,OTHER
 Practices	12	NOUN
 aufschreiben	12	VERB
 Collective	12	NOUN,OTHER
-Anstellungen	12	NOUN
+Anstellungen	12	NOUN	Anstellung
 Konstruktionsprinzip	12	NOUN
 Synergien	12	NOUN
 hochbegabte	12	OTHER
@@ -86467,19 +86467,19 @@ Rheinkreis	12	NOUN
 Rückgliederung	12	NOUN
 Verfassungsgeschichte	12	NOUN
 bevölkerte	12	OTHER
-Fachärzten	12	NOUN
+Fachärzten	12	NOUN	Facharzt
 Einkammersystem	12	NOUN
 Justizgebäude	12	NOUN
-Oberbürgermeistern	12	NOUN
+Oberbürgermeistern	12	NOUN	Oberbürgermeister
 Wählervereinigung	12	NOUN
 Flächenland	12	NOUN
 Anknüpfungspunkt	12	NOUN
-Tourismusverbände	12	NOUN
+Tourismusverbände	12	NOUN	Tourismusverband
 Bahnknotenpunkt	12	NOUN
 Opernball	12	NOUN
-Kirchweihen	12	NOUN
+Kirchweihen	12	NOUN	Kirchweih
 Denkmalschutzes	12	NOUN
-Volleys	12	NOUN
+Volleys	12	NOUN	Volley
 weltbesten	12	OTHER
 gehuldigt	12	OTHER
 Inversionswetterlage	12	NOUN
@@ -86487,9 +86487,9 @@ abfließende	12	OTHER
 südwestdeutsche	12	NOUN,OTHER
 Hohenstaufen	12	NOUN
 Fünfzehnjähriger	12	NOUN,OTHER
-Joannes	12	NOUN
+Joannes	12	NOUN	Joanne
 überspielt	12	OTHER
-Volksbegehrens	12	NOUN
+Volksbegehrens	12	NOUN	Volksbegehren
 Hirschstangen	12	NOUN
 gemeindlichen	12	OTHER
 Oettinger	12	NOUN
@@ -86498,7 +86498,7 @@ württembergisches	12	NOUN,OTHER
 Zeitungsverlage	12	NOUN
 Communities	12	NOUN
 Talbrücke	12	NOUN
-Hochrheins	12	NOUN
+Hochrheins	12	NOUN	Hochrhein
 Gesamtverkehr	12	NOUN
 Nahverkehrsgesellschaft	12	NOUN
 Fahrgastschifffahrt	12	NOUN
@@ -86512,7 +86512,7 @@ Programmierumgebung	12	NOUN
 eingebautes	12	OTHER
 Nachbarin	12	NOUN
 Filmemachen	12	NOUN
-Bertoluccis	12	NOUN
+Bertoluccis	12	NOUN	Bertolucci
 Einblendung	12	NOUN
 erfahrbaren	12	OTHER
 sinnliches	12	OTHER
@@ -86524,7 +86524,7 @@ kuratiert	12	OTHER
 Höhne	12	NOUN
 kompetitive	12	OTHER
 StUG	12	NOUN
-Lebensläufe	12	NOUN
+Lebensläufe	12	NOUN	Lebenslauf
 Medienberichterstattung	12	NOUN
 Linksfraktion	12	NOUN
 gescannt	12	OTHER
@@ -86549,9 +86549,9 @@ Tombak	12	NOUN
 aromatischer	12	OTHER
 Bleiweiß	12	NOUN
 gelöstes	12	OTHER
-Botanikern	12	NOUN
+Botanikern	12	NOUN	Botaniker
 Blaualgen	12	NOUN
-Querschnitts	12	NOUN
+Querschnitts	12	NOUN	Querschnitt
 Schmieröl	12	NOUN
 umzurechnen	12	VERB
 Energieinhalt	12	NOUN
@@ -86562,22 +86562,22 @@ naturgemäße	12	OTHER
 Erdball	12	NOUN
 Garbe	12	NOUN
 wertfrei	12	OTHER
-Lockerungen	12	NOUN
+Lockerungen	12	NOUN	Lockerung
 Waffenfabrik	12	NOUN
-Kombinats	12	NOUN
+Kombinats	12	NOUN	Kombinat
 Werkzeugmaschinenfabrik	12	NOUN
 bebauter	12	OTHER
 Zuzügler	12	NOUN
 niederbrannten	12	VERB
 Iggy	12	NOUN
-Produktnamen	12	NOUN
+Produktnamen	12	NOUN	Produktname
 Muskelmasse	12	NOUN
 Gewichtheber	12	NOUN
 Zombie	12	NOUN
-Mönches	12	NOUN
+Mönches	12	NOUN	Mönch
 Einzelbäume	12	NOUN
 Jungpflanzen	12	NOUN
-Findlingen	12	NOUN
+Findlingen	12	NOUN	Findling
 gleichmäßiges	12	OTHER
 freigelegte	12	OTHER
 Sennestadt	12	NOUN
@@ -86596,23 +86596,23 @@ Regionalstelle	12	NOUN
 nichtstädtische	12	OTHER
 Seespiegel	12	NOUN
 Bodenseeraum	12	NOUN
-Bischofssitzes	12	NOUN
+Bischofssitzes	12	NOUN	Bischofssitz
 Lindauer	12	NOUN
 Gottlieben	12	NOUN
-Untersees	12	NOUN
+Untersees	12	NOUN	Untersee
 Argen	12	NOUN
 geschwemmt	12	OTHER
 Werd	12	NOUN,OTHER
-Brutgebiete	12	NOUN
+Brutgebiete	12	NOUN	Brutgebiet
 Schachen	12	NOUN
 Klarstellung	12	NOUN
 Schilfgürtel	12	NOUN
 Schlafplatz	12	NOUN
-Waschmitteln	12	NOUN
+Waschmitteln	12	NOUN	Waschmittel
 Berufsfischer	12	NOUN
 gefischt	12	OTHER
 Markdorf	12	NOUN
-Uferbereiche	12	NOUN
+Uferbereiche	12	NOUN	Uferbereich
 Tourismusindustrie	12	NOUN
 nutzbares	12	OTHER
 zusammengefunden	12	VERB
@@ -86626,9 +86626,9 @@ Bundesvorstandes	12	NOUN
 Massenveranstaltungen	12	NOUN
 Johannsen	12	NOUN
 Schoppe	12	NOUN,OTHER
-Regierungsbeteiligungen	12	NOUN
+Regierungsbeteiligungen	12	NOUN	Regierungsbeteiligung
 Gesamtberliner	12	NOUN
-Listenverbindungen	12	NOUN
+Listenverbindungen	12	NOUN	Listenverbindung
 Bendit	12	NOUN
 befriedigenden	12	OTHER
 krautig	12	OTHER
@@ -86641,24 +86641,24 @@ Welttanzprogramm	12	NOUN
 Couperin	12	NOUN
 musiktheoretische	12	OTHER
 gesteigertes	12	OTHER
-Atems	12	NOUN
+Atems	12	NOUN	Atem
 Gemeindegesang	12	NOUN
-Hauptvertretern	12	NOUN
+Hauptvertretern	12	NOUN	Hauptvertreter
 weitgespannte	12	OTHER
 Chaconne	12	NOUN
 galant	12	OTHER
 Theile	12	NOUN
 Anthem	12	NOUN
 Auffächerung	12	NOUN
-Zusammenwirkens	12	NOUN
+Zusammenwirkens	12	NOUN	Zusammenwirken
 sprengt	12	OTHER
 Introspektion	12	NOUN
 Camerata	12	NOUN
 ExternalData	12	NOUN
-Grenzübergangsstellen	12	NOUN
-Lehrplänen	12	NOUN
+Grenzübergangsstellen	12	NOUN	Grenzübergangsstelle
+Lehrplänen	12	NOUN	Lehrplan
 unlösbare	12	OTHER
-Zäunen	12	NOUN
+Zäunen	12	NOUN	Zaun
 Birkenwerder	12	NOUN
 Schmuggler	12	NOUN
 Massenentlassungen	12	NOUN
@@ -86672,23 +86672,23 @@ versinkt	12	OTHER
 Gartenarchitekt	12	NOUN
 versunkene	12	OTHER
 Sperrfrist	12	NOUN
-Schabowskis	12	NOUN
+Schabowskis	12	NOUN	Schabowski
 arides	12	OTHER
 Kolchis	12	NOUN
 Beistandspakt	12	NOUN
 TSS	12	NOUN
-Seeschifffahrts	12	NOUN
-Lüfte	12	NOUN
+Seeschifffahrts	12	NOUN	Seeschifffahrt
+Lüfte	12	NOUN	Luft
 Straubinger	12	NOUN
 Generalkapitän	12	NOUN
-Zufahrten	12	NOUN
+Zufahrten	12	NOUN	Zufahrt
 würzigen	12	OTHER
 kreolische	12	OTHER
 Busliniennetz	12	NOUN
-Quellflüssen	12	NOUN
+Quellflüssen	12	NOUN	Quellfluss
 Stadtmusikanten	12	NOUN
 Ortsämter	12	NOUN
-Austritte	12	NOUN
+Austritte	12	NOUN	Austritt
 Märchenstraße	12	NOUN
 Martinikirche	12	NOUN
 Glückstadt	12	NOUN
@@ -86702,13 +86702,13 @@ Armutsbekämpfung	12	NOUN
 Inning	12	NOUN
 Umzäunung	12	NOUN
 Fänger	12	NOUN
-Nationalteams	12	NOUN
+Nationalteams	12	NOUN	Nationalteam
 Entscheidungsspiel	12	NOUN
 geküsst	12	OTHER
 Allmend	12	NOUN
 Naismith	12	NOUN
 sprangen	12	VERB
-Körben	12	NOUN
+Körben	12	NOUN	Korb
 Abmessung	12	NOUN
 DALY	12	NOUN
 Disqualifikation	12	NOUN
@@ -86720,7 +86720,7 @@ Arbeitgeberverband	12	NOUN
 Seyler	12	NOUN
 Miescher	12	NOUN
 Gerardus	12	NOUN
-Masterstudiengängen	12	NOUN
+Masterstudiengängen	12	NOUN	Masterstudiengang
 Biotech	12	NOUN
 Sauermilch	12	NOUN
 monoklonale	12	OTHER
@@ -86730,9 +86730,9 @@ Abwasserreinigung	12	NOUN
 Silbenende	12	NOUN
 Biskaya	12	NOUN
 Fischerboote	12	NOUN
-Steinkreise	12	NOUN
+Steinkreise	12	NOUN	Steinkreis
 Zeichnerin	12	NOUN
-Steinhäuser	12	NOUN
+Steinhäuser	12	NOUN	Steinhaus
 Grabbe	12	NOUN
 Kundera	12	NOUN
 sehnte	12	OTHER
@@ -86742,16 +86742,16 @@ Bevölkerungspolitik	12	NOUN
 Transaktionskosten	12	NOUN
 Paternoster	12	NOUN
 Midtown	12	NOUN
-Marktteilnehmern	12	NOUN
+Marktteilnehmern	12	NOUN	Marktteilnehmer
 Mercantile	12	NOUN
 moslemischen	12	OTHER
 Verlöschen	12	NOUN,OTHER
-Rückwirkungen	12	NOUN
-Wiedergeburten	12	NOUN
+Rückwirkungen	12	NOUN	Rückwirkung
+Wiedergeburten	12	NOUN	Wiedergeburt
 Fortdauer	12	NOUN
 verheißene	12	OTHER
 Gesalbte	12	NOUN,OTHER
-Forschungsansätze	12	NOUN
+Forschungsansätze	12	NOUN	Forschungsansatz
 Armeeführung	12	NOUN
 tendenziösen	12	OTHER
 ungeschickt	12	OTHER
@@ -86761,16 +86761,16 @@ Kantakuzenos	12	NOUN
 Atempause	12	NOUN
 Kaisareia	12	NOUN
 hagiographischen	12	OTHER
-Credits	12	NOUN
+Credits	12	NOUN	Credit
 Drawing	12	NOUN,OTHER
 Jón	12	NOUN
 Ruhegehalt	12	NOUN
 ausgeschriebene	12	OTHER
 sächliche	12	OTHER
-Hoheitsgebiete	12	NOUN
+Hoheitsgebiete	12	NOUN	Hoheitsgebiet
 nährstoffarm	12	OTHER
-Grauwacken	12	NOUN
-Inversionswetterlagen	12	NOUN
+Grauwacken	12	NOUN	Grauwacke
+Inversionswetterlagen	12	NOUN	Inversionswetterlage
 Meuse	12	NOUN
 Hertog	12	NOUN
 ripuarische	12	OTHER
@@ -86780,10 +86780,10 @@ Straßenkarneval	12	NOUN
 Rechtsposition	12	NOUN
 laizistischen	12	OTHER
 Sicherungssysteme	12	NOUN
-Sprachgebieten	12	NOUN
-Luxusgütern	12	NOUN
+Sprachgebieten	12	NOUN	Sprachgebiet
+Luxusgütern	12	NOUN	Luxusgüter
 Warenhandel	12	NOUN
-Klassenstufen	12	NOUN
+Klassenstufen	12	NOUN	Klassenstufe
 Realschulabschluss	12	NOUN
 Butte	12	NOUN
 Brčko	12	NOUN
@@ -86798,8 +86798,8 @@ IMF	12	NOUN
 Küstenort	12	NOUN
 Niemandsland	12	NOUN
 Auspendler	12	NOUN
-Bruttonationaleinkommens	12	NOUN
-Wohlbefindens	12	NOUN
+Bruttonationaleinkommens	12	NOUN	Bruttonationaleinkommen
+Wohlbefindens	12	NOUN	Wohlbefinden
 Gefährt	12	NOUN
 abbrannte	12	OTHER
 Fleurus	12	NOUN
@@ -86810,20 +86810,20 @@ Vian	12	NOUN
 standhält	12	OTHER
 Böschung	12	NOUN
 Hefeteig	12	NOUN
-Portionen	12	NOUN
+Portionen	12	NOUN	Portion
 Barrage	12	NOUN
 Keïta	12	NOUN
-Verstärkungs	12	NOUN
+Verstärkungs	12	NOUN	Verstärkung
 linksufrige	12	OTHER
 Dinkelberg	12	NOUN
 Malm	12	NOUN
 fakultatives	12	OTHER
-Bürgergemeinden	12	NOUN
-Jugendherbergen	12	NOUN
+Bürgergemeinden	12	NOUN	Bürgergemeinde
+Jugendherbergen	12	NOUN	Jugendherberge
 Betonstahl	12	NOUN
 Wellenbrecher	12	NOUN
 Bruchstein	12	NOUN
-Temperaturdifferenzen	12	NOUN
+Temperaturdifferenzen	12	NOUN	Temperaturdifferenz
 Bitumen	12	NOUN
 Smeaton	12	NOUN
 absondern	12	VERB
@@ -86833,8 +86833,8 @@ Niederdonau	12	NOUN
 wohlhabendste	12	OTHER
 Umrandung	12	NOUN
 innert	12	OTHER
-Strafprozesse	12	NOUN
-Skilifte	12	NOUN
+Strafprozesse	12	NOUN	Strafprozess
+Skilifte	12	NOUN	Skilift
 Volksrechte	12	NOUN
 einwohnerstärksten	12	OTHER
 Kabinettssitzung	12	NOUN
@@ -86842,7 +86842,7 @@ schwört	12	OTHER
 Annalena	12	NOUN
 wörtlicher	12	OTHER
 verfassungsrechtlicher	12	OTHER
-Misstrauensvotums	12	NOUN
+Misstrauensvotums	12	NOUN	Misstrauensvotum
 befolgten	12	VERB
 Funktionsbezeichnung	12	NOUN
 Kniefall	12	NOUN
@@ -86856,9 +86856,9 @@ Homöomorphismus	12	NOUN
 LR	12	NOUN,OTHER
 Stromerzeuger	12	NOUN
 Leertaste	12	NOUN
-Aussparungen	12	NOUN
+Aussparungen	12	NOUN	Aussparung
 seitenrichtig	12	OTHER
-Flussdeltas	12	NOUN
+Flussdeltas	12	NOUN	Flussdelta
 Flussdelta	12	NOUN
 Hochwassergefahr	12	NOUN
 weiterbestehen	12	VERB
@@ -86868,12 +86868,12 @@ grassierende	12	OTHER
 Protestwelle	12	NOUN
 Hauptkritikpunkt	12	NOUN
 Chemieunternehmen	12	NOUN
-Eigenproduktionen	12	NOUN
+Eigenproduktionen	12	NOUN	Eigenproduktion
 Rila	12	NOUN
 Kulturinstitutionen	12	NOUN
 Perspektivlosigkeit	12	NOUN
 patriarchalen	12	OTHER
-Staatsstreichs	12	NOUN
+Staatsstreichs	12	NOUN	Staatsstreich
 umfänglich	12	OTHER
 Probebohrungen	12	NOUN
 Holzschnitzerei	12	NOUN
@@ -86885,7 +86885,7 @@ Teodor	12	NOUN
 Sperling	12	NOUN
 Walder	12	NOUN
 meistgesprochenen	12	OTHER
-Hamburgern	12	NOUN
+Hamburgern	12	NOUN	Hamburger
 Rekordzeit	12	NOUN
 wartenden	12	OTHER
 bewiesenen	12	OTHER
@@ -86898,7 +86898,7 @@ Oblaten	12	NOUN
 Eremit	12	NOUN
 Benediktinerinnenkloster	12	NOUN
 Gaudium	12	NOUN,OTHER
-Kirchtürmen	12	NOUN
+Kirchtürmen	12	NOUN	Kirchturm
 Mittelrheintal	12	NOUN
 schwül	12	OTHER
 Regenschirm	12	NOUN
@@ -86910,7 +86910,7 @@ Brüderkirche	12	NOUN
 Trainingszentrum	12	NOUN
 nennenswertes	12	OTHER
 Linienverbindungen	12	NOUN
-Fahrradstraßen	12	NOUN
+Fahrradstraßen	12	NOUN	Fahrradstraße
 nachempfundene	12	OTHER
 Weck	12	NOUN,VERB,OTHER
 Neusser	12	NOUN
@@ -86935,17 +86935,17 @@ Bändchen	12	NOUN
 Königsliste	12	NOUN
 Salmanassar	12	NOUN
 Perserzeit	12	NOUN
-Verwaltungsakte	12	NOUN
+Verwaltungsakte	12	NOUN	Verwaltungsakt
 vielversprechenden	12	OTHER
 eingespielte	12	OTHER
 Verabredung	12	NOUN
-Gedenkveranstaltungen	12	NOUN
+Gedenkveranstaltungen	12	NOUN	Gedenkveranstaltung
 Aufnahmetechnik	12	NOUN
 Blutgruppensystem	12	NOUN
-Immunglobuline	12	NOUN
-Allelen	12	NOUN
+Immunglobuline	12	NOUN	Immunglobulin
+Allelen	12	NOUN	Allel
 Putnam	12	NOUN
-Sinneseindrücken	12	NOUN
+Sinneseindrücken	12	NOUN	Sinneseindruck
 fremdsprachliche	12	OTHER
 fossiles	12	OTHER
 Bernsteinart	12	NOUN
@@ -86961,27 +86961,27 @@ auszubeuten	12	VERB
 wirksamsten	12	OTHER
 naturkundlichen	12	OTHER
 verschiedenartiger	12	OTHER
-Kunstharze	12	NOUN
+Kunstharze	12	NOUN	Kunstharz
 Quantenzustand	12	NOUN
 Swoboda	12	NOUN
 stellare	12	OTHER
-Haufens	12	NOUN
+Haufens	12	NOUN	Haufen
 Kumar	12	NOUN
 Quellenpark	12	NOUN
 drangsaliert	12	OTHER
-kartographischen	12	NOUN,OTHER
+kartographischen	12	NOUN,OTHER	kartographische
 Verlagsanstalt	12	NOUN
-Lichtspektrums	12	NOUN
+Lichtspektrums	12	NOUN	Lichtspektrum
 substanzielle	12	OTHER
 energiereicher	12	OTHER
 Lichtschranke	12	NOUN
 Magistratsmitgliedern	12	NOUN
 abgetragenen	12	OTHER
-Liegewiesen	12	NOUN
+Liegewiesen	12	NOUN	Liegewiese
 Transdev	12	NOUN
 Saalburg	12	NOUN
 bleib	12	NOUN,VERB,OTHER
-Budapests	12	NOUN
+Budapests	12	NOUN	Budapest
 Pontonbrücke	12	NOUN
 wegbereitend	12	OTHER
 Oktogon	12	NOUN
@@ -86992,13 +86992,13 @@ Hydrographie	12	NOUN
 RoRo	12	NOUN
 Zeitbedarf	12	NOUN
 Zielzellen	12	NOUN
-Monosacchariden	12	NOUN
+Monosacchariden	12	NOUN	Monosaccharid
 Gerinnungsfaktoren	12	NOUN
 ausgereifte	12	OTHER
 Untertypen	12	NOUN
 Heparin	12	NOUN
 Blutgerinnsel	12	NOUN
-Identitäts	12	NOUN
+Identitäts	12	NOUN	Identität
 Laboruntersuchungen	12	NOUN
 Tierkörper	12	NOUN
 Zahlennamen	12	NOUN
@@ -87009,7 +87009,7 @@ akzeptierter	12	OTHER
 Telefonnetzes	12	NOUN
 aufmoduliert	12	OTHER
 DOCSIS	12	NOUN
-Brennnesseln	12	NOUN
+Brennnesseln	12	NOUN	Brennnessel
 Speicherzelle	12	NOUN
 Quadraturamplitudenmodulation	12	NOUN
 Maxillen	12	NOUN
@@ -87017,8 +87017,8 @@ Jahreszyklus	12	NOUN
 Bediener	12	NOUN
 Entfaltungsmöglichkeiten	12	NOUN
 selbstbewusster	12	OTHER
-Würfelspiele	12	NOUN
-Buchausgaben	12	NOUN
+Würfelspiele	12	NOUN	Würfelspiel
+Buchausgaben	12	NOUN	Buchausgabe
 Briefumschlag	12	NOUN
 abschließendes	12	OTHER
 Sichtfenster	12	NOUN
@@ -87033,28 +87033,28 @@ InterContinental	12	NOUN
 vorrätig	12	OTHER
 polytheistische	12	OTHER
 schamanistische	12	OTHER
-Randbereiche	12	NOUN
+Randbereiche	12	NOUN	Randbereich
 Nyingma	12	NOUN
-Gewitterwolken	12	NOUN
+Gewitterwolken	12	NOUN	Gewitterwolke
 Beschützerin	12	NOUN
-Partizips	12	NOUN
+Partizips	12	NOUN	Partizip
 Verbalwurzel	12	NOUN
-Landstädte	12	NOUN
+Landstädte	12	NOUN	Landstadt
 Petronio	12	NOUN
 Pisano	12	NOUN
-Hauptbahnen	12	NOUN
+Hauptbahnen	12	NOUN	Hauptbahn
 Emiliano	12	NOUN
 Renato	12	NOUN
 Türmer	12	NOUN
 Hofarchitekten	12	NOUN
-Reichstalern	12	NOUN
+Reichstalern	12	NOUN	Reichstaler
 Infanteriekaserne	12	NOUN
 Stoll	12	NOUN
 gesundheitsgefährdenden	12	OTHER
 Fernsehempfang	12	NOUN
-Betriebsstätten	12	NOUN
+Betriebsstätten	12	NOUN	Betriebsstätte
 parteiübergreifend	12	OTHER
-Todestags	12	NOUN
+Todestags	12	NOUN	Todestag
 Geburtshauses	12	NOUN
 pausieren	12	VERB
 Übernachtungszahlen	12	NOUN
@@ -87072,15 +87072,15 @@ Geschäftsjahres	12	NOUN
 Postfach	12	NOUN
 BFH	12	NOUN
 Bundesfinanzhofes	12	NOUN
-Finanzbehörden	12	NOUN
+Finanzbehörden	12	NOUN	Finanzbehörde
 unterständigen	12	OTHER
 Barthélemy	12	NOUN
 Nussfrüchte	12	NOUN
 hinzugewonnen	12	VERB
 iterativen	12	OTHER
-Wahlmöglichkeiten	12	NOUN
-Installations	12	NOUN
-Deckblätter	12	NOUN
+Wahlmöglichkeiten	12	NOUN	Wahlmöglichkeit
+Installations	12	NOUN	Installation
+Deckblätter	12	NOUN	Deckblatt
 Sporangien	12	NOUN
 Gefäßsporenpflanzen	12	NOUN
 Blattgrund	12	NOUN
@@ -87091,7 +87091,7 @@ Growth	12	NOUN,OTHER
 prophylaktische	12	OTHER
 Tast	12	NOUN
 beitrage	12	OTHER
-Monitors	12	NOUN
+Monitors	12	NOUN	Monitor
 Kernspintomographie	12	NOUN
 adjuvanten	12	OTHER
 Tumorerkrankungen	12	NOUN
@@ -87128,10 +87128,10 @@ Kontraindikationen	12	NOUN
 Kommunikationssystem	12	NOUN
 Bottle	12	NOUN
 staatsrechtlicher	12	OTHER
-Bundesorgane	12	NOUN
+Bundesorgane	12	NOUN	Bundesorgan
 Bundesparlament	12	NOUN
 Ostzone	12	NOUN
-Presseagenturen	12	NOUN
+Presseagenturen	12	NOUN	Presseagentur
 Wachensturm	12	NOUN
 Maroni	12	NOUN
 Sonderkulturen	12	NOUN
@@ -87147,14 +87147,14 @@ Falbkatze	12	NOUN
 dentalen	12	OTHER
 Schwarzerde	12	NOUN
 Kückhoven	12	NOUN
-Großfamilien	12	NOUN
+Großfamilien	12	NOUN	Großfamilie
 Ungleichverteilung	12	NOUN
 Satteldach	12	NOUN
-Schnüren	12	NOUN,OTHER
+Schnüren	12	NOUN,OTHER	Schnur
 Steck	12	NOUN,VERB
 Holzkonstruktion	12	NOUN
 sichernden	12	OTHER
-Schwerpunkts	12	NOUN
+Schwerpunkts	12	NOUN	Schwerpunkt
 abzeichnen	12	VERB
 Rössener	12	NOUN
 Gerben	12	NOUN
@@ -87165,18 +87165,18 @@ ikonografische	12	OTHER
 Konzentrationsfähigkeit	12	NOUN
 gleichseitiges	12	OTHER
 Schularten	12	NOUN
-Spitzenwerte	12	NOUN
+Spitzenwerte	12	NOUN	Spitzenwert
 Anwendungszweck	12	NOUN
 Dividieren	12	NOUN,OTHER
 adressierbaren	12	OTHER
 SRAM	12	NOUN
 Conflict	12	NOUN,OTHER
-Prozessorarchitekturen	12	NOUN
+Prozessorarchitekturen	12	NOUN	Prozessorarchitektur
 Grundchemikalien	12	NOUN
-Entscheidungsträgern	12	NOUN
+Entscheidungsträgern	12	NOUN	Entscheidungsträger
 Stöchiometrie	12	NOUN
-Summenformeln	12	NOUN
-Romanzen	12	NOUN
+Summenformeln	12	NOUN	Summenformel
+Romanzen	12	NOUN	Romanze
 Wallach	12	NOUN
 Fever	12	NOUN,OTHER
 Recreation	12	NOUN
@@ -87184,28 +87184,28 @@ Größenverhältnisse	12	NOUN
 Weltstar	12	NOUN
 Turpin	12	NOUN
 Rink	12	NOUN
-Dramatikers	12	NOUN
+Dramatikers	12	NOUN	Dramatiker
 sinnlicher	12	OTHER
 Candela	12	NOUN
 Schalenmodell	12	NOUN
 Konzentrationsgradienten	12	NOUN
 Kristallwasser	12	NOUN,OTHER
-Teppichen	12	NOUN
+Teppichen	12	NOUN	Teppich
 Anhydrit	12	NOUN
 Stearinsäure	12	NOUN
-Mülldeponien	12	NOUN
+Mülldeponien	12	NOUN	Mülldeponie
 Konzentrat	12	NOUN
 Tabakrauch	12	NOUN
 Turbinenschaufeln	12	NOUN
 Seekrankheit	12	NOUN
-Auftragen	12	NOUN,OTHER
+Auftragen	12	NOUN,OTHER	Auftrag
 Röntgenbeugung	12	NOUN
 unangenehmer	12	OTHER
 Schnupfen	12	NOUN
 Phosgen	12	NOUN
 unbefriedigenden	12	OTHER
-Chloriden	12	NOUN
-Elektronenpaaren	12	NOUN
+Chloriden	12	NOUN	Chloride
+Elektronenpaaren	12	NOUN	Elektronenpaar
 Wasseraufbereitung	12	NOUN
 dreckige	12	OTHER
 Pegmatite	12	NOUN
@@ -87219,11 +87219,11 @@ amputiert	12	OTHER
 Diätetik	12	NOUN
 Juliusspital	12	NOUN
 Pott	12	NOUN
-Drittels	12	NOUN
-Kriegsministeriums	12	NOUN
+Drittels	12	NOUN	Drittel
+Kriegsministeriums	12	NOUN	Kriegsministerium
 erkennende	12	OTHER
 Wachsmuth	12	NOUN
-Kartells	12	NOUN
+Kartells	12	NOUN	Kartell
 Tambora	12	NOUN
 Dien	12	NOUN,OTHER
 Stanhope	12	NOUN
@@ -87236,9 +87236,9 @@ Braxton	12	NOUN
 Grafikdesigner	12	NOUN
 Spielmodi	12	NOUN
 Onlinespiele	12	NOUN
-Abkömmlingen	12	NOUN
+Abkömmlingen	12	NOUN	Abkömmling
 Paddles	12	NOUN
-Pedalen	12	NOUN
+Pedalen	12	NOUN	Pedal
 Kulturrat	12	NOUN
 Völkerrechtler	12	NOUN
 kirchenrechtlichen	12	OTHER
@@ -87262,9 +87262,9 @@ revanchierte	12	OTHER
 edierten	12	VERB,OTHER
 austreiben	12	VERB
 verharmlosen	12	VERB
-Affinitäten	12	NOUN
+Affinitäten	12	NOUN	Affinität
 einführenden	12	OTHER
-Schicksalsschläge	12	NOUN
+Schicksalsschläge	12	NOUN	Schicksalsschlag
 Orientreise	12	NOUN
 Staatsgefängnis	12	NOUN
 Soldzahlungen	12	NOUN
@@ -87279,7 +87279,7 @@ Oxyrhynchus	12	NOUN
 lapidar	12	OTHER
 nichtöffentlichen	12	OTHER
 gehegt	12	OTHER
-Herrscherhäusern	12	NOUN
+Herrscherhäusern	12	NOUN	Herrscherhaus
 phantastisch	12	OTHER
 Britanniae	12	NOUN
 Decline	12	NOUN,OTHER
@@ -87293,17 +87293,17 @@ Gläubigentaufe	12	NOUN
 Schöpfergottes	12	NOUN
 Cyrus	12	NOUN
 Obed	12	NOUN
-Burganlagen	12	NOUN
-Coburgs	12	NOUN
+Burganlagen	12	NOUN	Burganlage
+Coburgs	12	NOUN	Coburg
 Überschwemmungsgebiet	12	NOUN
 Baugebiet	12	NOUN
 Schießsport	12	NOUN
 gemeindliche	12	OTHER
-Kompressoren	12	NOUN
+Kompressoren	12	NOUN	Kompressor
 Verkehrsgemeinschaft	12	NOUN
 Gersfeld	12	NOUN
 Cascading	12	NOUN
-Versionsnummern	12	NOUN
+Versionsnummern	12	NOUN	Versionsnummer
 Arial	12	NOUN
 Serif	12	NOUN,OTHER
 auswählt	12	OTHER
@@ -87311,7 +87311,7 @@ eingebundenen	12	OTHER
 einflussreiches	12	OTHER
 Arkadi	12	NOUN
 Frauenbund	12	NOUN
-Vorbeiflüge	12	NOUN
+Vorbeiflüge	12	NOUN	Vorbeiflug
 Nilsson	12	NOUN
 südschwedischen	12	OTHER
 Valenciennes	12	NOUN
@@ -87321,14 +87321,14 @@ spezifizierten	12	VERB,OTHER
 ungeeignete	12	OTHER
 Delisle	12	NOUN
 Amélie	12	NOUN
-Abrisse	12	NOUN
+Abrisse	12	NOUN	Abriss
 standesgemäßen	12	OTHER
-Besatzungsmitgliedern	12	NOUN
+Besatzungsmitgliedern	12	NOUN	Besatzungsmitglied
 Pomaré	12	NOUN
 Shilling	12	NOUN
 tangential	12	OTHER
 Kristallisationspunkt	12	NOUN
-Origins	12	NOUN
+Origins	12	NOUN	Origin
 Reizbarkeit	12	NOUN
 Fremdbestäubung	12	NOUN
 Trübner	12	NOUN
@@ -87345,13 +87345,13 @@ heraushalten	12	VERB
 einsilbig	12	OTHER
 Taijiquan	12	NOUN
 tibeto	12	OTHER
-Nominalphrasen	12	NOUN
+Nominalphrasen	12	NOUN	Nominalphrase
 Landon	12	NOUN
 Unterrichtsstunden	12	NOUN
-Comicstrips	12	NOUN
-Landschaftsbildern	12	NOUN
-Nachdrucken	12	NOUN
-Carls	12	NOUN
+Comicstrips	12	NOUN	Comicstrip
+Landschaftsbildern	12	NOUN	Landschaftsbild
+Nachdrucken	12	NOUN	Nachdruck
+Carls	12	NOUN	Carl
 Militärschule	12	NOUN
 Panzerwaffe	12	NOUN
 Weltsicherheitsrat	12	NOUN
@@ -87360,10 +87360,10 @@ Mémoires	12	NOUN
 Kaminen	12	NOUN
 Pilaster	12	NOUN
 Rundbogenfenster	12	NOUN
-Reisebeschreibungen	12	NOUN
+Reisebeschreibungen	12	NOUN	Reisebeschreibung
 Kamerasysteme	12	NOUN
 CSC	12	NOUN,OTHER
-Carotinoiden	12	NOUN
+Carotinoiden	12	NOUN	Carotinoide
 angereicherten	12	OTHER
 Kernladungszahl	12	NOUN
 Soddy	12	NOUN
@@ -87379,11 +87379,11 @@ handhabbar	12	OTHER
 Geismar	12	NOUN
 Gesamtkapazität	12	NOUN
 leistungsfähiges	12	OTHER
-Umläufe	12	NOUN
+Umläufe	12	NOUN	Umlauf
 printf	12	OTHER
-Ganzzahlen	12	NOUN
+Ganzzahlen	12	NOUN	Ganzzahl
 Doubles	12	NOUN
-Programmcodes	12	NOUN
+Programmcodes	12	NOUN	Programmcode
 velaren	12	OTHER
 alveolare	12	OTHER
 formelhaften	12	OTHER
@@ -87406,7 +87406,7 @@ Gesetzgebungsprozess	12	NOUN
 einträgliche	12	OTHER
 Verrocchio	12	NOUN
 erkenntlich	12	OTHER
-Staatsmännern	12	NOUN
+Staatsmännern	12	NOUN	Staatsmann
 Lippi	12	NOUN
 Tatkraft	12	NOUN
 Staatskunst	12	NOUN
@@ -87421,7 +87421,7 @@ Carthago	12	NOUN
 Solz	12	NOUN
 unsinnige	12	OTHER
 Mehrfachvererbung	12	NOUN
-Dateiendungen	12	NOUN
+Dateiendungen	12	NOUN	Dateiendung
 SpecialDouble	12	NOUN
 pflanzliches	12	OTHER
 verestert	12	OTHER
@@ -87438,7 +87438,7 @@ Herausschneiden	12	NOUN,OTHER
 Maschinensprachemonitor	12	NOUN
 eingestellter	12	OTHER
 Acryl	12	NOUN
-Anwendungs	12	NOUN
+Anwendungs	12	NOUN	Anwendung
 vorgetäuschte	12	OTHER
 Grundsatzentscheidung	12	NOUN
 Bergspitzen	12	NOUN
@@ -87452,7 +87452,7 @@ Rechtsruck	12	NOUN
 sanitäre	12	OTHER
 christdemokratischen	12	OTHER
 antarctica	12	OTHER
-Töpferwaren	12	NOUN
+Töpferwaren	12	NOUN	Töpferware
 angeordneter	12	OTHER
 Themenkreis	12	NOUN
 Thinking	12	NOUN,OTHER
@@ -87469,15 +87469,15 @@ teilenden	12	OTHER
 Längsseite	12	NOUN
 Shōnen	12	NOUN
 Larousse	12	NOUN
-Laserstrahls	12	NOUN
+Laserstrahls	12	NOUN	Laserstrahl
 Lichtführung	12	NOUN
 Audiodaten	12	NOUN
 Hauptvorteil	12	NOUN
-Drucktechniken	12	NOUN
+Drucktechniken	12	NOUN	Drucktechnik
 zugerechneten	12	OTHER
 fortschreitend	12	OTHER
-Kellerautomaten	12	NOUN
-Virusinfektionen	12	NOUN
+Kellerautomaten	12	NOUN	Kellerautomat
+Virusinfektionen	12	NOUN	Virusinfektion
 Datenreduktion	12	NOUN
 Datensatzes	12	NOUN
 Ziv	12	NOUN
@@ -87485,7 +87485,7 @@ florierten	12	VERB
 Heldenepos	12	NOUN
 innovatives	12	OTHER
 Deppe	12	NOUN
-Filmreihen	12	NOUN
+Filmreihen	12	NOUN	Filmreihe
 Schroeter	12	NOUN
 bewilligten	12	VERB,OTHER
 auszubrechen	12	VERB
@@ -87493,7 +87493,7 @@ zugesagten	12	OTHER
 Flachbildschirme	12	NOUN
 Petzold	12	NOUN
 aufsucht	12	OTHER
-Fachgebiets	12	NOUN
+Fachgebiets	12	NOUN	Fachgebiet
 aufbereitete	12	OTHER
 ergänzender	12	OTHER
 Eraserhead	12	NOUN
@@ -87505,22 +87505,22 @@ feindselige	12	OTHER
 Rasenmäher	12	NOUN
 unbesiegbar	12	OTHER
 bespielten	12	VERB,OTHER
-Zahlungsverkehrs	12	NOUN
+Zahlungsverkehrs	12	NOUN	Zahlungsverkehr
 Schuldenkrise	12	NOUN
 Sapt	12	NOUN
 entgeht	12	OTHER
 abgefasste	12	OTHER
 ostwestfälischen	12	OTHER
-Rheinlands	12	NOUN
+Rheinlands	12	NOUN	Rheinland
 Kriegsschuld	12	NOUN
 Reparationsforderungen	12	NOUN
 Wanderungsbewegung	12	NOUN
-Versatzstücken	12	NOUN
+Versatzstücken	12	NOUN	Versatzstücke
 Redeverbot	12	NOUN
 Kaufentscheidung	12	NOUN
 disziplinieren	12	VERB
 parteinahen	12	OTHER
-Strafgesetze	12	NOUN
+Strafgesetze	12	NOUN	Strafgesetz
 VGH	12	NOUN
 verscharrt	12	OTHER
 Kriegsmonaten	12	NOUN
@@ -87531,20 +87531,20 @@ Unterbezirke	12	NOUN
 Vereinsrecht	12	NOUN
 Mader	12	NOUN
 Lüders	12	NOUN
-Grundrissen	12	NOUN
+Grundrissen	12	NOUN	Grundriss
 Thier	12	NOUN
 fachgerecht	12	OTHER
 begehbares	12	OTHER
 Westerholt	12	NOUN
 Lunapark	12	NOUN
-Burgruinen	12	NOUN
+Burgruinen	12	NOUN	Burgruine
 Schmeling	12	NOUN
 Kowalski	12	NOUN
 Popsänger	12	NOUN
 Fußballsport	12	NOUN
 Kulturtage	12	NOUN
 Kulturfestival	12	NOUN
-Spielorten	12	NOUN
+Spielorten	12	NOUN	Spielort
 Europapokalsieger	12	NOUN
 BMX	12	NOUN
 Ringkampf	12	NOUN
@@ -87555,20 +87555,20 @@ Visions	12	NOUN
 Reus	12	NOUN
 Umlautbuchstaben	12	NOUN
 Trigramme	12	NOUN
-Reisepässen	12	NOUN
+Reisepässen	12	NOUN	Reisepass
 Quarry	12	NOUN
 Geisteskranke	12	NOUN,OTHER
 transportierenden	12	OTHER
-Ausstattungen	12	NOUN
+Ausstattungen	12	NOUN	Ausstattung
 Menschenversuche	12	NOUN
 bewilligen	12	VERB
 vorübergehendes	12	OTHER
 zukunftsweisend	12	OTHER
-Quartetts	12	NOUN
+Quartetts	12	NOUN	Quartett
 Babur	12	NOUN
 beließen	12	VERB
 böhmisches	12	OTHER
-Winterquartiere	12	NOUN
+Winterquartiere	12	NOUN	Winterquartier
 Reichsfürst	12	NOUN
 Aldringen	12	NOUN
 Ottavio	12	NOUN
@@ -87578,9 +87578,9 @@ schwedisches	12	OTHER
 Sundgau	12	NOUN
 Truppenabzug	12	NOUN
 Wachleute	12	NOUN
-Martyriums	12	NOUN
+Martyriums	12	NOUN	Martyrium
 Kinderlied	12	NOUN
-Augenzeugenberichte	12	NOUN
+Augenzeugenberichte	12	NOUN	Augenzeugenbericht
 kongruente	12	OTHER
 aufspannen	12	NOUN,OTHER
 Einheitskugel	12	NOUN
@@ -87605,18 +87605,18 @@ obergermanischen	12	OTHER
 brandschatzten	12	VERB
 stillzulegen	12	VERB
 löschte	12	OTHER
-Charakterisierungen	12	NOUN
-Nutzungs	12	NOUN
+Charakterisierungen	12	NOUN	Charakterisierung
+Nutzungs	12	NOUN	Nutzung
 Sloan	12	NOUN
 unbezahlte	12	OTHER
-Marktplätze	12	NOUN
+Marktplätze	12	NOUN	Marktplatz
 globalisierten	12	VERB,OTHER
 gebührenfrei	12	OTHER
 Bildungschancen	12	NOUN
 verbessere	12	OTHER
 Langzeitgedächtnis	12	NOUN
 Korte	12	NOUN
-Journals	12	NOUN
+Journals	12	NOUN	Journal
 konkurrierend	12	OTHER
 kritiklos	12	OTHER
 händisch	12	OTHER
@@ -87629,14 +87629,14 @@ Registries	12	NOUN
 Bezirkshauptstadt	12	NOUN
 fluviatile	12	OTHER
 Maiaufstand	12	NOUN
-Großwohnsiedlungen	12	NOUN
+Großwohnsiedlungen	12	NOUN	Großwohnsiedlung
 Schönfeld	12	NOUN
 eingegliederte	12	OTHER
-Verwaltungsstellen	12	NOUN
-Amtshauptmannschaften	12	NOUN
+Verwaltungsstellen	12	NOUN	Verwaltungsstelle
+Amtshauptmannschaften	12	NOUN	Amtshauptmannschaft
 Electra	12	NOUN
 Elbseite	12	NOUN
-Erholungsflächen	12	NOUN
+Erholungsflächen	12	NOUN	Erholungsfläche
 nächtliches	12	OTHER
 Nachfolgeunternehmen	12	NOUN
 Nextbike	12	NOUN,OTHER
@@ -87652,12 +87652,12 @@ Ravenloft	12	NOUN
 Greyhawk	12	NOUN
 Neverwinter	12	NOUN
 Livingstone	12	NOUN
-Spielfilms	12	NOUN
+Spielfilms	12	NOUN	Spielfilm
 Nel	12	NOUN,OTHER
 Ergänzungsbände	12	NOUN
 kontrastreiche	12	OTHER
 Mitgliedsbeitrag	12	NOUN
-Wanderausstellungen	12	NOUN
+Wanderausstellungen	12	NOUN	Wanderausstellung
 Gutsherr	12	NOUN
 Leupold	12	NOUN
 Carlisle	12	NOUN
@@ -87684,34 +87684,34 @@ Einwanderergruppen	12	NOUN
 nachlassenden	12	OTHER
 Hertfordshire	12	NOUN
 Might	12	NOUN,OTHER
-Königshofs	12	NOUN
+Königshofs	12	NOUN	Königshof
 Zahlungsfähigkeit	12	NOUN
 Mieteinnahmen	12	NOUN
 niederbrannte	12	OTHER
 Novemberverfassung	12	NOUN
 neugegründet	12	OTHER
-Verfassungsrechts	12	NOUN
+Verfassungsrechts	12	NOUN	Verfassungsrecht
 Verfütterung	12	NOUN
 Paratethys	12	NOUN
 Vukovar	12	NOUN
 Osijek	12	NOUN
 rasten	12	VERB
 Smaragdeidechse	12	NOUN
-Weltnaturerbes	12	NOUN
+Weltnaturerbes	12	NOUN	Weltnaturerbe
 Gheorghe	12	NOUN
 Gabčíkovo	12	NOUN
 ergänzendes	12	OTHER
 Kranichstein	12	NOUN
 Arheilgen	12	NOUN
 Vorkriegsstand	12	NOUN
-Magistrates	12	NOUN,OTHER
+Magistrates	12	NOUN,OTHER	Magistrat
 Jagdwaffen	12	NOUN
 Ausstellungsgebäude	12	NOUN
 Industriedesign	12	NOUN
 Marching	12	NOUN
 Erwerbsperson	12	NOUN
 Pharmakonzern	12	NOUN
-Gerichtsbarkeiten	12	NOUN
+Gerichtsbarkeiten	12	NOUN	Gerichtsbarkeit
 Umstadt	12	NOUN
 Eisenbahngüterverkehr	12	NOUN
 Stangl	12	NOUN
@@ -87720,10 +87720,10 @@ bezahlbar	12	OTHER
 Carrefour	12	NOUN
 geübten	12	OTHER
 Europaflagge	12	NOUN
-Chefredakteurs	12	NOUN
+Chefredakteurs	12	NOUN	Chefredakteur
 Lobbyorganisation	12	NOUN
 hitzige	12	OTHER
-Luftfahrzeuges	12	NOUN
+Luftfahrzeuges	12	NOUN	Luftfahrzeug
 Diskursuniversum	12	NOUN
 deiktische	12	OTHER
 schlussfolgern	12	VERB
@@ -87731,10 +87731,10 @@ interpoliert	12	OTHER
 Rechenschritte	12	NOUN
 Dezimalziffern	12	NOUN
 Kopfrechnen	12	NOUN
-Distributivgesetzes	12	NOUN
+Distributivgesetzes	12	NOUN	Distributivgesetz
 faktorisieren	12	NOUN,OTHER
 Anschlussbahn	12	NOUN
-Fachgebietes	12	NOUN
+Fachgebietes	12	NOUN	Fachgebiet
 Themenschwerpunkt	12	NOUN
 Begleitband	12	NOUN
 Bevorratung	12	NOUN
@@ -87755,7 +87755,7 @@ einklagbar	12	OTHER
 beglaubigte	12	OTHER
 Westfriesland	12	NOUN
 positiveren	12	OTHER
-Geldmengen	12	NOUN,OTHER
+Geldmengen	12	NOUN,OTHER	Geldmenge
 Zandvoort	12	NOUN
 Hustle	12	NOUN
 Minderheitenschutz	12	NOUN
@@ -87769,7 +87769,7 @@ unentbehrliche	12	OTHER
 Gestaltungsprinzip	12	NOUN
 Bürgernähe	12	NOUN
 unumkehrbaren	12	OTHER
-Millionäre	12	NOUN
+Millionäre	12	NOUN	Millionär
 planerische	12	OTHER
 Taktung	12	NOUN
 Höffe	12	NOUN
@@ -87777,18 +87777,18 @@ LLC	12	NOUN
 Rechtspopulismus	12	NOUN
 aufmerksame	12	OTHER
 Internalisierung	12	NOUN
-Erbprinzen	12	NOUN
+Erbprinzen	12	NOUN	Erbprinz
 Verschönerung	12	NOUN
 Pufferstaat	12	NOUN
 spektakulärsten	12	OTHER
-Gedenkorte	12	NOUN
+Gedenkorte	12	NOUN	Gedenkort
 standrechtlich	12	OTHER
 Einwohnermelderegisters	12	NOUN
 ansteigend	12	OTHER
 ick	12	OTHER
 altlutherische	12	OTHER
 konfirmiert	12	OTHER
-alevitischen	12	NOUN,OTHER
+alevitischen	12	NOUN,OTHER	alevitische
 Pranken	12	NOUN
 Stadtlogo	12	NOUN
 Bühnenprogramm	12	NOUN
@@ -87799,19 +87799,19 @@ neoromanischen	12	OTHER
 Fürstenwall	12	NOUN
 Moorgebiet	12	NOUN
 Minigolf	12	NOUN
-Straßenschildern	12	NOUN
+Straßenschildern	12	NOUN	Straßenschild
 Leitmessen	12	NOUN
 Erwerbstätigem	12	NOUN
 Linienbusse	12	NOUN
 Rheinradweg	12	NOUN
 Fahrzeugtechnik	12	NOUN
 Landesministerien	12	NOUN
-Datenblöcken	12	NOUN
+Datenblöcken	12	NOUN	Datenblock
 Verzeichnisstruktur	12	NOUN
 Regenwaldgebiete	12	NOUN
 überlebenswichtig	12	OTHER
 Evangelisierung	12	NOUN
-Missionsgesellschaften	12	NOUN
+Missionsgesellschaften	12	NOUN	Missionsgesellschaft
 ruandischen	12	OTHER
 Rebellengruppen	12	NOUN
 altersbedingt	12	OTHER
@@ -87820,10 +87820,10 @@ Audit	12	NOUN
 postkolonialen	12	OTHER
 Orchestre	12	NOUN
 Kompaktkameras	12	NOUN
-Filmmaterials	12	NOUN
+Filmmaterials	12	NOUN	Filmmaterial
 Formatfaktor	12	NOUN
 hervorriefen	12	VERB
-Sonetten	12	NOUN
+Sonetten	12	NOUN	Sonett
 sensibler	12	OTHER
 Soap	12	NOUN
 Operas	12	NOUN
@@ -87835,13 +87835,13 @@ anlautendes	12	OTHER
 LUW	12	NOUN
 lockeres	12	OTHER
 Schließmuskel	12	NOUN
-Verschlüssen	12	NOUN
+Verschlüssen	12	NOUN	Verschluss
 chirurgisch	12	OTHER
 Mühlengebäude	12	NOUN
 Flussbettes	12	NOUN
 Landschaftsgestaltung	12	NOUN
 Kleingärten	12	NOUN
-Seitentälern	12	NOUN
+Seitentälern	12	NOUN	Seitental
 wiederbeleben	12	VERB
 Ibis	12	NOUN
 bezogenes	12	OTHER
@@ -87850,18 +87850,18 @@ kursierende	12	OTHER
 ernstes	12	OTHER
 Telefongespräch	12	NOUN
 seinesgleichen	12	OTHER
-Zufälle	12	NOUN
+Zufälle	12	NOUN	Zufall
 Begriffsgeschichte	12	NOUN
 Urprinzip	12	NOUN
 Propagator	12	NOUN
 freimaurerischen	12	OTHER
 naturphilosophische	12	OTHER
 Bohm	12	NOUN
-Adornos	12	NOUN
+Adornos	12	NOUN	Adorno
 Vossische	12	NOUN
 Weltbundes	12	NOUN
 zweisilbig	12	OTHER
-Zamenhofs	12	NOUN
+Zamenhofs	12	NOUN	Zamenhof
 Personalbedarf	12	NOUN
 ausgelagerten	12	OTHER
 Beata	12	NOUN,OTHER
@@ -87871,11 +87871,11 @@ Galissard	12	NOUN
 sechsfach	12	OTHER
 befindende	12	OTHER
 basaltischen	12	OTHER
-Leuchtstoffe	12	NOUN
+Leuchtstoffe	12	NOUN	Leuchtstoff
 Endothelzellen	12	NOUN
 vorrömische	12	OTHER
 Kalilauge	12	NOUN
-Bindemitteln	12	NOUN
+Bindemitteln	12	NOUN	Bindemittel
 Sinter	12	NOUN
 permanentes	12	OTHER
 Rutil	12	NOUN
@@ -87885,10 +87885,10 @@ Zeeman	12	NOUN
 Hamiltonschen	12	NOUN,OTHER
 Energieerhaltungssatzes	12	NOUN
 Clapeyron	12	NOUN
-Brennstoffes	12	NOUN
+Brennstoffes	12	NOUN	Brennstoff
 abelsche	12	OTHER
 Lovers	12	NOUN
-Bestätigungen	12	NOUN
+Bestätigungen	12	NOUN	Bestätigung
 Flame	12	NOUN
 EWS	12	NOUN
 Finanzierungskosten	12	NOUN
@@ -87900,22 +87900,22 @@ Nominalwert	12	NOUN
 indirektem	12	OTHER
 Maclaurin	12	NOUN
 Zwischenaufenthalt	12	NOUN
-Detektors	12	NOUN
+Detektors	12	NOUN	Detektor
 Fabry	12	NOUN
 Geehrten	12	NOUN,OTHER
 steter	12	OTHER
-Staatsbesuche	12	NOUN
+Staatsbesuche	12	NOUN	Staatsbesuch
 aufgeheizten	12	OTHER
 werdendes	12	OTHER
 todkranken	12	OTHER
 Waldsiedlung	12	NOUN
-Kammergerichts	12	NOUN
+Kammergerichts	12	NOUN	Kammergericht
 unfehlbar	12	OTHER
 Unbeweglichkeit	12	NOUN
 Erfolgsserie	12	NOUN
 Verbindungsbüro	12	NOUN
 Tausendkorngewicht	12	NOUN
-Mischwäldern	12	NOUN
+Mischwäldern	12	NOUN	Mischwald
 Lend	12	NOUN,OTHER
 Ettore	12	NOUN
 Kernforschungszentrum	12	NOUN
@@ -87931,7 +87931,7 @@ voraussetzten	12	VERB
 abgemischt	12	OTHER
 Sequencer	12	NOUN
 Drumcomputer	12	NOUN
-Einzugsbereiche	12	NOUN
+Einzugsbereiche	12	NOUN	Einzugsbereich
 Rosaceae	12	NOUN
 Unterholz	12	NOUN
 aucuparia	12	OTHER
@@ -87946,18 +87946,18 @@ Soviet	12	NOUN
 Schlüssellänge	12	NOUN
 Maulwurf	12	NOUN
 rotierte	12	OTHER
-FETs	12	NOUN
-Anwendungsbeispiele	12	NOUN
+FETs	12	NOUN	FET
+Anwendungsbeispiele	12	NOUN	Anwendungsbeispiel
 Differenzverstärker	12	NOUN
 Arbeitspunkt	12	NOUN
 Projektierung	12	NOUN
 Unionisten	12	NOUN
 Llosa	12	NOUN
 Beatriz	12	NOUN
-Deserteuren	12	NOUN
+Deserteuren	12	NOUN	Deserteur
 Industriepolitik	12	NOUN
-Tribunals	12	NOUN
-Hilfsverbs	12	NOUN
+Tribunals	12	NOUN	Tribunal
+Hilfsverbs	12	NOUN	Hilfsverb
 Notabitur	12	NOUN
 Kriegserlebnisse	12	NOUN
 Lietz	12	NOUN
@@ -87968,8 +87968,8 @@ Mescalin	12	NOUN
 Kriegstagebuch	12	NOUN
 Bezieher	12	NOUN
 seismischer	12	OTHER
-Zusammenspiels	12	NOUN
-Sinnesorganen	12	NOUN
+Zusammenspiels	12	NOUN	Zusammenspiel
+Sinnesorganen	12	NOUN	Sinnesorgan
 USGS	12	NOUN
 boreale	12	OTHER
 Inlandeises	12	NOUN
@@ -87977,19 +87977,19 @@ Planetary	12	NOUN
 Höhenwinkel	12	NOUN
 Draco	12	NOUN
 aufeinanderfolgen	12	VERB
-Hochländern	12	NOUN
+Hochländern	12	NOUN	Hochland
 oberem	12	OTHER
 boundary	12	NOUN,OTHER
 radiometrische	12	OTHER
 Mondgöttin	12	NOUN
 Bodies	12	NOUN,OTHER
-Störche	12	NOUN
+Störche	12	NOUN	Storch
 Dachverbandes	12	NOUN
 Beitragssatz	12	NOUN
 Kampfhubschrauber	12	NOUN
 Reintegration	12	NOUN
 unbefestigt	12	OTHER
-Stromausfällen	12	NOUN
+Stromausfällen	12	NOUN	Stromausfall
 facettenreich	12	OTHER
 frittierte	12	OTHER
 Garri	12	NOUN
@@ -88018,7 +88018,7 @@ Hermite	12	NOUN
 Kettenbruchentwicklung	12	NOUN
 jährlichem	12	OTHER
 Wurzelziehen	12	NOUN
-Schlüsselbegriffe	12	NOUN
+Schlüsselbegriffe	12	NOUN	Schlüsselbegriff
 vermehrtes	12	OTHER
 Tropenkrankheiten	12	NOUN
 Vogl	12	NOUN
@@ -88029,9 +88029,9 @@ Graupen	12	NOUN
 Weinland	12	NOUN
 kennenlernten	12	VERB
 CITES	12	NOUN
-Steilküsten	12	NOUN
+Steilküsten	12	NOUN	Steilküste
 herangeschafft	12	OTHER
-Kruzifixe	12	NOUN
+Kruzifixe	12	NOUN	Kruzifix
 wetteiferten	12	VERB
 Strichcode	12	NOUN
 Aulis	12	NOUN
@@ -88044,17 +88044,17 @@ Religionsbegriff	12	NOUN
 mühsame	12	OTHER
 Mawr	12	NOUN
 Gedächtnispreis	12	NOUN
-Cofaktoren	12	NOUN
+Cofaktoren	12	NOUN	Cofaktor
 Columella	12	NOUN
 Brenda	12	NOUN
 Ubiquitin	12	NOUN
 Inuitsprachen	12	NOUN
 allergrößten	12	OTHER
-Plosiven	12	NOUN
-Princes	12	NOUN
+Plosiven	12	NOUN	Plosiv
+Princes	12	NOUN	Prince
 Niederhöchstadt	12	NOUN
 Eschborner	12	NOUN
-Freigaben	12	NOUN,OTHER
+Freigaben	12	NOUN,OTHER	Freigabe
 Onlinemagazin	12	NOUN
 exogenen	12	OTHER
 Erkalten	12	NOUN
@@ -88064,29 +88064,29 @@ antimilitaristischen	12	OTHER
 eingebundene	12	OTHER
 Mahner	12	NOUN
 Rahmenvertrag	12	NOUN
-Firmengründungen	12	NOUN
+Firmengründungen	12	NOUN	Firmengründung
 Schaftes	12	NOUN
 berührungslose	12	OTHER
 Ionenleiter	12	NOUN
 Copper	12	NOUN
-Elektromotors	12	NOUN
+Elektromotors	12	NOUN	Elektromotor
 Northumberland	12	NOUN
 plump	12	OTHER
 bewachsene	12	OTHER
 Brutvogel	12	NOUN
-Schnabels	12	NOUN
+Schnabels	12	NOUN	Schnabel
 Exportartikel	12	NOUN
 abzieht	12	OTHER
 Hippasos	12	NOUN
 Steady	12	NOUN
-Patentanmeldungen	12	NOUN
+Patentanmeldungen	12	NOUN	Patentanmeldung
 Moss	12	NOUN
 antrifft	12	OTHER
 Eibenholz	12	NOUN
 kulminiert	12	OTHER
 halbkreisförmig	12	OTHER
 homologer	12	OTHER
-Pulses	12	NOUN
+Pulses	12	NOUN	Pulse
 Weidetiere	12	NOUN
 Kleiber	12	NOUN
 Zuchtformen	12	NOUN
@@ -88095,7 +88095,7 @@ dazugekommen	12	VERB
 Netzabdeckung	12	NOUN
 Sachwörterbuch	12	NOUN
 Vives	12	NOUN
-Druckausgaben	12	NOUN
+Druckausgaben	12	NOUN	Druckausgabe
 Flaschenzug	12	NOUN
 unterschreibt	12	OTHER
 ausgeschnitten	12	VERB
@@ -88103,14 +88103,14 @@ kundig	12	OTHER
 Mithören	12	NOUN,OTHER
 Götterbild	12	NOUN
 Hebammenkunst	12	NOUN
-Denkansätze	12	NOUN
+Denkansätze	12	NOUN	Denkansatz
 rudolfensis	12	OTHER
 Paranthropus	12	NOUN
 planvolle	12	OTHER
 Umweltverträglichkeit	12	NOUN
 häufigster	12	OTHER
 Termination	12	NOUN,OTHER
-Modifizierungen	12	NOUN
+Modifizierungen	12	NOUN	Modifizierung
 Koevolution	12	NOUN
 Meeresstrand	12	NOUN
 Nacherzählung	12	NOUN
@@ -88129,7 +88129,7 @@ wojewódzka	12	NOUN,OTHER
 EB	12	NOUN
 realisierbaren	12	OTHER
 Wissenschaftszweig	12	NOUN
-Schneidezähnen	12	NOUN
+Schneidezähnen	12	NOUN	Schneidezähne
 gedeuteten	12	OTHER
 Moloch	12	NOUN
 Künstlichkeit	12	NOUN
@@ -88139,7 +88139,7 @@ Südwestkirchhof	12	NOUN
 Lebensgefährte	12	NOUN
 Morgue	12	NOUN
 gespickt	12	OTHER
-Siodmaks	12	NOUN
+Siodmaks	12	NOUN	Siodmak
 Rzeszów	12	NOUN
 Ecole	12	NOUN
 Howell	12	NOUN
@@ -88152,7 +88152,7 @@ Fatum	12	NOUN,OTHER
 Allzumenschliches	12	NOUN
 alarmierte	12	OTHER
 Pneumonie	12	NOUN
-Emersons	12	NOUN
+Emersons	12	NOUN	Emerson
 Sinneswandel	12	NOUN
 musizierte	12	OTHER
 verabschiedetes	12	OTHER
@@ -88160,7 +88160,7 @@ Massenflucht	12	NOUN
 Kirchenbesitz	12	NOUN
 Lascaux	12	NOUN
 unbesetzte	12	OTHER
-Verstaatlichungen	12	NOUN
+Verstaatlichungen	12	NOUN	Verstaatlichung
 Grundrechtekatalog	12	NOUN
 Gebirgsjäger	12	NOUN
 Territoire	12	NOUN,OTHER
@@ -88177,17 +88177,17 @@ Saipan	12	NOUN
 Akron	12	NOUN
 Scouting	12	NOUN
 wartende	12	OTHER
-Tertiärs	12	NOUN
+Tertiärs	12	NOUN	Tertiär
 Maximaltemperatur	12	NOUN
 württembergisch	12	OTHER
 abgesteckt	12	OTHER
-Kronländern	12	NOUN
+Kronländern	12	NOUN	Kronland
 vermietete	12	OTHER
 erbauter	12	OTHER
-Basare	12	NOUN
+Basare	12	NOUN	Basar
 zehntägige	12	OTHER
 Ailingen	12	NOUN
-Hofen	12	NOUN
+Hofen	12	NOUN	Hof
 Stadtpfarrer	12	NOUN
 Steger	12	NOUN
 Firmierung	12	NOUN
@@ -88199,11 +88199,11 @@ Spanplatten	12	NOUN
 Steinschlag	12	NOUN
 übernachteten	12	VERB
 Polak	12	NOUN
-Verschlechterungen	12	NOUN
+Verschlechterungen	12	NOUN	Verschlechterung
 herrlich	12	OTHER
 gelacht	12	OTHER
 meistgelesene	12	OTHER
-Fäuste	12	NOUN
+Fäuste	12	NOUN	Faust
 hie	12	OTHER
 Sondersprache	12	NOUN
 Polaroid	12	NOUN
@@ -88227,7 +88227,7 @@ Wohltat	12	NOUN
 zwischenstaatlicher	12	OTHER
 Herrschaftsrepräsentation	12	NOUN
 Durchsetzungsfähigkeit	12	NOUN
-Hoftagen	12	NOUN
+Hoftagen	12	NOUN	Hoftag
 Mediävistik	12	NOUN
 Beamtenapparat	12	NOUN
 Selbstentfaltung	12	NOUN
@@ -88242,18 +88242,18 @@ durchziehende	12	OTHER
 Gründungsparteitag	12	NOUN
 bürokratischer	12	OTHER
 Liberaldemokraten	12	NOUN
-Direktmandaten	12	NOUN
-Betätigungsfelder	12	NOUN
-Genschers	12	NOUN
+Direktmandaten	12	NOUN	Direktmandat
+Betätigungsfelder	12	NOUN	Betätigungsfeld
+Genschers	12	NOUN	Genscher
 Europaabgeordneten	12	NOUN
-Kalebassen	12	NOUN
+Kalebassen	12	NOUN	Kalebasse
 Hubkolbenmotor	12	NOUN
-Beanspruchungen	12	NOUN
+Beanspruchungen	12	NOUN	Beanspruchung
 Ganzmetall	12	NOUN
-Motorflugzeugen	12	NOUN
+Motorflugzeugen	12	NOUN	Motorflugzeuge
 eingemischt	12	OTHER
 Cessna	12	NOUN
-Ultraleichtflugzeugen	12	NOUN
+Ultraleichtflugzeugen	12	NOUN	Ultraleichtflugzeug
 Hochachse	12	NOUN
 aerodynamischer	12	OTHER
 Ultraleichtflugzeug	12	NOUN
@@ -88264,11 +88264,11 @@ asymmetrisches	12	OTHER
 schwimmfähig	12	OTHER
 Russki	12	NOUN,OTHER
 Elb	12	NOUN,OTHER
-Gullivers	12	NOUN
+Gullivers	12	NOUN	Gulliver
 Coleridge	12	NOUN
 Eintrittskarte	12	NOUN
 Willow	12	NOUN,OTHER
-Scrolls	12	NOUN,OTHER
+Scrolls	12	NOUN,OTHER	Scroll
 Suomi	12	NOUN
 Nordschweden	12	NOUN
 SSA	12	NOUN,OTHER
@@ -88281,12 +88281,12 @@ Salzsteuer	12	NOUN
 zwanglos	12	OTHER
 Nahrungsmittelversorgung	12	NOUN
 Menschenrechtserklärung	12	NOUN
-Frondienste	12	NOUN
-Kapitale	12	NOUN,OTHER
+Frondienste	12	NOUN	Frondienst
+Kapitale	12	NOUN,OTHER	Kapital
 Konstituante	12	NOUN
-Verwaltungsvorschriften	12	NOUN
+Verwaltungsvorschriften	12	NOUN	Verwaltungsvorschrift
 hinzuwirken	12	VERB
-Jakobinern	12	NOUN
+Jakobinern	12	NOUN	Jakobiner
 Enfants	12	NOUN,OTHER
 Regierungsfunktionen	12	NOUN
 konsequentes	12	OTHER
@@ -88315,7 +88315,7 @@ Federung	12	NOUN
 unkompliziert	12	OTHER
 hingearbeitet	12	OTHER
 Qualifikationsrunde	12	NOUN
-Startplätze	12	NOUN
+Startplätze	12	NOUN	Startplatz
 Olivenbaum	12	NOUN
 gälische	12	OTHER
 wachten	12	NOUN,OTHER
@@ -88340,7 +88340,7 @@ pago	12	NOUN,OTHER
 stilisierter	12	OTHER
 Kerb	12	NOUN
 Seal	12	NOUN
-Drehbewegungen	12	NOUN
+Drehbewegungen	12	NOUN	Drehbewegung
 Messabweichung	12	NOUN
 économie	12	OTHER
 Einforderung	12	NOUN
@@ -88348,15 +88348,15 @@ korrespondierend	12	OTHER
 parasitiert	12	OTHER
 irritans	12	OTHER
 Rattenfloh	12	NOUN
-Artisten	12	NOUN
+Artisten	12	NOUN	Artist
 Streuobst	12	NOUN
 Flughaut	12	NOUN
 paarige	12	OTHER
-Naturvölkern	12	NOUN
+Naturvölkern	12	NOUN	Naturvölker
 Druckdifferenz	12	NOUN
 Windrad	12	NOUN
 Vojtěch	12	NOUN
-Polonaisen	12	NOUN
+Polonaisen	12	NOUN	Polonaise
 Etüden	12	NOUN
 Musikverleger	12	NOUN
 Valldemossa	12	NOUN
@@ -88365,11 +88365,11 @@ schwerkranken	12	NOUN,OTHER
 Cognac	12	NOUN
 völliges	12	OTHER
 resonant	12	OTHER
-Anschlagen	12	NOUN,OTHER
+Anschlagen	12	NOUN,OTHER	Anschlag
 Hammerflügel	12	NOUN
 Textgestaltung	12	NOUN
-Klavierkonzerte	12	NOUN
-Volkstänze	12	NOUN
+Klavierkonzerte	12	NOUN	Klavierkonzert
+Volkstänze	12	NOUN	Volkstanz
 herhalten	12	VERB
 Musikwerke	12	NOUN
 kaschieren	12	VERB
@@ -88415,7 +88415,7 @@ Ordensnamen	12	NOUN
 Verirrung	12	NOUN
 schonungslose	12	OTHER
 Geistesleben	12	NOUN
-Patriziers	12	NOUN
+Patriziers	12	NOUN	Patrizier
 Marsilius	12	NOUN
 Kampfansage	12	NOUN
 Verteidigungsstrategie	12	NOUN
@@ -88440,14 +88440,14 @@ Gebetshaus	12	NOUN
 Murtal	12	NOUN
 spektakuläres	12	OTHER
 Mwanza	12	NOUN
-Margarethen	12	NOUN
+Margarethen	12	NOUN	Margarethe
 Eishalle	12	NOUN
 Medaillengewinner	12	NOUN
 hauptberufliche	12	OTHER
 Europaplatz	12	NOUN
 Musikausbildung	12	NOUN
 Fux	12	NOUN
-Buchhändlers	12	NOUN
+Buchhändlers	12	NOUN	Buchhändler
 Dienstherr	12	NOUN
 Historiograph	12	NOUN
 allwissend	12	OTHER
@@ -88466,7 +88466,7 @@ Hauptschrift	12	NOUN
 wohldefiniert	12	OTHER
 Temperaturniveau	12	NOUN
 Policies	12	NOUN,OTHER
-Heizungen	12	NOUN
+Heizungen	12	NOUN	Heizung
 ausgeprägtesten	12	OTHER
 Klimaneutralität	12	NOUN
 elfjährige	12	OTHER
@@ -88491,7 +88491,7 @@ Beiklang	12	NOUN
 anthropomorph	12	OTHER
 Archetypus	12	NOUN,OTHER
 epigenetische	12	OTHER
-Teilgraphen	12	NOUN
+Teilgraphen	12	NOUN	Teilgraph
 Zulassungsverfahren	12	NOUN
 Chimären	12	NOUN,OTHER
 Unterbegriff	12	NOUN
@@ -88503,19 +88503,19 @@ Zahlenverhältnis	12	NOUN
 Landspitze	12	NOUN
 Battery	12	NOUN,OTHER
 Rajoy	12	NOUN
-Casinos	12	NOUN
+Casinos	12	NOUN	Casino
 Verbundsystem	12	NOUN
 Dattelpalme	12	NOUN
 eigenständigem	12	OTHER
 Gegenkraft	12	NOUN
 trotzkistische	12	OTHER
 Sveriges	12	NOUN
-Lohnes	12	NOUN
+Lohnes	12	NOUN	Lohn
 Dienstleistungsgewerkschaft	12	NOUN
 verkehrsgünstige	12	OTHER
 Catulus	12	NOUN
 Milvischen	12	NOUN
-Gordians	12	NOUN
+Gordians	12	NOUN	Gordian
 Thrax	12	NOUN
 reifer	12	OTHER
 Tiefsttemperatur	12	NOUN
@@ -88523,26 +88523,26 @@ Wirtschaftshof	12	NOUN
 Instandsetzungsarbeiten	12	NOUN
 Friedfertigkeit	12	NOUN
 Verwaltungsorgan	12	NOUN
-Napoléons	12	NOUN
-Keulen	12	NOUN
-Hannöverschen	12	NOUN
+Napoléons	12	NOUN	Napoléon
+Keulen	12	NOUN	Keule
+Hannöverschen	12	NOUN	Hannoversch
 Behaglichkeit	12	NOUN
-Kameradschaften	12	NOUN
+Kameradschaften	12	NOUN	Kameradschaft
 Erev	12	NOUN,OTHER
 Clavier	12	NOUN
 Bistro	12	NOUN
 spätgotisches	12	OTHER
 Stelzer	12	NOUN
 Pflugk	12	NOUN
-Setzungen	12	NOUN
+Setzungen	12	NOUN	Setzung
 Ozeanographie	12	NOUN
 bedrohe	12	OTHER
-Herzinfarktes	12	NOUN
+Herzinfarktes	12	NOUN	Herzinfarkt
 Kavalleristen	12	NOUN
 infantilen	12	OTHER
 Linthebene	12	NOUN
 Seitental	12	NOUN
-Gesamterneuerungswahlen	12	NOUN
+Gesamterneuerungswahlen	12	NOUN	Gesamterneuerungswahl
 Wädenswil	12	NOUN
 Sargans	12	NOUN
 Talschaft	12	NOUN
@@ -88565,10 +88565,10 @@ Fensterglas	12	NOUN
 Andromedagalaxie	12	NOUN
 supermassereiche	12	OTHER
 Anciens	12	NOUN,OTHER
-Bündnerromanische	12	NOUN,OTHER
+Bündnerromanische	12	NOUN,OTHER	Bündnerromanisch
 Mediationsakte	12	NOUN
-Gämsen	12	NOUN
-Talschaften	12	NOUN
+Gämsen	12	NOUN	Gämse
+Talschaften	12	NOUN	Talschaft
 Wintertourismus	12	NOUN
 zugewandter	12	NOUN,OTHER
 Chiavenna	12	NOUN
@@ -88586,7 +88586,7 @@ verschlimmert	12	OTHER
 verzehnfachte	12	OTHER
 Optativ	12	NOUN
 wäscht	12	OTHER
-Steines	12	NOUN
+Steines	12	NOUN	Stein
 geraume	12	OTHER
 punktsymmetrisch	12	OTHER
 Pietsch	12	NOUN
@@ -88594,18 +88594,18 @@ Solver	12	NOUN,OTHER
 Getreideernte	12	NOUN
 Selbstversorgungsgrad	12	NOUN
 Schüttung	12	NOUN
-Standpunkten	12	NOUN
-Bauhütten	12	NOUN
+Standpunkten	12	NOUN	Standpunkt
+Bauhütten	12	NOUN	Bauhütte
 Ableitungsregeln	12	NOUN
 überschreitende	12	OTHER
-Radars	12	NOUN
+Radars	12	NOUN	Radar
 tiefliegenden	12	OTHER
 Schelf	12	NOUN
 Erdaltertum	12	NOUN
 gären	12	NOUN,OTHER
 Teilblätter	12	NOUN
 Längenwachstum	12	NOUN
-Unkräutern	12	NOUN
+Unkräutern	12	NOUN	Unkraut
 Hauptanbaugebiete	12	NOUN
 nin	12	NOUN,OTHER
 pflanzt	12	OTHER
@@ -88613,19 +88613,19 @@ Abfassungszeit	12	NOUN
 Wil	12	NOUN
 Jelenia	12	NOUN
 Biberpelz	12	NOUN
-Agamemnons	12	NOUN
+Agamemnons	12	NOUN	Agamemnon
 Theatergeschichte	12	NOUN
 Neuromantik	12	NOUN
 Kunert	12	NOUN
 aufrührerischen	12	OTHER
-Regierungssystems	12	NOUN
+Regierungssystems	12	NOUN	Regierungssystem
 Maastrichter	12	NOUN
 Wallerstein	12	NOUN
 Vektorprodukt	12	NOUN
-Rohres	12	NOUN
+Rohres	12	NOUN	Rohr
 Gruppengeschwindigkeit	12	NOUN
 redendes	12	OTHER
-Moorgebiete	12	NOUN
+Moorgebiete	12	NOUN	Moorgebiet
 Schmöckwitz	12	NOUN
 Hönow	12	NOUN
 revoltierten	12	VERB
@@ -88635,12 +88635,12 @@ Karlos	12	NOUN
 Calau	12	NOUN
 Friedrichswerdersche	12	NOUN
 Carstenn	12	NOUN
-Rehberge	12	NOUN
+Rehberge	12	NOUN	Rehberg
 Reichsdurchschnitt	12	NOUN
 Bombenlast	12	NOUN
 Stalinallee	12	NOUN
 Falkenhagener	12	NOUN
-Kombinate	12	NOUN
+Kombinate	12	NOUN	Kombinat
 Michell	12	NOUN
 Arzneimittellehre	12	NOUN
 Elementargeometrie	12	NOUN
@@ -88650,20 +88650,20 @@ Sachsenherzog	12	NOUN
 Kurverein	12	NOUN
 Moraw	12	NOUN
 Tauroggen	12	NOUN
-Volksvertretungen	12	NOUN
+Volksvertretungen	12	NOUN	Volksvertretung
 Erzberger	12	NOUN
 Deutschlandvertrag	12	NOUN
-Schutzmächte	12	NOUN
-Bemühens	12	NOUN
-Volksaufstands	12	NOUN
-Krippen	12	NOUN
+Schutzmächte	12	NOUN	Schutzmacht
+Bemühens	12	NOUN	Bemühen
+Volksaufstands	12	NOUN	Volksaufstand
+Krippen	12	NOUN	Krippe
 konfrontierte	12	OTHER
 richtungsweisende	12	OTHER
-Insolvenzverfahrens	12	NOUN
+Insolvenzverfahrens	12	NOUN	Insolvenzverfahren
 befriedet	12	OTHER
 Candia	12	NOUN
 Ikonenmaler	12	NOUN
-Süßwasserseen	12	NOUN
+Süßwasserseen	12	NOUN	Süßwassersee
 Genoa	12	NOUN
 Mazzini	12	NOUN
 Salone	12	NOUN
@@ -88672,29 +88672,29 @@ genuesische	12	OTHER
 Steuerpflicht	12	NOUN
 Kryptografie	12	NOUN
 mes	12	NOUN,OTHER
-Nadelhölzern	12	NOUN
+Nadelhölzern	12	NOUN	Nadelholz
 Nordhemisphäre	12	NOUN
-Insulins	12	NOUN
+Insulins	12	NOUN	Insulin
 Gly	12	NOUN
 Grafikprozessor	12	NOUN
-Amigas	12	NOUN
+Amigas	12	NOUN	Amiga
 Entwicklungsschub	12	NOUN
 herstellerspezifische	12	OTHER
 APU	12	NOUN
 austauschbaren	12	OTHER
 Kundendienst	12	NOUN
 Zurechnung	12	NOUN
-Gaias	12	NOUN
+Gaias	12	NOUN	Gaia
 Tityos	12	NOUN
 Fasti	12	NOUN
 zyprischen	12	OTHER
 spiegelverkehrt	12	OTHER
 spätromanischen	12	OTHER
-Prosatexte	12	NOUN
+Prosatexte	12	NOUN	Prosatext
 Meeresgott	12	NOUN
 symbolisierten	12	VERB,OTHER
 Capitalis	12	NOUN,OTHER
-Teufeln	12	NOUN
+Teufeln	12	NOUN	Teufel
 paraphyletische	12	OTHER
 Funksignal	12	NOUN
 Sicherheitsfunktionen	12	NOUN
@@ -88703,34 +88703,34 @@ Recommendations	12	NOUN,OTHER
 Garantievertrag	12	NOUN
 Heilkräuter	12	NOUN
 Encomienda	12	NOUN
-Rückständen	12	NOUN
+Rückständen	12	NOUN	Rückstand
 philosophicus	12	OTHER
 richtigem	12	OTHER
 eurer	12	OTHER
 entwaffnen	12	VERB
 geschärft	12	OTHER
 Spontanität	12	NOUN
-Körnern	12	NOUN
+Körnern	12	NOUN	Körner
 Polish	12	NOUN
 Gammaquanten	12	NOUN
 Kilovolt	12	NOUN
-Strahlenquellen	12	NOUN
+Strahlenquellen	12	NOUN	Strahlenquelle
 Paarungsverhalten	12	NOUN
 Zentrumspolitiker	12	NOUN
 Atomtod	12	NOUN
 üblen	12	OTHER
 konsultiert	12	OTHER
 abzuschrecken	12	VERB
-Herzschrittmachers	12	NOUN
+Herzschrittmachers	12	NOUN	Herzschrittmacher
 Gesundheitsberufe	12	NOUN
 einteilte	12	OTHER
-Verwaltungsgerichts	12	NOUN
+Verwaltungsgerichts	12	NOUN	Verwaltungsgericht
 Stellingen	12	NOUN
-Wochenmärkte	12	NOUN
+Wochenmärkte	12	NOUN	Wochenmarkt
 Städtetag	12	NOUN
 Admiralty	12	NOUN,OTHER
 Scharff	12	NOUN
-Musikverlage	12	NOUN
+Musikverlage	12	NOUN	Musikverlag
 Loblied	12	NOUN
 Langenhorn	12	NOUN
 Maschinenbauunternehmen	12	NOUN
@@ -88742,7 +88742,7 @@ erfolgloser	12	OTHER
 Ablasses	12	NOUN
 hochstehende	12	OTHER
 anbahnende	12	OTHER
-Lenzen	12	NOUN
+Lenzen	12	NOUN	Lenz
 Ausbaupläne	12	NOUN
 herausstellten	12	VERB
 Wellenmechanik	12	NOUN
@@ -88775,7 +88775,7 @@ Abuja	12	NOUN
 Obdach	12	NOUN
 Konoe	12	NOUN
 zweitjüngste	12	OTHER
-Zusicherungen	12	NOUN
+Zusicherungen	12	NOUN	Zusicherung
 Vorwarnung	12	NOUN
 Fröndenberg	12	NOUN
 Haarstrang	12	NOUN
@@ -88798,10 +88798,10 @@ Entkolonialisierung	12	NOUN
 bewachsenen	12	OTHER
 eindrucksvollsten	12	OTHER
 Hofkultur	12	NOUN
-Schiedsgerichte	12	NOUN
+Schiedsgerichte	12	NOUN	Schiedsgericht
 Schlüsselindustrien	12	NOUN
 Henrique	12	NOUN
-Bolivarischen	12	NOUN,OTHER
+Bolivarischen	12	NOUN,OTHER	Bolivarische
 Velasco	12	NOUN
 Regierungsbeamte	12	NOUN
 Unidad	12	NOUN
@@ -88809,7 +88809,7 @@ Maracaibo	12	NOUN
 Organisierung	12	NOUN
 ROG	12	NOUN
 Nutzholz	12	NOUN
-Mopeds	12	NOUN
+Mopeds	12	NOUN	Moped
 Schildrand	12	NOUN
 Athletik	12	NOUN
 unwesentlichen	12	OTHER
@@ -88826,18 +88826,18 @@ entnahmen	12	VERB
 Handelsgeschäft	12	NOUN
 nordeuropäische	12	OTHER
 Handelsembargo	12	NOUN
-Herrschaftsgebieten	12	NOUN
+Herrschaftsgebieten	12	NOUN	Herrschaftsgebiet
 stachen	12	VERB
 Großenhain	12	NOUN
 angelandet	12	OTHER
 Rettungskräfte	12	NOUN
-Militärparaden	12	NOUN
+Militärparaden	12	NOUN	Militärparade
 Marinemuseum	12	NOUN
 Verkehrszentrum	12	NOUN
 Busgesellschaft	12	NOUN
-Municipios	12	NOUN
+Municipios	12	NOUN	Municipio
 Membranproteine	12	NOUN
-Eierstöcken	12	NOUN
+Eierstöcken	12	NOUN	Eierstock
 Signalwirkung	12	NOUN
 abzeichnende	12	OTHER
 verkehrsmäßig	12	OTHER
@@ -88862,15 +88862,15 @@ Zielkonflikt	12	NOUN
 manifestierten	12	VERB,OTHER
 Türkengefahr	12	NOUN
 handelnd	12	OTHER
-Kurfürstentümer	12	NOUN
-Schrittes	12	NOUN
+Kurfürstentümer	12	NOUN	Kurfürstentum
+Schrittes	12	NOUN	Schritt
 Erzkanzler	12	NOUN
 Krönungsfeierlichkeiten	12	NOUN
 Färber	12	NOUN
 zubilligte	12	OTHER
-Bruttoinlandprodukts	12	NOUN
+Bruttoinlandprodukts	12	NOUN	Bruttoinlandprodukt
 subsidiär	12	OTHER
-Haithabus	12	NOUN
+Haithabus	12	NOUN	Haithabu
 Urnengräber	12	NOUN
 Tonwaren	12	NOUN
 Hochzeitsnacht	12	NOUN
@@ -88882,8 +88882,8 @@ Optics	12	NOUN
 Bahnhöhe	12	NOUN
 BVerwG	12	NOUN
 sozialdarwinistische	12	OTHER
-Radiums	12	NOUN
-Dystopien	12	NOUN
+Radiums	12	NOUN	Radium
+Dystopien	12	NOUN	Dystopie
 Ausflugsverkehr	12	NOUN
 Stiftungsurkunde	12	NOUN
 immatrikulierten	12	VERB,OTHER
@@ -88896,7 +88896,7 @@ Middleware	12	NOUN
 Tugendlehre	12	NOUN
 abrupten	12	OTHER
 Aufsatzsammlungen	12	NOUN
-Werkausgaben	12	NOUN
+Werkausgaben	12	NOUN	Werkausgabe
 Kabbalah	12	NOUN
 Fastenbrechens	12	NOUN
 übertraten	12	VERB
@@ -88907,7 +88907,7 @@ Andersgläubige	12	NOUN,OTHER
 Baha	12	NOUN
 differenzierteres	12	OTHER
 pochte	12	OTHER
-Schwarzpulvers	12	NOUN
+Schwarzpulvers	12	NOUN	Schwarzpulver
 Sicherheitsbehälter	12	NOUN
 Gehölz	12	NOUN
 Streuobstwiese	12	NOUN
@@ -88916,7 +88916,7 @@ Hertie	12	NOUN
 Orakelspruch	12	NOUN
 vokalischen	12	OTHER
 Jungtürken	12	NOUN
-Edikts	12	NOUN
+Edikts	12	NOUN	Edikt
 Thumann	12	NOUN
 zweistufig	12	OTHER
 Aya	12	NOUN,OTHER
@@ -88924,14 +88924,14 @@ Andreaskirche	12	NOUN
 Grabbauten	12	NOUN
 Supercup	12	NOUN
 Motorfahrzeuge	12	NOUN
-Begünstigungen	12	NOUN
+Begünstigungen	12	NOUN	Begünstigung
 Beitragszahlungen	12	NOUN
 Formvorschriften	12	NOUN
 gleichberechtigtes	12	OTHER
 fremdartig	12	OTHER
 SAMPA	12	NOUN
 Nachrichtenübertragung	12	NOUN
-Angriffspunkte	12	NOUN
+Angriffspunkte	12	NOUN	Angriffspunkt
 abhält	12	OTHER
 lett	12	OTHER
 Kirchheimbolanden	12	NOUN
@@ -88941,7 +88941,7 @@ IND	12	NOUN,OTHER
 Lenggries	12	NOUN
 Quellbach	12	NOUN
 Brauchwasser	12	NOUN
-Ausweisungen	12	NOUN
+Ausweisungen	12	NOUN	Ausweisung
 Denim	12	NOUN
 Krähen	12	NOUN
 Pandya	12	NOUN
@@ -88961,12 +88961,12 @@ Lautbildung	12	NOUN
 Gasgleichung	12	NOUN
 Durchtritt	12	NOUN
 Einzelzellen	12	NOUN
-Reaktortypen	12	NOUN
+Reaktortypen	12	NOUN	Reaktortyp
 Medizinhistoriker	12	NOUN
 retronym	12	OTHER
 Rationierung	12	NOUN
 preiswertere	12	OTHER
-Adressbereiche	12	NOUN
+Adressbereiche	12	NOUN	Adressbereich
 klassenlose	12	OTHER
 unixoide	12	OTHER
 Internetprovider	12	NOUN
@@ -88981,19 +88981,19 @@ Mandatsmacht	12	NOUN
 Tikrit	12	NOUN
 Lagerhaft	12	NOUN
 auferlegen	12	VERB
-Rhizomen	12	NOUN
+Rhizomen	12	NOUN	Rhizom
 gekeltert	12	OTHER
 Mozzarella	12	NOUN
 Daniele	12	NOUN
 Langsamkeit	12	NOUN
-Gespenster	12	NOUN
+Gespenster	12	NOUN	Gespenst
 Journalism	12	NOUN
 Alive	12	NOUN
 Bigelow	12	NOUN
 Maureen	12	NOUN
 Culver	12	NOUN
 rebellischer	12	OTHER
-Kirchentage	12	NOUN
+Kirchentage	12	NOUN	Kirchentag
 vertrauenswürdige	12	OTHER
 unbearbeitet	12	OTHER
 Winslow	12	NOUN
@@ -89010,23 +89010,23 @@ radiologischen	12	OTHER
 hinausreichende	12	OTHER
 gewichtiger	12	OTHER
 Ventura	12	NOUN
-Comedians	12	NOUN
+Comedians	12	NOUN	Comedian
 Heard	12	NOUN,OTHER
 Gellert	12	NOUN
-Neugeborenes	12	NOUN,OTHER
+Neugeborenes	12	NOUN,OTHER	Neugeborene
 Zusammensein	12	NOUN
 Palladio	12	NOUN
-Unterhaltungen	12	NOUN
+Unterhaltungen	12	NOUN	Unterhaltung
 sentimentalische	12	OTHER
 Verliebtheit	12	NOUN
 Sinnenwelt	12	NOUN
 Realist	12	NOUN
-Essayisten	12	NOUN
-Pilgerreisen	12	NOUN
+Essayisten	12	NOUN	Essayist
+Pilgerreisen	12	NOUN	Pilgerreise
 Liebender	12	NOUN,OTHER
-Streiche	12	NOUN
+Streiche	12	NOUN	Streich
 Billings	12	NOUN
-Dodds	12	NOUN
+Dodds	12	NOUN	Dodd
 Insertion	12	NOUN,OTHER
 leblosen	12	OTHER
 Restaurationszeit	12	NOUN
@@ -89040,7 +89040,7 @@ Judaistik	12	NOUN
 Leberschäden	12	NOUN
 Reuel	12	NOUN
 Dear	12	NOUN,OTHER
-Sagas	12	NOUN
+Sagas	12	NOUN	Saga
 Unwin	12	NOUN
 prägendsten	12	OTHER
 Walentin	12	NOUN
@@ -89062,7 +89062,7 @@ SFR	12	NOUN
 Jacken	12	NOUN
 hinziehen	12	VERB
 Storck	12	NOUN
-Umfange	12	NOUN
+Umfange	12	NOUN	Umfang
 Thomaskantor	12	NOUN
 Cammer	12	NOUN
 obligate	12	OTHER
@@ -89071,16 +89071,16 @@ Diabelli	12	NOUN
 Spitta	12	NOUN
 verkohlte	12	OTHER
 verwitwet	12	OTHER
-Auszahlungen	12	NOUN
+Auszahlungen	12	NOUN	Auszahlung
 Planetensystem	12	NOUN
 Rückwärtsbewegung	12	NOUN
 Lufthülle	12	NOUN
 Butzbach	12	NOUN
-Aberglaubens	12	NOUN
+Aberglaubens	12	NOUN	Aberglauben
 Ausdeutung	12	NOUN
 Kansai	12	NOUN
 Tōhoku	12	NOUN
-Ökoregionen	12	NOUN
+Ökoregionen	12	NOUN	Ökoregion
 Präfekturparlamente	12	NOUN
 militaristische	12	OTHER
 vietnamesischer	12	OTHER
@@ -89088,13 +89088,13 @@ Utzschneider	12	NOUN
 Sonntagsschule	12	NOUN
 sensationellen	12	OTHER
 Bildbearbeitungsprogramme	12	NOUN
-Bildformate	12	NOUN
+Bildformate	12	NOUN	Bildformat
 Brae	12	NOUN
 Maturana	12	NOUN
 überstaatlichen	12	OTHER
 imitierten	12	VERB,OTHER
 bestochen	12	VERB
-Gauen	12	NOUN
+Gauen	12	NOUN	Gau
 gekränkt	12	OTHER
 Akaba	12	NOUN
 Haschimiten	12	NOUN
@@ -89121,13 +89121,13 @@ Cholin	12	NOUN
 siedenden	12	OTHER
 aufschließen	12	VERB
 Skalarfeld	12	NOUN
-Koordinatensystemen	12	NOUN
+Koordinatensystemen	12	NOUN	Koordinatensystem
 Marineoffizier	12	NOUN
 Krosigk	12	NOUN
 Abmarsch	12	NOUN
 freigemacht	12	OTHER
 Gefängnisaufenthalt	12	NOUN
-Kriegsendes	12	NOUN
+Kriegsendes	12	NOUN	Kriegsende
 höchstrangige	12	OTHER
 BImSchG	12	NOUN
 zusammenzulegen	12	VERB
@@ -89145,7 +89145,7 @@ geschält	12	OTHER
 Planeta	12	NOUN
 erfundenes	12	OTHER
 Hinführung	12	NOUN
-Wohnortes	12	NOUN
+Wohnortes	12	NOUN	Wohnort
 anstecken	12	VERB
 Schützengraben	12	NOUN
 Nadler	12	NOUN
@@ -89153,7 +89153,7 @@ Zolleinnahmen	12	NOUN
 Merritt	12	NOUN
 MacLachlan	12	NOUN
 Extras	12	NOUN
-Steffens	12	NOUN
+Steffens	12	NOUN	Steffen
 Arbeiterassoziation	12	NOUN
 Lochner	12	NOUN
 drauf	12	OTHER
@@ -89162,11 +89162,11 @@ Kapitalistenklasse	12	NOUN
 Ennepetal	12	NOUN
 Kagera	12	NOUN
 Steilhang	12	NOUN
-Koranversen	12	NOUN
+Koranversen	12	NOUN	Koranvers
 Reisebusse	12	NOUN
 Einschienenbahn	12	NOUN
 Straßenbahnstrecke	12	NOUN
-Straßenbahnstrecken	12	NOUN
+Straßenbahnstrecken	12	NOUN	Straßenbahnstrecke
 Islamwissenschaftler	12	NOUN
 Teilort	12	NOUN
 Brustbild	12	NOUN
@@ -89186,30 +89186,30 @@ mehrstimmige	12	OTHER
 Athabasca	12	NOUN
 Banff	12	NOUN
 transkontinentalen	12	OTHER
-Goldrauschs	12	NOUN
+Goldrauschs	12	NOUN	Goldrausch
 Integrationspolitik	12	NOUN
 bloc	12	NOUN,OTHER
 TVA	12	NOUN
-Luftstreitkräften	12	NOUN
+Luftstreitkräften	12	NOUN	Luftstreitkräfte
 Munro	12	NOUN
-Eishockeys	12	NOUN
+Eishockeys	12	NOUN	Eishockey
 Superliga	12	NOUN
-Vokabulare	12	NOUN
+Vokabulare	12	NOUN	Vokabular
 Liao	12	NOUN
 Koreanern	12	NOUN
 Koreakrieges	12	NOUN
 leistungsstarker	12	OTHER
 Historizismus	12	NOUN
 Humanisierung	12	NOUN
-Bauwesens	12	NOUN
+Bauwesens	12	NOUN	Bauwesen
 Minorität	12	NOUN
 Entwicklungsarbeit	12	NOUN
-Urbans	12	NOUN
+Urbans	12	NOUN	Urban
 Nichtkombattanten	12	NOUN
 ghanaischen	12	OTHER
 Besorgung	12	NOUN
 Mathematicae	12	NOUN
-Wettervorhersagen	12	NOUN
+Wettervorhersagen	12	NOUN	Wettervorhersage
 Formalismen	12	NOUN
 Organisationstheorie	12	NOUN
 Kunstfasern	12	NOUN
@@ -89219,22 +89219,22 @@ sinusförmig	12	OTHER
 Blindleistung	12	NOUN
 Altbulgarisch	12	NOUN
 Gepflogenheit	12	NOUN
-Usurpators	12	NOUN
+Usurpators	12	NOUN	Usurpator
 erhabener	12	OTHER
 Aksum	12	NOUN
 Kinderheilkunde	12	NOUN
-Landeshauptstädten	12	NOUN
+Landeshauptstädten	12	NOUN	Landeshauptstadt
 Kugelkoordinaten	12	NOUN
 Kichererbse	12	NOUN
 Osterstein	12	NOUN
 Oberlößnitz	12	NOUN
-Winnetous	12	NOUN
+Winnetous	12	NOUN	Winnetou
 Anredeform	12	NOUN
 Spielhilfen	12	NOUN
 Cusse	12	NOUN
 Ambeno	12	NOUN
 Conquista	12	NOUN,OTHER
-Preisträgers	12	NOUN
+Preisträgers	12	NOUN	Preisträger
 Saxonum	12	NOUN
 heilsgeschichtliche	12	OTHER
 Trauerzeit	12	NOUN
@@ -89245,7 +89245,7 @@ orthographisch	12	OTHER
 Sprachvarianten	12	NOUN
 Degradierung	12	NOUN
 Störungszone	12	NOUN
-Hintergrunds	12	NOUN
+Hintergrunds	12	NOUN	Hintergrund
 Despot	12	NOUN
 Pavilion	12	NOUN
 Metrolink	12	NOUN
@@ -89271,20 +89271,20 @@ Außenkommando	12	NOUN
 Weißmeer	12	NOUN
 Bento	12	NOUN
 Lagerkomplexes	12	NOUN
-Sonderkommandos	12	NOUN
+Sonderkommandos	12	NOUN	Sonderkommando
 Humanity	12	NOUN,OTHER
 Kommunalunternehmen	12	NOUN
 volkswirtschaftlicher	12	OTHER
-Schumpeters	12	NOUN
-Sprachgebietes	12	NOUN
+Schumpeters	12	NOUN	Schumpeter
+Sprachgebietes	12	NOUN	Sprachgebiet
 Tibi	12	NOUN,OTHER
 gesündigt	12	OTHER
 Directional	12	NOUN,OTHER
-Schirms	12	NOUN
+Schirms	12	NOUN	Schirm
 Sarkom	12	NOUN
 haltende	12	OTHER
 Hasdrubal	12	NOUN
-Iberern	12	NOUN
+Iberern	12	NOUN	Iberer
 Carthage	12	NOUN
 landestypische	12	OTHER
 Wiederkäuen	12	NOUN,OTHER
@@ -89300,30 +89300,30 @@ Volkskrieg	12	NOUN
 Morgenthau	12	NOUN
 Meller	12	NOUN
 nachrangige	12	OTHER
-Landsknechte	12	NOUN
+Landsknechte	12	NOUN	Landsknecht
 verführte	12	OTHER
 übersteigerte	12	OTHER
-Wirklichkeiten	12	NOUN
+Wirklichkeiten	12	NOUN	Wirklichkeit
 Inselbevölkerung	12	NOUN
-Coffeins	12	NOUN
+Coffeins	12	NOUN	Coffein
 Kristallformen	12	NOUN
-Arzneistoffen	12	NOUN
+Arzneistoffen	12	NOUN	Arzneistoff
 galante	12	OTHER
-Gleichnissen	12	NOUN
-Weblogs	12	NOUN
+Gleichnissen	12	NOUN	Gleichnisse
+Weblogs	12	NOUN	Weblog
 Trauergottesdienst	12	NOUN
-Bogarts	12	NOUN
-Lorenzen	12	NOUN
+Bogarts	12	NOUN	Bogart
+Lorenzen	12	NOUN	Lorenz
 Handlungsanweisungen	12	NOUN
 Wikilinks	12	NOUN
 Rechtswidrigkeit	12	NOUN
-Reichsministeriums	12	NOUN
+Reichsministeriums	12	NOUN	Reichsministerium
 Avancen	12	NOUN
-Hemingways	12	NOUN
+Hemingways	12	NOUN	Hemingway
 Inglourious	12	NOUN
 Basterds	12	NOUN
 eingewirkt	12	OTHER
-Regelkreise	12	NOUN
+Regelkreise	12	NOUN	Regelkreis
 Textpassage	12	NOUN
 Zugangsbeschränkungen	12	NOUN
 Selbstversuch	12	NOUN
@@ -89336,9 +89336,9 @@ Renningen	12	NOUN
 koordinierende	12	OTHER
 laparoskopische	12	OTHER
 Erkenschwick	12	NOUN
-Lyrikers	12	NOUN
+Lyrikers	12	NOUN	Lyriker
 Zuffenhausen	12	NOUN
-Meitners	12	NOUN
+Meitners	12	NOUN	Meitner
 Barbecue	12	NOUN
 Falling	12	NOUN
 Fahrrades	12	NOUN
@@ -89350,9 +89350,9 @@ Narrenschiff	12	NOUN
 überschwänglich	12	OTHER
 halbkreisförmigen	12	OTHER
 Tympanon	12	NOUN
-Größenklassen	12	NOUN
+Größenklassen	12	NOUN	Größenklasse
 abgeräumt	12	OTHER
-Zweckverbände	12	NOUN
+Zweckverbände	12	NOUN	Zweckverband
 Tieflandsbucht	12	NOUN
 drabgreen	12	OTHER
 Marinus	12	NOUN,OTHER
@@ -89372,9 +89372,9 @@ Burenrepubliken	12	NOUN
 Lagerplatz	12	NOUN
 durchfliesst	12	OTHER
 VAW	12	NOUN
-Bezugssystemen	12	NOUN
-Lektüren	12	NOUN
-Engländers	12	NOUN
+Bezugssystemen	12	NOUN	Bezugssystem
+Lektüren	12	NOUN	Lektüre
+Engländers	12	NOUN	Engländer
 Marmorbüste	12	NOUN
 Column	12	NOUN,OTHER
 Klappbrücke	12	NOUN
@@ -89383,13 +89383,13 @@ Hampstead	12	NOUN
 Pokalwettbewerb	12	NOUN
 Motorradrennen	12	NOUN
 Brick	12	NOUN,OTHER
-Trams	12	NOUN
-Scherzen	12	NOUN,OTHER
+Trams	12	NOUN	Tram
+Scherzen	12	NOUN,OTHER	Scherz
 laß	12	NOUN,OTHER
 Emu	12	NOUN
-Zellkulturen	12	NOUN
+Zellkulturen	12	NOUN	Zellkultur
 Interferometrie	12	NOUN
-Zielfernrohre	12	NOUN
+Zielfernrohre	12	NOUN	Zielfernrohr
 Alpenländern	12	NOUN
 fünfthöchste	12	OTHER
 Wiesenflächen	12	NOUN
@@ -89398,7 +89398,7 @@ Aussenpolitik	12	NOUN
 Kursbuch	12	NOUN
 Edelweiss	12	NOUN
 Zweijahresrhythmus	12	NOUN
-Farbwerken	12	NOUN
+Farbwerken	12	NOUN	Farbwerke
 Feldstraße	12	NOUN
 ECE	12	NOUN
 Gotter	12	NOUN
