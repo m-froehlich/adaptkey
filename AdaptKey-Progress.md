@@ -565,6 +565,31 @@ non-trivial changes).
   <10: 1073), the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, and populating
   `lemma` on every result so far.
 
+- **§308 (v1.0.61): round 3 - the 200-499 band (423 rows), plus the D-368 tag-order question from §307**
+  **resolved: yes, reorder those too.** User confirmed retroactively fixing D-368's own 210 pre-existing
+  entries as well - the 42 that actually needed it (`NOUN,OTHER,VERB` -> `NOUN,VERB,OTHER`; the other 168
+  were plain `NOUN,VERB` with no `OTHER` to reorder, untouched) via the same fail-loud pattern, verifying
+  the exact prior tag before rewriting. 788 candidates reviewed individually; 360 `OTHER` -> `VERB`, 63
+  genuine dual-meaning words `OTHER` -> `VERB,OTHER` (the established participle/preterite-plural collision
+  pattern from §307 accounts for most of them, e.g. `erhöhten`/`erklärten`/`kritisierten`; six are a
+  different, independent-second-meaning shape rather than a spelling coincidence and were flagged for
+  visibility rather than silently decided: `weichen` (to yield/soften, vs. adjective "weich" inflected),
+  `achten` (to respect, vs. ordinal "achte" inflected), `meinen` (to mean/think, vs. possessive "mein"
+  inflected), `nötigen` (to compel, vs. adjective "nötig" inflected), `dichten` (to write poetry/seal, vs.
+  adjective "dicht" inflected), `tätigen` (to carry out, vs. adjective "tätig" inflected) - all six genuinely
+  real, non-archaic verb readings, unlike the round-1 `sondern`/`freien`/`langen` skips). Noted but
+  deliberately not touched (out of scope for this tagging pass, a separate D-301-style noise-cleanup
+  question): `begin`/`align`/`sin`/`min`/`colon`/`varepsilon`/`return`/`schen` all surfaced in this band's
+  own candidate pool and are clearly not German words at all (LaTeX/math-markup and programming-keyword
+  leaks, the same corpus-extraction-artefact class §301 already cleaned up) - flagged for a future noise
+  pass, not removed here. `git diff --stat` confirmed exactly 465 lines changed (423 + 42 reorder).
+  `dictionaries/de/version.txt` 18 -> 19, pack rebuilt/verified (spot-checked `Drang` now reads
+  `NOUN,VERB,OTHER`), `LanguagePackCatalog` version 18 -> 19. No new tests (data-only). 1064 unit tests
+  unchanged, all green (via JDK 21). `versionCode` 364 -> 365, `versionName` `"1.0.60"` -> `"1.0.61"`. Not
+  yet device-confirmed. Remaining scope: three frequency bands left (50-199: 2290, 10-49: 6138, <10: 1073),
+  the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries
+  (separate decision), and populating `lemma` on every result so far.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with

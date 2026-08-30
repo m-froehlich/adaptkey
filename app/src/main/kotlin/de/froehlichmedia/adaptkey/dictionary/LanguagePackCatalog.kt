@@ -173,7 +173,11 @@ object LanguagePackCatalog {
             // words OTHER -> VERB,OTHER) - and a tag-order correction, applied retroactively to
             // round 1's 5 dual words too: OTHER always sorts last against VERB (VERB,OTHER, not
             // OTHER,VERB), per explicit user instruction. 227 + 5 rows changed.
-            version = 18
+            // §308 (v1.0.61): round 3, the 200-499 band (360 OTHER -> VERB, 63 OTHER -> VERB,OTHER) -
+            // plus the same tag-order fix retroactively applied to D-368's own 42 pre-existing
+            // NOUN,OTHER,VERB entries (-> NOUN,VERB,OTHER), per explicit user request. 423 + 42 rows
+            // changed.
+            version = 19
         ),
         Entry(
             Language.GREEK,
