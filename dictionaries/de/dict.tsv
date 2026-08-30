@@ -34682,10 +34682,10 @@ Quell	43	NOUN
 Wheeler	43	NOUN
 surrealistische	43	OTHER
 beiderlei	43	OTHER
-Diskriminierungen	43	NOUN
+Diskriminierungen	43	NOUN	Diskriminierung
 Kriegswirtschaft	43	NOUN
-Wanderwegen	43	NOUN
-Stifts	43	NOUN
+Wanderwegen	43	NOUN	Wanderweg
+Stifts	43	NOUN	Stift
 Religionsfrieden	43	NOUN
 Universe	43	NOUN
 Schutzmacht	43	NOUN
@@ -34695,22 +34695,22 @@ Sicherheitslücke	43	NOUN
 HTTPS	43	NOUN
 Wrocław	43	NOUN
 Wilsdruff	43	NOUN
-Wasserspiele	43	NOUN
-Virchows	43	NOUN
-Kolbens	43	NOUN
-Wasserräder	43	NOUN
-Tinten	43	NOUN
+Wasserspiele	43	NOUN	Wasserspiel
+Virchows	43	NOUN	Virchow
+Kolbens	43	NOUN	Kolben
+Wasserräder	43	NOUN	Wasserrad
+Tinten	43	NOUN	Tinte
 Bauchspeicheldrüse	43	NOUN
-Wasserstoffbrücken	43	NOUN
-Chromatiden	43	NOUN
+Wasserstoffbrücken	43	NOUN	Wasserstoffbrücke
+Chromatiden	43	NOUN	Chromatid
 kriegerischer	43	OTHER
 Zwischenstation	43	NOUN
 Nordschwarzwald	43	NOUN
 WV	43	NOUN
-Regionalzüge	43	NOUN
+Regionalzüge	43	NOUN	Regionalzug
 Extremismus	43	NOUN
 städtebaulich	43	OTHER
-Phantasien	43	NOUN
+Phantasien	43	NOUN	Phantasie
 Energietechnik	43	NOUN
 underbrace	43	OTHER
 Verantwortlichkeit	43	NOUN
@@ -34720,9 +34720,9 @@ Pic	43	NOUN
 Wojciech	43	NOUN
 Kane	43	NOUN
 venezolanische	43	OTHER
-Verbreitungsgebietes	43	NOUN
+Verbreitungsgebietes	43	NOUN	Verbreitungsgebiet
 unzutreffend	43	OTHER
-Rechenregeln	43	NOUN
+Rechenregeln	43	NOUN	Rechenregel
 Stromkreis	43	NOUN
 Wissensstand	43	NOUN
 Papiergeld	43	NOUN
@@ -34734,7 +34734,7 @@ Benin	43	NOUN
 Triptychon	43	NOUN
 Wine	43	NOUN
 Peleus	43	NOUN
-Generators	43	NOUN
+Generators	43	NOUN	Generator
 Kogge	43	NOUN
 Ausbreitungsgeschwindigkeit	43	NOUN
 Sprachphilosophie	43	NOUN
@@ -34754,16 +34754,16 @@ unabdingbar	43	OTHER
 FreeDOS	43	NOUN
 Kommandozeile	43	NOUN
 erbeuten	43	VERB
-Brennelementen	43	NOUN
+Brennelementen	43	NOUN	Brennelemente
 Brunner	43	NOUN
 Penrose	43	NOUN
 Northeim	43	NOUN
-Fehden	43	NOUN
+Fehden	43	NOUN	Fehde
 pietistischen	43	OTHER
 Neujahrstag	43	NOUN
 Hun	43	NOUN,OTHER
 Kowalewskaja	43	NOUN
-Sedimentgesteine	43	NOUN
+Sedimentgesteine	43	NOUN	Sedimentgestein
 Roddenberry	43	NOUN
 Gutshof	43	NOUN
 Stiglitz	43	NOUN
@@ -34772,47 +34772,47 @@ Newtonsche	43	NOUN,OTHER
 lombardischen	43	OTHER
 Gemahl	43	NOUN
 Kolonialpolitik	43	NOUN
-Distrikts	43	NOUN
+Distrikts	43	NOUN	Distrikt
 Castello	43	NOUN
 Privatdozent	43	NOUN
 Nahrungssuche	43	NOUN
 Zech	43	NOUN
 Hyperion	43	NOUN
-Fahrkarten	43	NOUN
+Fahrkarten	43	NOUN	Fahrkarte
 Landbrücke	43	NOUN
 Janis	43	NOUN
 yyyy	43	OTHER
 Iserlohn	43	NOUN
 wendischen	43	NOUN,OTHER
 Düna	43	NOUN
-Zustandsgrößen	43	NOUN
+Zustandsgrößen	43	NOUN	Zustandsgröße
 Kupferstecher	43	NOUN
 Lippische	43	NOUN,OTHER
-Tansanias	43	NOUN
+Tansanias	43	NOUN	Tansania
 Losung	43	NOUN
 Chhattisgarh	43	NOUN
 Ansteckung	43	NOUN
 Sarastro	43	NOUN
 deiner	440	OTHER
-Radiostationen	43	NOUN
+Radiostationen	43	NOUN	Radiostation
 Lavigne	43	NOUN
 Sonnenstein	43	NOUN
 Lauch	43	NOUN
 Lutherstadt	43	NOUN
 Newski	43	NOUN
 Colchester	43	NOUN
-Vorarlbergs	43	NOUN
+Vorarlbergs	43	NOUN	Vorarlberg
 Kamtschatka	43	NOUN
 Nymphenburg	43	NOUN
 Genter	43	NOUN
-Ungleichungen	43	NOUN
-Zweitaktmotoren	43	NOUN
+Ungleichungen	43	NOUN	Ungleichung
+Zweitaktmotoren	43	NOUN	Zweitaktmotor
 Karlshagen	43	NOUN
 Papierherstellung	43	NOUN
 Gewerbepark	43	NOUN
 Trebur	43	NOUN
-Oberschlesiens	43	NOUN
-Textzeugen	43	NOUN
+Oberschlesiens	43	NOUN	Oberschlesien
+Textzeugen	43	NOUN	Textzeuge
 Kaczyński	43	NOUN
 Wechselrichter	43	NOUN
 Frazer	43	NOUN
@@ -34821,12 +34821,12 @@ Azimut	43	NOUN
 Oberspreewald	43	NOUN
 Menden	43	NOUN
 Deutschösterreich	43	NOUN
-Eingängen	43	NOUN
+Eingängen	43	NOUN	Eingang
 Kilimandscharo	43	NOUN
 Mittelmark	43	NOUN
 Kondom	43	NOUN
 Ruppiner	43	NOUN
-Jawlenskys	43	NOUN
+Jawlenskys	43	NOUN	Jawlensky
 Stockerau	43	NOUN
 Osterfeld	43	NOUN
 Heidekreis	43	NOUN
@@ -34850,7 +34850,7 @@ Cary	42	NOUN
 propagandistische	42	OTHER
 Flop	42	NOUN
 größtem	42	OTHER
-Täuschungen	42	NOUN
+Täuschungen	42	NOUN	Täuschung
 Perkins	42	NOUN
 Production	42	NOUN,OTHER
 angekündigten	42	OTHER
@@ -34864,21 +34864,21 @@ aufgetaucht	42	OTHER
 ausgeschmückt	42	OTHER
 reaktionäre	42	OTHER
 Wonder	42	NOUN
-Carbonsäuren	42	NOUN
+Carbonsäuren	42	NOUN	Carbonsäure
 Sublimation	42	NOUN
 Wertigkeit	42	NOUN
 ol	42	NOUN,OTHER
 Aluminiumoxid	42	NOUN
 sibirische	42	NOUN,OTHER
 eingeschmolzen	42	VERB
-Vorrichtungen	42	NOUN
+Vorrichtungen	42	NOUN	Vorrichtung
 hexagonal	42	OTHER
 leichtesten	42	OTHER
 unkritisch	42	OTHER
 gelbes	42	OTHER
 reichert	42	OTHER
 volkstümlich	42	OTHER
-Blutgefäßen	42	NOUN
+Blutgefäßen	42	NOUN	Blutgefäß
 Hydrazin	42	NOUN
 vorsätzlich	42	OTHER
 Spross	42	NOUN
@@ -34892,9 +34892,9 @@ Kleopatra	42	NOUN
 beleidigt	42	OTHER
 geschmiedet	42	OTHER
 aufzubringen	42	VERB
-Feldzugs	42	NOUN
+Feldzugs	42	NOUN	Feldzug
 kretischen	42	OTHER
-Generälen	42	NOUN
+Generälen	42	NOUN	General
 Reisender	42	NOUN,OTHER
 vorgedrungen	42	VERB
 Lebensbeschreibung	42	NOUN
@@ -34912,9 +34912,9 @@ Acre	42	NOUN,OTHER
 Physical	42	NOUN,OTHER
 Brisanz	42	NOUN
 Abtragung	42	NOUN
-Schreibungen	42	NOUN
+Schreibungen	42	NOUN	Schreibung
 Telegrafie	42	NOUN
-Bombenangriffen	42	NOUN
+Bombenangriffen	42	NOUN	Bombenangriff
 gaußsche	42	NOUN,OTHER
 Haven	42	NOUN
 sterbende	42	OTHER
@@ -34926,7 +34926,7 @@ angemerkt	42	OTHER
 Boethius	42	NOUN
 Konfuzius	42	NOUN
 abgegrenzten	42	OTHER
-Haustieren	42	NOUN
+Haustieren	42	NOUN	Haustier
 Halluzinationen	42	NOUN
 versöhnen	42	VERB
 Gesuch	42	NOUN
@@ -34936,10 +34936,10 @@ Address	42	NOUN
 Gefangenenlager	42	NOUN
 Verfassungszusatz	42	NOUN
 überdurchschnittliche	42	OTHER
-Flugblättern	42	NOUN
+Flugblättern	42	NOUN	Flugblatt
 Alleingang	42	NOUN
 Ackermann	42	NOUN
-Abfällen	42	NOUN
+Abfällen	42	NOUN	Abfall
 Seehofer	42	NOUN
 schränkte	42	OTHER
 israelisch	42	OTHER
@@ -34961,10 +34961,10 @@ Henker	42	NOUN
 Zwischenprodukt	42	NOUN
 naturwissenschaftlicher	42	OTHER
 Gegenbegriff	42	NOUN
-Himmelskörpers	42	NOUN
-Plasmas	42	NOUN
+Himmelskörpers	42	NOUN	Himmelskörper
+Plasmas	42	NOUN	Plasma
 Binnenstaat	42	NOUN
-Privatuniversitäten	42	NOUN
+Privatuniversitäten	42	NOUN	Privatuniversität
 Safawiden	42	NOUN
 Massenmord	42	NOUN
 zusprach	42	OTHER
@@ -34993,13 +34993,13 @@ sanktioniert	42	OTHER
 sympathisierte	42	OTHER
 diktatorische	42	OTHER
 Benevent	42	NOUN
-Ziegeln	42	NOUN
+Ziegeln	42	NOUN	Ziegel
 Lautes	42	NOUN,OTHER
 Methodologie	42	NOUN
 wertvollsten	42	OTHER
 Retina	42	NOUN
 Sperrgebiet	42	NOUN
-Diktatoren	42	NOUN
+Diktatoren	42	NOUN	Diktator
 paramilitärischen	42	OTHER
 apokalyptischen	42	OTHER
 Giftgas	42	NOUN
@@ -35007,14 +35007,14 @@ Erwählung	42	NOUN
 entnahm	42	OTHER
 Bodenreform	42	NOUN
 steuerlichen	42	OTHER
-Beratern	42	NOUN
+Beratern	42	NOUN	Berater
 Anschlusses	42	NOUN
-Baltikums	42	NOUN
+Baltikums	42	NOUN	Baltikum
 Stocken	42	NOUN
 Posener	42	NOUN
 mitnehmen	42	VERB
 Bullock	42	NOUN
-Fremdsprachen	42	NOUN
+Fremdsprachen	42	NOUN	Fremdsprache
 beeinträchtigte	42	OTHER
 Datenübertragungsrate	42	NOUN
 virtuell	42	OTHER
@@ -35024,7 +35024,7 @@ Prokopios	42	NOUN
 Schornstein	42	NOUN
 aufgeführte	42	OTHER
 innersten	42	OTHER
-Fußgängern	42	NOUN
+Fußgängern	42	NOUN	Fußgänger
 Annaberg	42	NOUN
 Vorrede	42	NOUN
 asymmetrischen	42	OTHER
@@ -35033,9 +35033,9 @@ Entladung	42	NOUN
 générale	42	OTHER
 lebhaften	42	OTHER
 schriftstellerische	42	OTHER
-Allergene	42	NOUN
+Allergene	42	NOUN	Allergen
 intravenös	42	OTHER
-Monomere	42	NOUN
+Monomere	42	NOUN	Monomer
 Säugling	42	NOUN
 versus	42	OTHER
 Tian	42	NOUN
@@ -35052,24 +35052,24 @@ sozialdemokratisch	42	OTHER
 eingeleiteten	42	OTHER
 frischem	42	OTHER
 Direktverbindung	42	NOUN
-Lipide	42	NOUN
+Lipide	42	NOUN	Lipid
 Spezifität	42	NOUN
 Linus	42	NOUN
 Spiegelbild	42	NOUN
-Eulen	42	NOUN
+Eulen	42	NOUN	Eule
 Stammesgeschichte	42	NOUN
 hieran	42	OTHER
 Hubertus	42	NOUN
 unhaltbar	42	OTHER
 Elefant	42	NOUN
-Seile	42	NOUN
+Seile	42	NOUN	Seil
 Tonsprache	42	NOUN
-Reflexe	42	NOUN
+Reflexe	42	NOUN	Reflex
 wechselwirken	42	VERB
 Schere	42	NOUN
 Zoologe	42	NOUN
 fehlerhaften	42	OTHER
-Sulfate	42	NOUN
+Sulfate	42	NOUN	Sulfat
 Glucagon	42	NOUN
 Tunica	42	NOUN,OTHER
 Weißrussland	42	NOUN
@@ -35077,10 +35077,10 @@ Etzel	42	NOUN
 Jewish	42	NOUN
 Generalstabschef	42	NOUN
 Rabin	42	NOUN
-Babys	42	NOUN
+Babys	42	NOUN	Baby
 Jassir	42	NOUN
 Noam	42	NOUN
-Patrioten	42	NOUN
+Patrioten	42	NOUN	Patriot
 abgesetzten	42	OTHER
 seid	42	OTHER
 Gaußschen	42	NOUN,OTHER
@@ -35093,7 +35093,7 @@ Delfter	42	NOUN
 Motu	42	NOUN
 Brazzaville	42	NOUN
 Waals	42	NOUN
-Programmes	42	NOUN
+Programmes	42	NOUN	Programm
 Kommunikationstechnik	42	NOUN
 Missionstätigkeit	42	NOUN
 Sündenfall	42	NOUN
@@ -35105,19 +35105,19 @@ Rohmaterial	42	NOUN
 Altern	42	NOUN,OTHER
 Thiel	42	NOUN
 Flugbahn	42	NOUN
-Triebwerken	42	NOUN
+Triebwerken	42	NOUN	Triebwerk
 Luanda	42	NOUN
-Einzugsgebiete	42	NOUN
+Einzugsgebiete	42	NOUN	Einzugsgebiet
 Metropolitana	42	NOUN
 Santos	42	NOUN
 Mineralwasser	42	NOUN
-Galeristen	42	NOUN
+Galeristen	42	NOUN	Galerist
 Universitätsklinik	42	NOUN
 magmatischen	42	OTHER
 Axiomensystem	42	NOUN
 barocker	42	OTHER
 Elfriede	42	NOUN
-Highways	42	NOUN
+Highways	42	NOUN	Highway
 Brüderlichkeit	42	NOUN
 marktwirtschaftlichen	42	OTHER
 Heribert	42	NOUN
@@ -35125,7 +35125,7 @@ std	42	NOUN,OTHER
 Speicherbereinigung	42	NOUN
 Ariane	42	NOUN
 Überdosis	42	NOUN
-Fässer	42	NOUN
+Fässer	42	NOUN	Fass
 Honoré	42	NOUN
 lebhaft	42	OTHER
 befürworten	42	VERB
@@ -35133,7 +35133,7 @@ schrittweisen	42	OTHER
 Beauftragung	42	NOUN
 Antiochien	42	NOUN
 Staatswappen	42	NOUN
-Rauten	42	NOUN
+Rauten	42	NOUN	Raute
 innerdeutsche	42	OTHER
 Hauptmarkt	42	NOUN
 Obergermanisch	42	NOUN
@@ -35144,22 +35144,22 @@ Greif	42	NOUN,VERB
 Kabarettist	42	NOUN
 separates	42	OTHER
 Streitpunkt	42	NOUN
-Microsofts	42	NOUN
+Microsofts	42	NOUN	Microsoft
 geplantes	42	OTHER
 ausbrechen	42	NOUN,OTHER
 Spinne	42	NOUN
 Atrium	42	NOUN
-Regierungsparteien	42	NOUN
+Regierungsparteien	42	NOUN	Regierungspartei
 Beauftragter	42	NOUN,OTHER
-Geschmacks	42	NOUN
+Geschmacks	42	NOUN	Geschmack
 erschwerend	42	OTHER
-Raffinerien	42	NOUN
-Industriebetrieben	42	NOUN
+Raffinerien	42	NOUN	Raffinerie
+Industriebetrieben	42	NOUN	Industriebetrieb
 abfallen	42	VERB
 WWF	42	NOUN
 Prohibition	42	NOUN
 Rechtsverordnung	42	NOUN
-Feuerwachen	42	NOUN
+Feuerwachen	42	NOUN	Feuerwache
 Insulaner	42	NOUN
 Klangerzeugung	42	NOUN
 Amstrad	42	NOUN
@@ -35174,17 +35174,17 @@ saisonale	42	OTHER
 Schilf	42	NOUN
 invasive	42	OTHER
 Goldbach	42	NOUN
-Zuflüssen	42	NOUN
-Segelschiffe	42	NOUN
+Zuflüssen	42	NOUN	Zufluss
+Segelschiffe	42	NOUN	Segelschiff
 aufgeschüttet	42	OTHER
-Transportwege	42	NOUN
-Posaunen	42	NOUN
+Transportwege	42	NOUN	Transportweg
+Posaunen	42	NOUN	Posaune
 handschriftlich	42	OTHER
 Stefano	42	NOUN
 Babelsberg	42	NOUN
 markantes	42	OTHER
 erweckte	42	OTHER
-Paraden	42	NOUN
+Paraden	42	NOUN	Parade
 gehörend	42	OTHER
 Visumpflicht	42	NOUN
 Klimaklassifikation	42	NOUN
@@ -35203,21 +35203,21 @@ weiterführen	42	VERB
 Hauptanteil	42	NOUN
 Institutionalisierung	42	NOUN
 masoretische	42	OTHER
-Gutenbergs	42	NOUN
-Suren	42	NOUN
+Gutenbergs	42	NOUN	Gutenberg
+Suren	42	NOUN	Sure
 schreckliche	42	NOUN,OTHER
 zensiert	42	OTHER
 Klimate	42	NOUN
-Erschießungen	42	NOUN
+Erschießungen	42	NOUN	Erschießung
 gemindert	42	OTHER
 Rechtsnachfolger	42	NOUN
 Fürstenhaus	42	NOUN
 BAM	42	NOUN
 Flughöhe	42	NOUN
 Weinstein	42	NOUN
-Metamorphosen	42	NOUN
+Metamorphosen	42	NOUN	Metamorphose
 Fuss	42	NOUN
-Hauptgründe	42	NOUN
+Hauptgründe	42	NOUN	Hauptgrund
 Wheel	42	NOUN,OTHER
 verhängen	42	VERB
 Vorgängerin	42	NOUN
@@ -35226,7 +35226,7 @@ Seemann	42	NOUN
 Banco	42	NOUN
 Clarence	42	NOUN
 Care	42	NOUN
-Kastanien	42	NOUN
+Kastanien	42	NOUN	Kastanie
 Baudenkmal	42	NOUN
 Halbkugel	42	NOUN
 dargeboten	42	VERB
@@ -35235,13 +35235,13 @@ Spielplan	42	NOUN
 Ride	42	NOUN,OTHER
 lateinamerikanische	42	OTHER
 Habilitationsschrift	42	NOUN
-Zeugenaussagen	42	NOUN
+Zeugenaussagen	42	NOUN	Zeugenaussage
 esse	42	OTHER
 Kriegsschäden	42	NOUN
 Schriftstück	42	NOUN
-Heiligtums	42	NOUN
+Heiligtums	42	NOUN	Heiligtum
 nachvollzogen	42	VERB
-Gliederfüßern	42	NOUN
+Gliederfüßern	42	NOUN	Gliederfüßer
 Zellulose	42	NOUN
 Bonus	42	NOUN
 Breitband	42	NOUN
@@ -35251,11 +35251,11 @@ Provincial	42	NOUN
 zweigeteilt	42	OTHER
 Krankheitsverlauf	42	NOUN
 verlassene	42	OTHER
-Anbieters	42	NOUN
+Anbieters	42	NOUN	Anbieter
 Bauleitung	42	NOUN
-Gaus	42	NOUN
+Gaus	42	NOUN	Gau
 primitiv	42	OTHER
-Farne	42	NOUN
+Farne	42	NOUN	Farn
 bedingter	42	OTHER
 bezeichne	42	OTHER
 Funktionsfähigkeit	42	NOUN
@@ -35270,19 +35270,19 @@ eckigen	42	OTHER
 verzweigte	42	OTHER
 Ono	42	NOUN
 Eckhart	42	NOUN
-Elektronenröhren	42	NOUN
+Elektronenröhren	42	NOUN	Elektronenröhre
 Adress	42	NOUN
 Random	42	NOUN
 Marvin	42	NOUN
 Soho	42	NOUN
 mmol	42	OTHER
 Interpret	42	NOUN
-Hyperlinks	42	NOUN
-Harmonien	42	NOUN
+Hyperlinks	42	NOUN	Hyperlink
+Harmonien	42	NOUN	Harmonie
 Corea	42	NOUN
 Katholik	42	NOUN
 Verfassungsgesetz	42	NOUN
-Naturrechts	42	NOUN
+Naturrechts	42	NOUN	Naturrecht
 Odo	42	NOUN
 Philosophy	42	NOUN
 bequem	42	OTHER
@@ -35305,7 +35305,7 @@ which	42	OTHER
 förmlich	42	OTHER
 Jensen	42	NOUN
 schränkt	42	OTHER
-Aerosole	42	NOUN
+Aerosole	42	NOUN	Aerosol
 Tea	42	NOUN,OTHER
 Zugeständnis	42	NOUN
 begeisterter	42	OTHER
@@ -35319,12 +35319,12 @@ misstrauisch	42	OTHER
 unverheiratet	42	OTHER
 induktive	42	OTHER
 Saône	42	NOUN
-Reiseberichte	42	NOUN
+Reiseberichte	42	NOUN	Reisebericht
 Fotografin	42	NOUN
 Möbiusband	42	NOUN
 Target	42	NOUN
 Bundeshaushalt	42	NOUN
-Satzungen	42	NOUN
+Satzungen	42	NOUN	Satzung
 Galgen	42	NOUN
 verholfen	42	VERB
 Anja	42	NOUN
@@ -35334,8 +35334,8 @@ Achtel	42	NOUN
 Lucy	42	NOUN
 hauptamtlich	42	OTHER
 Hohenstein	42	NOUN
-Kardinälen	42	NOUN
-Schnittpunkte	42	NOUN
+Kardinälen	42	NOUN	Kardinal
+Schnittpunkte	42	NOUN	Schnittpunkt
 Legat	42	NOUN
 Digitalkamera	42	NOUN
 Myopie	42	NOUN
@@ -35345,7 +35345,7 @@ Canaletto	42	NOUN
 übertragbaren	42	OTHER
 Kaste	42	NOUN
 Laue	42	NOUN
-Funktionswerte	42	NOUN
+Funktionswerte	42	NOUN	Funktionswert
 Duplex	42	NOUN,OTHER
 Putz	42	NOUN,VERB
 Morava	42	NOUN
@@ -35361,30 +35361,30 @@ verkehrende	42	OTHER
 Vampir	42	NOUN
 Dateimanager	42	NOUN
 überfielen	42	VERB
-Geschenken	42	NOUN
+Geschenken	42	NOUN	Geschenk
 Kloakentiere	42	NOUN
 Epithel	42	NOUN
 Blaeu	42	NOUN
 abzweigt	42	OTHER
 Allmende	42	NOUN
 ganzheitlichen	42	OTHER
-Auserwählten	42	NOUN,OTHER
+Auserwählten	42	NOUN,OTHER	Auserwählte
 Sephiroth	42	NOUN
 Gälisch	42	NOUN,OTHER
 verschlossenen	42	OTHER
 Eingangsbereich	42	NOUN
-Affekte	42	NOUN
+Affekte	42	NOUN	Affekt
 selektiven	42	OTHER
 fernab	42	OTHER
 Nantes	42	NOUN
 Chimborazo	42	NOUN
-Rillen	42	NOUN
-Entschädigungen	42	NOUN
+Rillen	42	NOUN	Rille
+Entschädigungen	42	NOUN	Entschädigung
 existent	42	OTHER
 verordnete	42	OTHER
 Volksbildung	42	NOUN
 Kurmainz	42	NOUN
-Weibchens	42	NOUN
+Weibchens	42	NOUN	Weibchen
 Maimonides	42	NOUN
 Gerold	42	NOUN
 Energiezufuhr	42	NOUN
@@ -35395,18 +35395,18 @@ Meeresoberfläche	42	NOUN
 SWF	42	NOUN
 Brescia	42	NOUN
 zugespitzt	42	OTHER
-Herrschaftsrechte	42	NOUN
+Herrschaftsrechte	42	NOUN	Herrschaftsrecht
 mündlicher	42	OTHER
 frisches	42	OTHER
-Segelflugzeuge	42	NOUN
-Landrats	42	NOUN
+Segelflugzeuge	42	NOUN	Segelflugzeug
+Landrats	42	NOUN	Landrat
 schwingenden	42	OTHER
 umgezogen	42	VERB
 Südinsel	42	NOUN
 fällte	42	OTHER
 schottisch	42	NOUN,OTHER
 Wawel	42	NOUN
-Eigenwerte	42	NOUN
+Eigenwerte	42	NOUN	Eigenwert
 verzehren	42	VERB
 einstweilige	42	OTHER
 Elisabethkirche	42	NOUN
@@ -35414,9 +35414,9 @@ ständigem	42	OTHER
 Ruhezustand	42	NOUN
 Coverversion	42	NOUN
 Tethys	42	NOUN
-Quadrates	42	NOUN
-Teichen	42	NOUN
-Merkurs	42	NOUN
+Quadrates	42	NOUN	Quadrat
+Teichen	42	NOUN	Teich
+Merkurs	42	NOUN	Merkur
 Rasmussen	42	NOUN
 Gesamtsystem	42	NOUN
 Oranienburger	42	NOUN
@@ -35439,8 +35439,8 @@ Please	42	NOUN
 Wilna	42	NOUN
 Gram	42	NOUN
 Überhöhung	42	NOUN
-Turners	42	NOUN
-Zwangsarbeitern	42	NOUN
+Turners	42	NOUN	Turner
+Zwangsarbeitern	42	NOUN	Zwangsarbeiter
 Trolltech	42	NOUN
 Sieden	42	NOUN,OTHER
 Lazarus	42	NOUN
@@ -35459,11 +35459,11 @@ Karlshafen	42	NOUN
 Rücksichtnahme	42	NOUN
 Gabel	42	NOUN
 Knotenmenge	42	NOUN
-Bessarabiens	42	NOUN
+Bessarabiens	42	NOUN	Bessarabien
 anhaltischen	42	NOUN,OTHER
 Twer	42	NOUN
 Quastenflosser	42	NOUN
-Eisberge	42	NOUN
+Eisberge	42	NOUN	Eisberg
 synoptischen	42	OTHER
 Kontinentalkongress	42	NOUN
 Phitsanulok	42	NOUN
@@ -35471,19 +35471,19 @@ Crescentius	42	NOUN
 PZPR	42	NOUN
 Pots	42	NOUN
 Duschanbe	42	NOUN
-Klees	42	NOUN
+Klees	42	NOUN	Klee
 Zuggattung	42	NOUN
 Brünhild	42	NOUN
 Gentoo	42	NOUN
 NTBA	42	NOUN
 Eldagsen	42	NOUN
-Tisos	42	NOUN
-Glausers	42	NOUN
+Tisos	42	NOUN	Tiso
+Glausers	42	NOUN	Glauser
 Leasingnehmer	42	NOUN
 Flusssäure	41	NOUN
 verwitwete	41	OTHER
 reproduzieren	41	VERB
-Paradoxien	41	NOUN
+Paradoxien	41	NOUN	Paradoxie
 Unvollständigkeitssatz	41	NOUN
 redundant	41	OTHER
 Untersuchungsgegenstand	41	NOUN
@@ -35494,16 +35494,16 @@ Verunsicherung	41	NOUN
 siebzig	41	OTHER
 Missfallen	41	NOUN
 faszinierte	41	OTHER
-Andeutungen	41	NOUN
+Andeutungen	41	NOUN	Andeutung
 Zeitdruck	41	NOUN
 Penelope	41	NOUN
 unterteilte	41	OTHER
 verschließen	41	NOUN,OTHER
 Olav	41	NOUN
-Anleitungen	41	NOUN
+Anleitungen	41	NOUN	Anleitung
 farbiger	41	OTHER
-Charakteren	41	NOUN
-Videospiele	41	NOUN
+Charakteren	41	NOUN	Charakter
+Videospiele	41	NOUN	Videospiel
 ausgelassen	41	VERB
 Bonnie	41	NOUN
 Eliminierung	41	NOUN
@@ -35512,17 +35512,17 @@ Elementarzelle	41	NOUN
 abgeschieden	41	VERB
 Haube	41	NOUN
 Karosserie	41	NOUN
-Blechen	41	NOUN
+Blechen	41	NOUN	Blech
 Brandschutz	41	NOUN
 Edelgas	41	NOUN
 handelsüblichen	41	OTHER
-Gehalte	41	NOUN
+Gehalte	41	NOUN	Gehalt
 Modernität	41	NOUN
 wiederverwendet	41	OTHER
 emittierten	41	OTHER
-Herbizide	41	NOUN
+Herbizide	41	NOUN	Herbizid
 wahrscheinlichste	41	OTHER
-Halogene	41	NOUN
+Halogene	41	NOUN	Halogen
 Monazit	41	NOUN
 Protactinium	41	NOUN
 ionisierender	41	OTHER
@@ -35533,24 +35533,24 @@ Selbsterkenntnis	41	NOUN
 übers	41	OTHER
 erzählenden	41	OTHER
 Weltherrschaft	41	NOUN
-Amulette	41	NOUN
+Amulette	41	NOUN	Amulett
 siegreiche	41	OTHER
 ostslawischen	41	OTHER
 Ancient	41	NOUN
-Produktionsanlagen	41	NOUN
+Produktionsanlagen	41	NOUN	Produktionsanlage
 Abteilungsleiter	41	NOUN
 Fry	41	NOUN
-Verurteilungen	41	NOUN
+Verurteilungen	41	NOUN	Verurteilung
 Champollion	41	NOUN
 Latènezeit	41	NOUN
 kompletter	41	OTHER
-Schriftsysteme	41	NOUN
+Schriftsysteme	41	NOUN	Schriftsystem
 Flieger	41	NOUN
 Tourist	41	NOUN
 Visier	41	NOUN
-Zwillingen	41	NOUN
+Zwillingen	41	NOUN	Zwilling
 Schreibmaschine	41	NOUN
-Symbols	41	NOUN
+Symbols	41	NOUN	Symbol
 Marcellus	41	NOUN
 Syllogistik	41	NOUN
 dialektische	41	OTHER
@@ -35558,7 +35558,7 @@ deskriptiven	41	OTHER
 Poet	41	NOUN
 Neuplatoniker	41	NOUN
 Hanks	41	NOUN
-Whigs	41	NOUN
+Whigs	41	NOUN	Whig
 Parteiführer	41	NOUN
 Ausfuhr	41	NOUN
 Nebraska	41	NOUN
@@ -35566,12 +35566,12 @@ ausbaute	41	OTHER
 Hooker	41	NOUN
 Neuengland	41	NOUN
 gelobte	41	OTHER
-Martins	41	NOUN
-Vogels	41	NOUN
+Martins	41	NOUN	Martin
+Vogels	41	NOUN	Vogel
 Industriezweig	41	NOUN
 beigefügt	41	OTHER
 Hannelore	41	NOUN
-Enthaltungen	41	NOUN
+Enthaltungen	41	NOUN	Enthaltung
 flächendeckenden	41	OTHER
 steuerliche	41	OTHER
 Kofferwort	41	NOUN
@@ -35606,33 +35606,33 @@ Kinetik	41	NOUN
 Henderson	41	NOUN
 infraroten	41	OTHER
 umstrittener	41	OTHER
-Bewerbern	41	NOUN
+Bewerbern	41	NOUN	Bewerber
 besiegelte	41	OTHER
 herrsche	41	OTHER
 gepriesen	41	VERB
 bellum	41	OTHER
 Tönnies	41	NOUN
 Linienführung	41	NOUN
-Bildschirme	41	NOUN
+Bildschirme	41	NOUN	Bildschirm
 barrierefrei	41	OTHER
 reparieren	41	VERB
-Handys	41	NOUN
+Handys	41	NOUN	Handy
 Verstoßes	41	NOUN
 Inzest	41	NOUN
 Ausbilder	41	NOUN
 fühle	41	OTHER
-Auslands	41	NOUN
+Auslands	41	NOUN	Ausland
 ordentlicher	41	OTHER
 Reichsministerium	41	NOUN
 Planer	41	NOUN
 abzutreten	41	VERB
-Radiosendern	41	NOUN
+Radiosendern	41	NOUN	Radiosender
 jüdischem	41	OTHER
 ausgerüstete	41	OTHER
 Fernost	41	NOUN
-Radioprogramme	41	NOUN
+Radioprogramme	41	NOUN	Radioprogramm
 oberirdisch	41	OTHER
-Bauweisen	41	NOUN
+Bauweisen	41	NOUN	Bauweise
 verbrauchen	41	VERB
 Begriffsbildung	41	NOUN
 hartem	41	OTHER
@@ -35656,19 +35656,19 @@ rezitiert	41	OTHER
 Karen	41	NOUN
 Ordensgemeinschaft	41	NOUN
 spröde	41	OTHER
-Standarddeutschen	41	NOUN,OTHER
+Standarddeutschen	41	NOUN,OTHER	Standarddeutsch
 longrightarrow	41	OTHER
-Tetraeders	41	NOUN
+Tetraeders	41	NOUN	Tetraeder
 hergestelltes	41	OTHER
 freisetzen	41	VERB
 saudischen	41	OTHER
-Zwischenprodukte	41	NOUN
+Zwischenprodukte	41	NOUN	Zwischenprodukt
 Einsparung	41	NOUN
 krankhafte	41	OTHER
 harmlose	41	OTHER
 ausgeschüttet	41	OTHER
 Kuhmilch	41	NOUN
-Codons	41	NOUN
+Codons	41	NOUN	Codon
 erahnen	41	VERB
 Handelsposten	41	NOUN
 Schmelzwasser	41	NOUN
@@ -35694,7 +35694,7 @@ Marseillaise	41	NOUN
 Fachwissen	41	NOUN
 CV	41	NOUN
 zurückreicht	41	OTHER
-Wanderungsbewegungen	41	NOUN
+Wanderungsbewegungen	41	NOUN	Wanderungsbewegung
 Schneefall	41	NOUN
 Schwitzen	41	NOUN
 Betablocker	41	NOUN
@@ -35704,14 +35704,14 @@ LCD	41	NOUN
 Redundanz	41	NOUN
 Annemarie	41	NOUN
 fortbewegen	41	VERB
-Textdateien	41	NOUN
+Textdateien	41	NOUN	Textdatei
 eingelesen	41	VERB
 skalare	41	OTHER
 programmierte	41	OTHER
 Fleisches	41	NOUN
 Konjunktiv	41	NOUN
 Como	41	NOUN,OTHER
-Sümpfen	41	NOUN
+Sümpfen	41	NOUN	Sumpf
 silbernes	41	OTHER
 hohl	41	OTHER
 Extrakt	41	NOUN
@@ -35721,7 +35721,7 @@ sexuellem	41	OTHER
 kreist	41	OTHER
 bekehren	41	VERB
 Hilfsorganisation	41	NOUN
-Einladungen	41	NOUN
+Einladungen	41	NOUN	Einladung
 Wärmemenge	41	NOUN
 Move	41	NOUN,OTHER
 Rochester	41	NOUN
@@ -35748,20 +35748,20 @@ akademisches	41	OTHER
 Sterberate	41	NOUN
 Blake	41	NOUN
 Sundance	41	NOUN
-Mooren	41	NOUN
-Geotope	41	NOUN
+Mooren	41	NOUN	Moor
+Geotope	41	NOUN	Geotop
 Rheinpfalz	41	NOUN
 ständischen	41	OTHER
-Bezirksämter	41	NOUN
+Bezirksämter	41	NOUN	Bezirksamt
 Salzach	41	NOUN
 Aushängeschild	41	NOUN
 kulturhistorische	41	OTHER
 Wertheim	41	NOUN
-Verteidigungsanlagen	41	NOUN
-Landesteils	41	NOUN
+Verteidigungsanlagen	41	NOUN	Verteidigungsanlage
+Landesteils	41	NOUN	Landesteil
 prognostizierte	41	OTHER
 staatsrechtlich	41	OTHER
-Kurorte	41	NOUN
+Kurorte	41	NOUN	Kurort
 technologisch	41	OTHER
 sechstgrößte	41	OTHER
 Frauenmannschaft	41	NOUN
@@ -35782,15 +35782,15 @@ nachweisbaren	41	OTHER
 Gefäßpflanzen	41	NOUN
 Ratifikation	41	NOUN
 Ringbahn	41	NOUN
-Keyboards	41	NOUN
-Funktionalitäten	41	NOUN
-Prämien	41	NOUN
+Keyboards	41	NOUN	Keyboard
+Funktionalitäten	41	NOUN	Funktionalität
+Prämien	41	NOUN	Prämie
 Ahorn	41	NOUN
 umhüllt	41	OTHER
-Maschinenbaus	41	NOUN
+Maschinenbaus	41	NOUN	Maschinenbau
 Schultz	41	NOUN
 Handwerkskammer	41	NOUN
-Endmoränen	41	NOUN
+Endmoränen	41	NOUN	Endmoräne
 abfallenden	41	OTHER
 Kreuzlingen	41	NOUN
 unveränderter	41	OTHER
@@ -35802,10 +35802,10 @@ Resignation	41	NOUN
 Ornamentik	41	NOUN
 Badehaus	41	NOUN
 Gestik	41	NOUN
-Partituren	41	NOUN
+Partituren	41	NOUN	Partitur
 zugewandten	41	OTHER
 Kollektivierung	41	NOUN
-Befugnissen	41	NOUN
+Befugnissen	41	NOUN	Befugnisse
 warteten	41	VERB
 Derby	41	NOUN
 einzigartiges	41	OTHER
@@ -35824,19 +35824,19 @@ Dharma	41	NOUN
 feststehenden	41	OTHER
 Ezechiel	41	NOUN
 Schreckensherrschaft	41	NOUN
-Despoten	41	NOUN
+Despoten	41	NOUN	Despot
 Venn	41	NOUN
 Cäsar	41	NOUN
 Gare	41	NOUN
 Montanindustrie	41	NOUN
 tituliert	41	OTHER
-Pannonischen	41	NOUN,OTHER
-Bosniens	41	NOUN
+Pannonischen	41	NOUN,OTHER	Pannonische
+Bosniens	41	NOUN	Bosnien
 Bevölkerungsstruktur	41	NOUN
 Josip	41	NOUN
 Dinar	41	NOUN
 Zulu	41	NOUN
-Fluten	41	NOUN
+Fluten	41	NOUN	Flut
 geflutet	41	OTHER
 Elsässer	41	NOUN
 irreversiblen	41	OTHER
@@ -35860,17 +35860,17 @@ Retro	41	NOUN
 Bevölkerungszunahme	41	NOUN
 Dia	41	NOUN,OTHER
 lightgrey	41	OTHER
-Zusammenbruchs	41	NOUN
-Versuchspersonen	41	NOUN
-Berührungen	41	NOUN
+Zusammenbruchs	41	NOUN	Zusammenbruch
+Versuchspersonen	41	NOUN	Versuchsperson
+Berührungen	41	NOUN	Berührung
 Leeds	41	NOUN
-Wikingern	41	NOUN
+Wikingern	41	NOUN	Wikinger
 Seife	41	NOUN
 Kopfbahnhof	41	NOUN
 IB	41	NOUN,OTHER
 Lokalbahn	41	NOUN
 namhafter	41	OTHER
-Ausgleichs	41	NOUN
+Ausgleichs	41	NOUN	Ausgleich
 Straßenbahnwagen	41	NOUN
 Hämophilie	41	NOUN
 Wiederkäuer	41	NOUN
@@ -35879,12 +35879,12 @@ Borreliose	41	NOUN
 Wildpark	41	NOUN
 Viten	41	NOUN
 Kriegsgeschehen	41	NOUN
-Alleen	41	NOUN
-Direktverbindungen	41	NOUN
+Alleen	41	NOUN	Allee
+Direktverbindungen	41	NOUN	Direktverbindung
 Unterhaltungsliteratur	41	NOUN
 fiktionalen	41	OTHER
 Lebensgefühl	41	NOUN
-Dornen	41	NOUN
+Dornen	41	NOUN	Dorn
 sekundäres	41	OTHER
 Protektion	41	NOUN
 Komplement	41	NOUN
@@ -35892,12 +35892,12 @@ Auszählung	41	NOUN
 Stiefel	41	NOUN
 Bluthochdruck	41	NOUN
 Herzversagen	41	NOUN
-Ökosystems	41	NOUN
+Ökosystems	41	NOUN	Ökosystem
 Sonnenstand	41	NOUN
 Brennholz	41	NOUN
 gekrümmten	41	OTHER
-Gräsern	41	NOUN
-Kultes	41	NOUN
+Gräsern	41	NOUN	Gras
+Kultes	41	NOUN	Kult
 Comenius	41	NOUN
 Cher	41	NOUN
 dy	41	OTHER
@@ -35907,18 +35907,18 @@ versagte	41	OTHER
 beratend	41	OTHER
 angefordert	41	OTHER
 gleichgeschaltet	41	OTHER
-Castros	41	NOUN
+Castros	41	NOUN	Castro
 Seianus	41	NOUN
 gehofft	41	OTHER
 Ehemannes	41	NOUN
-Böses	41	NOUN,OTHER
-Informanten	41	NOUN
+Böses	41	NOUN,OTHER	Böse
+Informanten	41	NOUN	Informant
 Trigonometrie	41	NOUN
 Geldmangel	41	NOUN
 Veste	41	NOUN
 topographischen	41	OTHER
-Linnés	41	NOUN
-Laufwerken	41	NOUN
+Linnés	41	NOUN	Linné
+Laufwerken	41	NOUN	Laufwerk
 facher	41	OTHER
 Aircraft	41	NOUN
 Bombay	41	NOUN
@@ -35931,7 +35931,7 @@ Panamakanal	41	NOUN
 DTV	41	NOUN,OTHER
 Check	41	NOUN
 gewerblich	41	OTHER
-Zweigstellen	41	NOUN
+Zweigstellen	41	NOUN	Zweigstelle
 operierenden	41	OTHER
 Sedan	41	NOUN
 Navigator	41	NOUN
@@ -35944,24 +35944,24 @@ kreiert	41	OTHER
 Straight	41	NOUN,OTHER
 Sixtus	41	NOUN
 Sanktion	41	NOUN
-Regionalverbands	41	NOUN
-Einzelhandels	41	NOUN
+Regionalverbands	41	NOUN	Regionalverband
+Einzelhandels	41	NOUN	Einzelhandel
 Schwartz	41	NOUN
 Thilo	41	NOUN
 NWDR	41	NOUN
 Scheibenwelt	41	NOUN
 Fleischfresser	41	NOUN
 großräumige	41	OTHER
-Wirts	41	NOUN
+Wirts	41	NOUN	Wirt
 Schifffahrtsamt	41	NOUN
 Forsthaus	41	NOUN
 DV	41	NOUN,OTHER
 Vorsitzendem	41	NOUN
 Staatsvolk	41	NOUN
-Steinbrüche	41	NOUN
+Steinbrüche	41	NOUN	Steinbruch
 Ahmadiyya	41	NOUN
 Dreiecksungleichung	41	NOUN
-Teilstrecken	41	NOUN
+Teilstrecken	41	NOUN	Teilstrecke
 Jamaica	41	NOUN
 Croix	41	NOUN
 DFL	41	NOUN
@@ -35972,13 +35972,13 @@ Gerresheim	41	NOUN
 Kaiserswerth	41	NOUN
 Katharinenkirche	41	NOUN
 Fußballabteilung	41	NOUN
-Routern	41	NOUN
-Eisenbahnnetzes	41	NOUN
+Routern	41	NOUN	Router
+Eisenbahnnetzes	41	NOUN	Eisenbahnnetz
 Bilddaten	41	NOUN
 Darstellerin	41	NOUN
 Vohwinkel	41	NOUN
-Rechtsordnungen	41	NOUN
-Quanten	41	NOUN
+Rechtsordnungen	41	NOUN	Rechtsordnung
+Quanten	41	NOUN	Quant
 Sunrise	41	NOUN
 bronzene	41	OTHER
 FSV	41	NOUN
@@ -35994,12 +35994,12 @@ erlischt	41	OTHER
 Eigenwert	41	NOUN
 Kuala	41	NOUN
 Idealisierung	41	NOUN
-Tonträgern	41	NOUN
+Tonträgern	41	NOUN	Tonträger
 stärkeres	41	OTHER
 kreisförmig	41	OTHER
-Tunesiens	41	NOUN
+Tunesiens	41	NOUN	Tunesien
 Badeort	41	NOUN
-Epauletten	41	NOUN
+Epauletten	41	NOUN	Epaulette
 Gegenposition	41	NOUN
 Silbermann	41	NOUN
 Omnibusse	41	NOUN
@@ -36020,29 +36020,29 @@ vergoldeten	41	VERB,OTHER
 Faustregel	41	NOUN
 Laudatio	41	NOUN
 Oberkarbon	41	NOUN
-Völkermordes	41	NOUN
+Völkermordes	41	NOUN	Völkermord
 Piłsudski	41	NOUN
 Tide	41	NOUN
 aufleben	41	VERB
 Liturgiereform	41	NOUN
 Deschner	41	NOUN
-Katastralgemeinden	41	NOUN
+Katastralgemeinden	41	NOUN	Katastralgemeinde
 emittieren	41	VERB
-Weltmeere	41	NOUN
+Weltmeere	41	NOUN	Weltmeer
 Rinteln	41	NOUN
 Konkordanz	41	NOUN
 meterspurige	41	OTHER
 Saatgut	41	NOUN
-Lehrlinge	41	NOUN
+Lehrlinge	41	NOUN	Lehrling
 KSZE	41	NOUN
 Quality	41	NOUN
 Prokura	41	NOUN
 Kew	41	NOUN
 besungen	41	VERB
 Bräutigam	41	NOUN
-Mobiltelefons	41	NOUN
+Mobiltelefons	41	NOUN	Mobiltelefon
 meldet	41	OTHER
-Kulturdenkmäler	41	NOUN
+Kulturdenkmäler	41	NOUN	Kulturdenkmal
 Haltern	41	NOUN
 Unterland	41	NOUN
 Frida	41	NOUN
@@ -36056,18 +36056,18 @@ Pärnu	41	NOUN
 Zeitmaschine	41	NOUN
 Kensington	41	NOUN
 Morgendämmerung	41	NOUN
-Zusatzprotokolls	41	NOUN
+Zusatzprotokolls	41	NOUN	Zusatzprotokoll
 Wassermoleküle	41	NOUN
 RKI	41	NOUN
 Molly	41	NOUN
-Frameworks	41	NOUN
+Frameworks	41	NOUN	Framework
 Eisenacher	41	NOUN
 Umm	41	NOUN
-Rinnen	41	NOUN,OTHER
+Rinnen	41	NOUN,OTHER	Rinne
 Heartfield	41	NOUN
 Domkirche	41	NOUN
 Kavitation	41	NOUN
-Filipinos	41	NOUN
+Filipinos	41	NOUN	Filipino
 Clash	41	NOUN
 Graudenz	41	NOUN
 Mogadischu	41	NOUN
@@ -36084,12 +36084,12 @@ Innenohr	41	NOUN
 Bensheim	41	NOUN
 Sudeten	41	NOUN
 Kaschuben	41	NOUN
-Lehrgänge	41	NOUN
+Lehrgänge	41	NOUN	Lehrgang
 Teufelsmauer	41	NOUN
 Rosmarin	41	NOUN
 Frontale	41	NOUN
 Stabreim	41	NOUN
-Mendelssohns	41	NOUN
+Mendelssohns	41	NOUN	Mendelssohn
 Semantic	41	NOUN
 Fribourg	41	NOUN
 HDTV	41	NOUN
@@ -36110,10 +36110,10 @@ Gurlitt	41	NOUN
 Indies	41	NOUN
 Aufsichtsratsvorsitzender	41	NOUN
 ParlG	41	NOUN
-Tischendorfs	41	NOUN
+Tischendorfs	41	NOUN	Tischendorf
 Ortelsburg	41	NOUN
-Ferngläser	41	NOUN
-Grecos	41	NOUN
+Ferngläser	41	NOUN	Fernglas
+Grecos	41	NOUN	Greco
 Geldausgabeautomaten	41	NOUN
 Xiamen	41	NOUN
 verantwortet	40	OTHER
@@ -36132,11 +36132,11 @@ verkörperten	40	OTHER
 Stabes	40	NOUN
 ergreift	40	OTHER
 Credo	40	NOUN
-Kontraste	40	NOUN
+Kontraste	40	NOUN	Kontrast
 Buchreihe	40	NOUN
 gespaltenen	40	OTHER
 Danny	40	NOUN
-Animes	40	NOUN
+Animes	40	NOUN	Anime
 überschneidet	40	OTHER
 neoklassische	40	OTHER
 Kohlenstoffatom	40	NOUN
@@ -36144,7 +36144,7 @@ Björn	40	NOUN
 verfeinerte	40	OTHER
 hinterlässt	40	OTHER
 Herabsetzung	40	NOUN
-Neutrons	40	NOUN
+Neutrons	40	NOUN	Neutron
 kosmischer	40	OTHER
 zweitwichtigste	40	OTHER
 Vase	40	NOUN
@@ -36155,7 +36155,7 @@ Kation	40	NOUN
 Betastrahlung	40	NOUN
 AMS	40	NOUN
 Hebamme	40	NOUN
-Kassenärztlichen	40	NOUN,OTHER
+Kassenärztlichen	40	NOUN,OTHER	Kassenärztliche
 mitzuteilen	40	VERB
 anteilig	40	OTHER
 Spannungsverhältnis	40	NOUN
@@ -36182,7 +36182,7 @@ eingeflossen	40	VERB
 richtungsweisend	40	OTHER
 Unzucht	40	NOUN
 Rachel	40	NOUN
-Entwicklungsstufen	40	NOUN
+Entwicklungsstufen	40	NOUN	Entwicklungsstufe
 untersuchenden	40	OTHER
 Pech	40	NOUN
 Vorschub	40	NOUN
@@ -36195,7 +36195,7 @@ kopernikanische	40	OTHER
 unbemannten	40	OTHER
 befruchtet	40	OTHER
 SOS	40	NOUN
-Erdbebens	40	NOUN
+Erdbebens	40	NOUN	Erdbeben
 Score	40	NOUN
 Bedauern	40	NOUN,OTHER
 sprichwörtlich	40	OTHER
@@ -36207,7 +36207,7 @@ Bronzestatue	40	NOUN
 unveränderlichen	40	OTHER
 feststellt	40	OTHER
 verifiziert	40	OTHER
-Embryonen	40	NOUN
+Embryonen	40	NOUN	Embryo
 Klugheit	40	NOUN
 unbeeinflusst	40	OTHER
 neuplatonischen	40	OTHER
@@ -36245,7 +36245,7 @@ Monatsnamen	40	NOUN
 komplementären	40	OTHER
 bemalten	40	VERB,OTHER
 konform	40	OTHER
-Gerüchten	40	NOUN
+Gerüchten	40	NOUN	Gerücht
 Drug	40	NOUN
 geneigten	40	OTHER
 ersuchte	40	OTHER
@@ -36260,8 +36260,8 @@ Arbeitsvertrag	40	NOUN
 Durchschnittswert	40	NOUN
 Cao	40	NOUN
 Verfügungsgewalt	40	NOUN
-Enteignungen	40	NOUN
-Kriegsjahre	40	NOUN
+Enteignungen	40	NOUN	Enteignung
+Kriegsjahre	40	NOUN	Kriegsjahr
 Dauerhaftigkeit	40	NOUN
 Falk	40	NOUN
 Manifestation	40	NOUN
@@ -36277,7 +36277,7 @@ Vice	40	NOUN,OTHER
 Wortspiel	40	NOUN
 Dow	40	NOUN
 schmerzhaften	40	OTHER
-Bataillone	40	NOUN
+Bataillone	40	NOUN	Bataillon
 ideellen	40	OTHER
 Staatsgerichtshof	40	NOUN
 Einbürgerung	40	NOUN
@@ -36286,16 +36286,16 @@ Unvereinbarkeit	40	NOUN
 revidieren	40	VERB
 kapitulieren	40	VERB
 schwinden	40	NOUN,OTHER
-Urheberrechte	40	NOUN
-Verwaltungsbehörden	40	NOUN
-Hungersnöten	40	NOUN
-Unfalls	40	NOUN
+Urheberrechte	40	NOUN	Urheberrecht
+Verwaltungsbehörden	40	NOUN	Verwaltungsbehörde
+Hungersnöten	40	NOUN	Hungersnot
+Unfalls	40	NOUN	Unfall
 forma	40	OTHER
 linksliberalen	40	OTHER
 westgotischen	40	OTHER
 Restaurierungsarbeiten	40	NOUN
 filmisch	40	OTHER
-Raumschiffen	40	NOUN
+Raumschiffen	40	NOUN	Raumschiff
 hinzugezogen	40	VERB
 geantwortet	40	OTHER
 erweitertes	40	OTHER
@@ -36306,7 +36306,7 @@ Solarzelle	40	NOUN
 Emile	40	NOUN
 polytechnique	40	OTHER
 hypothetisch	40	OTHER
-Vereinfachungen	40	NOUN
+Vereinfachungen	40	NOUN	Vereinfachung
 mütterlichen	40	OTHER
 Justinus	40	NOUN
 Dahn	40	NOUN
@@ -36322,17 +36322,17 @@ Wollaston	40	NOUN
 Personentransport	40	NOUN
 modernisieren	40	VERB
 Etikett	40	NOUN
-akkadische	40	NOUN,OTHER
-Adjektivs	40	NOUN
+akkadische	40	NOUN,OTHER	akkadisch
+Adjektivs	40	NOUN	Adjektiv
 Seekrieg	40	NOUN
 Wählerschaft	40	NOUN
 Belebung	40	NOUN
-Gläubigern	40	NOUN
+Gläubigern	40	NOUN	Gläubiger
 Interessengemeinschaft	40	NOUN
 befriedigend	40	OTHER
-Schwangerschaften	40	NOUN
+Schwangerschaften	40	NOUN	Schwangerschaft
 Malz	40	NOUN
-Zwischenstufen	40	NOUN
+Zwischenstufen	40	NOUN	Zwischenstufe
 ankommen	40	VERB
 krankhaft	40	OTHER
 Milz	40	NOUN
@@ -36341,7 +36341,7 @@ Jacobus	40	NOUN
 umfassenderen	40	OTHER
 kugelförmig	40	OTHER
 zerkleinert	40	OTHER
-Eigenarten	40	NOUN
+Eigenarten	40	NOUN	Eigenart
 kaltes	40	OTHER
 Mandatsgebiet	40	NOUN
 vorzudringen	40	VERB
@@ -36349,16 +36349,16 @@ libanesischen	40	OTHER
 Vorstandes	40	NOUN
 programmierten	40	OTHER
 maltesische	40	OTHER
-Regens	40	NOUN
+Regens	40	NOUN	Regen
 unempfindlich	40	OTHER
 Carus	40	NOUN
 kranker	40	NOUN,OTHER
-Polynoms	40	NOUN
+Polynoms	40	NOUN	Polynom
 ablegte	40	OTHER
 Traité	40	NOUN
 Blanche	40	NOUN,OTHER
 Radikalität	40	NOUN
-Umwandlungen	40	NOUN
+Umwandlungen	40	NOUN	Umwandlung
 errechnen	40	VERB
 Abtastfrequenz	40	NOUN
 Durchlauf	40	NOUN
@@ -36373,45 +36373,45 @@ Idealbild	40	NOUN
 längerfristige	40	OTHER
 Goldstandard	40	NOUN
 Aszites	40	NOUN
-Verfehlungen	40	NOUN
+Verfehlungen	40	NOUN	Verfehlung
 ausgearbeiteten	40	VERB
 bizarre	40	OTHER
 exportieren	40	VERB
 Kapspur	40	NOUN
 Cable	40	NOUN
-Wartezeiten	40	NOUN
+Wartezeiten	40	NOUN	Wartezeit
 untermauert	40	OTHER
-Theoreme	40	NOUN
+Theoreme	40	NOUN	Theorem
 Burgas	40	NOUN
-Landstraßen	40	NOUN
+Landstraßen	40	NOUN	Landstraße
 Deutschlandradio	40	NOUN
 steuerlich	40	OTHER
 erfanden	40	VERB
-Ritters	40	NOUN
+Ritters	40	NOUN	Ritter
 deklarierte	40	OTHER
-Goghs	40	NOUN
+Goghs	40	NOUN	Gogh
 Rechtsvorschriften	40	NOUN
 jahrhundertelange	40	OTHER
-Kulturkreisen	40	NOUN
+Kulturkreisen	40	NOUN	Kulturkreis
 Pulp	40	NOUN
 Energieeffizienz	40	NOUN
 Böhmerwald	40	NOUN
-Füchse	40	NOUN
+Füchse	40	NOUN	Fuchs
 Kelheim	40	NOUN
-Mährische	40	NOUN,OTHER
+Mährische	40	NOUN,OTHER	Mährisch
 Verdienstorden	40	NOUN
 Walisisch	40	NOUN,OTHER
 Burda	40	NOUN
 Fuggerei	40	NOUN
 Bahnverkehr	40	NOUN
 Lorscher	40	NOUN
-Gedenkmünzen	40	NOUN
+Gedenkmünzen	40	NOUN	Gedenkmünze
 Munich	40	NOUN
 Regenschatten	40	NOUN
 Verkehrswesen	40	NOUN
 Ravensbrück	40	NOUN
 Freizeitpark	40	NOUN
-Landesverbänden	40	NOUN
+Landesverbänden	40	NOUN	Landesverband
 Italowestern	40	NOUN
 Rekordhalter	40	NOUN
 Altersgründen	40	NOUN
@@ -36429,7 +36429,7 @@ Lamb	40	NOUN
 Tokioter	40	NOUN
 Senne	40	NOUN
 Rheine	40	NOUN
-Baumeisters	40	NOUN
+Baumeisters	40	NOUN	Baumeister
 Baumbestand	40	NOUN
 Innenstadtbereich	40	NOUN
 Binnengewässer	40	NOUN
@@ -36438,7 +36438,7 @@ Dornbirner	40	NOUN
 Einbußen	40	NOUN
 Heimathafen	40	NOUN
 aka	40	OTHER
-Zahnradbahnen	40	NOUN
+Zahnradbahnen	40	NOUN	Zahnradbahn
 Kurswechsel	40	NOUN
 gesungenen	40	OTHER
 hervorheben	40	VERB
@@ -36448,11 +36448,11 @@ antifaschistische	40	OTHER
 Caen	40	NOUN
 Freihandel	40	NOUN
 Fatih	40	NOUN
-Außenbezirken	40	NOUN
+Außenbezirken	40	NOUN	Außenbezirk
 Avenida	40	NOUN
 bestellen	40	VERB
 Umlandgemeinden	40	NOUN
-Stadtrechts	40	NOUN
+Stadtrechts	40	NOUN	Stadtrecht
 mittelalterliches	40	OTHER
 Reeder	40	NOUN
 Trägerin	40	NOUN
@@ -36469,15 +36469,15 @@ Sebastián	40	NOUN
 Catharina	40	NOUN
 festgelegter	40	OTHER
 gelegenes	40	OTHER
-Johannesevangeliums	40	NOUN
+Johannesevangeliums	40	NOUN	Johannesevangelium
 reichste	40	OTHER
 Bilderverbot	40	NOUN
 Nikephoros	40	NOUN
 Alexios	40	NOUN
 Stories	40	NOUN
 originär	40	OTHER
-Herkunftsländer	40	NOUN
-Bundesbahnen	40	NOUN
+Herkunftsländer	40	NOUN	Herkunftsland
+Bundesbahnen	40	NOUN	Bundesbahn
 Sax	40	NOUN
 Dahl	40	NOUN
 Wäsche	40	NOUN
@@ -36487,7 +36487,7 @@ grössere	40	OTHER
 erlässt	40	OTHER
 zylindrische	40	OTHER
 eckige	40	OTHER
-Leoparden	40	NOUN
+Leoparden	40	NOUN	Leopard
 bengalische	40	NOUN,OTHER
 Bildungssprache	40	NOUN
 versetzten	40	OTHER
@@ -36495,15 +36495,15 @@ Exploration	40	NOUN
 Harmonists	40	NOUN
 Weltrangliste	40	NOUN
 Karlmann	40	NOUN
-Stiftes	40	NOUN
+Stiftes	40	NOUN	Stift
 dichtem	40	OTHER
 wahrnahm	40	OTHER
 Redensart	40	NOUN
 Buchblock	40	NOUN
 Brunswick	40	NOUN
-Delfine	40	NOUN
+Delfine	40	NOUN	Delfin
 versäumt	40	OTHER
-Tiergruppen	40	NOUN
+Tiergruppen	40	NOUN	Tiergruppe
 Wassertropfen	40	NOUN
 Kalibrierung	40	NOUN
 Schwalbach	40	NOUN
@@ -36517,30 +36517,30 @@ Cour	40	NOUN,OTHER
 Eleganz	40	NOUN
 amour	40	NOUN,OTHER
 getarnt	40	OTHER
-Pfeilspitzen	40	NOUN
+Pfeilspitzen	40	NOUN	Pfeilspitze
 Hack	40	NOUN,VERB
 EFI	40	NOUN
 Arezzo	40	NOUN
 schrumpfen	40	VERB
 Pietà	40	NOUN
 Diphtherie	40	NOUN
-Gedankens	40	NOUN
+Gedankens	40	NOUN	Gedanke
 bedeutendstes	40	OTHER
 Nationalliberale	40	NOUN,OTHER
 Rechtsmittel	40	NOUN
 monözisch	40	OTHER
-Pollenkörner	40	NOUN
-Schulungen	40	NOUN
+Pollenkörner	40	NOUN	Pollenkorn
+Schulungen	40	NOUN	Schulung
 Expression	40	NOUN
 Fettgewebe	40	NOUN
 drängt	40	OTHER
 Gesetzgebungsverfahren	40	NOUN
-Wertungen	40	NOUN
-Wirte	40	NOUN
+Wertungen	40	NOUN	Wertung
+Wirte	40	NOUN	Wirt
 Ausdifferenzierung	40	NOUN
 Rating	40	NOUN
 völkerrechtlicher	40	OTHER
-Teilstaaten	40	NOUN
+Teilstaaten	40	NOUN	Teilstaat
 schaffe	40	OTHER
 Donauraum	40	NOUN
 autochthone	40	OTHER
@@ -36578,12 +36578,12 @@ Aegidius	40	NOUN
 anlaufen	40	NOUN,OTHER
 oppositioneller	40	OTHER
 Äquatorebene	40	NOUN
-Sonnenlichts	40	NOUN
+Sonnenlichts	40	NOUN	Sonnenlicht
 artenreiche	40	OTHER
 Juliane	40	NOUN
 morphologischer	40	OTHER
 Tao	40	NOUN
-Gemeinderats	40	NOUN
+Gemeinderats	40	NOUN	Gemeinderat
 integralen	40	NOUN,OTHER
 VX	40	NOUN
 Crown	40	NOUN
@@ -36591,7 +36591,7 @@ geleistete	40	OTHER
 Tauschhandel	40	NOUN
 Brunelleschi	40	NOUN
 anzuknüpfen	40	VERB
-Rechtecke	40	NOUN
+Rechtecke	40	NOUN	Rechteck
 auszuwählen	40	VERB
 ausverkauft	40	OTHER
 Silla	40	NOUN
@@ -36621,31 +36621,31 @@ Kalabrien	40	NOUN
 Wochenzeitschrift	40	NOUN
 Franche	40	NOUN
 Reichslehen	40	NOUN
-Nester	40	NOUN
-Jungtieren	40	NOUN
+Nester	40	NOUN	Nest
+Jungtieren	40	NOUN	Jungtier
 Yucatán	40	NOUN
-Kommandeure	40	NOUN
+Kommandeure	40	NOUN	Kommandeur
 überbrückt	40	OTHER
 Buchbinder	40	NOUN
 Appel	40	NOUN
-Aktualisierungen	40	NOUN
-pure	40	NOUN,OTHER
+Aktualisierungen	40	NOUN	Aktualisierung
+pure	40	NOUN,OTHER	pur
 zusammenzuführen	40	VERB
 Filterung	40	NOUN
-Weiterleitungen	40	NOUN
+Weiterleitungen	40	NOUN	Weiterleitung
 Seriennummer	40	NOUN
 Gondel	40	NOUN
 Königstraße	40	NOUN
-Güterzüge	40	NOUN
+Güterzüge	40	NOUN	Güterzug
 Spielleiter	40	NOUN
-Trabanten	40	NOUN
+Trabanten	40	NOUN	Trabant
 oberschlesischen	40	OTHER
 Kernkraft	40	NOUN
 Minderheitensprache	40	NOUN
-Abendmahls	40	NOUN
+Abendmahls	40	NOUN	Abendmahl
 Zufluchtsort	40	NOUN
 Eingeborenen	40	NOUN,OTHER
-Nitrate	40	NOUN
+Nitrate	40	NOUN	Nitrat
 Paddel	40	NOUN
 korsischen	40	OTHER
 Elementarteilchenphysik	40	NOUN
@@ -36665,7 +36665,7 @@ Kreisprozess	40	NOUN
 div	40	OTHER
 Plain	40	NOUN,OTHER
 Direktorin	40	NOUN
-Sachverständigen	40	NOUN
+Sachverständigen	40	NOUN	Sachverständige
 Oppenheimer	40	NOUN
 Hindemith	40	NOUN
 Knox	40	NOUN
@@ -36675,14 +36675,14 @@ bevölkerten	40	VERB,OTHER
 bezeichnetes	40	OTHER
 Druckluft	40	NOUN
 Gala	40	NOUN
-Taxons	40	NOUN
-Westindischen	40	NOUN,OTHER
+Taxons	40	NOUN	Taxon
+Westindischen	40	NOUN,OTHER	Westindische
 vie	40	OTHER
-Grundfarben	40	NOUN
+Grundfarben	40	NOUN	Grundfarbe
 Fit	40	NOUN,OTHER
 Naturstein	40	NOUN
-Fermats	40	NOUN
-Urheberrechts	40	NOUN
+Fermats	40	NOUN	Fermat
+Urheberrechts	40	NOUN	Urheberrecht
 Hecken	40	NOUN
 Erle	40	NOUN
 verpfändet	40	OTHER
@@ -36692,12 +36692,12 @@ Molière	40	NOUN
 bedeutendere	40	OTHER
 sanfte	40	OTHER
 Stall	40	NOUN
-Bastionen	40	NOUN
+Bastionen	40	NOUN	Bastion
 Oettingen	40	NOUN
 Bodenseekreis	40	NOUN
 spätrömischen	40	OTHER
 grenzten	40	VERB
-Randgebiete	40	NOUN
+Randgebiete	40	NOUN	Randgebiet
 ʿAbdallāh	40	OTHER
 mythisch	40	OTHER
 dekliniert	40	OTHER
@@ -36707,19 +36707,19 @@ Gesells	40	NOUN
 Bellini	40	NOUN
 Klavierunterricht	40	NOUN
 Bahnverbindung	40	NOUN
-Verhören	40	NOUN
+Verhören	40	NOUN	Verhör
 Südpazifik	40	NOUN
-Planungs	40	NOUN
+Planungs	40	NOUN	Planung
 Loewe	40	NOUN
 Iraker	40	NOUN
-Exons	40	NOUN
+Exons	40	NOUN	Exon
 Handlungsreisenden	40	NOUN
 Allied	40	NOUN
-Hörfunkprogramme	40	NOUN
+Hörfunkprogramme	40	NOUN	Hörfunkprogramm
 maskulin	40	OTHER
 Zypries	40	NOUN
 westslawischen	40	OTHER
-Privatrechts	40	NOUN
+Privatrechts	40	NOUN	Privatrecht
 Streitwagen	40	NOUN
 paulinischen	40	OTHER
 Wilhelmsburg	40	NOUN
@@ -36727,9 +36727,9 @@ Süssmuth	40	NOUN
 groups	40	NOUN,OTHER
 Wissenschaftslehre	40	NOUN
 rekrutierten	40	OTHER
-Michels	40	NOUN
+Michels	40	NOUN	Michel
 synaptischen	40	OTHER
-Nassauischen	40	NOUN,OTHER
+Nassauischen	40	NOUN,OTHER	Nassauische
 Hauptspiegel	40	NOUN
 Prärie	40	NOUN
 Schalom	40	NOUN
@@ -36737,14 +36737,14 @@ innerstaatlichen	40	OTHER
 Chola	40	NOUN
 Chalukya	40	NOUN
 Singh	40	NOUN
-Regelkreises	40	NOUN
+Regelkreises	40	NOUN	Regelkreis
 Reading	40	NOUN
-Hegelschen	40	NOUN,OTHER
-Lullys	40	NOUN
-Zusätzen	40	NOUN
+Hegelschen	40	NOUN,OTHER	Hegelsche
+Lullys	40	NOUN	Lully
+Zusätzen	40	NOUN	Zusatz
 halbem	40	OTHER
 Toyota	40	NOUN
-Tucholskys	40	NOUN
+Tucholskys	40	NOUN	Tucholsky
 Atta	40	NOUN
 amtsfreie	40	OTHER
 hüten	40	VERB
@@ -36753,7 +36753,7 @@ Ledoux	40	NOUN
 stroke	40	OTHER
 Hampton	40	NOUN
 verharren	40	VERB
-Russlanddeutschen	40	NOUN,OTHER
+Russlanddeutschen	40	NOUN,OTHER	Russlanddeutsche
 Marktgemeinde	40	NOUN
 Kolping	40	NOUN
 Jerichower	40	NOUN
@@ -36762,21 +36762,21 @@ PlusBus	40	NOUN
 Mittelzentren	40	NOUN
 HiFi	40	NOUN
 comique	40	OTHER
-Ventilen	40	NOUN
+Ventilen	40	NOUN	Ventil
 Körperchen	40	NOUN
 Governor	40	NOUN
 Studer	40	NOUN
 MarkenG	40	NOUN
-Tees	40	NOUN
+Tees	40	NOUN	Tee
 Praetorius	40	NOUN
-Samtgemeinden	40	NOUN
-Nürnbergs	40	NOUN
+Samtgemeinden	40	NOUN	Samtgemeinde
+Nürnbergs	40	NOUN	Nürnberg
 nigerianischen	40	OTHER
 Wolin	40	NOUN
 Nibelungensage	40	NOUN
 Mathis	40	NOUN
 erniedrigt	40	OTHER
-Almen	40	NOUN
+Almen	40	NOUN	Alm
 Grunwald	40	NOUN
 dreischiffige	40	OTHER
 Beaufort	40	NOUN
@@ -36785,15 +36785,15 @@ Stormarn	40	NOUN
 Walldürn	40	NOUN
 Konsonantenzeichen	40	NOUN
 Stüler	40	NOUN
-Beckmanns	40	NOUN
+Beckmanns	40	NOUN	Beckmann
 PVAP	40	NOUN
 Mehrheitsgesellschaft	40	NOUN
 Palamas	40	NOUN
 Marinetti	40	NOUN
 Penetration	40	NOUN
 Zonenzeit	40	NOUN
-Abbrüche	40	NOUN
-Berufsfeuerwehren	40	NOUN
+Abbrüche	40	NOUN	Abbruch
+Berufsfeuerwehren	40	NOUN	Berufsfeuerwehr
 Kalinago	40	NOUN
 Höch	40	NOUN
 Amphoe	40	NOUN
@@ -36812,7 +36812,7 @@ Mason	39	NOUN
 Umkehrschluss	39	NOUN
 nachher	39	OTHER
 Logiker	39	NOUN
-Schemas	39	NOUN
+Schemas	39	NOUN	Schema
 genüge	39	NOUN,OTHER
 neutrales	39	OTHER
 Anwendungsfall	39	NOUN
@@ -36820,14 +36820,14 @@ Kodak	39	NOUN
 essentiellen	39	OTHER
 Suspense	39	NOUN
 lukrativen	39	OTHER
-Verwicklungen	39	NOUN
+Verwicklungen	39	NOUN	Verwicklung
 Charme	39	NOUN
 Fontaine	39	NOUN
 oberflächliche	39	OTHER
 Jessica	39	NOUN
 Polizist	39	NOUN
 befragte	39	NOUN,OTHER
-Fabeln	39	NOUN
+Fabeln	39	NOUN	Fabel
 detaillierter	39	OTHER
 Erstausstrahlung	39	NOUN
 Chuck	39	NOUN
@@ -36837,7 +36837,7 @@ solchem	39	OTHER
 Erstbeschreibung	39	NOUN
 gegebenem	39	OTHER
 Aggressivität	39	NOUN
-Syndrome	39	NOUN,OTHER
+Syndrome	39	NOUN,OTHER	Syndrom
 vorkommendes	39	OTHER
 bläulich	39	OTHER
 stuft	39	OTHER
@@ -36851,7 +36851,7 @@ herausgefunden	39	VERB
 detektiert	39	OTHER
 Instrumentalisierung	39	NOUN
 Krems	39	NOUN
-Atomkerns	39	NOUN
+Atomkerns	39	NOUN	Atomkern
 hochauflösenden	39	OTHER
 abgeschlossener	39	OTHER
 ambulanten	39	OTHER
@@ -36864,12 +36864,12 @@ verwandtschaftliche	39	OTHER
 Musterbeispiel	39	NOUN
 überwand	39	OTHER
 Luftfahrzeug	39	NOUN
-Motivs	39	NOUN
+Motivs	39	NOUN	Motiv
 gigantischen	39	OTHER
 unterging	39	OTHER
 Herakleios	39	NOUN
 antikes	39	OTHER
-Sekundarschulen	39	NOUN
+Sekundarschulen	39	NOUN	Sekundarschule
 Bibliographie	39	NOUN
 Vervollkommnung	39	NOUN
 Berufsleben	39	NOUN
@@ -36881,27 +36881,27 @@ Hyderabad	39	NOUN
 Christophorus	39	NOUN
 Nachbarort	39	NOUN
 Nerv	39	NOUN
-Turbulenzen	39	NOUN
+Turbulenzen	39	NOUN	Turbulenz
 Kanone	39	NOUN
 Cornell	39	NOUN
 Requisiten	39	NOUN
-Durchmessers	39	NOUN
-Glücks	39	NOUN
+Durchmessers	39	NOUN	Durchmesser
+Glücks	39	NOUN	Glück
 lobt	39	OTHER
 Deduktion	39	NOUN
-Einzelfälle	39	NOUN
+Einzelfälle	39	NOUN	Einzelfall
 induktiven	39	OTHER
 kategorisch	39	OTHER
 bestmögliche	39	OTHER
 philologische	39	OTHER
 Ringer	39	NOUN
-Schulwesens	39	NOUN
+Schulwesens	39	NOUN	Schulwesen
 Zentralmacht	39	NOUN
 Meteor	39	NOUN
 abschaffen	39	VERB
 verschleiert	39	OTHER
 Copland	39	NOUN
-Ausflüge	39	NOUN
+Ausflüge	39	NOUN	Ausflug
 italienischem	39	OTHER
 Kunze	39	NOUN
 Volkskammerwahl	39	NOUN
@@ -36924,8 +36924,8 @@ Libre	39	NOUN,OTHER
 spektralen	39	OTHER
 Dreiklang	39	NOUN
 wirtschaftspolitischen	39	OTHER
-Außenministeriums	39	NOUN
-Khans	39	NOUN
+Außenministeriums	39	NOUN	Außenministerium
+Khans	39	NOUN	Khan
 subsumiert	39	OTHER
 Plymouth	39	NOUN
 beeindruckten	39	OTHER
@@ -36933,13 +36933,13 @@ Archibald	39	NOUN
 Om	39	NOUN,OTHER
 Menschenopfer	39	NOUN
 ausgab	39	OTHER
-Graden	39	NOUN
-Konnotationen	39	NOUN
+Graden	39	NOUN	Grad
+Konnotationen	39	NOUN	Konnotation
 Alexandrien	39	NOUN
-Keplerschen	39	NOUN,OTHER
+Keplerschen	39	NOUN,OTHER	Keplersche
 kopernikanischen	39	OTHER
 Plasmen	39	NOUN
-Pharaonen	39	NOUN
+Pharaonen	39	NOUN	Pharao
 ausdehnte	39	OTHER
 Sumerer	39	NOUN
 Freihandelsabkommen	39	NOUN
@@ -36947,8 +36947,8 @@ verklärt	39	OTHER
 Pontifex	39	NOUN
 Crassus	39	NOUN
 Augusti	39	NOUN
-Freigelassenen	39	NOUN,OTHER
-Arabiens	39	NOUN
+Freigelassenen	39	NOUN,OTHER	Freigelassene
+Arabiens	39	NOUN	Arabien
 Machtpolitik	39	NOUN
 wegweisende	39	OTHER
 rohen	39	OTHER
@@ -36957,7 +36957,7 @@ Finanzkraft	39	NOUN
 einschneidende	39	OTHER
 Gruber	39	NOUN
 Physics	39	NOUN
-Tablets	39	NOUN
+Tablets	39	NOUN	Tablet
 Anwendungssoftware	39	NOUN
 Patentamt	39	NOUN
 Rainbow	39	NOUN
@@ -36981,13 +36981,13 @@ exekutiert	39	OTHER
 entlässt	39	OTHER
 Lastkraftwagen	39	NOUN
 gesamtwirtschaftliche	39	OTHER
-Feigen	39	NOUN
+Feigen	39	NOUN	Feige
 abgefertigt	39	OTHER
 Güterwagen	39	NOUN
 pendelte	39	OTHER
-Watts	39	NOUN
+Watts	39	NOUN	Watt
 Kriminalroman	39	NOUN
-Erzählers	39	NOUN
+Erzählers	39	NOUN	Erzähler
 Wostok	39	NOUN
 Weltöffentlichkeit	39	NOUN
 Quader	39	NOUN
@@ -36999,14 +36999,14 @@ differieren	39	VERB
 Gutsbesitzer	39	NOUN
 geherrscht	39	OTHER
 Haarlem	39	NOUN
-Verformungen	39	NOUN
+Verformungen	39	NOUN	Verformung
 Vorform	39	NOUN
 Energiespeicher	39	NOUN
 Cimetière	39	NOUN
 Eises	39	NOUN
 Grabplatte	39	NOUN
 Schlüter	39	NOUN
-Gesprächs	39	NOUN
+Gesprächs	39	NOUN	Gespräch
 Ottilie	39	NOUN
 Kirchenjahres	39	NOUN
 Principles	39	NOUN
@@ -37018,11 +37018,11 @@ durchlässig	39	OTHER
 basische	39	OTHER
 Officer	39	NOUN
 Erfordernisse	39	NOUN
-Fantasien	39	NOUN
-Weltraums	39	NOUN
+Fantasien	39	NOUN	Fantasie
+Weltraums	39	NOUN	Weltraum
 Piste	39	NOUN
 Sensibilisierung	39	NOUN
-pathogenen	39	NOUN,OTHER
+pathogenen	39	NOUN,OTHER	pathogen
 artenreich	39	OTHER
 Technical	39	NOUN
 Spitzenreiter	39	NOUN
@@ -37030,15 +37030,15 @@ Verkaufsfläche	39	NOUN
 gebacken	39	VERB
 Torsten	39	NOUN
 OHG	39	NOUN,OTHER
-Dienstleistungs	39	NOUN
+Dienstleistungs	39	NOUN	Dienstleistung
 Tax	39	NOUN,OTHER
 Siedlungsstruktur	39	NOUN
 Lokativ	39	NOUN
 Grundbedeutung	39	NOUN
-Suffixen	39	NOUN
+Suffixen	39	NOUN	Suffix
 Avatar	39	NOUN
 Patagonien	39	NOUN
-Vermögenswerte	39	NOUN
+Vermögenswerte	39	NOUN	Vermögenswert
 Abgeordnetenkammer	39	NOUN
 signierte	39	OTHER
 Antioxidantien	39	NOUN
@@ -37058,7 +37058,7 @@ Autounfall	39	NOUN
 Lehrgang	39	NOUN
 Rangstufe	39	NOUN
 umständlich	39	OTHER
-Intervalls	39	NOUN
+Intervalls	39	NOUN	Intervall
 reguläres	39	OTHER
 getaufte	39	OTHER
 Mathematical	39	NOUN
@@ -37068,12 +37068,12 @@ tunesischen	39	OTHER
 flektiert	39	OTHER
 WS	39	NOUN
 entsprang	39	OTHER
-Dämpfe	39	NOUN
+Dämpfe	39	NOUN	Dampf
 Klimatologie	39	NOUN
 Kommunikationspartner	39	NOUN
 Siècle	39	NOUN,OTHER
 Morales	39	NOUN
-Gründern	39	NOUN
+Gründern	39	NOUN	Gründer
 Cocteau	39	NOUN
 anordnen	39	VERB
 Zeitintervall	39	NOUN
@@ -37085,35 +37085,35 @@ Asteroidengürtel	39	NOUN
 Finanzwirtschaft	39	NOUN
 abzulösen	39	VERB
 Widerspruchsfreiheit	39	NOUN
-Folgerungen	39	NOUN
+Folgerungen	39	NOUN	Folgerung
 lieb	39	OTHER
 Verkehrsweg	39	NOUN
 Tobin	39	NOUN
 Garbage	39	NOUN
 angezündet	39	OTHER
-Gilden	39	NOUN
+Gilden	39	NOUN	Gilde
 Nachwuchses	39	NOUN
 Iller	39	NOUN
 Fortschrittspartei	39	NOUN
-Kindertagesstätten	39	NOUN
+Kindertagesstätten	39	NOUN	Kindertagesstätte
 Haushaltsplan	39	NOUN
-Direktmandate	39	NOUN
+Direktmandate	39	NOUN	Direktmandat
 einzog	39	OTHER
 Networks	39	NOUN
-Hochmittelalters	39	NOUN
+Hochmittelalters	39	NOUN	Hochmittelalter
 Wegweiser	39	NOUN
 Messergebnisse	39	NOUN
 Hochschul	39	NOUN
 Processing	39	NOUN,OTHER
 vereinheitlichen	39	VERB
-Kästners	39	NOUN
+Kästners	39	NOUN	Kästner
 Kulturveranstaltungen	39	NOUN
 Angesicht	39	NOUN
-Kernreaktionen	39	NOUN
+Kernreaktionen	39	NOUN	Kernreaktion
 Wirkungsquerschnitt	39	NOUN
 bushel	39	NOUN,OTHER
 Finance	39	NOUN
-Kapseln	39	NOUN
+Kapseln	39	NOUN	Kapsel
 Touristenattraktion	39	NOUN
 Busoni	39	NOUN
 Before	39	NOUN,OTHER
@@ -37153,18 +37153,18 @@ bewirtschaftete	39	OTHER
 abfällig	39	OTHER
 Steinberg	39	NOUN
 amtlicher	39	OTHER
-Nepals	39	NOUN
+Nepals	39	NOUN	Nepal
 Apollonios	39	NOUN
 Richtschnur	39	NOUN
 sola	39	NOUN,OTHER
 ideelle	39	OTHER
 zurückerobern	39	VERB
-Wallonien	39	NOUN
+Wallonien	39	NOUN	Wallonie
 Lehnshoheit	39	NOUN
-Achtzigjährigen	39	NOUN
+Achtzigjährigen	39	NOUN	Achtzigjährige
 zentralistischen	39	OTHER
-Netzwerkes	39	NOUN
-Eisenbahnverbindungen	39	NOUN
+Netzwerkes	39	NOUN	Netzwerk
+Eisenbahnverbindungen	39	NOUN	Eisenbahnverbindung
 kyrillisch	39	NOUN,OTHER
 Twist	39	NOUN
 Merlin	39	NOUN
@@ -37180,19 +37180,19 @@ momentane	39	OTHER
 Tripura	39	NOUN
 Meeresspiegelanstieg	39	NOUN
 gewähltes	39	OTHER
-Garnisonen	39	NOUN
+Garnisonen	39	NOUN	Garnison
 Tageszeit	39	NOUN
-Geschlechtskrankheiten	39	NOUN
+Geschlechtskrankheiten	39	NOUN	Geschlechtskrankheit
 lasen	39	VERB
 vorherrschte	39	OTHER
 Harding	39	NOUN
 Benediktinerabtei	39	NOUN
 Landschaftsverband	39	NOUN
-Bombern	39	NOUN
+Bombern	39	NOUN	Bomber
 Kölsch	39	NOUN
 Aufsichtsbehörde	39	NOUN
 ersatzweise	39	OTHER
-Verkehrsverbunds	39	NOUN
+Verkehrsverbunds	39	NOUN	Verkehrsverbund
 umziehen	39	VERB
 dotierte	39	OTHER
 Narrativ	39	NOUN,OTHER
@@ -37204,7 +37204,7 @@ Pratchett	39	NOUN
 CVS	39	NOUN
 Optimismus	39	NOUN
 mineralischen	39	OTHER
-Edelsteinen	39	NOUN
+Edelsteinen	39	NOUN	Edelstein
 Eiderstedt	39	NOUN
 Neidenburg	39	NOUN
 Überträger	39	NOUN
@@ -37213,10 +37213,10 @@ Wise	39	NOUN
 Gravitationskraft	39	NOUN
 Mongolensturm	39	NOUN
 Sisi	39	NOUN
-Eisens	39	NOUN
-Gifte	39	NOUN
+Eisens	39	NOUN	Eisen
+Gifte	39	NOUN	Gift
 nahegelegt	39	OTHER
-Biogasanlagen	39	NOUN
+Biogasanlagen	39	NOUN	Biogasanlage
 verschlechtern	39	VERB
 partnerschaftliche	39	OTHER
 umgebildet	39	OTHER
@@ -37228,20 +37228,20 @@ verdichtete	39	OTHER
 besserte	39	OTHER
 enthüllte	39	OTHER
 Basilica	39	NOUN
-Hexenverfolgungen	39	NOUN
+Hexenverfolgungen	39	NOUN	Hexenverfolgung
 hängende	39	OTHER
 Zygote	39	NOUN
 Zytostatika	39	NOUN
-Fachgesellschaften	39	NOUN
+Fachgesellschaften	39	NOUN	Fachgesellschaft
 Reichsminister	39	NOUN
 Zweckmäßigkeit	39	NOUN
-Regierungspräsidiums	39	NOUN
+Regierungspräsidiums	39	NOUN	Regierungspräsidium
 Bandkeramiker	39	NOUN
 Immigration	39	NOUN
 Reh	39	NOUN
-Feuerstellen	39	NOUN
+Feuerstellen	39	NOUN	Feuerstelle
 Obsidian	39	NOUN
-Freiflächen	39	NOUN
+Freiflächen	39	NOUN	Freifläche
 Kannibalismus	39	NOUN
 Massengrab	39	NOUN
 denkenden	39	OTHER
@@ -37253,14 +37253,14 @@ Anleihe	39	NOUN
 vereinnahmt	39	OTHER
 Dolomit	39	NOUN
 Erstarrung	39	NOUN
-Wildschweinen	39	NOUN
+Wildschweinen	39	NOUN	Wildschwein
 geschriebener	39	OTHER
 gehenden	39	OTHER
 leibliche	39	OTHER
 Cool	39	NOUN,OTHER
 phantastische	39	OTHER
-Musils	39	NOUN
-Broschüren	39	NOUN
+Musils	39	NOUN	Musil
+Broschüren	39	NOUN	Broschüre
 ungerechten	39	OTHER
 wirklicher	39	OTHER
 grotesk	39	OTHER
@@ -37276,14 +37276,14 @@ Konqueror	39	NOUN
 imperialistischen	39	OTHER
 überholen	39	VERB
 Admiralität	39	NOUN
-Fernrohre	39	NOUN
+Fernrohre	39	NOUN	Fernrohr
 entgegennehmen	39	VERB
 resümierte	39	OTHER
 Werbe	39	NOUN
 untauglich	39	OTHER
-Gazastreifens	39	NOUN
+Gazastreifens	39	NOUN	Gazastreifen
 errechnete	39	OTHER
-Nasen	39	NOUN
+Nasen	39	NOUN	Nase
 puts	39	OTHER
 aufzudecken	39	VERB
 abzunehmen	39	VERB
@@ -37297,8 +37297,8 @@ WriteLine	39	NOUN
 modifizierter	39	OTHER
 florierenden	39	OTHER
 entscheidendes	39	OTHER
-Queens	39	NOUN
-Polymeren	39	NOUN,OTHER
+Queens	39	NOUN	Queen
+Polymeren	39	NOUN,OTHER	Polymer
 Endzustand	39	NOUN
 überarbeiten	39	VERB
 Getreuen	39	NOUN,OTHER
@@ -37309,23 +37309,23 @@ Lünen	39	NOUN
 Ersterwähnung	39	NOUN
 Nostra	39	NOUN,OTHER
 Sad	39	NOUN
-Beats	39	NOUN
+Beats	39	NOUN	Beat
 zusammengefassten	39	OTHER
-Zechen	39	NOUN
+Zechen	39	NOUN	Zeche
 tz	39	NOUN,OTHER
 Comté	39	NOUN
-Mittelpunkte	39	NOUN
-Rittern	39	NOUN
+Mittelpunkte	39	NOUN	Mittelpunkt
+Rittern	39	NOUN	Ritter
 Desinteresse	39	NOUN
 streiten	39	VERB
 automatischer	39	OTHER
-Naturdenkmäler	39	NOUN
+Naturdenkmäler	39	NOUN	Naturdenkmal
 Wachau	39	NOUN
 Striesen	39	NOUN
 Polizeidirektion	39	NOUN
 Volkskunst	39	NOUN
-Seefahrern	39	NOUN
-Heines	39	NOUN
+Seefahrern	39	NOUN	Seefahrer
+Heines	39	NOUN	Heine
 Lohengrin	39	NOUN
 galvanischen	39	OTHER
 nordgermanischen	39	OTHER
@@ -37335,10 +37335,10 @@ Ludovico	39	NOUN
 Liechtensteiner	39	NOUN
 Volksbeauftragten	39	NOUN
 Salix	39	NOUN
-Naturräume	39	NOUN
+Naturräume	39	NOUN	Naturraum
 Donauradweg	39	NOUN
 Nächtigungen	39	NOUN
-Gewässers	39	NOUN
+Gewässers	39	NOUN	Gewässer
 Merck	39	NOUN
 Weststadt	39	NOUN
 prominenteste	39	OTHER
@@ -37349,7 +37349,7 @@ kommutativen	39	OTHER
 Elektromagnetismus	39	NOUN
 Vielseitigkeit	39	NOUN
 Umverteilung	39	NOUN
-Zollvereins	39	NOUN
+Zollvereins	39	NOUN	Zollverein
 Benrather	39	NOUN
 Jesuitenkirche	39	NOUN
 hervorgerufene	39	OTHER
@@ -37360,10 +37360,10 @@ Poster	39	NOUN
 Zeitbereich	39	NOUN
 Amarna	39	NOUN
 Manx	39	NOUN
-Ottomotoren	39	NOUN
+Ottomotoren	39	NOUN	Ottomotor
 Weltmarktführer	39	NOUN
 liechtensteinischen	39	OTHER
-Schaufeln	39	NOUN
+Schaufeln	39	NOUN	Schaufel
 Lebenserinnerungen	39	NOUN
 kohärente	39	OTHER
 erstaunliche	39	OTHER
@@ -37371,7 +37371,7 @@ Weltorganisation	39	NOUN
 Fabel	39	NOUN
 Ernährungsweise	39	NOUN
 robusten	39	OTHER
-Quantenzahlen	39	NOUN
+Quantenzahlen	39	NOUN	Quantenzahl
 entfalteten	39	OTHER
 Tamara	39	NOUN
 Cuba	39	NOUN
@@ -37382,34 +37382,34 @@ Casablanca	39	NOUN
 Katz	39	NOUN
 Travel	39	NOUN,OTHER
 Erbteilung	39	NOUN
-Kalksteine	39	NOUN
+Kalksteine	39	NOUN	Kalkstein
 Paella	39	NOUN
 Warmzeit	39	NOUN
 Radien	39	NOUN
 Curzon	39	NOUN
 Ste	39	NOUN,OTHER
-Täufern	39	NOUN
+Täufern	39	NOUN	Täufer
 Samariter	39	NOUN
 Ausgangsbasis	39	NOUN
-Herzogtümern	39	NOUN
+Herzogtümern	39	NOUN	Herzogtum
 Königsmacht	39	NOUN
 Investiturstreit	39	NOUN
 Wessex	39	NOUN
-Kulturlandschaften	39	NOUN
+Kulturlandschaften	39	NOUN	Kulturlandschaft
 Bedeutungslosigkeit	39	NOUN
-Privatisierungen	39	NOUN
+Privatisierungen	39	NOUN	Privatisierung
 Straftäter	39	NOUN
 sozialliberalen	39	OTHER
 Messerschmitt	39	NOUN
 Search	39	NOUN
 UI	39	NOUN,OTHER
-Losungen	39	NOUN
+Losungen	39	NOUN	Losung
 Qualitätsmanagement	39	NOUN
 Quorum	39	NOUN
-Steigungen	39	NOUN
-Nordeuropas	39	NOUN
+Steigungen	39	NOUN	Steigung
+Nordeuropas	39	NOUN	Nordeuropa
 gebeugt	39	OTHER
-Odins	39	NOUN
+Odins	39	NOUN	Odin
 Betzenberg	39	NOUN
 Entscheid	39	NOUN
 ZPO	39	NOUN
@@ -37427,15 +37427,15 @@ Erinnerungskultur	39	NOUN
 Plastizität	39	NOUN
 Plautdietsch	39	NOUN
 Grunge	39	NOUN
-Wälle	39	NOUN
+Wälle	39	NOUN	Wall
 Bebra	39	NOUN
 kan	39	NOUN,OTHER
 ausschließlichen	39	OTHER
 Nullmeridian	39	NOUN
 schweizerdeutschen	39	NOUN,OTHER
 Glacier	39	NOUN
-Fjorde	39	NOUN
-Bacons	39	NOUN
+Fjorde	39	NOUN	Fjord
+Bacons	39	NOUN	Bacon
 Ascona	39	NOUN
 Bundesallee	39	NOUN
 Paderborner	39	NOUN
@@ -37445,13 +37445,13 @@ WIPO	39	NOUN
 Bestandes	39	NOUN
 CRC	39	NOUN
 Kurdisch	39	NOUN,OTHER
-Zungen	39	NOUN
+Zungen	39	NOUN	Zunge
 Zuid	39	NOUN
 Nederland	39	NOUN
 Bahnstation	39	NOUN
 Antinoos	39	NOUN
 sizilianischen	39	OTHER
-Salinen	39	NOUN
+Salinen	39	NOUN	Saline
 Erzherzogin	39	NOUN
 Lehrling	39	NOUN
 Chinatown	39	NOUN
@@ -37459,10 +37459,10 @@ Mohamed	39	NOUN
 Nachbarstaat	39	NOUN
 Rimini	39	NOUN
 Orgelbauer	39	NOUN
-Helsinkis	39	NOUN
-Hadithe	39	NOUN
+Helsinkis	39	NOUN	Helsinki
+Hadithe	39	NOUN	Hadith
 Schutzzeichen	39	NOUN
-Plansprachen	39	NOUN
+Plansprachen	39	NOUN	Plansprache
 tamilischen	39	OTHER
 Madras	39	NOUN
 Adivasi	39	NOUN
@@ -37472,19 +37472,19 @@ Sterbebett	39	NOUN
 Scheinwerfer	39	NOUN
 Sund	39	NOUN
 ZFC	39	NOUN
-Seifen	39	NOUN
-Handelsstraßen	39	NOUN
+Seifen	39	NOUN	Seife
+Handelsstraßen	39	NOUN	Handelsstraße
 DRG	39	NOUN
 Rühle	39	NOUN
 Trumpf	39	NOUN
 Sponsoring	39	NOUN
 Schüssel	39	NOUN
-Gewehre	39	NOUN
-Strategen	39	NOUN
+Gewehre	39	NOUN	Gewehr
+Strategen	39	NOUN	Stratege
 Sarmaten	39	NOUN
 altkirchlichen	39	OTHER
 ADP	39	NOUN
-Riffe	39	NOUN
+Riffe	39	NOUN	Riff
 Kreisgrenze	39	NOUN
 Mehrzweckhalle	39	NOUN
 Zwischenraum	39	NOUN
@@ -37500,7 +37500,7 @@ Oldenburgischen	39	NOUN,OTHER
 Path	39	NOUN,OTHER
 Kekulé	39	NOUN
 Yamaha	39	NOUN
-Ecuadors	39	NOUN
+Ecuadors	39	NOUN	Ecuador
 Griffbrett	39	NOUN
 Podlachien	39	NOUN
 Nowy	39	NOUN
@@ -37513,17 +37513,17 @@ impressionistischen	39	OTHER
 Erstfeld	39	NOUN
 Española	39	NOUN
 Gardelegen	39	NOUN
-Blockflöten	39	NOUN
+Blockflöten	39	NOUN	Blockflöte
 Orinoco	39	NOUN
 Kotangens	39	NOUN
 Boleyn	39	NOUN
 Wankel	39	NOUN
 Thong	39	NOUN
-Reinhardts	39	NOUN
+Reinhardts	39	NOUN	Reinhardt
 Controlling	39	NOUN
 Zweitaktmotor	39	NOUN
 Vaginalverkehr	39	NOUN
-Bhutans	39	NOUN
+Bhutans	39	NOUN	Bhutan
 Jachad	39	NOUN
 Christkatholischen	39	NOUN,OTHER
 Klagenfurter	39	NOUN
@@ -37534,7 +37534,7 @@ Nena	39	NOUN
 Pfälzerwaldes	39	NOUN
 Weferlingen	39	NOUN
 Hohenwestedt	39	NOUN
-Hausdorffs	39	NOUN
+Hausdorffs	39	NOUN	Hausdorff
 Zeitumstellung	39	NOUN
 Abspann	38	NOUN
 Actinoide	38	NOUN
@@ -37545,12 +37545,12 @@ fremdsprachigen	38	OTHER
 materiale	38	OTHER
 beliebiges	38	OTHER
 formales	38	OTHER
-Bausteinen	38	NOUN
+Bausteinen	38	NOUN	Baustein
 schottischer	38	OTHER
 Talkshow	38	NOUN
-Taschen	38	NOUN
+Taschen	38	NOUN	Tasche
 entgegensetzen	38	VERB
-Murnaus	38	NOUN
+Murnaus	38	NOUN	Murnau
 ebnete	38	OTHER
 Shirley	38	NOUN
 Familiengrab	38	NOUN
@@ -37563,27 +37563,27 @@ Kuss	38	NOUN
 beruflicher	38	OTHER
 vermarktete	38	OTHER
 Cameo	38	NOUN
-Tribune	38	NOUN
+Tribune	38	NOUN	Tribüne
 verfällt	38	OTHER
 dogmatische	38	OTHER
 Unterfangen	38	NOUN
 Videospiel	38	NOUN
-Einschaltquoten	38	NOUN
+Einschaltquoten	38	NOUN	Einschaltquote
 Fremdbezeichnung	38	NOUN
 Fortgang	38	NOUN
 Terminator	38	NOUN
 Glen	38	NOUN
-Kohlenstoffatome	38	NOUN
+Kohlenstoffatome	38	NOUN	Kohlenstoffatom
 Spiritus	38	NOUN,OTHER
 sekundärer	38	OTHER
 without	38	NOUN,OTHER
-Wicklungen	38	NOUN
+Wicklungen	38	NOUN	Wicklung
 Taktfrequenz	38	NOUN
 Barren	38	NOUN
 zuzugreifen	38	VERB
 verdünnter	38	OTHER
 Galenos	38	NOUN
-Salben	38	NOUN,OTHER
+Salben	38	NOUN,OTHER	Salbe
 Zentralnervensystem	38	NOUN
 Inversion	38	NOUN
 gesundheitsschädlich	38	OTHER
@@ -37592,7 +37592,7 @@ gelbem	38	OTHER
 schlüssig	38	OTHER
 Materialeigenschaften	38	NOUN
 ausgebildeter	38	OTHER
-Bundesgerichtshofs	38	NOUN
+Bundesgerichtshofs	38	NOUN	Bundesgerichtshof
 Ibsen	38	NOUN
 walten	38	VERB
 entgegnete	38	OTHER
@@ -37619,8 +37619,8 @@ wünschten	38	VERB
 Amendment	38	NOUN
 Michele	38	NOUN
 Wasserleitung	38	NOUN
-Höhlenmalereien	38	NOUN
-Kulturwissenschaften	38	NOUN
+Höhlenmalereien	38	NOUN	Höhlenmalerei
+Kulturwissenschaften	38	NOUN	Kulturwissenschaft
 modulare	38	OTHER
 siegten	38	VERB
 Kriegsbeute	38	NOUN
@@ -37634,14 +37634,14 @@ begaben	38	VERB
 Gegenbeispiel	38	NOUN
 Bauplan	38	NOUN
 geschehe	38	OTHER
-Ernährungs	38	NOUN
+Ernährungs	38	NOUN	Ernährung
 scholastischen	38	OTHER
 Georgios	38	NOUN
 Spring	38	NOUN,VERB
 Norfolk	38	NOUN
 Stiefmutter	38	NOUN
 Autodidakt	38	NOUN
-Anbauflächen	38	NOUN
+Anbauflächen	38	NOUN	Anbaufläche
 Favorit	38	NOUN
 Aphorismen	38	NOUN
 geübte	38	OTHER
@@ -37652,8 +37652,8 @@ Ressort	38	NOUN
 Ulf	38	NOUN
 gezielter	38	OTHER
 Chancengleichheit	38	NOUN
-Außengrenzen	38	NOUN
-Namensformen	38	NOUN
+Außengrenzen	38	NOUN	Außengrenze
+Namensformen	38	NOUN	Namensform
 Alp	38	NOUN
 umgebettet	38	OTHER
 getreu	38	OTHER
@@ -37661,7 +37661,7 @@ Rechtsphilosophie	38	NOUN
 abstraktes	38	OTHER
 Zwölftontechnik	38	NOUN
 proklamierten	38	VERB,OTHER
-Strichen	38	NOUN
+Strichen	38	NOUN	Strich
 entmachtete	38	OTHER
 Zehnfache	38	NOUN,OTHER
 Umweltschäden	38	NOUN
@@ -37678,16 +37678,16 @@ Shiva	38	NOUN
 Gedankenwelt	38	NOUN
 verständigt	38	OTHER
 Livia	38	NOUN
-Rückschlägen	38	NOUN
-Verfügungen	38	NOUN
+Rückschlägen	38	NOUN	Rückschlag
+Verfügungen	38	NOUN	Verfügung
 verhassten	38	OTHER
-Adelsgeschlechter	38	NOUN
+Adelsgeschlechter	38	NOUN	Adelsgeschlecht
 innegehabt	38	OTHER
 Dogmatismus	38	NOUN
 illyrischen	38	NOUN,OTHER
 zuwenden	38	VERB
 aufzusuchen	38	VERB
-Dividenden	38	NOUN
+Dividenden	38	NOUN	Dividende
 adaptive	38	OTHER
 PDA	38	NOUN
 Zertifizierung	38	NOUN
@@ -37696,7 +37696,7 @@ Oberschenkel	38	NOUN
 vermögenden	38	OTHER
 treuen	38	OTHER
 unterzuordnen	38	VERB
-Einschnitte	38	NOUN
+Einschnitte	38	NOUN	Einschnitt
 Leitfigur	38	NOUN
 Verfassungsrecht	38	NOUN
 Obersalzberg	38	NOUN
@@ -37706,28 +37706,28 @@ Gernika	38	NOUN
 begleichen	38	VERB
 übermittelte	38	OTHER
 Lebensraumes	38	NOUN
-Nachfragen	38	NOUN,OTHER
+Nachfragen	38	NOUN,OTHER	Nachfrage
 Rotarmisten	38	NOUN
 äußerster	38	OTHER
 Umma	38	NOUN
 Verwaltungsebene	38	NOUN
 Staatseinnahmen	38	NOUN
 welch	38	NOUN,OTHER
-Caches	38	NOUN
+Caches	38	NOUN	Cache
 generischen	38	OTHER
-Problemstellungen	38	NOUN
+Problemstellungen	38	NOUN	Problemstellung
 Karnak	38	NOUN
 Bundesbehörde	38	NOUN
 hartnäckig	38	OTHER
-Landungen	38	NOUN
-Luftschiffen	38	NOUN
+Landungen	38	NOUN	Landung
+Luftschiffen	38	NOUN	Luftschiff
 Olof	38	NOUN
 Platzbedarf	38	NOUN
 Gegenseitigkeit	38	NOUN
 Vermählung	38	NOUN
-Phrasen	38	NOUN
-Kondensators	38	NOUN
-Riemannschen	38	NOUN,OTHER
+Phrasen	38	NOUN	Phrase
+Kondensators	38	NOUN	Kondensator
+Riemannschen	38	NOUN,OTHER	Riemannsche
 Differentialgeometrie	38	NOUN
 Stokes	38	NOUN
 eingingen	38	VERB
@@ -37743,26 +37743,26 @@ Nutzpflanze	38	NOUN
 Syn	38	NOUN,OTHER
 Kabine	38	NOUN
 Carboxygruppe	38	NOUN
-Synthesen	38	NOUN
+Synthesen	38	NOUN	Synthese
 tagelang	38	OTHER
-Knotens	38	NOUN
+Knotens	38	NOUN	Knoten
 Vermont	38	NOUN
-Bergketten	38	NOUN
-Nagetieren	38	NOUN
+Bergketten	38	NOUN	Bergkette
+Nagetieren	38	NOUN	Nagetier
 Jahresdurchschnitt	38	NOUN
 experimentierten	38	VERB,OTHER
-Erträgen	38	NOUN
+Erträgen	38	NOUN	Ertrag
 Pacht	38	NOUN
 einkaufen	38	NOUN,OTHER
 Satzstellung	38	NOUN
 Mapuche	38	NOUN
 Gesamtwertung	38	NOUN
 neoliberalen	38	OTHER
-Pforten	38	NOUN
+Pforten	38	NOUN	Pforte
 Beruhigung	38	NOUN
 erzählende	38	OTHER
-Blutgruppen	38	NOUN
-Eindringlinge	38	NOUN
+Blutgruppen	38	NOUN	Blutgruppe
+Eindringlinge	38	NOUN	Eindringling
 Elisa	38	NOUN
 Generierung	38	NOUN
 ineffizient	38	OTHER
@@ -37773,10 +37773,10 @@ Normalisierung	38	NOUN
 Hypothalamus	38	NOUN
 Nathaniel	38	NOUN
 Neuausgabe	38	NOUN
-Stuhls	38	NOUN
+Stuhls	38	NOUN	Stuhl
 umrundet	38	OTHER
 sous	38	NOUN,OTHER
-Grandes	38	NOUN
+Grandes	38	NOUN	Grande
 weiterverwendet	38	OTHER
 nominale	38	OTHER
 Khoisan	38	NOUN
@@ -37787,19 +37787,19 @@ andauert	38	OTHER
 Erniedrigung	38	NOUN
 mobilisiert	38	OTHER
 Lily	38	NOUN
-Flüchtlingslagern	38	NOUN
-Sicherheitskräften	38	NOUN
+Flüchtlingslagern	38	NOUN	Flüchtlingslager
+Sicherheitskräften	38	NOUN	Sicherheitskräfte
 versuchsweise	38	OTHER
 Nötigung	38	NOUN
-Beurteilungen	38	NOUN
+Beurteilungen	38	NOUN	Beurteilung
 erlernten	38	VERB,OTHER
 Zusatzzeichen	38	NOUN
 Ventrikel	38	NOUN
 binär	38	OTHER
 kleinster	38	OTHER
-Privathaushalten	38	NOUN
-Vornamens	38	NOUN
-Bauarten	38	NOUN
+Privathaushalten	38	NOUN	Privathaushalt
+Vornamens	38	NOUN	Vorname
+Bauarten	38	NOUN	Bauart
 darlegte	38	OTHER
 Dreyfus	38	NOUN
 Internierten	38	NOUN,OTHER
@@ -37816,20 +37816,20 @@ erinnernde	38	OTHER
 Demnig	38	NOUN
 Pegasus	38	NOUN
 era	38	NOUN,OTHER
-Wertpapieren	38	NOUN
+Wertpapieren	38	NOUN	Wertpapier
 Kosmetika	38	NOUN
 Phosphorsäure	38	NOUN
 Neukirchen	38	NOUN
 abgefeuert	38	OTHER
-Kultstätten	38	NOUN
+Kultstätten	38	NOUN	Kultstätte
 Gnus	38	NOUN
 Personalausweis	38	NOUN
 Ölförderung	38	NOUN
-Rollenspielen	38	NOUN
+Rollenspielen	38	NOUN	Rollenspiel
 Verhaltensmuster	38	NOUN
 Risikofaktor	38	NOUN
 Schizophrenie	38	NOUN
-Zuschreibungen	38	NOUN
+Zuschreibungen	38	NOUN	Zuschreibung
 Gruppentheorie	38	NOUN
 Intension	38	NOUN
 Stau	38	NOUN
@@ -37854,19 +37854,19 @@ Rechen	38	NOUN
 Werktag	38	NOUN
 tum	38	OTHER
 alljährlichen	38	OTHER
-Patenten	38	NOUN
+Patenten	38	NOUN	Patent
 Carta	38	NOUN
-Gemeinderäte	38	NOUN
+Gemeinderäte	38	NOUN	Gemeinderat
 meistbesuchte	38	OTHER
 Hohenheim	38	NOUN
-Welterbestätten	38	NOUN
-Tornados	38	NOUN
+Welterbestätten	38	NOUN	Welterbestätte
+Tornados	38	NOUN	Tornado
 Offline	38	NOUN,OTHER
 Appartement	38	NOUN
 Fliege	38	NOUN,VERB
 Writers	38	NOUN
 umzog	38	OTHER
-Widersprüchen	38	NOUN
+Widersprüchen	38	NOUN	Widerspruch
 Grimaldi	38	NOUN
 Burkhard	38	NOUN
 Kernreaktor	38	NOUN
@@ -37880,10 +37880,10 @@ Urania	38	NOUN
 Tonband	38	NOUN
 Saturday	38	NOUN
 abzielt	38	OTHER
-Ackerflächen	38	NOUN
+Ackerflächen	38	NOUN	Ackerfläche
 Spinnerei	38	NOUN
 Feldmark	38	NOUN
-Stadtwappens	38	NOUN
+Stadtwappens	38	NOUN	Stadtwappen
 Inneneinrichtung	38	NOUN
 eingleisige	38	OTHER
 stillgelegte	38	OTHER
@@ -37891,12 +37891,12 @@ Hoheitsrechte	38	NOUN
 eingeschleppt	38	OTHER
 sozialliberale	38	OTHER
 Vollmer	38	NOUN
-Regierungsjahren	38	NOUN
+Regierungsjahren	38	NOUN	Regierungsjahr
 Vokalmusik	38	NOUN
 Bläser	38	NOUN
 Mühlenstraße	38	NOUN
-Frachtschiffe	38	NOUN
-Gedenkens	38	NOUN
+Frachtschiffe	38	NOUN	Frachtschiff
+Gedenkens	38	NOUN	Gedenken
 Strömungsgeschwindigkeit	38	NOUN
 gebräuchlicher	38	OTHER
 Hafengebiet	38	NOUN
@@ -37918,7 +37918,7 @@ Goes	38	NOUN,OTHER
 Handelsbilanz	38	NOUN
 Princip	38	NOUN
 Vielvölkerstaat	38	NOUN
-Granaten	38	NOUN
+Granaten	38	NOUN	Granat
 Grundgedanke	38	NOUN
 stimmberechtigte	38	NOUN,OTHER
 vonnöten	38	OTHER
@@ -37935,13 +37935,13 @@ Marut	38	NOUN
 Gelsenkirchener	38	NOUN
 Völkerverständigung	38	NOUN
 Odisha	38	NOUN
-Frankenreichs	38	NOUN
+Frankenreichs	38	NOUN	Frankenreich
 chinesisches	38	OTHER
 überdurchschnittlichen	38	OTHER
 Kaufkraftindex	38	NOUN
 Althoff	38	NOUN
 gestützten	38	OTHER
-Paragraphen	38	NOUN
+Paragraphen	38	NOUN	Paragraph
 einbezieht	38	OTHER
 Erhitzung	38	NOUN
 Harn	38	NOUN
@@ -37950,7 +37950,7 @@ Plato	38	NOUN
 ausgewaschen	38	VERB
 gravitative	38	OTHER
 Kawasaki	38	NOUN
-Anlegestellen	38	NOUN
+Anlegestellen	38	NOUN	Anlegestelle
 Sommersaison	38	NOUN
 prominentes	38	OTHER
 rigoros	38	OTHER
@@ -37958,18 +37958,18 @@ empfänglich	38	OTHER
 Tochterfirma	38	NOUN
 vorging	38	OTHER
 befahrenen	38	OTHER
-Bahnsteige	38	NOUN
-Stirners	38	NOUN
+Bahnsteige	38	NOUN	Bahnsteig
+Stirners	38	NOUN	Stirner
 Stadtfriedhof	38	NOUN
 Videokunst	38	NOUN
 diözisch	38	OTHER
 Längsrichtung	38	NOUN
-Datenträgern	38	NOUN
+Datenträgern	38	NOUN	Datenträger
 Früherkennung	38	NOUN
 Zellzyklus	38	NOUN
-Pathologen	38	NOUN
+Pathologen	38	NOUN	Pathologe
 Zufallsvariable	38	NOUN
-Opioidrezeptoren	38	NOUN
+Opioidrezeptoren	38	NOUN	Opioidrezeptor
 vorhersehbar	38	OTHER
 Algol	38	NOUN
 Pharmakologie	38	NOUN
@@ -37986,9 +37986,9 @@ Oakland	38	NOUN
 Deborah	38	NOUN
 ambitionierte	38	OTHER
 Strange	38	NOUN
-Säuglingen	38	NOUN
+Säuglingen	38	NOUN	Säugling
 Hintergrundstrahlung	38	NOUN
-Spaltprodukte	38	NOUN
+Spaltprodukte	38	NOUN	Spaltprodukt
 Salerno	38	NOUN
 Harlem	38	NOUN
 Bandleader	38	NOUN
@@ -37998,9 +37998,9 @@ kreativer	38	OTHER
 verbalen	38	OTHER
 Wirkungskreis	38	NOUN
 konstitutiv	38	OTHER
-Obertöne	38	NOUN
+Obertöne	38	NOUN	Oberton
 mitteltönigen	38	OTHER
-Deserteure	38	NOUN
+Deserteure	38	NOUN	Deserteur
 Fernand	38	NOUN
 Firmung	38	NOUN
 Eisenbahnanschluss	38	NOUN
@@ -38012,7 +38012,7 @@ Hartung	38	NOUN
 Privatbibliothek	38	NOUN
 Kingdom	38	NOUN
 Fuzhou	38	NOUN
-Kommissare	38	NOUN
+Kommissare	38	NOUN	Kommissar
 verheerend	38	OTHER
 brauchbar	38	OTHER
 unternehmerische	38	OTHER
@@ -38022,45 +38022,45 @@ Pfeife	38	NOUN,VERB
 vorgibt	38	OTHER
 vonseiten	38	OTHER
 Hartwig	38	NOUN
-Images	38	NOUN,OTHER
+Images	38	NOUN,OTHER	Image
 schweizerischer	38	NOUN,OTHER
 Antimaterie	38	NOUN
 Forschende	38	NOUN,OTHER
 Pragmatik	38	NOUN
 zwischenmenschlichen	38	OTHER
-Bildergeschichten	38	NOUN
+Bildergeschichten	38	NOUN	Bildergeschichte
 gefiltert	38	OTHER
 Interessengruppen	38	NOUN
 seltsame	38	OTHER
-Zuschüsse	38	NOUN
+Zuschüsse	38	NOUN	Zuschuss
 Hotelzimmer	38	NOUN
 leitend	38	OTHER
 Wehler	38	NOUN
 unbeschränkt	38	OTHER
 Militarisierung	38	NOUN
 Zivilpersonen	38	NOUN
-Sekretariats	38	NOUN
+Sekretariats	38	NOUN	Sekretariat
 Napoca	38	NOUN
 Karat	38	NOUN
 Proof	38	NOUN,OTHER
 Spektakel	38	NOUN
 Zeil	38	NOUN
-Familiennamens	38	NOUN
+Familiennamens	38	NOUN	Familienname
 Universalität	38	NOUN
-Gesundheitswesens	38	NOUN
-Skandale	38	NOUN
+Gesundheitswesens	38	NOUN	Gesundheitswesen
+Skandale	38	NOUN	Skandal
 Gerry	38	NOUN
 südöstlicher	38	OTHER
 eilig	38	OTHER
-Schnittes	38	NOUN
-Anwendern	38	NOUN
+Schnittes	38	NOUN	Schnitt
+Anwendern	38	NOUN	Anwender
 Deregulierung	38	NOUN
 Plattenbauweise	38	NOUN
-Veranstaltungsorte	38	NOUN
+Veranstaltungsorte	38	NOUN	Veranstaltungsort
 Topf	38	NOUN
-Kaufhäuser	38	NOUN
+Kaufhäuser	38	NOUN	Kaufhaus
 Beyond	38	NOUN
-Kurischen	38	NOUN,OTHER
+Kurischen	38	NOUN,OTHER	Kurische
 Gutshaus	38	NOUN
 beibehielt	38	OTHER
 SIG	38	NOUN
@@ -38084,7 +38084,7 @@ Kreisstraße	38	NOUN
 schlanke	38	OTHER
 Kriegsjahr	38	NOUN
 verschlüsseln	38	VERB
-Schmetterlingen	38	NOUN
+Schmetterlingen	38	NOUN	Schmetterling
 Akkordeon	38	NOUN
 Strahlengang	38	NOUN
 westliches	38	OTHER
@@ -38107,15 +38107,15 @@ russischsprachigen	38	OTHER
 publizistischen	38	OTHER
 Reimann	38	NOUN
 Lumpur	38	NOUN
-Fiktionen	38	NOUN
-Indios	38	NOUN
+Fiktionen	38	NOUN	Fiktion
+Indios	38	NOUN	Indio
 generelles	38	OTHER
 umsetzt	38	OTHER
-Ulrichs	38	NOUN
-Okulars	38	NOUN
+Ulrichs	38	NOUN	Ulrich
+Okulars	38	NOUN	Okular
 Saxo	38	NOUN
 anboten	38	VERB
-Einbände	38	NOUN
+Einbände	38	NOUN	Einband
 ungesättigten	38	OTHER
 Stutthof	38	NOUN
 ausgewachsene	38	OTHER
@@ -38133,15 +38133,15 @@ Nagy	38	NOUN
 Schaltjahr	38	NOUN
 Signifikanzniveau	38	NOUN
 Théodore	38	NOUN
-Dürrenmatts	38	NOUN
+Dürrenmatts	38	NOUN	Dürrenmatt
 Bowling	38	NOUN
 leuchtend	38	OTHER
 Replik	38	NOUN
-Gradienten	38	NOUN
+Gradienten	38	NOUN	Gradient
 Mündungsbereich	38	NOUN
 Neuhausen	38	NOUN
 frequency	38	NOUN,OTHER
-Verkehrswegen	38	NOUN
+Verkehrswegen	38	NOUN	Verkehrsweg
 Eigenbewegung	38	NOUN
 Rennsteig	38	NOUN
 Hayek	38	NOUN
@@ -38157,7 +38157,7 @@ heliozentrischen	38	OTHER
 Investment	38	NOUN
 Voodoo	38	NOUN
 Aborigine	38	NOUN
-Notationen	38	NOUN
+Notationen	38	NOUN	Notation
 Kite	38	NOUN
 großformatigen	38	OTHER
 Siebenjährige	38	NOUN,OTHER
@@ -38165,7 +38165,7 @@ Randlage	38	NOUN
 Damenmannschaft	38	NOUN
 Bauingenieurwesen	38	NOUN
 Aron	38	NOUN
-Ockhams	38	NOUN
+Ockhams	38	NOUN	Ockham
 Banach	38	NOUN
 Auswanderungswelle	38	NOUN
 Rahel	38	NOUN
@@ -38173,9 +38173,9 @@ loser	38	OTHER
 Schleim	38	NOUN
 Principe	38	NOUN,OTHER
 Antragsteller	38	NOUN
-Oden	38	NOUN
+Oden	38	NOUN	Ode
 haploide	38	OTHER
-Marschen	38	NOUN
+Marschen	38	NOUN	Marsch
 Meuron	38	NOUN
 Regentin	38	NOUN
 Illegalität	38	NOUN
@@ -38188,7 +38188,7 @@ ATV	38	NOUN
 psychotherapeutische	38	OTHER
 Kerouac	38	NOUN
 Staumauer	38	NOUN
-Kuwaits	38	NOUN
+Kuwaits	38	NOUN	Kuwait
 Neuhochdeutschen	38	NOUN,OTHER
 weißrussischen	38	NOUN,OTHER
 Köthener	38	NOUN
@@ -38196,9 +38196,9 @@ Schwedt	38	NOUN
 nichtjüdischen	38	OTHER
 Flower	38	NOUN
 Hypnose	38	NOUN
-Liedtexte	38	NOUN
-Transsibirischen	38	NOUN
-Apachen	38	NOUN
+Liedtexte	38	NOUN	Liedtext
+Transsibirischen	38	NOUN	Transsibirische
+Apachen	38	NOUN	Apache
 Verdienstkreuz	38	NOUN
 Lytton	38	NOUN
 Entwicklungsstufe	38	NOUN
@@ -38214,8 +38214,8 @@ Zilog	38	NOUN
 Enercon	38	NOUN
 Kompressor	38	NOUN
 Fulbe	38	NOUN
-Muskelfasern	38	NOUN
-Abschüsse	38	NOUN
+Muskelfasern	38	NOUN	Muskelfaser
+Abschüsse	38	NOUN	Abschuss
 Schellack	38	NOUN
 Pocket	38	NOUN,OTHER
 Endeavour	38	NOUN
@@ -38224,11 +38224,11 @@ Peiner	38	NOUN
 Museumsbahn	38	NOUN
 Polska	38	NOUN
 Gmina	38	NOUN
-Lacans	38	NOUN
+Lacans	38	NOUN	Lacan
 Quaternion	38	NOUN
-Essais	38	NOUN
-Thyristoren	38	NOUN
-Mikrofone	38	NOUN
+Essais	38	NOUN	Essai
+Thyristoren	38	NOUN	Thyristor
+Mikrofone	38	NOUN	Mikrofon
 Schleiereule	38	NOUN
 Tröpfchen	38	NOUN
 Wörlitzer	38	NOUN
@@ -38237,7 +38237,7 @@ Gemara	38	NOUN
 Bastet	38	NOUN
 Nordreich	38	NOUN
 Guangxi	38	NOUN
-Katars	38	NOUN
+Katars	38	NOUN	Katar
 Inguschetien	38	NOUN
 Neukloster	38	NOUN
 Lanzhou	38	NOUN
@@ -38251,10 +38251,10 @@ Telomere	38	NOUN
 neuindoarischen	38	OTHER
 Oszilloskop	38	NOUN
 DFD	38	NOUN
-Lassalles	38	NOUN
+Lassalles	38	NOUN	Lassalle
 Buzek	38	NOUN
 Gjirokastra	38	NOUN
-Karnatakas	38	NOUN
+Karnatakas	38	NOUN	Karnataka
 Filmtitel	37	NOUN
 zweiteiligen	37	OTHER
 feuchtem	37	OTHER
@@ -38270,14 +38270,14 @@ Goldwyn	37	NOUN
 Frachter	37	NOUN
 verdächtigte	37	OTHER
 attackierte	37	OTHER
-Filmschaffenden	37	NOUN
+Filmschaffenden	37	NOUN	Filmschaffende
 ankamen	37	VERB
 XXX	37	NOUN,OTHER
-Werbespots	37	NOUN
+Werbespots	37	NOUN	Werbespot
 kostspielige	37	OTHER
 Wohnzimmer	37	NOUN
 reibungslos	37	OTHER
-Unglücks	37	NOUN
+Unglücks	37	NOUN	Unglück
 Trennlinie	37	NOUN
 schaltet	37	OTHER
 Bates	37	NOUN
@@ -38301,8 +38301,8 @@ kugelförmige	37	OTHER
 Demenz	37	NOUN
 Anämie	37	NOUN
 unterstützenden	37	OTHER
-Vulkanausbrüche	37	NOUN
-Schaltkreisen	37	NOUN
+Vulkanausbrüche	37	NOUN	Vulkanausbruch
+Schaltkreisen	37	NOUN	Schaltkreis
 ICs	37	NOUN
 harmlos	37	OTHER
 abgetan	37	VERB
@@ -38310,18 +38310,18 @@ biochemische	37	OTHER
 gegraben	37	VERB
 Mikrogramm	37	NOUN
 Humphry	37	NOUN
-Feststoffe	37	NOUN
-Spezialisierungen	37	NOUN
+Feststoffe	37	NOUN	Feststoff
+Spezialisierungen	37	NOUN	Spezialisierung
 Berufstätige	37	NOUN,OTHER
-Arbeitszeiten	37	NOUN
+Arbeitszeiten	37	NOUN	Arbeitszeit
 Geisteswissenschaft	37	NOUN
 auszuwerten	37	VERB
 auflöst	37	OTHER
 Reichsverweser	37	NOUN
 abzuwarten	37	VERB
 überbringen	37	VERB
-Gewichten	37	NOUN,OTHER
-Phöniziern	37	NOUN
+Gewichten	37	NOUN,OTHER	Gewicht
+Phöniziern	37	NOUN	Phönizier
 gekreuzigt	37	OTHER
 Verwundung	37	NOUN
 Münzfuß	37	NOUN
@@ -38345,7 +38345,7 @@ Orthografie	37	NOUN
 Kanaan	37	NOUN
 Steuerzeichen	37	NOUN
 spielerisch	37	OTHER
-Koalitionskriege	37	NOUN
+Koalitionskriege	37	NOUN	Koalitionskrieg
 Torres	37	NOUN
 Abberufung	37	NOUN
 Drehbuchautorin	37	NOUN
@@ -38361,14 +38361,14 @@ Monogramm	37	NOUN
 Legendenbildung	37	NOUN
 sterblich	37	OTHER
 konsistente	37	OTHER
-Fixsterne	37	NOUN
+Fixsterne	37	NOUN	Fixstern
 bewegende	37	OTHER
 unveränderliche	37	OTHER
 befruchteten	37	VERB,OTHER
 Informationsquelle	37	NOUN
 normativ	37	OTHER
 Arianer	37	NOUN
-Frühmittelalters	37	NOUN
+Frühmittelalters	37	NOUN	Frühmittelalter
 philologischen	37	OTHER
 Nachfahre	37	NOUN
 Spezialist	37	NOUN
@@ -38377,9 +38377,9 @@ weiterzuführen	37	VERB
 Sheridan	37	NOUN
 SCO	37	NOUN
 staatlichem	37	OTHER
-Auslandsreisen	37	NOUN
+Auslandsreisen	37	NOUN	Auslandsreise
 achter	37	NOUN,OTHER
-Vertrauens	37	NOUN
+Vertrauens	37	NOUN	Vertrauen
 Erderwärmung	37	NOUN
 Rechtsextremisten	37	NOUN
 Sparsamkeit	37	NOUN
@@ -38396,37 +38396,37 @@ atheistische	37	OTHER
 zivilrechtliche	37	OTHER
 kultisch	37	OTHER
 ergründen	37	VERB
-Bräuchen	37	NOUN
+Bräuchen	37	NOUN	Brauch
 erdachte	37	OTHER
 bezichtigte	37	OTHER
-Philosophien	37	NOUN
-Beispiels	37	NOUN
+Philosophien	37	NOUN	Philosophie
+Beispiels	37	NOUN	Beispiel
 Pétain	37	NOUN
-Gebirgsregionen	37	NOUN
+Gebirgsregionen	37	NOUN	Gebirgsregion
 katastrophal	37	OTHER
-Moslems	37	NOUN
+Moslems	37	NOUN	Moslem
 Haschisch	37	NOUN
 Pamir	37	NOUN
-Grundregeln	37	NOUN
+Grundregeln	37	NOUN	Grundregel
 Bartók	37	NOUN
 vulgaris	37	OTHER
-Zweigs	37	NOUN
+Zweigs	37	NOUN	Zweig
 Drogenkonsum	37	NOUN
 buchstäblich	37	OTHER
 definitive	37	OTHER
 erotisch	37	OTHER
 vereitelt	37	OTHER
 taktisch	37	OTHER
-Bewegungsabläufe	37	NOUN
+Bewegungsabläufe	37	NOUN	Bewegungsablauf
 Streich	37	NOUN,VERB
 nachgeben	37	VERB
-Alis	37	NOUN
+Alis	37	NOUN	Ali
 Kirchenhistoriker	37	NOUN
-Katakomben	37	NOUN
+Katakomben	37	NOUN	Katakombe
 Renovierungsarbeiten	37	NOUN
 statischer	37	OTHER
 Kirchhoff	37	NOUN
-Löhnen	37	NOUN
+Löhnen	37	NOUN	Lohn
 Guru	37	NOUN,OTHER
 Nordzypern	37	NOUN
 BAG	37	NOUN
@@ -38438,7 +38438,7 @@ XIX	37	NOUN
 Schwamm	37	NOUN,OTHER
 beeindruckende	37	OTHER
 herstellten	37	VERB
-Flussmündungen	37	NOUN
+Flussmündungen	37	NOUN	Flussmündung
 Runge	37	NOUN
 Opernsängerin	37	NOUN
 Horkheimer	37	NOUN
@@ -38449,17 +38449,17 @@ Entscheidungsschlacht	37	NOUN
 Pose	37	NOUN
 aktualisierten	37	VERB,OTHER
 mitgelieferten	37	OTHER
-niederösterreichischen	37	NOUN,OTHER
+niederösterreichischen	37	NOUN,OTHER	niederösterreichische
 vorbeugen	37	VERB
 antisemitischer	37	OTHER
 ungewollt	37	OTHER
 totaler	37	OTHER
 mildes	37	OTHER
 verfehlten	37	VERB,OTHER
-Großdeutschen	37	NOUN,OTHER
+Großdeutschen	37	NOUN,OTHER	Großdeutsche
 KZs	37	NOUN
 Bedenkzeit	37	NOUN
-Novemberpogromen	37	NOUN
+Novemberpogromen	37	NOUN	Novemberpogrom
 Baur	37	NOUN
 nomadische	37	OTHER
 Zuckerrüben	37	NOUN
@@ -38467,48 +38467,48 @@ umkämpften	37	VERB,OTHER
 Vertrauensfrage	37	NOUN
 Westerwelle	37	NOUN
 brauchbaren	37	OTHER
-Kisten	37	NOUN
+Kisten	37	NOUN	Kiste
 Rückfahrt	37	NOUN
 ausgemustert	37	OTHER
 elastisch	37	OTHER
 Pau	37	NOUN
 empfingen	37	VERB
-Bogenschützen	37	NOUN
-Kraters	37	NOUN
+Bogenschützen	37	NOUN	Bogenschütze
+Kraters	37	NOUN	Krater
 Rille	37	NOUN
 vorgetäuscht	37	OTHER
-Fluide	37	NOUN
+Fluide	37	NOUN	Fluid
 unkontrollierte	37	OTHER
 missfiel	37	OTHER
-Stockholms	37	NOUN
+Stockholms	37	NOUN	Stockholm
 Beatrice	37	NOUN
 Datenkompression	37	NOUN
 Verkehrsteilnehmer	37	NOUN
 geleisteten	37	OTHER
 prüfte	37	OTHER
-Sedimentgesteinen	37	NOUN
-Ansammlungen	37	NOUN
+Sedimentgesteinen	37	NOUN	Sedimentgestein
+Ansammlungen	37	NOUN	Ansammlung
 Infinitesimalrechnung	37	NOUN
 Stetigkeit	37	NOUN
 Differentialrechnung	37	NOUN
 Namensträger	37	NOUN
 Mahnung	37	NOUN
 Reichsacht	37	NOUN
-Drücke	37	NOUN,OTHER
-Wiederkäuern	37	NOUN
+Drücke	37	NOUN,OTHER	Druck
+Wiederkäuern	37	NOUN	Wiederkäuer
 Atemnot	37	NOUN
 Hülsen	37	NOUN
 zwittrigen	37	OTHER
 Heimreise	37	NOUN
 Kahle	37	NOUN,OTHER
-Umweltfaktoren	37	NOUN
+Umweltfaktoren	37	NOUN	Umweltfaktor
 Fremdkörper	37	NOUN
 Exekutivkomitee	37	NOUN
 Discounter	37	NOUN
 Führungsstil	37	NOUN
-Standortes	37	NOUN
-Shops	37	NOUN
-Verbformen	37	NOUN
+Standortes	37	NOUN	Standort
+Shops	37	NOUN	Shop
+Verbformen	37	NOUN	Verbform
 niederließ	37	OTHER
 nachträglichen	37	OTHER
 verantwortlicher	37	NOUN,OTHER
@@ -38539,7 +38539,7 @@ gleichzeitigem	37	OTHER
 mitgeprägt	37	OTHER
 unvermeidlichen	37	OTHER
 Liquidation	37	NOUN
-Wortformen	37	NOUN
+Wortformen	37	NOUN	Wortform
 vorgelesen	37	VERB
 Naturæ	37	NOUN
 Jahrmillionen	37	NOUN
