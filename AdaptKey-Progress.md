@@ -253,14 +253,10 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **The two genuinely ambiguous LaTeX-noise candidates spotted alongside §317's own removal, deliberately**
-  **left untouched:** `alpha`(910) - bigram context is mixed (`sin alpha`/`cos alpha` clearly LaTeX, but
-  `alpha centauri`/`alpha und` read as genuine, if lowercase, German prose); `text`(5076, tagged
-  `NOUN,VERB`) - very high frequency, mixed bigram context (`text bar`/`text shift` look like `\text{}`
-  LaTeX-macro leakage, but `der text`/`text und` read as the real, extremely common German noun) - and
-  oddly, capitalised `Text` does **not** exist as its own dictionary entry at all, which is itself worth
-  understanding before touching this one either way. Needs real judgement, not a mechanical removal - not
-  fixed without explicit direction first.
+- **The real German verb `texten` ("to text/message someone") has no dictionary entry at all** - noticed**
+  while resolving §318's `text` tag fix (only its participle `getextet`(9, `OTHER`) exists; the infinitive
+  and every finite form - `texte`/`textest`/`textet`/... - are missing). Not added yet, since it wasn't part
+  of what was asked; flagged here in case it belongs in a future word-family round.
 
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) is German-only.**
   Found while auditing every place that does *not* route through the active-language pipeline (history §210's
@@ -784,6 +780,18 @@ non-trivial changes).
   `dictionaries/de/version.txt` 27 -> 28, pack rebuilt, `LanguagePackCatalog` version 27 -> 28. No new tests
   (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 373 -> 374, `versionName`
   `"1.0.69"` -> `"1.0.70"`. Not yet device-confirmed.
+
+- **§318 (v1.0.71): `text` `NOUN,VERB` -> `NOUN` - a D-368 mechanical-scan false positive, caught by the**
+  **user's own review.** §316/§317's noise cross-check had flagged `text`(5076) as one of two genuinely
+  ambiguous LaTeX-noise candidates (alongside `alpha`, kept as-is); the user resolved both by keeping the
+  word, but pointed out the `VERB` half of its tag was simply wrong regardless of the LaTeX question - D-368's
+  mechanical homograph scan checked whether stem+`"en"` forms a real verb (`text`+`en` = `texten`, which is
+  indeed real), but never checked whether the bare stem itself is a valid *inflected form* of that verb. It
+  is not: `texten`'s own finite forms are `texte`/`textest`/`textet`, never bare `text`. `git diff --stat`:
+  1 line. `dictionaries/de/version.txt` 28 -> 29, pack rebuilt, `LanguagePackCatalog` version 28 -> 29. No
+  new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 374 -> 375,
+  `versionName` `"1.0.70"` -> `"1.0.71"`. Not yet device-confirmed. Found in passing: `texten` itself has no
+  dictionary entry at all (see Open TODOs) - not fixed here, out of what was actually asked this round.
 
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed

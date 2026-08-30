@@ -199,7 +199,10 @@ object LanguagePackCatalog {
             // §317 (v1.0.70): removed the second LaTeX-noise cluster flagged in §316 (7 more rows,
             // 47 stale bigram.tsv rows) and closed a fresh user-supplied word-family list (19 missing
             // words added, 2 mistagged existing entries fixed).
-            version = 28
+            // §318 (v1.0.71): "text" NOUN,VERB -> NOUN - a D-368 mechanical-scan false positive (bare
+            // "text" is not itself a valid form of the real verb "texten"; that verb's own inflected
+            // forms would be texte/textest/textet).
+            version = 29
         ),
         Entry(
             Language.GREEK,
