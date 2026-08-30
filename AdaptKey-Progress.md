@@ -677,6 +677,23 @@ non-trivial changes).
   mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries, and
   populating `lemma` on every result so far.
 
+- **§311 (v1.0.64): round 5b - the `20-29` sub-band of `10-49` (1459 candidates, 613 rows changed).** Same
+  method as every round so far. 532 words `OTHER` -> `VERB`; 81 genuine dual-meaning words `OTHER` ->
+  `VERB,OTHER`. The fail-loud script again caught real authoring slips before writing anything - most
+  notably a batch of ~40 words where the dual (`VERB,OTHER`) form had, correctly, been placed in the dual
+  list, but a related sibling form had been mistakenly duplicated into the plain-`VERB` list as well; fixed
+  by deriving `verb_only` as "everything not already claimed by `verb_other`" rather than hand-editing each
+  one, then re-verified the resulting counts against the manual review before writing. Also caught: one word
+  (`bekehren`) already tagged by an earlier round and mistakenly re-listed, and one word (`dezimieren`) that
+  turned out not to exist as its own dictionary row at all (only its preterite-plural sibling
+  `dezimierten` does) - both dropped rather than forced. `git diff --stat` confirmed exactly 613 lines
+  changed. `dictionaries/de/version.txt` 21 -> 22, pack rebuilt/verified, `LanguagePackCatalog` version 21
+  -> 22. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 367 ->
+  368, `versionName` `"1.0.63"` -> `"1.0.64"`. Not yet device-confirmed. Remaining: the `10-19` sub-band of
+  `10-49` (3225 - by far the largest remaining chunk), then the `<10` band (1073), the mechanical
+  weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries, and
+  populating `lemma` on every result so far.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with
