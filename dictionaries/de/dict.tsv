@@ -72434,7 +72434,7 @@ Sternzeichen	16	NOUN
 officiis	16	OTHER
 lautlos	16	OTHER
 Frühlingspunktes	16	NOUN
-Hudsons	16	NOUN
+Hudsons	16	NOUN	Hudson
 abflusslosen	16	OTHER
 Nitrofen	16	NOUN
 Alliteration	16	NOUN
@@ -72455,9 +72455,9 @@ Brückenau	16	NOUN
 impfen	16	VERB
 Hebrew	16	NOUN
 Bal	16	NOUN
-Musikkapellen	16	NOUN
+Musikkapellen	16	NOUN	Musikkapelle
 Holzblasinstrument	16	NOUN
-Fagotte	16	NOUN
+Fagotte	16	NOUN	Fagott
 Gehörgang	16	NOUN
 Selbstbefruchtung	16	NOUN
 hübsche	16	OTHER
@@ -72465,14 +72465,14 @@ repeat	16	OTHER
 Datenbankmanagementsystem	16	NOUN
 Serail	16	NOUN
 Ordensschwestern	16	NOUN
-Säkularinstitute	16	NOUN
+Säkularinstitute	16	NOUN	Säkularinstitut
 Vatikanum	16	NOUN
 Vorderpfalz	16	NOUN
 Flüssigkeitsoberfläche	16	NOUN
 umsetzbar	16	OTHER
 stöchiometrischen	16	OTHER
 überschaubarer	16	OTHER
-Wolframs	16	NOUN
+Wolframs	16	NOUN	Wolfram
 Oklo	16	NOUN
 ungleichmäßige	16	OTHER
 Betriebsbedingungen	16	NOUN
@@ -72483,12 +72483,12 @@ symptomatischen	16	OTHER
 Hämorrhoiden	16	NOUN
 Mihály	16	NOUN
 töte	16	OTHER
-Vierecke	16	NOUN
+Vierecke	16	NOUN	Viereck
 Sophist	16	NOUN
 Wisła	16	NOUN
 Czarny	16	NOUN,OTHER
 Tatarisch	16	NOUN,OTHER
-Kriegsrechts	16	NOUN
+Kriegsrechts	16	NOUN	Kriegsrecht
 Podhale	16	NOUN
 Normalspurnetz	16	NOUN
 Parler	16	NOUN
@@ -72508,19 +72508,19 @@ Staphylococcus	16	NOUN
 Quercetin	16	NOUN
 Königshofen	16	NOUN
 Einzeltiere	16	NOUN
-Taifas	16	NOUN
+Taifas	16	NOUN	Taifa
 unwegsamen	16	OTHER
 Kreisvolkshochschule	16	NOUN
 pathogen	16	NOUN,OTHER
-Lähmungen	16	NOUN
-Ausstrahlungen	16	NOUN
+Lähmungen	16	NOUN	Lähmung
+Ausstrahlungen	16	NOUN	Ausstrahlung
 Alltagswelt	16	NOUN
 Brutstätte	16	NOUN
 Gesetzestreue	16	NOUN,OTHER
 Prozessrecht	16	NOUN
 Tagesverlauf	16	NOUN
 Limón	16	NOUN
-Nutzlasten	16	NOUN
+Nutzlasten	16	NOUN	Nutzlast
 astrologischer	16	OTHER
 bedeutungsvoll	16	OTHER
 umringt	16	OTHER
@@ -72528,18 +72528,18 @@ Titicacasee	16	NOUN
 steuerfrei	16	OTHER
 geraubten	16	OTHER
 Harzquerbahn	16	NOUN
-Jakobsweges	16	NOUN
+Jakobsweges	16	NOUN	Jakobsweg
 Zebra	16	NOUN
 Führungsgröße	16	NOUN
 ricanischen	16	OTHER
 Amtskirche	16	NOUN
-Samplern	16	NOUN
+Samplern	16	NOUN	Sampler
 URE	16	NOUN
 nachlassender	16	OTHER
-Regalen	16	NOUN
+Regalen	16	NOUN	Regal
 abonniert	16	OTHER
 Neuformulierung	16	NOUN
-Pulsaren	16	NOUN
+Pulsaren	16	NOUN	Pulsar
 dunkelsten	16	OTHER
 Kronprinzenpalais	16	NOUN
 Harrach	16	NOUN
@@ -72552,10 +72552,10 @@ Aigle	16	NOUN
 Bundesinventar	16	NOUN
 Bergmassiv	16	NOUN
 Multimenge	16	NOUN
-Panzertruppen	16	NOUN
+Panzertruppen	16	NOUN	Panzertruppe
 Witzleben	16	NOUN
-Begriffsklärungsseiten	16	NOUN
-Adlern	16	NOUN
+Begriffsklärungsseiten	16	NOUN	Begriffsklärungsseite
+Adlern	16	NOUN	Adler
 Iliodor	16	NOUN
 quälen	16	VERB
 Jassy	16	NOUN
@@ -72569,7 +72569,7 @@ Aubrey	16	NOUN
 japonica	16	OTHER
 Halland	16	NOUN
 Unihockey	16	NOUN
-Rigas	16	NOUN
+Rigas	16	NOUN	Riga
 emergenten	16	OTHER
 Ahriman	16	NOUN
 Teck	16	NOUN
@@ -72577,23 +72577,23 @@ Germanus	16	NOUN
 Phlogistontheorie	16	NOUN
 Streckenverlauf	16	NOUN
 Fahrgeschwindigkeit	16	NOUN
-Stromschienen	16	NOUN
+Stromschienen	16	NOUN	Stromschiene
 Allens	16	NOUN
 Blaubeuren	16	NOUN
 Delinquenten	16	NOUN
 Bargau	16	NOUN
 geräuchert	16	OTHER
 Fernglases	16	NOUN
-Sonnenwenden	16	NOUN
+Sonnenwenden	16	NOUN	Sonnenwende
 Streubesitz	16	NOUN
 Überlaufen	16	NOUN,OTHER
 Ticino	16	NOUN
-Schweizerdeutsche	16	NOUN,OTHER
+Schweizerdeutsche	16	NOUN,OTHER	Schweizerdeutsch
 Natel	16	NOUN
 Hodler	16	NOUN
 Taeuber	16	NOUN
 Parallelwelt	16	NOUN
-Schwestergruppen	16	NOUN
+Schwestergruppen	16	NOUN	Schwestergruppe
 Mola	16	NOUN
 Liegeplatz	16	NOUN
 Feldstecher	16	NOUN
@@ -72606,14 +72606,14 @@ fill	16	OTHER
 Tümpel	16	NOUN
 Zwettl	16	NOUN
 Volkskommissar	16	NOUN
-Augapfels	16	NOUN
-Schwingkreisen	16	NOUN
-Schaltnetzteilen	16	NOUN
+Augapfels	16	NOUN	Augapfel
+Schwingkreisen	16	NOUN	Schwingkreis
+Schaltnetzteilen	16	NOUN	Schaltnetzteil
 Innenwand	16	NOUN
 Bildprogramm	16	NOUN
 Kapitelsaal	16	NOUN
 Zacken	16	NOUN
-Schränke	16	NOUN,OTHER
+Schränke	16	NOUN,OTHER	Schrank
 Kyffhäuser	16	NOUN
 Sättigungsdampfdruck	16	NOUN
 südindischen	16	OTHER
@@ -72623,7 +72623,7 @@ Guck	16	NOUN
 STA	16	NOUN
 westslawische	16	OTHER
 Gutteil	16	NOUN
-Meridianen	16	NOUN
+Meridianen	16	NOUN	Meridian
 Faustformel	16	NOUN
 Monsunklima	16	NOUN
 Kleinbären	16	NOUN
@@ -72633,25 +72633,25 @@ Steinfeld	16	NOUN
 schreitenden	16	OTHER
 Schuldbekenntnis	16	NOUN
 Rhys	16	NOUN
-Oberhaupts	16	NOUN
+Oberhaupts	16	NOUN	Oberhaupt
 sizilische	16	OTHER
 Gela	16	NOUN
 Skipisten	16	NOUN
 Nacktsamer	16	NOUN
 Wasserwellen	16	NOUN
-Sternenhimmels	16	NOUN
+Sternenhimmels	16	NOUN	Sternenhimmel
 freizulassen	16	VERB
 ADO	16	NOUN
 rechtliches	16	OTHER
 Shinjuku	16	NOUN
 Motorroller	16	NOUN
 Professionalität	16	NOUN
-Verwandtschaften	16	NOUN
+Verwandtschaften	16	NOUN	Verwandtschaft
 ausgekoppelt	16	OTHER
 Terrorism	16	NOUN
 Colombia	16	NOUN
 Mormon	16	NOUN
-Tübingens	16	NOUN
+Tübingens	16	NOUN	Tübingen
 Überdeckung	16	NOUN
 Präfekturverwaltung	16	NOUN
 Großheringen	16	NOUN
@@ -72659,8 +72659,8 @@ Ronneburg	16	NOUN
 ernestinische	16	OTHER
 einschlägiger	16	OTHER
 Sekundärseite	16	NOUN
-Juwelen	16	NOUN
-Hofdamen	16	NOUN
+Juwelen	16	NOUN	Juwel
+Hofdamen	16	NOUN	Hofdame
 Mährerreiches	16	NOUN
 Vladislav	16	NOUN
 Vladimír	16	NOUN
@@ -72673,7 +72673,7 @@ Articulata	16	NOUN
 Batumi	16	NOUN
 Kriegsgefangenenhospital	16	NOUN
 Jasnaja	16	NOUN
-Polstellen	16	NOUN
+Polstellen	16	NOUN	Polstelle
 Wärmeaustausch	16	NOUN
 Henochbuch	16	NOUN
 Königsborn	16	NOUN
@@ -72684,11 +72684,11 @@ Sopron	16	NOUN
 Ligeti	16	NOUN
 Juventus	16	NOUN
 Tschernihiw	16	NOUN
-Oblasten	16	NOUN
-Golfes	16	NOUN
+Oblasten	16	NOUN	Oblast
+Golfes	16	NOUN	Golf
 Exon	16	NOUN
 Lipiddoppelschicht	16	NOUN
-Südvietnams	16	NOUN
+Südvietnams	16	NOUN	Südvietnam
 Bergvölker	16	NOUN
 Suchfeld	16	NOUN
 Neuling	16	NOUN
@@ -72698,16 +72698,16 @@ Bezirksgrenze	16	NOUN
 Handballer	16	NOUN
 Gentz	16	NOUN
 Leistungszahl	16	NOUN
-Heisenbergs	16	NOUN
+Heisenbergs	16	NOUN	Heisenberg
 Poststation	16	NOUN
-Werkfeuerwehren	16	NOUN
+Werkfeuerwehren	16	NOUN	Werkfeuerwehr
 Säulenhalle	16	NOUN
 erogenen	16	OTHER
 chromatisch	16	OTHER
-Nationalkomitees	16	NOUN
+Nationalkomitees	16	NOUN	Nationalkomitee
 Sonderlager	16	NOUN
 stochastischer	16	OTHER
-Residenten	16	NOUN
+Residenten	16	NOUN	Resident
 Gottesvolk	16	NOUN
 Dreizack	16	NOUN
 Lodz	16	NOUN
@@ -72722,10 +72722,10 @@ Dedicated	16	NOUN,OTHER
 zurückzahlen	16	OTHER
 Bougainville	16	NOUN
 Tamar	16	NOUN
-Beschlagnahmungen	16	NOUN
+Beschlagnahmungen	16	NOUN	Beschlagnahmung
 Ertränken	16	NOUN,OTHER
 Ramathibodi	16	NOUN
-Pontifikats	16	NOUN
+Pontifikats	16	NOUN	Pontifikat
 Wolgagebiet	16	NOUN
 Kartoffelanbau	16	NOUN
 Serres	16	NOUN
@@ -72741,7 +72741,7 @@ Harker	16	NOUN
 Dedwen	16	NOUN
 Favelas	16	NOUN
 Texter	16	NOUN
-Panthers	16	NOUN
+Panthers	16	NOUN	Panther
 Smuts	16	NOUN
 Quasar	16	NOUN
 Pferdezucht	16	NOUN
@@ -72758,7 +72758,7 @@ Siedlungsform	16	NOUN
 friderizianischen	16	OTHER
 Dorferneuerung	16	NOUN
 Nazarener	16	NOUN
-Buchillustrationen	16	NOUN
+Buchillustrationen	16	NOUN	Buchillustration
 Scotch	16	NOUN
 Sandhausen	16	NOUN
 Regionalverbandes	16	NOUN
@@ -72776,7 +72776,7 @@ Perikopenordnung	16	NOUN
 Schäßburg	16	NOUN
 Wettstein	16	NOUN
 Museveni	16	NOUN
-Tötungsdelikten	16	NOUN
+Tötungsdelikten	16	NOUN	Tötungsdelikt
 Eisenverarbeitung	16	NOUN
 Haqq	16	NOUN
 Chamorro	16	NOUN
@@ -72786,7 +72786,7 @@ Strebebögen	16	NOUN
 Belfried	16	NOUN
 Bernt	16	NOUN
 Renaud	16	NOUN
-Berchtesgadens	16	NOUN
+Berchtesgadens	16	NOUN	Berchtesgaden
 Cooke	16	NOUN
 Zither	16	NOUN
 sendeten	16	VERB
@@ -72797,10 +72797,10 @@ Carriera	16	NOUN
 Beuthen	16	NOUN
 Brienzersee	16	NOUN
 Zips	16	NOUN
-Kirchentags	16	NOUN
-Pharisäern	16	NOUN
+Kirchentags	16	NOUN	Kirchentag
+Pharisäern	16	NOUN	Pharisäer
 Röntgenaufnahme	16	NOUN
-Plattenspielern	16	NOUN
+Plattenspielern	16	NOUN	Plattenspieler
 Hagener	16	NOUN
 Pila	16	NOUN,OTHER
 Joschija	16	NOUN
@@ -72814,20 +72814,20 @@ Steuereinrichtung	16	NOUN
 Steuerstrecke	16	NOUN
 Ablaufsteuerungen	16	NOUN
 Steuergrößen	16	NOUN
-Picards	16	NOUN
+Picards	16	NOUN	Picard
 Wriezener	16	NOUN
 Salzwedeler	16	NOUN
 Duisberg	16	NOUN
 Kindertag	16	NOUN
-Hopfens	16	NOUN
+Hopfens	16	NOUN	Hopfen
 Krümmungsradius	16	NOUN
 Rasterung	16	NOUN
 Erdmannsdorff	16	NOUN
-Wisenten	16	NOUN
-Fidschis	16	NOUN
+Wisenten	16	NOUN	Wisent
+Fidschis	16	NOUN	Fidschi
 Aquaristik	16	NOUN
 Sissi	16	NOUN
-Manifestes	16	NOUN
+Manifestes	16	NOUN	Manifest
 Kopfstück	16	NOUN
 Heusser	16	NOUN
 Passionsgeschichte	16	NOUN
@@ -72842,14 +72842,14 @@ Epaphras	16	NOUN
 Telophase	16	NOUN
 RVR	16	NOUN
 Meiderich	16	NOUN
-Mühlviertels	16	NOUN
+Mühlviertels	16	NOUN	Mühlviertel
 Langzeile	16	NOUN
 Kleinwalsertal	16	NOUN
 Bassposaune	16	NOUN
 Plättchen	16	NOUN
 Lichtschranken	16	NOUN
 Ginsburg	16	NOUN
-Faksimiles	16	NOUN
+Faksimiles	16	NOUN	Faksimile
 Emslandes	16	NOUN
 Kreisau	16	NOUN
 Pathom	16	NOUN
@@ -72861,8 +72861,8 @@ Dülmener	16	NOUN
 Bogislaw	16	NOUN
 Naturton	16	NOUN
 Analogabschaltung	16	NOUN
-Gregorios	16	NOUN
-Leasinggesellschaften	16	NOUN
+Gregorios	16	NOUN	Gregorio
+Leasinggesellschaften	16	NOUN	Leasinggesellschaft
 Flüssigkristall	16	NOUN
 alanische	16	OTHER
 Chormönche	16	NOUN
@@ -72870,14 +72870,14 @@ Latum	16	NOUN,OTHER
 Neundorf	16	NOUN
 Homöopathika	16	NOUN
 Herzgewächse	16	NOUN
-Grans	16	NOUN
+Grans	16	NOUN	Gran
 Erregerwicklung	16	NOUN
 Systemadministrator	16	NOUN
 BNC	16	NOUN
-Jacobsohns	16	NOUN
-Kischs	16	NOUN
+Jacobsohns	16	NOUN	Jacobsohn
+Kischs	16	NOUN	Kisch
 Krängung	16	NOUN
-Kantengewichte	16	NOUN
+Kantengewichte	16	NOUN	Kantengewicht
 UndirectedGraph	16	NOUN,OTHER
 AEMR	16	NOUN
 Pilum	16	NOUN
@@ -72886,7 +72886,7 @@ Rosberg	16	NOUN
 Bundesnaturschutzgesetzes	16	NOUN
 Zhuangzi	16	NOUN
 Rossija	16	NOUN
-Kirgisischen	16	NOUN,OTHER
+Kirgisischen	16	NOUN,OTHER	Kirgisisch
 regierungsunmittelbaren	16	OTHER
 Wolchow	16	NOUN
 Nischnekamsk	16	NOUN
@@ -72897,21 +72897,21 @@ Horgen	16	NOUN
 Wachtmeister	16	NOUN
 Iaidō	16	NOUN
 Obernkirchen	16	NOUN
-Edmonds	16	NOUN
+Edmonds	16	NOUN	Edmond
 Tasmania	16	NOUN
 Tonträgerunternehmen	16	NOUN
 Stimmplatten	16	NOUN
 Firemonkey	16	NOUN
-Kissingers	16	NOUN
+Kissingers	16	NOUN	Kissinger
 Zivildienstes	16	NOUN
 Visigothen	16	NOUN
 Leibeshöhle	16	NOUN
-Volkskirchen	16	NOUN
+Volkskirchen	16	NOUN	Volkskirche
 elter	16	OTHER
 Wingolfsbund	16	NOUN
 Crispien	16	NOUN
 Kaseburg	16	NOUN
-Wiktionarys	16	NOUN
+Wiktionarys	16	NOUN	Wiktionary
 Teeblätter	16	NOUN
 Montjuïc	16	NOUN
 Welfenschloss	16	NOUN
@@ -72940,30 +72940,30 @@ Grasleben	16	NOUN
 Schwalmstadt	16	NOUN
 Laios	16	NOUN
 Steenke	16	NOUN
-Trioden	16	NOUN
+Trioden	16	NOUN	Triode
 Pfeilwürmer	16	NOUN
 Leasingvertrag	16	NOUN
 Gentiana	16	NOUN
 Fausta	16	NOUN
 Medini	16	NOUN
 Goudar	16	NOUN
-Marburgs	16	NOUN
+Marburgs	16	NOUN	Marburg
 Goldbären	16	NOUN
 Konversationsanalyse	16	NOUN
 Reginn	16	NOUN
-Müllheims	16	NOUN
+Müllheims	16	NOUN	Müllheim
 Klezmorim	16	NOUN
 Békessy	16	NOUN
 invertierenden	16	OTHER
 Smithee	15	NOUN
-Himbeeren	15	NOUN
+Himbeeren	15	NOUN	Himbeere
 eat	15	NOUN,OTHER
 Austen	15	NOUN
 WAI	15	NOUN,OTHER
-Stilelementen	15	NOUN
+Stilelementen	15	NOUN	Stilelement
 positivistischen	15	OTHER
 einfügt	15	OTHER
-Kalküls	15	NOUN
+Kalküls	15	NOUN	Kalkül
 herleitbar	15	OTHER
 umkehrt	15	OTHER
 inkonsistent	15	OTHER
@@ -72972,12 +72972,12 @@ mehrwertigen	15	OTHER
 Frères	15	NOUN,OTHER
 Eastman	15	NOUN
 Massenware	15	NOUN
-Profite	15	NOUN
+Profite	15	NOUN	Profit
 Rechtssprache	15	NOUN
-Abbreviaturen	15	NOUN
+Abbreviaturen	15	NOUN	Abbreviatur
 Bildgestaltung	15	NOUN
 abzuheben	15	VERB
-Trophäen	15	NOUN
+Trophäen	15	NOUN	Trophäe
 Farbfilm	15	NOUN
 untreu	15	OTHER
 projizierte	15	OTHER
@@ -72995,23 +72995,23 @@ abzuweichen	15	VERB
 Mörderin	15	NOUN
 heile	15	OTHER
 Zeugin	15	NOUN
-Tonfilme	15	NOUN
+Tonfilme	15	NOUN	Tonfilm
 Teamarbeit	15	NOUN
 provokativ	15	OTHER
 Beier	15	NOUN
-Arbeitskämpfen	15	NOUN
+Arbeitskämpfen	15	NOUN	Arbeitskampf
 gerungen	15	VERB
 Pokémon	15	NOUN
 Jugendschutz	15	NOUN
 Fachmagazin	15	NOUN
 synchronisierten	15	VERB,OTHER
 miterleben	15	OTHER
-Actionfilmen	15	NOUN
+Actionfilmen	15	NOUN	Actionfilm
 Showdown	15	NOUN
 Kampala	15	NOUN
-Wasserstoffatomen	15	NOUN
+Wasserstoffatomen	15	NOUN	Wasserstoffatom
 omnis	15	NOUN,OTHER
-Dipole	15	NOUN
+Dipole	15	NOUN	Dipol
 Popgruppe	15	NOUN
 Haushaltsgegenstände	15	NOUN
 Saphir	15	NOUN
@@ -73025,24 +73025,24 @@ Pedanios	15	NOUN
 Potosí	15	NOUN
 Abführmittel	15	NOUN
 Arsenik	15	NOUN
-Nekrosen	15	NOUN
+Nekrosen	15	NOUN	Nekrose
 ASO	15	NOUN
 Anhydrid	15	NOUN
 erlagen	15	VERB
 Clare	15	NOUN
 PY	15	NOUN,OTHER
-Feuerwerke	15	NOUN
-Versuchsreihen	15	NOUN
+Feuerwerke	15	NOUN	Feuerwerk
+Versuchsreihen	15	NOUN	Versuchsreihe
 unteilbar	15	OTHER
 hypothetisches	15	OTHER
 salus	15	NOUN,OTHER
 approbierten	15	VERB,OTHER
 berufstätig	15	OTHER
 ableisten	15	VERB
-Arbeitsverträge	15	NOUN
+Arbeitsverträge	15	NOUN	Arbeitsvertrag
 Benutzerfreundlichkeit	15	NOUN
-Antrieben	15	NOUN,OTHER
-Blicks	15	NOUN
+Antrieben	15	NOUN,OTHER	Antrieb
+Blicks	15	NOUN	Blick
 dementsprechende	15	OTHER
 biotischen	15	OTHER
 Kleinstaat	15	NOUN
@@ -73053,7 +73053,7 @@ verlustreich	15	OTHER
 maßlos	15	OTHER
 Droysen	15	NOUN
 Kallisthenes	15	NOUN
-Angriffes	15	NOUN
+Angriffes	15	NOUN	Angriff
 aufzufüllen	15	VERB
 Eunuch	15	NOUN
 Wetterverhältnisse	15	NOUN
@@ -73069,7 +73069,7 @@ gehaltenes	15	OTHER
 Tugendhaftigkeit	15	NOUN
 Dhū	15	NOUN
 Schutzwall	15	NOUN
-Ballette	15	NOUN
+Ballette	15	NOUN	Ballett
 Aleksandar	15	NOUN
 Einzelaspekte	15	NOUN
 angerichteten	15	OTHER
@@ -73077,7 +73077,7 @@ wertenden	15	OTHER
 Kition	15	NOUN
 Graecia	15	NOUN
 Macedonia	15	NOUN
-Volkstribunen	15	NOUN
+Volkstribunen	15	NOUN	Volkstribun
 Poebene	15	NOUN
 Palmyra	15	NOUN
 Krisenzeit	15	NOUN
@@ -73092,26 +73092,26 @@ Poste	15	NOUN
 Amateurastronomen	15	NOUN
 Kryptoanalyse	15	NOUN
 Flowers	15	NOUN,OTHER
-Nichten	15	NOUN,OTHER
+Nichten	15	NOUN,OTHER	Nichte
 Payne	15	NOUN
 herausbildeten	15	VERB
 Unterwasserarchäologie	15	NOUN
 Neuenburgersee	15	NOUN
 Lehrbefugnis	15	NOUN
-Fundplätzen	15	NOUN
-Forschungsprojekten	15	NOUN
-Funktions	15	NOUN,OTHER
+Fundplätzen	15	NOUN	Fundplatz
+Forschungsprojekten	15	NOUN	Forschungsprojekt
+Funktions	15	NOUN,OTHER	Funktion
 mehrwöchige	15	OTHER
 adäquater	15	OTHER
 Merkhilfe	15	NOUN
 mannigfaltigen	15	OTHER
 Rhodesien	15	NOUN
-Luftangriffs	15	NOUN
+Luftangriffs	15	NOUN	Luftangriff
 Basil	15	NOUN
 ehrgeizig	15	OTHER
 Nachhut	15	NOUN
 Rücktransport	15	NOUN
-Prinzregenten	15	NOUN
+Prinzregenten	15	NOUN	Prinzregent
 reorganisieren	15	OTHER
 Duero	15	NOUN
 Hauptschiff	15	NOUN
@@ -73119,7 +73119,7 @@ abzogen	15	VERB
 Sternhimmel	15	NOUN
 Zeitbestimmung	15	NOUN
 interdisziplinärer	15	OTHER
-Osterdatums	15	NOUN
+Osterdatums	15	NOUN	Osterdatum
 Schaltregel	15	NOUN
 Vance	15	NOUN
 weint	15	OTHER
@@ -73135,12 +73135,12 @@ Synchronstimme	15	NOUN
 erreichende	15	OTHER
 freigibt	15	OTHER
 Kodizes	15	NOUN
-Platonikern	15	NOUN
-Redners	15	NOUN
+Platonikern	15	NOUN	Platoniker
+Redners	15	NOUN	Redner
 zweifelhafter	15	OTHER
 Theophrast	15	NOUN
 gewidmetes	15	OTHER
-Gebäudekomplexes	15	NOUN
+Gebäudekomplexes	15	NOUN	Gebäudekomplex
 anvertraute	15	OTHER
 einsichtig	15	OTHER
 unvollkommenen	15	OTHER
@@ -73152,14 +73152,14 @@ vergängliche	15	OTHER
 Beweger	15	NOUN
 terminologisch	15	OTHER
 Kraken	15	NOUN
-Lastern	15	NOUN
+Lastern	15	NOUN	Laster
 ausgestattetes	15	OTHER
 Politie	15	NOUN
 neuplatonisch	15	OTHER
 Stephanos	15	NOUN
 Benedetti	15	NOUN
 Hardin	15	NOUN
-Freimaurern	15	NOUN
+Freimaurern	15	NOUN	Freimaurer
 Soil	15	NOUN
 Hemmnis	15	NOUN
 Elijah	15	NOUN
@@ -73171,7 +73171,7 @@ Massey	15	NOUN
 winterliche	15	OTHER
 ausgebreiteten	15	OTHER
 Skilanglauf	15	NOUN
-Aufbruchs	15	NOUN
+Aufbruchs	15	NOUN	Aufbruch
 Regierungsmehrheit	15	NOUN
 Familienpolitik	15	NOUN
 Arbeitsmarktpolitik	15	NOUN
@@ -73193,7 +73193,7 @@ Romanverfilmung	15	NOUN
 Pharmakologe	15	NOUN
 anarchischen	15	OTHER
 Gazi	15	NOUN
-Fahrscheine	15	NOUN
+Fahrscheine	15	NOUN	Fahrschein
 Eisbahn	15	NOUN
 dreiteilig	15	OTHER
 Blickfang	15	NOUN
@@ -73202,7 +73202,7 @@ Mackie	15	NOUN
 Eherecht	15	NOUN
 Chayyām	15	NOUN
 unpersönlichen	15	OTHER
-Rosse	15	NOUN
+Rosse	15	NOUN	Ross
 Glaubenssätze	15	NOUN
 provokanten	15	OTHER
 Religionskriege	15	NOUN
@@ -73220,11 +73220,11 @@ Gastheorie	15	NOUN
 Gashülle	15	NOUN
 Chromosphäre	15	NOUN
 Klavierstück	15	NOUN
-Schneefälle	15	NOUN
+Schneefälle	15	NOUN	Schneefall
 Flüchtlingswelle	15	NOUN
-Weltreichs	15	NOUN
+Weltreichs	15	NOUN	Weltreich
 einstellten	15	VERB
-Interims	15	NOUN
+Interims	15	NOUN	Interim
 Straßenverkehrsordnung	15	NOUN
 Ariana	15	NOUN
 kristallisierten	15	VERB,OTHER
@@ -73235,21 +73235,21 @@ ansehnliche	15	OTHER
 abreiste	15	OTHER
 durchsuchte	15	OTHER
 anal	15	NOUN,OTHER
-Beraters	15	NOUN
-Nachfolgeorganisationen	15	NOUN
+Beraters	15	NOUN	Berater
+Nachfolgeorganisationen	15	NOUN	Nachfolgeorganisation
 Memoirs	15	NOUN
 waza	15	OTHER
 angedeuteten	15	OTHER
 Uke	15	NOUN
 Bewegungsmuster	15	NOUN
 Weichheit	15	NOUN
-Gelenken	15	NOUN
+Gelenken	15	NOUN	Gelenk
 ungewohnte	15	OTHER
 Mündungsarm	15	NOUN
 Wohnbezirk	15	NOUN
 Decius	15	NOUN
-Exports	15	NOUN
-Vorortbahnen	15	NOUN
+Exports	15	NOUN	Export
+Vorortbahnen	15	NOUN	Vorortbahn
 Statistikbehörde	15	NOUN
 Permafrostboden	15	NOUN
 Handelsverbindungen	15	NOUN
@@ -73258,18 +73258,18 @@ Mahavira	15	NOUN
 dreistufigen	15	OTHER
 Staatskrise	15	NOUN
 Geschäftsbedingungen	15	NOUN
-Tarifverträgen	15	NOUN
+Tarifverträgen	15	NOUN	Tarifvertrag
 Montan	15	NOUN,OTHER
 Unwirksamkeit	15	NOUN
-Arbeitstage	15	NOUN
+Arbeitstage	15	NOUN	Arbeitstag
 ausfielen	15	VERB
-Grundrechts	15	NOUN
+Grundrechts	15	NOUN	Grundrecht
 Vipsanius	15	NOUN
-Einflusssphären	15	NOUN
+Einflusssphären	15	NOUN	Einflusssphäre
 Sicilia	15	NOUN
-Agrippas	15	NOUN
+Agrippas	15	NOUN	Agrippa
 monatelange	15	OTHER
-Demütigungen	15	NOUN
+Demütigungen	15	NOUN	Demütigung
 Augusteische	15	NOUN,OTHER
 Rangabzeichen	15	NOUN
 Tarraconensis	15	NOUN
@@ -73277,7 +73277,7 @@ ereilte	15	OTHER
 Repräsentationsbauten	15	NOUN
 Imitatio	15	NOUN,OTHER
 Nordostküste	15	NOUN
-Meeresbodens	15	NOUN
+Meeresbodens	15	NOUN	Meeresboden
 Näherin	15	NOUN
 Vorzimmer	15	NOUN
 Dorotheenstraße	15	NOUN
@@ -73295,7 +73295,7 @@ BBk	15	NOUN
 Produktentwicklung	15	NOUN
 Wertschöpfungskette	15	NOUN
 monatigen	15	OTHER
-Senates	15	NOUN
+Senates	15	NOUN	Senat
 Randgruppen	15	NOUN
 Halbgeschwister	15	NOUN
 Lueger	15	NOUN
@@ -73310,32 +73310,32 @@ Hitlergruß	15	NOUN
 herausbringen	15	VERB
 Aushöhlung	15	NOUN
 Asoziale	15	NOUN
-Gesetzesinitiativen	15	NOUN
-Aufmärsche	15	NOUN
+Gesetzesinitiativen	15	NOUN	Gesetzesinitiative
+Aufmärsche	15	NOUN	Aufmarsch
 zugestehen	15	VERB
 nachempfundenen	15	OTHER
 gekreuzigten	15	NOUN,OTHER
 Reichskonkordat	15	NOUN
 Kirchenkampf	15	NOUN
 Theophil	15	NOUN
-Klosterschulen	15	NOUN
-Vorstößen	15	NOUN
+Klosterschulen	15	NOUN	Klosterschule
+Vorstößen	15	NOUN	Vorstoß
 Vertragsbruch	15	NOUN
 Einschließung	15	NOUN
 libres	15	OTHER
 Berghof	15	NOUN
 entkamen	15	VERB
 fahrlässig	15	OTHER
-Hungers	15	NOUN
+Hungers	15	NOUN	Hunger
 konsultieren	15	OTHER
 Durchhalten	15	NOUN,OTHER
 Nervenzusammenbruch	15	NOUN
 Stabsoffiziere	15	NOUN
 eigenwillig	15	OTHER
 Ludolf	15	NOUN
-Hocharabischen	15	NOUN
+Hocharabischen	15	NOUN	Hocharabisch
 Darja	15	NOUN
-Studentenzahlen	15	NOUN
+Studentenzahlen	15	NOUN	Studentenzahl
 Leseverständnis	15	NOUN
 Bergregion	15	NOUN
 begnadigte	15	OTHER
@@ -73344,7 +73344,7 @@ Bürde	15	NOUN
 Bankensektor	15	NOUN
 herkömmliches	15	OTHER
 Nanosekunden	15	NOUN
-Arbeitsspeichers	15	NOUN
+Arbeitsspeichers	15	NOUN	Arbeitsspeicher
 ausgereizt	15	OTHER
 baugleiche	15	OTHER
 Osthälfte	15	NOUN
@@ -73354,11 +73354,11 @@ Inventarnummer	15	NOUN
 Vorbildung	15	NOUN
 Getreidelieferungen	15	NOUN
 Lohr	15	NOUN
-Probefahrten	15	NOUN
+Probefahrten	15	NOUN	Probefahrt
 abgedreht	15	OTHER
 Parkeisenbahn	15	NOUN
 Berkshire	15	NOUN
-Lyons	15	NOUN
+Lyons	15	NOUN	Lyon
 Oxfordshire	15	NOUN
 Kunstgriff	15	NOUN
 Gesellschaftsschicht	15	NOUN
@@ -73378,8 +73378,8 @@ skandalös	15	OTHER
 Bruchzahl	15	NOUN
 Kodierer	15	NOUN
 Elektroauto	15	NOUN
-Fuhrwerke	15	NOUN
-Abrechnungen	15	NOUN
+Fuhrwerke	15	NOUN	Fuhrwerk
+Abrechnungen	15	NOUN	Abrechnung
 aufblühenden	15	OTHER
 Halswirbelsäule	15	NOUN
 unterschlagen	15	VERB
@@ -73390,8 +73390,8 @@ Außenhülle	15	NOUN
 Seetang	15	NOUN
 abgrenzbaren	15	OTHER
 Änderungsrate	15	NOUN
-Teilflächen	15	NOUN
-Patenschaften	15	NOUN
+Teilflächen	15	NOUN	Teilfläche
+Patenschaften	15	NOUN	Patenschaft
 Paulinum	15	NOUN
 Familienvater	15	NOUN
 meisterhafte	15	OTHER
@@ -73413,18 +73413,18 @@ Sauerstoffspezies	15	NOUN
 Nutz	15	NOUN,VERB
 vermehrtem	15	OTHER
 Past	15	NOUN,OTHER
-Blutzuckerspiegels	15	NOUN
+Blutzuckerspiegels	15	NOUN	Blutzuckerspiegel
 endständige	15	OTHER
 Nektarien	15	NOUN
 BCE	15	NOUN
-Mannschafts	15	NOUN
+Mannschafts	15	NOUN	Mannschaft
 Kontrollzentrum	15	NOUN
 stündige	15	OTHER
 Äquatornähe	15	NOUN
 angetriebenes	15	OTHER
 angekoppelt	15	OTHER
 rotbraun	15	OTHER
-Injektionen	15	NOUN
+Injektionen	15	NOUN	Injektion
 akutem	15	OTHER
 proteinogenen	15	OTHER
 Vauquelin	15	NOUN
@@ -73448,7 +73448,7 @@ Gesundheitsförderung	15	NOUN
 Immobilienwirtschaft	15	NOUN
 Warenangebot	15	NOUN
 Forsa	15	NOUN
-Angebotes	15	NOUN
+Angebotes	15	NOUN	Angebot
 bedenkt	15	OTHER
 assyrisch	15	NOUN,OTHER
 Archaismen	15	NOUN
@@ -73463,7 +73463,7 @@ Warenkorb	15	NOUN
 Haushaltseinkommen	15	NOUN
 wiedergegründeten	15	OTHER
 Konquistador	15	NOUN
-Rosas	15	NOUN
+Rosas	15	NOUN	Rosa
 Salpeterkrieg	15	NOUN
 gekannten	15	OTHER
 libertären	15	OTHER
@@ -73479,7 +73479,7 @@ Zelloberfläche	15	NOUN
 Wentworth	15	NOUN
 Weißkohl	15	NOUN
 Hagebutten	15	NOUN
-Strukturelemente	15	NOUN
+Strukturelemente	15	NOUN	Strukturelement
 Natriumionen	15	NOUN
 intrazellulär	15	OTHER
 Coenzym	15	NOUN
@@ -73491,16 +73491,16 @@ traviata	15	OTHER
 Nervenimpulse	15	NOUN
 Präkambrium	15	NOUN
 Zellschicht	15	NOUN
-Ringelwürmern	15	NOUN
-Spinnentieren	15	NOUN
+Ringelwürmern	15	NOUN	Ringelwürmer
+Spinnentieren	15	NOUN	Spinnentiere
 pri	15	NOUN,OTHER
 Augenbewegungen	15	NOUN
-Mantras	15	NOUN
+Mantras	15	NOUN	Mantra
 Exorzismus	15	NOUN
 Stütz	15	NOUN,VERB
 Steuerruder	15	NOUN
 Talisman	15	NOUN
-Amuletten	15	NOUN
+Amuletten	15	NOUN	Amulett
 Chai	15	NOUN
 Chant	15	NOUN,OTHER
 Panoramablick	15	NOUN
@@ -73513,65 +73513,65 @@ Affix	15	NOUN
 Verbreitungsschwerpunkt	15	NOUN
 Hinterende	15	NOUN
 Ostium	15	NOUN
-Gräberfeldern	15	NOUN
+Gräberfeldern	15	NOUN	Gräberfeld
 zerfallenen	15	OTHER
-Radionukliden	15	NOUN
-Myonen	15	NOUN
-Blutdrucks	15	NOUN
+Radionukliden	15	NOUN	Radionuklid
+Myonen	15	NOUN	Myon
+Blutdrucks	15	NOUN	Blutdruck
 Notfallmedizin	15	NOUN
-Schocks	15	NOUN
+Schocks	15	NOUN	Schock
 Leonhardt	15	NOUN
 Membrana	15	NOUN
 Berggipfel	15	NOUN
 Edna	15	NOUN,OTHER
 cava	15	NOUN,OTHER
-Datenübertragungsraten	15	NOUN
+Datenübertragungsraten	15	NOUN	Datenübertragungsrate
 gewollten	15	OTHER
 Explikation	15	NOUN
 bedeutungsgleich	15	OTHER
 aufschlagen	15	VERB
 Jahresversammlung	15	NOUN
-Menschenrechts	15	NOUN
+Menschenrechts	15	NOUN	Menschenrecht
 Autorenkürzel	15	NOUN
-Wesenheiten	15	NOUN
+Wesenheiten	15	NOUN	Wesenheit
 Wesensart	15	NOUN
-Kladen	15	NOUN
+Kladen	15	NOUN	Klade
 Gültigkeitsbereich	15	NOUN
 Reichardt	15	NOUN
-Romantikern	15	NOUN
+Romantikern	15	NOUN	Romantiker
 nichtdeterministischen	15	OTHER
 hineingeboren	15	VERB
-Halbvokale	15	NOUN
+Halbvokale	15	NOUN	Halbvokal
 Konsonantenverbindungen	15	NOUN
 anlautenden	15	OTHER
 gebrochener	15	OTHER
-Präfixes	15	NOUN
+Präfixes	15	NOUN	Präfix
 Sakralsprache	15	NOUN
 Gefäßwand	15	NOUN
-Formates	15	NOUN
-Vektorgrafiken	15	NOUN
+Formates	15	NOUN	Format
+Vektorgrafiken	15	NOUN	Vektorgrafik
 vertikales	15	OTHER
 quelloffene	15	OTHER
 Copley	15	NOUN
 getränkt	15	OTHER
 vorführte	15	OTHER
-Mikroskopen	15	NOUN
+Mikroskopen	15	NOUN	Mikroskop
 Microscope	15	NOUN,OTHER
 Tierchen	15	NOUN
 Gewürznelken	15	NOUN
 Wasserkörper	15	NOUN
 Ribes	15	NOUN,OTHER
 centralis	15	OTHER
-Kreuzfahrern	15	NOUN
+Kreuzfahrern	15	NOUN	Kreuzfahrer
 riecht	15	OTHER
 symbolistischen	15	OTHER
-Herodots	15	NOUN
-Poes	15	NOUN
+Herodots	15	NOUN	Herodot
+Poes	15	NOUN	Poe
 Oedipus	15	NOUN
 Enfant	15	NOUN
 Gard	15	NOUN,OTHER
 attackierten	15	OTHER
-Eingangssignals	15	NOUN
+Eingangssignals	15	NOUN	Eingangssignal
 Stützstellen	15	NOUN
 Bezugswert	15	NOUN
 proportionalen	15	OTHER
@@ -73582,7 +73582,7 @@ Kronrat	15	NOUN
 Auserwählte	15	NOUN,OTHER
 weitergehen	15	VERB
 betrachtenden	15	OTHER
-Erzengels	15	NOUN
+Erzengels	15	NOUN	Erzengel
 erwählte	15	OTHER
 Philosophiehistoriker	15	NOUN
 Hauptschuld	15	NOUN
@@ -73606,13 +73606,13 @@ menschengemachte	15	OTHER
 auswertete	15	OTHER
 Hol	15	NOUN,VERB,OTHER
 Mitarbeiterstab	15	NOUN
-Fallschirmen	15	NOUN
+Fallschirmen	15	NOUN	Fallschirm
 Gegenliebe	15	NOUN
 Gebirgsregion	15	NOUN
 Ovambo	15	NOUN
 Lingala	15	NOUN
 charismatischer	15	OTHER
-Wohnungs	15	NOUN
+Wohnungs	15	NOUN	Wohnung
 Portuguesa	15	NOUN
 Begleiterkrankungen	15	NOUN
 Persönlichkeitsstörung	15	NOUN
@@ -73628,11 +73628,11 @@ Metasprache	15	NOUN
 Tableau	15	NOUN
 hyperbolische	15	OTHER
 Redeweise	15	NOUN
-Umschlags	15	NOUN
+Umschlags	15	NOUN	Umschlag
 Rückstau	15	NOUN
 Chí	15	NOUN
 NHS	15	NOUN
-Roads	15	NOUN,OTHER
+Roads	15	NOUN,OTHER	Road
 Zersiedelung	15	NOUN
 Ignacio	15	NOUN
 Pressearbeit	15	NOUN
@@ -73646,11 +73646,11 @@ Honeywell	15	NOUN
 vorige	15	OTHER
 Ausnahmebehandlung	15	NOUN
 Tetrahydrocannabinol	15	NOUN
-Hähne	15	NOUN
+Hähne	15	NOUN	Hahn
 Verlaine	15	NOUN
 Ständeordnung	15	NOUN
 Handwerksordnung	15	NOUN
-Biomolekülen	15	NOUN
+Biomolekülen	15	NOUN	Biomoleküle
 phylogenetischer	15	OTHER
 zweitklassigen	15	OTHER
 elektronischem	15	OTHER
@@ -73660,7 +73660,7 @@ eingelegten	15	OTHER
 Landesgebiet	15	NOUN
 Lkr	15	NOUN
 mageren	15	OTHER
-Sichtungen	15	NOUN
+Sichtungen	15	NOUN	Sichtung
 eingebürgerte	15	OTHER
 Gämse	15	NOUN
 glanzvolle	15	OTHER
@@ -73673,32 +73673,32 @@ HDR	15	NOUN
 Kreiswappen	15	NOUN
 Osram	15	NOUN
 Gästebetten	15	NOUN
-Landesstudios	15	NOUN
+Landesstudios	15	NOUN	Landesstudio
 Furth	15	NOUN
 Bundesverkehrsministerium	15	NOUN
 Sprechtheater	15	NOUN
 Schlossbau	15	NOUN
 Staatsgemäldesammlungen	15	NOUN
 Totensonntag	15	NOUN
-Abiturs	15	NOUN
+Abiturs	15	NOUN	Abitur
 Jahrgangsstufe	15	NOUN
-Internate	15	NOUN
+Internate	15	NOUN	Internat
 LMU	15	NOUN
 Handballabteilung	15	NOUN
 Belustigung	15	NOUN
 DTM	15	NOUN
-Trockengebiete	15	NOUN
+Trockengebiete	15	NOUN	Trockengebiet
 Rätischen	15	NOUN,OTHER
 Alemannien	15	NOUN
 Dialektgrenze	15	NOUN
-Flächenstaaten	15	NOUN
+Flächenstaaten	15	NOUN	Flächenstaat
 Tötungsanstalt	15	NOUN
-Kreisgrenzen	15	NOUN
-Südweststaats	15	NOUN
+Kreisgrenzen	15	NOUN	Kreisgrenze
+Südweststaats	15	NOUN	Südweststaat
 verwaltungsrechtlich	15	OTHER
 entworfenes	15	OTHER
 Bodenseeregion	15	NOUN
-Windräder	15	NOUN
+Windräder	15	NOUN	Windrad
 Mainau	15	NOUN
 InfraGO	15	NOUN
 Bahnübergänge	15	NOUN
@@ -73708,8 +73708,8 @@ kulturhistorischer	15	OTHER
 Bundesligist	15	NOUN
 ProA	15	NOUN
 Motocross	15	NOUN
-Navigationssysteme	15	NOUN
-Technikern	15	NOUN
+Navigationssysteme	15	NOUN	Navigationssystem
+Technikern	15	NOUN	Techniker
 portieren	15	OTHER
 Soundkarte	15	NOUN
 Sicherheitsmechanismen	15	NOUN
@@ -73719,21 +73719,21 @@ Holden	15	NOUN
 Ribbon	15	NOUN
 Umwidmung	15	NOUN
 Sphere	15	NOUN,OTHER
-Instinkte	15	NOUN
+Instinkte	15	NOUN	Instinkt
 Heimatregion	15	NOUN
 Träumer	15	NOUN
 Arbeitsfähigkeit	15	NOUN
-Gutachtens	15	NOUN
+Gutachtens	15	NOUN	Gutachten
 Tondokumente	15	NOUN
 Projektgruppe	15	NOUN
 BAMF	15	NOUN
 zerrissenen	15	OTHER
 Borsäure	15	NOUN
 Bornitrid	15	NOUN
-Carbonaten	15	NOUN
+Carbonaten	15	NOUN	Carbonat
 langkettige	15	OTHER
 Höhenstrahlung	15	NOUN
-Aerosolen	15	NOUN
+Aerosolen	15	NOUN	Aerosol
 Leuchtstoffröhren	15	NOUN
 veredelt	15	OTHER
 Schlacke	15	NOUN
@@ -73742,11 +73742,11 @@ Parkes	15	NOUN
 ausgetrieben	15	VERB
 riechende	15	OTHER
 aufgeteilten	15	OTHER
-Kräuterbücher	15	NOUN
+Kräuterbücher	15	NOUN	Kräuterbuch
 BBL	15	NOUN,OTHER
 Scheffel	15	NOUN
 emeritiert	15	OTHER
-Umweltschützern	15	NOUN
+Umweltschützern	15	NOUN	Umweltschützer
 Reaktorkatastrophe	15	NOUN
 Großdemonstration	15	NOUN
 Drogenpolitik	15	NOUN
@@ -73776,12 +73776,12 @@ sinfonische	15	OTHER
 selbstverwaltete	15	OTHER
 Sparren	15	NOUN
 Wollweber	15	NOUN
-Arbeitskreises	15	NOUN
+Arbeitskreises	15	NOUN	Arbeitskreis
 Pomponius	15	NOUN
 Mela	15	NOUN
 Flottille	15	NOUN
 Rheinfall	15	NOUN
-Abflüsse	15	NOUN
+Abflüsse	15	NOUN	Abfluss
 abhielten	15	VERB
 Seefläche	15	NOUN
 Außerdienststellung	15	NOUN
@@ -73789,36 +73789,36 @@ Säntis	15	NOUN
 hydrologische	15	OTHER
 Rundwanderweg	15	NOUN
 Bft	15	NOUN
-Sprachwissenschaften	15	NOUN
+Sprachwissenschaften	15	NOUN	Sprachwissenschaft
 Theaterlandschaft	15	NOUN
 Oberdorf	15	NOUN
 Partikularinteressen	15	NOUN
 Schriftführer	15	NOUN
 instrumentellen	15	OTHER
 schadeten	15	OTHER
-Saarlands	15	NOUN
+Saarlands	15	NOUN	Saarland
 Wahlgebiet	15	NOUN
 Srebrenica	15	NOUN
-Kulturformen	15	NOUN
+Kulturformen	15	NOUN	Kulturform
 oberständig	15	OTHER
 herba	15	NOUN,OTHER
 Achänen	15	NOUN
 Erntezeit	15	NOUN
 lanzettlich	15	OTHER
 afroamerikanischer	15	OTHER
-Philharmonikern	15	NOUN
+Philharmonikern	15	NOUN	Philharmoniker
 Gesanges	15	NOUN
 Frauenklöster	15	NOUN
 Landis	15	NOUN
 Cortina	15	NOUN
-Geschmacksrichtungen	15	NOUN
+Geschmacksrichtungen	15	NOUN	Geschmacksrichtung
 hochqualifizierte	15	OTHER
 Fluchtbewegung	15	NOUN
 Massenproteste	15	NOUN
 Ausverkauf	15	NOUN
 Dreilinden	15	NOUN
 Schneise	15	NOUN
-Aufklärungs	15	NOUN
+Aufklärungs	15	NOUN	Aufklärung
 vornahmen	15	VERB
 überprüften	15	VERB,OTHER
 Spreeufer	15	NOUN
@@ -73828,21 +73828,21 @@ zweimaliger	15	OTHER
 reizvollen	15	OTHER
 schwächerer	15	OTHER
 Manövrierfähigkeit	15	NOUN
-Durchfahrten	15	NOUN
+Durchfahrten	15	NOUN	Durchfahrt
 Erstkontakt	15	NOUN
 durchzogenen	15	OTHER
 Carr	15	NOUN
 Cisneros	15	NOUN
 Escuela	15	NOUN
-Textilfabriken	15	NOUN
-Konstrukteure	15	NOUN
+Textilfabriken	15	NOUN	Textilfabrik
+Konstrukteure	15	NOUN	Konstrukteur
 Gedenkbuch	15	NOUN
 Tiara	15	NOUN
 gewürfelt	15	OTHER
 Generalmusikdirektor	15	NOUN
 Stadtführungen	15	NOUN
 Literaturfestival	15	NOUN
-Zitrusfrüchten	15	NOUN
+Zitrusfrüchten	15	NOUN	Zitrusfrüchte
 Schienenpersonenfernverkehr	15	NOUN
 gymnasialer	15	OTHER
 drittälteste	15	OTHER
@@ -73858,14 +73858,14 @@ Sommerpause	15	NOUN
 Olympisches	15	NOUN,OTHER
 afrikanisch	15	OTHER
 Regeländerungen	15	NOUN
-Trainern	15	NOUN
+Trainern	15	NOUN	Trainer
 Hauptstelle	15	NOUN
 rivalisierender	15	OTHER
 Elektrophorese	15	NOUN
 Hohentübingen	15	NOUN
-Zuckers	15	NOUN
+Zuckers	15	NOUN	Zucker
 Oxalacetat	15	NOUN
-Stoffwechselprodukten	15	NOUN
+Stoffwechselprodukten	15	NOUN	Stoffwechselprodukt
 Curriculum	15	NOUN
 Meereslebewesen	15	NOUN
 Knock	15	NOUN
@@ -73873,13 +73873,13 @@ angezettelt	15	OTHER
 Kompositionsunterricht	15	NOUN
 Furore	15	NOUN
 Haiku	15	NOUN
-Releases	15	NOUN
+Releases	15	NOUN	Release
 Vorgängerversion	15	NOUN
-Portierungen	15	NOUN
+Portierungen	15	NOUN	Portierung
 Monetary	15	NOUN
 Dotcom	15	NOUN
 Hedonismus	15	NOUN
-Konzile	15	NOUN
+Konzile	15	NOUN	Konzil
 fühlenden	15	OTHER
 islamisierten	15	VERB,OTHER
 anhaften	15	VERB
@@ -73888,20 +73888,20 @@ Textsammlung	15	NOUN
 Nevi	15	NOUN
 Makkabäer	15	NOUN
 Opferkult	15	NOUN
-Buchrollen	15	NOUN
+Buchrollen	15	NOUN	Buchrolle
 Zwölfprophetenbuch	15	NOUN
 Gottesliebe	15	NOUN
 scriptura	15	OTHER
 Hagar	15	NOUN
 jungfräuliche	15	OTHER
-Bibeltexten	15	NOUN
+Bibeltexten	15	NOUN	Bibeltext
 rivalisierten	15	VERB,OTHER
 Maurikios	15	NOUN
 Phokas	15	NOUN
 verstümmelt	15	OTHER
 schlagkräftigen	15	OTHER
 outre	15	OTHER
-Wendepunkte	15	NOUN
+Wendepunkte	15	NOUN	Wendepunkt
 Illyrer	15	NOUN
 umzukehren	15	VERB
 Einar	15	NOUN
@@ -73917,9 +73917,9 @@ Douai	15	NOUN
 beerbt	15	OTHER
 Mehrsprachigkeit	15	NOUN
 Ratingagentur	15	NOUN
-Amsterdams	15	NOUN
-Unterlaufs	15	NOUN
-Feuerwehrleuten	15	NOUN
+Amsterdams	15	NOUN	Amsterdam
+Unterlaufs	15	NOUN	Unterlauf
+Feuerwehrleuten	15	NOUN	Feuerwehrleute
 Feuerwehrangehörigen	15	NOUN
 Supérieur	15	NOUN,OTHER
 siebtes	15	OTHER
@@ -73938,12 +73938,12 @@ KPJ	15	NOUN
 Füllgas	15	NOUN
 Sensen	15	NOUN
 Lebensfähigkeit	15	NOUN
-Kesseln	15	NOUN
+Kesseln	15	NOUN	Kessel
 Riege	15	NOUN
 Lagerraum	15	NOUN
 politikwissenschaftlichen	15	OTHER
 Dissonanz	15	NOUN
-Umstellungen	15	NOUN
+Umstellungen	15	NOUN	Umstellung
 beeinflusstes	15	OTHER
 Touré	15	NOUN
 Westhang	15	NOUN
@@ -73962,15 +73962,15 @@ Tagsatzung	15	NOUN
 Kommandogewalt	15	NOUN
 Prozedere	15	NOUN
 entgegengestellt	15	OTHER
-Anschriften	15	NOUN
+Anschriften	15	NOUN	Anschrift
 Regierungsamt	15	NOUN
 Gaullisten	15	NOUN
-Unterstellungen	15	NOUN
+Unterstellungen	15	NOUN	Unterstellung
 Herrenhauses	15	NOUN
 Alkene	15	NOUN
 gesättigter	15	OTHER
 Butan	15	NOUN
-Druckerzeugnissen	15	NOUN
+Druckerzeugnissen	15	NOUN	Druckerzeugnisse
 Bangladescher	15	NOUN
 Bazar	15	NOUN
 bangladeschischen	15	OTHER
@@ -73988,7 +73988,7 @@ EAD	15	NOUN,OTHER
 veralteter	15	OTHER
 Tourismuseinnahmen	15	NOUN
 Einzelgewerkschaften	15	NOUN
-Schnellzügen	15	NOUN
+Schnellzügen	15	NOUN	Schnellzug
 Ikonenmalerei	15	NOUN
 gefragtesten	15	OTHER
 Popow	15	NOUN
@@ -74006,7 +74006,7 @@ Ordenskürzel	15	NOUN
 benediktinischen	15	OTHER
 Idealtypus	15	NOUN
 Hochachtung	15	NOUN
-Klosteranlagen	15	NOUN
+Klosteranlagen	15	NOUN	Klosteranlage
 Siebenzahl	15	NOUN
 Komplet	15	NOUN
 Frischluft	15	NOUN
@@ -74025,12 +74025,12 @@ entwässerte	15	OTHER
 Faulung	15	NOUN
 Postbank	15	NOUN
 Kommunikationstechnologie	15	NOUN
-Handelsketten	15	NOUN
+Handelsketten	15	NOUN	Handelskette
 genial	15	OTHER
 Sprachausgabe	15	NOUN
 Gesellschaftstanz	15	NOUN
 Justizrat	15	NOUN
-Nobelpreisträgers	15	NOUN
+Nobelpreisträgers	15	NOUN	Nobelpreisträger
 Städtenamen	15	NOUN
 volksetymologische	15	OTHER
 angenehmes	15	OTHER
@@ -74045,26 +74045,26 @@ Balearischen	15	NOUN,OTHER
 romanisierte	15	OTHER
 Grady	15	NOUN
 Coral	15	NOUN
-Bluttransfusionen	15	NOUN
+Bluttransfusionen	15	NOUN	Bluttransfusion
 Kell	15	NOUN
 Selektionsvorteil	15	NOUN
 Thrombozyten	15	NOUN
-Zugängen	15	NOUN
-Repliken	15	NOUN
+Zugängen	15	NOUN	Zugang
+Repliken	15	NOUN	Replik
 Aufwachen	15	NOUN,OTHER
-Scans	15	NOUN
+Scans	15	NOUN	Scan
 Endsilbe	15	NOUN
 abgeschliffen	15	VERB
 Bernsteinsäure	15	NOUN
 Kunstharz	15	NOUN
 einschließenden	15	OTHER
 Schmelzwässer	15	NOUN
-Zeitabschnitten	15	NOUN
+Zeitabschnitten	15	NOUN	Zeitabschnitt
 Zwischenlager	15	NOUN
-Herrscherhäuser	15	NOUN
+Herrscherhäuser	15	NOUN	Herrscherhaus
 Blattgold	15	NOUN
 Anschnitt	15	NOUN
-Fördermengen	15	NOUN
+Fördermengen	15	NOUN	Fördermenge
 strahlenförmig	15	OTHER
 Trichome	15	NOUN
 figurative	15	OTHER
@@ -74073,15 +74073,15 @@ handelsüblicher	15	OTHER
 Eichbosonen	15	NOUN
 Antiquark	15	NOUN
 konvektiven	15	OTHER
-Tafelbilder	15	NOUN
+Tafelbilder	15	NOUN	Tafelbild
 Ortsausgang	15	NOUN
-Stoßwellen	15	NOUN
+Stoßwellen	15	NOUN	Stoßwelle
 Hohenberg	15	NOUN
 Haushaltsplanes	15	NOUN
 aufgelegtem	15	OTHER
 Traumwelt	15	NOUN
 Benner	15	NOUN
-Stephans	15	NOUN
+Stephans	15	NOUN	Stephan
 Andrássy	15	NOUN
 Stadthälften	15	NOUN
 Volksaufstandes	15	NOUN
@@ -74101,18 +74101,18 @@ substantiellen	15	OTHER
 Basalmembran	15	NOUN
 Erdumfang	15	NOUN
 Koaxialkabel	15	NOUN
-Funkamateuren	15	NOUN
+Funkamateuren	15	NOUN	Funkamateur
 Upload	15	NOUN,OTHER
 Spinat	15	NOUN
 Kulturpflanze	15	NOUN
 kleinstmögliche	15	OTHER
 umgedreht	15	OTHER
 Saugrüssel	15	NOUN
-Mundwerkzeugen	15	NOUN
+Mundwerkzeugen	15	NOUN	Mundwerkzeuge
 brillanten	15	OTHER
 neuzeitlich	15	OTHER
 Informationswissenschaft	15	NOUN
-Briefumschläge	15	NOUN
+Briefumschläge	15	NOUN	Briefumschlag
 Gefahrenlage	15	NOUN
 erdenklichen	15	OTHER
 Jiangxi	15	NOUN
@@ -74124,12 +74124,12 @@ Jataka	15	NOUN
 Canale	15	NOUN
 Legge	15	NOUN
 Rundbau	15	NOUN
-Wasserspielen	15	NOUN
+Wasserspielen	15	NOUN	Wasserspiel
 Sais	15	NOUN
 Ackerbürger	15	NOUN
-Petersdoms	15	NOUN
+Petersdoms	15	NOUN	Petersdom
 Baronin	15	NOUN
-Gauleiters	15	NOUN
+Gauleiters	15	NOUN	Gauleiter
 Festhalle	15	NOUN
 unbewaffnete	15	OTHER
 Tobacco	15	NOUN,OTHER
@@ -74139,42 +74139,42 @@ Amateurtheater	15	NOUN
 Teufelsbrücke	15	NOUN
 Leuschner	15	NOUN
 perspektivische	15	OTHER
-Statuetten	15	NOUN
+Statuetten	15	NOUN	Statuette
 Solitär	15	NOUN,OTHER
 affirmative	15	OTHER
 zeitlose	15	OTHER
 XA	15	NOUN
 Geschäftsverteilungsplan	15	NOUN
-Bezirksgerichte	15	NOUN
+Bezirksgerichte	15	NOUN	Bezirksgericht
 Volltext	15	NOUN
 sternförmigen	15	OTHER
 lautende	15	OTHER
 Spermatozoiden	15	NOUN
-Bette	15	NOUN
+Bette	15	NOUN	Bett
 Krebshilfe	15	NOUN
 treatment	15	NOUN,OTHER
 Kinase	15	NOUN
 Metastudie	15	NOUN
-Screenings	15	NOUN
+Screenings	15	NOUN	Screening
 Paclitaxel	15	NOUN
 Bra	15	NOUN,OTHER
 Ziehung	15	NOUN
 Bundeswahlgesetzes	15	NOUN
-Niederschriften	15	NOUN
+Niederschriften	15	NOUN	Niederschrift
 Sitzzahl	15	NOUN
 bak	15	NOUN,OTHER
 Elbhochwasser	15	NOUN
 Kötzting	15	NOUN
 überparteiliche	15	OTHER
-Kreistagen	15	NOUN
-Gesetzesentwürfe	15	NOUN
-Gesetzesvorlagen	15	NOUN
+Kreistagen	15	NOUN	Kreistag
+Gesetzesentwürfe	15	NOUN	Gesetzesentwurf
+Gesetzesvorlagen	15	NOUN	Gesetzesvorlage
 Genealogen	15	NOUN
 Quellenforschung	15	NOUN
 Florus	15	NOUN
 komplementärer	15	OTHER
 Abgeschlossenheit	15	NOUN
-Medikaments	15	NOUN
+Medikaments	15	NOUN	Medikament
 Banana	15	NOUN,OTHER
 Wohnwagen	15	NOUN
 Staatsaufgaben	15	NOUN
@@ -74184,14 +74184,14 @@ Rangerhöhung	15	NOUN
 Misstrauensantrag	15	NOUN
 mittigen	15	OTHER
 Reliefenergie	15	NOUN
-Auenlandschaften	15	NOUN
+Auenlandschaften	15	NOUN	Auenlandschaft
 mesolithischen	15	OTHER
 mitochondrialer	15	OTHER
 Hanglage	15	NOUN
-Einschnitten	15	NOUN
+Einschnitten	15	NOUN	Einschnitt
 Silex	15	NOUN,OTHER
 bedeutsames	15	OTHER
-Leichname	15	NOUN
+Leichname	15	NOUN	Leichnam
 professionelles	15	OTHER
 vielschichtiger	15	OTHER
 dummen	15	OTHER
@@ -74199,7 +74199,7 @@ abgehängt	15	OTHER
 Prophetenbiographie	15	NOUN
 Boko	15	NOUN
 funktionstüchtigen	15	OTHER
-Maßzahlen	15	NOUN
+Maßzahlen	15	NOUN	Maßzahl
 verständlicherweise	15	OTHER
 Svante	15	NOUN
 Gainsbourg	15	NOUN
@@ -74225,7 +74225,7 @@ spaltbar	15	OTHER
 Strahlenkrankheit	15	NOUN
 Fallout	15	NOUN
 brennendes	15	OTHER
-Pflügen	15	NOUN,OTHER
+Pflügen	15	NOUN,OTHER	Pflug
 syntaktischer	15	OTHER
 behavioristischen	15	OTHER
 Schmerzlinderung	15	NOUN
@@ -74235,15 +74235,15 @@ landwirtschaftliches	15	OTHER
 miserablen	15	OTHER
 Dogmatiker	15	NOUN
 sprunghaften	15	OTHER
-Begräbnisses	15	NOUN
-Sparks	15	NOUN
+Begräbnisses	15	NOUN	Begräbnisse
+Sparks	15	NOUN	Spark
 Storytelling	15	NOUN
-Computerspiels	15	NOUN
+Computerspiels	15	NOUN	Computerspiel
 Interessensvertretung	15	NOUN
 semiotischen	15	OTHER
-Mechaniken	15	NOUN
+Mechaniken	15	NOUN	Mechanik
 Qualitätsmerkmal	15	NOUN
-Entwicklers	15	NOUN
+Entwicklers	15	NOUN	Entwickler
 Spracherkennung	15	NOUN
 auseinandergerissen	15	VERB
 Noack	15	NOUN
@@ -74252,7 +74252,7 @@ Positionspapier	15	NOUN
 behaupte	15	OTHER
 Kerl	15	NOUN
 Rückzugsort	15	NOUN
-Menschengeschlechts	15	NOUN
+Menschengeschlechts	15	NOUN	Menschengeschlecht
 Universalismus	15	NOUN
 bündelte	15	OTHER
 Festschrift	15	NOUN
@@ -74261,7 +74261,7 @@ ausufernden	15	OTHER
 bestraften	15	VERB
 ernstzunehmenden	15	OTHER
 luxuriös	15	OTHER
-Bestrafungen	15	NOUN
+Bestrafungen	15	NOUN	Bestrafung
 Anschaulichkeit	15	NOUN
 Thronerbe	15	NOUN
 Perennis	15	NOUN,OTHER
@@ -74270,7 +74270,7 @@ Konkubine	15	NOUN
 rehabilitierte	15	OTHER
 bejubelt	15	OTHER
 Reflections	15	NOUN,OTHER
-Menschseins	15	NOUN
+Menschseins	15	NOUN	Menschsein
 Weihesakrament	15	NOUN
 Kongregationalisten	15	NOUN
 Gottesverehrung	15	NOUN
@@ -74282,7 +74282,7 @@ Stadtsparkasse	15	NOUN
 Schwerpunktversorgung	15	NOUN
 Multifunktionshalle	15	NOUN
 Lärmbelästigung	15	NOUN
-Rettungswachen	15	NOUN
+Rettungswachen	15	NOUN	Rettungswache
 Padding	15	NOUN,OTHER
 reformorientierten	15	OTHER
 programmatischer	15	OTHER
@@ -74309,8 +74309,8 @@ Merrill	15	NOUN
 Comicreihe	15	NOUN
 bändige	15	OTHER
 Tuchatschewski	15	NOUN
-Waffengattungen	15	NOUN
-Denkschriften	15	NOUN
+Waffengattungen	15	NOUN	Waffengattung
+Denkschriften	15	NOUN	Denkschrift
 Militärhistoriker	15	NOUN
 Giraud	15	NOUN
 KPF	15	NOUN
@@ -74330,7 +74330,7 @@ enum	15	NOUN,OTHER
 Hours	15	NOUN,OTHER
 Affrikate	15	NOUN
 tschech	15	OTHER
-Lateins	15	NOUN
+Lateins	15	NOUN	Latein
 rüsteten	15	OTHER
 Gaswagen	15	NOUN
 Polizeiwache	15	NOUN
@@ -74351,7 +74351,7 @@ Beharrlichkeit	15	NOUN
 Saturnringe	15	NOUN
 Parteizugehörigkeit	15	NOUN
 getarnten	15	OTHER
-Moltkes	15	NOUN
+Moltkes	15	NOUN	Moltke
 Alexandrine	15	NOUN
 kompromisslose	15	OTHER
 Fallunterscheidung	15	NOUN
@@ -74362,12 +74362,12 @@ Abstract	15	NOUN,OTHER
 Hypercholesterinämie	15	NOUN
 erwägen	15	VERB
 Niemann	15	NOUN
-Hauptprozessors	15	NOUN
+Hauptprozessors	15	NOUN	Hauptprozessor
 Farbdarstellung	15	NOUN
 sensationell	15	OTHER
 Kerbe	15	NOUN
 MPS	15	NOUN
-Raritäten	15	NOUN
+Raritäten	15	NOUN	Rarität
 Verkaufsstart	15	NOUN
 Racer	15	NOUN
 BzKJ	15	NOUN
@@ -74376,18 +74376,18 @@ Cursor	15	NOUN
 Inga	15	NOUN
 Pflichtverletzung	15	NOUN
 aufbrachen	15	VERB
-Pinochets	15	NOUN
+Pinochets	15	NOUN	Pinochet
 Sozialistin	15	NOUN
 selbigen	15	OTHER
-Killers	15	NOUN
+Killers	15	NOUN	Killer
 Inti	15	NOUN
 Elektrik	15	NOUN
 Antiproton	15	NOUN
 aufgerüstet	15	OTHER
 Pouilly	15	NOUN
-Arbeitssprachen	15	NOUN
+Arbeitssprachen	15	NOUN	Arbeitssprache
 Abduktion	15	NOUN
-Bildungsbürgertums	15	NOUN
+Bildungsbürgertums	15	NOUN	Bildungsbürgertum
 ungeduldig	15	OTHER
 Bain	15	NOUN,OTHER
 depressiv	15	OTHER
@@ -74401,19 +74401,19 @@ abtöten	15	VERB
 Zellwachstum	15	NOUN
 Prozentbereich	15	NOUN
 Gegenkultur	15	NOUN
-Kunsthistorikers	15	NOUN
+Kunsthistorikers	15	NOUN	Kunsthistoriker
 überraschender	15	OTHER
 Startsymbol	15	NOUN
 doppelsträngige	15	OTHER
 verlustbehafteten	15	OTHER
-Ausdrucksweisen	15	NOUN
+Ausdrucksweisen	15	NOUN	Ausdrucksweise
 expressiv	15	OTHER
 Neorealismus	15	NOUN
 angestiegenen	15	OTHER
 Granger	15	NOUN
 Jagdszenen	15	NOUN
 Filmförderung	15	NOUN
-Defiziten	15	NOUN
+Defiziten	15	NOUN	Defizit
 Zodiac	15	NOUN
 zurückgeholt	15	OTHER
 Zweiteiler	15	NOUN
@@ -74433,15 +74433,15 @@ Vorschlagsrecht	15	NOUN
 Tagungszentrum	15	NOUN
 verschonen	15	VERB
 Deutungsmuster	15	NOUN
-Erwerbspersonen	15	NOUN
+Erwerbspersonen	15	NOUN	Erwerbsperson
 Ostarbeiter	15	NOUN
 Sauckel	15	NOUN
 Holocaustleugnung	15	NOUN
-Unternehmensgründungen	15	NOUN
+Unternehmensgründungen	15	NOUN	Unternehmensgründung
 Wallanlage	15	NOUN
 Maschinenbauer	15	NOUN
 gründerzeitlichen	15	OTHER
-Kirchenkreise	15	NOUN
+Kirchenkreise	15	NOUN	Kirchenkreis
 sechseckigen	15	OTHER
 Besucherbergwerk	15	NOUN
 Wittekind	15	NOUN
@@ -74449,11 +74449,11 @@ freitragende	15	OTHER
 Kammerchor	15	NOUN
 Förderkreis	15	NOUN
 Partnerland	15	NOUN
-Ruderern	15	NOUN
+Ruderern	15	NOUN	Ruderer
 sportliches	15	OTHER
-Golfplätze	15	NOUN
-Giants	15	NOUN
-Beratungs	15	NOUN
+Golfplätze	15	NOUN	Golfplatz
+Giants	15	NOUN	Giant
+Beratungs	15	NOUN	Beratung
 WR	15	NOUN
 Baedeker	15	NOUN
 Buchstabenformen	15	NOUN
@@ -74463,7 +74463,7 @@ Alltagssituationen	15	NOUN
 Suchdienst	15	NOUN
 etappenweise	15	OTHER
 Akbar	15	NOUN,OTHER
-Interessenkonflikte	15	NOUN
+Interessenkonflikte	15	NOUN	Interessenkonflikt
 eingekreist	15	OTHER
 Fürstabt	15	NOUN
 rüsten	15	OTHER
@@ -74479,10 +74479,10 @@ Spielwürfel	15	NOUN
 kladistischen	15	OTHER
 Landtiere	15	NOUN
 ausladenden	15	OTHER
-Pflanzenfressern	15	NOUN
-Straußen	15	NOUN
-Klonens	15	NOUN
-Doyles	15	NOUN
+Pflanzenfressern	15	NOUN	Pflanzenfresser
+Straußen	15	NOUN	Strauß
+Klonens	15	NOUN	Klonen
+Doyles	15	NOUN	Doyle
 gleitende	15	OTHER
 Barber	15	NOUN
 Bilk	15	NOUN
@@ -74491,7 +74491,7 @@ Westkarpaten	15	NOUN
 eifersüchtigen	15	OTHER
 Urner	15	NOUN
 Kommunikationsmedien	15	NOUN
-Wahrnehmungs	15	NOUN
+Wahrnehmungs	15	NOUN	Wahrnehmung
 unverbindlichen	15	OTHER
 Mobiltelefonie	15	NOUN
 überrollt	15	OTHER
@@ -74503,7 +74503,7 @@ gelange	15	OTHER
 Contract	15	NOUN,OTHER
 SLS	15	NOUN
 dazugehörende	15	OTHER
-RFCs	15	NOUN
+RFCs	15	NOUN	RFC
 GitHub	15	NOUN
 Kulturstadt	15	NOUN
 Klotzsche	15	NOUN
@@ -74515,9 +74515,9 @@ Ignacy	15	NOUN
 Zionskirche	15	NOUN
 Sommertheater	15	NOUN
 Ausstellungsgelände	15	NOUN
-Berghänge	15	NOUN
+Berghänge	15	NOUN	Berghang
 Industriebauten	15	NOUN
-Hochlands	15	NOUN
+Hochlands	15	NOUN	Hochland
 Spiegelreflexkamera	15	NOUN
 Hitradio	15	NOUN
 schwankender	15	OTHER
@@ -74528,14 +74528,14 @@ Ecstasy	15	NOUN
 Spielmechanik	15	NOUN
 Aventurien	15	NOUN
 authentisches	15	OTHER
-Feen	15	NOUN
+Feen	15	NOUN	Fee
 Midgard	15	NOUN
 beisammen	15	OTHER
 Pinselführung	15	NOUN
 begrünten	15	VERB,OTHER
 Grundstückspreise	15	NOUN
 Arbeitsmaschine	15	NOUN
-Wärmekraftmaschinen	15	NOUN
+Wärmekraftmaschinen	15	NOUN	Wärmekraftmaschine
 Gestänge	15	NOUN
 Pleuel	15	NOUN
 Ausgangsposition	15	NOUN
@@ -74544,17 +74544,17 @@ Boulton	15	NOUN
 geschaltete	15	OTHER
 verkleinertes	15	OTHER
 Schoner	15	NOUN
-Lösemitteln	15	NOUN
+Lösemitteln	15	NOUN	Lösemittel
 Berufsgenossenschaft	15	NOUN
 Ortsschilder	15	NOUN
 Vokalismus	15	NOUN
 Hem	15	NOUN,OTHER
 Knife	15	NOUN
-Lehnübersetzungen	15	NOUN
+Lehnübersetzungen	15	NOUN	Lehnübersetzung
 Monophthonge	15	NOUN
 mehrsilbigen	15	OTHER
 Otte	15	NOUN
-Satzteile	15	NOUN
+Satzteile	15	NOUN	Satzteil
 Basenpaarung	15	NOUN
 mRNAs	15	OTHER
 angefärbt	15	OTHER
@@ -74563,10 +74563,10 @@ Giuseppina	15	NOUN
 Nowak	15	NOUN
 Teer	15	NOUN
 Hanson	15	NOUN
-Versicherungsgesellschaften	15	NOUN
+Versicherungsgesellschaften	15	NOUN	Versicherungsgesellschaft
 Brandkatastrophe	15	NOUN
 Bundespräsidium	15	NOUN
-Parteivorstands	15	NOUN
+Parteivorstands	15	NOUN	Parteivorstand
 Bauchschmerzen	15	NOUN
 walachischen	15	OTHER
 Möhringen	15	NOUN
@@ -74576,8 +74576,8 @@ Stieleiche	15	NOUN
 geomorphologische	15	OTHER
 Livelihood	15	NOUN
 Kuriosität	15	NOUN
-Flusssystems	15	NOUN
-Staudamms	15	NOUN
+Flusssystems	15	NOUN	Flusssystem
+Staudamms	15	NOUN	Staudamm
 Fossa	15	NOUN
 Rohstoffgewinnung	15	NOUN
 Extremwerte	15	NOUN
@@ -74592,10 +74592,10 @@ Kloss	15	NOUN
 übersieht	15	OTHER
 Hempel	15	NOUN
 Intuitionismus	15	NOUN
-Lemmas	15	NOUN
+Lemmas	15	NOUN	Lemma
 Anfügung	15	NOUN
 Münzwesen	15	NOUN
-Traktaten	15	NOUN
+Traktaten	15	NOUN	Traktat
 abbaci	15	OTHER
 Zwischenergebnisse	15	NOUN
 BlueViolet	15	NOUN
@@ -74603,8 +74603,8 @@ Haupthaus	15	NOUN
 Schnelltriebwagen	15	NOUN
 gearbeitete	15	OTHER
 Filmset	15	NOUN
-Neuzugänge	15	NOUN
-Zwischenschritte	15	NOUN
+Neuzugänge	15	NOUN	Neuzugang
+Zwischenschritte	15	NOUN	Zwischenschritt
 vereinheitlichten	15	VERB,OTHER
 Drohne	15	NOUN
 eschatologische	15	OTHER
@@ -74613,18 +74613,18 @@ Zinssatzes	15	NOUN
 Begleichung	15	NOUN
 Devisenreserven	15	NOUN
 DFÜ	15	NOUN
-Gateways	15	NOUN
+Gateways	15	NOUN	Gateway
 gestreiften	15	OTHER
 Preisanstieg	15	NOUN
 Roemer	15	NOUN
 abgekauft	15	OTHER
-Händlers	15	NOUN
+Händlers	15	NOUN	Händler
 gelänge	15	OTHER
 verfrüht	15	OTHER
 anschaulicher	15	OTHER
 Boer	15	NOUN
 Rechtsgleichheit	15	NOUN
-Gesellschaftsordnungen	15	NOUN
+Gesellschaftsordnungen	15	NOUN	Gesellschaftsordnung
 vorausgehende	15	OTHER
 bereitzuhalten	15	VERB
 Patrone	15	NOUN
@@ -74649,7 +74649,7 @@ Burgplatz	15	NOUN
 angrenzt	15	OTHER
 Timo	15	NOUN
 Sachwerte	15	NOUN
-Umschlagplätze	15	NOUN
+Umschlagplätze	15	NOUN	Umschlagplatz
 fordere	15	OTHER
 Überlandstraßenbahn	15	NOUN
 Wartungsaufwand	15	NOUN
@@ -74663,14 +74663,14 @@ Kongobecken	15	NOUN
 Müttersterblichkeit	15	NOUN
 Schulgeld	15	NOUN
 Einparteienstaat	15	NOUN
-Volkseinkommens	15	NOUN
+Volkseinkommens	15	NOUN	Volkseinkommen
 Wirtschaftsbetriebe	15	NOUN
 Columbit	15	NOUN
-Bilds	15	NOUN
-Optiken	15	NOUN
+Bilds	15	NOUN	Bild
+Optiken	15	NOUN	Optik
 Aufnahmeformat	15	NOUN
-Ausgangssignals	15	NOUN
-Videosignale	15	NOUN
+Ausgangssignals	15	NOUN	Ausgangssignal
+Videosignale	15	NOUN	Videosignal
 wechselständigen	15	OTHER
 Einzelblüten	15	NOUN
 Vorderkante	15	NOUN
@@ -74695,8 +74695,8 @@ anknüpfende	15	OTHER
 mieden	15	OTHER
 Sodom	15	NOUN
 Postproduktion	15	NOUN
-Shots	15	NOUN,OTHER
-Wohnblöcke	15	NOUN
+Shots	15	NOUN,OTHER	Shot
+Wohnblöcke	15	NOUN	Wohnblock
 figure	15	NOUN,OTHER
 Eisenmeteoriten	15	NOUN
 Hämatit	15	NOUN
@@ -74705,11 +74705,11 @@ Hüttenwesen	15	NOUN
 ferromagnetischen	15	OTHER
 Häufigkeitsverteilung	15	NOUN
 Röntgenröhre	15	NOUN
-Energiemengen	15	NOUN
+Energiemengen	15	NOUN	Energiemenge
 Proportionalitätskonstante	15	NOUN
 mitgerechnet	15	OTHER
-Umrechnungen	15	NOUN
-Bezugssysteme	15	NOUN
+Umrechnungen	15	NOUN	Umrechnung
+Bezugssysteme	15	NOUN	Bezugssystem
 vierdimensionale	15	OTHER
 quantenmechanisch	15	OTHER
 DSN	15	NOUN
@@ -74722,13 +74722,13 @@ Gegenstimme	15	NOUN
 Klement	15	NOUN
 Geldspenden	15	NOUN
 Verdachtsdiagnose	15	NOUN
-Rechtsstaaten	15	NOUN
+Rechtsstaaten	15	NOUN	Rechtsstaat
 Leberlappen	15	NOUN
-Spiralgalaxien	15	NOUN
+Spiralgalaxien	15	NOUN	Spiralgalaxie
 verjüngen	15	VERB
 Irène	15	NOUN
 Hauptfeind	15	NOUN
-Parteichefs	15	NOUN
+Parteichefs	15	NOUN	Parteichef
 Glückwünsche	15	NOUN
 Todesdatum	15	NOUN
 Parteiarbeit	15	NOUN
@@ -74757,8 +74757,8 @@ iy	15	OTHER
 Krypto	15	NOUN,OTHER
 Elektrogeräte	15	NOUN
 Gedenkplatte	15	NOUN
-Stürze	15	NOUN
-Apparaten	15	NOUN
+Stürze	15	NOUN	Sturz
+Apparaten	15	NOUN	Apparat
 basierter	15	OTHER
 Anschlussleitungen	15	NOUN
 Warenproduktion	15	NOUN
@@ -74767,7 +74767,7 @@ eritreischen	15	OTHER
 Sheila	15	NOUN
 Straßenrennen	15	NOUN
 Armas	15	NOUN
-Nassers	15	NOUN
+Nassers	15	NOUN	Nasser
 Guerillabewegung	15	NOUN
 bolivianische	15	OTHER
 Martí	15	NOUN
@@ -74779,10 +74779,10 @@ Greffern	15	NOUN
 Wehrkraftzersetzung	15	NOUN
 Frühwarnsystem	15	NOUN
 Slip	15	NOUN,OTHER
-Fixsternen	15	NOUN
+Fixsternen	15	NOUN	Fixstern
 siderischer	15	OTHER
 Präzessionsbewegung	15	NOUN
-Kontinentes	15	NOUN
+Kontinentes	15	NOUN	Kontinent
 schädlicher	15	OTHER
 Chaldäer	15	NOUN
 Libration	15	NOUN
@@ -74795,7 +74795,7 @@ Lamine	15	NOUN
 antifranzösischen	15	OTHER
 Auberginen	15	NOUN
 Matin	15	NOUN
-Schreie	15	NOUN,VERB
+Schreie	15	NOUN,VERB	Schrei
 Kojoten	15	NOUN
 Bühnenmusik	15	NOUN
 Südjütisch	15	NOUN,OTHER
@@ -74808,26 +74808,26 @@ Fahrstuhl	15	NOUN
 Schaulustige	15	NOUN
 ausgreifenden	15	OTHER
 Ersparnis	15	NOUN
-Vorrechten	15	NOUN
+Vorrechten	15	NOUN	Vorrecht
 auswertet	15	OTHER
 Formelsatz	15	NOUN
 Ramanujan	15	NOUN
-Etymologien	15	NOUN
+Etymologien	15	NOUN	Etymologie
 umschriebenen	15	OTHER
 Ährchen	15	NOUN
-Halme	15	NOUN
+Halme	15	NOUN	Halm
 Internodien	15	NOUN
 Walross	15	NOUN
 indisches	15	OTHER
 Magnesiumoxid	15	NOUN
 Schwund	15	NOUN
 gewundenen	15	OTHER
-Walrosse	15	NOUN
+Walrosse	15	NOUN	Walross
 geschöpft	15	OTHER
 angelsächsisch	15	OTHER
 Pidgin	15	NOUN
 Amtsverzicht	15	NOUN
-Seriennummern	15	NOUN
+Seriennummern	15	NOUN	Seriennummer
 Fachdisziplin	15	NOUN
 funktionalistische	15	OTHER
 nuklear	15	NOUN,OTHER
@@ -74840,42 +74840,42 @@ Pakistaner	15	NOUN
 wiederkommen	15	VERB
 Niedernhausen	15	NOUN
 altdeutsche	15	NOUN,OTHER
-Imports	15	NOUN
+Imports	15	NOUN	Import
 Kinderliteratur	15	NOUN
-Durchsuchungen	15	NOUN
+Durchsuchungen	15	NOUN	Durchsuchung
 Rechtschreibregeln	15	NOUN
-Bildinformationen	15	NOUN
+Bildinformationen	15	NOUN	Bildinformation
 biegsamen	15	OTHER
 Bildinformation	15	NOUN
-Urhebern	15	NOUN
+Urhebern	15	NOUN	Urheber
 Fälscher	15	NOUN
-Kleintieren	15	NOUN
+Kleintieren	15	NOUN	Kleintiere
 Holle	15	NOUN
 Organisationsprinzip	15	NOUN
 fleischig	15	OTHER
 generative	15	OTHER
 Bahnbetrieb	15	NOUN
 Connect	15	NOUN,OTHER
-Weisheiten	15	NOUN
+Weisheiten	15	NOUN	Weisheit
 tsu	15	OTHER
 befolgte	15	OTHER
 Unparteilichkeit	15	NOUN
-Erdteile	15	NOUN
+Erdteile	15	NOUN	Erdteil
 Herrad	15	NOUN
 Pera	15	NOUN
 Botany	15	NOUN
 Tarnopol	15	NOUN
-Rückgänge	15	NOUN
+Rückgänge	15	NOUN	Rückgang
 Glukose	15	NOUN
 Linolsäure	15	NOUN
 Nahrungsenergie	15	NOUN
 eingelagerte	15	OTHER
-Ladungsträgern	15	NOUN
-Tüchern	15	NOUN
+Ladungsträgern	15	NOUN	Ladungsträger
+Tüchern	15	NOUN	Tuch
 Asynchronmotoren	15	NOUN
 Dreiphasenwechselstrom	15	NOUN
 Haushaltslage	15	NOUN
-Felds	15	NOUN
+Felds	15	NOUN	Feld
 einzelgängerisch	15	OTHER
 Isidore	15	NOUN
 stochastisch	15	OTHER
@@ -74886,18 +74886,18 @@ Stranger	15	NOUN
 Zielperson	15	NOUN
 Staccato	15	NOUN
 Cassavetes	15	NOUN
-Capras	15	NOUN
+Capras	15	NOUN	Capra
 subversive	15	OTHER
 metallica	15	NOUN,OTHER
 Atomgewicht	15	NOUN
-Meters	15	NOUN
+Meters	15	NOUN	Meter
 Heinze	15	NOUN
 Bonnet	15	NOUN
 Tunesier	15	NOUN
 leistungsstarken	15	OTHER
 restaurativen	15	OTHER
 ENA	15	NOUN,OTHER
-Gemeindeverbände	15	NOUN
+Gemeindeverbände	15	NOUN	Gemeindeverband
 Kulturindustrie	15	NOUN
 KLM	15	NOUN
 Gemeinschaftsprogramm	15	NOUN
@@ -74906,19 +74906,19 @@ einzuschüchtern	15	VERB
 Bezirksverband	15	NOUN
 Oriente	15	NOUN
 Alegre	15	NOUN
-Armenvierteln	15	NOUN
-Atomkriegs	15	NOUN
+Armenvierteln	15	NOUN	Armenviertel
+Atomkriegs	15	NOUN	Atomkrieg
 Zuma	15	NOUN
 Bundesarbeitsgemeinschaft	15	NOUN
 neugebauten	15	OTHER
-Oberzentrums	15	NOUN
+Oberzentrums	15	NOUN	Oberzentrum
 abgegangene	15	OTHER
 Stadtgrundriss	15	NOUN
 ummauerten	15	VERB,OTHER
 Seelsorgeeinheit	15	NOUN
 Balingen	15	NOUN
 Heimsuchung	15	NOUN
-Stadtherrn	15	NOUN
+Stadtherrn	15	NOUN	Stadtherr
 antideutschen	15	OTHER
 Coitus	15	NOUN,OTHER
 homoerotische	15	OTHER
@@ -74927,9 +74927,9 @@ Sado	15	NOUN,OTHER
 KSČ	15	NOUN
 geglaubte	15	OTHER
 friesischer	15	OTHER
-Unikate	15	NOUN
+Unikate	15	NOUN	Unikat
 urheberrechtlichen	15	OTHER
-Fullerenen	15	NOUN
+Fullerenen	15	NOUN	Fulleren
 Laserlicht	15	NOUN
 Absorptionslinien	15	NOUN
 Karolingerreich	15	NOUN
@@ -74956,14 +74956,14 @@ Kirchengüter	15	NOUN
 Fischhausen	15	NOUN
 ausgeglichener	15	OTHER
 Reformvorschläge	15	NOUN
-Möllemanns	15	NOUN
+Möllemanns	15	NOUN	Möllemann
 Sarai	15	NOUN
 Gasturbine	15	NOUN
 Transportsystem	15	NOUN
 Ambulanz	15	NOUN
-Marschflugkörpern	15	NOUN
+Marschflugkörpern	15	NOUN	Marschflugkörper
 XB	15	NOUN
-Maschinengewehren	15	NOUN
+Maschinengewehren	15	NOUN	Maschinengewehr
 UH	15	NOUN
 episch	15	OTHER
 Ossian	15	NOUN
@@ -74987,21 +74987,21 @@ konterrevolutionären	15	OTHER
 goss	15	OTHER
 Großbürgertum	15	NOUN
 zugefallen	15	VERB
-Kollegiums	15	NOUN
-Projektnamen	15	NOUN
-Finanzwesens	15	NOUN
-Fernbahnhöfe	15	NOUN
+Kollegiums	15	NOUN	Kollegium
+Projektnamen	15	NOUN	Projektname
+Finanzwesens	15	NOUN	Finanzwesen
+Fernbahnhöfe	15	NOUN	Fernbahnhof
 Trennschärfe	15	NOUN
 Precision	15	NOUN,OTHER
 Gesamtnote	15	NOUN
 SLA	15	NOUN
 MITROPA	15	NOUN
 Elektroantrieb	15	NOUN
-Höhenmetern	15	NOUN
+Höhenmetern	15	NOUN	Höhenmeter
 Gleisanschluss	15	NOUN
 Briest	15	NOUN
 polyphone	15	OTHER
-Musikstücks	15	NOUN
+Musikstücks	15	NOUN	Musikstück
 Lablab	15	NOUN,OTHER
 unpaarig	15	OTHER
 Großenbrode	15	NOUN
@@ -75018,12 +75018,12 @@ Amateurliga	15	NOUN
 Gianni	15	NOUN
 stählernen	15	OTHER
 Luftmasse	15	NOUN
-Schiffsverkehrs	15	NOUN
+Schiffsverkehrs	15	NOUN	Schiffsverkehr
 angepasstes	15	OTHER
 eingemauert	15	OTHER
 Physiokraten	15	NOUN
 Wanderjahre	15	NOUN
-Wirtschaftens	15	NOUN
+Wirtschaftens	15	NOUN	Wirtschaften
 Larvenstadien	15	NOUN
 kratzen	15	OTHER
 Sielmingen	15	NOUN
@@ -75032,14 +75032,14 @@ Speiche	15	NOUN
 Echoortung	15	NOUN
 voluminösen	15	OTHER
 Fortpflanzungsrate	15	NOUN
-Interferenzen	15	NOUN
+Interferenzen	15	NOUN	Interferenz
 Interferenzmuster	15	NOUN
 Fossilienfunde	15	NOUN
-Bisse	15	NOUN
-Drosten	15	NOUN
+Bisse	15	NOUN	Biss
+Drosten	15	NOUN	Droste
 FAS	15	NOUN,OTHER
 Claim	15	NOUN
-Dossiers	15	NOUN
+Dossiers	15	NOUN	Dossier
 Impressum	15	NOUN
 Bundesverbandes	15	NOUN
 Mikołaj	15	NOUN
@@ -75055,7 +75055,7 @@ lbrace	15	OTHER
 rbrace	15	OTHER
 einfallendes	15	OTHER
 Denkrichtung	15	NOUN
-Großregionen	15	NOUN
+Großregionen	15	NOUN	Großregion
 Calciumionen	15	NOUN
 Fehling	15	NOUN
 unbehaart	15	OTHER
@@ -75067,7 +75067,7 @@ isotropen	15	OTHER
 Exarchat	15	NOUN
 wehrhafte	15	OTHER
 Bäuerin	15	NOUN
-Kehrwerte	15	NOUN
+Kehrwerte	15	NOUN	Kehrwert
 erbeten	15	VERB
 Bildungsgesetz	15	NOUN
 Induktionsvoraussetzung	15	NOUN
@@ -75077,32 +75077,32 @@ Erregbarkeit	15	NOUN
 Befindlichkeit	15	NOUN
 Deuterostomia	15	NOUN
 Stimulierung	15	NOUN
-Magmas	15	NOUN
+Magmas	15	NOUN	Magma
 Moyen	15	NOUN,OTHER
 fetter	15	NOUN,OTHER
-Andachten	15	NOUN
+Andachten	15	NOUN	Andacht
 geläutet	15	OTHER
 Rückwirkung	15	NOUN
 Tätigkeitsfeld	15	NOUN
 Islām	15	NOUN,OTHER
-Rabbinern	15	NOUN
-Geheimgesellschaften	15	NOUN
+Rabbinern	15	NOUN	Rabbiner
+Geheimgesellschaften	15	NOUN	Geheimgesellschaft
 Prädatoren	15	NOUN
 Hafner	15	NOUN
-Temperaturunterschieden	15	NOUN
+Temperaturunterschieden	15	NOUN	Temperaturunterschied
 keramischer	15	OTHER
 adiabatischen	15	OTHER
 DG	15	NOUN
 Messwesen	15	NOUN
 Rømer	15	NOUN
-Sentenzen	15	NOUN
+Sentenzen	15	NOUN	Sentenz
 Prozessakten	15	NOUN
 verschlingen	15	VERB
 Ramelow	15	NOUN
 Börner	15	NOUN
 Fischkutter	15	NOUN
-Paläozoikums	15	NOUN
-Erzherzogs	15	NOUN
+Paläozoikums	15	NOUN	Paläozoikum
+Erzherzogs	15	NOUN	Erzherzog
 glattes	15	OTHER
 Buckel	15	NOUN
 Universitätskirche	15	NOUN
@@ -75111,35 +75111,35 @@ Judenviertel	15	NOUN
 Frog	15	NOUN
 Zaha	15	NOUN
 Hadid	15	NOUN
-Spaziergänge	15	NOUN
+Spaziergänge	15	NOUN	Spaziergang
 Nachfolgeverein	15	NOUN
-Badeseen	15	NOUN
+Badeseen	15	NOUN	Badesee
 Sicherheitsbehörde	15	NOUN
 Umweltorganisation	15	NOUN
-Berichtes	15	NOUN
+Berichtes	15	NOUN	Bericht
 Kriminalistik	15	NOUN
 Leibnitz	15	NOUN
-Monaden	15	NOUN
+Monaden	15	NOUN	Monade
 Candide	15	NOUN
 Situs	15	NOUN,OTHER
 bleibendes	15	OTHER
-Dualzahlen	15	NOUN
-Hexagramme	15	NOUN
+Dualzahlen	15	NOUN	Dualzahl
+Hexagramme	15	NOUN	Hexagramm
 Erdkreis	15	NOUN
 Maffeo	15	NOUN
 Hydrodynamik	15	NOUN
-Balkens	15	NOUN
+Balkens	15	NOUN	Balken
 Behandlungsmethode	15	NOUN
 Trägermenge	15	NOUN
 Klimasensitivität	15	NOUN
 messtechnisch	15	OTHER
 Verleugnung	15	NOUN
-Lufttemperaturen	15	NOUN
+Lufttemperaturen	15	NOUN	Lufttemperatur
 Dekarbonisierung	15	NOUN
 Energiesysteme	15	NOUN
 Gerichtsentscheidung	15	NOUN
 Trunkenheit	15	NOUN
-Ölpreise	15	NOUN
+Ölpreise	15	NOUN	Ölpreis
 Einwanderungsland	15	NOUN
 Peninsula	15	NOUN
 Ganga	15	NOUN,OTHER
@@ -75150,11 +75150,11 @@ Dossier	15	NOUN
 Skalden	15	NOUN
 Verwandtschaftsbezeichnungen	15	NOUN
 Pacioli	15	NOUN
-Rechtecken	15	NOUN
+Rechtecken	15	NOUN	Rechteck
 Strahlensatz	15	NOUN
 CDE	15	NOUN
 Nährstoff	15	NOUN
-Munde	15	NOUN
+Munde	15	NOUN	Mund
 auflösten	15	VERB
 GSD	15	NOUN
 Mitgliederschwund	15	NOUN
@@ -75162,14 +75162,14 @@ Bismarckschen	15	NOUN,OTHER
 Svenska	15	NOUN
 Trabajo	15	NOUN,OTHER
 Kasper	15	NOUN
-Othos	15	NOUN
+Othos	15	NOUN	Otho
 auserkoren	15	VERB
 Homologie	15	NOUN
 Gordian	15	NOUN
 unwiederbringlich	15	OTHER
 unvereinbare	15	OTHER
 Straßenkilometer	15	NOUN
-Rittertums	15	NOUN
+Rittertums	15	NOUN	Rittertum
 Protestaktion	15	NOUN
 Sievert	15	NOUN
 uniformierte	15	OTHER
@@ -75186,25 +75186,25 @@ rühmt	15	OTHER
 Linthwerk	15	NOUN
 Widmer	15	NOUN
 beschämt	15	OTHER
-Monatsmitteltemperaturen	15	NOUN
+Monatsmitteltemperaturen	15	NOUN	Monatsmitteltemperatur
 Hitzetage	15	NOUN
 Buchdruckerei	15	NOUN
 überzähligen	15	OTHER
 gesiedelt	15	OTHER
 Dienstleistungsbranche	15	NOUN
 Sportkomplex	15	NOUN
-Patrizierfamilien	15	NOUN
+Patrizierfamilien	15	NOUN	Patrizierfamilie
 Pflanzung	15	NOUN
 vorsorglich	15	OTHER
-Imams	15	NOUN
+Imams	15	NOUN	Imam
 Duarte	15	NOUN
 Leichtathlet	15	NOUN
 Kunta	15	NOUN
 Civico	15	NOUN
 Wandung	15	NOUN
 Schaper	15	NOUN
-Graubündens	15	NOUN
-Bündnerromanischen	15	NOUN,OTHER
+Graubündens	15	NOUN	Graubünden
+Bündnerromanischen	15	NOUN,OTHER	Bündnerromanisch
 unterkühlten	15	VERB,OTHER
 Hegelsche	15	NOUN,OTHER
 Seelenteil	15	NOUN
@@ -75215,12 +75215,12 @@ Missale	15	NOUN
 Kontinentalplatte	15	NOUN
 glazial	15	OTHER
 Grænlendingar	15	NOUN
-Wässern	15	NOUN
+Wässern	15	NOUN	Wasser
 neugriechisch	15	OTHER
 Liceo	15	NOUN
 Xu	15	NOUN,OTHER
 zurückschlagen	15	VERB
-Genussmitteln	15	NOUN
+Genussmitteln	15	NOUN	Genussmittel
 Keimling	15	NOUN
 Triticale	15	NOUN
 Vegetationszeit	15	NOUN
@@ -75239,9 +75239,9 @@ betrage	15	OTHER
 mittelhessischen	15	OTHER
 zugesicherten	15	OTHER
 gefragter	15	OTHER
-Festveranstaltungen	15	NOUN
+Festveranstaltungen	15	NOUN	Festveranstaltung
 Paläoanthropologen	15	NOUN
-Geisteskranken	15	NOUN,OTHER
+Geisteskranken	15	NOUN,OTHER	Geisteskranke
 Königskrönung	15	NOUN
 Spreeinsel	15	NOUN
 geköpft	15	OTHER
@@ -75254,32 +75254,32 @@ Reichsanstalt	15	NOUN
 Lebensreform	15	NOUN
 Frohnau	15	NOUN
 Poelzig	15	NOUN
-Großsiedlungen	15	NOUN
+Großsiedlungen	15	NOUN	Großsiedlung
 Mendelsohn	15	NOUN
 logierte	15	OTHER
-Bezirksämtern	15	NOUN
+Bezirksämtern	15	NOUN	Bezirksamt
 solidarisierten	15	VERB,OTHER
 Leuchtkraftklasse	15	NOUN
-Raumflüge	15	NOUN
+Raumflüge	15	NOUN	Raumflug
 Vanilla	15	NOUN
 Geodäte	15	NOUN
 Sprachforschung	15	NOUN
 zweitältesten	15	OTHER
 Reichsrechte	15	NOUN
-Landesherrschaften	15	NOUN
+Landesherrschaften	15	NOUN	Landesherrschaft
 Schwedenkönig	15	NOUN
 Punktation	15	NOUN
 Waffengang	15	NOUN
-Demontagen	15	NOUN
-Umwegen	15	NOUN
+Demontagen	15	NOUN	Demontage
+Umwegen	15	NOUN	Umweg
 Abdülhamid	15	NOUN
-Binnenschiffen	15	NOUN
+Binnenschiffen	15	NOUN	Binnenschiffe
 Westwindzone	15	NOUN
 Sizilianer	15	NOUN
 rechtsfähigen	15	OTHER
-Landgerichten	15	NOUN
+Landgerichten	15	NOUN	Landgericht
 Acetylcholinesterase	15	NOUN
-Miozäns	15	NOUN
+Miozäns	15	NOUN	Miozän
 monochrome	15	OTHER
 TDP	15	NOUN
 Miro	15	NOUN
@@ -75300,24 +75300,24 @@ Modellprojekt	15	NOUN
 Linienbreite	15	NOUN
 Flachlandgorillas	15	NOUN
 tagaktiv	15	OTHER
-Lübkes	15	NOUN
+Lübkes	15	NOUN	Lübke
 Unionsfraktion	15	NOUN
 umzustimmen	15	VERB
 Beigeschmack	15	NOUN
 Polyamid	15	NOUN
-Associates	15	NOUN
+Associates	15	NOUN	Associate
 Elbphilharmonie	15	NOUN
 Nordelbischen	15	NOUN,OTHER
 Fuhlsbüttel	15	NOUN
 Hansezeit	15	NOUN
 een	15	OTHER
-Landungsbrücken	15	NOUN
-Wasserwegen	15	NOUN
+Landungsbrücken	15	NOUN	Landungsbrücke
+Wasserwegen	15	NOUN	Wasserweg
 Verkehrsmittelwahl	15	NOUN
 Ulzburg	15	NOUN
 überführten	15	VERB,OTHER
-Messehallen	15	NOUN
-Ausstellungsflächen	15	NOUN
+Messehallen	15	NOUN	Messehalle
+Ausstellungsflächen	15	NOUN	Ausstellungsfläche
 Kamerlingh	15	NOUN
 leitfähigen	15	OTHER
 Finnegans	15	NOUN
@@ -75328,8 +75328,8 @@ Landtagsmandat	15	NOUN
 Stoltenberg	15	NOUN
 bilateral	15	OTHER
 zugetraut	15	OTHER
-Fördervereins	15	NOUN
-Bundesverwaltungsgerichts	15	NOUN
+Fördervereins	15	NOUN	Förderverein
+Bundesverwaltungsgerichts	15	NOUN	Bundesverwaltungsgericht
 Oggersheim	15	NOUN
 Inlandsgeheimdienst	15	NOUN
 Offiziersausbildung	15	NOUN
@@ -75337,7 +75337,7 @@ Ordnungspolizei	15	NOUN
 herrlichen	15	OTHER
 Kaltenbrunner	15	NOUN
 Hohlraumstrahlung	15	NOUN
-Aufschüttungen	15	NOUN
+Aufschüttungen	15	NOUN	Aufschüttung
 Lichnowsky	15	NOUN
 Bürgerkomitee	15	NOUN
 Noa	15	NOUN,OTHER
@@ -75354,7 +75354,7 @@ Ohneland	15	NOUN
 Guesclin	15	NOUN
 Coligny	15	NOUN
 Dokumenttypdefinition	15	NOUN
-Berns	15	NOUN
+Berns	15	NOUN	Bern
 Radbruch	15	NOUN
 Pazifikraum	15	NOUN
 kuni	15	OTHER
@@ -75367,28 +75367,28 @@ beschwichtigen	15	VERB
 kleinasiatische	15	OTHER
 Synhedrion	15	NOUN
 Omikron	15	NOUN
-Gewichtes	15	NOUN
+Gewichtes	15	NOUN	Gewicht
 Transversal	15	NOUN,OTHER
 Hammel	15	NOUN
 Kartusche	15	NOUN
 Stargate	15	NOUN
-Textverarbeitungsprogrammen	15	NOUN
+Textverarbeitungsprogrammen	15	NOUN	Textverarbeitungsprogramm
 abstammenden	15	OTHER
 exklusives	15	OTHER
 heranzog	15	OTHER
 Schwärmer	15	NOUN
-Politikwissenschaften	15	NOUN
-Abrams	15	NOUN
+Politikwissenschaften	15	NOUN	Politikwissenschaft
+Abrams	15	NOUN	Abram
 PSUV	15	NOUN
 Schulstadt	15	NOUN
 Papierproduktion	15	NOUN
 Montagnola	15	NOUN
 Luganersee	15	NOUN
 Arbeitsdienst	15	NOUN
-Magiers	15	NOUN
+Magiers	15	NOUN	Magier
 Überläufer	15	NOUN
 Praça	15	NOUN
-Koggen	15	NOUN
+Koggen	15	NOUN	Kogge
 Bohlen	15	NOUN
 lübischen	15	OTHER
 Nordsachsen	15	NOUN
@@ -75400,18 +75400,18 @@ Wilderness	15	NOUN
 zurückerhalten	15	VERB
 namhaftesten	15	OTHER
 verhüten	15	VERB
-Fungiziden	15	NOUN
+Fungiziden	15	NOUN	Fungizid
 selbsternannten	15	OTHER
 Vieweg	15	NOUN
 Wildcard	15	NOUN
 altdeutschen	15	OTHER
 herrührenden	15	OTHER
 Deutschmeister	15	NOUN
-Reichsgrafen	15	NOUN
-Rechtsgebieten	15	NOUN
+Reichsgrafen	15	NOUN	Reichsgraf
+Rechtsgebieten	15	NOUN	Rechtsgebiet
 verringerter	15	OTHER
 Historica	15	NOUN,OTHER
-Brutkolonien	15	NOUN
+Brutkolonien	15	NOUN	Brutkolonie
 Mühlenteich	15	NOUN
 Rel	15	NOUN,OTHER
 Symbionten	15	NOUN
@@ -75425,15 +75425,15 @@ schwedischsprachigen	15	OTHER
 anderssprachigen	15	OTHER
 Architekturmuseum	15	NOUN
 Rundfunkunion	15	NOUN
-Parkplätzen	15	NOUN
+Parkplätzen	15	NOUN	Parkplatz
 Wellenfront	15	NOUN
 hingeben	15	VERB
 Invisible	15	NOUN
 Massenpanik	15	NOUN
-Schleiermachers	15	NOUN
+Schleiermachers	15	NOUN	Schleiermacher
 Frauenklinik	15	NOUN
 Standortfaktoren	15	NOUN
-Stipendiaten	15	NOUN
+Stipendiaten	15	NOUN	Stipendiat
 wechselvolle	15	OTHER
 anwendbaren	15	OTHER
 Herbart	15	NOUN
@@ -75443,59 +75443,59 @@ muslimisches	15	OTHER
 Schlechtigkeit	15	NOUN
 unausweichlichen	15	OTHER
 spannenden	15	OTHER
-Baggerseen	15	NOUN
+Baggerseen	15	NOUN	Baggersee
 Elektronikindustrie	15	NOUN
 Brady	15	NOUN
 Kaliumiodid	15	NOUN
-Schilddrüsenhormonen	15	NOUN
+Schilddrüsenhormonen	15	NOUN	Schilddrüsenhormone
 EBO	15	NOUN
-Altonas	15	NOUN
+Altonas	15	NOUN	Altona
 Teilkapitulation	15	NOUN
 Marschbahn	15	NOUN
-Mosaike	15	NOUN
+Mosaike	15	NOUN	Mosaik
 Tayyip	15	NOUN
 Janitscharen	15	NOUN
 umgenutzt	15	OTHER
 Wanderrouten	15	NOUN
-Schiffbrüchigen	15	NOUN,OTHER
-Sonderausgaben	15	NOUN
-Ordnungswidrigkeiten	15	NOUN
-Lankas	15	NOUN
+Schiffbrüchigen	15	NOUN,OTHER	Schiffbrüchige
+Sonderausgaben	15	NOUN	Sonderausgabe
+Ordnungswidrigkeiten	15	NOUN	Ordnungswidrigkeit
+Lankas	15	NOUN	Lanka
 gleichseitige	15	OTHER
 Ritterschlag	15	NOUN
-Sachbüchern	15	NOUN
+Sachbüchern	15	NOUN	Sachbuch
 Erschaffer	15	NOUN
 Skype	15	NOUN
-Quartals	15	NOUN
-Zündkerzen	15	NOUN
-Flussdichten	15	NOUN
+Quartals	15	NOUN	Quartal
+Zündkerzen	15	NOUN	Zündkerze
+Flussdichten	15	NOUN	Flussdichte
 Drahtes	15	NOUN
 Wasserverlust	15	NOUN
 Hochwässer	15	NOUN
-Bänken	15	NOUN
+Bänken	15	NOUN	Bank
 Wasserbüffel	15	NOUN
-Kraniche	15	NOUN
+Kraniche	15	NOUN	Kranich
 Ashoka	15	NOUN
 castes	15	OTHER
 Rajya	15	NOUN
 erwerbsfähigen	15	OTHER
 Festungsbauten	15	NOUN
 nordindische	15	OTHER
-Allerheiligsten	15	NOUN,OTHER
+Allerheiligsten	15	NOUN,OTHER	Allerheiligste
 altisländisch	15	OTHER
 Seherin	15	NOUN
-Tastenkombinationen	15	NOUN
+Tastenkombinationen	15	NOUN	Tastenkombination
 begrub	15	OTHER
 Gesamtnachfrage	15	NOUN
 Kapitalangebot	15	NOUN
 Goldgewinnung	15	NOUN
-Mindestreserven	15	NOUN
+Mindestreserven	15	NOUN	Mindestreserve
 Doña	15	NOUN
 unbedeutender	15	OTHER
 peripher	15	OTHER
 unzumutbar	15	OTHER
 VAZ	15	NOUN
-Spezialfällen	15	NOUN
+Spezialfällen	15	NOUN	Spezialfall
 Danger	15	NOUN
 Reporterin	15	NOUN
 persifliert	15	OTHER
@@ -75510,7 +75510,7 @@ sentimental	15	OTHER
 Mexican	15	NOUN
 Aushändigung	15	NOUN
 Hauptstützpunkt	15	NOUN
-Streitpunkte	15	NOUN
+Streitpunkte	15	NOUN	Streitpunkt
 Repräsentantin	15	NOUN
 utopisch	15	OTHER
 Haskala	15	NOUN
@@ -75518,26 +75518,26 @@ Sopransaxophon	15	NOUN
 sinnvolles	15	OTHER
 Durchgangsstation	15	NOUN
 Buff	15	NOUN
-Staatsgeschäften	15	NOUN
+Staatsgeschäften	15	NOUN	Staatsgeschäfte
 konterte	15	OTHER
 Fehlleistungen	15	NOUN
 Scope	15	NOUN,OTHER
 hommes	15	OTHER
 Märtyrerin	15	NOUN
-Liebhabern	15	NOUN
+Liebhabern	15	NOUN	Liebhaber
 TSH	15	NOUN
 Diphthongierung	15	NOUN
 bezweifelten	15	VERB,OTHER
-Danzigs	15	NOUN
+Danzigs	15	NOUN	Danzig
 Schulbibliothek	15	NOUN
-Heims	15	NOUN
-Gedichtes	15	NOUN
+Heims	15	NOUN	Heim
+Gedichtes	15	NOUN	Gedicht
 arbeitsfreier	15	OTHER
 Numidien	15	NOUN
 Thom	15	NOUN
 Senckenberg	15	NOUN
 Angemessenheit	15	NOUN
-Sprechakte	15	NOUN
+Sprechakte	15	NOUN	Sprechakt
 TdkH	15	NOUN
 FuG	15	NOUN
 Sheikh	15	NOUN
@@ -75547,13 +75547,13 @@ Beilstein	15	NOUN
 Macrobius	15	NOUN
 Orgelwerke	15	NOUN
 Deckblatt	15	NOUN
-Dispute	15	NOUN
+Dispute	15	NOUN	Disput
 Olearius	15	NOUN
 Violin	15	NOUN
 Cruelty	15	NOUN,OTHER
 Seefeld	15	NOUN
 Detailansicht	15	NOUN
-Horoskope	15	NOUN
+Horoskope	15	NOUN	Horoskop
 bleibend	15	OTHER
 Kōbe	15	NOUN
 Saitama	15	NOUN
@@ -75565,14 +75565,14 @@ BMP	15	NOUN
 Encoder	15	NOUN
 Phalaris	15	NOUN
 Unitas	15	NOUN,OTHER
-Gaues	15	NOUN
+Gaues	15	NOUN	Gau
 entschädigungslos	15	OTHER
 ohnmächtig	15	OTHER
 Pressezensur	15	NOUN
 Meisterstück	15	NOUN
 Magda	15	NOUN
 Primärquellen	15	NOUN
-Großlandschaften	15	NOUN
+Großlandschaften	15	NOUN	Großlandschaft
 Vorsprechen	15	NOUN,OTHER
 Korporation	15	NOUN
 gemeinschaftlicher	15	OTHER
@@ -75580,19 +75580,19 @@ Schwingungsebene	15	NOUN
 Bildungsanstalt	15	NOUN
 Tutor	15	NOUN
 Rektorat	15	NOUN
-Vorfalls	15	NOUN
+Vorfalls	15	NOUN	Vorfall
 Kesselschlacht	15	NOUN
 Fanclub	15	NOUN
-Brillengläsern	15	NOUN
+Brillengläsern	15	NOUN	Brillengläser
 bog	15	OTHER
 Tiefenpsychologie	15	NOUN
 Vau	15	NOUN,OTHER
 Perrin	15	NOUN
-Stimmlagen	15	NOUN
+Stimmlagen	15	NOUN	Stimmlage
 Ismen	15	NOUN,OTHER
 Wanderratte	15	NOUN
 induzierter	15	OTHER
-Skills	15	NOUN,OTHER
+Skills	15	NOUN,OTHER	Skill
 ausreiche	15	OTHER
 Drehzahlregelung	15	NOUN
 durchgehen	15	NOUN,OTHER
@@ -75611,29 +75611,29 @@ konfrontieren	15	OTHER
 Körperform	15	NOUN
 Loving	15	NOUN
 Arbeitserziehungslager	15	NOUN
-Kommissaren	15	NOUN
+Kommissaren	15	NOUN	Kommissar
 Westintegration	15	NOUN
 Reisebeschreibung	15	NOUN
 Geschäftsleben	15	NOUN
 Abschlusses	15	NOUN
 Ökonomik	15	NOUN
-Mehrwerts	15	NOUN
+Mehrwerts	15	NOUN	Mehrwert
 ableitenden	15	OTHER
 entrissen	15	VERB
-Sarkophage	15	NOUN
-Pilgerfahrten	15	NOUN
+Sarkophage	15	NOUN	Sarkophag
+Pilgerfahrten	15	NOUN	Pilgerfahrt
 Stola	15	NOUN
 DHB	15	NOUN
 IFM	15	NOUN,OTHER
 Technikum	15	NOUN
 ätherisches	15	OTHER
 geschmacklich	15	OTHER
-Produktivkräfte	15	NOUN
+Produktivkräfte	15	NOUN	Produktivkraft
 kulminierten	15	VERB,OTHER
-Maos	15	NOUN
+Maos	15	NOUN	Mao
 desolate	15	OTHER
 maoistische	15	OTHER
-Ontarios	15	NOUN
+Ontarios	15	NOUN	Ontario
 transkontinentale	15	OTHER
 Aubert	15	NOUN
 Abmahnung	15	NOUN
@@ -75647,13 +75647,13 @@ durchschauen	15	VERB
 unproduktiven	15	OTHER
 Sherwood	15	NOUN
 Spitzenleistung	15	NOUN
-Brennstoffs	15	NOUN
-Hilbertraums	15	NOUN
+Brennstoffs	15	NOUN	Brennstoff
+Hilbertraums	15	NOUN	Hilbertraum
 Majuskel	15	NOUN
 totius	15	OTHER
 Computertomografie	15	NOUN
 ausgelebt	15	OTHER
-Gehorsams	15	NOUN
+Gehorsams	15	NOUN	Gehorsam
 Mozarteum	15	NOUN
 Schwanzflosse	15	NOUN
 Barca	15	NOUN
@@ -75666,12 +75666,12 @@ banka	15	OTHER
 muttersprachliche	15	OTHER
 Jat	15	NOUN,OTHER
 Daničić	15	NOUN
-Utahs	15	NOUN
+Utahs	15	NOUN	Utah
 Süßwassersee	15	NOUN
-Teergruben	15	NOUN
+Teergruben	15	NOUN	Teergrube
 Attorney	15	NOUN
 Vorortzüge	15	NOUN
-Arbeitsmaschinen	15	NOUN
+Arbeitsmaschinen	15	NOUN	Arbeitsmaschine
 Palladion	15	NOUN
 zergliedert	15	OTHER
 Phaistos	15	NOUN
@@ -75680,28 +75680,28 @@ Krifteler	15	NOUN
 idyllische	15	OTHER
 Burgkapelle	15	NOUN
 Partikularismus	15	NOUN
-Belegschaften	15	NOUN
+Belegschaften	15	NOUN	Belegschaft
 Zwölftafelgesetz	15	NOUN
-Debitkarten	15	NOUN
+Debitkarten	15	NOUN	Debitkarte
 Städteregion	15	NOUN
 Heimatstube	15	NOUN
-Campos	15	NOUN,OTHER
-Durchgangs	15	NOUN
+Campos	15	NOUN,OTHER	Campo
+Durchgangs	15	NOUN	Durchgang
 Hartheim	15	NOUN
 Funktionshäftlinge	15	NOUN
 Komorowski	15	NOUN
-Drogenhandels	15	NOUN
+Drogenhandels	15	NOUN	Drogenhandel
 Rückstellungen	15	NOUN
-Monopols	15	NOUN
+Monopols	15	NOUN	Monopol
 missbräuchlich	15	OTHER
 Hauptunterschied	15	NOUN
 Gebärmutterschleimhaut	15	NOUN
 Kriegshafen	15	NOUN
 Ländernamen	15	NOUN
 Reclam	15	NOUN
-Koranverse	15	NOUN
+Koranverse	15	NOUN	Koranvers
 Gurke	15	NOUN
-Fruchtblättern	15	NOUN
+Fruchtblättern	15	NOUN	Fruchtblatt
 identifizierbare	15	OTHER
 letale	15	OTHER
 Marionettenregierung	15	NOUN
@@ -75717,10 +75717,10 @@ Kindersoldaten	15	NOUN
 Cajetan	15	NOUN
 Fiktionalität	15	NOUN
 virulent	15	OTHER
-Winzern	15	NOUN
+Winzern	15	NOUN	Winzer
 Originalserie	15	NOUN
 Iași	15	NOUN
-Manhattans	15	NOUN
+Manhattans	15	NOUN	Manhattan
 Grundschüler	15	NOUN
 LoF	15	NOUN
 namenlos	15	OTHER
@@ -75729,10 +75729,10 @@ beiwohnen	15	VERB
 Endfassung	15	NOUN
 Königsfeld	15	NOUN
 Puchberg	15	NOUN
-Schultes	15	NOUN
+Schultes	15	NOUN	Schulte
 Phosphorsäureester	15	NOUN
-Lithiums	15	NOUN
-Elektrofahrzeugen	15	NOUN
+Lithiums	15	NOUN	Lithium
+Elektrofahrzeugen	15	NOUN	Elektrofahrzeuge
 explosionsartigen	15	OTHER
 Schulkindergarten	15	NOUN
 Minix	15	NOUN,OTHER
@@ -75749,13 +75749,13 @@ Arkadien	15	NOUN
 vertonten	15	VERB,OTHER
 Belchen	15	NOUN
 Gletscherzunge	15	NOUN
-Amtsbezirks	15	NOUN
+Amtsbezirks	15	NOUN	Amtsbezirk
 Luppe	15	NOUN
 Leutzsch	15	NOUN
 Aufenthaltstitel	15	NOUN
-Industrieansiedlungen	15	NOUN
+Industrieansiedlungen	15	NOUN	Industrieansiedlung
 Connewitz	15	NOUN
-Teilstücken	15	NOUN
+Teilstücken	15	NOUN	Teilstück
 Gewandhausorchester	15	NOUN
 Nobile	15	NOUN
 LuftVG	15	NOUN
@@ -75781,14 +75781,14 @@ Agua	15	NOUN
 Kaus	15	NOUN
 Wotan	15	NOUN
 Wassersportarten	15	NOUN
-Rennräder	15	NOUN
+Rennräder	15	NOUN	Rennrad
 LiD	15	NOUN
-Lautverschiebungen	15	NOUN
-Blütenhüllblättern	15	NOUN
+Lautverschiebungen	15	NOUN	Lautverschiebung
+Blütenhüllblättern	15	NOUN	Blütenhüllblätter
 Mausoleen	15	NOUN
 Bauleitplanung	15	NOUN
 Umweltbildung	15	NOUN
-Ethern	15	NOUN
+Ethern	15	NOUN	Ether
 Abwärtstrend	15	NOUN
 normalisierte	15	OTHER
 Bouillon	15	NOUN
@@ -75801,24 +75801,24 @@ Waldorf	15	NOUN
 Feldman	15	NOUN
 Quiz	15	NOUN
 Erkenntnisgewinnung	15	NOUN
-Gibsons	15	NOUN
+Gibsons	15	NOUN	Gibson
 exkommunizierten	15	NOUN,OTHER
 Tomáš	15	NOUN
-Damme	15	NOUN
+Damme	15	NOUN	Damm
 Weltuntergang	15	NOUN
 eintreffende	15	OTHER
 umflossen	15	VERB
 Fifth	15	NOUN
 kraftvolle	15	OTHER
-Nähmaschinen	15	NOUN
-Kupplungen	15	NOUN
-Synchronmaschinen	15	NOUN
+Nähmaschinen	15	NOUN	Nähmaschine
+Kupplungen	15	NOUN	Kupplung
+Synchronmaschinen	15	NOUN	Synchronmaschine
 Antriebsenergie	15	NOUN
 zoroastrischen	15	OTHER
 Auditor	15	NOUN
 Ant	15	NOUN
 verfremdete	15	OTHER
-Fußballplätze	15	NOUN
+Fußballplätze	15	NOUN	Fußballplatz
 Asam	15	NOUN
 Teilnachlass	15	NOUN
 Spitzweg	15	NOUN
@@ -75851,7 +75851,7 @@ Turnbewegung	15	NOUN
 Demminer	15	NOUN
 Strelasund	15	NOUN
 Jarmen	15	NOUN
-Anfangszeiten	15	NOUN
+Anfangszeiten	15	NOUN	Anfangszeit
 preislich	15	OTHER
 Vibratoren	15	NOUN
 Yukawa	15	NOUN
@@ -75861,14 +75861,14 @@ Straflosigkeit	15	NOUN
 Massina	15	NOUN
 zerteilen	15	VERB
 anhing	15	OTHER
-Übertragungswege	15	NOUN
-Latrinen	15	NOUN
+Übertragungswege	15	NOUN	Übertragungsweg
+Latrinen	15	NOUN	Latrine
 umgelegt	15	OTHER
 EGBGB	15	NOUN
-Werktage	15	NOUN
+Werktage	15	NOUN	Werktag
 Terrarien	15	NOUN
 Skarabäen	15	NOUN
-Madrids	15	NOUN
+Madrids	15	NOUN	Madrid
 Paseo	15	NOUN
 Wahlmöglichkeit	15	NOUN
 Struck	15	NOUN
@@ -75882,7 +75882,7 @@ Denisova	15	NOUN
 ausblenden	15	NOUN,OTHER
 Cleese	15	NOUN
 Störgröße	15	NOUN
-Minoritäten	15	NOUN
+Minoritäten	15	NOUN	Minorität
 zündeten	15	VERB
 critically	15	NOUN,OTHER
 Mediengeschichte	15	NOUN
@@ -75890,7 +75890,7 @@ Meißener	15	NOUN
 Megalithkultur	15	NOUN
 Malteserorden	15	NOUN
 Partit	15	NOUN,OTHER
-Delphine	15	NOUN
+Delphine	15	NOUN	Delphin
 Stoffgemische	15	NOUN
 mikroskopischer	15	OTHER
 CDM	15	NOUN
@@ -75898,7 +75898,7 @@ Kreisausschuss	15	NOUN
 Amöneburg	15	NOUN
 Januaraufstand	15	NOUN
 Patenonkel	15	NOUN
-Quäkern	15	NOUN
+Quäkern	15	NOUN	Quäker
 Kompassnadel	15	NOUN
 dreimonatige	15	OTHER
 Schwebfliegen	15	NOUN
@@ -75910,7 +75910,7 @@ Marmorierte	15	NOUN,OTHER
 ikonographischen	15	OTHER
 Semiten	15	NOUN
 Māori	15	NOUN
-Telefonbücher	15	NOUN
+Telefonbücher	15	NOUN	Telefonbuch
 Milchdrüsen	15	NOUN
 Hornträger	15	NOUN
 Gmundner	15	NOUN
@@ -75920,11 +75920,11 @@ Buonarroti	15	NOUN
 Monopolist	15	NOUN
 quittiert	15	OTHER
 Blattoberfläche	15	NOUN
-Tochterkerne	15	NOUN
+Tochterkerne	15	NOUN	Tochterkern
 Antiope	15	NOUN
 Leopoldskron	15	NOUN
 Évreux	15	NOUN
-Mines	15	NOUN
+Mines	15	NOUN	Mine
 Miyazaki	15	NOUN
 Blankenberg	15	NOUN
 Wahlfälschung	15	NOUN
@@ -75937,7 +75937,7 @@ AWZ	15	NOUN
 Namenkunde	15	NOUN
 Bomb	15	NOUN,OTHER
 Artistenfakultät	15	NOUN
-Kirchenrechts	15	NOUN
+Kirchenrechts	15	NOUN	Kirchenrecht
 Stauraum	15	NOUN
 wasserreiche	15	OTHER
 Hornberg	15	NOUN
@@ -75948,14 +75948,14 @@ Oker	15	NOUN
 Lappwald	15	NOUN
 Rheiderland	15	NOUN
 Kontrollpunkt	15	NOUN
-Brüdergemeinden	15	NOUN
+Brüdergemeinden	15	NOUN	Brüdergemeinde
 Mackensen	15	NOUN
 Worpsweder	15	NOUN
 hannoverscher	15	NOUN,OTHER
 Tromsø	15	NOUN
 Skispringen	15	NOUN
 Bjørn	15	NOUN
-Quadratzahlen	15	NOUN
+Quadratzahlen	15	NOUN	Quadratzahl
 tagesbezogene	15	OTHER
 Hermas	15	NOUN
 Bemalen	15	NOUN,OTHER
@@ -75970,7 +75970,7 @@ holzverarbeitende	15	OTHER
 multiethnische	15	OTHER
 Dämonisierung	15	NOUN
 Suevit	15	NOUN
-Stellenwertsysteme	15	NOUN
+Stellenwertsysteme	15	NOUN	Stellenwertsystem
 Adamawa	15	NOUN
 Wachstumsgeschwindigkeit	15	NOUN
 Nordatlantikrat	15	NOUN
@@ -75981,31 +75981,31 @@ Backhaus	15	NOUN
 Nasciturus	15	NOUN
 Nadelholzgewächse	15	NOUN
 Handatlas	15	NOUN
-Albvereins	15	NOUN
-Arubas	15	NOUN
-Wissenschaftsdisziplinen	15	NOUN
-Freiheitsgraden	15	NOUN
-Anwesens	15	NOUN
+Albvereins	15	NOUN	Albverein
+Arubas	15	NOUN	Aruba
+Wissenschaftsdisziplinen	15	NOUN	Wissenschaftsdisziplin
+Freiheitsgraden	15	NOUN	Freiheitsgrad
+Anwesens	15	NOUN	Anwesen
 Scheuer	15	NOUN,OTHER
 Merzig	15	NOUN
 Wildspitze	15	NOUN
-Fernverkehrsstraßen	15	NOUN
-Bahnstationen	15	NOUN
+Fernverkehrsstraßen	15	NOUN	Fernverkehrsstraße
+Bahnstationen	15	NOUN	Bahnstation
 Zweitplatzierte	15	NOUN,OTHER
 Kunstturnen	15	NOUN
 Überblasen	15	NOUN,OTHER
 Klangcharakter	15	NOUN
 stetiges	15	OTHER
 computergenerierte	15	OTHER
-Odenwälder	15	NOUN
+Odenwälder	15	NOUN	Odenwald
 VAX	15	NOUN
-Arbeitsgeräte	15	NOUN
+Arbeitsgeräte	15	NOUN	Arbeitsgerät
 Temperaturschichtung	15	NOUN
 italienischsprachige	15	OTHER
 Donizetti	15	NOUN
 Korrespondenzprinzip	15	NOUN
-Innenhöfe	15	NOUN
-Halbtonschritten	15	NOUN
+Innenhöfe	15	NOUN	Innenhof
+Halbtonschritten	15	NOUN	Halbtonschritt
 entwickle	15	OTHER
 Theophanie	15	NOUN
 Jezioro	15	NOUN
@@ -76021,8 +76021,8 @@ Bardo	15	NOUN
 Ratibor	15	NOUN
 Warszawa	15	NOUN
 regierungskritische	15	OTHER
-Masurische	15	NOUN,OTHER
-Dachverbänden	15	NOUN
+Masurische	15	NOUN,OTHER	Masurisch
+Dachverbänden	15	NOUN	Dachverband
 Pfadfinderverbände	15	NOUN
 Penguin	15	NOUN,OTHER
 unentschlossen	15	OTHER
@@ -76057,7 +76057,7 @@ Pam	15	NOUN
 Shihuangdi	15	NOUN
 Teotihuacán	15	NOUN
 verschränkt	15	OTHER
-Lazaretten	15	NOUN
+Lazaretten	15	NOUN	Lazarett
 Steinweg	15	NOUN
 Brockenbahn	15	NOUN
 Fachwerkstraße	15	NOUN
@@ -76067,7 +76067,7 @@ Curd	15	NOUN
 Auftragswerk	15	NOUN
 erringt	15	OTHER
 Schlusswort	15	NOUN
-Suizide	15	NOUN
+Suizide	15	NOUN	Suizid
 rechteckiger	15	OTHER
 bildhauerischen	15	OTHER
 Hafenbehörde	15	NOUN
@@ -76081,10 +76081,10 @@ Gründungszeit	15	NOUN
 Národní	15	NOUN,OTHER
 Sexualleben	15	NOUN
 findest	15	OTHER
-Gedenksteine	15	NOUN
+Gedenksteine	15	NOUN	Gedenkstein
 Südostecke	15	NOUN
 Großfeuer	15	NOUN
-Zarenreichs	15	NOUN
+Zarenreichs	15	NOUN	Zarenreich
 Alexandru	15	NOUN
 postsowjetischen	15	OTHER
 Headliner	15	NOUN
@@ -76100,10 +76100,10 @@ Zacke	15	NOUN
 Baulänge	15	NOUN
 Heydt	15	NOUN
 Ausmusterung	15	NOUN
-Sofias	15	NOUN
+Sofias	15	NOUN	Sofia
 Caserta	15	NOUN
 Flamingo	15	NOUN
-Hochplateaus	15	NOUN
+Hochplateaus	15	NOUN	Hochplateau
 Speisegesetze	15	NOUN
 Stundenbuch	15	NOUN
 gräfliche	15	OTHER
@@ -76113,22 +76113,22 @@ Steinlach	15	NOUN
 Giengen	15	NOUN
 Ehingen	15	NOUN
 Achalm	15	NOUN
-Relikten	15	NOUN
-Badehäuser	15	NOUN
+Relikten	15	NOUN	Relikt
+Badehäuser	15	NOUN	Badehaus
 Härchen	15	NOUN
-Fadens	15	NOUN
+Fadens	15	NOUN	Faden
 Bestürzung	15	NOUN
 Agrarproduktion	15	NOUN
 massgeblich	15	OTHER
 MdI	15	NOUN
 Spreewaldes	15	NOUN
 Örtlichkeit	15	NOUN
-Elektronenstrahlen	15	NOUN
-Wolfen	15	NOUN
+Elektronenstrahlen	15	NOUN	Elektronenstrahl
+Wolfen	15	NOUN	Wolf
 Reinbek	15	NOUN
 Schluß	15	NOUN
 Rastplatz	15	NOUN
-Rebflächen	15	NOUN
+Rebflächen	15	NOUN	Rebfläche
 Universitätscampus	15	NOUN
 Nis	15	NOUN,OTHER
 OKB	15	NOUN
@@ -76137,7 +76137,7 @@ Seitenwand	15	NOUN
 Staircase	15	NOUN,OTHER
 Kortschnoi	15	NOUN
 Temperaturkoeffizienten	15	NOUN
-Südturms	15	NOUN
+Südturms	15	NOUN	Südturm
 anspruchsvolleren	15	OTHER
 Vermögensverwaltung	15	NOUN
 Jork	15	NOUN
@@ -76145,7 +76145,7 @@ Berghausen	15	NOUN
 Cosmographia	15	NOUN
 Abschlagen	15	NOUN,OTHER
 Öllampen	15	NOUN
-Widerstandskämpfern	15	NOUN
+Widerstandskämpfern	15	NOUN	Widerstandskämpfer
 Regungen	15	NOUN
 Vedanta	15	NOUN
 Grundbauplan	15	NOUN
@@ -76159,7 +76159,7 @@ Wau	15	NOUN
 Kammervolumen	15	NOUN
 Musketen	15	NOUN
 Liparischen	15	NOUN
-Garibaldis	15	NOUN
+Garibaldis	15	NOUN	Garibaldi
 Marinesen	15	NOUN
 Oranjestad	15	NOUN
 hES	15	NOUN,OTHER
@@ -76168,7 +76168,7 @@ Chartreuse	15	NOUN
 bildgebendes	15	OTHER
 Philibert	15	NOUN
 catholique	15	OTHER
-Augustins	15	NOUN
+Augustins	15	NOUN	Augustin
 Begräbnisse	15	NOUN
 Ueno	15	NOUN
 Bolivar	15	NOUN
@@ -76180,14 +76180,14 @@ vorzeitiger	15	OTHER
 Mochica	15	NOUN
 hauseigene	15	OTHER
 Wellenwiderstand	15	NOUN
-Operationsverstärkern	15	NOUN
+Operationsverstärkern	15	NOUN	Operationsverstärker
 Mammen	15	NOUN
-Fernsehübertragungen	15	NOUN
+Fernsehübertragungen	15	NOUN	Fernsehübertragung
 kleinformatige	15	OTHER
-Nachnamens	15	NOUN
+Nachnamens	15	NOUN	Nachname
 Plzeň	15	NOUN
-Lausitzen	15	NOUN
-Staatsfeinde	15	NOUN
+Lausitzen	15	NOUN	Lausitz
+Staatsfeinde	15	NOUN	Staatsfeind
 Genossenschaftswesen	15	NOUN
 Göggingen	15	NOUN
 Tibetern	15	NOUN
@@ -76211,12 +76211,12 @@ Tonscherben	15	NOUN
 erigierten	15	VERB,OTHER
 Hodensack	15	NOUN
 Fiume	15	NOUN
-Vitruvs	15	NOUN
+Vitruvs	15	NOUN	Vitruv
 Lavastrom	15	NOUN
 Bundespräsidialamt	15	NOUN
-Wärmequellen	15	NOUN
+Wärmequellen	15	NOUN	Wärmequelle
 Dime	15	NOUN
-Teilstämme	15	NOUN
+Teilstämme	15	NOUN	Teilstamm
 Fremdwährung	15	NOUN
 Weichselbrücke	15	NOUN
 Praga	15	NOUN
@@ -76224,10 +76224,10 @@ Bagration	15	NOUN
 Eisenbeton	15	NOUN
 Nightingale	15	NOUN
 Happel	15	NOUN
-Ehrengräber	15	NOUN
+Ehrengräber	15	NOUN	Ehrengrab
 erregend	15	OTHER
 Schärding	15	NOUN
-Siedlungskerne	15	NOUN
+Siedlungskerne	15	NOUN	Siedlungskern
 Büdingen	15	NOUN
 Greiner	15	NOUN
 Spermaceti	15	NOUN
@@ -76237,17 +76237,17 @@ Michelsberg	15	NOUN
 Großwohnsiedlung	15	NOUN
 Broker	15	NOUN
 Nichtangriffspaktes	15	NOUN
-Rotterdams	15	NOUN
+Rotterdams	15	NOUN	Rotterdam
 Belagerungsring	15	NOUN
 Peipussee	15	NOUN
 Truppengattung	15	NOUN
-Rudeln	15	NOUN
+Rudeln	15	NOUN	Rudel
 Ixodes	15	NOUN
 Communist	15	NOUN
 Bundesligageschichte	15	NOUN
 Entrückung	15	NOUN
 Atomkrieges	15	NOUN
-Tianjins	15	NOUN
+Tianjins	15	NOUN	Tianjin
 Pellet	15	NOUN
 Antônio	15	NOUN
 Slomka	15	NOUN
@@ -76260,11 +76260,11 @@ Kunstkammer	15	NOUN
 Vincke	15	NOUN
 Reithmann	15	NOUN
 Turnvater	15	NOUN
-Lehens	15	NOUN
+Lehens	15	NOUN	Lehen
 Orseolo	15	NOUN
-Mieszkos	15	NOUN
+Mieszkos	15	NOUN	Mieszko
 hinauszuzögern	15	VERB
-Segments	15	NOUN
+Segments	15	NOUN	Segment
 Brienz	15	NOUN
 Zams	15	NOUN
 Visayas	15	NOUN
@@ -76275,17 +76275,17 @@ Galeon	15	NOUN
 abwechselnden	15	OTHER
 Kängurus	15	NOUN
 Traumzeit	15	NOUN
-Laubbäumen	15	NOUN
+Laubbäumen	15	NOUN	Laubbaum
 Barrichello	15	NOUN
 Regine	15	NOUN
-Controllers	15	NOUN
-Abspielgeräte	15	NOUN
-Sessionen	15	NOUN
+Controllers	15	NOUN	Controller
+Abspielgeräte	15	NOUN	Abspielgerät
+Sessionen	15	NOUN	Session
 unsachgemäße	15	OTHER
-Trommelfells	15	NOUN
+Trommelfells	15	NOUN	Trommelfell
 stimmenstärkste	15	OTHER
 Prophetengefährten	15	NOUN
-Cromwells	15	NOUN
+Cromwells	15	NOUN	Cromwell
 Chnum	15	NOUN
 Jugendwerk	15	NOUN
 Freiern	15	NOUN
@@ -76305,15 +76305,15 @@ Texttyp	15	NOUN
 Malé	15	NOUN
 Sulu	15	NOUN
 Hansemann	15	NOUN
-Segelbooten	15	NOUN
+Segelbooten	15	NOUN	Segelboot
 Limerick	15	NOUN
 Estradiol	15	NOUN
 Pecos	15	NOUN
 Petroglyphen	15	NOUN
-Zeitreihen	15	NOUN
+Zeitreihen	15	NOUN	Zeitreihe
 Reformationsbewegung	15	NOUN
 Froben	15	NOUN
-Lebensstile	15	NOUN
+Lebensstile	15	NOUN	Lebensstil
 kurländischen	15	OTHER
 lettischer	15	OTHER
 Saaremaa	15	NOUN
@@ -76324,32 +76324,32 @@ ecuadorianischen	15	OTHER
 Sanctuary	15	NOUN
 MCP	15	NOUN
 Harare	15	NOUN
-Eisenbahnverkehrs	15	NOUN
+Eisenbahnverkehrs	15	NOUN	Eisenbahnverkehr
 Nuon	15	NOUN
 Muttermund	15	NOUN
 Thera	15	NOUN
-Glasfenstern	15	NOUN
+Glasfenstern	15	NOUN	Glasfenster
 Zisterzienserorden	15	NOUN
 Ivanhoe	15	NOUN
 Hinkel	15	NOUN
-Hofmannsthals	15	NOUN
+Hofmannsthals	15	NOUN	Hofmannsthal
 Stax	15	NOUN
 Saisonverlauf	15	NOUN
 Rosenkranzes	15	NOUN
 Kanne	15	NOUN
 Diskant	15	NOUN
-Röcke	15	NOUN
+Röcke	15	NOUN	Rock
 Sexualpräferenz	15	NOUN
 Notaufnahme	15	NOUN
 frühchristlicher	15	OTHER
-Standseilbahnen	15	NOUN
+Standseilbahnen	15	NOUN	Standseilbahn
 AfS	15	NOUN
 Wandervögel	15	NOUN
 Bildträger	15	NOUN
 Tafelmalerei	15	NOUN
 Navajo	15	NOUN
 Pacini	15	NOUN
-Wasserdampfs	15	NOUN
+Wasserdampfs	15	NOUN	Wasserdampf
 Alveolen	15	NOUN
 Telemedien	15	NOUN
 Speicheldrüsen	15	NOUN
@@ -76359,11 +76359,11 @@ Buldern	15	NOUN
 Kubisten	15	NOUN
 Diözie	15	NOUN
 Sterndeuter	15	NOUN
-Posaunenchöre	15	NOUN
+Posaunenchöre	15	NOUN	Posaunenchor
 Adventssonntag	15	NOUN
-Adventssonntage	15	NOUN
+Adventssonntage	15	NOUN	Adventssonntag
 Werkstoffprüfung	15	NOUN
-Arianern	15	NOUN
+Arianern	15	NOUN	Arianer
 Wintershall	15	NOUN
 Treuenbrietzen	15	NOUN
 Wachstumskernen	15	NOUN
@@ -76372,11 +76372,11 @@ Maulbeere	15	NOUN
 Jodocus	15	NOUN
 Karower	15	NOUN
 Westhavelland	15	NOUN
-Kulturlebens	15	NOUN
-Barnims	15	NOUN
+Kulturlebens	15	NOUN	Kulturleben
+Barnims	15	NOUN	Barnim
 Niederbarnim	15	NOUN
-Störgrößen	15	NOUN
-Ausgangsgrößen	15	NOUN
+Störgrößen	15	NOUN	Störgröße
+Ausgangsgrößen	15	NOUN	Ausgangsgröße
 Entwässerungsgräben	15	NOUN
 Spremberger	15	NOUN
 Läsion	15	NOUN
@@ -76384,7 +76384,7 @@ impressionistisch	15	OTHER
 Sorani	15	NOUN
 Sendestart	15	NOUN
 Architekturpreis	15	NOUN
-Börsenvereins	15	NOUN
+Börsenvereins	15	NOUN	Börsenverein
 Stripe	15	NOUN
 Freibrief	15	NOUN
 Lavoir	15	NOUN
@@ -76407,7 +76407,7 @@ Moabiterin	15	NOUN
 Purimfest	15	NOUN
 Haupttriebwerke	15	NOUN
 Aufschnitt	15	NOUN
-Kamelien	15	NOUN
+Kamelien	15	NOUN	Kamelie
 Chun	15	NOUN
 Hwang	15	NOUN
 Luitpoldstraße	15	NOUN
@@ -76415,8 +76415,8 @@ Pärchenegel	15	NOUN
 Abfassungsort	15	NOUN
 Lukaskommentar	15	NOUN
 verkündigen	15	VERB
-Betriebsspannungen	15	NOUN
-Ehrenmitglieder	15	NOUN
+Betriebsspannungen	15	NOUN	Betriebsspannung
+Ehrenmitglieder	15	NOUN	Ehrenmitglied
 Leste	15	NOUN
 Atauro	15	NOUN
 Drautal	15	NOUN
@@ -76425,18 +76425,18 @@ Vasopressin	15	NOUN,OTHER
 Strukturgruppe	15	NOUN
 Kernmembran	15	NOUN
 Fondazione	15	NOUN
-Marketings	15	NOUN
-Zulassungsstellen	15	NOUN
+Marketings	15	NOUN	Marketing
+Zulassungsstellen	15	NOUN	Zulassungsstelle
 Dysfunktion	15	NOUN
 Durlacher	15	NOUN
-Arbeitervereine	15	NOUN
-Marinettis	15	NOUN
+Arbeitervereine	15	NOUN	Arbeiterverein
+Marinettis	15	NOUN	Marinetti
 Hunnenkönig	15	NOUN
-Feiertags	15	NOUN,OTHER
+Feiertags	15	NOUN,OTHER	Feiertag
 Sitzblockaden	15	NOUN
 Whymper	15	NOUN
 Amateurfunkdienst	15	NOUN
-Schlichters	15	NOUN
+Schlichters	15	NOUN	Schlichter
 Timisoara	15	NOUN
 transponierendes	15	OTHER
 Granden	15	NOUN
@@ -76450,10 +76450,10 @@ Wenzhou	15	NOUN
 Pinckney	15	NOUN
 Rechnungsgulden	15	NOUN
 Konföderationsartikel	15	NOUN
-Vaterunsers	15	NOUN
-Versmaße	15	NOUN
+Vaterunsers	15	NOUN	Vaterunser
+Versmaße	15	NOUN	Versmaß
 Nový	15	NOUN
-Regensburgs	15	NOUN
+Regensburgs	15	NOUN	Regensburg
 Schallstück	15	NOUN
 Tasteninstrument	15	NOUN
 Oeventrop	15	NOUN
