@@ -707,6 +707,21 @@ non-trivial changes).
   `10-19` (2060 candidates), then the `<10` band (1073), the mechanical weak-verb-inflection pass, the
   strong-verb principal-parts table, the flagged noise entries, and populating `lemma` on every result so far.
 
+- **§313 (v1.0.66): round 5d - the `12-14` sub-band of `10-14` (1110 candidates, 393 rows changed) - `10-14`**
+  **itself further split into `12-14`/`10-11`.** Same method as every round so far, using the §311/§312
+  "derive `verb_only` as not-already-in-`verb_other`, plus dedup" authoring pattern throughout. 340 words
+  `OTHER` -> `VERB`; 53 genuine dual-meaning words `OTHER` -> `VERB,OTHER`. Fail-loud script caught three
+  small slips before writing: one word (`verzierten`) already tagged by an earlier round and mistakenly
+  re-listed, one word (`verkleiden`) wrongly placed in the dual list when it has no adjective-collision
+  reason at all, and one word (`balancieren`, the bare infinitive) that turned out not to exist as its own
+  row - only its preterite-plural sibling `balancierten` does, which itself had been reasoned through as a
+  dual case but never actually added to either list until the fix. `git diff --stat` confirmed exactly 393
+  lines changed. `dictionaries/de/version.txt` 23 -> 24, pack rebuilt/verified, `LanguagePackCatalog` version
+  23 -> 24. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 369 ->
+  370, `versionName` `"1.0.65"` -> `"1.0.66"`. Not yet device-confirmed. Remaining: the `10-11` sub-band of
+  `10-14` (949 candidates), then the `<10` band (1073), the mechanical weak-verb-inflection pass, the
+  strong-verb principal-parts table, the flagged noise entries, and populating `lemma` on every result so far.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with
