@@ -253,11 +253,6 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **The real German verb `texten` ("to text/message someone") has no dictionary entry at all** - noticed**
-  while resolving §318's `text` tag fix (only its participle `getextet`(9, `OTHER`) exists; the infinitive
-  and every finite form - `texte`/`textest`/`textet`/... - are missing). Not added yet, since it wasn't part
-  of what was asked; flagged here in case it belongs in a future word-family round.
-
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) is German-only.**
   Found while auditing every place that does *not* route through the active-language pipeline (history §210's
   own D-287 fix) - deliberately scoped to German today (that is the only curated list that exists), not a bug
@@ -792,6 +787,20 @@ non-trivial changes).
   new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 374 -> 375,
   `versionName` `"1.0.70"` -> `"1.0.71"`. Not yet device-confirmed. Found in passing: `texten` itself has no
   dictionary entry at all (see Open TODOs) - not fixed here, out of what was actually asked this round.
+
+- **§319 (v1.0.72): added `texten` ("to text/message someone") with its finite forms, per explicit user**
+  **request following up on §318's find.** 4 new rows: `texten`(15)/`textet`(12)/`texte`(10)/`textest`(6),
+  all `VERB`, frequencies calibrated against the one existing anchor point for this verb's register - its
+  own participle `getextet`(9) - since every other comparable informal/loanword communication verb checked
+  for calibration (`chatten`, `simsen`, `mailen`, `posten`, `surfen`) turned out to be entirely absent from
+  this Wikipedia-extracted corpus too, consistent with it being a systematically under-represented register
+  here, not a gap specific to `texten`. `getextet`(9) itself, already present, gained the `VERB` tag it was
+  missing (`OTHER` -> `VERB`) - not a fresh participle addition (which the project's own participle-exclusion
+  rule would forbid), just correcting an existing row's tag, same as every other "found mistagged" fix in
+  this backlog cleanup. `git diff --stat`: 6 lines (5 insertions, 1 deletion). `dictionaries/de/version.txt`
+  29 -> 30, pack rebuilt, `LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests
+  unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
+  yet device-confirmed.
 
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed

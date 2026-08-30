@@ -76606,6 +76606,7 @@ zeigst	15	VERB
 haptisches	15	ADJECTIVE
 bewerte	15	VERB
 kriegst	15	VERB
+texten	15	VERB
 zugesteht	14	OTHER
 Zerfallsprodukt	14	NOUN
 gefärbtes	14	OTHER
@@ -90978,6 +90979,7 @@ besparen	12	VERB
 investiere	12	VERB
 erstellst	12	VERB
 installiere	12	VERB
+textet	12	VERB
 IMDb	11	NOUN
 Uranerzen	11	NOUN
 Seltenerdmetalle	11	NOUN
@@ -104441,6 +104443,7 @@ bewertest	10	VERB
 Regenrinne	10	NOUN
 vermutest	10	VERB
 wische	10	VERB
+texte	10	VERB
 Raimi	9	NOUN
 Taiwans	9	NOUN
 Starbesetzung	9	NOUN
@@ -112167,7 +112170,7 @@ Scha	9	NOUN,OTHER
 Lokführer	9	NOUN
 Cassiciacum	9	NOUN
 Alarichs	9	NOUN
-getextet	9	OTHER
+getextet	9	VERB
 Biya	9	NOUN
 landlose	9	NOUN,OTHER
 DEB	9	NOUN
@@ -119695,3 +119698,4 @@ erstaunlicherweise	20	OTHER
 aberkennen	25	VERB
 Stk	350	OTHER
 Wegerecht	20	NOUN
+textest	6	VERB

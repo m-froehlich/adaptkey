@@ -202,7 +202,10 @@ object LanguagePackCatalog {
             // §318 (v1.0.71): "text" NOUN,VERB -> NOUN - a D-368 mechanical-scan false positive (bare
             // "text" is not itself a valid form of the real verb "texten"; that verb's own inflected
             // forms would be texte/textest/textet).
-            version = 29
+            // §319 (v1.0.72): added "texten" ("to text/message") with its finite forms (texten/texte/
+            // textest/textet), flagged as missing in §318; its participle getextet already existed
+            // (OTHER) and gained the VERB tag too.
+            version = 30
         ),
         Entry(
             Language.GREEK,
