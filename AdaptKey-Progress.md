@@ -437,6 +437,17 @@ non-trivial changes).
      precedent for "add new structure to an existing table without discarding what's already there"), not a
      fresh start.
 
+  **D-412 (see Current State) has since laid the schema groundwork tier 1 would need** - a bundled-only
+  `lemma` link column on `TABLE_WORDS` - and a genuinely new, in-progress project is using it: tagging every
+  German verb currently mis-tagged plain `OTHER` (not just the `NOUN`/`VERB` collision cases D-368 already
+  finished), including already-present inflected forms, recording each one's base-form link via the new
+  column as a byproduct. Only the ≥2000-frequency band is done so far (§306, 78 words); five bands remain
+  (500-1999/200-499/50-199/10-49/<10, ~10,700 candidates total), plus the mechanical weak-verb-inflection
+  derivation pass, a strong-verb principal-parts reference table, and actually populating `lemma` on the
+  results (tagging and linking were kept as separate steps). This is real progress toward tier 1, not tier 1
+  itself - full generative morphology (replacing stored inflected rows with runtime generation) is still its
+  own, not-yet-started, uncertain-feasibility project.
+
 ## Current State
 
 - **§305 (v1.0.58): D-412 - a bundled-only `lemma` link column, laid down as groundwork for the**
@@ -464,21 +475,67 @@ non-trivial changes).
   `lemma` exist yet** - same groundwork-only status D-368's own `VERB` tag had. Not yet device-confirmed (no
   device-observable change expected). See history (this session).
 
-  **Still queued, not yet applied to `dict.tsv`:** the actual German verb-in-`OTHER` tagging project this
-  column exists to support. Scope agreed with the user: infinitives *and* already-present inflected forms
-  (not just base forms), found via a heuristic candidate pool (lowercase, `OTHER`-only, ends in `-en`/`-eln`/
-  `-ern`/`-n` - 10,925 candidates total, banded by frequency) reviewed individually, D-368-style. The ≥2000
-  band (181 candidates) has been fully classified but not yet written: ~76 clear-cut verbs ready to tag,
-  4 genuine dual-meaning words (`einigen`/`sieben`/`gleichen`/`bestimmten`) agreed to tag as `OTHER,VERB`,
-  3 rare/archaic verb readings (`sondern`/`freien`/`langen`) agreed to skip. Präsens-Partizip-as-adjective
-  forms (`folgenden`, `genannten`, ...) are explicitly out of scope - agreed as "generativ gut greifbar"
-  (regenerable later, not worth tagging now). For genuinely irregular (strong-verb) inflected forms - which
-  do **not** share a usable prefix with their infinitive's stem (empirically checked: 8 of 10 sampled strong
-  participles share zero leading characters with the infinitive, e.g. `gehen`/`gegangen`) - a curated
-  reference table of German strong-verb principal parts (a small, closed, well-documented class, ~150-200
-  verbs) is the agreed approach, checked by exact match against the candidate pool, not by any prefix search.
-  Next step: apply the ≥2000 band, then continue through the remaining bands (500-1999: 455, 200-499: 788,
-  50-199: 2290, 10-49: 6138, <10: 1073).
+- **§306 (v1.0.59): German verb-in-`OTHER` tagging, round 1 - the ≥2000-frequency band (78 rows) - project**
+  **overview and remaining scope below.** New effort: unlike D-368 (which only tagged a `NOUN`-`VERB`
+  collision for capitalisation purposes), this tags *every* genuine verb form currently mis-tagged plain
+  `OTHER`, including already-present inflected forms, not just infinitives - explicit groundwork for D-404
+  Tier 1, using D-412's new `lemma` column to record each inflected form's base-form link as a byproduct of
+  finding it (not yet populated this round - that starts once the base-form/inflected-form linking pass
+  itself begins; round 1 only applied the POS tag). Candidate pool: lowercase, `OTHER`-only, ends in
+  `-en`/`-eln`/`-ern`/`-n` (10,925 total, banded by frequency - `-eln`/`-ern` needed adding after the user
+  flagged the plain `-en` heuristic misses them, e.g. `sammeln`/`wandern`; `sein` needed its own hand-add
+  since it's the one infinitive that fits none of those suffixes). This round: the ≥2000 band (181
+  candidates), reviewed individually. 73 unambiguous verbs `OTHER` -> `VERB` (infinitives:
+  `werden`/`können`/`haben`/`finden`/`lassen`/`gehören`/`erhalten`/`kommen`/`bilden`/`liegen`/`stehen`/
+  `müssen`/`führen`/`stellen`/`befinden`/`bestehen`/`machen`/`sollen`/`sehen`/`gelten`/`enthalten`/`spielen`/
+  `vertreten`/`erreichen`/`zeigen`/`unterscheiden`/`zählen`/`entstehen`/`dienen`/`existieren`/`besitzen`/
+  `geben`/`tragen`/`halten`/`nutzen`/`nehmen`/`bleiben`/`übertragen`/`gehen`; finite/participle forms already
+  present as their own rows: `wurden`/`waren`/`kann`/`hatten`/`begann`/`konnten`/`entstanden`/`kamen`/
+  `gewesen`/`verbunden`/`erschien`/`seien`/`sollten`/`fanden`/`aufgenommen`/`hochgeladen`/`betrieben`/
+  `mussten`/`gefunden`/`gegeben`/`gewann`/`führten`/`gehörten`/`verloren`/`geworden`/`unterschieden`/
+  `geboren`/`übernommen`/`gesprochen`/`geschrieben`/`würden`/`gesehen`/`angesehen`/`worden`). 5 genuine
+  dual-meaning words `OTHER` -> `OTHER,VERB` (the non-verb reading has no better-fitting `PartOfSpeech` tag
+  than `OTHER`, so it stays alongside `VERB` rather than being replaced by it): `sein` (verb *and* the
+  extremely common possessive determiner - the one word the user flagged by name as needing individual
+  treatment), `einigen` (sich einigen = to agree), `sieben` (to sieve, alongside the number "seven"),
+  `gleichen` (to resemble, alongside the adjective "gleich" inflected), `bestimmten` (preterite of
+  "bestimmen", alongside "bestimmt" inflected). 3 genuinely rare/archaic verb readings left untouched by
+  explicit agreement (`sondern`/`freien`/`langen` - each dominated overwhelmingly by a non-verb reading in
+  real usage, judged not worth the `OTHER,VERB` addition, matching this project's own precedent of not
+  chasing every conceivable rare reading, e.g. the removed `"Bri"` noise entry). Präsens-Partizip-as-adjective
+  forms (`folgenden`/`genannten`/...) explicitly out of scope by the user's own call - "generativ gut
+  greifbar" (regenerable later under D-404 Tier 1, not worth tagging individually now). `git diff --stat`
+  confirmed exactly 78 lines changed (verified via a fail-loud Python script, same pattern as D-368/D-301 -
+  asserts every target word is found with exactly the expected prior tag before writing, and that the found
+  count matches the target count exactly). `dictionaries/de/version.txt` 16 -> 17, pack rebuilt/verified
+  (unzipped back, spot-checked `sein`/`werden`/`einigen` all carry `VERB`), `LanguagePackCatalog` version 16
+  -> 17. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 362 ->
+  363, `versionName` `"1.0.58"` -> `"1.0.59"`. Not yet device-confirmed.
+
+  **Design discussion, resolved before this round started (no code change of its own):** the user asked
+  whether, once base forms are tagged, a *prefix search* against the infinitive's stem could mechanically
+  find already-present inflected forms, kept as short as possible to also catch irregular ones. Checked
+  empirically against ten real strong verbs from this round's own candidate list (`gehen`/`kommen`/`nehmen`/
+  `sehen`/`geben`/`sprechen`/`tragen`/`stehen`/`sein`/`werden`): the preterite typically shares only the
+  infinitive's first 1-3 characters with the base form (ablaut), and the participle shares **zero** leading
+  characters in 8 of 10 cases (the `ge-` prefix is added at the front, not appended - `gehen`/`gegangen`
+  share no prefix at all; `gehen`/`geben`'s own `ge`-vs-`ge` overlap with their participles is coincidental,
+  not structural). Confirmed no prefix length threads the needle: `g`/`ge`/`geh` as literal dictionary
+  prefixes return 2496/1903/77 entries respectively, yet none of the three ever includes `ging` or
+  `gegangen` - shortening trades recall for precision on both ends *simultaneously* rather than tuning
+  between them. Conclusion: prefix search works only for the mechanical (Phase 2) weak-verb suffix-stripping
+  path already planned (exact `stem+ending` reconstruction, no fuzziness needed there at all); strong-verb
+  forms need a small hand-authored reference table of principal parts instead (closed class, ~150-200 verbs,
+  pure grammar knowledge - not an external content source), matched by exact string equality against the
+  candidate pool, never by prefix.
+
+  **Remaining scope for this project** (not yet started): the remaining five frequency bands (500-1999: 455,
+  200-499: 788, 50-199: 2290, 10-49: 6138, <10: 1073 candidates), the mechanical weak-verb-inflection pass
+  described above (once base forms are confirmed, derive each one's own regular personal-ending forms and
+  check which already exist as `OTHER` rows - no individual review needed, exact reconstruction), the
+  strong-verb principal-parts table (not yet written), and populating the actual `lemma` link on every
+  inflected form found via either path (this round only applied the `VERB`/`OTHER,VERB` tag, not yet the
+  link - the two were kept as separate, independently-verifiable steps rather than combined into one script).
 
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed

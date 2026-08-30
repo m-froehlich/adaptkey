@@ -165,7 +165,11 @@ object LanguagePackCatalog {
             // (mein-/ihr-/unser-/euer- against each other or against dein-/sein-) scored above 0.12 anywhere
             // in the full 36x36 comparison. Fixed the one real case the same way as every prior round: "dein"
             // 139 -> 550 (score now ~0.64, matching "deine"'s own already-fixed margin).
-            version = 16
+            // §306 (v1.0.58): D-412's own sibling tagging round - the ≥2000-frequency band of the
+            // German verb-in-OTHER retagging project (73 words OTHER -> VERB, 5 genuine dual-meaning
+            // words - sein/einigen/sieben/gleichen/bestimmten - OTHER -> OTHER,VERB, individually
+            // reviewed against the real dictionary, D-368-style). 78 rows changed.
+            version = 17
         ),
         Entry(
             Language.GREEK,
