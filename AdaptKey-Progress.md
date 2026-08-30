@@ -257,29 +257,28 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
-- **D-402/D-306-followup/D-345/D-367 - COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303 v1.0.56); only**
-  **D-330-followup remains open from the original combined bundle.** Originally agreed to bundle
-  D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into one combined cleanup round since they all touch
-  the same `dict_de.tsv` rebuild/version-bump/pack-republish cycle - D-368 (homograph tagging) was finished
-  separately across its own eight rounds (see its own bullet below). §301 handled the noise-removal side
-  ("Mülltrennung", fully automatic per explicit user request): `Mur`/`BDI`/`Dee` and the four genuine
+- **D-402/D-306-followup/D-345/D-330-followup/D-367 - ALL COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303**
+  **v1.0.56 + §304 v1.0.57); the entire originally-agreed combined bundle is now closed.** Originally agreed
+  to bundle D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into one combined cleanup round since they
+  all touch the same `dict_de.tsv` rebuild/version-bump/pack-republish cycle - D-368 (homograph tagging) was
+  finished separately across its own eight rounds (see its own bullet below). §301 handled the noise-removal
+  side ("Mülltrennung", fully automatic per explicit user request): `Mur`/`BDI`/`Dee` and the four genuine
   corpus-tokeniser split-artefacts removed outright, plus 344 more via a systematic probe (see §301/history).
   §302 handled the rest of D-402's missing-word list plus D-367's `natürlich`-family frequency fix (see
-  §302/history). §303 closed the remaining three items: `"Stk."` recognition (a **code** fix -
+  §302/history). §303 closed three more items: `"Stk."` recognition (a **code** fix -
   `Abbreviations.kt`'s `GERMAN` set, not `dict.tsv` - plus the bare word `"Stk"` was separately missing from
   the dictionary too, added alongside); confirmed `Robotische`/`Scheiße`/`Traditionell`/`Beugungen`'s bad
   splits are now structurally impossible as a side effect of §301's noise removal (no action needed); and
   `"Wegerecht"`->`"we"`+`"gerecht"` fixed directly by adding `"Wegerecht"` itself rather than chasing the
   original report's stale "`we` only exists via the English dictionary" explanation (no English pack ships
   in this project at all - `"We"` 203 sits directly in the German dict with unclear-but-not-confirmed-noise
-  status, left alone). D-306-followup and D-345's own probes are superseded by §301's broader one - not
+  status, left alone). §304 finished D-330-followup itself: computed every real keyboard-adjacent
+  single-substitution collision across all six possessive determiners' full declension paradigms (36 forms)
+  using the app's own real `KeyboardProximity.kt` grid and `CorrectionConfidence`'s live formula - found only
+  one genuine risk (bare `dein` vs `sein`, the originally-flagged case), fixed it, confirmed nothing else in
+  the family needs touching. D-306-followup and D-345's own probes are superseded by §301's broader one - not
   provably exhaustive for every noise pattern, but the best done so far; treat any future noise report the
-  same way rather than assuming it's exhaustive. **Still open**:
-  - **D-330-followup**: see its own bullet below - the `dein`/`sein` register-skew fix, plus the proposed
-    full `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` audit. Its own bullet's description of the override
-    mechanism as a flat "100x bar" is now stale - D-353 replaced that with a log-scaled curve (see
-    `CorrectionConfidence.kt`, and §302/history for the up-to-date formula) - re-derive the live ratio/score
-    from the current code rather than trusting that bullet's own numbers when this is picked up.
+  same way rather than assuming it's exhaustive.
   - **D-368 (case-neutral homograph tagging) - COMPLETE, eight rounds done** (§294-§300, v1.0.47-1.0.53):
     **210** words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`),
     26 further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised
@@ -361,17 +360,15 @@ non-trivial changes).
   future session (or an actual French-speaking contributor) doesn't have to rediscover that the geometry and
   the content are two separate, independently-completed pieces of this feature.
 
-- **D-330 fixed `deine`/`deiner`/`deinen`/`deinem`/`deines` against their `seinX` counterparts, but the**
-  **bare, uninflected `dein` (no suffix, e.g. "dein Buch") shows the identical Wikipedia-corpus**
-  **register-skew ratio and was only found while verifying the already-rebuilt archive, too late to fold**
-  **into that round's already-agreed scope:** `dein` 139 vs `sein` 28942 (~208x), past the 100x
-  `KNOWN_WORD_OVERRIDE_RATIO` bar, `d`/`s` adjacent - almost certainly autocorrects `dein` -> `sein` today by
-  the same mechanism, unconfirmed on-device. Deliberately left unfixed pending explicit go-ahead, same
-  convention as D-330's own initial scoping. Revisit with the same fix shape (raise `dein`'s frequency by a
-  comparable ~1.5x-over-minimum margin, e.g. into the low-to-mid hundreds, plus the usual pack rebuild/version
-  bump) if confirmed or raised again - and worth a fresh, deliberate full audit of every remaining
-  `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` pair at that point, rather than continuing to fix this one paradigm
-  one report at a time.
+- **D-330-followup - RESOLVED by §304 (v1.0.57).** D-330 itself fixed `deine`/`deiner`/`deinen`/`deinem`/
+  `deines` against their `seinX` counterparts; the bare, uninflected `dein` was found showing the identical
+  register-skew ratio too late to fold into that round, and was left open pending a full audit. §304 did that
+  audit properly: not just `dein`/`sein`, but every declined form of all six German possessive determiners
+  (36 forms total) checked against every other via the app's own real keyboard-adjacency grid and its current
+  (D-353, log-scaled - the flat "100x `KNOWN_WORD_OVERRIDE_RATIO` bar" this bullet used to describe is stale)
+  confidence formula. Result: `dein` (139 -> 550) was indeed the only real risk in the current data; every
+  other pairing, including the already-fixed suffixed `dein`-forms, sits safely below every
+  `AutocorrectAggressiveness` threshold. See §304/history for the full method and numbers.
 
 - **D-344 (download directory control, spec §30): the app's approach to ensuring browser-downloaded**
   **language packs and LLM models land where AdaptKey can find them is not yet decided.** Three options
@@ -420,6 +417,32 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
+  **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
+  `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with
+  nothing else different (`ADJACENT_SUB_COST=1` vs `SUB_COST`/`INDEL_COST=2`). Pulled all 36 existing declined
+  forms of `mein`/`dein`/`sein`/`ihr`/`unser`/`euer` from the live dictionary and computed every real
+  single-adjacent-substitution pair among them programmatically (not estimated), scoring each with
+  `CorrectionConfidence`'s actual log-scaled formula. Only one genuine risk found: bare `dein` (139) vs `sein`
+  (28942), score ≈0.86, clears `MEDIUM`'s threshold - the exact case originally flagged. The suffixed
+  `deine`/`deinen`/`deinem`/`deiner`/`deines` D-330 already fixed all score 0.64-0.68 today, confirmed still
+  safely below every level. No other cross-pronoun pair scored above 0.12 anywhere in the full comparison -
+  five of the six determiners need no change at all. Fixed `dein` 139 -> 550 (matching `deine`'s own already-
+  fixed margin). `git diff --stat`: 1 line. `version.txt` 15 -> 16, pack rebuilt/verified, `LanguagePackCatalog`
+  version 15 -> 16. No new tests. 1059 unit tests unchanged, all green (via JDK 21). `versionCode` 360 -> 361,
+  `versionName` `"1.0.56"` -> `"1.0.57"`. Not yet device-confirmed. **This closes the entire originally-agreed
+  D-402/D-306-followup/D-330-followup/D-345/D-367/D-368 combined cleanup bundle** - nothing remains open from
+  it. See history §304.
+
+  Also answered a design question first (no code change): why `"Stk."`-style abbreviation recognition lives
+  in `Abbreviations.kt` rather than as an `ABBR` tag in `dict.tsv`. Kept separate deliberately - `PartOfSpeech`
+  drives word-capitalisation, `Abbreviations.kt` answers a punctuation question (`SentenceBoundary.kt`'s own
+  sentence-end check) that several entries (`z.b.`, `n.chr.` - internal periods) don't fit into the
+  one-word-per-row dictionary model anyway, and the abbreviation list is deliberately dependency-free
+  (doesn't need the dictionary loaded). The existing `OTHER` tags on bare forms already in `dict.tsv`
+  (`bzw`/`ca`/`usw`/...) are correct for their own purpose; the `"Stk."` gap was a missing-entry problem in
+  both places, not a tagging problem.
 
 - **§303 (v1.0.56): D-402 "Stk." fix, and everything else in this cleanup round checked/closed out.**
   `"Stk."` recognition is a **code** fix, not a dictionary one - `capitalisation/Abbreviations.kt`'s `GERMAN`

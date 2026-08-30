@@ -155,7 +155,17 @@ object LanguagePackCatalog {
             // impossible: "Robot"/"Tradition"/"Beugung" remain genuine words, but their other halves
             // ("ische"/"Sc"/"ell"/"en") no longer resolve at all - "ische"/"ell"/"en" removed outright in
             // §301, and "Sc" was never a real dictionary entry.
-            version = 15
+            // D-330-followup (the full dein-/sein-/mein-/unser-/ihr-/euer- audit): computed every real
+            // keyboard-adjacent single-substitution collision across all six German possessive determiners'
+            // full declension paradigms (36 forms), using this project's own exact QWERTZ adjacency grid
+            // (KeyboardProximity.kt) and CorrectionConfidence's live log-scaled ratio formula, not guessed.
+            // Only one genuine risk remained: bare "dein" (139) vs "sein" (28942), score ~0.86, clearing
+            // MEDIUM's 0.75 auto-apply threshold - the suffixed deine/deinen/deinem/deiner/deines forms
+            // D-330 already fixed all score 0.64-0.68, safely below every level. No other pronoun pair
+            // (mein-/ihr-/unser-/euer- against each other or against dein-/sein-) scored above 0.12 anywhere
+            // in the full 36x36 comparison. Fixed the one real case the same way as every prior round: "dein"
+            // 139 -> 550 (score now ~0.64, matching "deine"'s own already-fixed margin).
+            version = 16
         ),
         Entry(
             Language.GREEK,

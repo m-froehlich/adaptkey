@@ -15297,3 +15297,51 @@ new unit test (`AbbreviationsTest`'s `"Stk."` assertion) - 1059 unit tests total
 This closes out the entire D-402/D-306-followup/D-345/D-367 combined cleanup round - only D-330-followup's
 own audit remains open from the original bundle, and it was never part of what the user asked to bundle in
 today's "Mülltrennung"/additions/`natürlich`/`Stk.` sequence.
+
+## §304 - D-330-followup: The Full Possessive-Pronoun Audit (v1.0.57)
+
+Before starting, the user asked a design question: why does `"Stk."` recognition live in a separate
+`Abbreviations.kt` list instead of being folded into `dict.tsv` as an `ABBR` part-of-speech tag? Answered
+directly rather than implementing anything: the two mechanisms model genuinely different things -
+`PartOfSpeech` tags drive §6's capitalisation-forcing decision for a *word*, while `Abbreviations.kt` answers
+a *punctuation* question (does this trailing period end the sentence) that `SentenceBoundary.kt` alone
+consumes. Two concrete reasons a merge would be unclean: (1) `dict.tsv` stores words without punctuation at
+all, but several entries in `Abbreviations.kt`'s set carry *internal* periods (`z.b.`, `d.h.`, `n.chr.`) that
+do not fit a one-word-per-row model without weakening it; (2) `Abbreviations.kt` is deliberately a pure,
+dependency-free lookup that works before/without the dictionary loaded - folding it in would newly couple
+sentence-boundary detection to `DictionaryStore`. Confirmed the *existing* `OTHER` tags on the bare forms
+(`bzw`/`ca`/`vgl`/`usw`/...) already in `dict.tsv` are correct for their own purpose (don't force-capitalise) -
+today's actual gap was that `"Stk."` was simply missing from *both* places, not a tagging problem. User
+accepted the explanation and asked to move on to the full audit.
+
+For the audit itself (`dein`/`sein`/`mein`/`unser`/`ihr`/`euer`, all declined forms), rather than asking the
+user anything, read the app's own exact mechanisms first: `KeyboardProximity.kt`'s QWERTZ adjacency grid
+(king-move adjacency over a 4-row, column-indexed layout) and confirmed via `DictionarySuggestionProvider.kt`
+that `forKnownWordOverride`'s `cost <= ADJACENT_COST(1)` gate only ever fires for a *single* keyboard-adjacent
+character substitution with everything else identical (`ADJACENT_SUB_COST=1` vs `SUB_COST=2`/`INDEL_COST=2` -
+any other kind of edit already exceeds the threshold on its own). Pulled every existing declined form of all
+six possessive determiners from the live dictionary (36 rows, including the irregular contracted `unsre`),
+then computed - programmatically, using the app's own real adjacency grid and `CorrectionConfidence`'s real
+log-scaled formula, not estimated - every pair among those 36 forms that differs in exactly one
+keyboard-adjacent character.
+
+Result: only **one** genuine risk exists in the current data. Bare `"dein"` (139) vs `"sein"` (28,942): ratio
+208x, score ≈0.86, clears `MEDIUM`'s 0.75 auto-apply threshold - the exact case D-330-followup flagged
+originally and left open pending this audit. Every suffixed `dein`-form D-330 already fixed
+(`deine`/`deinen`/`deinem`/`deiner`/`deines`) scores 0.64-0.68, safely below every `AutocorrectAggressiveness`
+level today - confirming that earlier fix is holding, not just assumed to be. Every other cross-pronoun pair
+in the full 36x36 comparison - `mein`-, `ihr`-, `unser`-, `euer`-family forms against each other and against
+`dein`-/`sein`- - scored at most 0.12 (`eurem`/`euren`), nowhere close to any threshold. The audit's own
+conclusion is therefore much narrower than "boost the whole family": five of the six determiners need no
+change at all, and the sixth (`dein`) only in its bare form.
+
+Fixed the one real case the same way as every prior round in this session: `dein` 139 -> 550 (ratio now 52.6x,
+score ≈0.64, matching `deine`'s own already-fixed margin - a deliberately matched sibling value, not a
+separately chosen one). `git diff --stat` confirmed exactly 1 line changed. `dictionaries/de/version.txt`
+15 -> 16, pack rebuilt/verified, `LanguagePackCatalog` version 15 -> 16.
+
+No new unit tests (single data-value change + comment). 1059 unit tests unchanged, all green (via JDK 21).
+`versionCode` 360 -> 361, `versionName` `"1.0.56"` -> `"1.0.57"`. Not yet device-confirmed.
+
+This closes D-330-followup and, with it, the entire originally-agreed D-402/D-306-followup/D-330-followup/
+D-345/D-367/D-368 combined cleanup bundle - nothing remains open from that list.
