@@ -179,7 +179,9 @@ object LanguagePackCatalog {
             // changed.
             // §309 (v1.0.62): round 4, the 50-199 band (774 OTHER -> VERB, 190 OTHER -> VERB,OTHER),
             // 2290 candidates individually reviewed. 964 rows changed.
-            version = 20
+            // §310 (v1.0.63): round 5a, the 30-49 sub-band of 10-49 (528 OTHER -> VERB, 100 OTHER ->
+            // VERB,OTHER), 1454 candidates individually reviewed. 628 rows changed.
+            version = 21
         ),
         Entry(
             Language.GREEK,

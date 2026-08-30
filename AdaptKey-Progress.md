@@ -651,6 +651,32 @@ non-trivial changes).
   pacing question from the top of this round before committing to the same exhaustive approach for 10-49 and
   <10.**
 
+  **User explicitly confirmed (next message): both remaining bands, same exhaustive per-word approach,**
+  **explicitly for dictionary quality ("Ich will ein wirklich hochqualitatives Wörterbuch haben")** -
+  supersedes the "re-raise pacing" flag above. `10-49` (6138) is being worked in three frequency sub-bands
+  for manageability (`30-49`: 1454, `20-29`: 1459, `10-19`: 3225), each its own verify/build/commit cycle,
+  same fail-loud script pattern as every round so far - not a change in rigor, purely a chunking choice for
+  a band this large.
+
+- **§310 (v1.0.63): round 5a - the `30-49` sub-band of `10-49` (1454 candidates, 628 rows changed).** Same
+  method as every round so far (bare predicative participle/infinitive/finite form -> `VERB`; further-declined
+  participle-as-adjective untouched unless it doubles as a real preterite-plural -> `VERB,OTHER`; adjective/
+  determiner/number/conjunction/present-participle-as-adjective untouched). 528 words `OTHER` -> `VERB`; 100
+  genuine dual-meaning words `OTHER` -> `VERB,OTHER` (established collision pattern, e.g. `weiterentwickelten`,
+  plus a couple of independent-second-meaning cases like `lichten` - to melt/lift anchor vs. adjective
+  "licht" - not separately re-flagged, per the precedent set in §309). The fail-loud verification script
+  caught several real authoring slips before anything was written this round - two misspelled words
+  (`unzubenennen`/`heroisch`, neither a real dictionary entry), one word (`thematisieren`) already tagged by
+  an earlier round and mistakenly re-listed, and four words placed in both the plain-`VERB` and dual lists
+  (`bombardierten`/`weiterentwickeln`/`überliefern`/`proklamierten`) - all caught by the script's own
+  assertions and fixed before the actual write, nothing silently corrupted. `git diff --stat` confirmed
+  exactly 628 lines changed. `dictionaries/de/version.txt` 20 -> 21, pack rebuilt/verified,
+  `LanguagePackCatalog` version 20 -> 21. No new tests (data-only). 1064 unit tests unchanged, all green (via
+  JDK 21). `versionCode` 366 -> 367, `versionName` `"1.0.62"` -> `"1.0.63"`. Not yet device-confirmed.
+  Remaining: `20-29` (1459) and `10-19` (3225) sub-bands of `10-49`, then the `<10` band (1073), the
+  mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries, and
+  populating `lemma` on every result so far.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with
