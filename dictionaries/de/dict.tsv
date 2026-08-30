@@ -98639,11 +98639,11 @@ Betonbau	10	NOUN
 CaCO	10	NOUN
 Rütteln	10	NOUN,OTHER
 Schalung	10	NOUN
-Dimeren	10	NOUN,OTHER
+Dimeren	10	NOUN,OTHER	Dimer
 Kubatur	10	NOUN
-Gerichtsbezirken	10	NOUN
+Gerichtsbezirken	10	NOUN	Gerichtsbezirk
 Torberg	10	NOUN
-Stichprobenerhebungen	10	NOUN
+Stichprobenerhebungen	10	NOUN	Stichprobenerhebung
 Einsitz	10	NOUN
 Einwohnerrat	10	NOUN
 Bundesumweltminister	10	NOUN
@@ -98677,7 +98677,7 @@ deutlicheren	10	OTHER
 Pirin	10	NOUN
 Silistra	10	NOUN
 Bogomilen	10	NOUN
-Vordringens	10	NOUN
+Vordringens	10	NOUN	Vordringen
 Kimon	10	NOUN
 Todor	10	NOUN
 Schiwkow	10	NOUN
@@ -98688,13 +98688,13 @@ Voix	10	NOUN,OTHER
 Sylvie	10	NOUN
 Kraftsport	10	NOUN
 Balakow	10	NOUN
-Bestsellern	10	NOUN
+Bestsellern	10	NOUN	Bestseller
 Croves	10	NOUN
 Totenschiff	10	NOUN
-Dampfers	10	NOUN
-Strafgerichte	10	NOUN
+Dampfers	10	NOUN	Dampfer
+Strafgerichte	10	NOUN	Strafgericht
 Schiffsjunge	10	NOUN
-Anzeigers	10	NOUN
+Anzeigers	10	NOUN	Anzeiger
 Upton	10	NOUN
 Lautzeichen	10	NOUN
 Hakim	10	NOUN
@@ -98704,7 +98704,7 @@ Wietzenbruch	10	NOUN
 Benachrichtigung	10	NOUN
 Flugrouten	10	NOUN
 Frachtflugzeuge	10	NOUN
-Ersatzteilen	10	NOUN
+Ersatzteilen	10	NOUN	Ersatzteile
 Rosinenbomber	10	NOUN
 Theaterschauspielerin	10	NOUN
 beigesetzten	10	OTHER
@@ -98726,16 +98726,16 @@ Bevölkerungsprognose	10	NOUN
 Arbeitsminister	10	NOUN
 Kulturaustausch	10	NOUN
 Sustainable	10	NOUN,OTHER
-SDGs	10	NOUN
+SDGs	10	NOUN	SDG
 Konferenzzentrum	10	NOUN
 Hammerschmidt	10	NOUN
 Architektenwettbewerb	10	NOUN
 transloziert	10	OTHER
 Südbrücke	10	NOUN
-Rheinauen	10	NOUN
+Rheinauen	10	NOUN	Rheinau
 kombiniertes	10	OTHER
 nachgefragten	10	OTHER
-Stilllegungen	10	NOUN
+Stilllegungen	10	NOUN	Stilllegung
 Taktzeiten	10	NOUN
 Meindorf	10	NOUN
 hochspezialisierten	10	OTHER
@@ -98744,11 +98744,11 @@ UNU	10	NOUN
 Gemeinschaftskrankenhaus	10	NOUN
 Carcassonne	10	NOUN
 Monopoly	10	NOUN
-Neuheiten	10	NOUN
+Neuheiten	10	NOUN	Neuheit
 Crowdfunding	10	NOUN
 Zwischenprüfung	10	NOUN
 Vet	10	NOUN,OTHER
-Schaustellern	10	NOUN
+Schaustellern	10	NOUN	Schausteller
 rechtskräftigen	10	OTHER
 Trickfilm	10	NOUN
 zielgerichteten	10	OTHER
@@ -98756,21 +98756,21 @@ Mondgott	10	NOUN
 Befestigungsmauer	10	NOUN
 Reuther	10	NOUN
 faszinierenden	10	OTHER
-Einwohnerinnen	10	NOUN
+Einwohnerinnen	10	NOUN	Einwohner
 Hammadi	10	NOUN
 Buchherstellung	10	NOUN
-Salomons	10	NOUN
-Münzmeisters	10	NOUN
+Salomons	10	NOUN	Salomon
+Münzmeisters	10	NOUN	Münzmeister
 Nordwestrand	10	NOUN
 übergesetzt	10	OTHER
 Kreuzfahrttourismus	10	NOUN
-Pettys	10	NOUN
+Pettys	10	NOUN	Petty
 einzuspielen	10	VERB
 Orchesterbegleitung	10	NOUN
 Waiting	10	NOUN
 MCs	10	NOUN
 Unplugged	10	NOUN,OTHER
-Recordings	10	NOUN
+Recordings	10	NOUN	Recording
 homozygot	10	OTHER
 Macaca	10	NOUN
 JK	10	NOUN,OTHER
@@ -98784,14 +98784,14 @@ Bewusstseinsverlust	10	NOUN
 phänomenale	10	OTHER
 ontogenetischen	10	OTHER
 Neurowissenschaft	10	NOUN
-Aussiedlern	10	NOUN
+Aussiedlern	10	NOUN	Aussiedler
 štokavisch	10	NOUN,OTHER
-Zukunfts	10	NOUN
+Zukunfts	10	NOUN	Zukunft
 Conduct	10	NOUN
 Kunstobjekt	10	NOUN
 elektrostatisch	10	OTHER
 Staubteilchen	10	NOUN
-Bernsteine	10	NOUN
+Bernsteine	10	NOUN	Bernstein
 Dieskau	10	NOUN
 profitable	10	OTHER
 Jantar	10	NOUN,OTHER
@@ -98810,12 +98810,12 @@ Gaswolke	10	NOUN
 Gleichgewichtstemperatur	10	NOUN
 Finanzsituation	10	NOUN
 Erholungsheim	10	NOUN
-Tiefgaragen	10	NOUN
+Tiefgaragen	10	NOUN	Tiefgarage
 Parkstraße	10	NOUN
 denkmalgeschütztes	10	OTHER
 Adventswochenende	10	NOUN
-Grazien	10	NOUN
-Doppelsternen	10	NOUN
+Grazien	10	NOUN	Grazie
+Doppelsternen	10	NOUN	Doppelstern
 Stoßwelle	10	NOUN
 Supernovaexplosion	10	NOUN
 Hochtaunuskreises	10	NOUN
@@ -98834,16 +98834,16 @@ Burggarten	10	NOUN
 stadtauswärts	10	OTHER
 systematisieren	10	VERB
 Metró	10	NOUN,OTHER
-Verbindungs	10	NOUN
+Verbindungs	10	NOUN	Verbindung
 Zellbestandteile	10	NOUN
 kräftigeren	10	OTHER
 Rapoport	10	NOUN
 Sauerstoffsättigung	10	NOUN
 Verkleben	10	NOUN,OTHER
-Unterformen	10	NOUN
+Unterformen	10	NOUN	Unterform
 machenden	10	OTHER
 blutsaugende	10	OTHER
-Dreiergruppen	10	NOUN
+Dreiergruppen	10	NOUN	Dreiergruppe
 Kompogas	10	NOUN
 umgerüsteten	10	OTHER
 gedrosselt	10	OTHER
@@ -98851,7 +98851,7 @@ hochgefahren	10	VERB
 Rückkanal	10	NOUN
 Kabellänge	10	NOUN
 Schaltungstechnik	10	NOUN
-Codierungen	10	NOUN
+Codierungen	10	NOUN	Codierung
 Quantensystem	10	NOUN
 Tularämie	10	NOUN
 Infektionswege	10	NOUN
@@ -98878,8 +98878,8 @@ Rüstungskontrolle	10	NOUN
 Schutzimpfung	10	NOUN
 Pesterreger	10	NOUN
 Versuchszwecken	10	NOUN
-Bakteriologen	10	NOUN
-Giftstoffen	10	NOUN
+Bakteriologen	10	NOUN	Bakteriologe
+Giftstoffen	10	NOUN	Giftstoffe
 erscheinender	10	OTHER
 Titelheld	10	NOUN
 Maroniten	10	NOUN
@@ -98889,12 +98889,12 @@ Rundfunkgesellschaft	10	NOUN
 Khalil	10	NOUN
 Neckermann	10	NOUN
 Klöppel	10	NOUN
-Haustüren	10	NOUN
+Haustüren	10	NOUN	Haustür
 nepalischen	10	OTHER
 eingepflanzt	10	OTHER
 Volksschichten	10	NOUN
 Startvorgang	10	NOUN
-Exarchats	10	NOUN
+Exarchats	10	NOUN	Exarchat
 Enzio	10	NOUN
 Stadtherrschaft	10	NOUN
 Carracci	10	NOUN
@@ -98918,23 +98918,23 @@ gezogener	10	OTHER
 Ventilation	10	NOUN
 unblutig	10	OTHER
 Einheitsliste	10	NOUN
-Schlachthofs	10	NOUN
+Schlachthofs	10	NOUN	Schlachthof
 zugeschickt	10	OTHER
 Jagdbomber	10	NOUN
 Chanukka	10	NOUN
 einrückenden	10	OTHER
 Merk	10	NOUN
 Hohenzollernplatz	10	NOUN
-Stolpersteinen	10	NOUN
+Stolpersteinen	10	NOUN	Stolperstein
 zumutbare	10	OTHER
 gepflanzten	10	OTHER
 Spielshow	10	NOUN
 Berufspendler	10	NOUN
-Stadtbussen	10	NOUN
+Stadtbussen	10	NOUN	Stadtbusse
 Fahrradstraße	10	NOUN
 hochgelegene	10	OTHER
 gestaltenden	10	OTHER
-Kunstakademien	10	NOUN
+Kunstakademien	10	NOUN	Kunstakademie
 Siedlungsfunde	10	NOUN
 Ikonostase	10	NOUN
 Zentralperspektive	10	NOUN
@@ -98943,13 +98943,13 @@ Pointillismus	10	NOUN
 Olmeken	10	NOUN
 Paracas	10	NOUN
 Rechtseinheit	10	NOUN
-Schriftsätze	10	NOUN
+Schriftsätze	10	NOUN	Schriftsatz
 Zuschauerplätze	10	NOUN
 anonymisiert	10	OTHER
 Abweisung	10	NOUN
-Sachgebieten	10	NOUN
+Sachgebieten	10	NOUN	Sachgebiet
 letztinstanzlich	10	OTHER
-Richterinnen	10	NOUN
+Richterinnen	10	NOUN	Richterin
 erforderlicher	10	OTHER
 Rechtsentwicklung	10	NOUN
 ährigen	10	OTHER
@@ -98984,13 +98984,13 @@ cyanogene	10	OTHER
 zeitigen	10	VERB
 vorbehaltene	10	OTHER
 Briefwahlunterlagen	10	NOUN
-Wahlvorschläge	10	NOUN
+Wahlvorschläge	10	NOUN	Wahlvorschlag
 Wahlkreisgrenzen	10	NOUN
 ausgeglichenes	10	OTHER
 Teilnahmslosigkeit	10	NOUN
 Wahlsieges	10	NOUN
 Falschaussage	10	NOUN
-Politikfeldern	10	NOUN
+Politikfeldern	10	NOUN	Politikfelder
 didaktischer	10	OTHER
 Selbstbeschreibung	10	NOUN
 brüchigen	10	OTHER
@@ -99010,7 +99010,7 @@ Stripes	10	NOUN
 Iceland	10	NOUN
 Länderkammer	10	NOUN
 Gebietszuwachs	10	NOUN
-Markgrafschaften	10	NOUN
+Markgrafschaften	10	NOUN	Markgrafschaft
 Ettlingen	10	NOUN
 unbeschränkter	10	OTHER
 Forderungskatalog	10	NOUN
@@ -99021,15 +99021,15 @@ Oberdeutsch	10	NOUN,OTHER
 aufgespießt	10	OTHER
 anorganisch	10	OTHER
 Balaton	10	NOUN
-Bandkeramikern	10	NOUN
+Bandkeramikern	10	NOUN	Bandkeramiker
 Brombeeren	10	NOUN
 Goseck	10	NOUN
-Hausschweine	10	NOUN
+Hausschweine	10	NOUN	Hausschwein
 Keramikscherben	10	NOUN
 anfielen	10	VERB
 Brucellose	10	NOUN
 Mikrobiom	10	NOUN
-Familienverbände	10	NOUN
+Familienverbände	10	NOUN	Familienverband
 Rötel	10	NOUN
 weitergaben	10	VERB
 Schwefelanteil	10	NOUN
@@ -99038,14 +99038,14 @@ Arbeitshypothese	10	NOUN
 ausgestreckt	10	OTHER
 gespreizten	10	OTHER
 abruptes	10	OTHER
-Gewaltakten	10	NOUN
+Gewaltakten	10	NOUN	Gewaltakte
 Bildungsforschung	10	NOUN
 Klafki	10	NOUN
 Selbsttätigkeit	10	NOUN
 Bildungsziel	10	NOUN
 mehrdimensional	10	OTHER
 Jeschiwa	10	NOUN
-Videorekordern	10	NOUN
+Videorekordern	10	NOUN	Videorekorder
 Ballistik	10	NOUN
 Festplattenlaufwerk	10	NOUN
 FIFO	10	NOUN
@@ -99068,7 +99068,7 @@ Wark	10	NOUN
 geisteskrank	10	OTHER
 Glasbläser	10	NOUN
 Races	10	NOUN,OTHER
-Titelhelden	10	NOUN
+Titelhelden	10	NOUN	Titelheld
 reiferen	10	OTHER
 Enkeltochter	10	NOUN
 achtzehnjährige	10	OTHER
@@ -99093,13 +99093,13 @@ aeruginosa	10	OTHER
 Ames	10	NOUN
 Koordinationszahl	10	NOUN
 daselbst	10	OTHER
-Schwimmbädern	10	NOUN
+Schwimmbädern	10	NOUN	Schwimmbad
 Chloridionen	10	NOUN
 Hypochlorit	10	NOUN
 Silberchlorid	10	NOUN
 ClO	10	NOUN
 Strahlenquelle	10	NOUN
-Kernbrennstoffe	10	NOUN
+Kernbrennstoffe	10	NOUN	Kernbrennstoff
 gewöhnlicherweise	10	OTHER
 Reinelement	10	NOUN
 Glühkathode	10	NOUN
@@ -99124,7 +99124,7 @@ solistische	10	OTHER
 Trommler	10	NOUN
 Musikerkollegen	10	NOUN
 darbieten	10	VERB
-Spielekonsolen	10	NOUN
+Spielekonsolen	10	NOUN	Spielekonsole
 Geoff	10	NOUN
 BPjM	10	NOUN
 abschießen	10	VERB
@@ -99156,7 +99156,7 @@ Nazideutschland	10	NOUN
 Studentenrevolte	10	NOUN
 Chantal	10	NOUN
 Etatismus	10	NOUN
-Rufes	10	NOUN
+Rufes	10	NOUN	Ruf
 distinction	10	OTHER
 synoptische	10	OTHER
 Ausschöpfung	10	NOUN
@@ -99165,7 +99165,7 @@ angeworbene	10	OTHER
 opulenten	10	OTHER
 ausufernde	10	OTHER
 Staatskult	10	NOUN
-Verschärfungen	10	NOUN
+Verschärfungen	10	NOUN	Verschärfung
 Untaten	10	NOUN
 Archivar	10	NOUN
 Herrscherkult	10	NOUN
@@ -99177,7 +99177,7 @@ Pollio	10	NOUN
 Priscus	10	NOUN,OTHER
 Unbestechlichen	10	NOUN,OTHER
 Cleander	10	NOUN
-Amphitheaters	10	NOUN
+Amphitheaters	10	NOUN	Amphitheater
 Stadtpräfekten	10	NOUN
 Narcissus	10	NOUN
 Domna	10	NOUN
@@ -99202,16 +99202,16 @@ Ebersdorf	10	NOUN
 HUK	10	NOUN
 SBC	10	NOUN
 Schlossplatzes	10	NOUN
-Lichtspielhäuser	10	NOUN
+Lichtspielhäuser	10	NOUN	Lichtspielhaus
 Renaissanceschloss	10	NOUN
 Begrünung	10	NOUN
 Vorgängerverein	10	NOUN
 gesponserte	10	OTHER
 Steuerkraft	10	NOUN
 erschlossenes	10	OTHER
-Wettbewerbes	10	NOUN
+Wettbewerbes	10	NOUN	Wettbewerb
 Verbrauchsspitzen	10	NOUN
-Entsorgungs	10	NOUN
+Entsorgungs	10	NOUN	Entsorgung
 SEG	10	NOUN
 Regionalbibliothek	10	NOUN
 Suevia	10	NOUN
@@ -99240,12 +99240,12 @@ Grandhotel	10	NOUN
 Spargelbohne	10	NOUN
 Ternate	10	NOUN
 ungläubig	10	OTHER
-Herschels	10	NOUN
+Herschels	10	NOUN	Herschel
 Sedgwick	10	NOUN
 Exkursion	10	NOUN
 zehntägigen	10	OTHER
 querte	10	OTHER
-Kreisläufe	10	NOUN
+Kreisläufe	10	NOUN	Kreislauf
 Vortrages	10	NOUN
 Publikationstätigkeit	10	NOUN
 Fertilisation	10	NOUN
@@ -99271,17 +99271,17 @@ Moines	10	NOUN
 Altchinesischen	10	NOUN,OTHER
 Kognaten	10	NOUN
 Chuan	10	NOUN
-Subjekten	10	NOUN
-Topics	10	NOUN
+Subjekten	10	NOUN	Subjekt
+Topics	10	NOUN	Topic
 Imperfektiv	10	NOUN,OTHER
 Perfektiv	10	NOUN,OTHER
-Erfahrungs	10	NOUN
-Akts	10	NOUN
+Erfahrungs	10	NOUN	Erfahrung
+Akts	10	NOUN	Akt
 Parlamentskammer	10	NOUN
-Kolonialgebiete	10	NOUN
+Kolonialgebiete	10	NOUN	Kolonialgebiet
 bewaffnen	10	VERB
 Atomprogramm	10	NOUN
-Mitterrands	10	NOUN
+Mitterrands	10	NOUN	Mitterrand
 sollt	10	OTHER
 Régis	10	NOUN
 Abtritt	10	NOUN,OTHER
@@ -99315,7 +99315,7 @@ Dump	10	NOUN,OTHER
 Disarmament	10	NOUN
 GRU	10	NOUN
 Grundschritt	10	NOUN
-Computerprogramms	10	NOUN
+Computerprogramms	10	NOUN	Computerprogramm
 Rechenoperation	10	NOUN
 Mediceer	10	NOUN
 sechsmonatiger	10	OTHER
@@ -99324,16 +99324,16 @@ Bankgeschäft	10	NOUN
 residierende	10	OTHER
 schockierenden	10	OTHER
 Stadtpalast	10	NOUN
-Mediceers	10	NOUN
+Mediceers	10	NOUN	Mediceer
 manipulativ	10	OTHER
 Steuergesetzgebung	10	NOUN
-Kandidaturen	10	NOUN
+Kandidaturen	10	NOUN	Kandidatur
 gütiger	10	OTHER
 Dominikanerordens	10	NOUN
 Mehrung	10	NOUN
 Krösus	10	NOUN
 grandios	10	OTHER
-Mäzens	10	NOUN
+Mäzens	10	NOUN	Mäzen
 Führerschaft	10	NOUN
 despotisch	10	OTHER
 profilierter	10	OTHER
@@ -99354,8 +99354,8 @@ Anfangswerte	10	NOUN
 implicit	10	OTHER
 Objektebene	10	NOUN
 Exceptions	10	NOUN
-Phospholipiden	10	NOUN
-Kopplungen	10	NOUN
+Phospholipiden	10	NOUN	Phospholipide
+Kopplungen	10	NOUN	Kopplung
 populärwissenschaftlich	10	OTHER
 nachgewiesenermaßen	10	OTHER
 Bürorechner	10	NOUN
@@ -99366,7 +99366,7 @@ Epson	10	NOUN
 Tintenstrahldrucker	10	NOUN
 Farbmonitor	10	NOUN
 Kleinserie	10	NOUN
-FPGAs	10	NOUN
+FPGAs	10	NOUN	FPGA
 Crest	10	NOUN,OTHER
 Shades	10	NOUN
 Huus	10	NOUN
@@ -99375,14 +99375,14 @@ vergüten	10	VERB
 Vertretungsmacht	10	NOUN
 Rechtsgüter	10	NOUN
 Aconcagua	10	NOUN
-Wahrheits	10	NOUN
+Wahrheits	10	NOUN	Wahrheit
 Versöhnungskommission	10	NOUN
-Haftbefehls	10	NOUN
+Haftbefehls	10	NOUN	Haftbefehl
 Piñera	10	NOUN
 Sperrminorität	10	NOUN
 Camara	10	NOUN
 PDC	10	NOUN
-Splitterparteien	10	NOUN
+Splitterparteien	10	NOUN	Splitterpartei
 Einfuhrzölle	10	NOUN
 Elektrizitätsversorgung	10	NOUN
 Tatar	10	NOUN
@@ -99394,9 +99394,9 @@ Siglo	10	NOUN
 computerbasierten	10	OTHER
 LEP	10	NOUN
 Exposé	10	NOUN
-Saussures	10	NOUN
+Saussures	10	NOUN	Saussure
 Semiose	10	NOUN
-Interpretanten	10	NOUN
+Interpretanten	10	NOUN	Interpretant
 Handlungsablauf	10	NOUN
 Fallibilismus	10	NOUN
 singuläres	10	OTHER
@@ -99404,14 +99404,14 @@ begrifflicher	10	OTHER
 gestrebt	10	OTHER
 Ladd	10	NOUN
 Foundations	10	NOUN
-Subjektes	10	NOUN
+Subjektes	10	NOUN	Subjekt
 Quellsprache	10	NOUN
 Syntaxbaum	10	NOUN
 dekorierten	10	VERB,OTHER
 Optimierungsverfahren	10	NOUN
 Folding	10	NOUN
 Unterprogramm	10	NOUN
-Verarbeitungen	10	NOUN
+Verarbeitungen	10	NOUN	Verarbeitung
 options	10	NOUN,OTHER
 missionierte	10	OTHER
 Gildas	10	NOUN
@@ -99421,11 +99421,11 @@ antibiotische	10	OTHER
 induced	10	OTHER
 wägen	10	NOUN,OTHER
 Pogo	10	NOUN
-Nutzungsrechten	10	NOUN
+Nutzungsrechten	10	NOUN	Nutzungsrecht
 salonfähig	10	OTHER
 Chemiekonzern	10	NOUN
-Reflexions	10	NOUN
-Unwuchten	10	NOUN
+Reflexions	10	NOUN	Reflexion
+Unwuchten	10	NOUN	Unwucht
 unlesbar	10	OTHER
 Kilohertz	10	NOUN
 abstürzte	10	OTHER
@@ -99437,7 +99437,7 @@ Skladanowsky	10	NOUN
 Balázs	10	NOUN
 Käutner	10	NOUN
 Dachgesellschaft	10	NOUN
-Besatzungsstatuts	10	NOUN
+Besatzungsstatuts	10	NOUN	Besatzungsstatut
 herausgegebener	10	OTHER
 Thalbach	10	NOUN
 Fernsehspiel	10	NOUN
@@ -99445,7 +99445,7 @@ Aguirre	10	NOUN
 Genée	10	NOUN
 Momo	10	NOUN
 Roadmovie	10	NOUN
-Privatsendern	10	NOUN
+Privatsendern	10	NOUN	Privatsender
 Sönke	10	NOUN
 demographischer	10	OTHER
 Undine	10	NOUN
@@ -99454,7 +99454,7 @@ Leitmedium	10	NOUN
 unterdurchschnittliche	10	OTHER
 mehrstufiges	10	OTHER
 Innovationsforschung	10	NOUN
-Scanners	10	NOUN
+Scanners	10	NOUN	Scanner
 schauspielerisch	10	OTHER
 Sick	10	NOUN
 Dern	10	NOUN
@@ -99464,17 +99464,17 @@ Reboot	10	NOUN
 suggestive	10	OTHER
 Primärliteratur	10	NOUN
 umgekehrtem	10	OTHER
-Meilensteinen	10	NOUN
+Meilensteinen	10	NOUN	Meilenstein
 Bommer	10	NOUN
 bundesunmittelbare	10	OTHER
 Cochem	10	NOUN
 novelliert	10	OTHER
 Allzeithoch	10	NOUN
-Vermögenswerten	10	NOUN
+Vermögenswerten	10	NOUN	Vermögenswert
 Ritschl	10	NOUN
 geöffnetes	10	OTHER
-Konventen	10	NOUN
-Konventes	10	NOUN
+Konventen	10	NOUN	Konvent
+Konventes	10	NOUN	Konvent
 aufgezwungene	10	OTHER
 unnachgiebig	10	OTHER
 Privatangelegenheit	10	NOUN
@@ -99482,18 +99482,18 @@ Erziehungswesen	10	NOUN
 Denunzianten	10	NOUN
 Rechtskreis	10	NOUN
 Kampftag	10	NOUN
-Potenzials	10	NOUN
+Potenzials	10	NOUN	Potenzial
 Sportpalastrede	10	NOUN
 totalitäres	10	OTHER
 Essgewohnheiten	10	NOUN
 Datenschutzrecht	10	NOUN
-Zuschauerplätzen	10	NOUN
+Zuschauerplätzen	10	NOUN	Zuschauerplätze
 Marten	10	NOUN
 Millî	10	NOUN
 Kreisvorsitzender	10	NOUN
 Partnerschaftsabkommen	10	NOUN
 Schytomyr	10	NOUN
-Elektrizitätswerke	10	NOUN
+Elektrizitätswerke	10	NOUN	Elektrizitätswerk
 WestLB	10	NOUN
 Brückstraße	10	NOUN
 Marienaltar	10	NOUN
@@ -99515,10 +99515,10 @@ Entwicklungsprojekten	10	NOUN
 erwachsende	10	OTHER
 Hilfsgesellschaften	10	NOUN
 Notfallrettung	10	NOUN
-Grundorganisationen	10	NOUN
+Grundorganisationen	10	NOUN	Grundorganisation
 vertrauensvoll	10	OTHER
 Ösel	10	NOUN
-Bethlens	10	NOUN
+Bethlens	10	NOUN	Bethlen
 Majestätsbeleidigung	10	NOUN
 Sarajewo	10	NOUN
 Hauptheer	10	NOUN
@@ -99530,7 +99530,7 @@ andeutete	10	OTHER
 Vorstoßes	10	NOUN
 Kleinseite	10	NOUN
 Reichsstandschaft	10	NOUN
-Wahlkapitulationen	10	NOUN
+Wahlkapitulationen	10	NOUN	Wahlkapitulation
 Flieg	10	NOUN,VERB,OTHER
 Grimmelshausen	10	NOUN
 Einzeichnen	10	NOUN,OTHER
@@ -99549,7 +99549,7 @@ wirbelloser	10	OTHER
 Luftsäcke	10	NOUN
 Individualentwicklung	10	NOUN
 Rhodopsin	10	NOUN
-Landbrücken	10	NOUN
+Landbrücken	10	NOUN	Landbrücke
 ertragreicher	10	OTHER
 Generated	10	NOUN,OTHER
 grains	10	NOUN,OTHER
@@ -99560,28 +99560,28 @@ Steuerwesen	10	NOUN
 Moesien	10	NOUN
 Christenverfolger	10	NOUN
 Zukunftsfragen	10	NOUN
-Industriegesellschaften	10	NOUN
+Industriegesellschaften	10	NOUN	Industriegesellschaft
 Positioning	10	NOUN
 Staab	10	NOUN
 Internetunternehmen	10	NOUN
 Vorannahmen	10	NOUN
 Bürgergeld	10	NOUN
 Folgewirkungen	10	NOUN
-Hemmungen	10	NOUN
+Hemmungen	10	NOUN	Hemmung
 weitläufiger	10	OTHER
 Populisten	10	NOUN
-Referenzpunkte	10	NOUN
+Referenzpunkte	10	NOUN	Referenzpunkt
 Hirnfunktionen	10	NOUN
 aufzeigten	10	VERB
 Influencer	10	NOUN
 Fotokamera	10	NOUN
 Gedächtnisleistungen	10	NOUN
 psychisches	10	OTHER
-Plagiate	10	NOUN
+Plagiate	10	NOUN	Plagiat
 lahmgelegt	10	OTHER
 nachgerade	10	OTHER
 mündige	10	OTHER
-Fotoapparaten	10	NOUN
+Fotoapparaten	10	NOUN	Fotoapparat
 Technologen	10	NOUN
 wetteifern	10	VERB
 behelfen	10	VERB
@@ -99594,9 +99594,9 @@ abwärtskompatible	10	OTHER
 berührungslos	10	OTHER
 QUIC	10	NOUN
 Straßenbäume	10	NOUN
-Gutsbezirks	10	NOUN
+Gutsbezirks	10	NOUN	Gutsbezirk
 Bleyl	10	NOUN
-Privatbanken	10	NOUN
+Privatbanken	10	NOUN	Privatbank
 Raumgestaltung	10	NOUN
 Ministerkomitee	10	NOUN
 Ortschaftsverfassung	10	NOUN
@@ -99611,7 +99611,7 @@ Drachenboot	10	NOUN
 pausiert	10	OTHER
 ame	10	OTHER
 Tagesverkehr	10	NOUN
-Bushaltestellen	10	NOUN
+Bushaltestellen	10	NOUN	Bushaltestelle
 NDPD	10	NOUN
 Gutzkow	10	NOUN
 Ludewig	10	NOUN
@@ -99627,7 +99627,7 @@ Shawn	10	NOUN
 portierte	10	OTHER
 Zyklopen	10	NOUN
 Zinnfiguren	10	NOUN
-Arbeitsräume	10	NOUN
+Arbeitsräume	10	NOUN	Arbeitsraum
 Nidden	10	NOUN
 Dahlemer	10	NOUN
 Pflasterung	10	NOUN
@@ -99655,23 +99655,23 @@ Petuh	10	NOUN
 Schonische	10	NOUN,OTHER
 Gosling	10	NOUN
 Internationalismen	10	NOUN
-Genitivs	10	NOUN
-Nebensätze	10	NOUN
+Genitivs	10	NOUN	Genitiv
+Nebensätze	10	NOUN	Nebensatz
 Ersteller	10	NOUN
-Clowns	10	NOUN
+Clowns	10	NOUN	Clown
 Phosphatrest	10	NOUN
-Nukleotids	10	NOUN
+Nukleotids	10	NOUN	Nukleotid
 Wasserabspaltung	10	NOUN
-Strangs	10	NOUN
+Strangs	10	NOUN	Strang
 Artikelanfang	10	NOUN
-Keile	10	NOUN
-Histone	10	NOUN
+Keile	10	NOUN	Keil
+Histone	10	NOUN	Histon
 Gobelin	10	NOUN
 angefacht	10	OTHER
-Vorräten	10	NOUN
+Vorräten	10	NOUN	Vorrat
 Einreißen	10	NOUN,OTHER
 unermüdlichen	10	OTHER
-Ermahnungen	10	NOUN
+Ermahnungen	10	NOUN	Ermahnung
 Yet	10	NOUN,OTHER
 Sedantag	10	NOUN
 Reichskrone	10	NOUN
@@ -99682,15 +99682,15 @@ Ridder	10	NOUN
 Wöhrd	10	NOUN
 Mindel	10	NOUN
 Ilz	10	NOUN
-Kernzonen	10	NOUN
+Kernzonen	10	NOUN	Kernzone
 Flussmitte	10	NOUN
 Stari	10	NOUN
 Giurgiu	10	NOUN
 Schwarzstorch	10	NOUN
 Donauauen	10	NOUN
-Welse	10	NOUN
+Welse	10	NOUN	Wels
 Lebensraumtypen	10	NOUN
-Buchenwäldern	10	NOUN
+Buchenwäldern	10	NOUN	Buchenwald
 Biosphärenpark	10	NOUN
 optimierter	10	OTHER
 Tiefensee	10	NOUN
@@ -99703,7 +99703,7 @@ Pfungstadt	10	NOUN
 Altbausubstanz	10	NOUN
 neuerlicher	10	OTHER
 Hausrat	10	NOUN
-Geschichtswissenschaften	10	NOUN
+Geschichtswissenschaften	10	NOUN	Geschichtswissenschaft
 Gesamtverschuldung	10	NOUN
 Wirtschaftswoche	10	NOUN
 Unternehmensteile	10	NOUN
@@ -99712,7 +99712,7 @@ Kinobetreiber	10	NOUN
 Wohls	10	NOUN
 ausgelagerte	10	OTHER
 Odenwaldbahn	10	NOUN
-Fachverbände	10	NOUN
+Fachverbände	10	NOUN	Fachverband
 Drittländern	10	NOUN
 Großmarkt	10	NOUN
 Moselfränkischen	10	NOUN,OTHER
@@ -99725,19 +99725,19 @@ Soros	10	NOUN
 Medienmarkt	10	NOUN
 intensionale	10	OTHER
 druckende	10	OTHER
-Ziffernwerte	10	NOUN
+Ziffernwerte	10	NOUN	Ziffernwert
 Jetons	10	NOUN
 Matrizenmultiplikation	10	NOUN
 Ausstellungsbereich	10	NOUN
 Einzelkomponenten	10	NOUN
 menschenverachtenden	10	OTHER
-Dampfloks	10	NOUN
+Dampfloks	10	NOUN	Dampflok
 Ingenieurbaukunst	10	NOUN
 Diorama	10	NOUN
 Projektleitung	10	NOUN
 Gravitationsgesetzes	10	NOUN
 unverbunden	10	OTHER
-Kopplungskonstanten	10	NOUN
+Kopplungskonstanten	10	NOUN	Kopplungskonstante
 Venusatmosphäre	10	NOUN
 Vence	10	NOUN
 Forêt	10	NOUN,OTHER
@@ -99750,18 +99750,18 @@ schwindenden	10	OTHER
 spezielleren	10	OTHER
 unterschiedene	10	OTHER
 gestrichelten	10	OTHER
-Florins	10	NOUN
+Florins	10	NOUN	Florin
 einstehen	10	VERB
-Finanzkrisen	10	NOUN
-Handelsgeschäfte	10	NOUN
+Finanzkrisen	10	NOUN	Finanzkrise
+Handelsgeschäfte	10	NOUN	Handelsgeschäft
 mitfahren	10	VERB
 ruinierten	10	VERB,OTHER
 Waisenkind	10	NOUN
-Zwischenformen	10	NOUN
+Zwischenformen	10	NOUN	Zwischenform
 Comitia	10	NOUN,OTHER
 staatstheoretische	10	OTHER
 consent	10	OTHER
-Staatsgewalten	10	NOUN
+Staatsgewalten	10	NOUN	Staatsgewalt
 Besitzbürgertum	10	NOUN
 abhanden	10	OTHER
 plebiszitäre	10	OTHER
@@ -99770,14 +99770,14 @@ Gewaltenverschränkung	10	NOUN
 sympathisierenden	10	OTHER
 hervorgehende	10	OTHER
 Schubkraft	10	NOUN
-Idealtypen	10	NOUN
+Idealtypen	10	NOUN	Idealtyp
 Bürgerversammlung	10	NOUN
 Exekutivmacht	10	NOUN
 selbstbestimmt	10	OTHER
 undemokratischen	10	OTHER
 überbieten	10	VERB
 versklavte	10	OTHER
-Respekts	10	NOUN
+Respekts	10	NOUN	Respekt
 gerechtere	10	OTHER
 Gewerbeausstellung	10	NOUN
 Gerresheimer	10	NOUN
@@ -99796,7 +99796,7 @@ Landeshaus	10	NOUN
 Tragwerksplaner	10	NOUN
 intaktes	10	OTHER
 Höhenweg	10	NOUN
-Standardtänzen	10	NOUN
+Standardtänzen	10	NOUN	Standardtänze
 GEA	10	NOUN
 Wassersportler	10	NOUN
 hochgestuft	10	OTHER
@@ -99813,7 +99813,7 @@ Volcano	10	NOUN
 Kongolesen	10	NOUN
 unerschwinglich	10	OTHER
 Lumumba	10	NOUN
-Präsidentenwahlen	10	NOUN
+Präsidentenwahlen	10	NOUN	Präsidentenwahl
 ruandische	10	OTHER
 Neuaufteilung	10	NOUN
 Coltan	10	NOUN
@@ -99825,7 +99825,7 @@ erträglicher	10	OTHER
 elektromagnetisch	10	OTHER
 Grafikformat	10	NOUN
 schwenkbare	10	OTHER
-Polargebieten	10	NOUN
+Polargebieten	10	NOUN	Polargebiete
 billigste	10	OTHER
 Branchenverband	10	NOUN
 Batteriebetrieb	10	NOUN
@@ -99841,8 +99841,8 @@ entstehender	10	OTHER
 Farbinformation	10	NOUN
 Rauschunterdrückung	10	NOUN
 zugehörigem	10	OTHER
-Knochenfischen	10	NOUN
-Knorpelfischen	10	NOUN
+Knochenfischen	10	NOUN	Knochenfische
+Knorpelfischen	10	NOUN	Knorpelfische
 förmiges	10	OTHER
 kaudal	10	OTHER
 Hohlvene	10	NOUN
@@ -99853,7 +99853,7 @@ zylinderförmigen	10	OTHER
 entleeren	10	VERB
 hochgradige	10	OTHER
 Stenose	10	NOUN
-Lymphgefäßen	10	NOUN
+Lymphgefäßen	10	NOUN	Lymphgefäße
 weiträumiges	10	OTHER
 Kamper	10	NOUN
 Düker	10	NOUN
@@ -99873,14 +99873,14 @@ Monopolisierung	10	NOUN
 wechselwirkende	10	OTHER
 Margulis	10	NOUN
 Teilhard	10	NOUN
-Regelkreisen	10	NOUN
+Regelkreisen	10	NOUN	Regelkreis
 Geheimlehre	10	NOUN
 würdiger	10	OTHER
-Neuplatonikern	10	NOUN
+Neuplatonikern	10	NOUN	Neuplatoniker
 Abulafia	10	NOUN
 Llull	10	NOUN
 Platonisches	10	NOUN,OTHER
-Bestsellers	10	NOUN
+Bestsellers	10	NOUN	Bestseller
 anthroposophischer	10	OTHER
 Filmtrilogie	10	NOUN
 Rosenkreuzertum	10	NOUN
@@ -99894,8 +99894,8 @@ Diesterweg	10	NOUN
 OSF	10	NOUN
 Delafontaine	10	NOUN
 Kalorimeter	10	NOUN
-Nanopartikeln	10	NOUN
-Kinasen	10	NOUN
+Nanopartikeln	10	NOUN	Nanopartikel
+Kinasen	10	NOUN	Kinase
 Nickelgehalt	10	NOUN
 Bj	10	NOUN
 kollabierten	10	VERB,OTHER
@@ -99915,11 +99915,11 @@ Bartlett	10	NOUN
 Materiewelle	10	NOUN
 Rankine	10	NOUN
 deformierten	10	VERB,OTHER
-Kraftwerkes	10	NOUN
+Kraftwerkes	10	NOUN	Kraftwerk
 Wärmesenke	10	NOUN
 abzuändern	10	VERB
 Nahfeld	10	NOUN
-Feldtheorien	10	NOUN
+Feldtheorien	10	NOUN	Feldtheorie
 DARPA	10	NOUN
 begrenzende	10	OTHER
 Junk	10	NOUN,OTHER
@@ -99942,7 +99942,7 @@ Pressemeldungen	10	NOUN
 amabilis	10	OTHER
 Samenkorn	10	NOUN
 Schadinsekten	10	NOUN
-Weihnachtsbäume	10	NOUN
+Weihnachtsbäume	10	NOUN	Weihnachtsbaum
 erfundener	10	OTHER
 Wick	10	NOUN
 Pile	10	NOUN,OTHER
@@ -99951,18 +99951,18 @@ dreimonatiger	10	OTHER
 Raubmörder	10	NOUN
 wethouders	10	OTHER
 Landesentwicklung	10	NOUN
-Momentaufnahmen	10	NOUN
+Momentaufnahmen	10	NOUN	Momentaufnahme
 Paragraf	10	NOUN
 Justizministerin	10	NOUN
 Clavecin	10	NOUN
 Ordnungsprinzipien	10	NOUN
 Fifty	10	NOUN,OTHER
-Gitarrenverstärkern	10	NOUN
-Lichtungen	10	NOUN
+Gitarrenverstärkern	10	NOUN	Gitarrenverstärker
+Lichtungen	10	NOUN	Lichtung
 Apfelwein	10	NOUN
 domestica	10	OTHER
 religionsgeschichtliche	10	OTHER
-Werturteilen	10	NOUN
+Werturteilen	10	NOUN	Werturteil
 Wirtschaftsethik	10	NOUN
 Transzendentalien	10	NOUN
 Entscheidungssituationen	10	NOUN
@@ -99972,15 +99972,15 @@ Mundus	10	NOUN,OTHER
 intuitionistischen	10	OTHER
 utilitaristischen	10	OTHER
 Willensäußerung	10	NOUN
-Exponentialfunktionen	10	NOUN
-Potenzgesetze	10	NOUN
+Exponentialfunktionen	10	NOUN	Exponentialfunktion
+Potenzgesetze	10	NOUN	Potenzgesetz
 einschaltet	10	OTHER
-Chargen	10	NOUN
+Chargen	10	NOUN	Charge
 Elsbeth	10	NOUN
 Nachrichtenverkehr	10	NOUN
 zurückgelassene	10	OTHER
 kryptographisch	10	OTHER
-Steckern	10	NOUN
+Steckern	10	NOUN	Stecker
 hörenden	10	VERB
 Handhabbarkeit	10	NOUN
 Grönemeyer	10	NOUN
@@ -99990,9 +99990,9 @@ SMD	10	NOUN
 äquidistanten	10	OTHER
 Volksbefreiungsfront	10	NOUN
 Regierungsseite	10	NOUN
-Äthiopiern	10	NOUN
+Äthiopiern	10	NOUN	Äthiopier
 Tonbuchstaben	10	NOUN
-Ausschlüsse	10	NOUN
+Ausschlüsse	10	NOUN	Ausschluss
 Bombenabwürfe	10	NOUN
 Fachkenntnisse	10	NOUN
 Worker	10	NOUN
@@ -100008,11 +100008,11 @@ Bronnen	10	NOUN
 Revolutionierung	10	NOUN
 Vorabdruck	10	NOUN
 geschichtsphilosophischen	10	OTHER
-Kosenamen	10	NOUN
+Kosenamen	10	NOUN	Kosename
 Hollander	10	NOUN
 verkörpere	10	OTHER
 südeuropäische	10	OTHER
-Plattengrenzen	10	NOUN
+Plattengrenzen	10	NOUN	Plattengrenze
 ungewöhnlichem	10	OTHER
 Jupitersystem	10	NOUN
 auffälligstes	10	OTHER
@@ -100021,14 +100021,14 @@ Erdbahnebene	10	NOUN
 Abbremsung	10	NOUN
 Referenzellipsoid	10	NOUN
 vierzigsten	10	OTHER
-Feuchtsavannen	10	NOUN
+Feuchtsavannen	10	NOUN	Feuchtsavanne
 Sonnenfleckenzyklus	10	NOUN
 Mondrückseite	10	NOUN
 Lunationen	10	NOUN
 unterem	10	OTHER
 geologisches	10	OTHER
 Mondfinsternisse	10	NOUN
-Bedeckungen	10	NOUN
+Bedeckungen	10	NOUN	Bedeckung
 Harriot	10	NOUN
 PDCI	10	NOUN
 Nimba	10	NOUN
@@ -100042,10 +100042,10 @@ mannigfaltig	10	OTHER
 Musikbögen	10	NOUN
 Jah	10	NOUN,OTHER
 Kokosnuss	10	NOUN
-Rundfunksenders	10	NOUN
+Rundfunksenders	10	NOUN	Rundfunksender
 Fehr	10	NOUN
 Richtigstellung	10	NOUN
-Reichssicherheitshauptamts	10	NOUN
+Reichssicherheitshauptamts	10	NOUN	Reichssicherheitshauptamt
 Leichtbauweise	10	NOUN
 Handelsminister	10	NOUN
 Anlieger	10	NOUN
@@ -100053,20 +100053,20 @@ Eröffnungstag	10	NOUN
 Boileau	10	NOUN
 Grasset	10	NOUN
 Völkerkundemuseum	10	NOUN
-Erbauers	10	NOUN
+Erbauers	10	NOUN	Erbauer
 Maiglöckchen	10	NOUN
 Farbpigmente	10	NOUN
 Lanxess	10	NOUN
 ehrgeiziges	10	OTHER
 fragwürdiger	10	OTHER
-Fundaments	10	NOUN
+Fundaments	10	NOUN	Fundament
 Katastrophenfilm	10	NOUN
 Campari	10	NOUN
-Sendeantennen	10	NOUN
+Sendeantennen	10	NOUN	Sendeantenne
 gleichwertiges	10	OTHER
-Grammatikern	10	NOUN
+Grammatikern	10	NOUN	Grammatiker
 Arbitrarität	10	NOUN
-Nelken	10	NOUN
+Nelken	10	NOUN	Nelke
 absank	10	OTHER
 Stéphanie	10	NOUN
 Poaceae	10	NOUN
@@ -100082,9 +100082,9 @@ flektierende	10	OTHER
 Seigniorage	10	NOUN
 einzahlen	10	VERB
 Berechnungsverfahren	10	NOUN
-Nennwerten	10	NOUN
+Nennwerten	10	NOUN	Nennwert
 Fehlererkennung	10	NOUN
-Durkheims	10	NOUN
+Durkheims	10	NOUN	Durkheim
 plötzlichem	10	OTHER
 evolutionistische	10	OTHER
 überspannten	10	VERB,OTHER
@@ -100094,8 +100094,8 @@ Bryn	10	NOUN
 vorstellig	10	OTHER
 Artin	10	NOUN
 Stauffer	10	NOUN
-Erbinformationen	10	NOUN
-Maischen	10	NOUN
+Erbinformationen	10	NOUN	Erbinformation
+Maischen	10	NOUN	Maische
 Epistulae	10	NOUN
 Verdauungsenzyme	10	NOUN
 Phosphatgruppe	10	NOUN
@@ -100116,15 +100116,15 @@ Kaolinit	10	NOUN
 triploide	10	OTHER
 nachdenklich	10	OTHER
 Remilitarisierung	10	NOUN
-Schellackplatten	10	NOUN
+Schellackplatten	10	NOUN	Schellackplatte
 gesegneten	10	OTHER
 leugne	10	OTHER
 Varga	10	NOUN
 Gull	10	NOUN
 Supercomputing	10	NOUN
-Auslagen	10	NOUN
+Auslagen	10	NOUN	Auslage
 Linsensystem	10	NOUN
-Untersuchungs	10	NOUN
+Untersuchungs	10	NOUN	Untersuchung
 Pentax	10	NOUN
 infrarote	10	OTHER
 Bilddarstellung	10	NOUN
@@ -100132,12 +100132,12 @@ widerlegbar	10	OTHER
 Verschwörungstheoretiker	10	NOUN
 Anatidae	10	NOUN
 Eiderdaunen	10	NOUN
-Gefieders	10	NOUN
+Gefieders	10	NOUN	Gefieder
 Spätwinter	10	NOUN
 Cuthbert	10	NOUN
 Kosename	10	NOUN
-Gehegen	10	NOUN
-Minimums	10	NOUN
+Gehegen	10	NOUN	Gehege
+Minimums	10	NOUN	Minimum
 Schwesterart	10	NOUN
 sandigem	10	OTHER
 schädigend	10	OTHER
@@ -100146,16 +100146,16 @@ Verbiss	10	NOUN,OTHER
 Nahrungspflanze	10	NOUN
 gütlich	10	OTHER
 aggregierte	10	OTHER
-Buchtiteln	10	NOUN
+Buchtiteln	10	NOUN	Buchtitel
 Renatus	10	NOUN
 träumte	10	OTHER
-Glossare	10	NOUN
+Glossare	10	NOUN	Glossar
 Summarium	10	NOUN,OTHER
 Einbinder	10	NOUN
 etabliertes	10	OTHER
 erläuternde	10	OTHER
-Widmungen	10	NOUN
-Hochschullehrern	10	NOUN
+Widmungen	10	NOUN	Widmung
+Hochschullehrern	10	NOUN	Hochschullehrer
 Fügung	10	NOUN
 aufbrachten	10	VERB
 Rückwendung	10	NOUN
@@ -100164,18 +100164,18 @@ PHD	10	NOUN
 veganen	10	OTHER
 gemittelt	10	OTHER
 Glykoproteine	10	NOUN
-Stiers	10	NOUN
-Stieres	10	NOUN
+Stiers	10	NOUN	Stier
+Stieres	10	NOUN	Stier
 Wasserelektrolyse	10	NOUN
 dielektrische	10	OTHER
 Leitungselektronen	10	NOUN
 Spannungsbegrenzung	10	NOUN
 Graduiertenschule	10	NOUN
 deduktive	10	OTHER
-Tripeln	10	NOUN
+Tripeln	10	NOUN	Tripel
 Vollwinkel	10	NOUN
 Direktorat	10	NOUN
-Badewannen	10	NOUN
+Badewannen	10	NOUN	Badewanne
 Augenlicht	10	NOUN
 kompensierten	10	VERB,OTHER
 Ursachenforschung	10	NOUN
@@ -100198,7 +100198,7 @@ uneindeutig	10	OTHER
 Schlagfertigkeit	10	NOUN
 Cy	10	NOUN,OTHER
 Rockstar	10	NOUN
-Lebenserfahrungen	10	NOUN
+Lebenserfahrungen	10	NOUN	Lebenserfahrung
 Aushilfe	10	NOUN
 Gesetzlosigkeit	10	NOUN
 einmischten	10	VERB
@@ -100215,10 +100215,10 @@ Zerwürfnissen	10	NOUN
 plagten	10	VERB
 Geldsorgen	10	NOUN
 vorwegnimmt	10	OTHER
-Idyllen	10	NOUN
+Idyllen	10	NOUN	Idyll
 ausländerfeindlichen	10	OTHER
 ausdehnten	10	VERB
-Richelieus	10	NOUN
+Richelieus	10	NOUN	Richelieu
 Cohabitation	10	NOUN
 Regionalrates	10	NOUN
 verwaltungsrechtliche	10	OTHER
@@ -100236,82 +100236,82 @@ Evo	10	NOUN
 Mirjam	10	NOUN
 Stadtgesellschaft	10	NOUN
 orthopädische	10	NOUN,OTHER
-Militärflugzeuge	10	NOUN
+Militärflugzeuge	10	NOUN	Militärflugzeug
 einsatzfähige	10	OTHER
 Ely	10	NOUN
 Mittelmeerinsel	10	NOUN
 Schiffsführung	10	NOUN
 Murg	10	NOUN
-Häuserzeilen	10	NOUN
+Häuserzeilen	10	NOUN	Häuserzeile
 Giebelhaus	10	NOUN
 requiriert	10	OTHER
 Tagestourismus	10	NOUN
 angehörende	10	OTHER
 Ordinariat	10	NOUN
 Abendrealschule	10	NOUN
-Radwegs	10	NOUN
+Radwegs	10	NOUN	Radweg
 Seerose	10	NOUN
 Habsburgerreiches	10	NOUN
 einjähriges	10	OTHER
-Dienstreisen	10	NOUN
+Dienstreisen	10	NOUN	Dienstreise
 Jizchak	10	NOUN
-Grammophone	10	NOUN
+Grammophone	10	NOUN	Grammophon
 Graal	10	NOUN
 entsagte	10	OTHER
 verabscheut	10	OTHER
-Religionsphilosophen	10	NOUN
-Varietés	10	NOUN
+Religionsphilosophen	10	NOUN	Religionsphilosoph
+Varietés	10	NOUN	Varieté
 haderte	10	OTHER
 anwies	10	OTHER
 Buchläden	10	NOUN
 Fotopapier	10	NOUN
 abgezeichnet	10	OTHER
-Fehlinterpretationen	10	NOUN
+Fehlinterpretationen	10	NOUN	Fehlinterpretation
 Fotolabor	10	NOUN
-Rekorden	10	NOUN
-Sechsecken	10	NOUN
-Graphits	10	NOUN
+Rekorden	10	NOUN	Rekord
+Sechsecken	10	NOUN	Sechseck
+Graphits	10	NOUN	Graphit
 Hunnenreich	10	NOUN
 Heerkönig	10	NOUN
-Pestwellen	10	NOUN
+Pestwellen	10	NOUN	Pestwelle
 Vouillé	10	NOUN
 Mythenbildung	10	NOUN
 demütigenden	10	OTHER
 Erbteil	10	NOUN
-Reichsitaliens	10	NOUN
+Reichsitaliens	10	NOUN	Reichsitalien
 Gregorii	10	NOUN
 Lutizen	10	NOUN
-Kapetingern	10	NOUN
-Knuts	10	NOUN
+Kapetingern	10	NOUN	Kapetinger
+Knuts	10	NOUN	Knut
 Silberwährung	10	NOUN
 Vasallität	10	NOUN
 Aufständischer	10	NOUN,OTHER
 urbanisierten	10	VERB
 Verfügungsrecht	10	NOUN
-Hausherrn	10	NOUN
+Hausherrn	10	NOUN	Hausherr
 Latifundien	10	NOUN
 Herrschaftsapparat	10	NOUN
-Alkuins	10	NOUN
+Alkuins	10	NOUN	Alkuin
 berichtigen	10	VERB
 durchgesehen	10	VERB
-Fachwerke	10	NOUN
+Fachwerke	10	NOUN	Fachwerk
 westgotischer	10	OTHER
 Secundus	10	NOUN,OTHER
-Erichs	10	NOUN
+Erichs	10	NOUN	Erich
 Israeli	10	NOUN
 erbaten	10	VERB
 Wortgottesdienst	10	NOUN
 Artussage	10	NOUN
 Elternpaar	10	NOUN
 Emissionsrechtehandel	10	NOUN
-Höchstgeschwindigkeiten	10	NOUN
+Höchstgeschwindigkeiten	10	NOUN	Höchstgeschwindigkeit
 Bürgerkriegsflüchtlinge	10	NOUN
 DFP	10	NOUN
 unterwandern	10	VERB
 Silvana	10	NOUN
 Haseloff	10	NOUN
-Grundideen	10	NOUN
-Düften	10	NOUN
+Grundideen	10	NOUN	Grundidee
+Düften	10	NOUN	Duft
 Fluglage	10	NOUN
 Strahltriebwerke	10	NOUN
 Aramid	10	NOUN
@@ -100340,12 +100340,12 @@ zit	10	OTHER
 Erbisdorf	10	NOUN
 Wallgraben	10	NOUN
 Freyberg	10	NOUN
-Westtürme	10	NOUN
+Westtürme	10	NOUN	Westturm
 Nosseni	10	NOUN
 Mühlgraben	10	NOUN
 Werdau	10	NOUN
 Stadtratsbeschluss	10	NOUN
-Karosserien	10	NOUN
+Karosserien	10	NOUN	Karosserie
 Briggs	10	NOUN
 Ponton	10	NOUN
 Kombi	10	NOUN
@@ -100378,7 +100378,7 @@ abzuzeichnen	10	VERB
 Desillusionierung	10	NOUN
 weitergebaut	10	OTHER
 dürftigen	10	OTHER
-Gärtnern	10	NOUN
+Gärtnern	10	NOUN	Gärtner
 Leandro	10	NOUN
 Statista	10	NOUN
 behagte	10	OTHER
@@ -100400,7 +100400,7 @@ Sault	10	NOUN
 wüsste	10	OTHER
 Berndeutsch	10	NOUN
 Prosawerk	10	NOUN
-Einzelbänden	10	NOUN
+Einzelbänden	10	NOUN	Einzelbände
 Flughafengebäude	10	NOUN
 Stadtverordneter	10	NOUN
 Betriebsaufnahme	10	NOUN
@@ -100415,24 +100415,24 @@ ausdauernd	10	OTHER
 Geschwindigkeitsrekord	10	NOUN
 Kurbelgehäuse	10	NOUN
 Drehgestell	10	NOUN
-Austritten	10	NOUN
+Austritten	10	NOUN	Austritt
 Punktgleichheit	10	NOUN
 Finalisten	10	NOUN
 Vorrundenspiele	10	NOUN
 gewinnenden	10	OTHER
-Dopings	10	NOUN
+Dopings	10	NOUN	Doping
 Vulpes	10	NOUN,OTHER
-Fells	10	NOUN
+Fells	10	NOUN	Fell
 adulter	10	OTHER
 Orientalismus	10	NOUN
-Färingern	10	NOUN
+Färingern	10	NOUN	Färinger
 Kirchensprache	10	NOUN
 Trinkgelage	10	NOUN
 Mannschaftskapitän	10	NOUN
-Länderspielen	10	NOUN
+Länderspielen	10	NOUN	Länderspiel
 uff	10	OTHER
 Aufstiegsrunde	10	NOUN
-Gastwirte	10	NOUN
+Gastwirte	10	NOUN	Gastwirt
 Gruppenspiel	10	NOUN
 Morlock	10	NOUN
 Einlaufen	10	NOUN
@@ -100479,14 +100479,14 @@ bestätige	10	OTHER
 Propagandist	10	NOUN
 Methusalem	10	NOUN
 eingeladenen	10	OTHER
-Aufsichtsratsmitglieder	10	NOUN
+Aufsichtsratsmitglieder	10	NOUN	Aufsichtsratsmitglied
 Editorial	10	NOUN
 sechsseitige	10	OTHER
 Illies	10	NOUN
 Franciszek	10	NOUN
 Fingersatz	10	NOUN
-Musiklebens	10	NOUN
-Konzertes	10	NOUN
+Musiklebens	10	NOUN	Musikleben
+Konzertes	10	NOUN	Konzert
 Stefani	10	NOUN
 gesuchter	10	OTHER
 weitverbreitetes	10	OTHER
@@ -100495,7 +100495,7 @@ Scherzo	10	NOUN
 Trauergäste	10	NOUN
 Conservatoire	10	NOUN
 Dire	10	NOUN
-Liszts	10	NOUN
+Liszts	10	NOUN	Liszt
 rubato	10	OTHER
 beträchtlichem	10	OTHER
 brandmarkte	10	OTHER
@@ -100504,12 +100504,12 @@ Zofia	10	NOUN
 Bohdan	10	NOUN
 genaueste	10	OTHER
 unzweideutig	10	OTHER
-Rundfunksendern	10	NOUN
+Rundfunksendern	10	NOUN	Rundfunksender
 Mandränke	10	NOUN
-Lebensgeschichten	10	NOUN
+Lebensgeschichten	10	NOUN	Lebensgeschichte
 Gleichgesinnter	10	NOUN,OTHER
 Bezirksstelle	10	NOUN
-Bezugsgrößen	10	NOUN
+Bezugsgrößen	10	NOUN	Bezugsgröße
 Lichtfarbe	10	NOUN
 Munk	10	NOUN
 Tripolitanien	10	NOUN
@@ -100525,7 +100525,7 @@ darstellerische	10	OTHER
 überdimensioniert	10	OTHER
 Krisenbewältigung	10	NOUN
 Überkapazitäten	10	NOUN
-Eroberungskriege	10	NOUN
+Eroberungskriege	10	NOUN	Eroberungskrieg
 Awarenmark	10	NOUN
 Endrekursion	10	NOUN
 Mantisse	10	NOUN
@@ -100533,7 +100533,7 @@ Ransom	10	NOUN
 figurae	10	OTHER
 Rechenbrett	10	NOUN
 kaufmännisch	10	OTHER
-Eigenwerten	10	NOUN
+Eigenwerten	10	NOUN	Eigenwert
 Zwischenhirn	10	NOUN
 endogener	10	OTHER
 zuverlässigsten	10	OTHER
@@ -100541,11 +100541,11 @@ Aostatal	10	NOUN
 Monadologie	10	NOUN
 Walkman	10	NOUN
 Nasalierung	10	NOUN
-Frequenzbereichen	10	NOUN
+Frequenzbereichen	10	NOUN	Frequenzbereich
 gemittelten	10	OTHER
 Büßer	10	NOUN
 Fastenmonat	10	NOUN
-Erdumfangs	10	NOUN
+Erdumfangs	10	NOUN	Erdumfang
 specialis	10	OTHER
 Landschaftsökologie	10	NOUN
 Gründungsgeschichte	10	NOUN
@@ -100563,15 +100563,15 @@ Drohgebärden	10	NOUN
 Kühlgeräte	10	NOUN
 Exportverbot	10	NOUN
 tausendste	10	OTHER
-Grafikern	10	NOUN
+Grafikern	10	NOUN	Grafiker
 mallorquinischen	10	OTHER
 einweihen	10	VERB
 niederreißen	10	VERB
 unwahr	10	OTHER
 Mitgliedes	10	NOUN
 McTaggart	10	NOUN
-Horne	10	NOUN
-Schutzgebietes	10	NOUN
+Horne	10	NOUN	Horn
+Schutzgebietes	10	NOUN	Schutzgebiet
 embryonaler	10	OTHER
 basisdemokratischen	10	OTHER
 Meeresmuseum	10	NOUN
@@ -100588,14 +100588,14 @@ setz	10	OTHER
 linksufrig	10	OTHER
 Fußverkehr	10	NOUN
 Dezimeter	10	NOUN
-Steges	10	NOUN
+Steges	10	NOUN	Steg
 rechtwinkelig	10	OTHER
 Stahlskulptur	10	NOUN
 bilingual	10	OTHER
 fertiggestelltes	10	OTHER
 Naturschutzbund	10	NOUN
 Musikfilm	10	NOUN
-Witterungsverhältnissen	10	NOUN
+Witterungsverhältnissen	10	NOUN	Witterungsverhältnisse
 Eislaufen	10	NOUN
 Versicherungskonzern	10	NOUN
 Pichler	10	NOUN
@@ -100612,7 +100612,7 @@ Cosmographicum	10	NOUN,OTHER
 Tridentinischen	10	NOUN,OTHER
 Elsevier	10	NOUN
 Erstdruck	10	NOUN
-Bewegungsabläufen	10	NOUN
+Bewegungsabläufen	10	NOUN	Bewegungsablauf
 sphericalangle	10	OTHER
 Schwingungsdauer	10	NOUN
 Felsblock	10	NOUN
@@ -100629,15 +100629,15 @@ Erdneuzeit	10	NOUN
 Gletscherschmelze	10	NOUN
 Permafrostböden	10	NOUN
 Gegenstrahlung	10	NOUN
-Temperaturmessungen	10	NOUN
+Temperaturmessungen	10	NOUN	Temperaturmessung
 Energieeintrag	10	NOUN
 Meteorological	10	NOUN
 fror	10	OTHER
-Fertigungs	10	NOUN
+Fertigungs	10	NOUN	Fertigung
 irreversibler	10	OTHER
 tiefgehende	10	OTHER
 Umweltbilanz	10	NOUN
-Hackmans	10	NOUN
+Hackmans	10	NOUN	Hackman
 Höllenfahrt	10	NOUN
 Filmdienst	10	NOUN
 Personalien	10	NOUN
@@ -100645,7 +100645,7 @@ eingewanderter	10	OTHER
 Amaterasu	10	NOUN
 Ndebele	10	NOUN
 nihilo	10	OTHER
-Indianerstämme	10	NOUN
+Indianerstämme	10	NOUN	Indianerstamm
 Varuna	10	NOUN
 amphibischen	10	OTHER
 Agni	10	NOUN
@@ -100668,7 +100668,7 @@ CCR	10	NOUN
 Textsorte	10	NOUN
 ostgermanische	10	NOUN,OTHER
 elbgermanischen	10	OTHER
-Laufs	10	NOUN
+Laufs	10	NOUN	Lauf
 Fettdruck	10	NOUN
 periodisches	10	OTHER
 Lehrwerk	10	NOUN
@@ -100678,7 +100678,7 @@ ungeradem	10	OTHER
 Körpererweiterung	10	NOUN
 reagierenden	10	OTHER
 Jakobson	10	NOUN
-Musikstils	10	NOUN
+Musikstils	10	NOUN	Musikstil
 Gitarrenspiel	10	NOUN
 Blur	10	NOUN
 Romanhandlung	10	NOUN
@@ -100698,16 +100698,16 @@ CFDT	10	NOUN
 Être	10	NOUN,OTHER
 Streikwelle	10	NOUN
 ARU	10	NOUN
-Standpunktes	10	NOUN
+Standpunktes	10	NOUN	Standpunkt
 Verwaltungsmittelpunkt	10	NOUN
 Ämterlaufbahn	10	NOUN
-Prokurators	10	NOUN
+Prokurators	10	NOUN	Prokurator
 Sänfte	10	NOUN
 Tochterkern	10	NOUN
 Histon	10	NOUN
 Geschlechtszellen	10	NOUN
 Pneumatologie	10	NOUN
-Grenzfällen	10	NOUN
+Grenzfällen	10	NOUN	Grenzfall
 Baggersee	10	NOUN
 Teilfürstentum	10	NOUN
 Leinetal	10	NOUN
@@ -100725,12 +100725,12 @@ Maschpark	10	NOUN
 Hochschulsport	10	NOUN
 PPR	10	NOUN
 Erdkörper	10	NOUN
-Intrusionen	10	NOUN
+Intrusionen	10	NOUN	Intrusion
 XXIX	10	NOUN
 Lamy	10	NOUN
 Rieder	10	NOUN
 eingeräumten	10	OTHER
-Ganymeds	10	NOUN
+Ganymeds	10	NOUN	Ganymed
 nachgegeben	10	VERB
 äquatorial	10	NOUN,OTHER
 zentrierten	10	VERB,OTHER
@@ -100741,8 +100741,8 @@ Fernsehwerbung	10	NOUN
 Marktgeschehen	10	NOUN
 Vollmondes	10	NOUN
 gregorianischem	10	OTHER
-Nationalfeiertage	10	NOUN
-Kalenderjahren	10	NOUN
+Nationalfeiertage	10	NOUN	Nationalfeiertag
+Kalenderjahren	10	NOUN	Kalenderjahr
 interaction	10	NOUN,OTHER
 Hineinwachsen	10	NOUN,OTHER
 Epizykeltheorie	10	NOUN
@@ -100754,17 +100754,17 @@ Alvise	10	NOUN
 Statistikamtes	10	NOUN
 Ölpalme	10	NOUN
 Reisebegleiter	10	NOUN
-Erdnüssen	10	NOUN
+Erdnüssen	10	NOUN	Erdnuss
 heruntergespielt	10	OTHER
 Suso	10	NOUN
 Volkssport	10	NOUN
 Siphon	10	NOUN
 Pektorale	10	NOUN
-Schäfte	10	NOUN
+Schäfte	10	NOUN	Schaft
 figürlicher	10	OTHER
 kunstgewerbliche	10	OTHER
 bisherigem	10	OTHER
-Bahnkurven	10	NOUN
+Bahnkurven	10	NOUN	Bahnkurve
 Bonickhausen	10	NOUN
 Alpenhauptkamms	10	NOUN
 Bergsturz	10	NOUN
@@ -100787,8 +100787,8 @@ Braunkohlevorkommen	10	NOUN
 artenarm	10	OTHER
 Insektenordnungen	10	NOUN
 Stammväter	10	NOUN
-Polizeistationen	10	NOUN
-Berufsausbildungen	10	NOUN
+Polizeistationen	10	NOUN	Polizeistation
+Berufsausbildungen	10	NOUN	Berufsausbildung
 Alkoholmissbrauch	10	NOUN
 Roos	10	NOUN
 Probenoberfläche	10	NOUN
@@ -100799,14 +100799,14 @@ Subvention	10	NOUN
 Spielbeginn	10	NOUN
 Eröffnungsspiel	10	NOUN
 positions	10	NOUN,OTHER
-Schachspiels	10	NOUN
+Schachspiels	10	NOUN	Schachspiel
 Grannen	10	NOUN
 Goldschlägerhaut	10	NOUN
 Dehnbarkeit	10	NOUN
 Amylopektin	10	NOUN
-Gleichungssystemen	10	NOUN
+Gleichungssystemen	10	NOUN	Gleichungssystem
 Frontinus	10	NOUN
-Kegelschnitten	10	NOUN
+Kegelschnitten	10	NOUN	Kegelschnitt
 Viète	10	NOUN
 zuspitzte	10	OTHER
 aufzuholen	10	VERB
@@ -100817,7 +100817,7 @@ Othello	10	NOUN
 purpurfarben	10	OTHER
 arabicum	10	OTHER
 Mex	10	NOUN
-Gilgameschs	10	NOUN
+Gilgameschs	10	NOUN	Gilgamesch
 Qumranrollen	10	NOUN
 Menschenpaar	10	NOUN
 Wiederentdecker	10	NOUN
@@ -100830,16 +100830,16 @@ Fate	10	NOUN,OTHER
 Studentenzeit	10	NOUN
 wiederzuerkennen	10	VERB
 missfielen	10	VERB
-Religionskriegen	10	NOUN
+Religionskriegen	10	NOUN	Religionskriege
 Vorbote	10	NOUN
-Kriegserklärungen	10	NOUN
+Kriegserklärungen	10	NOUN	Kriegserklärung
 umstürzen	10	NOUN,OTHER
 Rüstungswettlauf	10	NOUN
 Vielvölkerstaates	10	NOUN
 Tachometer	10	NOUN
 Anfangsgeschwindigkeit	10	NOUN
 nichtrelativistischen	10	OTHER
-Urstromtäler	10	NOUN
+Urstromtäler	10	NOUN	Urstromtal
 Siegesallee	10	NOUN
 Zwischenhandel	10	NOUN
 Zeughauses	10	NOUN
@@ -100855,15 +100855,15 @@ Demonstrant	10	NOUN
 Bessy	10	NOUN
 Sanierungsgebiet	10	NOUN
 defizitäre	10	OTHER
-Maßgaben	10	NOUN
-Mitschnitte	10	NOUN
+Maßgaben	10	NOUN	Maßgabe
+Mitschnitte	10	NOUN	Mitschnitt
 Sondereinheit	10	NOUN
 Pegasi	10	NOUN
 Lebenserhaltungssysteme	10	NOUN
 Alhazen	10	NOUN
 Peregrinus	10	NOUN,OTHER
 Epiker	10	NOUN
-Körperteils	10	NOUN
+Körperteils	10	NOUN	Körperteil
 Herrschergeschlecht	10	NOUN
 Slavica	10	NOUN
 Scivias	10	NOUN
@@ -100881,30 +100881,30 @@ unübersehbare	10	OTHER
 Reichsrätekongress	10	NOUN
 Ruhrarmee	10	NOUN
 Kriegsfinanzierung	10	NOUN
-Novembers	10	NOUN
+Novembers	10	NOUN	November
 Mädel	10	NOUN
 Ostexpansion	10	NOUN
 Beraubung	10	NOUN
 Spruchkammerverfahren	10	NOUN
-Auschwitzprozesse	10	NOUN
+Auschwitzprozesse	10	NOUN	Auschwitzprozess
 Muff	10	NOUN
-Brandstiftungen	10	NOUN
+Brandstiftungen	10	NOUN	Brandstiftung
 dringlichen	10	OTHER
 ausweglose	10	OTHER
 Gewaltandrohung	10	NOUN
-Jahresberichte	10	NOUN
-Mittelmeerinseln	10	NOUN
+Jahresberichte	10	NOUN	Jahresbericht
+Mittelmeerinseln	10	NOUN	Mittelmeerinsel
 Friedensperiode	10	NOUN
 Gortys	10	NOUN
 Rhodier	10	NOUN
 Genova	10	NOUN
 Leerlaufspannung	10	NOUN
-Reichsgerichts	10	NOUN
+Reichsgerichts	10	NOUN	Reichsgericht
 ergangene	10	OTHER
 GewStG	10	NOUN
 veräußerten	10	VERB,OTHER
 scriptstyle	10	OTHER
-Strahlungs	10	NOUN
+Strahlungs	10	NOUN	Strahlung
 Gasfüllung	10	NOUN
 kinematischen	10	OTHER
 Streu	10	NOUN
@@ -100922,7 +100922,7 @@ Dione	10	NOUN
 Stater	10	NOUN
 Parthenos	10	NOUN
 Mykonos	10	NOUN
-Bronzefiguren	10	NOUN
+Bronzefiguren	10	NOUN	Bronzefigur
 Lyngby	10	NOUN
 Njörd	10	NOUN
 opferten	10	VERB
@@ -100931,8 +100931,8 @@ höfisch	10	OTHER
 Zeitschlitz	10	NOUN
 Subscriber	10	NOUN
 Leistungsmerkmale	10	NOUN
-Mobilgeräten	10	NOUN
-Übertragungssystemen	10	NOUN
+Mobilgeräten	10	NOUN	Mobilgerät
+Übertragungssystemen	10	NOUN	Übertragungssystem
 Verschlüsselungsalgorithmus	10	NOUN
 SGSN	10	NOUN
 Hauptarten	10	NOUN
@@ -100943,7 +100943,7 @@ Rechtsunsicherheit	10	NOUN
 SourceForge	10	NOUN
 Albigenser	10	NOUN
 Rechtfertigungsschrift	10	NOUN
-Missbrauchsfällen	10	NOUN
+Missbrauchsfällen	10	NOUN	Missbrauchsfälle
 Crescendo	10	NOUN
 Chaitin	10	NOUN
 antikatholische	10	OTHER
@@ -100974,22 +100974,22 @@ rationelle	10	OTHER
 heidnisches	10	OTHER
 Weihnachtsschmuck	10	NOUN
 Presbyterian	10	NOUN
-Stimmenzahlen	10	NOUN
+Stimmenzahlen	10	NOUN	Stimmenzahl
 Reeperbahn	10	NOUN
-Nebenarme	10	NOUN
+Nebenarme	10	NOUN	Nebenarm
 Uhlenhorst	10	NOUN
-Umweltverbänden	10	NOUN
+Umweltverbänden	10	NOUN	Umweltverbände
 Winterhude	10	NOUN
-Durchgangsverkehrs	10	NOUN
+Durchgangsverkehrs	10	NOUN	Durchgangsverkehr
 ausgegliederte	10	OTHER
 Körber	10	NOUN
 Tipp	10	NOUN
 Freenet	10	NOUN,OTHER
 vorzurücken	10	VERB
-Einkaufspassagen	10	NOUN
+Einkaufspassagen	10	NOUN	Einkaufspassage
 Leckstrom	10	NOUN
-Fusionsreaktoren	10	NOUN
-Ventils	10	NOUN
+Fusionsreaktoren	10	NOUN	Fusionsreaktor
+Ventils	10	NOUN	Ventil
 Nichtleiter	10	NOUN
 Hypertextes	10	NOUN
 aufgeschlagenes	10	OTHER
@@ -101022,7 +101022,7 @@ Hammaburgensis	10	NOUN
 Kalkfelsen	10	NOUN
 Wittmann	10	NOUN
 Hertling	10	NOUN
-Baugebiete	10	NOUN
+Baugebiete	10	NOUN	Baugebiet
 abwechslungsreiches	10	OTHER
 Ausflügler	10	NOUN
 Ithaca	10	NOUN
@@ -101036,7 +101036,7 @@ Almere	10	NOUN
 Pairs	10	NOUN,OTHER
 Brétigny	10	NOUN
 Azincourt	10	NOUN
-Nordfrankreichs	10	NOUN
+Nordfrankreichs	10	NOUN	Nordfrankreich
 frommes	10	OTHER
 Codepunkt	10	NOUN
 Anwendungsschicht	10	NOUN
@@ -101044,7 +101044,7 @@ Accept	10	NOUN
 vorderste	10	OTHER
 Municipality	10	NOUN,OTHER
 Meeresbiologie	10	NOUN
-Hirohitos	10	NOUN
+Hirohitos	10	NOUN	Hirohito
 reglementierte	10	OTHER
 Agitator	10	NOUN
 Tōjō	10	NOUN
@@ -101052,7 +101052,7 @@ Hideki	10	NOUN
 Kaiserherrschaft	10	NOUN
 Reject	10	NOUN,OTHER
 Dress	10	NOUN,OTHER
-Jakobswegs	10	NOUN
+Jakobswegs	10	NOUN	Jakobsweg
 Landgemeindeordnung	10	NOUN
 Primäreinkommen	10	NOUN
 Luftsportverein	10	NOUN
@@ -101068,23 +101068,23 @@ Rotordurchmesser	10	NOUN
 Heckrotor	10	NOUN
 Steuerbarkeit	10	NOUN
 Rotorkopf	10	NOUN
-Pumas	10	NOUN
+Pumas	10	NOUN	Puma
 Gusmão	10	NOUN
 Tragkraft	10	NOUN
 Naqada	10	NOUN
 Fürstengrab	10	NOUN
 demotischen	10	NOUN,OTHER
 wissenschaftshistorischen	10	OTHER
-Grundvoraussetzungen	10	NOUN
+Grundvoraussetzungen	10	NOUN	Grundvoraussetzung
 hawaiisch	10	OTHER
-Polynesiern	10	NOUN
+Polynesiern	10	NOUN	Polynesier
 Perot	10	NOUN
 herausfordernd	10	OTHER
 Transformationsmatrix	10	NOUN
 Absolutbetrag	10	NOUN
 Filterbank	10	NOUN
 Daubechies	10	NOUN
-Romzugs	10	NOUN
+Romzugs	10	NOUN	Romzug
 nachgab	10	OTHER
 crimen	10	OTHER
 Prestigegewinn	10	NOUN
@@ -101092,11 +101092,11 @@ ernstzunehmender	10	OTHER
 Sinnstiftung	10	NOUN
 Militärdoktrin	10	NOUN
 CNE	10	NOUN
-Wahlkampagnen	10	NOUN
-Maduros	10	NOUN
+Wahlkampagnen	10	NOUN	Wahlkampagne
+Maduros	10	NOUN	Maduro
 Preiskontrollen	10	NOUN
 Ölgeschäft	10	NOUN
-Sendefrequenzen	10	NOUN
+Sendefrequenzen	10	NOUN	Sendefrequenz
 Lueg	10	NOUN
 Salzabbau	10	NOUN
 Salzproduktion	10	NOUN
@@ -101121,11 +101121,11 @@ achtern	10	OTHER
 Holzbedarf	10	NOUN
 Kolding	10	NOUN
 Ostseehandel	10	NOUN
-Ordensrittern	10	NOUN
+Ordensrittern	10	NOUN	Ordensritter
 Westsee	10	NOUN
 Schiffbauer	10	NOUN
 Handelsreise	10	NOUN
-Heinos	10	NOUN
+Heinos	10	NOUN	Heino
 dominierendes	10	OTHER
 Lothal	10	NOUN
 Chefingenieur	10	NOUN
@@ -101144,7 +101144,7 @@ sauerstoffarmen	10	OTHER
 Dottersack	10	NOUN
 muskulösen	10	OTHER
 vagus	10	OTHER
-Infarkte	10	NOUN
+Infarkte	10	NOUN	Infarkt
 SPECT	10	NOUN
 Sechsfache	10	NOUN,OTHER
 bewusstlosen	10	NOUN,OTHER
@@ -101159,11 +101159,11 @@ massereiche	10	OTHER
 vertrauenswürdigen	10	OTHER
 Handshake	10	NOUN
 Anwahl	10	NOUN
-Prätendenten	10	NOUN
+Prätendenten	10	NOUN	Prätendent
 Konziliarismus	10	NOUN
 Geharnischten	10	NOUN,OTHER
 Oberhauptes	10	NOUN
-Habsburgers	10	NOUN
+Habsburgers	10	NOUN	Habsburger
 einzuverleiben	10	VERB
 abtrat	10	OTHER
 Einmütigkeit	10	NOUN
@@ -101173,16 +101173,16 @@ Regierungsbehörde	10	NOUN
 Monumenta	10	NOUN
 variables	10	OTHER
 brütende	10	OTHER
-Hornmoosen	10	NOUN
+Hornmoosen	10	NOUN	Hornmoose
 Farn	10	NOUN
-Bitfolgen	10	NOUN
+Bitfolgen	10	NOUN	Bitfolge
 Meisterprüfung	10	NOUN
 Hochschulzugangsberechtigung	10	NOUN
 Schilddrüsenunterfunktion	10	NOUN
 Bildecke	10	NOUN
 Nereide	10	NOUN
 Stu	10	NOUN
-Ärztekammern	10	NOUN
+Ärztekammern	10	NOUN	Ärztekammer
 Jugendlichenpsychotherapeuten	10	NOUN
 Helsingfors	10	NOUN
 Helsingør	10	NOUN
@@ -101193,12 +101193,12 @@ Pilotanlage	10	NOUN
 Polarforscher	10	NOUN
 Frachtraum	10	NOUN
 COSTAR	10	NOUN
-Spektralbereiche	10	NOUN
+Spektralbereiche	10	NOUN	Spektralbereich
 Außenbordeinsatz	10	NOUN
 temperature	10	NOUN,OTHER
 Vignettierung	10	NOUN
 Politologie	10	NOUN
-Erziehungswissenschaften	10	NOUN
+Erziehungswissenschaften	10	NOUN	Erziehungswissenschaft
 Aufsichtsratsmitglied	10	NOUN
 Havelniederung	10	NOUN
 Normannia	10	NOUN
@@ -101227,8 +101227,8 @@ durchdrang	10	OTHER
 Rockgruppe	10	NOUN
 frühislamischen	10	OTHER
 Prophetenmoschee	10	NOUN
-Südrusslands	10	NOUN
-Javas	10	NOUN
+Südrusslands	10	NOUN	Südrussland
+Javas	10	NOUN	Java
 Kolonialbeamten	10	NOUN
 Imamat	10	NOUN
 Mālik	10	NOUN
@@ -101238,7 +101238,7 @@ Sufik	10	NOUN
 Haddschi	10	NOUN
 Selbstlosigkeit	10	NOUN
 Manzanares	10	NOUN
-Kiesgruben	10	NOUN
+Kiesgruben	10	NOUN	Kiesgrube
 pflastern	10	NOUN,OTHER
 herausragen	10	VERB
 Keno	10	NOUN
@@ -101259,39 +101259,39 @@ Eirene	10	NOUN,OTHER
 Bauschmuck	10	NOUN
 Haydarpaşa	10	NOUN
 Rockfestival	10	NOUN
-Autobahnbrücken	10	NOUN
+Autobahnbrücken	10	NOUN	Autobahnbrücke
 Lastenträger	10	NOUN
 heimgekehrten	10	OTHER
-Informationstechnologien	10	NOUN
+Informationstechnologien	10	NOUN	Informationstechnologie
 Führungsgremien	10	NOUN
 Fridtjof	10	NOUN
 Hilfsaktion	10	NOUN
 Dreiviertelmehrheit	10	NOUN
 alveolar	10	OTHER
-Hannibals	10	NOUN
+Hannibals	10	NOUN	Hannibal
 Reason	10	NOUN,OTHER
 Verwissenschaftlichung	10	NOUN
 Bedeutungsinhalt	10	NOUN
-Interdependenzen	10	NOUN
+Interdependenzen	10	NOUN	Interdependenz
 Aufheizen	10	NOUN,OTHER
 Masseverlust	10	NOUN
 ultraviolette	10	OTHER
 flexione	10	OTHER
 abnehmend	10	OTHER
-Spracheinheiten	10	NOUN
+Spracheinheiten	10	NOUN	Spracheinheit
 Goldoni	10	NOUN
 Lateinunterricht	10	NOUN
-Oktette	10	NOUN
+Oktette	10	NOUN	Oktett
 Skineffekt	10	NOUN
 entgegengerichtet	10	OTHER
 magnetisierbaren	10	OTHER
 aufgespannten	10	OTHER
 Fließweg	10	NOUN
-Barsche	10	NOUN
+Barsche	10	NOUN	Barsch
 Rotauge	10	NOUN
 Musikkapelle	10	NOUN
 Ahmedabad	10	NOUN
-Paläogens	10	NOUN
+Paläogens	10	NOUN	Paläogen
 Zentralindien	10	NOUN
 Halbwüste	10	NOUN
 Makaken	10	NOUN
@@ -101302,7 +101302,7 @@ Kashmiri	10	NOUN
 Maithili	10	NOUN
 Santali	10	NOUN
 Schuldknechtschaft	10	NOUN
-Kaschmirs	10	NOUN
+Kaschmirs	10	NOUN	Kaschmir
 Bildungspflicht	10	NOUN
 Schwachpunkt	10	NOUN
 Sesam	10	NOUN
@@ -101314,8 +101314,8 @@ Steinmetzarbeiten	10	NOUN
 Yamuna	10	NOUN
 Rohan	10	NOUN
 gemauert	10	OTHER
-Marshalls	10	NOUN
-Subsystemen	10	NOUN
+Marshalls	10	NOUN	Marshall
+Subsystemen	10	NOUN	Subsystem
 geschlechtsneutrale	10	OTHER
 Inuvialuit	10	NOUN
 Plancksche	10	NOUN
@@ -101332,17 +101332,17 @@ Vollzugsordnung	10	NOUN
 sechsstellige	10	OTHER
 Gewaltkriminalität	10	NOUN
 Todesschwadronen	10	NOUN
-Zuwiderhandlungen	10	NOUN
+Zuwiderhandlungen	10	NOUN	Zuwiderhandlung
 nachwirken	10	VERB
 saudischer	10	OTHER
 bopd	10	OTHER
 eingezahlt	10	OTHER
 Entwicklungsfonds	10	NOUN
 Thalheim	10	NOUN
-Franzen	10	NOUN
+Franzen	10	NOUN	Franz
 Ore	10	NOUN,OTHER
 verabreichte	10	OTHER
-Stimmrechte	10	NOUN
+Stimmrechte	10	NOUN	Stimmrecht
 gewährleisteten	10	VERB
 Markets	10	NOUN,OTHER
 Immunsuppression	10	NOUN
@@ -101366,7 +101366,7 @@ Duca	10	NOUN
 Probeaufnahmen	10	NOUN
 schauspielerisches	10	OTHER
 Aspen	10	NOUN
-Kaffeehäusern	10	NOUN
+Kaffeehäusern	10	NOUN	Kaffeehaus
 Svevo	10	NOUN
 Mittelholzer	10	NOUN
 Weinrich	10	NOUN
@@ -101411,19 +101411,19 @@ durchkomponierte	10	OTHER
 Selbstzeugnisse	10	NOUN
 Raffinesse	10	NOUN
 Porgy	10	NOUN
-Mortons	10	NOUN
+Mortons	10	NOUN	Morton
 Mutt	10	NOUN
-Sketches	10	NOUN
+Sketches	10	NOUN	Sketch
 Communicator	10	NOUN
 Kapselung	10	NOUN
 RegExp	10	NOUN
 annus	10	NOUN,OTHER
 Datumsformat	10	NOUN
-Volksfeinde	10	NOUN
+Volksfeinde	10	NOUN	Volksfeind
 guillotiniert	10	OTHER
 Sonnenradien	10	NOUN
 Abflauen	10	NOUN
-Nordpols	10	NOUN
+Nordpols	10	NOUN	Nordpol
 Zopf	10	NOUN
 Umlautung	10	NOUN
 Jews	10	NOUN
@@ -101431,7 +101431,7 @@ nervöser	10	OTHER
 Kavallerieregiment	10	NOUN
 Kunstsprache	10	NOUN
 Neuedition	10	NOUN
-Urheberrechten	10	NOUN
+Urheberrechten	10	NOUN	Urheberrecht
 verglast	10	OTHER
 Ädil	10	NOUN
 Usipeter	10	NOUN
@@ -101440,12 +101440,12 @@ augusteischer	10	OTHER
 Township	10	NOUN
 Geldtheorie	10	NOUN
 Studentengruppen	10	NOUN
-Sozialwissenschaftlern	10	NOUN
+Sozialwissenschaftlern	10	NOUN	Sozialwissenschaftler
 Spätkapitalismus	10	NOUN
 implizites	10	OTHER
 propositionalen	10	OTHER
 performativen	10	OTHER
-Geltungsansprüche	10	NOUN
+Geltungsansprüche	10	NOUN	Geltungsanspruch
 SFRJ	10	NOUN
 Playfair	10	NOUN
 Taufname	10	NOUN
@@ -101459,9 +101459,9 @@ Sonatensatzform	10	NOUN
 mitzugestalten	10	VERB
 Verlangens	10	NOUN
 Quantz	10	NOUN
-Zelters	10	NOUN
+Zelters	10	NOUN	Zelter
 Kretzschmar	10	NOUN
-McCartneys	10	NOUN
+McCartneys	10	NOUN	McCartney
 Paraphrase	10	NOUN
 Bartholomew	10	NOUN
 Totenschädel	10	NOUN
@@ -101479,11 +101479,11 @@ Sakai	10	NOUN
 Erdrutsch	10	NOUN
 Yukio	10	NOUN
 Shinkansen	10	NOUN
-Wohngegenden	10	NOUN
+Wohngegenden	10	NOUN	Wohngegend
 Shimbun	10	NOUN
 Kendō	10	NOUN
 Foucaultsche	10	NOUN
-Taschenbüchern	10	NOUN
+Taschenbüchern	10	NOUN	Taschenbuch
 Jardim	10	NOUN
 Temesvár	10	NOUN
 mitarbeitete	10	OTHER
@@ -101494,12 +101494,12 @@ nomadisierenden	10	OTHER
 beschmiert	10	OTHER
 misshandeln	10	VERB
 erzürnte	10	OTHER
-Zeitumständen	10	NOUN
+Zeitumständen	10	NOUN	Zeitumstände
 Idyll	10	NOUN
 Zwangsmitgliedschaft	10	NOUN
 generisches	10	OTHER
 Rechenhilfsmittel	10	NOUN
-Schuhmachers	10	NOUN
+Schuhmachers	10	NOUN	Schuhmacher
 Bergbaustadt	10	NOUN
 Oberkonsistorium	10	NOUN
 gefällte	10	OTHER
@@ -101517,7 +101517,7 @@ Devin	10	NOUN,OTHER
 ausgeleuchtet	10	OTHER
 tödlichem	10	OTHER
 Krüppel	10	NOUN
-Balletts	10	NOUN
+Balletts	10	NOUN	Ballett
 Opernakademie	10	NOUN
 beabsichtige	10	OTHER
 Deklamation	10	NOUN
@@ -101552,12 +101552,12 @@ Wachoffizier	10	NOUN
 Torpedoboote	10	NOUN
 Großkampfschiffe	10	NOUN
 erfolgversprechende	10	OTHER
-Anklagepunkten	10	NOUN
+Anklagepunkten	10	NOUN	Anklagepunkte
 Kock	10	NOUN
 Abmilderung	10	NOUN
 umzudeuten	10	VERB
 Taktieren	10	NOUN
-Fürstbischöfen	10	NOUN
+Fürstbischöfen	10	NOUN	Fürstbischof
 verschloss	10	OTHER
 Festungsring	10	NOUN
 inoffizielles	10	OTHER
@@ -101593,7 +101593,7 @@ abzurechnen	10	VERB
 Ausbürgerungsliste	10	NOUN
 begabtesten	10	OTHER
 anzuprangern	10	VERB
-Erdrutschen	10	NOUN
+Erdrutschen	10	NOUN	Erdrutsch
 Rana	10	NOUN
 Smoke	10	NOUN
 Liebeskummer	10	NOUN
@@ -101602,9 +101602,9 @@ Schneiderin	10	NOUN
 Zuschauerzahl	10	NOUN
 flink	10	OTHER
 epikureischen	10	OTHER
-Föderationen	10	NOUN
+Föderationen	10	NOUN	Föderation
 Entäußerung	10	NOUN
-Irrtums	10	NOUN
+Irrtums	10	NOUN	Irrtum
 Klassengegensätze	10	NOUN
 voluminöse	10	OTHER
 mehrstöckige	10	OTHER
@@ -101615,7 +101615,7 @@ Hurghada	10	NOUN
 diokletianischen	10	OTHER
 Thurgauer	10	NOUN
 Jodok	10	NOUN
-Jakobswege	10	NOUN
+Jakobswege	10	NOUN	Jakobsweg
 lesbischer	10	OTHER
 Realisierbarkeit	10	NOUN
 Europabrücke	10	NOUN
@@ -101624,32 +101624,32 @@ Monoterpene	10	NOUN
 einzukaufen	10	VERB
 zwinge	10	OTHER
 Arbeitskosten	10	NOUN
-Kriegskrediten	10	NOUN
+Kriegskrediten	10	NOUN	Kriegskredite
 zerbrachen	10	VERB
-Gulags	10	NOUN
+Gulags	10	NOUN	Gulag
 Volksdemokratien	10	NOUN
-Diffamierungen	10	NOUN
+Diffamierungen	10	NOUN	Diffamierung
 abwechselnde	10	OTHER
 Aufnahmestudio	10	NOUN
-Quartetten	10	NOUN,OTHER
+Quartetten	10	NOUN,OTHER	Quartett
 Momentaufnahme	10	NOUN
 Eiland	10	NOUN
-Columbias	10	NOUN
+Columbias	10	NOUN	Columbia
 Ultramontanismus	10	NOUN
 Arbeitsverbot	10	NOUN
 Grundüberzeugungen	10	NOUN
 Finanzdienstleister	10	NOUN
 BBG	10	NOUN
-Bevölkerungsdichten	10	NOUN
+Bevölkerungsdichten	10	NOUN	Bevölkerungsdichte
 Greyhound	10	NOUN
 Gesangsformen	10	NOUN
 gemachter	10	OTHER
-Poets	10	NOUN,OTHER
+Poets	10	NOUN,OTHER	Poet
 grandiose	10	OTHER
 Laichzeit	10	NOUN
 lebenswertesten	10	OTHER
 Arriva	10	NOUN
-Stopps	10	NOUN
+Stopps	10	NOUN	Stopp
 Jurchen	10	NOUN
 Ahnenverehrung	10	NOUN
 Chinakohl	10	NOUN
@@ -101661,47 +101661,47 @@ nahebringen	10	VERB
 Tumbleweed	10	NOUN
 Diffie	10	NOUN
 nachprüfbar	10	OTHER
-Lexemen	10	NOUN
+Lexemen	10	NOUN	Lexem
 Heinrici	10	NOUN
 randständigen	10	OTHER
 Gnadenschatz	10	NOUN
 erschreckende	10	OTHER
-Kämpfers	10	NOUN
+Kämpfers	10	NOUN	Kämpfer
 Vereinigungsfreiheit	10	NOUN
 Lujo	10	NOUN
 formlose	10	OTHER
-Kartellen	10	NOUN
+Kartellen	10	NOUN	Kartell
 Energieaustausch	10	NOUN
 kunstvoller	10	OTHER
 einwandfreie	10	OTHER
 imperatoris	10	OTHER
 Rangstreitigkeiten	10	NOUN
-Kaisertitels	10	NOUN
+Kaisertitels	10	NOUN	Kaisertitel
 exilierte	10	NOUN,OTHER
 Wáng	10	NOUN
 restituiert	10	OTHER
 Halsschlagader	10	NOUN
-Herzkrankheiten	10	NOUN
+Herzkrankheiten	10	NOUN	Herzkrankheit
 fünfteiligen	10	OTHER
 Repertorium	10	NOUN
 Selbstüberschätzung	10	NOUN
-Freilichtbühnen	10	NOUN
-Milos	10	NOUN
+Freilichtbühnen	10	NOUN	Freilichtbühne
+Milos	10	NOUN	Milo
 Musikfreunde	10	NOUN
 einstürzte	10	OTHER
 Astrolabium	10	NOUN
 Karlsburg	10	NOUN
 defensiver	10	OTHER
 legendarisch	10	OTHER
-Reformprogramms	10	NOUN
-Kulturguts	10	NOUN
+Reformprogramms	10	NOUN	Reformprogramm
+Kulturguts	10	NOUN	Kulturgut
 Domschatzkammer	10	NOUN
-Ottern	10	NOUN
+Ottern	10	NOUN	Otter
 Župan	10	NOUN,OTHER
 Smartcard	10	NOUN
 Branko	10	NOUN
 Kajkavischen	10	NOUN,OTHER
-Slawisten	10	NOUN
+Slawisten	10	NOUN	Slawist
 silbische	10	OTHER
 Baška	10	NOUN
 Küstenraum	10	NOUN
@@ -101724,7 +101724,7 @@ Malia	10	NOUN
 jahrtausendealten	10	OTHER
 Educational	10	NOUN
 Kehldeckel	10	NOUN
-Essens	10	NOUN
+Essens	10	NOUN	Essen
 McKenna	10	NOUN
 kladistische	10	OTHER
 Hornau	10	NOUN
@@ -101739,7 +101739,7 @@ Leiblichkeit	10	NOUN
 Gruppenbildung	10	NOUN
 drückend	10	OTHER
 geduldete	10	OTHER
-Medicis	10	NOUN
+Medicis	10	NOUN	Medici
 Kreditvertrag	10	NOUN
 vollbringt	10	OTHER
 gutgeschrieben	10	VERB
@@ -101750,7 +101750,7 @@ Frith	10	NOUN
 Lagerleitung	10	NOUN
 WVHA	10	NOUN
 desinfiziert	10	OTHER
-Gefangenenlagern	10	NOUN
+Gefangenenlagern	10	NOUN	Gefangenenlager
 Massendeportationen	10	NOUN
 Landwirtschaftsbetriebe	10	NOUN
 Marschmusik	10	NOUN
@@ -101761,22 +101761,22 @@ genocide	10	NOUN,OTHER
 conditions	10	OTHER
 Gemeindevertreter	10	NOUN
 Kapitalbegriff	10	NOUN
-Geldmitteln	10	NOUN
+Geldmitteln	10	NOUN	Geldmittel
 monetär	10	OTHER
 Diakonin	10	NOUN
-Längsseiten	10	NOUN
+Längsseiten	10	NOUN	Längsseite
 trennbare	10	OTHER
 Gewichtsverlagerung	10	NOUN
 Trambahn	10	NOUN
 Beard	10	NOUN
 Komplementärmedizin	10	NOUN
 Flügelspitzen	10	NOUN
-Golfe	10	NOUN
+Golfe	10	NOUN	Golf
 karthagischer	10	OTHER
 Tierhaut	10	NOUN
 Athaulf	10	NOUN
 Kampfweise	10	NOUN
-Koenigs	10	NOUN
+Koenigs	10	NOUN	Koenig
 Mondzyklus	10	NOUN
 wickelte	10	OTHER
 Haddschādsch	10	NOUN
@@ -101791,7 +101791,7 @@ Willingen	10	NOUN
 Cur	10	NOUN,OTHER
 Memleben	10	NOUN
 Erdölfelder	10	NOUN
-Stoffgemischen	10	NOUN
+Stoffgemischen	10	NOUN	Stoffgemische
 sommergrünen	10	OTHER
 sporadischer	10	OTHER
 Warwitz	10	NOUN
@@ -101802,18 +101802,18 @@ Machtgefälle	10	NOUN
 Bewegungsspiele	10	NOUN
 Gesamtwirkungsgrad	10	NOUN
 Sachverständigenrat	10	NOUN
-Maßes	10	NOUN
+Maßes	10	NOUN	Maß
 Kaiman	10	NOUN
 Wreck	10	NOUN
 Kolonialgebiet	10	NOUN
-Teeblättern	10	NOUN
+Teeblättern	10	NOUN	Teeblätter
 Dünnschichtchromatographie	10	NOUN
 iro	10	NOUN,OTHER
 Juba	10	NOUN
-Punktzahlen	10	NOUN
+Punktzahlen	10	NOUN	Punktzahl
 stärkster	10	OTHER
 Governmental	10	NOUN,OTHER
-Exportprodukte	10	NOUN
+Exportprodukte	10	NOUN	Exportprodukt
 Siebener	10	NOUN
 Klatsch	10	NOUN
 Kostümbildner	10	NOUN
@@ -101823,8 +101823,8 @@ Sondheim	10	NOUN
 Inger	10	NOUN
 Vorgängerfilm	10	NOUN
 Landschaftsaufnahmen	10	NOUN
-Standbildern	10	NOUN
-Pornos	10	NOUN
+Standbildern	10	NOUN	Standbild
+Pornos	10	NOUN	Porno
 provozierenden	10	OTHER
 terminologischen	10	OTHER
 Grundoperationen	10	NOUN
@@ -101844,7 +101844,7 @@ elegans	10	OTHER
 Tetrahydrofuran	10	NOUN
 Cyclopentadienyl	10	NOUN
 Dobson	10	NOUN
-Sonnenstände	10	NOUN
+Sonnenstände	10	NOUN	Sonnenstand
 integrativ	10	OTHER
 Landesbeamte	10	NOUN
 DOI	10	NOUN
@@ -101871,22 +101871,22 @@ Umkehroperation	10	NOUN
 dekadischen	10	OTHER
 Isomorphismen	10	NOUN
 Zt	10	NOUN
-Keupers	10	NOUN
+Keupers	10	NOUN	Keuper
 neigende	10	OTHER
 Sandgrube	10	NOUN
 Pflüger	10	NOUN
 Gemeindeverwaltungsverband	10	NOUN
 Eliezer	10	NOUN
 Augustusplatz	10	NOUN
-Krane	10	NOUN
+Krane	10	NOUN	Kran
 Lauchhammer	10	NOUN
 Betriebsstätte	10	NOUN
 Internetradio	10	NOUN
-Branchenverbände	10	NOUN
+Branchenverbände	10	NOUN	Branchenverband
 IFL	10	NOUN
 Landesuniversität	10	NOUN
 Geithain	10	NOUN
-Tarifzonen	10	NOUN
+Tarifzonen	10	NOUN	Tarifzone
 Randbebauung	10	NOUN
 Musikstadt	10	NOUN
 Distillery	10	NOUN
@@ -101898,8 +101898,8 @@ Nippes	10	NOUN
 Reparation	10	NOUN
 Hochhauses	10	NOUN
 ölige	10	OTHER
-Frauenstimmrechts	10	NOUN
-Einwohnergemeinden	10	NOUN
+Frauenstimmrechts	10	NOUN	Frauenstimmrecht
+Einwohnergemeinden	10	NOUN	Einwohnergemeinde
 Sarnen	10	NOUN
 linksufrigen	10	OTHER
 bestockter	10	OTHER
@@ -101911,7 +101911,7 @@ stell	10	NOUN,VERB,OTHER
 äusseren	10	OTHER
 Helferlein	10	NOUN
 allerhand	10	OTHER
-Overalls	10	NOUN
+Overalls	10	NOUN	Overall
 quantitas	10	OTHER
 Forschungsfragen	10	NOUN
 syllogistischen	10	OTHER
@@ -101919,13 +101919,13 @@ disziplinierten	10	VERB,OTHER
 Gleb	10	NOUN
 Stickstoffdünger	10	NOUN
 Palisander	10	NOUN
-Blauwals	10	NOUN
+Blauwals	10	NOUN	Blauwal
 Gladstone	10	NOUN
 Türmchen	10	NOUN
 Salutschüsse	10	NOUN
 Olympiapark	10	NOUN
 Rechtschreibprüfung	10	NOUN
-Großonkels	10	NOUN
+Großonkels	10	NOUN	Großonkel
 Childe	10	NOUN
 Barke	10	NOUN
 Toleranzpatent	10	NOUN
@@ -101945,10 +101945,10 @@ Steigbügel	10	NOUN
 Höhenzuges	10	NOUN
 Wetterscheide	10	NOUN
 Brachland	10	NOUN
-Ortsdialekte	10	NOUN
+Ortsdialekte	10	NOUN	Ortsdialekt
 geniesst	10	OTHER
 Berufslehre	10	NOUN
-Balzers	10	NOUN
+Balzers	10	NOUN	Balzer
 Reichsfürstentum	10	NOUN
 Bürgerpartei	10	NOUN
 Briefkastenfirmen	10	NOUN
@@ -101976,23 +101976,23 @@ Kappelerhof	10	NOUN
 typografischer	10	OTHER
 Baghdādī	10	NOUN
 Parteilisten	10	NOUN
-Körperverletzungen	10	NOUN
+Körperverletzungen	10	NOUN	Körperverletzung
 Tatverdächtigen	10	NOUN
 seitenständigen	10	OTHER
-Rechtsgeschäften	10	NOUN
+Rechtsgeschäften	10	NOUN	Rechtsgeschäft
 afraid	10	NOUN,OTHER
 Landespflege	10	NOUN
-Siegern	10	NOUN
+Siegern	10	NOUN	Sieger
 Straßenbahnhaltestelle	10	NOUN
 Hung	10	NOUN,OTHER
 gedrehter	10	OTHER
 Traverse	10	NOUN,OTHER
 Gewaltdarstellung	10	NOUN
-Studioalbums	10	NOUN
+Studioalbums	10	NOUN	Studioalbum
 Dreikörperproblems	10	NOUN
 Saunders	10	NOUN
 Museumsquartier	10	NOUN
-Revivals	10	NOUN
+Revivals	10	NOUN	Revival
 Einfallsreichtum	10	NOUN
 Malden	10	NOUN
 Hedda	10	NOUN
@@ -102006,7 +102006,7 @@ Bestenlisten	10	NOUN
 Across	10	NOUN
 Heimfahrt	10	NOUN
 Bühnenshow	10	NOUN
-Ehrenpräsidenten	10	NOUN
+Ehrenpräsidenten	10	NOUN	Ehrenpräsident
 Wilfred	10	NOUN
 Langdon	10	NOUN
 Tonsignal	10	NOUN
@@ -102018,13 +102018,13 @@ Uptown	10	NOUN
 Ständeklausel	10	NOUN
 Crook	10	NOUN
 Musikbegleitung	10	NOUN
-Wasserrädern	10	NOUN
+Wasserrädern	10	NOUN	Wasserrad
 Königswelle	10	NOUN
 Stahlseile	10	NOUN
 erbauliche	10	OTHER
 mittelpersischen	10	OTHER
 existenziell	10	OTHER
-Joachims	10	NOUN
+Joachims	10	NOUN	Joachim
 Konfliktpotential	10	NOUN
 Tolosa	10	NOUN
 Interpretin	10	NOUN
@@ -102047,14 +102047,14 @@ MFM	10	NOUN
 MorphOS	10	NOUN
 Satya	10	NOUN,OTHER
 MITS	10	NOUN
-Netzwerkdienste	10	NOUN
+Netzwerkdienste	10	NOUN	Netzwerkdienst
 zurückgebliebene	10	OTHER
 satellitengestützten	10	OTHER
 Fußpunkt	10	NOUN
 Pretziener	10	NOUN
 Suffraganbistum	10	NOUN
 Elbauenpark	10	NOUN
-Markts	10	NOUN
+Markts	10	NOUN	Markt
 Repgow	10	NOUN
 neobarocke	10	OTHER
 beschrifteten	10	VERB,OTHER
@@ -102062,7 +102062,7 @@ Jugendkunstschule	10	NOUN
 Gutspark	10	NOUN
 Kanuten	10	NOUN
 FAM	10	NOUN
-Vestas	10	NOUN
+Vestas	10	NOUN	Vesta
 Radverkehrsnetz	10	NOUN
 Touristeninformation	10	NOUN
 Hörerschaft	10	NOUN
@@ -102071,20 +102071,20 @@ deutbar	10	OTHER
 Konstituenten	10	NOUN
 Göta	10	NOUN
 Kohlegruben	10	NOUN
-Ausstellungsräumen	10	NOUN
+Ausstellungsräumen	10	NOUN	Ausstellungsraum
 Nebenmeer	10	NOUN
 einmündenden	10	OTHER
 Populationsdichte	10	NOUN
 Mikhail	10	NOUN
 Folgenglied	10	NOUN
 Stoffwechselprodukt	10	NOUN
-Methanols	10	NOUN
+Methanols	10	NOUN	Methanol
 verkraftet	10	OTHER
 sponserte	10	OTHER
 Zeolith	10	NOUN
 opticus	10	OTHER
 Golm	10	NOUN
-Gutshäuser	10	NOUN
+Gutshäuser	10	NOUN	Gutshaus
 Stavenhagen	10	NOUN
 UBB	10	NOUN
 Oderhaff	10	NOUN
@@ -102108,8 +102108,8 @@ gewachsenes	10	OTHER
 wehrlose	10	OTHER
 Wochenbett	10	NOUN
 zurückeroberten	10	VERB
-Schichtstufen	10	NOUN
-äolischen	10	NOUN,OTHER
+Schichtstufen	10	NOUN	Schichtstufe
+äolischen	10	NOUN,OTHER	äolisch
 Schwemmebene	10	NOUN
 MNLA	10	NOUN
 Ry	10	NOUN,OTHER
@@ -102128,7 +102128,7 @@ Pardo	10	NOUN,OTHER
 Oberflächengestalt	10	NOUN
 Nachttemperaturen	10	NOUN
 zusammenzuziehen	10	VERB
-Magnetpole	10	NOUN
+Magnetpole	10	NOUN	Magnetpol
 Mercure	10	NOUN
 Gantenbein	10	NOUN
 Prosatext	10	NOUN
@@ -102139,18 +102139,18 @@ theatralischen	10	OTHER
 Reisepasses	10	NOUN
 Härtling	10	NOUN
 Honegger	10	NOUN
-Raumfahrtagenturen	10	NOUN
+Raumfahrtagenturen	10	NOUN	Raumfahrtagentur
 Stutzen	10	NOUN
 Dopplerverschiebung	10	NOUN
 MACHOs	10	NOUN
-Sternhaufens	10	NOUN
+Sternhaufens	10	NOUN	Sternhaufen
 Lecithin	10	NOUN
 Hausmittel	10	NOUN
 Haarfollikel	10	NOUN
 efferenten	10	OTHER
 Struga	10	NOUN
 Borrell	10	NOUN
-Stichwahlen	10	NOUN
+Stichwahlen	10	NOUN	Stichwahl
 proximal	10	OTHER
 Standfuß	10	NOUN
 gequert	10	OTHER
@@ -102163,12 +102163,12 @@ Elterngeneration	10	NOUN
 Grundwasservorkommen	10	NOUN
 Fahrtziel	10	NOUN
 nehmend	10	OTHER
-Parabolantennen	10	NOUN
+Parabolantennen	10	NOUN	Parabolantenne
 Ziegenmilch	10	NOUN
 Hauptverkehrsmittel	10	NOUN
 Ähre	10	NOUN
 Ortenberg	10	NOUN
-Landratsbezirke	10	NOUN
+Landratsbezirke	10	NOUN	Landratsbezirk
 Baustatik	10	NOUN
 Intelligenzija	10	NOUN
 Driburg	10	NOUN
@@ -102182,7 +102182,7 @@ Longchamp	10	NOUN
 Étang	10	NOUN
 Symbolrate	10	NOUN
 Agadir	10	NOUN
-Lavaströme	10	NOUN
+Lavaströme	10	NOUN	Lavastrom
 Philosophieunterricht	10	NOUN
 Herennium	10	NOUN
 mnemotechnischen	10	OTHER
@@ -102197,7 +102197,7 @@ Milchpulver	10	NOUN
 Gegenpapstes	10	NOUN
 geritten	10	VERB
 Brienne	10	NOUN
-Theodoliten	10	NOUN
+Theodoliten	10	NOUN	Theodolit
 Ostflanke	10	NOUN
 Asper	10	NOUN
 Bösch	10	NOUN
@@ -102218,7 +102218,7 @@ minoisch	10	OTHER
 Gesamtumfang	10	NOUN
 Manifesto	10	NOUN
 Reichsthaler	10	NOUN
-Lokalradios	10	NOUN
+Lokalradios	10	NOUN	Lokalradio
 widerfahren	10	VERB
 verderblichen	10	OTHER
 Irrawaddy	10	NOUN
@@ -102228,8 +102228,8 @@ Christadelphians	10	NOUN
 IGMG	10	NOUN
 Honschaften	10	NOUN
 Landbürgermeisterei	10	NOUN
-Innenstädte	10	NOUN
-Borussias	10	NOUN
+Innenstädte	10	NOUN	Innenstadt
+Borussias	10	NOUN	Borussia
 Judoka	10	NOUN
 Helder	10	NOUN
 Barriereinseln	10	NOUN
@@ -102242,22 +102242,22 @@ Nachhaltigkeitsstrategie	10	NOUN
 schem	10	OTHER
 Frauennamen	10	NOUN
 Binnenwasserstraße	10	NOUN
-Konzerthallen	10	NOUN
+Konzerthallen	10	NOUN	Konzerthalle
 Natriumdampflampen	10	NOUN
 Permanentmagnete	10	NOUN
 Pelops	10	NOUN
 TaF	10	NOUN
-Schüsseln	10	NOUN
+Schüsseln	10	NOUN	Schüssel
 Piercings	10	NOUN
 Titelkirche	10	NOUN
-Hauptwirtschaftszweige	10	NOUN
+Hauptwirtschaftszweige	10	NOUN	Hauptwirtschaftszweig
 Pinguinarten	10	NOUN
 zufließenden	10	OTHER
-Kochers	10	NOUN
+Kochers	10	NOUN	Kocher
 Gerinne	10	NOUN
 Schichtstufenlandes	10	NOUN
 Flächenbedarf	10	NOUN
-Steinplatten	10	NOUN
+Steinplatten	10	NOUN	Steinplatte
 Obertürkheim	10	NOUN
 Liebenstein	10	NOUN
 Heckenschütze	10	NOUN
@@ -102267,7 +102267,7 @@ auditiven	10	OTHER
 synaptischer	10	OTHER
 Kurzbeschreibung	10	NOUN
 Östergötland	10	NOUN
-Webstühlen	10	NOUN
+Webstühlen	10	NOUN	Webstuhl
 weggezogen	10	VERB
 Wörishofen	10	NOUN
 Västra	10	NOUN
@@ -102298,7 +102298,7 @@ Tierkreises	10	NOUN
 klappt	10	OTHER
 NRO	10	NOUN
 USAID	10	NOUN
-Wohltätigkeitsorganisationen	10	NOUN
+Wohltätigkeitsorganisationen	10	NOUN	Wohltätigkeitsorganisation
 Philipperbrief	10	NOUN
 Feststoffbooster	10	NOUN
 Behandlungsfehler	10	NOUN
@@ -102307,7 +102307,7 @@ eingliederte	10	OTHER
 Judenfriedhof	10	NOUN
 Markusplatz	10	NOUN
 Stromer	10	NOUN
-Abbrüchen	10	NOUN
+Abbrüchen	10	NOUN	Abbruch
 Kandel	10	NOUN
 Materialität	10	NOUN
 Sebaldus	10	NOUN
@@ -102321,15 +102321,15 @@ annehmbar	10	OTHER
 ungelöstes	10	OTHER
 unerträgliche	10	OTHER
 tatenlos	10	OTHER
-Geschäftsreisen	10	NOUN
+Geschäftsreisen	10	NOUN	Geschäftsreise
 Ippolito	10	NOUN
 aufzurüsten	10	VERB
 unerschöpflich	10	OTHER
-Anlehnungen	10	NOUN
+Anlehnungen	10	NOUN	Anlehnung
 Ning	10	NOUN
 IPPNW	10	NOUN
-Niros	10	NOUN
-Ermlands	10	NOUN
+Niros	10	NOUN	Niro
+Ermlands	10	NOUN	Ermland
 Giese	10	NOUN
 Reiterkrieg	10	NOUN
 Amtshauptmann	10	NOUN
@@ -102337,12 +102337,12 @@ vollkommenes	10	OTHER
 ermländische	10	OTHER
 Domhügel	10	NOUN
 Importverbot	10	NOUN
-Militärgerichten	10	NOUN
+Militärgerichten	10	NOUN	Militärgericht
 nichtjüdischer	10	OTHER
 Großplastiken	10	NOUN
-Niederschlesiens	10	NOUN
+Niederschlesiens	10	NOUN	Niederschlesien
 Pfizer	10	NOUN
-Tiefländer	10	NOUN
+Tiefländer	10	NOUN	Tiefland
 Gouverneurin	10	NOUN
 Capricci	10	NOUN,OTHER
 Notentext	10	NOUN
@@ -102351,7 +102351,7 @@ Bianchi	10	NOUN
 Städtedreieck	10	NOUN
 Riesrand	10	NOUN,OTHER
 Kratersee	10	NOUN
-Höhensiedlungen	10	NOUN
+Höhensiedlungen	10	NOUN	Höhensiedlung
 Spitzberg	10	NOUN
 Seequarks	10	NOUN
 Tok	10	NOUN
@@ -102369,13 +102369,13 @@ Organisationsentwicklung	10	NOUN
 Modellflug	10	NOUN
 Wakenitz	10	NOUN
 verfassungswidriger	10	OTHER
-Blattformen	10	NOUN
+Blattformen	10	NOUN	Blattform
 Beek	10	NOUN,OTHER
 waagerechter	10	OTHER
 Faun	10	NOUN
 Argonautensage	10	NOUN
 betrauert	10	OTHER
-Pogroms	10	NOUN
+Pogroms	10	NOUN	Pogrom
 Verfolgungswelle	10	NOUN
 Neumühle	10	NOUN
 Reisezüge	10	NOUN
@@ -102394,13 +102394,13 @@ Janine	10	NOUN
 unbedingter	10	OTHER
 Ideologe	10	NOUN
 öffentlichkeitswirksame	10	OTHER
-Eingeweiden	10	NOUN
+Eingeweiden	10	NOUN	Eingeweide
 Sargent	10	NOUN
 frühestmögliche	10	OTHER
 geschraubt	10	OTHER
 Dislokation	10	NOUN
 Amal	10	NOUN
-Spendengeldern	10	NOUN
+Spendengeldern	10	NOUN	Spendengelder
 SBG	10	NOUN
 Theokratie	10	NOUN
 Videoband	10	NOUN
@@ -102408,12 +102408,12 @@ Familienministerin	10	NOUN
 Sicherheitsgarantien	10	NOUN
 altmärkischen	10	OTHER
 Groenewold	10	NOUN
-Selbsttötungen	10	NOUN
+Selbsttötungen	10	NOUN	Selbsttötung
 Großglockner	10	NOUN
 ehrten	10	VERB
 Weidengewächse	10	NOUN
 Absorptionsmaxima	10	NOUN
-Familienbetriebe	10	NOUN
+Familienbetriebe	10	NOUN	Familienbetrieb
 Hexaeder	10	NOUN
 sphärisches	10	OTHER
 Privatgelehrten	10	NOUN
@@ -102423,9 +102423,9 @@ Persistenz	10	NOUN
 bildungspolitischen	10	OTHER
 Gesamtumschlag	10	NOUN
 Staubecken	10	NOUN
-Smartcards	10	NOUN
+Smartcards	10	NOUN	Smartcard
 Kommissionsmitglieder	10	NOUN
-Handschuhen	10	NOUN
+Handschuhen	10	NOUN	Handschuh
 antisowjetischen	10	OTHER
 Veľká	10	NOUN
 recta	10	OTHER
@@ -102440,8 +102440,8 @@ Atemtechnik	10	NOUN
 Ohrmuschel	10	NOUN
 SPL	10	NOUN
 THz	10	NOUN
-Linsensysteme	10	NOUN
-Sehhilfen	10	NOUN
+Linsensysteme	10	NOUN	Linsensystem
+Sehhilfen	10	NOUN	Sehhilfe
 Aster	10	NOUN
 Odenwaldkreises	10	NOUN
 Gräflich	10	NOUN,OTHER
@@ -102466,7 +102466,7 @@ Auber	10	NOUN
 Siviglia	10	NOUN
 Cenerentola	10	NOUN
 Madama	10	NOUN
-Schlagern	10	NOUN
+Schlagern	10	NOUN	Schlager
 Karmelitinnen	10	NOUN
 humaine	10	OTHER
 Evers	10	NOUN
@@ -102475,29 +102475,29 @@ entgegenstellten	10	VERB
 Leitungsebene	10	NOUN
 Taizé	10	NOUN
 Gemeinschaftslebens	10	NOUN
-Oberrheins	10	NOUN
+Oberrheins	10	NOUN	Oberrhein
 Aquifer	10	NOUN
 Splines	10	NOUN
 Nordgau	10	NOUN
 pygmaeus	10	OTHER
-Borneos	10	NOUN
+Borneos	10	NOUN	Borneo
 Polity	10	NOUN,OTHER
 FDD	10	NOUN,OTHER
 Tonausgabe	10	NOUN
-Netzteile	10	NOUN
+Netzteile	10	NOUN	Netzteil
 Skill	10	NOUN
 Obszönität	10	NOUN
 Elternschaft	10	NOUN
 Gemeindeleitung	10	NOUN
 kostbares	10	OTHER
 Metallgitter	10	NOUN
-Fernandes	10	NOUN
+Fernandes	10	NOUN	Fernande
 abgereichertem	10	OTHER
 geradzahligen	10	OTHER
 Dauerleistung	10	NOUN
 Nutzleistung	10	NOUN
 cheval	10	NOUN,OTHER
-Approximationen	10	NOUN
+Approximationen	10	NOUN	Approximation
 Nombre	10	NOUN,OTHER
 Goodwin	10	NOUN
 Verlagsgebäude	10	NOUN
@@ -102510,7 +102510,7 @@ Gitarrenverstärker	10	NOUN
 Ursprungsform	10	NOUN
 dazugehören	10	NOUN,OTHER
 Randbemerkung	10	NOUN
-Sitzungsperioden	10	NOUN
+Sitzungsperioden	10	NOUN	Sitzungsperiode
 frivole	10	OTHER
 kommuniziere	10	OTHER
 zufriedenstellenden	10	OTHER
@@ -102524,7 +102524,7 @@ Sandomirer	10	NOUN
 Międzyzdroje	10	NOUN
 Totenfeier	10	NOUN
 Nationalkirche	10	NOUN
-Piłsudskis	10	NOUN
+Piłsudskis	10	NOUN	Piłsudski
 Pinsk	10	NOUN
 kodifiziertes	10	OTHER
 Korvette	10	NOUN
@@ -102537,13 +102537,13 @@ Gnesener	10	NOUN
 Markuskirche	10	NOUN
 Miasto	10	NOUN
 Lötzen	10	NOUN
-Masowiens	10	NOUN
+Masowiens	10	NOUN	Masowien
 Ohlau	10	NOUN
 Karlskirche	10	NOUN
 Kattowitzer	10	NOUN
 Huta	10	NOUN
 Polsat	10	NOUN
-Kantinen	10	NOUN
+Kantinen	10	NOUN	Kantine
 Skirennläufer	10	NOUN
 Korzeniowski	10	NOUN
 Reformpädagogik	10	NOUN
@@ -102553,17 +102553,17 @@ parasitische	10	OTHER
 undifferenzierten	10	OTHER
 Kaiserpinguine	10	NOUN
 Körpergewichtes	10	NOUN
-Schwimmens	10	NOUN
+Schwimmens	10	NOUN	Schwimmen
 Regex	10	NOUN
 TPC	10	NOUN
 randomisiert	10	OTHER
-Systemadministratoren	10	NOUN
+Systemadministratoren	10	NOUN	Systemadministrator
 annäherten	10	VERB
 append	10	OTHER
 Familienstruktur	10	NOUN
 Ortsliste	10	NOUN
 references	10	NOUN,OTHER
-Arthurs	10	NOUN
+Arthurs	10	NOUN	Arthur
 Handtuch	10	NOUN
 Munitionslager	10	NOUN
 fünfbändige	10	OTHER
@@ -102582,7 +102582,7 @@ MSD	10	NOUN
 Sesquiterpene	10	NOUN
 SLV	10	NOUN
 zarter	10	OTHER
-Unabhängigkeitskriege	10	NOUN
+Unabhängigkeitskriege	10	NOUN	Unabhängigkeitskrieg
 Seidenraupenzucht	10	NOUN
 Coelho	10	NOUN
 Joaquim	10	NOUN
@@ -102600,19 +102600,19 @@ verfassungsfeindlich	10	OTHER
 Funkeln	10	NOUN,OTHER
 Rahmung	10	NOUN
 altrömische	10	OTHER
-Drachmen	10	NOUN
+Drachmen	10	NOUN	Drachme
 Variola	10	NOUN,OTHER
 Virushülle	10	NOUN
-Läsionen	10	NOUN
+Läsionen	10	NOUN	Läsion
 versiegelte	10	OTHER
 Vollbildern	10	NOUN
-Fernsehsignals	10	NOUN
+Fernsehsignals	10	NOUN	Fernsehsignal
 Abart	10	NOUN
-Farbsignale	10	NOUN
+Farbsignale	10	NOUN	Farbsignal
 invertiert	10	OTHER
 Abspielgerät	10	NOUN
 bargeldlos	10	OTHER
-Aaronitischen	10	NOUN
+Aaronitischen	10	NOUN	Aaronitische
 Kohanim	10	NOUN
 darzubringen	10	VERB
 Handelsgewerbe	10	NOUN
@@ -102627,9 +102627,9 @@ versteuernde	10	OTHER
 volkskundlichen	10	OTHER
 Freibetrag	10	NOUN
 Stemmtore	10	NOUN
-Vorgängermodells	10	NOUN
+Vorgängermodells	10	NOUN	Vorgängermodell
 Popocatépetl	10	NOUN
-Querungen	10	NOUN
+Querungen	10	NOUN	Querung
 Schleusenanlage	10	NOUN
 Darién	10	NOUN
 Skulpturenschmuck	10	NOUN
@@ -102644,8 +102644,8 @@ Sekundärstruktur	10	NOUN
 Forscherin	10	NOUN
 Neurogenese	10	NOUN
 Urquell	10	NOUN
-Gasthöfen	10	NOUN
-Bieres	10	NOUN
+Gasthöfen	10	NOUN	Gasthof
+Bieres	10	NOUN	Bier
 Frauenarzt	10	NOUN
 Mikrofossilien	10	NOUN
 Gesteinseinheiten	10	NOUN
@@ -102660,7 +102660,7 @@ Vollziehung	10	NOUN
 Harzrand	10	NOUN
 Mette	10	NOUN
 Hilfsgelder	10	NOUN
-Töpfen	10	NOUN
+Töpfen	10	NOUN	Topf
 Klumpp	10	NOUN
 Stockmaß	10	NOUN
 Großsäuger	10	NOUN
@@ -102672,20 +102672,20 @@ Steuerfunktionen	10	NOUN
 aqs	10	OTHER
 Orthogonalität	10	NOUN
 Animator	10	NOUN
-Fassbinders	10	NOUN
-Trennungen	10	NOUN
+Fassbinders	10	NOUN	Fassbinder
+Trennungen	10	NOUN	Trennung
 Lautsprecherboxen	10	NOUN
 Marsianer	10	NOUN
 Gaga	10	NOUN
-Greenes	10	NOUN
-Unschärfen	10	NOUN
+Greenes	10	NOUN	Greene
+Unschärfen	10	NOUN	Unschärfe
 altruistischen	10	OTHER
 diesseitige	10	OTHER
 Quanzhen	10	NOUN
 Perpendicular	10	NOUN
-Rheniums	10	NOUN
+Rheniums	10	NOUN	Rhenium
 Tacke	10	NOUN
-Gents	10	NOUN
+Gents	10	NOUN	Gent
 Schwejk	10	NOUN
 reklamieren	10	VERB,OTHER
 Telemach	10	NOUN
@@ -102695,14 +102695,14 @@ verfassungswidrige	10	OTHER
 Tuwinische	10	NOUN,OTHER
 Ethyl	10	NOUN,OTHER
 Holzdecke	10	NOUN
-Buchdruckereien	10	NOUN
+Buchdruckereien	10	NOUN	Buchdruckerei
 Wahrscheinlichkeitsraum	10	NOUN
 Künstlerszene	10	NOUN
 ENI	10	NOUN
 Nachtzeit	10	NOUN
 ebenbürtige	10	OTHER
 alpines	10	OTHER
-Seitenarme	10	NOUN
+Seitenarme	10	NOUN	Seitenarm
 Rheinkilometer	10	NOUN
 Reaktorblock	10	NOUN
 Kalkar	10	NOUN
@@ -102722,7 +102722,7 @@ nobiles	10	OTHER
 Samniten	10	NOUN
 Nichtbürger	10	NOUN
 Machbaren	10	NOUN
-Plünderungszügen	10	NOUN
+Plünderungszügen	10	NOUN	Plünderungszüge
 Bevölkerungszusammensetzung	10	NOUN
 Unterwallis	10	NOUN
 savoyischen	10	OTHER
@@ -102732,7 +102732,7 @@ Glis	10	NOUN,OTHER
 Nika	10	NOUN
 eukaryotischer	10	OTHER
 prokaryotische	10	OTHER
-Telefonanlagen	10	NOUN
+Telefonanlagen	10	NOUN	Telefonanlage
 Monachus	10	NOUN,OTHER
 inflationäre	10	OTHER
 Radarsensoren	10	NOUN
@@ -102748,22 +102748,22 @@ unselbständig	10	OTHER
 nährte	10	OTHER
 Akribie	10	NOUN
 Friedberger	10	NOUN
-Interieurs	10	NOUN
+Interieurs	10	NOUN	Interieur
 Neuerrichtung	10	NOUN
 Sicherungsarbeiten	10	NOUN
 Doppelporträt	10	NOUN
 Großfürstin	10	NOUN
 Zarizyn	10	NOUN
-Quantencomputers	10	NOUN
+Quantencomputers	10	NOUN	Quantencomputer
 Shor	10	NOUN
 romanischsprachigen	10	OTHER
-Ladinische	10	NOUN,OTHER
-Rumäniendeutschen	10	NOUN
+Ladinische	10	NOUN,OTHER	Ladinisch
+Rumäniendeutschen	10	NOUN	Rumäniendeutsche
 Nordsiebenbürgen	10	NOUN
 Traian	10	NOUN
 Oppositionsbündnis	10	NOUN
 stilistisches	10	OTHER
-Fjords	10	NOUN
+Fjords	10	NOUN	Fjord
 unverantwortlich	10	OTHER
 vorausgesetzten	10	OTHER
 Haide	10	NOUN
@@ -102784,7 +102784,7 @@ Tadel	10	NOUN
 Dirigat	10	NOUN
 kroch	10	OTHER
 sehnt	10	OTHER
-Hofpredigers	10	NOUN
+Hofpredigers	10	NOUN	Hofprediger
 sacre	10	NOUN,OTHER
 verklärte	10	OTHER
 Sozialphilosoph	10	NOUN
@@ -102800,7 +102800,7 @@ Mittelschweden	10	NOUN
 Schärengarten	10	NOUN
 Ingvar	10	NOUN
 Waldner	10	NOUN
-Spezialeffekten	10	NOUN
+Spezialeffekten	10	NOUN	Spezialeffekt
 intermediäre	10	OTHER
 Strafgesetz	10	NOUN
 aufgeklebt	10	OTHER
@@ -102830,10 +102830,10 @@ Keratin	10	NOUN
 Gasthauses	10	NOUN
 Livealben	10	NOUN
 Liniennummer	10	NOUN
-Bürgervereine	10	NOUN
-Drehgestellen	10	NOUN
+Bürgervereine	10	NOUN	Bürgerverein
+Drehgestellen	10	NOUN	Drehgestell
 eingefüllt	10	OTHER
-Zugfolgen	10	NOUN
+Zugfolgen	10	NOUN	Zugfolge
 Terrestrial	10	NOUN,OTHER
 Ratsfraktion	10	NOUN
 Wildtier	10	NOUN
@@ -102844,7 +102844,7 @@ Deckschicht	10	NOUN
 Uhrenmuseum	10	NOUN
 Stubensandstein	10	NOUN
 Uracher	10	NOUN
-Randen	10	NOUN
+Randen	10	NOUN	Rand
 Torfmoor	10	NOUN
 Stadel	10	NOUN
 Herbrechtingen	10	NOUN
@@ -102858,14 +102858,14 @@ Maulbeerbäume	10	NOUN
 Seidenindustrie	10	NOUN
 Sonnenkorona	10	NOUN
 entglitt	10	OTHER
-Bauernaufstände	10	NOUN
+Bauernaufstände	10	NOUN	Bauernaufstand
 kriegsmüde	10	OTHER
 verpachteten	10	VERB,OTHER
 Aletsch	10	NOUN
 Dielsdorf	10	NOUN
 Hauptregionen	10	NOUN
-Tessins	10	NOUN
-Füchsen	10	NOUN
+Tessins	10	NOUN	Tessin
+Füchsen	10	NOUN	Fuchs
 Sempach	10	NOUN
 Wanderbewegung	10	NOUN
 Morgarten	10	NOUN
@@ -102886,7 +102886,7 @@ Overdrive	10	NOUN
 Kindermann	10	NOUN
 Amnioten	10	NOUN
 Bauchflossen	10	NOUN
-Tentakeln	10	NOUN
+Tentakeln	10	NOUN	Tentakel
 Langschwanzflugsaurier	10	NOUN
 Gleichgewichtssinn	10	NOUN
 lieblichen	10	OTHER
@@ -102897,11 +102897,11 @@ Hauptbereiche	10	NOUN
 CEDA	10	NOUN
 Robles	10	NOUN
 Negrín	10	NOUN
-Panzerschiffe	10	NOUN
-Maschinengewehre	10	NOUN
+Panzerschiffe	10	NOUN	Panzerschiff
+Maschinengewehre	10	NOUN	Maschinengewehr
 befohlene	10	OTHER
 Ringebene	10	NOUN
-Punkts	10	NOUN
+Punkts	10	NOUN	Punkt
 gröbere	10	OTHER
 Archipenko	10	NOUN
 Kurkreis	10	NOUN
@@ -102918,14 +102918,14 @@ computerunterstützte	10	OTHER
 Aflaq	10	NOUN
 Weststrand	10	NOUN
 auseinanderzubrechen	10	VERB
-Seeräubern	10	NOUN
+Seeräubern	10	NOUN	Seeräuber
 Heimatvertriebener	10	NOUN
 Touristenzahlen	10	NOUN
 Flächenversiegelung	10	NOUN
 Windsurf	10	NOUN
 Eingangstür	10	NOUN
 Adventskranzes	10	NOUN
-Wohnsitzes	10	NOUN
+Wohnsitzes	10	NOUN	Wohnsitz
 Teilnormen	10	NOUN
 Tractus	10	NOUN
 Macula	10	NOUN
@@ -102939,7 +102939,7 @@ Rochade	10	NOUN
 Kopier	10	NOUN
 Kuß	10	NOUN
 Fredric	10	NOUN
-Haines	10	NOUN
+Haines	10	NOUN	Haine
 Parallelschwingkreis	10	NOUN
 Remanenz	10	NOUN
 gewundene	10	OTHER
@@ -102952,7 +102952,7 @@ mehrfarbige	10	OTHER
 geschmiedeten	10	OTHER
 Barron	10	NOUN
 vorbildhaft	10	OTHER
-Mandatsgebiets	10	NOUN
+Mandatsgebiets	10	NOUN	Mandatsgebiet
 Tropfstein	10	NOUN
 normalverteilte	10	OTHER
 Schlettstadt	10	NOUN
@@ -102960,7 +102960,7 @@ Rundbild	10	NOUN
 Kampffront	10	NOUN
 Herbarium	10	NOUN
 Surinam	10	NOUN
-Cheruskern	10	NOUN
+Cheruskern	10	NOUN	Cherusker
 SchUM	10	NOUN
 Hausgenossen	10	NOUN
 Entwicklungskonzept	10	NOUN
@@ -102969,14 +102969,14 @@ Diakonissenanstalt	10	NOUN
 Todeskandidaten	10	NOUN
 pronominalen	10	OTHER
 Nausikaa	10	NOUN
-Meridians	10	NOUN
+Meridians	10	NOUN	Meridian
 gravierte	10	OTHER
-Inertialsysteme	10	NOUN
+Inertialsysteme	10	NOUN	Inertialsystem
 zusammenhält	10	OTHER
 AIK	10	NOUN
 Hauptfassade	10	NOUN
 Sitter	10	NOUN
-Hennes	10	NOUN
+Hennes	10	NOUN	Henne
 Südwinter	10	NOUN
 Hörnchen	10	NOUN
 Altstadtbereich	10	NOUN
@@ -103046,32 +103046,32 @@ Zeitunterschied	10	NOUN
 Transmissionsgrad	10	NOUN
 Modulationsfrequenz	10	NOUN
 Materialprüfung	10	NOUN
-Wiederaufarbeitungsanlagen	10	NOUN
-Raumgruppen	10	NOUN
+Wiederaufarbeitungsanlagen	10	NOUN	Wiederaufarbeitungsanlage
+Raumgruppen	10	NOUN	Raumgruppe
 nullter	10	OTHER
 Gleichgewichtes	10	NOUN
 Spannungsdifferenz	10	NOUN
 Zeitgleichung	10	NOUN
 Taur	10	NOUN
 philosophiegeschichtlichen	10	OTHER
-Befreiungs	10	NOUN
+Befreiungs	10	NOUN	Befreiung
 Traughber	10	NOUN
 Uda	10	NOUN
 untergeschoben	10	VERB
 ausgestiegen	10	VERB
 Vierergruppe	10	NOUN
-Ersthelfern	10	NOUN
+Ersthelfern	10	NOUN	Ersthelfer
 Führungsstrukturen	10	NOUN
-Predigern	10	NOUN
+Predigern	10	NOUN	Prediger
 ausspionieren	10	NOUN,OTHER
 offeneren	10	OTHER
 Erlebnisberichte	10	NOUN
 Parteifreund	10	NOUN
 Derendingen	10	NOUN
 Amtsbürgermeister	10	NOUN
-Reutlingens	10	NOUN
+Reutlingens	10	NOUN	Reutlingen
 Individualisten	10	NOUN
-Klavierspielen	10	NOUN
+Klavierspielen	10	NOUN	Klavierspiel
 Oberflächeninhalt	10	NOUN
 Grenzpunkt	10	NOUN
 Staatsschreiber	10	NOUN
@@ -103087,7 +103087,7 @@ Eckartsberga	10	NOUN
 Grenzweg	10	NOUN
 Vacha	10	NOUN
 Handelsverein	10	NOUN
-Verkehrsverbünden	10	NOUN
+Verkehrsverbünden	10	NOUN	Verkehrsverbund
 Regionalligisten	10	NOUN
 Boxberg	10	NOUN
 Allemande	10	NOUN,OTHER
@@ -103096,7 +103096,7 @@ Siedlungshügel	10	NOUN
 Keir	10	NOUN
 nobis	10	NOUN,OTHER
 nostri	10	OTHER
-Okularen	10	NOUN
+Okularen	10	NOUN	Okular
 Colla	10	NOUN
 Satzschriften	10	NOUN
 Schaltnetzteil	10	NOUN
@@ -103127,7 +103127,7 @@ inkludiert	10	OTHER
 friedfertigen	10	OTHER
 Hüttenberg	10	NOUN
 aufzufallen	10	VERB
-Raiffeisenbanken	10	NOUN
+Raiffeisenbanken	10	NOUN	Raiffeisenbank
 photoTAN	10	OTHER
 Haya	10	NOUN
 Kano	10	NOUN
@@ -103146,15 +103146,15 @@ Bruhns	10	NOUN
 Volontär	10	NOUN
 Lebensstationen	10	NOUN
 Plank	10	NOUN
-Divisoren	10	NOUN
+Divisoren	10	NOUN	Divisor
 iz	10	NOUN,OTHER
 abgestürzt	10	OTHER
-Tragschraubern	10	NOUN
+Tragschraubern	10	NOUN	Tragschrauber
 Schwungmasse	10	NOUN
 Rota	10	NOUN
 Entities	10	NOUN,OTHER
 Unternehmensbegriff	10	NOUN
-Abgänge	10	NOUN
+Abgänge	10	NOUN	Abgang
 Bundeswehrstandort	10	NOUN
 Bollerwagen	10	NOUN
 Zeebrugge	10	NOUN
@@ -103178,7 +103178,7 @@ Höhlenkloster	10	NOUN
 Kernspaltflöten	10	NOUN
 Neurose	10	NOUN
 Lisle	10	NOUN
-Ameisenigeln	10	NOUN
+Ameisenigeln	10	NOUN	Ameisenigel
 distinkte	10	OTHER
 IMC	10	NOUN,OTHER
 Vergilius	10	NOUN
@@ -103186,37 +103186,37 @@ umzogen	10	VERB
 zärtlichen	10	OTHER
 Wordsworth	10	NOUN
 Sappho	10	NOUN
-Nullmeridians	10	NOUN
+Nullmeridians	10	NOUN	Nullmeridian
 Lucilius	10	NOUN
 Fingerspitzengefühl	10	NOUN
 Patientenversorgung	10	NOUN
-Erwerbszweige	10	NOUN
+Erwerbszweige	10	NOUN	Erwerbszweig
 Maktum	10	NOUN
 hochqualifizierten	10	OTHER
 Eruptionssäule	10	NOUN
 Strub	10	NOUN
 geehrte	10	OTHER
-Parias	10	NOUN
+Parias	10	NOUN	Paria
 RIC	10	NOUN
 Ausreisevisum	10	NOUN
 TPS	10	NOUN
 Kohlefaden	10	NOUN
-Werkstücks	10	NOUN
+Werkstücks	10	NOUN	Werkstück
 betreibende	10	OTHER
 Randomisierung	10	NOUN
 Aktienrecht	10	NOUN
 Holzart	10	NOUN
-Personennamens	10	NOUN
+Personennamens	10	NOUN	Personenname
 Tet	10	NOUN,OTHER
 Thành	10	NOUN
 Phu	10	NOUN,OTHER
-Busonis	10	NOUN
+Busonis	10	NOUN	Busoni
 Astralleib	10	NOUN
 personaler	10	OTHER
 individualistisch	10	OTHER
 mailto	10	OTHER
-Stichwortes	10	NOUN
-Wikipedias	10	NOUN
+Stichwortes	10	NOUN	Stichwort
+Wikipedias	10	NOUN	Wikipedia
 Zusammenfassungszeile	10	NOUN
 Schädellosen	10	NOUN
 Kieferlosen	10	NOUN,OTHER
@@ -103227,7 +103227,7 @@ Bespitzelung	10	NOUN
 Musikdateien	10	NOUN
 drohendes	10	OTHER
 Rawa	10	NOUN
-Stare	10	NOUN
+Stare	10	NOUN	Star
 Czesław	10	NOUN
 EIC	10	NOUN
 Konvertibilität	10	NOUN
@@ -103270,7 +103270,7 @@ WEA	10	NOUN
 Zahnradgetriebe	10	NOUN
 Asynchronmaschine	10	NOUN
 Nutzungsgrad	10	NOUN
-Drehmomentes	10	NOUN
+Drehmomentes	10	NOUN	Drehmoment
 einspeisen	10	VERB
 Tiefgründung	10	NOUN
 Wabern	10	NOUN
@@ -103278,7 +103278,7 @@ Jagdschlosses	10	NOUN
 Einhausen	10	NOUN
 RheinMain	10	NOUN
 Walkmühle	10	NOUN
-Festzelten	10	NOUN
+Festzelten	10	NOUN	Festzelt
 Mattertal	10	NOUN
 bilineata	10	OTHER
 Blutdruckabfall	10	NOUN
@@ -103297,7 +103297,7 @@ matthäischen	10	OTHER
 Thomasevangelium	10	NOUN
 Unterbirma	10	NOUN
 Südkontinent	10	NOUN
-Wirtschaftsstrukturen	10	NOUN
+Wirtschaftsstrukturen	10	NOUN	Wirtschaftsstruktur
 FRELIMO	10	NOUN
 Zyperntürken	10	NOUN
 Vertrauensverlust	10	NOUN
@@ -103306,8 +103306,8 @@ Frisius	10	NOUN
 Weigl	10	NOUN
 klettert	10	OTHER
 Militärrat	10	NOUN
-Sisis	10	NOUN
-Längsflöten	10	NOUN
+Sisis	10	NOUN	Sisi
+Längsflöten	10	NOUN	Längsflöte
 Straßenkinder	10	NOUN
 Kapazitätsgrenzen	10	NOUN
 Kesseltrommel	10	NOUN
@@ -103328,16 +103328,16 @@ Rickenbacker	10	NOUN
 Mosul	10	NOUN
 Infanten	10	NOUN
 Xang	10	NOUN
-Inkareichs	10	NOUN
+Inkareichs	10	NOUN	Inkareich
 Spiess	10	NOUN
 Petermann	10	NOUN
-Hochaltars	10	NOUN
+Hochaltars	10	NOUN	Hochaltar
 Westexpansion	10	NOUN
-Arias	10	NOUN
+Arias	10	NOUN	Aria
 aztekische	10	OTHER
 Reublin	10	NOUN
 Polygynie	10	NOUN
-Simsons	10	NOUN
+Simsons	10	NOUN	Simson
 Hibernia	10	NOUN
 Pareus	10	NOUN
 Gévaudan	10	NOUN
@@ -103362,27 +103362,27 @@ Powys	10	NOUN
 Meret	10	NOUN
 Tiefschlaf	10	NOUN
 RapidCAD	10	NOUN
-Speditionen	10	NOUN
+Speditionen	10	NOUN	Spedition
 Nordkette	10	NOUN
 Kaernten	10	NOUN
 Altenkirchen	10	NOUN
 Fourvière	10	NOUN
 Kutscherla	10	NOUN
-Grasen	10	NOUN,OTHER
+Grasen	10	NOUN,OTHER	Gras
 antarktischer	10	OTHER
-Grenzlinien	10	NOUN
+Grenzlinien	10	NOUN	Grenzlinie
 Baritonsaxophon	10	NOUN
 Serifen	10	NOUN
-Tennisanlagen	10	NOUN
+Tennisanlagen	10	NOUN	Tennisanlage
 Einöde	10	NOUN
 Lippspringe	10	NOUN
 Komplexitätsklasse	10	NOUN
-Kontrollgruppen	10	NOUN
+Kontrollgruppen	10	NOUN	Kontrollgruppe
 Heloten	10	NOUN
 Periöken	10	NOUN
 Verbesserungsvorschläge	10	NOUN
 Trixiums	10	NOUN
-Gefahrensituationen	10	NOUN
+Gefahrensituationen	10	NOUN	Gefahrensituation
 Rasur	10	NOUN
 Superkräfte	10	NOUN
 Tentakel	10	NOUN
@@ -103394,11 +103394,11 @@ wiederbesiedelt	10	OTHER
 Reihenuntersuchungen	10	NOUN
 eingefärbte	10	OTHER
 Heerich	10	NOUN
-unbeteiligten	10	NOUN,OTHER
-Grenzverschiebungen	10	NOUN
+unbeteiligten	10	NOUN,OTHER	unbeteiligte
+Grenzverschiebungen	10	NOUN	Grenzverschiebung
 surrealistisch	10	OTHER
 fachgebundene	10	OTHER
-Zytoskeletts	10	NOUN
+Zytoskeletts	10	NOUN	Zytoskelett
 Naturalisten	10	NOUN
 Bahnhofsnähe	10	NOUN
 Gaugrafen	10	NOUN
@@ -103409,11 +103409,11 @@ geziert	10	OTHER
 Kryptonit	10	NOUN
 Stufentheorie	10	NOUN
 traumatisiert	10	OTHER
-Pilotprojekte	10	NOUN
+Pilotprojekte	10	NOUN	Pilotprojekt
 Fasci	10	NOUN
 Subaru	10	NOUN
 sonnenähnlichen	10	OTHER
-Lebenswochen	10	NOUN
+Lebenswochen	10	NOUN	Lebenswoche
 Schwestertaxon	10	NOUN
 Wielbark	10	NOUN
 Sandboden	10	NOUN
@@ -103426,12 +103426,12 @@ Główny	10	NOUN
 abendländischer	10	OTHER
 Landstreicher	10	NOUN
 Merchant	10	NOUN
-Franziskanerinnen	10	NOUN
+Franziskanerinnen	10	NOUN	Franziskaner
 Arma	10	NOUN
 Sportvereinigung	10	NOUN
 erstaunlicher	10	OTHER
 Paria	10	NOUN
-Sassen	10	NOUN
+Sassen	10	NOUN	Sasse
 Ascanius	10	NOUN
 Nebenbuhler	10	NOUN
 Telephos	10	NOUN
@@ -103442,7 +103442,7 @@ Kuckhoff	10	NOUN
 Coppi	10	NOUN
 temperiert	10	OTHER
 Niebelschütz	10	NOUN
-Naturraums	10	NOUN
+Naturraums	10	NOUN	Naturraum
 Kumpel	10	NOUN
 Uranoxid	10	NOUN
 dieselbetriebene	10	OTHER
@@ -103451,7 +103451,7 @@ Ausgegrenzten	10	NOUN,OTHER
 chon	10	NOUN,OTHER
 Parteispaltung	10	NOUN
 Hauptausschusses	10	NOUN
-Bergwälder	10	NOUN
+Bergwälder	10	NOUN	Bergwald
 Hautflora	10	NOUN
 abgedunkelten	10	OTHER
 Hertwig	10	NOUN
@@ -103466,7 +103466,7 @@ Komitet	10	NOUN
 Jugendrat	10	NOUN
 Hohenwart	10	NOUN
 Huchenfeld	10	NOUN
-Gewerbegebiets	10	NOUN
+Gewerbegebiets	10	NOUN	Gewerbegebiet
 Dietlingen	10	NOUN
 Bauamt	10	NOUN
 Urkundenhypothese	10	NOUN
@@ -103477,9 +103477,9 @@ tendenziöse	10	OTHER
 Mopsuestia	10	NOUN
 Saitenspannung	10	NOUN
 monistischen	10	OTHER
-Rodtschenkos	10	NOUN
+Rodtschenkos	10	NOUN	Rodtschenko
 Wanderbuch	10	NOUN
-Einsatzgebieten	10	NOUN
+Einsatzgebieten	10	NOUN	Einsatzgebiet
 Versdichtung	10	NOUN
 Rostam	10	NOUN
 Convento	10	NOUN
@@ -103489,7 +103489,7 @@ Leistungsbedarf	10	NOUN
 Huthi	10	NOUN
 Grundwasserstand	10	NOUN
 Brasidas	10	NOUN
-Vorteils	10	NOUN
+Vorteils	10	NOUN	Vorteil
 Woermann	10	NOUN
 Schutzzollpolitik	10	NOUN
 Waterberg	10	NOUN
@@ -103503,46 +103503,46 @@ provinziellen	10	OTHER
 Galiläer	10	NOUN
 Zungenstimmen	10	NOUN
 Orgelbewegung	10	NOUN
-Zwischenhalte	10	NOUN
+Zwischenhalte	10	NOUN	Zwischenhalt
 Streckenbau	10	NOUN
 Fahrschienen	10	NOUN
 motiviertes	10	OTHER
 Jang	10	NOUN
 Modellvariante	10	NOUN
 Oderhochwasser	10	NOUN
-Baptists	10	NOUN
+Baptists	10	NOUN	Baptist
 Langeoog	10	NOUN
 Eishockeyspieler	10	NOUN
 Arroyo	10	NOUN
-Seegrenzen	10	NOUN
-Tallinns	10	NOUN
-Kabelnetzbetreibern	10	NOUN
-Ganztagsschulen	10	NOUN
-Vollprogramme	10	NOUN
+Seegrenzen	10	NOUN	Seegrenze
+Tallinns	10	NOUN	Tallinn
+Kabelnetzbetreibern	10	NOUN	Kabelnetzbetreiber
+Ganztagsschulen	10	NOUN	Ganztagsschule
+Vollprogramme	10	NOUN	Vollprogramm
 Selbstverwaltungseinheiten	10	NOUN
 Panflöte	10	NOUN
 NPP	10	NOUN
 Sekondi	10	NOUN
-Ghazālīs	10	NOUN
+Ghazālīs	10	NOUN	Ghazālī
 Halladsch	10	NOUN
 javanischen	10	NOUN,OTHER
-Botenstoffen	10	NOUN
+Botenstoffen	10	NOUN	Botenstoff
 Gobierno	10	NOUN,OTHER
-Bundesräten	10	NOUN
+Bundesräten	10	NOUN	Bundesrat
 Tumulus	10	NOUN
 Calvert	10	NOUN
 Morogoro	10	NOUN
 Tonle	10	NOUN
 Aimag	10	NOUN
-Naturlandschaften	10	NOUN
+Naturlandschaften	10	NOUN	Naturlandschaft
 gezupfte	10	OTHER
-Sendezeiten	10	NOUN
+Sendezeiten	10	NOUN	Sendezeit
 Mindoro	10	NOUN
 Cebu	10	NOUN
 Kirchenamtes	10	NOUN
 missionarisch	10	OTHER
 Kalinga	10	NOUN
-Victorias	10	NOUN
+Victorias	10	NOUN	Victoria
 Sozialpakt	10	NOUN
 Nebelwäldern	10	NOUN
 Fornix	10	NOUN,OTHER
@@ -103550,18 +103550,18 @@ vaginaler	10	OTHER
 Bezugsmeridian	10	NOUN
 verheißt	10	OTHER
 Kirchenverständnis	10	NOUN
-Backsteinbaus	10	NOUN
+Backsteinbaus	10	NOUN	Backsteinbau
 Gadebusch	10	NOUN
 Rippengewölbe	10	NOUN
 Kapellenkranz	10	NOUN
 Westchor	10	NOUN
 Mediaș	10	NOUN
 Batty	10	NOUN
-Postämter	10	NOUN
+Postämter	10	NOUN	Postamt
 Thronfolgerin	10	NOUN
 Gockel	10	NOUN
 Eschershausen	10	NOUN
-Inventars	10	NOUN
+Inventars	10	NOUN	Inventar
 Europacup	10	NOUN
 XXIV	10	NOUN
 Thronrede	10	NOUN
@@ -103571,28 +103571,28 @@ Innovationspreis	10	NOUN
 Strafrahmen	10	NOUN
 Kinderschutz	10	NOUN
 Mehrehe	10	NOUN
-Bahaitums	10	NOUN
+Bahaitums	10	NOUN	Bahaitum
 Matignon	10	NOUN
 Payload	10	NOUN
 Motorrades	10	NOUN
 Putto	10	NOUN
 Kunstströmung	10	NOUN
 Rieter	10	NOUN
-Genien	10	NOUN
+Genien	10	NOUN	Genie
 Ausbildungsinhalte	10	NOUN
 eingeborene	10	OTHER
 VwVfG	10	NOUN
 Reformgesetz	10	NOUN
 Navigationsschule	10	NOUN
-Inselbegabten	10	NOUN
+Inselbegabten	10	NOUN	Inselbegabte
 Hirnareale	10	NOUN
 Questione	10	NOUN
-Henleins	10	NOUN
+Henleins	10	NOUN	Henlein
 Slavia	10	NOUN
 Blindgänger	10	NOUN
 profaner	10	OTHER
 Urmel	10	NOUN
-Stehplätzen	10	NOUN
+Stehplätzen	10	NOUN	Stehplätze
 Mittelschwaben	10	NOUN
 Buchloe	10	NOUN
 HKA	10	NOUN
@@ -103606,8 +103606,8 @@ Mander	10	NOUN
 Buchau	10	NOUN
 Temperaturgefälle	10	NOUN
 Sexualwissenschaftler	10	NOUN
-Soldatinnen	10	NOUN
-Sexualverhaltens	10	NOUN
+Soldatinnen	10	NOUN	Soldat
+Sexualverhaltens	10	NOUN	Sexualverhalten
 Hetero	10	NOUN,OTHER
 Brikett	10	NOUN
 Dannen	10	NOUN,OTHER
@@ -103634,7 +103634,7 @@ Kennzeichenschilder	10	NOUN
 Vorderrades	10	NOUN
 Colarossi	10	NOUN
 Pfemfert	10	NOUN
-Szenerien	10	NOUN
+Szenerien	10	NOUN	Szenerie
 Christmette	10	NOUN
 Epistel	10	NOUN
 Matutin	10	NOUN
@@ -103649,7 +103649,7 @@ Ausstellungsverbot	10	NOUN
 Ulipristalacetat	10	NOUN
 Diësis	10	NOUN
 Kapitalerhöhung	10	NOUN
-Clarks	10	NOUN
+Clarks	10	NOUN	Clark
 Sulamith	10	NOUN
 Türkmenbaşy	10	NOUN
 Namazga	10	NOUN
@@ -103663,7 +103663,7 @@ Duvalier	10	NOUN
 Kota	10	NOUN
 einhergehender	10	OTHER
 Talgo	10	NOUN
-Titanias	10	NOUN
+Titanias	10	NOUN	Titania
 Beelitzer	10	NOUN
 Stazione	10	NOUN,OTHER
 schützenswertes	10	OTHER
@@ -103674,16 +103674,16 @@ Laienbrüder	10	NOUN
 Sexarbeit	10	NOUN
 Vallendar	10	NOUN
 Weltrat	10	NOUN
-Neuruppins	10	NOUN
+Neuruppins	10	NOUN	Neuruppin
 Friedersdorf	10	NOUN
 Fiener	10	NOUN
-Feldsteinen	10	NOUN
+Feldsteinen	10	NOUN	Feldstein
 Müllrose	10	NOUN
 Stadtbrücke	10	NOUN
 Neuenhagener	10	NOUN
 Systembeschreibung	10	NOUN
 Heizkörpertemperatur	10	NOUN
-Nichtlinearitäten	10	NOUN
+Nichtlinearitäten	10	NOUN	Nichtlinearität
 Regelungsnormalform	10	NOUN
 kleinbürgerliche	10	OTHER
 Sigbjörnson	10	NOUN
@@ -103693,7 +103693,7 @@ aufgerichteten	10	OTHER
 Sorbisches	10	NOUN,OTHER
 Landschaftswiesen	10	NOUN
 Peitz	10	NOUN
-Schalldrucks	10	NOUN
+Schalldrucks	10	NOUN	Schalldruck
 Heilstätten	10	NOUN
 Arnošt	10	NOUN
 Völkerfreundschaft	10	NOUN
@@ -103717,7 +103717,7 @@ Weiterbildungsmöglichkeiten	10	NOUN
 smallfrown	10	OTHER
 dravidische	10	OTHER
 Platzregen	10	NOUN
-Finanzsektors	10	NOUN
+Finanzsektors	10	NOUN	Finanzsektor
 Verwirklichungschancen	10	NOUN
 Eretz	10	NOUN
 Treviso	10	NOUN
@@ -103737,7 +103737,7 @@ Ratsvorsitzende	10	NOUN
 präferiert	10	OTHER
 Gewinnrücklage	10	NOUN
 Molino	10	NOUN
-Jahresausstellungen	10	NOUN
+Jahresausstellungen	10	NOUN	Jahresausstellung
 Manger	10	NOUN
 Küchenmeister	10	NOUN
 Chemorezeptoren	10	NOUN
@@ -103757,7 +103757,7 @@ Ideogramme	10	NOUN
 Waldguinea	10	NOUN
 ablenkt	10	OTHER
 Legionella	10	NOUN
-Nationalräte	10	NOUN
+Nationalräte	10	NOUN	Nationalrat
 Palahniuk	10	NOUN
 Grünbaum	10	NOUN
 FEI	10	NOUN
@@ -103767,7 +103767,7 @@ ricanische	10	OTHER
 Primera	10	NOUN,OTHER
 Identifikator	10	NOUN
 Wettergott	10	NOUN
-Weinfeste	10	NOUN
+Weinfeste	10	NOUN	Weinfest
 SRC	10	NOUN
 homöopathisch	10	OTHER
 Vorhangfassade	10	NOUN
@@ -103786,12 +103786,12 @@ Liborius	10	NOUN
 Trespass	10	NOUN
 Stations	10	NOUN,OTHER
 RENAMO	10	NOUN
-Bubers	10	NOUN
+Bubers	10	NOUN	Buber
 halachische	10	OTHER
 Treskow	10	NOUN
 Stellantis	10	NOUN
 Wasserstoffverbrennungsmotor	10	NOUN
-Grills	10	NOUN
+Grills	10	NOUN	Grill
 Yorktown	10	NOUN
 mittelniederländischen	10	NOUN,OTHER
 Ballei	10	NOUN
@@ -103807,7 +103807,7 @@ eucharistische	10	OTHER
 entgleiste	10	OTHER
 UIC	10	NOUN
 Triebfahrzeugführer	10	NOUN
-Intercitys	10	NOUN
+Intercitys	10	NOUN	Intercity
 Entlastungszüge	10	NOUN
 Bahnreform	10	NOUN
 menschenwürdige	10	OTHER
@@ -103815,7 +103815,7 @@ kursierenden	10	OTHER
 Erfa	10	NOUN
 Melanesier	10	NOUN
 CDMA	10	NOUN
-Holländerwindmühlen	10	NOUN
+Holländerwindmühlen	10	NOUN	Holländerwindmühle
 Ihlow	10	NOUN
 Turmwindmühle	10	NOUN
 Wijk	10	NOUN,OTHER
