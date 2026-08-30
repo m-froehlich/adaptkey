@@ -64240,7 +64240,7 @@ vorwirft	18	OTHER
 Notwehr	18	NOUN
 ungebrochene	18	OTHER
 kriminell	18	OTHER
-Schurken	18	NOUN
+Schurken	18	NOUN	Schurke
 Mitch	18	NOUN
 transzendieren	18	OTHER
 Kriminalfall	18	NOUN
@@ -64249,7 +64249,7 @@ Caligari	18	NOUN
 Novak	18	NOUN
 Garderobe	18	NOUN
 Ehescheidung	18	NOUN
-Romanautoren	18	NOUN
+Romanautoren	18	NOUN	Romanautor
 Clift	18	NOUN
 Standardrepertoire	18	NOUN
 Bazin	18	NOUN
@@ -64262,9 +64262,9 @@ japanischem	18	OTHER
 Schausteller	18	NOUN
 animierten	18	VERB,OTHER
 Seitenwechsel	18	NOUN
-Strafgesetzbuchs	18	NOUN
-Einzelbilder	18	NOUN
-Fanzines	18	NOUN
+Strafgesetzbuchs	18	NOUN	Strafgesetzbuch
+Einzelbilder	18	NOUN	Einzelbild
+Fanzines	18	NOUN	Fanzine
 Maja	18	NOUN
 Schwarzenegger	18	NOUN
 Zurschaustellung	18	NOUN
@@ -64273,7 +64273,7 @@ Charakterdarsteller	18	NOUN
 haltige	18	OTHER
 Rauschmittel	18	NOUN
 Reaktionsbedingungen	18	NOUN
-Schmelzpunkte	18	NOUN
+Schmelzpunkte	18	NOUN	Schmelzpunkt
 Anni	18	NOUN,OTHER
 Nostalgie	18	NOUN
 stimmig	18	OTHER
@@ -64292,8 +64292,8 @@ hinzugegeben	18	VERB
 Toxikologie	18	NOUN
 Tonnage	18	NOUN
 Edelgaskonfiguration	18	NOUN
-Oxidationsmitteln	18	NOUN
-Massenzahlen	18	NOUN
+Oxidationsmitteln	18	NOUN	Oxidationsmittel
+Massenzahlen	18	NOUN	Massenzahl
 Insektizid	18	NOUN
 entzündlich	18	OTHER
 Extinktion	18	NOUN
@@ -64302,10 +64302,10 @@ vortäuschen	18	VERB
 Heftigkeit	18	NOUN
 Birch	18	NOUN
 Befüllung	18	NOUN
-Kernbrennstoffen	18	NOUN
+Kernbrennstoffen	18	NOUN	Kernbrennstoff
 Transmutation	18	NOUN
 Hydrosphäre	18	NOUN
-Zerfallsprodukte	18	NOUN
+Zerfallsprodukte	18	NOUN	Zerfallsprodukt
 abschirmen	18	VERB
 Atomismus	18	NOUN
 medica	18	OTHER
@@ -64320,22 +64320,22 @@ Kognitionswissenschaft	18	NOUN
 Zähmung	18	NOUN
 Erdkunde	18	NOUN
 Kulturbegriff	18	NOUN
-Grundfragen	18	NOUN
-Kulturraums	18	NOUN
-Anatoliens	18	NOUN
-Handelsstädten	18	NOUN
+Grundfragen	18	NOUN	Grundfrage
+Kulturraums	18	NOUN	Kulturraum
+Anatoliens	18	NOUN	Anatolien
+Handelsstädten	18	NOUN	Handelsstadt
 Artaxerxes	18	NOUN
 Fußsoldaten	18	NOUN
 Bundesheeres	18	NOUN
-Ablassen	18	NOUN,OTHER
+Ablassen	18	NOUN,OTHER	Ablass
 überstürzt	18	OTHER
 Durchquerung	18	NOUN
 Halbgott	18	NOUN
 Ephemeriden	18	NOUN
 Metzer	18	NOUN
 demonstrativen	18	OTHER
-Burschen	18	NOUN
-Senecas	18	NOUN
+Burschen	18	NOUN	Bursche
+Senecas	18	NOUN	Seneca
 regten	18	VERB
 altfranzösische	18	OTHER
 missbilligt	18	OTHER
@@ -64353,7 +64353,7 @@ lebensgefährliche	18	OTHER
 Arbeitstag	18	NOUN
 bremst	18	OTHER
 Arbeitslohn	18	NOUN
-Neuschöpfungen	18	NOUN
+Neuschöpfungen	18	NOUN	Neuschöpfung
 kulturpolitische	18	OTHER
 kurzwelligen	18	OTHER
 pensionierten	18	VERB,OTHER
@@ -64363,22 +64363,22 @@ vergifteten	18	VERB,OTHER
 einstufte	18	OTHER
 Forschungsmethoden	18	NOUN
 sukzessiv	18	OTHER
-Klimaveränderungen	18	NOUN
-Fundplätze	18	NOUN
-Grabhügeln	18	NOUN
+Klimaveränderungen	18	NOUN	Klimaveränderung
+Fundplätze	18	NOUN	Fundplatz
+Grabhügeln	18	NOUN	Grabhügel
 knöchernen	18	OTHER
 heilenden	18	OTHER
 andeuten	18	VERB
 wiedererkennen	18	VERB
 Transportflugzeuge	18	NOUN
-Churchills	18	NOUN
+Churchills	18	NOUN	Churchill
 Overlord	18	NOUN
 stürmte	18	OTHER
 Durchmarsch	18	NOUN
 Oberkommandierender	18	NOUN
 Hochschulpolitik	18	NOUN
 Schell	18	NOUN
-Kurzfilmen	18	NOUN
+Kurzfilmen	18	NOUN	Kurzfilm
 angeschossen	18	VERB
 lesbischen	18	OTHER
 Detective	18	NOUN
@@ -64388,7 +64388,7 @@ kolumbianische	18	OTHER
 einzulassen	18	VERB
 Samosata	18	NOUN
 Nicolo	18	NOUN
-Propositionen	18	NOUN
+Propositionen	18	NOUN	Proposition
 Staatslehre	18	NOUN
 unangefochtene	18	OTHER
 sichten	18	NOUN,OTHER
@@ -64398,26 +64398,26 @@ Versatzstücke	18	NOUN
 kuriose	18	OTHER
 didaktisch	18	OTHER
 vergänglich	18	OTHER
-Überlebens	18	NOUN
+Überlebens	18	NOUN	Überleben
 platonischer	18	OTHER
 Diels	18	NOUN
 angelsächsischer	18	OTHER
 verabredet	18	OTHER
 reizte	18	OTHER
 Sklavenfrage	18	NOUN
-Apologeten	18	NOUN
+Apologeten	18	NOUN	Apologet
 Sumter	18	NOUN
 Hafeneinfahrt	18	NOUN
 Gangart	18	NOUN
 Shenandoahtal	18	NOUN
 vergönnt	18	OTHER
-Persönlichkeitsrechte	18	NOUN
+Persönlichkeitsrechte	18	NOUN	Persönlichkeitsrecht
 Bausektor	18	NOUN
 nebenberuflich	18	OTHER
 kinderlose	18	OTHER
 eingeläutet	18	OTHER
 BaFin	18	NOUN
-Obamas	18	NOUN
+Obamas	18	NOUN	Obama
 gratulierte	18	OTHER
 Koalitionsparteien	18	NOUN
 Bankenkrise	18	NOUN
@@ -64428,39 +64428,39 @@ Autoindustrie	18	NOUN
 Verfassungsrichter	18	NOUN
 Mordfall	18	NOUN
 Driessen	18	NOUN
-Finanzhilfen	18	NOUN
+Finanzhilfen	18	NOUN	Finanzhilfe
 gelinge	18	OTHER
 gegenteiliger	18	OTHER
 Weizmann	18	NOUN
-Vorstände	18	NOUN
-Videoclips	18	NOUN
+Vorstände	18	NOUN	Vorstand
+Videoclips	18	NOUN	Videoclip
 Sacred	18	NOUN
 Astrologe	18	NOUN
 seldschukischen	18	OTHER
-Atatürks	18	NOUN
+Atatürks	18	NOUN	Atatürk
 beschreibbaren	18	OTHER
 Grundwerte	18	NOUN
 Dekonstruktion	18	NOUN
 Rollins	18	NOUN
 Deva	18	NOUN,OTHER
 diesseitigen	18	OTHER
-Gottesvorstellungen	18	NOUN
+Gottesvorstellungen	18	NOUN	Gottesvorstellung
 unaufhaltsam	18	OTHER
 Theodoros	18	NOUN
-Kleinigkeiten	18	NOUN
-Œuvres	18	NOUN
+Kleinigkeiten	18	NOUN	Kleinigkeit
+Œuvres	18	NOUN	Œuvre
 toleranten	18	OTHER
-Sehnsüchte	18	NOUN
+Sehnsüchte	18	NOUN	Sehnsucht
 Existenzialismus	18	NOUN
 profiliertesten	18	OTHER
 Raubtier	18	NOUN
-Einwänden	18	NOUN
+Einwänden	18	NOUN	Einwand
 zufriedenstellende	18	OTHER
-Ausarbeitungen	18	NOUN
+Ausarbeitungen	18	NOUN	Ausarbeitung
 Gasteilchen	18	NOUN
 Einflussgrößen	18	NOUN
 ungenutzten	18	OTHER
-Fachausdrücke	18	NOUN
+Fachausdrücke	18	NOUN	Fachausdruck
 Staatsname	18	NOUN
 UNODC	18	NOUN
 gestreckte	18	OTHER
@@ -64468,7 +64468,7 @@ Lapislazuli	18	NOUN
 Gasvorkommen	18	NOUN
 kompilierte	18	OTHER
 Lunarkalender	18	NOUN
-Volksfesten	18	NOUN
+Volksfesten	18	NOUN	Volksfest
 Grundreihe	18	NOUN
 ungehinderte	18	OTHER
 Erhabenheit	18	NOUN
@@ -64482,20 +64482,20 @@ Weida	18	NOUN
 Koitus	18	NOUN
 Practice	18	NOUN
 Kulturhistoriker	18	NOUN
-Kampfkünsten	18	NOUN
+Kampfkünsten	18	NOUN	Kampfkunst
 ungebundenen	18	OTHER
 Einkehr	18	NOUN
 Fingerspitzen	18	NOUN
 Monophysitismus	18	NOUN
 intellektuelles	18	OTHER
 Sephardim	18	NOUN
-Genauigkeiten	18	NOUN
+Genauigkeiten	18	NOUN	Genauigkeit
 Weberaufstand	18	NOUN
 Gewerbeordnung	18	NOUN
 Haymarket	18	NOUN
 Tarifautonomie	18	NOUN
 Nenzen	18	NOUN
-Südasiens	18	NOUN
+Südasiens	18	NOUN	Südasien
 Religionsstifter	18	NOUN
 Nordirak	18	NOUN
 Grundlagenvertrag	18	NOUN
@@ -64504,7 +64504,7 @@ angesprochene	18	OTHER
 Interessenausgleich	18	NOUN
 freigewordenen	18	OTHER
 Rächer	18	NOUN
-Sullas	18	NOUN
+Sullas	18	NOUN	Sulla
 Ostprovinzen	18	NOUN
 beschnitt	18	OTHER
 standesgemäß	18	OTHER
@@ -64513,10 +64513,10 @@ einstiger	18	OTHER
 Familienoberhaupt	18	NOUN
 patrizischen	18	OTHER
 deute	18	OTHER
-Aquädukte	18	NOUN
+Aquädukte	18	NOUN	Aquädukt
 Machtdemonstration	18	NOUN
 vorgeschoben	18	VERB
-Lebenswandels	18	NOUN
+Lebenswandels	18	NOUN	Lebenswandel
 claudischen	18	OTHER
 Verheerungen	18	NOUN
 Unzulänglichkeit	18	NOUN
@@ -64526,14 +64526,14 @@ Ratsherr	18	NOUN
 illustre	18	OTHER
 neunjährigen	18	OTHER
 entlädt	18	OTHER
-Beweggründen	18	NOUN
+Beweggründen	18	NOUN	Beweggrund
 Gegenübers	18	NOUN
 spottete	18	OTHER
 unfreiwillige	18	OTHER
-Oberkommandierenden	18	NOUN
+Oberkommandierenden	18	NOUN	Oberkommandierende
 Alpenpässe	18	NOUN
 gleichgemacht	18	OTHER
-Kults	18	NOUN
+Kults	18	NOUN	Kult
 enthaupten	18	VERB
 Korruptionsbekämpfung	18	NOUN
 Irina	18	NOUN
@@ -64541,21 +64541,21 @@ Drag	18	NOUN,OTHER
 Garamond	18	NOUN
 gelisteten	18	OTHER
 Backend	18	NOUN
-Hochgeschwindigkeitszügen	18	NOUN
-Überprüfungen	18	NOUN
+Hochgeschwindigkeitszügen	18	NOUN	Hochgeschwindigkeitszug
+Überprüfungen	18	NOUN	Überprüfung
 Chefin	18	NOUN
-Kanzleien	18	NOUN
+Kanzleien	18	NOUN	Kanzlei
 proprietäres	18	OTHER
 ausnutzt	18	OTHER
 verbrecherische	18	OTHER
 Verfehlung	18	NOUN
 Hausarzt	18	NOUN
 Standgericht	18	NOUN
-Geldgebern	18	NOUN
+Geldgebern	18	NOUN	Geldgeber
 Ruhrbesetzung	18	NOUN
-Linksparteien	18	NOUN
+Linksparteien	18	NOUN	Linkspartei
 Reichsexekution	18	NOUN
-Statements	18	NOUN
+Statements	18	NOUN	Statement
 Mindeststrafe	18	NOUN
 Autarkie	18	NOUN
 Weltverschwörung	18	NOUN
@@ -64567,13 +64567,13 @@ Kirchenverfassung	18	NOUN
 OKH	18	NOUN
 verlange	18	OTHER
 Zweifrontenkrieg	18	NOUN
-Rüstungsbetrieben	18	NOUN
+Rüstungsbetrieben	18	NOUN	Rüstungsbetrieb
 Reichsmarschall	18	NOUN
 Funkspruch	18	NOUN
 bestimmender	18	OTHER
 Constantine	18	NOUN
 Entschärfung	18	NOUN
-Handelspartnern	18	NOUN
+Handelspartnern	18	NOUN	Handelspartner
 Neuwagen	18	NOUN
 Erdgasförderung	18	NOUN
 TMS	18	NOUN
@@ -64582,21 +64582,21 @@ Arbeitspartei	18	NOUN
 einmarschiert	18	OTHER
 Verkehrsmuseum	18	NOUN
 Tender	18	NOUN,OTHER
-Stabs	18	NOUN
+Stabs	18	NOUN	Stab
 Festzug	18	NOUN
 Autobiography	18	NOUN
 Halley	18	NOUN
 Kriminalliteratur	18	NOUN
 Irwin	18	NOUN
-Mondlandungen	18	NOUN
-Raumfahrzeugen	18	NOUN
+Mondlandungen	18	NOUN	Mondlandung
+Raumfahrzeugen	18	NOUN	Raumfahrzeug
 Mauro	18	NOUN
 sonnig	18	OTHER
 Sonographie	18	NOUN
 belieferte	18	OTHER
 Binary	18	NOUN,OTHER
 Reisegeschwindigkeit	18	NOUN
-Aldehyde	18	NOUN
+Aldehyde	18	NOUN	Aldehyd
 Flächenverbrauch	18	NOUN
 Unterkreide	18	NOUN
 mesozoischen	18	OTHER
@@ -64609,21 +64609,21 @@ deduktiv	18	OTHER
 Kraftfahrzeugkennzeichen	18	NOUN
 Differenzierbarkeit	18	NOUN
 dimensionale	18	OTHER
-Bauernfamilien	18	NOUN
+Bauernfamilien	18	NOUN	Bauernfamilie
 dreizehnten	18	OTHER
 Mertens	18	NOUN
 Entrüstung	18	NOUN
-Reformbewegungen	18	NOUN
+Reformbewegungen	18	NOUN	Reformbewegung
 Opferbereitschaft	18	NOUN
 anhaltendes	18	OTHER
-Spendern	18	NOUN
+Spendern	18	NOUN	Spender
 Metallionen	18	NOUN
 Hochdruckverfahren	18	NOUN
-Stickoxiden	18	NOUN
+Stickoxiden	18	NOUN	Stickoxide
 NMDA	18	NOUN
-Rezeptors	18	NOUN
+Rezeptors	18	NOUN	Rezeptor
 probeweise	18	OTHER
-Konvois	18	NOUN
+Konvois	18	NOUN	Konvoi
 Großadmiral	18	NOUN
 anwachsenden	18	OTHER
 dreizählig	18	OTHER
@@ -64633,7 +64633,7 @@ Astronomy	18	NOUN
 Rufzeichen	18	NOUN
 Anflug	18	NOUN
 Schattenwurf	18	NOUN
-Flugs	18	NOUN
+Flugs	18	NOUN	Flug
 Zielgebiet	18	NOUN
 koppelte	18	OTHER
 Umlenkung	18	NOUN
@@ -64643,36 +64643,36 @@ Cor	18	NOUN,OTHER
 karge	18	OTHER
 entfachen	18	VERB
 Troy	18	NOUN,OTHER
-Regierungsbehörden	18	NOUN
+Regierungsbehörden	18	NOUN	Regierungsbehörde
 ebbte	18	OTHER
 Eparchie	18	NOUN
 Bandy	18	NOUN
-Säcken	18	NOUN
+Säcken	18	NOUN	Sack
 kalkuliert	18	OTHER
 Unternehmensgeschichte	18	NOUN
 Internetportal	18	NOUN
-Hörbücher	18	NOUN
+Hörbücher	18	NOUN	Hörbuch
 prominentestes	18	OTHER
-Großreiches	18	NOUN
-Aufschlüsse	18	NOUN
+Großreiches	18	NOUN	Großreich
+Aufschlüsse	18	NOUN	Aufschluss
 unbetonte	18	OTHER
 Depositum	18	NOUN
 einordnet	18	OTHER
 dünnem	18	OTHER
 Eigelb	18	NOUN
-Ballungsraums	18	NOUN
-Schuljahre	18	NOUN
-Herrschaftsbereichs	18	NOUN
+Ballungsraums	18	NOUN	Ballungsraum
+Schuljahre	18	NOUN	Schuljahr
+Herrschaftsbereichs	18	NOUN	Herrschaftsbereich
 Militärregime	18	NOUN
 undurchsichtig	18	OTHER
 vorgegebenes	18	OTHER
-Umfanges	18	NOUN
-Telefonanschlüsse	18	NOUN
+Umfanges	18	NOUN	Umfang
+Telefonanschlüsse	18	NOUN	Telefonanschluss
 Telefonanschluss	18	NOUN
 Atahualpa	18	NOUN
 Puig	18	NOUN
 Copa	18	NOUN
-Impfstoffen	18	NOUN
+Impfstoffen	18	NOUN	Impfstoff
 vital	18	NOUN,OTHER
 Pepsin	18	NOUN
 Baroness	18	NOUN
@@ -64697,17 +64697,17 @@ schriftstellerisch	18	OTHER
 Andreae	18	NOUN
 Vue	18	NOUN,OTHER
 Tschadsee	18	NOUN
-Hauptzweige	18	NOUN
+Hauptzweige	18	NOUN	Hauptzweig
 triadische	18	OTHER
-Arealen	18	NOUN,OTHER
-Verkehrssprachen	18	NOUN
+Arealen	18	NOUN,OTHER	Areal
+Verkehrssprachen	18	NOUN	Verkehrssprache
 darunterliegende	18	OTHER
 innerviert	18	OTHER
-Häutungen	18	NOUN
+Häutungen	18	NOUN	Häutung
 Polypen	18	NOUN
 meidet	18	OTHER
 reihte	18	OTHER
-Beigaben	18	NOUN
+Beigaben	18	NOUN	Beigabe
 Kartenbild	18	NOUN
 Erregungsleitung	18	NOUN
 paradoxen	18	OTHER
@@ -64718,13 +64718,13 @@ Ehud	18	NOUN
 Negev	18	NOUN
 weggeworfen	18	VERB
 Augst	18	NOUN
-Übertragungsraten	18	NOUN
+Übertragungsraten	18	NOUN	Übertragungsrate
 monetäre	18	OTHER
 generalis	18	OTHER
-Skripten	18	NOUN
+Skripten	18	NOUN	Skript
 Phantastik	18	NOUN
 lyrisches	18	OTHER
-Sackgassen	18	NOUN
+Sackgassen	18	NOUN	Sackgasse
 Brahmagupta	18	NOUN
 Argo	18	NOUN
 Russellsche	18	NOUN
@@ -64733,11 +64733,11 @@ vollwertiges	18	OTHER
 ay	18	NOUN,OTHER
 Umbildung	18	NOUN
 Vokalisation	18	NOUN
-Bauingenieure	18	NOUN
+Bauingenieure	18	NOUN	Bauingenieur
 vordefinierte	18	OTHER
 Heizkessel	18	NOUN
 Salzlake	18	NOUN
-Datenbanksysteme	18	NOUN
+Datenbanksysteme	18	NOUN	Datenbanksystem
 Boerhaave	18	NOUN
 eiförmige	18	OTHER
 Blutserum	18	NOUN
@@ -64752,7 +64752,7 @@ idealtypisch	18	OTHER
 Selbstreflexion	18	NOUN
 schleudert	18	OTHER
 Itanium	18	NOUN
-Alltagsgegenständen	18	NOUN
+Alltagsgegenständen	18	NOUN	Alltagsgegenstände
 zurückzieht	18	OTHER
 abstrahieren	18	VERB
 Anglican	18	NOUN
@@ -64764,12 +64764,12 @@ Kosmogonie	18	NOUN
 Melderegister	18	NOUN
 Infrarotbereich	18	NOUN
 Kuiper	18	NOUN
-Ambosse	18	NOUN
+Ambosse	18	NOUN	Amboss
 überdauerten	18	VERB
 dekorierte	18	OTHER
 Börsenhandel	18	NOUN
 BörsG	18	NOUN
-Nahrungsergänzungsmitteln	18	NOUN
+Nahrungsergänzungsmitteln	18	NOUN	Nahrungsergänzungsmittel
 TAC	18	NOUN
 Herzerkrankung	18	NOUN
 Druckerhöhung	18	NOUN
@@ -64781,8 +64781,8 @@ Arrow	18	NOUN
 Originalgröße	18	NOUN
 steinernes	18	OTHER
 Dekolonisation	18	NOUN
-Anführers	18	NOUN
-Verfassungsgerichts	18	NOUN
+Anführers	18	NOUN	Anführer
+Verfassungsgerichts	18	NOUN	Verfassungsgericht
 Sul	18	NOUN,OTHER
 Lechner	18	NOUN
 Rahn	18	NOUN
@@ -64792,10 +64792,10 @@ sonstigem	18	OTHER
 gleichaltrige	18	NOUN,OTHER
 Puzzle	18	NOUN,OTHER
 Naivität	18	NOUN
-Arbeitsabläufe	18	NOUN
+Arbeitsabläufe	18	NOUN	Arbeitsablauf
 selbstbestimmtes	18	OTHER
 endokrine	18	OTHER
-Metaanalysen	18	NOUN
+Metaanalysen	18	NOUN	Metaanalyse
 Mellon	18	NOUN
 barrierefreie	18	OTHER
 Hilflosigkeit	18	NOUN
@@ -64809,15 +64809,15 @@ Verkehrsplanung	18	NOUN
 Mitgliedsorganisationen	18	NOUN
 Regionalisierung	18	NOUN
 Verrechnung	18	NOUN
-Bells	18	NOUN
+Bells	18	NOUN	Bell
 Klaviermusik	18	NOUN
 Waldo	18	NOUN
 Anis	18	NOUN
-Getränks	18	NOUN
+Getränks	18	NOUN	Getränk
 Landarzt	18	NOUN
 abzuholen	18	VERB
 IGP	18	NOUN
-Grenzwerten	18	NOUN
+Grenzwerten	18	NOUN	Grenzwert
 sylvatica	18	OTHER
 Schöpfungsmythos	18	NOUN
 Baptista	18	NOUN
@@ -64836,11 +64836,11 @@ Deggendorf	18	NOUN
 Figurentheater	18	NOUN
 Markgräfliche	18	NOUN,OTHER
 Buß	18	NOUN
-Erziehungs	18	NOUN
+Erziehungs	18	NOUN	Erziehung
 erstklassig	18	OTHER
 geomorphologischen	18	OTHER
 Westwind	18	NOUN
-Randzonen	18	NOUN
+Randzonen	18	NOUN	Randzone
 Protestation	18	NOUN
 Verhaftungswelle	18	NOUN
 Südweststaat	18	NOUN
@@ -64850,12 +64850,12 @@ Bodenseeufer	18	NOUN
 Fahrradklimatest	18	NOUN
 Lahr	18	NOUN
 Maulbronn	18	NOUN
-Nibelungenlieds	18	NOUN
+Nibelungenlieds	18	NOUN	Nibelungenlied
 Titisee	18	NOUN
 TEC	18	NOUN
 plattformunabhängige	18	OTHER
 Textausgabe	18	NOUN
-Detektive	18	NOUN
+Detektive	18	NOUN	Detektiv
 leisen	18	OTHER
 werteten	18	VERB
 beaufsichtigte	18	OTHER
@@ -64866,15 +64866,15 @@ Staatssicherheitsdienst	18	NOUN
 unbekanntem	18	OTHER
 Schriftgut	18	NOUN
 ionisch	18	OTHER
-Orbitalen	18	NOUN,OTHER
+Orbitalen	18	NOUN,OTHER	Orbital
 Stromeyer	18	NOUN
-Röntgenröhren	18	NOUN
+Röntgenröhren	18	NOUN	Röntgenröhre
 Hadron	18	NOUN
 winzig	18	OTHER
 angeschrieben	18	VERB
 Mostar	18	NOUN
 lipophil	18	OTHER
-Jordans	18	NOUN
+Jordans	18	NOUN	Jordan
 Solen	18	NOUN
 Lungenödem	18	NOUN
 unbefristete	18	OTHER
@@ -64883,9 +64883,9 @@ Projektmanagement	18	NOUN
 Mittelelbe	18	NOUN
 BfArM	18	NOUN
 ausweislich	18	OTHER
-Hauptgebäudes	18	NOUN
+Hauptgebäudes	18	NOUN	Hauptgebäude
 begehrtes	18	OTHER
-Stadtquartiere	18	NOUN
+Stadtquartiere	18	NOUN	Stadtquartier
 kaiserzeitlichen	18	OTHER
 Hotellerie	18	NOUN
 Vorortbahn	18	NOUN
@@ -64904,30 +64904,30 @@ Baumkrone	18	NOUN
 Gestaltungselement	18	NOUN
 Brackwede	18	NOUN
 ozeanisch	18	OTHER
-Webereien	18	NOUN
+Webereien	18	NOUN	Weberei
 Gumbinnen	18	NOUN
 Nordpark	18	NOUN
 Studentenwohnheim	18	NOUN
 Pfarr	18	NOUN
 Kriegsflüchtlinge	18	NOUN
 Astoria	18	NOUN
-Konzertsälen	18	NOUN
+Konzertsälen	18	NOUN	Konzertsäle
 Filmvorführungen	18	NOUN
 Vereinsheim	18	NOUN
 Molo	18	NOUN
 Versorgungssicherheit	18	NOUN
-Zugvögeln	18	NOUN
+Zugvögeln	18	NOUN	Zugvögel
 ISF	18	NOUN
-Fördermitteln	18	NOUN
+Fördermitteln	18	NOUN	Fördermittel
 Projektträger	18	NOUN
-Fernradwege	18	NOUN
+Fernradwege	18	NOUN	Fernradweg
 Glasfaserkabel	18	NOUN
 Frauenfeld	18	NOUN
 Bagger	18	NOUN
 kapitalistischer	18	OTHER
 rechnerische	18	OTHER
 Listenverbindung	18	NOUN
-Stimmanteile	18	NOUN
+Stimmanteile	18	NOUN	Stimmanteil
 beworfen	18	OTHER
 Oberlippe	18	NOUN
 Standardform	18	NOUN
@@ -64937,26 +64937,26 @@ Purcell	18	NOUN
 verwendenden	18	OTHER
 Phrasierung	18	NOUN
 Proprium	18	NOUN
-Airs	18	NOUN,OTHER
+Airs	18	NOUN,OTHER	Air
 Keiser	18	NOUN
 derzeitigem	18	OTHER
 herbeiführte	18	OTHER
 Verteidigungsrates	18	NOUN
-Fluchtversuche	18	NOUN
+Fluchtversuche	18	NOUN	Fluchtversuch
 lautstark	18	OTHER
 Teltowkanal	18	NOUN
 Übernachtung	18	NOUN
-Osmanisches	18	NOUN,OTHER
+Osmanisches	18	NOUN,OTHER	Osmanische
 Asow	18	NOUN
 Meeresströmung	18	NOUN
 wenigste	18	OTHER
 Medaillon	18	NOUN
 Bundesdistrikt	18	NOUN
 gehobener	18	OTHER
-Grundherrschaften	18	NOUN
+Grundherrschaften	18	NOUN	Grundherrschaft
 bereithält	18	OTHER
-Kinosälen	18	NOUN
-Gehölzen	18	NOUN
+Kinosälen	18	NOUN	Kinosäle
+Gehölzen	18	NOUN	Gehölz
 Methodistenkirche	18	NOUN
 diakonische	18	OTHER
 brillant	18	OTHER
@@ -64965,18 +64965,18 @@ aufgeschlüsselt	18	OTHER
 Senatorin	18	NOUN
 Umpire	18	NOUN
 Pick	18	NOUN
-Spieltage	18	NOUN
+Spieltage	18	NOUN	Spieltag
 Balles	18	NOUN
-Führungs	18	NOUN
+Führungs	18	NOUN	Führung
 Medienpräsenz	18	NOUN
 verabredeten	18	VERB,OTHER
-Luftwaffen	18	NOUN
+Luftwaffen	18	NOUN	Luftwaffe
 Ellenbogen	18	NOUN
 bequeme	18	OTHER
 Remer	18	NOUN
 gesteckten	18	OTHER
 abgestorbene	18	OTHER
-Nebennieren	18	NOUN
+Nebennieren	18	NOUN	Nebenniere
 Gerberei	18	NOUN
 hübsch	18	OTHER
 Auslautverhärtung	18	NOUN
@@ -64991,9 +64991,9 @@ absolutistisch	18	OTHER
 weitestgehende	18	OTHER
 Staatenlose	18	NOUN,OTHER
 Makler	18	NOUN
-Irrtümern	18	NOUN
+Irrtümern	18	NOUN	Irrtum
 Securities	18	NOUN
-Pools	18	NOUN
+Pools	18	NOUN	Pool
 kleiden	18	VERB
 Shakyamuni	18	NOUN
 Bedingtheit	18	NOUN
@@ -65007,21 +65007,21 @@ Textgeschichte	18	NOUN
 Ora	18	NOUN,OTHER
 Hegemonialmacht	18	NOUN
 Trapezunt	18	NOUN
-Interregnums	18	NOUN
+Interregnums	18	NOUN	Interregnum
 Wyatt	18	NOUN
 Nederlands	18	NOUN
 Mineralquellen	18	NOUN
 Léopold	18	NOUN
 Nachkriegsgeschichte	18	NOUN
 stockte	18	OTHER
-Regierungsmitgliedern	18	NOUN
+Regierungsmitgliedern	18	NOUN	Regierungsmitglied
 Component	18	NOUN
 Hautes	18	NOUN,OTHER
 frites	18	OTHER
 Léonard	18	NOUN
 Drina	18	NOUN
 Thymian	18	NOUN
-Ordnungs	18	NOUN
+Ordnungs	18	NOUN	Ordnung
 Pazar	18	NOUN
 Aburteilung	18	NOUN
 ineffiziente	18	OTHER
@@ -65039,12 +65039,12 @@ Kapitänleutnant	18	NOUN
 kopfüber	18	OTHER
 Bäckerei	18	NOUN
 Untermalung	18	NOUN
-Saturns	18	NOUN
-Streitschriften	18	NOUN
+Saturns	18	NOUN	Saturn
+Streitschriften	18	NOUN	Streitschrift
 Vorwissen	18	NOUN
 Lebkuchen	18	NOUN
 Abwehrmechanismen	18	NOUN
-Senegals	18	NOUN
+Senegals	18	NOUN	Senegal
 Popularmusik	18	NOUN
 Kulturförderung	18	NOUN
 Amadou	18	NOUN
@@ -65053,14 +65053,14 @@ Petersplatz	18	NOUN
 gebietet	18	OTHER
 geeignetem	18	OTHER
 oberschwäbischen	18	NOUN,OTHER
-Einsatzzwecke	18	NOUN
+Einsatzzwecke	18	NOUN	Einsatzzweck
 Schwachstelle	18	NOUN
 Město	18	NOUN,OTHER
 Randgebirge	18	NOUN
-Gerichtsbezirke	18	NOUN
+Gerichtsbezirke	18	NOUN	Gerichtsbezirk
 Kinsky	18	NOUN
 Gondelbahn	18	NOUN
-Bundestagspräsidenten	18	NOUN
+Bundestagspräsidenten	18	NOUN	Bundestagspräsident
 Medieninteresse	18	NOUN
 Fraktionsdisziplin	18	NOUN
 dienstälteste	18	OTHER
@@ -65072,14 +65072,14 @@ Aral	18	NOUN
 Verfassungszusatzes	18	NOUN
 unversöhnlich	18	OTHER
 außergerichtliche	18	OTHER
-Oberschichten	18	NOUN
+Oberschichten	18	NOUN	Oberschicht
 Konfliktlinien	18	NOUN
 veranschlagten	18	VERB,OTHER
 Kirchenarchitektur	18	NOUN
 ausführten	18	VERB
 Neuf	18	NOUN
 Karnevalszeit	18	NOUN
-Travens	18	NOUN
+Travens	18	NOUN	Traven
 Nahuatl	18	NOUN
 Juárez	18	NOUN
 Oriya	18	NOUN
@@ -65088,7 +65088,7 @@ Corridor	18	NOUN
 Flugunfall	18	NOUN
 VD	18	NOUN
 ziviles	18	OTHER
-Hangars	18	NOUN
+Hangars	18	NOUN	Hangar
 Anniversary	18	NOUN
 Montecassino	18	NOUN
 Michaela	18	NOUN
@@ -65102,14 +65102,14 @@ Vestibül	18	NOUN
 Vierungsturm	18	NOUN
 Remigius	18	NOUN
 Cyprian	18	NOUN
-Arps	18	NOUN
-Philharmonischen	18	NOUN
+Arps	18	NOUN	Arp
+Philharmonischen	18	NOUN	Philharmonische
 Festwiese	18	NOUN
 Rebe	18	NOUN
 Verbrauchspreis	18	NOUN
 Korporativ	18	NOUN
 Dependance	18	NOUN
-Spielsteine	18	NOUN
+Spielsteine	18	NOUN	Spielstein
 Adriano	18	NOUN
 Maxi	18	NOUN
 Kraterrand	18	NOUN
@@ -65121,11 +65121,11 @@ Bündnispolitik	18	NOUN
 Kollegialorgan	18	NOUN
 verbreitern	18	VERB
 Pathogenese	18	NOUN
-Zwischenfällen	18	NOUN
+Zwischenfällen	18	NOUN	Zwischenfall
 Psychologismus	18	NOUN
 einstufen	18	VERB
 hochkomplexen	18	OTHER
-Schlafs	18	NOUN
+Schlafs	18	NOUN	Schlaf
 cogito	18	OTHER
 Muʿtaziliten	18	NOUN
 antik	18	OTHER
@@ -65133,28 +65133,28 @@ ausgestorbener	18	OTHER
 Bernsteinstraße	18	NOUN
 Verpachtung	18	NOUN
 tretenden	18	OTHER
-Farbtönen	18	NOUN
+Farbtönen	18	NOUN	Farbton
 Hel	18	NOUN,OTHER
 taugt	18	OTHER
 Periodenlänge	18	NOUN
 Metallizität	18	NOUN
 Temperaturverteilung	18	NOUN
 Spektraltyp	18	NOUN
-Wohnlagen	18	NOUN
+Wohnlagen	18	NOUN	Wohnlage
 Nassauer	18	NOUN
 Reiss	18	NOUN
 Umlaufdauer	18	NOUN
-Doppelsternsystems	18	NOUN
+Doppelsternsystems	18	NOUN	Doppelsternsystem
 Münzenberg	18	NOUN
 Homburger	18	NOUN
 Freizeitbad	18	NOUN
 Rabenstein	18	NOUN
 Gesamtstadt	18	NOUN
 Heldenplatz	18	NOUN
-Kessels	18	NOUN
+Kessels	18	NOUN	Kessel
 Pester	18	NOUN
 Kunstpalast	18	NOUN
-Containerterminals	18	NOUN
+Containerterminals	18	NOUN	Containerterminal
 Jesuitenkolleg	18	NOUN
 Blutrache	18	NOUN
 Weichtiere	18	NOUN
@@ -65162,11 +65162,11 @@ Vergärung	18	NOUN
 biotische	18	OTHER
 Landmaschinen	18	NOUN
 Betriebstemperatur	18	NOUN
-Substraten	18	NOUN
+Substraten	18	NOUN	Substrat
 Macher	18	NOUN,OTHER
 dazugezählt	18	OTHER
 Kalzium	18	NOUN
-Potenziale	18	NOUN
+Potenziale	18	NOUN	Potenzial
 bergab	18	OTHER
 Ordre	18	NOUN,OTHER
 hinterlassenen	18	OTHER
@@ -65194,9 +65194,9 @@ Spitalkirche	18	NOUN
 Seitenarm	18	NOUN
 Bootshaus	18	NOUN
 Motorflug	18	NOUN
-Lokalausgaben	18	NOUN
+Lokalausgaben	18	NOUN	Lokalausgabe
 neugebaute	18	OTHER
-Begriffsbildungen	18	NOUN
+Begriffsbildungen	18	NOUN	Begriffsbildung
 verengte	18	OTHER
 gerüstet	18	OTHER
 konspirativen	18	OTHER
@@ -65209,7 +65209,7 @@ anhängig	18	OTHER
 Castanea	18	NOUN
 Acetylcholin	18	NOUN
 Milchsaft	18	NOUN
-Dateinamens	18	NOUN
+Dateinamens	18	NOUN	Dateiname
 Betula	18	NOUN
 Sporangium	18	NOUN
 waagrecht	18	OTHER
@@ -65225,7 +65225,7 @@ Ergebnismenge	18	NOUN
 Gesamtpopulation	18	NOUN
 Cyanid	18	NOUN,OTHER
 Mandel	18	NOUN
-Überhangmandaten	18	NOUN
+Überhangmandaten	18	NOUN	Überhangmandate
 beanstandet	18	OTHER
 Überhang	18	NOUN
 Kanzlerkandidatur	18	NOUN
@@ -65235,7 +65235,7 @@ wollt	18	OTHER
 strittige	18	OTHER
 Petersberg	18	NOUN
 psychoanalytisch	18	OTHER
-Rubriken	18	NOUN
+Rubriken	18	NOUN	Rubrik
 Moralia	18	NOUN
 Wohltäter	18	NOUN
 Blocker	18	NOUN
@@ -65245,7 +65245,7 @@ Sachgebiet	18	NOUN
 Innereien	18	NOUN
 Geburtsurkunde	18	NOUN
 Verkehrslage	18	NOUN
-Schauspiels	18	NOUN
+Schauspiels	18	NOUN	Schauspiel
 Wärmetransport	18	NOUN
 agrarische	18	OTHER
 Sandböden	18	NOUN
@@ -65261,7 +65261,7 @@ Handlungsmöglichkeiten	18	NOUN
 Hochschulabsolventen	18	NOUN
 konfuzianischen	18	OTHER
 Bürokraten	18	NOUN
-Hauptprozessoren	18	NOUN
+Hauptprozessoren	18	NOUN	Hauptprozessor
 mysteriöse	18	OTHER
 Alison	18	NOUN
 alternde	18	OTHER
@@ -65275,8 +65275,8 @@ abendfüllenden	18	OTHER
 lähmte	18	OTHER
 unamerikanische	18	OTHER
 silberweißes	18	OTHER
-Hydrate	18	NOUN
-Übergangsmetallen	18	NOUN
+Hydrate	18	NOUN	Hydrat
+Übergangsmetallen	18	NOUN	Übergangsmetall
 Jana	18	NOUN
 chromatographische	18	OTHER
 angereicherte	18	OTHER
@@ -65287,40 +65287,40 @@ Fanfarenzug	18	NOUN
 Casper	18	NOUN
 Tenorhorn	18	NOUN
 Bigband	18	NOUN
-Parkers	18	NOUN
+Parkers	18	NOUN	Parker
 rhythmischer	18	OTHER
 Eingabegerät	18	NOUN
 Immersion	18	NOUN
 immersive	18	OTHER
 Gleichgesinnte	18	NOUN,OTHER
-Headsets	18	NOUN
+Headsets	18	NOUN	Headset
 Sicherheitsbedenken	18	NOUN
 Schwabinger	18	NOUN
 Verwaltungsrecht	18	NOUN
 nichtstaatlichen	18	OTHER
-Staatsbürgers	18	NOUN
+Staatsbürgers	18	NOUN	Staatsbürger
 Aufsatzes	18	NOUN
 Angeklagter	18	NOUN,OTHER
 nordischer	18	OTHER
 existentiellen	18	OTHER
 greifbaren	18	VERB
 dringender	18	OTHER
-Begabungen	18	NOUN
+Begabungen	18	NOUN	Begabung
 foltern	18	NOUN,OTHER
 Konsenses	18	NOUN
 McDowell	18	NOUN
 bekanntermaßen	18	OTHER
-Cents	18	NOUN,OTHER
+Cents	18	NOUN,OTHER	Cent
 Sura	18	NOUN
 Dakien	18	NOUN
 verdankten	18	OTHER
-Portraits	18	NOUN
+Portraits	18	NOUN	Portrait
 Verspottung	18	NOUN
 Steuerlast	18	NOUN
 Augenbrauen	18	NOUN
 Tombaugh	18	NOUN
 Filioque	18	NOUN
-Erweckungsbewegungen	18	NOUN
+Erweckungsbewegungen	18	NOUN	Erweckungsbewegung
 Nichtchristen	18	NOUN
 Gewerbesteuereinnahmen	18	NOUN
 mehrteilige	18	OTHER
@@ -65333,19 +65333,19 @@ kodifizierten	18	VERB,OTHER
 irritiert	18	OTHER
 dunklere	18	OTHER
 Südgallien	18	NOUN
-Lehrstuhls	18	NOUN
+Lehrstuhls	18	NOUN	Lehrstuhl
 naturales	18	OTHER
 Sloane	18	NOUN
 Musiktitel	18	NOUN
-Ausstellungs	18	NOUN
+Ausstellungs	18	NOUN	Ausstellung
 nachließ	18	OTHER
-Übersichten	18	NOUN
+Übersichten	18	NOUN	Übersicht
 Missionsstation	18	NOUN
 Cove	18	NOUN
 zweimonatigen	18	OTHER
-Waschungen	18	NOUN
+Waschungen	18	NOUN	Waschung
 Orchidee	18	NOUN
-Owens	18	NOUN
+Owens	18	NOUN	Owen
 Vorzeichnung	18	NOUN
 gesellige	18	OTHER
 Überschallgeschwindigkeit	18	NOUN
@@ -65362,26 +65362,26 @@ Hapag	18	NOUN
 verlängerter	18	OTHER
 Beladung	18	NOUN
 Abfuhr	18	NOUN,OTHER
-Investments	18	NOUN
+Investments	18	NOUN	Investment
 lukrativ	18	OTHER
-Carotine	18	NOUN
+Carotine	18	NOUN	Carotin
 Unveränderlichkeit	18	NOUN
-Steinmetzen	18	NOUN
+Steinmetzen	18	NOUN	Steinmetz
 nichteuklidischen	18	OTHER
-Fernrohren	18	NOUN
+Fernrohren	18	NOUN	Fernrohr
 Containerumschlag	18	NOUN
 Mærsk	18	NOUN
 Grenznutzen	18	NOUN
 stählerne	18	OTHER
 verschrottet	18	OTHER
-Fehlerkorrekturen	18	NOUN
+Fehlerkorrekturen	18	NOUN	Fehlerkorrektur
 gleichbedeutende	18	OTHER
 Verifikation	18	NOUN
 Homeland	18	NOUN
 Sprachstufe	18	NOUN
 erprobten	18	OTHER
 Fehleinschätzung	18	NOUN
-Golfkriegs	18	NOUN
+Golfkriegs	18	NOUN	Golfkrieg
 lohnend	18	OTHER
 Frontlinie	18	NOUN
 tendierten	18	VERB,OTHER
@@ -65398,13 +65398,13 @@ großartiger	18	OTHER
 Naturphilosoph	18	NOUN
 ritterliche	18	OTHER
 Nikolassee	18	NOUN
-Templates	18	NOUN
+Templates	18	NOUN	Template
 Sutter	18	NOUN
 Automatismus	18	NOUN
 Click	18	NOUN
-Kontextes	18	NOUN
+Kontextes	18	NOUN	Kontext
 Hepatozyten	18	NOUN
-Durchschnittswerte	18	NOUN
+Durchschnittswerte	18	NOUN	Durchschnittswert
 Semiconductor	18	NOUN
 Soundchip	18	NOUN
 Machines	18	NOUN,OTHER
@@ -65415,11 +65415,11 @@ Spezialanwendungen	18	NOUN
 Gideon	18	NOUN
 SCART	18	NOUN
 mitgelieferte	18	OTHER
-Nintendos	18	NOUN
-Stegen	18	NOUN
+Nintendos	18	NOUN	Nintendo
+Stegen	18	NOUN	Steg
 strengsten	18	OTHER
 wertende	18	OTHER
-Kontaktes	18	NOUN
+Kontaktes	18	NOUN	Kontakt
 Widersprüchlichkeit	18	NOUN
 Eukalyptus	18	NOUN
 Urbanisierungsgrad	18	NOUN
@@ -65428,45 +65428,45 @@ präsidiale	18	OTHER
 scharfem	18	OTHER
 Chino	18	NOUN
 Marcelo	18	NOUN
-Forschungsreisen	18	NOUN
-Darlegungen	18	NOUN
+Forschungsreisen	18	NOUN	Forschungsreise
+Darlegungen	18	NOUN	Darlegung
 Vorwegnahme	18	NOUN
 Lebenspraxis	18	NOUN
 Teilreiche	18	NOUN
 Schutzherr	18	NOUN
 missionarischen	18	OTHER
 schnellem	18	OTHER
-Samens	18	NOUN
+Samens	18	NOUN	Samen
 Pratt	18	NOUN
 ahistorisch	18	OTHER
 Tauschbörsen	18	NOUN
 Backus	18	NOUN
-Einzelstränge	18	NOUN
+Einzelstränge	18	NOUN	Einzelstrang
 Vorbis	18	NOUN
 antiautoritäre	18	OTHER
 Zwischentitel	18	NOUN
 Dreigroschenoper	18	NOUN
-Leinwände	18	NOUN
+Leinwände	18	NOUN	Leinwand
 Literaturverfilmung	18	NOUN
 Brandon	18	NOUN
-Deformationen	18	NOUN
+Deformationen	18	NOUN	Deformation
 Platzmangel	18	NOUN
 Nachtclub	18	NOUN
 eingestürzt	18	OTHER
 sonnigen	18	OTHER
-Klans	18	NOUN
+Klans	18	NOUN	Klan
 Roach	18	NOUN
 spektroskopischen	18	OTHER
 Boisbaudran	18	NOUN
 verbliebener	18	OTHER
 fliehenden	18	OTHER
 Überzeugungskraft	18	NOUN
-Kirchengebäuden	18	NOUN
+Kirchengebäuden	18	NOUN	Kirchengebäude
 Noviziat	18	NOUN
 abzumildern	18	VERB
 ausgesuchten	18	OTHER
 Massengesellschaft	18	NOUN
-Apparats	18	NOUN
+Apparats	18	NOUN	Apparat
 einzumischen	18	VERB
 LKWs	18	NOUN
 Representation	18	NOUN,OTHER
@@ -65478,13 +65478,13 @@ Stadtbaumeister	18	NOUN
 untergebrachten	18	OTHER
 interreligiösen	18	OTHER
 Zusammenflusses	18	NOUN
-Revuen	18	NOUN
-Bergwerks	18	NOUN
-Dauermagneten	18	NOUN
-Regionalverkehrs	18	NOUN
+Revuen	18	NOUN	Revue
+Bergwerks	18	NOUN	Bergwerk
+Dauermagneten	18	NOUN	Dauermagnete
+Regionalverkehrs	18	NOUN	Regionalverkehr
 börsennotierten	18	OTHER
 iu	18	OTHER
-Rechtsanwälten	18	NOUN
+Rechtsanwälten	18	NOUN	Rechtsanwalt
 Kuckucksnest	18	NOUN
 Juwel	18	NOUN
 preisgekrönten	18	OTHER
@@ -65500,22 +65500,22 @@ Breitenfeld	18	NOUN
 Überraschungsangriff	18	NOUN
 gescheiterter	18	OTHER
 DGS	18	NOUN
-Vorsokratikern	18	NOUN
+Vorsokratikern	18	NOUN	Vorsokratiker
 brütenden	18	OTHER
 verkompliziert	18	OTHER
 nuklearer	18	OTHER
 ergiebige	18	OTHER
 Dorfbewohner	18	NOUN
-Hauptströmungen	18	NOUN
+Hauptströmungen	18	NOUN	Hauptströmung
 gleichzeitiges	18	OTHER
 Schallplattenaufnahmen	18	NOUN
 Within	18	NOUN,OTHER
 Goldwährung	18	NOUN
-Palasts	18	NOUN
+Palasts	18	NOUN	Palast
 Decebalus	18	NOUN
 befrieden	18	VERB
 Cyberspace	18	NOUN
-Geschäftsmodelle	18	NOUN
+Geschäftsmodelle	18	NOUN	Geschäftsmodell
 Speicherprogrammierbare	18	NOUN,OTHER
 Zygmunt	18	NOUN
 Medienwissenschaftler	18	NOUN
@@ -65525,9 +65525,9 @@ freut	18	OTHER
 Hauptzweig	18	NOUN
 Hurd	18	NOUN
 Thunderbird	18	NOUN
-Pakets	18	NOUN
+Pakets	18	NOUN	Paket
 Sicherheitsrisiko	18	NOUN
-Teilnehmers	18	NOUN
+Teilnehmers	18	NOUN	Teilnehmer
 Staatskapelle	18	NOUN
 mediterran	18	OTHER
 Loschwitz	18	NOUN
@@ -65542,7 +65542,7 @@ Rundfunkprogramme	18	NOUN
 Ardenne	18	NOUN
 fernöstliche	18	OTHER
 Sword	18	NOUN
-Hennen	18	NOUN
+Hennen	18	NOUN	Henne
 Gründungstag	18	NOUN
 gefertigtes	18	OTHER
 Lutze	18	NOUN
@@ -65550,7 +65550,7 @@ komplizierteren	18	OTHER
 Schwungrad	18	NOUN
 Wasserdampfes	18	NOUN
 Murdoch	18	NOUN
-Holländers	18	NOUN
+Holländers	18	NOUN	Holländer
 Musikdrama	18	NOUN
 rückseitig	18	OTHER
 getrockneter	18	OTHER
@@ -65572,13 +65572,13 @@ Bundesverkehrsminister	18	NOUN
 Behaim	18	NOUN
 Sportereignisse	18	NOUN
 Eigenbetrieb	18	NOUN
-Einsatzkräften	18	NOUN
+Einsatzkräften	18	NOUN	Einsatzkräfte
 dagger	18	OTHER
 halbstündlich	18	OTHER
 Busverbindung	18	NOUN
 gesunkene	18	OTHER
 Naomi	18	NOUN
-Konsortiums	18	NOUN
+Konsortiums	18	NOUN	Konsortium
 Begriffsumfang	18	NOUN
 Scheutz	18	NOUN
 Hundertstel	18	NOUN,OTHER
@@ -65587,28 +65587,28 @@ hochwertig	18	OTHER
 Familienplanung	18	NOUN
 Grundpfeiler	18	NOUN
 Naherwartung	18	NOUN
-Gondeln	18	NOUN
+Gondeln	18	NOUN	Gondel
 dämpft	18	OTHER
-Kühlschränken	18	NOUN
+Kühlschränken	18	NOUN	Kühlschrank
 Wachstumsphase	18	NOUN
-Inflationsraten	18	NOUN
-Advokaten	18	NOUN
+Inflationsraten	18	NOUN	Inflationsrate
+Advokaten	18	NOUN	Advokat
 befallene	18	OTHER
 verspeist	18	OTHER
 weiterverkauft	18	OTHER
 Metöken	18	NOUN
-Vorländer	18	NOUN
-Checks	18	NOUN
-Herrschaftsstrukturen	18	NOUN
+Vorländer	18	NOUN	Vorland
+Checks	18	NOUN	Check
+Herrschaftsstrukturen	18	NOUN	Herrschaftsstruktur
 problematisiert	18	OTHER
-Entscheidungsprozesse	18	NOUN
+Entscheidungsprozesse	18	NOUN	Entscheidungsprozess
 Verbitterung	18	NOUN
 selbstbestimmten	18	OTHER
 Heerdt	18	NOUN
 Gesamteinwohnerzahl	18	NOUN
 Brandanschlag	18	NOUN
 Grundsteuer	18	NOUN
-Stilepochen	18	NOUN
+Stilepochen	18	NOUN	Stilepoche
 Wilderer	18	NOUN
 Pesch	18	NOUN
 Frings	18	NOUN
@@ -65618,16 +65618,16 @@ Moody	18	NOUN
 Kraftverkehr	18	NOUN
 Industriebetrieb	18	NOUN
 Goethestraße	18	NOUN
-Waldorfschulen	18	NOUN
+Waldorfschulen	18	NOUN	Waldorfschule
 lesende	18	NOUN,OTHER
 Ausschneiden	18	NOUN,OTHER
-Users	18	NOUN,OTHER
+Users	18	NOUN,OTHER	User
 Congregatio	18	NOUN
 Kolonialbehörden	18	NOUN
 zusammenzuhalten	18	VERB
 Militäraktion	18	NOUN
 BGR	18	NOUN
-Agrarprodukten	18	NOUN
+Agrarprodukten	18	NOUN	Agrarprodukte
 Heracleum	18	NOUN
 Students	18	NOUN,OTHER
 fertigzustellen	18	VERB
@@ -65639,7 +65639,7 @@ solltest	18	OTHER
 Ager	18	NOUN,OTHER
 Gemeingut	18	NOUN
 Grundeigentum	18	NOUN
-Naturkonstanten	18	NOUN
+Naturkonstanten	18	NOUN	Naturkonstante
 Theurgie	18	NOUN
 Eintopf	18	NOUN
 Thought	18	NOUN,OTHER
@@ -65650,11 +65650,11 @@ Anatole	18	NOUN
 amorphem	18	OTHER
 Tutanchamun	18	NOUN
 Arzneistoff	18	NOUN
-Neutronensternen	18	NOUN
+Neutronensternen	18	NOUN	Neutronenstern
 Kiruna	18	NOUN
 Umgebungsdruck	18	NOUN
 Temperaturänderung	18	NOUN
-Erhaltungsgrößen	18	NOUN
+Erhaltungsgrößen	18	NOUN	Erhaltungsgröße
 Gravitationsbeschleunigung	18	NOUN
 Elektrostatik	18	NOUN
 monierte	18	OTHER
@@ -65672,12 +65672,12 @@ Hauptverhandlung	18	NOUN
 zuspitzenden	18	OTHER
 sexy	18	OTHER
 Frequenzverschiebung	18	NOUN
-Helligkeiten	18	NOUN
+Helligkeiten	18	NOUN	Helligkeit
 nobilis	18	OTHER
 rechtswidrigen	18	OTHER
 Külz	18	NOUN
 Forschungsstandort	18	NOUN
-Wahlergebnissen	18	NOUN
+Wahlergebnissen	18	NOUN	Wahlergebnisse
 Syndikus	18	NOUN
 einwirkenden	18	OTHER
 Tauschwert	18	NOUN
@@ -65685,7 +65685,7 @@ ausgleichenden	18	OTHER
 teleologische	18	OTHER
 naturalistischer	18	OTHER
 Stammfunktion	18	NOUN
-EEPROMs	18	NOUN
+EEPROMs	18	NOUN	EEPROM
 Quarzglas	18	NOUN
 Aufleuchten	18	NOUN,OTHER
 erfolgenden	18	OTHER
@@ -65698,12 +65698,12 @@ Normalbetrieb	18	NOUN
 Frequenzumrichter	18	NOUN
 rangieren	18	VERB
 Principal	18	NOUN,OTHER
-Wirtschaftsbereichen	18	NOUN
+Wirtschaftsbereichen	18	NOUN	Wirtschaftsbereich
 Pomp	18	NOUN
 Cáceres	18	NOUN
 Handelsvertrag	18	NOUN
 Lehn	18	NOUN
-Brennpunkten	18	NOUN
+Brennpunkten	18	NOUN	Brennpunkt
 Ruhestellung	18	NOUN
 Ästhetizismus	18	NOUN
 moderierten	18	VERB,OTHER
@@ -65713,7 +65713,7 @@ ausgeworfen	18	VERB
 Polarregionen	18	NOUN
 Sonnentag	18	NOUN
 Erdmasse	18	NOUN
-Laubwälder	18	NOUN
+Laubwälder	18	NOUN	Laubwald
 Erdradius	18	NOUN
 synodischen	18	OTHER
 bremste	18	OTHER
@@ -65730,23 +65730,23 @@ Klassenkameraden	18	NOUN
 gewaltlose	18	OTHER
 Überfamilie	18	NOUN
 abgeschwächten	18	OTHER
-Krankheitsfälle	18	NOUN
+Krankheitsfälle	18	NOUN	Krankheitsfall
 Grundkörper	18	NOUN
-Verfärbungen	18	NOUN
+Verfärbungen	18	NOUN	Verfärbung
 Handelsmacht	18	NOUN
 Dienstboten	18	NOUN
-Fachsprachen	18	NOUN
+Fachsprachen	18	NOUN	Fachsprache
 eindringende	18	OTHER
-Rabbiners	18	NOUN
+Rabbiners	18	NOUN	Rabbiner
 Wundt	18	NOUN
 Aranda	18	NOUN
 dünneren	18	OTHER
-Sägen	18	NOUN
+Sägen	18	NOUN	Säge
 dickes	18	OTHER
 Frachtschiff	18	NOUN
 Mechthild	18	NOUN
 hemmend	18	OTHER
-Marks	18	NOUN
+Marks	18	NOUN	Mark
 Wester	18	NOUN
 Gebetbuch	18	NOUN
 Bodenkunde	18	NOUN
@@ -65754,9 +65754,9 @@ Schluff	18	NOUN
 gefriert	18	OTHER
 Zuckerhut	18	NOUN
 Zentner	18	NOUN
-Appells	18	NOUN
+Appells	18	NOUN	Appell
 Waldsee	18	NOUN
-Staatswissenschaften	18	NOUN
+Staatswissenschaften	18	NOUN	Staatswissenschaft
 vierstelligen	18	OTHER
 Einweg	18	NOUN
 Ideologiekritik	18	NOUN
@@ -65764,7 +65764,7 @@ plumpe	18	NOUN,OTHER
 Schneeeule	18	NOUN
 Efeu	18	NOUN
 Rotwild	18	NOUN
-Hochspannungsleitungen	18	NOUN
+Hochspannungsleitungen	18	NOUN	Hochspannungsleitung
 Geldanlage	18	NOUN
 enzyklopädische	18	OTHER
 Speculum	18	NOUN
@@ -65772,16 +65772,16 @@ Hierarchisierung	18	NOUN
 Speisesalz	18	NOUN
 Fleischkonsum	18	NOUN
 Sagengestalt	18	NOUN
-Kathoden	18	NOUN
+Kathoden	18	NOUN	Kathode
 Graßmann	18	NOUN
 ertranken	18	VERB
 Bevölkerungsaustausch	18	NOUN
-Masurischen	18	NOUN,OTHER
+Masurischen	18	NOUN,OTHER	Masurisch
 Michał	18	NOUN
 krajowa	18	OTHER
 durchliefen	18	VERB
-Körperhaltungen	18	NOUN
-Zustandsänderungen	18	NOUN
+Körperhaltungen	18	NOUN	Körperhaltung
+Zustandsänderungen	18	NOUN	Zustandsänderung
 trennscharf	18	OTHER
 Legacy	18	NOUN
 Zivilehe	18	NOUN
@@ -65795,8 +65795,8 @@ Saskia	18	NOUN
 Zynismus	18	NOUN
 Dimethylsulfat	18	NOUN
 nautischen	18	OTHER
-Drehmoments	18	NOUN
-Grüße	18	NOUN,VERB
+Drehmoments	18	NOUN	Drehmoment
+Grüße	18	NOUN,VERB	Gruß
 Métropole	18	NOUN
 Felsmalereien	18	NOUN
 Rollo	18	NOUN
@@ -65816,21 +65816,21 @@ Golfclub	18	NOUN
 Meckenbeuren	18	NOUN
 MTU	18	NOUN
 Wirtschaftsinformatik	18	NOUN
-Performances	18	NOUN
+Performances	18	NOUN	Performance
 Nachlassverwalter	18	NOUN
 solidarisierte	18	OTHER
 Titelgeschichte	18	NOUN
-Apparates	18	NOUN
+Apparates	18	NOUN	Apparat
 Albtraum	18	NOUN
 auszuloten	18	VERB
 Torr	18	NOUN
-Materiewellen	18	NOUN
+Materiewellen	18	NOUN	Materiewelle
 einte	18	OTHER
 Theuderich	18	NOUN
 ottonische	18	OTHER
-Hugos	18	NOUN
+Hugos	18	NOUN	Hugo
 übertrat	18	OTHER
-Adelsgeschlechtern	18	NOUN
+Adelsgeschlechtern	18	NOUN	Adelsgeschlecht
 Truppenkontingente	18	NOUN
 Photios	18	NOUN
 Regierungsverantwortung	18	NOUN
@@ -65858,13 +65858,13 @@ zweidimensionales	18	OTHER
 mengentheoretische	18	OTHER
 Mémoire	18	NOUN,OTHER
 Sprechakt	18	NOUN
-Abschnittes	18	NOUN
-Wohnanlagen	18	NOUN
+Abschnittes	18	NOUN	Abschnitt
+Wohnanlagen	18	NOUN	Wohnanlage
 verändertem	18	OTHER
 NDB	18	NOUN
-Durchführungen	18	NOUN
+Durchführungen	18	NOUN	Durchführung
 Fußballspiel	18	NOUN
-Weltmeisters	18	NOUN
+Weltmeisters	18	NOUN	Weltmeister
 Münzprägestätte	18	NOUN
 Isoglosse	18	NOUN
 Festrede	18	NOUN
@@ -65873,46 +65873,46 @@ Hacke	18	NOUN
 wegzudenken	18	VERB
 Strafraum	18	NOUN
 Anwaltskanzlei	18	NOUN
-Pässen	18	NOUN
+Pässen	18	NOUN	Pass
 Rummel	18	NOUN
 Glory	18	NOUN
 Myotis	18	NOUN,OTHER
 Winterschlaf	18	NOUN
-Unterordnungen	18	NOUN
+Unterordnungen	18	NOUN	Unterordnung
 Ripa	18	NOUN,OTHER
 Wintersaison	18	NOUN
 wortwörtlich	18	OTHER
-Eggers	18	NOUN
+Eggers	18	NOUN	Egger
 Czartoryski	18	NOUN
 Wertgegenstände	18	NOUN
 Muzeum	18	NOUN,OTHER
 gruppierte	18	OTHER
 Sydow	18	NOUN
-Nanometern	18	NOUN
+Nanometern	18	NOUN	Nanometer
 VFAT	18	NOUN
 endständig	18	OTHER
 iterativ	18	OTHER
 Romanzyklus	18	NOUN
 Phon	18	NOUN
 Stimmlippen	18	NOUN
-Antiphonen	18	NOUN
+Antiphonen	18	NOUN	Antiphon
 Bergamo	18	NOUN
 Mocenigo	18	NOUN
 kirchenpolitischen	18	OTHER
 Religionskritiker	18	NOUN
 NÖ	18	NOUN
 festschrieb	18	OTHER
-Diebstahls	18	NOUN
+Diebstahls	18	NOUN	Diebstahl
 Stadtsenat	18	NOUN
 Bastei	18	NOUN
 unübersichtlichen	18	OTHER
-Pfauen	18	NOUN
+Pfauen	18	NOUN	Pfau
 LKH	18	NOUN
 unterirdisches	18	OTHER
 Sportwagen	18	NOUN
 Solarpark	18	NOUN
 Wärmespeicher	18	NOUN
-Bauabschnitten	18	NOUN
+Bauabschnitten	18	NOUN	Bauabschnitt
 nachzuholen	18	VERB
 Prinzipienlehre	18	NOUN
 Ressourcenverbrauch	18	NOUN
@@ -65920,7 +65920,7 @@ Tracing	18	NOUN,OTHER
 variierenden	18	OTHER
 gesichertes	18	OTHER
 Interdikt	18	NOUN
-Fallhöhen	18	NOUN
+Fallhöhen	18	NOUN	Fallhöhe
 multiplikativ	18	OTHER
 invertierbar	18	OTHER
 partitioniert	18	OTHER
@@ -65947,7 +65947,7 @@ Aufforstung	18	NOUN
 radikalere	18	OTHER
 Rubber	18	NOUN
 Troeltsch	18	NOUN
-Hauptkirchen	18	NOUN
+Hauptkirchen	18	NOUN	Hauptkirche
 Herrschaftssitz	18	NOUN
 Fricke	18	NOUN
 Pädagogium	18	NOUN
@@ -65957,9 +65957,9 @@ Attersee	18	NOUN
 Gusenbauer	18	NOUN
 Tymoschenko	18	NOUN
 probieren	18	NOUN,OTHER
-Informationsquellen	18	NOUN
+Informationsquellen	18	NOUN	Informationsquelle
 Abänderung	18	NOUN
-Ortsgemeinden	18	NOUN
+Ortsgemeinden	18	NOUN	Ortsgemeinde
 Rumi	18	NOUN
 Hipparchos	18	NOUN
 erübrigt	18	OTHER
@@ -65971,7 +65971,7 @@ entleert	18	OTHER
 Glassorten	18	NOUN
 eingepasst	18	OTHER
 Spiralarme	18	NOUN
-Rhätischen	18	NOUN
+Rhätischen	18	NOUN	Rhätische
 erwuchsen	18	VERB
 erleuchtet	18	OTHER
 essbare	18	OTHER
@@ -65983,7 +65983,7 @@ Wachstumsbedingungen	18	NOUN
 Zhu	18	NOUN
 läuteten	18	VERB
 Konkurrenzdruck	18	NOUN
-Tanzformen	18	NOUN
+Tanzformen	18	NOUN	Tanzform
 gebraten	18	VERB
 schnitzen	18	NOUN,OTHER
 verglühte	18	OTHER
@@ -65993,14 +65993,14 @@ Technologietransfer	18	NOUN
 Doppelstadt	18	NOUN
 JAXA	18	NOUN
 Verbindungsstraße	18	NOUN
-Stadterweiterungen	18	NOUN
+Stadterweiterungen	18	NOUN	Stadterweiterung
 Fischerinsel	18	NOUN
 nationalstaatliche	18	OTHER
 Esplanade	18	NOUN
 Fabrikation	18	NOUN
 Großsiedlung	18	NOUN
 Grundgesetzänderung	18	NOUN
-Privatwohnungen	18	NOUN
+Privatwohnungen	18	NOUN	Privatwohnung
 Grundsatzes	18	NOUN
 Periheldrehung	18	NOUN
 unpräzise	18	OTHER
@@ -66010,15 +66010,15 @@ Sozialgesetzgebung	18	NOUN
 Brandstifter	18	NOUN
 niedergelegten	18	OTHER
 Nichtanerkennung	18	NOUN
-Auslandseinsätzen	18	NOUN
+Auslandseinsätzen	18	NOUN	Auslandseinsatz
 InsO	18	NOUN
 Insolvenzverwalter	18	NOUN
 ethno	18	NOUN,OTHER
 Lakes	18	NOUN
-Genuas	18	NOUN
+Genuas	18	NOUN	Genua
 Sarden	18	NOUN
 nachzulesen	18	VERB
-Inhabers	18	NOUN
+Inhabers	18	NOUN	Inhaber
 Gesellschaftsrecht	18	NOUN
 Inhaberin	18	NOUN
 gekleideten	18	OTHER
@@ -66031,14 +66031,14 @@ freizügigen	18	OTHER
 Grundbestand	18	NOUN
 Grevesmühlen	18	NOUN
 nahekommt	18	OTHER
-Nachbarschaften	18	NOUN
-Booms	18	NOUN
+Nachbarschaften	18	NOUN	Nachbarschaft
+Booms	18	NOUN	Boom
 hochenergetische	18	OTHER
 Misskredit	18	NOUN
 Bundespräsidentenwahl	18	NOUN
 kühlgemäßigten	18	OTHER
 Bennigsen	18	NOUN
-Zuzüge	18	NOUN
+Zuzüge	18	NOUN	Zuzug
 Romanes	18	NOUN,OTHER
 Partnerschaftsvertrag	18	NOUN
 Shanty	18	NOUN
@@ -66046,7 +66046,7 @@ Moin	18	NOUN
 prunkvoll	18	OTHER
 Cranz	18	NOUN
 Holsten	18	NOUN
-Berufsgenossenschaften	18	NOUN
+Berufsgenossenschaften	18	NOUN	Berufsgenossenschaft
 Singulett	18	NOUN
 Prinzipal	18	NOUN
 gebende	18	OTHER
@@ -66054,25 +66054,25 @@ Wildbad	18	NOUN
 Arbeitsvermittlung	18	NOUN
 verselbständigt	18	OTHER
 Selbstjustiz	18	NOUN
-Polizeien	18	NOUN
+Polizeien	18	NOUN	Polizei
 Gandersheim	18	NOUN
-Helgolands	18	NOUN
+Helgolands	18	NOUN	Helgoland
 Terence	18	NOUN
 brillanter	18	OTHER
 Bebauungsdichte	18	NOUN
 dreigeschossigen	18	OTHER
 schweigend	18	OTHER
-Grachten	18	NOUN
+Grachten	18	NOUN	Gracht
 Gascogne	18	NOUN
 gekannte	18	OTHER
 zornig	18	OTHER
 Qasim	18	NOUN
-Gegenstücke	18	NOUN
+Gegenstücke	18	NOUN	Gegenstück
 WN	18	NOUN
 generischer	18	OTHER
 Rangplatz	18	NOUN
 Rechnungslegung	18	NOUN
-Stadtherren	18	NOUN
+Stadtherren	18	NOUN	Stadtherr
 Reggio	18	NOUN
 Dieterich	18	NOUN
 Publizistin	18	NOUN
@@ -66088,11 +66088,11 @@ Haferflocken	18	NOUN
 Pferdesport	18	NOUN
 Zwolle	18	NOUN
 Hafengelände	18	NOUN
-Quartiers	18	NOUN,OTHER
+Quartiers	18	NOUN,OTHER	Quartier
 aristokratisch	18	OTHER
 Vieja	18	NOUN
-Kapselfrüchte	18	NOUN
-Wildformen	18	NOUN
+Kapselfrüchte	18	NOUN	Kapselfrucht
+Wildformen	18	NOUN	Wildform
 Kreisklasse	18	NOUN
 linksseitig	18	OTHER
 Schmerzempfinden	18	NOUN
@@ -66108,8 +66108,8 @@ Tutzing	18	NOUN
 Visit	18	NOUN
 neugebildete	18	OTHER
 Studierendenparlament	18	NOUN
-Fachschaften	18	NOUN
-Bataillonen	18	NOUN
+Fachschaften	18	NOUN	Fachschaft
+Bataillonen	18	NOUN	Bataillon
 Ruderverein	18	NOUN
 unterhaltsam	18	OTHER
 Tiegel	18	NOUN
@@ -66117,7 +66117,7 @@ Badr	18	NOUN
 Malawisee	18	NOUN
 jemenitische	18	OTHER
 Charidschiten	18	NOUN
-Wallfahrtsorte	18	NOUN
+Wallfahrtsorte	18	NOUN	Wallfahrtsort
 puritanische	18	OTHER
 Besiedlungsgeschichte	18	NOUN
 aquatische	18	OTHER
@@ -66130,12 +66130,12 @@ genuesischen	18	OTHER
 reizvolle	18	OTHER
 Erbil	18	NOUN
 verschickte	18	OTHER
-Heimatländer	18	NOUN
-Zusatzprotokolle	18	NOUN
+Heimatländer	18	NOUN	Heimatland
+Zusatzprotokolle	18	NOUN	Zusatzprotokoll
 Falkland	18	NOUN
-Frühwerke	18	NOUN
-Rechenschiebern	18	NOUN
-Limericks	18	NOUN
+Frühwerke	18	NOUN	Frühwerk
+Rechenschiebern	18	NOUN	Rechenschieber
+Limericks	18	NOUN	Limerick
 Übertragungssystem	18	NOUN
 isoliertes	18	OTHER
 leitfähig	18	OTHER
@@ -66150,7 +66150,7 @@ Masson	18	NOUN
 Stato	18	NOUN,OTHER
 Buchstabenkombination	18	NOUN
 Depolarisation	18	NOUN
-Stichworte	18	NOUN
+Stichworte	18	NOUN	Stichwort
 Startseite	18	NOUN
 Testbetrieb	18	NOUN
 Friaulische	18	NOUN,OTHER
@@ -66165,7 +66165,7 @@ Alvarado	18	NOUN
 Eigeninitiative	18	NOUN
 Kathy	18	NOUN
 Friedensnobelpreisträger	18	NOUN
-Zionisten	18	NOUN
+Zionisten	18	NOUN	Zionist
 Carré	18	NOUN
 Tenorsaxophon	18	NOUN
 Kestner	18	NOUN
@@ -66173,7 +66173,7 @@ Hilton	18	NOUN
 him	18	OTHER
 Zeitmaß	18	NOUN
 Oort	18	NOUN
-Oortschen	18	NOUN
+Oortschen	18	NOUN	Oortsche
 RPR	18	NOUN
 Nachfolgepartei	18	NOUN
 literaturwissenschaftlichen	18	OTHER
@@ -66184,7 +66184,7 @@ Tilt	18	NOUN
 fortschrittlichsten	18	OTHER
 Liebfrauen	18	NOUN
 musicum	18	NOUN,OTHER
-Choräle	18	NOUN
+Choräle	18	NOUN	Choral
 Konzertreise	18	NOUN
 Silence	18	NOUN,OTHER
 Mariehamn	18	NOUN
@@ -66195,10 +66195,10 @@ Jehoschua	18	NOUN
 sphärisch	18	OTHER
 Zahlungsverpflichtungen	18	NOUN
 Sera	18	NOUN
-Ballets	18	NOUN,OTHER
+Ballets	18	NOUN,OTHER	Ballet
 Nôtre	18	NOUN
 zusehen	18	VERB
-Privatleuten	18	NOUN
+Privatleuten	18	NOUN	Privatleute
 aufgekommenen	18	OTHER
 Przewalski	18	NOUN
 Einnistung	18	NOUN
@@ -66220,15 +66220,15 @@ nachtaktiv	18	OTHER
 Leroy	18	NOUN
 Malenkow	18	NOUN
 Holl	18	NOUN
-Weihnachts	18	NOUN
+Weihnachts	18	NOUN	Weihnacht
 bereicherte	18	OTHER
 wundersame	18	OTHER
 administratives	18	OTHER
 Fahrzeughersteller	18	NOUN
 Seestraße	18	NOUN
-Geschäftshäuser	18	NOUN
+Geschäftshäuser	18	NOUN	Geschäftshaus
 Generalvikar	18	NOUN
-Weiber	18	NOUN
+Weiber	18	NOUN	Weib
 Staatsideologie	18	NOUN
 Deng	18	NOUN
 Jaruzelski	18	NOUN
@@ -66254,74 +66254,74 @@ Zarenreiches	18	NOUN
 gekrönter	18	OTHER
 bemächtigt	18	OTHER
 Wasserturbine	18	NOUN
-Erzengeln	18	NOUN
+Erzengeln	18	NOUN	Erzengel
 Schutzheiligen	18	NOUN
 Militäroperation	18	NOUN
-Rechtsverordnungen	18	NOUN
-Großgruppen	18	NOUN
+Rechtsverordnungen	18	NOUN	Rechtsverordnung
+Großgruppen	18	NOUN	Großgruppe
 aride	18	OTHER
 Starlight	18	NOUN
 Hochtal	18	NOUN
 Vereinsleben	18	NOUN
 Vico	18	NOUN
 VIP	18	NOUN
-Cranachs	18	NOUN
-Arbeitsleistungen	18	NOUN
+Cranachs	18	NOUN	Cranach
+Arbeitsleistungen	18	NOUN	Arbeitsleistung
 Pflanzenöl	18	NOUN
 Surfer	18	NOUN
-Schirme	18	NOUN
+Schirme	18	NOUN	Schirm
 geschätztes	18	OTHER
 Milchzucker	18	NOUN
-Rückerts	18	NOUN
+Rückerts	18	NOUN	Rückert
 Triben	18	NOUN
 Präventivkrieg	18	NOUN
-Messern	18	NOUN
+Messern	18	NOUN	Messer
 versklavten	18	VERB,OTHER
 verschwägert	18	OTHER
 normalspurigen	18	OTHER
 Investitionsvolumen	18	NOUN
 Initiierung	18	NOUN
-Philologien	18	NOUN
+Philologien	18	NOUN	Philologie
 verstreichen	18	VERB
 Nuba	18	NOUN
 Primärharn	18	NOUN
 Bachelorstudiengang	18	NOUN
 Thekla	18	NOUN
-Binärdateien	18	NOUN
+Binärdateien	18	NOUN	Binärdatei
 nordamerikanischer	18	OTHER
 Hochrechnung	18	NOUN
 Psychedelika	18	NOUN
-Partnerinnen	18	NOUN
+Partnerinnen	18	NOUN	Partnerin
 Notgemeinschaft	18	NOUN
 Stardust	18	NOUN
 vorbehaltlich	18	OTHER
-Briketts	18	NOUN
+Briketts	18	NOUN	Brikett
 Strawinski	18	NOUN
 eingegebenen	18	OTHER
 Wieden	18	NOUN
-Muschelkalks	18	NOUN
+Muschelkalks	18	NOUN	Muschelkalk
 Landvogtei	18	NOUN
 instrumentalisieren	18	VERB
 Tieflandes	18	NOUN
-Tagebauen	18	NOUN
+Tagebauen	18	NOUN	Tagebau
 Wasserstraßennetz	18	NOUN
 aerodynamisch	18	OTHER
-Luftschiffes	18	NOUN
+Luftschiffes	18	NOUN	Luftschiff
 Tropical	18	NOUN
 Frauenstimmrecht	18	NOUN
-Pfadfinderinnen	18	NOUN
+Pfadfinderinnen	18	NOUN	Pfadfinder
 Morgestraich	18	NOUN
 Lexikologie	18	NOUN
 Neuschnee	18	NOUN
 Flussname	18	NOUN
-Infanteristen	18	NOUN
+Infanteristen	18	NOUN	Infanterist
 hochalemannischen	18	NOUN,OTHER
 befuhren	18	VERB
-Verkehrsmittels	18	NOUN
+Verkehrsmittels	18	NOUN	Verkehrsmittel
 Bardowick	18	NOUN
 Dachreiter	18	NOUN
 Bleckede	18	NOUN
-Baikalsees	18	NOUN
+Baikalsees	18	NOUN	Baikalsee
 Johanniterorden	18	NOUN
 CEN	18	NOUN
 Lorbeer	18	NOUN
@@ -66341,11 +66341,11 @@ Kondenswasser	18	NOUN
 fachspezifische	18	OTHER
 Oberau	18	NOUN
 Wettbewerbsvorteil	18	NOUN
-Interkontinentalraketen	18	NOUN
+Interkontinentalraketen	18	NOUN	Interkontinentalrakete
 Hügelkette	18	NOUN
 zurückerstattet	18	OTHER
 Sammelpunkt	18	NOUN
-Regenmengen	18	NOUN
+Regenmengen	18	NOUN	Regenmenge
 Einzelfragen	18	NOUN
 abhängiges	18	OTHER
 Bifurkation	18	NOUN
@@ -66354,7 +66354,7 @@ chaotisches	18	OTHER
 Schwesig	18	NOUN
 Fokker	18	NOUN
 Neuhof	18	NOUN
-Stralsunds	18	NOUN
+Stralsunds	18	NOUN	Stralsund
 Suchfunktion	18	NOUN
 Meson	18	NOUN
 Doodle	18	NOUN,OTHER
@@ -66364,7 +66364,7 @@ Schleichkatzen	18	NOUN
 Körperstrafen	18	NOUN
 Königsdynastie	18	NOUN
 gestorbene	18	OTHER
-Medaillons	18	NOUN
+Medaillons	18	NOUN	Medaillon
 Schimmelpilz	18	NOUN
 Kernspinresonanz	18	NOUN
 Veteran	18	NOUN
@@ -66375,19 +66375,19 @@ Arthropoda	18	NOUN
 extensiven	18	OTHER
 Kirchhain	18	NOUN
 Battenberg	18	NOUN
-Plancks	18	NOUN
+Plancks	18	NOUN	Planck
 Stromschiene	18	NOUN
-Passworts	18	NOUN
+Passworts	18	NOUN	Passwort
 Zedernholz	18	NOUN
 Sichtverbindung	18	NOUN
 Plagiat	18	NOUN
 Kinderpornografie	18	NOUN
 Suu	18	NOUN
-Tiden	18	NOUN
+Tiden	18	NOUN	Tide
 Datumsgrenze	18	NOUN
 Beherbergungsbetriebe	18	NOUN
-Axons	18	NOUN
-Bibeltextes	18	NOUN
+Axons	18	NOUN	Axon
+Bibeltextes	18	NOUN	Bibeltext
 PVV	18	NOUN
 Stauanlagen	18	NOUN
 strafbare	18	OTHER
@@ -66398,12 +66398,12 @@ HDI	18	NOUN
 Storting	18	NOUN
 Lofoten	18	NOUN
 Meade	18	NOUN
-Mitgliedsbeiträgen	18	NOUN
+Mitgliedsbeiträgen	18	NOUN	Mitgliedsbeitrag
 auferstehen	18	NOUN,OTHER
 seht	18	NOUN,OTHER
 Kinderrechte	18	NOUN
 Steinheimer	18	NOUN
-Greenbergs	18	NOUN
+Greenbergs	18	NOUN	Greenberg
 Koelle	18	NOUN
 umständliche	18	OTHER
 HAW	18	NOUN
@@ -66422,7 +66422,7 @@ Albis	18	NOUN
 Onomasiologie	18	NOUN
 Polster	18	NOUN
 weicheren	18	OTHER
-Mensuren	18	NOUN
+Mensuren	18	NOUN	Mensur
 Andros	18	NOUN
 Monomer	18	NOUN
 Ethylen	18	NOUN
@@ -66449,11 +66449,11 @@ Ewa	18	NOUN
 Berghütten	18	NOUN
 Frühgotik	18	NOUN
 Köslin	18	NOUN
-Jugendverbände	18	NOUN
+Jugendverbände	18	NOUN	Jugendverband
 ausgewachsen	18	VERB
 Balancieren	18	NOUN,OTHER
 Heiligenstadt	18	NOUN
-Feldmarschalls	18	NOUN
+Feldmarschalls	18	NOUN	Feldmarschall
 Primzahlzwillinge	18	NOUN
 Verwahrlosung	18	NOUN
 geimpft	18	OTHER
@@ -66462,10 +66462,10 @@ landestypischen	18	OTHER
 brasilianischer	18	OTHER
 Breve	18	NOUN,OTHER
 indischstämmigen	18	OTHER
-Sendeanstalten	18	NOUN
-Schokoladen	18	NOUN
+Sendeanstalten	18	NOUN	Sendeanstalt
+Schokoladen	18	NOUN	Schokolade
 Zeilenfrequenz	18	NOUN
-Schreinen	18	NOUN
+Schreinen	18	NOUN	Schrein
 Leiningen	18	NOUN
 Harnleiter	18	NOUN
 Reflexionsgrad	18	NOUN
@@ -66486,11 +66486,11 @@ evangelikaler	18	OTHER
 Rundbogen	18	NOUN
 belehren	18	VERB
 Nederrijn	18	NOUN
-Hochwassermarken	18	NOUN
+Hochwassermarken	18	NOUN	Hochwassermarke
 Rigi	18	NOUN
 Maximian	18	NOUN
 Siders	18	NOUN
-Genfersees	18	NOUN
+Genfersees	18	NOUN	Genfersee
 Richtwirkung	18	NOUN
 Ammersee	18	NOUN
 Führungselite	18	NOUN
@@ -66499,10 +66499,10 @@ Wyrubowa	18	NOUN
 Synod	18	NOUN
 ruthenische	18	OTHER
 Ox	18	NOUN,OTHER
-Witzes	18	NOUN
+Witzes	18	NOUN	Witz
 Musikdramen	18	NOUN
-Klaviersonaten	18	NOUN
-Stockhausens	18	NOUN
+Klaviersonaten	18	NOUN	Klaviersonate
+Stockhausens	18	NOUN	Stockhausen
 Skywalker	18	NOUN
 Baton	18	NOUN
 Systemkomponenten	18	NOUN
@@ -66527,15 +66527,15 @@ Altmarkkreis	18	NOUN
 Rudelsburg	18	NOUN
 Petro	18	NOUN
 Slobodan	18	NOUN
-Gouverneuren	18	NOUN
+Gouverneuren	18	NOUN	Gouverneur
 Lettner	18	NOUN
 Angelus	18	NOUN
 Strebepfeiler	18	NOUN
 sinusförmige	18	OTHER
 Ukas	18	NOUN
 Christkind	18	NOUN
-Lichtstrahls	18	NOUN
-Koordinatensysteme	18	NOUN
+Lichtstrahls	18	NOUN	Lichtstrahl
+Koordinatensysteme	18	NOUN	Koordinatensystem
 Koordinatenachsen	18	NOUN
 sporadischen	18	OTHER
 Tordesillas	18	NOUN
@@ -66555,7 +66555,7 @@ Nymphaea	18	NOUN
 Sexualwissenschaft	18	NOUN
 Gegenkathete	18	NOUN
 Transgender	18	NOUN,OTHER
-Meinungsäußerungen	18	NOUN
+Meinungsäußerungen	18	NOUN	Meinungsäußerung
 Fernsehbild	18	NOUN
 Wärmefluss	18	NOUN
 Glühfaden	18	NOUN
@@ -66565,19 +66565,19 @@ Dulles	18	NOUN
 Theme	18	NOUN,OTHER
 Telepathie	18	NOUN
 Winterlager	18	NOUN
-Verkehre	18	NOUN,OTHER
+Verkehre	18	NOUN,OTHER	Verkehr
 Danse	18	NOUN,OTHER
 Postament	18	NOUN
 Fortress	18	NOUN,OTHER
 Lordkanzler	18	NOUN
-Gehwege	18	NOUN
+Gehwege	18	NOUN	Gehweg
 dreitürmige	18	OTHER
-Teppichs	18	NOUN
+Teppichs	18	NOUN	Teppich
 Pallium	18	NOUN
 Ostrau	18	NOUN
 Schneekoppe	18	NOUN
-Herrschaftsgebiets	18	NOUN
-Hektors	18	NOUN
+Herrschaftsgebiets	18	NOUN	Herrschaftsgebiet
+Hektors	18	NOUN	Hektor
 Homebanking	18	NOUN
 Steckverbinder	18	NOUN
 Pferdestraßenbahn	18	NOUN
@@ -66592,7 +66592,7 @@ Kuban	18	NOUN
 Neurussland	18	NOUN
 Klose	18	NOUN
 Musikforschung	18	NOUN
-Vorwurfs	18	NOUN
+Vorwurfs	18	NOUN	Vorwurf
 Jahreskreis	18	NOUN
 Hauptseite	18	NOUN
 Sears	18	NOUN
@@ -66627,16 +66627,16 @@ Gruffydd	18	NOUN
 Kils	18	NOUN,OTHER
 Gamelan	18	NOUN
 Almsick	18	NOUN
-Conways	18	NOUN
+Conways	18	NOUN	Conway
 GSVP	18	NOUN
-Leverkusens	18	NOUN
+Leverkusens	18	NOUN	Leverkusen
 Ausheben	18	NOUN,OTHER
 Praktiker	18	NOUN
 Touchdown	18	NOUN
 Scrimmage	18	NOUN
 Indio	18	NOUN,OTHER
 Ortsbischof	18	NOUN
-Umsiedlungen	18	NOUN
+Umsiedlungen	18	NOUN	Umsiedlung
 Deleuze	18	NOUN
 Primärfarben	18	NOUN
 Reinmar	18	NOUN
@@ -66651,7 +66651,7 @@ Priesterschrift	18	NOUN
 Spätdatierung	18	NOUN
 Zimmerleute	18	NOUN
 Boswellia	18	NOUN
-Kunsthändlers	18	NOUN
+Kunsthändlers	18	NOUN	Kunsthändler
 Lietuvos	18	NOUN
 Embarcadero	18	NOUN
 durchgesetzte	18	OTHER
@@ -66669,12 +66669,12 @@ turksprachigen	18	OTHER
 ugrische	18	OTHER
 Jakobspilger	18	NOUN
 Scratchen	18	NOUN
-Rodins	18	NOUN
+Rodins	18	NOUN	Rodin
 Meistermann	18	NOUN
 Graduale	18	NOUN
 Agende	18	NOUN
-Aralsees	18	NOUN
-Fasos	18	NOUN
+Aralsees	18	NOUN	Aralsee
+Fasos	18	NOUN	Faso
 Karimov	18	NOUN
 TAE	18	NOUN
 überfluteten	18	VERB,OTHER
@@ -66685,18 +66685,18 @@ Kinderwagen	18	NOUN
 Vorlauftemperatur	18	NOUN
 Marzahner	18	NOUN
 Karyotyp	18	NOUN
-Göteborgs	18	NOUN
+Göteborgs	18	NOUN	Göteborg
 PNP	18	NOUN,OTHER
 Lawinengefahr	18	NOUN
 Lipchitz	18	NOUN
 Wichern	18	NOUN
-Gewinnrücklagen	18	NOUN
+Gewinnrücklagen	18	NOUN	Gewinnrücklage
 Camellia	18	NOUN
-Mönchsrobben	18	NOUN
+Mönchsrobben	18	NOUN	Mönchsrobbe
 Bauhausgebäude	18	NOUN
 Absalom	18	NOUN
 Joelbuch	18	NOUN
-Winstons	18	NOUN
+Winstons	18	NOUN	Winston
 lukanische	18	OTHER
 Sommerfahrplan	18	NOUN
 Sotschi	18	NOUN
@@ -66705,36 +66705,36 @@ Erkennungsnummer	18	NOUN
 Viertakt	18	NOUN
 Rheinberg	18	NOUN
 Bergzabern	18	NOUN
-Etzels	18	NOUN
+Etzels	18	NOUN	Etzel
 Khirbet	18	NOUN
 Abram	18	NOUN
 Altgläubige	18	NOUN,OTHER
 Eismeer	18	NOUN
 Oybin	18	NOUN
 Weißenau	18	NOUN
-Corinths	18	NOUN
+Corinths	18	NOUN	Corinth
 Knabenliebe	18	NOUN
 Kölliker	18	NOUN
 Gutman	18	NOUN
-Stuten	18	NOUN
+Stuten	18	NOUN	Stute
 Werkfeuerwehr	18	NOUN
 tiefenpsychologisch	18	OTHER
 Rafah	18	NOUN
 Ikterus	18	NOUN
-Werefkins	18	NOUN
+Werefkins	18	NOUN	Werefkin
 Cebotari	18	NOUN
 Nemanjiden	18	NOUN
 Tvrtko	18	NOUN
 Medienwerke	18	NOUN
-Yourcenars	18	NOUN
+Yourcenars	18	NOUN	Yourcenar
 EPOC	18	NOUN
-Münsterlands	18	NOUN
+Münsterlands	18	NOUN	Münsterland
 Anblasloch	18	NOUN
 Lenore	18	NOUN
 Angelou	18	NOUN
 Totalordnung	18	NOUN
 Häkkinen	18	NOUN
-Heaps	18	NOUN
+Heaps	18	NOUN	Heap
 Chassidismus	18	NOUN
 Charpillon	18	NOUN
 Horní	18	NOUN
@@ -66744,7 +66744,7 @@ Bashkia	18	NOUN,OTHER
 Akranes	18	NOUN
 Utility	18	NOUN
 Bürgerplattform	18	NOUN
-Eigers	18	NOUN
+Eigers	18	NOUN	Eiger
 Rupertsberg	18	NOUN
 Protostomia	18	NOUN
 Zevener	18	NOUN
@@ -66760,14 +66760,14 @@ Kirchenamt	18	NOUN
 Ovelgönne	18	NOUN
 Lomnica	18	NOUN
 Baschkortostan	18	NOUN
-Gelsenkirchens	18	NOUN
+Gelsenkirchens	18	NOUN	Gelsenkirchen
 Déjà	18	NOUN
 Druckausgleich	18	NOUN
 Mundingen	18	NOUN
 Voltigierer	18	NOUN
 Teilbaum	18	NOUN
 Sehfeld	18	NOUN
-Maulbeeren	18	NOUN
+Maulbeeren	18	NOUN	Maulbeere
 Loë	18	NOUN
 linksunten	18	OTHER
 Vorband	18	NOUN
@@ -66785,14 +66785,14 @@ Häutungstiere	18	NOUN
 Numic	18	NOUN
 Beatboxer	18	NOUN
 Elbling	18	NOUN
-Ingolstadts	18	NOUN
+Ingolstadts	18	NOUN	Ingolstadt
 Geflügelpest	18	NOUN
 Saverne	18	NOUN
 Phibunsongkhram	18	NOUN
 Rheindorf	18	NOUN
 Todeskunst	18	NOUN
 Pretzschendorf	18	NOUN
-Schlauchboote	18	NOUN
+Schlauchboote	18	NOUN	Schlauchboot
 Kleinblittersdorf	18	NOUN
 Dreirad	18	NOUN
 Pechblende	17	NOUN
