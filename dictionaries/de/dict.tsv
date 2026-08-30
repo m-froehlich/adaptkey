@@ -1084,7 +1084,6 @@ trägt	1973	OTHER
 südlichen	1971	OTHER
 sozialen	1969	OTHER
 christlichen	1969	OTHER
-cdot	1969	OTHER
 hätten	1966	VERB
 Projekt	1965	NOUN
 fiel	1965	OTHER
@@ -1898,7 +1897,6 @@ Kommission	1139	NOUN
 Franken	1139	NOUN
 Wesen	1139	NOUN
 kulturellen	1138	OTHER
-left	1136	OTHER
 frühe	1135	OTHER
 menschliche	1134	OTHER
 oftmals	1134	OTHER
@@ -2151,7 +2149,6 @@ bestanden	1014	VERB
 angeblich	1014	OTHER
 unterstützen	1013	VERB
 Brüder	1013	NOUN
-end	1013	OTHER
 bedeutenden	1012	OTHER
 Leistungen	1012	NOUN
 Freiburg	1012	NOUN
@@ -5384,7 +5381,6 @@ Dialekten	399	NOUN
 Autobahnen	399	NOUN
 Konzern	399	NOUN
 Lake	399	NOUN
-width	399	OTHER
 Situationen	398	NOUN
 beliebige	398	OTHER
 entwarf	398	OTHER
@@ -6929,7 +6925,6 @@ verteilen	303	VERB
 Opus	303	NOUN
 Diego	303	NOUN
 Thai	303	NOUN
-varphi	303	OTHER
 JHWH	303	NOUN
 Stephan	302	NOUN
 Säulen	302	NOUN
@@ -7434,7 +7429,6 @@ Handball	280	NOUN
 Schöneberg	280	NOUN
 Tropen	280	NOUN
 versorgen	280	VERB
-pmatrix	280	OTHER
 Rotenburg	280	NOUN
 Grundsätze	279	NOUN
 wandelte	279	OTHER
@@ -12879,6 +12873,7 @@ Blankenburg	150	NOUN
 Senftenberg	150	NOUN
 Tabellenplatz	150	NOUN
 nachdenkt	150	VERB
+hoffentlich	150	OTHER
 gelobt	149	OTHER
 alias	149	OTHER
 Dance	149	NOUN
@@ -20499,7 +20494,6 @@ WP	85	NOUN
 Mittelmächte	85	NOUN
 Diakone	85	NOUN
 ICQ	85	NOUN
-bmatrix	85	OTHER
 Abeba	85	NOUN
 Bondage	85	NOUN
 Impfstoff	85	NOUN
@@ -31025,6 +31019,7 @@ Simferopol	50	NOUN
 Sterkrade	50	NOUN
 Winsener	50	NOUN
 Völler	50	NOUN
+kriegen	50	VERB
 kulinarische	49	OTHER
 aufsteigend	49	OTHER
 induktiv	49	OTHER
@@ -33261,7 +33256,7 @@ sofortiger	45	OTHER
 diplomatisch	45	OTHER
 gelieferten	45	OTHER
 Neubaus	45	NOUN
-vermisst	45	OTHER
+vermisst	45	VERB
 Überdruck	45	NOUN
 Hess	45	NOUN
 Ballungsräumen	45	NOUN
@@ -36810,6 +36805,7 @@ Kumite	40	NOUN
 Cheftrainer	40	NOUN
 Lütschine	40	NOUN
 würdest	40	VERB
+kriegt	40	VERB
 Aran	39	NOUN
 Patch	39	NOUN
 Mason	39	NOUN
@@ -40772,6 +40768,8 @@ Berufsberatung	35	NOUN
 Kaufsache	35	NOUN
 Wiesdorf	35	NOUN
 hättest	35	VERB
+erfreulich	35	ADJECTIVE
+erstelle	35	VERB
 Fluorwasserstoff	34	NOUN
 Haan	34	NOUN
 Filmeditor	34	NOUN
@@ -45616,6 +45614,7 @@ ACARS	30	NOUN
 Paiute	30	NOUN
 Ennigloh	30	NOUN
 beobachte	30	VERB
+gib	30	VERB
 Drehbuchautoren	29	NOUN
 Oxiden	29	NOUN
 Resident	29	NOUN
@@ -52341,6 +52340,7 @@ Ogi	25	NOUN
 duzen	25	VERB
 lösche	25	VERB
 haptischer	25	ADJECTIVE
+vermute	25	VERB
 überzieht	24	OTHER
 CLP	24	NOUN
 einzuschlagen	24	VERB
@@ -61804,6 +61804,7 @@ vermisse	20	VERB
 verrostet	20	VERB
 verrottet	20	VERB
 zeig	20	VERB
+wischen	20	VERB
 len	19	NOUN,OTHER
 Stillschweigen	19	NOUN
 fingierte	19	OTHER
@@ -66793,6 +66794,7 @@ Todeskunst	18	NOUN
 Pretzschendorf	18	NOUN
 Schlauchboote	18	NOUN
 Kleinblittersdorf	18	NOUN
+Dreirad	18	NOUN
 Pechblende	17	NOUN
 Drink	17	NOUN
 Taipeh	17	NOUN
@@ -76602,6 +76604,8 @@ verrosten	15	VERB
 verrotten	15	VERB
 zeigst	15	VERB
 haptisches	15	ADJECTIVE
+bewerte	15	VERB
+kriegst	15	VERB
 zugesteht	14	OTHER
 Zerfallsprodukt	14	NOUN
 gefärbtes	14	OTHER
@@ -90972,6 +90976,8 @@ Kaokoland	12	NOUN
 Faltrad	12	NOUN
 besparen	12	VERB
 investiere	12	VERB
+erstellst	12	VERB
+installiere	12	VERB
 IMDb	11	NOUN
 Uranerzen	11	NOUN
 Seltenerdmetalle	11	NOUN
@@ -104431,6 +104437,10 @@ Spannungsanstiegsrate	10	NOUN
 Bambergen	10	NOUN
 erzähl	10	VERB
 ignorierst	10	VERB
+bewertest	10	VERB
+Regenrinne	10	NOUN
+vermutest	10	VERB
+wische	10	VERB
 Raimi	9	NOUN
 Taiwans	9	NOUN
 Starbesetzung	9	NOUN
@@ -119630,7 +119640,7 @@ Landesfürst	8	NOUN
 Grafengeschlecht	8	NOUN
 darfst	45	OTHER
 warst	90	OTHER
-gibst	150	OTHER
+gibst	150	VERB
 nimmst	25	OTHER
 sprichst	22	OTHER
 fahre	90	OTHER
@@ -119676,6 +119686,8 @@ agentisch	15	OTHER
 agentische	8	OTHER
 agentischen	8	OTHER
 packst	8	VERB
+installierst	8	VERB
+wischst	8	VERB
 agentischem	6	OTHER
 agentischer	6	OTHER
 agentisches	6	OTHER

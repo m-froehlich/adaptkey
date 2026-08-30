@@ -196,7 +196,10 @@ object LanguagePackCatalog {
             // §316 (v1.0.69): closed the deferred Learned-Words-inflection-gap and haptisch-family
             // backlog (28 missing words added, 3 mistagged existing entries fixed) plus the confirmed
             // LaTeX-noise backlog (7 rows removed from dict.tsv, 15 stale bigram.tsv rows removed).
-            version = 27
+            // §317 (v1.0.70): removed the second LaTeX-noise cluster flagged in §316 (7 more rows,
+            // 47 stale bigram.tsv rows) and closed a fresh user-supplied word-family list (19 missing
+            // words added, 2 mistagged existing entries fixed).
+            version = 28
         ),
         Entry(
             Language.GREEK,

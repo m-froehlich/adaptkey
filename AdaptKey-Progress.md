@@ -253,19 +253,14 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **A second, larger LaTeX/math-markup noise cluster, found while cross-checking §316's own noise removal**
-  **against `bigram.tsv` (2026-08-30), not yet acted on:** `pmatrix`(280)/`bmatrix`(85)/`cdot`(1969)/
-  `varphi`(303)/`width`(399)/`left`(1136)/`end`(1013) all co-occur in `bigram.tsv` almost exclusively with
-  confirmed LaTeX tokens (`frac`/`right`/`top`/`bottom`/`array`/`matrix`/`cases`/`align`/`pmatrix` etc.) -
-  the same artefact class as §316's own removals, plausibly safe to remove the same way once individually
-  confirmed. Two are genuinely ambiguous and need real judgement, not a mechanical removal: `alpha`(910) -
-  bigram context is mixed (`sin alpha`/`cos alpha` clearly LaTeX, but `alpha centauri`/`alpha und` read as
-  genuine, if lowercase, German prose); `text`(5076, tagged `NOUN,VERB`) - very high frequency, mixed bigram
-  context (`text bar`/`text shift` look like `\text{}` LaTeX-macro leakage, but `der text`/`text und` read as
-  the real, extremely common German noun) - and oddly, capitalised `Text` does **not** exist as its own
-  dictionary entry at all, which is itself worth understanding before touching this one either way. Not
-  fixed yet - flagged rather than acted on, since this is real scope beyond what was originally agreed for
-  the deferred cleanup round.
+- **The two genuinely ambiguous LaTeX-noise candidates spotted alongside §317's own removal, deliberately**
+  **left untouched:** `alpha`(910) - bigram context is mixed (`sin alpha`/`cos alpha` clearly LaTeX, but
+  `alpha centauri`/`alpha und` read as genuine, if lowercase, German prose); `text`(5076, tagged
+  `NOUN,VERB`) - very high frequency, mixed bigram context (`text bar`/`text shift` look like `\text{}`
+  LaTeX-macro leakage, but `der text`/`text und` read as the real, extremely common German noun) - and
+  oddly, capitalised `Text` does **not** exist as its own dictionary entry at all, which is itself worth
+  understanding before touching this one either way. Needs real judgement, not a mechanical removal - not
+  fixed without explicit direction first.
 
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) is German-only.**
   Found while auditing every place that does *not* route through the active-language pipeline (history §210's
@@ -769,6 +764,26 @@ non-trivial changes).
   attention: `besparen` was added as a real (if rare/dialectal) verb based on this session's own knowledge,
   not re-confirmed against the user's actual Learned Words entry as the original TODO note asked - worth a
   quick sanity check that this was really the intended word.
+
+- **§317 (v1.0.70): removed §316's own flagged "second LaTeX-noise cluster" and closed a fresh**
+  **user-supplied word-family list.** **7 more confirmed LaTeX-noise rows removed** (`pmatrix`, `bmatrix`,
+  `cdot`, `varphi`, `width`, `left`, `end`) - the two genuinely ambiguous candidates spotted at the same time
+  (`alpha`, `text`) deliberately left untouched, per the user's own explicit scoping (see Open TODOs). 47
+  stale `bigram.tsv` rows referencing them also removed. **19 missing words added** from a fresh user-
+  supplied list, verified against the live dictionary first: 4 new infinitives/base forms that didn't exist
+  at all (`kriegen` - colloquial "to get", `wischen`, `Dreirad`, `Regenrinne`, `erfreulich`, `hoffentlich` -
+  6 total, tagged `VERB`/`NOUN`/`ADJECTIVE`/`OTHER` matching the dictionary's own convention for each word
+  class) plus 13 missing finite forms of already-present verbs (`bewerte`/`bewertest`, `erstelle`/
+  `erstellst`, `gib`, `installiere`/`installierst`, `kriegst`/`kriegt`, `vermute`/`vermutest`, `wische`/
+  `wischst`), all `VERB`, frequencies calibrated against comparable existing entries the same way as §316
+  (colloquial-register verbs like `kriegen` calibrated well below their formal synonyms `bekommen`(737)/
+  `erhalten`(5857), matching this project's own consistent register-skew pattern). **2 more existing rows**
+  **found mistagged** while investigating (same root cause as §316's three - `gibst`/`vermisst` don't end in
+  `-en`/`-n` so the original tagging sweep never saw them): `gibst`(150) `OTHER` -> `VERB`, `vermisst`(45)
+  `OTHER` -> `VERB`. `git diff --numstat`: `dict.tsv` 21 insertions/9 deletions, `bigram.tsv` 47 deletions.
+  `dictionaries/de/version.txt` 27 -> 28, pack rebuilt, `LanguagePackCatalog` version 27 -> 28. No new tests
+  (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 373 -> 374, `versionName`
+  `"1.0.69"` -> `"1.0.70"`. Not yet device-confirmed.
 
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
