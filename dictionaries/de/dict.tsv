@@ -4333,7 +4333,7 @@ Bekämpfung	497	NOUN
 grundlegend	497	OTHER
 Mannheim	497	NOUN
 autonomen	497	NOUN,OTHER
-deutsches	497	NOUN,OTHER
+deutsches	497	NOUN,OTHER	deutsch
 reellen	497	OTHER
 Hauptrolle	496	NOUN
 diversen	496	OTHER
@@ -4349,9 +4349,9 @@ Golden	495	NOUN
 Kapazität	495	NOUN
 Niedergang	495	NOUN
 Genre	495	NOUN
-Helden	495	NOUN
+Helden	495	NOUN	Held
 anerkannte	495	OTHER
-Einschränkungen	495	NOUN
+Einschränkungen	495	NOUN	Einschränkung
 Lebenserwartung	495	NOUN
 fuhr	495	OTHER
 Tschechoslowakei	495	NOUN
@@ -4371,8 +4371,8 @@ gelb	493	NOUN,OTHER
 Taufe	493	NOUN
 op	493	OTHER
 Bord	493	NOUN
-Ionen	492	NOUN
-Erwachsenen	492	NOUN,OTHER
+Ionen	492	NOUN	Ion
+Erwachsenen	492	NOUN,OTHER	Erwachsene
 Fusion	492	NOUN
 Tunnel	492	NOUN
 Tschechien	492	NOUN
@@ -4392,7 +4392,7 @@ Mode	491	NOUN
 eingestuft	491	OTHER
 eigenständigen	491	OTHER
 litt	491	OTHER
-Gewerkschaften	491	NOUN
+Gewerkschaften	491	NOUN	Gewerkschaft
 Besatzungszone	491	NOUN
 Ganzes	490	NOUN,OTHER
 Jagd	490	NOUN
@@ -4402,7 +4402,7 @@ kaiserliche	490	OTHER
 Ersatz	490	NOUN
 Landeshauptstadt	490	NOUN
 aufmerksam	489	OTHER
-Verträge	489	NOUN
+Verträge	489	NOUN	Vertrag
 deutschsprachige	489	OTHER
 ausgeprägt	489	OTHER
 Anpassung	489	NOUN
@@ -4416,14 +4416,14 @@ gesetzlichen	488	OTHER
 verwandte	488	NOUN,OTHER
 gefährdet	488	OTHER
 anzutreffen	488	VERB
-Hände	487	NOUN
+Hände	487	NOUN	Hand
 Informatik	487	NOUN
 stammten	487	VERB
 Kindheit	487	NOUN
 Party	487	NOUN
-Frequenzen	487	NOUN
-Böden	487	NOUN
-Messungen	487	NOUN
+Frequenzen	487	NOUN	Frequenz
+Böden	487	NOUN	Boden
+Messungen	487	NOUN	Messung
 archäologische	487	OTHER
 Partnerschaft	487	NOUN
 Java	487	NOUN
@@ -4442,18 +4442,18 @@ Gegenzug	485	NOUN
 vermieden	485	VERB
 Fertigstellung	485	NOUN
 beruhen	485	VERB
-Objekten	485	NOUN
+Objekten	485	NOUN	Objekt
 blaue	485	NOUN,OTHER
 Invasion	485	NOUN
-Ziffern	485	NOUN
+Ziffern	485	NOUN	Ziffer
 Bayreuth	485	NOUN
 Buchstabe	484	NOUN
 entstehenden	484	OTHER
 Mehrzahl	484	NOUN
 ff	484	OTHER
 stimmte	484	OTHER
-Investitionen	484	NOUN
-Russen	484	NOUN
+Investitionen	484	NOUN	Investition
+Russen	484	NOUN	Russe
 unterzeichnet	484	OTHER
 Großstadt	484	NOUN
 Ideologie	484	NOUN
@@ -4486,14 +4486,14 @@ erwartet	480	OTHER
 gedeutet	480	OTHER
 Prince	480	NOUN
 Laden	480	NOUN,OTHER
-Früchte	480	NOUN
-Räumen	479	NOUN,OTHER
-Bundesländern	479	NOUN
+Früchte	480	NOUN	Frucht
+Räumen	479	NOUN,OTHER	Raum
+Bundesländern	479	NOUN	Bundesland
 praktische	479	OTHER
 Aufwand	479	NOUN
 Königsberg	479	NOUN
 Public	479	NOUN,OTHER
-Herrn	479	NOUN
+Herrn	479	NOUN	Herr
 Orgel	479	NOUN
 bewertet	478	OTHER
 dreimal	478	OTHER
@@ -4508,10 +4508,10 @@ offensichtlich	477	OTHER
 Not	477	NOUN,OTHER
 Kauf	477	NOUN,VERB
 konservative	477	OTHER
-Buches	477	NOUN
+Buches	477	NOUN	Buch
 Blüte	477	NOUN
-Parks	477	NOUN
-Kommunen	477	NOUN
+Parks	477	NOUN	Park
+Kommunen	477	NOUN	Kommune
 Harz	476	NOUN
 Datum	476	NOUN
 befindlichen	476	OTHER
@@ -4521,20 +4521,20 @@ Cup	475	NOUN
 produzieren	475	VERB
 echten	475	OTHER
 geraten	475	VERB
-Tätigkeiten	475	NOUN
+Tätigkeiten	475	NOUN	Tätigkeit
 geschlossene	475	OTHER
 Synthese	475	NOUN
 nachweisbar	475	OTHER
 Management	475	NOUN
 umgebaut	475	OTHER
-Geschäfte	475	NOUN
+Geschäfte	475	NOUN	Geschäft
 gearbeitet	474	OTHER
 Jones	474	NOUN
 entscheidenden	474	OTHER
 Kiew	474	NOUN
 verringert	474	OTHER
 Öffnung	474	NOUN
-Geräten	474	NOUN
+Geräten	474	NOUN	Gerät
 kreisfreie	474	OTHER
 Kernstadt	474	NOUN
 betreffenden	473	OTHER
@@ -4560,26 +4560,26 @@ besagt	471	OTHER
 Lucas	471	NOUN
 erwarten	471	VERB
 starker	471	OTHER
-Abschnitte	471	NOUN
+Abschnitte	471	NOUN	Abschnitt
 biologische	471	OTHER
 Jäger	471	NOUN
 Bergbau	471	NOUN
 Vertreibung	471	NOUN
 Matthias	471	NOUN
-Unterlagen	471	NOUN,OTHER
-Kantons	471	NOUN
+Unterlagen	471	NOUN,OTHER	Unterlage
+Kantons	471	NOUN	Kanton
 guter	470	OTHER
-Vorschriften	470	NOUN
+Vorschriften	470	NOUN	Vorschrift
 erwähnte	470	OTHER
 reagiert	470	OTHER
-Museums	470	NOUN
-Naturwissenschaften	470	NOUN
+Museums	470	NOUN	Museum
+Naturwissenschaften	470	NOUN	Naturwissenschaft
 Händler	470	NOUN
 UdSSR	470	NOUN
 unverändert	469	OTHER
 Fahrzeug	469	NOUN
 Kenntnisse	469	NOUN
-Indiens	469	NOUN
+Indiens	469	NOUN	Indien
 Beta	468	NOUN,OTHER
 kombiniert	468	OTHER
 drehte	468	OTHER
@@ -4588,7 +4588,7 @@ existierten	468	VERB
 Häfen	468	NOUN
 Außenpolitik	468	NOUN
 massiv	468	OTHER
-Ansprüche	468	NOUN
+Ansprüche	468	NOUN	Anspruch
 Felix	468	NOUN
 lat	468	OTHER
 deuten	467	VERB
@@ -4602,7 +4602,7 @@ wissenschaftlicher	467	OTHER
 Konzentrationslager	467	NOUN
 vollzogen	467	VERB
 Fotografie	467	NOUN
-Handels	467	NOUN
+Handels	467	NOUN	Handel
 Mail	467	NOUN
 zeichnete	466	OTHER
 Kohlenstoff	466	NOUN
@@ -4612,7 +4612,7 @@ worauf	466	OTHER
 Aachen	466	NOUN
 Vertrauen	465	NOUN
 zweites	465	OTHER
-Flüssen	465	NOUN
+Flüssen	465	NOUN	Fluss
 IP	465	NOUN
 inhaltlich	464	OTHER
 finanziert	464	OTHER
@@ -4622,7 +4622,7 @@ Verwandtschaft	464	NOUN
 jüdischer	464	OTHER
 Germanen	464	NOUN
 israelischen	464	OTHER
-Ortsteile	464	NOUN
+Ortsteile	464	NOUN	Ortsteil
 Tanz	463	NOUN,VERB
 Grammatik	463	NOUN
 Beliebtheit	463	NOUN
@@ -4637,7 +4637,7 @@ herangezogen	463	VERB
 Vorstand	463	NOUN
 Plattform	463	NOUN
 Barock	463	NOUN
-Atome	462	NOUN
+Atome	462	NOUN	Atom
 gesagt	462	OTHER
 Edition	462	NOUN
 Beachtung	462	NOUN
@@ -4652,7 +4652,7 @@ Rose	461	NOUN
 entworfen	461	VERB
 Gewinn	461	NOUN,VERB
 betragen	461	VERB
-Programmen	461	NOUN
+Programmen	461	NOUN	Programm
 hessischen	460	NOUN,OTHER
 Ethik	460	NOUN
 forderten	460	VERB
@@ -4668,7 +4668,7 @@ Arbeitnehmer	459	NOUN
 Unternehmer	459	NOUN
 Goebbels	459	NOUN
 repräsentiert	459	OTHER
-Studios	458	NOUN
+Studios	458	NOUN	Studio
 zwanzig	458	OTHER
 variiert	458	OTHER
 Erdöl	458	NOUN
@@ -4692,13 +4692,13 @@ White	456	NOUN,OTHER
 warf	456	OTHER
 bedeckt	456	OTHER
 Foto	456	NOUN
-Wälder	456	NOUN
+Wälder	456	NOUN	Wald
 Stockholm	456	NOUN
 optische	456	OTHER
 eingesetzten	456	OTHER
-Phänomene	456	NOUN
+Phänomene	456	NOUN	Phänomen
 weichen	456	VERB,OTHER
-Klosters	456	NOUN
+Klosters	456	NOUN	Kloster
 Komödie	455	NOUN
 Zugriff	455	NOUN
 normale	455	OTHER
@@ -4706,25 +4706,25 @@ Francis	455	NOUN
 hängen	455	VERB
 Organ	455	NOUN
 gliedert	455	OTHER
-Wilhelms	455	NOUN
+Wilhelms	455	NOUN	Wilhelm
 Distanz	455	NOUN
 Church	455	NOUN
 alternativ	454	OTHER
-Stufen	454	NOUN
+Stufen	454	NOUN	Stufe
 wiesen	454	NOUN,OTHER
 Pferd	454	NOUN
 Sohnes	454	NOUN
-Vorlesungen	454	NOUN
+Vorlesungen	454	NOUN	Vorlesung
 Dokumentation	454	NOUN
-Variablen	454	NOUN
+Variablen	454	NOUN	Variable
 erstellen	454	VERB
 ausgedrückt	453	OTHER
 BBC	453	NOUN
 besetzte	453	OTHER
-Proteine	453	NOUN
+Proteine	453	NOUN	Protein
 glaubte	453	OTHER
 Nietzsche	453	NOUN
-Protestanten	453	NOUN
+Protestanten	453	NOUN	Protestant
 fünften	452	OTHER
 fordert	452	OTHER
 Ben	452	NOUN,OTHER
@@ -4737,7 +4737,7 @@ Herford	452	NOUN
 ähnelt	451	OTHER
 Schema	451	NOUN
 Märchen	451	NOUN
-Wassers	451	NOUN
+Wassers	451	NOUN	Wasser
 Differenz	451	NOUN
 Merkel	451	NOUN
 realen	451	OTHER
@@ -4751,7 +4751,7 @@ Tausende	450	NOUN,OTHER
 hinten	450	OTHER
 Göttin	450	NOUN
 Getreide	450	NOUN
-Gene	450	NOUN
+Gene	450	NOUN	Gen
 einsetzen	449	VERB
 ähnlicher	449	OTHER
 zentraler	449	OTHER
@@ -4759,7 +4759,7 @@ ausgelegt	449	OTHER
 zurzeit	449	OTHER
 kontrolliert	449	OTHER
 Ems	449	NOUN
-Wirtschafts	449	NOUN
+Wirtschafts	449	NOUN	Wirtschaft
 Protokoll	449	NOUN
 politisches	449	OTHER
 Einzug	448	NOUN
@@ -4777,15 +4777,15 @@ Zeile	447	NOUN
 enger	447	OTHER
 Überwachung	447	NOUN
 interessiert	447	OTHER
-Alternativen	447	NOUN,OTHER
+Alternativen	447	NOUN,OTHER	Alternative
 vermitteln	447	VERB
 erhöhten	447	VERB,OTHER
-Taten	447	NOUN,OTHER
+Taten	447	NOUN,OTHER	Tat
 Sanskrit	447	NOUN
 empfohlen	446	VERB
 Auszeichnung	446	NOUN
 siedelten	446	VERB
-Boote	446	NOUN
+Boote	446	NOUN	Boot
 publizierte	446	OTHER
 unbekannten	446	OTHER
 etablieren	446	VERB
@@ -4807,9 +4807,9 @@ jüngerer	445	OTHER
 überdies	445	OTHER
 basieren	445	VERB
 zerstörten	445	VERB,OTHER
-Kriegs	445	NOUN
+Kriegs	445	NOUN	Krieg
 abgegeben	445	VERB
-Typs	445	NOUN
+Typs	445	NOUN	Typ
 Jena	445	NOUN
 tatsächliche	445	OTHER
 ständigen	445	OTHER
@@ -4817,7 +4817,7 @@ Verb	445	NOUN
 verabschiedet	445	OTHER
 Augustinus	445	NOUN
 Opera	444	NOUN
-Landschaften	444	NOUN
+Landschaften	444	NOUN	Landschaft
 Ausstattung	444	NOUN
 Kilogramm	444	NOUN
 heutiger	444	OTHER
@@ -4825,7 +4825,7 @@ erlitt	444	OTHER
 geschickt	444	OTHER
 kulturell	444	OTHER
 Berufung	444	NOUN
-Vokale	444	NOUN
+Vokale	444	NOUN	Vokal
 untersuchte	443	OTHER
 benötigte	443	OTHER
 Zeus	443	NOUN
@@ -4844,7 +4844,7 @@ Keller	442	NOUN
 indische	442	OTHER
 unterworfen	442	VERB
 Ulm	442	NOUN
-Handschriften	442	NOUN
+Handschriften	442	NOUN	Handschrift
 Stellvertreter	442	NOUN
 verließen	442	VERB
 Calvin	442	NOUN
@@ -4855,24 +4855,24 @@ Freiwillige	441	NOUN,OTHER
 jüngste	441	OTHER
 Anbau	441	NOUN
 kreisfreien	441	OTHER
-Westfälischen	441	NOUN,OTHER
-Mannschaften	441	NOUN
-Bezirks	441	NOUN
+Westfälischen	441	NOUN,OTHER	Westfälische
+Mannschaften	441	NOUN	Mannschaft
+Bezirks	441	NOUN	Bezirk
 Picasso	441	NOUN
 Akt	440	NOUN
-Ausdrücke	440	NOUN
+Ausdrücke	440	NOUN	Ausdruck
 gefallen	440	VERB
-Flugzeuge	440	NOUN
+Flugzeuge	440	NOUN	Flugzeug
 verzichtete	440	OTHER
 ansässigen	440	OTHER
 Wiederherstellung	440	NOUN
 Muttersprache	440	NOUN
 prägen	440	VERB
 Flug	440	NOUN
-sächsische	440	NOUN,OTHER
+sächsische	440	NOUN,OTHER	sächsisch
 zunehmender	439	OTHER
 Tote	439	NOUN,OTHER
-Pferde	439	NOUN
+Pferde	439	NOUN	Pferd
 Erdoberfläche	439	NOUN
 Gelehrte	439	NOUN,OTHER
 Zusammenbruch	439	NOUN
@@ -4882,7 +4882,7 @@ Pommern	439	NOUN
 Ingolstadt	439	NOUN
 woraufhin	438	OTHER
 Streifen	438	NOUN
-Abweichungen	438	NOUN
+Abweichungen	438	NOUN	Abweichung
 Fach	438	NOUN,OTHER
 bedeutend	438	OTHER
 indigenen	438	OTHER
@@ -4900,7 +4900,7 @@ Gulden	438	NOUN
 südwestlich	438	OTHER
 spät	437	OTHER
 Ähnlichkeit	437	NOUN
-Mannes	437	NOUN
+Mannes	437	NOUN	Mann
 Universum	437	NOUN
 demselben	437	OTHER
 orientierten	437	VERB,OTHER
@@ -4916,14 +4916,14 @@ unterliegt	437	OTHER
 Adler	437	NOUN
 Bogen	437	NOUN
 Lenin	437	NOUN
-Genres	436	NOUN
+Genres	436	NOUN	Genre
 durchzusetzen	436	VERB
 VIII	436	NOUN
 Nobelpreis	436	NOUN
 Überzeugung	436	NOUN
 senkrecht	436	OTHER
 Erfurt	436	NOUN
-Gleichungen	436	NOUN
+Gleichungen	436	NOUN	Gleichung
 Bundesstraße	436	NOUN
 First	435	NOUN
 Einschätzung	435	NOUN
@@ -4939,27 +4939,27 @@ Web	435	NOUN
 Atlas	435	NOUN
 Force	434	NOUN
 nominiert	434	OTHER
-Norddeutschen	434	NOUN,OTHER
+Norddeutschen	434	NOUN,OTHER	Norddeutsche
 zitiert	434	OTHER
 Beruf	434	NOUN
 WHO	434	NOUN
 Zürcher	434	NOUN
 allgemeiner	434	OTHER
-Gefangenen	434	NOUN,OTHER
+Gefangenen	434	NOUN,OTHER	Gefangene
 verlieh	434	OTHER
 Campus	434	NOUN
 erkennt	433	OTHER
 beeinflusste	433	OTHER
 Konvention	433	NOUN
 Wilson	433	NOUN
-Werkes	433	NOUN
+Werkes	433	NOUN	Werk
 Singular	433	NOUN
 Komponente	432	NOUN
 beauftragt	432	OTHER
 beweisen	432	VERB
 höchstens	432	OTHER
 alleine	432	OTHER
-Schweizerischen	432	NOUN,OTHER
+Schweizerischen	432	NOUN,OTHER	Schweizerische
 Time	432	NOUN,OTHER
 gegenseitig	432	OTHER
 darstellte	432	OTHER
@@ -4972,7 +4972,7 @@ Ensemble	431	NOUN
 unbedingt	431	OTHER
 feiern	431	NOUN,OTHER
 zwang	431	NOUN,VERB
-Instituts	431	NOUN
+Instituts	431	NOUN	Institut
 Descartes	431	NOUN
 erlassen	431	VERB
 theologischen	431	OTHER
@@ -4984,13 +4984,13 @@ FPÖ	431	NOUN
 André	430	NOUN
 scheinbar	430	OTHER
 Ruhe	430	NOUN,VERB
-Militärs	430	NOUN
-Symbole	430	NOUN
+Militärs	430	NOUN	Militär
+Symbole	430	NOUN	Symbol
 Alkohol	430	NOUN
 menschlicher	430	OTHER
 sinkt	430	OTHER
 relative	430	OTHER
-Belege	430	NOUN
+Belege	430	NOUN	Beleg
 biblischen	430	OTHER
 gutes	430	OTHER
 Lissabon	430	NOUN
@@ -5008,39 +5008,39 @@ spezifischen	429	OTHER
 Vorfeld	429	NOUN
 Hochwasser	429	NOUN
 ohnehin	429	OTHER
-Regimes	429	NOUN
+Regimes	429	NOUN	Regime
 Kopenhagen	429	NOUN
 vorgeworfen	429	VERB
 Armut	429	NOUN
 verbesserte	429	OTHER
-Satelliten	429	NOUN
+Satelliten	429	NOUN	Satellit
 lutherische	429	OTHER
 Bochum	429	NOUN
 berücksichtigen	428	VERB
 Fortschritt	428	NOUN
-Listen	428	NOUN
+Listen	428	NOUN	Liste
 Nachteil	428	NOUN
 überführt	428	OTHER
-Vorgaben	428	NOUN
+Vorgaben	428	NOUN	Vorgabe
 Amtes	428	NOUN
 langfristig	428	OTHER
 Schnittstelle	428	NOUN
 installiert	428	OTHER
 Gebet	428	NOUN
 Patent	428	NOUN
-Georges	427	NOUN
+Georges	427	NOUN	George
 ggf	427	OTHER
 Jahrtausend	427	NOUN
 weitesten	427	OTHER
-Erweiterungen	427	NOUN
+Erweiterungen	427	NOUN	Erweiterung
 Sage	427	NOUN,VERB
-Opern	427	NOUN
+Opern	427	NOUN	Oper
 portugiesischen	427	OTHER
 herrschenden	427	OTHER
-Gäste	427	NOUN
+Gäste	427	NOUN	Gast
 geb	427	OTHER
-Händen	427	NOUN
-Ereignissen	427	NOUN
+Händen	427	NOUN	Hand
+Ereignissen	427	NOUN	Ereignisse
 Schmitt	427	NOUN
 denselben	426	OTHER
 Erfinder	426	NOUN
@@ -5050,7 +5050,7 @@ Vorhaben	426	NOUN
 Witwe	426	NOUN
 Mose	426	NOUN
 Blütezeit	426	NOUN
-Skulpturen	426	NOUN
+Skulpturen	426	NOUN	Skulptur
 genetische	426	OTHER
 Lebensjahr	426	NOUN
 Euler	426	NOUN
@@ -5067,17 +5067,17 @@ Systematik	425	NOUN
 Skala	425	NOUN
 zeitweilig	425	OTHER
 muslimischen	425	OTHER
-Verben	425	NOUN
+Verben	425	NOUN	Verb
 Vokal	425	NOUN
 legten	425	VERB
 Gesang	425	NOUN
-Produktionen	424	NOUN
+Produktionen	424	NOUN	Produktion
 verlieren	424	VERB
 weiterentwickelt	424	OTHER
 gültig	424	OTHER
 verzichten	424	VERB
-Modellen	424	NOUN
-Platten	424	NOUN
+Modellen	424	NOUN	Modell
+Platten	424	NOUN	Platte
 angeführt	424	OTHER
 schriftlich	424	OTHER
 vorerst	424	OTHER
@@ -5088,7 +5088,7 @@ Ausländer	423	NOUN
 Absatz	423	NOUN
 geltenden	423	OTHER
 zerstörte	423	OTHER
-Gärten	423	NOUN
+Gärten	423	NOUN	Garten
 kirchliche	423	OTHER
 Referendum	423	NOUN
 Enterprise	423	NOUN
@@ -5101,9 +5101,9 @@ One	422	NOUN,OTHER
 anerkannten	422	OTHER
 Feldzug	422	NOUN
 unmittelbaren	422	OTHER
-Anhängern	422	NOUN
-Äußerungen	422	NOUN
-Überreste	422	NOUN
+Anhängern	422	NOUN	Anhänger
+Äußerungen	422	NOUN	Äußerung
+Überreste	422	NOUN	Überrest
 deportiert	422	OTHER
 Markus	422	NOUN
 Feier	422	NOUN
@@ -5118,7 +5118,7 @@ Zunahme	421	NOUN
 geeigneten	421	OTHER
 Sekunde	421	NOUN
 Erdgas	421	NOUN
-Grunde	421	NOUN
+Grunde	421	NOUN	Grund
 Gramm	420	NOUN
 kommerziellen	420	OTHER
 schwarzer	420	NOUN,OTHER
@@ -5137,13 +5137,13 @@ wirksam	419	OTHER
 wirtschaftlicher	419	OTHER
 Übersicht	419	NOUN
 erneuten	419	OTHER
-Völkern	419	NOUN
+Völkern	419	NOUN	Volk
 Laute	419	NOUN
 fehlenden	419	OTHER
 Kap	419	NOUN
 SV	419	NOUN
 korrekt	418	OTHER
-Nachbarn	418	NOUN
+Nachbarn	418	NOUN	Nachbar
 Santiago	418	NOUN
 erfolgreichsten	418	OTHER
 herzustellen	418	VERB
@@ -5155,11 +5155,11 @@ Romantik	418	NOUN
 Katharina	418	NOUN
 kommunalen	418	OTHER
 verlangt	417	OTHER
-Gesetzen	417	NOUN
+Gesetzen	417	NOUN	Gesetz
 Komposition	417	NOUN
 Günter	417	NOUN
 sucht	417	OTHER
-Ursprungs	417	NOUN
+Ursprungs	417	NOUN	Ursprung
 Line	417	NOUN,OTHER
 akademischen	417	OTHER
 Leonardo	417	NOUN
@@ -5175,15 +5175,15 @@ fontsize	417	OTHER
 States	416	NOUN
 überlieferten	416	VERB,OTHER
 unmittelbarer	416	OTHER
-Bundespräsidenten	416	NOUN
+Bundespräsidenten	416	NOUN	Bundespräsident
 abgehalten	416	VERB
-Künstlers	416	NOUN
+Künstlers	416	NOUN	Künstler
 eingemeindet	416	OTHER
 Big	415	NOUN
 zeitgleich	415	OTHER
 Europäer	415	NOUN
 Schild	415	NOUN
-Chinas	415	NOUN
+Chinas	415	NOUN	China
 Flughäfen	415	NOUN
 Klavier	415	NOUN
 autonome	415	OTHER
@@ -5207,17 +5207,17 @@ Rad	413	NOUN
 Vorsitzende	413	NOUN
 Posten	413	NOUN
 Untergrund	413	NOUN
-Goethes	413	NOUN
+Goethes	413	NOUN	Goethe
 Wittenberg	413	NOUN
 ausgewählt	412	OTHER
 Gerichtshof	412	NOUN
-Schritte	412	NOUN
+Schritte	412	NOUN	Schritt
 geeignete	412	OTHER
 Vernichtung	412	NOUN
 Rechnung	412	NOUN
-Songs	412	NOUN
+Songs	412	NOUN	Song
 Helium	412	NOUN
-Sorten	412	NOUN
+Sorten	412	NOUN	Sorte
 Thailand	412	NOUN
 Istanbul	412	NOUN
 Holland	412	NOUN
@@ -5229,15 +5229,15 @@ th	411	OTHER
 Hochzeit	411	NOUN
 Magazin	411	NOUN
 Arabisch	411	NOUN,OTHER
-Besonderheiten	411	NOUN
-Zügen	411	NOUN
+Besonderheiten	411	NOUN	Besonderheit
+Zügen	411	NOUN	Zug
 einzeln	411	OTHER
 Hauptwerk	411	NOUN
 Moll	411	NOUN
-Häusern	411	NOUN
+Häusern	411	NOUN	Haus
 charakterisiert	410	OTHER
 Vorwurf	410	NOUN
-Praktiken	410	NOUN
+Praktiken	410	NOUN	Praktik
 nachhaltig	410	OTHER
 grundlegenden	410	OTHER
 Roms	410	NOUN
@@ -5253,27 +5253,27 @@ Bekanntheit	409	NOUN
 Venezuela	409	NOUN
 Bearbeitung	409	NOUN
 vernichtet	409	OTHER
-Freunden	409	NOUN
+Freunden	409	NOUN	Freund
 englischer	409	OTHER
 herausragende	409	OTHER
 Wladimir	409	NOUN
-Preußens	409	NOUN
+Preußens	409	NOUN	Preußen
 Olympics	409	NOUN
 stammenden	408	OTHER
 annehmen	408	VERB
 Schuld	408	NOUN
 romanischen	408	OTHER
 ersetzte	408	OTHER
-Artikeln	408	NOUN
+Artikeln	408	NOUN	Artikel
 angehören	408	VERB
 behaupten	408	VERB
 bildenden	408	OTHER
 vergleiche	408	NOUN,VERB
 Spanier	408	NOUN
-Abbildungen	408	NOUN
+Abbildungen	408	NOUN	Abbildung
 trennen	407	VERB
 Chicago	407	NOUN
-Proteste	407	NOUN
+Proteste	407	NOUN	Protest
 Häufigkeit	407	NOUN
 erweiterten	407	VERB,OTHER
 vergrößert	407	OTHER
@@ -5282,10 +5282,10 @@ Sturm	407	NOUN
 gehandelt	407	OTHER
 Moritz	407	NOUN
 verlangte	407	OTHER
-Verhältnissen	407	NOUN
+Verhältnissen	407	NOUN	Verhältnisse
 Cottbus	407	NOUN
 aufgegriffen	406	VERB
-Sternen	406	NOUN
+Sternen	406	NOUN	Stern
 Gewerbe	406	NOUN
 Hügel	406	NOUN
 befördert	406	OTHER
@@ -5308,14 +5308,14 @@ Arena	405	NOUN
 Juan	405	NOUN
 Blues	405	NOUN
 Medici	405	NOUN
-Produzenten	404	NOUN
+Produzenten	404	NOUN	Produzent
 Gesicht	404	NOUN
 Sciences	404	NOUN,OTHER
 einheitlich	404	OTHER
 übte	404	OTHER
 Image	404	NOUN
 gamma	404	NOUN,OTHER
-Berechnungen	404	NOUN
+Berechnungen	404	NOUN	Berechnung
 theologische	404	OTHER
 Luftwaffe	404	NOUN
 Relativitätstheorie	404	NOUN
@@ -5327,26 +5327,26 @@ gelangten	403	VERB,OTHER
 Wellenlänge	403	NOUN
 Blue	403	NOUN
 Flugzeug	403	NOUN
-Bundesländer	403	NOUN
-Ortes	403	NOUN
+Bundesländer	403	NOUN	Bundesland
+Ortes	403	NOUN	Ort
 Meisterschaft	403	NOUN
-Gebietes	403	NOUN
+Gebietes	403	NOUN	Gebiet
 Umbau	403	NOUN
-Italiens	403	NOUN
+Italiens	403	NOUN	Italien
 legend	403	OTHER
 Life	402	NOUN
 bisweilen	402	OTHER
 etablierten	402	VERB,OTHER
-Fans	402	NOUN
+Fans	402	NOUN	Fan
 isoliert	402	OTHER
 Zusatz	402	NOUN
 beliebigen	402	OTHER
-Römern	402	NOUN
+Römern	402	NOUN	Römer
 Nachkriegszeit	402	NOUN
 darzustellen	402	VERB
 feierte	402	OTHER
 Pol	402	NOUN
-Kompositionen	402	NOUN
+Kompositionen	402	NOUN	Komposition
 geweiht	402	OTHER
 böhmischen	402	OTHER
 Schwaben	402	NOUN
@@ -5377,11 +5377,11 @@ Kaufleute	399	NOUN
 öffnen	399	VERB
 regulären	399	OTHER
 Wehrpflicht	399	NOUN
-Dialekten	399	NOUN
-Autobahnen	399	NOUN
+Dialekten	399	NOUN	Dialekt
+Autobahnen	399	NOUN	Autobahn
 Konzern	399	NOUN
 Lake	399	NOUN
-Situationen	398	NOUN
+Situationen	398	NOUN	Situation
 beliebige	398	OTHER
 entwarf	398	OTHER
 mag	398	OTHER
@@ -5391,7 +5391,7 @@ grob	398	OTHER
 Anführer	398	NOUN
 Ableitung	398	NOUN
 Wohlstand	398	NOUN
-Schülern	398	NOUN
+Schülern	398	NOUN	Schüler
 gesammelt	398	OTHER
 Magie	398	NOUN
 Edison	397	NOUN
@@ -5404,17 +5404,17 @@ direkter	397	OTHER
 Überblick	397	NOUN
 gestartet	397	OTHER
 verhältnismäßig	396	OTHER
-Neutronen	396	NOUN
+Neutronen	396	NOUN	Neutron
 Südkorea	396	NOUN
 Phi	396	NOUN,OTHER
 Punk	396	NOUN
 besiedelten	396	VERB,OTHER
 Atlantik	396	NOUN
 ukrainische	396	OTHER
-Alters	396	NOUN,OTHER
+Alters	396	NOUN,OTHER	Alter
 Tageszeitung	396	NOUN
 kaufte	396	OTHER
-Klammern	395	NOUN
+Klammern	395	NOUN	Klammer
 kommenden	395	OTHER
 Michel	395	NOUN
 vorkommt	395	OTHER
@@ -5423,14 +5423,14 @@ konzentrierte	395	OTHER
 derart	395	OTHER
 Maßstab	395	NOUN
 Benennung	395	NOUN
-Definitionen	395	NOUN
+Definitionen	395	NOUN	Definition
 Ingenieur	395	NOUN
 scheinen	395	VERB
 MW	395	NOUN
 Zen	395	NOUN
 NASA	395	NOUN
 Papstes	395	NOUN
-Mächte	394	NOUN
+Mächte	394	NOUN	Macht
 ungewöhnlich	394	OTHER
 Eva	394	NOUN
 CIA	394	NOUN
@@ -5446,16 +5446,16 @@ landwirtschaftliche	394	OTHER
 verfügten	394	VERB
 Tacitus	394	NOUN
 Rugby	394	NOUN
-Serien	393	NOUN
-Programmiersprachen	393	NOUN
+Serien	393	NOUN	Serie
+Programmiersprachen	393	NOUN	Programmiersprache
 Tirol	393	NOUN
 Day	393	NOUN
 bemühte	393	OTHER
 Bill	393	NOUN
 betrachteten	393	VERB,OTHER
 hart	393	OTHER
-Christentums	393	NOUN
-Freiwilligen	393	NOUN,OTHER
+Christentums	393	NOUN	Christentum
+Freiwilligen	393	NOUN,OTHER	Freiwillige
 voller	393	OTHER
 religiöser	393	OTHER
 Mars	393	NOUN
@@ -5468,17 +5468,17 @@ Strömung	392	NOUN
 CH	392	NOUN,OTHER
 Ausgleich	392	NOUN
 ausgegangen	392	VERB
-Testaments	392	NOUN
+Testaments	392	NOUN	Testament
 beschränkte	392	OTHER
 geordnet	392	OTHER
 Stadtbild	392	NOUN
 basierte	392	OTHER
 Roger	391	NOUN
-Protagonisten	391	NOUN
+Protagonisten	391	NOUN	Protagonist
 reagierte	391	OTHER
 müsste	391	OTHER
 Schifffahrt	391	NOUN
-Staats	391	NOUN
+Staats	391	NOUN	Staat
 KI	391	NOUN
 Fahrer	391	NOUN
 Salz	391	NOUN,VERB
@@ -5488,12 +5488,12 @@ spiegelt	390	OTHER
 Berücksichtigung	390	NOUN
 Cicero	390	NOUN
 Burgund	390	NOUN
-Beschlüsse	390	NOUN
+Beschlüsse	390	NOUN	Beschluss
 geistige	390	OTHER
-Zivilisten	390	NOUN
-Hotels	390	NOUN
-Besuchern	390	NOUN
-Aminosäuren	390	NOUN
+Zivilisten	390	NOUN	Zivilist
+Hotels	390	NOUN	Hotel
+Besuchern	390	NOUN	Besucher
+Aminosäuren	390	NOUN	Aminosäure
 Schumacher	390	NOUN
 HTML	390	NOUN
 Flugplatz	390	NOUN
@@ -5505,24 +5505,24 @@ Abzug	389	NOUN
 vergeblich	389	OTHER
 unterhalten	389	VERB
 Handwerker	389	NOUN
-Demokraten	389	NOUN
+Demokraten	389	NOUN	Demokrat
 Verzicht	389	NOUN
 Source	389	NOUN
 Ruhrgebiet	389	NOUN
 abgesetzt	389	OTHER
-Rande	388	NOUN
+Rande	388	NOUN	Rand
 ordnete	388	OTHER
 endgültige	388	OTHER
-Fahrzeugen	388	NOUN
+Fahrzeugen	388	NOUN	Fahrzeug
 veränderten	388	VERB,OTHER
 beigetragen	388	VERB
 Verehrung	388	NOUN
 Marcus	388	NOUN
 Columbia	388	NOUN
-Beamten	388	NOUN
+Beamten	388	NOUN	Beamte
 Freistaat	388	NOUN
-Schaltjahren	388	NOUN
-revolutionäre	388	NOUN,OTHER
+Schaltjahren	388	NOUN	Schaltjahr
+revolutionäre	388	NOUN,OTHER	revolutionär
 definierten	387	VERB,OTHER
 fremden	387	OTHER
 Einigung	387	NOUN
@@ -5536,7 +5536,7 @@ erklärten	387	VERB,OTHER
 Wahrzeichen	387	NOUN
 göttliche	387	OTHER
 USPD	387	NOUN
-Pflichten	387	NOUN
+Pflichten	387	NOUN	Pflicht
 Register	387	NOUN
 Barcelona	387	NOUN
 erwerben	386	VERB
@@ -5559,11 +5559,11 @@ Genfer	385	NOUN
 befestigt	385	OTHER
 Be	385	NOUN,OTHER
 Sebastian	385	NOUN
-Gerichte	385	NOUN
+Gerichte	385	NOUN	Gericht
 vorherigen	385	OTHER
 Gabriel	385	NOUN
 Steiner	385	NOUN
-Formeln	384	NOUN
+Formeln	384	NOUN	Formel
 folgendermaßen	384	OTHER
 gerecht	384	OTHER
 Harry	384	NOUN
@@ -5601,7 +5601,7 @@ fortgesetzt	382	OTHER
 reale	382	OTHER
 drohte	382	OTHER
 nannten	382	VERB
-Todes	382	NOUN
+Todes	382	NOUN	Tod
 Hildesheim	382	NOUN
 Ernennung	382	NOUN
 Wahlbeteiligung	382	NOUN
@@ -5621,10 +5621,10 @@ Wahlgang	381	NOUN
 COVID	381	NOUN
 Apostel	381	NOUN
 globale	381	OTHER
-Zonen	381	NOUN
+Zonen	381	NOUN	Zone
 norwegischen	381	OTHER
 Grafik	381	NOUN
-Einwohnerzahlen	381	NOUN
+Einwohnerzahlen	381	NOUN	Einwohnerzahl
 Ostpreußen	381	NOUN
 Uhrzeigersinn	381	NOUN
 leiten	380	VERB
@@ -5652,15 +5652,15 @@ Darwin	379	NOUN
 Siegen	379	NOUN
 berief	379	OTHER
 Budapest	379	NOUN
-Produkten	379	NOUN
-Kanäle	379	NOUN
-Intellektuellen	379	NOUN,OTHER
-Höhen	379	NOUN
+Produkten	379	NOUN	Produkt
+Kanäle	379	NOUN	Kanal
+Intellektuellen	379	NOUN,OTHER	Intellektuelle
+Höhen	379	NOUN	Höhe
 quer	379	OTHER
 KV	379	NOUN,OTHER
 Habsburger	379	NOUN
 SC	379	NOUN
-Sätze	378	NOUN
+Sätze	378	NOUN	Satz
 Berater	378	NOUN
 Bekenntnis	378	NOUN
 gern	378	OTHER
@@ -5683,12 +5683,12 @@ Antrieb	377	NOUN
 äußersten	377	OTHER
 Höhle	377	NOUN
 Pascal	377	NOUN
-Schwäbischen	377	NOUN,OTHER
+Schwäbischen	377	NOUN,OTHER	Schwäbisch
 Zimmer	377	NOUN
 gotischen	377	OTHER
 zufällig	376	OTHER
 vorne	376	OTHER
-Fische	376	NOUN
+Fische	376	NOUN	Fisch
 Glück	376	NOUN
 Carter	376	NOUN
 gewährleistet	376	OTHER
@@ -5707,7 +5707,7 @@ heftigen	375	OTHER
 idealen	375	OTHER
 Verletzung	375	NOUN
 Hinrichtung	375	NOUN
-Mönche	375	NOUN
+Mönche	375	NOUN	Mönch
 privat	374	OTHER
 ausgestrahlt	374	OTHER
 Musical	374	NOUN
@@ -5716,16 +5716,16 @@ gescheitert	374	OTHER
 Staatsbürgerschaft	374	NOUN
 zentrales	374	OTHER
 untersuchen	374	VERB
-Symptome	374	NOUN
+Symptome	374	NOUN	Symptom
 Wähler	374	NOUN
-Konsequenzen	374	NOUN
-Spenden	374	NOUN,OTHER
+Konsequenzen	374	NOUN	Konsequenz
+Spenden	374	NOUN,OTHER	Spende
 Beendigung	374	NOUN
 abgebrochen	374	VERB
 Einladung	373	NOUN
 Gültigkeit	373	NOUN
 beschäftigen	373	VERB
-Kräften	373	NOUN
+Kräften	373	NOUN	Kraft
 schickte	373	OTHER
 ausgenommen	373	VERB
 Attentat	373	NOUN
@@ -5748,7 +5748,7 @@ Präsidentschaftswahl	372	NOUN
 Meeresspiegel	372	NOUN
 benachbarte	372	OTHER
 zulässig	371	OTHER
-Disziplinen	371	NOUN
+Disziplinen	371	NOUN	Disziplin
 Umgangssprache	371	NOUN
 erlebt	371	OTHER
 vorliegt	371	OTHER
@@ -5757,7 +5757,7 @@ erfunden	371	VERB
 Berichterstattung	371	NOUN
 geographischen	371	OTHER
 Rückseite	371	NOUN
-Teams	371	NOUN
+Teams	371	NOUN	Team
 Show	371	NOUN
 frühesten	371	OTHER
 Intel	371	NOUN
@@ -5767,7 +5767,7 @@ Feb	371	NOUN,OTHER
 gedruckt	370	OTHER
 Atom	370	NOUN
 verschwinden	370	NOUN,OTHER
-Erwartungen	370	NOUN
+Erwartungen	370	NOUN	Erwartung
 stärken	370	VERB
 aufzunehmen	370	VERB
 zusammengeschlossen	370	VERB
@@ -5785,7 +5785,7 @@ Kommune	369	NOUN
 konzipiert	369	OTHER
 vielfältige	369	OTHER
 statistische	369	OTHER
-Kompetenzen	369	NOUN
+Kompetenzen	369	NOUN	Kompetenz
 ZDF	369	NOUN
 gotische	369	OTHER
 amtliche	369	OTHER
@@ -5793,15 +5793,15 @@ Master	368	NOUN
 durchgehend	368	OTHER
 erzeugte	368	OTHER
 Arabien	368	NOUN
-Wirkungen	368	NOUN
+Wirkungen	368	NOUN	Wirkung
 ständige	368	OTHER
 Wüste	368	NOUN
-Napoleons	368	NOUN
-Herzogs	368	NOUN
+Napoleons	368	NOUN	Napoleon
+Herzogs	368	NOUN	Herzog
 Volksabstimmung	368	NOUN
 Gottesdienst	368	NOUN
 beliebtesten	368	OTHER
-Netze	368	NOUN
+Netze	368	NOUN	Netz
 Handschrift	367	NOUN
 deutet	367	OTHER
 ideale	367	NOUN,OTHER
@@ -5823,7 +5823,7 @@ Becker	367	NOUN
 Spree	367	NOUN
 Matthäus	367	NOUN
 Western	366	NOUN
-Zusammenhänge	366	NOUN
+Zusammenhänge	366	NOUN	Zusammenhang
 kommerziell	366	OTHER
 niedrig	366	OTHER
 herstellen	366	VERB
@@ -5840,12 +5840,12 @@ Osmanen	366	NOUN
 Adjektiv	366	NOUN
 scheiterten	366	VERB
 Go	366	NOUN
-Sportarten	366	NOUN
+Sportarten	366	NOUN	Sportart
 Addition	365	NOUN
 junger	365	OTHER
 fließen	365	VERB
 vorbereitet	365	OTHER
-Zielen	365	NOUN,OTHER
+Zielen	365	NOUN,OTHER	Ziel
 dorthin	365	OTHER
 hinterließ	365	OTHER
 intensive	365	OTHER
@@ -5863,17 +5863,17 @@ verkündete	364	OTHER
 behandeln	364	VERB
 decken	364	VERB
 Ilias	364	NOUN
-Küsten	364	NOUN
-Feinde	364	NOUN
+Küsten	364	NOUN	Küste
+Feinde	364	NOUN	Feind
 verliert	364	OTHER
 sur	364	OTHER
 Moskauer	364	NOUN
 Flora	364	NOUN
 Gotha	364	NOUN
 Schnee	364	NOUN
-Standorte	364	NOUN
+Standorte	364	NOUN	Standort
 Potsdamer	364	NOUN
-Sees	364	NOUN
+Sees	364	NOUN	See
 Lord	363	NOUN
 Johnson	363	NOUN
 speichern	363	VERB
@@ -5888,7 +5888,7 @@ Compiler	363	NOUN
 NET	363	NOUN,OTHER
 Trek	363	NOUN
 Trend	362	NOUN
-schönen	362	NOUN,OTHER
+schönen	362	NOUN,OTHER	schöne
 lautete	362	OTHER
 überraschend	362	OTHER
 pH	362	OTHER
@@ -5903,7 +5903,7 @@ Staatsoberhaupt	362	NOUN
 Green	362	NOUN,OTHER
 Vogel	362	NOUN
 Geraden	362	NOUN,OTHER
-Steine	362	NOUN
+Steine	362	NOUN	Stein
 Moldau	362	NOUN
 Gefühl	361	NOUN
 beides	361	OTHER
@@ -5911,11 +5911,11 @@ verkaufen	361	VERB
 juristischen	361	OTHER
 kleinsten	361	OTHER
 Geschichtsschreibung	361	NOUN
-Metalle	361	NOUN
+Metalle	361	NOUN	Metall
 Leber	361	NOUN
-Planungen	361	NOUN
-Gruppierungen	361	NOUN
-Gegenden	361	NOUN
+Planungen	361	NOUN	Planung
+Gruppierungen	361	NOUN	Gruppierung
+Gegenden	361	NOUN	Gegend
 Durchsetzung	361	NOUN
 Evangelium	361	NOUN
 Schriftsprache	361	NOUN
@@ -5925,9 +5925,9 @@ Jung	360	NOUN,OTHER
 Oskar	360	NOUN
 wirkten	360	VERB
 Büro	360	NOUN
-Schulden	360	NOUN
-Stoffen	360	NOUN
-Comics	360	NOUN
+Schulden	360	NOUN	Schuld
+Stoffen	360	NOUN	Stoff
+Comics	360	NOUN	Comic
 genauen	360	OTHER
 Schneider	360	NOUN
 Ali	360	NOUN
@@ -5940,18 +5940,18 @@ Media	359	NOUN
 Oberschicht	359	NOUN
 schriftlichen	359	OTHER
 Flandern	359	NOUN
-Gläubigen	359	NOUN
+Gläubigen	359	NOUN	Gläubige
 Basketball	359	NOUN
 Abwehr	359	NOUN
 hervorgegangen	359	VERB
 mathcal	359	OTHER
-Chromosomen	359	NOUN
-Standorten	359	NOUN
-Restaurants	359	NOUN
+Chromosomen	359	NOUN	Chromosom
+Standorten	359	NOUN	Standort
+Restaurants	359	NOUN	Restaurant
 Verknüpfung	358	NOUN
 verlangen	358	NOUN,OTHER
-Richtlinien	358	NOUN
-Friedens	358	NOUN
+Richtlinien	358	NOUN	Richtlinie
+Friedens	358	NOUN	Frieden
 ökonomische	358	OTHER
 darauffolgenden	358	OTHER
 gerufen	358	VERB
@@ -5965,24 +5965,24 @@ au	357	NOUN,OTHER
 Kugel	357	NOUN
 einheimische	357	OTHER
 Byzanz	357	NOUN
-Meeres	357	NOUN
+Meeres	357	NOUN	Meer
 Großvater	357	NOUN
 ökologischen	357	OTHER
 Zentralbank	357	NOUN
 Motto	357	NOUN
 Lausanne	357	NOUN
 Komitee	356	NOUN
-Bedeutungen	356	NOUN
+Bedeutungen	356	NOUN	Bedeutung
 Annäherung	356	NOUN
 Quantenmechanik	356	NOUN
 geführten	356	OTHER
 überwinden	356	VERB
 vormals	356	OTHER
-Arme	356	NOUN,OTHER
+Arme	356	NOUN,OTHER	Arm
 Research	356	NOUN
 Chance	356	NOUN
 statistisch	356	OTHER
-Dörfern	356	NOUN
+Dörfern	356	NOUN	Dorf
 Reichweite	356	NOUN
 erschossen	356	VERB
 Betrag	356	NOUN
@@ -5995,20 +5995,20 @@ gewinnt	355	OTHER
 unbekannte	355	OTHER
 entfernen	355	VERB
 Störung	355	NOUN
-Prozessen	355	NOUN
+Prozessen	355	NOUN	Prozess
 Sichtweise	355	NOUN
-Kanals	355	NOUN
+Kanals	355	NOUN	Kanal
 mitten	355	OTHER
-Afrikas	355	NOUN
-Befehle	355	NOUN
+Afrikas	355	NOUN	Afrika
+Befehle	355	NOUN	Befehl
 Liturgie	355	NOUN
 Riga	355	NOUN
 XML	355	NOUN
-Katzen	354	NOUN
+Katzen	354	NOUN	Katze
 Corporation	354	NOUN
 Douglas	354	NOUN
 bewirken	354	VERB
-roter	354	NOUN,OTHER
+roter	354	NOUN,OTHER	rot
 fühlte	354	OTHER
 Einnahme	354	NOUN
 höchster	354	OTHER
@@ -6022,7 +6022,7 @@ Täter	354	NOUN
 Foundation	354	NOUN
 Kammer	354	NOUN
 kanadischen	354	OTHER
-niedersächsischen	354	NOUN,OTHER
+niedersächsischen	354	NOUN,OTHER	niedersächsische
 Merseburg	354	NOUN
 Mär	354	NOUN
 Erwerb	353	NOUN
@@ -6068,14 +6068,14 @@ Meißen	352	NOUN
 overline	352	OTHER
 beibehalten	351	VERB
 vereinfacht	351	OTHER
-Motiven	351	NOUN
+Motiven	351	NOUN	Motiv
 Wand	351	NOUN
 komplette	351	OTHER
 charakteristische	351	OTHER
 Scott	351	NOUN
-Kindes	351	NOUN
+Kindes	351	NOUN	Kind
 Bandbreite	351	NOUN
-Ergebnissen	350	NOUN
+Ergebnissen	350	NOUN	Ergebnisse
 verkürzt	350	OTHER
 Stickstoff	350	NOUN
 Verbrennung	350	NOUN
@@ -6089,7 +6089,7 @@ Genehmigung	350	NOUN
 geographische	350	OTHER
 starten	350	VERB
 Naturschutzgebiet	350	NOUN
-Landkreisen	350	NOUN
+Landkreisen	350	NOUN	Landkreis
 CP	350	NOUN
 entsprechender	349	OTHER
 leichte	349	OTHER
@@ -6097,7 +6097,7 @@ geringem	349	OTHER
 erschwert	349	OTHER
 stabile	349	OTHER
 Uran	349	NOUN
-Romanen	349	NOUN
+Romanen	349	NOUN	Roman
 byzantinische	349	OTHER
 gewordenen	349	OTHER
 Reichtum	349	NOUN
@@ -6110,7 +6110,7 @@ russischer	349	OTHER
 angekündigt	349	OTHER
 Chronik	349	NOUN
 praktiziert	349	OTHER
-Wolken	349	NOUN
+Wolken	349	NOUN	Wolke
 Philippinen	349	NOUN
 schöne	349	NOUN,OTHER
 Kaiserin	349	NOUN
@@ -6122,17 +6122,17 @@ wählt	348	OTHER
 feststellen	348	VERB
 Abfolge	348	NOUN
 schied	348	OTHER
-Merkmalen	348	NOUN
+Merkmalen	348	NOUN	Merkmal
 Geschmack	348	NOUN
 erleben	348	NOUN,OTHER
 Terror	348	NOUN
-Vorschläge	348	NOUN
+Vorschläge	348	NOUN	Vorschlag
 with	348	OTHER
 längsten	348	OTHER
 Ausübung	348	NOUN
 künftig	348	OTHER
 Beurteilung	348	NOUN
-Heeres	348	NOUN
+Heeres	348	NOUN	Heer
 Wetter	348	NOUN
 Maschinenbau	348	NOUN
 verwirklicht	348	OTHER
@@ -6140,9 +6140,9 @@ fliegen	348	NOUN,OTHER
 Klage	348	NOUN,VERB
 dauerhafte	348	OTHER
 Central	348	NOUN
-Plätzen	348	NOUN
-Tests	348	NOUN
-Motoren	348	NOUN
+Plätzen	348	NOUN	Platz
+Tests	348	NOUN	Test
+Motoren	348	NOUN	Motor
 Hagen	348	NOUN
 Graph	348	NOUN
 Reuter	348	NOUN
@@ -6152,24 +6152,24 @@ schwachen	347	OTHER
 vergleichbare	347	OTHER
 Nickel	347	NOUN
 Konsens	347	NOUN
-Gebäudes	347	NOUN
-Säugetiere	347	NOUN
+Gebäudes	347	NOUN	Gebäude
+Säugetiere	347	NOUN	Säugetier
 gerieten	346	VERB
 absolvierte	346	OTHER
 runden	346	NOUN,OTHER
 zivile	346	OTHER
 integrierte	346	OTHER
-Thesen	346	NOUN
+Thesen	346	NOUN	These
 Lebensraum	346	NOUN
 Statthalter	346	NOUN
 Wörterbuch	346	NOUN
 künstlichen	346	OTHER
 Bundestages	346	NOUN
 Antisemitismus	346	NOUN
-Protesten	346	NOUN
-Porträts	346	NOUN
+Protesten	346	NOUN	Protest
+Porträts	346	NOUN	Porträt
 Saudi	346	NOUN
-Kunstwerke	346	NOUN
+Kunstwerke	346	NOUN	Kunstwerk
 Programmierung	346	NOUN
 reformierte	346	OTHER
 Mühle	346	NOUN
@@ -6182,7 +6182,7 @@ lehrte	345	OTHER
 bedienen	345	VERB
 Barbara	345	NOUN
 verankert	345	OTHER
-Sozialdemokraten	345	NOUN
+Sozialdemokraten	345	NOUN	Sozialdemokrat
 Osnabrück	345	NOUN
 Exekutive	345	NOUN
 Tee	345	NOUN
@@ -6192,8 +6192,8 @@ Festlegung	344	NOUN
 technischer	344	OTHER
 Klassiker	344	NOUN
 wendet	344	OTHER
-Angebote	344	NOUN
-Lande	344	NOUN
+Angebote	344	NOUN	Angebot
+Lande	344	NOUN	Land
 Umsatz	344	NOUN
 älterer	344	OTHER
 Karthago	344	NOUN
@@ -6207,7 +6207,7 @@ letztendlich	343	OTHER
 deutlicher	343	OTHER
 pm	343	OTHER
 Kärnten	343	NOUN
-Bänden	343	NOUN
+Bänden	343	NOUN	Band
 unterlag	343	OTHER
 wesentlicher	343	OTHER
 niedrige	343	OTHER
@@ -6215,7 +6215,7 @@ nachfolgende	342	OTHER
 entstehende	342	OTHER
 richtige	342	OTHER
 Frühling	342	NOUN
-Angriffen	342	NOUN
+Angriffen	342	NOUN	Angriff
 verzeichnen	342	VERB
 verabschiedete	342	OTHER
 Modern	342	NOUN,OTHER
@@ -6231,8 +6231,8 @@ Erwachsene	341	NOUN,OTHER
 wenden	341	VERB
 seltene	341	OTHER
 sicherte	341	OTHER
-Inschriften	341	NOUN
-Demonstrationen	341	NOUN
+Inschriften	341	NOUN	Inschrift
+Demonstrationen	341	NOUN	Demonstration
 Lincoln	341	NOUN
 Vereinbarung	341	NOUN
 Unterdrückung	341	NOUN
@@ -6256,9 +6256,9 @@ langem	340	OTHER
 Cambridge	340	NOUN
 derer	340	OTHER
 weitestgehend	340	OTHER
-Haushalte	340	NOUN
+Haushalte	340	NOUN	Haushalt
 unterrichtet	340	OTHER
-Schwestern	340	NOUN
+Schwestern	340	NOUN	Schwester
 Sängerin	340	NOUN
 braucht	339	OTHER
 fremde	339	NOUN,OTHER
@@ -6268,7 +6268,7 @@ Gießen	339	NOUN
 erzeugten	339	VERB,OTHER
 steigenden	339	OTHER
 Epos	339	NOUN
-Denkens	339	NOUN
+Denkens	339	NOUN	Denken
 Schönheit	339	NOUN
 schlechte	339	OTHER
 Galilei	339	NOUN
@@ -6281,7 +6281,7 @@ wofür	338	OTHER
 Tom	338	NOUN
 Aufsatz	338	NOUN
 richten	338	VERB
-Textes	338	NOUN
+Textes	338	NOUN	Texte
 Erlaubnis	338	NOUN
 militärischer	338	OTHER
 Regierungschef	338	NOUN
@@ -6296,8 +6296,8 @@ komponierte	337	OTHER
 doppelte	337	OTHER
 dominierten	337	VERB,OTHER
 erlangt	337	OTHER
-Burgen	337	NOUN
-Koordinaten	337	NOUN
+Burgen	337	NOUN	Burg
+Koordinaten	337	NOUN	Koordinate
 keltischen	337	OTHER
 Taliban	337	NOUN
 angelegte	337	OTHER
@@ -6314,47 +6314,47 @@ Aufstellung	336	NOUN
 Laien	336	NOUN
 gleichgesetzt	336	OTHER
 Dynamik	336	NOUN
-Gesteine	336	NOUN
-Vornamen	336	NOUN
-Gespräche	336	NOUN
+Gesteine	336	NOUN	Gestein
+Vornamen	336	NOUN	Vorname
+Gespräche	336	NOUN	Gespräch
 entfernte	336	OTHER
 Ausschuss	336	NOUN
 Gemüse	336	NOUN
-Lagern	336	NOUN,OTHER
+Lagern	336	NOUN,OTHER	Lager
 Hz	336	NOUN
 cos	336	OTHER
-Tendenzen	335	NOUN
+Tendenzen	335	NOUN	Tendenz
 stirbt	335	OTHER
 Kommentar	335	NOUN
-Paare	335	NOUN
+Paare	335	NOUN	Paar
 betriebene	335	OTHER
 belgischen	335	OTHER
 gepflegt	335	OTHER
 IX	335	NOUN
 Pkw	335	NOUN
-Niederschläge	335	NOUN
+Niederschläge	335	NOUN	Niederschlag
 leichten	335	OTHER
 Zar	335	NOUN
 TU	335	NOUN,OTHER
 Nationalismus	335	NOUN
 Augsburger	335	NOUN
-Moore	335	NOUN
+Moore	335	NOUN	Moor
 Lahn	335	NOUN
-Bundesstraßen	335	NOUN
+Bundesstraßen	335	NOUN	Bundesstraße
 Klinik	335	NOUN
 Behauptung	334	NOUN
-Annahmen	334	NOUN,OTHER
+Annahmen	334	NOUN,OTHER	Annahme
 Standpunkt	334	NOUN
 steigen	334	VERB
 Fantasy	334	NOUN
-Herzöge	334	NOUN
+Herzöge	334	NOUN	Herzog
 Vorherrschaft	334	NOUN
 verlorenen	334	OTHER
 letztes	334	OTHER
 Streitigkeiten	334	NOUN
 einzusetzen	334	VERB
 erweitern	334	VERB
-Adels	334	NOUN
+Adels	334	NOUN	Adel
 linearen	334	OTHER
 Mais	334	NOUN
 Bologna	334	NOUN
@@ -6364,23 +6364,23 @@ veröffentlichen	333	VERB
 Great	333	NOUN
 versprach	333	OTHER
 Bedürfnisse	333	NOUN
-Kriegen	333	NOUN
+Kriegen	333	NOUN	Krieg
 non	333	NOUN,OTHER
 Kairo	333	NOUN
-Verletzungen	333	NOUN
+Verletzungen	333	NOUN	Verletzung
 Sultan	333	NOUN
 Maus	333	NOUN
-Beinamen	333	NOUN
+Beinamen	333	NOUN	Beiname
 Nassau	333	NOUN
 fassen	332	VERB
-Autos	332	NOUN
+Autos	332	NOUN	Auto
 Fisch	332	NOUN
 durchschnittlichen	332	OTHER
 Uraufführung	332	NOUN
 erfassen	332	VERB
 landwirtschaftlich	332	OTHER
 bulgarischen	332	OTHER
-Fortschritte	332	NOUN
+Fortschritte	332	NOUN	Fortschritt
 untersagt	332	OTHER
 lambda	332	OTHER
 amtlichen	332	OTHER
@@ -6395,7 +6395,7 @@ unternommen	331	VERB
 Disney	331	NOUN
 Einhaltung	331	NOUN
 Fassade	331	NOUN
-Opfern	331	NOUN,OTHER
+Opfern	331	NOUN,OTHER	Opfer
 floh	331	OTHER
 behalten	331	VERB
 Araber	331	NOUN
@@ -6413,7 +6413,7 @@ European	331	NOUN
 gehörende	330	OTHER
 gemeinsames	330	OTHER
 aufbewahrt	330	OTHER
-Lebensmitteln	330	NOUN
+Lebensmitteln	330	NOUN	Lebensmittel
 anschließende	330	OTHER
 Auswertung	330	NOUN
 erteilt	330	OTHER
@@ -6430,13 +6430,13 @@ Ehemann	329	NOUN
 Fernsehsender	329	NOUN
 basierend	329	OTHER
 langjährigen	329	OTHER
-Nationalparks	329	NOUN
+Nationalparks	329	NOUN	Nationalpark
 weswegen	329	OTHER
 erschienene	329	OTHER
 Beute	329	NOUN
 vorderen	329	OTHER
 hierdurch	329	OTHER
-Fragmente	329	NOUN
+Fragmente	329	NOUN	Fragment
 vermuten	329	VERB
 Stephen	329	NOUN
 Gedenken	329	NOUN
@@ -6460,7 +6460,7 @@ genutzte	328	OTHER
 Dicke	328	NOUN,OTHER
 Quecksilber	328	NOUN
 Steiermark	328	NOUN
-Analysen	328	NOUN
+Analysen	328	NOUN	Analyse
 hob	328	OTHER
 meldete	328	OTHER
 Celsius	328	NOUN
@@ -6471,26 +6471,26 @@ Busse	328	NOUN
 Records	328	NOUN
 Westdeutschland	328	NOUN
 Nov	328	NOUN,OTHER
-Besitzungen	328	NOUN
+Besitzungen	328	NOUN	Besitzung
 drehen	327	VERB
 altes	327	NOUN,OTHER
 formalen	327	OTHER
 britischer	327	OTHER
 fertig	327	OTHER
-Werks	327	NOUN
+Werks	327	NOUN	Werk
 dunklen	327	OTHER
 Helsinki	327	NOUN
 umgebenden	327	OTHER
 identifizieren	327	VERB
-Dokumenten	327	NOUN
+Dokumenten	327	NOUN	Dokument
 germanische	327	OTHER
 schlagen	327	VERB
 Gefangenschaft	327	NOUN
 Neigung	327	NOUN
 Kopie	327	NOUN
 wenigstens	327	OTHER
-Ausgrabungen	327	NOUN
-Rohstoffe	327	NOUN
+Ausgrabungen	327	NOUN	Ausgrabung
+Rohstoffe	327	NOUN	Rohstoff
 Bachelor	327	NOUN
 Zucker	327	NOUN
 Schwäbisch	327	NOUN
@@ -6506,7 +6506,7 @@ deutlichen	326	OTHER
 seinerseits	326	OTHER
 Austritt	326	NOUN
 Resolution	326	NOUN
-Aufständischen	326	NOUN,OTHER
+Aufständischen	326	NOUN,OTHER	Aufständische
 akademische	325	OTHER
 beitragen	325	VERB
 übrig	325	OTHER
@@ -6518,7 +6518,7 @@ rückte	325	OTHER
 up	325	NOUN,OTHER
 Generalsekretär	325	NOUN
 verkehrt	325	OTHER
-Prozessoren	325	NOUN
+Prozessoren	325	NOUN	Prozessor
 Staatspräsident	325	NOUN
 WM	325	NOUN
 letzteren	324	OTHER
@@ -6539,32 +6539,32 @@ Schweizerische	324	NOUN,OTHER
 betreut	324	OTHER
 Neubrandenburg	324	NOUN
 Enkel	324	NOUN
-Stände	324	NOUN
-Bischofs	324	NOUN
+Stände	324	NOUN	Stand
+Bischofs	324	NOUN	Bischof
 Bundesautobahn	324	NOUN
 Bauweise	324	NOUN
 Gera	324	NOUN
 Notation	323	NOUN
-Enzyme	323	NOUN
+Enzyme	323	NOUN	Enzym
 Bier	323	NOUN
 empfahl	323	OTHER
 schätzte	323	OTHER
-Adligen	323	NOUN,OTHER
+Adligen	323	NOUN,OTHER	Adlige
 begraben	323	VERB
 begründeten	323	VERB,OTHER
-Engels	323	NOUN
+Engels	323	NOUN	Engel
 moralische	323	OTHER
 slowakischen	323	OTHER
 Manuskript	323	NOUN
-Konfessionen	323	NOUN
-Impulse	323	NOUN
+Konfessionen	323	NOUN	Konfession
+Impulse	323	NOUN	Impuls
 DFB	323	NOUN
 Heuss	323	NOUN
 Bolschewiki	323	NOUN
-Adressen	322	NOUN
+Adressen	322	NOUN	Adresse
 kurzfristig	322	OTHER
 unmittelbare	322	OTHER
-Wissenschaftlern	322	NOUN
+Wissenschaftlern	322	NOUN	Wissenschaftler
 englischsprachigen	322	OTHER
 bedeutsam	322	OTHER
 Mechanismus	322	NOUN
@@ -6572,7 +6572,7 @@ Diagnose	322	NOUN
 Zulassung	322	NOUN
 selbständige	322	OTHER
 Schwert	322	NOUN
-Zwecken	322	NOUN
+Zwecken	322	NOUN	Zweck
 bewohnt	322	OTHER
 Gleichheit	322	NOUN
 Bundesamt	322	NOUN
@@ -6583,12 +6583,12 @@ Sophie	322	NOUN
 lauten	321	VERB
 konsequent	321	OTHER
 unterzeichnete	321	OTHER
-Fotos	321	NOUN
-Bindungen	321	NOUN
+Fotos	321	NOUN	Foto
+Bindungen	321	NOUN	Bindung
 Erfüllung	321	NOUN
 fertigte	321	OTHER
 schlägt	321	OTHER
-Abständen	321	NOUN
+Abständen	321	NOUN	Abstand
 Republikaner	321	NOUN
 retten	321	VERB
 Helligkeit	321	NOUN
@@ -6611,14 +6611,14 @@ Pass	320	NOUN,VERB
 Virus	320	NOUN
 Bundesstaates	320	NOUN
 Berchtesgaden	320	NOUN
-Isotope	319	NOUN
-Epochen	319	NOUN
+Isotope	319	NOUN	Isotop
+Epochen	319	NOUN	Epoche
 leistete	319	OTHER
-Abteilungen	319	NOUN
+Abteilungen	319	NOUN	Abteilung
 Bösen	319	NOUN,OTHER
 eingeführte	319	OTHER
 nacheinander	319	OTHER
-Stämmen	319	NOUN
+Stämmen	319	NOUN	Stamm
 verwiesen	319	VERB
 Ur	319	NOUN
 geschaffene	319	OTHER
@@ -6631,15 +6631,15 @@ Charlotte	319	NOUN
 Algorithmen	319	NOUN
 Kirchengemeinde	319	NOUN
 Recklinghausen	319	NOUN
-Herzen	318	NOUN
+Herzen	318	NOUN	Herz
 Ästhetik	318	NOUN
 Probe	318	NOUN
 begrenzten	318	VERB,OTHER
 Tagebuch	318	NOUN
-Debatten	318	NOUN
+Debatten	318	NOUN	Debatte
 Tisch	318	NOUN
 operatorname	318	OTHER
-Herzogtums	318	NOUN
+Herzogtums	318	NOUN	Herzogtum
 analogen	318	OTHER
 Kurve	318	NOUN
 Detmold	318	NOUN
@@ -6653,7 +6653,7 @@ Mittelmeerraum	317	NOUN
 NT	317	NOUN
 weithin	317	OTHER
 Präsenz	317	NOUN
-Differenzen	317	NOUN
+Differenzen	317	NOUN	Differenz
 gefüllt	317	OTHER
 folgend	317	OTHER
 Hauptmann	317	NOUN
@@ -6663,13 +6663,13 @@ County	316	NOUN
 Sex	316	NOUN
 klassischer	316	OTHER
 Brauerei	316	NOUN
-Kritikern	316	NOUN
+Kritikern	316	NOUN	Kritiker
 linear	316	OTHER
 Marxismus	316	NOUN
-Bruders	316	NOUN
+Bruders	316	NOUN	Bruder
 radikale	316	OTHER
 Kfz	316	NOUN
-Exemplaren	316	NOUN
+Exemplaren	316	NOUN	Exemplar
 stillgelegt	316	OTHER
 Putsch	316	NOUN
 Raumschiff	316	NOUN
@@ -6694,7 +6694,7 @@ Engländer	315	NOUN
 Gesamtfläche	315	NOUN
 Watt	315	NOUN
 oxid	314	OTHER
-Ecken	314	NOUN
+Ecken	314	NOUN	Ecke
 Prägung	314	NOUN
 sitzt	314	OTHER
 Zensur	314	NOUN
@@ -6704,7 +6704,7 @@ dominieren	314	VERB
 vorherrschenden	314	OTHER
 Schwarzwald	314	NOUN
 Weltbild	314	NOUN
-Arbeitsplätze	314	NOUN
+Arbeitsplätze	314	NOUN	Arbeitsplatz
 Fund	314	NOUN
 Anbindung	314	NOUN
 woraus	314	OTHER
@@ -6712,18 +6712,18 @@ He	314	NOUN,OTHER
 Innern	314	NOUN
 Sylt	314	NOUN
 Harald	314	NOUN
-Argumente	313	NOUN
+Argumente	313	NOUN	Argument
 zerstören	313	VERB
 Rainer	313	NOUN
 Löwe	313	NOUN
 Trinkwasser	313	NOUN
-Emissionen	313	NOUN
+Emissionen	313	NOUN	Emission
 gebildete	313	OTHER
 jemals	313	OTHER
 Wortschatz	313	NOUN
 Kaufmann	313	NOUN
 verursachte	313	OTHER
-Anweisungen	313	NOUN
+Anweisungen	313	NOUN	Anweisung
 Hals	313	NOUN
 Bürgerschaft	313	NOUN
 Sekretär	313	NOUN
@@ -6741,31 +6741,31 @@ Dutzend	312	NOUN
 kostete	312	OTHER
 informiert	312	OTHER
 Risiken	312	NOUN
-Verkehrs	312	NOUN
+Verkehrs	312	NOUN	Verkehr
 Pius	312	NOUN
 komplexer	312	OTHER
-Psalmen	312	NOUN
+Psalmen	312	NOUN	Psalm
 Nowgorod	312	NOUN
 erhebt	311	OTHER
 finnischen	311	OTHER
 zugerechnet	311	OTHER
 hunderte	311	NOUN,OTHER
 dürften	311	VERB
-Verse	311	NOUN
+Verse	311	NOUN	Vers
 Zeugnisse	311	NOUN
 beseitigt	311	OTHER
 erleichtern	311	VERB
-Monarchen	311	NOUN
+Monarchen	311	NOUN	Monarch
 verschwunden	311	VERB
-Sehenswürdigkeiten	311	NOUN
+Sehenswürdigkeiten	311	NOUN	Sehenswürdigkeit
 Kanzler	311	NOUN
 päpstlichen	311	OTHER
 durchführen	311	VERB
 Gallien	311	NOUN
-Bistums	311	NOUN
+Bistums	311	NOUN	Bistum
 Eingabe	311	NOUN
 ökologische	311	OTHER
-Geschwindigkeiten	311	NOUN
+Geschwindigkeiten	311	NOUN	Geschwindigkeit
 SDS	311	NOUN
 Emden	311	NOUN
 asiatischen	310	OTHER
@@ -6777,7 +6777,7 @@ infolgedessen	310	OTHER
 Abu	310	NOUN
 Stärkung	310	NOUN
 dunkle	310	OTHER
-Ähnlichkeiten	310	NOUN
+Ähnlichkeiten	310	NOUN	Ähnlichkeit
 Carolina	310	NOUN
 Hindenburg	310	NOUN
 räumlich	309	OTHER
@@ -6799,19 +6799,19 @@ Vorname	309	NOUN
 überein	309	OTHER
 Saarland	309	NOUN
 Gotik	309	NOUN
-Urkunden	309	NOUN
+Urkunden	309	NOUN	Urkunde
 Hill	308	NOUN
 logische	308	OTHER
 falschen	308	OTHER
 ausdrücken	308	NOUN,OTHER
 hell	308	OTHER
-Projekts	308	NOUN
+Projekts	308	NOUN	Projekt
 Roland	308	NOUN
-Auftritte	308	NOUN
+Auftritte	308	NOUN	Auftritt
 Sun	308	NOUN
 interne	308	OTHER
-Werkzeuge	308	NOUN
-Williams	308	NOUN
+Werkzeuge	308	NOUN	Werkzeug
+Williams	308	NOUN	William
 Shakespeare	308	NOUN
 Fauna	308	NOUN
 MIDI	308	NOUN
@@ -6819,7 +6819,7 @@ Elite	307	NOUN
 hl	307	NOUN,OTHER
 sprachlich	307	OTHER
 Streben	307	NOUN,OTHER
-Zuschauern	307	NOUN
+Zuschauern	307	NOUN	Zuschauer
 weitem	307	OTHER
 Datierung	307	NOUN
 Bauer	307	NOUN
@@ -6852,7 +6852,7 @@ folgendes	306	OTHER
 fasst	306	OTHER
 Ausschluss	306	NOUN
 örtliche	306	OTHER
-Wilde	306	NOUN,OTHER
+Wilde	306	NOUN,OTHER	Wild
 Franco	306	NOUN
 fungierte	306	OTHER
 parlamentarischen	306	OTHER
@@ -6865,17 +6865,17 @@ Habsburg	306	NOUN
 indogermanischen	306	OTHER
 Liebermann	306	NOUN
 abstrakten	305	OTHER
-Konventionen	305	NOUN
+Konventionen	305	NOUN	Konvention
 bestraft	305	OTHER
 Demonstration	305	NOUN
 Ethanol	305	NOUN
-Gegnern	305	NOUN
+Gegnern	305	NOUN	Gegner
 gestattet	305	OTHER
 Enzyklopädie	305	NOUN
-Jesuiten	305	NOUN
-Mauern	305	NOUN
+Jesuiten	305	NOUN	Jesuit
+Mauern	305	NOUN	Mauer
 eingezogen	305	VERB
-Göttern	305	NOUN
+Göttern	305	NOUN	Gott
 dominierte	305	OTHER
 Datenbank	305	NOUN
 Willy	305	NOUN
@@ -6906,11 +6906,11 @@ Vertrieb	303	NOUN,OTHER
 ausgeprägte	303	OTHER
 suchten	303	VERB
 Kohlenstoffdioxid	303	NOUN
-Erhebungen	303	NOUN
-Lichts	303	NOUN
+Erhebungen	303	NOUN	Erhebung
+Lichts	303	NOUN	Licht
 Beleg	303	NOUN
 Offizier	303	NOUN
-Zerstörungen	303	NOUN
+Zerstörungen	303	NOUN	Zerstörung
 Office	303	NOUN
 Delegation	303	NOUN
 Astrologie	303	NOUN
@@ -6919,22 +6919,22 @@ Centre	303	NOUN
 Weltraum	303	NOUN
 Friedensvertrag	303	NOUN
 Singapur	303	NOUN
-Betriebssysteme	303	NOUN
-Entwürfe	303	NOUN
+Betriebssysteme	303	NOUN	Betriebssystem
+Entwürfe	303	NOUN	Entwurf
 verteilen	303	VERB
 Opus	303	NOUN
 Diego	303	NOUN
 Thai	303	NOUN
 JHWH	303	NOUN
 Stephan	302	NOUN
-Säulen	302	NOUN
+Säulen	302	NOUN	Säule
 bekamen	302	VERB
 misst	302	OTHER
 geführte	302	OTHER
 te	302	NOUN,OTHER
 überlieferte	302	OTHER
 unterhielt	302	OTHER
-Vorwürfe	302	NOUN
+Vorwürfe	302	NOUN	Vorwurf
 Wiedergabe	302	NOUN
 psi	302	OTHER
 Brust	302	NOUN
@@ -6951,17 +6951,17 @@ chemisch	301	OTHER
 flachen	301	OTHER
 Empfang	301	NOUN
 gesteuert	301	OTHER
-Söhnen	301	NOUN
+Söhnen	301	NOUN	Sohn
 Umfrage	301	NOUN
 klassifiziert	301	OTHER
-Nachteile	301	NOUN
+Nachteile	301	NOUN	Nachteil
 Mississippi	301	NOUN
 Geschwister	301	NOUN
 inhaftiert	301	OTHER
 Besatzungsmacht	301	NOUN
-Schwankungen	301	NOUN
+Schwankungen	301	NOUN	Schwankung
 Entwickler	301	NOUN
-Passagiere	301	NOUN
+Passagiere	301	NOUN	Passagier
 stattgefunden	301	VERB
 Mechanismen	301	NOUN
 Games	301	NOUN
@@ -6976,7 +6976,7 @@ wechselnden	300	OTHER
 Bagdad	300	NOUN
 Filter	300	NOUN
 Germania	300	NOUN
-Wagners	300	NOUN
+Wagners	300	NOUN	Wagner
 Tanach	300	NOUN
 Altenburg	300	NOUN
 tätigen	299	VERB,OTHER
@@ -7012,18 +7012,18 @@ geometrischen	298	OTHER
 Zylinder	298	NOUN
 verurteilte	298	OTHER
 Umbenennung	298	NOUN
-Bahnhöfe	298	NOUN
+Bahnhöfe	298	NOUN	Bahnhof
 westdeutschen	298	OTHER
 Indonesien	298	NOUN
-Aktien	298	NOUN
+Aktien	298	NOUN	Aktie
 ermöglichten	298	VERB,OTHER
 Football	298	NOUN
-Mondes	298	NOUN
+Mondes	298	NOUN	Mond
 Zunge	298	NOUN
 Stadium	298	NOUN
 Allee	298	NOUN
-Zaren	298	NOUN
-Empfehlungen	297	NOUN
+Zaren	298	NOUN	Zar
+Empfehlungen	297	NOUN	Empfehlung
 erfährt	297	OTHER
 Gast	297	NOUN
 verstärkten	297	VERB,OTHER
@@ -7045,13 +7045,13 @@ genehmigt	297	OTHER
 Leonhard	297	NOUN
 Array	297	NOUN,OTHER
 Département	297	NOUN
-Türme	297	NOUN
+Türme	297	NOUN	Turm
 infty	297	OTHER
 Titan	296	NOUN
 trennte	296	OTHER
 weißer	296	OTHER
-Projekten	296	NOUN
-Gebiets	296	NOUN
+Projekten	296	NOUN	Projekt
+Gebiets	296	NOUN	Gebiet
 beginnenden	296	OTHER
 drittgrößte	296	OTHER
 privater	296	OTHER
@@ -7072,25 +7072,25 @@ republikanischen	296	OTHER
 fungiert	296	OTHER
 erneuert	296	OTHER
 konstanten	296	NOUN,OTHER
-Bayerns	296	NOUN
+Bayerns	296	NOUN	Bayern
 entnommen	296	VERB
 Heilig	296	NOUN,OTHER
 Impuls	296	NOUN
-Kantone	296	NOUN
+Kantone	296	NOUN	Kanton
 Stasi	296	NOUN
 SIM	296	NOUN,OTHER
 Artikelstart	296	NOUN
-Computern	295	NOUN
+Computern	295	NOUN	Computer
 vollen	295	OTHER
-Wissens	295	NOUN
+Wissens	295	NOUN	Wissen
 ägyptische	295	OTHER
 Titus	295	NOUN
 elektromagnetische	295	OTHER
-Gemälden	295	NOUN
+Gemälden	295	NOUN	Gemälde
 fördert	295	OTHER
 Mandat	295	NOUN
 begründen	295	VERB
-Kammern	295	NOUN
+Kammern	295	NOUN	Kammer
 Busch	295	NOUN
 GPS	295	NOUN
 Reserve	295	NOUN
@@ -7103,13 +7103,13 @@ häufigste	294	OTHER
 se	294	NOUN,OTHER
 Kunststoff	294	NOUN
 Nahrungsmittel	294	NOUN
-Gewässern	294	NOUN
+Gewässern	294	NOUN	Gewässer
 Springer	294	NOUN
 Dominanz	294	NOUN
-Verhaltens	294	NOUN
+Verhaltens	294	NOUN	Verhalten
 Imperium	294	NOUN
 Claudius	294	NOUN
-Technologien	294	NOUN
+Technologien	294	NOUN	Technologie
 überprüft	294	OTHER
 Pforzheim	294	NOUN
 Tragödie	294	NOUN
@@ -7118,7 +7118,7 @@ lokaler	294	OTHER
 Tür	294	NOUN
 Anzeige	294	NOUN
 Bestände	294	NOUN
-Fraktionen	294	NOUN
+Fraktionen	294	NOUN	Fraktion
 richtigen	294	OTHER
 Charta	294	NOUN
 bekommt	294	OTHER
@@ -7132,9 +7132,9 @@ gesunken	293	VERB
 ergänzen	293	VERB
 gewachsen	293	VERB
 bestätigen	293	VERB
-Raketen	293	NOUN
+Raketen	293	NOUN	Rakete
 Hesse	293	NOUN
-Aufführungen	293	NOUN
+Aufführungen	293	NOUN	Aufführung
 Mikroorganismen	293	NOUN
 Gymnasien	293	NOUN
 Marbach	293	NOUN
@@ -7144,7 +7144,7 @@ eintreten	292	NOUN,OTHER
 anzunehmen	292	VERB
 Point	292	NOUN
 erfolgreichste	292	OTHER
-Aspekten	292	NOUN
+Aspekten	292	NOUN	Aspekt
 anzusehen	292	VERB
 eingeordnet	292	OTHER
 Mongolei	292	NOUN
@@ -7168,7 +7168,7 @@ schafft	291	OTHER
 gängigen	291	OTHER
 pflegte	291	OTHER
 künstlerisch	291	OTHER
-Blättern	291	NOUN
+Blättern	291	NOUN	Blatt
 Bedenken	291	NOUN,OTHER
 Erschließung	291	NOUN
 hingewiesen	291	VERB
@@ -7176,19 +7176,19 @@ Free	291	NOUN
 Pressefreiheit	291	NOUN
 Cricket	291	NOUN
 geltende	291	OTHER
-Einträge	291	NOUN
+Einträge	291	NOUN	Eintrag
 Rotation	291	NOUN
 beliebte	290	OTHER
 meinen	290	VERB,OTHER
-Umstände	290	NOUN
+Umstände	290	NOUN	Umstand
 Traum	290	NOUN
-Einflüssen	290	NOUN
+Einflüssen	290	NOUN	Einfluss
 eignen	290	VERB
-Oberflächen	290	NOUN
+Oberflächen	290	NOUN	Oberfläche
 Überprüfung	290	NOUN
 empfiehlt	290	OTHER
 Damen	290	NOUN
-Gegebenheiten	290	NOUN
+Gegebenheiten	290	NOUN	Gegebenheit
 Hauptquartier	290	NOUN
 hebräische	290	OTHER
 Francesco	290	NOUN
@@ -7196,17 +7196,17 @@ Homer	290	NOUN
 Basilika	290	NOUN
 Namibia	290	NOUN
 Antenne	290	NOUN
-Clubs	290	NOUN
+Clubs	290	NOUN	Club
 formell	290	OTHER
 Neumann	290	NOUN
 Saal	290	NOUN
 IC	290	NOUN
 geometrische	290	OTHER
 Lehen	290	NOUN
-Buslinien	290	NOUN
+Buslinien	290	NOUN	Buslinie
 Fett	290	NOUN,OTHER
 Erzbistum	290	NOUN
-Neuerungen	289	NOUN
+Neuerungen	289	NOUN	Neuerung
 kontrollierten	289	VERB,OTHER
 einsetzte	289	OTHER
 Raumfahrt	289	NOUN
@@ -7214,7 +7214,7 @@ Episode	289	NOUN
 Marseille	289	NOUN
 rekonstruiert	289	OTHER
 Kriterium	289	NOUN
-Prozesses	289	NOUN
+Prozesses	289	NOUN	Prozess
 gewertet	289	OTHER
 gelben	289	OTHER
 verwechseln	289	VERB
@@ -7243,21 +7243,21 @@ Friedrichshafen	288	NOUN
 ISS	288	NOUN
 Betracht	287	NOUN
 bewiesen	287	VERB
-Instrumenten	287	NOUN
-Autors	287	NOUN
+Instrumenten	287	NOUN	Instrument
+Autors	287	NOUN	Autor
 tschechische	287	OTHER
 verfügbaren	287	OTHER
 empirischen	287	OTHER
 landesweit	287	OTHER
 beherrschten	287	VERB,OTHER
-Gase	287	NOUN
+Gase	287	NOUN	Gas
 Bestätigung	287	NOUN
 Syndrom	287	NOUN
 kultureller	287	OTHER
 Waffenstillstand	287	NOUN
 bestattet	287	OTHER
-Ethnien	287	NOUN
-Gütern	287	NOUN
+Ethnien	287	NOUN	Ethnie
+Gütern	287	NOUN	Güter
 Ziffer	287	NOUN
 Slowenien	287	NOUN
 Brandt	287	NOUN
@@ -7269,7 +7269,7 @@ Glaubensgemeinschaft	287	NOUN
 Sony	287	NOUN
 litauischen	287	OTHER
 Kolumbus	287	NOUN
-Dingen	286	NOUN
+Dingen	286	NOUN	Ding
 verteidigte	286	OTHER
 verschwand	286	OTHER
 gleichfalls	286	OTHER
@@ -7278,12 +7278,12 @@ Troja	286	NOUN
 Dissertation	286	NOUN
 Hilfsmittel	286	NOUN
 Oberbefehlshaber	286	NOUN
-Senatoren	286	NOUN
+Senatoren	286	NOUN	Senator
 Feiertag	286	NOUN
 Türken	286	NOUN
 kontrollieren	286	VERB
 denkbar	286	OTHER
-Angestellten	286	NOUN,OTHER
+Angestellten	286	NOUN,OTHER	Angestellte
 ausgedehnte	286	OTHER
 Lateinamerika	286	NOUN
 Bautzen	286	NOUN
@@ -7298,21 +7298,21 @@ erkrankte	285	OTHER
 Reiter	285	NOUN
 Machtübernahme	285	NOUN
 Wohnhaus	285	NOUN
-Territoriums	285	NOUN
+Territoriums	285	NOUN	Territorium
 leere	285	OTHER
 radikal	285	OTHER
 erließ	285	OTHER
 Gandhi	285	NOUN
 Desktop	285	NOUN
 Wohnsitz	285	NOUN
-Erinnerungen	285	NOUN
+Erinnerungen	285	NOUN	Erinnerung
 Sünde	285	NOUN
 Reutlingen	285	NOUN
 Riesen	285	NOUN
 Nationalrat	285	NOUN
 Oxidation	284	NOUN
 Horn	284	NOUN
-Ringe	284	NOUN
+Ringe	284	NOUN	Ring
 Grant	284	NOUN
 beinhalten	284	VERB
 erleichtert	284	OTHER
@@ -7325,9 +7325,9 @@ Reis	284	NOUN
 regelt	284	OTHER
 Gefangene	284	NOUN
 Abspaltung	284	NOUN
-Astronomen	284	NOUN
+Astronomen	284	NOUN	Astronom
 Celle	284	NOUN
-Sitzungen	284	NOUN
+Sitzungen	284	NOUN	Sitzung
 Ostern	284	NOUN
 Technology	284	NOUN
 della	284	OTHER
@@ -7335,7 +7335,7 @@ Schwimmen	284	NOUN,OTHER
 Straßennetz	284	NOUN
 Erlass	284	NOUN
 dynamischen	284	OTHER
-Verbesserungen	284	NOUN
+Verbesserungen	284	NOUN	Verbesserung
 Güterverkehr	284	NOUN
 Wolfenbüttel	284	NOUN
 Gelsenkirchen	284	NOUN
@@ -7345,24 +7345,24 @@ Verpflichtung	283	NOUN
 bekanntes	283	OTHER
 Malaysia	283	NOUN
 Elektron	283	NOUN
-Tore	283	NOUN
+Tore	283	NOUN	Tor
 breiter	283	OTHER
-Spaniens	283	NOUN
+Spaniens	283	NOUN	Spanien
 präzise	283	OTHER
 Angela	283	NOUN
 Furcht	283	NOUN
-Arbeitskräfte	283	NOUN
+Arbeitskräfte	283	NOUN	Arbeitskraft
 Schauplatz	283	NOUN
 österreichisch	283	OTHER
 Book	283	NOUN
 Love	283	NOUN
 Südostasien	283	NOUN
-Bäumen	283	NOUN
-Säugetieren	283	NOUN
+Bäumen	283	NOUN	Baum
+Säugetieren	283	NOUN	Säugetier
 Marcel	283	NOUN
 Schleuse	283	NOUN
 Täufer	283	NOUN
-Kranken	282	NOUN,OTHER
+Kranken	282	NOUN,OTHER	Kranke
 Aufsicht	282	NOUN
 durchlaufen	282	VERB
 besiegt	282	OTHER
@@ -7371,8 +7371,8 @@ beherrschen	282	VERB
 schottischen	282	OTHER
 Tafel	282	NOUN
 Zitat	282	NOUN
-Kombinationen	282	NOUN
-Erklärungen	282	NOUN
+Kombinationen	282	NOUN	Kombination
+Erklärungen	282	NOUN	Erklärung
 dünn	282	OTHER
 Substantiv	282	NOUN
 dotsc	282	OTHER
@@ -7383,27 +7383,27 @@ hinreichend	281	OTHER
 enormen	281	OTHER
 Joyce	281	NOUN
 außerordentlich	281	OTHER
-Japans	281	NOUN
+Japans	281	NOUN	Japan
 anwesend	281	OTHER
-Armeen	281	NOUN
+Armeen	281	NOUN	Armee
 angeblichen	281	OTHER
 Weisheit	281	NOUN
 einnehmen	281	VERB
-Verdienste	281	NOUN
-Antworten	281	NOUN,OTHER
-Gunsten	281	NOUN
+Verdienste	281	NOUN	Verdienst
+Antworten	281	NOUN,OTHER	Antwort
+Gunsten	281	NOUN	Gunst
 gesendet	281	OTHER
 dürfe	281	OTHER
 stärkeren	281	OTHER
 Nachbarschaft	281	NOUN
 rationalen	281	OTHER
-Markgrafen	281	NOUN
+Markgrafen	281	NOUN	Markgraf
 gewisser	280	OTHER
 Feststellung	280	NOUN
 Universal	280	NOUN
 zurückgehen	280	VERB
 Betrachter	280	NOUN
-Schmerzen	280	NOUN
+Schmerzen	280	NOUN	Schmerz
 plötzlich	280	OTHER
 Protonen	280	NOUN
 Odenwald	280	NOUN
@@ -7418,19 +7418,19 @@ Annexion	280	NOUN
 Vermeidung	280	NOUN
 Implementierung	280	NOUN
 spezialisiert	280	OTHER
-Quadratkilometern	280	NOUN
+Quadratkilometern	280	NOUN	Quadratkilometer
 Fischerei	280	NOUN
 riesigen	280	OTHER
 indes	280	OTHER
 ÖPNV	280	NOUN
 Eintrag	280	NOUN
-Weltmeisterschaften	280	NOUN
+Weltmeisterschaften	280	NOUN	Weltmeisterschaft
 Handball	280	NOUN
 Schöneberg	280	NOUN
 Tropen	280	NOUN
 versorgen	280	VERB
 Rotenburg	280	NOUN
-Grundsätze	279	NOUN
+Grundsätze	279	NOUN	Grundsatz
 wandelte	279	OTHER
 individuell	279	OTHER
 tauchen	279	VERB
@@ -7438,16 +7438,16 @@ Bass	279	NOUN
 Posen	279	NOUN
 überwiegende	279	OTHER
 Wasserdampf	279	NOUN
-Strahlen	279	NOUN,OTHER
-Beschreibungen	279	NOUN
+Strahlen	279	NOUN,OTHER	Strahl
+Beschreibungen	279	NOUN	Beschreibung
 Erscheinungsbild	279	NOUN
 befahren	279	VERB
 Leichnam	279	NOUN
-Teilnehmern	279	NOUN
+Teilnehmern	279	NOUN	Teilnehmer
 garantiert	279	OTHER
 vorausgesetzt	279	OTHER
 Gnade	279	NOUN
-Bühnen	279	NOUN
+Bühnen	279	NOUN	Bühne
 Königlich	279	NOUN,OTHER
 trockenen	279	OTHER
 erstreckte	279	OTHER
@@ -7465,8 +7465,8 @@ Goten	278	NOUN
 geringfügig	278	OTHER
 Nations	278	NOUN
 einflussreiche	278	OTHER
-Gemeinsamkeiten	278	NOUN
-Parlamentswahlen	278	NOUN
+Gemeinsamkeiten	278	NOUN	Gemeinsamkeit
+Parlamentswahlen	278	NOUN	Parlamentswahl
 abseits	278	OTHER
 natürlicher	278	OTHER
 Fraunhofer	278	NOUN
@@ -7475,7 +7475,7 @@ Pisa	278	NOUN
 Buenos	278	NOUN
 Monte	278	NOUN
 bemerkbar	278	OTHER
-Linsen	278	NOUN
+Linsen	278	NOUN	Linse
 funktionieren	278	VERB
 stattfindenden	278	OTHER
 ten	278	NOUN,OTHER
@@ -7512,7 +7512,7 @@ Audio	276	NOUN
 starkes	276	OTHER
 künftigen	276	OTHER
 begleitete	276	OTHER
-Märkte	276	NOUN
+Märkte	276	NOUN	Markt
 Normandie	276	NOUN
 widmen	276	VERB
 Aussicht	276	NOUN
@@ -7522,17 +7522,17 @@ sendet	276	OTHER
 sozialdemokratischen	276	OTHER
 Zoo	276	NOUN
 Kiewer	276	NOUN
-Rheinischen	276	NOUN,OTHER
+Rheinischen	276	NOUN,OTHER	Rheinisch
 Montenegro	276	NOUN
 Taste	276	NOUN
-Missionare	276	NOUN
+Missionare	276	NOUN	Missionar
 dänisch	276	NOUN,OTHER
 Chávez	276	NOUN
 Super	275	NOUN
 Abenteuer	275	NOUN
 Bernard	275	NOUN
 bereitete	275	OTHER
-Molekülen	275	NOUN
+Molekülen	275	NOUN	Molekül
 konventionellen	275	OTHER
 Gestein	275	NOUN
 betrugen	275	VERB
@@ -7548,14 +7548,14 @@ extremen	275	OTHER
 Oberhausen	275	NOUN
 Eingreifen	275	NOUN,OTHER
 Edinburgh	275	NOUN
-Tageszeitungen	275	NOUN
+Tageszeitungen	275	NOUN	Tageszeitung
 überregionale	275	OTHER
 Ausbeutung	275	NOUN
-Jahreszeiten	275	NOUN
+Jahreszeiten	275	NOUN	Jahreszeit
 Halberstadt	275	NOUN
 Syntax	274	NOUN
 gebrochen	274	VERB
-Male	274	NOUN,VERB
+Male	274	NOUN,VERB	Mal
 hervorging	274	OTHER
 steigern	274	VERB
 Trump	274	NOUN
@@ -7572,7 +7572,7 @@ stehe	274	OTHER
 Rücksicht	274	NOUN
 Krieger	274	NOUN
 fuhren	274	VERB
-Streiks	274	NOUN
+Streiks	274	NOUN	Streik
 Unterscheidungszeichen	274	NOUN
 Personenverkehr	274	NOUN
 nötigen	274	VERB,OTHER
@@ -7582,8 +7582,8 @@ Aurich	274	NOUN
 angefertigt	273	OTHER
 Natrium	273	NOUN
 rumänischen	273	OTHER
-Pilze	273	NOUN
-Eingriffe	273	NOUN
+Pilze	273	NOUN	Pilz
+Eingriffe	273	NOUN	Eingriff
 Akzeptanz	273	NOUN
 Marsch	273	NOUN
 kommend	273	OTHER
@@ -7592,14 +7592,14 @@ Infanterie	273	NOUN
 Hanau	273	NOUN
 richteten	273	VERB
 Landgericht	273	NOUN
-Erscheinungen	273	NOUN
+Erscheinungen	273	NOUN	Erscheinung
 AfD	273	NOUN
 East	273	NOUN
 Stadtgrenze	273	NOUN
 Großraum	273	NOUN
-Urteile	273	NOUN
+Urteile	273	NOUN	Urteil
 Lebensdauer	273	NOUN
-Professoren	273	NOUN
+Professoren	273	NOUN	Professor
 Eberhard	273	NOUN
 dir	273	OTHER
 engagiert	273	OTHER
@@ -7611,7 +7611,7 @@ jenem	272	OTHER
 Sanierung	272	NOUN
 reines	272	OTHER
 Arzneimittel	272	NOUN
-Populationen	272	NOUN
+Populationen	272	NOUN	Population
 kämpften	272	VERB
 Drang	272	NOUN,VERB,OTHER
 Sure	272	NOUN
@@ -7622,15 +7622,15 @@ möglicher	272	OTHER
 lehnten	272	VERB
 beschränken	272	VERB
 Sorge	272	NOUN,VERB
-Großstädten	272	NOUN
+Großstädten	272	NOUN	Großstadt
 Machtergreifung	272	NOUN
-Vorträge	272	NOUN
+Vorträge	272	NOUN	Vortrag
 betonen	272	VERB
 saniert	272	OTHER
 Protein	272	NOUN
 Oslo	272	NOUN
 kürzer	272	OTHER
-Finanzen	272	NOUN
+Finanzen	272	NOUN	Finanz
 Gorbatschow	272	NOUN
 Liebknecht	272	NOUN
 Staffel	271	NOUN
@@ -7643,11 +7643,11 @@ magnetischen	271	OTHER
 übergab	271	OTHER
 Nil	271	NOUN
 Kontrast	271	NOUN
-Materials	271	NOUN
+Materials	271	NOUN	Material
 Ruhm	271	NOUN
 Angreifer	271	NOUN
 Gottlieb	271	NOUN
-Tasten	271	NOUN
+Tasten	271	NOUN	Taste
 Kriegsgefangene	271	NOUN
 überwacht	271	OTHER
 regionaler	271	OTHER
@@ -7657,9 +7657,9 @@ Reichskanzler	271	NOUN
 Sozialdemokratie	271	NOUN
 Infektion	271	NOUN
 Abbruch	271	NOUN
-Überlebenden	271	NOUN,OTHER
+Überlebenden	271	NOUN,OTHER	Überlebende
 enorme	271	OTHER
-Tabellen	271	NOUN
+Tabellen	271	NOUN	Tabelle
 kW	271	OTHER
 Niederösterreich	271	NOUN
 Vorarlberg	271	NOUN
@@ -7675,11 +7675,11 @@ Kabel	270	NOUN
 ausgetauscht	270	OTHER
 Sammler	270	NOUN
 brechen	270	VERB
-Initiativen	270	NOUN
-Piloten	270	NOUN
+Initiativen	270	NOUN	Initiative
+Piloten	270	NOUN	Pilot
 ausgerufen	270	VERB
 entspringt	270	OTHER
-Erkenntnissen	270	NOUN
+Erkenntnissen	270	NOUN	Erkenntnisse
 Arminius	270	NOUN
 verkauften	270	VERB,OTHER
 Benz	270	NOUN
@@ -7693,10 +7693,10 @@ demzufolge	269	OTHER
 verfolgten	269	VERB,OTHER
 beobachtete	269	OTHER
 warten	269	VERB
-Folgejahren	269	NOUN
+Folgejahren	269	NOUN	Folgejahr
 physischen	269	OTHER
 Brooklyn	269	NOUN
-Metallen	269	NOUN
+Metallen	269	NOUN	Metall
 antiker	269	OTHER
 Hebräisch	269	NOUN,OTHER
 Sachs	269	NOUN
@@ -7713,8 +7713,8 @@ verbreiten	269	VERB
 Klerus	269	NOUN
 Boy	269	NOUN
 Zwickau	269	NOUN
-Silben	269	NOUN
-Sendungen	269	NOUN
+Silben	269	NOUN	Silbe
+Sendungen	269	NOUN	Sendung
 Okt	269	NOUN
 Alan	268	NOUN
 Tony	268	NOUN
@@ -7747,26 +7747,26 @@ existierende	267	OTHER
 fehlte	267	OTHER
 verleihen	267	VERB
 realisieren	267	VERB
-Säuren	267	NOUN
-Medikamente	267	NOUN
+Säuren	267	NOUN	Säure
+Medikamente	267	NOUN	Medikament
 Anthropologie	267	NOUN
-Überlieferungen	267	NOUN
+Überlieferungen	267	NOUN	Überlieferung
 Delphi	267	NOUN
 Unfall	267	NOUN
 Prädikat	267	NOUN
 betreten	267	VERB
 durchquert	267	OTHER
 Merkur	267	NOUN
-Feldern	267	NOUN
+Feldern	267	NOUN	Feld
 Poesie	267	NOUN
 verkündet	267	OTHER
 Stab	267	NOUN
 Parlamentswahl	267	NOUN
 Georgien	267	NOUN
 Schmuck	267	NOUN
-Beine	267	NOUN
+Beine	267	NOUN	Bein
 Kennzeichnung	267	NOUN
-Ortsnamen	267	NOUN
+Ortsnamen	267	NOUN	Ortsname
 if	267	NOUN,OTHER
 Bauhaus	267	NOUN
 schufen	267	VERB
@@ -7778,22 +7778,22 @@ Weltmeister	266	NOUN
 Ehepaar	266	NOUN
 dargestellten	266	OTHER
 magnetische	266	OTHER
-Konzentrationen	266	NOUN
+Konzentrationen	266	NOUN	Konzentration
 Wall	266	NOUN
 räumlichen	266	OTHER
-Universums	266	NOUN
+Universums	266	NOUN	Universum
 Journal	266	NOUN
 gesprochenen	266	OTHER
 Verweis	266	NOUN
 Wille	266	NOUN
-Zusammenhängen	266	NOUN,OTHER
+Zusammenhängen	266	NOUN,OTHER	Zusammenhang
 USB	266	NOUN
 Mönchengladbach	266	NOUN
-Ludwigs	266	NOUN
+Ludwigs	266	NOUN	Ludwig
 Zuständigkeit	266	NOUN
 Stadtverordnetenversammlung	266	NOUN
-Schleusen	266	NOUN
-Auszeichnungen	265	NOUN
+Schleusen	266	NOUN	Schleuse
+Auszeichnungen	265	NOUN	Auszeichnung
 langjährige	265	OTHER
 äußert	265	OTHER
 spezifisch	265	OTHER
@@ -7802,7 +7802,7 @@ antwortete	265	OTHER
 geborenen	265	OTHER
 mancher	265	OTHER
 soziales	265	NOUN,OTHER
-Wäldern	265	NOUN
+Wäldern	265	NOUN	Wald
 Vorzeichen	265	NOUN
 Algerien	265	NOUN
 Signatur	265	NOUN
@@ -7814,7 +7814,7 @@ Abweichung	265	NOUN
 eigenständig	265	OTHER
 Denkmalschutz	265	NOUN
 Hauptort	265	NOUN
-Akteure	264	NOUN
+Akteure	264	NOUN	Akteur
 Asche	264	NOUN
 offener	264	OTHER
 verdanken	264	VERB
@@ -7831,21 +7831,21 @@ Christianisierung	264	NOUN
 angewandte	264	OTHER
 extreme	264	OTHER
 Gefolge	264	NOUN
-Rheins	264	NOUN
-Anzeigen	264	NOUN,OTHER
+Rheins	264	NOUN	Rhein
+Anzeigen	264	NOUN,OTHER	Anzeige
 Variable	264	NOUN,OTHER
-Luthers	264	NOUN
-Vizepräsidenten	264	NOUN
+Luthers	264	NOUN	Luther
+Vizepräsidenten	264	NOUN	Vizepräsident
 ganzjährig	264	OTHER
 TAN	264	NOUN,OTHER
 Klassizismus	264	NOUN
 Nikolai	264	NOUN
-Vorbilder	263	NOUN
+Vorbilder	263	NOUN	Vorbild
 überlegen	263	VERB
-Musikern	263	NOUN
-Drogen	263	NOUN
+Musikern	263	NOUN	Musiker
+Drogen	263	NOUN	Droge
 Gemisch	263	NOUN
-Schritten	263	NOUN
+Schritten	263	NOUN	Schritt
 stürzte	263	OTHER
 Project	263	NOUN
 Kleinasien	263	NOUN
@@ -7853,29 +7853,29 @@ angebliche	263	OTHER
 passieren	263	VERB
 verschont	263	OTHER
 gebeten	263	VERB
-Senats	263	NOUN
+Senats	263	NOUN	Senat
 alleinige	263	OTHER
 Ware	263	NOUN
 Schreibung	263	NOUN
 sichere	263	OTHER
 fehlender	263	OTHER
-Welten	263	NOUN
+Welten	263	NOUN	Welt
 heiraten	263	VERB
-Prinzen	263	NOUN
+Prinzen	263	NOUN	Prinz
 Puerto	263	NOUN
 Macintosh	263	NOUN
 Großherzogtum	263	NOUN
 ernähren	263	VERB
 Gemeindegebiet	263	NOUN
 Marienkirche	263	NOUN
-Ortsteilen	263	NOUN
+Ortsteilen	263	NOUN	Ortsteil
 Spin	263	NOUN
 Tiger	262	NOUN
 Arbeitsgemeinschaft	262	NOUN
 ziemlich	262	OTHER
 vorkommenden	262	OTHER
 Befürworter	262	NOUN
-Konkurrenten	262	NOUN
+Konkurrenten	262	NOUN	Konkurrent
 internationales	262	OTHER
 exportiert	262	OTHER
 Basilius	262	NOUN
@@ -7901,14 +7901,14 @@ Michail	262	NOUN
 Honecker	262	NOUN
 Jerusalemer	262	NOUN
 Berner	262	NOUN
-Handelns	261	NOUN
+Handelns	261	NOUN	Handeln
 Alice	261	NOUN
 Fachliteratur	261	NOUN
-Freiheiten	261	NOUN
-Stile	261	NOUN
+Freiheiten	261	NOUN	Freiheit
+Stile	261	NOUN	Stil
 eigenständiges	261	OTHER
-Booten	261	NOUN
-Bewohnern	261	NOUN
+Booten	261	NOUN	Boot
+Bewohnern	261	NOUN	Bewohner
 Größenordnung	261	NOUN
 ableiten	261	VERB
 gegenseitige	261	OTHER
@@ -7920,8 +7920,8 @@ Lothar	261	NOUN
 externen	261	OTHER
 Nationalmuseum	261	NOUN
 freigegeben	261	VERB
-Amerikas	261	NOUN
-Banknoten	261	NOUN
+Amerikas	261	NOUN	Amerika
+Banknoten	261	NOUN	Banknote
 Stadtbezirk	260	NOUN
 verpflichtete	260	OTHER
 spiegeln	260	VERB
@@ -7935,7 +7935,7 @@ Zinn	260	NOUN
 Psychotherapie	260	NOUN
 initiierte	260	OTHER
 sammelte	260	OTHER
-Marken	260	NOUN
+Marken	260	NOUN	Marke
 gehe	260	OTHER
 beteiligen	260	VERB
 demokratisch	260	OTHER
@@ -7951,7 +7951,7 @@ Wave	260	NOUN
 Iwan	260	NOUN
 Spieltag	260	NOUN
 Stadtrand	260	NOUN
-Preisen	259	NOUN
+Preisen	259	NOUN	Preis
 Detail	259	NOUN
 Edmund	259	NOUN
 Essay	259	NOUN
@@ -7959,7 +7959,7 @@ entziehen	259	VERB
 persische	259	OTHER
 Anschlag	259	NOUN
 gebräuchliche	259	OTHER
-Nachfahren	259	NOUN
+Nachfahren	259	NOUN	Nachfahre
 Libyen	259	NOUN
 gliedern	259	VERB
 umfassend	259	OTHER
@@ -7967,25 +7967,25 @@ Diskriminierung	259	NOUN
 angegliedert	259	OTHER
 dichten	259	VERB,OTHER
 Wasserversorgung	259	NOUN
-Iberischen	259	NOUN,OTHER
+Iberischen	259	NOUN,OTHER	Iberische
 PCs	259	NOUN
 Dortmunder	259	NOUN
 vergessen	259	VERB
-Stadtbezirke	259	NOUN
+Stadtbezirke	259	NOUN	Stadtbezirk
 Süddeutschland	259	NOUN
 Finger	259	NOUN
 parallele	258	NOUN,OTHER
 angesprochen	258	VERB
 teuer	258	OTHER
-Vögeln	258	NOUN
-Theaters	258	NOUN
+Vögeln	258	NOUN	Vögel
+Theaters	258	NOUN	Theater
 stabilen	258	OTHER
 Kubikmeter	258	NOUN
 Erfassung	258	NOUN
 Major	258	NOUN
-Tempels	258	NOUN
+Tempels	258	NOUN	Tempel
 gekrönt	258	OTHER
-Ämtern	258	NOUN
+Ämtern	258	NOUN	Ämter
 Library	258	NOUN
 Beschneidung	258	NOUN
 hr	258	OTHER
@@ -7999,7 +7999,7 @@ Hospital	258	NOUN
 erforderliche	258	OTHER
 Dean	258	NOUN
 Stadtwappen	258	NOUN
-Spiels	257	NOUN
+Spiels	257	NOUN	Spiel
 Satzes	257	NOUN
 Lewis	257	NOUN
 erwartete	257	OTHER
@@ -8007,48 +8007,48 @@ Interaktion	257	NOUN
 erschließen	257	VERB
 gelassen	257	VERB
 Rauch	257	NOUN,VERB
-Zähne	257	NOUN
+Zähne	257	NOUN	Zahn
 fordern	257	VERB
 Freundin	257	NOUN
 prüfen	257	OTHER
 befassen	257	VERB
-Schwächen	257	NOUN,OTHER
-Gottesdienste	257	NOUN
+Schwächen	257	NOUN,OTHER	Schwäche
+Gottesdienste	257	NOUN	Gottesdienst
 Gutachten	257	NOUN
-Volksgruppen	257	NOUN
-Stadtgebiets	257	NOUN
-Hessische	257	NOUN,OTHER
+Volksgruppen	257	NOUN	Volksgruppe
+Stadtgebiets	257	NOUN	Stadtgebiet
+Hessische	257	NOUN,OTHER	Hessisch
 Louise	257	NOUN
 häufigen	257	OTHER
 ausmachen	257	VERB
 Eiszeit	257	NOUN
-Dimensionen	257	NOUN
+Dimensionen	257	NOUN	Dimension
 Transkription	257	NOUN
-Grundschulen	257	NOUN
-Bezirken	257	NOUN
+Grundschulen	257	NOUN	Grundschule
+Bezirken	257	NOUN	Bezirk
 Wuppertal	257	NOUN
-Spielern	257	NOUN
+Spielern	257	NOUN	Spieler
 fließend	256	OTHER
 Werkzeug	256	NOUN
-Einstellungen	256	NOUN
+Einstellungen	256	NOUN	Einstellung
 Andrew	256	NOUN
 senden	256	VERB
 passiert	256	OTHER
-Kliniken	256	NOUN
+Kliniken	256	NOUN	Klinik
 griechischer	256	OTHER
 derjenige	256	OTHER
-Höhlen	256	NOUN
+Höhlen	256	NOUN	Höhle
 Grande	256	NOUN
 Kambodscha	256	NOUN
 schwieriger	256	OTHER
 ewigen	256	OTHER
 Baumwolle	256	NOUN
 Inn	256	NOUN
-Hypothesen	256	NOUN
+Hypothesen	256	NOUN	Hypothese
 enthielten	256	VERB
 Dönitz	256	NOUN
 hinteren	256	OTHER
-Geschlechter	256	NOUN
+Geschlechter	256	NOUN	Geschlecht
 abwechselnd	256	OTHER
 langsamer	256	OTHER
 Anzeichen	256	NOUN
@@ -8067,7 +8067,7 @@ Novelle	255	NOUN
 Begeisterung	255	NOUN
 Antarktis	255	NOUN
 Auferstehung	255	NOUN
-Malers	255	NOUN
+Malers	255	NOUN	Maler
 Bundesminister	255	NOUN
 seitlich	255	OTHER
 Genua	255	NOUN
@@ -8078,26 +8078,26 @@ PDS	255	NOUN
 bildende	255	NOUN,OTHER
 Serben	255	NOUN
 Philadelphia	254	NOUN
-Fettsäuren	254	NOUN
+Fettsäuren	254	NOUN	Fettsäure
 Silicium	254	NOUN
 Lithium	254	NOUN
 Calcium	254	NOUN
 betroffene	254	NOUN,OTHER
-Studiums	254	NOUN
+Studiums	254	NOUN	Studium
 unsicher	254	OTHER
 Gaza	254	NOUN
 strategische	254	OTHER
 Lorenz	254	NOUN
-Großstädte	254	NOUN
+Großstädte	254	NOUN	Großstadt
 eingefügt	254	OTHER
 Hip	254	NOUN
 Mitbegründer	254	NOUN
-Spitzen	254	NOUN,OTHER
+Spitzen	254	NOUN,OTHER	Spitze
 Zuwanderung	254	NOUN
 Ruine	254	NOUN
-Juristen	254	NOUN
-Englands	254	NOUN
-Zentrums	254	NOUN
+Juristen	254	NOUN	Jurist
+Englands	254	NOUN	England
+Zentrums	254	NOUN	Zentrum
 Bukarest	254	NOUN
 dazwischen	254	OTHER
 Weltkulturerbe	254	NOUN
@@ -8108,61 +8108,61 @@ bezahlen	253	VERB
 Scheidung	253	NOUN
 Kalium	253	NOUN
 ne	253	OTHER
-Verfahrens	253	NOUN
+Verfahrens	253	NOUN	Verfahren
 integrierten	253	OTHER
 abgeben	253	VERB
-Wechselwirkungen	253	NOUN
+Wechselwirkungen	253	NOUN	Wechselwirkung
 sogenanntes	253	OTHER
 Spezies	253	NOUN
 ausgehen	253	VERB
 Prosa	253	NOUN
 Turin	253	NOUN
 lösten	253	VERB
-Experimenten	253	NOUN
+Experimenten	253	NOUN	Experiment
 annahm	253	OTHER
 Hawaii	253	NOUN
 gestrichen	253	VERB
 klaren	253	OTHER
 vorherrschende	253	OTHER
-Muslimen	253	NOUN
+Muslimen	253	NOUN	Muslim
 Jörg	253	NOUN
 Intellektuelle	253	NOUN,OTHER
 schmalen	253	OTHER
 Albanien	253	NOUN
-Gebote	253	NOUN
+Gebote	253	NOUN	Gebot
 Bauart	253	NOUN
 genetischen	253	OTHER
 ZK	253	NOUN
 Zahlungsmittel	253	NOUN
 ausgestorben	253	VERB
 Genom	253	NOUN
-Vektoren	253	NOUN
-Naturschutzgebiete	253	NOUN
+Vektoren	253	NOUN	Vektor
+Naturschutzgebiete	253	NOUN	Naturschutzgebiet
 Rothenburg	253	NOUN
 Oberliga	253	NOUN
 Monet	253	NOUN
 Wolfsburg	253	NOUN
 Morrison	253	NOUN
 Kopernikus	253	NOUN
-Anfängen	252	NOUN
+Anfängen	252	NOUN	Anfang
 gekauft	252	OTHER
-Variationen	252	NOUN
+Variationen	252	NOUN	Variation
 persönlicher	252	OTHER
 stattfindende	252	OTHER
-Flüssigkeiten	252	NOUN
+Flüssigkeiten	252	NOUN	Flüssigkeit
 physikalisch	252	OTHER
-Chinesen	252	NOUN
+Chinesen	252	NOUN	Chinese
 Straßenverkehr	252	NOUN
 vorgelegt	252	OTHER
 Nero	252	NOUN
 Basler	252	NOUN
 südwestlichen	252	OTHER
-Schwerpunkte	252	NOUN
+Schwerpunkte	252	NOUN	Schwerpunkt
 verschiedensten	252	OTHER
-Kommunalwahlen	252	NOUN
+Kommunalwahlen	252	NOUN	Kommunalwahl
 Brandenburger	252	NOUN
-Tyrannen	252	NOUN
-Pflanzenarten	252	NOUN
+Tyrannen	252	NOUN	Tyrann
+Pflanzenarten	252	NOUN	Pflanzenart
 Business	252	NOUN
 berührt	252	OTHER
 grafische	252	OTHER
@@ -8177,7 +8177,7 @@ baut	252	OTHER
 gesperrt	252	OTHER
 Jänner	252	NOUN
 Fläming	252	NOUN
-Meinungen	251	NOUN
+Meinungen	251	NOUN	Meinung
 beruhte	251	OTHER
 senken	251	VERB
 Treue	251	NOUN,OTHER
@@ -8185,7 +8185,7 @@ grossen	251	OTHER
 astronomische	251	OTHER
 sowjetischer	251	OTHER
 verfilmt	251	OTHER
-Module	251	NOUN
+Module	251	NOUN	Modul
 gegenwärtigen	251	OTHER
 diplomatische	251	OTHER
 Gesetzgeber	251	NOUN
@@ -8194,24 +8194,24 @@ Fahne	251	NOUN
 Färbung	251	NOUN
 Sachen	251	NOUN
 Niederländisch	251	NOUN,OTHER
-Windkraftanlagen	251	NOUN
+Windkraftanlagen	251	NOUN	Windkraftanlage
 Bremerhaven	251	NOUN
 VEB	251	NOUN
 Siedlungsgebiet	251	NOUN
 Lienz	251	NOUN
 Vilnius	250	NOUN
 erarbeitet	250	OTHER
-Vorlagen	250	NOUN,OTHER
+Vorlagen	250	NOUN,OTHER	Vorlage
 Unterhaltung	250	NOUN
 vertretenen	250	OTHER
-Kopien	250	NOUN
+Kopien	250	NOUN	Kopie
 Einmarsch	250	NOUN
 Commonwealth	250	NOUN
-Fabriken	250	NOUN
+Fabriken	250	NOUN	Fabrik
 Training	250	NOUN
 Legislaturperiode	250	NOUN
-Artikels	250	NOUN
-Rituale	250	NOUN
+Artikels	250	NOUN	Artikel
+Rituale	250	NOUN	Ritual
 lasse	250	OTHER
 Sequenz	250	NOUN
 Balkan	250	NOUN
@@ -8224,18 +8224,18 @@ ge	250	NOUN,OTHER
 ansässige	250	OTHER
 KPdSU	250	NOUN
 Pirna	250	NOUN
-Polizisten	249	NOUN
+Polizisten	249	NOUN	Polizist
 gefährlich	249	OTHER
 exakte	249	OTHER
 hervorzuheben	249	VERB
 grau	249	NOUN,OTHER
 Plasma	249	NOUN
-Kantonen	249	NOUN
+Kantonen	249	NOUN	Kanton
 Bolivien	249	NOUN
-Legenden	249	NOUN
+Legenden	249	NOUN	Legende
 geschwächt	249	OTHER
-Anfänge	249	NOUN
-Bevölkerungsgruppen	249	NOUN
+Anfänge	249	NOUN	Anfang
+Bevölkerungsgruppen	249	NOUN	Bevölkerungsgruppe
 britisch	249	NOUN,OTHER
 Verbund	249	NOUN
 Konföderation	249	NOUN
@@ -8246,7 +8246,7 @@ passive	249	OTHER
 Installation	249	NOUN
 Aschaffenburg	249	NOUN
 Quadratmeter	249	NOUN
-Schnittstellen	249	NOUN
+Schnittstellen	249	NOUN	Schnittstelle
 Long	249	NOUN,OTHER
 Eigenständigkeit	249	NOUN
 Neubauten	249	NOUN
@@ -8254,8 +8254,8 @@ Gemarkung	249	NOUN
 Eingemeindung	249	NOUN
 Aschersleben	249	NOUN
 Pradesh	249	NOUN
-Atomen	248	NOUN
-Stars	248	NOUN
+Atomen	248	NOUN	Atom
+Stars	248	NOUN	Star
 kaufen	248	VERB
 Court	248	NOUN
 katholischer	248	OTHER
@@ -8274,7 +8274,7 @@ Kampfhandlungen	248	NOUN
 Lufthansa	248	NOUN
 wiedergewählt	248	OTHER
 territoriale	248	OTHER
-Auswärtigen	248	NOUN,OTHER
+Auswärtigen	248	NOUN,OTHER	Auswärtige
 einflussreichen	248	OTHER
 Volkspartei	248	NOUN
 Umgestaltung	248	NOUN
@@ -8289,13 +8289,13 @@ kHz	248	OTHER
 perfekt	248	NOUN,OTHER
 theta	248	OTHER
 Mercator	248	NOUN
-Proben	247	NOUN
+Proben	247	NOUN	Probe
 diejenige	247	OTHER
 Wild	247	NOUN,OTHER
 dick	247	NOUN,OTHER
 begab	247	OTHER
 Frühmittelalter	247	NOUN
-Gedichten	247	NOUN
+Gedichten	247	NOUN	Gedicht
 Odyssee	247	NOUN
 Army	247	NOUN
 Geologie	247	NOUN
@@ -8307,7 +8307,7 @@ Gravitation	247	NOUN
 bekämpfen	247	VERB
 niedrigsten	247	OTHER
 Penis	247	NOUN,OTHER
-Ausführungen	247	NOUN
+Ausführungen	247	NOUN	Ausführung
 strebte	247	OTHER
 Relief	247	NOUN
 Container	247	NOUN
@@ -8318,35 +8318,35 @@ optisch	247	OTHER
 Britannien	247	NOUN
 Cézanne	247	NOUN
 radioaktiven	246	OTHER
-Fragestellungen	246	NOUN
+Fragestellungen	246	NOUN	Fragestellung
 geradezu	246	OTHER
 Inszenierung	246	NOUN
 Inhaber	246	NOUN
 begeistert	246	OTHER
-Gefühle	246	NOUN
+Gefühle	246	NOUN	Gefühl
 gezeichnet	246	OTHER
 ethischen	246	OTHER
-Sprechern	246	NOUN
+Sprechern	246	NOUN	Sprecher
 Molekül	246	NOUN
 Verfügbarkeit	246	NOUN
 weitgehende	246	OTHER
 gerettet	246	OTHER
-Attribute	246	NOUN
+Attribute	246	NOUN	Attribut
 Honig	246	NOUN
 berechtigt	246	OTHER
 Kontroverse	246	NOUN,OTHER
-Tierarten	246	NOUN
-Felsen	246	NOUN
+Tierarten	246	NOUN	Tierart
+Felsen	246	NOUN	Fels
 illegal	246	OTHER
 Vision	246	NOUN
 magische	246	OTHER
 Feuerbach	246	NOUN
 Student	246	NOUN
 Rate	246	NOUN,VERB
-Brüdern	246	NOUN
+Brüdern	246	NOUN	Bruder
 schwankt	246	OTHER
 Beschleunigung	246	NOUN
-Fahrten	246	NOUN
+Fahrten	246	NOUN	Fahrt
 Obst	246	NOUN
 Hofer	246	NOUN
 Jakobus	246	NOUN
@@ -8384,7 +8384,7 @@ preußisch	245	NOUN,OTHER
 Sejm	245	NOUN
 Globe	244	NOUN
 drückt	244	OTHER
-Winde	244	NOUN
+Winde	244	NOUN	Wind
 Ausstrahlung	244	NOUN
 Conrad	244	NOUN
 Fertigung	244	NOUN
@@ -8405,25 +8405,25 @@ Nicolas	244	NOUN
 Beratung	244	NOUN
 wählten	244	VERB
 geltend	244	OTHER
-Stalins	244	NOUN
+Stalins	244	NOUN	Stalin
 Marmor	244	NOUN
 kalte	244	OTHER
-Grundgesetzes	244	NOUN
+Grundgesetzes	244	NOUN	Grundgesetz
 Eisenbahnnetz	244	NOUN
 großteils	244	OTHER
 Revision	244	NOUN
-Festplatten	244	NOUN
+Festplatten	244	NOUN	Festplatte
 reelle	244	OTHER
 Liberalismus	244	NOUN
-Konzerten	244	NOUN
+Konzerten	244	NOUN	Konzert
 Radweg	244	NOUN
 Karate	244	NOUN
 bulgarische	244	OTHER
 lieben	243	NOUN,OTHER
-Kongresses	243	NOUN
+Kongresses	243	NOUN	Kongress
 behandelte	243	OTHER
 Theatre	243	NOUN
-Ketten	243	NOUN
+Ketten	243	NOUN	Kette
 gesellschaftlich	243	OTHER
 typisches	243	OTHER
 Toleranz	243	NOUN
@@ -8431,7 +8431,7 @@ Textilien	243	NOUN
 steigender	243	OTHER
 Krönung	243	NOUN
 hoffte	243	OTHER
-Herrschers	243	NOUN
+Herrschers	243	NOUN	Herrscher
 gewaltsam	243	OTHER
 nordamerikanischen	243	OTHER
 Rasse	243	NOUN
@@ -8446,12 +8446,12 @@ späte	243	OTHER
 geheime	243	OTHER
 maximalen	243	OTHER
 Ukrainer	243	NOUN
-Webseiten	243	NOUN
-Primzahlen	243	NOUN
+Webseiten	243	NOUN	Webseite
+Primzahlen	243	NOUN	Primzahl
 Python	243	NOUN
 Rivera	243	NOUN
 inhaltliche	242	OTHER
-Beweise	242	NOUN
+Beweise	242	NOUN	Beweis
 scharfe	242	OTHER
 Unrecht	242	NOUN
 professionellen	242	OTHER
@@ -8462,12 +8462,12 @@ Anklage	242	NOUN
 Manga	242	NOUN
 Erdkruste	242	NOUN
 Wallis	242	NOUN
-Löcher	242	NOUN
-Kometen	242	NOUN
+Löcher	242	NOUN	Loch
+Kometen	242	NOUN	Komet
 Kreislauf	242	NOUN
 eingeschlossen	242	VERB
 Suizid	242	NOUN
-Fakultäten	242	NOUN
+Fakultäten	242	NOUN	Fakultät
 Sparta	242	NOUN
 Verringerung	242	NOUN
 Regelfall	242	NOUN
@@ -8477,7 +8477,7 @@ Einsicht	242	NOUN
 Kandidatur	242	NOUN
 Jungfrau	242	NOUN
 Geschäftsführer	242	NOUN
-Stadtzentrums	242	NOUN
+Stadtzentrums	242	NOUN	Stadtzentrum
 kompatibel	242	OTHER
 nachhaltige	242	OTHER
 Hieronymus	242	NOUN
@@ -8492,24 +8492,24 @@ Eberswalde	242	NOUN
 Canaris	242	NOUN
 schlicht	241	OTHER
 Jersey	241	NOUN
-Kameras	241	NOUN
+Kameras	241	NOUN	Kamera
 Spielberg	241	NOUN
 gewünschte	241	OTHER
 Isaac	241	NOUN
 AA	241	NOUN
 niedrigeren	241	OTHER
 Helena	241	NOUN
-Krankenhäuser	241	NOUN
+Krankenhäuser	241	NOUN	Krankenhaus
 widmet	241	OTHER
 Bernd	241	NOUN
 geliefert	241	OTHER
 meiner	241	OTHER
-Delegierten	241	NOUN
+Delegierten	241	NOUN	Delegierte
 Limes	241	NOUN
 verarbeiten	241	VERB
 Carlos	241	NOUN
 Chaos	241	NOUN
-Ungarns	241	NOUN
+Ungarns	241	NOUN	Ungarn
 jpeg	241	NOUN,OTHER
 einfaches	240	OTHER
 geschriebenen	240	OTHER
@@ -8529,13 +8529,13 @@ Evangelien	240	NOUN
 verdoppelt	240	OTHER
 Tunesien	240	NOUN
 Eisenach	240	NOUN
-Vertrags	240	NOUN
+Vertrags	240	NOUN	Vertrag
 Weizen	240	NOUN
 vorn	240	OTHER
-Kartoffeln	240	NOUN
+Kartoffeln	240	NOUN	Kartoffel
 Abgeordnetenhaus	240	NOUN
 Niederrhein	240	NOUN
-Saiten	240	NOUN
+Saiten	240	NOUN	Saite
 Awards	239	NOUN
 Metaphysik	239	NOUN
 Joe	239	NOUN
@@ -8544,7 +8544,7 @@ Melodie	239	NOUN
 digitaler	239	OTHER
 bewegte	239	OTHER
 Erdatmosphäre	239	NOUN
-Sanktionen	239	NOUN
+Sanktionen	239	NOUN	Sanktion
 beseitigen	239	VERB
 freigesetzt	239	OTHER
 Plutonium	239	NOUN
@@ -8555,7 +8555,7 @@ Stone	239	NOUN
 Kapitän	239	NOUN
 Weltbank	239	NOUN
 unabhängiger	239	OTHER
-Investoren	239	NOUN
+Investoren	239	NOUN	Investor
 Rolf	239	NOUN
 Pazifischen	239	NOUN,OTHER
 aufgefordert	239	OTHER
@@ -8568,14 +8568,14 @@ Router	239	NOUN
 Budget	238	NOUN
 Zufall	238	NOUN
 akzeptieren	238	VERB
-Interviews	238	NOUN
+Interviews	238	NOUN	Interview
 zuordnen	238	VERB
 Abkehr	238	NOUN
 geäußert	238	OTHER
 Vorhandensein	238	NOUN
 fälschlicherweise	238	OTHER
 ESA	238	NOUN
-Alexanders	238	NOUN
+Alexanders	238	NOUN	Alexander
 verschaffen	238	VERB
 unterstand	238	OTHER
 hervorgerufen	238	VERB
@@ -8586,8 +8586,8 @@ Himmelskörper	238	NOUN
 bestritten	238	VERB
 irakischen	238	OTHER
 gewordene	238	OTHER
-Chancen	238	NOUN
-Heimspiele	238	NOUN
+Chancen	238	NOUN	Chance
+Heimspiele	238	NOUN	Heimspiel
 studiert	238	OTHER
 Einklang	238	NOUN
 Tötung	238	NOUN
@@ -8605,9 +8605,9 @@ Homburg	238	NOUN
 Eishockey	238	NOUN
 skandinavischen	238	OTHER
 Teilgebiet	237	NOUN
-Interpretationen	237	NOUN
+Interpretationen	237	NOUN	Interpretation
 abstrakte	237	OTHER
-Kontroversen	237	NOUN,OTHER
+Kontroversen	237	NOUN,OTHER	Kontroverse
 Talent	237	NOUN
 ausreichende	237	OTHER
 VHS	237	NOUN
@@ -8621,14 +8621,14 @@ vorsah	237	OTHER
 stattfanden	237	VERB
 Unterschrift	237	NOUN
 geschriebene	237	OTHER
-Logos	237	NOUN
+Logos	237	NOUN	Logo
 abzugrenzen	237	VERB
-Interpreten	237	NOUN
+Interpreten	237	NOUN	Interpret
 einstellen	237	VERB
 Stadtbahn	237	NOUN
 Norbert	237	NOUN
 Fünftel	237	NOUN
-Strafen	237	NOUN
+Strafen	237	NOUN	Strafe
 Sigmund	237	NOUN
 Anstellung	237	NOUN
 wohnten	237	VERB
@@ -8636,8 +8636,8 @@ Hunger	237	NOUN
 angegebenen	237	OTHER
 Exemplar	237	NOUN
 Set	237	NOUN,OTHER
-Neffen	237	NOUN
-Wölfe	237	NOUN
+Neffen	237	NOUN	Neffe
+Wölfe	237	NOUN	Wolf
 verbindlich	237	OTHER
 Angola	237	NOUN
 Helgoland	237	NOUN
@@ -8645,7 +8645,7 @@ Empire	236	NOUN
 Ostküste	236	NOUN
 genügt	236	OTHER
 vorangetrieben	236	VERB
-Flugzeugen	236	NOUN
+Flugzeugen	236	NOUN	Flugzeug
 Gate	236	NOUN
 weitergeführt	236	OTHER
 Enzym	236	NOUN
@@ -8656,9 +8656,9 @@ Jahrhundertwende	236	NOUN
 Arbeiterbewegung	236	NOUN
 kommentierte	236	OTHER
 relativen	236	OTHER
-Luftangriffe	236	NOUN
+Luftangriffe	236	NOUN	Luftangriff
 elektromagnetischen	236	OTHER
-Auffassungen	236	NOUN
+Auffassungen	236	NOUN	Auffassung
 Merz	236	NOUN
 Samstag	236	NOUN
 Nahverkehr	236	NOUN
@@ -8671,13 +8671,13 @@ BIOS	236	NOUN
 liberal	236	OTHER
 Würfel	236	NOUN
 Spalte	236	NOUN
-Beschwerden	236	NOUN
+Beschwerden	236	NOUN	Beschwerde
 Oberösterreich	236	NOUN
-Plattformen	236	NOUN
+Plattformen	236	NOUN	Plattform
 brandenburgischen	236	OTHER
 Hindi	236	NOUN
 History	235	NOUN
-Erden	235	NOUN
+Erden	235	NOUN	Erde
 ausführen	235	VERB
 profitieren	235	VERB
 siedelte	235	OTHER
@@ -8686,7 +8686,7 @@ erlitten	235	VERB
 physische	235	OTHER
 Dramen	235	NOUN
 spezialisierte	235	OTHER
-Liedern	235	NOUN
+Liedern	235	NOUN	Lied
 neutral	235	OTHER
 erbracht	235	OTHER
 psychischen	235	OTHER
@@ -8715,11 +8715,11 @@ Steuer	235	NOUN
 erfordern	235	VERB
 geologischen	235	OTHER
 Gesamtlänge	235	NOUN
-Konstruktionen	235	NOUN
+Konstruktionen	235	NOUN	Konstruktion
 preußischer	235	OTHER
 Dateisystem	235	NOUN
 Galizien	235	NOUN
-Studiengänge	235	NOUN
+Studiengänge	235	NOUN	Studiengang
 Unicode	235	NOUN
 Pixel	235	NOUN
 Siebenbürgen	235	NOUN
@@ -8741,7 +8741,7 @@ führe	234	OTHER
 Weltwirtschaftskrise	234	NOUN
 günstige	234	OTHER
 Kernel	234	NOUN
-Ottos	234	NOUN
+Ottos	234	NOUN	Otto
 Maurice	234	NOUN
 Migration	234	NOUN
 Pennsylvania	234	NOUN
@@ -8762,33 +8762,33 @@ hebt	233	OTHER
 stützte	233	OTHER
 Manchester	233	NOUN
 Darm	233	NOUN
-Entdeckungen	233	NOUN
+Entdeckungen	233	NOUN	Entdeckung
 Namensgebung	233	NOUN
 Unterwerfung	233	NOUN
 flohen	233	VERB
 veranstaltete	233	OTHER
 knüpfte	233	OTHER
-Passagen	233	NOUN
+Passagen	233	NOUN	Passage
 trennt	233	OTHER
 Louvre	233	NOUN
 konservativ	233	OTHER
 Verantwortlichen	233	NOUN,OTHER
 Dublin	233	NOUN
-Monde	233	NOUN
+Monde	233	NOUN	Mond
 ausgeprägten	233	OTHER
-Verhaltensweisen	233	NOUN
+Verhaltensweisen	233	NOUN	Verhaltensweise
 Perl	233	NOUN
-Staatspräsidenten	233	NOUN
+Staatspräsidenten	233	NOUN	Staatspräsident
 Verwaltungsreform	233	NOUN
 Benedikt	233	NOUN
 verzeichnete	233	OTHER
 südöstlichen	233	OTHER
 Brest	233	NOUN
 Nebenfluss	233	NOUN
-Rezeptoren	233	NOUN
+Rezeptoren	233	NOUN	Rezeptor
 Vita	233	NOUN,OTHER
 Portugiesisch	233	NOUN,OTHER
-Drachen	233	NOUN
+Drachen	233	NOUN	Drache
 Ravensburg	233	NOUN
 Kreuzberg	233	NOUN
 Pauli	233	NOUN
@@ -8805,11 +8805,11 @@ eingegangen	232	VERB
 Miller	232	NOUN
 Network	232	NOUN
 Marburger	232	NOUN
-Raumes	232	NOUN
+Raumes	232	NOUN	Raum
 Senator	232	NOUN
 Untertanen	232	NOUN
 Bereitschaft	232	NOUN
-Sozialisten	232	NOUN
+Sozialisten	232	NOUN	Sozialist
 schwierigen	232	OTHER
 Zuzug	232	NOUN
 Strauss	232	NOUN
@@ -8817,12 +8817,12 @@ umstrittenen	232	OTHER
 Hinduismus	232	NOUN
 Pot	232	NOUN
 est	232	NOUN,OTHER
-Mandate	232	NOUN
+Mandate	232	NOUN	Mandat
 bitten	232	NOUN,OTHER
 Kastilien	232	NOUN
-Betten	232	NOUN
+Betten	232	NOUN	Bett
 Hase	232	NOUN
-niederdeutschen	232	NOUN,OTHER
+niederdeutschen	232	NOUN,OTHER	niederdeutsche
 Sam	231	NOUN
 AC	231	NOUN,OTHER
 normal	231	OTHER
@@ -8830,10 +8830,10 @@ verlaufenden	231	OTHER
 Verurteilung	231	NOUN
 empirische	231	OTHER
 schön	231	OTHER
-Branchen	231	NOUN
+Branchen	231	NOUN	Branche
 rezipiert	231	OTHER
 Intervall	231	NOUN
-Forschern	231	NOUN
+Forschern	231	NOUN	Forscher
 beobachteten	231	VERB,OTHER
 Schwäche	231	NOUN
 Gent	231	NOUN
@@ -8843,7 +8843,7 @@ Zivilbevölkerung	231	NOUN
 XII	231	NOUN
 Nova	231	NOUN,OTHER
 Wahlkampf	231	NOUN
-Repräsentanten	231	NOUN
+Repräsentanten	231	NOUN	Repräsentant
 nennenswerte	231	OTHER
 Marco	231	NOUN
 Residenzstadt	231	NOUN
@@ -8854,12 +8854,12 @@ symbolisch	231	OTHER
 Leverkusen	231	NOUN
 Kreisreform	231	NOUN
 org	231	OTHER
-Regisseure	230	NOUN
+Regisseure	230	NOUN	Regisseur
 Schauspiel	230	NOUN
 gleiches	230	NOUN,OTHER
 Fox	230	NOUN
 eingesetzte	230	OTHER
-Ursprünge	230	NOUN
+Ursprünge	230	NOUN	Ursprung
 aufbauen	230	VERB
 Sonde	230	NOUN
 enthaltene	230	OTHER
@@ -8869,27 +8869,27 @@ tödlich	230	OTHER
 äußerlich	230	OTHER
 befunden	230	VERB
 Luise	230	NOUN
-Missionen	230	NOUN
-Diensten	230	NOUN
+Missionen	230	NOUN	Mission
+Diensten	230	NOUN	Dienst
 begegnet	230	OTHER
 Vandalen	230	NOUN
 Navy	230	NOUN
 Begrenzung	230	NOUN
 Südstaaten	230	NOUN
-Moscheen	230	NOUN
+Moscheen	230	NOUN	Moschee
 Sinfonie	230	NOUN
 Unterzeichnung	230	NOUN
 Schreiber	230	NOUN
 sinken	230	VERB
 Sportler	230	NOUN
-Schwingungen	230	NOUN
+Schwingungen	230	NOUN	Schwingung
 Protestantismus	230	NOUN
 präsentieren	230	VERB
 Level	230	NOUN
 Marino	230	NOUN
 Machiavelli	230	NOUN
 Sprachwissenschaft	229	NOUN
-Abkürzungen	229	NOUN
+Abkürzungen	229	NOUN	Abkürzung
 inszenierte	229	OTHER
 initiiert	229	OTHER
 symbolische	229	OTHER
@@ -8901,7 +8901,7 @@ Reduzierung	229	NOUN
 viermal	229	OTHER
 getrieben	229	VERB
 tendenziell	229	OTHER
-Familiennamen	229	NOUN
+Familiennamen	229	NOUN	Familienname
 fortgeführt	229	OTHER
 Babylon	229	NOUN
 Niederschlagung	229	NOUN
@@ -8912,15 +8912,15 @@ Verschwörung	229	NOUN
 Manifest	229	NOUN
 symbolisiert	229	OTHER
 rückgängig	229	OTHER
-Geburten	229	NOUN
+Geburten	229	NOUN	Geburt
 Vorrang	229	NOUN
 Agglomeration	229	NOUN
 Senegal	229	NOUN
-Herstellern	229	NOUN
+Herstellern	229	NOUN	Hersteller
 barocken	229	OTHER
 Versailler	229	NOUN
 lieferten	229	VERB
-evangelischer	229	NOUN,OTHER
+evangelischer	229	NOUN,OTHER	evangelisch
 taz	229	OTHER
 bf	229	OTHER
 Kompanie	228	NOUN
@@ -8934,14 +8934,14 @@ gesteigert	228	OTHER
 verstärken	228	VERB
 Elektrotechnik	228	NOUN
 ausgeglichen	228	VERB
-Gesteinen	228	NOUN
+Gesteinen	228	NOUN	Gestein
 aktiviert	228	OTHER
 Li	228	NOUN,OTHER
-Kerne	228	NOUN
+Kerne	228	NOUN	Kern
 Lunge	228	NOUN
-Fotografien	228	NOUN
+Fotografien	228	NOUN	Fotografie
 Katalog	228	NOUN
-Einzelheiten	228	NOUN
+Einzelheiten	228	NOUN	Einzelheit
 erläutert	228	OTHER
 Metropole	228	NOUN
 Garnison	228	NOUN
@@ -8965,7 +8965,7 @@ assoziiert	228	OTHER
 abends	228	OTHER
 Diözese	228	NOUN
 zugeführt	228	OTHER
-Infektionen	228	NOUN
+Infektionen	228	NOUN	Infektion
 Uruguay	228	NOUN
 Profil	228	NOUN
 Sportart	228	NOUN
@@ -8985,24 +8985,24 @@ Personennahverkehr	227	NOUN
 Drängen	227	NOUN,OTHER
 steigende	227	OTHER
 Sahara	227	NOUN
-Dämonen	227	NOUN
-Ruinen	227	NOUN
+Dämonen	227	NOUN	Dämon
+Ruinen	227	NOUN	Ruine
 Streik	227	NOUN
 beansprucht	227	OTHER
 Markgraf	227	NOUN
-Proteinen	227	NOUN
-Freikirchen	227	NOUN
+Proteinen	227	NOUN	Protein
+Freikirchen	227	NOUN	Freikirche
 Dürer	227	NOUN
 Box	227	NOUN,VERB
 Gmünd	227	NOUN
 Lima	227	NOUN
-Ringen	227	NOUN
+Ringen	227	NOUN	Ring
 Artillerie	227	NOUN
 Bratislava	227	NOUN
 vermarktet	226	OTHER
 Erliegen	226	NOUN
 ungeachtet	226	OTHER
-Codes	226	NOUN
+Codes	226	NOUN	Code
 besetzen	226	VERB
 berühmtesten	226	OTHER
 Methanol	226	NOUN
@@ -9016,7 +9016,7 @@ zeitlebens	226	OTHER
 einzuführen	226	VERB
 riesige	226	OTHER
 Hochmittelalter	226	NOUN
-Statuen	226	NOUN
+Statuen	226	NOUN	Statue
 Bulle	226	NOUN
 Gallery	226	NOUN
 Inc	226	NOUN
@@ -9025,11 +9025,11 @@ verweigert	226	OTHER
 zurückführen	226	VERB
 Weltausstellung	226	NOUN
 amtierende	226	OTHER
-Rinder	226	NOUN
+Rinder	226	NOUN	Rind
 Autorin	226	NOUN
 Folter	226	NOUN
 Dan	226	NOUN
-Kontinents	226	NOUN
+Kontinents	226	NOUN	Kontinent
 Baumeister	226	NOUN
 Byte	226	NOUN
 umgestellt	226	OTHER
@@ -9044,9 +9044,9 @@ rgb	226	NOUN,OTHER
 Kreistag	226	NOUN
 Buchholz	226	NOUN
 touristische	226	OTHER
-Islands	226	NOUN
-Feuerwehren	226	NOUN
-Mozarts	226	NOUN
+Islands	226	NOUN	Island
+Feuerwehren	226	NOUN	Feuerwehr
+Mozarts	226	NOUN	Mozart
 UKW	226	NOUN
 fiktiven	225	OTHER
 vorkommende	225	OTHER
@@ -9055,10 +9055,10 @@ Chaplin	225	NOUN
 investiert	225	OTHER
 Ausscheiden	225	NOUN,OTHER
 solch	225	OTHER
-Salze	225	NOUN
+Salze	225	NOUN	Salz
 Kohlendioxid	225	NOUN
 Elektrizität	225	NOUN
-Speisen	225	NOUN,OTHER
+Speisen	225	NOUN,OTHER	Speise
 effektiv	225	OTHER
 erinnerte	225	OTHER
 Kaiserzeit	225	NOUN
@@ -9090,22 +9090,22 @@ Maas	225	NOUN
 Ordnungszahl	224	NOUN
 dreht	224	OTHER
 korrekte	224	OTHER
-Großbritanniens	224	NOUN
+Großbritanniens	224	NOUN	Großbritannien
 verarbeitete	224	OTHER
 Identifikation	224	NOUN
-Anstrengungen	224	NOUN
+Anstrengungen	224	NOUN	Anstrengung
 Christopher	224	NOUN
-Nummern	224	NOUN
-Legierungen	224	NOUN
+Nummern	224	NOUN	Nummer
+Legierungen	224	NOUN	Legierung
 hieraus	224	OTHER
 Antennen	224	NOUN
 Grundwasser	224	NOUN
 Fundament	224	NOUN
 befahl	224	OTHER
-Archäologen	224	NOUN
+Archäologen	224	NOUN	Archäologe
 Verfall	224	NOUN
 günstig	224	OTHER
-Titeln	224	NOUN
+Titeln	224	NOUN	Titel
 Beschaffenheit	224	NOUN
 ausgerichteten	224	OTHER
 aufs	224	OTHER
@@ -9114,14 +9114,14 @@ abweichen	224	VERB
 zusammenhängenden	224	OTHER
 Äquator	224	NOUN
 Wohn	224	NOUN
-Angeklagten	224	NOUN
+Angeklagten	224	NOUN	Angeklagte
 verschwanden	224	VERB
 lud	224	OTHER
 Schöpfer	224	NOUN
 Europe	224	NOUN
 Neuordnung	224	NOUN
 Hund	224	NOUN
-Individuums	224	NOUN
+Individuums	224	NOUN	Individuum
 MP	224	NOUN
 Sojus	224	NOUN
 Brauch	224	NOUN,VERB
@@ -9130,7 +9130,7 @@ Tel	224	NOUN
 Arafat	224	NOUN
 approx	224	OTHER
 olympische	224	NOUN,OTHER
-Bünde	224	NOUN
+Bünde	224	NOUN	Bund
 Personalunion	224	NOUN
 Gnome	224	NOUN
 Köthen	224	NOUN
@@ -9168,12 +9168,12 @@ Gabe	222	NOUN
 aufrechterhalten	222	VERB
 integrieren	222	VERB
 verblieben	222	VERB
-Freundes	222	NOUN
+Freundes	222	NOUN	Freund
 Gordon	222	NOUN
 spontan	222	OTHER
 verbracht	222	OTHER
 geografische	222	OTHER
-Flüchtlingen	222	NOUN
+Flüchtlingen	222	NOUN	Flüchtling
 Solidarität	222	NOUN
 vernachlässigt	222	OTHER
 Clara	222	NOUN
@@ -9188,21 +9188,21 @@ Río	222	NOUN
 Popper	222	NOUN
 Austragungsort	222	NOUN
 Pedro	222	NOUN
-Stadtgebietes	222	NOUN
+Stadtgebietes	222	NOUN	Stadtgebiet
 obigen	221	OTHER
 Tempo	221	NOUN
 konstruierte	221	OTHER
 nachzuweisen	221	VERB
 Mineral	221	NOUN
-Minerale	221	NOUN
+Minerale	221	NOUN	Mineral
 ordnet	221	OTHER
-Arbeitern	221	NOUN
+Arbeitern	221	NOUN	Arbeiter
 Geliebte	221	NOUN
 Rahmenbedingungen	221	NOUN
 automatische	221	OTHER
 psychologischen	221	OTHER
 postum	221	OTHER
-Denkmäler	221	NOUN
+Denkmäler	221	NOUN	Denkmal
 Corpus	221	NOUN
 Konfiguration	221	NOUN
 Stellungnahme	221	NOUN
@@ -9257,15 +9257,15 @@ Académie	220	NOUN
 circ	220	OTHER
 Faraday	220	NOUN
 Tiefebene	220	NOUN
-Bachs	220	NOUN
+Bachs	220	NOUN	Bach
 Chemnitz	220	NOUN
 Maya	220	NOUN
 Stadtkirche	220	NOUN
 Naumburg	220	NOUN
 FM	220	NOUN
 FCK	220	NOUN
-Kritiken	219	NOUN
-Bären	219	NOUN
+Kritiken	219	NOUN	Kritik
+Bären	219	NOUN	Bär
 finanzieren	219	VERB
 ereignete	219	OTHER
 Ronald	219	NOUN
@@ -9280,9 +9280,9 @@ endeten	219	VERB
 euch	219	OTHER
 Brockhaus	219	NOUN
 wechselten	219	VERB,OTHER
-Jehovas	219	NOUN
+Jehovas	219	NOUN	Jehova
 Satzung	219	NOUN
-Bildungseinrichtungen	219	NOUN
+Bildungseinrichtungen	219	NOUN	Bildungseinrichtung
 virtuelle	219	OTHER
 Camp	219	NOUN,OTHER
 Säule	219	NOUN
@@ -9292,9 +9292,9 @@ mächtige	218	OTHER
 vorzeitig	218	OTHER
 teilten	218	VERB
 hinweisen	218	VERB
-Elements	218	NOUN
+Elements	218	NOUN	Element
 dünnen	218	OTHER
-Körpern	218	NOUN
+Körpern	218	NOUN	Körper
 experimentell	218	OTHER
 warnte	218	OTHER
 mündete	218	OTHER
@@ -9302,16 +9302,16 @@ Lebenszeit	218	NOUN
 Korrespondenz	218	NOUN
 schenkte	218	OTHER
 Vorgehensweise	218	NOUN
-Historikern	218	NOUN
+Historikern	218	NOUN	Historiker
 Wirtschaftswachstum	218	NOUN
 Rekord	218	NOUN
 erteilte	218	OTHER
-Vertriebenen	218	NOUN,OTHER
+Vertriebenen	218	NOUN,OTHER	Vertriebene
 potentielle	218	OTHER
-Abgaben	218	NOUN
+Abgaben	218	NOUN	Abgabe
 befestigte	218	OTHER
 Panama	218	NOUN
-Betriebssystemen	218	NOUN
+Betriebssystemen	218	NOUN	Betriebssystem
 Esperanto	218	NOUN
 geschützten	218	OTHER
 Maximum	218	NOUN
@@ -9330,30 +9330,30 @@ erzielten	217	VERB,OTHER
 fügte	217	OTHER
 Passage	217	NOUN
 Thukydides	217	NOUN
-Caesars	217	NOUN
-Bismarcks	217	NOUN
+Caesars	217	NOUN	Caesar
+Bismarcks	217	NOUN	Bismarck
 Unterteilung	217	NOUN
 glaubt	217	OTHER
 mittlerer	217	OTHER
 Place	217	NOUN
 Palazzo	217	NOUN
-Flüge	217	NOUN
+Flüge	217	NOUN	Flug
 wandern	217	NOUN,OTHER
 Staatssicherheit	217	NOUN
 sichergestellt	217	OTHER
 keltische	217	OTHER
 begegnen	217	VERB
-Verpflichtungen	217	NOUN
-Monats	217	NOUN
+Verpflichtungen	217	NOUN	Verpflichtung
+Monats	217	NOUN	Monat
 Anwender	217	NOUN
-Politikern	217	NOUN
+Politikern	217	NOUN	Politiker
 Dachau	217	NOUN
 Militärdienst	217	NOUN
 Ritus	217	NOUN
-Apostolischen	217	NOUN,OTHER
+Apostolischen	217	NOUN,OTHER	Apostolische
 tiefste	217	OTHER
 Ba	217	NOUN,OTHER
-Partnerschaften	217	NOUN
+Partnerschaften	217	NOUN	Partnerschaft
 Volksmund	217	NOUN
 COA	217	NOUN
 Usedom	217	NOUN
@@ -9366,7 +9366,7 @@ aufnahm	216	OTHER
 Grundstück	216	NOUN
 Märtyrer	216	NOUN
 Butter	216	NOUN
-Längen	216	NOUN
+Längen	216	NOUN	Länge
 unterdrückt	216	OTHER
 XVI	216	NOUN
 Nelson	216	NOUN
@@ -9391,11 +9391,11 @@ ausgenutzt	215	OTHER
 drittes	215	OTHER
 abgegrenzt	215	OTHER
 Area	215	NOUN
-Abschnitten	215	NOUN
+Abschnitten	215	NOUN	Abschnitt
 Elizabeth	215	NOUN
 Abgeordneter	215	NOUN
 kroatischen	215	OTHER
-Gesprächen	215	NOUN
+Gesprächen	215	NOUN	Gespräch
 Georgia	215	NOUN
 Oberhaupt	215	NOUN
 öffentliches	215	OTHER
@@ -9405,7 +9405,7 @@ gestanden	215	VERB
 geologische	215	OTHER
 vorherige	215	OTHER
 Tucholsky	215	NOUN
-Eisernen	215	NOUN,OTHER
+Eisernen	215	NOUN,OTHER	Eisern
 Scholl	215	NOUN
 Wahlperiode	215	NOUN
 Holmes	215	NOUN
@@ -9413,8 +9413,8 @@ entsprachen	215	VERB
 niedrigste	215	OTHER
 Monaco	215	NOUN
 BDSM	215	NOUN
-Gegenständen	215	NOUN
-Schlösser	215	NOUN
+Gegenständen	215	NOUN	Gegenstand
+Schlösser	215	NOUN	Schloss
 ETH	215	NOUN
 Rembrandt	215	NOUN
 allesamt	214	OTHER
@@ -9430,7 +9430,7 @@ angeklagt	214	OTHER
 dreißig	214	OTHER
 Light	214	NOUN
 finanzierte	214	OTHER
-Erfindungen	214	NOUN
+Erfindungen	214	NOUN	Erfindung
 bewegten	214	VERB,OTHER
 Lebensunterhalt	214	NOUN
 freilich	214	OTHER
@@ -9445,36 +9445,36 @@ veranlasst	214	OTHER
 wandten	214	VERB
 Frist	214	NOUN
 Angestellte	214	NOUN
-Lizenzen	214	NOUN
+Lizenzen	214	NOUN	Lizenz
 Umschrift	214	NOUN
 Noten	214	NOUN
 südlicher	214	OTHER
 enorm	214	OTHER
 Palästinenser	214	NOUN
 Eukaryoten	214	NOUN
-Königen	214	NOUN
+Königen	214	NOUN	König
 UEFA	214	NOUN
 barocke	214	OTHER
 öffnete	213	OTHER
 bewarb	213	OTHER
 überholt	213	OTHER
 allgemeines	213	OTHER
-Agenten	213	NOUN
+Agenten	213	NOUN	Agent
 vollendete	213	OTHER
 prägend	213	OTHER
-Festivals	213	NOUN
-Aufträge	213	NOUN
+Festivals	213	NOUN	Festival
+Aufträge	213	NOUN	Auftrag
 Resonanz	213	NOUN
 unwahrscheinlich	213	OTHER
 Drücken	213	NOUN,OTHER
-Ratten	213	NOUN
-Tumoren	213	NOUN
+Ratten	213	NOUN	Ratte
+Tumoren	213	NOUN	Tumor
 Pädagogik	213	NOUN
 Blockade	213	NOUN
-Gebirges	213	NOUN
-Rebellen	213	NOUN
+Gebirges	213	NOUN	Gebirge
+Rebellen	213	NOUN	Rebell
 überlebte	213	OTHER
-Heiliger	213	NOUN,OTHER
+Heiliger	213	NOUN,OTHER	Heilig
 gespalten	213	VERB
 Reinhold	213	NOUN
 passiv	213	NOUN,OTHER
@@ -9482,19 +9482,19 @@ gestürzt	213	OTHER
 Sowjetrepublik	213	NOUN
 erwähnenswert	213	OTHER
 Zusammenspiel	213	NOUN
-Entfernungen	213	NOUN
+Entfernungen	213	NOUN	Entfernung
 Ackerbau	213	NOUN
 Satire	213	NOUN
 umzusetzen	213	VERB
 Steve	213	NOUN
 Bauform	213	NOUN
 Niederländer	213	NOUN
-Schiffes	213	NOUN
+Schiffes	213	NOUN	Schiff
 wirkenden	213	OTHER
 Logarithmus	213	NOUN
 Ghana	213	NOUN
 klinischen	213	OTHER
-Perioden	213	NOUN
+Perioden	213	NOUN	Periode
 quad	213	OTHER
 Rauschen	213	NOUN
 Aufarbeitung	213	NOUN
@@ -9502,13 +9502,13 @@ Vulkan	213	NOUN
 grosse	213	OTHER
 Oeynhausen	213	NOUN
 chronologisch	212	OTHER
-Problems	212	NOUN
+Problems	212	NOUN	Problem
 getrennten	212	OTHER
 heirateten	212	VERB
 brauchte	212	OTHER
-Bezüge	212	NOUN
+Bezüge	212	NOUN	Bezug
 Überlegenheit	212	NOUN
-Botschaften	212	NOUN
+Botschaften	212	NOUN	Botschaft
 experimentelle	212	OTHER
 primären	212	OTHER
 Bilanz	212	NOUN
@@ -9518,7 +9518,7 @@ sche	212	OTHER
 resultierenden	212	OTHER
 geschützte	212	OTHER
 Zypern	212	NOUN
-Schlachten	212	NOUN
+Schlachten	212	NOUN	Schlacht
 iranischen	212	OTHER
 Tyrannis	212	NOUN
 Civil	212	NOUN,OTHER
@@ -9529,19 +9529,19 @@ gesenkt	212	OTHER
 Pakt	212	NOUN
 verbleiben	212	VERB
 jeher	212	OTHER
-Demonstranten	212	NOUN
-Kredite	212	NOUN
+Demonstranten	212	NOUN	Demonstrant
+Kredite	212	NOUN	Kredit
 Lüttich	212	NOUN
 Gremium	212	NOUN
 Lichtenberg	212	NOUN
 Gedenkstein	212	NOUN
 Hildegard	212	NOUN
 Jahn	212	NOUN
-Netzwerke	212	NOUN
+Netzwerke	212	NOUN	Netzwerk
 Klinikum	212	NOUN
 Inuit	212	NOUN
 Pfarrei	212	NOUN
-Scharfschützen	212	NOUN
+Scharfschützen	212	NOUN	Scharfschütze
 Operette	212	NOUN
 leq	212	OTHER
 Raumstation	212	NOUN
@@ -9552,7 +9552,7 @@ kontrollierte	211	OTHER
 erlaubten	211	VERB,OTHER
 wirkende	211	OTHER
 professionelle	211	OTHER
-Magazine	211	NOUN
+Magazine	211	NOUN	Magazin
 männlicher	211	OTHER
 resultiert	211	OTHER
 Südtirol	211	NOUN
@@ -9574,21 +9574,21 @@ Haiti	211	NOUN
 Libanon	211	NOUN
 hintereinander	211	OTHER
 interpretieren	211	VERB
-Fakten	211	NOUN
+Fakten	211	NOUN	Fakt
 bestehe	211	OTHER
 angehörte	211	OTHER
 Amtsantritt	211	NOUN
 Kulturzentrum	211	NOUN
 frühzeitig	211	OTHER
 Bundesversammlung	211	NOUN
-Verbänden	211	NOUN
+Verbänden	211	NOUN	Verband
 Eidgenossenschaft	211	NOUN
 Haeckel	211	NOUN
-Kants	211	NOUN
+Kants	211	NOUN	Kant
 nordöstlichen	211	OTHER
 Urban	211	NOUN
 Uwe	211	NOUN
-Betriebssystems	211	NOUN
+Betriebssystems	211	NOUN	Betriebssystem
 macOS	211	OTHER
 selbstverständlich	211	OTHER
 belgische	211	OTHER
@@ -9601,17 +9601,17 @@ Prix	211	NOUN
 hauptamtlichen	211	OTHER
 administrative	211	OTHER
 behindert	211	OTHER
-Regierungsbezirke	211	NOUN
+Regierungsbezirke	211	NOUN	Regierungsbezirk
 OECD	211	NOUN
-Kirchengemeinden	211	NOUN
+Kirchengemeinden	211	NOUN	Kirchengemeinde
 Freitag	211	NOUN
 Atlantis	211	NOUN
 Metternich	211	NOUN
 Glauser	211	NOUN
-Inhalten	210	NOUN
+Inhalten	210	NOUN	Inhalt
 Erwartung	210	NOUN
 Arsen	210	NOUN
-Ärzten	210	NOUN
+Ärzten	210	NOUN	Ärzte
 Chlor	210	NOUN
 Explosion	210	NOUN
 zahlenmäßig	210	OTHER
@@ -9619,9 +9619,9 @@ Kämpfer	210	NOUN
 bemerkte	210	OTHER
 getestet	210	OTHER
 Violine	210	NOUN
-Kommentare	210	NOUN
+Kommentare	210	NOUN	Kommentar
 Absetzung	210	NOUN
-Festspiele	210	NOUN
+Festspiele	210	NOUN	Festspiel
 Geburtsort	210	NOUN
 verlagert	210	OTHER
 Autobiografie	210	NOUN
@@ -9636,15 +9636,15 @@ Oktoberrevolution	210	NOUN
 Taiwan	209	NOUN
 isolierte	209	OTHER
 intensiver	209	OTHER
-Herausforderungen	209	NOUN
+Herausforderungen	209	NOUN	Herausforderung
 doppelten	209	OTHER
 drastisch	209	OTHER
-Jahrtausends	209	NOUN
+Jahrtausends	209	NOUN	Jahrtausend
 Foucault	209	NOUN
 Echo	209	NOUN
 schätzungsweise	209	OTHER
 Dutschke	209	NOUN
-Sensoren	209	NOUN
+Sensoren	209	NOUN	Sensor
 schneiden	209	VERB
 Lust	209	NOUN
 Generalmajor	209	NOUN
@@ -9660,19 +9660,19 @@ Bergland	209	NOUN
 Skalen	209	NOUN
 Lektüre	209	NOUN
 Zeppelin	209	NOUN
-Computers	209	NOUN
+Computers	209	NOUN	Computer
 Valley	209	NOUN
 selbstständig	209	OTHER
 Baptiste	209	NOUN
-Ingenieure	209	NOUN
+Ingenieure	209	NOUN	Ingenieur
 Wilmersdorf	209	NOUN
 Anden	209	NOUN
-Dreiecks	209	NOUN
-Koeffizienten	209	NOUN
+Dreiecks	209	NOUN	Dreieck
+Koeffizienten	209	NOUN	Koeffizient
 Domain	209	NOUN
 Verkehrsmittel	209	NOUN
 Niederlassung	209	NOUN
-Eingemeindungen	209	NOUN
+Eingemeindungen	209	NOUN	Eingemeindung
 Marl	209	NOUN
 klären	208	VERB
 Freizeit	208	NOUN
@@ -9693,21 +9693,21 @@ basierten	208	VERB
 Kosovo	208	NOUN
 bevorzugten	208	VERB,OTHER
 erschaffen	208	VERB
-Bürgerkriegs	208	NOUN
+Bürgerkriegs	208	NOUN	Bürgerkrieg
 bewohnten	208	VERB,OTHER
 vornehmen	208	VERB
 Margaret	208	NOUN
 Anstalt	208	NOUN
-Seelen	208	NOUN
+Seelen	208	NOUN	Seele
 Heine	208	NOUN
 empfand	208	OTHER
 Diagramm	208	NOUN
 Volkswirtschaft	208	NOUN
-Kanadas	208	NOUN
+Kanadas	208	NOUN	Kanada
 fruchtbaren	208	OTHER
 Stoffwechsel	208	NOUN
 Lorenzo	208	NOUN
-Fachhochschulen	208	NOUN
+Fachhochschulen	208	NOUN	Fachhochschule
 Nationalbibliothek	208	NOUN
 sozialdemokratische	208	NOUN,OTHER
 Hamas	208	NOUN
@@ -9721,7 +9721,7 @@ Radebeul	208	NOUN
 Wiki	208	NOUN
 Teilmenge	207	NOUN
 abermals	207	OTHER
-Tatsachen	207	NOUN
+Tatsachen	207	NOUN	Tatsache
 Prototyp	207	NOUN
 ganzer	207	OTHER
 wahrnehmen	207	VERB
@@ -9735,7 +9735,7 @@ Damm	207	NOUN
 verwickelt	207	OTHER
 befreundet	207	OTHER
 Square	207	NOUN,OTHER
-Kaiserreichs	207	NOUN
+Kaiserreichs	207	NOUN	Kaiserreich
 Leid	207	NOUN,VERB
 komme	207	OTHER
 Wahrung	207	NOUN
@@ -9744,22 +9744,22 @@ interessierten	207	VERB,OTHER
 Regentschaft	207	NOUN
 bemerkt	207	OTHER
 Materialismus	207	NOUN
-Grundrechte	207	NOUN
+Grundrechte	207	NOUN	Grundrecht
 aufgerufen	207	VERB
 Anspielung	207	NOUN
 analytischen	207	OTHER
 angetrieben	207	VERB
 Amnesty	207	NOUN
-Essays	207	NOUN
+Essays	207	NOUN	Essay
 Gedenktag	207	NOUN
-Jobs	207	NOUN
+Jobs	207	NOUN	Job
 Drucker	207	NOUN
 österreichischer	207	OTHER
 geistig	207	OTHER
 monatlich	207	OTHER
 Feder	207	NOUN
 beabsichtigte	207	OTHER
-Tags	207	NOUN,OTHER
+Tags	207	NOUN,OTHER	Tag
 Klimawandel	207	NOUN
 Spider	207	NOUN
 Präfix	207	NOUN
@@ -9771,7 +9771,7 @@ Zwangsarbeiter	207	NOUN
 EKD	207	NOUN
 Town	207	NOUN
 Terminal	207	NOUN
-Wahlkreise	207	NOUN
+Wahlkreise	207	NOUN	Wahlkreis
 Alaska	207	NOUN
 Werra	207	NOUN
 Meppen	207	NOUN
@@ -9787,14 +9787,14 @@ Lehrstuhl	206	NOUN
 Terminologie	206	NOUN
 Gemahlin	206	NOUN
 Begleiter	206	NOUN
-Gräber	206	NOUN
+Gräber	206	NOUN	Grab
 herrschende	206	OTHER
 lebendig	206	OTHER
 qualifizierte	206	OTHER
 erfand	206	OTHER
-Vokalen	206	NOUN
+Vokalen	206	NOUN	Vokal
 Duke	206	NOUN
-Schienen	206	NOUN,OTHER
+Schienen	206	NOUN,OTHER	Schiene
 saß	206	OTHER
 Telefon	206	NOUN
 Greifswald	206	NOUN
@@ -9802,9 +9802,9 @@ zugenommen	206	VERB
 Median	206	NOUN
 ethnisch	206	OTHER
 erkannten	206	VERB,OTHER
-Steinen	206	NOUN
+Steinen	206	NOUN	Stein
 Decke	206	NOUN,VERB
-Verlage	206	NOUN
+Verlage	206	NOUN	Verlag
 Adlige	206	NOUN,OTHER
 Manhattan	206	NOUN
 Radiosender	206	NOUN
@@ -9831,21 +9831,21 @@ beliebten	205	OTHER
 verlaufende	205	OTHER
 Heilung	205	NOUN
 Bomber	205	NOUN
-Statistiken	205	NOUN
+Statistiken	205	NOUN	Statistik
 Thatcher	205	NOUN
-Eliten	205	NOUN
-Südamerikas	205	NOUN
-Geliebten	205	NOUN,OTHER
+Eliten	205	NOUN	Elite
+Südamerikas	205	NOUN	Südamerika
+Geliebten	205	NOUN,OTHER	Geliebte
 Skandal	205	NOUN
 Greenpeace	205	NOUN
 Host	205	NOUN
 Erosion	205	NOUN
-Waldes	205	NOUN
+Waldes	205	NOUN	Wald
 Wartburg	205	NOUN
 Wörgl	205	NOUN
 durchsetzte	204	OTHER
 Mayer	204	NOUN
-Beschränkungen	204	NOUN
+Beschränkungen	204	NOUN	Beschränkung
 Nein	204	NOUN,OTHER
 bekämpft	204	OTHER
 Gebot	204	NOUN
@@ -9855,7 +9855,7 @@ serbische	204	OTHER
 Völkerwanderung	204	NOUN
 pflegen	204	VERB
 vierzig	204	OTHER
-Galaxien	204	NOUN
+Galaxien	204	NOUN	Galaxie
 deckt	204	OTHER
 bottom	204	OTHER
 Pa	204	NOUN,OTHER
@@ -9864,17 +9864,17 @@ Orleans	204	NOUN
 ermordeten	204	VERB,OTHER
 annektiert	204	OTHER
 Rügen	204	NOUN
-Willens	204	NOUN
+Willens	204	NOUN	Wille
 kanadische	204	OTHER
 dreizehn	204	OTHER
 gemalt	204	OTHER
 detaillierte	204	OTHER
 Schädel	204	NOUN
 Eric	204	NOUN
-Toren	204	NOUN
+Toren	204	NOUN	Tor
 Südwest	204	NOUN
 euklidischen	204	OTHER
-Fächer	204	NOUN
+Fächer	204	NOUN	Fach
 Gastgeber	204	NOUN
 Segel	204	NOUN
 Pilatus	204	NOUN
@@ -9884,21 +9884,21 @@ jenes	203	OTHER
 Hudson	203	NOUN
 verurteilten	203	NOUN,OTHER
 ausgewertet	203	OTHER
-Türen	203	NOUN
+Türen	203	NOUN	Tür
 differenziert	203	OTHER
 Umweltschutz	203	NOUN
 Granit	203	NOUN
-Varietäten	203	NOUN
+Varietäten	203	NOUN	Varietät
 Epidemie	203	NOUN
-Todesfälle	203	NOUN
+Todesfälle	203	NOUN	Todesfall
 strafbar	203	OTHER
-Berufe	203	NOUN
+Berufe	203	NOUN	Beruf
 befürchtete	203	OTHER
 Damaskus	203	NOUN
 Nase	203	NOUN
 besiegte	203	OTHER
 urteilte	203	OTHER
-Mohammeds	203	NOUN
+Mohammeds	203	NOUN	Mohammed
 Vorgeschichte	203	NOUN
 effektive	203	OTHER
 Diplom	203	NOUN
@@ -9913,12 +9913,12 @@ optimale	203	OTHER
 vergrößerte	203	OTHER
 geografischen	203	OTHER
 Kunstmuseum	203	NOUN
-Gottheiten	203	NOUN
+Gottheiten	203	NOUN	Gottheit
 unterdessen	203	OTHER
 Schnittpunkt	203	NOUN
 We	203	NOUN,OTHER
 vorgegeben	203	VERB
-Sitten	203	NOUN
+Sitten	203	NOUN	Sitte
 Gremien	203	NOUN
 Entsprechung	203	NOUN
 Linse	203	NOUN
@@ -9926,13 +9926,13 @@ Katalonien	203	NOUN
 unit	203	NOUN,OTHER
 Sandstein	203	NOUN
 Kafka	203	NOUN
-Uhren	203	NOUN
+Uhren	203	NOUN	Uhr
 Aborigines	203	NOUN
 HP	203	NOUN
 NP	202	NOUN
 beanspruchte	202	OTHER
 wenigsten	202	OTHER
-Bauteile	202	NOUN
+Bauteile	202	NOUN	Bauteil
 Magnesium	202	NOUN
 Stromerzeugung	202	NOUN
 Lücke	202	NOUN
@@ -9941,31 +9941,31 @@ empirisch	202	OTHER
 ausgeht	202	OTHER
 Oberbegriff	202	NOUN
 Innovation	202	NOUN
-Bits	202	NOUN
+Bits	202	NOUN	Bit
 alliierte	202	OTHER
 künftige	202	OTHER
-Gesichtspunkten	202	NOUN
+Gesichtspunkten	202	NOUN	Gesichtspunkt
 Wolff	202	NOUN
 nördlicher	202	OTHER
 Louisiana	202	NOUN
 bestellt	202	OTHER
 vereinigen	202	VERB
 langes	202	OTHER
-Komitees	202	NOUN
+Komitees	202	NOUN	Komitee
 Kleist	202	NOUN
 Offenbach	202	NOUN
 Mathilde	202	NOUN
 Ostwestfalen	202	NOUN
-Reisenden	202	NOUN
+Reisenden	202	NOUN	Reisende
 Holding	202	NOUN
 Attribut	202	NOUN
 Frucht	202	NOUN
 Bundesarchiv	202	NOUN
 siebten	202	OTHER
-Bahnhofs	202	NOUN
+Bahnhofs	202	NOUN	Bahnhof
 Kabarett	202	NOUN
 Verschlüsselung	202	NOUN
-Ensembles	202	NOUN
+Ensembles	202	NOUN	Ensemble
 Bozen	202	NOUN
 Aare	202	NOUN
 Taler	202	NOUN
@@ -9975,7 +9975,7 @@ tut	201	OTHER
 Marktes	201	NOUN
 widerlegt	201	OTHER
 vieles	201	OTHER
-Arbeits	201	NOUN
+Arbeits	201	NOUN	Arbeit
 illegale	201	OTHER
 Fragment	201	NOUN
 arabischer	201	OTHER
@@ -9985,14 +9985,14 @@ Iod	201	NOUN
 Staatsangehörigkeit	201	NOUN
 Zorn	201	NOUN
 Erregung	201	NOUN
-Humanisten	201	NOUN
+Humanisten	201	NOUN	Humanist
 gescheiterten	201	VERB,OTHER
 Westgoten	201	NOUN
 basierende	201	OTHER
 fähig	201	OTHER
 Todestag	201	NOUN
 datieren	201	VERB
-Stätten	201	NOUN
+Stätten	201	NOUN	Stätte
 geschieden	201	VERB
 flog	201	OTHER
 Denker	201	NOUN
@@ -10001,29 +10001,29 @@ stimmt	201	OTHER
 Zählung	201	NOUN
 argumentierte	201	OTHER
 Blair	201	NOUN
-Zitate	201	NOUN
+Zitate	201	NOUN	Zitat
 Gründungsmitglied	201	NOUN
 relevanten	201	OTHER
-Zahlungen	201	NOUN
-Büros	201	NOUN
+Zahlungen	201	NOUN	Zahlung
+Büros	201	NOUN	Büro
 hindurch	201	OTHER
 unterteilen	201	VERB
 Paula	201	NOUN
 berufliche	201	OTHER
 Control	201	NOUN
-Zentimetern	201	NOUN
+Zentimetern	201	NOUN	Zentimeter
 Sulfat	201	NOUN,OTHER
-Formate	201	NOUN
+Formate	201	NOUN	Format
 GPL	201	NOUN
-badischen	201	NOUN,OTHER
+badischen	201	NOUN,OTHER	badische
 sapiens	201	OTHER
 Anthony	200	NOUN
-Kurse	200	NOUN
-Herzens	200	NOUN
+Kurse	200	NOUN	Kurs
+Herzens	200	NOUN	Herz
 Urheber	200	NOUN
 entstammt	200	OTHER
 Absorption	200	NOUN
-Verordnungen	200	NOUN
+Verordnungen	200	NOUN	Verordnung
 erwarteten	200	VERB,OTHER
 transportieren	200	VERB
 spätantiken	200	OTHER
@@ -10042,10 +10042,10 @@ Harmonie	200	NOUN
 Formation	200	NOUN
 kostenlose	200	OTHER
 Spurweite	200	NOUN
-Eisenbahnen	200	NOUN
+Eisenbahnen	200	NOUN	Eisenbahn
 Verbraucher	200	NOUN
 Einkünfte	200	NOUN
-Straftaten	200	NOUN
+Straftaten	200	NOUN	Straftat
 Baseball	200	NOUN
 Aktiengesellschaft	200	NOUN
 Kantate	200	NOUN
