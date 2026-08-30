@@ -537,6 +537,34 @@ non-trivial changes).
   inflected form found via either path (this round only applied the `VERB`/`OTHER,VERB` tag, not yet the
   link - the two were kept as separate, independently-verifiable steps rather than combined into one script).
 
+- **§307 (v1.0.60): round 2 - the 500-1999 band (227 rows), plus a tag-order fix applied retroactively to**
+  **round 1.** User caught the tag order: `OTHER` must sort *last* against `VERB` (`VERB,OTHER`, not
+  `OTHER,VERB`) - fixed going forward and retroactively re-applied to round 1's 5 dual words
+  (`sein`/`einigen`/`sieben`/`gleichen`/`bestimmten`), via the same fail-loud script (asserts the exact prior
+  tag before rewriting, so a silent double-application or a stale assumption about round 1's state would have
+  aborted rather than corrupted anything). **Open question raised, not yet decided**: D-368's own 210
+  pre-existing `NOUN,OTHER,VERB` entries follow the *old*, alphabetical convention (`OTHER` before `VERB`) -
+  whether those should also be reordered to `NOUN,VERB,OTHER` for full consistency is a separate, larger
+  retroactive change spanning several already-released versions, flagged for the user rather than assumed.
+  This round's own 455-candidate band was reviewed individually exactly like round 1, with one added
+  distinction worth keeping for every future band: a **bare** participle used predicatively (`geschlossen`,
+  `verstanden`, `gehalten` - e.g. "die Tür ist geschlossen") is tagged plain `VERB`, but a **further-declined**
+  participle-as-adjective (`entstandenen`, `geplanten`, `gewählten` - no corresponding preterite-plural
+  collision) is left untouched, consistent with the already-agreed Präsens-Partizip exception
+  (`folgenden`/`genannten`). Where a participle-plus-adjective-ending form *does* genuinely double as a real
+  preterite-plural (`entwickelten` = "sie entwickelten" *and* "die entwickelten Länder" - the weak-verb
+  `-ten` preterite ending and the dative/genitive-plural adjective `-en` ending on a `-t`-final participle
+  coincide), it gets `VERB,OTHER` rather than being skipped. 209 words `OTHER` -> `VERB`; 18 genuine
+  dual-meaning words `OTHER` -> `VERB,OTHER` (15 participle/preterite-plural collisions plus 3 borderline
+  cases flagged for the user and confirmed: `linken`/`weiten`/`schnellen`, each real but a minority reading
+  next to a dominant adjective one). `git diff --stat` confirmed exactly 232 lines changed (227 + 5 reorder).
+  `dictionaries/de/version.txt` 17 -> 18, pack rebuilt/verified, `LanguagePackCatalog` version 17 -> 18. No
+  new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 363 -> 364,
+  `versionName` `"1.0.59"` -> `"1.0.60"`. Not yet device-confirmed. Remaining scope unchanged from §306's own
+  note, minus the now-done 500-1999 band: four frequency bands left (200-499: 788, 50-199: 2290, 10-49: 6138,
+  <10: 1073), the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, and populating
+  `lemma` on every result so far.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with
