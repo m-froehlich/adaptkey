@@ -722,6 +722,21 @@ non-trivial changes).
   `10-14` (949 candidates), then the `<10` band (1073), the mechanical weak-verb-inflection pass, the
   strong-verb principal-parts table, the flagged noise entries, and populating `lemma` on every result so far.
 
+- **§314 (v1.0.67): round 5e - the `10-11` sub-band of `10-14` (949 candidates, 357 rows changed) - closes**
+  **out the entire `10-49` band (rounds 1-5e, §306-§314).** Same method throughout. 315 words `OTHER` ->
+  `VERB`; 42 genuine dual-meaning words `OTHER` -> `VERB,OTHER`. Fail-loud script caught two slips before
+  writing: one genuine typo (`überschriften`, never a real candidate) and one bare infinitive
+  (`involvieren`) that doesn't exist as its own row - only its preterite-plural sibling `involvierten`
+  (already correctly in the dual list) does. `git diff --stat` confirmed exactly 357 lines changed.
+  `dictionaries/de/version.txt` 24 -> 25, pack rebuilt/verified, `LanguagePackCatalog` version 24 -> 25. No
+  new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 370 -> 371,
+  `versionName` `"1.0.66"` -> `"1.0.67"`. Not yet device-confirmed. **Only the `<10` band (1073 candidates)**
+  **remains of the frequency sweep itself.** Also still open, unrelated to the sweep: the mechanical
+  weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries (deferred
+  cleanup round), and populating `lemma` on every result tagged so far (D-412's own column has not yet been
+  written to at all across this whole project - every round so far has only ever applied the `VERB`/
+  `VERB,OTHER` tag, deliberately kept as its own separate, independently-verifiable step).
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with

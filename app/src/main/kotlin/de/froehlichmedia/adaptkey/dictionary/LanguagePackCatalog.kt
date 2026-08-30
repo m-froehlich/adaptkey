@@ -187,7 +187,10 @@ object LanguagePackCatalog {
             // VERB,OTHER), 1165 candidates individually reviewed. 395 rows changed.
             // §313 (v1.0.66): round 5d, the 12-14 sub-band of 10-14 (340 OTHER -> VERB, 53 OTHER ->
             // VERB,OTHER), 1110 candidates individually reviewed. 393 rows changed.
-            version = 24
+            // §314 (v1.0.67): round 5e, the 10-11 sub-band of 10-14 (315 OTHER -> VERB, 42 OTHER ->
+            // VERB,OTHER), 949 candidates individually reviewed - closes out the entire 10-49 band.
+            // 357 rows changed.
+            version = 25
         ),
         Entry(
             Language.GREEK,
