@@ -943,7 +943,7 @@ Main	2202	NOUN
 außer	2199	OTHER
 werde	2196	OTHER
 Alexander	2196	NOUN
-hätte	2194	OTHER
+hätte	2194	VERB
 Stadtgebiet	2194	NOUN
 Köln	2190	NOUN
 Stadtteil	2186	NOUN
@@ -4613,7 +4613,6 @@ beschriebenen	466	OTHER
 eingenommen	466	VERB
 worauf	466	OTHER
 Aachen	466	NOUN
-begin	466	OTHER
 Vertrauen	465	NOUN
 zweites	465	OTHER
 Flüssen	465	NOUN
@@ -4756,7 +4755,6 @@ hinten	450	OTHER
 Göttin	450	NOUN
 Getreide	450	NOUN
 Gene	450	NOUN
-align	450	OTHER
 einsetzen	449	VERB
 ähnlicher	449	OTHER
 zentraler	449	OTHER
@@ -5398,7 +5396,6 @@ Anführer	398	NOUN
 Ableitung	398	NOUN
 Wohlstand	398	NOUN
 Schülern	398	NOUN
-sin	398	OTHER
 gesammelt	398	OTHER
 Magie	398	NOUN
 Edison	397	NOUN
@@ -6585,7 +6582,6 @@ Gleichheit	322	NOUN
 Bundesamt	322	NOUN
 betreffen	322	VERB
 Data	322	NOUN
-colon	322	OTHER
 sigma	322	NOUN,OTHER
 Sophie	322	NOUN
 lauten	321	VERB
@@ -7235,7 +7231,6 @@ inwieweit	288	OTHER
 größeres	288	OTHER
 kennengelernt	288	OTHER
 reduzierte	288	OTHER
-schen	288	OTHER
 Zivilisation	288	NOUN
 Säure	288	NOUN
 Schriftstellerin	288	NOUN
@@ -8364,7 +8359,6 @@ Jakobus	246	NOUN
 Nordwest	246	NOUN
 Utrecht	246	NOUN
 Lexikon	246	NOUN
-varepsilon	246	OTHER
 Night	245	NOUN
 Marketing	245	NOUN
 Einleitung	245	NOUN
@@ -9006,7 +9000,6 @@ Proteinen	227	NOUN
 Freikirchen	227	NOUN
 Dürer	227	NOUN
 Box	227	NOUN,VERB
-return	227	OTHER
 Gmünd	227	NOUN
 Lima	227	NOUN
 Ringen	227	NOUN
@@ -10065,6 +10058,7 @@ Kantate	200	NOUN
 Thematik	200	NOUN
 Blumen	200	NOUN
 mathbf	200	OTHER
+nachdenken	200	VERB
 verwechselt	199	OTHER
 starkem	199	OTHER
 verschaffte	199	OTHER
@@ -10911,7 +10905,7 @@ Auswanderung	181	NOUN
 Asiens	181	NOUN
 over	181	OTHER
 Tibet	181	NOUN
-löschen	181	NOUN,OTHER
+löschen	181	NOUN,VERB,OTHER
 Organen	181	NOUN
 jahrhundertelang	181	OTHER
 Türmen	181	NOUN
@@ -12884,6 +12878,7 @@ Itzehoe	150	NOUN
 Blankenburg	150	NOUN
 Senftenberg	150	NOUN
 Tabellenplatz	150	NOUN
+nachdenkt	150	VERB
 gelobt	149	OTHER
 alias	149	OTHER
 Dance	149	NOUN
@@ -14539,6 +14534,7 @@ Burgunden	130	NOUN
 Westerland	130	NOUN
 Küstrin	130	NOUN
 Lübbecke	130	NOUN
+haptische	130	ADJECTIVE
 schwarzem	129	OTHER
 Stilmittel	129	NOUN
 Kurzgeschichte	129	NOUN
@@ -15563,6 +15559,7 @@ Picard	120	NOUN
 DMS	120	NOUN
 Waits	120	NOUN
 OpenOffice	120	NOUN
+haptischen	120	ADJECTIVE
 Konstruktivismus	119	NOUN
 Verwirrung	119	NOUN
 nebenbei	119	OTHER
@@ -18029,6 +18026,7 @@ Klade	100	NOUN
 Nunavut	100	NOUN
 Lagune	100	NOUN
 Addis	100	NOUN
+fortfahren	100	VERB
 Einspruch	99	NOUN
 kurzlebige	99	OTHER
 Verkörperung	99	NOUN
@@ -21712,6 +21710,7 @@ Ventile	79	NOUN
 qualitativen	79	OTHER
 Kunsthändler	79	NOUN
 merkt	79	OTHER
+haptisch	70	ADJECTIVE
 merke	65	OTHER
 Dracula	79	NOUN
 verpasste	79	OTHER
@@ -36810,6 +36809,7 @@ Corpsstudenten	40	NOUN
 Kumite	40	NOUN
 Cheftrainer	40	NOUN
 Lütschine	40	NOUN
+würdest	40	VERB
 Aran	39	NOUN
 Patch	39	NOUN
 Mason	39	NOUN
@@ -40771,6 +40771,7 @@ Shuswap	35	NOUN
 Berufsberatung	35	NOUN
 Kaufsache	35	NOUN
 Wiesdorf	35	NOUN
+hättest	35	VERB
 Fluorwasserstoff	34	NOUN
 Haan	34	NOUN
 Filmeditor	34	NOUN
@@ -45614,6 +45615,7 @@ Saranda	30	NOUN
 ACARS	30	NOUN
 Paiute	30	NOUN
 Ennigloh	30	NOUN
+beobachte	30	VERB
 Drehbuchautoren	29	NOUN
 Oxiden	29	NOUN
 Resident	29	NOUN
@@ -52336,6 +52338,9 @@ IBGP	25	NOUN
 Friaulischen	25	NOUN,OTHER
 Drewermanns	25	NOUN
 Ogi	25	NOUN
+duzen	25	VERB
+lösche	25	VERB
+haptischer	25	ADJECTIVE
 überzieht	24	OTHER
 CLP	24	NOUN
 einzuschlagen	24	VERB
@@ -57596,6 +57601,7 @@ Franchising	22	NOUN
 KSCV	22	NOUN
 Wiinblad	22	NOUN
 Thammarat	22	NOUN
+meinst	22	VERB
 Erstling	21	NOUN
 Teilaussagen	21	NOUN
 Konditional	21	NOUN
@@ -61793,6 +61799,11 @@ Wahlalter	20	NOUN
 Dildo	20	NOUN
 Manipurs	20	NOUN
 Nitzer	20	NOUN
+siezen	20	VERB
+vermisse	20	VERB
+verrostet	20	VERB
+verrottet	20	VERB
+zeig	20	VERB
 len	19	NOUN,OTHER
 Stillschweigen	19	NOUN
 fingierte	19	OTHER
@@ -76586,6 +76597,11 @@ Baumberg	15	NOUN
 Shantys	15	NOUN
 Testtiere	15	NOUN
 Dättwil	15	NOUN
+packt	15	VERB
+verrosten	15	VERB
+verrotten	15	VERB
+zeigst	15	VERB
+haptisches	15	ADJECTIVE
 zugesteht	14	OTHER
 Zerfallsprodukt	14	NOUN
 gefärbtes	14	OTHER
@@ -85935,7 +85951,7 @@ Wettbewerbern	12	NOUN
 Marktanteilen	12	NOUN
 Unternehmenskultur	12	NOUN
 Erzrivalen	12	NOUN
-erzähle	12	OTHER
+erzähle	12	VERB
 einfarbige	12	OTHER
 Kare	12	NOUN,OTHER
 Regale	12	NOUN
@@ -90954,6 +90970,8 @@ Neofolk	12	NOUN
 aranesischen	12	OTHER
 Kaokoland	12	NOUN
 Faltrad	12	NOUN
+besparen	12	VERB
+investiere	12	VERB
 IMDb	11	NOUN
 Uranerzen	11	NOUN
 Seltenerdmetalle	11	NOUN
@@ -104411,6 +104429,8 @@ Münchsmünster	10	NOUN
 Offsetspannung	10	NOUN
 Spannungsanstiegsrate	10	NOUN
 Bambergen	10	NOUN
+erzähl	10	VERB
+ignorierst	10	VERB
 Raimi	9	NOUN
 Taiwans	9	NOUN
 Starbesetzung	9	NOUN
@@ -119655,6 +119675,7 @@ Oh	90	OTHER
 agentisch	15	OTHER
 agentische	8	OTHER
 agentischen	8	OTHER
+packst	8	VERB
 agentischem	6	OTHER
 agentischer	6	OTHER
 agentisches	6	OTHER

@@ -193,7 +193,10 @@ object LanguagePackCatalog {
             // §315 (v1.0.68): round 6, the final <10 band (327 OTHER -> VERB, 53 OTHER -> VERB,OTHER),
             // 1073 candidates individually reviewed - closes out the entire German verb-in-OTHER
             // retagging sweep across all bands. 380 rows changed.
-            version = 26
+            // §316 (v1.0.69): closed the deferred Learned-Words-inflection-gap and haptisch-family
+            // backlog (28 missing words added, 3 mistagged existing entries fixed) plus the confirmed
+            // LaTeX-noise backlog (7 rows removed from dict.tsv, 15 stale bigram.tsv rows removed).
+            version = 27
         ),
         Entry(
             Language.GREEK,
