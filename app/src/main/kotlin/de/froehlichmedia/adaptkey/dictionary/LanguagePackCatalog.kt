@@ -190,7 +190,10 @@ object LanguagePackCatalog {
             // §314 (v1.0.67): round 5e, the 10-11 sub-band of 10-14 (315 OTHER -> VERB, 42 OTHER ->
             // VERB,OTHER), 949 candidates individually reviewed - closes out the entire 10-49 band.
             // 357 rows changed.
-            version = 25
+            // §315 (v1.0.68): round 6, the final <10 band (327 OTHER -> VERB, 53 OTHER -> VERB,OTHER),
+            // 1073 candidates individually reviewed - closes out the entire German verb-in-OTHER
+            // retagging sweep across all bands. 380 rows changed.
+            version = 26
         ),
         Entry(
             Language.GREEK,

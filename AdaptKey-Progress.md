@@ -737,6 +737,23 @@ non-trivial changes).
   written to at all across this whole project - every round so far has only ever applied the `VERB`/
   `VERB,OTHER` tag, deliberately kept as its own separate, independently-verifiable step).
 
+- **§315 (v1.0.68): round 6 - the final `<10` band (1073 candidates, 380 rows changed) - closes out the**
+  **entire German verb-in-`OTHER` retagging sweep (rounds 1-6, §306-§315).** Same method throughout. 327
+  words `OTHER` -> `VERB`; 53 genuine dual-meaning words `OTHER` -> `VERB,OTHER`. Fail-loud script caught two
+  slips before writing: `überdecken` and `beanstanden` were each mistakenly re-listed as fresh candidates
+  when only their preterite-plural siblings (`überdeckten`, `beanstandeten`) were actually the new find -
+  both bare infinitives already carried `VERB` from an earlier round. `git diff --stat` confirmed exactly 380
+  lines changed. `dictionaries/de/version.txt` 25 -> 26, pack rebuilt, `LanguagePackCatalog` version 25 ->
+  26. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 371 -> 372,
+  `versionName` `"1.0.67"` -> `"1.0.68"`. Not yet device-confirmed. **This closes the entire frequency sweep**
+  (10,925 candidates across all bands, §306-§315, 9 rounds) - every lowercase, `OTHER`-tagged
+  `-en`/`-eln`/`-ern`/`-n` word in the German dictionary has now been individually reviewed. Still open,
+  unrelated to the sweep itself: the mechanical weak-verb-inflection derivation pass, the strong-verb
+  principal-parts reference table, the flagged noise entries and Learned-Words inflection-gap list (deferred
+  cleanup round), and populating `lemma` on every result tagged across all nine rounds (D-412's own column
+  has not been written to at all yet - kept as its own separate, independently-verifiable step, deliberately
+  not started without a fresh check-in per this project's own convention).
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with

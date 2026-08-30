@@ -104512,7 +104512,7 @@ darnach	9	NOUN,OTHER
 Phosphofructokinase	9	NOUN
 isoliertem	9	OTHER
 einatomig	9	OTHER
-auskühlen	9	OTHER
+auskühlen	9	VERB
 Salvarsan	9	NOUN
 Beizmittel	9	NOUN
 liebend	9	OTHER
@@ -104521,7 +104521,7 @@ Komplexverbindungen	9	NOUN
 krebserregenden	9	OTHER
 unsauberen	9	OTHER
 Zinks	9	NOUN
-sublimieren	9	OTHER
+sublimieren	9	VERB
 gelöstem	9	OTHER
 Pyridin	9	NOUN
 kumuliert	9	OTHER
@@ -104550,7 +104550,7 @@ Camelot	9	NOUN
 Plessner	9	NOUN
 Bildungstheorie	9	NOUN
 positivistische	9	OTHER
-aufgefahren	9	OTHER
+aufgefahren	9	VERB
 Satrap	9	NOUN
 Nachschubwege	9	NOUN
 Tarsos	9	NOUN
@@ -104564,7 +104564,7 @@ mediterraner	9	OTHER
 Gandhara	9	NOUN
 Monsunregen	9	NOUN
 sachgerecht	9	OTHER
-mumifizierten	9	OTHER
+mumifizierten	9	VERB,OTHER
 freigab	9	OTHER
 Alexandersage	9	NOUN
 fußenden	9	OTHER
@@ -104574,7 +104574,7 @@ einfacheres	9	OTHER
 belehrenden	9	OTHER
 Weisheitsliteratur	9	NOUN
 Firdausi	9	NOUN
-zusammenzutragen	9	OTHER
+zusammenzutragen	9	VERB
 nordmazedonische	9	OTHER
 Werturteil	9	NOUN
 Argolis	9	NOUN
@@ -104584,7 +104584,7 @@ plebejischen	9	OTHER
 Integrationskraft	9	NOUN
 zentrifugalen	9	OTHER
 kollabierenden	9	OTHER
-aufblühten	9	OTHER
+aufblühten	9	VERB
 Archaik	9	NOUN
 Analytique	9	NOUN,OTHER
 Hochleistungsflüssigkeitschromatographie	9	NOUN
@@ -104622,7 +104622,7 @@ Reichstein	9	NOUN
 Pegida	9	NOUN
 Dalrymple	9	NOUN
 Soult	9	NOUN
-reorganisierten	9	OTHER
+reorganisierten	9	VERB,OTHER
 vorrückte	9	OTHER
 Vitoria	9	NOUN
 Frühlingsvollmond	9	NOUN
@@ -104646,7 +104646,7 @@ Kralle	9	NOUN
 Simms	9	NOUN
 Wasseruhr	9	NOUN
 Tartaglia	9	NOUN
-recherchierten	9	OTHER
+recherchierten	9	VERB,OTHER
 Perspektivwechsel	9	NOUN
 unveränderliches	9	OTHER
 hinlänglich	9	OTHER
@@ -104657,7 +104657,7 @@ geliebtes	9	NOUN,OTHER
 Textquellen	9	NOUN
 Stufenleiter	9	NOUN
 kurios	9	OTHER
-ausschlagen	9	OTHER
+ausschlagen	9	VERB
 vorgebildet	9	OTHER
 ebendieses	9	OTHER
 spiritualis	9	OTHER
@@ -104675,7 +104675,7 @@ Harpers	9	NOUN
 Waffenarsenal	9	NOUN
 Bildungsgut	9	NOUN
 Antietam	9	NOUN
-loszusagen	9	OTHER
+loszusagen	9	VERB
 Greeley	9	NOUN
 zugesicherte	9	OTHER
 Stanton	9	NOUN
@@ -104690,7 +104690,7 @@ Steppenlandschaft	9	NOUN
 Unternehmenszentrale	9	NOUN
 Vinschgau	9	NOUN
 unbelasteten	9	OTHER
-gegenübergestanden	9	OTHER
+gegenübergestanden	9	VERB
 Polenz	9	NOUN
 Oppositionsführerin	9	NOUN
 Befreiungsschlag	9	NOUN
@@ -104805,8 +104805,8 @@ Roben	9	NOUN
 Geheimbünde	9	NOUN
 Gregorius	9	NOUN
 prozessierte	9	OTHER
-feilen	9	OTHER
-schmieren	9	OTHER
+feilen	9	VERB
+schmieren	9	VERB
 Sexualethik	9	NOUN
 Confessions	9	NOUN
 Entlarvung	9	NOUN
@@ -104887,7 +104887,7 @@ Houellebecq	9	NOUN
 Vitalismus	9	NOUN
 Stammbuch	9	NOUN
 weltgeschichtliche	9	OTHER
-ausriefen	9	OTHER
+ausriefen	9	VERB
 Urbanus	9	NOUN
 Putschversuche	9	NOUN
 wiedergewonnenen	9	OTHER
@@ -104909,7 +104909,7 @@ Subunternehmer	9	NOUN
 ambitioniertes	9	OTHER
 Tochterfirmen	9	NOUN
 ignoriere	9	OTHER
-enttarnen	9	OTHER
+enttarnen	9	VERB
 entrechtet	9	OTHER
 Massenverbrechen	9	NOUN
 Maser	9	NOUN
@@ -104924,12 +104924,12 @@ formbar	9	OTHER
 unserm	9	OTHER
 mächtigeren	9	OTHER
 Bruckmann	9	NOUN
-attestierten	9	OTHER
-entglitten	9	OTHER
-vereidigen	9	OTHER
+attestierten	9	VERB,OTHER
+entglitten	9	VERB
+vereidigen	9	VERB
 Bürgerbräukeller	9	NOUN
 Staffelsee	9	NOUN
-herrichten	9	OTHER
+herrichten	9	VERB
 Asozialen	9	NOUN,OTHER
 Geopolitik	9	NOUN
 pseudowissenschaftlichen	9	OTHER
@@ -104951,9 +104951,9 @@ Menschenlebens	9	NOUN
 Experimentierfeld	9	NOUN
 Rundstedt	9	NOUN
 Caudillo	9	NOUN
-zusammengetroffen	9	OTHER
+zusammengetroffen	9	VERB
 Kolonialgebieten	9	NOUN
-abzuschieben	9	OTHER
+abzuschieben	9	VERB
 Odilo	9	NOUN
 Monologen	9	NOUN
 schmuggelte	9	OTHER
@@ -105071,7 +105071,7 @@ Generaladmiral	9	NOUN
 protokollarische	9	OTHER
 Überdauerungsorgane	9	NOUN
 Schmetterlingsblüten	9	NOUN
-abhoben	9	OTHER
+abhoben	9	VERB
 Astronautengruppe	9	NOUN
 Armstrongs	9	NOUN
 Capcom	9	NOUN
@@ -105104,7 +105104,7 @@ Tannenholz	9	NOUN
 Stoch	9	NOUN
 Spirituosenhersteller	9	NOUN
 Medienstandort	9	NOUN
-auszugliedern	9	OTHER
+auszugliedern	9	VERB
 Flugverbindung	9	NOUN
 Realteilung	9	NOUN
 gelernter	9	OTHER
@@ -105125,7 +105125,7 @@ akkadischer	9	OTHER
 PRS	9	NOUN,OTHER
 Stamms	9	NOUN
 Kasusendungen	9	NOUN
-sprießen	9	OTHER
+sprießen	9	VERB
 Nebensätzen	9	NOUN
 Wortstruktur	9	NOUN
 Cayennepfeffer	9	NOUN
@@ -105150,7 +105150,7 @@ Armadas	9	NOUN
 Menschenrechtsverstöße	9	NOUN
 Comercio	9	NOUN
 Salar	9	NOUN
-reaktivierten	9	OTHER
+reaktivierten	9	VERB,OTHER
 Drehkreuze	9	NOUN
 Gemeindestraßen	9	NOUN
 Staatspräsidentin	9	NOUN
@@ -105159,7 +105159,7 @@ Hornos	9	NOUN
 Dignidad	9	NOUN
 Yerba	9	NOUN
 Trinkgefäß	9	NOUN
-aufgegossen	9	OTHER
+aufgegossen	9	VERB
 Boulevardjournalismus	9	NOUN
 gente	9	NOUN,OTHER
 Paparazzi	9	NOUN
@@ -105185,7 +105185,7 @@ Kameliendame	9	NOUN
 Neugierde	9	NOUN
 SQUID	9	NOUN
 Langusten	9	NOUN
-pigmentierten	9	OTHER
+pigmentierten	9	VERB,OTHER
 Seesterne	9	NOUN
 Bechers	9	NOUN
 Einstülpung	9	NOUN
@@ -105203,7 +105203,7 @@ Verdauungssystem	9	NOUN
 clavis	9	NOUN,OTHER
 Neurochirurgie	9	NOUN
 Baraka	9	NOUN
-herausführen	9	OTHER
+herausführen	9	VERB
 abdankte	9	OTHER
 Bürgerkönig	9	NOUN
 Navarre	9	NOUN
@@ -105255,7 +105255,7 @@ Herzschlags	9	NOUN
 abgehenden	9	OTHER
 Arteriolen	9	NOUN
 Hagana	9	NOUN
-zurückstellen	9	OTHER
+zurückstellen	9	VERB
 Hoffnungsträger	9	NOUN
 Parteienbündnisses	9	NOUN
 schärfster	9	OTHER
@@ -105293,7 +105293,7 @@ isolierend	9	OTHER
 Thackeray	9	NOUN
 sauerstoffhaltigen	9	OTHER
 Namensraums	9	NOUN
-mitarbeiteten	9	OTHER
+mitarbeiteten	9	VERB
 Gesetzlosen	9	NOUN,OTHER
 Almanachen	9	NOUN
 Patentschutz	9	NOUN
@@ -105344,7 +105344,7 @@ Reflexionseigenschaften	9	NOUN
 gleichschenklig	9	OTHER
 subsetneq	9	OTHER
 Zartheit	9	NOUN
-mitprägen	9	OTHER
+mitprägen	9	VERB
 Madeleines	9	NOUN
 Heredia	9	NOUN
 Identitätssuche	9	NOUN
@@ -105390,7 +105390,7 @@ Exzentrizitäten	9	NOUN
 Jupiterbahn	9	NOUN
 Asteroidengürtels	9	NOUN
 Planetenbahn	9	NOUN
-einleiteten	9	OTHER
+einleiteten	9	VERB
 Finanzdienstleistungsaufsicht	9	NOUN
 Abhebungen	9	NOUN
 Modellorganismen	9	NOUN
@@ -105412,7 +105412,7 @@ Strahlruder	9	NOUN
 Aufschlüsselung	9	NOUN
 Raderach	9	NOUN
 Schlier	9	NOUN
-anordneten	9	OTHER
+anordneten	9	VERB
 Vergeltungswaffe	9	NOUN
 Chefkonstrukteur	9	NOUN
 Großrakete	9	NOUN
@@ -105427,7 +105427,7 @@ FNLA	9	NOUN
 Lourenço	9	NOUN
 korporative	9	OTHER
 Baustahl	9	NOUN
-einnisten	9	OTHER
+einnisten	9	VERB
 Finanzbereich	9	NOUN
 Comercial	9	NOUN
 Ophelia	9	NOUN
@@ -105473,7 +105473,7 @@ Fahrleistung	9	NOUN
 installiertes	9	OTHER
 Teilabschnitte	9	NOUN
 Finanztransaktionen	9	NOUN
-einlösen	9	OTHER
+einlösen	9	VERB
 unüberbrückbarer	9	OTHER
 Arbeitskreisen	9	NOUN
 Frauenquote	9	NOUN
@@ -105551,7 +105551,7 @@ Bundesleistungszentrum	9	NOUN
 Nachwuchsarbeit	9	NOUN
 Bergländer	9	NOUN
 Bodenseegebiet	9	NOUN
-stauen	9	OTHER
+stauen	9	VERB
 Klimamodelle	9	NOUN
 prognostizieren	9	OTHER
 entwässernden	9	OTHER
@@ -105569,7 +105569,7 @@ Kriegswochen	9	NOUN
 Obrigheim	9	NOUN
 Heidelandschaften	9	NOUN
 Eiszeitkunst	9	NOUN
-archivierten	9	OTHER
+archivierten	9	VERB,OTHER
 zweitgrößtes	9	OTHER
 südfränkisch	9	OTHER
 klischeehaften	9	OTHER
@@ -105736,7 +105736,7 @@ Massenbewegungen	9	NOUN
 Nickels	9	NOUN
 gespaltenes	9	OTHER
 bundesrepublikanischen	9	OTHER
-ausräumen	9	OTHER
+ausräumen	9	VERB
 Machtfrage	9	NOUN
 Reformpartei	9	NOUN
 professionalisiert	9	OTHER
@@ -105784,7 +105784,7 @@ Bereitschaften	9	NOUN
 Grenzübergangsstelle	9	NOUN
 Sicherheitsfragen	9	NOUN
 Hinterhöfe	9	NOUN
-artikulierten	9	OTHER
+artikulierten	9	VERB
 scheinende	9	OTHER
 Sowjetzone	9	NOUN
 Justizmord	9	NOUN
@@ -105792,12 +105792,12 @@ Versöhnungskirche	9	NOUN
 Verkehrsführung	9	NOUN
 Fluchthelfer	9	NOUN
 Niederkirchnerstraße	9	NOUN
-bejubelten	9	OTHER
+bejubelten	9	VERB
 Erinnerungsstätte	9	NOUN
 Kunstinstallation	9	NOUN
 Tegeler	9	NOUN
 Polytechnic	9	NOUN
-anzukommen	9	OTHER
+anzukommen	9	VERB
 Ochsenfurt	9	NOUN
 Bremsweg	9	NOUN
 maltesischer	9	OTHER
@@ -105818,7 +105818,7 @@ durchzogene	9	OTHER
 Maximalwerte	9	NOUN
 Flussmarschen	9	NOUN
 Referenzperiode	9	NOUN
-verpfändeten	9	OTHER
+verpfändeten	9	VERB,OTHER
 Gauleitung	9	NOUN
 Dienstflagge	9	NOUN
 Karajan	9	NOUN
@@ -105840,7 +105840,7 @@ Müllverbrennungsanlage	9	NOUN
 Heimmannschaft	9	NOUN
 geschlagener	9	OTHER
 angelaufenen	9	OTHER
-aufrücken	9	OTHER
+aufrücken	9	VERB
 Juniorinnen	9	NOUN
 Deals	9	NOUN,OTHER
 liebste	9	NOUN,OTHER
@@ -105861,7 +105861,7 @@ Spielmacher	9	NOUN
 Laufweg	9	NOUN
 ausstrecken	9	NOUN,OTHER
 abwirft	9	OTHER
-blocken	9	OTHER
+blocken	9	VERB
 Netball	9	NOUN
 Zweikämpfen	9	NOUN
 Trainingseinheiten	9	NOUN
@@ -105886,7 +105886,7 @@ sey	9	OTHER
 Lebensgefühls	9	NOUN
 Friedlaender	9	NOUN
 Shareware	9	NOUN
-formatierten	9	OTHER
+formatierten	9	VERB,OTHER
 Grafikprogramm	9	NOUN
 kompilierter	9	OTHER
 Bevölkerungsbewegung	9	NOUN
@@ -105990,7 +105990,7 @@ Birseck	9	NOUN
 Volksinitiativen	9	NOUN
 erstinstanzlichen	9	OTHER
 Softwarelösung	9	NOUN
-angefallen	9	OTHER
+angefallen	9	VERB
 parteiunabhängige	9	OTHER
 Beyeler	9	NOUN
 Kunstmessen	9	NOUN
@@ -106052,11 +106052,11 @@ Zeitleiste	9	NOUN
 Koranübersetzung	9	NOUN
 Asamiya	9	NOUN
 Abholzen	9	NOUN
-eingeflogen	9	OTHER
+eingeflogen	9	VERB
 Personenschäden	9	NOUN
-befriedigten	9	OTHER
+befriedigten	9	VERB
 abwarf	9	OTHER
-überflogen	9	OTHER
+überflogen	9	VERB
 Bucheckern	9	NOUN
 Wintergerste	9	NOUN
 Grütze	9	NOUN
@@ -106075,7 +106075,7 @@ Kemper	9	NOUN
 Klimabereich	9	NOUN
 Mehlem	9	NOUN
 Hauptstadtfrage	9	NOUN
-stolpern	9	OTHER
+stolpern	9	VERB
 Trottoir	9	NOUN,OTHER
 Fundamentaltheologie	9	NOUN
 Gusto	9	NOUN
@@ -106109,7 +106109,7 @@ Babyloniens	9	NOUN
 etymologischer	9	OTHER
 Petrusbrief	9	NOUN
 Prozessionsstraße	9	NOUN
-wiederentdeckten	9	OTHER
+wiederentdeckten	9	VERB,OTHER
 Nebukadnezars	9	NOUN
 Achämenidenreiches	9	NOUN
 chaldäische	9	OTHER
@@ -106155,7 +106155,7 @@ Schildpatt	9	NOUN
 Ergiebigkeit	9	NOUN
 Strandes	9	NOUN
 Abtrag	9	NOUN
-angeschnitten	9	OTHER
+angeschnitten	9	VERB
 kreidezeitlichen	9	OTHER
 erschwere	9	OTHER
 Larsson	9	NOUN
@@ -106221,7 +106221,7 @@ Tabanus	9	NOUN
 eozänen	9	OTHER
 Fading	9	NOUN
 Pferdekutschen	9	NOUN
-geschlungen	9	OTHER
+geschlungen	9	VERB
 Amtsausübung	9	NOUN
 asketisches	9	OTHER
 Maßregeln	9	NOUN,OTHER
@@ -106240,7 +106240,7 @@ Papierformat	9	NOUN
 Briefpost	9	NOUN
 Bong	9	NOUN
 Amherst	9	NOUN
-anzustecken	9	OTHER
+anzustecken	9	VERB
 Biowaffen	9	NOUN
 geheimdienstliche	9	OTHER
 Tichy	9	NOUN
@@ -106258,7 +106258,7 @@ Amdo	9	NOUN
 Meditations	9	NOUN
 Padmasambhava	9	NOUN
 Himmelsgötter	9	NOUN
-erleuchteten	9	OTHER
+erleuchteten	9	VERB,OTHER
 Taishō	9	NOUN
 Festwertspeicher	9	NOUN
 Jumper	9	NOUN
@@ -106271,7 +106271,7 @@ Schreibform	9	NOUN
 Aubach	9	NOUN
 Andechser	9	NOUN
 Türmerstube	9	NOUN
-ausstechen	9	OTHER
+ausstechen	9	VERB
 Torhäuser	9	NOUN
 Koppel	9	NOUN
 zwanzigste	9	OTHER
@@ -106284,7 +106284,7 @@ Rassentheoretiker	9	NOUN
 Gauhauptstadt	9	NOUN
 Stadtbuslinie	9	NOUN
 durchkreuzte	9	OTHER
-gefangengehalten	9	OTHER
+gefangengehalten	9	VERB
 Lazarettstadt	9	NOUN
 Fremdarbeiter	9	NOUN
 Industrielandschaft	9	NOUN
@@ -106295,7 +106295,7 @@ Demonstrationszug	9	NOUN
 begüterte	9	OTHER
 Tourneetheater	9	NOUN
 Studiobühne	9	NOUN
-sogen	9	OTHER
+sogen	9	VERB
 PICT	9	NOUN
 exotisch	9	OTHER
 Krügen	9	NOUN
@@ -106328,7 +106328,7 @@ Schmetterlings	9	NOUN
 sukkulent	9	OTHER
 Entomophilie	9	NOUN
 Flashspeicher	9	NOUN
-abschotten	9	OTHER
+abschotten	9	VERB
 abgestimmtes	9	OTHER
 angewiesenen	9	OTHER
 Sporophylle	9	NOUN
@@ -106340,7 +106340,7 @@ eisige	9	OTHER
 Heimatfilm	9	NOUN
 Krebsfälle	9	NOUN
 Krankheitslast	9	NOUN
-mutierten	9	OTHER
+mutierten	9	VERB,OTHER
 Brustkrebserkrankung	9	NOUN
 CHK	9	NOUN,OTHER
 Estrogen	9	NOUN
@@ -106370,7 +106370,7 @@ Aufsplitterung	9	NOUN
 Richterspruch	9	NOUN
 Selbstanzeige	9	NOUN
 Kalkbrenner	9	NOUN
-loswerden	9	OTHER
+loswerden	9	VERB
 Urnengang	9	NOUN
 Rechtsbeistand	9	NOUN
 Kostenfaktor	9	NOUN
@@ -106449,7 +106449,7 @@ Kriegsanleihen	9	NOUN
 Schaffenskrise	9	NOUN
 Pfändung	9	NOUN
 Gepäckträger	9	NOUN
-anfreunden	9	OTHER
+anfreunden	9	VERB
 parodieren	9	OTHER
 Activities	9	NOUN
 Fußabdrücke	9	NOUN
@@ -106519,7 +106519,7 @@ Abstraktheit	9	NOUN
 unorthodoxen	9	OTHER
 Wage	9	NOUN,OTHER
 Antiliberalismus	9	NOUN
-denunzieren	9	OTHER
+denunzieren	9	VERB
 Halbjuden	9	NOUN
 Vordenkern	9	NOUN
 Beamtentum	9	NOUN
@@ -106527,7 +106527,7 @@ Epimetheus	9	NOUN
 potest	9	OTHER
 Testamentsvollstrecker	9	NOUN
 traditionalistische	9	OTHER
-vorausgingen	9	OTHER
+vorausgingen	9	VERB
 Primats	9	NOUN
 Feindschaften	9	NOUN
 handelndes	9	OTHER
@@ -106555,7 +106555,7 @@ Geschichtsbildes	9	NOUN
 Tinto	9	NOUN
 Sinustönen	9	NOUN
 quadratus	9	NOUN,OTHER
-vereitelten	9	OTHER
+vereitelten	9	VERB,OTHER
 Maternus	9	NOUN
 Senatorenstand	9	NOUN
 Erdkreises	9	NOUN
@@ -106611,10 +106611,10 @@ aufgedrängt	9	OTHER
 Sassanidenkönig	9	NOUN
 borealis	9	NOUN,OTHER
 entgegenbrachte	9	OTHER
-übertrumpfen	9	OTHER
+übertrumpfen	9	VERB
 Aloe	9	NOUN
 Korrektoren	9	NOUN
-besichtigten	9	OTHER
+besichtigten	9	VERB
 satzungsgemäß	9	OTHER
 Entdeckungsreise	9	NOUN
 ordines	9	NOUN,OTHER
@@ -106661,8 +106661,8 @@ wunderte	9	OTHER
 kantonesische	9	NOUN,OTHER
 Umgangssprachen	9	NOUN
 Konsonanteninventar	9	NOUN
-erodierten	9	OTHER
-negierten	9	OTHER
+erodierten	9	VERB,OTHER
+negierten	9	VERB,OTHER
 Festanstellung	9	NOUN
 Lokalpresse	9	NOUN
 Andes	9	NOUN
@@ -106673,7 +106673,7 @@ Ausbruchsversuch	9	NOUN
 genützt	9	OTHER
 Protektorate	9	NOUN
 Opération	9	NOUN
-verschiffen	9	OTHER
+verschiffen	9	VERB
 Vive	9	NOUN
 Compagnons	9	NOUN,OTHER
 Gebinde	9	NOUN
@@ -106722,7 +106722,7 @@ Bannerträger	9	NOUN
 popolo	9	OTHER
 mächtigere	9	OTHER
 Unberechenbarkeit	9	NOUN
-auszuhebeln	9	OTHER
+auszuhebeln	9	VERB
 Finanzbedarfs	9	NOUN
 kostspieliger	9	OTHER
 genehm	9	OTHER
@@ -106828,7 +106828,7 @@ Funktionseinheiten	9	NOUN
 Leinster	9	NOUN
 Bangor	9	NOUN
 Brigantia	9	NOUN
-verharrten	9	OTHER
+verharrten	9	VERB
 präzises	9	OTHER
 Hausbibliothek	9	NOUN
 traumatischer	9	OTHER
@@ -106848,8 +106848,8 @@ Establishing	9	NOUN
 Eröffnungs	9	NOUN
 Datenbytes	9	NOUN
 Kompressionsverfahren	9	NOUN
-kompromittieren	9	OTHER
-referenzieren	9	OTHER
+kompromittieren	9	VERB
+referenzieren	9	VERB
 Paulaner	9	NOUN
 Thue	9	NOUN
 Nichtterminalsymbole	9	NOUN
@@ -106862,13 +106862,13 @@ LZW	9	NOUN
 Pionierleistungen	9	NOUN
 Kinematographie	9	NOUN
 Kunststil	9	NOUN
-entfesselten	9	OTHER
+entfesselten	9	VERB,OTHER
 Rentenmark	9	NOUN
 sozialistischem	9	OTHER
 Bergner	9	NOUN
 Filmprojekten	9	NOUN
 Filminstitut	9	NOUN
-kuratierten	9	OTHER
+kuratierten	9	VERB,OTHER
 Filmpreises	9	NOUN
 Kinosterben	9	NOUN
 überzeichnete	9	OTHER
@@ -106911,7 +106911,7 @@ Amtsbezeichnungen	9	NOUN
 denkend	9	OTHER
 schmiedeeisernen	9	OTHER
 Verlies	9	NOUN
-entlohnen	9	OTHER
+entlohnen	9	VERB
 Attaché	9	NOUN
 rastlosen	9	OTHER
 Mitbrüder	9	NOUN
@@ -106946,7 +106946,7 @@ Widerstandskreisen	9	NOUN
 Geiselerschießungen	9	NOUN
 Schlusskapitel	9	NOUN
 Flüssigkeitszufuhr	9	NOUN
-vervielfachen	9	OTHER
+vervielfachen	9	VERB
 Unternehmensdaten	9	NOUN
 langjährigem	9	OTHER
 Neuansiedlungen	9	NOUN
@@ -107022,7 +107022,7 @@ Bärwalde	9	NOUN
 befestigtes	9	OTHER
 Corbie	9	NOUN
 entsetzte	9	OTHER
-voranzukommen	9	OTHER
+voranzukommen	9	VERB
 Steuerbelastung	9	NOUN
 Korneuburg	9	NOUN
 Königsmarck	9	NOUN
@@ -107071,7 +107071,7 @@ Schadt	9	NOUN
 digitalisierten	9	OTHER
 Geschäftspraktiken	9	NOUN
 Internetplattform	9	NOUN
-aufbereiten	9	OTHER
+aufbereiten	9	VERB
 gesponserten	9	OTHER
 Terawattstunden	9	NOUN
 Analytics	9	NOUN
@@ -107092,10 +107092,10 @@ Haptik	9	NOUN
 Literaturwissenschaften	9	NOUN
 geisteswissenschaftlicher	9	OTHER
 durchgreifenden	9	OTHER
-mitbekommen	9	OTHER
+mitbekommen	9	VERB
 vorzieht	9	OTHER
 Abneigungen	9	NOUN
-auszuspionieren	9	OTHER
+auszuspionieren	9	VERB
 wandle	9	OTHER
 verspreche	9	OTHER
 Murdock	9	NOUN
@@ -107112,7 +107112,7 @@ Schönfelder	9	NOUN
 zufließende	9	OTHER
 Landgraben	9	NOUN
 Waldschlößchenbrücke	9	NOUN
-einverleibten	9	OTHER
+einverleibten	9	VERB,OTHER
 Landesbischofs	9	NOUN
 Burggrafschaft	9	NOUN
 Augustusbrücke	9	NOUN
@@ -107167,7 +107167,7 @@ Kirchenpatronat	9	NOUN
 Amtsvorsteher	9	NOUN
 Warnemünder	9	NOUN
 Ateliergebäude	9	NOUN
-zurücktraten	9	OTHER
+zurücktraten	9	VERB
 Debye	9	NOUN
 Grundmengen	9	NOUN
 Bildmenge	9	NOUN
@@ -107205,11 +107205,11 @@ Gesamtkomposition	9	NOUN
 mehrstöckigen	9	OTHER
 Obergeschossen	9	NOUN
 Löscharbeiten	9	NOUN
-inspizieren	9	OTHER
+inspizieren	9	VERB
 einfältigen	9	OTHER
 Königinwitwe	9	NOUN
 Staatenpraxis	9	NOUN
-aufzuschieben	9	OTHER
+aufzuschieben	9	VERB
 Flussabschnitte	9	NOUN
 Rheingraben	9	NOUN
 Jochenstein	9	NOUN
@@ -107221,7 +107221,7 @@ Turnu	9	NOUN
 Freihafens	9	NOUN
 Weichholz	9	NOUN
 Aschach	9	NOUN
-wärmen	9	OTHER
+wärmen	9	VERB
 Lobau	9	NOUN
 Altarmen	9	NOUN
 Wasserkraftwerks	9	NOUN
@@ -107259,7 +107259,7 @@ gewandelte	9	OTHER
 Feindbilder	9	NOUN
 Grundmodell	9	NOUN
 infiniten	9	OTHER
-herausgegriffen	9	OTHER
+herausgegriffen	9	VERB
 festzumachen	9	OTHER
 Idealtyp	9	NOUN
 erschöpfend	9	OTHER
@@ -107270,7 +107270,7 @@ Dezimalbruchentwicklung	9	NOUN
 Dezimalbruch	9	NOUN
 Rechenstäbchen	9	NOUN
 Ausklammern	9	NOUN,OTHER
-wiederaufbauen	9	OTHER
+wiederaufbauen	9	VERB
 Traktion	9	NOUN
 Bauserie	9	NOUN
 Tucher	9	NOUN
@@ -107280,7 +107280,7 @@ einführende	9	OTHER
 Walrossen	9	NOUN
 Deuteronen	9	NOUN
 archimedisch	9	OTHER
-abzulassen	9	OTHER
+abzulassen	9	VERB
 Maximin	9	NOUN
 Côtes	9	NOUN
 Binnennachfrage	9	NOUN
@@ -107291,12 +107291,12 @@ Telex	9	NOUN
 Papierformate	9	NOUN
 Woese	9	NOUN
 eilends	9	OTHER
-auszutreiben	9	OTHER
+auszutreiben	9	VERB
 Vermittlers	9	NOUN
-eingestiegen	9	OTHER
+eingestiegen	9	VERB
 Gerichtsakten	9	NOUN
 Lotterien	9	NOUN
-besteuern	9	OTHER
+besteuern	9	VERB
 Vergessens	9	NOUN
 Woogie	9	NOUN
 Rope	9	NOUN,OTHER
@@ -107305,7 +107305,7 @@ Demagogie	9	NOUN
 Theten	9	NOUN
 droits	9	OTHER
 contrat	9	NOUN,OTHER
-eingeschworen	9	OTHER
+eingeschworen	9	VERB
 monarchischer	9	OTHER
 Reformern	9	NOUN
 Konfliktaustragung	9	NOUN
@@ -107334,7 +107334,7 @@ Trabantenstadt	9	NOUN
 Ghanaer	9	NOUN
 Landesbetriebs	9	NOUN
 Gesamtverband	9	NOUN
-offerieren	9	OTHER
+offerieren	9	VERB
 Museumsbauten	9	NOUN
 Kulturinstitute	9	NOUN
 Pellegrini	9	NOUN
@@ -107428,7 +107428,7 @@ Faivre	9	NOUN
 Körperwelt	9	NOUN
 Zahlenverhältnissen	9	NOUN
 entspringe	9	OTHER
-implizierten	9	OTHER
+implizierten	9	VERB,OTHER
 Alanus	9	NOUN
 befreienden	9	OTHER
 Gnadenakt	9	NOUN
@@ -107467,7 +107467,7 @@ Interbankenhandel	9	NOUN
 dazugehört	9	OTHER
 Erhaltungssätze	9	NOUN
 punktförmig	9	OTHER
-auseinanderliegen	9	OTHER
+auseinanderliegen	9	VERB
 Heisenbergsche	9	NOUN
 Vorfaktor	9	NOUN
 cartesianischen	9	OTHER
@@ -107483,7 +107483,7 @@ unverschlüsselte	9	OTHER
 Abmahnungen	9	NOUN
 Schadensersatzanspruch	9	NOUN
 Währungskorb	9	NOUN
-großgeschrieben	9	OTHER
+großgeschrieben	9	VERB
 Paneuropa	9	NOUN
 Coudenhove	9	NOUN
 Kalergi	9	NOUN
@@ -107520,7 +107520,7 @@ Kaskadenkette	9	NOUN
 Nordmann	9	NOUN
 Bergarbeiterstreik	9	NOUN
 kandidierenden	9	OTHER
-zugegangen	9	OTHER
+zugegangen	9	VERB
 Unsterblicher	9	NOUN,OTHER
 Streibl	9	NOUN
 Versprecher	9	NOUN
@@ -107535,12 +107535,12 @@ abstirbt	9	OTHER
 AGG	9	NOUN,OTHER
 Theologien	9	NOUN
 Prodikos	9	NOUN
-zuzumuten	9	OTHER
+zuzumuten	9	VERB
 Prädikator	9	NOUN
 omne	9	OTHER
 Strebevermögen	9	NOUN
 unsittlich	9	OTHER
-kommutieren	9	OTHER
+kommutieren	9	VERB
 Rechenregel	9	NOUN
 Definitionsbereichs	9	NOUN
 Steckerbrett	9	NOUN
@@ -107564,7 +107564,7 @@ Nanometerbereich	9	NOUN
 Willoughby	9	NOUN
 brauchbares	9	OTHER
 intelligentes	9	OTHER
-unterboten	9	OTHER
+unterboten	9	VERB
 Funktionsverlust	9	NOUN
 Phasendrehung	9	NOUN
 frequenzabhängige	9	OTHER
@@ -107606,8 +107606,8 @@ Oberton	9	NOUN
 Bergstürze	9	NOUN
 Hypozentrum	9	NOUN
 Ortsbestimmung	9	NOUN
-auseinandergezogen	9	OTHER
-zubewegen	9	OTHER
+auseinandergezogen	9	VERB
+zubewegen	9	VERB
 oblique	9	OTHER
 logarithmischer	9	OTHER
 Stuff	9	NOUN,OTHER
@@ -107653,7 +107653,7 @@ Morricones	9	NOUN
 Pfiffe	9	NOUN
 Spasski	9	NOUN
 Treppenstufen	9	NOUN
-wahrhaben	9	OTHER
+wahrhaben	9	VERB
 Einsichtnahme	9	NOUN
 romantisierende	9	OTHER
 Umsetzbarkeit	9	NOUN
@@ -107679,7 +107679,7 @@ Grenadiere	9	NOUN
 Ableitungsfunktion	9	NOUN
 Morphems	9	NOUN
 rhetorisches	9	OTHER
-standgehalten	9	OTHER
+standgehalten	9	VERB
 fälschliche	9	OTHER
 Verwendungsweise	9	NOUN
 Aussonderung	9	NOUN
@@ -107739,7 +107739,7 @@ nihilistische	9	OTHER
 Moralismus	9	NOUN
 treibe	9	OTHER
 durchgreifend	9	OTHER
-einmünden	9	OTHER
+einmünden	9	VERB
 Flugreisen	9	NOUN
 Studienbeginn	9	NOUN
 robustere	9	OTHER
@@ -107752,7 +107752,7 @@ Elefantenvögel	9	NOUN
 Elektrolysen	9	NOUN
 Galvanotechnik	9	NOUN
 AgCl	9	NOUN
-entgegnen	9	OTHER
+entgegnen	9	VERB
 blaugrau	9	OTHER
 Kontrastierung	9	NOUN
 Brutgebieten	9	NOUN
@@ -107804,7 +107804,7 @@ Oberflächlichkeit	9	NOUN
 Hales	9	NOUN
 punischer	9	NOUN,OTHER
 rhei	9	OTHER
-ausstrahlten	9	OTHER
+ausstrahlten	9	VERB
 stoisch	9	OTHER
 Funkstationen	9	NOUN
 Säuregehalt	9	NOUN
@@ -107861,7 +107861,7 @@ Godfather	9	NOUN
 Puzo	9	NOUN
 Schnittfassung	9	NOUN
 Eingriffsmöglichkeiten	9	NOUN
-vorwegnehmen	9	OTHER
+vorwegnehmen	9	VERB
 Renoirs	9	NOUN
 Burnett	9	NOUN
 jäh	9	OTHER
@@ -107887,7 +107887,7 @@ Grundmasse	9	NOUN
 Kenntnisnahme	9	NOUN
 Orientales	9	NOUN,OTHER
 druidischen	9	OTHER
-untermauerten	9	OTHER
+untermauerten	9	VERB,OTHER
 Staatsquote	9	NOUN
 AEU	9	NOUN
 Fitch	9	NOUN
@@ -107951,7 +107951,7 @@ Holzwerkstoffen	9	NOUN
 Nelke	9	NOUN
 folgenschweren	9	OTHER
 Eheversprechen	9	NOUN
-verhüllten	9	OTHER
+verhüllten	9	VERB,OTHER
 asketischer	9	OTHER
 Rossmann	9	NOUN
 bedrückende	9	OTHER
@@ -107961,11 +107961,11 @@ bestimmbaren	9	OTHER
 Bekundung	9	NOUN
 reinsten	9	OTHER
 nationalistisches	9	OTHER
-aushändigen	9	OTHER
+aushändigen	9	VERB
 Saterfriesisch	9	NOUN,OTHER
 altfriesische	9	NOUN,OTHER
 Westfriesischen	9	NOUN,OTHER
-belichteten	9	OTHER
+belichteten	9	VERB
 Einscannen	9	NOUN,OTHER
 Salgado	9	NOUN
 Gratwanderung	9	NOUN
@@ -108019,7 +108019,7 @@ ZEW	9	NOUN
 strengstens	9	OTHER
 Abänderungen	9	NOUN
 Staatsanwälten	9	NOUN
-sanktionieren	9	OTHER
+sanktionieren	9	VERB
 temporärer	9	OTHER
 Herkunftsstaaten	9	NOUN
 überparteilichen	9	OTHER
@@ -108088,16 +108088,16 @@ Flandre	9	NOUN
 Lebensmittellieferungen	9	NOUN
 Karosse	9	NOUN
 Fußvolk	9	NOUN
-hinwirken	9	OTHER
+hinwirken	9	VERB
 Bierbrauer	9	NOUN
 Kriegslage	9	NOUN
-zuvorkommen	9	OTHER
-übersenden	9	OTHER
+zuvorkommen	9	VERB
+übersenden	9	VERB
 Bürgerfest	9	NOUN
 Erscheinungsweise	9	NOUN
 mehrheitliche	9	OTHER
 staatsbürgerliche	9	OTHER
-tauen	9	OTHER
+tauen	9	VERB
 greifende	9	OTHER
 Hanning	9	NOUN
 Bassano	9	NOUN
@@ -108106,7 +108106,7 @@ Purrmann	9	NOUN
 Wolfskehl	9	NOUN
 Häuserkampf	9	NOUN
 Lanzi	9	NOUN,OTHER
-hinausragen	9	OTHER
+hinausragen	9	VERB
 Bargello	9	NOUN
 Dombauhütte	9	NOUN
 mengentheoretisch	9	OTHER
@@ -108129,7 +108129,7 @@ Jagdflugzeugen	9	NOUN
 Funkfeuer	9	NOUN
 Symphonien	9	NOUN
 Kontrasubjekt	9	NOUN
-zurückgebogen	9	OTHER
+zurückgebogen	9	VERB
 Staunässe	9	NOUN
 Wegmann	9	NOUN
 Kühlwassers	9	NOUN
@@ -108147,7 +108147,7 @@ südgermanischen	9	OTHER
 Nationalelf	9	NOUN
 Ehejahren	9	NOUN
 Festungs	9	NOUN
-zollen	9	OTHER
+zollen	9	VERB
 Hauptverantwortliche	9	NOUN
 seelisches	9	OTHER
 Statist	9	NOUN
@@ -108186,7 +108186,7 @@ RSF	9	NOUN
 Employment	9	NOUN,OTHER
 Gläubigers	9	NOUN
 Geldforderungen	9	NOUN
-abzuwerten	9	OTHER
+abzuwerten	9	VERB
 Heber	9	NOUN
 Kokon	9	NOUN
 Plattenhardt	9	NOUN
@@ -108267,12 +108267,12 @@ Tepalen	9	NOUN
 Biopic	9	NOUN
 Stroheim	9	NOUN
 Anfangstagen	9	NOUN
-zusammenzubringen	9	OTHER
+zusammenzubringen	9	VERB
 Greenspan	9	NOUN
 Pippiniden	9	NOUN
 Durchsetzungsvermögen	9	NOUN
 salbte	9	OTHER
-aufbieten	9	OTHER
+aufbieten	9	VERB
 Äbten	9	NOUN
 elementigen	9	OTHER
 Taylorreihen	9	NOUN
@@ -108289,7 +108289,7 @@ rektale	9	OTHER
 Studienlage	9	NOUN
 Abschattung	9	NOUN
 Kurznachrichten	9	NOUN
-aspirierten	9	OTHER
+aspirierten	9	VERB,OTHER
 Hiat	9	NOUN
 Obertönen	9	NOUN
 Sinusschwingungen	9	NOUN
@@ -108365,7 +108365,7 @@ Koralmbahn	9	NOUN
 Semmeringbahn	9	NOUN
 Zeichensprache	9	NOUN
 Greuel	9	NOUN
-verwickelten	9	OTHER
+verwickelten	9	VERB,OTHER
 vielgestaltigen	9	OTHER
 Hydronymie	9	NOUN
 anvisierte	9	OTHER
@@ -108475,10 +108475,10 @@ Ortsräte	9	NOUN
 Gote	9	NOUN
 Paulinerkirche	9	NOUN
 verkehrsgünstigen	9	OTHER
-rangierten	9	OTHER
+rangierten	9	VERB
 quartierte	9	OTHER
 Hinrichtungsmethode	9	NOUN
-verbuchten	9	OTHER
+verbuchten	9	VERB
 Grubenhagen	9	NOUN
 Ratsvorsitzenden	9	NOUN
 Musikwissenschaftlern	9	NOUN
@@ -108540,7 +108540,7 @@ Einschnürung	9	NOUN
 Kannen	9	NOUN
 Venise	9	NOUN
 venezianischem	9	OTHER
-signierten	9	OTHER
+signierten	9	VERB,OTHER
 kunsthandwerklichen	9	OTHER
 Gallé	9	NOUN
 Teiches	9	NOUN
@@ -108603,8 +108603,8 @@ Ziusudra	9	NOUN
 Megiddo	9	NOUN
 bedrückenden	9	OTHER
 erliegt	9	OTHER
-auszusenden	9	OTHER
-bestaunen	9	OTHER
+auszusenden	9	VERB
+bestaunen	9	VERB
 Popularitätsschub	9	NOUN
 Kaufmannstochter	9	NOUN
 Hanneles	9	NOUN
@@ -108703,7 +108703,7 @@ Kurzbezeichnungen	9	NOUN
 Ausgangssignale	9	NOUN
 DisplayPort	9	NOUN
 Macrovision	9	NOUN
-sequenzieren	9	OTHER
+sequenzieren	9	VERB
 haftete	9	OTHER
 Mimas	9	NOUN
 Daktylen	9	NOUN
@@ -108731,10 +108731,10 @@ Welte	9	NOUN
 prangerten	9	OTHER
 Brüllen	9	NOUN,OTHER
 Ilmenit	9	NOUN
-favorisieren	9	OTHER
+favorisieren	9	VERB
 Nuklids	9	NOUN
-erklimmen	9	OTHER
-abschaben	9	OTHER
+erklimmen	9	VERB
+abschaben	9	VERB
 Savage	9	NOUN
 Fernsehgeschichte	9	NOUN
 wiederkehrt	9	OTHER
@@ -108788,7 +108788,7 @@ abdrucken	9	NOUN,OTHER
 zweifelnde	9	OTHER
 Hochwald	9	NOUN
 Vierteljahr	9	NOUN
-abtransportieren	9	OTHER
+abtransportieren	9	VERB
 Scharlatan	9	NOUN
 Fortsetzungskrieg	9	NOUN
 widersprechend	9	OTHER
@@ -108908,7 +108908,7 @@ zuträglich	9	OTHER
 Ansiedler	9	NOUN
 Sandomir	9	NOUN
 Hinterindien	9	NOUN
-meißeln	9	OTHER
+meißeln	9	VERB
 Hollingstedt	9	NOUN
 Holk	9	NOUN
 Transportwesens	9	NOUN
@@ -108991,7 +108991,7 @@ Ernährungszustand	9	NOUN
 Limnologie	9	NOUN
 Basisbereich	9	NOUN
 Hexadezimalzahlen	9	NOUN
-freihalten	9	OTHER
+freihalten	9	VERB
 Handwerksunternehmen	9	NOUN
 Wulfstan	9	NOUN
 Glasperlen	9	NOUN
@@ -109067,7 +109067,7 @@ Leids	9	NOUN
 Kurzwellensender	9	NOUN
 Davison	9	NOUN
 Adom	9	NOUN
-uniformierten	9	OTHER
+uniformierten	9	VERB
 Whois	9	NOUN,OTHER
 Initiationen	9	NOUN
 Initiationsritus	9	NOUN
@@ -109080,7 +109080,7 @@ ausgetauschten	9	OTHER
 Geschwindigkeitsmessung	9	NOUN
 übertragenem	9	OTHER
 LSE	9	NOUN
-herauskommen	9	OTHER
+herauskommen	9	VERB
 Selbstinduktion	9	NOUN
 Stromkreises	9	NOUN
 Leiterschleifen	9	NOUN
@@ -109091,7 +109091,7 @@ Schotterebene	9	NOUN
 Sohlgefälle	9	NOUN
 Mühleninsel	9	NOUN
 Schaulustigen	9	NOUN
-kanalisieren	9	OTHER
+kanalisieren	9	VERB
 Flutmulde	9	NOUN
 Verbauungen	9	NOUN
 sehenswerter	9	OTHER
@@ -109111,7 +109111,7 @@ verhungert	9	OTHER
 Allahabad	9	NOUN
 Slum	9	NOUN
 linksradikale	9	OTHER
-verpfänden	9	OTHER
+verpfänden	9	VERB
 Subdivisions	9	NOUN
 Hemmnisse	9	NOUN
 Aquakulturen	9	NOUN
@@ -109253,7 +109253,7 @@ Cannonball	9	NOUN
 Adderley	9	NOUN
 Erdberg	9	NOUN
 Dinah	9	NOUN
-liebten	9	OTHER
+liebten	9	VERB
 Musicians	9	NOUN
 Reb	9	NOUN
 Bechet	9	NOUN
@@ -109270,7 +109270,7 @@ GRS	9	NOUN
 Günstlingen	9	NOUN
 Oberlehrer	9	NOUN
 Encke	9	NOUN
-ausersehen	9	OTHER
+ausersehen	9	VERB
 jeunes	9	NOUN,OTHER
 Chiracs	9	NOUN
 Unterdialekte	9	NOUN
@@ -109299,7 +109299,7 @@ Rückschritte	9	NOUN
 Gründungsakt	9	NOUN
 zugemutet	9	OTHER
 Weltgeschehens	9	NOUN
-mahnen	9	OTHER
+mahnen	9	VERB
 Zoran	9	NOUN
 Rorty	9	NOUN
 Badinter	9	NOUN
@@ -109316,7 +109316,7 @@ verfertigte	9	OTHER
 Hertzog	9	NOUN
 Lyzeums	9	NOUN
 Präludien	9	NOUN
-nachholen	9	OTHER
+nachholen	9	VERB
 dreistimmigen	9	OTHER
 Kaufsumme	9	NOUN
 transkribieren	9	NOUN,OTHER
@@ -109360,14 +109360,14 @@ Nave	9	NOUN,OTHER
 Jesús	9	NOUN
 Gesellschafterversammlung	9	NOUN
 Einsprüche	9	NOUN
-erwirkten	9	OTHER
+erwirkten	9	VERB
 Archivbestände	9	NOUN
 Privilegs	9	NOUN
 Kirchenrat	9	NOUN
 Ehr	9	NOUN,OTHER
 entrichtende	9	OTHER
 Wiederholungsfall	9	NOUN
-säumten	9	OTHER
+säumten	9	VERB
 Gymnasiast	9	NOUN
 Winton	9	NOUN
 Mom	9	NOUN
@@ -109427,7 +109427,7 @@ Germanica	9	NOUN,OTHER
 kommunalem	9	OTHER
 Koeln	9	NOUN,OTHER
 Universitätsviertel	9	NOUN
-einfinden	9	OTHER
+einfinden	9	VERB
 Jugendchor	9	NOUN
 halbjährlichen	9	OTHER
 völkerkundliche	9	OTHER
@@ -109464,13 +109464,13 @@ Traditionsbildung	9	NOUN
 Lalitpur	9	NOUN
 Freundschaftsbrücke	9	NOUN
 Kathmandutal	9	NOUN
-einzubüßen	9	OTHER
+einzubüßen	9	VERB
 Kessellage	9	NOUN
-höchstmöglichen	9	OTHER
+höchstmöglichen	9	VERB
 Roald	9	NOUN
 Druckfahnen	9	NOUN
-internieren	9	OTHER
-eingeschlafen	9	OTHER
+internieren	9	VERB
+eingeschlafen	9	VERB
 Porträtbüste	9	NOUN
 Agitatoren	9	NOUN
 Rechtsrahmen	9	NOUN
@@ -109495,7 +109495,7 @@ Bürgerausschuss	9	NOUN
 Unterwasserwelt	9	NOUN
 Kammeroper	9	NOUN
 Wasserski	9	NOUN
-zurückgriffen	9	OTHER
+zurückgriffen	9	VERB
 Kerguelen	9	NOUN
 Großkontinent	9	NOUN
 zurechnet	9	OTHER
@@ -109594,7 +109594,7 @@ Morgenland	9	NOUN
 Wortlauts	9	NOUN
 orthografisch	9	OTHER
 concertante	9	OTHER
-betäuben	9	OTHER
+betäuben	9	VERB
 Lateinersegel	9	NOUN
 Traglast	9	NOUN
 Pinta	9	NOUN
@@ -109604,7 +109604,7 @@ machtlosen	9	OTHER
 eingewilligt	9	OTHER
 Exarchen	9	NOUN
 heilsgeschichtlich	9	OTHER
-verdeutlichten	9	OTHER
+verdeutlichten	9	VERB,OTHER
 idealisierende	9	OTHER
 Dalmatiens	9	NOUN
 Illyrismus	9	NOUN
@@ -109634,7 +109634,7 @@ Frühlatènezeit	9	NOUN
 Blutgerichtsbarkeit	9	NOUN
 Sickingen	9	NOUN
 Gelehrtenschule	9	NOUN
-verenden	9	OTHER
+verenden	9	VERB
 epigenetischen	9	OTHER
 Kulturleistungen	9	NOUN
 Bewußtseins	9	NOUN
@@ -109693,7 +109693,7 @@ Heeresversammlung	9	NOUN
 Avers	9	NOUN
 Wortbruch	9	NOUN
 Abbauweg	9	NOUN
-verketten	9	OTHER
+verketten	9	VERB
 Gärungen	9	NOUN
 reduzierende	9	OTHER
 stattfindender	9	OTHER
@@ -109726,7 +109726,7 @@ Antiterrorkrieg	9	NOUN
 konkurrenzfähigen	9	OTHER
 Jahresdurchschnittstemperaturen	9	NOUN
 migrieren	9	OTHER
-aufliefen	9	OTHER
+aufliefen	9	VERB
 Kaffeebohnen	9	NOUN
 Methylgruppen	9	NOUN
 Wachzustand	9	NOUN
@@ -109745,7 +109745,7 @@ Werbegrafiker	9	NOUN
 Dillon	9	NOUN
 Morten	9	NOUN
 inkrementelle	9	OTHER
-herunterzuladen	9	OTHER
+herunterzuladen	9	VERB
 Rückfrage	9	NOUN
 Fackellauf	9	NOUN
 verschwenderisch	9	OTHER
@@ -109753,7 +109753,7 @@ Bildunterschrift	9	NOUN
 Unterlassungserklärung	9	NOUN
 Maischberger	9	NOUN
 übler	9	OTHER
-beanstandeten	9	OTHER
+beanstandeten	9	VERB
 narzisstische	9	OTHER
 Einschreibung	9	NOUN
 Typoskript	9	NOUN
@@ -109838,7 +109838,7 @@ Aubry	9	NOUN
 altindisch	9	OTHER
 Temperamente	9	NOUN
 Bezirksgerichts	9	NOUN
-kartografieren	9	OTHER
+kartografieren	9	VERB
 Powells	9	NOUN
 burische	9	OTHER
 Stellenbosch	9	NOUN
@@ -109897,7 +109897,7 @@ Funknetze	9	NOUN
 Lüne	9	NOUN
 Fuhrwerken	9	NOUN
 Höchstzahl	9	NOUN
-niedergerissen	9	OTHER
+niedergerissen	9	VERB
 Pfingstgemeinde	9	NOUN
 Stadtspitze	9	NOUN
 Hinz	9	NOUN
@@ -109967,7 +109967,7 @@ Maaß	9	NOUN
 Magnes	9	NOUN,OTHER
 Kettensägen	9	NOUN
 Spinell	9	NOUN
-oxidierten	9	OTHER
+oxidierten	9	VERB,OTHER
 Molybdänit	9	NOUN
 Metallurgen	9	NOUN
 Climax	9	NOUN
@@ -109990,7 +109990,7 @@ Greer	9	NOUN
 Gréco	9	NOUN
 Neuzugängen	9	NOUN
 Sichelzellenanämie	9	NOUN
-abgeworben	9	OTHER
+abgeworben	9	VERB
 spielend	9	OTHER
 Mittelbairischen	9	NOUN,OTHER
 Sendlinger	9	NOUN
@@ -110008,7 +110008,7 @@ Quantenoptik	9	NOUN
 ESK	9	NOUN
 Bildungsauftrag	9	NOUN
 Machtapparat	9	NOUN
-hinführen	9	OTHER
+hinführen	9	VERB
 Stapelverarbeitungsdateien	9	NOUN
 telefonischen	9	OTHER
 Browserkrieg	9	NOUN
@@ -110080,10 +110080,10 @@ bemessenen	9	OTHER
 Illyrern	9	NOUN
 athenischer	9	OTHER
 DSE	9	NOUN
-ausweiteten	9	OTHER
+ausweiteten	9	VERB
 slawischsprachigen	9	OTHER
 Patchwork	9	NOUN
-marginalisierten	9	OTHER
+marginalisierten	9	VERB,OTHER
 Quecke	9	NOUN
 respektlos	9	OTHER
 thebanischen	9	OTHER
@@ -110152,7 +110152,7 @@ Opinion	9	NOUN,OTHER
 SfS	9	NOUN
 Calabria	9	NOUN
 Dun	9	NOUN
-rekombinieren	9	OTHER
+rekombinieren	9	VERB
 Hauptgipfel	9	NOUN
 Lärms	9	NOUN
 Gemeindenamen	9	NOUN
@@ -110168,7 +110168,7 @@ Kröten	9	NOUN
 Pinen	9	NOUN
 Münzsystem	9	NOUN
 Münzherren	9	NOUN
-verschönern	9	OTHER
+verschönern	9	VERB
 Méditerranée	9	NOUN
 Jordaens	9	NOUN
 verfallende	9	OTHER
@@ -110186,10 +110186,10 @@ Instituut	9	NOUN
 pflegerische	9	OTHER
 Keos	9	NOUN
 siebzehnten	9	OTHER
-benützen	9	OTHER
+benützen	9	VERB
 Mink	9	NOUN
 Euterpe	9	NOUN
-abzuspeichern	9	OTHER
+abzuspeichern	9	VERB
 Marktbreit	9	NOUN
 Mainschleife	9	NOUN
 Ortskernen	9	NOUN
@@ -110202,7 +110202,7 @@ Kernwaffe	9	NOUN
 Gepard	9	NOUN
 Megalith	9	NOUN
 Vorbedingungen	9	NOUN
-durchstochen	9	OTHER
+durchstochen	9	VERB
 Malo	9	NOUN
 Milcherzeugnisse	9	NOUN
 Vitamingehalt	9	NOUN
@@ -110347,7 +110347,7 @@ Eisschilde	9	NOUN
 Waldboden	9	NOUN
 Wohlfahrtsstaat	9	NOUN
 Bane	9	NOUN,OTHER
-herausgaben	9	OTHER
+herausgaben	9	VERB
 Aamodt	9	NOUN
 Schneier	9	NOUN
 Dreiundzwanzig	9	NOUN,OTHER
@@ -110368,7 +110368,7 @@ Prädestinierten	9	NOUN,OTHER
 Clary	9	NOUN
 fürstbischöflichen	9	OTHER
 Gängelung	9	NOUN
-abzudanken	9	OTHER
+abzudanken	9	VERB
 Mätressen	9	NOUN
 Hoeges	9	NOUN
 unterschwellige	9	OTHER
@@ -110402,7 +110402,7 @@ isiXhosa	9	OTHER
 Bonaventure	9	NOUN
 Klassensystem	9	NOUN
 Mischsprachen	9	NOUN
-zusammengehören	9	OTHER
+zusammengehören	9	VERB
 Luganda	9	NOUN
 Teufelspakt	9	NOUN
 Militärausschuss	9	NOUN
@@ -110416,7 +110416,7 @@ Heranziehung	9	NOUN
 Handlungsabläufe	9	NOUN
 Cupressaceae	9	NOUN
 Larix	9	NOUN
-herausfallen	9	OTHER
+herausfallen	9	VERB
 Konventikel	9	NOUN
 Pferdestall	9	NOUN
 Skelettreste	9	NOUN
@@ -110555,7 +110555,7 @@ routinemäßige	9	OTHER
 bewahre	9	OTHER
 Rechtssinne	9	NOUN
 Christenmenschen	9	NOUN
-typisierten	9	OTHER
+typisierten	9	VERB,OTHER
 Objektivierung	9	NOUN
 Beamtenverhältnis	9	NOUN
 Gesamtdauer	9	NOUN
@@ -110573,7 +110573,7 @@ Verfassungsschutzbehörden	9	NOUN
 Äquatorialebene	9	NOUN
 nee	9	OTHER
 heptatonischen	9	OTHER
-erwachten	9	OTHER
+erwachten	9	VERB
 Lichtkurven	9	NOUN
 Instrumentalstücke	9	NOUN
 Président	9	NOUN,OTHER
@@ -110624,7 +110624,7 @@ Robbenarten	9	NOUN
 unüberwindliche	9	OTHER
 übersichtliche	9	OTHER
 Catalyst	9	NOUN
-auseinandergebrochen	9	OTHER
+auseinandergebrochen	9	VERB
 Eispanzer	9	NOUN
 Radioserie	9	NOUN
 Armeechef	9	NOUN
@@ -110853,7 +110853,7 @@ Pietät	9	NOUN
 Grundrisses	9	NOUN
 pilgerte	9	OTHER
 Fjodorowna	9	NOUN
-zusammengeschlagen	9	OTHER
+zusammengeschlagen	9	VERB
 verleumdet	9	OTHER
 Zarewitschs	9	NOUN
 Bolschewisten	9	NOUN
@@ -110901,7 +110901,7 @@ Leitmotivs	9	NOUN
 Zukunftsmusik	9	NOUN
 Tonsatz	9	NOUN
 trostlosen	9	OTHER
-adressierten	9	OTHER
+adressierten	9	VERB
 effektvoll	9	OTHER
 Aufführungsverbot	9	NOUN
 Septakkord	9	NOUN
@@ -110953,7 +110953,7 @@ Moebius	9	NOUN
 Rauchgase	9	NOUN
 Füllstoffen	9	NOUN
 Scandiumoxid	9	NOUN
-herausgezogen	9	OTHER
+herausgezogen	9	VERB
 Stahlkonstruktionen	9	NOUN
 Windströmungen	9	NOUN
 Maichingen	9	NOUN
@@ -110964,7 +110964,7 @@ Einzelwagen	9	NOUN
 Monorail	9	NOUN
 Doppeltraktion	9	NOUN
 Außenwerbung	9	NOUN
-havarierten	9	OTHER
+havarierten	9	VERB
 Ersatzverkehr	9	NOUN
 Fotoaufnahmen	9	NOUN
 Stammlinie	9	NOUN
@@ -111001,8 +111001,8 @@ absinkenden	9	OTHER
 Dokumenttypen	9	NOUN
 Stillwell	9	NOUN
 Herrschaftskomplex	9	NOUN
-verwahrten	9	OTHER
-schuldeten	9	OTHER
+verwahrten	9	VERB
+schuldeten	9	VERB
 Königsamt	9	NOUN
 Baronen	9	NOUN
 tributpflichtigen	9	OTHER
@@ -111112,7 +111112,7 @@ Drucktanks	9	NOUN
 Sondergebiet	9	NOUN
 wiedererrichtete	9	OTHER
 Beschäftigungsstruktur	9	NOUN
-ärgern	9	OTHER
+ärgern	9	VERB
 serifenlose	9	OTHER
 Whittaker	9	NOUN
 Epidauros	9	NOUN
@@ -111122,7 +111122,7 @@ Regionalentwicklung	9	NOUN
 exportorientierten	9	OTHER
 Freiheitsberaubung	9	NOUN
 Vergangenheitsformen	9	NOUN
-abgegriffen	9	OTHER
+abgegriffen	9	VERB
 IHO	9	NOUN
 Schambein	9	NOUN
 fortpflanzungsfähig	9	OTHER
@@ -111166,7 +111166,7 @@ Nistkästen	9	NOUN
 Kettenreaktionen	9	NOUN
 Capsula	9	NOUN
 Kretinismus	9	NOUN
-einzustehen	9	OTHER
+einzustehen	9	VERB
 Kollektivschuld	9	NOUN
 Noahs	9	NOUN
 verdirbt	9	OTHER
@@ -111174,7 +111174,7 @@ Hochstetter	9	NOUN
 Liederzyklus	9	NOUN
 Annelida	9	NOUN
 SMP	9	NOUN
-abzustellen	9	OTHER
+abzustellen	9	VERB
 Vitruvius	9	NOUN
 mecklenburgisches	9	NOUN,OTHER
 Mehler	9	NOUN
@@ -111187,7 +111187,7 @@ zugesagte	9	OTHER
 Gottesdienstordnung	9	NOUN
 Brutvögel	9	NOUN
 Bestandszahlen	9	NOUN
-verfeinern	9	OTHER
+verfeinern	9	VERB
 Unglaube	9	NOUN
 Attributliste	9	NOUN
 Rollback	9	NOUN
@@ -111225,7 +111225,7 @@ Kosekans	9	NOUN
 µA	9	OTHER
 gemahnt	9	OTHER
 lebenslänglich	9	OTHER
-flankierten	9	OTHER
+flankierten	9	VERB,OTHER
 Wehrmachtsoldaten	9	NOUN
 krassem	9	OTHER
 wasserhaltigen	9	OTHER
@@ -111233,7 +111233,7 @@ wasserhaltigen	9	OTHER
 Operationalisierung	9	NOUN
 unzutreffende	9	OTHER
 Missionierungsversuche	9	NOUN
-beugten	9	OTHER
+beugten	9	VERB
 Genitals	9	NOUN
 Taarab	9	NOUN,OTHER
 Vorgängermodellen	9	NOUN
@@ -111265,7 +111265,7 @@ Udon	9	NOUN
 Parties	9	NOUN,OTHER
 Achtungserfolge	9	NOUN
 Lacy	9	NOUN
-alarmieren	9	OTHER
+alarmieren	9	VERB
 Iterationsschritt	9	NOUN
 gesetzgebendes	9	OTHER
 Kantonsschulen	9	NOUN
@@ -111351,7 +111351,7 @@ Verdeutschung	9	NOUN
 Bizerte	9	NOUN
 Beys	9	NOUN
 Ennahda	9	NOUN
-erwählen	9	OTHER
+erwählen	9	VERB
 unterwerfe	9	OTHER
 Offb	9	NOUN
 Vorwiderstand	9	NOUN
@@ -111411,7 +111411,7 @@ Kaganowitsch	9	NOUN
 Konzernbildung	9	NOUN
 Steuergelder	9	NOUN
 Wärmeversorgung	9	NOUN
-inkorporierten	9	OTHER
+inkorporierten	9	VERB,OTHER
 Geburtskirche	9	NOUN
 Hierarchen	9	NOUN
 Rastrelli	9	NOUN
@@ -111453,7 +111453,7 @@ Folsom	9	NOUN
 Schorsch	9	NOUN
 Andrée	9	NOUN
 Wladimirowitsch	9	NOUN
-wälzen	9	OTHER
+wälzen	9	VERB
 Marci	9	NOUN,OTHER
 Ordensgeneral	9	NOUN
 Necronomicon	9	NOUN
@@ -111514,7 +111514,7 @@ Impressionist	9	NOUN
 Dämmung	9	NOUN
 Wildschönau	9	NOUN
 Brixentaler	9	NOUN
-zurückgefallen	9	OTHER
+zurückgefallen	9	VERB
 Gasthöfe	9	NOUN
 Wassereinbruch	9	NOUN
 Liesl	9	NOUN
@@ -111615,7 +111615,7 @@ Irrfahrt	9	NOUN
 Stapledons	9	NOUN
 Freizeitangebote	9	NOUN
 Stadtguerilla	9	NOUN
-agitierten	9	OTHER
+agitierten	9	VERB,OTHER
 Somozas	9	NOUN
 Seelenbinder	9	NOUN
 Militärgouverneure	9	NOUN
@@ -111648,10 +111648,10 @@ Vorfrühling	9	NOUN
 Roanoke	9	NOUN
 Späher	9	NOUN
 Chocolate	9	NOUN
-gefroren	9	OTHER
+gefroren	9	VERB
 Westflorida	9	NOUN
 Glatz	9	NOUN
-verorteten	9	OTHER
+verorteten	9	VERB,OTHER
 Penang	9	NOUN
 Werkzyklus	9	NOUN
 Munzinger	9	NOUN
@@ -111720,7 +111720,7 @@ Fachgerichte	9	NOUN
 Studienjahre	9	NOUN
 Fremdenführer	9	NOUN
 Nahrungsbeschaffung	9	NOUN
-schalteten	9	OTHER
+schalteten	9	VERB
 Brandner	9	NOUN
 Hünxe	9	NOUN
 Harpune	9	NOUN
@@ -111799,7 +111799,7 @@ Stechlinsee	9	NOUN
 Nightmare	9	NOUN
 Zarlino	9	NOUN
 Ganztönen	9	NOUN
-authentifizieren	9	OTHER
+authentifizieren	9	VERB
 Subnetzmaske	9	NOUN
 Polydeukes	9	NOUN
 unveräußerlichen	9	OTHER
@@ -111891,7 +111891,7 @@ Unitary	9	NOUN
 Caernarfon	9	NOUN
 Metrorapid	9	NOUN
 Beteiligungs	9	NOUN
-addierten	9	OTHER
+addierten	9	VERB
 Kostenerstattung	9	NOUN
 Harmonium	9	NOUN
 Großzyklus	9	NOUN
@@ -111955,8 +111955,8 @@ Marimba	9	NOUN,OTHER
 Tengrismus	9	NOUN
 Lengua	9	NOUN
 PADI	9	NOUN
-ankündigten	9	OTHER
-gastierten	9	OTHER
+ankündigten	9	VERB
+gastierten	9	VERB
 Butare	9	NOUN
 Kriminalitätsraten	9	NOUN
 Maintenance	9	NOUN
@@ -112127,7 +112127,7 @@ Shenyang	9	NOUN
 Versuchstier	9	NOUN
 Celans	9	NOUN
 Preußenkönig	9	NOUN
-bespielen	9	OTHER
+bespielen	9	VERB
 Misoprostol	9	NOUN
 Merw	9	NOUN
 Baumwollproduktion	9	NOUN
@@ -112150,7 +112150,7 @@ Urstromtälern	9	NOUN
 schattigen	9	OTHER
 Bruchwald	9	NOUN
 Elsinore	9	NOUN
-demontieren	9	OTHER
+demontieren	9	VERB
 Marschgebiete	9	NOUN
 Liebing	9	NOUN
 Radiokohlenstoff	9	NOUN
@@ -112233,7 +112233,7 @@ Bananenplantagen	9	NOUN
 Kokos	9	NOUN
 Portail	9	NOUN
 Redaktionsgemeinschaft	9	NOUN
-überhöhen	9	OTHER
+überhöhen	9	VERB
 Selbstbildnisse	9	NOUN
 Langenhorst	9	NOUN
 XM	9	NOUN
@@ -112318,7 +112318,7 @@ Wüstenwanderung	9	NOUN
 Akiba	9	NOUN
 Deuterojesaja	9	NOUN
 Anon	9	NOUN,OTHER
-coverten	9	OTHER
+coverten	9	VERB
 Limpopo	9	NOUN
 Gewitterzellen	9	NOUN
 halachischen	9	OTHER
@@ -112352,7 +112352,7 @@ Selbstbefreiung	9	NOUN
 Pescher	9	NOUN
 Sebaste	9	NOUN
 Völkermission	9	NOUN
-geleiten	9	OTHER
+geleiten	9	VERB
 Paulusschüler	9	NOUN
 Briefkorpus	9	NOUN
 Römerbriefkommentar	9	NOUN
@@ -112461,7 +112461,7 @@ Madagassen	9	NOUN
 Delaunays	9	NOUN
 Seminolen	9	NOUN
 Kauffahrer	9	NOUN
-hochgehalten	9	OTHER
+hochgehalten	9	VERB
 Obleuten	9	NOUN
 Unterkapitel	9	NOUN
 Bewick	9	NOUN
@@ -112474,7 +112474,7 @@ Burghölzli	9	NOUN
 ZSG	9	NOUN
 Ontology	9	NOUN
 Pseudomonaden	9	NOUN
-ertönen	9	OTHER
+ertönen	9	VERB
 Schnellzuglokomotiven	9	NOUN
 Lenya	9	NOUN
 Varina	9	NOUN
@@ -112504,7 +112504,7 @@ Contests	9	NOUN
 Xen	9	NOUN
 OSPF	9	NOUN
 Availability	9	NOUN
-skalieren	9	OTHER
+skalieren	9	VERB
 Modellumgebung	9	NOUN
 Voßwinkel	9	NOUN
 Alcúdia	9	NOUN
@@ -112842,7 +112842,7 @@ Lieberknecht	9	NOUN
 behindertengerecht	9	OTHER
 Filze	9	NOUN
 Verkäuferin	9	NOUN
-verbüßten	9	OTHER
+verbüßten	9	VERB,OTHER
 Hallermund	9	NOUN
 Grinder	9	NOUN
 Wiehen	9	NOUN
@@ -113239,7 +113239,7 @@ Continuity	8	NOUN,OTHER
 Identitätsverlust	8	NOUN
 Islington	8	NOUN
 Zwischentiteln	8	NOUN
-anliefen	8	OTHER
+anliefen	8	VERB
 Schlüsselszenen	8	NOUN
 Sprachversion	8	NOUN
 unpolitischer	8	OTHER
@@ -113255,14 +113255,14 @@ Lorre	8	NOUN
 unwahrscheinliche	8	OTHER
 Spielorte	8	NOUN
 Überraschungsmoment	8	NOUN
-zurückkommen	8	OTHER
+zurückkommen	8	VERB
 Expositionen	8	NOUN
 Dekors	8	NOUN
 Orchestral	8	NOUN,OTHER
 Wiene	8	NOUN
-erwürgen	8	OTHER
+erwürgen	8	VERB
 heikle	8	OTHER
-entschärften	8	OTHER
+entschärften	8	VERB
 drehe	8	OTHER
 Szenenbildner	8	NOUN
 makabre	8	OTHER
@@ -113287,7 +113287,7 @@ Rechteinhabern	8	NOUN
 Kinoproduktionen	8	NOUN
 Exportvolumen	8	NOUN
 explizitem	8	OTHER
-mitzufinanzieren	8	OTHER
+mitzufinanzieren	8	VERB
 Privatfernsehens	8	NOUN
 ProSiebenSat	8	NOUN
 Buchmessen	8	NOUN
@@ -113333,7 +113333,7 @@ gegenwärtigem	8	OTHER
 korrosionsbeständiger	8	OTHER
 Morin	8	NOUN
 Entfärbung	8	NOUN
-weitergetragen	8	OTHER
+weitergetragen	8	VERB
 beständigste	8	OTHER
 Mauguin	8	NOUN
 Sprödigkeit	8	NOUN
@@ -113489,7 +113489,7 @@ Zeichenvorrat	8	NOUN
 optimiertes	8	OTHER
 Alef	8	NOUN,OTHER
 Jagdflieger	8	NOUN
-befehligten	8	OTHER
+befehligten	8	VERB,OTHER
 Beresford	8	NOUN
 Unbeliebtheit	8	NOUN
 beobachtender	8	OTHER
@@ -113542,7 +113542,7 @@ ehrlicher	8	OTHER
 Sekundanten	8	NOUN
 Douglass	8	NOUN
 Fugitive	8	NOUN
-verunglimpfen	8	OTHER
+verunglimpfen	8	VERB
 verschrien	8	OTHER
 Divided	8	NOUN,OTHER
 entschiedensten	8	OTHER
@@ -113562,7 +113562,7 @@ EAK	8	NOUN
 umweltpolitische	8	OTHER
 Ehrenwort	8	NOUN
 Einlagensicherung	8	NOUN
-verstaatlichen	8	OTHER
+verstaatlichen	8	VERB
 beliebtester	8	OTHER
 Menschenrechtsausschuss	8	NOUN
 mehrwöchiger	8	OTHER
@@ -113607,7 +113607,7 @@ Anthropomorphismus	8	NOUN
 Rossen	8	NOUN
 niederem	8	OTHER
 Denkschulen	8	NOUN
-diskriminieren	8	OTHER
+diskriminieren	8	VERB
 dreifaltigen	8	OTHER
 Abaelardus	8	NOUN
 Gallikanismus	8	NOUN
@@ -113664,7 +113664,7 @@ Abyss	8	NOUN
 Equinox	8	NOUN
 Miramar	8	NOUN
 überdimensionalen	8	OTHER
-proklamieren	8	OTHER
+proklamieren	8	VERB
 Randbemerkungen	8	NOUN
 Schutzgeist	8	NOUN
 Georgina	8	NOUN
@@ -113688,7 +113688,7 @@ Nebi	8	NOUN
 Gellius	8	NOUN
 Fernsehshows	8	NOUN
 Numerik	8	NOUN
-rückschließen	8	OTHER
+rückschließen	8	VERB
 Hedin	8	NOUN
 Nordasien	8	NOUN
 Währungskrise	8	NOUN
@@ -113702,7 +113702,7 @@ vertrauensvollen	8	OTHER
 Betriebszweck	8	NOUN
 Einzelmaßnahmen	8	NOUN
 erwartbaren	8	OTHER
-lahmzulegen	8	OTHER
+lahmzulegen	8	VERB
 Octavianus	8	NOUN
 Praenomen	8	NOUN,OTHER
 virilis	8	OTHER
@@ -113731,12 +113731,12 @@ Carrhae	8	NOUN
 initiiertes	8	OTHER
 Quinctilius	8	NOUN
 Nachfolgekandidaten	8	NOUN
-beerben	8	OTHER
+beerben	8	VERB
 Ferae	8	NOUN
 Augustum	8	NOUN
 oligarchischer	8	OTHER
 Servilius	8	NOUN
-entfachten	8	OTHER
+entfachten	8	VERB
 argumentum	8	NOUN,OTHER
 thálassa	8	OTHER
 Laurasia	8	NOUN
@@ -113758,7 +113758,7 @@ Ebbinghaus	8	NOUN
 Lebedew	8	NOUN
 Geschäftsanteile	8	NOUN
 Verkaufsschlager	8	NOUN
-lizenzieren	8	OTHER
+lizenzieren	8	VERB
 Freescale	8	NOUN
 Apfels	8	NOUN
 Mikrochips	8	NOUN
@@ -113785,7 +113785,7 @@ Beamtenlaufbahn	8	NOUN
 vorgeblicher	8	OTHER
 Sammlungsbewegung	8	NOUN
 Ordonnanz	8	NOUN
-hingegeben	8	OTHER
+hingegeben	8	VERB
 Alldeutsche	8	NOUN
 Hakenkreuzfahnen	8	NOUN
 Programmreform	8	NOUN
@@ -113818,7 +113818,7 @@ Kabinettssitzungen	8	NOUN
 Gesellschaftsbereiche	8	NOUN
 Judenpolitik	8	NOUN
 Judenboykott	8	NOUN
-unterbanden	8	OTHER
+unterbanden	8	VERB
 Amtsantritts	8	NOUN
 Prachtstraßen	8	NOUN
 Weltauffassung	8	NOUN
@@ -113828,7 +113828,7 @@ Greiser	8	NOUN
 Gauleitern	8	NOUN
 Monologs	8	NOUN
 lebensunwerten	8	OTHER
-misslangen	8	OTHER
+misslangen	8	VERB
 Spaniers	8	NOUN
 häufte	8	OTHER
 Nachschubs	8	NOUN
@@ -113837,7 +113837,7 @@ inspirierenden	8	OTHER
 Täuschungsmanöver	8	NOUN
 Einzeltäter	8	NOUN
 Handgemenge	8	NOUN
-weiterkämpfen	8	OTHER
+weiterkämpfen	8	VERB
 Siegesfeier	8	NOUN
 Wutanfall	8	NOUN
 Wenck	8	NOUN
@@ -113896,7 +113896,7 @@ Regelverletzungen	8	NOUN
 Trägersystem	8	NOUN
 Haise	8	NOUN
 Kurskorrekturen	8	NOUN
-übergelaufen	8	OTHER
+übergelaufen	8	VERB
 untergetauchten	8	NOUN,OTHER
 abscheulich	8	OTHER
 Vasodilatation	8	NOUN
@@ -113930,7 +113930,7 @@ Matrikel	8	NOUN
 impliziter	8	OTHER
 unendlichdimensionalen	8	OTHER
 Navier	8	NOUN
-ragten	8	OTHER
+ragten	8	VERB
 Kinderfrau	8	NOUN
 Schützenbruderschaft	8	NOUN
 Romanfragment	8	NOUN
@@ -113939,9 +113939,9 @@ Eigentümerfamilie	8	NOUN
 Sailer	8	NOUN
 Bergengruen	8	NOUN
 schubweise	8	OTHER
-zurückberufen	8	OTHER
-anfertigten	8	OTHER
-vergegenwärtigen	8	OTHER
+zurückberufen	8	VERB
+anfertigten	8	VERB
+vergegenwärtigen	8	VERB
 Heilsgeschehen	8	NOUN
 Salzvorkommen	8	NOUN
 Bergius	8	NOUN
@@ -114001,7 +114001,7 @@ Nerthus	8	NOUN
 Aesti	8	NOUN
 Trunksucht	8	NOUN
 Ascoli	8	NOUN
-entstellten	8	OTHER
+entstellten	8	VERB,OTHER
 Slater	8	NOUN
 Moskowski	8	NOUN
 Schneeleopard	8	NOUN
@@ -114130,7 +114130,7 @@ gesundheitsfördernde	8	OTHER
 postcard	8	NOUN,OTHER
 Foch	8	NOUN
 Kunstaktion	8	NOUN
-verhüllen	8	OTHER
+verhüllen	8	VERB
 Wohlklang	8	NOUN
 Tonsystemen	8	NOUN
 Instrumentenbau	8	NOUN
@@ -114144,7 +114144,7 @@ Expansionen	8	NOUN
 Postel	8	NOUN
 Genussystem	8	NOUN
 ungerechtfertigte	8	OTHER
-palatalisierten	8	OTHER
+palatalisierten	8	VERB,OTHER
 emphatische	8	OTHER
 Orel	8	NOUN
 Kikongo	8	NOUN
@@ -114209,7 +114209,7 @@ halbautomatische	8	OTHER
 Disauerstoff	8	NOUN
 Anaerobier	8	NOUN
 mehrzellige	8	OTHER
-zusammenzusetzen	8	OTHER
+zusammenzusetzen	8	VERB
 Anweisungsblock	8	NOUN
 Suchmuster	8	NOUN
 Coppet	8	NOUN
@@ -114251,7 +114251,7 @@ Moschus	8	NOUN
 Pottwals	8	NOUN
 Sokotra	8	NOUN
 Kreüterbuch	8	NOUN
-aufgewogen	8	OTHER
+aufgewogen	8	VERB
 Wellenlängenbereiche	8	NOUN
 Strahlungsbilanz	8	NOUN
 reformpädagogischen	8	OTHER
@@ -114271,7 +114271,7 @@ Demonstrationszwecken	8	NOUN
 Interrupts	8	NOUN
 Bauelements	8	NOUN
 Unterabtastung	8	NOUN
-digitalisieren	8	OTHER
+digitalisieren	8	VERB
 Significant	8	NOUN,OTHER
 Steuerwerk	8	NOUN
 größenordnungsmäßig	8	OTHER
@@ -114292,7 +114292,7 @@ verdunstete	8	OTHER
 ähnele	8	OTHER
 Anderl	8	NOUN
 Thierack	8	NOUN
-überstellen	8	OTHER
+überstellen	8	VERB
 Reichszentrale	8	NOUN
 Teilregionen	8	NOUN
 Fallgruppe	8	NOUN
@@ -114398,7 +114398,7 @@ Schallwandler	8	NOUN
 tetraedrischen	8	OTHER
 Brutstätten	8	NOUN
 Badia	8	NOUN,OTHER
-abzuspalten	8	OTHER
+abzuspalten	8	VERB
 Senussi	8	NOUN
 Sicherheitschef	8	NOUN
 Validierung	8	NOUN
@@ -114430,7 +114430,7 @@ Oberstein	8	NOUN
 Gastrolle	8	NOUN
 Musikalben	8	NOUN
 Respect	8	NOUN
-liehen	8	OTHER
+liehen	8	VERB
 Leistungskraft	8	NOUN
 Benchmarks	8	NOUN
 Bina	8	NOUN,OTHER
@@ -114543,7 +114543,7 @@ auskristallisiert	8	OTHER
 Kupferdraht	8	NOUN
 Struktureinheit	8	NOUN
 Dreifachbindung	8	NOUN
-auffielen	8	OTHER
+auffielen	8	VERB
 lithophil	8	OTHER
 Apatit	8	NOUN
 Oberwiesenthal	8	NOUN
@@ -114676,7 +114676,7 @@ Fischtreppen	8	NOUN
 Kormoran	8	NOUN
 Frischgemüse	8	NOUN
 Birnau	8	NOUN
-vereisen	8	OTHER
+vereisen	8	VERB
 Seepromenade	8	NOUN
 Endneolithikum	8	NOUN
 Walsers	8	NOUN
@@ -114689,7 +114689,7 @@ Bundeskongress	8	NOUN
 Atomanlagen	8	NOUN
 Bundesprogramm	8	NOUN
 basisdemokratische	8	NOUN,OTHER
-freizumachen	8	OTHER
+freizumachen	8	VERB
 realpolitische	8	OTHER
 ARL	8	NOUN
 Regierungsfähigkeit	8	NOUN
@@ -114829,7 +114829,7 @@ Mannschaftssport	8	NOUN
 Denkschule	8	NOUN
 linkshändigen	8	OTHER
 Someone	8	NOUN,OTHER
-erwischen	8	OTHER
+erwischen	8	VERB
 Sumō	8	NOUN
 Schmalseiten	8	NOUN
 Feldspielern	8	NOUN
@@ -114888,7 +114888,7 @@ Textverständnis	8	NOUN
 Schlüsselstelle	8	NOUN
 überkonfessionellen	8	OTHER
 zweiseitiges	8	OTHER
-relativierten	8	OTHER
+relativierten	8	VERB,OTHER
 paraphrasiert	8	OTHER
 meuternden	8	OTHER
 Oberherrn	8	NOUN
@@ -114922,7 +114922,7 @@ Kaisererhebung	8	NOUN
 widerständigen	8	OTHER
 Pumpspeicherkraftwerk	8	NOUN
 Thermalquelle	8	NOUN
-verstädterten	8	OTHER
+verstädterten	8	VERB,OTHER
 Kortrijk	8	NOUN
 Ath	8	NOUN,OTHER
 Dijle	8	NOUN
@@ -114932,7 +114932,7 @@ Balen	8	NOUN
 Limburgisch	8	NOUN,OTHER
 Kongogräuel	8	NOUN
 Walloniens	8	NOUN
-zusagten	8	OTHER
+zusagten	8	VERB
 Austeritätspolitik	8	NOUN
 Zwin	8	NOUN
 Knokke	8	NOUN
@@ -114946,7 +114946,7 @@ Rennserien	8	NOUN
 Somebody	8	NOUN
 Cranes	8	NOUN
 Neum	8	NOUN
-verkarsteten	8	OTHER
+verkarsteten	8	VERB,OTHER
 kalkhaltigen	8	OTHER
 Schlangenarten	8	NOUN
 Gänsegeier	8	NOUN
@@ -114969,7 +114969,7 @@ unbemannter	8	OTHER
 Marineführung	8	NOUN
 Erprobungen	8	NOUN
 Gotenhafen	8	NOUN
-anzulaufen	8	OTHER
+anzulaufen	8	VERB
 Flugboot	8	NOUN
 Krankenstation	8	NOUN
 Müllenheim	8	NOUN
@@ -114989,7 +114989,7 @@ Gerichtsinstanz	8	NOUN
 Kirchensteuern	8	NOUN
 Steuerverwaltung	8	NOUN
 Abgeltung	8	NOUN
-fragmentierten	8	OTHER
+fragmentierten	8	VERB,OTHER
 entsendete	8	OTHER
 Standesstimme	8	NOUN
 Rois	8	NOUN
@@ -115011,7 +115011,7 @@ Parteiämter	8	NOUN
 überschätzte	8	OTHER
 Staatsrechtslehre	8	NOUN
 hielte	8	OTHER
-betrauen	8	OTHER
+betrauen	8	VERB
 gerichtliches	8	OTHER
 Wahlphase	8	NOUN
 nötigt	8	OTHER
@@ -115059,7 +115059,7 @@ Tourismusbereich	8	NOUN
 Umweltbereich	8	NOUN
 Umweltministeriums	8	NOUN
 Schienenverbindung	8	NOUN
-glasierten	8	OTHER
+glasierten	8	VERB,OTHER
 verziertes	8	OTHER
 Staatsphilosophie	8	NOUN
 Erzählwerk	8	NOUN
@@ -115069,8 +115069,8 @@ Tampico	8	NOUN
 bestach	8	OTHER
 Figueroa	8	NOUN
 Faßberg	8	NOUN
-abliefen	8	OTHER
-einreihen	8	OTHER
+abliefen	8	VERB
+einreihen	8	VERB
 Hilfsgüter	8	NOUN
 Hilfsgütern	8	NOUN
 Halvorsen	8	NOUN
@@ -115179,7 +115179,7 @@ zusammengepresst	8	OTHER
 trüber	8	OTHER
 Bernsteinöl	8	NOUN
 glänzt	8	OTHER
-verfärben	8	OTHER
+verfärben	8	VERB
 substanziellen	8	OTHER
 Einzelfunde	8	NOUN
 jurassischen	8	OTHER
@@ -115200,7 +115200,7 @@ Miegel	8	NOUN
 Magenbeschwerden	8	NOUN
 Freyer	8	NOUN
 innerlichen	8	OTHER
-verstopfen	8	OTHER
+verstopfen	8	VERB
 Überhitzen	8	NOUN,OTHER
 Göbel	8	NOUN
 Eigendrehimpuls	8	NOUN
@@ -115242,7 +115242,7 @@ Verbundtarif	8	NOUN
 Flusskreuzfahrtschiffe	8	NOUN
 Transportmedium	8	NOUN
 Hämatologie	8	NOUN
-rieben	8	OTHER
+rieben	8	VERB
 aufhaltenden	8	OTHER
 tierisches	8	OTHER
 Schlachthöfen	8	NOUN
@@ -115291,7 +115291,7 @@ Ningbo	8	NOUN
 Vergeltungsaktion	8	NOUN
 versprüht	8	OTHER
 Jetstream	8	NOUN
-versprühen	8	OTHER
+versprühen	8	VERB
 Delivery	8	NOUN
 Rechtschreibfehler	8	NOUN
 Jachthäfen	8	NOUN
@@ -115328,7 +115328,7 @@ Lohe	8	NOUN
 Trockenmauer	8	NOUN
 Viehmärkte	8	NOUN
 Bürgerverein	8	NOUN
-herausgehalten	8	OTHER
+herausgehalten	8	VERB
 Nebenresidenz	8	NOUN
 Lohnerhöhung	8	NOUN
 Kreishauptstadt	8	NOUN
@@ -115340,7 +115340,7 @@ ungekannten	8	OTHER
 Preu	8	NOUN
 beunruhigend	8	OTHER
 Kammerbezirk	8	NOUN
-auszulagern	8	OTHER
+auszulagern	8	VERB
 Blindgängern	8	NOUN
 Zielorte	8	NOUN
 Rollwagen	8	NOUN
@@ -115432,7 +115432,7 @@ nichttechnischen	8	OTHER
 Djallon	8	NOUN
 Lebensbilder	8	NOUN
 Euagoras	8	NOUN
-nachzueifern	8	OTHER
+nachzueifern	8	VERB
 Lobes	8	NOUN
 zahlreiches	8	OTHER
 hoi	8	OTHER
@@ -115451,7 +115451,7 @@ SVD	8	NOUN
 Neuordnungen	8	NOUN
 Armenpflege	8	NOUN
 Landesbezirk	8	NOUN
-verzahnen	8	OTHER
+verzahnen	8	VERB
 Kurgästen	8	NOUN
 linearbandkeramischen	8	OTHER
 instrumenteller	8	OTHER
@@ -115570,7 +115570,7 @@ Methylchlorid	8	NOUN
 Maronen	8	NOUN
 Rehwild	8	NOUN
 Schwefeloxide	8	NOUN
-nachspielen	8	OTHER
+nachspielen	8	VERB
 Logs	8	NOUN
 getippt	8	OTHER
 Interjektionen	8	NOUN
@@ -115625,7 +115625,7 @@ Fortschrittsoptimismus	8	NOUN
 Überschwang	8	NOUN
 aufgreifend	8	OTHER
 regulativen	8	OTHER
-auszublenden	8	OTHER
+auszublenden	8	VERB
 positivistisch	8	OTHER
 Verfassungsgeber	8	NOUN
 Zitierung	8	NOUN
@@ -115639,14 +115639,14 @@ unvoreingenommen	8	OTHER
 Demokratietheorie	8	NOUN
 Antiimperialismus	8	NOUN
 Antiamerikanismus	8	NOUN
-anzuleiten	8	OTHER
+anzuleiten	8	VERB
 extensiver	8	OTHER
 autokratischer	8	OTHER
 Geldgeschenk	8	NOUN
 aufwendiges	8	OTHER
 multikulturell	8	OTHER
 Reichsbevölkerung	8	NOUN
-umgeworfen	8	OTHER
+umgeworfen	8	VERB
 Adoptivkaiser	8	NOUN
 psychopathologische	8	OTHER
 Gelübdes	8	NOUN
@@ -115660,7 +115660,7 @@ kappadokischen	8	OTHER
 Pertinax	8	NOUN
 verfemten	8	NOUN,OTHER
 Caelius	8	NOUN
-konstatierten	8	OTHER
+konstatierten	8	VERB
 Homs	8	NOUN
 Provinzstatthalter	8	NOUN
 Kaisersohn	8	NOUN
@@ -115696,7 +115696,7 @@ Orientierungslauf	8	NOUN
 Museumsnacht	8	NOUN
 Versorgungsstufe	8	NOUN
 Kastner	8	NOUN
-ausdrückten	8	OTHER
+ausdrückten	8	VERB
 Druckerhaltung	8	NOUN
 technologisches	8	OTHER
 sozialwissenschaftliches	8	OTHER
@@ -115707,7 +115707,7 @@ Kampfschrift	8	NOUN
 Reformisten	8	NOUN
 Ilko	8	NOUN
 Nebenorganisationen	8	NOUN
-einhergegangen	8	OTHER
+einhergegangen	8	VERB
 ausübe	8	OTHER
 Alterspräsidentin	8	NOUN
 Kremlmauer	8	NOUN
@@ -115730,11 +115730,11 @@ Méchain	8	NOUN
 Kurgast	8	NOUN
 Gosebruch	8	NOUN
 Taormina	8	NOUN
-verkannten	8	OTHER
+verkannten	8	VERB
 Betreff	8	NOUN
 Nominatform	8	NOUN
 Barometers	8	NOUN
-mithelfen	8	OTHER
+mithelfen	8	VERB
 aufgefrischt	8	OTHER
 Paley	8	NOUN
 Insektenkunde	8	NOUN
@@ -115797,7 +115797,7 @@ Aisne	8	NOUN
 Dragoon	8	NOUN
 amnestierte	8	OTHER
 RPF	8	NOUN
-revitalisieren	8	OTHER
+revitalisieren	8	VERB
 Debré	8	NOUN
 Westjordanlands	8	NOUN
 Aquitaine	8	NOUN
@@ -115863,16 +115863,16 @@ Losentscheid	8	NOUN
 parlamento	8	OTHER
 Geldverleiher	8	NOUN
 Führungsqualitäten	8	NOUN
-lahmlegen	8	OTHER
+lahmlegen	8	VERB
 Verbannungsort	8	NOUN
 Erfolgschancen	8	NOUN
 Provisionen	8	NOUN
 Verlass	8	NOUN
 ausgelost	8	OTHER
 Zufällen	8	NOUN
-billigten	8	OTHER
+billigten	8	VERB
 Hauptelement	8	NOUN
-einräumten	8	OTHER
+einräumten	8	VERB
 seinige	8	NOUN,OTHER
 Konventsgebäude	8	NOUN
 imposantes	8	OTHER
@@ -115893,7 +115893,7 @@ quadratura	8	OTHER
 Forschungsthemen	8	NOUN
 Lautlingen	8	NOUN
 Schmerzmitteln	8	NOUN
-anzulasten	8	OTHER
+anzulasten	8	VERB
 Befehlshabers	8	NOUN
 Destruktion	8	NOUN
 versehentlichen	8	OTHER
@@ -115909,7 +115909,7 @@ Boxing	8	NOUN
 override	8	NOUN,OTHER
 Wrapper	8	NOUN
 ternären	8	OTHER
-durchgegangen	8	OTHER
+durchgegangen	8	VERB
 Cholesterinwerte	8	NOUN
 belebter	8	OTHER
 Reaktionsschritte	8	NOUN
@@ -115929,7 +115929,7 @@ decodieren	8	NOUN,OTHER
 Galway	8	NOUN
 Madness	8	NOUN
 Abtippen	8	NOUN
-erstanden	8	OTHER
+erstanden	8	VERB
 contrahendo	8	OTHER
 Missverständnisses	8	NOUN
 Verletzer	8	NOUN
@@ -115990,13 +115990,13 @@ Verschachtelung	8	NOUN
 Befehlszeile	8	NOUN
 Optimizer	8	NOUN
 Operand	8	NOUN,OTHER
-stillstehen	8	OTHER
+stillstehen	8	VERB
 gesühnt	8	OTHER
 Eustachius	8	NOUN
 Kirkpatrick	8	NOUN
 Materialist	8	NOUN
 injizierte	8	OTHER
-zuzuschlagen	8	OTHER
+zuzuschlagen	8	VERB
 Stammzelltransplantation	8	NOUN
 hochwirksame	8	OTHER
 Bildfolge	8	NOUN
@@ -116031,7 +116031,7 @@ Psychoakustik	8	NOUN
 Qualitätsunterschiede	8	NOUN
 Bildinhalts	8	NOUN
 Farbwert	8	NOUN
-appellieren	8	OTHER
+appellieren	8	VERB
 Kriminalfilme	8	NOUN
 Kortner	8	NOUN
 Kunstfilm	8	NOUN
@@ -116079,7 +116079,7 @@ kontrastreich	8	OTHER
 Gurus	8	NOUN
 Ameise	8	NOUN
 Kellerraum	8	NOUN
-weiterzuarbeiten	8	OTHER
+weiterzuarbeiten	8	VERB
 einigt	8	OTHER
 Hektik	8	NOUN
 großangelegtes	8	OTHER
@@ -116095,7 +116095,7 @@ Jagdausflug	8	NOUN
 Jagdhütte	8	NOUN
 zweimonatige	8	OTHER
 Ordensmeister	8	NOUN
-delegitimieren	8	OTHER
+delegitimieren	8	VERB
 geschmäht	8	OTHER
 Ultimaten	8	NOUN
 mitgliederstarken	8	OTHER
@@ -116225,7 +116225,7 @@ vierbeinige	8	OTHER
 Omnivoren	8	NOUN
 Cope	8	NOUN
 Tyrannosaurus	8	NOUN
-beschützten	8	OTHER
+beschützten	8	VERB
 erwachsenes	8	OTHER
 mysteriös	8	OTHER
 wechselwarmen	8	OTHER
@@ -116254,7 +116254,7 @@ ausgearbeiteter	8	OTHER
 menschenfeindlichen	8	OTHER
 Ölpreiskrisen	8	NOUN
 energieeffizienter	8	OTHER
-rationalisieren	8	OTHER
+rationalisieren	8	VERB
 Büroanwendungen	8	NOUN
 Digitalfernsehen	8	NOUN
 Digitalradio	8	NOUN
@@ -116266,7 +116266,7 @@ intransparente	8	OTHER
 Lockdowns	8	NOUN
 Grundeinkommen	8	NOUN
 Orientierungspunkte	8	NOUN
-abzurufen	8	OTHER
+abzurufen	8	VERB
 Privatheit	8	NOUN
 unternehme	8	OTHER
 Risikobereitschaft	8	NOUN
@@ -116276,15 +116276,15 @@ Gegenreaktionen	8	NOUN
 Resonanzraum	8	NOUN
 nachahmende	8	OTHER
 Likes	8	NOUN
-posieren	8	OTHER
+posieren	8	VERB
 Carina	8	NOUN
 Passform	8	NOUN
 Internetnutzern	8	NOUN
 meinungsbildenden	8	OTHER
 Bauman	8	NOUN
 Leseförderung	8	NOUN
-verlören	8	OTHER
-auszugestalten	8	OTHER
+verlören	8	VERB
+auszugestalten	8	VERB
 Programmpakete	8	NOUN
 freeze	8	NOUN,OTHER
 Webservern	8	NOUN
@@ -116351,7 +116351,7 @@ angeregter	8	OTHER
 Droemer	8	NOUN
 Knaur	8	NOUN
 Kobolde	8	NOUN
-beunruhigen	8	OTHER
+beunruhigen	8	VERB
 übermalte	8	OTHER
 Druckgraphik	8	NOUN
 Schapire	8	NOUN
@@ -116423,7 +116423,7 @@ Sonntagabend	8	NOUN
 brennbarer	8	OTHER
 Kais	8	NOUN
 Weinbrand	8	NOUN
-festsetzten	8	OTHER
+festsetzten	8	VERB
 Kommunikationswege	8	NOUN
 ungebrochenen	8	OTHER
 Mittwochabend	8	NOUN
@@ -116463,7 +116463,7 @@ Zuleitung	8	NOUN
 Unterschriftenaktion	8	NOUN
 Großschifffahrt	8	NOUN
 Monokultur	8	NOUN
-verästelten	8	OTHER
+verästelten	8	VERB
 Wissenschaftsstadt	8	NOUN
 Paulusviertel	8	NOUN
 Odenwalds	8	NOUN
@@ -116475,7 +116475,7 @@ SSG	8	NOUN
 Heubach	8	NOUN
 Gemeindebund	8	NOUN
 Verwaltungsgerichte	8	NOUN
-betrauten	8	OTHER
+betrauten	8	VERB
 Zeitkarte	8	NOUN
 Rödermark	8	NOUN
 Autobahnauffahrt	8	NOUN
@@ -116540,7 +116540,7 @@ Eukaryota	8	NOUN
 Beeten	8	NOUN
 Bernardus	8	NOUN
 Diebstählen	8	NOUN
-bestohlen	8	OTHER
+bestohlen	8	VERB
 gemusterten	8	OTHER
 Farbänderung	8	NOUN
 Züchtern	8	NOUN
@@ -116731,10 +116731,10 @@ Grosseteste	8	NOUN
 antichristliche	8	OTHER
 Meditationstechniken	8	NOUN
 Arnolds	8	NOUN
-nachlesen	8	OTHER
+nachlesen	8	VERB
 ganzheitlicher	8	OTHER
 Esperantisten	8	NOUN
-bewirten	8	OTHER
+bewirten	8	VERB
 zweitklassige	8	OTHER
 Kassler	8	NOUN
 Eröffnungssequenz	8	NOUN
@@ -116776,7 +116776,7 @@ Hamiltonoperator	8	NOUN
 Energienutzung	8	NOUN
 Teilchenenergien	8	NOUN
 Umrechnungstabelle	8	NOUN
-zurückzuerhalten	8	OTHER
+zurückzuerhalten	8	VERB
 magnetischem	8	OTHER
 Antoon	8	NOUN
 Längenkontraktion	8	NOUN
@@ -116842,7 +116842,7 @@ mitnichten	8	OTHER
 Ottomar	8	NOUN
 zusammengeschlossene	8	OTHER
 Schehr	8	NOUN
-abzudrucken	8	OTHER
+abzudrucken	8	VERB
 Parteiamt	8	NOUN
 ukrainischem	8	OTHER
 Westpazifik	8	NOUN
@@ -116890,7 +116890,7 @@ Systemfunktionen	8	NOUN
 Fertigungsprozess	8	NOUN
 Stromquellen	8	NOUN
 Frequenzfilter	8	NOUN
-transmittierten	8	OTHER
+transmittierten	8	VERB,OTHER
 Bionic	8	NOUN
 Keren	8	NOUN
 Eri	8	NOUN
@@ -116913,7 +116913,7 @@ Guerillakämpfer	8	NOUN
 revolutionärem	8	OTHER
 Taktiker	8	NOUN
 Lippenrundung	8	NOUN
-vollführen	8	OTHER
+vollführen	8	VERB
 Inessiv	8	NOUN
 Rehburg	8	NOUN
 Reichswehrministerium	8	NOUN
@@ -116921,7 +116921,7 @@ Bundesleitung	8	NOUN
 Stralauer	8	NOUN
 Arnolt	8	NOUN
 Trottel	8	NOUN
-vorzuwerfen	8	OTHER
+vorzuwerfen	8	VERB
 Kirchhorst	8	NOUN
 Majestic	8	NOUN
 Frankreichfeldzug	8	NOUN
@@ -116940,7 +116940,7 @@ Erdinnere	8	NOUN
 ortsabhängigen	8	OTHER
 Bahnpunkt	8	NOUN
 Magmakammern	8	NOUN
-vorbeifliegen	8	OTHER
+vorbeifliegen	8	VERB
 Rotationsrichtung	8	NOUN
 extrapoliert	8	OTHER
 subpolaren	8	OTHER
@@ -116961,7 +116961,7 @@ Regenwaldgebieten	8	NOUN
 Aby	8	NOUN
 guineische	8	OTHER
 Ivorer	8	NOUN
-zusammenzuleben	8	OTHER
+zusammenzuleben	8	VERB
 CMU	8	NOUN
 verschmutztes	8	OTHER
 Zweiklassenwahlrecht	8	NOUN
@@ -116988,7 +116988,7 @@ Girlanden	8	NOUN
 Seriosität	8	NOUN
 Lichtinstallation	8	NOUN
 Weltfachausstellung	8	NOUN
-verbreiterten	8	OTHER
+verbreiterten	8	VERB,OTHER
 Brüstung	8	NOUN
 gelbbraun	8	OTHER
 Glühbirnen	8	NOUN
@@ -117001,7 +117001,7 @@ Pinselstrichen	8	NOUN
 Passante	8	NOUN
 wuchtigen	8	OTHER
 Materialwert	8	NOUN
-verschlissen	8	OTHER
+verschlissen	8	VERB
 Garnisonstruppen	8	NOUN
 zulaufend	8	OTHER
 Sergeanten	8	NOUN
@@ -117048,8 +117048,8 @@ dickem	8	OTHER
 zugeschaltet	8	OTHER
 angetriebener	8	OTHER
 Mädchenschulen	8	NOUN
-immatrikulieren	8	OTHER
-habilitieren	8	OTHER
+immatrikulieren	8	VERB
+habilitieren	8	VERB
 Plenarvortrag	8	NOUN
 Leendert	8	NOUN
 katalytischer	8	OTHER
@@ -117087,7 +117087,7 @@ Mancha	8	NOUN
 Curiosa	8	NOUN,OTHER
 Kinderbuchautor	8	NOUN
 Urlaubstage	8	NOUN
-lackierten	8	OTHER
+lackierten	8	VERB
 geschaut	8	OTHER
 Eidgenössisches	8	NOUN,OTHER
 Doktorat	8	NOUN
@@ -117139,7 +117139,7 @@ Qian	8	NOUN
 Isidors	8	NOUN
 Zauberkraft	8	NOUN
 Philosophica	8	NOUN,OTHER
-überschatteten	8	OTHER
+überschatteten	8	VERB,OTHER
 eingeklebt	8	OTHER
 billiges	8	OTHER
 Querverweisen	8	NOUN
@@ -117153,7 +117153,7 @@ Kundenbindung	8	NOUN
 Latini	8	NOUN,OTHER
 Deliciarum	8	NOUN
 ermüdend	8	OTHER
-zufriedengeben	8	OTHER
+zufriedengeben	8	VERB
 Dove	8	NOUN
 Mirabeau	8	NOUN
 panta	8	NOUN,OTHER
@@ -117246,7 +117246,7 @@ Studienkollege	8	NOUN
 Fröhlicher	8	NOUN,OTHER
 Ressentiment	8	NOUN
 Zeitungsberichte	8	NOUN
-einpassen	8	OTHER
+einpassen	8	VERB
 absolutistischer	8	OTHER
 Schulbehörde	8	NOUN
 élémentaire	8	OTHER
@@ -117266,7 +117266,7 @@ gotischem	8	OTHER
 disziplinierter	8	OTHER
 Vorläuferorganisation	8	NOUN
 Mangelwirtschaft	8	NOUN
-überdeckten	8	OTHER
+überdeckten	8	VERB,OTHER
 Troubadours	8	NOUN
 INSEE	8	NOUN
 regenreiche	8	OTHER
@@ -117277,7 +117277,7 @@ Shotokan	8	NOUN
 Kletterzentrum	8	NOUN
 Nissl	8	NOUN
 antiimperialistischen	8	OTHER
-ausgrenzen	8	OTHER
+ausgrenzen	8	VERB
 Cardoso	8	NOUN
 regierungsnahen	8	OTHER
 erbärmlichen	8	OTHER
@@ -117349,12 +117349,12 @@ Gebrauchskunst	8	NOUN
 Kunstwissenschaften	8	NOUN
 Preisverleihungen	8	NOUN
 religionspolitische	8	OTHER
-weiterzogen	8	OTHER
-einzufallen	8	OTHER
+weiterzogen	8	VERB
+einzufallen	8	VERB
 Westgotenreichs	8	NOUN
 Childerichs	8	NOUN
 skrupellose	8	OTHER
-germanisierten	8	OTHER
+germanisierten	8	VERB
 merowingischer	8	OTHER
 Einhards	8	NOUN
 hilflose	8	OTHER
@@ -117395,14 +117395,14 @@ Diskobucht	8	NOUN
 Lakoff	8	NOUN
 Systemzustand	8	NOUN
 Passarge	8	NOUN
-erfroren	8	OTHER
+erfroren	8	VERB
 Wellenschnitt	8	NOUN
 Kemmerich	8	NOUN
 zurückweist	8	OTHER
 unbürokratisch	8	OTHER
 Startklasse	8	NOUN
 handlungsfähige	8	OTHER
-abzusenken	8	OTHER
+abzusenken	8	VERB
 DPD	8	NOUN,OTHER
 Wehrmachts	8	NOUN
 Präsidentschaftskandidatin	8	NOUN
@@ -117467,7 +117467,7 @@ mitbestimmend	8	OTHER
 Strukturveränderungen	8	NOUN
 Revolutionsphase	8	NOUN
 hinauslief	8	OTHER
-überstürzten	8	OTHER
+überstürzten	8	VERB,OTHER
 Sieyès	8	NOUN
 geschehenen	8	NOUN,OTHER
 aufgeräumt	8	OTHER
@@ -117607,7 +117607,7 @@ abschirmt	8	OTHER
 Hautschichten	8	NOUN
 Dachböden	8	NOUN
 Hufeisennasen	8	NOUN
-zurechtzufinden	8	OTHER
+zurechtzufinden	8	VERB
 Hörschnecke	8	NOUN
 Buchautoren	8	NOUN
 Höhlungen	8	NOUN
@@ -117630,15 +117630,15 @@ Cadet	8	NOUN
 Kopist	8	NOUN
 Erskine	8	NOUN
 Englandreise	8	NOUN
-deponieren	8	OTHER
+deponieren	8	VERB
 Schlossstraße	8	NOUN
 Klavierkonzerten	8	NOUN
 Vorhaltung	8	NOUN
-einzuwenden	8	OTHER
+einzuwenden	8	VERB
 Pedals	8	NOUN
 Nachklang	8	NOUN
 Klavierkonzerts	8	NOUN
-verinnerlichten	8	OTHER
+verinnerlichten	8	VERB,OTHER
 Pianos	8	NOUN
 höhergelegenen	8	OTHER
 Besiedlungsspuren	8	NOUN
@@ -117691,7 +117691,7 @@ Formant	8	NOUN
 Partialton	8	NOUN
 Nasennebenhöhlen	8	NOUN
 Musikinstruments	8	NOUN
-vibrieren	8	OTHER
+vibrieren	8	VERB
 Positionierungen	8	NOUN
 Passionszeit	8	NOUN
 Bußzeit	8	NOUN
@@ -117732,7 +117732,7 @@ Monade	8	NOUN
 Gedankenexperimente	8	NOUN
 Märtyrertum	8	NOUN
 Bohley	8	NOUN
-geschwiegen	8	OTHER
+geschwiegen	8	VERB
 Leyendecker	8	NOUN
 Confidence	8	NOUN,OTHER
 Steuerbehörde	8	NOUN
@@ -117774,10 +117774,10 @@ Generales	8	NOUN
 Mengendiagramme	8	NOUN
 Sisyphus	8	NOUN
 welfischer	8	OTHER
-nachzuzeichnen	8	OTHER
-auszulesen	8	OTHER
+nachzuzeichnen	8	VERB
+auszulesen	8	VERB
 ungünstigem	8	OTHER
-managen	8	OTHER
+managen	8	VERB
 vorzügliche	8	OTHER
 Discorso	8	NOUN
 Lipperhey	8	NOUN
@@ -117814,7 +117814,7 @@ abrupter	8	OTHER
 Copenhagen	8	NOUN
 internalisiert	8	OTHER
 Kohleausstieg	8	NOUN
-befeuerten	8	OTHER
+befeuerten	8	VERB,OTHER
 Anpassungsmaßnahmen	8	NOUN
 Entwicklungspläne	8	NOUN
 Kommunikatoren	8	NOUN
@@ -117837,9 +117837,9 @@ Venusfigurinen	8	NOUN
 Sarasvati	8	NOUN
 heldenhaft	8	OTHER
 Gottkönig	8	NOUN
-anbeten	8	OTHER
+anbeten	8	VERB
 allmächtige	8	OTHER
-gleichsetzten	8	OTHER
+gleichsetzten	8	VERB
 Götterversammlung	8	NOUN
 Übeltäter	8	NOUN
 Metallarbeiter	8	NOUN
@@ -117903,14 +117903,14 @@ Subject	8	NOUN
 Nohl	8	NOUN
 Sinnstrukturen	8	NOUN
 erhaltenden	8	OTHER
-technisierten	8	OTHER
+technisierten	8	VERB,OTHER
 eminent	8	OTHER
 Leinegraben	8	NOUN
 Franziskanerprovinz	8	NOUN
 Rezess	8	NOUN
 weimarischen	8	OTHER
 Richtplatz	8	NOUN
-mitreißen	8	OTHER
+mitreißen	8	VERB
 Kampfeinheiten	8	NOUN
 Kunstlandschaft	8	NOUN
 Vernissage	8	NOUN
@@ -117972,7 +117972,7 @@ Lindblad	8	NOUN
 Neugrad	8	NOUN
 Passerelle	8	NOUN
 Bianco	8	NOUN
-überkreuzen	8	OTHER
+überkreuzen	8	VERB
 gesamtschweizerisch	8	OTHER
 Langsamverkehr	8	NOUN
 Untertanengebiete	8	NOUN
@@ -118045,7 +118045,7 @@ gräbt	8	OTHER
 Forschungslage	8	NOUN
 dramatisierte	8	OTHER
 Macfarlane	8	NOUN
-überreichten	8	OTHER
+überreichten	8	VERB
 verlernt	8	OTHER
 Szklarska	8	NOUN
 Poręba	8	NOUN
@@ -118129,7 +118129,7 @@ Bürgerrechtlern	8	NOUN
 Abouré	8	NOUN
 Projektilspitzen	8	NOUN
 Stichel	8	NOUN
-untergingen	8	OTHER
+untergingen	8	VERB
 Bärensee	8	NOUN
 Schichtstufe	8	NOUN
 Barockbauten	8	NOUN
@@ -118165,7 +118165,7 @@ Erichthonios	8	NOUN
 Phoibe	8	NOUN
 Ephialtes	8	NOUN
 Philostratos	8	NOUN
-überkommen	8	OTHER
+überkommen	8	VERB
 Votivgaben	8	NOUN
 textlichen	8	OTHER
 Windgott	8	NOUN
@@ -118197,7 +118197,7 @@ Sicherungsgeber	8	NOUN
 Utilities	8	NOUN
 Mischbarkeit	8	NOUN
 Linking	8	NOUN
-divergieren	8	OTHER
+divergieren	8	VERB
 Ballmer	8	NOUN
 Episkopos	8	NOUN,OTHER
 Konformismus	8	NOUN
@@ -118219,8 +118219,8 @@ Szintigrafie	8	NOUN
 Brachytherapie	8	NOUN
 graubraun	8	OTHER
 hügeligem	8	OTHER
-wettmachen	8	OTHER
-krabbeln	8	OTHER
+wettmachen	8	VERB
+krabbeln	8	VERB
 entwöhnt	8	OTHER
 Remakes	8	NOUN
 Lebensmittelrecht	8	NOUN
@@ -118348,7 +118348,7 @@ respektvollen	8	OTHER
 Anfangsjahre	8	NOUN
 kniende	8	OTHER
 eklektischen	8	OTHER
-abspielten	8	OTHER
+abspielten	8	VERB
 Choresm	8	NOUN
 koaxialen	8	OTHER
 Luftfahrtpionier	8	NOUN
@@ -118388,7 +118388,7 @@ Regesten	8	NOUN
 Ejército	8	NOUN
 Bolivarianische	8	NOUN,OTHER
 Unterschriftenliste	8	NOUN
-nachprüfen	8	OTHER
+nachprüfen	8	VERB
 Wahlcomputer	8	NOUN
 Interparlamentarischen	8	NOUN,OTHER
 Bolívares	8	NOUN
@@ -118412,7 +118412,7 @@ Kamala	8	NOUN
 schriftstellerischer	8	OTHER
 Schlafraum	8	NOUN
 Jüngerschaft	8	NOUN
-gegenzusteuern	8	OTHER
+gegenzusteuern	8	VERB
 Lebenswoche	8	NOUN
 behutsamer	8	OTHER
 Schwerpunktthema	8	NOUN
@@ -118508,7 +118508,7 @@ Vermögensverhältnisse	8	NOUN
 ausweichend	8	OTHER
 Pagen	8	NOUN
 Reichsritterschaft	8	NOUN
-beurkundeten	8	OTHER
+beurkundeten	8	VERB,OTHER
 Reichsangelegenheiten	8	NOUN
 Kreisverfassung	8	NOUN
 Geschichtsquellen	8	NOUN
@@ -118555,7 +118555,7 @@ belichtete	8	OTHER
 mitbenutzt	8	OTHER
 Peltier	8	NOUN
 Fehlerfreiheit	8	NOUN
-begutachteten	8	OTHER
+begutachteten	8	VERB
 Wheels	8	NOUN
 erfüllenden	8	OTHER
 Wirkkraft	8	NOUN
@@ -118578,7 +118578,7 @@ Biester	8	NOUN
 steifer	8	OTHER
 Zerstreuungen	8	NOUN
 Dackel	8	NOUN
-herausfiltern	8	OTHER
+herausfiltern	8	VERB
 KdU	8	NOUN
 anhebt	8	OTHER
 unparteiisch	8	OTHER
@@ -118644,7 +118644,7 @@ Slash	8	NOUN,OTHER
 unorganisiert	8	OTHER
 ikonische	8	OTHER
 magst	8	OTHER
-ahmen	8	OTHER
+ahmen	8	VERB
 Initiationsriten	8	NOUN
 Astounding	8	NOUN
 Hauptberuf	8	NOUN
@@ -118653,7 +118653,7 @@ Proteinsequenzen	8	NOUN
 Hintergrundrauschen	8	NOUN
 Calderen	8	NOUN
 Biot	8	NOUN
-kurzgeschlossen	8	OTHER
+kurzgeschlossen	8	VERB
 Fallunterscheidungen	8	NOUN
 Hinterautal	8	NOUN
 Unglücksfällen	8	NOUN
@@ -118713,16 +118713,16 @@ Dauermarkenserie	8	NOUN
 Familienstand	8	NOUN
 Witterungsverhältnisse	8	NOUN
 nachziehen	8	NOUN,OTHER
-zerstückelten	8	OTHER
+zerstückelten	8	VERB,OTHER
 GByte	8	NOUN
 Preiserhöhung	8	NOUN
 erwarteter	8	OTHER
-verteuern	8	OTHER
+verteuern	8	VERB
 Husni	8	NOUN
 Reallöhne	8	NOUN
 Sachkapital	8	NOUN
 Hyperinflationen	8	NOUN
-determinieren	8	OTHER
+determinieren	8	VERB
 Arbeitswerttheorie	8	NOUN
 Keynesianer	8	NOUN
 Pensionäre	8	NOUN
@@ -118825,7 +118825,7 @@ Hanan	8	NOUN
 Missmanagement	8	NOUN
 Dschasira	8	NOUN
 Nanterre	8	NOUN
-maskieren	8	OTHER
+maskieren	8	VERB
 giving	8	NOUN,OTHER
 Duttweiler	8	NOUN
 Rüschlikon	8	NOUN
@@ -118861,7 +118861,7 @@ Beutler	8	NOUN
 Shorter	8	NOUN
 Ländler	8	NOUN
 unseriösen	8	OTHER
-überzusiedeln	8	OTHER
+überzusiedeln	8	VERB
 Spikes	8	NOUN
 geschweifte	8	OTHER
 Eigenschaftsname	8	NOUN,OTHER
@@ -118890,7 +118890,7 @@ Mytilenes	8	NOUN
 Neuregelungen	8	NOUN
 Versammlungsplatz	8	NOUN
 Ariovist	8	NOUN
-festzunehmen	8	OTHER
+festzunehmen	8	VERB
 Pontinischen	8	NOUN
 Genetrix	8	NOUN,OTHER
 Mentoren	8	NOUN
@@ -118900,7 +118900,7 @@ kommunikativ	8	OTHER
 deskriptiver	8	OTHER
 Lebensentwurf	8	NOUN
 Misslingen	8	NOUN
-hintergangen	8	OTHER
+hintergangen	8	VERB
 missachte	8	OTHER
 Kyocera	8	NOUN
 Triglav	8	NOUN
@@ -118922,7 +118922,7 @@ Streichquartetten	8	NOUN
 Ancienne	8	NOUN,OTHER
 Stages	8	NOUN,OTHER
 Seefahrtsmuseum	8	NOUN
-freikaufen	8	OTHER
+freikaufen	8	VERB
 geborenes	8	OTHER
 Ulms	8	NOUN
 Mensura	8	NOUN,OTHER
@@ -118962,7 +118962,7 @@ Ackerboden	8	NOUN
 Solstitien	8	NOUN
 Janke	8	NOUN
 beschämend	8	OTHER
-beuteten	8	OTHER
+beuteten	8	VERB
 Ovationen	8	NOUN
 Presseecho	8	NOUN
 Arbeiterzeitung	8	NOUN
@@ -118971,7 +118971,7 @@ Bündnisverpflichtungen	8	NOUN
 Auslandsrundfunk	8	NOUN
 Kriegsglück	8	NOUN
 Zerstückelung	8	NOUN
-dastehen	8	OTHER
+dastehen	8	VERB
 Dreiecksbeziehung	8	NOUN
 Ständchen	8	NOUN
 handgeschriebenen	8	OTHER
@@ -119010,14 +119010,14 @@ Bankette	8	NOUN
 unwohl	8	OTHER
 überbordenden	8	OTHER
 Rezitativen	8	NOUN
-vertonen	8	OTHER
+vertonen	8	VERB
 Musikbibliothek	8	NOUN
 Entstehungsphase	8	NOUN
 Veblen	8	NOUN
 verbindend	8	OTHER
 gewandelten	8	OTHER
 interkulturell	8	OTHER
-verinnerlichen	8	OTHER
+verinnerlichen	8	VERB
 kommunizierende	8	NOUN,OTHER
 Amöben	8	NOUN
 eineiiger	8	OTHER
@@ -119033,7 +119033,7 @@ Zentralamerikas	8	NOUN
 Politthriller	8	NOUN
 tätigte	8	OTHER
 Immenstadt	8	NOUN
-floppten	8	OTHER
+floppten	8	VERB
 Kadettenanstalt	8	NOUN
 Fernsehauftritt	8	NOUN
 rätselhafter	8	OTHER
@@ -119091,7 +119091,7 @@ supranational	8	OTHER
 Schaukelpolitik	8	NOUN
 garantierter	8	OTHER
 expansionistische	8	OTHER
-verschnitten	8	OTHER
+verschnitten	8	VERB
 Fliegerschule	8	NOUN
 Couplets	8	NOUN
 Kreiser	8	NOUN
@@ -119124,7 +119124,7 @@ minütiger	8	OTHER
 Deutschordenskommende	8	NOUN
 Notitia	8	NOUN
 Witichis	8	NOUN
-besoldeten	8	OTHER
+besoldeten	8	VERB,OTHER
 Handballs	8	NOUN
 Stephansplatz	8	NOUN
 rheinabwärts	8	OTHER
@@ -119311,7 +119311,7 @@ voranschreiten	8	NOUN,OTHER
 Gemeindeedikt	8	NOUN
 Indianerreservate	8	NOUN
 Lagerordnung	8	NOUN
-rollten	8	OTHER
+rollten	8	VERB
 Schutzhaftlager	8	NOUN
 Viehwaggons	8	NOUN
 pseudowissenschaftliche	8	OTHER
@@ -119358,7 +119358,7 @@ Leistungssportler	8	NOUN
 Lebergewebe	8	NOUN
 Weizenstärke	8	NOUN
 Kalendersystem	8	NOUN
-ornamentierten	8	OTHER
+ornamentierten	8	VERB,OTHER
 Himmelssphäre	8	NOUN
 Spatha	8	NOUN
 sukkulente	8	OTHER
@@ -119378,7 +119378,7 @@ schirmte	8	OTHER
 verstrich	8	OTHER
 angedachten	8	OTHER
 Glucosinolate	8	NOUN
-überwachsen	8	OTHER
+überwachsen	8	VERB
 Wintergärten	8	NOUN
 existenzieller	8	OTHER
 Sonderentwicklung	8	NOUN
@@ -119389,7 +119389,7 @@ monopolisiert	8	OTHER
 Doppelstrategie	8	NOUN
 Coates	8	NOUN
 Kriegsgebieten	8	NOUN
-zurückzufinden	8	OTHER
+zurückzufinden	8	VERB
 Kriegsursachen	8	NOUN
 Autogas	8	NOUN
 Einsprüchen	8	NOUN
@@ -119486,7 +119486,7 @@ kartografische	8	OTHER
 Melzi	8	NOUN
 Uomo	8	NOUN,OTHER
 zerteilte	8	OTHER
-geloben	8	OTHER
+geloben	8	VERB
 scherzte	8	OTHER
 Iwanowna	8	NOUN
 Nutzgärten	8	NOUN
@@ -119580,7 +119580,7 @@ Backsteinfassade	8	NOUN
 Blacks	8	NOUN
 Militärkapellen	8	NOUN
 feuert	8	OTHER
-verstopften	8	OTHER
+verstopften	8	VERB
 Rowley	8	NOUN
 Schöpf	8	NOUN,VERB
 veranlagte	8	OTHER
@@ -119604,7 +119604,7 @@ Standardausrüstung	8	NOUN
 Dopplerverbreiterung	8	NOUN
 hermitesche	8	OTHER
 homogenisiert	8	OTHER
-abzuschirmen	8	OTHER
+abzuschirmen	8	VERB
 abgewandte	8	OTHER
 Landesfürst	8	NOUN
 Grafengeschlecht	8	NOUN
