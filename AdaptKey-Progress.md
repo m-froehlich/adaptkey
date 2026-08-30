@@ -253,6 +253,41 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **Deferred "Aufräumrunde" (cleanup round), explicitly queued by the user to run after the German**
+  **verb-in-`OTHER` tagging project (see the D-412 bullet below) finishes its remaining frequency bands -**
+  **three items bundled into it so far, none acted on yet:**
+  1. **Corpus-extraction noise surfaced while reviewing the 200-499 band (§308):** `begin`/`align`/`sin`/
+     `min`/`colon`/`varepsilon`/`return`/`schen` are not German words at all - LaTeX/math-markup and
+     programming-keyword leaks, the same artefact class §301's own cleanup already removed 348 of. Not
+     removed yet; a fresh look at the German dictionary for more of the same class (mirroring §301's own
+     method - short/low-frequency/pure-`OTHER` probe, individually reviewed) would be the natural way to
+     pick this up, not just these eight in isolation.
+  2. **Verb inflections missing from the German dictionary, found via the user's own Learned Words list**
+     (2026-08-30): the base/infinitive is presumably already a bundled entry for each of these, but specific
+     conjugated forms are missing outright - typing them gets learned fresh into `TABLE_LEARNED` instead of
+     being recognised, which is exactly the D-404 "inflected forms flooding Learned Words" problem in
+     action. Needs verification against the live dictionary before any row is added (nothing assumed) - the
+     user's own list, verbatim, first word per line the base/reference verb where given, remaining words the
+     specific missing forms to check:
+     `besparen`; `fortfahren`; `duzen`; `siezen`; `würden`, `würdest`; `haben`, `hättest`; `meinen`,
+     `meinst`; `erzählen`, `erzähle`, `erzähl`; `beobachten`, `beobachte`; `ignorieren`, `ignorierst`;
+     `investieren`, `investiere`; `nachdenken`, `nachdenkt`; `löschen`, `lösche`; `packen`, `packt`,
+     `packst`; `vermissen`, `vermisse`; `verrosten`, `verrostet`; `verrotten`, `verrottet`; `zeigen`,
+     `zeigst`, `zeig`. (`besparen` itself does not match standard German spelling as far as this session is
+     aware - `sparen` is the real verb - flagged rather than silently substituted; verify against the user's
+     actual Learned Words entry before acting.)
+
+     **Explicit design constraint from the user, load-bearing for how this gets fixed**: a participle form
+     (e.g. `gespart`) must **not** be fixed by simply adding it as a bundled dictionary row that then gets
+     personally learned - it must be *generated/recognised* instead, specifically so it never floods the
+     Learned Words list. This is not a plain "add the missing word" task for participles; it points at
+     D-404 Tier 1 (generative morphology) or at minimum a participle-aware recognition mechanism, not a bare
+     dictionary addition. Finite forms (`würdest`, `hättest`, `meinst`, `erzähle`, ...) do not carry this
+     same constraint - those can most likely just be added as ordinary bundled rows once verified.
+  3. **`"haptisch"` (adjective) is missing entirely, along with its inflected forms** (`haptisches`,
+     `haptischen`, etc.) - not a verb, unrelated to the tagging project, just bundled into the same deferred
+     round since it surfaced at the same time.
+
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) is German-only.**
   Found while auditing every place that does *not* route through the active-language pipeline (history §210's
   own D-287 fix) - deliberately scoped to German today (that is the only curated list that exists), not a bug
