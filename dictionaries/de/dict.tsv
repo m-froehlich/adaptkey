@@ -113252,11 +113252,11 @@ Objektsprache	8	NOUN
 Junktor	8	NOUN
 temporalen	8	OTHER
 graphischer	8	OTHER
-Graphs	8	NOUN,OTHER
-Kalkülen	8	NOUN
+Graphs	8	NOUN,OTHER	Graph
+Kalkülen	8	NOUN	Kalkül
 wahrem	8	NOUN,OTHER
 polynomial	8	OTHER
-Semantiken	8	NOUN
+Semantiken	8	NOUN	Semantik
 Inspector	8	NOUN
 Storyteller	8	NOUN
 Kurzauftritt	8	NOUN
@@ -113264,14 +113264,14 @@ Kritikerpreis	8	NOUN
 Kinobesitzer	8	NOUN
 Arbeitsangebot	8	NOUN
 voriger	8	OTHER
-Zahlungsmittels	8	NOUN
+Zahlungsmittels	8	NOUN	Zahlungsmittel
 Standardtext	8	NOUN
 Achsensprung	8	NOUN
 Desorientierung	8	NOUN
 Continuity	8	NOUN,OTHER
 Identitätsverlust	8	NOUN
 Islington	8	NOUN
-Zwischentiteln	8	NOUN
+Zwischentiteln	8	NOUN	Zwischentitel
 anliefen	8	VERB
 Schlüsselszenen	8	NOUN
 Sprachversion	8	NOUN
@@ -113286,11 +113286,11 @@ extremste	8	OTHER
 Besitzergreifung	8	NOUN
 Lorre	8	NOUN
 unwahrscheinliche	8	OTHER
-Spielorte	8	NOUN
+Spielorte	8	NOUN	Spielort
 Überraschungsmoment	8	NOUN
 zurückkommen	8	VERB
-Expositionen	8	NOUN
-Dekors	8	NOUN
+Expositionen	8	NOUN	Exposition
+Dekors	8	NOUN	Dekor
 Orchestral	8	NOUN,OTHER
 Wiene	8	NOUN
 erwürgen	8	VERB
@@ -113299,31 +113299,31 @@ entschärften	8	VERB
 drehe	8	OTHER
 Szenenbildner	8	NOUN
 makabre	8	OTHER
-Kriminalgeschichten	8	NOUN
+Kriminalgeschichten	8	NOUN	Kriminalgeschichte
 Rohmer	8	NOUN
-Hauptmotive	8	NOUN
+Hauptmotive	8	NOUN	Hauptmotiv
 Schlachter	8	NOUN
 aufwarf	8	OTHER
-Aufnahmetechniken	8	NOUN
+Aufnahmetechniken	8	NOUN	Aufnahmetechnik
 Einzelwerk	8	NOUN
 Filmtheoretiker	8	NOUN
 lakonischen	8	OTHER
 Bresson	8	NOUN
-Animationsfilmen	8	NOUN
+Animationsfilmen	8	NOUN	Animationsfilm
 Scherenschnitt	8	NOUN
 Tezuka	8	NOUN
 Ninja	8	NOUN
 Nachtprogramm	8	NOUN
 pornografischer	8	OTHER
 Lamarre	8	NOUN
-Rechteinhabern	8	NOUN
+Rechteinhabern	8	NOUN	Rechteinhaber
 Kinoproduktionen	8	NOUN
 Exportvolumen	8	NOUN
 explizitem	8	OTHER
 mitzufinanzieren	8	VERB
-Privatfernsehens	8	NOUN
+Privatfernsehens	8	NOUN	Privatfernsehen
 ProSiebenSat	8	NOUN
-Buchmessen	8	NOUN
+Buchmessen	8	NOUN	Buchmesse
 Gewaltszenen	8	NOUN
 Filmschaffen	8	NOUN
 SWAT	8	NOUN
@@ -113333,7 +113333,7 @@ Frankie	8	NOUN
 Kuhl	8	NOUN,OTHER
 Stibnit	8	NOUN
 vino	8	NOUN,OTHER
-Dreifachbindungen	8	NOUN
+Dreifachbindungen	8	NOUN	Dreifachbindung
 Numbered	8	NOUN,OTHER
 Propen	8	NOUN
 Structural	8	NOUN
@@ -113354,14 +113354,14 @@ gefügt	8	OTHER
 Schaltwerk	8	NOUN
 Aluminiumfolie	8	NOUN
 Paks	8	NOUN
-Kunststofffolien	8	NOUN
-Heizkörpern	8	NOUN
+Kunststofffolien	8	NOUN	Kunststofffolie
+Heizkörpern	8	NOUN	Heizkörper
 Aluminiumblech	8	NOUN
 Zinkblech	8	NOUN
 verarbeitbar	8	OTHER
 Elektrodenmaterial	8	NOUN
 Druckguss	8	NOUN
-Endprodukten	8	NOUN
+Endprodukten	8	NOUN	Endprodukt
 gegenwärtigem	8	OTHER
 korrosionsbeständiger	8	OTHER
 Morin	8	NOUN
@@ -113374,7 +113374,7 @@ Ulcera	8	NOUN
 hundertjähriger	8	NOUN,OTHER
 Leberversagen	8	NOUN
 reizend	8	OTHER
-Fruchtsäften	8	NOUN
+Fruchtsäften	8	NOUN	Fruchtsaft
 Strutt	8	NOUN
 Photolyse	8	NOUN
 Hydrat	8	NOUN
@@ -113382,7 +113382,7 @@ Isotopengemisch	8	NOUN
 Dichtigkeit	8	NOUN
 OES	8	NOUN
 goldfarben	8	OTHER
-Reisfeldern	8	NOUN
+Reisfeldern	8	NOUN	Reisfelder
 Andreasberg	8	NOUN
 Nanogramm	8	NOUN
 Nichtmetall	8	NOUN
@@ -113392,16 +113392,16 @@ Zahnschmerzen	8	NOUN
 Vergiftungssymptome	8	NOUN
 hochreinen	8	OTHER
 Eawag	8	NOUN
-Nachweisgrenzen	8	NOUN
+Nachweisgrenzen	8	NOUN	Nachweisgrenze
 verflüchtigt	8	OTHER
 gekoppeltes	8	OTHER
 Sauerstoffsäuren	8	NOUN
-Sprosse	8	NOUN
+Sprosse	8	NOUN	Spross
 Geschworenengericht	8	NOUN
 Priscilla	8	NOUN
 unstet	8	OTHER
 Interhalogenverbindungen	8	NOUN
-Hydride	8	NOUN
+Hydride	8	NOUN	Hydrid
 Natriumperoxid	8	NOUN
 Kronenether	8	NOUN
 geglüht	8	OTHER
@@ -113410,7 +113410,7 @@ ubiquitär	8	OTHER
 stufenweisen	8	OTHER
 tetragonale	8	OTHER
 Telluride	8	NOUN
-Lichtmikroskopen	8	NOUN
+Lichtmikroskopen	8	NOUN	Lichtmikroskop
 Körnchen	8	NOUN
 gehäuften	8	OTHER
 herrührte	8	OTHER
@@ -113425,8 +113425,8 @@ Risikoerhöhung	8	NOUN
 Zwillingsbrüder	8	NOUN
 monatige	8	OTHER
 Weiterbildungszeit	8	NOUN
-Hausärzte	8	NOUN
-Diploms	8	NOUN
+Hausärzte	8	NOUN	Hausarzt
+Diploms	8	NOUN	Diplom
 Menschenkunde	8	NOUN
 hominis	8	OTHER
 Extraordinarius	8	NOUN
@@ -113435,7 +113435,7 @@ Anthropology	8	NOUN,OTHER
 rechtswissenschaftliche	8	OTHER
 reflexiven	8	OTHER
 neurowissenschaftlichen	8	OTHER
-Themenschwerpunkte	8	NOUN
+Themenschwerpunkte	8	NOUN	Themenschwerpunkt
 überzeitlich	8	OTHER
 bevorstehe	8	OTHER
 Argeaden	8	NOUN
@@ -113460,7 +113460,7 @@ Umsicht	8	NOUN
 ritterlich	8	OTHER
 unfertig	8	OTHER
 Wissbegierde	8	NOUN
-Neufassungen	8	NOUN
+Neufassungen	8	NOUN	Neufassung
 Masʿūdī	8	NOUN
 Ibrāhīm	8	NOUN
 Iskander	8	NOUN
@@ -113468,11 +113468,11 @@ einhellige	8	OTHER
 Fortsetzer	8	NOUN
 Phrygien	8	NOUN
 Aram	8	NOUN
-Zeitabschnitts	8	NOUN
+Zeitabschnitts	8	NOUN	Zeitabschnitt
 Tontäfelchen	8	NOUN
-Handelsstationen	8	NOUN
+Handelsstationen	8	NOUN	Handelsstation
 Güterproduktion	8	NOUN
-Plebejern	8	NOUN
+Plebejern	8	NOUN	Plebejer
 Severer	8	NOUN
 diokletianische	8	NOUN,OTHER
 endloser	8	OTHER
@@ -113486,14 +113486,14 @@ Kristallstrukturanalyse	8	NOUN
 Leiterquerschnitt	8	NOUN
 Rood	8	NOUN,OTHER
 Weights	8	NOUN
-Flurstücken	8	NOUN
+Flurstücken	8	NOUN	Flurstücke
 destruktives	8	OTHER
 Solow	8	NOUN
-Industriezeitalters	8	NOUN
+Industriezeitalters	8	NOUN	Industriezeitalter
 geächtete	8	NOUN,OTHER
 Flexibilisierung	8	NOUN
 Arbeitsethik	8	NOUN
-Genüsse	8	NOUN
+Genüsse	8	NOUN	Genuss
 Kopiervorgang	8	NOUN
 erblindet	8	OTHER
 Zwischenrufe	8	NOUN
@@ -113514,7 +113514,7 @@ Analogieschluss	8	NOUN
 Copán	8	NOUN
 Verdrehung	8	NOUN
 Sprunggelenk	8	NOUN
-Gelenks	8	NOUN
+Gelenks	8	NOUN	Gelenk
 Orthese	8	NOUN
 Bewegungsfähigkeit	8	NOUN
 kirchenlateinisch	8	OTHER
@@ -113534,11 +113534,11 @@ unverkennbaren	8	OTHER
 Bluescreen	8	NOUN
 Coen	8	NOUN
 verschlechternde	8	OTHER
-Sarajevos	8	NOUN
-Hackers	8	NOUN
+Sarajevos	8	NOUN	Sarajevo
+Hackers	8	NOUN	Hacker
 Aniston	8	NOUN
 Boulevardmedien	8	NOUN
-Pitts	8	NOUN
+Pitts	8	NOUN	Pitt
 Brustkrebsrisiko	8	NOUN
 Titelblättern	8	NOUN
 Unvollständigkeit	8	NOUN
@@ -113561,18 +113561,18 @@ Einzelprojekte	8	NOUN
 diachron	8	OTHER
 lebendgebärend	8	OTHER
 vollkommensten	8	OTHER
-Theoretikers	8	NOUN
+Theoretikers	8	NOUN	Theoretiker
 paradigmatische	8	OTHER
 Spottlied	8	NOUN
 meistdiskutierten	8	OTHER
 neuplatonischer	8	OTHER
 ungeschaffen	8	OTHER
-Widerlegungen	8	NOUN
+Widerlegungen	8	NOUN	Widerlegung
 Thomismus	8	NOUN
 Unnötiges	8	NOUN,OTHER
 Gewandtheit	8	NOUN
 ehrlicher	8	OTHER
-Sekundanten	8	NOUN
+Sekundanten	8	NOUN	Sekundant
 Douglass	8	NOUN
 Fugitive	8	NOUN
 verunglimpfen	8	VERB
@@ -113586,7 +113586,7 @@ Amtsnachfolger	8	NOUN
 Leland	8	NOUN
 Altweibersommer	8	NOUN
 sprachgeschichtliche	8	OTHER
-Landarbeitern	8	NOUN
+Landarbeitern	8	NOUN	Landarbeiter
 Erdbebengefahr	8	NOUN
 Ischia	8	NOUN
 vorhergehender	8	OTHER
@@ -113623,13 +113623,13 @@ Sivas	8	NOUN
 Zugmaschinen	8	NOUN
 Elsaesser	8	NOUN
 Clubhaus	8	NOUN
-Teehäuser	8	NOUN
+Teehäuser	8	NOUN	Teehaus
 Karawanserei	8	NOUN
 Epheser	8	NOUN
 Minois	8	NOUN
 Eurobarometer	8	NOUN
 Geschichtswissenschaftler	8	NOUN
-Wissenschaftstheoretikern	8	NOUN
+Wissenschaftstheoretikern	8	NOUN	Wissenschaftstheoretiker
 Böckenförde	8	NOUN
 Religionsgruppe	8	NOUN
 fundierter	8	OTHER
@@ -113637,16 +113637,16 @@ Secular	8	NOUN,OTHER
 entgegenbringt	8	OTHER
 Meslier	8	NOUN
 Anthropomorphismus	8	NOUN
-Rossen	8	NOUN
+Rossen	8	NOUN	Ross
 niederem	8	OTHER
-Denkschulen	8	NOUN
+Denkschulen	8	NOUN	Denkschule
 diskriminieren	8	VERB
 dreifaltigen	8	OTHER
 Abaelardus	8	NOUN
 Gallikanismus	8	NOUN
 religionskritischen	8	OTHER
 Misere	8	NOUN
-Mottos	8	NOUN
+Mottos	8	NOUN	Motto
 Transzendentes	8	NOUN,OTHER
 anthropozentrischen	8	OTHER
 unbestimmtes	8	OTHER
@@ -113656,14 +113656,14 @@ entlieh	8	OTHER
 abgeschickt	8	OTHER
 Heliosphäre	8	NOUN
 Standardatmosphäre	8	NOUN
-Lebenswerks	8	NOUN
+Lebenswerks	8	NOUN	Lebenswerk
 Mineralvorkommen	8	NOUN
 tiefstgelegene	8	OTHER
 Selbstidentifikation	8	NOUN
-Wahlrechte	8	NOUN
+Wahlrechte	8	NOUN	Wahlrecht
 Aschraf	8	NOUN
 Loja	8	NOUN
-Institutions	8	NOUN,OTHER
+Institutions	8	NOUN,OTHER	Institution
 Rifles	8	NOUN
 Dostum	8	NOUN
 HRW	8	NOUN
@@ -113673,23 +113673,23 @@ Einzelstimmgebung	8	NOUN
 Hazara	8	NOUN
 gerächt	8	OTHER
 Rohstoffabbau	8	NOUN
-Viehbestände	8	NOUN
+Viehbestände	8	NOUN	Viehbestand
 Abpumpen	8	NOUN
 Drogenkriminalität	8	NOUN
-Opiaten	8	NOUN
+Opiaten	8	NOUN	Opiate
 Pesa	8	NOUN
-Hilfsgeldern	8	NOUN
+Hilfsgeldern	8	NOUN	Hilfsgelder
 eingearbeiteten	8	OTHER
 Maupassant	8	NOUN
 Zeitungswesen	8	NOUN
 Arbeitsgrundlage	8	NOUN
-Sonnenjahre	8	NOUN
-Pflichtspiele	8	NOUN
+Sonnenjahre	8	NOUN	Sonnenjahr
+Pflichtspiele	8	NOUN	Pflichtspiel
 Kompositionstechnik	8	NOUN
-Akeleien	8	NOUN
+Akeleien	8	NOUN	Akelei
 Hahnenfußgewächse	8	NOUN
 vorkommend	8	OTHER
-Volksnamen	8	NOUN
+Volksnamen	8	NOUN	Volksname
 Gesundheitsgründen	8	NOUN
 Zaza	8	NOUN
 Gästebuch	8	NOUN
@@ -113698,7 +113698,7 @@ Equinox	8	NOUN
 Miramar	8	NOUN
 überdimensionalen	8	OTHER
 proklamieren	8	VERB
-Randbemerkungen	8	NOUN
+Randbemerkungen	8	NOUN	Randbemerkung
 Schutzgeist	8	NOUN
 Georgina	8	NOUN
 LaVey	8	NOUN
@@ -113719,14 +113719,14 @@ zweckmäßigerweise	8	OTHER
 Ritsurei	8	NOUN
 Nebi	8	NOUN
 Gellius	8	NOUN
-Fernsehshows	8	NOUN
+Fernsehshows	8	NOUN	Fernsehshow
 Numerik	8	NOUN
 rückschließen	8	VERB
 Hedin	8	NOUN
 Nordasien	8	NOUN
 Währungskrise	8	NOUN
 Tierdarstellungen	8	NOUN
-Glaubenssysteme	8	NOUN
+Glaubenssysteme	8	NOUN	Glaubenssystem
 Amitabha	8	NOUN
 Goh	8	NOUN
 bundeseinheitliche	8	OTHER
@@ -113742,7 +113742,7 @@ virilis	8	OTHER
 Mitkonsul	8	NOUN
 Proskriptionen	8	NOUN
 Syme	8	NOUN
-Triumvirats	8	NOUN
+Triumvirats	8	NOUN	Triumvirat
 untergrub	8	OTHER
 Getreideversorgung	8	NOUN
 herrenlose	8	OTHER
@@ -113786,14 +113786,14 @@ Metapsychologie	8	NOUN
 willentliche	8	OTHER
 handschriftlicher	8	OTHER
 mittelbyzantinischen	8	OTHER
-Prüfungsordnungen	8	NOUN
+Prüfungsordnungen	8	NOUN	Prüfungsordnung
 Ebbinghaus	8	NOUN
 Lebedew	8	NOUN
 Geschäftsanteile	8	NOUN
 Verkaufsschlager	8	NOUN
 lizenzieren	8	VERB
 Freescale	8	NOUN
-Apfels	8	NOUN
+Apfels	8	NOUN	Apfel
 Mikrochips	8	NOUN
 Cue	8	NOUN
 Sequencing	8	NOUN,OTHER
@@ -113802,7 +113802,7 @@ Prozessorkerne	8	NOUN
 kantig	8	OTHER
 Spielekonsole	8	NOUN
 Screenreader	8	NOUN
-Sehbehinderten	8	NOUN,OTHER
+Sehbehinderten	8	NOUN,OTHER	Sehbehinderte
 softwareseitig	8	OTHER
 Materialwahl	8	NOUN
 gefräst	8	OTHER
@@ -113812,7 +113812,7 @@ Viviane	8	NOUN
 Reding	8	NOUN
 Bezahlsystem	8	NOUN
 Erwerbsmöglichkeiten	8	NOUN
-Vertragspartnern	8	NOUN
+Vertragspartnern	8	NOUN	Vertragspartner
 Ariernachweis	8	NOUN
 Beamtenlaufbahn	8	NOUN
 vorgeblicher	8	OTHER
@@ -113822,16 +113822,16 @@ hingegeben	8	VERB
 Alldeutsche	8	NOUN
 Hakenkreuzfahnen	8	NOUN
 Programmreform	8	NOUN
-Machtbefugnissen	8	NOUN
+Machtbefugnissen	8	NOUN	Machtbefugnisse
 Landfriedensbruchs	8	NOUN
 Reichswehrführung	8	NOUN
 Republikschutzgesetz	8	NOUN
-Vorladungen	8	NOUN
+Vorladungen	8	NOUN	Vorladung
 Stoßtrupp	8	NOUN
 Nebenraum	8	NOUN
 Gehrock	8	NOUN
 Schluck	8	NOUN,VERB
-Ludendorffs	8	NOUN
+Ludendorffs	8	NOUN	Ludendorff
 republikfeindlichen	8	OTHER
 Blutzeugen	8	NOUN
 verirrte	8	OTHER
@@ -113847,24 +113847,24 @@ Schaub	8	NOUN
 Minderheitskabinett	8	NOUN
 Reichskanzlerschaft	8	NOUN
 Staatsangehörigkeitsgesetz	8	NOUN
-Kabinettssitzungen	8	NOUN
+Kabinettssitzungen	8	NOUN	Kabinettssitzung
 Gesellschaftsbereiche	8	NOUN
 Judenpolitik	8	NOUN
 Judenboykott	8	NOUN
 unterbanden	8	VERB
-Amtsantritts	8	NOUN
-Prachtstraßen	8	NOUN
+Amtsantritts	8	NOUN	Amtsantritt
+Prachtstraßen	8	NOUN	Prachtstraße
 Weltauffassung	8	NOUN
 Teilkirchen	8	NOUN
 innerkirchlich	8	OTHER
 Greiser	8	NOUN
-Gauleitern	8	NOUN
-Monologs	8	NOUN
+Gauleitern	8	NOUN	Gauleiter
+Monologs	8	NOUN	Monolog
 lebensunwerten	8	OTHER
 misslangen	8	VERB
-Spaniers	8	NOUN
+Spaniers	8	NOUN	Spanier
 häufte	8	OTHER
-Nachschubs	8	NOUN
+Nachschubs	8	NOUN	Nachschub
 ranghohen	8	OTHER
 inspirierenden	8	OTHER
 Täuschungsmanöver	8	NOUN
@@ -113894,11 +113894,11 @@ semipräsidentielle	8	OTHER
 Durchgreifen	8	NOUN,OTHER
 Kolonialvergangenheit	8	NOUN
 Vermittlungsbemühungen	8	NOUN
-Friedensabkommens	8	NOUN
+Friedensabkommens	8	NOUN	Friedensabkommen
 Gasgesellschaft	8	NOUN
 Expansionsphase	8	NOUN
 Inlandsnachfrage	8	NOUN
-Schotts	8	NOUN
+Schotts	8	NOUN	Schott
 Zuckerraffinerie	8	NOUN
 Bejaia	8	NOUN
 Auslandsdienst	8	NOUN
@@ -113915,7 +113915,7 @@ gallischer	8	OTHER
 direktere	8	OTHER
 Tyrrhenische	8	NOUN,OTHER
 Olybrius	8	NOUN
-Bronzestatuen	8	NOUN
+Bronzestatuen	8	NOUN	Bronzestatue
 Dampfwagen	8	NOUN
 Betriebsjahren	8	NOUN
 Dampflokwerk	8	NOUN
@@ -113936,7 +113936,7 @@ Vasodilatation	8	NOUN
 Antoniter	8	NOUN
 trachtete	8	OTHER
 Privatsekretärin	8	NOUN
-Automobiles	8	NOUN
+Automobiles	8	NOUN	Automobil
 Mautgebühren	8	NOUN
 Gemeinsinn	8	NOUN
 Zaschka	8	NOUN
@@ -113953,9 +113953,9 @@ Suprafluidität	8	NOUN
 Ladevorgang	8	NOUN
 Standardformat	8	NOUN
 Mignon	8	NOUN
-Elektroantriebe	8	NOUN
+Elektroantriebe	8	NOUN	Elektroantrieb
 bezahle	8	NOUN,VERB,OTHER
-Verbrennungsmotors	8	NOUN
+Verbrennungsmotors	8	NOUN	Verbrennungsmotor
 Speicherkraftwerke	8	NOUN
 Nenndrehzahl	8	NOUN
 Raumbedarf	8	NOUN
@@ -113984,16 +113984,16 @@ tiefblaue	8	OTHER
 Stickstoffquelle	8	NOUN
 Algenblüten	8	NOUN
 Blutspiegel	8	NOUN
-Evidenzen	8	NOUN
+Evidenzen	8	NOUN	Evidenz
 niederliegend	8	OTHER
 kletternd	8	OTHER
-Kriegsschiffes	8	NOUN
+Kriegsschiffes	8	NOUN	Kriegsschiff
 Reichsmarine	8	NOUN
 Marineminister	8	NOUN
 Commissioned	8	NOUN
 Gesundheitspflege	8	NOUN
 andine	8	NOUN,OTHER
-Yambohnen	8	NOUN
+Yambohnen	8	NOUN	Yambohne
 rotbraune	8	OTHER
 Weddell	8	NOUN
 Hornet	8	NOUN
@@ -114012,7 +114012,7 @@ sensibilisierte	8	OTHER
 anaphylaktischen	8	OTHER
 hämatologischen	8	OTHER
 postmortalen	8	OTHER
-Cremes	8	NOUN
+Cremes	8	NOUN	Creme
 Hyposensibilisierung	8	NOUN
 Monozyten	8	NOUN
 Allergologie	8	NOUN
@@ -114025,7 +114025,7 @@ Völkernamen	8	NOUN
 Guarino	8	NOUN
 Hersfelder	8	NOUN
 decumates	8	OTHER
-Rheinprovinzen	8	NOUN
+Rheinprovinzen	8	NOUN	Rheinprovinz
 unvermischt	8	OTHER
 Disziplinlosigkeit	8	NOUN
 Tenkterer	8	NOUN
@@ -114054,18 +114054,18 @@ Abdi	8	NOUN
 Oberleitungsbuslinien	8	NOUN
 Rhede	8	NOUN
 Immobilienverwaltung	8	NOUN
-Discountern	8	NOUN
+Discountern	8	NOUN	Discounter
 Gebrauchsgüter	8	NOUN
 Elektrofahrräder	8	NOUN
 unerforschten	8	OTHER
 Nimrod	8	NOUN
-Nachbarvölkern	8	NOUN
+Nachbarvölkern	8	NOUN	Nachbarvölker
 Nachleben	8	NOUN
 Kultzentrum	8	NOUN
 Zeichenform	8	NOUN
 ša	8	NOUN,OTHER
 Königsnamen	8	NOUN
-Infixe	8	NOUN
+Infixe	8	NOUN	Infix
 regierter	8	OTHER
 Possessivsuffix	8	NOUN
 Radikals	8	NOUN
@@ -114073,7 +114073,7 @@ pronominale	8	OTHER
 Metathese	8	NOUN
 hurritische	8	NOUN,OTHER
 berittener	8	NOUN,OTHER
-Apuliens	8	NOUN
+Apuliens	8	NOUN	Apulien
 Klimadaten	8	NOUN
 Democratico	8	NOUN
 Barletta	8	NOUN
@@ -114081,20 +114081,20 @@ antico	8	NOUN,OTHER
 argentum	8	OTHER
 Julián	8	NOUN
 Zuckerrohranbau	8	NOUN
-Rios	8	NOUN
+Rios	8	NOUN	Rio
 Fuego	8	NOUN
 Wiederaufflammen	8	NOUN
-Ríos	8	NOUN
+Ríos	8	NOUN	Río
 Seseo	8	NOUN
-Elendsvierteln	8	NOUN
+Elendsvierteln	8	NOUN	Elendsviertel
 Secretaría	8	NOUN
 Zúñiga	8	NOUN
 Schmutziger	8	NOUN,OTHER
 entledigt	8	OTHER
 Rúa	8	NOUN
-Interessengemeinschaften	8	NOUN
+Interessengemeinschaften	8	NOUN	Interessengemeinschaft
 Jahresvergleich	8	NOUN
-Staatsbetrieben	8	NOUN
+Staatsbetrieben	8	NOUN	Staatsbetriebe
 Interimsabkommen	8	NOUN
 Fahrgastbetrieb	8	NOUN
 Atucha	8	NOUN
@@ -114109,7 +114109,7 @@ erzeugend	8	OTHER
 präsentierenden	8	OTHER
 Graft	8	NOUN
 Epitop	8	NOUN
-Fremdkörpern	8	NOUN
+Fremdkörpern	8	NOUN	Fremdkörper
 membranständige	8	OTHER
 Doherty	8	NOUN
 kDa	8	OTHER
@@ -114123,7 +114123,7 @@ Fischereiflotte	8	NOUN
 Vedder	8	NOUN
 Thiole	8	NOUN
 Monohydrat	8	NOUN
-Phenolen	8	NOUN
+Phenolen	8	NOUN	Phenol
 Hydroxyprolin	8	NOUN
 Peroxidase	8	NOUN
 erfreuliche	8	OTHER
@@ -114139,7 +114139,7 @@ Wimpern	8	NOUN
 Helligkeitsunterschiede	8	NOUN
 gerichtetem	8	OTHER
 Pigmentzellen	8	NOUN
-Kopffüßern	8	NOUN
+Kopffüßern	8	NOUN	Kopffüßer
 Einzelaugen	8	NOUN
 Ausstülpung	8	NOUN
 nachtaktiven	8	OTHER
@@ -114150,7 +114150,7 @@ Opferritual	8	NOUN
 Zergliederung	8	NOUN
 Anat	8	NOUN
 Herophilos	8	NOUN
-Nicolaes	8	NOUN
+Nicolaes	8	NOUN	Nicolae
 Tōyō	8	NOUN
 Waldeyer	8	NOUN
 Zakariya	8	NOUN
@@ -114165,7 +114165,7 @@ Foch	8	NOUN
 Kunstaktion	8	NOUN
 verhüllen	8	VERB
 Wohlklang	8	NOUN
-Tonsystemen	8	NOUN
+Tonsystemen	8	NOUN	Tonsystem
 Instrumentenbau	8	NOUN
 Übertragungstechnik	8	NOUN
 Schallfeld	8	NOUN
@@ -114173,7 +114173,7 @@ Schallabstrahlung	8	NOUN
 Kommunikationskanal	8	NOUN
 Schmerzschwelle	8	NOUN
 Tschadische	8	NOUN,OTHER
-Expansionen	8	NOUN
+Expansionen	8	NOUN	Expansion
 Postel	8	NOUN
 Genussystem	8	NOUN
 ungerechtfertigte	8	OTHER
@@ -114191,17 +114191,17 @@ Furchung	8	NOUN
 Entoderm	8	NOUN
 Ruderfußkrebse	8	NOUN
 Pflanzengruppen	8	NOUN
-Sammelbegriffe	8	NOUN
+Sammelbegriffe	8	NOUN	Sammelbegriff
 Fluorapatit	8	NOUN
-Flugbahnen	8	NOUN
+Flugbahnen	8	NOUN	Flugbahn
 Stresshormon	8	NOUN
 anfärben	8	NOUN,OTHER
 Methylierung	8	NOUN
 Nebennierenrinde	8	NOUN
 Plasmahalbwertszeit	8	NOUN
 Energiereserven	8	NOUN
-Blutvolumens	8	NOUN
-Trakts	8	NOUN
+Blutvolumens	8	NOUN	Blutvolumen
+Trakts	8	NOUN	Trakt
 Hauptanwendungsgebiet	8	NOUN
 intramuskulären	8	OTHER
 Nasenspray	8	NOUN
@@ -114228,14 +114228,14 @@ Konsumverhalten	8	NOUN
 Teilnehmeranschlussleitung	8	NOUN
 Signalqualität	8	NOUN
 Arktur	8	NOUN
-Generalsekretäre	8	NOUN
+Generalsekretäre	8	NOUN	Generalsekretär
 Sexarbeiter	8	NOUN
 Eyed	8	NOUN
-Hauptunterschiede	8	NOUN
+Hauptunterschiede	8	NOUN	Hauptunterschied
 Systematiker	8	NOUN
 zoon	8	NOUN,OTHER
 Duhem	8	NOUN
-Verschiedenheiten	8	NOUN
+Verschiedenheiten	8	NOUN	Verschiedenheit
 arbiträr	8	OTHER
 Stringer	8	NOUN
 halbautomatische	8	OTHER
@@ -114246,14 +114246,14 @@ zusammenzusetzen	8	VERB
 Anweisungsblock	8	NOUN
 Suchmuster	8	NOUN
 Coppet	8	NOUN
-Bettinas	8	NOUN
+Bettinas	8	NOUN	Bettina
 traumhafte	8	OTHER
 Alonzo	8	NOUN
 Ambiguität	8	NOUN
 Eingangsdaten	8	NOUN
 determinierte	8	OTHER
 Dixit	8	NOUN
-Hocharabische	8	NOUN,OTHER
+Hocharabische	8	NOUN,OTHER	Hocharabisch
 lesbarer	8	OTHER
 Kurzvokal	8	NOUN
 Personalsuffix	8	NOUN
@@ -114268,7 +114268,7 @@ benutzerdefinierte	8	OTHER
 Schraffuren	8	NOUN
 fünftägigen	8	OTHER
 Voltasche	8	NOUN
-Voltaschen	8	NOUN
+Voltaschen	8	NOUN	Voltasche
 Tempio	8	NOUN
 stattliches	8	OTHER
 Flüssigkeitstropfen	8	NOUN
@@ -114281,18 +114281,18 @@ Muskat	8	NOUN
 Mückenlarven	8	NOUN
 angespült	8	OTHER
 Moschus	8	NOUN
-Pottwals	8	NOUN
+Pottwals	8	NOUN	Pottwal
 Sokotra	8	NOUN
 Kreüterbuch	8	NOUN
 aufgewogen	8	VERB
-Wellenlängenbereiche	8	NOUN
+Wellenlängenbereiche	8	NOUN	Wellenlängenbereich
 Strahlungsbilanz	8	NOUN
 reformpädagogischen	8	OTHER
 Barrès	8	NOUN
 veranlagten	8	OTHER
 Retour	8	NOUN
 schäme	8	OTHER
-Verliese	8	NOUN
+Verliese	8	NOUN	Verlies
 Romanist	8	NOUN
 Falschmünzer	8	NOUN
 neoklassischer	8	OTHER
@@ -114301,8 +114301,8 @@ Echtzeitsystemen	8	NOUN
 Speicherzugriffe	8	NOUN
 hexadezimaler	8	OTHER
 Demonstrationszwecken	8	NOUN
-Interrupts	8	NOUN
-Bauelements	8	NOUN
+Interrupts	8	NOUN	Interrupt
+Bauelements	8	NOUN	Bauelement
 Unterabtastung	8	NOUN
 digitalisieren	8	VERB
 Significant	8	NOUN,OTHER
@@ -114332,7 +114332,7 @@ Fallgruppe	8	NOUN
 Neptunbahn	8	NOUN
 ellipsoiden	8	OTHER
 nächstgrößeren	8	OTHER
-Starrs	8	NOUN
+Starrs	8	NOUN	Starr
 sq	8	NOUN,OTHER
 JPL	8	NOUN
 Marsbahn	8	NOUN
@@ -114342,13 +114342,13 @@ stringente	8	OTHER
 Fayyum	8	NOUN
 Kursaussetzung	8	NOUN
 Extremereignisse	8	NOUN
-Wertpapiers	8	NOUN
-Aussetzungen	8	NOUN
+Wertpapiers	8	NOUN	Wertpapier
+Aussetzungen	8	NOUN	Aussetzung
 Listing	8	NOUN
 Tukulti	8	NOUN
-Schwefligen	8	NOUN,OTHER
-Elastomeren	8	NOUN
-Schmierstoffen	8	NOUN
+Schwefligen	8	NOUN,OTHER	Schweflige
+Elastomeren	8	NOUN	Elastomere
+Schmierstoffen	8	NOUN	Schmierstoff
 Nierenerkrankungen	8	NOUN
 Gewichtsabnahme	8	NOUN
 Diuretika	8	NOUN
@@ -114364,7 +114364,7 @@ Cutaway	8	NOUN
 Hazy	8	NOUN
 Redl	8	NOUN
 Waffensystem	8	NOUN
-Eindringens	8	NOUN
+Eindringens	8	NOUN	Eindringen
 Auffrischung	8	NOUN
 Aar	8	NOUN
 Rhesusaffe	8	NOUN
@@ -114376,7 +114376,7 @@ Etosha	8	NOUN
 Verschiedenartigkeit	8	NOUN
 SME	8	NOUN,OTHER
 Jornal	8	NOUN
-Afrikameisterschaften	8	NOUN
+Afrikameisterschaften	8	NOUN	Afrikameisterschaft
 Filmarbeit	8	NOUN
 autistisch	8	OTHER
 Überreizung	8	NOUN
@@ -114388,10 +114388,10 @@ Komorbiditäten	8	NOUN
 Lernziele	8	NOUN
 Trainingsprogramm	8	NOUN
 Ausgeglichenheit	8	NOUN
-Zytokinen	8	NOUN
+Zytokinen	8	NOUN	Zytokine
 entzündlicher	8	OTHER
 teratogene	8	OTHER
-Luftschadstoffen	8	NOUN
+Luftschadstoffen	8	NOUN	Luftschadstoffe
 Verpackungsmaterialien	8	NOUN
 Bisphenol	8	NOUN
 glaubhafte	8	OTHER
@@ -114403,18 +114403,18 @@ Austro	8	NOUN
 steirisch	8	OTHER
 Aufschmelzung	8	NOUN
 ausdrückbar	8	OTHER
-Axiomensysteme	8	NOUN
-Monoids	8	NOUN
+Axiomensysteme	8	NOUN	Axiomensystem
+Monoids	8	NOUN	Monoid
 Jauch	8	NOUN
-Fehlschlägen	8	NOUN
+Fehlschlägen	8	NOUN	Fehlschlag
 Hungen	8	NOUN
 Ortsnetz	8	NOUN
 Unfallgefahr	8	NOUN
-Wetterverhältnissen	8	NOUN
+Wetterverhältnissen	8	NOUN	Wetterverhältnisse
 zahlungskräftigen	8	OTHER
 höhenfrei	8	OTHER
 autobahnartig	8	OTHER
-Fahrverbote	8	NOUN
+Fahrverbote	8	NOUN	Fahrverbot
 Naturschutzverbände	8	NOUN
 Devisengeschäfte	8	NOUN
 Bildungsbewegung	8	NOUN
@@ -114423,13 +114423,13 @@ Meinungsspektrum	8	NOUN
 parteinahe	8	OTHER
 pluralistisches	8	OTHER
 Jahresabschlusses	8	NOUN
-Anlagevermögens	8	NOUN
+Anlagevermögens	8	NOUN	Anlagevermögen
 Geldvermögen	8	NOUN
 Deaf	8	NOUN
 Patentantrag	8	NOUN
 Schallwandler	8	NOUN
 tetraedrischen	8	OTHER
-Brutstätten	8	NOUN
+Brutstätten	8	NOUN	Brutstätte
 Badia	8	NOUN,OTHER
 abzuspalten	8	VERB
 Senussi	8	NOUN
@@ -114449,13 +114449,13 @@ Malerkollegen	8	NOUN
 fristete	8	OTHER
 servierte	8	OTHER
 tschechisches	8	NOUN,OTHER
-Teilaspekten	8	NOUN
+Teilaspekten	8	NOUN	Teilaspekt
 ecclesiastica	8	OTHER
 Eingruppierung	8	NOUN
 eingruppiert	8	OTHER
 Uexküll	8	NOUN
 Organismengruppen	8	NOUN
-Biodiversitäts	8	NOUN
+Biodiversitäts	8	NOUN	Biodiversität
 Entwicklungsbiologie	8	NOUN
 Planta	8	NOUN
 Idar	8	NOUN
@@ -114465,33 +114465,33 @@ Musikalben	8	NOUN
 Respect	8	NOUN
 liehen	8	VERB
 Leistungskraft	8	NOUN
-Benchmarks	8	NOUN
+Benchmarks	8	NOUN	Benchmark
 Bina	8	NOUN,OTHER
 Blackbox	8	NOUN
 Gruppendynamik	8	NOUN
 Outsider	8	NOUN
 entworfener	8	OTHER
-Unterfrankens	8	NOUN
+Unterfrankens	8	NOUN	Unterfranken
 Veitshöchheim	8	NOUN
 wasserreicher	8	OTHER
 Maindreieck	8	NOUN
 Ungarneinfälle	8	NOUN
 Ostarrichi	8	NOUN
 hinzugewonnenen	8	OTHER
-Emanuels	8	NOUN
+Emanuels	8	NOUN	Emanuel
 Pockenimpfung	8	NOUN
 Ministerverantwortlichkeit	8	NOUN
 Staatsgrundgesetz	8	NOUN
 Moscheegemeinden	8	NOUN
 Abdin	8	NOUN
 nichtdeutsche	8	OTHER
-Oberlandesgerichte	8	NOUN
+Oberlandesgerichte	8	NOUN	Oberlandesgericht
 aussichtsreichen	8	OTHER
 direktdemokratische	8	OTHER
 Aiwanger	8	NOUN
 Eisenreich	8	NOUN
 Generalkonsul	8	NOUN
-Jurys	8	NOUN
+Jurys	8	NOUN	Jury
 Noris	8	NOUN
 Christkindlesmarkt	8	NOUN
 Reinhausen	8	NOUN
@@ -114500,31 +114500,31 @@ Gundremmingen	8	NOUN
 FRM	8	NOUN,OTHER
 Energiekonzept	8	NOUN
 großflächiges	8	OTHER
-Bundesmitteln	8	NOUN
-Verkehrslandeplätze	8	NOUN
+Bundesmitteln	8	NOUN	Bundesmittel
+Verkehrslandeplätze	8	NOUN	Verkehrslandeplatz
 renommierteste	8	OTHER
 Residenztheater	8	NOUN
-Landesbühnen	8	NOUN
+Landesbühnen	8	NOUN	Landesbühne
 Geschlechtertürme	8	NOUN
 Sozialsiedlung	8	NOUN
 Freilandmuseum	8	NOUN
 Medieneinheiten	8	NOUN
-Motorsports	8	NOUN
+Motorsports	8	NOUN	Motorsport
 Speedwayrennen	8	NOUN
 Sportschießen	8	NOUN
-Turnvereine	8	NOUN
+Turnvereine	8	NOUN	Turnverein
 ritterschaftlichen	8	OTHER
 Baltringer	8	NOUN
 Seehaufen	8	NOUN
 Kleinadel	8	NOUN
-Brandschatzungen	8	NOUN
+Brandschatzungen	8	NOUN	Brandschatzung
 Mélac	8	NOUN
 Aufmarschgebiet	8	NOUN
 Frauengefängnis	8	NOUN
 Gotteszell	8	NOUN
 Luckner	8	NOUN
 unterbrachte	8	OTHER
-Volksbefragungen	8	NOUN
+Volksbefragungen	8	NOUN	Volksbefragung
 Verfassungsklage	8	NOUN
 Landeszugehörigkeit	8	NOUN
 schreitende	8	OTHER
@@ -114534,8 +114534,8 @@ erstmaliger	8	OTHER
 Grünlandwirtschaft	8	NOUN
 Junghans	8	NOUN
 Neckarwestheim	8	NOUN
-Laufwasserkraftwerke	8	NOUN
-Flächenländer	8	NOUN
+Laufwasserkraftwerke	8	NOUN	Laufwasserkraftwerk
+Flächenländer	8	NOUN	Flächenland
 Wegenetzes	8	NOUN
 Rheinhäfen	8	NOUN
 Freizeitverkehr	8	NOUN
@@ -114545,18 +114545,18 @@ Reds	8	NOUN
 Schulgesetz	8	NOUN
 Prozessorzeit	8	NOUN
 Kommandosprache	8	NOUN
-Bausteins	8	NOUN
+Bausteins	8	NOUN	Baustein
 StatCounter	8	NOUN
-Schlöndorffs	8	NOUN
+Schlöndorffs	8	NOUN	Schlöndorff
 would	8	OTHER
 schlüpfrige	8	OTHER
-Bildausschnitte	8	NOUN
+Bildausschnitte	8	NOUN	Bildausschnitt
 vordergründige	8	OTHER
 jongliert	8	OTHER
 offensichtlichsten	8	OTHER
 Zwillingspaar	8	NOUN
 unverfälscht	8	OTHER
-Hammetts	8	NOUN
+Hammetts	8	NOUN	Hammett
 Bowles	8	NOUN
 Belmondo	8	NOUN
 Rother	8	NOUN
@@ -114569,7 +114569,7 @@ Pilotverfahren	8	NOUN
 Arbeitsschwerpunkt	8	NOUN
 Forschungsauftrag	8	NOUN
 Arbeitsvorbereitung	8	NOUN
-Hauptverfahrens	8	NOUN
+Hauptverfahrens	8	NOUN	Hauptverfahren
 abbauwürdigen	8	OTHER
 Borverbindungen	8	NOUN
 auskristallisiert	8	OTHER
@@ -114588,14 +114588,14 @@ geochemisch	8	OTHER
 Chondrite	8	NOUN
 Gleitlager	8	NOUN
 Legierungsbestandteil	8	NOUN
-Neutroneneinfänge	8	NOUN
+Neutroneneinfänge	8	NOUN	Neutroneneinfang
 Schichtfolge	8	NOUN
 BKP	8	NOUN
-Dimere	8	NOUN,OTHER
+Dimere	8	NOUN,OTHER	Dimer
 Bleiglanz	8	NOUN
 Saturnus	8	NOUN
 bleihaltige	8	OTHER
-Aggregaten	8	NOUN
+Aggregaten	8	NOUN	Aggregat
 Emittent	8	NOUN
 dunkelgraue	8	OTHER
 widersteht	8	OTHER
@@ -114607,14 +114607,14 @@ Bleibelastung	8	NOUN
 Wasserhärte	8	NOUN
 Säuglingsnahrung	8	NOUN
 Carnallit	8	NOUN
-Biokraftstoffen	8	NOUN
+Biokraftstoffen	8	NOUN	Biokraftstoffe
 Tetrachlorkohlenstoff	8	NOUN
 SCE	8	NOUN
 heilkundliche	8	OTHER
 Karystos	8	NOUN
 Gesner	8	NOUN
 kollidierenden	8	OTHER
-Hohlraums	8	NOUN
+Hohlraums	8	NOUN	Hohlraum
 erbohrt	8	OTHER
 Verrechnungseinheit	8	NOUN
 Getreidepreis	8	NOUN
@@ -114623,10 +114623,10 @@ Bodenschutz	8	NOUN
 Einsatzstelle	8	NOUN
 Pumpspeicherwerk	8	NOUN
 Waldwirtschaft	8	NOUN
-Mitbegründers	8	NOUN
+Mitbegründers	8	NOUN	Mitbegründer
 Strafzumessung	8	NOUN
 Gefährdungspotential	8	NOUN
-Kultusministers	8	NOUN
+Kultusministers	8	NOUN	Kultusminister
 Laubholz	8	NOUN
 Stralau	8	NOUN
 Lohmühlenstraße	8	NOUN
@@ -114641,17 +114641,17 @@ führendem	8	OTHER
 Nollendorfstraße	8	NOUN
 Ceciliengärten	8	NOUN
 rosafarben	8	OTHER
-Kollaborationen	8	NOUN
+Kollaborationen	8	NOUN	Kollaboration
 Haneda	8	NOUN
 Tibia	8	NOUN
 Lokalanästhetikum	8	NOUN
 Bewährungsstrafe	8	NOUN
 Ghostbusters	8	NOUN
-Andersons	8	NOUN
+Andersons	8	NOUN	Anderson
 Markie	8	NOUN
 Tennstedt	8	NOUN
 Bäumchen	8	NOUN
-Krümmungen	8	NOUN
+Krümmungen	8	NOUN	Krümmung
 konfuzianisch	8	OTHER
 Blattachsel	8	NOUN
 Stilelement	8	NOUN
@@ -114659,7 +114659,7 @@ Gestaltungsmerkmal	8	NOUN
 Verkehrsader	8	NOUN
 welligen	8	OTHER
 Spenge	8	NOUN
-Erdmittelalters	8	NOUN
+Erdmittelalters	8	NOUN	Erdmittelalter
 Sättel	8	NOUN
 angelagert	8	OTHER
 Parabraunerden	8	NOUN
@@ -114672,9 +114672,9 @@ Rochdale	8	NOUN
 Sprungturm	8	NOUN
 Naturschutzgründen	8	NOUN
 Johannisberg	8	NOUN
-Gastauftritten	8	NOUN
+Gastauftritten	8	NOUN	Gastauftritt
 Aire	8	NOUN
-Standardwerken	8	NOUN
+Standardwerken	8	NOUN	Standardwerk
 Damenteam	8	NOUN
 Severing	8	NOUN
 Pickert	8	NOUN
@@ -114684,7 +114684,7 @@ gefördertes	8	OTHER
 Venetus	8	NOUN
 Chelles	8	NOUN
 Durchströmen	8	NOUN,OTHER
-Schussen	8	NOUN
+Schussen	8	NOUN	Schuss
 sedimentiert	8	OTHER
 Wasserabfluss	8	NOUN
 Wollmatinger	8	NOUN
@@ -114695,7 +114695,7 @@ Hug	8	NOUN
 Treibholz	8	NOUN
 Sentinel	8	NOUN
 Tönung	8	NOUN
-Rechtsauffassungen	8	NOUN
+Rechtsauffassungen	8	NOUN	Rechtsauffassung
 Seemitte	8	NOUN
 gewohnheitsrechtlichen	8	OTHER
 Gänsesäger	8	NOUN
@@ -114712,7 +114712,7 @@ Birnau	8	NOUN
 vereisen	8	VERB
 Seepromenade	8	NOUN
 Endneolithikum	8	NOUN
-Walsers	8	NOUN
+Walsers	8	NOUN	Walser
 Starkwind	8	NOUN
 Ökologiebewegung	8	NOUN
 Landesminister	8	NOUN
@@ -114737,14 +114737,14 @@ Missbrauchsopfer	8	NOUN
 Leides	8	NOUN
 zweitstärksten	8	OTHER
 Drittplatzierten	8	NOUN,OTHER
-Volkssagen	8	NOUN
+Volkssagen	8	NOUN	Volkssage
 Zimmerpflanze	8	NOUN
 Völlegefühl	8	NOUN
 Hüllblätter	8	NOUN
 campestris	8	OTHER
 Charm	8	NOUN,OTHER
 Bundesgesundheitsamtes	8	NOUN
-Teilblütenständen	8	NOUN
+Teilblütenständen	8	NOUN	Teilblütenstände
 Charley	8	NOUN
 raueren	8	OTHER
 Blunt	8	NOUN
@@ -114768,12 +114768,12 @@ kontrapunktische	8	OTHER
 anmutig	8	OTHER
 Pisendel	8	NOUN
 Opernkomponist	8	NOUN
-Rameaus	8	NOUN
+Rameaus	8	NOUN	Rameau
 Molitor	8	NOUN,OTHER
-Westteils	8	NOUN
+Westteils	8	NOUN	Westteil
 Flüchtlingsstrom	8	NOUN
 fordernden	8	OTHER
-Gesellschaftssysteme	8	NOUN
+Gesellschaftssysteme	8	NOUN	Gesellschaftssystem
 Schlupfloch	8	NOUN
 Schmarotzer	8	NOUN
 Gewährsleute	8	NOUN
@@ -114805,13 +114805,13 @@ kilometerlangen	8	OTHER
 rammte	8	OTHER
 vorausschauend	8	OTHER
 Primatstadt	8	NOUN
-Fahrrinnen	8	NOUN
+Fahrrinnen	8	NOUN	Fahrrinne
 Chas	8	NOUN
-Palacios	8	NOUN
+Palacios	8	NOUN	Palacio
 Hipólito	8	NOUN
 Moderno	8	NOUN
 Barras	8	NOUN
-Rennbahnen	8	NOUN
+Rennbahnen	8	NOUN	Rennbahn
 Dreiband	8	NOUN
 gebratene	8	OTHER
 Reserva	8	NOUN
@@ -114822,7 +114822,7 @@ Neruda	8	NOUN
 Exupéry	8	NOUN
 Mittelweser	8	NOUN
 Oberneuland	8	NOUN
-Beiräte	8	NOUN
+Beiräte	8	NOUN	Beirat
 Feinstaubbelastung	8	NOUN
 naturbelassener	8	OTHER
 Nutzungsmöglichkeit	8	NOUN
@@ -114832,12 +114832,12 @@ Schlachte	8	NOUN
 Randgemeinden	8	NOUN
 Kaisen	8	NOUN
 Westmauer	8	NOUN
-Arbeitervierteln	8	NOUN
-Schauspielen	8	NOUN
+Arbeitervierteln	8	NOUN	Arbeiterviertel
+Schauspielen	8	NOUN	Schauspiel
 Goetheplatz	8	NOUN
 Kötter	8	NOUN
 Paavo	8	NOUN
-Yankees	8	NOUN
+Yankees	8	NOUN	Yankee
 richtungsweisenden	8	OTHER
 Roselius	8	NOUN
 verkam	8	OTHER
@@ -114854,9 +114854,9 @@ ffn	8	OTHER
 Korrespondentenbüros	8	NOUN
 flächenkleinste	8	OTHER
 Windschutz	8	NOUN
-Spielfelds	8	NOUN
+Spielfelds	8	NOUN	Spielfeld
 hinterste	8	OTHER
-Einspruchs	8	NOUN
+Einspruchs	8	NOUN	Einspruch
 inches	8	OTHER
 Mannschaftssport	8	NOUN
 Denkschule	8	NOUN
@@ -114864,49 +114864,49 @@ linkshändigen	8	OTHER
 Someone	8	NOUN,OTHER
 erwischen	8	VERB
 Sumō	8	NOUN
-Schmalseiten	8	NOUN
-Feldspielern	8	NOUN
+Schmalseiten	8	NOUN	Schmalseite
+Feldspielern	8	NOUN	Feldspieler
 EuroLeague	8	NOUN
 Basketballspiel	8	NOUN
 Ballsportarten	8	NOUN
-Basketballs	8	NOUN
+Basketballs	8	NOUN	Basketball
 anerkanntesten	8	OTHER
 Bestechungsgelder	8	NOUN
 GoodFellas	8	NOUN
 BAA	8	NOUN
 Nationalverbände	8	NOUN
-Vorgängerorganisationen	8	NOUN
+Vorgängerorganisationen	8	NOUN	Vorgängerorganisation
 startende	8	OTHER
 Ellbogen	8	NOUN
 Wurfes	8	NOUN
 Unicycling	8	NOUN
 Hickory	8	NOUN
-Spitzenverbände	8	NOUN
+Spitzenverbände	8	NOUN	Spitzenverband
 Phoebus	8	NOUN
 Bunge	8	NOUN
-Oxidationen	8	NOUN
+Oxidationen	8	NOUN	Oxidation
 Reinkultur	8	NOUN
 chrysogenum	8	OTHER
 gefasster	8	OTHER
 Euskal	8	NOUN
 nöthig	8	OTHER
 Miterfinder	8	NOUN
-Gernikas	8	NOUN
+Gernikas	8	NOUN	Gernika
 Banknotenserie	8	NOUN
 Gunda	8	NOUN
 Erlkönig	8	NOUN
 Kriegserfahrungen	8	NOUN
 Entwicklerversion	8	NOUN
-Quelltexts	8	NOUN
+Quelltexts	8	NOUN	Quelltext
 Hauptentwickler	8	NOUN
 inspiriertes	8	OTHER
 Börsenmakler	8	NOUN
 OTC	8	NOUN
 Zuerich	8	NOUN
-Wirtschaftsgütern	8	NOUN
+Wirtschaftsgütern	8	NOUN	Wirtschaftsgüter
 Automated	8	NOUN
 Baryon	8	NOUN
-Erwachens	8	NOUN
+Erwachens	8	NOUN	Erwachen
 Sarnath	8	NOUN
 verwobenen	8	OTHER
 Seinsweise	8	NOUN
@@ -114931,21 +114931,21 @@ Aufflackern	8	NOUN
 Ikonodulen	8	NOUN,OTHER
 immenses	8	OTHER
 aufblühte	8	OTHER
-Landadels	8	NOUN
+Landadels	8	NOUN	Landadel
 Weliko	8	NOUN
 Morea	8	NOUN
 Todesstoß	8	NOUN
-Eugens	8	NOUN
+Eugens	8	NOUN	Eugen
 Niketas	8	NOUN
 Heerwesen	8	NOUN
 Toynbee	8	NOUN
 Agathias	8	NOUN
 Magnússon	8	NOUN
-Björks	8	NOUN
+Björks	8	NOUN	Björk
 skal	8	OTHER
 Debut	8	NOUN
-Remixe	8	NOUN
-Schaffensphasen	8	NOUN
+Remixe	8	NOUN	Remix
+Schaffensphasen	8	NOUN	Schaffensphase
 Rahzel	8	NOUN
 Einsendungen	8	NOUN
 Tetrarchen	8	NOUN
@@ -114964,7 +114964,7 @@ Fazilitätengemeinden	8	NOUN
 Balen	8	NOUN
 Limburgisch	8	NOUN,OTHER
 Kongogräuel	8	NOUN
-Walloniens	8	NOUN
+Walloniens	8	NOUN	Wallonien
 zusagten	8	VERB
 Austeritätspolitik	8	NOUN
 Zwin	8	NOUN
@@ -114975,7 +114975,7 @@ Soir	8	NOUN
 primaire	8	OTHER
 éducation	8	NOUN,OTHER
 Crémant	8	NOUN
-Rennserien	8	NOUN
+Rennserien	8	NOUN	Rennserie
 Somebody	8	NOUN
 Cranes	8	NOUN
 Neum	8	NOUN
@@ -114987,9 +114987,9 @@ bosniakischen	8	OTHER
 zweisprachiger	8	OTHER
 Hauptkriegsschauplatz	8	NOUN
 Verteidigungsrat	8	NOUN
-Stabilisierungs	8	NOUN
+Stabilisierungs	8	NOUN	Stabilisierung
 Bosne	8	NOUN
-Inländern	8	NOUN
+Inländern	8	NOUN	Inländer
 gefülltem	8	OTHER
 Ballonfahren	8	NOUN
 weitergearbeitet	8	OTHER
@@ -115000,7 +115000,7 @@ Schrenk	8	NOUN
 Piccard	8	NOUN
 unbemannter	8	OTHER
 Marineführung	8	NOUN
-Erprobungen	8	NOUN
+Erprobungen	8	NOUN	Erprobung
 Gotenhafen	8	NOUN
 anzulaufen	8	VERB
 Flugboot	8	NOUN
@@ -115019,7 +115019,7 @@ Hörnli	8	NOUN
 Arlesheim	8	NOUN
 Dogger	8	NOUN
 Gerichtsinstanz	8	NOUN
-Kirchensteuern	8	NOUN
+Kirchensteuern	8	NOUN	Kirchensteuer
 Steuerverwaltung	8	NOUN
 Abgeltung	8	NOUN
 fragmentierten	8	VERB,OTHER
@@ -115033,14 +115033,14 @@ bluten	8	NOUN,OTHER
 Qualitätskriterium	8	NOUN
 Brennbarkeit	8	NOUN
 Plzeňský	8	NOUN
-Sudetenlands	8	NOUN
+Sudetenlands	8	NOUN	Sudetenland
 Mehlspeisen	8	NOUN
-Ausstülpungen	8	NOUN
+Ausstülpungen	8	NOUN	Ausstülpung
 Rodelbahn	8	NOUN
 Kantonswechsel	8	NOUN
 Fachminister	8	NOUN
 Nachsehen	8	NOUN,OTHER
-Parteiämter	8	NOUN
+Parteiämter	8	NOUN	Parteiamt
 überschätzte	8	OTHER
 Staatsrechtslehre	8	NOUN
 hielte	8	OTHER
@@ -115053,7 +115053,7 @@ einfordert	8	OTHER
 Maunz	8	NOUN,OTHER
 wirtschaftsnahen	8	OTHER
 Altersrekord	8	NOUN
-Kanzlern	8	NOUN
+Kanzlern	8	NOUN	Kanzler
 Kohleverflüssigung	8	NOUN
 Synthetic	8	NOUN
 regenerativ	8	OTHER
@@ -115063,7 +115063,7 @@ Zusammenschaltung	8	NOUN
 unterbrechungsfreie	8	OTHER
 Schwarzschrift	8	NOUN
 ertasten	8	NOUN,OTHER
-Visitenkarten	8	NOUN
+Visitenkarten	8	NOUN	Visitenkarte
 Comma	8	NOUN
 Kir	8	NOUN
 Sundarbans	8	NOUN
@@ -115071,7 +115071,7 @@ Santal	8	NOUN
 bangladeschische	8	OTHER
 ungesetzlich	8	OTHER
 Mujibur	8	NOUN
-Putschen	8	NOUN,OTHER
+Putschen	8	NOUN,OTHER	Putsch
 kaltgestellt	8	OTHER
 Wasserverteilung	8	NOUN
 aufflammende	8	OTHER
@@ -115079,24 +115079,24 @@ Gewaltausbrüchen	8	NOUN
 Weltverfolgungsindex	8	NOUN
 Wirtschaftsexperten	8	NOUN
 begriffene	8	OTHER
-Wildcards	8	NOUN
+Wildcards	8	NOUN	Wildcard
 rassischer	8	OTHER
 Restreich	8	NOUN
 Samuil	8	NOUN
-Gegenbewegungen	8	NOUN
+Gegenbewegungen	8	NOUN	Gegenbewegung
 GERB	8	NOUN
 Verfassungsartikel	8	NOUN
 katalytisches	8	NOUN,OTHER
 Ölraffinerie	8	NOUN
 Tourismusbereich	8	NOUN
 Umweltbereich	8	NOUN
-Umweltministeriums	8	NOUN
+Umweltministeriums	8	NOUN	Umweltministerium
 Schienenverbindung	8	NOUN
 glasierten	8	VERB,OTHER
 verziertes	8	OTHER
 Staatsphilosophie	8	NOUN
 Erzählwerk	8	NOUN
-Almanachs	8	NOUN
+Almanachs	8	NOUN	Almanach
 Recknagel	8	NOUN
 Tampico	8	NOUN
 bestach	8	OTHER
@@ -115105,15 +115105,15 @@ Faßberg	8	NOUN
 abliefen	8	VERB
 einreihen	8	VERB
 Hilfsgüter	8	NOUN
-Hilfsgütern	8	NOUN
+Hilfsgütern	8	NOUN	Hilfsgüter
 Halvorsen	8	NOUN
 Falkenburg	8	NOUN
 gigantisch	8	OTHER
 Kunstdünger	8	NOUN
-Feldfrüchten	8	NOUN
+Feldfrüchten	8	NOUN	Feldfrüchte
 Nischenprodukt	8	NOUN
 Inhaltsstoff	8	NOUN
-Drogerien	8	NOUN
+Drogerien	8	NOUN	Drogerie
 Polenta	8	NOUN
 ostfriesisches	8	OTHER
 purer	8	OTHER
@@ -115124,19 +115124,19 @@ Subiaco	8	NOUN
 mönchischen	8	OTHER
 Zwischenziel	8	NOUN
 Mutterkloster	8	NOUN
-Habits	8	NOUN,OTHER
+Habits	8	NOUN,OTHER	Habit
 Klosterleben	8	NOUN
 Beuron	8	NOUN
 Chorgebet	8	NOUN
 Darbringung	8	NOUN
 Biolandbau	8	NOUN
 Männerklöster	8	NOUN
-Benediktinerinnen	8	NOUN
+Benediktinerinnen	8	NOUN	Benediktiner
 Zweitsitz	8	NOUN
 Bundesviertel	8	NOUN
 Schulaufsicht	8	NOUN
 Poppelsdorf	8	NOUN
-Oktobers	8	NOUN
+Oktobers	8	NOUN	Oktober
 Leberwurst	8	NOUN
 Stegreif	8	NOUN
 Mittelbahn	8	NOUN
@@ -115147,34 +115147,34 @@ webbasierte	8	OTHER
 zeitgeschichtlich	8	OTHER
 Rheinhochwasser	8	NOUN
 Rheinsteig	8	NOUN
-Kunstobjekten	8	NOUN
+Kunstobjekten	8	NOUN	Kunstobjekt
 Arkadenhof	8	NOUN
 Kirschblüte	8	NOUN
 Capitals	8	NOUN
 SSF	8	NOUN
-Sportereignissen	8	NOUN
+Sportereignissen	8	NOUN	Sportereignisse
 Millau	8	NOUN
-Linienflügen	8	NOUN
+Linienflügen	8	NOUN	Linienflüge
 Hürth	8	NOUN
 Nordbrücke	8	NOUN
 Industrieansiedlung	8	NOUN
 landseitig	8	OTHER
-Schlämme	8	NOUN
+Schlämme	8	NOUN	Schlamm
 Schauberg	8	NOUN
 Stadtanzeiger	8	NOUN
 BNetzA	8	NOUN
 Neurodegenerative	8	NOUN,OTHER
-Landgerichtes	8	NOUN
+Landgerichtes	8	NOUN	Landgericht
 Spielstein	8	NOUN
 Pohle	8	NOUN
-Kartenspielen	8	NOUN
+Kartenspielen	8	NOUN	Kartenspiel
 Kickstarter	8	NOUN
 Klassifikationsschema	8	NOUN
 rezeptive	8	OTHER
 HipHop	8	NOUN
 Gräfelfing	8	NOUN
 Verdienstkreuzes	8	NOUN
-Grzimeks	8	NOUN
+Grzimeks	8	NOUN	Grzimek
 Schoof	8	NOUN
 Veterinär	8	NOUN
 Stollberg	8	NOUN
@@ -115190,7 +115190,7 @@ Assurbanipal	8	NOUN
 Munt	8	NOUN,OTHER
 Caecilius	8	NOUN
 finanzschwache	8	OTHER
-Agrarsektors	8	NOUN
+Agrarsektors	8	NOUN	Agrarsektor
 Denny	8	NOUN
 Tune	8	NOUN,OTHER
 Sides	8	NOUN,OTHER
@@ -115206,7 +115206,7 @@ Altweltaffen	8	NOUN
 einsichtige	8	OTHER
 Persönlichkeitseigenschaften	8	NOUN
 gegrabenen	8	OTHER
-Steinkohlen	8	NOUN
+Steinkohlen	8	NOUN	Steinkohle
 Verwitterungsprozesse	8	NOUN
 zusammengepresst	8	OTHER
 trüber	8	OTHER
@@ -115219,16 +115219,16 @@ jurassischen	8	OTHER
 Fossilinhalt	8	NOUN
 tertiärer	8	OTHER
 baltischem	8	NOUN,OTHER
-Großsteingräber	8	NOUN
+Großsteingräber	8	NOUN	Großsteingrab
 Zinnvorkommen	8	NOUN
 Hortfund	8	NOUN
 tadelt	8	OTHER
 importiertem	8	OTHER
 zusammengeklebt	8	OTHER
 Aufsammeln	8	NOUN
-Pächtern	8	NOUN
+Pächtern	8	NOUN	Pächter
 detailgetreue	8	OTHER
-Dahns	8	NOUN
+Dahns	8	NOUN	Dahn
 Miegel	8	NOUN
 Magenbeschwerden	8	NOUN
 Freyer	8	NOUN
@@ -115242,26 +115242,26 @@ Jupitermasse	8	NOUN
 Molekülwolke	8	NOUN
 Teide	8	NOUN
 verstoßenen	8	OTHER
-Südhängen	8	NOUN
+Südhängen	8	NOUN	Südhang
 Arbeitsraum	8	NOUN
 Neuenhain	8	NOUN
 Bürgerbüro	8	NOUN
 Kinderspielplatz	8	NOUN
-Erhalts	8	NOUN
+Erhalts	8	NOUN	Erhalt
 masseärmeren	8	OTHER
 Wienschen	8	NOUN
-Doppelsternsystemen	8	NOUN
+Doppelsternsystemen	8	NOUN	Doppelsternsystem
 Instabilitätsstreifen	8	NOUN
 konvektive	8	OTHER
 Dornholzhausen	8	NOUN
 Elisabethenstraße	8	NOUN
 Raiffeisenbank	8	NOUN
 Monopteros	8	NOUN
-Novemberpogroms	8	NOUN
-Schicksalen	8	NOUN
+Novemberpogroms	8	NOUN	Novemberpogrom
+Schicksalen	8	NOUN	Schicksal
 verschönert	8	OTHER
 Stadtversammlung	8	NOUN
-Burgbergs	8	NOUN
+Burgbergs	8	NOUN	Burgberg
 pályaudvar	8	NOUN,OTHER
 Erzsébet	8	NOUN
 Bektaschi	8	NOUN
@@ -115270,7 +115270,7 @@ Donauknie	8	NOUN
 Halbschwergewicht	8	NOUN
 Warenhauskette	8	NOUN
 Molnár	8	NOUN
-Autostraßen	8	NOUN
+Autostraßen	8	NOUN	Autostraße
 Verbundtarif	8	NOUN
 Flusskreuzfahrtschiffe	8	NOUN
 Transportmedium	8	NOUN
@@ -115278,7 +115278,7 @@ Hämatologie	8	NOUN
 rieben	8	VERB
 aufhaltenden	8	OTHER
 tierisches	8	OTHER
-Schlachthöfen	8	NOUN
+Schlachthöfen	8	NOUN	Schlachthof
 Biomethan	8	NOUN
 niedermolekulare	8	OTHER
 Klimabilanz	8	NOUN
@@ -115286,34 +115286,34 @@ Säen	8	NOUN,OTHER
 Hauptenergiequelle	8	NOUN
 Ökolandbau	8	NOUN
 abgekühlte	8	OTHER
-Kompressors	8	NOUN
+Kompressors	8	NOUN	Kompressor
 Windstrom	8	NOUN
 Naturgas	8	NOUN
 elastischem	8	OTHER
 Anatomy	8	NOUN
 Telefonmodems	8	NOUN
 Geschäftskunden	8	NOUN
-Internetzugänge	8	NOUN
+Internetzugänge	8	NOUN	Internetzugang
 Megabit	8	NOUN
 MeO	8	NOUN
-Kollektionen	8	NOUN
+Kollektionen	8	NOUN	Kollektion
 Porree	8	NOUN
-Binärzahlen	8	NOUN
+Binärzahlen	8	NOUN	Binärzahl
 hochohmig	8	OTHER
 Bitfehler	8	NOUN
 Entwicklungszyklus	8	NOUN
 Unterkategorie	8	NOUN
 Dissipation	8	NOUN
-Reibungskräfte	8	NOUN
+Reibungskräfte	8	NOUN	Reibungskraft
 Wirkprinzipien	8	NOUN
-Hauslehrern	8	NOUN
+Hauslehrern	8	NOUN	Hauslehrer
 zugeschriebener	8	OTHER
 herablassend	8	OTHER
 hervorgebrachte	8	OTHER
-Aporien	8	NOUN
-Löwiths	8	NOUN
+Aporien	8	NOUN	Aporie
+Löwiths	8	NOUN	Löwith
 Gesamtübersetzung	8	NOUN
-Bibliothekswesens	8	NOUN
+Bibliothekswesens	8	NOUN	Bibliothekswesen
 publizierter	8	OTHER
 Informationsversorgung	8	NOUN
 Omnipräsenz	8	NOUN
@@ -115335,7 +115335,7 @@ Libanongebirge	8	NOUN
 Polizeiposten	8	NOUN
 Nakba	8	NOUN
 Développement	8	NOUN,OTHER
-Stadtgebieten	8	NOUN
+Stadtgebieten	8	NOUN	Stadtgebiet
 gelagertes	8	OTHER
 Straßenbahnsystem	8	NOUN
 Nutzerzahlen	8	NOUN
@@ -115346,8 +115346,8 @@ Shenrab	8	NOUN
 angerufenen	8	OTHER
 StAG	8	NOUN,OTHER
 Fadenkreuz	8	NOUN
-Behältnissen	8	NOUN
-Wächtern	8	NOUN
+Behältnissen	8	NOUN	Behältnisse
+Wächtern	8	NOUN	Wächter
 Wegweisung	8	NOUN
 Indologe	8	NOUN
 Bootvorgang	8	NOUN
@@ -115359,7 +115359,7 @@ Fortitudo	8	NOUN,OTHER
 Straßenmarkt	8	NOUN
 Lohe	8	NOUN
 Trockenmauer	8	NOUN
-Viehmärkte	8	NOUN
+Viehmärkte	8	NOUN	Viehmarkt
 Bürgerverein	8	NOUN
 herausgehalten	8	VERB
 Nebenresidenz	8	NOUN
@@ -115374,23 +115374,23 @@ Preu	8	NOUN
 beunruhigend	8	OTHER
 Kammerbezirk	8	NOUN
 auszulagern	8	VERB
-Blindgängern	8	NOUN
-Zielorte	8	NOUN
+Blindgängern	8	NOUN	Blindgänger
+Zielorte	8	NOUN	Zielort
 Rollwagen	8	NOUN
-Bäuerinnen	8	NOUN
+Bäuerinnen	8	NOUN	Bäuerin
 Nationaldemokratische	8	NOUN
-Modernisierungs	8	NOUN
+Modernisierungs	8	NOUN	Modernisierung
 Fernwasserversorgung	8	NOUN
 Modellversuch	8	NOUN
 Französischlehrer	8	NOUN
 Alexanderstraße	8	NOUN
 Ziehbrunnen	8	NOUN
 Wasserspielplatz	8	NOUN
-Bratwürste	8	NOUN
+Bratwürste	8	NOUN	Bratwurst
 Starkbier	8	NOUN
 dazwischenliegende	8	OTHER
 Pumpstationen	8	NOUN
-Abwanderungen	8	NOUN
+Abwanderungen	8	NOUN	Abwanderung
 Panzergrenadierbrigade	8	NOUN
 Blasloch	8	NOUN
 Whale	8	NOUN
@@ -115403,13 +115403,13 @@ Ica	8	NOUN
 Gerichtsverfassungsgesetzes	8	NOUN
 Gerichtsverfassung	8	NOUN
 Spruchkörper	8	NOUN
-Zivilsenate	8	NOUN
+Zivilsenate	8	NOUN	Zivilsenat
 Wiedereinrichtung	8	NOUN
-Gerichtshöfen	8	NOUN
+Gerichtshöfen	8	NOUN	Gerichtshof
 steuerrechtlichen	8	OTHER
 Rosales	8	NOUN
 einhüllen	8	NOUN,OTHER
-Keimblättern	8	NOUN
+Keimblättern	8	NOUN	Keimblätter
 spürbarer	8	OTHER
 unveränderbar	8	OTHER
 Startmedium	8	NOUN
@@ -115434,7 +115434,7 @@ Biopsy	8	NOUN,OTHER
 ungewollter	8	OTHER
 Ultraschalluntersuchung	8	NOUN
 Probenentnahme	8	NOUN
-Mammakarzinoms	8	NOUN
+Mammakarzinoms	8	NOUN	Mammakarzinom
 Neoplasie	8	NOUN
 Teilungsrate	8	NOUN
 UICC	8	NOUN
@@ -115446,18 +115446,18 @@ getestete	8	OTHER
 dumpfen	8	OTHER
 Explosionsgrenze	8	NOUN
 Wahlleiter	8	NOUN
-Grundes	8	NOUN
+Grundes	8	NOUN	Grund
 stärkehaltige	8	OTHER
 Pasteten	8	NOUN
 Krume	8	NOUN
 Wählerschichten	8	NOUN
 Sezessionsbestrebungen	8	NOUN
 Schutzmantel	8	NOUN
-Fingerabdrücken	8	NOUN
-Sozialsystems	8	NOUN
-Abschlägen	8	NOUN
-Herkunftsbezeichnungen	8	NOUN
-Bezirksverbände	8	NOUN
+Fingerabdrücken	8	NOUN	Fingerabdruck
+Sozialsystems	8	NOUN	Sozialsystem
+Abschlägen	8	NOUN	Abschlag
+Herkunftsbezeichnungen	8	NOUN	Herkunftsbezeichnung
+Bezirksverbände	8	NOUN	Bezirksverband
 Volksgesetzgebung	8	NOUN
 beamtete	8	OTHER
 Volljuristen	8	NOUN
@@ -115466,11 +115466,11 @@ Djallon	8	NOUN
 Lebensbilder	8	NOUN
 Euagoras	8	NOUN
 nachzueifern	8	VERB
-Lobes	8	NOUN
+Lobes	8	NOUN	Lob
 zahlreiches	8	OTHER
 hoi	8	OTHER
 Lucullus	8	NOUN
-Booles	8	NOUN
+Booles	8	NOUN	Boole
 additiver	8	OTHER
 Nullelement	8	NOUN
 Tagesdosen	8	NOUN
@@ -115481,11 +115481,11 @@ aufgehende	8	OTHER
 elftes	8	OTHER
 Bundesorgan	8	NOUN
 SVD	8	NOUN
-Neuordnungen	8	NOUN
+Neuordnungen	8	NOUN	Neuordnung
 Armenpflege	8	NOUN
 Landesbezirk	8	NOUN
 verzahnen	8	VERB
-Kurgästen	8	NOUN
+Kurgästen	8	NOUN	Kurgast
 linearbandkeramischen	8	OTHER
 instrumenteller	8	OTHER
 Keramikproduktion	8	NOUN
@@ -115494,7 +115494,7 @@ extraktiven	8	OTHER
 HgS	8	NOUN
 frühneolithischen	8	OTHER
 Haselnuss	8	NOUN
-Schwarzerden	8	NOUN
+Schwarzerden	8	NOUN	Schwarzerde
 Siedlungsraumes	8	NOUN
 Wintergetreide	8	NOUN
 Nahrungsversorgung	8	NOUN
@@ -115507,8 +115507,8 @@ hergerichteten	8	OTHER
 Dachbalken	8	NOUN
 Zwischendecke	8	NOUN
 bodenkundliche	8	OTHER
-Eintreffens	8	NOUN
-Sicheln	8	NOUN
+Eintreffens	8	NOUN	Eintreffen
+Sicheln	8	NOUN	Sichel
 Hornstein	8	NOUN
 scharfkantig	8	OTHER
 Standardmethode	8	NOUN
@@ -115518,7 +115518,7 @@ Kleinplastiken	8	NOUN
 Lengyel	8	NOUN
 Tongefäße	8	NOUN
 Holzarbeiten	8	NOUN
-Funktionsträgern	8	NOUN
+Funktionsträgern	8	NOUN	Funktionsträger
 Utensil	8	NOUN
 Extremsituationen	8	NOUN
 Gewalteinwirkung	8	NOUN
@@ -115526,7 +115526,7 @@ fachwissenschaftlichen	8	OTHER
 Muttergöttin	8	NOUN
 dazugehöriger	8	OTHER
 Fruchtbarkeitsgöttin	8	NOUN
-Schutzgeister	8	NOUN
+Schutzgeister	8	NOUN	Schutzgeist
 Formbildung	8	NOUN
 Paideia	8	NOUN,OTHER
 Rohheit	8	NOUN
@@ -115536,9 +115536,9 @@ Entwicklungstheorie	8	NOUN
 Interaktionsprozess	8	NOUN
 Curricula	8	NOUN
 symbolhaft	8	OTHER
-Bildungsabschlüsse	8	NOUN
+Bildungsabschlüsse	8	NOUN	Bildungsabschluss
 Arbeiterkinder	8	NOUN
-Kultusministeriums	8	NOUN
+Kultusministeriums	8	NOUN	Kultusministerium
 Qualitätsentwicklung	8	NOUN
 kategorialen	8	OTHER
 konfuzianische	8	OTHER
@@ -115558,7 +115558,7 @@ Kultfigur	8	NOUN
 Filmkritikerin	8	NOUN
 menschenverachtende	8	OTHER
 zynischer	8	OTHER
-Ausschnitts	8	NOUN
+Ausschnitts	8	NOUN	Ausschnitt
 Laufbursche	8	NOUN
 Erfolgsrezept	8	NOUN
 Spazierstock	8	NOUN
@@ -115570,7 +115570,7 @@ geschnittener	8	OTHER
 Lebensmut	8	NOUN
 bemerkenswerteste	8	NOUN,OTHER
 surreal	8	OTHER
-Liebesgeschichten	8	NOUN
+Liebesgeschichten	8	NOUN	Liebesgeschichte
 pompöse	8	OTHER
 vonstattengeht	8	OTHER
 Arzneimittelkommission	8	NOUN
@@ -115579,7 +115579,7 @@ Schichtstruktur	8	NOUN
 Roloff	8	NOUN
 Sphalerit	8	NOUN
 Magnesiumnitrat	8	NOUN
-Arbeitsbereichen	8	NOUN
+Arbeitsbereichen	8	NOUN	Arbeitsbereich
 Mischmetall	8	NOUN
 Cerit	8	NOUN
 dreiwertiges	8	OTHER
@@ -115587,7 +115587,7 @@ Manganknollen	8	NOUN
 dera	8	OTHER
 CeH	8	NOUN
 Wundbehandlung	8	NOUN
-Reduktionsmitteln	8	NOUN
+Reduktionsmitteln	8	NOUN	Reduktionsmittel
 nukleophilen	8	OTHER
 Wallmann	8	NOUN
 Isotopenverteilung	8	NOUN
@@ -115609,9 +115609,9 @@ getippt	8	OTHER
 Interjektionen	8	NOUN
 Lol	8	NOUN,OTHER
 Montague	8	NOUN
-Berufsbildern	8	NOUN
+Berufsbildern	8	NOUN	Berufsbild
 Pharmakotherapie	8	NOUN
-Scharfrichters	8	NOUN
+Scharfrichters	8	NOUN	Scharfrichter
 geburtshilflichen	8	OTHER
 erhaltende	8	OTHER
 Eyb	8	NOUN
@@ -115620,8 +115620,8 @@ Schlüsselerlebnis	8	NOUN
 Returns	8	NOUN
 Pannonica	8	NOUN,OTHER
 nachvollziehbarer	8	OTHER
-Idioms	8	NOUN
-Gershwins	8	NOUN
+Idioms	8	NOUN	Idiom
+Gershwins	8	NOUN	Gershwin
 betrunkener	8	NOUN,OTHER
 Tijuana	8	NOUN
 Hear	8	NOUN,OTHER
@@ -115640,7 +115640,7 @@ Gewalterfahrungen	8	NOUN
 fachwissenschaftliche	8	OTHER
 Textgattungen	8	NOUN
 antisemitisches	8	OTHER
-Bauers	8	NOUN
+Bauers	8	NOUN	Bauer
 Generalkommando	8	NOUN
 Seewald	8	NOUN
 Imprimatur	8	NOUN
@@ -115650,7 +115650,7 @@ zustimmenden	8	OTHER
 Verfassungswandel	8	NOUN
 opportunistischen	8	OTHER
 trenne	8	OTHER
-Parteiorganisationen	8	NOUN
+Parteiorganisationen	8	NOUN	Parteiorganisation
 Versorgungsbezüge	8	NOUN
 eurem	8	OTHER
 Jefe	8	NOUN
@@ -115682,7 +115682,7 @@ Reichsbevölkerung	8	NOUN
 umgeworfen	8	VERB
 Adoptivkaiser	8	NOUN
 psychopathologische	8	OTHER
-Gelübdes	8	NOUN
+Gelübdes	8	NOUN	Gelübde
 legitimierende	8	OTHER
 psychotische	8	OTHER
 Textabschnitt	8	NOUN
@@ -115715,12 +115715,12 @@ Pozzuoli	8	NOUN
 Cruces	8	NOUN
 ungewisse	8	OTHER
 rechtgläubig	8	OTHER
-Glaubenssätzen	8	NOUN
+Glaubenssätzen	8	NOUN	Glaubenssätze
 Opfertod	8	NOUN
 töricht	8	OTHER
 Hochwasserrückhaltebecken	8	NOUN
-Gebetshäuser	8	NOUN
-Landestheaters	8	NOUN
+Gebetshäuser	8	NOUN	Gebetshaus
+Landestheaters	8	NOUN	Landestheater
 Gebäudeensemble	8	NOUN
 Ostchor	8	NOUN
 Kirchenschiffes	8	NOUN
@@ -115733,7 +115733,7 @@ ausdrückten	8	VERB
 Druckerhaltung	8	NOUN
 technologisches	8	OTHER
 sozialwissenschaftliches	8	OTHER
-Auszeichnungssprachen	8	NOUN
+Auszeichnungssprachen	8	NOUN	Auszeichnungssprache
 Arbeitsentwurf	8	NOUN
 Narodniki	8	NOUN
 Kampfschrift	8	NOUN
@@ -115744,9 +115744,9 @@ einhergegangen	8	VERB
 ausübe	8	OTHER
 Alterspräsidentin	8	NOUN
 Kremlmauer	8	NOUN
-Leitfiguren	8	NOUN
+Leitfiguren	8	NOUN	Leitfigur
 Infotafel	8	NOUN
-Victors	8	NOUN
+Victors	8	NOUN	Victor
 Linnaeus	8	NOUN
 Rothman	8	NOUN
 Zöglings	8	NOUN
@@ -115766,7 +115766,7 @@ Taormina	8	NOUN
 verkannten	8	VERB
 Betreff	8	NOUN
 Nominatform	8	NOUN
-Barometers	8	NOUN
+Barometers	8	NOUN	Barometer
 mithelfen	8	VERB
 aufgefrischt	8	OTHER
 Paley	8	NOUN
@@ -115777,7 +115777,7 @@ Speerwurf	8	NOUN
 Frankland	8	NOUN
 Volcanic	8	NOUN,OTHER
 existence	8	OTHER
-Wallaces	8	NOUN
+Wallaces	8	NOUN	Wallace
 Hirschgeweih	8	NOUN
 Pflanzenbau	8	NOUN
 saz	8	OTHER
@@ -115800,10 +115800,10 @@ Flugdauer	8	NOUN
 Flügelfläche	8	NOUN
 Bremsschirm	8	NOUN
 Morrow	8	NOUN
-Frachtschiffs	8	NOUN
+Frachtschiffs	8	NOUN	Frachtschiff
 Luftfahrtunternehmen	8	NOUN
 zusammengehöriger	8	OTHER
-Makrofamilien	8	NOUN
+Makrofamilien	8	NOUN	Makrofamilie
 Kula	8	NOUN,OTHER
 Shuowen	8	NOUN
 Jiezi	8	NOUN
@@ -115813,8 +115813,8 @@ Pluralsuffix	8	NOUN
 Wortgrenzen	8	NOUN
 aufzeichnet	8	OTHER
 Singularform	8	NOUN
-Divergenzen	8	NOUN
-Attributs	8	NOUN
+Divergenzen	8	NOUN	Divergenz
+Attributs	8	NOUN	Attribut
 Cartoonist	8	NOUN
 Louie	8	NOUN
 Daredevil	8	NOUN
@@ -115832,7 +115832,7 @@ amnestierte	8	OTHER
 RPF	8	NOUN
 revitalisieren	8	VERB
 Debré	8	NOUN
-Westjordanlands	8	NOUN
+Westjordanlands	8	NOUN	Westjordanland
 Aquitaine	8	NOUN
 Bastien	8	NOUN
 mutet	8	OTHER
@@ -115842,7 +115842,7 @@ Laschen	8	NOUN,OTHER
 Zielhafen	8	NOUN
 Schiffsbewegungen	8	NOUN
 Kühlcontainer	8	NOUN
-Beleuchtungs	8	NOUN
+Beleuchtungs	8	NOUN	Beleuchtung
 Corners	8	NOUN
 Maersk	8	NOUN
 gepackten	8	OTHER
@@ -115850,17 +115850,17 @@ Maximalgewicht	8	NOUN
 Stirnwand	8	NOUN
 Gesundheitsrisiken	8	NOUN
 dunkelgrüne	8	OTHER
-Limonaden	8	NOUN
+Limonaden	8	NOUN	Limonade
 kombinierbar	8	OTHER
 ferrum	8	OTHER
 Massendifferenz	8	NOUN
 massearmen	8	OTHER
 bestandene	8	OTHER
 Carolinum	8	NOUN
-Johannas	8	NOUN
+Johannas	8	NOUN	Johanna
 Arithmeticae	8	NOUN
 Mathematikhistoriker	8	NOUN
-Foucaultschen	8	NOUN,OTHER
+Foucaultschen	8	NOUN,OTHER	Foucaultsche
 Lobatschewski	8	NOUN
 modularer	8	OTHER
 Auffälligkeit	8	NOUN
@@ -115872,13 +115872,13 @@ Standardization	8	NOUN
 kommazahl	8	NOUN,OTHER
 standardkonformen	8	OTHER
 Coded	8	NOUN
-Programmierers	8	NOUN
+Programmierers	8	NOUN	Programmierer
 fehlerhaftes	8	OTHER
 Betriebssicherheit	8	NOUN
 Collaborative	8	NOUN
 Vaughn	8	NOUN
 Showtime	8	NOUN
-Emmys	8	NOUN
+Emmys	8	NOUN	Emmy
 Canaanite	8	NOUN
 Censor	8	NOUN
 Chemiewaffenkonvention	8	NOUN
@@ -115890,7 +115890,7 @@ verkehrstechnische	8	OTHER
 Viervierteltakt	8	NOUN
 Opening	8	NOUN
 EDVAC	8	NOUN
-Texteditors	8	NOUN
+Texteditors	8	NOUN	Texteditor
 urheberrechtliche	8	OTHER
 Losentscheid	8	NOUN
 parlamento	8	OTHER
@@ -115899,10 +115899,10 @@ Führungsqualitäten	8	NOUN
 lahmlegen	8	VERB
 Verbannungsort	8	NOUN
 Erfolgschancen	8	NOUN
-Provisionen	8	NOUN
+Provisionen	8	NOUN	Provision
 Verlass	8	NOUN
 ausgelost	8	OTHER
-Zufällen	8	NOUN
+Zufällen	8	NOUN	Zufall
 billigten	8	VERB
 Hauptelement	8	NOUN
 einräumten	8	VERB
@@ -115919,19 +115919,19 @@ unterminiert	8	OTHER
 manipulative	8	OTHER
 meisterhaften	8	OTHER
 Avanti	8	NOUN
-Pendeluhren	8	NOUN
+Pendeluhren	8	NOUN	Pendeluhr
 Gresham	8	NOUN
 Luftpumpe	8	NOUN
 quadratura	8	OTHER
 Forschungsthemen	8	NOUN
 Lautlingen	8	NOUN
-Schmerzmitteln	8	NOUN
+Schmerzmitteln	8	NOUN	Schmerzmittel
 anzulasten	8	VERB
-Befehlshabers	8	NOUN
+Befehlshabers	8	NOUN	Befehlshaber
 Destruktion	8	NOUN
 versehentlichen	8	OTHER
 unbeabsichtigten	8	OTHER
-Typumwandlungen	8	NOUN
+Typumwandlungen	8	NOUN	Typumwandlung
 Nachbesserung	8	NOUN
 Erscheinungstermin	8	NOUN
 variant	8	NOUN,OTHER
@@ -115949,10 +115949,10 @@ Reaktionsschritte	8	NOUN
 enzymatischer	8	OTHER
 aufgenommenem	8	OTHER
 HMG	8	NOUN
-Speicherbereichen	8	NOUN
+Speicherbereichen	8	NOUN	Speicherbereich
 Taktzyklen	8	NOUN
 Matrixdarstellung	8	NOUN
-Funktionswerten	8	NOUN
+Funktionswerten	8	NOUN	Funktionswert
 Netzwerkadapter	8	NOUN
 Gehäuseform	8	NOUN
 Fremdherstellern	8	NOUN
@@ -115964,10 +115964,10 @@ Madness	8	NOUN
 Abtippen	8	NOUN
 erstanden	8	VERB
 contrahendo	8	OTHER
-Missverständnisses	8	NOUN
+Missverständnisses	8	NOUN	Missverständnisse
 Verletzer	8	NOUN
 Rückabwicklung	8	NOUN
-Salas	8	NOUN
+Salas	8	NOUN	Sala
 Ildefonso	8	NOUN
 Südchile	8	NOUN
 Vulkankette	8	NOUN
@@ -115983,9 +115983,9 @@ Juventud	8	NOUN
 Jugendkriminalität	8	NOUN
 Pontificia	8	NOUN
 Paranal	8	NOUN
-Versuches	8	NOUN
+Versuches	8	NOUN	Versuch
 präsidentielles	8	OTHER
-Auslandsdeutschen	8	NOUN
+Auslandsdeutschen	8	NOUN	Auslandsdeutsche
 Patricio	8	NOUN
 Marín	8	NOUN
 Kast	8	NOUN
@@ -115996,16 +115996,16 @@ Wasserrechte	8	NOUN
 Produktionssektor	8	NOUN
 Kupfermine	8	NOUN
 Volkssänger	8	NOUN
-Ecos	8	NOUN
+Ecos	8	NOUN	Eco
 Sepúlveda	8	NOUN
 Generación	8	NOUN,OTHER
 Abwehrspieler	8	NOUN
 Mercurio	8	NOUN
 Qué	8	NOUN
 Atomkonferenz	8	NOUN
-Speicherringe	8	NOUN
-Umläufen	8	NOUN
-Bosons	8	NOUN
+Speicherringe	8	NOUN	Speicherring
+Umläufen	8	NOUN	Umlauf
+Bosons	8	NOUN	Boson
 kernphysikalische	8	OTHER
 Frauenrechtsbewegung	8	NOUN
 Aufsatzserie	8	NOUN
@@ -116034,7 +116034,7 @@ Stammzelltransplantation	8	NOUN
 hochwirksame	8	OTHER
 Bildfolge	8	NOUN
 bebilderte	8	OTHER
-Gospels	8	NOUN
+Gospels	8	NOUN	Gospel
 Nuttall	8	NOUN
 Harlot	8	NOUN
 detailreich	8	OTHER
@@ -116062,10 +116062,10 @@ nada	8	NOUN,OTHER
 irrelevante	8	OTHER
 Psychoakustik	8	NOUN
 Qualitätsunterschiede	8	NOUN
-Bildinhalts	8	NOUN
+Bildinhalts	8	NOUN	Bildinhalt
 Farbwert	8	NOUN
 appellieren	8	VERB
-Kriminalfilme	8	NOUN
+Kriminalfilme	8	NOUN	Kriminalfilm
 Kortner	8	NOUN
 Kunstfilm	8	NOUN
 Komparsen	8	NOUN
@@ -116075,12 +116075,12 @@ Reiniger	8	NOUN
 Ruttmann	8	NOUN
 Hollaender	8	NOUN
 stummer	8	OTHER
-Befindlichkeiten	8	NOUN
+Befindlichkeiten	8	NOUN	Befindlichkeit
 Kirst	8	NOUN
 Sunny	8	NOUN
 Kinderfilm	8	NOUN
 spektakulärste	8	OTHER
-Papas	8	NOUN
+Papas	8	NOUN	Papa
 Schamoni	8	NOUN
 Kinopremiere	8	NOUN
 Tabuthemen	8	NOUN
@@ -116092,7 +116092,7 @@ Antikriegsfilm	8	NOUN
 langandauernde	8	OTHER
 Korty	8	NOUN
 Lause	8	NOUN
-Stillers	8	NOUN
+Stillers	8	NOUN	Stiller
 lachend	8	OTHER
 Meinungsbildungsprozess	8	NOUN
 Zusatznutzen	8	NOUN
@@ -116109,7 +116109,7 @@ Fotoserie	8	NOUN
 inspirierende	8	OTHER
 mystischem	8	OTHER
 kontrastreich	8	OTHER
-Gurus	8	NOUN
+Gurus	8	NOUN	Guru
 Ameise	8	NOUN
 Kellerraum	8	NOUN
 weiterzuarbeiten	8	VERB
@@ -116119,9 +116119,9 @@ großangelegtes	8	OTHER
 Vidor	8	NOUN
 Absorptionsbanden	8	NOUN
 Besatzungsrecht	8	NOUN
-Zahlungs	8	NOUN
+Zahlungs	8	NOUN	Zahlung
 Bargeldversorgung	8	NOUN
-Führungspersonals	8	NOUN
+Führungspersonals	8	NOUN	Führungspersonal
 konzeptioneller	8	OTHER
 Schuldentilgung	8	NOUN
 Jagdausflug	8	NOUN
@@ -116130,14 +116130,14 @@ zweimonatige	8	OTHER
 Ordensmeister	8	NOUN
 delegitimieren	8	VERB
 geschmäht	8	OTHER
-Ultimaten	8	NOUN
+Ultimaten	8	NOUN	Ultimatum
 mitgliederstarken	8	OTHER
 Prozessverlauf	8	NOUN
 Verbüßung	8	NOUN
 Leitvorstellungen	8	NOUN
-Standgerichte	8	NOUN
+Standgerichte	8	NOUN	Standgericht
 Deficit	8	NOUN,OTHER
-Stabschefs	8	NOUN
+Stabschefs	8	NOUN	Stabschef
 Kriegsvorbereitung	8	NOUN
 Rüstungsausgaben	8	NOUN
 Flugzeugproduktion	8	NOUN
@@ -116149,23 +116149,23 @@ Echternkamp	8	NOUN
 Wildt	8	NOUN
 Gewichtsreduktion	8	NOUN
 substantiviert	8	OTHER
-Computersystems	8	NOUN
+Computersystems	8	NOUN	Computersystem
 Datenmodellierung	8	NOUN
 Datenbestand	8	NOUN
-Landschaftsverbands	8	NOUN
-Hellwegs	8	NOUN
-Industriedenkmäler	8	NOUN
+Landschaftsverbands	8	NOUN	Landschaftsverband
+Hellwegs	8	NOUN	Hellweg
+Industriedenkmäler	8	NOUN	Industriedenkmal
 Bergsenkungen	8	NOUN
 Wickede	8	NOUN
 Waltrop	8	NOUN
 Transferzahlungen	8	NOUN
 Hansastraße	8	NOUN
-Archidiakonats	8	NOUN
+Archidiakonats	8	NOUN	Archidiakonat
 Selm	8	NOUN
 inaktiver	8	OTHER
 Görüş	8	NOUN
-Kuppelbaus	8	NOUN
-Bethäuser	8	NOUN
+Kuppelbaus	8	NOUN	Kuppelbau
+Bethäuser	8	NOUN	Bethaus
 Stadtmagistrat	8	NOUN
 Tierschutzpartei	8	NOUN
 fünfzackigen	8	OTHER
@@ -116177,7 +116177,7 @@ Kopfseite	8	NOUN
 prangt	8	OTHER
 weitläufiges	8	OTHER
 Moränenlandschaft	8	NOUN
-Freiberuflern	8	NOUN
+Freiberuflern	8	NOUN	Freiberufler
 Westfalenpark	8	NOUN
 innenstadtnahe	8	OTHER
 Theaterkunst	8	NOUN
@@ -116192,10 +116192,10 @@ illuminiert	8	OTHER
 Currywurst	8	NOUN
 kreisrundes	8	OTHER
 Vereinsmannschaften	8	NOUN
-Wanderers	8	NOUN
+Wanderers	8	NOUN	Wanderer
 Betriebswerk	8	NOUN
 Biomedizin	8	NOUN
-Einkaufsmeilen	8	NOUN
+Einkaufsmeilen	8	NOUN	Einkaufsmeile
 Klimatechnik	8	NOUN
 Kleinbusse	8	NOUN
 Kennziffer	8	NOUN
@@ -116204,12 +116204,12 @@ Courteney	8	NOUN
 Ear	8	NOUN
 Gewerkschaftsführer	8	NOUN
 Wirtschaftsprüfer	8	NOUN
-Jahresabschlüsse	8	NOUN
+Jahresabschlüsse	8	NOUN	Jahresabschluss
 Winterhalter	8	NOUN
 Neuschaffung	8	NOUN
 aufgedeckte	8	OTHER
 Konzertmusik	8	NOUN
-Vorspielen	8	NOUN,OTHER
+Vorspielen	8	NOUN,OTHER	Vorspiel
 Milhaud	8	NOUN
 Oberlin	8	NOUN
 Ambassador	8	NOUN
@@ -116217,7 +116217,7 @@ kammermusikalischen	8	OTHER
 Brodsky	8	NOUN
 Selbstmordanschlag	8	NOUN
 Reliquiar	8	NOUN
-Habsburgs	8	NOUN
+Habsburgs	8	NOUN	Habsburg
 Rechtsgrundsatz	8	NOUN
 Furie	8	NOUN
 vertagte	8	OTHER
@@ -116237,22 +116237,22 @@ Christoffel	8	NOUN
 Heeresgeschichtlichen	8	NOUN
 Schutzwaffen	8	NOUN
 Dioramen	8	NOUN
-Kriegsschauplätze	8	NOUN
+Kriegsschauplätze	8	NOUN	Kriegsschauplatz
 Punktspiegelung	8	NOUN
 fünfzähligen	8	OTHER
 nebenstehendes	8	OTHER
 aufgeschnittenen	8	OTHER
-Couplands	8	NOUN
+Couplands	8	NOUN	Coupland
 McLuhan	8	NOUN
 Achtzigern	8	NOUN
 Orca	8	NOUN,OTHER
 Weir	8	NOUN
 fremdartigen	8	OTHER
 Gently	8	NOUN
-Demokrits	8	NOUN
+Demokrits	8	NOUN	Demokrit
 Seelenatome	8	NOUN
 Spreu	8	NOUN
-Umbildungen	8	NOUN,OTHER
+Umbildungen	8	NOUN,OTHER	Umbildung
 Erdmittelalter	8	NOUN
 vierbeinige	8	OTHER
 Omnivoren	8	NOUN
@@ -116274,18 +116274,18 @@ Jáchymov	8	NOUN
 feinkörnig	8	OTHER
 Dollarzeichen	8	NOUN
 Spruchband	8	NOUN
-Kapitols	8	NOUN
+Kapitols	8	NOUN	Kapitol
 Statius	8	NOUN
 Ratssitzung	8	NOUN
 datierbar	8	OTHER
 konsularische	8	OTHER
 Bündnisangebot	8	NOUN
-Agricolas	8	NOUN
+Agricolas	8	NOUN	Agricola
 Todesart	8	NOUN
 Domitia	8	NOUN
 ausgearbeiteter	8	OTHER
 menschenfeindlichen	8	OTHER
-Ölpreiskrisen	8	NOUN
+Ölpreiskrisen	8	NOUN	Ölpreiskrise
 energieeffizienter	8	OTHER
 rationalisieren	8	VERB
 Büroanwendungen	8	NOUN
@@ -116294,33 +116294,33 @@ Digitalradio	8	NOUN
 selbstfahrende	8	OTHER
 Kommunikationsnetze	8	NOUN
 Verbilligung	8	NOUN
-Käufen	8	NOUN
+Käufen	8	NOUN	Kauf
 intransparente	8	OTHER
-Lockdowns	8	NOUN
+Lockdowns	8	NOUN	Lockdown
 Grundeinkommen	8	NOUN
-Orientierungspunkte	8	NOUN
+Orientierungspunkte	8	NOUN	Orientierungspunkt
 abzurufen	8	VERB
 Privatheit	8	NOUN
 unternehme	8	OTHER
 Risikobereitschaft	8	NOUN
 Trivialisierung	8	NOUN
 Hirnforscher	8	NOUN
-Gegenreaktionen	8	NOUN
+Gegenreaktionen	8	NOUN	Gegenreaktion
 Resonanzraum	8	NOUN
 nachahmende	8	OTHER
-Likes	8	NOUN
+Likes	8	NOUN	Like
 posieren	8	VERB
 Carina	8	NOUN
 Passform	8	NOUN
-Internetnutzern	8	NOUN
+Internetnutzern	8	NOUN	Internetnutzer
 meinungsbildenden	8	OTHER
 Bauman	8	NOUN
 Leseförderung	8	NOUN
 verlören	8	VERB
 auszugestalten	8	VERB
-Programmpakete	8	NOUN
+Programmpakete	8	NOUN	Programmpaket
 freeze	8	NOUN,OTHER
-Webservern	8	NOUN
+Webservern	8	NOUN	Webserver
 barrierefreies	8	OTHER
 Internetprotokollfamilie	8	NOUN
 persistenten	8	OTHER
@@ -116339,9 +116339,9 @@ Metallwerk	8	NOUN
 steuerlicher	8	OTHER
 Kammergut	8	NOUN
 Kaditz	8	NOUN
-Randlagen	8	NOUN
+Randlagen	8	NOUN	Randlage
 jeweilig	8	OTHER
-Mandatsträgern	8	NOUN
+Mandatsträgern	8	NOUN	Mandatsträger
 Boulevardtheater	8	NOUN
 Konzertorchester	8	NOUN
 Masur	8	NOUN
@@ -116350,8 +116350,8 @@ Saxoniae	8	NOUN
 Méndez	8	NOUN
 SKD	8	NOUN
 Militärhistorische	8	NOUN,OTHER
-Hochschulbibliotheken	8	NOUN
-Baustilen	8	NOUN
+Hochschulbibliotheken	8	NOUN	Hochschulbibliothek
+Baustilen	8	NOUN	Baustil
 Trafford	8	NOUN
 lichtdurchlässig	8	OTHER
 Glasdach	8	NOUN
@@ -116361,8 +116361,8 @@ markantestes	8	OTHER
 Amateurbereich	8	NOUN
 schuldenfrei	8	OTHER
 Studentenclubs	8	NOUN
-Wohnheimen	8	NOUN
-Musikfeste	8	NOUN
+Wohnheimen	8	NOUN	Wohnheim
+Musikfeste	8	NOUN	Musikfest
 Zauberkunst	8	NOUN
 überschuldet	8	OTHER
 Fertigungsstätten	8	NOUN
@@ -116370,7 +116370,7 @@ Matern	8	NOUN
 Arzneimittelwerk	8	NOUN
 Warenhauses	8	NOUN
 feinmechanischen	8	OTHER
-Automobilwerke	8	NOUN
+Automobilwerke	8	NOUN	Automobilwerk
 ETS	8	NOUN
 ahnungslosen	8	OTHER
 Schifffahrtsdirektion	8	NOUN
@@ -116383,7 +116383,7 @@ Elysium	8	NOUN
 angeregter	8	OTHER
 Droemer	8	NOUN
 Knaur	8	NOUN
-Kobolde	8	NOUN
+Kobolde	8	NOUN	Kobold
 beunruhigen	8	VERB
 übermalte	8	OTHER
 Druckgraphik	8	NOUN
@@ -116392,18 +116392,18 @@ alsdann	8	OTHER
 zusammengetragene	8	OTHER
 Milow	8	NOUN
 Schäferei	8	NOUN
-Villenkolonien	8	NOUN
-Tagelöhnern	8	NOUN
+Villenkolonien	8	NOUN	Villenkolonie
+Tagelöhnern	8	NOUN	Tagelöhner
 Ramm	8	NOUN
 Ihne	8	NOUN
 Engler	8	NOUN
-Bebauungspläne	8	NOUN
-Gutsbezirken	8	NOUN
+Bebauungspläne	8	NOUN	Bebauungsplan
+Gutsbezirken	8	NOUN	Gutsbezirk
 Erblehre	8	NOUN
 kinderreichen	8	OTHER
 Äquivalenzumformung	8	NOUN
 überhitzter	8	OTHER
-Schornsteinen	8	NOUN
+Schornsteinen	8	NOUN	Schornstein
 Steinkohlebergbau	8	NOUN
 Nutzenergie	8	NOUN
 Strömungsrichtung	8	NOUN
@@ -116421,14 +116421,14 @@ Kompositionsauftrag	8	NOUN
 verwegen	8	OTHER
 Dröhnen	8	NOUN
 eindrückliche	8	OTHER
-Donnern	8	NOUN,OTHER
+Donnern	8	NOUN,OTHER	Donner
 Druckmaschine	8	NOUN
 Flexodruck	8	NOUN
 Gummituchzylinder	8	NOUN
 kontaktlosen	8	OTHER
 Neuberechnung	8	NOUN
 Beschichten	8	NOUN,OTHER
-Ausbildungsberufe	8	NOUN
+Ausbildungsberufe	8	NOUN	Ausbildungsberuf
 geprüfter	8	OTHER
 Bandmaterial	8	NOUN
 Kerngruppe	8	NOUN
@@ -116450,11 +116450,11 @@ Reiterdenkmal	8	NOUN
 Solari	8	NOUN
 Haigerloch	8	NOUN
 Keeffe	8	NOUN
-Warhols	8	NOUN
+Warhols	8	NOUN	Warhol
 Sonntagabend	8	NOUN
 ärmerer	8	OTHER
 brennbarer	8	OTHER
-Kais	8	NOUN
+Kais	8	NOUN	Kai
 Weinbrand	8	NOUN
 festsetzten	8	VERB
 Kommunikationswege	8	NOUN
@@ -116463,13 +116463,13 @@ Mittwochabend	8	NOUN
 Hausbrand	8	NOUN
 blutrote	8	OTHER
 Alarmbereitschaft	8	NOUN
-Uhrmachers	8	NOUN
-Städtchens	8	NOUN
+Uhrmachers	8	NOUN	Uhrmacher
+Städtchens	8	NOUN	Städtchen
 Eigentumstitel	8	NOUN
 Zahlungsverzug	8	NOUN
-Horrors	8	NOUN,OTHER
+Horrors	8	NOUN,OTHER	Horror
 Memelgebiet	8	NOUN
-Kriegsvölkerrechts	8	NOUN
+Kriegsvölkerrechts	8	NOUN	Kriegsvölkerrecht
 Feuerbohne	8	NOUN
 Fruchtfolge	8	NOUN
 Schwindelgefühl	8	NOUN
@@ -116482,15 +116482,15 @@ Aist	8	NOUN
 Bačka	8	NOUN
 Neusiedlersee	8	NOUN
 Sumpfschildkröte	8	NOUN
-Grundgebirges	8	NOUN
+Grundgebirges	8	NOUN	Grundgebirge
 montane	8	OTHER
 Fingerhut	8	NOUN
 Auengebiete	8	NOUN
 Bürgerproteste	8	NOUN
-Seitenarmen	8	NOUN
+Seitenarmen	8	NOUN	Seitenarm
 Goldschakale	8	NOUN
 Weltnaturschutzunion	8	NOUN
-Naturfreunden	8	NOUN
+Naturfreunden	8	NOUN	Naturfreunde
 Donaustadt	8	NOUN
 Zuleitung	8	NOUN
 Unterschriftenaktion	8	NOUN
@@ -116499,9 +116499,9 @@ Monokultur	8	NOUN
 verästelten	8	VERB
 Wissenschaftsstadt	8	NOUN
 Paulusviertel	8	NOUN
-Odenwalds	8	NOUN
+Odenwalds	8	NOUN	Odenwald
 Großmütige	8	NOUN,OTHER
-Einrichtungsgegenständen	8	NOUN
+Einrichtungsgegenständen	8	NOUN	Einrichtungsgegenstände
 Kantorei	8	NOUN
 Kasino	8	NOUN
 SSG	8	NOUN
