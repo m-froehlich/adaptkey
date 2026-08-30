@@ -205,7 +205,10 @@ object LanguagePackCatalog {
             // §319 (v1.0.72): added "texten" ("to text/message") with its finite forms (texten/texte/
             // textest/textet), flagged as missing in §318; its participle getextet already existed
             // (OTHER) and gained the VERB tag too.
-            version = 30
+            // §320 (v1.0.73): D-412's lemma column populated for the first time - noun-inflection
+            // project round 1, the >=2000 frequency band (124 mechanical candidates, 79 individually
+            // confirmed and linked to their base form).
+            version = 31
         ),
         Entry(
             Language.GREEK,

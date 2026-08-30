@@ -802,6 +802,40 @@ non-trivial changes).
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
 
+- **§320 (v1.0.73): kicked off the German noun-inflection-linking project - D-412's `lemma` column**
+  **populated for the first time (0 rows -> 79), round 1 of the `>=2000` frequency band.** New effort,
+  requested explicitly and scoped via `AskUserQuestion` before starting (mirroring how the verb project
+  began): 88,012 words carry the `NOUN` tag (~8x the verb project's own candidate pool). A mechanical
+  prototype (suffix-stripping `-nen`/`-innen`/`-en`/`-er`/`-n`/`-e`/`-s` plus umlaut-reversal on the *last*
+  umlaut only) found ~20,000 words with a plausible existing-row base-form candidate; a 40-word random spot
+  check found ~12-15% clear false positives (short/foreign stems coincidentally colliding with an unrelated
+  word - `Mais`->`Mai`, `Pointer`->`Point`, `Orbiter`->`Orbit`, `Preston`->`Presto`), confirming individual
+  review is still required, not a mechanical auto-apply. **Two design decisions resolved with the user
+  up front**: (1) full individual review of every candidate, same rigor as the verb project, since `lemma`
+  is not yet read by any code (safe to refine later before D-404 Tier 1 actually consumes it); (2)
+  derivational word-formation (demonyms like `Berliner`->`Berlin`, `Schweizer`->`Schweiz`, `Wiener`->`Wien`)
+  explicitly **excluded** - only true inflection (case/number, and adjective declension when both sides
+  already carry the `NOUN` tag, e.g. nominalised `deutsche`/`deutschen`->`deutsch`) counts as a link. This
+  round: the `>=2000` band, 124 mechanical candidates individually reviewed, 79 confirmed and linked, 45
+  rejected (demonyms, proper-noun/place-name collisions, and short-stem false matches like `Kaiser`->`Kais`,
+  `Wasser`->`Wass`, `Bürger`->`Burg`). **13 links were manually corrected to the true base rather than the
+  raw mechanical match** where the mechanical candidate landed on a spurious fragment or an intermediate
+  form instead of the real lemma (`Namen`->`Name` not `Nam`, `Kirchen`->`Kirche` not `Kirch`, `Ländern`-
+  >`Land` not the intermediate plural `Länder`, `Jahres`->`Jahr` not the intermediate plural `Jahre`, and
+  similarly for `Landes`/`Stimmen`/`Regionen`/`Quellen`/`Reiches`/`Grenzen`/`Krieges`/`Schulen`/`Juden`) -
+  each verified to actually exist as its own `NOUN`-tagged row before writing. `Nord`/`Süd`/`West`/`Ost`
+  vs. `Norden`/`Süden`/`Westen`/`Osten` deliberately treated as independent lemmas, not an inflection pair
+  (both are established independent headwords in modern usage, not one derived live from the other).
+  Write script fail-loud-asserts each target word is `NOUN`-tagged, currently has an empty `lemma` field,
+  and its chosen base actually exists as its own row, before writing - same pattern as every tagging round.
+  `git diff --stat` confirmed exactly 79 lines changed (158 total: old+new per line). `dictionaries/de/
+  version.txt` 30 -> 31, pack rebuilt, `LanguagePackCatalog` version 30 -> 31. No new tests (data-only;
+  `lemma` still has zero code readers, same groundwork-only status as before). 1064 unit tests unchanged,
+  all green (via JDK 21). `versionCode` 376 -> 377, `versionName` `"1.0.72"` -> `"1.0.73"`. Not yet
+  device-confirmed. **Remaining: ~19,900 more mechanical candidates across the rest of the frequency range**
+  (500-1999, 200-499, ... down through the same banding pattern as the verb project), to be worked through
+  round by round.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with

@@ -72,11 +72,11 @@ seiner	29361	OTHER
 sein	28942	VERB,OTHER
 hatte	28290	OTHER
 jedoch	27743	OTHER
-Jahre	25444	NOUN
+Jahre	25444	NOUN	Jahr
 zwei	24911	OTHER
 Zeit	24833	NOUN
 da	24713	OTHER
-Jahren	24465	NOUN
+Jahren	24465	NOUN	Jahr
 mehr	23596	OTHER
 während	23323	OTHER
 können	23227	VERB
@@ -87,7 +87,7 @@ ihre	21206	OTHER
 damit	21055	OTHER
 ersten	20842	OTHER
 heute	20683	OTHER
-deutschen	19831	NOUN,OTHER
+deutschen	19831	NOUN,OTHER	deutsch
 anderen	19617	OTHER
 bereits	19176	OTHER
 Jahrhundert	18587	NOUN
@@ -116,7 +116,7 @@ bzw	14776	OTHER
 ihm	14716	OTHER
 sondern	14681	OTHER
 neben	14648	OTHER
-Menschen	14505	NOUN
+Menschen	14505	NOUN	Mensch
 hier	14154	OTHER
 was	14104	OTHER
 viele	14091	OTHER
@@ -150,18 +150,18 @@ also	11450	OTHER
 dazu	11431	OTHER
 oft	11357	OTHER
 verwendet	11310	OTHER
-Jahrhunderts	11235	NOUN
+Jahrhunderts	11235	NOUN	Jahrhundert
 ihn	11232	OTHER
 große	11204	OTHER
 ebenfalls	11175	OTHER
 neue	10950	OTHER
 insbesondere	10896	OTHER
-deutsche	10848	NOUN,OTHER
+deutsche	10848	NOUN,OTHER	deutsch
 Mai	10694	NOUN
 Berlin	10637	NOUN
 worden	10522	VERB
 neuen	10410	OTHER
-zweiten	10356	NOUN,OTHER
+zweiten	10356	NOUN,OTHER	zweit
 vier	10355	OTHER
 aufgrund	10321	OTHER
 zunächst	10308	OTHER
@@ -186,7 +186,7 @@ Land	9335	NOUN,VERB
 mehrere	9182	OTHER
 Bedeutung	9170	NOUN
 Januar	9135	NOUN
-Namen	9056	NOUN
+Namen	9056	NOUN	Name
 Leben	9019	NOUN,OTHER
 August	8974	NOUN
 genannt	8943	OTHER
@@ -197,7 +197,7 @@ Oktober	8801	NOUN
 März	8748	NOUN
 Dezember	8743	NOUN
 zurück	8694	OTHER
-Millionen	8598	NOUN
+Millionen	8598	NOUN	Million
 hatten	8549	VERB
 wobei	8485	OTHER
 April	8466	NOUN
@@ -226,7 +226,7 @@ fast	7705	OTHER
 je	7686	OTHER
 meisten	7649	OTHER
 erstmals	7631	OTHER
-Staaten	7622	NOUN
+Staaten	7622	NOUN	Staat
 Entwicklung	7615	NOUN
 befindet	7567	OTHER
 häufig	7535	OTHER
@@ -281,7 +281,7 @@ findet	6154	OTHER
 weniger	6127	OTHER
 konnten	6119	VERB
 pro	6084	OTHER
-Personen	6081	NOUN
+Personen	6081	NOUN	Person
 eigenen	6078	OTHER
 dafür	6075	OTHER
 Krieg	6068	NOUN,VERB
@@ -304,7 +304,7 @@ erhalten	5857	VERB
 lässt	5819	OTHER
 folgenden	5794	OTHER
 Film	5782	NOUN,VERB
-Landes	5729	NOUN
+Landes	5729	NOUN	Land
 beide	5725	OTHER
 Einwohner	5699	NOUN
 kommt	5696	OTHER
@@ -314,7 +314,7 @@ ging	5660	OTHER
 entstand	5648	OTHER
 darunter	5635	OTHER
 Region	5629	NOUN
-europäischen	5628	NOUN,OTHER
+europäischen	5628	NOUN,OTHER	europäische
 Kaiser	5623	NOUN
 ebenso	5617	OTHER
 ca	5607	OTHER
@@ -337,7 +337,7 @@ kurz	5348	OTHER
 Regel	5342	NOUN
 größten	5307	OTHER
 alten	5302	OTHER
-Sprachen	5298	NOUN
+Sprachen	5298	NOUN	Sprache
 nahm	5272	OTHER
 darüber	5266	OTHER
 Unternehmen	5256	NOUN
@@ -349,7 +349,7 @@ Name	5161	NOUN
 ich	5153	OTHER
 einigen	5152	VERB,OTHER
 Familie	5149	NOUN
-Frauen	5140	NOUN
+Frauen	5140	NOUN	Frau
 gegründet	5099	OTHER
 Partei	5098	NOUN
 text	5076	NOUN
@@ -387,17 +387,17 @@ Frau	4756	NOUN
 dar	4707	OTHER
 sogar	4706	OTHER
 Euro	4695	NOUN
-Teile	4685	NOUN,VERB
+Teile	4685	NOUN,VERB	Teil
 obwohl	4671	OTHER
 stellte	4668	OTHER
 bilden	4646	VERB
 musste	4643	OTHER
 Richtung	4640	NOUN
-Gemeinden	4625	NOUN
+Gemeinden	4625	NOUN	Gemeinde
 ganz	4617	OTHER
 weit	4603	OTHER
 Schweiz	4592	NOUN
-Städte	4585	NOUN
+Städte	4585	NOUN	Stadt
 zuvor	4584	OTHER
 hohen	4554	OTHER
 Bild	4539	NOUN
@@ -410,19 +410,19 @@ sechs	4517	OTHER
 müssen	4510	VERB
 Süden	4501	NOUN
 Gegensatz	4489	NOUN
-Werke	4483	NOUN
+Werke	4483	NOUN	Werk
 einzelnen	4482	OTHER
 gewählt	4472	OTHER
 solche	4454	OTHER
 Weltkrieg	4452	NOUN
-Arten	4444	NOUN
+Arten	4444	NOUN	Art
 politische	4442	OTHER
 ehemaligen	4427	OTHER
 stellt	4426	OTHER
 dagegen	4418	OTHER
 DDR	4405	NOUN
 eher	4384	OTHER
-Mitglieder	4381	NOUN
+Mitglieder	4381	NOUN	Mitglied
 denn	4368	OTHER
 Insel	4356	NOUN
 Anteil	4353	NOUN
@@ -448,15 +448,15 @@ Musik	4226	NOUN
 Anzahl	4223	NOUN
 Kunst	4221	NOUN
 Landkreis	4211	NOUN
-Truppen	4209	NOUN
+Truppen	4209	NOUN	Trupp
 kamen	4198	VERB
 deshalb	4193	OTHER
 Staat	4189	NOUN
 handelt	4187	OTHER
 Zentrum	4182	NOUN
 gewesen	4172	VERB
-Sinne	4171	NOUN
-Ländern	4168	NOUN
+Sinne	4171	NOUN	Sinn
+Ländern	4168	NOUN	Land
 wenig	4161	OTHER
 Westen	4161	NOUN
 mehreren	4159	OTHER
@@ -475,7 +475,7 @@ bestand	4075	OTHER
 Meter	4072	NOUN
 Bau	4064	NOUN,VERB
 befinden	4051	VERB
-Tage	4042	NOUN
+Tage	4042	NOUN	Tag
 heißt	4025	OTHER
 sogenannte	4009	OTHER
 Osten	4004	NOUN
@@ -489,7 +489,7 @@ schrieb	3932	OTHER
 Artikel	3913	NOUN
 Mitglied	3912	NOUN
 kaum	3898	OTHER
-Kinder	3884	NOUN
+Kinder	3884	NOUN	Kind
 Reihe	3883	NOUN
 internationalen	3861	OTHER
 Hauptstadt	3855	NOUN
@@ -511,16 +511,16 @@ zehn	3799	OTHER
 Frage	3796	NOUN,VERB
 Straße	3782	NOUN
 Kilometer	3778	NOUN
-Arbeiten	3774	NOUN,OTHER
+Arbeiten	3774	NOUN,OTHER	Arbeit
 erschien	3773	VERB
 Weg	3768	NOUN,VERB
 Polen	3767	NOUN
 deutsch	3763	NOUN,OTHER
 Höhe	3763	NOUN
 kleinen	3748	OTHER
-Zahlen	3737	NOUN
+Zahlen	3737	NOUN	Zahl
 Hälfte	3737	NOUN
-Gruppen	3722	NOUN
+Gruppen	3722	NOUN	Gruppe
 Gott	3716	NOUN
 viel	3713	OTHER
 Literatur	3712	NOUN
@@ -544,12 +544,12 @@ erfolgte	3583	OTHER
 Gebäude	3561	NOUN
 Armee	3558	NOUN
 früher	3540	OTHER
-Juden	3536	NOUN
+Juden	3536	NOUN	Jude
 gemeinsam	3535	OTHER
 sollten	3523	VERB
 Rom	3521	NOUN
 Mann	3518	NOUN
-Vereinigten	3509	NOUN
+Vereinigten	3509	NOUN	Vereinigte
 Grenze	3499	NOUN
 bestimmten	3498	VERB,OTHER
 Stelle	3497	NOUN,VERB
@@ -609,10 +609,10 @@ jede	3201	OTHER
 gelten	3200	VERB
 öffentlichen	3194	OTHER
 Bewegung	3193	NOUN
-Städten	3191	NOUN
+Städten	3191	NOUN	Stadt
 umfasst	3186	OTHER
 außerhalb	3178	OTHER
-Jahres	3177	NOUN
+Jahres	3177	NOUN	Jahr
 Provinz	3174	NOUN
 Alter	3170	NOUN,OTHER
 zahlreichen	3158	OTHER
@@ -620,7 +620,7 @@ Möglichkeit	3148	NOUN
 Zeichen	3147	NOUN
 anderer	3145	OTHER
 Russland	3143	NOUN
-Elemente	3140	NOUN
+Elemente	3140	NOUN	Element
 Liste	3133	NOUN
 modernen	3131	OTHER
 hauptsächlich	3129	OTHER
@@ -632,7 +632,7 @@ Nähe	3112	NOUN,VERB
 größere	3106	OTHER
 ihres	3092	OTHER
 al	3090	OTHER
-Teilen	3087	NOUN
+Teilen	3087	NOUN	Teil
 Kraft	3087	NOUN
 gesamte	3083	OTHER
 Energie	3082	NOUN
@@ -650,16 +650,16 @@ Version	3048	NOUN
 Grundlage	3045	NOUN
 enthalten	3038	VERB
 zog	3035	OTHER
-Gebiete	3034	NOUN
+Gebiete	3034	NOUN	Gebiet
 spielen	3030	VERB
 erfolgt	3025	OTHER
 Band	3016	NOUN,VERB
-Zuge	3012	NOUN
+Zuge	3012	NOUN	Zug
 rechts	3011	OTHER
 and	3010	OTHER
 Natur	3008	NOUN
 besitzt	3007	OTHER
-Formen	3007	NOUN
+Formen	3007	NOUN	Form
 zugleich	3002	OTHER
 Forschung	3001	NOUN
 überwiegend	2999	OTHER
@@ -688,7 +688,7 @@ selten	2916	OTHER
 Otto	2911	NOUN
 Theorie	2909	NOUN
 Gründung	2908	NOUN
-Folgen	2904	NOUN,OTHER
+Folgen	2904	NOUN,OTHER	Folge
 sah	2903	OTHER
 späteren	2893	OTHER
 Hamburg	2893	NOUN
@@ -703,7 +703,7 @@ Verfügung	2877	NOUN
 inzwischen	2862	OTHER
 starb	2854	OTHER
 folgte	2843	OTHER
-Länder	2843	NOUN
+Länder	2843	NOUN	Land
 zeigen	2837	VERB
 spielte	2837	OTHER
 eingeführt	2829	OTHER
@@ -711,7 +711,7 @@ bedeutet	2826	OTHER
 nie	2824	OTHER
 englischen	2807	OTHER
 bekannte	2801	OTHER
-Deutschlands	2798	NOUN
+Deutschlands	2798	NOUN	Deutschland
 daraufhin	2796	OTHER
 moderne	2793	OTHER
 bald	2789	OTHER
@@ -730,26 +730,26 @@ gleich	2765	OTHER
 Schlacht	2763	NOUN
 daraus	2755	OTHER
 Länge	2753	NOUN
-Stimmen	2748	NOUN,OTHER
+Stimmen	2748	NOUN,OTHER	Stimme
 veröffentlichte	2742	OTHER
 katholischen	2741	OTHER
-Inseln	2739	NOUN
+Inseln	2739	NOUN	Insel
 Peter	2738	NOUN
 China	2736	NOUN
-Beispiele	2736	NOUN
+Beispiele	2736	NOUN	Beispiel
 London	2736	NOUN
 zählen	2735	VERB
 genau	2733	OTHER
 nimmt	2732	OTHER
-Kirchen	2728	NOUN
+Kirchen	2728	NOUN	Kirche
 mathrm	2727	OTHER
-Heiligen	2719	NOUN,OTHER
+Heiligen	2719	NOUN,OTHER	Heilig
 unterschiedliche	2715	OTHER
 selben	2715	OTHER
 wäre	2710	OTHER
 Mehrheit	2705	NOUN
 gemacht	2702	OTHER
-Soldaten	2701	NOUN
+Soldaten	2701	NOUN	Soldat
 fanden	2688	VERB
 jährlich	2683	OTHER
 aufgenommen	2678	VERB
@@ -764,7 +764,7 @@ unterschiedlichen	2637	OTHER
 Ernst	2637	NOUN
 ergibt	2630	OTHER
 anschließend	2627	OTHER
-Eigenschaften	2624	NOUN
+Eigenschaften	2624	NOUN	Eigenschaft
 Ebene	2623	NOUN
 westlichen	2621	OTHER
 Nachfolger	2613	NOUN
@@ -785,7 +785,7 @@ entweder	2582	OTHER
 Nord	2581	NOUN
 Tochter	2573	NOUN
 spricht	2572	OTHER
-Regionen	2568	NOUN
+Regionen	2568	NOUN	Region
 weiterer	2567	OTHER
 knapp	2564	OTHER
 Druck	2563	NOUN,VERB
@@ -794,12 +794,12 @@ sodass	2561	OTHER
 Bayern	2561	NOUN
 bietet	2560	OTHER
 vermutlich	2558	OTHER
-Autoren	2556	NOUN
+Autoren	2556	NOUN	Autor
 hierbei	2555	OTHER
 dient	2554	OTHER
 Roman	2550	NOUN
 entstehen	2549	VERB
-Quellen	2547	NOUN
+Quellen	2547	NOUN	Quelle
 verbreitet	2543	OTHER
 andererseits	2539	OTHER
 Thomas	2536	NOUN
@@ -813,10 +813,10 @@ Johannes	2526	NOUN
 Ausdruck	2525	NOUN
 Verhältnis	2516	NOUN
 Robert	2515	NOUN
-Seiten	2514	NOUN
+Seiten	2514	NOUN	Seite
 gebildet	2511	OTHER
 unabhängig	2506	OTHER
-Männer	2504	NOUN
+Männer	2504	NOUN	Mann
 schnell	2501	OTHER
 bar	2500	OTHER
 Georg	2499	NOUN
@@ -833,13 +833,13 @@ York	2457	NOUN
 Wirkung	2456	NOUN
 Preußen	2454	NOUN
 Leipzig	2448	NOUN
-Parteien	2448	NOUN
+Parteien	2448	NOUN	Partei
 erklärt	2447	OTHER
 Carl	2443	NOUN
 dienen	2440	VERB
 beschrieben	2432	OTHER
 dritten	2427	OTHER
-Fällen	2423	NOUN
+Fällen	2423	NOUN	Fall
 mussten	2418	VERB
 gefunden	2416	VERB
 historische	2414	OTHER
@@ -848,7 +848,7 @@ heraus	2411	OTHER
 einzelne	2408	OTHER
 südlich	2408	OTHER
 ganze	2407	OTHER
-Reiches	2405	NOUN
+Reiches	2405	NOUN	Reich
 Max	2404	NOUN
 Papst	2399	NOUN
 gegeben	2397	VERB
@@ -857,13 +857,13 @@ definiert	2394	OTHER
 groß	2389	OTHER
 jüdischen	2384	OTHER
 wenigen	2377	OTHER
-Laufe	2377	NOUN
+Laufe	2377	NOUN	Lauf
 europäische	2376	NOUN,OTHER
 gewann	2373	VERB
 Wirtschaft	2373	NOUN
 erwähnt	2368	OTHER
 Anwendung	2364	NOUN
-Schriften	2363	NOUN
+Schriften	2363	NOUN	Schrift
 geführt	2363	OTHER
 hoch	2360	OTHER
 Rhein	2357	NOUN
@@ -877,7 +877,7 @@ tatsächlich	2341	OTHER
 führten	2340	VERB
 Königreich	2339	NOUN
 gehen	2337	VERB
-Milliarden	2335	NOUN
+Milliarden	2335	NOUN	Milliarde
 Stil	2335	NOUN
 Datei	2335	NOUN
 gehörten	2334	VERB
@@ -887,23 +887,23 @@ bekannten	2317	OTHER
 ehemalige	2316	OTHER
 unterscheidet	2314	OTHER
 existieren	2312	VERB
-Angaben	2311	NOUN
+Angaben	2311	NOUN	Angabe
 Verwaltung	2310	NOUN
-Grenzen	2308	NOUN
+Grenzen	2308	NOUN	Grenze
 heutige	2308	OTHER
 Mensch	2307	NOUN
 Mittelalter	2306	NOUN
 entlang	2305	OTHER
 besondere	2301	OTHER
-Krieges	2298	NOUN
+Krieges	2298	NOUN	Krieg
 Gottes	2298	NOUN
 links	2297	OTHER
 wahrscheinlich	2295	OTHER
 erklärte	2295	OTHER
 stets	2291	OTHER
 Produktion	2290	NOUN
-Einwohnern	2288	NOUN
-Rechte	2282	NOUN,OTHER
+Einwohnern	2288	NOUN	Einwohner
+Rechte	2282	NOUN,OTHER	Recht
 Bundesrepublik	2281	NOUN
 griechischen	2276	OTHER
 Bürger	2275	NOUN
@@ -932,12 +932,12 @@ Luft	2228	NOUN
 Organisation	2226	NOUN
 du	2226	OTHER
 Bürgermeister	2220	NOUN
-Gründen	2216	NOUN,OTHER
+Gründen	2216	NOUN,OTHER	Grund
 gebracht	2215	OTHER
 See	2213	NOUN
 jungen	2212	OTHER
 Position	2207	NOUN
-Präsidenten	2207	NOUN
+Präsidenten	2207	NOUN	Präsident
 Ost	2202	NOUN
 Main	2202	NOUN
 außer	2199	OTHER
@@ -960,16 +960,16 @@ Wesentlichen	2165	NOUN,OTHER
 Prozess	2163	NOUN
 Volk	2163	NOUN
 Großbritannien	2161	NOUN
-Verbindungen	2160	NOUN
-Monate	2160	NOUN
+Verbindungen	2160	NOUN	Verbindung
+Monate	2160	NOUN	Monat
 Definition	2157	NOUN
-Schulen	2154	NOUN
+Schulen	2154	NOUN	Schule
 wodurch	2152	OTHER
 Abs	2149	NOUN
 englisch	2148	NOUN,OTHER
 weder	2145	OTHER
 unterschieden	2135	VERB
-Funktionen	2130	NOUN
+Funktionen	2130	NOUN	Funktion
 Religion	2129	NOUN
 öffentliche	2129	OTHER
 halten	2128	VERB
@@ -984,13 +984,13 @@ bedeutende	2118	OTHER
 benutzt	2113	OTHER
 nutzen	2111	VERB
 gebaut	2110	OTHER
-Gebieten	2110	NOUN
+Gebieten	2110	NOUN	Gebiet
 höchste	2108	OTHER
 mm	2108	OTHER
 nächsten	2106	OTHER
 Technik	2106	NOUN
 gestellt	2100	OTHER
-Roten	2100	NOUN,OTHER
+Roten	2100	NOUN,OTHER	Rote
 bleibt	2099	OTHER
 geboren	2094	VERB
 Führung	2094	NOUN
@@ -1014,10 +1014,10 @@ Hand	2075	NOUN
 starken	2074	OTHER
 Meer	2074	NOUN
 Ausnahme	2072	NOUN
-Europas	2070	NOUN
+Europas	2070	NOUN	Europa
 Software	2070	NOUN
 würden	2069	VERB
-Stunden	2067	NOUN
+Stunden	2067	NOUN	Stunde
 Wiener	2066	NOUN
 Martin	2062	NOUN
 starke	2062	OTHER
@@ -1028,7 +1028,7 @@ Bahnhof	2059	NOUN
 unten	2053	OTHER
 Ordnung	2053	NOUN
 Spanien	2053	NOUN
-Beziehungen	2052	NOUN
+Beziehungen	2052	NOUN	Beziehung
 Burg	2051	NOUN
 gesehen	2050	VERB
 nehmen	2047	VERB
@@ -1041,16 +1041,16 @@ polnischen	2037	OTHER
 Problem	2036	NOUN
 angesehen	2035	VERB
 offiziell	2031	OTHER
-Tiere	2029	NOUN
+Tiere	2029	NOUN	Tier
 zumindest	2028	OTHER
 Verlauf	2027	NOUN
 Wappen	2026	NOUN
-Probleme	2025	NOUN
+Probleme	2025	NOUN	Problem
 Michael	2023	NOUN
 Verhalten	2022	NOUN,OTHER
 bildete	2021	OTHER
 zeigte	2017	OTHER
-Aufgaben	2014	NOUN
+Aufgaben	2014	NOUN	Aufgabe
 übertragen	2014	VERB
 beginnt	2011	OTHER
 Hitler	2011	NOUN
@@ -1058,7 +1058,7 @@ alt	2009	OTHER
 Element	2008	NOUN
 seitdem	2008	OTHER
 unmittelbar	2008	OTHER
-Lebens	2007	NOUN
+Lebens	2007	NOUN	Leben
 from	2006	OTHER
 Verein	2004	NOUN
 Lehre	2003	NOUN,VERB
