@@ -46519,18 +46519,18 @@ Sacrum	29	NOUN,OTHER
 Naturalien	29	NOUN
 Corioliskraft	29	NOUN
 Waldstein	29	NOUN
-Streckenabschnitte	29	NOUN
+Streckenabschnitte	29	NOUN	Streckenabschnitt
 Guano	29	NOUN
 gebiert	29	OTHER
 begabten	29	OTHER
 Meyerbeer	29	NOUN
 vererbte	29	OTHER
 Zeichenunterricht	29	NOUN
-Paganinis	29	NOUN
+Paganinis	29	NOUN	Paganini
 Dämpfer	29	NOUN
 Lemberger	29	NOUN
 aktivsten	29	OTHER
-Fahrers	29	NOUN
+Fahrers	29	NOUN	Fahrer
 missglückten	29	VERB,OTHER
 unterstehenden	29	OTHER
 historisierende	29	OTHER
@@ -46539,9 +46539,9 @@ gerundeten	29	OTHER
 Laye	29	NOUN
 Speisesaal	29	NOUN
 umliegender	29	OTHER
-Fußgängerzonen	29	NOUN
+Fußgängerzonen	29	NOUN	Fußgängerzone
 abzubringen	29	VERB
-Dienstherrn	29	NOUN
+Dienstherrn	29	NOUN	Dienstherr
 Gewässernamen	29	NOUN
 absehen	29	NOUN,OTHER
 statisches	29	OTHER
@@ -46549,7 +46549,7 @@ damaligem	29	OTHER
 überdecken	29	VERB
 Hoffman	29	NOUN
 Medwedew	29	NOUN
-Nordkoreas	29	NOUN
+Nordkoreas	29	NOUN	Nordkorea
 viralen	29	OTHER
 visualisiert	29	OTHER
 Sexte	29	NOUN
@@ -46576,7 +46576,7 @@ Entspannungspolitik	29	NOUN
 Türkenkrieg	29	NOUN
 Halbordnung	29	NOUN
 Videorekorder	29	NOUN
-Thors	29	NOUN
+Thors	29	NOUN	Thor
 Trondheim	29	NOUN
 nix	29	OTHER
 Shinji	29	NOUN
@@ -46586,7 +46586,7 @@ rutschte	29	OTHER
 sanieren	29	VERB
 Unterelbe	29	NOUN
 missionieren	29	VERB
-Saints	29	NOUN
+Saints	29	NOUN	Saint
 endzeitlichen	29	OTHER
 Soldatenfriedhof	29	NOUN
 getäuscht	29	OTHER
@@ -46594,21 +46594,21 @@ Badegäste	29	NOUN
 Analgetika	29	NOUN
 Engelsburg	29	NOUN
 gründlichen	29	OTHER
-Cooks	29	NOUN
-Wavelets	29	NOUN
+Cooks	29	NOUN	Cook
+Wavelets	29	NOUN	Wavelet
 Grenzraum	29	NOUN
 Unterwalden	29	NOUN
 Přemysliden	29	NOUN
-Absatzmärkte	29	NOUN
-Holocausts	29	NOUN
-Geigen	29	NOUN
+Absatzmärkte	29	NOUN	Absatzmarkt
+Holocausts	29	NOUN	Holocaust
+Geigen	29	NOUN	Geige
 Tessiner	29	NOUN
-Aquarellen	29	NOUN
+Aquarellen	29	NOUN	Aquarell
 Tourismusbranche	29	NOUN
 Oldtimer	29	NOUN
 Vaccinium	29	NOUN
-Geißeln	29	NOUN,OTHER
-Schlaganfalls	29	NOUN
+Geißeln	29	NOUN,OTHER	Geißel
+Schlaganfalls	29	NOUN	Schlaganfall
 Wissenschaftlichkeit	29	NOUN
 progressiv	29	OTHER
 Modernismus	29	NOUN
@@ -46616,12 +46616,12 @@ Spieß	29	NOUN
 Headquarters	29	NOUN
 konstitutive	29	OTHER
 längster	29	OTHER
-Kamelen	29	NOUN
-Diskursen	29	NOUN
+Kamelen	29	NOUN	Kamel
+Diskursen	29	NOUN	Diskurs
 Marija	29	NOUN
 Salah	29	NOUN
 Sihl	29	NOUN
-Hoffmanns	29	NOUN
+Hoffmanns	29	NOUN	Hoffmann
 Geständnisse	29	NOUN
 Taxifahrer	29	NOUN
 ranghöchste	29	OTHER
@@ -46656,9 +46656,9 @@ Kykladen	29	NOUN
 Wattenscheid	29	NOUN
 Hamborn	29	NOUN
 Ostgalizien	29	NOUN
-Eichmanns	29	NOUN
+Eichmanns	29	NOUN	Eichmann
 ismus	29	OTHER
-Halles	29	NOUN
+Halles	29	NOUN	Halle
 Lithiumcarbonat	29	NOUN
 ACPI	29	NOUN
 Michaelskirche	29	NOUN
@@ -46678,12 +46678,12 @@ Finanzzentren	29	NOUN
 Buran	29	NOUN
 Magellanschen	29	NOUN
 beaufsichtigt	29	OTHER
-Kreistages	29	NOUN
+Kreistages	29	NOUN	Kreistag
 Sellers	29	NOUN
 Marianen	29	NOUN
 Rednitz	29	NOUN
 Zustandsvariablen	29	NOUN
-Myanmars	29	NOUN
+Myanmars	29	NOUN	Myanmar
 Nostradamus	29	NOUN
 Nussbaum	29	NOUN
 Kithara	29	NOUN
@@ -46699,7 +46699,7 @@ Cassegrain	29	NOUN
 widehat	29	OTHER
 ungeschriebenen	29	OTHER
 Wyborcza	29	NOUN
-Penicilline	29	NOUN
+Penicilline	29	NOUN	Penicillin
 Rua	29	NOUN
 Annihilation	29	NOUN
 Ekklesiologie	29	NOUN
@@ -46708,7 +46708,7 @@ Scrapie	29	NOUN
 Wegenetz	29	NOUN
 klingend	29	OTHER
 Volkszugehörigkeit	29	NOUN
-Neapels	29	NOUN
+Neapels	29	NOUN	Neapel
 Wörth	29	NOUN
 Placement	29	NOUN,OTHER
 Ladinisch	29	NOUN,OTHER
@@ -46727,7 +46727,7 @@ Löwenthal	29	NOUN
 Dolní	29	NOUN
 Potjomkin	29	NOUN
 akkreditierten	29	VERB,OTHER
-Siams	29	NOUN
+Siams	29	NOUN	Siam
 Chirico	29	NOUN
 Prussia	29	NOUN
 Dollart	29	NOUN
@@ -46738,7 +46738,7 @@ Llywelyn	29	NOUN
 Formatvorlage	29	NOUN
 Ostfriesen	29	NOUN
 Bröhan	29	NOUN
-Notrufe	29	NOUN
+Notrufe	29	NOUN	Notruf
 Złoty	29	NOUN
 Pückler	29	NOUN
 gleichstufigen	29	OTHER
@@ -46747,7 +46747,7 @@ Leica	29	NOUN
 Querhaus	29	NOUN
 Nikosia	29	NOUN
 Lissabonner	29	NOUN
-Duchamps	29	NOUN
+Duchamps	29	NOUN	Duchamp
 Samenerguss	29	NOUN
 Karatschai	29	NOUN,OTHER
 Mifepriston	29	NOUN
@@ -46771,7 +46771,7 @@ Kabardino	29	NOUN
 Nisou	29	NOUN
 Bilsenkraut	29	NOUN
 Alanien	29	NOUN
-Herrhausens	29	NOUN
+Herrhausens	29	NOUN	Herrhausen
 Karteninhaber	29	NOUN
 Żywiec	29	NOUN
 Buxtehuder	29	NOUN
@@ -46785,7 +46785,7 @@ Pathé	28	NOUN
 Lusitania	28	NOUN
 MPPC	28	NOUN
 Gagen	28	NOUN
-Währungs	28	NOUN
+Währungs	28	NOUN	Währung
 Trailer	28	NOUN
 untypisch	28	OTHER
 müde	28	OTHER
@@ -46798,10 +46798,10 @@ Marionette	28	NOUN
 Herald	28	NOUN
 Auteur	28	NOUN,OTHER
 polemischen	28	OTHER
-Hauptverantwortlichen	28	NOUN,OTHER
-Disneys	28	NOUN
+Hauptverantwortlichen	28	NOUN,OTHER	Hauptverantwortliche
+Disneys	28	NOUN	Disney
 Übertreibung	28	NOUN
-Auslassungen	28	NOUN
+Auslassungen	28	NOUN	Auslassung
 umsonst	28	OTHER
 Fangemeinde	28	NOUN
 Spies	28	NOUN
@@ -46812,8 +46812,8 @@ Stoffgruppe	28	NOUN
 ausprobiert	28	OTHER
 Wärmetauscher	28	NOUN
 reaktiv	28	OTHER
-Profilen	28	NOUN
-Freileitungen	28	NOUN
+Profilen	28	NOUN	Profil
+Freileitungen	28	NOUN	Freileitung
 Geschirr	28	NOUN
 schadet	28	OTHER
 regenerativen	28	OTHER
@@ -46828,15 +46828,15 @@ Pflanzenschutz	28	NOUN
 Königswasser	28	NOUN
 unerkannt	28	OTHER
 Booth	28	NOUN
-Untersuchungsmethoden	28	NOUN
-Transurane	28	NOUN
+Untersuchungsmethoden	28	NOUN	Untersuchungsmethode
+Transurane	28	NOUN	Transuran
 anderweitige	28	OTHER
 Barn	28	NOUN,OTHER
 Tiermedizin	28	NOUN
-Hebammen	28	NOUN
+Hebammen	28	NOUN	Hebamme
 belastenden	28	OTHER
 Bewusstlosigkeit	28	NOUN
-Eingriffs	28	NOUN
+Eingriffs	28	NOUN	Eingriff
 Zeitaufwand	28	NOUN
 Jahresbericht	28	NOUN
 Anrecht	28	NOUN
@@ -46858,10 +46858,10 @@ Taille	28	NOUN
 blühten	28	VERB
 verlässlichen	28	OTHER
 Töpferei	28	NOUN
-Gesetzestexte	28	NOUN
+Gesetzestexte	28	NOUN	Gesetzestext
 Verschiedenes	28	NOUN,OTHER
 Surrey	28	NOUN
-Basiseinheiten	28	NOUN
+Basiseinheiten	28	NOUN	Basiseinheit
 aristokratische	28	OTHER
 Schutzfunktion	28	NOUN
 Langzeit	28	NOUN
@@ -46869,15 +46869,15 @@ Berufsbild	28	NOUN
 Ethel	28	NOUN
 Lackierung	28	NOUN
 zuordnete	28	OTHER
-Silbenschriften	28	NOUN
+Silbenschriften	28	NOUN	Silbenschrift
 Alphabetisierung	28	NOUN
-Tontafeln	28	NOUN
+Tontafeln	28	NOUN	Tontafel
 kodieren	28	VERB
 Rüstungsproduktion	28	NOUN
 Coventry	28	NOUN
 Galaxienhaufen	28	NOUN
 beobachtende	28	OTHER
-Messmethoden	28	NOUN
+Messmethoden	28	NOUN	Messmethode
 geodätische	28	OTHER
 Schauspielunterricht	28	NOUN
 Doug	28	NOUN
@@ -46886,10 +46886,10 @@ Parco	28	NOUN
 ausgelaufen	28	VERB
 Treptower	28	NOUN
 Mindestgröße	28	NOUN
-Bällen	28	NOUN
+Bällen	28	NOUN	Ball
 ungeordneten	28	OTHER
 nichtchristlichen	28	OTHER
-Feststellungen	28	NOUN
+Feststellungen	28	NOUN	Feststellung
 erhaben	28	OTHER
 qualitativer	28	OTHER
 Wanken	28	NOUN,OTHER
@@ -46897,7 +46897,7 @@ Charleston	28	NOUN
 Breckinridge	28	NOUN
 Hauptlast	28	NOUN
 Passus	28	NOUN
-Geldzahlungen	28	NOUN
+Geldzahlungen	28	NOUN	Geldzahlung
 Verfassungsrang	28	NOUN
 prachtvollen	28	OTHER
 Polarkreis	28	NOUN
@@ -46907,7 +46907,7 @@ großräumig	28	OTHER
 Kreditinstitut	28	NOUN
 eingeschult	28	OTHER
 Sonderparteitag	28	NOUN
-Stellvertretern	28	NOUN
+Stellvertretern	28	NOUN	Stellvertreter
 turnusmäßig	28	OTHER
 aufzubewahren	28	VERB
 Eurokrise	28	NOUN
@@ -46915,9 +46915,9 @@ abgehört	28	OTHER
 gesunkenen	28	OTHER
 Willigen	28	NOUN
 Eve	28	NOUN
-Duos	28	NOUN
+Duos	28	NOUN	Duo
 langfristiger	28	OTHER
-Opernhäuser	28	NOUN
+Opernhäuser	28	NOUN	Opernhaus
 dergestalt	28	OTHER
 Ehrlichkeit	28	NOUN
 etablierter	28	OTHER
@@ -46933,9 +46933,9 @@ Berufstätigkeit	28	NOUN
 eheliche	28	OTHER
 aufwachsen	28	NOUN,OTHER
 Entbindung	28	NOUN
-Großreiche	28	NOUN
+Großreiche	28	NOUN	Großreich
 vorrangiges	28	OTHER
-Emirats	28	NOUN
+Emirats	28	NOUN	Emirat
 Atonalität	28	NOUN
 eingeschnittene	28	OTHER
 irdischer	28	OTHER
@@ -46944,7 +46944,7 @@ Karakorum	28	NOUN
 desertierten	28	VERB
 Veruntreuung	28	NOUN
 Erachtens	28	NOUN
-Entwicklungsphasen	28	NOUN
+Entwicklungsphasen	28	NOUN	Entwicklungsphase
 Contact	28	NOUN
 speiste	28	OTHER
 polytheistischen	28	OTHER
@@ -46954,9 +46954,9 @@ Arbeitskampf	28	NOUN
 Aushandlung	28	NOUN
 Vishnu	28	NOUN
 Vajrayana	28	NOUN
-Autonomiegebieten	28	NOUN
+Autonomiegebieten	28	NOUN	Autonomiegebiete
 Finanzsektor	28	NOUN
-Arbeitsverhältnisses	28	NOUN
+Arbeitsverhältnisses	28	NOUN	Arbeitsverhältnisse
 Bundesarbeitsgericht	28	NOUN
 Typisierung	28	NOUN
 entgegenstehen	28	VERB
@@ -46964,7 +46964,7 @@ lauteten	28	VERB
 XXI	28	NOUN
 Octavia	28	NOUN
 akzeptable	28	OTHER
-Konsuls	28	NOUN
+Konsuls	28	NOUN	Konsul
 abfinden	28	VERB
 augusteischen	28	OTHER
 Privatmann	28	NOUN
@@ -46977,7 +46977,7 @@ Kammergericht	28	NOUN
 außerehelichen	28	OTHER
 blinder	28	OTHER
 Mittagessen	28	NOUN
-Philosophierens	28	NOUN
+Philosophierens	28	NOUN	Philosophieren
 angespannte	28	OTHER
 Dacia	28	NOUN
 korrupten	28	OTHER
@@ -46987,7 +46987,7 @@ drahtlosen	28	OTHER
 Cocoa	28	NOUN
 Othmar	28	NOUN
 Products	28	NOUN
-Bildschirms	28	NOUN
+Bildschirms	28	NOUN	Bildschirm
 besteuert	28	OTHER
 Hey	28	NOUN
 pluralistische	28	OTHER
@@ -47020,7 +47020,7 @@ Meg	28	NOUN,OTHER
 swap	28	NOUN,OTHER
 fallender	28	OTHER
 westgotische	28	OTHER
-Revolten	28	NOUN
+Revolten	28	NOUN	Revolte
 Steuererhebung	28	NOUN
 Eisengießerei	28	NOUN
 KK	28	NOUN,OTHER
@@ -47028,7 +47028,7 @@ Instrumentation	28	NOUN
 überboten	28	VERB
 Wassersäule	28	NOUN
 billigeren	28	OTHER
-Teilstücke	28	NOUN
+Teilstücke	28	NOUN	Teilstück
 längliche	28	OTHER
 vollbringen	28	VERB
 vierteljährlich	28	OTHER
@@ -47041,7 +47041,7 @@ Felicitas	28	NOUN,OTHER
 zarten	28	OTHER
 Amme	28	NOUN
 Hospiz	28	NOUN
-Melanchthons	28	NOUN
+Melanchthons	28	NOUN	Melanchthon
 Verdampfungsenthalpie	28	NOUN
 Aromaten	28	NOUN
 LPG	28	NOUN
@@ -47060,7 +47060,7 @@ origine	28	OTHER
 faulen	28	OTHER
 Gastfreundschaft	28	NOUN
 rühmte	28	OTHER
-Schauspiele	28	NOUN
+Schauspiele	28	NOUN	Schauspiel
 Flüsschen	28	NOUN
 derzeitiger	28	OTHER
 Sterblichkeitsrate	28	NOUN
@@ -47072,7 +47072,7 @@ Scannen	28	NOUN,OTHER
 Kunstfertigkeit	28	NOUN
 rectus	28	NOUN,OTHER
 seriöse	28	OTHER
-Meers	28	NOUN
+Meers	28	NOUN	Meer
 achtgrößte	28	OTHER
 ansiedelte	28	OTHER
 manövrieren	28	NOUN,OTHER
@@ -47084,7 +47084,7 @@ América	28	NOUN
 kristalliner	28	OTHER
 übereinstimmten	28	VERB
 Rohkost	28	NOUN
-Zuckern	28	NOUN
+Zuckern	28	NOUN	Zucker
 präventive	28	OTHER
 satirischer	28	OTHER
 neuronaler	28	OTHER
@@ -47095,37 +47095,37 @@ beschreibende	28	OTHER
 fabrica	28	NOUN,OTHER
 Vesal	28	NOUN
 Ficino	28	NOUN
-Schalls	28	NOUN
+Schalls	28	NOUN	Schall
 erzeugtes	28	OTHER
-Resonanzen	28	NOUN
-Plosive	28	NOUN
+Resonanzen	28	NOUN	Resonanz
+Plosive	28	NOUN	Plosiv
 lexikalisch	28	OTHER
 resorbiert	28	OTHER
-Zuwanderern	28	NOUN
+Zuwanderern	28	NOUN	Zuwanderer
 Augenarzt	28	NOUN
 oraler	28	OTHER
 Arterie	28	NOUN
 Aqsa	28	NOUN
-Kurzformen	28	NOUN
+Kurzformen	28	NOUN	Kurzform
 taxonomischen	28	OTHER
 Gattungsname	28	NOUN
 Property	28	NOUN
 fakultativ	28	OTHER
 Wintergarten	28	NOUN
 Chwarizmi	28	NOUN
-Repräsentationen	28	NOUN
+Repräsentationen	28	NOUN	Repräsentation
 Verballhornung	28	NOUN
 Entscheidungsproblem	28	NOUN
 Lern	28	NOUN,VERB
 Kitāb	28	NOUN,OTHER
 Ultimate	28	NOUN
 Toolkit	28	NOUN
-Versorgungs	28	NOUN
+Versorgungs	28	NOUN	Versorgung
 Novartis	28	NOUN
 Hooke	28	NOUN
 Naturkundemuseum	28	NOUN
 Vorkommens	28	NOUN
-Verkehrsflächen	28	NOUN
+Verkehrsflächen	28	NOUN	Verkehrsfläche
 begüterten	28	OTHER
 Valéry	28	NOUN
 opfert	28	OTHER
@@ -47135,7 +47135,7 @@ entfachte	28	OTHER
 Schaum	28	NOUN
 kleinstes	28	OTHER
 arbeitender	28	OTHER
-Compilern	28	NOUN
+Compilern	28	NOUN	Compiler
 CISC	28	NOUN
 leistungsfähig	28	OTHER
 differentiellen	28	OTHER
@@ -47144,63 +47144,63 @@ Weisse	28	NOUN,OTHER
 Kriminalisierung	28	NOUN
 traurig	28	OTHER
 bestrafte	28	OTHER
-Handbüchern	28	NOUN
+Handbüchern	28	NOUN	Handbuch
 polizeilich	28	OTHER
 Meteoroiden	28	NOUN
 Halbachse	28	NOUN
-Gefährdungen	28	NOUN
+Gefährdungen	28	NOUN	Gefährdung
 Rotwein	28	NOUN
 zugeführten	28	OTHER
-Hauptursachen	28	NOUN
+Hauptursachen	28	NOUN	Hauptursache
 ambulant	28	OTHER
 Klemmen	28	NOUN,OTHER
 Nebenlager	28	NOUN
 Fallschirm	28	NOUN
 Rabe	28	NOUN
 versinnbildlicht	28	OTHER
-Afrikanern	28	NOUN
+Afrikanern	28	NOUN	Afrikaner
 Zaire	28	NOUN
-Hausdurchsuchungen	28	NOUN
+Hausdurchsuchungen	28	NOUN	Hausdurchsuchung
 Stahlwerk	28	NOUN
 angrenzender	28	OTHER
 Flores	28	NOUN
 ehelichte	28	OTHER
 Geschäftsführerin	28	NOUN
 Namensgeberin	28	NOUN
-Retrospektiven	28	NOUN,OTHER
+Retrospektiven	28	NOUN,OTHER	Retrospektive
 Asperger	28	NOUN
 Außenstehende	28	NOUN,OTHER
-Aggressionen	28	NOUN
+Aggressionen	28	NOUN	Aggression
 selbiges	28	OTHER
 Übersichtsarbeit	28	NOUN
-Bezugspersonen	28	NOUN
+Bezugspersonen	28	NOUN	Bezugsperson
 Vertrautheit	28	NOUN
 traumatische	28	OTHER
 Sklerose	28	NOUN
-Hilberts	28	NOUN
-Fahrzeiten	28	NOUN
+Hilberts	28	NOUN	Hilbert
+Fahrzeiten	28	NOUN	Fahrzeit
 stattgegeben	28	VERB
-Organisationsstrukturen	28	NOUN
+Organisationsstrukturen	28	NOUN	Organisationsstruktur
 Weston	28	NOUN
 einzureichen	28	VERB
 neuartiger	28	OTHER
 Ehrenpräsident	28	NOUN
-Stützpunkten	28	NOUN
+Stützpunkten	28	NOUN	Stützpunkt
 Eclipse	28	NOUN
-Absinthe	28	NOUN,OTHER
-Tischen	28	NOUN
+Absinthe	28	NOUN,OTHER	Absinth
+Tischen	28	NOUN	Tisch
 codierten	28	VERB,OTHER
-Arbeitsschritte	28	NOUN
+Arbeitsschritte	28	NOUN	Arbeitsschritt
 Keuper	28	NOUN
-Vogelschutzgebiete	28	NOUN
-Rodungen	28	NOUN
+Vogelschutzgebiete	28	NOUN	Vogelschutzgebiet
+Rodungen	28	NOUN	Rodung
 Erbfolgekrieges	28	NOUN
 Volksstaat	28	NOUN
 Richtlinienkompetenz	28	NOUN
 Puma	28	NOUN
 Tourismusverband	28	NOUN
 alljährliche	28	OTHER
-Volksfeste	28	NOUN
+Volksfeste	28	NOUN	Volksfest
 Hohenems	28	NOUN
 Industriegeschichte	28	NOUN
 übertreten	28	VERB
@@ -47213,27 +47213,27 @@ Truchsess	28	NOUN
 feudale	28	OTHER
 Schönborn	28	NOUN
 Bürckel	28	NOUN
-Schwarzwalds	28	NOUN
+Schwarzwalds	28	NOUN	Schwarzwald
 nichtkommerzielle	28	OTHER
-Bauernhöfe	28	NOUN
+Bauernhöfe	28	NOUN	Bauernhof
 Staatsgalerie	28	NOUN
-Schwäbischer	28	NOUN,OTHER
+Schwäbischer	28	NOUN,OTHER	Schwäbisch
 TTC	28	NOUN
 Sharing	28	NOUN
 Ruin	28	NOUN
 Belzec	28	NOUN
 Burt	28	NOUN
 Expertenkommission	28	NOUN
-Nachrichtendienstes	28	NOUN
+Nachrichtendienstes	28	NOUN	Nachrichtendienst
 Bezirksverwaltung	28	NOUN
 Glasindustrie	28	NOUN
 Wolframcarbid	28	NOUN
 Wasserstoffbombe	28	NOUN
-Anwendungsbereichen	28	NOUN
+Anwendungsbereichen	28	NOUN	Anwendungsbereich
 strengeren	28	OTHER
 problematischer	28	OTHER
 vorhandenem	28	OTHER
-Getreides	28	NOUN
+Getreides	28	NOUN	Getreide
 transformierte	28	NOUN,OTHER
 Hangelar	28	NOUN
 Kasernengelände	28	NOUN
@@ -47246,9 +47246,9 @@ Körpermasse	28	NOUN
 Coup	28	NOUN
 Bali	28	NOUN
 verordneten	28	VERB
-Gehölze	28	NOUN
+Gehölze	28	NOUN	Gehölz
 Oetker	28	NOUN
-Sandsteinen	28	NOUN
+Sandsteinen	28	NOUN	Sandstein
 Steigungsregen	28	NOUN
 Blutvergießen	28	NOUN
 gedeckte	28	OTHER
@@ -47257,16 +47257,16 @@ Snooker	28	NOUN
 Aach	28	NOUN
 Nebenwirkung	28	NOUN
 Begünstigung	28	NOUN
-Horizonts	28	NOUN
+Horizonts	28	NOUN	Horizont
 eingeschleppten	28	OTHER
 Quagga	28	NOUN
 ausbezahlt	28	OTHER
 Obstbau	28	NOUN
 Raddampfer	28	NOUN
 ereignen	28	VERB
-Verteidigungs	28	NOUN
+Verteidigungs	28	NOUN	Verteidigung
 Landesverbandes	28	NOUN
-Bürgerrechten	28	NOUN
+Bürgerrechten	28	NOUN	Bürgerrecht
 Blattrand	28	NOUN
 Staubbeutel	28	NOUN
 Volksmedizin	28	NOUN
@@ -47283,8 +47283,8 @@ gepanzerte	28	OTHER
 Witterungsbedingungen	28	NOUN
 Cristóbal	28	NOUN
 Hisbollah	28	NOUN
-Versicherungs	28	NOUN
-Bremischen	28	NOUN,OTHER
+Versicherungs	28	NOUN	Versicherung
+Bremischen	28	NOUN,OTHER	Bremische
 verfüllt	28	OTHER
 Fahrgeschäfte	28	NOUN
 obliegen	28	VERB
@@ -47295,7 +47295,7 @@ Gebäck	28	NOUN
 unterbrochene	28	OTHER
 Tip	28	NOUN,OTHER
 vorgefertigten	28	OTHER
-Fouls	28	NOUN
+Fouls	28	NOUN	Foul
 Ursprungsland	28	NOUN
 Trefferquote	28	NOUN
 Regular	28	NOUN,OTHER
@@ -47303,7 +47303,7 @@ Sega	28	NOUN
 Hoppe	28	NOUN
 Phosphorylierung	28	NOUN
 Aceton	28	NOUN
-Erdöls	28	NOUN
+Erdöls	28	NOUN	Erdöl
 Weste	28	NOUN
 Hitachi	28	NOUN
 Cebit	28	NOUN
@@ -47311,12 +47311,12 @@ frühem	28	OTHER
 Immanenz	28	NOUN
 Seligkeit	28	NOUN
 Geschichtsbücher	28	NOUN
-Verzeichnissen	28	NOUN
+Verzeichnissen	28	NOUN	Verzeichnisse
 lautlich	28	OTHER
 anfing	28	OTHER
 Eckpfeiler	28	NOUN
-Minuskeln	28	NOUN
-Flusstäler	28	NOUN
+Minuskeln	28	NOUN	Minuskel
+Flusstäler	28	NOUN	Flusstal
 Chapelle	28	NOUN
 Mouvement	28	NOUN
 Bauernschaft	28	NOUN
@@ -47325,16 +47325,16 @@ Löschfahrzeuge	28	NOUN
 Drehleitern	28	NOUN
 Hochschulbildung	28	NOUN
 Bronzemedaille	28	NOUN
-Mäzene	28	NOUN
+Mäzene	28	NOUN	Mäzen
 Bruegel	28	NOUN
 Vogelwelt	28	NOUN
-Serbokroatischen	28	NOUN,OTHER
+Serbokroatischen	28	NOUN,OTHER	Serbokroatisch
 Broz	28	NOUN
 boykottierten	28	VERB,OTHER
 Bruttonationaleinkommen	28	NOUN
-Adelsgeschlechts	28	NOUN
+Adelsgeschlechts	28	NOUN	Adelsgeschlecht
 geretteten	28	NOUN,OTHER
-Wracks	28	NOUN
+Wracks	28	NOUN	Wrack
 Oberrheingraben	28	NOUN
 Einwohnergemeinde	28	NOUN
 menschengemachten	28	OTHER
@@ -47358,18 +47358,18 @@ Chalcedon	28	NOUN
 Mitsprache	28	NOUN
 Cfb	28	NOUN
 Bärbel	28	NOUN
-Umbaus	28	NOUN
+Umbaus	28	NOUN	Umbau
 Heimatverein	28	NOUN
 Rondo	28	NOUN
-Freibäder	28	NOUN
+Freibäder	28	NOUN	Freibad
 Stammstrecke	28	NOUN
-Abfahrten	28	NOUN
+Abfahrten	28	NOUN	Abfahrt
 Einwohnerentwicklung	28	NOUN
 Fernuniversität	28	NOUN
 Zeitvertreib	28	NOUN
 Steinlaus	28	NOUN
 verschleppte	28	OTHER
-Wohnräume	28	NOUN
+Wohnräume	28	NOUN	Wohnraum
 Wohnstadt	28	NOUN
 jamaikanischen	28	OTHER
 medialer	28	OTHER
@@ -47378,12 +47378,12 @@ Abfallentsorgung	28	NOUN
 Petty	28	NOUN
 vaginale	28	OTHER
 Weltregionen	28	NOUN
-Neurowissenschaften	28	NOUN
+Neurowissenschaften	28	NOUN	Neurowissenschaft
 Kognition	28	NOUN
 längeres	28	OTHER
-Nadelbäume	28	NOUN
+Nadelbäume	28	NOUN	Nadelbaum
 Weißwein	28	NOUN
-Frösche	28	NOUN
+Frösche	28	NOUN	Frosch
 versinken	28	VERB
 näherer	28	OTHER
 dreien	28	OTHER
@@ -47393,16 +47393,16 @@ ausdehnt	28	OTHER
 Pogromnacht	28	NOUN
 Sonnenberg	28	NOUN
 György	28	NOUN
-Hochwassers	28	NOUN
-Warenhäuser	28	NOUN
-Druckes	28	NOUN
-Pigmenten	28	NOUN
+Hochwassers	28	NOUN	Hochwasser
+Warenhäuser	28	NOUN	Warenhaus
+Druckes	28	NOUN	Druck
+Pigmenten	28	NOUN	Pigment
 simultane	28	OTHER
 Gurken	28	NOUN
 Pair	28	NOUN,OTHER
-Elektromagneten	28	NOUN
-Protests	28	NOUN
-Pascals	28	NOUN
+Elektromagneten	28	NOUN	Elektromagnete
+Protests	28	NOUN	Protest
+Pascals	28	NOUN	Pascal
 polemische	28	OTHER
 Totenmaske	28	NOUN
 Masterstudiengang	28	NOUN
@@ -47423,7 +47423,7 @@ Kunstkritik	28	NOUN
 mobiles	28	OTHER
 Hochrenaissance	28	NOUN
 anrufen	28	VERB
-Präfixen	28	NOUN
+Präfixen	28	NOUN	Präfix
 Dickenwachstum	28	NOUN
 steril	28	OTHER
 erklärtes	28	OTHER
@@ -47459,14 +47459,14 @@ Spontanspaltung	28	NOUN
 explosive	28	OTHER
 Tube	28	NOUN,OTHER
 Computerlinguistik	28	NOUN
-Klerikern	28	NOUN
+Klerikern	28	NOUN	Kleriker
 Olivia	28	NOUN
 Erwartungshaltung	28	NOUN
 Baird	28	NOUN
 Spielfigur	28	NOUN
 Dungeon	28	NOUN
-Wissenschaftlers	28	NOUN
-Rechtssubjekte	28	NOUN
+Wissenschaftlers	28	NOUN	Wissenschaftler
+Rechtssubjekte	28	NOUN	Rechtssubjekt
 Lebenswirklichkeit	28	NOUN
 Kombattanten	28	NOUN
 orientalischer	28	OTHER
@@ -47474,22 +47474,22 @@ ausgeübte	28	OTHER
 arrogant	28	OTHER
 Primogenitur	28	NOUN
 beleidigen	28	VERB
-Landwirten	28	NOUN
+Landwirten	28	NOUN	Landwirt
 Mühlbach	28	NOUN
 Autobahnanschluss	28	NOUN
 Ingenieurschule	28	NOUN
-Layouts	28	NOUN
+Layouts	28	NOUN	Layout
 Chefredakteurin	28	NOUN
 Jupitermond	28	NOUN
 Braunschweigische	28	NOUN,OTHER
 Widerstreit	28	NOUN
-Beschriftungen	28	NOUN
+Beschriftungen	28	NOUN	Beschriftung
 Arco	28	NOUN
 auslaufende	28	OTHER
 phonologischen	28	OTHER
-Dialektes	28	NOUN
+Dialektes	28	NOUN	Dialekt
 Dong	28	NOUN,OTHER
-Burgunds	28	NOUN
+Burgunds	28	NOUN	Burgund
 originäre	28	OTHER
 zentralisierte	28	OTHER
 überbrachte	28	OTHER
@@ -47504,7 +47504,7 @@ günstiges	28	OTHER
 Sonder	28	NOUN
 abhing	28	OTHER
 Bianca	28	NOUN
-Gedankenguts	28	NOUN
+Gedankenguts	28	NOUN	Gedankengut
 rigorose	28	OTHER
 fiktives	28	OTHER
 reichhaltig	28	OTHER
@@ -47512,19 +47512,19 @@ Livre	28	NOUN,OTHER
 Bahngeschwindigkeit	28	NOUN
 Staatspolizei	28	NOUN
 Template	28	NOUN,OTHER
-Namensräumen	28	NOUN
+Namensräumen	28	NOUN	Namensraum
 Margarine	28	NOUN
 Grundfrequenz	28	NOUN
-Schreibmaschinen	28	NOUN
-Speicherkarten	28	NOUN
+Schreibmaschinen	28	NOUN	Schreibmaschine
+Speicherkarten	28	NOUN	Speicherkarte
 FPGA	28	NOUN
-Entwicklungsumgebungen	28	NOUN
+Entwicklungsumgebungen	28	NOUN	Entwicklungsumgebung
 wohnhaft	28	OTHER
-Standardmodells	28	NOUN
-Grundkräfte	28	NOUN
-Kantischen	28	NOUN,OTHER
+Standardmodells	28	NOUN	Standardmodell
+Grundkräfte	28	NOUN	Grundkraft
+Kantischen	28	NOUN,OTHER	Kantische
 Regression	28	NOUN
-Tokens	28	NOUN
+Tokens	28	NOUN	Token
 Kat	28	NOUN,OTHER
 Kirby	28	NOUN
 Kästchen	28	NOUN
@@ -47532,17 +47532,17 @@ RW	28	NOUN
 schärfere	28	OTHER
 Goldman	28	NOUN
 moderater	28	OTHER
-Hintergründen	28	NOUN
-Misserfolge	28	NOUN
+Hintergründen	28	NOUN	Hintergrund
+Misserfolge	28	NOUN	Misserfolg
 Kirch	28	NOUN
 Tykwer	28	NOUN
-Collagen	28	NOUN
-Salzes	28	NOUN
+Collagen	28	NOUN	Collage
+Salzes	28	NOUN	Salz
 Flavia	28	NOUN
 gespannte	28	OTHER
 schärfste	28	NOUN,OTHER
 Wegstrecke	28	NOUN
-Überlagerungen	28	NOUN
+Überlagerungen	28	NOUN	Überlagerung
 physiologischer	28	OTHER
 personenbezogenen	28	OTHER
 westfälisch	28	OTHER
@@ -47551,9 +47551,9 @@ Aplerbecker	28	NOUN
 geführtes	28	OTHER
 Propsteikirche	28	NOUN
 Marek	28	NOUN
-Architekturbüros	28	NOUN
+Architekturbüros	28	NOUN	Architekturbüro
 gläserne	28	OTHER
-Ausstellungsräume	28	NOUN
+Ausstellungsräume	28	NOUN	Ausstellungsraum
 Taufstein	28	NOUN
 hergerichtet	28	OTHER
 Strobel	28	NOUN
@@ -47580,23 +47580,23 @@ entspringenden	28	OTHER
 Estate	28	NOUN
 Baracke	28	NOUN
 Jakobikirche	28	NOUN
-Straßenbrücken	28	NOUN
-Flugzeugwerke	28	NOUN
-Fluglinien	28	NOUN
+Straßenbrücken	28	NOUN	Straßenbrücke
+Flugzeugwerke	28	NOUN	Flugzeugwerk
+Fluglinien	28	NOUN	Fluglinie
 pathologisch	28	OTHER
 Untersuchungsverfahren	28	NOUN
-Wizards	28	NOUN
+Wizards	28	NOUN	Wizard
 LARP	28	NOUN
 Kunsthistorikerin	28	NOUN
 Wirtschaftsgebäude	28	NOUN
 Atmosphärendruck	28	NOUN
-Zylinders	28	NOUN
+Zylinders	28	NOUN	Zylinder
 aufgebrachte	28	OTHER
 Superlativ	28	NOUN
 Phaseolus	28	NOUN
 Mohács	28	NOUN
 Dobrudscha	28	NOUN
-Erklärungsversuche	28	NOUN
+Erklärungsversuche	28	NOUN	Erklärungsversuch
 Christengemeinde	28	NOUN
 Holbein	28	NOUN
 Auszubildende	28	NOUN
@@ -47607,7 +47607,7 @@ Subtrahend	28	NOUN
 Waagen	28	NOUN
 Sexual	28	NOUN,OTHER
 Stoßzähne	28	NOUN
-Beträgen	28	NOUN
+Beträgen	28	NOUN	Betrag
 Großkreis	28	NOUN
 sicherheitspolitische	28	OTHER
 Gesamtergebnis	28	NOUN
@@ -47615,7 +47615,7 @@ Hetze	28	NOUN
 Rheingold	28	NOUN
 Nachrichtensender	28	NOUN
 eindimensionale	28	OTHER
-Pfaden	28	NOUN
+Pfaden	28	NOUN	Pfad
 Lochkarte	28	NOUN
 virtuelles	28	OTHER
 Mobutu	28	NOUN
@@ -47629,16 +47629,16 @@ schmerzhafte	28	OTHER
 rechtsgerichteten	28	OTHER
 unitären	28	OTHER
 Patria	28	NOUN,OTHER
-Kompilationen	28	NOUN
+Kompilationen	28	NOUN	Kompilation
 Irrationalität	28	NOUN
-Litauern	28	NOUN
+Litauern	28	NOUN	Litauer
 Bühnenbildner	28	NOUN
 Vogelsang	28	NOUN
 Papierfabrik	28	NOUN
-Wechsels	28	NOUN
-Helme	28	NOUN
-Inkas	28	NOUN
-Leiterplatten	28	NOUN
+Wechsels	28	NOUN	Wechsel
+Helme	28	NOUN	Helm
+Inkas	28	NOUN	Inka
+Leiterplatten	28	NOUN	Leiterplatte
 Flugrichtung	28	NOUN
 Erg	28	NOUN,OTHER
 Kollektor	28	NOUN
@@ -47656,27 +47656,27 @@ Verschlüsselungsverfahren	28	NOUN
 eingebrachten	28	OTHER
 entkoppelt	28	OTHER
 Tigray	28	NOUN
-Somalias	28	NOUN
+Somalias	28	NOUN	Somalia
 Dadaisten	28	NOUN
 denunziert	28	OTHER
 Karsten	28	NOUN
 zugeben	28	VERB
-Erdinneren	28	NOUN
+Erdinneren	28	NOUN	Erdinnere
 zerbricht	28	OTHER
 stagniert	28	OTHER
-Kalendern	28	NOUN
+Kalendern	28	NOUN	Kalender
 Relativität	28	NOUN
-Reservaten	28	NOUN
+Reservaten	28	NOUN	Reservat
 Tucker	28	NOUN
 Cœur	28	NOUN
 aurea	28	NOUN,OTHER
 Süßgräser	28	NOUN
 Item	28	NOUN,OTHER
 Farin	28	NOUN
-Anträgen	28	NOUN
+Anträgen	28	NOUN	Antrag
 Steinhaus	28	NOUN
 Chorherrenstift	28	NOUN
-Courts	28	NOUN,OTHER
+Courts	28	NOUN,OTHER	Court
 Heike	28	NOUN
 Sauna	28	NOUN
 Burgstraße	28	NOUN
@@ -47692,7 +47692,7 @@ ungeteilt	28	OTHER
 mitbrachten	28	VERB
 Zytoplasma	28	NOUN
 Schmetterlingsarten	28	NOUN
-Hospitäler	28	NOUN
+Hospitäler	28	NOUN	Hospital
 Droga	28	NOUN,OTHER
 Einjährig	28	NOUN,OTHER
 fragwürdige	28	OTHER
@@ -47723,10 +47723,10 @@ Kreisverband	28	NOUN
 irgend	28	OTHER
 eingeschoben	28	VERB
 Fasching	28	NOUN
-Schreibers	28	NOUN
+Schreibers	28	NOUN	Schreiber
 Polynomfunktion	28	NOUN
 disjunkt	28	OTHER
-Rangers	28	NOUN
+Rangers	28	NOUN	Ranger
 Personengruppe	28	NOUN
 Fichtel	28	NOUN
 Tischler	28	NOUN
@@ -47766,7 +47766,7 @@ mindert	28	OTHER
 Subventionierung	28	NOUN
 Radiation	28	NOUN
 Funker	28	NOUN
-Preisträgern	28	NOUN
+Preisträgern	28	NOUN	Preisträger
 separater	28	OTHER
 zurückgehend	28	OTHER
 Rundreise	28	NOUN
@@ -47777,22 +47777,22 @@ Landdrostei	28	NOUN
 Bürgerwehr	28	NOUN
 Altstadtfest	28	NOUN
 Renommee	28	NOUN
-Parteitage	28	NOUN
-Schaltjahre	28	NOUN
-Planetenbahnen	28	NOUN
+Parteitage	28	NOUN	Parteitag
+Schaltjahre	28	NOUN	Schaltjahr
+Planetenbahnen	28	NOUN	Planetenbahn
 Alighieri	28	NOUN
 kolonialer	28	OTHER
 Piz	28	NOUN
 rätoromanischen	28	OTHER
 Inlandeis	28	NOUN
-Quantenfeldtheorien	28	NOUN
+Quantenfeldtheorien	28	NOUN	Quantenfeldtheorie
 Inca	28	NOUN
 Personenname	28	NOUN
 Rockwell	28	NOUN
 versöhnt	28	OTHER
 Cro	28	NOUN
 Auseinanderbrechen	28	NOUN
-Rades	28	NOUN
+Rades	28	NOUN	Rad
 australischer	28	OTHER
 Hallesche	28	NOUN
 Kurras	28	NOUN
@@ -47800,18 +47800,18 @@ Verfassungsmäßigkeit	28	NOUN
 Frankenhausen	28	NOUN
 Niedersächsisch	28	NOUN,OTHER
 Bethmann	28	NOUN
-Schwangerschaftsabbrüchen	28	NOUN
+Schwangerschaftsabbrüchen	28	NOUN	Schwangerschaftsabbruch
 Samaria	28	NOUN
 Begehung	28	NOUN
 kretische	28	OTHER
 Schildfuß	28	NOUN
-Personengesellschaften	28	NOUN
+Personengesellschaften	28	NOUN	Personengesellschaft
 Rendering	28	NOUN
 informierten	28	VERB
-Schildes	28	NOUN
+Schildes	28	NOUN	Schild
 Weltgeschehen	28	NOUN
 Lincolnshire	28	NOUN
-Oberpräsidenten	28	NOUN
+Oberpräsidenten	28	NOUN	Oberpräsident
 Hanseaten	28	NOUN
 Volksbühne	28	NOUN
 Birne	28	NOUN
@@ -47827,7 +47827,7 @@ Wohnhauses	28	NOUN
 Grimma	28	NOUN
 verbrieft	28	OTHER
 Dauphiné	28	NOUN
-Schimmelpilzen	28	NOUN
+Schimmelpilzen	28	NOUN	Schimmelpilz
 Modellbau	28	NOUN
 Lehrgedicht	28	NOUN
 homerische	28	NOUN,OTHER
@@ -47845,7 +47845,7 @@ gestreckten	28	OTHER
 Give	28	NOUN,OTHER
 Login	28	NOUN
 bewachsen	28	OTHER
-Todesstrafen	28	NOUN
+Todesstrafen	28	NOUN	Todesstrafe
 Slawonien	28	NOUN
 Driver	28	NOUN
 Goldstein	28	NOUN
@@ -47853,10 +47853,10 @@ Celan	28	NOUN
 Thani	28	NOUN
 SFSR	28	NOUN
 Britannier	28	NOUN
-Banats	28	NOUN
+Banats	28	NOUN	Banat
 Taschenuhr	28	NOUN
-Ålands	28	NOUN
-Brahes	28	NOUN
+Ålands	28	NOUN	Åland
+Brahes	28	NOUN	Brahe
 Äquinoktien	28	NOUN
 angefeindet	28	OTHER
 Islamismus	28	NOUN
@@ -47867,7 +47867,7 @@ gebürtiger	28	OTHER
 Hauptkriegsverbrecher	28	NOUN
 versenkte	28	OTHER
 UB	28	NOUN
-Moas	28	NOUN
+Moas	28	NOUN	Moa
 heftigsten	28	OTHER
 Hauptfluss	28	NOUN
 Roda	28	NOUN
@@ -47875,7 +47875,7 @@ stalinistische	28	OTHER
 Mercer	28	NOUN
 Hashwert	28	NOUN
 Alleinregierung	28	NOUN
-Kremls	28	NOUN
+Kremls	28	NOUN	Kreml
 Coelestin	28	NOUN
 geschmückte	28	OTHER
 Meeressäuger	28	NOUN
@@ -47891,15 +47891,15 @@ Kenya	28	NOUN
 Pemba	28	NOUN
 Remstal	28	NOUN
 Orsay	28	NOUN
-Jacobs	28	NOUN
-Vögte	28	NOUN
+Jacobs	28	NOUN	Jacob
+Vögte	28	NOUN	Vogt
 silbern	28	OTHER
 Icener	28	NOUN
-Dogs	28	NOUN
-Lasers	28	NOUN
+Dogs	28	NOUN	Dog
+Lasers	28	NOUN	Laser
 Werksgelände	28	NOUN
 VPN	28	NOUN
-Regierungsbezirkes	28	NOUN
+Regierungsbezirkes	28	NOUN	Regierungsbezirk
 ZZ	28	NOUN,OTHER
 Hängebrücke	28	NOUN
 Slipknot	28	NOUN
@@ -47912,15 +47912,15 @@ Martinus	28	NOUN
 Pomerania	28	NOUN
 Doberan	28	NOUN
 Probst	28	NOUN
-Solarmodulen	28	NOUN
+Solarmodulen	28	NOUN	Solarmodul
 Aktionspotential	28	NOUN
-Siegeln	28	NOUN
+Siegeln	28	NOUN	Siegel
 Ordensritter	28	NOUN
 Banda	28	NOUN,OTHER
 Lahntal	28	NOUN
 Crème	28	NOUN
 Brackwasser	28	NOUN
-Entdeckern	28	NOUN
+Entdeckern	28	NOUN	Entdecker
 Evangelical	28	NOUN,OTHER
 Borgia	28	NOUN
 polnischsprachige	28	OTHER
@@ -47930,16 +47930,16 @@ coll	28	NOUN,OTHER
 Volkstum	28	NOUN
 Poulenc	28	NOUN
 Infraschall	28	NOUN
-Rossinis	28	NOUN
+Rossinis	28	NOUN	Rossini
 SCA	28	NOUN
 Pythagoreismus	28	NOUN
 Kaschubisch	28	NOUN,OTHER
-Rathäuser	28	NOUN
+Rathäuser	28	NOUN	Rathaus
 Alexanderkirche	28	NOUN
 WOSM	28	NOUN
 Topic	28	NOUN
-Lissabons	28	NOUN
-Mittellandkanals	28	NOUN
+Lissabons	28	NOUN	Lissabon
+Mittellandkanals	28	NOUN	Mittellandkanal
 UGB	28	NOUN
 Regenstein	28	NOUN
 Beijing	28	NOUN
@@ -47952,10 +47952,10 @@ Reisezugwagen	28	NOUN
 Sion	28	NOUN,OTHER
 prinzipbedingt	28	OTHER
 Girona	28	NOUN
-Satane	28	NOUN
+Satane	28	NOUN	Satan
 Fahrweg	28	NOUN
 Nigel	28	NOUN
-Wüstungen	28	NOUN
+Wüstungen	28	NOUN	Wüstung
 Wärmestrom	28	NOUN
 Rütli	28	NOUN
 Kantonsrat	28	NOUN
@@ -47972,9 +47972,9 @@ Trassierung	28	NOUN
 einvernehmliche	28	OTHER
 Finalis	28	NOUN,OTHER
 Nové	28	NOUN
-Asowschen	28	NOUN
+Asowschen	28	NOUN	Asowsche
 Reemtsma	28	NOUN
-Christlichsozialen	28	NOUN,OTHER
+Christlichsozialen	28	NOUN,OTHER	Christlichsoziale
 Kapkolonie	28	NOUN
 Golda	28	NOUN
 Kahlo	28	NOUN
@@ -47982,57 +47982,57 @@ Futuristen	28	NOUN
 Surround	28	NOUN
 Anhui	28	NOUN
 Funakoshi	28	NOUN
-Annes	28	NOUN
+Annes	28	NOUN	Anne
 Ebersberg	28	NOUN
 Acrobat	28	NOUN
-Nicaraguas	28	NOUN
-Matchings	28	NOUN
+Nicaraguas	28	NOUN	Nicaragua
+Matchings	28	NOUN	Matching
 RUB	28	NOUN
 ISM	28	NOUN
 Greutungen	28	NOUN
 Glissando	28	NOUN
 Caprivi	28	NOUN
 SWAPO	28	NOUN
-Limas	28	NOUN
+Limas	28	NOUN	Lima
 Magnetpol	28	NOUN
 Pommersfelden	28	NOUN
 Witebsk	28	NOUN
 Monokel	28	NOUN
 Thidrekssaga	28	NOUN
-Grünewalds	28	NOUN
+Grünewalds	28	NOUN	Grünewald
 tragbaren	28	OTHER
 Permakultur	28	NOUN
 Textus	28	NOUN
 Redon	28	NOUN
 Irtysch	28	NOUN
 Bluntschli	28	NOUN
-Monroes	28	NOUN
+Monroes	28	NOUN	Monroe
 Anodenspannung	28	NOUN
 Verdampfer	28	NOUN
 Verfügungsgeschäft	28	NOUN
 Wjatka	28	NOUN
-Hildegards	28	NOUN
+Hildegards	28	NOUN	Hildegard
 Bremgarten	28	NOUN
-Falcos	28	NOUN
+Falcos	28	NOUN	Falco
 Kapellbrücke	28	NOUN
 Melsungen	28	NOUN
 Haardtrand	28	NOUN
 Hausgruppen	28	NOUN
-Klagenfurts	28	NOUN
+Klagenfurts	28	NOUN	Klagenfurt
 Lank	28	NOUN
 CBL	28	NOUN
 Lobopoden	28	NOUN
 Marcolina	28	NOUN
 Ecdysozoa	28	NOUN
 Sukhothaischrift	28	NOUN
-Logiken	27	NOUN
+Logiken	27	NOUN	Logik
 nummerierten	27	VERB,OTHER
 kontroverser	27	OTHER
 nützen	27	VERB
 bisschen	27	OTHER
 Produktionsgesellschaft	27	NOUN
-Kaffeehäuser	27	NOUN
-Appartements	27	NOUN
+Kaffeehäuser	27	NOUN	Kaffeehaus
+Appartements	27	NOUN	Appartement
 zusammengesetztes	27	OTHER
 Publikumserfolg	27	NOUN
 Filmrolle	27	NOUN
@@ -48054,14 +48054,14 @@ Commercial	27	NOUN
 Midnight	27	NOUN
 Stevie	27	NOUN
 unscharfe	27	OTHER
-Umwege	27	NOUN
+Umwege	27	NOUN	Umweg
 pornografischen	27	OTHER
 Actionfilm	27	NOUN
 spektakulär	27	OTHER
 Clausen	27	NOUN
 kennzeichnende	27	OTHER
 ausgeprägtem	27	OTHER
-Wasserstoffbrückenbindungen	27	NOUN
+Wasserstoffbrückenbindungen	27	NOUN	Wasserstoffbrückenbindung
 Singleauskopplung	27	NOUN
 mineralische	27	OTHER
 Formeleinheiten	27	NOUN
@@ -48082,7 +48082,7 @@ weitverbreitet	27	OTHER
 Sattler	27	NOUN
 Berta	27	NOUN,OTHER
 Verdampfung	27	NOUN
-Kernisomere	27	NOUN
+Kernisomere	27	NOUN	Kernisomer
 Mikrosekunden	27	NOUN
 Nachsorge	27	NOUN
 Krankenbett	27	NOUN
@@ -48096,14 +48096,14 @@ Physiologe	27	NOUN
 Ordinarius	27	NOUN
 vergl	27	OTHER
 beschreibbare	27	OTHER
-Satrapen	27	NOUN
+Satrapen	27	NOUN	Satrap
 Issos	27	NOUN
-Verteidigern	27	NOUN
+Verteidigern	27	NOUN	Verteidiger
 eingesetzter	27	OTHER
 athenische	27	OTHER
-Stadtgründungen	27	NOUN
+Stadtgründungen	27	NOUN	Stadtgründung
 verachtet	27	OTHER
-Babylons	27	NOUN
+Babylons	27	NOUN	Babylon
 Königspalast	27	NOUN
 entledigen	27	VERB
 überbracht	27	OTHER
@@ -48111,7 +48111,7 @@ demnächst	27	OTHER
 Streitenden	27	NOUN,OTHER
 Leibwächter	27	NOUN
 unehelichen	27	OTHER
-Gefolgsleuten	27	NOUN
+Gefolgsleuten	27	NOUN	Gefolgsleute
 Affront	27	NOUN
 Geliebter	27	NOUN
 umbringen	27	VERB
@@ -48121,7 +48121,7 @@ Ansatzpunkt	27	NOUN
 verdorben	27	VERB
 äthiopisch	27	NOUN,OTHER
 Nichtigkeit	27	NOUN
-Berghängen	27	NOUN
+Berghängen	27	NOUN	Berghang
 Handelskontakte	27	NOUN
 Gewerbetreibende	27	NOUN
 Syria	27	NOUN
@@ -48133,35 +48133,35 @@ Neudefinition	27	NOUN
 manchem	27	OTHER
 Instinkt	27	NOUN
 prekäre	27	OTHER
-Arbeiters	27	NOUN
+Arbeiters	27	NOUN	Arbeiter
 Eigenleben	27	NOUN
 sprachwissenschaftliche	27	OTHER
-Wörterbuchs	27	NOUN
+Wörterbuchs	27	NOUN	Wörterbuch
 Sprachpolitik	27	NOUN
-Steinwerkzeugen	27	NOUN
+Steinwerkzeugen	27	NOUN	Steinwerkzeuge
 Faktum	27	NOUN
 ableitete	27	OTHER
 fotografierte	27	OTHER
-Röntgenaufnahmen	27	NOUN
+Röntgenaufnahmen	27	NOUN	Röntgenaufnahme
 operativer	27	OTHER
 heilt	27	OTHER
-Phonems	27	NOUN
+Phonems	27	NOUN	Phonem
 Hydra	27	NOUN
 schnelleres	27	OTHER
-Vizekönigs	27	NOUN
+Vizekönigs	27	NOUN	Vizekönig
 Militärgericht	27	NOUN
 Grabdenkmal	27	NOUN
 Fleet	27	NOUN
 heranziehen	27	VERB
-Weltalls	27	NOUN
+Weltalls	27	NOUN	Weltall
 Leier	27	NOUN
-Lebensgefährten	27	NOUN
+Lebensgefährten	27	NOUN	Lebensgefährte
 Waltz	27	NOUN
 Regiedebüt	27	NOUN
 Integralrechnung	27	NOUN
 Ludvig	27	NOUN
 Lukian	27	NOUN
-Auszügen	27	NOUN
+Auszügen	27	NOUN	Auszug
 Themenbereich	27	NOUN
 Falschheit	27	NOUN
 bejahten	27	VERB
@@ -48169,7 +48169,7 @@ trüben	27	VERB
 herleitet	27	OTHER
 Emotion	27	NOUN
 Syllogismen	27	NOUN
-Urbilder	27	NOUN
+Urbilder	27	NOUN	Urbild
 Menschsein	27	NOUN
 immateriell	27	OTHER
 suspekt	27	OTHER
@@ -48204,21 +48204,21 @@ Laurel	27	NOUN
 Diane	27	NOUN
 notierten	27	VERB,OTHER
 verschmutzt	27	OTHER
-Einkaufs	27	NOUN
+Einkaufs	27	NOUN	Einkauf
 Hochgeschwindigkeitsstrecke	27	NOUN
-Völkermords	27	NOUN
+Völkermords	27	NOUN	Völkermord
 Gebetsraum	27	NOUN
 Moralität	27	NOUN
 Dorothee	27	NOUN
 Sölle	27	NOUN
 Gottesbild	27	NOUN
-Vorderasiens	27	NOUN
+Vorderasiens	27	NOUN	Vorderasien
 Seh	27	NOUN,VERB,OTHER
 Gottlosigkeit	27	NOUN
 abgestuften	27	OTHER
 idealistische	27	OTHER
 unvollkommen	27	OTHER
-Nachschlagewerken	27	NOUN
+Nachschlagewerken	27	NOUN	Nachschlagewerk
 Höhenformel	27	NOUN
 Fachpersonal	27	NOUN
 Bundesverwaltung	27	NOUN
@@ -48232,7 +48232,7 @@ Sonnenkalender	27	NOUN
 Gewichtheben	27	NOUN
 tonale	27	OTHER
 Lobpreis	27	NOUN
-Empfangs	27	NOUN
+Empfangs	27	NOUN	Empfang
 entlarven	27	VERB
 Theresa	27	NOUN
 Sadomasochismus	27	NOUN
@@ -48246,9 +48246,9 @@ Handwerkskunst	27	NOUN
 Fahrstreifen	27	NOUN
 Lehrmeister	27	NOUN
 HRD	27	NOUN
-Aussperrungen	27	NOUN
+Aussperrungen	27	NOUN	Aussperrung
 malaiische	27	OTHER
-Vegetationszonen	27	NOUN
+Vegetationszonen	27	NOUN	Vegetationszone
 Westasien	27	NOUN
 verstärkenden	27	OTHER
 Laozi	27	NOUN
@@ -48266,7 +48266,7 @@ Friedensordnung	27	NOUN
 Palatin	27	NOUN
 segnet	27	OTHER
 Ara	27	NOUN
-Grabe	27	NOUN
+Grabe	27	NOUN	Grab
 Pessimismus	27	NOUN
 gereizt	27	OTHER
 Aemilianus	27	NOUN
@@ -48277,19 +48277,19 @@ MacBook	27	NOUN
 Dividende	27	NOUN
 LTE	27	NOUN
 Kopfhörer	27	NOUN
-Videokameras	27	NOUN
+Videokameras	27	NOUN	Videokamera
 Rechenzentren	27	NOUN
 Geldbuße	27	NOUN
-Abonnements	27	NOUN
+Abonnements	27	NOUN	Abonnement
 gesessen	27	VERB
-Stäben	27	NOUN
+Stäben	27	NOUN	Stab
 Bechstein	27	NOUN
 zentralisiert	27	OTHER
 Landespolizei	27	NOUN
 Sturzes	27	NOUN
 erdulden	27	VERB
 hervorhob	27	OTHER
-Schöpfers	27	NOUN
+Schöpfers	27	NOUN	Schöpfer
 Großdeutsche	27	NOUN,OTHER
 Reichstagsbrand	27	NOUN
 auferlegte	27	OTHER
@@ -48306,35 +48306,35 @@ Rommel	27	NOUN
 Leclerc	27	NOUN
 Berbersprachen	27	NOUN
 Militäreinsatz	27	NOUN
-Jüdinnen	27	NOUN
+Jüdinnen	27	NOUN	Jüdin
 Bauwirtschaft	27	NOUN
 Rank	27	NOUN,OTHER
 Perserkönig	27	NOUN
 gallorömischen	27	OTHER
-Abteile	27	NOUN
+Abteile	27	NOUN	Abteil
 Bahngesellschaft	27	NOUN
 abwesend	27	OTHER
 Mondlandefähre	27	NOUN
 Herpes	27	NOUN
 Temperaturskala	27	NOUN
 jedweder	27	OTHER
-Mehrdeutigkeiten	27	NOUN
+Mehrdeutigkeiten	27	NOUN	Mehrdeutigkeit
 Windstille	27	NOUN
 Dictionnaire	27	NOUN
-Telegraphen	27	NOUN
+Telegraphen	27	NOUN	Telegraph
 Wilhelmina	27	NOUN
 Görres	27	NOUN
 Gehöft	27	NOUN
 freute	27	OTHER
 Violinist	27	NOUN
 Tektonik	27	NOUN
-Hochmeisters	27	NOUN
+Hochmeisters	27	NOUN	Hochmeister
 gerechtfertigte	27	OTHER
 gasförmiges	27	OTHER
 abgestorbenen	27	OTHER
 Zeitmessung	27	NOUN
 Ligand	27	NOUN
-Amine	27	NOUN
+Amine	27	NOUN	Amin
 vorteilhaften	27	OTHER
 Webb	27	NOUN
 Radioteleskop	27	NOUN
@@ -48342,32 +48342,32 @@ Cliff	27	NOUN
 Vorkommnisse	27	NOUN
 unbeabsichtigte	27	OTHER
 seismischen	27	OTHER
-Ostafrikas	27	NOUN
+Ostafrikas	27	NOUN	Ostafrika
 Methionin	27	NOUN
 klärte	27	OTHER
-Gattungsnamen	27	NOUN
+Gattungsnamen	27	NOUN	Gattungsname
 Commune	27	NOUN,OTHER
 vernommen	27	VERB
-Ackerbaus	27	NOUN
+Ackerbaus	27	NOUN	Ackerbau
 Nachwort	27	NOUN
-Latinos	27	NOUN
-Tanzschulen	27	NOUN
+Latinos	27	NOUN	Latino
+Tanzschulen	27	NOUN	Tanzschule
 Stadtname	27	NOUN
 Geschlechterverhältnis	27	NOUN
 Saldo	27	NOUN
-Turkvölker	27	NOUN
+Turkvölker	27	NOUN	Turkvolk
 Finanzwesen	27	NOUN
 Süßwaren	27	NOUN
 gehandelten	27	OTHER
 Busunternehmen	27	NOUN
-Wochentagen	27	NOUN
+Wochentagen	27	NOUN	Wochentag
 nördlicheren	27	OTHER
 Zentralstaat	27	NOUN
 Kardinalzahl	27	NOUN
 Gesamtproduktion	27	NOUN
 Confederación	27	NOUN
 Einwanderungswelle	27	NOUN
-Lebensstandards	27	NOUN
+Lebensstandards	27	NOUN	Lebensstandard
 Julio	27	NOUN
 Ari	27	NOUN
 Colón	27	NOUN
@@ -48382,7 +48382,7 @@ Drosophila	27	NOUN
 landlebenden	27	OTHER
 seitigen	27	OTHER
 Afroasiatische	27	NOUN,OTHER
-Pluralformen	27	NOUN
+Pluralformen	27	NOUN	Pluralform
 Abdomen	27	NOUN
 Ganglien	27	NOUN
 Bedeckung	27	NOUN
@@ -48404,14 +48404,14 @@ monophyletische	27	OTHER
 abgetötet	27	OTHER
 Heimweg	27	NOUN
 zugeschnittenen	27	OTHER
-Notwendigkeiten	27	NOUN
+Notwendigkeiten	27	NOUN	Notwendigkeit
 Unbehagen	27	NOUN
 Hamza	27	NOUN
 Hinzufügung	27	NOUN
 Autodesk	27	NOUN
 Ren	27	NOUN,OTHER
 Protozoen	27	NOUN
-Mikroskops	27	NOUN
+Mikroskops	27	NOUN	Mikroskop
 Antony	27	NOUN
 unglaublich	27	OTHER
 Kamel	27	NOUN
@@ -48424,7 +48424,7 @@ Sozialstaat	27	NOUN
 Textform	27	NOUN
 Endeffekt	27	NOUN
 gestaffelt	27	OTHER
-Liturgien	27	NOUN
+Liturgien	27	NOUN	Liturgie
 Oi	27	NOUN,OTHER
 hellenistisch	27	OTHER
 gewiesen	27	VERB
@@ -48432,14 +48432,14 @@ unverzichtbare	27	OTHER
 gewandert	27	OTHER
 Spektralklasse	27	NOUN
 Einschlagkrater	27	NOUN
-Wirtschaftskrisen	27	NOUN
+Wirtschaftskrisen	27	NOUN	Wirtschaftskrise
 Carotinoide	27	NOUN
 Portugiesischsprachigen	27	NOUN,OTHER
 Baugenehmigung	27	NOUN
 Nelkenrevolution	27	NOUN
 bruchstückhaft	27	OTHER
 Grundausstattung	27	NOUN
-Livres	27	NOUN
+Livres	27	NOUN	Livre
 mutmaßlicher	27	OTHER
 überwiesen	27	VERB
 Lourdes	27	NOUN
@@ -48457,7 +48457,7 @@ CoV	27	NOUN
 Sigmar	27	NOUN
 Wettbewerber	27	NOUN
 Warenzeichen	27	NOUN
-Fullerene	27	NOUN
+Fullerene	27	NOUN	Fulleren
 Chiemsee	27	NOUN
 Waldgrenze	27	NOUN
 extensiv	27	OTHER
@@ -48472,14 +48472,14 @@ Kommunal	27	NOUN,OTHER
 Filmfest	27	NOUN
 Reformationstag	27	NOUN
 Exzellenzinitiative	27	NOUN
-Spielklassen	27	NOUN
+Spielklassen	27	NOUN	Spielklasse
 Buchner	27	NOUN
 Wasmeier	27	NOUN
 Gliedstaat	27	NOUN
 Kraichgau	27	NOUN
 Vorderösterreich	27	NOUN
 Tuttlingen	27	NOUN
-Altstädte	27	NOUN
+Altstädte	27	NOUN	Altstadt
 Schwenningen	27	NOUN
 Gebietsänderungen	27	NOUN
 multilaterale	27	OTHER
@@ -48487,23 +48487,23 @@ NUTS	27	NOUN
 Verkehrsflughäfen	27	NOUN
 Hoffenheim	27	NOUN
 Männermannschaft	27	NOUN
-Wings	27	NOUN
+Wings	27	NOUN	Wing
 Eberstadt	27	NOUN
-Läufe	27	NOUN
+Läufe	27	NOUN	Lauf
 verfügbarer	27	OTHER
 Operating	27	NOUN
 leiblicher	27	OTHER
 aneignen	27	VERB
-Terminen	27	NOUN
+Terminen	27	NOUN	Termin
 Better	27	NOUN,OTHER
 unterbreiten	27	VERB
-Polizeibehörden	27	NOUN
-Podcasts	27	NOUN
+Polizeibehörden	27	NOUN	Polizeibehörde
+Podcasts	27	NOUN	Podcast
 definiertes	27	OTHER
 magmatische	27	OTHER
 Kernreaktion	27	NOUN
 gängiges	27	OTHER
-Rohren	27	NOUN
+Rohren	27	NOUN	Rohr
 Patterson	27	NOUN
 Classification	27	NOUN,OTHER
 Universalgelehrte	27	NOUN
@@ -48511,30 +48511,30 @@ genormten	27	OTHER
 weight	27	OTHER
 Benoît	27	NOUN
 Schreibstil	27	NOUN
-Jugendgruppen	27	NOUN
+Jugendgruppen	27	NOUN	Jugendgruppe
 Braunkohletagebau	27	NOUN
 Kerpen	27	NOUN
-Polizeipräsidenten	27	NOUN
+Polizeipräsidenten	27	NOUN	Polizeipräsident
 gründenden	27	OTHER
 aufgegebenen	27	OTHER
 Aufmachung	27	NOUN
 Behind	27	NOUN,OTHER
 Palestine	27	NOUN
 Gleichheitszeichen	27	NOUN
-Felsformationen	27	NOUN
+Felsformationen	27	NOUN	Felsformation
 stumme	27	OTHER
 Findling	27	NOUN
-Sandsteine	27	NOUN
+Sandsteine	27	NOUN	Sandstein
 Planstadt	27	NOUN
-Baustile	27	NOUN
+Baustile	27	NOUN	Baustil
 Altstädter	27	NOUN
 Naherholung	27	NOUN
 Bockwindmühle	27	NOUN
-Hemden	27	NOUN
+Hemden	27	NOUN	Hemd
 Billard	27	NOUN
 Seekarten	27	NOUN
 Zugverkehr	27	NOUN
-Dämmen	27	NOUN
+Dämmen	27	NOUN	Damm
 renaturiert	27	OTHER
 Neozoen	27	NOUN
 naturbelassene	27	OTHER
@@ -48542,29 +48542,29 @@ Kitesurfen	27	NOUN
 Einflussgebiet	27	NOUN
 Wacker	27	NOUN
 Wetterdienst	27	NOUN
-Siegels	27	NOUN
+Siegels	27	NOUN	Siegel
 gelblichen	27	OTHER
 geheftet	27	OTHER
 Barockstil	27	NOUN
 Mehrstimmigkeit	27	NOUN
 Rameau	27	NOUN
-Blechblasinstrumente	27	NOUN
+Blechblasinstrumente	27	NOUN	Blechblasinstrument
 verlorengegangen	27	VERB
-Logen	27	NOUN
+Logen	27	NOUN	Loge
 forte	27	NOUN,OTHER
 Colonna	27	NOUN
 Introitus	27	NOUN
 mäßigem	27	OTHER
 bewachten	27	VERB
 Zollverwaltung	27	NOUN
-Kontrollpunkte	27	NOUN
+Kontrollpunkte	27	NOUN	Kontrollpunkt
 Freudenberg	27	NOUN
-Freiheits	27	NOUN
+Freiheits	27	NOUN	Freiheit
 Picknick	27	NOUN
 Beil	27	NOUN
 Informationstafeln	27	NOUN
 Gesine	27	NOUN
-Meerengen	27	NOUN
+Meerengen	27	NOUN	Meerenge
 kollidierte	27	OTHER
 Selim	27	NOUN
 zehntgrößte	27	OTHER
@@ -48573,16 +48573,16 @@ Linienflüge	27	NOUN
 Marko	27	NOUN
 Polaris	27	NOUN
 Visselhövede	27	NOUN
-Oberschulen	27	NOUN
+Oberschulen	27	NOUN	Oberschule
 Regionalausgabe	27	NOUN
 gesehenen	27	OTHER
 entlassenen	27	OTHER
 Unterarm	27	NOUN
-Würfe	27	NOUN
+Würfe	27	NOUN	Wurf
 Überangebot	27	NOUN
 Gluconeogenese	27	NOUN
 spezialisieren	27	VERB
-Häuten	27	NOUN,OTHER
+Häuten	27	NOUN,OTHER	Haut
 Lächeln	27	NOUN
 Daches	27	NOUN
 Shenandoah	27	NOUN
@@ -48592,8 +48592,8 @@ Burjatien	27	NOUN
 Schrank	27	NOUN
 Rosenzweig	27	NOUN
 Einheitsübersetzung	27	NOUN
-Allahs	27	NOUN
-Bundesministers	27	NOUN
+Allahs	27	NOUN	Allah
+Bundesministers	27	NOUN	Bundesminister
 Liège	27	NOUN
 Sambre	27	NOUN
 sandig	27	OTHER
@@ -48606,7 +48606,7 @@ zuweist	27	OTHER
 Banque	27	NOUN
 wiederaufgenommen	27	VERB
 renommierter	27	OTHER
-Musikfestivals	27	NOUN
+Musikfestivals	27	NOUN	Musikfestival
 Dayton	27	NOUN
 sda	27	NOUN,OTHER
 gedauert	27	OTHER
@@ -48617,7 +48617,7 @@ Marineschule	27	NOUN
 Nordwestschweiz	27	NOUN
 Münsterplatz	27	NOUN
 altfranzösisch	27	OTHER
-Tiefebenen	27	NOUN
+Tiefebenen	27	NOUN	Tiefebene
 Okres	27	NOUN,OTHER
 spiegelbildlich	27	OTHER
 abgeleistet	27	OTHER
@@ -48627,11 +48627,11 @@ surjektiv	27	OTHER
 reversiblen	27	OTHER
 Binde	27	NOUN,VERB,OTHER
 Brahmaputra	27	NOUN
-Bangladeschs	27	NOUN
-Rhesusaffen	27	NOUN
+Bangladeschs	27	NOUN	Bangladesch
+Rhesusaffen	27	NOUN	Rhesusaffe
 eingezogenen	27	OTHER
 betriebener	27	OTHER
-Geschäftsleuten	27	NOUN
+Geschäftsleuten	27	NOUN	Geschäftsleute
 deportieren	27	VERB
 Obmann	27	NOUN
 zurückgeschickt	27	OTHER
@@ -48640,15 +48640,15 @@ systematisiert	27	OTHER
 Pfanne	27	NOUN
 isst	27	OTHER
 Benediktsregel	27	NOUN
-Ideals	27	NOUN
+Ideals	27	NOUN	Ideal
 öffentlichkeitswirksam	27	OTHER
 unwiderruflich	27	OTHER
-Umstrukturierungen	27	NOUN
-Kurgäste	27	NOUN
+Umstrukturierungen	27	NOUN	Umstrukturierung
+Kurgäste	27	NOUN	Kurgast
 Trinitatiskirche	27	NOUN
 ausrichtet	27	OTHER
-Kaspars	27	NOUN
-Haltepunkten	27	NOUN
+Kaspars	27	NOUN	Kaspar
+Haltepunkten	27	NOUN	Haltepunkt
 alteingesessene	27	OTHER
 Bundesgesetzblatt	27	NOUN
 Verhaltensforschung	27	NOUN
@@ -48659,13 +48659,13 @@ korrupt	27	OTHER
 Inkunabeln	27	NOUN
 Jehuda	27	NOUN
 Königsthron	27	NOUN
-Landwirtschafts	27	NOUN
+Landwirtschafts	27	NOUN	Landwirtschaft
 Geschicklichkeit	27	NOUN
 Spain	27	NOUN
 Plattenvertrag	27	NOUN
 Bud	27	NOUN
 fatal	27	OTHER
-Bindungsstellen	27	NOUN
+Bindungsstellen	27	NOUN	Bindungsstelle
 Furche	27	NOUN
 Sopot	27	NOUN
 abgesetzte	27	OTHER
@@ -48675,7 +48675,7 @@ Skalar	27	NOUN
 GeV	27	NOUN
 Hilf	27	NOUN,VERB,OTHER
 Regionalbahnlinie	27	NOUN
-Landschaftsarchitekten	27	NOUN
+Landschaftsarchitekten	27	NOUN	Landschaftsarchitekt
 Usingen	27	NOUN
 Förderpreis	27	NOUN
 Belag	27	NOUN
@@ -48683,9 +48683,9 @@ Homöostase	27	NOUN
 Aderlass	27	NOUN
 Stechmücken	27	NOUN
 energiereiche	27	OTHER
-Pflanzenschutzmitteln	27	NOUN
+Pflanzenschutzmitteln	27	NOUN	Pflanzenschutzmittel
 MWh	27	NOUN
-Telefonleitungen	27	NOUN
+Telefonleitungen	27	NOUN	Telefonleitung
 ernstzunehmende	27	OTHER
 Lyme	27	NOUN
 anonymer	27	OTHER
@@ -48696,7 +48696,7 @@ libanesische	27	OTHER
 Reeves	27	NOUN
 zertifizierte	27	OTHER
 Tenzin	27	NOUN
-Grotten	27	NOUN
+Grotten	27	NOUN	Grotte
 fünfhundert	27	OTHER
 Italiano	27	NOUN
 finsteren	27	OTHER
@@ -48711,18 +48711,18 @@ Genexpression	27	NOUN
 zellulärer	27	OTHER
 Leonidas	27	NOUN
 bitteren	27	OTHER
-Werktagen	27	NOUN
+Werktagen	27	NOUN	Werktag
 Wahlgesetz	27	NOUN
 Monarchisten	27	NOUN
 wirtschaftspolitisch	27	OTHER
-Landesvorsitzenden	27	NOUN
+Landesvorsitzenden	27	NOUN	Landesvorsitzende
 Solon	27	NOUN
 Demetrios	27	NOUN
 XOR	27	NOUN
 Homomorphismus	27	NOUN
 Alemannia	27	NOUN
 keramischen	27	OTHER
-Vorfahre	27	NOUN
+Vorfahre	27	NOUN	Vorfahr
 Bodenerosion	27	NOUN
 hölzerner	27	OTHER
 intra	27	OTHER
@@ -48732,7 +48732,7 @@ geschlechtsspezifische	27	OTHER
 Mischwesen	27	NOUN
 Haustier	27	NOUN
 Selbstverständlichkeit	27	NOUN
-Weiterbildungen	27	NOUN
+Weiterbildungen	27	NOUN	Weiterbildung
 Flaschenhals	27	NOUN
 Henricus	27	NOUN
 Heizer	27	NOUN
@@ -48757,19 +48757,19 @@ ausblieben	27	VERB
 Autokratie	27	NOUN
 vorbildlichen	27	OTHER
 wohltemperierten	27	NOUN,OTHER
-Verstimmungen	27	NOUN
+Verstimmungen	27	NOUN	Verstimmung
 Edessa	27	NOUN
 Nicäno	27	NOUN
 Pfingstler	27	NOUN
 apokryphe	27	OTHER
 Aufl	27	NOUN
 Bahnhofsviertel	27	NOUN
-Besuches	27	NOUN
-Vertriebs	27	NOUN
+Besuches	27	NOUN	Besuch
+Vertriebs	27	NOUN	Vertrieb
 Rettungswache	27	NOUN
-Stylesheets	27	NOUN
+Stylesheets	27	NOUN	Stylesheet
 klargestellt	27	OTHER
-Vertreterinnen	27	NOUN
+Vertreterinnen	27	NOUN	Vertreterin
 Cuno	27	NOUN
 Pfarramt	27	NOUN
 Societas	27	NOUN,OTHER
@@ -48790,7 +48790,7 @@ Sacramento	27	NOUN
 auffiel	27	OTHER
 peuple	27	NOUN,OTHER
 ausrief	27	OTHER
-Kastells	27	NOUN
+Kastells	27	NOUN	Kastell
 gestaut	27	OTHER
 Prüfziffer	27	NOUN
 Landesvermessung	27	NOUN
@@ -48799,42 +48799,42 @@ Liniendienst	27	NOUN
 Greek	27	NOUN
 Nordvietnam	27	NOUN
 imposante	27	OTHER
-Ansehens	27	NOUN
+Ansehens	27	NOUN	Ansehen
 Totenbett	27	NOUN
 überwältigenden	27	OTHER
 Botticelli	27	NOUN
 Jahrhundertmitte	27	NOUN
 Walküre	27	NOUN
 GNUstep	27	NOUN
-Endoplasmatischen	27	NOUN,OTHER
+Endoplasmatischen	27	NOUN,OTHER	Endoplasmatische
 Proteasom	27	NOUN
 beschert	27	OTHER
 Ubuntu	27	NOUN
 Videosignal	27	NOUN
 waagerechte	27	OTHER
-Drums	27	NOUN,OTHER
+Drums	27	NOUN,OTHER	Drum
 Rückversicherung	27	NOUN
-Breitengrade	27	NOUN
+Breitengrade	27	NOUN	Breitengrad
 gebraut	27	OTHER
 Historiengemälde	27	NOUN
 Electron	27	NOUN,OTHER
 Brent	27	NOUN
-Naturgesetzen	27	NOUN
+Naturgesetzen	27	NOUN	Naturgesetz
 zusammenfügen	27	NOUN,OTHER
 effizienteren	27	OTHER
 entfliehen	27	VERB
 Chesterton	27	NOUN
-Polymerasen	27	NOUN
+Polymerasen	27	NOUN	Polymerase
 genauerer	27	OTHER
 Vaterländische	27	NOUN,OTHER
 wegweisenden	27	OTHER
 Garnier	27	NOUN
-Beckers	27	NOUN
+Beckers	27	NOUN	Becker
 Forman	27	NOUN
 Yogi	27	NOUN
 Yeah	27	NOUN
 Rechnungshof	27	NOUN
-Konstitutionen	27	NOUN
+Konstitutionen	27	NOUN	Konstitution
 Körperlichkeit	27	NOUN
 gewerblicher	27	OTHER
 parteipolitischen	27	OTHER
@@ -48843,28 +48843,28 @@ Torhaus	27	NOUN
 historistischen	27	OTHER
 zugezogenen	27	OTHER
 Chess	27	NOUN
-Radverkehrs	27	NOUN
-Ausbildungsstätten	27	NOUN
+Radverkehrs	27	NOUN	Radverkehr
+Ausbildungsstätten	27	NOUN	Ausbildungsstätte
 Sprinter	27	NOUN
 Kaufhof	27	NOUN
 Lokalteil	27	NOUN
-Ortsverbände	27	NOUN
+Ortsverbände	27	NOUN	Ortsverband
 Katastrophenschutzes	27	NOUN
 strebenden	27	OTHER
 tägigen	27	OTHER
-Adolfs	27	NOUN
-Umgestaltungen	27	NOUN
-Bernhards	27	NOUN
+Adolfs	27	NOUN	Adolf
+Umgestaltungen	27	NOUN	Umgestaltung
+Bernhards	27	NOUN	Bernhard
 Vlotho	27	NOUN
 Dorsten	27	NOUN
 Theatrum	27	NOUN
 verhandelten	27	VERB,OTHER
-Konfrontationen	27	NOUN
+Konfrontationen	27	NOUN	Konfrontation
 Søren	27	NOUN
 Rainald	27	NOUN
 tiefgreifend	27	OTHER
 RFID	27	NOUN
-Urheberrechtsverletzungen	27	NOUN
+Urheberrechtsverletzungen	27	NOUN	Urheberrechtsverletzung
 bemisst	27	OTHER
 Geselligkeit	27	NOUN
 sensorischen	27	OTHER
@@ -48873,11 +48873,11 @@ LibreOffice	27	NOUN
 SMTP	27	NOUN
 TLS	27	NOUN
 abführen	27	VERB
-Librettisten	27	NOUN
+Librettisten	27	NOUN	Librettist
 Amtshauptmannschaft	27	NOUN
 Wassiljewitsch	27	NOUN
 Gygax	27	NOUN
-Folgejahres	27	NOUN
+Folgejahres	27	NOUN	Folgejahr
 kunsthistorisch	27	OTHER
 Kleingruppen	27	NOUN
 Messel	27	NOUN
@@ -48887,7 +48887,7 @@ Parallelogramm	27	NOUN
 Bedruckstoff	27	NOUN
 Verbum	27	NOUN,OTHER
 WGA	27	NOUN
-Lagerhäuser	27	NOUN
+Lagerhäuser	27	NOUN	Lagerhaus
 Völkerrechtssubjekt	27	NOUN
 Abendroth	27	NOUN
 Bohne	27	NOUN
@@ -48895,27 +48895,27 @@ Fischadler	27	NOUN
 Löffler	27	NOUN
 Landschaftsschutz	27	NOUN
 artenreichsten	27	OTHER
-Zweitligisten	27	NOUN
+Zweitligisten	27	NOUN	Zweitligist
 Südhessen	27	NOUN
 Gesamtstrecke	27	NOUN
 überhöhten	27	VERB,OTHER
 Schnittmenge	27	NOUN
-Ausfuhren	27	NOUN
+Ausfuhren	27	NOUN	Ausfuhr
 Currency	27	NOUN
 Tulpenmanie	27	NOUN
 Sitzungsperiode	27	NOUN
 Festmahl	27	NOUN
 Salzborn	27	NOUN
-Flüchtlingsströme	27	NOUN
-Ungerechtigkeiten	27	NOUN
+Flüchtlingsströme	27	NOUN	Flüchtlingsstrom
+Ungerechtigkeiten	27	NOUN	Ungerechtigkeit
 fusionieren	27	VERB
 Rosenmontagszug	27	NOUN
 Kaiserpfalz	27	NOUN
 thront	27	OTHER
 Gentrifizierung	27	NOUN
 Nautilus	27	NOUN
-Streams	27	NOUN
-Sensors	27	NOUN
+Streams	27	NOUN	Stream
+Sensors	27	NOUN	Sensor
 konvergieren	27	VERB
 Thalia	27	NOUN
 fürchte	27	OTHER
@@ -48925,19 +48925,19 @@ verdickt	27	OTHER
 rötlichen	27	OTHER
 Kollektion	27	NOUN
 Korinther	27	NOUN
-Pythagoreern	27	NOUN
+Pythagoreern	27	NOUN	Pythagoreer
 erkennenden	27	NOUN,OTHER
 Lehrkrankenhaus	27	NOUN
 Leuchtmittel	27	NOUN
 Olivin	27	NOUN
 Schmiedeeisen	27	NOUN
-Effektes	27	NOUN
+Effektes	27	NOUN	Effekt
 Kraftfeld	27	NOUN
 Sonnenoberfläche	27	NOUN
 Postleitzahl	27	NOUN
 Yahoo	27	NOUN
 Beweiskraft	27	NOUN
-Hauptziele	27	NOUN
+Hauptziele	27	NOUN	Hauptziel
 kenianischen	27	OTHER
 Constitution	27	NOUN
 Ausschmückung	27	NOUN
@@ -48962,22 +48962,22 @@ heißesten	27	OTHER
 Ise	27	NOUN
 Ekel	27	NOUN
 personifiziert	27	OTHER
-Polarkreises	27	NOUN
+Polarkreises	27	NOUN	Polarkreis
 Sonnenwindes	27	NOUN
-Hebungen	27	NOUN
-Erdmantels	27	NOUN
+Hebungen	27	NOUN	Hebung
+Erdmantels	27	NOUN	Erdmantel
 aufhält	27	OTHER
 Hyänen	27	NOUN
 bewässert	27	OTHER
 verzerren	27	VERB
-Eisenbahnbrücken	27	NOUN
+Eisenbahnbrücken	27	NOUN	Eisenbahnbrücke
 konischen	27	OTHER
 Stochastik	27	NOUN
 verformen	27	VERB
-Ausnahmeregelungen	27	NOUN
+Ausnahmeregelungen	27	NOUN	Ausnahmeregelung
 Verwunderung	27	NOUN
 benetzt	27	OTHER
-Äpfeln	27	NOUN
+Äpfeln	27	NOUN	Äpfel
 Finanzdienstleistungen	27	NOUN
 Mesa	27	NOUN,OTHER
 Schaffner	27	NOUN
@@ -48986,7 +48986,7 @@ nachtaktive	27	OTHER
 Walensee	27	NOUN
 ausreichendes	27	OTHER
 schwindet	27	OTHER
-Brehms	27	NOUN
+Brehms	27	NOUN	Brehm
 Kreter	27	NOUN
 Königstochter	27	NOUN
 Fanatismus	27	NOUN
@@ -49002,12 +49002,12 @@ Elmar	27	NOUN
 Kampfabstimmung	27	NOUN
 Steuerfreiheit	27	NOUN
 Luftkurort	27	NOUN
-Hauptquartiers	27	NOUN
+Hauptquartiers	27	NOUN	Hauptquartier
 ausgeschriebenen	27	OTHER
 Marienbad	27	NOUN
-Gebärden	27	NOUN
+Gebärden	27	NOUN	Gebärde
 Scholem	27	NOUN
-Romanfiguren	27	NOUN
+Romanfiguren	27	NOUN	Romanfigur
 mittelniederdeutsche	27	OTHER
 Zeitgeschehen	27	NOUN
 Filtration	27	NOUN
@@ -49015,7 +49015,7 @@ westfränkischen	27	OTHER
 Kopfsteuer	27	NOUN
 oralen	27	OTHER
 vorzutragen	27	VERB
-Fernhandels	27	NOUN
+Fernhandels	27	NOUN	Fernhandel
 wechselseitiger	27	OTHER
 Alkuin	27	NOUN
 Hair	27	NOUN
@@ -49023,7 +49023,7 @@ Versicherungsunternehmen	27	NOUN
 Freigrafschaft	27	NOUN
 ausgehandelten	27	OTHER
 Querelen	27	NOUN
-Winglets	27	NOUN
+Winglets	27	NOUN	Winglet
 Tschaikowski	27	NOUN
 entschließt	27	OTHER
 Kerala	27	NOUN
@@ -49032,7 +49032,7 @@ Academie	27	NOUN
 unliebsame	27	OTHER
 Helvetische	27	NOUN,OTHER
 Caravaggio	27	NOUN
-Sportplätze	27	NOUN
+Sportplätze	27	NOUN	Sportplatz
 Elfmeterschießen	27	NOUN
 beeindruckenden	27	OTHER
 abgestimmten	27	OTHER
@@ -49050,7 +49050,7 @@ gesamtwirtschaftlichen	27	OTHER
 OC	27	NOUN,OTHER
 Muammar	27	NOUN
 Karwoche	27	NOUN
-Reviere	27	NOUN
+Reviere	27	NOUN	Revier
 Preuß	27	NOUN,OTHER
 Halacha	27	NOUN
 drohender	27	OTHER
@@ -49062,16 +49062,16 @@ verspielt	27	OTHER
 Anreise	27	NOUN
 konstantinischen	27	NOUN,OTHER
 backslash	27	OTHER
-Tipps	27	NOUN
+Tipps	27	NOUN	Tipp
 Indra	27	NOUN
-Systematiken	27	NOUN
+Systematiken	27	NOUN	Systematik
 Endknoten	27	NOUN
 Kunstauffassung	27	NOUN
 gelesenen	27	OTHER
 Ortsrat	27	NOUN
 jagten	27	VERB
-Bündnissen	27	NOUN
-Kunstvereins	27	NOUN
+Bündnissen	27	NOUN	Bündnisse
+Kunstvereins	27	NOUN	Kunstverein
 Ahlers	27	NOUN
 errichteter	27	OTHER
 Elm	27	NOUN
@@ -49084,36 +49084,36 @@ Springschwänze	27	NOUN
 geschnitzte	27	OTHER
 Zugfolge	27	NOUN
 Alberti	27	NOUN
-Stühle	27	NOUN
+Stühle	27	NOUN	Stuhl
 Zustandsgleichung	27	NOUN
-Hummeln	27	NOUN
+Hummeln	27	NOUN	Hummel
 befällt	27	OTHER
-Ausgängen	27	NOUN
+Ausgängen	27	NOUN	Ausgang
 Schloßstraße	27	NOUN
 Nominalklassen	27	NOUN
 gravitativen	27	OTHER
 Überbevölkerung	27	NOUN
 Antifaschismus	27	NOUN
 Gesellschaftstheorie	27	NOUN
-Weltfriedens	27	NOUN
-Betriebsarten	27	NOUN
+Weltfriedens	27	NOUN	Weltfrieden
+Betriebsarten	27	NOUN	Betriebsart
 nachgerüstet	27	OTHER
-Gesellschaftsformen	27	NOUN
+Gesellschaftsformen	27	NOUN	Gesellschaftsform
 Pythia	27	NOUN
 Taufbecken	27	NOUN
 Ikonografie	27	NOUN
 mythischer	27	OTHER
 Signalisierung	27	NOUN
 Deum	27	NOUN
-Reagans	27	NOUN
-Nationalbewusstseins	27	NOUN
+Reagans	27	NOUN	Reagan
+Nationalbewusstseins	27	NOUN	Nationalbewusstsein
 Rochelle	27	NOUN
 Guise	27	NOUN
 siebter	27	OTHER
 Werl	27	NOUN
 Heranwachsende	27	NOUN,OTHER
 Millionär	27	NOUN
-Hawaiis	27	NOUN
+Hawaiis	27	NOUN	Hawaii
 Habsburgerreich	27	NOUN
 Naturheilkunde	27	NOUN
 Płock	27	NOUN
@@ -49130,7 +49130,7 @@ Verunglimpfung	27	NOUN
 haploiden	27	OTHER
 eifersüchtig	27	OTHER
 Nadelwald	27	NOUN
-Nachbarstädte	27	NOUN
+Nachbarstädte	27	NOUN	Nachbarstadt
 Windkanal	27	NOUN
 Hinrichtungsstätte	27	NOUN
 Pünktlichkeit	27	NOUN
@@ -49139,10 +49139,10 @@ motivierter	27	OTHER
 Beulenpest	27	NOUN
 Rapp	27	NOUN
 Bibliografie	27	NOUN
-Flussnamen	27	NOUN
+Flussnamen	27	NOUN	Flussname
 Inntal	27	NOUN
 Fernmeldeunion	27	NOUN
-Allendes	27	NOUN
+Allendes	27	NOUN	Allende
 kommerzielles	27	OTHER
 Ileus	27	NOUN
 Joanne	27	NOUN
@@ -49153,7 +49153,7 @@ Fremdenfeindlichkeit	27	NOUN
 Politics	27	NOUN,OTHER
 Teilungsplan	27	NOUN
 zehnjährige	27	OTHER
-Predigers	27	NOUN
+Predigers	27	NOUN	Prediger
 Brück	27	NOUN
 Schlosser	27	NOUN
 Südmähren	27	NOUN
@@ -49162,20 +49162,20 @@ Originalsprache	27	NOUN
 Unabhängigkeitstag	27	NOUN
 Redekunst	27	NOUN
 Friedemann	27	NOUN
-Vivaldis	27	NOUN
+Vivaldis	27	NOUN	Vivaldi
 Piktogramm	27	NOUN
 Hallenser	27	NOUN
 EPG	27	NOUN
 einräumt	27	OTHER
 Schickard	27	NOUN
-Kuratoriums	27	NOUN
+Kuratoriums	27	NOUN	Kuratorium
 Chronica	27	NOUN
 kunsthistorische	27	OTHER
-Palmas	27	NOUN
+Palmas	27	NOUN	Palma
 Elton	27	NOUN
-Hochwassern	27	NOUN
+Hochwassern	27	NOUN	Hochwasser
 Betsaal	27	NOUN
-Happenings	27	NOUN
+Happenings	27	NOUN	Happening
 Kagel	27	NOUN
 mitzunehmen	27	VERB
 MiNr	27	NOUN
@@ -49186,11 +49186,11 @@ Erstsprache	27	NOUN
 Yellowknife	27	NOUN
 Innenhafen	27	NOUN
 Öresundbrücke	27	NOUN
-Phasenübergänge	27	NOUN
+Phasenübergänge	27	NOUN	Phasenübergang
 Valladolid	27	NOUN
 Ostfalen	27	NOUN
 Delfin	27	NOUN
-Drakes	27	NOUN
+Drakes	27	NOUN	Drake
 Neuspanien	27	NOUN
 Guadalupe	27	NOUN
 silbernem	27	OTHER
@@ -49198,7 +49198,7 @@ Heymann	27	NOUN
 Builder	27	NOUN
 Hochschulstadt	27	NOUN
 Stratford	27	NOUN
-Priestertums	27	NOUN
+Priestertums	27	NOUN	Priestertum
 Aufhängung	27	NOUN
 geopolitischen	27	OTHER
 nurmehr	27	OTHER
@@ -49207,11 +49207,11 @@ Schadsoftware	27	NOUN
 Augustinerkloster	27	NOUN
 Spindel	27	NOUN
 Bezirksamtes	27	NOUN
-Erkennungsnummern	27	NOUN
+Erkennungsnummern	27	NOUN	Erkennungsnummer
 Augenheilkunde	27	NOUN
 Volapük	27	NOUN
 Ausleihe	27	NOUN
-Eigenzustände	27	NOUN
+Eigenzustände	27	NOUN	Eigenzustand
 Buttenheim	27	NOUN
 Londinium	27	NOUN
 Hausnummer	27	NOUN
@@ -49226,29 +49226,29 @@ Baumstamm	27	NOUN
 Wasserstraßenkreuz	27	NOUN
 Vorpommersche	27	NOUN,OTHER
 Synthase	27	NOUN
-Schwärmen	27	NOUN
+Schwärmen	27	NOUN	Schwarm
 Vertragspartei	27	NOUN
 Myrrhe	27	NOUN
-Stöcken	27	NOUN
+Stöcken	27	NOUN	Stock
 Kinderspielzeug	27	NOUN
 Mykologie	27	NOUN
 Anatol	27	NOUN
 Entity	27	NOUN,OTHER
 Holzbau	27	NOUN
 Lafayette	27	NOUN
-Vierecks	27	NOUN
+Vierecks	27	NOUN	Viereck
 Kilometrierung	27	NOUN
-Stacks	27	NOUN
+Stacks	27	NOUN	Stack
 Wiedereinsetzung	27	NOUN
 Gleitschirmfliegen	27	NOUN
 Partitionierung	27	NOUN
 Aigeus	27	NOUN
 Amtsverwaltung	27	NOUN
-Schreine	27	NOUN
+Schreine	27	NOUN	Schrein
 Durchfluss	27	NOUN
 IJsselmeer	27	NOUN
 Overijssel	27	NOUN
-Lippes	27	NOUN
+Lippes	27	NOUN	Lippe
 Henne	27	NOUN
 Terneuzen	27	NOUN
 oldenburgische	27	NOUN,OTHER
@@ -49266,7 +49266,7 @@ niedersorbische	27	NOUN,OTHER
 Verkaufserfolg	27	NOUN
 Zisterzienserkloster	27	NOUN
 Almwirtschaft	27	NOUN
-Buchenwälder	27	NOUN
+Buchenwälder	27	NOUN	Buchenwald
 Rzeczpospolita	27	NOUN
 Jarosław	27	NOUN
 Prälat	27	NOUN
@@ -49274,16 +49274,16 @@ Humanae	27	NOUN,OTHER
 malerisch	27	OTHER
 Horta	27	NOUN
 LBS	27	NOUN,OTHER
-Fernsehnormen	27	NOUN
+Fernsehnormen	27	NOUN	Fernsehnorm
 priesterliche	27	OTHER
 Hofgericht	27	NOUN
 Karibikküste	27	NOUN
 Creutzfeldt	27	NOUN
-Lithographien	27	NOUN
+Lithographien	27	NOUN	Lithographie
 Bukarester	27	NOUN
 Abstraktionsprinzip	27	NOUN
 Buddenbrooks	27	NOUN
-Kleinbahnen	27	NOUN
+Kleinbahnen	27	NOUN	Kleinbahn
 Hauptuntersuchung	27	NOUN
 Giacometti	27	NOUN
 Saaletal	27	NOUN
@@ -49296,7 +49296,7 @@ Hengst	27	NOUN
 Thermografie	27	NOUN
 Zener	27	NOUN
 Tories	27	NOUN
-Eunuchen	27	NOUN
+Eunuchen	27	NOUN	Eunuch
 Hiva	27	NOUN
 Volksparkstadion	27	NOUN
 Hradec	27	NOUN
@@ -49304,16 +49304,16 @@ Sima	27	NOUN
 Boxermotor	27	NOUN
 Polonisierung	27	NOUN
 Patina	27	NOUN
-Schnabeltiere	27	NOUN
-Kegels	27	NOUN
+Schnabeltiere	27	NOUN	Schnabeltier
+Kegels	27	NOUN	Kegel
 indoarische	27	OTHER
-Visums	27	NOUN
+Visums	27	NOUN	Visum
 Wagenburg	27	NOUN
 Jungfraubahn	27	NOUN
 Luzon	27	NOUN
 Kirgisen	27	NOUN
 Angoulême	27	NOUN
-Khanats	27	NOUN
+Khanats	27	NOUN	Khanat
 Farel	27	NOUN
 Gwynedd	27	NOUN
 Semgallen	27	NOUN
@@ -49331,7 +49331,7 @@ Litas	27	NOUN
 Unguja	27	NOUN
 Malaien	27	NOUN
 Siegener	27	NOUN
-Augsburgs	27	NOUN
+Augsburgs	27	NOUN	Augsburg
 skythische	27	OTHER
 AWV	27	NOUN
 Williamsburg	27	NOUN
@@ -49340,7 +49340,7 @@ Schmerztherapie	27	NOUN
 Verbandsversammlung	27	NOUN
 Derain	27	NOUN
 Meidner	27	NOUN
-Boxermotoren	27	NOUN
+Boxermotoren	27	NOUN	Boxermotor
 Bendel	27	NOUN
 Landvogt	27	NOUN
 Ude	27	NOUN
@@ -49349,21 +49349,21 @@ Kahnweiler	27	NOUN
 Ephoren	27	NOUN
 Mattheuer	27	NOUN
 Thess	27	NOUN
-Feeds	27	NOUN
+Feeds	27	NOUN	Feed
 Brynhild	27	NOUN
 Thadden	27	NOUN
 Witwenverbrennung	27	NOUN
 Solidi	27	NOUN
 hesychastische	27	OTHER
 Jogiches	27	NOUN
-Hartmetalle	27	NOUN
+Hartmetalle	27	NOUN	Hartmetall
 Hasselfelde	27	NOUN
 bipartiten	27	OTHER
 Wengernalpbahn	27	NOUN
 Bodetal	27	NOUN
 Rheda	27	NOUN
 Kalachakra	27	NOUN
-Kriemhilds	27	NOUN
+Kriemhilds	27	NOUN	Kriemhild
 Abschn	27	NOUN
 Katane	27	NOUN
 Schlebusch	27	NOUN
@@ -49383,27 +49383,27 @@ Hull	26	NOUN
 althergebrachten	26	OTHER
 Interest	26	NOUN
 Jahresgehalt	26	NOUN
-Tonfilms	26	NOUN
+Tonfilms	26	NOUN	Tonfilm
 Rettungsboot	26	NOUN
-Schauplätzen	26	NOUN
+Schauplätzen	26	NOUN	Schauplatz
 stilbildend	26	OTHER
 bevorzugter	26	OTHER
-Nebenfiguren	26	NOUN
+Nebenfiguren	26	NOUN	Nebenfigur
 blonde	26	OTHER
 harmlosen	26	OTHER
-Zuschauers	26	NOUN
+Zuschauers	26	NOUN	Zuschauer
 Herb	26	NOUN,OTHER
 improvisieren	26	VERB
 beisteuerte	26	OTHER
 Mort	26	NOUN,OTHER
 Kaurismäki	26	NOUN
-Fernsehfilmen	26	NOUN
+Fernsehfilmen	26	NOUN	Fernsehfilm
 pornografische	26	OTHER
 Jugendkultur	26	NOUN
 Akira	26	NOUN
 Stirb	26	NOUN,OTHER
 Reno	26	NOUN
-Lavoisiers	26	NOUN
+Lavoisiers	26	NOUN	Lavoisier
 giftiges	26	OTHER
 heranwachsen	26	NOUN,OTHER
 Titelsong	26	NOUN
@@ -49430,10 +49430,10 @@ Margaretha	26	NOUN
 Flaubert	26	NOUN
 Eka	26	NOUN
 Emilio	26	NOUN
-Alkalimetallen	26	NOUN
+Alkalimetallen	26	NOUN	Alkalimetall
 explosiv	26	OTHER
 Radionuklidbatterien	26	NOUN
-Fließgewässern	26	NOUN
+Fließgewässern	26	NOUN	Fließgewässer
 Fluorit	26	NOUN
 molekularem	26	OTHER
 zerteilt	26	OTHER
@@ -49449,7 +49449,7 @@ abgehoben	26	VERB
 geordneter	26	OTHER
 Militärmacht	26	NOUN
 Phalanx	26	NOUN
-Reichtümer	26	NOUN
+Reichtümer	26	NOUN	Reichtum
 Großzügigkeit	26	NOUN
 Insellage	26	NOUN
 rebellischen	26	OTHER
@@ -49481,16 +49481,16 @@ merkwürdig	26	OTHER
 Anglizismus	26	NOUN
 Fluktuation	26	NOUN
 veränderlicher	26	OTHER
-Turings	26	NOUN
+Turings	26	NOUN	Turing
 Analytical	26	NOUN
 gegenseitigem	26	OTHER
 kulturgeschichtliche	26	OTHER
-Zeitabschnitte	26	NOUN
+Zeitabschnitte	26	NOUN	Zeitabschnitt
 unnötige	26	OTHER
 Shang	26	NOUN
 Fußes	26	NOUN
 Beamtenschaft	26	NOUN
-Majors	26	NOUN
+Majors	26	NOUN	Major
 Stellungskrieg	26	NOUN
 algorithmische	26	OTHER
 Croft	26	NOUN
@@ -49499,7 +49499,7 @@ lächerliche	26	OTHER
 fleischigen	26	OTHER
 sudanesische	26	OTHER
 kolumbianischen	26	OTHER
-Eierstöcke	26	NOUN
+Eierstöcke	26	NOUN	Eierstock
 archimedische	26	OTHER
 hydrostatischen	26	OTHER
 Planetarien	26	NOUN
@@ -49507,13 +49507,13 @@ Regiomontanus	26	NOUN
 Porphyrios	26	NOUN
 Geistesgeschichte	26	NOUN
 Ausgewogenheit	26	NOUN
-Stilmitteln	26	NOUN
-Widerspruchs	26	NOUN
-Allgemeinbegriffe	26	NOUN
+Stilmitteln	26	NOUN	Stilmittel
+Widerspruchs	26	NOUN	Widerspruch
+Allgemeinbegriffe	26	NOUN	Allgemeinbegriff
 Klumpen	26	NOUN
 Ausgangszustand	26	NOUN
 stofflichen	26	OTHER
-Gesamtwerks	26	NOUN
+Gesamtwerks	26	NOUN	Gesamtwerk
 niederer	26	OTHER
 einschlägig	26	OTHER
 dualistischen	26	OTHER
@@ -49526,14 +49526,14 @@ bairische	26	OTHER
 popularisiert	26	OTHER
 Russlanddeutsche	26	NOUN,OTHER
 Liniennetz	26	NOUN
-Polytechnischen	26	NOUN
+Polytechnischen	26	NOUN	Polytechnische
 Ministeramt	26	NOUN
 Gerda	26	NOUN
 Wahlerfolg	26	NOUN
 entschuldigt	26	OTHER
 Abschreibungen	26	NOUN
 Kanzlerin	26	NOUN
-Käufern	26	NOUN
+Käufern	26	NOUN	Käufer
 Moratorium	26	NOUN
 verdichteten	26	VERB
 Ökosteuer	26	NOUN
@@ -49557,14 +49557,14 @@ Samsara	26	NOUN
 breitem	26	OTHER
 Gottesbegriff	26	NOUN
 sicherstellt	26	OTHER
-Vorbilds	26	NOUN
+Vorbilds	26	NOUN	Vorbild
 erlaube	26	OTHER
 Zinnemann	26	NOUN
 ungeordnet	26	OTHER
 Temperaturverlauf	26	NOUN
 einzuteilen	26	VERB
 Temperaturabhängigkeit	26	NOUN
-Klaviers	26	NOUN
+Klaviers	26	NOUN	Klavier
 Betteln	26	NOUN,OTHER
 Chorasan	26	NOUN
 Schutztruppe	26	NOUN
@@ -49581,19 +49581,19 @@ Christiansen	26	NOUN
 Privatvermögen	26	NOUN
 Ausschweifungen	26	NOUN
 rätselhaften	26	OTHER
-Manifestationen	26	NOUN
-Zirkeln	26	NOUN
+Manifestationen	26	NOUN	Manifestation
+Zirkeln	26	NOUN	Zirkel
 standardisierter	26	OTHER
 trete	26	OTHER
 Drehpunkt	26	NOUN
 Gesäß	26	NOUN
 optionalen	26	OTHER
 Nashville	26	NOUN
-Weltbilds	26	NOUN
+Weltbilds	26	NOUN	Weltbild
 einmaliger	26	OTHER
 Marmarameer	26	NOUN
 Gautama	26	NOUN
-Mitgliedsländern	26	NOUN
+Mitgliedsländern	26	NOUN	Mitgliedsland
 Kontrollratsgesetz	26	NOUN
 Arbeitsorganisation	26	NOUN
 Triumvirat	26	NOUN
@@ -49603,7 +49603,7 @@ Capri	26	NOUN
 verfasster	26	OTHER
 erdgeschichtlichen	26	OTHER
 Zittern	26	NOUN,OTHER
-Armes	26	NOUN,OTHER
+Armes	26	NOUN,OTHER	Arm
 eingenommene	26	OTHER
 Vischer	26	NOUN
 durchsichtige	26	OTHER
@@ -49617,7 +49617,7 @@ Touchscreen	26	NOUN
 Outdoor	26	NOUN
 angepasster	26	OTHER
 gesprochener	26	OTHER
-Drittanbietern	26	NOUN
+Drittanbietern	26	NOUN	Drittanbieter
 Arisierung	26	NOUN
 Reichsarbeitsdienst	26	NOUN
 Deutschtum	26	NOUN
@@ -49635,17 +49635,17 @@ Opernsänger	26	NOUN
 ökonomisches	26	OTHER
 beeindruckend	26	OTHER
 unentdeckt	26	OTHER
-Pfarrern	26	NOUN
+Pfarrern	26	NOUN	Pfarrer
 enteignete	26	OTHER
 neugeschaffene	26	OTHER
 zunahmen	26	VERB
-Urals	26	NOUN
+Urals	26	NOUN	Ural
 unterschiedslos	26	OTHER
 Plötzensee	26	NOUN
 zugetragen	26	VERB
 Machtstrukturen	26	NOUN
 forcieren	26	VERB
-Lehrkräften	26	NOUN
+Lehrkräften	26	NOUN	Lehrkräfte
 Toulon	26	NOUN
 flüchtig	26	OTHER
 Speicherbedarf	26	NOUN
@@ -49659,25 +49659,25 @@ Ariadne	26	NOUN
 Conan	26	NOUN
 Haupteinnahmequelle	26	NOUN
 Gespür	26	NOUN
-Krimis	26	NOUN
-Teilstreitkräfte	26	NOUN
+Krimis	26	NOUN	Krimi
+Teilstreitkräfte	26	NOUN	Teilstreitkraft
 öffnenden	26	OTHER
 entgegenwirkt	26	OTHER
 schwebende	26	OTHER
 asymptotisch	26	OTHER
 Verkehrssicherheit	26	NOUN
-Verkehrstoten	26	NOUN
+Verkehrstoten	26	NOUN	Verkehrstote
 fingen	26	VERB
 Motorradfahrer	26	NOUN
-Paläontologen	26	NOUN
+Paläontologen	26	NOUN	Paläontologe
 erdgeschichtlich	26	OTHER
-Entdeckers	26	NOUN
+Entdeckers	26	NOUN	Entdecker
 anatomischer	26	OTHER
 hässlich	26	OTHER
 Ladungsmenge	26	NOUN
-Solaranlagen	26	NOUN
+Solaranlagen	26	NOUN	Solaranlage
 Avogadro	26	NOUN
-Fixpunkte	26	NOUN
+Fixpunkte	26	NOUN	Fixpunkt
 montierten	26	VERB
 Charpentier	26	NOUN
 Münsteraner	26	NOUN
@@ -49706,11 +49706,11 @@ Marcello	26	NOUN
 Tierra	26	NOUN,OTHER
 unberührten	26	OTHER
 Perón	26	NOUN
-Achsenmächten	26	NOUN
+Achsenmächten	26	NOUN	Achsenmächte
 nahestehen	26	VERB
-Wahlperioden	26	NOUN
+Wahlperioden	26	NOUN	Wahlperiode
 Mehrheitsverhältnisse	26	NOUN
-Kirchners	26	NOUN
+Kirchners	26	NOUN	Kirchner
 Superstar	26	NOUN
 Länderspiel	26	NOUN
 gekochten	26	OTHER
@@ -49723,36 +49723,36 @@ präpariert	26	OTHER
 Indianapolis	26	NOUN
 Götzen	26	NOUN
 Rundkurs	26	NOUN
-Nachahmungen	26	NOUN
+Nachahmungen	26	NOUN	Nachahmung
 Fernwirkung	26	NOUN
 Vibration	26	NOUN
 Amharisch	26	NOUN
 Partizipien	26	NOUN
 Languages	26	NOUN,OTHER
 Rückschritt	26	NOUN
-Festkörpers	26	NOUN
+Festkörpers	26	NOUN	Festkörper
 Energieniveau	26	NOUN
 Rüssel	26	NOUN
 abgelegten	26	OTHER
 verklebt	26	OTHER
-Darms	26	NOUN
+Darms	26	NOUN	Darm
 Spinnentiere	26	NOUN
 Peristaltik	26	NOUN
 Anschwellen	26	NOUN,OTHER
 verzweigen	26	VERB
-Verdiensten	26	NOUN
-Fernwanderwege	26	NOUN
+Verdiensten	26	NOUN	Verdienst
+Fernwanderwege	26	NOUN	Fernwanderweg
 Nino	26	NOUN
 Camulodunum	26	NOUN
 existierendes	26	OTHER
-Förderprogramme	26	NOUN
+Förderprogramme	26	NOUN	Förderprogramm
 Pleonasmus	26	NOUN
-Coverversionen	26	NOUN
-Rangstufen	26	NOUN
+Coverversionen	26	NOUN	Coverversion
+Rangstufen	26	NOUN	Rangstufe
 evolutionärer	26	OTHER
 indizierte	26	OTHER
 Blankensee	26	NOUN
-Rechtsgelehrten	26	NOUN
+Rechtsgelehrten	26	NOUN	Rechtsgelehrte
 Denunziation	26	NOUN
 stoppt	26	OTHER
 vorgegebener	26	OTHER
@@ -49760,7 +49760,7 @@ Ortsbezeichnung	26	NOUN
 Auswendiglernen	26	NOUN
 Allophone	26	NOUN
 DWG	26	NOUN
-Grundrisse	26	NOUN
+Grundrisse	26	NOUN	Grundriss
 ehrenhalber	26	OTHER
 berufliches	26	OTHER
 Diminutiv	26	NOUN
@@ -49770,13 +49770,13 @@ diffuse	26	OTHER
 phasenweise	26	OTHER
 Stéphane	26	NOUN
 sichtlich	26	OTHER
-Lebensumständen	26	NOUN
+Lebensumständen	26	NOUN	Lebensumstände
 Psychoanalytikerin	26	NOUN
 Neuchâtel	26	NOUN
 Offset	26	NOUN
 fehlendem	26	OTHER
 zweistufigen	26	OTHER
-Stuarts	26	NOUN
+Stuarts	26	NOUN	Stuart
 Bebenhausen	26	NOUN
 personifizierten	26	VERB
 ruhend	26	OTHER
@@ -49790,7 +49790,7 @@ Pergamonmuseum	26	NOUN
 Muttermilch	26	NOUN
 Flavonoide	26	NOUN
 plc	26	NOUN,OTHER
-Elektrolyte	26	NOUN
+Elektrolyte	26	NOUN	Elektrolyt
 Borkum	26	NOUN
 Karpatenvorland	26	NOUN
 EOS	26	NOUN
@@ -49801,7 +49801,7 @@ Graphiker	26	NOUN
 diskriminierend	26	OTHER
 Fragebögen	26	NOUN
 vererben	26	VERB
-Pestiziden	26	NOUN
+Pestiziden	26	NOUN	Pestizid
 Gütesiegel	26	NOUN
 Stolze	26	NOUN,OTHER
 Teststrecke	26	NOUN
@@ -49815,65 +49815,65 @@ geodätischen	26	OTHER
 Kalkalpen	26	NOUN
 Füssen	26	NOUN
 Mittelstaaten	26	NOUN
-Stimmenanteile	26	NOUN
+Stimmenanteile	26	NOUN	Stimmenanteil
 heraldischen	26	OTHER
 Staatsgebilde	26	NOUN
-Planungsregionen	26	NOUN
-Bahnverbindungen	26	NOUN
+Planungsregionen	26	NOUN	Planungsregion
+Bahnverbindungen	26	NOUN	Bahnverbindung
 Bartholomä	26	NOUN
 Fronleichnam	26	NOUN
 Fachoberschule	26	NOUN
 Indians	26	NOUN
 Grill	26	NOUN
-Bauernkrieges	26	NOUN
+Bauernkrieges	26	NOUN	Bauernkrieg
 Bauernaufstand	26	NOUN
 Grenzgänger	26	NOUN
 Höhendifferenz	26	NOUN
 fotografisch	26	OTHER
 viertklassigen	26	OTHER
-Rennstrecken	26	NOUN
+Rennstrecken	26	NOUN	Rennstrecke
 Wasserball	26	NOUN
 RK	26	NOUN
 Abarbeitung	26	NOUN
 Initialisierung	26	NOUN
-Zugriffs	26	NOUN
+Zugriffs	26	NOUN	Zugriff
 Interrupt	26	NOUN
 Irma	26	NOUN
 Filmgesellschaft	26	NOUN
 Hohelied	26	NOUN
 flüchtet	26	OTHER
 Premio	26	NOUN
-Eintrittskarten	26	NOUN
+Eintrittskarten	26	NOUN	Eintrittskarte
 Karteikarten	26	NOUN
 Klaproth	26	NOUN
 Magmen	26	NOUN
 hexagonalen	26	OTHER
-Urans	26	NOUN
+Urans	26	NOUN	Uran
 Altbauten	26	NOUN
 Salzwiesen	26	NOUN
 Gastprofessor	26	NOUN
 IAA	26	NOUN
 Betäubungsmittelgesetz	26	NOUN
-Grundstoffe	26	NOUN
-Schulbüchern	26	NOUN
+Grundstoffe	26	NOUN	Grundstoff
+Schulbüchern	26	NOUN	Schulbuch
 Landesrecht	26	NOUN
 Straßenseite	26	NOUN
 Erholungsfläche	26	NOUN
 TIFF	26	NOUN,OTHER
-Gewerbegebieten	26	NOUN
+Gewerbegebieten	26	NOUN	Gewerbegebiet
 Torbogen	26	NOUN
 Portsmouth	26	NOUN
 Talking	26	NOUN
 Storage	26	NOUN
 Denver	26	NOUN
 Wuchsform	26	NOUN
-Kaufhäusern	26	NOUN
+Kaufhäusern	26	NOUN	Kaufhaus
 Hermannsdenkmal	26	NOUN
 Flächennutzung	26	NOUN
-Eiszeitalters	26	NOUN
+Eiszeitalters	26	NOUN	Eiszeitalter
 bekrönt	26	OTHER
 zurückversetzt	26	OTHER
-Chors	26	NOUN
+Chors	26	NOUN	Chor
 Segelflug	26	NOUN
 Hochbehälter	26	NOUN
 Autofähre	26	NOUN
@@ -49881,7 +49881,7 @@ Ferienstraße	26	NOUN
 ganzjährigen	26	OTHER
 revidierten	26	VERB
 befährt	26	OTHER
-Notsituationen	26	NOUN
+Notsituationen	26	NOUN	Notsituation
 Parteispitze	26	NOUN
 gewollte	26	OTHER
 Gewaltmonopol	26	NOUN
@@ -49894,21 +49894,21 @@ Chalumeau	26	NOUN
 subtile	26	OTHER
 Basso	26	NOUN,OTHER
 beschwor	26	OTHER
-Abfolgen	26	NOUN
+Abfolgen	26	NOUN	Abfolge
 längerfristigen	26	OTHER
 Grenzübertritt	26	NOUN
 Sportboote	26	NOUN
 Gesamtkonzept	26	NOUN
-Auktionen	26	NOUN
+Auktionen	26	NOUN	Auktion
 veräußern	26	VERB
 eingeschnittenen	26	OTHER
 thrakischen	26	OTHER
 Schiffswerft	26	NOUN
-Istanbuls	26	NOUN
+Istanbuls	26	NOUN	Istanbul
 Harem	26	NOUN
 austretenden	26	OTHER
 durchschneidet	26	OTHER
-Hitzewellen	26	NOUN
+Hitzewellen	26	NOUN	Hitzewelle
 Küstenschutz	26	NOUN
 namentliche	26	OTHER
 Außenposten	26	NOUN
@@ -49917,12 +49917,12 @@ Preisklasse	26	NOUN
 Sendegebiet	26	NOUN
 Missingsch	26	NOUN
 kooperierten	26	VERB
-Turniers	26	NOUN
+Turniers	26	NOUN	Turnier
 Coach	26	NOUN
-Laboren	26	NOUN
+Laboren	26	NOUN	Labor
 hormonelle	26	OTHER
 Anwendungsmöglichkeiten	26	NOUN
-Basenpaaren	26	NOUN
+Basenpaaren	26	NOUN	Basenpaare
 Pyrénées	26	NOUN
 steinzeitlichen	26	OTHER
 tolerierte	26	OTHER
@@ -49933,61 +49933,61 @@ institutionalisierten	26	VERB,OTHER
 UBS	26	NOUN
 nordindischen	26	OTHER
 Gyatso	26	NOUN
-vedische	26	NOUN,OTHER
+vedische	26	NOUN,OTHER	vedisch
 Castelli	26	NOUN
 Schriftkultur	26	NOUN
 Bast	26	NOUN
-Glaubensfragen	26	NOUN
+Glaubensfragen	26	NOUN	Glaubensfrage
 Testamentum	26	NOUN,OTHER
 stellvertretendes	26	OTHER
 Huldrych	26	NOUN
 Ismael	26	NOUN
-Anastasios	26	NOUN
+Anastasios	26	NOUN	Anastasio
 Steueraufkommen	26	NOUN
 Dukas	26	NOUN
 expandieren	26	VERB
-Anrufe	26	NOUN
+Anrufe	26	NOUN	Anruf
 Inspirationsquelle	26	NOUN
 zusammenfinden	26	VERB
 gebirgig	26	OTHER
 Wagons	26	NOUN
 Lits	26	NOUN
 Braunbär	26	NOUN
-Nachbarorte	26	NOUN
+Nachbarorte	26	NOUN	Nachbarort
 Wirtschaftsbereich	26	NOUN
 Heißluftballon	26	NOUN
 Champagner	26	NOUN
-Schlachtschiffe	26	NOUN
+Schlachtschiffe	26	NOUN	Schlachtschiff
 TN	26	NOUN
-Fliegerbomben	26	NOUN
+Fliegerbomben	26	NOUN	Fliegerbombe
 Rechberg	26	NOUN
-Guineas	26	NOUN
+Guineas	26	NOUN	Guinea
 stürmische	26	OTHER
 putschte	26	OTHER
-Oberrheingrabens	26	NOUN
+Oberrheingrabens	26	NOUN	Oberrheingraben
 grösstenteils	26	OTHER
 Deutschschweizer	26	NOUN
 Dornach	26	NOUN
-Wohngebäuden	26	NOUN
+Wohngebäuden	26	NOUN	Wohngebäude
 Bauausführung	26	NOUN
 schnellstmöglich	26	OTHER
 Kreiseinteilung	26	NOUN
-Protektorats	26	NOUN
+Protektorats	26	NOUN	Protektorat
 Jaroslav	26	NOUN
 konstruktives	26	OTHER
-Amtsperioden	26	NOUN
+Amtsperioden	26	NOUN	Amtsperiode
 Barzel	26	NOUN
 erpressen	26	VERB
 transatlantische	26	OTHER
 amtierten	26	VERB
 landläufig	26	OTHER
 Bengalisch	26	NOUN
-Monsuns	26	NOUN
+Monsuns	26	NOUN	Monsun
 Yahya	26	NOUN
 säkularer	26	OTHER
 ratifizierten	26	VERB
 ungenügende	26	OTHER
-Hüte	26	NOUN
+Hüte	26	NOUN	Hut
 Kolkata	26	NOUN
 einlud	26	OTHER
 Oppositionsbewegung	26	NOUN
@@ -50001,16 +50001,16 @@ Rädelsführer	26	NOUN
 rätselhafte	26	OTHER
 Nazismus	26	NOUN
 Prakrit	26	NOUN
-Postpositionen	26	NOUN
-Flugplätzen	26	NOUN
+Postpositionen	26	NOUN	Postposition
+Flugplätzen	26	NOUN	Flugplatz
 überstiegen	26	VERB
-Isomere	26	NOUN,OTHER
+Isomere	26	NOUN,OTHER	Isomer
 tägliches	26	OTHER
 Ordensleute	26	NOUN
 Loci	26	NOUN,OTHER
-Kongregationen	26	NOUN
+Kongregationen	26	NOUN	Kongregation
 Melk	26	NOUN
-Testamentes	26	NOUN
+Testamentes	26	NOUN	Testament
 Disentis	26	NOUN
 Eber	26	NOUN
 Liegenschaft	26	NOUN
@@ -50022,31 +50022,31 @@ verrückte	26	OTHER
 Aznavour	26	NOUN
 kommissarischer	26	OTHER
 Buchenholz	26	NOUN
-Volksstämme	26	NOUN
+Volksstämme	26	NOUN	Volksstamm
 sfondo	26	OTHER
 anchor	26	OTHER
-Parlamentspräsidenten	26	NOUN
+Parlamentspräsidenten	26	NOUN	Parlamentspräsident
 Guadeloupe	26	NOUN
-Erklärungsansätze	26	NOUN
-Argumentationen	26	NOUN
-Bernsteinarten	26	NOUN
+Erklärungsansätze	26	NOUN	Erklärungsansatz
+Argumentationen	26	NOUN	Argumentation
+Bernsteinarten	26	NOUN	Bernsteinart
 Jungpaläolithikum	26	NOUN
 zierte	26	OTHER
 glühende	26	OTHER
-Weltraumteleskops	26	NOUN
+Weltraumteleskops	26	NOUN	Weltraumteleskop
 Uhrturm	26	NOUN
 Fliesen	26	NOUN
 Bremsstrahlung	26	NOUN
 Eddington	26	NOUN
 Landesgesetz	26	NOUN
-Hauptverkehrszeiten	26	NOUN
+Hauptverkehrszeiten	26	NOUN	Hauptverkehrszeit
 herausragendsten	26	OTHER
 Ferenc	26	NOUN
 Fernzüge	26	NOUN
 Bahnbetriebswerk	26	NOUN
 vorrangigen	26	OTHER
 Kaskade	26	NOUN
-Monomeren	26	NOUN,OTHER
+Monomeren	26	NOUN,OTHER	Monomer
 Wärmeerzeugung	26	NOUN
 Wasserbedarf	26	NOUN
 Zweiflügler	26	NOUN
@@ -50055,18 +50055,18 @@ Corneille	26	NOUN
 CES	26	NOUN
 unzufriedenen	26	OTHER
 Bewußtsein	26	NOUN
-Umschläge	26	NOUN
+Umschläge	26	NOUN	Umschlag
 gefaltete	26	OTHER
 Agriculture	26	NOUN,OTHER
 Theodora	26	NOUN
-Bänke	26	NOUN
-Schrifttums	26	NOUN
+Bänke	26	NOUN	Bank
+Schrifttums	26	NOUN	Schrifttum
 eigentümliche	26	OTHER
 Setup	26	NOUN
 Rechnernetz	26	NOUN
 Inf	26	NOUN,OTHER
 biegt	26	OTHER
-Stadtbrände	26	NOUN
+Stadtbrände	26	NOUN	Stadtbrand
 hinzog	26	OTHER
 überrannt	26	OTHER
 Feuerwehrhaus	26	NOUN
@@ -50074,10 +50074,10 @@ Lehrerbildung	26	NOUN
 Teilzeit	26	NOUN
 Bundesanwaltschaft	26	NOUN
 gesägt	26	OTHER
-Konfigurationen	26	NOUN
+Konfigurationen	26	NOUN	Konfiguration
 Sporophyt	26	NOUN
 Bez	26	NOUN,OTHER
-Karzinome	26	NOUN
+Karzinome	26	NOUN	Karzinom
 mitbestimmt	26	OTHER
 vorgetragenen	26	OTHER
 Lötzsch	26	NOUN
@@ -50085,9 +50085,9 @@ kostenloser	26	OTHER
 Fabius	26	NOUN
 Datenerhebung	26	NOUN
 sympathischen	26	OTHER
-Bundesgesetze	26	NOUN
+Bundesgesetze	26	NOUN	Bundesgesetz
 Bildungsstätte	26	NOUN
-Innenministers	26	NOUN
+Innenministers	26	NOUN	Innenminister
 ehedem	26	OTHER
 Garn	26	NOUN
 steckten	26	VERB
@@ -50103,21 +50103,21 @@ verteiltes	26	OTHER
 Wärmeabgabe	26	NOUN
 Asbest	26	NOUN
 Polyvinylchlorid	26	NOUN
-Kontraktionen	26	NOUN
+Kontraktionen	26	NOUN	Kontraktion
 Barbier	26	NOUN
-Mitwirkenden	26	NOUN,OTHER
-Saxophonisten	26	NOUN
-Musikstücken	26	NOUN
+Mitwirkenden	26	NOUN,OTHER	Mitwirkende
+Saxophonisten	26	NOUN	Saxophonist
+Musikstücken	26	NOUN	Musikstück
 geltendes	26	OTHER
 Bundesprüfstelle	26	NOUN
 Mehrspieler	26	NOUN
 werdender	26	OTHER
 kommandiert	26	OTHER
-Herrschaftsformen	26	NOUN
+Herrschaftsformen	26	NOUN	Herrschaftsform
 Fakt	26	NOUN
 Nomos	26	NOUN,OTHER
 Enemy	26	NOUN,OTHER
-Geschichtsschreibers	26	NOUN
+Geschichtsschreibers	26	NOUN	Geschichtsschreiber
 Verortung	26	NOUN
 damnatio	26	OTHER
 gleichstufige	26	OTHER
@@ -50127,7 +50127,7 @@ Hutterer	26	NOUN
 duldete	26	OTHER
 eingemeindete	26	OTHER
 zweigeschossigen	26	OTHER
-Zugpaare	26	NOUN
+Zugpaare	26	NOUN	Zugpaar
 Spartakusgruppe	26	NOUN
 Cauer	26	NOUN
 Reichstagsfraktion	26	NOUN
@@ -50135,14 +50135,14 @@ Reese	26	NOUN
 Sébastien	26	NOUN
 Lawson	26	NOUN
 Naturhistorischen	26	NOUN,OTHER
-Disks	26	NOUN,OTHER
+Disks	26	NOUN,OTHER	Disk
 Landschaftsmaler	26	NOUN
 Arosa	26	NOUN
 Dramaturg	26	NOUN
 humoristischen	26	OTHER
 artium	26	OTHER
 Kapverdischen	26	NOUN,OTHER
-Simons	26	NOUN
+Simons	26	NOUN	Simon
 bekanntere	26	OTHER
 Maui	26	NOUN
 Hunan	26	NOUN
@@ -50152,14 +50152,14 @@ Tagundnachtgleiche	26	NOUN
 Floor	26	NOUN,OTHER
 Chassis	26	NOUN
 Dienstmädchen	26	NOUN
-Orientalisten	26	NOUN
-Decks	26	NOUN
-Anbindungen	26	NOUN
+Orientalisten	26	NOUN	Orientalist
+Decks	26	NOUN	Deck
+Anbindungen	26	NOUN	Anbindung
 Ganzzahl	26	NOUN,OTHER
-Filmrollen	26	NOUN
+Filmrollen	26	NOUN	Filmrolle
 Champ	26	NOUN
 Kompilierung	26	NOUN
-Urhebers	26	NOUN
+Urhebers	26	NOUN	Urheber
 gewichtige	26	OTHER
 Albizzi	26	NOUN
 energischen	26	OTHER
@@ -50180,9 +50180,9 @@ Higgins	26	NOUN
 verfassungsgebenden	26	OTHER
 Spontaneität	26	NOUN
 Transzendentalphilosophie	26	NOUN
-Taschenbücher	26	NOUN
+Taschenbücher	26	NOUN	Taschenbuch
 UDF	26	NOUN
-Inhibitoren	26	NOUN
+Inhibitoren	26	NOUN	Inhibitor
 Datendurchsatz	26	NOUN
 Binärbaum	26	NOUN
 Helge	26	NOUN
@@ -50196,27 +50196,27 @@ secunda	26	OTHER
 gleichförmige	26	OTHER
 diffusen	26	OTHER
 Rechtsquelle	26	NOUN
-Schauprozesse	26	NOUN
+Schauprozesse	26	NOUN	Schauprozess
 Sowjetbürger	26	NOUN
 Bethaus	26	NOUN
 Landtagsabgeordnete	26	NOUN
-Jugendorganisationen	26	NOUN
-Schlossparks	26	NOUN
+Jugendorganisationen	26	NOUN	Jugendorganisation
+Schlossparks	26	NOUN	Schlosspark
 Sportstätte	26	NOUN
 erlebbar	26	OTHER
-Präsentationen	26	NOUN
-Weihnachtsmärkte	26	NOUN
+Präsentationen	26	NOUN	Präsentation
+Weihnachtsmärkte	26	NOUN	Weihnachtsmarkt
 Leistungssport	26	NOUN
 Anlagenbau	26	NOUN
-Mitgliedsbeiträge	26	NOUN
+Mitgliedsbeiträge	26	NOUN	Mitgliedsbeitrag
 außereuropäischer	26	OTHER
 Mulligan	26	NOUN
-Zugeständnissen	26	NOUN
+Zugeständnissen	26	NOUN	Zugeständnisse
 Lützen	26	NOUN
 Sächsisches	26	NOUN,OTHER
 Ehrenbreitstein	26	NOUN
 reorganisiert	26	OTHER
-Hochstifte	26	NOUN
+Hochstifte	26	NOUN	Hochstift
 eigenhändige	26	OTHER
 Fünfeck	26	NOUN
 geschwungene	26	OTHER
@@ -50225,17 +50225,17 @@ schwieriges	26	OTHER
 Unternehmensberatung	26	NOUN
 Kontaktlinse	26	NOUN
 Lynn	26	NOUN
-Telefonnummern	26	NOUN
+Telefonnummern	26	NOUN	Telefonnummer
 IETF	26	NOUN
 Potschappel	26	NOUN
 Schloßplatz	26	NOUN
 durchgängigen	26	OTHER
 Saxonia	26	NOUN
-Tennisplätze	26	NOUN
+Tennisplätze	26	NOUN	Tennisplatz
 Fuhrpark	26	NOUN
 Hauptzollamt	26	NOUN
 Attacke	26	NOUN
-Freundinnen	26	NOUN
+Freundinnen	26	NOUN	Freundin
 Seifert	26	NOUN
 Newcomen	26	NOUN
 Dampfes	26	NOUN
@@ -50248,12 +50248,12 @@ dänisches	26	OTHER
 stummen	26	OTHER
 Infinite	26	NOUN,OTHER
 Kupfersteinzeit	26	NOUN
-Sprengungen	26	NOUN
+Sprengungen	26	NOUN	Sprengung
 Henrietta	26	NOUN
 Militärbündnis	26	NOUN
 Gartenbohne	26	NOUN
 Viehfutter	26	NOUN
-Gänsen	26	NOUN
+Gänsen	26	NOUN	Gans
 Raubbau	26	NOUN
 Plastikmüll	26	NOUN
 Gemeindeleben	26	NOUN
@@ -50264,7 +50264,7 @@ Vorbedingung	26	NOUN
 Hollerith	26	NOUN
 Quinta	26	NOUN,OTHER
 latinisierten	26	VERB
-Labors	26	NOUN
+Labors	26	NOUN	Labor
 verdreifachte	26	OTHER
 Pasadena	26	NOUN
 betraten	26	VERB
@@ -50279,31 +50279,31 @@ Sprechgesang	26	NOUN
 Gehry	26	NOUN
 niederrheinische	26	NOUN,OTHER
 nordafrikanische	26	OTHER
-Schützenfeste	26	NOUN
+Schützenfeste	26	NOUN	Schützenfest
 Tanzschule	26	NOUN
 Marktsegment	26	NOUN
-Datenblöcke	26	NOUN
+Datenblöcke	26	NOUN	Datenblock
 zweitlängste	26	OTHER
-Kommissars	26	NOUN
+Kommissars	26	NOUN	Kommissar
 Foreman	26	NOUN
 Leander	26	NOUN
 Samenschale	26	NOUN
-Höhenstufen	26	NOUN
-Baches	26	NOUN
+Höhenstufen	26	NOUN	Höhenstufe
+Baches	26	NOUN	Bach
 Bahnhofes	26	NOUN
-Habitaten	26	NOUN
+Habitaten	26	NOUN	Habitat
 Mikrokosmos	26	NOUN
 Areopagita	26	NOUN
 Mirandola	26	NOUN
 Weltbund	26	NOUN
 Warning	26	NOUN,OTHER
 mündenden	26	OTHER
-Auftragsarbeiten	26	NOUN
+Auftragsarbeiten	26	NOUN	Auftragsarbeit
 Kreisliga	26	NOUN
 Eisenkern	26	NOUN
-Handelsgesellschaften	26	NOUN
+Handelsgesellschaften	26	NOUN	Handelsgesellschaft
 zweithäufigste	26	OTHER
-Bewegungsgleichungen	26	NOUN
+Bewegungsgleichungen	26	NOUN	Bewegungsgleichung
 Gibbs	26	NOUN
 Koordinatenursprung	26	NOUN
 inhomogenen	26	OTHER
@@ -50316,9 +50316,9 @@ verlaufender	26	OTHER
 Oszillation	26	NOUN
 Depeche	26	NOUN
 ungerechte	26	OTHER
-Zieles	26	NOUN
-Umformungen	26	NOUN
-Multiplikationen	26	NOUN
+Zieles	26	NOUN	Ziel
+Umformungen	26	NOUN	Umformung
+Multiplikationen	26	NOUN	Multiplikation
 Morsezeichen	26	NOUN
 Energieübertragung	26	NOUN
 Nara	26	NOUN
@@ -50326,11 +50326,11 @@ Gebrauchsmuster	26	NOUN
 marginale	26	OTHER
 Frontsoldaten	26	NOUN
 Kontinentaldrift	26	NOUN
-Intensitäten	26	NOUN
+Intensitäten	26	NOUN	Intensität
 Schräglage	26	NOUN
-Halbkugeln	26	NOUN
+Halbkugeln	26	NOUN	Halbkugel
 polarisierten	26	VERB
-Regenbogens	26	NOUN
+Regenbogens	26	NOUN	Regenbogen
 Bassam	26	NOUN
 ECOWAS	26	NOUN
 Atelierhaus	26	NOUN
@@ -50338,7 +50338,7 @@ Kitsch	26	NOUN
 Alterswerk	26	NOUN
 Umbaumaßnahmen	26	NOUN
 Oberklasse	26	NOUN
-Souvenirs	26	NOUN
+Souvenirs	26	NOUN	Souvenir
 teurere	26	OTHER
 Oa	26	NOUN,OTHER
 leeres	26	OTHER
@@ -50350,13 +50350,13 @@ abtragen	26	NOUN,OTHER
 Yosemite	26	NOUN
 Reichsschrifttumskammer	26	NOUN
 Bronzeplastik	26	NOUN
-Prismas	26	NOUN
+Prismas	26	NOUN	Prisma
 Arillus	26	NOUN
 essbar	26	OTHER
 AMR	26	NOUN,OTHER
-Naturen	26	NOUN,OTHER
+Naturen	26	NOUN,OTHER	Natur
 Huang	26	NOUN
-Arzneien	26	NOUN
+Arzneien	26	NOUN	Arznei
 Monatsschrift	26	NOUN
 Mindestabstand	26	NOUN
 Ostkolonisation	26	NOUN
@@ -50364,26 +50364,26 @@ Schola	26	NOUN,OTHER
 Wehlau	26	NOUN
 Nachtzug	26	NOUN
 gleichseitigen	26	OTHER
-Detektivs	26	NOUN
+Detektivs	26	NOUN	Detektiv
 Brook	26	NOUN
 Krafft	26	NOUN
 radikaleren	26	OTHER
 duales	26	OTHER
-Staufern	26	NOUN
+Staufern	26	NOUN	Staufer
 Noor	26	NOUN
 Graphik	26	NOUN
 DAV	26	NOUN
 Dorfschule	26	NOUN
-Zigarren	26	NOUN
+Zigarren	26	NOUN	Zigarre
 achtjährigen	26	OTHER
-Alltagsrouten	26	NOUN
+Alltagsrouten	26	NOUN	Alltagsroute
 solidarisch	26	OTHER
 Stadtgericht	26	NOUN
 RSV	26	NOUN
 mittellosen	26	OTHER
 träumt	26	OTHER
-Anklänge	26	NOUN
-Abzüge	26	NOUN
+Anklänge	26	NOUN	Anklang
+Abzüge	26	NOUN	Abzug
 Rückwand	26	NOUN
 Gepiden	26	NOUN
 Nachfolgeregelung	26	NOUN
@@ -50395,7 +50395,7 @@ zersplitterte	26	OTHER
 Tabarī	26	NOUN
 Bildersturm	26	NOUN
 Fuzzylogik	26	NOUN
-Ultraleichtflugzeuge	26	NOUN
+Ultraleichtflugzeuge	26	NOUN	Ultraleichtflugzeug
 gegenläufigen	26	OTHER
 Blended	26	NOUN
 Horatio	26	NOUN
@@ -50410,12 +50410,12 @@ Molkerei	26	NOUN
 hergebrachten	26	OTHER
 Fahrtzeit	26	NOUN
 Zona	26	NOUN
-Fehlerwahrscheinlichkeiten	26	NOUN
+Fehlerwahrscheinlichkeiten	26	NOUN	Fehlerwahrscheinlichkeit
 fortwährende	26	OTHER
 Flugfeld	26	NOUN
 Traugott	26	NOUN
 Charter	26	NOUN
-Fahrzeuges	26	NOUN
+Fahrzeuges	26	NOUN	Fahrzeug
 Vierer	26	NOUN,OTHER
 Zweisprachigkeit	26	NOUN
 Wortart	26	NOUN
@@ -50423,25 +50423,25 @@ Spieltechnik	26	NOUN
 Architektin	26	NOUN
 Friedenspreis	26	NOUN
 Vertriebener	26	NOUN,OTHER
-Schönbuchs	26	NOUN
+Schönbuchs	26	NOUN	Schönbuch
 nowrap	26	OTHER
 Fruchtfleisch	26	NOUN
 Fontana	26	NOUN
 Mickiewicz	26	NOUN
 Gesundheitszustandes	26	NOUN
 Klaviersonate	26	NOUN
-Volksliedern	26	NOUN
+Volksliedern	26	NOUN	Volkslied
 Hörnum	26	NOUN
 Share	26	NOUN,OTHER
 Almagest	26	NOUN
 Geraer	26	NOUN
-Lehnsherren	26	NOUN
+Lehnsherren	26	NOUN	Lehnsherr
 kältere	26	OTHER
 Diethylether	26	NOUN
 Hochfest	26	NOUN
 Altarraum	26	NOUN
 priesterlichen	26	OTHER
-Spots	26	NOUN
+Spots	26	NOUN	Spot
 gemeinnützig	26	OTHER
 Newsletter	26	NOUN
 Seume	26	NOUN
@@ -50454,7 +50454,7 @@ Vizebürgermeister	26	NOUN
 Parallelismus	26	NOUN
 Reformbestrebungen	26	NOUN
 Gamba	26	NOUN,OTHER
-Meteore	26	NOUN
+Meteore	26	NOUN	Meteor
 Nägel	26	NOUN
 Ductus	26	NOUN
 Klimasystem	26	NOUN
@@ -50464,8 +50464,8 @@ irakischer	26	OTHER
 nordkoreanische	26	OTHER
 ausgewogen	26	OTHER
 zerstörerischen	26	OTHER
-Göttingens	26	NOUN
-Franziskanern	26	NOUN
+Göttingens	26	NOUN	Göttingen
+Franziskanern	26	NOUN	Franziskaner
 bezeichneter	26	OTHER
 prädestiniert	26	OTHER
 Lotterie	26	NOUN
@@ -50477,9 +50477,9 @@ ruach	26	NOUN,OTHER
 paulinische	26	OTHER
 Saloniki	26	NOUN
 Regierungsvertreter	26	NOUN
-Wiedergaben	26	NOUN,OTHER
-Zöllen	26	NOUN
-Pfählen	26	NOUN
+Wiedergaben	26	NOUN,OTHER	Wiedergabe
+Zöllen	26	NOUN	Zoll
+Pfählen	26	NOUN	Pfahl
 einforderte	26	OTHER
 España	26	NOUN
 kollabiert	26	OTHER
@@ -50490,7 +50490,7 @@ Stoecker	26	NOUN
 Lüderitz	26	NOUN
 Arbeitslosenversicherung	26	NOUN
 Industriezentren	26	NOUN
-Aquariums	26	NOUN
+Aquariums	26	NOUN	Aquarium
 Kommanditgesellschaft	26	NOUN
 Südhemisphäre	26	NOUN
 ASP	26	NOUN
@@ -50499,9 +50499,9 @@ MDA	26	NOUN
 AVI	26	NOUN
 Verbindungsaufbau	26	NOUN
 abwärtskompatibel	26	OTHER
-Slots	26	NOUN
+Slots	26	NOUN	Slot
 bloecke	26	OTHER
-Konquistadoren	26	NOUN
+Konquistadoren	26	NOUN	Konquistador
 zusammengezogen	26	VERB
 erlegte	26	OTHER
 Pongo	26	NOUN
@@ -50517,21 +50517,21 @@ eingeschüchtert	26	OTHER
 vordersten	26	OTHER
 erstatten	26	VERB
 Aalto	26	NOUN
-Hollands	26	NOUN
+Hollands	26	NOUN	Holland
 Flevoland	26	NOUN
 Märtyrertod	26	NOUN
 Opherdicke	26	NOUN
-Höhenzügen	26	NOUN
-Mommsens	26	NOUN
+Höhenzügen	26	NOUN	Höhenzug
+Mommsens	26	NOUN	Mommsen
 Sinkgeschwindigkeit	26	NOUN
 s²	26	OTHER
-Schriftsystems	26	NOUN
+Schriftsystems	26	NOUN	Schriftsystem
 Revitalisierung	26	NOUN
-Johanns	26	NOUN
+Johanns	26	NOUN	Johann
 festlich	26	OTHER
 Reyes	26	NOUN
 erweckten	26	NOUN,OTHER
-Slums	26	NOUN
+Slums	26	NOUN	Slum
 Santana	26	NOUN
 Coimbra	26	NOUN
 Belém	26	NOUN
@@ -50541,9 +50541,9 @@ gemauerte	26	OTHER
 Zwerchfell	26	NOUN
 Systole	26	NOUN
 PAP	26	NOUN
-Bischofssitze	26	NOUN
-Landfriedens	26	NOUN
-Handwerksbetrieben	26	NOUN
+Bischofssitze	26	NOUN	Bischofssitz
+Landfriedens	26	NOUN	Landfrieden
+Handwerksbetrieben	26	NOUN	Handwerksbetriebe
 geläufiger	26	OTHER
 Raytheon	26	NOUN
 Zehdenick	26	NOUN
@@ -50552,7 +50552,7 @@ Deister	26	NOUN
 Lagerkommandant	26	NOUN
 Quraiza	26	NOUN
 Faisal	26	NOUN
-Betenden	26	NOUN,OTHER
+Betenden	26	NOUN,OTHER	Betende
 Gedenk	26	NOUN
 farbliche	26	OTHER
 semantischer	26	OTHER
