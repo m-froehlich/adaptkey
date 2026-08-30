@@ -18,7 +18,7 @@ object Abbreviations {
     /** Common German abbreviations that always carry a trailing period (lower-cased). */
     val GERMAN: Set<String> = setOf(
         "usw.", "usf.", "etc.", "bzw.", "ca.", "ggf.", "vgl.", "inkl.", "exkl.", "max.", "min.",
-        "nr.", "mio.", "mrd.", "tel.", "abs.", "art.", "str.", "geb.", "gest.", "verh.", "evtl.",
+        "nr.", "stk.", "mio.", "mrd.", "tel.", "abs.", "art.", "str.", "geb.", "gest.", "verh.", "evtl.",
         "sog.", "bspw.", "einschl.", "zzgl.", "abzgl.", "dr.", "prof.", "ing.", "zit.", "s.",
         "z.b.", "d.h.", "u.a.", "o.ä.", "u.ä.", "i.d.r.", "z.t.", "u.u.", "u.v.m.", "m.a.w.", "n.chr.", "v.chr."
     )

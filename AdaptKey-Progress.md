@@ -257,31 +257,29 @@ non-trivial changes).
   per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
   set per language.
 
-- **D-402/D-306-followup/D-345/D-367 - all done now (§301 v1.0.54 + §302 v1.0.55); only D-330-followup**
-  **remains open.** Originally agreed to bundle D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into
-  one combined cleanup round since they all touch the same `dict_de.tsv` rebuild/version-bump/pack-republish
-  cycle - D-368 (homograph tagging) was finished separately across its own eight rounds (see its own bullet
-  below). §301 then handled the noise-removal side ("Mülltrennung", fully automatic per explicit user
-  request): `Mur`/`BDI`/`Dee` and the four genuine corpus-tokeniser split-artefacts removed outright, plus
-  344 more via a systematic probe (see §301/history). §302 then handled the rest of D-402's own list (missing
-  words: `Wessen`/`drüber`/`drunter`/`Vorm`/`tue`/`neulich`/`aberkennen`/`ah`/`Oh`/`agentisch`/
-  `erstaunlicherweise` - several already existed with too-low frequencies and were corrected rather than
-  re-added) plus D-367's `natürlich`-family frequency fix (see §302/history for the full method, including
-  the live `CorrectionConfidence.kt`/`AdjectiveInflection.kt` checks done before each fix). D-306-followup and
-  D-345's own probes are superseded by §301's broader one - not provably exhaustive for every noise pattern,
-  but the best done so far; treat any future noise report the same way rather than assuming it's exhaustive.
-  **Still open**:
+- **D-402/D-306-followup/D-345/D-367 - COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303 v1.0.56); only**
+  **D-330-followup remains open from the original combined bundle.** Originally agreed to bundle
+  D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into one combined cleanup round since they all touch
+  the same `dict_de.tsv` rebuild/version-bump/pack-republish cycle - D-368 (homograph tagging) was finished
+  separately across its own eight rounds (see its own bullet below). §301 handled the noise-removal side
+  ("Mülltrennung", fully automatic per explicit user request): `Mur`/`BDI`/`Dee` and the four genuine
+  corpus-tokeniser split-artefacts removed outright, plus 344 more via a systematic probe (see §301/history).
+  §302 handled the rest of D-402's missing-word list plus D-367's `natürlich`-family frequency fix (see
+  §302/history). §303 closed the remaining three items: `"Stk."` recognition (a **code** fix -
+  `Abbreviations.kt`'s `GERMAN` set, not `dict.tsv` - plus the bare word `"Stk"` was separately missing from
+  the dictionary too, added alongside); confirmed `Robotische`/`Scheiße`/`Traditionell`/`Beugungen`'s bad
+  splits are now structurally impossible as a side effect of §301's noise removal (no action needed); and
+  `"Wegerecht"`->`"we"`+`"gerecht"` fixed directly by adding `"Wegerecht"` itself rather than chasing the
+  original report's stale "`we` only exists via the English dictionary" explanation (no English pack ships
+  in this project at all - `"We"` 203 sits directly in the German dict with unclear-but-not-confirmed-noise
+  status, left alone). D-306-followup and D-345's own probes are superseded by §301's broader one - not
+  provably exhaustive for every noise pattern, but the best done so far; treat any future noise report the
+  same way rather than assuming it's exhaustive. **Still open**:
   - **D-330-followup**: see its own bullet below - the `dein`/`sein` register-skew fix, plus the proposed
     full `dein-`/`sein-`/`mein-`/`unser-`/`ihr-` audit. Its own bullet's description of the override
     mechanism as a flat "100x bar" is now stale - D-353 replaced that with a log-scaled curve (see
     `CorrectionConfidence.kt`, and §302/history for the up-to-date formula) - re-derive the live ratio/score
     from the current code rather than trusting that bullet's own numbers when this is picked up.
-  - **`"Wegerecht"` -> `"we gerecht"`**: the `"we"` half only resolves via the *English* dictionary - a
-    cross-language algorithmic question (should a German split ever accept an English-only half?), not a
-    simple word addition. Surfaced by D-402's original report, not yet investigated.
-  - **The `"Stk."` abbreviation-recognition request** from D-402's original report - not yet investigated
-    whether this is even a dictionary-data matter or a separate code mechanism (abbreviation handling may
-    live outside `dict.tsv` entirely).
   - **D-368 (case-neutral homograph tagging) - COMPLETE, eight rounds done** (§294-§300, v1.0.47-1.0.53):
     **210** words retagged `NOUN,VERB` total - the three originally-confirmed cases (`stelle`/`sage`/`weg`),
     26 further weak-verb-1st-person-singular-vs-noun candidates (singular and plural), the nominalised
@@ -422,6 +420,23 @@ non-trivial changes).
      fresh start.
 
 ## Current State
+
+- **§303 (v1.0.56): D-402 "Stk." fix, and everything else in this cleanup round checked/closed out.**
+  `"Stk."` recognition is a **code** fix, not a dictionary one - `capitalisation/Abbreviations.kt`'s `GERMAN`
+  set (consumed only by `SentenceBoundary.kt`, to stop a trailing period being treated as a sentence end)
+  was missing `"stk."` - added, plus a matching `AbbreviationsTest` case. Also added the bare word `"Stk"`
+  (350, `OTHER`) to `dict.tsv` itself, missing independently of the abbreviation-period question. Checked
+  every other still-open item from D-402's original report against the live dictionary: `Robotische`/
+  `Scheiße`/`Traditionell`/`Beugungen`'s bad splits are now structurally impossible (their noise halves
+  `ische`/`Sc`/`ell`/`en` no longer resolve, `ische`/`ell`/`en` removed in §301, `Sc` was never real) - no
+  action needed. `"Wegerecht"`->`"we"`+`"gerecht"`: the original report's "`we` only exists via the English
+  dictionary" explanation is stale (no English pack ships at all; `"We"` 203 sits directly in the German
+  dict, status unclear) - fixed the symptom directly instead by adding `"Wegerecht"` (20, `NOUN`) as its own
+  entry, leaving the ambiguous `"We"` alone. `git diff --stat`: `dict.tsv` +2 rows (119,662 -> 119,664).
+  `version.txt` 14 -> 15, pack rebuilt/verified, `LanguagePackCatalog` version 14 -> 15. One new unit test;
+  1059 total, all green (via JDK 21). `versionCode` 359 -> 360, `versionName` `"1.0.55"` -> `"1.0.56"`. Not
+  yet device-confirmed. **This closes the whole D-402/D-306-followup/D-345/D-367 combined round** - only
+  D-330-followup's own audit remains open (not part of what was asked this round). See history §303.
 
 - **§302 (v1.0.55): D-402 missing-word additions + D-367 `natürlich`-frequency fix.** Checked every word on
   D-402's list live first - several (`tue`/48, `vorm`/30, `wessen`/20, all lowercase) already existed, likely

@@ -145,7 +145,17 @@ object LanguagePackCatalog {
             // NOUN,OTHER - the English-loanword misparse, not the German adverb family) removed outright per
             // the explicit "should not appear at all" instruction; "Natura" (131, the real Natura-2000 nature-
             // reserve term) left alone, now safely outranked by the corrected "natürlich".
-            version = 14
+            // D-402 (remaining items): "Stk" (350, OTHER) added as its own word - the "Stk." abbreviation
+            // itself is a code fix, not a dictionary one (see Abbreviations.kt's own GERMAN set), but the
+            // bare word without a trailing period was also missing from the dictionary entirely and is now
+            // added alongside it. "Wegerecht" (20, NOUN) added directly, resolving the reported "Wegerecht"
+            // -> "We"+"gerecht" split by giving the whole compound its own entry rather than touching "We"
+            // (203, NOUN,OTHER, of uncertain but not confirmed-noise status - left alone). Confirmed the
+            // other three reported bad splits (Robotische/Scheiße/Traditionell/Beugungen) are now structurally
+            // impossible: "Robot"/"Tradition"/"Beugung" remain genuine words, but their other halves
+            // ("ische"/"Sc"/"ell"/"en") no longer resolve at all - "ische"/"ell"/"en" removed outright in
+            // §301, and "Sc" was never a real dictionary entry.
+            version = 15
         ),
         Entry(
             Language.GREEK,

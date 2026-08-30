@@ -15246,3 +15246,54 @@ whether this is even a dictionary-data matter or a separate code mechanism); and
 
 No new unit tests (dictionary content + comment only). 1058 unit tests unchanged, all green (via JDK 21).
 `versionCode` 358 -> 359, `versionName` `"1.0.54"` -> `"1.0.55"`. Not yet device-confirmed.
+
+## §303 - D-402: "Stk." Abbreviation Fix, And A Sweep Of Everything Else Still Open (v1.0.56)
+
+User: `"Stk."` must absolutely be recognised, and please check whether anything else remains open in this
+package.
+
+Investigated where abbreviation recognition actually lives before touching anything - not a `dict.tsv`
+matter at all, unlike everything else this cleanup round has touched so far.
+`app/.../capitalisation/Abbreviations.kt` holds a curated `GERMAN` set of period-terminated abbreviations
+consumed by exactly one place (`SentenceBoundary.kt`) to decide a trailing period is *not* a sentence
+terminator, so §6's force-capitalise-next-word rule does not wrongly fire after it. `"stk."` was missing
+from that set - added it (next to `"nr."`, the closest existing entry in kind). Also added a
+`AbbreviationsTest` assertion (`isAbbreviation("Stk.")`) alongside the existing `"Nr."` one, and separately
+confirmed the *bare* word `"Stk"` (no period) was also entirely missing from `dict.tsv` itself - added it too
+(350, `OTHER`, calibrated against `Nr` 1640/`kg` 1398/`Tel` 224 - all short quantity/reference abbreviations
+already in the dictionary at comparable frequency), since recognising the abbreviation form doesn't help if
+someone drops the period and the bare token gets flagged/mangled instead.
+
+For the "anything else open" check, went back through D-402's full original report line by line against the
+live dictionary rather than trusting the summarised bullet list:
+- **`"Robotische"`->`"Robot"`+`"ische"`, `"Traditionell"`->`"Tradition"`+`"ell"`, `"Beugungen"`->`"Beugung"`+
+  `"en"`**: confirmed structurally impossible now - `Robot`/`Tradition`/`Beugung` remain genuine dictionary
+  words, but `ische`/`ell`/`en` were all removed outright in §301, so A-05's "both halves must resolve" gate
+  can no longer pass for any of these three splits. No further action needed - already fixed as a side effect
+  of the garbage cleanup, not separately tracked until now.
+- **`"Scheiße"`->`"Sc"`+`"heiße"`**: checked `"Sc"` directly - it does not exist in the current dictionary at
+  all (either it never really required its own removal and the original report's framing was slightly off,
+  or it was swept up incidentally by §301's broader probe). Either way, this split is also no longer possible
+  today. No further action needed.
+- **`"Wegerecht"`->`"we"`+`"gerecht"`**: the original report's own explanation ("`we` only exists via the
+  *English* dictionary") turned out to be stale - this project ships no English dictionary at all (only
+  `de`/`el`), and checking live showed `"We"` (203, `NOUN,OTHER`) sitting directly *in* the German
+  `dict.tsv` itself, high enough frequency that its status (genuine abbreviation, e.g. `WE` = `Wohneinheit`,
+  vs. Wikipedia band/title-name noise like the already-discussed `"The"`/`"tue"` case) is not obviously
+  either way. Rather than make that judgement call, fixed the reported symptom directly and more safely:
+  added `"Wegerecht"` itself (20, `NOUN`, calibrated against similar `-recht` compounds already present -
+  `Nutzungsrecht`/24, `Vorkaufsrecht`/12, `Wohnrecht`/10, `Bleiberecht`/9) as its own dictionary entry, so the
+  whole word resolves directly and never reaches the split algorithm at all. `"We"` itself left untouched -
+  its status can be revisited on its own if it turns out to cause a problem elsewhere.
+- **D-330-followup** (`dein`/`sein`/`mein`/`unser`/`ihr` full audit): confirmed still genuinely open, not
+  touched this round - flagged back to the user rather than assumed in scope, since it was not part of
+  today's explicit ask.
+
+`git diff --stat`: `dict.tsv` +2 rows (`Stk`, `Wegerecht`) - 119,662 -> 119,664.
+`dictionaries/de/version.txt` 14 -> 15, pack rebuilt/verified, `LanguagePackCatalog` version 14 -> 15. One
+new unit test (`AbbreviationsTest`'s `"Stk."` assertion) - 1059 unit tests total, all green (via JDK 21).
+`versionCode` 359 -> 360, `versionName` `"1.0.55"` -> `"1.0.56"`. Not yet device-confirmed.
+
+This closes out the entire D-402/D-306-followup/D-345/D-367 combined cleanup round - only D-330-followup's
+own audit remains open from the original bundle, and it was never part of what the user asked to bundle in
+today's "Mülltrennung"/additions/`natürlich`/`Stk.` sequence.
