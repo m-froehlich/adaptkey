@@ -89410,15 +89410,15 @@ Béthencourt	12	NOUN
 Schlieren	12	NOUN
 unwissentlich	12	OTHER
 Wortabstand	12	NOUN
-Machthabers	12	NOUN
+Machthabers	12	NOUN	Machthaber
 Blattunterseite	12	NOUN
 Schrobenhausen	12	NOUN
 Andreaskreuz	12	NOUN
 Kalligraphie	12	NOUN
 Reichsnaturschutzgesetz	12	NOUN
-Landesgesetzen	12	NOUN
+Landesgesetzen	12	NOUN	Landesgesetz
 Schadensfall	12	NOUN
-Leitsätzen	12	NOUN
+Leitsätzen	12	NOUN	Leitsatz
 Jakobsmuschel	12	NOUN
 Videoclip	12	NOUN
 besann	12	VERB
@@ -89434,13 +89434,13 @@ Ruhepotential	12	NOUN
 Wärmeübergang	12	NOUN
 Aristokrat	12	NOUN
 Bonifacio	12	NOUN
-Hilfswissenschaften	12	NOUN
+Hilfswissenschaften	12	NOUN	Hilfswissenschaft
 Musikpädagogik	12	NOUN
-Minnesangs	12	NOUN
-Plantagenets	12	NOUN
+Minnesangs	12	NOUN	Minnesang
+Plantagenets	12	NOUN	Plantagenet
 Gehrden	12	NOUN
 zurückholen	12	VERB
-Niedermoore	12	NOUN
+Niedermoore	12	NOUN	Niedermoor
 milderen	12	OTHER
 Stadtmodell	12	NOUN
 barockisiert	12	OTHER
@@ -89452,7 +89452,7 @@ profitablen	12	OTHER
 Mesosphäre	12	NOUN
 Grauwacke	12	NOUN
 Rothensee	12	NOUN
-Fußgängerbrücken	12	NOUN
+Fußgängerbrücken	12	NOUN	Fußgängerbrücke
 Drehbrücke	12	NOUN
 Kart	12	NOUN
 Kunstfestival	12	NOUN
@@ -89461,33 +89461,33 @@ Eichholz	12	NOUN
 ausgleicht	12	OTHER
 Segelflieger	12	NOUN
 bekanntgewordene	12	OTHER
-Kommunikationssysteme	12	NOUN
+Kommunikationssysteme	12	NOUN	Kommunikationssystem
 prädikative	12	OTHER
-Wüstengebieten	12	NOUN
+Wüstengebieten	12	NOUN	Wüstengebiete
 chaotischer	12	OTHER
 Attraktor	12	NOUN
 Kontaktstelle	12	NOUN
-Computergrafiken	12	NOUN
+Computergrafiken	12	NOUN	Computergrafik
 Wasserstoffbrückenbindung	12	NOUN
 Monsanto	12	NOUN
 Wasserstoffionen	12	NOUN
 Dehydrierung	12	NOUN
 Alkoholdehydrogenase	12	NOUN
 Solarmodul	12	NOUN
-Küstenorten	12	NOUN
+Küstenorten	12	NOUN	Küstenort
 Museumshafen	12	NOUN
 Löcknitz	12	NOUN
 Cypress	12	NOUN
 Signalquelle	12	NOUN
 Marr	12	NOUN
-Massagen	12	NOUN
+Massagen	12	NOUN	Massage
 Thromben	12	NOUN
 Produktname	12	NOUN
 angereiste	12	OTHER
 Singin	12	NOUN
 Bühnenfassung	12	NOUN
 Alfaro	12	NOUN
-Pumpwerke	12	NOUN
+Pumpwerke	12	NOUN	Pumpwerk
 Gruppenzugehörigkeit	12	NOUN
 Ceiba	12	NOUN
 techniques	12	NOUN,OTHER
@@ -89495,7 +89495,7 @@ verstrickte	12	OTHER
 Vergeltungsmaßnahmen	12	NOUN
 beabsichtigen	12	VERB
 Liedform	12	NOUN
-Seifenopern	12	NOUN
+Seifenopern	12	NOUN	Seifenoper
 benachteiligen	12	VERB
 Makedonija	12	NOUN
 heuerte	12	OTHER
@@ -89514,7 +89514,7 @@ weltumspannende	12	OTHER
 Flavus	12	NOUN,OTHER
 Heilkraft	12	NOUN
 Kartoffelernte	12	NOUN
-Klassifikationssystemen	12	NOUN
+Klassifikationssystemen	12	NOUN	Klassifikationssystem
 Fernsehstudio	12	NOUN
 Schweißdrüsen	12	NOUN
 Fettanteil	12	NOUN
@@ -89523,7 +89523,7 @@ Berggebiet	12	NOUN
 Altersstufe	12	NOUN
 Josep	12	NOUN
 terroristisch	12	OTHER
-Aspekts	12	NOUN
+Aspekts	12	NOUN	Aspekt
 herauszuholen	12	VERB
 gezinnten	12	OTHER
 Downhill	12	NOUN
@@ -89532,7 +89532,7 @@ felsig	12	OTHER
 getöteter	12	OTHER
 Hilfegesuch	12	NOUN
 Inkraftsetzung	12	NOUN
-Elternteils	12	NOUN
+Elternteils	12	NOUN	Elternteil
 IKT	12	NOUN
 Landgang	12	NOUN
 Grandmaster	12	NOUN
@@ -89540,15 +89540,15 @@ Regionalsender	12	NOUN
 Drittsprache	12	NOUN
 Gladenbach	12	NOUN
 Homberger	12	NOUN
-Tasks	12	NOUN
+Tasks	12	NOUN	Task
 ebensolchen	12	OTHER
 Brennerpass	12	NOUN
 tödliches	12	OTHER
-Helvetiern	12	NOUN
+Helvetiern	12	NOUN	Helvetier
 Corsica	12	NOUN,OTHER
 Ferries	12	NOUN
 SIP	12	NOUN
-Besteigungen	12	NOUN
+Besteigungen	12	NOUN	Besteigung
 Aporie	12	NOUN
 Paros	12	NOUN
 oratore	12	OTHER
@@ -89560,7 +89560,7 @@ gegenüberliegt	12	OTHER
 Justinuskirche	12	NOUN
 Sindlingen	12	NOUN
 Wern	12	NOUN
-Bindestriche	12	NOUN
+Bindestriche	12	NOUN	Bindestrich
 Lawa	12	NOUN
 Nadelwehr	12	NOUN
 Wasserstraßenklasse	12	NOUN
@@ -89577,16 +89577,16 @@ ausgewerteten	12	OTHER
 bestreut	12	OTHER
 erledigtes	12	OTHER
 Lucrezia	12	NOUN
-Offices	12	NOUN
+Offices	12	NOUN	Office
 Nordflanke	12	NOUN
 Kampa	12	NOUN
 stimmige	12	OTHER
 GK	12	NOUN,OTHER
 Monopolkommission	12	NOUN
 Tuschmalerei	12	NOUN
-Maltechniken	12	NOUN
+Maltechniken	12	NOUN	Maltechnik
 Datenträgersignatur	12	NOUN
-Zellschichten	12	NOUN
+Zellschichten	12	NOUN	Zellschicht
 Knochenmetastasen	12	NOUN
 widerstandsfähige	12	OTHER
 dünnbesiedelten	12	OTHER
@@ -89595,10 +89595,10 @@ Skylla	12	NOUN
 Aktionskunst	12	NOUN
 Besteck	12	NOUN
 Atomzeitalter	12	NOUN
-Zentralkörpers	12	NOUN
+Zentralkörpers	12	NOUN	Zentralkörper
 Ortsraum	12	NOUN
 Birmanisch	12	NOUN,OTHER
-Investitionsgütern	12	NOUN
+Investitionsgütern	12	NOUN	Investitionsgüter
 Konbaung	12	NOUN
 Bökelberg	12	NOUN
 Hockenheim	12	NOUN
@@ -89610,17 +89610,17 @@ nordenglischen	12	OTHER
 Erdarbeiten	12	NOUN
 Plünderungszüge	12	NOUN
 Verwaltungsbeamter	12	NOUN
-Tiefdruckgebiete	12	NOUN
+Tiefdruckgebiete	12	NOUN	Tiefdruckgebiet
 Winkelmann	12	NOUN
-Niederrheins	12	NOUN
-Forschungsreaktoren	12	NOUN
+Niederrheins	12	NOUN	Niederrhein
+Forschungsreaktoren	12	NOUN	Forschungsreaktor
 Daylight	12	NOUN,OTHER
 CJ	12	NOUN,OTHER
 veredelte	12	OTHER
 Sudbury	12	NOUN
 Vincoli	12	NOUN
 Lullus	12	NOUN
-Sigmunds	12	NOUN
+Sigmunds	12	NOUN	Sigmund
 Verborgenheit	12	NOUN
 Papageienarten	12	NOUN
 presbyterianische	12	OTHER
@@ -89631,42 +89631,42 @@ Hirschhorn	12	NOUN
 Untertürkheim	12	NOUN
 Kiesabbau	12	NOUN
 Boßler	12	NOUN
-Pegeln	12	NOUN
+Pegeln	12	NOUN	Pegel
 Gedeputeerde	12	NOUN
 Delfzijl	12	NOUN
 Dunkelkammer	12	NOUN
-Hörfunkprogrammen	12	NOUN
+Hörfunkprogrammen	12	NOUN	Hörfunkprogramm
 neuronales	12	OTHER
 Östra	12	NOUN
 Egge	12	NOUN
-Burundis	12	NOUN
+Burundis	12	NOUN	Burundi
 NLWKN	12	NOUN
 verlaufenen	12	OTHER
 Hitzacker	12	NOUN
 Bargfeld	12	NOUN
-Siegens	12	NOUN
+Siegens	12	NOUN	Siegen
 Landsmål	12	NOUN
 Venstre	12	NOUN
-Terrains	12	NOUN
-Multiples	12	NOUN
+Terrains	12	NOUN	Terrain
+Multiples	12	NOUN	Multiple
 Gnutella	12	NOUN
-Orakeln	12	NOUN
+Orakeln	12	NOUN	Orakel
 übersichtlicher	12	OTHER
 Assigned	12	NOUN
 Civic	12	NOUN,OTHER
-Eisbergs	12	NOUN
-Urchristentums	12	NOUN
+Eisbergs	12	NOUN	Eisberg
+Urchristentums	12	NOUN	Urchristentum
 Didache	12	NOUN
 gestürzte	12	OTHER
-Raabs	12	NOUN
-Speyers	12	NOUN
+Raabs	12	NOUN	Raab
+Speyers	12	NOUN	Speyer
 FAU	12	NOUN
 GMP	12	NOUN,OTHER
 aufgefasste	12	OTHER
 Hochschuleinrichtungen	12	NOUN
 Buonaparte	12	NOUN
 vermelden	12	VERB
-Marschälle	12	NOUN
+Marschälle	12	NOUN	Marschall
 Livio	12	NOUN
 freizukaufen	12	VERB
 amnestiert	12	OTHER
@@ -89674,26 +89674,26 @@ Entschiedenheit	12	NOUN
 täuschend	12	OTHER
 rhetorischer	12	OTHER
 Gennaro	12	NOUN
-Bohrs	12	NOUN
+Bohrs	12	NOUN	Bohr
 Garrett	12	NOUN
 Watzenrode	12	NOUN
 Rynek	12	NOUN
 Novara	12	NOUN
 Elert	12	NOUN
-Domherrn	12	NOUN
+Domherrn	12	NOUN	Domherr
 Eckzahn	12	NOUN
 Nervenenden	12	NOUN
 Narwa	12	NOUN
 erwürgt	12	OTHER
-Lungenentzündungen	12	NOUN
+Lungenentzündungen	12	NOUN	Lungenentzündung
 JP	12	NOUN
 Hochamt	12	NOUN
-Reglements	12	NOUN
+Reglements	12	NOUN	Reglement
 Tuff	12	NOUN
 Schillingsfürst	12	NOUN
 Valenzquarks	12	NOUN
 Ani	12	NOUN,OTHER
-Hauptsprachen	12	NOUN
+Hauptsprachen	12	NOUN	Hauptsprache
 Sudansprachen	12	NOUN
 Epitheta	12	NOUN
 Sprechfunk	12	NOUN
@@ -89704,7 +89704,7 @@ Februarumsturz	12	NOUN
 Großverband	12	NOUN
 Galtung	12	NOUN
 Nadine	12	NOUN
-Höhenzugs	12	NOUN
+Höhenzugs	12	NOUN	Höhenzug
 Verkehrsraum	12	NOUN
 Logitech	12	NOUN
 Schrotrauschen	12	NOUN
@@ -89712,12 +89712,12 @@ Urnenfelderkultur	12	NOUN
 ledige	12	OTHER
 ran	12	OTHER
 Anbaumethoden	12	NOUN
-Biafras	12	NOUN
+Biafras	12	NOUN	Biafra
 gleichgeschalteten	12	OTHER
 Potala	12	NOUN
 Ausbildungslager	12	NOUN
 Nordjemen	12	NOUN
-Rassisten	12	NOUN
+Rassisten	12	NOUN	Rassist
 Treuhand	12	NOUN
 Tapferkeitsmedaille	12	NOUN
 trösten	12	VERB
@@ -89727,25 +89727,25 @@ populistisch	12	OTHER
 kongruenten	12	OTHER
 Arbeitseinkommen	12	NOUN
 Skies	12	NOUN
-ICEs	12	NOUN
+ICEs	12	NOUN	ICE
 Ladoga	12	NOUN
 NEP	12	NOUN
 schuldet	12	OTHER
-Coubertins	12	NOUN
+Coubertins	12	NOUN	Coubertin
 Übertragungsrechte	12	NOUN
 Witkowski	12	NOUN
 Kakophonie	12	NOUN
-Zwerges	12	NOUN
-Böcke	12	NOUN
+Zwerges	12	NOUN	Zwerg
+Böcke	12	NOUN	Bock
 chromatischer	12	OTHER
-Hauptformen	12	NOUN
-Weltmarktpreise	12	NOUN
+Hauptformen	12	NOUN	Hauptform
+Weltmarktpreise	12	NOUN	Weltmarktpreis
 auditive	12	OTHER
-Innenohrs	12	NOUN
+Innenohrs	12	NOUN	Innenohr
 Linearisierung	12	NOUN
 Wahlkreisabgeordnete	12	NOUN
 dargebotenen	12	OTHER
-Wuchsformen	12	NOUN
+Wuchsformen	12	NOUN	Wuchsform
 Wong	12	NOUN
 jährigem	12	OTHER
 Aisch	12	NOUN
@@ -89754,14 +89754,14 @@ Birkenrinde	12	NOUN
 Othmarschen	12	NOUN
 Ljudmila	12	NOUN
 barbiere	12	NOUN,OTHER
-Spielplänen	12	NOUN
+Spielplänen	12	NOUN	Spielplan
 Mélisande	12	NOUN
 Orchesterbesetzung	12	NOUN
-Bühnenwerken	12	NOUN
-Ordenslebens	12	NOUN
+Bühnenwerken	12	NOUN	Bühnenwerk
+Ordenslebens	12	NOUN	Ordensleben
 Karmeliten	12	NOUN
 Ordensleben	12	NOUN
-Gelübden	12	NOUN
+Gelübden	12	NOUN	Gelübde
 Oberin	12	NOUN
 Klarissen	12	NOUN
 Konventualen	12	NOUN
@@ -89783,19 +89783,19 @@ Gesundheitsschutz	12	NOUN
 HAP	12	NOUN
 transportablen	12	OTHER
 Kritikalität	12	NOUN
-Antineutrinos	12	NOUN
+Antineutrinos	12	NOUN	Antineutrino
 befände	12	OTHER
 Zhao	12	NOUN
 Specht	12	NOUN
 artikulatorische	12	OTHER
-Schalldruckpegels	12	NOUN
+Schalldruckpegels	12	NOUN	Schalldruckpegel
 Tie	12	NOUN
 tuberosum	12	OTHER
 Massenverteilung	12	NOUN
 Xylophon	12	NOUN
 aufgestiegene	12	OTHER
 Dilettanten	12	NOUN
-Politikwissenschaftlern	12	NOUN
+Politikwissenschaftlern	12	NOUN	Politikwissenschaftler
 JRE	12	NOUN
 Sicherheitskonzept	12	NOUN
 Aigina	12	NOUN
@@ -89822,21 +89822,21 @@ Neudeck	12	NOUN
 Jahrhunderthalle	12	NOUN
 Lewandowski	12	NOUN
 Tomasz	12	NOUN
-Weltverbände	12	NOUN
+Weltverbände	12	NOUN	Weltverband
 Laubmoose	12	NOUN
-Wirtszellen	12	NOUN
+Wirtszellen	12	NOUN	Wirtszelle
 Winfield	12	NOUN
-Delfinen	12	NOUN
-Legionären	12	NOUN
+Delfinen	12	NOUN	Delfin
+Legionären	12	NOUN	Legionäre
 Sonderstufe	12	NOUN
 Primelement	12	NOUN
 OpenPGP	12	NOUN
 Unzugänglichkeit	12	NOUN
-Wanderratten	12	NOUN
+Wanderratten	12	NOUN	Wanderratte
 Kontaktpersonen	12	NOUN
 stündlichen	12	OTHER
 Kunersdorf	12	NOUN
-Helmen	12	NOUN
+Helmen	12	NOUN	Helm
 Wintermärchen	12	NOUN
 Hoboken	12	NOUN
 Cayenne	12	NOUN
@@ -89854,9 +89854,9 @@ Orthopoxvirus	12	NOUN
 Impfpflicht	12	NOUN
 Epidemiengesetz	12	NOUN
 Grafton	12	NOUN
-Chunks	12	NOUN,OTHER
-Bildzeilen	12	NOUN
-Kabelnetze	12	NOUN
+Chunks	12	NOUN,OTHER	Chunk
+Bildzeilen	12	NOUN	Bildzeile
+Kabelnetze	12	NOUN	Kabelnetz
 Geisterbeschwörer	12	NOUN
 kundigen	12	NOUN,OTHER
 Pirs	12	NOUN
@@ -89871,7 +89871,7 @@ Gatún	12	NOUN
 Gatúnsee	12	NOUN
 labile	12	OTHER
 Universalienstreit	12	NOUN
-Brustkorbs	12	NOUN
+Brustkorbs	12	NOUN	Brustkorb
 klastische	12	OTHER
 zeichnerisch	12	OTHER
 vorausgesetzte	12	OTHER
@@ -89881,7 +89881,7 @@ angeschaut	12	OTHER
 nahelegten	12	VERB
 konstruierbar	12	OTHER
 Hobson	12	NOUN
-Sarkophags	12	NOUN
+Sarkophags	12	NOUN	Sarkophag
 Brustschild	12	NOUN
 Waldbühne	12	NOUN
 Pfadintegral	12	NOUN
@@ -89893,26 +89893,26 @@ Bezogenheit	12	NOUN
 belässt	12	OTHER
 dekorativer	12	OTHER
 Pompadour	12	NOUN
-Textfassungen	12	NOUN
+Textfassungen	12	NOUN	Textfassung
 Novelas	12	NOUN
 Bombast	12	NOUN
-Textsorten	12	NOUN
+Textsorten	12	NOUN	Textsorte
 unbeholfen	12	OTHER
-Mahnmals	12	NOUN
-Joplins	12	NOUN
-Bogenbrücken	12	NOUN
+Mahnmals	12	NOUN	Mahnmal
+Joplins	12	NOUN	Joplin
+Bogenbrücken	12	NOUN	Bogenbrücke
 Zusammenprall	12	NOUN
 Salutati	12	NOUN
 Bronzefigur	12	NOUN
 Korruptionsskandal	12	NOUN
 denkmalpflegerischen	12	OTHER
-Gladiatorenkämpfen	12	NOUN
-Kapitolinischen	12	NOUN,OTHER
+Gladiatorenkämpfen	12	NOUN	Gladiatorenkämpfe
+Kapitolinischen	12	NOUN,OTHER	Kapitolinische
 Festa	12	NOUN
 abwechslungsreich	12	OTHER
 Hauptströmung	12	NOUN
 Oestrich	12	NOUN
-Forschungsfelder	12	NOUN
+Forschungsfelder	12	NOUN	Forschungsfeld
 Rollmaterial	12	NOUN
 Zentralbahn	12	NOUN
 Pendelzüge	12	NOUN
@@ -89922,15 +89922,15 @@ Mangold	12	NOUN
 Walliserdeutsch	12	NOUN,OTHER
 Pilgerort	12	NOUN
 Savoie	12	NOUN
-Jarrys	12	NOUN
-Balleien	12	NOUN
+Jarrys	12	NOUN	Jarry
+Balleien	12	NOUN	Ballei
 landesherrlicher	12	OTHER
 SPX	12	NOUN
 Artikelnamen	12	NOUN
-Tänzern	12	NOUN
+Tänzern	12	NOUN	Tänzer
 herausgebrochen	12	VERB
 spitzbogigen	12	OTHER
-Glaubensflüchtlingen	12	NOUN
+Glaubensflüchtlingen	12	NOUN	Glaubensflüchtlinge
 Vorbesitzer	12	NOUN
 Baumaßnahme	12	NOUN
 FFC	12	NOUN
@@ -89951,13 +89951,13 @@ kunsttheoretische	12	OTHER
 Tatooine	12	NOUN
 Polyandrie	12	NOUN
 Theaterbetrieb	12	NOUN
-Reisebüros	12	NOUN
+Reisebüros	12	NOUN	Reisebüro
 chiral	12	OTHER
 Zweiseitentiere	12	NOUN
 Transitivität	12	NOUN
 Rücksprungadresse	12	NOUN
 Zanzibar	12	NOUN
-Kälbern	12	NOUN
+Kälbern	12	NOUN	Kalb
 Bandenkriminalität	12	NOUN
 Flames	12	NOUN
 Strukturfunktionalismus	12	NOUN
@@ -89980,20 +89980,20 @@ Kaiserwagen	12	NOUN
 Stadtväter	12	NOUN
 Ponti	12	NOUN
 Ramsauer	12	NOUN
-Vorzeichens	12	NOUN
+Vorzeichens	12	NOUN	Vorzeichen
 Binnenkolonisation	12	NOUN
 Krozingen	12	NOUN
 Vogelherdhöhle	12	NOUN
 Gönningen	12	NOUN
 vereisten	12	VERB,OTHER
-Pilgerwege	12	NOUN
+Pilgerwege	12	NOUN	Pilgerweg
 Gipfelkreuz	12	NOUN
-Sandschaks	12	NOUN
+Sandschaks	12	NOUN	Sandschak
 jungtürkischen	12	OTHER
 caprea	12	OTHER
 Juvenal	12	NOUN
-Fallschirms	12	NOUN
-Suchbegriffe	12	NOUN
+Fallschirms	12	NOUN	Fallschirm
+Suchbegriffe	12	NOUN	Suchbegriff
 aneignete	12	OTHER
 Zentralort	12	NOUN
 Klimaschwankungen	12	NOUN
@@ -90008,7 +90008,7 @@ Syngenta	12	NOUN
 Bildkunst	12	NOUN
 Lucerne	12	NOUN
 Muri	12	NOUN
-Raumfähren	12	NOUN
+Raumfähren	12	NOUN	Raumfähre
 gestrandeten	12	OTHER
 Hauptgebiet	12	NOUN
 witzigen	12	OTHER
@@ -90016,12 +90016,12 @@ Fanzine	12	NOUN
 Wernsdorf	12	NOUN
 Schiffbauerdamm	12	NOUN
 Altarm	12	NOUN
-Streitgespräche	12	NOUN
+Streitgespräche	12	NOUN	Streitgespräch
 Theodoret	12	NOUN
 Arbeiterorganisationen	12	NOUN
 Panzerschiff	12	NOUN
-Treibstoffs	12	NOUN
-TLDs	12	NOUN
+Treibstoffs	12	NOUN	Treibstoff
+TLDs	12	NOUN	TLD
 EDS	12	NOUN
 Brehna	12	NOUN
 Osterburg	12	NOUN
@@ -90055,13 +90055,13 @@ Reihenschwingkreis	12	NOUN
 Bodenfunde	12	NOUN
 rundenbasierte	12	OTHER
 Kreationismus	12	NOUN
-Zuwanderungen	12	NOUN
+Zuwanderungen	12	NOUN	Zuwanderung
 Fidesz	12	NOUN
 Barlow	12	NOUN
 pekao	12	OTHER
 Buschland	12	NOUN
-Wohnblöcken	12	NOUN
-Guayanas	12	NOUN
+Wohnblöcken	12	NOUN	Wohnblock
+Guayanas	12	NOUN	Guayana
 Schneegrenze	12	NOUN
 Bindenschild	12	NOUN
 Gedenkstele	12	NOUN
@@ -90075,7 +90075,7 @@ Idealität	12	NOUN
 Lynne	12	NOUN
 Temperaturbedingungen	12	NOUN
 Widderchen	12	NOUN
-Nadelbäumen	12	NOUN
+Nadelbäumen	12	NOUN	Nadelbaum
 versprengte	12	OTHER
 wehrlos	12	OTHER
 abgespaltenen	12	OTHER
@@ -90087,9 +90087,9 @@ Wismarer	12	NOUN
 Handelsbetriebe	12	NOUN
 Gemeinschaftsverband	12	NOUN
 Bezirksapostel	12	NOUN
-Läufen	12	NOUN
+Läufen	12	NOUN	Lauf
 Nebenstelle	12	NOUN
-Gitters	12	NOUN
+Gitters	12	NOUN	Gitter
 Buchung	12	NOUN
 Mesophasen	12	NOUN
 Sanam	12	NOUN
@@ -90097,7 +90097,7 @@ Mutterschutz	12	NOUN
 AFP	12	NOUN
 IAST	12	NOUN
 sy	12	NOUN,OTHER
-Tröge	12	NOUN
+Tröge	12	NOUN	Trog
 eingestrahlte	12	OTHER
 wahrt	12	OTHER
 erbberechtigten	12	OTHER
@@ -90131,12 +90131,12 @@ Flugschule	12	NOUN
 Feuertod	12	NOUN
 Handschuhsheim	12	NOUN
 Kilchberg	12	NOUN
-Bauphasen	12	NOUN
+Bauphasen	12	NOUN	Bauphase
 Nullvektor	12	NOUN
-Strafexpeditionen	12	NOUN
+Strafexpeditionen	12	NOUN	Strafexpedition
 Germanenstämme	12	NOUN
 Krämerbrücke	12	NOUN
-Rennsteigs	12	NOUN
+Rennsteigs	12	NOUN	Rennsteig
 Schmölln	12	NOUN
 Pausa	12	NOUN
 Städtetourismus	12	NOUN
@@ -90157,7 +90157,7 @@ unterhaltene	12	OTHER
 Übersetzungsverhältnis	12	NOUN
 Flussrichtung	12	NOUN
 Ebensee	12	NOUN
-Klassifikationssysteme	12	NOUN
+Klassifikationssysteme	12	NOUN	Klassifikationssystem
 Waffenschmiede	12	NOUN
 Yeomen	12	NOUN
 Bahlsen	12	NOUN
@@ -90187,7 +90187,7 @@ Emory	12	NOUN,OTHER
 Übergießen	12	NOUN,OTHER
 Dnjepr	12	NOUN
 Saporischschja	12	NOUN
-Russinen	12	NOUN
+Russinen	12	NOUN	Russin
 Brzeziński	12	NOUN
 Galizische	12	NOUN,OTHER
 Chersones	12	NOUN
@@ -90197,11 +90197,11 @@ Ennius	12	NOUN
 Liebesbrief	12	NOUN
 Harcourt	12	NOUN
 patriarchalische	12	OTHER
-Kindertagen	12	NOUN
+Kindertagen	12	NOUN	Kindertag
 herannahenden	12	OTHER
 Autorensysteme	12	NOUN
 Schardscha	12	NOUN
-Aschen	12	NOUN
+Aschen	12	NOUN	Asche
 Pompeii	12	NOUN
 Clearance	12	NOUN,OTHER
 Passierschein	12	NOUN
@@ -90227,14 +90227,14 @@ Kunstliebhaber	12	NOUN
 Orthonormalsystem	12	NOUN
 Peenemünder	12	NOUN
 mat	12	OTHER
-Gemeindebezirke	12	NOUN
+Gemeindebezirke	12	NOUN	Gemeindebezirk
 Liesing	12	NOUN
 Verzichtserklärung	12	NOUN
 Hietzing	12	NOUN
 Veterinärmedizinische	12	NOUN,OTHER
 Enke	12	NOUN
-Liebesbriefe	12	NOUN
-Erzstifts	12	NOUN
+Liebesbriefe	12	NOUN	Liebesbrief
+Erzstifts	12	NOUN	Erzstift
 Figuration	12	NOUN
 Verbreiter	12	NOUN
 Kirchbichl	12	NOUN
@@ -90249,10 +90249,10 @@ Wget	12	NOUN,OTHER
 Schnelllaufzahl	12	NOUN
 flexiblere	12	OTHER
 ausrüsten	12	VERB
-Synchrongeneratoren	12	NOUN
+Synchrongeneratoren	12	NOUN	Synchrongenerator
 Winglet	12	NOUN
 Anpressdruck	12	NOUN
-Schilden	12	NOUN
+Schilden	12	NOUN	Schild
 Maid	12	NOUN
 Hochfeld	12	NOUN
 Lampertheim	12	NOUN
@@ -90263,31 +90263,31 @@ Raumgewinn	12	NOUN
 Woronesch	12	NOUN
 erläuternden	12	OTHER
 Holzbock	12	NOUN
-Zielsystems	12	NOUN
+Zielsystems	12	NOUN	Zielsystem
 abgehen	12	VERB
 Hirtenbrief	12	NOUN
 ZFU	12	NOUN
 fernöstlicher	12	OTHER
 Golkonda	12	NOUN
-Verwandtschaftsgruppen	12	NOUN
+Verwandtschaftsgruppen	12	NOUN	Verwandtschaftsgruppe
 Huayna	12	NOUN
 KKE	12	NOUN
 Xiaoping	12	NOUN
 Pernau	12	NOUN
 Ubbo	12	NOUN
-Vereinigungs	12	NOUN
+Vereinigungs	12	NOUN	Vereinigung
 divers	12	OTHER
 Meles	12	NOUN
 Schnittbild	12	NOUN
 Waschbecken	12	NOUN
 Luciani	12	NOUN
-Staatsstreiche	12	NOUN
+Staatsstreiche	12	NOUN	Staatsstreich
 Urundi	12	NOUN
 Sicherheitsorgane	12	NOUN
 Unionsrepubliken	12	NOUN
 Zaisser	12	NOUN
 Aufbahrung	12	NOUN
-Lancasters	12	NOUN
+Lancasters	12	NOUN	Lancaster
 Lazarević	12	NOUN
 Dreibund	12	NOUN
 Kosmografie	12	NOUN
@@ -90297,10 +90297,10 @@ allegorischer	12	OTHER
 Dornum	12	NOUN
 Spalatin	12	NOUN
 Kartenwerk	12	NOUN
-Alfonsos	12	NOUN
+Alfonsos	12	NOUN	Alfonso
 gerudert	12	OTHER
 Bevern	12	NOUN
-Pöppelmanns	12	NOUN
+Pöppelmanns	12	NOUN	Pöppelmann
 Wackerbarth	12	NOUN
 Rurik	12	NOUN
 honduranische	12	OTHER
@@ -90319,7 +90319,7 @@ Poppo	12	NOUN
 Godehard	12	NOUN
 Waffenhilfe	12	NOUN
 Hauptfeste	12	NOUN
-Ernennungen	12	NOUN
+Ernennungen	12	NOUN	Ernennung
 frühdynastischen	12	NOUN,OTHER
 Spittal	12	NOUN
 Thaksin	12	NOUN
@@ -90337,47 +90337,47 @@ McFarlane	12	NOUN
 urbaine	12	OTHER
 Tasmanier	12	NOUN
 Welfare	12	NOUN
-Dingos	12	NOUN
+Dingos	12	NOUN	Dingo
 Kernfamilie	12	NOUN
 Arnhem	12	NOUN
 Linkkabel	12	NOUN
 Veluwe	12	NOUN
 chered	12	OTHER
 Schu	12	NOUN
-Referendariats	12	NOUN
-Vorlande	12	NOUN
-Kreuzgangs	12	NOUN
+Referendariats	12	NOUN	Referendariat
+Vorlande	12	NOUN	Vorland
+Kreuzgangs	12	NOUN	Kreuzgang
 Bergwald	12	NOUN
 Oberelsass	12	NOUN
-Porträtbüsten	12	NOUN
+Porträtbüsten	12	NOUN	Porträtbüste
 Schaumstoff	12	NOUN
 Plenk	12	NOUN
 Polizeischutz	12	NOUN
 Bonusmaterial	12	NOUN
 Bde	12	NOUN
-Bauherrn	12	NOUN
+Bauherrn	12	NOUN	Bauherr
 Polarwinkel	12	NOUN
 Baseline	12	NOUN,OTHER
-Backenzähnen	12	NOUN
-Plazentatieren	12	NOUN
+Backenzähnen	12	NOUN	Backenzähne
+Plazentatieren	12	NOUN	Plazentatiere
 Moorlandschaft	12	NOUN
 westbaltische	12	OTHER
-Landrückens	12	NOUN
+Landrückens	12	NOUN	Landrücken
 Einzelheit	12	NOUN
 Nöldeke	12	NOUN
 Traditionarier	12	NOUN
 ergoss	12	OTHER
 Spruchdichtung	12	NOUN
-Neuausgaben	12	NOUN
+Neuausgaben	12	NOUN	Neuausgabe
 eingefassten	12	OTHER
 Fabric	12	NOUN,OTHER
 Rechtlosigkeit	12	NOUN
 Wadjet	12	NOUN
 Charybdis	12	NOUN
 Eumaios	12	NOUN
-Altphilologen	12	NOUN
-Nacherzählungen	12	NOUN
-Editions	12	NOUN
+Altphilologen	12	NOUN	Altphilologe
+Nacherzählungen	12	NOUN	Nacherzählung
+Editions	12	NOUN	Edition
 Bundesplatz	12	NOUN
 syntonische	12	OTHER
 AKM	12	NOUN
@@ -90387,19 +90387,19 @@ zentralamerikanischen	12	OTHER
 maßgebliches	12	OTHER
 Albertiner	12	NOUN
 Besatzungsgebiet	12	NOUN
-Feiertages	12	NOUN
+Feiertages	12	NOUN	Feiertag
 ehrlichen	12	OTHER
 hairesis	12	OTHER
 Ambitus	12	NOUN
-Prüfungs	12	NOUN
+Prüfungs	12	NOUN	Prüfung
 Kickl	12	NOUN
 Augenoptiker	12	NOUN
-Museumsbahnen	12	NOUN
-Breitenkreisen	12	NOUN
+Museumsbahnen	12	NOUN	Museumsbahn
+Breitenkreisen	12	NOUN	Breitenkreis
 Föderaten	12	NOUN
 Bazille	12	NOUN
-Kunstgewerbemuseums	12	NOUN
-Madrigale	12	NOUN
+Kunstgewerbemuseums	12	NOUN	Kunstgewerbemuseum
+Madrigale	12	NOUN	Madrigal
 staatsfeindliche	12	OTHER
 Standardskalarprodukt	12	NOUN
 Rödinghausen	12	NOUN
@@ -90417,8 +90417,8 @@ Sark	12	NOUN
 Atget	12	NOUN
 Limbourg	12	NOUN
 Spiegelgalerie	12	NOUN
-Ninos	12	NOUN
-Regelwerken	12	NOUN
+Ninos	12	NOUN	Nino
+Regelwerken	12	NOUN	Regelwerk
 Guillemets	12	NOUN
 Galveston	12	NOUN
 Brownsville	12	NOUN
@@ -90447,22 +90447,22 @@ katarischen	12	OTHER
 Iai	12	NOUN
 Hymen	12	NOUN
 porn	12	NOUN,OTHER
-Zonenzeiten	12	NOUN
+Zonenzeiten	12	NOUN	Zonenzeit
 Bronzeglocken	12	NOUN
 Missionsbefehl	12	NOUN
 Strebewerk	12	NOUN
 angevinischen	12	OTHER
 Bauplastik	12	NOUN
 Neuötting	12	NOUN
-Radionuklids	12	NOUN
+Radionuklids	12	NOUN	Radionuklid
 ausgetretene	12	OTHER
 emsländischen	12	OTHER
 Misogynie	12	NOUN
 DBPB	12	NOUN
 Soulmusik	12	NOUN
-Langspielplatten	12	NOUN
+Langspielplatten	12	NOUN	Langspielplatte
 Infanterist	12	NOUN
-Kommandeurs	12	NOUN
+Kommandeurs	12	NOUN	Kommandeur
 Copperfield	12	NOUN
 Sikes	12	NOUN
 Fahrzeugführer	12	NOUN
@@ -90476,7 +90476,7 @@ Antiquaschriften	12	NOUN
 Budějovice	12	NOUN
 Bethesda	12	NOUN
 metafisica	12	OTHER
-Grabsteins	12	NOUN
+Grabsteins	12	NOUN	Grabstein
 Campin	12	NOUN
 Tropenmedizin	12	NOUN
 Tuaillon	12	NOUN
@@ -90510,7 +90510,7 @@ Tagaste	12	NOUN
 Yaoundé	12	NOUN
 parent	12	OTHER
 Streckenkilometer	12	NOUN
-Austritts	12	NOUN
+Austritts	12	NOUN	Austritt
 Slough	12	NOUN
 Waldschule	12	NOUN
 Südtondern	12	NOUN
@@ -90525,14 +90525,14 @@ Dammvorstadt	12	NOUN
 Kirchmöser	12	NOUN
 WSA	12	NOUN
 Rathenower	12	NOUN
-Oderbruchs	12	NOUN
+Oderbruchs	12	NOUN	Oderbruch
 Shubashi	12	NOUN
 Hasso	12	NOUN
 pommerscher	12	NOUN,OTHER
 Pflanzenproduktion	12	NOUN
 Königskammer	12	NOUN
 Taltempel	12	NOUN
-Stadtrechten	12	NOUN
+Stadtrechten	12	NOUN	Stadtrecht
 Betriebsteil	12	NOUN
 Orjen	12	NOUN
 Gesellschaftsroman	12	NOUN
@@ -90552,7 +90552,7 @@ postorder	12	OTHER
 Harlekin	12	NOUN
 PAIGC	12	NOUN
 Ramiro	12	NOUN
-Spielweisen	12	NOUN
+Spielweisen	12	NOUN	Spielweise
 Dubuffet	12	NOUN
 ossetische	12	OTHER
 Geigerin	12	NOUN
@@ -90560,21 +90560,21 @@ FZ	12	NOUN
 Holmgren	12	NOUN
 gemäht	12	OTHER
 Kellergeschoss	12	NOUN
-Gesetzbücher	12	NOUN
-Redaktoren	12	NOUN
+Gesetzbücher	12	NOUN	Gesetzbuch
+Redaktoren	12	NOUN	Redaktor
 Rabba	12	NOUN
 reitend	12	OTHER
 satis	12	NOUN,OTHER
 Gesamthochschule	12	NOUN
 Joschafat	12	NOUN
-Hamans	12	NOUN
+Hamans	12	NOUN	Haman
 Beira	12	NOUN
 Mittelsenkrechte	12	NOUN
 Sofer	12	NOUN
 Saxe	12	NOUN
 Reblaus	12	NOUN
 Gerolzhofen	12	NOUN
-Hauptkamms	12	NOUN
+Hauptkamms	12	NOUN	Hauptkamm
 Neogotik	12	NOUN
 Ausgießung	12	NOUN
 jachadischen	12	OTHER
@@ -90585,7 +90585,7 @@ Apostelkonzil	12	NOUN
 Mittelwagen	12	NOUN
 Mobilfunkempfang	12	NOUN
 Verzögerungszeit	12	NOUN
-Timors	12	NOUN
+Timors	12	NOUN	Timor
 CNRT	12	NOUN
 motorisiert	12	OTHER
 Außengebiet	12	NOUN
@@ -90600,20 +90600,20 @@ Versöhnungstag	12	NOUN
 Schouten	12	NOUN
 Beutelratten	12	NOUN
 MIV	12	NOUN
-Pratchetts	12	NOUN
+Pratchetts	12	NOUN	Pratchett
 ruinierte	12	OTHER
 Zentriolen	12	NOUN
 FZV	12	NOUN
-Hauptlagers	12	NOUN
+Hauptlagers	12	NOUN	Hauptlager
 Balla	12	NOUN
 Readymade	12	NOUN
 HMF	12	NOUN
 rechtsseitigen	12	OTHER
 ecuadorianische	12	OTHER
 Samoaner	12	NOUN
-Bezirkshauptmannschaften	12	NOUN
+Bezirkshauptmannschaften	12	NOUN	Bezirkshauptmannschaft
 Computerkunst	12	NOUN
-Bläsers	12	NOUN
+Bläsers	12	NOUN	Bläser
 Reihenhäuser	12	NOUN
 Notenschlüssel	12	NOUN
 transponierend	12	OTHER
@@ -90641,9 +90641,9 @@ Khun	12	NOUN,OTHER
 Yai	12	NOUN
 Pemberton	12	NOUN
 Sehwinkel	12	NOUN
-Kurbelwellen	12	NOUN
+Kurbelwellen	12	NOUN	Kurbelwelle
 Stadtsanierung	12	NOUN
-Vizepräsidentschaftskandidaten	12	NOUN
+Vizepräsidentschaftskandidaten	12	NOUN	Vizepräsidentschaftskandidat
 Bergwelt	12	NOUN
 Gemischbildung	12	NOUN
 Reichsmünzordnung	12	NOUN
@@ -90669,7 +90669,7 @@ Czernin	12	NOUN
 Szczytno	12	NOUN
 Goldap	12	NOUN
 Formstabilität	12	NOUN
-Kentenichs	12	NOUN
+Kentenichs	12	NOUN	Kentenich
 Marienschwestern	12	NOUN
 CVD	12	NOUN
 Mitgliedsunternehmen	12	NOUN
@@ -90680,7 +90680,7 @@ Erweiterungsschnittstelle	12	NOUN
 VTS	12	NOUN
 Regelspur	12	NOUN
 NSS	12	NOUN
-Saxophons	12	NOUN
+Saxophons	12	NOUN	Saxophon
 Bildungsabschluss	12	NOUN
 Zworykin	12	NOUN
 breitbandigen	12	OTHER
@@ -90690,7 +90690,7 @@ Burk	12	NOUN
 Levu	12	NOUN
 spielberechtigt	12	OTHER
 ungeschaffenen	12	OTHER
-Referaten	12	NOUN
+Referaten	12	NOUN	Referat
 Scopolamin	12	NOUN
 Aufsichtsratsvorsitzende	12	NOUN
 AusglMechV	12	NOUN
@@ -90701,12 +90701,12 @@ Aksjonow	12	NOUN
 Anblasen	12	NOUN,OTHER
 Reaktionsmischung	12	NOUN
 Generaloberen	12	NOUN
-Vogts	12	NOUN
+Vogts	12	NOUN	Vogt
 tympani	12	OTHER
 Radome	12	NOUN
 Triptane	12	NOUN
 Fallsucht	12	NOUN
-Fehlgeburten	12	NOUN
+Fehlgeburten	12	NOUN	Fehlgeburt
 Seydewitz	12	NOUN
 Gevelsberg	12	NOUN
 nicänische	12	OTHER
@@ -90715,9 +90715,9 @@ GNSS	12	NOUN
 Düdingen	12	NOUN
 Komturei	12	NOUN
 Glüh	12	NOUN
-Stimulationen	12	NOUN
+Stimulationen	12	NOUN	Stimulation
 Generalintendant	12	NOUN
-Oszilloskope	12	NOUN
+Oszilloskope	12	NOUN	Oszilloskop
 Milzener	12	NOUN
 Ablösesumme	12	NOUN
 Notarzt	12	NOUN
@@ -90732,9 +90732,9 @@ Domburg	12	NOUN
 Kiernan	12	NOUN
 Pailin	12	NOUN
 Musenalmanach	12	NOUN
-Heyms	12	NOUN
+Heyms	12	NOUN	Heym
 Ecclestone	12	NOUN
-Kontrabässe	12	NOUN
+Kontrabässe	12	NOUN	Kontrabass
 Stahlsaiten	12	NOUN
 Litwinow	12	NOUN
 Zargen	12	NOUN
@@ -90755,7 +90755,7 @@ Windau	12	NOUN
 Koszalin	12	NOUN
 ausgeschlagener	12	OTHER
 NVV	12	NOUN
-Neubürgern	12	NOUN
+Neubürgern	12	NOUN	Neubürger
 Kröllwitz	12	NOUN
 Grindelwaldgletscher	12	NOUN
 Wengernalp	12	NOUN
@@ -90764,7 +90764,7 @@ Wolgaster	12	NOUN
 Rødby	12	NOUN
 Słupsk	12	NOUN
 Gifhorner	12	NOUN
-Berglands	12	NOUN
+Berglands	12	NOUN	Bergland
 Reinhardswald	12	NOUN
 Stekel	12	NOUN
 Frisia	12	NOUN
@@ -90775,17 +90775,17 @@ Durchbruchspannung	12	NOUN
 Ermanarich	12	NOUN
 RMB	12	NOUN
 bipartit	12	OTHER
-Subtrahenden	12	NOUN
+Subtrahenden	12	NOUN	Subtrahend
 Feher	12	NOUN
 Jamnik	12	NOUN
 Oehmichen	12	NOUN
 Gamut	12	NOUN
-Flüssigkristallen	12	NOUN
+Flüssigkristallen	12	NOUN	Flüssigkristall
 Problemgröße	12	NOUN
 BlitzPlus	12	NOUN
 Stallupönen	12	NOUN
 genitalen	12	OTHER
-Umgreifenden	12	NOUN
+Umgreifenden	12	NOUN	Umgreifende
 Wehrpflichtgesetz	12	NOUN
 Jonsdorf	12	NOUN
 Kasprowy	12	NOUN
@@ -90809,8 +90809,8 @@ bezirksfreien	12	OTHER
 Raadt	12	NOUN
 extractMin	12	OTHER
 Teplice	12	NOUN
-Völkerschlachtdenkmals	12	NOUN
-Mehrings	12	NOUN
+Völkerschlachtdenkmals	12	NOUN	Völkerschlachtdenkmal
+Mehrings	12	NOUN	Mehring
 Walston	12	NOUN
 Campino	12	NOUN
 Suderwich	12	NOUN
@@ -90820,8 +90820,8 @@ Bingum	12	NOUN
 Nordfeld	12	NOUN
 nachkonziliaren	12	OTHER
 Kollmarsreute	12	NOUN
-Zentrosomen	12	NOUN
-Kontrollpunkten	12	NOUN
+Zentrosomen	12	NOUN	Zentrosom
+Kontrollpunkten	12	NOUN	Kontrollpunkt
 Ostwürttemberg	12	NOUN
 Hussenhofen	12	NOUN
 Herlikofen	12	NOUN
@@ -90835,24 +90835,24 @@ Ahlbecker	12	NOUN
 NXL	12	NOUN
 nullptr	12	OTHER
 Viehspecken	12	NOUN
-Powiate	12	NOUN
+Powiate	12	NOUN	Powiat
 Rías	12	NOUN
 Ersatzzeichen	12	NOUN
 Widerstandsänderung	12	NOUN
 NTIA	12	NOUN
-Verwertungsgesellschaften	12	NOUN
+Verwertungsgesellschaften	12	NOUN	Verwertungsgesellschaft
 Grundzentrum	12	NOUN
 Hardenburg	12	NOUN
 Weinhübel	12	NOUN
 Königshufen	12	NOUN
-Zirkumzisionen	12	NOUN
+Zirkumzisionen	12	NOUN	Zirkumzision
 Gimmeldingen	12	NOUN
 Analsex	12	NOUN
 Bushwick	12	NOUN
 Zahnd	12	NOUN
 Zachanassian	12	NOUN
 Suizidhilfe	12	NOUN
-Geras	12	NOUN
+Geras	12	NOUN	Gera
 Venta	12	NOUN
 tuwinischen	12	OTHER
 Wainachen	12	NOUN
@@ -90864,7 +90864,7 @@ fettgedruckten	12	OTHER
 Trochoide	12	NOUN
 Sondernheim	12	NOUN
 Neckarelz	12	NOUN
-Erkraths	12	NOUN
+Erkraths	12	NOUN	Erkrath
 Karatedō	12	NOUN
 Oberjettingen	12	NOUN
 Unterjettingen	12	NOUN
@@ -90877,9 +90877,9 @@ Vertragsunternehmen	12	NOUN
 Stiftberg	12	NOUN
 SvZ	12	NOUN
 Agostinelli	12	NOUN
-Testbilder	12	NOUN
+Testbilder	12	NOUN	Testbild
 Einradfahrer	12	NOUN
-Todessterns	12	NOUN
+Todessterns	12	NOUN	Todesstern
 Tenshō	12	NOUN
 Sprötze	12	NOUN
 Zofingen	12	NOUN
@@ -90891,9 +90891,9 @@ alarmierenden	12	OTHER
 Zuhälterei	12	NOUN
 Yoyo	12	NOUN
 Friedrichsdorfer	12	NOUN
-Alleinspielers	12	NOUN
+Alleinspielers	12	NOUN	Alleinspieler
 Fliegerbombe	12	NOUN
-Königssees	12	NOUN
+Königssees	12	NOUN	Königssee
 Zivilschutzes	12	NOUN
 Gossypium	12	NOUN
 HOEHE	12	NOUN,OTHER
@@ -90903,17 +90903,17 @@ Tuchman	12	NOUN
 Öschingen	12	NOUN
 Rollwinkel	12	NOUN
 Osterhase	12	NOUN
-Allmenden	12	NOUN
+Allmenden	12	NOUN	Allmend
 Feuchtmittel	12	NOUN
-Broschuren	12	NOUN
+Broschuren	12	NOUN	Broschur
 Armii	12	NOUN
 Noordoostpolder	12	NOUN
 Pennantsittich	12	NOUN
 Havila	12	NOUN
 Teslin	12	NOUN
 Einkammernparlament	12	NOUN
-Reinmars	12	NOUN
-Notrufnummern	12	NOUN
+Reinmars	12	NOUN	Reinmar
+Notrufnummern	12	NOUN	Notrufnummer
 Sängerschaft	12	NOUN
 Pentode	12	NOUN
 Nauruer	12	NOUN
@@ -90936,8 +90936,8 @@ CANopen	12	NOUN
 Terraner	12	NOUN
 Vokativphrase	12	NOUN
 Babler	12	NOUN
-Basilias	12	NOUN
-Garbos	12	NOUN
+Basilias	12	NOUN	Basilia
+Garbos	12	NOUN	Garbo
 Nukleosid	12	NOUN
 Phosphyl	12	NOUN
 Sebnitzer	12	NOUN
@@ -90949,9 +90949,9 @@ Exponentialskalen	12	NOUN
 Shatavahana	12	NOUN
 Imphal	12	NOUN
 AIADMK	12	NOUN
-Uttarakhands	12	NOUN
-Westbengalens	12	NOUN
-Meditierenden	12	NOUN
+Uttarakhands	12	NOUN	Uttarakhand
+Westbengalens	12	NOUN	Westbengalen
+Meditierenden	12	NOUN	Meditierende
 Mårbacka	12	NOUN
 Polycarpi	12	NOUN
 Hagbard	12	NOUN
@@ -90963,14 +90963,14 @@ Betrachtzeit	12	NOUN
 Ekathotsarot	12	NOUN
 Phaulkon	12	NOUN
 Phrae	12	NOUN
-Fnords	12	NOUN
+Fnords	12	NOUN	Fnord
 Videoüberwachungsanlagen	12	NOUN
 Meldert	12	NOUN
-Meinungsbilder	12	NOUN
-Shinjis	12	NOUN
+Meinungsbilder	12	NOUN	Meinungsbild
+Shinjis	12	NOUN	Shinji
 Haubach	12	NOUN
 Burschenschaftliche	12	NOUN,OTHER
-Deschners	12	NOUN
+Deschners	12	NOUN	Deschner
 Neofolk	12	NOUN
 aranesischen	12	OTHER
 Kaokoland	12	NOUN
@@ -90981,21 +90981,21 @@ erstellst	12	VERB
 installiere	12	VERB
 textet	12	VERB
 IMDb	11	NOUN
-Uranerzen	11	NOUN
+Uranerzen	11	NOUN	Uranerz
 Seltenerdmetalle	11	NOUN
 Oxalat	11	NOUN,OTHER
 Berufswunsch	11	NOUN
-Koproduktionen	11	NOUN
-Filmpreisen	11	NOUN
-Kommunikationen	11	NOUN
-Absätzen	11	NOUN
+Koproduktionen	11	NOUN	Koproduktion
+Filmpreisen	11	NOUN	Filmpreis
+Kommunikationen	11	NOUN	Kommunikation
+Absätzen	11	NOUN	Absatz
 zuspricht	11	OTHER
-Enterprises	11	NOUN
+Enterprises	11	NOUN	Enterprise
 Krimiserie	11	NOUN
 Traumfabrik	11	NOUN
 Essanay	11	NOUN
 Hauptkonkurrent	11	NOUN
-Gerichtsurteile	11	NOUN
+Gerichtsurteile	11	NOUN	Gerichtsurteil
 Zwischenhändler	11	NOUN
 Produktionsunternehmen	11	NOUN
 Dryden	11	NOUN
@@ -91009,9 +91009,9 @@ Mitinhaber	11	NOUN
 Naturell	11	NOUN
 Glamour	11	NOUN
 Filmkomponist	11	NOUN
-Producers	11	NOUN
+Producers	11	NOUN	Producer
 ausgeklügelte	11	OTHER
-Gesundheitszustands	11	NOUN
+Gesundheitszustands	11	NOUN	Gesundheitszustand
 undurchsichtigen	11	OTHER
 Schurke	11	NOUN
 hilflosen	11	OTHER
@@ -91029,8 +91029,8 @@ Preminger	11	NOUN
 sparsamen	11	OTHER
 atmosphärisch	11	OTHER
 begehe	11	OTHER
-Computeranimationen	11	NOUN
-Propagandafilme	11	NOUN
+Computeranimationen	11	NOUN	Computeranimation
+Propagandafilme	11	NOUN	Propagandafilm
 ungekannte	11	OTHER
 Barbera	11	NOUN
 Kinderprogramm	11	NOUN
@@ -91049,11 +91049,11 @@ Thurman	11	NOUN
 Rogue	11	NOUN
 Slade	11	NOUN
 Ethylenglycol	11	NOUN
-Ethanols	11	NOUN
-Alkanen	11	NOUN
+Ethanols	11	NOUN	Ethanol
+Alkanen	11	NOUN	Alkane
 Lyngstad	11	NOUN
 Marggraf	11	NOUN
-Namensvarianten	11	NOUN
+Namensvarianten	11	NOUN	Namensvariante
 Gewichtsprozent	11	NOUN
 Mineralart	11	NOUN
 dunkelgrauen	11	OTHER
@@ -91067,7 +91067,7 @@ Konservendosen	11	NOUN
 Reflector	11	NOUN
 Metallguss	11	NOUN
 Zerspanen	11	NOUN,OTHER
-Sprachstörungen	11	NOUN
+Sprachstörungen	11	NOUN	Sprachstörung
 aufwirft	11	OTHER
 Probelösung	11	NOUN
 Constantinus	11	NOUN
@@ -91078,8 +91078,8 @@ Oels	11	NOUN
 Glaskugel	11	NOUN
 instabiles	11	OTHER
 verfügbares	11	OTHER
-Tauchtiefen	11	NOUN
-Reaktionsgleichungen	11	NOUN
+Tauchtiefen	11	NOUN	Tauchtiefe
+Reaktionsgleichungen	11	NOUN	Reaktionsgleichung
 oxidierende	11	OTHER
 Aphrodisiakum	11	NOUN
 Ionenradien	11	NOUN
@@ -91087,18 +91087,18 @@ Giftmord	11	NOUN
 unbeständig	11	OTHER
 Nobelium	11	NOUN
 Lawrencium	11	NOUN
-Brennstäben	11	NOUN
+Brennstäben	11	NOUN	Brennstäbe
 Disproportionierung	11	NOUN
 Bakterienzellen	11	NOUN
 verpresst	11	OTHER
-Elektronenmikroskope	11	NOUN
+Elektronenmikroskope	11	NOUN	Elektronenmikroskop
 Ausbildungsstand	11	NOUN
 Prüfungsordnung	11	NOUN
 Ärztetag	11	NOUN
-Bunds	11	NOUN
+Bunds	11	NOUN	Bund
 mündigen	11	OTHER
 abzuleisten	11	VERB
-Vertragsärzte	11	NOUN
+Vertragsärzte	11	NOUN	Vertragsarzt
 Humangenetik	11	NOUN
 Hundt	11	NOUN
 Humanbiologie	11	NOUN
@@ -91107,14 +91107,14 @@ molekularbiologischer	11	OTHER
 Mittelposition	11	NOUN
 Gebrauchstauglichkeit	11	NOUN
 legendenhaft	11	OTHER
-Thebens	11	NOUN
+Thebens	11	NOUN	Theben
 wutentbrannt	11	OTHER
-Hofstaats	11	NOUN
+Hofstaats	11	NOUN	Hofstaat
 Gordion	11	NOUN
 löse	11	OTHER
 Inselstadt	11	NOUN
 Olynth	11	NOUN
-Gazas	11	NOUN
+Gazas	11	NOUN	Gaza
 zerlegten	11	VERB
 Grenzfestung	11	NOUN
 verachten	11	VERB
@@ -91127,7 +91127,7 @@ Altersschwäche	11	NOUN
 reinigende	11	OTHER
 Libanios	11	NOUN
 Alexandri	11	NOUN
-Perserkönigs	11	NOUN
+Perserkönigs	11	NOUN	Perserkönig
 Herrschaftslegitimation	11	NOUN
 Philosophenschule	11	NOUN
 elegischen	11	OTHER
@@ -91148,7 +91148,7 @@ Westreiches	11	NOUN
 Überlieferungslage	11	NOUN
 Tusculum	11	NOUN
 Fachlexika	11	NOUN
-Namensgebers	11	NOUN
+Namensgebers	11	NOUN	Namensgeber
 Measures	11	NOUN
 Überlebenskampf	11	NOUN
 aufrechterhält	11	OTHER
@@ -91160,7 +91160,7 @@ Schachprogramme	11	NOUN
 Weihnachtsabend	11	NOUN
 versäumten	11	VERB
 Sammelleidenschaft	11	NOUN
-Lyells	11	NOUN
+Lyells	11	NOUN	Lyell
 stratigraphischen	11	OTHER
 Lubbock	11	NOUN
 Schatzsucher	11	NOUN
@@ -91171,7 +91171,7 @@ Gletschermumie	11	NOUN
 Machu	11	NOUN
 Picchu	11	NOUN
 angewinkelt	11	OTHER
-Schwellungen	11	NOUN
+Schwellungen	11	NOUN	Schwellung
 nachlässt	11	OTHER
 Akutphase	11	NOUN
 Ödeme	11	NOUN
@@ -91188,7 +91188,7 @@ isolationistische	11	OTHER
 Sparer	11	NOUN
 ferneren	11	OTHER
 Gravitationsfeldes	11	NOUN
-Einzelwerke	11	NOUN
+Einzelwerke	11	NOUN	Einzelwerk
 wanted	11	NOUN,OTHER
 Schulferien	11	NOUN
 gelangweilt	11	OTHER
@@ -91197,8 +91197,8 @@ Cinematic	11	NOUN
 anzurufen	11	VERB
 Episodenfilm	11	NOUN
 Gillian	11	NOUN
-Hauptdarstellern	11	NOUN
-Pearls	11	NOUN
+Hauptdarstellern	11	NOUN	Hauptdarsteller
+Pearls	11	NOUN	Pearl
 Dornröschen	11	NOUN
 viertägige	11	OTHER
 Ehrenbürgerin	11	NOUN
@@ -91210,9 +91210,9 @@ gleichsetzte	11	OTHER
 Palimpsest	11	NOUN
 Marciana	11	NOUN
 Chalkis	11	NOUN
-Naturforschern	11	NOUN
+Naturforschern	11	NOUN	Naturforscher
 Speusippos	11	NOUN
-Eroberungszügen	11	NOUN
+Eroberungszügen	11	NOUN	Eroberungszug
 exoterischen	11	OTHER
 Dubletten	11	NOUN
 singulären	11	OTHER
@@ -91221,7 +91221,7 @@ dialogischen	11	OTHER
 leugnet	11	OTHER
 Beweisverfahren	11	NOUN
 Atomisten	11	NOUN
-Einzeldings	11	NOUN
+Einzeldings	11	NOUN	Einzelding
 bedürfte	11	OTHER
 sublunaren	11	OTHER
 zweitbesten	11	OTHER
@@ -91229,7 +91229,7 @@ Aristoteliker	11	NOUN
 verspotteten	11	VERB
 Monophysiten	11	NOUN
 sophistische	11	OTHER
-Blutkreislaufs	11	NOUN
+Blutkreislaufs	11	NOUN	Blutkreislauf
 Bildungsmöglichkeiten	11	NOUN
 Siedlungsgrenze	11	NOUN
 Flößer	11	NOUN
@@ -91245,14 +91245,14 @@ Kampfbereitschaft	11	NOUN
 verpflichte	11	OTHER
 belieferten	11	VERB
 Homestead	11	NOUN
-Militärgerichte	11	NOUN
-Zusatzartikels	11	NOUN
+Militärgerichte	11	NOUN	Militärgericht
+Zusatzartikels	11	NOUN	Zusatzartikel
 Ruska	11	NOUN
 Mitternachtssonne	11	NOUN
 Rückbenennung	11	NOUN
 vorgehaltener	11	OTHER
 Rally	11	NOUN
-Geschwindigkeitskonstanten	11	NOUN
+Geschwindigkeitskonstanten	11	NOUN	Geschwindigkeitskonstante
 Luisenstraße	11	NOUN
 Vereinigungsparteitag	11	NOUN
 Bürgerin	11	NOUN
@@ -91261,16 +91261,16 @@ riskanten	11	OTHER
 Schattenkabinett	11	NOUN
 Bürokratieabbau	11	NOUN
 Spareinlagen	11	NOUN
-Bürgschaften	11	NOUN
+Bürgschaften	11	NOUN	Bürgschaft
 Außenministerkonferenz	11	NOUN
 entwertete	11	OTHER
-Umweltschutzorganisationen	11	NOUN
+Umweltschutzorganisationen	11	NOUN	Umweltschutzorganisation
 Höhenflug	11	NOUN
 Spionageaffäre	11	NOUN
 Kiepenheuer	11	NOUN
 Arnaud	11	NOUN
-Hayeks	11	NOUN
-Politiken	11	NOUN
+Hayeks	11	NOUN	Hayek
+Politiken	11	NOUN	Politik
 Halskette	11	NOUN
 Mateo	11	NOUN
 Fernsehpreis	11	NOUN
@@ -91286,11 +91286,11 @@ atheistischer	11	OTHER
 ausgeformt	11	OTHER
 gäben	11	VERB
 Kommunikationstheorie	11	NOUN
-Blochs	11	NOUN
-Hauptwerkes	11	NOUN
-Stupas	11	NOUN
+Blochs	11	NOUN	Bloch
+Hauptwerkes	11	NOUN	Hauptwerk
+Stupas	11	NOUN	Stupa
 Epikureismus	11	NOUN
-Epikurs	11	NOUN
+Epikurs	11	NOUN	Epikur
 Morallehre	11	NOUN
 deorum	11	OTHER
 geistlichem	11	NOUN,OTHER
@@ -91299,15 +91299,15 @@ Antiklerikalismus	11	NOUN
 verfälschte	11	OTHER
 übernatürlich	11	OTHER
 Alvin	11	NOUN
-Gründerinnen	11	NOUN
-Südfrankreichs	11	NOUN
+Gründerinnen	11	NOUN	Gründerin
+Südfrankreichs	11	NOUN	Südfrankreich
 Konvolut	11	NOUN
 bodennahe	11	OTHER
 Arvo	11	NOUN
 zurücktritt	11	OTHER
 DAAD	11	NOUN
 fundamentalistisch	11	OTHER
-Terrororganisationen	11	NOUN
+Terrororganisationen	11	NOUN	Terrororganisation
 Kernraum	11	NOUN
 Bamiyan	11	NOUN
 Menschenrechtler	11	NOUN
@@ -91316,11 +91316,11 @@ Durrani	11	NOUN
 Masar	11	NOUN
 erstaunlichen	11	OTHER
 verzweifelter	11	OTHER
-Inhaftierungen	11	NOUN
+Inhaftierungen	11	NOUN	Inhaftierung
 Kommandostruktur	11	NOUN
 Schlafmohn	11	NOUN
 Unglücksfall	11	NOUN
-Teilstücks	11	NOUN
+Teilstücks	11	NOUN	Teilstück
 Telekommunikationsnetz	11	NOUN
 Volksdichtung	11	NOUN
 Erzähltradition	11	NOUN
@@ -91332,8 +91332,8 @@ Madrigal	11	NOUN
 Krenek	11	NOUN
 täusche	11	OTHER
 Dahlhaus	11	NOUN
-Boschs	11	NOUN
-Tudors	11	NOUN
+Boschs	11	NOUN	Bosch
+Tudors	11	NOUN	Tudor
 Schulkameraden	11	NOUN
 handfesten	11	OTHER
 erkundigen	11	VERB
@@ -91341,7 +91341,7 @@ Loma	11	NOUN
 ertrug	11	OTHER
 Kapuze	11	NOUN
 Pessoa	11	NOUN
-Treppenhäuser	11	NOUN
+Treppenhäuser	11	NOUN	Treppenhaus
 Adept	11	NOUN
 biografisch	11	OTHER
 cattle	11	NOUN,OTHER
@@ -91350,7 +91350,7 @@ satanistische	11	OTHER
 individualistische	11	OTHER
 Vollstrecker	11	NOUN
 Geschichtsfälschung	11	NOUN
-Covers	11	NOUN
+Covers	11	NOUN	Cover
 Blizzard	11	NOUN
 Pleasure	11	NOUN
 Bujutsu	11	NOUN,OTHER
@@ -91360,8 +91360,8 @@ widerstandslos	11	OTHER
 Schälen	11	NOUN,OTHER
 dunkelblaue	11	OTHER
 Konfliktforschung	11	NOUN
-Bandmitgliedern	11	NOUN
-Hauptverkehrsachsen	11	NOUN
+Bandmitgliedern	11	NOUN	Bandmitglied
+Hauptverkehrsachsen	11	NOUN	Hauptverkehrsachse
 reorganisierte	11	OTHER
 oströmischer	11	OTHER
 einträglichen	11	OTHER
@@ -91375,7 +91375,7 @@ Taklamakan	11	NOUN
 Erdölproduktion	11	NOUN
 OAPEC	11	NOUN
 Rechtsgebiet	11	NOUN
-Bewerbers	11	NOUN
+Bewerbers	11	NOUN	Bewerber
 Mitbestimmungsrecht	11	NOUN
 Rechtsträger	11	NOUN
 Konsekration	11	NOUN
@@ -91384,7 +91384,7 @@ Narbonensis	11	NOUN,OTHER
 Landverteilung	11	NOUN
 entlaufene	11	OTHER
 Weisungsbefugnis	11	NOUN
-Triumphe	11	NOUN
+Triumphe	11	NOUN	Triumph
 widerspruchslos	11	OTHER
 Germanenkriege	11	NOUN
 vorangeschritten	11	VERB
@@ -91399,7 +91399,7 @@ objektiviert	11	OTHER
 widerspräche	11	OTHER
 Individuation	11	NOUN
 Pudel	11	NOUN
-Irrwege	11	NOUN
+Irrwege	11	NOUN	Irrweg
 Wölfflin	11	NOUN
 überschätzen	11	VERB
 Entsagung	11	NOUN
@@ -91408,7 +91408,7 @@ Placentia	11	NOUN
 Korruptionsvorwürfe	11	NOUN
 triumphalen	11	OTHER
 aufeinandertrafen	11	VERB
-GUIs	11	NOUN
+GUIs	11	NOUN	GUI
 Computermaus	11	NOUN
 Drittanbieter	11	NOUN
 iBook	11	OTHER
@@ -91417,7 +91417,7 @@ Rosenthaler	11	NOUN
 PricewaterhouseCoopers	11	NOUN
 Aktienkurse	11	NOUN
 watchOS	11	OTHER
-Messages	11	NOUN,OTHER
+Messages	11	NOUN,OTHER	Message
 stattet	11	OTHER
 Punktschrift	11	NOUN
 Beschäftigter	11	NOUN,OTHER
@@ -91426,7 +91426,7 @@ Leaks	11	NOUN
 Telegram	11	NOUN
 schmuggeln	11	VERB
 vertragsgemäß	11	OTHER
-Völkermorde	11	NOUN
+Völkermorde	11	NOUN	Völkermord
 Meidling	11	NOUN
 unberechtigten	11	OTHER
 Flandernschlacht	11	NOUN
@@ -91438,10 +91438,10 @@ grandiosen	11	OTHER
 Stadelheim	11	NOUN
 Vaterländischer	11	NOUN,OTHER
 allemal	11	OTHER
-Ausnahmezustands	11	NOUN
+Ausnahmezustands	11	NOUN	Ausnahmezustand
 Kahrs	11	NOUN
 Nationalregierung	11	NOUN
-Telefonbüchern	11	NOUN
+Telefonbüchern	11	NOUN	Telefonbuch
 Finanzier	11	NOUN
 deutschnational	11	OTHER
 Rassentheorie	11	NOUN
@@ -91449,10 +91449,10 @@ Ploetz	11	NOUN
 Jenische	11	NOUN,OTHER
 erstreben	11	VERB
 provokativen	11	OTHER
-Schleichers	11	NOUN
+Schleichers	11	NOUN	Schleicher
 zähmen	11	VERB
-Forschungsprojekts	11	NOUN
-Staatsverträge	11	NOUN
+Forschungsprojekts	11	NOUN	Forschungsprojekt
+Staatsverträge	11	NOUN	Staatsvertrag
 Ungeduld	11	NOUN
 Vergasung	11	NOUN
 Weserübung	11	NOUN
@@ -91485,7 +91485,7 @@ Aelia	11	NOUN
 Malu	11	NOUN
 ungewöhnlicherweise	11	OTHER
 Kriegsgebiet	11	NOUN
-Hispaniens	11	NOUN
+Hispaniens	11	NOUN	Hispanien
 umkam	11	OTHER
 stadtrömische	11	OTHER
 kaiserlichem	11	OTHER
@@ -91513,12 +91513,12 @@ Shoemaker	11	NOUN
 Hadley	11	NOUN
 eintaucht	11	OTHER
 lastet	11	OTHER
-Höhenunterschieden	11	NOUN
+Höhenunterschieden	11	NOUN	Höhenunterschied
 hergestelltem	11	OTHER
-Nitraten	11	NOUN
+Nitraten	11	NOUN	Nitrat
 Nationalarchiv	11	NOUN
 verlustfreien	11	OTHER
-Verkehrsunfällen	11	NOUN
+Verkehrsunfällen	11	NOUN	Verkehrsunfall
 herabsetzen	11	VERB
 Unfallrisiko	11	NOUN
 fahrerlose	11	OTHER
@@ -91528,7 +91528,7 @@ verderbliche	11	OTHER
 Bauleistungen	11	NOUN
 Verkehrsclub	11	NOUN
 Rechnens	11	NOUN
-Gattungs	11	NOUN
+Gattungs	11	NOUN	Gattung
 voranstellen	11	NOUN,OTHER
 galvanisches	11	OTHER
 dimensionierten	11	VERB
@@ -91556,19 +91556,19 @@ Hochverräter	11	NOUN
 riechendes	11	OTHER
 Ammoniaksynthese	11	NOUN
 Teilreaktionen	11	NOUN
-Exkrementen	11	NOUN
+Exkrementen	11	NOUN	Exkremente
 Fumarolen	11	NOUN
 Schwingungsfrequenz	11	NOUN
 planarer	11	OTHER
 Reduction	11	NOUN,OTHER
-Platzbedarfs	11	NOUN
-Synonymen	11	NOUN,OTHER
+Platzbedarfs	11	NOUN	Platzbedarf
+Synonymen	11	NOUN,OTHER	Synonym
 hemmenden	11	OTHER
 Selbstbestäubung	11	NOUN
 Hilum	11	NOUN
 Dienstgradgruppe	11	NOUN
 Farragut	11	NOUN
-Salaten	11	NOUN
+Salaten	11	NOUN	Salat
 frittiert	11	OTHER
 Wettrennen	11	NOUN
 Halbleitertechnologie	11	NOUN
@@ -91590,7 +91590,7 @@ Glutamin	11	NOUN
 richtigerweise	11	OTHER
 deprotoniert	11	OTHER
 Agonist	11	NOUN
-Hülsenfrüchten	11	NOUN
+Hülsenfrüchten	11	NOUN	Hülsenfrucht
 monogam	11	OTHER
 Belger	11	NOUN
 Hermunduren	11	NOUN
@@ -91610,7 +91610,7 @@ Museumszentrum	11	NOUN
 Eisenbahngeschichte	11	NOUN
 biografischer	11	OTHER
 Mädchengymnasium	11	NOUN
-Pagoden	11	NOUN
+Pagoden	11	NOUN	Pagode
 Familienbetrieb	11	NOUN
 Geschäftspolitik	11	NOUN
 zurückgekauft	11	OTHER
@@ -91629,7 +91629,7 @@ raues	11	OTHER
 Stadtflucht	11	NOUN
 Indígenas	11	NOUN
 Peruaner	11	NOUN
-Personalpronomens	11	NOUN
+Personalpronomens	11	NOUN	Personalpronomen
 Menem	11	NOUN
 Pública	11	NOUN
 Pflichtexemplarrecht	11	NOUN
@@ -91684,7 +91684,7 @@ Rude	11	NOUN
 Künstlerpaar	11	NOUN
 zweimonatiger	11	OTHER
 Hervorbringung	11	NOUN
-Geräusches	11	NOUN
+Geräusches	11	NOUN	Geräusch
 unrichtig	11	OTHER
 Schallleistung	11	NOUN
 Bedscha	11	NOUN
@@ -91707,24 +91707,24 @@ abstrahlt	11	OTHER
 aquatisch	11	OTHER
 Rauminhalt	11	NOUN
 Gefahrensituation	11	NOUN
-Altersbestimmungen	11	NOUN
-Umlagerungen	11	NOUN
+Altersbestimmungen	11	NOUN	Altersbestimmung
+Umlagerungen	11	NOUN	Umlagerung
 Kalibrieren	11	NOUN,OTHER
 Isotopenverhältnisse	11	NOUN
 Eisbohrkernen	11	NOUN
-Särgen	11	NOUN
+Särgen	11	NOUN	Sarg
 Abbauprodukt	11	NOUN
 Stoffwechselprozesse	11	NOUN
 Ruhigstellung	11	NOUN
 Syntheseverfahren	11	NOUN
-Cuts	11	NOUN
+Cuts	11	NOUN	Cut
 Kammerflimmern	11	NOUN
-Hemmern	11	NOUN
+Hemmern	11	NOUN	Hemmer
 Blutgefäß	11	NOUN
 Intima	11	NOUN,OTHER
 externa	11	OTHER
-Mordechais	11	NOUN
-Avivs	11	NOUN
+Mordechais	11	NOUN	Mordechai
+Avivs	11	NOUN	Aviv
 unternommenen	11	OTHER
 Avraham	11	NOUN
 Lichtgestalt	11	NOUN
@@ -91734,7 +91734,7 @@ angeborener	11	OTHER
 beibehielten	11	VERB
 erhältlicher	11	OTHER
 Wahrig	11	NOUN
-Akronyms	11	NOUN
+Akronyms	11	NOUN	Akronym
 Apronym	11	NOUN
 Revised	11	NOUN,OTHER
 Homophone	11	NOUN,OTHER
@@ -91742,7 +91742,7 @@ EMM	11	NOUN
 Forgotten	11	NOUN
 anzuzünden	11	VERB
 stimmberechtigtes	11	OTHER
-Regionalbüros	11	NOUN
+Regionalbüros	11	NOUN	Regionalbüro
 Menschenrechtssituation	11	NOUN
 Grundeinheit	11	NOUN
 Botanica	11	NOUN
@@ -91757,16 +91757,16 @@ Greedy	11	NOUN,OTHER
 Arabistik	11	NOUN
 überlange	11	OTHER
 drittletzten	11	OTHER
-Schams	11	NOUN,OTHER
+Schams	11	NOUN,OTHER	Scham
 reziprok	11	OTHER
 Vokalisierung	11	NOUN
 Spatial	11	NOUN,OTHER
-Dateiformats	11	NOUN
+Dateiformats	11	NOUN	Dateiformat
 zeitkritischen	11	OTHER
 Webanwendung	11	NOUN
 Gesamtansicht	11	NOUN
 ovaler	11	OTHER
-Fröschen	11	NOUN
+Fröschen	11	NOUN	Frosch
 Mixturen	11	NOUN
 sien	11	NOUN,OTHER
 fünfstelligen	11	OTHER
@@ -91782,42 +91782,42 @@ Pastoral	11	NOUN,OTHER
 contemporain	11	NOUN,OTHER
 Privatdruck	11	NOUN
 Zustandsraum	11	NOUN
-Reinstoffen	11	NOUN
+Reinstoffen	11	NOUN	Reinstoff
 Pfütze	11	NOUN
 Volumenzunahme	11	NOUN
 Güterangebot	11	NOUN
 abstraktere	11	OTHER
 Anwendungsfeld	11	NOUN
 gestuften	11	OTHER
-Taktes	11	NOUN
+Taktes	11	NOUN	Takt
 Nachlauf	11	NOUN
-Komparatoren	11	NOUN
+Komparatoren	11	NOUN	Komparator
 Integrator	11	NOUN
-Zählern	11	NOUN
+Zählern	11	NOUN	Zähler
 Slope	11	NOUN
 Zehnerpotenz	11	NOUN
-Kirchenmitgliedern	11	NOUN
+Kirchenmitgliedern	11	NOUN	Kirchenmitglieder
 Verlautbarung	11	NOUN
 Listening	11	NOUN,OTHER
 Atraḫasis	11	NOUN
 Bildtypus	11	NOUN
 Immaculata	11	NOUN
 jungfräulichen	11	OTHER
-Elends	11	NOUN
+Elends	11	NOUN	Elend
 beziehende	11	OTHER
-Zigeunern	11	NOUN
+Zigeunern	11	NOUN	Zigeuner
 RHF	11	NOUN
 Ausführungsbestimmungen	11	NOUN
 Wittgensteiner	11	NOUN
 bestimmbare	11	OTHER
 Kleinplanet	11	NOUN
 Inklination	11	NOUN
-Bahnebenen	11	NOUN
-Halbgötter	11	NOUN
+Bahnebenen	11	NOUN	Bahnebene
+Halbgötter	11	NOUN	Halbgott
 Stufenpyramide	11	NOUN
-Arbeitersiedlungen	11	NOUN
+Arbeitersiedlungen	11	NOUN	Arbeitersiedlung
 ordnungsgemäßer	11	OTHER
-Orders	11	NOUN,OTHER
+Orders	11	NOUN,OTHER	Order
 Nasir	11	NOUN
 übermäßiges	11	OTHER
 Melatonin	11	NOUN
@@ -91830,15 +91830,15 @@ Kármán	11	NOUN
 Anschütz	11	NOUN
 Stability	11	NOUN,OTHER
 Interkontinentalrakete	11	NOUN
-Recherches	11	NOUN,OTHER
-Besichtigungen	11	NOUN
+Recherches	11	NOUN,OTHER	Recherche
+Besichtigungen	11	NOUN	Besichtigung
 ehelicher	11	OTHER
 Areopag	11	NOUN
 Namenspate	11	NOUN
 Rückfluss	11	NOUN
 Ambo	11	NOUN
 Carmona	11	NOUN
-Mehrparteiensystems	11	NOUN
+Mehrparteiensystems	11	NOUN	Mehrparteiensystem
 unparteiischen	11	OTHER
 Binnenlandes	11	NOUN
 Öleinnahmen	11	NOUN
@@ -91869,7 +91869,7 @@ verstehbar	11	OTHER
 insbes	11	OTHER
 verifizierbar	11	OTHER
 Klaas	11	NOUN
-Unterführungen	11	NOUN
+Unterführungen	11	NOUN	Unterführung
 Gegenverkehr	11	NOUN
 Millionenpublikum	11	NOUN
 Straßenwesen	11	NOUN
@@ -91891,18 +91891,18 @@ DFLP	11	NOUN
 Alternate	11	NOUN,OTHER
 erweiterbare	11	OTHER
 Spirituose	11	NOUN
-Absinths	11	NOUN
-Endprodukts	11	NOUN
-Tinkturen	11	NOUN
+Absinths	11	NOUN	Absinth
+Endprodukts	11	NOUN	Endprodukt
+Tinkturen	11	NOUN	Tinktur
 verte	11	NOUN,OTHER
 Sisley	11	NOUN
 Huysmans	11	NOUN
 Vin	11	NOUN,OTHER
 Veilchen	11	NOUN
 kolportierte	11	OTHER
-Berufsstände	11	NOUN
+Berufsstände	11	NOUN	Berufsstand
 erfragt	11	OTHER
-Berufsbilder	11	NOUN
+Berufsbilder	11	NOUN	Berufsbild
 Profession	11	NOUN,OTHER
 Berufsmusiker	11	NOUN
 Kleinstlebewesen	11	NOUN
@@ -91916,27 +91916,27 @@ Rooms	11	NOUN,OTHER
 Benchmark	11	NOUN
 effektivsten	11	OTHER
 befruchten	11	VERB
-Oberlaufs	11	NOUN
-Niederbayerns	11	NOUN
+Oberlaufs	11	NOUN	Oberlauf
+Niederbayerns	11	NOUN	Niederbayern
 Waldkiefer	11	NOUN
 Voralpenland	11	NOUN
 hochalpinen	11	OTHER
 Bayernherzog	11	NOUN
 Hausvertrag	11	NOUN
-Gebietsgewinnen	11	NOUN
+Gebietsgewinnen	11	NOUN	Gebietsgewinne
 Montez	11	NOUN
 abdanken	11	VERB
 Ostheim	11	NOUN
 Kommunalwahlrecht	11	NOUN
-Landräten	11	NOUN
+Landräten	11	NOUN	Landrat
 Schwesterpartei	11	NOUN
 EFRE	11	NOUN
 Wappenzeichen	11	NOUN
 Landschaftsnamen	11	NOUN
-Mittelbehörden	11	NOUN
+Mittelbehörden	11	NOUN	Mittelbehörde
 Rüstungsunternehmen	11	NOUN
-Beherbergungsbetrieben	11	NOUN
-Ankünften	11	NOUN
+Beherbergungsbetrieben	11	NOUN	Beherbergungsbetriebe
+Ankünften	11	NOUN	Ankunft
 Endenergieverbrauch	11	NOUN
 Knabenchor	11	NOUN
 Kaiserburg	11	NOUN
@@ -91944,16 +91944,16 @@ steinerner	11	NOUN,OTHER
 Curling	11	NOUN
 Armbrust	11	NOUN
 Landesleistungszentrum	11	NOUN
-Insolvenzen	11	NOUN
+Insolvenzen	11	NOUN	Insolvenz
 Hegau	11	NOUN
 alemannischer	11	OTHER
 Vielgestaltigkeit	11	NOUN
 Oberflächenformen	11	NOUN
-Jahresmitteltemperaturen	11	NOUN
+Jahresmitteltemperaturen	11	NOUN	Jahresmitteltemperatur
 Taubertal	11	NOUN
 Hochwasserereignisse	11	NOUN
 trinationalen	11	OTHER
-Freiheitsrechten	11	NOUN
+Freiheitsrechten	11	NOUN	Freiheitsrechte
 Zwangsverwaltung	11	NOUN
 eingefallenen	11	OTHER
 Forchtenberg	11	NOUN
@@ -91964,7 +91964,7 @@ Gemeindefusion	11	NOUN
 Landesvater	11	NOUN
 Landespartei	11	NOUN
 Laufwasserkraftwerk	11	NOUN
-Südwestrundfunks	11	NOUN
+Südwestrundfunks	11	NOUN	Südwestrundfunk
 RTF	11	NOUN,OTHER
 Foss	11	NOUN
 Landesbahn	11	NOUN
@@ -91973,23 +91973,23 @@ DVV	11	NOUN
 Skisprung	11	NOUN
 Langbahn	11	NOUN
 Sonderpädagogische	11	NOUN,OTHER
-Interpreters	11	NOUN
+Interpreters	11	NOUN	Interpreter
 inkompatible	11	OTHER
 aufsetzte	11	OTHER
 unverzichtbarer	11	OTHER
 Endanwender	11	NOUN
 Chico	11	NOUN
 Narration	11	NOUN
-Nahaufnahmen	11	NOUN
+Nahaufnahmen	11	NOUN	Nahaufnahme
 Todesnachricht	11	NOUN
 befremdet	11	OTHER
-Großproduktionen	11	NOUN
+Großproduktionen	11	NOUN	Großproduktion
 Filmsprache	11	NOUN
 Klavierspieler	11	NOUN
 Chatrian	11	NOUN
-Donners	11	NOUN
+Donners	11	NOUN	Donner
 Filmmarkt	11	NOUN
-Bürgerkomitees	11	NOUN
+Bürgerkomitees	11	NOUN	Bürgerkomitee
 abgeschöpft	11	OTHER
 ZV	11	NOUN
 Einkristalle	11	NOUN
@@ -92001,9 +92001,9 @@ Haüy	11	NOUN
 steinige	11	OTHER
 adsorbieren	11	VERB
 krebserzeugend	11	OTHER
-Verarbeitungs	11	NOUN
+Verarbeitungs	11	NOUN	Verarbeitung
 Ytterby	11	NOUN
-Quants	11	NOUN
+Quants	11	NOUN	Quant
 Hexahydrat	11	NOUN
 kubischer	11	OTHER
 Çatalhöyük	11	NOUN
@@ -92012,12 +92012,12 @@ Rammelsberg	11	NOUN
 aufarbeiten	11	VERB
 Prozessführung	11	NOUN
 Schwefelgehalt	11	NOUN
-Spektrometern	11	NOUN
+Spektrometern	11	NOUN	Spektrometer
 Abwasserleitungen	11	NOUN
 verlötet	11	OTHER
 subtraktive	11	OTHER
 erniedrigten	11	VERB,OTHER
-Anions	11	NOUN
+Anions	11	NOUN	Anion
 Serpentin	11	NOUN
 Halit	11	NOUN
 Hexan	11	NOUN
@@ -92026,7 +92026,7 @@ beachteter	11	OTHER
 Getreidehandel	11	NOUN
 Programmier	11	NOUN
 Selbstähnlichkeit	11	NOUN
-Brownschen	11	NOUN
+Brownschen	11	NOUN	Brownsche
 Naturhaushalt	11	NOUN
 Lobbyismus	11	NOUN
 zweitältester	11	OTHER
@@ -92034,11 +92034,11 @@ BFD	11	NOUN
 Marienfeld	11	NOUN
 Umweltauswirkungen	11	NOUN
 verschreiben	11	VERB
-Berufsverbote	11	NOUN
+Berufsverbote	11	NOUN	Berufsverbot
 sachgerechte	11	OTHER
 psychotrope	11	OTHER
 Cannabinoide	11	NOUN,OTHER
-Schienenwege	11	NOUN
+Schienenwege	11	NOUN	Schienenweg
 Bienenzucht	11	NOUN
 Straßenkreuzung	11	NOUN
 kolorierter	11	OTHER
@@ -92046,7 +92046,7 @@ Untergrundbahn	11	NOUN
 Straßenszene	11	NOUN
 Enos	11	NOUN
 Wrong	11	NOUN,OTHER
-Kinds	11	NOUN
+Kinds	11	NOUN	Kind
 aussortiert	11	OTHER
 Knochendichte	11	NOUN
 Körperfett	11	NOUN
@@ -92056,8 +92056,8 @@ Shogun	11	NOUN
 Dreispitz	11	NOUN
 kleinwüchsige	11	OTHER
 verwitterte	11	OTHER
-Podsole	11	NOUN
-Spinnereien	11	NOUN
+Podsole	11	NOUN	Podsol
+Spinnereien	11	NOUN	Spinnerei
 Hauptbau	11	NOUN
 Ladengeschäft	11	NOUN
 Stammumfang	11	NOUN
@@ -92075,9 +92075,9 @@ mechanisierten	11	VERB,OTHER
 Nahrungsspektrum	11	NOUN
 Siedlungsplatz	11	NOUN
 Vindeliker	11	NOUN
-Strabons	11	NOUN
+Strabons	11	NOUN	Strabon
 Peutingeriana	11	NOUN
-Wasserstands	11	NOUN
+Wasserstands	11	NOUN	Wasserstand
 Stromgewinnung	11	NOUN
 Sandbank	11	NOUN
 laichen	11	NOUN,OTHER
@@ -92096,13 +92096,13 @@ Wasservorräte	11	NOUN
 kleinräumig	11	OTHER
 Bronzetafel	11	NOUN
 unzugängliche	11	OTHER
-Umgehungsstraßen	11	NOUN
+Umgehungsstraßen	11	NOUN	Umgehungsstraße
 planmäßiger	11	OTHER
 schwimmendes	11	OTHER
-Ruderboote	11	NOUN
+Ruderboote	11	NOUN	Ruderboot
 Bodenseekreises	11	NOUN
 Dario	11	NOUN
-Tauchern	11	NOUN
+Tauchern	11	NOUN	Taucher
 Urnenfelderzeit	11	NOUN
 Hemmenhofen	11	NOUN
 Bauchnabel	11	NOUN
@@ -92111,7 +92111,7 @@ Blinken	11	NOUN,OTHER
 Zerreißprobe	11	NOUN
 schnellte	11	OTHER
 durchzuhalten	11	VERB
-Wahllisten	11	NOUN
+Wahllisten	11	NOUN	Wahlliste
 Ströbele	11	NOUN
 gedrängten	11	OTHER
 Kleinert	11	NOUN
@@ -92132,10 +92132,10 @@ Monodie	11	NOUN
 neutralere	11	OTHER
 Gambe	11	NOUN
 Schalmei	11	NOUN
-Lehrwerke	11	NOUN
+Lehrwerke	11	NOUN	Lehrwerk
 aktuelleren	11	OTHER
 instrumentaler	11	OTHER
-Violoncellos	11	NOUN
+Violoncellos	11	NOUN	Violoncello
 Theaterbau	11	NOUN
 Regelverstöße	11	NOUN
 Gabrieli	11	NOUN
@@ -92146,7 +92146,7 @@ Lotti	11	NOUN
 kompositorischer	11	OTHER
 subtiler	11	OTHER
 Burmeister	11	NOUN
-Mauerbaus	11	NOUN
+Mauerbaus	11	NOUN	Mauerbau
 Zonengrenze	11	NOUN
 gegenüberstehende	11	OTHER
 bundesdeutscher	11	OTHER
@@ -92159,14 +92159,14 @@ Bürgersteig	11	NOUN
 zugemauert	11	OTHER
 Besonnenheit	11	NOUN
 durchlässiger	11	OTHER
-Grenzverlaufs	11	NOUN
+Grenzverlaufs	11	NOUN	Grenzverlauf
 Selbstschussanlagen	11	NOUN
 Fahndung	11	NOUN
 getragenes	11	OTHER
 Massenkundgebungen	11	NOUN
 Übergangsregelung	11	NOUN
 gestempelt	11	OTHER
-Baggern	11	NOUN
+Baggern	11	NOUN	Bagger
 missglückte	11	OTHER
 Mauerpark	11	NOUN
 Lübars	11	NOUN
@@ -92180,24 +92180,24 @@ Nationalkongresses	11	NOUN
 Künstlerviertel	11	NOUN
 farbenprächtigen	11	OTHER
 Hausfassaden	11	NOUN
-Mittelpunkts	11	NOUN
+Mittelpunkts	11	NOUN	Mittelpunkt
 Schachbrettmuster	11	NOUN
 Kraftfahrzeugverkehr	11	NOUN
 Bremerhavener	11	NOUN
-Walle	11	NOUN
+Walle	11	NOUN	Wall
 Seidl	11	NOUN
 Schlagersänger	11	NOUN
 Ronny	11	NOUN
-Läufern	11	NOUN,OTHER
+Läufern	11	NOUN,OTHER	Läufer
 Menke	11	NOUN
 sportlichem	11	OTHER
 BRE	11	NOUN,OTHER
 Hörfunkwellen	11	NOUN
 Cosmo	11	NOUN
-Wochenblätter	11	NOUN
-Länderfinanzausgleichs	11	NOUN
+Wochenblätter	11	NOUN	Wochenblatt
+Länderfinanzausgleichs	11	NOUN	Länderfinanzausgleich
 EADS	11	NOUN
-Leagues	11	NOUN
+Leagues	11	NOUN	League
 Stolen	11	NOUN
 Fourth	11	NOUN
 lax	11	NOUN,OTHER
@@ -92211,8 +92211,8 @@ gepasst	11	OTHER
 Season	11	NOUN
 Paralympischen	11	NOUN
 Hörverlust	11	NOUN
-Finals	11	NOUN
-Bulls	11	NOUN
+Finals	11	NOUN	Final
+Bulls	11	NOUN	Bull
 Entscheidungsorgan	11	NOUN
 BPB	11	NOUN,OTHER
 Chevreul	11	NOUN
@@ -92221,13 +92221,13 @@ phototrophen	11	NOUN,OTHER
 Gerty	11	NOUN
 Biotechnik	11	NOUN
 wirtschaftlichere	11	OTHER
-Amylasen	11	NOUN
+Amylasen	11	NOUN	Amylase
 Abfallwirtschaft	11	NOUN
 Obstruenten	11	NOUN
 eckig	11	OTHER
 frühgriechische	11	OTHER
-Knöpfen	11	NOUN
-Seebädern	11	NOUN
+Knöpfen	11	NOUN	Knopf
+Seebädern	11	NOUN	Seebad
 Podemos	11	NOUN
 Towards	11	NOUN,OTHER
 Arbeitskollegen	11	NOUN
@@ -92236,7 +92236,7 @@ HFS	11	NOUN
 Bildbetrachter	11	NOUN
 Processor	11	NOUN,OTHER
 Enough	11	NOUN,OTHER
-Ausländerinnen	11	NOUN
+Ausländerinnen	11	NOUN	Ausländer
 Geldbörse	11	NOUN
 NYC	11	NOUN
 heftigste	11	OTHER
@@ -92271,8 +92271,8 @@ Fool	11	NOUN
 sexistische	11	OTHER
 Hilmar	11	NOUN
 schwöre	11	OTHER
-Herrschaftsanspruchs	11	NOUN
-Graphemen	11	NOUN
+Herrschaftsanspruchs	11	NOUN	Herrschaftsanspruch
+Graphemen	11	NOUN	Graphem
 Louvain	11	NOUN
 Neuve	11	NOUN
 Bever	11	NOUN
@@ -92284,7 +92284,7 @@ Ausstand	11	NOUN,OTHER
 Föderalisierung	11	NOUN
 sozioökonomisch	11	OTHER
 Gründungsstaaten	11	NOUN
-Bassins	11	NOUN
+Bassins	11	NOUN	Bassin
 Wirtschaftszeitung	11	NOUN
 Eisenbahninfrastruktur	11	NOUN
 enseignement	11	OTHER
@@ -92296,20 +92296,20 @@ Brugge	11	NOUN
 Zenica	11	NOUN
 jezero	11	OTHER
 Kreuzotter	11	NOUN
-Brutpaaren	11	NOUN
-Wintersportgebiete	11	NOUN
+Brutpaaren	11	NOUN	Brutpaare
+Wintersportgebiete	11	NOUN	Wintersportgebiet
 bosnischer	11	OTHER
-Schutzpatrons	11	NOUN
+Schutzpatrons	11	NOUN	Schutzpatron
 Nationaleinkommen	11	NOUN
 süddeutsch	11	OTHER
 Reibungselektrizität	11	NOUN
 Pilâtre	11	NOUN
 Mitfahrer	11	NOUN
-Fallschirme	11	NOUN
+Fallschirme	11	NOUN	Fallschirm
 Salve	11	NOUN
-Jollen	11	NOUN
+Jollen	11	NOUN	Jolle
 Ark	11	NOUN
-Sprengsätze	11	NOUN
+Sprengsätze	11	NOUN	Sprengsatz
 gefluteten	11	OTHER
 kampffähige	11	OTHER
 Panzerung	11	NOUN
@@ -92324,63 +92324,63 @@ siebenköpfige	11	OTHER
 Bürgerspital	11	NOUN
 einzieht	11	OTHER
 Liberaldemokratische	11	NOUN,OTHER
-Ausflügen	11	NOUN
+Ausflügen	11	NOUN	Ausflug
 Branntkalk	11	NOUN
-Rohstoffes	11	NOUN
+Rohstoffes	11	NOUN	Rohstoff
 gröberen	11	OTHER
 Epoxidharz	11	NOUN
 gestalterisches	11	OTHER
-Wasserscheiden	11	NOUN
+Wasserscheiden	11	NOUN	Wasserscheide
 Bohemia	11	NOUN
 circulus	11	OTHER
 flächenmässig	11	OTHER
-Stuben	11	NOUN
+Stuben	11	NOUN	Stube
 Stichprobenerhebung	11	NOUN
 Touring	11	NOUN
 Energiekrise	11	NOUN
 Gegenzeichnung	11	NOUN
 bindender	11	OTHER
-Wahlgänge	11	NOUN
-Volksparteien	11	NOUN
+Wahlgänge	11	NOUN	Wahlgang
+Volksparteien	11	NOUN	Volkspartei
 Baerbock	11	NOUN
 Rederecht	11	NOUN
-Vizekanzlers	11	NOUN
-Wählers	11	NOUN
+Vizekanzlers	11	NOUN	Vizekanzler
+Wählers	11	NOUN	Wähler
 Inkaufnahme	11	NOUN
 Altkanzler	11	NOUN
 Futura	11	NOUN,OTHER
 exists	11	OTHER
-Apostrophe	11	NOUN,OTHER
+Apostrophe	11	NOUN,OTHER	Apostroph
 Monsunzeit	11	NOUN
 Jahresniederschlagssumme	11	NOUN
-Wirbelstürmen	11	NOUN
+Wirbelstürmen	11	NOUN	Wirbelsturm
 vordringende	11	OTHER
 Islami	11	NOUN
 zugutekamen	11	VERB
 Muhammed	11	NOUN
 Wajed	11	NOUN
 Parlamentsmandate	11	NOUN
-Studentenprotesten	11	NOUN
+Studentenprotesten	11	NOUN	Studentenproteste
 Pew	11	NOUN
 diszipliniert	11	OTHER
-Hauptprodukte	11	NOUN
+Hauptprodukte	11	NOUN	Hauptprodukt
 Pfannkuchen	11	NOUN
 Balkangebirge	11	NOUN
 Gebirgsklima	11	NOUN
 kleinbäuerlichen	11	OTHER
-Regierungsämter	11	NOUN
+Regierungsämter	11	NOUN	Regierungsamt
 prägendste	11	OTHER
-Balkankriegen	11	NOUN
+Balkankriegen	11	NOUN	Balkankrieg
 Devisenbringer	11	NOUN
 Televizija	11	NOUN,OTHER
 Goldschmiedearbeiten	11	NOUN
 ostkirchlichen	11	OTHER
 gestrichene	11	OTHER
 Dara	11	NOUN
-Grabinschriften	11	NOUN
-Schriftformen	11	NOUN
-Übersetzers	11	NOUN
-Stickereien	11	NOUN
+Grabinschriften	11	NOUN	Grabinschrift
+Schriftformen	11	NOUN	Schriftform
+Übersetzers	11	NOUN	Übersetzer
+Stickereien	11	NOUN	Stickerei
 Staatspolitik	11	NOUN
 Sportgymnastik	11	NOUN
 Petrow	11	NOUN
@@ -92390,14 +92390,14 @@ Heuer	11	NOUN
 aufgeregt	11	OTHER
 Ahnenforschung	11	NOUN
 Asiatic	11	NOUN
-Flugzeugtypen	11	NOUN
+Flugzeugtypen	11	NOUN	Flugzeugtyp
 eingeschätzte	11	OTHER
 Combined	11	NOUN,OTHER
 bekanntgewordenen	11	OTHER
 Auslandseinsatz	11	NOUN
 Flugzeugtyp	11	NOUN
 Privatinitiative	11	NOUN
-Ballaststoffen	11	NOUN
+Ballaststoffen	11	NOUN	Ballaststoffe
 benediktinische	11	OTHER
 Heimatlosigkeit	11	NOUN
 Whitby	11	NOUN
@@ -92430,12 +92430,12 @@ Smooth	11	NOUN,OTHER
 Bata	11	NOUN
 Tierärztlichen	11	NOUN
 stundenweise	11	OTHER
-Andenkens	11	NOUN
+Andenkens	11	NOUN	Andenken
 Straßenführung	11	NOUN
-Plünderern	11	NOUN
+Plünderern	11	NOUN	Plünderer
 Ruinenstadt	11	NOUN
 Museumsdirektor	11	NOUN
-Buchblocks	11	NOUN
+Buchblocks	11	NOUN	Buchblock
 Autohersteller	11	NOUN
 Elamiter	11	NOUN
 Šamši	11	NOUN
@@ -92443,17 +92443,17 @@ zweimaligen	11	OTHER
 Cabrera	11	NOUN
 Kordillere	11	NOUN
 Metellus	11	NOUN
-Autonomiestatuts	11	NOUN
+Autonomiestatuts	11	NOUN	Autonomiestatut
 Jumbo	11	NOUN
 Wait	11	NOUN,OTHER
 Because	11	NOUN,OTHER
 nachzeichnet	11	OTHER
-Pressungen	11	NOUN
+Pressungen	11	NOUN	Pressung
 Agglutination	11	NOUN
 reinerbig	11	OTHER
-Elternteilen	11	NOUN
+Elternteilen	11	NOUN	Elternteil
 vorangegangener	11	OTHER
-Genotypen	11	NOUN
+Genotypen	11	NOUN	Genotyp
 Lutheran	11	NOUN
 phänomenalen	11	OTHER
 altslawischen	11	NOUN,OTHER
@@ -92461,7 +92461,7 @@ Naturformen	11	NOUN
 akzessorischen	11	OTHER
 Pressbernstein	11	NOUN
 Borsdorf	11	NOUN
-Gravuren	11	NOUN
+Gravuren	11	NOUN	Gravur
 verschenkte	11	OTHER
 samländischen	11	NOUN,OTHER
 Schachtanlagen	11	NOUN
@@ -92481,7 +92481,7 @@ Sennfeld	11	NOUN
 Anlegung	11	NOUN
 angefüllt	11	OTHER
 Eichwald	11	NOUN
-Gartenarchitekten	11	NOUN
+Gartenarchitekten	11	NOUN	Gartenarchitekt
 Stadtgalerie	11	NOUN
 Schulhof	11	NOUN
 Zwerggalaxien	11	NOUN
@@ -92492,15 +92492,15 @@ Sonderstatusstädten	11	NOUN
 HGO	11	NOUN
 Bürgerinteressen	11	NOUN
 Haushaltssatzung	11	NOUN
-Elektrizitäts	11	NOUN
+Elektrizitäts	11	NOUN	Elektrizität
 Süntel	11	NOUN
-Hölderlins	11	NOUN
+Hölderlins	11	NOUN	Hölderlin
 Septemberwochenende	11	NOUN
 Böckler	11	NOUN
 Noll	11	NOUN
 Budaer	11	NOUN
 Visegrád	11	NOUN
-Komitats	11	NOUN
+Komitats	11	NOUN	Komitat
 Stephanskrone	11	NOUN
 stadtbildprägenden	11	OTHER
 Kossuth	11	NOUN
@@ -92529,15 +92529,15 @@ Kanalkodierung	11	NOUN
 Labium	11	NOUN
 EIA	11	NOUN
 Elektromagnete	11	NOUN
-Radsätzen	11	NOUN
+Radsätzen	11	NOUN	Radsätze
 Nachlassverwalterin	11	NOUN
 Fronde	11	NOUN,OTHER
 Preisausschreiben	11	NOUN
-Informationswissenschaften	11	NOUN
+Informationswissenschaften	11	NOUN	Informationswissenschaft
 mehrmaliges	11	OTHER
 Querformat	11	NOUN
 Hochformat	11	NOUN
-Absenders	11	NOUN
+Absenders	11	NOUN	Absender
 aufgeschnitten	11	VERB
 USDA	11	NOUN,OTHER
 Biological	11	NOUN
@@ -92551,7 +92551,7 @@ Hipparcos	11	NOUN
 abfiel	11	OTHER
 Staubwolke	11	NOUN
 Inhomogenitäten	11	NOUN
-Beiruts	11	NOUN
+Beiruts	11	NOUN	Beirut
 Militärkrankenhaus	11	NOUN
 Friedensbemühungen	11	NOUN
 Ammoniumnitrat	11	NOUN
@@ -92559,7 +92559,7 @@ Keanu	11	NOUN
 CEPT	11	NOUN
 neugestaltet	11	OTHER
 Yungdrung	11	NOUN
-Belehrungen	11	NOUN
+Belehrungen	11	NOUN	Belehrung
 Lha	11	NOUN,OTHER
 Heerscharen	11	NOUN
 redaktioneller	11	OTHER
@@ -92570,15 +92570,15 @@ XXVIII	11	NOUN
 Lombardi	11	NOUN
 SmA	11	NOUN
 Donato	11	NOUN
-Schnellfahrstrecken	11	NOUN
+Schnellfahrstrecken	11	NOUN	Schnellfahrstrecke
 Nahverkehrssystem	11	NOUN
-Ferienstraßen	11	NOUN
+Ferienstraßen	11	NOUN	Ferienstraße
 Baier	11	NOUN
 Gontard	11	NOUN
 Reitzenstein	11	NOUN
 Münzgasse	11	NOUN
 Ministerialdirektor	11	NOUN
-Lagerräume	11	NOUN
+Lagerräume	11	NOUN	Lagerraum
 sechzehnjährige	11	NOUN,OTHER
 Siebert	11	NOUN
 Informationsbüro	11	NOUN
@@ -92591,16 +92591,16 @@ Franzensbad	11	NOUN
 Spezia	11	NOUN
 funktionsfähiger	11	OTHER
 Pehlemann	11	NOUN
-Krüge	11	NOUN
+Krüge	11	NOUN	Krug
 Taxen	11	NOUN
 Luftsport	11	NOUN
-Baumwollspinnereien	11	NOUN
+Baumwollspinnereien	11	NOUN	Baumwollspinnerei
 Farbenfabriken	11	NOUN
 Zigarettenfabrik	11	NOUN
 Bundesgrenzschutzes	11	NOUN
 Höhlenmalerei	11	NOUN
-Oberkörpers	11	NOUN
-Baustils	11	NOUN
+Oberkörpers	11	NOUN	Oberkörper
+Baustils	11	NOUN	Baustil
 Duccio	11	NOUN
 Kunstzentren	11	NOUN
 Masaccio	11	NOUN
@@ -92608,26 +92608,26 @@ BGBl	11	NOUN
 Klägerin	11	NOUN
 Arbeitsbelastung	11	NOUN
 Haushaltsausschuss	11	NOUN
-Beisitzern	11	NOUN
-Oberlandesgerichten	11	NOUN
+Beisitzern	11	NOUN	Beisitzer
+Oberlandesgerichten	11	NOUN	Oberlandesgericht
 marmorne	11	OTHER
 Gebietshoheit	11	NOUN
 ledrig	11	OTHER
-Blattränder	11	NOUN
+Blattränder	11	NOUN	Blattrand
 zymösen	11	OTHER
 Fehlerfall	11	NOUN
 Benutzereingaben	11	NOUN
 Oktett	11	NOUN
 Startprogramm	11	NOUN
 Dienstprogramm	11	NOUN
-Fruchtstände	11	NOUN
+Fruchtstände	11	NOUN	Fruchtstand
 Phloem	11	NOUN
 Kameraleute	11	NOUN
 Schneeberger	11	NOUN
 Erkrankungsfälle	11	NOUN
 Überlebensrate	11	NOUN
-Östrogenen	11	NOUN
-Sexualhormonen	11	NOUN
+Östrogenen	11	NOUN	Östrogen
+Sexualhormonen	11	NOUN	Sexualhormone
 Menstruationszyklus	11	NOUN
 Selbstuntersuchung	11	NOUN
 gutartigen	11	OTHER
@@ -92636,31 +92636,31 @@ Rezidiv	11	NOUN
 Risikogruppe	11	NOUN
 Studienergebnisse	11	NOUN
 Schmerzbehandlung	11	NOUN
-Thrombosen	11	NOUN
+Thrombosen	11	NOUN	Thrombose
 Dyson	11	NOUN
-Verrätern	11	NOUN
+Verrätern	11	NOUN	Verräter
 kurzzeitiges	11	OTHER
 Natriumcyanid	11	NOUN
 benachrichtigt	11	OTHER
 Vertrauensperson	11	NOUN
-Vertrauenspersonen	11	NOUN
+Vertrauenspersonen	11	NOUN	Vertrauensperson
 Inkonsistenz	11	NOUN
 Mindestzahl	11	NOUN
-Zuchthausstrafen	11	NOUN
+Zuchthausstrafen	11	NOUN	Zuchthausstrafe
 Blackout	11	NOUN
 Reformprozess	11	NOUN
 Tiermehl	11	NOUN
-Verfassungsorganen	11	NOUN
+Verfassungsorganen	11	NOUN	Verfassungsorgan
 beschlussfähig	11	OTHER
-Übereinkünfte	11	NOUN
+Übereinkünfte	11	NOUN	Übereinkunft
 Fouta	11	NOUN
 Geschichtsdarstellung	11	NOUN
 Gerede	11	NOUN
 Selbstbetrachtungen	11	NOUN
-Lebensläufen	11	NOUN
+Lebensläufen	11	NOUN	Lebenslauf
 Thomae	11	NOUN
-Komplemente	11	NOUN
-Betablockern	11	NOUN
+Komplemente	11	NOUN	Komplement
+Betablockern	11	NOUN	Betablocker
 Lipid	11	NOUN
 pathologischer	11	OTHER
 bibliothekarische	11	OTHER
@@ -92671,7 +92671,7 @@ Entstehungszeitraum	11	NOUN
 Anf	11	NOUN
 Körös	11	NOUN
 neolithischer	11	OTHER
-Einwanderungen	11	NOUN
+Einwanderungen	11	NOUN	Einwanderung
 dendrochronologischen	11	OTHER
 Wintertemperaturen	11	NOUN
 Klimaveränderung	11	NOUN
@@ -92680,8 +92680,8 @@ Avena	11	NOUN
 sylvestris	11	OTHER
 scrofa	11	OTHER
 Rinderrassen	11	NOUN
-Zwischenwirte	11	NOUN
-Rindes	11	NOUN
+Zwischenwirte	11	NOUN	Zwischenwirt
+Rindes	11	NOUN	Rind
 Lindenthal	11	NOUN
 Lüftung	11	NOUN
 Schemazeichnung	11	NOUN
@@ -92697,9 +92697,9 @@ Gamble	11	NOUN
 gefesselten	11	OTHER
 Steinbearbeitung	11	NOUN
 agrarischer	11	OTHER
-Handlungsorte	11	NOUN
-Bildungsziele	11	NOUN
-Lernprozessen	11	NOUN
+Handlungsorte	11	NOUN	Handlungsort
+Bildungsziele	11	NOUN	Bildungsziel
+Lernprozessen	11	NOUN	Lernprozess
 Paradoxie	11	NOUN
 Fachdiskussion	11	NOUN
 Bildungsstandards	11	NOUN
@@ -92715,7 +92715,7 @@ McQueen	11	NOUN
 Mystic	11	NOUN
 Einstellungsgröße	11	NOUN
 Bildbereich	11	NOUN
-Einflussnahmen	11	NOUN
+Einflussnahmen	11	NOUN	Einflussnahme
 gegenteilig	11	OTHER
 hugenottische	11	OTHER
 Karno	11	NOUN
@@ -92731,49 +92731,49 @@ Gaslampen	11	NOUN
 Mitautor	11	NOUN
 bindendes	11	OTHER
 Calcitriol	11	NOUN
-Urins	11	NOUN
+Urins	11	NOUN	Urin
 Streusalz	11	NOUN
 calamus	11	OTHER
 metabolisiert	11	OTHER
 vierwertigen	11	OTHER
 vollbesetzten	11	OTHER
 Paramagnetismus	11	NOUN
-Leuchtstoffen	11	NOUN
+Leuchtstoffen	11	NOUN	Leuchtstoff
 Lysosomen	11	NOUN
 Elektrolysezelle	11	NOUN
 wirkend	11	OTHER
 Extrazellularraum	11	NOUN
 Magensäure	11	NOUN
-Iodide	11	NOUN
-Herzschrittmachern	11	NOUN
+Iodide	11	NOUN	Iodid
+Herzschrittmachern	11	NOUN	Herzschrittmacher
 himmelblau	11	NOUN,OTHER
 Pollucit	11	NOUN
 Abbrand	11	NOUN
 Chains	11	NOUN,OTHER
 Datenmaterial	11	NOUN
 Lokalanästhesie	11	NOUN
-Amputationen	11	NOUN
+Amputationen	11	NOUN	Amputation
 Zellularpathologie	11	NOUN
 fünfbändigen	11	OTHER
 anglisiert	11	OTHER
 Daughter	11	NOUN,OTHER
 Verve	11	NOUN
 Changes	11	NOUN,OTHER
-Grammys	11	NOUN
+Grammys	11	NOUN	Grammy
 Persson	11	NOUN
 Spector	11	NOUN
 Einzelspieler	11	NOUN
-Maustasten	11	NOUN
+Maustasten	11	NOUN	Maustaste
 zensierten	11	VERB
 kreiste	11	OTHER
 Varela	11	NOUN
-Beeinflussungen	11	NOUN
+Beeinflussungen	11	NOUN	Beeinflussung
 kirchlichem	11	OTHER
 Staatsorgan	11	NOUN
 handlungsfähigen	11	OTHER
-Antipoden	11	NOUN
+Antipoden	11	NOUN	Antipode
 schrecklicher	11	OTHER
-Leserbriefe	11	NOUN
+Leserbriefe	11	NOUN	Leserbrief
 angebrochen	11	VERB
 partikularen	11	OTHER
 hinwegsetzen	11	VERB
@@ -92783,7 +92783,7 @@ anständig	11	OTHER
 Marquard	11	NOUN
 SHB	11	NOUN
 Weltregierung	11	NOUN
-Wesensmerkmale	11	NOUN
+Wesensmerkmale	11	NOUN	Wesensmerkmal
 Jinping	11	NOUN
 dogmatischer	11	OTHER
 Alterssitz	11	NOUN
@@ -92819,7 +92819,7 @@ Manufactures	11	NOUN,OTHER
 Lichtsignale	11	NOUN
 Lego	11	NOUN
 Zeitschriftenbeiträge	11	NOUN
-Selbstbezeichnungen	11	NOUN
+Selbstbezeichnungen	11	NOUN	Selbstbezeichnung
 Leuenberger	11	NOUN
 reformorientierte	11	OTHER
 Realpräsenz	11	NOUN
@@ -92834,17 +92834,17 @@ Fertigungsanlagen	11	NOUN
 Formteile	11	NOUN
 Rodach	11	NOUN
 Streckenteil	11	NOUN
-Löschzüge	11	NOUN
+Löschzüge	11	NOUN	Löschzug
 Albertinum	11	NOUN
 Längenangabe	11	NOUN
 Seelenleben	11	NOUN
 reformistische	11	OTHER
 hineinreichen	11	VERB
-Kompasses	11	NOUN
+Kompasses	11	NOUN	Kompass
 Leninorden	11	NOUN
 Phoebe	11	NOUN
 merkten	11	VERB
-Gärtners	11	NOUN
+Gärtners	11	NOUN	Gärtner
 Fay	11	NOUN
 Seitenrand	11	NOUN
 Größenverhältnis	11	NOUN
@@ -92879,40 +92879,40 @@ Hofbildhauer	11	NOUN
 Desdemona	11	NOUN
 Startmasse	11	NOUN
 Überschallflug	11	NOUN
-Verkehrsflugzeugen	11	NOUN
+Verkehrsflugzeugen	11	NOUN	Verkehrsflugzeug
 Sonnenauf	11	NOUN
-Adlerordens	11	NOUN
+Adlerordens	11	NOUN	Adlerorden
 gutgeheißen	11	VERB
 Fliegens	11	NOUN
 degenerative	11	OTHER
 bestürzt	11	OTHER
-Tonsystems	11	NOUN
+Tonsystems	11	NOUN	Tonsystem
 spätlateinischen	11	OTHER
 Transkriptionssysteme	11	NOUN
-Umschriften	11	NOUN
+Umschriften	11	NOUN	Umschrift
 Kantonesisch	11	NOUN,OTHER
-Ducks	11	NOUN
+Ducks	11	NOUN	Duck
 Tick	11	NOUN,OTHER
 Schwerhörigkeit	11	NOUN
 lymphatische	11	OTHER
 Ebenezer	11	NOUN
-Spitzenpositionen	11	NOUN
+Spitzenpositionen	11	NOUN	Spitzenposition
 Colombey	11	NOUN
 Stanislas	11	NOUN
 Cyr	11	NOUN
-Kollaborateuren	11	NOUN
+Kollaborateuren	11	NOUN	Kollaborateur
 Interimspräsident	11	NOUN
 Schießscharten	11	NOUN
-Schattens	11	NOUN
+Schattens	11	NOUN	Schatten
 rossa	11	NOUN,OTHER
 Sanitäranlagen	11	NOUN
-Labyrinths	11	NOUN
+Labyrinths	11	NOUN	Labyrinth
 bautechnische	11	OTHER
 BIC	11	NOUN
 Warenumschlag	11	NOUN
 abgeklärt	11	OTHER
 Bergbaugeschichte	11	NOUN
-Vermessungs	11	NOUN
+Vermessungs	11	NOUN	Vermessung
 Pult	11	NOUN
 Martino	11	NOUN
 sensationelle	11	OTHER
@@ -92936,9 +92936,9 @@ Conquest	11	NOUN
 Wildwuchs	11	NOUN
 Haupteinsatzgebiet	11	NOUN
 Codepage	11	NOUN
-Wertebereiche	11	NOUN
+Wertebereiche	11	NOUN	Wertebereich
 Imaginary	11	NOUN,OTHER
-Funktionsaufrufe	11	NOUN
+Funktionsaufrufe	11	NOUN	Funktionsaufruf
 Funktionsaufruf	11	NOUN
 Fantasyfilm	11	NOUN
 Waffentechnik	11	NOUN
@@ -92950,7 +92950,7 @@ entpuppte	11	OTHER
 Giftgasangriff	11	NOUN
 zeitintensiv	11	OTHER
 Burlington	11	NOUN
-Welttanzprogramms	11	NOUN
+Welttanzprogramms	11	NOUN	Welttanzprogramm
 Exilkubanern	11	NOUN
 Tanzhaltung	11	NOUN
 Plankalkül	11	NOUN
@@ -92958,19 +92958,19 @@ posthumen	11	OTHER
 Konfliktpotenzial	11	NOUN
 Giustizia	11	NOUN,OTHER
 Sondervollmachten	11	NOUN
-Cliquen	11	NOUN
+Cliquen	11	NOUN	Clique
 unübertroffen	11	OTHER
 Kreditwürdigkeit	11	NOUN
 zementierte	11	OTHER
-Patriziats	11	NOUN
+Patriziats	11	NOUN	Patriziat
 zwangsläufige	11	OTHER
-Vermerke	11	NOUN
+Vermerke	11	NOUN	Vermerk
 Poggio	11	NOUN
 Bracciolini	11	NOUN
-Bronzeskulpturen	11	NOUN
+Bronzeskulpturen	11	NOUN	Bronzeskulptur
 Guicciardini	11	NOUN
-Burckhardts	11	NOUN
-Abbildungsfehlern	11	NOUN
+Burckhardts	11	NOUN	Burckhardt
+Abbildungsfehlern	11	NOUN	Abbildungsfehler
 Fachkollegen	11	NOUN
 Neidhardt	11	NOUN
 misstrauten	11	VERB
@@ -92986,14 +92986,14 @@ volatile	11	OTHER
 managed	11	NOUN,OTHER
 Ringschluss	11	NOUN
 Gallensäuren	11	NOUN
-Vesikeln	11	NOUN
+Vesikeln	11	NOUN	Vesikel
 lipophilen	11	OTHER
-Reizungen	11	NOUN
+Reizungen	11	NOUN	Reizung
 Erweiterbarkeit	11	NOUN
 einsetzbare	11	OTHER
 einzuschalten	11	VERB
 gespeicherter	11	OTHER
-Abstürzen	11	NOUN,OTHER
+Abstürzen	11	NOUN,OTHER	Absturz
 Betriebsmodi	11	NOUN
 Schaltplan	11	NOUN
 Jugendmedienschutz	11	NOUN
@@ -93021,7 +93021,7 @@ ablegten	11	VERB
 manisch	11	OTHER
 Druckseiten	11	NOUN
 Doubt	11	NOUN,OTHER
-Zahlensystemen	11	NOUN
+Zahlensystemen	11	NOUN	Zahlensystem
 Keyser	11	NOUN
 nachweisliche	11	OTHER
 Entwicklerteam	11	NOUN
@@ -93037,22 +93037,22 @@ sozialkritisch	11	OTHER
 Tarzan	11	NOUN
 Seitenzahl	11	NOUN
 Softcover	11	NOUN,OTHER
-Vorzeichnungen	11	NOUN
+Vorzeichnungen	11	NOUN	Vorzeichnung
 Mitwirkende	11	NOUN
 Bilderbogen	11	NOUN
 kulturwissenschaftliche	11	OTHER
-Gewaltdarstellungen	11	NOUN
+Gewaltdarstellungen	11	NOUN	Gewaltdarstellung
 Fotodioden	11	NOUN
-Speichermediums	11	NOUN
-Übertragungs	11	NOUN,OTHER
+Speichermediums	11	NOUN	Speichermedium
+Übertragungs	11	NOUN,OTHER	Übertragung
 Produktionsregeln	11	NOUN
 Burrows	11	NOUN
 Lempel	11	NOUN
 tastet	11	OTHER
 Reduced	11	NOUN,OTHER
 Fovea	11	NOUN
-Lumières	11	NOUN,OTHER
-Kleinbürgertums	11	NOUN
+Lumières	11	NOUN,OTHER	Lumière
+Kleinbürgertums	11	NOUN	Kleinbürgertum
 Filmfirma	11	NOUN
 Ophüls	11	NOUN
 Entscheidungsbefugnis	11	NOUN
@@ -93067,7 +93067,7 @@ Bride	11	NOUN
 Daryl	11	NOUN
 Doppelfolge	11	NOUN
 Grundkurs	11	NOUN
-Unabhängigkeitskriegs	11	NOUN
+Unabhängigkeitskriegs	11	NOUN	Unabhängigkeitskrieg
 Yttriumoxid	11	NOUN
 raren	11	OTHER
 Weidmann	11	NOUN
@@ -93085,24 +93085,24 @@ Reichsbehörden	11	NOUN
 befriedigte	11	OTHER
 eingesparten	11	OTHER
 übernehme	11	OTHER
-Arisierungen	11	NOUN
+Arisierungen	11	NOUN	Arisierung
 übriggebliebenen	11	OTHER
-Ermordungen	11	NOUN
-Rechtsgrundsätze	11	NOUN
+Ermordungen	11	NOUN	Ermordung
+Rechtsgrundsätze	11	NOUN	Rechtsgrundsatz
 Untermenschen	11	NOUN
 Rechtsetzung	11	NOUN
 Reichsarbeitsdienstes	11	NOUN
 Hauspersonal	11	NOUN
 Mucha	11	NOUN
 Hungertod	11	NOUN
-Rettungsaktionen	11	NOUN
+Rettungsaktionen	11	NOUN	Rettungsaktion
 unbequem	11	OTHER
 Heilverfahren	11	NOUN
 Westfalenstadion	11	NOUN
 Statistischem	11	NOUN,OTHER
 Stadtwerdung	11	NOUN
 Kirchenregiment	11	NOUN
-Kirchenkreisen	11	NOUN
+Kirchenkreisen	11	NOUN	Kirchenkreis
 Diyanet	11	NOUN
 VIKZ	11	NOUN
 Rechtsanwältin	11	NOUN
@@ -93121,7 +93121,7 @@ Freizeitbereich	11	NOUN
 stärkstes	11	OTHER
 Betriebsbahnhof	11	NOUN
 Luftrettung	11	NOUN
-Liniennummern	11	NOUN
+Liniennummern	11	NOUN	Liniennummer
 Rheinschiene	11	NOUN
 Bierstadt	11	NOUN
 Dub	11	NOUN
@@ -93139,19 +93139,19 @@ Brooke	11	NOUN
 Taos	11	NOUN
 antizipieren	11	VERB
 leistungsfähigsten	11	OTHER
-GmbHs	11	NOUN
+GmbHs	11	NOUN	GmbH
 Verwaltungschef	11	NOUN
 Grundorganisation	11	NOUN
-Departments	11	NOUN
+Departments	11	NOUN	Department
 Fenstersturz	11	NOUN
 Kurfürstenkollegium	11	NOUN
 Berufungsinstanz	11	NOUN
-Mansfelds	11	NOUN
+Mansfelds	11	NOUN	Mansfeld
 Restitutionsedikt	11	NOUN
-Heerführern	11	NOUN
+Heerführern	11	NOUN	Heerführer
 wiedergegebene	11	OTHER
 Hintertür	11	NOUN
-Brückenköpfe	11	NOUN
+Brückenköpfe	11	NOUN	Brückenkopf
 Entsatzheer	11	NOUN
 Hatzfeldt	11	NOUN
 Überwinterung	11	NOUN
@@ -93165,7 +93165,7 @@ Ostseehäfen	11	NOUN
 düsterer	11	OTHER
 Verrohung	11	NOUN
 Raumstruktur	11	NOUN
-Fünfecks	11	NOUN
+Fünfecks	11	NOUN	Fünfeck
 Aufschneiden	11	NOUN,OTHER
 Söllingen	11	NOUN
 Arztpraxis	11	NOUN
@@ -93174,7 +93174,7 @@ Lecture	11	NOUN
 Spurenfossilien	11	NOUN
 Faunen	11	NOUN
 Skelettteile	11	NOUN
-Kämme	11	NOUN
+Kämme	11	NOUN	Kamm
 Alvarez	11	NOUN
 Impakt	11	NOUN
 Echse	11	NOUN
@@ -93186,10 +93186,10 @@ Equus	11	NOUN
 Nigrinus	11	NOUN
 Domitilla	11	NOUN
 Ordnungsrahmen	11	NOUN
-Monopolen	11	NOUN
+Monopolen	11	NOUN	Monopol
 Konsumtion	11	NOUN
 aufzubereiten	11	VERB
-Usern	11	NOUN
+Usern	11	NOUN	User
 harmonisierten	11	VERB,OTHER
 bewirke	11	OTHER
 Avila	11	NOUN
@@ -93203,15 +93203,15 @@ Reflection	11	NOUN,OTHER
 Caching	11	NOUN
 vorzugeben	11	VERB
 Kryptosystem	11	NOUN
-Registrierungen	11	NOUN
+Registrierungen	11	NOUN	Registrierung
 Niederschlagshöhe	11	NOUN
-Altarme	11	NOUN
+Altarme	11	NOUN	Altarm
 Retention	11	NOUN
 Heidenau	11	NOUN
 Radeburg	11	NOUN
 Brühlsche	11	NOUN
 Taschenbergpalais	11	NOUN
-Bürgerprotesten	11	NOUN
+Bürgerprotesten	11	NOUN	Bürgerproteste
 mitverwaltet	11	OTHER
 Entscheidungsbefugnisse	11	NOUN
 Postplatz	11	NOUN
@@ -93220,11 +93220,11 @@ Marschner	11	NOUN
 bürgerschaftlichen	11	OTHER
 Enttrümmerung	11	NOUN
 Bürokomplex	11	NOUN
-Hallenbäder	11	NOUN
+Hallenbäder	11	NOUN	Hallenbad
 Hauptprodukt	11	NOUN
 Zulieferindustrie	11	NOUN
 erwachende	11	OTHER
-Passagierschiffe	11	NOUN
+Passagierschiffe	11	NOUN	Passagierschiff
 Kulturmagazin	11	NOUN
 empfangbare	11	OTHER
 Rachmaninow	11	NOUN
@@ -93250,16 +93250,16 @@ Arbeitssicherheit	11	NOUN
 informativen	11	OTHER
 Mailing	11	NOUN
 Schleswigsche	11	NOUN,OTHER
-Sprachkenntnissen	11	NOUN
+Sprachkenntnissen	11	NOUN	Sprachkenntnisse
 benommen	11	VERB
 Mittelenglischen	11	NOUN,OTHER
 Torte	11	NOUN
 Mors	11	NOUN,OTHER
 abgeänderten	11	OTHER
 NUL	11	NOUN,OTHER
-Präteritums	11	NOUN
+Präteritums	11	NOUN	Präteritum
 Fragewort	11	NOUN
-Ribonukleinsäuren	11	NOUN
+Ribonukleinsäuren	11	NOUN	Ribonukleinsäure
 Bakterienchromosom	11	NOUN
 Mechanism	11	NOUN,OTHER
 linkshändige	11	OTHER
@@ -93274,10 +93274,10 @@ schmolzen	11	VERB
 Steinmauern	11	NOUN
 geprügelt	11	OTHER
 gelyncht	11	OTHER
-Mietern	11	NOUN
+Mietern	11	NOUN	Mieter
 Geschäftsräume	11	NOUN
 Brandverhütung	11	NOUN
-Kriegsgeschehens	11	NOUN
+Kriegsgeschehens	11	NOUN	Kriegsgeschehen
 Rechtshistoriker	11	NOUN
 abschlägig	11	OTHER
 übersiedelt	11	OTHER
@@ -93285,7 +93285,7 @@ Feddersen	11	NOUN
 Immendingen	11	NOUN
 Wutach	11	NOUN
 Tauern	11	NOUN
-Bratislavas	11	NOUN
+Bratislavas	11	NOUN	Bratislava
 Batschka	11	NOUN
 Mauereidechse	11	NOUN
 Donaukanal	11	NOUN
@@ -93293,53 +93293,53 @@ Hitzeperioden	11	NOUN
 Energielieferant	11	NOUN
 Vorankommen	11	NOUN,OTHER
 Tauwerk	11	NOUN
-Nationalhymnen	11	NOUN
+Nationalhymnen	11	NOUN	Nationalhymne
 Wixhausen	11	NOUN
 lutherischem	11	OTHER
 Eishockeysport	11	NOUN
 Kletterhalle	11	NOUN
 Mutterkonzern	11	NOUN
-Regionalausgaben	11	NOUN
+Regionalausgaben	11	NOUN	Regionalausgabe
 Reinheim	11	NOUN
 Mörfelden	11	NOUN
-Luftreinhalteplans	11	NOUN
+Luftreinhalteplans	11	NOUN	Luftreinhalteplan
 anzuschaffen	11	VERB
 Konkurrenzunternehmen	11	NOUN
 aufgezehrt	11	OTHER
-Hinterhöfen	11	NOUN
+Hinterhöfen	11	NOUN	Hinterhof
 begründbar	11	OTHER
 Eichenlaub	11	NOUN
 Münzvertrag	11	NOUN
-Steuergeldern	11	NOUN
+Steuergeldern	11	NOUN	Steuergelder
 Spinner	11	NOUN
 einhält	11	OTHER
 irrtümliche	11	OTHER
 Spezifikum	11	NOUN
 Helfrich	11	NOUN
 Triumphator	11	NOUN
-Stellenwertsystems	11	NOUN
-Distributivgesetze	11	NOUN
+Stellenwertsystems	11	NOUN	Stellenwertsystem
+Distributivgesetze	11	NOUN	Distributivgesetz
 Feria	11	NOUN,OTHER
 mitgespielt	11	OTHER
 Erinnerungsstücke	11	NOUN
 Meereskunde	11	NOUN
 Arbeitstechniken	11	NOUN
 funktionstüchtige	11	OTHER
-Glaubenslehren	11	NOUN
+Glaubenslehren	11	NOUN	Glaubenslehre
 Maurier	11	NOUN
 Flussgebiet	11	NOUN
 Mittelmeerklima	11	NOUN
 Schuldendeflation	11	NOUN
 Debt	11	NOUN,OTHER
 Abgleiten	11	NOUN,OTHER
-Funkverbindungen	11	NOUN
+Funkverbindungen	11	NOUN	Funkverbindung
 Gracht	11	NOUN
 Alkmaar	11	NOUN
 vielmals	11	OTHER
 Goldgar	11	NOUN
 Konfusion	11	NOUN
 überdimensionierte	11	OTHER
-Autokratien	11	NOUN
+Autokratien	11	NOUN	Autokratie
 Rechenschaftspflicht	11	NOUN
 demokratisieren	11	VERB
 Demagogen	11	NOUN
@@ -93365,7 +93365,7 @@ Rheinbundakte	11	NOUN
 harmonisches	11	OTHER
 Pempelfort	11	NOUN
 Massendemonstration	11	NOUN
-Konsistoriums	11	NOUN
+Konsistoriums	11	NOUN	Konsistorium
 Stockum	11	NOUN
 Sondergemeinschaften	11	NOUN
 Gear	11	NOUN
@@ -93375,8 +93375,8 @@ Backsteinarchitektur	11	NOUN
 Itter	11	NOUN
 Zeitanzeige	11	NOUN
 Balkenbrücke	11	NOUN
-Uferzonen	11	NOUN
-Rheinufers	11	NOUN
+Uferzonen	11	NOUN	Uferzone
+Rheinufers	11	NOUN	Rheinufer
 gärtnerisch	11	OTHER
 zaghaft	11	OTHER
 Altbier	11	NOUN
@@ -93395,8 +93395,8 @@ TeI	11	NOUN,OTHER
 Sese	11	NOUN
 verwittert	11	OTHER
 Feuchtsavanne	11	NOUN
-Sozialsysteme	11	NOUN
-Exzessen	11	NOUN
+Sozialsysteme	11	NOUN	Sozialsystem
+Exzessen	11	NOUN	Exzess
 dreistellig	11	OTHER
 unterstütztes	11	OTHER
 Tiefseehafen	11	NOUN
@@ -93406,16 +93406,16 @@ Pixelanzahl	11	NOUN
 Exif	11	NOUN
 integrierbar	11	OTHER
 Beamer	11	NOUN
-Abzügen	11	NOUN
+Abzügen	11	NOUN	Abzug
 Spannungsversorgung	11	NOUN
-Netzteilen	11	NOUN
+Netzteilen	11	NOUN	Netzteil
 abschreckend	11	OTHER
 neuentwickelten	11	OTHER
 Messprozess	11	NOUN
 Zeitverschiebung	11	NOUN
 Impulsantwort	11	NOUN
 Decodierung	11	NOUN
-DSPs	11	NOUN
+DSPs	11	NOUN	DSP
 wiedergewonnen	11	VERB
 Tana	11	NOUN
 MMIX	11	NOUN
@@ -93423,7 +93423,7 @@ complexity	11	NOUN,OTHER
 Grimmdarm	11	NOUN
 Sinistra	11	NOUN,OTHER
 Meso	11	NOUN,OTHER
-Dünndarms	11	NOUN
+Dünndarms	11	NOUN	Dünndarm
 Verwachsung	11	NOUN
 kontrahieren	11	VERB
 unwillkürlich	11	OTHER
@@ -93432,12 +93432,12 @@ Immunzellen	11	NOUN
 Kollagenfasern	11	NOUN
 ischämische	11	OTHER
 Anastomosen	11	NOUN
-Lymphome	11	NOUN
+Lymphome	11	NOUN	Lymphom
 Ducatus	11	NOUN,OTHER
 Kalkofen	11	NOUN
 Talabschnitt	11	NOUN
 naturbelassen	11	OTHER
-Fahrtrichtungen	11	NOUN
+Fahrtrichtungen	11	NOUN	Fahrtrichtung
 massigen	11	OTHER
 flugunfähige	11	OTHER
 endlichdimensionale	11	OTHER
@@ -93448,17 +93448,17 @@ angestoßenen	11	OTHER
 Großkirche	11	NOUN
 Cagliostro	11	NOUN
 zeremonieller	11	OTHER
-Blavatskys	11	NOUN
-Böcklins	11	NOUN
+Blavatskys	11	NOUN	Blavatsky
+Böcklins	11	NOUN	Böcklin
 Menu	11	NOUN,OTHER
 auszustrahlen	11	VERB
 tsch	11	OTHER
-Teilnehmerzahlen	11	NOUN
+Teilnehmerzahlen	11	NOUN	Teilnehmerzahl
 Familia	11	NOUN,OTHER
 EKO	11	NOUN
 Erlauchten	11	NOUN,OTHER
 Neuzelle	11	NOUN
-Obergerichte	11	NOUN
+Obergerichte	11	NOUN	Obergericht
 Oberstufenzentrum	11	NOUN
 HREE	11	NOUN
 Lichtwellenleiter	11	NOUN
@@ -93471,7 +93471,7 @@ Ferrit	11	NOUN
 Eisenmangel	11	NOUN
 schonenden	11	OTHER
 Goldpreis	11	NOUN
-Barclays	11	NOUN
+Barclays	11	NOUN	Barclay
 Atomorbitale	11	NOUN
 augenblicklichen	11	OTHER
 Kraftbegriff	11	NOUN
@@ -93480,20 +93480,20 @@ Wärmeinhalt	11	NOUN
 Systemgrenze	11	NOUN
 vermeidbare	11	OTHER
 Wärmebedarf	11	NOUN
-Blockheizkraftwerken	11	NOUN
+Blockheizkraftwerken	11	NOUN	Blockheizkraftwerk
 dimensional	11	OTHER
 Particle	11	NOUN,OTHER
 elektromagnetisches	11	OTHER
 Wörterverzeichnis	11	NOUN
-Zeitungsberichten	11	NOUN
+Zeitungsberichten	11	NOUN	Zeitungsberichte
 Abhebung	11	NOUN
 Umtausch	11	NOUN
 Oesterreichische	11	NOUN
 NZB	11	NOUN
 Euroraum	11	NOUN
 beeinflusse	11	OTHER
-Wechselkursen	11	NOUN
-Partnerländer	11	NOUN
+Wechselkursen	11	NOUN	Wechselkurs
+Partnerländer	11	NOUN	Partnerland
 fünfzigsten	11	OTHER
 Fünfer	11	NOUN
 Geldinstitute	11	NOUN
@@ -93516,7 +93516,7 @@ zurückzuzahlen	11	VERB
 ADGB	11	NOUN
 Selbsttäuschung	11	NOUN
 Luftzirkulation	11	NOUN
-Riffen	11	NOUN
+Riffen	11	NOUN	Riff
 Goppel	11	NOUN
 geeignetsten	11	OTHER
 prägnanten	11	OTHER
@@ -93530,7 +93530,7 @@ Stanza	11	NOUN
 zeigenden	11	OTHER
 Quecksilberdampflampen	11	NOUN
 fensterlosen	11	OTHER
-Simulatoren	11	NOUN
+Simulatoren	11	NOUN	Simulator
 Walzensatz	11	NOUN
 Ringstellung	11	NOUN
 einstuften	11	VERB
@@ -93543,9 +93543,9 @@ NWA	11	NOUN
 SPICE	11	NOUN
 Informationsministerium	11	NOUN
 Abiy	11	NOUN
-Maultiere	11	NOUN
+Maultiere	11	NOUN	Maultier
 Anfangsgründe	11	NOUN
-Ganztöne	11	NOUN
+Ganztöne	11	NOUN	Ganzton
 Knallen	11	NOUN,OTHER
 fotografisches	11	OTHER
 Granma	11	NOUN
@@ -93555,10 +93555,10 @@ Obdachlosigkeit	11	NOUN
 Oberförsterei	11	NOUN
 Unzeitgemäßen	11	NOUN,OTHER
 Kulturzeitschrift	11	NOUN
-Gerhards	11	NOUN
+Gerhards	11	NOUN	Gerhard
 fault	11	NOUN,OTHER
 Raumfahrtagentur	11	NOUN
-Sternbilds	11	NOUN
+Sternbilds	11	NOUN	Sternbild
 Meerestiefe	11	NOUN
 meteorologisch	11	OTHER
 Tundren	11	NOUN
@@ -93568,12 +93568,12 @@ Scientists	11	NOUN
 Perigäum	11	NOUN
 Abendhimmel	11	NOUN
 Arth	11	NOUN,OTHER
-Glaskugeln	11	NOUN
-Südpols	11	NOUN
+Glaskugeln	11	NOUN	Glaskugel
+Südpols	11	NOUN	Südpol
 lunaren	11	OTHER
 Nordhälfte	11	NOUN
 weißlichen	11	OTHER
-Schaltmonate	11	NOUN
+Schaltmonate	11	NOUN	Schaltmonat
 skizzenhafte	11	OTHER
 Constellation	11	NOUN
 Kameragehäuse	11	NOUN
@@ -93585,25 +93585,25 @@ Guèye	11	NOUN
 Gewaltentrennung	11	NOUN
 RDA	11	NOUN
 robusta	11	OTHER
-Kokosnüsse	11	NOUN
+Kokosnüsse	11	NOUN	Kokosnuss
 Fischteichen	11	NOUN
 Naturkautschuk	11	NOUN
-Schmiergelder	11	NOUN
+Schmiergelder	11	NOUN	Schmiergeld
 kostendeckend	11	OTHER
 Électricité	11	NOUN,OTHER
 geschwärzt	11	OTHER
-Romanciers	11	NOUN
-Avocados	11	NOUN
+Romanciers	11	NOUN	Romancier
+Avocados	11	NOUN	Avocado
 Okra	11	NOUN
 Privatfernsehen	11	NOUN
 Alsen	11	NOUN
 Königgrätzer	11	NOUN
 Schack	11	NOUN
-Leuchtturms	11	NOUN
+Leuchtturms	11	NOUN	Leuchtturm
 überdimensionierten	11	VERB,OTHER
 Bergbauingenieur	11	NOUN
 Niet	11	NOUN,OTHER
-Bauwerkes	11	NOUN
+Bauwerkes	11	NOUN	Bauwerk
 Informationsübermittlung	11	NOUN
 Einfriedung	11	NOUN
 Glaswand	11	NOUN
@@ -93623,21 +93623,21 @@ Kratylos	11	NOUN
 Ausschließung	11	NOUN
 Gaußklammer	11	NOUN
 Nahrungserwerb	11	NOUN
-Ebern	11	NOUN
+Ebern	11	NOUN	Eber
 weitgehendes	11	OTHER
 Artenschutzübereinkommen	11	NOUN
-Hostien	11	NOUN
+Hostien	11	NOUN	Hostie
 Triptychen	11	NOUN
 recto	11	OTHER
 UPC	11	NOUN
 Digest	11	NOUN
-Frühformen	11	NOUN
+Frühformen	11	NOUN	Frühform
 teilbaren	11	OTHER
 geschuldeten	11	OTHER
-Bargelds	11	NOUN
+Bargelds	11	NOUN	Bargeld
 Kleinmünzen	11	NOUN
 scheuten	11	VERB
-Gesellschaftsstrukturen	11	NOUN
+Gesellschaftsstrukturen	11	NOUN	Gesellschaftsstruktur
 ökonomischem	11	OTHER
 Alphons	11	NOUN
 eisfreie	11	OTHER
@@ -93649,18 +93649,18 @@ Oligomere	11	NOUN,OTHER
 Glucokinase	11	NOUN
 Yupik	11	NOUN
 Vokalsystem	11	NOUN
-Nordirlands	11	NOUN
+Nordirlands	11	NOUN	Nordirland
 Rödelheim	11	NOUN
 Militärflugplatzes	11	NOUN
 Rossert	11	NOUN
 Eppsteiner	11	NOUN
 Schwarza	11	NOUN
-Jahrgangsstufen	11	NOUN
+Jahrgangsstufen	11	NOUN	Jahrgangsstufe
 Schüleraustausche	11	NOUN
 Steilufer	11	NOUN
 Bergkuppen	11	NOUN
 bildhauerisch	11	OTHER
-Produktionsmengen	11	NOUN
+Produktionsmengen	11	NOUN	Produktionsmenge
 trichterförmig	11	OTHER
 bezogener	11	OTHER
 Weihnachtsgeschäft	11	NOUN
@@ -93678,16 +93678,16 @@ Holarktis	11	NOUN
 Artbezeichnung	11	NOUN
 keilförmig	11	OTHER
 Augenfarbe	11	NOUN
-Verbreitungsgebieten	11	NOUN
+Verbreitungsgebieten	11	NOUN	Verbreitungsgebiet
 Zeitbegriff	11	NOUN
 Samenmantel	11	NOUN
 DOSBox	11	NOUN
 bestäubt	11	OTHER
 Wasserstrahl	11	NOUN
-Rehen	11	NOUN
+Rehen	11	NOUN	Reh
 Splintholz	11	NOUN
-Ahlen	11	NOUN
-Viehs	11	NOUN
+Ahlen	11	NOUN	Ahle
+Viehs	11	NOUN	Vieh
 EnWG	11	NOUN
 Einphasenwechselstrom	11	NOUN
 Nyx	11	NOUN
@@ -93698,15 +93698,15 @@ einbändige	11	OTHER
 Mikrofilm	11	NOUN
 Krünitz	11	NOUN
 Spare	11	NOUN,OTHER
-Sachgebiete	11	NOUN
-Wissensgebieten	11	NOUN
+Sachgebiete	11	NOUN	Sachgebiet
+Wissensgebieten	11	NOUN	Wissensgebiete
 Yongle	11	NOUN
 Bevölkerungsanzahl	11	NOUN
 obrigkeitliche	11	OTHER
 Constable	11	NOUN
 geförderter	11	OTHER
 Umbruchphase	11	NOUN
-Grundpositionen	11	NOUN
+Grundpositionen	11	NOUN	Grundposition
 Eudaimonie	11	NOUN
 Namenskonventionen	11	NOUN
 Antibiotikaresistenzen	11	NOUN
@@ -93718,17 +93718,17 @@ mathematischem	11	OTHER
 Habermann	11	NOUN
 Sarpedon	11	NOUN
 wunderschönen	11	OTHER
-Umspannwerke	11	NOUN
+Umspannwerke	11	NOUN	Umspannwerk
 Frombork	11	NOUN
-Priesterseminars	11	NOUN
+Priesterseminars	11	NOUN	Priesterseminar
 Gesagte	11	NOUN,OTHER
 Heinroth	11	NOUN
 Fabre	11	NOUN
-Ornithologen	11	NOUN
+Ornithologen	11	NOUN	Ornithologe
 Entstehens	11	NOUN
 Versuchsleiter	11	NOUN
 herauszufiltern	11	VERB
-Sinns	11	NOUN
+Sinns	11	NOUN	Sinn
 Traunsee	11	NOUN
 gefärbtem	11	OTHER
 adjektivisch	11	OTHER
@@ -93738,7 +93738,7 @@ Coda	11	NOUN,OTHER
 Marignano	11	NOUN
 Erbbegräbnis	11	NOUN
 Hardboiled	11	NOUN
-Chandlers	11	NOUN
+Chandlers	11	NOUN	Chandler
 Schwarzweißfotografie	11	NOUN
 Steckbrief	11	NOUN
 Sarkasmus	11	NOUN
@@ -93746,10 +93746,10 @@ Marlowe	11	NOUN
 Mothers	11	NOUN
 Familienmitglied	11	NOUN
 MNF	11	NOUN
-Einfachbindungen	11	NOUN
+Einfachbindungen	11	NOUN	Einfachbindung
 antibindenden	11	OTHER
 Schwefelhexafluorid	11	NOUN
-Extremfällen	11	NOUN
+Extremfällen	11	NOUN	Extremfall
 Klafter	11	NOUN
 megalithischen	11	OTHER
 Meterkonvention	11	NOUN
@@ -93757,7 +93757,7 @@ Nautik	11	NOUN
 Gewichtseinheit	11	NOUN
 Landesschule	11	NOUN
 beurlauben	11	VERB
-Werturteile	11	NOUN
+Werturteile	11	NOUN	Werturteil
 Übermensch	11	NOUN
 zurückfallen	11	VERB
 Reaction	11	NOUN,OTHER
@@ -93777,7 +93777,7 @@ Lizenziat	11	NOUN
 Armenviertel	11	NOUN
 Narendra	11	NOUN
 Kreisverbandes	11	NOUN
-Antriebsarten	11	NOUN
+Antriebsarten	11	NOUN	Antriebsart
 Klimaschutzmaßnahmen	11	NOUN
 Bürgerzentrum	11	NOUN
 Zwischenbericht	11	NOUN
@@ -93791,7 +93791,7 @@ Gabler	11	NOUN
 Stadtbahnnetz	11	NOUN
 Ortenau	11	NOUN
 Filialgemeinde	11	NOUN
-Skigebieten	11	NOUN
+Skigebieten	11	NOUN	Skigebiet
 Gundelfingen	11	NOUN
 Hauswirtschaftliche	11	NOUN,OTHER
 Naturschutzbehörde	11	NOUN
@@ -93811,7 +93811,7 @@ Glückes	11	NOUN
 schwärmerischen	11	OTHER
 Josefine	11	NOUN
 unüberschaubar	11	OTHER
-Dorfbewohnern	11	NOUN
+Dorfbewohnern	11	NOUN	Dorfbewohner
 zugeteilte	11	OTHER
 allwissenden	11	OTHER
 kommerziellem	11	OTHER
@@ -93819,25 +93819,25 @@ Minolta	11	NOUN
 zuzusprechen	11	VERB
 poetologischen	11	OTHER
 Steichen	11	NOUN
-Clusters	11	NOUN
+Clusters	11	NOUN	Cluster
 vorjährigen	11	OTHER
 Donator	11	NOUN
 Morgenländische	11	NOUN,OTHER
-Usurpationen	11	NOUN
-Mittelitaliens	11	NOUN
+Usurpationen	11	NOUN	Usurpation
+Mittelitaliens	11	NOUN	Mittelitalien
 Chlodomer	11	NOUN
-Hausmeiers	11	NOUN
+Hausmeiers	11	NOUN	Hausmeier
 Ottonenzeit	11	NOUN
 Führungsgruppe	11	NOUN
 Cividale	11	NOUN
-Seestädte	11	NOUN
+Seestädte	11	NOUN	Seestadt
 intervenierten	11	VERB,OTHER
 Seerepubliken	11	NOUN
 Rekkared	11	NOUN
 Hofadel	11	NOUN
-Alfreds	11	NOUN
+Alfreds	11	NOUN	Alfred
 Vendel	11	NOUN
-Haralds	11	NOUN
+Haralds	11	NOUN	Harald
 Kufa	11	NOUN
 ʿAffān	11	OTHER
 straffer	11	OTHER
@@ -93848,7 +93848,7 @@ dreistufige	11	OTHER
 Beschreibstoff	11	NOUN
 Gotengeschichte	11	NOUN
 hagiographische	11	OTHER
-Homilien	11	NOUN
+Homilien	11	NOUN	Homilie
 Venantius	11	NOUN
 Fortunatus	11	NOUN
 Hofkaplan	11	NOUN
@@ -93869,40 +93869,40 @@ bespannten	11	VERB
 Querachse	11	NOUN
 Sonderbauformen	11	NOUN
 Wasserflugzeug	11	NOUN
-Konstrukteurs	11	NOUN
+Konstrukteurs	11	NOUN	Konstrukteur
 Rollbewegung	11	NOUN
 Sikorski	11	NOUN
 Wärmeübertrager	11	NOUN
 gestaffelten	11	OTHER
 Ariosto	11	NOUN
-Buchreihen	11	NOUN
+Buchreihen	11	NOUN	Buchreihe
 unglaublichen	11	OTHER
 schrille	11	OTHER
 Gustafsson	11	NOUN
-Puccinis	11	NOUN
+Puccinis	11	NOUN	Puccini
 Bankvorteil	11	NOUN
-Urformen	11	NOUN
+Urformen	11	NOUN	Urform
 Freudenstein	11	NOUN
-Vulkaniten	11	NOUN
+Vulkaniten	11	NOUN	Vulkanite
 Bebelplatz	11	NOUN
 abgetragene	11	OTHER
 Jazztage	11	NOUN
 Silberbergbau	11	NOUN
-Präzisions	11	NOUN
+Präzisions	11	NOUN	Präzision
 pyrotechnische	11	OTHER
 Geoinformatik	11	NOUN
-Mittelzentrums	11	NOUN
+Mittelzentrums	11	NOUN	Mittelzentrum
 Krankentransportwagen	11	NOUN
 Barkas	11	NOUN
 Parlements	11	NOUN,OTHER
-Dekrets	11	NOUN
+Dekrets	11	NOUN	Dekret
 Unruheherd	11	NOUN
 Feuillants	11	NOUN
 tagende	11	OTHER
 Umorganisation	11	NOUN
 Germinal	11	NOUN,OTHER
 Arbeitsprodukte	11	NOUN
-Mitchells	11	NOUN
+Mitchells	11	NOUN	Mitchell
 Florianus	11	NOUN
 Volterra	11	NOUN
 prekärer	11	OTHER
