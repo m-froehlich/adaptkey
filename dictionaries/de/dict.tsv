@@ -76460,22 +76460,22 @@ Oeventrop	15	NOUN
 LFS	15	NOUN
 Speichererweiterung	15	NOUN
 VRAM	15	NOUN
-Längenkreise	15	NOUN
-Kabelfernsehens	15	NOUN
+Längenkreise	15	NOUN	Längenkreis
+Kabelfernsehens	15	NOUN	Kabelfernsehen
 Zirkularatmung	15	NOUN
 Gottleuba	15	NOUN
 Chemiepark	15	NOUN
 Biela	15	NOUN
-Elbsandsteingebirges	15	NOUN
+Elbsandsteingebirges	15	NOUN	Elbsandsteingebirge
 Wurzen	15	NOUN
 EPUB	15	NOUN
 Aitmatow	15	NOUN
-altfränkischen	15	NOUN,OTHER
+altfränkischen	15	NOUN,OTHER	altfränkische
 Austastlücke	15	NOUN
 CDSB	15	NOUN
 Bildweite	15	NOUN
 Spiegelfläche	15	NOUN
-Placeboeffekte	15	NOUN
+Placeboeffekte	15	NOUN	Placeboeffekt
 homöische	15	OTHER
 Winterpalast	15	NOUN
 Duklja	15	NOUN
@@ -76486,7 +76486,7 @@ Bucharin	15	NOUN
 Ilmensee	15	NOUN
 Konitz	15	NOUN
 Karp	15	NOUN,OTHER
-Klopstocks	15	NOUN
+Klopstocks	15	NOUN	Klopstock
 Wochenstunden	15	NOUN
 Teamchef	15	NOUN
 Wesertal	15	NOUN
@@ -76502,21 +76502,21 @@ Fehmarnsundbrücke	15	NOUN
 Burgmannshof	15	NOUN
 Naundorf	15	NOUN
 Durchlassrichtung	15	NOUN
-Kristallsysteme	15	NOUN
+Kristallsysteme	15	NOUN	Kristallsystem
 Griffloch	15	NOUN
 Akcja	15	NOUN
 Wiedertäufer	15	NOUN
 Stressoren	15	NOUN
 Kurzmitteilung	15	NOUN
-Pianinos	15	NOUN
-Heckenschützen	15	NOUN
+Pianinos	15	NOUN	Pianino
+Heckenschützen	15	NOUN	Heckenschütze
 Veltins	15	NOUN
 Tatry	15	NOUN
 Saxones	15	NOUN
-Duisburgs	15	NOUN
+Duisburgs	15	NOUN	Duisburg
 opacity	15	OTHER
 Levensau	15	NOUN
-Marbachs	15	NOUN
+Marbachs	15	NOUN	Marbach
 Strummer	15	NOUN
 Schwarzburger	15	NOUN
 zugelost	15	OTHER
@@ -76526,9 +76526,9 @@ Raddurchmesser	15	NOUN
 Dioptrien	15	NOUN
 Zylinderkopf	15	NOUN
 Brassert	15	NOUN
-Marls	15	NOUN
+Marls	15	NOUN	Marl
 Öhr	15	NOUN
-Adhäsions	15	NOUN
+Adhäsions	15	NOUN	Adhäsion
 Drachenfels	15	NOUN
 Merscheid	15	NOUN
 Systemkameras	15	NOUN
@@ -76536,41 +76536,41 @@ Vojtech	15	NOUN
 Landesjugendring	15	NOUN
 Ujazd	15	NOUN
 Kramnik	15	NOUN
-Kasparows	15	NOUN
+Kasparows	15	NOUN	Kasparow
 Goth	15	NOUN,OTHER
 Udmurten	15	NOUN
 Ischewsk	15	NOUN
 Kleefeld	15	NOUN
-Nicolais	15	NOUN
+Nicolais	15	NOUN	Nicolai
 Rupelmonde	15	NOUN
 Kihon	15	NOUN
 Zazen	15	NOUN
 Interimstrainer	15	NOUN
 Berggarten	15	NOUN
-Anderschs	15	NOUN
+Anderschs	15	NOUN	Andersch
 Akzeptanzstellen	15	NOUN
 Adelsheim	15	NOUN
 Ruhemembranpotential	15	NOUN
 Okurigana	15	NOUN
-Blytons	15	NOUN
+Blytons	15	NOUN	Blyton
 Absteiger	15	NOUN
 Arkestra	15	NOUN
 Gutekunst	15	NOUN
 Udine	15	NOUN
-Maigrets	15	NOUN
+Maigrets	15	NOUN	Maigret
 Wehrdienstverweigerung	15	NOUN
-Watzmanns	15	NOUN
+Watzmanns	15	NOUN	Watzmann
 Elverdissen	15	NOUN
 Kamprad	15	NOUN
 Terminalblüte	15	NOUN
 Mellingen	15	NOUN
-Turkus	15	NOUN
-Albertas	15	NOUN
+Turkus	15	NOUN	Turku
+Albertas	15	NOUN	Alberta
 Notrufkanal	15	NOUN
 Grünfelde	15	NOUN
 Flüelen	15	NOUN
 ReleaseYear	15	NOUN
-Naurus	15	NOUN
+Naurus	15	NOUN	Nauru
 Bökelbergstadion	15	NOUN
 Ikari	15	NOUN
 Hitzlsperger	15	NOUN
@@ -76580,7 +76580,7 @@ Werkstoffsteifigkeit	15	NOUN
 Winnetouch	15	NOUN
 KVen	15	NOUN
 neupersisch	15	NOUN,OTHER
-Stummelfüßern	15	NOUN
+Stummelfüßern	15	NOUN	Stummelfüßer
 Sensillen	15	NOUN
 Amselfeldschlacht	15	NOUN
 Aposteltreffen	15	NOUN
@@ -76588,15 +76588,15 @@ TEOAE	15	NOUN
 Bülach	15	NOUN
 Weberschen	15	NOUN
 CET	15	NOUN
-Pentameters	15	NOUN
-Kracauers	15	NOUN
+Pentameters	15	NOUN	Pentameter
+Kracauers	15	NOUN	Kracauer
 Niflungen	15	NOUN
 Steinbäcker	15	NOUN
 Sawankhalok	15	NOUN
 Songtham	15	NOUN
 Strümp	15	NOUN
 Baumberg	15	NOUN
-Shantys	15	NOUN
+Shantys	15	NOUN	Shanty
 Testtiere	15	NOUN
 Dättwil	15	NOUN
 packt	15	VERB
@@ -76613,7 +76613,7 @@ gefärbtes	14	OTHER
 angehen	14	VERB
 Eileen	14	NOUN
 vielseitigsten	14	OTHER
-Selektionen	14	NOUN
+Selektionen	14	NOUN	Selektion
 anschlussfähig	14	OTHER
 aussagenlogische	14	OTHER
 Begriffsschrift	14	NOUN
@@ -76626,7 +76626,7 @@ Handelskrieg	14	NOUN
 Formalitäten	14	NOUN
 Weiterverkauf	14	NOUN
 RKO	14	NOUN
-Vorsätze	14	NOUN
+Vorsätze	14	NOUN	Vorsatz
 KBE	14	NOUN
 MacGuffin	14	NOUN
 Henley	14	NOUN
@@ -76641,7 +76641,7 @@ zerrissene	14	OTHER
 verschwimmt	14	OTHER
 vorantreibt	14	OTHER
 Geheimorganisation	14	NOUN
-Blondinen	14	NOUN
+Blondinen	14	NOUN	Blondine
 hinziehenden	14	OTHER
 neurotischen	14	OTHER
 bemerkenswertesten	14	OTHER
@@ -76649,33 +76649,33 @@ geschliffene	14	OTHER
 anpassten	14	VERB
 Bühnenautor	14	NOUN
 Erkennungsmelodie	14	NOUN
-Gastgebers	14	NOUN
-Filmkritikern	14	NOUN
+Gastgebers	14	NOUN	Gastgeber
+Filmkritikern	14	NOUN	Filmkritiker
 Evan	14	NOUN
 Johansson	14	NOUN
 zelebrieren	14	VERB
 befreundeter	14	OTHER
 Tagespresse	14	NOUN
 Finanznot	14	NOUN
-Videokassetten	14	NOUN
+Videokassetten	14	NOUN	Videokassette
 Showgeschäft	14	NOUN
 beworbenen	14	OTHER
-Geschlechtsorganen	14	NOUN
+Geschlechtsorganen	14	NOUN	Geschlechtsorgan
 unterscheidenden	14	OTHER
 fokussierten	14	VERB,OTHER
 ausgefeilten	14	OTHER
 Hintergrundmusik	14	NOUN
 Realfilm	14	NOUN
 verkleiden	14	VERB
-Clements	14	NOUN
+Clements	14	NOUN	Clement
 Gefühlswelt	14	NOUN
 Bronson	14	NOUN
-Grundtöne	14	NOUN
+Grundtöne	14	NOUN	Grundton
 Travolta	14	NOUN
 wasserfreie	14	OTHER
 Ulvaeus	14	NOUN
 Erdhülle	14	NOUN
-Festigkeiten	14	NOUN
+Festigkeiten	14	NOUN	Festigkeit
 allotrope	14	OTHER
 Jakutsk	14	NOUN
 inert	14	OTHER
@@ -76688,17 +76688,17 @@ Suszeptibilität	14	NOUN
 Gefahrgut	14	NOUN
 stabilem	14	OTHER
 Apparatebau	14	NOUN
-Schienenfahrzeugen	14	NOUN
-Nieten	14	NOUN
-Kurbeln	14	NOUN
+Schienenfahrzeugen	14	NOUN	Schienenfahrzeuge
+Nieten	14	NOUN	Niet
+Kurbeln	14	NOUN	Kurbel
 Austrittsarbeit	14	NOUN
-Halbmetalle	14	NOUN
+Halbmetalle	14	NOUN	Halbmetall
 exothermen	14	OTHER
 verbauen	14	VERB
 Magnesiumlegierungen	14	NOUN
 Stahlguss	14	NOUN
 Verbundwerkstoffe	14	NOUN
-Knochenbrüchen	14	NOUN
+Knochenbrüchen	14	NOUN	Knochenbruch
 wiederverwertet	14	OTHER
 gediegenes	14	OTHER
 Silikat	14	NOUN
@@ -76720,7 +76720,7 @@ MnO	14	NOUN
 Amo	14	NOUN
 rosafarbene	14	OTHER
 vierwertige	14	OTHER
-Grundeinheiten	14	NOUN
+Grundeinheiten	14	NOUN	Grundeinheit
 Behandlungsmöglichkeiten	14	NOUN
 Populares	14	NOUN,OTHER
 Kinderarzt	14	NOUN
@@ -76732,11 +76732,11 @@ neueres	14	OTHER
 Hellenisierung	14	NOUN
 abzustammen	14	VERB
 Antipatros	14	NOUN
-Großkönigs	14	NOUN
+Großkönigs	14	NOUN	Großkönig
 abgewartet	14	OTHER
 Beschlag	14	NOUN
 segelten	14	VERB
-Trieren	14	NOUN
+Trieren	14	NOUN	Trier
 Söldnerführer	14	NOUN
 Kyrenaika	14	NOUN
 Gaugamela	14	NOUN
@@ -76748,23 +76748,23 @@ Mittelmeergebiet	14	NOUN
 angefragt	14	OTHER
 gelautet	14	OTHER
 Markusdom	14	NOUN
-Gemahls	14	NOUN
-Verehrern	14	NOUN
+Gemahls	14	NOUN	Gemahl
+Verehrern	14	NOUN	Verehrer
 unerhörte	14	OTHER
 Kyniker	14	NOUN
 Schullektüre	14	NOUN
 Alberich	14	NOUN
 zwiespältige	14	OTHER
-Kirchenslawische	14	NOUN,OTHER
+Kirchenslawische	14	NOUN,OTHER	Kirchenslawisch
 reinigt	14	OTHER
 Aventinus	14	NOUN
 verwertete	14	OTHER
 HWV	14	NOUN
 Traditionspflege	14	NOUN
-Reitervölker	14	NOUN
+Reitervölker	14	NOUN	Reitervolk
 Böotien	14	NOUN
 Messenien	14	NOUN
-Gesetzgebungen	14	NOUN
+Gesetzgebungen	14	NOUN	Gesetzgebung
 Staatsmannes	14	NOUN
 festlicher	14	OTHER
 dictator	14	NOUN,OTHER
@@ -76791,7 +76791,7 @@ Leitkultur	14	NOUN
 OBE	14	NOUN
 Cheshire	14	NOUN
 Machinery	14	NOUN
-Diffusions	14	NOUN,OTHER
+Diffusions	14	NOUN,OTHER	Diffusion
 freundschaftliches	14	OTHER
 DIP	14	NOUN
 frühzeitigen	14	OTHER
@@ -76813,8 +76813,8 @@ phonemische	14	OTHER
 norddeutsch	14	OTHER
 Derivation	14	NOUN,OTHER
 kommissarischen	14	OTHER
-Innenstädten	14	NOUN
-Verlagerungen	14	NOUN
+Innenstädten	14	NOUN	Innenstadt
+Verlagerungen	14	NOUN	Verlagerung
 Marquess	14	NOUN
 Eton	14	NOUN
 ablehne	14	OTHER
@@ -76835,7 +76835,7 @@ lächerlichen	14	NOUN,OTHER
 Teen	14	NOUN
 Schauspielkollegen	14	NOUN
 Raider	14	NOUN
-Regierungsbeamten	14	NOUN
+Regierungsbeamten	14	NOUN	Regierungsbeamte
 Managerin	14	NOUN
 Goldgehalt	14	NOUN
 Bedienbarkeit	14	NOUN
@@ -76861,15 +76861,15 @@ doctrine	14	NOUN,OTHER
 Nordstaatler	14	NOUN
 Seward	14	NOUN
 Vizepräsidentschaftskandidat	14	NOUN
-Rechtsverletzungen	14	NOUN
-Übels	14	NOUN
+Rechtsverletzungen	14	NOUN	Rechtsverletzung
+Übels	14	NOUN	Übel
 erlittene	14	OTHER
 Arapaho	14	NOUN
 Erdrutschsieg	14	NOUN
 Sonderzug	14	NOUN
 Brendan	14	NOUN
 trockenere	14	OTHER
-Turkvölkern	14	NOUN
+Turkvölkern	14	NOUN	Turkvolk
 Entschlafens	14	NOUN
 Turkish	14	NOUN
 Bergbauunternehmen	14	NOUN
@@ -76890,7 +76890,7 @@ Annegret	14	NOUN
 Kramp	14	NOUN
 Hollande	14	NOUN
 Asylpolitik	14	NOUN
-Obergrenzen	14	NOUN
+Obergrenzen	14	NOUN	Obergrenze
 Sloterdijk	14	NOUN
 Textnachrichten	14	NOUN
 Horowitz	14	NOUN
@@ -76899,21 +76899,21 @@ Choresmien	14	NOUN
 Manlius	14	NOUN
 Ostanatolien	14	NOUN
 Sprengstoffanschlag	14	NOUN
-Hochgeschwindigkeitsstrecken	14	NOUN
+Hochgeschwindigkeitsstrecken	14	NOUN	Hochgeschwindigkeitsstrecke
 Wohnfläche	14	NOUN
 Habseligkeiten	14	NOUN
 Spannbreite	14	NOUN
-Religionsgesellschaften	14	NOUN
+Religionsgesellschaften	14	NOUN	Religionsgesellschaft
 totales	14	OTHER
 absprechen	14	VERB
 Meaning	14	NOUN,OTHER
-Sutras	14	NOUN
+Sutras	14	NOUN	Sutra
 Phaidros	14	NOUN
 unwissend	14	OTHER
-Großreichen	14	NOUN
+Großreichen	14	NOUN	Großreich
 Lollarden	14	NOUN
 Wiederauferstehung	14	NOUN
-Antinomien	14	NOUN
+Antinomien	14	NOUN	Antinomie
 Rechenberg	14	NOUN
 andauernd	14	OTHER
 Gottesvorstellung	14	NOUN
@@ -76928,7 +76928,7 @@ schwieg	14	OTHER
 Harder	14	NOUN
 Gebirgsland	14	NOUN
 endemischer	14	OTHER
-Freizeitparks	14	NOUN
+Freizeitparks	14	NOUN	Freizeitpark
 Paschto	14	NOUN
 Hafis	14	NOUN
 tadschikischen	14	OTHER
@@ -76936,7 +76936,7 @@ paschtunischen	14	OTHER
 Militärsklaven	14	NOUN
 Fata	14	NOUN,OTHER
 Stellvertreterkrieg	14	NOUN
-Guerillas	14	NOUN
+Guerillas	14	NOUN	Guerilla
 logistischer	14	OTHER
 Scharif	14	NOUN
 Nahrungsmittelknappheit	14	NOUN
@@ -76949,21 +76949,21 @@ Metrum	14	NOUN
 Machtlosigkeit	14	NOUN
 Besitzlosen	14	NOUN,OTHER
 Trikolore	14	NOUN
-Sportlerinnen	14	NOUN
+Sportlerinnen	14	NOUN	Sportlerin
 Zwölftonmusik	14	NOUN
 Blütenstiele	14	NOUN
 Zierpflanze	14	NOUN
 Formosa	14	NOUN
 Alton	14	NOUN
-Glücksspielen	14	NOUN
+Glücksspielen	14	NOUN	Glücksspiel
 Felsbrocken	14	NOUN
 Reymond	14	NOUN
-Versagens	14	NOUN
+Versagens	14	NOUN	Versagen
 verschmutzen	14	VERB
 zufallen	14	VERB
 abgereist	14	OTHER
 Genital	14	NOUN,OTHER
-Glaubensbekenntnissen	14	NOUN
+Glaubensbekenntnissen	14	NOUN	Glaubensbekenntnisse
 Aiki	14	NOUN
 naturgegebenen	14	OTHER
 funktionierender	14	OTHER
@@ -76972,15 +76972,15 @@ Kampfgeschehen	14	NOUN
 gütigen	14	OTHER
 Ausübenden	14	NOUN,OTHER
 harmonisiert	14	OTHER
-Verteidigers	14	NOUN
+Verteidigers	14	NOUN	Verteidiger
 mitbringt	14	OTHER
 neuntgrößte	14	OTHER
 bestattete	14	OTHER
-Alexandrias	14	NOUN
+Alexandrias	14	NOUN	Alexandria
 forschten	14	VERB
 photograph	14	NOUN,OTHER
 petrochemische	14	OTHER
-Helligkeits	14	NOUN
+Helligkeits	14	NOUN	Helligkeit
 Arbeitskampfes	14	NOUN
 boykottieren	14	VERB
 Tschuktschen	14	NOUN
@@ -76990,7 +76990,7 @@ Erzväter	14	NOUN
 Brahma	14	NOUN
 Verdinglichung	14	NOUN
 Richterrecht	14	NOUN
-Willenserklärungen	14	NOUN
+Willenserklärungen	14	NOUN	Willenserklärung
 unterlässt	14	OTHER
 Beschäftigungsmöglichkeiten	14	NOUN
 Hafenarbeiter	14	NOUN
@@ -76998,14 +76998,14 @@ zerrütteten	14	VERB,OTHER
 einschränkten	14	VERB
 Schachzug	14	NOUN
 mehrtägiger	14	OTHER
-Befehlshabern	14	NOUN
+Befehlshabern	14	NOUN	Befehlshaber
 cura	14	OTHER
 Leges	14	NOUN,OTHER
-Ehebruchs	14	NOUN
+Ehebruchs	14	NOUN	Ehebruch
 Nachfolgefrage	14	NOUN
 versöhnte	14	OTHER
 regelrechtes	14	OTHER
-Polarkreise	14	NOUN
+Polarkreise	14	NOUN	Polarkreis
 Eriksson	14	NOUN
 meistbefahrene	14	OTHER
 Stückgut	14	NOUN
@@ -77036,12 +77036,12 @@ Thunderbolt	14	NOUN
 Speaker	14	NOUN
 Hemmschwelle	14	NOUN
 verletzende	14	OTHER
-Gerichtsverfahrens	14	NOUN
+Gerichtsverfahrens	14	NOUN	Gerichtsverfahren
 VESA	14	NOUN
 transkribierte	14	OTHER
 Blutsverwandtschaft	14	NOUN
 Unvermögen	14	NOUN
-Überlebenschancen	14	NOUN
+Überlebenschancen	14	NOUN	Überlebenschance
 Waffenstillstandsverhandlungen	14	NOUN
 Brandschatzung	14	NOUN
 Kriegsniederlage	14	NOUN
@@ -77051,7 +77051,7 @@ Tyrell	14	NOUN
 Kampfbund	14	NOUN
 vollziehende	14	OTHER
 wahrte	14	OTHER
-Putschversuchs	14	NOUN
+Putschversuchs	14	NOUN	Putschversuch
 Lebensrecht	14	NOUN
 reklamierte	14	OTHER
 Mischling	14	NOUN
@@ -77069,14 +77069,14 @@ Sudetenkrise	14	NOUN
 Linienschiff	14	NOUN
 verschleierte	14	OTHER
 arbeitsfähige	14	OTHER
-Massenmorden	14	NOUN
+Massenmorden	14	NOUN	Massenmord
 Brauchitsch	14	NOUN
 Neuverteilung	14	NOUN
 Folgemonaten	14	NOUN
 Untergebene	14	NOUN,OTHER
 Heimatfront	14	NOUN
 unvermeidbare	14	OTHER
-Kommandeuren	14	NOUN
+Kommandeuren	14	NOUN	Kommandeur
 Elser	14	NOUN
 Sprengsatz	14	NOUN
 Goerdeler	14	NOUN
@@ -77090,7 +77090,7 @@ unzulässigen	14	OTHER
 Tamazight	14	NOUN
 démocratie	14	OTHER
 Defferre	14	NOUN
-Einschüchterungen	14	NOUN
+Einschüchterungen	14	NOUN	Einschüchterung
 atmosphärischer	14	OTHER
 Ölkonzerne	14	NOUN
 erschöpften	14	VERB,OTHER
@@ -77099,20 +77099,20 @@ Gesamtreich	14	NOUN
 Kammerherr	14	NOUN
 wohlwollender	14	OTHER
 Wazir	14	NOUN
-Paars	14	NOUN,OTHER
-Valentinians	14	NOUN
+Paars	14	NOUN,OTHER	Paar
+Valentinians	14	NOUN	Valentinian
 Notabeln	14	NOUN
 opponierten	14	VERB
 Stockton	14	NOUN
 Ausbesserungswerk	14	NOUN
-Generaldirektors	14	NOUN
-Innenseiten	14	NOUN
+Generaldirektors	14	NOUN	Generaldirektor
+Innenseiten	14	NOUN	Innenseite
 Fahrbetrieb	14	NOUN
-Jahrgängen	14	NOUN
+Jahrgängen	14	NOUN	Jahrgang
 Prägestätte	14	NOUN
 Poirot	14	NOUN
 Rosalind	14	NOUN
-Bühnenwerke	14	NOUN
+Bühnenwerke	14	NOUN	Bühnenwerk
 Gentry	14	NOUN
 symbolträchtige	14	OTHER
 entgegnet	14	OTHER
@@ -77136,11 +77136,11 @@ taxonomisch	14	OTHER
 Antonym	14	NOUN
 Bolt	14	NOUN,OTHER
 brennender	14	OTHER
-Ruins	14	NOUN
+Ruins	14	NOUN	Ruin
 stetigem	14	OTHER
-Oszillators	14	NOUN
+Oszillators	14	NOUN	Oszillator
 Francisca	14	NOUN
-Hansetagen	14	NOUN
+Hansetagen	14	NOUN	Hansetag
 musisch	14	OTHER
 naturkundliche	14	OTHER
 befähigte	14	OTHER
@@ -77151,7 +77151,7 @@ Kostbarkeiten	14	NOUN
 eindringlichen	14	OTHER
 modisch	14	OTHER
 eingängige	14	OTHER
-Literaturpreise	14	NOUN
+Literaturpreise	14	NOUN	Literaturpreis
 Osiander	14	NOUN
 Verdammung	14	NOUN
 Berthollet	14	NOUN
@@ -77183,22 +77183,22 @@ schwefelhaltige	14	OTHER
 Gesamtladung	14	NOUN
 fruchtbarem	14	OTHER
 nachlässig	14	OTHER
-Schlägereien	14	NOUN
+Schlägereien	14	NOUN	Schlägerei
 differenzierende	14	OTHER
 losgesagt	14	OTHER
-Haine	14	NOUN
+Haine	14	NOUN	Hain
 Stadtklima	14	NOUN
-Kirgisische	14	NOUN,OTHER
+Kirgisische	14	NOUN,OTHER	Kirgisisch
 Frunse	14	NOUN
 Ty	14	NOUN,OTHER
 Demonstrierenden	14	NOUN
 Tourism	14	NOUN
 Lebensmittelherstellung	14	NOUN
 Regionalflughäfen	14	NOUN
-Paletten	14	NOUN
+Paletten	14	NOUN	Palette
 Mittenwalde	14	NOUN
 firmieren	14	VERB
-Investitions	14	NOUN
+Investitions	14	NOUN	Investition
 wickelt	14	OTHER
 Werbeagentur	14	NOUN
 Ladestationen	14	NOUN
@@ -77208,16 +77208,16 @@ Mala	14	NOUN,OTHER
 Stückchen	14	NOUN
 Otranto	14	NOUN
 Grotta	14	NOUN
-Sonnentage	14	NOUN
+Sonnentage	14	NOUN	Sonnentag
 Troia	14	NOUN
-Kolonialreiches	14	NOUN
+Kolonialreiches	14	NOUN	Kolonialreich
 Comandante	14	NOUN,OTHER
 entre	14	NOUN,OTHER
 Asociación	14	NOUN
 übergesiedelt	14	OTHER
 Amerigo	14	NOUN
-Vizekönigreichs	14	NOUN
-Volkshelden	14	NOUN
+Vizekönigreichs	14	NOUN	Vizekönigreich
+Volkshelden	14	NOUN	Volksheld
 Rega	14	NOUN
 Guerilleros	14	NOUN
 Käsemann	14	NOUN
@@ -77226,7 +77226,7 @@ wirtschaftsliberale	14	OTHER
 Socialista	14	NOUN
 CELAC	14	NOUN
 Kreditgewährung	14	NOUN
-Interessenvertretungen	14	NOUN
+Interessenvertretungen	14	NOUN	Interessenvertretung
 asphaltierten	14	VERB,OTHER
 Sosa	14	NOUN
 Fausto	14	NOUN
@@ -77238,7 +77238,7 @@ Antioxidans	14	NOUN
 Györgyi	14	NOUN
 Oxidase	14	NOUN
 Konservierungsmittel	14	NOUN
-Disulfidbrücken	14	NOUN
+Disulfidbrücken	14	NOUN	Disulfidbrücke
 ausscheidet	14	OTHER
 Darmes	14	NOUN
 artspezifisch	14	OTHER
@@ -77246,13 +77246,13 @@ Samaveda	14	NOUN
 Leichenöffnung	14	NOUN
 Fabrizio	14	NOUN
 Adriaan	14	NOUN
-Denkrichtungen	14	NOUN
+Denkrichtungen	14	NOUN	Denkrichtung
 melancholisch	14	OTHER
-Pylonen	14	NOUN
+Pylonen	14	NOUN	Pylon
 Militärparade	14	NOUN
 inscriptions	14	NOUN,OTHER
-Resonanzfrequenzen	14	NOUN
-Primärzweige	14	NOUN
+Resonanzfrequenzen	14	NOUN	Resonanzfrequenz
+Primärzweige	14	NOUN	Primärzweig
 begründetes	14	OTHER
 Afrikanistik	14	NOUN
 stimmlose	14	OTHER
@@ -77261,13 +77261,13 @@ intransitive	14	OTHER
 Demonstrativpronomina	14	NOUN
 verbaler	14	OTHER
 Fulfulde	14	NOUN
-Beines	14	NOUN
+Beines	14	NOUN	Bein
 Mitteldarm	14	NOUN
 plumpen	14	OTHER
 Eigentümlichkeit	14	NOUN
 Untersuchungsmethode	14	NOUN
 metabolische	14	OTHER
-Pulsen	14	NOUN
+Pulsen	14	NOUN	Puls
 Hauptschlagader	14	NOUN
 Auszeit	14	NOUN
 Menhire	14	NOUN
@@ -77301,10 +77301,10 @@ Mechanical	14	NOUN
 quelloffen	14	OTHER
 Elektrizitätslehre	14	NOUN
 Marianna	14	NOUN
-Kammerherrn	14	NOUN
+Kammerherrn	14	NOUN	Kammerherr
 Constantijn	14	NOUN
 Weingeist	14	NOUN
-Zolls	14	NOUN
+Zolls	14	NOUN	Zoll
 Muttertier	14	NOUN
 Mücke	14	NOUN
 gehärtet	14	OTHER
@@ -77320,15 +77320,15 @@ Erwerbslosigkeit	14	NOUN
 Arbeitsergebnisse	14	NOUN
 Debug	14	NOUN,OTHER
 Unterfunktion	14	NOUN
-Umsetzern	14	NOUN
+Umsetzern	14	NOUN	Umsetzer
 nichtlinearer	14	OTHER
 differenzielle	14	OTHER
-Kirchenprovinzen	14	NOUN
+Kirchenprovinzen	14	NOUN	Kirchenprovinz
 Libby	14	NOUN
 Igreja	14	NOUN,OTHER
 herausgeführt	14	OTHER
 Mandäer	14	NOUN
-Tätigkeitsfelder	14	NOUN
+Tätigkeitsfelder	14	NOUN	Tätigkeitsfeld
 Hekataios	14	NOUN
 Kernaussage	14	NOUN
 gesetzmäßige	14	OTHER
@@ -77337,14 +77337,14 @@ ausgetrocknet	14	OTHER
 Berichtigung	14	NOUN
 archaisches	14	OTHER
 Rassenpolitik	14	NOUN
-Handlungsspielräume	14	NOUN
+Handlungsspielräume	14	NOUN	Handlungsspielraum
 Südsternwarte	14	NOUN
 Göttergeschlecht	14	NOUN
 unerreicht	14	OTHER
 legendärer	14	OTHER
 Pepi	14	NOUN
 Börsenkurse	14	NOUN
-Emittenten	14	NOUN
+Emittenten	14	NOUN	Emittent
 ašarēd	14	OTHER
 Entgiftung	14	NOUN
 anpasste	14	OTHER
@@ -77357,46 +77357,46 @@ Verbrennungsgase	14	NOUN
 unmenschlich	14	OTHER
 funktionstüchtig	14	OTHER
 überlangen	14	OTHER
-Flugzeugträgers	14	NOUN
+Flugzeugträgers	14	NOUN	Flugzeugträger
 Raketenantrieb	14	NOUN
 Cabinda	14	NOUN
 Präsidialsystem	14	NOUN
-Wasserquellen	14	NOUN
+Wasserquellen	14	NOUN	Wasserquelle
 Steuervergünstigungen	14	NOUN
-Aufsichtsratsvorsitzenden	14	NOUN
+Aufsichtsratsvorsitzenden	14	NOUN	Aufsichtsratsvorsitzende
 Andrade	14	NOUN
 Pathologisierung	14	NOUN
 Klassifikationssystem	14	NOUN
 feindseligen	14	OTHER
 Diagnostic	14	NOUN
-Puzzles	14	NOUN
+Puzzles	14	NOUN	Puzzle
 ungeborene	14	NOUN,OTHER
 unbehandelte	14	OTHER
 ursächlichen	14	OTHER
 widerlegten	14	OTHER
-Ernährungsweisen	14	NOUN
+Ernährungsweisen	14	NOUN	Ernährungsweise
 Geschlechtsunterschiede	14	NOUN
 Auster	14	NOUN
-Theoremen	14	NOUN
+Theoremen	14	NOUN	Theorem
 Akrostichon	14	NOUN
 Schlomo	14	NOUN
-Verzeichnisses	14	NOUN
+Verzeichnisses	14	NOUN	Verzeichnisse
 Verkehrsfluss	14	NOUN
-Europastraßen	14	NOUN
+Europastraßen	14	NOUN	Europastraße
 Gesamtnetz	14	NOUN
-Zulassungen	14	NOUN
+Zulassungen	14	NOUN	Zulassung
 Garching	14	NOUN
-Ausfahrten	14	NOUN
+Ausfahrten	14	NOUN	Ausfahrt
 Győr	14	NOUN
 Trägerverein	14	NOUN
 Gründungsversammlung	14	NOUN
-Finanzmärkten	14	NOUN
-Mehrheits	14	NOUN
+Finanzmärkten	14	NOUN	Finanzmarkt
+Mehrheits	14	NOUN	Mehrheit
 AGS	14	NOUN,OTHER
 bundesweites	14	OTHER
 Nichtmitglieder	14	NOUN
 durchdacht	14	OTHER
-Erfindern	14	NOUN
+Erfindern	14	NOUN	Erfinder
 Curtiss	14	NOUN
 irritierte	14	OTHER
 sterilisiert	14	OTHER
@@ -77429,27 +77429,27 @@ fungierenden	14	OTHER
 Gebirgslagen	14	NOUN
 gebietsweise	14	OTHER
 Meranien	14	NOUN
-Mitwirkungsrechte	14	NOUN
+Mitwirkungsrechte	14	NOUN	Mitwirkungsrecht
 Deutschmährer	14	NOUN
 Ungleichbehandlung	14	NOUN
-Interessenverbände	14	NOUN
+Interessenverbände	14	NOUN	Interessenverband
 Erststimme	14	NOUN
 drittgrößter	14	OTHER
 Herzschild	14	NOUN
-Landesnamens	14	NOUN
-Verwaltungsorgane	14	NOUN
+Landesnamens	14	NOUN	Landesname
+Verwaltungsorgane	14	NOUN	Verwaltungsorgan
 Chemiedreieck	14	NOUN
 Fernbusse	14	NOUN
 Industriedenkmal	14	NOUN
-Stadtkernen	14	NOUN
+Stadtkernen	14	NOUN	Stadtkern
 Johannisburg	14	NOUN
 Windsheim	14	NOUN
 Gartenbauausstellung	14	NOUN
 zusammenfiel	14	OTHER
-Pirates	14	NOUN
+Pirates	14	NOUN	Pirat
 Plattling	14	NOUN
 Sportschützen	14	NOUN
-Stammesherzogtümer	14	NOUN
+Stammesherzogtümer	14	NOUN	Stammesherzogtum
 setzende	14	OTHER
 Viehbestand	14	NOUN
 Schwetzingen	14	NOUN
@@ -77459,13 +77459,13 @@ Rheinau	14	NOUN
 Volksstaates	14	NOUN
 Kanagawa	14	NOUN
 innovativsten	14	OTHER
-Regionalzeitungen	14	NOUN
-Lokalzeitungen	14	NOUN
+Regionalzeitungen	14	NOUN	Regionalzeitung
+Lokalzeitungen	14	NOUN	Lokalzeitung
 LSV	14	NOUN
 Achtfache	14	NOUN,OTHER
 Eishockeyliga	14	NOUN
 HTC	14	NOUN
-Ausgabegeräte	14	NOUN
+Ausgabegeräte	14	NOUN	Ausgabegerät
 Misch	14	NOUN,VERB
 Zeitgeber	14	NOUN
 bidirektionale	14	OTHER
@@ -77476,17 +77476,17 @@ Ghostwriter	14	NOUN
 Eingebung	14	NOUN
 Kinemathek	14	NOUN
 Kleinbürgertum	14	NOUN
-Schuldgefühlen	14	NOUN
+Schuldgefühlen	14	NOUN	Schuldgefühl
 anklingen	14	VERB
 unvorhersehbar	14	OTHER
 Trotta	14	NOUN
 Filmpalast	14	NOUN
 Intendanz	14	NOUN
 Marriott	14	NOUN
-Bundesbeauftragten	14	NOUN
+Bundesbeauftragten	14	NOUN	Bundesbeauftragte
 Rosenholz	14	NOUN
 Behältnisse	14	NOUN
-Arbeitsbereiche	14	NOUN
+Arbeitsbereiche	14	NOUN	Arbeitsbereich
 Heliumbrennen	14	NOUN
 zweiwertiges	14	OTHER
 ATPase	14	NOUN
@@ -77501,27 +77501,27 @@ Gesundheitsgefahr	14	NOUN
 erzeugende	14	OTHER
 Gestank	14	NOUN
 Meereis	14	NOUN
-Nachweisreaktionen	14	NOUN
+Nachweisreaktionen	14	NOUN	Nachweisreaktion
 festlegten	14	VERB
 Kalorie	14	NOUN
 Chaosforschung	14	NOUN
 Lungenbläschen	14	NOUN
 Bundesgeschäftsstelle	14	NOUN
-Arbeitskreise	14	NOUN
+Arbeitskreise	14	NOUN	Arbeitskreis
 Gesamteinnahmen	14	NOUN
 Verkehrswende	14	NOUN
 Hambach	14	NOUN
-Walds	14	NOUN
+Walds	14	NOUN	Wald
 psychoaktive	14	OTHER
 Grenzstreifen	14	NOUN
-schlesischer	14	NOUN,OTHER
+schlesischer	14	NOUN,OTHER	schlesisch
 Gemeindevorsteher	14	NOUN
-Bezirksgrenzen	14	NOUN
+Bezirksgrenzen	14	NOUN	Bezirksgrenze
 KaDeWe	14	NOUN
 Aufweitung	14	NOUN
 Glam	14	NOUN
 Makrosprache	14	NOUN
-Cellisten	14	NOUN
+Cellisten	14	NOUN	Cellist
 kunsttheoretischen	14	OTHER
 zivilrechtlich	14	OTHER
 befeuchtet	14	OTHER
@@ -77564,12 +77564,12 @@ Bundespartei	14	NOUN
 Heidemarie	14	NOUN
 anthroposophisch	14	OTHER
 angetretenen	14	OTHER
-Blattstiele	14	NOUN
-Mineralstoffen	14	NOUN
+Blattstiele	14	NOUN	Blattstiel
+Mineralstoffen	14	NOUN	Mineralstoffe
 ausgesät	14	OTHER
-Würzen	14	NOUN
+Würzen	14	NOUN	Würze
 Macer	14	NOUN
-Ställen	14	NOUN
+Ställen	14	NOUN	Stall
 bildhaften	14	OTHER
 karibischer	14	OTHER
 Tight	14	NOUN,OTHER
@@ -77578,54 +77578,54 @@ Aufeinanderfolge	14	NOUN
 Concerto	14	NOUN
 Amati	14	NOUN
 Kraftaufwand	14	NOUN
-Opernhäusern	14	NOUN
+Opernhäusern	14	NOUN	Opernhaus
 Orfeo	14	NOUN
 Historiae	14	NOUN,OTHER
 Correa	14	NOUN
 Gaultier	14	NOUN
-Tempos	14	NOUN
+Tempos	14	NOUN	Tempo
 klarere	14	OTHER
-Passions	14	NOUN,OTHER
+Passions	14	NOUN,OTHER	Passion
 Deckenfresko	14	NOUN
 Grenzbefestigungen	14	NOUN
-Reparationsleistungen	14	NOUN
+Reparationsleistungen	14	NOUN	Reparationsleistung
 verkehrstechnischen	14	OTHER
 Strausberger	14	NOUN
 Malchin	14	NOUN
 resistenter	14	OTHER
 eilten	14	VERB
 Menschenmassen	14	NOUN
-Mauerfalls	14	NOUN
+Mauerfalls	14	NOUN	Mauerfall
 zurückkehrenden	14	OTHER
 meistbefahrenen	14	OTHER
-Hängebrücken	14	NOUN
+Hängebrücken	14	NOUN	Hängebrücke
 Badestrand	14	NOUN
 Señora	14	NOUN
-Sportvereins	14	NOUN
-Renovierungen	14	NOUN
+Sportvereins	14	NOUN	Sportverein
+Renovierungen	14	NOUN	Renovierung
 Geschäftszentrum	14	NOUN
 Einzelhandelsgeschäfte	14	NOUN
 Abwassersystem	14	NOUN
 Aeropuerto	14	NOUN
 Fernverbindungen	14	NOUN
-Kopfbahnhöfe	14	NOUN
-Fahrpreise	14	NOUN
+Kopfbahnhöfe	14	NOUN	Kopfbahnhof
+Fahrpreise	14	NOUN	Fahrpreis
 Berne	14	NOUN
 Ritterhude	14	NOUN
 kommunalpolitische	14	OTHER
 Kaufmannssiedlung	14	NOUN
-Privathäuser	14	NOUN
+Privathäuser	14	NOUN	Privathaus
 Samstagnachmittag	14	NOUN
-Hasses	14	NOUN
+Hasses	14	NOUN	Hass
 Wümmeniederung	14	NOUN
-Lounges	14	NOUN
+Lounges	14	NOUN	Lounge
 Mennonitengemeinde	14	NOUN
-Personenfähren	14	NOUN
+Personenfähren	14	NOUN	Personenfähre
 Klöckner	14	NOUN
 vierspurigen	14	OTHER
 Stifterverband	14	NOUN
-Nordwestdeutschlands	14	NOUN
-Regulations	14	NOUN
+Nordwestdeutschlands	14	NOUN	Nordwestdeutschland
+Regulations	14	NOUN	Regulation
 exzellenter	14	OTHER
 Werfer	14	NOUN
 auftreffende	14	OTHER
@@ -77664,8 +77664,8 @@ Commodities	14	NOUN
 Bursche	14	NOUN
 NYSE	14	NOUN
 Handelssystem	14	NOUN
-Wirtschaftsraums	14	NOUN
-Pfades	14	NOUN
+Wirtschaftsraums	14	NOUN	Wirtschaftsraum
+Pfades	14	NOUN	Pfad
 Selbstverantwortung	14	NOUN
 Anhäufen	14	NOUN,OTHER
 nachlassende	14	OTHER
@@ -77674,7 +77674,7 @@ einschätzte	14	OTHER
 kleinformatigen	14	OTHER
 offenbare	14	OTHER
 Wulfilabibel	14	NOUN
-Westreichs	14	NOUN
+Westreichs	14	NOUN	Westreich
 Kultursprache	14	NOUN
 Hypothek	14	NOUN
 zurückzunehmen	14	VERB
@@ -77696,13 +77696,13 @@ Ortszuschlag	14	NOUN
 nachstehende	14	OTHER
 Staatsaufbau	14	NOUN
 Industrieland	14	NOUN
-Mergeln	14	NOUN
+Mergeln	14	NOUN	Mergel
 überprägt	14	OTHER
 Dender	14	NOUN
-Limburgs	14	NOUN
+Limburgs	14	NOUN	Limburg
 Sprachwechsel	14	NOUN
 Bruxelles	14	NOUN
-Norditaliens	14	NOUN
+Norditaliens	14	NOUN	Norditalien
 vorantrieben	14	VERB
 Renard	14	NOUN
 bekanntgab	14	OTHER
@@ -77715,7 +77715,7 @@ Bihać	14	NOUN
 Rhodopen	14	NOUN
 Turmfalke	14	NOUN
 Schulklasse	14	NOUN
-Ortsteiles	14	NOUN
+Ortsteiles	14	NOUN	Ortsteil
 BH	14	NOUN,OTHER
 Haupthandelspartner	14	NOUN
 Republike	14	NOUN
@@ -77730,34 +77730,34 @@ Backbord	14	NOUN
 steuerbar	14	OTHER
 Holzmarkt	14	NOUN
 universitaire	14	NOUN,OTHER
-Tonstudios	14	NOUN
+Tonstudios	14	NOUN	Tonstudio
 Kantonsparlament	14	NOUN
-Kalken	14	NOUN
+Kalken	14	NOUN	Kalk
 Fachhandel	14	NOUN
 poröse	14	OTHER
 besprüht	14	OTHER
-Diagramms	14	NOUN
+Diagramms	14	NOUN	Diagramm
 Brutalismus	14	NOUN
 Čapek	14	NOUN
 Künstlerkreisen	14	NOUN
-Halbkantone	14	NOUN
+Halbkantone	14	NOUN	Halbkanton
 Regierungsrates	14	NOUN
 bernischen	14	OTHER
-Kiesingers	14	NOUN
+Kiesingers	14	NOUN	Kiesinger
 monatelanger	14	OTHER
 Präsidentschaftswahlkampf	14	NOUN
 längstens	14	OTHER
 Bundesfinanzminister	14	NOUN
 Daniell	14	NOUN
-Sumpfgebieten	14	NOUN
+Sumpfgebieten	14	NOUN	Sumpfgebiet
 Tageshöchsttemperatur	14	NOUN
 Sachstandsbericht	14	NOUN
 Khasi	14	NOUN
 Stammesgemeinschaften	14	NOUN
 Studentenunruhen	14	NOUN
 Grundbildung	14	NOUN
-Kriegshelden	14	NOUN
-Oberläufe	14	NOUN
+Kriegshelden	14	NOUN	Kriegsheld
+Oberläufe	14	NOUN	Oberlauf
 Expertengruppe	14	NOUN
 Beschäftigungsverhältnisse	14	NOUN
 Fiskaljahr	14	NOUN
@@ -77780,14 +77780,14 @@ Belieferung	14	NOUN
 ungefährdet	14	OTHER
 Monatsmittel	14	NOUN
 unbefestigte	14	OTHER
-Flugboote	14	NOUN
+Flugboote	14	NOUN	Flugboot
 Flughafengelände	14	NOUN
 Zöliakie	14	NOUN
 Nivellierung	14	NOUN
 Albi	14	NOUN
 Wilfrid	14	NOUN
 Patristik	14	NOUN
-Sakraments	14	NOUN
+Sakraments	14	NOUN	Sakrament
 liturgisches	14	OTHER
 humanistisches	14	OTHER
 Säkularinstitut	14	NOUN
@@ -77797,17 +77797,17 @@ Dörner	14	NOUN
 Zementfabrik	14	NOUN
 Michaelskapelle	14	NOUN
 zweigeschossiges	14	OTHER
-Hausnummern	14	NOUN
+Hausnummern	14	NOUN	Hausnummer
 Rheinaue	14	NOUN
 Ballsaal	14	NOUN
 Sportfreunde	14	NOUN
-Schwimmern	14	NOUN
+Schwimmern	14	NOUN	Schwimmer
 Kennedybrücke	14	NOUN
 Klais	14	NOUN
 BMFTR	14	NOUN
 BfN	14	NOUN
 Forschungsförderung	14	NOUN
-Stöcke	14	NOUN
+Stöcke	14	NOUN	Stock
 Lopez	14	NOUN
 Belgrader	14	NOUN
 verzerrtes	14	OTHER
@@ -77823,9 +77823,9 @@ rollende	14	NOUN,OTHER
 Stay	14	NOUN
 Abwehrmaßnahmen	14	NOUN
 invasiv	14	OTHER
-Spenders	14	NOUN
-Bewusstseinszustände	14	NOUN
-Materialisten	14	NOUN
+Spenders	14	NOUN	Spender
+Bewusstseinszustände	14	NOUN	Bewusstseinszustand
+Materialisten	14	NOUN	Materialist
 Geistigkeit	14	NOUN
 Inklusen	14	NOUN
 verwechselten	14	VERB,OTHER
@@ -77833,7 +77833,7 @@ strahlend	14	OTHER
 konträr	14	OTHER
 halbkreisförmige	14	OTHER
 Bernsteinvorkommen	14	NOUN
-Böschungen	14	NOUN
+Böschungen	14	NOUN	Böschung
 anstehen	14	VERB
 geflügelter	14	OTHER
 aDNA	14	OTHER
@@ -77842,12 +77842,12 @@ Urinieren	14	NOUN,OTHER
 bezweckte	14	OTHER
 quadriert	14	OTHER
 Fermion	14	NOUN
-Linearkombinationen	14	NOUN
-Jupitermassen	14	NOUN
+Linearkombinationen	14	NOUN	Linearkombination
+Jupitermassen	14	NOUN	Jupitermasse
 Egmond	14	NOUN
-Baumeistern	14	NOUN
+Baumeistern	14	NOUN	Baumeister
 Flaggenbeschreibung	14	NOUN
-Kirchenbaus	14	NOUN
+Kirchenbaus	14	NOUN	Kirchenbau
 Sprudel	14	NOUN
 frühgeschichtlicher	14	OTHER
 Sternwind	14	NOUN
@@ -77857,13 +77857,13 @@ Quandt	14	NOUN
 Hintertaunus	14	NOUN
 prosperierte	14	OTHER
 Pannonische	14	NOUN,OTHER
-Komitate	14	NOUN
+Komitate	14	NOUN	Komitat
 prächtiger	14	OTHER
 Esztergom	14	NOUN
 Erlebnisbad	14	NOUN
 Körperflüssigkeit	14	NOUN
 Wirbeltierarten	14	NOUN
-Lecks	14	NOUN
+Lecks	14	NOUN	Leck
 zusammenzieht	14	OTHER
 Distickstoffmonoxid	14	NOUN
 Moorflächen	14	NOUN
@@ -77875,7 +77875,7 @@ Anlagenbetreiber	14	NOUN
 Einwahl	14	NOUN
 Endnutzer	14	NOUN
 Optical	14	NOUN
-Datendienste	14	NOUN
+Datendienste	14	NOUN	Datendienst
 Widerstandskraft	14	NOUN
 Fahrtwind	14	NOUN
 Dôme	14	NOUN
@@ -77889,14 +77889,14 @@ Bouquet	14	NOUN
 einzuschleusen	14	VERB
 infizierter	14	OTHER
 gezüchtete	14	OTHER
-Krankheits	14	NOUN,OTHER
+Krankheits	14	NOUN,OTHER	Krankheit
 maronitischen	14	OTHER
 Befreiungsorganisation	14	NOUN
-Hauptquartiere	14	NOUN
+Hauptquartiere	14	NOUN	Hauptquartier
 verblasste	14	OTHER
-Vermittlungsstellen	14	NOUN
-Dolche	14	NOUN
-Zauberern	14	NOUN
+Vermittlungsstellen	14	NOUN	Vermittlungsstelle
+Dolche	14	NOUN	Dolch
+Zauberern	14	NOUN	Zauberer
 ewigem	14	OTHER
 Ramayana	14	NOUN
 Cardo	14	NOUN,OTHER
@@ -77908,22 +77908,22 @@ gespeiste	14	OTHER
 Hep	14	NOUN
 Möbelfabrik	14	NOUN
 Stadträtin	14	NOUN
-Zwangsarbeiterinnen	14	NOUN
+Zwangsarbeiterinnen	14	NOUN	Zwangsarbeiter
 Strafanstalt	14	NOUN
 Dreißigjähriger	14	NOUN,OTHER
 Arbeitslosenhilfe	14	NOUN
 Jugendparlament	14	NOUN
 Reithalle	14	NOUN
 Hingerichtete	14	NOUN,OTHER
-Materialwissenschaften	14	NOUN
+Materialwissenschaften	14	NOUN	Materialwissenschaft
 Zahnwale	14	NOUN
 Schulfach	14	NOUN
-Kunststile	14	NOUN
+Kunststile	14	NOUN	Kunststil
 aufblühende	14	OTHER
 feudaler	14	OTHER
 Informel	14	NOUN
 Konzeptkunst	14	NOUN
-Oberlandesgerichtes	14	NOUN
+Oberlandesgerichtes	14	NOUN	Oberlandesgericht
 angegriffene	14	OTHER
 Bundesgerichtshofes	14	NOUN
 Bundespatentgericht	14	NOUN
@@ -77941,7 +77941,7 @@ mitentscheidend	14	OTHER
 Paget	14	NOUN
 IRS	14	NOUN
 Tumorgewebe	14	NOUN
-Stadiums	14	NOUN
+Stadiums	14	NOUN	Stadium
 fec	14	NOUN,OTHER
 Analoga	14	NOUN
 Cyanwasserstoff	14	NOUN
@@ -77950,19 +77950,19 @@ Esbit	14	NOUN
 Bundeswahlordnung	14	NOUN
 Dreiklassenwahlrecht	14	NOUN
 Auslandsdeutsche	14	NOUN,OTHER
-Parteimitgliedern	14	NOUN
+Parteimitgliedern	14	NOUN	Parteimitglied
 Sonderregeln	14	NOUN
 durchschneiden	14	VERB
 zurückzuweisen	14	VERB
 weitergehender	14	OTHER
-Dienstherren	14	NOUN
+Dienstherren	14	NOUN	Dienstherr
 föderalistisch	14	OTHER
 Wahlwerbung	14	NOUN
 widerstreitenden	14	OTHER
 Breg	14	NOUN
 Gracchus	14	NOUN
 Confessiones	14	NOUN
-Settings	14	NOUN
+Settings	14	NOUN	Setting
 übersetzbar	14	OTHER
 Consensus	14	NOUN
 Wirkdauer	14	NOUN
@@ -77980,7 +77980,7 @@ Ernteerträge	14	NOUN
 Milchproduktion	14	NOUN
 Dalheim	14	NOUN
 Landschaftsbildes	14	NOUN
-Grabstellen	14	NOUN
+Grabstellen	14	NOUN	Grabstelle
 Gesteinsarten	14	NOUN
 Feuerzeug	14	NOUN
 zerstörter	14	OTHER
@@ -77993,7 +77993,7 @@ DRAM	14	NOUN,OTHER
 Industrieprodukte	14	NOUN
 Haarfarbe	14	NOUN
 Vadim	14	NOUN
-Enttäuschungen	14	NOUN
+Enttäuschungen	14	NOUN	Enttäuschung
 Fluß	14	NOUN
 Kopfgeldjäger	14	NOUN
 Unknown	14	NOUN,OTHER
@@ -78006,7 +78006,7 @@ vergnügte	14	OTHER
 Idle	14	NOUN,OTHER
 gehegten	14	OTHER
 Takes	14	NOUN
-Untertönen	14	NOUN
+Untertönen	14	NOUN	Unterton
 altmodisch	14	OTHER
 duktiles	14	OTHER
 Nutrition	14	NOUN
@@ -78014,7 +78014,7 @@ prospektive	14	OTHER
 Säureregulator	14	NOUN
 Flussspat	14	NOUN
 langkettigen	14	OTHER
-Phosphaten	14	NOUN
+Phosphaten	14	NOUN	Phosphat
 Seltenerdelementen	14	NOUN
 Pyrophosphat	14	NOUN
 orthorhombischen	14	OTHER
@@ -78039,13 +78039,13 @@ Clayton	14	NOUN
 Mongo	14	NOUN,OTHER
 divergierende	14	OTHER
 botanisches	14	OTHER
-Marathons	14	NOUN
+Marathons	14	NOUN	Marathon
 ungeliebte	14	OTHER
 Sorel	14	NOUN
 Vilfredo	14	NOUN
 Attendorn	14	NOUN
 Assessor	14	NOUN
-Privatdozenten	14	NOUN
+Privatdozenten	14	NOUN	Privatdozent
 Wesenskern	14	NOUN
 aufgefassten	14	OTHER
 Indifferenz	14	NOUN
@@ -78053,7 +78053,7 @@ berauben	14	VERB
 Hellwig	14	NOUN
 Pettenkofer	14	NOUN
 Kulturkritik	14	NOUN
-Antichristen	14	NOUN
+Antichristen	14	NOUN	Antichrist
 Literaturbetrieb	14	NOUN
 Privatsache	14	NOUN
 naturrechtlichen	14	OTHER
@@ -78063,7 +78063,7 @@ rechtsextremistische	14	OTHER
 revisionistischen	14	OTHER
 Consul	14	NOUN
 Kindbett	14	NOUN
-Ärmelkanals	14	NOUN
+Ärmelkanals	14	NOUN	Ärmelkanal
 annullieren	14	VERB
 hassen	14	VERB
 Personalbestand	14	NOUN
@@ -78079,7 +78079,7 @@ unschlüssig	14	OTHER
 Gemetzel	14	NOUN
 Mehraufwand	14	NOUN
 gefangengesetzt	14	OTHER
-Gesichtszügen	14	NOUN
+Gesichtszügen	14	NOUN	Gesichtszüge
 vorbringen	14	VERB
 auskam	14	OTHER
 charismatisch	14	OTHER
@@ -78096,35 +78096,35 @@ Småland	14	NOUN
 Streifzüge	14	NOUN
 Falun	14	NOUN
 diktieren	14	VERB
-Kuriositäten	14	NOUN
+Kuriositäten	14	NOUN	Kuriosität
 Briefpartner	14	NOUN
 Lalande	14	NOUN
 Sombart	14	NOUN
 rezitierte	14	OTHER
 Goetheanum	14	NOUN
 Gernhardt	14	NOUN
-Matthews	14	NOUN
+Matthews	14	NOUN	Matthew
 Ausformulierung	14	NOUN
 Malthus	14	NOUN
 stattfinde	14	OTHER
 Überlebensfähigkeit	14	NOUN
 Regenwürmer	14	NOUN
-Evolutionsbiologen	14	NOUN
-Nachträge	14	NOUN
+Evolutionsbiologen	14	NOUN	Evolutionsbiologe
+Nachträge	14	NOUN	Nachtrag
 Weingartner	14	NOUN
-Sammlers	14	NOUN
+Sammlers	14	NOUN	Sammler
 Palatina	14	NOUN,OTHER
-Weimars	14	NOUN
+Weimars	14	NOUN	Weimar
 Ernestine	14	NOUN
 Jakobskirche	14	NOUN
 drakonische	14	OTHER
-Bombers	14	NOUN
+Bombers	14	NOUN	Bomber
 Heathrow	14	NOUN
 Testflug	14	NOUN
 einbrechen	14	VERB
 Marietta	14	NOUN
 sinotibetischen	14	NOUN,OTHER
-Hochchinesische	14	NOUN
+Hochchinesische	14	NOUN	Hochchinesisch
 Hochchinesisch	14	NOUN
 mehrsilbige	14	OTHER
 zweisilbige	14	OTHER
@@ -78132,7 +78132,7 @@ Satzanfang	14	NOUN
 Scrooge	14	NOUN
 Arbeitskräftemangel	14	NOUN
 Uncle	14	NOUN
-Pirate	14	NOUN
+Pirate	14	NOUN	Pirat
 Roussel	14	NOUN
 Serre	14	NOUN
 Rennes	14	NOUN
@@ -78148,14 +78148,14 @@ PW	14	NOUN,OTHER
 Kohlenstoffkette	14	NOUN
 Spinquantenzahl	14	NOUN
 nichteuklidische	14	OTHER
-Aussichtstürme	14	NOUN
+Aussichtstürme	14	NOUN	Aussichtsturm
 Wassersucht	14	NOUN
 Fundamentalsatzes	14	NOUN
 Motus	14	NOUN,OTHER
 ersparte	14	OTHER
 Møller	14	NOUN
 Shipping	14	NOUN
-Datentyps	14	NOUN
+Datentyps	14	NOUN	Datentyp
 registrierter	14	OTHER
 Performing	14	NOUN
 bakteriologischen	14	OTHER
@@ -78170,7 +78170,7 @@ missachteten	14	VERB,OTHER
 geschäftlich	14	OTHER
 Profilierung	14	NOUN
 Stimmungslage	14	NOUN
-Belohnungen	14	NOUN
+Belohnungen	14	NOUN	Belohnung
 getätigten	14	OTHER
 Menschenkenntnis	14	NOUN
 Verfassungskrise	14	NOUN
@@ -78180,13 +78180,13 @@ Pinacoteca	14	NOUN
 schuldete	14	OTHER
 aufsuchten	14	VERB
 Wissensgebiete	14	NOUN
-Lorenzos	14	NOUN
+Lorenzos	14	NOUN	Lorenzo
 Benvenuto	14	NOUN
 erblicher	14	OTHER
 artikulierte	14	OTHER
 kombinatorischen	14	OTHER
 Eigenrotation	14	NOUN
-Ratschlägen	14	NOUN
+Ratschlägen	14	NOUN	Ratschlag
 Hofkammer	14	NOUN
 Dressur	14	NOUN
 Absolvierung	14	NOUN
@@ -78199,8 +78199,8 @@ Assemblies	14	NOUN
 typeof	14	OTHER
 Glykoside	14	NOUN
 Cost	14	NOUN,OTHER
-Fachgeschäften	14	NOUN
-Diskettenlaufwerken	14	NOUN
+Fachgeschäften	14	NOUN	Fachgeschäfte
+Diskettenlaufwerken	14	NOUN	Diskettenlaufwerk
 polyphonen	14	OTHER
 Aussteuerung	14	NOUN
 Ladezeiten	14	NOUN
@@ -78221,7 +78221,7 @@ Montt	14	NOUN
 Handelsfreiheit	14	NOUN
 Moneda	14	NOUN
 Linksbündnis	14	NOUN
-Botschaftern	14	NOUN
+Botschaftern	14	NOUN	Botschafter
 unveröffentlichtes	14	OTHER
 Ikon	14	NOUN
 lösenden	14	OTHER
@@ -78229,14 +78229,14 @@ innewohnende	14	OTHER
 vereinfachende	14	OTHER
 Ogden	14	NOUN
 Duns	14	NOUN
-Unterprogrammen	14	NOUN
-Überraschungen	14	NOUN
+Unterprogrammen	14	NOUN	Unterprogramm
+Überraschungen	14	NOUN	Überraschung
 Zwischenspeicherung	14	NOUN
 Reiseroute	14	NOUN
 verschüttete	14	OTHER
 Sandalen	14	NOUN
-Jacks	14	NOUN
-Literaturkritikern	14	NOUN
+Jacks	14	NOUN	Jack
+Literaturkritikern	14	NOUN	Literaturkritiker
 Abolition	14	NOUN
 Bilderbuch	14	NOUN
 Trajanssäule	14	NOUN
@@ -78245,17 +78245,17 @@ eingelagerten	14	OTHER
 destruktiver	14	OTHER
 Bitmuster	14	NOUN
 Gleichanteil	14	NOUN
-Arbeitens	14	NOUN
+Arbeitens	14	NOUN	Arbeiten
 zulässiger	14	OTHER
 Erbsubstanz	14	NOUN
 har	14	NOUN,OTHER
 vervielfältigen	14	NOUN,OTHER
 Empfängerseite	14	NOUN
 algorithmischen	14	OTHER
-Bildinhalte	14	NOUN
+Bildinhalte	14	NOUN	Bildinhalt
 Propagandazwecken	14	NOUN
 Großproduktion	14	NOUN
-Gebrüdern	14	NOUN
+Gebrüdern	14	NOUN	Gebrüder
 hochstehenden	14	OTHER
 Propagandaministerium	14	NOUN
 Originalschauplätzen	14	NOUN
@@ -78271,11 +78271,11 @@ Wohngegend	14	NOUN
 Gesundheitsbehörde	14	NOUN
 Kagan	14	NOUN
 Ronnie	14	NOUN
-Coppolas	14	NOUN
+Coppolas	14	NOUN	Coppola
 Laurentiis	14	NOUN
 mustergültig	14	OTHER
 gehasst	14	OTHER
-Staatsorganen	14	NOUN
+Staatsorganen	14	NOUN	Staatsorgan
 Handelsbeschränkungen	14	NOUN
 Bundesfinanzministerium	14	NOUN
 Forschungsschwerpunkt	14	NOUN
@@ -78287,7 +78287,7 @@ Handlungsbedarf	14	NOUN
 anstrebe	14	OTHER
 freizusetzen	14	OTHER
 Kernbestandteil	14	NOUN
-Zielvorstellungen	14	NOUN
+Zielvorstellungen	14	NOUN	Zielvorstellung
 aufgelegte	14	OTHER
 Flächenbombardement	14	NOUN
 Germanisierungspolitik	14	NOUN
@@ -78295,13 +78295,13 @@ Solidarisierung	14	NOUN
 historiographische	14	OTHER
 Vergemeinschaftung	14	NOUN
 Sonderweg	14	NOUN
-Aufsichtsbehörden	14	NOUN
+Aufsichtsbehörden	14	NOUN	Aufsichtsbehörde
 beeinflussbar	14	OTHER
 Kreuzviertel	14	NOUN
 Industriezeitalter	14	NOUN
 Hohensyburg	14	NOUN
 Außenanlagen	14	NOUN
-Spaziergängen	14	NOUN
+Spaziergängen	14	NOUN	Spaziergang
 Lehrpfad	14	NOUN
 Ruderclub	14	NOUN
 Ansichtskarte	14	NOUN
@@ -78312,44 +78312,44 @@ Kurzfilmfestival	14	NOUN
 Journalistik	14	NOUN
 Aktenzeichen	14	NOUN
 Arquette	14	NOUN
-Twins	14	NOUN
+Twins	14	NOUN	Twin
 Wohlfahrtspflege	14	NOUN
 Botho	14	NOUN
-Dieben	14	NOUN
+Dieben	14	NOUN	Dieb
 Klevischen	14	NOUN,OTHER
 Dänenkönig	14	NOUN
 mehrmonatiger	14	OTHER
 verheerten	14	VERB,OTHER
-Generalen	14	NOUN
+Generalen	14	NOUN	General
 Kriegsgerät	14	NOUN
 Seitenfläche	14	NOUN
 Zusammenbau	14	NOUN
 Rheinmünster	14	NOUN
-Hörspiels	14	NOUN
+Hörspiels	14	NOUN	Hörspiel
 Abdera	14	NOUN
 urtümliche	14	OTHER
 gefiederte	14	OTHER
 gesellig	14	OTHER
-Knochens	14	NOUN
+Knochens	14	NOUN	Knochen
 verdunkelt	14	OTHER
 Kristian	14	NOUN
-Idioten	14	NOUN
+Idioten	14	NOUN	Idiot
 Aufstiegsmöglichkeiten	14	NOUN
 Stengel	14	NOUN
 Innovationskraft	14	NOUN
-Telekommunikations	14	NOUN
+Telekommunikations	14	NOUN	Telekommunikation
 Videokamera	14	NOUN
-Solarparks	14	NOUN
+Solarparks	14	NOUN	Solarpark
 schleichenden	14	OTHER
 Tropez	14	NOUN
-Innovations	14	NOUN
+Innovations	14	NOUN	Innovation
 Handlungsformen	14	NOUN
 Thiede	14	NOUN
 Datenanalyse	14	NOUN
-Softwarepakete	14	NOUN
+Softwarepakete	14	NOUN	Softwarepaket
 Xfce	14	NOUN
 LTS	14	NOUN
-Blends	14	NOUN,OTHER
+Blends	14	NOUN,OTHER	Blend
 hierarchischer	14	OTHER
 Distributed	14	NOUN
 Rigoletto	14	NOUN
@@ -78361,14 +78361,14 @@ Hauptorgan	14	NOUN
 Bolton	14	NOUN
 Nymphenbad	14	NOUN
 Parcours	14	NOUN
-Flugzeugwerken	14	NOUN
-Warenhäusern	14	NOUN
+Flugzeugwerken	14	NOUN	Flugzeugwerk
+Warenhäusern	14	NOUN	Warenhaus
 LDPD	14	NOUN
-Forschungsprogramme	14	NOUN
+Forschungsprogramme	14	NOUN	Forschungsprogramm
 Molecular	14	NOUN,OTHER
 Eliteschule	14	NOUN
 Hautkrankheiten	14	NOUN
-Spielwelten	14	NOUN
+Spielwelten	14	NOUN	Spielwelt
 hasst	14	OTHER
 Egbert	14	NOUN
 angestoßene	14	OTHER
@@ -78379,7 +78379,7 @@ Getreidemühle	14	NOUN
 Gollwitzer	14	NOUN
 Trennverfahren	14	NOUN
 Tuchfabrik	14	NOUN
-Rezitative	14	NOUN
+Rezitative	14	NOUN	Rezitativ
 zertifizieren	14	VERB
 Bandgeschwindigkeit	14	NOUN
 Trent	14	NOUN
@@ -78388,7 +78388,7 @@ einsilbigen	14	OTHER
 vokalisiert	14	OTHER
 Zehnerstelle	14	NOUN
 hydrophil	14	OTHER
-Paarungen	14	NOUN
+Paarungen	14	NOUN	Paarung
 aufgewickelt	14	OTHER
 Methylenblau	14	NOUN
 Minoritenkirche	14	NOUN
@@ -78405,7 +78405,7 @@ Eisvogel	14	NOUN
 robur	14	NOUN,OTHER
 schwärzlich	14	OTHER
 Besen	14	NOUN
-Flusslaufs	14	NOUN
+Flusslaufs	14	NOUN	Flusslauf
 Floridsdorf	14	NOUN
 Werbeslogan	14	NOUN
 Buhnen	14	NOUN
@@ -78413,7 +78413,7 @@ Mathildenhöhe	14	NOUN
 verrohrt	14	OTHER
 Egelsbach	14	NOUN
 arabischsprachige	14	OTHER
-Gebetsräume	14	NOUN
+Gebetsräume	14	NOUN	Gebetsraum
 Kao	14	NOUN
 Europaviertel	14	NOUN
 Justizzentrum	14	NOUN
@@ -78421,8 +78421,8 @@ Fahrspuren	14	NOUN
 Fernverkehrszüge	14	NOUN
 stündliche	14	OTHER
 Rabatt	14	NOUN
-Mitbewerbern	14	NOUN
-Dialektkontinuums	14	NOUN
+Mitbewerbern	14	NOUN	Mitbewerber
+Dialektkontinuums	14	NOUN	Dialektkontinuum
 Handelssprache	14	NOUN
 Bundesadler	14	NOUN
 angleichen	14	VERB
@@ -78430,7 +78430,7 @@ ausgedrückte	14	OTHER
 Definiens	14	NOUN
 unentbehrlichen	14	OTHER
 Tabellenwerken	14	NOUN
-Zahlensysteme	14	NOUN
+Zahlensysteme	14	NOUN	Zahlensystem
 Duodezimalsystem	14	NOUN
 calculi	14	OTHER
 Aurillac	14	NOUN
@@ -78440,7 +78440,7 @@ Neuzugang	14	NOUN
 Abteilwagen	14	NOUN
 ausgeklügelten	14	OTHER
 Gravitationstheorie	14	NOUN
-Lehrsätze	14	NOUN
+Lehrsätze	14	NOUN	Lehrsatz
 Antibes	14	NOUN
 zurückgefahren	14	VERB
 Privatanwender	14	NOUN
@@ -78448,25 +78448,25 @@ Realm	14	NOUN
 Manie	14	NOUN
 Züchter	14	NOUN
 Blütenblätter	14	NOUN
-Spekulanten	14	NOUN
+Spekulanten	14	NOUN	Spekulant
 solcherart	14	OTHER
-Rektoren	14	NOUN
-Kaufverträge	14	NOUN
+Rektoren	14	NOUN	Rektor
+Kaufverträge	14	NOUN	Kaufvertrag
 Ido	14	NOUN
 Sartori	14	NOUN
 vieldeutig	14	OTHER
 frühestes	14	OTHER
-Perserkriegen	14	NOUN
+Perserkriegen	14	NOUN	Perserkriege
 Vollbürger	14	NOUN
 radikaldemokratischen	14	OTHER
 nationalstaatlicher	14	OTHER
 Klassenherrschaft	14	NOUN
-imperativen	14	NOUN,OTHER
+imperativen	14	NOUN,OTHER	imperative
 präsidentiellen	14	OTHER
 Regierungshandeln	14	NOUN
-Gemeinschafts	14	NOUN
+Gemeinschafts	14	NOUN	Gemeinschaft
 erweise	14	OTHER
-Wahlkämpfe	14	NOUN
+Wahlkämpfe	14	NOUN	Wahlkampf
 Wehe	14	NOUN,OTHER
 beispielloser	14	OTHER
 unterliege	14	OTHER
@@ -78478,8 +78478,8 @@ anständigen	14	VERB
 Legislatur	14	NOUN
 sympathische	14	OTHER
 gärtnerischen	14	OTHER
-Krupps	14	NOUN
-Ortskerne	14	NOUN
+Krupps	14	NOUN	Krupp
+Ortskerne	14	NOUN	Ortskern
 deg	14	NOUN,OTHER
 Beratungsunternehmen	14	NOUN
 Enso	14	NOUN
@@ -78496,21 +78496,21 @@ anzugliedern	14	VERB
 Bürgerkriegsparteien	14	NOUN
 Tantalit	14	NOUN
 Kriegszustandes	14	NOUN
-Exporteure	14	NOUN
+Exporteure	14	NOUN	Exporteur
 Sicherheitskontrollen	14	NOUN
 Coupe	14	NOUN
 Daus	14	NOUN
-Audiosignale	14	NOUN
-Soundkarten	14	NOUN
+Audiosignale	14	NOUN	Audiosignal
+Soundkarten	14	NOUN	Soundkarte
 Petroselinum	14	NOUN
 Rao	14	NOUN,OTHER
 vollautomatische	14	OTHER
-Phasenverschiebungen	14	NOUN
+Phasenverschiebungen	14	NOUN	Phasenverschiebung
 Horton	14	NOUN
 Appendix	14	NOUN
-Rückenmarks	14	NOUN
+Rückenmarks	14	NOUN	Rückenmark
 propria	14	OTHER
-Bindegewebes	14	NOUN
+Bindegewebes	14	NOUN	Bindegewebe
 rotierender	14	OTHER
 Schallkopf	14	NOUN
 Operationsgebiet	14	NOUN
@@ -78534,17 +78534,17 @@ reduziere	14	OTHER
 Arusha	14	NOUN
 Lamp	14	NOUN,OTHER
 Interlingue	14	NOUN
-Baudenkmalen	14	NOUN
+Baudenkmalen	14	NOUN	Baudenkmal
 Weinert	14	NOUN
 Mieresch	14	NOUN
 Samarskit	14	NOUN
-Chondriten	14	NOUN
+Chondriten	14	NOUN	Chondrite
 Nimrud	14	NOUN
 verwachsene	14	OTHER
 Mineralklasse	14	NOUN
 Übergangsmetall	14	NOUN
 Duftstoffe	14	NOUN
-Planetensystems	14	NOUN
+Planetensystems	14	NOUN	Planetensystem
 maskiert	14	OTHER
 hygroskopische	14	OTHER
 Ätzen	14	NOUN
@@ -78556,20 +78556,20 @@ Kilowattstunde	14	NOUN
 Volumenelement	14	NOUN
 Linienspektren	14	NOUN
 Maxwellgleichungen	14	NOUN
-Messergebnissen	14	NOUN
+Messergebnissen	14	NOUN	Messergebnisse
 Coulombkraft	14	NOUN
 widerspruchsfreie	14	OTHER
 Beweggrund	14	NOUN
 ARPA	14	NOUN,OTHER
-Ausdrucken	14	NOUN,OTHER
-Aufkommens	14	NOUN
+Ausdrucken	14	NOUN,OTHER	Ausdruck
+Aufkommens	14	NOUN	Aufkommen
 archivieren	14	NOUN,OTHER
 rechtswirksam	14	OTHER
 strafrechtlicher	14	OTHER
 angemessenes	14	OTHER
 Umrechnungsfaktor	14	NOUN
-Designers	14	NOUN
-Scheins	14	NOUN
+Designers	14	NOUN	Designer
+Scheins	14	NOUN	Schein
 streicht	14	OTHER
 Dachdecker	14	NOUN
 Politbüromitglieder	14	NOUN
@@ -78580,10 +78580,10 @@ Genosse	14	NOUN
 Echelon	14	NOUN
 fünft	14	OTHER
 Kernphysiker	14	NOUN
-Mittelsmänner	14	NOUN
+Mittelsmänner	14	NOUN	Mittelsmann
 Bluse	14	NOUN
-Niños	14	NOUN,OTHER
-Seevögeln	14	NOUN
+Niños	14	NOUN,OTHER	Niño
+Seevögeln	14	NOUN	Seevögel
 beziffern	14	VERB
 Dormagen	14	NOUN
 Oberlandesgerichtsbezirk	14	NOUN
@@ -78605,33 +78605,33 @@ Hochfrequenztechnik	14	NOUN
 Patentrecht	14	NOUN
 Leiterplatte	14	NOUN
 EMV	14	NOUN
-Abzweigungen	14	NOUN
-Energiezustände	14	NOUN
-Radiosenders	14	NOUN
-Studienfächern	14	NOUN
+Abzweigungen	14	NOUN	Abzweigung
+Energiezustände	14	NOUN	Energiezustand
+Radiosenders	14	NOUN	Radiosender
+Studienfächern	14	NOUN	Studienfach
 EUCLID	14	NOUN
 Zwischenhalt	14	NOUN
 nicaraguanischen	14	OTHER
 honduranischen	14	OTHER
 bürgerkriegsähnliche	14	OTHER
 Befreiungsarmee	14	NOUN
-Ausfalls	14	NOUN
+Ausfalls	14	NOUN	Ausfall
 Mantegna	14	NOUN
 skrupellos	14	OTHER
 Livischen	14	NOUN,OTHER
 Patiens	14	NOUN
 Ergativ	14	NOUN
 Meri	14	NOUN,OTHER
-Kirchspielen	14	NOUN
+Kirchspielen	14	NOUN	Kirchspiel
 Niekisch	14	NOUN
 Vorahnung	14	NOUN
-Briefwechsels	14	NOUN
+Briefwechsels	14	NOUN	Briefwechsel
 Spiekeroog	14	NOUN
 Henrich	14	NOUN
 Resonanzboden	14	NOUN
 Sieburg	14	NOUN
 Hauptbeben	14	NOUN
-Eisbergen	14	NOUN
+Eisbergen	14	NOUN	Eisberg
 erdähnlichen	14	OTHER
 Eisensulfid	14	NOUN
 Magnesiumsulfat	14	NOUN
@@ -78640,7 +78640,7 @@ aufzurichten	14	VERB
 geothermische	14	OTHER
 Wetterereignisse	14	NOUN
 vorindustrieller	14	OTHER
-Schwerpunktes	14	NOUN
+Schwerpunktes	14	NOUN	Schwerpunkt
 Leuchterscheinungen	14	NOUN
 hinzukamen	14	VERB
 vereitelte	14	OTHER
@@ -78666,12 +78666,12 @@ Reproduktionsrate	14	NOUN
 ungeschützt	14	OTHER
 Polio	14	NOUN
 Liouville	14	NOUN
-Vertauschungen	14	NOUN
+Vertauschungen	14	NOUN	Vertauschung
 holomorphe	14	OTHER
 zerstörungsfreien	14	OTHER
 Schachfiguren	14	NOUN
 Dionysien	14	NOUN
-Hinterpommerns	14	NOUN
+Hinterpommerns	14	NOUN	Hinterpommern
 zeitgeschichtliche	14	OTHER
 archetypischen	14	OTHER
 metallorganische	14	OTHER
@@ -78682,34 +78682,34 @@ Leistungsklasse	14	NOUN
 Sibir	14	NOUN
 Antragstellung	14	NOUN
 katalysierte	14	OTHER
-Stoffwechselwege	14	NOUN
+Stoffwechselwege	14	NOUN	Stoffwechselweg
 Polypeptidkette	14	NOUN
 Reaktionsenthalpie	14	NOUN
 meistgesprochene	14	OTHER
 Usher	14	NOUN
-Totschlags	14	NOUN
+Totschlags	14	NOUN	Totschlag
 Fliedner	14	NOUN
 exponierter	14	OTHER
 Gesteinskörper	14	NOUN
-Klüften	14	NOUN
+Klüften	14	NOUN	Kluft
 Übersättigung	14	NOUN
 Bittenfeld	14	NOUN
 mittelschweren	14	OTHER
 Arzneimittelprüfung	14	NOUN
-Nebentätigkeiten	14	NOUN
+Nebentätigkeiten	14	NOUN	Nebentätigkeit
 Rezitator	14	NOUN
 Hermsdorf	14	NOUN
-Aufklärern	14	NOUN
+Aufklärern	14	NOUN	Aufklärer
 Autobuslinien	14	NOUN
-Mitarbeitenden	14	NOUN
+Mitarbeitenden	14	NOUN	Mitarbeitende
 Ausleuchtung	14	NOUN
 Lichtintensität	14	NOUN
 Gravur	14	NOUN
 Illig	14	NOUN
 Prachtkleid	14	NOUN
-Bruten	14	NOUN
+Bruten	14	NOUN	Brut
 eingebürgerten	14	OTHER
-Wasservögeln	14	NOUN
+Wasservögeln	14	NOUN	Wasservögel
 irreduzible	14	OTHER
 nachbildet	14	OTHER
 Talgdrüsen	14	NOUN
@@ -78727,38 +78727,38 @@ dosiert	14	OTHER
 Panaitios	14	NOUN
 ersteigert	14	OTHER
 afarensis	14	OTHER
-Polypeptidketten	14	NOUN
+Polypeptidketten	14	NOUN	Polypeptidkette
 Hogeschool	14	NOUN
 sommergrüne	14	OTHER
 geglaubten	14	OTHER
 Elektrolytlösung	14	NOUN
 kapazitiven	14	OTHER
-Wasserturbinen	14	NOUN
-Kraftmaschinen	14	NOUN
+Wasserturbinen	14	NOUN	Wasserturbine
+Kraftmaschinen	14	NOUN	Kraftmaschine
 Gasentladung	14	NOUN
-Gleichrichtern	14	NOUN
-Grabplatten	14	NOUN
-Bezugssystems	14	NOUN
+Gleichrichtern	14	NOUN	Gleichrichter
+Grabplatten	14	NOUN	Grabplatte
+Bezugssystems	14	NOUN	Bezugssystem
 Ortsvektor	14	NOUN
 Familiengruppen	14	NOUN
 africana	14	OTHER
 Hilaire	14	NOUN
-Taxonomien	14	NOUN
+Taxonomien	14	NOUN	Taxonomie
 vernunftbegabte	14	OTHER
-Werkstätte	14	NOUN
-Leutnants	14	NOUN
+Werkstätte	14	NOUN	Werkstatt
+Leutnants	14	NOUN	Leutnant
 Grieg	14	NOUN
 Lawn	14	NOUN
-Filmregisseurs	14	NOUN
+Filmregisseurs	14	NOUN	Filmregisseur
 schematischen	14	OTHER
-Patterns	14	NOUN,OTHER
+Patterns	14	NOUN,OTHER	Pattern
 Kurilen	14	NOUN
-Burtons	14	NOUN
+Burtons	14	NOUN	Burton
 Erstfassung	14	NOUN
-Geldmangels	14	NOUN
+Geldmangels	14	NOUN	Geldmangel
 Rudyard	14	NOUN
 cubic	14	OTHER
-Elternteile	14	NOUN
+Elternteile	14	NOUN	Elternteil
 Vereinsmitglieder	14	NOUN
 freiwerdenden	14	OTHER
 niederschlugen	14	VERB
@@ -78780,14 +78780,14 @@ Auxerre	14	NOUN
 Isenach	14	NOUN
 Bolivarische	14	NOUN,OTHER
 Betrugs	14	NOUN
-Rümpfe	14	NOUN
+Rümpfe	14	NOUN	Rumpf
 Deckgebirge	14	NOUN
 Teilortswahl	14	NOUN
 Kienberg	14	NOUN
 Reißbrett	14	NOUN
 Gesamtkirchengemeinde	14	NOUN
 Railjet	14	NOUN
-Studienrichtungen	14	NOUN
+Studienrichtungen	14	NOUN	Studienrichtung
 Veranstaltungsraum	14	NOUN
 talwärts	14	OTHER
 tschechoslowakischer	14	OTHER
@@ -78797,14 +78797,14 @@ Jesenská	14	NOUN
 Ermüdung	14	NOUN
 sadomasochistische	14	OTHER
 offenzulegen	14	VERB
-Schaffensperioden	14	NOUN
+Schaffensperioden	14	NOUN	Schaffensperiode
 Sternheim	14	NOUN
 belichtet	14	OTHER
 verwertbaren	14	OTHER
 Organic	14	NOUN
-Personifikationen	14	NOUN
+Personifikationen	14	NOUN	Personifikation
 Liudolfinger	14	NOUN
-Wesenszüge	14	NOUN
+Wesenszüge	14	NOUN	Wesenszug
 militaris	14	OTHER
 Herrschaftsübernahme	14	NOUN
 Thronstreitigkeiten	14	NOUN
@@ -78816,19 +78816,19 @@ zollte	14	OTHER
 aufhörte	14	OTHER
 ausgebildetes	14	OTHER
 deditio	14	OTHER
-Theophanus	14	NOUN
+Theophanus	14	NOUN	Theophanu
 villae	14	NOUN,OTHER
 Grundherr	14	NOUN
 Gaeta	14	NOUN
 merowingische	14	OTHER
-Fürstenhöfen	14	NOUN
+Fürstenhöfen	14	NOUN	Fürstenhof
 Simbel	14	NOUN
 Durchlass	14	NOUN
 namengebende	14	OTHER
 Weyer	14	NOUN
 Jamal	14	NOUN
 Rösler	14	NOUN
-Wegfalls	14	NOUN
+Wegfalls	14	NOUN	Wegfall
 verpassten	14	VERB,OTHER
 Röhl	14	NOUN
 Modellbildung	14	NOUN
@@ -78844,7 +78844,7 @@ Contes	14	NOUN,OTHER
 karelisch	14	NOUN,OTHER
 Häme	14	NOUN
 unbetont	14	OTHER
-Nachsilben	14	NOUN
+Nachsilben	14	NOUN	Nachsilbe
 referieren	14	VERB
 einundzwanzig	14	OTHER
 Finnmark	14	NOUN
@@ -78853,7 +78853,7 @@ Mittweida	14	NOUN
 erzgebirgischen	14	NOUN,OTHER
 Regiobus	14	NOUN
 Lederindustrie	14	NOUN
-Hilfsdienste	14	NOUN
+Hilfsdienste	14	NOUN	Hilfsdienst
 nochmalige	14	OTHER
 Fayette	14	NOUN
 Volksmenge	14	NOUN
@@ -78861,7 +78861,7 @@ Danton	14	NOUN
 aufzufordern	14	VERB
 Kaunitz	14	NOUN
 Montagnards	14	NOUN
-Widersachern	14	NOUN
+Widersachern	14	NOUN	Widersacher
 Gesetzestafeln	14	NOUN
 regierungstreuen	14	OTHER
 Brumaire	14	NOUN
@@ -78879,7 +78879,7 @@ Gütekriterien	14	NOUN
 Suchanfrage	14	NOUN
 Gegenhypothese	14	NOUN
 Maître	14	NOUN,OTHER
-Wandbildern	14	NOUN
+Wandbildern	14	NOUN	Wandbild
 Hasenheide	14	NOUN
 Aufräumarbeiten	14	NOUN
 Sikorsky	14	NOUN
@@ -78898,11 +78898,11 @@ mangele	14	OTHER
 auffüllen	14	NOUN,OTHER
 färöischer	14	OTHER
 Färinger	14	NOUN
-Sklavinnen	14	NOUN
+Sklavinnen	14	NOUN	Sklavin
 Triduum	14	NOUN
 abergläubische	14	OTHER
 Freundschaftsspiel	14	NOUN
-Lehrgängen	14	NOUN
+Lehrgängen	14	NOUN	Lehrgang
 Grenadier	14	NOUN
 Grünwald	14	NOUN
 vorschwebte	14	OTHER
@@ -78916,10 +78916,10 @@ Cullen	14	NOUN
 Curia	14	NOUN,OTHER
 Geowissenschaftler	14	NOUN
 Wallau	14	NOUN
-Mahlers	14	NOUN
+Mahlers	14	NOUN	Mahler
 Bodenrente	14	NOUN
 europaea	14	NOUN,OTHER
-Sprichwörtern	14	NOUN
+Sprichwörtern	14	NOUN	Sprichwort
 Mittelbereich	14	NOUN
 Regelversorgung	14	NOUN
 Comments	14	NOUN
@@ -78936,20 +78936,20 @@ Potocki	14	NOUN
 Männerkleidung	14	NOUN
 Klaviertrio	14	NOUN
 depressiver	14	OTHER
-Lebensmonaten	14	NOUN
+Lebensmonaten	14	NOUN	Lebensmonat
 hundertmal	14	OTHER
 braunem	14	OTHER
-Klavieren	14	NOUN
+Klavieren	14	NOUN	Klavier
 Bolero	14	NOUN
 IVa	14	NOUN
 salzhaltigen	14	OTHER
 Förderzentrum	14	NOUN
 Dorfstraße	14	NOUN
-Hierarchieebenen	14	NOUN
-Farbräume	14	NOUN
-Farbinformationen	14	NOUN
+Hierarchieebenen	14	NOUN	Hierarchieebene
+Farbräume	14	NOUN	Farbraum
+Farbinformationen	14	NOUN	Farbinformation
 Großhirn	14	NOUN
-Pawlows	14	NOUN
+Pawlows	14	NOUN	Pawlow
 Symbolisierung	14	NOUN
 aufruft	14	OTHER
 Logical	14	NOUN
@@ -78959,16 +78959,16 @@ Fixsternhimmel	14	NOUN
 startend	14	OTHER
 Fanfare	14	NOUN
 Historienfilm	14	NOUN
-Produktionsweisen	14	NOUN
+Produktionsweisen	14	NOUN	Produktionsweise
 zusammenzufügen	14	VERB
 amorpher	14	OTHER
 keynesianischen	14	OTHER
 romanisches	14	OTHER
 Herrenhof	14	NOUN
-Saliern	14	NOUN
+Saliern	14	NOUN	Salier
 Hôpital	14	NOUN
-Eigenfrequenzen	14	NOUN
-Fastenzeiten	14	NOUN
+Eigenfrequenzen	14	NOUN	Eigenfrequenz
+Fastenzeiten	14	NOUN	Fastenzeit
 dreiwöchige	14	OTHER
 Aman	14	NOUN,OTHER
 Fedor	14	NOUN
@@ -78994,10 +78994,10 @@ Josephinischen	14	NOUN,OTHER
 Rosegger	14	NOUN
 Architects	14	NOUN
 Fürstenstand	14	NOUN
-Privatkliniken	14	NOUN
+Privatkliniken	14	NOUN	Privatklinik
 Arithmetica	14	NOUN,OTHER
 Eroberungsfeldzug	14	NOUN
-Nöten	14	NOUN
+Nöten	14	NOUN	Not
 Oberharz	14	NOUN
 Frühaufklärung	14	NOUN
 körperlichem	14	OTHER
@@ -79005,12 +79005,12 @@ angestrengten	14	OTHER
 Bodin	14	NOUN
 brevis	14	OTHER
 Führungsaufgaben	14	NOUN
-Streichungen	14	NOUN
-Naturphänomene	14	NOUN
+Streichungen	14	NOUN	Streichung
+Naturphänomene	14	NOUN	Naturphänomen
 Erddrehung	14	NOUN
 intrinsischen	14	OTHER
 briefliche	14	OTHER
-Wasseruhren	14	NOUN
+Wasseruhren	14	NOUN	Wasseruhr
 Krampfadern	14	NOUN
 Geschichtsbewusstsein	14	NOUN
 Christensen	14	NOUN
@@ -79019,7 +79019,7 @@ Umweltprogramm	14	NOUN
 Klimaänderungen	14	NOUN
 wirkmächtig	14	OTHER
 Gouverneurswahl	14	NOUN
-Qaidas	14	NOUN
+Qaidas	14	NOUN	Qaida
 Zapatero	14	NOUN
 Rahmenabkommen	14	NOUN
 furchtbare	14	OTHER
@@ -79030,7 +79030,7 @@ Parallelverschiebung	14	NOUN
 Zahlkörper	14	NOUN
 Loches	14	NOUN
 wählbaren	14	OTHER
-Streckenlängen	14	NOUN
+Streckenlängen	14	NOUN	Streckenlänge
 Militärhafen	14	NOUN
 Consolidated	14	NOUN
 Urteilsvermögen	14	NOUN
@@ -79047,7 +79047,7 @@ Verpacken	14	NOUN,OTHER
 Transkriptase	14	NOUN
 Zweiheit	14	NOUN
 Windelband	14	NOUN
-Franziskanerordens	14	NOUN
+Franziskanerordens	14	NOUN	Franziskanerorden
 ärmste	14	OTHER
 unbeteiligt	14	OTHER
 entmilitarisierte	14	OTHER
@@ -79058,8 +79058,8 @@ Kunstfreunde	14	NOUN
 Altenstein	14	NOUN
 Pécs	14	NOUN
 Nachwuchsmannschaften	14	NOUN
-Kabinette	14	NOUN
-Gewerben	14	NOUN
+Kabinette	14	NOUN	Kabinett
+Gewerben	14	NOUN	Gewerbe
 Frenzel	14	NOUN
 einwirkende	14	OTHER
 Documentation	14	NOUN,OTHER
@@ -79073,16 +79073,16 @@ Kunststoffindustrie	14	NOUN
 Kantonsspital	14	NOUN
 päpstlich	14	OTHER
 fiskalische	14	OTHER
-Horden	14	NOUN
+Horden	14	NOUN	Horde
 Quay	14	NOUN
-Drehachsen	14	NOUN
+Drehachsen	14	NOUN	Drehachse
 Hipparch	14	NOUN
-Kreisbewegungen	14	NOUN
+Kreisbewegungen	14	NOUN	Kreisbewegung
 Waiblinger	14	NOUN
 unerlaubter	14	OTHER
 senegalesische	14	OTHER
 Sonderorganisationen	14	NOUN
-Fruchtsäfte	14	NOUN
+Fruchtsäfte	14	NOUN	Fruchtsaft
 gewebt	14	OTHER
 Lamin	14	NOUN
 Acrylglas	14	NOUN
@@ -79091,14 +79091,14 @@ Likör	14	NOUN
 Koloman	14	NOUN
 wechselwirkenden	14	OTHER
 Ferme	14	NOUN
-Steinböcke	14	NOUN
+Steinböcke	14	NOUN	Steinbock
 Scheibchen	14	NOUN
-Erdmassen	14	NOUN
+Erdmassen	14	NOUN	Erdmasse
 Entgegensetzung	14	NOUN
-Kirchenliedern	14	NOUN
+Kirchenliedern	14	NOUN	Kirchenlied
 bewegliches	14	OTHER
 sprachhistorisch	14	OTHER
-Konfliktsituationen	14	NOUN
+Konfliktsituationen	14	NOUN	Konfliktsituation
 Minamoto	14	NOUN
 Glyphosat	14	NOUN
 Pilzbefall	14	NOUN
@@ -79107,9 +79107,9 @@ Hautschicht	14	NOUN
 Bonmot	14	NOUN
 Polyedersatz	14	NOUN
 ableiteten	14	VERB
-Kürbissen	14	NOUN
-Maden	14	NOUN
-Würfen	14	NOUN
+Kürbissen	14	NOUN	Kürbisse
+Maden	14	NOUN	Made
+Würfen	14	NOUN	Wurf
 Inanna	14	NOUN
 gefällten	14	OTHER
 Kelley	14	NOUN
@@ -79118,10 +79118,10 @@ hinreißen	14	VERB
 Batu	14	NOUN
 weltpolitische	14	OTHER
 vergast	14	OTHER
-Kulturkreise	14	NOUN
+Kulturkreise	14	NOUN	Kulturkreis
 Grundgleichung	14	NOUN
 Münzfunde	14	NOUN
-Askaniern	14	NOUN
+Askaniern	14	NOUN	Askanier
 Meinhard	14	NOUN
 Palisade	14	NOUN
 Verbrauchssteuern	14	NOUN
@@ -79130,16 +79130,16 @@ bekundeten	14	VERB
 Mietskasernen	14	NOUN
 Heckmann	14	NOUN
 teilige	14	OTHER
-Satellitenstädte	14	NOUN
+Satellitenstädte	14	NOUN	Satellitenstadt
 Wissenschaftszentrum	14	NOUN
 Rudow	14	NOUN
 Brunnenstraße	14	NOUN
 Virgil	14	NOUN
 ausgemessen	14	VERB
 Hochindustrialisierung	14	NOUN
-Sachsenkriegen	14	NOUN
-Reunionen	14	NOUN
-Südwestens	14	NOUN
+Sachsenkriegen	14	NOUN	Sachsenkriege
+Reunionen	14	NOUN	Reunion
+Südwestens	14	NOUN	Südwesten
 Begehrlichkeiten	14	NOUN
 substantielle	14	OTHER
 Frauenemanzipation	14	NOUN
@@ -79154,16 +79154,16 @@ meterspurigen	14	OTHER
 Kommanditisten	14	NOUN
 gerades	14	OTHER
 gekürzter	14	OTHER
-Warenverkehrs	14	NOUN
+Warenverkehrs	14	NOUN	Warenverkehr
 einzugrenzen	14	VERB
 Teilchenstrahlung	14	NOUN
 Cholinesterase	14	NOUN
 auftretend	14	OTHER
 Schilddrüsenkrebs	14	NOUN
-Hemisphären	14	NOUN
+Hemisphären	14	NOUN	Hemisphäre
 Farah	14	NOUN
 Primärstruktur	14	NOUN
-Erweiterungskarten	14	NOUN
+Erweiterungskarten	14	NOUN	Erweiterungskarte
 Erstzulassung	14	NOUN
 blutbildenden	14	OTHER
 Personenvereinigungen	14	NOUN
@@ -79189,7 +79189,7 @@ helfenden	14	OTHER
 trinitarischen	14	OTHER
 Hintergrundfarbe	14	NOUN,OTHER
 Geesthacht	14	NOUN
-Grabsteinen	14	NOUN
+Grabsteinen	14	NOUN	Grabstein
 Viertelkreis	14	NOUN
 Henstedt	14	NOUN
 Generalzolldirektion	14	NOUN
@@ -79206,7 +79206,7 @@ nachexilische	14	OTHER
 Damiani	14	NOUN
 aufgedeckten	14	OTHER
 urteilten	14	VERB
-Verfassungsbeschwerden	14	NOUN
+Verfassungsbeschwerden	14	NOUN	Verfassungsbeschwerde
 BvR	14	NOUN
 schärfte	14	OTHER
 Pachtvertrag	14	NOUN
@@ -79218,13 +79218,13 @@ Agathe	14	NOUN
 zeigende	14	OTHER
 Saaleeiszeit	14	NOUN
 Heiligenlegenden	14	NOUN
-Heringen	14	NOUN
+Heringen	14	NOUN	Hering
 Verdienstmöglichkeiten	14	NOUN
 Börne	14	NOUN
 unverrichteter	14	OTHER
-Beobachtungs	14	NOUN
+Beobachtungs	14	NOUN	Beobachtung
 Einüben	14	NOUN,OTHER
-Gesetzbuchs	14	NOUN
+Gesetzbuchs	14	NOUN	Gesetzbuch
 Illustrirten	14	NOUN
 Friseur	14	NOUN
 Alvar	14	NOUN
@@ -79245,11 +79245,11 @@ Schriftschnitt	14	NOUN
 gerendert	14	OTHER
 Bedrohungslage	14	NOUN
 Hölloch	14	NOUN
-Wirtschaftsbereiche	14	NOUN
-Wählergemeinschaften	14	NOUN
+Wirtschaftsbereiche	14	NOUN	Wirtschaftsbereich
+Wählergemeinschaften	14	NOUN	Wählergemeinschaft
 namengebend	14	OTHER
 widersprüchliches	14	NOUN,OTHER
-Zustandekommens	14	NOUN
+Zustandekommens	14	NOUN	Zustandekommen
 beisetzen	14	VERB
 dankt	14	OTHER
 modische	14	OTHER
@@ -79258,7 +79258,7 @@ Lehmziegeln	14	NOUN
 Ján	14	NOUN
 umspannt	14	OTHER
 festere	14	OTHER
-Außentemperaturen	14	NOUN
+Außentemperaturen	14	NOUN	Außentemperatur
 Gaskonstante	14	NOUN
 transliteriert	14	OTHER
 Oʻahu	14	NOUN
@@ -79271,8 +79271,8 @@ Schießerei	14	NOUN
 Danilo	14	NOUN
 Aznar	14	NOUN
 gebrauchter	14	OTHER
-Militärputsche	14	NOUN
-Holzbrücken	14	NOUN
+Militärputsche	14	NOUN	Militärputsch
+Holzbrücken	14	NOUN	Holzbrücke
 Widerstandskämpferin	14	NOUN
 Rückhaltebecken	14	NOUN
 herzliche	14	OTHER
@@ -79282,14 +79282,14 @@ zusammengehörigen	14	OTHER
 Hadersleben	14	NOUN
 schlesisch	14	NOUN,OTHER
 Poel	14	NOUN
-Tuche	14	NOUN
+Tuche	14	NOUN	Tuch
 Kontor	14	NOUN
 beaufsichtigen	14	VERB
 Livländische	14	NOUN,OTHER
 Delay	14	NOUN,OTHER
 Fuerza	14	NOUN
 Provinzrat	14	NOUN
-Moorlandschaften	14	NOUN
+Moorlandschaften	14	NOUN	Moorlandschaft
 subalpinen	14	OTHER
 Mumm	14	NOUN
 Kreisordnung	14	NOUN
@@ -79301,16 +79301,16 @@ Todesangst	14	NOUN
 spezifischere	14	OTHER
 Sauerstoffversorgung	14	NOUN
 Publikumspreis	14	NOUN
-Unterschieds	14	NOUN
+Unterschieds	14	NOUN	Unterschied
 aufgerufenen	14	OTHER
 Wahlkapitulation	14	NOUN
 Reichskleinodien	14	NOUN
-Ruprechts	14	NOUN
+Ruprechts	14	NOUN	Ruprecht
 Religionsfrage	14	NOUN
-Landständen	14	NOUN
-Reichskammergerichts	14	NOUN
+Landständen	14	NOUN	Landstände
+Reichskammergerichts	14	NOUN	Reichskammergericht
 Reichsmatrikel	14	NOUN
-Hussitenkriegen	14	NOUN
+Hussitenkriegen	14	NOUN	Hussitenkriege
 Toul	14	NOUN
 Schwänen	14	NOUN
 flügge	14	NOUN,OTHER
@@ -79318,20 +79318,20 @@ abgefallenen	14	OTHER
 Gewerke	14	NOUN
 selbstverwalteten	14	OTHER
 FamFG	14	NOUN
-Unterkategorien	14	NOUN
+Unterkategorien	14	NOUN	Unterkategorie
 Truso	14	NOUN
 gefälschter	14	OTHER
-Kirchspiels	14	NOUN
+Kirchspiels	14	NOUN	Kirchspiel
 Finnlandschweden	14	NOUN
-Generalgouverneurs	14	NOUN
+Generalgouverneurs	14	NOUN	Generalgouverneur
 Stromabnehmer	14	NOUN
 Nutzlastbucht	14	NOUN
 Jungsozialisten	14	NOUN
-Autobahnanschlussstellen	14	NOUN
+Autobahnanschlussstellen	14	NOUN	Autobahnanschlussstelle
 Lehrkörper	14	NOUN
 überflügelt	14	OTHER
 Frauenstudium	14	NOUN
-Wissenschaftlerinnen	14	NOUN
+Wissenschaftlerinnen	14	NOUN	Wissenschaftlerin
 Neuroscience	14	NOUN
 Altstadtsanierung	14	NOUN
 unwürdigen	14	OTHER
@@ -79341,15 +79341,15 @@ Geoinformation	14	NOUN
 Erkenntnisfähigkeit	14	NOUN
 sensus	14	OTHER
 Chapter	14	NOUN
-Gebetes	14	NOUN
+Gebetes	14	NOUN	Gebet
 Islamwissenschaft	14	NOUN
 schamanischen	14	OTHER
 Epigonen	14	NOUN
 Elmer	14	NOUN
 ähnelnden	14	OTHER
 sensitive	14	OTHER
-Itzehoes	14	NOUN
-Wohnquartiere	14	NOUN
+Itzehoes	14	NOUN	Itzehoe
+Wohnquartiere	14	NOUN	Wohnquartier
 Fuchsberg	14	NOUN
 Uferstreifen	14	NOUN
 Wachpersonal	14	NOUN
@@ -79357,11 +79357,11 @@ Millionengrenze	14	NOUN
 wehenden	14	OTHER
 halbrunden	14	OTHER
 Felsendom	14	NOUN
-Busverkehrs	14	NOUN
+Busverkehrs	14	NOUN	Busverkehr
 Campagne	14	NOUN,OTHER
 Krankenwagen	14	NOUN
 Egger	14	NOUN
-Hilfeleistungen	14	NOUN
+Hilfeleistungen	14	NOUN	Hilfeleistung
 Umkreisradius	14	NOUN
 Romanhelden	14	NOUN
 betete	14	OTHER
@@ -79371,7 +79371,7 @@ Robbie	14	NOUN
 asymmetrischer	14	OTHER
 fertiger	14	OTHER
 Bildelement	14	NOUN
-Mächtigkeiten	14	NOUN
+Mächtigkeiten	14	NOUN	Mächtigkeit
 ECMA	14	NOUN
 Differenzialgleichung	14	NOUN
 parasitären	14	OTHER
@@ -79389,31 +79389,31 @@ Naturerbe	14	NOUN
 Meru	14	NOUN
 Velha	14	NOUN
 Sitar	14	NOUN,OTHER
-Odishas	14	NOUN
+Odishas	14	NOUN	Odisha
 Malla	14	NOUN
 Importgüter	14	NOUN
-Spielzeuge	14	NOUN
+Spielzeuge	14	NOUN	Spielzeug
 Ojibwe	14	NOUN
 Medizingeschichte	14	NOUN
 Geograf	14	NOUN
 Namenforschung	14	NOUN
-Zweifelsfällen	14	NOUN
+Zweifelsfällen	14	NOUN	Zweifelsfall
 Recognition	14	NOUN,OTHER
 Lenovo	14	NOUN
 INTERCAL	14	NOUN
 Hochschulausbildung	14	NOUN
 Nuri	14	NOUN
 kuwaitische	14	OTHER
-Saddams	14	NOUN
-Journalistinnen	14	NOUN
+Saddams	14	NOUN	Saddam
+Journalistinnen	14	NOUN	Journalistin
 Selfkant	14	NOUN
 Durchstechen	14	NOUN,OTHER
 eingedrungene	14	OTHER
 Plasmazellen	14	NOUN
-Duschen	14	NOUN
+Duschen	14	NOUN	Dusche
 Salami	14	NOUN
 Limonade	14	NOUN
-Gerichtsentscheidungen	14	NOUN
+Gerichtsentscheidungen	14	NOUN	Gerichtsentscheidung
 Beacon	14	NOUN
 Lilli	14	NOUN
 Melvin	14	NOUN
@@ -79422,14 +79422,14 @@ Priest	14	NOUN,OTHER
 sadistischen	14	OTHER
 gefügig	14	OTHER
 former	14	NOUN,OTHER
-Blooms	14	NOUN
+Blooms	14	NOUN	Bloom
 Clockwork	14	NOUN,OTHER
 Everybody	14	NOUN
 Valentinstag	14	NOUN
 Marsches	14	NOUN
 Pants	14	NOUN
 aufriefen	14	VERB
-Polizeipräsidiums	14	NOUN
+Polizeipräsidiums	14	NOUN	Polizeipräsidium
 Torquato	14	NOUN
 Geschäftsvorfälle	14	NOUN
 edelste	14	OTHER
@@ -79452,7 +79452,7 @@ innerparteilicher	14	OTHER
 Liebeslieder	14	NOUN
 ostmitteldeutschen	14	OTHER
 Realisation	14	NOUN
-Freihandels	14	NOUN
+Freihandels	14	NOUN	Freihandel
 Isère	14	NOUN
 Alexejewitsch	14	NOUN
 wasserdicht	14	OTHER
@@ -79461,13 +79461,13 @@ Commentarii	14	NOUN,OTHER
 Teilstamm	14	NOUN
 Weltalter	14	NOUN
 zusprechen	14	VERB
-Testpersonen	14	NOUN
+Testpersonen	14	NOUN	Testperson
 basiertes	14	OTHER
 erwidern	14	VERB
 Marxsche	14	NOUN,OTHER
 Staatspreis	14	NOUN
 Volkseigene	14	NOUN,OTHER
-Farmern	14	NOUN
+Farmern	14	NOUN	Farmer
 Pflanzenwachstum	14	NOUN
 zehnter	14	OTHER
 Ohrdruf	14	NOUN
@@ -79477,7 +79477,7 @@ Triosonaten	14	NOUN
 Ahle	14	NOUN
 Totenkopfverbände	14	NOUN
 KOI	14	NOUN
-Verwaltungsebenen	14	NOUN
+Verwaltungsebenen	14	NOUN	Verwaltungsebene
 Rechtssätze	14	NOUN
 Sachenrecht	14	NOUN
 Uqbar	14	NOUN
@@ -79497,7 +79497,7 @@ Bundeskanzlei	14	NOUN
 Wellennatur	14	NOUN
 Ostermesse	14	NOUN
 solchermaßen	14	OTHER
-Studienfächer	14	NOUN
+Studienfächer	14	NOUN	Studienfach
 Studentenlied	14	NOUN
 großartig	14	OTHER
 Theaterregisseur	14	NOUN
@@ -79508,15 +79508,15 @@ Moonlight	14	NOUN
 Komödiendichter	14	NOUN
 Mademoiselle	14	NOUN
 Ercole	14	NOUN
-Fährlinien	14	NOUN
+Fährlinien	14	NOUN	Fährlinie
 Thusnelda	14	NOUN
 Hausschwein	14	NOUN
 bräuchte	14	OTHER
 nordirische	14	OTHER
 Capone	14	NOUN
 unwahre	14	OTHER
-Ehrengäste	14	NOUN
-Redakteurs	14	NOUN
+Ehrengäste	14	NOUN	Ehrengast
+Redakteurs	14	NOUN	Redakteur
 Timberlake	14	NOUN
 bring	14	NOUN,VERB,OTHER
 Elk	14	NOUN
@@ -79526,7 +79526,7 @@ abwertender	14	OTHER
 Militärgerichtshof	14	NOUN
 Duff	14	NOUN
 Bundesmarine	14	NOUN
-Zimmermanns	14	NOUN
+Zimmermanns	14	NOUN	Zimmermann
 wilhelminische	14	OTHER
 entsprangen	14	VERB
 Wohnzwecken	14	NOUN
@@ -79569,16 +79569,16 @@ Wintersportarten	14	NOUN
 Indexierung	14	NOUN
 geprägtem	14	OTHER
 Naturgeister	14	NOUN
-Glücksspiele	14	NOUN
+Glücksspiele	14	NOUN	Glücksspiel
 Syntaxhervorhebung	14	NOUN
 Falsifikation	14	NOUN
 Poverty	14	NOUN
 wirtschaftsliberalen	14	OTHER
 Honour	14	NOUN
-Linienschiffe	14	NOUN
+Linienschiffe	14	NOUN	Linienschiff
 Zahlenverhältnisse	14	NOUN
-Zahlengeraden	14	NOUN
-Hilberträumen	14	NOUN
+Zahlengeraden	14	NOUN	Zahlengerade
+Hilberträumen	14	NOUN	Hilbertraum
 Kyrilliza	14	NOUN
 altbulgarischen	14	NOUN,OTHER
 OpenType	14	NOUN
@@ -79586,11 +79586,11 @@ siebenbürgische	14	NOUN,OTHER
 Zarenhof	14	NOUN
 Goldfunde	14	NOUN
 ZB	14	NOUN,OTHER
-Reiseerzählungen	14	NOUN
+Reiseerzählungen	14	NOUN	Reiseerzählung
 Vulkaninsel	14	NOUN
-Widukinds	14	NOUN
+Widukinds	14	NOUN	Widukind
 Ordine	14	NOUN,OTHER
-Mathildes	14	NOUN
+Mathildes	14	NOUN	Mathilde
 Vaterstadt	14	NOUN
 vielgestaltige	14	OTHER
 Hrvatska	14	NOUN,OTHER
@@ -79598,20 +79598,20 @@ Zagreber	14	NOUN
 Montenegrinisch	14	NOUN
 südslawische	14	OTHER
 illyrische	14	OTHER
-Dubrovniks	14	NOUN
+Dubrovniks	14	NOUN	Dubrovnik
 Lone	14	NOUN,OTHER
 Tahoe	14	NOUN
 Irvine	14	NOUN
 Blink	14	NOUN,OTHER
-Dominions	14	NOUN
+Dominions	14	NOUN	Dominion
 auseinanderbrach	14	OTHER
 embryonal	14	OTHER
 Wetzel	14	NOUN
 Baumarkt	14	NOUN
 bebauen	14	VERB
-Stammesgesellschaften	14	NOUN
-Cassirers	14	NOUN
-Ampeln	14	NOUN
+Stammesgesellschaften	14	NOUN	Stammesgesellschaft
+Cassirers	14	NOUN	Cassirer
+Ampeln	14	NOUN	Ampel
 Zeitdifferenz	14	NOUN
 Senatsbeschluss	14	NOUN
 amtsfrei	14	OTHER
@@ -79626,7 +79626,7 @@ ordinierte	14	OTHER
 assistiert	14	OTHER
 Skiern	14	NOUN
 Fußschlaufen	14	NOUN
-Steuerleinen	14	NOUN
+Steuerleinen	14	NOUN	Steuerleine
 weiterfahren	14	VERB
 Humanes	14	NOUN,OTHER
 Krabbe	14	NOUN
@@ -79638,7 +79638,7 @@ Präexistenz	14	NOUN
 Fatima	14	NOUN
 Melo	14	NOUN,OTHER
 Schoten	14	NOUN
-Besiedlungen	14	NOUN
+Besiedlungen	14	NOUN	Besiedlung
 Brewster	14	NOUN
 Naturhafen	14	NOUN
 Cyclohexan	14	NOUN
@@ -79649,14 +79649,14 @@ Indianerkriege	14	NOUN
 vorherrschten	14	VERB
 Triumphbögen	14	NOUN
 tragfähigen	14	OTHER
-Anwohnern	14	NOUN
-Purine	14	NOUN
+Anwohnern	14	NOUN	Anwohner
+Purine	14	NOUN	Purin
 kenianische	14	OTHER
 Shona	14	NOUN
 SMER	14	NOUN
 Textanalyse	14	NOUN
 Breaking	14	NOUN
-Verlinkungen	14	NOUN
+Verlinkungen	14	NOUN	Verlinkung
 Tarnkappe	14	NOUN
 üble	14	OTHER
 Trakl	14	NOUN
@@ -79666,7 +79666,7 @@ BCS	14	NOUN
 Lutetia	14	NOUN
 LW	14	NOUN
 Quadratzentimeter	14	NOUN
-Desktops	14	NOUN
+Desktops	14	NOUN	Desktop
 PLL	14	NOUN
 psychotischen	14	OTHER
 psychedelischen	14	OTHER
@@ -79677,20 +79677,20 @@ Schadstoffgruppe	14	NOUN
 Dieppe	14	NOUN
 schichtweise	14	OTHER
 Stadhuis	14	NOUN
-Molen	14	NOUN
-Streckenabschnitten	14	NOUN
+Molen	14	NOUN	Mole
+Streckenabschnitten	14	NOUN	Streckenabschnitt
 Sully	14	NOUN
 eingeschossigen	14	OTHER
 Perfekts	14	NOUN
 tempore	14	OTHER
 Weihnachtslied	14	NOUN
-Verwaltungsbezirken	14	NOUN
+Verwaltungsbezirken	14	NOUN	Verwaltungsbezirk
 kelleygreen	14	OTHER
 Tingierung	14	NOUN
 Verbundnetz	14	NOUN
-Bundesligaspiele	14	NOUN
+Bundesligaspiele	14	NOUN	Bundesligaspiel
 Regionalmuseum	14	NOUN
-Musiktheaters	14	NOUN
+Musiktheaters	14	NOUN	Musiktheater
 Bonifatiuskirche	14	NOUN
 Hauptturm	14	NOUN
 insolventen	14	OTHER
@@ -79700,14 +79700,14 @@ Werfthalle	14	NOUN
 Spaziergänger	14	NOUN
 Neotenie	14	NOUN
 Wörterbuches	14	NOUN
-Wolffs	14	NOUN
+Wolffs	14	NOUN	Wolff
 gelegte	14	OTHER
 irgendwelchen	14	OTHER
 selbstkritisch	14	OTHER
 Woolwich	14	NOUN
 Piccadilly	14	NOUN
-Märsche	14	NOUN
-Textverarbeitungen	14	NOUN
+Märsche	14	NOUN	Marsch
+Textverarbeitungen	14	NOUN	Textverarbeitung
 Cochran	14	NOUN
 polje	14	NOUN,OTHER
 Libellenarten	14	NOUN
@@ -79719,10 +79719,10 @@ Zollvertrag	14	NOUN
 Amtshilfe	14	NOUN
 Kriminalitätsbekämpfung	14	NOUN
 Verwaltungsverfahren	14	NOUN
-Osterhasen	14	NOUN
+Osterhasen	14	NOUN	Osterhase
 aufführt	14	OTHER
 VLAN	14	NOUN
-Privatsammlungen	14	NOUN
+Privatsammlungen	14	NOUN	Privatsammlung
 Dannenberger	14	NOUN
 Messstelle	14	NOUN
 Tobruk	14	NOUN
@@ -79730,16 +79730,16 @@ Salafisten	14	NOUN
 Adoptivtochter	14	NOUN
 Ölquellen	14	NOUN
 ETCS	14	NOUN
-Laubblättern	14	NOUN
+Laubblättern	14	NOUN	Laubblatt
 Capablanca	14	NOUN
-Gesetzestexten	14	NOUN
+Gesetzestexten	14	NOUN	Gesetzestext
 Kommunalrecht	14	NOUN
 Textilunternehmen	14	NOUN
 selbstgewählten	14	OTHER
-Pops	14	NOUN
+Pops	14	NOUN	Pop
 Vivien	14	NOUN
 Lynchjustiz	14	NOUN
-Gags	14	NOUN
+Gags	14	NOUN	Gag
 Ballad	14	NOUN
 Morsen	14	NOUN
 Erdfigur	14	NOUN
@@ -79749,7 +79749,7 @@ Knallgasreaktion	14	NOUN
 Wasserkühlung	14	NOUN
 Wärmeabfuhr	14	NOUN
 judenchristlichen	14	OTHER
-Zäsuren	14	NOUN
+Zäsuren	14	NOUN	Zäsur
 Zimbabwe	14	NOUN
 bereuen	14	VERB
 Instinct	14	NOUN
@@ -79758,7 +79758,7 @@ Stieler	14	NOUN
 Jurymitglied	14	NOUN
 Majoran	14	NOUN
 Dingo	14	NOUN
-Oberbayerns	14	NOUN
+Oberbayerns	14	NOUN	Oberbayern
 Reisegruppe	14	NOUN
 elfter	14	OTHER
 Allach	14	NOUN
@@ -79766,7 +79766,7 @@ Rundfunktechnik	14	NOUN
 sophistischen	14	OTHER
 Montgolfière	14	NOUN
 Datengrundlage	14	NOUN
-Nordturms	14	NOUN
+Nordturms	14	NOUN	Nordturm
 Geburtenrückgang	14	NOUN
 Generalsuperintendenten	14	NOUN
 gefällig	14	OTHER
@@ -79776,15 +79776,15 @@ Hauptorgel	14	NOUN
 Linköping	14	NOUN
 Vitrinen	14	NOUN
 Marktort	14	NOUN
-Attraktoren	14	NOUN
-Hügelketten	14	NOUN
+Attraktoren	14	NOUN	Attraktor
+Hügelketten	14	NOUN	Hügelkette
 Naturliebhaber	14	NOUN
 Nordland	14	NOUN
 Kamasutra	14	NOUN
-Muskels	14	NOUN
+Muskels	14	NOUN	Muskel
 Isospin	14	NOUN
 Tubuli	14	NOUN
-Ionenkanälen	14	NOUN
+Ionenkanälen	14	NOUN	Ionenkanäle
 Endosymbiose	14	NOUN
 Galopp	14	NOUN
 gekappt	14	OTHER
@@ -79792,7 +79792,7 @@ Nockenwelle	14	NOUN
 Wasserrades	14	NOUN
 Eisheiligen	14	NOUN
 BirdLife	14	NOUN
-Flusspferden	14	NOUN
+Flusspferden	14	NOUN	Flusspferd
 Kalebasse	14	NOUN
 Portus	14	NOUN,OTHER
 durchflossene	14	OTHER
@@ -79803,49 +79803,49 @@ Ursa	14	NOUN
 Blauverschiebung	14	NOUN
 kultivierter	14	OTHER
 Beobachtungszeitraum	14	NOUN
-Naturphänomenen	14	NOUN
+Naturphänomenen	14	NOUN	Naturphänomen
 Emulgatoren	14	NOUN
 Enzephalitis	14	NOUN
 Minderheitenrechte	14	NOUN
 Schlüsselbein	14	NOUN
-Hinterbeinen	14	NOUN
+Hinterbeinen	14	NOUN	Hinterbeine
 Albrechtsburg	14	NOUN
 Zweikammerparlament	14	NOUN
 Szlachta	14	NOUN
 Forschungsaktivitäten	14	NOUN
-Pierres	14	NOUN
+Pierres	14	NOUN	Pierre
 Daudet	14	NOUN
 Labortagebücher	14	NOUN
 Régence	14	NOUN
 Ile	14	NOUN,OTHER
 Gesprächsführung	14	NOUN
-Mnemotechniken	14	NOUN
+Mnemotechniken	14	NOUN	Mnemotechnik
 Flussschifffahrt	14	NOUN
 Hallstadt	14	NOUN
 Erlach	14	NOUN
-Warmzeiten	14	NOUN
+Warmzeiten	14	NOUN	Warmzeit
 Gewässergüte	14	NOUN
 Steinkreis	14	NOUN
 Konzentrationsprozess	14	NOUN
 Vollmilch	14	NOUN
 Magermilch	14	NOUN
 pasteurisierte	14	OTHER
-Verbrauchers	14	NOUN
+Verbrauchers	14	NOUN	Verbraucher
 Gemma	14	NOUN
 Norgay	14	NOUN
 Sherpas	14	NOUN
 Südgipfel	14	NOUN
 schwierigste	14	OTHER
 schleppen	14	VERB
-Monopolisten	14	NOUN
+Monopolisten	14	NOUN	Monopolist
 Intellectual	14	NOUN
 Marktversagen	14	NOUN
 LAENGE	14	NOUN,OTHER
 Datenblättern	14	NOUN
 Monochromie	14	NOUN
-Citizens	14	NOUN
+Citizens	14	NOUN	Citizen
 Wäscher	14	NOUN
-Wals	14	NOUN
+Wals	14	NOUN	Wal
 Agentis	14	NOUN
 Onkogene	14	NOUN
 Kunststoffverarbeitung	14	NOUN
@@ -79855,14 +79855,14 @@ Ehrenfriedhof	14	NOUN
 Reichswald	14	NOUN
 Magmakammer	14	NOUN
 individualisierte	14	OTHER
-Fehlverhaltens	14	NOUN
+Fehlverhaltens	14	NOUN	Fehlverhalten
 Mandalay	14	NOUN
 menschenunwürdigen	14	OTHER
 Willich	14	NOUN
 Frentzen	14	NOUN
-Mikronationen	14	NOUN
+Mikronationen	14	NOUN	Mikronation
 übernächsten	14	OTHER
-Deichen	14	NOUN
+Deichen	14	NOUN	Deich
 Gewürzhandel	14	NOUN
 Prien	14	NOUN
 Warburger	14	NOUN
@@ -79877,7 +79877,7 @@ Chatham	14	NOUN
 Nahrungskonkurrenten	14	NOUN
 einspurige	14	OTHER
 kontrastieren	14	VERB
-Ställe	14	NOUN
+Ställe	14	NOUN	Stall
 Bonatz	14	NOUN
 Gleiskörper	14	NOUN
 zusammenführt	14	OTHER
@@ -79893,15 +79893,15 @@ Schaich	14	NOUN
 Kreuzweg	14	NOUN
 Nadelholz	14	NOUN
 korsischer	14	NOUN,OTHER
-Staatsbeamten	14	NOUN
+Staatsbeamten	14	NOUN	Staatsbeamte
 Machiavellismus	14	NOUN
 zugesprochenen	14	OTHER
 unterkühlt	14	OTHER
 Trumbull	14	NOUN
 Vormenschen	14	NOUN
-Bildwerken	14	NOUN
+Bildwerken	14	NOUN	Bildwerk
 Rodolphe	14	NOUN
-Possen	14	NOUN
+Possen	14	NOUN	Posse
 Bopfingen	14	NOUN
 unbefestigten	14	OTHER
 Marsden	14	NOUN
@@ -79909,7 +79909,7 @@ Elimination	14	NOUN,OTHER
 Rupp	14	NOUN
 Reliabilität	14	NOUN
 Konstruktivisten	14	NOUN
-Abschlussprüfungen	14	NOUN
+Abschlussprüfungen	14	NOUN	Abschlussprüfung
 Irrenhaus	14	NOUN
 Cynthia	14	NOUN
 dezentralisiert	14	OTHER
@@ -79919,35 +79919,35 @@ Kontrollrates	14	NOUN
 Fredrik	14	NOUN
 Kalypso	14	NOUN
 strukturalistischen	14	OTHER
-Doktrinen	14	NOUN
+Doktrinen	14	NOUN	Doktrin
 Allgemeinbegriff	14	NOUN
 Columbine	14	NOUN
 Hory	14	NOUN,OTHER
-Platinmetallen	14	NOUN
+Platinmetallen	14	NOUN	Platinmetalle
 Schenkelhalsfraktur	14	NOUN
 lockern	14	VERB
-Verstecke	14	NOUN,OTHER
+Verstecke	14	NOUN,OTHER	Versteck
 Strukturreform	14	NOUN
 entschärfte	14	OTHER
 eindringliche	14	OTHER
-Parlamentsgebäudes	14	NOUN
+Parlamentsgebäudes	14	NOUN	Parlamentsgebäude
 Indigenous	14	NOUN,OTHER
 Elastomere	14	NOUN
 Sheet	14	NOUN,OTHER
 Ærø	14	NOUN
 Peder	14	NOUN
-Stadtbränden	14	NOUN
+Stadtbränden	14	NOUN	Stadtbrand
 Nachtfahrverbot	14	NOUN
 Natalja	14	NOUN
 Synoptikern	14	NOUN
 Britten	14	NOUN
 Hörvermögen	14	NOUN
-Ohres	14	NOUN
+Ohres	14	NOUN	Ohr
 Kreistagswahl	14	NOUN
 Pirelli	14	NOUN
 Segelflugplatz	14	NOUN
 ventralen	14	OTHER
-Teilnetzen	14	NOUN
+Teilnetzen	14	NOUN	Teilnetze
 Gy	14	NOUN,OTHER
 elisabethanischen	14	OTHER
 Musiksprache	14	NOUN
@@ -79967,23 +79967,23 @@ Schutzhülle	14	NOUN
 conseiller	14	OTHER
 Seigneur	14	NOUN,OTHER
 Mausklick	14	NOUN
-Spartanern	14	NOUN
-Seelenteile	14	NOUN
-Grundmoränen	14	NOUN
+Spartanern	14	NOUN	Spartaner
+Seelenteile	14	NOUN	Seelenteil
+Grundmoränen	14	NOUN	Grundmoräne
 Weichseldelta	14	NOUN
-Flussinseln	14	NOUN
+Flussinseln	14	NOUN	Flussinsel
 Częstochowa	14	NOUN
 Balcerowicz	14	NOUN
 Stargarder	14	NOUN
-Barten	14	NOUN
+Barten	14	NOUN	Bart
 Gediminas	14	NOUN
-Krakaus	14	NOUN
+Krakaus	14	NOUN	Krakau
 Stary	14	NOUN
 Chalet	14	NOUN
 Emanzipationsbewegung	14	NOUN
 parasitischen	14	OTHER
-Gamas	14	NOUN
-Batmans	14	NOUN
+Gamas	14	NOUN	Gama
+Batmans	14	NOUN	Batman
 Unisys	14	NOUN
 Benutzergruppen	14	NOUN
 Antriebskraft	14	NOUN
@@ -79999,7 +79999,7 @@ Ostchinesischen	14	NOUN,OTHER
 BitTorrent	14	NOUN
 Bellevuestraße	14	NOUN
 Influenzaviren	14	NOUN
-Impfstoffs	14	NOUN
+Impfstoffs	14	NOUN	Impfstoff
 gänzliche	14	OTHER
 resistenten	14	OTHER
 Kundl	14	NOUN
@@ -80018,17 +80018,17 @@ Paprikapulver	14	NOUN
 Epidemiegesetz	14	NOUN
 geträumt	14	OTHER
 Ladungstrennung	14	NOUN
-Fernsehsignale	14	NOUN
+Fernsehsignale	14	NOUN	Fernsehsignal
 Bildfrequenz	14	NOUN
 Farbdifferenzsignale	14	NOUN
 Timotheusbrief	14	NOUN
 immergrüner	14	OTHER
 gepressten	14	OTHER
-Ortsvereine	14	NOUN
+Ortsvereine	14	NOUN	Ortsverein
 rechtsgültig	14	OTHER
 Phraseologie	14	NOUN
-Einspeisevergütungen	14	NOUN
-Straftätern	14	NOUN
+Einspeisevergütungen	14	NOUN	Einspeisevergütung
+Straftätern	14	NOUN	Straftäter
 Abgangsgruppe	14	NOUN
 radikalische	14	OTHER
 Burkert	14	NOUN
@@ -80043,7 +80043,7 @@ konjugiertes	14	OTHER
 enharmonischen	14	OTHER
 adische	14	OTHER
 Skalarmultiplikation	14	NOUN
-Einheitsquaternionen	14	NOUN
+Einheitsquaternionen	14	NOUN	Einheitsquaternion
 Involution	14	NOUN
 desaströsen	14	OTHER
 ungedämpften	14	OTHER
@@ -80064,19 +80064,19 @@ Castra	14	NOUN
 Stolzenfels	14	NOUN
 Oberth	14	NOUN
 Fusionsvertrag	14	NOUN
-Mittelbereiche	14	NOUN
+Mittelbereiche	14	NOUN	Mittelbereich
 Junction	14	NOUN,OTHER
 Göschenen	14	NOUN
 Tafelrunde	14	NOUN
 Surveillance	14	NOUN
 EIRP	14	NOUN
 Pessachfest	14	NOUN
-Eigenbezeichnungen	14	NOUN
+Eigenbezeichnungen	14	NOUN	Eigenbezeichnung
 Bewegungsablauf	14	NOUN
 Annina	14	NOUN
 Pressedienst	14	NOUN
 anvisierten	14	VERB,OTHER
-Zukäufe	14	NOUN
+Zukäufe	14	NOUN	Zukauf
 Glasmaler	14	NOUN
 Herzanfall	14	NOUN
 Ruderboot	14	NOUN
@@ -80101,13 +80101,13 @@ Chorwerke	14	NOUN
 Toteninsel	14	NOUN
 Kirchenstrafen	14	NOUN
 Verkehrszeichen	14	NOUN
-Schiffshebewerke	14	NOUN
+Schiffshebewerke	14	NOUN	Schiffshebewerk
 Sternschnuppen	14	NOUN
 Specialist	14	NOUN
 ausziehen	14	NOUN,OTHER
 AGI	14	NOUN
-Welfs	14	NOUN
-Nebengebäuden	14	NOUN
+Welfs	14	NOUN	Welf
+Nebengebäuden	14	NOUN	Nebengebäude
 Sammlungsbestand	14	NOUN
 WIZO	14	NOUN
 Gelenkwagen	14	NOUN
@@ -80124,15 +80124,15 @@ Augmented	14	NOUN
 Zwiefalten	14	NOUN
 Seidenraupen	14	NOUN
 entgegenstellte	14	OTHER
-Sheriffs	14	NOUN
+Sheriffs	14	NOUN	Sheriff
 Gotthardmassiv	14	NOUN
 Fürstabtei	14	NOUN
 Strassenbahn	14	NOUN
 gefahrenen	14	OTHER
-Koroljows	14	NOUN
+Koroljows	14	NOUN	Koroljow
 Lendenwirbelsäule	14	NOUN
-Schwänze	14	NOUN
-Springers	14	NOUN
+Schwänze	14	NOUN	Schwanz
+Springers	14	NOUN	Springer
 weilenden	14	OTHER
 Schiffbrüchiger	14	NOUN
 bewußt	14	OTHER
@@ -80146,10 +80146,10 @@ Gies	14	NOUN
 Kröger	14	NOUN
 Militärattaché	14	NOUN
 hypothetischer	14	OTHER
-Rebstöcke	14	NOUN
+Rebstöcke	14	NOUN	Rebstock
 Inselbahn	14	NOUN
 Fetting	14	NOUN
-Hünengräber	14	NOUN
+Hünengräber	14	NOUN	Hünengrab
 Poitier	14	NOUN
 belarussischer	14	OTHER
 Eadweard	14	NOUN
@@ -80164,14 +80164,14 @@ Reihenkreis	14	NOUN
 süditalienischen	14	OTHER
 gesamtgesellschaftlichen	14	OTHER
 transitiven	14	OTHER
-Bahnsteigs	14	NOUN
+Bahnsteigs	14	NOUN	Bahnsteig
 Bahnsteigende	14	NOUN
-Lindgrens	14	NOUN
+Lindgrens	14	NOUN	Lindgren
 Fader	14	NOUN,OTHER
 Sedimentbecken	14	NOUN
 Ayacucho	14	NOUN
 Betriebsfeuerwehren	14	NOUN
-Leibe	14	NOUN
+Leibe	14	NOUN	Leib
 nafs	14	OTHER
 Räumlichkeit	14	NOUN
 Carnivora	14	NOUN
@@ -80189,7 +80189,7 @@ Djamena	14	NOUN
 postkommunistischen	14	OTHER
 arisch	14	OTHER
 unverzweigten	14	OTHER
-Rosskastanien	14	NOUN
+Rosskastanien	14	NOUN	Rosskastanie
 Oberländischen	14	NOUN
 Severn	14	NOUN
 Obertor	14	NOUN
@@ -80197,28 +80197,28 @@ Etna	14	NOUN
 Schafgarbe	14	NOUN
 Talseite	14	NOUN
 Loreto	14	NOUN
-Sportplätzen	14	NOUN
-Konkubinen	14	NOUN
+Sportplätzen	14	NOUN	Sportplatz
+Konkubinen	14	NOUN	Konkubine
 vergoldetem	14	OTHER
-Kolonialreichs	14	NOUN
+Kolonialreichs	14	NOUN	Kolonialreich
 Pinkers	14	NOUN
 sexualisierter	14	OTHER
 Pigmentierung	14	NOUN
 Gesamtdrehimpuls	14	NOUN
-Ankern	14	NOUN,OTHER
+Ankern	14	NOUN,OTHER	Anker
 Pädophilie	14	NOUN
-Unterabteilungen	14	NOUN
+Unterabteilungen	14	NOUN	Unterabteilung
 DEST	14	NOUN
 palästinischen	14	OTHER
-Kirchenbüchern	14	NOUN
-Leiern	14	NOUN
+Kirchenbüchern	14	NOUN	Kirchenbuch
+Leiern	14	NOUN	Leier
 Takeshi	14	NOUN
 Delgado	14	NOUN
-Siedewasserreaktoren	14	NOUN
+Siedewasserreaktoren	14	NOUN	Siedewasserreaktor
 Lak	14	NOUN
 Gothique	14	NOUN
 Calatrava	14	NOUN
-Abschüssen	14	NOUN
+Abschüssen	14	NOUN	Abschuss
 DStP	14	NOUN
 Berechnungsmethode	14	NOUN
 Widget	14	NOUN
@@ -80228,23 +80228,23 @@ Arnoldi	14	NOUN
 Zukunftsrisiken	14	NOUN
 Schleusingen	14	NOUN
 Ostthüringen	14	NOUN
-Verkehrsleistungen	14	NOUN
+Verkehrsleistungen	14	NOUN	Verkehrsleistung
 Landschaftsarchitektur	14	NOUN
 Umfassungsmauer	14	NOUN
 Serdica	14	NOUN
-Hilberträume	14	NOUN
+Hilberträume	14	NOUN	Hilbertraum
 Zierrat	14	NOUN
-Manuale	14	NOUN
-Erdwällen	14	NOUN
+Manuale	14	NOUN	Manual
+Erdwällen	14	NOUN	Erdwall
 Millais	14	NOUN
 CIX	14	NOUN
 Equality	14	NOUN,OTHER
 sozialisiert	14	OTHER
 Maskulines	14	NOUN,OTHER
 Mährerreich	14	NOUN
-Adalberts	14	NOUN
+Adalberts	14	NOUN	Adalbert
 ČSR	14	NOUN
-Geschäftsfelder	14	NOUN
+Geschäftsfelder	14	NOUN	Geschäftsfeld
 Lucie	14	NOUN
 Delme	14	NOUN
 klimatologische	14	OTHER
@@ -80259,7 +80259,7 @@ Meriniden	14	NOUN
 Selbstbeschränkung	14	NOUN
 Kura	14	NOUN
 Heimatrecht	14	NOUN
-Satanen	14	NOUN
+Satanen	14	NOUN	Satan
 unehrenhaft	14	OTHER
 Stadtstruktur	14	NOUN
 Neuro	14	NOUN
@@ -80281,21 +80281,21 @@ Gulf	14	NOUN
 Visumzwang	14	NOUN
 Kempe	14	NOUN
 Twa	14	NOUN
-Polynomfunktionen	14	NOUN
+Polynomfunktionen	14	NOUN	Polynomfunktion
 Südchinesische	14	NOUN,OTHER
-WLANs	14	NOUN
+WLANs	14	NOUN	WLAN
 Zielartikel	14	NOUN
 Weichselufer	14	NOUN
 Hölzel	14	NOUN
 franziskanischen	14	OTHER
-Augenblicke	14	NOUN
+Augenblicke	14	NOUN	Augenblick
 Jasomirgott	14	NOUN
 vorrevolutionären	14	OTHER
 Colloredo	14	NOUN
 zeitaufwendig	14	OTHER
-Kadenzen	14	NOUN
+Kadenzen	14	NOUN	Kadenz
 JAZ	14	NOUN
-Wörgls	14	NOUN
+Wörgls	14	NOUN	Wörgl
 Bergulme	14	NOUN
 dreimaligen	14	OTHER
 Bodenplatte	14	NOUN
@@ -80311,7 +80311,7 @@ altruistisches	14	OTHER
 Kolonialbesitz	14	NOUN
 Midraschim	14	NOUN
 Peirithoos	14	NOUN
-Nationalratspräsidenten	14	NOUN
+Nationalratspräsidenten	14	NOUN	Nationalratspräsident
 Bautista	14	NOUN
 Bust	14	NOUN,OTHER
 Taungu	14	NOUN
@@ -80322,11 +80322,11 @@ Pachacútec	14	NOUN
 demonstrierende	14	OTHER
 Brockdorff	14	NOUN
 Fürstpropstei	14	NOUN
-Plantations	14	NOUN
-Iwans	14	NOUN
-Isabellas	14	NOUN
+Plantations	14	NOUN	Plantation
+Iwans	14	NOUN	Iwan
+Isabellas	14	NOUN	Isabella
 Neupfarrplatz	14	NOUN
-Edikte	14	NOUN
+Edikte	14	NOUN	Edikt
 Hubmaier	14	NOUN
 Arcimboldo	14	NOUN
 Tenasserim	14	NOUN
@@ -80343,7 +80343,7 @@ Werle	14	NOUN
 Khao	14	NOUN
 Feuerbachkreis	14	NOUN
 Belluno	14	NOUN
-Admins	14	NOUN,OTHER
+Admins	14	NOUN,OTHER	Admin
 Klebebindung	14	NOUN
 Düben	14	NOUN
 Sachmet	14	NOUN
@@ -80360,7 +80360,7 @@ Fehrenbach	14	NOUN
 patriarchale	14	OTHER
 Karibikstaaten	14	NOUN
 universitärer	14	OTHER
-Rekordern	14	NOUN
+Rekordern	14	NOUN	Rekorder
 nota	14	NOUN,OTHER
 Kathedra	14	NOUN
 westbaltischen	14	OTHER
@@ -80384,23 +80384,23 @@ Abegg	14	NOUN
 Officers	14	NOUN
 Galliern	14	NOUN
 Altsachsen	14	NOUN
-Backups	14	NOUN
+Backups	14	NOUN	Backup
 Lösungsmenge	14	NOUN
 Schatthausen	14	NOUN
 Elischa	14	NOUN
 Althing	14	NOUN
 Quickborn	14	NOUN
-Huttens	14	NOUN
+Huttens	14	NOUN	Hutten
 Industrieroboter	14	NOUN
 Wahlkampagne	14	NOUN
-Bahrains	14	NOUN
+Bahrains	14	NOUN	Bahrain
 Chagos	14	NOUN
 Maji	14	NOUN
 Gesetzesvorlage	14	NOUN
 Ginsberg	14	NOUN
 Panhandle	14	NOUN
 DeBakey	14	NOUN
-Zeitfensters	14	NOUN
+Zeitfensters	14	NOUN	Zeitfenster
 Hauptkette	14	NOUN
 Kastenlosen	14	NOUN
 marianische	14	NOUN,OTHER
@@ -80414,8 +80414,8 @@ Huáscar	14	NOUN
 Nigerdelta	14	NOUN
 Saakaschwili	14	NOUN
 Takoradi	14	NOUN
-Malawis	14	NOUN
-Handarbeiten	14	NOUN
+Malawis	14	NOUN	Malawi
+Handarbeiten	14	NOUN	Handarbeit
 Gangregler	14	NOUN
 Schallwelle	14	NOUN
 biegsame	14	OTHER
@@ -80443,7 +80443,7 @@ Rosalba	14	NOUN
 Trema	14	NOUN
 Sowjetkongress	14	NOUN
 Galerkin	14	NOUN
-Bedas	14	NOUN
+Bedas	14	NOUN	Beda
 Tschecho	14	NOUN
 Vite	14	NOUN,OTHER
 Cartimandua	14	NOUN
@@ -80458,14 +80458,14 @@ Tropenholz	14	NOUN
 Kremer	14	NOUN
 Gallensalze	14	NOUN
 Mizellen	14	NOUN
-Strafgerichtshofs	14	NOUN
+Strafgerichtshofs	14	NOUN	Strafgerichtshof
 Grenzposten	14	NOUN
-Auslenkungen	14	NOUN
+Auslenkungen	14	NOUN	Auslenkung
 Niehaus	14	NOUN
 Electrola	14	NOUN
 Biblique	14	NOUN,OTHER
 Kurzzeitkennzeichen	14	NOUN
-Aufgabengebiete	14	NOUN
+Aufgabengebiete	14	NOUN	Aufgabengebiet
 Eingangswiderstand	14	NOUN
 Zechs	14	NOUN
 weihnachtliche	14	OTHER
@@ -80500,14 +80500,14 @@ Bundeswirtschaftsministerium	14	NOUN
 Hexapoda	14	NOUN
 Collembola	14	NOUN
 Laizität	14	NOUN
-Waldens	14	NOUN
+Waldens	14	NOUN	Walden
 transferieren	14	VERB
 Garz	14	NOUN
 Rücklage	14	NOUN
 Equisetum	14	NOUN
 Giverny	14	NOUN
 Murales	14	NOUN
-Chilis	14	NOUN
+Chilis	14	NOUN	Chili
 Bestandsgröße	14	NOUN
 Adela	14	NOUN
 gezupft	14	OTHER
@@ -80518,7 +80518,7 @@ Roboterarm	14	NOUN
 PMA	14	NOUN
 HTV	14	NOUN
 Neh	14	NOUN
-Esters	14	NOUN
+Esters	14	NOUN	Ester
 Waschti	14	NOUN
 Toningenieur	14	NOUN
 Bratwurst	14	NOUN
@@ -80531,9 +80531,9 @@ IGBT	14	NOUN
 Winterfahrplan	14	NOUN
 Computersicherheit	14	NOUN
 Mech	14	NOUN,OTHER
-Barcelonas	14	NOUN
+Barcelonas	14	NOUN	Barcelona
 Dicks	14	NOUN
-Krematoriums	14	NOUN
+Krematoriums	14	NOUN	Krematorium
 Humpolec	14	NOUN
 Eph	14	NOUN,OTHER
 Kolosserbrief	14	NOUN
@@ -80541,15 +80541,15 @@ Loemühle	14	NOUN
 Bördekreis	14	NOUN
 Schlüchtern	14	NOUN
 Kleinod	14	NOUN
-Kokoschkas	14	NOUN
+Kokoschkas	14	NOUN	Kokoschka
 befreundetes	14	OTHER
 Mühlkreis	14	NOUN
 Lichtenhagen	14	NOUN
 Schwanenblume	14	NOUN
 Tenorposaune	14	NOUN
 JCL	14	NOUN
-Sikkims	14	NOUN
-Matterhorns	14	NOUN
+Sikkims	14	NOUN	Sikkim
+Matterhorns	14	NOUN	Matterhorn
 Landkirchen	14	NOUN
 Hasenartige	14	NOUN
 Heimatgeschichte	14	NOUN
@@ -80557,10 +80557,10 @@ Graupa	14	NOUN
 Vajiravudh	14	NOUN
 Scheyer	14	NOUN
 kudurrī	14	OTHER
-Taminos	14	NOUN
+Taminos	14	NOUN	Tamino
 Rechnungsmünze	14	NOUN
 Kronentaler	14	NOUN
-Hofers	14	NOUN
+Hofers	14	NOUN	Hofer
 Hofstellen	14	NOUN
 Truppenübungsplatzes	14	NOUN
 Blechblasinstrument	14	NOUN
@@ -80581,13 +80581,13 @@ Akunin	14	NOUN
 Arbeitsgeschwindigkeit	14	NOUN
 Antimilitarismus	14	NOUN
 Programmdirektor	14	NOUN
-Empfangsgeräte	14	NOUN
+Empfangsgeräte	14	NOUN	Empfangsgerät
 BKG	14	NOUN
-Oberschwabens	14	NOUN
-Logbücher	14	NOUN
+Oberschwabens	14	NOUN	Oberschwaben
+Logbücher	14	NOUN	Logbuch
 Stadtamhof	14	NOUN
 Elementarreaktionen	14	NOUN
-Diakoninnen	14	NOUN
+Diakoninnen	14	NOUN	Diakonin
 niederfrequenten	14	OTHER
 Bruchsaler	14	NOUN
 Vollformat	14	NOUN
@@ -80602,10 +80602,10 @@ Potiorek	14	NOUN
 Sozialistengesetz	14	NOUN
 Lochblende	14	NOUN
 Balsam	14	NOUN
-Kautskys	14	NOUN
-Trotzkis	14	NOUN
+Kautskys	14	NOUN	Kautsky
+Trotzkis	14	NOUN	Trotzki
 Abusch	14	NOUN
-Naturrechte	14	NOUN
+Naturrechte	14	NOUN	Naturrecht
 Budissin	14	NOUN
 SMPTE	14	NOUN
 Belaja	14	NOUN
@@ -80616,10 +80616,10 @@ Rochlitzer	14	NOUN
 Mirabal	14	NOUN
 Kettenantrieb	14	NOUN
 Wiegand	14	NOUN
-Fingerlöchern	14	NOUN
+Fingerlöchern	14	NOUN	Fingerlöcher
 Birg	14	NOUN
 Coulthard	14	NOUN
-Seidels	14	NOUN
+Seidels	14	NOUN	Seidel
 Widerspruchsbehörde	14	NOUN
 Nuke	14	NOUN
 Ziegelbau	14	NOUN
@@ -80629,9 +80629,9 @@ Amu	14	NOUN
 Bagrationowsk	14	NOUN
 Krasnojarsker	14	NOUN
 Bratislavaer	14	NOUN
-Zeitkarten	14	NOUN
+Zeitkarten	14	NOUN	Zeitkarte
 Ekliptikschiefe	14	NOUN
-Stettins	14	NOUN
+Stettins	14	NOUN	Stettin
 Kamień	14	NOUN
 DKM	14	NOUN
 Glattfelden	14	NOUN
@@ -80646,7 +80646,7 @@ Vorsfelde	14	NOUN
 Durchlassspannung	14	NOUN
 Galicia	14	NOUN
 Tscherniwzi	14	NOUN
-Wisents	14	NOUN
+Wisents	14	NOUN	Wisent
 Märchensammlung	14	NOUN
 sRGB	14	OTHER
 Budzislawski	14	NOUN
@@ -80656,7 +80656,7 @@ ASten	14	NOUN
 Dáil	14	NOUN
 DSt	14	NOUN
 Mordwinen	14	NOUN
-Hauptebenen	14	NOUN
+Hauptebenen	14	NOUN	Hauptebene
 Affalterbach	14	NOUN
 Gravenbruch	14	NOUN
 Lancia	14	NOUN
@@ -80674,8 +80674,8 @@ Straßdorf	14	NOUN
 GND	14	NOUN
 Isrāfīl	14	NOUN
 Lauban	14	NOUN
-Fröbels	14	NOUN
-Zugläufe	14	NOUN
+Fröbels	14	NOUN	Fröbel
+Zugläufe	14	NOUN	Zuglauf
 Cassella	14	NOUN
 Nienburger	14	NOUN
 Moys	14	NOUN
@@ -80699,9 +80699,9 @@ Zauckerode	14	NOUN
 ULA	14	NOUN
 Eurocard	14	NOUN
 Triathletinnen	14	NOUN
-Neubrandenburgs	14	NOUN
+Neubrandenburgs	14	NOUN	Neubrandenburg
 Jōyō	14	NOUN
-Lignine	14	NOUN
+Lignine	14	NOUN	Lignin
 Kirchlengern	14	NOUN
 Rieckenberg	14	NOUN
 Genossenschafter	14	NOUN
@@ -80711,9 +80711,9 @@ Köppern	14	NOUN
 Kehlsteinhaus	14	NOUN
 TTR	14	NOUN
 Schilthornbahn	14	NOUN
-Basistunnels	14	NOUN
-Kerouacs	14	NOUN
-Bibliothekarinnen	14	NOUN
+Basistunnels	14	NOUN	Basistunnel
+Kerouacs	14	NOUN	Kerouac
+Bibliothekarinnen	14	NOUN	Bibliothekarin
 Blinddruck	14	NOUN
 Heatset	14	NOUN
 Monticello	14	NOUN
@@ -80724,45 +80724,45 @@ Aurajoki	14	NOUN
 Synth	14	NOUN
 Creuzer	14	NOUN
 Standardnormalverteilung	14	NOUN
-Kolpings	14	NOUN
+Kolpings	14	NOUN	Kolping
 Aufderhöhe	14	NOUN
 Capsaicinoide	14	NOUN
-Cartwrights	14	NOUN
+Cartwrights	14	NOUN	Cartwright
 Abbate	14	NOUN
 Manucci	14	NOUN
 formstabile	14	OTHER
 Tschechowa	14	NOUN
 Engers	14	NOUN
-Servets	14	NOUN
+Servets	14	NOUN	Servet
 Wumpscut	14	NOUN
 Glaßbrenner	14	NOUN
 Eyquem	14	NOUN
 Krauthammer	14	NOUN
-Weigels	14	NOUN
+Weigels	14	NOUN	Weigel
 folgeknoten	14	OTHER
-Schutzalters	14	NOUN
+Schutzalters	14	NOUN	Schutzalter
 Vachss	14	NOUN
 Meerbuscher	14	NOUN
 Glättli	14	NOUN
 Herdersem	14	NOUN
 sekher	14	OTHER
-Mitfahrzentralen	14	NOUN
+Mitfahrzentralen	14	NOUN	Mitfahrzentrale
 Vispa	14	NOUN
 Energieumwandlung	13	NOUN
 Erzählstruktur	13	NOUN
 Axiomatik	13	NOUN
 aussagenlogischen	13	OTHER
 Typentheorie	13	NOUN
-Wahrheitstabellen	13	NOUN
+Wahrheitstabellen	13	NOUN	Wahrheitstabelle
 Binoche	13	NOUN
 Butterfly	13	NOUN,OTHER
-Palisades	13	NOUN
+Palisades	13	NOUN	Palisade
 Jacksonville	13	NOUN
 Vim	13	NOUN,OTHER
 Munitionsfabrik	13	NOUN
 schiere	13	OTHER
 Loeb	13	NOUN
-Abnehmern	13	NOUN
+Abnehmern	13	NOUN	Abnehmer
 Erzählstil	13	NOUN
 Kurzzeichen	13	NOUN
 AUD	13	NOUN,OTHER
