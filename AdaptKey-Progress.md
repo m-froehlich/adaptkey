@@ -625,6 +625,32 @@ non-trivial changes).
   the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries
   (separate decision), and populating `lemma` on every result so far.
 
+- **§309 (v1.0.62): round 4 - the 50-199 band (2290 candidates, 964 rows changed) - largest single band**
+  **done so far, reviewed individually exactly like the first three.** Before starting, flagged to the user
+  that this band alone (2290) already exceeds bands 1-3 combined (~1424), with 6138 + 1073 still to come
+  after it - the user explicitly confirmed continuing the same exhaustive per-word review for `≥50`
+  frequency, to be reassessed once this band closed. Same established method throughout: bare predicative
+  participles and genuine infinitives/finite forms tagged plain `VERB`; further-declined participle-as-
+  adjective forms left untouched unless their spelling genuinely doubles as a weak-verb preterite-plural
+  (`VERB,OTHER`); Präsens-Partizip-as-adjective and pure adjective/determiner/number/conjunction entries
+  untouched. 774 words `OTHER` -> `VERB`; 190 genuine dual-meaning words `OTHER` -> `VERB,OTHER` (the
+  established participle/preterite-plural collision pattern, plus a handful of independent-second-meaning
+  cases in the same shape as round 3's six flagged ones, e.g. `kühlen`/`leeren`/`fertigen`/`billigen`/
+  `mäßigen` - real but secondary verb readings next to a dominant adjective one - not separately re-flagged
+  this round since the pattern itself is now established). `git diff --stat` confirmed exactly 964 lines
+  changed, via the same fail-loud script pattern - caught and fixed two real authoring slips before writing
+  anything (two words accidentally duplicated within `verb_only`, and four words - `ersetzten`/`stützten`/
+  `versorgten`/`bearbeiteten` - accidentally placed in both the plain-`VERB` and dual lists; the script's own
+  overlap/duplicate assertions caught both classes immediately, nothing was silently corrupted).
+  `dictionaries/de/version.txt` 19 -> 20, pack rebuilt/verified, `LanguagePackCatalog` version 19 -> 20. No
+  new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 365 -> 366,
+  `versionName` `"1.0.61"` -> `"1.0.62"`. Not yet device-confirmed. Remaining scope: two frequency bands left
+  (10-49: 6138, <10: 1073 - together over 7x this band's own size), the mechanical weak-verb-inflection pass,
+  the strong-verb principal-parts table, the flagged noise entries (separate decision), and populating
+  `lemma` on every result so far. **Given the scale of what's left, the next session should re-raise the
+  pacing question from the top of this round before committing to the same exhaustive approach for 10-49 and
+  <10.**
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with

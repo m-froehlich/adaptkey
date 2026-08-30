@@ -177,7 +177,9 @@ object LanguagePackCatalog {
             // plus the same tag-order fix retroactively applied to D-368's own 42 pre-existing
             // NOUN,OTHER,VERB entries (-> NOUN,VERB,OTHER), per explicit user request. 423 + 42 rows
             // changed.
-            version = 19
+            // §309 (v1.0.62): round 4, the 50-199 band (774 OTHER -> VERB, 190 OTHER -> VERB,OTHER),
+            // 2290 candidates individually reviewed. 964 rows changed.
+            version = 20
         ),
         Entry(
             Language.GREEK,
