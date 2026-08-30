@@ -243,6 +243,10 @@ History.md's append-only log) so they are not lost if the situation that would j
   between candidates" case adequately. Revisit only if a future profiling round again points at wasted,
   actually-superseded query time (not raw computation cost) as the dominant remaining factor.
 
+- **A real fastText/ONNX model behind the existing `LanguageClassifier` interface**, as an alternative to the
+  current on-device character-trigram classifier (A-03), if language-detection accuracy ever becomes the
+  bottleneck. Purely optional - no known accuracy problem has actually motivated this yet.
+
 ## Open TODOs / Known Limitations (Not Yet Actioned)
 
 Confirmed real, deliberately not fixed yet - flagged here so a future session does not have to rediscover
@@ -359,6 +363,23 @@ non-trivial changes).
   someone builds and hosts one, following the Contribution Guide's own §3/§4. Not started; flagging so a
   future session (or an actual French-speaking contributor) doesn't have to rediscover that the geometry and
   the content are two separate, independently-completed pieces of this feature.
+
+- **D-280/D-281 follow-up: `SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language` enum and**
+  **already fully typeable via QWERTY, but none has a dictionary or its own hint set built/hosted yet** - a
+  genuine, ready-to-pick-up community contribution opportunity, same shape as the French gap above but without
+  even a geometry question to resolve first (see `AdaptKey-Language-Contribution-Guide.md`). Separately, the
+  Python script that originally built `language_profiles.tsv` (A-03's trigram classifier data) is not in this
+  repository - reconstructing it is only needed if a future language falls outside the eight already covered
+  there.
+
+- **Tier-3 mini-LLM and first-run dictionary import: code-complete, real-device validation still outstanding.**
+  Everything code-side (orchestration, the C-06 setting, §6 rule-6 hook, adaptive learning, tokenizer +
+  parity, model-import UX, ONNX session/provider wiring) is built and unit-tested; what remains is validating
+  and tuning the actual inference runtime on a real ARM device (latency/battery), adding instrumented tests
+  for it, and verifying/tuning first-run dictionary import time on a real device. Model already sits at
+  `D:\workspace-ai\models\SmolLM2-360M-Instruct\`, imported via Settings -> Info/Großschreibung -> "Mini-LLM-
+  Modell". Possible optimisation once latency is measured: ABI splits/app bundle so each device only pulls its
+  own native lib (~18 MB arm64).
 
 - **D-330-followup - RESOLVED by §304 (v1.0.57).** D-330 itself fixed `deine`/`deiner`/`deinen`/`deinem`/
   `deines` against their `seinX` counterparts; the bare, uninflected `dein` was found showing the identical
@@ -1799,34 +1820,6 @@ same way, without summarising them - they stay permanently retrievable in Histor
   (no emulator/ONNX runtime here). Runtime correctness — and per-token latency/battery — must be validated
   on a real arm device; iterate on device logs. Also to tune on device: whether greedy is enough, prompt
   windowing, and whether the single big-model latency is acceptable per activation.
-
-## Remaining (per spec §11)
-
-- **D-278 (captured, §198): cross-device export/import** of settings, blacklist, learned words, and
-  credentials/e-mail store - not designed yet, see the Current State entry above for the open questions.
-- **D-280/D-281 follow-ups (§200/§201):** `SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the
-  `Language` enum and already fully typeable via QWERTY, but none has a dictionary or its own hint set
-  built/hosted yet - a genuine, ready-to-pick-up community contribution opportunity (see
-  `AdaptKey-Language-Contribution-Guide.md`). `FRENCH` is a separate case: already in the enum (for A-03's
-  classifier), but per the user's own D-281 pushback its AZERTY convention likely means QWERTY is not
-  actually good enough - still needs a real geometry decision (§5 of the guide) before it is genuinely done,
-  not only a dictionary. Separately, the Python script that built `language_profiles.tsv` (A-03's trigram
-  data) is not in this repository - reconstructing it is only needed for a language outside the eight
-  already covered there.
-- **Tier-3 — device work only:** validate + tune the inference runtime above on a real arm device (import
-  the model via Settings → Info/Großschreibung → "Mini-LLM-Modell"), add instrumented tests, and confirm
-  latency/battery. Everything code-side (orchestration, C-06 setting, §6 rule-6 hook, adaptive-learning,
-  tokenizer + parity, model-import UX, ONNX session/provider/wiring) is built. Model already at
-  `D:\workspace-ai\models\SmolLM2-360M-Instruct\`. Possible optimisation: ABI splits / app bundle so each
-  device only pulls its own native lib (~18 MB arm64), and quantise/prune further if latency is high.
-- Optional: a real fastText/ONNX model behind the same `LanguageClassifier` interface, if ever wanted.
-- Verify/tune the first-run dictionary import time on a real device.
-- **Stale-doc cleanup (found while answering "what's still open", not re-derived from anything new):** this
-  section previously also listed "persist `activeLanguage` across service restarts", "Greek diaeresis (ϊ/ϋ)
-  input" and "a language-aware C-05 blacklist editor" as nice-to-haves - all three were already implemented
-  long ago (`ActiveLanguageStore`; the G-01 Greek-input package, v0.7.16; `BlacklistActivity`'s language
-  spinner, also v0.7.16) and confirmed still present in the current code. Removed rather than left to
-  mislead a future session into re-implementing them.
 
 ## Testing gaps
 
