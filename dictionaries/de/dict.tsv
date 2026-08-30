@@ -103834,24 +103834,24 @@ antagonistisch	10	OTHER
 Polykondensation	10	NOUN
 Zungenrede	10	NOUN
 Briefform	10	NOUN
-Eswatinis	10	NOUN
+Eswatinis	10	NOUN	Eswatini
 siSwati	10	NOUN,OTHER
 Swaziland	10	NOUN
 Glamorgan	10	NOUN
 Evangelisation	10	NOUN
-Mitosen	10	NOUN
+Mitosen	10	NOUN	Mitose
 Nordtribüne	10	NOUN
 RHL	10	NOUN
 unsachgemäßer	10	OTHER
 Bahnkörper	10	NOUN
-Spermiums	10	NOUN
-Vostells	10	NOUN
+Spermiums	10	NOUN	Spermium
+Vostells	10	NOUN	Vostell
 Autoteilen	10	NOUN
 Stiepel	10	NOUN
 herausgebrachten	10	OTHER
 Mohl	10	NOUN
 Apabhramsha	10	NOUN
-Singhalesischen	10	NOUN,OTHER
+Singhalesischen	10	NOUN,OTHER	Singhalesisch
 Sinustachykardie	10	NOUN
 Versicherungskennzeichen	10	NOUN
 WL	10	NOUN,OTHER
@@ -103875,13 +103875,13 @@ Napoletana	10	NOUN
 Infraschallpegel	10	NOUN
 Mantelfläche	10	NOUN
 Nachzerfallswärme	10	NOUN
-Stammesvölkern	10	NOUN
+Stammesvölkern	10	NOUN	Stammesvölker
 Zermatter	10	NOUN
 Stegemann	10	NOUN
 Arlbergbahn	10	NOUN
 Greetsiel	10	NOUN
 Hünengrab	10	NOUN
-Kuratoren	10	NOUN
+Kuratoren	10	NOUN	Kurator
 Mosè	10	NOUN
 gegenstandslosen	10	OTHER
 Königsgut	10	NOUN
@@ -103894,8 +103894,8 @@ Unterhaltungskosten	10	NOUN
 HHA	10	NOUN
 Bahnsteiggleise	10	NOUN
 BMT	10	NOUN
-Relaisstationen	10	NOUN
-Notrufes	10	NOUN
+Relaisstationen	10	NOUN	Relaisstation
+Notrufes	10	NOUN	Notruf
 Pore	10	NOUN
 Mutterunternehmen	10	NOUN
 Fasttage	10	NOUN
@@ -103904,7 +103904,7 @@ zusammengezählt	10	OTHER
 insinööri	10	OTHER
 Vorderflügel	10	NOUN
 Pflegeeltern	10	NOUN
-Jelzins	10	NOUN
+Jelzins	10	NOUN	Jelzin
 Bega	10	NOUN
 Passarowitz	10	NOUN
 Waterlooplatz	10	NOUN
@@ -103914,7 +103914,7 @@ Sihlfeld	10	NOUN
 Tragekomfort	10	NOUN
 Eschenholz	10	NOUN
 Geschlechtskrankheit	10	NOUN
-Sonare	10	NOUN
+Sonare	10	NOUN	Sonar
 Trennschicht	10	NOUN
 Gezeitenzone	10	NOUN
 Lakonien	10	NOUN
@@ -103931,11 +103931,11 @@ verhärtet	10	OTHER
 überfluten	10	VERB
 Kavalleriedivision	10	NOUN
 Nanni	10	NOUN
-Kolbes	10	NOUN
+Kolbes	10	NOUN	Kolbe
 Ventilsteuerung	10	NOUN
 Bozeman	10	NOUN
-Biopsien	10	NOUN
-Gothas	10	NOUN
+Biopsien	10	NOUN	Biopsie
+Gothas	10	NOUN	Gotha
 Entwurzelung	10	NOUN
 Arise	10	NOUN,OTHER
 Kunming	10	NOUN
@@ -103947,19 +103947,19 @@ TENP	10	NOUN
 Kavaliershäuser	10	NOUN
 kirchenmusikalische	10	OTHER
 Thursby	10	NOUN
-Innsbrucks	10	NOUN
+Innsbrucks	10	NOUN	Innsbruck
 Oderufer	10	NOUN
 Eisenwerke	10	NOUN
 Führungsgremium	10	NOUN
 Leipa	10	NOUN
 Klemme	10	NOUN
 Beschallung	10	NOUN
-Hofmalers	10	NOUN
+Hofmalers	10	NOUN	Hofmaler
 Doppelstockwagen	10	NOUN
 Hochsauerlandkreises	10	NOUN
 comarques	10	OTHER
 Llevant	10	NOUN
-Fadenwürmern	10	NOUN
+Fadenwürmern	10	NOUN	Fadenwürmer
 Ebenhausen	10	NOUN
 Kischinjow	10	NOUN
 Sfatul	10	NOUN
@@ -103982,17 +103982,17 @@ RGBI	10	NOUN
 Marktpräsenz	10	NOUN
 Punktdichte	10	NOUN
 TPA	10	NOUN
-Hauptorten	10	NOUN
+Hauptorten	10	NOUN	Hauptort
 Rishikesh	10	NOUN
 Namenswechsel	10	NOUN
 extremistisch	10	OTHER
 Braunsche	10	NOUN
-Bairds	10	NOUN
+Bairds	10	NOUN	Baird
 Yagi	10	NOUN
 Unitymedia	10	NOUN
 Trägersignal	10	NOUN
 Grabowski	10	NOUN
-Franckes	10	NOUN
+Franckes	10	NOUN	Francke
 Bainimarama	10	NOUN
 Rebstock	10	NOUN
 Mandragora	10	NOUN
@@ -104006,13 +104006,13 @@ Segestes	10	NOUN
 Landeskirchenamt	10	NOUN
 Kunstschmied	10	NOUN
 Rehberg	10	NOUN
-Feministen	10	NOUN
+Feministen	10	NOUN	Feminist
 Silnice	10	NOUN
 Landeskrone	10	NOUN
 Wergeld	10	NOUN
 arrier	10	OTHER
 Schwebung	10	NOUN
-Delphinen	10	NOUN
+Delphinen	10	NOUN	Delphin
 Gegenstandsweite	10	NOUN
 Weitwinkelobjektiv	10	NOUN
 Battles	10	NOUN
@@ -104034,7 +104034,7 @@ Schleimünde	10	NOUN
 Informationsportal	10	NOUN
 arianischer	10	OTHER
 Ossius	10	NOUN
-Torpedobooten	10	NOUN
+Torpedobooten	10	NOUN	Torpedoboote
 Kostenträger	10	NOUN
 Kladderadatsch	10	NOUN
 Dämpferwicklung	10	NOUN
@@ -104042,20 +104042,20 @@ Plechanow	10	NOUN
 Peary	10	NOUN
 Phytotherapie	10	NOUN
 Landesgruppe	10	NOUN
-Erdmagnetfelds	10	NOUN
+Erdmagnetfelds	10	NOUN	Erdmagnetfeld
 Kimme	10	NOUN
-Kältemittels	10	NOUN
+Kältemittels	10	NOUN	Kältemittel
 Ausfallwahrscheinlichkeit	10	NOUN
-Oszilloskopen	10	NOUN
-Elektronenstrahls	10	NOUN
+Oszilloskopen	10	NOUN	Oszilloskop
+Elektronenstrahls	10	NOUN	Elektronenstrahl
 Kirchenkonferenz	10	NOUN
-Noskes	10	NOUN
+Noskes	10	NOUN	Noske
 JG	10	NOUN
 Soweto	10	NOUN
 Relotius	10	NOUN
 Ortenburg	10	NOUN
 Korla	10	NOUN
-Warägern	10	NOUN
+Warägern	10	NOUN	Waräger
 Samaj	10	NOUN
 Berichtswesen	10	NOUN
 Thru	10	NOUN,OTHER
@@ -104064,7 +104064,7 @@ Schuschkewitsch	10	NOUN
 Extraliga	10	NOUN
 Vereinsvermögen	10	NOUN
 kantengewichteten	10	OTHER
-Urys	10	NOUN
+Urys	10	NOUN	Ury
 padevat	10	OTHER
 Sith	10	NOUN
 Alen	10	NOUN
@@ -104073,9 +104073,9 @@ Kantenzug	10	NOUN
 Nachbarknoten	10	NOUN
 Schleifladen	10	NOUN
 Ringelrobbe	10	NOUN
-Okarinas	10	NOUN
+Okarinas	10	NOUN	Okarina
 Rettelbusch	10	NOUN
-Konföderationsartikeln	10	NOUN
+Konföderationsartikeln	10	NOUN	Konföderationsartikel
 Dekadenzliteratur	10	NOUN
 Sekundant	10	NOUN
 cohortes	10	OTHER
@@ -104094,14 +104094,14 @@ Pecci	10	NOUN
 Beckenbodenmuskulatur	10	NOUN
 Unterharz	10	NOUN
 Silberhütte	10	NOUN
-Surfbretter	10	NOUN
+Surfbretter	10	NOUN	Surfbrett
 Mastfuß	10	NOUN
 Sachsendorf	10	NOUN
 Palmenhaus	10	NOUN
-Vanuatus	10	NOUN
+Vanuatus	10	NOUN	Vanuatu
 Hauptregenbogen	10	NOUN
 QL	10	NOUN
-Tipis	10	NOUN
+Tipis	10	NOUN	Tipi
 Eckansicht	10	NOUN
 Nullfolge	10	NOUN
 Dsungarei	10	NOUN
@@ -104112,23 +104112,23 @@ Sendesaal	10	NOUN
 Ochotskischen	10	NOUN
 Korjaken	10	NOUN
 Merfeld	10	NOUN
-Augustinerinnen	10	NOUN
+Augustinerinnen	10	NOUN	Augustiner
 Enschede	10	NOUN
 Comcast	10	NOUN
 schrillen	10	OTHER
-Schützenvereinen	10	NOUN
+Schützenvereinen	10	NOUN	Schützenverein
 Ostseegouvernements	10	NOUN
 Laurussia	10	NOUN
 Nowonikolajewsk	10	NOUN
-Koltschaks	10	NOUN
-Balkenbrücken	10	NOUN
+Koltschaks	10	NOUN	Koltschak
+Balkenbrücken	10	NOUN	Balkenbrücke
 aleja	10	NOUN,OTHER
 Baschkiren	10	NOUN
-Antwerpens	10	NOUN
+Antwerpens	10	NOUN	Antwerpen
 Kunstverlag	10	NOUN
 Chordonia	10	NOUN
 Petersdorf	10	NOUN
-Usedoms	10	NOUN
+Usedoms	10	NOUN	Usedom
 Ducherow	10	NOUN
 Teileinheiten	10	NOUN
 Bokeloh	10	NOUN
@@ -104141,7 +104141,7 @@ Kadesch	10	NOUN
 Siebel	10	NOUN
 Frommermann	10	NOUN
 Lawinendurchbruch	10	NOUN
-Sperrspannungen	10	NOUN
+Sperrspannungen	10	NOUN	Sperrspannung
 Potenzwert	10	NOUN
 SJÖ	10	NOUN
 Anderlecht	10	NOUN
@@ -104152,23 +104152,23 @@ Zebus	10	NOUN
 Cöpenick	10	NOUN
 Hellersdorfer	10	NOUN
 Lauingen	10	NOUN
-Wodkas	10	NOUN
+Wodkas	10	NOUN	Wodka
 Schlüsselburg	10	NOUN
 Paketgröße	10	NOUN
 Hauptschulabschluss	10	NOUN
 DHCPv	10	NOUN
 Diesseitigkeit	10	NOUN
-Wowereits	10	NOUN
+Wowereits	10	NOUN	Wowereit
 Tangua	10	NOUN
 Einvernehmlichkeit	10	NOUN
 Giffey	10	NOUN
 Rechnerknoten	10	NOUN
-Sexuallebens	10	NOUN
+Sexuallebens	10	NOUN	Sexualleben
 Oberbaurat	10	NOUN
 Kollwitzplatz	10	NOUN
 selski	10	OTHER
 Arista	10	NOUN
-Außentanks	10	NOUN
+Außentanks	10	NOUN	Außentank
 Reactors	10	NOUN,OTHER
 Kulin	10	NOUN
 Primärvalenzen	10	NOUN
@@ -104202,14 +104202,14 @@ Geschlechterstereotype	10	NOUN
 Haddenhausen	10	NOUN
 Wesertor	10	NOUN
 Wagenmaterial	10	NOUN
-Naturparke	10	NOUN
-Baptistengemeinden	10	NOUN
+Naturparke	10	NOUN	Naturpark
+Baptistengemeinden	10	NOUN	Baptistengemeinde
 Gröden	10	NOUN
 Jeanny	10	NOUN
 Ribbeck	10	NOUN
 Beinstein	10	NOUN
 Siegelhausen	10	NOUN
-Waiblingens	10	NOUN
+Waiblingens	10	NOUN	Waiblingen
 Hulot	10	NOUN
 Großdeinbach	10	NOUN
 Wetzgau	10	NOUN
@@ -104226,9 +104226,9 @@ Hauptträgheitsachsen	10	NOUN
 Bhagirathi	10	NOUN
 Dänholm	10	NOUN
 AFE	10	NOUN
-Kiribatis	10	NOUN
+Kiribatis	10	NOUN	Kiribati
 Mainwaring	10	NOUN
-Deckungen	10	NOUN
+Deckungen	10	NOUN	Deckung
 Teepflanze	10	NOUN
 Pekoe	10	NOUN
 Gnarrenburg	10	NOUN
@@ -104237,7 +104237,7 @@ Knüllgebirge	10	NOUN
 Graukarte	10	NOUN
 Lebemann	10	NOUN
 Eumelanin	10	NOUN
-Kindesmissbrauchs	10	NOUN
+Kindesmissbrauchs	10	NOUN	Kindesmissbrauch
 Katzenstein	10	NOUN
 Tonträgerindustrie	10	NOUN
 Rupprecht	10	NOUN
@@ -104253,13 +104253,13 @@ Branntweinmonopol	10	NOUN
 Traps	10	NOUN
 Großfürstenwürde	10	NOUN
 Handelsakademie	10	NOUN
-Aranesische	10	NOUN,OTHER
-Papenburgs	10	NOUN
-Föderationskreise	10	NOUN
+Aranesische	10	NOUN,OTHER	Aranesisch
+Papenburgs	10	NOUN	Papenburg
+Föderationskreise	10	NOUN	Föderationskreis
 Prigorodny	10	NOUN
 inguschische	10	OTHER
 udmurtische	10	NOUN,OTHER
-Vokallängen	10	NOUN
+Vokallängen	10	NOUN	Vokallänge
 Leerkassetten	10	NOUN
 Röhrenverstärker	10	NOUN
 Ashitaka	10	NOUN
@@ -104273,13 +104273,13 @@ DKV	10	NOUN
 Nizan	10	NOUN
 disklabel	10	OTHER
 Korporationsverband	10	NOUN
-Maschsees	10	NOUN
+Maschsees	10	NOUN	Maschsee
 Tramm	10	NOUN
 Demokratycznej	10	NOUN
 Vilsen	10	NOUN
 Rabenau	10	NOUN
 Zwingerteich	10	NOUN
-Kronentors	10	NOUN
+Kronentors	10	NOUN	Kronentor
 eSIM	10	OTHER
 Unicycle	10	NOUN,OTHER
 ZSL	10	NOUN
@@ -104288,7 +104288,7 @@ Sulfotransferasen	10	NOUN
 Eigentumsübertragung	10	NOUN
 Himmelsmeister	10	NOUN
 Padmé	10	NOUN
-Saiblinge	10	NOUN
+Saiblinge	10	NOUN	Saibling
 Seppensen	10	NOUN
 Prisser	10	NOUN
 Bürgervorsteher	10	NOUN
@@ -104302,19 +104302,19 @@ Leopoldshall	10	NOUN
 Traufenhaus	10	NOUN
 Nordpfälzer	10	NOUN
 VdU	10	NOUN
-Haiders	10	NOUN
+Haiders	10	NOUN	Haider
 Bancomat	10	NOUN
 Bundesligaspiel	10	NOUN
 Unterzahl	10	NOUN
 Drittligisten	10	NOUN
 NLZ	10	NOUN
-Ultras	10	NOUN
+Ultras	10	NOUN	Ultra
 Fanfreundschaft	10	NOUN
 RUNSTATS	10	NOUN
 Tabellenbereich	10	NOUN
 Schlemm	10	NOUN
 Regenbogenhaut	10	NOUN
-Trümpfe	10	NOUN
+Trümpfe	10	NOUN	Trumpf
 Revoke	10	NOUN
 Marktschellenberg	10	NOUN
 Kurgebiet	10	NOUN
@@ -104332,13 +104332,13 @@ Heftromane	10	NOUN
 Watzmannkinder	10	NOUN
 Hocheck	10	NOUN
 Schwarzenmoor	10	NOUN
-Harpunen	10	NOUN
+Harpunen	10	NOUN	Harpune
 Dünnschichtzellen	10	NOUN
 Graeff	10	NOUN
 Liberce	10	NOUN
 Zipfsche	10	NOUN
 Carcross	10	NOUN
-Yukons	10	NOUN
+Yukons	10	NOUN	Yukon
 Selkirk	10	NOUN
 Inuvik	10	NOUN
 Iqaluit	10	NOUN
@@ -104347,14 +104347,14 @@ Werste	10	NOUN
 Notfunkbaken	10	NOUN
 Wasgau	10	NOUN
 Helveticat	10	NOUN
-Tetroden	10	NOUN
+Tetroden	10	NOUN	Tetrode
 nauruische	10	OTHER
 Tardigrada	10	NOUN
 Schweineartigen	10	NOUN
 Tabellenführung	10	NOUN
 Nanomaterialien	10	NOUN
 McAuliffe	10	NOUN
-Chongqings	10	NOUN
+Chongqings	10	NOUN	Chongqing
 Facharztbezeichnung	10	NOUN
 Tönisberg	10	NOUN
 Nachbarbundesstaaten	10	NOUN
@@ -104363,14 +104363,14 @@ Bayldon	10	NOUN
 TVthek	10	NOUN
 Bookcrossing	10	NOUN
 Leki	10	NOUN
-Südkurdischen	10	NOUN,OTHER
+Südkurdischen	10	NOUN,OTHER	Südkurdisch
 Straßenboßeln	10	NOUN
 DTE	10	NOUN
 Campioni	10	NOUN
 Desarmoises	10	NOUN
 Callimene	10	NOUN
-Leasingverträge	10	NOUN
-Leasingnehmers	10	NOUN
+Leasingverträge	10	NOUN	Leasingvertrag
+Leasingnehmers	10	NOUN	Leasingnehmer
 Mistler	10	NOUN
 Silikonflüssigkeiten	10	NOUN
 Grethe	10	NOUN
@@ -104383,17 +104383,17 @@ Thoregon	10	NOUN
 Atlan	10	NOUN
 Meštrović	10	NOUN
 Satimata	10	NOUN
-Sequenzern	10	NOUN
+Sequenzern	10	NOUN	Sequenzer
 Percha	10	NOUN
 Jorat	10	NOUN
 Atlilied	10	NOUN
 Maipo	10	NOUN
 Cauvin	10	NOUN
-Proteasoms	10	NOUN
+Proteasoms	10	NOUN	Proteasom
 Verbrechensbegriff	10	NOUN
 Lampert	10	NOUN
 deiktisch	10	OTHER
-Gulbranssons	10	NOUN
+Gulbranssons	10	NOUN	Gulbransson
 Addiermaschinen	10	NOUN
 Mantissenskala	10	NOUN
 Funktionsskalen	10	NOUN
@@ -104409,9 +104409,9 @@ Grimhild	10	NOUN
 Latimeria	10	NOUN
 Esico	10	NOUN
 Belvederer	10	NOUN
-Polykarps	10	NOUN
-Sängerschaften	10	NOUN
-Tomahawks	10	NOUN
+Polykarps	10	NOUN	Polykarp
+Sängerschaften	10	NOUN	Sängerschaft
+Tomahawks	10	NOUN	Tomahawk
 Trokmer	10	NOUN
 Codefolge	10	NOUN
 Dvaravati	10	NOUN
@@ -104427,7 +104427,7 @@ Siegelwappen	10	NOUN
 Buisdorf	10	NOUN
 Kommersbücher	10	NOUN
 Höchsts	10	NOUN
-Troikas	10	NOUN
+Troikas	10	NOUN	Troika
 Sondersiedlungen	10	NOUN
 Leopoldshöher	10	NOUN
 Bechterdissen	10	NOUN
