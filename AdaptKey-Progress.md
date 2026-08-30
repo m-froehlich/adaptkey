@@ -694,6 +694,19 @@ non-trivial changes).
   weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries, and
   populating `lemma` on every result so far.
 
+- **§312 (v1.0.65): round 5c - the `15-19` sub-band of `10-19` (1165 candidates, 395 rows changed) - `10-19`**
+  **itself further split into `15-19`/`10-14` for manageability, same reasoning as the `10-49` split.** Same
+  method as every round so far. 315 words `OTHER` -> `VERB`; 80 genuine dual-meaning words `OTHER` ->
+  `VERB,OTHER`. The verb-list-authoring approach from §311 (derive `verb_only` as "not already in
+  `verb_other`", plus a dedup pass) was kept from the start this round specifically because it proved more
+  reliable than hand-fixing each overlap - the script ran clean on the first real attempt as a result,
+  compared to several iterative fixes needed in earlier rounds. `git diff --stat` confirmed exactly 395
+  lines changed. `dictionaries/de/version.txt` 22 -> 23, pack rebuilt/verified, `LanguagePackCatalog` version
+  22 -> 23. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 368 ->
+  369, `versionName` `"1.0.64"` -> `"1.0.65"`. Not yet device-confirmed. Remaining: the `10-14` sub-band of
+  `10-19` (2060 candidates), then the `<10` band (1073), the mechanical weak-verb-inflection pass, the
+  strong-verb principal-parts table, the flagged noise entries, and populating `lemma` on every result so far.
+
 - **§304 (v1.0.57): D-330-followup - the full possessive-pronoun audit; the entire combined cleanup bundle**
   **is now closed.** Read `KeyboardProximity.kt` (the app's real QWERTZ adjacency grid) and confirmed
   `forKnownWordOverride`'s `cost <= 1` gate only ever fires for a single keyboard-adjacent substitution with
