@@ -971,6 +971,44 @@ non-trivial changes).
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
 
+- **§328 (v1.0.80): D-386-followup - is the automatically-resolved file actually the right one?** User's own
+  direct follow-up after §327 shipped: does the app report a genuine downgrade distinctly, and does it
+  verify the resolved archive's own language, not just trust its file name? Both turned out to be real,
+  previously-unnoticed gaps, confirmed by reading the code (not guessed) - and, for the language check, by
+  an existing test unintentionally proving it (installing arbitrary content labelled as any `Language`
+  without any content check at all). Two independent fixes, one shared round per the user's own explicit
+  instruction (interrupted an earlier attempt at bumping/building for the first fix alone - "sonst hättest
+  du mir zweimal geversionbumpt und gebuildet"):
+  1. **Staleness reporting.** The old `pack.version <= installedVersion` check collapsed "exactly current"
+     and "actually older" into the same "already up to date" message. New `LanguagePackInstaller.
+     compareVersions()` (pure, unit-tested - 4 new cases) returns a three-way `VersionCheck`
+     (`INSTALL`/`ALREADY_CURRENT`/`OLDER_THAN_INSTALLED`); `LanguagePacksActivity.importPack()` now shows a
+     distinct message for a genuine downgrade attempt (new `d280_older_than_installed` string) instead of
+     silently reporting "nothing to do".
+  2. **Language identity.** `version.txt` gained an optional second line - the pack's own declared language
+     code - cross-checked in `LanguagePackInstaller.parse()` against the language actually being imported;
+     a mismatch throws the new `LanguageMismatchException` (caught distinctly in the Activity, new
+     `d280_language_mismatch` string with both codes interpolated), never silently accepted or lumped into
+     a generic "import failed". Tolerant of a legacy archive with no second line at all (never rejected on a
+     missing declaration). User's own explicit choice between two implementation options (a version.txt
+     content line vs. renaming an archive entry) - went with the content line, keeping D-310's own
+     fixed-entry-name convention intact.
+  Both hosted packs rebuilt to carry the new line, **per the user's own explicit instruction that this must
+  cover Greek too, not only German**: `dictionaries/de/version.txt` 33 -> 34, `dictionaries/el/version.txt`
+  1 -> 2, `LanguagePackCatalog` versions 33 -> 34 / 1 -> 2. `dict.tsv`/`bigram.tsv`/`hints.tsv` themselves
+  untouched - rebuilt via a Python `zipfile.ZipFile` one-liner (this environment's Git Bash has no `zip`
+  binary; the German zip was briefly, accidentally deleted mid-attempt and restored via `git checkout`
+  before any data was lost) and verified byte-identical against the source `dictionaries/<code>/` files
+  afterward, same discipline as every prior pack-rebuild round. `AdaptKey-Language-Contribution-Guide.md`
+  updated so a future community-contributed language pack knows about both the accurate-staleness-reporting
+  behaviour and the new, recommended `version.txt` second line. 8 new unit tests (`LanguagePackInstallerTest`:
+  4 for `compareVersions`, 4 for the language-mismatch validation including case-insensitivity and legacy-
+  archive tolerance). 1144 unit tests total (was 1136), all green (via JBR JDK 21, both `:app:assembleRelease`
+  and `:app:testDebugUnitTest` verified). `versionCode` 383 -> 384, `versionName` `"1.0.79"` -> `"1.0.80"`
+  (one bump covering both fixes together, not two separate rounds). Spec §30 extended with both checks;
+  D-386 backlog bullet unchanged (already resolved by §327, this is a direct refinement of the same item, not
+  a new one). Not yet device-confirmed.
+
 - **§327 (v1.0.79): D-344/D-386 implemented together - duplicate-download-file resolution via a**
   **once-granted folder tree, not a single-file picker.** Verified feasibility against the official Android
   documentation before implementing (`WebFetch`/`WebSearch`, not guessed): `ACTION_OPEN_DOCUMENT` cannot

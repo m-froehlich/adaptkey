@@ -1369,6 +1369,27 @@ up immediately. This is deliberately what keeps `findNewestMatch` itself simple 
 folder kept clear of stale copies, a *future* download of the same name rarely needs a duplicate suffix to
 begin with.
 
+**D-386-followup: is the resolved file actually the right one?** Automatic filename-pattern resolution
+removes the human "did I pick the right file" check a manual picker implied, so two content-level checks
+close that gap for language packs specifically (the LLM model has no version/language concept to check
+against):
+- **Staleness is reported accurately, not collapsed into one message.** `LanguagePackInstaller.
+  compareVersions(packVersion, installedVersion)` (pure, unit-tested) distinguishes three outcomes -
+  `INSTALL` (nothing installed yet, or the found archive is strictly newer), `ALREADY_CURRENT` (exactly the
+  same version), and `OLDER_THAN_INSTALLED` (the found archive is strictly *older*) - where the previous
+  `<=` check collapsed the latter two into the same "already up to date" message. An accidental downgrade
+  (a stale or wrong file resolved from the download folder) is now surfaced distinctly, never silently
+  treated as "nothing to do".
+- **Language identity is verified, not assumed.** `version.txt` gained an optional second line - the pack's
+  own declared language code (`"de"`, `"el"`, ...) - which `LanguagePackInstaller.parse()` cross-checks
+  against the language actually being imported, throwing `LanguageMismatchException` (a distinct, specific
+  "wrong language" message, not a generic import failure) on an actual mismatch. Tolerant of an archive with
+  no second line at all (every archive built before this convention existed - never rejected on a missing
+  declaration, only a present and wrong one). Both hosted packs (German, Greek) were rebuilt with this line
+  (`dictionaries/de/version.txt` 33 -> 34, `dictionaries/el/version.txt` 1 -> 2 - `dict.tsv`/`bigram.tsv`/
+  `hints.tsv` themselves byte-identical, verified after rebuild); the language-contribution guide documents
+  the format for future community packs.
+
 **Considered and explicitly declined**: HTTP header control (`Content-Disposition`/`Content-Type` tuning on
 the hosted download, D-344's original option 1) - the app does not control every possible hosting surface a
 future community-contributed language pack might use (D-344's own motivating case was GitHub raw content

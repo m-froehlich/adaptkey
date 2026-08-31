@@ -114,20 +114,34 @@ its own location, not by its filenames:
   need to hand-tune its popup's left/right direction: D-282 made that automatic, based on the real popup
   width and the key's actual screen position, not on which key it happens to be - it works the same whether
   the alternatives came from this file or from hand-written Kotlin.
-- **`version.txt`** (optional but strongly recommended, D-308): a single plain integer, e.g. `1` - this
-  pack's own version, bumped by *you* every time you publish a revised `dict.tsv`/`bigram.tsv`/`hints.tsv`
-  under the same hosted URL. `LanguagePacksActivity`'s Download/Import buttons stay available at any time
-  (even for an already-installed language) so a user can always manually re-check; re-importing only
-  actually applies the freshly downloaded archive when *its own* version is strictly newer than what is
-  already installed, otherwise nothing changes and the user is told it is already current. Start at `1` for
-  your language's first release and increment by 1 every time you publish a real content change. **A
-  missing version file is not neutral - it actively blocks future updates from ever being picked up by
-  re-import**: an archive with no version file is always treated as version `1` (same as a fresh install
-  with nothing recorded yet), so once a language is installed, every later re-import of a version-less
-  archive compares `1 <= 1` and is always skipped as "already current", no matter how different the actual
-  content is - the only way such an update then reaches an existing install is the user fully removing and
-  reinstalling the language. If you intend to ever revise your pack after its first release, include this
-  file from the start.
+- **`version.txt`** (optional but strongly recommended, D-308): its first line is a single plain integer,
+  e.g. `1` - this pack's own version, bumped by *you* every time you publish a revised
+  `dict.tsv`/`bigram.tsv`/`hints.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
+  buttons stay available at any time (even for an already-installed language) so a user can always manually
+  re-check; re-importing only actually applies the freshly downloaded archive when *its own* version is
+  strictly newer than what is already installed - if it is exactly the same, the user is told it is already
+  current; if it is *older* (D-386-followup: a stale or wrong file resolved from the download folder), the
+  user is told that distinctly instead, so an accidental downgrade is never silently swallowed as "nothing to
+  do". Start at `1` for your language's first release and increment by 1 every time you publish a real
+  content change. **A missing version file is not neutral - it actively blocks future updates from ever
+  being picked up by re-import**: an archive with no version file is always treated as version `1` (same as a
+  fresh install with nothing recorded yet), so once a language is installed, every later re-import of a
+  version-less archive compares as "already current", no matter how different the actual content is - the
+  only way such an update then reaches an existing install is the user fully removing and reinstalling the
+  language. If you intend to ever revise your pack after its first release, include this file from the start.
+
+  D-386-followup: a second line, your language's own code (e.g. `de`), is strongly recommended too -
+  `LanguagePackInstaller.parse()` cross-checks it against the language being imported and rejects a genuine
+  mismatch outright (with a clear "wrong language" message, not a silent wrong import). This matters because
+  `LanguagePacksActivity`'s own import flow (D-386) resolves the archive to install purely by matching an
+  expected *file name* in the user's downloads folder, not by the user visually confirming the file the way a
+  manual picker once implied - this line is what still catches a wrong/mismatched file at the content level.
+  Omitting it is tolerated (never rejected on that basis alone), but every pack built for a specific language
+  should include it:
+  ```
+  1
+  de
+  ```
 
 Put your working files under a new `dictionaries/<code>/` folder at the repo root (mirroring
 `dictionaries/de/`, `dictionaries/el/` - both already using these exact fixed names) so they stay in version

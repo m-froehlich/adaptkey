@@ -266,21 +266,26 @@ class LanguagePacksActivity : AppCompatActivity() {
     private fun importPack(uri: Uri, entry: LanguagePackCatalog.Entry) {
         val language = entry.language
         val alreadyInstalled = language in InstalledLanguagesStore.load(this)
-        // null result = skipped, the picked archive was not newer than what is already installed.
-        val result = runCatching<Int?> {
+        val result = runCatching {
             contentResolver.openInputStream(uri).use { input ->
                 requireNotNull(input) { "cannot open $uri" }
                 val pack = LanguagePackInstaller.parse(input, language)
-                if (alreadyInstalled && pack.version <= InstalledLanguagesStore.installedVersion(this, language)) {
-                    // D-334: the hosted archive is stale relative to the catalog's claimed version -
-                    // suppress the "update available" hint for this exact catalog version so it does not
-                    // reappear on every rebuild() until a future app release raises the catalog further.
-                    InstalledLanguagesStore.suppressCatalogVersion(this, language, entry.version)
-                    return@use null
+                val installedVersion = if (alreadyInstalled) InstalledLanguagesStore.installedVersion(this, language) else null
+                val check = LanguagePackInstaller.compareVersions(pack.version, installedVersion)
+                when (check) {
+                    LanguagePackInstaller.VersionCheck.INSTALL -> {
+                        LanguagePackInstaller.write(LanguagePackStorage.packDir(this), pack)
+                        InstalledLanguagesStore.add(this, language, pack.version)
+                    }
+                    LanguagePackInstaller.VersionCheck.ALREADY_CURRENT, LanguagePackInstaller.VersionCheck.OLDER_THAN_INSTALLED -> {
+                        // D-334: the hosted archive is stale relative to the catalog's claimed version (or,
+                        // D-386-followup, older than what's installed) - suppress the "update available"
+                        // hint for this exact catalog version so it does not reappear on every rebuild()
+                        // until a future app release raises the catalog further.
+                        InstalledLanguagesStore.suppressCatalogVersion(this, language, entry.version)
+                    }
                 }
-                LanguagePackInstaller.write(LanguagePackStorage.packDir(this), pack)
-                InstalledLanguagesStore.add(this, language, pack.version)
-                pack.version
+                check
             }
         }
         if (!result.isFailure) {
@@ -288,10 +293,13 @@ class LanguagePacksActivity : AppCompatActivity() {
         }
         runOnUiThread {
             setBusy(false)
+            val mismatch = result.exceptionOrNull() as? LanguagePackInstaller.LanguageMismatchException
             val message = when {
-                result.isFailure -> R.string.d280_import_failed
-                result.getOrNull() == null -> R.string.d280_already_current
-                else -> R.string.d280_imported
+                mismatch != null -> getString(R.string.d280_language_mismatch, mismatch.declaredCode, mismatch.expectedCode)
+                result.isFailure -> getString(R.string.d280_import_failed)
+                result.getOrNull() == LanguagePackInstaller.VersionCheck.OLDER_THAN_INSTALLED -> getString(R.string.d280_older_than_installed)
+                result.getOrNull() == LanguagePackInstaller.VersionCheck.ALREADY_CURRENT -> getString(R.string.d280_already_current)
+                else -> getString(R.string.d280_imported)
             }
             Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             rebuild()

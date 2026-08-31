@@ -80,15 +80,74 @@ object LanguagePackInstaller {
     }
     
     /**
+     * D-386-followup: the three possible outcomes of comparing a freshly-parsed archive's own
+     * [ParsedPack.version] against whatever is already installed - distinguishing "genuinely the same
+     * version, nothing to do" from "the found archive is actually *older*" matters on its own: a stale or
+     * wrong file quietly resolved by [de.froehlichmedia.adaptkey.download.DownloadFolderResolver] must never
+     * be reported the same way as an intentional, already-up-to-date re-check, or the user has no way to
+     * notice they picked up an outdated file at all.
+     */
+    enum class VersionCheck {
+        /** No installed version to compare against, or the archive is strictly newer - apply it. */
+        INSTALL,
+        
+        /** Exactly the same version as what is already installed - nothing to apply. */
+        ALREADY_CURRENT,
+        
+        /** Strictly older than what is already installed - nothing applied; worth surfacing distinctly. */
+        OLDER_THAN_INSTALLED
+    }
+    
+    /**
+     * Pure version comparison, split out of [de.froehlichmedia.adaptkey.settings.LanguagePacksActivity]'s
+     * own import flow so it is directly unit-testable independent of the SAF/Activity glue around it.
+     *
+     * @param packVersion the freshly-parsed archive's own [ParsedPack.version]
+     * @param installedVersion the currently installed version, or null when the language is not installed
+     *        at all yet (there is nothing to compare against)
+     * @return the outcome - see [VersionCheck]'s own cases
+     */
+    fun compareVersions(packVersion: Int, installedVersion: Int?): VersionCheck {
+        return when {
+            installedVersion == null || packVersion > installedVersion -> VersionCheck.INSTALL
+            packVersion == installedVersion -> VersionCheck.ALREADY_CURRENT
+            else -> VersionCheck.OLDER_THAN_INSTALLED
+        }
+    }
+    
+    /**
+     * D-386-followup: thrown by [parse] when the archive's own `version.txt` declares a language code (its
+     * optional second line) that does not match the [language] the caller expected to import - a genuine
+     * content-level check, not merely trusting whatever file [de.froehlichmedia.adaptkey.download.
+     * DownloadFolderResolver] happened to resolve by filename alone. An archive predating this convention
+     * (no second line at all) is never rejected on this basis - see [parse]'s own KDoc.
+     *
+     * @property declaredCode the language code the archive itself declares
+     * @property expectedCode the language the caller expected to import
+     */
+    class LanguageMismatchException(val declaredCode: String, val expectedCode: String) :
+        IOException("archive declares language '$declaredCode', expected '$expectedCode'")
+    
+    /**
      * D-308: reads [source] fully into memory without writing anything to disk - lets the caller (D-308's
      * own "only overwrite an already-installed pack when the picked archive is actually newer" check in
      * [de.froehlichmedia.adaptkey.settings.LanguagePacksActivity]) inspect [ParsedPack.version] before
      * deciding whether [write] should ever run at all.
      *
+     * D-386-followup: `version.txt` gained an optional second line - the pack's own declared language code
+     * (`"de"`, `"el"`, ...), cross-checked against [language] here. Needed because [de.froehlichmedia.
+     * adaptkey.download.DownloadFolderResolver] now resolves the archive to import purely by matching a
+     * *file name* pattern, not by the user visually confirming the file the way a manual picker once
+     * implied - a genuine, archive-internal identity check closes that gap. Deliberately tolerant of an
+     * archive with no second line at all (every archive built before this convention existed) - only an
+     * actual, present mismatch is rejected, never a missing declaration.
+     *
      * @param source the archive bytes (closed by this call)
      * @param language the language this archive is expected to contain
      * @return the parsed pack, not yet written anywhere
      * @throws IOException when the archive is missing the unigram entry
+     * @throws LanguageMismatchException when `version.txt`'s own declared language code is present and does
+     *         not match [language]
      */
     fun parse(source: InputStream, language: Language): ParsedPack {
         var words: ByteArray? = null
@@ -109,9 +168,14 @@ object LanguagePackInstaller {
             }
         }
         val wordsBytes = words ?: throw IOException("archive is missing $WORDS_ENTRY_NAME")
-        val version = versionBytes
-            ?.let { String(it, Charsets.UTF_8).trim().toIntOrNull() }
-            ?: InstalledLanguagesStore.DEFAULT_VERSION
+        val versionLines = versionBytes
+            ?.let { String(it, Charsets.UTF_8).lines().map { line -> line.trim() }.filter { line -> line.isNotEmpty() } }
+            ?: emptyList()
+        val version = versionLines.getOrNull(0)?.toIntOrNull() ?: InstalledLanguagesStore.DEFAULT_VERSION
+        val declaredCode = versionLines.getOrNull(1)
+        if (declaredCode != null && !declaredCode.equals(language.code, ignoreCase = true)) {
+            throw LanguageMismatchException(declaredCode, language.code)
+        }
         return ParsedPack(language, wordsBytes, bigrams, hints, version)
     }
     

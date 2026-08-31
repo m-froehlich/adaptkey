@@ -275,12 +275,21 @@ object LanguagePackCatalog {
             // unzipping it back and byte-comparing `dict.tsv`, `LanguagePackCatalog` version 32 -> 33.
             // No new tests (data-only; `lemma` still has zero code readers - remains groundwork).
             // `versionCode` 378 -> 379, `versionName` `"1.0.74"` -> `"1.0.75"`. Not yet device-confirmed.
-            version = 33
+            // D-386-followup: `version.txt` gained a second line, the pack's own declared language code
+            // ("de") - `LanguagePackInstaller.parse()` now cross-checks it against the language being
+            // imported, so a resolved-by-filename-alone archive (D-386's own automatic folder resolution)
+            // can never be silently accepted for the wrong language. `dictionaries/de/version.txt` 33 -> 34
+            // (dict.tsv/bigram.tsv/hints.tsv themselves unchanged - verified byte-identical after rebuild),
+            // `LanguagePackCatalog` version 33 -> 34.
+            version = 34
         ),
         Entry(
             Language.GREEK,
             "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-el.zip",
-            version = 1
+            // D-386-followup: same `version.txt` language-code addition as German above ("el").
+            // `dictionaries/el/version.txt` 1 -> 2 (dict.tsv/bigram.tsv themselves unchanged - verified
+            // byte-identical after rebuild), `LanguagePackCatalog` version 1 -> 2.
+            version = 2
         )
     )
 }

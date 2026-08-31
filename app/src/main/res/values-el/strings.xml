@@ -210,7 +210,9 @@
     <string name="d280_remove">Αφαίρεση</string>
     <string name="d280_imported">Η γλώσσα εγκαταστάθηκε.</string>
     <string name="d280_already_current">Ήδη ενημερωμένο.</string>
+    <string name="d280_older_than_installed">Το αρχείο που βρέθηκε είναι παλαιότερο από το εγκατεστημένο - δεν εφαρμόστηκε.</string>
     <string name="d280_import_failed">Η εισαγωγή απέτυχε.</string>
+    <string name="d280_language_mismatch">Λάθος γλώσσα: το αρχείο είναι για «%1$s», αναμενόταν «%2$s».</string>
     <string name="d280_removed">Η γλώσσα αφαιρέθηκε.</string>
     <string name="d280_no_browser">Δεν βρέθηκε περιηγητής. Κατέβασε και εισήγαγε το αρχείο χειροκίνητα.</string>
 

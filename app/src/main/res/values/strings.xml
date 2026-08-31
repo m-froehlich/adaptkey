@@ -209,7 +209,12 @@
     <string name="d280_remove">Remove</string>
     <string name="d280_imported">Language installed.</string>
     <string name="d280_already_current">Already up to date.</string>
+    <!-- D-386-followup: distinct from "already up to date" - the found file is actually older than what
+         is installed, which is worth surfacing rather than silently treating the same as "nothing to do". -->
+    <string name="d280_older_than_installed">Found file is older than what is installed - not applied.</string>
     <string name="d280_import_failed">Import failed.</string>
+    <!-- D-386-followup: %1$s = the language code the archive itself declares, %2$s = the language expected. -->
+    <string name="d280_language_mismatch">Wrong language: file is for \"%1$s\", expected \"%2$s\".</string>
     <string name="d280_removed">Language removed.</string>
     <string name="d280_no_browser">No browser found. Please download and import the file manually.</string>
 

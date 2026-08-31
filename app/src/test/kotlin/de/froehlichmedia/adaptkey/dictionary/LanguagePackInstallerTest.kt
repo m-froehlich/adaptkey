@@ -197,4 +197,57 @@ class LanguagePackInstallerTest {
         assertEquals("bonjour\t100\n", File(dir, "fr/dict.tsv").readText())
         assertEquals("a\tb\t1\n", File(dir, "fr/bigram.tsv").readText())
     }
+    
+    @Test
+    fun `D-386-followup parse accepts a matching declared language code on version txt's second line`() {
+        val pack = LanguagePackInstaller.parse(
+            zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "3\nfr\n"),
+            Language.FRENCH
+        )
+        assertEquals(3, pack.version)
+    }
+    
+    @Test
+    fun `D-386-followup parse rejects a mismatched declared language code`() {
+        val exception = assertThrows(LanguagePackInstaller.LanguageMismatchException::class.java) {
+            LanguagePackInstaller.parse(zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "3\nde\n"), Language.FRENCH)
+        }
+        assertEquals("de", exception.declaredCode)
+        assertEquals("fr", exception.expectedCode)
+    }
+    
+    @Test
+    fun `D-386-followup parse is tolerant of a legacy archive with no declared language code at all`() {
+        val pack = LanguagePackInstaller.parse(zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "3"), Language.FRENCH)
+        assertEquals(3, pack.version)
+    }
+    
+    @Test
+    fun `D-386-followup parse matches the declared language code case-insensitively`() {
+        val pack = LanguagePackInstaller.parse(
+            zipOf("dict.tsv" to "bonjour\t100\n", "version.txt" to "3\nFR\n"),
+            Language.FRENCH
+        )
+        assertEquals(3, pack.version)
+    }
+    
+    @Test
+    fun `D-386-followup compareVersions returns INSTALL when nothing is installed yet`() {
+        assertEquals(LanguagePackInstaller.VersionCheck.INSTALL, LanguagePackInstaller.compareVersions(1, null))
+    }
+    
+    @Test
+    fun `D-386-followup compareVersions returns INSTALL when the pack is strictly newer`() {
+        assertEquals(LanguagePackInstaller.VersionCheck.INSTALL, LanguagePackInstaller.compareVersions(5, 3))
+    }
+    
+    @Test
+    fun `D-386-followup compareVersions returns ALREADY_CURRENT when the versions match exactly`() {
+        assertEquals(LanguagePackInstaller.VersionCheck.ALREADY_CURRENT, LanguagePackInstaller.compareVersions(3, 3))
+    }
+    
+    @Test
+    fun `D-386-followup compareVersions returns OLDER_THAN_INSTALLED when the pack is strictly older`() {
+        assertEquals(LanguagePackInstaller.VersionCheck.OLDER_THAN_INSTALLED, LanguagePackInstaller.compareVersions(2, 3))
+    }
 }
