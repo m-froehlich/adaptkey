@@ -423,7 +423,9 @@ non-trivial changes).
      noun declension specifically; methodology is rule-based generation + curated exception tables +
      sampling, not the individual-review-of-every-candidate approach the two prerequisite sweeps below used
      (confirmed infeasible at this project's estimated 300,000+ candidate-form scale). Read that file before
-     picking this up, don't re-derive the plan from scratch.
+     picking this up, don't re-derive the plan from scratch. **RESOLVED — see §322 in Current State: the
+     "Wortfamilien" project generated and added the missing paradigms end to end; `AdaptKey-Plan-Wortfamilien.md`
+     was deleted once superseded.**
   2. **A lighter cross-reference/lemma-link approach** - keep both inflected forms as separate dictionary
      rows, but link them so ranking/A-01's override-protection logic can tell "same word family" apart from
      "coincidentally similar, unrelated word" (today nothing distinguishes those two cases at all). More
@@ -443,7 +445,10 @@ non-trivial changes).
      user does not want to lose. Needs a genuine migration path that consolidates already-accumulated
      entries under their shared base form (mirroring D-388's own `last_touched` column migration as the
      precedent for "add new structure to an existing table without discarding what's already there"), not a
-     fresh start.
+     fresh start. **RESOLVED (non-LLM path) — see §323 in Current State and spec §39: the migration honours**
+     **this constraint exactly (additive `ALTER TABLE`, no wipe). The with-LLM extension (whole-family**
+     **learning on every learn event, an installation-triggered reprocessing pass) remains open - not yet**
+     **implemented.**
 
   **D-412 (see Current State) has since laid the schema groundwork tier 1 would need** - a bundled-only
   `lemma` link column on `TABLE_WORDS` - and a genuinely new, in-progress project is using it: tagging every
@@ -809,6 +814,51 @@ non-trivial changes).
   29 -> 30, pack rebuilt, `LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
+
+- **§323 (v1.0.76): D-404 Tier 3, non-LLM path - Learned Words base-form consolidation.** Pure code, no
+  dictionary data touched (see spec §39 for the full mechanics). `TABLE_LEARNED` gained its own `lemma`
+  column via a new guarded `ensureLearnedLemmaColumn()` (same `PRAGMA table_info`-checked `ALTER TABLE ADD
+  COLUMN` pattern as D-388/D-412's own precedents, called unconditionally from `init {}` - never a
+  `DATABASE_VERSION` bump, honouring the user's explicit "never reset/wipe the Learned Words list"
+  constraint). New `LearnedLemmaLinking` object: extremely conservative, lookup-only base-form linking in
+  both directions (`findLemma` - a newly-learned word strips a closed set of noun endings
+  `-s/-es/-e/-en/-er/-n/-nen/-ern` or, failing that, `RegularVerbInflection`'s own verb-personal endings,
+  and checks whether the stripped candidate is already a learned entry; `candidateInflections` - the reverse,
+  checking whether the newly-learned word is itself the base of an already-learned, not-yet-linked entry) -
+  never fabricates a row, only links two words already genuinely typed and learned. Caught and fixed a
+  self-match bug of my own during test-writing: `findLemma`'s noun branch originally relied on a length guard
+  alone before calling `String.removeSuffix()`, which no-ops (returns the string unchanged) when the suffix
+  doesn't actually match - risking a word reinforcing itself into its own lemma; fixed with an explicit
+  `endsWith` check before stripping. `DictionaryStore.learn()` gained an optional `categoryHint` parameter -
+  `AdaptKeyService.learnWord()`/`learnWordStrong()` pass `NOUN` when a word is typed capitalised but only
+  *mid-sentence* (never at a sentence start, which capitalises regardless of true category), applied only
+  while the category is still unset and re-checked on every reinforcement, never overriding an
+  already-known category. `putWordInternal` now always carries `TABLE_LEARNED`'s own `lemma` forward
+  explicitly on every write (`learn`/`unlearn`/`recaseLearnedWord`/`restoreLearnedWord`) - `INSERT OR
+  REPLACE` semantics meant an omitted column reverts to its default, so an established link would otherwise
+  be silently wiped by the very next reinforcement. Migration's own one-time pass: after the `ALTER TABLE`,
+  every pre-existing row runs the same forward-only lookup against every other row already in the table
+  (covers both directions across the whole existing set without a separate reverse sweep). Editor
+  (`LearnedWordsActivity`, D-292/D-294's dialog): the list itself now shows only entries with no lemma link
+  as their own row (a linked inflected form no longer clutters it once its base is known); an entry with no
+  known category gets a trailing asterisk; the tap-to-edit dialog gained a category multi-select (one
+  checkbox per `PartOfSpeech` tag, backed by new `setLearnedCategories()`) and a "Grundform" dropdown (every
+  other learned word plus "unbekannt", backed by new `setLearnedLemma()`) for manual power-user correction.
+  Localised the new strings (EN/DE/EL). Known, accepted limitation: a mis-linked child entry has no direct
+  path back into the edit dialog today, since it no longer appears as its own row - relink from the correct
+  entry's own dropdown instead; accepted given this whole screen is explicitly framed as power-user-only.
+  20 new unit tests (`LearnedLemmaLinkingTest`, 12; new `InMemoryDictionaryStoreTest` cases, 7 - including
+  one asserting the self-match bug stays fixed; `RegularVerbInflectionTest` unchanged, still green after
+  `candidateInfinitives()` was factored out of `isPlausibleInflection()`). 1084 unit tests total (was 1064),
+  all green (via JBR JDK 21, both `:app:assembleDebug` and `:app:assembleRelease` verified). `versionCode`
+  379 -> 380, `versionName` `"1.0.75"` -> `"1.0.76"`. Spec gained new §39; the D-404 backlog item above marked
+  resolved for tiers 1 and 3's non-LLM path. **Deferred, not implemented this round**: tier 2 (bundled-
+  dictionary ranking/override cross-reference), and tier 3's own LLM-powered extension (whole-family learning
+  on every learn event via a `Tier3Provider` extension not yet designed, plus the "LLM newly installed"
+  reprocessing-pass trigger and the migration's own LLM-aware branch) - both explicitly scoped out at the
+  user's own direction, to be picked up as a separate follow-up round. Not yet device-confirmed (UI/gesture
+  behaviour is untestable in this environment - no emulator - only the pure logic underneath was unit-tested,
+  per this project's own accepted, already-established limitation).
 
 - **§322 (v1.0.75): D-404 Tier 1, the "Wortfamilien" project - complete German noun/verb paradigms**
   **generated and added, not just linked.** Extends §320/§321's lemma-linking groundwork from "link what

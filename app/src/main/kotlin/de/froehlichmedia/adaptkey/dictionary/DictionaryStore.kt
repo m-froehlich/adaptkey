@@ -47,8 +47,23 @@ interface DictionaryStore {
      *        accumulated pending count (see [de.froehlichmedia.adaptkey.AdaptKeyService.learnWord]) may
      *        pass that count instead, so the new entry starts reflecting how many times it was actually
      *        seen, not always exactly 1.
+     * @param categoryHint D-404 (tier 3, non-LLM path): a part-of-speech to record when this entry's own
+     *        category is still unset (never overrides an already-known category) - the caller's own
+     *        capitalisation-based heuristic (a word typed capitalised mid-sentence, not at sentence start,
+     *        is assumed to be a [PartOfSpeech.NOUN]). Ignored entirely once a category is already known.
+     *        Also the trigger for this call's own conservative, lookup-only base-form link (see
+     *        [LearnedLemmaLinking]): applied only the first time an entry's own lemma is still unset, in
+     *        both directions - [word] linked to an already-learned base, or an already-learned word linked
+     *        back to [word] as its own base - never a guessed write, only ever a link between two words
+     *        already present in the learned lexicon.
      */
-    fun learn(word: String, previousWord: String?, previousPreviousWord: String? = null, seedFrequency: Long = 1L)
+    fun learn(
+        word: String,
+        previousWord: String?,
+        previousPreviousWord: String? = null,
+        seedFrequency: Long = 1L,
+        categoryHint: PartOfSpeech? = null
+    )
     
     /**
      * D-327: records only the n-gram context (bigram + trigram) of one observation of [word], WITHOUT

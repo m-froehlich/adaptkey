@@ -393,4 +393,67 @@ class InMemoryDictionaryStoreTest {
         val words = store.unigramsByPrefix("gin", 10)
         assertEquals("gehen", words.first().lemma)
     }
+    
+    @Test
+    fun `D-404 learn sets categoryHint only when no category is known yet`() {
+        store.learn("Baum", null, categoryHint = PartOfSpeech.NOUN)
+        assertEquals(setOf(PartOfSpeech.NOUN), store.partsOfSpeech("baum"))
+    }
+    
+    @Test
+    fun `D-404 learn never overrides an already-known category with a later categoryHint`() {
+        store.learn("Baum", null, categoryHint = PartOfSpeech.NOUN)
+        store.learn("Baum", null, categoryHint = PartOfSpeech.VERB)
+        
+        assertEquals(setOf(PartOfSpeech.NOUN), store.partsOfSpeech("baum"))
+    }
+    
+    @Test
+    fun `D-404 learn without a categoryHint leaves the category unset (unbekannt)`() {
+        store.learn("baum", null)
+        assertTrue(store.partsOfSpeech("baum").isEmpty())
+    }
+    
+    @Test
+    fun `D-404 learn links a newly-learned inflected form to an already-learned base - forward direction`() {
+        store.learn("Hund", null)
+        store.learn("Hundes", null)
+        
+        assertEquals("hund", store.entryOf("Hundes")?.lemma)
+        assertEquals(null, store.entryOf("Hund")?.lemma)
+    }
+    
+    @Test
+    fun `D-404 learn links an already-learned inflected form to a newly-learned base - reverse direction`() {
+        // The opening example: "Hundes" already learned standalone, "Hund" learned only afterwards.
+        store.learn("Hundes", null)
+        store.learn("Hund", null)
+        
+        assertEquals("hund", store.entryOf("hundes")?.lemma)
+        assertEquals(null, store.entryOf("hund")?.lemma)
+    }
+    
+    @Test
+    fun `D-404 learn links a plausible weak-verb inflection to its already-learned infinitive`() {
+        store.learn("kaufen", null)
+        store.learn("kaufte", null)
+        
+        assertEquals("kaufen", store.entryOf("kaufte")?.lemma)
+    }
+    
+    @Test
+    fun `D-404 an already-set lemma link is never overwritten by a later reinforcement`() {
+        store.learn("Hund", null)
+        store.learn("Hundes", null)
+        // A manual correction (mirrors the editor's own Grundform dropdown) must survive reinforcement.
+        store.learn("Hundes", null)
+        
+        assertEquals("hund", store.entryOf("hundes")?.lemma)
+    }
+    
+    @Test
+    fun `D-404 no lemma link is created when no plausible base or inflection is already learned`() {
+        store.learn("Giraffe", null)
+        assertEquals(null, store.entryOf("giraffe")?.lemma)
+    }
 }

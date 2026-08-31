@@ -1606,6 +1606,83 @@ a `DELETE`+bulk-`INSERT` pair.
 
 ---
 
+## 39. Learned-Words Base-Form Consolidation — Tier 3, Non-LLM Path (D-404)
+
+D-404's backlog item lists three tiers of inflection-awareness; this is Tier 3, scoped purely to the Learned
+Words list (`TABLE_LEARNED`) and its own editor - not the bundled dictionary's ranking/override logic (Tier
+2, untouched) and not full generative runtime morphology (Tier 1, untouched). Motivation: an inflected form
+typed enough times to promote (e.g. a genitive "Hundes") used to sit in the learned list as its own,
+unrelated-looking entry even after the base form ("Hund") was also learned - flooding the list with what is,
+to the user, the same word.
+
+`TABLE_LEARNED` gained its own `lemma` column (a guarded `ALTER TABLE ADD COLUMN`, `ensureLearnedLemmaColumn()`,
+called unconditionally from `init {}` exactly like D-412's `ensureLemmaColumn()` for the bundled table -
+`DATABASE_VERSION` is still never bumped, so the user's real, irreplaceable learned words are never at risk).
+Unlike the bundled table, `TABLE_LEARNED` cannot simply be reseeded, so every pre-existing row gets a one-time,
+maximally conservative consolidation pass right inside the migration - see below.
+
+**Category ("unbekannt" until determined).** `WordEntry.partsOfSpeech` already defaults to the empty set; a
+freshly learned word already started there. What's new is a single non-LLM heuristic in `AdaptKeyService.
+learnWord()`/`learnWordStrong()`: a word typed capitalised at its first letter, but only when this happens
+*mid-sentence* (`!tokenSentenceStart` - a sentence-start capital says nothing about the real category, since
+every word gets one) and only while the category is still unset, is assumed to be a `NOUN` (`categoryHint`,
+a new optional parameter on `DictionaryStore.learn()`). Never overrides an already-known category, and is
+re-applied on every reinforcement, not only at first promotion - a word first learned at a sentence start
+stays "unbekannt" and can still resolve itself the first time it is later typed mid-sentence. The editor
+(§13) shows an entry with no category with a trailing asterisk, so a power user knows to check it.
+
+**Base-form linking (`LearnedLemmaLinking`).** Extremely conservative and lookup-only, mirroring D-115/D-125's
+existing `RegularVerbInflection` pattern (strip a closed set of endings, check whether the reconstructed
+candidate is already known) but for the learned lexicon specifically, in both directions:
+- *Forward* (`findLemma`): the word just learned is itself checked against a set of noun endings
+  (genitive/dative/plural-style: `-s -es -e -en -er -n -nen -ern`) and, when none match, `RegularVerbInflection`'s
+  own personal-ending set - if a stripped candidate already exists as its own `TABLE_LEARNED` entry, the new
+  word links to it.
+- *Reverse* (`candidateInflections`): the word just learned may itself be the base a not-yet-linked existing
+  entry is an inflection of (the "Hundes" learned first, "Hund" learned afterwards" case) - every plausible
+  inflected form of the new word is checked against the existing lexicon, and any match still missing its own
+  link is linked back to it.
+
+Both directions try noun and verb endings unconditionally, rather than gating on a suspected category first -
+a coincidental match against an unrelated learned word is possible in principle (the same accepted trade-off
+`RegularVerbInflection` already documents for its own narrower case) but only ever links two words the user
+has genuinely typed and had learned already, never fabricates an entry. A link, once set, is never overwritten
+by a later automatic pass (only the editor's own manual "Grundform" correction can change it) - `putWordInternal`'s
+own `INSERT OR REPLACE` semantics mean every `TABLE_LEARNED` write must now explicitly carry the entry's
+current lemma forward (mirrors how `last_touched` and, for the bundled table, `lemma` itself already had to be
+carried forward the same way), or an established link would be silently wiped on the very next reinforcement.
+
+**Migration's own one-time pass.** After the `ALTER TABLE`, every existing row starts with `lemma = NULL`;
+`ensureLearnedLemmaColumn()` then runs the *forward* check for every row against every other row already in
+the table - lookup-only, same as the ongoing per-`learn()`-call check. Running it forward for every row
+already covers both directions across the whole existing set (an inflected form's own row finds its base; a
+base form's own row is found *by* the inflected form's row when that one runs its own check), so no separate
+reverse sweep is needed here the way a single freshly-learned word needs one. A future LLM-aware reprocessing
+pass superseding this conservative one when a tier-3 model is already installed at migration time is part of
+the design (see below) but not yet implemented.
+
+**Editor (§13).** The list itself now shows only entries with no base-form link (`lemma == null`) as their
+own row - a linked inflected form no longer clutters the list once its base is also known. Known limitation:
+a linked ("child") entry that was mis-linked has no direct path back into the editor's own tap-to-edit dialog
+today, since it no longer appears as its own row - only reachable indirectly, by relinking the correct entry.
+The existing tap-to-edit dialog (D-292/D-294) gained a category multi-select (one checkbox per
+`PartOfSpeech` tag) and a "Grundform" dropdown (every other learned word, plus "unbekannt" for no link) -
+`SqliteDictionaryStore.setLearnedCategories()`/`setLearnedLemma()`, both plain column updates, let a power
+user review or correct either by hand. Framed explicitly as a power-user-only surface (low impact on a normal
+user, who has no reason to open this screen at all) - the rough edge above was accepted on that basis rather
+than building a "reveal hidden family members" affordance for it.
+
+**Deferred (not yet implemented).** With an installed tier-3 model, the design calls for every learn event to
+have the LLM determine the word's full category *and* its whole inflectional family in one pass, learning
+them all together and linked - not merely opportunistic lookup-and-link the way the non-LLM path above works.
+"LLM installed" is meant to be treated as a state, not a history: installing one at any point should trigger a
+one-time reprocessing pass over the existing learned list (the same pass migration would run if a model is
+*already* installed at that moment), backfilling categories/families/links with the model's help. None of this
+- the `Tier3Provider` extension, the reprocessing trigger, or the migration's LLM-aware branch - exists yet;
+this round is the conservative, always-available non-LLM path only.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

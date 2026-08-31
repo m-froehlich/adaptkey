@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -28,6 +29,7 @@ import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordEntry
+import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
@@ -52,6 +54,12 @@ import java.util.Locale
  * text is case-insensitively identical to the original), so this can never be used to sneak an entirely
  * different word into the learned lexicon under someone else's frequency/history; a genuinely different word
  * still has to be typed and learned normally.
+ *
+ * D-404: the list itself is consolidated - only entries with no base-form link ([LearnedWordEntry.lemma] ==
+ * null) are shown as their own row, so an inflected form the keyboard already linked to a base (e.g.
+ * "Hundes" once "Hund" is also known) no longer clutters the list on its own. An entry whose category is
+ * still undetermined ("unbekannt") is marked with a trailing asterisk. The same tap-to-edit dialog now also
+ * offers a category multi-select and a "Grundform" dropdown, so a power user can review or correct either.
  */
 class LearnedWordsActivity : AppCompatActivity() {
     
@@ -64,6 +72,11 @@ class LearnedWordsActivity : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var emptyView: TextView
     private lateinit var adapter: ArrayAdapter<String>
+    // D-404: every learned word, unfiltered - the "Grundform" dropdown's own candidate list needs every
+    // entry, not just the base-level ones [words] itself is filtered down to for display.
+    private val allWords = ArrayList<LearnedWordEntry>()
+    // D-404: only entries with no base-form link ([LearnedWordEntry.lemma] == null) - see this class's own
+    // KDoc.
     private val words = ArrayList<LearnedWordEntry>()
     // D-388: how the list is currently ordered - see the sort spinner in onCreate(). Alphabetical by
     // default (browsing/searching for a specific word, this screen's primary use, per the user's own
@@ -167,6 +180,12 @@ class LearnedWordsActivity : AppCompatActivity() {
      * learning pipeline entirely via `TYPE_TEXT_FLAG_NO_SUGGESTIONS` - editing a word's casing here must
      * never itself feed back into the dictionary or show a suggestion bar.
      *
+     * D-404: also offers a category multi-select ([CATEGORY_CHOICES], one [CheckBox] per tag) and a
+     * "Grundform" [Spinner] (every other learned word, plus [R.string.learned_words_lemma_unknown] for "no
+     * link") - a power-user-only correction surface for whatever the capitalisation heuristic / conservative
+     * lookup-linker got wrong or missed. Both save unconditionally on Save (independent of the casing-only
+     * gate below, which only concerns the text field itself).
+     *
      * @param entry the learned-word entry tapped
      */
     private fun showEntryDialog(entry: LearnedWordEntry) {
@@ -197,12 +216,44 @@ class LearnedWordsActivity : AppCompatActivity() {
             text = getString(R.string.learned_words_edit_hint)
             setPadding(0, dp(4), 0, 0)
         }
+        val categoryLabel = TextView(this).apply {
+            text = getString(R.string.learned_words_category_label)
+            setPadding(0, dp(12), 0, 0)
+        }
+        val categoryCheckboxes = CATEGORY_CHOICES.associateWith { pos ->
+            CheckBox(this).apply {
+                text = getString(categoryLabelRes(pos))
+                isChecked = pos in entry.partsOfSpeech
+            }
+        }
+        val categoryRows = categoryCheckboxes.values.chunked(CATEGORY_ROW_SIZE).map { rowBoxes ->
+            LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                rowBoxes.forEach { addView(it) }
+            }
+        }
+        val lemmaLabel = TextView(this).apply {
+            text = getString(R.string.learned_words_lemma_label)
+            setPadding(0, dp(12), 0, 0)
+        }
+        // D-404: every other learned word (base or not - a mis-linked child can itself be relinked), sorted,
+        // with "unbekannt"/"unknown" prepended as the "no link" option at index 0.
+        val lemmaChoices = listOf(getString(R.string.learned_words_lemma_unknown)) +
+            allWords.filter { it.word != entry.word }.map { it.word }.sorted()
+        val lemmaSpinner = Spinner(this).apply {
+            adapter = ArrayAdapter(this@LearnedWordsActivity, android.R.layout.simple_spinner_dropdown_item, lemmaChoices)
+            setSelection(entry.lemma?.let { lemmaChoices.indexOf(it) }.takeIf { it != null && it >= 0 } ?: 0)
+        }
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val padding = dp(20)
             setPadding(padding, dp(8), padding, 0)
             addView(fieldRow)
             addView(hint)
+            addView(categoryLabel)
+            categoryRows.forEach { addView(it) }
+            addView(lemmaLabel)
+            addView(lemmaSpinner)
         }
         val dialog = AlertDialog.Builder(this)
             .setTitle(entry.word)
@@ -221,7 +272,8 @@ class LearnedWordsActivity : AppCompatActivity() {
         fun updateSaveEnabled() {
             // D-292: case-insensitively identical to the original only - the whole point is that this can
             // fix casing alone, never sneak an entirely different word in under this entry's own
-            // frequency/history.
+            // frequency/history. Does not gate the category/Grundform fields below - those are independent
+            // corrections, not a casing edit.
             saveButton.isEnabled = editText.text.toString().equals(entry.word, ignoreCase = true)
         }
         updateSaveEnabled()
@@ -232,10 +284,29 @@ class LearnedWordsActivity : AppCompatActivity() {
         })
         saveButton.setOnClickListener {
             store.recaseLearnedWord(entry.word, editText.text.toString())
+            val selectedCategories = categoryCheckboxes.filterValues { it.isChecked }.keys
+            store.setLearnedCategories(entry.word, selectedCategories)
+            val lemmaSelection = lemmaSpinner.selectedItemPosition
+            store.setLearnedLemma(entry.word, if (lemmaSelection <= 0) null else lemmaChoices[lemmaSelection])
             refresh()
             dialog.dismiss()
         }
         dialog.show()
+    }
+    
+    /**
+     * D-404: the localised label for [pos] in the category multi-select.
+     *
+     * @param pos the tag to label
+     * @return its string resource id
+     */
+    private fun categoryLabelRes(pos: PartOfSpeech): Int = when (pos) {
+        PartOfSpeech.NOUN -> R.string.learned_words_category_noun
+        PartOfSpeech.VERB -> R.string.learned_words_category_verb
+        PartOfSpeech.ADJECTIVE -> R.string.learned_words_category_adjective
+        PartOfSpeech.PREPOSITION -> R.string.learned_words_category_preposition
+        PartOfSpeech.PROPER_NOUN -> R.string.learned_words_category_proper_noun
+        PartOfSpeech.OTHER -> R.string.learned_words_category_other
     }
     
     private fun copyToClipboard(value: String) {
@@ -298,10 +369,16 @@ class LearnedWordsActivity : AppCompatActivity() {
      * umlauts/accents sort at their natural alphabetic position rather than by raw UTF-8 byte value).
      * Frequency is deliberately not shown - it is internal bookkeeping (the promotion/reinforcement count),
      * not something a normal user reviewing this list needs to see.
+     *
+     * D-404: [words] (what is actually shown) is filtered down to entries with no base-form link - see this
+     * class's own KDoc; [allWords] keeps every entry, for the "Grundform" dropdown's own candidate list. An
+     * entry with a still-undetermined category ("unbekannt") is shown with a trailing asterisk.
      */
     private fun refresh() {
+        allWords.clear()
+        allWords.addAll(store.learnedWordsWithTimestamp())
         words.clear()
-        words.addAll(store.learnedWordsWithTimestamp())
+        words.addAll(allWords.filter { it.lemma == null })
         when (sortMode) {
             SortMode.RECENT -> words.sortByDescending { it.lastTouched }
             SortMode.ALPHA -> {
@@ -310,7 +387,7 @@ class LearnedWordsActivity : AppCompatActivity() {
             }
         }
         adapter.clear()
-        adapter.addAll(words.map { entry -> entry.word })
+        adapter.addAll(words.map { entry -> if (entry.partsOfSpeech.isEmpty()) "${entry.word} *" else entry.word })
         adapter.notifyDataSetChanged()
         emptyView.visibility = if (words.isEmpty()) TextView.VISIBLE else TextView.GONE
     }
@@ -327,5 +404,18 @@ class LearnedWordsActivity : AppCompatActivity() {
         // D-296: a standard-sized touch target (matches the Android accessibility guideline minimum),
         // just square instead of the ordinary Button's own wide/padded shape.
         private const val SQUARE_ICON_BUTTON_SIZE_DP = 48
+        
+        // D-404: every category offered in the edit dialog's multi-select, in a fixed, stable order.
+        private val CATEGORY_CHOICES = listOf(
+            PartOfSpeech.NOUN,
+            PartOfSpeech.VERB,
+            PartOfSpeech.ADJECTIVE,
+            PartOfSpeech.PREPOSITION,
+            PartOfSpeech.PROPER_NOUN,
+            PartOfSpeech.OTHER
+        )
+        
+        // D-404: how many category checkboxes share one row in the multi-select.
+        private const val CATEGORY_ROW_SIZE = 3
     }
 }

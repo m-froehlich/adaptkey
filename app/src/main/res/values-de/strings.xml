@@ -290,6 +290,16 @@
     <string name="learned_words_remove_confirm_action">Vergessen</string>
     <string name="learned_words_edit_hint">Hier kann nur die Groß-/Kleinschreibung angepasst werden - ein wirklich anderes Wort muss normal getippt und gelernt werden.</string>
     <string name="learned_words_save_action">Speichern</string>
+    <!-- D-404: Kategorie-Mehrfachauswahl und Grundform-Verknüpfung im selben Bearbeitungsdialog. -->
+    <string name="learned_words_category_label">Kategorie:</string>
+    <string name="learned_words_lemma_label">Grundform:</string>
+    <string name="learned_words_lemma_unknown">unbekannt</string>
+    <string name="learned_words_category_noun">Nomen</string>
+    <string name="learned_words_category_verb">Verb</string>
+    <string name="learned_words_category_adjective">Adjektiv</string>
+    <string name="learned_words_category_preposition">Präposition</string>
+    <string name="learned_words_category_proper_noun">Eigenname</string>
+    <string name="learned_words_category_other">Sonstiges</string>
 
     <!-- Editor für gespeicherte Benutzernamen/E-Mails (D-180). -->
     <string name="credentials_empty">Noch keine gespeicherten Benutzernamen oder E-Mails.</string>

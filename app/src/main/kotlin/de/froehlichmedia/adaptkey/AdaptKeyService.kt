@@ -68,6 +68,7 @@ import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.InMemoryDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog
+import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
 import de.froehlichmedia.adaptkey.dictionary.PendingLearnStore
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
@@ -5160,6 +5161,11 @@ class AdaptKeyService : InputMethodService() {
         // suspected unsplit compound), so a one-off typo is not eagerly learned as a real word.
         val context = previousWord
         val contextContext = previousPreviousWord
+        // D-404 (tier 3, non-LLM path): a word typed capitalised at its first letter, but only mid-sentence
+        // (never at sentence start, where every word is capitalised regardless of its real category) is
+        // assumed to be a noun - passed as a hint only, never overriding an already-known category (see
+        // DictionaryStore.learn()'s own KDoc).
+        val categoryHint = if (word.first().isUpperCase() && !tokenSentenceStart) PartOfSpeech.NOUN else null
         // D-264: a bundled word typed in its own exact bundled casing has nothing to learn (D-186's
         // original reasoning, preserved exactly - avoids flooding the Learned Words editor with plain
         // vocabulary reinforcement). Typed in a persistently *different* casing (e.g. a preferred all-caps
@@ -5188,7 +5194,7 @@ class AdaptKeyService : InputMethodService() {
             // all), or an already-established differently-cased override of a bundled one - reinforce it
             // directly; learn() itself keeps that entry's own already-established casing fixed regardless
             // of this exact call's casing (see its own KDoc).
-            dictionaryStore.learn(word, context, contextContext)
+            dictionaryStore.learn(word, context, contextContext, categoryHint = categoryHint)
             LearnOutcome.LEARNED
         } else if (isPendingBlacklistRecurrence(word)) {
             // D-177: this exact word was provisionally forgotten (G-04 drag-to-trash, or the learned-words
@@ -5214,7 +5220,7 @@ class AdaptKeyService : InputMethodService() {
                 // D-388: seeds the new entry's frequency with the pending count it actually took to
                 // promote it (e.g. 4 for a compound-suspect word), rather than always resetting to 1 - the
                 // word was genuinely seen this many times already, not once.
-                dictionaryStore.learn(word, context, contextContext, seedFrequency = pendingCount.toLong())
+                dictionaryStore.learn(word, context, contextContext, seedFrequency = pendingCount.toLong(), categoryHint = categoryHint)
                 PendingLearnStore.clear(this, word)
                 LearnOutcome.PROMOTED
             } else {
@@ -5418,7 +5424,9 @@ class AdaptKeyService : InputMethodService() {
         }
         val context = previousWord
         val contextContext = previousPreviousWord
-        dictionaryStore.learn(word, context, contextContext)
+        // D-404: see learnWord()'s own identical categoryHint reasoning.
+        val categoryHint = if (word.first().isUpperCase() && !tokenSentenceStart) PartOfSpeech.NOUN else null
+        dictionaryStore.learn(word, context, contextContext, categoryHint = categoryHint)
         PendingLearnStore.clear(this, word)
         previousPreviousWord = previousWord
         previousWord = word

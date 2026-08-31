@@ -290,6 +290,16 @@
     <string name="learned_words_remove_confirm_action">Forget</string>
     <string name="learned_words_edit_hint">Only the capitalisation can be changed here - a genuinely different word needs to be typed and learned normally.</string>
     <string name="learned_words_save_action">Save</string>
+    <!-- D-404: category multi-select and base-form ("Grundform") link, in the same edit dialog. -->
+    <string name="learned_words_category_label">Category:</string>
+    <string name="learned_words_lemma_label">Base form:</string>
+    <string name="learned_words_lemma_unknown">unknown</string>
+    <string name="learned_words_category_noun">Noun</string>
+    <string name="learned_words_category_verb">Verb</string>
+    <string name="learned_words_category_adjective">Adjective</string>
+    <string name="learned_words_category_preposition">Preposition</string>
+    <string name="learned_words_category_proper_noun">Proper noun</string>
+    <string name="learned_words_category_other">Other</string>
 
     <!-- Saved usernames/emails editor (D-180). -->
     <string name="credentials_empty">No saved usernames or emails yet.</string>

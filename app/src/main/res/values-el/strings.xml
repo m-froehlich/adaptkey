@@ -290,6 +290,16 @@
     <string name="learned_words_remove_confirm_action">Ξέχασέ το</string>
     <string name="learned_words_edit_hint">Εδώ μπορούν να αλλάξουν μόνο τα κεφαλαία/πεζά - μια πραγματικά διαφορετική λέξη πρέπει να πληκτρολογηθεί και να μαθευτεί κανονικά.</string>
     <string name="learned_words_save_action">Αποθήκευση</string>
+    <!-- D-404: πολλαπλή επιλογή κατηγορίας και σύνδεση βασικής μορφής, στον ίδιο διάλογο επεξεργασίας. -->
+    <string name="learned_words_category_label">Κατηγορία:</string>
+    <string name="learned_words_lemma_label">Βασική μορφή:</string>
+    <string name="learned_words_lemma_unknown">άγνωστη</string>
+    <string name="learned_words_category_noun">Ουσιαστικό</string>
+    <string name="learned_words_category_verb">Ρήμα</string>
+    <string name="learned_words_category_adjective">Επίθετο</string>
+    <string name="learned_words_category_preposition">Πρόθεση</string>
+    <string name="learned_words_category_proper_noun">Κύριο όνομα</string>
+    <string name="learned_words_category_other">Άλλο</string>
 
     <!-- Επεξεργασία αποθηκευμένων ονομάτων χρήστη/email (D-180). -->
     <string name="credentials_empty">Δεν υπάρχουν ακόμη αποθηκευμένα ονόματα χρήστη ή email.</string>

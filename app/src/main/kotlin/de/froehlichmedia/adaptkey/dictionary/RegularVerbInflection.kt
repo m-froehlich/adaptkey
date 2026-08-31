@@ -25,10 +25,26 @@ object RegularVerbInflection {
     // Longest-first is not required for correctness (each candidate stem is independently checked against
     // the dictionary; a wrong, shorter split simply fails the lookup), but keeps the list readable in the
     // order these endings actually appear: preterite personal endings, then present-tense ones.
-    private val ENDINGS = listOf(
+    val ENDINGS = listOf(
         "test", "ten", "tet", "te", // preterite: du/wir+sie/ihr/ich+er
         "est", "st", "et", "t", "e" // present tense: du(+dental stem)/du/er+ihr(+dental stem)/er+ihr/ich
     )
+    
+    /**
+     * D-404: every candidate infinitive obtainable by stripping one of [ENDINGS] from [token] and
+     * appending `en` - the same reconstruction [isPlausibleInflection] checks each of, exposed directly for
+     * a caller ([LearnedLemmaLinking]) that needs the actual candidate string, not just a yes/no
+     * plausibility answer.
+     *
+     * @param token the composing token, in any case
+     * @return the candidate infinitives, lower-cased, in [ENDINGS]' own order
+     */
+    fun candidateInfinitives(token: String): List<String> {
+        val lower = token.lowercase()
+        return ENDINGS.mapNotNull { ending ->
+            if (lower.length <= ending.length) null else lower.removeSuffix(ending) + "en"
+        }
+    }
     
     /**
      * @param token the composing token, in any case
@@ -36,16 +52,6 @@ object RegularVerbInflection {
      * @return true when stripping some regular personal ending and appending `en` yields a known word
      */
     fun isPlausibleInflection(token: String, isKnownWord: (String) -> Boolean): Boolean {
-        val lower = token.lowercase()
-        for (ending in ENDINGS) {
-            if (lower.length <= ending.length) {
-                continue
-            }
-            val stem = lower.removeSuffix(ending)
-            if (isKnownWord(stem + "en")) {
-                return true
-            }
-        }
-        return false
+        return candidateInfinitives(token).any(isKnownWord)
     }
 }

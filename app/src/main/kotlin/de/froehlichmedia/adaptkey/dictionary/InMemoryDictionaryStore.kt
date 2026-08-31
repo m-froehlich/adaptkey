@@ -38,7 +38,13 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         bigrams[bigramKey(previousWord, word)] = count
     }
     
-    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?, seedFrequency: Long) {
+    override fun learn(
+        word: String,
+        previousWord: String?,
+        previousPreviousWord: String?,
+        seedFrequency: Long,
+        categoryHint: PartOfSpeech?
+    ) {
         val key = word.lowercase()
         val existing = learned[key]
         // D-264: a fresh learned entry uses the casing actually typed/committed, not the bundled entry's
@@ -46,11 +52,28 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         // acronym) become the one that wins in entryOf()/unigramsByPrefix() merges, instead of being
         // silently discarded in favour of whatever the bundled asset happens to store.
         val canonical = existing?.word ?: word
+        // D-404: a category is only ever set once, from whichever categoryHint call first supplies one -
+        // never overridden afterwards, and never defaulted to anything when no hint is given (stays the
+        // empty set, read by the editor as "unbekannt").
+        val pos = when {
+            existing != null && existing.partsOfSpeech.isNotEmpty() -> existing.partsOfSpeech
+            categoryHint != null -> setOf(categoryHint)
+            else -> existing?.partsOfSpeech ?: emptySet()
+        }
+        // D-404: the base-form link is resolved once, the first time this entry's own lemma is still
+        // unset - lookup-only, see LearnedLemmaLinking's own KDoc.
+        val lemma = existing?.lemma ?: LearnedLemmaLinking.findLemma(key) { candidate -> learned.containsKey(candidate) }
         // D-388: a genuinely new entry starts at seedFrequency, not always 1 - see the interface's own KDoc.
         learned[key] = if (existing != null) {
-            existing.copy(frequency = existing.frequency + 1L)
+            existing.copy(frequency = existing.frequency + 1L, partsOfSpeech = pos, lemma = lemma)
         } else {
-            WordEntry(word = canonical, frequency = seedFrequency)
+            WordEntry(word = canonical, frequency = seedFrequency, partsOfSpeech = pos, lemma = lemma)
+        }
+        if (existing?.lemma == null && lemma == null) {
+            // D-404: word itself may be the base of an already-learned inflected form still missing its
+            // own link - the reverse direction, needed for the opening example ("Hundes" already learned,
+            // "Hund" learned afterwards).
+            linkExistingInflectionsTo(key)
         }
         learnedTouch[key] = clock()
         if (previousWord != null) {
@@ -59,6 +82,21 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
             if (previousPreviousWord != null) {
                 val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
                 learnedTrigrams[trigramKey] = (learnedTrigrams[trigramKey] ?: 0L) + 1L
+            }
+        }
+    }
+    
+    /**
+     * D-404: links every already-learned word matching one of [baseKey]'s own candidate inflected forms
+     * ([LearnedLemmaLinking.candidateInflections]) back to it, unless that word already carries its own
+     * lemma link. Lookup-only - never creates a new entry, only fills in the `lemma` field of one already
+     * present.
+     */
+    private fun linkExistingInflectionsTo(baseKey: String) {
+        for (candidate in LearnedLemmaLinking.candidateInflections(baseKey)) {
+            val row = learned[candidate] ?: continue
+            if (row.lemma == null) {
+                learned[candidate] = row.copy(lemma = baseKey)
             }
         }
     }
@@ -156,10 +194,10 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         learned.filterKeys { it.startsWith(normalized) }.forEach { (key, entry) ->
             val existing = merged[key]
             // D-264: the learned entry's own casing wins over a bundled one when both exist for the same
-            // key (see learn()'s own note). D-412: lemma is bundled-only, so the bundled entry's own value
-            // (if any) is kept rather than lost to the learned entry's always-null one.
+            // key (see learn()'s own note). D-404: the learned entry's own lemma link (if any) wins too -
+            // it is more specific, user-established data - falling back to the bundled one otherwise.
             merged[key] = if (existing != null) {
-                entry.copy(frequency = existing.frequency + entry.frequency, lemma = existing.lemma)
+                entry.copy(frequency = existing.frequency + entry.frequency, lemma = entry.lemma ?: existing.lemma)
             } else {
                 entry
             }
@@ -255,13 +293,13 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         return when {
             bundled == null -> personal
             personal == null -> bundled
-            // D-264: the learned entry's own casing wins when both exist for the same key. D-412: lemma is
-            // bundled-only (a learned entry's own lemma is always null), so bundled.lemma is kept as-is.
+            // D-264: the learned entry's own casing wins when both exist for the same key. D-404: the
+            // learned entry's own lemma link (if any) wins too, falling back to the bundled one otherwise.
             else -> WordEntry(
                 personal.word,
                 bundled.frequency + personal.frequency,
                 bundled.partsOfSpeech + personal.partsOfSpeech,
-                lemma = bundled.lemma
+                lemma = personal.lemma ?: bundled.lemma
             )
         }
     }

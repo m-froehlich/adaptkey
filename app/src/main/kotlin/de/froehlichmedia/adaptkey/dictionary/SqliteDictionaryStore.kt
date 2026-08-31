@@ -42,6 +42,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         ensureAdditiveSchema(db)
         ensureLastTouchedColumn(db)
         ensureLemmaColumn(db)
+        ensureLearnedLemmaColumn(db)
     }
     
     /**
@@ -158,8 +159,8 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * fails outright if the column already exists). Unlike that migration, no existing-row backfill is
      * needed: [TABLE_WORDS] is entirely reseedable from the language-pack asset ([resetBundledWords] +
      * [bulkImport]), so a `NULL` default for every pre-existing row is simply correct until the next
-     * reimport populates the real links - never [TABLE_LEARNED], which has no `lemma` column at all and
-     * must never be touched by this bundled-only migration.
+     * reimport populates the real links - never [TABLE_LEARNED], whose own `lemma` column (added
+     * separately by [ensureLearnedLemmaColumn]) this bundled-only migration must never touch.
      */
     private fun ensureLemmaColumn(database: SQLiteDatabase) {
         val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_WORDS)", null).use { cursor ->
@@ -170,6 +171,54 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             return
         }
         database.execSQL("ALTER TABLE $TABLE_WORDS ADD COLUMN lemma TEXT")
+    }
+    
+    /**
+     * D-404: adds [TABLE_LEARNED]'s own `lemma` column when this database predates it - same guarded-`ALTER
+     * TABLE` pattern as [ensureLastTouchedColumn]/[ensureLemmaColumn]. Unlike [ensureLemmaColumn],
+     * [TABLE_LEARNED] can never simply be reseeded - it holds the user's own accumulated, irreplaceable
+     * typing history, which must never be wiped by this migration (explicit design constraint).
+     *
+     * Every pre-existing row therefore gets a one-time, maximally conservative consolidation pass right
+     * here: after the `ALTER TABLE`, every row starts with `lemma = NULL`; this fills in only the links a
+     * plain forward suffix-strip lookup ([LearnedLemmaLinking.findLemma]) can find among the OTHER rows
+     * already present in this same table - lookup-only, never a guessed write, exactly the same check
+     * [linkLemma] applies to every future [learn] call. Running the forward check for every row already
+     * covers both directions (an inflected form's own row finds its base; a base form's own row is found
+     * *by* the inflected form's row when that one runs its own check), so no separate reverse sweep is
+     * needed here the way [linkLemma] needs one for a single freshly-learned word.
+     *
+     * A future LLM-aware reprocessing pass (D-404, deferred) may supersede this conservative pass outright
+     * when a tier-3 model is already installed at the moment this migration runs - not yet implemented.
+     */
+    private fun ensureLearnedLemmaColumn(database: SQLiteDatabase) {
+        val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_LEARNED)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { if (cursor.moveToNext()) cursor.getString(nameIndex) else null }.any { it == "lemma" }
+        }
+        if (hasColumn) {
+            return
+        }
+        database.execSQL("ALTER TABLE $TABLE_LEARNED ADD COLUMN lemma TEXT")
+        val words = ArrayList<String>()
+        database.rawQuery("SELECT wkey FROM $TABLE_LEARNED", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                words.add(cursor.getString(0))
+            }
+        }
+        val wordSet = words.toHashSet()
+        database.beginTransaction()
+        try {
+            words.forEach { key ->
+                val base = LearnedLemmaLinking.findLemma(key) { candidate -> candidate != key && candidate in wordSet }
+                if (base != null) {
+                    database.execSQL("UPDATE $TABLE_LEARNED SET lemma = ? WHERE wkey = ?", arrayOf(base, key))
+                }
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
     }
     
     override fun putWord(entry: WordEntry) {
@@ -380,7 +429,13 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         putBigramInternal(TABLE_BIGRAMS, previousWord, word, count)
     }
     
-    override fun learn(word: String, previousWord: String?, previousPreviousWord: String?, seedFrequency: Long) {
+    override fun learn(
+        word: String,
+        previousWord: String?,
+        previousPreviousWord: String?,
+        seedFrequency: Long,
+        categoryHint: PartOfSpeech?
+    ) {
         // D-177: always the learned table, regardless of whether word is also a bundled entry - reinforcing
         // an already-bundled word (e.g. "der") adds/updates a small personal overlay here rather than ever
         // touching TABLE_WORDS, so the bundled asset stays swappable. frequencyOf()/isKnownWord() etc. sum
@@ -397,8 +452,22 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // 1; an already-existing entry is reinforced exactly as before, ignoring seedFrequency entirely -
         // it only ever seeds a fresh row, never overrides an ongoing count.
         val frequency = existing?.let { it.frequency + 1L } ?: seedFrequency
-        val pos = existing?.partsOfSpeech ?: emptySet()
-        putWordInternal(TABLE_LEARNED, canonical, frequency, pos, lastTouched = System.currentTimeMillis())
+        // D-404: a category is only ever set once, from whichever categoryHint call first supplies one -
+        // never overridden afterwards, and never defaulted to anything when no hint is given (stays the
+        // empty set, read by the editor as "unbekannt").
+        val pos = when {
+            existing != null && existing.partsOfSpeech.isNotEmpty() -> existing.partsOfSpeech
+            categoryHint != null -> setOf(categoryHint)
+            else -> existing?.partsOfSpeech ?: emptySet()
+        }
+        val lemma = existing?.lemma ?: linkLemma(canonical)
+        putWordInternal(TABLE_LEARNED, canonical, frequency, pos, lastTouched = System.currentTimeMillis(), lemma = lemma)
+        if (existing?.lemma == null && lemma == null) {
+            // D-404: word itself may be the base of an already-learned inflected form still missing its
+            // own link - the reverse direction, needed for the opening example ("Hundes" already learned,
+            // "Hund" learned afterwards).
+            linkExistingInflectionsTo(canonical)
+        }
         if (previousWord != null) {
             putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
             // D-246: S-07 trigram support - personal-only, so only ever written here, never seeded.
@@ -409,6 +478,64 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
                 )
             }
         }
+    }
+    
+    /**
+     * D-404: the forward half of [LearnedLemmaLinking] - whether [word] is itself a plausible inflected
+     * form of an already-learned base, lookup-only (see that object's own KDoc).
+     *
+     * @param word the word just learned (its own canonical casing)
+     * @return the matching already-learned base form's key, or null when none is found
+     */
+    private fun linkLemma(word: String): String? {
+        val lower = word.lowercase()
+        return LearnedLemmaLinking.findLemma(lower) { candidate -> candidate != lower && learnedCasingOf(candidate) != null }
+    }
+    
+    /**
+     * D-404: the reverse half of [LearnedLemmaLinking] - links every already-learned word matching one of
+     * [baseWord]'s own candidate inflected forms back to it, unless that word already carries its own lemma
+     * link. Lookup-only - never creates a new entry, only fills in the `lemma` column of a row already
+     * present.
+     *
+     * @param baseWord the word just learned, suspected of being a base form (its own canonical casing)
+     */
+    private fun linkExistingInflectionsTo(baseWord: String) {
+        val lower = baseWord.lowercase()
+        for (candidate in LearnedLemmaLinking.candidateInflections(lower)) {
+            val row = learnedEntryOf(candidate) ?: continue
+            if (row.lemma == null) {
+                setLearnedLemma(candidate, lower)
+            }
+        }
+    }
+    
+    /**
+     * D-404: sets (or clears, when [lemma] is null) an already-learned word's own base-form link directly -
+     * the Learned Words editor's own "Grundform" dropdown, letting a power user manually correct or remove a
+     * link the conservative lookup missed or got wrong. A plain column update, touching nothing else about
+     * the row (frequency, category, last-touched); a no-op when [word] is not currently a learned entry.
+     *
+     * @param word the learned word to (re)link (any case)
+     * @param lemma the base form's own key to link to, or null to clear an existing link
+     */
+    fun setLearnedLemma(word: String, lemma: String?) {
+        val values = ContentValues().apply { put("lemma", lemma) }
+        db.update(TABLE_LEARNED, values, "wkey = ?", arrayOf(word.lowercase()))
+    }
+    
+    /**
+     * D-404: sets (or clears) an already-learned word's own category tags directly - the Learned Words
+     * editor's own multi-select category field, letting a power user correct a category the capitalisation
+     * heuristic got wrong (or never determined at all). A plain column update; a no-op when [word] is not
+     * currently a learned entry.
+     *
+     * @param word the learned word to recategorise (any case)
+     * @param categories the new category tags, or empty to reset back to "unbekannt"
+     */
+    fun setLearnedCategories(word: String, categories: Set<PartOfSpeech>) {
+        val values = ContentValues().apply { put("pos", categories.joinToString(",") { it.name }) }
+        db.update(TABLE_LEARNED, values, "wkey = ?", arrayOf(word.lowercase()))
     }
     
     override fun learnContext(word: String, previousWord: String?, previousPreviousWord: String?) {
@@ -432,7 +559,10 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             if (frequency <= 0L) {
                 db.delete(TABLE_LEARNED, "wkey = ?", arrayOf(word.lowercase()))
             } else {
-                putWordInternal(TABLE_LEARNED, existing.word, frequency, existing.partsOfSpeech, lastTouched = System.currentTimeMillis())
+                putWordInternal(
+                    TABLE_LEARNED, existing.word, frequency, existing.partsOfSpeech,
+                    lastTouched = System.currentTimeMillis(), lemma = existing.lemma
+                )
             }
         }
         if (previousWord != null) {
@@ -497,7 +627,10 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      */
     fun recaseLearnedWord(word: String, newCasing: String) {
         val existing = learnedEntryOf(word) ?: return
-        putWordInternal(TABLE_LEARNED, newCasing, existing.frequency, existing.partsOfSpeech, lastTouched = System.currentTimeMillis())
+        putWordInternal(
+            TABLE_LEARNED, newCasing, existing.frequency, existing.partsOfSpeech,
+            lastTouched = System.currentTimeMillis(), lemma = existing.lemma
+        )
     }
     
     override fun learnedWords(): List<WordEntry> {
@@ -518,13 +651,23 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * shared far too widely across the suggestion/correction engine to carry a field only this one screen
      * cares about. Unordered - the caller decides the actual display order (alphabetical or by recency).
      *
+     * D-404: also carries each entry's own category ([PartOfSpeech] tags, possibly empty/"unbekannt") and
+     * base-form link - the editor's own asterisk marker (empty category) and list consolidation (an entry
+     * with a non-null [LearnedWordEntry.lemma] is a family member of another row, not shown as its own
+     * top-level entry) both read directly off this.
+     *
      * @return every learned entry with its own last-touched timestamp (epoch millis)
      */
     fun learnedWordsWithTimestamp(): List<LearnedWordEntry> {
         val result = ArrayList<LearnedWordEntry>()
-        db.rawQuery("SELECT word, freq, last_touched FROM $TABLE_LEARNED", null).use { cursor ->
+        db.rawQuery("SELECT word, freq, last_touched, pos, lemma FROM $TABLE_LEARNED", null).use { cursor ->
             while (cursor.moveToNext()) {
-                result.add(LearnedWordEntry(cursor.getString(0), cursor.getLong(1), cursor.getLong(2)))
+                result.add(
+                    LearnedWordEntry(
+                        cursor.getString(0), cursor.getLong(1), cursor.getLong(2),
+                        parsePos(cursor.getString(3)), cursor.getString(4)
+                    )
+                )
             }
         }
         return result
@@ -632,15 +775,18 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * 
      * @param word the word exactly as exported (canonical case)
      * @param frequencyDelta the exported frequency to add
-     * @param partsOfSpeech the exported tags, merged into whatever this store already has (in practice always
-     *        empty - [learn] never sets a tag on a learned entry - kept for fidelity with the exported row)
+     * @param partsOfSpeech the exported tags, merged into whatever this store already has (D-404: possibly
+     *        non-empty since [learn]'s own categoryHint can set one - kept for fidelity with the exported row)
      */
     fun restoreLearnedWord(word: String, frequencyDelta: Long, partsOfSpeech: Set<PartOfSpeech>) {
         val existing = learnedEntryOf(word)
         val canonical = existing?.word ?: word
         val frequency = (existing?.frequency ?: 0L) + frequencyDelta
         val mergedPos = (existing?.partsOfSpeech ?: emptySet()) + partsOfSpeech
-        putWordInternal(TABLE_LEARNED, canonical, frequency, mergedPos, lastTouched = System.currentTimeMillis())
+        putWordInternal(
+            TABLE_LEARNED, canonical, frequency, mergedPos,
+            lastTouched = System.currentTimeMillis(), lemma = existing?.lemma
+        )
     }
     
     /**
@@ -988,13 +1134,13 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return when {
             bundled == null -> learned
             learned == null -> bundled
-            // D-264: the learned entry's own casing wins when both exist for the same key. D-412: lemma is
-            // bundled-only (TABLE_LEARNED has no such column, so learned.lemma is always null here anyway).
+            // D-264: the learned entry's own casing wins when both exist for the same key. D-404: the
+            // learned entry's own lemma link (if any) wins too, falling back to the bundled one otherwise.
             else -> WordEntry(
                 learned.word,
                 bundled.frequency + learned.frequency,
                 bundled.partsOfSpeech + learned.partsOfSpeech,
-                lemma = bundled.lemma
+                lemma = learned.lemma ?: bundled.lemma
             )
         }
     }
@@ -1008,11 +1154,12 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     /**
-     * D-412: [TABLE_WORDS] alone carries a `lemma` column - [TABLE_LEARNED] has none, so selecting it
-     * there would fail outright.
+     * D-412/D-404: both [TABLE_WORDS] and [TABLE_LEARNED] carry their own `lemma` column - every other
+     * table has none, so selecting it there would fail outright.
      */
     private fun entryOfIn(table: String, word: String): WordEntry? {
-        val columns = if (table == TABLE_WORDS) "word, freq, pos, lemma" else "word, freq, pos"
+        val hasLemma = table == TABLE_WORDS || table == TABLE_LEARNED
+        val columns = if (hasLemma) "word, freq, pos, lemma" else "word, freq, pos"
         db.rawQuery(
             "SELECT $columns FROM $table WHERE wkey = ?",
             arrayOf(word.lowercase())
@@ -1020,7 +1167,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             if (!cursor.moveToFirst()) {
                 return null
             }
-            val lemma = if (table == TABLE_WORDS) cursor.getString(3) else null
+            val lemma = if (hasLemma) cursor.getString(3) else null
             return WordEntry(cursor.getString(0), cursor.getLong(1), parsePos(cursor.getString(2)), lemma)
         }
     }
@@ -1031,8 +1178,12 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      *        write is a full `INSERT OR REPLACE`, so this must always be passed explicitly for that table
      *        - an omitted value would silently reset the column back to its schema default instead of
      *        leaving it untouched.
-     * @param lemma D-412: the base-form key to stamp into [TABLE_WORDS]'s own `lemma` column - ignored
-     *        for any other table, which has no such column at all (mirrors [lastTouched] above).
+     * @param lemma D-412/D-404: the base-form key to stamp into [table]'s own `lemma` column - ignored for
+     *        any other table, which has no such column at all (mirrors [lastTouched] above). Every
+     *        [TABLE_LEARNED] write is, like [lastTouched], a full `INSERT OR REPLACE` too - a caller
+     *        writing to that table must always pass the entry's current lemma explicitly (its own newly
+     *        resolved link, or the existing one carried forward unchanged), never omit it, or an
+     *        already-established link would be silently wiped on the very next reinforcement.
      */
     private fun putWordInternal(
         table: String,
@@ -1050,7 +1201,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             if (lastTouched != null) {
                 put("last_touched", lastTouched)
             }
-            if (table == TABLE_WORDS) {
+            if (table == TABLE_WORDS || table == TABLE_LEARNED) {
                 put("lemma", lemma)
             }
         }
