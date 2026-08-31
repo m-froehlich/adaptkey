@@ -245,6 +245,21 @@ a configurable number of consecutive words committed in a different language tha
 only the manual swipe); every switch - manual or automatic - cross-fades the space-bar's language label
 (260 ms) as a visible acknowledgement.
 
+**D-400: switching the active language does not, by itself, switch the physical key layout.** The layout
+(`LayoutRegistry.kindFor`) is pinned to the device's own system language, independent of whichever language
+is actually active for dictionary/suggestion purposes - so neither the automatic switch above nor an
+ordinary manual swipe between two Latin-script languages ever rearranges keys the user did not ask to
+rearrange (system language German, active language cycling between German/English/French: always QWERTZ).
+One exception: switching into a language with its own non-Latin alphabet (Greek, the only one today) always
+shows that language's own dedicated layout, since it would otherwise be physically impossible to type at
+all - reachable only via an explicit G-01 swipe, never the automatic promotion above (which only ever
+targets English, and can only ever fire from an already-Latin active language, since typing the English
+words that would trigger it is itself impossible on a non-Latin layout). Symmetrically, when the system
+language itself has no sensible Latin layout to fall back to (the system language is Greek, or a language
+this app has no layout convention for at all) and the user explicitly switches to a genuine Latin-script
+language, the layout follows *that* language's own convention directly rather than defaulting to plain
+QWERTY - an explicit switch is already a deliberate choice, so it may as well land on the right layout.
+
 ### G-02 - Delete Whole Word
 Swiping left on the backspace key deletes the entire previous word rather than a single character. This is independent of - and takes priority in recognition over - the accelerating repeat-on-hold behaviour of a plain backspace press/hold.
 

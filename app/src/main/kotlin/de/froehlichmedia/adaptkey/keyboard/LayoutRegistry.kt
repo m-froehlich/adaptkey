@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import de.froehlichmedia.adaptkey.language.Language
+import java.util.Locale
 
 /**
  * D-280: which compiled-in letters-surface layout a [Language] uses - the single source of truth
@@ -45,4 +46,39 @@ object LayoutRegistry {
     /** Languages with a genuinely different (non-Latin) alphabet, requiring dedicated layout code
      *  ([GreekLayout]) rather than reusing [KeyboardLayout]. */
     val NON_LATIN_LANGUAGES: Set<Language> = KINDS.filterValues { it == LayoutKind.GREEK }.keys
+    
+    /**
+     * D-400: the actual layout shown day to day - deliberately independent of [activeLanguage] (the
+     * dictionary/suggestion language, changed freely by both the manual G-01 swipe and D-130's automatic
+     * sustained-English promotion) in the ordinary case, pinned instead to the device's own system
+     * language, so a language switch alone - whichever of the two triggers it - never rearranges physical
+     * keys the user did not ask to rearrange ("niemand will plötzlich von QWERTZ auf QWERTY wechseln").
+     * Two cases override that default, in order:
+     * 1. [activeLanguage] itself has a non-Latin layout ([NON_LATIN_LANGUAGES], Greek today) - always wins,
+     *    since every other Latin layout is otherwise physically incapable of typing it at all. In practice
+     *    this can only ever be reached via an explicit G-01 swipe *into* that language, never D-130's
+     *    automatic promotion (which only ever targets English, and can only ever fire from an already-Latin
+     *    active language to begin with - Greek's own layout has no Latin key positions to type the English
+     *    words that would trigger it from).
+     * 2. The system language itself has no sensible Latin layout to offer (it resolves to a non-Latin
+     *    language - Greek - or to nothing this app recognises at all) while [activeLanguage] is a genuine,
+     *    explicit choice with its own real layout convention - falls back to [activeLanguage]'s own layout
+     *    directly in that case (the user's own reasoning: a system-language-Greek device explicitly
+     *    switching to German or French is *already* a clear, deliberate switch, so it may as well land on
+     *    that language's own correct layout rather than an arbitrary QWERTY default).
+     *
+     * @param systemLocale the device's own system locale (e.g. [Locale.getDefault])
+     * @param activeLanguage the currently active dictionary/suggestion language (G-01)
+     * @return the layout kind to actually show
+     */
+    fun kindFor(systemLocale: Locale, activeLanguage: Language): LayoutKind {
+        if (activeLanguage in NON_LATIN_LANGUAGES) {
+            return kindFor(activeLanguage)
+        }
+        val systemLanguage = Language.fromCode(systemLocale.language)
+        if (systemLanguage != null && systemLanguage !in NON_LATIN_LANGUAGES) {
+            return kindFor(systemLanguage)
+        }
+        return kindFor(activeLanguage)
+    }
 }

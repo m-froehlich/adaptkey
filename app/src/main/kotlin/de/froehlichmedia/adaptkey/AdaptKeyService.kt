@@ -10,6 +10,7 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.provider.ContactsContract
 import android.os.Build
 import android.graphics.drawable.GradientDrawable
@@ -92,7 +93,6 @@ import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
-import de.froehlichmedia.adaptkey.keyboard.LayoutKind
 import de.froehlichmedia.adaptkey.keyboard.LayoutRegistry
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
@@ -866,17 +866,29 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-280/D-281: applies [activeLanguage]'s compiled-in layout kind ([LayoutRegistry]) and its own
-     * default L-05/C-08 letter-hint set to the keyboard view - the single place
-     * [AdaptKeyboardView.layoutKind]/[AdaptKeyboardView.letterHints] are derived from [activeLanguage],
-     * instead of repeating the comparison at every call site ([onStartInputView], [toggleLanguage], and
-     * [installStores]'s own removed-language fallback above). `applySettings()` separately reapplies the
-     * same [SettingsStore.loadLetterHints] result whenever any setting changes - both paths agree, since
-     * either resolves for the same [activeLanguage].
+     * D-280/D-281/D-400: applies the actual layout kind ([LayoutRegistry.kindFor], pinned to the system
+     * language rather than [activeLanguage] in the ordinary case - see that function's own KDoc for the
+     * full reasoning) and [activeLanguage]'s own default L-05/C-08 letter-hint set to the keyboard view -
+     * the single place [AdaptKeyboardView.layoutKind]/[AdaptKeyboardView.letterHints] are derived, instead
+     * of repeating the comparison at every call site ([onStartInputView], [toggleLanguage],
+     * [onConfigurationChanged], and [installStores]'s own removed-language fallback above). `applySettings()`
+     * separately reapplies the same [SettingsStore.loadLetterHints] result whenever any setting changes -
+     * both paths agree, since either resolves for the same [activeLanguage].
      */
     private fun applyActiveLanguageToView() {
-        keyboardView?.layoutKind = LayoutRegistry.kindFor(activeLanguage)
+        keyboardView?.layoutKind = LayoutRegistry.kindFor(Locale.getDefault(), activeLanguage)
         keyboardView?.letterHints = SettingsStore.loadLetterHints(this, activeLanguage)
+    }
+    
+    /**
+     * D-400: the layout is pinned to the system language ([applyActiveLanguageToView] /
+     * [LayoutRegistry.kindFor]), not to [activeLanguage] - so a system language change while the keyboard
+     * happens to already be open (rare; a settings-app round-trip, not something that occurs mid-typing)
+     * must re-derive it too, exactly the same way a fresh [onStartInputView] would.
+     */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applyActiveLanguageToView()
     }
     
     /**
@@ -3808,7 +3820,11 @@ class AdaptKeyService : InputMethodService() {
      * protection, already work well for a single embedded loanword; a sustained run of English words is a
      * different, stronger signal that the user has genuinely switched languages, not just borrowed one word.
      * D-398: a stored threshold of 0 disables this promotion entirely - only the manual G-01 swipe still
-     * changes the active language.
+     * changes the active language. D-400: never touches [AdaptKeyboardView.layoutKind] - this promotion
+     * can only ever fire between already-Latin-typeable languages to begin with (English is its only
+     * target, and reaching it requires the previous few words to have actually been typed as Latin
+     * letters), so the layout - pinned to the system language, see [LayoutRegistry.kindFor] - is already
+     * correct and simply stays exactly as it was.
      *
      * @param ic the current input connection
      * @param tokenLanguage the language [finalizeAndCommit] actually routed the just-committed token to
@@ -3828,7 +3844,6 @@ class AdaptKeyService : InputMethodService() {
         keyboardView?.beginLanguageChangeFade()
         activeLanguage = Language.ENGLISH
         ActiveLanguageStore.save(this, activeLanguage)
-        keyboardView?.layoutKind = LayoutKind.LATIN_QWERTY
         updateSpaceLabel()
         clearSuggestions()
         Toast.makeText(this, languageLabel(activeLanguage), Toast.LENGTH_SHORT).show()

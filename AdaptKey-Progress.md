@@ -533,11 +533,17 @@ non-trivial changes).
     hardcoded 5) is now C-23, a 0-8 slider under the Dictionary category's language section, default 5;
     0 disables the automatic switch entirely (manual G-01 swipe unaffected).
   - **D-399 - RESOLVED (§330, v1.0.82).** C-03's maximum-suggestions range widened from a 6 floor to 3.
-  - **D-400 - OPEN, a design question the user already leans on.** Should an automatic language switch (D-130)
-    into another Latin-script language also switch the keyboard *layout*? User's own conclusion: probably
-    not - only the dictionary/word recognition should switch; the layout should instead follow the *system's*
-    own locale, never the currently-active typing language ("niemand will plötzlich von QWERTZ auf QWERTY
-    wechseln").
+  - **D-400 - RESOLVED (§331, v1.0.83).** Discussed and implemented: the keyboard layout is now pinned to
+    the device's system language, independent of whichever language is active for dictionary/suggestion
+    purposes - neither D-130's automatic switch nor an ordinary manual G-01 swipe between two Latin-script
+    languages changes it any more ("niemand will plötzlich von QWERTZ auf QWERTY wechseln"). Two exceptions,
+    both the user's own explicit refinements during discussion: switching into a non-Latin-script language
+    (Greek) always uses its own layout (otherwise physically untypeable); and when the system language
+    itself has no sensible Latin layout to offer (system language is Greek, or unrecognised) and the user
+    explicitly switches to a genuine Latin language, the layout follows *that* language's own convention
+    directly rather than a blind QWERTY default - "hier wird ohnehin klar umgeschaltet, dann kann man auch
+    direkt das passende Layout nehmen." See spec's G-01 addendum and `LayoutRegistry.kindFor()`'s own KDoc
+    for the full resolution order.
   - **D-401 - OPEN, a fully-specified new feature concept (captured verbatim, the shape is already precise -**
     **see history §276 for the complete four-stage description).** A cursor/text-selection mode reached via a
     long-press on the space bar: long-press arms it (vibration, keys fade to 30%, crosshair appears);
@@ -630,6 +636,45 @@ non-trivial changes).
   own, not-yet-started, uncertain-feasibility project.
 
 ## Current State
+
+- **§331 (v1.0.83): D-400 - the keyboard layout is pinned to the system language, decoupled from the**
+  **active dictionary language.** Design discussed directly with the user before implementing (this
+  project's own convention for non-trivial decisions) - see the conversation itself for the full back-and-
+  forth; summary of what shipped:
+  - **Root problem, confirmed from the actual code, not assumed:** D-130's automatic sustained-English
+    promotion hard-set `keyboardView.layoutKind = LayoutKind.LATIN_QWERTY` unconditionally
+    ([AdaptKeyService.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt), inside
+    `trackSustainedEnglishUsage()`) - typing 5 English words while German (QWERTZ) was active silently
+    flipped the physical layout to QWERTY, a real, reproducible surprise for a purely cosmetic Y/Z
+    difference. The manual G-01 swipe (`toggleLanguage()`) and app/field startup (`onStartInputView()`)
+    instead called `LayoutRegistry.kindFor(activeLanguage)` via the shared `applyActiveLanguageToView()`.
+  - **Key finding during discussion that resolved an earlier false concern:** D-130's automatic promotion
+    can *only* ever target English, and can only ever fire while the active language is already
+    Latin-typeable (Greek's own layout has no Latin key positions, so the English words that would trigger
+    it could never actually be typed while Greek is active) - so the automatic path never needs to touch
+    the layout at all, not even conditionally. The line was simply deleted, no replacement.
+  - **New shared resolution, `LayoutRegistry.kindFor(systemLocale: Locale, activeLanguage: Language):
+    LayoutKind`** (pure, unit-tested, reuses the existing `Language.fromCode()` lookup rather than
+    duplicating locale-matching logic): resolves to `activeLanguage`'s own layout when it is non-Latin
+    (Greek - always wins, otherwise physically untypeable); otherwise to the system language's own layout
+    when the system language is itself a recognised Latin one; otherwise (system language is Greek, or one
+    this app has no entry for at all) falls back to `activeLanguage`'s own layout directly - the user's own
+    late refinement during discussion ("hier wird ohnehin klar umgeschaltet, dann kann man auch direkt das
+    passende Layout nehmen"), added after the initial "always pin to system language" framing turned out to
+    have no sensible answer for a Greek-system-language device explicitly switching to German or French.
+  - `applyActiveLanguageToView()` (the single place feeding `AdaptKeyboardView.layoutKind`, shared by
+    `onStartInputView`/`toggleLanguage`/`installStores`'s removed-language fallback) now calls the new
+    two-argument overload with `Locale.getDefault()`. New `AdaptKeyService.onConfigurationChanged()`
+    override re-derives it on a live system-language change while the keyboard happens to be open (the
+    user's own "nice to have, not important, this doesn't happen often" ask - cheap enough to include).
+  - 5 new tests (`LayoutRegistryTest`, new file - the class had none before). 1136 → 1141 unit tests. Spec's
+    G-01 gained a D-400 addendum explaining the pin + both exceptions; `LayoutRegistry.kindFor()`'s own KDoc
+    carries the full resolution-order reasoning.
+  - `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 386 → 387, `versionName` `"1.0.82"`
+    → `"1.0.83"`. **Not yet device-confirmed** - needs real-device checks: German active/system, sustained
+    English typing no longer flips to QWERTY; manual swipe between two Latin languages leaves the layout
+    alone; swiping to Greek still shows the Greek layout; a Greek-system-language device swiping to German/
+    French lands on QWERTZ/AZERTY respectively, not QWERTY.
 
 - **§330 (v1.0.82): a batch of seven small, independently-decided backlog items - D-379, D-382, D-394**
   **(digit-mirror half only), D-398, D-399 implemented; D-375 and D-381 confirmed with no code change.**
