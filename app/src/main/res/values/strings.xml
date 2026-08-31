@@ -186,15 +186,7 @@
     <string name="c06_model_import_failed">Import failed.</string>
     <string name="c06_model_removed">Model removed.</string>
     <string name="c06_model_no_browser">No browser found. Please download and import the file manually.</string>
-    <string name="c06_model_privacy">This app holds no internet and no storage permission. The download runs through your browser; the app only reads the folder you grant access to once, to find the downloaded file automatically.</string>
-
-    <!-- D-386: shared download-folder resolution (finds a browser-renamed "(1)"/"(2)" duplicate and takes
-         the newest, so import never needs a file picker beyond the one-time folder grant) - used by both
-         the language-pack and the tier-3 model import screens. -->
-    <string name="d386_grant_folder_title">Grant download folder access</string>
-    <string name="d386_grant_folder_message">AdaptKey needs one-time access to the folder your browser downloads to, so it can find the file automatically - even if your browser renamed it (e.g. \"… (1)\") because a same-named file already existed. This only needs to be granted once; every future import reuses it. Please choose your Downloads folder.</string>
-    <string name="d386_grant_folder_action">Choose folder</string>
-    <string name="d386_file_not_found">File not found in the granted folder. Please download it there, or grant a different folder and try again.</string>
+    <string name="c06_model_privacy">This app holds no internet and no storage permission. The download runs through your browser; the app only reads the one file you pick via the system\'s own file picker.</string>
 
     <!-- D-280 language packs (browser download + file import, one per language beyond English). -->
     <string name="d280_pref_title">Languages</string>

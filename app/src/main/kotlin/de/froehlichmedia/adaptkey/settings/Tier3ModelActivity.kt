@@ -12,11 +12,9 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import de.froehlichmedia.adaptkey.R
-import de.froehlichmedia.adaptkey.download.DownloadFolderResolver
-import de.froehlichmedia.adaptkey.download.DownloadFolderStore
+import de.froehlichmedia.adaptkey.download.DownloadFileSupport
 import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelInstaller
 import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
 
@@ -29,9 +27,10 @@ import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
  * Android-facing layers it is covered by instrumented rather than unit tests; the copy/validation logic it
  * delegates to is unit-tested.
  *
- * D-386: "import" no longer opens a single-file picker - see [de.froehlichmedia.adaptkey.settings.
- * LanguagePacksActivity]'s own identical KDoc for the full reasoning (duplicate-file resolution shared via
- * [DownloadFolderStore]/[DownloadFolderResolver], the same granted folder reused by both screens).
+ * D-413: "import" opens a plain `ACTION_OPEN_DOCUMENT` single-file picker again - see
+ * [de.froehlichmedia.adaptkey.settings.LanguagePacksActivity]'s own identical KDoc for the full reasoning
+ * (D-386's folder-grant automation turned out to be unusable on a real device; [DownloadFileSupport]'s
+ * post-import cleanup is still shared by both screens).
  */
 class Tier3ModelActivity : AppCompatActivity() {
     
@@ -41,11 +40,12 @@ class Tier3ModelActivity : AppCompatActivity() {
     private lateinit var removeButton: Button
     private var busy = false
     
-    private val openTree = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val openDocument = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data
         if (result.resultCode == RESULT_OK && uri != null) {
-            DownloadFolderStore.save(this, uri)
-            resolveAndImport(uri)
+            setBusy(true)
+            statusView.setText(R.string.c06_model_importing)
+            Thread { importModel(uri) }.start()
         }
     }
     
@@ -76,72 +76,30 @@ class Tier3ModelActivity : AppCompatActivity() {
     }
     
     /**
-     * D-386: begins the import - reuses the already-granted download folder when one exists, otherwise
-     * explains why one is needed and requests it first. See [de.froehlichmedia.adaptkey.settings.
-     * LanguagePacksActivity]'s own identical method for the full reasoning.
+     * D-413: begins the import - launches a plain `ACTION_OPEN_DOCUMENT` single-file picker every time. See
+     * [de.froehlichmedia.adaptkey.settings.LanguagePacksActivity]'s own identical method for the full
+     * reasoning.
      */
     private fun startImport() {
         if (busy) {
             return
         }
-        val treeUri = DownloadFolderStore.treeUri(this)
-        if (treeUri == null) {
-            showGrantFolderExplanation()
-        } else {
-            resolveAndImport(treeUri)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+            // D-413: write access is needed for DownloadFileSupport's own post-import cleanup below.
+            flags = Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, DownloadFileSupport.downloadsInitialUriHint())
         }
-    }
-    
-    private fun showGrantFolderExplanation() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.d386_grant_folder_title)
-            .setMessage(R.string.d386_grant_folder_message)
-            .setPositiveButton(R.string.d386_grant_folder_action) { _, _ -> launchTreePicker() }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-    
-    private fun launchTreePicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, DownloadFolderResolver.downloadsInitialUriHint())
-        }
-        openTree.launch(intent)
+        openDocument.launch(intent)
     }
     
     /**
-     * D-386: resolves the newest matching file in [treeUri] for the model's own expected download name
-     * (the model URL's last path segment) and imports it - or, when no match is found, forgets the stale
-     * grant and re-prompts.
-     */
-    private fun resolveAndImport(treeUri: Uri) {
-        val expectedFileName = Uri.parse(MODEL_URL).lastPathSegment
-        if (expectedFileName == null) {
-            Toast.makeText(this, R.string.d386_file_not_found, Toast.LENGTH_LONG).show()
-            return
-        }
-        setBusy(true)
-        statusView.setText(R.string.c06_model_importing)
-        Thread {
-            val matched = DownloadFolderResolver.findNewestMatch(this, treeUri, expectedFileName)
-            if (matched == null) {
-                DownloadFolderStore.clear(this)
-                runOnUiThread {
-                    setBusy(false)
-                    Toast.makeText(this, R.string.d386_file_not_found, Toast.LENGTH_LONG).show()
-                    refresh()
-                }
-                return@Thread
-            }
-            importModel(matched)
-        }.start()
-    }
-    
-    /**
-     * D-386: now called already on [resolveAndImport]'s own background thread (never spawns its own), and
-     * deletes the resolved model file afterward when it is recent enough ([DownloadFolderResolver.
+     * D-386/D-413: now called already on the picker callback's own background thread (never spawns its
+     * own), and deletes the picked model file afterward when it is recent enough ([DownloadFileSupport.
      * deleteIfRecentlyCreated]).
      *
-     * @param uri the resolved model file to import
+     * @param uri the picked model file to import
      */
     private fun importModel(uri: Uri) {
         val result = runCatching {
@@ -151,7 +109,7 @@ class Tier3ModelActivity : AppCompatActivity() {
             }
         }
         if (result.isSuccess) {
-            DownloadFolderResolver.deleteIfRecentlyCreated(this, uri, DownloadFolderResolver.DELETE_MAX_AGE_MILLIS)
+            DownloadFileSupport.deleteIfRecentlyCreated(this, uri, DownloadFileSupport.DELETE_MAX_AGE_MILLIS)
         }
         runOnUiThread {
             setBusy(false)

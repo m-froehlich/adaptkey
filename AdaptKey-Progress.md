@@ -429,9 +429,15 @@ non-trivial changes).
     retroactively reinterpreted as Backspace. Possibly its own setting either way.
   - **D-362 - OPEN.** The "…" loading-indicator chip (D-346, shown during the deferred fuzzy search) is far
     too small/subtle - should be bold, larger, possibly animated.
-  - **D-363 - OPEN.** Colon/semicolon should arm the same A-12 punctuation-auto-space `.`/`!`/`?`/`,` already
-    do, with a time-of-day exception: a digit immediately before the colon (`"14:30"`) must suppress it. The
-    user explicitly asked for further refinement of this exception, not just the base behaviour.
+  - **D-363 - WON'T FIX (2026-08-31, no code change - discussed and declined).** Colon/semicolon arming the
+    same A-12 punctuation-auto-space `.`/`!`/`?`/`,` already do, with a time-of-day exception (a digit
+    immediately before the colon, e.g. `"14:30"`, must suppress it). Discussed directly: unconditionally
+    arming `:`/`;` collides with text emoticons (`:)`, `;)`, `:-)`, `:D`, ...) far more often than the
+    time-of-day case the user originally named - the auto-space would land as `": )"`/`"; )"`. A generalised
+    "only arm when a letter immediately precedes the mark" gate was worked out (subsumes the digit exception
+    and protects the common "emoticon after a space or at message start" case, though not one glued directly
+    onto a word with no space, e.g. `"Danke;)"`) but the user decided the remaining collision risk/complexity
+    is not worth it for this feature - declined rather than implemented.
   - **D-364 - OPEN.** Typing `"Teyt"` offers two separate chips for `"Text"` - a duplicate that should
     collapse to one.
   - **D-365 - OPEN, a question not yet answered.** What frequency do seeded/bundled bigrams carry, and
@@ -488,9 +494,11 @@ non-trivial changes).
     immediately) was agreed as the better-targeted fix for the *actual* pain point - not yet implemented,
     worth its own future backlog item if picked up. D-385's own "nothing may be lost" constraint is moot
     given this outcome (no migration ever happens).
-  - **D-386 - RESOLVED (§327 v1.0.79).** Dictionary/model import now finds a `(1)`-suffixed (or `(2)`, `(3)`,
-    ...) duplicate near the expected file and takes the newest, and deletes the imported file afterward when
-    it is at most 60 seconds old - see spec §30 for the full mechanism (shared with D-344, chosen together).
+  - **D-386 - SUPERSEDED BY D-413 (2026-08-31, no version bump - a decision, not new code).** The
+    `(1)`-suffixed-duplicate folder resolution (§327 v1.0.79) is gone again - see D-413 below: the
+    `ACTION_OPEN_DOCUMENT_TREE` folder grant it depended on turned out to be refused outright for the
+    Downloads folder itself on a real device. The post-import 60-second-old cleanup half of D-386 survives
+    unchanged (now against a directly-picked file) - see spec §30.
   - **D-387 - OPEN.** Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages - know
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
@@ -547,10 +555,11 @@ non-trivial changes).
     casing, confirmed via the existing `"MSCI"`-vs-`"Msci"` regression test), reconfirmed directly with the
     user this round.
 
-- **D-344 (download directory control, spec §30) - RESOLVED by §327 (v1.0.79), together with D-386.** SAF
-  chosen over the other two options (HTTP header control, raw repo path) - see spec §30 for the full
-  mechanism (an `ACTION_OPEN_DOCUMENT_TREE` folder grant, shared by both import screens, resolved
-  automatically per import via `download.DownloadFolderResolver`).
+- **D-344 (download directory control, spec §30) - RESOLVED, mechanism changed by D-413 (see below).** The
+  SAF folder-grant approach from §327 (v1.0.79) was reverted; the app is back to a plain `ACTION_OPEN_
+  DOCUMENT` single-file picker, the same family of fix D-344 originally chose between (HTTP header control
+  and raw-repo-path remain declined for the reasons given in spec §30) - see spec §30 for the current
+  mechanism and D-413 for why the folder-grant attempt did not survive real-device testing.
 
 - **D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54), with one open question.** The
   broader scan for Wikipedia-extraction-noise entries (fragments, obscure acronyms, markup tokens) that §345
@@ -618,6 +627,43 @@ non-trivial changes).
   own, not-yet-started, uncertain-feasibility project.
 
 ## Current State
+
+- **§329 (v1.0.81): D-413 - reverted D-344/D-386's SAF folder-grant import back to a plain
+  `ACTION_OPEN_DOCUMENT` single-file picker; D-363 declined as Won't Fix.** Real-device report: trying to
+  import the German language pack, the system refused to grant the Downloads folder at all via
+  `ACTION_OPEN_DOCUMENT_TREE` ("Dieser Ordner kann nicht verwendet werden. Zum Schutz deiner Daten einen
+  anderen Ordner auswählen.") - a platform-level SAF restriction (worsened by Samsung One UI's own download
+  sandboxing) on exactly the folder D-386's whole automatic-resolution mechanism was built around, not an
+  app bug. Discussed directly: reverting to a manual single-file pick was the only viable path (a folder that
+  cannot be granted has no file to automatically resolve within it either). Removed `download.
+  DownloadFolderStore` (persisted tree grant) and `download.DuplicateDownloadMatcher`/`DownloadCandidate`
+  (browser-`" (N)"`-duplicate matching, no longer needed once the user picks the exact file again) entirely,
+  including `DuplicateDownloadMatcherTest`. `download.DownloadFolderResolver` renamed to `download.
+  DownloadFileSupport`, keeping only what still applies to a single picked document unchanged:
+  `downloadsInitialUriHint()` (the `EXTRA_INITIAL_URI` Downloads-folder hint) and `deleteIfRecentlyCreated()`/
+  `isRecentlyCreated()`/`DELETE_MAX_AGE_MILLIS` (D-386's post-import cleanup, kept at the user's own explicit
+  request even though the file is picked manually again). `LanguagePacksActivity`/`Tier3ModelActivity`:
+  `ACTION_OPEN_DOCUMENT_TREE` + persisted-grant reuse + the upfront "why we need a folder" rationale dialog
+  are all gone; "Import" now launches `ACTION_OPEN_DOCUMENT` (`CATEGORY_OPENABLE`, `type = "*/*"`,
+  `FLAG_GRANT_WRITE_URI_PERMISSION` for the delete-after-import to actually work) fresh every time and
+  imports the result directly. D-386-followup's content-level checks (`LanguagePackInstaller.
+  compareVersions`/`LanguageMismatchException`) are untouched and now do double duty as the safety net a
+  folder-scan design no longer needs but a "trust the user's own pick" design still benefits from. Four now-
+  unused `d386_grant_folder_*`/`d386_file_not_found` strings removed from all three locales (en/de/el);
+  `c06_model_privacy`'s user-facing text corrected in all three (no longer claims a one-time folder grant).
+  Spec §30 rewritten to describe the current single-file-picker mechanism as the crystallised state, with
+  D-344/D-386's folder-grant attempt kept as explained, superseded history rather than silently deleted.
+  1144 → 1134 unit tests (10 `DuplicateDownloadMatcherTest` cases removed; `DownloadFolderResolverTest`
+  renamed to `DownloadFileSupportTest`, same 4 cases, unchanged). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 384 → 385, `versionName` `"1.0.80"` → `"1.0.81"`.
+  **Separately, no code change:** D-363 (colon/semicolon arming A-12's punctuation-auto-space) discussed and
+  declined as Won't Fix - unconditionally arming `:`/`;` collides with text emoticons (`:)`, `;)`, ...) far
+  more often than the time-of-day case that originally motivated it; a "only arm when a letter immediately
+  precedes the mark" gate was worked out (subsumes the digit exception, protects the common
+  space-or-message-start emoticon case) but the user judged the remaining complexity/risk not worth it. See
+  the "Open TODOs" list above for both items' updated status. **Not yet device-confirmed** - needs a real
+  import (language pack and/or model) via the new single-file picker on the same device that hit the original
+  Downloads-folder-grant refusal.
 
 - **§305 (v1.0.58): D-412 - a bundled-only `lemma` link column, laid down as groundwork for the**
   **in-progress German verb-tagging project (see below) and, further out, D-404 Tier 1.** `WordEntry` gained

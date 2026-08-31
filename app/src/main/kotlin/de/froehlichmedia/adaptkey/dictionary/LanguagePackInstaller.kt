@@ -83,7 +83,7 @@ object LanguagePackInstaller {
      * D-386-followup: the three possible outcomes of comparing a freshly-parsed archive's own
      * [ParsedPack.version] against whatever is already installed - distinguishing "genuinely the same
      * version, nothing to do" from "the found archive is actually *older*" matters on its own: a stale or
-     * wrong file quietly resolved by [de.froehlichmedia.adaptkey.download.DownloadFolderResolver] must never
+     * wrong file the user picked by mistake (e.g. an old cached copy still sitting in Downloads) must never
      * be reported the same way as an intentional, already-up-to-date re-check, or the user has no way to
      * notice they picked up an outdated file at all.
      */
@@ -118,9 +118,9 @@ object LanguagePackInstaller {
     /**
      * D-386-followup: thrown by [parse] when the archive's own `version.txt` declares a language code (its
      * optional second line) that does not match the [language] the caller expected to import - a genuine
-     * content-level check, not merely trusting whatever file [de.froehlichmedia.adaptkey.download.
-     * DownloadFolderResolver] happened to resolve by filename alone. An archive predating this convention
-     * (no second line at all) is never rejected on this basis - see [parse]'s own KDoc.
+     * content-level check against picking the wrong archive by mistake (e.g. a similarly-named file from an
+     * earlier download), not merely trusting the file the user handed in. An archive predating this
+     * convention (no second line at all) is never rejected on this basis - see [parse]'s own KDoc.
      *
      * @property declaredCode the language code the archive itself declares
      * @property expectedCode the language the caller expected to import
@@ -135,10 +135,10 @@ object LanguagePackInstaller {
      * deciding whether [write] should ever run at all.
      *
      * D-386-followup: `version.txt` gained an optional second line - the pack's own declared language code
-     * (`"de"`, `"el"`, ...), cross-checked against [language] here. Needed because [de.froehlichmedia.
-     * adaptkey.download.DownloadFolderResolver] now resolves the archive to import purely by matching a
-     * *file name* pattern, not by the user visually confirming the file the way a manual picker once
-     * implied - a genuine, archive-internal identity check closes that gap. Deliberately tolerant of an
+     * (`"de"`, `"el"`, ...), cross-checked against [language] here. A genuine, archive-internal identity
+     * check kept even after D-413 reverted back to a manual single-file picker - the user visually
+     * confirming a file name in the picker is still no guarantee it is the *content* they meant (a stale
+     * same-named file downloaded earlier, or the wrong language's archive). Deliberately tolerant of an
      * archive with no second line at all (every archive built before this convention existed) - only an
      * actual, present mismatch is rejected, never a missing declaration.
      *

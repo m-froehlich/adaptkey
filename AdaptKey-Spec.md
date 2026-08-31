@@ -1326,60 +1326,47 @@ being startling. Refines G-06/D-337.
 
 ---
 
-## 30. Download Directory Control for Dictionaries / LLM Model (D-344 / D-386)
+## 30. Download Directory Control for Dictionaries / LLM Model (D-344 / D-386 / D-413)
 
-D-344's original three options are resolved: the app uses the Storage Access Framework, extended
-(D-386) with automatic folder-wide resolution rather than a single-file picker, so AdaptKey finds the
-downloaded language pack or tier-3 LLM model file itself - the user never has to manually hunt for it,
-including through the exact concrete complaint that prompted this: Samsung One UI's own download sandboxing
-routinely renamed the file (`"… (1)"`) or placed it somewhere the plain file picker's default view did not
-show, and the user reported getting lost in the picker even knowing what to look for.
+The app has no internet permission, so downloading the language pack / tier-3 model happens in the user's
+own browser; "Import" then needs to get at that downloaded file. Current, crystallised mechanism: a plain
+`ACTION_OPEN_DOCUMENT` single-file picker, launched fresh on every "Import" tap - the user picks the exact
+file each time, the same system-picker consent flow used throughout, needing no manifest-declared
+`<uses-permission>` (the app's own "no internet, no storage permission" story is unaffected). `Intent.
+EXTRA_INITIAL_URI` best-effort-hints the picker to open directly in Downloads (silently ignored by a picker
+that does not recognise the hint's exact document-ID shape - never an error); the intent requests
+`FLAG_GRANT_WRITE_URI_PERMISSION` so the post-import cleanup below can actually delete the picked document.
 
-**Chosen mechanism**: `ACTION_OPEN_DOCUMENT_TREE` (a folder grant), not `ACTION_OPEN_DOCUMENT` (a single-file
-pick) - the latter cannot expose sibling files or the parent directory at all, a hard SAF limitation, not an
-implementation gap (confirmed against the official Android documentation before choosing). Neither intent
-needs a manifest-declared `<uses-permission>` - both are user-driven system-picker consent flows, so the
-app's own "no internet, no storage permission" story is unaffected either way; the folder grant is a
-runtime-only choice the user makes once via the picker itself.
+**D-344/D-386, tried and reverted (D-413).** An intermediate design used `ACTION_OPEN_DOCUMENT_TREE` (a
+one-time folder grant, persisted and reused by both `LanguagePacksActivity` and `Tier3ModelActivity`) plus
+automatic filename-pattern resolution within that folder (`DuplicateDownloadMatcher`, tolerating a
+browser-inserted `" (N)"` duplicate suffix) - built specifically so the user would never have to hunt for a
+file Samsung One UI's own download sandboxing had silently renamed. On a real device this failed outright:
+a recent Android version (further tightened by Samsung's own sandboxing) refuses to let `ACTION_OPEN_
+DOCUMENT_TREE` grant the Downloads folder itself at all ("Dieser Ordner kann nicht verwendet werden. Zum
+Schutz deiner Daten einen anderen Ordner auswählen.") - a platform-level SAF restriction on exactly the
+folder the whole mechanism needed, not a bug in the app's own resolution logic. D-413 reverted to the direct
+single-file picker described above; `download.DownloadFolderStore` (the persisted tree grant) and
+`download.DuplicateDownloadMatcher` (the duplicate-suffix matching) are gone, along with the upfront "why
+we need a folder" rationale dialog a folder-grant request warranted but a single-file pick does not.
 
-**One shared grant, both import screens.** `download.DownloadFolderStore` persists the granted tree URI
-(`takePersistableUriPermission`, survives restarts) in its own small `SharedPreferences` file - granted the
-first time *either* `LanguagePacksActivity` or `Tier3ModelActivity` needs it, reused by both from then
-on, so the user is asked only the one time regardless of which import they use first. Tapping "Import" with
-no folder granted yet shows a short rationale dialog (why a folder, not a file, is being requested) before
-launching the picker; `Intent.EXTRA_INITIAL_URI` best-effort-hints the picker to open directly in Downloads
-(silently ignored by a picker that does not recognise the hint's exact document-ID shape - never an error).
+**Cleanup (kept from D-386).** `download.DownloadFileSupport.deleteIfRecentlyCreated()` deletes the picked
+file via `DocumentsContract.deleteDocument` when its own `COLUMN_LAST_MODIFIED` is no more than
+`DELETE_MAX_AGE_MILLIS` (60 seconds, the user's own explicit figure) old - a failed/aborted import leaves the
+file alone (for inspection), but a genuinely successful one cleans up immediately. This still works
+unchanged against a single `ACTION_OPEN_DOCUMENT` result, needing no folder grant of its own.
 
-**Resolution**: `download.DownloadFolderResolver.findNewestMatch()` lists every file directly inside the
-granted tree (`DocumentsContract.buildChildDocumentsUriUsingTree` + a query for
-`COLUMN_DOCUMENT_ID`/`COLUMN_DISPLAY_NAME`/`COLUMN_LAST_MODIFIED`) and hands the list to the pure, unit-tested
-`download.DuplicateDownloadMatcher` (D-386's own core): given the expected plain file name (the download
-URL's own last path segment, e.g. `"adaptkey-lang-de.zip"`/`"model_q4f16.onnx"`), it matches that name exactly
-or with a browser-style `" (N)"` suffix inserted directly before the extension (the near-universal
-Chrome/Edge/Firefox convention on Android), and returns the newest match by `COLUMN_LAST_MODIFIED`. No match
-found (the user downloaded to a different folder than the one granted) clears the stale grant and re-prompts
-- asking for a fresh folder is the only sensible recovery, so a stuck/wrong grant can never wedge the import
-flow permanently.
-
-**Cleanup (D-386's other half)**: after a successful import, `DownloadFolderResolver.
-deleteIfRecentlyCreated()` deletes the resolved file via `DocumentsContract.deleteDocument` when its own
-`COLUMN_LAST_MODIFIED` is no more than `DELETE_MAX_AGE_MILLIS` (60 seconds, the user's own explicit figure)
-old - a failed/aborted import leaves the file alone (for inspection), but a genuinely successful one cleans
-up immediately. This is deliberately what keeps `findNewestMatch` itself simple long-term: with the Downloads
-folder kept clear of stale copies, a *future* download of the same name rarely needs a duplicate suffix to
-begin with.
-
-**D-386-followup: is the resolved file actually the right one?** Automatic filename-pattern resolution
-removes the human "did I pick the right file" check a manual picker implied, so two content-level checks
-close that gap for language packs specifically (the LLM model has no version/language concept to check
-against):
+**D-386-followup, kept as a safety net even after D-413.** A manually re-picked file is no stronger a
+guarantee of correctness than the automatic resolution it replaced - a stale same-named copy from an earlier
+download, or the wrong language's archive, are both still one wrong tap away - so both content-level checks
+introduced for the automatic-resolution design remain in place for language packs specifically (the LLM
+model has no version/language concept to check against):
 - **Staleness is reported accurately, not collapsed into one message.** `LanguagePackInstaller.
   compareVersions(packVersion, installedVersion)` (pure, unit-tested) distinguishes three outcomes -
-  `INSTALL` (nothing installed yet, or the found archive is strictly newer), `ALREADY_CURRENT` (exactly the
-  same version), and `OLDER_THAN_INSTALLED` (the found archive is strictly *older*) - where the previous
-  `<=` check collapsed the latter two into the same "already up to date" message. An accidental downgrade
-  (a stale or wrong file resolved from the download folder) is now surfaced distinctly, never silently
-  treated as "nothing to do".
+  `INSTALL` (nothing installed yet, or the picked archive is strictly newer), `ALREADY_CURRENT` (exactly the
+  same version), and `OLDER_THAN_INSTALLED` (the picked archive is strictly *older*) - where a prior `<=`
+  check collapsed the latter two into the same "already up to date" message. An accidental downgrade is now
+  surfaced distinctly, never silently treated as "nothing to do".
 - **Language identity is verified, not assumed.** `version.txt` gained an optional second line - the pack's
   own declared language code (`"de"`, `"el"`, ...) - which `LanguagePackInstaller.parse()` cross-checks
   against the language actually being imported, throwing `LanguageMismatchException` (a distinct, specific
@@ -1390,13 +1377,12 @@ against):
   `hints.tsv` themselves byte-identical, verified after rebuild); the language-contribution guide documents
   the format for future community packs.
 
-**Considered and explicitly declined**: HTTP header control (`Content-Disposition`/`Content-Type` tuning on
-the hosted download, D-344's original option 1) - the app does not control every possible hosting surface a
-future community-contributed language pack might use (D-344's own motivating case was GitHub raw content
-URLs), and the SAF-based fix above works regardless of what headers a given host happens to send, making the
-header approach redundant rather than complementary. A raw-repository-path/Release-Asset approach (D-344's
-original option 3) was similarly superseded - the actual problem was never *where* the file is hosted, only
-*finding* it again after the browser saves it.
+**Considered and explicitly declined (D-344's original two alternatives to a picker-based fix)**: HTTP
+header control (`Content-Disposition`/`Content-Type` tuning on the hosted download) - the app does not
+control every possible hosting surface a future community-contributed language pack might use (D-344's own
+motivating case was GitHub raw content URLs). A raw-repository-path/Release-Asset approach was similarly
+declined - the actual problem was never *where* the file is hosted, only *getting at* it again after the
+browser saves it, which any picker-based approach already solves regardless of hosting.
 
 ---
 

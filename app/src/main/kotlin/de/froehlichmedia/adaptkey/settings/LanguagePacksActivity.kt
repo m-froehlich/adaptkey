@@ -15,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -24,8 +23,7 @@ import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackStorage
-import de.froehlichmedia.adaptkey.download.DownloadFolderResolver
-import de.froehlichmedia.adaptkey.download.DownloadFolderStore
+import de.froehlichmedia.adaptkey.download.DownloadFileSupport
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
 
@@ -41,13 +39,13 @@ import de.froehlichmedia.adaptkey.language.Language
  * immediately - no manual keyboard restart needed. Android-view glue, covered by instrumented rather than
  * unit tests, like every other settings screen here.
  *
- * D-386: "import" no longer opens a single-file picker - it resolves the expected archive automatically
- * within a once-granted download-folder tree ([DownloadFolderStore]/[DownloadFolderResolver]), tolerating
- * the `" (1)"`/`" (2)"` duplicate-naming a browser (Samsung One UI's own download sandboxing was the
- * concrete complaint) inserts when a same-named file already exists - the newest match wins. The picked
- * file is deleted after a successful import when it is no older than [DownloadFolderResolver.
- * DELETE_MAX_AGE_MILLIS], which is also what keeps the folder clean enough that a *future* download rarely
- * needs a duplicate suffix at all.
+ * D-413: "import" opens a plain `ACTION_OPEN_DOCUMENT` single-file picker again - reverting D-386's
+ * folder-grant automation, which turned out to be unusable on a real device (Samsung One UI, a recent
+ * Android version refuses to grant the Downloads folder itself via `ACTION_OPEN_DOCUMENT_TREE` at all:
+ * "Dieser Ordner kann nicht verwendet werden..."). The user picks the exact archive again, every time, the
+ * way the app worked before D-386; [DownloadFileSupport.deleteIfRecentlyCreated] still cleans up the picked
+ * file afterward when it is no older than [DownloadFileSupport.DELETE_MAX_AGE_MILLIS], and the D-386-followup
+ * staleness/language checks in [LanguagePackInstaller] remain in place as a safety net.
  */
 class LanguagePacksActivity : AppCompatActivity() {
     
@@ -55,12 +53,12 @@ class LanguagePacksActivity : AppCompatActivity() {
     private var pendingImportEntry: LanguagePackCatalog.Entry? = null
     private var busy = false
     
-    private val openTree = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val openDocument = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data
         val entry = pendingImportEntry
         if (result.resultCode == RESULT_OK && uri != null && entry != null) {
-            DownloadFolderStore.save(this, uri)
-            resolveAndImport(uri, entry)
+            setBusy(true)
+            Thread { importPack(uri, entry) }.start()
         }
     }
     
@@ -166,8 +164,8 @@ class LanguagePacksActivity : AppCompatActivity() {
     }
     
     /**
-     * D-386: begins the import - reuses the already-granted download folder when one exists, otherwise
-     * explains why one is needed and requests it first ([showGrantFolderExplanation]).
+     * D-413: begins the import - launches a plain `ACTION_OPEN_DOCUMENT` single-file picker every time (no
+     * more persisted folder grant to check first).
      *
      * @param entry the row whose Import button was tapped
      */
@@ -176,62 +174,16 @@ class LanguagePacksActivity : AppCompatActivity() {
             return
         }
         pendingImportEntry = entry
-        val treeUri = DownloadFolderStore.treeUri(this)
-        if (treeUri == null) {
-            showGrantFolderExplanation()
-        } else {
-            resolveAndImport(treeUri, entry)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+            // D-413: write access is needed for DownloadFileSupport's own post-import cleanup below.
+            flags = Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            // Best-effort hint to open directly in Downloads - silently ignored by providers that don't
+            // recognise this exact document ID shape (e.g. some OEM pickers), never an error.
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, DownloadFileSupport.downloadsInitialUriHint())
         }
-    }
-    
-    /**
-     * D-386: a brief rationale before the `ACTION_OPEN_DOCUMENT_TREE` system picker - granting folder
-     * access is a less familiar request than picking a single file, worth explaining once rather than
-     * showing the picker cold. Shared between this screen and [Tier3ModelActivity].
-     */
-    private fun showGrantFolderExplanation() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.d386_grant_folder_title)
-            .setMessage(R.string.d386_grant_folder_message)
-            .setPositiveButton(R.string.d386_grant_folder_action) { _, _ -> launchTreePicker() }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-    
-    private fun launchTreePicker() {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-            // D-386: best-effort hint to open directly in Downloads - silently ignored by providers that
-            // don't recognise this exact document ID shape (e.g. some OEM pickers), never an error.
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, DownloadFolderResolver.downloadsInitialUriHint())
-        }
-        openTree.launch(intent)
-    }
-    
-    /**
-     * D-386: resolves the newest matching file in [treeUri] for [entry]'s own expected archive name
-     * (the download URL's last path segment) and imports it - or, when no match is found (the user
-     * downloaded to a different folder than the one granted), forgets the stale grant and re-prompts, since
-     * asking to grant a fresh folder is the only sensible recovery.
-     */
-    private fun resolveAndImport(treeUri: Uri, entry: LanguagePackCatalog.Entry) {
-        val expectedFileName = Uri.parse(entry.downloadUrl).lastPathSegment
-        if (expectedFileName == null) {
-            Toast.makeText(this, R.string.d386_file_not_found, Toast.LENGTH_LONG).show()
-            return
-        }
-        setBusy(true)
-        Thread {
-            val matched = DownloadFolderResolver.findNewestMatch(this, treeUri, expectedFileName)
-            if (matched == null) {
-                DownloadFolderStore.clear(this)
-                runOnUiThread {
-                    setBusy(false)
-                    Toast.makeText(this, R.string.d386_file_not_found, Toast.LENGTH_LONG).show()
-                }
-                return@Thread
-            }
-            importPack(matched, entry)
-        }.start()
+        openDocument.launch(intent)
     }
     
     /**
@@ -253,8 +205,8 @@ class LanguagePacksActivity : AppCompatActivity() {
      * dismissed catalog version so the "update available" hint does not reappear until the catalog itself
      * moves past it in a future app release.
      *
-     * D-386: now called already on [resolveAndImport]'s own background thread (never spawns its own), and
-     * deletes the resolved archive afterward when it is recent enough ([DownloadFolderResolver.
+     * D-386/D-413: now called already on the picker callback's own background thread (never spawns its own),
+     * and deletes the picked archive afterward when it is recent enough ([DownloadFileSupport.
      * deleteIfRecentlyCreated]) - on every outcome except a hard read/parse failure, so a stale archive that
      * genuinely failed to import is left behind for inspection rather than silently destroyed.
      *
@@ -289,7 +241,7 @@ class LanguagePacksActivity : AppCompatActivity() {
             }
         }
         if (!result.isFailure) {
-            DownloadFolderResolver.deleteIfRecentlyCreated(this, uri, DownloadFolderResolver.DELETE_MAX_AGE_MILLIS)
+            DownloadFileSupport.deleteIfRecentlyCreated(this, uri, DownloadFileSupport.DELETE_MAX_AGE_MILLIS)
         }
         runOnUiThread {
             setBusy(false)
