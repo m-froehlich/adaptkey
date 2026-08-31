@@ -391,6 +391,163 @@ non-trivial changes).
   other pairing, including the already-fixed suffixed `dein`-forms, sits safely below every
   `AutocorrectAggressiveness` threshold. See §304/history for the full method and numbers.
 
+- **The 2026-07-xx vacation-usage batch (§276, history) - split into individually-addressable items below**
+  **(2026-08-31), per explicit request: "das sind ja sehr viele Punkte, die nicht als ein Paragraph geführt**
+  **werden können."** §276 itself (see "Current State" below) stays exactly as written - the historical
+  record of *when and how* the batch was captured - this split only concerns the *actionable backlog* index.
+  Full original wording/reasoning for every item lives in `AdaptKey-History.md` §276; each bullet below is a
+  condensed, individually-tracked pointer, not a replacement transcription. D-368/D-402/D-367/D-345/D-330-
+  followup already had their own bullets before this split (see above) and are not repeated here.
+
+  - **D-352 - RESOLVED (§280 v1.0.37, §285 v1.0.41).** Auto-split needed its own setting (auto/chip-only/
+    off) since A-05 "funktioniert zu oft falsch und zu oft nicht" - shipped as `AutoSplitMode` (C-21).
+  - **D-353 - RESOLVED (§281 v1.0.38, §284 v1.0.40, part of §280 v1.0.37).** Autocorrect fired without
+    genuine unambiguity - replaced with `CorrectionConfidence`'s unified, graduated score plus the
+    three-level `AutocorrectAggressiveness` setting.
+  - **D-354 - RESOLVED (§281 v1.0.38).** Meaning-changing silent autocorrections (`"aberkennen"` ->
+    `"anerkennen"`) folded into the same confidence metric as a prefix-changing-edit signal, not a separate
+    boolean gate.
+  - **D-355 - OPEN, distinct from D-405.** A word must never be retroactively re-cased purely from line/
+    sentence-start context at commit time. **Not the same bug as D-405** (§277/§278 spun that fix off
+    separately, at the user's own explicit instruction not to conflate the two) - D-355 itself, as
+    originally reported, has not been re-examined since.
+  - **D-356 - OPEN, awaiting a concrete example.** A typed umlaut should not be carelessly reverted by
+    autocorrect. Per §277: no concrete repro has been supplied yet to design against.
+  - **D-357 - OPEN.** Mid-word edit (delete two letters, type two new ones) + double-tap Shift capitalises
+    the first of the two newly-typed letters instead of the word's own start.
+  - **D-358 - RESOLVED (§289 v1.0.44).** Double-tap-Backspace revert was broken right after punctuation -
+    fixed alongside D-359.
+  - **D-359 - RESOLVED (§289 v1.0.44).** A word reverted via double-tap Backspace was immediately
+    re-autocorrected on the very next Space - a revert now gets exactly one unimpeded retry (learns nothing
+    itself, distinct from D-403's own broader "silently-corrected word must eventually become learnable"
+    ask, see below).
+  - **D-360 - OPEN.** A commit + autocorrect right before an Enter/newline must still be revertible by a
+    plain Backspace afterward.
+  - **D-361 - OPEN.** Fast Backspace typing should not let neighbour keys (including Enter) react within the
+    double-tap window - ideally Backspace's own touch zone temporarily grows while typing fast. Further,
+    more aggressive idea floated by the user: a fast neighbour-tap near Backspace could itself be
+    retroactively reinterpreted as Backspace. Possibly its own setting either way.
+  - **D-362 - OPEN.** The "…" loading-indicator chip (D-346, shown during the deferred fuzzy search) is far
+    too small/subtle - should be bold, larger, possibly animated.
+  - **D-363 - OPEN.** Colon/semicolon should arm the same A-12 punctuation-auto-space `.`/`!`/`?`/`,` already
+    do, with a time-of-day exception: a digit immediately before the colon (`"14:30"`) must suppress it. The
+    user explicitly asked for further refinement of this exception, not just the base behaviour.
+  - **D-364 - OPEN.** Typing `"Teyt"` offers two separate chips for `"Text"` - a duplicate that should
+    collapse to one.
+  - **D-365 - OPEN, a question not yet answered.** What frequency do seeded/bundled bigrams carry, and
+    shouldn't a self-learned bigram always outweigh a seeded one?
+  - **D-366 - OPEN.** A learned bigram's next-word prediction (S-07) works for the blank-slate case but is
+    dropped entirely once the user starts typing the predicted word themselves - the signal should keep
+    influencing prefix-completion ranking and autocorrect probability as it is typed, not just vanish.
+  - **D-369 - OPEN.** Accepting a suggestion chip must not insert a space when punctuation already
+    immediately follows.
+  - **D-370 - OPEN, real design work needed, not a quick patch.** Double-quote handling: an auto-space after
+    a closing double-quote should be removable; more ambitiously, every space directly before a closing
+    quote should be removable, but only when a genuine preceding opening quote is nearby - the user
+    explicitly flags the trap to avoid (wrongly deleting the space *before* the quoted word instead of
+    *after* it). Open question posed directly: how far back to search for the matching opening quote?
+  - **D-371 - OPEN.** A word ending in a digit should never be silently autocorrected - possibly its own
+    setting/slider rather than a plain boolean; a chip offer is still fine.
+  - **D-372 - OPEN.** A diagonally-adjacent key (e.g. `g`/`b`) should also count as a keyboard neighbour for
+    correction purposes.
+  - **D-373 - OPEN.** Appending a hyphen after a *capitalised* word should re-arm auto-capitalisation for the
+    next segment (mirrors B-02's own default for the general case).
+  - **D-374 - OPEN.** Removing the trailing auto-space no longer works, at least in Google Keep.
+  - **D-375 - OPEN.** `"sollendafur"` gets auto-unfolded and split silently; the user believes it should
+    instead be offered as a chip, since the result differs from what was typed - explicitly flagged as
+    possibly conflicting with other rules, needs evaluation rather than an assumed-compatible fix.
+  - **D-376 - OPEN.** After `"km"` (and, separately, after a `/`), a `"km/h"` completion chip should be
+    offered.
+  - **D-377 - OPEN, explicitly named as expensive/last-resort.** Recover a badly garbled mid-word mistake
+    where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
+    worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
+    nothing else in the pipeline resolves the token at all.
+  - **D-378 - OPEN.** While capitalisation is active (auto-armed or explicit), a quote character must not
+    reset it.
+  - **D-379 - OPEN.** `"bzgl."` is missing from the known-abbreviation list, so a sentence start is wrongly
+    assumed right after it.
+  - **D-380 - OPEN.** A long-press smear too small to trigger a swipe/page-change should still open the alt
+    popup - the `o` key is named as the one that frequently fails to.
+  - **D-381 - OPEN.** A learned word's part-of-speech tag should be user-editable. **Superseded in scope by
+    D-404 §323/§324** (the Learned Words editor now has exactly this - a category multi-select - and, with a
+    tier-3 model installed, the LLM determines it automatically) - worth a fresh look to confirm this ask is
+    now actually satisfied rather than closing it by assumption.
+  - **D-382 - OPEN.** The `2` key is missing an apostrophe among its long-press alternatives, and should also
+    offer subscript `₂` alongside the existing superscript `²`.
+  - **D-383 - OPEN.** In Google Keep's list mode, placing the caret before a word and pressing Enter (to push
+    the rest of the line into a new list item) deletes that word.
+  - **D-384 - OPEN.** Typing a minus preceded by a space should also get its own trailing A-12-style
+    auto-space, but only when a space already precedes the minus.
+  - **D-385 - RESOLVED (2026-08-31, no code change - a deliberate decision, not an implementation).** "German
+    should go back to being a bundled language, not an installable pack" - discussed for/against directly
+    with the user; decided **against** bundling (would permanently privilege the maintainer's own language for
+    every future non-German install, and the current architecture has no "installed but deactivated" state
+    at all - not even English can be turned off, so bundling German today would not even satisfy the user's
+    own "must be at least deactivatable" requirement without first building that capability separately).
+    Instead: a locale-aware first-run prompt (detect system locale `de`, prominently offer the German pack
+    immediately) was agreed as the better-targeted fix for the *actual* pain point - not yet implemented,
+    worth its own future backlog item if picked up. D-385's own "nothing may be lost" constraint is moot
+    given this outcome (no migration ever happens).
+  - **D-386 - IN PROGRESS (2026-08-31).** Dictionary/model import should look for newer alternately-named
+    files near the one picked (e.g. a `(1)`-suffixed duplicate, common on Samsung One UI's own download
+    sandboxing) and prefer those if found; the picked file should be deleted after import if it is at most 60
+    seconds old. Directly follows from the D-344/D-385 discussion above - being actively designed.
+  - **D-387 - OPEN.** Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages - know
+    each language's own base letters and their diacritic variants.
+  - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
+    the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
+  - **D-389 - OPEN.** Learned words could expire after a configurable period of disuse (proposed default 3
+    months or a year; frequent use should extend the window). User's own suggested control: a coarse
+    früh/mittel/spät setting, not a raw duration.
+  - **D-390 - OPEN.** Sentence-start auto-capitalisation must tolerate multi-part abbreviations (`"p. a."`/
+    `"i. d. R."`) - a wrongly-applied capital must be retroactively corrected back once the abbreviation
+    completes. Explicitly asked to be designed as a *general* rule, not a special case for one example.
+  - **D-391 - OPEN.** A-05's retroactive split extended to the reverse direction (mirrors the same auto/
+    chip-only setting D-352 got): if the current or preceding word makes no sense alone, but inserting a
+    bottom-row connector letter (`y x c v b n m`) between them produces a sensible combined word, recognise
+    it - a generalisation of A-06 merge beyond its current scope.
+  - **D-392 - OPEN.** Auto-capitalisation should re-engage after Caps Lock is turned off.
+  - **D-393 - OPEN.** In the Google Play Store's own search bar, Enter does not act as Submit.
+  - **D-394 - OPEN.** Mirror the calculator/number-pad's digit block vertically (mobile keyboards have
+    converged on the reversed phone-style order) and show the T9 letter mapping as a long-press alt per digit.
+  - **D-395 - OPEN.** The distance kept from the system gesture-navigation bar should be configurable - the
+    user reports the gesture has become far more sensitive on their current Android version, causing
+    accidental app-hide/app-switch near the space bar's lower edge.
+  - **D-396 - OPEN.** Classify per-key vibration into three levels: mode-switch actions (Level 1), autocorrect/
+    chip-acceptance (Level 2), ordinary key feedback (Level 3).
+  - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
+    letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
+    produce an unwanted `q` instead of the intended `a` below it.
+  - **D-398 - OPEN.** The automatic language-switch threshold (fixed 5 consecutive foreign words, D-130)
+    should become a slider from 0 (off) to 8, under the language section in Dictionary settings.
+  - **D-399 - OPEN.** The maximum-suggestions range (C-03) should include 3, not only start at some higher
+    floor.
+  - **D-400 - OPEN, a design question the user already leans on.** Should an automatic language switch (D-130)
+    into another Latin-script language also switch the keyboard *layout*? User's own conclusion: probably
+    not - only the dictionary/word recognition should switch; the layout should instead follow the *system's*
+    own locale, never the currently-active typing language ("niemand will plötzlich von QWERTZ auf QWERTY
+    wechseln").
+  - **D-401 - OPEN, a fully-specified new feature concept (captured verbatim, the shape is already precise -**
+    **see history §276 for the complete four-stage description).** A cursor/text-selection mode reached via a
+    long-press on the space bar: long-press arms it (vibration, keys fade to 30%, crosshair appears);
+    swiping in Stage 1 moves the cursor; holding still 800ms promotes to Stage 2 (second vibration, colour
+    change), where swiping extends a text selection instead, and a tap ends the mode; lifting the finger keeps
+    the mode armed for ~1000ms (re-touching within that window re-origins the crosshair at the new point;
+    letting it expire ends the mode and, if a selection is active, opens the platform's own selection context
+    menu).
+  - **D-403 - RESOLVED (§280 v1.0.37, §289 v1.0.44, §325 v1.0.78).** Uppercase acronyms were apparently never
+    learnable and poorly supported generally - four distinct sub-reports, all now closed: (1) the
+    `learnedCasingOf` ratio exemption (§280) protects an *already-learned* word from ever being overridden
+    again; (2) "a silently-corrected word's revert must count as a learning signal, and the next commit must
+    never re-fire the same wrong correction" (§289's D-359 work: one unimpeded retry); (3) the concrete
+    `"kWp"`-never-learnable repro - an acronym silently corrected away *before* it could ever accumulate a
+    W-02 pending count at all - is exactly what §325's `Acronym.isAcronym()` veto closes (reproduced and
+    confirmed fixed against the real dictionary with `"etf"`/`"ETF"` before shipping); (4) "typing `"etf"`
+    lower-case should surface the learned `"ETF"` pinned at the front, same as typing it upper-case" -
+    already true via D-264's own casing-merge (`unigramsByPrefix`/`entryOf` prefer the learned entry's own
+    casing, confirmed via the existing `"MSCI"`-vs-`"Msci"` regression test), reconfirmed directly with the
+    user this round.
+
 - **D-344 (download directory control, spec §30): the app's approach to ensuring browser-downloaded**
   **language packs and LLM models land where AdaptKey can find them is not yet decided.** Three options
   (HTTP header control, SAF/file-picker API, raw repo path) are documented in the spec; practical testing
@@ -814,6 +971,29 @@ non-trivial changes).
   29 -> 30, pack rebuilt, `LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
+
+- **§326 (still v1.0.78, no code change): two backlog decisions plus a documentation restructure.** (1)
+  Discussed for/against directly with the user whether German should become a bundled language again
+  (D-385, from the vacation batch) - decided against; captured as its own resolved backlog item (see "Open
+  TODOs" above) rather than left ambiguous. (2) Found D-386 (the actual backlog item for "the picked
+  download file isn't the right one, Samsung One UI renames it `(1)`") after an initial wrong search hit
+  D-344 instead - a different, related item (download-directory *control*, not post-download duplicate-file
+  *detection*); both now live side by side in the backlog. (3) At the user's own explicit request - "das
+  sind ja sehr viele Punkte, die nicht als ein Paragraph geführt werden können" - split the §276 vacation-
+  usage batch (D-352 through D-404, ~50 items previously reachable only as one dense paragraph plus the full
+  original text buried in `AdaptKey-History.md`) into 45 individually-addressable backlog bullets (the six
+  that already had their own bullets - D-330-followup/D-344/D-345/D-367/D-368/D-402/D-404 - were left as
+  they were, not duplicated). Statuses resolved via `grep`-driven cross-referencing against every later round
+  that touched each D-number, not guessed: 12 already fully resolved by earlier rounds (D-352/D-353/D-354/
+  D-358/D-359/D-368/D-388, plus D-403 closed out this very round by §325 above), 2 resolved just now (D-385)
+  or in progress (D-386), 2 flagged with an important nuance (D-355 - distinct from the D-405 bug that got
+  spun off from the same original report; D-356 - still awaiting a concrete example), 1 flagged as possibly
+  superseded and worth re-checking rather than closed by assumption (D-381 - a learned word's category is
+  now user-editable per D-404 §323/§324, which may already satisfy this), and the remaining ~29 left open
+  exactly as originally captured, condensed rather than transcribed (full original wording stays in
+  `AdaptKey-History.md` §276, untouched, per the project's own append-only convention for that file). No
+  code changed, no tests run, no version bump. See "Open TODOs / Known Limitations" above for the full
+  split list.
 
 - **§325 (v1.0.78): D-404-followup - acronyms ("ETF"/"AVD") are never autocorrected away and learn at the**
   **ordinary threshold.** User's own worry directly confirmed as a real, currently-reproducible bug before
