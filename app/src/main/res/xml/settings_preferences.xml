@@ -63,6 +63,16 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.LanguagePacksActivity" />
         </Preference>
 
+        <SeekBarPreference
+            android:key="d398_sustained_language_switch_threshold"
+            android:title="@string/d398_title"
+            android:summary="@string/d398_summary"
+            android:defaultValue="5"
+            android:max="8"
+            app:min="0"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true" />
+
         <Preference
             android:key="c05_blacklist"
             android:title="@string/c05_title"
@@ -157,7 +167,7 @@
             android:summary="@string/c03_summary"
             android:defaultValue="8"
             android:max="10"
-            app:min="6"
+            app:min="3"
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 

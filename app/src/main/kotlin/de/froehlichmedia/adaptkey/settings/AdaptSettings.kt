@@ -94,6 +94,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           only ever resolves to one of the three real levels ([AutocorrectAggressiveness.OFF_KEY] falls
  *           back to [AutocorrectAggressiveness.DEFAULT] here), so suggestion ranking stays sensible even
  *           while [autocorrectEnabled] is off.
+ * @property sustainedLanguageSwitchThreshold D-398: how many consecutive commits routed to a foreign
+ *           language (A-03's per-token routing, D-130) promote that to a real active-language switch
+ *           (default [DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD], the former hardcoded value); a stored
+ *           `0` disables the automatic switch entirely - only the manual G-01 swipe still changes the
+ *           active language.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -118,7 +123,8 @@ data class AdaptSettings(
     val autocorrectEnabled: Boolean = true,
     val doubleTapBackspaceUndo: Boolean = false,
     val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,
-    val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT
+    val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
+    val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
 ) {
     
     companion object {
@@ -137,6 +143,9 @@ data class AdaptSettings(
         
         /** Default D-177 pending-blacklist expiry, in days - the user's own proposed starting value. */
         const val DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS = 7
+        
+        /** Default D-398 sustained-foreign-language-switch threshold (D-130's former hardcoded value). */
+        const val DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = 5
         
         /** The all-defaults configuration, equivalent to a freshly installed app. */
         val DEFAULT = AdaptSettings()

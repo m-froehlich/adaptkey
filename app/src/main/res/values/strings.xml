@@ -125,7 +125,7 @@
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>
     <string name="c03_title">Maximum suggestions</string>
-    <string name="c03_summary">Number of suggestions offered at once (6–10).</string>
+    <string name="c03_summary">Number of suggestions offered at once (3–10).</string>
 
     <string name="c09_title">Number row</string>
     <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
@@ -191,6 +191,9 @@
     <!-- D-280 language packs (browser download + file import, one per language beyond English). -->
     <string name="d280_pref_title">Languages</string>
     <string name="d280_pref_summary">Install or remove additional typing languages (C-19).</string>
+
+    <string name="d398_title">Automatic language switch</string>
+    <string name="d398_summary">Consecutive words in another language before the keyboard switches to it on its own (0 = off, manual switch only).</string>
     <string name="d280_title">Language packs</string>
     <string name="d280_intro">English is always available. Every other language is an optional download (its dictionary is not bundled in the app, to keep it small) - download it once in the browser, then import the file. Afterwards it works fully offline, like everything else here.</string>
     <string name="d280_status_installed">Installed.</string>

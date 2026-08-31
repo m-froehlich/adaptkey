@@ -57,6 +57,7 @@ object SettingsStore {
     // D-407: the former, separate D-234 "d234_autocorrect_enabled" toggle is gone - merged into this one
     // slider's own "Off" position (AutocorrectAggressiveness.OFF_KEY), no migration of any old stored value.
     const val KEY_AUTOCORRECT_AGGRESSIVENESS = "d353_autocorrect_aggressiveness"
+    const val KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = "d398_sustained_language_switch_threshold"
     
     /**
      * D-304: the one-time K-01 calibration-offer flag ([SettingsActivity.SettingsFragment.maybeOfferCalibration]) -
@@ -111,6 +112,9 @@ object SettingsStore {
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
+    /** Default stored integer for the D-398 sustained-language-switch-threshold slider (5 words). */
+    const val DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
+    
     /**
      * @param context any valid context
      * @return the shared default preferences backing both the settings screen and this store
@@ -157,7 +161,10 @@ object SettingsStore {
             contactsSuggestionsEnabled = p.getBoolean(KEY_CONTACTS_SUGGESTIONS_ENABLED, false),
             doubleTapBackspaceUndo = p.getBoolean(KEY_DOUBLE_TAP_BACKSPACE_UNDO, DEF_DOUBLE_TAP_BACKSPACE_UNDO),
             autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null),
-            autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null)
+            autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null),
+            sustainedLanguageSwitchThreshold = p.getInt(
+                KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
+            )
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -235,6 +242,7 @@ object SettingsStore {
         KEY_CONTACTS_SUGGESTIONS_ENABLED,
         KEY_AUTO_SPLIT_MODE,
         KEY_AUTOCORRECT_AGGRESSIVENESS,
+        KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
         KEY_DOUBLE_TAP_BACKSPACE_UNDO,
         KEY_HIGHLIGHT_COLOR,
         KEY_RESORT_DELAY,

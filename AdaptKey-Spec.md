@@ -152,14 +152,19 @@ A dedicated number row (`1`-`0`) is shown at the top of the alpha view by defaul
 Settings (C-09). It behaves like an ordinary key row (full height, its own long-press popups): each digit
 carries two long-press alternatives - its German-QWERTZ shifted symbol (`1`→`!`, `2`→`"`, `3`→`§`, `4`→`$`,
 `5`→`%`, `6`→`&`, `7`→`/`, `8`→`(`, `9`→`)`, `0`→`=`) and its own superscript form (e.g. `2`→`²`) - reached
-via the same multi-alternative popup as L-05. C-09 governs only the main letters page; the dedicated
-URL-mode and email-mode bottom rows never show a number row at all, and symbol page 2 (§15) always shows a
-digit row regardless of C-09, as a guaranteed fallback when the main row is off.
+via the same multi-alternative popup as L-05. D-382: the `2` key additionally offers an apostrophe (`'`) and
+its own subscript (`₂`) as a third and fourth alternative, unlike every other digit's plain two-alternative
+popup. C-09 governs only the main letters page; the dedicated URL-mode and email-mode bottom rows never show
+a number row at all, and symbol page 2 (§15) always shows a digit row regardless of C-09, as a guaranteed
+fallback when the main row is off.
 
 ### L-07 - Calculator Layer
 A dedicated calculator layout is reachable from the symbol pages (§15): a 4×4 digit/operator grid with a
 persistent right-hand column (backspace, space, currency glyph, `ABC`, Enter), plus `sin`/`cos`/`tan`/`log`
-and `deg`/`rad` keys. The minus key's sign flips via long-press. Currency glyph and decimal/thousands
+and `deg`/`rad` keys. D-394: the digit block reads `1 2 3` / `4 5 6` / `7 8 9` / `0` top to bottom - the
+now-converged phone-style order - rather than the calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0` order it
+originally shipped with; the operator column (`+ − × ÷` top to bottom) and every other key's row position are
+unaffected by this mirror. The minus key's sign flips via long-press. Currency glyph and decimal/thousands
 separators are resolved from the device locale.
 
 ### L-08 - Catch-All Symbol Page
@@ -235,8 +240,10 @@ The gesture only fires on the letters surface's own space key; the
 symbol/calculator pages and the dedicated URL-mode/email-mode space keys have no language of their own, so a
 swipe there falls through to the ordinary page-switch gesture (G-06... see D-19-style full-field swipe,
 §4 note below) instead. In addition to this manual switch, the active language switches automatically after
-five consecutive words committed in a different language than the one currently active; every switch -
-manual or automatic - cross-fades the space-bar's language label (260 ms) as a visible acknowledgement.
+a configurable number of consecutive words committed in a different language than the one currently active
+(C-23, D-398: a slider from 0 to 8, default 5 - a stored `0` disables the automatic switch entirely, leaving
+only the manual swipe); every switch - manual or automatic - cross-fades the space-bar's language label
+(260 ms) as a visible acknowledgement.
 
 ### G-02 - Delete Whole Word
 Swiping left on the backspace key deletes the entire previous word rather than a single character. This is independent of - and takes priority in recognition over - the accelerating repeat-on-hold behaviour of a plain backspace press/hold.
@@ -327,7 +334,7 @@ and the wrongly-capitalised state then persisted even after tapping back to the 
 
 ### S-01 - Horizontally Scrollable, Configurable Maximum
 The bar shows as many ordinary (tier-1/tier-3) suggestions as are meaningful and scrolls horizontally.
-Default: 8 entries. Maximum is user-configurable (recommended range: 6-10). Sorted by descending
+Default: 8 entries. Maximum is user-configurable (range 3-10, D-399: widened from a 6 floor). Sorted by descending
 probability; the most probable suggestion appears at the far left. "Probability" is not raw dictionary
 frequency alone: closeness to what has actually been typed so far weighs in too, always as a soft
 preference (a much closer candidate generally outranks a farther one even when the farther one is far more
@@ -540,8 +547,9 @@ A comma does not clear the prediction context. N-gram patterns such as `", dass"
 A character-trigram classifier identifies the current writing language from recent words, gated to at least
 two words of context (a single word's own sample is too statistically noisy). Suggestions and autocorrect
 are filtered per language. The classifier's own per-token routing interacts with the explicit active-language
-toggle (G-01): five consecutive words classified in a different language than the one currently active
-triggers a real language switch, not merely per-token filtering.
+toggle (G-01): a configurable run of consecutive words classified in a different language than the one
+currently active (C-23, D-398, default 5) triggers a real language switch, not merely per-token filtering -
+or never does, when that threshold is set to 0 (off).
 
 ### A-04 - Blacklist for Unwanted Words
 Words can be permanently excluded from suggestions and autocorrect. The blacklist is persisted in SQLite and
@@ -1137,7 +1145,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 |---|---|---|---|
 | C-01 | Key proportions (space bar / comma / full stop / backspace) + the two L-02 spacing sliders | Slider | Gboard-like |
 | C-02 | Suggestion re-sort delay | 0-600 ms | 300 ms |
-| C-03 | Maximum number of suggestions | Integer (6-10) | 8 |
+| C-03 | Maximum number of suggestions | Integer (3-10, D-399: widened from a 6 floor) | 8 |
 | C-04 | Word confirmation highlight colour, or "no highlighting" (D-298: folds the former separate on/off toggle into this one list); the settings row and its picker dialog preview each colour directly as its own entry's text colour (D-302) | Colour, or off | Green |
 | C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled confusables + archaic-spelling set |
 | C-06 | LLM activation threshold, or "disabled" (D-297: folds the former separate tier-3-enabled toggle into this one list) | N-gram confidence value, or off | medium |
@@ -1155,6 +1163,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | Off |
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
 | C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
+| C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.

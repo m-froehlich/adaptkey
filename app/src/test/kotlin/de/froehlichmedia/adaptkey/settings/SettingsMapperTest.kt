@@ -168,6 +168,24 @@ class SettingsMapperTest {
         )
     }
     
+    @Test
+    fun `D-398 sustainedLanguageSwitchThreshold defaults to 5 and is clamped into the 0-8 range`() {
+        assertEquals(
+            AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
+            SettingsMapper.toAdaptSettings(RawSettings()).sustainedLanguageSwitchThreshold
+        )
+        assertEquals(
+            SettingsMapper.MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
+            SettingsMapper.toAdaptSettings(RawSettings(sustainedLanguageSwitchThreshold = -3)).sustainedLanguageSwitchThreshold
+        )
+        assertEquals(
+            SettingsMapper.MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
+            SettingsMapper.toAdaptSettings(RawSettings(sustainedLanguageSwitchThreshold = 99)).sustainedLanguageSwitchThreshold
+        )
+        assertEquals(0, SettingsMapper.toAdaptSettings(RawSettings(sustainedLanguageSwitchThreshold = 0)).sustainedLanguageSwitchThreshold)
+        assertEquals(3, SettingsMapper.toAdaptSettings(RawSettings(sustainedLanguageSwitchThreshold = 3)).sustainedLanguageSwitchThreshold)
+    }
+    
     
     @Test
     fun `shiftGraceWindow is clamped into the spec range`() {

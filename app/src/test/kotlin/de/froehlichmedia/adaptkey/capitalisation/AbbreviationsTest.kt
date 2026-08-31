@@ -19,6 +19,7 @@ class AbbreviationsTest {
         assertTrue(Abbreviations.isAbbreviation("z.B."))
         assertTrue(Abbreviations.isAbbreviation("Z.B."))
         assertTrue(Abbreviations.isAbbreviation("Stk."))
+        assertTrue(Abbreviations.isAbbreviation("bzgl."))
     }
     
     @Test

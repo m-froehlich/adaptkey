@@ -81,13 +81,15 @@ class SymbolLayoutTest {
     fun `corrected - the operator column reads plus, minus, times, divide top to bottom`() {
         val rows = SymbolLayout.rows(1, locale = Locale.GERMANY)
         
-        assertEquals(listOf('7', '8', '9', '+'), rows[1].dropLast(1).map { it.char })
+        // D-394: digit block mirrored vertically to phone-style order (1 2 3 / 4 5 6 / 7 8 9) - the operator
+        // column itself (+ − × ÷ top to bottom) is unaffected, it stays tied to its row.
+        assertEquals(listOf('1', '2', '3', '+'), rows[1].dropLast(1).map { it.char })
         assertEquals(KeyCode.SPACE, rows[1].last().code)
         
         assertEquals(listOf('4', '5', '6', '−'), rows[2].dropLast(1).map { it.char })
         assertEquals('€', rows[2].last().char)
         
-        assertEquals(listOf('1', '2', '3', '×'), rows[3].dropLast(1).map { it.char })
+        assertEquals(listOf('7', '8', '9', '×'), rows[3].dropLast(1).map { it.char })
         assertEquals('=', rows[3].last().char)
         
         val row5 = rows[4]
@@ -120,7 +122,8 @@ class SymbolLayoutTest {
     
     @Test
     fun `page 1's own 2 and 3 keys carry squared and cubed hints`() {
-        val digitRow = SymbolLayout.rows(1)[3]
+        // D-394: 2/3 moved to row 2 (index 1) with the digit-block mirror - was row 4 (index 3).
+        val digitRow = SymbolLayout.rows(1)[1]
         
         assertEquals("²", digitRow.byChar('2').hint)
         assertEquals("³", digitRow.byChar('3').hint)

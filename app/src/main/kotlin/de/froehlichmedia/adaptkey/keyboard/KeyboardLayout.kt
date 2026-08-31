@@ -346,7 +346,11 @@ object KeyboardLayout {
      * D-105: builds a number-row key with its existing shifted symbol (index 0, pre-selected - unchanged
      * from before) and its own superscript form (index 1) as a real D-01 two-cell popup, instead of the
      * shifted symbol applying immediately on long-press.
-     * 
+     *
+     * D-382: `2` additionally gets an apostrophe and its own subscript `₂` (a second, unrelated ask bundled
+     * onto the same key by the user) - every other digit is unaffected, still exactly the shifted-symbol +
+     * superscript pair above.
+     *
      * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
      * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
      * here.
@@ -354,7 +358,11 @@ object KeyboardLayout {
     private fun numberKey(c: Char): Key {
         val hint = NUMBER_HINTS[c]
         val superscript = NUMBER_SUPERSCRIPTS[c]
-        val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
+        val alternatives = when {
+            hint == null || superscript == null -> emptyList()
+            c == '2' -> listOf(hint, superscript, "'", "₂")
+            else -> listOf(hint, superscript)
+        }
         return charKey(c, hint, alternatives = alternatives)
     }
 }

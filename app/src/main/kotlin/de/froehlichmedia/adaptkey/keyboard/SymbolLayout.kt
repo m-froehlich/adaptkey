@@ -157,18 +157,21 @@ object SymbolLayout {
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
-        // Row 2 (corrected): 7 8 9 + | space. Operator column reordered top to bottom: + − × ÷.
+        // Row 2 (D-394: mirrored vertically to the now-converged phone-style digit order - was 7 8 9,
+        // the calculator-style order this page originally shipped with): 1 2 3 + | space. Operator column
+        // reordered top to bottom: + − × ÷.
         result.add(
             listOf(
-                charKey('7'),
-                charKey('8'),
-                charKey('9'),
+                charKey('1'),
+                charKey('2', hint = SQUARED_HINT),
+                charKey('3', hint = CUBED_HINT),
                 charKey('+'),
                 Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = CALC_COLUMN_WEIGHT)
             )
         )
         
-        // Row 3 (corrected): 4 5 6 − | currency.
+        // Row 3: 4 5 6 − | currency - already the middle row under both digit-block conventions, so D-394's
+        // mirror leaves it untouched.
         result.add(
             listOf(
                 charKey('4'),
@@ -179,13 +182,13 @@ object SymbolLayout {
             )
         )
         
-        // Row 4 (corrected): 1 2 3 × | = ("=" always visible in the column, ABC tucked into the grid
-        // instead, since ABC is the rarer action of the two).
+        // Row 4 (D-394: mirrored vertically - was 1 2 3, see row 2 above): 7 8 9 × | = ("=" always visible
+        // in the column, ABC tucked into the grid instead, since ABC is the rarer action of the two).
         result.add(
             listOf(
-                charKey('1'),
-                charKey('2', hint = SQUARED_HINT),
-                charKey('3', hint = CUBED_HINT),
+                charKey('7'),
+                charKey('8'),
+                charKey('9'),
                 charKey('×', alternatives = MULTIPLY_ALTERNATIVES),
                 charKey('=', alternatives = EQUALS_ALTERNATIVES, weight = CALC_COLUMN_WEIGHT)
             )

@@ -125,7 +125,7 @@
     <string name="c02_title">Re-Sort-Verzögerung</string>
     <string name="c02_summary">Pause ohne Eingabe, nach der die Vorschlagsleiste neu sortiert (0–600 ms).</string>
     <string name="c03_title">Maximale Vorschläge</string>
-    <string name="c03_summary">Anzahl gleichzeitig angebotener Vorschläge (6–10).</string>
+    <string name="c03_summary">Anzahl gleichzeitig angebotener Vorschläge (3–10).</string>
 
     <string name="c09_title">Nummernreihe</string>
     <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
@@ -191,6 +191,9 @@
     <!-- D-280 Sprachpakete (Browser-Download + Datei-Import, eines pro Sprache außer Englisch). -->
     <string name="d280_pref_title">Sprachen</string>
     <string name="d280_pref_summary">Weitere Eingabesprachen installieren oder entfernen (C-19).</string>
+
+    <string name="d398_title">Automatischer Sprachwechsel</string>
+    <string name="d398_summary">Aufeinanderfolgende Wörter in einer anderen Sprache, bevor die Tastatur von selbst dorthin wechselt (0 = aus, nur manueller Wechsel).</string>
     <string name="d280_title">Sprachpakete</string>
     <string name="d280_intro">Englisch ist immer verfügbar. Jede weitere Sprache ist ein optionaler Download (ihr Wörterbuch liegt nicht in der App, damit sie klein bleibt) - einmalig im Browser herunterladen, dann die Datei importieren. Danach funktioniert es vollständig offline, wie alles andere hier auch.</string>
     <string name="d280_status_installed">Installiert.</string>

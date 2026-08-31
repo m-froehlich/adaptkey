@@ -47,7 +47,8 @@ data class RawSettings(
     val contactsSuggestionsEnabled: Boolean = false,
     val doubleTapBackspaceUndo: Boolean = false,
     val autoSplitModeKey: String? = null,
-    val autocorrectAggressivenessKey: String? = null
+    val autocorrectAggressivenessKey: String? = null,
+    val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
 )
 
 /**
@@ -58,8 +59,8 @@ data class RawSettings(
  */
 object SettingsMapper {
     
-    /** C-03 minimum maximum-suggestion count (§10 recommended range 6-10). */
-    const val MIN_MAX_SUGGESTIONS = 6
+    /** C-03 minimum maximum-suggestion count (D-399: widened from 6 to include 3, §10 recommended range). */
+    const val MIN_MAX_SUGGESTIONS = 3
     
     /** C-03 maximum maximum-suggestion count (§10 recommended range 6-10). */
     const val MAX_MAX_SUGGESTIONS = 10
@@ -99,6 +100,12 @@ object SettingsMapper {
     
     /** D-177 maximum pending-blacklist expiry, in days. */
     const val MAX_PENDING_BLACKLIST_EXPIRY_DAYS = 30
+    
+    /** D-398 minimum sustained-foreign-language-switch threshold - 0 disables the automatic switch. */
+    const val MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = 0
+    
+    /** D-398 maximum sustained-foreign-language-switch threshold. */
+    const val MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = 8
     
     /** C-01 lower bound for the space-bar weight (must stay a usable, positive width). */
     const val MIN_SPACE_WEIGHT = 1.0f
@@ -242,7 +249,10 @@ object SettingsMapper {
             autocorrectEnabled = toAutocorrectEnabled(raw),
             doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo,
             autoSplitMode = toAutoSplitMode(raw),
-            autocorrectAggressiveness = toAutocorrectAggressiveness(raw)
+            autocorrectAggressiveness = toAutocorrectAggressiveness(raw),
+            sustainedLanguageSwitchThreshold = raw.sustainedLanguageSwitchThreshold.coerceIn(
+                MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
+            )
         )
     }
 }

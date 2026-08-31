@@ -459,9 +459,11 @@ non-trivial changes).
   - **D-373 - OPEN.** Appending a hyphen after a *capitalised* word should re-arm auto-capitalisation for the
     next segment (mirrors B-02's own default for the general case).
   - **D-374 - OPEN.** Removing the trailing auto-space no longer works, at least in Google Keep.
-  - **D-375 - OPEN.** `"sollendafur"` gets auto-unfolded and split silently; the user believes it should
-    instead be offered as a chip, since the result differs from what was typed - explicitly flagged as
-    possibly conflicting with other rules, needs evaluation rather than an assumed-compatible fix.
+  - **D-375 - RESOLVED (2026-08-31, no dedicated fix identified).** User confirmed on real-device testing
+    that `"sollendafur"` no longer gets silently auto-unfolded/split the way originally reported - no code
+    change in this session targeted it specifically; likely a side effect of the intervening dictionary
+    cleanup rounds (§301 and later) or a later A-05/umlaut-interaction refinement, not root-caused further
+    since there is nothing left to fix.
   - **D-376 - OPEN.** After `"km"` (and, separately, after a `/`), a `"km/h"` completion chip should be
     offered.
   - **D-377 - OPEN, explicitly named as expensive/last-resort.** Recover a badly garbled mid-word mistake
@@ -470,16 +472,16 @@ non-trivial changes).
     nothing else in the pipeline resolves the token at all.
   - **D-378 - OPEN.** While capitalisation is active (auto-armed or explicit), a quote character must not
     reset it.
-  - **D-379 - OPEN.** `"bzgl."` is missing from the known-abbreviation list, so a sentence start is wrongly
-    assumed right after it.
+  - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
+    already-present `abzgl.`/`zzgl.` family.
   - **D-380 - OPEN.** A long-press smear too small to trigger a swipe/page-change should still open the alt
     popup - the `o` key is named as the one that frequently fails to.
-  - **D-381 - OPEN.** A learned word's part-of-speech tag should be user-editable. **Superseded in scope by
-    D-404 §323/§324** (the Learned Words editor now has exactly this - a category multi-select - and, with a
-    tier-3 model installed, the LLM determines it automatically) - worth a fresh look to confirm this ask is
-    now actually satisfied rather than closing it by assumption.
-  - **D-382 - OPEN.** The `2` key is missing an apostrophe among its long-press alternatives, and should also
-    offer subscript `₂` alongside the existing superscript `²`.
+  - **D-381 - RESOLVED, device-confirmed (2026-08-31, no code change).** The fresh look this bullet asked
+    for happened: user confirmed on-device that D-404 §323/§324's Learned Words editor (category
+    multi-select, LLM-determined with a tier-3 model installed) fully satisfies the original ask.
+  - **D-382 - RESOLVED (§330, v1.0.82).** `KeyboardLayout.numberKey('2')` (shared by both QWERTZ and QWERTY,
+    L-01) now offers an apostrophe and subscript `₂` as a third and fourth long-press alternative, alongside
+    the existing shifted-symbol/superscript pair. Every other digit unaffected.
   - **D-383 - OPEN.** In Google Keep's list mode, placing the caret before a word and pressing Enter (to push
     the rest of the line into a new list item) deletes that word.
   - **D-384 - OPEN.** Typing a minus preceded by a space should also get its own trailing A-12-style
@@ -515,8 +517,10 @@ non-trivial changes).
     it - a generalisation of A-06 merge beyond its current scope.
   - **D-392 - OPEN.** Auto-capitalisation should re-engage after Caps Lock is turned off.
   - **D-393 - OPEN.** In the Google Play Store's own search bar, Enter does not act as Submit.
-  - **D-394 - OPEN.** Mirror the calculator/number-pad's digit block vertically (mobile keyboards have
-    converged on the reversed phone-style order) and show the T9 letter mapping as a long-press alt per digit.
+  - **D-394 - RESOLVED, digit-mirror only (§330, v1.0.82).** The calculator page's digit block now reads
+    `1 2 3` / `4 5 6` / `7 8 9` / `0` top to bottom (was calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0`) -
+    the operator column and every other key untouched. The T9-letter-long-press half of this ask was
+    explicitly declined by the user - dropped from scope entirely, not deferred.
   - **D-395 - OPEN.** The distance kept from the system gesture-navigation bar should be configurable - the
     user reports the gesture has become far more sensitive on their current Android version, causing
     accidental app-hide/app-switch near the space bar's lower edge.
@@ -525,10 +529,10 @@ non-trivial changes).
   - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
     letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
     produce an unwanted `q` instead of the intended `a` below it.
-  - **D-398 - OPEN.** The automatic language-switch threshold (fixed 5 consecutive foreign words, D-130)
-    should become a slider from 0 (off) to 8, under the language section in Dictionary settings.
-  - **D-399 - OPEN.** The maximum-suggestions range (C-03) should include 3, not only start at some higher
-    floor.
+  - **D-398 - RESOLVED (§330, v1.0.82).** The automatic language-switch threshold (D-130, formerly a
+    hardcoded 5) is now C-23, a 0-8 slider under the Dictionary category's language section, default 5;
+    0 disables the automatic switch entirely (manual G-01 swipe unaffected).
+  - **D-399 - RESOLVED (§330, v1.0.82).** C-03's maximum-suggestions range widened from a 6 floor to 3.
   - **D-400 - OPEN, a design question the user already leans on.** Should an automatic language switch (D-130)
     into another Latin-script language also switch the keyboard *layout*? User's own conclusion: probably
     not - only the dictionary/word recognition should switch; the layout should instead follow the *system's*
@@ -627,6 +631,50 @@ non-trivial changes).
   own, not-yet-started, uncertain-feasibility project.
 
 ## Current State
+
+- **§330 (v1.0.82): a batch of seven small, independently-decided backlog items - D-379, D-382, D-394**
+  **(digit-mirror half only), D-398, D-399 implemented; D-375 and D-381 confirmed with no code change.**
+  User pre-decided each item individually (no open design questions, unlike the project's usual "discuss
+  first" convention for non-trivial choices), so all seven were handled in one round:
+  - **D-379**: `"bzgl."` added to `Abbreviations.GERMAN` ([Abbreviations.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/capitalisation/Abbreviations.kt)), alongside the existing `abzgl.`/`zzgl.` family - a sentence start is no longer wrongly assumed right after it.
+  - **D-382**: `KeyboardLayout.numberKey('2')` gained an apostrophe (`'`) and subscript (`₂`) as a third/
+    fourth long-press alternative, alongside the existing shifted-symbol (`"`) and superscript (`²`) pair -
+    shared code between QWERTZ and QWERTY (L-01), so both get it identically; every other digit unaffected.
+  - **D-394**: the calculator page's digit block (`SymbolLayout.calculatorRows()`) mirrored vertically to
+    the phone-style `1 2 3` / `4 5 6` / `7 8 9` / `0` order (was calculator-style `7 8 9` / `4 5 6` /
+    `1 2 3` / `0`) - only the digit keys moved; the operator column, currency/decimal/ABC/Enter cells and
+    their row positions are untouched. The original ask's T9-letter-long-press half was explicitly declined
+    by the user ("streichen wir aber ersatzlos") - dropped from scope, not deferred.
+  - **D-398**: the D-130 automatic-language-switch threshold (formerly a hardcoded `SUSTAINED_ENGLISH_
+    WORD_THRESHOLD = 5` in `AdaptKeyService`) is now a real setting - new C-23, `sustainedLanguageSwitch
+    Threshold` threaded through `RawSettings`/`SettingsStore`/`SettingsMapper`/`AdaptSettings` the same way
+    every other slider setting is, clamped 0-8, default 5, exposed as a `SeekBarPreference` in the
+    Dictionary category right after the language-packs link (the "language section" the user asked for).
+    `trackSustainedEnglishUsage()` now reads `settings.sustainedLanguageSwitchThreshold`; a stored `0`
+    disables the whole promotion (checked explicitly, not merely "compare against 0" which would have
+    fired after zero consecutive words) - only the manual G-01 swipe still changes the active language.
+  - **D-399**: `SettingsMapper.MIN_MAX_SUGGESTIONS` lowered from 6 to 3; the C-03 `SeekBarPreference`'s
+    `app:min` updated to match. `MAX_MAX_SUGGESTIONS` (10) unchanged.
+  - **D-375** (no code change): user confirmed on real-device testing that `"sollendafur"` no longer gets
+    silently auto-unfolded/split the way originally reported. No dedicated fix targeted it this round or
+    any prior one identifiably - likely a side effect of the intervening dictionary cleanup rounds (§301+)
+    or a later A-05/umlaut-interaction refinement; not root-caused further since there is nothing left to
+    fix. Marked resolved on the strength of the user's own direct repro-no-longer-reproduces report.
+  - **D-381** (no code change): user confirmed on-device that D-404 §323/§324's Learned Words editor
+    (category multi-select, LLM-determined with a tier-3 model installed) fully satisfies the original
+    "learned word's POS tag should be user-editable" ask - the "worth a fresh look" this bullet had been
+    carrying is now actually closed, not just assumed.
+
+  6 new/updated unit tests (`AbbreviationsTest` +1 assertion in-place; `KeyboardLayoutTest` split into two,
+  net +1; `SymbolLayoutTest` three assertions updated in-place, no new tests; `SettingsMapperTest` +1).
+  1134 → 1136 unit tests. Spec: L-06 (D-382), L-07 (D-394), G-01/A-03 (D-398), S-01 (D-399), and the §20
+  C-03/new-C-23 settings table rows all updated to the current, crystallised state.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 385 → 386, `versionName` `"1.0.81"` →
+  `"1.0.82"`. **Not yet device-confirmed** (D-379/D-382/D-394/D-398/D-399's own new behaviour) - needs a real
+  device check: `bzgl.` no longer triggers a false sentence start; the `2` key's popup shows all four
+  alternatives; the calculator digit block reads in the new order; the new language-switch-threshold slider
+  appears under Dictionary settings and actually gates the automatic switch (including at 0 = off); the
+  max-suggestions slider now reaches down to 3.
 
 - **§329 (v1.0.81): D-413 - reverted D-344/D-386's SAF folder-grant import back to a plain
   `ACTION_OPEN_DOCUMENT` single-file picker; D-363 declined as Won't Fix.** Real-device report: trying to

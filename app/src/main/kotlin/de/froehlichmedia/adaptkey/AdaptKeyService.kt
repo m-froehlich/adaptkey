@@ -261,8 +261,9 @@ class AdaptKeyService : InputMethodService() {
     // English here too, the one language DictionaryLoader.BUNDLED_LANGUAGES always guarantees is loaded.
     private var activeLanguage = Language.ENGLISH
     
-    // D-130: consecutive commits routed to English by A-03 while German/Greek stays active - once this
-    // reaches SUSTAINED_ENGLISH_WORD_THRESHOLD, trackSustainedEnglishUsage() promotes it to a real switch.
+    // D-130/D-398: consecutive commits routed to English by A-03 while German/Greek stays active - once
+    // this reaches settings.sustainedLanguageSwitchThreshold, trackSustainedEnglishUsage() promotes it to a
+    // real switch (a stored threshold of 0 disables the mechanism entirely).
     private var consecutiveEnglishWords = 0
     
     // L-03: which layer is shown, the numeric/symbol layer's current page, the bundled emoji dataset
@@ -3802,21 +3803,24 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * D-130: promotes A-03's per-token English routing (used while German/Greek stays active) to a real
-     * active-language switch after [SUSTAINED_ENGLISH_WORD_THRESHOLD] consecutive commits routed to
-     * English - the existing per-token routing, and D-106 stage 2's cross-language autocorrect protection,
-     * already work well for a single embedded loanword; a sustained run of English words is a different,
-     * stronger signal that the user has genuinely switched languages, not just borrowed one word.
-     * 
+     * active-language switch after [AdaptSettings.sustainedLanguageSwitchThreshold] consecutive commits
+     * routed to English - the existing per-token routing, and D-106 stage 2's cross-language autocorrect
+     * protection, already work well for a single embedded loanword; a sustained run of English words is a
+     * different, stronger signal that the user has genuinely switched languages, not just borrowed one word.
+     * D-398: a stored threshold of 0 disables this promotion entirely - only the manual G-01 swipe still
+     * changes the active language.
+     *
      * @param ic the current input connection
      * @param tokenLanguage the language [finalizeAndCommit] actually routed the just-committed token to
      */
     private fun trackSustainedEnglishUsage(ic: InputConnection, tokenLanguage: Language) {
-        if (activeLanguage == Language.ENGLISH || tokenLanguage != Language.ENGLISH) {
+        val threshold = settings.sustainedLanguageSwitchThreshold
+        if (threshold <= 0 || activeLanguage == Language.ENGLISH || tokenLanguage != Language.ENGLISH) {
             consecutiveEnglishWords = 0
             return
         }
         consecutiveEnglishWords++
-        if (consecutiveEnglishWords < SUSTAINED_ENGLISH_WORD_THRESHOLD) {
+        if (consecutiveEnglishWords < threshold) {
             return
         }
         consecutiveEnglishWords = 0
@@ -6197,10 +6201,6 @@ class AdaptKeyService : InputMethodService() {
         // for the auto-space itself - armShiftForNextWord() re-derives capitalisation fresh from the real
         // document text (SentenceBoundary), so a comma never arms an auto-capital purely by being in this set.
         private const val SENTENCE_PUNCTUATION = ".!?,"
-        
-        // D-130: consecutive commits routed to English (while German/Greek stays active) before
-        // trackSustainedEnglishUsage() promotes it to a real active-language switch.
-        private const val SUSTAINED_ENGLISH_WORD_THRESHOLD = 5
         
         // D-135: at most this many Autofill inline suggestions are requested/shown at once; each is
         // inflated at this width (a reasonable single-suggestion chip width - the platform itself decides
