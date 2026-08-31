@@ -661,9 +661,8 @@ non-trivial changes).
   more often than the time-of-day case that originally motivated it; a "only arm when a letter immediately
   precedes the mark" gate was worked out (subsumes the digit exception, protects the common
   space-or-message-start emoticon case) but the user judged the remaining complexity/risk not worth it. See
-  the "Open TODOs" list above for both items' updated status. **Not yet device-confirmed** - needs a real
-  import (language pack and/or model) via the new single-file picker on the same device that hit the original
-  Downloads-folder-grant refusal.
+  the "Open TODOs" list above for both items' updated status. **Device-confirmed** - a real import via the
+  new single-file picker succeeded on the same device that hit the original Downloads-folder-grant refusal.
 
 - **§305 (v1.0.58): D-412 - a bundled-only `lemma` link column, laid down as groundwork for the**
   **in-progress German verb-tagging project (see below) and, further out, D-404 Tier 1.** `WordEntry` gained
