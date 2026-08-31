@@ -5,6 +5,10 @@ package de.froehlichmedia.adaptkey.prediction.onnx
 
 import android.content.Context
 import de.froehlichmedia.adaptkey.prediction.Tier3Decoding
+import de.froehlichmedia.adaptkey.prediction.Tier3FamilyPrompt
+import de.froehlichmedia.adaptkey.prediction.Tier3FamilyRequest
+import de.froehlichmedia.adaptkey.prediction.Tier3FamilyResponseParser
+import de.froehlichmedia.adaptkey.prediction.Tier3FamilyResult
 import de.froehlichmedia.adaptkey.prediction.Tier3ModelFiles
 import de.froehlichmedia.adaptkey.prediction.Tier3Prompt
 import de.froehlichmedia.adaptkey.prediction.Tier3Provider
@@ -47,6 +51,24 @@ class OnnxTier3Provider private constructor(
         val generatedIds = session.generate(promptIds, decoding.maxNewTokens, stopIds)
         val continuation = tokenizer.decode(generatedIds)
         return Tier3Result(Tier3ResponseParser.parse(request.input, continuation, decoding.numCandidates))
+    }
+    
+    /**
+     * D-404: the family-learning task (see [Tier3Provider.predictFamily]'s own KDoc). Uses the hard
+     * [Tier3Decoding.MAX_NEW_TOKENS] budget regardless of [decoding]'s own (much smaller) next-word value -
+     * a family answer needs far more tokens than an ordinary continuation, and this call is already only
+     * ever made once per learn event (or once per backfilled word during reprocessing), not per keystroke,
+     * so the extra latency is an accepted, deliberate trade-off.
+     */
+    override fun predictFamily(request: Tier3FamilyRequest): Tier3FamilyResult {
+        val prompt = Tier3FamilyPrompt.build(request)
+        val promptIds = tokenizer.encode(prompt)
+        if (promptIds.isEmpty()) {
+            return Tier3FamilyResult.EMPTY
+        }
+        val generatedIds = session.generate(promptIds, Tier3Decoding.MAX_NEW_TOKENS, stopIds)
+        val continuation = tokenizer.decode(generatedIds)
+        return Tier3FamilyResponseParser.parse(continuation)
     }
     
     override fun close() {

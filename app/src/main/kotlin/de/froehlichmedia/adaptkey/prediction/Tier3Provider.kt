@@ -28,4 +28,16 @@ interface Tier3Provider {
      * @return the ranked candidates and any high-certainty capitalisation proposal
      */
     fun predict(request: Tier3Request): Tier3Result
+    
+    /**
+     * D-404: determines [Tier3FamilyRequest.word]'s category and its whole inflectional family, so the
+     * caller can learn them all together, linked - the "with LLM, always learn the whole family" design.
+     * Only ever called when [isAvailable] is true. The default implementation returns
+     * [Tier3FamilyResult.EMPTY], so [NoopTier3Provider] and any other backend not yet implementing this
+     * task need no override of their own.
+     *
+     * @param request the word (and optional sentence context) to analyse
+     * @return the determined family, or [Tier3FamilyResult.EMPTY] when nothing usable was produced
+     */
+    fun predictFamily(request: Tier3FamilyRequest): Tier3FamilyResult = Tier3FamilyResult.EMPTY
 }

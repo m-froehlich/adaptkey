@@ -158,11 +158,25 @@ interface DictionaryStore {
     fun learnedFrequencyOf(word: String): LearnedFrequency?
     
     /**
+     * D-404: sets (or clears, when [lemma] is null) an already-learned word's own base-form link directly -
+     * a plain update, touching nothing else about the entry (frequency, category, last-touched); a no-op
+     * when [word] is not currently a learned entry. Two callers: the Learned Words editor's own "Grundform"
+     * dropdown (a power user manually correcting or removing a link the conservative lookup missed or got
+     * wrong), and the with-LLM family-learning path ([de.froehlichmedia.adaptkey.AdaptKeyService] applying a
+     * [de.froehlichmedia.adaptkey.prediction.Tier3FamilyResult] - every non-lemma family member linked back
+     * to the lemma).
+     *
+     * @param word the learned word to (re)link (any case)
+     * @param lemma the base form's own key to link to, or null to clear an existing link
+     */
+    fun setLearnedLemma(word: String, lemma: String?)
+    
+    /**
      * D-177: every word currently in the learned lexicon (never the bundled dictionary), in canonical
      * case with its learned frequency, for the learned-words editor - including a word that could never
      * be reached any other way (e.g. one matching the current input, which S-02 always excludes from
      * the suggestion bar, so G-04's drag-to-trash structurally can never reach it either).
-     * 
+     *
      * @return the learned words, sorted by descending frequency
      */
     fun learnedWords(): List<WordEntry>

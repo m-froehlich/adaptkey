@@ -456,4 +456,29 @@ class InMemoryDictionaryStoreTest {
         store.learn("Giraffe", null)
         assertEquals(null, store.entryOf("giraffe")?.lemma)
     }
+    
+    @Test
+    fun `D-404 setLearnedLemma links an already-learned word to an arbitrary base`() {
+        store.learn("Hunde", null)
+        store.setLearnedLemma("hunde", "hund")
+        
+        assertEquals("hund", store.entryOf("hunde")?.lemma)
+    }
+    
+    @Test
+    fun `D-404 setLearnedLemma clears an existing link when given null`() {
+        store.learn("Hund", null)
+        store.learn("Hundes", null)
+        assertEquals("hund", store.entryOf("hundes")?.lemma)
+        
+        store.setLearnedLemma("hundes", null)
+        
+        assertEquals(null, store.entryOf("hundes")?.lemma)
+    }
+    
+    @Test
+    fun `D-404 setLearnedLemma on a word that is not a learned entry is a harmless no-op`() {
+        store.setLearnedLemma("nie-gelernt", "irgendwas")
+        assertFalse(store.isKnownWord("nie-gelernt"))
+    }
 }

@@ -445,10 +445,10 @@ non-trivial changes).
      user does not want to lose. Needs a genuine migration path that consolidates already-accumulated
      entries under their shared base form (mirroring D-388's own `last_touched` column migration as the
      precedent for "add new structure to an existing table without discarding what's already there"), not a
-     fresh start. **RESOLVED (non-LLM path) — see §323 in Current State and spec §39: the migration honours**
-     **this constraint exactly (additive `ALTER TABLE`, no wipe). The with-LLM extension (whole-family**
-     **learning on every learn event, an installation-triggered reprocessing pass) remains open - not yet**
-     **implemented.**
+     fresh start. **RESOLVED — see §323/§324 in Current State and spec §39: the migration honours this**
+     **constraint exactly (additive `ALTER TABLE`, no wipe), and the with-LLM extension (whole-family**
+     **learning on every learn event, a unified "LLM installed is a state" reprocessing pass) is also now**
+     **implemented (§324) - D-404 is fully closed except for tier 2, still open.**
 
   **D-412 (see Current State) has since laid the schema groundwork tier 1 would need** - a bundled-only
   `lemma` link column on `TABLE_WORDS` - and a genuinely new, in-progress project is using it: tagging every
@@ -814,6 +814,60 @@ non-trivial changes).
   29 -> 30, pack rebuilt, `LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
+
+- **§324 (v1.0.77): D-404 Tier 3, with-LLM path - whole-family learning + the unified reprocessing**
+  **backfill.** Closes out D-404's own explicit "with LLM, always learn the whole family" requirement
+  (§323's non-LLM path stays exactly as it was - this is purely additive). `Tier3Provider` gained a second
+  task method, `predictFamily(Tier3FamilyRequest): Tier3FamilyResult`, deliberately separate from the
+  existing next-word-continuation `predict`/`Tier3Request`/`Tier3Result` (different prompting - an explicit
+  instruction plus a rigid `KEY=value` answer format the model is primed to continue mid-answer, not plain
+  continuation - and a different token budget, the hard `Tier3Decoding.MAX_NEW_TOKENS` cap since this runs
+  once per learn event rather than once per keystroke); default implementation returns
+  `Tier3FamilyResult.EMPTY`, so `NoopTier3Provider` needed no override. New `Tier3FamilyPrompt` (builds the
+  German instruction prompt, primes `"GRUNDFORM="` so the model's own continuation starts right at the
+  answer) + `Tier3FamilyResponseParser` (deliberately generous - each of `GRUNDFORM=`/`WORTART=`/`FORMEN=`
+  is extracted independently via its own regex rather than requiring the whole line to parse as one unit,
+  since a small 360M-parameter model will not always reproduce the format exactly; only the lemma is
+  load-bearing - a missing/garbled category or forms field just leaves that part null/empty rather than
+  discarding an otherwise-usable lemma; forms are letters-only-filtered, de-duplicated case-insensitively,
+  and capped at 16 so a degenerate/repetitive generation cannot flood the lexicon). `OnnxTier3Provider.
+  predictFamily()` composes these with the same tokenizer/session already used for `predict()`.
+  `Tier3FamilyApplier.apply(store, result)` (new, pure over `DictionaryStore`, unit-tested via
+  `InMemoryDictionaryStore` rather than living untested inside `AdaptKeyService`) is the one shared
+  operation both call sites below reduce to: learn every family form (an ordinary `learn()` call per form,
+  `result.category` as the `categoryHint`), then link every non-lemma form back to the lemma via
+  `DictionaryStore.setLearnedLemma` - promoted from a `SqliteDictionaryStore`-only method to the shared
+  interface (implemented in `InMemoryDictionaryStore` too) specifically so this logic never needs to
+  downcast the interface - unless that form already carries its own link, so a prior manual "Grundform"
+  correction or an earlier application of the same family is never silently overwritten.
+  Live path: `AdaptKeyService.dispatchFamilyLearning()`, called from both `learnWord()`/`learnWordStrong()`
+  right after their own ordinary (non-LLM) outcome, only for a genuine write (`LEARNED`/`PROMOTED` - never
+  `SKIPPED`/`PENDING`) and only when a real backend (`onnxProvider`) is present; dispatches on
+  `tier3Executor` with `dictionaryStore`/`onnxProvider` captured on the calling thread first (mirrors
+  `refreshSuggestions()`'s own orchestrator-capture pattern) - `predictFamily` is synchronous and heavy, so
+  it must never run on the IME thread. Backfill path: "LLM installed is a state, not a history" - rather
+  than special-casing "already installed at migration time" inside `ensureLearnedLemmaColumn()`'s own
+  synchronous `init {}` migration (which must stay fast, ruled out heavy LLM work there entirely), each
+  language store's `TABLE_META` gained a `family_reprocess_version` key
+  (`familyReprocessVersion()`/`setFamilyReprocessVersion()`, mirroring `learnedCleanupVersion`'s own scheme).
+  New `AdaptKeyService.maybeReprocessFamiliesAsync()` runs every time `loadTier3ProviderAsync()` actually
+  builds a real backend - which happens on *every* fresh service instance that finds a model already
+  installed, not only right after a fresh import, which is what makes this single mechanism cover both of
+  D-404's original trigger conditions at once - and, for every `SqliteDictionaryStore` still behind the
+  current version, reprocesses every learned word still missing a category or a lemma link
+  (`learnedWordsWithTimestamp()`, filtered) through the same `predictFamily`+`Tier3FamilyApplier.apply`
+  pair, entirely on `tier3Executor`, before bumping that store's version - a cheap no-op on every later
+  startup once already run. No original sentence context is available for a backfilled word
+  (`Tier3FamilyRequest.sentence` defaults to empty, treated as "lemmatise this word in isolation").
+  28 new unit tests (`Tier3FamilyPromptTest` 6, `Tier3FamilyResponseParserTest` 12, `Tier3FamilyApplierTest`
+  6, `InMemoryDictionaryStoreTest` +3 for `setLearnedLemma`, `NoopTier3ProviderTest` +1). 1112 unit tests
+  total (was 1084), all green (via JBR JDK 21, both `:app:assembleRelease` and `:app:testDebugUnitTest`
+  verified). `versionCode` 380 -> 381, `versionName` `"1.0.76"` -> `"1.0.77"`. Spec §39 extended (its own
+  "Deferred" section rewritten into "With-LLM path (implemented)"); the D-404 backlog item above is now
+  fully resolved except for tier 2. Not yet device-confirmed - no device/ONNX runtime in this environment,
+  same already-accepted limitation the rest of tier 3 has; the prompt format's actual reliability against
+  the real SmolLM2-360M-Instruct model is therefore unverified beyond the parser's own generous, defensive
+  design.
 
 - **§323 (v1.0.76): D-404 Tier 3, non-LLM path - Learned Words base-form consolidation.** Pure code, no
   dictionary data touched (see spec §39 for the full mechanics). `TABLE_LEARNED` gained its own `lemma`

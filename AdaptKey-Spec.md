@@ -1672,14 +1672,43 @@ user review or correct either by hand. Framed explicitly as a power-user-only su
 user, who has no reason to open this screen at all) - the rough edge above was accepted on that basis rather
 than building a "reveal hidden family members" affordance for it.
 
-**Deferred (not yet implemented).** With an installed tier-3 model, the design calls for every learn event to
-have the LLM determine the word's full category *and* its whole inflectional family in one pass, learning
-them all together and linked - not merely opportunistic lookup-and-link the way the non-LLM path above works.
-"LLM installed" is meant to be treated as a state, not a history: installing one at any point should trigger a
-one-time reprocessing pass over the existing learned list (the same pass migration would run if a model is
-*already* installed at that moment), backfilling categories/families/links with the model's help. None of this
-- the `Tier3Provider` extension, the reprocessing trigger, or the migration's LLM-aware branch - exists yet;
-this round is the conservative, always-available non-LLM path only.
+**With-LLM path (implemented).** When a real tier-3 backend is present, every genuine learn event (`LearnOutcome.
+LEARNED`/`PROMOTED` - never `SKIPPED`/`PENDING`, nothing written yet to enrich) additionally dispatches
+`AdaptKeyService.dispatchFamilyLearning()` on `tier3Executor` (never the IME thread - `Tier3Provider.predictFamily`
+is synchronous and heavy, exactly like `predict` itself): the backend determines the word's full category *and*
+its whole inflectional family in one pass, and all of it is learned together, linked - not merely opportunistic
+lookup-and-link the way the non-LLM path above works. `Tier3Provider` gained a second task method,
+`predictFamily(Tier3FamilyRequest): Tier3FamilyResult`, alongside its existing next-word-continuation `predict` -
+kept as a fully separate request/result pair and prompt/parser (`Tier3FamilyPrompt`/`Tier3FamilyResponseParser`)
+rather than overloading the continuation shape, since the two tasks need different prompting (an explicit
+instruction + a rigid `KEY=value` answer format the model is primed to continue, vs. plain text continuation)
+and different token budgets (the hard `Tier3Decoding.MAX_NEW_TOKENS` cap, not the tiny per-keystroke default -
+this call happens once per learn event, not once per keystroke, so the extra latency is an accepted trade-off).
+The default `Tier3Provider.predictFamily` implementation returns `Tier3FamilyResult.EMPTY`, so `NoopTier3Provider`
+needs no override at all. `Tier3FamilyApplier.apply(store, result)` (pure over the `DictionaryStore` interface,
+not any concrete store - unit-tested via `InMemoryDictionaryStore`) is the single shared operation both this
+live path and the backfill pass below reduce to: learn every family form (creating or reinforcing exactly like
+an ordinary `learn()` call, `result.category` as the `categoryHint`), then link every non-lemma form back to the
+lemma via `DictionaryStore.setLearnedLemma` (promoted from a `SqliteDictionaryStore`-only method to the shared
+interface, implemented in `InMemoryDictionaryStore` too, specifically so this Android-glue-free application
+logic never needs to downcast the interface) - unless that form already carries its own link, so a prior manual
+correction (the editor's own "Grundform" dropdown) or an earlier application of the same family is never
+silently overridden.
+
+"LLM installed" is treated as a state, not a history, via one unified mechanism covering both trigger
+conditions the design called for ("LLM newly installed" and "LLM already installed at migration time"), neither
+of which hooks into `ensureLearnedLemmaColumn()`'s own synchronous migration directly - that migration runs
+inside `SqliteDictionaryStore.init {}`, which every store open goes through, so it must stay fast; heavy LLM
+inference has no place there. Instead: each language's `TABLE_META` gained a `family_reprocess_version` key
+(`familyReprocessVersion()`/`setFamilyReprocessVersion()`, mirroring `learnedCleanupVersion`'s own scheme, "0"
+meaning the pass has never run for that store). `AdaptKeyService.maybeReprocessFamiliesAsync()` is called every
+time `loadTier3ProviderAsync()` actually builds a real backend - which happens on *every* fresh service instance
+that finds a model already installed, not only right after a fresh import - and, for every `SqliteDictionaryStore`
+still behind the current version, reprocesses every learned word still missing a category or a lemma link
+(`learnedWordsWithTimestamp()`, filtered) through `predictFamily` + `Tier3FamilyApplier.apply`, entirely on
+`tier3Executor`, before bumping that store's own version. A cheap no-op on every later startup once the version
+has already been bumped; no original sentence context is available for a backfilled word (`Tier3FamilyRequest.
+sentence` defaults to empty - acceptable, since the request is really "lemmatise this word in isolation").
 
 ---
 

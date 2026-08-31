@@ -171,6 +171,12 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
     }
     
     
+    override fun setLearnedLemma(word: String, lemma: String?) {
+        val key = word.lowercase()
+        val existing = learned[key] ?: return
+        learned[key] = existing.copy(lemma = lemma)
+    }
+    
     override fun learnedWords(): List<WordEntry> {
         return learned.values.sortedWith(compareByDescending<WordEntry> { it.frequency }.thenBy { it.word })
     }

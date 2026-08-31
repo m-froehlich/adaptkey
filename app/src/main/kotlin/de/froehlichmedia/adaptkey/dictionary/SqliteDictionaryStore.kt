@@ -188,8 +188,13 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * *by* the inflected form's row when that one runs its own check), so no separate reverse sweep is
      * needed here the way [linkLemma] needs one for a single freshly-learned word.
      *
-     * A future LLM-aware reprocessing pass (D-404, deferred) may supersede this conservative pass outright
-     * when a tier-3 model is already installed at the moment this migration runs - not yet implemented.
+     * D-404's with-LLM extension deliberately does *not* hook in here: this migration runs synchronously
+     * inside [init], which every store open goes through, so it must stay fast - heavy LLM inference has no
+     * place in it. Instead, [de.froehlichmedia.adaptkey.AdaptKeyService]'s own `maybeReprocessFamiliesAsync()`
+     * covers "a tier-3 model is already installed at migration time" too: [familyReprocessVersion] starts at
+     * 0 regardless of when the backend first became available, so the very first time a real backend is
+     * built after this migration ran - on this store open or any later one - the same backfill pass this
+     * conservative migration's own "LLM newly installed" trigger uses runs there instead, off-thread.
      */
     private fun ensureLearnedLemmaColumn(database: SQLiteDatabase) {
         val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_LEARNED)", null).use { cursor ->
@@ -425,6 +430,35 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
     
+    /**
+     * D-404: the with-LLM family-reprocessing version last applied to this store, or 0 if never run -
+     * mirrors [bundledContentVersion]'s own versioning scheme, but for
+     * [de.froehlichmedia.adaptkey.AdaptKeyService]'s own `maybeReprocessFamiliesAsync()` backfill pass
+     * instead of a bundled reseed. "0" covers both a store that predates D-404 entirely and one where a
+     * tier-3 model has simply never been installed yet - either way, the pass has genuinely never run.
+     *
+     * @return the recorded version, or 0 if none is recorded yet
+     */
+    fun familyReprocessVersion(): Int {
+        db.rawQuery("SELECT value FROM $TABLE_META WHERE key = ?", arrayOf(META_KEY_FAMILY_REPROCESS_VERSION)).use { cursor ->
+            return if (cursor.moveToFirst()) cursor.getString(0).toIntOrNull() ?: 0 else 0
+        }
+    }
+    
+    /**
+     * Records the family-reprocessing version this store now holds, so it is not run again until the
+     * constant is bumped further.
+     *
+     * @param version the version to record
+     */
+    fun setFamilyReprocessVersion(version: Int) {
+        val values = ContentValues().apply {
+            put("key", META_KEY_FAMILY_REPROCESS_VERSION)
+            put("value", version.toString())
+        }
+        db.insertWithOnConflict(TABLE_META, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+    }
+    
     override fun putBigram(previousWord: String, word: String, count: Long) {
         putBigramInternal(TABLE_BIGRAMS, previousWord, word, count)
     }
@@ -510,16 +544,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
     }
     
-    /**
-     * D-404: sets (or clears, when [lemma] is null) an already-learned word's own base-form link directly -
-     * the Learned Words editor's own "Grundform" dropdown, letting a power user manually correct or remove a
-     * link the conservative lookup missed or got wrong. A plain column update, touching nothing else about
-     * the row (frequency, category, last-touched); a no-op when [word] is not currently a learned entry.
-     *
-     * @param word the learned word to (re)link (any case)
-     * @param lemma the base form's own key to link to, or null to clear an existing link
-     */
-    fun setLearnedLemma(word: String, lemma: String?) {
+    override fun setLearnedLemma(word: String, lemma: String?) {
         val values = ContentValues().apply { put("lemma", lemma) }
         db.update(TABLE_LEARNED, values, "wkey = ?", arrayOf(word.lowercase()))
     }
@@ -1256,6 +1281,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         private const val META_KEY_INSTALLED_PACK_VERSION = "installed_pack_version"
         private const val META_KEY_LEARNED_CLEANUP_VERSION = "learned_cleanup_version"
         private const val META_KEY_BIGRAM_CLEANUP_VERSION = "bigram_cleanup_version"
+        private const val META_KEY_FAMILY_REPROCESS_VERSION = "family_reprocess_version"
         
         // Upper bound on autocorrect candidates scanned per keystroke (bounds worst-case latency).
         private const val CANDIDATE_LIMIT = 2000

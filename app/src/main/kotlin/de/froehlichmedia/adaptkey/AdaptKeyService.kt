@@ -71,6 +71,7 @@ import de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog
 import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
 import de.froehlichmedia.adaptkey.dictionary.PendingLearnStore
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
+import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.TokenRepair
 import de.froehlichmedia.adaptkey.emoji.EmojiDataset
 import de.froehlichmedia.adaptkey.emoji.EmojiDatasetLoader
@@ -108,6 +109,8 @@ import de.froehlichmedia.adaptkey.language.SuggestedLanguages
 import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
 import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
 import de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation
+import de.froehlichmedia.adaptkey.prediction.Tier3FamilyApplier
+import de.froehlichmedia.adaptkey.prediction.Tier3FamilyRequest
 import de.froehlichmedia.adaptkey.prediction.Tier3Orchestrator
 import de.froehlichmedia.adaptkey.prediction.Tier3Outcome
 import de.froehlichmedia.adaptkey.prediction.Tier3Result
@@ -782,9 +785,50 @@ class AdaptKeyService : InputMethodService() {
                     onnxProvider = built
                     tier3 = Tier3Orchestrator(built)
                     tier3Async = true
+                    maybeReprocessFamiliesAsync()
                 }
             }
         }.start()
+    }
+    
+    /**
+     * D-404 (with-LLM path): the "LLM installed is a state, not a history" backfill - runs once per
+     * language store, the first time a real tier-3 backend becomes available while that store's own
+     * [SqliteDictionaryStore.familyReprocessVersion] is still behind [FAMILY_REPROCESS_VERSION]. Called every
+     * time [loadTier3ProviderAsync] actually builds a backend (every fresh service instance that finds a
+     * model already installed, not only a genuinely fresh import), which is what makes this one mechanism
+     * cover both trigger conditions from the design: "LLM newly installed" (the very next time the backend
+     * is built after the import) and "LLM already installed at migration time" (the version starts at 0
+     * regardless of when the backend first became available, so the first opportunity to check it - here,
+     * not inside [SqliteDictionaryStore]'s own synchronous `init {}` migration, which must stay fast since
+     * every store open goes through it - runs the pass). A cheap no-op on every later startup once the
+     * version has already been bumped.
+     *
+     * Every learned word still missing a category or a lemma link is reprocessed - a plain word-by-word
+     * loop, no original sentence context available for a backfilled word (see [Tier3FamilyRequest]'s own
+     * KDoc on why that is fine). Runs entirely on [tier3Executor], one store and one word at a time however
+     * long that takes - a one-time backfill, not a per-keystroke path, so no staleness/sequence guard is
+     * needed the way [refreshSuggestions]'s own tier-3 dispatch has one.
+     */
+    private fun maybeReprocessFamiliesAsync() {
+        val provider = onnxProvider ?: return
+        val sqliteStores = stores.values.filterIsInstance<SqliteDictionaryStore>()
+        tier3Executor.execute {
+            for (store in sqliteStores) {
+                if (store.familyReprocessVersion() >= FAMILY_REPROCESS_VERSION) {
+                    continue
+                }
+                store.learnedWordsWithTimestamp()
+                    .filter { it.lemma == null || it.partsOfSpeech.isEmpty() }
+                    .forEach { entry ->
+                        val result = runCatching { provider.predictFamily(Tier3FamilyRequest(entry.word)) }.getOrNull()
+                        if (result != null) {
+                            Tier3FamilyApplier.apply(store, result)
+                        }
+                    }
+                store.setFamilyReprocessVersion(FAMILY_REPROCESS_VERSION)
+            }
+        }
     }
     
     /**
@@ -5227,12 +5271,44 @@ class AdaptKeyService : InputMethodService() {
                 LearnOutcome.PENDING
             }
         }
+        dispatchFamilyLearning(word, outcome)
         // D-246: shift the two-word trigram context in lockstep, oldest value first.
         previousPreviousWord = previousWord
         previousWord = word
         val record = LearnRecord(word, context, contextContext, outcome)
         rememberForBackspaceUnlearn(record)
         return record
+    }
+    
+    /**
+     * D-404 (with-LLM path): dispatches the family-learning task for [word] on [tier3Executor] when a real
+     * tier-3 backend is present and this call genuinely wrote something ([LearnOutcome.LEARNED]/
+     * [LearnOutcome.PROMOTED]) - "with LLM, always learn the whole family" (as opposed to the non-LLM path's
+     * purely conservative, lookup-only linking already applied via [DictionaryStore.learn]'s own
+     * `categoryHint`). A no-op with the inert [NoopTier3Provider] ([onnxProvider] is only non-null once a
+     * real backend has actually been built - see [loadTier3ProviderAsync]) or when [outcome] made no write
+     * ([LearnOutcome.SKIPPED]/[LearnOutcome.PENDING] - nothing yet worth enriching).
+     *
+     * [dictionaryStore]/[onnxProvider] are captured here on the calling (main) thread before dispatching, so
+     * the background task never reads either reassignable field directly once queued - mirrors
+     * `refreshSuggestions()`'s own orchestrator-capture pattern (a later language switch or model
+     * removal must not make an in-flight background task write into the wrong store or crash on a closed
+     * one). [Tier3Provider.predictFamily] is synchronous and heavy, like [Tier3Provider.predict] itself, so
+     * it must never run on this (the IME's) calling thread.
+     *
+     * @param word the word just learned (its own canonical casing)
+     * @param outcome this call's own [learnWord]/[learnWordStrong] outcome
+     */
+    private fun dispatchFamilyLearning(word: String, outcome: LearnOutcome) {
+        if (outcome != LearnOutcome.LEARNED && outcome != LearnOutcome.PROMOTED) {
+            return
+        }
+        val provider = onnxProvider ?: return
+        val store = dictionaryStore
+        tier3Executor.execute {
+            val result = runCatching { provider.predictFamily(Tier3FamilyRequest(word)) }.getOrNull() ?: return@execute
+            Tier3FamilyApplier.apply(store, result)
+        }
     }
     
     /**
@@ -5428,6 +5504,7 @@ class AdaptKeyService : InputMethodService() {
         val categoryHint = if (word.first().isUpperCase() && !tokenSentenceStart) PartOfSpeech.NOUN else null
         dictionaryStore.learn(word, context, contextContext, categoryHint = categoryHint)
         PendingLearnStore.clear(this, word)
+        dispatchFamilyLearning(word, LearnOutcome.LEARNED)
         previousPreviousWord = previousWord
         previousWord = word
         rememberForBackspaceUnlearn(LearnRecord(word, context, contextContext, LearnOutcome.LEARNED))
@@ -6089,6 +6166,10 @@ class AdaptKeyService : InputMethodService() {
         // can still reach - a small, cheap bound, not tuned against any particular repro; five comfortably
         // covers "typed a fragment, hit Enter by accident a few times while reaching for Backspace instead".
         private const val RECENT_LEARN_HISTORY_SIZE = 5
+        
+        // D-404: bumped only if the family-reprocessing algorithm/prompt changes meaningfully enough to be
+        // worth re-running against every already-processed store - see maybeReprocessFamiliesAsync().
+        private const val FAMILY_REPROCESS_VERSION = 1
         
         // D-177: converts AdaptSettings.pendingBlacklistExpiryDays (whole days) to milliseconds.
         private const val DAY_MILLIS = 24 * 60 * 60 * 1000L

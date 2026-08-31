@@ -22,4 +22,10 @@ class NoopTier3ProviderTest {
         val result = NoopTier3Provider.predict(Tier3Request("wor", null, "das wor"))
         assertEquals(Tier3Result.EMPTY, result)
     }
+    
+    @Test
+    fun `D-404 always predicts the empty family result`() {
+        val result = NoopTier3Provider.predictFamily(Tier3FamilyRequest("Hund"))
+        assertEquals(Tier3FamilyResult.EMPTY, result)
+    }
 }
