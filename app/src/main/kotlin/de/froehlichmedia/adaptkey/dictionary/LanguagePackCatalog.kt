@@ -232,7 +232,50 @@ object LanguagePackCatalog {
             // rebuilt, `LanguagePackCatalog` version 31 -> 32. No new tests (data-only; `lemma` still
             // has zero code readers - this remains groundwork for D-404 Tier 1). `versionCode` 377 ->
             // 378, `versionName` `"1.0.73"` -> `"1.0.74"`. Not yet device-confirmed.
-            version = 32
+            //
+            // §322 (v1.0.75): D-404 Tier 1, the "Wortfamilien" project - complete German noun/verb
+            // paradigms (Genitiv/Dativ/Akkusativ Singular, Plural, Dativ Plural for nouns; Präsens x6/
+            // Präteritum x6/Partizip II/Imperativ Sg+Pl for verbs), extending §320/§321's lemma-linking
+            // groundwork from "link what already exists" to "generate and add what's missing". First
+            // attempt was a from-scratch rule engine (genus.py: article-cooccurrence heuristic against
+            // `bigram.tsv`; deklination.py/plural.py: strong/weak-declension + plural-class rules;
+            // konjugation.py: strong/weak conjugation + a curated per-verb override table for the
+            // genuinely ambiguous durch-/um-/über-/unter-/voll-/hinter-/wieder- separable-or-not
+            // prefixes, `praefix_overrides.py`) - each component went through several real-bug-found-
+            // and-fixed rounds against live corpus data (documented in-line in the scripts themselves),
+            // but plural-class assignment in particular kept surfacing new exception classes faster than
+            // rules could be added (German plural choice is often lexical, not derivable from spelling),
+            // so on explicit user instruction the approach pivoted: `wiktextract`'s German Wiktionary
+            // extract (kaikki.org, MIT-licensed tool / CC BY-SA-licensed content, same licence family as
+            // this project's existing Wikipedia-derived `dict.tsv`/`bigram.tsv`) is now the *primary*
+            // source for both nouns (`extract_wiktionary_nouns.py` -> `wiktionary_nomen.tsv`, 119,779
+            // nouns with genus+genitiv+plural) and verbs (`extract_wiktionary_verbs.py` ->
+            // `wiktionary_verben.tsv`, 14,412 verbs with full conjugation) - `nomen.py`/`verben.py` each
+            // check the Wiktionary table first and fall back to the hand-built rule engine only for
+            // words missing there. Explicitly rejected: bulk-importing the ~91,559 Wiktionary nouns
+            // entirely absent from `dict.tsv` - only 2 of them have any `bigram.tsv` occurrence at all,
+            // meaning essentially none of that pool has a real frequency signal or corpus relevance:
+            // this project stayed scoped to completing paradigms of already-present lemmas, not growing
+            // the vocabulary itself. New-row frequency uses a lemma-frequency ratio calibrated from each
+            // POS's own already-linked pairs (nouns: median 0.355 from 14,976 pairs; verbs: median 0.417
+            // from 191 pairs); collision rule: never write a form that already exists anywhere in
+            // `dict.tsv` under any POS. The verb write surfaced a real class of candidate-list
+            // contamination missed by the earlier validation passes - preterite-plural/participle/
+            // Konjunktiv-II forms of already-known strong verbs (`wurden`/`waren`/`worden`,
+            // `misslangen`, `gestünden`) and zu-infinitives of separable verbs being mistaken for their
+            // own base infinitives - caught and fixed over six write-verify-revert rounds (a generalised
+            // "does this word end in a long enough known-strong-verb inflected form" suffix check,
+            // replacing an earlier fixed-prefix-list approach that missed compound/double-prefix cases
+            // like `nachvollzogen`); final random-sample spot check (70 rows) came back error-free. Also
+            // added 8 more strong verbs missing from the original hand-curated table along the way
+            // (schlingen/misslingen/heben/empfinden/schleißen/trügen/gebären/schreiten), each confirmed
+            // against real `dict.tsv` forms before adding, not guessed. Net result: `dict.tsv` 119,701 ->
+            // 158,073 rows (+33,390 noun forms, +4,982 verb forms, all with a `lemma` link), 153,091 of
+            // them lemma-linked. `dictionaries/de/version.txt` 32 -> 33, pack rebuilt and verified by
+            // unzipping it back and byte-comparing `dict.tsv`, `LanguagePackCatalog` version 32 -> 33.
+            // No new tests (data-only; `lemma` still has zero code readers - remains groundwork).
+            // `versionCode` 378 -> 379, `versionName` `"1.0.74"` -> `"1.0.75"`. Not yet device-confirmed.
+            version = 33
         ),
         Entry(
             Language.GREEK,

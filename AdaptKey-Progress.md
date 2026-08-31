@@ -415,7 +415,15 @@ non-trivial changes).
      own already-narrow "regular case only" scope (D-115/D-125/D-252, which only ever *protect*, never
      generate, and explicitly exclude strong/ablaut forms). Deliberately **not** folded into the D-402
      cleanup round above - needs its own dedicated design discussion later, comparable in weight to
-     D-353/D-410.
+     D-353/D-410. **That design discussion happened (2026-08-30): a full phased plan for generating -**
+     **not merely linking - every verb's and noun's complete paradigm now lives in its own file,**
+     [`AdaptKey-Plan-Wortfamilien.md`](AdaptKey-Plan-Wortfamilien.md) - deliberately deferred, not started,
+     at the user's own explicit request to prioritise other work first. Confirmed there: no gender field
+     exists anywhere in the schema today (`WordEntry`/`PartOfSpeech` checked directly), a real blocker for
+     noun declension specifically; methodology is rule-based generation + curated exception tables +
+     sampling, not the individual-review-of-every-candidate approach the two prerequisite sweeps below used
+     (confirmed infeasible at this project's estimated 300,000+ candidate-form scale). Read that file before
+     picking this up, don't re-derive the plan from scratch.
   2. **A lighter cross-reference/lemma-link approach** - keep both inflected forms as separate dictionary
      rows, but link them so ranking/A-01's override-protection logic can tell "same word family" apart from
      "coincidentally similar, unrelated word" (today nothing distinguishes those two cases at all). More
@@ -800,6 +808,60 @@ non-trivial changes).
   this backlog cleanup. `git diff --stat`: 6 lines (5 insertions, 1 deletion). `dictionaries/de/version.txt`
   29 -> 30, pack rebuilt, `LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
+  yet device-confirmed.
+
+- **§322 (v1.0.75): D-404 Tier 1, the "Wortfamilien" project - complete German noun/verb paradigms**
+  **generated and added, not just linked.** Extends §320/§321's lemma-linking groundwork from "link what
+  already exists" to "generate and add what's missing": full noun declension (Genitiv/Dativ/Akkusativ
+  Singular, Plural, Dativ Plural) and full verb conjugation (Präsens x6, Präteritum x6, Partizip II,
+  Imperativ Singular+Plural), for every already-present lemma without one, each new row lemma-linked via
+  D-412's column as a direct byproduct of generation. First attempt was a from-scratch rule engine:
+  `genus.py` (noun gender via `eine`/`einer`=feminine, `das`=neuter-if-present-at-any-count-since-real-
+  masculines never co-occur with it, `ein`/`einem`/`eines`=masculine-by-elimination otherwise - `der`
+  deliberately never trusted alone, since it also marks feminine Genitiv/Dativ), `deklination.py`/
+  `plural.py` (strong/weak declension + plural-class rules), `konjugation.py` (strong/weak conjugation +
+  a curated per-verb override table, `praefix_overrides.py`, for the ~150 individually-reviewed cases
+  where durch-/um-/über-/unter-/voll-/hinter-/wieder- genuinely can't be classified as separable-or-not
+  from the prefix alone - e.g. `übertragen` stays unhandled, `unternehmen` is always inseparable,
+  `wiederfinden` always separable). Each component went through several real-bug-found-and-fixed rounds
+  against live corpus/reference data (documented in-line in the scripts themselves - epenthesis gaps,
+  sibilant-collapse rules, Präteritopräsentia's suppletive forms, false-friend prefix matches like
+  `erben`/`Beispiel` that only *look* prefixed), but noun plural-class assignment in particular kept
+  surfacing new exception classes faster than rules could close them (German plural choice is often
+  lexical, not derivable from spelling), so on explicit user instruction the approach pivoted: the
+  German Wiktionary extract via `wiktextract`/kaikki.org (MIT-licensed tool, CC BY-SA-licensed content -
+  same licence family this project's `dict.tsv`/`bigram.tsv` already come from) is now the *primary*
+  source for both nouns (`extract_wiktionary_nouns.py` -> `wiktionary_nomen.tsv`, 119,779 nouns with
+  genus+genitiv+plural) and verbs (`extract_wiktionary_verbs.py` -> `wiktionary_verben.tsv`, 14,412 verbs
+  with full conjugation); `nomen.py`/`verben.py` check the Wiktionary table first, falling back to the
+  hand-built rule engine only for words missing there (~38% of noun lemmas / ~57% of verb lemmas by word
+  count found in Wiktionary, but ~64%/higher by frequency weight - common words are disproportionately
+  covered). Explicitly rejected on the user's own reflection: bulk-importing the ~91,559 Wiktionary nouns
+  entirely absent from `dict.tsv` - cross-checked against `bigram.tsv` and only 2 of them have any
+  occurrence there at all, meaning that pool carries essentially no real frequency signal; the project
+  stayed scoped to completing existing lemmas' paradigms, not growing the vocabulary itself. New-row
+  frequency: lemma-frequency × a ratio calibrated from each POS's own already-linked pairs (nouns: median
+  0.355 from the 14,976 §320/§321 pairs; verbs: median 0.417 from 191 pairs). Collision rule: never write
+  a form already present anywhere in `dict.tsv` under any POS. The verb write surfaced real candidate-
+  list contamination the earlier validation passes had missed - preterite-plural/participle/Konjunktiv-II
+  forms of already-known strong verbs (`wurden`/`waren`/`worden`, `misslangen`, `gestünden`) and zu-
+  infinitives of separable verbs, both classes being mistaken for their own base infinitives - found and
+  fixed over six write-verify-revert-refix rounds; the eventual fix generalised a fixed-prefix-list
+  exclusion check into "does this word end in a long-enough known-strong-verb inflected form, regardless
+  of what precedes it", which also closed compound/double-prefix cases the fixed list structurally
+  couldn't reach (`nachvollzogen` = nach+vollzogen). Final random-sample spot check (70 rows) came back
+  fully error-free. 8 more strong verbs turned up missing from the original hand-curated table along the
+  way and were added, each confirmed against real `dict.tsv`-attested forms first, not guessed:
+  `schmelzen`/`verderben`/`gedeihen`/`weichen`/`schwellen`/`erlöschen`/`bergen`/`gleichen`/`streichen`/
+  `schleichen`/`preisen`/`erwägen`/`winden`/`schinden`/`sprießen`/`reiben`/`hauen`/`stechen`/`schwören`/
+  `schleifen`/`treten`/`werben`/`fallen`/`ringen`/`schreiten`/`gebären`/`schlingen`/`misslingen`/`heben`/
+  `empfinden`/`schleißen`/`trügen`. Net result: `dict.tsv` 119,701 -> 158,073 rows (+33,390 noun forms,
+  +4,982 verb forms), 153,091 of them now lemma-linked (was 14,976). `git status`-clean otherwise -
+  `bigram.tsv`/`hints.tsv` untouched, confirmed by hash. `dictionaries/de/version.txt` 32 -> 33, pack
+  rebuilt and verified by unzipping it back and byte-comparing `dict.tsv` against the source, plus a
+  `version.txt` content check; `LanguagePackCatalog` version 32 -> 33. No new tests (data-only; `lemma`
+  still has zero code readers - remains groundwork for whatever eventually reads it). 1064 unit tests
+  unchanged, all green (via JDK 21). `versionCode` 378 -> 379, `versionName` `"1.0.74"` -> `"1.0.75"`. Not
   yet device-confirmed.
 
 - **§321 (v1.0.74): the noun-inflection-linking project completed end to end - every remaining**
