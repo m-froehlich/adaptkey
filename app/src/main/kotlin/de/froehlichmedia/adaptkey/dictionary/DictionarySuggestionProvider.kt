@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.dictionary
 
 import de.froehlichmedia.adaptkey.language.GermanRules
 import de.froehlichmedia.adaptkey.language.LanguageRules
+import de.froehlichmedia.adaptkey.suggestion.Acronym
 import de.froehlichmedia.adaptkey.suggestion.Correction
 import de.froehlichmedia.adaptkey.suggestion.EditDistance
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
@@ -523,6 +524,18 @@ class DictionarySuggestionProvider(
     private fun bestCorrection(input: String, previousWord: String?, maxCost: Int): CandidateCost? {
         val token = input.lowercase()
         if (token.length < MIN_AUTOCORRECT_LENGTH) {
+            return null
+        }
+        // D-404-followup: a word typed entirely in capitals ("ETF", "AVD") is never autocorrected away,
+        // known or not, and regardless of how confident/frequent a candidate looks - typing in capitals is
+        // itself the user's own explicit, deliberate signal that this is an acronym, not a typo. Checked
+        // against [input] (the original typed casing), not [token] (already folded to lower-case above),
+        // and ahead of every other branch below, including the isKnownWord/shouldOverrideKnownWord one -
+        // this is an absolute veto, not merely a higher bar the way D-403's own learnedCasingOf exemption
+        // is (that one only protects a word already learned; an acronym must never be corrected away even
+        // on its very first, not-yet-learned typing - see AdaptKeyService.learnThresholdFor's own identical
+        // Acronym.isAcronym check for the matching "promotes at the ordinary threshold" half of this).
+        if (Acronym.isAcronym(input)) {
             return null
         }
         val folded = Umlaut.fold(token)

@@ -815,6 +815,36 @@ non-trivial changes).
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
 
+- **§325 (v1.0.78): D-404-followup - acronyms ("ETF"/"AVD") are never autocorrected away and learn at the**
+  **ordinary threshold.** User's own worry directly confirmed as a real, currently-reproducible bug before
+  this fix - not hypothetical: probed the real bundled German dictionary (a throwaway test, deleted after
+  use) and found typing `"etf"` was silently autocorrected to `"etc"` (cost-1 QWERTZ-adjacent, far more
+  frequent) on every single attempt, meaning the acronym's own W-02 pending counter could never even begin
+  to move through ordinary typing - it would never have been learnable at all. New shared, pure
+  `suggestion.Acronym.isAcronym()` (at least two letters, every one uppercase - the deliberate, explicit
+  "this is an acronym" signal a user gives by typing that way) used at two call sites, kept in lockstep
+  rather than duplicated: `DictionarySuggestionProvider.bestCorrection()` (backs `autocorrectFor`/
+  `bestCorrectionFor`/`highConfidenceCorrection`) now vetoes autocorrect against an acronym outright -
+  checked against the original typed casing, ahead of every other branch, an absolute veto stronger than
+  D-403's own `learnedCasingOf` exemption since it also protects the very first, not-yet-learned typing, not
+  only an already-learned word. `AdaptKeyService.learnThresholdFor()` (W-02) now checks the acronym signal
+  before either existing compound-suspicion signal, so an acronym promotes after the ordinary two
+  repetitions rather than the four a suspected-compound token needs - its embedded capitals are what *make*
+  it an acronym, not evidence of a missing space. Third part of the user's own three-part request turned out
+  to need no code change at all: confirmed (and cited an existing test proving it) that a later lower-case
+  typing already resolves to, and ranks by, the learned entry's own casing over any differently-cased
+  bundled variant sharing the same key (D-264's own `unigramsByPrefix`/`entryOf` merge - the exact
+  `"MSCI"`-vs-`"Msci"` case already regression-tested). Deliberately never silent auto-substitution on
+  commit either way, by design (A-01's own "explicit input is never silently changed" principle) - confirmed
+  directly with the user, who wanted exactly this (a prioritised chip, not a silent rewrite). Accepted
+  trade-off, confirmed with the user: a stuck Caps Lock disables ordinary typo-autocorrection for as long as
+  it stays engaged, matching how other mainstream keyboards already treat all-caps input. 10 new tests
+  (`AcronymTest` 7, `DictionarySuggestionProviderTest` +3, including a direct reproduction of the real
+  `"etf"`->`"etc"` bug pinned with synthetic data so it stays pinned independent of the live dictionary's
+  own future contents). 1122 unit tests total (was 1112), all green (via JBR JDK 21, both
+  `:app:assembleRelease` and `:app:testDebugUnitTest` verified). `versionCode` 381 -> 382, `versionName`
+  `"1.0.77"` -> `"1.0.78"`. Spec gained new §40. Not yet device-confirmed.
+
 - **§324 (v1.0.77): D-404 Tier 3, with-LLM path - whole-family learning + the unified reprocessing**
   **backfill.** Closes out D-404's own explicit "with LLM, always learn the whole family" requirement
   (§323's non-LLM path stays exactly as it was - this is purely additive). `Tier3Provider` gained a second

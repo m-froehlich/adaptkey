@@ -296,6 +296,39 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-404-followup reproduces the real reported bug - an unlearned acronym must not be autocorrected away`() {
+        // Confirmed against the real bundled German dictionary before this fix: typing "etf" (never yet
+        // learned, so not protected by D-403's own learnedCasingOf() check at all) was silently
+        // autocorrected to "etc" on every single attempt - a cost-1 QWERTZ-adjacent, far more frequent real
+        // word - which meant "ETF" could never even accumulate a pending count through ordinary typing, let
+        // alone reach W-02's promotion threshold. Reproduced here with a small, synthetic pair so the fix is
+        // pinned independently of the live dictionary's own contents ever changing.
+        store.putWord(WordEntry("etc", 50_000L))
+        
+        assertNull(provider.autocorrectFor("ETF", null))
+    }
+    
+    @Test
+    fun `D-404-followup an acronym is never autocorrected away even when typed lower-case`() {
+        // The acronym veto is keyed off the original typed casing, not the lower-cased lookup token -
+        // still applies as long as the whole token was typed in capitals.
+        store.putWord(WordEntry("avs", 50_000L))
+        
+        assertNull(provider.autocorrectFor("AVD", null))
+    }
+    
+    @Test
+    fun `D-404-followup the acronym veto does not suppress correction of an ordinary lower-case typo`() {
+        // Regression guard: confirms the new Acronym.isAcronym(input) check is scoped to fully-uppercase
+        // input only - an ordinary lower-case typo (D-38's own "dasy" -> "dass" case) must still
+        // autocorrect exactly as before.
+        store.putWord(WordEntry("das", 1000L))
+        store.putWord(WordEntry("dass", 50L))
+        
+        assertEquals("dass", provider.autocorrectFor("dasy", null))
+    }
+    
+    @Test
     fun `D-114 D-353 a noun-tagged candidate at a low confidence is never offered, however good its edit cost`() {
         // Reproduces the reported bug: "vorhin" is missing from the dictionary entirely, and "Virgin" (an
         // English-proper-noun artefact of the German Wikipedia corpus, tagged NOUN like the real

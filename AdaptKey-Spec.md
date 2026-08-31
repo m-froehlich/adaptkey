@@ -1712,6 +1712,50 @@ sentence` defaults to empty - acceptable, since the request is really "lemmatise
 
 ---
 
+## 40. Acronym Protection - Never Autocorrected, Learns at the Ordinary Threshold (D-404-followup)
+
+A word typed entirely in capitals ("ETF", "AVD" - at least two letters, so a lone capitalised initial does
+not count) is the user's own deliberate, explicit signal for "this is an acronym" - recognised by a small,
+shared, pure shape check, `suggestion.Acronym.isAcronym()`, with no dictionary lookup at all. Confirmed as a
+genuine, currently-reproducible bug before this fix, not a hypothetical: run against the real bundled German
+dictionary, typing `"etf"` was silently autocorrected to `"etc"` (a common, cost-1-QWERTZ-adjacent word) on
+*every* attempt - since the acronym was never yet learned, W-02's own promotion counter for it could never
+even begin to move (each commit became "etc", not "etf"), so the acronym could never be learned through
+ordinary typing at all, no matter how many times the user retyped it.
+
+Two call sites share this one check, deliberately kept in lockstep rather than duplicated:
+
+- `DictionarySuggestionProvider.bestCorrection()` (backs `autocorrectFor`/`bestCorrectionFor`/
+  `highConfidenceCorrection` - A-01/A-07's single choke point) refuses outright to ever autocorrect an
+  acronym away - checked against the *original* typed casing, ahead of every other branch including the
+  ordinary known-word-override check, and regardless of how confident or how much more frequent a rival
+  candidate looks. This is an absolute veto, stronger than D-403's own `learnedCasingOf` exemption (which
+  only protects a word already learned) - an acronym is protected on its very first, not-yet-learned typing
+  too, which is the exact case the reproduced bug fell through.
+- `AdaptKeyService.learnThresholdFor()` (W-02) checks the acronym signal first, ahead of both existing
+  compound-suspicion signals (`hasEmbeddedCapital`/`looksLikeUnsplitCompound`) - an acronym is never treated
+  as a suspected unsplit compound (its embedded capitals are exactly what make it an acronym, not evidence
+  of a missing space, the same embedded-capital shape `hasEmbeddedCapital` alone cannot tell apart), so it
+  promotes after the ordinary two repetitions (`LEARN_THRESHOLD`) rather than four
+  (`COMPOUND_LEARN_THRESHOLD`).
+
+Once learned this way, the acronym is found and offered normally under a later lower-case typing too - no
+special handling needed, already an existing property of the store/suggestion design: a word's lookup key is
+always its lower-cased form regardless of stored casing (`wkey`), so `"etf"` and `"ETF"` resolve to the same
+row, and the suggestion filter (S-02) only ever drops a candidate that is an *exact* (case-sensitive) match of
+the current input - `"ETF"` therefore still surfaces as an ordinary, unfiltered, high-priority suggestion chip
+when `"etf"` is typed later, exactly like any other completion. Deliberately not silently auto-substituted for
+the user on commit, consistent with A-01's own "explicit input is never silently changed" principle applied in
+the other direction - the user taps the chip (or keeps typing) to get the correct casing, the same way any
+other suggestion is accepted.
+
+Accepted trade-off, confirmed with the user: a stuck Caps Lock would make every subsequent word match this
+same all-uppercase shape, disabling ordinary typo-autocorrection for as long as it stays engaged - matches
+how other mainstream keyboards already treat all-caps input, and the user explicitly weighed this against the
+alternative (acronyms permanently vulnerable) and preferred it.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

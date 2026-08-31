@@ -124,6 +124,7 @@ import de.froehlichmedia.adaptkey.settings.LanguagePacksActivity
 import de.froehlichmedia.adaptkey.settings.SettingsActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
+import de.froehlichmedia.adaptkey.suggestion.Acronym
 import de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
 import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
@@ -5153,12 +5154,25 @@ class AdaptKeyService : InputMethodService() {
      * auto-split more aggressively while typing. A false positive here just delays an ordinary word's
      * promotion by a couple more repetitions, not a real loss - traded deliberately for fewer incorrectly
      * glued-together compounds ending up in the learned-words list.
-     * 
+     *
+     * D-404-followup: checked first, ahead of both compound signals - a fully-uppercase token
+     * ([Acronym.isAcronym]) is never a suspected unsplit compound (its embedded capitals are exactly what
+     * *makes* it an acronym, not evidence of a missing space), so it always gets the ordinary
+     * [LEARN_THRESHOLD] regardless of what either compound signal below would otherwise say. Without this,
+     * "ETF"/"AVD"-style acronyms needed [COMPOUND_LEARN_THRESHOLD] repetitions to promote purely because
+     * [hasEmbeddedCapital] cannot tell "two words glued together" apart from "an acronym, entirely on
+     * purpose" - the same embedded-capital signal that correctly flags "MeinAuto" is a false positive for
+     * "ETF". [Acronym] is shared with [DictionarySuggestionProvider.bestCorrection]'s own identical check,
+     * which vetoes autocorrect against an acronym outright - see its own KDoc.
+     *
      * @param word the word being considered for learning (any case)
-     * @return [COMPOUND_LEARN_THRESHOLD] or the ordinary [LEARN_THRESHOLD]
+     * @return [LEARN_THRESHOLD] for an acronym, [COMPOUND_LEARN_THRESHOLD] for a suspected compound, or the
+     *         ordinary [LEARN_THRESHOLD] otherwise
      */
     private fun learnThresholdFor(word: String): Int {
-        return if (hasEmbeddedCapital(word) || provider.looksLikeUnsplitCompound(word)) {
+        return if (Acronym.isAcronym(word)) {
+            LEARN_THRESHOLD
+        } else if (hasEmbeddedCapital(word) || provider.looksLikeUnsplitCompound(word)) {
             COMPOUND_LEARN_THRESHOLD
         } else {
             LEARN_THRESHOLD
