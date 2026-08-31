@@ -186,7 +186,15 @@
     <string name="c06_model_import_failed">Import fehlgeschlagen.</string>
     <string name="c06_model_removed">Modell entfernt.</string>
     <string name="c06_model_no_browser">Kein Browser gefunden. Bitte die Datei manuell herunterladen und importieren.</string>
-    <string name="c06_model_privacy">Diese App besitzt keine Internet- und keine Speicher-Berechtigung. Der Download läuft über deinen Browser; die App liest nur die eine ausgewählte Datei.</string>
+    <string name="c06_model_privacy">Diese App besitzt keine Internet- und keine Speicher-Berechtigung. Der Download läuft über deinen Browser; die App liest nur den einmalig freigegebenen Ordner, um die heruntergeladene Datei automatisch zu finden.</string>
+
+    <!-- D-386: gemeinsame Download-Ordner-Auflösung (findet eine vom Browser umbenannte "(1)"/"(2)"-Dublette
+         und nimmt die neueste, damit der Import nie einen Datei-Picker braucht - nur die einmalige
+         Ordner-Freigabe) - genutzt vom Sprachpaket- und vom Tier-3-Modell-Import-Bildschirm. -->
+    <string name="d386_grant_folder_title">Download-Ordner freigeben</string>
+    <string name="d386_grant_folder_message">AdaptKey braucht einmaligen Zugriff auf den Ordner, in den dein Browser herunterlädt, um die Datei automatisch zu finden - auch wenn dein Browser sie umbenannt hat (z. B. „… (1)“), weil bereits eine gleichnamige Datei existierte. Das muss nur einmal freigegeben werden; jeder künftige Import nutzt es wieder. Bitte deinen Download-Ordner auswählen.</string>
+    <string name="d386_grant_folder_action">Ordner wählen</string>
+    <string name="d386_file_not_found">Datei im freigegebenen Ordner nicht gefunden. Bitte dort herunterladen, oder einen anderen Ordner freigeben und erneut versuchen.</string>
 
     <!-- D-280 Sprachpakete (Browser-Download + Datei-Import, eines pro Sprache außer Englisch). -->
     <string name="d280_pref_title">Sprachen</string>

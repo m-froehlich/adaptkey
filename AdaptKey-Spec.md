@@ -1326,25 +1326,56 @@ being startling. Refines G-06/D-337.
 
 ---
 
-## 30. Download Directory Control for Dictionaries / LLM Model (D-344)
+## 30. Download Directory Control for Dictionaries / LLM Model (D-344 / D-386)
 
-D-344: the app needs better control over where a browser-downloaded language pack or tier-3 LLM model
-file lands on the device, so AdaptKey can find it directly without the user having to manually locate it
-in a file picker. Three approaches to evaluate (not mutually exclusive):
+D-344's original three options are resolved: the app uses the Storage Access Framework, extended
+(D-386) with automatic folder-wide resolution rather than a single-file picker, so AdaptKey finds the
+downloaded language pack or tier-3 LLM model file itself - the user never has to manually hunt for it,
+including through the exact concrete complaint that prompted this: Samsung One UI's own download sandboxing
+routinely renamed the file (`"… (1)"`) or placed it somewhere the plain file picker's default view did not
+show, and the user reported getting lost in the picker even knowing what to look for.
 
-1. **HTTP header control.** Set `Content-Disposition: attachment; filename="xyz.zip"` and
-   `Content-Type: application/octet-stream` on the hosted download. Samsung One UI has been observed to
-   route files into an app-specific sandbox when these headers are absent or set to browser-inline types;
-   forcing `attachment`/`octet-stream` may keep the file in the standard Downloads directory instead.
-2. **Storage Access Framework / File-Picker API.** Use the platform's own `GET_CONTENT` or `OPEN_DOCUMENT`
-   intent so the user picks the file from wherever their browser (or file manager) placed it — no download
-   path guessing at all.
-3. **Raw repository path or Release Asset.** Host the archive directly at a stable, guessable URL within
-   the repository itself (e.g. a `Releases` asset), and let the app construct the expected local path
-   itself after the user's browser finishes downloading.
+**Chosen mechanism**: `ACTION_OPEN_DOCUMENT_TREE` (a folder grant), not `ACTION_OPEN_DOCUMENT` (a single-file
+pick) - the latter cannot expose sibling files or the parent directory at all, a hard SAF limitation, not an
+implementation gap (confirmed against the official Android documentation before choosing). Neither intent
+needs a manifest-declared `<uses-permission>` - both are user-driven system-picker consent flows, so the
+app's own "no internet, no storage permission" story is unaffected either way; the folder grant is a
+runtime-only choice the user makes once via the picker itself.
 
-Decision deferred — the approach (or combination) that works reliably on the widest range of devices and
-browsers should be chosen after practical testing.
+**One shared grant, both import screens.** `download.DownloadFolderStore` persists the granted tree URI
+(`takePersistableUriPermission`, survives restarts) in its own small `SharedPreferences` file - granted the
+first time *either* `LanguagePacksActivity` or `Tier3ModelActivity` needs it, reused by both from then
+on, so the user is asked only the one time regardless of which import they use first. Tapping "Import" with
+no folder granted yet shows a short rationale dialog (why a folder, not a file, is being requested) before
+launching the picker; `Intent.EXTRA_INITIAL_URI` best-effort-hints the picker to open directly in Downloads
+(silently ignored by a picker that does not recognise the hint's exact document-ID shape - never an error).
+
+**Resolution**: `download.DownloadFolderResolver.findNewestMatch()` lists every file directly inside the
+granted tree (`DocumentsContract.buildChildDocumentsUriUsingTree` + a query for
+`COLUMN_DOCUMENT_ID`/`COLUMN_DISPLAY_NAME`/`COLUMN_LAST_MODIFIED`) and hands the list to the pure, unit-tested
+`download.DuplicateDownloadMatcher` (D-386's own core): given the expected plain file name (the download
+URL's own last path segment, e.g. `"adaptkey-lang-de.zip"`/`"model_q4f16.onnx"`), it matches that name exactly
+or with a browser-style `" (N)"` suffix inserted directly before the extension (the near-universal
+Chrome/Edge/Firefox convention on Android), and returns the newest match by `COLUMN_LAST_MODIFIED`. No match
+found (the user downloaded to a different folder than the one granted) clears the stale grant and re-prompts
+- asking for a fresh folder is the only sensible recovery, so a stuck/wrong grant can never wedge the import
+flow permanently.
+
+**Cleanup (D-386's other half)**: after a successful import, `DownloadFolderResolver.
+deleteIfRecentlyCreated()` deletes the resolved file via `DocumentsContract.deleteDocument` when its own
+`COLUMN_LAST_MODIFIED` is no more than `DELETE_MAX_AGE_MILLIS` (60 seconds, the user's own explicit figure)
+old - a failed/aborted import leaves the file alone (for inspection), but a genuinely successful one cleans
+up immediately. This is deliberately what keeps `findNewestMatch` itself simple long-term: with the Downloads
+folder kept clear of stale copies, a *future* download of the same name rarely needs a duplicate suffix to
+begin with.
+
+**Considered and explicitly declined**: HTTP header control (`Content-Disposition`/`Content-Type` tuning on
+the hosted download, D-344's original option 1) - the app does not control every possible hosting surface a
+future community-contributed language pack might use (D-344's own motivating case was GitHub raw content
+URLs), and the SAF-based fix above works regardless of what headers a given host happens to send, making the
+header approach redundant rather than complementary. A raw-repository-path/Release-Asset approach (D-344's
+original option 3) was similarly superseded - the actual problem was never *where* the file is hosted, only
+*finding* it again after the browser saves it.
 
 ---
 

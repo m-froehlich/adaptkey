@@ -488,10 +488,9 @@ non-trivial changes).
     immediately) was agreed as the better-targeted fix for the *actual* pain point - not yet implemented,
     worth its own future backlog item if picked up. D-385's own "nothing may be lost" constraint is moot
     given this outcome (no migration ever happens).
-  - **D-386 - IN PROGRESS (2026-08-31).** Dictionary/model import should look for newer alternately-named
-    files near the one picked (e.g. a `(1)`-suffixed duplicate, common on Samsung One UI's own download
-    sandboxing) and prefer those if found; the picked file should be deleted after import if it is at most 60
-    seconds old. Directly follows from the D-344/D-385 discussion above - being actively designed.
+  - **D-386 - RESOLVED (§327 v1.0.79).** Dictionary/model import now finds a `(1)`-suffixed (or `(2)`, `(3)`,
+    ...) duplicate near the expected file and takes the newest, and deletes the imported file afterward when
+    it is at most 60 seconds old - see spec §30 for the full mechanism (shared with D-344, chosen together).
   - **D-387 - OPEN.** Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages - know
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
@@ -548,10 +547,10 @@ non-trivial changes).
     casing, confirmed via the existing `"MSCI"`-vs-`"Msci"` regression test), reconfirmed directly with the
     user this round.
 
-- **D-344 (download directory control, spec §30): the app's approach to ensuring browser-downloaded**
-  **language packs and LLM models land where AdaptKey can find them is not yet decided.** Three options
-  (HTTP header control, SAF/file-picker API, raw repo path) are documented in the spec; practical testing
-  is needed before choosing.
+- **D-344 (download directory control, spec §30) - RESOLVED by §327 (v1.0.79), together with D-386.** SAF
+  chosen over the other two options (HTTP header control, raw repo path) - see spec §30 for the full
+  mechanism (an `ACTION_OPEN_DOCUMENT_TREE` folder grant, shared by both import screens, resolved
+  automatically per import via `download.DownloadFolderResolver`).
 
 - **D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54), with one open question.** The
   broader scan for Wikipedia-extraction-noise entries (fragments, obscure acronyms, markup tokens) that §345
@@ -971,6 +970,38 @@ non-trivial changes).
   29 -> 30, pack rebuilt, `LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests
   unchanged, all green (via JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not
   yet device-confirmed.
+
+- **§327 (v1.0.79): D-344/D-386 implemented together - duplicate-download-file resolution via a**
+  **once-granted folder tree, not a single-file picker.** Verified feasibility against the official Android
+  documentation before implementing (`WebFetch`/`WebSearch`, not guessed): `ACTION_OPEN_DOCUMENT` cannot
+  expose sibling files or the parent directory at all - a hard SAF limitation - so finding a browser-renamed
+  `"(1)"` duplicate genuinely requires `ACTION_OPEN_DOCUMENT_TREE` (a folder grant) instead; confirmed
+  neither intent needs a manifest-declared permission (corrected a wrong assumption raised mid-discussion
+  that the tree approach would need one - it does not, same "user-driven system picker, no
+  `<uses-permission>`" model as the single-file picker already in use). User's own explicit design call,
+  after weighing a simpler "just always delete, rely on a clean folder" alternative: go with the more robust
+  tree approach anyway, since "der ganze Ansatz ist schon nicht benutzerfreundlich" and it should not be made
+  harder than necessary - still deletes after import too, as originally asked.
+  New `download` package: `DuplicateDownloadMatcher` (pure - matches a file's exact name or a `" (N)"`-suffixed
+  duplicate, returns the newest by last-modified; unit-tested including case-sensitivity, no-extension names,
+  multi-digit suffixes, and unrelated-similar-prefix rejection) + `DownloadCandidate`; `DownloadFolderStore`
+  (Android glue - persists the granted tree URI via `takePersistableUriPermission`, shared by both import
+  screens so the grant is asked for only once regardless of which screen needs it first); `DownloadFolderResolver`
+  (Android glue - lists a tree's children via `DocumentsContract`, resolves the newest match, deletes it
+  after import when no older than the new `DELETE_MAX_AGE_MILLIS` = 60,000ms per the user's own figure; the
+  age comparison itself is split into a pure, unit-tested `isRecentlyCreated`). Both `LanguagePacksActivity`
+  and `Tier3ModelActivity`'s own "Import" button rewired identically: reuse an existing grant, or show a
+  short rationale dialog before requesting one (`ACTION_OPEN_DOCUMENT_TREE`, best-effort `EXTRA_INITIAL_URI`
+  hint toward Downloads); resolve + import automatically, no file picker shown at all once a folder is
+  granted; no match found clears the stale grant and re-prompts (the only sensible recovery). `importPack`/
+  `importModel` no longer spawn their own background thread (the caller already runs on one). Localised the
+  new/updated strings (EN/DE/EL), including correcting `c06_model_privacy`'s now-stale "only reads the one
+  file you pick" claim. 14 new unit tests (`DuplicateDownloadMatcherTest` 10, `DownloadFolderResolverTest`
+  4). 1136 unit tests total (was 1122), all green (via JBR JDK 21, both `:app:assembleRelease` and
+  `:app:testDebugUnitTest` verified). `versionCode` 382 -> 383, `versionName` `"1.0.78"` -> `"1.0.79"`. Spec
+  §30 rewritten from "decision deferred" to the implemented mechanism; D-344/D-386 backlog bullets marked
+  resolved. Not yet device-confirmed - Samsung One UI's own sandboxing behaviour, the concrete complaint that
+  prompted D-386, is exactly the kind of OEM-specific quirk this environment cannot verify directly.
 
 - **§326 (still v1.0.78, no code change): two backlog decisions plus a documentation restructure.** (1)
   Discussed for/against directly with the user whether German should become a bundled language again
