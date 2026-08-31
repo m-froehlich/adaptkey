@@ -565,14 +565,13 @@ non-trivial changes).
   and raw-repo-path remain declined for the reasons given in spec §30) - see spec §30 for the current
   mechanism and D-413 for why the folder-grant attempt did not survive real-device testing.
 
-- **D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54), with one open question.** The
-  broader scan for Wikipedia-extraction-noise entries (fragments, obscure acronyms, markup tokens) that §345
-  called for is exactly what §301's probe did (see the D-402/D-306-followup/D-345 bullet above for the full
-  method and results). One loose end: `"Bri"` itself, the entry that originally prompted D-345, was checked
-  directly against the current `dict.tsv` before this round and was **not found** (case-insensitive) - either
-  it was already removed in some earlier untracked change, or the original report used different casing/
-  context that doesn't match a literal `"Bri"` row. Not chased further since the entry that would need fixing
-  isn't actually present to fix; worth a fresh look if the original wrong-suggestion is ever reproduced again.
+- **D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54); the "Bri" loose end struck**
+  **(2026-08-31, user's own call, no further action).** The broader scan for Wikipedia-extraction-noise
+  entries (fragments, obscure acronyms, markup tokens) that §345 called for is exactly what §301's probe did
+  (see the D-402/D-306-followup/D-345 bullet above for the full method and results). `"Bri"` itself, the
+  entry that originally prompted D-345, was checked directly against the current `dict.tsv` and was **not
+  found** (case-insensitive) - either already removed in some earlier untracked change, or the original
+  report used different casing/context that doesn't match a literal `"Bri"` row. Nothing left to track here.
 
 - **D-404 (inflected forms flooding the Learned Words list, and more broadly the bundled dictionaries too -**
   **e.g. "Kugel"/"Kugeln" both present, risking the plural's frequency silently outranking and replacing**
