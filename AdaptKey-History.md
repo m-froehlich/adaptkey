@@ -16452,3 +16452,32 @@ indicator. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 
 `"1.0.84"` -> `"1.0.85"`. Not yet device-confirmed - this is exactly the kind of change that should be
 validated on a real device early and repeatedly, per the design pass's own §5, since the muscle-memory
 adjustment is the one thing no rollback can undo cleanly after the fact.
+
+## §334 - D-416-followup: indicator-clearing and a long-press materialisation gap (v1.0.86)
+
+Two real bugs found on first real-device-style read-through, before any device test - both from the user's
+own live questions/observations, not a fresh device report yet:
+
+1. **The dot stayed lit until the whole following word finished, not just its first letter.** Root cause:
+   `pendingSpaceIndicator` is only recomputed inside `armShiftForNextWord()`, which is not called again
+   mid-word (by design - it only runs at word/delimiter boundaries). The materialisation point in `handleKey`'s
+   `CHAR` branch resolved the pending space correctly but never told the view the state had changed, so the
+   dot simply kept showing its last-pushed value for the rest of the word. Fixed with an explicit
+   `keyboardView?.pendingSpaceIndicator = false` right at the materialisation point, the instant
+   `composing.isEmpty()` stops being true.
+2. **`appendLongPressLetter()` - the entry point for a long-press alternative like `ä`/`ö`/`ü`/`ß` starting a
+   brand-new word - never materialised the deferred space at all.** Missed in the original round: D-351's own
+   KDoc already names `handleKey`'s `CHAR` branch and `appendLongPressLetter` as the two typing-triggered
+   entry points, but only the former got the D-416 materialisation logic. Concretely, typing `.` then
+   long-pressing a key for `ä` as the first letter of the next word would have produced no leading space at
+   all. Fixed by adding the identical live-derived materialisation check (and the same indicator-clear) to
+   this function too.
+
+Separately verified, not assumed: `handlePunctuationDelimiter`'s own digit-glue/punctuation-run cases (where
+no explicit `armShiftForNextWord` call follows) do **not** have the same staleness problem - `finalizeAndCommit`'s
+own internal call already runs unconditionally whenever it is entered with `composing` empty, which is exactly
+those cases, and correctly recomputes the indicator via the same wiring. No third bug there.
+
+No new tests (both fixes are Android `InputConnection`/view-state glue, this project's own accepted
+untestable category). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged.
+`versionCode` 389 -> 390, `versionName` `"1.0.85"` -> `"1.0.86"`. Not yet device-confirmed.

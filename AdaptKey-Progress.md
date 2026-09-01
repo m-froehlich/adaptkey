@@ -699,6 +699,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§334 (v1.0.86): D-416-followup - two real bugs found on first read-through, before any device test.**
+  (1) The space-key dot stayed lit for the whole following word, not just its first letter -
+  `pendingSpaceIndicator` is only recomputed inside `armShiftForNextWord()`, which does not run again
+  mid-word, so nothing told the view the pending state had already resolved. Fixed with an explicit
+  `keyboardView?.pendingSpaceIndicator = false` right at the materialisation point in `handleKey`'s `CHAR`
+  branch. (2) `appendLongPressLetter()` (the entry point for `ä`/`ö`/`ü`/`ß` and other long-press
+  alternatives starting a brand-new word) never materialised the deferred space at all - a real gap missed
+  in §333, since D-351's own KDoc already names this as the *other* typing-triggered entry point alongside
+  the `CHAR` branch. Fixed with the identical live-derived check. Verified, not assumed: the digit-glue/
+  punctuation-run cases inside `handlePunctuationDelimiter` do **not** share this staleness problem -
+  `finalizeAndCommit()`'s own internal `armShiftForNextWord` call already covers them. No new tests (Android
+  glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 389
+  → 390, `versionName` `"1.0.85"` → `"1.0.86"`. **Not yet device-confirmed.**
+
 - **§333 (v1.0.85): D-416 - A-12's auto-space after sentence punctuation, from eager to deferred - the**
   **biggest single behaviour change this project has shipped in one round.** Fully designed and agreed with
   the user across several rounds before any code was written - see

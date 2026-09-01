@@ -2447,6 +2447,11 @@ class AdaptKeyService : InputMethodService() {
                                 if (beforeChar != null && beforeChar in SENTENCE_PUNCTUATION) {
                                     ic.commitText(" ", 1)
                                 }
+                                // D-416: the pending state is resolved either way the instant a new word
+                                // actually starts composing - clear the space-key dot immediately rather than
+                                // leaving it lit until the whole word finishes (armShiftForNextWord is not
+                                // called again until the next delimiter/commit, so nothing else would clear it).
+                                keyboardView?.pendingSpaceIndicator = false
                                 // D-62: the caret may sit inside (or against) an already-committed word - reclaim
                                 // it so autocorrect/suggestions see the whole word, not just what gets typed from
                                 // here.
@@ -2646,6 +2651,14 @@ class AdaptKeyService : InputMethodService() {
             if (composing.isEmpty()) {
                 captureTokenContext(ic)
                 resetWordEndShift()
+                // D-416: a long-press alternative (e.g. ä/ö/ü/ß) starting a brand-new word materialises the
+                // deferred A-12 space too, exactly like an ordinary letter does in handleKey's CHAR branch -
+                // this is the other typing-triggered entry point D-351's own KDoc already names.
+                val beforeChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
+                if (beforeChar != null && beforeChar in SENTENCE_PUNCTUATION) {
+                    ic.commitText(" ", 1)
+                }
+                keyboardView?.pendingSpaceIndicator = false
                 reclaimSurroundingWord(ic, tap = null)
             }
             val upper = isUpperArmed()
