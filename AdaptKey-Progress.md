@@ -466,8 +466,14 @@ non-trivial changes).
   - **D-371 - RESOLVED (§351, v1.0.103).** A word ending in a digit is now only ever silently autocorrected
     at C-22's own Aggressive level - no dedicated setting, reuses the existing autocorrect-aggressiveness
     slider (see Current State for the mechanism).
-  - **D-372 - OPEN.** A diagonally-adjacent key (e.g. `g`/`b`) should also count as a keyboard neighbour for
-    correction purposes.
+  - **D-372 - RESOLVED (2026-09-01, no code change - already implemented).** Checked directly against
+    [KeyboardProximity.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/suggestion/KeyboardProximity.kt)
+    rather than assumed: `adjacent()` has computed full 8-directional (row/col both within 1) adjacency,
+    diagonals included, since this class was introduced - its own class KDoc already states this ("adjacent
+    when their keys touch horizontally, vertically or diagonally") and an existing test already covers a
+    genuine diagonal pair (`a`/`w`). The named example itself (`g`/`b`) was also directly confirmed adjacent
+    via a real Gradle test run, not just re-derived by hand - `KeyboardProximityTest` gained a permanent
+    regression pair (`g`/`b`, `h`/`b`) to keep it that way. No version bump - no behaviour changed.
   - **D-373 - OPEN.** Appending a hyphen after a *capitalised* word should re-arm auto-capitalisation for the
     next segment (mirrors B-02's own default for the general case).
   - **D-374 - RESOLVED by D-416 (§333).** The trailing auto-space is never physically written until a real
@@ -735,6 +741,33 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§352 (v1.0.104): D-421 - two Reclaim-chip/Google-Keep bugs, both root-caused from real device reports,**
+  **not guessed.** (1) **A field's very first caret position was never reclaimed.** Reported: tapping
+  directly into an already-typed word to focus a Google Keep field for the first time left it unreclaimed;
+  only a *second* tap onto a different word actually reclaimed. Root cause: `onStartInput`'s own D-152
+  comment already documents that a field's initial selection arrives only via `EditorInfo.initialSelStart`/
+  `initialSelEnd`, never guaranteed through a subsequent `onUpdateSelection` callback - the reactive D-62
+  reclaim was only ever wired to that callback, so the field's true first caret position, delivered a
+  different way, was simply never seen by it. Fixed in `onStartInputView`: when `initialSelStart ==
+  initialSelEnd` (a collapsed caret) and both are known, schedules the identical debounced reclaim (and the
+  chip's own visibility refresh) the reactive caret-move path already uses.
+  (2) **A visible flash: chip briefly shown, then hidden.** Reported on a *second* tap, immediately after
+  (1)'s own leftover unreclaimed chip was already on screen. Root cause traced one level deeper than the
+  report itself: `reclaimPossible()` (the chip's own visibility check) is re-evaluated live on *every*
+  `showSuggestions()` call, with no awareness of whether `reclaimWordAtCaretRunnable`'s own 100 ms debounce
+  is already scheduled to resolve the very same position - so the very first render after any caret move
+  could see "nothing composing yet, a word touches the caret" and show the chip, moments before the
+  scheduled automatic reclaim quietly resolved it. New `reclaimPending` flag (true only for the duration of
+  a *non-suppressed* field's own pending reclaim - never set at all in Gemini, where nothing is ever
+  automatically pending) closes this for any caret move, not merely the one the original report happened to
+  hit. Both fixes share one new `scheduleReclaimAndChipRefresh()` (extracted from `onUpdateSelection`'s own
+  existing scheduling code, now also called from `onStartInputView`) rather than a second, differently-timed
+  reclaim path. No new tests (Android/`InputConnection` glue, per this project's own convention - the
+  `reclaimPending` state machine itself has no pure/testable seam separate from the real callbacks). 1180
+  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-10 gained
+  the D-421 addendum. `versionCode` 407 → 408, `versionName` `"1.0.103"` → `"1.0.104"`. **Not yet
+  device-confirmed.**
 
 - **§351 (v1.0.103): D-371 - a digit-ending typed token is now only ever silently autocorrected at C-22's**
   **Aggressive level.** Design discussed and agreed with the user first (this project's own rule for

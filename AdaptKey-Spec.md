@@ -545,6 +545,22 @@ own frozen candidate-list snapshot, independent of the live suggestion recomputa
 text would otherwise trigger, plus open questions around Backspace-during-cycle and casing) with no
 sufficiently clean resolution yet. Left for a possible future round with a cleaner concept, not implemented.
 
+D-421: two further gaps, both reported from real Google Keep use. First, a field's own *initial* caret
+position - the very first tap that focuses a field and places the caret at the same time - is delivered only
+through `EditorInfo`'s `initialSelStart`/`initialSelEnd`, never guaranteed through a subsequent
+`onUpdateSelection` callback; the reactive reclaim was only ever wired to that callback, so a word already
+touching the caret the first time a field was focused was never reclaimed until the caret moved a *second*
+time. `onStartInputView` now schedules the same reclaim (and the chip's own visibility refresh) from the
+field's initial selection directly, through the identical debounced path the reactive caret-move case already
+uses. Second, because that first, never-auto-reclaimed position left the chip visibly showing, a subsequent
+tap into a *different* word - which does reclaim normally - read as the chip flashing on and immediately off,
+though the true general cause is broader than that one leftover case: the chip's own visibility check is
+re-evaluated live on every suggestion-bar render, with no awareness of whether an automatic reclaim for the
+same position is already scheduled and about to resolve a moment later. A new `reclaimPending` flag, set for
+the duration of the reactive reclaim's own debounce window (never set at all in a suppressed field, where
+nothing is ever automatically pending), now suppresses the chip for exactly that window, closing the race
+regardless of which caret move triggered it.
+
 ---
 
 ## 6. Capitalisation

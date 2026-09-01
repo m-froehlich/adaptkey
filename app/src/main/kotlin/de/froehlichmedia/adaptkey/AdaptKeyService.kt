@@ -309,6 +309,14 @@ class AdaptKeyService : InputMethodService() {
     // app. Flagged as a special case to keep watching, not a settled, final answer - see spec §33.
     private var reclaimOnCaretMoveSuppressed = false
     
+    // D-421: true from the moment a non-suppressed field's own automatic reclaim (reclaimWordAtCaretRunnable)
+    // is scheduled until reclaimWordAtCaret() actually runs (successfully or not) - read by reclaimPossible()
+    // so the manual chip never renders for a position the automatic reclaim is about to resolve on its own a
+    // moment later, only to immediately hide again. Never set while reclaimOnCaretMoveSuppressed is true
+    // (Gemini): there, nothing is ever "pending" since the automatic reclaim never runs at all, so the chip
+    // must stay immediately available.
+    private var reclaimPending = false
+    
     // D-158: whether the currently-focused field is a recognised email-address field - unlike urlMode,
     // this is *derived* from loginFieldKind (already reliably detected via InputType for D-142's own
     // purposes, see LoginFieldDetector's KDoc) rather than re-parsing EditorInfo a second time; re-derived
@@ -1469,18 +1477,8 @@ class AdaptKeyService : InputMethodService() {
             // KDoc for why (a cursor-handle drag reports many intermediate positions in quick succession, and
             // reactively reclaiming every one of them was observed corrupting - and, once that was fixed,
             // stalling - the Gemini search field's own drag-handle rendering).
-            // D-351: even the debounced reclaim above still calls setComposingRegion() once it fires, which
-            // stops the Gemini search field's own cursor-handle drag dead - see reclaimOnCaretMoveSuppressed's
-            // own field KDoc.
-            if (newSelStart == newSelEnd && !reclaimOnCaretMoveSuppressed) {
-                handler.removeCallbacks(reclaimWordAtCaretRunnable)
-                handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
-            }
-            // D-414-followup: scheduled unconditionally - see reclaimEnabledRunnable's own KDoc for why the
-            // chip's visibility must not share the reclaim runnable's own suppression gate above.
             if (newSelStart == newSelEnd) {
-                handler.removeCallbacks(reclaimEnabledRunnable)
-                handler.postDelayed(reclaimEnabledRunnable, RECLAIM_DEBOUNCE_MS)
+                scheduleReclaimAndChipRefresh()
             }
             return
         }
@@ -1569,8 +1567,35 @@ class AdaptKeyService : InputMethodService() {
      * does not move anything, so the ordering does not matter for correctness, but reads more naturally this
      * way (derive Shift for the position first, then act on it).
      */
+    /**
+     * D-421: schedules both the reactive D-62 reclaim itself and the manual chip's own visibility refresh,
+     * debounced identically - extracted so [onUpdateSelection] and [onStartInputView]'s own initial-focus
+     * reclaim (see that function's own D-421 note) share one single scheduling point rather than two
+     * independently-maintained copies of the same two `postDelayed` calls.
+     *
+     * D-351: the reclaim itself is skipped in a field where it is suppressed (Gemini); the chip's own
+     * refresh is scheduled unconditionally regardless - see [reclaimEnabledRunnable]'s own KDoc for why.
+     * [reclaimPending] is set only in the non-suppressed branch, matching that same distinction - see its
+     * own field KDoc.
+     */
+    private fun scheduleReclaimAndChipRefresh() {
+        if (!reclaimOnCaretMoveSuppressed) {
+            reclaimPending = true
+            handler.removeCallbacks(reclaimWordAtCaretRunnable)
+            handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
+        }
+        // D-414-followup: scheduled unconditionally - see reclaimEnabledRunnable's own KDoc for why the
+        // chip's visibility must not share the reclaim runnable's own suppression gate above.
+        handler.removeCallbacks(reclaimEnabledRunnable)
+        handler.postDelayed(reclaimEnabledRunnable, RECLAIM_DEBOUNCE_MS)
+    }
+    
     private fun reclaimWordAtCaret() {
         val ic = currentInputConnection ?: return
+        // D-421: this position's own automatic reclaim (if one was scheduled at all - see
+        // scheduleReclaimAndChipRefresh()) is no longer pending the moment this function actually runs,
+        // successfully or not - see reclaimPending's own field KDoc for why reclaimPossible() needs this.
+        reclaimPending = false
         // D-347/D-350: this call is now debounced (see reclaimWordAtCaretRunnable) - by the time it actually
         // fires, a keystroke may already have started a real composing token in the meantime, which this
         // function must not append reclaimed text onto.
@@ -1650,6 +1675,18 @@ class AdaptKeyService : InputMethodService() {
         // ordinary settings-screen change while the service stays resident, not only per field focus).
         reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
+        // D-421: a fresh field's own INITIAL caret position is delivered via EditorInfo only (D-152's own
+        // note in onStartInput above) - never guaranteed through a subsequent onUpdateSelection callback. A
+        // word already touching the caret the very first time a field is focused (e.g. tapping directly into
+        // existing text, which brings up the keyboard right where tapped) was previously never reclaimed
+        // until the caret moved a second time - onUpdateSelection's own reactive path was simply never
+        // reached for this first position at all. Reuses scheduleReclaimAndChipRefresh() - the exact same
+        // debounced scheduling the reactive path uses, not a second, differently-timed reclaim mechanism -
+        // for consistency with D-347/D-350's own debounce discipline, even though a single call here (not a
+        // rapid drag) would not strictly need one.
+        if (info != null && info.initialSelStart >= 0 && info.initialSelStart == info.initialSelEnd) {
+            scheduleReclaimAndChipRefresh()
+        }
         // D-142: a recognised login field shows its own credential suggestions immediately, even before
         // anything is typed (the user's usual identifiers, most-used first) - takes priority over the
         // generic D-36 paste chip below, which would otherwise compete for the same bar slot.
@@ -4399,6 +4436,9 @@ class AdaptKeyService : InputMethodService() {
         // on every fresh field, among other paths) keeps a debounced reclaim from ever firing into whatever
         // comes next.
         handler.removeCallbacks(reclaimWordAtCaretRunnable)
+        // D-421: the cancelled callback above will now never run to clear this itself - a stale "pending" for
+        // a position that no longer exists must not suppress the chip in whatever field/word comes next.
+        reclaimPending = false
         // D-414-followup: same reasoning as reclaimWordAtCaretRunnable above - a stale enabled-state push
         // must never land on whatever field/word comes next.
         handler.removeCallbacks(reclaimEnabledRunnable)
@@ -6000,9 +6040,18 @@ class AdaptKeyService : InputMethodService() {
      * function the real reclaim commits with, not a hand-rolled reimplementation of the same "is there a
      * word touching the caret" truth value that could silently drift out of sync with it. Purely a read,
      * never `setComposingRegion` - safe to call regardless of suppression.
+     *
+     * D-421: reported showing briefly, then hiding again, right after tapping into a *second* word (the
+     * first tap into a fresh field never auto-reclaimed at all - see [onStartInputView]'s own D-421 note -
+     * so the chip that call should have shown correctly stayed visible into the second tap, then vanished
+     * once *that* word's own reclaim resolved, reading as a flash). Root cause: this function is re-checked
+     * live on every [showSuggestions] call, with no awareness of [reclaimWordAtCaretRunnable]'s own debounce
+     * - so the very first render after a caret move could see "nothing composing yet, a word touches the
+     * caret" and show the chip, only for the scheduled automatic reclaim to resolve the same position a
+     * moment later and hide it again. [reclaimPending] closes that gap directly.
      */
     private fun reclaimPossible(ic: InputConnection): Boolean {
-        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField || composing.isNotEmpty()) {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField || composing.isNotEmpty() || reclaimPending) {
             return false
         }
         val extracted = ic.getExtractedText(ExtractedTextRequest(), 0) ?: return false

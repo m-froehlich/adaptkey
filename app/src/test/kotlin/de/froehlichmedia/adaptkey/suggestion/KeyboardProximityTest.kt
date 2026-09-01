@@ -28,6 +28,17 @@ class KeyboardProximityTest {
     }
     
     @Test
+    fun `D-372 g and b are already adjacent - g,h are the diagonal pair straddling b's stagger position`() {
+        // D-372's own named example: the column-index grid places "asdfghjkl" directly above "yxcvbnm" with
+        // no stagger offset, so `g` (row 2, col 4) sits in the same column as `b` (row 3, col 4) - already
+        // within the row/col <= 1 window this class has used since its introduction, confirmed adjacent here
+        // directly against the real compiled adjacency map, not just re-derived by hand. `h` (row 2, col 5)
+        // is the genuinely diagonal neighbour of `b` in this same grid and is already adjacent too.
+        assertTrue(KeyboardProximity.adjacent('g', 'b'))
+        assertTrue(KeyboardProximity.adjacent('h', 'b'))
+    }
+    
+    @Test
     fun `distant keys are not adjacent`() {
         assertFalse(KeyboardProximity.adjacent('q', 'p'))
         assertFalse(KeyboardProximity.adjacent('a', 'l'))
