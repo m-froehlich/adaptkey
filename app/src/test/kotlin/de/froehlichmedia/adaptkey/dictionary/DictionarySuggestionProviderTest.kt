@@ -913,6 +913,25 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-371 a digit-ending token is never silently corrected at MEDIUM, only offered as a suggestion`() {
+        // A trailing digit accidentally left on an otherwise unambiguous word (e.g. a stray autocomplete/
+        // stuck-key artefact, "hilfe9" for "hilfe") - the default (MEDIUM) level must not silently strip it.
+        store.putWord(WordEntry("hilfe", 1_000_000L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        
+        assertNull(provider.autocorrectFor("hilfe9", null))
+        assertTrue(provider.suggestionsFor("hilfe9", null).map { it.word }.contains("hilfe"))
+    }
+    
+    @Test
+    fun `D-371 the same digit-ending token auto-corrects at AGGRESSIVE`() {
+        val aggressiveStore = InMemoryDictionaryStore()
+        val aggressiveProvider = DictionarySuggestionProvider(aggressiveStore, aggressiveness = AutocorrectAggressiveness.AGGRESSIVE)
+        aggressiveStore.putWord(WordEntry("hilfe", 1_000_000L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        
+        assertEquals("hilfe", aggressiveProvider.autocorrectFor("hilfe9", null))
+    }
+    
+    @Test
     fun `D-411 a heavily and recently used personal word now outranks a moderately common bundled word`() {
         val now = 1_000_000_000L
         val boostStore = InMemoryDictionaryStore(clock = { now })

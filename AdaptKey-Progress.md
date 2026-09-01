@@ -463,8 +463,9 @@ non-trivial changes).
     quote should be removable, but only when a genuine preceding opening quote is nearby - the user
     explicitly flags the trap to avoid (wrongly deleting the space *before* the quoted word instead of
     *after* it). Open question posed directly: how far back to search for the matching opening quote?
-  - **D-371 - OPEN.** A word ending in a digit should never be silently autocorrected - possibly its own
-    setting/slider rather than a plain boolean; a chip offer is still fine.
+  - **D-371 - RESOLVED (§351, v1.0.103).** A word ending in a digit is now only ever silently autocorrected
+    at C-22's own Aggressive level - no dedicated setting, reuses the existing autocorrect-aggressiveness
+    slider (see Current State for the mechanism).
   - **D-372 - OPEN.** A diagonally-adjacent key (e.g. `g`/`b`) should also count as a keyboard neighbour for
     correction purposes.
   - **D-373 - OPEN.** Appending a hyphen after a *capitalised* word should re-arm auto-capitalisation for the
@@ -734,6 +735,29 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§351 (v1.0.103): D-371 - a digit-ending typed token is now only ever silently autocorrected at C-22's**
+  **Aggressive level.** Design discussed and agreed with the user first (this project's own rule for
+  non-trivial confidence/algorithm decisions): rather than a new one-off level check, reuses the exact same
+  **cap** mechanism D-354 already established in `CorrectionConfidence` for the structurally identical
+  "risky signal, but the chip offer should still stand" question (`prefixShiftsAway`) - a second, independent
+  mechanism for the same kind of decision was explicitly rejected as inconsistent. `forUnknownToken` gained a
+  `typedEndsInDigit` parameter and a new `DIGIT_SUFFIX_CONFIDENCE_CAP` (0.72), deliberately placed *above*
+  Aggressive's own auto-apply threshold (0.70) but *below* Medium's (0.75) - unlike `PREFIX_CONFIDENCE_CAP`
+  (0.55, below every level), this cap lets an otherwise high-confidence candidate still auto-apply, but only
+  at the most permissive level; every chip-offer threshold sits well under 0.70, so the chip is never
+  suppressed at any level. `capped()` now combines both caps via the lower of the two when both apply.
+  Wired in at `DictionarySuggestionProvider.candidateConfidence()` - the one function already shared between
+  the chip-offer filter and the auto-apply decision, so this needed no new call site - with a local comment
+  pointing at the new constant's own KDoc. A-01's known-word-override path (`forKnownWordOverride`) is
+  untouched: a digit-ending token is practically never itself a dictionary entry, so that path is not
+  reachable for this case. 4 new tests (`CorrectionConfidenceTest`: clears Aggressive but not Medium/Cautious
+  at maximal underlying confidence; a low-confidence digit-ending token still fails every level, proving the
+  cap only ever lowers a score, never raises one - `DictionarySuggestionProviderTest`: end-to-end at the
+  default Medium level vs. an Aggressive-configured provider). 1175 → 1179 unit tests, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §36 gained the D-371 addendum (and its own
+  header D-number list). `versionCode` 406 → 407, `versionName` `"1.0.102"` → `"1.0.103"`. **Not yet
+  device-confirmed.**
 
 - **§350 (v1.0.102): D-420 - an A-05 split at a sentence/line start now keeps its own capital.** Reported
   directly: "Komischerweise" typed as the first word of a line committed as "komischer weise" after A-05

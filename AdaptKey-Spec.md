@@ -1685,7 +1685,7 @@ to the "repair the live-arming path, don't reinstate the override" instruction a
 
 ---
 
-## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354/D-407)
+## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354/D-371/D-407)
 
 D-353: the dictionary autocorrect previously decided whether to trust a candidate through several
 independent, ad hoc gates evolved one at a time over many rounds - D-114/D-227's absolute frequency floor
@@ -1741,6 +1741,18 @@ deliberately broader than A-05's own `ver-`/`zer-`/`ent-`/etc. list (§7) - that
 where the variable separable prefixes (`über-`/`um-`/`durch-`/etc.) are deliberately excluded because each is
 also a common standalone word; that reasoning does not apply to a soft plausibility cap on a whole-word
 substitution, so the broader set is used here without contradiction.
+
+D-371: a typed token ending in a digit (a house/model/version number glued onto a word without a separating
+space, e.g. "Str12") gets its own cap in `CorrectionConfidence.forUnknownToken`, deliberately placed
+*differently* from D-354's: strictly between C-22's Medium and Aggressive auto-apply thresholds, rather than
+below every level's. A digit suffix is not evidence the whole token is a plausible unlisted word the way a
+recognised prefix is (D-354's reasoning) - it is simply a shape autocorrect has historically been too eager to
+silently strip - so an otherwise high-confidence candidate may still auto-apply, but only at Aggressive, the
+level whose user has explicitly opted into the most permissive silent-correction behaviour; Cautious/Medium
+are held to a chip offer only (the cap sits comfortably above every level's chip-offer threshold, so the chip
+is never suppressed either). Reuses C-22 rather than a dedicated setting - a deliberate choice discussed
+directly: this is a graduated risk-tolerance question C-22 already models end to end, not a genuinely
+independent axis that would need its own control.
 
 ---
 

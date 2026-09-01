@@ -16,13 +16,13 @@ class CorrectionConfidenceTest {
     
     @Test
     fun `forUnknownToken clamps to 1_0 for a frequency at or beyond the reference`() {
-        assertEquals(1.0, CorrectionConfidence.forUnknownToken(1, 1_000_000L, false, false))
+        assertEquals(1.0, CorrectionConfidence.forUnknownToken(1, 1_000_000L, false, false, false))
     }
     
     @Test
     fun `forUnknownToken a cost-2 candidate scores lower than an otherwise identical cost-1 one`() {
-        val cost1 = CorrectionConfidence.forUnknownToken(1, 1_000L, false, false)
-        val cost2 = CorrectionConfidence.forUnknownToken(2, 1_000L, false, false)
+        val cost1 = CorrectionConfidence.forUnknownToken(1, 1_000L, false, false, false)
+        val cost2 = CorrectionConfidence.forUnknownToken(2, 1_000L, false, false, false)
         assertTrue(cost2 < cost1)
     }
     
@@ -31,14 +31,14 @@ class CorrectionConfidenceTest {
         // "jahreb" -> "Jahren" (cost 1, frequency 2,000, tagged NOUN): must clear MEDIUM's own auto
         // threshold (0.75) - a flat noun penalty would have wrongly punished this exactly like a rare
         // proper-noun corpus artefact would be.
-        val score = CorrectionConfidence.forUnknownToken(1, 2_000L, true, false)
+        val score = CorrectionConfidence.forUnknownToken(1, 2_000L, true, false, false)
         assertTrue(score >= AutocorrectAggressiveness.MEDIUM.autoApplyThreshold, "expected >= 0.75, was $score")
     }
     
     @Test
     fun `forUnknownToken D-114 a rare noun stays below every aggressiveness level's auto threshold - Virgin`() {
         // "Virhin" -> "Virgin" (cost 1, frequency 62, tagged NOUN, D-114's own reported bug).
-        val score = CorrectionConfidence.forUnknownToken(1, 62L, true, false)
+        val score = CorrectionConfidence.forUnknownToken(1, 62L, true, false, false)
         for (level in AutocorrectAggressiveness.entries) {
             assertTrue(score < level.autoApplyThreshold, "expected < ${level.autoApplyThreshold} at $level, was $score")
         }
@@ -47,14 +47,48 @@ class CorrectionConfidenceTest {
     @Test
     fun `forUnknownToken D-227 a rare non-noun clears MEDIUM's auto threshold - übrigens`() {
         // "übrigebs" -> "übrigens" (cost 1, frequency 79, tagged OTHER, D-227's own reported bug).
-        val score = CorrectionConfidence.forUnknownToken(1, 79L, false, false)
+        val score = CorrectionConfidence.forUnknownToken(1, 79L, false, false, false)
         assertTrue(score >= AutocorrectAggressiveness.MEDIUM.autoApplyThreshold, "expected >= 0.75, was $score")
     }
     
     @Test
     fun `forUnknownToken D-28 a cost-2 correction still clears MEDIUM's auto threshold - komplezz to komplett`() {
-        val score = CorrectionConfidence.forUnknownToken(2, 40L, false, false)
+        val score = CorrectionConfidence.forUnknownToken(2, 40L, false, false, false)
         assertTrue(score >= AutocorrectAggressiveness.MEDIUM.autoApplyThreshold, "expected >= 0.75, was $score")
+    }
+    
+    @Test
+    fun `forUnknownToken D-371 a digit-ending token clears AGGRESSIVE's auto threshold but not MEDIUM or CAUTIOUS`() {
+        // An otherwise maximally-confident candidate (frequency at/beyond the reference, cost 1) for a
+        // typed token ending in a digit (e.g. "Str12") - the digit-suffix cap must let AGGRESSIVE still
+        // auto-apply while MEDIUM/CAUTIOUS are held back to a chip offer only.
+        val score = CorrectionConfidence.forUnknownToken(1, 1_000_000L, false, false, true)
+        assertTrue(
+            score >= AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold,
+            "expected >= AGGRESSIVE (${AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold}), was $score"
+        )
+        assertTrue(
+            score < AutocorrectAggressiveness.MEDIUM.autoApplyThreshold,
+            "expected < MEDIUM (${AutocorrectAggressiveness.MEDIUM.autoApplyThreshold}), was $score"
+        )
+        assertTrue(
+            score < AutocorrectAggressiveness.CAUTIOUS.autoApplyThreshold,
+            "expected < CAUTIOUS (${AutocorrectAggressiveness.CAUTIOUS.autoApplyThreshold}), was $score"
+        )
+        for (level in AutocorrectAggressiveness.entries) {
+            assertTrue(score >= level.chipOfferThreshold, "expected >= ${level.chipOfferThreshold} at $level, was $score")
+        }
+    }
+    
+    @Test
+    fun `forUnknownToken D-371 a low-confidence digit-ending token still fails to auto-apply at any level`() {
+        // The digit-suffix cap only ever lowers a score, never raises one - a candidate that would not have
+        // cleared MEDIUM anyway (D-114's own Virgin case) must not be pushed up to AGGRESSIVE's threshold
+        // just because the typed token also happens to end in a digit.
+        val score = CorrectionConfidence.forUnknownToken(1, 62L, true, false, true)
+        for (level in AutocorrectAggressiveness.entries) {
+            assertTrue(score < level.autoApplyThreshold, "expected < ${level.autoApplyThreshold} at $level, was $score")
+        }
     }
     
     @Test
@@ -113,7 +147,7 @@ class CorrectionConfidenceTest {
         // "aberkennen" (unknown, frequency-wise plausible: cost 1, no dictionary entry, corrected to the
         // far more frequent "anerkennen", frequency 165) - the exact motivating case for D-354. Must be
         // capped below every AutocorrectAggressiveness auto threshold, yet still clear every chip threshold.
-        val score = CorrectionConfidence.forUnknownToken(1, 165L, false, true)
+        val score = CorrectionConfidence.forUnknownToken(1, 165L, false, true, false)
         for (level in AutocorrectAggressiveness.entries) {
             assertTrue(score < level.autoApplyThreshold, "expected < ${level.autoApplyThreshold} at $level, was $score")
             assertTrue(score >= level.chipOfferThreshold, "expected >= ${level.chipOfferThreshold} at $level, was $score")

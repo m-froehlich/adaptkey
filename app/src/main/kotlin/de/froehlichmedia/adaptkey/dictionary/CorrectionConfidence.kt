@@ -30,6 +30,13 @@ import kotlin.math.ln
  * enough to silently apply, at any {@link AutocorrectAggressiveness} level. See
  * [PREFIX_CONFIDENCE_CAP]'s own KDoc for why a cap, not a factor.
  *
+ * D-371: a typed token ending in a digit (e.g. a house/model number glued onto a word) gets the same
+ * treatment in {@link #forUnknownToken}, via its own [DIGIT_SUFFIX_CONFIDENCE_CAP] - but this cap sits
+ * strictly between [AutocorrectAggressiveness.MEDIUM]'s and [AutocorrectAggressiveness.AGGRESSIVE]'s own
+ * auto-apply thresholds rather than below every level's like [PREFIX_CONFIDENCE_CAP], so an otherwise
+ * high-confidence candidate can still auto-apply, but only at the most permissive level - see that
+ * constant's own KDoc for the exact reasoning and numbers.
+ *
  * See {@link AutocorrectAggressiveness}'s own KDoc for the full worked calibration of every constant here
  * against the real regression corpus (`due`/`die`, `ddr`/`der`, `Ohren`/`Ihren`, `übrigens`, `Virgin`,
  * `komplezz`/`komplett`, `aberkennen`/`anerkennen`, ...).
@@ -43,11 +50,19 @@ object CorrectionConfidence {
      * @param candidateFrequency the candidate's own dictionary frequency
      * @param candidateIsNounLike whether the candidate is tagged [PartOfSpeech.NOUN] / [PartOfSpeech.PROPER_NOUN]
      * @param prefixShiftsAway [prefixShiftsAway]'s own result for this typed/candidate pair (D-354)
+     * @param typedEndsInDigit D-371: whether the typed token itself ends in a digit (e.g. `"Str12"`) - see
+     *        [DIGIT_SUFFIX_CONFIDENCE_CAP]'s own KDoc
      * @return the confidence in `[0, 1]`
      */
-    fun forUnknownToken(cost: Int, candidateFrequency: Long, candidateIsNounLike: Boolean, prefixShiftsAway: Boolean): Double {
+    fun forUnknownToken(
+        cost: Int,
+        candidateFrequency: Long,
+        candidateIsNounLike: Boolean,
+        prefixShiftsAway: Boolean,
+        typedEndsInDigit: Boolean
+    ): Double {
         val raw = costFactor(cost) * frequencyFactor(candidateFrequency, candidateIsNounLike)
-        return capped(raw, prefixShiftsAway)
+        return capped(raw, prefixShiftsAway, typedEndsInDigit)
     }
     
     /**
@@ -109,8 +124,18 @@ object CorrectionConfidence {
         return (ln(ratio) / ln(REQUIRED_OVERRIDE_RATIO)).coerceIn(0.0, 1.0)
     }
     
-    private fun capped(raw: Double, prefixShiftsAway: Boolean): Double {
-        return if (prefixShiftsAway) minOf(raw, PREFIX_CONFIDENCE_CAP) else raw
+    private fun capped(raw: Double, prefixShiftsAway: Boolean, typedEndsInDigit: Boolean = false): Double {
+        // D-371: the two caps are independent risk signals and combine via the lower of the two - a
+        // candidate can be capped by both a prefix shift and a digit-ending typo at once, and either one
+        // alone is already enough reason to withhold silent auto-apply below its own cap's own level.
+        var result = raw
+        if (prefixShiftsAway) {
+            result = minOf(result, PREFIX_CONFIDENCE_CAP)
+        }
+        if (typedEndsInDigit) {
+            result = minOf(result, DIGIT_SUFFIX_CONFIDENCE_CAP)
+        }
+        return result
     }
     
     private const val ADJACENT_COST = 1
@@ -163,4 +188,17 @@ object CorrectionConfidence {
         "mit", "nach", "ob", "um", "unter", "ver", "vor", "weg", "wider", "zer", "zu", "über", "voll",
         "wieder", "miss", "ur"
     )
+    
+    /**
+     * D-371: the ceiling [capped] clamps a digit-ending token's score to. Unlike [PREFIX_CONFIDENCE_CAP],
+     * this one sits *above* [AutocorrectAggressiveness.AGGRESSIVE]'s own auto threshold (0.70) but *below*
+     * [AutocorrectAggressiveness.MEDIUM]'s (0.75) - so a digit-ending token (e.g. `"Str12"`, a house/model
+     * number glued onto a word) can still be silently auto-corrected, but only at the most permissive
+     * [AutocorrectAggressiveness] level; [CAUTIOUS]/[MEDIUM] are left with only a chip offer (every chip
+     * threshold sits well below 0.70, so the chip is never suppressed by this cap either). This is a
+     * deliberately different placement than [PREFIX_CONFIDENCE_CAP] (which blocks auto-apply outright, at
+     * every level) - here the risk is judged tolerable, just only for a user who has explicitly opted into
+     * the most aggressive setting.
+     */
+    private const val DIGIT_SUFFIX_CONFIDENCE_CAP = 0.72
 }

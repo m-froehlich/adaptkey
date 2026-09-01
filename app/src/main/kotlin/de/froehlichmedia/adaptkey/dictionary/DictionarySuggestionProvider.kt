@@ -263,7 +263,17 @@ class DictionarySuggestionProvider(
         val isNounLike = entry?.partsOfSpeech?.any {
             it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN
         } ?: true
-        return CorrectionConfidence.forUnknownToken(cost, frequency, isNounLike, CorrectionConfidence.prefixShiftsAway(token, candidateLower))
+        // D-371: a digit-ending typed token (e.g. a house/model number glued onto a word, "Str12") caps the
+        // resulting confidence so it can only ever auto-apply at AGGRESSIVE - see
+        // CorrectionConfidence.DIGIT_SUFFIX_CONFIDENCE_CAP's own KDoc for the exact threshold placement.
+        val endsInDigit = token.isNotEmpty() && token.last().isDigit()
+        return CorrectionConfidence.forUnknownToken(
+            cost,
+            frequency,
+            isNounLike,
+            CorrectionConfidence.prefixShiftsAway(token, candidateLower),
+            endsInDigit
+        )
     }
     
     /**
