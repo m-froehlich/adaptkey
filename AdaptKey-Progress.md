@@ -771,7 +771,7 @@ non-trivial changes).
   initial-focus reclaim could matter for at all) never has a special chip to protect in the first place. No
   new tests (Android/`InputConnection` glue). 1191 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-10 gained the D-421-followup (v2) note.
-  `versionCode` 413 → 414, `versionName` `"1.0.109"` → `"1.0.110"`. **Not yet device-confirmed.**
+  `versionCode` 413 → 414, `versionName` `"1.0.109"` → `"1.0.110"`. **2026-09-01: device-confirmed working.**
 
 - **§357 (v1.0.109): D-378-followup (v2) - a second, real device log confirmed the exact same root-cause**
   **shape as D-373-followup (v2), just via the opener path instead of the hyphen path.** User's own log
@@ -793,7 +793,7 @@ non-trivial changes).
   that entry if this class of bug ever needs the same treatment again. No new tests (Android/`InputConnection`
   glue). 1191 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
   D-378 "Addendum to G-05" gained the (v2) note. `versionCode` 412 → 413, `versionName` `"1.0.108"` →
-  `"1.0.109"`. **Not yet device-confirmed.**
+  `"1.0.109"`. **2026-09-01: device-confirmed working.**
 
 - **§356 (v1.0.108): D-373-followup (v2) - the §355 diagnostic log immediately found the real gap: a**
   **flicker, not a functional failure.** User's own real-device log (`AdaptKeyShift` tag) traced end to end:
@@ -813,8 +813,8 @@ non-trivial changes).
   the next line's own generic re-derivation." D-378-followup's own diagnostic logging is left in place -
   still unexplained, no log for that one yet. No new tests (Android/`InputConnection` glue). 1191 unit tests
   unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's B-02 gained the
-  D-373-followup (v2) note. `versionCode` 411 → 412, `versionName` `"1.0.107"` → `"1.0.108"`. **User-log-**
-  **confirmed root cause; fix itself not yet re-tested on-device.**
+  D-373-followup (v2) note. `versionCode` 411 → 412, `versionName` `"1.0.107"` → `"1.0.108"`.
+  **2026-09-01: device-confirmed working** ("Top! Das hat funktioniert.").
 
 - **§355 (v1.0.107): D-373-followup and D-378-followup confirmed still broken after §354's broadening -**
   **temporary diagnostic logging added instead of a third blind patch.** Two full rounds of code-level fixes
