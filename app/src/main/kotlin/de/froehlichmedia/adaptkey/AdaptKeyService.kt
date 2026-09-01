@@ -401,6 +401,17 @@ class AdaptKeyService : InputMethodService() {
     private var tokenPreviousHyphenSegment: String? = null
     private var tokenPreviousHyphenSegmentAtSentenceStart = false
     
+    // D-373-followup (v2): true when captureTokenContext() just live-armed Shift for the D-373
+    // hyphen-propagation case - consumed by reclaimWordAtCaret() the same way shiftArmedByDelete already is,
+    // so its own subsequent armShiftForNextWord() call (D-313's reactive re-derivation, for a genuinely
+    // different reason) does not immediately overwrite it back to the generic "not a sentence start" answer.
+    // Root-caused from a real device log: the debounced D-62 reclaim fires ~100ms after the hyphen commits
+    // (composing is empty there too) and calls captureTokenContext() a second time, then armShiftForNextWord()
+    // right after silently clobbered what the first call had just armed - functionally invisible by the time
+    // the user actually typed the next letter (captureTokenContext() runs a third time, right at that
+    // keystroke, correctly re-arming again), but visibly flickered true->false on the keyboard in between.
+    private var tokenShiftLiveArmed = false
+    
     // D-142: the currently focused field's login-relevance, classified from EditorInfo in onStartInput.
     // Drives both the suggestion pipeline (the credential list instead of the dictionary for USERNAME/
     // EMAIL, nothing at all for PASSWORD) and what gets learned (see captureCredentialIfLoginField).
@@ -1633,7 +1644,15 @@ class AdaptKeyService : InputMethodService() {
             // re-derives Shift normally (D-313's own purpose).
             if (shiftArmedByDelete) {
                 shiftArmedByDelete = false
-            } else {
+            } else if (!tokenShiftLiveArmed) {
+                // D-373-followup (v2): captureTokenContext() just above may have already live-armed Shift
+                // for the D-373 hyphen-propagation case - re-deriving here (D-313's own reactive purpose)
+                // would silently overwrite that back to the generic "not a sentence start" answer, exactly
+                // mirroring the shiftArmedByDelete protection right above for the delete-driven case. Root-
+                // caused from a real device log: the debounced D-62 reclaim fires here ~100ms after a hyphen
+                // commits (composing is empty there too), so this was clobbering the arm every time, visibly
+                // flickering the keyboard's own Shift indicator true->false even though the *next* keystroke
+                // (which calls captureTokenContext() a third time, correctly) still ended up typed correctly.
                 armShiftForNextWord(ic)
             }
             // D-123 / D-416: skip the reset exactly once when this call is only the echo of a
@@ -5870,33 +5889,19 @@ class AdaptKeyService : InputMethodService() {
         }
         tokenPreviousHyphenSegment = previousSegment?.first
         tokenPreviousHyphenSegmentAtSentenceStart = previousSegment?.second == true
-        // D-373-followup (temporary diagnostic): reported still not working after the live-arm fix below -
-        // logs the exact inputs/decision so a real repro (adb logcat -s AdaptKeyShift:D, or Settings ->
-        // Diagnostics) shows whether captureTokenContext even sees the hyphen and the right previous
-        // segment, rather than guessing again. Remove once D-373-followup is confirmed fixed or the real
-        // gap is found here.
-        diag(
-            "AdaptKeyShift",
-            "captureTokenContext: before=\"$before\" tokenAfterHyphen=$tokenAfterHyphen " +
-                "tokenPreviousHyphenSegment=$tokenPreviousHyphenSegment " +
-                "tokenPreviousHyphenSegmentAtSentenceStart=$tokenPreviousHyphenSegmentAtSentenceStart " +
-                "shiftedBefore=${keyboardView?.shifted}"
-        )
         // D-373-followup: live-arms Shift too, mirroring CapitalisationEngine's own commit-time propagation
-        // - reported not working at all otherwise, since the first fix only ever changed the eventual
-        // committed casing, never what the keyboard shows armed while the word is still being typed. Scoped
-        // to the non-sentence-start branch only, deliberately: that one needs no dictionary lookup at all
-        // (the identical raw signal CapitalisationEngine.previousSegmentPropagates() itself uses for that
-        // branch), while the sentence-start branch needs the real dictionary noun/proper-noun check and stays
-        // commit-time-only for now - exactly like B-02's own pre-existing proper-noun exception already was,
-        // silently capitalising at commit without ever live-arming Shift either.
-        if (tokenPreviousHyphenSegment != null && !tokenPreviousHyphenSegmentAtSentenceStart &&
+        // - the first fix only ever changed the eventual committed casing, never what the keyboard shows
+        // armed while the word is still being typed. Scoped to the non-sentence-start branch only,
+        // deliberately: that one needs no dictionary lookup at all (the identical raw signal
+        // CapitalisationEngine.previousSegmentPropagates() itself uses for that branch), while the
+        // sentence-start branch needs the real dictionary noun/proper-noun check and stays commit-time-only
+        // for now - exactly like B-02's own pre-existing proper-noun exception already was, silently
+        // capitalising at commit without ever live-arming Shift either.
+        tokenShiftLiveArmed = tokenPreviousHyphenSegment != null && !tokenPreviousHyphenSegmentAtSentenceStart &&
             tokenPreviousHyphenSegment?.firstOrNull()?.isUpperCase() == true
-        ) {
+        if (tokenShiftLiveArmed) {
             keyboardView?.shifted = true
         }
-        // D-373-followup (temporary diagnostic): see the note above this function's own arm decision.
-        diag("AdaptKeyShift", "captureTokenContext: shiftedAfter=${keyboardView?.shifted}")
         tokenContextBefore = before
     }
     

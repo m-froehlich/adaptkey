@@ -990,6 +990,17 @@ real dictionary check and stays commit-time-only, exactly like B-02's own origin
 already was, silently capitalising at commit without ever live-arming Shift either - an existing, already-
 accepted asymmetry this follow-up does not change.
 
+D-373-followup (v2): a real device log showed the live-arm above was actually taking effect - the next
+letter *did* commit correctly capitalised - but the keyboard's own Shift indicator visibly flickered on then
+off in between, reading as "not working" even though the end result was right. Root cause: the debounced D-62
+reactive reclaim ([reclaimWordAtCaret]) fires ~100ms after the hyphen commits (composing is empty there too,
+the same trigger condition the live-arm above uses) and calls the same context-capture a second time - which
+re-arms Shift correctly - immediately followed by its own, differently-motivated re-derivation
+([armShiftForNextWord], D-313's reactive purpose for a caret landing on an existing word), which silently
+overwrote it back to the generic "not a sentence start" answer. A new one-shot flag, consumed exactly like the
+existing [shiftArmedByDelete] guard right next to it, tells that re-derivation to stand down when the arm it
+would otherwise clobber was this specific hyphen-propagation case.
+
 ### B-03 - Proactive Completion Of A Repeated Hyphen-Compound
 Each individual segment of a hyphen-joined chain is still learned/suggested exactly as B-01 already
 describes - unchanged. Independently, the whole chain itself (two segments, or more - "Rhein-Main-Gebiet" is

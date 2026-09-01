@@ -474,11 +474,12 @@ non-trivial changes).
     genuine diagonal pair (`a`/`w`). The named example itself (`g`/`b`) was also directly confirmed adjacent
     via a real Gradle test run, not just re-derived by hand - `KeyboardProximityTest` gained a permanent
     regression pair (`g`/`b`, `h`/`b`) to keep it that way. No version bump - no behaviour changed.
-  - **D-373 - REOPENED (2026-09-01).** §353's design and §354's live-arm broadening were both confirmed
-    still not fixed on-device, exact same repro, after two rounds of code-level fixes that traced correctly
-    on paper. §355 adds temporary diagnostic logging (`AdaptKeyShift` tag) rather than a third blind patch,
-    per this project's own rule to re-question the diagnosis after a negative device report rather than
-    keep patching the same theory - see Current State.
+  - **D-373 - RESOLVED (§356, v1.0.108).** The §355 diagnostic log immediately found the real gap: the
+    live-arm from §354 *was* correctly taking effect, but the debounced D-62 reclaim's own re-derivation
+    clobbered it moments later, then a third `captureTokenContext()` call (right at the actual keystroke)
+    silently re-armed it again - functionally correct by the time a letter committed, but visibly flickering
+    the keyboard's own Shift indicator in between, reading as broken. Fixed with a one-shot guard flag,
+    mirroring the existing `shiftArmedByDelete` pattern right next to it. See Current State for the mechanism.
   - **D-374 - RESOLVED by D-416 (§333).** The trailing auto-space is never physically written until a real
     next character resolves it, so there is structurally nothing left to strand or fail to clean up when a
     field is left (Google Keep or otherwise) - eliminated, not patched.
@@ -751,6 +752,27 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§356 (v1.0.108): D-373-followup (v2) - the §355 diagnostic log immediately found the real gap: a**
+  **flicker, not a functional failure.** User's own real-device log (`AdaptKeyShift` tag) traced end to end:
+  the hyphen commits (`armShiftForNextWordUnlessOpener` correctly leaves Shift alone/false, not a sentence
+  start) - ~100ms later the debounced D-62 reactive reclaim (`reclaimWordAtCaret`, fires because composing is
+  empty right after the hyphen too) calls `captureTokenContext()` a *second* time, which correctly live-arms
+  Shift for the hyphen-propagation case (§354's own fix) - but the very next line in that same function,
+  `armShiftForNextWord(ic)` (D-313's own reactive re-derivation, there for a completely different reason: a
+  caret landing on an existing word), immediately re-derives fresh and silently overwrites it back to `false`.
+  By the time the user actually pressed the next letter, `captureTokenContext()` ran a *third* time (the
+  ordinary CHAR-handler call site) and correctly re-armed it again - so the committed letter was capitalised
+  correctly the whole time, exactly as the user eventually noticed ("scheint effektiv zu greifen") - but the
+  keyboard's own Shift key visibly flickered on/off in the ~100ms window in between, reading as "not working"
+  on a first glance. Fixed with a new one-shot `tokenShiftLiveArmed` flag, set by `captureTokenContext()` and
+  consumed by `reclaimWordAtCaret()` exactly like the existing `shiftArmedByDelete` guard immediately above it
+  in the same function - the established pattern in this codebase for "a just-armed special case must survive
+  the next line's own generic re-derivation." D-378-followup's own diagnostic logging is left in place -
+  still unexplained, no log for that one yet. No new tests (Android/`InputConnection` glue). 1191 unit tests
+  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's B-02 gained the
+  D-373-followup (v2) note. `versionCode` 411 → 412, `versionName` `"1.0.107"` → `"1.0.108"`. **User-log-**
+  **confirmed root cause; fix itself not yet re-tested on-device.**
 
 - **§355 (v1.0.107): D-373-followup and D-378-followup confirmed still broken after §354's broadening -**
   **temporary diagnostic logging added instead of a third blind patch.** Two full rounds of code-level fixes
