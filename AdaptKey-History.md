@@ -16588,3 +16588,49 @@ Spec §32 (D-346) updated with a D-362 addendum describing the new visual treatm
 choice. No new tests (`SuggestionBarView` has no existing test file - Android view glue, this project's own
 established untestable category). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests
 unchanged. `versionCode` 393 -> 394, `versionName` `"1.0.89"` -> `"1.0.90"`. Not yet device-confirmed.
+
+## §339 - D-364: root-caused and fixed - the duplicate "Text" chip was a case-sensitive dedup bug (v1.0.91)
+
+User confirmed the bug still reproduces (`"Teyt"` -> two chips, both reading `"Text"`, both capitalised,
+exactly the first two ordinary-looking chips) and asked for a real investigation, not a guess. First
+hypothesis - tier-1 vs. tier-3 (mini-LLM) producing the same word in different casing via
+`SuggestionMerger.merge()`'s own case-sensitive map key - was traced all the way through
+(`Tier3ResponseParser.parse()` confirmed to apply zero case normalisation to the model's raw output) but
+ruled out directly by the user: tier-3 is not installed on their device. Their own follow-up detail - "es
+sind genau die ersten beiden Chips... beide vorne groß geschrieben" - repointed the trace at S-06 instead.
+
+**Real root cause, confirmed by reading the actual code, not assumed:** `SuggestionController.displayed()`
+seeds its own `alreadyShown` de-dup set from the verbatim chip's `input` and the pending-replacement chip's
+`replacement` - but `AdaptKeyService` deliberately **pre-capitalises** that replacement before ever calling
+`controller.update()` (D-111/D-112's own "preview the eventual committed form, including a case-only change,
+before it applies" reasoning, confirmed still present and load-bearing - simply stopping the pre-
+capitalisation would have silently broken that feature instead of fixing this one). Meanwhile `stableOrder`
+- fed from the ordinary tier-1 dictionary search - holds each word in its raw, **uncapitalised** canonical
+form throughout, by this class's own explicit design ("capitalising earlier would break S-02/S-03 identity",
+confirmed in `showSuggestions()`'s own KDoc). Confirmed directly against the actual German dictionary asset
+(`dictionaries/de/dict.tsv`): `text` is stored lowercase. So for `"Teyt"`, the pending-autocorrect preview
+computed and displayed `"Text"` (pre-capitalised) while the ordinary ranked list - independently finding the
+same underlying correction via its own search path - still held the raw `"text"`. `alreadyShown`'s
+comparison was case-sensitive, so `"text" !in {"Teyt", "Text"}` was true - the ordinary list's own entry was
+never recognised as the same word already shown, survived into `stableOrder`, and was itself capitalised to
+`"Text"` at render time by the exact same uniform per-item capitalisation `showSuggestions()` already applies
+to every ordinary suggestion - producing two visually identical chips from two structurally different code
+paths that had simply stopped recognising each other as the same word.
+
+**Fix, deliberately minimal and targeted at the actual comparison, not the casing convention itself:**
+`SuggestionController.displayed()`'s `alreadyShown` set and its membership check now compare `word.lowercase()`
+on both sides, rather than the raw strings - a plain string-level normalisation, not an application of the
+real §6 capitalisation rules, keeping this class's own explicit "free of any capitalisation/Android
+dependency" architecture intact. `pendingReplacement`'s pre-capitalisation (D-111/D-112) and
+`stableOrder`'s raw-word convention are both left completely unchanged - only the comparison used to decide
+"is this already shown" was wrong.
+
+New test (`SuggestionControllerTest`): `update("teyt", listOf(Suggestion("text", 5.0)), "Text")` now asserts
+`displayed()` yields exactly `["teyt", "Text"]`, not a third `"text"`/"Text" duplicate - reproduces the exact
+reported shape (differently-cased pending replacement vs. ordinary candidate) directly, without needing
+tier-3 or any Android dependency to exercise it. Every pre-existing `SuggestionControllerTest` case (S-06's
+own dedup test included, where the replacement and the ordinary candidate already shared identical casing)
+passes unchanged - confirms the fix only changes behaviour for the specific casing-mismatch case, not the
+already-correct exact-match case. 1147 -> 1148 unit tests, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-06 gained a short D-364 addendum. `versionCode`
+394 -> 395, `versionName` `"1.0.90"` -> `"1.0.91"`. Not yet device-confirmed.

@@ -95,6 +95,18 @@ class SuggestionControllerTest {
     }
     
     @Test
+    fun `D-364 the replacement chip is not duplicated by a differently-cased stableOrder entry`() {
+        // The caller pre-capitalises the pending-autocorrect preview (D-111/D-112) while stableOrder keeps
+        // the raw, uncapitalised canonical dictionary word - "text" (candidates) vs. "Text" (the pending
+        // replacement) must still be recognised as the same word.
+        val controller = controller()
+        controller.update("teyt", listOf(Suggestion("text", 5.0)), "Text")
+        
+        val items = controller.displayed()
+        assertEquals(listOf("teyt", "Text"), items.map { it.word })
+    }
+    
+    @Test
     fun `declineAutocorrect removes the verbatim chip`() {
         val controller = controller()
         controller.update("gu", listOf(Suggestion("gut", 5.0)), "gut")

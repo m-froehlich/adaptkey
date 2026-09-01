@@ -161,9 +161,16 @@ class SuggestionController(private val config: SuggestionConfig) {
             items.add(DisplayItem(text = "\"$input\"", kind = Kind.VERBATIM, word = input))
             items.add(DisplayItem(text = replacement, kind = Kind.NORMAL, word = replacement))
         }
-        val alreadyShown = items.mapTo(HashSet()) { it.word }
+        // D-364: compared case-insensitively - the caller pre-capitalises `replacement` (D-111/D-112's own
+        // "preview the eventual committed casing, including a case-only change" reason - see
+        // AdaptKeyService's own pending-computation KDoc), while stableOrder holds raw, uncapitalised
+        // canonical dictionary words throughout, per this class's own "capitalising earlier would break S-02/
+        // S-03 identity" design. A case-sensitive comparison here let the very same underlying word slip
+        // through as two separate chips - e.g. "text" still sitting in stableOrder was never recognised as
+        // the same word as the already-shown, already-capitalised "Text" replacement chip, so both rendered.
+        val alreadyShown = items.mapTo(HashSet()) { it.word.lowercase() }
         for (word in stableOrder) {
-            if (word !in alreadyShown) {
+            if (word.lowercase() !in alreadyShown) {
                 items.add(DisplayItem(text = word, kind = Kind.NORMAL, word = word))
             }
         }

@@ -434,6 +434,13 @@ Characters" guiding principle) - the latter takes precedence whenever both would
 actually wins at commit time - but it does not preview the rarer raw-coordinate fallback (T-02) or a
 high-certainty tier-3 capitalisation exception.
 
+D-364: the pending-replacement chip and S-01's own ordinary ranked list compare candidates
+case-insensitively when deciding whether a word is already shown - the replacement is previewed already
+cased as it would actually commit (D-111/D-112, directly above), while the ordinary list still holds each
+word in its raw, uncapitalised dictionary form; without this, the same underlying correction could appear
+twice (e.g. "Text" as the replacement, "text" - not yet recognised as the same word - as an ordinary
+suggestion too).
+
 ### S-07 - Next-Word Prediction
 A genuine next-word suggestion (not merely a completion of the current token) is offered before the next
 word is typed, using a bigram baseline elevated by tier-3 when available. When a personal (learned-only, no

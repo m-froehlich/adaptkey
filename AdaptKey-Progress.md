@@ -440,8 +440,11 @@ non-trivial changes).
     and protects the common "emoticon after a space or at message start" case, though not one glued directly
     onto a word with no space, e.g. `"Danke;)"`) but the user decided the remaining collision risk/complexity
     is not worth it for this feature - declined rather than implemented.
-  - **D-364 - OPEN.** Typing `"Teyt"` offers two separate chips for `"Text"` - a duplicate that should
-    collapse to one.
+  - **D-364 - RESOLVED (§339, v1.0.91).** Root cause confirmed by reading the actual code (first hypothesis,
+    tier-1 vs. tier-3 casing, was ruled out - the user has no tier-3 model installed): `SuggestionController.
+    displayed()`'s de-dup compared the pre-capitalised pending-replacement word ("Text") against `stableOrder`'s
+    raw-canonical words ("text") case-sensitively, so the same underlying correction slipped through as two
+    chips. Fixed with a case-insensitive comparison at that one point.
   - **D-365 - OPEN, a question not yet answered.** What frequency do seeded/bundled bigrams carry, and
     shouldn't a self-learned bigram always outweigh a seeded one?
   - **D-366 - OPEN.** A learned bigram's next-word prediction (S-07) works for the blank-slate case but is
@@ -711,6 +714,22 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§339 (v1.0.91): D-364 - root-caused and fixed: the duplicate "Text" chip was a case-sensitive dedup**
+  **bug, not tier-3.** First hypothesis (tier-1 vs. tier-3 producing the same word in different casing via
+  `SuggestionMerger.merge()`) traced all the way through and ruled out directly by the user - no tier-3 model
+  installed. Their own detail ("es sind genau die ersten beiden Chips... beide vorne groß geschrieben")
+  repointed the trace correctly: `SuggestionController.displayed()`'s `alreadyShown` de-dup compared the
+  pending-replacement chip's word (pre-capitalised by `AdaptKeyService`, D-111/D-112's own deliberate "preview
+  the eventual committed casing" reason) against `stableOrder`'s raw, uncapitalised canonical dictionary words
+  ("text" vs. "Text") case-sensitively - confirmed against the real dictionary asset that `text` is stored
+  lowercase. Fixed with a minimal, targeted change: the comparison itself is now case-insensitive
+  (`word.lowercase()` on both sides), not the underlying capitalisation convention, keeping
+  `SuggestionController`'s own "free of any capitalisation/Android dependency" design intact. New test
+  reproduces the exact reported shape directly (no tier-3/Android dependency needed to exercise it); every
+  pre-existing test (including the identical-casing dedup case) still passes unchanged. 1147 → 1148 unit
+  tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-06 gained a short addendum.
+  `versionCode` 394 → 395, `versionName` `"1.0.90"` → `"1.0.91"`. **Not yet device-confirmed.**
 
 - **§338 (v1.0.90): D-362 - the loading-indicator chip, from static/subtle to bold/large/animated.**
   D-346's original "…" was a plain 16sp italic grey `TextView`, easy to miss next to ordinary suggestions of
