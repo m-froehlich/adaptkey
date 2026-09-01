@@ -474,7 +474,7 @@ non-trivial changes).
     genuine diagonal pair (`a`/`w`). The named example itself (`g`/`b`) was also directly confirmed adjacent
     via a real Gradle test run, not just re-derived by hand - `KeyboardProximityTest` gained a permanent
     regression pair (`g`/`b`, `h`/`b`) to keep it that way. No version bump - no behaviour changed.
-  - **D-373 - RESOLVED (§353, v1.0.105).** A hyphen-chain segment now also capitalises when its own
+  - **D-373 - RESOLVED (§353 + D-373-followup §354, v1.0.105 + v1.0.106).** A hyphen-chain segment now also capitalises when its own
     predecessor was capitalised - hybrid design (user's own explicit call): a sentence-start predecessor
     needs an independent noun/proper-noun dictionary check, elsewhere the predecessor's capital is trusted
     directly. See Current State for the mechanism.
@@ -492,7 +492,7 @@ non-trivial changes).
     where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
     worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
     nothing else in the pipeline resolves the token at all.
-  - **D-378 - RESOLVED (§353, v1.0.105).** An opening quote/bracket typed with nothing composing no longer
+  - **D-378 - RESOLVED (§353 + D-378-followup §354, v1.0.105 + v1.0.106).** An opening quote/bracket typed with nothing composing no longer
     re-derives (and thereby disturbs) Shift at all - neither an auto-armed sentence-start capital nor an
     explicit Shift press gets clobbered any more. See Current State for the mechanism.
   - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
@@ -750,6 +750,32 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§354 (v1.0.106): three same-day device-reported follow-ups - §353's D-373/D-378 fixes were each too**
+  **narrow, plus a genuinely different D-421 flash path.** All from real device feedback right after §353/
+  §352 shipped; each re-diagnosed from the actual code path the report implied, not patched blind (this
+  project's own rule after a negative device report on an already-"fixed" point). **D-373-followup:** the
+  original fix only ever changed the eventual *committed* casing (`CapitalisationEngine`), never what Shift
+  shows armed while the segment is still being typed - a user watching the keyboard saw nothing happen.
+  `captureTokenContext()` now also live-arms Shift directly, but only for the non-sentence-start branch (no
+  dictionary lookup needed there); the sentence-start branch stays commit-time-only, matching how B-02's own
+  original proper-noun exception already behaved. **D-378-followup:** the original fix only guarded
+  `finalizeAndCommit`'s composing-*empty* branch - every other commit branch (split, merge, verbatim, the
+  ordinary word-commit path, the A-07 undo retry) still called `armShiftForNextWord` directly and still
+  clobbered Shift on an opening quote/bracket. New shared `armShiftForNextWordUnlessOpener(ic, delimiter)` -
+  every one of those call sites now funnels through it instead of calling `armShiftForNextWord` directly, so
+  a future new commit branch cannot reopen the same gap. **D-421-followup:** the reported flash survived
+  because it came from a genuinely different path than the one §352 fixed - tapping from one still-composing
+  word straight onto another reaches `onUpdateSelection`'s "external caret move while composing" branch
+  (D-406), which clears the abandoned word's `reclaimPending` along with its composing state and calls
+  `armShiftForNextWord` immediately, rendering the bar before any reclaim was ever scheduled for the *new*
+  position - `reclaimPending` alone cannot guard a reclaim that was never scheduled in the first place. That
+  branch now also calls `scheduleReclaimAndChipRefresh()` (gated on a genuinely collapsed caret) before its
+  own immediate re-arm, so a pending reclaim is already in place by the time the chip's own next render runs.
+  No new tests (all three are Android/`InputConnection` glue). 1191 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: B-02 gained the D-373-followup note, the D-378
+  "Addendum to G-05" gained its own follow-up note, S-10 gained the D-421-followup note. `versionCode`
+  409 → 410, `versionName` `"1.0.105"` → `"1.0.106"`. **Not yet device-confirmed.**
 
 - **§353 (v1.0.105): D-373 + D-378 + D-392 - three capitalisation fixes discussed and designed with the**
   **user first, D-390 dropped in the same discussion.** All four were raised together; design discussed

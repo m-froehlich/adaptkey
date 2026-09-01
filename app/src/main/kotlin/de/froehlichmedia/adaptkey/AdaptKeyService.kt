@@ -1544,6 +1544,18 @@ class AdaptKeyService : InputMethodService() {
         previousPreviousWord = null
         hyphenChain.clear()
         clearSuggestions()
+        // D-421-followup: schedules the same debounced reclaim/chip-refresh the "composing already empty"
+        // path below already uses for a fresh caret position - clearComposing() just above reset
+        // reclaimPending to false, so without this, the immediate armShiftForNextWord(ic) call right after
+        // renders the suggestion bar with reclaimPending still false and the position not yet reclaimed,
+        // showing the chip a moment before the (until now, never actually scheduled) reclaim quietly
+        // resolved it - reported directly, a flash on tapping from one already-composing word straight onto
+        // another. Called *before* armShiftForNextWord(ic) so its own showSuggestions() call already sees
+        // reclaimPending correctly set. Gated on a genuinely collapsed caret, mirroring the "composing
+        // already empty" path's own identical guard - a real external selection is not a reclaim target.
+        if (actualStart == actualEnd) {
+            scheduleReclaimAndChipRefresh()
+        }
         // D-406: this is the *other* place (besides reclaimWordAtCaret(), D-313) a caret can land on a
         // genuinely new position with no keystroke of its own - reached only while composing was still
         // active when the external move happened (reclaimWordAtCaret's own debounced path only ever fires
@@ -3586,14 +3598,7 @@ class AdaptKeyService : InputMethodService() {
             }
             // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
             pendingMergeChar = spaceInferred
-            // D-378: an opening quote/bracket must not disturb whatever Shift state already correctly
-            // reflects the real position - re-deriving here would either wrongly de-arm an already-correct
-            // auto-arm (SentenceBoundary sees the opener itself as "still mid-token", not yet followed by
-            // real whitespace) or silently clobber an explicit Shift press the user made specifically to
-            // capitalise the word this opener is about to introduce.
-            if (delimiter.length != 1 || delimiter[0] !in OPENING_PUNCTUATION) {
-                armShiftForNextWord(ic)
-            }
+            armShiftForNextWordUnlessOpener(ic, delimiter)
             return delimiter.length
         }
         // D-119 / D-120: a caret sitting mid-word (not at the composing token's true end - a common state
@@ -3635,7 +3640,7 @@ class AdaptKeyService : InputMethodService() {
             }
             if (split != null) {
                 val committedLength = applySplit(ic, split, delimiter, typed)
-                armShiftForNextWord(ic)
+                armShiftForNextWordUnlessOpener(ic, delimiter)
                 return committedLength
             }
             return commitVerbatim(ic, delimiter)
@@ -3682,7 +3687,7 @@ class AdaptKeyService : InputMethodService() {
             val merged = tokenRepair.tryMerge(previousWord, mergeChar, typed)
             if (merged != null) {
                 val committedLength = applyMerge(ic, merged, delimiter)
-                armShiftForNextWord(ic)
+                armShiftForNextWordUnlessOpener(ic, delimiter)
                 return committedLength
             }
         }
@@ -3760,7 +3765,7 @@ class AdaptKeyService : InputMethodService() {
                     "splitMs=$splitMs (split found)"
             )
             val committedLength = applySplit(ic, split, delimiter, typed)
-            armShiftForNextWord(ic)
+            armShiftForNextWordUnlessOpener(ic, delimiter)
             return committedLength
         }
         
@@ -3846,7 +3851,7 @@ class AdaptKeyService : InputMethodService() {
         val justPromoted = compoundRecord?.word?.takeIf { compoundRecord.outcome == LearnOutcome.PROMOTED }
             ?: learnRecord.word.takeIf { learnRecord.outcome == LearnOutcome.PROMOTED }
         showNextWordPredictions(justPromoted)
-        armShiftForNextWord(ic)
+        armShiftForNextWordUnlessOpener(ic, delimiter)
         trackSustainedEnglishUsage(ic, dictChoice.language)
         return finalWord.length + delimiter.length
     }
@@ -3972,7 +3977,7 @@ class AdaptKeyService : InputMethodService() {
         clearUndo()
         // D-43: predict the next word instead of leaving the bar blank.
         showNextWordPredictions()
-        armShiftForNextWord(ic)
+        armShiftForNextWordUnlessOpener(ic, delimiter)
         return word.length + delimiter.length
     }
     
@@ -4313,7 +4318,7 @@ class AdaptKeyService : InputMethodService() {
         previousPreviousWord = learnRecords.firstOrNull()?.previousWord
         // D-43: predict the next word (following the word the user insisted on) instead of a blank bar.
         showNextWordPredictions()
-        armShiftForNextWord(ic)
+        armShiftForNextWordUnlessOpener(ic, undoDelimiter)
         return true
     }
     
@@ -5856,6 +5861,19 @@ class AdaptKeyService : InputMethodService() {
         }
         tokenPreviousHyphenSegment = previousSegment?.first
         tokenPreviousHyphenSegmentAtSentenceStart = previousSegment?.second == true
+        // D-373-followup: live-arms Shift too, mirroring CapitalisationEngine's own commit-time propagation
+        // - reported not working at all otherwise, since the first fix only ever changed the eventual
+        // committed casing, never what the keyboard shows armed while the word is still being typed. Scoped
+        // to the non-sentence-start branch only, deliberately: that one needs no dictionary lookup at all
+        // (the identical raw signal CapitalisationEngine.previousSegmentPropagates() itself uses for that
+        // branch), while the sentence-start branch needs the real dictionary noun/proper-noun check and stays
+        // commit-time-only for now - exactly like B-02's own pre-existing proper-noun exception already was,
+        // silently capitalising at commit without ever live-arming Shift either.
+        if (tokenPreviousHyphenSegment != null && !tokenPreviousHyphenSegmentAtSentenceStart &&
+            tokenPreviousHyphenSegment?.firstOrNull()?.isUpperCase() == true
+        ) {
+            keyboardView?.shifted = true
+        }
         tokenContextBefore = before
     }
     
@@ -6025,6 +6043,21 @@ class AdaptKeyService : InputMethodService() {
         fieldMandateOverridden = false
         updatePendingSpaceIndicator(ic)
         showSuggestions()
+    }
+    
+    /**
+     * D-378: [armShiftForNextWord], except when [delimiter] is a recognised opener (see
+     * [OPENING_PUNCTUATION]'s own KDoc) - the single choke point every `finalizeAndCommit()`-family commit
+     * path re-arms Shift through, so a future new commit branch cannot reintroduce this gap by calling
+     * [armShiftForNextWord] directly. D-378 was first fixed only at [finalizeAndCommit]'s own
+     * composing-empty branch - too narrow: every other commit branch (split, merge, verbatim, the ordinary
+     * word-commit path, the A-07 revert retry) still called [armShiftForNextWord] directly and still
+     * clobbered Shift, confirmed by a real device report right after that first, incomplete fix.
+     */
+    private fun armShiftForNextWordUnlessOpener(ic: InputConnection, delimiter: String) {
+        if (delimiter.length != 1 || delimiter[0] !in OPENING_PUNCTUATION) {
+            armShiftForNextWord(ic)
+        }
     }
     
     /**

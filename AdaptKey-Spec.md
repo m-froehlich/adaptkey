@@ -377,6 +377,14 @@ freshly-derived value, which is usually "off" mid-sentence. The plain apostrophe
 unlike these, it genuinely closes a quote as often as it opens one, so treating it as an opener would risk the
 opposite mistake.
 
+D-378-followup: still reproduced after the fix above, which only guarded [finalizeAndCommit]'s own
+composing-*empty* commit branch - every other commit branch it has (a token-repair split, an A-06 merge, the
+ordinary word-commit path, verbatim commit, the A-07 undo retry) called [armShiftForNextWord] directly and
+still clobbered Shift, confirmed once a real device report showed the bug persisting after the first,
+too-narrow fix. All of them now funnel through one shared choke point instead
+(`armShiftForNextWordUnlessOpener`), so a future new commit branch cannot reintroduce this same gap by simply
+calling [armShiftForNextWord] directly.
+
 ---
 
 ## 5. Suggestion Bar
@@ -579,6 +587,17 @@ same position is already scheduled and about to resolve a moment later. A new `r
 the duration of the reactive reclaim's own debounce window (never set at all in a suppressed field, where
 nothing is ever automatically pending), now suppresses the chip for exactly that window, closing the race
 regardless of which caret move triggered it.
+
+D-421-followup: the flash still reproduced - the `reclaimPending` guard above only protects the *debounced*
+path, but tapping from one still-composing word straight onto another reaches a genuinely different,
+synchronous path (`onUpdateSelection`'s own "external caret move while composing" handling, D-406): it clears
+the just-abandoned word's composing state (resetting `reclaimPending` to false along with it) and calls
+`armShiftForNextWord` immediately, whose own `showSuggestions()` call renders with the new position not yet
+reclaimed at all - `scheduleReclaimAndChipRefresh()` was never wired into this path in the first place, so no
+reclaim was actually pending yet for the chip's own guard to catch. Now schedules the identical debounced
+reclaim/chip-refresh here too (gated on a genuinely collapsed caret, mirroring the "composing already empty"
+path's own guard) before the existing immediate re-arm, so the chip's own next render already sees a pending
+reclaim rather than a resolved-but-untouched position.
 
 ---
 
@@ -960,6 +979,16 @@ dictionary, the same signal the plain B-02 exception above already uses. Anywher
 predecessor's capital is trusted directly - a hyphen chain reads as one unit, so once one segment's
 capitalisation is settled (however it got there, including a further D-373 propagation earlier in a longer
 chain), the next segment should agree.
+
+D-373-followup: reported not working at all - the fix above only ever changed the eventual *committed*
+casing, never what Shift shows armed while the next segment is still being typed, so a user watching the
+keyboard (rather than the finished word) saw nothing happen. Shift is now live-armed too, the moment the
+hyphen's own next segment starts composing, mirroring what a genuine sentence start already does - but
+deliberately only for the non-sentence-start branch above, the one that needs no dictionary lookup at all
+(the identical raw signal the commit-time check itself uses there). The sentence-start branch still needs its
+real dictionary check and stays commit-time-only, exactly like B-02's own original proper-noun exception
+already was, silently capitalising at commit without ever live-arming Shift either - an existing, already-
+accepted asymmetry this follow-up does not change.
 
 ### B-03 - Proactive Completion Of A Repeated Hyphen-Compound
 Each individual segment of a hyphen-joined chain is still learned/suggested exactly as B-01 already
