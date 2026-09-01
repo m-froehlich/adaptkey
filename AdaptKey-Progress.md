@@ -428,8 +428,9 @@ non-trivial changes).
     double-tap window - ideally Backspace's own touch zone temporarily grows while typing fast. Further,
     more aggressive idea floated by the user: a fast neighbour-tap near Backspace could itself be
     retroactively reinterpreted as Backspace. Possibly its own setting either way.
-  - **D-362 - OPEN.** The "…" loading-indicator chip (D-346, shown during the deferred fuzzy search) is far
-    too small/subtle - should be bold, larger, possibly animated.
+  - **D-362 - RESOLVED (§338, v1.0.90).** The loading-indicator chip (D-346) is now bold, 20sp (vs. the
+    ordinary 16sp), a dedicated amber (`#F57C00`, its own colour, not reused from another chip's meaning),
+    and ticks through `.`/`..`/`...` every 400 ms instead of sitting static.
   - **D-363 - WON'T FIX (2026-08-31, no code change - discussed and declined).** Colon/semicolon arming the
     same A-12 punctuation-auto-space `.`/`!`/`?`/`,` already do, with a time-of-day exception (a digit
     immediately before the colon, e.g. `"14:30"`, must suppress it). Discussed directly: unconditionally
@@ -710,6 +711,18 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§338 (v1.0.90): D-362 - the loading-indicator chip, from static/subtle to bold/large/animated.**
+  D-346's original "…" was a plain 16sp italic grey `TextView`, easy to miss next to ordinary suggestions of
+  the same visual weight. Discussed with the user first (concrete proposal, before writing code); their
+  reaction: "Ich hatte etwas anders im Sinn. Aber es gefällt mir sehr gut so." Now bold, 20sp, a dedicated new
+  colour (`suggestion_loading_text`, `#F57C00` Material Amber 700 - deliberately its own meaning, not reused
+  from the verbatim chip's blue or the search-query chip's grey), ticking `.`/`..`/`...` every 400 ms. The
+  ticker is tied to the chip's own `OnAttachStateChangeListener` (`post()`/`removeCallbacks()`), starting/
+  stopping automatically as `setItems()` rebuilds the bar - no external field, no explicit cleanup call, no
+  leak risk. Spec §32 updated. No new tests (`SuggestionBarView` has no existing test file - Android view
+  glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 393
+  → 394, `versionName` `"1.0.89"` → `"1.0.90"`. **Not yet device-confirmed.**
 
 - **§337 (v1.0.89): D-414 - manual Reclaim button; the Cycle half explicitly shelved after design**
   **discussion, not implemented.** A new "🧲" button in the extra row (§14, R-01), left side, fixed slot 4

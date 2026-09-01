@@ -1454,11 +1454,16 @@ data-quality work started in D-306.
 
 D-346: when S-09's neighbour-prefix escalation (D-328) — or any other deferred/background fuzzy search —
 is still running and has not yet returned a result for the current token, and the hot path found
-nothing (the bar would otherwise be empty), the suggestion bar shows a brief, unobtrusive "…"
-(ellipsis) placeholder pinned in the bar's slot. Once the background search either finds a candidate
-or definitively finds nothing, the indicator is replaced by the ordinary bar content (or an empty bar).
-The indicator never appears alongside real suggestions, never blocks user input, and never delays the
-next keystroke.
+nothing (the bar would otherwise be empty), the suggestion bar shows a loading placeholder pinned in the
+bar's slot. Once the background search either finds a candidate or definitively finds nothing, the
+indicator is replaced by the ordinary bar content (or an empty bar). The indicator never appears alongside
+real suggestions, never blocks user input, and never delays the next keystroke.
+
+D-362: the placeholder's own visual treatment - bold, noticeably larger than an ordinary suggestion, in a
+dedicated warm amber, and animating through `.`/`..`/`...` every 400 ms - deliberately replaces the
+original static, italic, muted-grey "…" (confirmed too subtle to actually notice next to ordinary
+suggestions of the same size and weight). The colour is its own, distinct from every other chip's meaning -
+not S-06's verbatim-chip blue, not the muted grey still used for the emoji-search-query chip.
 
 ---
 

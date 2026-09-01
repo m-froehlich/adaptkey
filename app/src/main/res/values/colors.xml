@@ -29,4 +29,9 @@
          the same shade already used elsewhere for "context, not a value" text, so it reads as informational
          rather than another tappable emoji. -->
     <color name="suggestion_search_query_text">#7A7E83</color>
+    <!-- D-362: the animated loading-placeholder chip - a warm, saturated amber (Material Amber 700) reading
+         clearly as "in progress", deliberately its own colour rather than reusing suggestion_verbatim_text's
+         blue (already means "keep as typed") or suggestion_search_query_text's muted grey (too subtle, the
+         whole reason this bullet existed). -->
+    <color name="suggestion_loading_text">#F57C00</color>
 </resources>

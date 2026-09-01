@@ -205,14 +205,14 @@ class SuggestionBarView @JvmOverloads constructor(
             verbatim -> R.color.suggestion_verbatim_text
             item.kind == SuggestionController.Kind.LEARNED -> R.color.suggestion_learned_text
             query -> R.color.suggestion_search_query_text
-            loading -> R.color.suggestion_search_query_text
+            loading -> R.color.suggestion_loading_text
             else -> R.color.suggestion_text
         }
         return TextView(context).apply {
             text = item.text
             gravity = Gravity.CENTER
             setTextColor(ContextCompat.getColor(context, colorRes))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, if (loading) LOADING_TEXT_SP else 16f)
             if (verbatim) {
                 setTypeface(typeface, Typeface.BOLD)
             }
@@ -220,9 +220,31 @@ class SuggestionBarView @JvmOverloads constructor(
             if (query) {
                 setTypeface(typeface, Typeface.ITALIC)
             }
-            // D-346: italic + grey marks the loading placeholder as a status indicator, not a suggestion.
+            // D-362: bold + larger + a ticking "." -> ".." -> "..." animation, replacing D-346's original
+            // static, italic, muted-grey "…" - confirmed too subtle to actually notice next to ordinary
+            // suggestions of the same size. Tied to the view's own attach state (not, e.g., a field on this
+            // outer class) so the ticker starts and stops automatically as setItems() rebuilds the bar's
+            // children - no separate cleanup call needed, and no risk of a leaked callback still firing
+            // against a chip that has already been removed from the tree.
             if (loading) {
-                setTypeface(typeface, Typeface.ITALIC)
+                setTypeface(typeface, Typeface.BOLD)
+                val tick = object : Runnable {
+                    var dots = 1
+                    override fun run() {
+                        text = ".".repeat(dots)
+                        dots = dots % LOADING_MAX_DOTS + 1
+                        postDelayed(this, LOADING_TICK_MS)
+                    }
+                }
+                addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+                    override fun onViewAttachedToWindow(v: View) {
+                        post(tick)
+                    }
+                    
+                    override fun onViewDetachedFromWindow(v: View) {
+                        removeCallbacks(tick)
+                    }
+                })
             }
             setPadding(dp(16), 0, dp(16), 0)
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)
@@ -522,5 +544,10 @@ class SuggestionBarView @JvmOverloads constructor(
         private const val FLY_DURATION_MS = 380L
         private const val FLY_BASE_TEXT_DP = 15
         private const val FLY_SHRINK_FRACTION = 0.22f
+        
+        // D-362: the loading chip's own size (vs. every ordinary chip's plain 16f) and dot-tick timing.
+        private const val LOADING_TEXT_SP = 20f
+        private const val LOADING_TICK_MS = 400L
+        private const val LOADING_MAX_DOTS = 3
     }
 }

@@ -16565,3 +16565,26 @@ considered and set aside, not silently forgotten.
 No new tests (Android view/InputConnection glue, `ExtraRowView`'s own established untestable category).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 392 -> 393,
 `versionName` `"1.0.88"` -> `"1.0.89"`. Not yet device-confirmed.
+
+## §338 - D-362: the loading-indicator chip, from static/subtle to bold/large/animated (v1.0.90)
+
+Reported as too small/subtle to actually notice: D-346's original "…" placeholder was a plain `TextView` at
+the same 16sp every ordinary suggestion chip uses, italic, in the same muted grey (`#7A7E83`) already reused
+for the emoji-search-query chip - easy to miss entirely next to real suggestions of the same visual weight.
+Discussed directly with the user first (concrete proposal - bold, larger, an animated dot-tick, all reusing
+plain `TextView`/`Handler.postDelayed` rather than a custom-drawn spinner - before writing any code); user's
+own reaction: "Ich hatte etwas anders im Sinn. Aber es gefällt mir sehr gut so."
+
+`SuggestionBarView.chipFor()`'s `loading` branch now: bold, 20sp (vs. the ordinary 16sp), a dedicated new
+colour (`suggestion_loading_text`, `#F57C00` - Material Amber 700, deliberately not reusing the verbatim
+chip's blue or the search-query chip's grey, so it carries its own distinct meaning rather than borrowing
+someone else's), and a ticking `.` -> `..` -> `...` animation every 400 ms. The ticker is tied to the chip
+`TextView`'s own `OnAttachStateChangeListener` (`post()`/`removeCallbacks()` on attach/detach) rather than
+any external field or explicit stop call - starts and stops automatically as `setItems()` rebuilds the bar's
+children on every suggestion update, with no risk of a leaked callback still firing against an already-
+removed chip, and no cleanup code needed anywhere else.
+
+Spec §32 (D-346) updated with a D-362 addendum describing the new visual treatment and explaining the colour
+choice. No new tests (`SuggestionBarView` has no existing test file - Android view glue, this project's own
+established untestable category). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests
+unchanged. `versionCode` 393 -> 394, `versionName` `"1.0.89"` -> `"1.0.90"`. Not yet device-confirmed.
