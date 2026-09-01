@@ -721,6 +721,17 @@ non-trivial changes).
 
 ## Current State
 
+- **§343 (v1.0.95): D-414-followup (v2) - the Reclaim chip could show with nothing genuinely at the caret.**
+  Root cause: `reclaimPossible()` read `getTextBeforeCursor`/`getTextAfterCursor` as two separate Binder
+  round-trips - exactly the pattern `reclaimSurroundingWord()`'s own D-347 v2 fix already moved away from,
+  after a real device log showed two independent calls observing two different document snapshots on a
+  fast-moving caret in Gemini's own search field. Fixed by reusing that exact mechanism instead of a
+  hand-rolled reimplementation: one atomic `getExtractedText()` round-trip fed straight into
+  `WordExtent.reclaim()`, the same ground-truth function the real reclaim commits with. No new tests (same
+  untested `InputConnection` glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1157 unit tests
+  unchanged. Spec S-10 gained a short addendum. `versionCode` 398 → 399, `versionName` `"1.0.94"` →
+  `"1.0.95"`. **Not yet device-confirmed.**
+
 - **§342 (v1.0.94): D-414-followup's Reclaim button migrated into the suggestion bar; G-05's double-tap now**
   **reclaims first; D-416's "quiet dot" no longer sticks after a plain caret move.** (1) The Reclaim button
   (§341 confirmed it lights up correctly in Gemini, but it still lived in the extra row) moved into the

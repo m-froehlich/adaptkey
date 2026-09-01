@@ -526,6 +526,12 @@ gated by `reclaimOnCaretMoveSuppressed` - only the reactive *reclaim itself* is 
 Commander, not this read-only check, so the chip correctly appears exactly where it is needed (a plain tap
 into an older word there) instead of staying hidden until some unrelated action happens to trigger it.
 
+D-414-followup (v2): the visibility check reads the caret's surrounding text via one atomic
+`getExtractedText()` round-trip fed into `WordExtent.reclaim()` - the same mechanism the real reclaim commits
+with - rather than two separate `getTextBeforeCursor`/`getTextAfterCursor` calls, which could observe two
+different document snapshots on a fast-moving caret (the same class of staleness D-347 v2 already fixed for
+the real reclaim itself) and briefly show the chip with nothing genuinely at the caret.
+
 Separately, D-62's own reclaim now also runs, deliberately, in three more cases that used to stay suppressed
 too: a single (non-held) Backspace always reclaims immediately, even in a suppressed field - the suppression
 exists only for the cursor-handle-*drag* case a single keystroke never triggers; a genuine backspace *hold*

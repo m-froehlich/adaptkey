@@ -16819,3 +16819,23 @@ No new tests - all three changes live in the same untested `AdaptKeyService`/`In
 rewritten from "extra row button" to "suggestion bar chip"; G-05 gained the independent-of-claim-state
 addendum; A-12/D-416 gained the caret-move-clears-the-dot addendum. `versionCode` 397 -> 398, `versionName`
 `"1.0.93"` -> `"1.0.94"`. Not yet device-confirmed.
+
+## §343 - D-414-followup (v2): Reclaim chip visible with nothing to reclaim (v1.0.95)
+
+Reported directly right after §342: the chip could show even standing on genuinely nothing. Root cause,
+found by comparing against the real reclaim's own known-good mechanism rather than guessing: `reclaimPossible()`
+read `ic.getTextBeforeCursor(1, 0)`/`getTextAfterCursor(1, 0)` as two *separate* calls - exactly the pattern
+`reclaimSurroundingWord()`'s own D-347 v2 fix deliberately moved away from, after a real device log showed
+two independent Binder round-trips observing two different document snapshots on a fast-moving caret in
+Gemini's own search field specifically - the same field this chip exists to serve. Two calls issued right
+next to each other in source are still two independent round-trips with a real gap between them a caret
+still settling can move through, so one could observe a stale "letter touches here" from a position already
+left behind. Fixed by reusing `reclaimSurroundingWord()`'s own exact mechanism instead of a hand-rolled
+reimplementation: one atomic `getExtractedText()` round-trip, sliced at its own reported selection, fed
+straight into `WordExtent.reclaim()` - the identical ground-truth function the real reclaim commits with, so
+the chip's "is a reclaim possible" answer can no longer drift out of sync with what tapping it would actually
+do.
+
+No new tests - the same untested `InputConnection` glue as §341/§342. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green, 1157 unit tests unchanged. Spec: S-10 gained a short addendum. `versionCode`
+398 -> 399, `versionName` `"1.0.94"` -> `"1.0.95"`. Not yet device-confirmed.

@@ -5951,20 +5951,30 @@ class AdaptKeyService : InputMethodService() {
      * both [armShiftForNextWord] and [reclaimEnabledRunnable] (a *separate*, always-on debounced path that is
      * never gated by [reclaimOnCaretMoveSuppressed] - see that runnable's own KDoc for why the chip must stay
      * live even where the reactive *reclaim itself* is deliberately suppressed, e.g. Gemini). A login/URL/
-     * no-suggestions field never offers it, matching every other §6-bypass point in this file. Otherwise
-     * mirrors [WordExtent.reclaim]'s own "is there a word touching the caret at all" truth value - equivalent
-     * to checking only the immediately-adjacent character on each side, since a walk that starts on a
-     * non-letter always returns empty. Composing must be empty too - an already-reclaimed/composing word has
-     * nothing further to reclaim. Purely a read (`getTextBeforeCursor`/`getTextAfterCursor`), never
-     * `setComposingRegion` - safe to call regardless of suppression.
+     * no-suggestions field never offers it, matching every other §6-bypass point in this file. Composing must
+     * be empty too - an already-reclaimed/composing word has nothing further to reclaim.
+     *
+     * D-414-followup (v2): reported visible with no word anywhere near the caret. Root cause: the first
+     * version read `getTextBeforeCursor`/`getTextAfterCursor` as two separate calls - exactly the pattern
+     * [reclaimSurroundingWord]'s own D-347 v2 fix deliberately moved away from, after a real device log
+     * showed two independent Binder round-trips observing two different document snapshots on a fast-moving
+     * caret in Gemini's own search field (the same field this chip most needed to work correctly in). Now
+     * reuses [reclaimSurroundingWord]'s exact mechanism: one atomic `getExtractedText()` round-trip, sliced
+     * at its own reported selection, fed straight into [WordExtent.reclaim] - the identical ground-truth
+     * function the real reclaim commits with, not a hand-rolled reimplementation of the same "is there a
+     * word touching the caret" truth value that could silently drift out of sync with it. Purely a read,
+     * never `setComposingRegion` - safe to call regardless of suppression.
      */
     private fun reclaimPossible(ic: InputConnection): Boolean {
-        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField || composing.isNotEmpty()) {
             return false
         }
-        return composing.isEmpty() &&
-            (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isLetter() == true ||
-                ic.getTextAfterCursor(1, 0)?.singleOrNull()?.isLetter() == true)
+        val extracted = ic.getExtractedText(ExtractedTextRequest(), 0) ?: return false
+        val text = extracted.text ?: return false
+        val selStart = extracted.selectionStart.coerceIn(0, text.length)
+        val selEnd = extracted.selectionEnd.coerceIn(selStart, text.length)
+        val reclaim = WordExtent.reclaim(text.subSequence(0, selStart), text.subSequence(selEnd, text.length))
+        return reclaim.before.isNotEmpty() || reclaim.after.isNotEmpty()
     }
     
     /**
