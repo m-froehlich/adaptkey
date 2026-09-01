@@ -16507,3 +16507,24 @@ whatever the actual D-414/D-415 button design turns out to be if either lever wo
 No new tests (Android view/InputConnection glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147
 unit tests unchanged. `versionCode` 390 -> 391, `versionName` `"1.0.86"` -> `"1.0.87"`. Not yet device-tested
 - this round's entire purpose is to be tested on a real device next.
+
+## §336 - D-415: WON'T FIX, device-confirmed - neither give-up-focus lever actually releases focus (v1.0.88)
+
+The §335 experiment ran on a real device against Google Keep, both temporary test buttons tried directly:
+**`KEYCODE_BACK` did nothing at all. `performEditorAction(IME_ACTION_DONE)` hid the keyboard but left focus
+on the field exactly as before.** A clean, unambiguous negative result for both candidate levers - not an
+implementation gap to keep chasing, but confirmation of the technical concern raised before the experiment
+even started: an `InputMethodService` genuinely has no way to make a host app release focus it does not
+choose to give up on its own. D-415, as originally envisioned ("give up focus as if it had never been set"),
+is not buildable through the IME API. Closed as Won't Fix, not left open pending further investigation - the
+platform limitation is real, not a missing trick.
+
+Both temporary diagnostic buttons ("🔙"/"🏁") removed from `ExtraRowView`/`AdaptKeyService` exactly as
+promised when they were added in §335, regardless of the outcome - `OnTestBackClickListener`/
+`OnTestDoneClickListener`, their two button fields/`addView` calls, the two wiring lines, and
+`testGiveUpFocusViaBack()`/`testGiveUpFocusViaDone()` all deleted outright, no trace left behind beyond this
+entry and §335's own record of what was tried and why.
+
+No new tests (the removal is pure Android glue, same as the addition was). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 391 -> 392, `versionName` `"1.0.87"`
+-> `"1.0.88"`.

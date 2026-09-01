@@ -669,23 +669,18 @@ non-trivial changes).
   first - the end result might end up being just the plain Reclaim half of this, without the cycle-through-
   suggestions half at all. Not to be implemented until that follow-up design pass happens.
 
-- **D-415 - OPEN, feasibility unclear (2026-09-01).** A "give up focus as if it
-  had never been set" button in the extra row, motivated by Google Keep: once a list-item field has been
-  tapped into, focus never leaves it, so the keyboard keeps popping back up and the old caret position is
-  hard to relocate after dismissing/reopening. User confirmed a real-device experiment is needed before
-  designing this further (try both levers below against Keep specifically) - not yet done. Initial technical
-  finding (not yet confirmed against a real device, worth verifying before committing to a design): Android's
-  `InputMethodService` has no public API to
-  clear focus on a view it does not own - `requestHideSelf()`/`hideSoftInputFromWindow()` only hide the
-  keyboard's own window, they do not touch the host app's focus state, and the two indirect levers available
-  (sending `KEYCODE_BACK`, or `InputConnection.performEditorAction(EditorInfo.IME_ACTION_DONE)`) only have an
-  effect if the target app's own code chooses to react to them by clearing focus - entirely app-dependent,
-  not guaranteed, and Keep's own list-editing implementation is exactly the kind of custom widget that may
-  deliberately keep focus regardless. **§335 (v1.0.87): both levers are now wired to two temporary,
-  explicitly-not-committed test buttons** ("🔙"/"🏁") on the extra row's right side, so this can actually be
-  tried against Keep (and Total Commander) on a real device - see §335 in Current State. Waiting on the
-  device test result before deciding whether this is buildable at all, let alone designing the real button.
-  These two test buttons are meant to be removed once the experiment concludes, regardless of outcome.
+- **D-415 - WON'T FIX (device-confirmed, 2026-09-01).** A "give up focus as if it had never been set"
+  button in the extra row, motivated by Google Keep: once a list-item field has been tapped into, focus
+  never leaves it, so the keyboard keeps popping back up and the old caret position is hard to relocate
+  after dismissing/reopening. §335 (v1.0.87) wired both candidate levers to temporary test buttons
+  ("🔙"/"🏁") and the user tried them directly against Keep on a real device: **`KEYCODE_BACK` does nothing
+  at all; `performEditorAction(IME_ACTION_DONE)` only hides the keyboard - focus itself is retained either
+  way.** Confirms the original technical concern outright: `InputMethodService` genuinely has no way to make
+  a host app release focus it does not want to give up - a real Android platform limitation, not a gap in
+  this app's own implementation. §336 (v1.0.88) removed both temporary test buttons again, as promised when
+  they were added. Nothing left to build here unless some future, fundamentally different mechanism
+  (e.g. an accessibility service, well outside an IME's own scope and permission model) is ever considered
+  worth the added complexity - not currently planned.
 
 - **D-416 - RESOLVED (§333, see Current State).** A-12's eager auto-space-after-punctuation replaced with the
   deferred model discussed and planned in
@@ -717,6 +712,16 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§336 (v1.0.88): D-415 - WON'T FIX, device-confirmed.** The §335 experiment ran on a real device against
+  Google Keep: `KEYCODE_BACK` did nothing at all; `performEditorAction(IME_ACTION_DONE)` hid the keyboard but
+  left focus on the field exactly as before. A clean negative result for both candidate levers - confirms an
+  `InputMethodService` genuinely cannot make a host app release focus it does not choose to give up, a real
+  platform limitation, not a missing trick to keep chasing. Both temporary test buttons removed exactly as
+  promised (`OnTestBackClickListener`/`OnTestDoneClickListener`, their fields/`addView` calls, wiring, and
+  `testGiveUpFocusViaBack()`/`testGiveUpFocusViaDone()` all deleted). No new tests (Android glue).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 391 → 392,
+  `versionName` `"1.0.87"` → `"1.0.88"`. **Device-confirmed** (the test itself was the confirmation).
 
 - **§335 (v1.0.87): D-415 - two temporary diagnostic buttons to test both "give up focus" levers on a**
   **real device.** No IME has a public API to clear a host view's focus - the two indirect levers
