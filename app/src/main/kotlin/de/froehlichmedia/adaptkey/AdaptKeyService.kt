@@ -2563,6 +2563,15 @@ class AdaptKeyService : InputMethodService() {
                                 // here.
                                 reclaimSurroundingWord(ic, TapPoint(x, y, weight))
                             }
+                            // D-373-followup/D-378-followup (temporary diagnostic): the exact moment a
+                            // letter's own case is actually decided - see the matching notes in
+                            // captureTokenContext()/armShiftForNextWordUnlessOpener() for the rest of the
+                            // trace. Remove once both are confirmed fixed or the real gap is found here.
+                            diag(
+                                "AdaptKeyShift",
+                                "CHAR: raw='$raw' isWordLetter=$isWordLetter isUpperArmed=${isUpperArmed()} " +
+                                    "shifted=${keyboardView?.shifted} capsLock=${keyboardView?.capsLock}"
+                            )
                             val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
                             // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
                             // character at the logical edit point (the end, unless a reclaim left a tail after it).
@@ -5861,6 +5870,18 @@ class AdaptKeyService : InputMethodService() {
         }
         tokenPreviousHyphenSegment = previousSegment?.first
         tokenPreviousHyphenSegmentAtSentenceStart = previousSegment?.second == true
+        // D-373-followup (temporary diagnostic): reported still not working after the live-arm fix below -
+        // logs the exact inputs/decision so a real repro (adb logcat -s AdaptKeyShift:D, or Settings ->
+        // Diagnostics) shows whether captureTokenContext even sees the hyphen and the right previous
+        // segment, rather than guessing again. Remove once D-373-followup is confirmed fixed or the real
+        // gap is found here.
+        diag(
+            "AdaptKeyShift",
+            "captureTokenContext: before=\"$before\" tokenAfterHyphen=$tokenAfterHyphen " +
+                "tokenPreviousHyphenSegment=$tokenPreviousHyphenSegment " +
+                "tokenPreviousHyphenSegmentAtSentenceStart=$tokenPreviousHyphenSegmentAtSentenceStart " +
+                "shiftedBefore=${keyboardView?.shifted}"
+        )
         // D-373-followup: live-arms Shift too, mirroring CapitalisationEngine's own commit-time propagation
         // - reported not working at all otherwise, since the first fix only ever changed the eventual
         // committed casing, never what the keyboard shows armed while the word is still being typed. Scoped
@@ -5874,6 +5895,8 @@ class AdaptKeyService : InputMethodService() {
         ) {
             keyboardView?.shifted = true
         }
+        // D-373-followup (temporary diagnostic): see the note above this function's own arm decision.
+        diag("AdaptKeyShift", "captureTokenContext: shiftedAfter=${keyboardView?.shifted}")
         tokenContextBefore = before
     }
     
@@ -6055,9 +6078,21 @@ class AdaptKeyService : InputMethodService() {
      * clobbered Shift, confirmed by a real device report right after that first, incomplete fix.
      */
     private fun armShiftForNextWordUnlessOpener(ic: InputConnection, delimiter: String) {
-        if (delimiter.length != 1 || delimiter[0] !in OPENING_PUNCTUATION) {
+        val isOpener = delimiter.length == 1 && delimiter[0] in OPENING_PUNCTUATION
+        // D-378-followup (temporary diagnostic): reported still not working after this choke point was
+        // introduced - logs every call so a real repro (adb logcat -s AdaptKeyShift:D, or Settings ->
+        // Diagnostics) shows whether this function is even reached for the opener in question, and whether
+        // it correctly skips, rather than guessing again. Remove once D-378-followup is confirmed fixed or
+        // the real gap is found here.
+        diag(
+            "AdaptKeyShift",
+            "armShiftForNextWordUnlessOpener: delimiter=\"$delimiter\" isOpener=$isOpener " +
+                "shiftedBefore=${keyboardView?.shifted} capsLockBefore=${keyboardView?.capsLock}"
+        )
+        if (!isOpener) {
             armShiftForNextWord(ic)
         }
+        diag("AdaptKeyShift", "armShiftForNextWordUnlessOpener: shiftedAfter=${keyboardView?.shifted} capsLockAfter=${keyboardView?.capsLock}")
     }
     
     /**
@@ -6161,6 +6196,11 @@ class AdaptKeyService : InputMethodService() {
         }
         val elapsed = now - shiftArmTime
         if (ShiftGrace.suppressesShiftPress(shiftGuardedArm, view.shifted, settings.shiftGraceWindowMs, elapsed)) {
+            // D-378-followup (temporary diagnostic): if this ever fires outside a genuine field-mandated
+            // (WORDS/CHARACTERS) field, it is the real cause of an explicit Shift press appearing to do
+            // nothing - see the matching notes elsewhere in this same diagnostic pass. Remove once
+            // D-378-followup is confirmed fixed or the real gap is found here.
+            diag("AdaptKeyShift", "handleShift: SUPPRESSED by grace window (shiftGuardedArm=$shiftGuardedArm elapsed=$elapsed)")
             return
         }
         val wasUpper = view.shifted
@@ -6168,6 +6208,7 @@ class AdaptKeyService : InputMethodService() {
         if (shiftGuardedArm && wasUpper && !view.shifted) {
             fieldMandateOverridden = true
         }
+        diag("AdaptKeyShift", "handleShift: toggled shifted $wasUpper -> ${view.shifted}")
     }
     
     /**

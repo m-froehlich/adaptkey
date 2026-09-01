@@ -474,10 +474,11 @@ non-trivial changes).
     genuine diagonal pair (`a`/`w`). The named example itself (`g`/`b`) was also directly confirmed adjacent
     via a real Gradle test run, not just re-derived by hand - `KeyboardProximityTest` gained a permanent
     regression pair (`g`/`b`, `h`/`b`) to keep it that way. No version bump - no behaviour changed.
-  - **D-373 - RESOLVED (§353 + D-373-followup §354, v1.0.105 + v1.0.106).** A hyphen-chain segment now also capitalises when its own
-    predecessor was capitalised - hybrid design (user's own explicit call): a sentence-start predecessor
-    needs an independent noun/proper-noun dictionary check, elsewhere the predecessor's capital is trusted
-    directly. See Current State for the mechanism.
+  - **D-373 - REOPENED (2026-09-01).** §353's design and §354's live-arm broadening were both confirmed
+    still not fixed on-device, exact same repro, after two rounds of code-level fixes that traced correctly
+    on paper. §355 adds temporary diagnostic logging (`AdaptKeyShift` tag) rather than a third blind patch,
+    per this project's own rule to re-question the diagnosis after a negative device report rather than
+    keep patching the same theory - see Current State.
   - **D-374 - RESOLVED by D-416 (§333).** The trailing auto-space is never physically written until a real
     next character resolves it, so there is structurally nothing left to strand or fail to clean up when a
     field is left (Google Keep or otherwise) - eliminated, not patched.
@@ -492,9 +493,9 @@ non-trivial changes).
     where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
     worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
     nothing else in the pipeline resolves the token at all.
-  - **D-378 - RESOLVED (§353 + D-378-followup §354, v1.0.105 + v1.0.106).** An opening quote/bracket typed with nothing composing no longer
-    re-derives (and thereby disturbs) Shift at all - neither an auto-armed sentence-start capital nor an
-    explicit Shift press gets clobbered any more. See Current State for the mechanism.
+  - **D-378 - REOPENED (2026-09-01).** Same as D-373's own reopening note - confirmed still broken with the
+    identical repro after two code-level fix rounds; see Current State §355 for the diagnostic-logging round
+    now in place instead of a third blind patch.
   - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
     already-present `abzgl.`/`zzgl.` family.
   - **D-380 - OPEN.** A long-press smear too small to trigger a swipe/page-change should still open the alt
@@ -751,6 +752,23 @@ non-trivial changes).
 
 ## Current State
 
+- **§355 (v1.0.107): D-373-followup and D-378-followup confirmed still broken after §354's broadening -**
+  **temporary diagnostic logging added instead of a third blind patch.** Two full rounds of code-level fixes
+  each traced correctly on paper (confirmed again by re-reading the actual diff, not just re-deriving from
+  memory) - both still failed with the *exact same* repro on-device. Rather than guess a third time, this
+  project's own established pattern for exactly this class of bug (spec §1's guiding principle: Shift/
+  composing-state bugs "reproduce silently and took real device logs, not code review alone, to find each
+  time", D-110/D-139/D-217/D-324's own precedent) - a new `AdaptKeyShift` diagnostic tag logs the full
+  decision chain: `captureTokenContext()`'s own hyphen-segment/live-arm decision (before and after),
+  `armShiftForNextWordUnlessOpener()`'s own opener check and shifted/capsLock before and after, the CHAR
+  handler's own `isUpperArmed()` read at the exact moment a letter's case is decided, and `handleShift()`'s
+  own toggle/grace-window-suppression outcome. Reachable via `adb logcat -s AdaptKeyShift:D` or the in-app
+  Settings -> Diagnostics log. Genuinely no working theory left worth coding blind against - waiting on a
+  real repro's log output before touching either mechanism again. No new tests (diagnostic logging only, no
+  behaviour change). 1191 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. No spec change (no behaviour changed). `versionCode` 410 → 411, `versionName` `"1.0.106"` ->
+  `"1.0.107"`.
+
 - **§354 (v1.0.106): three same-day device-reported follow-ups - §353's D-373/D-378 fixes were each too**
   **narrow, plus a genuinely different D-421 flash path.** All from real device feedback right after §353/
   §352 shipped; each re-diagnosed from the actual code path the report implied, not patched blind (this
@@ -775,7 +793,9 @@ non-trivial changes).
   No new tests (all three are Android/`InputConnection` glue). 1191 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: B-02 gained the D-373-followup note, the D-378
   "Addendum to G-05" gained its own follow-up note, S-10 gained the D-421-followup note. `versionCode`
-  409 → 410, `versionName` `"1.0.105"` → `"1.0.106"`. **Not yet device-confirmed.**
+  409 → 410, `versionName` `"1.0.105"` → `"1.0.106"`. **2026-09-01: D-421-followup device-confirmed - the**
+  **reclaim flash is gone.** D-373-followup and D-378-followup are **not** - same exact repro, still broken;
+  see §355 for the diagnostic round that replaces a third blind patch attempt.
 
 - **§353 (v1.0.105): D-373 + D-378 + D-392 - three capitalisation fixes discussed and designed with the**
   **user first, D-390 dropped in the same discussion.** All four were raised together; design discussed
