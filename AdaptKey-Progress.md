@@ -513,8 +513,19 @@ non-trivial changes).
     the existing shifted-symbol/superscript pair. Every other digit unaffected.
   - **D-383 - OPEN.** In Google Keep's list mode, placing the caret before a word and pressing Enter (to push
     the rest of the line into a new list item) deletes that word.
-  - **D-384 - OPEN.** Typing a minus preceded by a space should also get its own trailing A-12-style
-    auto-space, but only when a space already precedes the minus.
+  - **D-384 - WON'T FIX (2026-09-01, no code change - discussed and declined).** Typing a minus preceded by a
+    space should also get its own trailing A-12-style auto-space, but only when a space already precedes the
+    minus. Analysed in detail: technically a small, low-risk-looking addition (one more pattern in
+    `pendingSentenceMark()`, D-370's own helper - B-01/B-03's compound-hyphen chain is already structurally
+    unreachable for a space-preceded dash, since `composing` is only ever non-empty for a genuine mid-word
+    hyphen). But the analysis itself surfaced a real interaction with D-370's own closing-quote glue (a `"`
+    typed right after a space-dash is far more often *opening* a new quoted aside than closing one - the
+    opposite bias from the `.`/`!`/`?`/`,` case D-370 was built for - so the two features would need to be
+    explicitly kept apart, not simply share the same code path). Weighed directly against the benefit - saving
+    exactly one already-deliberately-typed keystroke (the second space in "word - word") - and declined: A-12/
+    composing-state is this project's own most fragile area (spec §1's guiding principle; D-373/D-378/D-421 all
+    needed multiple real-device-log rounds to fully nail down), not worth the added surface area for a
+    convenience this small. User's own call, not implemented.
   - **D-385 - RESOLVED (2026-08-31, no code change - a deliberate decision, not an implementation).** "German
     should go back to being a bundled language, not an installable pack" - discussed for/against directly
     with the user; decided **against** bundling (would permanently privilege the maintainer's own language for
