@@ -17043,3 +17043,39 @@ No new tests - both changes are either a plain rename (no behaviour change to ve
 `Preference` view glue this project already leaves untested throughout. 1175 unit tests unchanged, all
 green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: W-05 and the D-419 note both updated.
 `versionCode` 404 -> 405, `versionName` `"1.0.100"` -> `"1.0.101"`. Not yet device-confirmed.
+
+## §350 - D-420: an A-05 split at a sentence start now keeps its own capital (v1.0.102)
+
+Reported directly: typing "Komischerweise" as the first word of a line committed as "komischer weise"
+instead of "Komischer Weise" once A-05 split it - the split itself is correct and welcome, only the left
+half's casing was wrong. Root-caused before writing any code, not guessed: this closes a design question
+the spec had explicitly flagged as unresolved back when A-05 was built (§7's own "a split currently
+re-derives the two halves' capitalisation from the generic rules rather than preserving whatever mid-word
+capitalisation the user had actually typed" note).
+
+`TokenRepair.SplitResult.resolvedLeft`/`resolvedRight` are always lower-case by contract (its own class KDoc
+says so explicitly) - all three places that apply a split (`applySplit()`, the autocorrect-split suggestion
+chip, `midWordConnectorSplitSuggestion()`) derived the left half's capitalisation context via
+`contextFor(split.resolvedLeft)`, so `explicitFirstUpper` (which reads only the passed string's own first
+character) was unconditionally `false` there - the real typed capital, whether sentence-start-armed or
+hand-typed, never had a chance to reach `CapitalisationEngine.capitalise()`. The right half happened to come
+out correctly capitalised in the reported case only because "Weise" is a noun (§6 rule 3), unrelated to the
+actual bug.
+
+Fixed at all three call sites by passing the *original* typed token (`typed`/`input`, already in scope at
+each site) to `contextFor()` instead of the already-lower-cased split half - `contextFor()` only ever reads
+the passed string's first character for `explicitFirstUpper`, and the left half always starts at the same
+position as the original token, so this correctly recovers whatever capitalisation the user actually had
+there (a sentence/line-start-armed capital and a deliberately hand-typed one are structurally identical
+signals to this code, and both are now handled without any sentence-start-specific special case - Rule 1,
+"explicit user input always wins", simply reaches the left half now). `followingPartContext()` for the right
+half is untouched, correctly still never a sentence start by construction.
+
+No new tests - the fix lives entirely in `AdaptKeyService.kt`'s own Android/`InputConnection` glue, the same
+untested class this project's own convention already leaves untested throughout (`TokenRepair` itself is
+pure/tested but never touches capitalisation - lower-casing both halves is its own explicit contract).
+1175 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: the A-05
+section's own previously-open design question replaced with the resolution. `versionCode` 405 -> 406,
+`versionName` `"1.0.101"` -> `"1.0.102"`. Not yet device-confirmed - worth re-typing "Komischerweise" (or any
+other sentence-start word this app would split) at a real line start to verify "Komischer Weise" now comes
+out correctly.

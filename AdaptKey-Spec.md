@@ -721,9 +721,15 @@ dictionaries carries a valid tag - but a mistagged-yet-tagged entry (like "til" 
 still recur; a bundled-dictionary contribution should always carry a real part-of-speech tag, never leave it
 blank, per `AdaptKey-Language-Contribution-Guide.md`.
 
-> **Open design question (unresolved):** a split currently re-derives the two halves' capitalisation from
-> the generic rules rather than preserving whatever mid-word capitalisation the user had actually typed.
-> Flagged, not fixed.
+D-420: the left half's own capitalisation context now derives from the original typed token's first
+character, not from `SplitResult.resolvedLeft` (always lower-case by contract). Reported directly: a
+sentence-start "Komischerweise" split into "komischer weise" instead of "Komischer Weise" - the split's own
+first-character explicit-capital signal was silently discarded, since it was being probed against the
+already-lower-cased left half instead of the real typed text. Closes the previously-open design question
+here (a split now preserves whatever capitalisation the user actually had at the split point - a sentence-
+start-armed capital or a deliberately hand-typed one are structurally identical signals) without needing any
+sentence-start-specific logic: Rule 1 ("explicit user input always wins") simply reaches the left half
+correctly now. The right half is never a sentence start by construction, so its own context is unaffected.
 
 ### A-06 - Retroactive Word Merge on Spurious Space
 The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-05) and the following token is not a valid word, the system tests whether removing that space and prepending the letter inferred from the tap's x-coordinate yields a valid or high-probability word. If so, the spurious space is removed and the reconstructed word is committed (e.g. `aber  ald` -> `aber bald`, where the intended `b` landed on the space bar). As with A-05, a valid linguistic result is mandatory; the spatial signal only nominates the candidate.

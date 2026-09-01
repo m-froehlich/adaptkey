@@ -735,6 +735,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§350 (v1.0.102): D-420 - an A-05 split at a sentence/line start now keeps its own capital.** Reported
+  directly: "Komischerweise" typed as the first word of a line committed as "komischer weise" after A-05
+  split it, instead of "Komischer Weise". Root cause: `TokenRepair.SplitResult.resolvedLeft`/`resolvedRight`
+  are always lower-case by contract; all three split-applying call sites (`applySplit()`, the autocorrect
+  split chip, `midWordConnectorSplitSuggestion()`) derived the left half's capitalisation context via
+  `contextFor(split.resolvedLeft)`, so `explicitFirstUpper` was unconditionally false there - the real typed
+  capital (sentence-start-armed or hand-typed) never reached `CapitalisationEngine.capitalise()`. Fixed by
+  passing the original typed token (`typed`/`input`, already in scope) to `contextFor()` at all three sites
+  instead - `contextFor()` only reads the passed string's first character, and the left half always starts
+  at the same position as the original token, so this recovers the real capitalisation correctly without any
+  sentence-start-specific special case (Rule 1, "explicit user input always wins", simply reaches the left
+  half now). Closes a design question the spec had explicitly flagged as unresolved since A-05 shipped. No
+  new tests (the fix lives entirely in `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue;
+  `TokenRepair` itself stays pure/tested, lower-casing both halves is its own explicit contract). 1175 unit
+  tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: the A-05 section's
+  previously-open design question replaced with the resolution. `versionCode` 405 → 406, `versionName`
+  `"1.0.101"` → `"1.0.102"`. **Not yet device-confirmed.**
+
 - **§349 (v1.0.101): D-389-followup (v5) + D-419-followup - decouple C-24's storage from its display; bold**
   **"Currently" line.** Two pieces of direct feedback. (1) §347 tied the *stored* preference value directly
   to the current duration meaning (enum renamed to `ONE_MONTH`/etc.) - user's own explicit correction: the
