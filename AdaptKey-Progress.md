@@ -655,19 +655,17 @@ non-trivial changes).
     since this is exactly the class of bug spec §1's guiding principle warns must be re-derived from real
     logs, not guessed.
 
-- **D-414 - OPEN, design still being worked out - not yet ready to implement (2026-09-01).** A dedicated
-  Reclaim/Cycle button in the swipe-up extra row (§14), left side - motivated directly by D-351/D-351-followup
-  (Gemini, Total Commander): when the word at the caret is **not** currently reclaimed (composing), tapping
-  the button explicitly triggers the reclaim, unconditionally ignoring `reclaimOnCaretMoveSuppressed` -
-  confirmed by the user as the whole point of the button, exactly for the fields (Gemini, Total Commander)
-  where the reactive mechanism is suppressed. When a word **is** already reclaimed, tapping instead cycles
-  through the same candidate list already shown as ordinary suggestion chips (S-01's bar), replacing the word
-  with each tap - the list is finite, cycling wraps back to the start once the end is reached (confirmed: no
-  long-press, no backward-cycling). Two separate icons are needed since the button covers two distinct
-  behaviours (confirmed by the user). **Still explicitly unresolved, per the user's own words:** cycling
-  through the suggestion list this way likely raises contradictions that need to be thought through properly
-  first - the end result might end up being just the plain Reclaim half of this, without the cycle-through-
-  suggestions half at all. Not to be implemented until that follow-up design pass happens.
+- **D-414 - RESOLVED (§337, v1.0.89) for the Reclaim half; the Cycle half explicitly shelved, not merely**
+  **deferred.** A manual Reclaim button ("🧲") now lives in the extra row (§14, R-01), left side - motivated
+  directly by D-351/D-351-followup (Gemini, Total Commander): tapping it fires D-62's reclaim immediately,
+  unconditionally ignoring `reclaimOnCaretMoveSuppressed`, enabled only while a reclaim is genuinely possible
+  right now. The originally-floated Cycle half (tapping again on an already-reclaimed word to cycle through
+  suggestion candidates) was discussed and dropped after the user traced through it themselves and found real
+  problems (a cycled candidate would need its own frozen list snapshot, plus open Backspace-during-cycle and
+  casing questions) with no clean resolution yet: "dieses Cycle-Feature war mehr eine fixe Idee, die bei
+  sauberem Durchdenken mehr Probleme aufmacht als sie löst... zurückstellen bzw. vergessen bis ich vielleicht
+  mit einem sauberen Konzept nochmal auf dich zukomme." Not tracked as its own open backlog item any more -
+  revisit only if the user brings a genuinely new concept for it.
 
 - **D-415 - WON'T FIX (device-confirmed, 2026-09-01).** A "give up focus as if it had never been set"
   button in the extra row, motivated by Google Keep: once a list-item field has been tapped into, focus
@@ -712,6 +710,22 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§337 (v1.0.89): D-414 - manual Reclaim button; the Cycle half explicitly shelved after design**
+  **discussion, not implemented.** A new "🧲" button in the extra row (§14, R-01), left side, fixed slot 4
+  (never collides with `emojiButton`'s own two possible positions). Tapping it calls `reclaimWordAtCaret()`
+  directly - confirmed by reading the function that it never checks `reclaimOnCaretMoveSuppressed` itself
+  (only `onUpdateSelection`'s own *scheduling* of the reactive call does), so a direct call already fires
+  immediately and already bypasses the suppression unconditionally, no new logic needed for either property.
+  Exactly what D-351/D-351-followup's suppressed fields (Gemini, Total Commander) need; available in every
+  field, not gated to those two. Enabled state (`ExtraRowView.reclaimEnabled`, dimmed via alpha) pushed live
+  from `armShiftForNextWord()` - the same central point D-416's `pendingSpaceIndicator` uses, extended with
+  one more live check equivalent to `WordExtent.reclaim`'s own "found nothing" case. The originally-floated
+  Cycle half (cycle through suggestion candidates on an already-reclaimed word) was discussed and dropped by
+  the user's own call after tracing through real problems with it (frozen-list snapshot needed, open
+  Backspace/casing questions) - shelved pending a genuinely new concept, not tracked as an open item. Spec
+  R-01 updated. No new tests (Android glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit
+  tests unchanged. `versionCode` 392 → 393, `versionName` `"1.0.88"` → `"1.0.89"`. **Not yet device-confirmed.**
 
 - **§336 (v1.0.88): D-415 - WON'T FIX, device-confirmed.** The §335 experiment ran on a real device against
   Google Keep: `KEYCODE_BACK` did nothing at all; `performEditorAction(IME_ACTION_DONE)` hid the keyboard but

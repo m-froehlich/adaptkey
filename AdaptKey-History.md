@@ -16528,3 +16528,40 @@ entry and §335's own record of what was tried and why.
 No new tests (the removal is pure Android glue, same as the addition was). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 391 -> 392, `versionName` `"1.0.87"`
 -> `"1.0.88"`.
+
+## §337 - D-414: manual Reclaim button, Cycle half dropped after design discussion (v1.0.89)
+
+Discussed directly with the user before writing any code, twice: first the combined Reclaim/Cycle button
+originally floated (D-351/D-351-followup's own motivation), then - once the Cycle half's own real problems
+were traced through (a cycled candidate would need its own frozen list snapshot, independent of the live
+suggestion recomputation the changing composing text would otherwise trigger, plus open Backspace-during-
+cycle and casing questions with no clean answer yet) - the user's own call: "dieses Cycle-Feature war mehr
+eine fixe Idee, die bei sauberem Durchdenken mehr Probleme aufmacht als sie löst... zurückstellen bzw.
+vergessen bis ich vielleicht mit einem sauberen Konzept nochmal auf dich zukomme." Only the plain Reclaim
+half shipped this round - the Cycle half is not merely deferred as a TODO, it is explicitly shelved pending a
+genuinely different concept, not this one refined.
+
+**What shipped:** a new "🧲" button in the extra row (§14, R-01), left side, fixed slot 4 (chosen
+specifically to never collide with `emojiButton`'s own two possible positions, slot 2 or 3 depending on
+`urlModeButtonVisible`). Tapping it calls `reclaimWordAtCaret()` directly - the same function the debounced
+`reclaimWordAtCaretRunnable` already calls, confirmed by reading it that the function itself never checks
+`reclaimOnCaretMoveSuppressed` at all (that flag only ever gates whether `onUpdateSelection` *schedules* the
+reactive call in the first place) - so a direct call already fires immediately, with no debounce, and already
+unconditionally bypasses the suppression, with zero new logic needed for either property. Exactly what
+D-351/D-351-followup's suppressed fields (Gemini's search field, Total Commander's rename-date field) need,
+and available in every field, not gated to those two specifically.
+
+The button's own enabled/disabled state (`ExtraRowView.reclaimEnabled`, dimmed via alpha rather than hidden,
+so its position stays predictable) is pushed live from `armShiftForNextWord()` - the same already-established
+central point `pendingSpaceIndicator` (D-416) uses, extended with one more live document check: composing
+empty, and the character immediately adjacent to the caret on either side a letter. Confirmed equivalent to
+`WordExtent.reclaim`'s own "found nothing" case (a walk starting on a non-letter always returns empty)
+without needing the fuller extraction that function's own real reclaim path uses - cheaper, and correct for
+a pure yes/no check.
+
+Spec: R-01 gained the button's own description plus an explicit note that the Reclaim/Cycle combination was
+considered and set aside, not silently forgotten.
+
+No new tests (Android view/InputConnection glue, `ExtraRowView`'s own established untestable category).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged. `versionCode` 392 -> 393,
+`versionName` `"1.0.88"` -> `"1.0.89"`. Not yet device-confirmed.

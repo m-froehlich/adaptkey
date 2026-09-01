@@ -1091,10 +1091,28 @@ deliberately-typed casing like an acronym does) is eligible.
 An upward swipe anywhere on the keyboard reveals a row sitting above the suggestion bar, hosting: an
 always-visible emoji-panel button (no setting gates it - opening the emoji panel is described under L-03),
 a settings-app shortcut, a session-only touch-zone-visualisation toggle (§17, T-06), a manual credential-mode
-toggle (also flashes on a weak login-field signal, §12), and a manual URL-mode toggle (visible only while a
-URL field is focused, §11). A downward swipe closes the row first, and a second downward swipe (with the row
-already closed) dismisses the keyboard (G-03). Activating a button in the row does not auto-close it. The
-clear-clipboard button that used to live here now sits in the suggestion bar itself instead (§16, V-03).
+toggle (also flashes on a weak login-field signal, §12), a manual URL-mode toggle (visible only while a
+URL field is focused, §11), and a manual Reclaim button (D-414, see below). A downward swipe closes the row
+first, and a second downward swipe (with the row already closed) dismisses the keyboard (G-03). Activating a
+button in the row does not auto-close it. The clear-clipboard button that used to live here now sits in the
+suggestion bar itself instead (§16, V-03).
+
+**D-414 - Manual Reclaim button.** D-62's reclaim (§58) normally fires reactively the moment the caret lands
+on an existing word - but D-351/D-351-followup found real fields (Gemini's search field; Total Commander's
+rename-date field) whose own cursor-handle rendering cannot tolerate that reactive composing-region change,
+so the reactive mechanism is deliberately suppressed there (`reclaimOnCaretMoveSuppressed`). This button is
+the explicit, always-available workaround: tapping it fires the same underlying reclaim immediately (no
+debounce - a deliberate single tap needs none) and unconditionally, ignoring the suppression entirely, since
+bypassing it is the button's whole purpose. Enabled only while a reclaim is genuinely possible right now
+(composing empty, a real word touches the caret on either side) - dimmed and inert otherwise, rather than
+offering a tap that would silently do nothing. Not gated to the suppressed fields specifically; available in
+every field as a general manual trigger.
+
+A Reclaim/Cycle combination (tapping again to cycle through suggestion candidates once already reclaimed) was
+discussed and deliberately not pursued - a real design problem surfaced (a cycled candidate would need its
+own frozen candidate-list snapshot, independent of the live suggestion recomputation the changing composing
+text would otherwise trigger, plus open questions around Backspace-during-cycle and casing) with no
+sufficiently clean resolution yet. Left for a possible future round with a cleaner concept, not implemented.
 
 ---
 

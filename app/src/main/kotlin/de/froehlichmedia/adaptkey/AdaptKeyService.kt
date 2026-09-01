@@ -1016,6 +1016,12 @@ class AdaptKeyService : InputMethodService() {
         row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
         row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
         row.onUrlModeToggleClick = ExtraRowView.OnUrlModeToggleClickListener { toggleUrlModeFromExtraRow() }
+        // D-414: reclaimWordAtCaret() is normally only invoked via the debounced reclaimWordAtCaretRunnable
+        // (see that field's own KDoc) - calling it directly here fires immediately, no debounce needed for a
+        // single deliberate tap, and unconditionally, since the suppression flag only ever gates the
+        // *scheduling* of the reactive call, never this function's own body (see reclaimOnCaretMoveSuppressed's
+        // KDoc) - exactly what D-351/D-351-followup's suppressed fields (Gemini, Total Commander) need.
+        row.onReclaimClick = ExtraRowView.OnReclaimClickListener { reclaimWordAtCaret() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
         row.onSwipeDown = ExtraRowView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         extraRow = row
@@ -5834,6 +5840,7 @@ class AdaptKeyService : InputMethodService() {
         if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             keyboardView?.shifted = false
             keyboardView?.pendingSpaceIndicator = false
+            extraRow?.reclaimEnabled = false
             shiftGuardedArm = false
             shiftArmTime = SystemClock.uptimeMillis()
             fieldMandateOverridden = false
@@ -5850,6 +5857,13 @@ class AdaptKeyService : InputMethodService() {
         // the real character right before the cursor a bare mark from SENTENCE_PUNCTUATION.
         keyboardView?.pendingSpaceIndicator = composing.isEmpty() &&
             ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.let { it in SENTENCE_PUNCTUATION } == true
+        // D-414: mirrors WordExtent.reclaim's own "is there a word touching the caret at all" truth value -
+        // equivalent to checking only the immediately-adjacent character on each side, since a walk that
+        // starts on a non-letter always returns empty. Composing must be empty too - an already-reclaimed/
+        // composing word has nothing further to reclaim.
+        extraRow?.reclaimEnabled = composing.isEmpty() &&
+            (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isLetter() == true ||
+                ic.getTextAfterCursor(1, 0)?.singleOrNull()?.isLetter() == true)
     }
     
     /**

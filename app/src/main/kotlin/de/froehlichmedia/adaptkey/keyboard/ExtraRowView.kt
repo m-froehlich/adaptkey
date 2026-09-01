@@ -99,6 +99,18 @@ class ExtraRowView @JvmOverloads constructor(
         fun onSwipeDown()
     }
     
+    /**
+     * D-414: invoked when the manual Reclaim button is tapped - explicitly triggers D-62's reclaim for the
+     * word at the caret, unconditionally (bypassing `reclaimOnCaretMoveSuppressed`, e.g. for the Gemini/
+     * Total Commander fields where the reactive mechanism is suppressed - D-351/D-351-followup) and
+     * immediately (no debounce, unlike the reactive drag-driven path). Only invoked while [reclaimEnabled]
+     * is true - the button is disabled otherwise.
+     */
+    fun interface OnReclaimClickListener {
+        
+        fun onReclaimClick()
+    }
+    
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
@@ -111,9 +123,23 @@ class ExtraRowView @JvmOverloads constructor(
     
     var onSwipeDown: OnSwipeDownListener? = null
     
+    var onReclaimClick: OnReclaimClickListener? = null
+    
     /** Whether the row is currently open (or mid-opening); false once fully closed. */
     var isOpen: Boolean = false
         private set
+    
+    /**
+     * D-414: whether a reclaim is actually possible right now (composing is empty and a word genuinely
+     * touches the caret, per [de.froehlichmedia.adaptkey.gesture.WordExtent]) - the button is dimmed and
+     * non-clickable otherwise, rather than always offering a tap that would silently do nothing.
+     */
+    var reclaimEnabled: Boolean = false
+        set(value) {
+            field = value
+            reclaimButton.isEnabled = value
+            reclaimButton.alpha = if (value) 1f else DISABLED_ALPHA
+        }
     
     /**
      * D-142: reflects whether credential mode is currently active for the focused field, so the button's
@@ -184,6 +210,14 @@ class ExtraRowView @JvmOverloads constructor(
         visibility = View.GONE
     }
     
+    // D-414: left side, permanently at slot 4 - never collides with emojiButton's own two possible
+    // positions (slot 2 or, with urlModeToggleButton visible, slot 3). Dimmed via [reclaimEnabled] rather
+    // than hidden, so its position stays predictable whether or not a reclaim is currently possible.
+    private val reclaimButton = buttonFor("🧲") { onReclaimClick?.onReclaimClick() }.apply {
+        isEnabled = false
+        alpha = DISABLED_ALPHA
+    }
+    
     private val content = FrameLayout(context)
     private var heightAnimator: ValueAnimator? = null
     private var credentialFlashAnimator: ValueAnimator? = null
@@ -213,6 +247,14 @@ class ExtraRowView @JvmOverloads constructor(
             emojiButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply {
                 marginStart = slotMarginStart(2)
+            }
+        )
+        // D-414: fixed slot 4 - see reclaimButton's own declaration for why this never collides with
+        // emojiButton's two possible slots.
+        content.addView(
+            reclaimButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.START or Gravity.CENTER_VERTICAL).apply {
+                marginStart = slotMarginStart(4)
             }
         )
         // D-156 / D-267: directly left of the settings gear, offset by the gear's own width plus one more
@@ -450,6 +492,8 @@ class ExtraRowView @JvmOverloads constructor(
         
         private const val BUTTON_SIZE_DP = 36
         private const val BUTTON_MARGIN_DP = 8
+        // D-414: reclaimButton's own alpha while reclaimEnabled is false - dim, but still legible.
+        private const val DISABLED_ALPHA = 0.35f
         // D-142: three reverse-repeats of a 220ms fade reads as a clear, brief pulse without lingering.
         private const val FLASH_DURATION_MS = 220L
         private const val FLASH_REPEAT_COUNT = 3
