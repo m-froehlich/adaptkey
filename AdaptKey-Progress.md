@@ -671,10 +671,7 @@ non-trivial changes).
     G-01 gained a D-400 addendum explaining the pin + both exceptions; `LayoutRegistry.kindFor()`'s own KDoc
     carries the full resolution-order reasoning.
   - `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 386 → 387, `versionName` `"1.0.82"`
-    → `"1.0.83"`. **Not yet device-confirmed** - needs real-device checks: German active/system, sustained
-    English typing no longer flips to QWERTY; manual swipe between two Latin languages leaves the layout
-    alone; swiping to Greek still shows the Greek layout; a Greek-system-language device swiping to German/
-    French lands on QWERTZ/AZERTY respectively, not QWERTY.
+    → `"1.0.83"`. **Device-confirmed.**
 
 - **§330 (v1.0.82): a batch of seven small, independently-decided backlog items - D-379, D-382, D-394**
   **(digit-mirror half only), D-398, D-399 implemented; D-375 and D-381 confirmed with no code change.**
