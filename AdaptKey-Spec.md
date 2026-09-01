@@ -609,6 +609,17 @@ reclaim/chip-refresh here too (gated on a genuinely collapsed caret, mirroring t
 path's own guard) before the existing immediate re-arm, so the chip's own next render already sees a pending
 reclaim rather than a resolved-but-untouched position.
 
+D-421-followup (v2) - regression: `onStartInputView` scheduling the reclaim/chip-refresh unconditionally on
+every fresh field broke D-36's own direct-paste chip and D-142's own credential list - both are built directly
+against the suggestion bar, deliberately bypassing the ordinary `showSuggestions()`/`SuggestionController`
+pipeline entirely (D-142's own KDoc), but the scheduled debounce's own `reclaimEnabledRunnable` still
+unconditionally re-renders through exactly that ordinary pipeline ~100ms later, which knows nothing about
+either special chip and silently wiped whichever one had just been shown back to an empty bar. Fixed by
+gating the scheduling on whether the field's own initial display already claimed the bar - a field with a
+credential list or paste chip showing has nothing useful left for the reclaim/chip-refresh to add, and a
+genuinely empty field (the only case reclaim on initial focus could ever matter for) never has one of these
+special chips to protect against in the first place.
+
 ---
 
 ## 6. Capitalisation

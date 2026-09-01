@@ -754,6 +754,25 @@ non-trivial changes).
 
 ## Current State
 
+- **§358 (v1.0.110): D-421-followup (v2) - regression: the credential list and clipboard paste chip stopped**
+  **appearing on a fresh empty field.** Reported directly: an empty email field no longer showed the saved
+  address list until the first letter was typed, and a fresh field with clipboard content no longer offered
+  the paste chip at all - both worked before §352/§354's own D-421 rounds. Root-caused, not guessed: §352's
+  `onStartInputView` change schedules the debounced reclaim/chip-refresh unconditionally on every fresh field;
+  its own `reclaimEnabledRunnable` calls the *ordinary* `showSuggestions()` ~100ms later, which knows nothing
+  about D-36's paste chip or D-142's credential list - both built directly against the suggestion bar,
+  deliberately bypassing that ordinary pipeline entirely (D-142's own KDoc) - and silently overwrote whichever
+  one had just been shown with an empty bar. Fixed by only scheduling the reclaim/chip-refresh when neither
+  special chip actually claimed the bar: `showClipboardChipIfAvailable()` now returns whether it actually
+  showed a chip, `showCredentialSuggestions()`'s own branch always counts as claiming it (even the
+  password-field empty-bar case is a deliberate, settled state), and `onStartInputView` gates the scheduling
+  on `!showedSpecialInitialChip`. No functional loss: a field with one of these chips showing has nothing left
+  for the reclaim/chip-refresh to usefully add, and a genuinely empty field (the only case D-421's own
+  initial-focus reclaim could matter for at all) never has a special chip to protect in the first place. No
+  new tests (Android/`InputConnection` glue). 1191 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-10 gained the D-421-followup (v2) note.
+  `versionCode` 413 → 414, `versionName` `"1.0.109"` → `"1.0.110"`. **Not yet device-confirmed.**
+
 - **§357 (v1.0.109): D-378-followup (v2) - a second, real device log confirmed the exact same root-cause**
   **shape as D-373-followup (v2), just via the opener path instead of the hyphen path.** User's own log
   (`AdaptKeyShift` tag, real repro this time - the first log sent for this round turned out to be an accidental

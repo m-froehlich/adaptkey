@@ -1730,6 +1730,16 @@ class AdaptKeyService : InputMethodService() {
         // ordinary settings-screen change while the service stays resident, not only per field focus).
         reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
+        // D-142: a recognised login field shows its own credential suggestions immediately, even before
+        // anything is typed (the user's usual identifiers, most-used first) - takes priority over the
+        // generic D-36 paste chip below, which would otherwise compete for the same bar slot.
+        val showedSpecialInitialChip = if (loginFieldKind == LoginFieldKind.USERNAME || loginFieldKind == LoginFieldKind.EMAIL) {
+            showCredentialSuggestions()
+            true
+        } else {
+            // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
+            showClipboardChipIfAvailable()
+        }
         // D-421: a fresh field's own INITIAL caret position is delivered via EditorInfo only (D-152's own
         // note in onStartInput above) - never guaranteed through a subsequent onUpdateSelection callback. A
         // word already touching the caret the very first time a field is focused (e.g. tapping directly into
@@ -1739,17 +1749,16 @@ class AdaptKeyService : InputMethodService() {
         // debounced scheduling the reactive path uses, not a second, differently-timed reclaim mechanism -
         // for consistency with D-347/D-350's own debounce discipline, even though a single call here (not a
         // rapid drag) would not strictly need one.
-        if (info != null && info.initialSelStart >= 0 && info.initialSelStart == info.initialSelEnd) {
+        // D-421-followup: gated on !showedSpecialInitialChip - reported as a regression, the credential list
+        // and the clipboard chip (both built directly against suggestionBar, bypassing the ordinary
+        // showSuggestions()/controller pipeline entirely, D-142's own KDoc) were being silently wiped back to
+        // an empty bar ~100ms later by this call's own debounced reclaimEnabledRunnable, which always
+        // re-renders through that ordinary pipeline and has no idea either special chip was ever there. A
+        // field with one of them already showing has nothing left for the reclaim/chip-refresh to usefully
+        // add - and a genuinely empty field (the only case reclaim could matter for) never has a special chip
+        // to protect in the first place, so nothing is lost by skipping.
+        if (!showedSpecialInitialChip && info != null && info.initialSelStart >= 0 && info.initialSelStart == info.initialSelEnd) {
             scheduleReclaimAndChipRefresh()
-        }
-        // D-142: a recognised login field shows its own credential suggestions immediately, even before
-        // anything is typed (the user's usual identifiers, most-used first) - takes priority over the
-        // generic D-36 paste chip below, which would otherwise compete for the same bar slot.
-        if (loginFieldKind == LoginFieldKind.USERNAME || loginFieldKind == LoginFieldKind.EMAIL) {
-            showCredentialSuggestions()
-        } else {
-            // D-36: offer a direct-paste chip when the field opens and the clipboard holds text.
-            showClipboardChipIfAvailable()
         }
         // §48: never carry an open extra row over into a fresh keyboard presentation.
         extraRow?.closeImmediately()
@@ -1914,21 +1923,25 @@ class AdaptKeyService : InputMethodService() {
      * plausible "code" token, [ClipboardExtraction.firstCode]) - are appended whenever their own extraction
      * actually differs from the full clipboard text, so a single-line/single-token clipboard does not grow
      * redundant duplicate chips of the main one.
+     *
+     * @return true when a chip was actually shown - D-421-followup: [onStartInputView] uses this to decide
+     *         whether it is safe to also schedule the reclaim/chip-refresh debounce (which would otherwise
+     *         silently wipe this chip again ~100ms later, see that call site's own note)
      */
-    private fun showClipboardChipIfAvailable() {
+    private fun showClipboardChipIfAvailable(): Boolean {
         if (composing.isNotEmpty()) {
-            return
+            return false
         }
-        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return
+        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return false
         if (clip.itemCount == 0) {
-            return
+            return false
         }
         if (!ClipboardPreview.isFresh(clip.description.timestamp, System.currentTimeMillis())) {
-            return
+            return false
         }
-        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return
+        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return false
         val sensitive = isSensitiveClip(clip)
-        val label = ClipboardPreview.label(text, sensitive) ?: return
+        val label = ClipboardPreview.label(text, sensitive) ?: return false
         val fullText = text.toString().trim()
         val chips = ArrayList<SuggestionController.DisplayItem>()
         chips.add(SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, ""))
@@ -1944,6 +1957,7 @@ class AdaptKeyService : InputMethodService() {
         }
         setSuggestionBarItems(chips)
         suggestionBar?.visibility = View.VISIBLE
+        return true
     }
     
     /**
