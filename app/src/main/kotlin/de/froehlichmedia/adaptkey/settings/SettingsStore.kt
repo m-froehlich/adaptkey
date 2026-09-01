@@ -58,6 +58,16 @@ object SettingsStore {
     // slider's own "Off" position (AutocorrectAggressiveness.OFF_KEY), no migration of any old stored value.
     const val KEY_AUTOCORRECT_AGGRESSIVENESS = "d353_autocorrect_aggressiveness"
     const val KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = "d398_sustained_language_switch_threshold"
+    const val KEY_LEARNED_WORD_EXPIRY_WINDOW = "d389_learned_word_expiry_window"
+    
+    /**
+     * D-389: epoch millis the daily [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] last
+     * actually ran - internal throttling bookkeeping, not a user-facing setting (no `settings_preferences.xml`
+     * row), same shape as [KEY_CALIBRATION_OFFERED] below. Excluded from export for the same reason: a
+     * restored device should re-derive its own sweep cadence from its own recent history, not inherit
+     * another device's.
+     */
+    const val KEY_LEARNED_WORD_EXPIRY_LAST_SWEEP = "d389_learned_word_expiry_last_sweep"
     
     /**
      * D-304: the one-time K-01 calibration-offer flag ([SettingsActivity.SettingsFragment.maybeOfferCalibration]) -
@@ -164,7 +174,8 @@ object SettingsStore {
             autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null),
             sustainedLanguageSwitchThreshold = p.getInt(
                 KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
-            )
+            ),
+            learnedWordExpiryWindowKey = p.getString(KEY_LEARNED_WORD_EXPIRY_WINDOW, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -238,6 +249,7 @@ object SettingsStore {
      */
     private val EXPORT_SETTINGS_KEY_ORDER: List<String> = listOf(
         KEY_PENDING_BLACKLIST_EXPIRY_DAYS,
+        KEY_LEARNED_WORD_EXPIRY_WINDOW,
         KEY_SAVE_CREDENTIALS,
         KEY_CONTACTS_SUGGESTIONS_ENABLED,
         KEY_AUTO_SPLIT_MODE,
@@ -276,7 +288,7 @@ object SettingsStore {
      * Not private: [de.froehlichmedia.adaptkey.backup.BackupImporter] also excludes these, for defence in
      * depth against a pre-D-304 export file or a hand-edited one that still carries either key.
      */
-    val EXPORT_EXCLUDED_KEYS = setOf(KEY_DIAGNOSTIC_LOG_ENABLED, KEY_CALIBRATION_OFFERED)
+    val EXPORT_EXCLUDED_KEYS = setOf(KEY_DIAGNOSTIC_LOG_ENABLED, KEY_CALIBRATION_OFFERED, KEY_LEARNED_WORD_EXPIRY_LAST_SWEEP)
     
     /**
      * D-278/D-304: every currently-stored preference value meant for the export/import backup (§21), in

@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
+import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -99,6 +100,9 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           (default [DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD], the former hardcoded value); a stored
  *           `0` disables the automatic switch entirely - only the manual G-01 swipe still changes the
  *           active language.
+ * @property learnedWordExpiryWindow D-389: how long a learned word may go untouched before the daily
+ *           [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] un-learns it (default
+ *           [LearnedWordExpiryWindow.DEFAULT]) - a coarse früh/mittel/spät choice, not a raw duration.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -124,7 +128,8 @@ data class AdaptSettings(
     val doubleTapBackspaceUndo: Boolean = false,
     val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,
     val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
-    val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
+    val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
+    val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT
 ) {
     
     companion object {

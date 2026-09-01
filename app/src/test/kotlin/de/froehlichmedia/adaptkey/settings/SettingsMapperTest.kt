@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
+import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -184,6 +185,27 @@ class SettingsMapperTest {
         )
         assertEquals(0, SettingsMapper.toAdaptSettings(RawSettings(sustainedLanguageSwitchThreshold = 0)).sustainedLanguageSwitchThreshold)
         assertEquals(3, SettingsMapper.toAdaptSettings(RawSettings(sustainedLanguageSwitchThreshold = 3)).sustainedLanguageSwitchThreshold)
+    }
+    
+    @Test
+    fun `D-389 learnedWordExpiryWindow resolves from the stored key, defaulting to MEDIUM`() {
+        assertEquals(LearnedWordExpiryWindow.MEDIUM, SettingsMapper.toAdaptSettings(RawSettings()).learnedWordExpiryWindow)
+        assertEquals(
+            LearnedWordExpiryWindow.EARLY,
+            SettingsMapper.toAdaptSettings(RawSettings(learnedWordExpiryWindowKey = "early")).learnedWordExpiryWindow
+        )
+        assertEquals(
+            LearnedWordExpiryWindow.LATE,
+            SettingsMapper.toLearnedWordExpiryWindow(RawSettings(learnedWordExpiryWindowKey = "late"))
+        )
+    }
+    
+    @Test
+    fun `D-389 an unknown learnedWordExpiryWindow key falls back to the default`() {
+        assertEquals(
+            LearnedWordExpiryWindow.DEFAULT,
+            SettingsMapper.toLearnedWordExpiryWindow(RawSettings(learnedWordExpiryWindowKey = "bogus"))
+        )
     }
     
     

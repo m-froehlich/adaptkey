@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
+import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -48,7 +49,8 @@ data class RawSettings(
     val doubleTapBackspaceUndo: Boolean = false,
     val autoSplitModeKey: String? = null,
     val autocorrectAggressivenessKey: String? = null,
-    val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
+    val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
+    val learnedWordExpiryWindowKey: String? = null
 )
 
 /**
@@ -203,6 +205,17 @@ object SettingsMapper {
     }
     
     /**
+     * Resolves the D-389 learned-word expiry window, falling back to the spec default for an unknown,
+     * blank or missing stored value (the validation point for this enum-valued setting).
+     *
+     * @param raw the raw stored values
+     * @return the resolved [LearnedWordExpiryWindow]
+     */
+    fun toLearnedWordExpiryWindow(raw: RawSettings): LearnedWordExpiryWindow {
+        return LearnedWordExpiryWindow.fromKey(raw.learnedWordExpiryWindowKey)
+    }
+    
+    /**
      * D-407: whether autocorrect may ever silently apply a correction - derived from the *same* raw C-22
      * value [toAutocorrectAggressiveness] resolves, not a separate stored toggle any more (D-234's original,
      * now-merged setting). False only for the literal [AutocorrectAggressiveness.OFF_KEY]; every other
@@ -252,7 +265,8 @@ object SettingsMapper {
             autocorrectAggressiveness = toAutocorrectAggressiveness(raw),
             sustainedLanguageSwitchThreshold = raw.sustainedLanguageSwitchThreshold.coerceIn(
                 MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
-            )
+            ),
+            learnedWordExpiryWindow = toLearnedWordExpiryWindow(raw)
         )
     }
 }

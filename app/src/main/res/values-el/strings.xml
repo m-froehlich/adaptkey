@@ -145,6 +145,12 @@
     <string name="d177_learned_words_title">Λέξεις που έμαθε το πληκτρολόγιο</string>
     <string name="d177_learned_words_summary">Δες ή αφαίρεσε λέξεις που έμαθε μόνο του το πληκτρολόγιο από τη δική σου πληκτρολόγηση - ακόμη κι αν δεν εμφανίζονται ποτέ ως πρόταση.</string>
 
+    <string name="d389_title">Ξέχασμα αχρησιμοποίητων λέξεων</string>
+    <string name="d389_summary">Πόσο καιρό μπορεί να μείνει αχρησιμοποίητη μια λέξη πριν ξεμαθευτεί αυτόματα. Η εκ νέου χρήση επαναφέρει το ρολόι.</string>
+    <string name="d389_window_early">Νωρίς</string>
+    <string name="d389_window_medium">Μεσαία</string>
+    <string name="d389_window_late">Αργά</string>
+
     <string name="d177_expiry_title">Διάρκεια μνήμης ξεχασμένων λέξεων</string>
     <string name="d177_expiry_summary">Πόσο καιρό παραμένει σε αναμονή μια αφαιρεμένη λέξη πριν μπορέσει να ξαναμαθευτεί σιωπηλά (1–30 ημέρες).</string>
 

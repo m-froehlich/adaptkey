@@ -518,9 +518,10 @@ non-trivial changes).
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
-  - **D-389 - OPEN.** Learned words could expire after a configurable period of disuse (proposed default 3
-    months or a year; frequent use should extend the window). User's own suggested control: a coarse
-    früh/mittel/spät setting, not a raw duration.
+  - **D-389 - RESOLVED (§344, v1.0.96).** Learned words now expire after a configurable period of disuse -
+    see spec W-05/C-24. New C-24 setting (früh/mittel/spät = 3/6/12 months, default mittel), a once-a-day
+    sweep across every installed language's own learned-word store, un-learning (`DictionaryStore.forget`)
+    whatever has gone untouched (`last_touched`, D-388) past the configured window.
   - **D-390 - OPEN.** Sentence-start auto-capitalisation must tolerate multi-part abbreviations (`"p. a."`/
     `"i. d. R."`) - a wrongly-applied capital must be retroactively corrected back once the abbreviation
     completes. Explicitly asked to be designed as a *general* rule, not a special case for one example.
@@ -720,6 +721,23 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§344 (v1.0.96): D-389 implemented - learned words now expire after a configurable period of disuse.**
+  Design confirmed with the user first: 3/6/12 months for früh/mittel/spät (new `LearnedWordExpiryWindow`
+  enum, `EARLY`/`MEDIUM`/`LATE`, default `MEDIUM`), scoped to individual learned words only (bigrams/trigrams
+  have no `last_touched` column yet), a once-a-day sweep, new C-24 setting directly beneath the Learned Words
+  editor's own row. New pure `LearnedWordExpirySweep.sweep(store, now, window)` reuses only existing
+  `DictionaryStore` methods (`learnedWords()`/`learnedFrequencyOf()`/`forget()` - the same permanent removal
+  G-04's drag-to-trash performs) - no new interface method or SQL needed. `AdaptKeyService.
+  maybeSweepExpiredLearnedWords()` runs on `loadDictionariesAsync()`'s own background thread, across every
+  installed language's own store, throttled against a new internal-only stored timestamp (excluded from
+  backup export). New setting wired through the full existing pipeline (`SettingsStore`/`RawSettings`/
+  `SettingsMapper`/`AdaptSettings`), localised into all three languages. 12 new tests
+  (`LearnedWordExpiryWindowTest`, `LearnedWordExpirySweepTest`, 2 `SettingsMapperTest` cases); every
+  pre-existing test passes unchanged. 1157 → 1169 unit tests, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Spec: new W-05 (§13) and C-24 (§10 settings table). `versionCode` 399 →
+  400, `versionName` `"1.0.95"` → `"1.0.96"`. **Not yet device-confirmed** - the daily throttle and
+  multi-language sweep are real-device-timing behaviour no unit test can exercise end to end.
 
 - **§343 (v1.0.95): D-414-followup (v2) - the Reclaim chip could show with nothing genuinely at the caret.**
   Root cause: `reclaimPossible()` read `getTextBeforeCursor`/`getTextAfterCursor` as two separate Binder

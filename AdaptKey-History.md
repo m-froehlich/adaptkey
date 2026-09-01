@@ -16839,3 +16839,60 @@ do.
 No new tests - the same untested `InputConnection` glue as §341/§342. `:app:assembleRelease`/
 `:app:testDebugUnitTest` green, 1157 unit tests unchanged. Spec: S-10 gained a short addendum. `versionCode`
 398 -> 399, `versionName` `"1.0.94"` -> `"1.0.95"`. Not yet device-confirmed.
+
+## §344 - D-389 implemented: learned words now expire after a configurable period of disuse (v1.0.96)
+
+Backlog item found and discussed before implementation, per the standing convention. Design confirmed with
+the user directly: 3/6/12 months for früh/mittel/spät, scoped to individual learned words only (not
+bigrams/trigrams, which carry no `last_touched` column yet - D-365/D-366 left that a deliberately separate,
+not-yet-built extension), a once-a-day sweep, and the new setting placed directly beneath the Learned Words
+editor's own entry.
+
+**Mechanism.** New `LearnedWordExpiryWindow` enum (`EARLY`/`MEDIUM`/`LATE` = 90/180/365 days, `DEFAULT` =
+`MEDIUM`), following the exact `AutoSplitMode`/`AutocorrectAggressiveness` shape (a `fromKey()` companion
+resolving a stored preference value, falling back to the default for anything null/blank/unrecognised) - and
+a new, pure, Android-free `LearnedWordExpirySweep.sweep(store, now, window)`, unit-testable against
+`InMemoryDictionaryStore` exactly like every other dictionary-layer helper in this project. It reuses only
+already-existing `DictionaryStore` interface methods - `learnedWords()` to enumerate, `learnedFrequencyOf()`
+for each entry's own `lastTouched` stamp (D-388/D-411), `forget()` to remove - so no new interface method or
+SQL query was needed at all; a word reinforced since it was first learned naturally keeps surviving, since
+every `learn()` write already refreshes its own `lastTouched`.
+
+`forget()` is deliberately reused rather than a new deletion primitive - the exact same permanent removal
+G-04's drag-to-trash already performs, matching the feature's own name ("entlernt") rather than inventing a
+softer demotion the user never asked for.
+
+**Daily throttling and multi-language scope.** `AdaptKeyService.loadDictionariesAsync()` already loads the
+real per-language SQLite stores off the main thread before installing them (avoiding the ANR a synchronous
+~0.5M-row SQLite open would cause) - the new `maybeSweepExpiredLearnedWords()` runs on that same background
+thread, right after the real stores load and before they are ever installed, so any SQLite deletes (a rare
+first run, or one after a long gap, could plausibly touch a meaningful number of rows) never touch the main
+thread. Throttled against a new internal-only stored timestamp (`d389_learned_word_expiry_last_sweep`, not a
+settings-screen row, excluded from backup export the same way `KEY_CALIBRATION_OFFERED` already is) rather
+than the service's own process lifecycle - a short-lived IME service that restarts often must not re-run this
+every time it starts. Runs across every entry of `stores.values` (every installed language's own store), not
+only the currently active one - each language accumulates its learned vocabulary independently (D-280), so a
+language not currently in use would otherwise never have its own stale words swept at all.
+
+**Setting.** New C-24, a `ListPreference` (mirroring C-06's own three/four-way threshold picker exactly:
+`entries`/`entryValues` arrays resolving through `strings.xml`, no bespoke Activity code needed) placed
+directly beneath the existing "Gelernte Wörter" row in the Dictionary settings category, per explicit
+placement instruction. Localised into all three shipped languages, with the German labels using the user's
+own literal words ("Früh"/"Mittel"/"Spät"). Wired through the full existing settings pipeline
+(`SettingsStore` key + default, `RawSettings`/`SettingsMapper.toLearnedWordExpiryWindow`, `AdaptSettings.
+learnedWordExpiryWindow`) - the same shape every other enum-valued setting in this codebase already uses, so
+`prefsListener`'s existing blanket "any change reloads settings" listener picks it up automatically with no
+new wiring.
+
+12 new tests: `LearnedWordExpiryWindowTest` (default/day-counts/key-resolution, mirroring
+`AutoSplitModeTest`), `LearnedWordExpirySweepTest` (recent word survives; long-untouched word expires;
+re-learning resets the clock and rescues a word that would otherwise have expired; only words past the
+*configured* window expire, not every learned word; the same age survives a longer window that would have
+expired it under a shorter one; a bundled dictionary word is never touched), and two `SettingsMapperTest`
+cases for the new resolution/fallback. Every pre-existing test passes unchanged. 1157 -> 1169 unit tests, all
+green.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: new W-05 (§13) and C-24 (§10 settings table).
+`versionCode` 399 -> 400, `versionName` `"1.0.95"` -> `"1.0.96"`. Not yet device-confirmed - in particular, the
+daily throttle and the "sweeps every installed language" claim are both real-device-timing/multi-language
+behaviour no unit test can exercise end to end.

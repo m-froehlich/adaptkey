@@ -43,6 +43,20 @@
         <item>high</item>
     </string-array>
 
+    <!-- D-389 learned-word expiry window (label / stored value) - the user's own suggested coarse
+         früh/mittel/spät choice, not a raw duration slider. -->
+    <string-array name="d389_expiry_window_labels">
+        <item>@string/d389_window_early</item>
+        <item>@string/d389_window_medium</item>
+        <item>@string/d389_window_late</item>
+    </string-array>
+
+    <string-array name="d389_expiry_window_values">
+        <item>early</item>
+        <item>medium</item>
+        <item>late</item>
+    </string-array>
+
     <!-- D-352 auto-split mode (label / stored value, matching AutoSplitMode's own enum names). -->
     <!-- D-409: "Off" leftmost, matching C-22's own slider order (see below). -->
     <string-array name="d352_auto_split_mode_labels">

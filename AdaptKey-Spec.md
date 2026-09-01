@@ -1168,6 +1168,25 @@ that merely happened to start a sentence (`"das"` -> `"Das"`) must not be mistak
 and start counting toward promotion. Only a difference reaching beyond the first character (as any genuine
 deliberately-typed casing like an acronym does) is eligible.
 
+### W-05 - Automatic Expiry of Unused Learned Words *(D-389, C-24)*
+A learned word that has gone untouched (never reinforced by a further commit, re-cased, or otherwise
+re-learned) longer than a configurable window is automatically un-learned - the same permanent, irreversible
+removal G-04's drag-to-trash performs, not a mere frequency demotion. "Untouched" reads the same
+`last_touched` stamp D-388's own recency sort already uses, so ordinary continued use of a word resets its
+own clock for free; nothing separate tracks "usage count" for this purpose.
+
+The window is a coarse three-way choice (C-24, "früh"/"mittel"/"spät" - 3/6/12 months respectively), not a
+raw duration control, per the user's own explicit preference - default "mittel". The setting sits directly
+beneath the Learned Words editor's own entry in the Dictionary settings category, immediately visible from
+the one place a user would think to look for it.
+
+Runs as a small, once-a-day housekeeping sweep (throttled against the real time it last actually ran, not
+this service's own process lifecycle), across every installed language's own learned-word store, not only
+the currently active one - each language accumulates its own learned vocabulary independently (§10/D-280),
+so a language not currently in use would otherwise never have its own stale entries swept at all. Deliberately
+scoped to individual learned words alone, not the learned bigram/trigram tables (S-07) - those carry no
+`last_touched` column of their own yet, a deliberately separate, not-yet-built extension (D-365/D-366).
+
 ---
 
 ## 14. Extra Row (Swipe-Up Panel)
@@ -1274,6 +1293,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
 | C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
 | C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
+| C-24 | Learned-word expiry window (W-05, D-389) | Early / Medium / Late (~3 / 6 / 12 months) | Medium |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.

@@ -69,6 +69,7 @@ import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
 import de.froehlichmedia.adaptkey.dictionary.InMemoryDictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog
+import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep
 import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
 import de.froehlichmedia.adaptkey.dictionary.PendingLearnStore
 import de.froehlichmedia.adaptkey.dictionary.SplitResult
@@ -924,8 +925,33 @@ class AdaptKeyService : InputMethodService() {
     private fun loadDictionariesAsync() {
         Thread {
             val loaded = DictionaryLoader.loadStores(this)
+            maybeSweepExpiredLearnedWords(loaded)
             handler.post { installStores(loaded) }
         }.start()
+    }
+    
+    /**
+     * D-389: once a day (throttled against the last real run, not this service's own lifecycle - a
+     * short-lived service restarting repeatedly must not re-run this every time it starts), un-learns
+     * every learned word - across every installed language, not only the currently active one - that has
+     * gone untouched longer than [AdaptSettings.learnedWordExpiryWindow] (see [LearnedWordExpirySweep] for
+     * the actual sweep logic). Called from the same background thread [loadDictionariesAsync] already
+     * loads the real per-language stores on, before they are ever installed onto the main thread - a rare
+     * first run (or one after a long gap) could otherwise un-learn a meaningful number of words in one
+     * pass, and per-word `forget()` SQLite deletes belong off the main thread the same way every other
+     * per-language load already is.
+     *
+     * @param loadedStores the just-loaded real per-language stores, not yet installed onto [stores]
+     */
+    private fun maybeSweepExpiredLearnedWords(loadedStores: Map<Language, DictionaryStore>) {
+        val prefs = SettingsStore.prefs(this)
+        val now = System.currentTimeMillis()
+        val lastSweep = prefs.getLong(SettingsStore.KEY_LEARNED_WORD_EXPIRY_LAST_SWEEP, 0L)
+        if (now - lastSweep < DAY_MILLIS) {
+            return
+        }
+        loadedStores.values.forEach { store -> LearnedWordExpirySweep.sweep(store, now, settings.learnedWordExpiryWindow) }
+        prefs.edit().putLong(SettingsStore.KEY_LEARNED_WORD_EXPIRY_LAST_SWEEP, now).apply()
     }
     
     override fun onCreateInputView(): View {
