@@ -16896,3 +16896,28 @@ green.
 `versionCode` 399 -> 400, `versionName` `"1.0.95"` -> `"1.0.96"`. Not yet device-confirmed - in particular, the
 daily throttle and the "sweeps every installed language" claim are both real-device-timing/multi-language
 behaviour no unit test can exercise end to end.
+
+## §345 - D-389-followup: a "Nie" option added to C-24, and made the default (v1.0.97)
+
+Immediate follow-up feedback right after §344 shipped: expiring learned words should be opt-in, not
+opt-out by default - a fourth `NEVER` value added to `LearnedWordExpiryWindow`, and `DEFAULT` moved from
+`MEDIUM` to it. `days` changed from `Int` to `Int?` (`NEVER` is `null`) - a genuine "no expiry at all" state
+needs to be structurally distinct from a merely very long window, not simulated with a sentinel value that
+`LearnedWordExpirySweep` would still have to compute a cutoff against; the sweep now short-circuits to an
+empty result the moment `window.days` is null, never even calling `learnedWords()`. Placed first in both the
+enum and the `d389_expiry_window_values`/`_labels` arrays, mirroring C-06's own existing "the off state leads"
+ordering.
+
+New C-24 stored value `"never"`, `ListPreference` default changed from `"medium"` to `"never"`, all three
+languages' "Nie"/"Never"/"Ποτέ" labels added. Spec W-05/C-24 updated (default now "nie"; the phrasing
+explicitly frames it as the user's own opt-in requirement: "expiring the user's own accumulated vocabulary is
+an opt-in behaviour, never something that happens silently unless deliberately turned on").
+
+2 new tests (`NEVER has no day count`, a sweep test confirming `NEVER` expires nothing regardless of age);
+every §344 test still passes (`EARLY`/`MEDIUM`/`LATE` day counts and cutoff behaviour unchanged), with the
+three call sites reading `LearnedWordExpiryWindow.EARLY.days` in test code updated to force-unwrap
+(`EARLY`/`MEDIUM`/`LATE` are still guaranteed non-null by construction; only `NEVER` is ever null). 1169 ->
+1171 unit tests, all green.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 400 -> 401, `versionName` `"1.0.96"` ->
+`"1.0.97"`. Not yet device-confirmed.

@@ -1175,10 +1175,11 @@ removal G-04's drag-to-trash performs, not a mere frequency demotion. "Untouched
 `last_touched` stamp D-388's own recency sort already uses, so ordinary continued use of a word resets its
 own clock for free; nothing separate tracks "usage count" for this purpose.
 
-The window is a coarse three-way choice (C-24, "früh"/"mittel"/"spät" - 3/6/12 months respectively), not a
-raw duration control, per the user's own explicit preference - default "mittel". The setting sits directly
-beneath the Learned Words editor's own entry in the Dictionary settings category, immediately visible from
-the one place a user would think to look for it.
+The window is a coarse choice (C-24, "nie"/"früh"/"mittel"/"spät" - never, or 3/6/12 months respectively),
+not a raw duration control, per the user's own explicit preference - default **"nie"**: expiring the user's
+own accumulated vocabulary is an opt-in behaviour, never something that happens silently unless deliberately
+turned on. The setting sits directly beneath the Learned Words editor's own entry in the Dictionary settings
+category, immediately visible from the one place a user would think to look for it.
 
 Runs as a small, once-a-day housekeeping sweep (throttled against the real time it last actually ran, not
 this service's own process lifecycle), across every installed language's own learned-word store, not only
@@ -1293,7 +1294,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
 | C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
 | C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
-| C-24 | Learned-word expiry window (W-05, D-389) | Early / Medium / Late (~3 / 6 / 12 months) | Medium |
+| C-24 | Learned-word expiry window (W-05, D-389) | Never / Early / Medium / Late (~3 / 6 / 12 months) | Never |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.

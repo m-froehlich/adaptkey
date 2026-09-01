@@ -188,8 +188,8 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `D-389 learnedWordExpiryWindow resolves from the stored key, defaulting to MEDIUM`() {
-        assertEquals(LearnedWordExpiryWindow.MEDIUM, SettingsMapper.toAdaptSettings(RawSettings()).learnedWordExpiryWindow)
+    fun `D-389 learnedWordExpiryWindow resolves from the stored key, defaulting to NEVER`() {
+        assertEquals(LearnedWordExpiryWindow.NEVER, SettingsMapper.toAdaptSettings(RawSettings()).learnedWordExpiryWindow)
         assertEquals(
             LearnedWordExpiryWindow.EARLY,
             SettingsMapper.toAdaptSettings(RawSettings(learnedWordExpiryWindowKey = "early")).learnedWordExpiryWindow

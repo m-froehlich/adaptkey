@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.dictionary
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 /**
@@ -12,8 +13,13 @@ import org.junit.jupiter.api.Test
 class LearnedWordExpiryWindowTest {
     
     @Test
-    fun `the default is medium`() {
-        assertEquals(LearnedWordExpiryWindow.MEDIUM, LearnedWordExpiryWindow.DEFAULT)
+    fun `the default is never`() {
+        assertEquals(LearnedWordExpiryWindow.NEVER, LearnedWordExpiryWindow.DEFAULT)
+    }
+    
+    @Test
+    fun `never has no day count`() {
+        assertNull(LearnedWordExpiryWindow.NEVER.days)
     }
     
     @Test
@@ -25,6 +31,7 @@ class LearnedWordExpiryWindowTest {
     
     @Test
     fun `known keys resolve regardless of case and surrounding space`() {
+        assertEquals(LearnedWordExpiryWindow.NEVER, LearnedWordExpiryWindow.fromKey("never"))
         assertEquals(LearnedWordExpiryWindow.EARLY, LearnedWordExpiryWindow.fromKey("early"))
         assertEquals(LearnedWordExpiryWindow.MEDIUM, LearnedWordExpiryWindow.fromKey("MEDIUM"))
         assertEquals(LearnedWordExpiryWindow.LATE, LearnedWordExpiryWindow.fromKey("  late "))

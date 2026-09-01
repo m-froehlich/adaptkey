@@ -147,6 +147,7 @@
 
     <string name="d389_title">Forget unused words</string>
     <string name="d389_summary">How long a learned word may go unused before it is automatically un-learned. Using it again resets the clock.</string>
+    <string name="d389_window_never">Never</string>
     <string name="d389_window_early">Early</string>
     <string name="d389_window_medium">Medium</string>
     <string name="d389_window_late">Late</string>

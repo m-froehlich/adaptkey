@@ -24,12 +24,14 @@ object LearnedWordExpirySweep {
      * @param store the dictionary store to sweep
      * @param now the current time (epoch millis) - injected, not read from the wall clock, so a caller
      *        (and its own tests) controls it explicitly
-     * @param window how long a word may go untouched before it expires
+     * @param window how long a word may go untouched before it expires; [LearnedWordExpiryWindow.NEVER]
+     *        (`days == null`) skips the sweep entirely, never un-learning anything
      * @return the words that were un-learned, in no particular order (for logging/diagnostics; callers that
      *         only care about the sweep having happened at all can ignore the return value)
      */
     fun sweep(store: DictionaryStore, now: Long, window: LearnedWordExpiryWindow): List<String> {
-        val cutoff = now - window.days * DAY_MILLIS
+        val days = window.days ?: return emptyList()
+        val cutoff = now - days * DAY_MILLIS
         val expired = store.learnedWords()
             .map { it.word }
             .filter { word -> (store.learnedFrequencyOf(word)?.lastTouched ?: now) < cutoff }

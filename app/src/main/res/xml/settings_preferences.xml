@@ -97,7 +97,7 @@
             android:summary="@string/d389_summary"
             android:entries="@array/d389_expiry_window_labels"
             android:entryValues="@array/d389_expiry_window_values"
-            android:defaultValue="medium" />
+            android:defaultValue="never" />
 
         <SeekBarPreference
             android:key="d177_pending_blacklist_expiry_days"

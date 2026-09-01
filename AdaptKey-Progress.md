@@ -518,10 +518,11 @@ non-trivial changes).
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
-  - **D-389 - RESOLVED (§344, v1.0.96).** Learned words now expire after a configurable period of disuse -
-    see spec W-05/C-24. New C-24 setting (früh/mittel/spät = 3/6/12 months, default mittel), a once-a-day
-    sweep across every installed language's own learned-word store, un-learning (`DictionaryStore.forget`)
-    whatever has gone untouched (`last_touched`, D-388) past the configured window.
+  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97).** Learned words now expire after a configurable period
+    of disuse - see spec W-05/C-24. New C-24 setting (nie/früh/mittel/spät = never/3/6/12 months, default
+    **nie**, §345's own follow-up fix - opt-in, not opt-out), a once-a-day sweep across every installed
+    language's own learned-word store, un-learning (`DictionaryStore.forget`) whatever has gone untouched
+    (`last_touched`, D-388) past the configured window.
   - **D-390 - OPEN.** Sentence-start auto-capitalisation must tolerate multi-part abbreviations (`"p. a."`/
     `"i. d. R."`) - a wrongly-applied capital must be retroactively corrected back once the abbreviation
     completes. Explicitly asked to be designed as a *general* rule, not a special case for one example.
@@ -721,6 +722,17 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§345 (v1.0.97): D-389-followup - added a "Nie" (Never) option to C-24, made it the default.**
+  Immediate feedback right after §344: expiring learned words should be opt-in, not opt-out by default.
+  `LearnedWordExpiryWindow` gained a fourth `NEVER` value (`days: Int?` = null - a genuine "no expiry"
+  state, not a sentinel large number), `DEFAULT` moved from `MEDIUM` to `NEVER`, `LearnedWordExpirySweep`
+  short-circuits to an empty result when `window.days` is null. New stored value `"never"`, placed first in
+  the enum/arrays (mirroring C-06's own "off state leads" ordering), `ListPreference` default changed to
+  `"never"`, all three languages' labels added ("Nie"/"Never"/"Ποτέ"). 2 new tests; every §344 test still
+  passes. 1169 → 1171 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec
+  W-05/C-24 updated. `versionCode` 400 → 401, `versionName` `"1.0.96"` → `"1.0.97"`. **Not yet
+  device-confirmed.**
 
 - **§344 (v1.0.96): D-389 implemented - learned words now expire after a configurable period of disuse.**
   Design confirmed with the user first: 3/6/12 months for früh/mittel/spät (new `LearnedWordExpiryWindow`

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test
 class LearnedWordExpirySweepTest {
     
     private val dayMillis = 24 * 60 * 60 * 1000L
+    private val earlyDays = LearnedWordExpiryWindow.EARLY.days!!
     
     @Test
     fun `a word touched well within the window survives`() {
@@ -33,7 +34,7 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("apfel", null)
-        now += LearnedWordExpiryWindow.EARLY.days * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         
         val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
@@ -46,10 +47,10 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("apfel", null)
-        now += LearnedWordExpiryWindow.EARLY.days * dayMillis - 1
+        now += earlyDays * dayMillis - 1
         // Touched again just before it would have expired - the clock restarts from here.
         store.learn("apfel", null)
-        now += LearnedWordExpiryWindow.EARLY.days * dayMillis - 1
+        now += earlyDays * dayMillis - 1
         
         val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
@@ -62,7 +63,7 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("alt", null)
-        now += LearnedWordExpiryWindow.EARLY.days * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         store.learn("neu", null)
         
         val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
@@ -77,9 +78,22 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("apfel", null)
-        now += LearnedWordExpiryWindow.EARLY.days * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         
         val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.LATE)
+        
+        assertTrue(expired.isEmpty())
+        assertTrue(store.isKnownWord("apfel"))
+    }
+    
+    @Test
+    fun `NEVER expires nothing regardless of how long a word has gone untouched`() {
+        var now = 0L
+        val store = InMemoryDictionaryStore(clock = { now })
+        store.learn("apfel", null)
+        now += 999L * dayMillis
+        
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.NEVER)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("apfel"))

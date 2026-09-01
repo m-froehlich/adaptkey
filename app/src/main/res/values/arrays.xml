@@ -44,14 +44,17 @@
     </string-array>
 
     <!-- D-389 learned-word expiry window (label / stored value) - the user's own suggested coarse
-         früh/mittel/spät choice, not a raw duration slider. -->
+         nie/früh/mittel/spät choice, not a raw duration slider. D-389-followup: "never" added, first
+         (the default), matching C-06's own "off state leads" ordering above. -->
     <string-array name="d389_expiry_window_labels">
+        <item>@string/d389_window_never</item>
         <item>@string/d389_window_early</item>
         <item>@string/d389_window_medium</item>
         <item>@string/d389_window_late</item>
     </string-array>
 
     <string-array name="d389_expiry_window_values">
+        <item>never</item>
         <item>early</item>
         <item>medium</item>
         <item>late</item>
