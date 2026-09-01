@@ -76,7 +76,16 @@ class SuggestionController(private val config: SuggestionConfig) {
          * fuzzy search is still in flight, so the user knows the keyboard is still looking. Purely
          * informational; a tap does nothing. Replaced by real results (or an empty bar) once the search
          * completes. */
-        LOADING
+        LOADING,
+        
+        /** D-414-followup: a magnet chip shown when the bar would otherwise be empty and a word genuinely
+         * touches the caret (composing empty) that could be reclaimed into composing (D-62) - migrated from
+         * the extra row's own dedicated button, which required an extra swipe-up to reach and only ever
+         * reflected its own enabled/disabled state, not a true visibility toggle. Tapping it performs the
+         * same unconditional, suppression-bypassing, immediate reclaim the button used to. Built and pushed
+         * directly to the suggestion bar, the same "built outside SuggestionController" shape [LOADING]/
+         * [COMPOUND] already use. */
+        RECLAIM
     }
     
     /**

@@ -292,9 +292,11 @@ intents (Caps Lock via long-press, word-start toggle via double-tap, next-letter
 longer compete with each other.
 
 The token stays composing after the toggle, so a further double-tap toggles the same word again (upper →
-lower → upper …), regardless of where the caret sits within it. When no word is currently composing, the
-double-tap simply disarms the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot
-uppercase.
+lower → upper …), regardless of where the caret sits within it. When no word is currently composing but one
+genuinely touches the caret, the double-tap first reclaims it (D-62) before toggling — see the D-414-followup
+addendum below; this works independent of claim state, including where the reactive reclaim-on-caret-move is
+suppressed (D-351). Only when nothing at all touches the caret does the double-tap fall back to simply
+disarming the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot uppercase.
 
 The double-tap delay is configurable via a slider in the Layout settings category, placed directly below the
 long-press delay slider. Default: 400 ms. Range: 200-800 ms, in 10 ms steps.
@@ -345,6 +347,16 @@ specific timing gap can no longer recur, since there is no stored flag left to g
 arms Shift for the next word), tapping back into the previous word to fix a typo, and backspacing to correct
 it - the first Backspace was silently swallowed, the second deleted correctly but left Shift wrongly armed,
 and the wrongly-capitalised state then persisted even after tapping back to the genuine sentence start.
+
+### Addendum to G-05 - Double-Tap Works Independent of Claim State
+D-414-followup: the toggle previously only flipped the currently-*composing* word's first character, so it
+silently did nothing when tapping into an existing word in a field where the reactive caret-move reclaim is
+suppressed (Gemini, D-351) — the word never became composing on its own there, only an explicit action (the
+Reclaim chip, a Backspace) reclaimed it. The toggle now reclaims first whenever nothing is composing yet: the
+same unconditional, suppression-bypassing [reclaimWordAtCaret] the Reclaim chip and a plain Backspace already
+use for exactly this kind of deliberate user action. A word genuinely touching the caret is reclaimed and
+toggled in the same tap-pair; with nothing to reclaim, the call is a safe no-op and the toggle correctly does
+nothing, unchanged from before.
 
 ---
 
@@ -492,6 +504,40 @@ Umlaut.unfoldCandidates + unigramsByPrefix loop, so a typo plus a missing umlaut
 ("twtsachl" → "tatsächlich"). Digit neighbours are skipped (never a word-initial letter); the number of
 variants is capped. Suggestion-only by construction — S-02 (never the exact input) and A-04 (blacklist) apply
 unchanged. Runs in the deferred/background pass (no main-thread cost), so it adds no per-keystroke latency.
+
+### S-10 - Manual Reclaim Chip
+D-62's reclaim (§58) normally fires reactively the moment the caret lands on an existing word - but D-351/
+D-351-followup found real fields (Gemini's search field; Total Commander's rename-date field) whose own
+cursor-handle rendering cannot tolerate that reactive composing-region change, so the reactive mechanism is
+deliberately suppressed there (`reclaimOnCaretMoveSuppressed`). This chip is the explicit, always-available
+workaround: tapping it fires the same underlying reclaim immediately (no debounce - a deliberate single tap
+needs none) and unconditionally, ignoring the suppression entirely, since bypassing it is the chip's whole
+purpose. Not gated to the suppressed fields specifically; available in every field as a general manual
+trigger.
+
+D-414 originally shipped this as a dedicated button in the extra row (§14); D-414-followup migrated it into
+the suggestion bar itself as a true *visibility* toggle rather than an enabled/disabled one - shown only when
+the bar would otherwise be empty (never displaces a real suggestion) and a reclaim is genuinely possible right
+now (composing empty, a real word touches the caret on either side), gone entirely rather than dimmed
+otherwise. The chip and S-07's own post-commit next-word predictions are structurally close to mutually
+exclusive already: an ordinary commit leaves a delimiter, not a letter, touching the caret, so the two are
+almost never both live at once. Its visibility is tracked by a debounced check that is deliberately *never*
+gated by `reclaimOnCaretMoveSuppressed` - only the reactive *reclaim itself* is suppressed in Gemini/Total
+Commander, not this read-only check, so the chip correctly appears exactly where it is needed (a plain tap
+into an older word there) instead of staying hidden until some unrelated action happens to trigger it.
+
+Separately, D-62's own reclaim now also runs, deliberately, in three more cases that used to stay suppressed
+too: a single (non-held) Backspace always reclaims immediately, even in a suppressed field - the suppression
+exists only for the cursor-handle-*drag* case a single keystroke never triggers; a genuine backspace *hold*
+reclaims exactly once, when the hold ends, never on every repeat tick (reclaiming per tick would reintroduce a
+real, previously-felt performance cost for an unrelated reason, D-138); and G-05's double-tap-Shift toggle
+reclaims first when nothing is composing yet (see that addendum).
+
+A Reclaim/Cycle combination (tapping again to cycle through suggestion candidates once already reclaimed) was
+discussed and deliberately not pursued - a real design problem surfaced (a cycled candidate would need its
+own frozen candidate-list snapshot, independent of the live suggestion recomputation the changing composing
+text would otherwise trigger, plus open questions around Backspace-during-cycle and casing) with no
+sufficiently clean resolution yet. Left for a possible future round with a cleaner concept, not implemented.
 
 ---
 
@@ -837,6 +883,12 @@ A small, quiet dot above the space key's own label (see S-05's own "quiet confir
 on-screen indication that the pending state is armed at all, since - unlike the former eager mechanism - there
 is otherwise nothing visible to confirm it before the next real keystroke resolves it.
 
+D-416-followup: the dot is also re-evaluated - and correctly cleared - after a plain caret move away from the
+punctuation mark with nothing typed (a tap elsewhere, a drag), not only once a new word starts composing. It
+previously stayed lit indefinitely in that case, since nothing re-checked it outside a commit/field-entry or
+an actual keystroke starting a new word. Refreshed on the same debounced, composing-empty-caret-move cadence
+S-10's own Reclaim chip already uses.
+
 ---
 
 ## 8. Hyphen Handling
@@ -1118,38 +1170,11 @@ deliberately-typed casing like an acronym does) is eligible.
 An upward swipe anywhere on the keyboard reveals a row sitting above the suggestion bar, hosting: an
 always-visible emoji-panel button (no setting gates it - opening the emoji panel is described under L-03),
 a settings-app shortcut, a session-only touch-zone-visualisation toggle (§17, T-06), a manual credential-mode
-toggle (also flashes on a weak login-field signal, §12), a manual URL-mode toggle (visible only while a
-URL field is focused, §11), and a manual Reclaim button (D-414, see below). A downward swipe closes the row
-first, and a second downward swipe (with the row already closed) dismisses the keyboard (G-03). Activating a
-button in the row does not auto-close it. The clear-clipboard button that used to live here now sits in the
-suggestion bar itself instead (§16, V-03).
-
-**D-414 - Manual Reclaim button.** D-62's reclaim (§58) normally fires reactively the moment the caret lands
-on an existing word - but D-351/D-351-followup found real fields (Gemini's search field; Total Commander's
-rename-date field) whose own cursor-handle rendering cannot tolerate that reactive composing-region change,
-so the reactive mechanism is deliberately suppressed there (`reclaimOnCaretMoveSuppressed`). This button is
-the explicit, always-available workaround: tapping it fires the same underlying reclaim immediately (no
-debounce - a deliberate single tap needs none) and unconditionally, ignoring the suppression entirely, since
-bypassing it is the button's whole purpose. Enabled only while a reclaim is genuinely possible right now
-(composing empty, a real word touches the caret on either side) - dimmed and inert otherwise, rather than
-offering a tap that would silently do nothing. Not gated to the suppressed fields specifically; available in
-every field as a general manual trigger.
-
-D-414-followup: the button's own enabled state is tracked by a debounced check that is deliberately *never*
-gated by `reclaimOnCaretMoveSuppressed` - only the reactive *reclaim itself* is suppressed in Gemini/Total
-Commander, not this read-only check, so the button correctly lights up exactly where it is needed (a plain
-tap into an older word there) instead of staying dark until some unrelated action happens to trigger it.
-Separately, D-62's own reclaim now also runs, deliberately, in two more cases that used to stay suppressed
-too: a single (non-held) Backspace always reclaims immediately, even in a suppressed field - the suppression
-exists only for the cursor-handle-*drag* case a single keystroke never triggers - and a genuine backspace
-*hold* reclaims exactly once, when the hold ends, never on every repeat tick (reclaiming per tick would
-reintroduce a real, previously-felt performance cost for an unrelated reason, D-138).
-
-A Reclaim/Cycle combination (tapping again to cycle through suggestion candidates once already reclaimed) was
-discussed and deliberately not pursued - a real design problem surfaced (a cycled candidate would need its
-own frozen candidate-list snapshot, independent of the live suggestion recomputation the changing composing
-text would otherwise trigger, plus open questions around Backspace-during-cycle and casing) with no
-sufficiently clean resolution yet. Left for a possible future round with a cleaner concept, not implemented.
+toggle (also flashes on a weak login-field signal, §12), and a manual URL-mode toggle (visible only while a
+URL field is focused, §11). A downward swipe closes the row first, and a second downward swipe (with the row
+already closed) dismisses the keyboard (G-03). Activating a button in the row does not auto-close it. The
+clear-clipboard button that used to live here now sits in the suggestion bar itself instead (§16, V-03) - as
+does the manual Reclaim chip that used to live here too (D-414/D-414-followup, §5, S-10).
 
 ---
 

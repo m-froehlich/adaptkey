@@ -16772,3 +16772,50 @@ explicit-lower-case exception; S-01/D-362 gained the bounce description; R-01/D-
 account. `versionCode` 396 -> 397, `versionName` `"1.0.92"` -> `"1.0.93"`. Not yet device-confirmed - four
 real behaviour changes in one round, all worth validating individually on the device before considering this
 settled.
+
+## §342 - D-414-followup: Reclaim button migrated into the suggestion bar; G-05 double-tap now reclaims first (v1.0.94)
+
+**Reclaim button -> suggestion-bar chip.** §341's fix confirmed the button lights up correctly in Gemini, but
+it still lived in the extra row - reachable only via an extra swipe-up, and by explicit request ("Allerdings
+sollte er ja via Visibility-Toggle in die Vorschlagsleiste wandern") it needed to migrate fully into the
+suggestion bar itself as a true visibility toggle (shown/hidden), not the enabled/disabled button it was.
+New `SuggestionController.Kind.RECLAIM`, built and pushed directly the same "outside `SuggestionController`"
+way `LOADING`/`COMPOUND` already are: `showSuggestions()` now pins a single 🧲 chip whenever the bar would
+otherwise be empty and a new `reclaimPossible(ic)` predicate (the `updateReclaimEnabled()` check it replaces,
+now also folding in the login/URL/no-suggestions-field guard `armShiftForNextWord()`'s early-return branch
+used to apply separately) is true. The two existing refresh points - `armShiftForNextWord()` (called after
+every commit) and the suppression-independent `reclaimEnabledRunnable` (§341's own fix for the Gemini case) -
+now call `showSuggestions()` directly instead of pushing to the extra row. A tap dispatches to the identical
+`reclaimWordAtCaret()` the button used to call. The extra-row button itself (`reclaimButton`,
+`OnReclaimClickListener`, `onReclaimClick`, `reclaimEnabled`, `DISABLED_ALPHA`) was removed entirely from
+`ExtraRowView`, not left duplicated alongside the chip. Verified rather than assumed: the chip and S-07's own
+post-commit next-word predictions are structurally close to mutually exclusive already - an ordinary commit
+leaves a delimiter (space/punctuation), not a letter, touching the caret, so `reclaimPossible()` is false in
+the exact moment S-07 would otherwise populate the bar.
+
+**G-05's double-tap-Shift case toggle now works independent of claim state.** Reported directly: typing into
+an old word in Gemini and double-tapping Shift did nothing, because `toggleWordStartImmediate()` only ever
+flipped `composing`'s first character - if the word under the caret was not already reclaimed into composing
+(the normal state in Gemini, where the reactive caret-move reclaim is deliberately suppressed - D-351), there
+was nothing there to flip. Fixed with a one-line implicit reclaim: when `composing` is empty, the function now
+calls `reclaimWordAtCaret()` first - the same safe, unconditional, suppression-bypassing reclaim the button/
+chip and Backspace already perform for exactly this kind of deliberate user action - before attempting the
+case flip. A word genuinely touching the caret is reclaimed and then toggled in one tap-pair; with nothing to
+reclaim, `reclaimWordAtCaret()` is a safe no-op and the toggle correctly does nothing, same as before.
+
+**D-416's "quiet dot" no longer sticks after a plain caret move.** Reported directly: typing a sentence-ending
+mark arms the dot above the space key (the deferred-space visual), and moving the caret elsewhere without
+typing anything left it lit indefinitely. Root cause, confirmed by reading the code: the dot is only ever
+re-evaluated inside `armShiftForNextWord()` (called after a commit or field entry) or the two typing-triggered
+"a new word just started composing" sites - a mere caret move triggers neither, so nothing ever re-checked it.
+Fixed the same way as the reclaim chip above: the computation was factored out into
+`updatePendingSpaceIndicator(ic)` (also now consistently applying the login/URL/no-suggestions-field guard,
+previously only enforced in `armShiftForNextWord()`'s early-return branch) and is now also called from the
+same debounced `reclaimEnabledRunnable` that already refreshes on every composing-empty caret move - so the
+dot is re-evaluated against the caret's new position on exactly the same cadence the reclaim chip already is.
+
+No new tests - all three changes live in the same untested `AdaptKeyService`/`InputConnection`/view glue as
+§341's. `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1157 unit tests unchanged. Spec: R-01/D-414
+rewritten from "extra row button" to "suggestion bar chip"; G-05 gained the independent-of-claim-state
+addendum; A-12/D-416 gained the caret-move-clears-the-dot addendum. `versionCode` 397 -> 398, `versionName`
+`"1.0.93"` -> `"1.0.94"`. Not yet device-confirmed.

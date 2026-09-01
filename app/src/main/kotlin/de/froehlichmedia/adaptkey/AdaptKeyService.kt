@@ -534,15 +534,19 @@ class AdaptKeyService : InputMethodService() {
     private val reclaimWordAtCaretRunnable = Runnable { reclaimWordAtCaret() }
     
     // D-414-followup: a *separate* debounced runnable, scheduled alongside reclaimWordAtCaretRunnable above
-    // but never gated by reclaimOnCaretMoveSuppressed - the manual Reclaim button's own enabled state must
-    // stay live even in a field (Gemini) where the reactive *reclaim itself* is deliberately suppressed,
-    // otherwise the button can never light up in exactly the situation it exists for. Kept genuinely
-    // separate from - not folded into - the reclaim runnable above: it only ever reads (updateReclaimEnabled
-    // never calls setComposingRegion), so it carries none of D-351's own risk, but it still needs the same
-    // debounce discipline (not fired on every intermediate position during a drag) for the same performance
-    // reason the reclaim runnable was debounced for in the first place (D-347/D-350).
+    // but never gated by reclaimOnCaretMoveSuppressed - the manual Reclaim chip's own visibility must stay
+    // live even in a field (Gemini) where the reactive *reclaim itself* is deliberately suppressed, otherwise
+    // the chip can never appear in exactly the situation it exists for. Kept genuinely separate from - not
+    // folded into - the reclaim runnable above: it only ever reads (reclaimPossible() never calls
+    // setComposingRegion), so it carries none of D-351's own risk, but it still needs the same debounce
+    // discipline (not fired on every intermediate position during a drag) for the same performance reason the
+    // reclaim runnable was debounced for in the first place (D-347/D-350).
+    // D-416-followup: also re-checks the pending-space dot for the same reason - a plain caret move away
+    // from a sentence-ending mark previously left it lit, since armShiftForNextWord() (the only other place
+    // that updates it) is never called for a mere caret move either.
     private val reclaimEnabledRunnable = Runnable {
-        currentInputConnection?.let { updateReclaimEnabled(it) }
+        currentInputConnection?.let { updatePendingSpaceIndicator(it) }
+        showSuggestions()
     }
     
     // D-211: the actual search now runs on this dedicated background thread (mirroring the existing
@@ -1028,12 +1032,6 @@ class AdaptKeyService : InputMethodService() {
         row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
         row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
         row.onUrlModeToggleClick = ExtraRowView.OnUrlModeToggleClickListener { toggleUrlModeFromExtraRow() }
-        // D-414: reclaimWordAtCaret() is normally only invoked via the debounced reclaimWordAtCaretRunnable
-        // (see that field's own KDoc) - calling it directly here fires immediately, no debounce needed for a
-        // single deliberate tap, and unconditionally, since the suppression flag only ever gates the
-        // *scheduling* of the reactive call, never this function's own body (see reclaimOnCaretMoveSuppressed's
-        // KDoc) - exactly what D-351/D-351-followup's suppressed fields (Gemini, Total Commander) need.
-        row.onReclaimClick = ExtraRowView.OnReclaimClickListener { reclaimWordAtCaret() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
         row.onSwipeDown = ExtraRowView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         extraRow = row
@@ -1453,7 +1451,7 @@ class AdaptKeyService : InputMethodService() {
                 handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
             }
             // D-414-followup: scheduled unconditionally - see reclaimEnabledRunnable's own KDoc for why the
-            // button's enabled state must not share the reclaim runnable's own suppression gate above.
+            // chip's visibility must not share the reclaim runnable's own suppression gate above.
             if (newSelStart == newSelEnd) {
                 handler.removeCallbacks(reclaimEnabledRunnable)
                 handler.postDelayed(reclaimEnabledRunnable, RECLAIM_DEBOUNCE_MS)
@@ -4971,7 +4969,20 @@ class AdaptKeyService : InputMethodService() {
         } else {
             withCompound
         }
-        setSuggestionBarItems(withLoading)
+        // D-414-followup: migrated from the extra row's own dedicated button - a true visibility toggle
+        // instead of an enabled/disabled one, and shown right where the reclaim would actually land instead
+        // of requiring an extra swipe-up to reach it. Only ever shown when the bar would otherwise be empty
+        // (never displaces a real suggestion/LOADING/COMPOUND chip) and reclaimPossible() is true - see that
+        // function's own KDoc for why the two are structurally close to mutually exclusive already (an
+        // ordinary commit leaves a delimiter, not a letter, touching the caret, so S-07's own next-word
+        // predictions and this chip are almost never both live at once).
+        val ic = currentInputConnection
+        val withReclaim = if (withLoading.isEmpty() && ic != null && reclaimPossible(ic)) {
+            listOf(SuggestionController.DisplayItem(text = "🧲", kind = SuggestionController.Kind.RECLAIM, word = ""))
+        } else {
+            withLoading
+        }
+        setSuggestionBarItems(withReclaim)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.
         suggestionBar?.visibility = View.VISIBLE
@@ -5725,6 +5736,10 @@ class AdaptKeyService : InputMethodService() {
             
             // D-346: purely informational placeholder - a tap does nothing.
             SuggestionController.Kind.LOADING -> Unit
+            
+            // D-414-followup: migrated from the extra row's own button - the identical, always-immediate,
+            // suppression-bypassing reclaim a tap there used to perform.
+            SuggestionController.Kind.RECLAIM -> reclaimWordAtCaret()
         }
     }
     
@@ -5897,10 +5912,10 @@ class AdaptKeyService : InputMethodService() {
         if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             keyboardView?.shifted = false
             keyboardView?.pendingSpaceIndicator = false
-            extraRow?.reclaimEnabled = false
             shiftGuardedArm = false
             shiftArmTime = SystemClock.uptimeMillis()
             fieldMandateOverridden = false
+            showSuggestions()
             return
         }
         val sentenceStart = sentenceStartBefore(ic)
@@ -5908,28 +5923,46 @@ class AdaptKeyService : InputMethodService() {
         shiftGuardedArm = ShiftGrace.isGuardedArm(capsMode, sentenceStart)
         shiftArmTime = SystemClock.uptimeMillis()
         fieldMandateOverridden = false
-        // D-416: mirrors the live deferred-space state on the space bar itself (a quiet visual confirmation
-        // that a space is genuinely pending, since nothing is written to the document yet to show it) - the
-        // same live check handlePunctuationDelimiter itself uses: composing empty (a genuine boundary) and
-        // the real character right before the cursor a bare mark from SENTENCE_PUNCTUATION.
-        keyboardView?.pendingSpaceIndicator = composing.isEmpty() &&
-            ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.let { it in SENTENCE_PUNCTUATION } == true
-        updateReclaimEnabled(ic)
+        updatePendingSpaceIndicator(ic)
+        showSuggestions()
     }
     
     /**
-     * D-414/D-414-followup: pushes the manual Reclaim button's own enabled state - factored out of
-     * [armShiftForNextWord] so it can also be pushed from [reclaimEnabledRunnable], a *separate*, always-on
-     * debounced path that is never gated by [reclaimOnCaretMoveSuppressed] (see that runnable's own KDoc for
-     * why the enabled state must stay live even where the reactive *reclaim itself* is deliberately
-     * suppressed, e.g. Gemini). Mirrors [WordExtent.reclaim]'s own "is there a word touching the caret at
-     * all" truth value - equivalent to checking only the immediately-adjacent character on each side, since a
-     * walk that starts on a non-letter always returns empty. Composing must be empty too - an already-
-     * reclaimed/composing word has nothing further to reclaim. Purely a read (`getTextBeforeCursor`/
-     * `getTextAfterCursor`), never `setComposingRegion` - safe to call regardless of suppression.
+     * D-416/D-416-followup: mirrors the live deferred-space state on the space bar itself (a quiet visual
+     * confirmation that a space is genuinely pending, since nothing is written to the document yet to show
+     * it) - the same live check [handlePunctuationDelimiter] itself uses: composing empty (a genuine
+     * boundary) and the real character right before the cursor a bare mark from [SENTENCE_PUNCTUATION].
+     * Factored out of [armShiftForNextWord] so it can also be refreshed from [reclaimEnabledRunnable] - a
+     * plain caret move away from the punctuation mark (no typing, no commit) previously left the dot lit
+     * indefinitely, since nothing else re-evaluates this outside a commit/field-entry. Never armed in a
+     * login/URL/no-suggestions field - those bypass A-12's deferred-space mechanism entirely (see
+     * [handlePunctuationDelimiter]'s own guard), so the dot would be actively misleading there.
      */
-    private fun updateReclaimEnabled(ic: InputConnection) {
-        extraRow?.reclaimEnabled = composing.isEmpty() &&
+    private fun updatePendingSpaceIndicator(ic: InputConnection) {
+        keyboardView?.pendingSpaceIndicator = loginFieldKind == LoginFieldKind.NONE && !urlMode && !noSuggestionsField &&
+            composing.isEmpty() &&
+            ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.let { it in SENTENCE_PUNCTUATION } == true
+    }
+    
+    /**
+     * D-414/D-414-followup: whether the manual Reclaim chip (migrated from the extra row's own button into
+     * the suggestion bar itself, see [SuggestionController.Kind.RECLAIM]) should currently show - checked
+     * from [showSuggestions] on every call, and refreshed reactively via a direct [showSuggestions] call from
+     * both [armShiftForNextWord] and [reclaimEnabledRunnable] (a *separate*, always-on debounced path that is
+     * never gated by [reclaimOnCaretMoveSuppressed] - see that runnable's own KDoc for why the chip must stay
+     * live even where the reactive *reclaim itself* is deliberately suppressed, e.g. Gemini). A login/URL/
+     * no-suggestions field never offers it, matching every other §6-bypass point in this file. Otherwise
+     * mirrors [WordExtent.reclaim]'s own "is there a word touching the caret at all" truth value - equivalent
+     * to checking only the immediately-adjacent character on each side, since a walk that starts on a
+     * non-letter always returns empty. Composing must be empty too - an already-reclaimed/composing word has
+     * nothing further to reclaim. Purely a read (`getTextBeforeCursor`/`getTextAfterCursor`), never
+     * `setComposingRegion` - safe to call regardless of suppression.
+     */
+    private fun reclaimPossible(ic: InputConnection): Boolean {
+        if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
+            return false
+        }
+        return composing.isEmpty() &&
             (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isLetter() == true ||
                 ic.getTextAfterCursor(1, 0)?.singleOrNull()?.isLetter() == true)
     }
@@ -5983,6 +6016,14 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun toggleWordStartImmediate(view: AdaptKeyboardView) {
         val ic = currentInputConnection
+        // D-414-followup: an explicit double-tap is exactly the kind of deliberate user action that should
+        // reclaim even where the reactive caret-move path is suppressed (Gemini) - mirrors the same reasoning
+        // already applied to a plain Backspace and the manual Reclaim button itself, so the toggle works
+        // regardless of whether the word already happens to be composing. reclaimWordAtCaret() is a safe
+        // no-op when there is nothing to reclaim at the caret.
+        if (composing.isEmpty()) {
+            reclaimWordAtCaret()
+        }
         if (composing.isNotEmpty() && ic != null) {
             flipFirstInComposing()
             composingCaseLocked = true

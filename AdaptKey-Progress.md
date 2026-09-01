@@ -721,6 +721,29 @@ non-trivial changes).
 
 ## Current State
 
+- **§342 (v1.0.94): D-414-followup's Reclaim button migrated into the suggestion bar; G-05's double-tap now**
+  **reclaims first; D-416's "quiet dot" no longer sticks after a plain caret move.** (1) The Reclaim button
+  (§341 confirmed it lights up correctly in Gemini, but it still lived in the extra row) moved into the
+  suggestion bar itself as a true visibility toggle, per explicit request. New
+  `SuggestionController.Kind.RECLAIM`, pinned by `showSuggestions()` whenever the bar would otherwise be empty
+  and a new `reclaimPossible(ic)` predicate is true (replaces `updateReclaimEnabled()`, now also folding in
+  the login/URL/no-suggestions-field guard). `armShiftForNextWord()` and the suppression-independent
+  `reclaimEnabledRunnable` now call `showSuggestions()` directly instead of pushing to the extra row; a tap
+  dispatches to the same `reclaimWordAtCaret()` as before. The extra-row button and all its supporting code
+  were removed from `ExtraRowView` entirely, not left duplicated. (2) G-05's double-tap-Shift toggle only
+  ever flipped an already-*composing* word, so it silently did nothing in Gemini (reactive reclaim
+  suppressed there, D-351) until the word happened to already be composing. `toggleWordStartImmediate()` now
+  reclaims first (`reclaimWordAtCaret()`) when nothing is composing yet - the same safe, unconditional,
+  suppression-bypassing call the chip/Backspace already use. (3) The deferred-space "quiet dot" above the
+  space key was only ever re-evaluated inside `armShiftForNextWord()` (commit/field-entry) or a
+  new-word-starts-composing keystroke - a plain caret move away from the punctuation mark with nothing typed
+  left it lit indefinitely. Factored into `updatePendingSpaceIndicator(ic)`, now also called from
+  `reclaimEnabledRunnable` on the same debounced composing-empty-caret-move cadence the Reclaim chip already
+  uses. No new tests (all three live in the same untested `AdaptKeyService`/`InputConnection`/view glue).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1157 unit tests unchanged. Spec: R-01 rewritten
+  (Reclaim moved to new §5 S-10), G-05 and A-12/D-416 each gained an addendum. `versionCode` 397 → 398,
+  `versionName` `"1.0.93"` → `"1.0.94"`. **Not yet device-confirmed.**
+
 - **§341 (v1.0.93): four fixes from real device feedback on D-362/D-416/D-414.** (1) The loading chip's dots
   now start full and bounce (`3→2→1→2→3…`) instead of cycling forward from one - the chip is often visible
   only briefly, so the old cycle mostly showed a single, glitch-looking dot. (2) An explicit lower-case
