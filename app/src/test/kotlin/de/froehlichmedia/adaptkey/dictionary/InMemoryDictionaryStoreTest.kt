@@ -497,4 +497,19 @@ class InMemoryDictionaryStoreTest {
         store.setLearnedLemma("nie-gelernt", "irgendwas")
         assertFalse(store.isKnownWord("nie-gelernt"))
     }
+    
+    @Test
+    fun `D-389-followup learnedWordsWithTimestamp carries frequency, category and lemma alongside the timestamp`() {
+        store.learn("Hund", null, categoryHint = PartOfSpeech.NOUN)
+        store.learn("Hunde", null)
+        store.setLearnedLemma("hunde", "hund")
+        
+        val entries = store.learnedWordsWithTimestamp().associateBy { it.word.lowercase() }
+        
+        assertEquals(1L, entries.getValue("hund").frequency)
+        assertEquals(setOf(PartOfSpeech.NOUN), entries.getValue("hund").partsOfSpeech)
+        assertEquals(null, entries.getValue("hund").lemma)
+        assertEquals("hund", entries.getValue("hunde").lemma)
+        assertTrue(entries.getValue("hund").lastTouched > 0L)
+    }
 }

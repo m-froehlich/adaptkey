@@ -181,6 +181,12 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         return learned.values.sortedWith(compareByDescending<WordEntry> { it.frequency }.thenBy { it.word })
     }
     
+    override fun learnedWordsWithTimestamp(): List<LearnedWordEntry> {
+        return learned.entries.map { (key, entry) ->
+            LearnedWordEntry(entry.word, entry.frequency, learnedTouch[key] ?: 0L, entry.partsOfSpeech, entry.lemma)
+        }
+    }
+    
     override fun markPendingBlacklist(word: String, timestampMillis: Long) {
         pendingBlacklist[word.lowercase()] = timestampMillis
     }

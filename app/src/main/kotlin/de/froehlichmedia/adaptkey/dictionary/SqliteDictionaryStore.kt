@@ -669,21 +669,21 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     /**
-     * D-388: [learnedWords] plus each entry's own `last_touched` stamp, for [de.froehlichmedia.adaptkey.
-     * settings.LearnedWordsActivity]'s own sortable view - not part of the shared [DictionaryStore]
-     * interface (frequency-only ordering, via [learnedWords], is all every other caller needs, e.g.
-     * [de.froehlichmedia.adaptkey.backup.BackupExporter]), and not added onto [WordEntry] itself, which is
-     * shared far too widely across the suggestion/correction engine to carry a field only this one screen
-     * cares about. Unordered - the caller decides the actual display order (alphabetical or by recency).
+     * D-388: [learnedWords] plus each entry's own `last_touched` stamp, originally built only for
+     * [de.froehlichmedia.adaptkey.settings.LearnedWordsActivity]'s own sortable view. Not added onto
+     * [WordEntry] itself, which is shared far too widely across the suggestion/correction engine to carry a
+     * field only a couple of callers care about. Unordered - the caller decides the actual display/
+     * processing order (alphabetical, by recency, or by family for [LearnedWordExpirySweep]).
      *
      * D-404: also carries each entry's own category ([PartOfSpeech] tags, possibly empty/"unbekannt") and
      * base-form link - the editor's own asterisk marker (empty category) and list consolidation (an entry
      * with a non-null [LearnedWordEntry.lemma] is a family member of another row, not shown as its own
-     * top-level entry) both read directly off this.
+     * top-level entry) both read directly off this. D-389-followup: [LearnedWordExpirySweep] uses the same
+     * [LearnedWordEntry.lemma] link to keep a whole word family's expiry decided together.
      *
      * @return every learned entry with its own last-touched timestamp (epoch millis)
      */
-    fun learnedWordsWithTimestamp(): List<LearnedWordEntry> {
+    override fun learnedWordsWithTimestamp(): List<LearnedWordEntry> {
         val result = ArrayList<LearnedWordEntry>()
         db.rawQuery("SELECT word, freq, last_touched, pos, lemma FROM $TABLE_LEARNED", null).use { cursor ->
             while (cursor.moveToNext()) {

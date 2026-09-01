@@ -518,12 +518,14 @@ non-trivial changes).
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
-  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99).** Learned words now expire after a
-    configurable period of disuse - see spec W-05/C-24. C-24 = 1 month / 4 months / 1 year / **Never**
-    (default, §345's own opt-in-not-opt-out fix; §347's own follow-up switched the three finite levels from
-    abstract früh/mittel/spät labels to these concrete durations, in this order), a once-a-day sweep across
-    every installed language's own learned-word store, un-learning (`DictionaryStore.forget`) whatever has
-    gone untouched (`last_touched`, D-388) past the configured window.
+  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99 + §348 v1.0.100).** Learned words now
+    expire after a configurable period of disuse - see spec W-05/C-24. C-24 = 1 month / 4 months / 1 year /
+    **Never** (default, §345's own opt-in-not-opt-out fix; §347's own follow-up switched the three finite
+    levels from abstract früh/mittel/spät labels to these concrete durations, in this order), a once-a-day
+    sweep across every installed language's own learned-word store, un-learning (`DictionaryStore.forget`)
+    whatever has gone untouched (`last_touched`, D-388) past the configured window - except that (§348) a
+    D-404 word family only ever expires as a whole, once every one of its own members has individually gone
+    stale; a single frequently-used member holds the rest of the family alive indefinitely.
   - **D-419 - RESOLVED (§346, v1.0.98).** Every plain `ListPreference` in the settings screen (C-06, C-24)
     now shows its own currently selected entry directly in the main list - previously only C-04 (D-302) and
     the `LabeledSeekBarPreference` sliders (C-21/C-22) did. See spec §20's own D-419 note.
@@ -726,6 +728,21 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§348 (v1.0.100): D-389-followup (v4) - a word family only expires once every member has gone stale.**
+  User's own explicit framing: a single stale member of a D-404 word family must not "tear a hole" in an
+  otherwise-alive family - the whole family now expires together, or a frequently-used member holds the rest
+  alive indefinitely. Needed the `lemma` link on every swept entry, which `learnedWords()` alone doesn't
+  reliably carry (`SqliteDictionaryStore`'s own version never selected it - a pre-existing gap vs.
+  `InMemoryDictionaryStore`'s). Fixed properly: `learnedWordsWithTimestamp()` (word/frequency/lastTouched/
+  category/lemma) promoted from a `SqliteDictionaryStore`-only method onto the shared `DictionaryStore`
+  interface, with a new `InMemoryDictionaryStore` implementation added. `LearnedWordExpirySweep` now groups
+  by `entry.lemma ?: entry.word.lowercase()` and only expires a family once every member is individually
+  stale - an unlinked word is still exactly a family of one, unchanged behaviour. 4 new tests (1
+  `InMemoryDictionaryStoreTest`, 3 `LearnedWordExpirySweepTest` - both directions of "one member keeps the
+  other alive", plus whole-family-expires-together). 1171 → 1175 unit tests, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec W-05 gained the family-expiry addendum.
+  `versionCode` 403 → 404, `versionName` `"1.0.99"` → `"1.0.100"`. **Not yet device-confirmed.**
 
 - **§347 (v1.0.99): D-389-followup (v3) - C-24 shows concrete durations, not abstract labels.** User's own
   reasoning: a person picking this setting wants to know how long an entry actually survives, not a

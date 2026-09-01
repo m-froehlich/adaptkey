@@ -109,4 +109,59 @@ class LearnedWordExpirySweepTest {
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("haus"))
     }
+    
+    @Test
+    fun `D-389-followup a recently reinforced family member keeps a stale sibling alive`() {
+        var now = 0L
+        val store = InMemoryDictionaryStore(clock = { now })
+        store.learn("hund", null)
+        store.learn("hunde", null)
+        store.setLearnedLemma("hunde", "hund")
+        // hund stays untouched from t=0; hunde is reinforced again just before it would have expired.
+        now = oneMonthDays * dayMillis - 1
+        store.learn("hunde", null)
+        now += oneMonthDays * dayMillis
+        
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        
+        assertTrue(expired.isEmpty())
+        assertTrue(store.isKnownWord("hund"))
+        assertTrue(store.isKnownWord("hunde"))
+    }
+    
+    @Test
+    fun `D-389-followup a whole family expires together only once every member has gone stale`() {
+        var now = 0L
+        val store = InMemoryDictionaryStore(clock = { now })
+        store.learn("hund", null)
+        store.learn("hunde", null)
+        store.setLearnedLemma("hunde", "hund")
+        now += oneMonthDays * dayMillis + 1
+        
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        
+        assertEquals(setOf("hund", "hunde"), expired.toSet())
+        assertFalse(store.isKnownWord("hund"))
+        assertFalse(store.isKnownWord("hunde"))
+    }
+    
+    @Test
+    fun `D-389-followup a stale base form is kept alive by a recently reinforced inflected form`() {
+        var now = 0L
+        val store = InMemoryDictionaryStore(clock = { now })
+        store.learn("hund", null)
+        store.learn("hunde", null)
+        store.setLearnedLemma("hunde", "hund")
+        now = oneMonthDays * dayMillis - 1
+        // The base form itself ("hund", lemma == null) is the one reinforced this time - the direction the
+        // family grouping must handle too, not only "an inflection keeps its own base alive".
+        store.learn("hund", null)
+        now += oneMonthDays * dayMillis
+        
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        
+        assertTrue(expired.isEmpty())
+        assertTrue(store.isKnownWord("hund"))
+        assertTrue(store.isKnownWord("hunde"))
+    }
 }

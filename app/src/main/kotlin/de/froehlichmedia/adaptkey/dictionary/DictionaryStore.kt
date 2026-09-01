@@ -182,6 +182,17 @@ interface DictionaryStore {
     fun learnedWords(): List<WordEntry>
     
     /**
+     * D-388: [learnedWords] plus each entry's own `lastTouched` stamp and base-form ([WordEntry.lemma])
+     * link - originally built only for [de.froehlichmedia.adaptkey.settings.LearnedWordsActivity]'s own
+     * sortable view, promoted onto the shared interface (D-389-followup) so
+     * [LearnedWordExpirySweep] can group entries into word families without a store-specific downcast.
+     * Unordered - the caller decides the actual display/processing order.
+     *
+     * @return every learned entry with its own last-touched timestamp (epoch millis) and lemma link
+     */
+    fun learnedWordsWithTimestamp(): List<LearnedWordEntry>
+    
+    /**
      * B-03/D-289: every learned hyphen-joined compound (e.g. "Trogata-Team") whose key starts with [prefix] -
      * the store side of the proactive compound-completion suggestion. The default returns none (fine for the
      * small in-memory store used in tests, which has no such notion); [SqliteDictionaryStore] overrides it

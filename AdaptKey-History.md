@@ -16974,3 +16974,38 @@ green.
 
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 402 -> 403, `versionName` `"1.0.98"` ->
 `"1.0.99"`. Not yet device-confirmed.
+
+## §348 - D-389-followup (v4): a word family expires only once every member has gone stale (v1.0.100)
+
+Immediate follow-up: a D-404 word family (a base form plus its own inflected forms, linked via
+`WordEntry.lemma`) must never lose just one member to the D-389 sweep while the rest survive - "damit es
+nicht ein Loch in die Familie reißt". User's own explicit framing of the intended effect: the whole family
+now expires together, or a frequently-used member holds the rest of the family alive indefinitely.
+
+Needed the lemma link on every entry the sweep looks at, which `learnedWords()` alone does not carry
+(`SqliteDictionaryStore`'s own version never selected the `lemma` column - a pre-existing gap between it and
+`InMemoryDictionaryStore`'s own `learnedWords()`, which happened to return it "for free" since it just hands
+back its raw `WordEntry` values; this only ever mattered once `LearnedWordExpirySweep` needed the field).
+Fixed properly rather than patched around: `learnedWordsWithTimestamp(): List<LearnedWordEntry>` - previously
+a `SqliteDictionaryStore`-only method the Learned Words editor used - promoted onto the shared
+`DictionaryStore` interface (word/frequency/lastTouched/category/lemma in one call), with a new
+`InMemoryDictionaryStore` implementation added so the sweep stays testable without an Android/SQLite
+dependency. `SqliteDictionaryStore`'s own existing implementation needed no logic change, only the `override`
+keyword.
+
+`LearnedWordExpirySweep.sweep()` rewritten around this: every entry is grouped by `entry.lemma ?: entry.word.lowercase()`
+- an inflected form's own lemma link when it has one, its own lower-cased key otherwise, which a base form
+(`lemma == null`) or a genuinely unlinked word both fall into naturally without any special-casing (a "family"
+of exactly one member behaves identically to the pre-family-aware sweep). A family only expires once
+`family.all { it.lastTouched < cutoff }` - i.e. every member individually stale, not just the family's oldest
+or newest member.
+
+4 new tests: `InMemoryDictionaryStoreTest` gained a direct `learnedWordsWithTimestamp()` coverage case
+(frequency/category/lemma/timestamp all present); `LearnedWordExpirySweepTest` gained three - a recently
+reinforced inflected form keeping a stale base form alive, the reverse direction (a reinforced base form
+keeping a stale inflection alive), and the whole family expiring together only once every member is stale.
+Every pre-existing test passes unchanged (an unlinked word is still exactly a family of one). 1171 -> 1175
+unit tests, all green.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: W-05 gained the family-expiry addendum.
+`versionCode` 403 -> 404, `versionName` `"1.0.99"` -> `"1.0.100"`. Not yet device-confirmed.

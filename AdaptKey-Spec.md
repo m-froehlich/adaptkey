@@ -1191,6 +1191,15 @@ so a language not currently in use would otherwise never have its own stale entr
 scoped to individual learned words alone, not the learned bigram/trigram tables (S-07) - those carry no
 `last_touched` column of their own yet, a deliberately separate, not-yet-built extension (D-365/D-366).
 
+D-389-followup: a word that is part of a W-04-style word family (linked via the same base-form link D-404's
+family reprocessing/lookup-linker/manual "Grundform" edit establishes) is never expired on its own - explicit
+user request, so a single stale member does not tear a hole in an otherwise-alive family. A family's own
+effective last-touched moment is the *most recent* stamp among all its members; the whole family is only
+un-learned together, once every single member has individually gone untouched past the window. In practice
+this means a frequently-used family member (e.g. a common inflected form) indefinitely keeps its rarer
+siblings alive too - the intended effect, not a side effect to work around. A word with no family link at
+all (the common case) is simply a family of one, expiring exactly as it would without this rule.
+
 ---
 
 ## 14. Extra Row (Swipe-Up Panel)
