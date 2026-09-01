@@ -1936,6 +1936,14 @@ rather than needing a separate future pass to re-derive it. As of this writing t
 anywhere in the app** - purely descriptive metadata until a future feature consumes it, the same status
 D-368's own `VERB` tag had before this round.
 
+D-404 Tier 1 (see `AdaptKey-Progress.md`) later used this same column, first for the complete noun/verb
+paradigms and subsequently for adjectives: every declined/degree form generated for an already-bundled
+adjective lemma (full 4-case x singular/plural x strong/weak/mixed declension across Positiv/Komparativ/
+Superlativ) is lemma-linked here exactly like a noun or verb form, and the lemma's own row gained the
+`ADJECTIVE` POS tag alongside whatever it already carried (`OTHER,ADJECTIVE` for a word like `schön`,
+mirroring the existing `NOUN,OTHER` multi-tag convention). Still no code reader anywhere in the app for any
+part of speech - remains descriptive metadata.
+
 Migration mechanics deliberately mirror D-388's `last_touched` column precedent, not the more destructive
 `onUpgrade`/`DATABASE_VERSION` path: this project never bumps `DATABASE_VERSION`, since `onUpgrade` drops
 every table including `TABLE_LEARNED` (the user's real, irreplaceable learned words and blacklist) and

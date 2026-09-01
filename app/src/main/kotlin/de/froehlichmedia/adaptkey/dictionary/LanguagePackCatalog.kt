@@ -281,7 +281,36 @@ object LanguagePackCatalog {
             // can never be silently accepted for the wrong language. `dictionaries/de/version.txt` 33 -> 34
             // (dict.tsv/bigram.tsv/hints.tsv themselves unchanged - verified byte-identical after rebuild),
             // `LanguagePackCatalog` version 33 -> 34.
-            version = 34
+            // D-404 Tier 1, adjective paradigms (see AdaptKey-Plan-Adjektive.md / History.md): completes
+            // full declension (4 cases x singular/plural x strong/weak/mixed) x 3 degrees (Positiv/
+            // Komparativ/Superlativ) for every adjective lemma already in `dict.tsv`, same "complete
+            // existing lemmas only, no vocabulary growth" scope as the noun/verb round - verified: only
+            // 274 of 27,957 not-yet-present Wiktionary adjective lemmas have any `bigram.tsv` occurrence at
+            // all (~1%, same near-zero signal that ruled out bulk noun import), so the same call was made
+            // here too. Primary source: `wiktionary_adjektive.tsv` (17,061 lemmas with a full, real
+            // Flexion table extracted directly from Wiktionary - unlike nouns/verbs, no rule engine was
+            // even needed to *generate* these, only to extract them; 3,786 of them are in scope). A real,
+            // confirmed lexical irregularity (`hoch` -> `hoher`/`hohe`, a stem change even in the Positiv)
+            // is exactly why full attested forms were taken directly rather than derived from a generic
+            // suffix rule. The small remainder (20 in-scope lemmas with only bare Positiv/Komparativ/
+            // Superlativ stems, no full table) went through a new, cross-verified rule module
+            // (`adjektiv_deklination.py`: e-elision for `-el`/`-er` stems - "dunkel"->"dunkler", confirmed
+            // never applied before the superlative `-st`/`-est` marker itself - "dunkelste", not
+            // "dunklste"; the dental/sibilant superlative extension after s/ß/z/x/d/t/sch - "heiß"->
+            // "heißeste", "bunt"->"bunteste") - deliberately excludes the closed umlaut-mutation class
+            // (alt/kurz/groß/...), only ever taking an umlauted form when Wiktionary itself attests it,
+            // same scoping precedent as the noun/verb round's strong-verb table. Frequency: new lemma
+            // frequency x 0.5, a real median (not borrowed from nouns/verbs) computed from 8,837 already-
+            // existing dict.tsv form/lemma frequency pairs matched via the Wiktionary form list. Existing
+            // lemma rows also gained the `ADJECTIVE` tag alongside their existing tag (e.g. `schön` is now
+            // `OTHER,ADJECTIVE`) - previously essentially unused (6 of 158,073 rows). Collision rule
+            // unchanged: never write a form already present under any POS. `viel`/`wenig` are not reachable
+            // under Wiktionary's `pos=="adj"` (tagged `adv`/`pron` there) - deliberately excluded rather
+            // than special-cased for two words. Net result: `dict.tsv` 158,073 -> 189,267 rows (+31,194
+            // adjective forms), 3,804 existing lemma rows re-tagged. `dictionaries/de/version.txt` 34 -> 35,
+            // pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 34 -> 35.
+            // No new tests (data-only). Not yet device-confirmed.
+            version = 35
         ),
         Entry(
             Language.GREEK,

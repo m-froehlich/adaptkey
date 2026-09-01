@@ -659,7 +659,9 @@ non-trivial changes).
      (confirmed infeasible at this project's estimated 300,000+ candidate-form scale). Read that file before
      picking this up, don't re-derive the plan from scratch. **RESOLVED — see §322 in Current State: the
      "Wortfamilien" project generated and added the missing paradigms end to end; `AdaptKey-Plan-Wortfamilien.md`
-     was deleted once superseded.**
+     was deleted once superseded.** **Adjectives followed the same way — see §360: full declension x degree
+     for every already-bundled adjective lemma, `AdaptKey-Plan-Adjektive.md` deleted once superseded. Tier 1
+     is now complete for nouns, verbs, and adjectives alike.**
   2. **A lighter cross-reference/lemma-link approach** - keep both inflected forms as separate dictionary
      rows, but link them so ranking/A-01's override-protection logic can tell "same word family" apart from
      "coincidentally similar, unrelated word" (today nothing distinguishes those two cases at all). More
@@ -767,6 +769,73 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§360 (v1.0.112): D-404 Tier 1, adjectives - full German adjective declension x degree paradigm added**
+  **for every already-bundled lemma, closing the last open part of speech from the "Wortfamilien" project**
+  **(§322).** Same scope discipline as nouns/verbs: complete existing lemmas only, no vocabulary growth -
+  verified before starting, not assumed carried over from the noun precedent: of 27,957 Wiktionary adjective
+  lemmas not yet in `dict.tsv`, only 274 (~1%) have any `bigram.tsv` occurrence at all, the same near-zero
+  signal that ruled out bulk noun import, so the same call was made here (user confirmed after seeing the
+  real numbers).
+  
+  Real Wiktionary data checked before any code was written, not assumed from how nouns/verbs worked: German
+  Wiktionary's own adjective entries carry a **complete, real Flexion table** in `wiktextract`'s `forms`
+  array wherever one exists at all (17,061 of 32,202 total lemmas, 3,786 of them in scope) - every case x
+  number x declension-type x degree combination as its own attested entry, not just the three bare degree
+  stems as first assumed from the Wiktionary page itself. This is why `extract_wiktionary_adjektive.py`
+  needed no declension-generation logic of its own for the covered majority - it only had to extract and
+  deduplicate what was already there (predicative multi-word entries like `"er ist schön"` filtered out as
+  phrases, not tokens). A genuine, confirmed lexical irregularity - `hoch` declines as `hoher`/`hohe`/`hohes`
+  (a stem change, not merely an ending, present even in the Positiv) - is exactly why full attested forms
+  were taken directly rather than derived from a generic suffix rule; would have silently produced
+  `hocher`/`hoches` otherwise.
+  
+  The small remainder (20 in-scope lemmas with only bare Positiv/Komparativ/Superlativ stems, no full table;
+  0 lemmas had neither) went through a new rule module, `adjektiv_deklination.py`, cross-verified against
+  real Wiktionary-attested forms for regular words before use (1,296 declined forms checked, 0 real
+  mismatches - the two apparent "mismatches" found first were `dunkel`'s own optional umlauted comparative
+  variant `dünklere`, itself present as a second, equally valid attested form, and `kurz`'s umlaut-class
+  irregularity, correctly outside this module's deliberate scope since `kurz` is fully Wiktionary-covered
+  anyway). Endings table derived programmatically from `schön`'s own real data, not typed from memory -
+  confirmed byte-identical across all three degrees. Two confirmed rules: e-elision for `-el`/`-er` stems
+  (`dunkel`+`er`→`dunkler`, `dunkel`+declension-`e`→`dunkle`) applies before the Komparativ `-er` marker and
+  before any vowel-initial declension ending, but **not** before the Superlativ `-st`/`-est` marker itself
+  (`dunkelste`, not `dunklste` - confirmed against real `dunkel`/`edel` data, an easy wrong guess since
+  `-est` also starts with a vowel); the dental/sibilant Superlativ extension (`-est` instead of `-st`) after
+  s/ß/z/x/d/t/sch, confirmed against `heiß`/`kurz`/`bunt`/`rund`/`laut`/`frisch` (the last of which Wiktionary
+  itself lists two valid variants for, `frischeste`/`frischste` - this module deliberately only ever produces
+  the `-este` form). Deliberately excludes the closed umlaut-mutation class (`alt`/`kurz`/`groß`/...) from
+  the rule engine entirely, same scoping precedent as the noun/verb round's own strong-verb table - an
+  umlauted form is only ever used when Wiktionary itself attests it.
+  
+  Frequency: new-form frequency = lemma frequency x 0.5 - a **real, adjective-specific** median (not borrowed
+  from the noun/verb figures), computed from 8,837 real, already-existing `dict.tsv` form/lemma frequency
+  pairs (declined adjective forms that already sat in `dict.tsv` unlinked, matched to their lemma via the
+  Wiktionary form list itself as ground truth) - a substantially larger, more direct calibration sample than
+  either the noun (14,976 pairs) or verb (191 pairs) round had. Collision rule unchanged: never write a form
+  already present in `dict.tsv` under any POS. Existing lemma rows also gained the `ADJECTIVE` tag alongside
+  whatever they already carried (3,804 rows, e.g. `schön` is now `OTHER,ADJECTIVE` not just `OTHER`) - `dict.
+  tsv`'s own low-frequency tail is appended-to, never resorted (confirmed the file is frequency-descending,
+  not alphabetical, before writing - an early draft of the merge script would have alphabetised the entire
+  158k-row file otherwise). `viel`/`wenig` are not reachable under Wiktionary's `pos=="adj"` filter (tagged
+  `adv`/`pron` there instead, confirmed directly) - deliberately excluded rather than building a special case
+  for two words, a conscious scope call flagged rather than silently made.
+  
+  Pre-existing inflected adjective forms already sitting in `dict.tsv` before this round (e.g. `kälter`, `54`,
+  `OTHER`) are **not** retroactively lemma-linked or re-tagged by this round - mirrors the noun/verb project's
+  own split (§320/§321's linking pass was always separate from §322's generation pass), not attempted here
+  either; left as a known, explicitly out-of-scope gap, same shape as D-404 Tier 2.
+  
+  Net result: `dict.tsv` 158,073 -> 189,267 rows (+31,194 adjective forms, all lemma-linked). `git status`
+  confirms `bigram.tsv`/`hints.tsv` untouched. `dictionaries/de/version.txt` 34 -> 35, pack rebuilt and
+  verified byte-identical after unzip (all four files, sha256), `LanguagePackCatalog` version 34 -> 35. Spec
+  §38 gained the adjective-coverage addendum. New tooling committed: `extract_wiktionary_adjektive.py`,
+  `adjektiv_deklination.py` (kept, reusable "Formen-Auskunft" style like `nomen.py`/`verben.py`); the one-off
+  merge script was not committed (scratchpad only), matching how nouns/verbs never kept a dedicated write
+  script either. `AdaptKey-Plan-Adjektive.md` deleted, superseded by this section. No new tests (data-only;
+  `lemma` still has zero code readers). 1191 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 415 → 416, `versionName` `"1.0.111"` →
+  `"1.0.112"`. Not yet device-confirmed.
 
 - **§359 (v1.0.111): D-370 - a closing double-quote right after sentence punctuation no longer gets a**
   **wrongly-placed deferred space shoved in front of it.** Root-caused directly in the current code, not
