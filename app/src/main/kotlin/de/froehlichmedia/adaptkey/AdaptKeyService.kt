@@ -2600,8 +2600,10 @@ class AdaptKeyService : InputMethodService() {
                                 // D-416-followup: shouldMaterializeSpace() also covers the explicit-lower-case
                                 // override (see its own KDoc) - typing straight through a sentence-ending mark
                                 // with Caps deliberately disarmed no longer forces a space in first.
-                                val beforeChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
-                                if (shouldMaterializeSpace(beforeChar)) {
+                                // D-370: pendingSentenceMark() also sees the mark underneath a closing quote
+                                // (e.g. `"Ja."` -> the new word after it), not only a bare mark directly before.
+                                val pendingMark = pendingSentenceMark(ic.getTextBeforeCursor(2, 0)?.toString() ?: "")
+                                if (shouldMaterializeSpace(pendingMark)) {
                                     ic.commitText(" ", 1)
                                 }
                                 // D-416: the pending state is resolved either way the instant a new word
@@ -2812,8 +2814,10 @@ class AdaptKeyService : InputMethodService() {
                 // deferred A-12 space too, exactly like an ordinary letter does in handleKey's CHAR branch -
                 // this is the other typing-triggered entry point D-351's own KDoc already names.
                 // D-416-followup: shouldMaterializeSpace() also covers the explicit-lower-case override here.
-                val beforeChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
-                if (shouldMaterializeSpace(beforeChar)) {
+                // D-370: pendingSentenceMark() also sees the mark underneath a closing quote, not only a bare
+                // mark directly before - see handleKey's CHAR branch for the identical, primary case.
+                val pendingMark = pendingSentenceMark(ic.getTextBeforeCursor(2, 0)?.toString() ?: "")
+                if (shouldMaterializeSpace(pendingMark)) {
                     ic.commitText(" ", 1)
                 }
                 keyboardView?.pendingSpaceIndicator = false
@@ -3513,6 +3517,32 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-370: resolves the [SENTENCE_PUNCTUATION] mark an A-12 deferred space is actually pending against,
+     * skipping over a single trailing closing double-quote first. [handlePunctuationDelimiter] commits such
+     * a quote without materialising the space (it glues onto the mark, same as a punctuation run) - so
+     * whatever commits next must still see the mark underneath the quote, not the quote itself, to know a
+     * space is still owed. A quote right after a bare `SENTENCE_PUNCTUATION` mark with nothing composing is
+     * structurally unambiguous as closing - nobody opens a new quote with no space directly after `.`/`!`/
+     * `?`/`,`.
+     *
+     * @param textBeforeCursor the last one or two characters immediately before the cursor
+     * @return the pending mark, or `null` when no space is actually pending here
+     */
+    private fun pendingSentenceMark(textBeforeCursor: String): Char? {
+        val last = textBeforeCursor.lastOrNull() ?: return null
+        if (last in SENTENCE_PUNCTUATION) {
+            return last
+        }
+        if (last == '"' && textBeforeCursor.length >= 2) {
+            val beforeQuote = textBeforeCursor[textBeforeCursor.length - 2]
+            if (beforeQuote in SENTENCE_PUNCTUATION) {
+                return beforeQuote
+            }
+        }
+        return null
+    }
+    
+    /**
      * D-416: commits a punctuation (or leading-digit) delimiter under the **deferred** auto-space model - no
      * space is ever inserted eagerly. Instead, "is a space (and, for `.`/`!`/`?`, a capital) pending right
      * here" is re-derived live from the real document on every call: composing empty (a genuine boundary,
@@ -3526,8 +3556,15 @@ class AdaptKeyService : InputMethodService() {
      *   (`3.14`/`3,14`) glues directly onto the mark too - D-320's own case, folded into the same general
      *   "does this next character actually want a space before it" decision every other case already needs,
      *   rather than a separate insert-then-detect-and-retract mechanism;
+     * - D-370: a closing double-quote glues directly onto the mark too, exactly like a punctuation run -
+     *   materialising the space here would land it inside the quotes (`"Ja. "` instead of `"Ja."`);
      * - anything else materialises the pending space now, right before committing [raw] - the first point
      *   that genuinely needs the separator to exist.
+     *
+     * D-370: "pending right here" is resolved via [pendingSentenceMark], which looks one character further
+     * back when the character immediately before the cursor is a `"` left behind by the bullet above - so
+     * whatever commits *after* the quote (another mark, or the next word's first letter via
+     * [shouldMaterializeSpace]) still sees the mark underneath the quote and knows a space is still owed.
      *
      * D-119/D-120: deliberately skipped when the delimiter would land mid-word (the caret sits before the
      * composing token's own end, so [finalizeAndCommit] delegates to `splitComposingAtCaretAndCommit`) - a
@@ -3551,15 +3588,19 @@ class AdaptKeyService : InputMethodService() {
         }
         ic.beginBatchEdit()
         try {
-            val beforeChar = if (composing.isEmpty()) ic.getTextBeforeCursor(1, 0)?.singleOrNull() else null
-            val pending = beforeChar != null && beforeChar in SENTENCE_PUNCTUATION
+            val lookback = if (composing.isEmpty()) ic.getTextBeforeCursor(2, 0)?.toString() ?: "" else ""
+            val pendingMark = pendingSentenceMark(lookback)
+            val pending = pendingMark != null
             val continuesRun = pending && raw in SENTENCE_PUNCTUATION
             val gluesDigit = pending && raw.isDigit() &&
                 PunctuationSpaceGlue.gluesDigit(
                     ic.getTextBeforeCursor(2, 0)?.toString() ?: "",
                     LanguageRulesRegistry.rulesFor(activeLanguage).decimalCommaGluesDigits()
                 )
-            if (pending && !continuesRun && !gluesDigit) {
+            // D-370: a closing quote right after a still-pending mark glues onto it directly - see this
+            // function's own KDoc for why the space must not materialise here.
+            val closesQuote = raw == '"'
+            if (pending && !continuesRun && !gluesDigit && !closesQuote) {
                 ic.commitText(" ", 1)
                 // D-269: guard the reactive reclaimWordAtCaret() this extra, now-batched commit's own
                 // callback triggers - it is only an echo of this very commit, not a genuine subsequent caret
@@ -6123,17 +6164,20 @@ class AdaptKeyService : InputMethodService() {
      * D-416/D-416-followup: mirrors the live deferred-space state on the space bar itself (a quiet visual
      * confirmation that a space is genuinely pending, since nothing is written to the document yet to show
      * it) - the same live check [handlePunctuationDelimiter] itself uses: composing empty (a genuine
-     * boundary) and the real character right before the cursor a bare mark from [SENTENCE_PUNCTUATION].
+     * boundary) and [pendingSentenceMark] resolving a real pending mark right before the cursor.
      * Factored out of [armShiftForNextWord] so it can also be refreshed from [reclaimEnabledRunnable] - a
      * plain caret move away from the punctuation mark (no typing, no commit) previously left the dot lit
      * indefinitely, since nothing else re-evaluates this outside a commit/field-entry. Never armed in a
      * login/URL/no-suggestions field - those bypass A-12's deferred-space mechanism entirely (see
      * [handlePunctuationDelimiter]'s own guard), so the dot would be actively misleading there.
+     *
+     * D-370: also stays lit through a closing double-quote (`pendingSentenceMark` sees the mark underneath
+     * it) - the space really is still pending at that point, only deferred past the quote, not resolved.
      */
     private fun updatePendingSpaceIndicator(ic: InputConnection) {
         keyboardView?.pendingSpaceIndicator = loginFieldKind == LoginFieldKind.NONE && !urlMode && !noSuggestionsField &&
             composing.isEmpty() &&
-            ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.let { it in SENTENCE_PUNCTUATION } == true
+            pendingSentenceMark(ic.getTextBeforeCursor(2, 0)?.toString() ?: "") != null
     }
     
     /**
@@ -6293,22 +6337,23 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * D-416-followup: whether a deferred A-12 space (see [SENTENCE_PUNCTUATION]) should actually be
-     * materialised before the letter about to start composing, given [beforeChar] - the real character
-     * immediately before the caret, read fresh from the document by the caller. No stored state needed:
-     * for a genuine sentence terminator ([SENTENCE_TERMINATORS]), [isUpperArmed] can only be false here
-     * because the user just explicitly disarmed the capital that terminator's own commit already auto-armed
-     * by default - that same explicit action is treated as "continue directly, no separator" and suppresses
-     * the space too. A comma is exempt - it never arms a capital in the first place, so Caps being off there
-     * carries no such signal and the space still materialises as always.
+     * materialised before the letter about to start composing, given [pendingMark] - the caller's own
+     * [pendingSentenceMark] resolution of the real document, read fresh at the caller. No stored state
+     * needed: for a genuine sentence terminator ([SENTENCE_TERMINATORS]), [isUpperArmed] can only be false
+     * here because the user just explicitly disarmed the capital that terminator's own commit already
+     * auto-armed by default - that same explicit action is treated as "continue directly, no separator" and
+     * suppresses the space too. A comma is exempt - it never arms a capital in the first place, so Caps
+     * being off there carries no such signal and the space still materialises as always.
      *
-     * @param beforeChar the character immediately before the caret, or null when there is none
+     * @param pendingMark the mark a space is pending against, from [pendingSentenceMark], or `null` when
+     *        none is pending
      * @return true when a real space should actually be committed before the next character
      */
-    private fun shouldMaterializeSpace(beforeChar: Char?): Boolean {
-        if (beforeChar == null || beforeChar !in SENTENCE_PUNCTUATION) {
+    private fun shouldMaterializeSpace(pendingMark: Char?): Boolean {
+        if (pendingMark == null) {
             return false
         }
-        return beforeChar !in SENTENCE_TERMINATORS || isUpperArmed()
+        return pendingMark !in SENTENCE_TERMINATORS || isUpperArmed()
     }
     
     private fun consumeShift() {

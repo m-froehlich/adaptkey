@@ -458,11 +458,14 @@ non-trivial changes).
     instruction - `TokenRepair`'s own separate A-05 split-scoring function left untouched.
   - **D-369 - OPEN.** Accepting a suggestion chip must not insert a space when punctuation already
     immediately follows.
-  - **D-370 - OPEN, real design work needed, not a quick patch.** Double-quote handling: an auto-space after
-    a closing double-quote should be removable; more ambitiously, every space directly before a closing
-    quote should be removable, but only when a genuine preceding opening quote is nearby - the user
-    explicitly flags the trap to avoid (wrongly deleting the space *before* the quoted word instead of
-    *after* it). Open question posed directly: how far back to search for the matching opening quote?
+  - **D-370 - RESOLVED for the actually-wanted core (§359, v1.0.111); the "more ambitious" half explicitly**
+    **dropped by the user (2026-09-01), not implemented.** Only the basic ask ("an auto-space after a closing
+    double-quote should be removable") was ever real to the user - the wrongly-placed-space bug itself, now
+    fixed by making the deferred A-12 space glue past a closing quote instead of materialising before it (no
+    open/close tracking needed, see spec A-12). The wider ask (eating an explicit space directly before *any*
+    closing quote, requiring real open/close-quote disambiguation via a lookback/parity search) was raised only
+    as an opportunistic "while we're at it" and confirmed by the user as "eher theoretischer Natur" once the
+    real design cost was laid out - dropped entirely, not deferred.
   - **D-371 - RESOLVED (§351, v1.0.103).** A word ending in a digit is now only ever silently autocorrected
     at C-22's own Aggressive level - no dedicated setting, reuses the existing autocorrect-aggressiveness
     slider (see Current State for the mechanism).
@@ -753,6 +756,32 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§359 (v1.0.111): D-370 - a closing double-quote right after sentence punctuation no longer gets a**
+  **wrongly-placed deferred space shoved in front of it.** Root-caused directly in the current code, not
+  guessed: `handlePunctuationDelimiter()`'s A-12 deferred-space check (D-416) only ever looked at the single
+  character immediately before the cursor - typing `"` right after `.` with a space genuinely pending (e.g.
+  closing a quoted sentence, `"Ja."`) fell into neither the punctuation-run nor the digit-glue exception, so
+  the space materialised *before* the quote (`"Ja. "` instead of `"Ja."`). Scoped to only "Problem 1" of the
+  two originally discussed - the wider "eat an explicit space before *any* closing quote" idea was raised only
+  as an opportunistic add-on and explicitly dropped by the user once its real design cost (open/close-quote
+  disambiguation via a lookback/parity search) was laid out; not implemented, not tracked as its own item any
+  more (see D-370's own Open TODOs entry).
+  
+  Fixed by extending, not replacing, D-416's existing "read fresh from the real document, no stored flags"
+  design: a new `pendingSentenceMark()` resolves the actually-pending mark from up to two characters before
+  the cursor, skipping over exactly one trailing closing `"` first. A `"` typed directly after a bare
+  `SENTENCE_PUNCTUATION` mark with nothing composing is structurally unambiguous as closing (nobody opens a
+  new quote with no space directly after `.`/`!`/`?`/`,`), so no real open/close-quote tracking was needed for
+  this narrower, actually-reported case. `handlePunctuationDelimiter()` now glues a closing quote directly onto
+  the pending mark (exactly like a punctuation run), and every downstream consumer that used to read only the
+  one immediate character - the new-word-start space materialisation in both `handleKey`'s CHAR branch and
+  `appendLongPressLetter()` (the ä/ö/ü/ß entry point), plus the space-key's own D-416 pending-space dot
+  (`updatePendingSpaceIndicator()`) - now goes through the same helper, so the space still lands correctly
+  after the quote and the dot correctly stays lit through it rather than going dark early. Spec's A-12 gained
+  the D-370 bullet (closing-quote glue) and dot note. No new tests (Android/`InputConnection` glue). 1191 unit
+  tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 414 → 415,
+  `versionName` `"1.0.110"` → `"1.0.111"`. Not yet device-confirmed.
 
 - **§358 (v1.0.110): D-421-followup (v2) - regression: the credential list and clipboard paste chip stopped**
   **appearing on a fresh empty field.** Reported directly: an empty email field no longer showed the saved

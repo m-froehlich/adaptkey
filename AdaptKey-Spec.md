@@ -947,6 +947,13 @@ only once the very next real keystroke resolves what actually belongs there:
   bare digit immediately after a numbered enumerator (e.g. `"Kapitel 3."` followed by a fresh sentence
   `"2 Punkte..."`) is a rare, accepted false-glue risk, matching this app's established soft-preference
   philosophy elsewhere (S-01/A-05/S-07) rather than an absolute rule.
+- **A closing double-quote** (D-370): glues directly onto the mark too, exactly like another mark from the same
+  set - materialising the space here would land it inside the quotes (`"Ja. "` instead of `"Ja."`). The pending
+  mode carries forward past the quote rather than resolving at it: the very next keystroke that actually starts
+  a new word (or continues the run) still sees the mark underneath the quote and materialises the space (and,
+  where applicable, the capital) exactly as if the quote had never been typed. A quote landing directly after a
+  bare mark with nothing composing is structurally unambiguous as closing - opening a new quote there with no
+  space in between does not occur in ordinary text - so no open/close tracking is needed to make this call.
 - **An explicit Space**: needs no special handling at all - nothing was physically written to reconcile, so it
   is simply an ordinary Space press.
 - **A Backspace**, with nothing typed since the mark committed: deletes the mark itself directly, on the very
@@ -975,6 +982,10 @@ punctuation mark with nothing typed (a tap elsewhere, a drag), not only once a n
 previously stayed lit indefinitely in that case, since nothing re-checked it outside a commit/field-entry or
 an actual keystroke starting a new word. Refreshed on the same debounced, composing-empty-caret-move cadence
 S-10's own Reclaim chip already uses.
+
+D-370: the dot also stays lit through a closing double-quote committed right after the mark, matching the
+closing-quote bullet above - the space really is still pending at that point, only deferred past the quote, not
+resolved, so the dot going dark there would be actively misleading.
 
 ---
 
