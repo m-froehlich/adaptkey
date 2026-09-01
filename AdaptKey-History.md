@@ -16354,3 +16354,101 @@ in place to `listOf("\"", "'", "²", "₂")` (no new test - same case, new expec
 `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1141 unit tests unchanged (one assertion updated in
 place, no new test added). `versionCode` 387 -> 388, `versionName` `"1.0.83"` -> `"1.0.84"`. Not yet
 device-confirmed.
+
+## §333 - D-416: A-12's auto-space after sentence punctuation, from eager to deferred (v1.0.85)
+
+Design discussed and agreed with the user across several rounds before any code was written - see
+[`AdaptKey-Plan-D416-Deferred-Space.md`](AdaptKey-Plan-D416-Deferred-Space.md) for the full design pass
+(kept in the repo, not deleted, since it still documents the reasoning behind several of the choices below
+in more depth than fits here). Root motivation: A-12 used to insert a real space into the document the
+instant `.`/`!`/`?`/`,` committed. That eager insertion was the direct cause of a whole cluster of otherwise
+unrelated-looking complexity - D-374 (a trailing auto-space not reliably cleaned up when a field is left,
+concretely reported in Google Keep), D-363's declined colon/semicolon-vs-emoticon collision (the space had
+to be inserted *before* the system could know whether a digit or an emoticon symbol would follow), and a
+dedicated priority rule keeping A-12's own pending space from colliding with A-07's undo window whenever both
+happened to be armed by the same commit. The user's own framing: "Wäre das eine Verbesserung? Es wäre eine
+komplette Umkrempelung des aktuellen Verhaltens."
+
+**The new model:** committing `.`/`!`/`?`/`,` inserts nothing physically any more. It only arms a live,
+re-derived pending state - exactly the same "position property, not an event" philosophy §6 rule 2's own
+`armShiftForNextWord` pre-arm already used for capitalisation (D-405/D-406), now extended to cover the space
+as well. Materialisation happens only on the very next real keystroke: a letter/digit gets a real space
+inserted first, then itself; another sentence-punctuation mark glues directly onto the previous one (a run,
+e.g. `"!?"`, unchanged in outward behaviour); a digit continuing a decimal number (D-320,
+`PunctuationSpaceGlue`) glues onto the mark instead of getting a leading space - now simply one more instance
+of the same general "does the next character actually want a space before it" decision, rather than a
+separate insert-then-detect-and-retract mechanism. Whether a space is "pending right here" is never stored in
+a flag at all - it is re-derived live from the real document every time it matters (composing empty, the
+character immediately before the cursor a bare mark from `SENTENCE_PUNCTUATION`), the same "read fresh, never
+trust a stored state" discipline A-07's own undo already uses.
+
+**A genuine, code-verified finding from the design pass, not a guess:** `SentenceBoundary.isSentenceStart`
+requires real trailing whitespace before it will recognise a sentence start at all - reading it directly
+confirmed a naive deferred implementation would silently fail to arm capitalisation after a bare `.`/`!`/`?`
+with nothing typed after it yet. Fixed with a new, narrow, still-pure `SentenceBoundary.withPendingTerminatorSpace()`
+function that appends a virtual, never-written trailing space before delegating to the unchanged
+`isSentenceStart` - reused by every one of `armShiftForNextWord`'s own ~25 call sites via the single
+`sentenceStartBefore(ic)` wrapper, rather than needing each call site to know about the deferred model
+individually. Comma is deliberately excluded from this virtual-space treatment, matching its existing
+"never arms capitalisation" behaviour.
+
+**A second finding, discovered while tracing the actual Backspace/undo interaction rather than assumed from
+the design plan alone:** the plan had predicted a two-step Backspace behaviour (first press deletes the bare
+mark, second triggers A-07's revert) for a split that also ends a sentence. Reading the real
+`handleKey`/`handleBackspace` code showed this is only true when `doubleTapBackspaceUndo` is on (where it
+falls out of the *already-existing*, general double-tap-undo mechanism for free, since D-358 already made
+that mechanism tolerate a punctuation delimiter directly). With that setting off, the ordinary undo-window
+check (`atArmedTail`) already fires the revert on the very first Backspace for an *ordinary* (non-sentence-
+ending) correction today - so once there is no physical space in the way any more, a sentence-ending
+correction now does the same, for the first time consistently with every other correction rather than
+carrying its own special-cased two-step exception. The old D-273 priority carve-out in `handleKey`'s
+`KeyCode.DELETE` branch was deleted outright, not replaced - the general logic already does the right thing
+unassisted.
+
+**Removed outright, not merely simplified** (see the rollback notes below for the precise "what used to be
+there" account): `pendingPunctuationSpace`/`pendingPunctuationSpacePos` (the two state fields), the whole
+`consumeStrandedPunctuationSpace()` function (D-279's ground-truth position capture and stranded-space
+cleanup), `handleBackspace()`'s own D-262/D-406 phantom-space guard, `handleEnter()`'s D-270
+remove-before-newline block, and the D-273 undo-priority carve-out - five distinct pieces of machinery that
+existed only to manage a physical space now eliminated by the design itself, not five things replaced with
+equivalent new code.
+
+**New, additive:** a small, quiet dot drawn above the space key's own label
+(`AdaptKeyboardView.pendingSpaceIndicator`, pushed from `armShiftForNextWord` alongside the Shift-arm state)
+while the deferred state is genuinely armed - the user's own explicit ask, once the idea was explained
+("Ja, das wäre toll... wenn wir das intuitiv verständlich hinbekommen"), mirroring S-05's existing "quiet,
+automatic confirmation" philosophy for a different, non-word kind of pending state. Reuses the same subdued
+`key_hint` colour already used for corner-hint glyphs, deliberately not a new accent colour.
+
+**Explicitly out of scope for this round**, per the design plan and confirmed unchanged: D-373 (hyphen
+re-arming capitalisation) turned out on closer reading to be unrelated to A-12 at all - corrected in
+Progress.md's own backlog note. D-384 (space-preceded minus) is genuinely eased by the new model but was not
+implemented here. D-363 (colon/semicolon vs. emoticons) remains a deliberately separate, not-yet-decided
+follow-up, even though its original blocking objection no longer applies.
+
+**No settings toggle** - discussed and explicitly declined by the user ("Ich denke aber nicht, dass ein
+Setting hier richtig wäre... das skaliert gar nicht gut"), since a flag would fork nearly every touch point
+listed above rather than the two or three files a stateless redesign actually needed. In its place: a
+dedicated, kept-current [`AdaptKey-Rollback-D416-Deferred-Space.md`](AdaptKey-Rollback-D416-Deferred-Space.md),
+written alongside the implementation itself (not reconstructed afterward), documenting exactly what a future
+rollback would need to touch and why a clean `git revert` of this round's own commit is the intended primary
+path.
+
+**The one permanent, user-visible behaviour change:** a Backspace pressed immediately after `.`/`!`/`?`/`,`
+with nothing typed since now deletes the mark itself directly on the first press, not a phantom space first.
+Flagged explicitly to the user during the design pass and accepted as a deliberate, worthwhile trade
+("Umgewöhnung, aber insgesamt richtige Richtung").
+
+`PunctuationSpaceGlue.gluesDigit()`'s own contract changed from a 3-character eager-model pattern (digit,
+mark, an already-inserted space) to a 2-character one (digit, mark, directly adjacent to the cursor) -
+`PunctuationSpaceGlueTest` rewritten in step, same 11 cases, all still meaningful under the new contract.
+`SentenceBoundaryTest` gained new cases for `withPendingTerminatorSpace`, including the abbreviation/
+enumerator veto still applying correctly through the virtual-space wrapper; its own pre-existing
+`isSentenceStart` cases are all untouched, confirming that contract genuinely was not modified. 1141 -> 1147
+unit tests, all green. Spec: A-12 rewritten to describe the current, crystallised deferred behaviour (its own
+eager-model text replaced, not appended to); A-07's own priority-rule paragraph and two historical D-406
+mentions of the now-removed guard updated for accuracy; S-05 gained a short cross-reference to the new
+indicator. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 388 -> 389, `versionName`
+`"1.0.84"` -> `"1.0.85"`. Not yet device-confirmed - this is exactly the kind of change that should be
+validated on a real device early and repeatedly, per the design pass's own §5, since the muscle-memory
+adjustment is the one thing no rollback can undo cleanly after the fact.

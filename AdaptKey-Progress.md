@@ -459,7 +459,9 @@ non-trivial changes).
     correction purposes.
   - **D-373 - OPEN.** Appending a hyphen after a *capitalised* word should re-arm auto-capitalisation for the
     next segment (mirrors B-02's own default for the general case).
-  - **D-374 - OPEN.** Removing the trailing auto-space no longer works, at least in Google Keep.
+  - **D-374 - RESOLVED by D-416 (§333).** The trailing auto-space is never physically written until a real
+    next character resolves it, so there is structurally nothing left to strand or fail to clean up when a
+    field is left (Google Keep or otherwise) - eliminated, not patched.
   - **D-375 - RESOLVED (2026-08-31, no dedicated fix identified).** User confirmed on real-device testing
     that `"sollendafur"` no longer gets silently auto-unfolded/split the way originally reported - no code
     change in this session targeted it specifically; likely a side effect of the intervening dictionary
@@ -682,35 +684,69 @@ non-trivial changes).
   deliberately keep focus regardless. Needs a real-device experiment (try both levers against Keep
   specifically) before deciding whether this is buildable at all, let alone designing the button.
 
-- **D-416 - OPEN, large design question, not started (2026-09-01).** Concept floated by the user: replace
-  A-12's eager auto-space-after-punctuation with a deferred one - insert nothing after `.`/`!`/`?`/`,`, only
-  mark the position as pending-space-and-pending-caps (unifying with rule 2's existing `armShiftForNextWord`
-  live pre-arm, which already defers *capitalisation* the same way), and materialise the space only once the
-  next real character is actually typed. Explicitly **not** to be implemented without a dedicated design
-  session first - the user's own words: "das müssen wir genau durchdenken... der Weg zurück wäre nicht
-  einfach." Worth mapping out before that session (not a decision, just discussion points to start from):
-  - Likely genuine wins: D-374 (trailing auto-space not cleaned up when leaving the field, e.g. Google Keep)
-    would be structurally eliminated rather than patched, since no space is ever physically written until a
-    real next character follows; the D-363 colon/semicolon-vs-emoticon collision that got this feature
-    declined could become resolvable, since the decision of whether to insert a space would see the actual
-    next-typed character (letter/digit vs. an emoticon's closing symbol) instead of having to insert first
-    and detect-and-undo afterward; an explicit Space keypress right after punctuation would need no special
-    handling at all (nothing was inserted to reconcile).
-  - Likely genuine costs: touches nearly every A-12-adjacent mechanism that currently assumes the space is
-    already physically in the document - A-07's undo-priority-vs-pending-auto-space ordering, the "genuine
-    selection beats every pending state" rule, A-05 splits that also end a sentence
-    (`"ehvnicht."` -> `"eh nicht. "`), the comma-terminated-line exception, and D-373/D-384's own newer
-    space-adjacent asks (both may collapse into a natural instance of the new unified mechanism rather than
-    needing their own bespoke logic, but that needs verifying, not assuming). Also a visible behaviour change
-    for the user: a Backspace pressed immediately after punctuation with nothing typed since would delete the
-    punctuation mark itself directly (nothing there to consume first), not a phantom auto-space - a genuine,
-    permanent muscle-memory change, not just an implementation detail.
-  - Given the user's own "hard to reverse" concern: worth considering shipping behind a settings toggle for a
-    transition period rather than a flag-day rewrite, so it stays reversible in practice even after landing.
-  - Recommended next step whenever picked up: work through every existing A-12/A-07/A-05 interaction rule in
-    the spec one at a time against the new model before writing any code, the same weight D-353/D-410 got.
+- **D-416 - RESOLVED (§333, see Current State).** A-12's eager auto-space-after-punctuation replaced with the
+  deferred model discussed and planned in
+  [`AdaptKey-Plan-D416-Deferred-Space.md`](AdaptKey-Plan-D416-Deferred-Space.md) - see that file and the
+  Current State entry for the full account. Correction to the original framing above: D-373 turned out **not**
+  to be related (a hyphen never got its own A-12 auto-space to begin with, so there was nothing for it to
+  collapse into - it remains its own, independent, still-open item, see below). D-384 genuinely is eased by
+  the new model, but was **not** bundled into this round - still its own separate, not-yet-implemented item.
+  D-363 (colon/semicolon vs. emoticon) also stays a deliberately separate, not-yet-decided follow-up. No
+  settings toggle was built, per the user's own explicit call (would not scale across every touch point) -
+  the rollback path instead is a dedicated, kept-current
+  [rollback-notes document](AdaptKey-Rollback-D416-Deferred-Space.md) plus keeping the migration on one
+  clean, isolated commit.
 
 ## Current State
+
+- **§333 (v1.0.85): D-416 - A-12's auto-space after sentence punctuation, from eager to deferred - the**
+  **biggest single behaviour change this project has shipped in one round.** Fully designed and agreed with
+  the user across several rounds before any code was written - see
+  [`AdaptKey-Plan-D416-Deferred-Space.md`](AdaptKey-Plan-D416-Deferred-Space.md) (kept, not deleted) for the
+  full design pass and [`AdaptKey-Rollback-D416-Deferred-Space.md`](AdaptKey-Rollback-D416-Deferred-Space.md)
+  for the precise rollback account, both explicit user-requested deliverables of this round, not incidental.
+  - **What changed:** `.`/`!`/`?`/`,` no longer insert a real space the instant they commit. They arm a live,
+    re-derived pending state instead (unifying with §6 rule 2's own `armShiftForNextWord` pre-arm philosophy),
+    materialised only on the next real keystroke - a letter/digit gets a real space first; another mark from
+    the same set glues onto the previous one (a run); a digit continuing a decimal number (D-320) glues onto
+    the mark instead. Nothing is ever tracked in a stored flag - "is a space pending right here" is re-derived
+    live from the real document every time, the same discipline A-07's undo already uses.
+  - **Two real findings from actually reading the code during the design pass, not assumed:**
+    `SentenceBoundary.isSentenceStart` requires physical trailing whitespace to recognise a sentence start at
+    all - fixed with a new, still-pure `SentenceBoundary.withPendingTerminatorSpace()` used by every
+    `armShiftForNextWord` call site via `sentenceStartBefore(ic)`. And the plan's own predicted
+    "two-step Backspace" for a sentence-ending correction turned out to only hold with
+    `doubleTapBackspaceUndo` on - with it off, the very first Backspace already reverts immediately today for
+    an ordinary correction, so removing the old D-273 priority carve-out outright (not replacing it) makes a
+    sentence-ending correction behave consistently with every other one for the first time, a genuine
+    harmonising improvement discovered mid-implementation.
+  - **Removed outright, not simplified:** `pendingPunctuationSpace`/`pendingPunctuationSpacePos`, the whole
+    `consumeStrandedPunctuationSpace()` function (D-279), `handleBackspace()`'s D-262/D-406 phantom-space
+    guard, `handleEnter()`'s D-270 remove-before-newline block, and the D-273 undo-priority carve-out - five
+    pieces of machinery that only ever existed to manage a physical space this design eliminates entirely.
+  - **New, additive:** a quiet dot above the space key's own label (`AdaptKeyboardView.pendingSpaceIndicator`)
+    while the deferred state is armed - the user's own explicit ask once the idea was explained, mirroring
+    S-05's "quiet confirmation" philosophy for a non-word pending state.
+  - **Explicitly out of scope, corrected from the original backlog framing:** D-373 turned out unrelated to
+    A-12 entirely (a hyphen never got its own auto-space) - stays open, independently. D-384 (space-preceded
+    minus) is genuinely eased by the new model but not implemented here. D-363 (colon/semicolon vs. emoticons)
+    stays a deliberately separate, not-yet-decided follow-up even though its blocking objection no longer
+    applies.
+  - **No settings toggle**, per the user's own explicit call ("das skaliert gar nicht gut") - the rollback
+    doc plus a clean, isolated commit is the agreed safety net instead.
+  - **The one permanent, user-visible behaviour change:** a Backspace right after `.`/`!`/`?`/`,` with
+    nothing typed since now deletes the mark itself directly on the first press, not a phantom space first -
+    flagged to the user during design and accepted as a deliberate trade.
+  - `PunctuationSpaceGlue.gluesDigit()`'s contract changed from a 3-character (digit, mark, already-inserted
+    space) to a 2-character (digit, mark, directly adjacent) pattern - its test rewritten in step, same 11
+    cases. `SentenceBoundaryTest` gained new `withPendingTerminatorSpace` cases; its pre-existing
+    `isSentenceStart` cases are all untouched, confirming that contract genuinely was not modified. 1141 ->
+    1147 unit tests, all green. Spec: A-12 rewritten to describe the current deferred behaviour (not
+    appended to); A-07 and two historical D-406 mentions updated for accuracy; S-05 cross-references the new
+    indicator.
+  - `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 388 → 389, `versionName` `"1.0.84"`
+    → `"1.0.85"`. **Not yet device-confirmed** - flagged as needing early, repeated real-device validation
+    given the muscle-memory stakes, per the design plan's own §5.
 
 - **§332 (v1.0.84): D-417 - reordered the `2` key's popup so the apostrophe sits ahead of the superscript.**
   D-382 (§330, v1.0.82) shipped the order `"` / `²` / `'` / `₂`; confirmed working on-device, but the user

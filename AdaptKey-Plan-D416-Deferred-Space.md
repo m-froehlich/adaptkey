@@ -1,9 +1,12 @@
 # AdaptKey - D-416 Design Plan: Deferred Auto-Space After Punctuation
 
-**Status: design pass in progress, nothing implemented yet.** Written per this project's own convention for
-non-trivial design work (see [`AdaptKey-Plan-Wortfamilien.md`](AdaptKey-Plan-Wortfamilien.md)'s precedent,
-since deleted once superseded - this file follows the same shape). Do not start coding against this plan
-until the open questions at the bottom are resolved with the user and this status line is updated.
+**Status: implemented (§333, v1.0.85) - kept in the repo as the design record, not deleted.** Written per
+this project's own convention for non-trivial design work (see
+[`AdaptKey-Plan-Wortfamilien.md`](AdaptKey-Plan-Wortfamilien.md)'s precedent, since deleted once superseded -
+this file follows the same shape but is being kept, since it still documents reasoning not fully repeated in
+`AdaptKey-History.md`'s own §333 entry). See
+[`AdaptKey-Rollback-D416-Deferred-Space.md`](AdaptKey-Rollback-D416-Deferred-Space.md) for the precise
+rollback account, written alongside the implementation itself.
 
 ## 1. Goal
 
@@ -165,9 +168,27 @@ machinery, untouched.
 
 ### 4.9 S-05 (word confirmation highlight) / S-06 (verbatim chip)
 No interaction - both concern the *current composing word*, not the punctuation/space state that follows a
-commit. No change needed. (Optional, not required for this migration: a future polish idea would be
-previewing the pending-caps position before the next word is typed, mirroring S-05's own live-preview
-philosophy - explicitly out of scope here, flag as a possible follow-up only if the user wants it later.)
+commit. No change needed.
+
+**Optional polish idea, explained in full (was too compressed in the first draft):** under the current
+eager model, the moment you type `.`, a real space visibly appears - you get instant, physical confirmation
+that the auto-space mechanism fired. Under the deferred model, typing `.` produces **no visible change at
+all** until the next letter is typed - the mark just sits there like an ordinary committed character, with an
+invisible "space + capital pending" state attached to it that has no on-screen representation. For most
+typing this is harmless (the space appears a moment later, exactly where expected, once you keep typing) -
+but it removes a small piece of implicit feedback the eager model gave for free: nothing on screen currently
+distinguishes "punctuation committed, space pending" from "punctuation committed, nothing pending" (e.g. a
+`.` that lands mid-sentence-abbreviation territory some other way, or once the mode has already exited).
+
+The idea: give the pending state its *own* small, S-05-style visual cue - a faint/ghost marker right after
+the punctuation mark (a thin cursor-adjacent hint, or a subtly different caret rendering) that disappears the
+instant a real character is typed and the space materialises for real - the same "quietly confirm what the
+system is about to do automatically" philosophy S-05 already applies to word correctness and A-05's live
+split preview, just applied to this new invisible state instead of to a word.
+
+This is a genuine, but *optional*, UX nicety - not required for the mechanism to work correctly, and not
+something the spec or the user asked for originally. Flagged only because it occurred to me while mapping
+S-05 against the new model, not because it's a known pain point. Decision: see §6.
 
 ### 4.10 D-373 (open backlog item) - **correction to the original backlog note**
 D-416's own backlog bullet speculated D-373 ("hyphen after a capitalised word should re-arm capitalisation")
@@ -212,22 +233,20 @@ it clearly in the eventual History.md entry and spec update, and validating it o
 earlier discussion: the muscle-memory risk is the one thing no rollback doc can undo, so catching a genuine
 problem with it early, before it's lived with for weeks, is the real mitigation).
 
-## 6. Open questions for the user before implementation starts
+## 6. Open questions - resolved 2026-09-01
 
-1. **§4.3's `SentenceBoundary` virtual-space approach** - agree with adding a dedicated
-   variant/overload for the punctuation-commit call site rather than touching the shared pure function
-   itself?
-2. **§4.6** - happy with "verify directly once written" for the comma-terminated-line interaction, or would
-   you rather that verification happen as part of this design pass (i.e. before any code is written) instead?
-3. Anything from §4.9's optional preview idea worth pulling into scope now, or leave it out entirely for a
-   possible later round?
-4. Confirm scope: this migration covers exactly today's `SENTENCE_PUNCTUATION` set (`.!?,`) and nothing else
-   - D-384's minus-sign extension and D-363's colon/semicolon question both stay explicitly separate, later
-   decisions (§4.11/§4.13), not bundled in. Agreed?
-5. Implementation phasing preference: one contained round (matches "keep the migration on its own commit
-   sequence so `git revert` stays real", from the earlier discussion), or split into sub-rounds (e.g. core
-   mechanism first, then D-320/A-07/A-05 interaction verification as a follow-up round)? Either way the
-   rollback-notes doc gets written alongside, not retroactively.
+1. **Agreed.** §4.3's `SentenceBoundary` virtual-space approach - a dedicated variant/overload at the
+   punctuation-commit call site, the shared pure function itself stays untouched.
+2. **Deferred, not blocking.** User's own read: `SentenceBoundary.isSentenceStart` already just strips/
+   ignores whitespace generically rather than depending on any specific amount of it, so the
+   comma-terminated-line exception is likely already flexible enough to carry over unchanged. Verify once the
+   code exists (§4.6), adjust then if actually needed - not a precondition for starting.
+3. Explained in conversation (see chat) - decision pending the user's read of the explanation.
+4. **Confirmed.** Scope is exactly today's `SENTENCE_PUNCTUATION` set (`.!?,`). D-384/D-363 stay separate,
+   later decisions.
+5. **One single combined round**, per explicit user instruction ("Bitte alles auf einmal. Sonst gibt es
+   Chaos.") - matches this project's established bulk-round convention (build/test once at the end, not per
+   sub-step). The rollback-notes doc is written alongside this one round as it happens, not retroactively.
 
 ## 7. Not part of this plan (reminder)
 

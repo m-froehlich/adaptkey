@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.capitalisation
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -74,5 +75,44 @@ class SentenceBoundaryTest {
     @Test
     fun `an abbreviation at the end of a line still starts the new line`() {
         assertTrue(start("und so weiter usw.\n"))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace appends a virtual space after a bare terminator`() {
+        assertTrue(start(SentenceBoundary.withPendingTerminatorSpace("Erster Satz.")))
+        assertTrue(start(SentenceBoundary.withPendingTerminatorSpace("Wirklich?")))
+        assertTrue(start(SentenceBoundary.withPendingTerminatorSpace("Stop!")))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace does not touch a comma`() {
+        assertFalse(start(SentenceBoundary.withPendingTerminatorSpace("Hallo Max,")))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace still respects the abbreviation veto`() {
+        assertFalse(start(SentenceBoundary.withPendingTerminatorSpace("und so weiter usw.")))
+        assertFalse(start(SentenceBoundary.withPendingTerminatorSpace("siehe Nr.")))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace still respects the enumerator veto`() {
+        assertFalse(start(SentenceBoundary.withPendingTerminatorSpace("1.")))
+        assertFalse(start(SentenceBoundary.withPendingTerminatorSpace("Liste 10.")))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace leaves text with real trailing whitespace unchanged`() {
+        assertEquals("Erster Satz. ", SentenceBoundary.withPendingTerminatorSpace("Erster Satz. "))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace leaves mid-word text unchanged`() {
+        assertEquals("ich gehe nach", SentenceBoundary.withPendingTerminatorSpace("ich gehe nach"))
+    }
+    
+    @Test
+    fun `D-416 withPendingTerminatorSpace leaves empty text unchanged`() {
+        assertEquals("", SentenceBoundary.withPendingTerminatorSpace(""))
     }
 }

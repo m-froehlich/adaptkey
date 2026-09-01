@@ -59,4 +59,22 @@ object SentenceBoundary {
     private fun lastToken(text: String): String {
         return text.takeLastWhile { !it.isWhitespace() }
     }
+    
+    private const val BARE_TERMINATORS = ".!?"
+    
+    /**
+     * D-416: appends a virtual, never-written trailing space to [before] when it ends directly in a bare
+     * sentence-terminating mark (`.`/`!`/`?`) with nothing after it - the deferred auto-space model arms
+     * capitalisation for the next word immediately on committing such a mark, before any physical space
+     * exists to satisfy [isSentenceStart]'s own "requires real trailing whitespace" rule above. Comma is
+     * deliberately excluded - it was never one of this object's own terminator characters (A-12's
+     * space-arming punctuation set `.!?,` is broader than this one), matching the existing rule that a
+     * comma never arms capitalisation by itself.
+     *
+     * @param before the text before the cursor, exactly as passed to [isSentenceStart]
+     * @return [before] unchanged, or with one virtual trailing space appended when it ends bare in `.`/`!`/`?`
+     */
+    fun withPendingTerminatorSpace(before: String): String {
+        return if (before.isNotEmpty() && before.last() in BARE_TERMINATORS) "$before " else before
+    }
 }

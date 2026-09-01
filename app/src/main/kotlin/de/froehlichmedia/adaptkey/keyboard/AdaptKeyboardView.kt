@@ -191,6 +191,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
         }
     
+    /**
+     * D-416: a quiet, S-05-style confirmation that a deferred A-12 auto-space (and, where applicable, a
+     * capital) is genuinely pending right at the caret - nothing else on screen shows this any more once the
+     * space stopped being inserted eagerly. Drawn as a small dot above the space key's own label; pushed
+     * live from [de.froehlichmedia.adaptkey.AdaptKeyService.armShiftForNextWord].
+     */
+    var pendingSpaceIndicator: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
     /** D-15: Caps Lock - persistent uppercase (engaged by a double-tap of Shift) until Shift is pressed again. */
     var capsLock: Boolean = false
         set(value) {
@@ -585,6 +597,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         strokeWidth = dp(3f)
     }
     
+    // D-416: the quiet dot drawn above the space key's label while pendingSpaceIndicator is armed - reuses
+    // the same subtle colour as the corner hint glyphs (key_hint) rather than a new accent colour, since the
+    // whole point is a quiet confirmation, not a loud one.
+    private val pendingSpaceIndicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.key_hint)
+        style = Paint.Style.FILL
+    }
+    
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.key_text)
         textAlign = Paint.Align.CENTER
@@ -821,6 +841,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // background fill so the stroke sits on top of it, but before the label so the glyph stays clear.
             if (key.code == KeyCode.SHIFT && capsLock) {
                 canvas.drawRoundRect(rect, keyRadiusPx, keyRadiusPx, capsLockBorderPaint)
+            }
+            // D-416: a quiet dot above the space key's own label while a deferred A-12 auto-space is
+            // genuinely pending - the only on-screen confirmation left now that the space is no longer
+            // inserted eagerly (see pendingSpaceIndicator's own KDoc).
+            if (key.code == KeyCode.SPACE && pendingSpaceIndicator) {
+                canvas.drawCircle(rect.centerX(), rect.top + dp(8f), dp(2.5f), pendingSpaceIndicatorPaint)
             }
             
             val label = labelFor(key)

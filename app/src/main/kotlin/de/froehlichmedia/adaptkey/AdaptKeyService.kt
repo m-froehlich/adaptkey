@@ -469,22 +469,13 @@ class AdaptKeyService : InputMethodService() {
     // it exists for ever gets to run. Armed for exactly the one reclaim call that follows a suggestion tap.
     private var suppressNextReclaimSpaceReset = false
     
-    // D-262/D-320: armed right after a mark in SENTENCE_PUNCTUATION (`.!?,`) auto-inserts its own trailing
-    // space - an immediately following mark from the same set removes that space first (so a punctuation
-    // run glues together, e.g. "!?!"), an explicit Space press does not duplicate it, and a Backspace
-    // removes only the forced space without cascading further. D-320: a digit glues onto a `.`/`,` instead
-    // (see PunctuationSpaceGlue) when the punctuation itself followed a digit - a decimal number, not a new
-    // sentence. Cleared as soon as anything else is typed - a separate flag from pendingSuggestionSpace
-    // above, since the two triggers (an accepted suggestion vs. sentence punctuation) are independent and
-    // must not be conflated.
-    private var pendingPunctuationSpace = false
-    
-    // D-279: the absolute document position of the auto-inserted space itself (not the caret after it),
-    // captured via a ground-truth ExtractedText read the moment pendingPunctuationSpace above is armed - so
-    // consumeStrandedPunctuationSpace() never has to derive that position from an onUpdateSelection
-    // callback's oldSelStart/newSelStart, which the D-269..D-277 saga already proved cannot be trusted for
-    // this. -1 whenever pendingPunctuationSpace is false or the ground-truth read failed at arm time.
-    private var pendingPunctuationSpacePos = -1
+    // D-416: no live flag lives here any more for the sentence-punctuation auto-space (formerly
+    // pendingPunctuationSpace/pendingPunctuationSpacePos, D-262/D-279/D-320) - the deferred model never
+    // physically inserts the space until the next real character resolves it, so "is a space pending right
+    // here" is simply re-derived on demand from the real document (composing empty, the character right
+    // before the cursor is in SENTENCE_PUNCTUATION) wherever it is needed, the same "read fresh, never trust
+    // a stored flag" philosophy A-07's own undo already applies. See handlePunctuationDelimiter,
+    // armShiftForNextWord, and AdaptKey-Plan-D416-Deferred-Space.md for the full account.
     
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
@@ -1321,7 +1312,6 @@ class AdaptKeyService : InputMethodService() {
         resetWordEndShift()
         pendingMergeChar = null
         pendingSuggestionSpace = false
-        pendingPunctuationSpace = false
         previousWord = null
         previousPreviousWord = null
         hyphenChain.clear()
@@ -1555,20 +1545,16 @@ class AdaptKeyService : InputMethodService() {
             } else {
                 armShiftForNextWord(ic)
             }
-            // D-123 / D-269: skip the reset exactly once when this call is only the echo of a suggestion-bar
-            // tap's or a D-262 auto-space's own commit, not a genuine subsequent caret move - otherwise
-            // D-29's space-eating flag (or D-262's own punctuation-run continuation) never survives to see
-            // the very keystroke it is meant to react to. Both pending-space flags share the one guard: only
-            // one of the two commits it guards against can ever be the most recent thing that happened.
+            // D-123 / D-416: skip the reset exactly once when this call is only the echo of a
+            // suggestion-bar tap's own commit, not a genuine subsequent caret move - otherwise D-29's
+            // space-eating flag never survives to see the very keystroke it is meant to react to. (Before
+            // D-416 this guard was shared with a second, punctuation-auto-space concern - see
+            // AdaptKey-Plan-D416-Deferred-Space.md - now removed since there is no longer a comparable
+            // physical commit to echo for that case.)
             if (suppressNextReclaimSpaceReset) {
                 suppressNextReclaimSpaceReset = false
             } else {
                 pendingSuggestionSpace = false
-                // D-279: the caret landing on a word elsewhere (not an immediately following Space/
-                // punctuation/Backspace) means the auto-space is abandoned - remove it if it is genuinely
-                // stranded at the end of the typed text (see consumeStrandedPunctuationSpace's own KDoc for
-                // why a mid-text auto-space, already followed by real content, must never be touched here).
-                consumeStrandedPunctuationSpace(ic)
             }
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
@@ -1579,57 +1565,6 @@ class AdaptKeyService : InputMethodService() {
             ic.endBatchEdit()
         }
         refreshSuggestions()
-    }
-    
-    /**
-     * D-279: removes a still-armed [pendingPunctuationSpace] auto-space that has been abandoned - the caret
-     * moved elsewhere ([reclaimWordAtCaret]) or the field is being left ([onFinishInput]) - without the user
-     * ever explicitly confirming (Space), gluing it into a run (further sentence punctuation), or removing
-     * it (Backspace/Enter, both already handled elsewhere). Uses the absolute position captured at arm time
-     * ([pendingPunctuationSpacePos]) rather than trying to re-derive it from the caller's own, by now
-     * unrelated, selection.
-     * 
-     * Verifies twice against the real document before ever deleting anything, mirroring D-277's own
-     * verify-before-mutate discipline: the character actually at that position must still be the space that
-     * was armed (the document may have changed underneath in the meantime), and - critically - nothing may
-     * already follow it. A space inserted mid-text (re-editing before existing content) is not "stranded" at
-     * all once abandoned - it is the load-bearing separator between the punctuation and whatever already
-     * follows it, and deleting it would pull that following text directly onto the punctuation mark. Only a
-     * space genuinely at the end of what has been typed so far is ever removed here; anything else is simply
-     * left as ordinary confirmed text, exactly as before this mechanism existed.
-     * 
-     * Always clears both [pendingPunctuationSpace] and [pendingPunctuationSpacePos], whether or not a
-     * deletion actually happens - the pending state is resolved, one way or the other, the moment this runs.
-     */
-    private fun consumeStrandedPunctuationSpace(ic: InputConnection) {
-        if (!pendingPunctuationSpace) {
-            return
-        }
-        val spacePos = pendingPunctuationSpacePos
-        pendingPunctuationSpace = false
-        pendingPunctuationSpacePos = -1
-        if (spacePos < 0) {
-            return
-        }
-        val callerExtracted = ic.getExtractedText(ExtractedTextRequest(), 0) ?: return
-        val callerStart = ComposingAnchor.resolve(callerExtracted.startOffset, callerExtracted.selectionStart, 0)
-        val callerEnd = ComposingAnchor.resolve(callerExtracted.startOffset, callerExtracted.selectionEnd, 0)
-        ic.beginBatchEdit()
-        try {
-            ic.setSelection(spacePos + 1, spacePos + 1)
-            val isArmedSpace = ic.getTextBeforeCursor(1, 0) == " "
-            val nothingFollows = ic.getTextAfterCursor(1, 0).isNullOrEmpty()
-            if (isArmedSpace && nothingFollows) {
-                ic.deleteSurroundingText(1, 0)
-                val restoredStart = if (callerStart > spacePos) callerStart - 1 else callerStart
-                val restoredEnd = if (callerEnd > spacePos) callerEnd - 1 else callerEnd
-                ic.setSelection(restoredStart, restoredEnd)
-            } else {
-                ic.setSelection(callerStart, callerEnd)
-            }
-        } finally {
-            ic.endBatchEdit()
-        }
     }
     
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -2324,12 +2259,10 @@ class AdaptKeyService : InputMethodService() {
         exitEmojiSearch()
         // D-142: catches leaving a login field WITHOUT pressing Enter (e.g. tapping an on-screen "Login"
         // button) - must run before the connection below is torn down, and before composing is cleared.
-        // D-279: same reasoning covers a still-armed A-12 auto-space - the field is being left without an
-        // explicit Space/Backspace/Enter ever resolving it, so it is abandoned exactly like a caret move
-        // elsewhere (see consumeStrandedPunctuationSpace's own KDoc for the mid-text exception).
+        // D-416: the field being left no longer needs any comparable A-12 cleanup - the deferred auto-space
+        // is never physically written, so there is nothing left behind to abandon (formerly D-279).
         currentInputConnection?.let { ic ->
             captureCredentialIfLoginField(ic)
-            consumeStrandedPunctuationSpace(ic)
         }
         composing.setLength(0)
         clearSuggestions()
@@ -2367,10 +2300,10 @@ class AdaptKeyService : InputMethodService() {
         val handledAt = SystemClock.uptimeMillis()
         try {
             // D-269: a genuine editor text selection takes priority over every other special mechanism
-            // (A-07 undo, D-262's pending-punctuation-space guard, ...) - Backspace must bluntly delete it,
-            // any other key must simply replace it, and neither may trigger anything else for this one
-            // keystroke; special handling resumes cleanly from the next keystroke. Checked before the A-07
-            // gate right below, which would otherwise hijack a Backspace meant for the selection.
+            // (A-07 undo, ...) - Backspace must bluntly delete it, any other key must simply replace it, and
+            // neither may trigger anything else for this one keystroke; special handling resumes cleanly
+            // from the next keystroke. Checked before the A-07 gate right below, which would otherwise
+            // hijack a Backspace meant for the selection.
             val selected = if (!selectionCollapsed) ic.getSelectedText(0) else null
             if (!selected.isNullOrEmpty()) {
                 consumeSelection(ic)
@@ -2379,18 +2312,14 @@ class AdaptKeyService : InputMethodService() {
                 }
                 // Every other key continues below against a clean, collapsed caret.
             }
-            // D-273: a still-pending A-12 sentence-punctuation auto-space takes priority over A-07's undo
-            // too, even when a split armed both at once (e.g. "ehvnicht." -> "eh nicht. ", which both splits
-            // - arming undoTyped - and ends a sentence - arming pendingPunctuationSpace). Per A-12's own
-            // mode, the first Backspace must only consume the pending space; the undo must not hijack it
-            // just because it happens to be armed too. handleBackspace() re-checks this flag itself and
-            // returns immediately, so calling it here and returning skips A-07/G-05 for this one keystroke,
-            // mirroring D-269's selection check right above. The undo stays armed for a later Backspace,
-            // once the space (and by then the delimiter) are actually gone from the document.
-            if (pendingPunctuationSpace && key.code == KeyCode.DELETE) {
-                handleBackspace(ic)
-                return
-            }
+            // D-416: the former D-273 priority carve-out ("a still-pending A-12 auto-space takes priority
+            // over A-07's undo, even when a split armed both at once") is gone, not merely simplified - it
+            // existed only because the eager model physically inserted a space the undo-window's own armed
+            // tail then had to be dug out from under. Under the deferred model there is no such space: a
+            // sentence-ending mark IS the armed tail's own trailing character already (D-358 already made
+            // the general undo-window logic below tolerate a punctuation delimiter directly, no space
+            // required), so the ordinary A-07 handling right below already does the right thing on its own -
+            // see AdaptKey-Plan-D416-Deferred-Space.md §4.4 for the full reasoning.
             // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
             if (undoTyped != null) {
                 when (key.code) {
@@ -2509,9 +2438,15 @@ class AdaptKeyService : InputMethodService() {
                                 // D-29: a new word after the accepted suggestion keeps its leading space (correct);
                                 // the eat-the-space rule was only for an immediately following punctuation.
                                 pendingSuggestionSpace = false
-                                // D-262: a letter typed next starts an ordinary new word - the sentence-
-                                // punctuation auto-space (if any) is already correctly in place as real text.
-                                pendingPunctuationSpace = false
+                                // D-416: a letter starting a brand-new word materialises the deferred A-12
+                                // space now, if one is genuinely pending right here - nothing was physically
+                                // written when the punctuation mark itself committed, so this is the first
+                                // point that actually needs the separator to exist. Read fresh from the real
+                                // document rather than any stored flag (see AdaptKey-Plan-D416-Deferred-Space.md).
+                                val beforeChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
+                                if (beforeChar != null && beforeChar in SENTENCE_PUNCTUATION) {
+                                    ic.commitText(" ", 1)
+                                }
                                 // D-62: the caret may sit inside (or against) an already-committed word - reclaim
                                 // it so autocorrect/suggestions see the whole word, not just what gets typed from
                                 // here.
@@ -2538,14 +2473,10 @@ class AdaptKeyService : InputMethodService() {
                     // T-05: a space tapped in the upper band carries the letter inferred for a possible merge (A-06).
                     // D-119: finalizeAndCommit() itself splits at the caret when it is mid-word.
                     val inferred = ambiguity.inferredChar.takeIf { ambiguity.kind == TapAmbiguity.LETTER_AMBIGUOUS }
-                    // D-262: a Space pressed while a sentence-punctuation auto-space is still pending
-                    // confirms it instead of adding a second one - commit an empty delimiter (composing is
-                    // necessarily empty in this state) so every other consequence of a Space press
-                    // (clearUndo, the S-08 time suggestion, pendingMergeChar, armShiftForNextWord) still runs
-                    // exactly as normal.
-                    val spaceDelimiter = if (pendingPunctuationSpace) "" else " "
-                    pendingPunctuationSpace = false
-                    finalizeAndCommit(ic, spaceDelimiter, inferred)
+                    // D-416: an explicit Space right after sentence punctuation needs no special handling any
+                    // more - nothing was physically inserted for the deferred model to double up on, so this
+                    // is simply an ordinary Space press (formerly D-262's own empty-delimiter special case).
+                    finalizeAndCommit(ic, " ", inferred)
                 }
                 
                 KeyCode.ENTER -> handleEnter(ic)
@@ -2584,15 +2515,11 @@ class AdaptKeyService : InputMethodService() {
      * ignored, so Enter appeared to do nothing.
      */
     private fun handleEnter(ic: InputConnection) {
-        // D-270: Enter right after a still-pending sentence-punctuation auto-space removes that space
-        // first, exactly like the matching Backspace guard already does - otherwise a trailing space is
-        // left dangling at the end of every line/paragraph the user ends right after a sentence-ending mark.
-        if (pendingPunctuationSpace) {
-            pendingPunctuationSpace = false
-            if (ic.getTextBeforeCursor(1, 0) == " ") {
-                ic.deleteSurroundingText(1, 0)
-            }
-        }
+        // D-416: the former D-270 guard (removing a still-pending auto-space before the newline, so it
+        // would not dangle at the end of the line) is gone, not merely simplified - the deferred model never
+        // physically writes that space in the first place, so there is nothing here to remove; a bare
+        // sentence-punctuation mark simply stays as the last character of the line, exactly as if the user
+        // had pressed Enter right after any other ordinary character.
         val editorInfo = currentInputEditorInfo
         val imeOptions = editorInfo?.imeOptions ?: 0
         val multiLine = ((editorInfo?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
@@ -3153,7 +3080,7 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * D-269: bluntly deletes a genuine, non-collapsed editor text selection and resets every pending
-     * special-behaviour flag along with it (A-07's undo window, D-29/D-262's own pending auto-spaces, A-06's
+     * special-behaviour flag along with it (A-07's undo window, D-29's own pending auto-space, A-06's
      * pending merge char) - a selection takes priority over all of them, and none may fire for the
      * keystroke that acts on it. Called from [handleKey] before any of those would otherwise get a chance
      * to intercept the key first.
@@ -3166,31 +3093,17 @@ class AdaptKeyService : InputMethodService() {
         }
         pendingMergeChar = null
         pendingSuggestionSpace = false
-        pendingPunctuationSpace = false
         clearUndo()
         ic.commitText("", 1)
     }
     
     private fun handleBackspace(ic: InputConnection) {
-        // D-262: a Backspace right after a still-pending sentence-punctuation auto-space removes only that
-        // forced space and exits the mode - it must not cascade into the ordinary deleteOneBefore() path
-        // below, which would go on to remove the punctuation mark (or the word before it) instead.
-        //
-        // D-406: only when the caret is actually still sitting right after that auto-space - verified fresh
-        // here, not merely inferred from the flag. A caret move away from that position (e.g. a tap back
-        // into the previous word to fix a typo) is meant to be consumed by reclaimWordAtCaret()'s own
-        // pendingPunctuationSpace reset, but that reclaim is debounced (RECLAIM_DEBOUNCE_MS) - a Backspace
-        // pressed faster than the debounce window used to still hit this branch with a now-stale flag,
-        // silently swallowing the keystroke entirely (neither deleting the intended character nor falling
-        // through to re-derive Shift for the real caret position). Falling through instead of returning lets
-        // this keystroke behave like an ordinary Backspace once the flag is confirmed stale.
-        if (pendingPunctuationSpace) {
-            pendingPunctuationSpace = false
-            if (ic.getTextBeforeCursor(1, 0) == " ") {
-                ic.deleteSurroundingText(1, 0)
-                return
-            }
-        }
+        // D-416: the former D-262/D-406 guard here (a Backspace right after a still-pending A-12 auto-space
+        // removes only that forced space, not cascading into the ordinary delete below) is gone, not merely
+        // simplified - the deferred model never physically writes that space, so there is nothing to
+        // intercept before the ordinary single-character delete below runs; a Backspace right after a bare
+        // sentence-punctuation mark now simply deletes that mark, on the very first press, exactly like any
+        // other character. See AdaptKey-Plan-D416-Deferred-Space.md §3/§4.4.
         // §41: a real, non-collapsed text selection takes priority over the ordinary single-character
         // delete below - Backspace must remove the selection itself, matching every other editor, not the
         // character before the cursor (which the selection may not even be adjacent to).
@@ -3400,39 +3313,34 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-262: commits a punctuation delimiter, then - for a mark in `SENTENCE_PUNCTUATION` (`.!?,`, D-320
-     * added the comma alongside §6/[SentenceBoundary]'s own `.`/`!`/`?`) - auto-inserts its own trailing
-     * space and arms [pendingPunctuationSpace] so a further such mark glues onto this one instead of leaving
-     * the auto-space stranded mid-run. When [pendingPunctuationSpace] is already armed (continuing a run,
-     * e.g. the `?` of `"!?"`) the previous auto-space is removed first, so the run's own trailing space only
-     * ever appears once, after the whole run - mirrors [isSpaceEatingPunctuation]'s existing "don't trust
-     * the space blindly" guard. D-320: the same removal also fires when [raw] is a digit and
-     * [PunctuationSpaceGlue] recognises a decimal number in progress (`3.14`/`3,14`), gluing the digit
-     * directly onto the punctuation instead of confirming the auto-space.
-     * 
+     * D-416: commits a punctuation (or leading-digit) delimiter under the **deferred** auto-space model - no
+     * space is ever inserted eagerly. Instead, "is a space (and, for `.`/`!`/`?`, a capital) pending right
+     * here" is re-derived live from the real document on every call: composing empty (a genuine boundary,
+     * not mid-word) and the character immediately before the cursor already a bare mark from
+     * `SENTENCE_PUNCTUATION` (`.!?,`) with nothing materialised after it yet.
+     *
+     * When a space is pending, [raw] decides what happens to it:
+     * - another mark from `SENTENCE_PUNCTUATION` glues directly onto the previous one (a run, e.g. `"!?"`) -
+     *   no space is ever inserted between them;
+     * - a digit that [PunctuationSpaceGlue] recognises as continuing a decimal number in progress
+     *   (`3.14`/`3,14`) glues directly onto the mark too - D-320's own case, folded into the same general
+     *   "does this next character actually want a space before it" decision every other case already needs,
+     *   rather than a separate insert-then-detect-and-retract mechanism;
+     * - anything else materialises the pending space now, right before committing [raw] - the first point
+     *   that genuinely needs the separator to exist.
+     *
      * D-119/D-120: deliberately skipped when the delimiter would land mid-word (the caret sits before the
      * composing token's own end, so [finalizeAndCommit] delegates to `splitComposingAtCaretAndCommit`) - a
      * mid-word delimiter inserts the mark somewhere in the *middle* of the reconstructed text, where a
-     * trailing auto-space would land in the wrong place entirely.
-     * 
+     * materialised space would land in the wrong place entirely.
+     *
      * E-01/U-01/P-01: also skipped entirely for a login/URL field - a `.` inside an e-mail address or a
      * domain name must never grow an uninvited space into the middle of it.
-     * 
-     * D-270: the whole sequence (removing a run's previous auto-space, [finalizeAndCommit]'s own internal
-     * edits, inserting the new auto-space) is wrapped in one batch edit - a real device log showed this
-     * otherwise generates *three* separate `onUpdateSelection` callbacks, not the usual two (an echo, then
-     * the real position), for what is conceptually one commit. Only the first of those three ever finds
-     * [suppressNextReclaimSpaceReset] still armed - the single-shot guard is consumed by it, leaving the
-     * *second* callback's own reactive `reclaimWordAtCaret()` free to clear [pendingPunctuationSpace] again
-     * before the user's very next keystroke, exactly the double-space/never-glues symptom reported. Batching
-     * lets the editor coalesce the whole sequence back down to the same two callbacks an ordinary single
-     * commit already produces, which the existing single-shot guard was designed for - the structural fix,
-     * not a bigger counter. Also re-arms Shift ([armShiftForNextWord]) *after* the auto-space actually lands
-     * - [finalizeAndCommit]'s own internal call reads the text *before* the auto-space exists, so it can
-     * never see the sentence-ending mark's trailing whitespace and therefore never arms it; without this
-     * second call, the next word typed straight after the auto-space (skipping an explicit Space) never gets
-     * its own sentence-start capital.
-     * 
+     *
+     * Shift is armed ([armShiftForNextWord]) immediately after a sentence-ending mark commits - safe to do
+     * right away under the deferred model, unlike the old eager one, since [sentenceStartBefore]'s own
+     * virtual-trailing-space handling (D-416) no longer needs a physical space to already exist first.
+     *
      * @param ic the current input connection
      * @param raw the punctuation (or leading-digit) character that delimits the token
      */
@@ -3443,39 +3351,25 @@ class AdaptKeyService : InputMethodService() {
         }
         ic.beginBatchEdit()
         try {
-            val continuesRun = pendingPunctuationSpace && composing.isEmpty() && raw in SENTENCE_PUNCTUATION
-            // D-320: a digit right after the auto-space glues onto the punctuation instead of confirming
-            // the space, when the punctuation itself followed a digit - a decimal number ("3.14"/"3,14"),
-            // not a new sentence. Read fresh from the document rather than cached state, same as continuesRun.
-            val gluesDigit = pendingPunctuationSpace && composing.isEmpty() && raw.isDigit() &&
+            val beforeChar = if (composing.isEmpty()) ic.getTextBeforeCursor(1, 0)?.singleOrNull() else null
+            val pending = beforeChar != null && beforeChar in SENTENCE_PUNCTUATION
+            val continuesRun = pending && raw in SENTENCE_PUNCTUATION
+            val gluesDigit = pending && raw.isDigit() &&
                 PunctuationSpaceGlue.gluesDigit(
-                    ic.getTextBeforeCursor(3, 0)?.toString() ?: "",
+                    ic.getTextBeforeCursor(2, 0)?.toString() ?: "",
                     LanguageRulesRegistry.rulesFor(activeLanguage).decimalCommaGluesDigits()
                 )
-            if ((continuesRun || gluesDigit) && ic.getTextBeforeCursor(1, 0) == " ") {
-                ic.deleteSurroundingText(1, 0)
+            if (pending && !continuesRun && !gluesDigit) {
+                ic.commitText(" ", 1)
+                // D-269: guard the reactive reclaimWordAtCaret() this extra, now-batched commit's own
+                // callback triggers - it is only an echo of this very commit, not a genuine subsequent caret
+                // move (mirrors the identical D-123 guard for pendingSuggestionSpace). Only needed for this
+                // branch, the one case that commits more than the mark alone.
+                suppressNextReclaimSpaceReset = true
             }
-            pendingPunctuationSpace = false
             val atTokenEnd = composingCursor == composing.length
             finalizeAndCommit(ic, raw.toString())
             if (atTokenEnd && raw in SENTENCE_PUNCTUATION) {
-                ic.commitText(" ", 1)
-                pendingPunctuationSpace = true
-                // D-279: ground-truth-capture the space's own absolute position right now, while it is
-                // guaranteed correct - see the field's own KDoc for why this must not be re-derived later
-                // from an onUpdateSelection callback instead.
-                val extracted = ic.getExtractedText(ExtractedTextRequest(), 0)
-                pendingPunctuationSpacePos = if (extracted != null) {
-                    ComposingAnchor.resolve(extracted.startOffset, extracted.selectionStart, 1)
-                } else {
-                    -1
-                }
-                // D-269: guard the reactive reclaimWordAtCaret() this commit's own (now-batched, but still
-                // eventually delivered) callback triggers - it is only an echo of this very commit, not a
-                // genuine subsequent caret move (mirrors the identical D-123 guard for pendingSuggestionSpace).
-                suppressNextReclaimSpaceReset = true
-                // D-270: re-derive the sentence-start arm now that the auto-space genuinely precedes the
-                // caret - see this function's own KDoc for why finalizeAndCommit()'s own call could not.
                 armShiftForNextWord(ic)
             }
         } finally {
@@ -5926,6 +5820,7 @@ class AdaptKeyService : InputMethodService() {
         // other §6-bypass point in this file (finalizeAndCommit, handlePunctuationDelimiter).
         if (loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField) {
             keyboardView?.shifted = false
+            keyboardView?.pendingSpaceIndicator = false
             shiftGuardedArm = false
             shiftArmTime = SystemClock.uptimeMillis()
             fieldMandateOverridden = false
@@ -5936,6 +5831,12 @@ class AdaptKeyService : InputMethodService() {
         shiftGuardedArm = ShiftGrace.isGuardedArm(capsMode, sentenceStart)
         shiftArmTime = SystemClock.uptimeMillis()
         fieldMandateOverridden = false
+        // D-416: mirrors the live deferred-space state on the space bar itself (a quiet visual confirmation
+        // that a space is genuinely pending, since nothing is written to the document yet to show it) - the
+        // same live check handlePunctuationDelimiter itself uses: composing empty (a genuine boundary) and
+        // the real character right before the cursor a bare mark from SENTENCE_PUNCTUATION.
+        keyboardView?.pendingSpaceIndicator = composing.isEmpty() &&
+            ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.let { it in SENTENCE_PUNCTUATION } == true
     }
     
     /**
@@ -6010,7 +5911,15 @@ class AdaptKeyService : InputMethodService() {
     
     private fun sentenceStartBefore(ic: InputConnection): Boolean {
         val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
-        return SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart)
+        // D-416: under the deferred auto-space model a bare `.`/`!`/`?` with nothing physically typed after
+        // it yet is already a pending sentence boundary - SentenceBoundary.withPendingTerminatorSpace
+        // appends a virtual, never-written trailing space for exactly that case before delegating, so every
+        // caller of this function (armShiftForNextWord's ~25 call sites) gets the correct answer without
+        // needing to know about the deferred model itself.
+        return SentenceBoundary.isSentenceStart(
+            SentenceBoundary.withPendingTerminatorSpace(before),
+            settings.commaLineNotSentenceStart
+        )
     }
     
     /**

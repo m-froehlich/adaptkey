@@ -8,50 +8,47 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for D-320: [PunctuationSpaceGlue] decides whether a digit typed right after an A-12
- * sentence-punctuation auto-space should glue onto the punctuation (a decimal number) instead of
- * confirming the auto-space as ordinary text.
+ * Unit tests for D-320/D-416: [PunctuationSpaceGlue] decides whether a digit about to be typed right after
+ * a sentence-punctuation mark should glue directly onto it (a decimal number) instead of a space being
+ * inserted first. D-416 changed the checked pattern from three characters (digit, punctuation, an
+ * already-inserted space) to two (digit, punctuation directly adjacent to the cursor), since the deferred
+ * auto-space model never inserts a space before this decision is made.
  */
 class PunctuationSpaceGlueTest {
     
     @Test
-    fun `a digit after a period-space that itself follows a digit glues`() {
-        assertTrue(PunctuationSpaceGlue.gluesDigit("3. "))
+    fun `a digit typed right after a period that itself follows a digit glues`() {
+        assertTrue(PunctuationSpaceGlue.gluesDigit("3."))
     }
     
     @Test
-    fun `a digit after a comma-space that itself follows a digit glues`() {
-        assertTrue(PunctuationSpaceGlue.gluesDigit("3, "))
+    fun `a digit typed right after a comma that itself follows a digit glues`() {
+        assertTrue(PunctuationSpaceGlue.gluesDigit("3,"))
     }
     
     @Test
-    fun `a longer preceding context still only looks at the last three characters`() {
-        assertTrue(PunctuationSpaceGlue.gluesDigit("Kapitel 3. "))
+    fun `a longer preceding context still only looks at the last two characters`() {
+        assertTrue(PunctuationSpaceGlue.gluesDigit("Kapitel 3."))
     }
     
     @Test
     fun `a period following a letter does not glue`() {
-        assertFalse(PunctuationSpaceGlue.gluesDigit("Hallo. "))
+        assertFalse(PunctuationSpaceGlue.gluesDigit("Hallo."))
     }
     
     @Test
     fun `an exclamation mark never glues even after a digit`() {
-        assertFalse(PunctuationSpaceGlue.gluesDigit("3! "))
+        assertFalse(PunctuationSpaceGlue.gluesDigit("3!"))
     }
     
     @Test
     fun `a question mark never glues even after a digit`() {
-        assertFalse(PunctuationSpaceGlue.gluesDigit("3? "))
+        assertFalse(PunctuationSpaceGlue.gluesDigit("3?"))
     }
     
     @Test
-    fun `missing trailing space does not glue`() {
-        assertFalse(PunctuationSpaceGlue.gluesDigit("3.5"))
-    }
-    
-    @Test
-    fun `text shorter than three characters never glues`() {
-        assertFalse(PunctuationSpaceGlue.gluesDigit(". "))
+    fun `text shorter than two characters never glues`() {
+        assertFalse(PunctuationSpaceGlue.gluesDigit("."))
     }
     
     @Test
@@ -61,16 +58,16 @@ class PunctuationSpaceGlueTest {
     
     @Test
     fun `D-410 a comma still glues by default, matching this app's historical German-only behaviour`() {
-        assertTrue(PunctuationSpaceGlue.gluesDigit("3, "))
+        assertTrue(PunctuationSpaceGlue.gluesDigit("3,"))
     }
     
     @Test
     fun `D-410 a comma does not glue when includeComma is false`() {
-        assertFalse(PunctuationSpaceGlue.gluesDigit("3, ", includeComma = false))
+        assertFalse(PunctuationSpaceGlue.gluesDigit("3,", includeComma = false))
     }
     
     @Test
     fun `D-410 a period still glues when includeComma is false`() {
-        assertTrue(PunctuationSpaceGlue.gluesDigit("3. ", includeComma = false))
+        assertTrue(PunctuationSpaceGlue.gluesDigit("3.", includeComma = false))
     }
 }

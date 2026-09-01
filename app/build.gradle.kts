@@ -34,8 +34,8 @@ android {
         // D-315: explicit user request bumped 0.9.26 -> 1.0.0 - a major-version milestone marker, not a
         // further third-digit step, requested right after D-314 (AZERTY) closed out the multi-language
         // rollout's last open layout gap; no code change accompanies this bump either.
-        versionCode = 388
-        versionName = "1.0.84"
+        versionCode = 389
+        versionName = "1.0.85"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing

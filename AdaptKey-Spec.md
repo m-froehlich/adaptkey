@@ -340,7 +340,8 @@ re-derived Shift either, the identical class of stale-state bug reaching the pos
 D-406 also fixed a related timing gap: a Backspace pressed faster than [reclaimWordAtCaret]'s own debounce
 window could still hit a now-stale pending-auto-space guard in `handleBackspace()` and be silently swallowed
 - consuming the flag without deleting anything and without ever reaching the delete-driven re-derivation
-above. All three symptoms were reported together from one real repro: typing a sentence-ending period (which
+above. (D-416 removed that guard entirely along with the eager auto-space mechanism it protected - this
+specific timing gap can no longer recur, since there is no stored flag left to go stale.) All three symptoms were reported together from one real repro: typing a sentence-ending period (which
 arms Shift for the next word), tapping back into the previous word to fix a typo, and backspacing to correct
 it - the first Backspace was silently swallowed, the second deleted correctly but left Shift wrongly armed,
 and the wrongly-capitalised state then persisted even after tapping back to the genuine sentence start.
@@ -412,6 +413,12 @@ after the token stops changing) for performance, so the highlight can lag briefl
 toggleable; colour is user-selectable. Confirmed by the user (see `AdaptKey-History.md`) that green meaning
 "safe, no correction planned" is the correct, settled reading - the alternative ("about to be
 auto-corrected") is not adopted.
+
+D-416 applies the same "quiet, automatic confirmation" philosophy to a different, non-word state: a small dot
+above the space key's own label while A-12's deferred auto-space is genuinely pending at the caret - not
+configurable, not S-05's own colour setting, but drawn from the same instinct that the system should visibly
+(if quietly) confirm what it is about to do automatically, rather than leaving it entirely invisible until the
+next keystroke resolves it.
 
 ### S-06 - Verbatim "Keep As Typed" Affordance
 Whenever autocorrect intends to replace the current token on the next delimiter - including a pending
@@ -694,19 +701,20 @@ single-character delete immediately after a mid-word reclaim (never deleting the
 must be kept intact by any future change in this area.
 
 A genuine, non-collapsed text selection always takes priority over this mechanism - and over every other
-pending special state (A-06's pending merge, D-262's own pending auto-space) - regardless of what happened
-just before it. Backspace on a selection bluntly deletes it; any other key bluntly replaces it. Neither
+pending special state (A-06's pending merge) - regardless of what happened just before it. (A-12's own
+deferred space, D-416, needs no comparable carve-out here - it is never physically present to begin with, so
+there is nothing a selection could collide with.) Backspace on a selection bluntly deletes it; any other key
+bluntly replaces it. Neither
 triggers the undo (or any other special behaviour) for that one keystroke; ordinary handling, including
 whatever pending state a *later* commit newly arms, resumes cleanly from the next keystroke.
 
-A-12's own still-pending auto-space also takes priority over this mechanism specifically, whenever both are
-armed by the same commit at once (an A-05 split that also happens to end a sentence, e.g. `"ehvnicht."` ->
-`"eh nicht. "`). The first Backspace only consumes the pending auto-space, per A-12's own mode; it does not
-also hijack that keystroke for the undo. A later Backspace, once the auto-space (and by then the delimiter
-itself) is actually gone from the document, triggers the undo normally - whether that auto-space was instead
-confirmed as ordinary text (an explicit Space pressed while it was still pending) makes no difference either
-way, since the whitespace-consuming Backspace behaviour above applies to it exactly the same as to any other
-trailing whitespace.
+D-416: an A-05 split that also happens to end a sentence (e.g. `"ehvnicht."` -> `"eh nicht."`) needs no special
+priority rule against this mechanism any more - A-12's deferred space is never physically in the document to
+compete with the undo window's own armed tail in the first place, so the ordinary Backspace/undo handling
+above already does the right thing unassisted: the first Backspace deletes the bare trailing mark itself (per
+A-12's own new Backspace behaviour), a later one lands exactly at the split boundary and triggers the undo
+normally. (Before D-416, the eager model's own physically-inserted space needed a dedicated carve-out here -
+removed along with the eager mechanism itself, not merely relocated.)
 
 Moving the caret away from an undo-eligible commit explicitly - a tap elsewhere - never lets a later Backspace
 revert the wrong text. Rather than trying to catch the exact moment the caret moves (unreliable - an ordinary
@@ -756,52 +764,51 @@ candidate would risk escalating an ordinary word straight to a permanent blackli
 typed (and, for the motivating half-typed-word case, it usually *is* typed
 again immediately afterwards, correctly this time).
 
-### A-12 - Auto-Space After Sentence Punctuation, With a Punctuation-Run Mode
-A sentence-ending punctuation mark (`.`, `!`, or `?`) - and, since D-320, a comma too, treated identically for
-the auto-space itself (see below for the one respect in which it differs) - auto-inserts a trailing space
-immediately after it commits - the user no longer has to press Space themselves before continuing, and this
-arms a standing mode, not a single one-shot reaction. As long as the caret simply remains sitting right after
-that auto-space - no explicit move elsewhere in the meantime - the mode stays armed: the *next* Space is
-ignored (absorbed into the already-present auto-space, not added as a second one) and the *next* mark from
-this same set glues directly onto the previous one (`"!?"`, not `"! ?"`) rather than leaving the auto-space
-stranded between them, gaining its own fresh trailing auto-space and re-arming the mode again - so a run of
-any length (`"!?!"`, `"..."`, `".,"`) keeps gluing together this way, the auto-space only ever trailing the
-whole run, never appearing mid-run.
+### A-12 - Deferred Auto-Space After Sentence Punctuation, With a Punctuation-Run Mode
+D-416 replaced this feature's original eager mechanism (auto-inserting a real space the instant the mark
+commits) with a **deferred** one: a sentence-ending punctuation mark (`.`, `!`, or `?`) - and, since D-320, a
+comma too, treated identically for the space itself (see below for the one respect in which it differs) -
+inserts nothing physically when it commits. It only arms a standing mode - the position right after the mark
+is a genuine pending boundary, exactly like §6 rule 2's own live capitalisation pre-arm already works, just
+now covering the space as well as the capital. The space (and, for `.`/`!`/`?`, the capital) is materialised
+only once the very next real keystroke resolves what actually belongs there:
 
-D-320: a digit typed right after the auto-space is a further, narrower exception - when the punctuation that
-armed the mode was specifically `.` or `,` (never `!`/`?`, which carry no numeric meaning) **and** the
-character immediately before that punctuation was itself a digit, the digit glues directly onto the
-punctuation instead of confirming the auto-space, so a decimal number typed digit-by-digit (`"3"` `"."` `"1"`
-`"4"`, or the German `"3"` `","` `"14"`) comes out as `"3.14"`/`"3,14"`, not `"3. 14"`/`"3, 14"`. This is a
-soft, position-based heuristic, not a semantic one: it never chases multi-digit lookback or thousands-grouping
-context, and a genuine new sentence that happens to start with a bare digit immediately after a numbered
-enumerator (e.g. `"Kapitel 3."` followed by a fresh sentence `"2 Punkte..."`) is a rare, accepted false-glue
-risk, matching this app's established soft-preference philosophy elsewhere (S-01/A-05/S-07) rather than an
-absolute rule. Both exits
-- an explicit Space (absorbed, confirming the auto-space as final) and a Backspace right at this point (removes
-only the forced space, never cascading into the punctuation mark or the word before it) - leave the mode
-exited; explicitly moving the caret elsewhere (a tap, not this app's own reactive echo of the auto-space commit
-itself) exits it the same way. A third exit exists specifically for Enter: pressed while the mode is still
-armed, it removes the pending auto-space first (mirroring the Backspace exit) rather than leaving a trailing
-space dangling at the end of the line - Enter is not itself part of the mode's own Space/punctuation reactions,
-but it must not leave stray whitespace behind either. A genuine caret move elsewhere, or the field itself being
-left (submitted, or focus moving away, with no explicit resolution of the mode in between), now also *removes*
-the auto-space outright rather than merely leaving it as confirmed text - but only when the space genuinely
-sits at the end of whatever has been typed so far. A space inserted while re-editing mid-text - already
-followed by real, pre-existing content - is never removed this way even once abandoned: it is the load-bearing
-separator between the punctuation and that following text, and removing it would pull the following word
-directly onto the punctuation mark. Once exited - by any of the above, or by any other key, which simply
-leaves the auto-space as ordinary confirmed text - further Space/punctuation presses are handled entirely
-normally again, with a fresh mode arming only if new sentence-ending punctuation is typed. For a `.`/`!`/`?`,
-the auto-space itself counts as the sentence-delimiting whitespace for §6's own auto-capitalisation the moment
-it lands - a word typed straight after it (without an explicit Space) still gets its own sentence-start
-capital, exactly as if the user had pressed Space themselves. A comma's own auto-space never does this -
-[SentenceBoundary] only ever treats `.`/`!`/`?` (or a genuine new line) as a sentence start, so a word typed
-straight after a comma's auto-space is capitalised no differently than after any ordinary Space, matching how
-a comma is never a sentence terminator regardless of what triggers the space after it. Does not apply inside
-a login/URL field (E-01/U-01/P-01) -
-a `.` inside an e-mail address or domain name must never grow an uninvited space into the middle of it - nor
-when the punctuation lands mid-word (re-editing an existing token, D-119/D-120's own split-at-caret case).
+- **A letter or digit** that genuinely starts a new word: a real space is inserted first, then the character
+  (capitalised per the already-armed Shift state, same as always).
+- **Another mark from the same set**: glues directly onto the previous one (`"!?"`, not `"! ?"`) - no space
+  is ever materialised between them, and the mode re-arms at the new position, so a run of any length
+  (`"!?!"`, `"..."`, `".,"`) still glues together exactly as before, the eventual space only ever trailing the
+  whole run.
+- **A digit that continues a decimal number in progress** (D-320): glues directly onto the mark instead of
+  getting a leading space - `"3"` `"."` `"1"` `"4"` (or the German `"3"` `","` `"14"`) comes out as
+  `"3.14"`/`"3,14"`, not `"3. 14"`/`"3, 14"` - only when the mark was specifically `.` or `,` (never `!`/`?`,
+  which carry no numeric meaning) **and** the character immediately before the mark was itself a digit. This
+  is a soft, position-based heuristic, not a semantic one: a genuine new sentence that happens to start with a
+  bare digit immediately after a numbered enumerator (e.g. `"Kapitel 3."` followed by a fresh sentence
+  `"2 Punkte..."`) is a rare, accepted false-glue risk, matching this app's established soft-preference
+  philosophy elsewhere (S-01/A-05/S-07) rather than an absolute rule.
+- **An explicit Space**: needs no special handling at all - nothing was physically written to reconcile, so it
+  is simply an ordinary Space press.
+- **A Backspace**, with nothing typed since the mark committed: deletes the mark itself directly, on the very
+  first press - there is no phantom space in the way any more to consume first. This is the one deliberate,
+  permanent behaviour change from the eager mechanism this replaced.
+- **Enter**, or the caret moving away/the field being left with nothing typed since: nothing was ever
+  physically written, so there is nothing to clean up or leave dangling - a bare mark simply sits as the last
+  character typed, exactly as if any other character had been typed there instead.
+
+For `.`/`!`/`?`, capitalisation is armed for the next word immediately on committing the mark - safe to do
+right away under this deferred model, unlike the eager one, since the position already counts as a pending
+sentence boundary the moment the mark lands (see [SentenceBoundary.withPendingTerminatorSpace]). A comma's
+own pending space never arms capitalisation - comma was never one of [SentenceBoundary]'s own terminator
+characters, so a word typed straight after a comma's (eventually materialised) space is capitalised no
+differently than after any ordinary Space, matching how a comma is never a sentence terminator regardless of
+what triggers the space after it. Does not apply inside a login/URL field (E-01/U-01/P-01) - a `.` inside an
+e-mail address or domain name must never grow an uninvited space into the middle of it - nor when the
+punctuation lands mid-word (re-editing an existing token, D-119/D-120's own split-at-caret case).
+
+A small, quiet dot above the space key's own label (see S-05's own "quiet confirmation" precedent) is the one
+on-screen indication that the pending state is armed at all, since - unlike the former eager mechanism - there
+is otherwise nothing visible to confirm it before the next real keystroke resolves it.
 
 ---
 
@@ -1613,7 +1620,9 @@ typo, Backspace to correct it):
    that window could still hit this guard with a caret that had already moved away - consuming the flag,
    deleting nothing, and returning before ever reaching the ordinary delete/re-derive path below. Fixed by
    verifying the caret is genuinely still at the auto-space position before intercepting the keystroke;
-   otherwise the flag is treated as stale and the keystroke falls through to an ordinary Backspace.
+   otherwise the flag is treated as stale and the keystroke falls through to an ordinary Backspace. (D-416
+   later removed this whole guard, flag and all, along with the eager auto-space mechanism it protected - see
+   A-12 for the current, deferred model, which has no comparable stale-flag risk left to guard against.)
 3. **Deleting a non-letter character had no re-derivation at all in the "off" direction.** The pre-existing
    D-45 fix only ever re-armed Shift *on* when deleting a character revealed a genuine sentence start
    (checked via one standalone, single-call-site re-check); there was no equivalent for the "not a sentence
