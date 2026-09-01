@@ -43,21 +43,21 @@
         <item>high</item>
     </string-array>
 
-    <!-- D-389 learned-word expiry window (label / stored value) - the user's own suggested coarse
-         nie/früh/mittel/spät choice, not a raw duration slider. D-389-followup: "never" added, first
-         (the default), matching C-06's own "off state leads" ordering above. -->
+    <!-- D-389 learned-word expiry window (label / stored value). D-389-followup (v3): concrete durations,
+         not abstract früh/mittel/spät wording - explicit user request, so the row states plainly how long
+         an entry actually survives. "Never" listed last, after the three finite windows. -->
     <string-array name="d389_expiry_window_labels">
+        <item>@string/d389_window_one_month</item>
+        <item>@string/d389_window_four_months</item>
+        <item>@string/d389_window_one_year</item>
         <item>@string/d389_window_never</item>
-        <item>@string/d389_window_early</item>
-        <item>@string/d389_window_medium</item>
-        <item>@string/d389_window_late</item>
     </string-array>
 
     <string-array name="d389_expiry_window_values">
+        <item>one_month</item>
+        <item>four_months</item>
+        <item>one_year</item>
         <item>never</item>
-        <item>early</item>
-        <item>medium</item>
-        <item>late</item>
     </string-array>
 
     <!-- D-352 auto-split mode (label / stored value, matching AutoSplitMode's own enum names). -->

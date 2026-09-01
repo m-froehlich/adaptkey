@@ -16921,3 +16921,56 @@ three call sites reading `LearnedWordExpiryWindow.EARLY.days` in test code updat
 
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 400 -> 401, `versionName` `"1.0.96"` ->
 `"1.0.97"`. Not yet device-confirmed.
+
+## §346 - D-419: every list-type setting now shows its currently selected value in the main list (v1.0.98)
+
+Explicit user request, prompted by C-06 (LLM threshold) and D-389 (the just-shipped learned-word expiry
+window) both requiring a tap into their own dialog to see what was currently set - every plain
+`ListPreference` in the settings screen must show its current value directly, matching how C-04 (highlight
+colour, D-302) and the `LabeledSeekBarPreference`-based sliders (C-21/C-22) already behave.
+
+Root-caused first, not assumed: C-04 was already correct (its own bespoke coloured-summary mechanism,
+`updateHighlightColorSummary()`, already shows the current entry's label, coloured, live) - the actual gap
+was every *other* plain `ListPreference` (`c06_llm_threshold`, `d389_learned_word_expiry_window`), whose
+summary was a static description with no live value at all.
+
+Fixed by mirroring `updateCalibrationSummary()`'s own existing "base description + live current value"
+shape (`"$base\n$current"`), generalised into a new shared pair of `SettingsFragment` helpers
+(`setupListPreferenceCurrentValueSummary`/`updateListPreferenceCurrentValueSummary`) rather than duplicating
+the pattern per setting - wired for `KEY_LLM_THRESHOLD`/`c06_summary` and
+`KEY_LEARNED_WORD_EXPIRY_WINDOW`/`d389_summary`, both at `onCreatePreferences()` and via each preference's
+own change listener, so the row stays live the moment a new value is picked, not only after leaving and
+re-entering the screen. New shared string `pref_current_value` ("Currently: %1$s" / "Aktuell: %1$s" /
+"Τρέχον: %1$s", D-419) - a generically-named resource deliberately kept separate from K-01's own identical
+`k01_current_style` string (an existing, feature-scoped duplicate not worth unifying for this round) since
+more than one setting now needs this exact wording.
+
+No new tests - `SettingsActivity`/`SettingsFragment` is Android view/`Preference` glue this project already
+leaves untested throughout (no existing test file for it either). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green, 1171 unit tests unchanged. Spec: new D-419 note under §20 (Configurable
+Parameters), right after the settings table. `versionCode` 401 -> 402, `versionName` `"1.0.97"` ->
+`"1.0.98"`. Not yet device-confirmed.
+
+## §347 - D-389-followup (v3): C-24 shows concrete durations, not abstract labels (v1.0.99)
+
+Immediate follow-up right after §346: the user reasoned a person picking this setting actually wants to
+know how long an entry survives, not just a relative "früh/mittel/spät" ranking - so the three finite
+levels are now shown and stored as concrete durations. `LearnedWordExpiryWindow`'s `EARLY`/`MEDIUM`/`LATE`
+(90/180/365 days) renamed to `ONE_MONTH`/`FOUR_MONTHS`/`ONE_YEAR` (30/120/365 days - the actual day counts
+changed too, not just the names: 1/4/12 months rather than 3/6/12) and reordered so `NEVER` sits last,
+after the three finite windows, rather than first - explicit requested order: "1 Monat/4 Monate/1 Jahr/Nie".
+`DEFAULT` stays `NEVER`, unchanged from §345.
+
+New stored values `one_month`/`four_months`/`one_year` (the `never` value is unchanged). All three
+languages' labels replaced with concrete text ("1 Monat"/"4 Monate"/"1 Jahr"/"Nie",
+"1 month"/"4 months"/"1 year"/"Never", "1 μήνας"/"4 μήνες"/"1 χρόνος"/"Ποτέ"). `LearnedWordExpirySweep`
+itself needed no change at all - its logic reads `window.days` generically, indifferent to which enum
+constant supplied it. Spec W-05/C-24 updated to the concrete-duration wording and new order.
+
+Existing tests updated in place (renamed references, `earlyDays` -> `oneMonthDays`, new day-count
+assertions for `ONE_MONTH`/`FOUR_MONTHS`/`ONE_YEAR`) - no new test scenarios, since the sweep's own
+behaviour is unchanged, only which concrete numbers back each enum constant. 1171 unit tests unchanged, all
+green.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 402 -> 403, `versionName` `"1.0.98"` ->
+`"1.0.99"`. Not yet device-confirmed.

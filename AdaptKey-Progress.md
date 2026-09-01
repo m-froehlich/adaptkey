@@ -518,11 +518,15 @@ non-trivial changes).
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
-  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97).** Learned words now expire after a configurable period
-    of disuse - see spec W-05/C-24. New C-24 setting (nie/früh/mittel/spät = never/3/6/12 months, default
-    **nie**, §345's own follow-up fix - opt-in, not opt-out), a once-a-day sweep across every installed
-    language's own learned-word store, un-learning (`DictionaryStore.forget`) whatever has gone untouched
-    (`last_touched`, D-388) past the configured window.
+  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99).** Learned words now expire after a
+    configurable period of disuse - see spec W-05/C-24. C-24 = 1 month / 4 months / 1 year / **Never**
+    (default, §345's own opt-in-not-opt-out fix; §347's own follow-up switched the three finite levels from
+    abstract früh/mittel/spät labels to these concrete durations, in this order), a once-a-day sweep across
+    every installed language's own learned-word store, un-learning (`DictionaryStore.forget`) whatever has
+    gone untouched (`last_touched`, D-388) past the configured window.
+  - **D-419 - RESOLVED (§346, v1.0.98).** Every plain `ListPreference` in the settings screen (C-06, C-24)
+    now shows its own currently selected entry directly in the main list - previously only C-04 (D-302) and
+    the `LabeledSeekBarPreference` sliders (C-21/C-22) did. See spec §20's own D-419 note.
   - **D-390 - OPEN.** Sentence-start auto-capitalisation must tolerate multi-part abbreviations (`"p. a."`/
     `"i. d. R."`) - a wrongly-applied capital must be retroactively corrected back once the abbreviation
     completes. Explicitly asked to be designed as a *general* rule, not a special case for one example.
@@ -722,6 +726,30 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§347 (v1.0.99): D-389-followup (v3) - C-24 shows concrete durations, not abstract labels.** User's own
+  reasoning: a person picking this setting wants to know how long an entry actually survives, not a
+  relative früh/mittel/spät ranking. `LearnedWordExpiryWindow`'s `EARLY`/`MEDIUM`/`LATE` (90/180/365 days)
+  renamed to `ONE_MONTH`/`FOUR_MONTHS`/`ONE_YEAR` (30/120/365 days - real value change, not just relabelling:
+  1/4/12 months instead of 3/6/12) and reordered so `NEVER` sits last, per the explicit requested order
+  ("1 Monat/4 Monate/1 Jahr/Nie"). `DEFAULT` stays `NEVER` (§345, unchanged). New stored values
+  `one_month`/`four_months`/`one_year`; all three languages' labels now concrete text. `LearnedWordExpirySweep`
+  needed no change (reads `.days` generically). Existing tests updated in place, no new scenarios. 1171 unit
+  tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec W-05/C-24 updated.
+  `versionCode` 402 → 403, `versionName` `"1.0.98"` → `"1.0.99"`. **Not yet device-confirmed.**
+
+- **§346 (v1.0.98): D-419 - every list-type setting now shows its currently selected value in the main**
+  **settings list.** Explicit user request, prompted by C-06/C-24 both needing a tap into their own dialog
+  to see what was set. C-04 (D-302) and the `LabeledSeekBarPreference` sliders (C-21/C-22) already did this
+  correctly; the actual gap was every other plain `ListPreference`. Fixed by generalising
+  `updateCalibrationSummary()`'s own "base description + live current value" shape into shared
+  `SettingsFragment` helpers (`setupListPreferenceCurrentValueSummary`/
+  `updateListPreferenceCurrentValueSummary`), wired for `c06_llm_threshold`/`d389_learned_word_expiry_window`
+  both at screen build and via each preference's own change listener. New shared string
+  `pref_current_value` ("Currently: %1$s"). No new tests (Android `Preference` view glue, already untested
+  throughout). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1171 unit tests unchanged. Spec: new
+  D-419 note under §20. `versionCode` 401 → 402, `versionName` `"1.0.97"` → `"1.0.98"`. **Not yet
+  device-confirmed.**
 
 - **§345 (v1.0.97): D-389-followup - added a "Nie" (Never) option to C-24, made it the default.**
   Immediate feedback right after §344: expiring learned words should be opt-in, not opt-out by default.

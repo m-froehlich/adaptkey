@@ -135,6 +135,13 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
             
+            // D-419: every plain ListPreference must show its own currently selected entry in the main
+            // list, not only once its dialog is opened - explicit user request. c04_highlight_color above
+            // already shows its current value (its own bespoke coloured-summary mechanism); every other
+            // plain ListPreference in this screen goes through the shared helper below instead.
+            setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LLM_THRESHOLD, R.string.c06_summary)
+            setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LEARNED_WORD_EXPIRY_WINDOW, R.string.d389_summary)
+            
             // D-191: the runtime permission dialog only appears the moment the user actually opts in here,
             // never proactively - turning the toggle on with the permission not yet granted blocks the
             // immediate switch flip (returning false) and requests it instead; the launcher callback above
@@ -258,6 +265,37 @@ class SettingsActivity : AppCompatActivity() {
             } else {
                 label
             }
+        }
+        
+        /**
+         * D-419: wires [key]'s summary to show its own static description plus the currently selected
+         * entry's label - the initial render here, and a change listener that keeps it live afterwards,
+         * mirroring [updateCalibrationSummary]'s own "base description + live current value" shape (that
+         * one is a plain [Preference], not a [ListPreference], so it cannot share this exact helper).
+         *
+         * @param key the [ListPreference]'s own key
+         * @param baseSummaryRes the setting's own static description string resource
+         */
+        private fun setupListPreferenceCurrentValueSummary(key: String, baseSummaryRes: Int) {
+            updateListPreferenceCurrentValueSummary(key, baseSummaryRes)
+            findPreference<ListPreference>(key)?.setOnPreferenceChangeListener { _, newValue ->
+                updateListPreferenceCurrentValueSummary(key, baseSummaryRes, newValue as String)
+                true
+            }
+        }
+        
+        /**
+         * @param key the [ListPreference]'s own key
+         * @param baseSummaryRes the setting's own static description string resource
+         * @param value the newly chosen stored value, or null to re-derive from the preference's current
+         *        (already-persisted) value - the same parameter shape [updateHighlightColorSummary] uses
+         */
+        private fun updateListPreferenceCurrentValueSummary(key: String, baseSummaryRes: Int, value: String? = null) {
+            val preference = findPreference<ListPreference>(key) ?: return
+            val current = value ?: preference.value ?: return
+            val index = preference.findIndexOfValue(current)
+            val label = if (index >= 0) preference.entries[index] else current
+            preference.summary = "${getString(baseSummaryRes)}\n${getString(R.string.pref_current_value, label)}"
         }
         
         /**

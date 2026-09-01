@@ -145,12 +145,14 @@
     <string name="d177_learned_words_title">Gelernte Wörter</string>
     <string name="d177_learned_words_summary">Wörter ansehen oder entfernen, die sich die Tastatur durch dein eigenes Tippen selbst beigebracht hat - auch solche, die nie als Vorschlag erscheinen.</string>
 
+    <string name="pref_current_value">Aktuell: %1$s</string>
+
     <string name="d389_title">Ungenutzte Wörter entlernen</string>
     <string name="d389_summary">Wie lange ein gelerntes Wort ungenutzt bleiben darf, bevor es automatisch entlernt wird. Erneute Nutzung setzt die Uhr zurück.</string>
+    <string name="d389_window_one_month">1 Monat</string>
+    <string name="d389_window_four_months">4 Monate</string>
+    <string name="d389_window_one_year">1 Jahr</string>
     <string name="d389_window_never">Nie</string>
-    <string name="d389_window_early">Früh</string>
-    <string name="d389_window_medium">Mittel</string>
-    <string name="d389_window_late">Spät</string>
 
     <string name="d177_expiry_title">Vormerkungsdauer vergessener Wörter</string>
     <string name="d177_expiry_summary">Wie lange ein entferntes gelerntes Wort vorgemerkt bleibt, bevor es still erneut gelernt werden kann (1–30 Tage).</string>

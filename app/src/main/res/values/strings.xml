@@ -145,12 +145,17 @@
     <string name="d177_learned_words_title">Learned words</string>
     <string name="d177_learned_words_summary">Review or remove words the keyboard has taught itself from your own typing - including ones that never show up as a suggestion.</string>
 
+    <!-- D-419: shared "currently selected value" line, appended to a ListPreference's own static
+         description - any list-type setting that needs to show its current value without opening the
+         dialog first uses this, not a per-setting duplicate (mirrors k01_current_style's own wording). -->
+    <string name="pref_current_value">Currently: %1$s</string>
+
     <string name="d389_title">Forget unused words</string>
     <string name="d389_summary">How long a learned word may go unused before it is automatically un-learned. Using it again resets the clock.</string>
+    <string name="d389_window_one_month">1 month</string>
+    <string name="d389_window_four_months">4 months</string>
+    <string name="d389_window_one_year">1 year</string>
     <string name="d389_window_never">Never</string>
-    <string name="d389_window_early">Early</string>
-    <string name="d389_window_medium">Medium</string>
-    <string name="d389_window_late">Late</string>
 
     <string name="d177_expiry_title">Forgotten-word memory</string>
     <string name="d177_expiry_summary">How long a removed learned word is remembered before it can quietly be learned again (1–30 days).</string>

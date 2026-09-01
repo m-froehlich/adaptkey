@@ -23,18 +23,18 @@ class LearnedWordExpiryWindowTest {
     }
     
     @Test
-    fun `each level's own day count is ordered early less than medium less than late`() {
-        assertEquals(90, LearnedWordExpiryWindow.EARLY.days)
-        assertEquals(180, LearnedWordExpiryWindow.MEDIUM.days)
-        assertEquals(365, LearnedWordExpiryWindow.LATE.days)
+    fun `each finite window's own day count matches its concrete duration label`() {
+        assertEquals(30, LearnedWordExpiryWindow.ONE_MONTH.days)
+        assertEquals(120, LearnedWordExpiryWindow.FOUR_MONTHS.days)
+        assertEquals(365, LearnedWordExpiryWindow.ONE_YEAR.days)
     }
     
     @Test
     fun `known keys resolve regardless of case and surrounding space`() {
+        assertEquals(LearnedWordExpiryWindow.ONE_MONTH, LearnedWordExpiryWindow.fromKey("one_month"))
+        assertEquals(LearnedWordExpiryWindow.FOUR_MONTHS, LearnedWordExpiryWindow.fromKey("FOUR_MONTHS"))
+        assertEquals(LearnedWordExpiryWindow.ONE_YEAR, LearnedWordExpiryWindow.fromKey("  one_year "))
         assertEquals(LearnedWordExpiryWindow.NEVER, LearnedWordExpiryWindow.fromKey("never"))
-        assertEquals(LearnedWordExpiryWindow.EARLY, LearnedWordExpiryWindow.fromKey("early"))
-        assertEquals(LearnedWordExpiryWindow.MEDIUM, LearnedWordExpiryWindow.fromKey("MEDIUM"))
-        assertEquals(LearnedWordExpiryWindow.LATE, LearnedWordExpiryWindow.fromKey("  late "))
     }
     
     @Test

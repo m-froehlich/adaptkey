@@ -1175,11 +1175,14 @@ removal G-04's drag-to-trash performs, not a mere frequency demotion. "Untouched
 `last_touched` stamp D-388's own recency sort already uses, so ordinary continued use of a word resets its
 own clock for free; nothing separate tracks "usage count" for this purpose.
 
-The window is a coarse choice (C-24, "nie"/"früh"/"mittel"/"spät" - never, or 3/6/12 months respectively),
-not a raw duration control, per the user's own explicit preference - default **"nie"**: expiring the user's
-own accumulated vocabulary is an opt-in behaviour, never something that happens silently unless deliberately
-turned on. The setting sits directly beneath the Learned Words editor's own entry in the Dictionary settings
-category, immediately visible from the one place a user would think to look for it.
+The window is a coarse choice (C-24: 1 month / 4 months / 1 year / never, in that order), not a raw
+duration control, per the user's own explicit preference - default **"never"**: expiring the user's own
+accumulated vocabulary is an opt-in behaviour, never something that happens silently unless deliberately
+turned on. Shown as concrete durations, not abstract labels ("früh"/"mittel"/"spät") - the user explicitly
+asked to see plainly how long an entry actually survives, not have to infer it. The setting sits directly
+beneath the Learned Words editor's own entry in the Dictionary settings category, immediately visible from
+the one place a user would think to look for it, and (D-419) shows its own currently selected duration
+directly in the settings list, not only once its dialog is opened.
 
 Runs as a small, once-a-day housekeeping sweep (throttled against the real time it last actually ran, not
 this service's own process lifecycle), across every installed language's own learned-word store, not only
@@ -1294,10 +1297,17 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
 | C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
 | C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
-| C-24 | Learned-word expiry window (W-05, D-389) | Never / Early / Medium / Late (~3 / 6 / 12 months) | Never |
+| C-24 | Learned-word expiry window (W-05, D-389) | 1 month / 4 months / 1 year / Never | Never |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
+
+D-419: any setting offered as a discrete list of named choices (C-04, C-06, C-24 above; C-21/C-22's own
+`LabeledSeekBarPreference` sliders already show their current position inline on the slider itself) shows
+its own currently selected entry directly in the settings screen's main list, not only once its own dialog
+is opened - explicit user request, since otherwise the only way to check a setting is to tap into it. C-04
+does this via its own bespoke coloured-summary preview (D-302); every other such setting appends a
+"Currently: X" line beneath its static description instead.
 
 ---
 
