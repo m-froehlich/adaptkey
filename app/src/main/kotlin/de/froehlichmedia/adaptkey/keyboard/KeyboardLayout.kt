@@ -349,7 +349,8 @@ object KeyboardLayout {
      *
      * D-382: `2` additionally gets an apostrophe and its own subscript `₂` (a second, unrelated ask bundled
      * onto the same key by the user) - every other digit is unaffected, still exactly the shifted-symbol +
-     * superscript pair above.
+     * superscript pair above. D-417: the apostrophe was moved ahead of the superscript in the popup order
+     * (`"` / `'` / `²` / `₂`), per the user's own preference.
      *
      * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
      * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
@@ -360,7 +361,7 @@ object KeyboardLayout {
         val superscript = NUMBER_SUPERSCRIPTS[c]
         val alternatives = when {
             hint == null || superscript == null -> emptyList()
-            c == '2' -> listOf(hint, superscript, "'", "₂")
+            c == '2' -> listOf(hint, "'", superscript, "₂")
             else -> listOf(hint, superscript)
         }
         return charKey(c, hint, alternatives = alternatives)

@@ -153,8 +153,10 @@ Settings (C-09). It behaves like an ordinary key row (full height, its own long-
 carries two long-press alternatives - its German-QWERTZ shifted symbol (`1`→`!`, `2`→`"`, `3`→`§`, `4`→`$`,
 `5`→`%`, `6`→`&`, `7`→`/`, `8`→`(`, `9`→`)`, `0`→`=`) and its own superscript form (e.g. `2`→`²`) - reached
 via the same multi-alternative popup as L-05. D-382: the `2` key additionally offers an apostrophe (`'`) and
-its own subscript (`₂`) as a third and fourth alternative, unlike every other digit's plain two-alternative
-popup. C-09 governs only the main letters page; the dedicated URL-mode and email-mode bottom rows never show
+its own subscript (`₂`) as a second and fourth alternative - D-417 reordered the popup to
+`"` / `'` / `²` / `₂` (apostrophe ahead of the superscript, subscript last) - unlike every other digit's
+plain two-alternative popup. C-09 governs only the main letters page; the dedicated URL-mode and email-mode
+bottom rows never show
 a number row at all, and symbol page 2 (§15) always shows a digit row regardless of C-09, as a guaranteed
 fallback when the main row is off.
 

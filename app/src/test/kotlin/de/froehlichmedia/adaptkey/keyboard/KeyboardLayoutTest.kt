@@ -55,10 +55,10 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-382 the 2 key additionally offers an apostrophe and a subscript, alongside its shifted symbol and superscript`() {
+    fun `D-382 D-417 the 2 key additionally offers an apostrophe and a subscript, apostrophe ahead of the superscript`() {
         val numberRow = KeyboardLayout.rows().first()
         
-        assertEquals(listOf("\"", "²", "'", "₂"), numberRow.byChar('2').alternatives)
+        assertEquals(listOf("\"", "'", "²", "₂"), numberRow.byChar('2').alternatives)
         assertTrue(KeyboardLayout.hasLongPressAction(numberRow.byChar('2')))
     }
     

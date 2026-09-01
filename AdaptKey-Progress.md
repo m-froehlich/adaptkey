@@ -712,6 +712,15 @@ non-trivial changes).
 
 ## Current State
 
+- **§332 (v1.0.84): D-417 - reordered the `2` key's popup so the apostrophe sits ahead of the superscript.**
+  D-382 (§330, v1.0.82) shipped the order `"` / `²` / `'` / `₂`; confirmed working on-device, but the user
+  wanted the apostrophe moved right after the shifted symbol. `KeyboardLayout.numberKey()`'s `'2'` branch
+  (shared by QWERTZ/QWERTY, L-01 - `AzertyLayout`/`GreekLayout` have their own separate implementation and
+  are unaffected) reordered to `listOf(hint, "'", superscript, "₂")`, giving `"` / `'` / `²` / `₂`. Spec's
+  L-06 and the KDoc updated; `KeyboardLayoutTest`'s existing D-382 assertion updated in place (no new test).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1141 unit tests unchanged. `versionCode` 387 -> 388,
+  `versionName` `"1.0.83"` -> `"1.0.84"`. **Not yet device-confirmed.**
+
 - **§331 (v1.0.83): D-400 - the keyboard layout is pinned to the system language, decoupled from the**
   **active dictionary language.** Design discussed directly with the user before implementing (this
   project's own convention for non-trivial decisions) - see the conversation itself for the full back-and-

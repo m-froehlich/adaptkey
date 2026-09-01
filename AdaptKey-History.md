@@ -16336,3 +16336,21 @@ carries the full resolution-order reasoning.
 
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 386 -> 387, `versionName` `"1.0.82"` ->
 `"1.0.83"`. **Device-confirmed** (a follow-up commit, `84446d8`, marked this explicitly).
+
+## §332 - D-417: reorder the `2` key's popup - apostrophe ahead of the superscript (v1.0.84)
+
+D-382 (§330, v1.0.82) had added an apostrophe (`'`) and a subscript (`₂`) as a third and fourth long-press
+alternative on the `2` key, alongside its existing shifted-symbol (`"`) and superscript (`²`) pair - order
+`"` / `²` / `'` / `₂`. Confirmed working correctly on-device, but the user wanted the order changed: the
+apostrophe should come right after the shifted symbol, ahead of the superscript, not after it.
+
+`KeyboardLayout.numberKey()` - the single implementation shared by both QWERTZ and QWERTY (L-01; `AzertyLayout`
+and `GreekLayout` have their own separate `numberKey()` and are unaffected, matching D-382's own original
+scope) - had the `'2'` branch hard-coded as `listOf(hint, superscript, "'", "₂")`. Simply reordered to
+`listOf(hint, "'", superscript, "₂")`, giving the new popup order `"` / `'` / `²` / `₂`. Spec's L-06 and the
+`numberKey()` KDoc updated to describe the new order; `KeyboardLayoutTest`'s existing D-382 assertion updated
+in place to `listOf("\"", "'", "²", "₂")` (no new test - same case, new expected order).
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green, 1141 unit tests unchanged (one assertion updated in
+place, no new test added). `versionCode` 387 -> 388, `versionName` `"1.0.83"` -> `"1.0.84"`. Not yet
+device-confirmed.
