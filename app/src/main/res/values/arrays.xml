@@ -43,20 +43,24 @@
         <item>high</item>
     </string-array>
 
-    <!-- D-389 learned-word expiry window (label / stored value). D-389-followup (v3): concrete durations,
-         not abstract früh/mittel/spät wording - explicit user request, so the row states plainly how long
-         an entry actually survives. "Never" listed last, after the three finite windows. -->
+    <!-- D-389 learned-word expiry window (label / stored value). D-389-followup (v5): the stored value is
+         deliberately the abstract early/medium/late/never level, not a duration - so it survives a future
+         change to what each level actually means, applied immediately after update with no migration. The
+         *label* text shown to the user is the concrete duration each level currently means ("1 Monat" etc,
+         D-389-followup v3) - kept in sync by hand with LearnedWordExpiryWindow's own `days` values, not
+         derived from them automatically (see that class's own KDoc). "Never" listed last, after the three
+         finite windows. -->
     <string-array name="d389_expiry_window_labels">
-        <item>@string/d389_window_one_month</item>
-        <item>@string/d389_window_four_months</item>
-        <item>@string/d389_window_one_year</item>
+        <item>@string/d389_window_early</item>
+        <item>@string/d389_window_medium</item>
+        <item>@string/d389_window_late</item>
         <item>@string/d389_window_never</item>
     </string-array>
 
     <string-array name="d389_expiry_window_values">
-        <item>one_month</item>
-        <item>four_months</item>
-        <item>one_year</item>
+        <item>early</item>
+        <item>medium</item>
+        <item>late</item>
         <item>never</item>
     </string-array>
 

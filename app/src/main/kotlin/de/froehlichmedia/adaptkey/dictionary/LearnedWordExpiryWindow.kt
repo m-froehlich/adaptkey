@@ -9,10 +9,14 @@ package de.froehlichmedia.adaptkey.dictionary
  * [DictionaryStore.learn]/reinforcement write already refreshes (D-388/D-411) - a frequently-used word's
  * own window keeps extending itself for free, with no separate "usage count" tracking needed.
  *
- * D-389-followup (v3): shown to the user as concrete durations ("1 Monat"/"4 Monate"/"1 Jahr"/"Nie"), not
- * the original abstract "früh"/"mittel"/"spät" wording - explicit user request, so the settings row states
- * plainly how long an entry actually survives rather than leaving that to be inferred. [NEVER] is listed
- * last, after the three finite windows, matching that same concrete-durations-first ordering.
+ * D-389-followup (v5): the persisted preference value is this enum's own name (`early`/`medium`/`late`/
+ * `never`), deliberately kept abstract - explicit user request. The *displayed* labels (each locale's own
+ * `strings.xml`, the `d389_window_*` entries) show the concrete duration each level currently
+ * means ("1 Monat"/"4 Monate"/"1 Jahr"), but that mapping is not baked into what is actually stored: a
+ * device that already has `medium` saved automatically picks up whatever [days] `MEDIUM` is redefined to
+ * mean in a later app update, with no migration needed. **Whoever changes a [days] value below must also
+ * update that level's own `d389_window_*` label strings (all three languages) in the same change** - the
+ * two are independent and nothing enforces they stay in sync automatically.
  *
  * @property days the retention window, in whole days (a coarse 30-day month approximation, matching this
  *           codebase's existing day-based expiry windows, e.g. [de.froehlichmedia.adaptkey.settings.
@@ -24,14 +28,14 @@ package de.froehlichmedia.adaptkey.dictionary
  */
 enum class LearnedWordExpiryWindow(val days: Int?) {
     
-    /** 1 month. */
-    ONE_MONTH(30),
+    /** Currently 1 month (`d389_window_early`) - see the class KDoc on keeping the two in sync. */
+    EARLY(30),
     
-    /** 4 months. */
-    FOUR_MONTHS(120),
+    /** Currently 4 months (`d389_window_medium`) - see the class KDoc on keeping the two in sync. */
+    MEDIUM(120),
     
-    /** 1 year. */
-    ONE_YEAR(365),
+    /** Currently 1 year (`d389_window_late`) - see the class KDoc on keeping the two in sync. */
+    LATE(365),
     
     /** D-389-followup: learned words are never automatically un-learned - the spec default. */
     NEVER(null);
@@ -47,8 +51,7 @@ enum class LearnedWordExpiryWindow(val days: Int?) {
          * the validation/clamp point for the persisted setting: anything unrecognised falls back to
          * [DEFAULT] so a corrupt stored value can never leave the setting in an invalid state.
          *
-         * @param key the stored value (e.g. "one_month" / "four_months" / "one_year" / "never"), or null
-         *        when unset
+         * @param key the stored value (e.g. "early" / "medium" / "late" / "never"), or null when unset
          * @return the matching window, or [DEFAULT] when [key] is null, blank or unrecognised
          */
         fun fromKey(key: String?): LearnedWordExpiryWindow {

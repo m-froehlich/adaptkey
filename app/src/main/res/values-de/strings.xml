@@ -149,9 +149,9 @@
 
     <string name="d389_title">Ungenutzte Wörter entlernen</string>
     <string name="d389_summary">Wie lange ein gelerntes Wort ungenutzt bleiben darf, bevor es automatisch entlernt wird. Erneute Nutzung setzt die Uhr zurück.</string>
-    <string name="d389_window_one_month">1 Monat</string>
-    <string name="d389_window_four_months">4 Monate</string>
-    <string name="d389_window_one_year">1 Jahr</string>
+    <string name="d389_window_early">1 Monat</string>
+    <string name="d389_window_medium">4 Monate</string>
+    <string name="d389_window_late">1 Jahr</string>
     <string name="d389_window_never">Nie</string>
 
     <string name="d177_expiry_title">Vormerkungsdauer vergessener Wörter</string>

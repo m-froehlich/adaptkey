@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 class LearnedWordExpirySweepTest {
     
     private val dayMillis = 24 * 60 * 60 * 1000L
-    private val oneMonthDays = LearnedWordExpiryWindow.ONE_MONTH.days!!
+    private val earlyDays = LearnedWordExpiryWindow.EARLY.days!!
     
     @Test
     fun `a word touched well within the window survives`() {
@@ -23,7 +23,7 @@ class LearnedWordExpirySweepTest {
         store.learn("apfel", null)
         now += 10 * dayMillis
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("apfel"))
@@ -34,9 +34,9 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("apfel", null)
-        now += oneMonthDays * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertEquals(listOf("apfel"), expired)
         assertFalse(store.isKnownWord("apfel"))
@@ -47,12 +47,12 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("apfel", null)
-        now += oneMonthDays * dayMillis - 1
+        now += earlyDays * dayMillis - 1
         // Touched again just before it would have expired - the clock restarts from here.
         store.learn("apfel", null)
-        now += oneMonthDays * dayMillis - 1
+        now += earlyDays * dayMillis - 1
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("apfel"))
@@ -63,10 +63,10 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("alt", null)
-        now += oneMonthDays * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         store.learn("neu", null)
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertEquals(listOf("alt"), expired)
         assertFalse(store.isKnownWord("alt"))
@@ -78,9 +78,9 @@ class LearnedWordExpirySweepTest {
         var now = 0L
         val store = InMemoryDictionaryStore(clock = { now })
         store.learn("apfel", null)
-        now += oneMonthDays * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_YEAR)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.LATE)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("apfel"))
@@ -104,7 +104,7 @@ class LearnedWordExpirySweepTest {
         val store = InMemoryDictionaryStore(clock = { 0L })
         store.putWord(WordEntry("haus", 5_000L))
         
-        val expired = LearnedWordExpirySweep.sweep(store, 999L * 24 * 60 * 60 * 1000, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, 999L * 24 * 60 * 60 * 1000, LearnedWordExpiryWindow.EARLY)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("haus"))
@@ -118,11 +118,11 @@ class LearnedWordExpirySweepTest {
         store.learn("hunde", null)
         store.setLearnedLemma("hunde", "hund")
         // hund stays untouched from t=0; hunde is reinforced again just before it would have expired.
-        now = oneMonthDays * dayMillis - 1
+        now = earlyDays * dayMillis - 1
         store.learn("hunde", null)
-        now += oneMonthDays * dayMillis
+        now += earlyDays * dayMillis
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("hund"))
@@ -136,9 +136,9 @@ class LearnedWordExpirySweepTest {
         store.learn("hund", null)
         store.learn("hunde", null)
         store.setLearnedLemma("hunde", "hund")
-        now += oneMonthDays * dayMillis + 1
+        now += earlyDays * dayMillis + 1
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertEquals(setOf("hund", "hunde"), expired.toSet())
         assertFalse(store.isKnownWord("hund"))
@@ -152,13 +152,13 @@ class LearnedWordExpirySweepTest {
         store.learn("hund", null)
         store.learn("hunde", null)
         store.setLearnedLemma("hunde", "hund")
-        now = oneMonthDays * dayMillis - 1
+        now = earlyDays * dayMillis - 1
         // The base form itself ("hund", lemma == null) is the one reinforced this time - the direction the
         // family grouping must handle too, not only "an inflection keeps its own base alive".
         store.learn("hund", null)
-        now += oneMonthDays * dayMillis
+        now += earlyDays * dayMillis
         
-        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.ONE_MONTH)
+        val expired = LearnedWordExpirySweep.sweep(store, now, LearnedWordExpiryWindow.EARLY)
         
         assertTrue(expired.isEmpty())
         assertTrue(store.isKnownWord("hund"))

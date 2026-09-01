@@ -518,17 +518,23 @@ non-trivial changes).
     each language's own base letters and their diacritic variants.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
-  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99 + §348 v1.0.100).** Learned words now
-    expire after a configurable period of disuse - see spec W-05/C-24. C-24 = 1 month / 4 months / 1 year /
-    **Never** (default, §345's own opt-in-not-opt-out fix; §347's own follow-up switched the three finite
-    levels from abstract früh/mittel/spät labels to these concrete durations, in this order), a once-a-day
-    sweep across every installed language's own learned-word store, un-learning (`DictionaryStore.forget`)
-    whatever has gone untouched (`last_touched`, D-388) past the configured window - except that (§348) a
-    D-404 word family only ever expires as a whole, once every one of its own members has individually gone
-    stale; a single frequently-used member holds the rest of the family alive indefinitely.
-  - **D-419 - RESOLVED (§346, v1.0.98).** Every plain `ListPreference` in the settings screen (C-06, C-24)
-    now shows its own currently selected entry directly in the main list - previously only C-04 (D-302) and
-    the `LabeledSeekBarPreference` sliders (C-21/C-22) did. See spec §20's own D-419 note.
+  - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99 + §348 v1.0.100 + §349 v1.0.101).**
+    Learned words now expire after a configurable period of disuse - see spec W-05/C-24. C-24's *displayed*
+    labels are 1 month / 4 months / 1 year / **Never** (default, §345's own opt-in-not-opt-out fix; §347's
+    own follow-up switched from abstract früh/mittel/spät labels to these concrete durations), but the
+    *stored* value stays the abstract `early`/`medium`/`late`/`never` level (§349's own correction, reverting
+    part of §347 - the stored value and its current duration meaning are deliberately decoupled, so a future
+    retuning of what a level means takes effect immediately for anyone with it already saved, no migration
+    needed). A once-a-day sweep across every installed language's own learned-word store, un-learning
+    (`DictionaryStore.forget`) whatever has gone untouched (`last_touched`, D-388) past the configured window
+    - except that (§348) a D-404 word family only ever expires as a whole, once every one of its own members
+    has individually gone stale; a single frequently-used member holds the rest of the family alive
+    indefinitely.
+  - **D-419 - RESOLVED (§346 v1.0.98 + §349 v1.0.101).** Every plain `ListPreference` in the settings screen
+    (C-06, C-24) shows its own currently selected entry directly in the main list, as a fully **bold**
+    "Currently: X" line (§349's own follow-up) - previously only C-04 (D-302) and the
+    `LabeledSeekBarPreference` sliders (C-21/C-22) showed their current value at all. See spec §20's own
+    D-419 note.
   - **D-390 - OPEN.** Sentence-start auto-capitalisation must tolerate multi-part abbreviations (`"p. a."`/
     `"i. d. R."`) - a wrongly-applied capital must be retroactively corrected back once the abbreviation
     completes. Explicitly asked to be designed as a *general* rule, not a special case for one example.
@@ -728,6 +734,22 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§349 (v1.0.101): D-389-followup (v5) + D-419-followup - decouple C-24's storage from its display; bold**
+  **"Currently" line.** Two pieces of direct feedback. (1) §347 tied the *stored* preference value directly
+  to the current duration meaning (enum renamed to `ONE_MONTH`/etc.) - user's own explicit correction: the
+  stored value must stay the abstract `early`/`medium`/`late`/`never` level, decoupled from what duration it
+  currently means, so retuning a threshold later applies immediately to everyone with that level already
+  saved, no migration needed. `LearnedWordExpiryWindow` renamed back to `EARLY`/`MEDIUM`/`LATE`/`NEVER` (days
+  unchanged: 30/120/365/null); the displayed label strings stay hand-maintained duration text, with a
+  class-KDoc warning to keep both in sync manually when `days` changes. `arrays.xml`'s stored-value array
+  reverted to match. Hit and fixed a nasty KDoc bug along the way: a literal `*/` inside a doc-comment line
+  (`res/values*/strings.xml`) silently closed the comment early, cascading into unrelated syntax errors
+  further down. (2) The "Currently: X" line (D-419) is now fully bold via a `SpannableString`/`StyleSpan`,
+  not plain text, so it visibly stands apart from the description above it. No new tests (rename + Android
+  view glue). 1175 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  Spec W-05 and the D-419 note both updated. `versionCode` 404 → 405, `versionName` `"1.0.100"` →
+  `"1.0.101"`. **Not yet device-confirmed.**
 
 - **§348 (v1.0.100): D-389-followup (v4) - a word family only expires once every member has gone stale.**
   User's own explicit framing: a single stale member of a D-404 word family must not "tear a hole" in an

@@ -17009,3 +17009,37 @@ unit tests, all green.
 
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: W-05 gained the family-expiry addendum.
 `versionCode` 403 -> 404, `versionName` `"1.0.99"` -> `"1.0.100"`. Not yet device-confirmed.
+
+## §349 - D-389-followup (v5) + D-419-followup: decouple C-24's storage from its display; bold "Currently" (v1.0.101)
+
+Two pieces of direct feedback on the just-shipped rounds.
+
+**C-24's stored value and displayed label are now independent.** §347's own "concrete durations" round had
+gone one step too far: the enum constants themselves were renamed to `ONE_MONTH`/`FOUR_MONTHS`/`ONE_YEAR`,
+which meant the *persisted* preference value (`one_month` etc., derived from the enum's own `.name`) was
+tied directly to the current duration meaning - retuning a threshold later would have needed a real
+migration for anyone who already had a value saved. User's own explicit correction: the stored value must
+stay the abstract level (`early`/`medium`/`late`/`never`, reverted from §347), completely decoupled from
+what duration it currently means - "Ändern wir irgendwann, was für MEDIUM steht, wirkt dieser Wert sofort
+nach Update." `LearnedWordExpiryWindow`'s enum constants renamed back to `EARLY`/`MEDIUM`/`LATE`/`NEVER`
+(days unchanged: 30/120/365/null); the *displayed* label strings (`d389_window_early`/`_medium`/`_late`/
+`_never`, still showing "1 Monat"/"4 Monate"/"1 Jahr"/"Nie") are now hand-maintained independently, with a
+prominent class-KDoc warning that a future change to a `days` value must also update its own label string in
+the same change - nothing enforces the two stay in sync automatically. `arrays.xml`'s stored-value array
+reverted to `early`/`medium`/`late`/`never` to match; the label array's own display order (durations, then
+"Nie" last) is untouched. Existing tests renamed back in place (`ONE_MONTH`→`EARLY` etc.); one nasty compile
+error along the way - a KDoc line reading `` `res/values*/strings.xml` `` contained a literal `*/`, which
+silently closed the whole doc comment early and cascaded into dozens of unrelated "Expecting a top level
+declaration" errors a few lines later - reworded to avoid the sequence entirely.
+
+**D-419's "Currently: X" line is now fully bold**, not plain text, so it visibly stands apart from the plain
+description above it - explicit user request ("komplett in bold, so dass sich das vom Beschreibungstext
+abhebt"). `updateListPreferenceCurrentValueSummary()` now builds a `SpannableString` with a
+`StyleSpan(Typeface.BOLD)` over exactly the "Currently: X" line's own range, mirroring this same file's
+existing `SpannableString`/span idiom (`updateHighlightColorSummary()`'s colour span, D-89's "Learn more"
+colour span) rather than introducing a new styling approach.
+
+No new tests - both changes are either a plain rename (no behaviour change to verify further) or Android
+`Preference` view glue this project already leaves untested throughout. 1175 unit tests unchanged, all
+green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: W-05 and the D-419 note both updated.
+`versionCode` 404 -> 405, `versionName` `"1.0.100"` -> `"1.0.101"`. Not yet device-confirmed.

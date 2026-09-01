@@ -1178,11 +1178,15 @@ own clock for free; nothing separate tracks "usage count" for this purpose.
 The window is a coarse choice (C-24: 1 month / 4 months / 1 year / never, in that order), not a raw
 duration control, per the user's own explicit preference - default **"never"**: expiring the user's own
 accumulated vocabulary is an opt-in behaviour, never something that happens silently unless deliberately
-turned on. Shown as concrete durations, not abstract labels ("früh"/"mittel"/"spät") - the user explicitly
-asked to see plainly how long an entry actually survives, not have to infer it. The setting sits directly
-beneath the Learned Words editor's own entry in the Dictionary settings category, immediately visible from
-the one place a user would think to look for it, and (D-419) shows its own currently selected duration
-directly in the settings list, not only once its dialog is opened.
+turned on. Shown as concrete durations, not abstract labels - the user explicitly asked to see plainly how
+long an entry actually survives, not have to infer it. What is actually *stored*, however, stays the
+abstract level (`early`/`medium`/`late`/`never`), deliberately decoupled from the displayed duration text -
+if the concrete meaning of a level is ever redefined in a later app update, a device that already has e.g.
+`medium` saved picks up the new meaning immediately, with no migration needed; only the hand-maintained label
+strings need updating alongside the code change to keep what is shown in sync with what actually happens.
+The setting sits directly beneath the Learned Words editor's own entry in the Dictionary settings category,
+immediately visible from the one place a user would think to look for it, and (D-419) shows its own
+currently selected duration directly in the settings list, not only once its dialog is opened.
 
 Runs as a small, once-a-day housekeeping sweep (throttled against the real time it last actually ran, not
 this service's own process lifecycle), across every installed language's own learned-word store, not only
@@ -1315,8 +1319,10 @@ D-419: any setting offered as a discrete list of named choices (C-04, C-06, C-24
 `LabeledSeekBarPreference` sliders already show their current position inline on the slider itself) shows
 its own currently selected entry directly in the settings screen's main list, not only once its own dialog
 is opened - explicit user request, since otherwise the only way to check a setting is to tap into it. C-04
-does this via its own bespoke coloured-summary preview (D-302); every other such setting appends a
-"Currently: X" line beneath its static description instead.
+does this via its own bespoke coloured-summary preview (D-302); every other such setting appends a fully
+**bold** "Currently: X" line beneath its own static, plain-text description instead - bold rather than
+plain, so it visibly stands apart from the description above it instead of blending in (also an explicit
+user request).
 
 ---
 

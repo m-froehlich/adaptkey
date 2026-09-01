@@ -149,9 +149,9 @@
 
     <string name="d389_title">Ξέχασμα αχρησιμοποίητων λέξεων</string>
     <string name="d389_summary">Πόσο καιρό μπορεί να μείνει αχρησιμοποίητη μια λέξη πριν ξεμαθευτεί αυτόματα. Η εκ νέου χρήση επαναφέρει το ρολόι.</string>
-    <string name="d389_window_one_month">1 μήνας</string>
-    <string name="d389_window_four_months">4 μήνες</string>
-    <string name="d389_window_one_year">1 χρόνος</string>
+    <string name="d389_window_early">1 μήνας</string>
+    <string name="d389_window_medium">4 μήνες</string>
+    <string name="d389_window_late">1 χρόνος</string>
     <string name="d389_window_never">Ποτέ</string>
 
     <string name="d177_expiry_title">Διάρκεια μνήμης ξεχασμένων λέξεων</string>

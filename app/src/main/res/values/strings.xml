@@ -152,9 +152,9 @@
 
     <string name="d389_title">Forget unused words</string>
     <string name="d389_summary">How long a learned word may go unused before it is automatically un-learned. Using it again resets the clock.</string>
-    <string name="d389_window_one_month">1 month</string>
-    <string name="d389_window_four_months">4 months</string>
-    <string name="d389_window_one_year">1 year</string>
+    <string name="d389_window_early">1 month</string>
+    <string name="d389_window_medium">4 months</string>
+    <string name="d389_window_late">1 year</string>
     <string name="d389_window_never">Never</string>
 
     <string name="d177_expiry_title">Forgotten-word memory</string>

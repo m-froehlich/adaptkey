@@ -191,12 +191,12 @@ class SettingsMapperTest {
     fun `D-389 learnedWordExpiryWindow resolves from the stored key, defaulting to NEVER`() {
         assertEquals(LearnedWordExpiryWindow.NEVER, SettingsMapper.toAdaptSettings(RawSettings()).learnedWordExpiryWindow)
         assertEquals(
-            LearnedWordExpiryWindow.ONE_MONTH,
-            SettingsMapper.toAdaptSettings(RawSettings(learnedWordExpiryWindowKey = "one_month")).learnedWordExpiryWindow
+            LearnedWordExpiryWindow.EARLY,
+            SettingsMapper.toAdaptSettings(RawSettings(learnedWordExpiryWindowKey = "early")).learnedWordExpiryWindow
         )
         assertEquals(
-            LearnedWordExpiryWindow.ONE_YEAR,
-            SettingsMapper.toLearnedWordExpiryWindow(RawSettings(learnedWordExpiryWindowKey = "one_year"))
+            LearnedWordExpiryWindow.LATE,
+            SettingsMapper.toLearnedWordExpiryWindow(RawSettings(learnedWordExpiryWindowKey = "late"))
         )
     }
     

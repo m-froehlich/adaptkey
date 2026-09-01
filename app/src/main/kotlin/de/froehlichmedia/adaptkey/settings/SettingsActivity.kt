@@ -7,10 +7,12 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -285,6 +287,9 @@ class SettingsActivity : AppCompatActivity() {
         }
         
         /**
+         * D-419-followup: the "Currently: X" line is rendered fully bold, so it visibly stands apart from
+         * the plain-text description above it instead of blending in - explicit user request.
+         *
          * @param key the [ListPreference]'s own key
          * @param baseSummaryRes the setting's own static description string resource
          * @param value the newly chosen stored value, or null to re-derive from the preference's current
@@ -295,7 +300,12 @@ class SettingsActivity : AppCompatActivity() {
             val current = value ?: preference.value ?: return
             val index = preference.findIndexOfValue(current)
             val label = if (index >= 0) preference.entries[index] else current
-            preference.summary = "${getString(baseSummaryRes)}\n${getString(R.string.pref_current_value, label)}"
+            val base = getString(baseSummaryRes)
+            val currentLine = getString(R.string.pref_current_value, label)
+            val full = "$base\n$currentLine"
+            preference.summary = SpannableString(full).apply {
+                setSpan(StyleSpan(Typeface.BOLD), base.length + 1, full.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
         }
         
         /**
