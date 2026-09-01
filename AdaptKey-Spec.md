@@ -385,6 +385,16 @@ too-narrow fix. All of them now funnel through one shared choke point instead
 (`armShiftForNextWordUnlessOpener`), so a future new commit branch cannot reintroduce this same gap by simply
 calling [armShiftForNextWord] directly.
 
+D-378-followup (v2): a real device log (identical in shape to D-373-followup's own v2) showed
+`armShiftForNextWordUnlessOpener` itself was already working correctly at commit time - Shift genuinely stayed
+untouched right when the opener committed - but the debounced D-62 reactive reclaim
+([reclaimWordAtCaret]) fires ~100ms later (composing is empty right after an opener too, the same trigger
+condition) and calls the raw [armShiftForNextWord] directly for its own, unrelated D-313 reason (a caret
+landing on an existing word), with no awareness of the opener at all - silently turning Shift back off a
+moment after the commit correctly left it alone. A new one-shot flag, consumed exactly like the existing
+`shiftArmedByDelete`/D-373-followup's own `tokenShiftLiveArmed` guards right next to it, carries the "this was
+just an opener" decision forward to that one call site.
+
 ---
 
 ## 5. Suggestion Bar

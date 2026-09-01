@@ -494,9 +494,10 @@ non-trivial changes).
     where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
     worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
     nothing else in the pipeline resolves the token at all.
-  - **D-378 - REOPENED (2026-09-01).** Same as D-373's own reopening note - confirmed still broken with the
-    identical repro after two code-level fix rounds; see Current State §355 for the diagnostic-logging round
-    now in place instead of a third blind patch.
+  - **D-378 - RESOLVED (§357, v1.0.109).** Same root-cause shape as D-373-followup (v2): the debounced D-62
+    reclaim's own `armShiftForNextWord` call, ~100ms after the opener commits, was never taught about D-378 at
+    all and clobbered it. Fixed with the same one-shot-flag pattern (`shiftPreservedAfterOpener`). See Current
+    State for the mechanism.
   - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
     already-present `abzgl.`/`zzgl.` family.
   - **D-380 - OPEN.** A long-press smear too small to trigger a swipe/page-change should still open the alt
@@ -752,6 +753,28 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§357 (v1.0.109): D-378-followup (v2) - a second, real device log confirmed the exact same root-cause**
+  **shape as D-373-followup (v2), just via the opener path instead of the hyphen path.** User's own log
+  (`AdaptKeyShift` tag, real repro this time - the first log sent for this round turned out to be an accidental
+  duplicate of the D-373 one) traced it precisely: `armShiftForNextWordUnlessOpener` correctly left Shift
+  untouched right when `"` committed (`isOpener=true`, `shiftedBefore=true` → `shiftedAfter=true`) - but by the
+  time the user actually typed the next letter, `shifted` had already flipped back to `false` in the
+  meantime, with no logged event visibly responsible (only the debounced D-62 reclaim's own *unlogged*
+  `armShiftForNextWord` call could explain the gap). Confirmed: the debounced reclaim
+  (`reclaimWordAtCaret`, fires ~100ms after any commit that leaves composing empty, openers included) calls
+  the raw `armShiftForNextWord` directly, with zero awareness that the most recent commit was an opener.
+  Fixed with the identical pattern D-373-followup (v2) just established: new one-shot
+  `shiftPreservedAfterOpener` flag, set (to the opener decision itself, not just `true` - so a later
+  non-opener commit correctly clears a stale value) by `armShiftForNextWordUnlessOpener`, consumed by
+  `reclaimWordAtCaret()` right next to the existing `shiftArmedByDelete`/`tokenShiftLiveArmed` guards -
+  captured into a local and cleared unconditionally before the function's own early-return, so a user typing
+  faster than the 100ms debounce cannot leave it stale for some later, unrelated reclaim. All temporary
+  `AdaptKeyShift` diagnostic logging from §355 removed now that both root causes are confirmed and fixed - see
+  that entry if this class of bug ever needs the same treatment again. No new tests (Android/`InputConnection`
+  glue). 1191 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
+  D-378 "Addendum to G-05" gained the (v2) note. `versionCode` 412 → 413, `versionName` `"1.0.108"` →
+  `"1.0.109"`. **Not yet device-confirmed.**
 
 - **§356 (v1.0.108): D-373-followup (v2) - the §355 diagnostic log immediately found the real gap: a**
   **flicker, not a functional failure.** User's own real-device log (`AdaptKeyShift` tag) traced end to end:

@@ -412,6 +412,17 @@ class AdaptKeyService : InputMethodService() {
     // keystroke, correctly re-arming again), but visibly flickered true->false on the keyboard in between.
     private var tokenShiftLiveArmed = false
     
+    // D-378-followup (v2): mirrors tokenShiftLiveArmed above for the *other* Shift-preservation case -
+    // armShiftForNextWordUnlessOpener() sets this to whether the delimiter it was just asked about was a
+    // recognised opener, so reclaimWordAtCaret()'s own armShiftForNextWord() call (D-313's reactive
+    // re-derivation, unrelated to D-378) does not clobber a Shift state D-378 deliberately left untouched a
+    // moment earlier. Root-caused from a real device log identical in shape to D-373-followup (v2): the
+    // debounced D-62 reclaim fires ~100ms after the opener commits and, until this fix, always re-derived
+    // fresh regardless - correctly leaving Shift alone right at commit time, then silently turning it off a
+    // moment later. Always reassigned (not just set true) on every commit, opener or not, so a later
+    // non-opener commit correctly clears a still-pending true from an earlier one.
+    private var shiftPreservedAfterOpener = false
+    
     // D-142: the currently focused field's login-relevance, classified from EditorInfo in onStartInput.
     // Drives both the suggestion pipeline (the credential list instead of the dictionary for USERNAME/
     // EMAIL, nothing at all for PASSWORD) and what gets learned (see captureCredentialIfLoginField).
@@ -1625,6 +1636,12 @@ class AdaptKeyService : InputMethodService() {
         // scheduleReclaimAndChipRefresh()) is no longer pending the moment this function actually runs,
         // successfully or not - see reclaimPending's own field KDoc for why reclaimPossible() needs this.
         reclaimPending = false
+        // D-378-followup (v2): captured into a local and cleared unconditionally here, before the
+        // composing.isNotEmpty() early-return right below can skip past it - otherwise a stale true would
+        // survive (never consumed) whenever the user starts typing before this debounced call fires at all,
+        // wrongly protecting some later, unrelated re-derivation this function would otherwise correctly do.
+        val preserveShiftAfterOpener = shiftPreservedAfterOpener
+        shiftPreservedAfterOpener = false
         // D-347/D-350: this call is now debounced (see reclaimWordAtCaretRunnable) - by the time it actually
         // fires, a keystroke may already have started a real composing token in the meantime, which this
         // function must not append reclaimed text onto.
@@ -1644,15 +1661,16 @@ class AdaptKeyService : InputMethodService() {
             // re-derives Shift normally (D-313's own purpose).
             if (shiftArmedByDelete) {
                 shiftArmedByDelete = false
-            } else if (!tokenShiftLiveArmed) {
-                // D-373-followup (v2): captureTokenContext() just above may have already live-armed Shift
-                // for the D-373 hyphen-propagation case - re-deriving here (D-313's own reactive purpose)
-                // would silently overwrite that back to the generic "not a sentence start" answer, exactly
-                // mirroring the shiftArmedByDelete protection right above for the delete-driven case. Root-
-                // caused from a real device log: the debounced D-62 reclaim fires here ~100ms after a hyphen
-                // commits (composing is empty there too), so this was clobbering the arm every time, visibly
-                // flickering the keyboard's own Shift indicator true->false even though the *next* keystroke
-                // (which calls captureTokenContext() a third time, correctly) still ended up typed correctly.
+            } else if (!tokenShiftLiveArmed && !preserveShiftAfterOpener) {
+                // D-373-followup (v2) / D-378-followup (v2): captureTokenContext() just above may have
+                // already live-armed Shift for the D-373 hyphen-propagation case (tokenShiftLiveArmed), or
+                // the most recent commit may have been a D-378 opener whose whole point was leaving Shift
+                // untouched (preserveShiftAfterOpener) - re-deriving here (D-313's own reactive purpose, for
+                // a caret landing on an existing word) would silently overwrite either back to the generic
+                // "not a sentence start" answer, exactly mirroring the shiftArmedByDelete protection right
+                // above for the delete-driven case. Root-caused from two real device logs: the debounced D-62
+                // reclaim fires here ~100ms after the hyphen/opener commits (composing is empty there too),
+                // so this was clobbering both every time.
                 armShiftForNextWord(ic)
             }
             // D-123 / D-416: skip the reset exactly once when this call is only the echo of a
@@ -2582,15 +2600,6 @@ class AdaptKeyService : InputMethodService() {
                                 // here.
                                 reclaimSurroundingWord(ic, TapPoint(x, y, weight))
                             }
-                            // D-373-followup/D-378-followup (temporary diagnostic): the exact moment a
-                            // letter's own case is actually decided - see the matching notes in
-                            // captureTokenContext()/armShiftForNextWordUnlessOpener() for the rest of the
-                            // trace. Remove once both are confirmed fixed or the real gap is found here.
-                            diag(
-                                "AdaptKeyShift",
-                                "CHAR: raw='$raw' isWordLetter=$isWordLetter isUpperArmed=${isUpperArmed()} " +
-                                    "shifted=${keyboardView?.shifted} capsLock=${keyboardView?.capsLock}"
-                            )
                             val ch = if (isWordLetter && isUpperArmed()) raw.uppercaseChar() else raw
                             // T-05 / D-39 / D-62: keeps composingFlags/composingTaps in lockstep and lands the new
                             // character at the logical edit point (the end, unless a reclaim left a tail after it).
@@ -6081,23 +6090,19 @@ class AdaptKeyService : InputMethodService() {
      * composing-empty branch - too narrow: every other commit branch (split, merge, verbatim, the ordinary
      * word-commit path, the A-07 revert retry) still called [armShiftForNextWord] directly and still
      * clobbered Shift, confirmed by a real device report right after that first, incomplete fix.
+     *
+     * D-378-followup (v2): confirmed by a real device log still broken even after the above - this function
+     * itself was already correctly leaving Shift untouched at commit time, but [reclaimWordAtCaret]'s own
+     * `armShiftForNextWord` call, ~100ms later via the debounced D-62 reactive reclaim (fires because
+     * composing is empty right after the opener too), was never taught about the opener at all and silently
+     * turned Shift back off. [shiftPreservedAfterOpener] carries the decision forward to that one call site.
      */
     private fun armShiftForNextWordUnlessOpener(ic: InputConnection, delimiter: String) {
         val isOpener = delimiter.length == 1 && delimiter[0] in OPENING_PUNCTUATION
-        // D-378-followup (temporary diagnostic): reported still not working after this choke point was
-        // introduced - logs every call so a real repro (adb logcat -s AdaptKeyShift:D, or Settings ->
-        // Diagnostics) shows whether this function is even reached for the opener in question, and whether
-        // it correctly skips, rather than guessing again. Remove once D-378-followup is confirmed fixed or
-        // the real gap is found here.
-        diag(
-            "AdaptKeyShift",
-            "armShiftForNextWordUnlessOpener: delimiter=\"$delimiter\" isOpener=$isOpener " +
-                "shiftedBefore=${keyboardView?.shifted} capsLockBefore=${keyboardView?.capsLock}"
-        )
+        shiftPreservedAfterOpener = isOpener
         if (!isOpener) {
             armShiftForNextWord(ic)
         }
-        diag("AdaptKeyShift", "armShiftForNextWordUnlessOpener: shiftedAfter=${keyboardView?.shifted} capsLockAfter=${keyboardView?.capsLock}")
     }
     
     /**
@@ -6201,11 +6206,6 @@ class AdaptKeyService : InputMethodService() {
         }
         val elapsed = now - shiftArmTime
         if (ShiftGrace.suppressesShiftPress(shiftGuardedArm, view.shifted, settings.shiftGraceWindowMs, elapsed)) {
-            // D-378-followup (temporary diagnostic): if this ever fires outside a genuine field-mandated
-            // (WORDS/CHARACTERS) field, it is the real cause of an explicit Shift press appearing to do
-            // nothing - see the matching notes elsewhere in this same diagnostic pass. Remove once
-            // D-378-followup is confirmed fixed or the real gap is found here.
-            diag("AdaptKeyShift", "handleShift: SUPPRESSED by grace window (shiftGuardedArm=$shiftGuardedArm elapsed=$elapsed)")
             return
         }
         val wasUpper = view.shifted
@@ -6213,7 +6213,6 @@ class AdaptKeyService : InputMethodService() {
         if (shiftGuardedArm && wasUpper && !view.shifted) {
             fieldMandateOverridden = true
         }
-        diag("AdaptKeyShift", "handleShift: toggled shifted $wasUpper -> ${view.shifted}")
     }
     
     /**
