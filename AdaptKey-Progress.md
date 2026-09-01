@@ -781,7 +781,8 @@ non-trivial changes).
   after the quote and the dot correctly stays lit through it rather than going dark early. Spec's A-12 gained
   the D-370 bullet (closing-quote glue) and dot note. No new tests (Android/`InputConnection` glue). 1191 unit
   tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 414 → 415,
-  `versionName` `"1.0.110"` → `"1.0.111"`. Not yet device-confirmed.
+  `versionName` `"1.0.110"` → `"1.0.111"`. **2026-09-01: device-confirmed working** ("Top! Das hat
+  funktioniert.").
 
 - **§358 (v1.0.110): D-421-followup (v2) - regression: the credential list and clipboard paste chip stopped**
   **appearing on a fresh empty field.** Reported directly: an empty email field no longer showed the saved
