@@ -13,10 +13,10 @@ migration and what a plain revert might miss or need to reconcile by hand.
 
 ## Implementation commit(s)
 
-- `TBD` - filled in once this round is committed. One combined round, per explicit user instruction
-  ("Bitte alles auf einmal.") - the whole migration lands as a single commit (or a short, immediately
-  consecutive sequence, never interleaved with unrelated work), so a single `git revert` of that commit (or
-  range) is expected to undo the code side of this migration cleanly.
+- `2515fc3` ("D-416: A-12's auto-space after sentence punctuation, from eager to deferred (v1.0.85)") - the
+  whole migration, per explicit user instruction ("Bitte alles auf einmal."). A single `git revert 2515fc3`
+  is expected to undo the code side of this migration cleanly, as long as it is still the tip of the
+  relevant files' own history when reverted - see the file-by-file list below to reconcile if not.
 
 ## What changed, file by file (for reconciling a revert against later work)
 
