@@ -75,7 +75,7 @@ class CapitalisationEngine(private val store: DictionaryStore) {
         val upper = when {
             context.explicitFirstUpper -> true
             context.capsMode == CapsMode.WORDS -> true
-            context.afterHyphen -> isProper // B-02
+            context.afterHyphen -> isProper || previousSegmentPropagates(context) // B-02 / D-373
             isProper -> true
             isPureNoun -> true
             llmForcesUpper -> true // §6 rule 6: high-certainty LLM nominal exception
@@ -89,5 +89,34 @@ class CapitalisationEngine(private val store: DictionaryStore) {
             // Never lowercases an explicit uppercase: that path returns above via upper == true.
             word.replaceFirstChar { it.lowercaseChar() }
         }
+    }
+    
+    /**
+     * D-373: B-02's own `isProper`-only exception missed a common, real case - a hyphen chain whose second
+     * (or later) segment is an ordinary word with no independent proper-noun tag of its own (`"Nord"` in
+     * `"München-Nord"`), even though the segment right before the hyphen genuinely was capitalised.
+     * Deliberately two different checks depending on *why* that previous segment was capitalised, per the
+     * user's own explicit hybrid design:
+     *
+     * - if the previous segment was itself at a sentence start, a bare capital there proves nothing about
+     *   its own grammatical status (any word can open a sentence) - only propagate when it is independently
+     *   a known noun/proper noun in the dictionary, the same signal [isProper]/[isPureNoun] already use for
+     *   the *current* word;
+     * - otherwise, the previous segment's capital is trusted directly (whatever put it there - B-02's own
+     *   [isProper] exception, an earlier D-373 propagation further back in the same chain, or an explicit
+     *   user choice - already answered the "should this be capitalised" question once; a hyphen chain reads
+     *   as one unit, so the next segment should agree).
+     *
+     * @param context the current word's own context; only [CapitalisationContext.previousHyphenSegment] and
+     *        [CapitalisationContext.previousHyphenSegmentAtSentenceStart] are read here
+     * @return true when the previous segment's own capitalisation should propagate onto this one
+     */
+    private fun previousSegmentPropagates(context: CapitalisationContext): Boolean {
+        val previous = context.previousHyphenSegment ?: return false
+        if (context.previousHyphenSegmentAtSentenceStart) {
+            val pos = store.partsOfSpeech(previous)
+            return pos.contains(PartOfSpeech.NOUN) || pos.contains(PartOfSpeech.PROPER_NOUN)
+        }
+        return previous.firstOrNull()?.isUpperCase() == true
     }
 }

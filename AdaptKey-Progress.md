@@ -474,8 +474,10 @@ non-trivial changes).
     genuine diagonal pair (`a`/`w`). The named example itself (`g`/`b`) was also directly confirmed adjacent
     via a real Gradle test run, not just re-derived by hand - `KeyboardProximityTest` gained a permanent
     regression pair (`g`/`b`, `h`/`b`) to keep it that way. No version bump - no behaviour changed.
-  - **D-373 - OPEN.** Appending a hyphen after a *capitalised* word should re-arm auto-capitalisation for the
-    next segment (mirrors B-02's own default for the general case).
+  - **D-373 - RESOLVED (§353, v1.0.105).** A hyphen-chain segment now also capitalises when its own
+    predecessor was capitalised - hybrid design (user's own explicit call): a sentence-start predecessor
+    needs an independent noun/proper-noun dictionary check, elsewhere the predecessor's capital is trusted
+    directly. See Current State for the mechanism.
   - **D-374 - RESOLVED by D-416 (§333).** The trailing auto-space is never physically written until a real
     next character resolves it, so there is structurally nothing left to strand or fail to clean up when a
     field is left (Google Keep or otherwise) - eliminated, not patched.
@@ -490,8 +492,9 @@ non-trivial changes).
     where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
     worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
     nothing else in the pipeline resolves the token at all.
-  - **D-378 - OPEN.** While capitalisation is active (auto-armed or explicit), a quote character must not
-    reset it.
+  - **D-378 - RESOLVED (§353, v1.0.105).** An opening quote/bracket typed with nothing composing no longer
+    re-derives (and thereby disturbs) Shift at all - neither an auto-armed sentence-start capital nor an
+    explicit Shift press gets clobbered any more. See Current State for the mechanism.
   - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
     already-present `abzgl.`/`zzgl.` family.
   - **D-380 - OPEN.** A long-press smear too small to trigger a swipe/page-change should still open the alt
@@ -542,14 +545,20 @@ non-trivial changes).
     "Currently: X" line (§349's own follow-up) - previously only C-04 (D-302) and the
     `LabeledSeekBarPreference` sliders (C-21/C-22) showed their current value at all. See spec §20's own
     D-419 note.
-  - **D-390 - OPEN.** Sentence-start auto-capitalisation must tolerate multi-part abbreviations (`"p. a."`/
-    `"i. d. R."`) - a wrongly-applied capital must be retroactively corrected back once the abbreviation
-    completes. Explicitly asked to be designed as a *general* rule, not a special case for one example.
+  - **D-390 - WON'T FIX (2026-09-01, no code change - discussed and dropped).** Sentence-start
+    auto-capitalisation tolerating multi-part abbreviations (`"p. a."`/`"i. d. R."`) with a retroactive
+    correction would have needed a deliberate, narrow exception to D-405's own "never a commit-time
+    correction" principle, plus editing already-committed (not composing) text - real risk, discussed
+    directly. User's own call: with D-405/D-416 already in place, typing straight through in lower-case is
+    simply not auto-corrected back any more either, so "p. a." has no effective problem left to fix - only
+    slightly more effort to type deliberately, judged acceptable. Dropped rather than designed further.
   - **D-391 - OPEN.** A-05's retroactive split extended to the reverse direction (mirrors the same auto/
     chip-only setting D-352 got): if the current or preceding word makes no sense alone, but inserting a
     bottom-row connector letter (`y x c v b n m`) between them produces a sensible combined word, recognise
     it - a generalisation of A-06 merge beyond its current scope.
-  - **D-392 - OPEN.** Auto-capitalisation should re-engage after Caps Lock is turned off.
+  - **D-392 - RESOLVED (§353, v1.0.105).** Releasing Caps Lock now re-derives Shift fresh from the real
+    caret position (D-313/D-406's own [armShiftForNextWord] mechanism) instead of unconditionally clearing
+    it. See Current State for the mechanism.
   - **D-393 - OPEN.** In the Google Play Store's own search bar, Enter does not act as Submit.
   - **D-394 - RESOLVED, digit-mirror only (§330, v1.0.82).** The calculator page's digit block now reads
     `1 2 3` / `4 5 6` / `7 8 9` / `0` top to bottom (was calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0`) -
@@ -741,6 +750,41 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§353 (v1.0.105): D-373 + D-378 + D-392 - three capitalisation fixes discussed and designed with the**
+  **user first, D-390 dropped in the same discussion.** All four were raised together; design discussed
+  before any code, per this project's own rule for non-trivial capitalisation/algorithm decisions.
+  **D-373** (hyphen-chain capitalisation propagation): B-02's own `isProper`-only exception missed the common
+  case of an ordinary word after a hyphen whose *predecessor* was capitalised but which itself carries no
+  proper-noun tag (`"Nord"` in `"München-Nord"`). User's own explicit hybrid design: `CapitalisationContext`
+  gained `previousHyphenSegment`/`previousHyphenSegmentAtSentenceStart`, computed in `captureTokenContext()`
+  via a new pure `SentenceBoundary.previousHyphenSegment()` (walks back to the segment right before the
+  trailing hyphen, then re-runs `isSentenceStart()` on the text before *that* segment). `CapitalisationEngine`
+  gained `previousSegmentPropagates()`: when the predecessor was itself at a sentence start, only propagates
+  if it is independently a known noun/proper noun in the dictionary (a bare sentence-initial capital proves
+  nothing about grammar); otherwise the predecessor's capital is trusted directly. **D-378** (opening
+  quote/bracket must not disturb Shift): root-caused to `finalizeAndCommit`'s composing-empty branch calling
+  `armShiftForNextWord(ic)` unconditionally after *every* delimiter - re-deriving after a bare opener with
+  nothing yet composing either wrongly de-arms an already-correct auto-arm (`SentenceBoundary` sees the
+  opener itself as "still mid-token") or silently clobbers an explicit Shift press. Fixed by skipping that one
+  call for a recognised opener (`"([{<` - new `OPENING_PUNCTUATION`; the apostrophe deliberately excluded,
+  genuinely ambiguous between opening and closing a quote per the user's own confirmation) - `handlePunctuationDelimiter`'s
+  own re-arm branch already only fires for `SENTENCE_PUNCTUATION`, which no opener is a member of, so no
+  second call site needed the same guard. **D-392** (Caps Lock release): `handleShift()`'s Caps-Lock-release
+  branch unconditionally cleared Shift with no context re-derivation, unlike every other "position reached"
+  event (D-313/D-406) - now calls `armShiftForNextWord(ic)` when nothing is composing (a genuine word
+  boundary), keeping the old plain disarm only for the mid-word edge case (no well-defined "next word" to
+  re-derive against there). **D-390 dropped** (WON'T FIX, no code change): a general multi-part-abbreviation
+  rule would have needed a deliberate, narrow exception to D-405's own "never a commit-time correction"
+  principle plus editing already-committed text - real risk. User's own call: D-405/D-416 already mean typing
+  "p. a." straight through in lower-case is never auto-corrected back either, so there is no effective problem
+  left, just marginally more typing effort - acceptable, not worth the risk. 11 new tests (6
+  `CapitalisationEngineTest` covering both propagation branches in both directions, 5
+  `SentenceBoundaryTest` covering `previousHyphenSegment()` directly incl. chain/no-predecessor cases) -
+  D-378/D-392 are untested Android/`InputConnection` glue per this project's own convention. 1180 → 1191 unit
+  tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: B-02 gained the D-373
+  addendum, G-06 gained the D-392 addendum, a new "Addendum to G-05" covers D-378. `versionCode` 408 → 409,
+  `versionName` `"1.0.104"` → `"1.0.105"`. **Not yet device-confirmed.**
 
 - **§352 (v1.0.104): D-421 - two Reclaim-chip/Google-Keep bugs, both root-caused from real device reports,**
   **not guessed.** (1) **A field's very first caret position was never reclaimed.** Reported: tapping

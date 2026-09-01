@@ -16,10 +16,18 @@ package de.froehlichmedia.adaptkey.capitalisation
  *           small, local change rather than needing this whole plumbing rebuilt from scratch.
  * @property capsMode the editor-mandated capitalisation, ranking directly below explicit input
  * @property afterHyphen the token is the segment following a hyphen (B-02: lowercase unless proper)
+ * @property previousHyphenSegment D-373: the hyphen chain's own previous segment (real casing preserved),
+ *           or null when [afterHyphen] is false or no segment precedes the hyphen at all - see
+ *           [de.froehlichmedia.adaptkey.capitalisation.SentenceBoundary.previousHyphenSegment]'s own KDoc
+ * @property previousHyphenSegmentAtSentenceStart D-373: whether [previousHyphenSegment] was itself at a
+ *           sentence start - see [CapitalisationEngine.previousSegmentPropagates] for how this and
+ *           [previousHyphenSegment] together decide whether capitalisation propagates across the hyphen
  */
 data class CapitalisationContext(
     val explicitFirstUpper: Boolean,
     val sentenceStart: Boolean,
     val capsMode: CapsMode,
-    val afterHyphen: Boolean
+    val afterHyphen: Boolean,
+    val previousHyphenSegment: String? = null,
+    val previousHyphenSegmentAtSentenceStart: Boolean = false
 )

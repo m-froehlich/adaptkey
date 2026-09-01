@@ -27,9 +27,18 @@ class CapitalisationEngineTest {
         explicit: Boolean = false,
         sentenceStart: Boolean = false,
         caps: CapsMode = CapsMode.NONE,
-        afterHyphen: Boolean = false
+        afterHyphen: Boolean = false,
+        previousHyphenSegment: String? = null,
+        previousHyphenSegmentAtSentenceStart: Boolean = false
     ): CapitalisationContext {
-        return CapitalisationContext(explicit, sentenceStart, caps, afterHyphen)
+        return CapitalisationContext(
+            explicit,
+            sentenceStart,
+            caps,
+            afterHyphen,
+            previousHyphenSegment,
+            previousHyphenSegmentAtSentenceStart
+        )
     }
     
     @Test
@@ -117,5 +126,43 @@ class CapitalisationEngineTest {
     @Test
     fun `§6 rule 6 LLM exception does not override the B-02 after-hyphen rule`() {
         assertEquals("haus", engine.capitalise("Haus", ctx(afterHyphen = true), llmForcesUpper = true))
+    }
+    
+    @Test
+    fun `D-373 not at sentence start - a capitalised previous segment propagates directly - Muenchen-Nord`() {
+        // "nord" itself is unknown/not a proper noun - B-02 alone would lowercase it.
+        val context = ctx(afterHyphen = true, previousHyphenSegment = "München", previousHyphenSegmentAtSentenceStart = false)
+        assertEquals("Nord", engine.capitalise("nord", context))
+    }
+    
+    @Test
+    fun `D-373 not at sentence start - a lowercase previous segment does not propagate`() {
+        val context = ctx(afterHyphen = true, previousHyphenSegment = "anteil", previousHyphenSegmentAtSentenceStart = false)
+        assertEquals("teil", engine.capitalise("Teil", context))
+    }
+    
+    @Test
+    fun `D-373 at sentence start - a capitalised non-noun previous segment does not propagate`() {
+        // "Schnell" was only capitalised because it opened the sentence, not because of its own grammar -
+        // must not drag an unrelated word after the hyphen up with it.
+        val context = ctx(afterHyphen = true, previousHyphenSegment = "Schnell", previousHyphenSegmentAtSentenceStart = true)
+        assertEquals("gehen", engine.capitalise("Gehen", context))
+    }
+    
+    @Test
+    fun `D-373 at sentence start - a genuine proper noun previous segment does propagate`() {
+        val context = ctx(afterHyphen = true, previousHyphenSegment = "Berlin", previousHyphenSegmentAtSentenceStart = true)
+        assertEquals("Mitte", engine.capitalise("mitte", context))
+    }
+    
+    @Test
+    fun `D-373 at sentence start - a genuine pure-noun previous segment does propagate`() {
+        val context = ctx(afterHyphen = true, previousHyphenSegment = "Haus", previousHyphenSegmentAtSentenceStart = true)
+        assertEquals("Tuer", engine.capitalise("tuer", context))
+    }
+    
+    @Test
+    fun `D-373 no previous segment recorded falls back to plain B-02`() {
+        assertEquals("teil", engine.capitalise("Teil", ctx(afterHyphen = true)))
     }
 }

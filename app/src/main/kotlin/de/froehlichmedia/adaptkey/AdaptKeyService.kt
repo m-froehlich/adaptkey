@@ -395,6 +395,12 @@ class AdaptKeyService : InputMethodService() {
     private var tokenSentenceStart = false
     private var tokenAfterHyphen = false
     
+    // D-373: the hyphen segment's own predecessor, and whether that predecessor was itself at a sentence
+    // start - see captureTokenContext()'s own D-373 note and CapitalisationEngine's own
+    // previousSegmentPropagates() for how these two are actually used.
+    private var tokenPreviousHyphenSegment: String? = null
+    private var tokenPreviousHyphenSegmentAtSentenceStart = false
+    
     // D-142: the currently focused field's login-relevance, classified from EditorInfo in onStartInput.
     // Drives both the suggestion pipeline (the credential list instead of the dictionary for USERNAME/
     // EMAIL, nothing at all for PASSWORD) and what gets learned (see captureCredentialIfLoginField).
@@ -3580,7 +3586,14 @@ class AdaptKeyService : InputMethodService() {
             }
             // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
             pendingMergeChar = spaceInferred
-            armShiftForNextWord(ic)
+            // D-378: an opening quote/bracket must not disturb whatever Shift state already correctly
+            // reflects the real position - re-deriving here would either wrongly de-arm an already-correct
+            // auto-arm (SentenceBoundary sees the opener itself as "still mid-token", not yet followed by
+            // real whitespace) or silently clobber an explicit Shift press the user made specifically to
+            // capitalise the word this opener is about to introduce.
+            if (delimiter.length != 1 || delimiter[0] !in OPENING_PUNCTUATION) {
+                armShiftForNextWord(ic)
+            }
             return delimiter.length
         }
         // D-119 / D-120: a caret sitting mid-word (not at the composing token's true end - a common state
@@ -5834,6 +5847,15 @@ class AdaptKeyService : InputMethodService() {
         val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
         tokenSentenceStart = SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart)
         tokenAfterHyphen = before.endsWith("-")
+        // D-373: only meaningful directly after a hyphen - see SentenceBoundary.previousHyphenSegment()'s
+        // own KDoc and CapitalisationEngine.previousSegmentPropagates() for how these two are used.
+        val previousSegment = if (tokenAfterHyphen) {
+            SentenceBoundary.previousHyphenSegment(before, settings.commaLineNotSentenceStart)
+        } else {
+            null
+        }
+        tokenPreviousHyphenSegment = previousSegment?.first
+        tokenPreviousHyphenSegmentAtSentenceStart = previousSegment?.second == true
         tokenContextBefore = before
     }
     
@@ -5943,7 +5965,9 @@ class AdaptKeyService : InputMethodService() {
             explicitFirstUpper = typed.firstOrNull()?.isUpperCase() == true,
             sentenceStart = tokenSentenceStart,
             capsMode = effectiveCaps,
-            afterHyphen = tokenAfterHyphen
+            afterHyphen = tokenAfterHyphen,
+            previousHyphenSegment = tokenPreviousHyphenSegment,
+            previousHyphenSegmentAtSentenceStart = tokenPreviousHyphenSegmentAtSentenceStart
         )
     }
     
@@ -6082,7 +6106,18 @@ class AdaptKeyService : InputMethodService() {
         // Caps Lock engaged: a simple tap releases it (checked first).
         if (view.capsLock) {
             view.capsLock = false
-            view.shifted = false
+            // D-392: releasing Caps Lock unconditionally cleared Shift with no re-derivation - unlike every
+            // other place a position is (re)reached (D-313/D-406), so releasing it right at a genuine
+            // sentence start left the next letter lowercase instead of re-arming. Re-derives fresh, exactly
+            // like a fresh field/commit already does, only when nothing is composing - mid-word (e.g.
+            // releasing Caps Lock partway through an ALL-CAPS word) has no well-defined "next word" position
+            // to re-derive against, so that case keeps the previous plain disarm.
+            val ic = currentInputConnection
+            if (composing.isEmpty() && ic != null) {
+                armShiftForNextWord(ic)
+            } else {
+                view.shifted = false
+            }
             return
         }
         // Double-tap: toggle the first character's case of the current word and commit immediately.
@@ -6382,6 +6417,13 @@ class AdaptKeyService : InputMethodService() {
         // deferred space. A comma is deliberately excluded: it never arms a capital, so "caps is currently
         // off" is simply its normal, expected state, not a signal of anything the user explicitly did.
         private const val SENTENCE_TERMINATORS = ".!?"
+        
+        // D-378: characters that only ever open something (a quote, a bracket) - typing one, with nothing
+        // composing, must not disturb whatever Shift state already correctly reflects the real position
+        // (see finalizeAndCommit's own D-378 note). Deliberately excludes the plain apostrophe: unlike
+        // these, it is genuinely ambiguous between opening and closing a quote, so treating it as an opener
+        // would risk the opposite mistake for a closing use.
+        private const val OPENING_PUNCTUATION = "\"([{<"
         
         // D-135: at most this many Autofill inline suggestions are requested/shown at once; each is
         // inflated at this width (a reasonable single-suggestion chip width - the platform itself decides

@@ -115,4 +115,40 @@ class SentenceBoundaryTest {
     fun `D-416 withPendingTerminatorSpace leaves empty text unchanged`() {
         assertEquals("", SentenceBoundary.withPendingTerminatorSpace(""))
     }
+    
+    @Test
+    fun `D-373 previousHyphenSegment finds the segment right before the hyphen`() {
+        // Nothing precedes "München" here, so this position is also, correctly, a sentence start - the
+        // dedicated tests below cover the sentence-start flag itself in both directions.
+        val result = SentenceBoundary.previousHyphenSegment("München-", suppressAfterCommaLine = true)
+        assertEquals("München", result?.first)
+        assertTrue(result?.second == true)
+    }
+    
+    @Test
+    fun `D-373 previousHyphenSegment finds the last segment of a longer chain`() {
+        // "Main", not "Rhein" - the segment immediately before *this* hyphen.
+        val result = SentenceBoundary.previousHyphenSegment("Rhein-Main-", suppressAfterCommaLine = true)
+        assertEquals("Main", result?.first)
+    }
+    
+    @Test
+    fun `D-373 previousHyphenSegment reports the segment as a sentence start when it genuinely is one`() {
+        val result = SentenceBoundary.previousHyphenSegment("Schnell-", suppressAfterCommaLine = true)
+        assertEquals("Schnell", result?.first)
+        assertTrue(result?.second == true)
+    }
+    
+    @Test
+    fun `D-373 previousHyphenSegment reports no sentence start mid-sentence`() {
+        val result = SentenceBoundary.previousHyphenSegment("Ich fahre nach München-", suppressAfterCommaLine = true)
+        assertEquals("München", result?.first)
+        assertFalse(result?.second == true)
+    }
+    
+    @Test
+    fun `D-373 previousHyphenSegment is null when nothing precedes the hyphen`() {
+        assertEquals(null, SentenceBoundary.previousHyphenSegment("-", suppressAfterCommaLine = true))
+        assertEquals(null, SentenceBoundary.previousHyphenSegment("  -", suppressAfterCommaLine = true))
+    }
 }

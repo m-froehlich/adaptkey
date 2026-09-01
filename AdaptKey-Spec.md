@@ -315,6 +315,13 @@ haptic feedback is governed by a separate setting ("Caps Lock vibration", defaul
 category, independent of whether the per-key vibration (D-06) is enabled. The vibration uses the same direct
 `Vibrator` path as D-06, bypassing the system "touch vibration" toggle.
 
+D-392: releasing Caps Lock re-derives Shift fresh from the real caret position exactly like every other
+position-reached event does ([armShiftForNextWord] — D-313/D-406's own mechanism), rather than unconditionally
+clearing it. Releasing Caps Lock right at a genuine sentence start now correctly leaves the next letter
+auto-armed instead of forcing it lowercase. Scoped to a genuine word boundary (nothing composing) - releasing
+Caps Lock mid-word (e.g. partway through an ALL-CAPS word) has no well-defined "next word" position to
+re-derive against, so that case keeps the plain disarm.
+
 ### Addendum to G-05 - Shift State After Backspace, and After a Caret Tap Into Existing Text
 D-406: a position is reached one of two ways, each with its own rule - both ultimately answered by
 [armShiftForNextWord], §6 rule 2's own live-arming mechanism, reused verbatim rather than re-derived
@@ -357,6 +364,18 @@ same unconditional, suppression-bypassing [reclaimWordAtCaret] the Reclaim chip 
 use for exactly this kind of deliberate user action. A word genuinely touching the caret is reclaimed and
 toggled in the same tap-pair; with nothing to reclaim, the call is a safe no-op and the toggle correctly does
 nothing, unchanged from before.
+
+### Addendum to G-05 - An Opening Quote or Bracket Never Disturbs Shift
+D-378: typing an opening quote or bracket (`"`/`(`/`[`/`{`/`<`) with nothing composing must not change
+whatever Shift state already correctly reflects the position it is about to introduce a word into - neither
+an auto-armed capital at a genuine sentence start nor an explicit Shift press the user made specifically to
+capitalise the upcoming quoted/bracketed word. The general "re-derive fresh on every word boundary" mechanism
+([armShiftForNextWord]) is deliberately *not* invoked at all for one of these characters: re-deriving would
+either wrongly de-arm an already-correct auto-arm (the sentence-boundary check sees the opener itself as
+still-mid-token, not yet followed by real whitespace) or silently overwrite an explicit press with the
+freshly-derived value, which is usually "off" mid-sentence. The plain apostrophe is deliberately excluded -
+unlike these, it genuinely closes a quote as often as it opens one, so treating it as an opener would risk the
+opposite mistake.
 
 ---
 
@@ -930,6 +949,17 @@ treated identically to a space-committed one by both bigram learning and next-wo
 The segment following a hyphen is lowercase by default at commit time. Exception: the segment is a known
 proper noun. A suggestion-bar chip for any candidate always displays its capitalised form through the same
 §6 pipeline the commit path uses, so a chip can never visually disagree with what will actually be committed.
+
+D-373: a second, independent exception - a segment whose own predecessor in the same hyphen chain was itself
+capitalised also capitalises, even when the segment itself carries no proper-noun tag of its own ("Nord" in
+"München-Nord", never independently tagged proper, still capitalises because "München" was). Two different
+checks depending on *why* the predecessor was capitalised, a deliberate hybrid design: if the predecessor was
+itself at a sentence start, a bare capital there proves nothing about its own grammatical status (any word can
+open a sentence) - only propagates when the predecessor is independently a known noun/proper noun in the
+dictionary, the same signal the plain B-02 exception above already uses. Anywhere else in the chain, the
+predecessor's capital is trusted directly - a hyphen chain reads as one unit, so once one segment's
+capitalisation is settled (however it got there, including a further D-373 propagation earlier in a longer
+chain), the next segment should agree.
 
 ### B-03 - Proactive Completion Of A Repeated Hyphen-Compound
 Each individual segment of a hyphen-joined chain is still learned/suggested exactly as B-01 already

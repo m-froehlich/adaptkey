@@ -60,6 +60,29 @@ object SentenceBoundary {
         return text.takeLastWhile { !it.isWhitespace() }
     }
     
+    /**
+     * D-373: the segment immediately preceding a trailing hyphen in [before] (e.g. `"Rhein-Main-"` ->
+     * `"Main"`), paired with whether *that* segment was itself at a sentence start - used to decide whether
+     * a hyphen chain's own capitalisation should propagate onto the segment now starting (B-02/D-373):
+     * a previous segment that was itself a sentence start needs its own dictionary part-of-speech check
+     * before propagating (a sentence-initial capital says nothing about the word's own grammatical status),
+     * while a previous segment capitalised anywhere else in the chain is trusted directly.
+     *
+     * @param before the text before the cursor; must already be known to end in `"-"`
+     * @param suppressAfterCommaLine forwarded to [isSentenceStart] for the previous segment's own context
+     * @return the previous segment's own text (real casing preserved) and whether it was a sentence start,
+     *         or null when [before] ends in a bare hyphen with no letters before it at all
+     */
+    fun previousHyphenSegment(before: String, suppressAfterCommaLine: Boolean): Pair<String, Boolean>? {
+        val beforeHyphen = before.dropLast(1)
+        val segment = beforeHyphen.takeLastWhile { it.isLetter() }
+        if (segment.isEmpty()) {
+            return null
+        }
+        val contextBeforeSegment = beforeHyphen.substring(0, beforeHyphen.length - segment.length)
+        return segment to isSentenceStart(contextBeforeSegment, suppressAfterCommaLine)
+    }
+    
     private const val BARE_TERMINATORS = ".!?"
     
     /**
