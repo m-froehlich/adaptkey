@@ -407,14 +407,15 @@ non-trivial changes).
   - **D-354 - RESOLVED (§281 v1.0.38).** Meaning-changing silent autocorrections (`"aberkennen"` ->
     `"anerkennen"`) folded into the same confidence metric as a prefix-changing-edit signal, not a separate
     boolean gate.
-  - **D-355 - OPEN, distinct from D-405.** A word must never be retroactively re-cased purely from line/
-    sentence-start context at commit time. **Not the same bug as D-405** (§277/§278 spun that fix off
-    separately, at the user's own explicit instruction not to conflate the two) - D-355 itself, as
-    originally reported, has not been re-examined since.
+  - **D-355 - RESOLVED (2026-09-01, no code change - user confirmation).** User confirmed this is long since
+    fixed ("längst erledigt"). No dedicated fix identified as the cause (most likely folded into D-405's own
+    rule-2 rework, which removed commit-time re-derivation from sentence position entirely) - not
+    root-caused further since there is nothing left to fix.
   - **D-356 - OPEN, awaiting a concrete example.** A typed umlaut should not be carelessly reverted by
     autocorrect. Per §277: no concrete repro has been supplied yet to design against.
-  - **D-357 - OPEN.** Mid-word edit (delete two letters, type two new ones) + double-tap Shift capitalises
-    the first of the two newly-typed letters instead of the word's own start.
+  - **D-357 - RESOLVED (2026-09-01, no code change - user confirmation).** User confirmed no longer
+    reproducible. No dedicated fix identified as the cause; not root-caused further since there is nothing
+    left to fix.
   - **D-358 - RESOLVED (§289 v1.0.44).** Double-tap-Backspace revert was broken right after punctuation -
     fixed alongside D-359.
   - **D-359 - RESOLVED (§289 v1.0.44).** A word reverted via double-tap Backspace was immediately
@@ -634,6 +635,82 @@ non-trivial changes).
   results (tagging and linking were kept as separate steps). This is real progress toward tier 1, not tier 1
   itself - full generative morphology (replacing stored inflected rows with runtime generation) is still its
   own, not-yet-started, uncertain-feasibility project.
+
+- **D-351-followup - OPEN, reopened 2026-09-01.** The same field/editor incompatibility D-351 found and
+  worked around for Gemini's search field (`reclaimOnCaretMoveSuppressed`, scoped by package name in
+  `AdaptKeyService.onStartInput()` - see [AdaptKeyService.kt:298](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:298))
+  is now also reported for Total Commander's "Datei umbenennen" (rename) date field. Not yet actioned:
+  - Need Total Commander's actual package name (`com.ghisler.android.TotalCommander` is the likely value but
+    unconfirmed - verify against a real device/logcat before wiring it in, per this project's own
+    "verify, don't guess" rule).
+  - The existing mechanism suppresses reactive caret-move reclaim for the **whole package**, not a specific
+    field - worth confirming with the user whether Total Commander's other text fields (e.g. path bar, other
+    dialogs) tolerate reclaim fine before blanket-suppressing the whole app the way Gemini's single-purpose
+    search field made an easy call for. If they don't all tolerate it equally, the fix is the same shape but
+    the tolerance question needs answering first.
+  - Root cause not yet confirmed to be identical to D-351's (composing-region change breaks the field's own
+    cursor-handle/selection UI) - worth a quick device-log check rather than assuming without verification,
+    since this is exactly the class of bug spec §1's guiding principle warns must be re-derived from real
+    logs, not guessed.
+
+- **D-414 - OPEN, design not yet finalised (2026-09-01).** A dedicated Reclaim/Cycle button in the swipe-up
+  extra row (§14), left side - motivated directly by D-351/D-351-followup (Gemini, Total Commander): when the
+  word at the caret is **not** currently reclaimed (composing), tapping the button explicitly triggers the
+  reclaim (bypassing `reclaimOnCaretMoveSuppressed` for exactly the fields where the reactive mechanism is
+  suppressed). When a word **is** already reclaimed, tapping instead cycles through suggestion candidates and
+  replaces the word with each tap. User explicitly asked to discuss the design before implementing (this
+  project's own convention for non-trivial mechanisms) - open questions for that discussion:
+  - Which candidate list and order does the cycle draw from - the same ranked S-01 bar candidates as shown,
+    or a separately computed list? Does it loop back to the original typed text after the last candidate, or
+    stop there?
+  - Does the button need its own two-state icon/visual so the user can tell which of the two behaviours a tap
+    will trigger before tapping it?
+  - Does a long-press do anything different (e.g. cycle backward)?
+  - How does repeated cycling interact with the undo window (A-07), case-lock (G-05), and the pending-
+    auto-space/A-12 priority ordering that already governs several other "which pending state wins" cases?
+  - Should the explicit reclaim it triggers ignore `reclaimOnCaretMoveSuppressed` unconditionally (the whole
+    point, for Gemini/Total Commander), or should it still respect any other future per-field opt-out?
+
+- **D-415 - OPEN, feasibility unclear, needs its own discussion (2026-09-01).** A "give up focus as if it
+  had never been set" button in the extra row, motivated by Google Keep: once a list-item field has been
+  tapped into, focus never leaves it, so the keyboard keeps popping back up and the old caret position is
+  hard to relocate after dismissing/reopening. Initial technical finding (not yet confirmed against a real
+  device, worth verifying before committing to a design): Android's `InputMethodService` has no public API to
+  clear focus on a view it does not own - `requestHideSelf()`/`hideSoftInputFromWindow()` only hide the
+  keyboard's own window, they do not touch the host app's focus state, and the two indirect levers available
+  (sending `KEYCODE_BACK`, or `InputConnection.performEditorAction(EditorInfo.IME_ACTION_DONE)`) only have an
+  effect if the target app's own code chooses to react to them by clearing focus - entirely app-dependent,
+  not guaranteed, and Keep's own list-editing implementation is exactly the kind of custom widget that may
+  deliberately keep focus regardless. Needs a real-device experiment (try both levers against Keep
+  specifically) before deciding whether this is buildable at all, let alone designing the button.
+
+- **D-416 - OPEN, large design question, not started (2026-09-01).** Concept floated by the user: replace
+  A-12's eager auto-space-after-punctuation with a deferred one - insert nothing after `.`/`!`/`?`/`,`, only
+  mark the position as pending-space-and-pending-caps (unifying with rule 2's existing `armShiftForNextWord`
+  live pre-arm, which already defers *capitalisation* the same way), and materialise the space only once the
+  next real character is actually typed. Explicitly **not** to be implemented without a dedicated design
+  session first - the user's own words: "das müssen wir genau durchdenken... der Weg zurück wäre nicht
+  einfach." Worth mapping out before that session (not a decision, just discussion points to start from):
+  - Likely genuine wins: D-374 (trailing auto-space not cleaned up when leaving the field, e.g. Google Keep)
+    would be structurally eliminated rather than patched, since no space is ever physically written until a
+    real next character follows; the D-363 colon/semicolon-vs-emoticon collision that got this feature
+    declined could become resolvable, since the decision of whether to insert a space would see the actual
+    next-typed character (letter/digit vs. an emoticon's closing symbol) instead of having to insert first
+    and detect-and-undo afterward; an explicit Space keypress right after punctuation would need no special
+    handling at all (nothing was inserted to reconcile).
+  - Likely genuine costs: touches nearly every A-12-adjacent mechanism that currently assumes the space is
+    already physically in the document - A-07's undo-priority-vs-pending-auto-space ordering, the "genuine
+    selection beats every pending state" rule, A-05 splits that also end a sentence
+    (`"ehvnicht."` -> `"eh nicht. "`), the comma-terminated-line exception, and D-373/D-384's own newer
+    space-adjacent asks (both may collapse into a natural instance of the new unified mechanism rather than
+    needing their own bespoke logic, but that needs verifying, not assuming). Also a visible behaviour change
+    for the user: a Backspace pressed immediately after punctuation with nothing typed since would delete the
+    punctuation mark itself directly (nothing there to consume first), not a phantom auto-space - a genuine,
+    permanent muscle-memory change, not just an implementation detail.
+  - Given the user's own "hard to reverse" concern: worth considering shipping behind a settings toggle for a
+    transition period rather than a flag-day rewrite, so it stays reversible in practice even after landing.
+  - Recommended next step whenever picked up: work through every existing A-12/A-07/A-05 interaction rule in
+    the spec one at a time against the new model before writing any code, the same weight D-353/D-410 got.
 
 ## Current State
 
