@@ -566,7 +566,7 @@ class AdaptKeyService : InputMethodService() {
     private val expensiveSuggestionExecutor = Executors.newSingleThreadExecutor()
     private val expensiveSuggestionSeq = AtomicInteger(0)
     private val expensiveSuggestionRunnable = Runnable {
-        dispatchExpensiveSuggestionSearch(composing.toString(), previousWord)
+        dispatchExpensiveSuggestionSearch(composing.toString(), previousWord, previousPreviousWord)
     }
     
     // D-346: true while a deferred expensive-suggestion search is scheduled (or in flight) and its result
@@ -4606,7 +4606,7 @@ class AdaptKeyService : InputMethodService() {
         val candidates = when {
             duringRepeat -> emptyList()
             precomputedExpensiveCandidates != null -> precomputedExpensiveCandidates
-            else -> provider.suggestionsFor(input, previousWord, includeExpensiveFallbacks)
+            else -> provider.suggestionsFor(input, previousWord, previousPreviousWord, includeExpensiveFallbacks)
         }
         // D-160/D-208/D-211/D-215: schedule the deferred pass (fuzzy neighbours plus, once those also find
         // nothing, the expensive last-resort fallbacks) whenever the hot path ran without them - no longer
@@ -4770,15 +4770,18 @@ class AdaptKeyService : InputMethodService() {
      * 
      * @param input the composing token this search is for
      * @param previous the preceding word for n-gram context, or null at a fresh start
+     * @param previousPrevious D-366: the word before that, threaded through so the provider's own ranking
+     *        can elevate a genuine personal trigram match - read on the main thread here, before the
+     *        executor lambda starts, exactly like [previous] itself
      */
-    private fun dispatchExpensiveSuggestionSearch(input: String, previous: String?) {
+    private fun dispatchExpensiveSuggestionSearch(input: String, previous: String?, previousPrevious: String?) {
         val seq = expensiveSuggestionSeq.get()
         val language = activeLanguage
         expensiveSuggestionExecutor.execute {
             if (seq != expensiveSuggestionSeq.get()) {
                 return@execute
             }
-            val expanded = provider.suggestionsFor(input, previous, includeExpensiveFallbacks = true) {
+            val expanded = provider.suggestionsFor(input, previous, previousPrevious, includeExpensiveFallbacks = true) {
                 seq != expensiveSuggestionSeq.get()
             }
             val pendingCandidate = pendingCorrectionCandidate(input, previous, language)

@@ -49,6 +49,7 @@ class DictionarySuggestionProvider(
     override fun suggestionsFor(
         input: String,
         previousWord: String?,
+        previousPreviousWord: String?,
         includeExpensiveFallbacks: Boolean,
         isCancelled: () -> Boolean
     ): List<Suggestion> {
@@ -73,7 +74,7 @@ class DictionarySuggestionProvider(
                 }
                 val extraLength = entry.word.length - token.length
                 candidates[entry.word] =
-                    Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, extraLength))
+                    Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, previousPreviousWord, extraLength))
             }
         }
         // D-328: escalation - when the literal (and umlaut-unfolded) prefix found nothing at all, also try
@@ -102,7 +103,7 @@ class DictionarySuggestionProvider(
                         }
                         val extraLength = entry.word.length - token.length
                         candidates[entry.word] =
-                            Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, extraLength))
+                            Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, previousPreviousWord, extraLength))
                     }
                 }
             }
@@ -123,7 +124,7 @@ class DictionarySuggestionProvider(
                 if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                     continue // A-04
                 }
-                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, cost))
+                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, previousPreviousWord, cost))
             }
         }
         // D-116: an unhyphenated compound whose exact form isn't itself in the dictionary but whose known
@@ -139,7 +140,7 @@ class DictionarySuggestionProvider(
         // path passes false and re-runs with true in one deferred pass once the token has been stable.
         if (includeExpensiveFallbacks && candidates.isEmpty()) {
             compoundCandidate(token, previousWord)?.let { word ->
-                candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord))
+                candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord, previousPreviousWord))
             }
         }
         // D-117: a longer token garbled by more than D-28's ordinary two-edit budget ("erkamm" for
@@ -153,7 +154,7 @@ class DictionarySuggestionProvider(
                 if (candidates.containsKey(word) || store.isBlacklisted(word)) {
                     continue // A-04
                 }
-                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, cost))
+                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, previousPreviousWord, cost))
             }
         }
         return candidates.values
@@ -458,8 +459,11 @@ class DictionarySuggestionProvider(
             .asSequence()
             .filter { !store.isBlacklisted(it) && it !in scores }
             .forEach { word ->
-                val bigramCount = store.bigramFrequency(previousWord, word).toDouble()
-                scores[word] = if (hasTrigramContext) bigramCount * TRIGRAM_BACKOFF_WEIGHT else bigramCount
+                // D-365: the learned share is rescaled via LearnedBigramBoost - see rankingBigramFrequency's
+                // own KDoc - instead of counted as a flat +1-per-use raw count that a bundled bigram
+                // co-occurring for some other candidate could otherwise swamp outright.
+                val bigramScore = rankingBigramFrequency(previousWord, word)
+                scores[word] = if (hasTrigramContext) bigramScore * TRIGRAM_BACKOFF_WEIGHT else bigramScore
             }
         return scores.entries
             .sortedByDescending { it.value }
@@ -661,13 +665,51 @@ class DictionarySuggestionProvider(
      * replaced by [LearnedFrequencyBoost]'s scaled, ranking-only equivalent - see [rankingFrequency]'s own
      * KDoc for why this is safe to apply here, at the single shared root every ranking score passes through,
      * without ever touching a correctness-affecting decision.
+     *
+     * D-365/D-366: the bigram/trigram bonus below is the same shared root's other half - [previousWord]'s
+     * own contribution rescaled via [rankingBigramFrequency], and, when [previousPreviousWord] is also known,
+     * elevated further by a genuine personal trigram match, exactly like [nextWordSuggestions]'s own D-246
+     * Stupid Backoff blend. Every ordinary suggestionsFor() call site threads [previousPreviousWord] through
+     * from the very start, so this signal no longer disappears the moment the user starts typing.
      */
-    private fun score(word: String, frequency: Long, previousWord: String?): Double {
+    private fun score(word: String, frequency: Long, previousWord: String?, previousPreviousWord: String? = null): Double {
         val base = rankingFrequency(word, frequency)
         if (previousWord == null) {
             return base
         }
-        return base + store.bigramFrequency(previousWord, word).toDouble() * BIGRAM_WEIGHT
+        // D-366: the same Stupid Backoff preference [nextWordSuggestions] already applies (D-246) - a
+        // genuine personal trigram match for this exact candidate elevates it beyond the plain bigram
+        // signal, instead of the richer two-word-context signal only ever mattering for S-07's own
+        // blank-slate prediction and vanishing the moment the user starts typing. [LearnedBigramBoost]
+        // (D-365) scales the trigram's own raw count the same way it scales a learned bigram count - a
+        // small, personal-only reinforcement count needs the same curve to compete meaningfully against a
+        // corpus-scale contribution, regardless of which n-gram order it came from.
+        if (previousPreviousWord != null) {
+            val trigramCount = store.trigramFrequency(previousPreviousWord, previousWord, word)
+            if (trigramCount > 0L) {
+                return base + LearnedBigramBoost.boost(trigramCount) * BIGRAM_WEIGHT
+            }
+            return base + rankingBigramFrequency(previousWord, word) * BIGRAM_WEIGHT * TRIGRAM_BACKOFF_WEIGHT
+        }
+        return base + rankingBigramFrequency(previousWord, word) * BIGRAM_WEIGHT
+    }
+    
+    /**
+     * D-365: [DictionaryStore.bigramFrequency] with its learned contribution ([DictionaryStore.
+     * learnedBigramFrequency]'s own raw, +1-per-use count) replaced by [LearnedBigramBoost]'s scaled
+     * equivalent - the bundled contribution passes through untouched. Ranking-only, mirroring
+     * [rankingFrequency]'s own D-411 precedent exactly: [TokenRepair]'s `>= MIN_BIGRAM` merge gate (A-06)
+     * keeps reading [DictionaryStore.bigramFrequency] directly, never through this.
+     *
+     * @param previousWord the preceding word
+     * @param word the candidate word
+     * @return the bundled bigram count plus the learned count's scaled, ranking-only equivalent
+     */
+    private fun rankingBigramFrequency(previousWord: String, word: String): Double {
+        val total = store.bigramFrequency(previousWord, word)
+        val learned = store.learnedBigramFrequency(previousWord, word)
+        val bundledOnly = total - learned
+        return bundledOnly.toDouble() + LearnedBigramBoost.boost(learned)
     }
     
     /**
@@ -709,11 +751,12 @@ class DictionarySuggestionProvider(
      * @param word the candidate word
      * @param frequency the candidate's dictionary frequency
      * @param previousWord the preceding word, for the same bigram bonus [score] applies
+     * @param previousPreviousWord the word before that, for the same trigram bonus [score] applies (D-366)
      * @param cost the candidate's edit cost from the typed token (0 for an exact/prefix match)
      * @return [score]'s own result, discounted by [FUZZY_COST_DECAY] raised to the power of [cost]
      */
-    private fun scoreWithCost(word: String, frequency: Long, previousWord: String?, cost: Int): Double {
-        return score(word, frequency, previousWord) * FUZZY_COST_DECAY.pow(cost)
+    private fun scoreWithCost(word: String, frequency: Long, previousWord: String?, previousPreviousWord: String?, cost: Int): Double {
+        return score(word, frequency, previousWord, previousPreviousWord) * FUZZY_COST_DECAY.pow(cost)
     }
     
     /**
@@ -742,14 +785,21 @@ class DictionarySuggestionProvider(
      * @param word the candidate word
      * @param frequency the candidate's dictionary frequency
      * @param previousWord the preceding word, for the same bigram bonus [score] applies
+     * @param previousPreviousWord the word before that, for the same trigram bonus [score] applies (D-366)
      * @param extraLength how many characters longer [word] is than the typed prefix (0 for an exact/complete
      *        match); a negative value (an umlaut-unfolded search variant briefly shorter than the literal
      *        typed prefix) is treated as 0
      * @return [score]'s own result, discounted by [PREFIX_LENGTH_DECAY] raised to the power of [extraLength]
      *         clamped to [PREFIX_LENGTH_DECAY_CAP]
      */
-    private fun scoreWithPrefixDistance(word: String, frequency: Long, previousWord: String?, extraLength: Int): Double {
-        return score(word, frequency, previousWord) * PREFIX_LENGTH_DECAY.pow(extraLength.coerceIn(0, PREFIX_LENGTH_DECAY_CAP))
+    private fun scoreWithPrefixDistance(
+        word: String,
+        frequency: Long,
+        previousWord: String?,
+        previousPreviousWord: String?,
+        extraLength: Int
+    ): Double {
+        return score(word, frequency, previousWord, previousPreviousWord) * PREFIX_LENGTH_DECAY.pow(extraLength.coerceIn(0, PREFIX_LENGTH_DECAY_CAP))
     }
     
     companion object {

@@ -105,6 +105,22 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `D-365 learnedBigramFrequency defaults to zero`() {
+        assertEquals(0L, store.learnedBigramFrequency("der", "hund"))
+    }
+    
+    @Test
+    fun `D-365 learnedBigramFrequency reports only the learned share, not the bundled one`() {
+        store.putWord(WordEntry("hund", 3L))
+        store.putBigram("der", "hund", 40L)
+        store.learn("hund", "der")
+        store.learn("hund", "der")
+        
+        assertEquals(42L, store.bigramFrequency("der", "hund"))
+        assertEquals(2L, store.learnedBigramFrequency("der", "hund"))
+    }
+    
+    @Test
     fun `nextWords returns canonical-case successors ordered by count - D-43`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putWord(WordEntry("Hut", 10L))

@@ -16634,3 +16634,65 @@ passes unchanged - confirms the fix only changes behaviour for the specific casi
 already-correct exact-match case. 1147 -> 1148 unit tests, all green.
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-06 gained a short D-364 addendum. `versionCode`
 394 -> 395, `versionName` `"1.0.90"` -> `"1.0.91"`. Not yet device-confirmed.
+
+## §340 - D-365/D-366: a self-learned bigram/trigram now competes fairly, and stays alive while typing (v1.0.92)
+
+Both design-discussed with the user before any code, per this project's own convention for statistical/
+weighting decisions - see the conversation for the full back-and-forth. Two real findings, empirically
+grounded rather than assumed:
+
+- **D-365's own question, answered with real numbers**: the bundled German bigram data
+  (`dictionaries/de/bigram.tsv`, 79,937 rows) ranges from 25 to 113,526, median 48, 90th percentile ~193,
+  95th percentile ~340 - genuine corpus scale. A self-learned bigram only ever grows by +1 per use
+  (`SqliteDictionaryStore`'s `TABLE_LEARNED_BIGRAMS`), and `bigramFrequency()` combined bundled+learned as a
+  flat, unscaled sum - exactly the same problem D-411 already solved for individual learned words, never
+  extended to bigrams.
+- **D-366's own premise turned out only partially accurate**: reading the actual code showed the plain
+  bigram signal (`BIGRAM_WEIGHT`) already flows into `score()`, and therefore into prefix-completion ranking
+  and autocorrect's own cost-tiebreak ordering - it does not vanish once typing starts, contrary to the
+  original bullet. What genuinely was missing: the *trigram* signal (D-246's own Stupid Backoff blend) was
+  wired only into `nextWordSuggestions()`, S-07's blank-slate prediction - never into `score()` itself, so
+  the richer two-word-context signal fell back to plain bigram the moment a first letter landed.
+
+**Both fixed together, since they naturally share the same root (`score()`):**
+
+- New `LearnedBigramBoost` (mirrors `LearnedFrequencyBoost`/D-411 exactly - log-scaled, `REFERENCE_COUNT`
+  kept at 50 for cross-app consistency, `REFERENCE_FREQUENCY` recalibrated to 250 for the bigram scale,
+  positioned between the bundled data's own 90th/95th percentile - "well-established", not chasing the
+  extreme tail). Deliberately **no recency factor** - `TABLE_LEARNED_BIGRAMS` carries no timestamp, and the
+  user explicitly deferred that schema migration to a later round rather than doing it now.
+- `DictionaryStore` gained `learnedBigramFrequency()` (the learned-only share, mirroring `bigramFrequency()`'s
+  existing shape) - implemented in both `SqliteDictionaryStore` (the private function already existed,
+  simply exposed) and `InMemoryDictionaryStore`. `bigramFrequency()` itself is completely untouched - still
+  the raw, unscaled combined count, since `TokenRepair`'s own `>= MIN_BIGRAM` merge gate (A-06) must keep
+  reading it directly, checked and confirmed as the one place a rescaled value would be wrong to use.
+- New `DictionarySuggestionProvider.rankingBigramFrequency()`: bundled share untouched, learned share run
+  through `LearnedBigramBoost`. Used by both `score()` and `nextWordSuggestions()` in place of the raw sum.
+- `score()` gained an optional `previousPreviousWord` parameter and, when it is known, the same trigram-match-
+  first, bigram-discounted-fallback logic `nextWordSuggestions()` already has - reusing `LearnedBigramBoost`
+  for the trigram's own raw count too (D-366), since a personal trigram count is structurally the same kind
+  of quantity as a learned bigram count (a small, personal-only reinforcement number that needs to compete
+  against a corpus-scale contribution) even though the calibration data is bigram-specific.
+  `scoreWithCost`/`scoreWithPrefixDistance` both thread it through. `suggestionsFor()` itself gained the same
+  parameter (default `null`, so every test call site needed zero changes) and threads it to every one of its
+  own internal `score`/`scoreWithCost`/`scoreWithPrefixDistance` call sites.
+- `SuggestionProvider` (the interface) and `StubSuggestionProvider` updated to match; `AdaptKeyService`'s two
+  real call sites (the synchronous hot path, and `dispatchExpensiveSuggestionSearch()`'s deferred pass -
+  `previousPreviousWord` captured on the main thread before the executor lambda starts, exactly like
+  `previous` itself already is) now thread the already-tracked `previousPreviousWord` field through.
+
+**Deliberately out of scope, per the user's own explicit call**: `TokenRepair`'s own A-05 split-scoring
+`score()` (a second, separate ranking-only function, not the merge gate) was **not** touched - stays scoped
+to `DictionarySuggestionProvider` only, a possible future round if wanted.
+
+9 new tests: `LearnedBigramBoostTest` (5, mirrors `LearnedFrequencyBoostTest`'s own shape), two
+`InMemoryDictionaryStoreTest` cases (`learnedBigramFrequency` defaults to zero, reports only the learned
+share), and two `DictionarySuggestionProviderTest` integration cases - one demonstrating a well-established
+learned bigram (50 uses) now outranking a merely-common bundled one it could not have beaten under the old
+flat-sum ranking, one demonstrating a sparse personal trigram match flipping the ranking specifically once
+`previousPreviousWord` is supplied, with the identical setup returning the old (still correct) answer
+without it. Every pre-existing test passes unchanged - the reweighting did not disturb any already-asserted
+ordering. 1148 -> 1157 unit tests, all green.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-07 gained D-365/D-366 addenda. `versionCode`
+395 -> 396, `versionName` `"1.0.91"` -> `"1.0.92"`. Not yet device-confirmed.

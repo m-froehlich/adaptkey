@@ -18,6 +18,10 @@ interface SuggestionProvider {
      *
      * @param input the current composing token (never blank when called)
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @param previousPreviousWord D-366: the word committed two positions before, or null when unknown -
+     *        lets an implementation elevate a candidate already known via the personal trigram table (the
+     *        same Stupid Backoff preference [nextWordSuggestions] already applies, D-246), not only when
+     *        nothing has been typed yet. Ignored by a provider with no trigram data source.
      * @param includeExpensiveFallbacks D-160/D-208: whether the implementation may also run its costlier
      *        searches - D-12's own fuzzy-neighbour matching (cost grows with the token's own length,
      *        unconditionally once long enough to qualify) and, only once those also find nothing, the
@@ -36,6 +40,7 @@ interface SuggestionProvider {
     fun suggestionsFor(
         input: String,
         previousWord: String?,
+        previousPreviousWord: String? = null,
         includeExpensiveFallbacks: Boolean = true,
         isCancelled: () -> Boolean = { false }
     ): List<Suggestion>

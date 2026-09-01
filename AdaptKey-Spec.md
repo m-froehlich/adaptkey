@@ -454,6 +454,19 @@ purely from the user's own typing (no bundled trigram data is shipped); a two-wo
 the existing one-word bigram context already does (field change, an external caret move, the G-02 whole-word
 delete).
 
+D-365: a self-learned bigram's own raw reinforcement count (+1 per use) is rescaled the same way D-411
+already rescales a learned unigram - log-scaled so a well-established personal pairing (50 uses, matching
+D-411's own reference point) competes fairly against the bundled corpus's own bigram counts, instead of an
+unscaled flat sum letting an unrelated but merely-common bundled pairing swamp it outright. Ranking only,
+same as D-411 - never a gate (A-06's own bigram-count merge threshold keeps reading the raw, unscaled count
+directly).
+
+D-366: this Stupid Backoff blend is no longer limited to the blank-slate prediction shown before a word is
+typed - the same personal trigram signal now also elevates a matching candidate's ranking in the ordinary
+prefix-completion/fuzzy-suggestion list while the word is actively being typed, and in autocorrect's own
+candidate ordering, rather than silently falling back to the plain (now-rescaled) bigram signal the moment
+the first letter lands.
+
 D-327: the bigram and trigram context is learned for *every* committed word, including a bundled word typed
 in its own already-canonical casing (W-04) - only its *unigram* frequency is deliberately not reinforced (to
 keep the Learned Words editor free of plain vocabulary), but which word follows it is still recorded, so

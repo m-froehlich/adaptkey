@@ -903,7 +903,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return bigramFrequencyIn(TABLE_BIGRAMS, previousWord, word)
     }
     
-    private fun learnedBigramFrequency(previousWord: String, word: String): Long {
+    override fun learnedBigramFrequency(previousWord: String, word: String): Long {
         return bigramFrequencyIn(TABLE_LEARNED_BIGRAMS, previousWord, word)
     }
     

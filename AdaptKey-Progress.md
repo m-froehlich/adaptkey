@@ -445,11 +445,17 @@ non-trivial changes).
     displayed()`'s de-dup compared the pre-capitalised pending-replacement word ("Text") against `stableOrder`'s
     raw-canonical words ("text") case-sensitively, so the same underlying correction slipped through as two
     chips. Fixed with a case-insensitive comparison at that one point.
-  - **D-365 - OPEN, a question not yet answered.** What frequency do seeded/bundled bigrams carry, and
-    shouldn't a self-learned bigram always outweigh a seeded one?
-  - **D-366 - OPEN.** A learned bigram's next-word prediction (S-07) works for the blank-slate case but is
-    dropped entirely once the user starts typing the predicted word themselves - the signal should keep
-    influencing prefix-completion ranking and autocorrect probability as it is typed, not just vanish.
+  - **D-365 - RESOLVED (§340, v1.0.92).** Answered with real numbers (bundled `dictionaries/de/bigram.tsv`:
+    25-113,526, median 48, p90 ~193, p95 ~340) and fixed the same way D-411 fixed the identical problem for
+    learned words: new `LearnedBigramBoost` (log-scaled, no recency - deferred, no timestamp column exists
+    yet), applied to the learned share only via a new `rankingBigramFrequency()`, never to the raw
+    `bigramFrequency()` A-06's own merge gate still reads directly.
+  - **D-366 - RESOLVED (§340, v1.0.92).** Premise only partially held up: the plain bigram signal already
+    reached prefix-completion ranking via `score()`, contrary to the original bullet - what was actually
+    missing was the *trigram* signal, wired only into S-07's own blank-slate prediction. `score()` now also
+    consults the personal trigram table when `previousPreviousWord` is known, via the same Stupid Backoff
+    blend `nextWordSuggestions()` already used. Scoped to `DictionarySuggestionProvider` only, per explicit
+    instruction - `TokenRepair`'s own separate A-05 split-scoring function left untouched.
   - **D-369 - OPEN.** Accepting a suggestion chip must not insert a space when punctuation already
     immediately follows.
   - **D-370 - OPEN, real design work needed, not a quick patch.** Double-quote handling: an auto-space after
@@ -714,6 +720,26 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§340 (v1.0.92): D-365/D-366 - a self-learned bigram/trigram now competes fairly, and the trigram**
+  **signal survives once typing starts.** Both discussed with the user first, per this project's own
+  weighting-decision convention. D-365 answered with real numbers (bundled bigram data: 25-113,526, median
+  48, p90 ~193, p95 ~340) and fixed exactly like D-411 fixed the same problem for learned words: new
+  `LearnedBigramBoost` (log-scaled, `REFERENCE_COUNT` 50 for cross-app consistency, `REFERENCE_FREQUENCY`
+  250 recalibrated for the bigram scale, no recency factor per explicit instruction - `TABLE_LEARNED_BIGRAMS`
+  has no timestamp column yet), applied only to the learned share via new `rankingBigramFrequency()` -
+  `bigramFrequency()` itself stays untouched, since `TokenRepair`'s `>= MIN_BIGRAM` merge gate (A-06) must
+  keep reading the raw count. D-366's own premise only partially held up on inspection: plain bigram signal
+  already reached prefix-completion ranking via `score()` - what was actually missing was the *trigram*
+  signal, wired only into S-07's blank-slate `nextWordSuggestions()`. `score()` gained an optional
+  `previousPreviousWord` parameter and the same Stupid Backoff blend, threaded through `suggestionsFor()`
+  (default `null`, zero existing test call sites needed changes) and `AdaptKeyService`'s two real call sites.
+  Deliberately scoped to `DictionarySuggestionProvider` only - `TokenRepair`'s own separate A-05 split-scoring
+  left untouched, per explicit instruction. 9 new tests (`LearnedBigramBoostTest`, two
+  `InMemoryDictionaryStoreTest`, two `DictionarySuggestionProviderTest` integration cases demonstrating both
+  fixes end to end); every pre-existing test passes unchanged. 1148 → 1157 unit tests, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-07 gained both addenda. `versionCode` 395 →
+  396, `versionName` `"1.0.91"` → `"1.0.92"`. **Not yet device-confirmed.**
 
 - **§339 (v1.0.91): D-364 - root-caused and fixed: the duplicate "Text" chip was a case-sensitive dedup**
   **bug, not tier-3.** First hypothesis (tier-1 vs. tier-3 producing the same word in different casing via

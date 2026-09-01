@@ -216,6 +216,10 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         return (bigrams[key] ?: 0L) + (learnedBigrams[key] ?: 0L)
     }
     
+    override fun learnedBigramFrequency(previousWord: String, word: String): Long {
+        return learnedBigrams[bigramKey(previousWord, word)] ?: 0L
+    }
+    
     override fun nextWords(previousWord: String, limit: Int): List<String> {
         if (previousWord.isEmpty() || limit <= 0) {
             return emptyList()

@@ -38,6 +38,40 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-365 a well-established learned bigram now competes fairly against a merely-bundled one`() {
+        store.putWord(WordEntry("Hund", 10L))
+        store.putWord(WordEntry("Haus", 10L))
+        // An ordinary, unrelated bundled bigram - ranked purely on frequency, "Haus" would win a raw,
+        // unscaled +1-per-use comparison against anything less than 100 personal repetitions.
+        store.putBigram("mein", "Haus", 100L)
+        // LearnedBigramBoost's own reference point (50 uses = "well-established") reached via a real,
+        // personally-typed context, not a seeded one.
+        repeat(50) { store.learnContext("Hund", "mein") }
+        
+        assertEquals("Hund", provider.suggestionsFor("h", "mein").first().word)
+    }
+    
+    @Test
+    fun `D-366 a personal trigram match elevates a candidate even while typing a prefix, not only at a blank slate`() {
+        store.putWord(WordEntry("Schatz", 10L))
+        store.putWord(WordEntry("Schuh", 10L))
+        // A solidly common bundled bigram for the same "mein " context - wins the ordinary, context-free
+        // comparison against a merely-learned-bigram "Schatz".
+        store.putBigram("mein", "Schuh", 150L)
+        // A sparse but real personal trigram: "Hallo mein Schatz", typed a handful of times.
+        repeat(3) { store.learnContext("Schatz", "mein", "Hallo") }
+        
+        // Without the two-word context, ordinary bigram ranking alone still favours the bundled "Schuh" -
+        // the exact behaviour D-366 reported as already correct at a blank slate.
+        assertEquals("Schuh", provider.suggestionsFor("s", "mein").first().word)
+        
+        // With the very same context genuinely typed before ("Hallo mein"), the sparse personal trigram
+        // match now elevates "Schatz" instead - this is the signal D-366 reported as vanishing the moment
+        // the user starts typing a prefix; it must not vanish any more.
+        assertEquals("Schatz", provider.suggestionsFor("s", "mein", "Hallo").first().word)
+    }
+    
+    @Test
     fun `D-144 a prefix typed without its umlaut still reaches the correctly-spelled word`() {
         store.putWord(WordEntry("tatsächlich", 500L))
         

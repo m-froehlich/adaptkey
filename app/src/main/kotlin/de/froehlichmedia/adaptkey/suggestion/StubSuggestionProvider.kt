@@ -31,6 +31,7 @@ class StubSuggestionProvider : SuggestionProvider {
     override fun suggestionsFor(
         input: String,
         previousWord: String?,
+        previousPreviousWord: String?,
         includeExpensiveFallbacks: Boolean,
         isCancelled: () -> Boolean
     ): List<Suggestion> {

@@ -237,6 +237,19 @@ interface DictionaryStore {
     fun bigramFrequency(previousWord: String, word: String): Long
     
     /**
+     * D-365: [bigramFrequency]'s own learned-only contribution (the bundled contribution passes through
+     * [bigramFrequency] minus this), so a caller can rescale just the personal reinforcement count for
+     * ranking purposes - see [de.froehlichmedia.adaptkey.dictionary.LearnedBigramBoost]. [bigramFrequency]
+     * itself stays the raw, unscaled combined count for every correctness-affecting read (e.g. [TokenRepair]'s
+     * own `>= MIN_BIGRAM` merge gate).
+     *
+     * @param previousWord the preceding word
+     * @param word the following word
+     * @return the stored, self-learned-only bigram count, or 0 when unknown/never learned
+     */
+    fun learnedBigramFrequency(previousWord: String, word: String): Long
+    
+    /**
      * The most frequent successor words of [previousWord] by bigram count (D-43 next-word prediction), in
      * canonical case. The default returns none; both concrete stores override it with a bigram lookup.
      * 
