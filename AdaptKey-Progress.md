@@ -697,6 +697,22 @@ non-trivial changes).
   [rollback-notes document](AdaptKey-Rollback-D416-Deferred-Space.md) plus keeping the migration on one
   clean, isolated commit.
 
+- **D-418 - OPEN, low priority, not started (2026-09-01).** A genuine in-text visual cue for D-416's deferred
+  space/caps state (as opposed to the space-key dot that shipped) - user's own explicit call: "nicht so
+  furchtbar wichtig", worth revisiting later, not now. Two realistic approaches identified, neither a small
+  add-on - see the conversation for the full discussion:
+  1. Hold the sentence-ending mark itself in composing state (not hard-committed) until the pending decision
+     resolves, so it can carry an IME-supplied visual span (underline/background), the same mechanism S-05's
+     word highlight already uses. Touches the composing-state/`onUpdateSelection` area spec §1's guiding
+     principle flags as historically fragile (three real device-log rounds for D-139) - would need its own
+     careful design-and-device-test round, not a quick addition.
+  2. A floating overlay drawn at the cursor's real screen position via `CursorAnchorInfo`/
+     `requestCursorUpdates` - avoids touching document/composing state at all, but depends on the target
+     app actually reporting cursor coordinates (inconsistent across apps, not guaranteed - ironically
+     including Google Keep/Total Commander, the two apps that motivated D-351-followup/D-414/D-415) and
+     would be this app's first use of a floating IME overlay at all.
+  Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
+
 ## Current State
 
 - **§334 (v1.0.86): D-416-followup - two real bugs found on first read-through, before any device test.**
