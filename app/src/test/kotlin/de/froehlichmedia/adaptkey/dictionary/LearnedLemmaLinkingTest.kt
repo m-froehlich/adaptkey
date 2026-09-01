@@ -42,6 +42,26 @@ class LearnedLemmaLinkingTest {
     }
     
     @Test
+    fun `findLemma strips a declined comparative ending`() {
+        assertEquals("schön", LearnedLemmaLinking.findLemma("schönere", learned("schön")))
+    }
+    
+    @Test
+    fun `findLemma strips a regular declined superlative ending`() {
+        assertEquals("schnell", LearnedLemmaLinking.findLemma("schnellsten", learned("schnell")))
+    }
+    
+    @Test
+    fun `findLemma strips a dental-extended declined superlative ending`() {
+        assertEquals("heiß", LearnedLemmaLinking.findLemma("heißesten", learned("heiß")))
+    }
+    
+    @Test
+    fun `findLemma strips a plain declined positive -em ending`() {
+        assertEquals("gut", LearnedLemmaLinking.findLemma("gutem", learned("gut")))
+    }
+    
+    @Test
     fun `findLemma returns null when no candidate is already learned`() {
         assertNull(LearnedLemmaLinking.findLemma("hundes", learned("katze")))
     }
@@ -69,6 +89,15 @@ class LearnedLemmaLinkingTest {
         assertTrue("hundes" in forms)
         assertTrue("hunde" in forms)
         assertTrue("hunden" in forms)
+    }
+    
+    @Test
+    fun `candidateInflections generates adjective-style forms for any base`() {
+        val forms = LearnedLemmaLinking.candidateInflections("schön")
+        assertTrue("schönem" in forms)
+        assertTrue("schönere" in forms)
+        assertTrue("schönsten" in forms)
+        assertTrue("schönesten" in forms)
     }
     
     @Test

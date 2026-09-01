@@ -684,7 +684,11 @@ non-trivial changes).
      fresh start. **RESOLVED — see §323/§324 in Current State and spec §39: the migration honours this**
      **constraint exactly (additive `ALTER TABLE`, no wipe), and the with-LLM extension (whole-family**
      **learning on every learn event, a unified "LLM installed is a state" reprocessing pass) is also now**
-     **implemented (§324) - D-404 is fully closed except for tier 2, still open.**
+     **implemented (§324).** **D-404-followup (§361, v1.1.0): the with-LLM path turned out to already cover**
+     **adjectives (the prompt/parser/applier were POS-agnostic from the start, `ADJECTIVE` already one of the**
+     **prompt's own category options) - checked directly in the code, not assumed, before reporting back. Only**
+     **the *non-LLM* path (`LearnedLemmaLinking`, this tier) was actually missing adjective endings, now added.**
+     **D-404 is fully closed except for tier 2, still open.**
 
   **D-412 (see Current State) has since laid the schema groundwork tier 1 would need** - a bundled-only
   `lemma` link column on `TABLE_WORDS` - and a genuinely new, in-progress project is using it: tagging every
@@ -769,6 +773,40 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§361 (v1.1.0): D-404-followup - the non-LLM Learned-Words lemma linker (`LearnedLemmaLinking`, spec**
+  **§39) gained adjective declension/degree endings, closing a real gap the with-LLM path never had.**
+  User asked directly whether adjectives get whole-family learning "bei Verfügbarkeit eines LLMs" the same
+  way nouns/verbs already do. Checked the actual code before answering, not assumed: `Tier3FamilyPrompt`
+  already lists `ADJECTIVE` as one of the categories the model is asked to choose from,
+  `Tier3FamilyResponseParser`/`Tier3FamilyApplier`/`SqliteDictionaryStore.learn()`'s `categoryHint` are all
+  fully POS-generic, and both trigger sites (`dispatchFamilyLearning()` on every learn event,
+  `maybeReprocessFamiliesAsync()`'s backfill) gate only on `LearnOutcome`/missing-lemma, never on part of
+  speech - the with-LLM path already covered adjectives from the day it was built, no code change needed
+  there. The gap was actually in the **separate, non-LLM** conservative linker (spec §39's own "Non-LLM
+  Path") - `NOUN_ENDINGS`/`RegularVerbInflection` only, no adjective endings at all. User confirmed this was
+  the real ask and requested the non-LLM side be extended.
+  
+  Added `ADJECTIVE_ENDINGS` to `LearnedLemmaLinking.kt`: the plain declined Positiv's `-em` (the rest of its
+  endings already overlap `NOUN_ENDINGS`), the declined Komparativ (`-er -ere -eren -erem -erer -eres`), and
+  the declined Superlativ in **both** the regular (`-ste -sten -stem -ster -stes`) and dental/sibilant-
+  extended (`-este -esten -estem -ester -estes`) form - both tried unconditionally since this lookup-only
+  linker has no way to know which is grammatically correct for an arbitrary stem, unlike the D-404 Tier 1
+  generation project (§360) which does. Wired into both `findLemma` (forward: strip an ending, check if the
+  remainder is already learned) and `candidateInflections` (reverse: generate candidates from a newly-learned
+  base, check each against the existing lexicon) - same unconditional-try pattern the noun/verb endings
+  already used, same accepted coincidental-match trade-off. Deliberately excludes e-elision (`dunkel` ->
+  `dunkler`) - a plain suffix strip cannot recover an elided stem, so an e-eliding adjective falls outside
+  this conservative linker's reach, same scope boundary `RegularVerbInflection` already draws around strong/
+  ablaut verbs. Spec §39's "Base-form linking" section updated to describe all three ending families. 5 new
+  tests (`findLemma`: declined comparative, regular declined superlative, dental-extended declined
+  superlative, plain declined positive `-em`; `candidateInflections`: adjective-style forms) - 1191 -> 1196
+  unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  
+  **Explicit user-requested milestone bump, not the usual third-digit step** (same shape as D-283's 0.9.0 and
+  D-315's 1.0.0): `versionCode` 416 → 417, `versionName` `"1.0.112"` → `"1.1.0"`, marking D-404's full closure
+  (all three tiers now either resolved or explicitly still-open-by-design) as its own milestone. Not yet
+  device-confirmed.
 
 - **§360 (v1.0.112): D-404 Tier 1, adjectives - full German adjective declension x degree paradigm added**
   **for every already-bundled lemma, closing the last open part of speech from the "Wortfamilien" project**

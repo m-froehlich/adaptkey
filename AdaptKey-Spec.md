@@ -1992,15 +1992,23 @@ stays "unbekannt" and can still resolve itself the first time it is later typed 
 existing `RegularVerbInflection` pattern (strip a closed set of endings, check whether the reconstructed
 candidate is already known) but for the learned lexicon specifically, in both directions:
 - *Forward* (`findLemma`): the word just learned is itself checked against a set of noun endings
-  (genitive/dative/plural-style: `-s -es -e -en -er -n -nen -ern`) and, when none match, `RegularVerbInflection`'s
-  own personal-ending set - if a stripped candidate already exists as its own `TABLE_LEARNED` entry, the new
-  word links to it.
+  (genitive/dative/plural-style: `-s -es -e -en -er -n -nen -ern`), then a set of adjective declension/degree
+  endings (D-404-followup: plain declined Positiv `-em`; Komparativ `-er -ere -eren -erem -erer -eres`;
+  Superlativ, both the regular `-ste -sten -stem -ster -stes` family and the dental/sibilant-extended `-este
+  -esten -estem -ester -estes` one, e.g. `heiß` -> `heißesten` - both tried unconditionally rather than
+  picking the grammatically correct one for a given stem, since this lookup has no way to know it), and, when
+  none of those match either, `RegularVerbInflection`'s own personal-ending set - if a stripped candidate
+  already exists as its own `TABLE_LEARNED` entry, the new word links to it. Deliberately does not attempt
+  e-elision (`dunkel` -> `dunkler`) - a plain suffix strip cannot recover an elided stem, so an e-eliding
+  adjective falls outside this conservative linker's reach, the same kind of accepted scope boundary
+  `RegularVerbInflection` already draws around strong/ablaut verbs.
 - *Reverse* (`candidateInflections`): the word just learned may itself be the base a not-yet-linked existing
   entry is an inflection of (the "Hundes" learned first, "Hund" learned afterwards" case) - every plausible
-  inflected form of the new word is checked against the existing lexicon, and any match still missing its own
-  link is linked back to it.
+  inflected form of the new word (noun and adjective endings, plus verb-personal forms when it looks like an
+  infinitive) is checked against the existing lexicon, and any match still missing its own link is linked back
+  to it.
 
-Both directions try noun and verb endings unconditionally, rather than gating on a suspected category first -
+All three endings families are tried unconditionally, rather than gating on a suspected category first -
 a coincidental match against an unrelated learned word is possible in principle (the same accepted trade-off
 `RegularVerbInflection` already documents for its own narrower case) but only ever links two words the user
 has genuinely typed and had learned already, never fabricates an entry. A link, once set, is never overwritten
