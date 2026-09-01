@@ -15345,3 +15345,994 @@ No new unit tests (single data-value change + comment). 1059 unit tests unchange
 
 This closes D-330-followup and, with it, the entire originally-agreed D-402/D-306-followup/D-330-followup/
 D-345/D-367/D-368 combined cleanup bundle - nothing remains open from that list.
+
+## §305 - D-412: A Bundled-Only `lemma` Link Column, Groundwork For Verb-Inflection Tagging (v1.0.58)
+
+New `WordEntry` field `lemma: String? = null`, laid down as groundwork for the in-progress German
+verb-tagging project (§306 onward) and, further out, D-404 Tier 1. `dict.tsv`'s word-line format gained a
+matching optional 4th column, parsed exactly like the POS column (absent/empty = no link, fully
+backward-compatible with every existing row in every language's asset).
+
+`SqliteDictionaryStore` schema: `TABLE_WORDS` alone gained the column (`lemma TEXT`, `CREATE TABLE` for
+fresh installs plus a new guarded `ensureLemmaColumn()` - the same `PRAGMA table_info`-checked
+`ALTER TABLE ADD COLUMN` pattern as D-388's `ensureLastTouchedColumn()`, called unconditionally from
+`init {}`) - deliberately **not** `TABLE_LEARNED`, and deliberately not via a `DATABASE_VERSION`/`onUpgrade`
+bump, since `onUpgrade` drops every table including `TABLE_LEARNED` (the user's real learned words/blacklist)
+and this project has apparently never actually exercised that path for exactly that reason. Every
+`TABLE_WORDS` read/write path (`putWord`, `bulkImport`, `entryOfIn`, `queryByPrefix`) threads the column
+through; both of `entryOf`'s and `unigramsByPrefix`'s merge-with-learned branches were fixed to keep the
+bundled entry's own `lemma` rather than silently losing it to the learned entry's always-null one (mirrored
+in `InMemoryDictionaryStore` too).
+
+Value stored as a plain word string, not a `rowid`/integer FK - discussed directly with the user (who asked
+about using the table's implicit SQLite `rowid` for a cheaper lookup): `TABLE_WORDS.wkey` is already the
+indexed primary key so a text lookup is no slower, every other cross-reference in this schema already keys by
+lower-cased text (`TABLE_BIGRAMS`, `TABLE_LEARNED_TRIGRAMS`, `TABLE_BLACKLIST`), and a rowid has no stability
+guarantee across `TABLE_WORDS`'s routine `resetBundledWords()`+`bulkImport()` wipe-and-reseed cycle.
+
+6 new tests (`DictionaryAssetParserTest` lemma-column parsing, `InMemoryDictionaryStoreTest` put/`entryOf`/
+`unigramsByPrefix` round-trip and merge-survival). 1064 unit tests total (was 1058), all green (via JDK 21).
+`versionCode` 361 -> 362, `versionName` `"1.0.57"` -> `"1.0.58"`. Spec gained new §38. **Zero readers of
+`lemma` exist yet** - same groundwork-only status D-368's own `VERB` tag once had. Not yet device-confirmed
+(no device-observable change expected).
+
+## §306 - German Verb-In-`OTHER` Tagging, Round 1: The `>=2000`-Frequency Band (78 Words) (v1.0.59)
+
+New effort, distinct from D-368: D-368 only ever tagged a `NOUN`-`VERB` collision for capitalisation
+purposes, but this project tags *every* genuine verb form currently mis-tagged plain `OTHER`, including
+already-present inflected forms, not just infinitives - explicit groundwork for D-404 Tier 1, using D-412's
+new `lemma` column to record each inflected form's base-form link as a byproduct of finding it (not yet
+populated this round - that starts once the base-form/inflected-form linking pass itself begins; round 1
+only applied the POS tag).
+
+Candidate pool: lowercase, `OTHER`-only, ends in `-en`/`-eln`/`-ern`/`-n` (10,925 total, banded by
+frequency - `-eln`/`-ern` needed adding after the user flagged the plain `-en` heuristic misses them, e.g.
+`sammeln`/`wandern`; `sein` needed its own hand-add since it's the one infinitive that fits none of those
+suffixes). This round covered the `>=2000` band (181 candidates), reviewed individually: 73 unambiguous
+verbs `OTHER` -> `VERB` (infinitives and already-present finite/participle forms of common verbs like
+`werden`/`können`/`haben`/`gehen`/`kommen`/`sehen`/`geben`). 5 genuine dual-meaning words `OTHER` ->
+`OTHER,VERB` (the non-verb reading has no better-fitting `PartOfSpeech` tag than `OTHER`, so it stays
+alongside `VERB` rather than being replaced by it): `sein` (verb *and* the extremely common possessive
+determiner - the one word the user flagged by name as needing individual treatment), `einigen` (sich
+einigen = to agree), `sieben` (to sieve, alongside the number "seven"), `gleichen` (to resemble, alongside
+the adjective "gleich" inflected), `bestimmten` (preterite of "bestimmen", alongside "bestimmt" inflected).
+3 genuinely rare/archaic verb readings left untouched by explicit agreement (`sondern`/`freien`/`langen` -
+each dominated overwhelmingly by a non-verb reading in real usage). Präsens-Partizip-as-adjective forms
+(`folgenden`/`genannten`/...) explicitly out of scope by the user's own call - regenerable later under
+D-404 Tier 1, not worth tagging individually now.
+
+Applied via a fail-loud Python verification script (same pattern as D-368/D-301 - asserts every target word
+is found with exactly the expected prior tag before writing, and that the found count matches the target
+count exactly); `git diff --stat` confirmed exactly 78 lines changed. `dictionaries/de/version.txt` 16 -> 17,
+pack rebuilt/verified (unzipped back, spot-checked `sein`/`werden`/`einigen` all carry `VERB`),
+`LanguagePackCatalog` version 16 -> 17. No new tests (data-only). 1064 unit tests unchanged, all green (via
+JDK 21). `versionCode` 362 -> 363, `versionName` `"1.0.58"` -> `"1.0.59"`. Not yet device-confirmed.
+
+**Design discussion, resolved before this round started (no code change of its own):** the user asked
+whether, once base forms are tagged, a *prefix search* against the infinitive's stem could mechanically find
+already-present inflected forms, kept as short as possible to also catch irregular ones. Checked empirically
+against ten real strong verbs from this round's own candidate list (`gehen`/`kommen`/`nehmen`/`sehen`/
+`geben`/`sprechen`/`tragen`/`stehen`/`sein`/`werden`): the preterite typically shares only the infinitive's
+first 1-3 characters with the base form (ablaut), and the participle shares **zero** leading characters in
+8 of 10 cases (the `ge-` prefix is added at the front, not appended - `gehen`/`gegangen` share no prefix at
+all). Confirmed no prefix length threads the needle: `g`/`ge`/`geh` as literal dictionary prefixes return
+2496/1903/77 entries respectively, yet none of the three ever includes `ging` or `gegangen` - shortening
+trades recall for precision on both ends *simultaneously* rather than tuning between them. Conclusion:
+prefix search works only for the mechanical (Phase 2) weak-verb suffix-stripping path already planned (exact
+`stem+ending` reconstruction, no fuzziness needed there at all); strong-verb forms need a small
+hand-authored reference table of principal parts instead (closed class, ~150-200 verbs, pure grammar
+knowledge), matched by exact string equality against the candidate pool, never by prefix.
+
+**Remaining scope for this project at this point** (not yet started): the remaining five frequency bands
+(500-1999: 455, 200-499: 788, 50-199: 2290, 10-49: 6138, <10: 1073 candidates), the mechanical weak-verb-
+inflection pass described above, the strong-verb principal-parts table, and populating the actual `lemma`
+link on every inflected form found via either path.
+
+## §307 - German Verb-In-`OTHER` Tagging, Round 2: The `500-1999` Band, Plus A Retroactive Tag-Order Fix (v1.0.60)
+
+Continuation of §306's project. The user caught the tag order: `OTHER` must sort *last* against `VERB`
+(`VERB,OTHER`, not `OTHER,VERB`) - fixed going forward and retroactively re-applied to round 1's 5 dual
+words (`sein`/`einigen`/`sieben`/`gleichen`/`bestimmten`), via the same fail-loud script (asserts the exact
+prior tag before rewriting, so a silent double-application or a stale assumption about round 1's state would
+have aborted rather than corrupted anything).
+
+**Open question raised, not yet decided this round**: D-368's own 210 pre-existing `NOUN,OTHER,VERB`
+entries follow the *old*, alphabetical convention (`OTHER` before `VERB`) - whether those should also be
+reordered to `NOUN,VERB,OTHER` for full consistency is a separate, larger retroactive change spanning
+several already-released versions, flagged for the user rather than assumed (resolved the following round,
+§308).
+
+This round's own 455-candidate `500-1999` band was reviewed individually exactly like round 1, with one
+added distinction worth keeping for every future band: a **bare** participle used predicatively
+(`geschlossen`, `verstanden`, `gehalten` - e.g. "die Tür ist geschlossen") is tagged plain `VERB`, but a
+**further-declined** participle-as-adjective (`entstandenen`, `geplanten`, `gewählten` - no corresponding
+preterite-plural collision) is left untouched, consistent with the already-agreed Präsens-Partizip
+exception. Where a participle-plus-adjective-ending form *does* genuinely double as a real preterite-plural
+(`entwickelten` = "sie entwickelten" *and* "die entwickelten Länder" - the weak-verb `-ten` preterite ending
+and the dative/genitive-plural adjective `-en` ending on a `-t`-final participle coincide), it gets
+`VERB,OTHER` rather than being skipped.
+
+209 words `OTHER` -> `VERB`; 18 genuine dual-meaning words `OTHER` -> `VERB,OTHER` (15 participle/preterite-
+plural collisions plus 3 borderline cases flagged for the user and confirmed: `linken`/`weiten`/`schnellen`,
+each real but a minority reading next to a dominant adjective one). `git diff --stat` confirmed exactly 232
+lines changed (227 + 5 reorder). `dictionaries/de/version.txt` 17 -> 18, pack rebuilt/verified,
+`LanguagePackCatalog` version 17 -> 18. No new tests (data-only). 1064 unit tests unchanged, all green (via
+JDK 21). `versionCode` 363 -> 364, `versionName` `"1.0.59"` -> `"1.0.60"`. Not yet device-confirmed.
+
+Remaining scope unchanged from §306's own note, minus the now-done `500-1999` band: four frequency bands
+left (200-499: 788, 50-199: 2290, 10-49: 6138, <10: 1073), the mechanical weak-verb-inflection pass, the
+strong-verb principal-parts table, and populating `lemma` on every result so far.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `b603e27` for the authoritative record.)*
+
+## §308 - German Verb-In-`OTHER` Tagging, Round 3: The `200-499` Band, Plus Retroactively Reordering D-368's Own Tags (v1.0.61)
+
+Continuation of the project. The user confirmed retroactively fixing D-368's own 210 pre-existing entries
+too, resolving §307's open question: the 42 that actually needed it (`NOUN,OTHER,VERB` -> `NOUN,VERB,OTHER`;
+the other 168 were plain `NOUN,VERB` with no `OTHER` to reorder, untouched) via the same fail-loud pattern,
+verifying the exact prior tag before rewriting.
+
+788 candidates in the `200-499` band reviewed individually; 360 `OTHER` -> `VERB`, 63 genuine dual-meaning
+words `OTHER` -> `VERB,OTHER` (the established participle/preterite-plural collision pattern from §307
+accounts for most of them, e.g. `erhöhten`/`erklärten`/`kritisierten`; six are a different, independent-
+second-meaning shape rather than a spelling coincidence and were flagged for visibility rather than silently
+decided: `weichen` (to yield/soften, vs. adjective "weich" inflected), `achten` (to respect, vs. ordinal
+"achte" inflected), `meinen` (to mean/think, vs. possessive "mein" inflected), `nötigen` (to compel, vs.
+adjective "nötig" inflected), `dichten` (to write poetry/seal, vs. adjective "dicht" inflected), `tätigen`
+(to carry out, vs. adjective "tätig" inflected) - all six genuinely real, non-archaic verb readings, unlike
+round 1's `sondern`/`freien`/`langen` skips).
+
+Noted but deliberately not touched this round (out of scope for this tagging pass, a separate D-301-style
+noise-cleanup question): `begin`/`align`/`sin`/`min`/`colon`/`varepsilon`/`return`/`schen` all surfaced in
+this band's own candidate pool and are clearly not German words at all (LaTeX/math-markup and
+programming-keyword leaks, the same corpus-extraction-artefact class §301 already cleaned up) - flagged for
+a future noise pass, not removed here (see §316).
+
+Also captured this round in a small doc-only commit with no version bump of its own (`01758a2`): the user's
+request to bundle the LaTeX/programming-keyword noise just found, a list of missing verb inflections
+surfaced from the user's own Learned Words list (with an explicit constraint that participle forms must be
+generated/recognised, not added as plain learned-flooding dictionary rows), and the missing "haptisch"
+adjective family into a future cleanup round once the tagging sweep's remaining bands finish - all three
+items were later closed together in §316.
+
+`git diff --stat` confirmed exactly 465 lines changed (423 + 42 reorder). `dictionaries/de/version.txt`
+18 -> 19, pack rebuilt/verified (spot-checked `Drang` now reads `NOUN,VERB,OTHER`), `LanguagePackCatalog`
+version 18 -> 19. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode`
+364 -> 365, `versionName` `"1.0.60"` -> `"1.0.61"`. Not yet device-confirmed.
+
+Remaining scope: three frequency bands left (50-199: 2290, 10-49: 6138, <10: 1073), the mechanical
+weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries, and populating
+`lemma` on every result so far.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `ee7c794` (and the interstitial doc-only commit
+`01758a2`) for the authoritative record.)*
+
+## §309 - German Verb-In-`OTHER` Tagging, Round 4: The `50-199` Band, Largest Single Band So Far (v1.0.62)
+
+Before starting, flagged to the user that this band alone (2290 candidates) already exceeds bands 1-3
+combined (~1424), with 6138 + 1073 still to come after it - the user explicitly confirmed continuing the
+same exhaustive per-word review for `>=50` frequency, to be reassessed once this band closed.
+
+Same established method throughout: bare predicative participles and genuine infinitives/finite forms
+tagged plain `VERB`; further-declined participle-as-adjective forms left untouched unless their spelling
+genuinely doubles as a weak-verb preterite-plural (`VERB,OTHER`); Präsens-Partizip-as-adjective and pure
+adjective/determiner/number/conjunction entries untouched. 774 words `OTHER` -> `VERB`; 190 genuine
+dual-meaning words `OTHER` -> `VERB,OTHER` (the established participle/preterite-plural collision pattern,
+plus a handful of independent-second-meaning cases in the same shape as round 3's six flagged ones, e.g.
+`kühlen`/`leeren`/`fertigen`/`billigen`/`mäßigen` - real but secondary verb readings next to a dominant
+adjective one - not separately re-flagged this round since the pattern itself is now established).
+
+`git diff --stat` confirmed exactly 964 lines changed, via the same fail-loud script pattern - caught and
+fixed two real authoring slips before writing anything (two words accidentally duplicated within
+`verb_only`, and four words - `ersetzten`/`stützten`/`versorgten`/`bearbeiteten` - accidentally placed in
+both the plain-`VERB` and dual lists; the script's own overlap/duplicate assertions caught both classes
+immediately, nothing was silently corrupted). `dictionaries/de/version.txt` 19 -> 20, pack rebuilt/verified,
+`LanguagePackCatalog` version 19 -> 20. No new tests (data-only). 1064 unit tests unchanged, all green (via
+JDK 21). `versionCode` 365 -> 366, `versionName` `"1.0.61"` -> `"1.0.62"`. Not yet device-confirmed.
+
+Given the scale of what remained (two frequency bands left, `10-49`: 6138 and `<10`: 1073, together over 7x
+this band's own size), the session flagged that pacing should be re-raised before committing to the same
+exhaustive approach for the rest - the user explicitly confirmed continuing with both remaining bands, same
+exhaustive per-word approach, explicitly for dictionary quality ("Ich will ein wirklich hochqualitatives
+Wörterbuch haben"). `10-49` was split into three frequency sub-bands for manageability (`30-49`: 1454,
+`20-29`: 1459, `10-19`: 3225), each its own verify/build/commit cycle, same fail-loud script pattern as
+every round so far - not a change in rigor, purely a chunking choice for a band this large.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `f9203f3` for the authoritative record.)*
+
+## §310 - German Verb-In-`OTHER` Tagging, Round 5a: The `30-49` Sub-Band Of `10-49` (v1.0.63)
+
+Same method as every round so far. 528 words `OTHER` -> `VERB`; 100 genuine dual-meaning words `OTHER` ->
+`VERB,OTHER` (established collision pattern, e.g. `weiterentwickelten`, plus a couple of independent-second-
+meaning cases like `lichten` - to melt/lift anchor vs. adjective "licht" - not separately re-flagged, per the
+precedent set in §309). The fail-loud verification script caught several real authoring slips before
+anything was written this round - two misspelled words (`unzubenennen`/`heroisch`, neither a real dictionary
+entry), one word (`thematisieren`) already tagged by an earlier round and mistakenly re-listed, and four
+words placed in both the plain-`VERB` and dual lists (`bombardierten`/`weiterentwickeln`/`überliefern`/
+`proklamierten`) - all caught by the script's own assertions and fixed before the actual write, nothing
+silently corrupted.
+
+`git diff --stat` confirmed exactly 628 lines changed. `dictionaries/de/version.txt` 20 -> 21, pack
+rebuilt/verified, `LanguagePackCatalog` version 20 -> 21. No new tests (data-only). 1064 unit tests
+unchanged, all green (via JDK 21). `versionCode` 366 -> 367, `versionName` `"1.0.62"` -> `"1.0.63"`. Not yet
+device-confirmed. Remaining: `20-29` (1459) and `10-19` (3225) sub-bands of `10-49`, then the `<10` band
+(1073), the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise
+entries, and populating `lemma` on every result so far.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `097999d` for the authoritative record.)*
+
+## §311 - German Verb-In-`OTHER` Tagging, Round 5b: The `20-29` Sub-Band Of `10-49` (v1.0.64)
+
+Same method as every round so far. 532 words `OTHER` -> `VERB`; 81 genuine dual-meaning words `OTHER` ->
+`VERB,OTHER`. The fail-loud script again caught real authoring slips before writing anything - most notably
+a batch of ~40 words where the dual (`VERB,OTHER`) form had, correctly, been placed in the dual list, but a
+related sibling form had been mistakenly duplicated into the plain-`VERB` list as well; fixed by deriving
+`verb_only` as "everything not already claimed by `verb_other`" rather than hand-editing each one, then
+re-verified the resulting counts against the manual review before writing. Also caught: one word
+(`bekehren`) already tagged by an earlier round and mistakenly re-listed, and one word (`dezimieren`) that
+turned out not to exist as its own dictionary row at all (only its preterite-plural sibling `dezimierten`
+does) - both dropped rather than forced.
+
+`git diff --stat` confirmed exactly 613 lines changed. `dictionaries/de/version.txt` 21 -> 22, pack
+rebuilt/verified, `LanguagePackCatalog` version 21 -> 22. No new tests (data-only). 1064 unit tests
+unchanged, all green (via JDK 21). `versionCode` 367 -> 368, `versionName` `"1.0.63"` -> `"1.0.64"`. Not yet
+device-confirmed. Remaining: the `10-19` sub-band of `10-49` (3225 - by far the largest remaining chunk),
+then the `<10` band (1073), the mechanical weak-verb-inflection pass, the strong-verb principal-parts table,
+the flagged noise entries, and populating `lemma` on every result so far.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `284fb40` for the authoritative record.)*
+
+## §312 - German Verb-In-`OTHER` Tagging, Round 5c: The `15-19` Sub-Band Of `10-19` (v1.0.65)
+
+`10-19` itself was further split into `15-19`/`10-14` for manageability, the same reasoning as the `10-49`
+split. Same method as every round so far. 315 words `OTHER` -> `VERB`; 80 genuine dual-meaning words
+`OTHER` -> `VERB,OTHER`. The verb-list-authoring approach from §311 (derive `verb_only` as "not already in
+`verb_other`", plus a dedup pass) was kept from the start this round specifically because it proved more
+reliable than hand-fixing each overlap - the script ran clean on the first real attempt as a result,
+compared to several iterative fixes needed in earlier rounds.
+
+`git diff --stat` confirmed exactly 395 lines changed. `dictionaries/de/version.txt` 22 -> 23, pack
+rebuilt/verified, `LanguagePackCatalog` version 22 -> 23. No new tests (data-only). 1064 unit tests
+unchanged, all green (via JDK 21). `versionCode` 368 -> 369, `versionName` `"1.0.64"` -> `"1.0.65"`. Not yet
+device-confirmed. Remaining: the `10-14` sub-band of `10-19` (2060 candidates), then the `<10` band (1073),
+the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries,
+and populating `lemma` on every result so far.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `aeafcbf` for the authoritative record.)*
+
+## §313 - German Verb-In-`OTHER` Tagging, Round 5d: The `12-14` Sub-Band Of `10-14` (v1.0.66)
+
+`10-14` itself was further split into `12-14`/`10-11`. Same method as every round so far, using the
+§311/§312 "derive `verb_only` as not-already-in-`verb_other`, plus dedup" authoring pattern throughout.
+340 words `OTHER` -> `VERB`; 53 genuine dual-meaning words `OTHER` -> `VERB,OTHER`. Fail-loud script caught
+three small slips before writing: one word (`verzierten`) already tagged by an earlier round and mistakenly
+re-listed, one word (`verkleiden`) wrongly placed in the dual list when it has no adjective-collision reason
+at all, and one word (`balancieren`, the bare infinitive) that turned out not to exist as its own row - only
+its preterite-plural sibling `balancierten` does, which itself had been reasoned through as a dual case but
+never actually added to either list until the fix.
+
+`git diff --stat` confirmed exactly 393 lines changed. `dictionaries/de/version.txt` 23 -> 24, pack
+rebuilt/verified, `LanguagePackCatalog` version 23 -> 24. No new tests (data-only). 1064 unit tests
+unchanged, all green (via JDK 21). `versionCode` 369 -> 370, `versionName` `"1.0.65"` -> `"1.0.66"`. Not yet
+device-confirmed. Remaining: the `10-11` sub-band of `10-14` (949 candidates), then the `<10` band (1073),
+the mechanical weak-verb-inflection pass, the strong-verb principal-parts table, the flagged noise entries,
+and populating `lemma` on every result so far.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `112a1d6` for the authoritative record.)*
+
+## §314 - German Verb-In-`OTHER` Tagging, Round 5e: The `10-11` Sub-Band, Closing Out The Entire `10-49` Band (v1.0.67)
+
+Closes out rounds 5a-5e (§310-§314) covering the whole `10-49` band that began at §309. Same method
+throughout. 315 words `OTHER` -> `VERB`; 42 genuine dual-meaning words `OTHER` -> `VERB,OTHER`. Fail-loud
+script caught two slips before writing: one genuine typo (`überschriften`, never a real candidate) and one
+bare infinitive (`involvieren`) that doesn't exist as its own row - only its preterite-plural sibling
+`involvierten` (already correctly in the dual list) does.
+
+`git diff --stat` confirmed exactly 357 lines changed. `dictionaries/de/version.txt` 24 -> 25, pack
+rebuilt/verified, `LanguagePackCatalog` version 24 -> 25. No new tests (data-only). 1064 unit tests
+unchanged, all green (via JDK 21). `versionCode` 370 -> 371, `versionName` `"1.0.66"` -> `"1.0.67"`. Not yet
+device-confirmed. **Only the `<10` band (1073 candidates) remains of the frequency sweep itself.** Also
+still open, unrelated to the sweep: the mechanical weak-verb-inflection pass, the strong-verb
+principal-parts table, the flagged noise entries (deferred cleanup round), and populating `lemma` on every
+result tagged so far (D-412's own column has not yet been written to at all across this whole project -
+every round so far has only ever applied the `VERB`/`VERB,OTHER` tag, deliberately kept as its own separate,
+independently-verifiable step).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `4046bcb` for the authoritative record.)*
+
+## §315 - German Verb-In-`OTHER` Tagging, Round 6: The Final `<10` Band - Closes The Entire Sweep (v1.0.68)
+
+Closes out the entire nine-round German verb-in-`OTHER` retagging sweep (§306-§315). Same method
+throughout. 327 words `OTHER` -> `VERB`; 53 genuine dual-meaning words `OTHER` -> `VERB,OTHER`. Fail-loud
+script caught two slips before writing: `überdecken` and `beanstanden` were each mistakenly re-listed as
+fresh candidates when only their preterite-plural siblings (`überdeckten`, `beanstandeten`) were actually
+the new find - both bare infinitives already carried `VERB` from an earlier round.
+
+`git diff --stat` confirmed exactly 380 lines changed. `dictionaries/de/version.txt` 25 -> 26, pack
+rebuilt, `LanguagePackCatalog` version 25 -> 26. No new tests (data-only). 1064 unit tests unchanged, all
+green (via JDK 21). `versionCode` 371 -> 372, `versionName` `"1.0.67"` -> `"1.0.68"`. Not yet
+device-confirmed.
+
+**This closes the entire frequency sweep** (10,925 candidates across all bands, §306-§315, 9 rounds) -
+every lowercase, `OTHER`-tagged `-en`/`-eln`/`-ern`/`-n` word in the German dictionary has now been
+individually reviewed. Still open, unrelated to the sweep itself: the mechanical weak-verb-inflection
+derivation pass, the strong-verb principal-parts reference table, the flagged noise entries and
+Learned-Words inflection-gap list (deferred cleanup round, queued back in §308), and populating `lemma` on
+every result tagged across all nine rounds (D-412's own column has not been written to at all yet - kept as
+its own separate, independently-verifiable step, deliberately not started without a fresh check-in per this
+project's own convention).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `a0ec45e` for the authoritative record.)*
+
+## §316 - Closed The Deferred Learned-Words-Inflection-Gap, `haptisch`, And LaTeX-Noise Backlog (v1.0.69)
+
+Closed all three items queued back in §308's interstitial doc-only commit. Verified every word against the
+live dictionary first (nothing assumed).
+
+**28 missing words added**: 5 new infinitives (`besparen`, `fortfahren`, `duzen`, `siezen`, `nachdenken` -
+none of these existed at all) plus 17 missing finite/imperative forms of already-present verbs (`würdest`,
+`hättest`, `meinst`, `erzähl`, `beobachte`, `ignorierst`, `investiere`, `nachdenkt`, `lösche`, `packt`,
+`packst`, `vermisse`, `verrosten`, `verrostet`, `verrotten`, `verrottet`, `zeigst`, `zeig`), all tagged
+`VERB`, frequencies calibrated against comparable already-present verb forms (person/mood-matched ratios,
+not guessed blind - e.g. 2nd-person `-st` and bare imperative forms consistently land low regardless of the
+verb's own commonness, matching `siehst`(18)/`sieh`(11)/`kommst`(14)'s existing pattern). Plus 5 new
+`haptisch`-family entries (`haptisch`/`haptische`/`haptischen`/`haptischer`/`haptisches`, tagged
+`ADJECTIVE`, calibrated against `optisch`/`akustisch`'s own base-vs-declined frequency ratios - `haptischem`
+deliberately not added, matching the confirmed pattern that this whole adjective class never has a
+dictionary row for the `-em` dative form either).
+
+**Explicit participle exclusion honoured**: `fortgefahren`/`bespart` (participles of `fortfahren`/
+`besparen`) deliberately **not** added, per the user's own constraint from §308 - future D-404 Tier 1
+territory, not a bare dictionary row. `verrostet`/`verrottet` were added despite being participle-shaped
+because both are also the genuine 3rd-person-present form (inseparable `ver-` prefix, weak verb, no `ge-` -
+present and participle are true homographs here), not a participle-only addition.
+
+**3 existing rows found mistagged** while investigating (out of scope for the earlier `OTHER`-only verb
+sweep since none end in `-en`/`-n`, so the mechanical candidate scan never saw them) and fixed: `hätte`(2194)
+`OTHER` -> `VERB`, `erzähle`(12) `OTHER` -> `VERB`, `löschen`(181) `NOUN,OTHER` -> `NOUN,VERB,OTHER`.
+
+**7 confirmed LaTeX/programming-noise rows removed** (`begin`/`align`/`sin`/`colon`/`varepsilon`/`return`/
+`schen`) - cross-checked against `bigram.tsv` before removing, which confirmed genuine LaTeX/math context
+for all seven (e.g. `begin pmatrix`/`begin align`/`sin alpha`/`sin varphi`) and surfaced a second, larger
+noise cluster left as a fresh open item rather than folded into this round unreviewed (closed in §317). `min`
+was deliberately **kept** despite being on the original candidate list - genuinely ambiguous (the everyday
+"Minute" abbreviation vs. a `\min` LaTeX leak) with a real everyday use case, unlike the other seven which
+have no legitimate German reading at all. 15 stale `bigram.tsv` rows referencing the 3 removed words that
+had bigram entries (`begin`/`align`/`sin`) also removed, the same pattern as an earlier bigram-cleanup round.
+
+`git diff --stat`: `dict.tsv` 41 lines (31 insertions, 10 deletions), `bigram.tsv` 15 deletions.
+`dictionaries/de/version.txt` 26 -> 27, pack rebuilt, `LanguagePackCatalog` version 26 -> 27. No new tests
+(data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 372 -> 373, `versionName`
+`"1.0.68"` -> `"1.0.69"`. Not yet device-confirmed. One open call worth revisiting: `besparen` was added as a
+real (if rare/dialectal) verb based on this session's own knowledge, not re-confirmed against the user's
+actual Learned Words entry as the original note asked - worth a quick sanity check that this was really the
+intended word.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `3aa96d6` for the authoritative record.)*
+
+## §317 - Removed The Second LaTeX-Noise Cluster, Closed A Fresh User-Supplied Word-Family List (v1.0.70)
+
+**7 more confirmed LaTeX-noise rows removed** (`pmatrix`, `bmatrix`, `cdot`, `varphi`, `width`, `left`,
+`end`) - the two genuinely ambiguous candidates spotted at the same time (`alpha`, `text`) deliberately left
+untouched, per the user's own explicit scoping (`text`'s own tag turned out to still need a fix, see §318).
+47 stale `bigram.tsv` rows referencing them also removed.
+
+**19 missing words added** from a fresh user-supplied list, verified against the live dictionary first:
+6 new infinitives/base forms that didn't exist at all (`kriegen` - colloquial "to get", `wischen`,
+`Dreirad`, `Regenrinne`, `erfreulich`, `hoffentlich`, tagged `VERB`/`NOUN`/`ADJECTIVE`/`OTHER` matching the
+dictionary's own convention for each word class) plus 13 missing finite forms of already-present verbs
+(`bewerte`/`bewertest`, `erstelle`/`erstellst`, `gib`, `installiere`/`installierst`, `kriegst`/`kriegt`,
+`vermute`/`vermutest`, `wische`/`wischst`), all `VERB`, frequencies calibrated against comparable existing
+entries the same way as §316 (colloquial-register verbs like `kriegen` calibrated well below their formal
+synonyms `bekommen`(737)/`erhalten`(5857), matching this project's own consistent register-skew pattern).
+
+**2 more existing rows found mistagged** while investigating (same root cause as §316's three - `gibst`/
+`vermisst` don't end in `-en`/`-n` so the original tagging sweep never saw them): `gibst`(150) `OTHER` ->
+`VERB`, `vermisst`(45) `OTHER` -> `VERB`.
+
+`git diff --numstat`: `dict.tsv` 21 insertions/9 deletions, `bigram.tsv` 47 deletions.
+`dictionaries/de/version.txt` 27 -> 28, pack rebuilt, `LanguagePackCatalog` version 27 -> 28. No new tests
+(data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 373 -> 374, `versionName`
+`"1.0.69"` -> `"1.0.70"`. Not yet device-confirmed.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `ffbadab` for the authoritative record.)*
+
+## §318 - Fixed `text` `NOUN,VERB` -> `NOUN`, A D-368 Mechanical-Scan False Positive (v1.0.71)
+
+§316/§317's noise cross-check had flagged `text`(5076) as one of two genuinely ambiguous LaTeX-noise
+candidates (alongside `alpha`, kept as-is); the user resolved both by keeping the word, but pointed out the
+`VERB` half of its tag was simply wrong regardless of the LaTeX question - D-368's mechanical homograph scan
+checked whether stem+`"en"` forms a real verb (`text`+`en` = `texten`, which is indeed real), but never
+checked whether the bare stem itself is a valid *inflected form* of that verb. It is not: `texten`'s own
+finite forms are `texte`/`textest`/`textet`, never bare `text`.
+
+`git diff --stat`: 1 line. `dictionaries/de/version.txt` 28 -> 29, pack rebuilt, `LanguagePackCatalog`
+version 28 -> 29. No new tests (data-only). 1064 unit tests unchanged, all green (via JDK 21). `versionCode`
+374 -> 375, `versionName` `"1.0.70"` -> `"1.0.71"`. Not yet device-confirmed. Found in passing: `texten`
+itself has no dictionary entry at all - not fixed here, out of what was actually asked this round (added the
+following round, §319).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `33536b6` for the authoritative record.)*
+
+## §319 - Added `texten` ("To Text/Message Someone") With Its Inflected Forms (v1.0.72)
+
+Explicit user request following up on §318's find. 4 new rows: `texten`(15)/`textet`(12)/`texte`(10)/
+`textest`(6), all `VERB`, frequencies calibrated against the one existing anchor point for this verb's
+register - its own participle `getextet`(9) - since every other comparable informal/loanword communication
+verb checked for calibration (`chatten`, `simsen`, `mailen`, `posten`, `surfen`) turned out to be entirely
+absent from this Wikipedia-extracted corpus too, consistent with it being a systematically under-represented
+register here, not a gap specific to `texten`. `getextet`(9) itself, already present, gained the `VERB` tag
+it was missing (`OTHER` -> `VERB`) - not a fresh participle addition (which the project's own participle-
+exclusion rule would forbid), just correcting an existing row's tag, same as every other "found mistagged"
+fix in this backlog cleanup.
+
+`git diff --stat`: 6 lines (5 insertions, 1 deletion). `dictionaries/de/version.txt` 29 -> 30, pack rebuilt,
+`LanguagePackCatalog` version 29 -> 30. No new tests (data-only). 1064 unit tests unchanged, all green (via
+JDK 21). `versionCode` 375 -> 376, `versionName` `"1.0.71"` -> `"1.0.72"`. Not yet device-confirmed.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `64e888e` for the authoritative record.)*
+
+## §320 - Kicked Off The German Noun-Inflection-Linking Project, Round 1: The `>=2000` Band (v1.0.73)
+
+New effort, requested explicitly and scoped via `AskUserQuestion` before starting (mirroring how the verb
+project began): 88,012 words carry the `NOUN` tag (~8x the verb project's own candidate pool). D-412's
+`lemma` column was populated for the first time this round (0 rows -> 79).
+
+A mechanical prototype (suffix-stripping `-nen`/`-innen`/`-en`/`-er`/`-n`/`-e`/`-s` plus umlaut-reversal on
+the *last* umlaut only) found ~20,000 words with a plausible existing-row base-form candidate; a 40-word
+random spot check found ~12-15% clear false positives (short/foreign stems coincidentally colliding with an
+unrelated word - `Mais`->`Mai`, `Pointer`->`Point`, `Orbiter`->`Orbit`, `Preston`->`Presto`), confirming
+individual review is still required, not a mechanical auto-apply.
+
+**Two design decisions resolved with the user up front**: (1) full individual review of every candidate,
+same rigor as the verb project, since `lemma` is not yet read by any code (safe to refine later before
+D-404 Tier 1 actually consumes it); (2) derivational word-formation (demonyms like `Berliner`->`Berlin`,
+`Schweizer`->`Schweiz`, `Wiener`->`Wien`) explicitly **excluded** - only true inflection (case/number, and
+adjective declension when both sides already carry the `NOUN` tag, e.g. nominalised `deutsche`/
+`deutschen`->`deutsch`) counts as a link.
+
+This round: the `>=2000` band, 124 mechanical candidates individually reviewed, 79 confirmed and linked,
+45 rejected (demonyms, proper-noun/place-name collisions, and short-stem false matches like `Kaiser`->
+`Kais`, `Wasser`->`Wass`, `Bürger`->`Burg`). **13 links were manually corrected to the true base rather than
+the raw mechanical match** where the mechanical candidate landed on a spurious fragment or an intermediate
+form instead of the real lemma (`Namen`->`Name` not `Nam`, `Kirchen`->`Kirche` not `Kirch`, `Ländern`->`Land`
+not the intermediate plural `Länder`, `Jahres`->`Jahr` not the intermediate plural `Jahre`, and similarly
+for `Landes`/`Stimmen`/`Regionen`/`Quellen`/`Reiches`/`Grenzen`/`Krieges`/`Schulen`/`Juden`) - each verified
+to actually exist as its own `NOUN`-tagged row before writing. `Nord`/`Süd`/`West`/`Ost` vs. `Norden`/
+`Süden`/`Westen`/`Osten` deliberately treated as independent lemmas, not an inflection pair (both are
+established independent headwords in modern usage, not one derived live from the other).
+
+Write script fail-loud-asserts each target word is `NOUN`-tagged, currently has an empty `lemma` field, and
+its chosen base actually exists as its own row, before writing - the same pattern as every tagging round.
+`git diff --stat` confirmed exactly 79 lines changed (158 total: old+new per line). `dictionaries/de/
+version.txt` 30 -> 31, pack rebuilt, `LanguagePackCatalog` version 30 -> 31. No new tests (data-only;
+`lemma` still has zero code readers, same groundwork-only status as before). 1064 unit tests unchanged, all
+green (via JDK 21). `versionCode` 376 -> 377, `versionName` `"1.0.72"` -> `"1.0.73"`. Not yet
+device-confirmed. **Remaining: ~19,900 more mechanical candidates across the rest of the frequency range**
+(500-1999, 200-499, ... down through the same banding pattern as the verb project), to be worked through
+round by round.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `9ad6c6a` for the authoritative record.)*
+
+## §321 - The Noun-Inflection-Linking Project Completed End To End (v1.0.74)
+
+Continuation of §320's round 1, per explicit user instruction to proceed autonomously band by band without
+stopping for interim builds. This closing round spans 27 intermediate, unversioned data-only commits between
+§320 and this entry's own commit (`git log --oneline 9ad6c6a..7c16286`: "Noun-lemma linking round 2"
+through "round 7b", each individually committed with its own exact link count in the subject line, e.g.
+"round 5a: 20-49 band, chunk 1 (578 links)"), each verified and committed on its own before the next began,
+with the version bump and this closing summary applied only once at the very end.
+
+Bands processed this pass: `500-1999` (408 links), `200-499` (770), `50-199` (3,113 across 6 rounds),
+`20-49` (4,597 across 8 rounds), `10-19` (5,238 across 10 rounds), `5-9` (771 across 2 rounds) - the last of
+these confirmed empty below frequency 5 by the same generator script used throughout. Total across the whole
+sweep (§320's round 1 included): ~20,024 mechanical candidates individually reviewed, 14,976 confirmed and
+linked to their base form (verified directly: an `awk` count of non-empty `lemma` rows in `dict.tsv` matches
+the sum of every round's own reported link count exactly).
+
+Same taxonomy as §320 throughout, refined round to round as new patterns appeared: **rejected** -
+derivational demonyms (`Berliner`->`Berlin`-style place-to-person forms, per the original explicit
+exclusion), agent-noun `-er` derivations (`Politiker`/`Lehrer`-style "one who does X" from a root that is
+not itself what's being inflected), short-stem/coincidental collisions with an unrelated real word
+(`Mais`≠`Mai`, `Kohlen`≠`Kohl`, `Ulmen`≠`Ulm`), cross-category pairs (a nominalised-infinitive vs. a plain
+noun sharing a root, e.g. `Schälen`≠`Schal`), foreign/English-spelled plurals kept out for safety
+(`Divisions`, `Operas`, `Chains`), and proper-noun genitives that are themselves standalone surnames rather
+than derived forms (`Carlsen`, `Johannsen`, `Andresen`). **Accepted** beyond plain case/number inflection -
+adjective declension where both sides already carry `NOUN` (nominalised adjectives), genitive-of-name/
+surname unless the `-s` form is itself an independent surname, archaic/dialectal doublets of an already-
+established word (`Lichter`/`Licht`, `Türe`/`Tür`), and a small, case-by-case-verified set of person-noun
+plural exceptions extending §320's own list (`Zwangsarbeiterinnen`->`Zwangsarbeiter`, `Franziskanerinnen`->
+`Franziskaner`, `Soldatinnen`->`Soldat`) where the base itself was already an accepted person-noun, never a
+fresh place-to-demonym derivation. Chain candidates continued to resolve to the true deepest root rather
+than an intermediate mechanical hop, per the pattern §320 established, with several dozen manual corrections
+per round where the mechanical umlaut-reversal or suffix-strip landed on a spurious fragment or a
+semantically unrelated intermediate word instead of the real lemma (e.g. `Ulmen`->`Ulme` not `Ulm`,
+`Kohlen`->`Kohle` not `Kohl`, `Baches`->`Bach` skipping the false intermediate `Bache`=female wild boar).
+
+Write script's fail-loud asserts (target is `NOUN`-tagged, currently has an empty `lemma`, chosen base
+actually exists as its own row) never fired across any of the 27 rounds committed this pass. `git diff
+--stat`/`--numstat` confirmed each round's exact 2x-line-count before every commit, all committed
+individually (27 data-only commits, no version bump per round per the explicit "don't stop for interim
+builds" instruction). `dictionaries/de/version.txt` 31 -> 32, pack rebuilt, `LanguagePackCatalog` version
+31 -> 32. No new tests (data-only; `lemma` still has zero code readers - this remains pure groundwork for
+D-404 Tier 1). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 377 -> 378, `versionName`
+`"1.0.73"` -> `"1.0.74"`. Not yet device-confirmed. **This closes the entire noun-inflection-linking
+project** - `lemma` is now populated for every noun inflection the mechanical suffix/umlaut heuristic could
+find and a human could individually confirm, across the full frequency range down to 5.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `7c16286` and the 27 intermediate data-only commits
+listed above for the authoritative record.)*
+
+## §322 - D-404 Tier 1, The "Wortfamilien" Project: Complete German Noun/Verb Paradigms Generated And Added (v1.0.75)
+
+Extends §320/§321's lemma-linking groundwork from "link what already exists" to "generate and add what's
+missing": full noun declension (Genitiv/Dativ/Akkusativ Singular, Plural, Dativ Plural) and full verb
+conjugation (Präsens x6, Präteritum x6, Partizip II, Imperativ Singular+Plural), for every already-present
+lemma without one, each new row lemma-linked via D-412's column as a direct byproduct of generation.
+
+First attempt was a from-scratch rule engine: `genus.py` (noun gender via `eine`/`einer`=feminine,
+`das`=neuter-if-present-at-any-count-since-real-masculines never co-occur with it, `ein`/`einem`/
+`eines`=masculine-by-elimination otherwise - `der` deliberately never trusted alone, since it also marks
+feminine Genitiv/Dativ), `deklination.py`/`plural.py` (strong/weak declension + plural-class rules),
+`konjugation.py` (strong/weak conjugation + a curated per-verb override table, `praefix_overrides.py`, for
+the ~150 individually-reviewed cases where durch-/um-/über-/unter-/voll-/hinter-/wieder- genuinely can't be
+classified as separable-or-not from the prefix alone - e.g. `übertragen` stays unhandled, `unternehmen` is
+always inseparable, `wiederfinden` always separable). Each component went through several real-bug-found-
+and-fixed rounds against live corpus/reference data (documented in-line in the scripts themselves -
+epenthesis gaps, sibilant-collapse rules, Präteritopräsentia's suppletive forms, false-friend prefix matches
+like `erben`/`Beispiel` that only *look* prefixed), but noun plural-class assignment in particular kept
+surfacing new exception classes faster than rules could close them (German plural choice is often lexical,
+not derivable from spelling), so on explicit user instruction the approach pivoted: the German Wiktionary
+extract via `wiktextract`/kaikki.org (MIT-licensed tool, CC BY-SA-licensed content - same licence family
+this project's `dict.tsv`/`bigram.tsv` already come from) became the *primary* source for both nouns
+(`extract_wiktionary_nouns.py` -> `wiktionary_nomen.tsv`, 119,779 nouns with genus+genitiv+plural) and verbs
+(`extract_wiktionary_verbs.py` -> `wiktionary_verben.tsv`, 14,412 verbs with full conjugation); `nomen.py`/
+`verben.py` check the Wiktionary table first, falling back to the hand-built rule engine only for words
+missing there (~38% of noun lemmas / ~57% of verb lemmas by word count found in Wiktionary, but ~64%/higher
+by frequency weight - common words are disproportionately covered).
+
+Explicitly rejected on the user's own reflection: bulk-importing the ~91,559 Wiktionary nouns entirely
+absent from `dict.tsv` - cross-checked against `bigram.tsv` and only 2 of them have any occurrence there at
+all, meaning that pool carries essentially no real frequency signal; the project stayed scoped to completing
+existing lemmas' paradigms, not growing the vocabulary itself.
+
+New-row frequency: lemma-frequency × a ratio calibrated from each POS's own already-linked pairs (nouns:
+median 0.355 from the 14,976 §320/§321 pairs; verbs: median 0.417 from 191 pairs). Collision rule: never
+write a form already present anywhere in `dict.tsv` under any POS. The verb write surfaced real candidate-
+list contamination the earlier validation passes had missed - preterite-plural/participle/Konjunktiv-II
+forms of already-known strong verbs (`wurden`/`waren`/`worden`, `misslangen`, `gestünden`) and zu-infinitives
+of separable verbs, both classes being mistaken for their own base infinitives - found and fixed over six
+write-verify-revert-refix rounds; the eventual fix generalised a fixed-prefix-list exclusion check into
+"does this word end in a long-enough known-strong-verb inflected form, regardless of what precedes it",
+which also closed compound/double-prefix cases the fixed list structurally couldn't reach (`nachvollzogen` =
+nach+vollzogen). Final random-sample spot check (70 rows) came back fully error-free.
+
+8 more strong verbs turned up missing from the original hand-curated table along the way and were added,
+each confirmed against real `dict.tsv`-attested forms first, not guessed: `schmelzen`/`verderben`/
+`gedeihen`/`weichen`/`schwellen`/`erlöschen`/`bergen`/`gleichen`/`streichen`/`schleichen`/`preisen`/
+`erwägen`/`winden`/`schinden`/`sprießen`/`reiben`/`hauen`/`stechen`/`schwören`/`schleifen`/`treten`/
+`werben`/`fallen`/`ringen`/`schreiten`/`gebären`/`schlingen`/`misslingen`/`heben`/`empfinden`/`schleißen`/
+`trügen`.
+
+Net result: `dict.tsv` 119,701 -> 158,073 rows (+33,390 noun forms, +4,982 verb forms), 153,091 of them now
+lemma-linked (was 14,976). `git status`-clean otherwise - `bigram.tsv`/`hints.tsv` untouched, confirmed by
+hash. `dictionaries/de/version.txt` 32 -> 33, pack rebuilt and verified by unzipping it back and byte-
+comparing `dict.tsv` against the source, plus a `version.txt` content check; `LanguagePackCatalog` version
+32 -> 33. No new tests (data-only; `lemma` still has zero code readers - remains groundwork for whatever
+eventually reads it). 1064 unit tests unchanged, all green (via JDK 21). `versionCode` 378 -> 379,
+`versionName` `"1.0.74"` -> `"1.0.75"`. Not yet device-confirmed.
+
+A follow-up commit right after (`f7bdf05`) removed `AdaptKey-Plan-Wortfamilien.md`, the phased design-
+discussion plan document this project's design had been captured in: its content is now fully superseded by
+this section (the actual completed project), and the plan's originally-described rule-based-only approach
+was largely superseded by the mid-project Wiktionary pivot documented above.
+
+This resolves D-404 Tier 1 in full (see the D-404 backlog entry); D-404 now remains open only for Tier 2
+(bundled-dictionary ranking/override cross-reference).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commits `912b733` and `f7bdf05` for the authoritative record.)*
+
+## §323 - D-404 Tier 3, Non-LLM Path: Learned Words Base-Form Consolidation (v1.0.76)
+
+Pure code, no dictionary data touched (see spec §39 for the full mechanics). `TABLE_LEARNED` gained its own
+`lemma` column via a new guarded `ensureLearnedLemmaColumn()` (the same `PRAGMA table_info`-checked
+`ALTER TABLE ADD COLUMN` pattern as D-388/D-412's own precedents, called unconditionally from `init {}` -
+never a `DATABASE_VERSION` bump, honouring the user's explicit "never reset/wipe the Learned Words list"
+constraint from the original D-404 discussion).
+
+New `LearnedLemmaLinking` object: extremely conservative, lookup-only base-form linking in both directions
+(`findLemma` - a newly-learned word strips a closed set of noun endings `-s/-es/-e/-en/-er/-n/-nen/-ern` or,
+failing that, `RegularVerbInflection`'s own verb-personal endings, and checks whether the stripped candidate
+is already a learned entry; `candidateInflections` - the reverse, checking whether the newly-learned word is
+itself the base of an already-learned, not-yet-linked entry) - never fabricates a row, only links two words
+already genuinely typed and learned. Caught and fixed a self-match bug of its own during test-writing:
+`findLemma`'s noun branch originally relied on a length guard alone before calling `String.removeSuffix()`,
+which no-ops (returns the string unchanged) when the suffix doesn't actually match - risking a word
+reinforcing itself into its own lemma; fixed with an explicit `endsWith` check before stripping.
+
+`DictionaryStore.learn()` gained an optional `categoryHint` parameter - `AdaptKeyService.learnWord()`/
+`learnWordStrong()` pass `NOUN` when a word is typed capitalised but only *mid-sentence* (never at a
+sentence start, which capitalises regardless of true category), applied only while the category is still
+unset and re-checked on every reinforcement, never overriding an already-known category. `putWordInternal`
+now always carries `TABLE_LEARNED`'s own `lemma` forward explicitly on every write (`learn`/`unlearn`/
+`recaseLearnedWord`/`restoreLearnedWord`) - `INSERT OR REPLACE` semantics meant an omitted column reverts to
+its default, so an established link would otherwise be silently wiped by the very next reinforcement.
+Migration's own one-time pass: after the `ALTER TABLE`, every pre-existing row runs the same forward-only
+lookup against every other row already in the table (covers both directions across the whole existing set
+without a separate reverse sweep).
+
+Editor (`LearnedWordsActivity`, D-292/D-294's dialog): the list itself now shows only entries with no lemma
+link as their own row (a linked inflected form no longer clutters it once its base is known); an entry with
+no known category gets a trailing asterisk; the tap-to-edit dialog gained a category multi-select (one
+checkbox per `PartOfSpeech` tag, backed by new `setLearnedCategories()`) and a "Grundform" dropdown (every
+other learned word plus "unbekannt", backed by new `setLearnedLemma()`) for manual power-user correction.
+Localised the new strings (EN/DE/EL). Known, accepted limitation: a mis-linked child entry has no direct
+path back into the edit dialog today, since it no longer appears as its own row - relink from the correct
+entry's own dropdown instead; accepted given this whole screen is explicitly framed as power-user-only.
+
+20 new unit tests (`LearnedLemmaLinkingTest`, 12; new `InMemoryDictionaryStoreTest` cases, 7 - including one
+asserting the self-match bug stays fixed; `RegularVerbInflectionTest` unchanged, still green after
+`candidateInfinitives()` was factored out of `isPlausibleInflection()`). 1084 unit tests total (was 1064),
+all green (via JBR JDK 21, both `:app:assembleDebug` and `:app:assembleRelease` verified). `versionCode`
+379 -> 380, `versionName` `"1.0.75"` -> `"1.0.76"`. Spec gained new §39; the D-404 backlog item marked
+resolved for Tier 1 and Tier 3's non-LLM path. **Deferred, not implemented this round**: Tier 2
+(bundled-dictionary ranking/override cross-reference), and Tier 3's own LLM-powered extension (whole-family
+learning on every learn event via a `Tier3Provider` extension not yet designed, plus the "LLM newly
+installed" reprocessing-pass trigger and the migration's own LLM-aware branch) - both explicitly scoped out
+at the user's own direction, to be picked up as a separate follow-up round (that follow-up is §324). Not yet
+device-confirmed (UI/gesture behaviour is untestable in this environment - no emulator - only the pure logic
+underneath was unit-tested, per this project's own accepted, already-established limitation).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `b5da96a` for the authoritative record.)*
+
+## §324 - D-404 Tier 3, With-LLM Path: Whole-Family Learning Plus The Unified Reprocessing Backfill (v1.0.77)
+
+Closes out D-404's own explicit "with LLM, always learn the whole family" requirement (§323's non-LLM path
+stays exactly as it was - this is purely additive).
+
+`Tier3Provider` gained a second task method, `predictFamily(Tier3FamilyRequest): Tier3FamilyResult`,
+deliberately separate from the existing next-word-continuation `predict`/`Tier3Request`/`Tier3Result`
+(different prompting - an explicit instruction plus a rigid `KEY=value` answer format the model is primed to
+continue mid-answer, not plain continuation - and a different token budget, the hard
+`Tier3Decoding.MAX_NEW_TOKENS` cap since this runs once per learn event rather than once per keystroke);
+default implementation returns `Tier3FamilyResult.EMPTY`, so `NoopTier3Provider` needed no override. New
+`Tier3FamilyPrompt` (builds the German instruction prompt, primes `"GRUNDFORM="` so the model's own
+continuation starts right at the answer) + `Tier3FamilyResponseParser` (deliberately generous - each of
+`GRUNDFORM=`/`WORTART=`/`FORMEN=` is extracted independently via its own regex rather than requiring the
+whole line to parse as one unit, since a small 360M-parameter model will not always reproduce the format
+exactly; only the lemma is load-bearing - a missing/garbled category or forms field just leaves that part
+null/empty rather than discarding an otherwise-usable lemma; forms are letters-only-filtered, de-duplicated
+case-insensitively, and capped at 16 so a degenerate/repetitive generation cannot flood the lexicon).
+`OnnxTier3Provider.predictFamily()` composes these with the same tokenizer/session already used for
+`predict()`. `Tier3FamilyApplier.apply(store, result)` (new, pure over `DictionaryStore`, unit-tested via
+`InMemoryDictionaryStore` rather than living untested inside `AdaptKeyService`) is the one shared operation
+both call sites below reduce to: learn every family form (an ordinary `learn()` call per form,
+`result.category` as the `categoryHint`), then link every non-lemma form back to the lemma via
+`DictionaryStore.setLearnedLemma` - promoted from a `SqliteDictionaryStore`-only method to the shared
+interface (implemented in `InMemoryDictionaryStore` too) specifically so this logic never needs to downcast
+the interface - unless that form already carries its own link, so a prior manual "Grundform" correction or
+an earlier application of the same family is never silently overwritten.
+
+Live path: `AdaptKeyService.dispatchFamilyLearning()`, called from both `learnWord()`/`learnWordStrong()`
+right after their own ordinary (non-LLM) outcome, only for a genuine write (`LEARNED`/`PROMOTED` - never
+`SKIPPED`/`PENDING`) and only when a real backend (`onnxProvider`) is present; dispatches on `tier3Executor`
+with `dictionaryStore`/`onnxProvider` captured on the calling thread first (mirrors `refreshSuggestions()`'s
+own orchestrator-capture pattern) - `predictFamily` is synchronous and heavy, so it must never run on the IME
+thread. Backfill path: "LLM installed is a state, not a history" - rather than special-casing "already
+installed at migration time" inside `ensureLearnedLemmaColumn()`'s own synchronous `init {}` migration
+(which must stay fast, ruled out heavy LLM work there entirely), each language store's `TABLE_META` gained a
+`family_reprocess_version` key (`familyReprocessVersion()`/`setFamilyReprocessVersion()`, mirroring
+`learnedCleanupVersion`'s own scheme). New `AdaptKeyService.maybeReprocessFamiliesAsync()` runs every time
+`loadTier3ProviderAsync()` actually builds a real backend - which happens on *every* fresh service instance
+that finds a model already installed, not only right after a fresh import, which is what makes this single
+mechanism cover both of D-404's original trigger conditions at once - and, for every `SqliteDictionaryStore`
+still behind the current version, reprocesses every learned word still missing a category or a lemma link
+(`learnedWordsWithTimestamp()`, filtered) through the same `predictFamily`+`Tier3FamilyApplier.apply` pair,
+entirely on `tier3Executor`, before bumping that store's version - a cheap no-op on every later startup once
+already run. No original sentence context is available for a backfilled word (`Tier3FamilyRequest.sentence`
+defaults to empty, treated as "lemmatise this word in isolation").
+
+28 new unit tests (`Tier3FamilyPromptTest` 6, `Tier3FamilyResponseParserTest` 12, `Tier3FamilyApplierTest`
+6, `InMemoryDictionaryStoreTest` +3 for `setLearnedLemma`, `NoopTier3ProviderTest` +1). 1112 unit tests
+total (was 1084), all green (via JBR JDK 21, both `:app:assembleRelease` and `:app:testDebugUnitTest`
+verified). `versionCode` 380 -> 381, `versionName` `"1.0.76"` -> `"1.0.77"`. Spec §39 extended (its own
+"Deferred" section rewritten into "With-LLM path (implemented)"); the D-404 backlog item is now fully
+resolved except for Tier 2. Not yet device-confirmed - no device/ONNX runtime in this environment, the same
+already-accepted limitation the rest of Tier 3 has; the prompt format's actual reliability against the real
+SmolLM2-360M-Instruct model is therefore unverified beyond the parser's own generous, defensive design.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `005eda8` for the authoritative record.)*
+
+## §325 - D-404-Followup: Acronyms Are Never Autocorrected Away, And Learn Faster (v1.0.78)
+
+The user's own worry directly confirmed as a real, currently-reproducible bug before this fix - not
+hypothetical: probed the real bundled German dictionary (a throwaway test, deleted after use) and found
+typing `"etf"` was silently autocorrected to `"etc"` (cost-1 QWERTZ-adjacent, far more frequent) on every
+single attempt, meaning the acronym's own W-02 pending counter could never even begin to move through
+ordinary typing - it would never have been learnable at all.
+
+New shared, pure `suggestion.Acronym.isAcronym()` (at least two letters, every one uppercase - the
+deliberate, explicit "this is an acronym" signal a user gives by typing that way) used at two call sites,
+kept in lockstep rather than duplicated: `DictionarySuggestionProvider.bestCorrection()` (backs
+`autocorrectFor`/`bestCorrectionFor`/`highConfidenceCorrection`) now vetoes autocorrect against an acronym
+outright - checked against the original typed casing, ahead of every other branch, an absolute veto stronger
+than D-403's own `learnedCasingOf` exemption since it also protects the very first, not-yet-learned typing,
+not only an already-learned word. `AdaptKeyService.learnThresholdFor()` (W-02) now checks the acronym signal
+before either existing compound-suspicion signal, so an acronym promotes after the ordinary two repetitions
+rather than the four a suspected-compound token needs - its embedded capitals are what *make* it an acronym,
+not evidence of a missing space.
+
+Third part of the user's own three-part request turned out to need no code change at all: confirmed (and
+cited an existing test proving it) that a later lower-case typing already resolves to, and ranks by, the
+learned entry's own casing over any differently-cased bundled variant sharing the same key (D-264's own
+`unigramsByPrefix`/`entryOf` merge - the exact `"MSCI"`-vs-`"Msci"` case already regression-tested).
+Deliberately never silent auto-substitution on commit either way, by design (A-01's own "explicit input is
+never silently changed" principle) - confirmed directly with the user, who wanted exactly this (a
+prioritised chip, not a silent rewrite). Accepted trade-off, confirmed with the user: a stuck Caps Lock
+disables ordinary typo-autocorrection for as long as it stays engaged, matching how other mainstream
+keyboards already treat all-caps input.
+
+10 new tests (`AcronymTest` 7, `DictionarySuggestionProviderTest` +3, including a direct reproduction of the
+real `"etf"`->`"etc"` bug pinned with synthetic data so it stays pinned independent of the live dictionary's
+own future contents). 1122 unit tests total (was 1112), all green (via JBR JDK 21, both
+`:app:assembleRelease` and `:app:testDebugUnitTest` verified). `versionCode` 381 -> 382, `versionName`
+`"1.0.77"` -> `"1.0.78"`. Spec gained new §40. Not yet device-confirmed.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `db92d36` for the authoritative record.)*
+
+## §326 - Split The Vacation-Usage Backlog Batch Into 45 Individually-Addressable Items (still v1.0.78, no code change)
+
+Doc-only round, no code changed, no tests run, no version bump. Three things happened:
+
+(1) Discussed for/against directly with the user whether German should become a bundled language again
+(D-385, from the original vacation batch, §276) - decided against; captured as its own resolved backlog item
+rather than left ambiguous.
+
+(2) Found D-386 (the actual backlog item for "the picked download file isn't the right one, Samsung One UI
+renames it `(1)`") after an initial wrong search hit D-344 instead - a different, related item
+(download-directory *control*, not post-download duplicate-file *detection*); both now live side by side in
+the backlog (D-386 was implemented together with D-344 the following round, §327).
+
+(3) At the user's own explicit request - "das sind ja sehr viele Punkte, die nicht als ein Paragraph geführt
+werden können" - split the §276 vacation-usage batch (D-352 through D-404, roughly 50 items previously
+reachable only as one dense paragraph plus the full original text buried in this file) into 45
+individually-addressable `AdaptKey-Progress.md` backlog bullets (the six that already had their own bullets -
+D-330-followup/D-344/D-345/D-367/D-368/D-402/D-404 - were left as they were, not duplicated). Per the commit
+diff, this added 180 lines to `AdaptKey-Progress.md` alone (`AdaptKey-Progress.md | 180 +++...`) - no other
+file touched. Statuses were resolved via `grep`-driven cross-referencing against every later round that
+touched each D-number, not guessed: 12 already fully resolved by earlier rounds (D-352/D-353/D-354/D-358/
+D-359/D-368/D-388, plus D-403 closed out that same session by §325 above), 2 resolved just now (D-385) or in
+progress (D-386), 2 flagged with an important nuance (D-355 - distinct from a separately-spun-off bug report
+that shared its original text; D-356 - still awaiting a concrete example), 1 flagged as possibly superseded
+and worth re-checking rather than closed by assumption (D-381 - a learned word's category is now
+user-editable per D-404 §323/§324, which may already satisfy this, later confirmed in §330), and the
+remaining ~29 left open exactly as originally captured, condensed rather than transcribed (the full original
+wording stays in this file's own §276, untouched, per this file's append-only convention).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `4392c5e` for the authoritative record.)*
+
+## §327 - D-344/D-386 Implemented Together: Duplicate-Download-File Resolution Via A Once-Granted Folder Tree (v1.0.79)
+
+Verified feasibility against the official Android documentation before implementing (web research, not
+guessed): `ACTION_OPEN_DOCUMENT` cannot expose sibling files or the parent directory at all - a hard SAF
+limitation - so finding a browser-renamed `"(1)"` duplicate genuinely requires `ACTION_OPEN_DOCUMENT_TREE`
+(a folder grant) instead; confirmed neither intent needs a manifest-declared permission (corrected a wrong
+assumption raised mid-discussion that the tree approach would need one - it does not, the same
+"user-driven system picker, no `<uses-permission>`" model as the single-file picker already in use). User's
+own explicit design call, after weighing a simpler "just always delete, rely on a clean folder" alternative:
+go with the more robust tree approach anyway, since "der ganze Ansatz ist schon nicht benutzerfreundlich"
+and it should not be made harder than necessary - still deletes after import too, as originally asked.
+
+New `download` package: `DuplicateDownloadMatcher` (pure - matches a file's exact name or a `" (N)"`-suffixed
+duplicate, returns the newest by last-modified; unit-tested including case-sensitivity, no-extension names,
+multi-digit suffixes, and unrelated-similar-prefix rejection) + `DownloadCandidate`; `DownloadFolderStore`
+(Android glue - persists the granted tree URI via `takePersistableUriPermission`, shared by both import
+screens so the grant is asked for only once regardless of which screen needs it first); `DownloadFolderResolver`
+(Android glue - lists a tree's children via `DocumentsContract`, resolves the newest match, deletes it after
+import when no older than the new `DELETE_MAX_AGE_MILLIS` = 60,000ms per the user's own figure; the age
+comparison itself is split into a pure, unit-tested `isRecentlyCreated`). Both `LanguagePacksActivity` and
+`Tier3ModelActivity`'s own "Import" button rewired identically: reuse an existing grant, or show a short
+rationale dialog before requesting one (`ACTION_OPEN_DOCUMENT_TREE`, best-effort `EXTRA_INITIAL_URI` hint
+toward Downloads); resolve + import automatically, no file picker shown at all once a folder is granted; no
+match found clears the stale grant and re-prompts (the only sensible recovery). `importPack`/`importModel`
+no longer spawn their own background thread (the caller already runs on one). Localised the new/updated
+strings (EN/DE/EL), including correcting `c06_model_privacy`'s now-stale "only reads the one file you pick"
+claim.
+
+14 new unit tests (`DuplicateDownloadMatcherTest` 10, `DownloadFolderResolverTest` 4). 1136 unit tests total
+(was 1122), all green (via JBR JDK 21, both `:app:assembleRelease` and `:app:testDebugUnitTest` verified).
+`versionCode` 382 -> 383, `versionName` `"1.0.78"` -> `"1.0.79"`. Spec §30 rewritten from "decision deferred"
+to the implemented mechanism; D-344/D-386 backlog bullets marked resolved. Not yet device-confirmed - Samsung
+One UI's own sandboxing behaviour, the concrete complaint that prompted D-386, is exactly the kind of
+OEM-specific quirk this environment cannot verify directly (that verification prompted the revert in §329).
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `2f64726` for the authoritative record.)*
+
+## §328 - D-386-Followup: Is The Automatically-Resolved File Actually The Right One? (v1.0.80)
+
+User's own direct follow-up after §327 shipped: does the app report a genuine downgrade distinctly, and
+does it verify the resolved archive's own language, not just trust its file name? Both turned out to be
+real, previously-unnoticed gaps, confirmed by reading the code (not guessed) - and, for the language check,
+by an existing test unintentionally proving it (installing arbitrary content labelled as any `Language`
+without any content check at all). Two independent fixes, one shared round per the user's own explicit
+instruction (interrupted an earlier attempt at bumping/building for the first fix alone - "sonst hättest du
+mir zweimal geversionbumpt und gebuildet"):
+
+1. **Staleness reporting.** The old `pack.version <= installedVersion` check collapsed "exactly current" and
+   "actually older" into the same "already up to date" message. New `LanguagePackInstaller.compareVersions()`
+   (pure, unit-tested - 4 new cases) returns a three-way `VersionCheck` (`INSTALL`/`ALREADY_CURRENT`/
+   `OLDER_THAN_INSTALLED`); `LanguagePacksActivity.importPack()` now shows a distinct message for a genuine
+   downgrade attempt (new `d280_older_than_installed` string) instead of silently reporting "nothing to do".
+2. **Language identity.** `version.txt` gained an optional second line - the pack's own declared language
+   code - cross-checked in `LanguagePackInstaller.parse()` against the language actually being imported; a
+   mismatch throws the new `LanguageMismatchException` (caught distinctly in the Activity, new
+   `d280_language_mismatch` string with both codes interpolated), never silently accepted or lumped into a
+   generic "import failed". Tolerant of a legacy archive with no second line at all (never rejected on a
+   missing declaration). User's own explicit choice between two implementation options (a version.txt content
+   line vs. renaming an archive entry) - went with the content line, keeping D-310's own fixed-entry-name
+   convention intact.
+
+Both hosted packs rebuilt to carry the new line, **per the user's own explicit instruction that this must
+cover Greek too, not only German**: `dictionaries/de/version.txt` 33 -> 34, `dictionaries/el/version.txt`
+1 -> 2, `LanguagePackCatalog` versions 33 -> 34 / 1 -> 2. `dict.tsv`/`bigram.tsv`/`hints.tsv` themselves
+untouched - rebuilt via a Python `zipfile.ZipFile` one-liner (this environment's Git Bash has no `zip`
+binary; the German zip was briefly, accidentally deleted mid-attempt and restored via `git checkout` before
+any data was lost) and verified byte-identical against the source `dictionaries/<code>/` files afterward, the
+same discipline as every prior pack-rebuild round. `AdaptKey-Language-Contribution-Guide.md` updated so a
+future community-contributed language pack knows about both the accurate-staleness-reporting behaviour and
+the new, recommended `version.txt` second line.
+
+8 new unit tests (`LanguagePackInstallerTest`: 4 for `compareVersions`, 4 for the language-mismatch
+validation including case-insensitivity and legacy-archive tolerance). 1144 unit tests total (was 1136), all
+green (via JBR JDK 21, both `:app:assembleRelease` and `:app:testDebugUnitTest` verified). `versionCode`
+383 -> 384, `versionName` `"1.0.79"` -> `"1.0.80"` (one bump covering both fixes together, not two separate
+rounds). Spec §30 extended with both checks; the D-386 backlog bullet unchanged (already resolved by §327,
+this is a direct refinement of the same item, not a new one). Not yet device-confirmed.
+
+*(Reconstructed 2026-09-01 from the commit record - the original live-session narrative for this round was
+never appended to this file at the time; see commit `068031d` for the authoritative record.)*
+
+## §329 - D-413: Reverted The SAF Folder-Grant Import Back To A Plain `ACTION_OPEN_DOCUMENT` Picker; D-363 Declined As Won't Fix (v1.0.81)
+
+Real-device report: trying to import the German language pack, the system refused to grant the Downloads
+folder at all via `ACTION_OPEN_DOCUMENT_TREE` ("Dieser Ordner kann nicht verwendet werden. Zum Schutz deiner
+Daten einen anderen Ordner auswählen.") - a platform-level SAF restriction (worsened by Samsung One UI's own
+download sandboxing) on exactly the folder D-386's whole automatic-resolution mechanism was built around,
+not an app bug. Discussed directly: reverting to a manual single-file pick was the only viable path (a
+folder that cannot be granted has no file to automatically resolve within it either).
+
+Removed `download.DownloadFolderStore` (persisted tree grant) and `download.DuplicateDownloadMatcher`/
+`DownloadCandidate` (browser-`" (N)"`-duplicate matching, no longer needed once the user picks the exact
+file again) entirely, including `DuplicateDownloadMatcherTest`. `download.DownloadFolderResolver` renamed to
+`download.DownloadFileSupport`, keeping only what still applies to a single picked document unchanged:
+`downloadsInitialUriHint()` (the `EXTRA_INITIAL_URI` Downloads-folder hint) and `deleteIfRecentlyCreated()`/
+`isRecentlyCreated()`/`DELETE_MAX_AGE_MILLIS` (D-386's post-import cleanup, kept at the user's own explicit
+request even though the file is picked manually again). `LanguagePacksActivity`/`Tier3ModelActivity`:
+`ACTION_OPEN_DOCUMENT_TREE` + persisted-grant reuse + the upfront "why we need a folder" rationale dialog are
+all gone; "Import" now launches `ACTION_OPEN_DOCUMENT` (`CATEGORY_OPENABLE`, `type = "*/*"`,
+`FLAG_GRANT_WRITE_URI_PERMISSION` for the delete-after-import to actually work) fresh every time and imports
+the result directly. D-386-followup's content-level checks (`LanguagePackInstaller.compareVersions`/
+`LanguageMismatchException`) are untouched and now do double duty as the safety net a folder-scan design no
+longer needs but a "trust the user's own pick" design still benefits from. Four now-unused
+`d386_grant_folder_*`/`d386_file_not_found` strings removed from all three locales (en/de/el);
+`c06_model_privacy`'s user-facing text corrected in all three (no longer claims a one-time folder grant).
+Spec §30 rewritten to describe the current single-file-picker mechanism as the crystallised state, with
+D-344/D-386's folder-grant attempt kept as explained, superseded history rather than silently deleted.
+
+1144 -> 1134 unit tests (10 `DuplicateDownloadMatcherTest` cases removed; `DownloadFolderResolverTest`
+renamed to `DownloadFileSupportTest`, same 4 cases, unchanged). `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `versionCode` 384 -> 385, `versionName` `"1.0.80"` -> `"1.0.81"`.
+
+**Separately, no code change:** D-363 (colon/semicolon arming A-12's punctuation-auto-space) discussed and
+declined as Won't Fix - unconditionally arming `:`/`;` collides with text emoticons (`:)`, `;)`, ...) far
+more often than the time-of-day case that originally motivated it; a "only arm when a letter immediately
+precedes the mark" gate was worked out (subsumes the digit exception, protects the common
+space-or-message-start emoticon case) but the user judged the remaining complexity/risk not worth it.
+
+**Device-confirmed** (a follow-up commit, `405e6de`, marked this explicitly) - a real import via the new
+single-file picker succeeded on the same device that hit the original Downloads-folder-grant refusal.
+
+## §330 - A Batch Of Seven Small, Independently-Decided Backlog Items: D-379, D-382, D-394 (Digit-Mirror Half Only), D-398, D-399 Implemented; D-375 And D-381 Confirmed (v1.0.82)
+
+User pre-decided each item individually (no open design questions, unlike the project's usual "discuss
+first" convention for non-trivial choices), so all seven were handled in one round:
+
+- **D-379**: `"bzgl."` added to `Abbreviations.GERMAN` ([Abbreviations.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/capitalisation/Abbreviations.kt)), alongside the existing `abzgl.`/`zzgl.` family - a sentence start is no longer wrongly assumed right after it.
+- **D-382**: `KeyboardLayout.numberKey('2')` gained an apostrophe (`'`) and subscript (`₂`) as a third/
+  fourth long-press alternative, alongside the existing shifted-symbol (`"`) and superscript (`²`) pair -
+  shared code between QWERTZ and QWERTY (L-01), so both get it identically; every other digit unaffected.
+- **D-394**: the calculator page's digit block (`SymbolLayout.calculatorRows()`) mirrored vertically to the
+  phone-style `1 2 3` / `4 5 6` / `7 8 9` / `0` order (was calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0`) -
+  only the digit keys moved; the operator column, currency/decimal/ABC/Enter cells and their row positions are
+  untouched. The original ask's T9-letter-long-press half was explicitly declined by the user ("streichen wir
+  aber ersatzlos") - dropped from scope, not deferred.
+- **D-398**: the D-130 automatic-language-switch threshold (formerly a hardcoded
+  `SUSTAINED_ENGLISH_WORD_THRESHOLD = 5` in `AdaptKeyService`) is now a real setting - new C-23,
+  `sustainedLanguageSwitchThreshold` threaded through `RawSettings`/`SettingsStore`/`SettingsMapper`/
+  `AdaptSettings` the same way every other slider setting is, clamped 0-8, default 5, exposed as a
+  `SeekBarPreference` in the Dictionary category right after the language-packs link (the "language section"
+  the user asked for). `trackSustainedEnglishUsage()` now reads `settings.sustainedLanguageSwitchThreshold`;
+  a stored `0` disables the whole promotion (checked explicitly, not merely "compare against 0" which would
+  have fired after zero consecutive words) - only the manual G-01 swipe still changes the active language.
+- **D-399**: `SettingsMapper.MIN_MAX_SUGGESTIONS` lowered from 6 to 3; the C-03 `SeekBarPreference`'s
+  `app:min` updated to match. `MAX_MAX_SUGGESTIONS` (10) unchanged.
+- **D-375** (no code change): user confirmed on real-device testing that `"sollendafur"` no longer gets
+  silently auto-unfolded/split the way originally reported. No dedicated fix targeted it this round or any
+  prior one identifiably - likely a side effect of the intervening dictionary cleanup rounds (§301+) or a
+  later A-05/umlaut-interaction refinement; not root-caused further since there is nothing left to fix.
+  Marked resolved on the strength of the user's own direct repro-no-longer-reproduces report.
+- **D-381** (no code change): user confirmed on-device that D-404 §323/§324's Learned Words editor (category
+  multi-select, LLM-determined with a Tier-3 model installed) fully satisfies the original "learned word's
+  POS tag should be user-editable" ask, first flagged as possibly superseded back in §326 - now actually
+  closed, not just assumed.
+
+6 new/updated unit tests (`AbbreviationsTest` +1 assertion in-place; `KeyboardLayoutTest` split into two, net
++1; `SymbolLayoutTest` three assertions updated in-place, no new tests; `SettingsMapperTest` +1). 1134 -> 1136
+unit tests. Spec: L-06 (D-382), L-07 (D-394), G-01/A-03 (D-398), S-01 (D-399), and the §20 C-03/new-C-23
+settings table rows all updated to the current, crystallised state. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 385 -> 386, `versionName` `"1.0.81"` -> `"1.0.82"`. **Not yet
+device-confirmed** (D-379/D-382/D-394/D-398/D-399's own new behaviour) - needs a real device check: `bzgl.`
+no longer triggers a false sentence start; the `2` key's popup shows all four alternatives; the calculator
+digit block reads in the new order; the new language-switch-threshold slider appears under Dictionary
+settings and actually gates the automatic switch (including at 0 = off); the max-suggestions slider now
+reaches down to 3.
+
+## §331 - D-400: The Keyboard Layout Is Pinned To The System Language, Decoupled From The Active Dictionary Language (v1.0.83)
+
+Design discussed directly with the user before implementing (this project's own convention for non-trivial
+decisions); summary of what shipped:
+
+- **Root problem, confirmed from the actual code, not assumed:** D-130's automatic sustained-English
+  promotion hard-set `keyboardView.layoutKind = LayoutKind.LATIN_QWERTY` unconditionally
+  ([AdaptKeyService.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt), inside
+  `trackSustainedEnglishUsage()`) - typing 5 English words while German (QWERTZ) was active silently flipped
+  the physical layout to QWERTY, a real, reproducible surprise for a purely cosmetic Y/Z difference. The
+  manual G-01 swipe (`toggleLanguage()`) and app/field startup (`onStartInputView()`) instead called
+  `LayoutRegistry.kindFor(activeLanguage)` via the shared `applyActiveLanguageToView()`.
+- **Key finding during discussion that resolved an earlier false concern:** D-130's automatic promotion can
+  *only* ever target English, and can only ever fire while the active language is already Latin-typeable
+  (Greek's own layout has no Latin key positions, so the English words that would trigger it could never
+  actually be typed while Greek is active) - so the automatic path never needs to touch the layout at all,
+  not even conditionally. The line was simply deleted, no replacement.
+- **New shared resolution, `LayoutRegistry.kindFor(systemLocale: Locale, activeLanguage: Language):
+  LayoutKind`** (pure, unit-tested, reuses the existing `Language.fromCode()` lookup rather than duplicating
+  locale-matching logic): resolves to `activeLanguage`'s own layout when it is non-Latin (Greek - always
+  wins, otherwise physically untypeable); otherwise to the system language's own layout when the system
+  language is itself a recognised Latin one; otherwise (system language is Greek, or one this app has no
+  entry for at all) falls back to `activeLanguage`'s own layout directly - the user's own late refinement
+  during discussion ("hier wird ohnehin klar umgeschaltet, dann kann man auch direkt das passende Layout
+  nehmen"), added after the initial "always pin to system language" framing turned out to have no sensible
+  answer for a Greek-system-language device explicitly switching to German or French.
+- `applyActiveLanguageToView()` (the single place feeding `AdaptKeyboardView.layoutKind`, shared by
+  `onStartInputView`/`toggleLanguage`/`installStores`'s removed-language fallback) now calls the new
+  two-argument overload with `Locale.getDefault()`. New `AdaptKeyService.onConfigurationChanged()` override
+  re-derives it on a live system-language change while the keyboard happens to be open (the user's own "nice
+  to have, not important, this doesn't happen often" ask - cheap enough to include).
+
+5 new tests (`LayoutRegistryTest`, new file - the class had none before). 1136 -> 1141 unit tests. Spec's
+G-01 gained a D-400 addendum explaining the pin plus both exceptions; `LayoutRegistry.kindFor()`'s own KDoc
+carries the full resolution-order reasoning.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 386 -> 387, `versionName` `"1.0.82"` ->
+`"1.0.83"`. **Device-confirmed** (a follow-up commit, `84446d8`, marked this explicitly).
