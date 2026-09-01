@@ -653,29 +653,27 @@ non-trivial changes).
     since this is exactly the class of bug spec §1's guiding principle warns must be re-derived from real
     logs, not guessed.
 
-- **D-414 - OPEN, design not yet finalised (2026-09-01).** A dedicated Reclaim/Cycle button in the swipe-up
-  extra row (§14), left side - motivated directly by D-351/D-351-followup (Gemini, Total Commander): when the
-  word at the caret is **not** currently reclaimed (composing), tapping the button explicitly triggers the
-  reclaim (bypassing `reclaimOnCaretMoveSuppressed` for exactly the fields where the reactive mechanism is
-  suppressed). When a word **is** already reclaimed, tapping instead cycles through suggestion candidates and
-  replaces the word with each tap. User explicitly asked to discuss the design before implementing (this
-  project's own convention for non-trivial mechanisms) - open questions for that discussion:
-  - Which candidate list and order does the cycle draw from - the same ranked S-01 bar candidates as shown,
-    or a separately computed list? Does it loop back to the original typed text after the last candidate, or
-    stop there?
-  - Does the button need its own two-state icon/visual so the user can tell which of the two behaviours a tap
-    will trigger before tapping it?
-  - Does a long-press do anything different (e.g. cycle backward)?
-  - How does repeated cycling interact with the undo window (A-07), case-lock (G-05), and the pending-
-    auto-space/A-12 priority ordering that already governs several other "which pending state wins" cases?
-  - Should the explicit reclaim it triggers ignore `reclaimOnCaretMoveSuppressed` unconditionally (the whole
-    point, for Gemini/Total Commander), or should it still respect any other future per-field opt-out?
+- **D-414 - OPEN, design still being worked out - not yet ready to implement (2026-09-01).** A dedicated
+  Reclaim/Cycle button in the swipe-up extra row (§14), left side - motivated directly by D-351/D-351-followup
+  (Gemini, Total Commander): when the word at the caret is **not** currently reclaimed (composing), tapping
+  the button explicitly triggers the reclaim, unconditionally ignoring `reclaimOnCaretMoveSuppressed` -
+  confirmed by the user as the whole point of the button, exactly for the fields (Gemini, Total Commander)
+  where the reactive mechanism is suppressed. When a word **is** already reclaimed, tapping instead cycles
+  through the same candidate list already shown as ordinary suggestion chips (S-01's bar), replacing the word
+  with each tap - the list is finite, cycling wraps back to the start once the end is reached (confirmed: no
+  long-press, no backward-cycling). Two separate icons are needed since the button covers two distinct
+  behaviours (confirmed by the user). **Still explicitly unresolved, per the user's own words:** cycling
+  through the suggestion list this way likely raises contradictions that need to be thought through properly
+  first - the end result might end up being just the plain Reclaim half of this, without the cycle-through-
+  suggestions half at all. Not to be implemented until that follow-up design pass happens.
 
-- **D-415 - OPEN, feasibility unclear, needs its own discussion (2026-09-01).** A "give up focus as if it
+- **D-415 - OPEN, feasibility unclear (2026-09-01).** A "give up focus as if it
   had never been set" button in the extra row, motivated by Google Keep: once a list-item field has been
   tapped into, focus never leaves it, so the keyboard keeps popping back up and the old caret position is
-  hard to relocate after dismissing/reopening. Initial technical finding (not yet confirmed against a real
-  device, worth verifying before committing to a design): Android's `InputMethodService` has no public API to
+  hard to relocate after dismissing/reopening. User confirmed a real-device experiment is needed before
+  designing this further (try both levers below against Keep specifically) - not yet done. Initial technical
+  finding (not yet confirmed against a real device, worth verifying before committing to a design): Android's
+  `InputMethodService` has no public API to
   clear focus on a view it does not own - `requestHideSelf()`/`hideSoftInputFromWindow()` only hide the
   keyboard's own window, they do not touch the host app's focus state, and the two indirect levers available
   (sending `KEYCODE_BACK`, or `InputConnection.performEditorAction(EditorInfo.IME_ACTION_DONE)`) only have an
