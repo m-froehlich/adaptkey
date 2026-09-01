@@ -99,6 +99,28 @@ class ExtraRowView @JvmOverloads constructor(
         fun onSwipeDown()
     }
     
+    /**
+     * D-415 (temporary diagnostic, not a committed feature): invoked when the "test Back" button is
+     * tapped - sends a real `KEYCODE_BACK` to the focused field, to observe on a real device whether the
+     * target app (Google Keep, Total Commander) actually gives up focus in response. Remove this whole
+     * button/listener pair once the experiment concludes, whichever way it goes - see
+     * `AdaptKey-Progress.md`'s D-415 entry.
+     */
+    fun interface OnTestBackClickListener {
+        
+        fun onTestBackClick()
+    }
+    
+    /**
+     * D-415 (temporary diagnostic, not a committed feature): invoked when the "test Done" button is tapped -
+     * sends `IME_ACTION_DONE` via `performEditorAction`, the other candidate lever for the same experiment.
+     * Remove alongside [OnTestBackClickListener] once the experiment concludes.
+     */
+    fun interface OnTestDoneClickListener {
+        
+        fun onTestDoneClick()
+    }
+    
     var onEmojiClick: OnEmojiClickListener? = null
     
     var onSettingsClick: OnSettingsClickListener? = null
@@ -110,6 +132,12 @@ class ExtraRowView @JvmOverloads constructor(
     var onUrlModeToggleClick: OnUrlModeToggleClickListener? = null
     
     var onSwipeDown: OnSwipeDownListener? = null
+    
+    /** D-415 temporary diagnostic - see [OnTestBackClickListener]. */
+    var onTestBackClick: OnTestBackClickListener? = null
+    
+    /** D-415 temporary diagnostic - see [OnTestDoneClickListener]. */
+    var onTestDoneClick: OnTestDoneClickListener? = null
     
     /** Whether the row is currently open (or mid-opening); false once fully closed. */
     var isOpen: Boolean = false
@@ -178,6 +206,10 @@ class ExtraRowView @JvmOverloads constructor(
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
     private val touchZoneToggleButton = buttonFor("🎯") { onTouchZoneToggleClick?.onTouchZoneToggleClick() }
     
+    // D-415 temporary diagnostic buttons - see OnTestBackClickListener/OnTestDoneClickListener.
+    private val testBackButton = buttonFor("🔙") { onTestBackClick?.onTestBackClick() }
+    private val testDoneButton = buttonFor("🏁") { onTestDoneClick?.onTestDoneClick() }
+    
     // D-185: sits between credentialModeButton and emojiButton (see [urlModeButtonVisible]) - GONE by
     // default, since it must not appear at all outside a URL field.
     private val urlModeToggleButton = buttonFor("🌐") { onUrlModeToggleClick?.onUrlModeToggleClick() }.apply {
@@ -227,6 +259,20 @@ class ExtraRowView @JvmOverloads constructor(
         content.addView(
             settingsButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply { marginEnd = marginPx }
+        )
+        // D-415 temporary diagnostic pair - two more slots left of touchZoneToggleButton, same formula.
+        // Remove both addView calls (and the two button fields/listeners above) once the experiment ends.
+        content.addView(
+            testDoneButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
+                marginEnd = marginPx * 3 + buttonSizePx * 2
+            }
+        )
+        content.addView(
+            testBackButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
+                marginEnd = marginPx * 4 + buttonSizePx * 3
+            }
         )
         // D-132: a fixed height, bottom-anchored - see the class KDoc for why this (not a translationY
         // slide) is what actually makes the buttons read as rising into place as the row itself grows.

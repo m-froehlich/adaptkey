@@ -681,8 +681,11 @@ non-trivial changes).
   (sending `KEYCODE_BACK`, or `InputConnection.performEditorAction(EditorInfo.IME_ACTION_DONE)`) only have an
   effect if the target app's own code chooses to react to them by clearing focus - entirely app-dependent,
   not guaranteed, and Keep's own list-editing implementation is exactly the kind of custom widget that may
-  deliberately keep focus regardless. Needs a real-device experiment (try both levers against Keep
-  specifically) before deciding whether this is buildable at all, let alone designing the button.
+  deliberately keep focus regardless. **§335 (v1.0.87): both levers are now wired to two temporary,
+  explicitly-not-committed test buttons** ("🔙"/"🏁") on the extra row's right side, so this can actually be
+  tried against Keep (and Total Commander) on a real device - see §335 in Current State. Waiting on the
+  device test result before deciding whether this is buildable at all, let alone designing the real button.
+  These two test buttons are meant to be removed once the experiment concludes, regardless of outcome.
 
 - **D-416 - RESOLVED (§333, see Current State).** A-12's eager auto-space-after-punctuation replaced with the
   deferred model discussed and planned in
@@ -714,6 +717,18 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§335 (v1.0.87): D-415 - two temporary diagnostic buttons to test both "give up focus" levers on a**
+  **real device.** No IME has a public API to clear a host view's focus - the two indirect levers
+  (`KEYCODE_BACK`, `performEditorAction(IME_ACTION_DONE)`) only work if the target app's own code reacts to
+  them, entirely unverified until actually tried. Added "🔙"/"🏁" to the extra row's right side (two more
+  slots left of the touch-zone/settings pair), wired to `sendDownUpKeyEvents(KeyEvent.KEYCODE_BACK)` and
+  `performEditorAction(IME_ACTION_DONE)` respectively - both already-used mechanisms elsewhere
+  (`handleEnter`), just newly exposed as a manual probe. Every new piece explicitly marked as temporary
+  diagnostic scaffolding in its own KDoc, meant to be removed entirely once the experiment concludes,
+  whichever way it goes. No new tests (Android glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green,
+  1147 unit tests unchanged. `versionCode` 390 → 391, `versionName` `"1.0.86"` → `"1.0.87"`. **Not yet
+  device-tested - this round's entire purpose is the device test itself, next.**
 
 - **§334 (v1.0.86): D-416-followup - two real bugs found on first read-through, before any device test.**
   (1) The space-key dot stayed lit for the whole following word, not just its first letter -

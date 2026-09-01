@@ -1016,6 +1016,9 @@ class AdaptKeyService : InputMethodService() {
         row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
         row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
         row.onUrlModeToggleClick = ExtraRowView.OnUrlModeToggleClickListener { toggleUrlModeFromExtraRow() }
+        // D-415 temporary diagnostic - see testGiveUpFocusViaBack()/testGiveUpFocusViaDone()'s own KDoc.
+        row.onTestBackClick = ExtraRowView.OnTestBackClickListener { testGiveUpFocusViaBack() }
+        row.onTestDoneClick = ExtraRowView.OnTestDoneClickListener { testGiveUpFocusViaDone() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
         row.onSwipeDown = ExtraRowView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         extraRow = row
@@ -2544,6 +2547,28 @@ class AdaptKeyService : InputMethodService() {
         } else {
             sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
         }
+    }
+    
+    /**
+     * D-415 (temporary diagnostic, not a committed feature): sends a real `KEYCODE_BACK` to the focused
+     * field - one of the two candidate levers being tested for a "give up focus" affordance, motivated by
+     * Google Keep's list items never releasing focus once tapped into. No IME has a public API to directly
+     * clear a host view's focus; this and [testGiveUpFocusViaDone] are the two indirect mechanisms worth
+     * trying on a real device - their actual effect is entirely up to the target app's own code, not
+     * guaranteed. Wired to the extra row's temporary "🔙" button; remove both once the experiment concludes,
+     * whichever way it goes - see `AdaptKey-Progress.md`'s D-415 entry.
+     */
+    private fun testGiveUpFocusViaBack() {
+        sendDownUpKeyEvents(KeyEvent.KEYCODE_BACK)
+    }
+    
+    /**
+     * D-415 (temporary diagnostic, not a committed feature): sends `IME_ACTION_DONE` via
+     * `performEditorAction` - the other candidate lever, see [testGiveUpFocusViaBack]'s own KDoc for the
+     * full context. Wired to the extra row's temporary "🏁" button.
+     */
+    private fun testGiveUpFocusViaDone() {
+        currentInputConnection?.performEditorAction(EditorInfo.IME_ACTION_DONE)
     }
     
     /**

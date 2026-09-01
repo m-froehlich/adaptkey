@@ -16481,3 +16481,29 @@ those cases, and correctly recomputes the indicator via the same wiring. No thir
 No new tests (both fixes are Android `InputConnection`/view-state glue, this project's own accepted
 untestable category). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147 unit tests unchanged.
 `versionCode` 389 -> 390, `versionName` `"1.0.85"` -> `"1.0.86"`. Not yet device-confirmed.
+
+## §335 - D-415: temporary diagnostic buttons to test both "give up focus" levers on a real device (v1.0.87)
+
+No IME has a public API to directly clear a host view's focus (checked directly, not assumed - see D-415's
+own Progress.md entry for the earlier research). Two indirect levers exist whose actual effect depends
+entirely on the target app's own code: sending a real `KEYCODE_BACK`, or `performEditorAction(IME_ACTION_DONE)`.
+Rather than guess which (if either) helps against Google Keep's list items never releasing focus, or build
+the eventual D-415 button around an unverified assumption, this round adds two clearly temporary,
+explicitly-not-a-committed-feature buttons to the swipe-up extra row (§14) - "🔙" (`testGiveUpFocusViaBack`)
+and "🏁" (`testGiveUpFocusViaDone`) - so the user can try both directly on a real device and observe which,
+if either, actually causes a target app to give up focus.
+
+`ExtraRowView` gained two new button slots (right side, two more positions left of the existing
+touch-zone/settings pair, same `slotMarginStart`-style formula) and two `fun interface` listener pairs
+(`OnTestBackClickListener`/`OnTestDoneClickListener`), wired in `AdaptKeyService` to
+`sendDownUpKeyEvents(KeyEvent.KEYCODE_BACK)` and `currentInputConnection?.performEditorAction(EditorInfo.IME_ACTION_DONE)`
+respectively - both already-used mechanisms elsewhere in this file (`handleEnter`), nothing novel
+technically, just newly exposed as a manual, user-triggered probe.
+
+Every new piece is explicitly marked in its own KDoc as temporary diagnostic scaffolding, not a committed
+feature - to be removed entirely once the experiment concludes, regardless of outcome, and superseded by
+whatever the actual D-414/D-415 button design turns out to be if either lever works.
+
+No new tests (Android view/InputConnection glue). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1147
+unit tests unchanged. `versionCode` 390 -> 391, `versionName` `"1.0.86"` -> `"1.0.87"`. Not yet device-tested
+- this round's entire purpose is to be tested on a real device next.
