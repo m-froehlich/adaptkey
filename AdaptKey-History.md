@@ -16696,3 +16696,79 @@ ordering. 1148 -> 1157 unit tests, all green.
 
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec S-07 gained D-365/D-366 addenda. `versionCode`
 395 -> 396, `versionName` `"1.0.91"` -> `"1.0.92"`. Not yet device-confirmed.
+
+## §341 - Device feedback on D-362/D-416/D-414: four fixes from real usage (v1.0.93)
+
+Real-device feedback on three just-shipped features, all discussed and root-caused before writing code, per
+this project's own convention.
+
+**D-362-followup: the loading dots start full and bounce, instead of cycling forward from one.** The chip is
+often visible only briefly (the search resolves quickly), so the old `1 -> 2 -> 3 -> 1` cycle was, in
+practice, mostly seen frozen at a single dot - read as a rendering glitch, not an animation. Now
+`3 -> 2 -> 1 -> 2 -> 3 -> ...`, so even a single visible frame reads as "..." Purely a `SuggestionBarView`
+tick-state change (start at `LOADING_MAX_DOTS`, flip direction at each end).
+
+**D-416-followup: an explicit lower-case override right after a sentence-ending mark also suppresses the**
+**deferred space, with no new state.** Reported directly: typing `.` under the new deferred model left no way
+to continue typing directly (no space, no capital) without a multi-step workaround (type it anyway, move the
+caret back, delete the space by hand). The user's own proposed mechanism needed no new tracked state at all:
+`isUpperArmed()`, read live at the exact moment the space-materialisation decision is already made, can only
+be false right there because the user just explicitly disarmed the capital that mark's own commit already
+auto-armed by default - so that live read alone tells the whole story. One real refinement found while
+implementing: this must apply only to `.`/`!`/`?` (a genuine terminator, [SENTENCE_TERMINATORS], a new,
+narrower constant alongside the existing [SENTENCE_PUNCTUATION]), never a comma - a comma never arms a
+capital in the first place, so "Caps is off" there is just its normal state, not a signal of anything
+explicit; applying the rule to commas too would have wrongly swallowed the space in "Katzen, hunde". New
+shared `shouldMaterializeSpace(beforeChar)` helper, used by both typing-triggered materialisation points
+(`handleKey`'s `CHAR` branch and `appendLongPressLetter`, the same pair D-351/D-416 already named). The one
+accepted trade-off, confirmed directly with the user: a deliberate lower-case sentence start that still wants
+its own space (`"...lol"` written as two separate, space-separated informal words) now needs one extra manual
+Space press - judged an easy, fully recoverable cost against fixing a case that was previously impossible at
+all.
+
+**D-414-followup: three real Reclaim-button bugs, all found by re-tracing the actual code, not guessed.**
+
+1. **The button never lit up in exactly the situation it exists for** (tapping mid-word into an older
+   sentence in Gemini). Root cause: the enabled-state push lived only inside `armShiftForNextWord()`, itself
+   only ever reached - for a plain caret move with nothing typed - via the *same* `reclaimOnCaretMoveSuppressed`
+   gate the button exists to work around (confirmed directly in `onUpdateSelection`: the scheduling check at
+   the reclaim-runnable site is the *only* thing suppression ever gates - the button's own manual
+   `reclaimWordAtCaret()` call was always correctly unconditional). Fixed with a genuinely separate,
+   always-scheduled debounced runnable (`reclaimEnabledRunnable`, same `RECLAIM_DEBOUNCE_MS` cadence as the
+   existing reclaim runnable, but never gated by suppression) that only ever *reads* (`getTextBeforeCursor`/
+   `getTextAfterCursor`, never `setComposingRegion`) - the shared computation itself factored out of
+   `armShiftForNextWord()` into `updateReclaimEnabled()` so both callers stay in lockstep. Debounced
+   deliberately, not fired on every raw `onUpdateSelection` call - a drag can report many intermediate
+   positions in quick succession (the exact reason the *reclaim* runnable was debounced in the first place,
+   D-347/D-350), and an undebounced read-only check would have re-hammered the same real IPC round-trips at
+   drag frequency, reintroducing the shape of the performance problem this round is otherwise fixing.
+2. **A plain Backspace should still reclaim in a suppressed field, since Backspace was never actually the**
+   **problem.** Traced directly, not assumed: `deleteOneBefore()` (the composing-empty Backspace path) only
+   ever calls `ic.deleteSurroundingText(1, 0)` - it never touches `setComposingRegion` at all. D-351's own
+   suppression exists purely for the cursor-handle-*drag* case; a single keystroke never triggers it, and the
+   manual Reclaim button already demonstrated a bare `setComposingRegion` call is safe in Gemini right after
+   this exact kind of delete. `handleBackspace()` now calls `reclaimWordAtCaret()` directly, unconditionally
+   of suppression, immediately after a composing-empty delete - a single keystroke, so no debounce needed.
+3. **...but a *held* Backspace must not reclaim on every repeat tick** - flagged directly by the user, citing
+   a real past performance incident (D-138) as the reason to be careful here. `handleBackspaceRepeat()` never
+   called `handleBackspace()` at all (confirmed by reading it - it calls `deleteOneBefore()`/
+   `deleteComposingChar()` directly), so point 2's fix could never have fired mid-hold in the first place -
+   but the user's own explicit "only after release" ask still needed a real mechanism, since nothing
+   previously reclaimed after a *held* Backspace ended at all. New `AdaptKeyboardView.OnBackspaceRepeatEndListener`,
+   invoked exactly once from `cancelBackspaceRepeat()` (on `ACTION_UP`/`ACTION_CANCEL`), and only when
+   `backspaceRepeated` is true - i.e. only after a genuine hold, never for an ordinary tap-and-release, which
+   never reaches the repeat mechanism's own initial delay at all. `AdaptKeyService.handleBackspaceRepeatEnd()`
+   reclaims only when suppressed - for every other app the reactive mechanism has already kept up throughout
+   the hold, so this stays a harmless no-op there.
+
+No new tests - every change lives in Android view/`InputConnection` glue this project already treats as
+untestable (`SuggestionBarView`'s own ticker; `AdaptKeyService`'s Shift/backspace/reclaim state, all reading
+live `keyboardView`/`InputConnection` state). `shouldMaterializeSpace()` was deliberately left as a small,
+private, two-line function inside `AdaptKeyService` rather than extracted into its own testable object purely
+to make it unit-testable - not worth a new abstraction for logic this small.
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green, 1157 unit tests unchanged. Spec: A-12 gained the
+explicit-lower-case exception; S-01/D-362 gained the bounce description; R-01/D-414 gained the three-bug
+account. `versionCode` 396 -> 397, `versionName` `"1.0.92"` -> `"1.0.93"`. Not yet device-confirmed - four
+real behaviour changes in one round, all worth validating individually on the device before considering this
+settled.

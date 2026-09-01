@@ -721,6 +721,25 @@ non-trivial changes).
 
 ## Current State
 
+- **§341 (v1.0.93): four fixes from real device feedback on D-362/D-416/D-414.** (1) The loading chip's dots
+  now start full and bounce (`3→2→1→2→3…`) instead of cycling forward from one - the chip is often visible
+  only briefly, so the old cycle mostly showed a single, glitch-looking dot. (2) An explicit lower-case
+  override right after a sentence-ending mark (`.`/`!`/`?`, never a comma) now also suppresses the deferred
+  space, with **no new tracked state** - `isUpperArmed()` read live at the exact moment already tells the
+  whole story, since a terminator's own capital is armed by default and can only be off there because the
+  user just explicitly disarmed it. New `shouldMaterializeSpace()`/`SENTENCE_TERMINATORS`. (3) The Reclaim
+  button's enabled state was gated by the same suppression it exists to work around - it could never light up
+  for the exact scenario (tap mid-word in Gemini) it was built for. Fixed with a genuinely separate, always-
+  debounced push (`reclaimEnabledRunnable`), never gated by `reclaimOnCaretMoveSuppressed`, but still
+  debounced to avoid re-hammering IPC calls at drag frequency. (4) A plain Backspace now also reclaims in a
+  suppressed field (`deleteOneBefore()` confirmed to never call `setComposingRegion` at all - the suppression
+  was only ever about the drag case) - but a *held* Backspace reclaims only once, at release
+  (`OnBackspaceRepeatEndListener`), never per tick, per the user's own explicit performance concern (D-138).
+  No new tests (all Android view/`InputConnection` glue). `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green, 1157 unit tests unchanged. Spec: A-12, S-01/D-362, and R-01/D-414 all updated. `versionCode` 396 →
+  397, `versionName` `"1.0.92"` → `"1.0.93"`. **Not yet device-confirmed - four real behaviour changes in one**
+  **round, worth validating individually.**
+
 - **§340 (v1.0.92): D-365/D-366 - a self-learned bigram/trigram now competes fairly, and the trigram**
   **signal survives once typing starts.** Both discussed with the user first, per this project's own
   weighting-decision convention. D-365 answered with real numbers (bundled bigram data: 25-113,526, median

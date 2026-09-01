@@ -794,7 +794,14 @@ now covering the space as well as the capital. The space (and, for `.`/`!`/`?`, 
 only once the very next real keystroke resolves what actually belongs there:
 
 - **A letter or digit** that genuinely starts a new word: a real space is inserted first, then the character
-  (capitalised per the already-armed Shift state, same as always).
+  (capitalised per the already-armed Shift state, same as always). **Exception (D-416-followup):** for a
+  genuine sentence-ending mark (`.`/`!`/`?`, never a comma - a comma never arms a capital in the first place),
+  if Shift's own auto-armed capital has been explicitly disarmed right there before the letter is typed, no
+  space is materialised either - continuing directly with no separator, on the understanding that a deliberate
+  lower-case override at exactly this position means "carry on, do not start a new, separated word". No state
+  is stored for this: whether Shift is currently armed is already read live at the same moment the space
+  decision itself is made, since a genuine sentence-ending mark's own capital is armed by default, so it can
+  only be off here because of that explicit action.
 - **Another mark from the same set**: glues directly onto the previous one (`"!?"`, not `"! ?"`) - no space
   is ever materialised between them, and the mode re-arms at the new position, so a run of any length
   (`"!?!"`, `"..."`, `".,"`) still glues together exactly as before, the eventual space only ever trailing the
@@ -1127,6 +1134,16 @@ bypassing it is the button's whole purpose. Enabled only while a reclaim is genu
 (composing empty, a real word touches the caret on either side) - dimmed and inert otherwise, rather than
 offering a tap that would silently do nothing. Not gated to the suppressed fields specifically; available in
 every field as a general manual trigger.
+
+D-414-followup: the button's own enabled state is tracked by a debounced check that is deliberately *never*
+gated by `reclaimOnCaretMoveSuppressed` - only the reactive *reclaim itself* is suppressed in Gemini/Total
+Commander, not this read-only check, so the button correctly lights up exactly where it is needed (a plain
+tap into an older word there) instead of staying dark until some unrelated action happens to trigger it.
+Separately, D-62's own reclaim now also runs, deliberately, in two more cases that used to stay suppressed
+too: a single (non-held) Backspace always reclaims immediately, even in a suppressed field - the suppression
+exists only for the cursor-handle-*drag* case a single keystroke never triggers - and a genuine backspace
+*hold* reclaims exactly once, when the hold ends, never on every repeat tick (reclaiming per tick would
+reintroduce a real, previously-felt performance cost for an unrelated reason, D-138).
 
 A Reclaim/Cycle combination (tapping again to cycle through suggestion candidates once already reclaimed) was
 discussed and deliberately not pursued - a real design problem surfaced (a cycled candidate would need its
@@ -1480,10 +1497,13 @@ indicator is replaced by the ordinary bar content (or an empty bar). The indicat
 real suggestions, never blocks user input, and never delays the next keystroke.
 
 D-362: the placeholder's own visual treatment - bold, noticeably larger than an ordinary suggestion, in a
-dedicated warm amber, and animating through `.`/`..`/`...` every 400 ms - deliberately replaces the
-original static, italic, muted-grey "…" (confirmed too subtle to actually notice next to ordinary
-suggestions of the same size and weight). The colour is its own, distinct from every other chip's meaning -
-not S-06's verbatim-chip blue, not the muted grey still used for the emoji-search-query chip.
+dedicated warm amber, and animating through `...`/`..`/`.`/`..`/`...` (bouncing, not cycling forward-only)
+every 400 ms - deliberately replaces the original static, italic, muted-grey "…" (confirmed too subtle to
+actually notice next to ordinary suggestions of the same size and weight). The colour is its own, distinct
+from every other chip's meaning - not S-06's verbatim-chip blue, not the muted grey still used for the
+emoji-search-query chip. The animation starts full (three dots) and bounces down to one and back, rather
+than starting at one dot and cycling up - the chip is often visible only briefly, and a forward-only cycle
+was, in practice, mostly seen frozen at a single lone dot, reading as a rendering glitch rather than motion.
 
 ---
 

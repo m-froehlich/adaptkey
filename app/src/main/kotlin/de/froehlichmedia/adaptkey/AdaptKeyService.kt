@@ -533,6 +533,18 @@ class AdaptKeyService : InputMethodService() {
     // fire once the caret has since moved on to something else (a keystroke, a fresh field).
     private val reclaimWordAtCaretRunnable = Runnable { reclaimWordAtCaret() }
     
+    // D-414-followup: a *separate* debounced runnable, scheduled alongside reclaimWordAtCaretRunnable above
+    // but never gated by reclaimOnCaretMoveSuppressed - the manual Reclaim button's own enabled state must
+    // stay live even in a field (Gemini) where the reactive *reclaim itself* is deliberately suppressed,
+    // otherwise the button can never light up in exactly the situation it exists for. Kept genuinely
+    // separate from - not folded into - the reclaim runnable above: it only ever reads (updateReclaimEnabled
+    // never calls setComposingRegion), so it carries none of D-351's own risk, but it still needs the same
+    // debounce discipline (not fired on every intermediate position during a drag) for the same performance
+    // reason the reclaim runnable was debounced for in the first place (D-347/D-350).
+    private val reclaimEnabledRunnable = Runnable {
+        currentInputConnection?.let { updateReclaimEnabled(it) }
+    }
+    
     // D-211: the actual search now runs on this dedicated background thread (mirroring the existing
     // tier3Executor precedent below), so it never blocks the main thread (or the key-press flash render)
     // the way D-160's original Handler.postDelayed-on-the-main-thread debounce still did once its delay
@@ -1439,6 +1451,12 @@ class AdaptKeyService : InputMethodService() {
             if (newSelStart == newSelEnd && !reclaimOnCaretMoveSuppressed) {
                 handler.removeCallbacks(reclaimWordAtCaretRunnable)
                 handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
+            }
+            // D-414-followup: scheduled unconditionally - see reclaimEnabledRunnable's own KDoc for why the
+            // button's enabled state must not share the reclaim runnable's own suppression gate above.
+            if (newSelStart == newSelEnd) {
+                handler.removeCallbacks(reclaimEnabledRunnable)
+                handler.postDelayed(reclaimEnabledRunnable, RECLAIM_DEBOUNCE_MS)
             }
             return
         }
@@ -2449,8 +2467,11 @@ class AdaptKeyService : InputMethodService() {
                                 // written when the punctuation mark itself committed, so this is the first
                                 // point that actually needs the separator to exist. Read fresh from the real
                                 // document rather than any stored flag (see AdaptKey-Plan-D416-Deferred-Space.md).
+                                // D-416-followup: shouldMaterializeSpace() also covers the explicit-lower-case
+                                // override (see its own KDoc) - typing straight through a sentence-ending mark
+                                // with Caps deliberately disarmed no longer forces a space in first.
                                 val beforeChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
-                                if (beforeChar != null && beforeChar in SENTENCE_PUNCTUATION) {
+                                if (shouldMaterializeSpace(beforeChar)) {
                                     ic.commitText(" ", 1)
                                 }
                                 // D-416: the pending state is resolved either way the instant a new word
@@ -2660,8 +2681,9 @@ class AdaptKeyService : InputMethodService() {
                 // D-416: a long-press alternative (e.g. ä/ö/ü/ß) starting a brand-new word materialises the
                 // deferred A-12 space too, exactly like an ordinary letter does in handleKey's CHAR branch -
                 // this is the other typing-triggered entry point D-351's own KDoc already names.
+                // D-416-followup: shouldMaterializeSpace() also covers the explicit-lower-case override here.
                 val beforeChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
-                if (beforeChar != null && beforeChar in SENTENCE_PUNCTUATION) {
+                if (shouldMaterializeSpace(beforeChar)) {
                     ic.commitText(" ", 1)
                 }
                 keyboardView?.pendingSpaceIndicator = false
@@ -2707,6 +2729,8 @@ class AdaptKeyService : InputMethodService() {
         view.onLongPressListener = AdaptKeyboardView.OnLongPressListener { key -> handleLongPress(key) }
         view.onSwipeListener = AdaptKeyboardView.OnSwipeListener { key, direction -> handleSwipe(key, direction) }
         view.onBackspaceRepeatListener = AdaptKeyboardView.OnBackspaceRepeatListener { step -> handleBackspaceRepeat(step) }
+        // D-414-followup: fires once, after a genuine hold ends - see handleBackspaceRepeatEnd()'s own KDoc.
+        view.onBackspaceRepeatEndListener = AdaptKeyboardView.OnBackspaceRepeatEndListener { handleBackspaceRepeatEnd() }
         view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
     }
     
@@ -3160,6 +3184,17 @@ class AdaptKeyService : InputMethodService() {
             deleteComposingChar(ic)
         } else {
             deleteOneBefore(ic)
+            // D-414-followup: a plain (non-held) Backspace deliberately still reclaims even where the
+            // reactive caret-move path is suppressed (Gemini) - D-351's suppression exists only for the
+            // cursor-handle-drag case, which a single keystroke never triggers; confirmed harmless in
+            // practice by the manual Reclaim button already performing this exact reclaim safely right after
+            // the same kind of delete. Immediate, not debounced - a single keystroke, not a rapid sequence
+            // (see handleBackspaceRepeat/onBackspaceRepeatEnd for the held-repeat case, which must wait for
+            // release instead, to avoid reclaiming on every tick of a fast hold - a real, previously-felt
+            // performance cost, see AdaptKey-Progress.md's own note on this).
+            if (reclaimOnCaretMoveSuppressed) {
+                reclaimWordAtCaret()
+            }
         }
     }
     
@@ -3293,6 +3328,22 @@ class AdaptKeyService : InputMethodService() {
         }
         // D-31: the next-tick delay follows the char/word-wise phase from the running deletion count.
         return BackspaceRepeat.nextDelayMs(backspaceHeldChars)
+    }
+    
+    /**
+     * D-414-followup: fires exactly once, when a genuine backspace *hold* ends (see
+     * [AdaptKeyboardView.OnBackspaceRepeatEndListener]'s own KDoc) - the held-repeat counterpart to
+     * [handleBackspace]'s own single-tap reclaim bypass right below it. Deliberately does **not** reclaim on
+     * every [handleBackspaceRepeat] tick - a fast hold can tick every 35-330ms (see [BackspaceRepeat]), and
+     * reclaiming that often was a real, previously-felt performance cost for an unrelated reason (D-138) this
+     * project is not about to reintroduce for a new one. Only actually reclaims where the reactive path is
+     * suppressed in the first place (Gemini) - for every other app, the reactive mechanism has already kept
+     * up throughout the hold, so this would be a harmless but pointless no-op there.
+     */
+    private fun handleBackspaceRepeatEnd() {
+        if (reclaimOnCaretMoveSuppressed) {
+            reclaimWordAtCaret()
+        }
     }
     
     /**
@@ -4316,6 +4367,9 @@ class AdaptKeyService : InputMethodService() {
         // on every fresh field, among other paths) keeps a debounced reclaim from ever firing into whatever
         // comes next.
         handler.removeCallbacks(reclaimWordAtCaretRunnable)
+        // D-414-followup: same reasoning as reclaimWordAtCaretRunnable above - a stale enabled-state push
+        // must never land on whatever field/word comes next.
+        handler.removeCallbacks(reclaimEnabledRunnable)
         composingPreviewToken = null
         composingPreviewFor = null
         // D-346: no token left to search for - any pending deferred search is now moot.
@@ -5860,10 +5914,21 @@ class AdaptKeyService : InputMethodService() {
         // the real character right before the cursor a bare mark from SENTENCE_PUNCTUATION.
         keyboardView?.pendingSpaceIndicator = composing.isEmpty() &&
             ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.let { it in SENTENCE_PUNCTUATION } == true
-        // D-414: mirrors WordExtent.reclaim's own "is there a word touching the caret at all" truth value -
-        // equivalent to checking only the immediately-adjacent character on each side, since a walk that
-        // starts on a non-letter always returns empty. Composing must be empty too - an already-reclaimed/
-        // composing word has nothing further to reclaim.
+        updateReclaimEnabled(ic)
+    }
+    
+    /**
+     * D-414/D-414-followup: pushes the manual Reclaim button's own enabled state - factored out of
+     * [armShiftForNextWord] so it can also be pushed from [reclaimEnabledRunnable], a *separate*, always-on
+     * debounced path that is never gated by [reclaimOnCaretMoveSuppressed] (see that runnable's own KDoc for
+     * why the enabled state must stay live even where the reactive *reclaim itself* is deliberately
+     * suppressed, e.g. Gemini). Mirrors [WordExtent.reclaim]'s own "is there a word touching the caret at
+     * all" truth value - equivalent to checking only the immediately-adjacent character on each side, since a
+     * walk that starts on a non-letter always returns empty. Composing must be empty too - an already-
+     * reclaimed/composing word has nothing further to reclaim. Purely a read (`getTextBeforeCursor`/
+     * `getTextAfterCursor`), never `setComposingRegion` - safe to call regardless of suppression.
+     */
+    private fun updateReclaimEnabled(ic: InputConnection) {
         extraRow?.reclaimEnabled = composing.isEmpty() &&
             (ic.getTextBeforeCursor(1, 0)?.singleOrNull()?.isLetter() == true ||
                 ic.getTextAfterCursor(1, 0)?.singleOrNull()?.isLetter() == true)
@@ -5961,6 +6026,26 @@ class AdaptKeyService : InputMethodService() {
     private fun isUpperArmed(): Boolean {
         val view = keyboardView ?: return false
         return view.shifted || view.capsLock
+    }
+    
+    /**
+     * D-416-followup: whether a deferred A-12 space (see [SENTENCE_PUNCTUATION]) should actually be
+     * materialised before the letter about to start composing, given [beforeChar] - the real character
+     * immediately before the caret, read fresh from the document by the caller. No stored state needed:
+     * for a genuine sentence terminator ([SENTENCE_TERMINATORS]), [isUpperArmed] can only be false here
+     * because the user just explicitly disarmed the capital that terminator's own commit already auto-armed
+     * by default - that same explicit action is treated as "continue directly, no separator" and suppresses
+     * the space too. A comma is exempt - it never arms a capital in the first place, so Caps being off there
+     * carries no such signal and the space still materialises as always.
+     *
+     * @param beforeChar the character immediately before the caret, or null when there is none
+     * @return true when a real space should actually be committed before the next character
+     */
+    private fun shouldMaterializeSpace(beforeChar: Char?): Boolean {
+        if (beforeChar == null || beforeChar !in SENTENCE_PUNCTUATION) {
+            return false
+        }
+        return beforeChar !in SENTENCE_TERMINATORS || isUpperArmed()
     }
     
     private fun consumeShift() {
@@ -6155,6 +6240,12 @@ class AdaptKeyService : InputMethodService() {
         // for the auto-space itself - armShiftForNextWord() re-derives capitalisation fresh from the real
         // document text (SentenceBoundary), so a comma never arms an auto-capital purely by being in this set.
         private const val SENTENCE_PUNCTUATION = ".!?,"
+        
+        // D-416-followup: the subset of SENTENCE_PUNCTUATION that ever arms a capital in the first place -
+        // used to decide whether an explicit lower-case override right there should also suppress the
+        // deferred space. A comma is deliberately excluded: it never arms a capital, so "caps is currently
+        // off" is simply its normal, expected state, not a signal of anything the user explicitly did.
+        private const val SENTENCE_TERMINATORS = ".!?"
         
         // D-135: at most this many Autofill inline suggestions are requested/shown at once; each is
         // inflated at this width (a reasonable single-suggestion chip width - the platform itself decides

@@ -220,19 +220,30 @@ class SuggestionBarView @JvmOverloads constructor(
             if (query) {
                 setTypeface(typeface, Typeface.ITALIC)
             }
-            // D-362: bold + larger + a ticking "." -> ".." -> "..." animation, replacing D-346's original
-            // static, italic, muted-grey "…" - confirmed too subtle to actually notice next to ordinary
-            // suggestions of the same size. Tied to the view's own attach state (not, e.g., a field on this
-            // outer class) so the ticker starts and stops automatically as setItems() rebuilds the bar's
-            // children - no separate cleanup call needed, and no risk of a leaked callback still firing
-            // against a chip that has already been removed from the tree.
+            // D-362: bold + larger + a ticking "..." -> ".." -> "." -> ".." -> "..." animation, replacing
+            // D-346's original static, italic, muted-grey "…" - confirmed too subtle to actually notice next
+            // to ordinary suggestions of the same size. Tied to the view's own attach state (not, e.g., a
+            // field on this outer class) so the ticker starts and stops automatically as setItems() rebuilds
+            // the bar's children - no separate cleanup call needed, and no risk of a leaked callback still
+            // firing against a chip that has already been removed from the tree.
+            //
+            // D-362-followup: starts full (3 dots) and bounces down to 1 and back, rather than cycling
+            // 1 -> 2 -> 3 -> 1 - the chip is very often visible for only one or two ticks (the search
+            // resolves quickly), so a forward-only cycle was, in practice, mostly seen frozen at a single
+            // lone dot, which read as a rendering glitch rather than an animation.
             if (loading) {
                 setTypeface(typeface, Typeface.BOLD)
                 val tick = object : Runnable {
-                    var dots = 1
+                    var dots = LOADING_MAX_DOTS
+                    var direction = -1
                     override fun run() {
                         text = ".".repeat(dots)
-                        dots = dots % LOADING_MAX_DOTS + 1
+                        if (dots == LOADING_MAX_DOTS) {
+                            direction = -1
+                        } else if (dots == 1) {
+                            direction = 1
+                        }
+                        dots += direction
                         postDelayed(this, LOADING_TICK_MS)
                     }
                 }

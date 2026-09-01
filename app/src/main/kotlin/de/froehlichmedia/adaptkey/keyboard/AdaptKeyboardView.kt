@@ -107,6 +107,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-414-followup: invoked exactly once, when a genuine backspace *hold* (D-07/D-31 - at least one
+     * repeat tick actually fired) ends, whether by release or by the gesture being cancelled - never for an
+     * ordinary single tap, which never reaches [scheduleBackspaceRepeat]'s own initial delay in the first
+     * place. Deliberately not fired per repeat tick, only once at the very end - see the caller's own KDoc
+     * for why a per-tick reaction here would reintroduce a real, previously-felt performance cost.
+     */
+    fun interface OnBackspaceRepeatEndListener {
+        
+        fun onBackspaceRepeatEnd()
+    }
+    
+    /**
      * Callback invoked when a D-01 multi-alternative long-press popup is released on an alternative
      * (finger-tracking selection): carries the pressed key and the chosen alternative string.
      */
@@ -122,6 +134,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var onSwipeListener: OnSwipeListener? = null
     
     var onBackspaceRepeatListener: OnBackspaceRepeatListener? = null
+    
+    var onBackspaceRepeatEndListener: OnBackspaceRepeatEndListener? = null
     
     var onLongPressPopupListener: OnLongPressPopupListener? = null
     
@@ -1530,6 +1544,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun cancelBackspaceRepeat() {
         backspaceRepeatRunnable?.let { longPressHandler.removeCallbacks(it) }
         backspaceRepeatRunnable = null
+        // D-414-followup: only when a genuine hold actually happened (at least one repeat tick fired) - an
+        // ordinary single tap never sets backspaceRepeated at all, so this never fires for it.
+        if (backspaceRepeated) {
+            backspaceRepeated = false
+            onBackspaceRepeatEndListener?.onBackspaceRepeatEnd()
+        }
     }
     
     private fun movedBeyondSlop(x: Float, y: Float): Boolean {
