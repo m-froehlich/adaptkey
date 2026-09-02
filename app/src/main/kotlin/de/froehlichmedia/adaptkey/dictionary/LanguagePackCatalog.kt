@@ -310,7 +310,26 @@ object LanguagePackCatalog {
             // adjective forms), 3,804 existing lemma rows re-tagged. `dictionaries/de/version.txt` 34 -> 35,
             // pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 34 -> 35.
             // No new tests (data-only). Not yet device-confirmed.
-            version = 35
+            // D-404-followup: user caught a real regression from the round above - new multi-tag rows landed
+            // as `OTHER,ADJECTIVE` (OTHER first), breaking the established convention (visible in every
+            // pre-existing multi-tag row: `NOUN,OTHER`, `VERB,OTHER`, `NOUN,VERB,OTHER` - OTHER always last,
+            // i.e. tags follow `PartOfSpeech`'s own enum declaration order). Fixed by re-sorting every
+            // multi-tag row's POS field into canonical enum order (3,646 rows corrected, e.g. `schön` is now
+            // `ADJECTIVE,OTHER`). Bundled with two more small, low-risk taggings while already touching this
+            // file, both previously discussed and confirmed cheap (closed classes, no inflection, no
+            // generation needed): 109 already-present German prepositions tagged `PREPOSITION` (155 total in
+            // Wiktionary's `pos=="prep"`, 46 not yet in `dict.tsv` deliberately left out, same "complete
+            // existing words only" scope as every other round); 6,049 already-`NOUN`-tagged proper nouns
+            // (Wiktionary `pos=="name"`, 15,808 total) additionally tagged `PROPER_NOUN` - verified safe
+            // first: `CapitalisationEngine`'s own `isProper` check forces capitalisation ahead of the
+            // "ambiguous, leave alone" rule, so this was only ever risk-free for words *already* tagged
+            // `NOUN` (capitalisation unchanged either way); 3 words matching Wiktionary's name list but not
+            // already `NOUN` (`iPhone`/`iPad`/`eBay`, all `OTHER`) were deliberately excluded - forcing
+            // first-letter capitalisation would have produced `Iphone` for a lower-case-typed `iphone`, wrong
+            // for a brand name with its own internal-capitalisation convention. `dictionaries/de/version.txt`
+            // 35 -> 36, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version
+            // 35 -> 36. No new tests (data-only). Not yet device-confirmed.
+            version = 36
         ),
         Entry(
             Language.GREEK,

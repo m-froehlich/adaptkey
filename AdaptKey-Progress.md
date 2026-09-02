@@ -774,6 +774,38 @@ non-trivial changes).
 
 ## Current State
 
+- **§362 (v1.1.1): three small, related `dict.tsv` data fixes - a real tag-order regression fix plus two**
+  **cheap, closed-class taggings (prepositions, proper nouns).** User caught the regression directly from a
+  throwaway mention in chat ("OTHER,ADJECTIVE") rather than a bug report: §360's adjective round appended
+  `ADJECTIVE` after whatever tag a lemma already carried, landing as `OTHER,ADJECTIVE` - breaking the
+  established convention every pre-existing multi-tag row already followed (`NOUN,OTHER`, `VERB,OTHER`,
+  `NOUN,VERB,OTHER` - `OTHER` always last, i.e. tags in `PartOfSpeech`'s own enum declaration order). Fixed
+  by re-sorting every multi-tag row's POS field into canonical enum order (3,646 rows corrected this round
+  specifically for the violation, e.g. `schön` is now `ADJECTIVE,OTHER`; the general sort would silently fix
+  any future ordering slip the same way).
+  
+  Bundled while already touching this file, both discussed and confirmed cheap first (closed word classes,
+  no inflection, no generation project needed - unlike nouns/verbs/adjectives): **prepositions** - 155 total
+  in Wiktionary's `pos=="prep"`, 109 already present in `dict.tsv` tagged `PREPOSITION` (46 not yet present
+  deliberately left out, same "complete existing words only" scope as every other round - several of them
+  looked like noise anyway, e.g. `vong`/`vmb`, an internet-slang/typo-looking entry and an unclear fragment).
+  **Proper nouns** - 15,808 total in Wiktionary's `pos=="name"`, 6,052 already present, but only the 6,049
+  already tagged `NOUN` were additionally tagged `PROPER_NOUN` - checked `CapitalisationEngine` directly
+  before doing this: `isProper` forces capitalisation ahead of the "ambiguous, leave alone" rule, so this was
+  only genuinely risk-free for words *already* `NOUN` (capitalisation outcome unchanged either way, e.g.
+  `Zeit`/`Welt`/`Bild` stay capitalised exactly as before despite also having a real name-sense in
+  Wiktionary). The 3 non-`NOUN` matches (`iPhone`/`iPad`/`eBay`, all `OTHER`) were deliberately excluded -
+  forcing first-letter capitalisation would have produced `Iphone` from a lower-case-typed `iphone`, wrong
+  for a brand name with its own internal-capitalisation convention; left untouched, same as before.
+  
+  Net result: 9,804 `dict.tsv` lines changed (3,646 pure reorder + 109 preposition + 6,049 proper-noun tags -
+  the sums don't add to 9,804 exactly since a handful of rows needed more than one kind of change at once,
+  e.g. `in` went from `OTHER,ADJECTIVE` straight to `ADJECTIVE,PREPOSITION,OTHER` in one pass). `git status`
+  confirms `bigram.tsv`/`hints.tsv` untouched. `dictionaries/de/version.txt` 35 -> 36, pack rebuilt and
+  verified byte-identical after unzip, `LanguagePackCatalog` version 35 -> 36. No new tests (data-only). 1196
+  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 417
+  → 418, `versionName` `"1.1.0"` → `"1.1.1"`. Not yet device-confirmed.
+
 - **§361 (v1.1.0): D-404-followup - the non-LLM Learned-Words lemma linker (`LearnedLemmaLinking`, spec**
   **§39) gained adjective declension/degree endings, closing a real gap the with-LLM path never had.**
   User asked directly whether adjectives get whole-family learning "bei Verfügbarkeit eines LLMs" the same
