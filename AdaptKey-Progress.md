@@ -586,9 +586,11 @@ non-trivial changes).
     `1 2 3` / `4 5 6` / `7 8 9` / `0` top to bottom (was calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0`) -
     the operator column and every other key untouched. The T9-letter-long-press half of this ask was
     explicitly declined by the user - dropped from scope entirely, not deferred.
-  - **D-395 - OPEN.** The distance kept from the system gesture-navigation bar should be configurable - the
-    user reports the gesture has become far more sensitive on their current Android version, causing
-    accidental app-hide/app-switch near the space bar's lower edge.
+  - **D-395 - WON'T FIX (2026-09-03, no code change - user's own root-cause correction).** Originally reported
+    as the system gesture-navigation bar having become more sensitive near the space bar's lower edge. User
+    since traced it to a personal, temporary cause instead: typing with the middle finger during an injury,
+    which does not reach the gesture zone as cleanly as the index finger - confirmed gone entirely once back to
+    typing normally. Not an app issue at all; nothing to build.
   - **D-396 - OPEN.** Classify per-key vibration into three levels: mode-switch actions (Level 1), autocorrect/
     chip-acceptance (Level 2), ordinary key feedback (Level 3).
   - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
@@ -708,20 +710,14 @@ non-trivial changes).
   languages today, not German alone. This is the schema/data groundwork D-404 Tier 1 consumed (see above,
   RESOLVED) and that §388 (below) is the first real consumer of on the ranking/override side (D-404 Tier 2).
 
-- **D-351-followup - OPEN, reopened 2026-09-01.** The same field/editor incompatibility D-351 found and
-  worked around for Gemini's search field (`reclaimOnCaretMoveSuppressed`, scoped by package name in
-  `AdaptKeyService.onStartInput()` - see [AdaptKeyService.kt:298](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:298))
-  is now also reported for Total Commander's "Datei umbenennen" (rename) date field. Not yet actioned:
-  - Need Total Commander's actual package name (`com.ghisler.android.TotalCommander` is the likely value but
-    unconfirmed - verify against a real device/logcat before wiring it in, per this project's own
-    "verify, don't guess" rule).
-  - The existing mechanism suppresses reactive caret-move reclaim for the **whole package**, not a specific
-    field - worth confirming with the user whether Total Commander's other text fields (e.g. path bar, other
-    dialogs) tolerate reclaim fine before blanket-suppressing the whole app the way Gemini's single-purpose
-    search field made an easy call for. If they don't all tolerate it equally, the fix is the same shape but
-    the tolerance question needs answering first.
-  - Root cause not yet confirmed to be identical to D-351's (composing-region change breaks the field's own
-    cursor-handle/selection UI) - worth a quick device-log check rather than assuming without verification,
+- **D-351-followup - CLOSED AGAIN (2026-09-03, no code change - not reproducible).** Had been reopened
+  2026-09-01 on a report that Total Commander's "Datei umbenennen" (rename) date field showed the same
+  field/editor incompatibility D-351 originally found and worked around for Gemini's search field
+  (`reclaimOnCaretMoveSuppressed`, scoped by package name in `AdaptKeyService.onStartInput()` - see
+  [AdaptKeyService.kt:298](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:298)). User has
+  since retested and confirmed Total Commander does not actually show the problem after all - closed without
+  ever wiring in a package-name-scoped suppression for it. `reclaimOnCaretMoveSuppressed` stays scoped to
+  Gemini only, as before D-351-followup. Revisit only if a genuine new repro turns up.
     since this is exactly the class of bug spec §1's guiding principle warns must be re-derived from real
     logs, not guessed.
 
