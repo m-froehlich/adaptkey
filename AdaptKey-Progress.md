@@ -802,9 +802,9 @@ non-trivial changes).
   "laufen"); and a regression guard confirming an unrelated, unlinked pair (`ddr`/`der`) still overrides
   exactly as before. 1240 → 1243 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
   green. Spec: A-01 gained the D-404 Tier 2 addendum. `versionCode` 443 → 444, `versionName` `"1.1.26"` ->
-  `"1.1.27"`. **Not yet device-confirmed** - pure dictionary/ranking logic, no Android glue touched, but
-  worth a real-device sanity check that an ordinary known plural/singular pair no longer risks a silent
-  autocorrect swap.
+  `"1.1.27"`. **2026-09-03: closed without a dedicated device test, per the user's own call** - pure
+  dictionary/ranking logic with no directly observable behaviour to check for; will be revisited only if a
+  negative report comes in.
 
 - **§387 (v1.1.26): D-431-followup closed - real device log confirmed the gate fix works, found a genuinely**
   **structural (non-bug) limitation, and caught a real performance regression the diagnostic round itself had
@@ -875,7 +875,7 @@ non-trivial changes).
   title/summary text one column further right. Fixed with a leading `56dp` `Space` before the two-button
   `LinearLayout`, matching that exact reserved width. No new tests (pure layout fix). 1240 unit tests
   unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 440 -> 441,
-  `versionName` `"1.1.23"` -> `"1.1.24"`. **Not yet device-confirmed.**
+  `versionName` `"1.1.23"` -> `"1.1.24"`. **2026-09-03: device-confirmed.**
 
 - **§384 (v1.1.23): D-433-followup (v4) - v3's own `<include>` pointed at the wrong layout resource.**
   Screenshot confirmed the exact symptom precisely: "Mini-LLM (Tier 3)" rendered larger but not bold, and
@@ -893,10 +893,8 @@ non-trivial changes).
   `listPreferredItemPaddingStart`/`End` theme attributes the included layout's own title/summary column uses,
   so the buttons line up under that text by construction rather than by an approximated constant. No new
   tests (pure layout-resource fix). 1240 unit tests unchanged, all green. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 439 -> 440, `versionName` `"1.1.22"` -> `"1.1.23"`. **Not yet
-  device-confirmed** - the fourth attempt at this one row; this time backed by reading the actual style chain
-  responsible for both reported symptoms rather than a plausible-looking substitute, so there is a concrete
-  reason to expect it holds, but still needs the real screenshot-vs-sibling comparison to confirm.
+  `:app:testDebugUnitTest` green. `versionCode` 439 -> 440, `versionName` `"1.1.22"` -> `"1.1.23"`. **2026-09-03:
+  device-confirmed.**
 
 - **§383 (v1.1.22): D-433-followup (v3) - §382's own fix made it worse (fully flush left, still not bold) -**
   **the real root cause was more fundamental than wrong margin/textAppearance values.** Reported directly:
@@ -921,9 +919,7 @@ non-trivial changes).
   No new tests (pure layout fix, Android view glue). 1240 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green (confirms `@layout/preference` resolves correctly
   against the `androidx.preference` dependency, not shadowed by any local resource of the same name).
-  `versionCode` 438 -> 439, `versionName` `"1.1.21"` -> `"1.1.22"`. **Not yet device-confirmed** - this is the
-  third attempt at this specific row's alignment; worth a careful side-by-side check against a genuinely
-  plain sibling preference before considering it settled.
+  `versionCode` 438 -> 439, `versionName` `"1.1.21"` -> `"1.1.22"`. **2026-09-03: device-confirmed.**
 
 - **§382 (v1.1.21): D-433-followup (v2) - three real visual bugs in §381's own hand-built preference layout,**
   **root-caused by diffing against AndroidX's real default layout, not guessed.** Reported directly: the row
@@ -954,9 +950,7 @@ non-trivial changes).
   was actually contributing to the shift), but replicating the identical structure removes it as a possible
   factor entirely rather than leaving an approximation in place. No new tests (pure layout-attribute fix,
   Android view glue). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. `versionCode` 437 -> 438, `versionName` `"1.1.20"` -> `"1.1.21"`. **Not yet device-confirmed** - needs
-  a real device check that the row now aligns flush with its siblings, the title reads bold, and "Jetzt
-  einrichten"/"Bereit" is clearly legible.
+  green. `versionCode` 437 -> 438, `versionName` `"1.1.20"` -> `"1.1.21"`. **2026-09-03: device-confirmed.**
 
 - **§381 (v1.1.20): D-433-followup - reworked the Mini-LLM settings row itself, plus a real, unrelated bug**
   **found and fixed in passing.** Direct feedback right after §380 shipped, several distinct points at once:
@@ -1005,11 +999,7 @@ non-trivial changes).
   remaining reference anywhere). No new tests (pure Android view/`Preference`/dialog glue, all untested per
   this project's own convention, same as every other settings-screen change). 1240 unit tests unchanged, all
   green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - same D-89 precedent as §380.
-  `versionCode` 436 -> 437, `versionName` `"1.1.19"` -> `"1.1.20"`. **Not yet device-confirmed** - needs a
-  real device/screen check: the widened summary still fits without truncating, both new buttons work
-  independently (Mehr erfahren shows the dialog with no navigation; the setup button navigates and shows the
-  correct label in both install states, updating correctly after returning from Tier3ModelActivity), and
-  Tier3ModelActivity's own content now sits properly below the status bar/notch.
+  `versionCode` 436 -> 437, `versionName` `"1.1.19"` -> `"1.1.20"`. **2026-09-03: device-confirmed.**
 
 - **§380 (v1.1.19): D-433 - the Mini-LLM (Tier 3) settings screen explains its actual value instead of just**
   **its install mechanics.** User's own explicit request, after a full re-read of the tier-3 orchestration
@@ -1050,9 +1040,7 @@ non-trivial changes).
   own convention). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
   green. No spec change - purely informational settings-screen content, the same precedent D-89's own much
   larger Feature Overview screen already set (never mentioned in `AdaptKey-Spec.md` either). `versionCode`
-  435 -> 436, `versionName` `"1.1.18"` -> `"1.1.19"`. **Not yet device-confirmed** - needs a real device/
-  screen check that the settings-list summary now fits without truncating, and that the "Mehr erfahren"
-  dialog opens and reads well.
+  435 -> 436, `versionName` `"1.1.18"` -> `"1.1.19"`. **2026-09-03: device-confirmed.**
 
 - **§379 (v1.1.18): D-432 - applied D-431's same `hasObviousCandidate()` gate to `rawCoordinateSuggestion`**
   **(T-02/D-39's own live preview chip), for consistency.** Flagged as a noticed-in-passing parallel while
@@ -1066,7 +1054,7 @@ non-trivial changes).
   itself was always correct. No new tests (same untested `AdaptKeyService.kt` Android/`InputConnection` glue
   as the call site itself, and `hasObviousCandidate()` is already fully covered from D-431). 1240 unit tests
   unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: T-02 gained the D-432
-  note. `versionCode` 434 -> 435, `versionName` `"1.1.17"` -> `"1.1.18"`. **Not yet device-confirmed.**
+  note. `versionCode` 434 -> 435, `versionName` `"1.1.17"` -> `"1.1.18"`. **2026-09-03: device-confirmed.**
 
 - **§378 (v1.1.17): D-431 - A-13's own "everything else must have failed first" gate was wrongly satisfied**
   **by a coincidental last-resort dictionary match, silently blocking the exact case A-13 exists for.**
@@ -1114,7 +1102,7 @@ non-trivial changes).
   own convention - no existing test referenced either button's role). 1235 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - implementation-only polish, same
   "occasionally skippable" precedent §363's own items 9/10 already established. `versionCode` 432 -> 433,
-  `versionName` `"1.1.15"` -> `"1.1.16"`. **Not yet device-confirmed.**
+  `versionName` `"1.1.15"` -> `"1.1.16"`. **2026-09-03: device-confirmed.**
 
 - **§376 (v1.1.15): D-429 - learned bigrams and trigrams now carry their own `last_touched` timestamp, and**
   **the recency boost D-411 already gives individual learned words now applies to them too.** Explicit
@@ -1168,9 +1156,7 @@ non-trivial changes).
   `:app:testDebugUnitTest` green. Spec: S-07 gained the D-429 addendum (and its own opening sentence updated -
   "raw trigram count" was no longer accurate); W-05's own bigram/trigram note corrected (they now have
   `last_touched`, but the *expiry sweep* itself is still not extended to them - a still-separate, not-yet-built
-  item). `versionCode` 431 -> 432, `versionName` `"1.1.14"` -> `"1.1.15"`. **Not yet device-confirmed** - the
-  practical effect is small and hard to notice directly, but worth a general regression pass on ordinary
-  next-word prediction and mid-typing bigram/trigram-elevated suggestions.
+  item). `versionCode` 431 -> 432, `versionName` `"1.1.14"` -> `"1.1.15"`. **2026-09-03: device-confirmed.**
 
 - **§375 (v1.1.14): D-428 - the V-04 clipboard-peek button flashed back visible for one render right after**
   **its own V-03 clear button emptied the clipboard.** Reported directly: tap the peek button, tap the clear
