@@ -17079,3 +17079,1303 @@ section's own previously-open design question replaced with the resolution. `ver
 `versionName` `"1.0.101"` -> `"1.0.102"`. Not yet device-confirmed - worth re-typing "Komischerweise" (or any
 other sentence-start word this app would split) at a real line start to verify "Komischer Weise" now comes
 out correctly.
+
+## §351 - D-371 - a digit-ending typed token is now only ever silently autocorrected at C-22's Aggressive level (v1.0.103)
+
+Design discussed and agreed with the user first (this project's own rule for
+non-trivial confidence/algorithm decisions): rather than a new one-off level check, reuses the exact same
+**cap** mechanism D-354 already established in `CorrectionConfidence` for the structurally identical
+"risky signal, but the chip offer should still stand" question (`prefixShiftsAway`) - a second, independent
+mechanism for the same kind of decision was explicitly rejected as inconsistent. `forUnknownToken` gained a
+`typedEndsInDigit` parameter and a new `DIGIT_SUFFIX_CONFIDENCE_CAP` (0.72), deliberately placed *above*
+Aggressive's own auto-apply threshold (0.70) but *below* Medium's (0.75) - unlike `PREFIX_CONFIDENCE_CAP`
+(0.55, below every level), this cap lets an otherwise high-confidence candidate still auto-apply, but only
+at the most permissive level; every chip-offer threshold sits well under 0.70, so the chip is never
+suppressed at any level. `capped()` now combines both caps via the lower of the two when both apply.
+Wired in at `DictionarySuggestionProvider.candidateConfidence()` - the one function already shared between
+the chip-offer filter and the auto-apply decision, so this needed no new call site - with a local comment
+pointing at the new constant's own KDoc. A-01's known-word-override path (`forKnownWordOverride`) is
+untouched: a digit-ending token is practically never itself a dictionary entry, so that path is not
+reachable for this case. 4 new tests (`CorrectionConfidenceTest`: clears Aggressive but not Medium/Cautious
+at maximal underlying confidence; a low-confidence digit-ending token still fails every level, proving the
+cap only ever lowers a score, never raises one - `DictionarySuggestionProviderTest`: end-to-end at the
+default Medium level vs. an Aggressive-configured provider). 1175 → 1179 unit tests, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §36 gained the D-371 addendum (and its own
+header D-number list). `versionCode` 406 → 407, `versionName` `"1.0.102"` → `"1.0.103"`. **Not yet
+device-confirmed.**
+
+## §352 - D-421 - two Reclaim-chip/Google-Keep bugs, both root-caused from real device reports, not guessed (v1.0.104)
+
+(1) **A field's very first caret position was never reclaimed.** Reported: tapping
+directly into an already-typed word to focus a Google Keep field for the first time left it unreclaimed;
+only a *second* tap onto a different word actually reclaimed. Root cause: `onStartInput`'s own D-152
+comment already documents that a field's initial selection arrives only via `EditorInfo.initialSelStart`/
+`initialSelEnd`, never guaranteed through a subsequent `onUpdateSelection` callback - the reactive D-62
+reclaim was only ever wired to that callback, so the field's true first caret position, delivered a
+different way, was simply never seen by it. Fixed in `onStartInputView`: when `initialSelStart ==
+initialSelEnd` (a collapsed caret) and both are known, schedules the identical debounced reclaim (and the
+chip's own visibility refresh) the reactive caret-move path already uses.
+(2) **A visible flash: chip briefly shown, then hidden.** Reported on a *second* tap, immediately after
+(1)'s own leftover unreclaimed chip was already on screen. Root cause traced one level deeper than the
+report itself: `reclaimPossible()` (the chip's own visibility check) is re-evaluated live on *every*
+`showSuggestions()` call, with no awareness of whether `reclaimWordAtCaretRunnable`'s own 100 ms debounce
+is already scheduled to resolve the very same position - so the very first render after any caret move
+could see "nothing composing yet, a word touches the caret" and show the chip, moments before the
+scheduled automatic reclaim quietly resolved it. New `reclaimPending` flag (true only for the duration of
+a *non-suppressed* field's own pending reclaim - never set at all in Gemini, where nothing is ever
+automatically pending) closes this for any caret move, not merely the one the original report happened to
+hit. Both fixes share one new `scheduleReclaimAndChipRefresh()` (extracted from `onUpdateSelection`'s own
+existing scheduling code, now also called from `onStartInputView`) rather than a second, differently-timed
+reclaim path. No new tests (Android/`InputConnection` glue, per this project's own convention - the
+`reclaimPending` state machine itself has no pure/testable seam separate from the real callbacks). 1180
+unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-10 gained
+the D-421 addendum. `versionCode` 407 → 408, `versionName` `"1.0.103"` → `"1.0.104"`. **Not yet
+device-confirmed.**
+
+## §353 - D-373 + D-378 + D-392 - three capitalisation fixes discussed and designed with the user first, D-390 dropped in the same discussion (v1.0.105)
+
+All four were raised together; design discussed
+before any code, per this project's own rule for non-trivial capitalisation/algorithm decisions.
+**D-373** (hyphen-chain capitalisation propagation): B-02's own `isProper`-only exception missed the common
+case of an ordinary word after a hyphen whose *predecessor* was capitalised but which itself carries no
+proper-noun tag (`"Nord"` in `"München-Nord"`). User's own explicit hybrid design: `CapitalisationContext`
+gained `previousHyphenSegment`/`previousHyphenSegmentAtSentenceStart`, computed in `captureTokenContext()`
+via a new pure `SentenceBoundary.previousHyphenSegment()` (walks back to the segment right before the
+trailing hyphen, then re-runs `isSentenceStart()` on the text before *that* segment). `CapitalisationEngine`
+gained `previousSegmentPropagates()`: when the predecessor was itself at a sentence start, only propagates
+if it is independently a known noun/proper noun in the dictionary (a bare sentence-initial capital proves
+nothing about grammar); otherwise the predecessor's capital is trusted directly. **D-378** (opening
+quote/bracket must not disturb Shift): root-caused to `finalizeAndCommit`'s composing-empty branch calling
+`armShiftForNextWord(ic)` unconditionally after *every* delimiter - re-deriving after a bare opener with
+nothing yet composing either wrongly de-arms an already-correct auto-arm (`SentenceBoundary` sees the
+opener itself as "still mid-token") or silently clobbers an explicit Shift press. Fixed by skipping that one
+call for a recognised opener (`"([{<` - new `OPENING_PUNCTUATION`; the apostrophe deliberately excluded,
+genuinely ambiguous between opening and closing a quote per the user's own confirmation) - `handlePunctuationDelimiter`'s
+own re-arm branch already only fires for `SENTENCE_PUNCTUATION`, which no opener is a member of, so no
+second call site needed the same guard. **D-392** (Caps Lock release): `handleShift()`'s Caps-Lock-release
+branch unconditionally cleared Shift with no context re-derivation, unlike every other "position reached"
+event (D-313/D-406) - now calls `armShiftForNextWord(ic)` when nothing is composing (a genuine word
+boundary), keeping the old plain disarm only for the mid-word edge case (no well-defined "next word" to
+re-derive against there). **D-390 dropped** (WON'T FIX, no code change): a general multi-part-abbreviation
+rule would have needed a deliberate, narrow exception to D-405's own "never a commit-time correction"
+principle plus editing already-committed text - real risk. User's own call: D-405/D-416 already mean typing
+"p. a." straight through in lower-case is never auto-corrected back either, so there is no effective problem
+left, just marginally more typing effort - acceptable, not worth the risk. 11 new tests (6
+`CapitalisationEngineTest` covering both propagation branches in both directions, 5
+`SentenceBoundaryTest` covering `previousHyphenSegment()` directly incl. chain/no-predecessor cases) -
+D-378/D-392 are untested Android/`InputConnection` glue per this project's own convention. 1180 → 1191 unit
+tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: B-02 gained the D-373
+addendum, G-06 gained the D-392 addendum, a new "Addendum to G-05" covers D-378. `versionCode` 408 → 409,
+`versionName` `"1.0.104"` → `"1.0.105"`. **Not yet device-confirmed.**
+
+## §354 - three same-day device-reported follow-ups - §353's D-373/D-378 fixes were each too narrow, plus a genuinely different D-421 flash path (v1.0.106)
+
+All from real device feedback right after §353/
+§352 shipped; each re-diagnosed from the actual code path the report implied, not patched blind (this
+project's own rule after a negative device report on an already-"fixed" point). **D-373-followup:** the
+original fix only ever changed the eventual *committed* casing (`CapitalisationEngine`), never what Shift
+shows armed while the segment is still being typed - a user watching the keyboard saw nothing happen.
+`captureTokenContext()` now also live-arms Shift directly, but only for the non-sentence-start branch (no
+dictionary lookup needed there); the sentence-start branch stays commit-time-only, matching how B-02's own
+original proper-noun exception already behaved. **D-378-followup:** the original fix only guarded
+`finalizeAndCommit`'s composing-*empty* branch - every other commit branch (split, merge, verbatim, the
+ordinary word-commit path, the A-07 undo retry) still called `armShiftForNextWord` directly and still
+clobbered Shift on an opening quote/bracket. New shared `armShiftForNextWordUnlessOpener(ic, delimiter)` -
+every one of those call sites now funnels through it instead of calling `armShiftForNextWord` directly, so
+a future new commit branch cannot reopen the same gap. **D-421-followup:** the reported flash survived
+because it came from a genuinely different path than the one §352 fixed - tapping from one still-composing
+word straight onto another reaches `onUpdateSelection`'s "external caret move while composing" branch
+(D-406), which clears the abandoned word's `reclaimPending` along with its composing state and calls
+`armShiftForNextWord` immediately, rendering the bar before any reclaim was ever scheduled for the *new*
+position - `reclaimPending` alone cannot guard a reclaim that was never scheduled in the first place. That
+branch now also calls `scheduleReclaimAndChipRefresh()` (gated on a genuinely collapsed caret) before its
+own immediate re-arm, so a pending reclaim is already in place by the time the chip's own next render runs.
+No new tests (all three are Android/`InputConnection` glue). 1191 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: B-02 gained the D-373-followup note, the D-378
+"Addendum to G-05" gained its own follow-up note, S-10 gained the D-421-followup note. `versionCode`
+409 → 410, `versionName` `"1.0.105"` → `"1.0.106"`. **2026-09-01: D-421-followup device-confirmed - the**
+**reclaim flash is gone.** D-373-followup and D-378-followup are **not** - same exact repro, still broken;
+see §355 for the diagnostic round that replaces a third blind patch attempt.
+
+## §355 - D-373-followup and D-378-followup confirmed still broken after §354's broadening - temporary diagnostic logging added instead of a third blind patch (v1.0.107)
+
+Two full rounds of code-level fixes
+each traced correctly on paper (confirmed again by re-reading the actual diff, not just re-deriving from
+memory) - both still failed with the *exact same* repro on-device. Rather than guess a third time, this
+project's own established pattern for exactly this class of bug (spec §1's guiding principle: Shift/
+composing-state bugs "reproduce silently and took real device logs, not code review alone, to find each
+time", D-110/D-139/D-217/D-324's own precedent) - a new `AdaptKeyShift` diagnostic tag logs the full
+decision chain: `captureTokenContext()`'s own hyphen-segment/live-arm decision (before and after),
+`armShiftForNextWordUnlessOpener()`'s own opener check and shifted/capsLock before and after, the CHAR
+handler's own `isUpperArmed()` read at the exact moment a letter's case is decided, and `handleShift()`'s
+own toggle/grace-window-suppression outcome. Reachable via `adb logcat -s AdaptKeyShift:D` or the in-app
+Settings -> Diagnostics log. Genuinely no working theory left worth coding blind against - waiting on a
+real repro's log output before touching either mechanism again. No new tests (diagnostic logging only, no
+behaviour change). 1191 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. No spec change (no behaviour changed). `versionCode` 410 → 411, `versionName` `"1.0.106"` ->
+`"1.0.107"`.
+
+## §356 - D-373-followup (v2) - the §355 diagnostic log immediately found the real gap: a flicker, not a functional failure (v1.0.108)
+
+User's own real-device log (`AdaptKeyShift` tag) traced end to end:
+the hyphen commits (`armShiftForNextWordUnlessOpener` correctly leaves Shift alone/false, not a sentence
+start) - ~100ms later the debounced D-62 reactive reclaim (`reclaimWordAtCaret`, fires because composing is
+empty right after the hyphen too) calls `captureTokenContext()` a *second* time, which correctly live-arms
+Shift for the hyphen-propagation case (§354's own fix) - but the very next line in that same function,
+`armShiftForNextWord(ic)` (D-313's own reactive re-derivation, there for a completely different reason: a
+caret landing on an existing word), immediately re-derives fresh and silently overwrites it back to `false`.
+By the time the user actually pressed the next letter, `captureTokenContext()` ran a *third* time (the
+ordinary CHAR-handler call site) and correctly re-armed it again - so the committed letter was capitalised
+correctly the whole time, exactly as the user eventually noticed ("scheint effektiv zu greifen") - but the
+keyboard's own Shift key visibly flickered on/off in the ~100ms window in between, reading as "not working"
+on a first glance. Fixed with a new one-shot `tokenShiftLiveArmed` flag, set by `captureTokenContext()` and
+consumed by `reclaimWordAtCaret()` exactly like the existing `shiftArmedByDelete` guard immediately above it
+in the same function - the established pattern in this codebase for "a just-armed special case must survive
+the next line's own generic re-derivation." D-378-followup's own diagnostic logging is left in place -
+still unexplained, no log for that one yet. No new tests (Android/`InputConnection` glue). 1191 unit tests
+unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's B-02 gained the
+D-373-followup (v2) note. `versionCode` 411 → 412, `versionName` `"1.0.107"` → `"1.0.108"`.
+**2026-09-01: device-confirmed working** ("Top! Das hat funktioniert.").
+
+## §357 - D-378-followup (v2) - a second, real device log confirmed the exact same root-cause shape as D-373-followup (v2), just via the opener path instead of the hyphen path (v1.0.109)
+
+User's own log
+(`AdaptKeyShift` tag, real repro this time - the first log sent for this round turned out to be an accidental
+duplicate of the D-373 one) traced it precisely: `armShiftForNextWordUnlessOpener` correctly left Shift
+untouched right when `"` committed (`isOpener=true`, `shiftedBefore=true` → `shiftedAfter=true`) - but by the
+time the user actually typed the next letter, `shifted` had already flipped back to `false` in the
+meantime, with no logged event visibly responsible (only the debounced D-62 reclaim's own *unlogged*
+`armShiftForNextWord` call could explain the gap). Confirmed: the debounced reclaim
+(`reclaimWordAtCaret`, fires ~100ms after any commit that leaves composing empty, openers included) calls
+the raw `armShiftForNextWord` directly, with zero awareness that the most recent commit was an opener.
+Fixed with the identical pattern D-373-followup (v2) just established: new one-shot
+`shiftPreservedAfterOpener` flag, set (to the opener decision itself, not just `true` - so a later
+non-opener commit correctly clears a stale value) by `armShiftForNextWordUnlessOpener`, consumed by
+`reclaimWordAtCaret()` right next to the existing `shiftArmedByDelete`/`tokenShiftLiveArmed` guards -
+captured into a local and cleared unconditionally before the function's own early-return, so a user typing
+faster than the 100ms debounce cannot leave it stale for some later, unrelated reclaim. All temporary
+`AdaptKeyShift` diagnostic logging from §355 removed now that both root causes are confirmed and fixed - see
+that entry if this class of bug ever needs the same treatment again. No new tests (Android/`InputConnection`
+glue). 1191 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's
+D-378 "Addendum to G-05" gained the (v2) note. `versionCode` 412 → 413, `versionName` `"1.0.108"` →
+`"1.0.109"`. **2026-09-01: device-confirmed working.**
+
+## §358 - D-421-followup (v2) - regression: the credential list and clipboard paste chip stopped appearing on a fresh empty field (v1.0.110)
+
+Reported directly: an empty email field no longer showed the saved
+address list until the first letter was typed, and a fresh field with clipboard content no longer offered
+the paste chip at all - both worked before §352/§354's own D-421 rounds. Root-caused, not guessed: §352's
+`onStartInputView` change schedules the debounced reclaim/chip-refresh unconditionally on every fresh field;
+its own `reclaimEnabledRunnable` calls the *ordinary* `showSuggestions()` ~100ms later, which knows nothing
+about D-36's paste chip or D-142's credential list - both built directly against the suggestion bar,
+deliberately bypassing that ordinary pipeline entirely (D-142's own KDoc) - and silently overwrote whichever
+one had just been shown with an empty bar. Fixed by only scheduling the reclaim/chip-refresh when neither
+special chip actually claimed the bar: `showClipboardChipIfAvailable()` now returns whether it actually
+showed a chip, `showCredentialSuggestions()`'s own branch always counts as claiming it (even the
+password-field empty-bar case is a deliberate, settled state), and `onStartInputView` gates the scheduling
+on `!showedSpecialInitialChip`. No functional loss: a field with one of these chips showing has nothing left
+for the reclaim/chip-refresh to usefully add, and a genuinely empty field (the only case D-421's own
+initial-focus reclaim could matter for at all) never has a special chip to protect in the first place. No
+new tests (Android/`InputConnection` glue). 1191 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-10 gained the D-421-followup (v2) note.
+`versionCode` 413 → 414, `versionName` `"1.0.109"` → `"1.0.110"`. **2026-09-01: device-confirmed working.**
+
+## §359 - D-370 - a closing double-quote right after sentence punctuation no longer gets a wrongly-placed deferred space shoved in front of it (v1.0.111)
+
+Root-caused directly in the current code, not
+guessed: `handlePunctuationDelimiter()`'s A-12 deferred-space check (D-416) only ever looked at the single
+character immediately before the cursor - typing `"` right after `.` with a space genuinely pending (e.g.
+closing a quoted sentence, `"Ja."`) fell into neither the punctuation-run nor the digit-glue exception, so
+the space materialised *before* the quote (`"Ja. "` instead of `"Ja."`). Scoped to only "Problem 1" of the
+two originally discussed - the wider "eat an explicit space before *any* closing quote" idea was raised only
+as an opportunistic add-on and explicitly dropped by the user once its real design cost (open/close-quote
+disambiguation via a lookback/parity search) was laid out; not implemented, not tracked as its own item any
+more (see D-370's own Open TODOs entry).
+
+Fixed by extending, not replacing, D-416's existing "read fresh from the real document, no stored flags"
+design: a new `pendingSentenceMark()` resolves the actually-pending mark from up to two characters before
+the cursor, skipping over exactly one trailing closing `"` first. A `"` typed directly after a bare
+`SENTENCE_PUNCTUATION` mark with nothing composing is structurally unambiguous as closing (nobody opens a
+new quote with no space directly after `.`/`!`/`?`/`,`), so no real open/close-quote tracking was needed for
+this narrower, actually-reported case. `handlePunctuationDelimiter()` now glues a closing quote directly onto
+the pending mark (exactly like a punctuation run), and every downstream consumer that used to read only the
+one immediate character - the new-word-start space materialisation in both `handleKey`'s CHAR branch and
+`appendLongPressLetter()` (the ä/ö/ü/ß entry point), plus the space-key's own D-416 pending-space dot
+(`updatePendingSpaceIndicator()`) - now goes through the same helper, so the space still lands correctly
+after the quote and the dot correctly stays lit through it rather than going dark early. Spec's A-12 gained
+the D-370 bullet (closing-quote glue) and dot note. No new tests (Android/`InputConnection` glue). 1191 unit
+tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 414 → 415,
+`versionName` `"1.0.110"` → `"1.0.111"`. **2026-09-01: device-confirmed working** ("Top! Das hat
+funktioniert.").
+
+## §360 - D-404 Tier 1, adjectives - full German adjective declension x degree paradigm added for every already-bundled lemma, closing the last open part of speech from the "Wortfamilien" project (§322) (v1.0.112)
+
+Same scope discipline as nouns/verbs: complete existing lemmas only, no vocabulary growth -
+verified before starting, not assumed carried over from the noun precedent: of 27,957 Wiktionary adjective
+lemmas not yet in `dict.tsv`, only 274 (~1%) have any `bigram.tsv` occurrence at all, the same near-zero
+signal that ruled out bulk noun import, so the same call was made here (user confirmed after seeing the
+real numbers).
+
+Real Wiktionary data checked before any code was written, not assumed from how nouns/verbs worked: German
+Wiktionary's own adjective entries carry a **complete, real Flexion table** in `wiktextract`'s `forms`
+array wherever one exists at all (17,061 of 32,202 total lemmas, 3,786 of them in scope) - every case x
+number x declension-type x degree combination as its own attested entry, not just the three bare degree
+stems as first assumed from the Wiktionary page itself. This is why `extract_wiktionary_adjektive.py`
+needed no declension-generation logic of its own for the covered majority - it only had to extract and
+deduplicate what was already there (predicative multi-word entries like `"er ist schön"` filtered out as
+phrases, not tokens). A genuine, confirmed lexical irregularity - `hoch` declines as `hoher`/`hohe`/`hohes`
+(a stem change, not merely an ending, present even in the Positiv) - is exactly why full attested forms
+were taken directly rather than derived from a generic suffix rule; would have silently produced
+`hocher`/`hoches` otherwise.
+
+The small remainder (20 in-scope lemmas with only bare Positiv/Komparativ/Superlativ stems, no full table;
+0 lemmas had neither) went through a new rule module, `adjektiv_deklination.py`, cross-verified against
+real Wiktionary-attested forms for regular words before use (1,296 declined forms checked, 0 real
+mismatches - the two apparent "mismatches" found first were `dunkel`'s own optional umlauted comparative
+variant `dünklere`, itself present as a second, equally valid attested form, and `kurz`'s umlaut-class
+irregularity, correctly outside this module's deliberate scope since `kurz` is fully Wiktionary-covered
+anyway). Endings table derived programmatically from `schön`'s own real data, not typed from memory -
+confirmed byte-identical across all three degrees. Two confirmed rules: e-elision for `-el`/`-er` stems
+(`dunkel`+`er`→`dunkler`, `dunkel`+declension-`e`→`dunkle`) applies before the Komparativ `-er` marker and
+before any vowel-initial declension ending, but **not** before the Superlativ `-st`/`-est` marker itself
+(`dunkelste`, not `dunklste` - confirmed against real `dunkel`/`edel` data, an easy wrong guess since
+`-est` also starts with a vowel); the dental/sibilant Superlativ extension (`-est` instead of `-st`) after
+s/ß/z/x/d/t/sch, confirmed against `heiß`/`kurz`/`bunt`/`rund`/`laut`/`frisch` (the last of which Wiktionary
+itself lists two valid variants for, `frischeste`/`frischste` - this module deliberately only ever produces
+the `-este` form). Deliberately excludes the closed umlaut-mutation class (`alt`/`kurz`/`groß`/...) from
+the rule engine entirely, same scoping precedent as the noun/verb round's own strong-verb table - an
+umlauted form is only ever used when Wiktionary itself attests it.
+
+Frequency: new-form frequency = lemma frequency x 0.5 - a **real, adjective-specific** median (not borrowed
+from the noun/verb figures), computed from 8,837 real, already-existing `dict.tsv` form/lemma frequency
+pairs (declined adjective forms that already sat in `dict.tsv` unlinked, matched to their lemma via the
+Wiktionary form list itself as ground truth) - a substantially larger, more direct calibration sample than
+either the noun (14,976 pairs) or verb (191 pairs) round had. Collision rule unchanged: never write a form
+already present in `dict.tsv` under any POS. Existing lemma rows also gained the `ADJECTIVE` tag alongside
+whatever they already carried (3,804 rows, e.g. `schön` is now `OTHER,ADJECTIVE` not just `OTHER`) - `dict.
+tsv`'s own low-frequency tail is appended-to, never resorted (confirmed the file is frequency-descending,
+not alphabetical, before writing - an early draft of the merge script would have alphabetised the entire
+158k-row file otherwise). `viel`/`wenig` are not reachable under Wiktionary's `pos=="adj"` filter (tagged
+`adv`/`pron` there instead, confirmed directly) - deliberately excluded rather than building a special case
+for two words, a conscious scope call flagged rather than silently made.
+
+Pre-existing inflected adjective forms already sitting in `dict.tsv` before this round (e.g. `kälter`, `54`,
+`OTHER`) are **not** retroactively lemma-linked or re-tagged by this round - mirrors the noun/verb project's
+own split (§320/§321's linking pass was always separate from §322's generation pass), not attempted here
+either; left as a known, explicitly out-of-scope gap, same shape as D-404 Tier 2.
+
+Net result: `dict.tsv` 158,073 -> 189,267 rows (+31,194 adjective forms, all lemma-linked). `git status`
+confirms `bigram.tsv`/`hints.tsv` untouched. `dictionaries/de/version.txt` 34 -> 35, pack rebuilt and
+verified byte-identical after unzip (all four files, sha256), `LanguagePackCatalog` version 34 -> 35. Spec
+§38 gained the adjective-coverage addendum. New tooling committed: `extract_wiktionary_adjektive.py`,
+`adjektiv_deklination.py` (kept, reusable "Formen-Auskunft" style like `nomen.py`/`verben.py`); the one-off
+merge script was not committed (scratchpad only), matching how nouns/verbs never kept a dedicated write
+script either. `AdaptKey-Plan-Adjektive.md` deleted, superseded by this section. No new tests (data-only;
+`lemma` still has zero code readers). 1191 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 415 → 416, `versionName` `"1.0.111"` →
+`"1.0.112"`. Not yet device-confirmed.
+
+## §361 - D-404-followup - the non-LLM Learned-Words lemma linker (`LearnedLemmaLinking`, spec §39) gained adjective declension/degree endings, closing a real gap the with-LLM path never had (v1.1.0)
+
+User asked directly whether adjectives get whole-family learning "bei Verfügbarkeit eines LLMs" the same
+way nouns/verbs already do. Checked the actual code before answering, not assumed: `Tier3FamilyPrompt`
+already lists `ADJECTIVE` as one of the categories the model is asked to choose from,
+`Tier3FamilyResponseParser`/`Tier3FamilyApplier`/`SqliteDictionaryStore.learn()`'s `categoryHint` are all
+fully POS-generic, and both trigger sites (`dispatchFamilyLearning()` on every learn event,
+`maybeReprocessFamiliesAsync()`'s backfill) gate only on `LearnOutcome`/missing-lemma, never on part of
+speech - the with-LLM path already covered adjectives from the day it was built, no code change needed
+there. The gap was actually in the **separate, non-LLM** conservative linker (spec §39's own "Non-LLM
+Path") - `NOUN_ENDINGS`/`RegularVerbInflection` only, no adjective endings at all. User confirmed this was
+the real ask and requested the non-LLM side be extended.
+
+Added `ADJECTIVE_ENDINGS` to `LearnedLemmaLinking.kt`: the plain declined Positiv's `-em` (the rest of its
+endings already overlap `NOUN_ENDINGS`), the declined Komparativ (`-er -ere -eren -erem -erer -eres`), and
+the declined Superlativ in **both** the regular (`-ste -sten -stem -ster -stes`) and dental/sibilant-
+extended (`-este -esten -estem -ester -estes`) form - both tried unconditionally since this lookup-only
+linker has no way to know which is grammatically correct for an arbitrary stem, unlike the D-404 Tier 1
+generation project (§360) which does. Wired into both `findLemma` (forward: strip an ending, check if the
+remainder is already learned) and `candidateInflections` (reverse: generate candidates from a newly-learned
+base, check each against the existing lexicon) - same unconditional-try pattern the noun/verb endings
+already used, same accepted coincidental-match trade-off. Deliberately excludes e-elision (`dunkel` ->
+`dunkler`) - a plain suffix strip cannot recover an elided stem, so an e-eliding adjective falls outside
+this conservative linker's reach, same scope boundary `RegularVerbInflection` already draws around strong/
+ablaut verbs. Spec §39's "Base-form linking" section updated to describe all three ending families. 5 new
+tests (`findLemma`: declined comparative, regular declined superlative, dental-extended declined
+superlative, plain declined positive `-em`; `candidateInflections`: adjective-style forms) - 1191 -> 1196
+unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+**Explicit user-requested milestone bump, not the usual third-digit step** (same shape as D-283's 0.9.0 and
+D-315's 1.0.0): `versionCode` 416 → 417, `versionName` `"1.0.112"` → `"1.1.0"`, marking D-404's full closure
+(all three tiers now either resolved or explicitly still-open-by-design) as its own milestone. Not yet
+device-confirmed.
+
+## §362 - three small, related `dict.tsv` data fixes - a real tag-order regression fix plus two cheap, closed-class taggings (prepositions, proper nouns) (v1.1.1)
+
+User caught the regression directly from a
+throwaway mention in chat ("OTHER,ADJECTIVE") rather than a bug report: §360's adjective round appended
+`ADJECTIVE` after whatever tag a lemma already carried, landing as `OTHER,ADJECTIVE` - breaking the
+established convention every pre-existing multi-tag row already followed (`NOUN,OTHER`, `VERB,OTHER`,
+`NOUN,VERB,OTHER` - `OTHER` always last, i.e. tags in `PartOfSpeech`'s own enum declaration order). Fixed
+by re-sorting every multi-tag row's POS field into canonical enum order (3,646 rows corrected this round
+specifically for the violation, e.g. `schön` is now `ADJECTIVE,OTHER`; the general sort would silently fix
+any future ordering slip the same way).
+
+Bundled while already touching this file, both discussed and confirmed cheap first (closed word classes,
+no inflection, no generation project needed - unlike nouns/verbs/adjectives): **prepositions** - 155 total
+in Wiktionary's `pos=="prep"`, 109 already present in `dict.tsv` tagged `PREPOSITION` (46 not yet present
+deliberately left out, same "complete existing words only" scope as every other round - several of them
+looked like noise anyway, e.g. `vong`/`vmb`, an internet-slang/typo-looking entry and an unclear fragment).
+**Proper nouns** - 15,808 total in Wiktionary's `pos=="name"`, 6,052 already present, but only the 6,049
+already tagged `NOUN` were additionally tagged `PROPER_NOUN` - checked `CapitalisationEngine` directly
+before doing this: `isProper` forces capitalisation ahead of the "ambiguous, leave alone" rule, so this was
+only genuinely risk-free for words *already* `NOUN` (capitalisation outcome unchanged either way, e.g.
+`Zeit`/`Welt`/`Bild` stay capitalised exactly as before despite also having a real name-sense in
+Wiktionary). The 3 non-`NOUN` matches (`iPhone`/`iPad`/`eBay`, all `OTHER`) were deliberately excluded -
+forcing first-letter capitalisation would have produced `Iphone` from a lower-case-typed `iphone`, wrong
+for a brand name with its own internal-capitalisation convention; left untouched, same as before.
+
+Net result: 9,804 `dict.tsv` lines changed (3,646 pure reorder + 109 preposition + 6,049 proper-noun tags -
+the sums don't add to 9,804 exactly since a handful of rows needed more than one kind of change at once,
+e.g. `in` went from `OTHER,ADJECTIVE` straight to `ADJECTIVE,PREPOSITION,OTHER` in one pass). `git status`
+confirms `bigram.tsv`/`hints.tsv` untouched. `dictionaries/de/version.txt` 35 -> 36, pack rebuilt and
+verified byte-identical after unzip, `LanguagePackCatalog` version 35 -> 36. No new tests (data-only). 1196
+unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 417
+→ 418, `versionName` `"1.1.0"` → `"1.1.1"`. Not yet device-confirmed.
+
+## §363 - a "Kleinigkeiten" punch-list batch - ten small, mostly independent items, built and committed together at the user's own request ("bitte nicht jedes Mal ein Version Bump und Build") (v1.1.2)
+
+1. **`Morgen` tagging fix.** Retagged `NOUN,OTHER` (frequency 561) in `dictionaries/de/dict.tsv` so the
+   lower-case adverb "morgen" ("tomorrow") is no longer force-capitalised by §6 rule 3 the way the pure noun
+   "Morgen" ("morning") correctly still is.
+
+2. **`fröhlich` capitalisation report - withdrawn, no code change.** Investigated on the user's report that
+   typing "Fröhlich" (their own surname) got silently lower-cased; the user re-checked and could no longer
+   reproduce it ("Meine Diagnose... kann ich nicht mehr bestätigen"). No fix applied - nothing was found to
+   be actually wrong once re-checked live.
+
+3. **D-404-followup: dual-casing chips for a genuinely ambiguous noun (new S-11).** A word like "Weg"/"weg"
+   (`NOUN,OTHER`) previously only ever showed one casing in the suggestion bar, since capitalisation is
+   derived from live context, never from a candidate's own cased form. New `SuggestionController.Kind.
+   AMBIGUOUS_CASE` chip, built by `ambiguousCasingChips()`: both casings offered while the composing token is
+   only a prefix of the word, only the *other* casing once it exactly matches (S-02, unconditional, no
+   exception for autocorrect being off). `excludeAmbiguousCasingWords()` drops the same candidates from the
+   ordinary ranked list so they are never shown twice.
+
+4. **`OK` autocorrect-to-`Öl` fix.** Reported directly ("Ok" kept correcting to "Öl"). Raised `OK`'s
+   frequency in `dict.tsv` from 46 to 800 - `CorrectionConfidence`'s own ratio-based override formula was
+   recomputed by hand and should not have fired at any of the three built-in aggressiveness levels at the
+   old frequency either, so the raise is independently justified regardless of root cause. The actual
+   trigger turned out to be the user's own *personal* blacklist entry for "ok" (invisible to this session,
+   routing the word through the far more permissive `forUnknownToken` path instead of the protected
+   `forKnownWordOverride` one) - removed by the user directly in the app; the frequency raise stays as a
+   confirmed-valid fix on its own merits.
+
+5. **D-404-followup: raw-coordinate correction now vetoes a split too (A-05).** Reported directly
+   ("Trobaner" splitting at the "b" instead of correcting to "Trojaner"). `finalizeAndCommit()`'s T-02/T-03
+   raw-coordinate-correction search now runs *before* the split decision (previously computed only
+   afterwards, as an unprotected last resort) and a non-null result vetoes the split exactly like
+   `bestCorrection()`'s own high-confidence flag already did - a split may only win once every safer
+   mechanism has already had its own chance and found nothing.
+
+6. **D-404-followup / D-410: German compound-forming-particle veto against a false split (A-05).** Reported
+   directly ("Schonfenster" splitting into "schon"/"Fenster"). New `LanguageRules.blocksAsCompoundPrefix`
+   interface method (German-bound per D-410, like every other grammar veto in this section - explicit user
+   request, "muss fest ans deutsche Sprachpaket gebunden sein"), implemented in `GermanRules` against a
+   curated set of common adverbs/particles (`schon`, `wohl`, `hoch`, `tief`, `voll`, `halb`, `fern`, `nah`,
+   `kaum`, `fast`) that only vetoes a split when the right half is itself a known noun - each particle is
+   also an ordinary standalone word, so "schon gut" still splits normally. Wired into `TokenRepair.
+   candidateAt()` right after the existing "both nouns" veto. 3 new `TokenRepairTest` cases (the veto firing,
+   the veto *not* firing against a non-noun right half, and `NoOpLanguageRules` staying unaffected -
+   confirms the D-410 language-binding).
+
+7. **D-404-followup: A-12's deferred space now materialises correctly after a protected abbreviation.**
+   Reported directly ("bzgl." showed the pending-space dot but the space never actually landed once the next
+   word started, even though the auto-capital was correctly suppressed). `shouldMaterializeSpace()`
+   previously treated Shift being off at a sentence-terminator position as *always* meaning a deliberate
+   user override (correct at a genuine sentence end) - wrong for a known abbreviation/enumerator, where §6's
+   own "No Sentence Start After Known Abbreviations and Enumerators" rule means Shift is correctly never
+   armed there in the first place, nothing to override. Fixed by re-deriving `sentenceStartBefore(ic)` fresh
+   at the space decision (the same check `armShiftForNextWord` itself already uses) to tell "never armed"
+   apart from "deliberately overridden" - only the latter still suppresses the space.
+
+8. **D-36-followup: clipboard peek button mid-text (new V-04).** V-01's own direct-paste chip only ever
+   appeared once, right when a field opened - gone for good the moment anything was typed, with no way back
+   short of leaving and re-entering the field. New button shares V-03's clear-button square (mutually
+   exclusive visibility) whenever the clipboard holds a clip fresher than V-01's own 5-minute window and the
+   chips are not already showing, independent of composing state. A tap finalises any in-progress word via
+   `finalizeAndCommit(ic, "")` (the same call `toggleLanguage()` already relies on to close out a mid-word
+   token before switching context) and shows the V-01/V-02 chips exclusively; the caret's next move reverts
+   the bar to normal on its own via the existing `onUpdateSelection` -> `reclaimEnabledRunnable` ->
+   `showSuggestions()` path, no dedicated "close peek" code needed. The freshness flag
+   (`clipboardPeekAvailable`) is cached and only recomputed at the handful of points it could plausibly
+   change (field open, a `ClipboardManager.OnPrimaryClipChangedListener` firing, the caret settling) rather
+   than on every keystroke, so `setSuggestionBarItems()` - which runs on every keystroke - stays free of a
+   live clipboard query.
+
+9. **D-404-followup: Learned Words editor - Save moved into the dialog's own button row, plus a
+   frequency/last-used info line.** The old Save icon sat right next to the text field, next to Copy, where
+   it was repeatedly mis-tapped for Forget; moved down to the dialog's own neutral button (bottom row,
+   alongside Forget/Cancel) via `setNeutralButton`, enabled/disabled the same way as before (only when the
+   edit is a case-only correction of the original word, D-292). Also added a frequency/last-used line
+   (`DateFormat.getDateFormat`) above the category checkboxes, so a power user can judge an entry's real
+   standing - and how close it is to C-24's own expiry window - without leaving the dialog.
+   `activity_learned_words.xml`: the language and sort-order filter rows merged into one horizontal row
+   (both fit comfortably; stacking wasted vertical space).
+
+10. **D-362-followup: the "Gelernt: ..." loading chip's tick animation starts on its own first frame.**
+    Previously showed a static "…" placeholder until the view's `onAttachStateChangeListener` fired and
+    posted the first real animation tick - a visible one-frame gap before the dot animation actually
+    started. `SuggestionBarView` now seeds the label with the animation's own starting frame
+    (`LOADING_MAX_DOTS` dots) directly, matching what the `Runnable` itself starts from.
+
+No new tests beyond item 6's three (items 1/4 are data-only; items 9/10 are Android view glue this
+project's own convention already leaves untested; items 2/3/5/7/8 are either no-op or the usual untested
+`AdaptKeyService.kt` Android/`InputConnection` glue). 1196 -> 1199 unit tests. Spec: A-05 (items 5/6), A-12
+(item 7), new S-11 (item 3), new V-04 (item 8) all updated to the current, crystallised state - items 9/10
+are implementation-only polish with no spec-level requirement change, left undocumented there per this
+project's own "occasionally skippable for a trivial change" convention. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 418 -> 419, `versionName` `"1.1.1"` -> `"1.1.2"`. **Not yet
+device-confirmed** - items 1/4 were device-reported and should be spot-checked again; items 3/5/6/7/8/9/10
+are new/changed behaviour with no device pass yet at all.
+
+## §364 - D-36-followup regression fix - the clipboard peek button's own chips flashed and immediately vanished again (v1.1.3)
+
+Reported directly right after §363 shipped ("kurz angezeigt, verschwinden
+aber sofort wieder"). Root-caused, not guessed: `openClipboardPeek()`'s own `finalizeAndCommit(ic, "")` call
+generates an asynchronous `onUpdateSelection` echo - composing already empty by the time it lands, exactly
+[`suppressNextReclaimSpaceReset`]'s own D-123 precedent - which reaches `scheduleReclaimAndChipRefresh()`
+and, `RECLAIM_DEBOUNCE_MS` (100ms) later, silently overwrites the bar via `reclaimWordAtCaret()`'s/
+`reclaimEnabledRunnable`'s own `refreshSuggestions()`/`showSuggestions()` calls - neither of which has any
+idea the bar was just showing something special, the same class of race D-421-followup already found and
+fixed for D-36's field-open chip and D-142's credential list, just triggered reactively here instead of
+from a direct call site.
+
+Fixed with a short, self-expiring blackout window rather than a single-consume flag: unlike an ordinary
+suggestion tap, whether this particular `commitText("")` actually produces an echo at all depends on the
+target editor (composing may already have been empty, with nothing to commit), so a flag only ever cleared
+by the echo it is waiting for could stay wrongly armed and swallow the *next genuine* caret move
+indefinitely if that echo never arrives. New `reclaimChipRefreshSuppressedUntil` (a timestamp,
+`SystemClock.uptimeMillis()`-based) is armed by `openClipboardPeek()` for `RECLAIM_DEBOUNCE_MS +
+CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS` (100 + 250 = 350ms) right before its own `finalizeAndCommit()` call;
+`scheduleReclaimAndChipRefresh()` now no-ops entirely while still inside that window, covering both
+runnables it schedules in one place rather than patching each of their own eventual render calls
+separately.
+
+No new tests - the fix lives entirely in `AdaptKeyService.kt`'s own Android/`InputConnection` timing glue,
+the same untested class this project's convention already leaves untested throughout. 1199 unit tests
+unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 419 -> 420,
+`versionName` `"1.1.2"` -> `"1.1.3"`. **Not yet device-confirmed** - needs a real device check: tap the
+clipboard peek button and verify the chips now stay up instead of vanishing within ~350ms.
+
+## §365 - D-404-followup (v3) - Learned Words editor's language/sort labels removed (v1.1.4)
+
+Reported
+directly right after §363's row-merge shipped: "Sprache:"/"Sortierung:" left too little width for the two
+spinners' own selected-value text, which was getting cut off. Removed both `TextView` labels from
+`activity_learned_words.xml` entirely (a spinner's own content already makes its purpose obvious without
+one, per the user's own call - "Die versteht man auch ohne") rather than shrinking them further; the two
+spinners now split the row's full width evenly. The now-unused `learned_words_language`/`learned_words_sort`
+string resources removed from all three locales (en/de/el) - nothing else referenced them.
+
+No new tests - pure Android layout/resource change, the same untested layer this project's convention
+already leaves untested throughout. 1199 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 420 -> 421, `versionName` `"1.1.3"` ->
+`"1.1.4"`. **Not yet device-confirmed** - needs a real device/screen check that both spinners' selected
+values now display in full.
+
+## §366 - D-376 - new S-12, a "km/h" speed-unit completion chip (v1.1.5)
+
+Two independent trigger points,
+both mirroring S-08's own "Uhr" time-suggestion reasoning exactly: **Trigger 1** - the composing token is
+exactly `"km"` - offers the full `"km/h"` as a completion, injected into `refreshSuggestions()`'s own
+`extras` list (`MAX_PRIORITY_SUGGESTION_SCORE`, same shape as `rawCoordinateSuggestion`/
+`autocorrectSplitChip` right beside it) so it competes directly with the plain `"km"` candidate; **Trigger
+2** - `"km/"` has just been committed (the user typed the `/` themselves) - offers the glued remainder
+`"h"`, no leading space (the `/` is already there). New pure `suggestion/SpeedUnitCompletion`
+(`completionForComposing`/`suffixAfterSlash`) mirrors `TimePattern`'s own "just-typed shape" reasoning -
+`"km/h"` can never itself be a tokenisable dictionary word (it contains `/`), so no amount of bigram/
+frequency data could ever surface it on its own. Deliberately **not** gated through `LanguageRules` unlike
+S-08's own German-only "Uhr" - `"km/h"` is the identical SI notation in German and English alike, not a
+genuinely language-specific word (a deliberate design choice, not an oversight - see S-12's own KDoc).
+
+Wired at both of the same two structural points S-08 already needed, for the identical reason:
+`speedUnitSuffixSuggestion()` alongside `timeSuggestion()` in `showNextWordPredictions()` (the common case
+- `/` typed immediately after `"km"` with nothing in between, so composing was still `"km"` and the commit
+went through the ordinary word-commit path), and `showSpeedUnitSuggestion(ic)` alongside
+`showTimeSuggestion(ic)` in `finalizeAndCommit()`'s composing-already-empty branch (the rarer case - `"km"`
+was finalised by a Space first, `/` typed as its own fresh standalone token afterwards).
+
+One real bug caught before shipping, not after: a first-draft `\bkm/$` regex for Trigger 2 used a plain
+`\b` word-boundary before `"km"`, which would have silently rejected the single most realistic case,
+`"50km/"` - `\b` requires a transition between a `\w` and a non-`\w` character, and a digit is itself `\w`,
+so there is no boundary at all between `"5"` and `"k"`. Fixed with a negative lookbehind for a preceding
+Unicode *letter* specifically (`(?<![\p{L}])km/$`) - nothing immediately before `"km"` (string start), a
+digit, whitespace or punctuation are all fine, only a preceding letter disqualifies it (correctly rejects
+`"akm/"`, where `"km"` is the tail of a longer word, not its own token). Caught by writing the test for the
+realistic `"50km/"` case before trusting the regex, not by a device report.
+
+13 new `SpeedUnitCompletionTest` cases (both triggers, case-insensitivity, the digit-vs-letter boundary
+distinction, empty input). 1199 -> 1212 unit tests. Spec: new S-12. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 421 -> 422, `versionName` `"1.1.4"` -> `"1.1.5"`.
+**2026-09-03: device-confirmed working.**
+
+## §367 - D-377 - new A-13, evidence-gated missed-Backspace recovery, chip-only (v1.1.6)
+
+Recovers a badly
+garbled token where a Backspace was missed and a neighbouring key was hit instead (e.g. `"welxmche"` for
+`"welche"` - the user's own worked example, an accidental `x` for `c` then a Backspace attempt that landed
+on `m`). A first proposal (widen A-09's own candidate length window so `wideFuzzyNeighbours` could even
+reach a target 2 characters shorter) was discussed and explicitly rejected by the user: that would have
+loosened acceptance for *every* long unresolved token generically, with dictionary-membership-after-
+arbitrary-deletion as the only signal - real risk of coincidental false corrections with no actual
+connection to what was typed. Root-caused before either proposal, not guessed: `correctionCandidatesInternal`
+fetches candidates within `token.length ± 1` - shared by both the ordinary (cost-2) and wide (cost-4)
+searches, but only wide enough for the ordinary one, so `"welche"` (6 chars) never even reaches the edit-
+distance comparison from `"welxmche"` (8 chars) regardless of cost budget. Verified empirically via a
+throwaway probe test (removed again after use) before either proposal, not by hand-arithmetic alone: the
+pure edit cost is exactly 4 (two deletions x `INDEL_COST` 2), sitting right at `WIDE_CORRECTION_COST`'s own
+ceiling.
+
+The user's own preferred design instead - concretely recognise what happened at the *input* level and
+reverse exactly that action, mirroring T-02/T-03's own `RawCoordinateCorrection` precedent (consult the
+real tap, not just the dictionary) rather than A-09's dictionary-coincidence shape. New pure
+`suggestion/MissedBackspaceRecovery`: for each composing-token tap position (from index 1 onward, mirroring
+what a real Backspace press could have reached), checks whether that tap's own recorded raw coordinate
+landed within one key's own width/height of Backspace's actual on-screen position (the user's own
+calibration, "ein Abstand von einer Taste reicht aus" - implemented as Backspace's rect expanded by exactly
+one more of its own half-width/half-height in each direction, resolution-independent by construction). Only
+a genuine near-Backspace tap becomes a removal candidate; only that character and its immediate predecessor
+are ever removed together - never an arbitrary deletion search over unrelated positions. New
+`AdaptKeyboardView.deleteKeyGeometry()` (mirrors `charKeyGeometry()`, filtered to `KeyCode.DELETE` instead
+of `KeyCode.CHAR`) supplies Backspace's own geometry; `composingTaps` already recorded the raw taps needed,
+no new input-tracking plumbing required. `AdaptKeyService.missedBackspaceCorrection()` mirrors
+`rawCoordinateCorrection()`'s own shape and is gated identically to `rawCoordinateSuggestion` in
+`refreshSuggestions()` - deferred pass only, only once `candidates.isEmpty()` (the user's own explicit "das
+Wort komplett unbekannt ist" condition, satisfied by the same "nothing else found anything" signal
+`rawCoordinateSuggestion` already relies on for its identical framing). **Chip-only per the user's own
+explicit call** ("Das wäre sonst zu riskant") - fed only into `refreshSuggestions()`'s own `extras` list,
+never wired into `finalizeAndCommit()`'s silent-correction chain the way `rawCoordinateCorrection()` itself
+is.
+
+8 new `MissedBackspaceRecoveryTest` cases (the worked example itself, the one-key-away boundary exactly and
+one unit past it, no near-Backspace tap, the first-character exemption, multiple independent candidates in
+one token, a tap-count mismatch, a too-short token). 1212 -> 1220 unit tests. Spec: new A-13.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 422 -> 423, `versionName` `"1.1.5"` ->
+`"1.1.6"`. **Not yet device-confirmed** - needs a real device check: deliberately mistype a word so a wrong
+key lands where Backspace should have, on a badly garbled multi-typo token, and verify the corrected word
+appears as a chip (never silently applied).
+
+## §368 - D-422 - English "Wortfamilien" parity project - real POS tags, Wiktionary-sourced inflection forms, lemma-linking, for `app/src/main/assets/en/dict.tsv` (v1.1.7)
+
+User's own framing: the German
+dictionary should not set a quality bar the English one falls short of, and completeness genuinely helps
+autocorrect quality even though English capitalisation itself barely benefits (§6 mostly doesn't apply to
+English common nouns). Mirrors the German Wortfamilien project (§322) end to end - same source
+(wiktextract/kaikki.org, MIT tool / CC BY-SA content), same scope discipline (only complete *existing*
+`dict.tsv` lemmas, never grow the vocabulary itself - 223,481 of 259,374 extracted Wiktionary words had no
+existing `dict.tsv` lemma and were correctly skipped), same collision rule (never overwrite an existing
+row), same append-only merge (file stays frequency-sorted, new rows added at the tail, never resorted).
+
+**Real difference from §322, confirmed empirically before generating anything, not assumed:** `en/dict.tsv`
+had *zero* real POS tags going in - only `OTHER`/`PROPER_NOUN` from the original casing-heuristic seed
+(same crude starting point German itself had before §322, just never since upgraded for English). No
+separate "link what's already there" phase (German's own §320/§321, done before §322's own generation
+pass) was needed - starting from Wiktionary data from the very first step let tagging and generation happen
+in one integrated pass instead of two.
+
+**Source difference from German, discovered live, not assumed:** kaikki.org has no small
+English-as-target-language extract the way it does for German (`de-extract.jsonl.gz`) - since the *source*
+Wiktionary edition already is English, "English-target" entries are just the bulk of its own full,
+cross-language dump (`raw-wiktextract-data.jsonl.gz`, 2.6GB compressed / 22.9GB uncompressed, ~9x
+German's own `de-extract.jsonl.gz`). Filtered to `lang_code=="en"` in one single pass (not four) extracting
+nouns/verbs/adjectives/prepositions together, since re-streaming a file this size four times would have
+cost real, avoidable time.
+
+New `dictionaries/en/extract_wiktionary.py` (nouns: plural; verbs: 3rd-person-singular/present-participle/
+simple-past/past-participle; adjectives: comparative/superlative; prepositions: closed-class, tagging
+only, no generation) + `merge_wiktionary.py` (tags existing lemmas, links/generates missing forms with a
+frequency calibrated from already-linked pairs' own median form/lemma ratio - noun 0.407 n=9782, verb
+0.484 n=14202, adjective 0.066 n=271, all in the same order of magnitude as German's own §322 ratios
+(nouns 0.355, verbs 0.417), a reassuring cross-language sanity check, not merely a coincidence).
+
+**Two real bugs caught by spot-checking before finalising, not shipped-then-found** (mirrors §322's own
+six write-verify-revert verb rounds - this project's now-established discipline of not trusting a Wiktionary
+merge without checking real output rows first):
+1. **Case-insensitive false match.** The archaic dialectal verb `"gan"` (attested past tense `"went"`)
+   case-insensitively matched an unrelated, already-present `dict.tsv` entry `"Gan"` (freq 47, `OTHER`) -
+   `"went"` would have been wrongly lemma-linked to `"Gan"` instead of `"go"`. `dict.tsv`'s own casing
+   convention ("the most frequent surface form") means a row whose casing differs from Wiktionary's own is
+   real evidence of a *different* word, not a casing quirk of the same one - fixed by requiring an exact
+   case match before accepting any lemma or form match at all (a missed completion is a far safer failure
+   than cross-contaminating two unrelated words); a matching second guard prevents generating a *new* row
+   that would collide case-insensitively with an existing differently-cased one, preserving `dict.tsv`'s
+   own case-insensitive-uniqueness invariant (verified after the fix: 0 case-insensitive duplicates in the
+   merged file).
+2. **Whole-entry archaic sense.** `"child"` has a genuine but archaic (Shakespeare-era, 1596-1608) Wiktionary
+   verb sense, "(archaic, ambitransitive) To give birth" - not caught by the form-level qualifier filter
+   (`EXCLUDE_QUALIFIERS`, itself needed for real cases like `"gooder"`/`"goodest"` instead of `"better"`/
+   `"best"` for `"good"`, and `"yode"`/`"goed"` instead of `"went"` for `"go"`) since Wiktionary marks
+   whole-sense archaism via each sense's own gloss text, not the `forms[]`-level tags that filter already
+   checks. Fixed with a second, entry-level filter: skip an entry only when *every* sense's gloss starts
+   with an archaic/obsolete/dialectal/nonstandard/rare/proscribed qualifier in parentheses (a word with
+   both an archaic and a live modern sense keeps its modern one).
+
+**Net result:** `dict.tsv` 90,026 -> 116,413 rows (+26,387: 16,798 noun forms, 8,040 verb forms, 1,549
+adjective forms), 35,487 lemmas tagged with a real POS from Wiktionary, 29,315 already-present forms newly
+linked to their lemma, 156 prepositions tagged. `OTHER` (the old "unknown" fallback) dropped from 55,878 to
+16,013 words - frequency-weighted, **85.2% of the original 90,026 words' combined real-world occurrence
+count now carries a genuine POS tag** (was 0%; exceeds German's own §322 frequency-weighted coverage,
+consistent with English's structurally simpler morphology needing less generation to reach full coverage).
+`bigram.tsv`/`hints.tsv` untouched, confirmed by diff. The Wiktionary extract scripts and their own
+intermediate TSVs (`wiktionary_nouns.tsv`/`_verbs.tsv`/`_adjectives.tsv`/`_prepositions.tsv`) committed to
+`dictionaries/en/`, mirroring `dictionaries/de/`'s own precedent - the raw 2.6GB source dump itself is not
+(same as German's own `de-extract.jsonl.gz`, never checked in).
+
+No new tests - data-only, `en/dict.tsv` is a bundled asset read through the same already-generic,
+already-tested `DictionaryAssetParser`/`bulkImport` pipeline every language already uses (the `lemma`
+column, D-412, was already fully generic across languages with zero English-specific code needed). 1220
+unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+423 -> 424, `versionName` `"1.1.6"` -> `"1.1.7"`. **Not yet device-confirmed** - worth a real-device check
+that English suggestions/autocorrect now behave noticeably better for common inflected forms and that
+nothing regressed for already-well-known words.
+
+## §369 - D-423 - "daß" and the Swiss ss-spelling "Strasse" removed outright from `dict_de.tsv`, never blacklisted (v1.1.8)
+
+User's own explicit condition, stated directly after a blacklist-
+based fix was proposed and implemented first: "Das soll nicht auf die Blacklist, sondern ganz aus dem
+Wörterbuch fliegen." A blacklist-based approach (mirroring D-206's existing pre-1996-spelling-reform-relic
+mechanism, which already covered "daß") was built, then explicitly reverted in favour of outright removal
+once the user clarified - kept the dictionary/pack side effects (this section) but dropped the blacklist
+code and its own new unit test entirely.
+
+`dict_de.tsv`: 3 rows removed outright - `"daß"` (868, `OTHER`), `"Strasse"` (92, `NOUN`), `"Strassen"`
+(49, `NOUN,PROPER_NOUN`, plural, lemma-linked to `"Strasse"`). `"daß"` also removed from `GermanRules.
+BUNDLED_CONFUSABLES_BLACKLIST` (D-206) - redundant once gone from the dictionary entirely, and no longer
+the intended mechanism for this word per the user's own explicit correction. Deliberately narrow scope,
+checked directly rather than assumed: the unrelated surname `"Strasser"` (and its own `"Strassers"`/
+`"Strassern"` inflections) is untouched - a real person's name is not an error to correct, the identical
+proper-noun exclusion D-206's own rationale already establishes for `"Keßler"`/`"Reuß"`/`"Elsaß"`;
+`"Strassenbahn"`/`"Strassenverkehr"` (2 further Swiss-spelling compounds found via a `grep -ic "strasse"`
+scan of the whole file, 7 total hits) were also left untouched, out of scope of what was actually asked -
+worth a follow-up if the user wants the same treatment extended to compounds.
+
+`dictionaries/de/version.txt` 36 -> 37, pack rebuilt and verified byte-identical after unzip (`dict.tsv`/
+`bigram.tsv`/`hints.tsv` diffed byte-for-byte, `version.txt` content checked), `LanguagePackCatalog`
+version 36 -> 37. No new tests (data-only; the blacklist mechanism itself already has its own coverage,
+untouched by this change). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 424 -> 425, `versionName` `"1.1.7"` -> `"1.1.8"`. Not yet
+device-confirmed.
+
+## §370 - D-424 - Greek "Wortfamilien" parity project - real POS tags, Wiktionary-sourced inflection forms, lemma-linking, for `dictionaries/el/dict.tsv` (v1.1.9)
+
+Same project as D-422 (English),
+requested right after it as a direct follow-on ("soll auch das griechische Wörterbuch genau so aufbereiten
+wie das deutsche und englische"). `dict_el.tsv` (120,000 words) started from the identical crude baseline
+as English had - only `OTHER`/`PROPER_NOUN`, no `lemma` column, zero real POS tags.
+
+**Confirmed before writing any extraction code, not assumed:** unlike English, kaikki.org does have its
+own small Greek-target extract (`el-extract.jsonl.gz`, 106MB compressed - the same shape German's own
+extract has, not English's 2.6GB full-dump situation). **Genuinely more complex morphology than German or
+English**, verified against real sample entries before designing anything: Greek nouns decline 4 cases x 2
+numbers (up to 8 tag combinations, though case syncretism collapses many to the same surface form);
+adjectives additionally decline by gender on top of that (up to 24+ combinations) plus comparative/
+superlative; verbs carry an aspect-based conjugation table (present/imperfect tenses x person x number x
+active/passive voice) averaging ~20 forms per verb, up to 90 for the most richly-documented ones - far too
+many, and too irregular, to hand-name slot by slot the way German's Präsens x6/Präteritum x6 or English's
+4-slot verb model did.
+
+**Deliberately generic extraction design as a direct result:** `dictionaries/el/extract_wiktionary.py`
+extracts every distinct, grammatically-tagged form differing from the lemma itself as its own row
+(`word\tform`, arbitrarily many rows per lemma) rather than fixed named columns - `merge_wiktionary.py`
+groups them back per lemma at merge time. Periphrastic constructions (future "θα γράφω", subjunctive "να
+γράφω" - both genuinely multi-word) are excluded for free by the same "form contains a space" filter
+already used for German/English, no Greek-specific handling needed at all. Otherwise identical scope
+discipline (only complete existing lemmas), collision rule, and case-match guard as D-422's own English
+round (see that round's own write-up for the "went"/"Gan" false-match bug the guard exists to prevent) -
+reused unchanged, not reinvented.
+
+**Genuinely surprising, verified-not-assumed finding:** unlike German/English, Greek's calibrated
+generated-form frequency ratio came out *above* 1.0 for verbs (1.40) and adjectives (1.39), against nouns'
+more expected 0.48 - Greek's own citation convention (1st-person-singular-present for verbs, masculine-
+singular-nominative for adjectives) is a grammatically *rarer* form in real encyclopedic prose than the
+forms being generated. Confirmed directly against real `dict.tsv` rows, not just the aggregate ratio:
+`"γράφει"` ("he/she/it writes", freq 1661) vastly outranks its own lemma `"γράφω"` ("I write", freq 61);
+`"μεγάλη"` (feminine "big", freq 10601) outranks the masculine citation form `"μεγάλος"` (freq 1566). The
+ratio-from-already-matched-pairs calibration (the same mechanism §322/D-422 already established) handled
+this correctly with no special-casing, precisely because it measures the real corpus rather than assuming
+"the lemma is the most common form."
+
+**Net result:** `dict.tsv` 120,000 -> 154,387 rows (+34,387: 21,210 noun forms, 6,500 verb forms, 6,677
+adjective forms), 13,958 lemmas tagged with a real POS, 33,493 already-present forms newly linked to their
+lemma, 42 prepositions tagged. `dictionaries/el/version.txt` 2 -> 3, pack rebuilt (`dict.tsv` + `bigram.tsv`
+- no `hints.tsv`, Greek never had one) and verified byte-identical after unzip, `LanguagePackCatalog`
+version 2 -> 3. Extraction/merge scripts and their intermediate TSVs committed to `dictionaries/el/`,
+mirroring `dictionaries/de/`'s and `dictionaries/en/`'s own precedent; the raw 106MB source extract itself
+is not (same as the other two languages' own raw dumps).
+
+**Separately noted, deliberately not fixed this round (pre-existing, out of scope):** 5,359 `dict_el.tsv`
+rows (of an original 6,854) still carry a completely empty POS field, not even `OTHER` - a pre-existing
+data gap from before this round, untouched by it; worth a dedicated look if the user wants it addressed.
+
+No new tests - data-only, same as D-422 (English). 1220 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 425 -> 426, `versionName` `"1.1.8"` ->
+`"1.1.9"`. **Not yet device-confirmed** - worth a real-device check that Greek suggestions/autocorrect now
+behave noticeably better, especially given the surprising verb/adjective frequency finding above.
+
+## §371 - D-425 - the 5,359 empty-POS `dict_el.tsv` rows flagged in §370 fixed, on explicit user request the same day (v1.1.10)
+
+Not individually reviewed with native-fluency linguistic judgement the way
+the German/English rounds' own noise cleanups were - this session has no Greek fluency to do so with the
+same confidence, disclosed directly rather than overclaimed. A structural check instead: every one of the
+5,359 words consists purely of Greek-script characters except 6, confirmed genuine extraction noise, not
+guessed by eye - 5 of them (`"ισοτιµίας"`/`"τοµέα"`/`"ισοτιµία"`/`"τιµή"`/`"εφαρμογή"`) are Unicode-
+confusable duplicates of an already-present, correctly-spelled, far-higher-frequency word, using U+00B5
+MICRO SIGN where the correct spelling uses U+03BC GREEK SMALL LETTER MU (visually near-identical, different
+codepoint) - confirmed by direct lookup, e.g. `"τιμή"` (correct mu) already present at freq 2307, `NOUN`,
+vs. the confusable `"τιµή"` (micro sign) at freq 4 with no tag at all; removed outright, same treatment as
+D-402's own confirmed-noise removals for German.
+
+The remaining 5,354 rows - all frequency 4-24, the very bottom of the corpus, matching D-402's own finding
+that low-frequency `OTHER`-adjacent rows are where noise concentrates, but the overwhelming majority
+reading as genuine rare Greek word-forms and proper nouns/surnames on inspection - tagged `OTHER` outright
+rather than individually classified, matching the same default every other not-yet-specifically-tagged word
+in this dictionary already carries; a future Wortfamilien-style pass could still upgrade any of them to a
+real POS the same way §370/D-424 already did for the rest of the dictionary.
+
+`dict_el.tsv` 154,387 -> 154,382 rows (5 noise rows removed; the 5,354 `OTHER` retags touch existing rows,
+no count change from those). `dictionaries/el/version.txt` 3 -> 4, pack rebuilt and verified byte-identical
+after unzip, `LanguagePackCatalog` version 3 -> 4. No new tests (data-only). 1220 unit tests unchanged, all
+green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 426 -> 427, `versionName`
+`"1.1.9"` -> `"1.1.10"`. Not yet device-confirmed.
+
+## §372 - D-426 - a real bug in §370/D-424's own Greek extraction, found via a follow-up "check for markup/noise like the German cleanup found" request, fixed at the root (v1.1.11)
+
+D-424's generic form-
+extraction (necessary given Greek's own morphological complexity - see that section's own write-up) turned
+out too permissive for a handful of real Wiktionary data shapes that are not themselves standalone words -
+confirmed via post-ship spot-check, not caught before the first run: a bare declension-table ending
+documented with a leading hyphen (`"-ῶνος"` - "this class's genitive plural ends in -ῶνος", not itself a
+word), a footnote-number artifact glued onto a form (`"απεδέχθη3ο"`), a cross-referenced Latin-script
+synonym or transliteration mistaken for a Greek form (`"Urticaria"`, `"Korinthios"`), and genuine alternate
+spellings joined by a `/` or `\` separator into one unparsed string (`"άρκεσε/ήρκεσε"` - the augmented and
+unaugmented aorist, both genuinely valid, never split apart).
+
+Fixed at the root in `extract_wiktionary.py`: split on `/`/`\` first (recovering both real forms instead of
+losing both), then require every accepted form to consist purely of Greek-script characters - a single
+check that subsumes the digit/punctuation/Latin-letter/leading-hyphen cases individually, since none of
+those shapes is ever a genuine Modern Greek word form. The same follow-up also surfaced 24 more instances
+of §371/D-425's own Unicode-confusable-mu bug (U+00B5 MICRO SIGN vs U+03BC GREEK SMALL LETTER MU) that
+round's own fix had missed, since it only scanned the empty-POS subset, not the whole file - this round's
+full-file scan found and removed all 24, each individually confirmed against an existing, correctly-
+spelled, far-higher-frequency counterpart first (e.g. confusable `"µε"` vs. the correct, already-
+`PREPOSITION`-tagged `"με"`, freq 274401). Three genuine unit-symbol rows (`"χλμ²"`/`"χμ²"`/`"μ²"`) and the
+ordinal marker `"Βʹ"` confirmed NOT to be confusable duplicates and left untouched.
+
+Re-derived from the pre-D424 original (120,000 rows, retrieved from git history) with the fixed extraction
+script, rather than patching the already-corrupted merged file, for full internal consistency. `dict.tsv`
+120,000 -> 154,338 rows this time (vs. §370's own first, now-superseded 154,387 - the difference is
+entirely the ~30 corrupted rows this round prevents from ever being generated, plus the 24 mu-duplicates
+now caught up front). Every check from §370/§371 re-run clean: 0 case-insensitive duplicates, 0 empty POS
+fields, 0 non-positive frequencies, 0 orphaned lemma links, all 14 distinct tag combinations in canonical
+enum order (verified in Python, not shell `sort -u` - Git Bash's own `sort` does not collate Greek UTF-8
+correctly on this machine and printed visually-duplicate-looking lines for genuinely-identical combos, a
+false alarm caught and re-verified, not a real data issue).
+
+`dictionaries/el/version.txt` 4 -> 5, pack rebuilt and verified byte-identical after unzip,
+`LanguagePackCatalog` version 4 -> 5. No new tests (data-only). 1220 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 427 -> 428, `versionName` `"1.1.10"` ->
+`"1.1.11"`. Not yet device-confirmed.
+
+## §373 - D-427 - `en/dict.tsv` LaTeX-markup noise cleanup, the same D-402-style follow-up that also surfaced §372/D-426's Greek bug (v1.1.12)
+
+Checked directly, not assumed: `en/dict.tsv` carried
+essentially the same class of Wikipedia-math-markup leakage German's own D-402 round found and removed
+(`cfrac`/`hline`/`bigl`/`nabla`/`qquad`/`bmod`/`pmod`/`vdots`/`hbar`/`sinh`/`cosh`/`sgn`/`notin`/`binom`
+plus `const`/`gzip`/`grep`/`ptr`/`bool`/`attr` all present with real frequencies), so a wider systematic
+scan for further LaTeX command names beyond that starting list found even more (`mathbf`/`mathrm`/
+`mathbb`/`mathcal`/`mathfrak`/`mathsf`/`operatorname`/`boldsymbol`/`widehat`/`widetilde`/`cdots`/`ldots`/
+`ddots`/`dotsb`/`dotsc`/`qquad`/`bigl`/`bigr`).
+
+**Deliberately did NOT blanket-copy German's own removed-token list**, since the reason those tokens were
+noise for German does not automatically transfer to English: for German they have *zero* German meaning
+(pure markup/Latin-jargon leakage, unconditionally safe to remove), but several - `sort`/`void`/`wedge`/
+`cot`/`because`/`therefore`/`complement` - are genuine, common English words that merely happen to share a
+spelling with a LaTeX command name, and others (`sinh`/`cosh`/`sgn`/`vdash`/`oplus`/`notin`/`nabla`/`hbar`/
+`binom`/`limsup`/`liminf`/`malloc`/`gzip`/`grep`/`const`/`bool`/`struct`/`typedef`/`nullptr`/`ptr`/
+`printf`/`arg`/`args`) turned out to be genuinely Wiktionary-attested English words too (mathematical/
+physics terms used in real prose, or computing jargon Wiktionary's own English edition documents as real,
+if narrow-register, vocabulary) - confirmed directly by checking whether each one already had real
+Wiktionary-sourced inflected forms from §368/D-422's own merge (13 of them did: `binoms`/`bools`/
+`callocs`/`consts`/`coshes`/`hbars`/`mallocs`/`nablas`/`nullptrs`/`ptrs`/`sinhs`/`structs`/`typedefs`,
+plus their own further inflections - all correctly kept, not orphaned).
+
+Only kept the tokens with **no meaning as an actual thing at all, ever - pure typesetting/formatting
+directives** (`mathbf`="render bold", `widehat`="draw a wide hat accent", `cdots`/`ldots`/`ddots`/`vdots`
+="draw dots in this pattern", `operatorname`="format as an operator name", and so on - nobody uses these
+as words in a sentence, unlike `nabla`/`hbar`/`sinh` which genuinely name a real mathematical/physical
+concept people do write about) on the removal list. 25 rows removed outright, individually confirmed to
+have zero orphaned child forms first. `en/dict.tsv` 116,413 -> 116,388 rows.
+
+Bundled directly in `app/src/main/assets/en/` (D-280 - English has no separate downloadable language pack
+the way German/Greek do), so no `version.txt`/pack-zip/`LanguagePackCatalog` step here, unlike §372's own
+Greek fix. No new tests (data-only). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 428 -> 429, `versionName` `"1.1.11"` -> `"1.1.12"`. Not yet
+device-confirmed.
+
+## §374 - D-369 - accepting a suggestion chip mid-text no longer shoves a space between the completed word and punctuation/a hyphen that already sits directly after it (v1.1.13)
+
+Discussed with the user
+first (this project's own rule for a design decision with real trade-offs): the existing D-144/D-183
+"don't double an already-present space" check (`onSuggestionClicked()`'s `Kind.NORMAL`/`COMPOUND`/
+`AMBIGUOUS_CASE` branches) only ever tested the real document character right after the composing token
+for whitespace - reclaiming a word already sitting directly before sentence/clause punctuation (e.g. its
+own sentence's trailing `.`) or before an existing hyphen-compound continuation (e.g. `"Rhein"` in
+`"Rhein-Main-Gebiet"`) got a wrongly-inserted space (`"wort ."`, `"Rhein -Main-Gebiet"`). Two scope
+questions were put to the user directly and both confirmed: (1) reuse the existing, already-curated
+`SPACE_EATING_PUNCTUATION` set (`.,!?;:)`) A-12/D-29 already uses for the mirror-image case, rather than a
+broad "any punctuation" check - a closing quote is deliberately excluded, matching D-370's own settled
+"not worth the open/close-disambiguation complexity" position; (2) also cover the hyphen (B-01), a
+structurally identical risk not named in D-369's own one-line spec text but confirmed real and worth
+closing in the same round.
+
+The three duplicated copies of the trailing-space check (`NORMAL`, `COMPOUND`, `AMBIGUOUS_CASE`) are now
+one shared `suggestionTrailingSpace(ic)` (placed next to `isSpaceEatingPunctuation()`, which it reuses),
+so all three suggestion-chip kinds - and, through `NORMAL`'s own shared computation, the D-122 split chip
+and the A-06 merge chip too - are fixed in one place rather than three separately-maintained ones. No new
+tests (the fix lives entirely in `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per
+this project's own convention). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Spec: new §41. `versionCode` 429 -> 430, `versionName` `"1.1.12"` ->
+`"1.1.13"`. **2026-09-03: device-confirmed working.**
+
+## §375 - D-428 - the V-04 clipboard-peek button flashed back visible for one render right after its own V-03 clear button emptied the clipboard (v1.1.14)
+
+Reported directly: tap the peek button, tap the clear
+button that appears alongside its chips - clipboard clears, chips and clear button vanish as expected, but
+the peek button itself briefly reappears before disappearing again on the next tap/keystroke. Root-caused
+by reading the actual code, not guessed: `clearClipboardFromSuggestionBar()` calls `clearClipboard()`
+(synchronously empties the system clipboard) then `clearSuggestions()` (synchronously calls
+`setSuggestionBarItems(emptyList())`, which derives the peek button's visibility from the cached
+`clipboardPeekAvailable` field) - but that field is otherwise only refreshed by the *asynchronous*
+`ClipboardManager.OnPrimaryClipChangedListener` notification, which had not yet fired by the time
+`setSuggestionBarItems()` read it, so it briefly rendered the stale, still-`true` value. The next real
+`setSuggestionBarItems()` call (typing, a caret move) always saw the by-then-correct `false` value, matching
+exactly the "briefly there, then properly hidden" symptom reported.
+
+Fixed by calling `updateClipboardPeekAvailability()` explicitly, synchronously, between `clearClipboard()`
+and `clearSuggestions()` - `clearClipboard()`'s own Binder call has already emptied the clipboard by the
+time it returns (only the *listener notification* about the change is asynchronous), so this recomputes the
+field correctly in time rather than waiting for that notification. `updateClipboardPeekAvailability()`'s own
+KDoc call-site list updated to name this new trigger point. No new tests (the fix lives entirely in
+`AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per this project's own convention). 1220
+unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: V-04 gained the
+D-428 addendum. `versionCode` 430 -> 431, `versionName` `"1.1.13"` -> `"1.1.14"`.
+**2026-09-03: device-confirmed working.**
+
+## §376 - D-429 - learned bigrams and trigrams now carry their own `last_touched` timestamp, and the recency boost D-411 already gives individual learned words now applies to them too (v1.1.15)
+
+Explicit
+follow-up request: this was flagged but deliberately left out of both D-365 (§340, v1.0.92, the bigram
+ranking rescale) and W-05 (§344-§349, learned-word expiry) - "das hatten wir beim letzten Mal ausgelassen" -
+worth closing before wider release even though the practical effect is small. Design discussed and agreed
+first (this project's own rule for a ranking/algorithm change): reuse D-388/D-411's own established
+guarded-`ALTER TABLE` migration pattern and D-411's own 14-day/×1.5 recency constants unchanged, rather than
+inventing a second mechanism or recalibrating - "used within the last 14 days" is a general
+personal-relevance signal, not specific to which n-gram order it came from.
+
+**Schema/write path.** `TABLE_LEARNED_BIGRAMS`/`TABLE_LEARNED_TRIGRAMS` each gained a guarded
+`last_touched INTEGER NOT NULL DEFAULT 0` column (`ensureBigramLastTouchedColumn`/
+`ensureTrigramLastTouchedColumn`, called from `init {}` alongside the three existing D-388/D-412/D-404
+migrations) - existing rows seeded with strictly increasing timestamps in key order, exactly like
+`ensureLastTouchedColumn` already does for `TABLE_LEARNED`. Every write to either table now stamps
+`System.currentTimeMillis()`: `learn()`'s and `learnContext()`'s own reinforcement writes, `unlearn()`'s
+decrement writes (a decrement still counts as a "touch", mirroring `TABLE_LEARNED`'s own identical
+behaviour), and the backup-import `restoreLearnedBigram`/`restoreLearnedTrigram` merges. The bundled
+`TABLE_BIGRAMS` table is untouched - `putBigramInternal`'s new `lastTouched` parameter is only ever passed
+by a learned-table call site, `null` (omitted) everywhere else. `InMemoryDictionaryStore` mirrors this with
+two new `learnedBigramTouch`/`learnedTrigramTouch` maps, stamped identically via its own `clock` parameter.
+
+**Read path.** New shared `LearnedNgram(count, lastTouched)` data class (mirrors `LearnedFrequency`'s
+identical D-411 shape) plus two new `DictionaryStore` methods, `learnedBigramWithTimestamp`/
+`trigramWithTimestamp`, implemented by both stores - `learnedBigramFrequency`/`trigramFrequency` themselves
+are untouched and still feed A-06's own merge gate directly, exactly as `LearnedBigramBoost`'s own KDoc
+already promises for the plain count.
+
+**Ranking.** `LearnedBigramBoost.boost()` gained `lastTouched`/`now` parameters and the identical
+×1.5-within-14-days multiplier `LearnedFrequencyBoost` already has. `DictionarySuggestionProvider.
+rankingBigramFrequency()` and `score()`'s trigram branch now thread the timestamp through.
+
+**Explicit follow-up decision, also agreed with the user first**: `nextWordSuggestions()` (S-07's own
+blank-slate prediction) was the one remaining place still scoring a trigram match by its literal raw count
+directly, never through `LearnedBigramBoost` at all - a pre-existing inconsistency with `score()`'s already-
+boosted trigram branch, unrelated to recency by itself but surfaced by this same round. Unified onto the
+same boosted, now recency-aware value rather than left as a second, inconsistent scoring path.
+
+19 new/updated tests: `LearnedBigramBoostTest` rewritten for the new signature plus 3 new recency cases (8
+total, mirroring `LearnedFrequencyBoostTest`'s own structure); 5 new `InMemoryDictionaryStoreTest` cases
+(`learnedBigramWithTimestamp`/`trigramWithTimestamp` default-null and reported-value cases, plus one
+covering `unlearn`'s own timestamp-then-removal behaviour); 4 new `SqliteDictionaryStoreRoboTest` cases
+(the same shape, against the real SQLite-backed store); 3 new `DictionarySuggestionProviderTest` integration
+cases (a recently-touched learned bigram outranking a moderately common bundled one, the identical case
+losing that edge once long untouched, and `nextWordSuggestions` no longer using a raw trigram count
+directly); 1 existing `DictionarySuggestionProviderTest` case (`nextWordSuggestions ranks a trigram match by
+its own raw count...`) rewritten to assert the new rescaled/boosted value instead, computed via
+`LearnedBigramBoost.boost()` itself rather than a hand-typed literal, so the test tracks the production
+formula rather than duplicating it. 1220 -> 1235 unit tests, all green. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. Spec: S-07 gained the D-429 addendum (and its own opening sentence updated -
+"raw trigram count" was no longer accurate); W-05's own bigram/trigram note corrected (they now have
+`last_touched`, but the *expiry sweep* itself is still not extended to them - a still-separate, not-yet-built
+item). `versionCode` 431 -> 432, `versionName` `"1.1.14"` -> `"1.1.15"`. **Not yet device-confirmed** - the
+practical effect is small and hard to notice directly, but worth a general regression pass on ordinary
+next-word prediction and mid-typing bigram/trigram-elevated suggestions.
+
+## §377 - D-430 - the Learned Words editor's per-entry dialog swaps its Save/Forget button roles (v1.1.16)
+
+User's own explicit call, after confirming the rest of §363/§365's own dialog rework is now "perfekt": Save
+moves to the dialog's positive button, Forget to the neutral one - Cancel (negative) untouched. Pure button-
+role swap in `LearnedWordsActivity.showEntryDialog()`'s `AlertDialog.Builder` chain (`setPositiveButton`/
+`setNeutralButton` bodies exchanged verbatim, no behaviour change to either action itself);
+`updateSaveEnabled()`'s own `dialog.getButton(...)` call updated from `BUTTON_NEUTRAL` to `BUTTON_POSITIVE`
+to keep gating the now-repositioned Save button. No new tests (Android dialog/view glue, per this project's
+own convention - no existing test referenced either button's role). 1235 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - implementation-only polish, same
+"occasionally skippable" precedent §363's own items 9/10 already established. `versionCode` 432 -> 433,
+`versionName` `"1.1.15"` -> `"1.1.16"`. **Not yet device-confirmed.**
+
+## §378 - D-431 - A-13's own "everything else must have failed first" gate was wrongly satisfied by a coincidental last-resort dictionary match, silently blocking the exact case A-13 exists for (v1.1.17)
+
+Reported directly against the feature's own worked example: typing `"welxmche"` (intending `"welche"`)
+suggested `"welsche"` instead - never even reached `missedBackspaceCorrection()`. Root-caused, not guessed:
+`"welsche"` (a genuine but rare German word) sits at edit cost 3 from `"welxmche"` (delete `"m"`, substitute
+the keyboard-adjacent `x`->`s`), cheaper than the actually-intended two-deletion reconstruction `"welche"`
+(cost 4) - so A-09's own wide-fuzzy fallback (D-117, cost ≤ 4, explicitly documented as "never trusted
+enough for autocorrect") surfaced it, making `candidates.isNotEmpty()` true and blocking A-13's own gate
+([AdaptKeyService.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt)) before it ever ran.
+
+User's own reframing of the original D-377 condition, confirmed as the intended design: "alle anderen
+Versuche müssen vorher gescheitert sein" never meant the whole suggestion bar had to end up empty -
+something can almost always be suggested - only that nothing *obvious* (prefix/umlaut-unfold/neighbour-
+substituted-prefix completion, a close cost-≤2 fuzzy match, or a recognised compound) turned up first.
+Whether the wide-fuzzy last-resort fallback separately, coincidentally, also finds something is irrelevant -
+both are simply offered together, A-13's own chip pinned ahead.
+
+Implemented by extracting `DictionarySuggestionProvider.suggestionsFor()`'s own candidate search (everything
+except the D-117 wide-fuzzy fallback) into a shared private `obviousCandidates()`, reused by both
+`suggestionsFor()` itself and a new `hasObviousCandidate()` (promoted onto the `SuggestionProvider` interface
+with a `suggestionsFor(...).isNotEmpty()` default for a provider with no tiered fallback to distinguish) -
+the two can never silently drift apart on what counts as "obvious". `AdaptKeyService`'s own
+`missedBackspaceSuggestion` gate now calls `provider.hasObviousCandidate(...)` instead of reading
+`candidates.isNotEmpty()` directly.
+
+5 new tests (`DictionarySuggestionProviderTest`: `hasObviousCandidate` true/false on ordinary matches, false
+when only the D-117 wide-fuzzy fallback finds something while `suggestionsFor` itself still does, and the
+exact `"welxmche"`/`"welsche"`/`"welche"` repro reproduced and confirmed fixed end to end;
+`StubSuggestionProviderTest`: the default delegates to `suggestionsFor(...).isNotEmpty()`). 1235 -> 1240 unit
+tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 rewritten to describe the
+current gate. `versionCode` 433 -> 434, `versionName` `"1.1.16"` -> `"1.1.17"`.
+**2026-09-03: device-confirmed working** end to end (real `AdaptKeyA13` diagnostic log: `hasObviousCandidate=
+false`, `recover() candidates=[welche]`) once §386/§387 below closed out the one remaining real-device gap
+(a reclaimed token has no tap evidence, not a bug) and the diagnostic-logging round's own self-inflicted
+performance regression (§387).
+
+## §379 - D-432 - applied D-431's same `hasObviousCandidate()` gate to `rawCoordinateSuggestion` (T-02/D-39's own live preview chip), for consistency (v1.1.18)
+
+Flagged as a noticed-in-passing parallel while
+fixing D-431 (identical `candidates.isNotEmpty()` gate shape), confirmed with the user before touching it.
+One real difference found while investigating, worth recording: unlike A-13 (chip-only, no other call
+site), `rawCoordinateCorrection()` also has a second, independent call site - `finalizeAndCommit()`'s own
+silent-autocorrect application at commit time ([AdaptKeyService.kt:4008](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:4008)) - which was **never** affected by this
+bug, since it gates on `autocorrected == null` (the tight, cost-≤2 `bestCorrection()` search) rather than on
+`candidates`/the wide-fuzzy fallback at all. So this fix only restores the *live, mid-word preview chip*'s
+visibility in the rare case a coincidental last-resort match also exists - the actual commit-time correction
+itself was always correct. No new tests (same untested `AdaptKeyService.kt` Android/`InputConnection` glue
+as the call site itself, and `hasObviousCandidate()` is already fully covered from D-431). 1240 unit tests
+unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: T-02 gained the D-432
+note. `versionCode` 434 -> 435, `versionName` `"1.1.17"` -> `"1.1.18"`. **Not yet device-confirmed.**
+
+## §380 - D-433 - the Mini-LLM (Tier 3) settings screen explains its actual value instead of just its install mechanics (v1.1.19)
+
+User's own explicit request, after a full re-read of the tier-3 orchestration
+code (`Tier3Orchestrator`/`Tier1Confidence`/`SuggestionMerger`/`HighCertaintyCapitalisation`/
+`AdaptiveLearning`/`Tier3FamilyPrompt`/`Tier3FamilyApplier`) to distil what genuinely differs with vs.
+without it: contextual completion for word combinations tier-1's own bigram/trigram statistics have never
+seen (only ever consulted when `Tier1Confidence` is low - the LLM stays dormant for confident predictions);
+resolving genuinely ambiguous capitalisation (§6 rule 6, e.g. "Weg"/"weg") from real sentence meaning, at
+≥85% confidence only; determining a newly-learned word's whole family (lemma, part of speech, principal
+inflected forms) in one step, versus the non-LLM path's much narrower fixed-ending-list heuristic (D-404,
+`LearnedLemmaLinking`); and feeding a confirmed LLM suggestion straight back into tier 1 so the LLM is
+needed less over time. Explicitly unaffected either way: ordinary spelling correction, umlaut restoration,
+A-05/A-06 split/merge, and A-13 missed-Backspace recovery - all independent of tier 3 entirely.
+
+First attempt (a 2-3 sentence on-screen paragraph) was reported back as still too long once tested against
+the real UI - "das hatten wir an anderer Stelle schon einmal" (echoing §365's own spinner-label width
+lesson). Root cause of the confusion, clarified through the report: the actually space-constrained spot is
+the **settings-list row's own summary** (`c06_model_pref_summary`, shown inline in the main Settings list
+before the user even taps in) - not the dedicated `Tier3ModelActivity` screen's own intro text, which sits
+in an unconstrained `ScrollView` and was never actually at risk of truncation. Resolved by keeping the
+content at three deliberately different lengths for three different spots:
+
+1. **`c06_model_pref_summary`** (the settings-list row, genuinely space-constrained): a single tight
+   sentence ("Verbessert unsichere Vorschläge durch Satzverständnis statt nur Statistik") replacing the
+   old purely-mechanical "download and import" text.
+2. **New `c06_model_benefit`** (top of `Tier3ModelActivity`'s own screen, `ScrollView`, no length
+   constraint): a short, 2-3 sentence why-use-this paragraph, ahead of the existing install-mechanics text.
+3. **New `c06_model_details_title`/`c06_model_details`** (a full deep-dive, six short paragraphs covering
+   tier-1's own limits, contextual completion, capitalisation resolution, family-learning, adaptive
+   learning, and what stays unaffected) - reached via a new "Mehr erfahren" link
+   (`R.id.tier3_learn_more`, reusing the existing `@string/d89_learn_more` label and `link_text` colour,
+   D-192's own established pattern) that opens a plain `AlertDialog` rather than navigating to another
+   screen, since this is one self-contained block of text, not `FeatureCatalog`'s own repeating list.
+
+Localised into all three languages (de/en/el) - the German original checked directly against this
+session's own from-the-code research, not paraphrased from memory; English and Greek translated in step.
+No new tests (pure string-resource content plus Android view/dialog glue, both untested per this project's
+own convention). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. No spec change - purely informational settings-screen content, the same precedent D-89's own much
+larger Feature Overview screen already set (never mentioned in `AdaptKey-Spec.md` either). `versionCode`
+435 -> 436, `versionName` `"1.1.18"` -> `"1.1.19"`. **Not yet device-confirmed** - needs a real device/
+screen check that the settings-list summary now fits without truncating, and that the "Mehr erfahren"
+dialog opens and reads well.
+
+## §381 - D-433-followup - reworked the Mini-LLM settings row itself, plus a real, unrelated bug found and fixed in passing (v1.1.20)
+
+Direct feedback right after §380 shipped, several distinct points at once:
+
+1. **The settings-list summary was confirmed to fit without truncating, but judged too thin** - "etwas mehr
+   könnte man an dieser Stelle schon dazu erzählen." `c06_model_pref_summary` widened moderately (one
+   two-clause sentence covering both the contextual-completion and ambiguous-capitalisation benefits) - a
+   deliberate middle length between the original one-liner and the full paragraph that prompted §380's own
+   truncation report in the first place, since there is no device here to test the exact new wrap point
+   against.
+2. **The row must show, at a glance, whether the model is actually installed.** Rather than a separate bold
+   status line (the D-419 `ListPreference` pattern doesn't fit here - this isn't a list of named choices),
+   folded directly into the new setup button's own label instead (see point 4).
+3. **A real, unrelated bug, reported in passing:** `Tier3ModelActivity` was missing the edge-to-edge inset
+   fix every other settings sub-screen already has (`BlacklistActivity`'s own K-01-derived fix, §13,
+   confirmed by grep - `LanguagePacksActivity`/`CredentialsActivity`/`CalibrationActivity`/
+   `DiagnosticLogActivity`/`BackupActivity`/`LearnedWordsActivity` all have it; this one alone never did).
+   Its content sat under the status bar/display cutout instead of being pushed down below it. Fixed with
+   the identical `ViewCompat.setOnApplyWindowInsetsListener` block every sibling screen already uses,
+   against a newly-named `@id/tier3_root` (the screen's own root `ScrollView`, padding moved there from the
+   inner `LinearLayout` to match the established convention exactly).
+4. **The settings row itself redesigned**: the on-screen "why" paragraph that used to live at the top of
+   `Tier3ModelActivity` (`c06_model_benefit`, added only in §380) is gone entirely - "der hier angezeigte
+   Text [ist] unnötig... man kann ihn sicher so kompakt halten, dass er einfach in die Settings View
+   passt." The settings-list row itself now hosts two independent buttons directly beneath its (widened)
+   summary: "Mehr erfahren" (opens the same detail dialog immediately, no navigation at all) and a
+   status-aware button reading "Bereit" when a model is installed or "Jetzt einrichten" otherwise (tapping
+   either state still opens `Tier3ModelActivity`, to manage/remove or to actually install). A plain
+   `Preference` cannot express two independently-clickable regions with different actions - built as a new
+   `Tier3ModelPreference` (custom `layoutResource`, `isSelectable = false` so only the two buttons react,
+   mirroring `LabeledSeekBarPreference`'s own D-407 precedent for a custom-layout preference in this same
+   screen) with a new `preference_tier3_model.xml` layout (mirrors `preference_labeled_seekbar.xml`'s own
+   icon/title/summary structure, D-407/D-408, with a two-button row in place of the SeekBar).
+   `settings_preferences.xml`'s `c06_model` entry now declares the custom class directly, dropping the old
+   `<intent>` child (navigation is now the setup button's own explicit `startActivity` call, not the whole
+   row's). `Tier3ModelActivity.showDetailsDialog()` promoted to a companion function taking a `Context`, so
+   the preference's own button can show it without ever creating the activity. The setup button's own label
+   is re-derived on every bind, refreshed via a new public `Tier3ModelPreference.refresh()` (`notifyChanged()`
+   itself is protected) called from `SettingsFragment.onResume()` - identical reasoning to the pre-existing
+   K-01 calibration-summary refresh right next to it: the install state only ever changes via the separate
+   `Tier3ModelActivity`, so returning from it must re-bind this row to pick up a fresh
+   `Tier3ModelStorage.isModelInstalled()` read.
+
+Localised into all three languages (de/en/el) - `c06_model_pref_summary` revised, two new button-label
+strings (`c06_model_pref_ready`/`c06_model_pref_setup_now`), `c06_model_benefit` removed (confirmed no
+remaining reference anywhere). No new tests (pure Android view/`Preference`/dialog glue, all untested per
+this project's own convention, same as every other settings-screen change). 1240 unit tests unchanged, all
+green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - same D-89 precedent as §380.
+`versionCode` 436 -> 437, `versionName` `"1.1.19"` -> `"1.1.20"`. **Not yet device-confirmed** - needs a
+real device/screen check: the widened summary still fits without truncating, both new buttons work
+independently (Mehr erfahren shows the dialog with no navigation; the setup button navigates and shows the
+correct label in both install states, updating correctly after returning from Tier3ModelActivity), and
+Tier3ModelActivity's own content now sits properly below the status bar/notch.
+
+## §382 - D-433-followup (v2) - three real visual bugs in §381's own hand-built preference layout, root-caused by diffing against AndroidX's real default layout, not guessed (v1.1.21)
+
+Reported directly: the row
+sat a few pixels left of every other setting, its own title was no longer bold, and the "Jetzt einrichten"
+button's text was nearly invisible (pale on light grey). Root cause confirmed by extracting the actual
+`preference.xml` straight out of the `androidx.preference:preference:1.2.1` AAR in the local Gradle cache
+(`~/.gradle/caches/modules-2/files-2.1/androidx.preference/...`) and diffing it line-for-line against
+`preference_tier3_model.xml` - which had been hand-copied from this project's own pre-existing
+`preference_labeled_seekbar.xml` template (D-407/D-408) rather than the true AndroidX default, and that
+template itself turns out to already carry small, previously-unnoticed deviations (masked there by the
+SeekBar's own visual weight, never masked here):
+
+- **The shift**: `preference_labeled_seekbar.xml`'s own title/summary `RelativeLayout` uses
+  `marginStart=16dp`/`marginEnd=8dp`; the real default uses `marginStart=15dip`/`marginEnd=6dip`. Fixed to
+  the exact real-default values.
+- **The missing bold**: the template's title `TextView` uses `textAppearance="?android:attr/
+  textAppearanceMedium"` with no explicit colour; the real default uses `textAppearanceLarge` plus an
+  explicit `textColor="?android:attr/textColorPrimary"`. Copied verbatim.
+- **The unreadable button**: the new setup button (`Kind.tier3_pref_setup`) inherited `?android:attr/
+  borderlessButtonStyle`'s own default text colour with no override - resolves to a pale tone against this
+  screen's light background. Fixed with an explicit `textColor="?android:attr/textColorPrimary"`, matching
+  the same attribute the title itself now correctly uses (the "Mehr erfahren" button's own deliberate blue
+  `link_text` override is untouched - that one was never the complaint).
+
+The icon frame was also switched from the template's bare `ImageView` (`android:minWidth="48dp"`) to the
+real default's exact `FrameLayout` + `ImageView` (`maxWidth`/`maxHeight` 48dp, no `minWidth`) structure -
+the one piece a plain diff alone could not fully explain (would need on-device measurement to confirm it
+was actually contributing to the shift), but replicating the identical structure removes it as a possible
+factor entirely rather than leaving an approximation in place. No new tests (pure layout-attribute fix,
+Android view glue). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `versionCode` 437 -> 438, `versionName` `"1.1.20"` -> `"1.1.21"`. **Not yet device-confirmed** - needs
+a real device check that the row now aligns flush with its siblings, the title reads bold, and "Jetzt
+einrichten"/"Bereit" is clearly legible.
+
+## §383 - D-433-followup (v3) - §382's own fix made it worse (fully flush left, still not bold) - the real root cause was more fundamental than wrong margin/textAppearance values (v1.1.22)
+
+Reported directly:
+after §382 shipped, the row went from "a few pixels off" to completely unindented, and the title, while now
+a larger font, still was not bold. Root-caused properly this time, not patched again by further attribute
+tweaking: `preference_tier3_model.xml` re-declared `android:id="@+id/icon_frame"` - inside this app's own
+layout resource, that mints a **new** id under this app's own `R` class, a different numeric value than
+`androidx.preference.R.id.icon_frame`, the id `Preference.onBindViewHolder()` is actually compiled to look
+up internally to manage that view's own visibility (same name, unrelated id - resource ids are scoped per
+compiled `R` class, not aliased by name across a library boundary). The library's own icon-frame handling
+therefore silently never reached this layout's view at all in either v1 or v2; §382's own change (dropping
+the `minWidth` safety net that happened to reserve *some* space in v1) simply removed the one thing that had
+been accidentally producing an approximately-plausible result, exposing the real gap.
+
+Fixed properly by not hand-copying AndroidX's internal structure at all: `preference_tier3_model.xml` now
+`<include layout="@layout/preference" />`s the library's own real default layout resource verbatim -
+the exact same physical XML `androidx.preference.Preference` already renders for every sibling row in this
+screen, ids included, so title/icon/summary rendering is now byte-identical to every other preference by
+construction, not by re-derivation. Only the two-button row is this project's own content, appended below
+the include in the same wrapping `LinearLayout`. `Tier3ModelPreference.onBindViewHolder()` itself needed no
+change - it only ever looked up its own `tier3_pref_setup`/`tier3_pref_learn_more` ids, never the library's.
+No new tests (pure layout fix, Android view glue). 1240 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green (confirms `@layout/preference` resolves correctly
+against the `androidx.preference` dependency, not shadowed by any local resource of the same name).
+`versionCode` 438 -> 439, `versionName` `"1.1.21"` -> `"1.1.22"`. **Not yet device-confirmed** - this is the
+third attempt at this specific row's alignment; worth a careful side-by-side check against a genuinely
+plain sibling preference before considering it settled.
+
+## §384 - D-433-followup (v4) - v3's own `<include>` pointed at the wrong layout resource (v1.1.23)
+
+Screenshot confirmed the exact symptom precisely: "Mini-LLM (Tier 3)" rendered larger but not bold, and
+visibly further left than every sibling title/summary in the same list. Root-caused properly this time by
+reading the actual style chain inside the `androidx.preference:1.2.1` AAR rather than assuming
+`@layout/preference` (the plain, pre-Material default `v3` included) was what this screen actually uses:
+`values/themes.xml` sets `preferenceTheme="@style/PreferenceThemeOverlay"`, whose own `BasePreferenceThemeOverlay`
+parent maps `preferenceStyle` to `@style/Preference.Material`, whose own `android:layout` is
+`@layout/preference_material` - a genuinely different file from `@layout/preference` (confirmed by reading
+both directly): theme-derived `?android:attr/listPreferredItemPadding*` instead of a fixed margin, and
+`?android:attr/textAppearanceListItem` for the title instead of `textAppearanceLarge` - exactly the two
+attributes behind both symptoms in the screenshot. Fixed by including `@layout/preference_material`
+instead - the literal layout every sibling plain `Preference` in this screen already renders through - and
+by switching the two-button row's own horizontal padding from a hard-coded `16dp` guess to the identical
+`listPreferredItemPaddingStart`/`End` theme attributes the included layout's own title/summary column uses,
+so the buttons line up under that text by construction rather than by an approximated constant. No new
+tests (pure layout-resource fix). 1240 unit tests unchanged, all green. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 439 -> 440, `versionName` `"1.1.22"` -> `"1.1.23"`. **Not yet
+device-confirmed** - the fourth attempt at this one row; this time backed by reading the actual style chain
+responsible for both reported symptoms rather than a plausible-looking substitute, so there is a concrete
+reason to expect it holds, but still needs the real screenshot-vs-sibling comparison to confirm.
+
+## §385 - D-433-followup (v5) - the last remaining gap: "Mehr erfahren" still sat flush left, not indented with the title/summary column above it (v1.1.24)
+
+Reported directly, once §384's own title/summary
+fix was confirmed correct. Root-caused, not re-guessed: `preference_material.xml`'s own icon column
+(`<include layout="@layout/image_frame"/>`) is a `LinearLayout` with `android:minWidth="56dp"` - reserved
+at that fixed width *regardless* of whether an icon is actually shown, confirmed by reading `image_frame.xml`
+directly. The button row below the include has no icon_frame of its own, so its own
+`listPreferredItemPaddingStart` padding alone landed it under where an icon would sit, not under the
+title/summary text one column further right. Fixed with a leading `56dp` `Space` before the two-button
+`LinearLayout`, matching that exact reserved width. No new tests (pure layout fix). 1240 unit tests
+unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 440 -> 441,
+`versionName` `"1.1.23"` -> `"1.1.24"`. **Not yet device-confirmed.**
+
+## §386 - D-431-followup - "welche" still not suggested for "welxmche" on a real device after D-431 shipped; temporary diagnostic logging added instead of a third blind patch (v1.1.25)
+
+The gate fix itself
+was re-verified directly (both by re-reading `hasObviousCandidate`'s own logic and by re-confirming the
+existing `LearnedBigramBoostTest`-style unit test for this exact repro still passes) - `"welsche"`/`"Welsche"`
+are real, separate dictionary rows only reachable via the D-117 wide-fuzzy fallback (cost 3, `x`/`s` being
+keyboard-adjacent), correctly excluded from `hasObviousCandidate`'s own narrower search, so the gate itself
+should not be blocking A-13 here. Rather than guess a third mechanism (composingTaps desync, a stale
+reclaim, the raw tap simply not landing close enough to Backspace on this occasion - all plausible, none
+confirmable from code alone), this project's own established pattern for exactly this class of bug (spec
+§1's guiding principle; D-355/D-373-followup's own precedent) applies: a new `AdaptKeyA13` diagnostic tag
+now logs, via the existing `diag()` helper (`Log.d` + the in-app X-01 diagnostic log, Settings ->
+Diagnostics), the gate decision itself (`hasObviousCandidate` result and the candidates already found) and,
+inside `missedBackspaceCorrection()`, the backspace geometry, `composingTaps.size` vs. the typed token's
+own length, `MissedBackspaceRecovery.recover()`'s own raw candidate list before the dictionary filter, and
+the final known-word result. Reachable via `adb logcat -s AdaptKeyA13:D` or the in-app Diagnostics log.
+Genuinely no working theory left worth coding blind against - waiting on a real repro's log output before
+touching either mechanism again. No new tests (diagnostic logging only, no behaviour change). 1240 unit
+tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (no
+behaviour changed). `versionCode` 441 -> 442, `versionName` `"1.1.24"` -> `"1.1.25"`.
+
+## §387 - D-431-followup closed - real device log confirmed the gate fix works, found a genuinely structural (non-bug) limitation, and caught a real performance regression the diagnostic round itself had introduced (v1.1.26)
+
+Three distinct outcomes from one real `AdaptKeyA13` log, all confirmed from the log's own
+content, not inferred:
+
+1. **The D-431 gate fix is confirmed correct.** `hasObviousCandidate=false` for `"welxmche"` even with
+   `"Welsche"` sitting in `candidates`, and `recover() candidates=[welche]` / `first known-word
+   candidate=welche` - A-13 fires and finds the right word, exactly as designed.
+2. **A genuine, structural, not-a-bug limitation, confirmed from the same log**: an earlier attempt at this
+   exact repro showed `composingTaps.size=0` against a 7-character reclaimed token
+   (`reclaimSurroundingWord: before="welxmch"`) - traced to `reclaimSurroundingWord(ic, tap: TapPoint?)`'s
+   own `if (tap != null) { composingTaps.addAll(...) }` guard: the D-421 initial-caret-position reclaim (a
+   field reopening with the caret already inside existing text) passes `tap = null`, since there genuinely
+   is no live tap history for text from a previous session - deliberately never fabricated. Because
+   `MissedBackspaceRecovery`/`RawCoordinateCorrection` both require an exact `token.length == taps.size`
+   match, a single reclaimed character anywhere in the token makes the whole thing ineligible. Confirmed not
+   a regression: typing the same garbled word freshly, in one unbroken session (no field reopening), worked
+   immediately - documented as a known, accepted boundary in spec A-13.
+3. **A real, self-inflicted performance regression, found in the very same log**: `handleKey: key=DELETE`
+   entries during a backspace-hold on the still-long, unknown token took 370-400ms each (`welxmche`->`welxm`),
+   dropping to 30ms once the token shortened - the classic profile of an expensive per-keystroke search this
+   project has fought to keep off the hot path several times before (D-138/D-160/D-208/D-211/D-215). Root
+   cause: §386's own diagnostic logging had extracted `provider.hasObviousCandidate(...)` into its own eager
+   `val` so the gate decision could be logged, breaking the `||` chain's short-circuit evaluation that
+   previously skipped this expensive call entirely whenever `duringRepeat` or `!includeExpensiveFallbacks`
+   already made the result irrelevant - so it now ran on *every* keystroke, including every backspace-repeat
+   tick. Fixed by restoring the original inline `if (duringRepeat || !includeExpensiveFallbacks ||
+   provider.hasObviousCandidate(...))` short-circuit shape while removing the temporary logging (both changes
+   land in the same edit, since the logging was the only reason the short-circuit had been broken up).
+
+`AdaptKeyA13`'s own temporary diagnostic logging (both in `refreshSuggestions()`'s gate and inside
+`missedBackspaceCorrection()`) fully removed now that it has served its purpose. No new tests (the fix
+restores previously-tested-and-shipped control flow rather than changing behaviour; the perf characteristic
+itself is not something this project's unit tests measure). 1240 unit tests unchanged, all green.
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 gained the D-431-followup addendum
+documenting the reclaimed-token limitation. `versionCode` 442 -> 443, `versionName` `"1.1.25"` ->
+`"1.1.26"`. **2026-09-03: device-confirmed working** - both the A-13 fix itself and the performance
+regression fix (Backspace-hold stays fast throughout).
+
+## §388 - D-404 Tier 2 - `shouldOverrideKnownWord` now vetoes A-01's ratio override outright when the typed word and the candidate share a D-412 word family (v1.1.27)
+
+Design discussed first per this project's own
+convention (non-trivial algorithm decision): hard veto vs. a softer raised ratio bar, and scope (this one
+gate only vs. also touching ordinary ranking/`forUnknownToken`) - user confirmed hard veto, scope limited to
+`shouldOverrideKnownWord`. Two corrections surfaced during that discussion, both verified live rather than
+taken on trust: D-412 (see below) was already fully resolved, not "5 bands remain" as this file's own
+stale Open-TODOs text still said at the time (fixed separately first, commit `18a4503`); and `lemma`
+coverage is **not** German-only - D-422/D-424 (§368/§370) already extended the identical Wortfamilien
+parity to English and Greek, confirmed by directly counting non-empty `lemma` rows in all three dict.tsv
+files before writing anything (`en/dict.tsv` 43,799/116,388, `dictionaries/el/dict.tsv` 64,828/154,338,
+`dictionaries/de/dict.tsv` 84,429/188,252).
+
+New `DictionarySuggestionProvider.sameWordFamily(wordLower, candidateLower)`: resolves each side's family
+key via `store.entryOf(...)?.let { it.lemma ?: it.word }.lowercase()` (mirrors `LearnedWordExpirySweep`'s
+own D-389 grouping pattern, lower-cased explicitly since `lemma` is stored in the base entry's own
+canonical case, not a lower-case key) and compares them; `shouldOverrideKnownWord` returns `false`
+immediately on a match, before `CorrectionConfidence.forKnownWordOverride`'s ratio is even computed. Reuses
+`store.entryOf` (already merges bundled+learned lemma links, D-264/D-404) rather than a dedicated lookup,
+so a learned/LLM-derived family link (D-323/D-324) is honoured too, at no extra query cost worth
+mentioning. Deliberately narrow: `forUnknownToken` (ordinary typo correction) and suggestion-bar ranking are
+untouched - D-404 Tier 2's own framing was always specifically about A-01's override gate.
+
+3 new tests in `DictionarySuggestionProviderTest`: the motivating "Kugel"/"Kugeln" case at an extreme,
+would-otherwise-clear-every-threshold ratio; a shared-third-base pair ("lief"/"läuft", both linked to
+"laufen"); and a regression guard confirming an unrelated, unlinked pair (`ddr`/`der`) still overrides
+exactly as before. 1240 → 1243 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. Spec: A-01 gained the D-404 Tier 2 addendum. `versionCode` 443 → 444, `versionName` `"1.1.26"` ->
+`"1.1.27"`. **Not yet device-confirmed** - pure dictionary/ranking logic, no Android glue touched, but
+worth a real-device sanity check that an ordinary known plural/singular pair no longer risks a silent
+autocorrect swap.
+
