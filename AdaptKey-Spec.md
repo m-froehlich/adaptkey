@@ -530,6 +530,18 @@ completion, independent of the ordinary dictionary/n-gram ranking - only while G
 (D-410: previously offered regardless of active language, a genuine cross-language leak, not a deliberate
 design choice).
 
+### S-12 - "km/h" Speed-Unit Completion (D-376)
+Two independent trigger points, both offered with a deliberately maximal score so either always sorts first,
+mirroring S-08's own reasoning - `"km/h"`, containing `/`, can never itself be a tokenisable dictionary word
+the ordinary candidate search could find on its own. Unlike S-08's "Uhr", not gated by active language -
+`"km/h"` is the identical SI notation in German and English alike, not a genuinely language-specific word.
+
+- **Trigger 1**: the composing token is exactly `"km"` - `"km/h"` is offered as a completion competing
+  directly with the plain `"km"` candidate.
+- **Trigger 2**: `"km/"` has just been committed (the user typed the `/` themselves instead of tapping the
+  Trigger-1 chip) - the glued remainder `"h"` is offered, with no leading space inserted (the `/` is already
+  there), completing to `"km/h"`.
+
 ### S-09 - Early Typo Recovery via Neighbour-Prefix Escalation (D-328)
 A single keyboard-neighbour typo early in a long word ("vetmut…" for "vermut…") is invisible to both the
 literal prefix scan (no shared prefix) and the full-token edit-distance search (still far out of budget while

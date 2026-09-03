@@ -134,6 +134,7 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionController
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
+import de.froehlichmedia.adaptkey.suggestion.SpeedUnitCompletion
 import de.froehlichmedia.adaptkey.suggestion.TimePattern
 import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.OffsetModel
@@ -3837,8 +3838,9 @@ class AdaptKeyService : InputMethodService() {
             // `composing` when typed as a fresh token, so the ordinary word-commit path further below -
             // where showNextWordPredictions() normally runs - is never reached by a time at all. This is
             // why the original wiring inside showNextWordPredictions() alone never fired for the reported
-            // case; checked here too, where digit/punctuation commits actually land.
-            if (!showTimeSuggestion(ic)) {
+            // case; checked here too, where digit/punctuation commits actually land. D-376: showSpeedUnitSuggestion()
+            // rides along here for the identical structural reason - see its own KDoc.
+            if (!showTimeSuggestion(ic) && !showSpeedUnitSuggestion(ic)) {
                 clearSuggestions()
             }
             // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
@@ -5088,7 +5090,16 @@ class AdaptKeyService : InputMethodService() {
         } else {
             null
         }
-        val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion, autocorrectSplitChip, autocorrectMergeChip)
+        // D-376: offered whenever the composing token is exactly "km" - competes directly with the plain
+        // "km" completion, since "km/h" (containing "/") can never itself be a tokenisable dictionary word
+        // the ordinary candidate search could find on its own. See SpeedUnitCompletion's own KDoc for
+        // Trigger 2 (right after "km/" itself commits), handled separately in finalizeAndCommit().
+        val speedUnitSuggestion = if (duringRepeat) {
+            null
+        } else {
+            SpeedUnitCompletion.completionForComposing(input)?.let { Suggestion(it, MAX_PRIORITY_SUGGESTION_SCORE) }
+        }
+        val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion, autocorrectSplitChip, autocorrectMergeChip, speedUnitSuggestion)
         // §125 / D-194: duringRepeat used to still call provider.autocorrectFor() here unconditionally -
         // the exact same expensive bestCorrection() search (a store query plus a banded edit-distance scan
         // per candidate) this function's own KDoc already gates everything else behind, simply missed when
@@ -5471,7 +5482,7 @@ class AdaptKeyService : InputMethodService() {
         lastCapProposal = null
         val previous = previousWord
         val predictions = (if (previous == null) emptyList() else provider.nextWordSuggestions(previous, previousPreviousWord)) +
-            listOfNotNull(timeSuggestion())
+            listOfNotNull(timeSuggestion(), speedUnitSuffixSuggestion())
         controller.clear()
         controller.update("", predictions, null)
         if (justPromoted != null) {
@@ -5514,6 +5525,21 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-376: [timeSuggestion]'s own Trigger-2 twin - offered right after `"km/"` itself commits (the user
+     * typed the `/` themselves instead of tapping [SpeedUnitCompletion.completionForComposing]'s own
+     * Trigger-1 chip), completing to `"km/h"` with the glued remainder `"h"`. Deliberately not gated through
+     * [de.froehlichmedia.adaptkey.language.LanguageRules] unlike [timeSuggestion] - see
+     * [SpeedUnitCompletion]'s own KDoc for why `"km/h"` is not treated as a German-specific word here.
+     *
+     * @return the `"h"` completion, or null when the text just committed does not end in a word-bounded
+     *         `"km/"`
+     */
+    private fun speedUnitSuffixSuggestion(): Suggestion? {
+        val before = currentInputConnection?.getTextBeforeCursor(SPEED_UNIT_LOOKBACK, 0) ?: return null
+        return SpeedUnitCompletion.suffixAfterSlash(before)?.let { Suggestion(it, MAX_PRIORITY_SUGGESTION_SCORE) }
+    }
+    
+    /**
      * D-137 / D-410: the empty-composing branch's own equivalent of [timeSuggestion] - called right after a
      * standalone digit/punctuation commit (see [finalizeAndCommit]'s own call site for why that path, not
      * [showNextWordPredictions], is what actually needs this for a typed time). Null for a language with
@@ -5533,6 +5559,28 @@ class AdaptKeyService : InputMethodService() {
         lastCapProposal = null
         controller.clear()
         controller.update("", listOf(Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE)), null)
+        showSuggestions()
+        return true
+    }
+    
+    /**
+     * D-376: [showTimeSuggestion]'s own Trigger-2 twin for the rarer case a standalone `/` commits with
+     * composing already empty (e.g. `"km"` was finalised by a Space first, then `/` typed separately) - the
+     * common case, `/` typed immediately after `"km"` with nothing in between, instead reaches
+     * [speedUnitSuffixSuggestion] via the ordinary word-commit path's own [showNextWordPredictions] call, the
+     * same split [timeSuggestion]/[showTimeSuggestion] already have for the identical structural reason.
+     *
+     * @param ic the current input connection
+     * @return true when a word-bounded `"km/"` was found and the suggestion bar now shows the `"h"` completion
+     */
+    private fun showSpeedUnitSuggestion(ic: InputConnection): Boolean {
+        val before = ic.getTextBeforeCursor(SPEED_UNIT_LOOKBACK, 0) ?: return false
+        val suffix = SpeedUnitCompletion.suffixAfterSlash(before) ?: return false
+        handler.removeCallbacks(resortRunnable)
+        lastTier3Result = Tier3Result.EMPTY
+        lastCapProposal = null
+        controller.clear()
+        controller.update("", listOf(Suggestion(suffix, MAX_PRIORITY_SUGGESTION_SCORE)), null)
         showSuggestions()
         return true
     }
@@ -6884,6 +6932,10 @@ class AdaptKeyService : InputMethodService() {
         // D-137: how far back to look for a trailing typed time - long enough for "14:30" plus a
         // reasonable amount of trailing punctuation/whitespace, short enough to stay a cheap read.
         private const val TIME_LOOKBACK = 16
+        
+        // D-376: how far back to look for a trailing "km/" - only ever needs to see the three characters
+        // themselves, a little slack included for the same reason TIME_LOOKBACK has some.
+        private const val SPEED_UNIT_LOOKBACK = 8
         
         // D-142: how far back to read for a login field's own value - generous enough for a realistic
         // email address or username, short enough to stay a cheap read.

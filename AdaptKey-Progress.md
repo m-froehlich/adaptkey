@@ -491,8 +491,8 @@ non-trivial changes).
     change in this session targeted it specifically; likely a side effect of the intervening dictionary
     cleanup rounds (§301 and later) or a later A-05/umlaut-interaction refinement, not root-caused further
     since there is nothing left to fix.
-  - **D-376 - OPEN.** After `"km"` (and, separately, after a `/`), a `"km/h"` completion chip should be
-    offered.
+  - **D-376 - RESOLVED (§366, v1.1.5).** New S-12 - a `"km/h"` completion chip offered both right after
+    `"km"` and right after `"km/"`. See Current State for the mechanism.
   - **D-377 - OPEN, explicitly named as expensive/last-resort.** Recover a badly garbled mid-word mistake
     where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
     worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
@@ -773,6 +773,41 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§366 (v1.1.5): D-376 - new S-12, a "km/h" speed-unit completion chip.** Two independent trigger points,
+  both mirroring S-08's own "Uhr" time-suggestion reasoning exactly: **Trigger 1** - the composing token is
+  exactly `"km"` - offers the full `"km/h"` as a completion, injected into `refreshSuggestions()`'s own
+  `extras` list (`MAX_PRIORITY_SUGGESTION_SCORE`, same shape as `rawCoordinateSuggestion`/
+  `autocorrectSplitChip` right beside it) so it competes directly with the plain `"km"` candidate; **Trigger
+  2** - `"km/"` has just been committed (the user typed the `/` themselves) - offers the glued remainder
+  `"h"`, no leading space (the `/` is already there). New pure `suggestion/SpeedUnitCompletion`
+  (`completionForComposing`/`suffixAfterSlash`) mirrors `TimePattern`'s own "just-typed shape" reasoning -
+  `"km/h"` can never itself be a tokenisable dictionary word (it contains `/`), so no amount of bigram/
+  frequency data could ever surface it on its own. Deliberately **not** gated through `LanguageRules` unlike
+  S-08's own German-only "Uhr" - `"km/h"` is the identical SI notation in German and English alike, not a
+  genuinely language-specific word (a deliberate design choice, not an oversight - see S-12's own KDoc).
+
+  Wired at both of the same two structural points S-08 already needed, for the identical reason:
+  `speedUnitSuffixSuggestion()` alongside `timeSuggestion()` in `showNextWordPredictions()` (the common case
+  - `/` typed immediately after `"km"` with nothing in between, so composing was still `"km"` and the commit
+  went through the ordinary word-commit path), and `showSpeedUnitSuggestion(ic)` alongside
+  `showTimeSuggestion(ic)` in `finalizeAndCommit()`'s composing-already-empty branch (the rarer case - `"km"`
+  was finalised by a Space first, `/` typed as its own fresh standalone token afterwards).
+
+  One real bug caught before shipping, not after: a first-draft `\bkm/$` regex for Trigger 2 used a plain
+  `\b` word-boundary before `"km"`, which would have silently rejected the single most realistic case,
+  `"50km/"` - `\b` requires a transition between a `\w` and a non-`\w` character, and a digit is itself `\w`,
+  so there is no boundary at all between `"5"` and `"k"`. Fixed with a negative lookbehind for a preceding
+  Unicode *letter* specifically (`(?<![\p{L}])km/$`) - nothing immediately before `"km"` (string start), a
+  digit, whitespace or punctuation are all fine, only a preceding letter disqualifies it (correctly rejects
+  `"akm/"`, where `"km"` is the tail of a longer word, not its own token). Caught by writing the test for the
+  realistic `"50km/"` case before trusting the regex, not by a device report.
+
+  13 new `SpeedUnitCompletionTest` cases (both triggers, case-insensitivity, the digit-vs-letter boundary
+  distinction, empty input). 1199 -> 1212 unit tests. Spec: new S-12. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 421 -> 422, `versionName` `"1.1.4"` -> `"1.1.5"`. **Not yet
+  device-confirmed** - needs a real device check for both triggers, ideally including the `"50km/"` digit-
+  prefixed shape specifically, since that is exactly the case the pre-ship regex fix targeted.
 
 - **§365 (v1.1.4): D-404-followup (v3) - Learned Words editor's language/sort labels removed.** Reported
   directly right after §363's row-merge shipped: "Sprache:"/"Sortierung:" left too little width for the two
