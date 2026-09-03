@@ -1171,7 +1171,6 @@ management	2261	NOUN
 communities	2260	NOUN	community
 meeting	2258	NOUN,VERB	meet
 win	2252	NOUN,VERB
-mathbf	2252	OTHER
 quickly	2249	OTHER
 remaining	2248	VERB	remain
 Poland	2246	PROPER_NOUN
@@ -2072,7 +2071,6 @@ throne	1318	NOUN,VERB
 translated	1317	VERB	translate
 IV	1317	NOUN,PROPER_NOUN
 capable	1316	OTHER
-mathrm	1315	OTHER
 actor	1314	NOUN
 provinces	1313	NOUN	province
 opera	1313	NOUN
@@ -3490,7 +3488,6 @@ restoration	745	NOUN
 falling	745	NOUN,VERB	fall
 wings	745	NOUN,VERB	wing
 operators	744	NOUN	operator
-operatorname	744	OTHER
 punishment	743	NOUN
 amongst	743	PREPOSITION
 recovered	743	VERB	recover
@@ -4163,7 +4160,6 @@ cargo	609	NOUN,VERB
 convert	608	NOUN,VERB
 caught	608	VERB	catch
 filed	608	OTHER
-mathbb	608	OTHER
 attested	607	VERB	attest
 hidden	607	NOUN,VERB	hide
 crash	607	NOUN,VERB
@@ -4808,7 +4804,6 @@ rating	507	NOUN,VERB	rate
 Julius	507	PROPER_NOUN
 galaxies	507	NOUN,VERB	galaxy
 Leibniz	507	PROPER_NOUN
-mathcal	507	OTHER
 celebrate	506	VERB
 Disney	506	PROPER_NOUN
 creator	506	NOUN
@@ -4998,7 +4993,6 @@ acquire	485	VERB
 consumed	485	VERB	consume
 arriving	485	VERB	arrive
 ammonia	485	NOUN
-cdots	485	OTHER
 fraction	484	NOUN,VERB
 Hinduism	484	PROPER_NOUN
 Mill	484	OTHER
@@ -5790,7 +5784,6 @@ strips	404	NOUN,VERB	strip
 surprise	404	NOUN,VERB
 archives	404	NOUN,VERB	archive
 ashes	404	NOUN,VERB	ash
-ldots	404	OTHER
 Holocaust	404	VERB,PROPER_NOUN
 Cantor	404	PROPER_NOUN
 vocals	404	NOUN	vocal
@@ -7170,7 +7163,6 @@ DEC	307	PROPER_NOUN
 hollow	307	NOUN,VERB,ADJECTIVE
 pressed	307	VERB	press
 Marshal	307	OTHER
-mathfrak	307	OTHER
 Galicia	307	PROPER_NOUN
 tmath	307	OTHER
 Coolidge	307	PROPER_NOUN
@@ -7898,7 +7890,6 @@ proprietary	268	NOUN
 Conan	268	PROPER_NOUN
 deuterium	268	NOUN
 Speer	268	PROPER_NOUN
-boldsymbol	268	OTHER
 hierarchical	267	OTHER
 gather	267	NOUN,VERB
 devastated	267	VERB	devastate
@@ -10621,7 +10612,6 @@ Hello	176	OTHER
 Ellison	176	PROPER_NOUN
 bent	176	NOUN,VERB,ADJECTIVE	bend
 Eocene	176	PROPER_NOUN
-mathsf	176	OTHER
 dodo	176	NOUN
 JavaScript	176	NOUN,PROPER_NOUN
 weighted	175	VERB	weight
@@ -11952,7 +11942,6 @@ enriched	148	VERB	enrich
 Benedictine	148	NOUN,PROPER_NOUN
 Genoa	148	NOUN,PROPER_NOUN
 Cole	148	PROPER_NOUN
-qquad	148	OTHER
 accompaniment	148	NOUN
 Psalms	148	OTHER
 Doppler	148	PROPER_NOUN
@@ -16205,7 +16194,6 @@ audit	92	NOUN,VERB
 grappling	92	NOUN,VERB	grapple
 GW	92	NOUN,PROPER_NOUN
 kayak	92	NOUN,VERB
-bigl	92	OTHER
 Micronesia	92	PROPER_NOUN
 Livonia	92	PROPER_NOUN
 Peppard	92	PROPER_NOUN
@@ -16331,7 +16319,6 @@ Mets	91	PROPER_NOUN
 Picts	91	NOUN,PROPER_NOUN	Pict
 Scarlett	91	PROPER_NOUN
 Baháʼu	91	PROPER_NOUN
-bigr	91	OTHER
 Féin	91	PROPER_NOUN
 EEC	91	NOUN,PROPER_NOUN
 Drexel	91	PROPER_NOUN
@@ -16411,7 +16398,6 @@ wrist	90	NOUN,VERB
 buyer	90	NOUN
 Sherlock	90	VERB,PROPER_NOUN
 petitioned	90	VERB	petition
-vdots	90	OTHER
 Nigel	90	NOUN,PROPER_NOUN
 Aristophanes	90	PROPER_NOUN
 Moravian	90	NOUN,PROPER_NOUN
@@ -16419,7 +16405,6 @@ Cossacks	90	NOUN,PROPER_NOUN	Cossack
 notwithstanding	90	PREPOSITION
 harmonics	90	NOUN	harmonic
 Daedalus	90	PROPER_NOUN
-widehat	90	OTHER
 vert	90	NOUN
 identifiers	90	NOUN	identifier
 Barnabas	90	PROPER_NOUN
@@ -17231,7 +17216,6 @@ airfields	83	NOUN	airfield
 Fay	83	PROPER_NOUN
 Livonian	83	NOUN,PROPER_NOUN
 Princip	83	PROPER_NOUN
-pmod	83	OTHER
 Bézier	83	PROPER_NOUN
 Linkin	83	PROPER_NOUN
 DPP	83	NOUN,PROPER_NOUN
@@ -24179,7 +24163,6 @@ insolvency	47	NOUN
 internetworking	47	VERB	internetwork
 Klamath	47	NOUN,PROPER_NOUN
 CJD	47	PROPER_NOUN
-cfrac	47	OTHER
 Odrade	47	PROPER_NOUN
 ciprofloxacin	47	OTHER
 Hoffer	47	PROPER_NOUN
@@ -24477,7 +24460,6 @@ FCA	46	NOUN,PROPER_NOUN
 Zelaya	46	PROPER_NOUN
 semitone	46	NOUN
 Brockovich	46	PROPER_NOUN
-widetilde	46	OTHER
 Clavell	46	PROPER_NOUN
 carbolic	46	NOUN
 Meleon	46	PROPER_NOUN
@@ -34592,7 +34574,6 @@ Grete	25	PROPER_NOUN
 Purley	25	PROPER_NOUN
 Rebbes	25	OTHER
 Björk	25	PROPER_NOUN
-bmod	25	OTHER
 TFI	25	PROPER_NOUN
 orientational	25	OTHER
 geocache	25	NOUN,VERB
@@ -40626,7 +40607,6 @@ NHK	18	PROPER_NOUN
 Carrington	18	PROPER_NOUN
 Adrienne	18	PROPER_NOUN
 rant	18	NOUN,VERB
-ddots	18	OTHER
 homework	18	NOUN
 monopolistic	18	OTHER
 GNAT	18	PROPER_NOUN
@@ -49457,7 +49437,6 @@ nativism	13	NOUN
 BOI	13	NOUN,PROPER_NOUN
 ActiveX	13	PROPER_NOUN
 quasicrystals	13	OTHER
-hline	13	OTHER
 UMNO	13	PROPER_NOUN
 graffito	13	NOUN
 granulation	13	NOUN
@@ -54145,7 +54124,6 @@ contentions	11	NOUN	contention
 asterisms	11	NOUN	asterism
 viols	11	NOUN,VERB	viol
 SSD	11	NOUN,PROPER_NOUN
-dotsb	11	OTHER
 Lak	11	PROPER_NOUN
 Coudenhove	11	PROPER_NOUN
 Sor	11	PROPER_NOUN
@@ -60212,7 +60190,6 @@ Aldwych	9	PROPER_NOUN
 incendiaries	9	NOUN	incendiary
 stoneware	9	NOUN
 Quimbaya	9	PROPER_NOUN
-dotsc	9	OTHER
 Bhāskara	9	PROPER_NOUN
 Danbury	9	PROPER_NOUN
 Denys	9	PROPER_NOUN
@@ -63035,7 +63012,6 @@ Warham	8	PROPER_NOUN
 Lindum	8	PROPER_NOUN
 Dowling	8	PROPER_NOUN
 consecrate	8	VERB
-OBJ	8	OTHER
 Wyche	8	PROPER_NOUN
 Donati	8	PROPER_NOUN
 Calciopoli	8	PROPER_NOUN
@@ -70084,7 +70060,6 @@ Earache	7	PROPER_NOUN
 Baader	7	PROPER_NOUN
 Ultraman	7	PROPER_NOUN
 SLS	7	PROPER_NOUN
-dpkg	7	OTHER
 kFreeBSD	7	OTHER
 Speedwell	7	PROPER_NOUN
 Daedala	7	OTHER

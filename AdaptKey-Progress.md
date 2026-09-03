@@ -773,6 +773,41 @@ non-trivial changes).
 
 ## Current State
 
+- **§373 (v1.1.12): D-427 - `en/dict.tsv` LaTeX-markup noise cleanup, the same D-402-style follow-up**
+  **that also surfaced §372/D-426's Greek bug.** Checked directly, not assumed: `en/dict.tsv` carried
+  essentially the same class of Wikipedia-math-markup leakage German's own D-402 round found and removed
+  (`cfrac`/`hline`/`bigl`/`nabla`/`qquad`/`bmod`/`pmod`/`vdots`/`hbar`/`sinh`/`cosh`/`sgn`/`notin`/`binom`
+  plus `const`/`gzip`/`grep`/`ptr`/`bool`/`attr` all present with real frequencies), so a wider systematic
+  scan for further LaTeX command names beyond that starting list found even more (`mathbf`/`mathrm`/
+  `mathbb`/`mathcal`/`mathfrak`/`mathsf`/`operatorname`/`boldsymbol`/`widehat`/`widetilde`/`cdots`/`ldots`/
+  `ddots`/`dotsb`/`dotsc`/`qquad`/`bigl`/`bigr`).
+
+  **Deliberately did NOT blanket-copy German's own removed-token list**, since the reason those tokens were
+  noise for German does not automatically transfer to English: for German they have *zero* German meaning
+  (pure markup/Latin-jargon leakage, unconditionally safe to remove), but several - `sort`/`void`/`wedge`/
+  `cot`/`because`/`therefore`/`complement` - are genuine, common English words that merely happen to share a
+  spelling with a LaTeX command name, and others (`sinh`/`cosh`/`sgn`/`vdash`/`oplus`/`notin`/`nabla`/`hbar`/
+  `binom`/`limsup`/`liminf`/`malloc`/`gzip`/`grep`/`const`/`bool`/`struct`/`typedef`/`nullptr`/`ptr`/
+  `printf`/`arg`/`args`) turned out to be genuinely Wiktionary-attested English words too (mathematical/
+  physics terms used in real prose, or computing jargon Wiktionary's own English edition documents as real,
+  if narrow-register, vocabulary) - confirmed directly by checking whether each one already had real
+  Wiktionary-sourced inflected forms from §368/D-422's own merge (13 of them did: `binoms`/`bools`/
+  `callocs`/`consts`/`coshes`/`hbars`/`mallocs`/`nablas`/`nullptrs`/`ptrs`/`sinhs`/`structs`/`typedefs`,
+  plus their own further inflections - all correctly kept, not orphaned).
+
+  Only kept the tokens with **no meaning as an actual thing at all, ever - pure typesetting/formatting
+  directives** (`mathbf`="render bold", `widehat`="draw a wide hat accent", `cdots`/`ldots`/`ddots`/`vdots`
+  ="draw dots in this pattern", `operatorname`="format as an operator name", and so on - nobody uses these
+  as words in a sentence, unlike `nabla`/`hbar`/`sinh` which genuinely name a real mathematical/physical
+  concept people do write about) on the removal list. 25 rows removed outright, individually confirmed to
+  have zero orphaned child forms first. `en/dict.tsv` 116,413 -> 116,388 rows.
+
+  Bundled directly in `app/src/main/assets/en/` (D-280 - English has no separate downloadable language pack
+  the way German/Greek do), so no `version.txt`/pack-zip/`LanguagePackCatalog` step here, unlike §372's own
+  Greek fix. No new tests (data-only). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 428 -> 429, `versionName` `"1.1.11"` -> `"1.1.12"`. Not yet
+  device-confirmed.
+
 - **§372 (v1.1.11): D-426 - a real bug in §370/D-424's own Greek extraction, found via a follow-up "check**
   **for markup/noise like the German cleanup found" request, fixed at the root.** D-424's generic form-
   extraction (necessary given Greek's own morphological complexity - see that section's own write-up) turned
