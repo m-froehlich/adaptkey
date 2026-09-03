@@ -773,6 +773,79 @@ non-trivial changes).
 
 ## Current State
 
+- **§368 (v1.1.7): D-422 - English "Wortfamilien" parity project - real POS tags, Wiktionary-sourced**
+  **inflection forms, lemma-linking, for `app/src/main/assets/en/dict.tsv`.** User's own framing: the German
+  dictionary should not set a quality bar the English one falls short of, and completeness genuinely helps
+  autocorrect quality even though English capitalisation itself barely benefits (§6 mostly doesn't apply to
+  English common nouns). Mirrors the German Wortfamilien project (§322) end to end - same source
+  (wiktextract/kaikki.org, MIT tool / CC BY-SA content), same scope discipline (only complete *existing*
+  `dict.tsv` lemmas, never grow the vocabulary itself - 223,481 of 259,374 extracted Wiktionary words had no
+  existing `dict.tsv` lemma and were correctly skipped), same collision rule (never overwrite an existing
+  row), same append-only merge (file stays frequency-sorted, new rows added at the tail, never resorted).
+
+  **Real difference from §322, confirmed empirically before generating anything, not assumed:** `en/dict.tsv`
+  had *zero* real POS tags going in - only `OTHER`/`PROPER_NOUN` from the original casing-heuristic seed
+  (same crude starting point German itself had before §322, just never since upgraded for English). No
+  separate "link what's already there" phase (German's own §320/§321, done before §322's own generation
+  pass) was needed - starting from Wiktionary data from the very first step let tagging and generation happen
+  in one integrated pass instead of two.
+
+  **Source difference from German, discovered live, not assumed:** kaikki.org has no small
+  English-as-target-language extract the way it does for German (`de-extract.jsonl.gz`) - since the *source*
+  Wiktionary edition already is English, "English-target" entries are just the bulk of its own full,
+  cross-language dump (`raw-wiktextract-data.jsonl.gz`, 2.6GB compressed / 22.9GB uncompressed, ~9x
+  German's own `de-extract.jsonl.gz`). Filtered to `lang_code=="en"` in one single pass (not four) extracting
+  nouns/verbs/adjectives/prepositions together, since re-streaming a file this size four times would have
+  cost real, avoidable time.
+
+  New `dictionaries/en/extract_wiktionary.py` (nouns: plural; verbs: 3rd-person-singular/present-participle/
+  simple-past/past-participle; adjectives: comparative/superlative; prepositions: closed-class, tagging
+  only, no generation) + `merge_wiktionary.py` (tags existing lemmas, links/generates missing forms with a
+  frequency calibrated from already-linked pairs' own median form/lemma ratio - noun 0.407 n=9782, verb
+  0.484 n=14202, adjective 0.066 n=271, all in the same order of magnitude as German's own §322 ratios
+  (nouns 0.355, verbs 0.417), a reassuring cross-language sanity check, not merely a coincidence).
+
+  **Two real bugs caught by spot-checking before finalising, not shipped-then-found** (mirrors §322's own
+  six write-verify-revert verb rounds - this project's now-established discipline of not trusting a Wiktionary
+  merge without checking real output rows first):
+  1. **Case-insensitive false match.** The archaic dialectal verb `"gan"` (attested past tense `"went"`)
+     case-insensitively matched an unrelated, already-present `dict.tsv` entry `"Gan"` (freq 47, `OTHER`) -
+     `"went"` would have been wrongly lemma-linked to `"Gan"` instead of `"go"`. `dict.tsv`'s own casing
+     convention ("the most frequent surface form") means a row whose casing differs from Wiktionary's own is
+     real evidence of a *different* word, not a casing quirk of the same one - fixed by requiring an exact
+     case match before accepting any lemma or form match at all (a missed completion is a far safer failure
+     than cross-contaminating two unrelated words); a matching second guard prevents generating a *new* row
+     that would collide case-insensitively with an existing differently-cased one, preserving `dict.tsv`'s
+     own case-insensitive-uniqueness invariant (verified after the fix: 0 case-insensitive duplicates in the
+     merged file).
+  2. **Whole-entry archaic sense.** `"child"` has a genuine but archaic (Shakespeare-era, 1596-1608) Wiktionary
+     verb sense, "(archaic, ambitransitive) To give birth" - not caught by the form-level qualifier filter
+     (`EXCLUDE_QUALIFIERS`, itself needed for real cases like `"gooder"`/`"goodest"` instead of `"better"`/
+     `"best"` for `"good"`, and `"yode"`/`"goed"` instead of `"went"` for `"go"`) since Wiktionary marks
+     whole-sense archaism via each sense's own gloss text, not the `forms[]`-level tags that filter already
+     checks. Fixed with a second, entry-level filter: skip an entry only when *every* sense's gloss starts
+     with an archaic/obsolete/dialectal/nonstandard/rare/proscribed qualifier in parentheses (a word with
+     both an archaic and a live modern sense keeps its modern one).
+
+  **Net result:** `dict.tsv` 90,026 -> 116,413 rows (+26,387: 16,798 noun forms, 8,040 verb forms, 1,549
+  adjective forms), 35,487 lemmas tagged with a real POS from Wiktionary, 29,315 already-present forms newly
+  linked to their lemma, 156 prepositions tagged. `OTHER` (the old "unknown" fallback) dropped from 55,878 to
+  16,013 words - frequency-weighted, **85.2% of the original 90,026 words' combined real-world occurrence
+  count now carries a genuine POS tag** (was 0%; exceeds German's own §322 frequency-weighted coverage,
+  consistent with English's structurally simpler morphology needing less generation to reach full coverage).
+  `bigram.tsv`/`hints.tsv` untouched, confirmed by diff. The Wiktionary extract scripts and their own
+  intermediate TSVs (`wiktionary_nouns.tsv`/`_verbs.tsv`/`_adjectives.tsv`/`_prepositions.tsv`) committed to
+  `dictionaries/en/`, mirroring `dictionaries/de/`'s own precedent - the raw 2.6GB source dump itself is not
+  (same as German's own `de-extract.jsonl.gz`, never checked in).
+
+  No new tests - data-only, `en/dict.tsv` is a bundled asset read through the same already-generic,
+  already-tested `DictionaryAssetParser`/`bulkImport` pipeline every language already uses (the `lemma`
+  column, D-412, was already fully generic across languages with zero English-specific code needed). 1220
+  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  423 -> 424, `versionName` `"1.1.6"` -> `"1.1.7"`. **Not yet device-confirmed** - worth a real-device check
+  that English suggestions/autocorrect now behave noticeably better for common inflected forms and that
+  nothing regressed for already-well-known words.
+
 - **§367 (v1.1.6): D-377 - new A-13, evidence-gated missed-Backspace recovery, chip-only.** Recovers a badly
   garbled token where a Backspace was missed and a neighbouring key was hit instead (e.g. `"welxmche"` for
   `"welche"` - the user's own worked example, an accidental `x` for `c` then a Backspace attempt that landed
