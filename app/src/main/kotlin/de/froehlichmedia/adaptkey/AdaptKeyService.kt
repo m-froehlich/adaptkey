@@ -2825,19 +2825,28 @@ class AdaptKeyService : InputMethodService() {
         // had pressed Enter right after any other ordinary character.
         val editorInfo = currentInputEditorInfo
         val imeOptions = editorInfo?.imeOptions ?: 0
+        val action = imeOptions and EditorInfo.IME_MASK_ACTION
+        val noEnterAction = (imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0
+        val hasRealAction = !noEnterAction && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED
         val multiLine = ((editorInfo?.inputType ?: 0) and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
-        if (multiLine) {
+        // D-393: MULTI_LINE alone is not a reliable "this field wants a literal newline" signal - confirmed
+        // from a real device log that the Google Play Store's own search field sets it despite being a
+        // single-line, submit-on-enter search box, silently swallowing Enter as a newline before the action
+        // handling below was ever reached. A field that declares a genuine action (Go/Search/Send/Done)
+        // without opting out via IME_FLAG_NO_ENTER_ACTION always submits on Enter now, MULTI_LINE or not; a
+        // field wanting real newlines despite having its own action button elsewhere (e.g. a chat app's
+        // multi-line compose box) already sets that flag for exactly this purpose, so it is unaffected.
+        if (multiLine && !hasRealAction) {
             finalizeAndCommit(ic, "\n")
             return
         }
-        // Single-line field: commit the pending word without a newline, then submit.
+        // Single-line field, or a multi-line one with a real action it did not opt out of: commit the
+        // pending word without a newline, then submit.
         finalizeAndCommit(ic, "")
         // D-142: a login field's value is typically finished right here (Enter/"Weiter"/"Login"), before
         // the app's own submit action can navigate away or clear the field.
         captureCredentialIfLoginField(ic)
-        val action = imeOptions and EditorInfo.IME_MASK_ACTION
-        val noEnterAction = (imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0
-        if (!noEnterAction && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
+        if (hasRealAction) {
             ic.performEditorAction(action)
         } else {
             sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)

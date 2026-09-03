@@ -578,7 +578,10 @@ non-trivial changes).
   - **D-392 - RESOLVED (§353, v1.0.105).** Releasing Caps Lock now re-derives Shift fresh from the real
     caret position (D-313/D-406's own [armShiftForNextWord] mechanism) instead of unconditionally clearing
     it. See Current State for the mechanism.
-  - **D-393 - OPEN.** In the Google Play Store's own search bar, Enter does not act as Submit.
+  - **D-393 - RESOLVED (§390, v1.1.29).** In the Google Play Store's own search bar, Enter did not act as
+    Submit - root-caused from a real device log to `handleEnter()`'s `MULTI_LINE` check firing before any
+    action handling, since Play Store sets `MULTI_LINE` on its search field despite it being single-line. See
+    spec's new G-07 and Current State for the mechanism.
   - **D-394 - RESOLVED, digit-mirror only (§330, v1.0.82).** The calculator page's digit block now reads
     `1 2 3` / `4 5 6` / `7 8 9` / `0` top to bottom (was calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0`) -
     the operator column and every other key untouched. The T9-letter-long-press half of this ask was
@@ -777,6 +780,36 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§390 (v1.1.29): D-393 - Enter did nothing in the Google Play Store's own search bar instead of**
+  **submitting the search.** Reported with a real device log (`AdaptKeyJitter`/`AdaptKeyHaptics`), root-caused
+  directly rather than guessed: `com.android.vending`'s search field reports `inputType=0x228001`, which
+  includes `TYPE_TEXT_FLAG_MULTI_LINE` (0x20000) despite being a genuine single-line, submit-on-enter search
+  box. `handleEnter()` checked `multiLine` first and returned immediately with `finalizeAndCommit(ic, "\n")`
+  whenever it was set, never reaching the action-handling code below at all - the log's own
+  `finalizeAndCommit: typed="Whatsapp" -> finalWord="Whatsapp" delimiter="\n"` line is the literal proof: a
+  raw newline was committed straight into the search bar, with no `performEditorAction`/submit anywhere
+  afterward.
+
+  Fixed by re-ordering the check: a field that declares a genuine IME action (Go/Search/Send/Done) and has not
+  opted out via `IME_FLAG_NO_ENTER_ACTION` now always submits on Enter, regardless of whether `MULTI_LINE` is
+  also set - `hasRealAction` is now computed first, and the `multiLine` newline branch only fires when
+  `!hasRealAction`. The existing `IME_FLAG_NO_ENTER_ACTION` check (unchanged) is exactly the mechanism a
+  genuinely multi-line field with its own action button elsewhere (e.g. a chat app's compose box) already
+  uses to keep Enter as a plain newline despite declaring an action - confirmed this reordering does not
+  affect that case, and does not affect D-383/Google Keep's own note-body field either (multi-line, no real
+  action either way).
+
+  Design discussed first per this project's own convention (a genuine behaviour change to Enter handling,
+  affecting every app, not just Play Store) - user confirmed the re-ordering before implementation. One
+  assumption remains unverified from the log alone (`imeOptions`/the actual declared action is not currently
+  logged) - inferred from the field being an unambiguous search box, not proven bit-for-bit; flagged to the
+  user as the one open question. Spec gained a new G-07 describing the resulting Submit-vs-Newline resolution
+  order. No new tests (`AdaptKeyService.kt`'s `InputConnection`/`EditorInfo` glue, untested per this project's
+  own convention). 1243 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `versionCode` 445 -> 446, `versionName` `"1.1.28"` -> `"1.1.29"`. **Not yet device-confirmed** - needs
+  the original repro (Google Play Store search bar, type a query, press Enter) re-tried on a real device to
+  confirm the search now actually submits.
 
 - **§389 (v1.1.28): D-383 - in Google Keep's list mode, pressing Enter with the caret right before a**
   **reclaimed word deleted that word.** Reported with a real device log (`AdaptKeyJitter`), root-caused from it

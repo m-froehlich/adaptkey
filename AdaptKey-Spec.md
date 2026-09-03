@@ -414,6 +414,19 @@ moment after the commit correctly left it alone. A new one-shot flag, consumed e
 `shiftArmedByDelete`/D-373-followup's own `tokenShiftLiveArmed` guards right next to it, carries the "this was
 just an opener" decision forward to that one call site.
 
+### G-07 - Enter Key: Submit vs. Newline
+Pressing Enter either inserts a literal newline or submits the field, depending on what the target editor
+itself declares - never on a fixed per-app or per-field-type assumption. A field that declares a genuine IME
+action (Go/Search/Send/Done) and does not opt out via `IME_FLAG_NO_ENTER_ACTION` always submits on Enter
+(`performEditorAction`), regardless of whether it also carries `TYPE_TEXT_FLAG_MULTI_LINE` - D-393: confirmed
+from a real device log that the Google Play Store's own search field sets `MULTI_LINE` despite being a
+single-line, submit-on-enter search box, so `MULTI_LINE` alone is not a reliable "wants a literal newline"
+signal. Only a field with `MULTI_LINE` set and no such action (or one that explicitly opts out via
+`IME_FLAG_NO_ENTER_ACTION` - e.g. a chat app's own multi-line compose box with a separate on-screen Send
+button) gets a real newline instead. A single-line field with no meaningful action at all (e.g. a browser
+address bar) still submits, via a real `KEYCODE_ENTER` key event rather than `performEditorAction`, since such
+fields typically treat the raw key event itself as their own submit trigger.
+
 ---
 
 ## 5. Suggestion Bar
