@@ -773,6 +773,39 @@ non-trivial changes).
 
 ## Current State
 
+- **§382 (v1.1.21): D-433-followup (v2) - three real visual bugs in §381's own hand-built preference layout,**
+  **root-caused by diffing against AndroidX's real default layout, not guessed.** Reported directly: the row
+  sat a few pixels left of every other setting, its own title was no longer bold, and the "Jetzt einrichten"
+  button's text was nearly invisible (pale on light grey). Root cause confirmed by extracting the actual
+  `preference.xml` straight out of the `androidx.preference:preference:1.2.1` AAR in the local Gradle cache
+  (`~/.gradle/caches/modules-2/files-2.1/androidx.preference/...`) and diffing it line-for-line against
+  `preference_tier3_model.xml` - which had been hand-copied from this project's own pre-existing
+  `preference_labeled_seekbar.xml` template (D-407/D-408) rather than the true AndroidX default, and that
+  template itself turns out to already carry small, previously-unnoticed deviations (masked there by the
+  SeekBar's own visual weight, never masked here):
+
+  - **The shift**: `preference_labeled_seekbar.xml`'s own title/summary `RelativeLayout` uses
+    `marginStart=16dp`/`marginEnd=8dp`; the real default uses `marginStart=15dip`/`marginEnd=6dip`. Fixed to
+    the exact real-default values.
+  - **The missing bold**: the template's title `TextView` uses `textAppearance="?android:attr/
+    textAppearanceMedium"` with no explicit colour; the real default uses `textAppearanceLarge` plus an
+    explicit `textColor="?android:attr/textColorPrimary"`. Copied verbatim.
+  - **The unreadable button**: the new setup button (`Kind.tier3_pref_setup`) inherited `?android:attr/
+    borderlessButtonStyle`'s own default text colour with no override - resolves to a pale tone against this
+    screen's light background. Fixed with an explicit `textColor="?android:attr/textColorPrimary"`, matching
+    the same attribute the title itself now correctly uses (the "Mehr erfahren" button's own deliberate blue
+    `link_text` override is untouched - that one was never the complaint).
+
+  The icon frame was also switched from the template's bare `ImageView` (`android:minWidth="48dp"`) to the
+  real default's exact `FrameLayout` + `ImageView` (`maxWidth`/`maxHeight` 48dp, no `minWidth`) structure -
+  the one piece a plain diff alone could not fully explain (would need on-device measurement to confirm it
+  was actually contributing to the shift), but replicating the identical structure removes it as a possible
+  factor entirely rather than leaving an approximation in place. No new tests (pure layout-attribute fix,
+  Android view glue). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `versionCode` 437 -> 438, `versionName` `"1.1.20"` -> `"1.1.21"`. **Not yet device-confirmed** - needs
+  a real device check that the row now aligns flush with its siblings, the title reads bold, and "Jetzt
+  einrichten"/"Bereit" is clearly legible.
+
 - **§381 (v1.1.20): D-433-followup - reworked the Mini-LLM settings row itself, plus a real, unrelated bug**
   **found and fixed in passing.** Direct feedback right after §380 shipped, several distinct points at once:
 

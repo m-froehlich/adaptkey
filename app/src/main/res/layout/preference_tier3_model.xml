@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- D-433-followup: layout for Tier3ModelPreference - mirrors preference_labeled_seekbar.xml's own
-     icon/title/summary structure (D-407/D-408), with a two-button row ("Mehr erfahren" / status-aware
-     setup button) below the summary instead of a SeekBar. -->
+<!-- D-433-followup(v2): icon frame/margins/title styling now copied byte-for-byte from AndroidX's own real
+     default preference.xml (extracted from the preference-1.2.1.aar, not hand-approximated via
+     preference_labeled_seekbar.xml as originally done - that template's own 16dp/8dp margins and
+     textAppearanceMedium title turned out to differ from the true default's 15dip/6dip and
+     textAppearanceLarge/textColorPrimary, which is exactly what a real device flagged: this row sat a few
+     pixels left of every sibling preference and its own title was not bold). Only the summary
+     (match_parent, not the default's wrap_content - a real paragraph needs to wrap at the row's own width)
+     and the two-button row replacing the widget/seekbar area are still deliberately different. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,23 +17,29 @@
     android:clipChildren="false"
     android:clipToPadding="false"
 >
-    <ImageView
-        android:id="@android:id/icon"
+    <FrameLayout
+        android:id="@+id/icon_frame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:minWidth="48dp"
-    />
+    >
+        <ImageView
+            android:id="@android:id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="48dp"
+            android:maxHeight="48dp"
+        />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginStart="15dip"
+        android:layout_marginLeft="15dip"
+        android:layout_marginEnd="6dip"
+        android:layout_marginRight="6dip"
+        android:layout_marginTop="6dip"
+        android:layout_marginBottom="6dip"
         android:layout_weight="1"
         android:clipChildren="false"
         android:clipToPadding="false"
@@ -38,7 +49,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="?android:attr/textColorPrimary"
             android:ellipsize="marquee"
             android:fadingEdge="horizontal"
         />
@@ -87,6 +99,7 @@
                 android:paddingEnd="0dp"
                 android:paddingRight="0dp"
                 android:gravity="end|center_vertical"
+                android:textColor="?android:attr/textColorPrimary"
             />
 
         </LinearLayout>
