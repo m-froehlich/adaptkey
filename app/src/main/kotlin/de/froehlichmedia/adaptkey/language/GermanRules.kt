@@ -130,7 +130,7 @@ object GermanRules : LanguageRules {
     // D-206: pre-1996-spelling-reform relics of otherwise ordinary, high-frequency common words - a
     // curated subset of dict_de.tsv's own ß-containing entries, hand-picked (not a blanket rule) by
     // checking each candidate against the real corpus frequencies: kept only where the modern ss-form
-    // is the dominant, living spelling in the very same corpus (e.g. "daß" 868 vs. "dass" 61892) -
+    // is the dominant, living spelling in the very same corpus (e.g. "muß" vs. "muss") -
     // never a genuinely modern long-vowel ß word that merely has a rarer Swiss-spelling ss-counterpart
     // present too (e.g. "große"/"grosse", "außerdem"/"ausserdem" - those stay untouched, ß is correct
     // and current there). Deliberately excludes proper nouns/surnames/place names sharing the same
@@ -142,9 +142,18 @@ object GermanRules : LanguageRules {
     // the existing ß->"ss" fold (Umlaut.fold, unrelated to D-204's own newer host-key fold) already
     // makes each of these a cost-0 match for its modern form, so autocorrect can still silently fix a
     // live typing of one of these to the modern spelling via the existing §44 known-word override.
+    //
+    // "daß" moved OFF this list (2026-09-03): explicit user instruction to remove the word from the
+    // dictionary entirely instead of merely blacklisting it - see dictionaries/de/dict.tsv's own removal,
+    // same round. Kept here it would have been redundant (nothing left in the dictionary to blacklist)
+    // and, per the user's own explicit preference, blacklisting is no longer the intended mechanism for
+    // this word going forward. "Strasse" (the Swiss ss-spelling of "Straße") got the identical
+    // dictionary-removal treatment in the same round, for the same explicit reason - it was never on this
+    // list at all (Swiss ss-spellings are deliberately NOT covered by the rule above), so nothing to
+    // remove here.
     private val BUNDLED_CONFUSABLES_BLACKLIST = setOf(
         "due", "sue", "ddr", "aks",
-        "daß", "muß", "mußt", "mußte", "müßte", "wußte", "läßt", "laß", "laßt",
+        "muß", "mußt", "mußte", "müßte", "wußte", "läßt", "laß", "laßt",
         "einfluß", "anschluß", "schluß", "fluß", "prozeß", "kongreß", "rußland",
         "bewußt", "bewußtsein", "bewußtseins", "unbewußten",
         "haß", "gewiß", "kuß", "bißchen", "häßlich"

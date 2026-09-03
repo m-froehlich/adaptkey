@@ -773,6 +773,32 @@ non-trivial changes).
 
 ## Current State
 
+- **§369 (v1.1.8): D-423 - "daß" and the Swiss ss-spelling "Strasse" removed outright from**
+  **`dict_de.tsv`, never blacklisted.** User's own explicit condition, stated directly after a blacklist-
+  based fix was proposed and implemented first: "Das soll nicht auf die Blacklist, sondern ganz aus dem
+  Wörterbuch fliegen." A blacklist-based approach (mirroring D-206's existing pre-1996-spelling-reform-relic
+  mechanism, which already covered "daß") was built, then explicitly reverted in favour of outright removal
+  once the user clarified - kept the dictionary/pack side effects (this section) but dropped the blacklist
+  code and its own new unit test entirely.
+
+  `dict_de.tsv`: 3 rows removed outright - `"daß"` (868, `OTHER`), `"Strasse"` (92, `NOUN`), `"Strassen"`
+  (49, `NOUN,PROPER_NOUN`, plural, lemma-linked to `"Strasse"`). `"daß"` also removed from `GermanRules.
+  BUNDLED_CONFUSABLES_BLACKLIST` (D-206) - redundant once gone from the dictionary entirely, and no longer
+  the intended mechanism for this word per the user's own explicit correction. Deliberately narrow scope,
+  checked directly rather than assumed: the unrelated surname `"Strasser"` (and its own `"Strassers"`/
+  `"Strassern"` inflections) is untouched - a real person's name is not an error to correct, the identical
+  proper-noun exclusion D-206's own rationale already establishes for `"Keßler"`/`"Reuß"`/`"Elsaß"`;
+  `"Strassenbahn"`/`"Strassenverkehr"` (2 further Swiss-spelling compounds found via a `grep -ic "strasse"`
+  scan of the whole file, 7 total hits) were also left untouched, out of scope of what was actually asked -
+  worth a follow-up if the user wants the same treatment extended to compounds.
+
+  `dictionaries/de/version.txt` 36 -> 37, pack rebuilt and verified byte-identical after unzip (`dict.tsv`/
+  `bigram.tsv`/`hints.tsv` diffed byte-for-byte, `version.txt` content checked), `LanguagePackCatalog`
+  version 36 -> 37. No new tests (data-only; the blacklist mechanism itself already has its own coverage,
+  untouched by this change). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 424 -> 425, `versionName` `"1.1.7"` -> `"1.1.8"`. Not yet
+  device-confirmed.
+
 - **§368 (v1.1.7): D-422 - English "Wortfamilien" parity project - real POS tags, Wiktionary-sourced**
   **inflection forms, lemma-linking, for `app/src/main/assets/en/dict.tsv`.** User's own framing: the German
   dictionary should not set a quality bar the English one falls short of, and completeness genuinely helps

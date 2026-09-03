@@ -329,7 +329,21 @@ object LanguagePackCatalog {
             // for a brand name with its own internal-capitalisation convention. `dictionaries/de/version.txt`
             // 35 -> 36, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version
             // 35 -> 36. No new tests (data-only). Not yet device-confirmed.
-            version = 36
+            // D-423: explicit user instruction - "daß" and the Swiss ss-spelling "Strasse"/"Strassen" must
+            // never be suggested/autocorrected to, full stop. A blacklist-based fix (mirroring D-206's
+            // existing pre-1996-reform-relic mechanism, which already covered "daß") was proposed first but
+            // explicitly declined by the user in favour of outright dictionary removal - "daß" 868, "Strasse"
+            // 92, "Strassen" 49 (plural, lemma-linked to "Strasse") removed outright, 3 rows. "daß" also
+            // removed from `GermanRules.BUNDLED_CONFUSABLES_BLACKLIST` (D-206) as redundant once gone from
+            // the dictionary entirely - blacklisting is no longer the mechanism for this word. The unrelated
+            // surname "Strasser" (and its own "Strassers"/"Strassern" inflections) is deliberately untouched
+            // - a real person's name is not an error to correct, same proper-noun exclusion D-206's own
+            // rationale already establishes; "Strassenbahn"/"Strassenverkehr" (2 further Swiss-spelling
+            // compounds found in the same scan) were also left untouched, out of the scope of what was
+            // actually asked. `dictionaries/de/version.txt` 36 -> 37, pack rebuilt and verified byte-identical
+            // after unzip, `LanguagePackCatalog` version 36 -> 37. No new tests (data-only). Not yet
+            // device-confirmed.
+            version = 37
         ),
         Entry(
             Language.GREEK,
