@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- D-433-followup (v3): reuses AndroidX's own real default preference layout verbatim via <include>,
-     instead of v1/v2's own hand-copied re-declaration of its icon/title/margin structure - that approach
-     kept diverging in ways hard to fully reason about without a device to test against, and the root cause
-     of v2's own regression (completely flush left, title not bold) turned out to be more fundamental than a
-     wrong attribute value: re-declaring android:id="@+id/icon_frame" in this app's own layout XML mints a
-     NEW resource id under this app's own R class - a different numeric value than
-     androidx.preference.R.id.icon_frame, which is what Preference.onBindViewHolder() itself is compiled to
-     look up internally to manage that view's visibility. Same name, different id - the library's own
-     icon-frame handling silently never reached this layout's view at all. Including the library's own
-     preference.xml directly sidesteps this whole class of bug: it is the literal same layout resource
-     androidx.preference.Preference itself already renders for every other row in this screen, ids and all,
-     so title/icon/summary are now guaranteed byte-identical to every sibling preference. Only the two-button
-     row below it is this project's own content. -->
+<!-- D-433-followup (v4): v3's own <include> pointed at the wrong layout - @layout/preference is the plain,
+     pre-Material default; this app's theme sets preferenceTheme="@style/PreferenceThemeOverlay", which maps
+     preferenceStyle to Preference.Material, whose own android:layout is @layout/preference_material (a
+     genuinely different file: theme-derived listPreferredItemPadding*, textAppearanceListItem for the
+     title, not textAppearanceLarge) - confirmed by reading the actual style chain inside the
+     androidx.preference AAR, not guessed a second time. This is the literal layout every sibling plain
+     Preference in this screen already renders through, so including it here finally guarantees byte-identical
+     title/icon/summary rendering. Only the two-button row below it is this project's own content. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
 >
-    <include layout="@layout/preference" />
+    <include layout="@layout/preference_material" />
 
+    <!-- Uses the same theme-derived paddingStart/End the included preference_material.xml's own root uses
+         for its title/summary column, rather than a hard-coded dp value, so both buttons line up exactly
+         under that text on any device/density instead of merely approximating it. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:paddingBottom="8dp"
     >
 

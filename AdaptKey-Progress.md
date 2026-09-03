@@ -773,6 +773,27 @@ non-trivial changes).
 
 ## Current State
 
+- **§384 (v1.1.23): D-433-followup (v4) - v3's own `<include>` pointed at the wrong layout resource.**
+  Screenshot confirmed the exact symptom precisely: "Mini-LLM (Tier 3)" rendered larger but not bold, and
+  visibly further left than every sibling title/summary in the same list. Root-caused properly this time by
+  reading the actual style chain inside the `androidx.preference:1.2.1` AAR rather than assuming
+  `@layout/preference` (the plain, pre-Material default `v3` included) was what this screen actually uses:
+  `values/themes.xml` sets `preferenceTheme="@style/PreferenceThemeOverlay"`, whose own `BasePreferenceThemeOverlay`
+  parent maps `preferenceStyle` to `@style/Preference.Material`, whose own `android:layout` is
+  `@layout/preference_material` - a genuinely different file from `@layout/preference` (confirmed by reading
+  both directly): theme-derived `?android:attr/listPreferredItemPadding*` instead of a fixed margin, and
+  `?android:attr/textAppearanceListItem` for the title instead of `textAppearanceLarge` - exactly the two
+  attributes behind both symptoms in the screenshot. Fixed by including `@layout/preference_material`
+  instead - the literal layout every sibling plain `Preference` in this screen already renders through - and
+  by switching the two-button row's own horizontal padding from a hard-coded `16dp` guess to the identical
+  `listPreferredItemPaddingStart`/`End` theme attributes the included layout's own title/summary column uses,
+  so the buttons line up under that text by construction rather than by an approximated constant. No new
+  tests (pure layout-resource fix). 1240 unit tests unchanged, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 439 -> 440, `versionName` `"1.1.22"` -> `"1.1.23"`. **Not yet
+  device-confirmed** - the fourth attempt at this one row; this time backed by reading the actual style chain
+  responsible for both reported symptoms rather than a plausible-looking substitute, so there is a concrete
+  reason to expect it holds, but still needs the real screenshot-vs-sibling comparison to confirm.
+
 - **§383 (v1.1.22): D-433-followup (v3) - §382's own fix made it worse (fully flush left, still not bold) -**
   **the real root cause was more fundamental than wrong margin/textAppearance values.** Reported directly:
   after §382 shipped, the row went from "a few pixels off" to completely unindented, and the title, while now
