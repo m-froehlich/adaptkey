@@ -773,6 +773,49 @@ non-trivial changes).
 
 ## Current State
 
+- **§380 (v1.1.19): D-433 - the Mini-LLM (Tier 3) settings screen explains its actual value instead of just**
+  **its install mechanics.** User's own explicit request, after a full re-read of the tier-3 orchestration
+  code (`Tier3Orchestrator`/`Tier1Confidence`/`SuggestionMerger`/`HighCertaintyCapitalisation`/
+  `AdaptiveLearning`/`Tier3FamilyPrompt`/`Tier3FamilyApplier`) to distil what genuinely differs with vs.
+  without it: contextual completion for word combinations tier-1's own bigram/trigram statistics have never
+  seen (only ever consulted when `Tier1Confidence` is low - the LLM stays dormant for confident predictions);
+  resolving genuinely ambiguous capitalisation (§6 rule 6, e.g. "Weg"/"weg") from real sentence meaning, at
+  ≥85% confidence only; determining a newly-learned word's whole family (lemma, part of speech, principal
+  inflected forms) in one step, versus the non-LLM path's much narrower fixed-ending-list heuristic (D-404,
+  `LearnedLemmaLinking`); and feeding a confirmed LLM suggestion straight back into tier 1 so the LLM is
+  needed less over time. Explicitly unaffected either way: ordinary spelling correction, umlaut restoration,
+  A-05/A-06 split/merge, and A-13 missed-Backspace recovery - all independent of tier 3 entirely.
+
+  First attempt (a 2-3 sentence on-screen paragraph) was reported back as still too long once tested against
+  the real UI - "das hatten wir an anderer Stelle schon einmal" (echoing §365's own spinner-label width
+  lesson). Root cause of the confusion, clarified through the report: the actually space-constrained spot is
+  the **settings-list row's own summary** (`c06_model_pref_summary`, shown inline in the main Settings list
+  before the user even taps in) - not the dedicated `Tier3ModelActivity` screen's own intro text, which sits
+  in an unconstrained `ScrollView` and was never actually at risk of truncation. Resolved by keeping the
+  content at three deliberately different lengths for three different spots:
+
+  1. **`c06_model_pref_summary`** (the settings-list row, genuinely space-constrained): a single tight
+     sentence ("Verbessert unsichere Vorschläge durch Satzverständnis statt nur Statistik") replacing the
+     old purely-mechanical "download and import" text.
+  2. **New `c06_model_benefit`** (top of `Tier3ModelActivity`'s own screen, `ScrollView`, no length
+     constraint): a short, 2-3 sentence why-use-this paragraph, ahead of the existing install-mechanics text.
+  3. **New `c06_model_details_title`/`c06_model_details`** (a full deep-dive, six short paragraphs covering
+     tier-1's own limits, contextual completion, capitalisation resolution, family-learning, adaptive
+     learning, and what stays unaffected) - reached via a new "Mehr erfahren" link
+     (`R.id.tier3_learn_more`, reusing the existing `@string/d89_learn_more` label and `link_text` colour,
+     D-192's own established pattern) that opens a plain `AlertDialog` rather than navigating to another
+     screen, since this is one self-contained block of text, not `FeatureCatalog`'s own repeating list.
+
+  Localised into all three languages (de/en/el) - the German original checked directly against this
+  session's own from-the-code research, not paraphrased from memory; English and Greek translated in step.
+  No new tests (pure string-resource content plus Android view/dialog glue, both untested per this project's
+  own convention). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. No spec change - purely informational settings-screen content, the same precedent D-89's own much
+  larger Feature Overview screen already set (never mentioned in `AdaptKey-Spec.md` either). `versionCode`
+  435 -> 436, `versionName` `"1.1.18"` -> `"1.1.19"`. **Not yet device-confirmed** - needs a real device/
+  screen check that the settings-list summary now fits without truncating, and that the "Mehr erfahren"
+  dialog opens and reads well.
+
 - **§379 (v1.1.18): D-432 - applied D-431's same `hasObviousCandidate()` gate to `rawCoordinateSuggestion`**
   **(T-02/D-39's own live preview chip), for consistency.** Flagged as a noticed-in-passing parallel while
   fixing D-431 (identical `candidates.isNotEmpty()` gate shape), confirmed with the user before touching it.

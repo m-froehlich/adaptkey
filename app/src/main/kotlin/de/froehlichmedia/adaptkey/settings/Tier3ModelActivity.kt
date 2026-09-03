@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -62,8 +63,24 @@ class Tier3ModelActivity : AppCompatActivity() {
         downloadButton.setOnClickListener { openDownloadPage() }
         importButton.setOnClickListener { startImport() }
         removeButton.setOnClickListener { removeModel() }
+        findViewById<TextView>(R.id.tier3_learn_more).setOnClickListener { showDetailsDialog() }
         
         refresh()
+    }
+    
+    /**
+     * D-433: the compact on-screen summary ([R.string.c06_model_benefit]) is deliberately short - the full
+     * explanation (what tier 1 alone cannot do, and exactly what the mini-LLM adds for each case) lives here
+     * instead, mirroring [SettingsActivity]'s own D-192 "Learn more" pattern (reusing the same
+     * [R.string.d89_learn_more] label) but as a lightweight in-app dialog rather than a navigation to another
+     * screen, since the content here is one self-contained block of text, not a repeating list.
+     */
+    private fun showDetailsDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.c06_model_details_title)
+            .setMessage(R.string.c06_model_details)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
     
     private fun openDownloadPage() {
