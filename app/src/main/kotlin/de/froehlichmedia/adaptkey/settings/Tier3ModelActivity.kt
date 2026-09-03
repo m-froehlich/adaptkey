@@ -5,15 +5,19 @@ package de.froehlichmedia.adaptkey.settings
 
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.download.DownloadFileSupport
 import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelInstaller
@@ -55,6 +59,25 @@ class Tier3ModelActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tier3_model)
         title = getString(R.string.c06_model_title)
         
+        // D-433-followup: this screen was missing the edge-to-edge inset fix every other settings sub-screen
+        // already has (BlacklistActivity's own K-01-derived fix, §13) - reported directly: its content sat
+        // under the status bar/display cutout instead of being pushed down below it.
+        val root = findViewById<View>(R.id.tier3_root)
+        val basePadding = root.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            v.setPadding(
+                basePadding,
+                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
+                basePadding + maxOf(navBars.bottom, gestures.bottom)
+            )
+            insets
+        }
+        
         statusView = findViewById(R.id.tier3_status)
         downloadButton = findViewById(R.id.tier3_download)
         importButton = findViewById(R.id.tier3_import)
@@ -63,24 +86,8 @@ class Tier3ModelActivity : AppCompatActivity() {
         downloadButton.setOnClickListener { openDownloadPage() }
         importButton.setOnClickListener { startImport() }
         removeButton.setOnClickListener { removeModel() }
-        findViewById<TextView>(R.id.tier3_learn_more).setOnClickListener { showDetailsDialog() }
         
         refresh()
-    }
-    
-    /**
-     * D-433: the compact on-screen summary ([R.string.c06_model_benefit]) is deliberately short - the full
-     * explanation (what tier 1 alone cannot do, and exactly what the mini-LLM adds for each case) lives here
-     * instead, mirroring [SettingsActivity]'s own D-192 "Learn more" pattern (reusing the same
-     * [R.string.d89_learn_more] label) but as a lightweight in-app dialog rather than a navigation to another
-     * screen, since the content here is one self-contained block of text, not a repeating list.
-     */
-    private fun showDetailsDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(R.string.c06_model_details_title)
-            .setMessage(R.string.c06_model_details)
-            .setPositiveButton(android.R.string.ok, null)
-            .show()
     }
     
     private fun openDownloadPage() {
@@ -160,5 +167,19 @@ class Tier3ModelActivity : AppCompatActivity() {
         // Public, stable Hugging Face URL of the quantised SmolLM2-360M model graph (Apache-2.0).
         private const val MODEL_URL =
             "https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct/resolve/main/onnx/model_q4f16.onnx?download=true"
+        
+        /**
+         * D-433-followup: the mini-LLM's full value-proposition explanation, shown as a plain dialog rather
+         * than a navigation to another screen (this is one self-contained block of text, not [FeatureCatalog]'s
+         * own repeating list) - callable from [Tier3ModelPreference]'s own "Mehr erfahren" button directly in
+         * the settings list, without ever opening this activity at all.
+         */
+        fun showDetailsDialog(context: Context) {
+            AlertDialog.Builder(context)
+                .setTitle(R.string.c06_model_details_title)
+                .setMessage(R.string.c06_model_details)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
     }
 }

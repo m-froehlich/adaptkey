@@ -199,6 +199,10 @@ class SettingsActivity : AppCompatActivity() {
             // onCreatePreferences() alone would only ever show whatever was current the moment the screen
             // was first built.
             updateCalibrationSummary()
+            // D-433-followup: identical reasoning for Tier3ModelPreference's own status-aware setup button -
+            // the install state only ever changes via the separate Tier3ModelActivity, so returning from it
+            // must re-bind this row's view to pick up a fresh Tier3ModelStorage.isModelInstalled() read.
+            findPreference<Tier3ModelPreference>("c06_model")?.refresh()
         }
         
         /**

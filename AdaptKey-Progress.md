@@ -773,6 +773,59 @@ non-trivial changes).
 
 ## Current State
 
+- **§381 (v1.1.20): D-433-followup - reworked the Mini-LLM settings row itself, plus a real, unrelated bug**
+  **found and fixed in passing.** Direct feedback right after §380 shipped, several distinct points at once:
+
+  1. **The settings-list summary was confirmed to fit without truncating, but judged too thin** - "etwas mehr
+     könnte man an dieser Stelle schon dazu erzählen." `c06_model_pref_summary` widened moderately (one
+     two-clause sentence covering both the contextual-completion and ambiguous-capitalisation benefits) - a
+     deliberate middle length between the original one-liner and the full paragraph that prompted §380's own
+     truncation report in the first place, since there is no device here to test the exact new wrap point
+     against.
+  2. **The row must show, at a glance, whether the model is actually installed.** Rather than a separate bold
+     status line (the D-419 `ListPreference` pattern doesn't fit here - this isn't a list of named choices),
+     folded directly into the new setup button's own label instead (see point 4).
+  3. **A real, unrelated bug, reported in passing:** `Tier3ModelActivity` was missing the edge-to-edge inset
+     fix every other settings sub-screen already has (`BlacklistActivity`'s own K-01-derived fix, §13,
+     confirmed by grep - `LanguagePacksActivity`/`CredentialsActivity`/`CalibrationActivity`/
+     `DiagnosticLogActivity`/`BackupActivity`/`LearnedWordsActivity` all have it; this one alone never did).
+     Its content sat under the status bar/display cutout instead of being pushed down below it. Fixed with
+     the identical `ViewCompat.setOnApplyWindowInsetsListener` block every sibling screen already uses,
+     against a newly-named `@id/tier3_root` (the screen's own root `ScrollView`, padding moved there from the
+     inner `LinearLayout` to match the established convention exactly).
+  4. **The settings row itself redesigned**: the on-screen "why" paragraph that used to live at the top of
+     `Tier3ModelActivity` (`c06_model_benefit`, added only in §380) is gone entirely - "der hier angezeigte
+     Text [ist] unnötig... man kann ihn sicher so kompakt halten, dass er einfach in die Settings View
+     passt." The settings-list row itself now hosts two independent buttons directly beneath its (widened)
+     summary: "Mehr erfahren" (opens the same detail dialog immediately, no navigation at all) and a
+     status-aware button reading "Bereit" when a model is installed or "Jetzt einrichten" otherwise (tapping
+     either state still opens `Tier3ModelActivity`, to manage/remove or to actually install). A plain
+     `Preference` cannot express two independently-clickable regions with different actions - built as a new
+     `Tier3ModelPreference` (custom `layoutResource`, `isSelectable = false` so only the two buttons react,
+     mirroring `LabeledSeekBarPreference`'s own D-407 precedent for a custom-layout preference in this same
+     screen) with a new `preference_tier3_model.xml` layout (mirrors `preference_labeled_seekbar.xml`'s own
+     icon/title/summary structure, D-407/D-408, with a two-button row in place of the SeekBar).
+     `settings_preferences.xml`'s `c06_model` entry now declares the custom class directly, dropping the old
+     `<intent>` child (navigation is now the setup button's own explicit `startActivity` call, not the whole
+     row's). `Tier3ModelActivity.showDetailsDialog()` promoted to a companion function taking a `Context`, so
+     the preference's own button can show it without ever creating the activity. The setup button's own label
+     is re-derived on every bind, refreshed via a new public `Tier3ModelPreference.refresh()` (`notifyChanged()`
+     itself is protected) called from `SettingsFragment.onResume()` - identical reasoning to the pre-existing
+     K-01 calibration-summary refresh right next to it: the install state only ever changes via the separate
+     `Tier3ModelActivity`, so returning from it must re-bind this row to pick up a fresh
+     `Tier3ModelStorage.isModelInstalled()` read.
+
+  Localised into all three languages (de/en/el) - `c06_model_pref_summary` revised, two new button-label
+  strings (`c06_model_pref_ready`/`c06_model_pref_setup_now`), `c06_model_benefit` removed (confirmed no
+  remaining reference anywhere). No new tests (pure Android view/`Preference`/dialog glue, all untested per
+  this project's own convention, same as every other settings-screen change). 1240 unit tests unchanged, all
+  green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - same D-89 precedent as §380.
+  `versionCode` 436 -> 437, `versionName` `"1.1.19"` -> `"1.1.20"`. **Not yet device-confirmed** - needs a
+  real device/screen check: the widened summary still fits without truncating, both new buttons work
+  independently (Mehr erfahren shows the dialog with no navigation; the setup button navigates and shows the
+  correct label in both install states, updating correctly after returning from Tier3ModelActivity), and
+  Tier3ModelActivity's own content now sits properly below the status bar/notch.
+
 - **§380 (v1.1.19): D-433 - the Mini-LLM (Tier 3) settings screen explains its actual value instead of just**
   **its install mechanics.** User's own explicit request, after a full re-read of the tier-3 orchestration
   code (`Tier3Orchestrator`/`Tier1Confidence`/`SuggestionMerger`/`HighCertaintyCapitalisation`/
