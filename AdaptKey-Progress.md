@@ -793,9 +793,8 @@ non-trivial changes).
   KDoc call-site list updated to name this new trigger point. No new tests (the fix lives entirely in
   `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per this project's own convention). 1220
   unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: V-04 gained the
-  D-428 addendum. `versionCode` 430 -> 431, `versionName` `"1.1.13"` -> `"1.1.14"`. **Not yet device-confirmed**
-  - needs a real device check: open the clipboard peek, tap the clear button, verify the peek button does not
-  flash back before disappearing.
+  D-428 addendum. `versionCode` 430 -> 431, `versionName` `"1.1.13"` -> `"1.1.14"`.
+  **2026-09-03: device-confirmed working.**
 
 - **§374 (v1.1.13): D-369 - accepting a suggestion chip mid-text no longer shoves a space between the**
   **completed word and punctuation/a hyphen that already sits directly after it.** Discussed with the user
