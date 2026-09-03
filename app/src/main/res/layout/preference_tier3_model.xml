@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- D-433-followup (v4): v3's own <include> pointed at the wrong layout - @layout/preference is the plain,
-     pre-Material default; this app's theme sets preferenceTheme="@style/PreferenceThemeOverlay", which maps
-     preferenceStyle to Preference.Material, whose own android:layout is @layout/preference_material (a
-     genuinely different file: theme-derived listPreferredItemPadding*, textAppearanceListItem for the
-     title, not textAppearanceLarge) - confirmed by reading the actual style chain inside the
-     androidx.preference AAR, not guessed a second time. This is the literal layout every sibling plain
-     Preference in this screen already renders through, so including it here finally guarantees byte-identical
-     title/icon/summary rendering. Only the two-button row below it is this project's own content. -->
+<!-- D-433-followup (v4/v5): v3's own <include> pointed at the wrong layout - @layout/preference is the
+     plain, pre-Material default; this app's theme sets preferenceTheme="@style/PreferenceThemeOverlay",
+     which maps preferenceStyle to Preference.Material, whose own android:layout is
+     @layout/preference_material (a genuinely different file: theme-derived listPreferredItemPadding*,
+     textAppearanceListItem for the title, not textAppearanceLarge) - confirmed by reading the actual style
+     chain inside the androidx.preference AAR, not guessed a second time. This is the literal layout every
+     sibling plain Preference in this screen already renders through, so including it here finally
+     guarantees byte-identical title/icon/summary rendering. v5: the button row below it still needs its own
+     leading 56dp Space (see below) - it has no icon_frame of its own to reserve that width automatically. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -14,9 +15,10 @@
 >
     <include layout="@layout/preference_material" />
 
-    <!-- Uses the same theme-derived paddingStart/End the included preference_material.xml's own root uses
-         for its title/summary column, rather than a hard-coded dp value, so both buttons line up exactly
-         under that text on any device/density instead of merely approximating it. -->
+    <!-- Uses the same theme-derived paddingStart/End the included preference_material.xml's own root uses,
+         plus a 56dp leading Space matching image_frame.xml's own reserved icon-frame width (androidx's own
+         constant, confirmed by reading that file directly) - without it the buttons align under where an
+         icon would sit, not under the title/summary column, since this row has no icon_frame of its own. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,30 +28,44 @@
         android:paddingBottom="8dp"
     >
 
-        <Button
-            android:id="@+id/tier3_pref_learn_more"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="0dp"
+        <Space
+            android:layout_width="56dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingStart="0dp"
-            android:paddingLeft="0dp"
-            android:gravity="start|center_vertical"
-            android:text="@string/d89_learn_more"
-            android:textColor="@color/link_text"
         />
 
-        <Button
-            android:id="@+id/tier3_pref_setup"
-            style="?android:attr/borderlessButtonStyle"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingEnd="0dp"
-            android:paddingRight="0dp"
-            android:gravity="end|center_vertical"
-            android:textColor="?android:attr/textColorPrimary"
-        />
+            android:orientation="horizontal"
+        >
+
+            <Button
+                android:id="@+id/tier3_pref_learn_more"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="0dp"
+                android:paddingLeft="0dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/d89_learn_more"
+                android:textColor="@color/link_text"
+            />
+
+            <Button
+                android:id="@+id/tier3_pref_setup"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"
+                android:gravity="end|center_vertical"
+                android:textColor="?android:attr/textColorPrimary"
+            />
+
+        </LinearLayout>
 
     </LinearLayout>
 

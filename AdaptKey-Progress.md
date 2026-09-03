@@ -773,6 +773,18 @@ non-trivial changes).
 
 ## Current State
 
+- **§385 (v1.1.24): D-433-followup (v5) - the last remaining gap: "Mehr erfahren" still sat flush left,**
+  **not indented with the title/summary column above it.** Reported directly, once §384's own title/summary
+  fix was confirmed correct. Root-caused, not re-guessed: `preference_material.xml`'s own icon column
+  (`<include layout="@layout/image_frame"/>`) is a `LinearLayout` with `android:minWidth="56dp"` - reserved
+  at that fixed width *regardless* of whether an icon is actually shown, confirmed by reading `image_frame.xml`
+  directly. The button row below the include has no icon_frame of its own, so its own
+  `listPreferredItemPaddingStart` padding alone landed it under where an icon would sit, not under the
+  title/summary text one column further right. Fixed with a leading `56dp` `Space` before the two-button
+  `LinearLayout`, matching that exact reserved width. No new tests (pure layout fix). 1240 unit tests
+  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 440 -> 441,
+  `versionName` `"1.1.23"` -> `"1.1.24"`. **Not yet device-confirmed.**
+
 - **§384 (v1.1.23): D-433-followup (v4) - v3's own `<include>` pointed at the wrong layout resource.**
   Screenshot confirmed the exact symptom precisely: "Mini-LLM (Tier 3)" rendered larger but not bold, and
   visibly further left than every sibling title/summary in the same list. Root-caused properly this time by
