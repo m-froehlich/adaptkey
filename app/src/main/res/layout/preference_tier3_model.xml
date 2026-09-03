@@ -1,108 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- D-433-followup(v2): icon frame/margins/title styling now copied byte-for-byte from AndroidX's own real
-     default preference.xml (extracted from the preference-1.2.1.aar, not hand-approximated via
-     preference_labeled_seekbar.xml as originally done - that template's own 16dp/8dp margins and
-     textAppearanceMedium title turned out to differ from the true default's 15dip/6dip and
-     textAppearanceLarge/textColorPrimary, which is exactly what a real device flagged: this row sat a few
-     pixels left of every sibling preference and its own title was not bold). Only the summary
-     (match_parent, not the default's wrap_content - a real paragraph needs to wrap at the row's own width)
-     and the two-button row replacing the widget/seekbar area are still deliberately different. -->
+<!-- D-433-followup (v3): reuses AndroidX's own real default preference layout verbatim via <include>,
+     instead of v1/v2's own hand-copied re-declaration of its icon/title/margin structure - that approach
+     kept diverging in ways hard to fully reason about without a device to test against, and the root cause
+     of v2's own regression (completely flush left, title not bold) turned out to be more fundamental than a
+     wrong attribute value: re-declaring android:id="@+id/icon_frame" in this app's own layout XML mints a
+     NEW resource id under this app's own R class - a different numeric value than
+     androidx.preference.R.id.icon_frame, which is what Preference.onBindViewHolder() itself is compiled to
+     look up internally to manage that view's visibility. Same name, different id - the library's own
+     icon-frame handling silently never reached this layout's view at all. Including the library's own
+     preference.xml directly sidesteps this whole class of bug: it is the literal same layout resource
+     androidx.preference.Preference itself already renders for every other row in this screen, ids and all,
+     so title/icon/summary are now guaranteed byte-identical to every sibling preference. Only the two-button
+     row below it is this project's own content. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:gravity="center_vertical"
-    android:paddingEnd="?android:attr/scrollbarSize"
-    android:paddingRight="?android:attr/scrollbarSize"
-    android:clipChildren="false"
-    android:clipToPadding="false"
+    android:orientation="vertical"
 >
-    <FrameLayout
-        android:id="@+id/icon_frame"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-    >
-        <ImageView
-            android:id="@android:id/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxWidth="48dp"
-            android:maxHeight="48dp"
-        />
-    </FrameLayout>
+    <include layout="@layout/preference" />
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dip"
-        android:layout_marginLeft="15dip"
-        android:layout_marginEnd="6dip"
-        android:layout_marginRight="6dip"
-        android:layout_marginTop="6dip"
-        android:layout_marginBottom="6dip"
-        android:layout_weight="1"
-        android:clipChildren="false"
-        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
     >
-        <TextView
-            android:id="@android:id/title"
-            android:layout_width="wrap_content"
+
+        <Button
+            android:id="@+id/tier3_pref_learn_more"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="1"
+            android:paddingStart="0dp"
+            android:paddingLeft="0dp"
+            android:gravity="start|center_vertical"
+            android:text="@string/d89_learn_more"
+            android:textColor="@color/link_text"
+        />
+
+        <Button
+            android:id="@+id/tier3_pref_setup"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingEnd="0dp"
+            android:paddingRight="0dp"
+            android:gravity="end|center_vertical"
             android:textColor="?android:attr/textColorPrimary"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
         />
 
-        <TextView
-            android:id="@android:id/summary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@android:id/title"
-            android:layout_alignStart="@android:id/title"
-            android:layout_alignLeft="@android:id/title"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorSecondary"
-            android:maxLines="4"
-        />
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@android:id/summary"
-            android:layout_marginTop="8dp"
-            android:layout_alignStart="@android:id/title"
-            android:layout_alignLeft="@android:id/title"
-            android:orientation="horizontal"
-        >
-
-            <Button
-                android:id="@+id/tier3_pref_learn_more"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="0dp"
-                android:paddingLeft="0dp"
-                android:gravity="start|center_vertical"
-                android:text="@string/d89_learn_more"
-                android:textColor="@color/link_text"
-            />
-
-            <Button
-                android:id="@+id/tier3_pref_setup"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingEnd="0dp"
-                android:paddingRight="0dp"
-                android:gravity="end|center_vertical"
-                android:textColor="?android:attr/textColorPrimary"
-            />
-
-        </LinearLayout>
-
-    </RelativeLayout>
 </LinearLayout>

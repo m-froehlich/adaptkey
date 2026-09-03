@@ -773,6 +773,33 @@ non-trivial changes).
 
 ## Current State
 
+- **§383 (v1.1.22): D-433-followup (v3) - §382's own fix made it worse (fully flush left, still not bold) -**
+  **the real root cause was more fundamental than wrong margin/textAppearance values.** Reported directly:
+  after §382 shipped, the row went from "a few pixels off" to completely unindented, and the title, while now
+  a larger font, still was not bold. Root-caused properly this time, not patched again by further attribute
+  tweaking: `preference_tier3_model.xml` re-declared `android:id="@+id/icon_frame"` - inside this app's own
+  layout resource, that mints a **new** id under this app's own `R` class, a different numeric value than
+  `androidx.preference.R.id.icon_frame`, the id `Preference.onBindViewHolder()` is actually compiled to look
+  up internally to manage that view's own visibility (same name, unrelated id - resource ids are scoped per
+  compiled `R` class, not aliased by name across a library boundary). The library's own icon-frame handling
+  therefore silently never reached this layout's view at all in either v1 or v2; §382's own change (dropping
+  the `minWidth` safety net that happened to reserve *some* space in v1) simply removed the one thing that had
+  been accidentally producing an approximately-plausible result, exposing the real gap.
+
+  Fixed properly by not hand-copying AndroidX's internal structure at all: `preference_tier3_model.xml` now
+  `<include layout="@layout/preference" />`s the library's own real default layout resource verbatim -
+  the exact same physical XML `androidx.preference.Preference` already renders for every sibling row in this
+  screen, ids included, so title/icon/summary rendering is now byte-identical to every other preference by
+  construction, not by re-derivation. Only the two-button row is this project's own content, appended below
+  the include in the same wrapping `LinearLayout`. `Tier3ModelPreference.onBindViewHolder()` itself needed no
+  change - it only ever looked up its own `tier3_pref_setup`/`tier3_pref_learn_more` ids, never the library's.
+  No new tests (pure layout fix, Android view glue). 1240 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green (confirms `@layout/preference` resolves correctly
+  against the `androidx.preference` dependency, not shadowed by any local resource of the same name).
+  `versionCode` 438 -> 439, `versionName` `"1.1.21"` -> `"1.1.22"`. **Not yet device-confirmed** - this is the
+  third attempt at this specific row's alignment; worth a careful side-by-side check against a genuinely
+  plain sibling preference before considering it settled.
+
 - **§382 (v1.1.21): D-433-followup (v2) - three real visual bugs in §381's own hand-built preference layout,**
   **root-caused by diffing against AndroidX's real default layout, not guessed.** Reported directly: the row
   sat a few pixels left of every other setting, its own title was no longer bold, and the "Jetzt einrichten"
