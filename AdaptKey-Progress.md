@@ -774,6 +774,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§365 (v1.1.4): D-404-followup (v3) - Learned Words editor's language/sort labels removed.** Reported
+  directly right after §363's row-merge shipped: "Sprache:"/"Sortierung:" left too little width for the two
+  spinners' own selected-value text, which was getting cut off. Removed both `TextView` labels from
+  `activity_learned_words.xml` entirely (a spinner's own content already makes its purpose obvious without
+  one, per the user's own call - "Die versteht man auch ohne") rather than shrinking them further; the two
+  spinners now split the row's full width evenly. The now-unused `learned_words_language`/`learned_words_sort`
+  string resources removed from all three locales (en/de/el) - nothing else referenced them.
+
+  No new tests - pure Android layout/resource change, the same untested layer this project's convention
+  already leaves untested throughout. 1199 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 420 -> 421, `versionName` `"1.1.3"` ->
+  `"1.1.4"`. **Not yet device-confirmed** - needs a real device/screen check that both spinners' selected
+  values now display in full.
+
 - **§364 (v1.1.3): D-36-followup regression fix - the clipboard peek button's own chips flashed and**
   **immediately vanished again.** Reported directly right after §363 shipped ("kurz angezeigt, verschwinden
   aber sofort wieder"). Root-caused, not guessed: `openClipboardPeek()`'s own `finalizeAndCommit(ic, "")` call

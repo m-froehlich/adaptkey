@@ -295,8 +295,6 @@
 
     <!-- Editor für gelernte Wörter (D-177). -->
     <string name="learned_words_title">Gelernte Wörter</string>
-    <string name="learned_words_language">Sprache:</string>
-    <string name="learned_words_sort">Sortierung:</string>
     <string name="learned_words_sort_recent">Neueste</string>
     <string name="learned_words_sort_alpha">A–Z</string>
     <string name="learned_words_empty">Noch keine gelernten Wörter.</string>

@@ -295,8 +295,6 @@
 
     <!-- Επεξεργασία λέξεων που έμαθε το πληκτρολόγιο (D-177). -->
     <string name="learned_words_title">Λέξεις που έμαθε το πληκτρολόγιο</string>
-    <string name="learned_words_language">Γλώσσα:</string>
-    <string name="learned_words_sort">Ταξινόμηση:</string>
     <string name="learned_words_sort_recent">Πρόσφατα</string>
     <string name="learned_words_sort_alpha">Α–Ω</string>
     <string name="learned_words_empty">Καμία λέξη ακόμη.</string>

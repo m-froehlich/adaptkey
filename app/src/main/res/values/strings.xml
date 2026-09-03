@@ -300,9 +300,7 @@
 
     <!-- Learned-words editor (D-177). -->
     <string name="learned_words_title">Learned Words</string>
-    <string name="learned_words_language">Language:</string>
     <!-- D-388 sort selector. -->
-    <string name="learned_words_sort">Sort:</string>
     <string name="learned_words_sort_recent">Recent</string>
     <string name="learned_words_sort_alpha">A–Z</string>
     <string name="learned_words_empty">No learned words yet.</string>

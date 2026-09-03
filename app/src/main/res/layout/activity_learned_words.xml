@@ -7,18 +7,15 @@
     android:padding="16dp">
 
     <!-- D-404-followup: language and sort filters side by side, not stacked - both fit comfortably on one
-         row, and stacking them wasted vertical space this screen has no real need to spend. -->
+         row, and stacking them wasted vertical space this screen has no real need to spend.
+         D-404-followup (v2): no more "Sprache:"/"Sortierung:" labels - they left too little width for the
+         spinners' own selected-value text, which was getting cut off; a spinner's own content already makes
+         its purpose obvious without one. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/learned_words_language" />
 
         <Spinner
             android:id="@+id/learned_words_language_spinner"
@@ -26,17 +23,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/learned_words_sort" />
-
         <Spinner
             android:id="@+id/learned_words_sort_spinner"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_weight="1" />
 
     </LinearLayout>
