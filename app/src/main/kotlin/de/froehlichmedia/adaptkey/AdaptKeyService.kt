@@ -2055,11 +2055,13 @@ class AdaptKeyService : InputMethodService() {
      * D-36-followup: recomputes [clipboardPeekAvailable] from the real clipboard - the only place this class
      * actually queries [clipboardManager] for the peek button's own sake, called from the handful of points
      * the answer could plausibly have changed: a fresh field opening ([onStartInputView]), the clipboard
-     * content itself changing ([clipboardPrimaryClipListener]), and the caret settling on a new position
+     * content itself changing ([clipboardPrimaryClipListener]), the caret settling on a new position
      * ([reclaimEnabledRunnable], which also catches the "5 minutes passed with no clipboard change" staleness
-     * case at the next natural opportunity, without a dedicated timer). Deliberately not called from
-     * [setSuggestionBarItems] itself - see [clipboardPeekAvailable]'s own KDoc for why that hot path must stay
-     * IPC-free.
+     * case at the next natural opportunity, without a dedicated timer), and clearing the clipboard from the
+     * suggestion bar's own clear button (D-428: [clearClipboardFromSuggestionBar] - [clipboardPrimaryClipListener]
+     * alone would eventually catch this too, but only asynchronously, after its own render has already gone
+     * stale). Deliberately not called from [setSuggestionBarItems] itself - see [clipboardPeekAvailable]'s
+     * own KDoc for why that hot path must stay IPC-free.
      */
     private fun updateClipboardPeekAvailability() {
         clipboardPeekAvailable = buildClipboardChips() != null
@@ -3312,6 +3314,12 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun clearClipboardFromSuggestionBar() {
         clearClipboard()
+        // D-428: clearClipboard()'s own Binder call has already emptied the clipboard synchronously by the
+        // time it returns, but clipboardPeekAvailable is otherwise only refreshed by the *asynchronous*
+        // OnPrimaryClipChangedListener notification - reading the stale (still-true) value here would flash
+        // the peek button in clearSuggestions()'s own setSuggestionBarItems() call below, right before that
+        // listener eventually fires and corrects it. Recomputing it explicitly here closes that window.
+        updateClipboardPeekAvailability()
         clearSuggestions()
     }
     

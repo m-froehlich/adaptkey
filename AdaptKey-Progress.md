@@ -773,6 +773,30 @@ non-trivial changes).
 
 ## Current State
 
+- **§375 (v1.1.14): D-428 - the V-04 clipboard-peek button flashed back visible for one render right after**
+  **its own V-03 clear button emptied the clipboard.** Reported directly: tap the peek button, tap the clear
+  button that appears alongside its chips - clipboard clears, chips and clear button vanish as expected, but
+  the peek button itself briefly reappears before disappearing again on the next tap/keystroke. Root-caused
+  by reading the actual code, not guessed: `clearClipboardFromSuggestionBar()` calls `clearClipboard()`
+  (synchronously empties the system clipboard) then `clearSuggestions()` (synchronously calls
+  `setSuggestionBarItems(emptyList())`, which derives the peek button's visibility from the cached
+  `clipboardPeekAvailable` field) - but that field is otherwise only refreshed by the *asynchronous*
+  `ClipboardManager.OnPrimaryClipChangedListener` notification, which had not yet fired by the time
+  `setSuggestionBarItems()` read it, so it briefly rendered the stale, still-`true` value. The next real
+  `setSuggestionBarItems()` call (typing, a caret move) always saw the by-then-correct `false` value, matching
+  exactly the "briefly there, then properly hidden" symptom reported.
+
+  Fixed by calling `updateClipboardPeekAvailability()` explicitly, synchronously, between `clearClipboard()`
+  and `clearSuggestions()` - `clearClipboard()`'s own Binder call has already emptied the clipboard by the
+  time it returns (only the *listener notification* about the change is asynchronous), so this recomputes the
+  field correctly in time rather than waiting for that notification. `updateClipboardPeekAvailability()`'s own
+  KDoc call-site list updated to name this new trigger point. No new tests (the fix lives entirely in
+  `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per this project's own convention). 1220
+  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: V-04 gained the
+  D-428 addendum. `versionCode` 430 -> 431, `versionName` `"1.1.13"` -> `"1.1.14"`. **Not yet device-confirmed**
+  - needs a real device check: open the clipboard peek, tap the clear button, verify the peek button does not
+  flash back before disappearing.
+
 - **§374 (v1.1.13): D-369 - accepting a suggestion chip mid-text no longer shoves a space between the**
   **completed word and punctuation/a hyphen that already sits directly after it.** Discussed with the user
   first (this project's own rule for a design decision with real trade-offs): the existing D-144/D-183
@@ -795,9 +819,7 @@ non-trivial changes).
   tests (the fix lives entirely in `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per
   this project's own convention). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
   `:app:testDebugUnitTest` green. Spec: new §41. `versionCode` 429 -> 430, `versionName` `"1.1.12"` ->
-  `"1.1.13"`. **Not yet device-confirmed** - needs a real device check: reclaim a word directly before
-  sentence punctuation (no space) and pick a suggestion, and reclaim a segment of an existing hyphen
-  compound and pick a suggestion - neither should insert a space.
+  `"1.1.13"`. **2026-09-03: device-confirmed working.**
 
 - **§373 (v1.1.12): D-427 - `en/dict.tsv` LaTeX-markup noise cleanup, the same D-402-style follow-up**
   **that also surfaced §372/D-426's Greek bug.** Checked directly, not assumed: `en/dict.tsv` carried
@@ -1125,9 +1147,8 @@ non-trivial changes).
 
   13 new `SpeedUnitCompletionTest` cases (both triggers, case-insensitivity, the digit-vs-letter boundary
   distinction, empty input). 1199 -> 1212 unit tests. Spec: new S-12. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 421 -> 422, `versionName` `"1.1.4"` -> `"1.1.5"`. **Not yet
-  device-confirmed** - needs a real device check for both triggers, ideally including the `"50km/"` digit-
-  prefixed shape specifically, since that is exactly the case the pre-ship regex fix targeted.
+  `:app:testDebugUnitTest` green. `versionCode` 421 -> 422, `versionName` `"1.1.4"` -> `"1.1.5"`.
+  **2026-09-03: device-confirmed working.**
 
 - **§365 (v1.1.4): D-404-followup (v3) - Learned Words editor's language/sort labels removed.** Reported
   directly right after §363's row-merge shipped: "Sprache:"/"Sortierung:" left too little width for the two

@@ -1466,8 +1466,14 @@ exclusively, with V-03's clear button taking the shared square back. The bar rev
 state on its own the moment the caret next moves - no dedicated "close peek mode" affordance is needed, since
 the existing caret-settle suggestion refresh already overwrites whatever was shown before it. The freshness
 check is re-run whenever the answer could plausibly have changed (a fresh field opening, the clipboard
-content itself changing, the caret settling on a new position) rather than on every keystroke, so the button
-never costs a live clipboard query on the hot typing path.
+content itself changing, the caret settling on a new position, and V-03's own clear button being tapped -
+D-428) rather than on every keystroke, so the button never costs a live clipboard query on the hot typing
+path.
+
+D-428: tapping V-03's clear button while V-04's peek chips are showing must not let this button flash back
+visible for a moment before disappearing again - the freshness check above is re-run synchronously right
+after clearing the clipboard, rather than waiting for the asynchronous clipboard-change notification the
+ordinary case relies on, which would otherwise still report the clip as fresh for one render.
 
 ---
 
