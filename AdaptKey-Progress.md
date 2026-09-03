@@ -773,6 +773,26 @@ non-trivial changes).
 
 ## Current State
 
+- **§386 (v1.1.25): D-431-followup - "welche" still not suggested for "welxmche" on a real device after**
+  **D-431 shipped; temporary diagnostic logging added instead of a third blind patch.** The gate fix itself
+  was re-verified directly (both by re-reading `hasObviousCandidate`'s own logic and by re-confirming the
+  existing `LearnedBigramBoostTest`-style unit test for this exact repro still passes) - `"welsche"`/`"Welsche"`
+  are real, separate dictionary rows only reachable via the D-117 wide-fuzzy fallback (cost 3, `x`/`s` being
+  keyboard-adjacent), correctly excluded from `hasObviousCandidate`'s own narrower search, so the gate itself
+  should not be blocking A-13 here. Rather than guess a third mechanism (composingTaps desync, a stale
+  reclaim, the raw tap simply not landing close enough to Backspace on this occasion - all plausible, none
+  confirmable from code alone), this project's own established pattern for exactly this class of bug (spec
+  §1's guiding principle; D-355/D-373-followup's own precedent) applies: a new `AdaptKeyA13` diagnostic tag
+  now logs, via the existing `diag()` helper (`Log.d` + the in-app X-01 diagnostic log, Settings ->
+  Diagnostics), the gate decision itself (`hasObviousCandidate` result and the candidates already found) and,
+  inside `missedBackspaceCorrection()`, the backspace geometry, `composingTaps.size` vs. the typed token's
+  own length, `MissedBackspaceRecovery.recover()`'s own raw candidate list before the dictionary filter, and
+  the final known-word result. Reachable via `adb logcat -s AdaptKeyA13:D` or the in-app Diagnostics log.
+  Genuinely no working theory left worth coding blind against - waiting on a real repro's log output before
+  touching either mechanism again. No new tests (diagnostic logging only, no behaviour change). 1240 unit
+  tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (no
+  behaviour changed). `versionCode` 441 -> 442, `versionName` `"1.1.24"` -> `"1.1.25"`.
+
 - **§385 (v1.1.24): D-433-followup (v5) - the last remaining gap: "Mehr erfahren" still sat flush left,**
   **not indented with the title/summary column above it.** Reported directly, once §384's own title/summary
   fix was confirmed correct. Root-caused, not re-guessed: `preference_material.xml`'s own icon column
