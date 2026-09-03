@@ -774,6 +774,34 @@ non-trivial changes).
 
 ## Current State
 
+- **§364 (v1.1.3): D-36-followup regression fix - the clipboard peek button's own chips flashed and**
+  **immediately vanished again.** Reported directly right after §363 shipped ("kurz angezeigt, verschwinden
+  aber sofort wieder"). Root-caused, not guessed: `openClipboardPeek()`'s own `finalizeAndCommit(ic, "")` call
+  generates an asynchronous `onUpdateSelection` echo - composing already empty by the time it lands, exactly
+  [`suppressNextReclaimSpaceReset`]'s own D-123 precedent - which reaches `scheduleReclaimAndChipRefresh()`
+  and, `RECLAIM_DEBOUNCE_MS` (100ms) later, silently overwrites the bar via `reclaimWordAtCaret()`'s/
+  `reclaimEnabledRunnable`'s own `refreshSuggestions()`/`showSuggestions()` calls - neither of which has any
+  idea the bar was just showing something special, the same class of race D-421-followup already found and
+  fixed for D-36's field-open chip and D-142's credential list, just triggered reactively here instead of
+  from a direct call site.
+
+  Fixed with a short, self-expiring blackout window rather than a single-consume flag: unlike an ordinary
+  suggestion tap, whether this particular `commitText("")` actually produces an echo at all depends on the
+  target editor (composing may already have been empty, with nothing to commit), so a flag only ever cleared
+  by the echo it is waiting for could stay wrongly armed and swallow the *next genuine* caret move
+  indefinitely if that echo never arrives. New `reclaimChipRefreshSuppressedUntil` (a timestamp,
+  `SystemClock.uptimeMillis()`-based) is armed by `openClipboardPeek()` for `RECLAIM_DEBOUNCE_MS +
+  CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS` (100 + 250 = 350ms) right before its own `finalizeAndCommit()` call;
+  `scheduleReclaimAndChipRefresh()` now no-ops entirely while still inside that window, covering both
+  runnables it schedules in one place rather than patching each of their own eventual render calls
+  separately.
+
+  No new tests - the fix lives entirely in `AdaptKeyService.kt`'s own Android/`InputConnection` timing glue,
+  the same untested class this project's convention already leaves untested throughout. 1199 unit tests
+  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 419 -> 420,
+  `versionName` `"1.1.2"` -> `"1.1.3"`. **Not yet device-confirmed** - needs a real device check: tap the
+  clipboard peek button and verify the chips now stay up instead of vanishing within ~350ms.
+
 - **§363 (v1.1.2): a "Kleinigkeiten" punch-list batch - ten small, mostly independent items, built and**
   **committed together at the user's own request ("bitte nicht jedes Mal ein Version Bump und Build").**
 

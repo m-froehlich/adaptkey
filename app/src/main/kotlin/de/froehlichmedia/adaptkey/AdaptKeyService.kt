@@ -525,6 +525,11 @@ class AdaptKeyService : InputMethodService() {
     // it exists for ever gets to run. Armed for exactly the one reclaim call that follows a suggestion tap.
     private var suppressNextReclaimSpaceReset = false
     
+    // D-36-followup: the same D-123 echo problem, but for openClipboardPeek()'s own directly-built bar
+    // content instead of pendingSuggestionSpace - see scheduleReclaimAndChipRefresh()'s own KDoc for why a
+    // time window is used here rather than a single-consume flag like suppressNextReclaimSpaceReset above.
+    private var reclaimChipRefreshSuppressedUntil = 0L
+    
     // D-416: no live flag lives here any more for the sentence-punctuation auto-space (formerly
     // pendingPunctuationSpace/pendingPunctuationSpacePos, D-262/D-279/D-320) - the deferred model never
     // physically inserts the space until the next real character resolves it, so "is a space pending right
@@ -1648,8 +1653,23 @@ class AdaptKeyService : InputMethodService() {
      * refresh is scheduled unconditionally regardless - see [reclaimEnabledRunnable]'s own KDoc for why.
      * [reclaimPending] is set only in the non-suppressed branch, matching that same distinction - see its
      * own field KDoc.
+     *
+     * D-36-followup: a no-op while [reclaimChipRefreshSuppressedUntil] is still in the future -
+     * [openClipboardPeek] arms a short window there right before its own `finalizeAndCommit()` call, whose
+     * `commitText()` generates an asynchronous `onUpdateSelection` echo (composing already empty by the time
+     * it lands, exactly [suppressNextReclaimSpaceReset]'s own D-123 precedent) that would otherwise reach
+     * this method and, ~[RECLAIM_DEBOUNCE_MS] later, silently wipe the clipboard chips that call just set -
+     * reported directly ("kurz angezeigt, verschwinden aber sofort wieder"). A single-consume flag like
+     * [suppressNextReclaimSpaceReset] was considered and rejected here: unlike an ordinary suggestion tap,
+     * whether this particular `commitText("")` actually produces an echo at all depends on the target editor
+     * (composing may already have been empty with nothing to commit), so a flag that is only ever cleared by
+     * the echo it is waiting for could otherwise stay wrongly armed and swallow the next genuine caret move
+     * indefinitely. A short, self-expiring time window degrades safely either way.
      */
     private fun scheduleReclaimAndChipRefresh() {
+        if (SystemClock.uptimeMillis() < reclaimChipRefreshSuppressedUntil) {
+            return
+        }
         if (!reclaimOnCaretMoveSuppressed) {
             reclaimPending = true
             handler.removeCallbacks(reclaimWordAtCaretRunnable)
@@ -2011,15 +2031,20 @@ class AdaptKeyService : InputMethodService() {
      * exact same "commit whatever is being typed before switching context" call [toggleLanguage] already
      * relies on - so the [SuggestionController.Kind.CLIPBOARD]/[..._FIRST_LINE]/[..._FIRST_CODE] tap handlers
      * a chip tap reaches afterwards never have to reason about a still-live composing span; those were written
-     * assuming one never exists, true under the field-open-only trigger but not here. The cursor-move back to
-     * ordinary suggestions (the user's own "kehrt die Darstellung wieder zurück auf das normale Verhalten")
-     * needs no dedicated code of its own - it already happens for free the moment the caret next settles
-     * ([onUpdateSelection] -> [scheduleReclaimAndChipRefresh] -> [reclaimEnabledRunnable] -> [showSuggestions]),
-     * which overwrites whatever this call just put in the bar exactly like it would any other stale content.
+     * assuming one never exists, true under the field-open-only trigger but not here.
+     *
+     * The [reclaimChipRefreshSuppressedUntil] window is armed *before* [finalizeAndCommit] - see
+     * [scheduleReclaimAndChipRefresh]'s own KDoc for the race it closes (reported directly: the chips flashed
+     * and immediately vanished again). The cursor genuinely moving back off this position afterwards still
+     * needs no dedicated code of its own to revert the bar (the user's own "kehrt die Darstellung wieder
+     * zurück auf das normale Verhalten") - once the window has passed, the very next real
+     * [onUpdateSelection] -> [scheduleReclaimAndChipRefresh] -> [reclaimEnabledRunnable] -> [showSuggestions]
+     * cycle overwrites whatever this call put in the bar exactly like it would any other stale content.
      */
     private fun openClipboardPeek() {
         val ic = currentInputConnection ?: return
         val chips = buildClipboardChips() ?: return
+        reclaimChipRefreshSuppressedUntil = SystemClock.uptimeMillis() + RECLAIM_DEBOUNCE_MS + CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS
         finalizeAndCommit(ic, "")
         setSuggestionBarItems(chips)
     }
@@ -6746,6 +6771,16 @@ class AdaptKeyService : InputMethodService() {
         // fluent typing does, so a shorter delay is both sufficient to let a drag pass through untouched and
         // still short enough that an ordinary settled tap reads as instant.
         private const val RECLAIM_DEBOUNCE_MS = 100L
+        
+        // D-36-followup: see reclaimChipRefreshSuppressedUntil's own field KDoc and
+        // scheduleReclaimAndChipRefresh()'s own KDoc for the race this closes. On top of RECLAIM_DEBOUNCE_MS
+        // itself (the delay scheduleReclaimAndChipRefresh() would otherwise wait before actually overwriting
+        // the bar), this is the extra margin covering how long the asynchronous onUpdateSelection echo of
+        // openClipboardPeek()'s own commitText() call may take to actually arrive and reach that scheduling
+        // call in the first place - generous on purpose, since a wrongly-short margin reintroduces exactly
+        // the reported bug (chips flash and vanish), while a wrongly-long one only risks a genuine cursor
+        // move right after the tap taking a little longer than ideal to revert the bar.
+        private const val CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS = 250L
         
         // D-351: see reclaimOnCaretMoveSuppressed's own field KDoc - the one package this app has confirmed
         // cannot tolerate a reactive setComposingRegion() call from a caret move without losing its own
