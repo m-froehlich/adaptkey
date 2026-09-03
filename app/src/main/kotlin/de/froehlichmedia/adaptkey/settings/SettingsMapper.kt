@@ -47,6 +47,7 @@ data class RawSettings(
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
     val doubleTapBackspaceUndo: Boolean = false,
+    val backspaceStickyEnabled: Boolean = true,
     val autoSplitModeKey: String? = null,
     val autocorrectAggressivenessKey: String? = null,
     val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
@@ -261,6 +262,7 @@ object SettingsMapper {
             contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled,
             autocorrectEnabled = toAutocorrectEnabled(raw),
             doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo,
+            backspaceStickyEnabled = raw.backspaceStickyEnabled,
             autoSplitMode = toAutoSplitMode(raw),
             autocorrectAggressiveness = toAutocorrectAggressiveness(raw),
             sustainedLanguageSwitchThreshold = raw.sustainedLanguageSwitchThreshold.coerceIn(

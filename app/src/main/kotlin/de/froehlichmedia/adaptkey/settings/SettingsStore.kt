@@ -53,6 +53,7 @@ object SettingsStore {
     const val KEY_SAVE_CREDENTIALS = "d224_save_credentials"
     const val KEY_CONTACTS_SUGGESTIONS_ENABLED = "d191_contacts_suggestions_enabled"
     const val KEY_DOUBLE_TAP_BACKSPACE_UNDO = "d348_double_tap_backspace_undo"
+    const val KEY_BACKSPACE_STICKY_ENABLED = "d361_backspace_sticky"
     const val KEY_AUTO_SPLIT_MODE = "d352_auto_split_mode"
     // D-407: the former, separate D-234 "d234_autocorrect_enabled" toggle is gone - merged into this one
     // slider's own "Off" position (AutocorrectAggressiveness.OFF_KEY), no migration of any old stored value.
@@ -119,6 +120,9 @@ object SettingsStore {
     /** Default stored boolean for the D-348 double-tap Backspace undo toggle (off). */
     const val DEF_DOUBLE_TAP_BACKSPACE_UNDO = false
     
+    /** Default stored boolean for the D-361 Backspace sticky-zone toggle (on). */
+    const val DEF_BACKSPACE_STICKY_ENABLED = true
+    
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
@@ -170,6 +174,7 @@ object SettingsStore {
             saveCredentials = p.getBoolean(KEY_SAVE_CREDENTIALS, true),
             contactsSuggestionsEnabled = p.getBoolean(KEY_CONTACTS_SUGGESTIONS_ENABLED, false),
             doubleTapBackspaceUndo = p.getBoolean(KEY_DOUBLE_TAP_BACKSPACE_UNDO, DEF_DOUBLE_TAP_BACKSPACE_UNDO),
+            backspaceStickyEnabled = p.getBoolean(KEY_BACKSPACE_STICKY_ENABLED, DEF_BACKSPACE_STICKY_ENABLED),
             autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null),
             autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null),
             sustainedLanguageSwitchThreshold = p.getInt(
@@ -272,6 +277,7 @@ object SettingsStore {
         KEY_COMMA_WEIGHT,
         KEY_PERIOD_WEIGHT,
         KEY_BACKSPACE_EXTRA,
+        KEY_BACKSPACE_STICKY_ENABLED,
         KEY_SHIFT_EXTRA,
         KEY_KEY_SOUND,
         KEY_KEY_HAPTICS,

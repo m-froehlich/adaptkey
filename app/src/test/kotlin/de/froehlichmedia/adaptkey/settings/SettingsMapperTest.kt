@@ -134,6 +134,12 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-361 backspaceStickyEnabled flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).backspaceStickyEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(backspaceStickyEnabled = false)).backspaceStickyEnabled)
+    }
+    
+    @Test
     fun `D-352 autoSplitMode resolves from the stored key, defaulting to AUTOMATIC`() {
         assertEquals(AutoSplitMode.AUTOMATIC, SettingsMapper.toAdaptSettings(RawSettings()).autoSplitMode)
         assertEquals(

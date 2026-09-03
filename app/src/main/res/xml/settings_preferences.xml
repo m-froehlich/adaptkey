@@ -302,6 +302,12 @@
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="d361_backspace_sticky"
+            android:title="@string/d361_backspace_sticky_title"
+            android:summary="@string/d361_backspace_sticky_summary"
+            android:defaultValue="true" />
+
         <SeekBarPreference
             android:key="c01_shift_extra"
             android:title="@string/c01_shift_title"

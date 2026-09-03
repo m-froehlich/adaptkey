@@ -512,6 +512,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var backspaceStep = 0
     private var backspaceRepeated = false
     
+    // D-361: when a Backspace tap/repeat tick last actually happened - resolveKey() consults this to
+    // decide whether the sticky zone below is currently active. 0 (never happened this session) is
+    // deliberately far enough in the past that SystemClock.uptimeMillis() - 0 always exceeds any realistic
+    // backspaceStickyDelayMs.
+    private var lastBackspaceActivationAtMs = 0L
+    
     private var downX = 0f
     private var downY = 0f
     private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
@@ -521,6 +527,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * ~20 % below the system long-press timeout so the popup comes up sooner even without a stored value.
      */
     var longPressDelayMs: Long = (ViewConfiguration.getLongPressTimeout() * 0.8f).toLong()
+    
+    /**
+     * D-361: whether a Backspace tap/repeat tick temporarily biases [resolveKey] toward Backspace itself
+     * for any key geometrically adjacent to it - set from the settings (default on).
+     */
+    var backspaceStickyEnabled: Boolean = true
+    
+    /**
+     * D-361: how long after the last Backspace activation the sticky zone above stays active. Set from the
+     * settings - deliberately the same value as [de.froehlichmedia.adaptkey.settings.AdaptSettings.doubleTapDelayMs]
+     * rather than its own separately tuned duration, per the user's own call: that window "hat sich gut
+     * bewährt" for the same class of "was this really a second, deliberate tap" decision (G-05/A-07).
+     */
+    var backspaceStickyDelayMs: Long = 400L
     // D-20 / D-35: field gestures (dismiss-down, surface swipe, word-delete) need a clearly larger travel
     // so a faint motion no longer triggers them; the space-bar language swipe (G-01) stays smaller,
     // proportional to the narrow space bar, but still deliberate.
@@ -1094,6 +1114,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 scheduleLongPress(key)
                 // D-07: holding the backspace key starts an accelerating repeat delete.
                 if (key.code == KeyCode.DELETE) {
+                    // D-361: (re-)arms the sticky zone for whatever comes next.
+                    lastBackspaceActivationAtMs = SystemClock.uptimeMillis()
                     scheduleBackspaceRepeat()
                 }
                 return true
@@ -1531,6 +1553,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     return
                 }
                 backspaceRepeated = true
+                // D-361: a still-active hold keeps the sticky zone freshly armed too, so releasing right at
+                // the end of a fast hold and immediately re-tapping still benefits from it.
+                lastBackspaceActivationAtMs = SystemClock.uptimeMillis()
                 // D-31: the service deletes and returns the delay before the next repeat (char/word phase).
                 val next = onBackspaceRepeatListener?.onBackspaceRepeat(backspaceStep) ?: return
                 backspaceStep++
@@ -1749,6 +1774,36 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return x >= rect.left && x <= rect.right && y > rect.bottom && y <= rect.bottom + paddingBottom
     }
     
+    /**
+     * D-361: whether [x]/[y] falls within the portion of [neighbor] nearest to [backspace] - only true when
+     * [neighbor] is actually adjacent to it (an edge lining up within [gapPx], the same deliberate spacing
+     * [layoutKeys] already leaves between every key/row, plus a little slack for rounding) on one of the
+     * four sides, with genuine overlap on the perpendicular axis too (so two keys whose edges merely happen
+     * to line up numerically without actually facing each other never match). Deliberately derived from the
+     * live, currently-rendered [keyRects] geometry rather than a hardcoded per-layout/per-language neighbour
+     * list - holds for whichever key genuinely sits next to Backspace on the active layout/surface (a
+     * punctuation key, Enter, a differently-shaped calculator-page neighbour, ...) without any changes here.
+     */
+    private fun isWithinBackspaceStickyZone(backspace: RectF, neighbor: RectF, x: Float, y: Float): Boolean {
+        if (!neighbor.contains(x, y)) {
+            return false
+        }
+        val tolerance = gapPx * 1.5f
+        val overlapsHorizontally = neighbor.right > backspace.left && neighbor.left < backspace.right
+        val overlapsVertically = neighbor.bottom > backspace.top && neighbor.top < backspace.bottom
+        return when {
+            overlapsHorizontally && abs(neighbor.bottom - backspace.top) <= tolerance ->
+                y >= neighbor.bottom - neighbor.height() * BACKSPACE_STICKY_ZONE_FRACTION
+            overlapsHorizontally && abs(neighbor.top - backspace.bottom) <= tolerance ->
+                y <= neighbor.top + neighbor.height() * BACKSPACE_STICKY_ZONE_FRACTION
+            overlapsVertically && abs(neighbor.right - backspace.left) <= tolerance ->
+                x >= neighbor.right - neighbor.width() * BACKSPACE_STICKY_ZONE_FRACTION
+            overlapsVertically && abs(neighbor.left - backspace.right) <= tolerance ->
+                x <= neighbor.left + neighbor.width() * BACKSPACE_STICKY_ZONE_FRACTION
+            else -> false
+        }
+    }
+    
     private fun resolveKey(x: Float, y: Float): Pair<Key, RectF>? {
         if (keyRects.isEmpty()) {
             return null
@@ -1760,6 +1815,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val spaceHit = keyRects.firstOrNull { it.first.code == KeyCode.SPACE && isWithinSpaceHitZone(it.second, x, y) }
         if (spaceHit != null) {
             return spaceHit
+        }
+        // D-361: right after fast Backspace activity, a tap landing in the near portion of whichever key
+        // currently sits next to Backspace resolves to Backspace itself instead - checked before the offset
+        // model so it is not diluted by a neighbour's own learned drift.
+        if (backspaceStickyEnabled) {
+            val backspaceEntry = keyRects.firstOrNull { it.first.code == KeyCode.DELETE }
+            if (backspaceEntry != null && SystemClock.uptimeMillis() - lastBackspaceActivationAtMs <= backspaceStickyDelayMs) {
+                val stickyHit = keyRects.any { (key, rect) ->
+                    key.code != KeyCode.DELETE && isWithinBackspaceStickyZone(backspaceEntry.second, rect, x, y)
+                }
+                if (stickyHit) {
+                    return backspaceEntry
+                }
+            }
         }
         val model = offsetModel
         if (model != null) {
@@ -1853,6 +1922,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // did vertically (D-231). `m` is capped rightward (toward Backspace), Backspace leftward (toward
         // `m`); same considered-starting-point value and reasoning as the other two offset-cap constants.
         private const val M_BACKSPACE_OFFSET_FACTOR = 0.25
+        
+        // D-361: how far isWithinBackspaceStickyZone() reaches into an adjacent key's own near side while
+        // the sticky window is active - a considered starting point, not yet device-tuned.
+        private const val BACKSPACE_STICKY_ZONE_FRACTION = 0.35f
         
         // D-260: the maximum share of a row's own height the space key's touch zone may extend downward
         // into the reclaimable part of the bottom gesture inset (setSpaceTouchExtension()'s own cap,

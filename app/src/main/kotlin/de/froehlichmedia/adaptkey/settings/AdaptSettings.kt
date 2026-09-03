@@ -81,6 +81,12 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           armed undo tail is a no-op (the key re-flashes as a visual hint); only a second Backspace
  *           within the [doubleTapDelayMs] window fires the revert. Trailing whitespace beyond the armed
  *           tail is still consumed ordinarily by the first press. Reuses the G-05 double-tap delay setting.
+ * @property backspaceStickyEnabled D-361: whether a fast Backspace tap/hold temporarily biases key
+ *           resolution toward Backspace itself for whichever key geometrically sits next to it on the
+ *           active layout (default **on**), so a mistimed re-tap right after Backspace does not land on
+ *           Enter/a punctuation key/etc. instead. Reuses [doubleTapDelayMs] as the "how recent counts as
+ *           fast" window rather than its own separately tuned duration - the user's own call, that window
+ *           already having proven itself for the same class of decision (G-05/A-07).
  * @property autoSplitMode D-352: how eagerly the A-05 retroactive word split may act (default
  *           [AutoSplitMode.AUTOMATIC], unchanged A-05 behaviour). [AutoSplitMode.CHIP_ONLY] still finds and
  *           offers a split as a suggestion chip, never silently applying it; [AutoSplitMode.OFF] disables
@@ -126,6 +132,7 @@ data class AdaptSettings(
     val contactsSuggestionsEnabled: Boolean = false,
     val autocorrectEnabled: Boolean = true,
     val doubleTapBackspaceUndo: Boolean = false,
+    val backspaceStickyEnabled: Boolean = true,
     val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,
     val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
     val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,

@@ -424,10 +424,15 @@ non-trivial changes).
     ask, see below).
   - **D-360 - OPEN.** A commit + autocorrect right before an Enter/newline must still be revertible by a
     plain Backspace afterward.
-  - **D-361 - OPEN.** Fast Backspace typing should not let neighbour keys (including Enter) react within the
-    double-tap window - ideally Backspace's own touch zone temporarily grows while typing fast. Further,
-    more aggressive idea floated by the user: a fast neighbour-tap near Backspace could itself be
-    retroactively reinterpreted as Backspace. Possibly its own setting either way.
+  - **D-361 - RESOLVED for the "grow the zone" half (§391, v1.1.30); the retroactive-reinterpretation half**
+    **deliberately shelved, not implemented.** Fast Backspace typing was letting neighbour keys (including
+    Enter) react instead of Backspace. Design discussed first (touches key hit-testing): two ideas were on the
+    table - (A) temporarily growing Backspace's own touch zone while typing fast, (B) retroactively
+    reinterpreting a wrong neighbour-tap as Backspace after the fact. User's own call: pursue A only for now -
+    B is riskier than when originally floated, since D-393 (same round) made a wrongly-landed Enter tap
+    genuinely submit real actions (search, send, login) in more fields, which cannot be undone after the fact.
+    Revisit B only if A alone turns out insufficient. See spec's L-04 addendum and Current State for A's
+    mechanism.
   - **D-362 - RESOLVED (§338, v1.0.90).** The loading-indicator chip (D-346) is now bold, 20sp (vs. the
     ordinary 16sp), a dedicated amber (`#F57C00`, its own colour, not reused from another chip's meaning),
     and ticks through `.`/`..`/`...` every 400 ms instead of sitting static.
@@ -776,6 +781,47 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§391 (v1.1.30): D-361 - fast Backspace typing let neighbour keys (Enter reported specifically) react**
+  **instead of Backspace.** Design discussed first per this project's own convention (touches key
+  hit-testing/`resolveKey`): two ideas were weighed - (A) temporarily grow Backspace's own touch zone while
+  typing fast, (B) retroactively reinterpret a wrong neighbour-tap as Backspace after the fact. Flagged to the
+  user that B has gotten meaningfully riskier since D-393 (same round): a wrongly-landed Enter tap can now
+  genuinely submit a real action (search, send, login) in more fields, which is not undoable after the fact.
+  User's own call: implement A only, shelve B (not declined outright - revisit only if A alone proves
+  insufficient).
+
+  **A's mechanism**, entirely in `AdaptKeyboardView` (the class already owning `resolveKey()`/D-231/D-233's
+  own static Backspace/Enter/`m` drift caps): a new `lastBackspaceActivationAtMs` timestamp, stamped on every
+  resolved Backspace `ACTION_DOWN` and on every accelerating-hold repeat tick (`scheduleBackspaceRepeat()`'s
+  own runnable) so a still-active hold keeps the window freshly armed too. `resolveKey()` now checks, right
+  after the existing Space special-case and before the offset-model resolution (so it is not diluted by a
+  neighbour's own learned drift): while `backspaceStickyEnabled` and within `backspaceStickyDelayMs` of that
+  timestamp, a new `isWithinBackspaceStickyZone()` resolves a tap to Backspace instead of whichever key it
+  actually landed in, for the near portion (35%, `BACKSPACE_STICKY_ZONE_FRACTION`) of any key genuinely
+  geometrically adjacent to Backspace's own rendered rect - adjacency and direction (above/below/left/right)
+  are derived from the live `keyRects` geometry each time (an edge lining up within `gapPx` plus slack, with
+  real overlap required on the perpendicular axis too), never a hardcoded per-language key list, so it holds
+  unchanged for whichever key actually sits there on the active layout/surface.
+
+  **Setting**: user found the originally-proposed idea of a brand-new duration slider unnecessary once shown
+  the existing "Doppel-Tipp-Shift-Verzögerung" (`doubleTapDelayMs`, G-05, default 400 ms/200-800 ms range) -
+  "das kann sich exakt an den generellen Doppel-Tap-Delay hängen." Implemented as a single new boolean,
+  `backspaceStickyEnabled` (D-361, default **on**), added the same way as the D-348 double-tap-Backspace-undo
+  toggle right next to it in the settings layer (`AdaptSettings`/`SettingsMapper`/`SettingsStore`, new
+  `SwitchPreferenceCompat` in the Layout category right after the enlarged-backspace-width slider, localised
+  de/en/el) - `backspaceStickyDelayMs` itself is not a stored setting at all, `applySettings()` feeds it
+  `s.doubleTapDelayMs` directly every time settings are applied, so it always tracks that slider's current
+  value live, with no separate value to fall out of sync.
+
+  1 new test (`SettingsMapperTest`: the new flag passes through unchanged, defaulting to on) - the geometry
+  itself (`isWithinBackspaceStickyZone`/`resolveKey`) is `AdaptKeyboardView` Android view glue, untested per
+  this project's own convention, the same boundary `isWithinSpaceHitZone`/the offset-factor functions already
+  sit on. 1243 -> 1244 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec:
+  L-04 gained the D-361 addendum. `versionCode` 446 -> 447, `versionName` `"1.1.29"` -> `"1.1.30"`. **Not yet
+  device-confirmed** - needs real fast-Backspace-typing use (ideally including the originally-reported
+  Backspace-into-Enter case) to confirm the sticky zone actually helps without getting in the way of a
+  genuine, deliberate tap on the neighbour key.
 
 - **§390 (v1.1.29): D-393 - Enter did nothing in the Google Play Store's own search bar instead of**
   **submitting the search.** Reported with a real device log (`AdaptKeyJitter`/`AdaptKeyHaptics`), root-caused

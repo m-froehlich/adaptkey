@@ -1270,6 +1270,11 @@ class AdaptKeyService : InputMethodService() {
             view.capsLockHapticsEnabled = s.capsLockHapticsEnabled
             // D-32: configurable long-press delay.
             view.longPressDelayMs = s.longPressDelayMs
+            // D-361: whether/how long a fast Backspace tap/hold biases resolution toward Backspace for
+            // whichever key sits next to it - reuses the double-tap delay setting's own current value as
+            // the window, per the user's own call, rather than a separately tuned duration.
+            view.backspaceStickyEnabled = s.backspaceStickyEnabled
+            view.backspaceStickyDelayMs = s.doubleTapDelayMs
             // D-59: the combined ?123 key can be disabled, in which case it disappears entirely.
             view.symbolKeyEnabled = s.symbolKeyEnabled
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system

@@ -105,6 +105,8 @@
     <string name="c01_period_title">Full-stop width</string>
     <string name="c01_backspace_title">Extra backspace width</string>
     <string name="c01_backspace_summary">Percentage surcharge, taken from the neighbouring keys (L-04).</string>
+    <string name="d361_backspace_sticky_title">Sticky Backspace while typing fast</string>
+    <string name="d361_backspace_sticky_summary">A quick re-tap right after Backspace stays Backspace, even if it lands on a neighbouring key (e.g. Enter). Uses the double-tap delay above as the window.</string>
     <string name="c01_shift_title">Extra shift width</string>
     <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
 

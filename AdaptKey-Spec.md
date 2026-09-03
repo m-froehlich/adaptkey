@@ -135,6 +135,15 @@ layout. The exact proportion is user-configurable (C-01). The chosen typing styl
 whether the extra width favours the backspace side or the Shift side by default, matching which hand/finger
 is expected to reach that corner.
 
+D-361 (default **on**, toggle in Layout settings): fast Backspace activity - a tap or an active accelerating
+hold (D-07/D-31) - temporarily biases key resolution toward Backspace itself for whichever key currently sits
+next to it, so a mistimed re-tap right after Backspace does not land on a neighbour (Enter being the reported
+case) instead. A tap in the portion of that neighbour nearest Backspace, within the sticky window, resolves to
+Backspace; the neighbour's own far portion stays normally reachable. The neighbour itself is never a fixed,
+per-language list - it is derived from the actually rendered key layout each time, so this holds unchanged on
+every surface (letters, symbols, calculator, ...) and every language's own geometry. The sticky window reuses
+the double-tap delay setting's own current value rather than a separately tuned duration of its own.
+
 ### L-05 - Secondary Symbols via Long-Press (AltGr-Style)
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ

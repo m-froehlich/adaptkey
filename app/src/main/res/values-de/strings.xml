@@ -105,6 +105,8 @@
     <string name="c01_period_title">Breite des Punkts</string>
     <string name="c01_backspace_title">Zusatzbreite der Rücktaste</string>
     <string name="c01_backspace_summary">Prozentualer Aufschlag, von den Nachbartasten genommen (L-04).</string>
+    <string name="d361_backspace_sticky_title">Rücktaste beim schnellen Tippen klebend</string>
+    <string name="d361_backspace_sticky_summary">Ein schneller erneuter Tipp direkt nach der Rücktaste bleibt Rücktaste, auch wenn er auf einer Nachbartaste landet (z. B. Enter). Nutzt oben stehendes Doppel-Tipp-Delay als Zeitfenster.</string>
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>
     <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 

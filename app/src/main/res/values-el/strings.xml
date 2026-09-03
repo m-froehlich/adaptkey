@@ -105,6 +105,8 @@
     <string name="c01_period_title">Πλάτος τελείας</string>
     <string name="c01_backspace_title">Πρόσθετο πλάτος backspace</string>
     <string name="c01_backspace_summary">Ποσοστιαία προσαύξηση, από τα γειτονικά πλήκτρα (L-04).</string>
+    <string name="d361_backspace_sticky_title">Κολλώδες Backspace κατά το γρήγορο πάτημα</string>
+    <string name="d361_backspace_sticky_summary">Ένα γρήγορο δεύτερο πάτημα αμέσως μετά το Backspace παραμένει Backspace, ακόμη κι αν προσγειωθεί σε γειτονικό πλήκτρο (π.χ. Enter). Χρησιμοποιεί την παραπάνω καθυστέρηση διπλού πατήματος ως χρονικό παράθυρο.</string>
     <string name="c01_shift_title">Πρόσθετο πλάτος Shift</string>
     <string name="c01_shift_summary">Ποσοστιαία προσαύξηση για το πλήκτρο Shift (D-16). Προρυθμίζεται από τη βαθμονόμηση· ρυθμιζόμενο.</string>
 
