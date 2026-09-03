@@ -773,6 +773,18 @@ non-trivial changes).
 
 ## Current State
 
+- **§377 (v1.1.16): D-430 - the Learned Words editor's per-entry dialog swaps its Save/Forget button roles.**
+  User's own explicit call, after confirming the rest of §363/§365's own dialog rework is now "perfekt": Save
+  moves to the dialog's positive button, Forget to the neutral one - Cancel (negative) untouched. Pure button-
+  role swap in `LearnedWordsActivity.showEntryDialog()`'s `AlertDialog.Builder` chain (`setPositiveButton`/
+  `setNeutralButton` bodies exchanged verbatim, no behaviour change to either action itself);
+  `updateSaveEnabled()`'s own `dialog.getButton(...)` call updated from `BUTTON_NEUTRAL` to `BUTTON_POSITIVE`
+  to keep gating the now-repositioned Save button. No new tests (Android dialog/view glue, per this project's
+  own convention - no existing test referenced either button's role). 1235 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - implementation-only polish, same
+  "occasionally skippable" precedent §363's own items 9/10 already established. `versionCode` 432 -> 433,
+  `versionName` `"1.1.15"` -> `"1.1.16"`. **Not yet device-confirmed.**
+
 - **§376 (v1.1.15): D-429 - learned bigrams and trigrams now carry their own `last_touched` timestamp, and**
   **the recency boost D-411 already gives individual learned words now applies to them too.** Explicit
   follow-up request: this was flagged but deliberately left out of both D-365 (§340, v1.0.92, the bigram

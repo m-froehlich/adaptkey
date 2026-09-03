@@ -172,11 +172,13 @@ class LearnedWordsActivity : AppCompatActivity() {
     }
     
     /**
-     * D-292/D-294: the per-entry dialog. [AlertDialog.Builder]'s own two built-in buttons are Forget
-     * (positive) / Cancel (negative), matching the original single-purpose confirm dialog exactly; Copy and
-     * Save moved into the custom view instead, as two compact buttons directly beside the (weighted, so it
-     * fills the remaining width) casing field - Save still needs to visibly grey out when disabled, which a
-     * real [Button] already does automatically, unlike a hand-rolled icon-only touch target.
+     * D-292/D-294: the per-entry dialog. [AlertDialog.Builder]'s own two built-in buttons were originally
+     * Forget (positive) / Cancel (negative), matching the original single-purpose confirm dialog exactly;
+     * Copy and Save moved into the custom view instead, as two compact buttons directly beside the
+     * (weighted, so it fills the remaining width) casing field - Save still needs to visibly grey out when
+     * disabled, which a real [Button] already does automatically, unlike a hand-rolled icon-only touch
+     * target. D-430: Save and Forget's own button *roles* (not their text/behaviour) were later swapped -
+     * see the dialog's own `setPositiveButton`/`setNeutralButton` calls below for the current arrangement.
      *
      * D-293: the field itself opts out of [de.froehlichmedia.adaptkey.AdaptKeyService]'s own suggestion/
      * learning pipeline entirely via `TYPE_TEXT_FLAG_NO_SUGGESTIONS` - editing a word's casing here must
@@ -207,8 +209,8 @@ class LearnedWordsActivity : AppCompatActivity() {
             setOnClickListener { copyToClipboard(editText.text.toString()) }
         }
         // D-404-followup: Save used to live here too, right next to the text field - moved down into the
-        // dialog's own neutral button (see setNeutralButton below), next to Forget/Cancel, after the user
-        // kept mis-tapping Forget while reaching for it up here.
+        // dialog's own button row (see setPositiveButton below, D-430) after the user kept mis-tapping
+        // Forget while reaching for it up here.
         val fieldRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -269,7 +271,19 @@ class LearnedWordsActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setTitle(entry.word)
             .setView(container)
-            .setPositiveButton(R.string.learned_words_remove_confirm_action) { _, _ ->
+            // D-430: Save and Forget's own button roles swapped, per explicit request - Save is now the
+            // dialog's positive button (still needs to visibly grey out when disabled, which a real
+            // [Button] already does automatically), Forget the neutral one; Cancel (negative) is untouched.
+            .setPositiveButton(R.string.learned_words_save_action) { _, _ ->
+                store.recaseLearnedWord(entry.word, editText.text.toString())
+                val selectedCategories = categoryCheckboxes.filterValues { it.isChecked }.keys
+                store.setLearnedCategories(entry.word, selectedCategories)
+                val lemmaSelection = lemmaSpinner.selectedItemPosition
+                store.setLearnedLemma(entry.word, if (lemmaSelection <= 0) null else lemmaChoices[lemmaSelection])
+                refresh()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.learned_words_remove_confirm_action) { _, _ ->
                 // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly - every
                 // word listed here is by definition already in the learned lexicon (learnedWords() itself
                 // never returns a bundled one), so there is no isBundledWord() branch to make here at all.
@@ -278,27 +292,17 @@ class LearnedWordsActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
                 refresh()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            // D-404-followup: Save as the dialog's own neutral button (bottom row, next to Forget/Cancel) -
-            // see fieldRow's own note above for why it moved down from the text field.
-            .setNeutralButton(R.string.learned_words_save_action) { _, _ ->
-                store.recaseLearnedWord(entry.word, editText.text.toString())
-                val selectedCategories = categoryCheckboxes.filterValues { it.isChecked }.keys
-                store.setLearnedCategories(entry.word, selectedCategories)
-                val lemmaSelection = lemmaSpinner.selectedItemPosition
-                store.setLearnedLemma(entry.word, if (lemmaSelection <= 0) null else lemmaChoices[lemmaSelection])
-                refresh()
-            }
             .create()
         fun updateSaveEnabled() {
             // D-292: case-insensitively identical to the original only - the whole point is that this can
             // fix casing alone, never sneak an entirely different word in under this entry's own
             // frequency/history. Does not gate the category/Grundform fields below - those are independent
             // corrections, not a casing edit.
-            // D-404-followup: the neutral button only exists once the dialog is actually showing (getButton()
-            // returns null before then) - the null-safe call is a no-op until setOnShowListener's own call
-            // below runs, which is also why that call exists at all (to set the correct initial state).
-            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.isEnabled =
+            // D-404-followup/D-430: the positive button only exists once the dialog is actually showing
+            // (getButton() returns null before then) - the null-safe call is a no-op until
+            // setOnShowListener's own call below runs, which is also why that call exists at all (to set
+            // the correct initial state).
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled =
                 editText.text.toString().equals(entry.word, ignoreCase = true)
         }
         dialog.setOnShowListener { updateSaveEnabled() }
