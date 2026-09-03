@@ -5075,12 +5075,18 @@ class AdaptKeyService : InputMethodService() {
         } else {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
         }
-        // D-377: same gate as rawCoordinateSuggestion right above (deferred pass only, and only once the
-        // ordinary/fuzzy search has already found absolutely nothing) - "alle anderen Versuche zur Reparatur
-        // müssen vorher gescheitert sein" (the user's own explicit condition). Chip-only by the user's own
-        // explicit request (too risky to silently auto-apply) - never wired into finalizeAndCommit()'s own
-        // silent-correction chain, unlike rawCoordinateSuggestion's own rawCoordinateCorrection() twin.
-        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks || candidates.isNotEmpty()) {
+        // D-377/D-431: deferred pass only, and only once the ordinary/fuzzy search has already found
+        // nothing *obvious* - "alle anderen Versuche zur Reparatur müssen vorher gescheitert sein" (the
+        // user's own original condition) never meant the whole bar had to end up empty; something can
+        // almost always be suggested. D-431 corrected the gate from candidates.isNotEmpty() (which a
+        // coincidental, last-resort wide-fuzzy match alone could already satisfy, wrongly suppressing a
+        // genuine missed-Backspace recovery - see provider.hasObviousCandidate()'s own KDoc for the
+        // concrete "welxmche" repro this closes) to this narrower, "was anything obvious found" check.
+        // Whatever wideFuzzyNeighbours separately, coincidentally also found stays in candidates/the bar
+        // regardless - deliberately not suppressed, both chips are simply offered together.
+        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks ||
+            provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
+        ) {
             null
         } else {
             missedBackspaceCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }

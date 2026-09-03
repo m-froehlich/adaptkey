@@ -957,12 +957,20 @@ resolution-independent by construction (scales with the key's own measured size,
 Only that character and its immediate predecessor are ever removed together (mirroring what a real Backspace
 press would have deleted right there), never an arbitrary window.
 
-Gated identically to A-09: only attempted once the ordinary/fuzzy dictionary search has found absolutely
-nothing for the token (it must be, in the user's own words, "komplett unbekannt") and only during the
-deferred/expensive fallback pass, never on the hot per-keystroke path - every other repair mechanism has
-already had its own chance and failed. Suggestion only, exactly like A-09 - deliberately never wired into the
-silent-correction chain, since even strong input-level evidence is not judged safe enough to auto-apply
-without confirmation.
+Gated identically to A-09: only attempted once the ordinary/fuzzy dictionary search has found nothing
+*obvious* for the token - a real prefix completion (including a D-144 umlaut-unfolded or D-328 neighbour-
+substituted-prefix variant), a close (cost ≤ 2) fuzzy match, or a recognised unhyphenated compound - and only
+during the deferred/expensive fallback pass, never on the hot per-keystroke path. D-431: this is deliberately
+*not* the same as the suggestion bar ending up completely empty - something can almost always be suggested,
+including via A-09's own wider (cost ≤ 4), suggestion-only, "never trusted enough for autocorrect" last-resort
+fallback. A coincidental last-resort match must not by itself veto A-13's own evidence-based recovery (e.g.
+the `"welxmche"` example above: a genuine but rare German word, `"welsche"`, sits at a cheaper generic edit
+distance than the correct `"welche"` reconstruction, purely because one of its differing letters happens to
+sit on a keyboard-adjacent key - a coincidence with no bearing on what A-13's own tap-geometry evidence
+already establishes). When both a last-resort match and an A-13 recovery exist side by side, both are offered
+- A-13's own chip is simply pinned ahead, not exclusive. Suggestion only, exactly like A-09 - deliberately
+never wired into the silent-correction chain, since even strong input-level evidence is not judged safe
+enough to auto-apply without confirmation.
 
 ### A-10 - Mid-Word Connector-Split Suggestion
 While re-editing mid-word, an unresolved bottom-row connector character (`c v b n m`, per T-05) between two

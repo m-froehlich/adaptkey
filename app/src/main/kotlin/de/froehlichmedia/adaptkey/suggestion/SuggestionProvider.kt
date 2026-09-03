@@ -130,6 +130,24 @@ interface SuggestionProvider {
     fun shouldOverrideKnownWord(word: String, candidate: String): Boolean = false
     
     /**
+     * D-431: whether an ordinary candidate search for [input] already finds something "obvious", without
+     * resorting to a last-resort, never-trusted-even-for-a-chip fallback (if the implementation has one at
+     * all). Used by [de.froehlichmedia.adaptkey.AdaptKeyService]'s own A-13 gate
+     * ([de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery], D-377) to decide whether that
+     * evidence-based repair still deserves its own chance, independent of whether [suggestionsFor]'s own
+     * last-resort tier separately, coincidentally, also turned up an unrelated real word. The default
+     * (no tiered fallback to distinguish) simply reports whether [suggestionsFor] finds anything at all.
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @param previousPreviousWord the word committed two positions before, or null when unknown
+     * @return true when an ordinary (non-last-resort) candidate search already finds something
+     */
+    fun hasObviousCandidate(input: String, previousWord: String?, previousPreviousWord: String? = null): Boolean {
+        return suggestionsFor(input, previousWord, previousPreviousWord).isNotEmpty()
+    }
+    
+    /**
      * D-202: whether [word] looks like a plausible but incorrectly-unsplit compound (D-116's own noun +
      * Fugenelement + resolvable-rest recognition) - used only to slow down how eagerly such a token is
      * learned as if it were a genuine single word (see [de.froehlichmedia.adaptkey.AdaptKeyService]'s D-37

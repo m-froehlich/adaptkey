@@ -61,4 +61,10 @@ class StubSuggestionProviderTest {
     fun `paragraph 44 shouldOverrideKnownWord defaults to false without frequency data`() {
         assertFalse(provider.shouldOverrideKnownWord("due", "die"))
     }
+    
+    @Test
+    fun `D-431 hasObviousCandidate defaults to whether suggestionsFor finds anything at all`() {
+        assertTrue(provider.hasObviousCandidate("de", null))
+        assertFalse(provider.hasObviousCandidate("xyzzy", null))
+    }
 }

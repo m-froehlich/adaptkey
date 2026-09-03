@@ -55,6 +55,66 @@ class DictionarySuggestionProvider(
         isCancelled: () -> Boolean
     ): List<Suggestion> {
         val token = input.lowercase()
+        val candidates = obviousCandidates(token, previousWord, previousPreviousWord, includeExpensiveFallbacks, isCancelled)
+        // D-117: a longer token garbled by more than D-28's ordinary two-edit budget ("erkamm" for
+        // "erkannt") still gets one more, wider-budget try - suggestion-only (never autocorrect, unlike
+        // every other candidate source above, this one is deliberately never trusted enough for that) and
+        // only once every cheaper, tighter search above found nothing at all, for the same reason as D-116:
+        // this is a rare fallback, not a general loosening of D-28's own budget, which stays exactly as
+        // tight as before for the common case. Gated on includeExpensiveFallbacks like D-116 (D-160).
+        // D-431: deliberately not consulted by hasObviousCandidate() below - a match found only here is, by
+        // this very method's own long-standing KDoc, "never trusted enough" even for a suggestion chip to
+        // count as "something was found" for A-13's purposes.
+        if (includeExpensiveFallbacks && candidates.isEmpty()) {
+            for ((word, cost) in wideFuzzyNeighbours(token, isCancelled)) {
+                if (candidates.containsKey(word) || store.isBlacklisted(word)) {
+                    continue // A-04
+                }
+                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, previousPreviousWord, cost))
+            }
+        }
+        return candidates.values
+            .sortedByDescending { it.score }
+            .take(maxCandidates)
+    }
+    
+    /**
+     * D-431: whether [suggestionsFor] would find anything "obvious" for [input] without resorting to
+     * [wideFuzzyNeighbours]'s own last-resort, never-trusted-even-for-a-chip fallback (D-117) - a real
+     * prefix completion (including a D-144 umlaut-unfolded or D-328 neighbour-substituted-prefix variant),
+     * a close ([MAX_CORRECTION_COST]) fuzzy match (D-12), or a recognised unhyphenated compound (D-116).
+     *
+     * Used by [de.froehlichmedia.adaptkey.AdaptKeyService]'s own A-13 gate
+     * ([de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery], D-377): "every other repair
+     * mechanism has already had its own chance and failed" was never meant to require the *whole*
+     * suggestion bar to end up empty - something can almost always be suggested - only that nothing
+     * *obvious* turned up first. A-13's own recovered word is then offered regardless of whether
+     * [wideFuzzyNeighbours] separately, coincidentally, also found some unrelated real word (see D-431's
+     * own history entry for the concrete case this was reported against: `"welxmche"` for `"welche"`
+     * wrongly suppressed by a cheaper, but wrong, wide-fuzzy match on `"welsche"`).
+     *
+     * @param input the current composing token
+     * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
+     * @param previousPreviousWord D-366: the word committed two positions before, or null when unknown
+     * @return true when an ordinary (non-wide-fuzzy) candidate search already finds something
+     */
+    override fun hasObviousCandidate(input: String, previousWord: String?, previousPreviousWord: String?): Boolean {
+        val token = input.lowercase()
+        return obviousCandidates(token, previousWord, previousPreviousWord, includeExpensiveFallbacks = true) { false }.isNotEmpty()
+    }
+    
+    /**
+     * D-431: [suggestionsFor]'s own candidate search, minus [wideFuzzyNeighbours]'s last-resort fallback -
+     * shared verbatim between [suggestionsFor] itself and [hasObviousCandidate], so the two can never drift
+     * apart on what counts as "obvious".
+     */
+    private fun obviousCandidates(
+        token: String,
+        previousWord: String?,
+        previousPreviousWord: String?,
+        includeExpensiveFallbacks: Boolean,
+        isCancelled: () -> Boolean
+    ): LinkedHashMap<String, Suggestion> {
         // Keyed by canonical word so a word is never offered twice; insertion order is irrelevant since
         // the merged set is re-sorted by score before it is capped.
         val candidates = LinkedHashMap<String, Suggestion>()
@@ -144,23 +204,7 @@ class DictionarySuggestionProvider(
                 candidates[word] = Suggestion(word, score(word, store.frequencyOf(word), previousWord, previousPreviousWord))
             }
         }
-        // D-117: a longer token garbled by more than D-28's ordinary two-edit budget ("erkamm" for
-        // "erkannt") still gets one more, wider-budget try - suggestion-only (never autocorrect, unlike
-        // every other candidate source above, this one is deliberately never trusted enough for that) and
-        // only once every cheaper, tighter search above found nothing at all, for the same reason as D-116:
-        // this is a rare fallback, not a general loosening of D-28's own budget, which stays exactly as
-        // tight as before for the common case. Gated on includeExpensiveFallbacks like D-116 (D-160).
-        if (includeExpensiveFallbacks && candidates.isEmpty()) {
-            for ((word, cost) in wideFuzzyNeighbours(token, isCancelled)) {
-                if (candidates.containsKey(word) || store.isBlacklisted(word)) {
-                    continue // A-04
-                }
-                candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, previousPreviousWord, cost))
-            }
-        }
-        return candidates.values
-            .sortedByDescending { it.score }
-            .take(maxCandidates)
+        return candidates
     }
     
     /**

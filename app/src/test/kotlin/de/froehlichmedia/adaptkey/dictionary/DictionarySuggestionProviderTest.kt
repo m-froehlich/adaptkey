@@ -811,6 +811,47 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-431 hasObviousCandidate is true when an ordinary prefix or fuzzy match exists`() {
+        store.putWord(WordEntry("Haus", 100L))
+        assertTrue(provider.hasObviousCandidate("Hau", null, null))
+    }
+    
+    @Test
+    fun `D-431 hasObviousCandidate is false when nothing at all is found`() {
+        assertFalse(provider.hasObviousCandidate("qxzvbklm", null, null))
+    }
+    
+    @Test
+    fun `D-431 hasObviousCandidate is false when only the D-117 wide-fuzzy fallback finds something`() {
+        // "erkannt" is only reachable from "erkamm" via the D-117 wide-fuzzy fallback (see the test above) -
+        // hasObviousCandidate must not count it, since A-13's own gate must not be blocked by it.
+        store.putWord(WordEntry("erkannt", 300L))
+        assertFalse(provider.hasObviousCandidate("erkamm", null, null))
+        // Yet suggestionsFor() itself still finds it - the two must not silently drift apart on what
+        // "found something" means for their own, deliberately different purposes.
+        assertTrue(provider.suggestionsFor("erkamm", null).map { it.word }.contains("erkannt"))
+    }
+    
+    @Test
+    fun `D-431 the real reported repro - welxmche must not be blocked by a coincidental welsche wide-fuzzy match`() {
+        // The user's own worked example (D-377): "welxmche" for "welche" (x mistyped, then a Backspace
+        // attempt that landed on m instead). "welsche" is a genuine, if rare, German word that
+        // coincidentally sits at a *cheaper* edit distance from "welxmche" (delete "m", substitute the
+        // adjacent-key x->s) than the actually-intended two-deletion reconstruction "welche" - confirmed
+        // real from a device report, not a hypothetical: before D-431, this alone silently blocked A-13's
+        // own gate every time.
+        store.putWord(WordEntry("welche", 500_000L))
+        store.putWord(WordEntry("welsche", 50L))
+        
+        // The wide-fuzzy fallback genuinely does surface "welsche" (confirming the reported symptom's own
+        // root cause, not just asserting the fix in isolation).
+        assertTrue(provider.suggestionsFor("welxmche", null).map { it.word }.contains("welsche"))
+        // But hasObviousCandidate must not count that last-resort match - A-13 still deserves its own
+        // chance regardless.
+        assertFalse(provider.hasObviousCandidate("welxmche", null, null))
+    }
+    
+    @Test
     fun `D-160 the hot path with expensive fallbacks off skips the D-116 compound reconstruction`() {
         store.putWord(WordEntry("Beitrag", 500L, setOf(PartOfSpeech.NOUN)))
         store.putWord(WordEntry("Jahren", 2_000L, setOf(PartOfSpeech.NOUN)))

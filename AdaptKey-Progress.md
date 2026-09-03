@@ -773,6 +773,40 @@ non-trivial changes).
 
 ## Current State
 
+- **§378 (v1.1.17): D-431 - A-13's own "everything else must have failed first" gate was wrongly satisfied**
+  **by a coincidental last-resort dictionary match, silently blocking the exact case A-13 exists for.**
+  Reported directly against the feature's own worked example: typing `"welxmche"` (intending `"welche"`)
+  suggested `"welsche"` instead - never even reached `missedBackspaceCorrection()`. Root-caused, not guessed:
+  `"welsche"` (a genuine but rare German word) sits at edit cost 3 from `"welxmche"` (delete `"m"`, substitute
+  the keyboard-adjacent `x`->`s`), cheaper than the actually-intended two-deletion reconstruction `"welche"`
+  (cost 4) - so A-09's own wide-fuzzy fallback (D-117, cost ≤ 4, explicitly documented as "never trusted
+  enough for autocorrect") surfaced it, making `candidates.isNotEmpty()` true and blocking A-13's own gate
+  ([AdaptKeyService.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt)) before it ever ran.
+
+  User's own reframing of the original D-377 condition, confirmed as the intended design: "alle anderen
+  Versuche müssen vorher gescheitert sein" never meant the whole suggestion bar had to end up empty -
+  something can almost always be suggested - only that nothing *obvious* (prefix/umlaut-unfold/neighbour-
+  substituted-prefix completion, a close cost-≤2 fuzzy match, or a recognised compound) turned up first.
+  Whether the wide-fuzzy last-resort fallback separately, coincidentally, also finds something is irrelevant -
+  both are simply offered together, A-13's own chip pinned ahead.
+
+  Implemented by extracting `DictionarySuggestionProvider.suggestionsFor()`'s own candidate search (everything
+  except the D-117 wide-fuzzy fallback) into a shared private `obviousCandidates()`, reused by both
+  `suggestionsFor()` itself and a new `hasObviousCandidate()` (promoted onto the `SuggestionProvider` interface
+  with a `suggestionsFor(...).isNotEmpty()` default for a provider with no tiered fallback to distinguish) -
+  the two can never silently drift apart on what counts as "obvious". `AdaptKeyService`'s own
+  `missedBackspaceSuggestion` gate now calls `provider.hasObviousCandidate(...)` instead of reading
+  `candidates.isNotEmpty()` directly.
+
+  5 new tests (`DictionarySuggestionProviderTest`: `hasObviousCandidate` true/false on ordinary matches, false
+  when only the D-117 wide-fuzzy fallback finds something while `suggestionsFor` itself still does, and the
+  exact `"welxmche"`/`"welsche"`/`"welche"` repro reproduced and confirmed fixed end to end;
+  `StubSuggestionProviderTest`: the default delegates to `suggestionsFor(...).isNotEmpty()`). 1235 -> 1240 unit
+  tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 rewritten to describe the
+  current gate. `versionCode` 433 -> 434, `versionName` `"1.1.16"` -> `"1.1.17"`. **Not yet device-confirmed** -
+  needs a real device check with the user's own exact repro (`"welxmche"` -> `"welche"` chip, alongside
+  whatever the wide-fuzzy fallback separately still offers).
+
 - **§377 (v1.1.16): D-430 - the Learned Words editor's per-entry dialog swaps its Save/Forget button roles.**
   User's own explicit call, after confirming the rest of §363/§365's own dialog rework is now "perfekt": Save
   moves to the dialog's positive button, Forget to the neutral one - Cancel (negative) untouched. Pure button-
