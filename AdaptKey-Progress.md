@@ -510,8 +510,11 @@ non-trivial changes).
   - **D-382 - RESOLVED (§330, v1.0.82).** `KeyboardLayout.numberKey('2')` (shared by both QWERTZ and QWERTY,
     L-01) now offers an apostrophe and subscript `₂` as a third and fourth long-press alternative, alongside
     the existing shifted-symbol/superscript pair. Every other digit unaffected.
-  - **D-383 - OPEN.** In Google Keep's list mode, placing the caret before a word and pressing Enter (to push
-    the rest of the line into a new list item) deletes that word.
+  - **D-383 - RESOLVED (§389, v1.1.28).** In Google Keep's list mode, placing the caret before a word and
+    pressing Enter deleted that word - root-caused from a real device log to `splitComposingAtCaretAndCommit()`'s
+    delete-then-reinsert sequence losing the still-provisional re-inserted half when Keep tears down its own
+    `InputConnection` in reaction to the delimiter. See spec §1's guiding principle (new point 4) and Current
+    State for the mechanism.
   - **D-384 - WON'T FIX (2026-09-01, no code change - discussed and declined).** Typing a minus preceded by a
     space should also get its own trailing A-12-style auto-space, but only when a space already precedes the
     minus. Analysed in detail: technically a small, low-risk-looking addition (one more pattern in
@@ -774,6 +777,41 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§389 (v1.1.28): D-383 - in Google Keep's list mode, pressing Enter with the caret right before a**
+  **reclaimed word deleted that word.** Reported with a real device log (`AdaptKeyJitter`), root-caused from it
+  directly rather than guessed: the field is multi-line (`inputType=0x2ac001`), so `handleEnter()` routes
+  through `finalizeAndCommit(ic, "\n")`; since the caret sat exactly at the composing word's own start
+  (`cursor=0`, not at its end), that took the mid-word split branch, `splitComposingAtCaretAndCommit()`. With
+  the "before" half empty, that function's own first step (`ic.setComposingText("", 1)`) collapsed the *real*
+  composing region to nothing - genuinely deleting the word from the document, not just resetting internal
+  state - before re-inserting it moments later as fresh, still-provisional composing text at the new position
+  after the newline. The log showed exactly this sequence, then an `onUpdateSelection` mismatch with "ground
+  truth unavailable", then an immediate fresh `onStartInput` for the same package - Google Keep recreates the
+  list item's own `InputConnection` the instant the committed `"\n"` splits the line, arriving before the
+  re-inserted word ever reached the (now-superseded) old connection, so it was lost for good.
+
+  Fixed narrowly, keyed off the same `beforeText.isEmpty()` condition already computed in
+  `splitComposingAtCaretAndCommit()`: `ic.finishComposingText()` (commits the word for real, in place, deletes
+  nothing) instead of `ic.setComposingText("", 1)` when there is no "before" half to shrink down to - the word
+  becomes genuine, committed document text *before* the delimiter is ever touched, so nothing is at risk even
+  if the host tears down its `InputConnection` immediately after. Because the word is now already real text at
+  its final position rather than absent, the closing step also had to change: routing it back through the
+  ordinary `updateComposing()` (which always calls `setComposingText`, i.e. *inserts* text at the cursor) would
+  have inserted a second, duplicate copy right in front of the text already there - fixed by calling
+  `ic.setComposingRegion(anchor, anchor + afterText.length)` directly in this one branch instead, marking the
+  already-present range as composing without writing anything.
+
+  Design discussed first per this project's own convention (the change touches exactly the composing-state/
+  batch-edit machinery spec §1's guiding principle flags as historically fragile) - user confirmed the
+  finishComposingText-first approach before it was implemented. Spec §1's guiding principle gained a fourth
+  numbered invariant documenting this failure class (delete-then-reinsert of already-real content is unsafe
+  whenever the host might tear down the `InputConnection` in direct reaction to the delimiter itself) for any
+  future change in this area. No new tests (`AdaptKeyService.kt`'s `InputConnection` glue, untested per this
+  project's own convention). 1243 unit tests unchanged, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 444 -> 445, `versionName` `"1.1.27"` -> `"1.1.28"`. **Not yet
+  device-confirmed** - needs the exact original repro (Google Keep list mode, caret before a word, Enter)
+  re-tried on a real device to confirm the word now survives.
 
 - **§388 (v1.1.27): D-404 Tier 2 - `shouldOverrideKnownWord` now vetoes A-01's ratio override outright when**
   **the typed word and the candidate share a D-412 word family.** Design discussed first per this project's own

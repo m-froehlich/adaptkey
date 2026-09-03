@@ -44,7 +44,7 @@ device-log tracing rounds against two independently observed, genuinely differen
 commit echo; an un-coalesced batch edit's transient intermediate state, from an editor that does not merge
 the reclaim's delete/set/select sequence into one callback). Not a blanket "don't touch this file" - but
 any future change that touches composing state, `onUpdateSelection`, `reclaimSurroundingWord`, or the
-batch-edit sequencing in `AdaptKeyService` must keep these three properties intact, and should be weighed
+batch-edit sequencing in `AdaptKeyService` must keep these four properties intact, and should be weighed
 against them before shipping (the full history entries for this fix are the cheap, sufficient check - not
 an exhaustive whole-file re-audit every time):
 
@@ -59,8 +59,21 @@ an exhaustive whole-file re-audit every time):
    equality against only the latest expected value is insufficient, proven by two distinct real echo
    shapes that a naive "belated update" interval heuristic (considered and rejected) would *not* both have
    caught.
+4. **D-383**: existing, already-real document content must never be routed through a delete-then-reinsert
+   sequence (a composing region collapsed to empty text, only to be re-established moments later) merely to
+   reposition it around a delimiter - the re-insertion half is provisional (composing) text, not committed,
+   and is silently lost if the host tears down/replaces its own `InputConnection` in reaction to the
+   delimiter itself before that second half ever lands. Confirmed from a real device log: pressing Enter
+   with the caret sitting right before a reclaimed word, in Google Keep's list mode, deleted the word
+   outright - Keep recreates the list item's own `InputConnection` (a fresh `onStartInput`) the moment the
+   committed `"\n"` splits the line, arriving before `splitComposingAtCaretAndCommit()`'s own re-seeded
+   composing text (the word, meant to reappear right after the newline) could ever reach the document.
+   `finishComposingText()` (commits content in place, deletes nothing) instead of `setComposingText("", 1)`
+   whenever the "before" half of a caret-split is empty - see `splitComposingAtCaretAndCommit()` - closes
+   this: the word becomes real, committed text before the delimiter is ever touched, so nothing is at risk
+   even if the host discards everything from that point on.
 
-If a change would make any of these three no longer hold, stop and re-derive against the original device
+If a change would make any of these four no longer hold, stop and re-derive against the original device
 logs (see `AdaptKey-History.md`) rather than guessing - this class of bug reproduces silently and took real
 device logs, not code review alone, to find each time.
 

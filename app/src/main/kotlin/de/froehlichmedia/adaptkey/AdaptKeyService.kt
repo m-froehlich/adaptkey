@@ -4911,7 +4911,19 @@ class AdaptKeyService : InputMethodService() {
             // Shrink the real composing region to just the "before" half first - otherwise finalising it
             // below would replace the *whole* existing composing span (before+after) and silently discard
             // the "after" half, which only exists in memory here, never yet committed anywhere.
-            ic.setComposingText(beforeText, 1)
+            // D-383: when "before" is empty (the caret sits at the composing word's own start, nothing to
+            // split off), shrinking to an empty composing text would genuinely delete the whole word from
+            // the real document, only to re-insert it moments later as fresh, still-provisional composing
+            // text - if the host reacts to the delimiter itself by tearing down its own InputConnection
+            // before that re-insertion lands (confirmed from a real device log: Google Keep's list mode
+            // does exactly this on Enter), the word is permanently lost. finishComposingText() commits it
+            // for real instead, at the exact same position, so nothing is at risk from this point on, even
+            // if the host discards everything that follows.
+            if (beforeText.isEmpty()) {
+                ic.finishComposingText()
+            } else {
+                ic.setComposingText(beforeText, 1)
+            }
             composing.setLength(0)
             composing.append(beforeText)
             composingFlags.clear()
@@ -4934,7 +4946,16 @@ class AdaptKeyService : InputMethodService() {
             composingTaps.addAll(afterTaps)
             composingCursor = 0
             composingAnchor = anchor
-            updateComposing(ic)
+            if (beforeText.isEmpty() && anchor >= 0) {
+                // D-383: "afterText" is already sitting in the real document (committed above via
+                // finishComposingText(), never deleted) - mark the existing range as composing directly
+                // instead of routing through updateComposing()'s ordinary setComposingText(), which would
+                // insert a second, duplicate copy at the cursor rather than recognising the text already
+                // there.
+                ic.setComposingRegion(anchor, anchor + afterText.length)
+            } else {
+                updateComposing(ic)
+            }
         } finally {
             ic.endBatchEdit()
         }
