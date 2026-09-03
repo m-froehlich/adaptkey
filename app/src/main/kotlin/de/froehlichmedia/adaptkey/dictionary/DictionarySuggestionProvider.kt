@@ -34,8 +34,9 @@ import kotlin.math.pow
  *           existing caller that does not pass one explicitly keeps this class's historical behaviour
  *           unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
  *           resolves and passes the value matching the actually active language.
- * @property now D-411: "now", for [LearnedFrequencyBoost]'s own recency check inside [score] - threaded
- *           through rather than read directly, so a caller's own tests stay deterministic (mirrors
+ * @property now D-411/D-429: "now", for [LearnedFrequencyBoost]'s and [LearnedBigramBoost]'s own recency
+ *           checks inside [score], [rankingBigramFrequency] and [nextWordSuggestions] - threaded through
+ *           rather than read directly, so a caller's own tests stay deterministic (mirrors
  *           [InMemoryDictionaryStore]'s identical `clock` parameter). Defaults to the real wall clock.
  */
 class DictionarySuggestionProvider(
@@ -433,13 +434,16 @@ class DictionarySuggestionProvider(
     /**
      * D-246: elevates the existing bigram baseline with the personal trigram table when
      * [previousPreviousWord] is known, via Stupid Backoff (Brants et al. 2007): a candidate with a real
-     * trigram match scores by its raw trigram count; a candidate reached only through the (bundled +
-     * personal) bigram signal scores by its bigram count discounted by [TRIGRAM_BACKOFF_WEIGHT] - a soft
-     * preference, not a hard "trigram always wins" rule (mirrors [scoreWithCost]'s own soft edit-cost
-     * discount), so an overwhelmingly more frequent bigram-only candidate can still outrank a barely-seen
-     * trigram one. A word already scored via its trigram match is never re-added via the bigram pass (the
-     * more specific signal always wins for that word, never blended with its own less-specific estimate).
-     * 
+     * trigram match scores by its trigram count (D-429: rescaled and recency-boosted via
+     * [LearnedBigramBoost], the same as every other n-gram contribution in this class - previously the one
+     * remaining place still scoring by the raw count directly); a candidate reached only through the
+     * (bundled + personal) bigram signal scores by its bigram count discounted by [TRIGRAM_BACKOFF_WEIGHT]
+     * - a soft preference, not a hard "trigram always wins" rule (mirrors [scoreWithCost]'s own soft
+     * edit-cost discount), so an overwhelmingly more frequent bigram-only candidate can still outrank a
+     * barely-seen trigram one. A word already scored via its trigram match is never re-added via the
+     * bigram pass (the more specific signal always wins for that word, never blended with its own
+     * less-specific estimate).
+     *
      * @param previousWord the most recently committed word
      * @param previousPreviousWord the word committed two positions before, or null when unknown - falls
      *        back to the plain bigram ranking, exactly as before D-246
@@ -456,7 +460,8 @@ class DictionarySuggestionProvider(
                 .asSequence()
                 .filter { !store.isBlacklisted(it) }
                 .forEach { word ->
-                    scores[word] = store.trigramFrequency(previousPreviousWord, previousWord, word).toDouble()
+                    val trigram = store.trigramWithTimestamp(previousPreviousWord, previousWord, word)
+                    scores[word] = LearnedBigramBoost.boost(trigram?.count ?: 0L, trigram?.lastTouched ?: 0L, now())
                 }
         }
         // The store already returns the successors ordered by bigram count; drop blacklisted words (A-04).
@@ -691,13 +696,14 @@ class DictionarySuggestionProvider(
         // genuine personal trigram match for this exact candidate elevates it beyond the plain bigram
         // signal, instead of the richer two-word-context signal only ever mattering for S-07's own
         // blank-slate prediction and vanishing the moment the user starts typing. [LearnedBigramBoost]
-        // (D-365) scales the trigram's own raw count the same way it scales a learned bigram count - a
-        // small, personal-only reinforcement count needs the same curve to compete meaningfully against a
-        // corpus-scale contribution, regardless of which n-gram order it came from.
+        // (D-365/D-429) scales the trigram's own raw count, and applies the same recency boost, the same
+        // way it treats a learned bigram count - a small, personal-only reinforcement count needs the same
+        // curve to compete meaningfully against a corpus-scale contribution, regardless of which n-gram
+        // order it came from.
         if (previousPreviousWord != null) {
-            val trigramCount = store.trigramFrequency(previousPreviousWord, previousWord, word)
-            if (trigramCount > 0L) {
-                return base + LearnedBigramBoost.boost(trigramCount) * BIGRAM_WEIGHT
+            val trigram = store.trigramWithTimestamp(previousPreviousWord, previousWord, word)
+            if (trigram != null && trigram.count > 0L) {
+                return base + LearnedBigramBoost.boost(trigram.count, trigram.lastTouched, now()) * BIGRAM_WEIGHT
             }
             return base + rankingBigramFrequency(previousWord, word) * BIGRAM_WEIGHT * TRIGRAM_BACKOFF_WEIGHT
         }
@@ -706,10 +712,10 @@ class DictionarySuggestionProvider(
     
     /**
      * D-365: [DictionaryStore.bigramFrequency] with its learned contribution ([DictionaryStore.
-     * learnedBigramFrequency]'s own raw, +1-per-use count) replaced by [LearnedBigramBoost]'s scaled
-     * equivalent - the bundled contribution passes through untouched. Ranking-only, mirroring
-     * [rankingFrequency]'s own D-411 precedent exactly: [TokenRepair]'s `>= MIN_BIGRAM` merge gate (A-06)
-     * keeps reading [DictionaryStore.bigramFrequency] directly, never through this.
+     * learnedBigramFrequency]'s own raw, +1-per-use count) replaced by [LearnedBigramBoost]'s scaled,
+     * recency-aware (D-429) equivalent - the bundled contribution passes through untouched. Ranking-only,
+     * mirroring [rankingFrequency]'s own D-411 precedent exactly: [TokenRepair]'s `>= MIN_BIGRAM` merge
+     * gate (A-06) keeps reading [DictionaryStore.bigramFrequency] directly, never through this.
      *
      * @param previousWord the preceding word
      * @param word the candidate word
@@ -717,9 +723,9 @@ class DictionarySuggestionProvider(
      */
     private fun rankingBigramFrequency(previousWord: String, word: String): Double {
         val total = store.bigramFrequency(previousWord, word)
-        val learned = store.learnedBigramFrequency(previousWord, word)
-        val bundledOnly = total - learned
-        return bundledOnly.toDouble() + LearnedBigramBoost.boost(learned)
+        val learned = store.learnedBigramWithTimestamp(previousWord, word) ?: LearnedNgram(0L, 0L)
+        val bundledOnly = total - learned.count
+        return bundledOnly.toDouble() + LearnedBigramBoost.boost(learned.count, learned.lastTouched, now())
     }
     
     /**

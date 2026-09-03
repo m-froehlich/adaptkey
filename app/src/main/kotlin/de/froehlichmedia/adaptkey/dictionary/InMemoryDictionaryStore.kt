@@ -29,6 +29,10 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
     // D-411: last-touched epoch millis per learned entry, mirroring SqliteDictionaryStore's own
     // last_touched column - stamped by every learned/unlearn write, uniformly, same reasoning as there.
     private val learnedTouch = HashMap<String, Long>()
+    // D-429: same last-touched tracking, extended to the bigram/trigram tables - mirrors
+    // SqliteDictionaryStore's own learned_bigrams/learned_trigrams `last_touched` columns.
+    private val learnedBigramTouch = HashMap<String, Long>()
+    private val learnedTrigramTouch = HashMap<String, Long>()
     
     override fun putWord(entry: WordEntry) {
         unigrams[entry.word.lowercase()] = entry
@@ -79,9 +83,11 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         if (previousWord != null) {
             val bigramKey = bigramKey(previousWord, word)
             learnedBigrams[bigramKey] = (learnedBigrams[bigramKey] ?: 0L) + 1L
+            learnedBigramTouch[bigramKey] = clock()
             if (previousPreviousWord != null) {
                 val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
                 learnedTrigrams[trigramKey] = (learnedTrigrams[trigramKey] ?: 0L) + 1L
+                learnedTrigramTouch[trigramKey] = clock()
             }
         }
     }
@@ -106,9 +112,11 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         if (previousWord != null) {
             val bigramKey = bigramKey(previousWord, word)
             learnedBigrams[bigramKey] = (learnedBigrams[bigramKey] ?: 0L) + 1L
+            learnedBigramTouch[bigramKey] = clock()
             if (previousPreviousWord != null) {
                 val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
                 learnedTrigrams[trigramKey] = (learnedTrigrams[trigramKey] ?: 0L) + 1L
+                learnedTrigramTouch[trigramKey] = clock()
             }
         }
     }
@@ -131,16 +139,20 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
             val count = (learnedBigrams[bigramKey] ?: 0L) - 1L
             if (count <= 0L) {
                 learnedBigrams.remove(bigramKey)
+                learnedBigramTouch.remove(bigramKey)
             } else {
                 learnedBigrams[bigramKey] = count
+                learnedBigramTouch[bigramKey] = clock()
             }
             if (previousPreviousWord != null) {
                 val trigramKey = trigramKey(previousPreviousWord, previousWord, word)
                 val trigramCount = (learnedTrigrams[trigramKey] ?: 0L) - 1L
                 if (trigramCount <= 0L) {
                     learnedTrigrams.remove(trigramKey)
+                    learnedTrigramTouch.remove(trigramKey)
                 } else {
                     learnedTrigrams[trigramKey] = trigramCount
+                    learnedTrigramTouch[trigramKey] = clock()
                 }
             }
         }
@@ -226,6 +238,12 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         return learnedBigrams[bigramKey(previousWord, word)] ?: 0L
     }
     
+    override fun learnedBigramWithTimestamp(previousWord: String, word: String): LearnedNgram? {
+        val key = bigramKey(previousWord, word)
+        val count = learnedBigrams[key] ?: return null
+        return LearnedNgram(count, learnedBigramTouch[key] ?: 0L)
+    }
+    
     override fun nextWords(previousWord: String, limit: Int): List<String> {
         if (previousWord.isEmpty() || limit <= 0) {
             return emptyList()
@@ -244,6 +262,12 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
     
     override fun trigramFrequency(previousPreviousWord: String, previousWord: String, word: String): Long {
         return learnedTrigrams[trigramKey(previousPreviousWord, previousWord, word)] ?: 0L
+    }
+    
+    override fun trigramWithTimestamp(previousPreviousWord: String, previousWord: String, word: String): LearnedNgram? {
+        val key = trigramKey(previousPreviousWord, previousWord, word)
+        val count = learnedTrigrams[key] ?: return null
+        return LearnedNgram(count, learnedTrigramTouch[key] ?: 0L)
     }
     
     override fun nextWordsTrigram(previousPreviousWord: String, previousWord: String, limit: Int): List<String> {

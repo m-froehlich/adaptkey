@@ -43,6 +43,8 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         ensureLastTouchedColumn(db)
         ensureLemmaColumn(db)
         ensureLearnedLemmaColumn(db)
+        ensureBigramLastTouchedColumn(db)
+        ensureTrigramLastTouchedColumn(db)
     }
     
     /**
@@ -219,6 +221,78 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
                 if (base != null) {
                     database.execSQL("UPDATE $TABLE_LEARNED SET lemma = ? WHERE wkey = ?", arrayOf(base, key))
                 }
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+    
+    /**
+     * D-429: adds [TABLE_LEARNED_BIGRAMS]'s `last_touched` column when this database predates it - same
+     * guarded-`ALTER TABLE` pattern as [ensureLastTouchedColumn] (D-388), extended here so
+     * [LearnedBigramBoost] can apply the same recency boost to a self-learned bigram that D-411 already
+     * applies to an individual learned word (W-05's own "deliberately deferred, no timestamp column
+     * exists yet" gap, closed). Existing rows are seeded with strictly increasing timestamps, in
+     * `prevkey`/`wkey` order - the same "stable, not-shuffled" reasoning [ensureLastTouchedColumn]
+     * documents for [TABLE_LEARNED].
+     */
+    private fun ensureBigramLastTouchedColumn(database: SQLiteDatabase) {
+        val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_LEARNED_BIGRAMS)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { if (cursor.moveToNext()) cursor.getString(nameIndex) else null }.any { it == "last_touched" }
+        }
+        if (hasColumn) {
+            return
+        }
+        database.execSQL("ALTER TABLE $TABLE_LEARNED_BIGRAMS ADD COLUMN last_touched INTEGER NOT NULL DEFAULT 0")
+        val keys = ArrayList<Pair<String, String>>()
+        database.rawQuery("SELECT prevkey, wkey FROM $TABLE_LEARNED_BIGRAMS", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                keys.add(cursor.getString(0) to cursor.getString(1))
+            }
+        }
+        database.beginTransaction()
+        try {
+            keys.sortedWith(compareBy({ it.first }, { it.second })).forEachIndexed { index, (prevkey, wkey) ->
+                database.execSQL(
+                    "UPDATE $TABLE_LEARNED_BIGRAMS SET last_touched = ? WHERE prevkey = ? AND wkey = ?",
+                    arrayOf(index.toLong() * SEED_TIMESTAMP_STEP_MS, prevkey, wkey)
+                )
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+    
+    /**
+     * D-429: adds [TABLE_LEARNED_TRIGRAMS]'s `last_touched` column when this database predates it -
+     * identical reasoning and pattern to [ensureBigramLastTouchedColumn], seeded in `w1key`/`w2key`/`wkey`
+     * order.
+     */
+    private fun ensureTrigramLastTouchedColumn(database: SQLiteDatabase) {
+        val hasColumn = database.rawQuery("PRAGMA table_info($TABLE_LEARNED_TRIGRAMS)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { if (cursor.moveToNext()) cursor.getString(nameIndex) else null }.any { it == "last_touched" }
+        }
+        if (hasColumn) {
+            return
+        }
+        database.execSQL("ALTER TABLE $TABLE_LEARNED_TRIGRAMS ADD COLUMN last_touched INTEGER NOT NULL DEFAULT 0")
+        val keys = ArrayList<Triple<String, String, String>>()
+        database.rawQuery("SELECT w1key, w2key, wkey FROM $TABLE_LEARNED_TRIGRAMS", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                keys.add(Triple(cursor.getString(0), cursor.getString(1), cursor.getString(2)))
+            }
+        }
+        database.beginTransaction()
+        try {
+            keys.sortedWith(compareBy({ it.first }, { it.second }, { it.third })).forEachIndexed { index, (w1key, w2key, wkey) ->
+                database.execSQL(
+                    "UPDATE $TABLE_LEARNED_TRIGRAMS SET last_touched = ? WHERE w1key = ? AND w2key = ? AND wkey = ?",
+                    arrayOf(index.toLong() * SEED_TIMESTAMP_STEP_MS, w1key, w2key, wkey)
+                )
             }
             database.setTransactionSuccessful()
         } finally {
@@ -503,12 +577,16 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             linkExistingInflectionsTo(canonical)
         }
         if (previousWord != null) {
-            putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
+            putBigramInternal(
+                TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L,
+                lastTouched = System.currentTimeMillis()
+            )
             // D-246: S-07 trigram support - personal-only, so only ever written here, never seeded.
             if (previousPreviousWord != null) {
                 putTrigramInternal(
                     previousPreviousWord, previousWord, word,
-                    trigramFrequency(previousPreviousWord, previousWord, word) + 1L
+                    trigramFrequency(previousPreviousWord, previousWord, word) + 1L,
+                    lastTouched = System.currentTimeMillis()
                 )
             }
         }
@@ -567,11 +645,15 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // D-327: only the n-gram context, never the unigram - mirrors learn()'s own n-gram block exactly,
         // omitting only the putWordInternal(TABLE_LEARNED, ...) above. See the interface KDoc.
         if (previousWord != null) {
-            putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L)
+            putBigramInternal(
+                TABLE_LEARNED_BIGRAMS, previousWord, word, learnedBigramFrequency(previousWord, word) + 1L,
+                lastTouched = System.currentTimeMillis()
+            )
             if (previousPreviousWord != null) {
                 putTrigramInternal(
                     previousPreviousWord, previousWord, word,
-                    trigramFrequency(previousPreviousWord, previousWord, word) + 1L
+                    trigramFrequency(previousPreviousWord, previousWord, word) + 1L,
+                    lastTouched = System.currentTimeMillis()
                 )
             }
         }
@@ -595,7 +677,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             if (count <= 0L) {
                 db.delete(TABLE_LEARNED_BIGRAMS, "prevkey = ? AND wkey = ?", arrayOf(previousWord.lowercase(), word.lowercase()))
             } else {
-                putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, count)
+                putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, count, lastTouched = System.currentTimeMillis())
             }
             if (previousPreviousWord != null) {
                 val trigramCount = trigramFrequency(previousPreviousWord, previousWord, word) - 1L
@@ -605,7 +687,10 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
                         arrayOf(previousPreviousWord.lowercase(), previousWord.lowercase(), word.lowercase())
                     )
                 } else {
-                    putTrigramInternal(previousPreviousWord, previousWord, word, trigramCount)
+                    putTrigramInternal(
+                        previousPreviousWord, previousWord, word, trigramCount,
+                        lastTouched = System.currentTimeMillis()
+                    )
                 }
             }
         }
@@ -824,7 +909,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      */
     fun restoreLearnedBigram(previousWord: String, word: String, countDelta: Long) {
         val count = learnedBigramFrequency(previousWord, word) + countDelta
-        putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, count)
+        putBigramInternal(TABLE_LEARNED_BIGRAMS, previousWord, word, count, lastTouched = System.currentTimeMillis())
     }
     
     /**
@@ -838,7 +923,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      */
     fun restoreLearnedTrigram(previousPreviousWord: String, previousWord: String, word: String, countDelta: Long) {
         val count = trigramFrequency(previousPreviousWord, previousWord, word) + countDelta
-        putTrigramInternal(previousPreviousWord, previousWord, word, count)
+        putTrigramInternal(previousPreviousWord, previousWord, word, count, lastTouched = System.currentTimeMillis())
     }
     
     override fun markPendingBlacklist(word: String, timestampMillis: Long) {
@@ -907,6 +992,18 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return bigramFrequencyIn(TABLE_LEARNED_BIGRAMS, previousWord, word)
     }
     
+    override fun learnedBigramWithTimestamp(previousWord: String, word: String): LearnedNgram? {
+        db.rawQuery(
+            "SELECT count, last_touched FROM $TABLE_LEARNED_BIGRAMS WHERE prevkey = ? AND wkey = ?",
+            arrayOf(previousWord.lowercase(), word.lowercase())
+        ).use { cursor ->
+            if (!cursor.moveToFirst()) {
+                return null
+            }
+            return LearnedNgram(cursor.getLong(0), cursor.getLong(1))
+        }
+    }
+    
     private fun bigramFrequencyIn(table: String, previousWord: String, word: String): Long {
         db.rawQuery(
             "SELECT count FROM $table WHERE prevkey = ? AND wkey = ?",
@@ -941,6 +1038,18 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             arrayOf(previousPreviousWord.lowercase(), previousWord.lowercase(), word.lowercase())
         ).use { cursor ->
             return if (cursor.moveToFirst()) cursor.getLong(0) else 0L
+        }
+    }
+    
+    override fun trigramWithTimestamp(previousPreviousWord: String, previousWord: String, word: String): LearnedNgram? {
+        db.rawQuery(
+            "SELECT count, last_touched FROM $TABLE_LEARNED_TRIGRAMS WHERE w1key = ? AND w2key = ? AND wkey = ?",
+            arrayOf(previousPreviousWord.lowercase(), previousWord.lowercase(), word.lowercase())
+        ).use { cursor ->
+            if (!cursor.moveToFirst()) {
+                return null
+            }
+            return LearnedNgram(cursor.getLong(0), cursor.getLong(1))
         }
     }
     
@@ -1233,21 +1342,35 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
     
-    private fun putBigramInternal(table: String, previousWord: String, word: String, count: Long) {
+    private fun putBigramInternal(table: String, previousWord: String, word: String, count: Long, lastTouched: Long? = null) {
         val values = ContentValues().apply {
             put("prevkey", previousWord.lowercase())
             put("wkey", word.lowercase())
             put("count", count)
+            // D-429: only the learned table has this column - TABLE_BIGRAMS (the bundled table) never
+            // passes lastTouched, mirroring putWordInternal's identical null-means-omit convention.
+            if (lastTouched != null) {
+                put("last_touched", lastTouched)
+            }
         }
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
     
-    private fun putTrigramInternal(previousPreviousWord: String, previousWord: String, word: String, count: Long) {
+    private fun putTrigramInternal(
+        previousPreviousWord: String,
+        previousWord: String,
+        word: String,
+        count: Long,
+        lastTouched: Long? = null
+    ) {
         val values = ContentValues().apply {
             put("w1key", previousPreviousWord.lowercase())
             put("w2key", previousWord.lowercase())
             put("wkey", word.lowercase())
             put("count", count)
+            if (lastTouched != null) {
+                put("last_touched", lastTouched)
+            }
         }
         db.insertWithOnConflict(TABLE_LEARNED_TRIGRAMS, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }

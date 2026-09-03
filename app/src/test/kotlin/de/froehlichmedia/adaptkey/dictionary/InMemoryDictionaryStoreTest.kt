@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.dictionary
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -121,6 +122,42 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `D-429 learnedBigramWithTimestamp defaults to null`() {
+        assertNull(store.learnedBigramWithTimestamp("der", "hund"))
+    }
+    
+    @Test
+    fun `D-429 learnedBigramWithTimestamp reports the count and last-touched timestamp`() {
+        val now = 42_000L
+        val touchStore = InMemoryDictionaryStore(clock = { now })
+        touchStore.putWord(WordEntry("hund", 3L))
+        touchStore.learn("hund", "der")
+        
+        val bigram = touchStore.learnedBigramWithTimestamp("der", "hund")
+        assertEquals(1L, bigram?.count)
+        assertEquals(now, bigram?.lastTouched)
+    }
+    
+    @Test
+    fun `D-429 unlearn updates the bigram's last-touched timestamp on a decrement, and removes it once forgotten`() {
+        var now = 1_000L
+        val touchStore = InMemoryDictionaryStore(clock = { now })
+        touchStore.putWord(WordEntry("hund", 3L))
+        touchStore.learn("hund", "der")
+        touchStore.learn("hund", "der")
+        now = 5_000L
+        touchStore.unlearn("hund", "der")
+        
+        val bigram = touchStore.learnedBigramWithTimestamp("der", "hund")
+        assertEquals(1L, bigram?.count)
+        assertEquals(5_000L, bigram?.lastTouched)
+        
+        now = 9_000L
+        touchStore.unlearn("hund", "der")
+        assertNull(touchStore.learnedBigramWithTimestamp("der", "hund"))
+    }
+    
+    @Test
     fun `nextWords returns canonical-case successors ordered by count - D-43`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putWord(WordEntry("Hut", 10L))
@@ -169,6 +206,23 @@ class InMemoryDictionaryStoreTest {
         store.unlearn("Nachbar", "der", "ist")
         
         assertEquals(0L, store.trigramFrequency("ist", "der", "Nachbar"))
+    }
+    
+    @Test
+    fun `D-429 trigramWithTimestamp defaults to null`() {
+        assertNull(store.trigramWithTimestamp("ist", "der", "Nachbar"))
+    }
+    
+    @Test
+    fun `D-429 trigramWithTimestamp reports the count and last-touched timestamp`() {
+        val now = 99_000L
+        val touchStore = InMemoryDictionaryStore(clock = { now })
+        touchStore.putWord(WordEntry("Nachbar", 3L))
+        touchStore.learn("Nachbar", "der", "ist")
+        
+        val trigram = touchStore.trigramWithTimestamp("ist", "der", "Nachbar")
+        assertEquals(1L, trigram?.count)
+        assertEquals(now, trigram?.lastTouched)
     }
     
     @Test

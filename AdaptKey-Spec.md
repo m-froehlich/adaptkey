@@ -494,10 +494,11 @@ suggestion too).
 A genuine next-word suggestion (not merely a completion of the current token) is offered before the next
 word is typed, using a bigram baseline elevated by tier-3 when available. When a personal (learned-only, no
 bundled seed) two-word-context trigram match also exists, it is preferred over the bigram baseline via a
-Stupid Backoff blend (D-246): a candidate with a real trigram match scores by its own raw trigram count; a
-candidate reached only through the bigram signal is discounted, so a trigram match generally - but not
-absolutely - wins over a merely more frequent bigram-only candidate (an overwhelmingly more frequent
-bigram-only word can still outrank a barely-seen trigram one, matching this app's established soft-preference
+Stupid Backoff blend (D-246): a candidate with a real trigram match scores by its own trigram count (D-429:
+rescaled and recency-boosted, not raw); a candidate reached only through the bigram signal is discounted, so
+a trigram match generally - but not absolutely - wins over a merely more frequent bigram-only candidate (an
+overwhelmingly more frequent bigram-only word can still outrank a barely-seen trigram one, matching this
+app's established soft-preference
 philosophy for a more-specific-but-sparse signal, see S-01/A-05). The trigram table starts empty and grows
 purely from the user's own typing (no bundled trigram data is shipped); a two-word context resets everywhere
 the existing one-word bigram context already does (field change, an external caret move, the G-02 whole-word
@@ -515,6 +516,15 @@ typed - the same personal trigram signal now also elevates a matching candidate'
 prefix-completion/fuzzy-suggestion list while the word is actively being typed, and in autocorrect's own
 candidate ordering, rather than silently falling back to the plain (now-rescaled) bigram signal the moment
 the first letter lands.
+
+D-429: a learned bigram and a learned trigram each now carry their own last-touched timestamp too (the same
+`last_touched` tracking D-388 already established for individual learned words), and D-365/D-411's own
+recency boost (an additional ×1.5 while touched within the past 14 days, settling back to the plain scaled
+value once that window passes) now applies to both alongside the existing frequency rescaling - a
+frequently-used bigram/trigram pairing that has gone quiet is no longer permanently as competitive as one
+still in active use. This also closed the one remaining place still scoring a trigram match by its literal,
+unscaled raw count directly (S-07's own blank-slate prediction before a word is typed) - it now goes through
+the identical rescaled, recency-aware value every other n-gram contribution in this ranking already uses.
 
 D-327: the bigram and trigram context is learned for *every* committed word, including a bundled word typed
 in its own already-canonical casing (W-04) - only its *unigram* frequency is deliberately not reinforced (to
@@ -1390,8 +1400,10 @@ Runs as a small, once-a-day housekeeping sweep (throttled against the real time 
 this service's own process lifecycle), across every installed language's own learned-word store, not only
 the currently active one - each language accumulates its own learned vocabulary independently (§10/D-280),
 so a language not currently in use would otherwise never have its own stale entries swept at all. Deliberately
-scoped to individual learned words alone, not the learned bigram/trigram tables (S-07) - those carry no
-`last_touched` column of their own yet, a deliberately separate, not-yet-built extension (D-365/D-366).
+scoped to individual learned words alone, not the learned bigram/trigram tables (S-07) - D-429 gave those
+their own `last_touched` column too, but only for S-07's own ranking-recency boost (D-365/D-411's mechanism);
+extending this expiry sweep itself to bigrams/trigrams remains a deliberately separate, not-yet-built
+extension.
 
 D-389-followup: a word that is part of a W-04-style word family (linked via the same base-form link D-404's
 family reprocessing/lookup-linker/manual "Grundform" edit establishes) is never expired on its own - explicit

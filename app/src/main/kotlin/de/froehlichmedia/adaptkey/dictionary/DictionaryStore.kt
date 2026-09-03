@@ -261,6 +261,18 @@ interface DictionaryStore {
     fun learnedBigramFrequency(previousWord: String, word: String): Long
     
     /**
+     * D-429: [learnedBigramFrequency]'s own last-touched timestamp alongside its count - exclusively for
+     * [DictionarySuggestionProvider]'s own ranking-only recency boost ([LearnedBigramBoost]), mirroring
+     * [learnedFrequencyOf]'s identical D-411 precedent for individual words. [learnedBigramFrequency]
+     * itself stays the plain count for every correctness-affecting read (A-06's own merge gate).
+     *
+     * @param previousWord the preceding word
+     * @param word the following word
+     * @return the learned count and its last-touched epoch millis, or null when never learned
+     */
+    fun learnedBigramWithTimestamp(previousWord: String, word: String): LearnedNgram?
+    
+    /**
      * The most frequent successor words of [previousWord] by bigram count (D-43 next-word prediction), in
      * canonical case. The default returns none; both concrete stores override it with a bigram lookup.
      * 
@@ -280,6 +292,18 @@ interface DictionaryStore {
      * @return the stored trigram count, or 0 when unknown
      */
     fun trigramFrequency(previousPreviousWord: String, previousWord: String, word: String): Long = 0L
+    
+    /**
+     * D-429: [trigramFrequency]'s own last-touched timestamp alongside its count - same purpose as
+     * [learnedBigramWithTimestamp], for the trigram table. The default returns null (no trigram data
+     * source, mirroring [trigramFrequency]'s own default); both concrete stores override it.
+     *
+     * @param previousPreviousWord the word committed two positions before
+     * @param previousWord the word committed immediately before
+     * @param word the following word
+     * @return the count and its last-touched epoch millis, or null when never observed
+     */
+    fun trigramWithTimestamp(previousPreviousWord: String, previousWord: String, word: String): LearnedNgram? = null
     
     /**
      * D-246: S-07's own two-word-context lookup, mirroring [nextWords]'s single-word one - the most

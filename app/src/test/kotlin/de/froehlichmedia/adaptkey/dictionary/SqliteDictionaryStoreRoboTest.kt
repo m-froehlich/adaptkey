@@ -215,6 +215,48 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    fun learnedBigramWithTimestampReportsCountAndARecentTimestampD429() {
+        val store = store("bigram-with-timestamp.db")
+        store.putWord(WordEntry("hund", 3L, emptySet()))
+        val before = System.currentTimeMillis()
+        store.learn("hund", "der")
+        val after = System.currentTimeMillis()
+        
+        val bigram = store.learnedBigramWithTimestamp("der", "hund")
+        assertEquals(1L, bigram?.count)
+        assertTrue((bigram?.lastTouched ?: 0L) in before..after)
+        store.close()
+    }
+    
+    @Test
+    fun learnedBigramWithTimestampReturnsNullWhenNeverLearnedD429() {
+        val store = store("bigram-with-timestamp-null.db")
+        assertEquals(null, store.learnedBigramWithTimestamp("der", "hund"))
+        store.close()
+    }
+    
+    @Test
+    fun trigramWithTimestampReportsCountAndARecentTimestampD429() {
+        val store = store("trigram-with-timestamp.db")
+        store.putWord(WordEntry("Nachbar", 3L, emptySet()))
+        val before = System.currentTimeMillis()
+        store.learn("Nachbar", "der", "ist")
+        val after = System.currentTimeMillis()
+        
+        val trigram = store.trigramWithTimestamp("ist", "der", "Nachbar")
+        assertEquals(1L, trigram?.count)
+        assertTrue((trigram?.lastTouched ?: 0L) in before..after)
+        store.close()
+    }
+    
+    @Test
+    fun trigramWithTimestampReturnsNullWhenNeverObservedD429() {
+        val store = store("trigram-with-timestamp-null.db")
+        assertEquals(null, store.trigramWithTimestamp("ist", "der", "Nachbar"))
+        store.close()
+    }
+    
+    @Test
     fun unlearnReversesATrigramExactlyOnceAndRemovesItAtZero() {
         val store = store("trigram-unlearn.db")
         store.learn("Nachbar", "der", "ist")

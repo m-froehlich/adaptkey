@@ -180,7 +180,7 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
-    fun `D-246 nextWordSuggestions ranks a trigram match by its own raw count, not blended with its bigram score`() {
+    fun `D-246,D-429 nextWordSuggestions ranks a trigram match by its rescaled, recency-boosted count`() {
         store.putWord(WordEntry("Nachbar", 3L))
         store.putWord(WordEntry("Auto", 3L))
         repeat(5) { store.learn("Nachbar", "der", "ist") }
@@ -189,10 +189,14 @@ class DictionarySuggestionProviderTest {
         
         val results = provider.nextWordSuggestions("der", "ist")
         assertEquals(listOf("Nachbar", "Auto"), results.map { it.word })
-        // The trigram's own raw count (5), not summed with or replaced by its own bigram count (also 5).
-        assertEquals(5.0, results.first { it.word == "Nachbar" }.score)
+        // D-429: the trigram's own raw count (5) is no longer used directly - it is rescaled through
+        // LearnedBigramBoost exactly like every other n-gram contribution in this class, and (since it was
+        // just touched) recency-boosted too. lastTouched==now==0 forces the same "recent" branch the real
+        // call above hits (it was touched moments before this assertion runs), without depending on the
+        // test's own wall-clock timing.
+        assertEquals(LearnedBigramBoost.boost(5L, 0L, 0L), results.first { it.word == "Nachbar" }.score, 0.001)
         // The bigram-only word is discounted (D-246: TRIGRAM_BACKOFF_WEIGHT = 0.4) since two-word context
-        // was available - 10 * 0.4 = 4, below the trigram match's raw 5.
+        // was available - 10 * 0.4 = 4, still well below the trigram match's now much larger boosted score.
         assertEquals(4.0, results.first { it.word == "Auto" }.score)
     }
     
@@ -954,5 +958,48 @@ class DictionarySuggestionProviderTest {
         
         val words = boostProvider.suggestionsFor("a", null).map { it.word }
         assertTrue(words.indexOf("an") < words.indexOf("ay"))
+    }
+    
+    @Test
+    fun `D-429 a heavily and recently used personal bigram now outranks a moderately common bundled one`() {
+        val now = 1_000_000_000L
+        val boostStore = InMemoryDictionaryStore(clock = { now })
+        val boostProvider = DictionarySuggestionProvider(boostStore, now = { now })
+        boostStore.putWord(WordEntry("Hund", 10L))
+        boostStore.putWord(WordEntry("Haus", 10L))
+        // Unboosted, LearnedBigramBoost(50) = 250 - just below this bundled bigram's own 300 count, so the
+        // recency multiplier is what must actually decide the ranking here, not the base scale alone.
+        boostStore.putBigram("mein", "Haus", 300L)
+        repeat(50) { boostStore.learnContext("Hund", "mein") }
+        
+        assertEquals("Hund", boostProvider.suggestionsFor("h", "mein").first().word)
+    }
+    
+    @Test
+    fun `D-429 the same well-established personal bigram loses that recency edge once long untouched`() {
+        // now is well past the 14-day recency window from the touched-at-0 seed below.
+        val now = 100L * 24 * 60 * 60 * 1000
+        val boostStore = InMemoryDictionaryStore(clock = { 0L })
+        val boostProvider = DictionarySuggestionProvider(boostStore, now = { now })
+        boostStore.putWord(WordEntry("Hund", 10L))
+        boostStore.putWord(WordEntry("Haus", 10L))
+        boostStore.putBigram("mein", "Haus", 300L)
+        repeat(50) { boostStore.learnContext("Hund", "mein") }
+        
+        assertEquals("Haus", boostProvider.suggestionsFor("h", "mein").first().word)
+    }
+    
+    @Test
+    fun `D-429 nextWordSuggestions rescales a raw personal trigram count instead of using it directly`() {
+        // Before D-429, this was the one place in the ranking code still scoring a trigram match by its
+        // literal reinforcement count - everywhere else already went through LearnedBigramBoost.
+        val now = 1_000_000_000L
+        val boostStore = InMemoryDictionaryStore(clock = { now })
+        val boostProvider = DictionarySuggestionProvider(boostStore, now = { now })
+        boostStore.putWord(WordEntry("Schatz", 10L))
+        repeat(5) { boostStore.learnContext("Schatz", "mein", "Hallo") }
+        
+        val suggestion = boostProvider.nextWordSuggestions("mein", "Hallo").first { it.word == "Schatz" }
+        assertTrue(suggestion.score > 5.0, "expected a boosted score above the raw count, was ${suggestion.score}")
     }
 }

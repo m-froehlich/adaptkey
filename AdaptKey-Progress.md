@@ -773,6 +773,62 @@ non-trivial changes).
 
 ## Current State
 
+- **§376 (v1.1.15): D-429 - learned bigrams and trigrams now carry their own `last_touched` timestamp, and**
+  **the recency boost D-411 already gives individual learned words now applies to them too.** Explicit
+  follow-up request: this was flagged but deliberately left out of both D-365 (§340, v1.0.92, the bigram
+  ranking rescale) and W-05 (§344-§349, learned-word expiry) - "das hatten wir beim letzten Mal ausgelassen" -
+  worth closing before wider release even though the practical effect is small. Design discussed and agreed
+  first (this project's own rule for a ranking/algorithm change): reuse D-388/D-411's own established
+  guarded-`ALTER TABLE` migration pattern and D-411's own 14-day/×1.5 recency constants unchanged, rather than
+  inventing a second mechanism or recalibrating - "used within the last 14 days" is a general
+  personal-relevance signal, not specific to which n-gram order it came from.
+
+  **Schema/write path.** `TABLE_LEARNED_BIGRAMS`/`TABLE_LEARNED_TRIGRAMS` each gained a guarded
+  `last_touched INTEGER NOT NULL DEFAULT 0` column (`ensureBigramLastTouchedColumn`/
+  `ensureTrigramLastTouchedColumn`, called from `init {}` alongside the three existing D-388/D-412/D-404
+  migrations) - existing rows seeded with strictly increasing timestamps in key order, exactly like
+  `ensureLastTouchedColumn` already does for `TABLE_LEARNED`. Every write to either table now stamps
+  `System.currentTimeMillis()`: `learn()`'s and `learnContext()`'s own reinforcement writes, `unlearn()`'s
+  decrement writes (a decrement still counts as a "touch", mirroring `TABLE_LEARNED`'s own identical
+  behaviour), and the backup-import `restoreLearnedBigram`/`restoreLearnedTrigram` merges. The bundled
+  `TABLE_BIGRAMS` table is untouched - `putBigramInternal`'s new `lastTouched` parameter is only ever passed
+  by a learned-table call site, `null` (omitted) everywhere else. `InMemoryDictionaryStore` mirrors this with
+  two new `learnedBigramTouch`/`learnedTrigramTouch` maps, stamped identically via its own `clock` parameter.
+
+  **Read path.** New shared `LearnedNgram(count, lastTouched)` data class (mirrors `LearnedFrequency`'s
+  identical D-411 shape) plus two new `DictionaryStore` methods, `learnedBigramWithTimestamp`/
+  `trigramWithTimestamp`, implemented by both stores - `learnedBigramFrequency`/`trigramFrequency` themselves
+  are untouched and still feed A-06's own merge gate directly, exactly as `LearnedBigramBoost`'s own KDoc
+  already promises for the plain count.
+
+  **Ranking.** `LearnedBigramBoost.boost()` gained `lastTouched`/`now` parameters and the identical
+  ×1.5-within-14-days multiplier `LearnedFrequencyBoost` already has. `DictionarySuggestionProvider.
+  rankingBigramFrequency()` and `score()`'s trigram branch now thread the timestamp through.
+
+  **Explicit follow-up decision, also agreed with the user first**: `nextWordSuggestions()` (S-07's own
+  blank-slate prediction) was the one remaining place still scoring a trigram match by its literal raw count
+  directly, never through `LearnedBigramBoost` at all - a pre-existing inconsistency with `score()`'s already-
+  boosted trigram branch, unrelated to recency by itself but surfaced by this same round. Unified onto the
+  same boosted, now recency-aware value rather than left as a second, inconsistent scoring path.
+
+  19 new/updated tests: `LearnedBigramBoostTest` rewritten for the new signature plus 3 new recency cases (8
+  total, mirroring `LearnedFrequencyBoostTest`'s own structure); 5 new `InMemoryDictionaryStoreTest` cases
+  (`learnedBigramWithTimestamp`/`trigramWithTimestamp` default-null and reported-value cases, plus one
+  covering `unlearn`'s own timestamp-then-removal behaviour); 4 new `SqliteDictionaryStoreRoboTest` cases
+  (the same shape, against the real SQLite-backed store); 3 new `DictionarySuggestionProviderTest` integration
+  cases (a recently-touched learned bigram outranking a moderately common bundled one, the identical case
+  losing that edge once long untouched, and `nextWordSuggestions` no longer using a raw trigram count
+  directly); 1 existing `DictionarySuggestionProviderTest` case (`nextWordSuggestions ranks a trigram match by
+  its own raw count...`) rewritten to assert the new rescaled/boosted value instead, computed via
+  `LearnedBigramBoost.boost()` itself rather than a hand-typed literal, so the test tracks the production
+  formula rather than duplicating it. 1220 -> 1235 unit tests, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Spec: S-07 gained the D-429 addendum (and its own opening sentence updated -
+  "raw trigram count" was no longer accurate); W-05's own bigram/trigram note corrected (they now have
+  `last_touched`, but the *expiry sweep* itself is still not extended to them - a still-separate, not-yet-built
+  item). `versionCode` 431 -> 432, `versionName` `"1.1.14"` -> `"1.1.15"`. **Not yet device-confirmed** - the
+  practical effect is small and hard to notice directly, but worth a general regression pass on ordinary
+  next-word prediction and mid-typing bigram/trigram-elevated suggestions.
+
 - **§375 (v1.1.14): D-428 - the V-04 clipboard-peek button flashed back visible for one render right after**
   **its own V-03 clear button emptied the clipboard.** Reported directly: tap the peek button, tap the clear
   button that appears alongside its chips - clipboard clears, chips and clear button vanish as expected, but
