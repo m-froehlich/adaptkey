@@ -4197,27 +4197,9 @@ class AdaptKeyService : InputMethodService() {
      * @return a missed-Backspace-derived correction, or null when there is none
      */
     private fun missedBackspaceCorrection(typed: String): String? {
-        // D-431-followup (temporary diagnostic): the gate fix (hasObviousCandidate) is confirmed correct by
-        // unit test, but a real device report says "welche" still never appears for "welxmche" - this traces
-        // exactly where it stops: whether the geometry lookup even succeeds, whether composingTaps is still
-        // in sync with the typed token (a desync silently yields no candidates, see MissedBackspaceRecovery's
-        // own KDoc), what MissedBackspaceRecovery.recover() itself proposes before the dictionary filter, and
-        // which (if any) survives it. Remove once D-431-followup is closed.
-        val backspace = keyboardView?.deleteKeyGeometry()
-        if (backspace == null) {
-            diag("AdaptKeyA13", "typed=\"$typed\" backspace geometry unavailable (keyboardView null or no delete key)")
-            return null
-        }
-        diag(
-            "AdaptKeyA13",
-            "typed=\"$typed\" (len=${typed.length}) composingTaps.size=${composingTaps.size} " +
-                "backspace center=(${backspace.centerX},${backspace.centerY}) half=(${backspace.halfWidth},${backspace.halfHeight})"
-        )
-        val candidates = MissedBackspaceRecovery.recover(typed, composingTaps, backspace)
-        diag("AdaptKeyA13", "recover() candidates=$candidates")
-        val result = candidates.firstOrNull { provider.isKnownWord(it) }
-        diag("AdaptKeyA13", "first known-word candidate=$result")
-        return result
+        val backspace = keyboardView?.deleteKeyGeometry() ?: return null
+        return MissedBackspaceRecovery.recover(typed, composingTaps, backspace)
+            .firstOrNull { provider.isKnownWord(it) }
     }
     
     /** D-140 / D-159: the single touch-model sample a D-39 raw-coordinate correction actually changed,
@@ -5109,17 +5091,9 @@ class AdaptKeyService : InputMethodService() {
         // concrete "welxmche" repro this closes) to this narrower, "was anything obvious found" check.
         // Whatever wideFuzzyNeighbours separately, coincidentally also found stays in candidates/the bar
         // regardless - deliberately not suppressed, both chips are simply offered together.
-        // D-431-followup (temporary diagnostic, see missedBackspaceCorrection()'s own matching note): logs
-        // the gate decision itself, so a real device repro shows whether A-13 was blocked here at all before
-        // ever reaching missedBackspaceCorrection().
-        val obviousForA13 = provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
-        if (!duringRepeat && includeExpensiveFallbacks) {
-            diag(
-                "AdaptKeyA13",
-                "gate: input=\"$input\" hasObviousCandidate=$obviousForA13 candidates=${candidates.map { it.word }}"
-            )
-        }
-        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks || obviousForA13) {
+        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks ||
+            provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
+        ) {
             null
         } else {
             missedBackspaceCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }

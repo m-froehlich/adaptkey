@@ -978,6 +978,16 @@ already establishes). When both a last-resort match and an A-13 recovery exist s
 never wired into the silent-correction chain, since even strong input-level evidence is not judged safe
 enough to auto-apply without confirmation.
 
+D-431-followup: a genuine, structural limitation, not a bug - device-confirmed by a real repro. The evidence
+this mechanism needs (one real recorded tap per character, in lockstep with the token) only exists for
+characters typed continuously within the current composing session. A word reclaimed from already-existing
+document text (a tap into old text, or a field reopening with the caret already resting inside a word, D-421)
+carries no tap history for its reclaimed portion at all - deliberately never fabricated (see
+`reclaimSurroundingWord`'s own `tap` parameter) rather than guessed - so a single reclaimed character anywhere
+in the token is enough to make the whole token ineligible, per the exact-length-match requirement both this
+mechanism and T-02's raw-coordinate fallback share. Typing the same garbled word freshly, in one unbroken
+session, is unaffected.
+
 ### A-10 - Mid-Word Connector-Split Suggestion
 While re-editing mid-word, an unresolved bottom-row connector character (`c v b n m`, per T-05) between two
 otherwise-recognisable halves is offered directly as a split suggestion, bypassing the ordinary bar-evidence

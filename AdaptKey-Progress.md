@@ -773,6 +773,46 @@ non-trivial changes).
 
 ## Current State
 
+- **§387 (v1.1.26): D-431-followup closed - real device log confirmed the gate fix works, found a genuinely**
+  **structural (non-bug) limitation, and caught a real performance regression the diagnostic round itself had
+  introduced.** Three distinct outcomes from one real `AdaptKeyA13` log, all confirmed from the log's own
+  content, not inferred:
+
+  1. **The D-431 gate fix is confirmed correct.** `hasObviousCandidate=false` for `"welxmche"` even with
+     `"Welsche"` sitting in `candidates`, and `recover() candidates=[welche]` / `first known-word
+     candidate=welche` - A-13 fires and finds the right word, exactly as designed.
+  2. **A genuine, structural, not-a-bug limitation, confirmed from the same log**: an earlier attempt at this
+     exact repro showed `composingTaps.size=0` against a 7-character reclaimed token
+     (`reclaimSurroundingWord: before="welxmch"`) - traced to `reclaimSurroundingWord(ic, tap: TapPoint?)`'s
+     own `if (tap != null) { composingTaps.addAll(...) }` guard: the D-421 initial-caret-position reclaim (a
+     field reopening with the caret already inside existing text) passes `tap = null`, since there genuinely
+     is no live tap history for text from a previous session - deliberately never fabricated. Because
+     `MissedBackspaceRecovery`/`RawCoordinateCorrection` both require an exact `token.length == taps.size`
+     match, a single reclaimed character anywhere in the token makes the whole thing ineligible. Confirmed not
+     a regression: typing the same garbled word freshly, in one unbroken session (no field reopening), worked
+     immediately - documented as a known, accepted boundary in spec A-13.
+  3. **A real, self-inflicted performance regression, found in the very same log**: `handleKey: key=DELETE`
+     entries during a backspace-hold on the still-long, unknown token took 370-400ms each (`welxmche`->`welxm`),
+     dropping to 30ms once the token shortened - the classic profile of an expensive per-keystroke search this
+     project has fought to keep off the hot path several times before (D-138/D-160/D-208/D-211/D-215). Root
+     cause: §386's own diagnostic logging had extracted `provider.hasObviousCandidate(...)` into its own eager
+     `val` so the gate decision could be logged, breaking the `||` chain's short-circuit evaluation that
+     previously skipped this expensive call entirely whenever `duringRepeat` or `!includeExpensiveFallbacks`
+     already made the result irrelevant - so it now ran on *every* keystroke, including every backspace-repeat
+     tick. Fixed by restoring the original inline `if (duringRepeat || !includeExpensiveFallbacks ||
+     provider.hasObviousCandidate(...))` short-circuit shape while removing the temporary logging (both changes
+     land in the same edit, since the logging was the only reason the short-circuit had been broken up).
+
+  `AdaptKeyA13`'s own temporary diagnostic logging (both in `refreshSuggestions()`'s gate and inside
+  `missedBackspaceCorrection()`) fully removed now that it has served its purpose. No new tests (the fix
+  restores previously-tested-and-shipped control flow rather than changing behaviour; the perf characteristic
+  itself is not something this project's unit tests measure). 1240 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 gained the D-431-followup addendum
+  documenting the reclaimed-token limitation. `versionCode` 442 -> 443, `versionName` `"1.1.25"` ->
+  `"1.1.26"`. **2026-09-03: the underlying A-13 fix is device-confirmed working; the performance regression
+  fix itself still needs its own quick device check** (hold Backspace through a long, unknown token and
+  confirm each repeat tick stays fast, not 370ms+).
+
 - **§386 (v1.1.25): D-431-followup - "welche" still not suggested for "welxmche" on a real device after**
   **D-431 shipped; temporary diagnostic logging added instead of a third blind patch.** The gate fix itself
   was re-verified directly (both by re-reading `hasObviousCandidate`'s own logic and by re-confirming the
@@ -1026,9 +1066,11 @@ non-trivial changes).
   exact `"welxmche"`/`"welsche"`/`"welche"` repro reproduced and confirmed fixed end to end;
   `StubSuggestionProviderTest`: the default delegates to `suggestionsFor(...).isNotEmpty()`). 1235 -> 1240 unit
   tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 rewritten to describe the
-  current gate. `versionCode` 433 -> 434, `versionName` `"1.1.16"` -> `"1.1.17"`. **Not yet device-confirmed** -
-  needs a real device check with the user's own exact repro (`"welxmche"` -> `"welche"` chip, alongside
-  whatever the wide-fuzzy fallback separately still offers).
+  current gate. `versionCode` 433 -> 434, `versionName` `"1.1.16"` -> `"1.1.17"`.
+  **2026-09-03: device-confirmed working** end to end (real `AdaptKeyA13` diagnostic log: `hasObviousCandidate=
+  false`, `recover() candidates=[welche]`) once §386/§387 below closed out the one remaining real-device gap
+  (a reclaimed token has no tap evidence, not a bug) and the diagnostic-logging round's own self-inflicted
+  performance regression (§387).
 
 - **§377 (v1.1.16): D-430 - the Learned Words editor's per-entry dialog swaps its Save/Forget button roles.**
   User's own explicit call, after confirming the rest of §363/§365's own dialog rework is now "perfekt": Save
