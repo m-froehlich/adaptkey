@@ -187,6 +187,12 @@ entry is corrected via `setComposingText`/`commitText`. The raw touch coordinate
 decision is made. This extends to a raw-coordinate fallback: while composing, the token's own retained raw
 taps are walked and the geometrically nearest neighbouring key is considered live, not only at commit time.
 
+D-432: the live, mid-word preview chip for this fallback is gated the same way A-13's own gate was corrected
+(D-431) - a coincidental last-resort wide-fuzzy dictionary match (A-09) must not hide it either. The actual
+silent correction applied at commit time was never affected by this - it has always used its own, separately
+and more tightly gated condition (nothing found by the ordinary, close-cost autocorrect search) - only the
+live chip previewing that upcoming correction while still typing could go missing.
+
 ### T-04 - Typing Style (Explicit Selection, Load-Bearing for T-03)
 The typing style is **not** auto-detected from taps - it is chosen explicitly during onboarding/calibration
 (K-01) from an ordered list: Both Thumbs, Right Thumb, Left Thumb, Right Index, Left Index (ordered by

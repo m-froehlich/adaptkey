@@ -773,6 +773,20 @@ non-trivial changes).
 
 ## Current State
 
+- **§379 (v1.1.18): D-432 - applied D-431's same `hasObviousCandidate()` gate to `rawCoordinateSuggestion`**
+  **(T-02/D-39's own live preview chip), for consistency.** Flagged as a noticed-in-passing parallel while
+  fixing D-431 (identical `candidates.isNotEmpty()` gate shape), confirmed with the user before touching it.
+  One real difference found while investigating, worth recording: unlike A-13 (chip-only, no other call
+  site), `rawCoordinateCorrection()` also has a second, independent call site - `finalizeAndCommit()`'s own
+  silent-autocorrect application at commit time ([AdaptKeyService.kt:4008](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:4008)) - which was **never** affected by this
+  bug, since it gates on `autocorrected == null` (the tight, cost-≤2 `bestCorrection()` search) rather than on
+  `candidates`/the wide-fuzzy fallback at all. So this fix only restores the *live, mid-word preview chip*'s
+  visibility in the rare case a coincidental last-resort match also exists - the actual commit-time correction
+  itself was always correct. No new tests (same untested `AdaptKeyService.kt` Android/`InputConnection` glue
+  as the call site itself, and `hasObviousCandidate()` is already fully covered from D-431). 1240 unit tests
+  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: T-02 gained the D-432
+  note. `versionCode` 434 -> 435, `versionName` `"1.1.17"` -> `"1.1.18"`. **Not yet device-confirmed.**
+
 - **§378 (v1.1.17): D-431 - A-13's own "everything else must have failed first" gate was wrongly satisfied**
   **by a coincidental last-resort dictionary match, silently blocking the exact case A-13 exists for.**
   Reported directly against the feature's own worked example: typing `"welxmche"` (intending `"welche"`)

@@ -5070,7 +5070,14 @@ class AdaptKeyService : InputMethodService() {
         // emptiness and !duringRepeat like D-116/D-117: it needs composingTaps/keyboard-geometry lookups,
         // and D-138 already flagged stacking extra per-keystroke lookups as a real, previously-felt cost.
         // D-160: part of the same empty-candidates escalation, so it now also waits for the deferred pass.
-        val rawCoordinateSuggestion = if (duringRepeat || !includeExpensiveFallbacks || candidates.isNotEmpty()) {
+        // D-432: same hasObviousCandidate() gate D-431 already gave missedBackspaceSuggestion below, for the
+        // identical reason - a coincidental D-117 wide-fuzzy match must not hide this live preview chip
+        // either, even though (unlike A-13) the actual commit-time application of this same correction was
+        // never affected, since finalizeAndCommit()'s own call site gates on autocorrected == null (the
+        // tight bestCorrection() search), not on this candidates list at all.
+        val rawCoordinateSuggestion = if (duringRepeat || !includeExpensiveFallbacks ||
+            provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
+        ) {
             null
         } else {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
