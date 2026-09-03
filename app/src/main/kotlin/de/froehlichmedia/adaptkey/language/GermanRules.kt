@@ -31,6 +31,10 @@ object GermanRules : LanguageRules {
         return Umlaut.unfoldCandidates(leftHalf).any { it in FEMININE_AGENT_NOUN_STEMS }
     }
     
+    override fun blocksAsCompoundPrefix(candidate: String, rightIsNoun: Boolean): Boolean {
+        return rightIsNoun && candidate in COMPOUND_FORMING_PARTICLES
+    }
+    
     override fun isPlausibleVerbInflection(token: String, isKnownWord: (String) -> Boolean): Boolean {
         return RegularVerbInflection.isPlausibleInflection(token, isKnownWord)
     }
@@ -93,6 +97,25 @@ object GermanRules : LanguageRules {
     private val FEMININE_AGENT_NOUN_STEMS = setOf(
         "arzt", "chef", "koch", "nachbar", "student", "freund", "patient",
         "präsident", "polizist", "journalist", "könig", "graf", "gott"
+    )
+    
+    /**
+     * D-404-followup: common German adverbs/particles that frequently form the first element of a
+     * compound noun ("Schonfenster", "Hochhaus", "Volltreffer", "Fernglas") - unlike D-249's
+     * [INSEPARABLE_PREFIXES], each of these is also an entirely ordinary standalone word, so
+     * [blocksAsCompoundPrefix] only ever blocks them when the right half is itself a noun: an uninflected
+     * adjective/adverb glued directly onto a noun with nothing else in between is essentially always this
+     * compound shape, never a genuine German phrase (normal phrase syntax requires an inflected ending
+     * before a noun, e.g. "volles Glas", never bare "voll Glas"). Confirmed against the real repro
+     * ("schon" `OTHER`, freq 11,685 - far too common for [PREFIX_COMMON_WORD_FREQUENCY_CEILING]'s own
+     * exemption to help here, and rightly so: unlike D-249's verb prefixes, this rule was never meant to
+     * exempt a common candidate, only to scope *when* it applies). Curated by hand, not algorithmically
+     * derived - see [blocksAsCompoundPrefix]'s own KDoc for why no clean formal signal (bigram absence,
+     * candidate length) reliably tells a genuine two-word phrase apart from this compound shape; not
+     * claimed to be exhaustive, extend as further real cases turn up.
+     */
+    private val COMPOUND_FORMING_PARTICLES = setOf(
+        "schon", "wohl", "hoch", "tief", "voll", "halb", "fern", "nah", "kaum", "fast"
     )
     
     /** S-08 / D-137: a typed time in German is essentially always followed by this word. */

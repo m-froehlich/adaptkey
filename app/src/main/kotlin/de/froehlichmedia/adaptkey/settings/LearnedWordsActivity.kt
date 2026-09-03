@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.text.format.DateFormat
 import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
@@ -34,6 +35,7 @@ import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
 import java.text.Collator
+import java.util.Date
 import java.util.Locale
 
 /**
@@ -204,13 +206,21 @@ class LearnedWordsActivity : AppCompatActivity() {
         val copyButton = squareIconButton(COPY_GLYPH, getString(R.string.copy_to_clipboard_action)).apply {
             setOnClickListener { copyToClipboard(editText.text.toString()) }
         }
-        val saveButton = squareIconButton(SAVE_GLYPH, getString(R.string.learned_words_save_action))
+        // D-404-followup: Save used to live here too, right next to the text field - moved down into the
+        // dialog's own neutral button (see setNeutralButton below), next to Forget/Cancel, after the user
+        // kept mis-tapping Forget while reaching for it up here.
         val fieldRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             addView(editText)
             addView(copyButton)
-            addView(saveButton)
+        }
+        // D-404-followup: frequency and last-used date, so a power user can tell an entry's real standing
+        // (and how stale it is relative to C-24's own expiry window) without leaving this dialog.
+        val infoLine = TextView(this).apply {
+            text = getString(R.string.learned_words_frequency_label, entry.frequency) + "  ·  " +
+                getString(R.string.learned_words_last_used_label, DateFormat.getDateFormat(this@LearnedWordsActivity).format(Date(entry.lastTouched)))
+            setPadding(0, dp(8), 0, 0)
         }
         val hint = TextView(this).apply {
             text = getString(R.string.learned_words_edit_hint)
@@ -249,6 +259,7 @@ class LearnedWordsActivity : AppCompatActivity() {
             val padding = dp(20)
             setPadding(padding, dp(8), padding, 0)
             addView(fieldRow)
+            addView(infoLine)
             addView(hint)
             addView(categoryLabel)
             categoryRows.forEach { addView(it) }
@@ -268,29 +279,34 @@ class LearnedWordsActivity : AppCompatActivity() {
                 refresh()
             }
             .setNegativeButton(android.R.string.cancel, null)
+            // D-404-followup: Save as the dialog's own neutral button (bottom row, next to Forget/Cancel) -
+            // see fieldRow's own note above for why it moved down from the text field.
+            .setNeutralButton(R.string.learned_words_save_action) { _, _ ->
+                store.recaseLearnedWord(entry.word, editText.text.toString())
+                val selectedCategories = categoryCheckboxes.filterValues { it.isChecked }.keys
+                store.setLearnedCategories(entry.word, selectedCategories)
+                val lemmaSelection = lemmaSpinner.selectedItemPosition
+                store.setLearnedLemma(entry.word, if (lemmaSelection <= 0) null else lemmaChoices[lemmaSelection])
+                refresh()
+            }
             .create()
         fun updateSaveEnabled() {
             // D-292: case-insensitively identical to the original only - the whole point is that this can
             // fix casing alone, never sneak an entirely different word in under this entry's own
             // frequency/history. Does not gate the category/Grundform fields below - those are independent
             // corrections, not a casing edit.
-            saveButton.isEnabled = editText.text.toString().equals(entry.word, ignoreCase = true)
+            // D-404-followup: the neutral button only exists once the dialog is actually showing (getButton()
+            // returns null before then) - the null-safe call is a no-op until setOnShowListener's own call
+            // below runs, which is also why that call exists at all (to set the correct initial state).
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL)?.isEnabled =
+                editText.text.toString().equals(entry.word, ignoreCase = true)
         }
-        updateSaveEnabled()
+        dialog.setOnShowListener { updateSaveEnabled() }
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             override fun afterTextChanged(s: Editable?) = updateSaveEnabled()
         })
-        saveButton.setOnClickListener {
-            store.recaseLearnedWord(entry.word, editText.text.toString())
-            val selectedCategories = categoryCheckboxes.filterValues { it.isChecked }.keys
-            store.setLearnedCategories(entry.word, selectedCategories)
-            val lemmaSelection = lemmaSpinner.selectedItemPosition
-            store.setLearnedLemma(entry.word, if (lemmaSelection <= 0) null else lemmaChoices[lemmaSelection])
-            refresh()
-            dialog.dismiss()
-        }
         dialog.show()
     }
     
@@ -399,7 +415,6 @@ class LearnedWordsActivity : AppCompatActivity() {
     
     private companion object {
         private const val COPY_GLYPH = "📋"
-        private const val SAVE_GLYPH = "💾"
         
         // D-296: a standard-sized touch target (matches the Android accessibility guideline minimum),
         // just square instead of the ordinary Button's own wide/padded shape.

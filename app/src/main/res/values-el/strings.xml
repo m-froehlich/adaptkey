@@ -314,6 +314,9 @@
     <string name="learned_words_category_preposition">Πρόθεση</string>
     <string name="learned_words_category_proper_noun">Κύριο όνομα</string>
     <string name="learned_words_category_other">Άλλο</string>
+    <!-- D-404-followup: γραμμή συχνότητας/τελευταίας χρήσης στο παράθυρο επεξεργασίας. -->
+    <string name="learned_words_frequency_label">Συχνότητα: %1$d</string>
+    <string name="learned_words_last_used_label">Τελευταία χρήση: %1$s</string>
 
     <!-- Επεξεργασία αποθηκευμένων ονομάτων χρήστη/email (D-180). -->
     <string name="credentials_empty">Δεν υπάρχουν ακόμη αποθηκευμένα ονόματα χρήστη ή email.</string>

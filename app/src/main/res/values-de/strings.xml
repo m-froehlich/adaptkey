@@ -314,6 +314,9 @@
     <string name="learned_words_category_preposition">Präposition</string>
     <string name="learned_words_category_proper_noun">Eigenname</string>
     <string name="learned_words_category_other">Sonstiges</string>
+    <!-- D-404-followup: Häufigkeit/Zuletzt-verwendet-Zeile im Bearbeitungsdialog. -->
+    <string name="learned_words_frequency_label">Häufigkeit: %1$d</string>
+    <string name="learned_words_last_used_label">Zuletzt verwendet: %1$s</string>
 
     <!-- Editor für gespeicherte Benutzernamen/E-Mails (D-180). -->
     <string name="credentials_empty">Noch keine gespeicherten Benutzernamen oder E-Mails.</string>

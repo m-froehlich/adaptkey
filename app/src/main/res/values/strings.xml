@@ -320,6 +320,9 @@
     <string name="learned_words_category_preposition">Preposition</string>
     <string name="learned_words_category_proper_noun">Proper noun</string>
     <string name="learned_words_category_other">Other</string>
+    <!-- D-404-followup: frequency/last-used info line in the edit dialog. -->
+    <string name="learned_words_frequency_label">Frequency: %1$d</string>
+    <string name="learned_words_last_used_label">Last used: %1$s</string>
 
     <!-- Saved usernames/emails editor (D-180). -->
     <string name="credentials_empty">No saved usernames or emails yet.</string>

@@ -620,6 +620,23 @@ credential list or paste chip showing has nothing useful left for the reclaim/ch
 genuinely empty field (the only case reclaim on initial focus could ever matter for) never has one of these
 special chips to protect against in the first place.
 
+### S-11 - Dual-Casing Chips for a Genuinely Ambiguous Noun (D-404-followup)
+§6 rule 5 leaves a genuinely ambiguous noun (`CapitalisationEngine.isAmbiguousCasing`, `NOUN,OTHER` - e.g.
+"Weg"/"weg") with no automatic casing correction, since context alone cannot decide which is meant - but the
+ordinary suggestion pipeline still only ever showed *one* casing of such a word, since capitalisation is
+derived purely from the live typing context at render time, never from a candidate's own already-cased form;
+both collapsed to the identical ambiguous-default-lowercase text. A dedicated, unranked chip slot (mirroring
+how the "Gelernt: X"/credential chips already bypass ranking entirely) now offers both casings independently
+while the composing token is only a genuine *prefix* of the ambiguous word, so either can be picked while
+still typing; once the token exactly matches the ambiguous word (case-insensitively), only the *other* casing
+is offered - the one actually typed is never duplicated as its own suggestion (S-02), unconditionally, with no
+exception for the autocorrect setting being off. Scans the call's own already-fetched ranked candidates rather
+than issuing a separate dictionary query, so an ambiguous word only ever gets its dual chips when the ordinary
+search already considered it relevant enough to surface - naturally subject to the same suggestion-bar
+slot-budget crowding as everything else, with no extra ranking logic of its own. A tap commits the chip's own
+already-cased word verbatim, never re-run through `capitalise()` (which would derive a different casing from
+context and silently discard the very choice the chip exists to offer).
+
 ---
 
 ## 6. Capitalisation
@@ -806,6 +823,25 @@ start-armed capital or a deliberately hand-typed one are structurally identical 
 sentence-start-specific logic: Rule 1 ("explicit user input always wins") simply reaches the left half
 correctly now. The right half is never a sentence start by construction, so its own context is unaffected.
 
+D-404-followup: **a split may now only be attempted once every other correction mechanism has already had its
+own chance and found nothing** - reported directly from a real repro ("Trobaner" splitting at the "b" instead
+of correcting to "Trojaner", a genuine adjacent-key slip T-02's own raw-coordinate search would have found).
+The raw-coordinate-correction search (T-02/T-03) is now computed *before* the split decision (previously
+computed only afterwards, as a last resort once a split had already had its own, unprotected chance to win),
+and a non-null result vetoes the split exactly like `bestCorrection()`'s own high-confidence flag already did -
+a split must never win merely because it was decided first, only because nothing safer was actually available.
+
+D-404-followup: a curated set of common German adverbs/particles that frequently form the first element of a
+genuine compound noun (`schon`, `wohl`, `hoch`, `tief`, `voll`, `halb`, `fern`, `nah`, `kaum`, `fast`) is
+rejected as a split's left half whenever the right half is itself a known noun (e.g. "Schonfenster" is never
+split into "schon"/"Fenster") - bound to the German `LanguageRules` implementation (D-410), like every other
+grammar-specific veto in this section, not applied cross-language. Unlike the inseparable-verb-prefix set
+above, each of these is also an entirely ordinary standalone word, so the veto only fires when immediately
+glued to a noun - the shape a genuine compound takes, since normal phrase syntax requires an inflected ending
+before a noun ("volles Glas", never bare "voll Glas"); the same particle followed by something that is not a
+noun ("schon gut") still splits normally. Curated by hand, not algorithmically derived, and not claimed to be
+exhaustive.
+
 ### A-06 - Retroactive Word Merge on Spurious Space
 The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-05) and the following token is not a valid word, the system tests whether removing that space and prepending the letter inferred from the tap's x-coordinate yields a valid or high-probability word. If so, the spurious space is removed and the reconstructed word is committed (e.g. `aber  ald` -> `aber bald`, where the intended `b` landed on the space bar). As with A-05, a valid linguistic result is mandatory; the spatial signal only nominates the candidate.
 
@@ -931,10 +967,17 @@ only once the very next real keystroke resolves what actually belongs there:
   genuine sentence-ending mark (`.`/`!`/`?`, never a comma - a comma never arms a capital in the first place),
   if Shift's own auto-armed capital has been explicitly disarmed right there before the letter is typed, no
   space is materialised either - continuing directly with no separator, on the understanding that a deliberate
-  lower-case override at exactly this position means "carry on, do not start a new, separated word". No state
-  is stored for this: whether Shift is currently armed is already read live at the same moment the space
-  decision itself is made, since a genuine sentence-ending mark's own capital is armed by default, so it can
-  only be off here because of that explicit action.
+  lower-case override at exactly this position means "carry on, do not start a new, separated word". Whether
+  Shift is currently armed is read live at the same moment the space decision itself is made, no state stored.
+  **D-404-followup refinement:** Shift being off is only treated as that deliberate override when this position
+  would genuinely have auto-armed a capital in the first place (re-derived fresh here, the same
+  `sentenceStartBefore` check `armShiftForNextWord` itself uses) - for a known abbreviation/enumerator (§6's
+  own "No Sentence Start After Known Abbreviations and Enumerators" rule, e.g. `"bzgl."`), Shift is correctly
+  never armed to begin with, so there is nothing to override there: the space still materialises normally,
+  even though Caps stays off, since two genuinely separate tokens are still being typed. Reported directly: the
+  space-key's own pending dot stayed lit (a space genuinely was still pending) but no space actually
+  materialised once the next letter arrived after a protected abbreviation - the original version could not
+  tell "never armed" apart from "deliberately overridden".
 - **Another mark from the same set**: glues directly onto the previous one (`"!?"`, not `"! ?"`) - no space
   is ever materialised between them, and the mode re-arms at the new position, so a run of any length
   (`"!?!"`, `"..."`, `".,"`) still glues together exactly as before, the eventual space only ever trailing the
@@ -1379,6 +1422,21 @@ horizontally-scrollable width. Tapping it wipes the clipboard (same effect as R-
 button, which this replaces) and the bar reverts to its own ordinary state, since there is nothing left to
 offer a chip for. Not shown at any other time - no space is reserved for it while the bar holds ordinary
 suggestions, a credential list, or a "Gelernt: X" chip.
+
+### V-04 - Clipboard Peek Button (D-36-followup)
+V-01's own direct-paste chip only ever appears once, right when a field first opens with the clipboard
+already holding a fresh clip - typing anything replaces it with ordinary suggestions, with no way back to it
+short of leaving and re-entering the field. A second button occupies the exact same square V-03's clear
+button does (the two are mutually exclusive: whichever applies at a given moment takes the slot) whenever the
+clipboard still holds a clip fresher than V-01's own 5-minute window and the chips are not already showing -
+independent of composing state, so it stays reachable mid-text, not only at field-open. Tapping it finalises
+any word currently being typed (exactly as a language switch already does) and shows the V-01/V-02 chips
+exclusively, with V-03's clear button taking the shared square back. The bar reverts to its own ordinary
+state on its own the moment the caret next moves - no dedicated "close peek mode" affordance is needed, since
+the existing caret-settle suggestion refresh already overwrites whatever was shown before it. The freshness
+check is re-run whenever the answer could plausibly have changed (a fresh field opening, the clipboard
+content itself changing, the caret settling on a new position) rather than on every keystroke, so the button
+never costs a live clipboard query on the hot typing path.
 
 ---
 

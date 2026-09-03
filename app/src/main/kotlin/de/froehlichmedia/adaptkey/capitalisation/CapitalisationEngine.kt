@@ -119,4 +119,29 @@ class CapitalisationEngine(private val store: DictionaryStore) {
         }
         return previous.firstOrNull()?.isUpperCase() == true
     }
+    
+    companion object {
+        
+        /**
+         * D-404-followup: whether [pos] is genuinely ambiguous under §6 rule 5 - a noun tag alongside at
+         * least one non-noun/non-proper-noun tag ("Weg" `NOUN,OTHER`), so [capitalise] applies neither its
+         * rule 3 (pure noun) nor its rule 4 ([PartOfSpeech.PROPER_NOUN]) force. Mirrors [capitalise]'s own
+         * `isAmbiguousNoun` computation exactly (kept in sync deliberately, not re-derived independently) -
+         * `!isProper` matters here even though it is redundant inside [capitalise] itself (whose `when` chain
+         * already checks `isProper` first, before ever reaching `isAmbiguousNoun`): a caller like
+         * [de.froehlichmedia.adaptkey.AdaptKeyService]'s own dual-casing suggestion chips (D-404-followup)
+         * has no such ordering to lean on, so the exclusion must be explicit here instead - a
+         * `NOUN,PROPER_NOUN,OTHER` word (e.g. a place name that also happens to be a common noun) must still
+         * always force upper-case, never be offered as "ambiguous, pick either casing".
+         *
+         * @param pos the word's own dictionary tags
+         * @return true when neither the pure-noun nor the proper-noun rule would force a casing
+         */
+        fun isAmbiguousCasing(pos: Set<PartOfSpeech>): Boolean {
+            val hasNoun = pos.contains(PartOfSpeech.NOUN)
+            val isProper = pos.contains(PartOfSpeech.PROPER_NOUN)
+            val isPureNoun = hasNoun && pos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN }
+            return hasNoun && !isPureNoun && !isProper
+        }
+    }
 }

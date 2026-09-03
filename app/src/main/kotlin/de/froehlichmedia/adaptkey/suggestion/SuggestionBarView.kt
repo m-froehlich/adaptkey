@@ -209,7 +209,12 @@ class SuggestionBarView @JvmOverloads constructor(
             else -> R.color.suggestion_text
         }
         return TextView(context).apply {
-            text = item.text
+            // D-362-followup: the loading chip starts directly in the tick animation's own first frame
+            // (three dots, matching the Runnable's own starting `dots = LOADING_MAX_DOTS` below), not
+            // item.text's static "…" glyph - previously shown as a static placeholder until the view's
+            // onAttachStateChangeListener fired and posted the first real tick, a visible gap before the
+            // animation actually started.
+            text = if (loading) ".".repeat(LOADING_MAX_DOTS) else item.text
             gravity = Gravity.CENTER
             setTextColor(ContextCompat.getColor(context, colorRes))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, if (loading) LOADING_TEXT_SP else 16f)

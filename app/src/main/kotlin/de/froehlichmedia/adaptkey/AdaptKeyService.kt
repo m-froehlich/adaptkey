@@ -187,6 +187,16 @@ class AdaptKeyService : InputMethodService() {
     // D-317: sits to the right of suggestionBar, mirroring clearClipboardButtonView - VISIBLE only while
     // emoji-search capture mode is active (see enterEmojiSearch()/exitEmojiSearch()).
     private var cancelEmojiSearchButtonView: View? = null
+    // D-36-followup: sits to the right of suggestionBar, in the exact same square clearClipboardButtonView
+    // occupies - the two are mutually exclusive (see setSuggestionBarItems()): this one reopens the D-36/
+    // D-267 clipboard chips mid-text, whenever the clipboard still holds a fresh clip and the chips are not
+    // already showing; clearClipboardButtonView takes the slot back the moment they are. GONE by default.
+    private var clipboardPeekButtonView: View? = null
+    // D-36-followup: cached result of the clipboard-freshness check (updateClipboardPeekAvailability()) -
+    // setSuggestionBarItems() reads this on every keystroke and must stay IPC-free, so the actual
+    // ClipboardManager query only happens at the handful of points the answer could plausibly have changed
+    // (see that function's own KDoc for the full list), never in this hot per-keystroke path itself.
+    private var clipboardPeekAvailable = false
     private var emojiPanel: EmojiPanelView? = null
     private var extraRow: ExtraRowView? = null
     private var onboardingView: OnboardingView? = null
@@ -255,6 +265,11 @@ class AdaptKeyService : InputMethodService() {
     // rule-6 capitalisation proposal and the raw result feeding the adaptive-learning signal (§9).
     private var lastTier3Result = Tier3Result.EMPTY
     private var lastCapProposal: CapitalisationProposal? = null
+    // D-404-followup: the §6-rule-5-ambiguous-noun dual-casing chips (see ambiguousCasingChips()) computed
+    // for the current composing token by the most recent refreshSuggestions() call - showSuggestions() reads
+    // this rather than recomputing it, since it is derived from that same call's own already-fetched
+    // candidate list (no separate dictionary query).
+    private var pendingAmbiguousCasingChips: List<SuggestionController.DisplayItem> = emptyList()
     
     // G-01: the active alphabet/input language, toggled by the space-bar swipe (see LayoutRegistry for the
     // layout each one uses). Kept for the service lifetime; this field-initialiser default is overwritten
@@ -336,6 +351,10 @@ class AdaptKeyService : InputMethodService() {
     
     // D-36: system clipboard, for the direct-paste chip.
     private val clipboardManager by lazy { getSystemService(ClipboardManager::class.java) }
+    // D-36-followup: keeps clipboardPeekAvailable current the moment the clipboard content actually changes,
+    // without polling it - registered once for the service's lifetime in onCreate()/unregistered in
+    // onDestroy(), mirroring prefsListener's own registration discipline below.
+    private val clipboardPrimaryClipListener = ClipboardManager.OnPrimaryClipChangedListener { updateClipboardPeekAvailability() }
     
     private val prefsListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
         settings = SettingsStore.load(this)
@@ -583,6 +602,10 @@ class AdaptKeyService : InputMethodService() {
     // that updates it) is never called for a mere caret move either.
     private val reclaimEnabledRunnable = Runnable {
         currentInputConnection?.let { updatePendingSpaceIndicator(it) }
+        // D-36-followup: also the natural re-check point for the peek button's own 5-minute staleness - the
+        // caret settling on a new position happens often enough during real typing that a dedicated timer
+        // would add for no real benefit; see updateClipboardPeekAvailability()'s own KDoc.
+        updateClipboardPeekAvailability()
         showSuggestions()
     }
     
@@ -811,6 +834,7 @@ class AdaptKeyService : InputMethodService() {
         // is already resident reloads the dictionary stores immediately, mirroring offsetModelPrefsListener's
         // own "notice a change made from a completely different screen right away" reasoning.
         InstalledLanguagesStore.prefs(this).registerOnSharedPreferenceChangeListener(installedLanguagesPrefsListener)
+        clipboardManager?.addPrimaryClipChangedListener(clipboardPrimaryClipListener)
     }
     
     /**
@@ -1073,11 +1097,18 @@ class AdaptKeyService : InputMethodService() {
         cancelEmojiSearch.setOnClickListener { exitEmojiSearch() }
         cancelEmojiSearchButtonView = cancelEmojiSearch
         
+        // D-36-followup: the way back into the clipboard chips mid-text - shares clearClipboard's own square
+        // (mutually exclusive visibility, see setSuggestionBarItems()), so adding it costs no extra row width.
+        val clipboardPeek = clipboardPeekButton()
+        clipboardPeek.setOnClickListener { openClipboardPeek() }
+        clipboardPeekButtonView = clipboardPeek
+        
         val suggestionRow = LinearLayout(this)
         suggestionRow.orientation = LinearLayout.HORIZONTAL
         this.suggestionRow = suggestionRow
         suggestionRow.addView(bar, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f))
         suggestionRow.addView(clearClipboard, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
+        suggestionRow.addView(clipboardPeek, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
         suggestionRow.addView(cancelEmojiSearch, LinearLayout.LayoutParams(SUGGESTION_BAR_HEIGHT_DP.dpToPx(), LinearLayout.LayoutParams.MATCH_PARENT))
         
         // D-135: the inline-suggestions row occupies the same slot as the ordinary suggestion bar, shown
@@ -1730,6 +1761,10 @@ class AdaptKeyService : InputMethodService() {
         // ordinary settings-screen change while the service stays resident, not only per field focus).
         reconcileOnboarding()
         currentInputConnection?.let { armShiftForNextWord(it) }
+        // D-36-followup: refreshed on every fresh field, independently of showedSpecialInitialChip below -
+        // the peek button lives in its own square, not the suggestion-bar slot the special initial chips
+        // compete for, and stays relevant even while one of those is showing.
+        updateClipboardPeekAvailability()
         // D-142: a recognised login field shows its own credential suggestions immediately, even before
         // anything is typed (the user's usual identifiers, most-used first) - takes priority over the
         // generic D-36 paste chip below, which would otherwise compete for the same bar slot.
@@ -1913,35 +1948,27 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-36: shows a direct-paste chip in the suggestion bar when a fresh field opens and the clipboard
-     * holds text; a tap pastes it. Sensitive content (e.g. a password) is masked in the preview. Typing
-     * anything replaces the chip with the normal suggestions. §40: nothing is offered once the clip is
-     * older than [ClipboardPreview.MAX_AGE_MS] - a long-forgotten clipboard entry should not keep
-     * resurfacing every time a field opens.
-     * 
-     * D-266: two further chips - "Erste Zeile" (the clipboard's first line) and "Erster Code" (the first
-     * plausible "code" token, [ClipboardExtraction.firstCode]) - are appended whenever their own extraction
-     * actually differs from the full clipboard text, so a single-line/single-token clipboard does not grow
-     * redundant duplicate chips of the main one.
+     * D-36 / D-266 / D-36-followup: the shared clipboard-chip builder behind both [showClipboardChipIfAvailable]
+     * (the field-open case) and [openClipboardPeek] (the D-36-followup mid-text case) - a direct-paste chip,
+     * plus "Erste Zeile" (the clipboard's first line) and "Erster Code" (the first plausible "code" token,
+     * [ClipboardExtraction.firstCode]) whenever their own extraction actually differs from the full clipboard
+     * text, so a single-line/single-token clipboard does not grow redundant duplicate chips of the main one.
+     * Sensitive content (e.g. a password) is masked in every chip's preview. §40: null once the clip is older
+     * than [ClipboardPreview.MAX_AGE_MS] - a long-forgotten clipboard entry should not keep resurfacing.
      *
-     * @return true when a chip was actually shown - D-421-followup: [onStartInputView] uses this to decide
-     *         whether it is safe to also schedule the reclaim/chip-refresh debounce (which would otherwise
-     *         silently wipe this chip again ~100ms later, see that call site's own note)
+     * @return the chips to show, or null when there is nothing fresh/readable to offer
      */
-    private fun showClipboardChipIfAvailable(): Boolean {
-        if (composing.isNotEmpty()) {
-            return false
-        }
-        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return false
+    private fun buildClipboardChips(): List<SuggestionController.DisplayItem>? {
+        val clip = clipboardManager?.takeIf { it.hasPrimaryClip() }?.primaryClip ?: return null
         if (clip.itemCount == 0) {
-            return false
+            return null
         }
         if (!ClipboardPreview.isFresh(clip.description.timestamp, System.currentTimeMillis())) {
-            return false
+            return null
         }
-        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return false
+        val text = resolveClipboardText(clip, clip.getItemAt(0)) ?: return null
         val sensitive = isSensitiveClip(clip)
-        val label = ClipboardPreview.label(text, sensitive) ?: return false
+        val label = ClipboardPreview.label(text, sensitive) ?: return null
         val fullText = text.toString().trim()
         val chips = ArrayList<SuggestionController.DisplayItem>()
         chips.add(SuggestionController.DisplayItem("📋 $label", SuggestionController.Kind.CLIPBOARD, ""))
@@ -1955,9 +1982,60 @@ class AdaptKeyService : InputMethodService() {
                 chips.add(SuggestionController.DisplayItem("🔡 $codeLabel", SuggestionController.Kind.CLIPBOARD_FIRST_CODE, ""))
             }
         }
+        return chips
+    }
+    
+    /**
+     * D-36: shows a direct-paste chip in the suggestion bar when a fresh field opens and the clipboard
+     * holds text; a tap pastes it. Typing anything replaces the chip with the normal suggestions - unlike
+     * [openClipboardPeek], this field-open case never finalises a composing token (there is none yet).
+     *
+     * @return true when a chip was actually shown - D-421-followup: [onStartInputView] uses this to decide
+     *         whether it is safe to also schedule the reclaim/chip-refresh debounce (which would otherwise
+     *         silently wipe this chip again ~100ms later, see that call site's own note)
+     */
+    private fun showClipboardChipIfAvailable(): Boolean {
+        if (composing.isNotEmpty()) {
+            return false
+        }
+        val chips = buildClipboardChips() ?: return false
         setSuggestionBarItems(chips)
         suggestionBar?.visibility = View.VISIBLE
         return true
+    }
+    
+    /**
+     * D-36-followup: [clipboardPeekButtonView]'s own tap handler - reopens the clipboard chips mid-text, not
+     * only right when a field first opens ([showClipboardChipIfAvailable]'s own field-open-only trigger). Any
+     * in-progress composing token is finalised first via [finalizeAndCommit] with an empty delimiter - the
+     * exact same "commit whatever is being typed before switching context" call [toggleLanguage] already
+     * relies on - so the [SuggestionController.Kind.CLIPBOARD]/[..._FIRST_LINE]/[..._FIRST_CODE] tap handlers
+     * a chip tap reaches afterwards never have to reason about a still-live composing span; those were written
+     * assuming one never exists, true under the field-open-only trigger but not here. The cursor-move back to
+     * ordinary suggestions (the user's own "kehrt die Darstellung wieder zurück auf das normale Verhalten")
+     * needs no dedicated code of its own - it already happens for free the moment the caret next settles
+     * ([onUpdateSelection] -> [scheduleReclaimAndChipRefresh] -> [reclaimEnabledRunnable] -> [showSuggestions]),
+     * which overwrites whatever this call just put in the bar exactly like it would any other stale content.
+     */
+    private fun openClipboardPeek() {
+        val ic = currentInputConnection ?: return
+        val chips = buildClipboardChips() ?: return
+        finalizeAndCommit(ic, "")
+        setSuggestionBarItems(chips)
+    }
+    
+    /**
+     * D-36-followup: recomputes [clipboardPeekAvailable] from the real clipboard - the only place this class
+     * actually queries [clipboardManager] for the peek button's own sake, called from the handful of points
+     * the answer could plausibly have changed: a fresh field opening ([onStartInputView]), the clipboard
+     * content itself changing ([clipboardPrimaryClipListener]), and the caret settling on a new position
+     * ([reclaimEnabledRunnable], which also catches the "5 minutes passed with no clipboard change" staleness
+     * case at the next natural opportunity, without a dedicated timer). Deliberately not called from
+     * [setSuggestionBarItems] itself - see [clipboardPeekAvailable]'s own KDoc for why that hot path must stay
+     * IPC-free.
+     */
+    private fun updateClipboardPeekAvailability() {
+        clipboardPeekAvailable = buildClipboardChips() != null
     }
     
     /**
@@ -2298,6 +2376,30 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-36-followup: the way back into the clipboard chips mid-text - a plain "📋" (deliberately without
+     * [clearClipboardButton]'s own 🗑 badge, so the two are never mistaken for each other) on the same button
+     * styling this row already established. GONE by default; [setSuggestionBarItems] is the only place that
+     * toggles it, alongside [clearClipboardButtonView] which occupies the same square (mutually exclusive).
+     */
+    private fun clipboardPeekButton(): View {
+        val glyph = TextView(this).apply {
+            text = "📋"
+            gravity = Gravity.CENTER
+            setTextColor(ContextCompat.getColor(this@AdaptKeyService, R.color.suggestion_text))
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        }
+        return FrameLayout(this).apply {
+            background = GradientDrawable().apply {
+                setColor(ContextCompat.getColor(this@AdaptKeyService, R.color.key_background_special))
+                cornerRadius = CLEAR_CLIPBOARD_CORNER_RADIUS_DP.dpToPx().toFloat()
+            }
+            isClickable = true
+            visibility = View.GONE
+            addView(glyph, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        }
+    }
+    
+    /**
      * D-267: the single choke point every suggestion-bar content update now goes through, instead of
      * calling [SuggestionBarView.setItems] directly - keeps [clearClipboardButtonView]'s own visibility
      * correctly in sync with whatever is actually displayed, without having to remember to toggle it at
@@ -2314,6 +2416,12 @@ class AdaptKeyService : InputMethodService() {
      * (never reset by this method before) staying up at the same time this method now shows the new field's
      * own ordinary content, doubling the row visually. See [resetInlineSuggestions] for the field-change case
      * this complements, not replaces.
+     *
+     * D-36-followup: also keeps [clipboardPeekButtonView] in sync, in the same square - shown exactly when
+     * [showsClipboard] is false and [clipboardPeekAvailable] is true, i.e. the bar is showing something other
+     * than the clipboard chips themselves while the clipboard still holds a fresh clip worth reopening. Reads
+     * the already-cached [clipboardPeekAvailable] rather than querying the clipboard again here - this method
+     * runs on every keystroke and must stay IPC-free (see that field's own KDoc).
      */
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
         suggestionBar?.setItems(items)
@@ -2328,6 +2436,7 @@ class AdaptKeyService : InputMethodService() {
                 it.kind == SuggestionController.Kind.CLIPBOARD_FIRST_CODE
         }
         clearClipboardButtonView?.visibility = if (showsClipboard) View.VISIBLE else View.GONE
+        clipboardPeekButtonView?.visibility = if (!showsClipboard && clipboardPeekAvailable) View.VISIBLE else View.GONE
     }
     
     /**
@@ -2430,6 +2539,7 @@ class AdaptKeyService : InputMethodService() {
         SettingsStore.prefs(this).unregisterOnSharedPreferenceChangeListener(prefsListener)
         OffsetStore.prefs(this).unregisterOnSharedPreferenceChangeListener(offsetModelPrefsListener)
         InstalledLanguagesStore.prefs(this).unregisterOnSharedPreferenceChangeListener(installedLanguagesPrefsListener)
+        clipboardManager?.removePrimaryClipChangedListener(clipboardPrimaryClipListener)
         persistOffsetModel()
         tier3Executor.shutdownNow()
         expensiveSuggestionExecutor.shutdownNow()
@@ -2603,7 +2713,7 @@ class AdaptKeyService : InputMethodService() {
                                 // D-370: pendingSentenceMark() also sees the mark underneath a closing quote
                                 // (e.g. `"Ja."` -> the new word after it), not only a bare mark directly before.
                                 val pendingMark = pendingSentenceMark(ic.getTextBeforeCursor(2, 0)?.toString() ?: "")
-                                if (shouldMaterializeSpace(pendingMark)) {
+                                if (shouldMaterializeSpace(pendingMark, ic)) {
                                     ic.commitText(" ", 1)
                                 }
                                 // D-416: the pending state is resolved either way the instant a new word
@@ -2817,7 +2927,7 @@ class AdaptKeyService : InputMethodService() {
                 // D-370: pendingSentenceMark() also sees the mark underneath a closing quote, not only a bare
                 // mark directly before - see handleKey's CHAR branch for the identical, primary case.
                 val pendingMark = pendingSentenceMark(ic.getTextBeforeCursor(2, 0)?.toString() ?: "")
-                if (shouldMaterializeSpace(pendingMark)) {
+                if (shouldMaterializeSpace(pendingMark, ic)) {
                     ic.commitText(" ", 1)
                 }
                 keyboardView?.pendingSpaceIndicator = false
@@ -3326,9 +3436,18 @@ class AdaptKeyService : InputMethodService() {
             // (see handleBackspaceRepeat/onBackspaceRepeatEnd for the held-repeat case, which must wait for
             // release instead, to avoid reclaiming on every tick of a fast hold - a real, previously-felt
             // performance cost, see AdaptKey-Progress.md's own note on this).
-            if (reclaimOnCaretMoveSuppressed) {
-                reclaimWordAtCaret()
-            }
+            // D-414-followup-2: no longer gated on reclaimOnCaretMoveSuppressed - the exact same "a single
+            // keystroke is never a drag" reasoning above holds regardless of field, and restricting the eager
+            // call to suppressed fields only left ordinary fields relying entirely on a subsequent
+            // onUpdateSelection callback to reschedule scheduleReclaimAndChipRefresh() at the new (post-
+            // delete) position; reported as a brief Reclaim-chip flash right after backspacing up to a word
+            // boundary (behind a just-deleted punctuation mark, or a chip-accepted word's own forced trailing
+            // space) - the callback-driven reschedule was not reliably fast/consistent enough across editors
+            // to close that gap. Calling reclaimWordAtCaret() here directly, synchronously, removes the gap
+            // entirely: composing becomes non-empty immediately when a word is actually found, so
+            // reclaimPossible()'s own composing.isNotEmpty() guard hides the chip outright rather than
+            // showing it for one frame first.
+            reclaimWordAtCaret()
         }
     }
     
@@ -3510,6 +3629,15 @@ class AdaptKeyService : InputMethodService() {
             deleted.isUpperCase() -> {
                 keyboardView?.shifted = true
                 shiftArmedByDelete = true
+                // D-404-followup: also arms the C-07 grace guard, exactly like a surprising field-mandated
+                // arm does - confirmed directly with the user as a real, recurring case: a reflexive Shift
+                // press, learned from years of other keyboards defaulting back to lower-case here (this
+                // app's own D-335/D-406 fix deliberately does not), un-does the now-correct re-armed capital
+                // before the user consciously registers it is already right. Without this, shiftGuardedArm/
+                // shiftArmTime stay at whatever stale value the last genuine word-start armShiftForNextWord()
+                // call left them at, so the very next Shift press was never actually guarded at all.
+                shiftGuardedArm = true
+                shiftArmTime = SystemClock.uptimeMillis()
             }
             deleted.isLowerCase() -> keyboardView?.shifted = false
             else -> armShiftForNextWord(ic)
@@ -3827,6 +3955,22 @@ class AdaptKeyService : InputMethodService() {
         val bestCorrectionStartedAt = SystemClock.uptimeMillis()
         val bestCorrection = if (diacriticWord != null || suppressAutocorrect) null else provider.bestCorrectionFor(typed, previousWord)
         val bestCorrectionMs = SystemClock.uptimeMillis() - bestCorrectionStartedAt
+        // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected language's
+        // autocorrect applies (A-01 enforced in provider). D-39: when the ordinary edit-distance autocorrect
+        // finds nothing, fall back to raw-coordinate correction - walk the token's actual raw taps (T-02) and
+        // see whether the geometrically next-most-plausible key at any one position (T-03) produces a known
+        // word. This recovers slips the static keyboard-adjacency map cannot see, since that map never looks
+        // at where the tap actually landed. D-154/D-155: diacriticWord (computed above, independent of
+        // suppressAutocorrect) wins outright when present - skipping autocorrectFor/rawCoordinateCorrection
+        // entirely in that case, not just as a tie-breaker, since an unambiguous umlaut restoration is a
+        // strictly stronger signal than either.
+        // D-404-followup: moved ahead of the split decision below (was previously computed only afterwards,
+        // as a last resort once a split had already had its own, unprotected chance to win) - see trySplit's
+        // own gating comment right below for why.
+        val autocorrected = bestCorrection?.word
+        val rawCorrectedStartedAt = SystemClock.uptimeMillis()
+        val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
+        val rawCorrectedMs = SystemClock.uptimeMillis() - rawCorrectedStartedAt
         val splitStartedAt = SystemClock.uptimeMillis()
         // D-226: suppressAutocorrect/knownElsewhere must veto a split exactly like it already vetoes
         // bestCorrection()/rawCoordinateCorrection() below - a token known in another consulted language
@@ -3837,9 +3981,17 @@ class AdaptKeyService : InputMethodService() {
         // D-352: CHIP_ONLY/OFF must never silently apply a split at commit either - the CHIP_ONLY case still
         // offers it via refreshSuggestions()'s own autocorrectSplitChip (reading the same debounced
         // composingPreviewRunnable result), never computed a second time here.
+        // D-404-followup: rawCorrected != null now also vetoes a split, not only bestCorrection's own
+        // highConfidence flag - explicit user design decision, confirmed from a real report ("Trobaner"
+        // splitting at the "b" instead of correcting to "Trojaner", a genuine adjacent-key slip T-02's own
+        // raw-coordinate search would have found). A split may only ever be attempted once every other
+        // correction mechanism - diacritic restoration, the dictionary/edit-distance search, and now the
+        // raw-coordinate fallback too - has already had its own chance and found nothing; it must never win
+        // merely because it was decided first, only because nothing safer was actually available.
         val split = if (
             diacriticWord != null ||
             bestCorrection?.highConfidence == true ||
+            rawCorrected != null ||
             suppressAutocorrect ||
             settings.autoSplitMode != AutoSplitMode.AUTOMATIC
         ) {
@@ -3854,26 +4006,13 @@ class AdaptKeyService : InputMethodService() {
             diag(
                 "AdaptKeyHaptics",
                 "finalizeAndCommit: timing diacriticMs=$diacriticMs bestCorrectionMs=$bestCorrectionMs " +
-                    "splitMs=$splitMs (split found)"
+                    "rawCorrectedMs=$rawCorrectedMs splitMs=$splitMs (split found)"
             )
             val committedLength = applySplit(ic, split, delimiter, typed)
             armShiftForNextWordUnlessOpener(ic, delimiter)
             return committedLength
         }
         
-        // A-03: an unsupported foreign context leaves the token as typed; otherwise the selected language's
-        // autocorrect applies (A-01 enforced in provider). D-39: when the ordinary edit-distance autocorrect
-        // finds nothing, fall back to raw-coordinate correction - walk the token's actual raw taps (T-02) and
-        // see whether the geometrically next-most-plausible key at any one position (T-03) produces a known
-        // word. This recovers slips the static keyboard-adjacency map cannot see, since that map never looks
-        // at where the tap actually landed. D-154/D-155: diacriticWord (computed above, independent of
-        // suppressAutocorrect) wins outright when present - skipping autocorrectFor/rawCoordinateCorrection
-        // entirely in that case, not just as a tie-breaker, since an unambiguous umlaut restoration is a
-        // strictly stronger signal than either.
-        val autocorrected = bestCorrection?.word
-        val rawCorrectedStartedAt = SystemClock.uptimeMillis()
-        val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
-        val rawCorrectedMs = SystemClock.uptimeMillis() - rawCorrectedStartedAt
         val corrected = diacriticWord ?: autocorrected ?: rawCorrected ?: typed
         // D-172 (temporary diagnostic): reported that an unknown-but-clearly-close-to-a-common-word token
         // (e.g. "aks" -> "als") sometimes never autocorrects at all, despite every gate traced by hand
@@ -4844,6 +4983,11 @@ class AdaptKeyService : InputMethodService() {
             precomputedExpensiveCandidates != null -> precomputedExpensiveCandidates
             else -> provider.suggestionsFor(input, previousWord, previousPreviousWord, includeExpensiveFallbacks)
         }
+        // D-404-followup: computed from this call's own candidates above (no separate dictionary query) -
+        // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
+        // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
+        // so the same word is never also shown a second time, wrongly single-cased.
+        pendingAmbiguousCasingChips = if (duringRepeat) emptyList() else ambiguousCasingChips(input, candidates)
         // D-160/D-208/D-211/D-215: schedule the deferred pass (fuzzy neighbours plus, once those also find
         // nothing, the expensive last-resort fallbacks) whenever the hot path ran without them - no longer
         // gated on candidates.isEmpty(): D-208 moved fuzzy matching itself into this tier, so a prefix
@@ -4968,7 +5112,7 @@ class AdaptKeyService : InputMethodService() {
         }
         // A real backend runs the LLM: show the tier-1 suggestions immediately, then refine off-thread so
         // the IME never blocks. A stale result (the token changed meanwhile) is discarded via the sequence.
-        controller.update(input, candidates + extras, pending)
+        controller.update(input, excludeAmbiguousCasingWords(candidates + extras), pending)
         showSuggestions()
         scheduleResort()
         val threshold = settings.llmActivationThreshold
@@ -5079,7 +5223,7 @@ class AdaptKeyService : InputMethodService() {
     private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome, extras: List<Suggestion> = emptyList()) {
         lastTier3Result = outcome.tier3
         lastCapProposal = outcome.capitalisation
-        controller.update(input, outcome.suggestions + extras, pending)
+        controller.update(input, excludeAmbiguousCasingWords(outcome.suggestions + extras), pending)
         showSuggestions()
         scheduleResort()
     }
@@ -5141,10 +5285,17 @@ class AdaptKeyService : InputMethodService() {
                 item
             }
         }
+        // D-404-followup: appended, not pinned - explicit user decision that these may be crowded out by
+        // more important ordinary suggestions once every slot is already taken, unlike every other special
+        // chip in this function (which are either always shown or shown only in an otherwise-empty bar).
+        // Already pre-cased (see ambiguousCasingChips()) - never routed through the NORMAL re-capitalisation
+        // above, which would collapse both variants back to the same ambiguous-default-lowercase text.
+        val remainingSlots = (config.maxSuggestions - items.size).coerceAtLeast(0)
+        val withAmbiguousCasing = items + pendingAmbiguousCasingChips.take(remainingSlots)
         // B-03/D-289: pinned ahead of everything else, the same "built outside SuggestionController, never
         // ranked against the ordinary candidates" shape CREDENTIAL/LEARNED already use - see
         // hyphenCompoundSuggestion()'s own KDoc for why a score-based approach could not reliably win here.
-        val withCompound = hyphenCompoundSuggestion()?.let { listOf(it) + items } ?: items
+        val withCompound = hyphenCompoundSuggestion()?.let { listOf(it) + withAmbiguousCasing } ?: withAmbiguousCasing
         // D-346: when the bar would otherwise be empty and a deferred fuzzy/expensive search is still in
         // flight, show a "…" placeholder so the user knows the keyboard is still looking - replaced by the
         // real results (or an empty bar) once the deferred search completes (expensiveSuggestionPending is
@@ -5198,11 +5349,79 @@ class AdaptKeyService : InputMethodService() {
         return SuggestionController.DisplayItem(text = compound.word, kind = SuggestionController.Kind.COMPOUND, word = compound.word)
     }
     
+    /**
+     * D-404-followup: §6 rule 5 says a genuinely ambiguous noun ([CapitalisationEngine.isAmbiguousCasing],
+     * e.g. "Weg"/"weg", `NOUN,OTHER`) gets no automatic casing correction - but the ordinary suggestion
+     * pipeline still only ever shows *one* casing of it, since [CapitalisationEngine.capitalise] derives
+     * purely from the live typing context at render time, never from a candidate's own already-cased
+     * [Suggestion.word] - both would collapse to the identical (ambiguous-default-lowercase) text.
+     * Confirmed directly with the user: both casings must be independently offered, since the app can never
+     * know from context alone which one is actually meant.
+     *
+     * - While [input] is only a genuine *prefix* of the ambiguous word (not yet an exact match): both
+     *   casings are offered, so either can be picked while still typing.
+     * - Once [input] exactly matches the ambiguous word (case-insensitively): only the *other* casing is
+     *   offered - the one actually typed is never duplicated as its own suggestion (S-02), matching every
+     *   other suggestion kind's "not the current input" rule, unconditionally (checked directly with the
+     *   user - no exception for the autocorrect setting being off).
+     *
+     * Scans [candidates] (this call's own already-fetched suggestion list) rather than issuing a separate
+     * dictionary query - an ambiguous word only matters here if the ordinary search already considered it
+     * relevant enough to surface, which also naturally satisfies "may be crowded out by more important
+     * words" (see the caller's own slot-budget check in [showSuggestions]) with no extra ranking logic of
+     * its own.
+     *
+     * @param input the composing token
+     * @param candidates this call's own ordinary ranked candidates
+     * @return the dual-casing chips to offer - one per genuinely ambiguous candidate word once [input]
+     *         matches it exactly, two while [input] is still only a prefix of it
+     */
+    private fun ambiguousCasingChips(input: String, candidates: List<Suggestion>): List<SuggestionController.DisplayItem> {
+        if (input.isEmpty()) {
+            return emptyList()
+        }
+        val chips = mutableListOf<SuggestionController.DisplayItem>()
+        val seen = HashSet<String>()
+        for (candidate in candidates) {
+            val word = candidate.word
+            val key = word.lowercase()
+            if (!seen.add(key) || !CapitalisationEngine.isAmbiguousCasing(dictionaryStore.partsOfSpeech(word))) {
+                continue
+            }
+            val lower = word.replaceFirstChar { it.lowercaseChar() }
+            val upper = word.replaceFirstChar { it.uppercaseChar() }
+            if (key == input.lowercase()) {
+                val alternate = if (input.first().isUpperCase()) lower else upper
+                chips += SuggestionController.DisplayItem(
+                    text = alternate, kind = SuggestionController.Kind.AMBIGUOUS_CASE, word = alternate
+                )
+            } else {
+                chips += SuggestionController.DisplayItem(text = lower, kind = SuggestionController.Kind.AMBIGUOUS_CASE, word = lower)
+                chips += SuggestionController.DisplayItem(text = upper, kind = SuggestionController.Kind.AMBIGUOUS_CASE, word = upper)
+            }
+        }
+        return chips
+    }
+    
+    /**
+     * D-404-followup: drops any candidate matching one of [pendingAmbiguousCasingChips]'s own words
+     * (case-insensitively) - those are shown exclusively via their own dedicated chips (see
+     * [ambiguousCasingChips]), never a second time as an ordinary, wrongly single-cased ranked entry.
+     */
+    private fun excludeAmbiguousCasingWords(suggestions: List<Suggestion>): List<Suggestion> {
+        if (pendingAmbiguousCasingChips.isEmpty()) {
+            return suggestions
+        }
+        val ambiguousWords = pendingAmbiguousCasingChips.mapTo(HashSet()) { it.word.lowercase() }
+        return suggestions.filter { it.word.lowercase() !in ambiguousWords }
+    }
+    
     private fun clearSuggestions() {
         handler.removeCallbacks(resortRunnable)
         controller.clear()
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
+        pendingAmbiguousCasingChips = emptyList()
         setSuggestionBarItems(emptyList())
         // D-50: keep the (now empty) bar visible rather than hiding it.
         suggestionBar?.visibility = View.VISIBLE
@@ -5843,6 +6062,28 @@ class AdaptKeyService : InputMethodService() {
                 armShiftForNextWord(ic)
             }
             
+            // D-404-followup: accepts one of ambiguousCasingChips()'s own dual-casing chips - item.word
+            // already carries its own deliberately forced casing (see that function's own KDoc for why it
+            // must never be re-run through capitalisation.capitalise(), which would derive a different
+            // casing from context and silently discard the very choice this chip exists to offer).
+            // Otherwise mirrors the ordinary NORMAL tap exactly (learn, notify, next-word predictions, arm
+            // Shift) - an ordinary suggestion pick, not the "bigger, more surprising insertion" COMPOUND's
+            // own dedicated undo window exists for.
+            SuggestionController.Kind.AMBIGUOUS_CASE -> {
+                val remainingComposingChars = composing.length - composingCursor
+                val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
+                    ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
+                val trailingSpace = if (alreadySpaced) "" else " "
+                ic.commitText(item.word + trailingSpace, 1)
+                clearComposing()
+                learnWord(item.word)
+                notifySuggestionAccepted(item.word)
+                showNextWordPredictions()
+                pendingSuggestionSpace = trailingSpace.isNotEmpty()
+                suppressNextReclaimSpaceReset = true
+                armShiftForNextWord(ic)
+            }
+            
             // §38 (reverted from D-36 / D-60's commitText()): fires the editor's own native paste action
             // instead of committing the clipboard text directly, so an app whose paste handling does
             // something beyond plain text insertion (e.g. a notes app splitting pasted lines into separate
@@ -5965,6 +6206,15 @@ class AdaptKeyService : InputMethodService() {
             tokenPreviousHyphenSegment?.firstOrNull()?.isUpperCase() == true
         if (tokenShiftLiveArmed) {
             keyboardView?.shifted = true
+            // D-404-followup: also arms the C-07 grace guard - a hyphen-chain segment capitalising only
+            // because the previous one was explicitly capitalised ("Bahnhof-Nord") is exactly the same
+            // "surprising, app-imposed arm the user did not consciously choose for *this* word" shape
+            // isGuardedArm() already protects for a CAP_WORDS field, confirmed directly with the user as the
+            // motivating case. Set unconditionally here rather than via ShiftGrace.isGuardedArm() - that
+            // helper's own capsMode/sentenceStart signature does not apply to this trigger at all, this arm
+            // is guarded by construction whenever it fires.
+            shiftGuardedArm = true
+            shiftArmTime = SystemClock.uptimeMillis()
         }
         tokenContextBefore = before
     }
@@ -6338,22 +6588,36 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-416-followup: whether a deferred A-12 space (see [SENTENCE_PUNCTUATION]) should actually be
      * materialised before the letter about to start composing, given [pendingMark] - the caller's own
-     * [pendingSentenceMark] resolution of the real document, read fresh at the caller. No stored state
-     * needed: for a genuine sentence terminator ([SENTENCE_TERMINATORS]), [isUpperArmed] can only be false
-     * here because the user just explicitly disarmed the capital that terminator's own commit already
-     * auto-armed by default - that same explicit action is treated as "continue directly, no separator" and
-     * suppresses the space too. A comma is exempt - it never arms a capital in the first place, so Caps
-     * being off there carries no such signal and the space still materialises as always.
+     * [pendingSentenceMark] resolution of the real document, read fresh at the caller. For a genuine
+     * sentence terminator ([SENTENCE_TERMINATORS]), [isUpperArmed] being false is treated as a deliberate
+     * "continue directly, no separator" override - suppressing the space along with the capital - **only**
+     * when this position genuinely would have auto-armed a capital in the first place ([sentenceStartBefore]
+     * re-derived fresh here, exactly like [armShiftForNextWord] itself already does). A comma is exempt
+     * outright - it never arms a capital in the first place, so Caps being off there carries no such signal
+     * and the space still materialises as always.
+     *
+     * D-404-followup: the original version assumed [isUpperArmed] could only be false here because of that
+     * explicit user override - true for an ordinary sentence end, but wrong for a known abbreviation/
+     * enumerator ("bzgl.", "1.") deliberately excluded from sentence-start auto-arming in the first place
+     * (§6's own "No Sentence Start After Known Abbreviations and Enumerators" rule) - there, Caps is
+     * *correctly* off with nothing to override at all, and the missing [sentenceStartBefore] check silently
+     * suppressed the space too, even though two genuinely separate tokens are still being typed. Reported
+     * directly: the space-key's own pending dot stayed lit (a space genuinely was still pending), but no
+     * space actually materialised once the next letter arrived.
      *
      * @param pendingMark the mark a space is pending against, from [pendingSentenceMark], or `null` when
      *        none is pending
+     * @param ic the current input connection, for the fresh [sentenceStartBefore] re-derivation
      * @return true when a real space should actually be committed before the next character
      */
-    private fun shouldMaterializeSpace(pendingMark: Char?): Boolean {
+    private fun shouldMaterializeSpace(pendingMark: Char?, ic: InputConnection): Boolean {
         if (pendingMark == null) {
             return false
         }
-        return pendingMark !in SENTENCE_TERMINATORS || isUpperArmed()
+        if (pendingMark !in SENTENCE_TERMINATORS) {
+            return true
+        }
+        return isUpperArmed() || !sentenceStartBefore(ic)
     }
     
     private fun consumeShift() {

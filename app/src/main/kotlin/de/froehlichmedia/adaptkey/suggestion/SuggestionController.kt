@@ -85,7 +85,17 @@ class SuggestionController(private val config: SuggestionConfig) {
          * same unconditional, suppression-bypassing, immediate reclaim the button used to. Built and pushed
          * directly to the suggestion bar, the same "built outside SuggestionController" shape [LOADING]/
          * [COMPOUND] already use. */
-        RECLAIM
+        RECLAIM,
+        
+        /** D-404-followup: one casing variant of a §6-rule-5-ambiguous noun (`CapitalisationEngine.
+         * isAmbiguousCasing` - "Weg" `NOUN,OTHER`), e.g. "Weg"/"weg". Built and pushed directly to the
+         * suggestion bar - never routed through [update]/[displayed]'s own capitalisation-at-render step
+         * ([DisplayItem.word] already carries its own deliberately forced casing; re-running it through
+         * `capitalise()` would always collapse both variants back to the same, ambiguous-default-lowercase
+         * result, since that function derives purely from typing context, never from what a candidate word
+         * already carries). Tapping it commits [DisplayItem.word] verbatim, exactly as shown - never
+         * re-capitalised, the same "already correctly cased" contract [COMPOUND] uses. */
+        AMBIGUOUS_CASE
     }
     
     /**

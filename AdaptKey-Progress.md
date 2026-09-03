@@ -774,6 +774,103 @@ non-trivial changes).
 
 ## Current State
 
+- **§363 (v1.1.2): a "Kleinigkeiten" punch-list batch - ten small, mostly independent items, built and**
+  **committed together at the user's own request ("bitte nicht jedes Mal ein Version Bump und Build").**
+
+  1. **`Morgen` tagging fix.** Retagged `NOUN,OTHER` (frequency 561) in `dictionaries/de/dict.tsv` so the
+     lower-case adverb "morgen" ("tomorrow") is no longer force-capitalised by §6 rule 3 the way the pure noun
+     "Morgen" ("morning") correctly still is.
+
+  2. **`fröhlich` capitalisation report - withdrawn, no code change.** Investigated on the user's report that
+     typing "Fröhlich" (their own surname) got silently lower-cased; the user re-checked and could no longer
+     reproduce it ("Meine Diagnose... kann ich nicht mehr bestätigen"). No fix applied - nothing was found to
+     be actually wrong once re-checked live.
+
+  3. **D-404-followup: dual-casing chips for a genuinely ambiguous noun (new S-11).** A word like "Weg"/"weg"
+     (`NOUN,OTHER`) previously only ever showed one casing in the suggestion bar, since capitalisation is
+     derived from live context, never from a candidate's own cased form. New `SuggestionController.Kind.
+     AMBIGUOUS_CASE` chip, built by `ambiguousCasingChips()`: both casings offered while the composing token is
+     only a prefix of the word, only the *other* casing once it exactly matches (S-02, unconditional, no
+     exception for autocorrect being off). `excludeAmbiguousCasingWords()` drops the same candidates from the
+     ordinary ranked list so they are never shown twice.
+
+  4. **`OK` autocorrect-to-`Öl` fix.** Reported directly ("Ok" kept correcting to "Öl"). Raised `OK`'s
+     frequency in `dict.tsv` from 46 to 800 - `CorrectionConfidence`'s own ratio-based override formula was
+     recomputed by hand and should not have fired at any of the three built-in aggressiveness levels at the
+     old frequency either, so the raise is independently justified regardless of root cause. The actual
+     trigger turned out to be the user's own *personal* blacklist entry for "ok" (invisible to this session,
+     routing the word through the far more permissive `forUnknownToken` path instead of the protected
+     `forKnownWordOverride` one) - removed by the user directly in the app; the frequency raise stays as a
+     confirmed-valid fix on its own merits.
+
+  5. **D-404-followup: raw-coordinate correction now vetoes a split too (A-05).** Reported directly
+     ("Trobaner" splitting at the "b" instead of correcting to "Trojaner"). `finalizeAndCommit()`'s T-02/T-03
+     raw-coordinate-correction search now runs *before* the split decision (previously computed only
+     afterwards, as an unprotected last resort) and a non-null result vetoes the split exactly like
+     `bestCorrection()`'s own high-confidence flag already did - a split may only win once every safer
+     mechanism has already had its own chance and found nothing.
+
+  6. **D-404-followup / D-410: German compound-forming-particle veto against a false split (A-05).** Reported
+     directly ("Schonfenster" splitting into "schon"/"Fenster"). New `LanguageRules.blocksAsCompoundPrefix`
+     interface method (German-bound per D-410, like every other grammar veto in this section - explicit user
+     request, "muss fest ans deutsche Sprachpaket gebunden sein"), implemented in `GermanRules` against a
+     curated set of common adverbs/particles (`schon`, `wohl`, `hoch`, `tief`, `voll`, `halb`, `fern`, `nah`,
+     `kaum`, `fast`) that only vetoes a split when the right half is itself a known noun - each particle is
+     also an ordinary standalone word, so "schon gut" still splits normally. Wired into `TokenRepair.
+     candidateAt()` right after the existing "both nouns" veto. 3 new `TokenRepairTest` cases (the veto firing,
+     the veto *not* firing against a non-noun right half, and `NoOpLanguageRules` staying unaffected -
+     confirms the D-410 language-binding).
+
+  7. **D-404-followup: A-12's deferred space now materialises correctly after a protected abbreviation.**
+     Reported directly ("bzgl." showed the pending-space dot but the space never actually landed once the next
+     word started, even though the auto-capital was correctly suppressed). `shouldMaterializeSpace()`
+     previously treated Shift being off at a sentence-terminator position as *always* meaning a deliberate
+     user override (correct at a genuine sentence end) - wrong for a known abbreviation/enumerator, where §6's
+     own "No Sentence Start After Known Abbreviations and Enumerators" rule means Shift is correctly never
+     armed there in the first place, nothing to override. Fixed by re-deriving `sentenceStartBefore(ic)` fresh
+     at the space decision (the same check `armShiftForNextWord` itself already uses) to tell "never armed"
+     apart from "deliberately overridden" - only the latter still suppresses the space.
+
+  8. **D-36-followup: clipboard peek button mid-text (new V-04).** V-01's own direct-paste chip only ever
+     appeared once, right when a field opened - gone for good the moment anything was typed, with no way back
+     short of leaving and re-entering the field. New button shares V-03's clear-button square (mutually
+     exclusive visibility) whenever the clipboard holds a clip fresher than V-01's own 5-minute window and the
+     chips are not already showing, independent of composing state. A tap finalises any in-progress word via
+     `finalizeAndCommit(ic, "")` (the same call `toggleLanguage()` already relies on to close out a mid-word
+     token before switching context) and shows the V-01/V-02 chips exclusively; the caret's next move reverts
+     the bar to normal on its own via the existing `onUpdateSelection` -> `reclaimEnabledRunnable` ->
+     `showSuggestions()` path, no dedicated "close peek" code needed. The freshness flag
+     (`clipboardPeekAvailable`) is cached and only recomputed at the handful of points it could plausibly
+     change (field open, a `ClipboardManager.OnPrimaryClipChangedListener` firing, the caret settling) rather
+     than on every keystroke, so `setSuggestionBarItems()` - which runs on every keystroke - stays free of a
+     live clipboard query.
+
+  9. **D-404-followup: Learned Words editor - Save moved into the dialog's own button row, plus a
+     frequency/last-used info line.** The old Save icon sat right next to the text field, next to Copy, where
+     it was repeatedly mis-tapped for Forget; moved down to the dialog's own neutral button (bottom row,
+     alongside Forget/Cancel) via `setNeutralButton`, enabled/disabled the same way as before (only when the
+     edit is a case-only correction of the original word, D-292). Also added a frequency/last-used line
+     (`DateFormat.getDateFormat`) above the category checkboxes, so a power user can judge an entry's real
+     standing - and how close it is to C-24's own expiry window - without leaving the dialog.
+     `activity_learned_words.xml`: the language and sort-order filter rows merged into one horizontal row
+     (both fit comfortably; stacking wasted vertical space).
+
+  10. **D-362-followup: the "Gelernt: ..." loading chip's tick animation starts on its own first frame.**
+      Previously showed a static "…" placeholder until the view's `onAttachStateChangeListener` fired and
+      posted the first real animation tick - a visible one-frame gap before the dot animation actually
+      started. `SuggestionBarView` now seeds the label with the animation's own starting frame
+      (`LOADING_MAX_DOTS` dots) directly, matching what the `Runnable` itself starts from.
+
+  No new tests beyond item 6's three (items 1/4 are data-only; items 9/10 are Android view glue this
+  project's own convention already leaves untested; items 2/3/5/7/8 are either no-op or the usual untested
+  `AdaptKeyService.kt` Android/`InputConnection` glue). 1196 -> 1199 unit tests. Spec: A-05 (items 5/6), A-12
+  (item 7), new S-11 (item 3), new V-04 (item 8) all updated to the current, crystallised state - items 9/10
+  are implementation-only polish with no spec-level requirement change, left undocumented there per this
+  project's own "occasionally skippable for a trivial change" convention. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 418 -> 419, `versionName` `"1.1.1"` -> `"1.1.2"`. **Not yet
+  device-confirmed** - items 1/4 were device-reported and should be spot-checked again; items 3/5/6/7/8/9/10
+  are new/changed behaviour with no device pass yet at all.
+
 - **§362 (v1.1.1): three small, related `dict.tsv` data fixes - a real tag-order regression fix plus two**
   **cheap, closed-class taggings (prepositions, proper nouns).** User caught the regression directly from a
   throwaway mention in chat ("OTHER,ADJECTIVE") rather than a bug report: §360's adjective round appended

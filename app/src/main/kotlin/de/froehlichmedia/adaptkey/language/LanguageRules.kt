@@ -42,6 +42,19 @@ interface LanguageRules {
     fun blocksAsFeminineAgentException(rightHalf: String, leftHalf: String, leftIsNoun: Boolean): Boolean
     
     /**
+     * A-05 / D-404-followup: whether [candidate] must be rejected as the left half of a word split when
+     * [rightIsNoun] - a known compound-forming particle/adverb (e.g. "schon" in "Schonfenster") that,
+     * unlike [blocksAsSplitPrefix]'s inseparable verb prefixes, is also a perfectly ordinary standalone
+     * word on its own, so it must not be blocked unconditionally - only when immediately glued to a noun,
+     * the shape a genuine German compound takes ("schon gut" - "schon" followed by something that is not
+     * a noun - must still split normally).
+     *
+     * @param candidate the lower-cased left half being considered
+     * @param rightIsNoun whether the right half resolves to a noun in the active dictionary
+     */
+    fun blocksAsCompoundPrefix(candidate: String, rightIsNoun: Boolean): Boolean
+    
+    /**
      * D-115 / D-125: whether [token] is a plausible regular verb inflection of a known infinitive, so it
      * must never be silently corrected or split.
      *
@@ -93,6 +106,7 @@ interface LanguageRules {
 object NoOpLanguageRules : LanguageRules {
     override fun blocksAsSplitPrefix(candidate: String, frequency: Long): Boolean = false
     override fun blocksAsFeminineAgentException(rightHalf: String, leftHalf: String, leftIsNoun: Boolean): Boolean = false
+    override fun blocksAsCompoundPrefix(candidate: String, rightIsNoun: Boolean): Boolean = false
     override fun isPlausibleVerbInflection(token: String, isKnownWord: (String) -> Boolean): Boolean = false
     override fun isPlausibleAdjectiveComparative(token: String, isPlausiblePositive: (String) -> Boolean): Boolean = false
     override fun splitCompound(token: String, isKnownNoun: (String) -> Boolean, resolveRest: (String) -> String?): CompoundSplit.Result? = null

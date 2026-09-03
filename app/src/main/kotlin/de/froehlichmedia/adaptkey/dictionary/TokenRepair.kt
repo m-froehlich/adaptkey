@@ -279,6 +279,16 @@ class TokenRepair(private val store: DictionaryStore, private val languageRules:
         if (isNoun(leftEntry) && isNoun(rightEntry)) {
             return null
         }
+        // D-404-followup: rejects a left half that is a known compound-forming particle ("schon" in
+        // "Schonfenster") once the right half is itself a noun - the same "German does not juxtapose these
+        // as separate words" reasoning as the both-nouns check right above, just for the far more common
+        // adverb/particle-plus-noun compound shape a plain "both halves are nouns" check cannot catch
+        // ("schon" itself is tagged OTHER, not NOUN). Delegated to languageRules (D-410) exactly like every
+        // other language-specific split veto here - see blocksAsCompoundPrefix's own KDoc for why it is
+        // deliberately scoped to only fire when the right half is a noun.
+        if (languageRules.blocksAsCompoundPrefix(left, isNoun(rightEntry))) {
+            return null
+        }
         // D-261: rejects a right half of exactly "in" when the left half is a plausible German masculine
         // agent/relation noun stem - mirrors D-249's left-half prefix guard, but a frequency-ceiling
         // exemption (D-249's own mechanism) cannot be reused here, since "in" the preposition is always

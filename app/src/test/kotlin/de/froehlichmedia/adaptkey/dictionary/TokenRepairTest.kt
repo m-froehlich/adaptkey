@@ -332,6 +332,35 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-404-followup a known compound-forming particle is never split from a following noun`() {
+        // "Schonfenster" (missing from the dictionary) must not be torn into "schon" (a known, frequent
+        // OTHER-tagged particle) + "Fenster" (a known noun) - mirrors the real repro.
+        store.putWord(WordEntry("schon", frequency = 11_685L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        store.putWord(WordEntry("fenster", frequency = 572L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertNull(repair.trySplit("schonfenster", emptySet()))
+    }
+    
+    @Test
+    fun `D-404-followup the same particle still splits normally when the right half is not a noun`() {
+        // "schon gut" ("already fine") is a perfectly ordinary two-word phrase - blocksAsCompoundPrefix is
+        // deliberately scoped to only fire when the right half is a noun, so this must not regress.
+        store.putWord(WordEntry("schon", frequency = 11_685L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        store.putWord(WordEntry("gut", frequency = 4_917L, partsOfSpeech = setOf(PartOfSpeech.ADJECTIVE)))
+        
+        assertEquals(SplitResult("schon", "gut"), repair.trySplit("schongut", emptySet()))
+    }
+    
+    @Test
+    fun `D-410 the compound-forming-particle veto above is German-specific - a non-German store does not apply it`() {
+        val noOpRepair = TokenRepair(store, NoOpLanguageRules)
+        store.putWord(WordEntry("schon", frequency = 11_685L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
+        store.putWord(WordEntry("fenster", frequency = 572L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertEquals(SplitResult("schon", "fenster"), noOpRepair.trySplit("schonfenster", emptySet()))
+    }
+    
+    @Test
     fun `a split is rejected when a half is blacklisted`() {
         store.blacklist("das", BlacklistCategory.USER)
         assertNull(repair.trySplit("aberdas", emptySet()))
