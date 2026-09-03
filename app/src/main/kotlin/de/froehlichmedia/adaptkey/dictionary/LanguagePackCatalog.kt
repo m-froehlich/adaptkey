@@ -351,7 +351,48 @@ object LanguagePackCatalog {
             // D-386-followup: same `version.txt` language-code addition as German above ("el").
             // `dictionaries/el/version.txt` 1 -> 2 (dict.tsv/bigram.tsv themselves unchanged - verified
             // byte-identical after rebuild), `LanguagePackCatalog` version 1 -> 2.
-            version = 2
+            //
+            // D-424: the same "Wortfamilien" parity project as D-422 (English) - real POS tags,
+            // Wiktionary-sourced inflection forms, lemma-linking. `dict_el.tsv` started from the identical
+            // crude baseline (only `OTHER`/`PROPER_NOUN`, no `lemma` column, zero real POS tags). Unlike
+            // English, kaikki.org does have its own small Greek-target extract (`el-extract.jsonl.gz`,
+            // 106MB compressed - same shape as German's own extract, not English's full 2.6GB dump).
+            // Genuinely more complex morphology than German or English, confirmed by real data, not assumed:
+            // Greek nouns decline 4 cases x 2 numbers (up to 8 forms, though case syncretism collapses many
+            // to the same surface form); adjectives additionally decline by gender (up to 24+ forms) plus
+            // comparative/superlative; verbs carry an aspect-based conjugation table (present/imperfect
+            // tenses x person x number x active/passive voice, ~20 forms per verb on average, up to 90 for
+            // the most richly-documented ones) too large and irregular to hand-name slot by slot the way
+            // German's Präsens x6/Präteritum x6 or English's 4-slot verb model did. `extract_wiktionary.py`
+            // is deliberately generic instead: every distinct, grammatically-tagged form differing from the
+            // lemma itself is extracted as its own row (`word\tform`, many rows per lemma) rather than fixed
+            // named columns - periphrastic constructions (e.g. future "θα γράφω", subjunctive "να γράφω",
+            // both multi-word) are excluded for free by the same "form contains a space" filter already used
+            // for German/English, no Greek-specific handling needed. `merge_wiktionary.py` groups rows back
+            // per lemma at merge time; otherwise identical scope discipline, collision rule, and case-match
+            // guard as D-422's own English round (see that file's own KDoc for the "went"/"Gan" bug story
+            // the guard exists for).
+            //
+            // Genuinely surprising, verified-not-assumed finding: unlike German/English, Greek's generated-
+            // form calibration ratio came out *above* 1.0 (verb 1.40, adjective 1.39, vs. noun's more
+            // expected 0.48) - Greek's own citation convention (1st-person-singular-present for verbs,
+            // masculine-singular-nominative for adjectives) is a grammatically *rarer* form in real
+            // encyclopedic prose than the forms being generated, confirmed directly against real dict.tsv
+            // rows: "γράφει" ("he/she/it writes", freq 1661) vastly outranks its own lemma "γράφω" ("I
+            // write", freq 61); "μεγάλη" (feminine "big", freq 10601) outranks the masculine citation form
+            // "μεγάλος" (freq 1566). The ratio-from-already-matched-pairs calibration handled this correctly
+            // without any special-casing, exactly because it measures the real corpus rather than assuming
+            // "the lemma is the most common form" the way a naive fixed discount would have.
+            //
+            // Net result: `dict.tsv` 120,000 -> 154,387 rows (+34,387: 21,210 noun forms, 6,500 verb forms,
+            // 6,677 adjective forms), 13,958 lemmas tagged with a real POS, 33,493 already-present forms
+            // linked to their lemma, 42 prepositions tagged. `dictionaries/el/version.txt` 2 -> 3, pack
+            // rebuilt (dict.tsv + bigram.tsv, no hints.tsv - Greek never had one) and verified byte-identical
+            // after unzip, `LanguagePackCatalog` version 2 -> 3. No new tests (data-only, same as D-422).
+            // Not yet device-confirmed. Separately noted, deliberately not fixed this round (pre-existing,
+            // out of scope): 5,359 `dict_el.tsv` rows (of an original 6,854) still carry a completely empty
+            // POS field (not even `OTHER`) - a pre-existing data gap from before this round, untouched by it.
+            version = 3
         )
     )
 }

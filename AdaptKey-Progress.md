@@ -773,6 +773,61 @@ non-trivial changes).
 
 ## Current State
 
+- **§370 (v1.1.9): D-424 - Greek "Wortfamilien" parity project - real POS tags, Wiktionary-sourced**
+  **inflection forms, lemma-linking, for `dictionaries/el/dict.tsv`.** Same project as D-422 (English),
+  requested right after it as a direct follow-on ("soll auch das griechische Wörterbuch genau so aufbereiten
+  wie das deutsche und englische"). `dict_el.tsv` (120,000 words) started from the identical crude baseline
+  as English had - only `OTHER`/`PROPER_NOUN`, no `lemma` column, zero real POS tags.
+
+  **Confirmed before writing any extraction code, not assumed:** unlike English, kaikki.org does have its
+  own small Greek-target extract (`el-extract.jsonl.gz`, 106MB compressed - the same shape German's own
+  extract has, not English's 2.6GB full-dump situation). **Genuinely more complex morphology than German or
+  English**, verified against real sample entries before designing anything: Greek nouns decline 4 cases x 2
+  numbers (up to 8 tag combinations, though case syncretism collapses many to the same surface form);
+  adjectives additionally decline by gender on top of that (up to 24+ combinations) plus comparative/
+  superlative; verbs carry an aspect-based conjugation table (present/imperfect tenses x person x number x
+  active/passive voice) averaging ~20 forms per verb, up to 90 for the most richly-documented ones - far too
+  many, and too irregular, to hand-name slot by slot the way German's Präsens x6/Präteritum x6 or English's
+  4-slot verb model did.
+
+  **Deliberately generic extraction design as a direct result:** `dictionaries/el/extract_wiktionary.py`
+  extracts every distinct, grammatically-tagged form differing from the lemma itself as its own row
+  (`word\tform`, arbitrarily many rows per lemma) rather than fixed named columns - `merge_wiktionary.py`
+  groups them back per lemma at merge time. Periphrastic constructions (future "θα γράφω", subjunctive "να
+  γράφω" - both genuinely multi-word) are excluded for free by the same "form contains a space" filter
+  already used for German/English, no Greek-specific handling needed at all. Otherwise identical scope
+  discipline (only complete existing lemmas), collision rule, and case-match guard as D-422's own English
+  round (see that round's own write-up for the "went"/"Gan" false-match bug the guard exists to prevent) -
+  reused unchanged, not reinvented.
+
+  **Genuinely surprising, verified-not-assumed finding:** unlike German/English, Greek's calibrated
+  generated-form frequency ratio came out *above* 1.0 for verbs (1.40) and adjectives (1.39), against nouns'
+  more expected 0.48 - Greek's own citation convention (1st-person-singular-present for verbs, masculine-
+  singular-nominative for adjectives) is a grammatically *rarer* form in real encyclopedic prose than the
+  forms being generated. Confirmed directly against real `dict.tsv` rows, not just the aggregate ratio:
+  `"γράφει"` ("he/she/it writes", freq 1661) vastly outranks its own lemma `"γράφω"` ("I write", freq 61);
+  `"μεγάλη"` (feminine "big", freq 10601) outranks the masculine citation form `"μεγάλος"` (freq 1566). The
+  ratio-from-already-matched-pairs calibration (the same mechanism §322/D-422 already established) handled
+  this correctly with no special-casing, precisely because it measures the real corpus rather than assuming
+  "the lemma is the most common form."
+
+  **Net result:** `dict.tsv` 120,000 -> 154,387 rows (+34,387: 21,210 noun forms, 6,500 verb forms, 6,677
+  adjective forms), 13,958 lemmas tagged with a real POS, 33,493 already-present forms newly linked to their
+  lemma, 42 prepositions tagged. `dictionaries/el/version.txt` 2 -> 3, pack rebuilt (`dict.tsv` + `bigram.tsv`
+  - no `hints.tsv`, Greek never had one) and verified byte-identical after unzip, `LanguagePackCatalog`
+  version 2 -> 3. Extraction/merge scripts and their intermediate TSVs committed to `dictionaries/el/`,
+  mirroring `dictionaries/de/`'s and `dictionaries/en/`'s own precedent; the raw 106MB source extract itself
+  is not (same as the other two languages' own raw dumps).
+
+  **Separately noted, deliberately not fixed this round (pre-existing, out of scope):** 5,359 `dict_el.tsv`
+  rows (of an original 6,854) still carry a completely empty POS field, not even `OTHER` - a pre-existing
+  data gap from before this round, untouched by it; worth a dedicated look if the user wants it addressed.
+
+  No new tests - data-only, same as D-422 (English). 1220 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 425 -> 426, `versionName` `"1.1.8"` ->
+  `"1.1.9"`. **Not yet device-confirmed** - worth a real-device check that Greek suggestions/autocorrect now
+  behave noticeably better, especially given the surprising verb/adjective frequency finding above.
+
 - **§369 (v1.1.8): D-423 - "daß" and the Swiss ss-spelling "Strasse" removed outright from**
   **`dict_de.tsv`, never blacklisted.** User's own explicit condition, stated directly after a blacklist-
   based fix was proposed and implemented first: "Das soll nicht auf die Blacklist, sondern ganz aus dem
