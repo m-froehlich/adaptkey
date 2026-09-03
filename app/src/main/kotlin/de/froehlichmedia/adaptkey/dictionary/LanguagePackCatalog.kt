@@ -411,7 +411,44 @@ object LanguagePackCatalog {
             // the rest of the dictionary. `dictionaries/el/version.txt` 3 -> 4, pack rebuilt and verified
             // byte-identical after unzip, `LanguagePackCatalog` version 3 -> 4. No new tests (data-only).
             // Not yet device-confirmed.
-            version = 4
+            //
+            // D-426 (bugfix, found via a follow-up "check for markup/noise" request, same day as D-424/
+            // D-425): D-424's own generic form-extraction ("every grammatically-tagged form, however many")
+            // turned out too permissive for a handful of real Wiktionary data shapes that are not themselves
+            // standalone words - found via post-ship spot-check, not caught before the first run. Confirmed
+            // examples, not guessed: a bare declension-table ending documented with a leading hyphen
+            // (`"-ῶνος"` - "this class's genitive plural ends in -ῶνος", not itself a word), a footnote-
+            // number artifact glued onto a form (`"απεδέχθη3ο"`), a cross-referenced Latin-script synonym or
+            // transliteration mistaken for a Greek form (`"Urticaria"`, `"Korinthios"`), and genuine alternate
+            // spellings joined by a `/` or `\` separator into one unparsed string (`"άρκεσε/ήρκεσε"` - the
+            // augmented and unaugmented aorist, both genuinely valid, never split apart). Fixed at the root:
+            // `extract_wiktionary.py` now splits on `/`/`\` first (recovering both real forms instead of
+            // losing both) and then requires every accepted form to consist purely of Greek-script
+            // characters - a single check that subsumes the digit/punctuation/Latin-letter/leading-hyphen
+            // cases individually, since none of those shapes is ever a genuine Modern Greek word form.
+            // Separately, the same follow-up request also surfaced 24 more instances of §371/D-425's own
+            // Unicode-confusable-mu bug (U+00B5 MICRO SIGN vs U+03BC GREEK SMALL LETTER MU) that the D-425
+            // fix had missed - that round only scanned the empty-POS subset, not the whole file; this round's
+            // full-file scan found and removed all 24, each individually confirmed against an existing,
+            // correctly-spelled, far-higher-frequency counterpart first, not assumed (e.g. confusable `"µε"`
+            // vs. the correct, already-`PREPOSITION`-tagged `"με"`, freq 274401). Three genuine unit-symbol
+            // rows (`"χλμ²"`/`"χμ²"`/`"μ²"`) and the ordinal marker `"Βʹ"` were confirmed NOT to be confusable
+            // duplicates (no micro-sign present) and left untouched, matching this project's own established
+            // precedent of keeping legitimate unit symbols.
+            //
+            // Re-derived from the pre-D424 original (120,000 rows, retrieved from git history) with the fixed
+            // extraction script, rather than patching the already-corrupted merged file, for full internal
+            // consistency. `dict.tsv` 120,000 -> 154,338 rows this time (vs. D-424's own first, now-superseded
+            // 154,387 - the difference is entirely the ~30 corrupted rows this round prevents from ever being
+            // generated, plus the 24 mu-duplicates now caught up front). Every check from D-424/D-425 re-run
+            // clean: 0 case-insensitive duplicates, 0 empty POS fields, 0 non-positive frequencies, 0 orphaned
+            // lemma links, all 14 distinct tag combinations in canonical enum order (verified in Python, not
+            // shell `sort -u` - Git Bash's own `sort` does not collate Greek UTF-8 correctly on this machine
+            // and printed visually-duplicate-looking lines for genuinely-identical combos, a false alarm
+            // caught and re-verified, not a real data issue). `dictionaries/el/version.txt` 4 -> 5, pack
+            // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 4 -> 5. No new
+            // tests (data-only). Not yet device-confirmed.
+            version = 5
         )
     )
 }

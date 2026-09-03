@@ -31,6 +31,7 @@
 
 import gzip
 import json
+import re
 import sys
 
 # Siehe dictionaries/en/extract_wiktionary.py's eigener Kommentar - dasselbe, editionsuebergreifend
@@ -41,20 +42,47 @@ EXCLUDE_QUALIFIERS = {
 }
 
 
+# D-426 (bugfix, same day as D-424): a real bug found via post-ship spot-check, not caught before the first
+# run - the generic "take every grammatically-tagged form" design (necessary given Greek's own morphological
+# complexity, see the module docstring) turned out too permissive for a handful of real Wiktionary data
+# shapes that are not themselves standalone words: a bare declension-table ENDING documented with a leading
+# hyphen ("-ῶνος" - "the genitive plural of this class ends in -ῶνος", not itself a word), a footnote/
+# reference-number artifact glued onto a form ("απεδέχθη3ο"), a cross-referenced Latin-script synonym or
+# transliteration mistaken for a Greek form ("Urticaria", "Korinthios"), and two real alternate spellings
+# joined by a "/" or "\" separator into one unparsed string ("άρκεσε/ήρκεσε" - the augmented and
+# unaugmented aorist, both genuinely valid, just never split apart). A single hard requirement now closes
+# every one of these at once, applied AFTER splitting on "/"/"\" first (so a genuine two-forms-in-one case
+# recovers both real forms instead of losing both): every accepted form must consist purely of Greek-script
+# characters (main Greek + Greek Extended Unicode blocks) - nothing else a real Modern Greek word form would
+# ever need, so this single check is stricter than (and subsumes) checking for spaces/apostrophes/digits/
+# punctuation/Latin letters individually.
+GREEK_ONLY_PATTERN = re.compile(r"^[Ͱ-Ͽἀ-῿]+$")
+
+
+def split_alternate_forms(form):
+    for sep in ("/", "\\"):
+        if sep in form:
+            return [part.strip() for part in form.split(sep) if part.strip()]
+    return [form]
+
+
 def usable_forms(entry, word):
     """Every distinct, grammatically-tagged form of `entry` that differs from `word` itself - see module
     docstring for why this is generic rather than per-slot like the German/English scripts."""
     result = {}
     for f in entry.get("forms", []):
-        form = f.get("form", "")
-        if not form or form in ("-", "—") or " " in form or "'" in form or form == word:
+        raw_form = f.get("form", "")
+        if not raw_form or raw_form in ("-", "—"):
             continue
         tags = set(f.get("tags", []))
         if not tags or "inflection-template" in tags:
             continue
         if tags & EXCLUDE_QUALIFIERS:
             continue
-        result[form] = True
+        for form in split_alternate_forms(raw_form):
+            if form == word or not GREEK_ONLY_PATTERN.match(form):
+                continue
+            result[form] = True
     return list(result.keys())
 
 
