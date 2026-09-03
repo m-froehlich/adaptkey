@@ -367,6 +367,37 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-404 Tier 2 a family sibling is never overridden however extreme the frequency ratio - Kugel to Kugeln`() {
+        // The exact motivating case: the far more frequent plural must never silently replace a correctly
+        // typed singular purely for being more common in the corpus - the two are the same D-412 word
+        // family, not the coincidental collision the ratio rule exists to catch.
+        store.putWord(WordEntry("Kugel", 50L))
+        store.putWord(WordEntry("Kugeln", 500_000L, lemma = "Kugel"))
+        
+        assertFalse(provider.shouldOverrideKnownWord("Kugel", "Kugeln"))
+    }
+    
+    @Test
+    fun `D-404 Tier 2 two siblings of a common base never override each other - lief to lauft`() {
+        // Neither side is the other's own lemma - both link to a shared third base ("laufen") - still the
+        // same family and still exempt from the ratio override.
+        store.putWord(WordEntry("lief", 100L, lemma = "laufen"))
+        store.putWord(WordEntry("läuft", 200_000L, lemma = "laufen"))
+        
+        assertFalse(provider.shouldOverrideKnownWord("lief", "läuft"))
+    }
+    
+    @Test
+    fun `D-404 Tier 2 does not affect an unrelated pair with no lemma link, even at a similarly extreme ratio`() {
+        // Regression guard: sameWordFamily() only ever suppresses a genuine family match - an ordinary
+        // unrelated pair (D-244's own "ddr"/"der", neither lemma-linked) still overrides exactly as before.
+        store.putWord(WordEntry("ddr", 4_405L))
+        store.putWord(WordEntry("der", 1_004_234L))
+        
+        assertTrue(provider.shouldOverrideKnownWord("ddr", "der"))
+    }
+    
+    @Test
     fun `D-114 D-353 a noun-tagged candidate at a low confidence is never offered, however good its edit cost`() {
         // Reproduces the reported bug: "vorhin" is missing from the dictionary entirely, and "Virgin" (an
         // English-proper-noun artefact of the German Wikipedia corpus, tagged NOUN like the real

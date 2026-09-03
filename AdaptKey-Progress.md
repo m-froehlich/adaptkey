@@ -661,11 +661,10 @@ non-trivial changes).
      was deleted once superseded.** **Adjectives followed the same way — see §360: full declension x degree
      for every already-bundled adjective lemma, `AdaptKey-Plan-Adjektive.md` deleted once superseded. Tier 1
      is now complete for nouns, verbs, and adjectives alike.**
-  2. **A lighter cross-reference/lemma-link approach** - keep both inflected forms as separate dictionary
-     rows, but link them so ranking/A-01's override-protection logic can tell "same word family" apart from
-     "coincidentally similar, unrelated word" (today nothing distinguishes those two cases at all). More
-     tractable than tier 1, but still a real data-curation task (a lemma mapping across the dictionary) plus
-     real code work (`shouldOverrideKnownWord` and friends) - its own future design round, not attempted here.
+  2. **A lighter cross-reference/lemma-link approach - RESOLVED (§388, v1.1.27).** `shouldOverrideKnownWord`
+     now vetoes the A-01 ratio override outright when the typed word and the candidate share a D-412 `lemma`
+     family, before any ratio is computed - see spec A-01's own D-404 Tier 2 addendum and §388 below for the
+     full mechanism and reasoning.
   3. **The minimum bar, scoped to the Learned Words list specifically**: link inflected forms of an
      already-learned word at learn time so they collapse in the editor's own display (D-388's sortable
      view), instead of flooding it with near-duplicate entries for what is conceptually one word. Pure code,
@@ -687,19 +686,21 @@ non-trivial changes).
      **adjectives (the prompt/parser/applier were POS-agnostic from the start, `ADJECTIVE` already one of the**
      **prompt's own category options) - checked directly in the code, not assumed, before reporting back. Only**
      **the *non-LLM* path (`LearnedLemmaLinking`, this tier) was actually missing adjective endings, now added.**
-     **D-404 is fully closed except for tier 2, still open.**
+     **D-404 is now fully closed, all three tiers (§388 closed tier 2, the last one open).**
 
   **D-412 - RESOLVED, fully closed (§305 schema, §306-§315 verb-tagging sweep, §320-§322 lemma**
-  **population/Wortfamilien).** The bundled-only `lemma` link column on `TABLE_WORDS` (§305) was populated in
-  full: the nine-round German verb-`OTHER`->`VERB` retagging sweep (§306-§315) individually reviewed all
-  10,925 candidates across every frequency band; the noun-inflection-linking project (§320-§321) then
-  individually reviewed and linked ~20,024 further mechanical candidates. The originally-planned "mechanical
-  weak-verb-inflection derivation pass" and "strong-verb principal-parts reference table" were superseded
-  entirely by §322's Wiktionary-backed Wortfamilien project, which generated full noun/verb paradigms
-  directly and lemma-links every new row as a byproduct - `lemma` now covers 153,091 rows (nouns and verbs
-  alike). This is the schema/data groundwork D-404 Tier 1 consumed (see above, RESOLVED). `lemma` itself still
-  has zero code readers outside Tier 1's own generation step - consuming it for ranking/override purposes is
-  exactly D-404 Tier 2, still open (see above).
+  **population/Wortfamilien, plus D-422/D-424 extending the same parity to English/Greek).** The bundled-only
+  `lemma` link column on `TABLE_WORDS` (§305) was populated in full for German: the nine-round verb-`OTHER`->
+  `VERB` retagging sweep (§306-§315) individually reviewed all 10,925 candidates across every frequency band;
+  the noun-inflection-linking project (§320-§321) then individually reviewed and linked ~20,024 further
+  mechanical candidates. The originally-planned "mechanical weak-verb-inflection derivation pass" and
+  "strong-verb principal-parts reference table" were superseded entirely by §322's Wiktionary-backed
+  Wortfamilien project, which generated full noun/verb paradigms directly and lemma-links every new row as a
+  byproduct (adjectives followed via §360). **D-422 (§368, v1.1.7) and D-424 (§370, v1.1.9) then extended the
+  identical Wiktionary-parity/lemma-linking treatment to English (`app/src/main/assets/en/dict.tsv`) and Greek
+  (`dictionaries/el/dict.tsv`) respectively** - `lemma` is populated for all three bundled/installable
+  languages today, not German alone. This is the schema/data groundwork D-404 Tier 1 consumed (see above,
+  RESOLVED) and that §388 (below) is the first real consumer of on the ranking/override side (D-404 Tier 2).
 
 - **D-351-followup - OPEN, reopened 2026-09-01.** The same field/editor incompatibility D-351 found and
   worked around for Gemini's search field (`reclaimOnCaretMoveSuppressed`, scoped by package name in
@@ -773,6 +774,37 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§388 (v1.1.27): D-404 Tier 2 - `shouldOverrideKnownWord` now vetoes A-01's ratio override outright when**
+  **the typed word and the candidate share a D-412 word family.** Design discussed first per this project's own
+  convention (non-trivial algorithm decision): hard veto vs. a softer raised ratio bar, and scope (this one
+  gate only vs. also touching ordinary ranking/`forUnknownToken`) - user confirmed hard veto, scope limited to
+  `shouldOverrideKnownWord`. Two corrections surfaced during that discussion, both verified live rather than
+  taken on trust: D-412 (see below) was already fully resolved, not "5 bands remain" as this file's own
+  stale Open-TODOs text still said at the time (fixed separately first, commit `18a4503`); and `lemma`
+  coverage is **not** German-only - D-422/D-424 (§368/§370) already extended the identical Wortfamilien
+  parity to English and Greek, confirmed by directly counting non-empty `lemma` rows in all three dict.tsv
+  files before writing anything (`en/dict.tsv` 43,799/116,388, `dictionaries/el/dict.tsv` 64,828/154,338,
+  `dictionaries/de/dict.tsv` 84,429/188,252).
+
+  New `DictionarySuggestionProvider.sameWordFamily(wordLower, candidateLower)`: resolves each side's family
+  key via `store.entryOf(...)?.let { it.lemma ?: it.word }.lowercase()` (mirrors `LearnedWordExpirySweep`'s
+  own D-389 grouping pattern, lower-cased explicitly since `lemma` is stored in the base entry's own
+  canonical case, not a lower-case key) and compares them; `shouldOverrideKnownWord` returns `false`
+  immediately on a match, before `CorrectionConfidence.forKnownWordOverride`'s ratio is even computed. Reuses
+  `store.entryOf` (already merges bundled+learned lemma links, D-264/D-404) rather than a dedicated lookup,
+  so a learned/LLM-derived family link (D-323/D-324) is honoured too, at no extra query cost worth
+  mentioning. Deliberately narrow: `forUnknownToken` (ordinary typo correction) and suggestion-bar ranking are
+  untouched - D-404 Tier 2's own framing was always specifically about A-01's override gate.
+
+  3 new tests in `DictionarySuggestionProviderTest`: the motivating "Kugel"/"Kugeln" case at an extreme,
+  would-otherwise-clear-every-threshold ratio; a shared-third-base pair ("lief"/"läuft", both linked to
+  "laufen"); and a regression guard confirming an unrelated, unlinked pair (`ddr`/`der`) still overrides
+  exactly as before. 1240 → 1243 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. Spec: A-01 gained the D-404 Tier 2 addendum. `versionCode` 443 → 444, `versionName` `"1.1.26"` ->
+  `"1.1.27"`. **Not yet device-confirmed** - pure dictionary/ranking logic, no Android glue touched, but
+  worth a real-device sanity check that an ordinary known plural/singular pair no longer risks a silent
+  autocorrect swap.
 
 - **§387 (v1.1.26): D-431-followup closed - real device log confirmed the gate fix works, found a genuinely**
   **structural (non-bug) limitation, and caught a real performance regression the diagnostic round itself had

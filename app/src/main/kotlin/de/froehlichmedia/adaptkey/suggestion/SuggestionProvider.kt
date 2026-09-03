@@ -120,8 +120,10 @@ interface SuggestionProvider {
      * only when [candidate] is dramatically more frequent, e.g. [word] is a rare dictionary entry that
      * coincidentally matches a typo of a far more common word (`due` blocking a correction to `die` purely
      * for existing in the dictionary at all, regardless of how implausible it is that `due` was intended).
-     * Used by both [autocorrectFor]'s own A-01 guard and the raw-coordinate correction fallback, so they
-     * agree. The default (no frequency data available) never overrides a known word.
+     * D-404 Tier 2: never true when [word] and [candidate] belong to the same dictionary word family (e.g.
+     * "Kugel"/"Kugeln") - a family sibling is never coincidental noise, so it is never overridden regardless
+     * of frequency. Used by both [autocorrectFor]'s own A-01 guard and the raw-coordinate correction
+     * fallback, so they agree. The default (no frequency data available) never overrides a known word.
      *
      * @param word the known word A-01 would otherwise protect
      * @param candidate the correction under consideration

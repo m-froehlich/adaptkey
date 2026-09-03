@@ -699,6 +699,15 @@ class DictionarySuggestionProvider(
      * "kWp"/"AVD", an abbreviation, anything) stayed permanently defenceless against this override for any
      * ordinary, moderately common cost-1-adjacent word, no matter how many times it had already been
      * deliberately taught.
+     *
+     * D-404 Tier 2: never overrides a word with a candidate from the *same* D-412 word family (checked via
+     * [sameWordFamily], before the ratio is computed) - e.g. a typed "Kugel" must never be silently swapped
+     * for the far more frequent plural sibling "Kugeln". The ratio rule exists for coincidental dictionary
+     * noise (a rare, unrelated entry that happens to collide, `due`/`ddr`); a same-family candidate is by
+     * definition a genuine, currently-in-use word of the same family the user may simply have chosen
+     * deliberately, so hierarchy rule 1 (§6: explicit input always wins) applies unconditionally, with no
+     * ratio to weigh at all. Missing lemma data on either side (a word/language the D-412 linking passes
+     * never reached) yields no family match, leaving the ratio check as the only signal, exactly as before.
      */
     override fun shouldOverrideKnownWord(word: String, candidate: String): Boolean {
         if (store.learnedCasingOf(word) != null) {
@@ -706,6 +715,9 @@ class DictionarySuggestionProvider(
         }
         val wordLower = word.lowercase()
         val candidateLower = candidate.lowercase()
+        if (sameWordFamily(wordLower, candidateLower)) {
+            return false
+        }
         val confidence = CorrectionConfidence.forKnownWordOverride(
             ADJACENT_SUB_COST,
             store.frequencyOf(wordLower),
@@ -713,6 +725,25 @@ class DictionarySuggestionProvider(
             CorrectionConfidence.prefixShiftsAway(wordLower, candidateLower)
         )
         return confidence >= aggressiveness.autoApplyThreshold
+    }
+    
+    /**
+     * D-404 Tier 2: whether [wordLower] and [candidateLower] resolve to the same D-412 word family - either
+     * one is the other's [WordEntry.lemma] base form, or both share a common base (e.g. "lief"/"läuft", both
+     * linked to "laufen"). Reuses [DictionaryStore.entryOf] rather than a dedicated lemma lookup, since a
+     * bundled+learned merged entry is exactly what a family check should compare against (D-404's own
+     * learned-word lemma links, D-323/D-324, count too). Family-key resolution mirrors
+     * [LearnedWordExpirySweep]'s own `entry.lemma ?: entry.word` grouping, lower-cased on both sides since
+     * [WordEntry.lemma] is stored in the base entry's own canonical case, not [wordLower]'s lower-case key.
+     *
+     * @param wordLower the known typed word, already lower-cased
+     * @param candidateLower the correction candidate, already lower-cased
+     * @return true when both resolve to the same family key; false when either is unknown or unlinked
+     */
+    private fun sameWordFamily(wordLower: String, candidateLower: String): Boolean {
+        val wordFamily = store.entryOf(wordLower)?.let { (it.lemma ?: it.word).lowercase() } ?: return false
+        val candidateFamily = store.entryOf(candidateLower)?.let { (it.lemma ?: it.word).lowercase() } ?: return false
+        return wordFamily == candidateFamily
     }
     
     /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */

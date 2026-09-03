@@ -756,6 +756,20 @@ newly-promoted word (an acronym, an abbreviation) stayed permanently vulnerable 
 away by any ordinary, moderately common cost-1-adjacent word, no matter how many times it had already been
 deliberately taught.
 
+D-404 Tier 2: the ratio override also never fires when the typed word and the candidate belong to the same
+dictionary word family - resolved via the D-412 `lemma` link (either side is the other's base form, or both
+link to a shared third base, e.g. "lief"/"läuft" both under "laufen"). This closes the exact gap D-404
+originally named: a far more frequent inflected sibling (e.g. plural "Kugeln" against a typed singular
+"Kugel") must never silently replace a correctly-typed word purely for being more common in the corpus - a
+family sibling is by definition a genuine, currently-in-use word, never the coincidental dictionary-noise
+collision the ratio rule exists to catch (`due`/`ddr`), so no ratio is even computed once a family match is
+found. Coverage follows wherever the D-412 linking/generation passes actually reached - German (§305-§322,
+§360), English (D-422), and Greek (D-424) are all lemma-populated; a word/language pair the linking passes
+never reached simply yields no family match, leaving the ratio check as the only signal, exactly as before
+D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate (§44) - D-404's own tier-2 framing
+never proposed touching ordinary suggestion-bar ranking or the unrelated unknown-token confidence formula
+(D-353's `forUnknownToken`), and neither was touched here.
+
 ### A-02 - Punctuation Is Not a Context Reset
 A comma does not clear the prediction context. N-gram patterns such as `", dass"` or `", die"` are trained and suggested as independent entries. The mini-LLM sees the full sentence and is not subject to this limitation in any case.
 
