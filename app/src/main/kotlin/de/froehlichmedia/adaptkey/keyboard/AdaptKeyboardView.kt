@@ -1630,6 +1630,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-377: Backspace's own geometry, for [de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery] -
+     * mirrors [charKeyGeometry] exactly, just filtered to [KeyCode.DELETE] instead of [KeyCode.CHAR] (there is
+     * always at most one). Null until the view is laid out, same as [charKeyGeometry] returning empty.
+     */
+    fun deleteKeyGeometry(): OffsetModel.Candidate? {
+        val (key, rect) = keyRects.firstOrNull { (key, _) -> key.code == KeyCode.DELETE } ?: return null
+        return OffsetModel.Candidate(key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f)
+    }
+    
+    /**
      * D-133: the bottom letter row (`c v b n m`, the row directly above the space bar) gets a harder,
      * direction-specific bound on its own learned downward drift, on top of [OffsetModel]'s ordinary
      * isotropic [OffsetModel.maxOffsetFactor] cap (D-109) - repeated mistaps that get silently corrected

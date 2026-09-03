@@ -128,6 +128,7 @@ import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.Acronym
 import de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
+import de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery
 import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
@@ -4176,6 +4177,23 @@ class AdaptKeyService : InputMethodService() {
         return candidate
     }
     
+    /**
+     * D-377: [rawCoordinateCorrection]'s own sibling for a badly garbled token where a Backspace was missed
+     * and a neighbouring key was hit instead (e.g. `"welxmche"` for `"welche"`) - tried only once the caller
+     * has already confirmed the ordinary/fuzzy search found nothing at all (same gate as
+     * [rawCoordinateCorrection]'s own call site). Evidence-gated at the input level exactly like
+     * [rawCoordinateCorrection] - see [MissedBackspaceRecovery]'s own KDoc for why this is not a generic
+     * fuzzy-dictionary widen.
+     *
+     * @param typed the composing token as typed
+     * @return a missed-Backspace-derived correction, or null when there is none
+     */
+    private fun missedBackspaceCorrection(typed: String): String? {
+        val backspace = keyboardView?.deleteKeyGeometry() ?: return null
+        return MissedBackspaceRecovery.recover(typed, composingTaps, backspace)
+            .firstOrNull { provider.isKnownWord(it) }
+    }
+    
     /** D-140 / D-159: the single touch-model sample a D-39 raw-coordinate correction actually changed,
      * captured so [OffsetModel.unrecord] can be called with exactly the arguments (including the D-159
      * weight) the original [OffsetModel.record] call used. */
@@ -5049,6 +5067,16 @@ class AdaptKeyService : InputMethodService() {
         } else {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
         }
+        // D-377: same gate as rawCoordinateSuggestion right above (deferred pass only, and only once the
+        // ordinary/fuzzy search has already found absolutely nothing) - "alle anderen Versuche zur Reparatur
+        // müssen vorher gescheitert sein" (the user's own explicit condition). Chip-only by the user's own
+        // explicit request (too risky to silently auto-apply) - never wired into finalizeAndCommit()'s own
+        // silent-correction chain, unlike rawCoordinateSuggestion's own rawCoordinateCorrection() twin.
+        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks || candidates.isNotEmpty()) {
+            null
+        } else {
+            missedBackspaceCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
+        }
         // D-238: with autocorrect disabled, A-05/A-06 no longer auto-apply (see finalizeAndCommit()'s
         // suppressAutocorrect/mergeChar gates) - "everything must go through the suggestions" (the user's
         // own words) means the split/merge candidate that *would* have silently applied is instead offered
@@ -5099,7 +5127,9 @@ class AdaptKeyService : InputMethodService() {
         } else {
             SpeedUnitCompletion.completionForComposing(input)?.let { Suggestion(it, MAX_PRIORITY_SUGGESTION_SCORE) }
         }
-        val extras = listOfNotNull(splitSuggestion, rawCoordinateSuggestion, autocorrectSplitChip, autocorrectMergeChip, speedUnitSuggestion)
+        val extras = listOfNotNull(
+            splitSuggestion, rawCoordinateSuggestion, autocorrectSplitChip, autocorrectMergeChip, speedUnitSuggestion, missedBackspaceSuggestion
+        )
         // §125 / D-194: duringRepeat used to still call provider.autocorrectFor() here unconditionally -
         // the exact same expensive bestCorrection() search (a store query plus a banded edit-distance scan
         // per candidate) this function's own KDoc already gates everything else behind, simply missed when

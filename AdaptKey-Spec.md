@@ -935,6 +935,25 @@ automatically.
 A long unrecognised token is additionally matched against the dictionary with a wider edit-cost budget
 (cost-4) than the ordinary correction search uses. Suggestion only, never auto-applied.
 
+### A-13 - Missed-Backspace Recovery (Suggestion Only, D-377)
+Recovers a badly garbled token where a Backspace was missed and a neighbouring key was hit instead (e.g.
+`"welxmche"` for `"welche"` - an accidental `x` for `c`, then a Backspace attempt that landed on `m` instead).
+Deliberately evidence-gated at the input level rather than a generic dictionary-coincidence search (a wider
+A-09 candidate window was considered and rejected on false-positive-risk grounds - removing arbitrary
+character pairs until something spells a known word has no real connection to what the user actually typed):
+a token position only ever becomes a removal candidate when the *real recorded tap* that produced it landed
+within one key's own width/height of Backspace's actual on-screen position - "one key away" is sufficient,
+resolution-independent by construction (scales with the key's own measured size, not a fixed pixel radius).
+Only that character and its immediate predecessor are ever removed together (mirroring what a real Backspace
+press would have deleted right there), never an arbitrary window.
+
+Gated identically to A-09: only attempted once the ordinary/fuzzy dictionary search has found absolutely
+nothing for the token (it must be, in the user's own words, "komplett unbekannt") and only during the
+deferred/expensive fallback pass, never on the hot per-keystroke path - every other repair mechanism has
+already had its own chance and failed. Suggestion only, exactly like A-09 - deliberately never wired into the
+silent-correction chain, since even strong input-level evidence is not judged safe enough to auto-apply
+without confirmation.
+
 ### A-10 - Mid-Word Connector-Split Suggestion
 While re-editing mid-word, an unresolved bottom-row connector character (`c v b n m`, per T-05) between two
 otherwise-recognisable halves is offered directly as a split suggestion, bypassing the ordinary bar-evidence

@@ -493,10 +493,9 @@ non-trivial changes).
     since there is nothing left to fix.
   - **D-376 - RESOLVED (§366, v1.1.5).** New S-12 - a `"km/h"` completion chip offered both right after
     `"km"` and right after `"km/"`. See Current State for the mechanism.
-  - **D-377 - OPEN, explicitly named as expensive/last-resort.** Recover a badly garbled mid-word mistake
-    where a Backspace was missed and a neighbouring key hit instead (e.g. `"welxmche"`) - the user's own
-    worked reasoning is in history §276; proposes at least a chip, possibly a silent autocorrect, only when
-    nothing else in the pipeline resolves the token at all.
+  - **D-377 - RESOLVED (§367, v1.1.6).** New A-13 - evidence-gated missed-Backspace recovery, chip-only per
+    the user's own explicit call (a generic dictionary-widen alternative was discussed and rejected on
+    false-positive-risk grounds first). See Current State for the mechanism.
   - **D-378 - RESOLVED (§357, v1.0.109).** Same root-cause shape as D-373-followup (v2): the debounced D-62
     reclaim's own `armShiftForNextWord` call, ~100ms after the opener commits, was never taught about D-378 at
     all and clobbered it. Fixed with the same one-shot-flag pattern (`shiftPreservedAfterOpener`). See Current
@@ -773,6 +772,50 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§367 (v1.1.6): D-377 - new A-13, evidence-gated missed-Backspace recovery, chip-only.** Recovers a badly
+  garbled token where a Backspace was missed and a neighbouring key was hit instead (e.g. `"welxmche"` for
+  `"welche"` - the user's own worked example, an accidental `x` for `c` then a Backspace attempt that landed
+  on `m`). A first proposal (widen A-09's own candidate length window so `wideFuzzyNeighbours` could even
+  reach a target 2 characters shorter) was discussed and explicitly rejected by the user: that would have
+  loosened acceptance for *every* long unresolved token generically, with dictionary-membership-after-
+  arbitrary-deletion as the only signal - real risk of coincidental false corrections with no actual
+  connection to what was typed. Root-caused before either proposal, not guessed: `correctionCandidatesInternal`
+  fetches candidates within `token.length ± 1` - shared by both the ordinary (cost-2) and wide (cost-4)
+  searches, but only wide enough for the ordinary one, so `"welche"` (6 chars) never even reaches the edit-
+  distance comparison from `"welxmche"` (8 chars) regardless of cost budget. Verified empirically via a
+  throwaway probe test (removed again after use) before either proposal, not by hand-arithmetic alone: the
+  pure edit cost is exactly 4 (two deletions x `INDEL_COST` 2), sitting right at `WIDE_CORRECTION_COST`'s own
+  ceiling.
+
+  The user's own preferred design instead - concretely recognise what happened at the *input* level and
+  reverse exactly that action, mirroring T-02/T-03's own `RawCoordinateCorrection` precedent (consult the
+  real tap, not just the dictionary) rather than A-09's dictionary-coincidence shape. New pure
+  `suggestion/MissedBackspaceRecovery`: for each composing-token tap position (from index 1 onward, mirroring
+  what a real Backspace press could have reached), checks whether that tap's own recorded raw coordinate
+  landed within one key's own width/height of Backspace's actual on-screen position (the user's own
+  calibration, "ein Abstand von einer Taste reicht aus" - implemented as Backspace's rect expanded by exactly
+  one more of its own half-width/half-height in each direction, resolution-independent by construction). Only
+  a genuine near-Backspace tap becomes a removal candidate; only that character and its immediate predecessor
+  are ever removed together - never an arbitrary deletion search over unrelated positions. New
+  `AdaptKeyboardView.deleteKeyGeometry()` (mirrors `charKeyGeometry()`, filtered to `KeyCode.DELETE` instead
+  of `KeyCode.CHAR`) supplies Backspace's own geometry; `composingTaps` already recorded the raw taps needed,
+  no new input-tracking plumbing required. `AdaptKeyService.missedBackspaceCorrection()` mirrors
+  `rawCoordinateCorrection()`'s own shape and is gated identically to `rawCoordinateSuggestion` in
+  `refreshSuggestions()` - deferred pass only, only once `candidates.isEmpty()` (the user's own explicit "das
+  Wort komplett unbekannt ist" condition, satisfied by the same "nothing else found anything" signal
+  `rawCoordinateSuggestion` already relies on for its identical framing). **Chip-only per the user's own
+  explicit call** ("Das wäre sonst zu riskant") - fed only into `refreshSuggestions()`'s own `extras` list,
+  never wired into `finalizeAndCommit()`'s silent-correction chain the way `rawCoordinateCorrection()` itself
+  is.
+
+  8 new `MissedBackspaceRecoveryTest` cases (the worked example itself, the one-key-away boundary exactly and
+  one unit past it, no near-Backspace tap, the first-character exemption, multiple independent candidates in
+  one token, a tap-count mismatch, a too-short token). 1212 -> 1220 unit tests. Spec: new A-13.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 422 -> 423, `versionName` `"1.1.5"` ->
+  `"1.1.6"`. **Not yet device-confirmed** - needs a real device check: deliberately mistype a word so a wrong
+  key lands where Backspace should have, on a badly garbled multi-typo token, and verify the corrected word
+  appears as a chip (never silently applied).
 
 - **§366 (v1.1.5): D-376 - new S-12, a "km/h" speed-unit completion chip.** Two independent trigger points,
   both mirroring S-08's own "Uhr" time-suggestion reasoning exactly: **Trigger 1** - the composing token is
