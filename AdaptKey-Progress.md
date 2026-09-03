@@ -689,16 +689,17 @@ non-trivial changes).
      **the *non-LLM* path (`LearnedLemmaLinking`, this tier) was actually missing adjective endings, now added.**
      **D-404 is fully closed except for tier 2, still open.**
 
-  **D-412 (see Current State) has since laid the schema groundwork tier 1 would need** - a bundled-only
-  `lemma` link column on `TABLE_WORDS` - and a genuinely new, in-progress project is using it: tagging every
-  German verb currently mis-tagged plain `OTHER` (not just the `NOUN`/`VERB` collision cases D-368 already
-  finished), including already-present inflected forms, recording each one's base-form link via the new
-  column as a byproduct. Only the ≥2000-frequency band is done so far (§306, 78 words); five bands remain
-  (500-1999/200-499/50-199/10-49/<10, ~10,700 candidates total), plus the mechanical weak-verb-inflection
-  derivation pass, a strong-verb principal-parts reference table, and actually populating `lemma` on the
-  results (tagging and linking were kept as separate steps). This is real progress toward tier 1, not tier 1
-  itself - full generative morphology (replacing stored inflected rows with runtime generation) is still its
-  own, not-yet-started, uncertain-feasibility project.
+  **D-412 - RESOLVED, fully closed (§305 schema, §306-§315 verb-tagging sweep, §320-§322 lemma**
+  **population/Wortfamilien).** The bundled-only `lemma` link column on `TABLE_WORDS` (§305) was populated in
+  full: the nine-round German verb-`OTHER`->`VERB` retagging sweep (§306-§315) individually reviewed all
+  10,925 candidates across every frequency band; the noun-inflection-linking project (§320-§321) then
+  individually reviewed and linked ~20,024 further mechanical candidates. The originally-planned "mechanical
+  weak-verb-inflection derivation pass" and "strong-verb principal-parts reference table" were superseded
+  entirely by §322's Wiktionary-backed Wortfamilien project, which generated full noun/verb paradigms
+  directly and lemma-links every new row as a byproduct - `lemma` now covers 153,091 rows (nouns and verbs
+  alike). This is the schema/data groundwork D-404 Tier 1 consumed (see above, RESOLVED). `lemma` itself still
+  has zero code readers outside Tier 1's own generation step - consuming it for ranking/override purposes is
+  exactly D-404 Tier 2, still open (see above).
 
 - **D-351-followup - OPEN, reopened 2026-09-01.** The same field/editor incompatibility D-351 found and
   worked around for Gemini's search field (`reclaimOnCaretMoveSuppressed`, scoped by package name in
