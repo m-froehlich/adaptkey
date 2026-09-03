@@ -809,9 +809,8 @@ non-trivial changes).
   itself is not something this project's unit tests measure). 1240 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 gained the D-431-followup addendum
   documenting the reclaimed-token limitation. `versionCode` 442 -> 443, `versionName` `"1.1.25"` ->
-  `"1.1.26"`. **2026-09-03: the underlying A-13 fix is device-confirmed working; the performance regression
-  fix itself still needs its own quick device check** (hold Backspace through a long, unknown token and
-  confirm each repeat tick stays fast, not 370ms+).
+  `"1.1.26"`. **2026-09-03: device-confirmed working** - both the A-13 fix itself and the performance
+  regression fix (Backspace-hold stays fast throughout).
 
 - **§386 (v1.1.25): D-431-followup - "welche" still not suggested for "welxmche" on a real device after**
   **D-431 shipped; temporary diagnostic logging added instead of a third blind patch.** The gate fix itself
