@@ -773,6 +773,31 @@ non-trivial changes).
 
 ## Current State
 
+- **§371 (v1.1.10): D-425 - the 5,359 empty-POS `dict_el.tsv` rows flagged in §370 fixed, on explicit**
+  **user request the same day.** Not individually reviewed with native-fluency linguistic judgement the way
+  the German/English rounds' own noise cleanups were - this session has no Greek fluency to do so with the
+  same confidence, disclosed directly rather than overclaimed. A structural check instead: every one of the
+  5,359 words consists purely of Greek-script characters except 6, confirmed genuine extraction noise, not
+  guessed by eye - 5 of them (`"ισοτιµίας"`/`"τοµέα"`/`"ισοτιµία"`/`"τιµή"`/`"εφαρμογή"`) are Unicode-
+  confusable duplicates of an already-present, correctly-spelled, far-higher-frequency word, using U+00B5
+  MICRO SIGN where the correct spelling uses U+03BC GREEK SMALL LETTER MU (visually near-identical, different
+  codepoint) - confirmed by direct lookup, e.g. `"τιμή"` (correct mu) already present at freq 2307, `NOUN`,
+  vs. the confusable `"τιµή"` (micro sign) at freq 4 with no tag at all; removed outright, same treatment as
+  D-402's own confirmed-noise removals for German.
+
+  The remaining 5,354 rows - all frequency 4-24, the very bottom of the corpus, matching D-402's own finding
+  that low-frequency `OTHER`-adjacent rows are where noise concentrates, but the overwhelming majority
+  reading as genuine rare Greek word-forms and proper nouns/surnames on inspection - tagged `OTHER` outright
+  rather than individually classified, matching the same default every other not-yet-specifically-tagged word
+  in this dictionary already carries; a future Wortfamilien-style pass could still upgrade any of them to a
+  real POS the same way §370/D-424 already did for the rest of the dictionary.
+
+  `dict_el.tsv` 154,387 -> 154,382 rows (5 noise rows removed; the 5,354 `OTHER` retags touch existing rows,
+  no count change from those). `dictionaries/el/version.txt` 3 -> 4, pack rebuilt and verified byte-identical
+  after unzip, `LanguagePackCatalog` version 3 -> 4. No new tests (data-only). 1220 unit tests unchanged, all
+  green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 426 -> 427, `versionName`
+  `"1.1.9"` -> `"1.1.10"`. Not yet device-confirmed.
+
 - **§370 (v1.1.9): D-424 - Greek "Wortfamilien" parity project - real POS tags, Wiktionary-sourced**
   **inflection forms, lemma-linking, for `dictionaries/el/dict.tsv`.** Same project as D-422 (English),
   requested right after it as a direct follow-on ("soll auch das griechische Wörterbuch genau so aufbereiten

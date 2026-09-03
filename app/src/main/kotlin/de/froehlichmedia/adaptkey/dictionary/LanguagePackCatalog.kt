@@ -389,10 +389,29 @@ object LanguagePackCatalog {
             // linked to their lemma, 42 prepositions tagged. `dictionaries/el/version.txt` 2 -> 3, pack
             // rebuilt (dict.tsv + bigram.tsv, no hints.tsv - Greek never had one) and verified byte-identical
             // after unzip, `LanguagePackCatalog` version 2 -> 3. No new tests (data-only, same as D-422).
-            // Not yet device-confirmed. Separately noted, deliberately not fixed this round (pre-existing,
-            // out of scope): 5,359 `dict_el.tsv` rows (of an original 6,854) still carry a completely empty
-            // POS field (not even `OTHER`) - a pre-existing data gap from before this round, untouched by it.
-            version = 3
+            // Not yet device-confirmed.
+            //
+            // D-425 (follow-up, same day): the 5,359 empty-POS rows noted above, fixed on explicit user
+            // request. Not individually reviewed with native-fluency linguistic judgement the way the
+            // German/English rounds' own noise cleanups were (this session has no Greek fluency to do so
+            // with the same confidence) - a structural check instead: every one of the 5,359 words consists
+            // purely of Greek-script characters except 6, confirmed genuine extraction noise, not guessed -
+            // 5 of them ("ισοτιµίας"/"τοµέα"/"ισοτιµία"/"τιµή"/"εφαρµογή") are Unicode-confusable duplicates
+            // of an already-present, correctly-spelled, far-higher-frequency word, using U+00B5 MICRO SIGN
+            // where the correct spelling uses U+03BC GREEK SMALL LETTER MU (visually near-identical,
+            // different codepoint) - confirmed by direct lookup, e.g. "τιμή" (correct mu) already exists at
+            // freq 2307, `NOUN`, vs. the confusable "τιµή" (micro sign) at freq 4 with no tag at all; removed
+            // outright, same treatment as D-402's own confirmed-noise removals for German. The remaining
+            // 5,354 - all frequency 4-24, the very bottom of the corpus, matching D-402's own finding that
+            // low-frequency `OTHER`-adjacent rows are where noise concentrates, but the overwhelming majority
+            // read as genuine rare Greek word-forms and proper nouns/surnames on inspection - tagged `OTHER`
+            // outright rather than individually classified, matching the same default every other
+            // not-yet-specifically-tagged word in this dictionary already carries; a future Wortfamilien-
+            // style pass could still upgrade any of them to a real POS the same way D-424 already did for
+            // the rest of the dictionary. `dictionaries/el/version.txt` 3 -> 4, pack rebuilt and verified
+            // byte-identical after unzip, `LanguagePackCatalog` version 3 -> 4. No new tests (data-only).
+            // Not yet device-confirmed.
+            version = 4
         )
     )
 }
