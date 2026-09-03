@@ -803,9 +803,7 @@ non-trivial changes).
   user as the one open question. Spec gained a new G-07 describing the resulting Submit-vs-Newline resolution
   order. No new tests (`AdaptKeyService.kt`'s `InputConnection`/`EditorInfo` glue, untested per this project's
   own convention). 1243 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. `versionCode` 445 -> 446, `versionName` `"1.1.28"` -> `"1.1.29"`. **Not yet device-confirmed** - needs
-  the original repro (Google Play Store search bar, type a query, press Enter) re-tried on a real device to
-  confirm the search now actually submits.
+  green. `versionCode` 445 -> 446, `versionName` `"1.1.28"` -> `"1.1.29"`. **2026-09-03: device-confirmed.**
 
 - **§389 (v1.1.28): D-383 - in Google Keep's list mode, pressing Enter with the caret right before a**
   **reclaimed word deleted that word.** Reported with a real device log (`AdaptKeyJitter`), root-caused from it
@@ -838,9 +836,8 @@ non-trivial changes).
   whenever the host might tear down the `InputConnection` in direct reaction to the delimiter itself) for any
   future change in this area. No new tests (`AdaptKeyService.kt`'s `InputConnection` glue, untested per this
   project's own convention). 1243 unit tests unchanged, all green. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 444 -> 445, `versionName` `"1.1.27"` -> `"1.1.28"`. **Not yet
-  device-confirmed** - needs the exact original repro (Google Keep list mode, caret before a word, Enter)
-  re-tried on a real device to confirm the word now survives.
+  `:app:testDebugUnitTest` green. `versionCode` 444 -> 445, `versionName` `"1.1.27"` -> `"1.1.28"`. **2026-09-03:
+  device-confirmed.**
 
 - **§388 (v1.1.27): D-404 Tier 2 - `shouldOverrideKnownWord` now vetoes A-01's ratio override outright when**
   **the typed word and the candidate share a D-412 word family.** Design discussed first per this project's own
