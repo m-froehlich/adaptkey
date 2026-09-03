@@ -456,8 +456,8 @@ non-trivial changes).
     consults the personal trigram table when `previousPreviousWord` is known, via the same Stupid Backoff
     blend `nextWordSuggestions()` already used. Scoped to `DictionarySuggestionProvider` only, per explicit
     instruction - `TokenRepair`'s own separate A-05 split-scoring function left untouched.
-  - **D-369 - OPEN.** Accepting a suggestion chip must not insert a space when punctuation already
-    immediately follows.
+  - **D-369 - RESOLVED (§374, v1.1.13).** Accepting a suggestion chip no longer inserts a space when
+    sentence/clause punctuation or a hyphen already sits directly after the composing token.
   - **D-370 - RESOLVED for the actually-wanted core (§359, v1.0.111); the "more ambitious" half explicitly**
     **dropped by the user (2026-09-01), not implemented.** Only the basic ask ("an auto-space after a closing
     double-quote should be removable") was ever real to the user - the wrongly-placed-space bug itself, now
@@ -772,6 +772,32 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§374 (v1.1.13): D-369 - accepting a suggestion chip mid-text no longer shoves a space between the**
+  **completed word and punctuation/a hyphen that already sits directly after it.** Discussed with the user
+  first (this project's own rule for a design decision with real trade-offs): the existing D-144/D-183
+  "don't double an already-present space" check (`onSuggestionClicked()`'s `Kind.NORMAL`/`COMPOUND`/
+  `AMBIGUOUS_CASE` branches) only ever tested the real document character right after the composing token
+  for whitespace - reclaiming a word already sitting directly before sentence/clause punctuation (e.g. its
+  own sentence's trailing `.`) or before an existing hyphen-compound continuation (e.g. `"Rhein"` in
+  `"Rhein-Main-Gebiet"`) got a wrongly-inserted space (`"wort ."`, `"Rhein -Main-Gebiet"`). Two scope
+  questions were put to the user directly and both confirmed: (1) reuse the existing, already-curated
+  `SPACE_EATING_PUNCTUATION` set (`.,!?;:)`) A-12/D-29 already uses for the mirror-image case, rather than a
+  broad "any punctuation" check - a closing quote is deliberately excluded, matching D-370's own settled
+  "not worth the open/close-disambiguation complexity" position; (2) also cover the hyphen (B-01), a
+  structurally identical risk not named in D-369's own one-line spec text but confirmed real and worth
+  closing in the same round.
+
+  The three duplicated copies of the trailing-space check (`NORMAL`, `COMPOUND`, `AMBIGUOUS_CASE`) are now
+  one shared `suggestionTrailingSpace(ic)` (placed next to `isSpaceEatingPunctuation()`, which it reuses),
+  so all three suggestion-chip kinds - and, through `NORMAL`'s own shared computation, the D-122 split chip
+  and the A-06 merge chip too - are fixed in one place rather than three separately-maintained ones. No new
+  tests (the fix lives entirely in `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per
+  this project's own convention). 1220 unit tests unchanged, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. Spec: new §41. `versionCode` 429 -> 430, `versionName` `"1.1.12"` ->
+  `"1.1.13"`. **Not yet device-confirmed** - needs a real device check: reclaim a word directly before
+  sentence punctuation (no space) and pick a suggestion, and reclaim a segment of an existing hyphen
+  compound and pick a suggestion - neither should insert a space.
 
 - **§373 (v1.1.12): D-427 - `en/dict.tsv` LaTeX-markup noise cleanup, the same D-402-style follow-up**
   **that also surfaced §372/D-426's Greek bug.** Checked directly, not assumed: `en/dict.tsv` carried

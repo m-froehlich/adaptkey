@@ -6071,22 +6071,15 @@ class AdaptKeyService : InputMethodService() {
             
             // Complete the token with the chosen word (cased per §6) and start a new one.
             SuggestionController.Kind.NORMAL -> {
-                // D-144 / D-183: applying a suggestion mid-text (the composing token sits before real,
-                // already-typed text) must not add a *second* space when one is already there right after
-                // it - checked against the document's current state, before either branch below replaces
-                // the composing span, since the real text immediately following it is untouched by that
-                // replace. D-183: a D-62 mid-word reclaim leaves the real cursor *inside* the composing
-                // token (composingCursor < composing.length), not at its end - the character right after
-                // the cursor is then still one of the token's own remaining characters (about to be
-                // replaced by commitText() below), not the real document text that follows the whole
-                // token. Skip past those remaining characters first, so the check lands on the same real
-                // position regardless of where inside the token the reclaim happened to be tapped. D-201:
-                // hoisted above the D-122 branch split below - both branches need the identical check, and
-                // it depends only on composing/composingCursor/the document, never on item.word.
-                val remainingComposingChars = composing.length - composingCursor
-                val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
-                    ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
-                val trailingSpace = if (alreadySpaced) "" else " "
+                // D-144/D-183/D-201/D-369: applying a suggestion mid-text (the composing token sits
+                // before real, already-typed text) must not grow a space into text that already needs
+                // none right there - checked against the document's current state, before either branch
+                // below replaces the composing span, since the real text immediately following it is
+                // untouched by that replace. Hoisted above the D-122 branch split below - both branches
+                // need the identical check, and it depends only on composing/composingCursor/the
+                // document, never on item.word. See suggestionTrailingSpace()'s own KDoc for exactly what
+                // "already needs none" covers.
+                val trailingSpace = suggestionTrailingSpace(ic)
                 // D-122: a suggestion word containing a space can only be the mid-word connector-split
                 // candidate (see midWordConnectorSplitSuggestion) - no other suggestion source in this
                 // codebase ever produces a multi-word candidate - so it needs applySplit()'s own per-half
@@ -6142,12 +6135,9 @@ class AdaptKeyService : InputMethodService() {
             // single, plain word, not a multi-segment compound.
             SuggestionController.Kind.COMPOUND -> {
                 val priorComposing = composing.toString()
-                // D-144/D-183: identical "don't double an already-present space" check the NORMAL branch
-                // above already uses - see its own KDoc.
-                val remainingComposingChars = composing.length - composingCursor
-                val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
-                    ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
-                val trailingSpace = if (alreadySpaced) "" else " "
+                // D-144/D-183/D-369: identical check the NORMAL branch above already uses - see
+                // suggestionTrailingSpace()'s own KDoc.
+                val trailingSpace = suggestionTrailingSpace(ic)
                 ic.commitText(item.word + trailingSpace, 1)
                 clearComposing()
                 val learnRecord = learnHyphenCompound(item.word)
@@ -6173,10 +6163,9 @@ class AdaptKeyService : InputMethodService() {
             // Shift) - an ordinary suggestion pick, not the "bigger, more surprising insertion" COMPOUND's
             // own dedicated undo window exists for.
             SuggestionController.Kind.AMBIGUOUS_CASE -> {
-                val remainingComposingChars = composing.length - composingCursor
-                val alreadySpaced = ic.getTextAfterCursor(remainingComposingChars + 1, 0)
-                    ?.getOrNull(remainingComposingChars)?.isWhitespace() == true
-                val trailingSpace = if (alreadySpaced) "" else " "
+                // D-144/D-183/D-369: identical check the NORMAL branch above already uses - see
+                // suggestionTrailingSpace()'s own KDoc.
+                val trailingSpace = suggestionTrailingSpace(ic)
                 ic.commitText(item.word + trailingSpace, 1)
                 clearComposing()
                 learnWord(item.word)
@@ -6276,12 +6265,36 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-29: whether [delimiter] is a punctuation mark that should absorb the trailing space left by an
      * accepted suggestion (sentence / clause punctuation, not a space, newline or opening bracket).
-     * 
+     *
      * @param delimiter the committed delimiter
      * @return true when it should eat a preceding accepted-suggestion space
      */
     private fun isSpaceEatingPunctuation(delimiter: String): Boolean {
         return delimiter.length == 1 && delimiter[0] in SPACE_EATING_PUNCTUATION
+    }
+    
+    /**
+     * D-369: the trailing space to append when a suggestion chip is accepted mid-text (the composing
+     * token sits before real, already-typed text) - "" when the real document text immediately
+     * following the token already makes one unwanted, " " otherwise. "Unwanted" covers three cases:
+     * genuine whitespace already there (D-144/D-183, the original check); punctuation that must hug the
+     * word with no space in front of it, the same set [isSpaceEatingPunctuation] already uses for the
+     * mirror-image case (eating a space just inserted, once that punctuation is typed afterwards); and a
+     * hyphen (B-01) - a token reclaimed directly before an existing hyphen-compound continuation must
+     * never grow a space into the middle of it. D-183: a D-62 mid-word reclaim leaves the real cursor
+     * *inside* the composing token, not at its end - the remaining-composing-chars skip lands the check
+     * on the real document position right after the whole token regardless of where inside it the tap
+     * happened.
+     *
+     * @param ic the current input connection
+     * @return " " when a real trailing space belongs here, "" when the position already needs none
+     */
+    private fun suggestionTrailingSpace(ic: InputConnection): String {
+        val remainingComposingChars = composing.length - composingCursor
+        val nextChar = ic.getTextAfterCursor(remainingComposingChars + 1, 0)?.getOrNull(remainingComposingChars)
+        val alreadySpaced = nextChar != null &&
+            (nextChar.isWhitespace() || nextChar == '-' || isSpaceEatingPunctuation(nextChar.toString()))
+        return if (alreadySpaced) "" else " "
     }
     
     private fun captureTokenContext(ic: InputConnection) {

@@ -2210,6 +2210,27 @@ alternative (acronyms permanently vulnerable) and preferred it.
 
 ---
 
+## 41. Suggestion-Chip Trailing Space Never Grows Into Adjacent Punctuation or a Hyphen (D-369)
+
+D-369: accepting a suggestion-bar chip (S-01's ordinary word/completion chips, B-03's compound chip, and
+S-11's dual-casing chip alike) mid-text - the composing token sits before real, already-typed text, most
+commonly a D-62 reclaim - adds a real trailing space to continue typing, except when the document text
+immediately following the composing token already makes one unwanted. This already covered genuine
+whitespace (D-144/D-183); D-369 widens it to two further cases where a leading space would visibly break
+what already follows:
+
+- **Sentence/clause punctuation with no space in front of it** - the same set A-12/D-29 already treats as
+  "hugs the previous word" (`.`, `,`, `!`, `?`, `;`, `:`, `)`). Reclaiming a word that already sits directly
+  before one of these (e.g. fixing a typo in a sentence's last word before its full stop) must not shove a
+  space in between them.
+- **A hyphen (B-01)** - reclaiming a segment of an already-typed hyphen-compound (e.g. fixing a typo in
+  `"Rhein"` within `"Rhein-Main-Gebiet"`) must not grow a space into the middle of the compound.
+
+A closing quote is deliberately excluded, consistent with D-370's own resolution (open/close-quote
+disambiguation was judged not worth the added complexity there) - not reopened here.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.
