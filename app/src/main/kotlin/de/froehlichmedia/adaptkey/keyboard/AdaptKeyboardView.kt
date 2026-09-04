@@ -1141,12 +1141,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 }
                 // Movement does not change the resolved key (T-01). D-108: a small smear that has not
                 // actually left the pressed key's own bounds must not cancel a pending long-press - only
-                // leaving the key does. Backspace repeat still reacts to the tighter system touch-slop
-                // (a swipe on backspace is a deliberate G-02 word-delete gesture, not a hold, and should
-                // still be recognised promptly) - but only before the first repeat tick has fired
-                // (D-340): once the hold is genuinely active, sliding the finger off the key must not
-                // abort the repeat; it continues until the finger is lifted (ACTION_UP/ACTION_CANCEL).
-                if (pressedKey != null && movedOutsideKey(event.x, event.y)) {
+                // leaving the key does. D-380: leaving the key is not enough by itself either - only a
+                // smear that has already travelled far enough to plausibly become a real swipe (the same
+                // distance resolveSwipe() will eventually require at release) cancels the long-press; a
+                // small smear off the key's own edge (e.g. into the inter-key/inter-row gap) that never
+                // comes close to a genuine swipe distance must still let the popup open - there is nothing
+                // more sensible to do with it than treat it as a held key regardless. Backspace repeat
+                // still reacts to the tighter system touch-slop (a swipe on backspace is a deliberate G-02
+                // word-delete gesture, not a hold, and should still be recognised promptly) - but only
+                // before the first repeat tick has fired (D-340): once the hold is genuinely active,
+                // sliding the finger off the key must not abort the repeat; it continues until the finger
+                // is lifted (ACTION_UP/ACTION_CANCEL).
+                if (pressedKey != null && movedOutsideKey(event.x, event.y) &&
+                    swipeDirectionIfFarEnough(pressedKey!!, event.x - downX, event.y - downY) != null
+                ) {
                     cancelPendingLongPress()
                 }
                 if (pressedKey != null && !backspaceRepeated && movedBeyondSlop(event.x, event.y)) {
@@ -1593,22 +1601,27 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * Resolves a release displacement into a swipe and offers it to the listener (§4 / D-20). The
-     * direction is first detected with the small threshold, then the dominant-axis travel must clear the
-     * threshold that applies to that gesture: the small [spaceSwipeThresholdPx] (D-57: +15%) for the
-     * space-bar language swipe (G-01), a three-key-width distance (D-46; D-57: -15%) for the horizontal page
-     * swipe, and the plain [fieldSwipeThresholdPx] three-key-width distance for the vertical field gestures
-     * (dismiss-down, up-to-symbols). Returns true when the listener consumed the swipe.
-     * 
-     * @param key the key the swipe started on
-     * @param dx the horizontal release displacement
-     * @param dy the vertical release displacement
-     * @return true when the swipe was recognised and consumed (suppressing the tap)
+     * The swipe direction [dx]/[dy] resolves to for [key], if the travel already clears that gesture's own
+     * required distance - the direction is first detected with the small threshold, then the dominant-axis
+     * travel must clear the threshold that applies to that specific gesture: the small
+     * [spaceSwipeThresholdPx] (D-57: +15%) for the space-bar language swipe (G-01), a three-key-width
+     * distance (D-46; D-57: -15%) for the horizontal page swipe, and the plain [fieldSwipeThresholdPx]
+     * three-key-width distance for the vertical field gestures (dismiss-down, up-to-symbols).
+     *
+     * D-380: shared between [resolveSwipe]'s own release-time dispatch and the ACTION_MOVE handler's own
+     * long-press-cancel gate - a smear that has left the pressed key's bounds but not yet reached here
+     * (returns null) is not a real swipe attempt, so it must not cancel a pending long-press either; only a
+     * smear that already clears the exact distance a real release would need to consume as a swipe should.
+     *
+     * @param key the key the gesture started on
+     * @param dx the horizontal displacement so far
+     * @param dy the vertical displacement so far
+     * @return the swipe direction, or null when [dx]/[dy] do not clear its own required distance yet
      */
-    private fun resolveSwipe(key: Key, dx: Float, dy: Float): Boolean {
+    private fun swipeDirectionIfFarEnough(key: Key, dx: Float, dy: Float): SwipeDirection? {
         val direction = SwipeGesture.classify(dx, dy, spaceSwipeThresholdPx)
         if (direction == SwipeDirection.NONE) {
-            return false
+            return null
         }
         val horizontal = direction == SwipeDirection.LEFT || direction == SwipeDirection.RIGHT
         val travel = if (horizontal) abs(dx) else abs(dy)
@@ -1625,9 +1638,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
             horizontal -> fieldRequired * PAGE_SWIPE_FACTOR
             else -> fieldRequired
         }
-        if (travel < required) {
-            return false
-        }
+        return if (travel >= required) direction else null
+    }
+    
+    /**
+     * Resolves a release displacement into a swipe and offers it to the listener (§4 / D-20).
+     *
+     * @param key the key the swipe started on
+     * @param dx the horizontal release displacement
+     * @param dy the vertical release displacement
+     * @return true when the swipe was recognised and consumed (suppressing the tap)
+     */
+    private fun resolveSwipe(key: Key, dx: Float, dy: Float): Boolean {
+        val direction = swipeDirectionIfFarEnough(key, dx, dy) ?: return false
         return onSwipeListener?.onSwipe(key, direction) == true
     }
     

@@ -179,11 +179,18 @@ the row) it is drawn reversed instead (D-282), so the key's own primary glyph st
 finger rather than pushed away by the clamp - determined dynamically from the actual popup width and the
 key's own screen position, not by which specific key it happens to be, so this holds for any key's popup
 regardless of what a language pack's own data puts on it. The popup tolerates a small amount of finger
-movement during the hold without cancelling or mis-selecting. The mapping is always the active language's
-own default; it is not user-configurable (D-301: a former per-key override editor combined incorrectly with
-the per-language default above, silently reintroducing cross-language hint bleed the moment any single
-symbol was customised, so the override layer was removed entirely rather than fixed). Together with L-03 and
-L-06 this removes the need to switch to `?123` for most everyday input.
+movement during the hold without cancelling or mis-selecting - D-108: as long as the touch stays inside the
+pressed key's own bounds; D-380/D-437: a smear that *does* leave the key's own bounds (e.g. into the inter-
+key/inter-row gap, reported as an intermittent failure on the `o` key specifically) still does not cancel the
+hold either, unless it has already travelled far enough to plausibly become a genuine swipe - the same
+distance a release would need to actually trigger one (§4's own G-01/G-02/field-gesture thresholds). A smear
+that never reaches that distance has nothing more sensible to become than a held key, so the popup opens
+regardless of the finger no longer being over the key by the time it does; only a smear already clearing a
+real swipe's own required distance still cancels the hold in favour of that swipe. The mapping is always the
+active language's own default; it is not user-configurable (D-301: a former per-key override editor combined
+incorrectly with the per-language default above, silently reintroducing cross-language hint bleed the moment
+any single symbol was customised, so the override layer was removed entirely rather than fixed). Together
+with L-03 and L-06 this removes the need to switch to `?123` for most everyday input.
 
 ### L-06 - Persistent Number Row
 A dedicated number row (`1`-`0`) is shown at the top of the alpha view by default and can be toggled off in

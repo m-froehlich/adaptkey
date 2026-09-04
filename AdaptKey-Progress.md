@@ -513,8 +513,10 @@ non-trivial changes).
     State for the mechanism.
   - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
     already-present `abzgl.`/`zzgl.` family.
-  - **D-380 - OPEN.** A long-press smear too small to trigger a swipe/page-change should still open the alt
-    popup - the `o` key is named as the one that frequently fails to.
+  - **D-380 - RESOLVED (§403, v1.1.42); not yet device-confirmed.** A long-press smear leaving the key's own
+    bounds (e.g. into the inter-key/inter-row gap) unconditionally cancelled the pending popup even when the
+    smear was nowhere near swipe-sized - the user's own precise repro: within the key it works reliably,
+    off the key it silently does nothing. Fixed in `AdaptKeyboardView`'s own ACTION_MOVE handling - see §403.
   - **D-381 - RESOLVED, device-confirmed (2026-08-31, no code change).** The fresh look this bullet asked
     for happened: user confirmed on-device that D-404 §323/§324's Learned Words editor (category
     multi-select, LLM-determined with a tier-3 model installed) fully satisfies the original ask.
@@ -797,6 +799,36 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§403 (v1.1.42): D-380/D-437 - a long-press smear that left the pressed key's own bounds unconditionally**
+  **cancelled the pending alt-popup, even when nowhere near swipe-sized - the user's own precise repro (`o`
+  key): smearing while staying inside the key reliably opens the popup (D-108, already correct), smearing
+  off the key does nothing at all.** Root-caused directly in `AdaptKeyboardView.onTouchEvent()`'s ACTION_MOVE
+  handler, not guessed: `movedOutsideKey()` alone gated the `cancelPendingLongPress()` call - the instant the
+  raw touch point left the key's own small rect, the long-press timer was cancelled, regardless of how far it
+  had actually travelled. Meanwhile `resolveSwipe()` (evaluated only at release) requires a real gesture's own
+  much larger distance (a three-key-width field-swipe threshold, or the smaller but still-key-sized
+  space-bar-language-swipe threshold) - leaving a dead zone where a smear was far enough to leave the key but
+  nowhere near a genuine swipe: long-press cancelled, no swipe recognised either, nothing left to show for it.
+
+  Fixed by requiring the *same* distance a release would need to actually register as a swipe before an
+  in-progress ACTION_MOVE may cancel the pending long-press - extracted `resolveSwipe()`'s own threshold
+  logic (previously computed only at release) into a new shared `swipeDirectionIfFarEnough(key, dx, dy):
+  SwipeDirection?`, called both by `resolveSwipe()` itself (behaviourally unchanged) and by the new
+  ACTION_MOVE gate: `movedOutsideKey(...) && swipeDirectionIfFarEnough(...) != null` now must both hold before
+  the long-press is cancelled. A smear that leaves the key but never reaches real swipe distance therefore no
+  longer cancels anything - the popup opens on schedule, anchored correctly to the originating key regardless
+  of where the finger has since drifted (`openPopup()` derives position purely from the key's own rect, never
+  from live pointer coordinates - confirmed by reading it, not assumed). D-108's own existing "smear fully
+  inside the key never cancels" behaviour is untouched - this only widens the *outside-the-key* case from
+  "any movement at all" to "movement close to swipe-sized".
+
+  No new tests - `AdaptKeyboardView`'s touch resolution is Android View glue, this project's own established
+  untested boundary (mirrors D-361's identical touch-zone work). 1300 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's L-05 gained a D-380/D-437 addendum.
+  `versionCode` 458 -> 459, `versionName` `"1.1.41"` -> `"1.1.42"`. **Not yet device-confirmed** - needs a real
+  repro check: long-press the `o` key (or any letter with an AltGr alternative) and smear down off the key
+  without swiping, confirm the popup still opens.
 
 - **§402 (v1.1.41): D-436 - the actual per-language diacritics data mechanism D-387 asked for, built on top**
   **of §401's architecture fix.** New optional sixth language-pack file `diacritics.tsv` (base letter ->
