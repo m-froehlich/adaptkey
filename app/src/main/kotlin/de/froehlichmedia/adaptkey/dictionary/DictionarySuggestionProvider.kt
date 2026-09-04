@@ -7,11 +7,12 @@ import de.froehlichmedia.adaptkey.language.GermanRules
 import de.froehlichmedia.adaptkey.language.LanguageRules
 import de.froehlichmedia.adaptkey.suggestion.Acronym
 import de.froehlichmedia.adaptkey.suggestion.Correction
+import de.froehlichmedia.adaptkey.suggestion.DiacriticFolding
 import de.froehlichmedia.adaptkey.suggestion.EditDistance
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
+import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
-import de.froehlichmedia.adaptkey.suggestion.Umlaut
 import kotlin.math.pow
 
 /**
@@ -34,6 +35,13 @@ import kotlin.math.pow
  *           existing caller that does not pass one explicitly keeps this class's historical behaviour
  *           unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
  *           resolves and passes the value matching the actually active language.
+ * @property diacriticFolding D-435: the active language's own diacritic fold/unfold/first-character-variant
+ *           handling (see [DiacriticFolding]) - delegated rather than hardcoded so a non-German store is
+ *           never subject to (or, before this, silently starved of) German-specific umlaut handling. Unlike
+ *           [languageRules], defaults to [NoOpDiacriticFolding], **not** [de.froehlichmedia.adaptkey.suggestion.Umlaut]
+ *           - German's own diacritics are not a sensible fallback for a language that does not have them
+ *           (see [de.froehlichmedia.adaptkey.language.DiacriticFoldingRegistry]); every existing German-
+ *           context test/caller must now pass `Umlaut` explicitly.
  * @property now D-411/D-429: "now", for [LearnedFrequencyBoost]'s and [LearnedBigramBoost]'s own recency
  *           checks inside [score], [rankingBigramFrequency] and [nextWordSuggestions] - threaded through
  *           rather than read directly, so a caller's own tests stay deterministic (mirrors
@@ -44,6 +52,7 @@ class DictionarySuggestionProvider(
     private val maxCandidates: Int = 12,
     private val aggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
     private val languageRules: LanguageRules = GermanRules,
+    private val diacriticFolding: DiacriticFolding = NoOpDiacriticFolding,
     private val now: () -> Long = { System.currentTimeMillis() }
 ) : SuggestionProvider {
     
@@ -121,14 +130,14 @@ class DictionarySuggestionProvider(
         // Prefix completion, ranked by frequency + bigram context (shown from the very first letter, D-11).
         // D-144: unigramsByPrefix is a literal/raw prefix match (both stores) - it alone would never find
         // "tatsächlich" for a typed "tatsachl", violating this app's own founding "umlauts are ordinary
-        // characters" principle for the one feature it names explicitly (suggestions). Umlaut.unfoldCandidates
-        // tries every plausible unfolded spelling of the typed prefix - the literal token first (the
+        // characters" principle for the one feature it names explicitly (suggestions). diacriticFolding's own
+        // unfoldCandidates() tries every plausible unfolded spelling of the typed prefix - the literal token first (the
         // overwhelmingly common case, with nothing to unfold, costs exactly the one query it always did).
         // D-272: discounted by scoreWithPrefixDistance, not score - a candidate needing fewer additional
         // characters beyond what is already typed generally outranks one needing more, mirroring D-205's own
         // "closeness over raw frequency" principle for the fuzzy-match path (see scoreWithPrefixDistance's
         // own KDoc for why this needed its own, capped decay rather than reusing D-205's directly).
-        for (prefixVariant in Umlaut.unfoldCandidates(token)) {
+        for (prefixVariant in diacriticFolding.unfoldCandidates(token)) {
             for (entry in store.unigramsByPrefix(prefixVariant, maxCandidates * SCAN_FACTOR)) {
                 if (candidates.containsKey(entry.word) || store.isBlacklisted(entry.word)) {
                     continue // A-04
@@ -145,7 +154,7 @@ class DictionarySuggestionProvider(
         // comes within budget. Gated like D-116/D-117 on candidates being empty (the literal prefix already
         // had its chance) and on a longer minimum length (a neighbour substitution on a short token would
         // match far too much); capped like D-144's own unfold combinatorics so a long token cannot blow up
-        // the number of indexed prefix scans. Each variant is fed through the same Umlaut.unfoldCandidates +
+        // the number of indexed prefix scans. Each variant is fed through the same diacriticFolding.unfoldCandidates +
         // unigramsByPrefix loop as the literal token, so a typo plus a missing umlaut ("twtsach..." ->
         // "tatsächlich") is resolved in one pass. Suggestion-only by construction - it populates the same
         // candidates map, so S-02 (never the exact input) and A-04 (blacklist) apply unchanged.
@@ -154,7 +163,7 @@ class DictionarySuggestionProvider(
                 if (isCancelled()) {
                     break
                 }
-                for (unfolded in Umlaut.unfoldCandidates(prefixVariant)) {
+                for (unfolded in diacriticFolding.unfoldCandidates(prefixVariant)) {
                     if (isCancelled()) {
                         break
                     }
@@ -266,7 +275,7 @@ class DictionarySuggestionProvider(
         if (token.length < MIN_FUZZY_LENGTH) {
             return emptyList()
         }
-        val folded = Umlaut.fold(token)
+        val folded = diacriticFolding.fold(token)
         val result = ArrayList<Pair<String, Int>>()
         for (candidate in store.correctionCandidates(token, candidateFirstChars(token))) {
             if (isCancelled()) {
@@ -341,7 +350,7 @@ class DictionarySuggestionProvider(
         if (token.length < MIN_WIDE_FUZZY_LENGTH) {
             return emptyList()
         }
-        val folded = Umlaut.fold(token)
+        val folded = diacriticFolding.fold(token)
         val result = ArrayList<Pair<String, Int>>()
         for (candidate in store.correctionCandidates(token, candidateFirstChars(token))) {
             if (isCancelled()) {
@@ -362,9 +371,11 @@ class DictionarySuggestionProvider(
     
     /**
      * The initial letters to search for correction candidates of [token] (D-38): its own first character,
-     * its keyboard neighbours (so a first-key typo like `eerden` -> `werden` is reachable) and its umlaut
-     * variant when it starts with `a` / `o` / `u` (so `Uberblick` -> `Überblick`).
-     * 
+     * its keyboard neighbours (so a first-key typo like `eerden` -> `werden` is reachable) and, since D-435,
+     * [diacriticFolding]'s own known diacritic variants of that first character (for German, `a`/`o`/`u` ->
+     * `ä`/`ö`/`ü`, so `Uberblick` -> `Überblick`) - a language with no diacritic handling of its own
+     * ([NoOpDiacriticFolding]) simply contributes none here.
+     *
      * @param token the lower-cased token
      * @return the set of initial letters to search
      */
@@ -373,18 +384,14 @@ class DictionarySuggestionProvider(
         val result = HashSet<Char>()
         result.add(first)
         result.addAll(KeyboardProximity.neighboursOf(first))
-        when (first) {
-            'a' -> result.add('ä')
-            'o' -> result.add('ö')
-            'u' -> result.add('ü')
-        }
+        result.addAll(diacriticFolding.variantsOf(first))
         return result
     }
     
     /**
      * D-328: every single-position keyboard-neighbour substitution of [token] (e.g. "vetmut" -> "vermut"),
      * capped at [MAX_NEIGHBOUR_PREFIX_VARIANTS]. Each variant, once fed back through
-     * [Umlaut.unfoldCandidates] and [DictionaryStore.unigramsByPrefix] by the caller, reaches completions
+     * [diacriticFolding]'s own `unfoldCandidates` and [DictionaryStore.unigramsByPrefix] by the caller, reaches completions
      * whose real spelling the user mistyped at exactly one position - the prefix-completion counterpart of
      * [candidateFirstChars]'s own first-character neighbour broadening, extended to every position. Used only
      * as an escalation when the literal prefix found nothing, so a correctly-typed word never pays for it.
@@ -426,7 +433,7 @@ class DictionarySuggestionProvider(
      * @return the total weighted edit cost, or a value guaranteed to exceed [maxCost] when the true cost does
      */
     private fun correctionCost(foldedToken: String, candidateLower: String, maxCost: Int): Int {
-        return EditDistance.weightedDistance(foldedToken, Umlaut.fold(candidateLower), INDEL_COST, maxCost) { x, y ->
+        return EditDistance.weightedDistance(foldedToken, diacriticFolding.fold(candidateLower), INDEL_COST, maxCost) { x, y ->
             when {
                 x == y -> 0
                 KeyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
@@ -451,8 +458,8 @@ class DictionarySuggestionProvider(
      * more common same-bucket words before ever reaching the comparison below, e.g. "Gruße" failing to
      * restore to "Grüße" (frequency 18) while falling back to an unrelated fuzzy match instead.
      * 
-     * D-204: the fold-equality check itself now accepts either of [Umlaut.foldVariants]' variants for the
-     * candidate side, not only [Umlaut.fold]'s own "ss" convention - so a token typed via this app's own
+     * D-204: the fold-equality check itself now accepts either of [diacriticFolding]'s own `foldVariants`
+     * variants for the candidate side, not only `fold`'s own "ss" convention - so a token typed via this app's own
      * long-press-alternative convention (e.g. "gruse" for "Grüße", `ß` reached by long-pressing `s`) is
      * recognised as an equally exact match, not left to the edit-cost-budgeted/frequency-floored fuzzy path.
      * 
@@ -465,12 +472,12 @@ class DictionarySuggestionProvider(
         if (token.length < MIN_FUZZY_LENGTH || isKnownWord(token)) {
             return null
         }
-        val folded = Umlaut.fold(token)
+        val folded = diacriticFolding.fold(token)
         return store.diacriticCandidates(token, candidateFirstChars(token))
             .asSequence()
             .filter { candidate ->
                 val lower = candidate.lowercase()
-                lower != token && !store.isBlacklisted(candidate) && Umlaut.foldVariants(lower).contains(folded)
+                lower != token && !store.isBlacklisted(candidate) && diacriticFolding.foldVariants(lower).contains(folded)
             }
             .maxByOrNull { score(it, store.frequencyOf(it), previousWord) }
     }
@@ -601,7 +608,7 @@ class DictionarySuggestionProvider(
         if (Acronym.isAcronym(input)) {
             return null
         }
-        val folded = Umlaut.fold(token)
+        val folded = diacriticFolding.fold(token)
         val best = store.correctionCandidates(token, candidateFirstChars(token))
             .asSequence()
             .filter { it.lowercase() != token && !store.isBlacklisted(it) }

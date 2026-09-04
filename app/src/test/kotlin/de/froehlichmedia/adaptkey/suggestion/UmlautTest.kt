@@ -118,4 +118,23 @@ class UmlautTest {
         assertEquals(listOf("grun"), Umlaut.foldVariants("grün"))
         assertEquals(listOf("default"), Umlaut.foldVariants("default"))
     }
+    
+    @Test
+    fun `D-435 variantsOf returns the umlaut variant for a b c`() {
+        assertEquals(setOf('ä'), Umlaut.variantsOf('a'))
+        assertEquals(setOf('ö'), Umlaut.variantsOf('o'))
+        assertEquals(setOf('ü'), Umlaut.variantsOf('u'))
+    }
+    
+    @Test
+    fun `D-435 variantsOf is empty for a character with no umlaut, including s despite hosting sharp s`() {
+        assertEquals(emptySet<Char>(), Umlaut.variantsOf('s'))
+        assertEquals(emptySet<Char>(), Umlaut.variantsOf('x'))
+    }
+    
+    @Test
+    fun `D-435 Umlaut implements DiacriticFolding`() {
+        val folding: DiacriticFolding = Umlaut
+        assertEquals("grun", folding.fold("grün"))
+    }
 }

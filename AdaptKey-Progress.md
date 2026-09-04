@@ -554,8 +554,16 @@ non-trivial changes).
     `ACTION_OPEN_DOCUMENT_TREE` folder grant it depended on turned out to be refused outright for the
     Downloads folder itself on a real device. The post-import 60-second-old cleanup half of D-386 survives
     unchanged (now against a directly-picked file) - see spec §30.
-  - **D-387 - OPEN.** Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages - know
-    each language's own base letters and their diacritic variants.
+  - **D-387 - PARTIALLY RESOLVED (§401, v1.1.40); still OPEN for the actual multi-language content.** While
+    discussing this item, found and fixed a genuine bug it was resting on (D-435, see Current State): the
+    umlaut/diacritic mechanism itself (D-144/D-204) was called unconditionally regardless of active language,
+    not merely "missing" for other languages. §401 built the general architecture (a `DiacriticFolding`
+    interface, per-language-resolved, defaulting to a no-op rather than German's own map) but deliberately
+    stopped there, on the user's own explicit instruction to fix the bug first and design the actual
+    per-language data mechanism (a `diacritics.tsv`-style file, base-letter -> known variants, generalising
+    the L-05 AltGr host-key convention) afterward - see §401 for the design discussion so far. Still nothing
+    beyond German (`Umlaut`) has a real implementation - every other language still resolves to the new
+    no-op default, functionally unchanged from before this round for anyone but German.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
   - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99 + §348 v1.0.100 + §349 v1.0.101).**
@@ -787,6 +795,60 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§401 (v1.1.40): D-435 - the umlaut/diacritic unfold mechanism (`Umlaut`, D-144/D-204) was called**
+  **unconditionally from `DictionarySuggestionProvider`/`TokenRepair`, regardless of the active language - a
+  genuine bug (the user's own framing, discussed while working through D-387), not merely a feature missing
+  for other languages.** Found by design-reviewing D-387 ("extend the umlaut mechanism to other languages"):
+  `Umlaut.fold`/`unfoldCandidates`/`foldVariants` were called directly as a global object at ~10 call sites
+  across both classes, never routed through the per-language `languageRules: LanguageRules` seam (D-410)
+  both classes already receive - so a French/Turkish/Polish active store got exactly German's umlaut handling
+  bolted on with no way to ever get its own, or none at all.
+
+  Fixed with a new `DiacriticFolding` interface (`fold`/`unfoldCandidates`/`foldVariants`/`variantsOf`,
+  mirroring `LanguageRules`' own D-410 shape) and `NoOpDiacriticFolding` as the default - explicitly **not**
+  `Umlaut`, per the user's own explicit call: "es bringt Türkisch überhaupt nichts, wenn der Default auf
+  deutsche Umlaute geht." `Umlaut` now implements the interface directly (unchanged behaviour, including its
+  D-204 ß dual-convention special case, left entirely alone - not worth the regression risk on a historically
+  fragile mechanism for a round that isn't even about German). New `DiacriticFoldingRegistry`
+  (`language` package, mirrors `LanguageRulesRegistry` exactly) maps only `GERMAN -> Umlaut`; every other
+  language resolves to `NoOpDiacriticFolding`, wired into all four real per-language construction sites in
+  `AdaptKeyService.kt` (`installStores()`, the aggressiveness-change provider rebuild, the English-bootstrap
+  `tokenRepair`, and `selectActiveDictionary()`'s own per-token repoint - the same four spots
+  `LanguageRulesRegistry.rulesFor()` is already threaded through). `candidateFirstChars()`'s own hardcoded
+  `'a'/'o'/'u' -> 'ä'/'ö'/'ü'` `when` block is now `diacriticFolding.variantsOf(first)` - the same bug, a
+  different call site than the `Umlaut.*` grep would have found on its own.
+
+  Since the default flipped from "always German" to "no-op", every existing German-context test/caller that
+  relied on the old unconditional behaviour needed `diacriticFolding = Umlaut` added explicitly:
+  `DictionarySuggestionProviderTest`'s and `TokenRepairTest`'s own primary `provider`/`repair` instances,
+  `SqliteDictionaryStoreRoboTest`'s three (one of which, `missingUmlautCorrectsToTheUmlautWordNotAShapeAlike`,
+  turned out to have been passing only by *accident* - via a same-edit-distance-1 frequency tie-break, not the
+  intended fold-distance-0 exact match its own comment describes - restoring the real mechanism here rather
+  than leaving a silently-fragile pass in place), and `BundledDictionaryDataTest`'s real-dictionary split test.
+  New tests: `UmlautTest` (`variantsOf`, interface conformance), `NoOpDiacriticFoldingTest`,
+  `DiacriticFoldingRegistryTest`, plus a `D-435` regression test in each of
+  `DictionarySuggestionProviderTest`/`TokenRepairTest` proving a `NoOpDiacriticFolding`-configured instance
+  does *not* restore German umlauts (the exact shape of bug this closes). 1262 -> 1273 unit tests, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §1 guiding principle gained a D-435 addendum.
+  `versionCode` 456 -> 457, `versionName` `"1.1.39"` -> `"1.1.40"`.
+
+  **Deliberately stopped here, not merged with the actual D-387 language extension**: this round is the
+  architecture fix only - no language beyond German has a real `DiacriticFolding` implementation yet, so
+  behaviour for every other language is unchanged (still no diacritic handling, now honestly so instead of
+  accidentally-German). The user's own explicit plan: fix the bug first, then design the actual per-language
+  data mechanism next. Two design points already raised in that follow-up discussion, worth recording before
+  they're lost: (1) the *direction* that matters for `unfoldCandidates` is always base-letter -> known-variants
+  (never the reverse), so a language needing several diacritic variants per base letter (French `e` -> `é è ê
+  ë`) generalises the existing per-position combinatorial branching cleanly - no per-language algorithm
+  differences needed, only a richer `Map<Char, List<Char>>` than German's own 1:1 `VOWEL_UNFOLD`; (2) the L-05
+  AltGr "host key" concept - exactly one physical key hosts a given diacritic - generalises as the universal
+  substitution rule for essentially every target language's diacritics (dropping the diacritic mark already
+  equals the host-key letter for e.g. French/Spanish/Turkish/Polish), so D-204's dual ASCII-convention
+  complexity (ß's separate formal-"ss"-vs-host-key-"s" split) is a genuine German (and structurally, Nordic
+  æ/ø/å) special case, not a shape every language's `DiacriticFolding` needs to support - `foldVariants`
+  likely stays single-valued for every new implementation. Neither point is implemented yet; see whatever
+  later round actually builds the `diacritics.tsv` mechanism for the outcome.
 
 - **§400 (v1.1.39): D-434 - `Abbreviations.isNonTerminalPeriod`/`isAbbreviation` always checked the token**
   **against the German list regardless of the active language - a genuine cross-language leak, found while

@@ -100,6 +100,7 @@ import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
 import de.froehlichmedia.adaptkey.keyboard.SignFlip
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
+import de.froehlichmedia.adaptkey.language.DiacriticFoldingRegistry
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
 import de.froehlichmedia.adaptkey.language.LanguageClassifier
@@ -924,7 +925,10 @@ class AdaptKeyService : InputMethodService() {
         stores = newStores
         autocorrectAggressiveness = settings.autocorrectAggressiveness
         providers = newStores.mapValues { (language, store) ->
-            DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness, LanguageRulesRegistry.rulesFor(language))
+            DictionarySuggestionProvider(
+                store, config.maxSuggestions * 2, autocorrectAggressiveness,
+                LanguageRulesRegistry.rulesFor(language), DiacriticFoldingRegistry.foldingFor(language)
+            )
         }
         engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
         if (activeLanguage !in newStores) {
@@ -936,7 +940,9 @@ class AdaptKeyService : InputMethodService() {
         dictionaryStore = english
         provider = providers.getValue(Language.ENGLISH)
         capitalisation = engines.getValue(Language.ENGLISH)
-        tokenRepair = TokenRepair(english, LanguageRulesRegistry.rulesFor(Language.ENGLISH))
+        tokenRepair = TokenRepair(
+            english, LanguageRulesRegistry.rulesFor(Language.ENGLISH), DiacriticFoldingRegistry.foldingFor(Language.ENGLISH)
+        )
         newStores[Language.GERMAN]?.let { seedBundledBlacklist(it) }
     }
     
@@ -1257,7 +1263,10 @@ class AdaptKeyService : InputMethodService() {
             controller = SuggestionController(config)
             if (this::stores.isInitialized) {
                 providers = stores.mapValues { (language, store) ->
-                    DictionarySuggestionProvider(store, config.maxSuggestions * 2, autocorrectAggressiveness, LanguageRulesRegistry.rulesFor(language))
+                    DictionarySuggestionProvider(
+                        store, config.maxSuggestions * 2, autocorrectAggressiveness,
+                        LanguageRulesRegistry.rulesFor(language), DiacriticFoldingRegistry.foldingFor(language)
+                    )
                 }
                 // Re-point the active provider onto English (always present); selectActiveDictionary
                 // corrects the language per token immediately afterwards, same reasoning as installStores.
@@ -6450,7 +6459,9 @@ class AdaptKeyService : InputMethodService() {
         provider = providers.getValue(choice.language)
         capitalisation = engines.getValue(choice.language)
         dictionaryStore = stores.getValue(choice.language)
-        tokenRepair = TokenRepair(dictionaryStore, LanguageRulesRegistry.rulesFor(choice.language))
+        tokenRepair = TokenRepair(
+            dictionaryStore, LanguageRulesRegistry.rulesFor(choice.language), DiacriticFoldingRegistry.foldingFor(choice.language)
+        )
         return choice
     }
     

@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.dictionary
 
 import de.froehlichmedia.adaptkey.language.GermanRules
 import de.froehlichmedia.adaptkey.language.NoOpLanguageRules
+import de.froehlichmedia.adaptkey.suggestion.Umlaut
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -29,7 +30,7 @@ class TokenRepairTest {
         listOf("und", "das", "aber", "bald", "ist", "ich").forEach { word ->
             store.putWord(WordEntry(word, frequency = 10L))
         }
-        repair = TokenRepair(store)
+        repair = TokenRepair(store, diacriticFolding = Umlaut)
     }
     
     @Test
@@ -229,6 +230,18 @@ class TokenRepairTest {
         store.putWord(WordEntry("es", frequency = 400_000L))
         
         assertEquals(SplitResult("gehort", "es", "gehört", "es"), repair.trySplit("gehortes", emptySet()))
+    }
+    
+    @Test
+    fun `D-435 a language with no DiacriticFolding of its own never resolves a half via German umlaut restoration`() {
+        // Same fix as DictionarySuggestionProviderTest's identical test: before D-435, Umlaut.unfoldCandidates
+        // was called unconditionally inside resolveWord regardless of language, so "uber" resolved to "über"
+        // even for a language whose own TokenRepair never asked for that. A NoOp-configured instance must not.
+        val noOpRepair = TokenRepair(store)
+        store.putWord(WordEntry("über", frequency = 500L, partsOfSpeech = setOf(PartOfSpeech.PREPOSITION)))
+        store.putWord(WordEntry("wort", frequency = 4_084L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        assertNull(noOpRepair.trySplit("uberwort", emptySet()))
     }
     
     @Test

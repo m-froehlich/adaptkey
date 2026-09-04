@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.dictionary
 
 import de.froehlichmedia.adaptkey.language.NoOpLanguageRules
+import de.froehlichmedia.adaptkey.suggestion.Umlaut
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Test
 class DictionarySuggestionProviderTest {
     
     private val store = InMemoryDictionaryStore()
-    private val provider = DictionarySuggestionProvider(store)
+    private val provider = DictionarySuggestionProvider(store, diacriticFolding = Umlaut)
     
     @Test
     fun `suggestionsFor ranks prefix matches by frequency`() {
@@ -489,6 +490,17 @@ class DictionarySuggestionProviderTest {
         // ß is a diacritic too: a typed "russ" restores to the sharp-s spelling.
         store.putWord(WordEntry("ruß", 30L))
         assertEquals("ruß", provider.diacriticRestoration("russ", null))
+    }
+    
+    @Test
+    fun `D-435 a language with no DiacriticFolding of its own never restores German umlauts`() {
+        // The exact fix for the cross-language leak: before D-435, Umlaut.* was called unconditionally
+        // regardless of which language's own provider this was, so a non-German language got German's
+        // restoration behaviour "for free". A provider left on the NoOpDiacriticFolding default must not.
+        val noOpProvider = DictionarySuggestionProvider(store)
+        store.putWord(WordEntry("können", 100L))
+        
+        assertEquals(null, noOpProvider.diacriticRestoration("konnen", null))
     }
     
     @Test

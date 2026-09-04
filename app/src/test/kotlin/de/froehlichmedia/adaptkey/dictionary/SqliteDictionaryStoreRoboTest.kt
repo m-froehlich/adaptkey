@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.suggestion.Umlaut
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -136,7 +137,7 @@ class SqliteDictionaryStoreRoboTest {
     fun autocorrectSuggestsTheSingleEditNeighbour() {
         val store = store("auto.db")
         store.putWord(WordEntry("haus", 100L, emptySet()))
-        val provider = DictionarySuggestionProvider(store)
+        val provider = DictionarySuggestionProvider(store, diacriticFolding = Umlaut)
         
         assertEquals("haus", provider.autocorrectFor("hous", null))
         assertEquals(null, provider.autocorrectFor("haus", null)) // A-01: a known word is not corrected
@@ -167,7 +168,7 @@ class SqliteDictionaryStoreRoboTest {
                 seeded++
             }
         }
-        val provider = DictionarySuggestionProvider(store)
+        val provider = DictionarySuggestionProvider(store, diacriticFolding = Umlaut)
         
         assertEquals("können", provider.autocorrectFor("konnen", null))
         assertEquals("müssen", provider.autocorrectFor("mussen", null))
@@ -181,7 +182,7 @@ class SqliteDictionaryStoreRoboTest {
         val store = store("umlaut-ambiguous.db")
         store.putWord(WordEntry("konnten", 200L, emptySet()))
         store.putWord(WordEntry("könnten", 900L, emptySet()))
-        val provider = DictionarySuggestionProvider(store)
+        val provider = DictionarySuggestionProvider(store, diacriticFolding = Umlaut)
         
         assertEquals(null, provider.autocorrectFor("konnten", null))
         assertTrue(provider.suggestionsFor("konnten", null).any { it.word == "könnten" })

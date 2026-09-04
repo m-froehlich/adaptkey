@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.suggestion.Umlaut
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -43,7 +44,7 @@ class BundledDictionaryDataTest {
         val store = InMemoryDictionaryStore()
         DictionaryAssetParser.parseWords(read("../dictionaries/de/dict.tsv", "dictionaries/de/dict.tsv"))
             .forEach { store.putWord(it) }
-        val repair = TokenRepair(store)
+        val repair = TokenRepair(store, diacriticFolding = Umlaut)
         
         // Index 4 is the 's' between "Tipp" and "til" - flagged space-ambiguous in the real device report.
         assertNull(repair.trySplit("Tippstil", setOf(4)))

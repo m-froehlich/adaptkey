@@ -8,8 +8,12 @@ package de.froehlichmedia.adaptkey.suggestion
  * typed without the diacritic (e.g. "grun") matches its correct form ("grün") under the single-edit
  * distance (D-12). Applied to both sides before comparing, it makes an umlaut/ß variant a distance-0
  * match rather than an unreachable one; non-German text is left unchanged.
+ *
+ * D-435: implements [DiacriticFolding] - the single German-specific instance behind that interface's own
+ * per-language seam. Not the default any language falls back to (see [NoOpDiacriticFolding]); only ever
+ * wired in for [de.froehlichmedia.adaptkey.language.Language.GERMAN].
  */
-object Umlaut {
+object Umlaut : DiacriticFolding {
     
     /**
      * Returns [text] with every umlaut / sharp-s folded to its ASCII base (uppercase umlauts fold to the
@@ -18,7 +22,7 @@ object Umlaut {
      * @param text the text to fold
      * @return the folded text
      */
-    fun fold(text: String): String {
+    override fun fold(text: String): String {
         val builder = StringBuilder(text.length)
         for (c in text) {
             when (c) {
@@ -49,7 +53,7 @@ object Umlaut {
      * @param text the lower-cased text to generate unfold candidates for (typically a composing prefix)
      * @return the candidates, [text] itself always first, each one otherwise unique
      */
-    fun unfoldCandidates(text: String): List<String> {
+    override fun unfoldCandidates(text: String): List<String> {
         val results = LinkedHashSet<String>()
         results.add(text)
         unfold(text, 0, StringBuilder(), results)
@@ -134,9 +138,23 @@ object Umlaut {
      * @param text the text to fold
      * @return the distinct fold variants of [text]
      */
-    fun foldVariants(text: String): List<String> {
+    override fun foldVariants(text: String): List<String> {
         val standard = fold(text)
         val hostKey = foldToHostKey(text)
         return if (hostKey == standard) listOf(standard) else listOf(standard, hostKey)
+    }
+    
+    /**
+     * D-435: the base-character generalisation [DiacriticFolding.variantsOf] needs - derived directly from
+     * [VOWEL_UNFOLD], the same table [unfold] itself already uses. `'s'` deliberately excluded despite
+     * hosting `ß` (L-05): unlike a genuine word-initial umlaut vowel, German has no real word starting with
+     * `ß`, so [de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider.candidateFirstChars]'s
+     * pre-D-435 hardcoded `when` block never included it either - this preserves that exactly.
+     *
+     * @param char a single lower-case base character
+     * @return `{ 'ä' }`/`{ 'ö' }`/`{ 'ü' }` for `a`/`o`/`u` respectively, empty otherwise
+     */
+    override fun variantsOf(char: Char): Set<Char> {
+        return VOWEL_UNFOLD[char]?.let { setOf(it) } ?: emptySet()
     }
 }

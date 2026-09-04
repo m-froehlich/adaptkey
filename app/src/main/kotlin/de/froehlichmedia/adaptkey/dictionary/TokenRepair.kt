@@ -5,7 +5,8 @@ package de.froehlichmedia.adaptkey.dictionary
 
 import de.froehlichmedia.adaptkey.language.GermanRules
 import de.froehlichmedia.adaptkey.language.LanguageRules
-import de.froehlichmedia.adaptkey.suggestion.Umlaut
+import de.froehlichmedia.adaptkey.suggestion.DiacriticFolding
+import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
 
 /**
  * The two words a token was split into (A-05); both are returned in lower case, so the caller applies
@@ -83,8 +84,17 @@ data class SplitResult(
  *
  * @property store the backing dictionary store
  * @property languageRules the active language's own split/inflection rules (see class KDoc above)
+ * @property diacriticFolding D-435: the active language's own diacritic unfold handling (see
+ *           [DiacriticFolding]), used by [resolveWord] to recognise a split half typed without its
+ *           diacritic. Unlike [languageRules], defaults to [NoOpDiacriticFolding] - see
+ *           [DictionarySuggestionProvider]'s own identical property for why German is never a sensible
+ *           fallback for another language.
  */
-class TokenRepair(private val store: DictionaryStore, private val languageRules: LanguageRules = GermanRules) {
+class TokenRepair(
+    private val store: DictionaryStore,
+    private val languageRules: LanguageRules = GermanRules,
+    private val diacriticFolding: DiacriticFolding = NoOpDiacriticFolding
+) {
     
     /**
      * Attempts to split [token] into two words (A-05).
@@ -300,7 +310,7 @@ class TokenRepair(private val store: DictionaryStore, private val languageRules:
         if (languageRules.blocksAsFeminineAgentException(right, left, isNoun(leftEntry))) {
             return null
         }
-        // D-268: leftEntry/rightEntry already resolved through Umlaut.unfoldCandidates() above - their own
+        // D-268: leftEntry/rightEntry already resolved through diacriticFolding.unfoldCandidates() above - their own
         // .word carries the real, umlaut/ß-restored dictionary spelling (e.g. "gehört", not the typed
         // "gehort") whenever that is what actually matched. Lower-cased back to match left/right's own
         // always-lower-case contract (candidateAt/trySplit both operate on an already-lower-cased token) -
@@ -312,8 +322,8 @@ class TokenRepair(private val store: DictionaryStore, private val languageRules:
     
     /**
      * §128 / D-203: [raw] itself first (the common case - nothing to unfold), then every plausible
-     * umlaut/ß-restored spelling ([Umlaut.unfoldCandidates]), so a half typed without its diacritic still
-     * resolves to its real dictionary entry.
+     * diacritic-restored spelling ([diacriticFolding]'s own `unfoldCandidates`, D-435), so a half typed
+     * without its diacritic still resolves to its real dictionary entry.
      *
      * D-214: returns the resolved [WordEntry] itself, not just its word - [candidateAt] needs the
      * frequency and part-of-speech [isNoun]/[score] would otherwise each independently re-fetch from the
@@ -323,7 +333,7 @@ class TokenRepair(private val store: DictionaryStore, private val languageRules:
      * @return the matched, non-blacklisted entry, or null when no variant matches
      */
     private fun resolveWord(raw: String): WordEntry? {
-        for (candidate in Umlaut.unfoldCandidates(raw)) {
+        for (candidate in diacriticFolding.unfoldCandidates(raw)) {
             if (store.isBlacklisted(candidate)) {
                 continue
             }

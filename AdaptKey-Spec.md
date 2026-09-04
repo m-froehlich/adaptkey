@@ -37,6 +37,14 @@ mirroring `ä`/`ö`/`ü` on `a`/`o`/`u` - a lazily-tapped bare `s` is a direct s
 `"gruse"` for `"Grüße"`). Neither convention may crowd out the other, and a match under either must never be
 demoted to a frequency-ranked fuzzy candidate - it is exact, and must be offered as such (see A-01/S-06).
 
+D-435: the mechanism behind this principle (`Umlaut`, D-144/D-204's fold/unfold/restoration) is resolved per
+the active language via `DiacriticFoldingRegistry`, exactly the way L-05's AltGr hints and the D-410
+`LanguageRules` seam already are - **not** a global, unconditional mechanism any more. A language without its
+own real implementation gets a no-op default, never German's own `ä`/`ö`/`ü`/`ß` map (that map would help
+nothing for, say, Turkish or Polish) - so this guiding principle's own "never throw the autocorrect off its
+stride" promise is, today, still German-specific in practice; extending it to other languages' own diacritics
+is D-387, open, deliberately not part of this fix.
+
 ### Guiding Principle - `onUpdateSelection`'s Self-Recognition Mechanism Is Foundational
 
 Getting `AdaptKeyService.onUpdateSelection()` to correctly recognise the IME's own edits took three full
