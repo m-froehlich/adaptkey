@@ -366,13 +366,36 @@ non-trivial changes).
   false-positive split is reported again (for German or any other bundled language), treat it the same way
   rather than assuming §301 caught everything.
 
-- **D-314 built French's AZERTY *geometry* only - no `dictionaries/fr/` pack (dict/bigram/hints/version)**
-  **exists yet, and `LanguagePackCatalog.ENTRIES` has no `Language.FRENCH` entry.** French is now fully
-  typeable (the layout is real, compiled, and wired to `Language.FRENCH`) but not yet usable end to end as a
-  language pack - a French speaker gets the right keys but no dictionary/autocorrect/suggestions until
-  someone builds and hosts one, following the Contribution Guide's own §3/§4. Not started; flagging so a
-  future session (or an actual French-speaking contributor) doesn't have to rediscover that the geometry and
-  the content are two separate, independently-completed pieces of this feature.
+- **D-441 - RESOLVED (§413, v1.1.52): D-314's AZERTY geometry now has a real `dictionaries/fr/` pack**
+  **behind it - the full one-shot pipeline from the Language Contribution Guide's own §8, run end to end**
+  **on explicit user request to see how well it works, fully autonomously.** See §413 in Current State for
+  the complete build method, real numbers, and every deliberate scope cut. Short version: `dict.tsv` (12,000
+  words, real `hermitdave/FrequencyWords` OpenSubtitles-corpus frequencies, rule-based POS tagging - no
+  per-word LLM pass, that does not scale), `bigram.tsv` (real French-Wikipedia-derived, smaller than
+  German/Greek's own full-dump corpus - the live-fetch approach hit Wikipedia's anonymous-API rate limit
+  partway through), `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` (French's own, not a German reuse),
+  `FrenchRules` (`LanguageRulesRegistry`, the three naively-fillable hooks only), one `LanguagePackCatalog`
+  entry. **A genuinely new, structural finding surfaced along the way, not specific to French**: §6 rules
+  3/4 (automatic noun capitalisation) are not gated by `Language` anywhere in `CapitalisationEngine` - see
+  the new D-441 addendum to spec §6. **Not yet done, flagged honestly per the guide's own step 11**: no
+  native French speaker has sanity-checked the output yet - this is a "pretty good", pipeline-built pack,
+  not native-reviewed quality, and should not be treated as ready to publish without that review. Also
+  still open: a real AZERTY-adjacency confusables scan (guide step 7) turned out to need
+  `KeyboardProximity` to be layout-aware, which it is not today - `bundledConfusablesBlacklist()` stays
+  empty for French, same as it always has for English/Greek.
+
+- **`KeyboardProximity` is hardcoded to the QWERTZ row geometry - not aware of `LayoutKind`/`AzertyLayout`**
+  **at all.** Found while building French's D-441 language pack, trying to run the Language Contribution
+  Guide's own step-7 confusables scan against AZERTY - the scan technique (checking real keyboard-adjacent
+  word pairs for autocorrect collision risk) only makes sense against the layout actually being typed on,
+  and `KeyboardProximity.ROWS` is a fixed `"1234567890"/"qwertzuiop"/"asdfghjkl"/"yxcvbnm"` regardless of
+  which language/layout is active - so a scan run today would silently check the wrong physical adjacency
+  for AZERTY (or any future non-QWERTZ Latin geometry). Affects every neighbour-typo correction signal
+  (D-28/D-38's own cheap-edit-distance boost, S-09's escalation), not merely the confusables-scan method -
+  a French/AZERTY user's actual physical typo neighbours are never what this class computes today. Not
+  fixed as part of D-441 - making `KeyboardProximity` layout-aware (parameterising `ROWS` by `LayoutKind`,
+  threading that through every caller) is real, if fairly mechanical, work of its own scope, deliberately
+  left open rather than folded into a dictionary-content round.
 
 - **D-280/D-281 follow-up: `SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language` enum and**
   **already fully typeable via QWERTY, but none has a dictionary or its own hint set built/hosted yet** - a
@@ -838,6 +861,33 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§413 (v1.1.52): D-441 - French language pack built end to end, fully autonomously, on explicit user**
+  **request to try the Language Contribution Guide's own §8 one-shot pipeline unattended.** D-314 already
+  built AZERTY's physical geometry; this round is the dictionary/hints/diacritics/abbreviations/rules
+  content. Full method, real numbers, and every deliberate scope cut are in `AdaptKey-History.md` §413 -
+  short version: `dict.tsv` (12,000 words, real `hermitdave/FrequencyWords` OpenSubtitles-corpus
+  frequencies rescaled to German's own magnitude, rule-based POS tagging with curated exception lists, no
+  per-word LLM pass), `bigram.tsv` (2,293 rows from a real but modest live-fetched French-Wikipedia
+  corpus - hit Wikipedia's own anonymous-API rate limit partway through, handled with retry/backoff rather
+  than abandoned), `hints.tsv`/`diacritics.tsv` (French's own AltGr/diacritic set, not a German reuse -
+  every real French accent reachable via a distinct key), `abbreviations.tsv`, `FrenchRules`
+  (`LanguageRulesRegistry`, the three naively-fillable hooks only), one `LanguagePackCatalog` entry.
+  **A genuinely new, structural finding, not specific to French**: `CapitalisationEngine`'s §6 rule 3
+  ("pure noun -> auto-capitalise") is not gated by `Language` anywhere in the code - see the new D-441
+  addendum to spec §6. French common nouns are tagged `NOUN,OTHER` (never a bare `NOUN`) specifically to
+  avoid triggering it, verified directly (zero bare-`NOUN` rows in the final file). **Also found, filed as
+  its own separate open TODO**: `KeyboardProximity` is hardcoded to QWERTZ with no AZERTY awareness, so the
+  guide's own step-7 confusables scan could not actually be run against French's real layout -
+  `bundledConfusablesBlacklist()` stays empty for French, same as English/Greek.
+
+  1304 → 1309 unit tests (4 new `LanguageRulesTest` cases for `FrenchRules`, one existing assertion
+  corrected - `Language.FRENCH` no longer resolves to `NoOpLanguageRules`), all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec §6 gained the D-441 capitalisation-mechanism
+  addendum. `versionCode` 468 -> 469, `versionName` `"1.1.51"` -> `"1.1.52"`. **Not device-confirmed, and -**
+  **per the guide's own mandatory step 11 - deliberately NOT claimed to have passed a native-French-speaker**
+  **review yet.** This is a "pretty good", pipeline-built pack, not native-reviewed quality; do not publish
+  it as more than that until a real French speaker has sanity-sampled the output.
 
 - **§412 (v1.1.51): D-440-followup - device feedback on §411: the chip now correctly shows "Fröhlich"/**
   **"Grüße", but tapping it still inserted "fröhlich"/"grüße".** A second, independent call site with the

@@ -1,0 +1,10 @@
+# French diacritic-fold table (D-436) - base letter -> every real accented variant, so a token typed
+# without its accent ("ecole") still reaches the correctly-spelled word ("école"), both live while
+# typing and at autocorrect/split-repair time. hints.tsv (same folder) picks one representative
+# symbol per key for the AltGr long-press hint; this file keeps the complete set per base letter.
+a	à,â,æ
+c	ç
+e	é,è,ê,ë
+i	î,ï
+o	ô,œ
+u	ù,û

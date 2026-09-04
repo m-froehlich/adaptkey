@@ -795,6 +795,20 @@ homograph pairs have been re-tagged to the ambiguous case; a scan found roughly 
 of the same shape, deliberately left unfixed as an open safety-vs-fluency product decision, not a bug to be
 silently resolved).
 
+D-441: rules 3/4 are **not** gated by [`Language`](language/Language.kt) anywhere in
+`CapitalisationEngine.capitalise()` - "a pure noun is capitalised automatically" fires for any word whose
+only tags are `NOUN`/`PROPER_NOUN`, in any active language's own dictionary. German capitalising every common
+noun is therefore not a special case the code recognises - it is simply the outcome of German's own `dict.tsv`
+tagging real common nouns as a bare `NOUN`. A language that does not share German's orthographic convention
+(French, like English, does not capitalise common nouns) must tag its own common nouns `NOUN,OTHER` instead
+of a bare `NOUN` - `isPureNoun` requires *every* tag to be `NOUN`/`PROPER_NOUN`, so pairing with `OTHER` keeps
+the real `NOUN` signal for A-05's split-safety gate (`PartOfSpeech.contains(NOUN)` still true) while correctly
+falling through to rule 5's "ambiguous, no automatic correction" outcome instead of rule 3. A genuine proper
+noun is unaffected either way (`isProper` is checked ahead of `isPureNoun`, and proper-noun capitalisation is
+not German-specific). This is the concrete mechanism behind the Language Contribution Guide's own §8 step 8
+("capitalisation-rule applicability is an explicit per-language decision, not a silent default") - see
+`dictionaries/fr/dict.tsv` for the first real non-German example.
+
 Rules 3/4's outcome is now visible in the suggestion bar *before* it silently applies, via S-06's extended
 scope covering pending capitalisation-only changes - not only pending spelling substitutions. Rule 2 has no
 equivalent pending state to preview any more (D-405) - it is resolved live, before the word is even typed,

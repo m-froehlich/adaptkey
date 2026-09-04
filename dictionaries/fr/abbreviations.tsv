@@ -1,0 +1,33 @@
+# French sentence-boundary abbreviations (D-434, §6) - a period after one of these does not by itself
+# mark a sentence end, so §6's auto-capitalisation does not fire right after it. Lower-cased, period
+# included, one per line, matching Abbreviations.parse()'s own format.
+m.
+mm.
+mme.
+mlle.
+dr.
+pr.
+me.
+st.
+ste.
+cf.
+ex.
+n°.
+art.
+vol.
+ch.
+av.
+bd.
+fig.
+p.
+pp.
+réf.
+tél.
+env.
+max.
+min.
+etc.
+c.-à-d.
+n.b.
+p.s.
+p.j.

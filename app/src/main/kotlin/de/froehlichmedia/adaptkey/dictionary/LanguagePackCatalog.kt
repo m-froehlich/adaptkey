@@ -449,6 +449,43 @@ object LanguagePackCatalog {
             // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 4 -> 5. No new
             // tests (data-only). Not yet device-confirmed.
             version = 5
+        ),
+        Entry(
+            Language.FRENCH,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-fr.zip",
+            // D-441: first French language pack, built following the Language Contribution Guide's own
+            // §8 "one-shot pipeline" end to end (D-314's AZERTY geometry already existed; this round is
+            // the dictionary/hints/diacritics/abbreviations/rules half). dict.tsv: top 12,000 words from
+            // hermitdave/FrequencyWords' real OpenSubtitles-2018-derived fr_50k list (MIT licence),
+            // rescaled to German's own frequency magnitude (rank-1 -> ~1,000,000, matching German's own
+            // max), rule-based POS tagged (hand-curated closed-class/irregular-verb lists plus
+            // suffix heuristics with curated exception tables for the common false positives found while
+            // sanity-sampling the output - "poussière"/"parfois"/"collier"-shaped cases). A French common
+            // noun is deliberately tagged NOUN,OTHER rather than a bare NOUN: CapitalisationEngine's own
+            // §6 rule 3 ("a pure noun is capitalised automatically") is unconditional, not gated by
+            // Language, and French - unlike German - does not capitalise common nouns; pairing with OTHER
+            // keeps the NOUN signal for A-05's split-safety gate while correctly leaving capitalisation
+            // untouched (matching the guide's own step 8 "explicit decision, not a silent default").
+            // bigram.tsv: 90 batches of live French Wikipedia random-article plaintext extracts fetched
+            // via the public MediaWiki API (no bulk dump download attempted - a real, if much smaller than
+            // German's own full-dump corpus, source), tokenised and counted, kept at >=3 occurrences.
+            // hints.tsv: French's own AltGr set, not a reuse of German's - built on the same "one accent
+            // per key, corner-glyph labelled" convention German established, keeping German's 10
+            // language-neutral math/typography assignments (b/d/f/h/m/n/p/q/v/x) and giving every one of
+            // the other 16 letters a distinct French accent/symbol (a=à, c=ç, e=é, g=œ, i=î, j=ï, k=ë,
+            // l=«, o=ô, r=», s=€, t=ê, u=ù, w=è, y=â, z=û) so every French accent is reachable somewhere.
+            // diacritics.tsv: e->é,è,ê,ë / a->à,â,æ / i->î,ï / o->ô,œ / u->ù,û / c->ç. abbreviations.tsv:
+            // a hand-curated French sentence-boundary abbreviation list. FrenchRules (LanguageRulesRegistry)
+            // added: decimalCommaGluesDigits=true, timeSuggestionWord=null (no French "Uhr" equivalent),
+            // bundledConfusablesBlacklist=empty - a real AZERTY keyboard-adjacency confusables scan (the
+            // guide's own step 7) turned out not to be possible yet: KeyboardProximity is hardcoded to the
+            // QWERTZ grid and has no AzertyLayout awareness, a genuine structural gap this round found and
+            // left open rather than silently scanning against the wrong physical layout (see
+            // AdaptKey-Progress.md's own Open TODOs). Capitalisation §6 rules 3/4 confirmed to simply never
+            // fire in practice for French (no word is tagged a bare NOUN). Not device-confirmed, and - per
+            // the guide's own mandatory step 11 - not yet reviewed by a native French speaker: this is a
+            // "pretty good", pipeline-built pack, not native-reviewed quality.
+            version = 1
         )
     )
 }

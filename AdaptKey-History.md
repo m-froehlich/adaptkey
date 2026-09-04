@@ -18379,3 +18379,130 @@ green. Spec: A-01 gained the D-404 Tier 2 addendum. `versionCode` 443 → 444, `
 worth a real-device sanity check that an ordinary known plural/singular pair no longer risks a silent
 autocorrect swap.
 
+## §413 - D-441: French language pack built end to end, fully autonomously, via the Language Contribution Guide's own §8 one-shot pipeline (v1.1.52)
+
+Explicit user request: try a genuine one-shot test of how well the Contribution Guide's own §8 pipeline
+works, unattended, for a real new language. D-314 had already built AZERTY's physical geometry (compiled
+Kotlin, wired to `Language.FRENCH`); this round is the other half - the actual dictionary/hints/
+diacritics/abbreviations/rules content, following the guide's own step ordering.
+
+**Base corpus (step 0).** No Wikipedia-dump extractor exists in this repo (a known gap the guide itself
+names) and building one from a multi-GB dump was not realistic for a one-sitting round, so two smaller,
+real, open-licensed sources were used instead, deliberately not fabricated: `dict.tsv`'s word list and
+frequencies come from `hermitdave/FrequencyWords` (MIT licence), the real 2018 OpenSubtitles-derived
+French frequency list (`fr_50k.txt`, downloaded and kept as `fr_50k_raw.txt` for reproducibility) - top
+12,000 entries after filtering apostrophe-contraction fragments (`c'`, `j'`, `qu'`, ...; matches the
+existing convention that neither the bundled German nor English dictionary carries any apostrophe
+entries either) and subtitle-specific verb-pronoun-inversion artefacts (`pouvez-vous`, `sommes-nous`).
+`bigram.tsv` comes from a live, real corpus instead of a static list: 90-ish batches of random French
+Wikipedia article plaintext (public MediaWiki API, `generator=random&prop=extracts&explaintext=1`),
+tokenised and counted, kept at >= 3 occurrences. This hit Wikipedia's own anonymous-API rate limit
+partway through (`HTTP 429`) - handled with a retry/backoff loop rather than abandoned, but the resulting
+corpus (~336,000 characters, 45,594 tokens) is real but far smaller than German/Greek's own full-Wikipedia-
+dump-derived `bigram.tsv` (79,937/an even larger Greek one) - 2,293 bigram rows here, an honest "pretty
+good" starting point, not parity with the hand-tuned German/Greek dictionaries built over many months of
+real device feedback.
+
+**Frequency-scale calibration (step 1).** hermitdave's raw counts (rank 1 "de" = 8,435,682) were linearly
+rescaled by `1,000,000 / 8,435,682` so the top word lands at German's own dict.tsv max order of magnitude
+(1,004,234) - a plain rescale that preserves the source corpus's own real Zipfian shape rather than
+inventing a new one.
+
+**Noise removal + POS tagging (steps 2-3), rule-based rather than a per-word LLM pass** (a 12,000-word
+list does not scale to individual LLM judgments in one sitting, per the guide's own step 2 note about
+batching). `PartOfSpeech` only has `NOUN`/`VERB`/`ADJECTIVE`/`PREPOSITION`/`PROPER_NOUN`/`OTHER` (no
+pronoun/article/conjunction/adverb tag of its own), so closed-class words tag `OTHER`, matching German's
+own convention. Hand-curated data: ~40 prepositions, a large irregular-verb-conjugated-form list (être/
+avoir/aller/faire/dire/pouvoir/vouloir/devoir/savoir/voir/venir/falloir/prendre/mettre/tenir/croire/
+partir/sortir/connaître/... and more) plus every irregular/regular `-re`/`-oir` infinitive by name (both
+suffixes turned out too noun-collision-prone - "poussière"/"lumière"/"miroir"/"tiroir" and hundreds like
+them - for a blanket suffix rule, unlike `-er`/`-ir`, which stayed suffix-rule-driven with a curated
+exception list built from real false positives found while sampling the output: "hiver"/"cancer"/"fer"/
+"mer"/"hier"/"collier"/"laser"/"avenir"/"souvenir" and more). Adjective suffixes (`-eux`/`-if`/`-al`/`-el`/
+`-ique`/`-able`/... ) got the same suffix-plus-exception-list treatment (`fois`/`parfois`/`hôtel`/`ciel`/
+`cheval`/`journal`/... excluded after being caught as false positives). Noun suffixes were kept
+deliberately narrow and high-confidence only (`-tion`/`-sion`/`-ité`/`-isme`/`-ance`/`-ence`, plus a
+curated `-ment`-noun exception list against the far more common `-ment`-adverb derivation) - everything
+else uncertain defaults to `OTHER`, per the guide's own explicit "prefer OTHER over leaving empty/
+over-claiming NOUN" advice. Result: 12,000 words, 454 tagged `NOUN,OTHER` (see below for why never a bare
+`NOUN`), 1,482 `VERB`, 772 `ADJECTIVE`, 40 `PREPOSITION`, 24 `PROPER_NOUN`, the remainder `OTHER`. Sampled
+across the whole frequency range by hand during development (every 400th/1000th row, plus targeted checks)
+and iterated three times on real false positives found that way - not claimed exhaustive, see the open
+native-review gate below.
+
+**A genuine, structural finding, not French-specific (step 8's "capitalisation-rule applicability" check):**
+`CapitalisationEngine.capitalise()`'s §6 rule 3 ("a pure noun is capitalised automatically") is **not**
+gated by `Language` anywhere in the code - it fires for any word whose only tags are `NOUN`/`PROPER_NOUN`,
+regardless of which language's dictionary produced it. German capitalising every common noun is therefore
+not a case the code itself recognises - it is purely an artefact of German's own `dict.tsv` tagging real
+common nouns as a bare `NOUN`. French (like English) does not capitalise common nouns, so every French
+common noun identified by the step-3 heuristics above is tagged `NOUN,OTHER`, never a bare `NOUN` -
+`isPureNoun` requires every tag to be `NOUN`/`PROPER_NOUN`, so pairing with `OTHER` keeps the real `NOUN`
+signal for A-05's split-safety gate while correctly falling through to rule 5's "ambiguous, no automatic
+correction" outcome instead of rule 3. Verified directly, not assumed: zero rows in the final `dict.tsv`
+carry a bare `NOUN` tag. A genuine proper noun is unaffected either way (`isProper` is checked ahead of
+`isPureNoun` in the hierarchy). Documented as a new addendum to spec §6, since this is durable, mechanism-
+level knowledge relevant to any future language contribution, not only French's own PR description. Two
+PROPER_NOUN candidates originally hand-listed ("pierre"/stone, "jean"/denim - both also real given names)
+were deliberately dropped from the proper-noun list once this mechanism was understood: `PROPER_NOUN`
+forces capitalisation unconditionally (`isProper` is checked first), so tagging either would have wrongly
+capitalised its far more frequent common-noun sense every time.
+
+**`hints.tsv`/`diacritics.tsv` (step 5) - French's own set, not a German reuse**, per the user's own
+explicit instruction to build on German's approach without copying its content. Kept German's 10
+language-neutral math/typography assignments unchanged (`b=*`, `d=°`, `f=ƒ`, `h=#`, `m=-`, `n=+`, `p=π`,
+`q=@`, `v=/`, `x=×`) and gave every other letter its own distinct French accent/symbol, since the corner-
+glyph hint makes the physical mnemonic (accent-on-its-vowel) unnecessary for discoverability - every real
+French accent ends up reachable somewhere: `a=à`, `c=ç`, `e=é`, `g=œ`, `i=î`, `j=ï`, `k=ë`, `l=«`, `o=ô`,
+`r=»`, `s=€`, `t=ê`, `u=ù`, `w=è`, `y=â`, `z=û`. `diacritics.tsv` (the complete per-base-letter variant
+set D-436's `DataDiacriticFolding` actually folds/unfolds against, distinct from `hints.tsv`'s single-
+symbol-per-key limit): `a→à,â,æ` / `c→ç` / `e→é,è,ê,ë` / `i→î,ï` / `o→ô,œ` / `u→ù,û`.
+
+**`abbreviations.tsv` (step 6)**: a hand-curated ~30-entry French sentence-boundary abbreviation list
+(`m.`/`mme.`/`dr.`/`cf.`/`ex.`/`etc.`/`c.-à-d.`/... ), the same low-risk-even-if-incomplete shape the
+guide describes.
+
+**Confusables scan (step 7) - attempted, found genuinely blocked, not silently skipped.**
+`KeyboardProximity` (the adjacency grid the scan method needs) is hardcoded to the QWERTZ row geometry
+with no `LayoutKind`/`AzertyLayout` awareness at all - a real keyboard-adjacency scan against AZERTY's
+actual physical layout is not possible without first making that class layout-aware, a genuine structural
+gap this round found rather than a pre-known limitation. Filed as its own open `AdaptKey-Progress.md` TODO
+(distinct from D-441 itself, since it affects every neighbour-typo correction signal - D-28/D-38/S-09 -
+not merely this one scan method) rather than silently scanning against the wrong physical layout or
+skipping the step without saying so. `FrenchRules.bundledConfusablesBlacklist()` stays empty for now, the
+same state English/Greek have always been in.
+
+**`LanguageRules` (step 9)**: `FrenchRules` object added, three naively-fillable hooks given real answers
+(`decimalCommaGluesDigits() = true` - French, like German, writes decimals with a comma;
+`timeSuggestionWord() = null` - no French equivalent of German's "Uhr"; `bundledConfusablesBlacklist() =
+emptySet()`, see above), the other six (German-specific compounding/inflection grammar) left `false`/`null`
+- the same documented, accepted degraded state `NoOpLanguageRules` gives every other language, not a naive
+guess at French grammar. Registered in `LanguageRulesRegistry.RULES`.
+
+**Character-trigram profile data (step 10)**: already present for `fr` in `language_profiles.tsv` since
+D-280 - no work needed.
+
+**Packaging (§4)**: `language-packs/adaptkey-lang-fr.zip` built from the six files at the archive root (no
+directory prefix), `LanguagePackCatalog.ENTRIES` gained one `Entry(Language.FRENCH, ..., version = 1)`
+with a detailed inline comment covering this round's own method and honesty caveats, mirroring German/
+Greek's own precedent of documenting each dictionary round's provenance directly in that file.
+
+**Tests**: `LanguageRulesTest` had an existing assertion that `Language.FRENCH` resolves to
+`NoOpLanguageRules` - now false since `FrenchRules` is registered, so that assertion was removed from the
+"every other language" test and replaced with its own `French resolves to FrenchRules` test, plus four new
+tests mirroring the German ones (`decimalCommaGluesDigits`/`timeSuggestionWord`/
+`bundledConfusablesBlacklist`/the six no-op grammar hooks). No other existing test referenced
+`Language.FRENCH` in a way this round's catalog/registry additions could break (`LanguagePackInstallerTest`
+already used `Language.FRENCH` purely as a generic in-memory test fixture, unrelated to the real catalog
+entry). 1304 → 1309 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 468 → 469, `versionName` `"1.1.51"` -> `"1.1.52"`.
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied.** This pack has not been reviewed by anyone
+who actually speaks French - it is a rule-based, pipeline-built "pretty good" pack in the guide's own
+sense (typable, reasonable autocorrect/suggestions, no known glaring false-positive corrections found
+during development sampling), not native-reviewed quality. `LanguagePackCatalog`'s own inline comment and
+`AdaptKey-Progress.md`'s D-441 entry both say this explicitly, so a future session/contributor does not
+mistake "the pipeline ran cleanly" for "this is finished." Not device-confirmed either (no real device
+available in this environment, consistent with this project's own established testing-gap acceptance for
+Android-only glue).
+

@@ -122,7 +122,8 @@ object NoOpLanguageRules : LanguageRules {
 object LanguageRulesRegistry {
     
     private val RULES: Map<Language, LanguageRules> = mapOf(
-        Language.GERMAN to GermanRules
+        Language.GERMAN to GermanRules,
+        Language.FRENCH to FrenchRules
     )
     
     /**
