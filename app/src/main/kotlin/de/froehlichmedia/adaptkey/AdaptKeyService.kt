@@ -5772,10 +5772,16 @@ class AdaptKeyService : InputMethodService() {
      * is deliberately typing this word in its own, different casing" - without it, D-264's differently-cased
      * learning path wrongly treated *every* sentence-start-capitalised ordinary word (bundled lower-case) as
      * a deliberate casing override and started promoting it as one.
-     * 
+     *
      * Both strings always share the same length here (they come from the same case-insensitive dictionary
      * key, and a case change never alters length), so no length check is needed beyond the empty guard.
-     * 
+     *
+     * D-439: this check alone cannot tell "capitalised only because of sentence start" apart from "a
+     * homograph proper noun deliberately capitalised mid-sentence" (e.g. the surname "Fröhlich" against the
+     * bundled adjective "fröhlich") - both callers must also require [tokenSentenceStart] themselves before
+     * treating a match here as nothing to learn; a genuine mid-sentence match must fall through to the
+     * ordinary not-yet-known-word path instead, so it can accumulate its own, separately-cased learned entry.
+     *
      * @param word the word actually committed/typed
      * @param bundledCasing the bundled entry's own exact stored casing for the same word
      * @return true when the two differ only in their first character's case (or not at all)
@@ -5812,8 +5818,14 @@ class AdaptKeyService : InputMethodService() {
         // too - §6 (sentence start, a pure/proper noun, an editor's field mandate) only ever recases that
         // one character, so a plain bundled-lowercase word that merely happened to start a sentence must not
         // be mistaken for a deliberate casing override and start counting toward promotion.
+        // D-439: but only when the token genuinely was at a sentence start - without tokenSentenceStart here,
+        // a homograph proper noun deliberately capitalised mid-sentence (e.g. "Fröhlich" as a surname against
+        // the bundled adjective "fröhlich") was wrongly swallowed by this same exception and could never
+        // accumulate its own, separately-cased learned entry no matter how many times it was typed.
         val bundledCasing = dictionaryStore.bundledCasingOf(word)
-        val outcome = if (bundledCasing == word || (bundledCasing != null && differsOnlyInFirstChar(word, bundledCasing))) {
+        val outcome = if (bundledCasing == word ||
+            (bundledCasing != null && tokenSentenceStart && differsOnlyInFirstChar(word, bundledCasing))
+        ) {
             // D-327: the unigram is deliberately not reinforced (D-186), but the word's n-gram context
             // (which word follows it) must still be learned (S-07) - without this, next-word prediction
             // never accumulated for ordinary bundled vocabulary typed in its own casing, so e.g. "Mein
@@ -6074,9 +6086,10 @@ class AdaptKeyService : InputMethodService() {
      * [learnWord]'s own distinction - a deliberate correction that happens to differ only in casing from a
      * bundled entry is still worth promoting.
      * 
-     * D-271: also bails out when the casing difference is confined to the first character
-     * ([differsOnlyInFirstChar]), mirroring [learnWord]'s own exception - see its KDoc.
-     * 
+     * D-271: also bails out when the casing difference is confined to the first character AND the token was
+     * genuinely at a sentence start ([differsOnlyInFirstChar]), mirroring [learnWord]'s own exception - see
+     * its KDoc, including D-439's own fix for the mid-sentence homograph gap.
+     *
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
@@ -6086,7 +6099,9 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val bundledCasing = dictionaryStore.bundledCasingOf(word)
-        if (bundledCasing == word || (bundledCasing != null && differsOnlyInFirstChar(word, bundledCasing))) {
+        if (bundledCasing == word ||
+            (bundledCasing != null && tokenSentenceStart && differsOnlyInFirstChar(word, bundledCasing))
+        ) {
             return
         }
         val context = previousWord

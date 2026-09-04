@@ -600,6 +600,20 @@ for a genuinely self-taught word. Before D-327, the unigram-skip path also skipp
 entirely, so no next-word prediction ever built up for bundled vocabulary typed in its canonical casing -
 defeating S-07's own purpose for the most common words in the language.
 
+D-438: recording a learned bigram (D-327) is not by itself enough to ever *see* it suggested - the candidate
+*selection* step (which words are even considered for a given previous word, before D-365's own rescaling
+ever runs) must never let a previous word's high-frequency bundled continuations exclude a personal one from
+the pool outright. A previous word that is itself common and richly attested in the bundled (Wikipedia-
+derived) corpus - "vielen"/"viele" being the reported case, both with two dozen-plus real bundled
+continuations - can otherwise squeeze out a habitual personal phrase the corpus's own encyclopedic register
+simply never contains ("vielen Dank", "viele Grüße"), no matter how many times it is actually typed, since
+raw personal counts (a handful to a few dozen uses) never compete with corpus-scale bundled ones on raw count
+alone. Every learned continuation for a given previous word is therefore always included in the candidate
+pool, never subject to the same raw-count cut the bundled continuations compete for; D-365's rescaling then
+decides its actual rank exactly as before. A previous word with few or no bundled continuations at all (e.g.
+a person's first name) was never affected by this gap in the first place, since nothing there ever competed
+away the learned continuation's own slot.
+
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language
@@ -1482,6 +1496,15 @@ one character, so an ordinary bundled-lowercase word
 that merely happened to start a sentence (`"das"` -> `"Das"`) must not be mistaken for a deliberate override
 and start counting toward promotion. Only a difference reaching beyond the first character (as any genuine
 deliberately-typed casing like an acronym does) is eligible.
+
+D-439: the first-character exception above only actually applies while the token genuinely *is* at a sentence
+start - a first-character-only casing difference occurring *mid-sentence* is a different situation entirely
+(a homograph proper noun deliberately capitalised where nothing forces a capital at all, e.g. the surname
+"Fröhlich" against the bundled adjective "fröhlich", typed directly after a first name) and must be eligible
+for its own, separately-cased promotion through the ordinary W-02 threshold exactly like any other genuinely
+different casing - not swallowed by this exception just because the difference happens to sit on the first
+character. Reaching the same casing decision at a sentence start (where §6 would supply a capital regardless
+of what the word actually is) still counts as nothing to learn, as before.
 
 ### W-05 - Automatic Expiry of Unused Learned Words *(D-389, C-24)*
 A learned word that has gone untouched (never reinforced by a further commit, re-cased, or otherwise

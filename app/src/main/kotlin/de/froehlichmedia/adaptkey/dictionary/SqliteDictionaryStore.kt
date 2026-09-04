@@ -1017,18 +1017,35 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         if (previousWord.isEmpty() || limit <= 0) {
             return emptyList()
         }
+        val key = previousWord.lowercase()
+        // D-438: every learned continuation is always included below, never competing against the bundled
+        // table's own top candidates for [limit]'s own cut - a habitual personal continuation (e.g. "vielen"
+        // -> "dank") must never be silently excluded from the candidate pool just because [previousWord] also
+        // has many high-frequency bundled (Wikipedia-derived) continuations, since the caller's own D-365
+        // rescaling can only ever help a candidate that actually reaches it. Mirrors D-209's own "the word's
+        // own bucket is uncapped" precedent for prefix-candidate selection.
         val counts = LinkedHashMap<String, Long>()
-        for (table in listOf(TABLE_BIGRAMS, TABLE_LEARNED_BIGRAMS)) {
-            db.rawQuery("SELECT wkey, count FROM $table WHERE prevkey = ?", arrayOf(previousWord.lowercase())).use { cursor ->
-                while (cursor.moveToNext()) {
-                    val wkey = cursor.getString(0)
-                    counts[wkey] = (counts[wkey] ?: 0L) + cursor.getLong(1)
-                }
+        val learnedWords = HashSet<String>()
+        db.rawQuery("SELECT wkey, count FROM $TABLE_LEARNED_BIGRAMS WHERE prevkey = ?", arrayOf(key)).use { cursor ->
+            while (cursor.moveToNext()) {
+                val wkey = cursor.getString(0)
+                counts[wkey] = cursor.getLong(1)
+                learnedWords.add(wkey)
             }
         }
-        return counts.entries
+        db.rawQuery(
+            "SELECT wkey, count FROM $TABLE_BIGRAMS WHERE prevkey = ? ORDER BY count DESC LIMIT ?",
+            arrayOf(key, limit.toString())
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                val wkey = cursor.getString(0)
+                counts[wkey] = (counts[wkey] ?: 0L) + cursor.getLong(1)
+            }
+        }
+        val (kept, rest) = counts.entries.partition { it.key in learnedWords }
+        val topRest = rest.sortedByDescending { it.value }.take((limit - kept.size).coerceAtLeast(0))
+        return (kept + topRest)
             .sortedByDescending { it.value }
-            .take(limit)
             .map { (wkey, _) -> canonicalWordFor(wkey) }
     }
     

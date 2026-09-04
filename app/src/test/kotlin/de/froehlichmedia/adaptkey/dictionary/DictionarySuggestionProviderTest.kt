@@ -170,6 +170,25 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-438 nextWordSuggestions still surfaces a habitual personal continuation among many higher-frequency bundled ones`() {
+        // The exact reported repro: "vielen" has plenty of real, high-frequency bundled Wikipedia
+        // continuations (none of them "Dank" - a genuine corpus register gap, not a bug) - the personal
+        // "vielen Dank" bigram, reinforced by repeated typing, must not be silently excluded from the
+        // candidate pool by DictionaryStore.nextWords()'s own raw-count-based selection just because it
+        // cannot yet outrank a dozen-plus bundled entries by raw count alone.
+        store.putWord(WordEntry("Dank", 50L))
+        for (i in 1..15) {
+            val word = "Folger$i"
+            store.putWord(WordEntry(word, 100L))
+            store.putBigram("vielen", word.lowercase(), (500L - i))
+        }
+        repeat(3) { store.learn("Dank", "vielen") }
+        
+        val words = provider.nextWordSuggestions("vielen").map { it.word }
+        assertTrue(words.contains("Dank"), "expected \"Dank\" among $words")
+    }
+    
+    @Test
     fun `D-43 nextWordSuggestions omits blacklisted successors and unknown context`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putBigram("der", "Hund", 40L)

@@ -204,6 +204,24 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
+    // D-438: the exact reported shape - "vielen" has plenty of real, high-frequency bundled Wikipedia
+    // continuations (none of them "dank" - a corpus register gap, not a bug) - a personal "dank" learned
+    // from repeated typing must still surface even though its own raw count is far lower than any of them.
+    fun learnedContinuationIsNeverCrowdedOutByManyHigherFrequencyBundledOnes() {
+        val store = store("crowd-out.db")
+        store.putWord(WordEntry("Dank", 50L, emptySet()))
+        for (i in 1..12) {
+            val word = "Folger$i"
+            store.putWord(WordEntry(word, 100L, emptySet()))
+            store.putBigram("vielen", word.lowercase(), (500L - i))
+        }
+        store.learn("Dank", "vielen")
+        
+        assertTrue(store.nextWords("vielen", 12).contains("Dank"))
+        store.close()
+    }
+    
+    @Test
     fun learnWithTwoWordContextRecordsATrigramAlongsideTheBigram() {
         val store = store("trigram-learn.db")
         store.putWord(WordEntry("Nachbar", 3L, emptySet()))

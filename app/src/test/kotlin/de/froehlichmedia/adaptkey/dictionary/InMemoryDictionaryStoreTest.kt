@@ -173,6 +173,37 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `D-438 a learned continuation is never crowded out by many higher-frequency bundled ones`() {
+        // The exact reported shape: "vielen" has plenty of real, high-frequency bundled Wikipedia
+        // continuations (none of them "dank" - a corpus register gap, not a bug) - a personal "dank" learned
+        // from repeated typing must still surface even though its own raw count is far lower than any of them.
+        store.putWord(WordEntry("Dank", 50L))
+        for (i in 1..12) {
+            val word = "Folger$i"
+            store.putWord(WordEntry(word, 100L))
+            store.putBigram("vielen", word.lowercase(), (500L - i))
+        }
+        store.learn("Dank", "vielen")
+        
+        assertTrue(store.nextWords("vielen", 12).contains("Dank"))
+    }
+    
+    @Test
+    fun `D-438 the bundled-only remainder still fills the leftover slots around a kept learned entry`() {
+        store.putWord(WordEntry("Dank", 50L))
+        for (i in 1..5) {
+            val word = "Folger$i"
+            store.putWord(WordEntry(word, 100L))
+            store.putBigram("vielen", word.lowercase(), (100L - i))
+        }
+        store.learn("Dank", "vielen")
+        
+        val result = store.nextWords("vielen", 3)
+        assertEquals(3, result.size)
+        assertTrue(result.contains("Dank"))
+    }
+    
+    @Test
     fun `learn with two-word context records a trigram alongside the bigram - D-246`() {
         store.putWord(WordEntry("Nachbar", 3L))
         store.learn("Nachbar", "der", "ist")

@@ -250,14 +250,27 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         }
         // The prefix must use the same separator as bigramKey(), so successors of previousWord are matched.
         val prefix = previousWord.lowercase() + BIGRAM_SEPARATOR
+        // D-438: every learned continuation is always kept below, never competing against the bundled map's
+        // own top candidates for [limit]'s own cut - mirrors SqliteDictionaryStore's identical fix; see its
+        // own KDoc for the full reasoning (a habitual personal continuation must never be silently excluded
+        // just because [previousWord] also has many high-frequency bundled continuations).
         val counts = LinkedHashMap<String, Long>()
-        bigrams.forEach { (key, count) -> if (count > 0L && key.startsWith(prefix)) counts[key] = (counts[key] ?: 0L) + count }
-        learnedBigrams.forEach { (key, count) -> if (count > 0L && key.startsWith(prefix)) counts[key] = (counts[key] ?: 0L) + count }
-        return counts.entries
+        val learnedKeys = HashSet<String>()
+        learnedBigrams.forEach { (key, count) ->
+            if (count > 0L && key.startsWith(prefix)) {
+                counts[key] = count
+                learnedKeys.add(key)
+            }
+        }
+        val bundled = bigrams.entries.filter { (key, count) -> count > 0L && key.startsWith(prefix) }
+        val topBundled = bundled.sortedByDescending { it.value }.take(limit)
+        topBundled.forEach { (key, count) -> counts[key] = (counts[key] ?: 0L) + count }
+        val (kept, rest) = counts.entries.partition { it.key in learnedKeys }
+        val topRest = rest.sortedByDescending { it.value }.take((limit - kept.size).coerceAtLeast(0))
+        return (kept + topRest)
             .sortedByDescending { it.value }
             .map { it.key.substring(prefix.length) }
             .map { successor -> learned[successor]?.word ?: unigrams[successor]?.word ?: successor }
-            .take(limit)
     }
     
     override fun trigramFrequency(previousPreviousWord: String, previousWord: String, word: String): Long {

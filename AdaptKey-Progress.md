@@ -800,6 +800,56 @@ non-trivial changes).
 
 ## Current State
 
+- **§404 (v1.1.43): D-438/D-439 - two real, root-caused bugs reported together: "vielen Dank"/"viele Grüße"**
+  **never got next-word suggestions despite frequent typing, and "Fröhlich" (a surname) after "Marvin" only**
+  **ever got learned lower-case as the ordinary adjective "fröhlich".**
+
+  **D-438 (S-07 next-word candidate selection):** confirmed directly against the real bundled
+  `dictionaries/de/bigram.tsv`, not guessed - "vielen"/"viele" both have two dozen-plus real, high-frequency
+  bundled continuations (`vielen anderen` 401, `vielen fällen` 269, ... `viele der` 606, `viele andere` 410,
+  ...), none of them "dank"/"grüße" (a genuine Wikipedia-corpus register gap - an encyclopedia does not
+  contain personal letter-closing phrases). `DictionaryStore.nextWords()` merged bundled+learned bigram
+  counts and cut to `limit` by *raw* count *before* the caller's own D-365 rescaling ever ran - so a personal
+  phrase's own modest raw count could never survive that cut when the previous word already had many
+  corpus-scale bundled continuations, regardless of how many times it was actually typed; D-365's rescaling
+  fix could only ever help a candidate that reached it, and this one never did. This is exactly why "Marvin"
+  -> "Fröhlich" *did* work already (a first name has few or no bundled continuations to compete against) while
+  "vielen"/"viele" did not (rich bundled competition). Fixed in both `SqliteDictionaryStore.nextWords()` and
+  `InMemoryDictionaryStore.nextWords()`: every learned continuation for a previous word is now always
+  included in the candidate pool, never subject to the bundled table's own raw-count cut - mirrors D-209's
+  own "the word's own bucket is uncapped" precedent for prefix-candidate selection. `nextWordsTrigram()` was
+  never affected (no bundled trigram table exists at all - purely personal, D-246).
+
+  **D-439 (W-02/W-04 promotion, D-271's own exception):** confirmed by reading `differsOnlyInFirstChar()`'s
+  own call sites, not guessed - its KDoc always said the exception exists for "a word that only looks
+  differently-cased because it happened to start a sentence", but neither `learnWord()` nor `learnWordStrong()`
+  actually checked `tokenSentenceStart` before applying it. "Fröhlich" typed mid-sentence directly after
+  "Marvin" differs from the bundled adjective "fröhlich" only in its first character, so the exception fired
+  unconditionally and routed it through D-327's `learnContext()`-only path (bigram context learned, unigram
+  never reinforced) forever, regardless of how many times it was typed - it could never accumulate its own,
+  separately-cased W-02 promotion. Fixed by requiring `tokenSentenceStart` alongside the existing
+  `differsOnlyInFirstChar()` check in both functions - a genuine sentence-start recasing (`"das"` -> `"Das"`)
+  is still correctly treated as nothing to learn, exactly as before; a mid-sentence homograph now falls
+  through to the ordinary not-yet-known-word path instead, accumulating via the same W-02 threshold
+  (`PendingLearnStore`) as any other new word - no accidental-pollution risk beyond what already existed for
+  every other word, addressing the user's own worry directly. The existing `categoryHint` computation already
+  correctly derives `PartOfSpeech.NOUN` for this exact shape (capitalised, not at a sentence start) with no
+  change needed - once promoted, "Fröhlich" is tagged as a noun automatically, alongside its own separate,
+  correctly-capitalised learned entry that then wins over the bundled lower-case adjective in ranking/
+  suggestions (W-04's own existing override mechanism, unchanged).
+
+  New tests: `InMemoryDictionaryStoreTest`/`SqliteDictionaryStoreRoboTest` (a learned continuation survives
+  many higher-frequency bundled competitors; the bundled-only remainder still fills leftover slots),
+  `DictionarySuggestionProviderTest` (the same shape end-to-end through `nextWordSuggestions()`). D-439's own
+  fix sits entirely in `AdaptKeyService`'s untested orchestrator glue (`learnWord`/`learnWordStrong`), this
+  project's own established untested boundary - no new tests there. 1300 -> 1304 unit tests, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-07 (D-438) and W-04 (D-439) both gained
+  addenda. `versionCode` 459 -> 460, `versionName` `"1.1.42"` -> `"1.1.43"`. **Not yet device-confirmed** -
+  needs real repeated typing of "vielen Dank"/"viele Grüße" (D-438) and "Marvin Fröhlich" enough times to
+  cross the promotion threshold again (D-439, a fresh promotion - the existing wrongly-lower-cased "fröhlich"
+  bigram-only context does not need manual cleanup, it simply stops being the only thing that ever
+  accumulates).
+
 - **§403 (v1.1.42): D-380/D-437 - a long-press smear that left the pressed key's own bounds unconditionally**
   **cancelled the pending alt-popup, even when nowhere near swipe-sized - the user's own precise repro (`o`
   key): smearing while staying inside the key reliably opens the popup (D-108, already correct), smearing
