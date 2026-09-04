@@ -7,7 +7,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 
 /**
  * Persistent {@link DictionaryStore} backed by SQLite (A-04: survives app updates).
@@ -1045,13 +1044,6 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         }
         val (kept, rest) = counts.entries.partition { it.key in learnedWords }
         val topRest = rest.sortedByDescending { it.value }.take((limit - kept.size).coerceAtLeast(0))
-        // D-440 (temporary diagnostic): see canonicalWordFor()'s own comment - logs the raw wkeys this
-        // query actually found, before casing resolution, so a mismatch further upstream (e.g. the wrong
-        // wkey ever reaching the learned-bigrams table) is not confused with a canonicalWordFor() bug.
-        DiagnosticLog.record(
-            "[AdaptKeyNextWordCasing] nextWords(\"$previousWord\"): learnedWords=$learnedWords " +
-                "kept=${kept.map { it.key }} rest=${rest.map { it.key }}"
-        )
         return (kept + topRest)
             .sortedByDescending { it.value }
             .map { (wkey, _) -> canonicalWordFor(wkey) }
@@ -1095,19 +1087,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     private fun canonicalWordFor(wkey: String): String {
-        // D-440 (temporary diagnostic): "dank"/"grüße"/"fröhlich" reported staying lowercase in next-word
-        // predictions - for "fröhlich" this contradicts a straightforward reading of this function (the
-        // user confirmed a capitalised TABLE_LEARNED entry already exists, which should win here outright).
-        // Logging every step actually taken instead of guessing further - remove once D-440 is closed.
-        val learned = learnedEntryOf(wkey)
-        val bundled = if (learned == null) bundledEntryOf(wkey) else null
-        val result = learned?.word ?: bundled?.word ?: wkey
-        DiagnosticLog.record(
-            "[AdaptKeyNextWordCasing] canonicalWordFor: wkey=\"$wkey\" " +
-                "learned=${learned?.let { "\"${it.word}\" pos=${it.partsOfSpeech}" } ?: "null"} " +
-                "bundled=${bundled?.let { "\"${it.word}\" pos=${it.partsOfSpeech}" } ?: "null"} -> \"$result\""
-        )
-        return result
+        return learnedEntryOf(wkey)?.word ?: bundledEntryOf(wkey)?.word ?: wkey
     }
     
     override fun frequencyOf(word: String): Long {

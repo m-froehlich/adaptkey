@@ -633,15 +633,14 @@ non-trivial changes).
   - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
     letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
     produce an unwanted `q` instead of the intended `a` below it.
-  - **D-440 - OPEN, temporary diagnostic logging added (§410, v1.1.49), awaiting real device data.**
-    Next-word-prediction chips for a word whose only bundled dictionary entry is correctly cased ("Grüße",
-    `NOUN,VERB`) stay lowercase and never get learned regardless of repeated retyping, and even a word
-    already confirmed correctly capitalised in `TABLE_LEARNED` ("Fröhlich", via D-439's own fix) still shows
-    lowercase in this one specific chip - both contradict `SqliteDictionaryStore.canonicalWordFor()`'s own
-    straightforward learned-then-bundled-then-raw-key resolution as read from source. "dank" itself is a
-    separate, already-fully-understood case (see §410) - a genuine, permanent dictionary ambiguity with no
-    dual-casing-chip coverage for next-word predictions, not a bug to chase further here. Next step: the
-    user reproduces with Diagnostic Log enabled and shares the `[AdaptKeyNextWordCasing]` lines.
+  - **D-440 - RESOLVED (§411, v1.1.50); not yet device-confirmed.** The §410 diagnostic log the user captured
+    cleared `SqliteDictionaryStore.canonicalWordFor()` outright (it already resolved "grüße"/"fröhlich"
+    correctly) - the real bug was one step later, `AdaptKeyService.showSuggestions()`'s blanket
+    re-capitalisation silently overwriting an already-correct next-word-prediction casing back to its generic
+    ambiguous-noun lower-case default, since nothing being typed yet made its "respect explicit user casing"
+    premise meaningless. Fixed by skipping that re-derivation while `composing` is empty. "dank" itself needed
+    no fix - genuinely ambiguous with no more-specific casing to prefer; extending the S-11-style dual-casing
+    chip to next-word predictions is a separate, still-open design question.
   - **D-398 - RESOLVED (§330, v1.0.82).** The automatic language-switch threshold (D-130, formerly a
     hardcoded 5) is now C-23, a 0-8 slider under the Dictionary category's language section, default 5;
     0 disables the automatic switch entirely (manual G-01 swipe unaffected).
@@ -822,6 +821,33 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§411 (v1.1.50): D-440 - real root cause found from the §410 diagnostic log the user captured and**
+  **shared, in a completely different place than the log's own original suspects.** The log proved
+  `SqliteDictionaryStore.canonicalWordFor()` already innocent: `wkey="fröhlich" learned="Fröhlich" ... ->
+  "Fröhlich"` and `wkey="grüße" ... bundled="Grüße" ... -> "Grüße"` - both resolved correctly, right there in
+  the `nextWordSuggestions()` call. The actual bug sits one step later, in `AdaptKeyService.showSuggestions()`
+  's blanket `if (item.kind == Kind.NORMAL) capitalisation.capitalise(item.word, context)` re-derivation
+  (D-196's own design: ordinary typing candidates deliberately arrive uncapitalised, re-cased fresh from live
+  context right before rendering). `capitalise()`'s rule 1 ("explicit user input is never changed") depends on
+  `context.explicitFirstUpper` reflecting what was actually typed - meaningless with `composing` empty (a
+  next-word prediction's defining condition), so a genuinely ambiguous noun (`isAmbiguousNoun -> false`) fell
+  through to its unconditional lower-case default, silently overwriting the already-correct casing
+  `canonicalWordFor()` had just supplied moments earlier. Fixed with one added condition:
+  `item.kind == Kind.NORMAL && composing.isNotEmpty()` - the exact state that distinguishes "still typing,
+  needs fresh §6 derivation" (unchanged) from "next-word prediction, already fully resolved, must not be
+  touched again". "dank" needed no fix and stays as designed - its only bundled entry is genuinely ambiguous
+  with no more-specific casing to prefer; whether next-word predictions should also get the S-11-style
+  dual-casing-chip treatment for that case is a separate, still-open design question, not part of D-440.
+  Removed §410's own temporary `[AdaptKeyNextWordCasing]` diagnostic logging now that it has served its
+  purpose.
+
+  No new tests - the fix is one condition in `AdaptKeyService`'s own established untested orchestrator glue
+  (`showSuggestions()`); `CapitalisationEngine.capitalise()` itself (already unit-tested) is unchanged. 1304
+  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's S-07 gained
+  a D-440 addendum. `versionCode` 466 -> 467, `versionName` `"1.1.49"` -> `"1.1.50"`. **Not yet
+  device-confirmed** - needs "viele "/"Marvin " retyped and the "Grüße"/"Fröhlich" chips checked for correct
+  capitalisation ("dank" is expected to stay lower-case, by design - see above).
 
 - **§410 (v1.1.49, temporary diagnostic): D-440 - user-reported follow-up on §404/D-438+D-439: "vielen**
   **Dank"/"viele Grüße"/"Marvin Fröhlich" next-word-prediction chips stay lowercase ("dank"/"grüße"/**

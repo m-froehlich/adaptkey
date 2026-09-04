@@ -5419,9 +5419,22 @@ class AdaptKeyService : InputMethodService() {
         // can no longer diverge. The already-capitalised S-06 pending-replacement item (also Kind.NORMAL,
         // D-111/D-112) is safely re-capitalised too: capitalise() is a pure function of (word, context), so
         // reapplying it to its own prior output yields the identical string back.
+        //
+        // D-440: this re-derivation must not run at all while composing is empty - the one case that is true
+        // for is S-07's own next-word predictions (showNextWordPredictions() -> controller.update("", ...)),
+        // never ordinary typing. capitalise()'s own rule 1 ("explicit user input is never changed") relies on
+        // context.explicitFirstUpper faithfully reflecting what the user actually typed - meaningless with
+        // nothing typed at all, so it silently falls through to the ordinary linguistic default instead
+        // (lower-case for a genuinely ambiguous noun, isAmbiguousNoun -> false). That default is correct for
+        // a freshly-typed token with nothing yet to go on, but next-word candidates are not that: `Suggestion.
+        // word` already comes back correctly cased from DictionarySuggestionProvider/SqliteDictionaryStore's
+        // own canonicalWordFor() (the learned/bundled entry's own real casing, e.g. "Grüße"/"Fröhlich") -
+        // re-running it through capitalise() here silently discarded that and replaced it with the generic
+        // ambiguous-noun default, confirmed via real device diagnostic logging (D-440) that canonicalWordFor()
+        // itself was already returning the correct casing before this step overwrote it.
         val context = contextFor(composing.toString())
         val items = controller.displayed().map { item ->
-            if (item.kind == SuggestionController.Kind.NORMAL) {
+            if (item.kind == SuggestionController.Kind.NORMAL && composing.isNotEmpty()) {
                 item.copy(text = capitalisation.capitalise(item.word, context))
             } else {
                 item

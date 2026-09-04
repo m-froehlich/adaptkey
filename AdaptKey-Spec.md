@@ -614,6 +614,31 @@ decides its actual rank exactly as before. A previous word with few or no bundle
 a person's first name) was never affected by this gap in the first place, since nothing there ever competed
 away the learned continuation's own slot.
 
+D-440: D-438 fixed *which* candidates reach the suggestion, but a real device report ("vielen Dank"/"viele
+Grüße" chips appearing yet always lower-case, "dank"/"grüße", never learnable) found a second, independent bug
+right after it in the *display* of an already-correctly-cased candidate. `SqliteDictionaryStore.
+canonicalWordFor()` (resolving a bigram's own casing-blind lowercase key back to the learned-or-bundled
+entry's real casing, e.g. `"grüße"` -> `"Grüße"`) was confirmed correct via real device diagnostic logging
+before looking any further - the actual bug is one step later, in `AdaptKeyService.showSuggestions()`'s own
+blanket re-capitalisation of every `Kind.NORMAL` chip via `CapitalisationEngine.capitalise(word, context)`.
+That function's rule 1 ("explicit user input is never changed", see `capitalise()`'s own KDoc) relies on
+`context.explicitFirstUpper` faithfully reflecting what the user actually typed - meaningless while nothing
+has been typed at all (a next-word prediction's defining condition, `composing` empty), so it silently fell
+through to the ordinary linguistic default for a genuinely ambiguous noun (`isAmbiguousNoun -> false`,
+unconditionally lower-case) - discarding the already-correct casing `canonicalWordFor()` had just supplied.
+Fixed by gating `showSuggestions()`'s re-capitalisation step on `composing.isNotEmpty()`, the exact condition
+that distinguishes an ordinary in-progress typing suggestion (which still needs fresh §6 derivation from live
+context - that half of the design is correct and unchanged) from a next-word prediction (already fully
+resolved, must be shown exactly as `canonicalWordFor()` returned it).
+
+**"dank" itself needs no further fix and stays as designed**: its only bundled dictionary entry is genuinely
+ambiguous (`NOUN,PREPOSITION,OTHER`, ordinary lower-case §6-rule-5 territory, the same class as "Weg"/"weg")
+- `canonicalWordFor()` correctly returns its lower-case base form, since there is no more-specific casing to
+prefer. The existing dual-casing-chip mechanism for exactly this ambiguity (`ambiguousCasingChips()`,
+D-404-followup) is scoped to *typing* only (returns `emptyList()` outright for an empty `input`) and does not
+extend to next-word predictions - whether it should is an open, separate design question (dual chips before
+anything is even typed, vs. a single best-guess reading), not part of D-440's fix.
+
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language
