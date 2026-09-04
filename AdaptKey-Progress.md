@@ -782,6 +782,31 @@ non-trivial changes).
 
 ## Current State
 
+- **§399 (v1.1.38): D-361-followup (v6) - the real cause of "oben wirkt gar nicht", found from the §398**
+  **diagnostic log the very first time it was captured.** User's own repro nailed it precisely: rapid
+  Backspace tapping while the finger drifts upward types `LLLLLLKKKKK` instead of deleting, the moment the
+  drift reaches L/K "und sei es nur die untere Kante" (even just the bottom edge). The log confirmed this
+  exactly, and revealed the actual mechanism: several sticky-check log lines showed `underKey=null` - the raw
+  tap landed in the gap *between* rows, matching no key's rect at all - immediately followed by `rawTap: key=
+  c:l`/`key=c:k`, i.e. `resolveKey()`'s personal offset model (T-03) resolving that same gap tap to whichever
+  *learned* key-zone was nearest, entirely bypassing the sticky check. Root cause: `isWithinBackspaceStickyZone()`
+  required the raw tap to land literally inside the neighbour's own rect (`neighbor.contains(x, y)`) before
+  considering it at all - a tap in the inter-row gap itself (extremely common during fast, sloppy repeated
+  tapping, per the log) matched nothing, fell through past the sticky check entirely, and got claimed by the
+  offset model instead. This explains why the log also showed some genuine `hit=true` cases for `l`/`k` (a tap
+  that happened to land inside the neighbour's own rect) interspersed with the failures (a tap landing in the
+  gap) - not a directional bug at all, a coverage gap.
+
+  Rewritten to build an explicit sticky-zone rect per direction - the neighbour's own near portion *plus* the
+  entire gap through to Backspace's own edge - and test that directly, so a gap tap is unambiguously claimed
+  before the offset model ever runs. The §398 diagnostic logging (its purpose served) removed again in the
+  same commit.
+
+  No new tests (same `AdaptKeyboardView` touch-resolution boundary). 1249 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. `versionCode` 454 -> 455,
+  `versionName` `"1.1.37"` -> `"1.1.38"`. **Not yet device-confirmed** - needs the exact same repro (fast
+  Backspace, finger drifting onto L/K) retried to confirm the gap taps are now caught too.
+
 - **§398 (v1.1.37): D-361-followup - "oben" still does not stick after v5, temporary diagnostic logging**
   **added instead of a third blind patch.** Reported right after v5 (which fixed "unten"/Enter): left/right
   now work well, but upward still has no effect at all. Re-derived the geometry by hand rather than guessing

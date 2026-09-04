@@ -1793,23 +1793,41 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * at all, i.e. never into Enter, the one neighbour D-361 actually exists for. Both D-55 values are added
      * to the tolerance now (defensively, both directions, rather than assuming which specific boundary a
      * given neighbour sits across).
+     *
+     * D-361-followup (v6): a real device log (`AdaptKeyTouch`) found the actual remaining gap - this
+     * originally required the raw tap to land literally inside [neighbor]'s own rect before considering it at
+     * all (`neighbor.contains(x, y)`). A raw tap during fast repeated Backspace tapping very often lands in
+     * the *gap itself* between two rows, matching no key's rect at all (confirmed directly in the log: several
+     * `underKey=null` entries for taps a few px above Backspace's own top edge) - `resolveKey()` then fell
+     * through past this check entirely to the personal offset model, which duly resolved the gap tap to
+     * whichever key's *learned* zone was nearest (`l`/`k`), typing a letter instead of deleting. Rewritten to
+     * build the sticky zone as an explicit rect per direction - the neighbour's own near portion *plus* the
+     * gap all the way to Backspace's own edge - and test that directly, so a tap landing anywhere in the gap
+     * is already unambiguously claimed before the offset model ever gets a chance to pull it elsewhere.
      */
     private fun isWithinBackspaceStickyZone(backspace: RectF, neighbor: RectF, x: Float, y: Float): Boolean {
-        if (!neighbor.contains(x, y)) {
-            return false
-        }
         val tolerance = gapPx * 1.5f + dp(extraSpaceAboveSpaceRowDp.toFloat()) + dp(extraSpaceBelowNumberRowDp.toFloat())
         val overlapsHorizontally = neighbor.right > backspace.left && neighbor.left < backspace.right
         val overlapsVertically = neighbor.bottom > backspace.top && neighbor.top < backspace.bottom
         return when {
-            overlapsHorizontally && abs(neighbor.bottom - backspace.top) <= tolerance ->
-                y >= neighbor.bottom - neighbor.height() * BACKSPACE_STICKY_ZONE_FRACTION
-            overlapsHorizontally && abs(neighbor.top - backspace.bottom) <= tolerance ->
-                y <= neighbor.top + neighbor.height() * BACKSPACE_STICKY_ZONE_FRACTION
-            overlapsVertically && abs(neighbor.right - backspace.left) <= tolerance ->
-                x >= neighbor.right - neighbor.width() * BACKSPACE_STICKY_ZONE_FRACTION
-            overlapsVertically && abs(neighbor.left - backspace.right) <= tolerance ->
-                x <= neighbor.left + neighbor.width() * BACKSPACE_STICKY_ZONE_FRACTION
+            overlapsHorizontally && abs(neighbor.bottom - backspace.top) <= tolerance -> {
+                // Neighbour sits above Backspace: its own near (bottom) portion, plus the whole gap down to
+                // Backspace's own top edge.
+                val zoneTop = neighbor.bottom - neighbor.height() * BACKSPACE_STICKY_ZONE_FRACTION
+                x in neighbor.left..neighbor.right && y in zoneTop..backspace.top
+            }
+            overlapsHorizontally && abs(neighbor.top - backspace.bottom) <= tolerance -> {
+                val zoneBottom = neighbor.top + neighbor.height() * BACKSPACE_STICKY_ZONE_FRACTION
+                x in neighbor.left..neighbor.right && y in backspace.bottom..zoneBottom
+            }
+            overlapsVertically && abs(neighbor.right - backspace.left) <= tolerance -> {
+                val zoneLeft = neighbor.right - neighbor.width() * BACKSPACE_STICKY_ZONE_FRACTION
+                y in neighbor.top..neighbor.bottom && x in zoneLeft..backspace.left
+            }
+            overlapsVertically && abs(neighbor.left - backspace.right) <= tolerance -> {
+                val zoneRight = neighbor.left + neighbor.width() * BACKSPACE_STICKY_ZONE_FRACTION
+                y in neighbor.top..neighbor.bottom && x in backspace.right..zoneRight
+            }
             else -> false
         }
     }
@@ -1835,14 +1853,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val stickyHit = keyRects.any { (key, rect) ->
                     key.code != KeyCode.DELETE && isWithinBackspaceStickyZone(backspaceEntry.second, rect, x, y)
                 }
-                // D-361-followup (temporary diagnostic): "upward" was reported as still not sticking after
-                // v5's tolerance fix, with no cause found by re-reading the geometry alone - logging the
-                // actual rects rather than guessing a further blind patch. Remove once resolved.
-                val under = keyRects.firstOrNull { it.second.contains(x, y) }
-                logTouch(
-                    "backspaceSticky: hit=$stickyHit x=$x y=$y backspaceRect=${backspaceEntry.second} " +
-                        "underKey=${under?.first?.id} underRect=${under?.second}"
-                )
                 if (stickyHit) {
                     return backspaceEntry
                 }
