@@ -639,6 +639,17 @@ D-404-followup) is scoped to *typing* only (returns `emptyList()` outright for a
 extend to next-word predictions - whether it should is an open, separate design question (dual chips before
 anything is even typed, vs. a single best-guess reading), not part of D-440's fix.
 
+**D-440-followup: the display fix above was not the whole bug - a real device report showed the *tap* still
+committing the wrong casing** (the chip itself correctly showed "Fröhlich"/"Grüße", but tapping it inserted
+"fröhlich"/"grüße"). A second, independent call site carries the identical failure shape:
+`onSuggestionClicked()`'s own `Kind.NORMAL` handler unconditionally re-derives `val word = capitalisation.
+capitalise(item.word, contextFor(composing.toString()))` before committing - for an ordinary typing-time
+candidate this is correct and necessary (the same live-context derivation `showSuggestions()` still performs
+for that case), but for a next-word-prediction chip tapped with `composing` empty it is the exact same
+meaningless-`explicitFirstUpper` fallthrough as before, silently re-lowercasing `item.word` right before
+`commitText()`. Fixed the same way: `composing.isNotEmpty()` decides whether to re-derive or to trust
+`item.word` as already resolved.
+
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language

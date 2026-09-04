@@ -6209,7 +6209,19 @@ class AdaptKeyService : InputMethodService() {
                         return
                     }
                 }
-                val word = capitalisation.capitalise(item.word, contextFor(composing.toString()))
+                // D-440-followup: the exact same bug as showSuggestions()'s own D-440 fix, an independent
+                // second call site - a next-word-prediction chip's item.word already comes fully resolved
+                // from canonicalWordFor() (composing is empty, nothing was typed to derive casing from), so
+                // re-running it through capitalise() here hit the identical "explicitFirstUpper meaningless
+                // with nothing typed" fallthrough and silently re-lowercased an already-correct casing right
+                // before committing it - confirmed from a real device report (tapping the correctly-cased
+                // "Fröhlich"/"Grüße" chip still inserted "fröhlich"/"grüße"). Only an ordinary typing-time
+                // candidate (composing non-empty) still needs fresh derivation here.
+                val word = if (composing.isNotEmpty()) {
+                    capitalisation.capitalise(item.word, contextFor(composing.toString()))
+                } else {
+                    item.word
+                }
                 ic.commitText(word + trailingSpace, 1)
                 clearComposing()
                 learnWord(word)
