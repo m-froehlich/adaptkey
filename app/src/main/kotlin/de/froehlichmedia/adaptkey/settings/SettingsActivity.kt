@@ -91,11 +91,17 @@ class SettingsActivity : AppCompatActivity() {
             // larger size/textSize). D-361-followup (v3): three icons are genuine colour emoji, not
             // monochrome symbols, per the user's own explicit request (flags for the two language-related
             // entries, a graduation cap for Learned Words) - a deliberate, disclosed exception to the
-            // otherwise-monochrome set, not an oversight.
+            // otherwise-monochrome set, not an oversight. D-361-followup (v4): the language-packs flag was a
+            // hardcoded 🇩🇪 (arbitrary, since the app is not exclusively for German speakers) - now resolved
+            // from the device's own system locale instead (SystemFlag), so it never needs picking again as
+            // more languages/regions are used; the automatic-language-switch icon's own "Ausgangsflagge"
+            // (starting flag) reuses the identical value, per the user's own explicit requirement that the
+            // two stay in sync whenever one changes.
+            val systemFlag = SystemFlag.glyph(resources.configuration.locales.get(0))
             mapOf(
                 // Sub-screen entry points (unchanged from v2 unless noted).
                 "k01_calibration" to "◎",
-                "d280_language_packs" to "🇩🇪", // v3: was 文 - "sieht aus wie ein Strichmännchen"
+                "d280_language_packs" to systemFlag, // v3: was 文; v4: was a hardcoded 🇩🇪
                 "c05_blacklist" to "✗",
                 "d177_learned_words" to "🎓", // v3: was ✒ - the user's own "Akademiker-Hut" request
                 "d142_credentials" to "⚿",
@@ -106,7 +112,9 @@ class SettingsActivity : AppCompatActivity() {
                 // name regardless ("Automatischer Sprachwechsel könnte eine Ligatur aus zwei Flaggen sein").
                 // Unicode has no true single-glyph flag ligature, so this is simply two flag sequences drawn
                 // as one string; GlyphIconDrawable's own shrink-to-fit keeps it from overflowing its bounds.
-                "d398_sustained_language_switch_threshold" to "🇩🇪🇬🇧",
+                // v4: the starting flag is now systemFlag too (was a hardcoded 🇩🇪); the target flag (English,
+                // G-01's own "always available" language) stays fixed.
+                "d398_sustained_language_switch_threshold" to "$systemFlag🇬🇧",
                 // Category headers (v3) - PreferenceCategory is a Preference too, and its own Material
                 // layout already reserves the identical icon-frame column (confirmed directly in the
                 // androidx.preference AAR's preference_category_material.xml before relying on it).

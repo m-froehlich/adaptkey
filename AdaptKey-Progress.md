@@ -782,6 +782,38 @@ non-trivial changes).
 
 ## Current State
 
+- **§396 (v1.1.35): D-361-followup (v4) - the language-related flag icons now resolve from the device's own**
+  **system locale, instead of a hardcoded 🇩🇪.** User's own reasoning, weighing three options directly (EU
+  flag / a genuinely generic non-national flag / system-locale-derived) before picking the third explicitly:
+  "Ich bin für (3.) wenn das möglich ist." Also required, in the same message: the automatic-language-switch
+  icon's own "Ausgangsflagge" (starting flag, §395's `d398_sustained_language_switch_threshold` icon) must
+  track the identical value whenever the language-packs flag changes, not drift out of sync.
+
+  New `SystemFlag` object (pure, JVM-testable - takes a `Locale`, not a `Context`): a country code's two
+  letters each map algorithmically onto Unicode's Regional Indicator Symbol block (`A -> U+1F1E6`, ...,
+  `Z -> U+1F1FF`; concatenating the pair for e.g. `DE` yields 🇩🇪 directly) - no bundled lookup table for the
+  ~250 possible codes, generalises automatically to any locale's country, including ones this app has no
+  language pack for at all. Falls back to the former hardcoded 🇩🇪 when the locale carries no usable two-letter
+  country (a bare language-only locale, or a malformed/non-letter code - both checked explicitly, not just the
+  length). `SettingsFragment.onCreatePreferences()` now resolves `SystemFlag.glyph(resources.configuration.
+  locales.get(0))` once and feeds the *same* value into both the `d280_language_packs` icon and as the leading
+  flag of `d398_sustained_language_switch_threshold`'s two-flag icon (the trailing flag, English/🇬🇧, stays
+  fixed - G-01's own "always available" language) - satisfies the sync requirement structurally: there is only
+  ever one place either icon's starting flag is computed.
+
+  Reads `resources.configuration.locales.get(0)`, not `Locale.getDefault()` - the same source D-92's own
+  `AdaptKeyService.applySettings()` `systemLocale` field already reads, deliberately not the JVM default
+  (which a per-app language override, Android 13+, can decouple from the device's actual system locale).
+
+  5 new tests (`SystemFlagTest`): real two-letter codes resolve correctly (`DE`/`GB`/`US`), lower-case input
+  resolves identically to upper-case, a language-only locale (no country) falls back, an empty locale falls
+  back, and three distinct malformed-country shapes (too short, too long/UN M49, right length but not letters)
+  all fall back rather than resolving nonsense. 1244 -> 1249 unit tests, all green. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. No spec change - settings-screen cosmetics. `versionCode` 451 -> 452,
+  `versionName` `"1.1.34"` -> `"1.1.35"`. **Not yet device-confirmed** - needs a real look, on a device whose
+  system language is not German, that the flag genuinely follows it (and that both language-related icons stay
+  in sync with each other).
+
 - **§395 (v1.1.34): D-361-followup (v3) - category header icons, plus three glyphs swapped for genuine**
   **colour emoji per direct user request.** Two independent extensions on top of §393/§394, confirmed
   "Schon besser" first:
