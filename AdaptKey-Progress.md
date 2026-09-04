@@ -384,18 +384,29 @@ non-trivial changes).
   `KeyboardProximity` to be layout-aware, which it is not today - `bundledConfusablesBlacklist()` stays
   empty for French, same as it always has for English/Greek.
 
-- **`KeyboardProximity` is hardcoded to the QWERTZ row geometry - not aware of `LayoutKind`/`AzertyLayout`**
-  **at all.** Found while building French's D-441 language pack, trying to run the Language Contribution
-  Guide's own step-7 confusables scan against AZERTY - the scan technique (checking real keyboard-adjacent
-  word pairs for autocorrect collision risk) only makes sense against the layout actually being typed on,
-  and `KeyboardProximity.ROWS` is a fixed `"1234567890"/"qwertzuiop"/"asdfghjkl"/"yxcvbnm"` regardless of
-  which language/layout is active - so a scan run today would silently check the wrong physical adjacency
-  for AZERTY (or any future non-QWERTZ Latin geometry). Affects every neighbour-typo correction signal
-  (D-28/D-38's own cheap-edit-distance boost, S-09's escalation), not merely the confusables-scan method -
-  a French/AZERTY user's actual physical typo neighbours are never what this class computes today. Not
-  fixed as part of D-441 - making `KeyboardProximity` layout-aware (parameterising `ROWS` by `LayoutKind`,
-  threading that through every caller) is real, if fairly mechanical, work of its own scope, deliberately
-  left open rather than folded into a dictionary-content round.
+- **`KeyboardProximity` hardcoded to QWERTZ - RESOLVED by D-442 (§414, v1.1.53).** Found while building**
+  **French's D-441 language pack; fixed properly and generally the same session, on explicit user**
+  **instruction, not merely patched for AZERTY alone.** Now a real interface
+  (`KeyboardProximityQwertz`/`Qwerty`/`Azerty`/`Greek`, one object per `LayoutKind`) with a
+  `KeyboardProximityRegistry` resolving the right one per active layout, threaded through
+  `DictionarySuggestionProvider` the same way `LanguageRules`/`DiacriticFolding` already are. Every
+  neighbour-typo correction signal (D-28/D-38/S-09) now genuinely scores against the layout actually being
+  typed on. See §414 for the full mechanism.
+
+- **D-442's own English confusables-scan side-effects, deliberately not fixed in that round (two separate**
+  **open items, split out so neither gets lost inside a mechanism-focused round's own write-up):**
+  1. **A real frequency-correction backlog for `en/dict.tsv`.** The QWERTY confusables scan (§414) found
+     dozens of genuine, real, but rare English words (`fir`/`otter`/`nave`/`hut`/`cab`/`bye`, and more -
+     `dictionaries/confusables_scan.py app/src/main/assets/en/dict.tsv qwerty 30` reproduces the full list)
+     sitting at real silent-autocorrect risk against a much more frequent QWERTY-adjacent neighbour
+     (`for`/`other`/`have`/`but`/`can`). The correct fix, per German's own D-330 `dein`/`sein` precedent, is
+     raising each risky word's own frequency past the risk threshold, not blacklisting - a real, careful,
+     one-word-at-a-time round of its own, not started.
+  2. **Possible genuine noise already living in `en/dict.tsv`, never audited English's own equivalent of**
+     **German's §301 sweep.** The same scan surfaced a few implausibly-high-frequency entries that do not
+     look like real English words at all (`ases`/95431, `mored`/17953, `bys`/76263) - found incidentally,
+     not confirmed noise via a real review, and English has never had a dedicated noise-removal pass the
+     way German (§301) and Greek (§371/D-425) did. Worth its own dedicated round if picked up.
 
 - **D-280/D-281 follow-up: `SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language` enum and**
   **already fully typeable via QWERTY, but none has a dictionary or its own hint set built/hosted yet** - a
@@ -861,6 +872,32 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§414 (v1.1.53): D-442 - `KeyboardProximity` turned into a real per-layout interface**
+  **(QWERTZ/QWERTY/AZERTY/Greek), plus English's own real confusables blacklist - explicit user request,**
+  **run as a parallel task while D-441's French dictionary rebuild (§415) processed in the background.**
+  `KeyboardProximity` is now an interface with one object per row geometry
+  (`KeyboardProximityQwertz`/`Qwerty`/`Azerty`/`Greek`) plus a `KeyboardProximityRegistry` keyed by
+  `LayoutKind`, mirroring `LanguageRules`/`DiacriticFolding`'s existing "interface + object + registry"
+  shape - the user's own concrete design, implemented as specified. Threaded through
+  `DictionarySuggestionProvider` (the one real call site: D-28/D-38/S-09's typo-neighbour signals) via a
+  new `keyboardProximity` constructor parameter, resolved per-language in `AdaptKeyService.installStores()`
+  exactly like `languageRules`/`diacriticFolding` already are. A French/AZERTY user's typo correction now
+  genuinely scores against AZERTY's real adjacency instead of silently falling back to QWERTZ's.
+
+  Also built the confusables-scan tooling this unblocks (`dictionaries/confusables_scan.py`, a generic
+  scanner implementing the D-304/D-330-followup method against `CorrectionConfidence.forKnownWordOverride`'s
+  own real formula) and ran it against English's own bundled `en/dict.tsv` with the new
+  `KeyboardProximityQwerty` grid - 1,384 candidate pairs found, the 37 at maximum score hand-reviewed. Five
+  short tokens confirmed not to be real English words (`ij`/`iz`/`iy`/`ae`/`ne`) became `EnglishRules`'s own
+  `bundledConfusablesBlacklist()` (new class, mirrors `FrenchRules`); `AdaptKeyService.seedBundledBlacklist()`
+  itself was hardcoded to German only and is now generalised to loop over every language. Two further,
+  larger findings from the same scan - a real frequency-correction backlog, and possible pre-existing noise
+  in `en/dict.tsv` itself - are deliberately **not** tackled this round; see their own Open TODO entries.
+
+  1309 → 1335 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  469 -> 470, `versionName` `"1.1.52"` -> `"1.1.53"`. Spec's A-04 gained a one-sentence D-442 note. Not
+  device-confirmed - pure dictionary/ranking logic, no Android glue touched.
 
 - **§413 (v1.1.52): D-441 - French language pack built end to end, fully autonomously, on explicit user**
   **request to try the Language Contribution Guide's own §8 one-shot pipeline unattended.** D-314 already

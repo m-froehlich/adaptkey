@@ -129,6 +129,7 @@ import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.Acronym
 import de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
+import de.froehlichmedia.adaptkey.suggestion.KeyboardProximityRegistry
 import de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery
 import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
@@ -927,7 +928,8 @@ class AdaptKeyService : InputMethodService() {
         providers = newStores.mapValues { (language, store) ->
             DictionarySuggestionProvider(
                 store, config.maxSuggestions * 2, autocorrectAggressiveness,
-                LanguageRulesRegistry.rulesFor(language), SettingsStore.loadDiacriticFolding(this, language)
+                LanguageRulesRegistry.rulesFor(language), SettingsStore.loadDiacriticFolding(this, language),
+                keyboardProximity = KeyboardProximityRegistry.forLayoutKind(LayoutRegistry.kindFor(language))
             )
         }
         engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
@@ -943,7 +945,7 @@ class AdaptKeyService : InputMethodService() {
         tokenRepair = TokenRepair(
             english, LanguageRulesRegistry.rulesFor(Language.ENGLISH), SettingsStore.loadDiacriticFolding(this, Language.ENGLISH)
         )
-        newStores[Language.GERMAN]?.let { seedBundledBlacklist(it) }
+        newStores.forEach { (language, store) -> seedBundledBlacklist(language, store) }
     }
     
     /**
@@ -978,20 +980,26 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-176: seeds the small, reviewed set of app-bundled German blacklist entries - see
+     * D-176: seeds the small, reviewed set of app-bundled per-language blacklist entries - see
      * [BlacklistCategory.BUNDLED]'s own KDoc and [knownInOtherLanguage]'s for the full reasoning behind
-     * each word; the word list itself lives in [de.froehlichmedia.adaptkey.language.GermanRules]
-     * (D-410) alongside every other German-specific rule. Called from every [installStores] - both the
-     * initial synchronous in-memory stores and the real SQLite stores once [loadDictionariesAsync]
-     * finishes - so a fresh install, an already-populated existing install, and even the transient
-     * in-memory placeholder all end up with these entries, with no `DATABASE_VERSION` bump (and the
-     * destructive full reimport that would entail) needed. `blacklist()` is a plain upsert (`INSERT OR
-     * REPLACE`), so calling this on every install is cheap and idempotent - never wipes or duplicates
-     * anything.
+     * each word; the word list itself lives in each language's own [de.froehlichmedia.adaptkey.language.
+     * LanguageRules] implementation (D-410) - [de.froehlichmedia.adaptkey.language.GermanRules] and
+     * (D-number, this round) [de.froehlichmedia.adaptkey.language.EnglishRules] today, empty for every
+     * language without a real curated list yet ([de.froehlichmedia.adaptkey.language.NoOpLanguageRules]'s
+     * `bundledConfusablesBlacklist()` returns `emptySet()`, so calling this for such a language is a cheap
+     * no-op, not a special case this function needs to know about). D-number: generalised from a
+     * German-only call - previously the one production caller resolved `Language.GERMAN`'s own rules
+     * unconditionally regardless of [language], silently never seeding any other language's list even
+     * once one existed. Called from every [installStores] - both the initial synchronous in-memory stores
+     * and the real SQLite stores once [loadDictionariesAsync] finishes - so a fresh install, an
+     * already-populated existing install, and even the transient in-memory placeholder all end up with
+     * these entries, with no `DATABASE_VERSION` bump (and the destructive full reimport that would
+     * entail) needed. `blacklist()` is a plain upsert (`INSERT OR REPLACE`), so calling this on every
+     * install is cheap and idempotent - never wipes or duplicates anything.
      */
-    private fun seedBundledBlacklist(german: DictionaryStore) {
-        for (word in LanguageRulesRegistry.rulesFor(Language.GERMAN).bundledConfusablesBlacklist()) {
-            german.blacklist(word, BlacklistCategory.BUNDLED)
+    private fun seedBundledBlacklist(language: Language, store: DictionaryStore) {
+        for (word in LanguageRulesRegistry.rulesFor(language).bundledConfusablesBlacklist()) {
+            store.blacklist(word, BlacklistCategory.BUNDLED)
         }
     }
     

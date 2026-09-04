@@ -923,7 +923,11 @@ a curated set of pre-1996-spelling-reform relics of otherwise ordinary common wo
 modern spelling is demonstrably the dominant, living form in the same corpus), deliberately excluding any
 proper noun/surname/place name sharing the same ß-vs-ss shape, whose own spelling is not an error to correct.
 Blacklisting keeps a word typeable/known (quoting genuinely old text still works) while it can never surface
-as its own suggestion again. The blacklist editor (C-05) shows only user-added entries by default - a bundled
+as its own suggestion again. D-442: English curates its own small, separate bundled set too (`ij`, `iz`,
+`iy`, `ae`, `ne` - short tokens confirmed not to be real standalone English words, found via a real
+QWERTY-keyboard-adjacency confusables scan) - each language's own list is independent and never shared or
+generalised across languages (confirmed explicit design intent, see the A-04 closure note in
+`AdaptKey-Progress.md`). The blacklist editor (C-05) shows only user-added entries by default - a bundled
 entry is rarely of interest and should rarely be removed at all - with an explicit toggle to reveal bundled
 entries too. Its own language selector opens on whichever language the keyboard itself currently/last had
 active (G-01), not always the first entry in the list - the same default the Learned Words editor (W-01) also

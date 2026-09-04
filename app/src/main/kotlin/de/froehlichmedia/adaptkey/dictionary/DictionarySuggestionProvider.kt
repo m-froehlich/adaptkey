@@ -10,6 +10,7 @@ import de.froehlichmedia.adaptkey.suggestion.Correction
 import de.froehlichmedia.adaptkey.suggestion.DiacriticFolding
 import de.froehlichmedia.adaptkey.suggestion.EditDistance
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximity
+import de.froehlichmedia.adaptkey.suggestion.KeyboardProximityQwertz
 import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
 import de.froehlichmedia.adaptkey.suggestion.Suggestion
 import de.froehlichmedia.adaptkey.suggestion.SuggestionProvider
@@ -46,6 +47,12 @@ import kotlin.math.pow
  *           checks inside [score], [rankingBigramFrequency] and [nextWordSuggestions] - threaded through
  *           rather than read directly, so a caller's own tests stay deterministic (mirrors
  *           [InMemoryDictionaryStore]'s identical `clock` parameter). Defaults to the real wall clock.
+ * @property keyboardProximity D-number (this round): the active layout's own physical key adjacency
+ *           (see [KeyboardProximity]) - delegated rather than hardcoded so a non-QWERTZ layout is never
+ *           subject to German's own key positions. Defaults to [KeyboardProximityQwertz] so every
+ *           existing caller that does not pass one explicitly keeps this class's historical behaviour
+ *           unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
+ *           resolves and passes the value matching the actually active layout.
  */
 class DictionarySuggestionProvider(
     private val store: DictionaryStore,
@@ -53,7 +60,8 @@ class DictionarySuggestionProvider(
     private val aggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
     private val languageRules: LanguageRules = GermanRules,
     private val diacriticFolding: DiacriticFolding = NoOpDiacriticFolding,
-    private val now: () -> Long = { System.currentTimeMillis() }
+    private val now: () -> Long = { System.currentTimeMillis() },
+    private val keyboardProximity: KeyboardProximity = KeyboardProximityQwertz
 ) : SuggestionProvider {
     
     override fun suggestionsFor(
@@ -383,7 +391,7 @@ class DictionarySuggestionProvider(
         val first = token.firstOrNull() ?: return emptySet()
         val result = HashSet<Char>()
         result.add(first)
-        result.addAll(KeyboardProximity.neighboursOf(first))
+        result.addAll(keyboardProximity.neighboursOf(first))
         result.addAll(diacriticFolding.variantsOf(first))
         return result
     }
@@ -402,7 +410,7 @@ class DictionarySuggestionProvider(
     private fun neighbourPrefixVariants(token: String): List<String> {
         val results = LinkedHashSet<String>()
         for (i in token.indices) {
-            for (neighbour in KeyboardProximity.neighboursOf(token[i])) {
+            for (neighbour in keyboardProximity.neighboursOf(token[i])) {
                 if (!neighbour.isLetter()) {
                     continue // Digits are never a plausible word-initial letter.
                 }
@@ -436,7 +444,7 @@ class DictionarySuggestionProvider(
         return EditDistance.weightedDistance(foldedToken, diacriticFolding.fold(candidateLower), INDEL_COST, maxCost) { x, y ->
             when {
                 x == y -> 0
-                KeyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
+                keyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
                 else -> SUB_COST
             }
         }

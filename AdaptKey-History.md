@@ -18506,3 +18506,90 @@ mistake "the pipeline ran cleanly" for "this is finished." Not device-confirmed 
 available in this environment, consistent with this project's own established testing-gap acceptance for
 Android-only glue).
 
+## §414 - D-442: `KeyboardProximity` is now a real per-layout interface (QWERTZ/QWERTY/AZERTY/Greek), and English gained its own real confusables blacklist
+
+Explicit user request, given as a parallel task while D-441's French dictionary rebuild (§415) ran in the
+background: the D-441 write-up's own newly-found gap (`KeyboardProximity` hardcoded to QWERTZ, unable to
+run a real AZERTY confusables scan) should not just be flagged - it should be fixed properly, generalised
+to every layout this app has, not only AZERTY. The user's own concrete design: turn `KeyboardProximity`
+into an interface with one object per row geometry (`KeyboardProximityQwertz`, `...Qwerty`, `...Azerty`,
+plus Greek for completeness), mirroring the existing `LanguageRules`/`DiacriticFolding` "interface + one
+object per variant + a registry" shape already used elsewhere in this codebase - implemented exactly as
+specified, not redesigned.
+
+**The refactor.** `KeyboardProximity.kt` now holds the interface plus a shared `RowKeyboardProximity.build`
+row-adjacency-map builder (D-41's "same row or an adjacent row, column index within 1" rule, factored out
+once instead of copy-pasted four times) and the four real implementations - `KeyboardProximityQwertz`
+(unchanged ROWS from before), `KeyboardProximityQwerty` (`"qwertyuiop"`/`"zxcvbnm"`, matching
+`KeyboardLayout.kt`'s own `TOP_ROW_QWERTY`/`THIRD_ROW_LETTERS_QWERTY` constants exactly), `KeyboardProximityAzerty`
+(`"azertyuiop"`/`"qsdfghjklm"`/`"wxcvbn"`, matching `AzertyLayout.kt`'s own `TOP_ROW`/`MIDDLE_ROW`/`THIRD_ROW`
+exactly), `KeyboardProximityGreek` (matching `GreekLayout.kt`'s own `ROW_TOP`/`ROW_MIDDLE`/`ROW_BOTTOM`
+exactly). New `KeyboardProximityRegistry.forLayoutKind(LayoutKind)`, keyed by `LayoutKind` rather than
+`Language` directly - physical key adjacency is a property of the row geometry, not the language, and
+several languages already share one geometry (every ordinary Latin language shares `LATIN_QWERTY`), so a
+future language adopting an already-covered layout needs no new registry entry.
+
+**Threading it through.** `DictionarySuggestionProvider` (the one real production call site -
+`candidateFirstChars`/`neighbourPrefixVariants`/`correctionCost`, the D-28/D-38/S-09 typo-neighbour
+signals the D-441 write-up's own open TODO named) gained a `keyboardProximity: KeyboardProximity =
+KeyboardProximityQwertz` constructor parameter, exactly mirroring the existing `languageRules`/
+`diacriticFolding` delegation pattern (default keeps every existing test/caller's historical behaviour
+unchanged; `AdaptKeyService` is the one production caller that resolves and passes the real value).
+`AdaptKeyService.installStores()`'s two `DictionarySuggestionProvider(...)` construction sites (the initial
+synchronous stores and the `applySettings()` rebuild) both now pass
+`KeyboardProximityRegistry.forLayoutKind(LayoutRegistry.kindFor(language))` - the same per-language
+`LayoutKind` resolution `applyActiveLanguageToView()` already uses for the *displayed* keyboard, reused
+here for the *dictionary's own* typo-correction geometry (a French/AZERTY user's own store now scores
+typo-neighbour candidates against AZERTY's real adjacency, not QWERTZ's).
+
+**English's own confusables (the user's own explicit follow-up ask: "Englisch hat dann vermutlich auch noch
+keine echten Confusables. Das müssen wir nachreichen.").** New `EnglishRules` (mirrors `FrenchRules`'s
+shape: the six German-specific compounding/inflection hooks stay `NoOpLanguageRules`-equivalent no-ops,
+`decimalCommaGluesDigits() = false`, `timeSuggestionWord() = null`), registered in
+`LanguageRulesRegistry.RULES`. `AdaptKeyService.seedBundledBlacklist()` itself was hardcoded to German only
+(`newStores[Language.GERMAN]?.let { seedBundledBlacklist(it) }`) - silently never seeding any other
+language's list even once one existed - generalised to `newStores.forEach { (language, store) ->
+seedBundledBlacklist(language, store) }`, cheap and correct for every language since
+`bundledConfusablesBlacklist()` already returns `emptySet()` for one without a real curated list.
+
+A new generic scanner, `dictionaries/confusables_scan.py`, implements the D-304/D-330-followup method
+directly against `CorrectionConfidence.forKnownWordOverride`'s own real formula (`ratioFactor =
+ln(candidateFreq/typedFreq)/ln(500)`, clamped `[0,1]`; MEDIUM's own `autoApplyThreshold` of 0.75 is the
+"genuine risk" bar, matching German's own dein/sein round exactly) rather than eyeballing frequency ratios
+by hand - takes any `dict.tsv` plus a named row layout, generates every single-adjacent-key-substitution
+neighbour of every word efficiently (not an O(n²) full pairwise scan) and scores real collisions. Run
+against the bundled `en/dict.tsv` with `KeyboardProximityQwerty`'s own real grid: **1,384 candidate pairs**
+clear even the low chip-offer bar (0.30) - far more than a single-family scan like German's own dein/sein
+round ever surfaced, because this one swept the *entire* dictionary, not one word family. Manually reviewed
+the 37 pairs at the maximum score (1.0): the overwhelming majority are genuine, if rare, real English words
+(`fir`/`otter`/`nave`/`hut`/`cab`/`bye`, ...) whose own frequency is simply too low next to a very common
+QWERTY-adjacent neighbour (`for`/`other`/`have`/`but`/`can`/`bys`) - the correct fix for those is a
+frequency correction (German's own D-330 `dein`/`sein` precedent), deliberately **not** attempted this
+round; a few pairs also surfaced what looks like genuine, separate data-quality noise already living in
+`en/dict.tsv` itself (`ases`/95431, `mored`/17953, `bys`/76263 - none of these look like real English words
+despite implausibly high frequencies, the same shape as German's own pre-§301 noise, not yet audited for
+English at all). Out of the full review, five short tokens (`ij`, `iz`, `iy`, `ae`, `ne`) were confirmed,
+as confidently as this round's own non-native-but-fluent English judgement allows, to not be real
+standalone English words at all - the same "not a genuine word, real cross-confusion risk" shape A-04's
+bundled German list already covers (for a different underlying cause) - and became `EnglishRules`'s own
+`bundledConfusablesBlacklist()`. Deliberately conservative and small, explicitly not claimed exhaustive -
+several borderline cases (`js`, `kt`, `ar`, `ln`) were left out rather than guessed at, since each has at
+least one plausible legitimate reading (tech/aviation abbreviations, dialectal interjection). Both the
+broader frequency-correction backlog and the `en/dict.tsv` noise-audit gap are filed as their own new
+`AdaptKey-Progress.md` Open TODOs, distinct from this round's own narrower confusables-mechanism scope.
+
+**Tests**: `KeyboardProximityTest` renamed to `KeyboardProximityQwertzTest` (calls updated to the new
+`KeyboardProximityQwertz` object) - unchanged assertions/coverage otherwise. Three new sibling test classes
+(`KeyboardProximityQwertyTest`/`AzertyTest`/`GreekTest`), each covering a same-row neighbour, a cross-row
+neighbour, self-non-adjacency, a distant non-neighbour, the D-41 digit-row check, and a full symmetry sweep
+over that layout's own real alphabet - plus `KeyboardProximityRegistryTest` (every `LayoutKind` resolves
+its own real implementation, not a shared fallback). `LanguageRulesTest` gained an `English resolves to
+EnglishRules` case (replacing the now-false "resolves to the no-op default" assertion) and its own
+`EnglishRules`-mirroring test block, matching `FrenchRules`'s existing shape. 1309 → 1335 unit tests (26
+new: 5+1 in the renamed/registry proximity tests × the three new layouts, plus 5 English rules cases),
+all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 469 -> 470, `versionName`
+`"1.1.52"` -> `"1.1.53"`. Spec's A-04 gained a one-sentence D-442 note that English now curates its own
+separate bundled list too. `AdaptKey-Progress.md`'s own
+`KeyboardProximity`-hardcoded-to-QWERTZ Open TODO (added earlier this same session, during D-441) closed as
+RESOLVED by this round. Not device-confirmed - pure dictionary/ranking logic, no Android glue touched.
+
