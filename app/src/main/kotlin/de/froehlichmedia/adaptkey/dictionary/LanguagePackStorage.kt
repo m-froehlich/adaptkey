@@ -58,6 +58,14 @@ object LanguagePackStorage {
         File(languageDir(context, language), "abbreviations.tsv")
     
     /**
+     * D-436: the installed base-letter -> diacritic-variants table (D-387/D-435's [DataDiacriticFolding])
+     * for [language], whether or not it actually exists yet - optional, like [hintsFile]: a language pack
+     * without one simply falls back to [de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding].
+     */
+    fun diacriticsFile(context: Context, language: Language): File =
+        File(languageDir(context, language), "diacritics.tsv")
+    
+    /**
      * @param context any valid context
      * @param language the language to check
      * @return true when a language pack is installed for [language] (its unigram file is present - a
@@ -85,6 +93,11 @@ object LanguagePackStorage {
         return runCatching { abbreviationsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
     }
     
+    /** @return the installed diacritics-table file's content, or null when not installed / unreadable */
+    fun readDiacritics(context: Context, language: Language): String? {
+        return runCatching { diacriticsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
+    }
+    
     /**
      * Removes [language]'s installed pack files (not the dictionary database itself - the caller is
      * responsible for also deleting that, see [DictionaryLoader.databaseName]).
@@ -97,6 +110,7 @@ object LanguagePackStorage {
         bigramsFile(context, language).delete()
         hintsFile(context, language).delete()
         abbreviationsFile(context, language).delete()
+        diacriticsFile(context, language).delete()
         // Best-effort: File.delete() on a directory only succeeds when it is already empty, exactly the
         // state the deletes above just left it in (barring a stray unrelated file, harmless either way).
         languageDir(context, language).delete()

@@ -74,7 +74,7 @@ If yours is already there:
 
 ## 3. Building the dictionary (and your own AltGr hint set)
 
-Up to five plain text files, UTF-8, one language - D-310: every file here uses a fixed, un-suffixed name
+Up to six plain text files, UTF-8, one language - D-310: every file here uses a fixed, un-suffixed name
 (`dict.tsv`, not `dict_<code>.tsv`), since each archive/folder is already scoped to exactly one language by
 its own location, not by its filenames:
 
@@ -122,9 +122,22 @@ its own location, not by its filenames:
   rather than leaving German's own list (`usw.`, `bzgl.`, `z.b.`, ...) silently applied to your text instead.
   Getting this wrong only ever costs a missed/extra auto-capitalisation after a period - never anything
   destructive - so a rough first list is a safe, low-risk contribution even before it is exhaustive.
+- **`diacritics.tsv`** (optional, D-436 - the D-144/D-204/D-387 umlaut-style fold/unfold mechanism,
+  generalised beyond German): one base letter per line, `baseLetter<TAB>variant1,variant2,...`, e.g.
+  `e<TAB>é,è,ê,ë` for French or `g<TAB>ğ` for Turkish - parsed by `DiacriticTable.parse()`; blank lines and
+  `#` comment lines are ignored. This is the file that lets a token typed without its diacritic (`"cafe"` for
+  `"café"`) still reach the correctly-spelled word, both live while typing (prefix completion) and at
+  autocorrect/split-repair time - exactly what German gets from `ä`/`ö`/`ü`/`ß` today, generalised via
+  `de.froehlichmedia.adaptkey.suggestion.DataDiacriticFolding`. Only the base -> known-variants direction is
+  ever needed, even for a base letter with *several* real variants (French's `e` above) - see
+  `DataDiacriticFolding`'s own KDoc for why the algorithm never needs the reverse. Without this file, your
+  language falls back to `NoOpDiacriticFolding` - no diacritic handling at all, not German's own map (which
+  would help nothing for a language that does not have German's diacritics) - so this file is a genuine,
+  standalone improvement, not a "tailored vs. generic default" choice the way `hints.tsv`/`abbreviations.tsv`
+  are. §8 below covers where this base-letter list most naturally comes from alongside `hints.tsv`'s own.
 - **`version.txt`** (optional but strongly recommended, D-308): its first line is a single plain integer,
   e.g. `1` - this pack's own version, bumped by *you* every time you publish a revised
-  `dict.tsv`/`bigram.tsv`/`hints.tsv`/`abbreviations.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
+  `dict.tsv`/`bigram.tsv`/`hints.tsv`/`abbreviations.tsv`/`diacritics.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
   buttons stay available at any time (even for an already-installed language) so a user can always manually
   re-check; re-importing only actually applies the freshly downloaded archive when *its own* version is
   strictly newer than what is already installed - if it is exactly the same, the user is told it is already
@@ -160,7 +173,8 @@ unambiguous both here and inside your `.zip` below.
 
 `de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your files at
 its root - not inside a folder - named exactly `dict.tsv`, and optionally `bigram.tsv`/`hints.tsv`/
-`version.txt`. Build one like the existing `language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip` (a
+`abbreviations.tsv`/`diacritics.tsv`/`version.txt`. Build one like the existing
+`language-packs/adaptkey-lang-de.zip`/`adaptkey-lang-el.zip` (a
 one-line `zipfile.ZipFile(...).write(...)` per file in Python, or any ordinary zip tool - just make sure
 there is no directory prefix inside the archive itself; `LanguagePackInstaller.write()` is what creates the
 `<code>/` folder on the receiving device, not something your own archive needs to contain).
@@ -297,15 +311,21 @@ gate between "the pipeline ran" and "this is fit to publish."
    review of every one infeasible, the same conclusion the (now-superseded, deleted)
    `AdaptKey-Plan-Wortfamilien.md`/`AdaptKey-Plan-Adjektive.md` design docs reached.
 
-5. **AltGr / long-press hint set (`hints.tsv`, §3).** More automatable than the original guide text above
-   suggests for one large, common case: a Latin-script language whose own special characters are diacritic
-   variants of an existing Latin letter - Turkish `ğ ş ı`, Polish `ł ż ń ć ś`, and similar - maps unambiguously
-   onto that base letter's own popup (`ğ`/`ş` belong on `g`/`s`, `ł` on `l`, exactly the same relationship
-   `ä`/`ö`/`ü` already have to `a`/`o`/`u` in German's own set). An LLM can draft this mapping directly and
-   reliably, since the target key is never in question. Symbol/punctuation choices (currency signs, quotation
-   marks, math symbols) are more of a genuine UX judgement call about what that language's users actually
-   reach for day to day - still worth an LLM first draft, but flag it explicitly for a human/native check
-   rather than trusting it the way the diacritic mapping can be trusted.
+5. **AltGr / long-press hint set (`hints.tsv`) and the diacritics table (`diacritics.tsv`, D-436) - one
+   research pass, two files.** More automatable than an earlier draft of this guide assumed, for one large,
+   common case: a Latin-script language whose own special characters are diacritic variants of an existing
+   Latin letter - Turkish `ğ ş ı`, Polish `ł ż ń ć ś`, French `é è ê ë`, and similar - maps unambiguously onto
+   that base letter (`ğ`/`ş` belong to `g`/`s`, `ł` to `l`, exactly the same relationship `ä`/`ö`/`ü` already
+   have to `a`/`o`/`u` in German's own set). An LLM can draft this base-letter -> variants list directly and
+   reliably, since which base letter a diacritic belongs to is never in question - the same list answers both
+   files at once: `diacritics.tsv` wants the *complete* variant set per base letter (D-436's own
+   `DataDiacriticFolding` handles several variants on one base letter natively, e.g. French's `e`), while
+   `hints.tsv` wants only *one* representative symbol per key (a single AltGr popup hint, §3's own format
+   limit) - pick the single most-used variant for that file, keep the full list for this one. Symbol/
+   punctuation choices for the rest of `hints.tsv` (currency signs, quotation marks, math symbols) are more of
+   a genuine UX judgement call about what that language's users actually reach for day to day - still worth an
+   LLM first draft, but flag it explicitly for a human/native check rather than trusting it the way the
+   diacritic mapping can be trusted.
 
 6. **Abbreviation list (`abbreviations.tsv`, D-434, §3).** Have the model draft a first list of the
    sentence-final-period abbreviations actually used in the target language (the German list itself,

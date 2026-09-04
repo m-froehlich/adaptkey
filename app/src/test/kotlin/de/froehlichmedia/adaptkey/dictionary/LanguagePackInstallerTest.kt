@@ -57,6 +57,7 @@ class LanguagePackInstallerTest {
         assertFalse(File(dir, "fr/bigram.tsv").exists())
         assertFalse(File(dir, "fr/hints.tsv").exists())
         assertFalse(File(dir, "fr/abbreviations.tsv").exists())
+        assertFalse(File(dir, "fr/diacritics.tsv").exists())
     }
     
     @Test
@@ -75,6 +76,15 @@ class LanguagePackInstallerTest {
         LanguagePackInstaller.install(archive, dir, Language.GERMAN)
         
         assertEquals("usw.\nbzgl.\n", File(dir, "de/abbreviations.tsv").readText())
+    }
+    
+    @Test
+    fun `D-436 install writes an optional diacritics file when the archive includes one`(@TempDir dir: File) {
+        val archive = zipOf("dict.tsv" to "bonjour\t100\n", "diacritics.tsv" to "e\té,è,ê,ë\n")
+        
+        LanguagePackInstaller.install(archive, dir, Language.FRENCH)
+        
+        assertEquals("e\té,è,ê,ë\n", File(dir, "fr/diacritics.tsv").readText())
     }
     
     @Test
@@ -137,7 +147,8 @@ class LanguagePackInstallerTest {
                 "dict.tsv" to "bonjour\t100\n",
                 "bigram.tsv" to "a\tb\t1\n",
                 "hints.tsv" to "a=à",
-                "abbreviations.tsv" to "etc.\n"
+                "abbreviations.tsv" to "etc.\n",
+                "diacritics.tsv" to "e\té,è\n"
             ),
             dir,
             Language.FRENCH
@@ -149,6 +160,7 @@ class LanguagePackInstallerTest {
         assertFalse(File(dir, "fr/bigram.tsv").exists())
         assertFalse(File(dir, "fr/hints.tsv").exists())
         assertFalse(File(dir, "fr/abbreviations.tsv").exists())
+        assertFalse(File(dir, "fr/diacritics.tsv").exists())
         assertFalse(File(dir, "fr").exists())
     }
     

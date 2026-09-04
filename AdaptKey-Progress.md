@@ -554,16 +554,18 @@ non-trivial changes).
     `ACTION_OPEN_DOCUMENT_TREE` folder grant it depended on turned out to be refused outright for the
     Downloads folder itself on a real device. The post-import 60-second-old cleanup half of D-386 survives
     unchanged (now against a directly-picked file) - see spec §30.
-  - **D-387 - PARTIALLY RESOLVED (§401, v1.1.40); still OPEN for the actual multi-language content.** While
-    discussing this item, found and fixed a genuine bug it was resting on (D-435, see Current State): the
-    umlaut/diacritic mechanism itself (D-144/D-204) was called unconditionally regardless of active language,
-    not merely "missing" for other languages. §401 built the general architecture (a `DiacriticFolding`
-    interface, per-language-resolved, defaulting to a no-op rather than German's own map) but deliberately
-    stopped there, on the user's own explicit instruction to fix the bug first and design the actual
-    per-language data mechanism (a `diacritics.tsv`-style file, base-letter -> known variants, generalising
-    the L-05 AltGr host-key convention) afterward - see §401 for the design discussion so far. Still nothing
-    beyond German (`Umlaut`) has a real implementation - every other language still resolves to the new
-    no-op default, functionally unchanged from before this round for anyone but German.
+  - **D-387 - RESOLVED (§401 architecture + §402 data mechanism, v1.1.40 + v1.1.41).** While discussing this
+    item, found and fixed a genuine bug it was resting on first (D-435, §401): the umlaut/diacritic mechanism
+    (D-144/D-204) was called unconditionally regardless of active language, not merely "missing" for other
+    languages. §402 then built the actual per-language content mechanism D-387 asked for: an optional
+    `diacritics.tsv` per language pack (base letter -> known variants, D-436), loaded exactly like `hints.tsv`/
+    `abbreviations.tsv`, resolved into a new `DataDiacriticFolding` generalising `Umlaut` beyond German's own
+    1:1 vowel map (including a base letter with several real variants, e.g. French's `e` -> `é è ê ë`) - see
+    §402 for the full mechanism and the two follow-up design points (direction-only unfold; the L-05 host-key
+    concept as the universal single-substitution rule) it closes out. No language beyond German has real
+    `diacritics.tsv` content yet - that is now exactly the same, expected, individually-picked-up-later state
+    every other optional per-language file (`hints.tsv`/`abbreviations.tsv`) is already in for every language
+    but German/English, not a remaining gap specific to D-387 any more.
   - **D-388 - RESOLVED (§291 v1.0.45).** Learned Words/Blacklist editors needed sortable views - shipped as
     the `last_touched` column + Recent/A-Z sort picker + locale-aware `Collator` sorting.
   - **D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99 + §348 v1.0.100 + §349 v1.0.101).**
@@ -795,6 +797,38 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§402 (v1.1.41): D-436 - the actual per-language diacritics data mechanism D-387 asked for, built on top**
+  **of §401's architecture fix.** New optional sixth language-pack file `diacritics.tsv` (base letter ->
+  known variants, e.g. `e<TAB>é,è,ê,ë` for French, `g<TAB>ğ` for Turkish), parsed by a new pure `DiacriticTable`
+  and resolved through the identical bundled-asset-or-installed-pack pattern every other optional file
+  already uses (new `LanguageDiacriticsLoader`, mirroring `LanguageAbbreviationsLoader`/
+  `LanguageLetterHintsLoader` exactly). A new `DataDiacriticFolding` implements `DiacriticFolding` generically
+  from that table - `Umlaut` itself stays untouched, still the compiled special case for German alone
+  (`SettingsStore.loadDiacriticFolding()`'s own precedence: a hardcoded implementation, currently only
+  `Umlaut`, always wins over a data table; a language with neither gets `NoOpDiacriticFolding`).
+
+  Closes out the two follow-up design points from §401's own discussion, both confirmed exactly as the user
+  argued: (1) `unfoldCandidates`/`fold` only ever need the base-letter -> variants direction, generalising
+  cleanly to a base letter with *several* real variants (French's `e`) via the same per-position combinatorial
+  branching `Umlaut`'s own private `unfold` already used for German's 1:1 case - no per-language algorithm
+  differences needed, confirmed by `DataDiacriticFoldingTest`'s own French-shaped table; (2) the L-05 AltGr
+  "host key" is always singular by construction, so `foldVariants` is single-valued for every
+  `DataDiacriticFolding` instance - German's `ß` dual ASCII convention (D-204) stays a genuine, `Umlaut`-only
+  special case, not a shape the generic mechanism needs to support.
+
+  New tests: `DiacriticTableTest` (parser tolerance/validation), `DataDiacriticFoldingTest` (fold/unfold/
+  foldVariants/variantsOf against synthetic Turkish- and French-shaped tables, including the multi-variant and
+  capped-combinatorics cases), plus `LanguagePackInstallerTest` coverage for the new archive entry
+  (write/clear). 1273 -> 1300 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `AdaptKey-Language-Contribution-Guide.md` §3 gained `diacritics.tsv` as the sixth optional file, and §8's own
+  step 5 now covers both `hints.tsv` and `diacritics.tsv` as one research pass (the same base-letter ->
+  variants list answers both: `diacritics.tsv` wants the complete set, `hints.tsv` only its single most-used
+  representative). `versionCode` 457 -> 458, `versionName` `"1.1.40"` -> `"1.1.41"`.
+
+  No language beyond German has real `diacritics.tsv` content yet - that is now simply the same, expected,
+  pick-it-up-later state every other optional per-language file is already in for every non-German/English
+  language, not a gap specific to this mechanism.
 
 - **§401 (v1.1.40): D-435 - the umlaut/diacritic unfold mechanism (`Umlaut`, D-144/D-204) was called**
   **unconditionally from `DictionarySuggestionProvider`/`TokenRepair`, regardless of the active language - a

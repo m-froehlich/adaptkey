@@ -10,7 +10,11 @@ import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
+import de.froehlichmedia.adaptkey.language.DiacriticFoldingRegistry
 import de.froehlichmedia.adaptkey.language.Language
+import de.froehlichmedia.adaptkey.suggestion.DataDiacriticFolding
+import de.froehlichmedia.adaptkey.suggestion.DiacriticFolding
+import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
 import de.froehlichmedia.adaptkey.touch.TypingPattern
 
@@ -215,6 +219,28 @@ object SettingsStore {
      */
     fun loadAbbreviations(context: Context, language: Language = ActiveLanguageStore.load(context)): Set<String> {
         return LanguageAbbreviationsLoader.loadFor(context, language) ?: Abbreviations.GERMAN
+    }
+    
+    /**
+     * D-436: resolves [language]'s own [DiacriticFolding] (D-435's per-language seam) - a compiled-in
+     * special case (currently only [DiacriticFoldingRegistry]'s `GERMAN -> Umlaut`) always wins when one
+     * exists, since it can encode real algorithmic behaviour (D-204's ß dual-convention) a plain data table
+     * cannot; otherwise [language]'s own installed/bundled `diacritics.tsv` ([LanguageDiacriticsLoader]) is
+     * loaded into a [DataDiacriticFolding]; a language with neither gets [NoOpDiacriticFolding] - never
+     * German's own map, which would help nothing for a language that does not have German's diacritics.
+     *
+     * @param context any valid context
+     * @param language the language whose own diacritic folding to resolve; defaults to whichever language
+     *        is currently active ([ActiveLanguageStore])
+     * @return [language]'s own [DiacriticFolding]
+     */
+    fun loadDiacriticFolding(context: Context, language: Language = ActiveLanguageStore.load(context)): DiacriticFolding {
+        val hardcoded = DiacriticFoldingRegistry.foldingFor(language)
+        if (hardcoded !== NoOpDiacriticFolding) {
+            return hardcoded
+        }
+        val table = LanguageDiacriticsLoader.loadFor(context, language) ?: return NoOpDiacriticFolding
+        return DataDiacriticFolding(table)
     }
     
     /**

@@ -38,12 +38,19 @@ mirroring `ä`/`ö`/`ü` on `a`/`o`/`u` - a lazily-tapped bare `s` is a direct s
 demoted to a frequency-ranked fuzzy candidate - it is exact, and must be offered as such (see A-01/S-06).
 
 D-435: the mechanism behind this principle (`Umlaut`, D-144/D-204's fold/unfold/restoration) is resolved per
-the active language via `DiacriticFoldingRegistry`, exactly the way L-05's AltGr hints and the D-410
-`LanguageRules` seam already are - **not** a global, unconditional mechanism any more. A language without its
-own real implementation gets a no-op default, never German's own `ä`/`ö`/`ü`/`ß` map (that map would help
-nothing for, say, Turkish or Polish) - so this guiding principle's own "never throw the autocorrect off its
-stride" promise is, today, still German-specific in practice; extending it to other languages' own diacritics
-is D-387, open, deliberately not part of this fix.
+the active language via `SettingsStore.loadDiacriticFolding()`, exactly the way L-05's AltGr hints and the
+D-410 `LanguageRules` seam already are - **not** a global, unconditional mechanism any more. A language
+without its own real implementation gets a no-op default, never German's own `ä`/`ö`/`ü`/`ß` map (that map
+would help nothing for, say, Turkish or Polish).
+
+D-436: a language pack's own optional `diacritics.tsv` (base letter -> known variants, e.g. French's
+`e` -> `é è ê ë`) generalises this beyond the no-op default via `DataDiacriticFolding` - see
+`AdaptKey-Language-Contribution-Guide.md` §3/§8 for the file format and how to derive it. `Umlaut` itself
+stays the permanent, hardcoded special case for German alone (including D-204's `ß` dual ASCII-convention
+mechanism, which `DataDiacriticFolding` deliberately does not generalise - every diacritic it knows about has
+exactly one ASCII substitution, its own base letter). No language beyond German has real `diacritics.tsv`
+content yet; adding one is D-387's originally-requested extension, now a normal content contribution rather
+than an open architecture question.
 
 ### Guiding Principle - `onUpdateSelection`'s Self-Recognition Mechanism Is Foundational
 
