@@ -782,6 +782,49 @@ non-trivial changes).
 
 ## Current State
 
+- **§393 (v1.1.32): D-361-followup - monochrome glyph icons for the settings screen's own sub-screen entry**
+  **points.** Direct follow-up to §392's icon discussion: user corrected the assumed cost ("Icon-Glyph, nicht
+  Icon-Image" - a single Unicode character needs no bundled asset, no licence to source/credit, unlike a real
+  icon set would) and confirmed scope (only preferences that open their own dedicated screen; a group/category
+  icon was floated but not actually requested this round - the confirmed candidate list was entry points only)
+  and style (plain monochrome symbol characters, not colourful emoji, matching ordinary Android Settings icon
+  conventions rather than this app's own extra-row emoji-button precedent).
+
+  Also directly addressed, separately, before starting: **the double-tap-delay rename from §392 does not drop
+  any functionality** - the user suspected a real, distinct "Doppel-Shift-Verzögerung" mechanism might have
+  been silently merged away. Re-verified line by line: `settings.doubleTapDelayMs` was already the single
+  value G-05 ([AdaptKeyService.kt:6683](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:6683)),
+  D-348 ([AdaptKeyService.kt:2631](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:2631)) and
+  now D-361 all read directly - no second field exists anywhere in `AdaptSettings`/`SettingsMapper`/
+  `SettingsStore` (grepped explicitly to be sure). D-348's own pre-existing KDoc already said "Reuses the G-05
+  double-tap delay setting" *before* this session touched anything - the sharing was an established, deliberate
+  design decision from earlier work, not something introduced or discovered incorrectly this round. Only the
+  UI label and a few stale KDoc comments (written back when the value was G-05-only) called it Shift-specific;
+  those comments corrected too (`AdaptSettings.DEFAULT_DOUBLE_TAP_DELAY_MS`, `SettingsMapper.MIN/
+  MAX_DOUBLE_TAP_DELAY_MS`, `SettingsStore.DEF_DOUBLE_TAP_DELAY`) - comment-only, no version bump for that
+  piece (committed separately, `0dc4f97`).
+
+  **Mechanism**: new `GlyphIconDrawable` (`Drawable` subclass) draws one Unicode character centred in a 24dp
+  square, tinted to `?android:attr/textColorSecondary` to match the muted look of an ordinary Android Settings
+  icon - confirmed via the real `androidx.preference` AAR's own `image_frame.xml` (`PreferenceImageView`,
+  `maxWidth`/`maxHeight="48dp"`, `wrap_content`) that a 24dp intrinsic size renders at its own natural size, no
+  forced up/downscaling. `SettingsFragment.onCreatePreferences()` assigns one to each of the eight sub-screen
+  entry points via a straightforward `key -> glyph` map, right after `setPreferencesFromResource()`: Calibration
+  ⌖, Language packs 文, Blacklist ⊘, Learned Words ✎, Credentials ⚿, Backup ⟲, Diagnostics log ☰, Feature
+  overview ℹ. `onboarding_replay` deliberately excluded - confirmed via `SettingsActivity.kt` it only shows a
+  `Toast` (`setOnPreferenceClickListener`), never opens its own screen, so it does not qualify under the user's
+  own "own submenu" scoping.
+
+  No new tests - `GlyphIconDrawable` is pure Android rendering glue (`Canvas`/`Paint`), the same untested
+  boundary `isWithinSpaceHitZone`/the offset-factor functions already sit on; `SettingsFragment`'s own wiring is
+  equally untested Android view glue, per this project's own convention for the whole settings screen. 1244
+  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - pure
+  settings-screen cosmetics, same precedent §380/§381 already established for this class of change. `versionCode`
+  448 -> 449, `versionName` `"1.1.31"` -> `"1.1.32"`. **Not yet device-confirmed** - glyph rendering support
+  varies by device/OEM font substitution in a way that cannot be verified from here; needs a real look that
+  every chosen character actually renders as intended (not a "tofu" missing-glyph box) and that the icon column
+  looks right alongside the rest of the row.
+
 - **§392 (v1.1.31): settings-screen follow-up from testing §391 - a stale-APK false alarm led to a real,**
   **useful settings-screen review round.** User reported seeing no Sticky-Backspace effect, no new setting, and
   the double-tap-delay slider itself missing entirely after installing what turned out to still be v1.1.29, not

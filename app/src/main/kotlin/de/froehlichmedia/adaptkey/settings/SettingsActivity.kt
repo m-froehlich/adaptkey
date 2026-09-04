@@ -81,6 +81,22 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
             
+            // D-361-followup: monochrome glyph icons (GlyphIconDrawable) for the settings screen's own
+            // sub-screen entry points only, per the user's own explicit scoping - a plain preference with no
+            // dedicated screen of its own stays without an icon.
+            mapOf(
+                "k01_calibration" to "⌖",
+                "d280_language_packs" to "文",
+                "c05_blacklist" to "⊘",
+                "d177_learned_words" to "✎",
+                "d142_credentials" to "⚿",
+                "d278_backup" to "⟲",
+                "d_diag_log" to "☰",
+                "d89_feature_overview" to "ℹ"
+            ).forEach { (key, glyph) ->
+                findPreference<Preference>(key)?.icon = GlyphIconDrawable(requireContext(), glyph)
+            }
+            
             // D-407/D-408: labels/values aren't XML attributes on LabeledSeekBarPreference (no custom-
             // attribute declaration exists for it, unlike ListPreference's built-in android:entries/
             // entryValues) - set here instead, the same place info_version/d89_feature_overview's own
