@@ -1835,6 +1835,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val stickyHit = keyRects.any { (key, rect) ->
                     key.code != KeyCode.DELETE && isWithinBackspaceStickyZone(backspaceEntry.second, rect, x, y)
                 }
+                // D-361-followup (temporary diagnostic): "upward" was reported as still not sticking after
+                // v5's tolerance fix, with no cause found by re-reading the geometry alone - logging the
+                // actual rects rather than guessing a further blind patch. Remove once resolved.
+                val under = keyRects.firstOrNull { it.second.contains(x, y) }
+                logTouch(
+                    "backspaceSticky: hit=$stickyHit x=$x y=$y backspaceRect=${backspaceEntry.second} " +
+                        "underKey=${under?.first?.id} underRect=${under?.second}"
+                )
                 if (stickyHit) {
                     return backspaceEntry
                 }

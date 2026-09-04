@@ -782,6 +782,28 @@ non-trivial changes).
 
 ## Current State
 
+- **§398 (v1.1.37): D-361-followup - "oben" still does not stick after v5, temporary diagnostic logging**
+  **added instead of a third blind patch.** Reported right after v5 (which fixed "unten"/Enter): left/right
+  now work well, but upward still has no effect at all. Re-derived the geometry by hand rather than guessing
+  again: `layoutKeys()` places every row's own last key flush against the identical right edge
+  (`left + usableWidth - gapPx`, a row-independent constant, verified algebraically from the actual loop) -
+  row 2 (`"asdfghjkl"`, 9 equal-weight keys, no L-04 backspace-driven squeeze applied to it) and row 3
+  (Shift + `thirdRowLetters` + Backspace) should therefore both end at the exact same x, meaning `l` (row 2's
+  last key) sits directly above Backspace exactly the way Enter sits directly below it - the v5 tolerance fix
+  (which is direction-agnostic, applied identically to all four branches) should cover this boundary at least
+  as easily as the Enter one, since there is no extra D-55 gap between row 2 and row 3 at all. No discrepancy
+  found by re-reading the code alone this time - this project's own established pattern for exactly this
+  situation (spec §1's guiding principle; D-386's own precedent) applies: temporary diagnostic logging
+  (`AdaptKeyTouch` tag, `logTouch` - reachable via `adb logcat -s AdaptKeyTouch:D` or Settings -> Diagnostics)
+  now records, on every sticky-check while the window is active, the computed hit/miss, the tap coordinates,
+  Backspace's own rect, and the actual key/rect the raw tap physically landed in - enough to compare the two
+  rects by hand once a real "oben" repro is captured, rather than coding blind against a theory that keeps not
+  matching what the device reports.
+
+  No new tests (diagnostic logging only, no behaviour change). 1249 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. `versionCode` 453 -> 454,
+  `versionName` `"1.1.36"` -> `"1.1.37"`.
+
 - **§397 (v1.1.36): D-361-followup (v5) - the sticky Backspace zone never actually bled toward Enter, the**
   **one neighbour it exists for.** First real device confirmation of D-361 itself: "klebt mir noch nicht weit
   genug... nach oben und unten strahlt sie gar nicht." Root-caused, not guessed - `layoutKeys()` adds the D-55
