@@ -422,8 +422,16 @@ non-trivial changes).
     re-autocorrected on the very next Space - a revert now gets exactly one unimpeded retry (learns nothing
     itself, distinct from D-403's own broader "silently-corrected word must eventually become learnable"
     ask, see below).
-  - **D-360 - OPEN.** A commit + autocorrect right before an Enter/newline must still be revertible by a
-    plain Backspace afterward.
+  - **D-360 - WON'T FIX (2026-09-04, no code change - discussed and declined).** Real repro confirmed first,
+    not assumed: needs D-348's own double-tap-Backspace-undo setting enabled - type "Das ist ein Teyt",
+    autocorrects to "Text" on Enter, a single Backspace afterward correctly does nothing at all (D-348's own
+    "first Backspace at the armed tail is a no-op" design, working exactly as documented) rather than the
+    single-Backspace revert D-360 originally asked for right at a line-break boundary specifically. Discussed
+    directly: the user's own reassessment is that no exception is actually warranted here - D-348's double-tap
+    requirement should simply apply uniformly, line-break boundary or not, with no special-cased carve-out.
+    The user's own account: this concern likely predates D-416 (the eager-to-deferred auto-space redesign,
+    see above) and has been implicitly resolved as a side effect of that broader simplification anyway.
+    Declined rather than implemented.
   - **D-361 - RESOLVED and device-confirmed (§391-§399, v1.1.30-v1.1.38); the retroactive-reinterpretation**
     **half deliberately shelved, not implemented.** Fast Backspace typing was letting neighbour keys (including
     Enter) react instead of Backspace. Design discussed first (touches key hit-testing): two ideas were on the
@@ -769,18 +777,18 @@ non-trivial changes).
   (e.g. an accessibility service, well outside an IME's own scope and permission model) is ever considered
   worth the added complexity - not currently planned.
 
-- **D-416 - RESOLVED (§333, see Current State).** A-12's eager auto-space-after-punctuation replaced with the
-  deferred model discussed and planned in
-  [`AdaptKey-Plan-D416-Deferred-Space.md`](AdaptKey-Plan-D416-Deferred-Space.md) - see that file and the
-  Current State entry for the full account. Correction to the original framing above: D-373 turned out **not**
-  to be related (a hyphen never got its own A-12 auto-space to begin with, so there was nothing for it to
-  collapse into - it remains its own, independent, still-open item, see below). D-384 genuinely is eased by
-  the new model, but was **not** bundled into this round - still its own separate, not-yet-implemented item.
-  D-363 (colon/semicolon vs. emoticon) also stays a deliberately separate, not-yet-decided follow-up. No
-  settings toggle was built, per the user's own explicit call (would not scale across every touch point) -
-  the rollback path instead is a dedicated, kept-current
-  [rollback-notes document](AdaptKey-Rollback-D416-Deferred-Space.md) plus keeping the migration on one
-  clean, isolated commit.
+- **D-416 - RESOLVED (§333, see History.md for the full account).** A-12's eager auto-space-after-punctuation
+  replaced with the deferred model (space is set only once the next letter is actually typed, not eagerly the
+  instant the punctuation mark commits) - planned in `AdaptKey-Plan-D416-Deferred-Space.md`, deleted once
+  superseded (2026-09-04, explicit user call: the deferred model "hat sich extrem bewährt und wird bleiben" -
+  no return path is kept any more; its own `AdaptKey-Rollback-D416-Deferred-Space.md` companion deleted
+  alongside it for the same reason). Correction to the original framing above: D-373 turned out **not** to be
+  related (a hyphen never got its own A-12 auto-space to begin with, so there was nothing for it to collapse
+  into - it remains its own, independent, still-open item, see below). D-384 genuinely is eased by the new
+  model, but was **not** bundled into this round - still its own separate, not-yet-implemented item. D-363
+  (colon/semicolon vs. emoticon) also stays a deliberately separate, not-yet-decided follow-up. No settings
+  toggle was ever built, per the user's own explicit call at the time (would not scale across every touch
+  point).
 
 - **D-418 - OPEN, low priority, not started (2026-09-01).** A genuine in-text visual cue for D-416's deferred
   space/caps state (as opposed to the space-key dot that shipped) - user's own explicit call: "nicht so
@@ -1620,187 +1628,7 @@ non-trivial changes).
   green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - same D-89 precedent as §380.
   `versionCode` 436 -> 437, `versionName` `"1.1.19"` -> `"1.1.20"`. **2026-09-03: device-confirmed.**
 
-- **§380 (v1.1.19): D-433 - the Mini-LLM (Tier 3) settings screen explains its actual value instead of just**
-  **its install mechanics.** User's own explicit request, after a full re-read of the tier-3 orchestration
-  code (`Tier3Orchestrator`/`Tier1Confidence`/`SuggestionMerger`/`HighCertaintyCapitalisation`/
-  `AdaptiveLearning`/`Tier3FamilyPrompt`/`Tier3FamilyApplier`) to distil what genuinely differs with vs.
-  without it: contextual completion for word combinations tier-1's own bigram/trigram statistics have never
-  seen (only ever consulted when `Tier1Confidence` is low - the LLM stays dormant for confident predictions);
-  resolving genuinely ambiguous capitalisation (§6 rule 6, e.g. "Weg"/"weg") from real sentence meaning, at
-  ≥85% confidence only; determining a newly-learned word's whole family (lemma, part of speech, principal
-  inflected forms) in one step, versus the non-LLM path's much narrower fixed-ending-list heuristic (D-404,
-  `LearnedLemmaLinking`); and feeding a confirmed LLM suggestion straight back into tier 1 so the LLM is
-  needed less over time. Explicitly unaffected either way: ordinary spelling correction, umlaut restoration,
-  A-05/A-06 split/merge, and A-13 missed-Backspace recovery - all independent of tier 3 entirely.
-
-  First attempt (a 2-3 sentence on-screen paragraph) was reported back as still too long once tested against
-  the real UI - "das hatten wir an anderer Stelle schon einmal" (echoing §365's own spinner-label width
-  lesson). Root cause of the confusion, clarified through the report: the actually space-constrained spot is
-  the **settings-list row's own summary** (`c06_model_pref_summary`, shown inline in the main Settings list
-  before the user even taps in) - not the dedicated `Tier3ModelActivity` screen's own intro text, which sits
-  in an unconstrained `ScrollView` and was never actually at risk of truncation. Resolved by keeping the
-  content at three deliberately different lengths for three different spots:
-
-  1. **`c06_model_pref_summary`** (the settings-list row, genuinely space-constrained): a single tight
-     sentence ("Verbessert unsichere Vorschläge durch Satzverständnis statt nur Statistik") replacing the
-     old purely-mechanical "download and import" text.
-  2. **New `c06_model_benefit`** (top of `Tier3ModelActivity`'s own screen, `ScrollView`, no length
-     constraint): a short, 2-3 sentence why-use-this paragraph, ahead of the existing install-mechanics text.
-  3. **New `c06_model_details_title`/`c06_model_details`** (a full deep-dive, six short paragraphs covering
-     tier-1's own limits, contextual completion, capitalisation resolution, family-learning, adaptive
-     learning, and what stays unaffected) - reached via a new "Mehr erfahren" link
-     (`R.id.tier3_learn_more`, reusing the existing `@string/d89_learn_more` label and `link_text` colour,
-     D-192's own established pattern) that opens a plain `AlertDialog` rather than navigating to another
-     screen, since this is one self-contained block of text, not `FeatureCatalog`'s own repeating list.
-
-  Localised into all three languages (de/en/el) - the German original checked directly against this
-  session's own from-the-code research, not paraphrased from memory; English and Greek translated in step.
-  No new tests (pure string-resource content plus Android view/dialog glue, both untested per this project's
-  own convention). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. No spec change - purely informational settings-screen content, the same precedent D-89's own much
-  larger Feature Overview screen already set (never mentioned in `AdaptKey-Spec.md` either). `versionCode`
-  435 -> 436, `versionName` `"1.1.18"` -> `"1.1.19"`. **2026-09-03: device-confirmed.**
-
-- **§379 (v1.1.18): D-432 - applied D-431's same `hasObviousCandidate()` gate to `rawCoordinateSuggestion`**
-  **(T-02/D-39's own live preview chip), for consistency.** Flagged as a noticed-in-passing parallel while
-  fixing D-431 (identical `candidates.isNotEmpty()` gate shape), confirmed with the user before touching it.
-  One real difference found while investigating, worth recording: unlike A-13 (chip-only, no other call
-  site), `rawCoordinateCorrection()` also has a second, independent call site - `finalizeAndCommit()`'s own
-  silent-autocorrect application at commit time ([AdaptKeyService.kt:4008](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:4008)) - which was **never** affected by this
-  bug, since it gates on `autocorrected == null` (the tight, cost-≤2 `bestCorrection()` search) rather than on
-  `candidates`/the wide-fuzzy fallback at all. So this fix only restores the *live, mid-word preview chip*'s
-  visibility in the rare case a coincidental last-resort match also exists - the actual commit-time correction
-  itself was always correct. No new tests (same untested `AdaptKeyService.kt` Android/`InputConnection` glue
-  as the call site itself, and `hasObviousCandidate()` is already fully covered from D-431). 1240 unit tests
-  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: T-02 gained the D-432
-  note. `versionCode` 434 -> 435, `versionName` `"1.1.17"` -> `"1.1.18"`. **2026-09-03: device-confirmed.**
-
-- **§378 (v1.1.17): D-431 - A-13's own "everything else must have failed first" gate was wrongly satisfied**
-  **by a coincidental last-resort dictionary match, silently blocking the exact case A-13 exists for.**
-  Reported directly against the feature's own worked example: typing `"welxmche"` (intending `"welche"`)
-  suggested `"welsche"` instead - never even reached `missedBackspaceCorrection()`. Root-caused, not guessed:
-  `"welsche"` (a genuine but rare German word) sits at edit cost 3 from `"welxmche"` (delete `"m"`, substitute
-  the keyboard-adjacent `x`->`s`), cheaper than the actually-intended two-deletion reconstruction `"welche"`
-  (cost 4) - so A-09's own wide-fuzzy fallback (D-117, cost ≤ 4, explicitly documented as "never trusted
-  enough for autocorrect") surfaced it, making `candidates.isNotEmpty()` true and blocking A-13's own gate
-  ([AdaptKeyService.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt)) before it ever ran.
-
-  User's own reframing of the original D-377 condition, confirmed as the intended design: "alle anderen
-  Versuche müssen vorher gescheitert sein" never meant the whole suggestion bar had to end up empty -
-  something can almost always be suggested - only that nothing *obvious* (prefix/umlaut-unfold/neighbour-
-  substituted-prefix completion, a close cost-≤2 fuzzy match, or a recognised compound) turned up first.
-  Whether the wide-fuzzy last-resort fallback separately, coincidentally, also finds something is irrelevant -
-  both are simply offered together, A-13's own chip pinned ahead.
-
-  Implemented by extracting `DictionarySuggestionProvider.suggestionsFor()`'s own candidate search (everything
-  except the D-117 wide-fuzzy fallback) into a shared private `obviousCandidates()`, reused by both
-  `suggestionsFor()` itself and a new `hasObviousCandidate()` (promoted onto the `SuggestionProvider` interface
-  with a `suggestionsFor(...).isNotEmpty()` default for a provider with no tiered fallback to distinguish) -
-  the two can never silently drift apart on what counts as "obvious". `AdaptKeyService`'s own
-  `missedBackspaceSuggestion` gate now calls `provider.hasObviousCandidate(...)` instead of reading
-  `candidates.isNotEmpty()` directly.
-
-  5 new tests (`DictionarySuggestionProviderTest`: `hasObviousCandidate` true/false on ordinary matches, false
-  when only the D-117 wide-fuzzy fallback finds something while `suggestionsFor` itself still does, and the
-  exact `"welxmche"`/`"welsche"`/`"welche"` repro reproduced and confirmed fixed end to end;
-  `StubSuggestionProviderTest`: the default delegates to `suggestionsFor(...).isNotEmpty()`). 1235 -> 1240 unit
-  tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 rewritten to describe the
-  current gate. `versionCode` 433 -> 434, `versionName` `"1.1.16"` -> `"1.1.17"`.
-  **2026-09-03: device-confirmed working** end to end (real `AdaptKeyA13` diagnostic log: `hasObviousCandidate=
-  false`, `recover() candidates=[welche]`) once §386/§387 below closed out the one remaining real-device gap
-  (a reclaimed token has no tap evidence, not a bug) and the diagnostic-logging round's own self-inflicted
-  performance regression (§387).
-
-- **§377 (v1.1.16): D-430 - the Learned Words editor's per-entry dialog swaps its Save/Forget button roles.**
-  User's own explicit call, after confirming the rest of §363/§365's own dialog rework is now "perfekt": Save
-  moves to the dialog's positive button, Forget to the neutral one - Cancel (negative) untouched. Pure button-
-  role swap in `LearnedWordsActivity.showEntryDialog()`'s `AlertDialog.Builder` chain (`setPositiveButton`/
-  `setNeutralButton` bodies exchanged verbatim, no behaviour change to either action itself);
-  `updateSaveEnabled()`'s own `dialog.getButton(...)` call updated from `BUTTON_NEUTRAL` to `BUTTON_POSITIVE`
-  to keep gating the now-repositioned Save button. No new tests (Android dialog/view glue, per this project's
-  own convention - no existing test referenced either button's role). 1235 unit tests unchanged, all green.
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - implementation-only polish, same
-  "occasionally skippable" precedent §363's own items 9/10 already established. `versionCode` 432 -> 433,
-  `versionName` `"1.1.15"` -> `"1.1.16"`. **2026-09-03: device-confirmed.**
-
-- **§376 (v1.1.15): D-429 - learned bigrams and trigrams now carry their own `last_touched` timestamp, and**
-  **the recency boost D-411 already gives individual learned words now applies to them too.** Explicit
-  follow-up request: this was flagged but deliberately left out of both D-365 (§340, v1.0.92, the bigram
-  ranking rescale) and W-05 (§344-§349, learned-word expiry) - "das hatten wir beim letzten Mal ausgelassen" -
-  worth closing before wider release even though the practical effect is small. Design discussed and agreed
-  first (this project's own rule for a ranking/algorithm change): reuse D-388/D-411's own established
-  guarded-`ALTER TABLE` migration pattern and D-411's own 14-day/×1.5 recency constants unchanged, rather than
-  inventing a second mechanism or recalibrating - "used within the last 14 days" is a general
-  personal-relevance signal, not specific to which n-gram order it came from.
-
-  **Schema/write path.** `TABLE_LEARNED_BIGRAMS`/`TABLE_LEARNED_TRIGRAMS` each gained a guarded
-  `last_touched INTEGER NOT NULL DEFAULT 0` column (`ensureBigramLastTouchedColumn`/
-  `ensureTrigramLastTouchedColumn`, called from `init {}` alongside the three existing D-388/D-412/D-404
-  migrations) - existing rows seeded with strictly increasing timestamps in key order, exactly like
-  `ensureLastTouchedColumn` already does for `TABLE_LEARNED`. Every write to either table now stamps
-  `System.currentTimeMillis()`: `learn()`'s and `learnContext()`'s own reinforcement writes, `unlearn()`'s
-  decrement writes (a decrement still counts as a "touch", mirroring `TABLE_LEARNED`'s own identical
-  behaviour), and the backup-import `restoreLearnedBigram`/`restoreLearnedTrigram` merges. The bundled
-  `TABLE_BIGRAMS` table is untouched - `putBigramInternal`'s new `lastTouched` parameter is only ever passed
-  by a learned-table call site, `null` (omitted) everywhere else. `InMemoryDictionaryStore` mirrors this with
-  two new `learnedBigramTouch`/`learnedTrigramTouch` maps, stamped identically via its own `clock` parameter.
-
-  **Read path.** New shared `LearnedNgram(count, lastTouched)` data class (mirrors `LearnedFrequency`'s
-  identical D-411 shape) plus two new `DictionaryStore` methods, `learnedBigramWithTimestamp`/
-  `trigramWithTimestamp`, implemented by both stores - `learnedBigramFrequency`/`trigramFrequency` themselves
-  are untouched and still feed A-06's own merge gate directly, exactly as `LearnedBigramBoost`'s own KDoc
-  already promises for the plain count.
-
-  **Ranking.** `LearnedBigramBoost.boost()` gained `lastTouched`/`now` parameters and the identical
-  ×1.5-within-14-days multiplier `LearnedFrequencyBoost` already has. `DictionarySuggestionProvider.
-  rankingBigramFrequency()` and `score()`'s trigram branch now thread the timestamp through.
-
-  **Explicit follow-up decision, also agreed with the user first**: `nextWordSuggestions()` (S-07's own
-  blank-slate prediction) was the one remaining place still scoring a trigram match by its literal raw count
-  directly, never through `LearnedBigramBoost` at all - a pre-existing inconsistency with `score()`'s already-
-  boosted trigram branch, unrelated to recency by itself but surfaced by this same round. Unified onto the
-  same boosted, now recency-aware value rather than left as a second, inconsistent scoring path.
-
-  19 new/updated tests: `LearnedBigramBoostTest` rewritten for the new signature plus 3 new recency cases (8
-  total, mirroring `LearnedFrequencyBoostTest`'s own structure); 5 new `InMemoryDictionaryStoreTest` cases
-  (`learnedBigramWithTimestamp`/`trigramWithTimestamp` default-null and reported-value cases, plus one
-  covering `unlearn`'s own timestamp-then-removal behaviour); 4 new `SqliteDictionaryStoreRoboTest` cases
-  (the same shape, against the real SQLite-backed store); 3 new `DictionarySuggestionProviderTest` integration
-  cases (a recently-touched learned bigram outranking a moderately common bundled one, the identical case
-  losing that edge once long untouched, and `nextWordSuggestions` no longer using a raw trigram count
-  directly); 1 existing `DictionarySuggestionProviderTest` case (`nextWordSuggestions ranks a trigram match by
-  its own raw count...`) rewritten to assert the new rescaled/boosted value instead, computed via
-  `LearnedBigramBoost.boost()` itself rather than a hand-typed literal, so the test tracks the production
-  formula rather than duplicating it. 1220 -> 1235 unit tests, all green. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. Spec: S-07 gained the D-429 addendum (and its own opening sentence updated -
-  "raw trigram count" was no longer accurate); W-05's own bigram/trigram note corrected (they now have
-  `last_touched`, but the *expiry sweep* itself is still not extended to them - a still-separate, not-yet-built
-  item). `versionCode` 431 -> 432, `versionName` `"1.1.14"` -> `"1.1.15"`. **2026-09-03: device-confirmed.**
-
-- **§375 (v1.1.14): D-428 - the V-04 clipboard-peek button flashed back visible for one render right after**
-  **its own V-03 clear button emptied the clipboard.** Reported directly: tap the peek button, tap the clear
-  button that appears alongside its chips - clipboard clears, chips and clear button vanish as expected, but
-  the peek button itself briefly reappears before disappearing again on the next tap/keystroke. Root-caused
-  by reading the actual code, not guessed: `clearClipboardFromSuggestionBar()` calls `clearClipboard()`
-  (synchronously empties the system clipboard) then `clearSuggestions()` (synchronously calls
-  `setSuggestionBarItems(emptyList())`, which derives the peek button's visibility from the cached
-  `clipboardPeekAvailable` field) - but that field is otherwise only refreshed by the *asynchronous*
-  `ClipboardManager.OnPrimaryClipChangedListener` notification, which had not yet fired by the time
-  `setSuggestionBarItems()` read it, so it briefly rendered the stale, still-`true` value. The next real
-  `setSuggestionBarItems()` call (typing, a caret move) always saw the by-then-correct `false` value, matching
-  exactly the "briefly there, then properly hidden" symptom reported.
-
-  Fixed by calling `updateClipboardPeekAvailability()` explicitly, synchronously, between `clearClipboard()`
-  and `clearSuggestions()` - `clearClipboard()`'s own Binder call has already emptied the clipboard by the
-  time it returns (only the *listener notification* about the change is asynchronous), so this recomputes the
-  field correctly in time rather than waiting for that notification. `updateClipboardPeekAvailability()`'s own
-  KDoc call-site list updated to name this new trigger point. No new tests (the fix lives entirely in
-  `AdaptKeyService.kt`'s own untested Android/`InputConnection` glue, per this project's own convention). 1220
-  unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: V-04 gained the
-  D-428 addendum. `versionCode` 430 -> 431, `versionName` `"1.1.13"` -> `"1.1.14"`.
-  **2026-09-03: device-confirmed working.**
-
-## Older Rounds (§1-§374, v0.7.6 through v1.1.6) - Pruned From This File
+## Older Rounds (§1-§380, v0.7.6 through v1.1.19) - Pruned From This File
 
 This file only tracks the current status plus the recent working set - it is not a lossy summary of the
 rounds removed below. Every pruned round's full detail (root cause, rejected alternatives, real device-log
@@ -1820,8 +1648,14 @@ assuming either way.
 
 Retention policy for this section going forward: keep the ~20-25 most recent rounds (enough for a fresh
 session's own continuity) plus anything not yet device-confirmed; prune older, already-confirmed rounds the
-same way, without summarising them - they stay permanently retrievable in History.md. **2026-09-04 fourth
-pruning pass (§367-§374 removed, cutoff moved from §367 to §375):** History.md was already backfilled through
+same way, without summarising them - they stay permanently retrievable in History.md. **2026-09-04 fifth
+pruning pass (§375-§380 removed, cutoff moved from §375 to §381):** History.md already covers this range
+(backfilled through §388, confirmed in the previous pass), so nothing needed backfilling first. Had grown to
+30 kept rounds after this session's own new §401-§404; none of §375-§380 carried an inline "not yet
+device-confirmed" caveat, and their own device confirmation is separately attested in git history
+(`a89753d Doku: §376-§385 geräte-bestätigt`, `4324134 Doku: D-428 gerätebestätigt` for §375) - a
+straightforward prune, no exemption question to weigh this time. **2026-09-04 fourth pruning pass (§367-§374
+removed, cutoff moved from §367 to §375):** History.md was already backfilled through
 §388 (checked directly, not assumed), so nothing needed backfilling first this time. §367-§374 had grown to
 34 kept rounds, past the ~20-25 target even before this pass; several of the removed rounds (§367/§368/§370/
 §371/§372, all dictionary-content/Wortfamilien-parity work) still carried an inline "not yet device-confirmed"

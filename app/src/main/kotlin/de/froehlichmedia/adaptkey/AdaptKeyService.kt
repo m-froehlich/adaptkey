@@ -537,8 +537,8 @@ class AdaptKeyService : InputMethodService() {
     // physically inserts the space until the next real character resolves it, so "is a space pending right
     // here" is simply re-derived on demand from the real document (composing empty, the character right
     // before the cursor is in SENTENCE_PUNCTUATION) wherever it is needed, the same "read fresh, never trust
-    // a stored flag" philosophy A-07's own undo already applies. See handlePunctuationDelimiter,
-    // armShiftForNextWord, and AdaptKey-Plan-D416-Deferred-Space.md for the full account.
+    // a stored flag" philosophy A-07's own undo already applies. See handlePunctuationDelimiter and
+    // armShiftForNextWord for the full account.
     
     // A-07 post-commit autocorrect undo state, armed only for the keystroke directly after a commit.
     private var undoTyped: String? = null
@@ -1747,9 +1747,8 @@ class AdaptKeyService : InputMethodService() {
             // D-123 / D-416: skip the reset exactly once when this call is only the echo of a
             // suggestion-bar tap's own commit, not a genuine subsequent caret move - otherwise D-29's
             // space-eating flag never survives to see the very keystroke it is meant to react to. (Before
-            // D-416 this guard was shared with a second, punctuation-auto-space concern - see
-            // AdaptKey-Plan-D416-Deferred-Space.md - now removed since there is no longer a comparable
-            // physical commit to echo for that case.)
+            // D-416 this guard was shared with a second, punctuation-auto-space concern, removed since there
+            // is no longer a comparable physical commit to echo for that case.)
             if (suppressNextReclaimSpaceReset) {
                 suppressNextReclaimSpaceReset = false
             } else {
@@ -2629,8 +2628,7 @@ class AdaptKeyService : InputMethodService() {
             // tail then had to be dug out from under. Under the deferred model there is no such space: a
             // sentence-ending mark IS the armed tail's own trailing character already (D-358 already made
             // the general undo-window logic below tolerate a punctuation delimiter directly, no space
-            // required), so the ordinary A-07 handling right below already does the right thing on its own -
-            // see AdaptKey-Plan-D416-Deferred-Space.md §4.4 for the full reasoning.
+            // required), so the ordinary A-07 handling right below already does the right thing on its own.
             // A-07: a plain backspace tap immediately after an autocorrect commit restores the typed word.
             if (undoTyped != null) {
                 when (key.code) {
@@ -2753,7 +2751,7 @@ class AdaptKeyService : InputMethodService() {
                                 // space now, if one is genuinely pending right here - nothing was physically
                                 // written when the punctuation mark itself committed, so this is the first
                                 // point that actually needs the separator to exist. Read fresh from the real
-                                // document rather than any stored flag (see AdaptKey-Plan-D416-Deferred-Space.md).
+                                // document rather than any stored flag.
                                 // D-416-followup: shouldMaterializeSpace() also covers the explicit-lower-case
                                 // override (see its own KDoc) - typing straight through a sentence-ending mark
                                 // with Caps deliberately disarmed no longer forces a space in first.
@@ -3452,7 +3450,7 @@ class AdaptKeyService : InputMethodService() {
         // simplified - the deferred model never physically writes that space, so there is nothing to
         // intercept before the ordinary single-character delete below runs; a Backspace right after a bare
         // sentence-punctuation mark now simply deletes that mark, on the very first press, exactly like any
-        // other character. See AdaptKey-Plan-D416-Deferred-Space.md §3/§4.4.
+        // other character.
         // §41: a real, non-collapsed text selection takes priority over the ordinary single-character
         // delete below - Backspace must remove the selection itself, matching every other editor, not the
         // character before the cursor (which the selection may not even be adjacent to).
