@@ -20,6 +20,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.os.Looper
 import android.os.SystemClock
+import android.provider.Settings
 import android.util.AttributeSet
 import android.util.Log
 import android.view.HapticFeedbackConstants
@@ -38,6 +39,20 @@ import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.KeyBox
 import de.froehlichmedia.adaptkey.touch.OffsetModel
 import de.froehlichmedia.adaptkey.touch.TapAmbiguity
+
+/**
+ * D-396: the three levels the OS's own "Haptic feedback" intensity slider offers (Settings > Sound &
+ * vibration), matching `Vibrator.VIBRATION_INTENSITY_LOW/MEDIUM/HIGH` (1/2/3) - see
+ * [AdaptKeyboardView.systemHapticLevel]. [minSystemLevel] is the lowest system level at which this tier
+ * of event still vibrates: the rarer/more significant the event, the lower its own threshold, so a user
+ * who has turned the system slider down still feels a mode change while ordinary key presses fall silent
+ * first.
+ */
+enum class HapticTier(val minSystemLevel: Int) {
+    MODE_SWITCH(1),
+    CORRECTION(2),
+    KEY_PRESS(3)
+}
 
 /**
  * Self-drawn keyboard view.
@@ -432,6 +447,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     /** G-06: whether a short vibration fires when Caps Lock engages via long-press on Shift (default on,
      *  independent of [hapticsEnabled]). */
     var capsLockHapticsEnabled: Boolean = true
+    
+    /**
+     * D-396: the OS's own "Haptic feedback" intensity level (0 off - 3 high, [refreshSystemHapticLevel]),
+     * gating which [HapticTier] still vibrates - see that enum. Defaults to 3 (the maximum) so a system
+     * this has not yet been read for behaves exactly like before this feature existed, never silently
+     * below what [hapticsEnabled]/[capsLockHapticsEnabled] already promise.
+     */
+    private var systemHapticLevel: Int = HapticTier.KEY_PRESS.minSystemLevel
     
     private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
@@ -1071,8 +1094,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // D-30: clear the backspace-repeat suppression from any previous hold, so a new touch is
                 // never wrongly swallowed (otherwise the keyboard freezes after a held backspace).
                 backspaceRepeated = false
-                // D-05 / D-06: optional press feedback (both default off).
-                playKeyFeedback()
+                // D-05 / D-06: optional press feedback (both default off). D-396: SYMBOL/LETTERS (the
+                // ?123 <-> ABC toggle) is a mode switch; every other key is ordinary press feedback.
+                playKeyFeedback(if (key.code == KeyCode.SYMBOL || key.code == KeyCode.LETTERS) HapticTier.MODE_SWITCH else HapticTier.KEY_PRESS)
                 pressedKey = key
                 pressedKeyRect = rect
                 longPressFired = false
@@ -1401,14 +1425,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-05 / D-06: plays the optional key-press feedback, each gated by its own setting (both default
-     * off). Both go straight to hardware - a bundled sample via [SoundPool] and a direct [Vibrator.vibrate]
-     * call - bypassing the system "touch sounds" / "touch vibration" toggles that silenced
-     * {@code android.media.AudioManager.playSoundEffect} / [performHapticFeedback] on device (D-06/D-34),
-     * which is why the app declares the VIBRATE permission itself instead of relying on the window-routed
-     * haptic API.
+     * D-05 / D-06: plays the optional key-press sound (default off, independent of haptics). Goes
+     * straight to hardware - a bundled sample via [SoundPool] - bypassing the system "touch sounds"
+     * toggle that silenced {@code android.media.AudioManager.playSoundEffect} on device (D-06/D-34).
+     * D-396: [tier] classifies this press for [systemHapticLevel] gating - see [fireHaptic].
      */
-    private fun playKeyFeedback() {
+    private fun playKeyFeedback(tier: HapticTier) {
         if (soundEnabled) {
             ensureClickSoundLoaded()
             if (clickSoundLoaded) {
@@ -1416,67 +1438,99 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
         }
         if (hapticsEnabled) {
-            // D-66: wrapped like the tone generator above - a SecurityException or vendor-specific failure
-            // in the vibration path must never take down key handling with it.
-            // D-193 (temporary diagnostic): D-06/D-34/D-66/D-75 have now failed three separate device
-            // rounds without ever confirming what actually happens at runtime - this very runCatching
-            // previously swallowed everything silently, including the exception itself. Every branch below
-            // is now logged (vibrator availability, which VibrationAttributes path was taken, and any
-            // exception) so a single Settings -> Diagnostics repro can finally show where it actually
-            // breaks, instead of guessing a fourth hypothesis. Remove once D-193 is closed.
-            val v = vibrator
-            if (v == null || !v.hasVibrator()) {
-                logHaptics("no vibrator available - vibrator=$v hasVibrator=${v?.hasVibrator()}", warn = true)
-            } else {
-                runCatching {
-                    val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
-                    // D-75 (D-66 still not firing on device): a plain vibrate(VibrationEffect) with no
-                    // attributes falls into an unclassified usage bucket that some OEM vibration-intensity
-                    // settings scale to zero independently of the (already-bypassed) "touch vibration"
-                    // toggle. USAGE_TOUCH is the category Android itself documents for on-screen-keyboard-
-                    // style UI feedback, so it is explicitly requested wherever available (API 33+;
-                    // VibrationAttributes does not exist below that).
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
-                        logHaptics("vibrate() called with USAGE_TOUCH, sdk=${Build.VERSION.SDK_INT}")
-                    } else {
-                        v.vibrate(effect)
-                        logHaptics("vibrate() called without attributes, sdk=${Build.VERSION.SDK_INT} (< 33)")
-                    }
-                }.onFailure { e ->
-                    logHaptics("vibrate() threw ${e::class.simpleName}: ${e.message}", warn = true)
-                }
-            }
+            fireHaptic(tier, "playKeyFeedback")
         }
     }
     
     /**
      * G-06: plays a short vibration when Caps Lock engages via long-press on Shift. Governed by
      * [capsLockHapticsEnabled] (default on), independent of [hapticsEnabled] — confirming a deliberate
-     * Caps Lock engagement should feel the same whether or not per-key haptics are turned on. Uses the
-     * same direct [Vibrator] path as [playKeyFeedback]'s haptic branch, bypassing the system "touch
-     * vibration" toggle that silenced [performHapticFeedback] on device (D-06/D-34).
+     * Caps Lock engagement should feel the same whether or not per-key haptics are turned on. Classified
+     * [HapticTier.MODE_SWITCH] (D-396) - a genuine mode change, so it survives the system slider being
+     * turned down further than ordinary key presses do.
      */
     private fun playCapsLockHaptic() {
         if (!capsLockHapticsEnabled) {
             return
         }
+        fireHaptic(HapticTier.MODE_SWITCH, "playCapsLockHaptic")
+    }
+    
+    /**
+     * D-396/D-88: fires a [HapticTier.CORRECTION]-tier vibration for a silently-applied autocorrection or
+     * an accepted suggestion chip - called by [AdaptKeyService.notifySuggestionAccepted], the single
+     * existing choke point both already flow through. Gated internally on [hapticsEnabled] exactly like
+     * [playKeyFeedback], so the caller needs no gating of its own.
+     */
+    fun fireCorrectionHaptic() {
+        if (hapticsEnabled) {
+            fireHaptic(HapticTier.CORRECTION, "fireCorrectionHaptic")
+        }
+    }
+    
+    /**
+     * D-396: re-reads the OS's own "Haptic feedback" intensity slider (0 off - 3 high) into
+     * [systemHapticLevel], gating which [HapticTier] still vibrates. Cheap enough to call from
+     * `AdaptKeyService.applySettings()` on every settings reload - a single [android.provider.Settings]
+     * content-provider read, not a per-keystroke cost. `"haptic_feedback_intensity"` is not a named public
+     * `Settings.System` constant - confirmed instead directly against AOSP's own `VibratorService` source,
+     * which reads this exact key server-side to scale every short vibration it receives. Falls back to 3
+     * (the maximum, today's always-on behaviour) whenever the read fails or the key is absent on this
+     * device/OEM skin, so a platform quirk this app cannot control never silently reduces feedback below
+     * what [hapticsEnabled]/[capsLockHapticsEnabled] already promise.
+     */
+    fun refreshSystemHapticLevel() {
+        systemHapticLevel = runCatching {
+            Settings.System.getInt(context.contentResolver, SYSTEM_HAPTIC_INTENSITY_KEY, HapticTier.KEY_PRESS.minSystemLevel)
+        }.getOrDefault(HapticTier.KEY_PRESS.minSystemLevel)
+    }
+    
+    /**
+     * D-396: the shared vibration dispatch behind [playKeyFeedback]/[playCapsLockHaptic]/
+     * [fireCorrectionHaptic] - each already confirmed its own setting is on before calling this; this
+     * function only still applies the [systemHapticLevel] gate (shared by all three, unlike the
+     * per-feature settings above) before actually reaching hardware.
+     *
+     * D-193 (temporary diagnostic): D-06/D-34/D-66/D-75 have now failed three separate device rounds
+     * without ever confirming what actually happens at runtime - this very `runCatching` previously
+     * swallowed everything silently, including the exception itself. Every branch below is now logged
+     * (vibrator availability, which attributes path was taken, and any exception) so a single Settings ->
+     * Diagnostics repro can finally show where it actually breaks, instead of guessing a fourth
+     * hypothesis. Remove once D-193 is closed.
+     */
+    private fun fireHaptic(tier: HapticTier, prefix: String) {
+        if (systemHapticLevel < tier.minSystemLevel) {
+            logHaptics("suppressed by systemHapticLevel=$systemHapticLevel < ${tier.name}(${tier.minSystemLevel})", prefix = prefix)
+            return
+        }
+        // D-66: wrapped like the tone generator in playKeyFeedback - a SecurityException or vendor-specific
+        // failure in the vibration path must never take down key handling with it.
         val v = vibrator
         if (v == null || !v.hasVibrator()) {
-            logHaptics("no vibrator available - vibrator=$v hasVibrator=${v?.hasVibrator()}", warn = true, prefix = "playCapsLockHaptic")
-        } else {
-            runCatching {
-                val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
-                    logHaptics("vibrate() called with USAGE_TOUCH, sdk=${Build.VERSION.SDK_INT}", prefix = "playCapsLockHaptic")
-                } else {
-                    v.vibrate(effect)
-                    logHaptics("vibrate() called without attributes, sdk=${Build.VERSION.SDK_INT} (< 33)", prefix = "playCapsLockHaptic")
-                }
-            }.onFailure { e ->
-                logHaptics("vibrate() threw ${e::class.simpleName}: ${e.message}", warn = true, prefix = "playCapsLockHaptic")
+            logHaptics("no vibrator available - vibrator=$v hasVibrator=${v?.hasVibrator()}", warn = true, prefix = prefix)
+            return
+        }
+        runCatching {
+            val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+            // D-75 (D-66 still not firing on device): a plain vibrate(VibrationEffect) with no attributes
+            // falls into an unclassified usage bucket that some OEM vibration-intensity settings scale to
+            // zero independently of the (already-bypassed) "touch vibration" toggle. USAGE_TOUCH/
+            // USAGE_ASSISTANCE_SONIFICATION are the categories Android itself documents for on-screen-
+            // keyboard-style UI feedback, so one of them is always explicitly requested rather than ever
+            // calling the bare, unclassified vibrate(effect) overload.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                v.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_TOUCH))
+                logHaptics("vibrate() called with USAGE_TOUCH, sdk=${Build.VERSION.SDK_INT}", prefix = prefix)
+            } else {
+                // D-396: below API 33, VibrationAttributes does not exist yet - the AudioAttributes-based
+                // overload is the only classified path available, so its deprecation (superseded by
+                // VibrationAttributes on API 33+) is unavoidable here, not a sign it should be replaced.
+                @Suppress("DEPRECATION")
+                v.vibrate(effect, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).build())
+                logHaptics("vibrate() called with USAGE_ASSISTANCE_SONIFICATION, sdk=${Build.VERSION.SDK_INT} (< 33)", prefix = prefix)
             }
+        }.onFailure { e ->
+            logHaptics("vibrate() threw ${e::class.simpleName}: ${e.message}", warn = true, prefix = prefix)
         }
     }
     
@@ -1994,6 +2048,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         private const val CLICK_VOLUME = 0.15f
         private const val SOUND_MAX_STREAMS = 4
         private const val HAPTIC_DURATION_MS = 40L
+        
+        // D-396: the OS's own per-usage vibration-intensity key (0 off - 3 high) - not a named public
+        // Settings.System constant, confirmed instead directly against AOSP's VibratorService source
+        // (updateVibrationIntensityLocked()), which reads this exact raw key.
+        private const val SYSTEM_HAPTIC_INTENSITY_KEY = "haptic_feedback_intensity"
         
         // D-57: the horizontal page swipe needs 15% less travel; the space-bar language swipe needs 15% more.
         private const val PAGE_SWIPE_FACTOR = 0.85f

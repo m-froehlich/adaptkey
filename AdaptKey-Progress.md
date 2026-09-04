@@ -622,8 +622,10 @@ non-trivial changes).
     since traced it to a personal, temporary cause instead: typing with the middle finger during an injury,
     which does not reach the gesture zone as cleanly as the index finger - confirmed gone entirely once back to
     typing normally. Not an app issue at all; nothing to build.
-  - **D-396 - OPEN.** Classify per-key vibration into three levels: mode-switch actions (Level 1), autocorrect/
-    chip-acceptance (Level 2), ordinary key feedback (Level 3).
+  - **D-396 - RESOLVED (§405, v1.1.44); not yet device-confirmed.** Reread during implementation: "three
+    levels" turned out to mean the OS's own Haptic-feedback intensity slider, not app-invented
+    stronger/weaker signals - see §405/spec §42 for the actual mechanism (strength via touch-classified
+    `vibrate()` calls at every API level, quantity via a new `HapticTier` gate keyed to that same slider).
   - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
     letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
     produce an unwanted `q` instead of the intended `a` below it.
@@ -807,6 +809,37 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§405 (v1.1.44): D-396 - per-key/Caps-Lock vibration now respects the OS's own three-level "Haptic**
+  **feedback" intensity slider, both in strength and in quantity.** Design discussed and agreed with the user
+  first (this project's own rule for non-trivial design decisions), including a real API-research round
+  before committing to an approach - the obvious read-back API (`Vibrator.getDefaultVibrationIntensity`) is
+  `@hide`/`@TestApi`, not public SDK, confirmed directly against AOSP source rather than assumed; the
+  underlying `Settings.System` key (`"haptic_feedback_intensity"`) is a real, ordinarily-readable provider
+  value though, confirmed live in `VibratorService.updateVibrationIntensityLocked()`. Two independent
+  mechanisms, corresponding to the two things "level" can mean: (1) **strength** - every `vibrate()` call is
+  now touch-classified (already `VibrationAttributes.USAGE_TOUCH` on API 33+; newly `AudioAttributes.
+  USAGE_ASSISTANCE_SONIFICATION` below that, via the only classified overload available there), so the
+  system's own amplitude scaling for this slider reaches every API level down to minSdk 26, not just 33+ as
+  before; (2) **quantity** - a new `HapticTier` enum (`MODE_SWITCH`/`CORRECTION`/`KEY_PRESS`, thresholds
+  1/2/3) gates which events still vibrate at a given system level, read via the new
+  `AdaptKeyboardView.refreshSystemHapticLevel()` (cheap, re-read on every `applySettings()` reload, not a
+  per-keystroke cost) with a fallback to 3 (today's always-on behaviour) whenever the read fails. The
+  `CORRECTION` tier is genuinely new wiring: `AdaptKeyService.notifySuggestionAccepted()` (D-88/§56's
+  existing single choke point for both a silent autocorrection and an explicit chip tap) now also calls the
+  new `AdaptKeyboardView.fireCorrectionHaptic()` - autocorrect/chip acceptance never vibrated at all before
+  this round. C-13 and G-06's own independent toggle are both unchanged and still gate everything first, per
+  the user's own explicit call to keep the app-local switch - D-396 only adds a further, system-level filter
+  on top.
+
+  No new tests - this is Android `Vibrator`/`Settings.System` glue, this project's own established untested
+  boundary (mirrors D-361/D-380's identical touch/haptics work); the one new call site inside
+  `AdaptKeyService` (`notifySuggestionAccepted`) is this project's own established untested orchestrator glue
+  too. 1304 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec
+  gained new §42. `versionCode` 460 -> 461, `versionName` `"1.1.43"` -> `"1.1.44"`. **Not yet
+  device-confirmed** - needs a real check on the user's own Pixel 9a: toggle Settings > Sound & vibration >
+  Haptic feedback through its three levels and confirm the described tier gating (and, ideally, a
+  perceptible strength difference) actually happens.
 
 - **§404 (v1.1.43): D-438/D-439 - two real, root-caused bugs reported together: "vielen Dank"/"viele Grüße"**
   **never got next-word suggestions despite frequent typing, and "Fröhlich" (a surname) after "Marvin" only**

@@ -97,6 +97,7 @@ import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.LayoutRegistry
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
+import de.froehlichmedia.adaptkey.keyboard.HapticTier
 import de.froehlichmedia.adaptkey.keyboard.SignFlip
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
@@ -1281,6 +1282,9 @@ class AdaptKeyService : InputMethodService() {
             view.hapticsEnabled = s.keyHapticsEnabled
             // G-06: Caps Lock haptic confirmation (separate from per-key haptics).
             view.capsLockHapticsEnabled = s.capsLockHapticsEnabled
+            // D-396: re-reads the OS's own haptic-intensity slider - cheap, so doing it on every settings
+            // reload (not just once at startup) picks up a mid-session change without extra plumbing.
+            view.refreshSystemHapticLevel()
             // D-32: configurable long-press delay.
             view.longPressDelayMs = s.longPressDelayMs
             // D-361: whether/how long a fast Backspace tap/hold biases resolution toward Backspace for
@@ -1312,10 +1316,15 @@ class AdaptKeyService : InputMethodService() {
      * visually unremarkable. [word] flies up out of the suggestion bar and fades, always, regardless of the
      * D-05 key-sound setting - §56 decoupled this from sound entirely, per feedback that a purely
      * sound-gated flash was too easy to miss and read as tied to the wrong toggle. The distinct "plop"
-     * sample plays in addition, only when key-press sound is actually on.
+     * sample plays in addition, only when key-press sound is actually on. D-396: a
+     * [HapticTier.CORRECTION]-tier vibration plays alongside, gated internally by
+     * [AdaptKeyboardView.fireCorrectionHaptic] on the same per-key haptics toggle - covers both a silent
+     * autocorrection (finalizeAndCommit) and an explicit chip tap (onSuggestionClicked), the two call
+     * shapes that already flow through this one function.
      */
     private fun notifySuggestionAccepted(word: String) {
         suggestionBar?.flyAccepted(word)
+        keyboardView?.fireCorrectionHaptic()
         if (settings.keySoundEnabled) {
             keyboardView?.playSuggestionAcceptedSound()
         }

@@ -2379,6 +2379,50 @@ disambiguation was judged not worth the added complexity there) - not reopened h
 
 ---
 
+## 42. Haptic Feedback Respects the OS's Own Intensity Slider (D-396)
+
+D-396: the per-key/Caps-Lock vibration (D-06/G-06) previously fired identically regardless of the OS's own
+"Haptic feedback" intensity setting (Settings > Sound & vibration - off/low/medium/high, `Vibrator.
+VIBRATION_INTENSITY_OFF/LOW/MEDIUM/HIGH` = 0-3). Researched directly against AOSP source before
+implementing, not guessed: the read-back API a normal app would want
+(`Vibrator.getDefaultVibrationIntensity(usage)`) is `@hide`/`@TestApi`, not public SDK - but the underlying
+`Settings.System` key it reads (`"haptic_feedback_intensity"`, confirmed live in `VibratorService.
+updateVibrationIntensityLocked()`) is an ordinary, unrestricted-read provider value, just not exposed as a
+named public constant. Two independent mechanisms now apply this level, corresponding to the two things it
+can mean:
+
+- **Strength (automatic, no code change beyond correct classification):** the system itself scales a
+  vibration's amplitude according to this slider, but only for a vibration it recognises as touch feedback.
+  Every vibrate() call now explicitly classifies itself for this - `VibrationAttributes.
+  createForUsage(USAGE_TOUCH)` on API 33+ (already in place before D-396), and, newly, `AudioAttributes.
+  USAGE_ASSISTANCE_SONIFICATION` via the deprecated-but-still-only-available `vibrate(VibrationEffect,
+  AudioAttributes)` overload below API 33 (minSdk 26) - previously an entirely unclassified `vibrate(effect)`
+  call on those API levels, meaning the system's own scaling never reached it at all pre-D-396.
+- **Quantity (new, explicit in-app logic):** a new `HapticTier` enum (`MODE_SWITCH` < `CORRECTION` <
+  `KEY_PRESS`, thresholds 1/2/3) classifies every vibration-triggering event by how significant/rare it is;
+  `AdaptKeyboardView.refreshSystemHapticLevel()` reads the raw settings key (re-read on every
+  `applySettings()` reload, cheap - not a per-keystroke cost) and an event only fires when the current system
+  level meets its tier's own threshold. At system level 1 only a genuine mode switch (`?123`/ABC toggle,
+  Caps Lock engage) still vibrates; level 2 adds a silently-applied autocorrection or an accepted suggestion
+  chip; level 3 (the maximum, and the fallback whenever the read fails or the key is absent) adds every
+  ordinary key press - today's original, always-on behaviour. Level 0 (system off) silences everything,
+  independent of the app's own C-13 toggle.
+
+The correction/chip-acceptance tier is genuinely new wiring, not a reclassification of something that
+already vibrated - `AdaptKeyService.notifySuggestionAccepted()` (D-88/§56's existing single choke point for
+both a silent `finalizeAndCommit()` correction and an explicit `onSuggestionClicked()` chip tap) now also
+calls the new `AdaptKeyboardView.fireCorrectionHaptic()`, alongside the flying-chip animation and optional
+sound it already triggered there.
+
+C-13 (the app's own per-key haptics toggle, default off) and G-06's separate, independent Caps-Lock-haptic
+toggle (default on) are both unchanged and still gate everything first, exactly as before - D-396 only adds
+a further, system-level filter on top of whichever of those the user has already turned on; it introduces no
+new setting of its own. Not yet device-confirmed - needs a real check that the system's own three-level
+slider (Settings > Sound & vibration > Haptic feedback) actually produces the described behaviour on a real
+device (Pixel 9a).
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.
