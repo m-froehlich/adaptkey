@@ -253,13 +253,23 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) is German-only.**
-  Found while auditing every place that does *not* route through the active-language pipeline (history §210's
-  own D-287 fix) - deliberately scoped to German today (that is the only curated list that exists), not a bug
-  in the D-287 sense. Revisit once a second installed language's own confusables against English are actually
-  curated - the seeding mechanism itself (`installStores()`) does not need to change shape, only gain a
-  per-language list to seed from, the same way `hints_<code>.tsv` (D-281) already generalised the AltGr hint
-  set per language.
+- **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) - CLOSED BY**
+  **DESIGN (2026-09-04, no code change - user's own explicit call).** Found while auditing every place that
+  does *not* route through the active-language pipeline (history §210's own D-287 fix) - deliberately scoped
+  to German today (that is the only curated list that exists), not a bug in the D-287 sense. Previously
+  framed as "revisit once a second language's own confusables are curated," implying this same German set
+  would eventually generalise across languages - the user corrected that framing directly: it must stay
+  German-only permanently, and any other language's confusables are that language's own separate curation
+  effort, not an extension of this one. Re-verified directly in code before closing, not assumed:
+  `seedBundledBlacklist()` is only ever called with `newStores[Language.GERMAN]`
+  ([AdaptKeyService.kt:946](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:946)), reading
+  `LanguageRulesRegistry.rulesFor(Language.GERMAN).bundledConfusablesBlacklist()`; every other language
+  resolves to `NoOpLanguageRules`, whose `bundledConfusablesBlacklist()` returns `emptySet()`
+  ([LanguageRules.kt:114](app/src/main/kotlin/de/froehlichmedia/adaptkey/language/LanguageRules.kt:114)) - no
+  cross-language leak exists structurally, since the call site is hardcoded to German and carries no
+  `Language` parameter at all. The Language Contribution Guide's own §5 item 7 (confusables/keyboard-adjacency
+  risk scan) already describes the right shape for a future language's own independent scan - not touched by
+  this closure, since it was never about extending the German list either. Nothing left to track here.
 
 - **D-402/D-306-followup/D-345/D-330-followup/D-367 - ALL COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303**
   **v1.0.56 + §304 v1.0.57); the entire originally-agreed combined bundle is now closed.** Originally agreed
