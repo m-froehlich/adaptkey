@@ -902,8 +902,9 @@ D-445, Portuguese is lemma-populated for VERBS only - its own native Wiktionary 
 regular noun/adjective inflection as generatable form data at all (a confirmed source limitation, not a
 scope choice - see `AdaptKey-Progress.md`'s D-445 entry), so a noun/adjective family match essentially never
 fires for Portuguese today, only a verb one. Since D-446, Italian is fully lemma-populated (nouns, verbs, and
-adjectives alike - its own native Wiktionary source documents all three richly, unlike Portuguese). A word/
-language pair the linking passes never reached simply yields no family match, leaving the ratio check as
+adjectives alike - its own native Wiktionary source documents all three richly, unlike Portuguese). Since
+D-447, Dutch is likewise fully lemma-populated (nouns, verbs, and adjectives alike). A word/language pair the
+linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated
 unknown-token confidence formula (D-353's `forUnknownToken`), and neither was touched here.

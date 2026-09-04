@@ -19273,4 +19273,131 @@ a genuinely stronger starting point than Portuguese's own round in that specific
 good" in the guide's own sense, not native-reviewed quality. Not device-confirmed either. Dutch continues in
 the same autonomous overnight session - see its own forthcoming §420 entry.
 
+## §420 - D-447: first Dutch language pack, third and final of the pt/it/nl overnight one-shot round - a real, serious calibration bug found and fixed, the identical symptom-class French's own D-444-followup already taught this project to watch for
+
+Continuing directly from §419/D-446 in the same autonomous session, the same pipeline sequence as before -
+Dutch already used ordinary QWERTY and already had a real character-trigram profile (`language_profiles.tsv`,
+"nl", since D-280).
+
+**The pre-flight size check repeated the reversed-pattern finding from §418 in the opposite direction, worth
+recording as confirmation the rule is genuinely direction-independent, not a fluke of two languages.**
+Dutch's own native Wiktionary edition (`kaikki.org/dictionary/downloads/nl/nl-extract.jsonl.gz`, 127.8MB) is
+the much BIGGER file here - ~4.4x the wrong English-Wiktionary-coverage file's 29.2MB - matching French's/
+Spanish's own original "native always bigger" pattern, not Portuguese's/Italian's own reversed one. Between
+the three languages this round, the size relationship went both ways (PT/IT: native smaller; NL: native
+bigger) - concrete confirmation that the guide's own unconditional "always use native when `rawdata.html`
+lists it" rule is correct precisely because the size comparison alone is not a reliable signal either way.
+
+**Verified directly, not assumed, whether Dutch would repeat Portuguese's own noun/adjective scarcity**: it
+does not - 130,196 of 149,010 real noun lemmas have real forms (including a genuine Dutch-specific
+"diminutive" form, e.g. `huis` -> `huisje`, kept as a real generated NOUN form since it is a genuine everyday
+word Dutch speakers type constantly, not excluded the way a mere spelling variant might be); 15,706 of 19,440
+adjective lemmas have real forms (inflected/comparative/superlative/partitive). Full three-category
+Wortfamilien completion applies, matching Italian's own round rather than Portuguese's.
+
+**The real bug, found before shipping rather than after - the exact discipline the guide's own step 4 now
+requires (see this round's own hardening of it, below).** The first merge pass computed a verb calibration
+ratio of ~173x from 35,225 already-matched pairs - immediately recognisable as impossible (a genuine
+inflected form is never systematically ~173x more frequent than its own lemma) purely because the session
+already knew to look for exactly this shape of bug from French's own D-444-followup history. Diagnosed the
+same way that earlier bug was: computing every individual ratio and inspecting the top outliers directly,
+not just the aggregate median. Every single top outlier shared the same shape: a verb lemma paired against a
+`"form"` that was actually a bare, extremely common function word - `"in"` (491,058), `"hebben"` (a "to
+have" auxiliary), `"worden"` ("to become"/passive auxiliary), `"zijn"` ("to be" auxiliary) - none of them a
+genuine inflected form of the verb they were linked to.
+
+Root-caused by pulling one real example's full raw JSON entry (`inbakeren`, "to swaddle") rather than
+guessing from the aggregate pattern: Dutch's own Wiktionary conjugation tables are complete periphrastic-
+tense tables, not simple single-word paradigms - forms like `"ingebakerd zullen hebben"` (future perfect
+infinitive, "will have swaddled") or, for this separable verb specifically, single-clause forms like
+`"baker in"` (imperative, "swaddle in!" - the verb stem `baker` and the separated prefix particle `in`,
+which splits off in main clauses the way Dutch separable verbs do). The shared `last_token()` helper (built
+for French's own D-444-followup fix, where a combined-pronoun-slot notation like `"il/elle/on mange"` puts
+the genuinely real verb form LAST after the pronoun alternatives) assumes exactly the opposite shape from
+what Dutch actually has: in `"baker in"`, the real content is FIRST (`baker`) and the particle is LAST
+(`in`); in `"ingebakerd zullen hebben"`, the real participle is FIRST and the auxiliary chain trails after
+it. Applied unmodified to Dutch, `last_token()` therefore extracted precisely the wrong half every time a
+form happened to be multi-word - `last_token("baker in")` -> `"in"`; `last_token("ingebakerd zullen
+hebben")` -> `"hebben"` - and did so at real scale: 18,025 rows across the whole `wiktionary_verbs.tsv`
+wrongly linked some verb lemma to a bare `"in"`/`"hebben"`/`"worden"`/`"zijn"`, confirmed by direct grep
+before writing the fix, not estimated.
+
+**Fixed at the root, not patched around the symptom**: `dictionaries/nl/extract_wiktionary.py`'s
+`usable_forms()` no longer calls `last_token()` at all - any raw form containing whitespace is rejected
+outright, before any recovery is attempted, the same "multi-word forms are out of scope" convention every
+other language's own script already applies for the ordinary case, simply enforced earlier in this one
+function. Confirmed this loses nothing real: `inbakeren`'s own genuinely useful single-word forms
+(`inbaker`/`inbakert`/`inbakerde`/`inbakerden` - the subordinate-clause forms, which Dutch grammar keeps the
+separable prefix attached to unlike the main-clause forms - plus the two participles `inbakerend`/
+`ingebakerd`) were already present as their own single-word `forms[]` entries, entirely independent of the
+periphrastic/separable-clause ones the fix now excludes. Re-run end to end after the fix: verb ratio
+corrected to a real, plausible 0.6667 (n=14,648 pairs, down from the poisoned 35,225 since the bogus pairs no
+longer exist to be counted), contaminated bare-auxiliary rows dropped from 18,025 to 5 (a small, genuine
+remainder, not re-investigated further since the count is now consistent with normal noise). `merge_dict.py`
+did not need re-running (its own inputs - `wiki_dump_freq.tsv`/`wiktionary_allpos.tsv` - were never affected
+by this bug, only the forms-linking step was), but `merge_wiktionary.py`, the bigram final-cutoff step,
+`confusables_scan.py`, and the quality gate were all re-run against the corrected data before packaging.
+
+The entire `nlwiki-latest-pages-articles.xml.bz2` (2.04GB compressed) was processed via the same
+multiprocessing/hapax-pruning extractor D-445 built - 2,225,912 real pages, 391,313,011 real tokens.
+
+**Net result** (post-fix): `dict.tsv` 715,368 rows (463,009 from the initial Wikipedia-frequency + kaikki-POS
+merge, +252,359 from full Wortfamilien completion - 174,646 noun, 27,951 verb, 49,762 adjective generated
+forms; calibration ratios noun=0.5000 (n=24,477 pairs), verb=0.6667 (n=14,648, post-fix), adjective=1.0000
+(n=7,845)). POS tagging: 331,809 words kept unrecognised-by-kaikki (corpus count >=20), 2,058,610 dropped
+below that floor, 12,614 removed as common-English-word contamination. Proper-noun handling: 6,108 tagged,
+917 skipped as real-word collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`:
+2,361,683 rows (>=10 cutoff) from 6,046,978 rows at the raw >=3 extraction floor. The shared
+`dictionaries/quality_gate.py` ran clean: 0 case-insensitive duplicates, 0 non-positive frequencies, 0
+orphaned lemma links, 0 bare-NOUN rows.
+
+`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Dutch's own, researched fresh: `hints.tsv` keeps
+German's 10 language-neutral assignments and gives the remaining 16 letters real Dutch content - `e=ë, i=ï,
+o=ö, u=ü` (Dutch's own trema/diaeresis marks, marking that two adjacent vowels are pronounced separately -
+`co-ordinatie` -> `coördinatie` - a genuinely different role from an ordinary accent mark, documented in
+`diacritics.tsv`'s own header comment; the fuller set: `e`->`ë,é,è`; `i`->`ï`; `o`->`ö`; `u`->`ü`), `g=„`/
+`r="` (the Dutch low-quote convention), `s=€` (currency), `t=—` (em dash, a common Dutch parenthetical-aside
+convention), `c=§` (section sign), `a=†` (a genuinely Dutch obituary/genealogy convention - "Jan Jansen
+†1990" - a deliberately chosen, culturally-grounded pick rather than a generic filler), and `j/k/l/w/y/z`
+filled with generically useful remaining typography (`…`, `&`, `%`, `~`, `•`, `±`). `abbreviations.tsv`: a
+hand-curated ~27-entry Dutch sentence-boundary list (`dhr.`/`mevr.`/`dr.`/`prof.`/`bv.`/`enz.`/...).
+
+`DutchRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`="uur" - unlike
+every Romance language this project has built so far, Dutch DOES have a real single-word S-08-style
+convention after a typed time ("om 14.30 uur") - a genuine locale fact, naively filled rather than left null,
+the first non-German language to get a real (non-null) answer here. `bundledConfusablesBlacklist`=empty -
+`dictionaries/confusables_scan.py dictionaries/nl/dict.tsv qwerty 30` found 1,364 candidate pairs, left
+deliberately uncurated for the same "cannot confidently separate a genuine short word/abbreviation from real
+corpus noise without native fluency" reasoning every non-German round has documented.
+
+`DutchRules` itself, its `LanguageRulesRegistry` wiring, and its own `LanguageRulesTest` block were already
+written and committed alongside Portuguese's own round (§418) - language-neutral, zero dictionary-file
+dependency, so only this round's real `LanguagePackCatalog.Entry` was pending. `versionCode` 475 -> 476,
+`versionName` `"1.1.58"` -> `"1.1.59"`. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+**The Language Contribution Guide itself hardened again this round, the same "close the loop immediately,
+not later" discipline D-444 established** - two additions to step 4/step 3 respectively: (1) a new mandatory
+calibration-ratio sanity check, naming both this bug and French's own D-444-followup one as the same
+symptom-class (a ratio nowhere near 1 means something upstream extracted the wrong text), with an explicit
+warning that `last_token()` is not safe to reuse unmodified for a new language without first checking which
+half of that language's own multi-word forms is grammatically "the real one" - first or last, since French's
+own shape and Dutch's own shape are opposites; (2) step 3's own pre-flight size-check note extended with the
+Portuguese/Italian reversed-size-pattern finding (native smaller than the wrong file, confirmed real for two
+languages) sitting alongside French's/Spanish's/Dutch's own "native bigger" pattern - the rule stays
+unconditional regardless of which direction the gap runs.
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+who actually speaks Dutch. Real, full-dump corpus scale (391.31M real tokens) and a complete, real lexicon
+with full noun/verb/adjective Wortfamilien parity (once the periphrastic-form bug above was found and
+fixed) - but still "pretty good" in the guide's own sense, not native-reviewed quality. Not device-confirmed
+either.
+
+**This closes the three-language (pt/it/nl) overnight one-shot round the user asked for at the end of §417.**
+All three languages: dictionary built from a complete (not capped) Wikipedia dump, native-Wiktionary POS
+tagging, Wortfamilien completion (verb-only for Portuguese - a confirmed source limitation; full parity for
+Italian and Dutch), a real confusables scan left honestly uncurated, their own researched hints/diacritics/
+abbreviations, a `LanguageRules` implementation, `LanguageRulesTest` coverage, a `LanguagePackCatalog.Entry`
+with the real numbers, and an honest step-11 gate - none reviewed yet by an actual native speaker of that
+language, all "pretty good" by the guide's own explicit standard, not more.
+
 

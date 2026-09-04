@@ -1,0 +1,11 @@
+# Dutch diacritic-fold table (D-436) - base letter -> every real accented/trema variant, so a token typed
+# without its diaeresis ("geinteresseerd") still reaches the correctly-spelled word ("geïnteresseerd"), both
+# live while typing and at autocorrect/split-repair time. Dutch's trema (ë/ï/ö/ü) marks that two adjacent
+# vowels are pronounced separately rather than as one sound (co-ordinatie -> coördinatie) - a genuinely
+# different role from an accent mark, but the same base-letter -> variant mechanism handles both uniformly.
+# hints.tsv (same folder) picks one representative symbol per key for the AltGr long-press hint; this file
+# keeps the complete set per base letter.
+e	ë,é,è
+i	ï
+o	ö
+u	ü

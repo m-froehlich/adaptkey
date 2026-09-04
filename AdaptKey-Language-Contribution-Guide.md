@@ -385,7 +385,12 @@ rather than silently treating it as equivalent to a language that does have its 
      is suspiciously small. **Before trusting either file, `curl -I` both URLs and compare sizes** - a large
      gap (French's own real numbers: 714.6MB native vs. 56.5MB English-coverage, a 12x difference) is the tell.
      If they are close in size (Spanish's own case: 99.3MB vs. 91MB), the native one is still correct - prefer
-     it on principle, not only when the size gap makes the mistake obvious.
+     it on principle, not only when the size gap makes the mistake obvious. **The comparison can also go the
+     other way, confirmed real for two languages, not a fluke**: Portuguese's own native file (35.4MB) and
+     Italian's own (40.0MB) are each *smaller* than their respective wrong English-coverage files (54.2MB/
+     74.2MB) - the reverse of French's/Spanish's/Dutch's own "native always bigger" pattern. The rule is still
+     unconditional regardless of which direction the gap runs: always use the native `downloads/<code>/` file
+     when `rawdata.html` lists it, never pick the larger file "because it looks more complete."
    - Ask the model directly "what part(s) of speech does this word have in \<language\>" only for words the
      Wiktionary extract itself does not resolve (unlike German's own retrofitted D-368 sweep, which had to lean
      on an error-prone `+n`/`+en` spelling heuristic, `Krieg`/`kriegen` vs. `Krieg`/`Kriege`,
@@ -427,6 +432,26 @@ rather than silently treating it as equivalent to a language that does have its 
    own hierarchy). For a language whose step-8 decision *is* "capitalises common nouns like German" (rare -
    German is the only one so far), this check does not apply; say which case you are in, explicitly, in your
    PR, the same way step 8 already asks you to.
+
+   **Mandatory, structural check, not a judgement call, added after D-447 (Dutch): sanity-check every
+   calibration ratio's own magnitude before trusting the generated-form frequencies it drives - a ratio
+   nowhere near 1 (well above ~2-3x or well below ~0.05x) is a signal something upstream is extracting the
+   wrong text, not a real fact about the language.** Two real, previously-shipped bugs share this exact
+   symptom and were both only caught this way, not by the pipeline "running cleanly": French's own D-444-
+   followup found a ~163x verb ratio caused by naively splitting a combined-pronoun-slot notation
+   (`"il/elle/on mange"`); Dutch's own D-447 found a ~173x verb ratio caused by a *different* root cause with
+   the identical symptom - `last_token()` (the recovery helper both bugs' own fixes use) assumes the
+   grammatically real word is the *last* whitespace-separated token of a multi-word form, which holds for
+   French's own pronoun-prefix pattern but is the *opposite* of Dutch's own periphrastic-tense shape (e.g.
+   `"ingebakerd zullen hebben"` - future perfect infinitive - or a separable verb's single-clause form like
+   `"baker in"`, verb stem first, particle last) - applied there, it silently extracted a common auxiliary/
+   particle (`"hebben"`/`"worden"`/`"zijn"`/a separable prefix) as if it were a genuine inflected form, and
+   that word's own astronomical standalone frequency poisoned the ratio. **Do not assume `last_token()` is
+   safe to reuse as-is for a new language just because it already exists** - check a real sample of that
+   language's own multi-word forms first (which word is grammatically "the real one" - first or last?) before
+   deciding whether to reuse it, adapt it, or - as Dutch's own fix does - skip the recovery entirely and treat
+   any whitespace-containing raw form as out of scope (safe by construction, and often loses nothing real:
+   Dutch's own genuinely useful single-word forms were already present as their own separate entries).
 
 5. **AltGr / long-press hint set (`hints.tsv`) and the diacritics table (`diacritics.tsv`, D-436) - one
    research pass, two files.** More automatable than an earlier draft of this guide assumed, for one large,

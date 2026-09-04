@@ -451,12 +451,10 @@ non-trivial changes).
      not confirmed noise via a real review, and English has never had a dedicated noise-removal pass the
      way German (§301) and Greek (§371/D-425) did. Worth its own dedicated round if picked up.
 
-- **D-280/D-281 follow-up: `DUTCH` is still in the `Language` enum and already fully typeable via QWERTY,**
-  **but has no dictionary or its own hint set built/hosted yet** - a genuine, ready-to-pick-up community
-  contribution opportunity, same shape as the French/Spanish gap was, without even a geometry question to
-  resolve first (see `AdaptKey-Language-Contribution-Guide.md`). `SPANISH` moved out of this list via D-443
-  (§416); `PORTUGUESE` via D-445 (§418); `ITALIAN` via D-446 (§419) - see those rounds for the real packs now
-  built and hosted. Separately, the Python script that originally built `language_profiles.tsv` (A-03's
+- **D-280/D-281 follow-up - RESOLVED, all four languages now have real, hosted packs.** `SPANISH` moved out
+  via D-443 (§416); `PORTUGUESE` via D-445 (§418); `ITALIAN` via D-446 (§419); `DUTCH` via D-447 (§420) - see
+  those rounds for the real packs now built and hosted, all eight `Language` enum entries other than
+  `UNKNOWN` now covered. Separately, the Python script that originally built `language_profiles.tsv` (A-03's
   trigram classifier data) is not in this repository - reconstructing it is only needed if a future language
   falls outside the eight already covered there.
 
@@ -916,6 +914,75 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§420 (v1.1.59): D-447 - first Dutch language pack, third and final of the three-language (pt/it/nl)**
+  **overnight one-shot round - and a real, serious bug caught before shipping, the identical class of**
+  **"impossible calibration ratio" French's own D-444-followup already taught this project to watch for.**
+  Dutch already used ordinary QWERTY and already had a real character-trigram profile
+  (`language_profiles.tsv`, "nl").
+
+  Like Italian, Dutch's own native Wiktionary edition (`kaikki.org/dictionary/downloads/nl/
+  nl-extract.jsonl.gz`, 127.8MB - here the native file IS the much bigger one, ~4.4x the wrong file's
+  29.2MB, matching French's/Spanish's own original "native always bigger" pattern rather than Portuguese's/
+  Italian's own reversed one, confirming both patterns are real and language-dependent, not a single rule)
+  documents noun/adjective inflection very richly (130,196/149,010 real noun lemmas, 15,706/19,440 adjective
+  lemmas have real forms, including a genuine Dutch-specific "diminutive" noun form kept as a real generated
+  form). Full three-category Wortfamilien completion applies.
+
+  **The real bug**: the first pass computed a verb calibration ratio of ~173x (n=35,225 pairs) - physically
+  impossible. Root cause, confirmed by direct inspection of real entries (not assumed): Dutch's own
+  conjugation tables are full periphrastic-tense tables (e.g. `"ingebakerd zullen hebben"` - future perfect
+  infinitive - or, for separable verbs, a two-word single-clause form like `"baker in"`, verb stem first,
+  separable particle last) - the OPPOSITE shape from French's own `"il/elle/on mange"` pattern (pronoun-
+  prefix(es) first, real verb last) the shared `last_token()` recovery helper was built for. Applied here, it
+  silently extracted the wrong half every time - wrongly linking 18,025 rows across the whole file to a bare
+  `"in"`/`"hebben"`/`"worden"`/`"zijn"`, each an extremely common, semantically unrelated standalone Dutch
+  word (`"in"` alone: 491,058) whose own astronomical frequency poisoned the ratio. Fixed at the root
+  (`dictionaries/nl/extract_wiktionary.py`): no `last_token()` recovery for Dutch at all - any raw form
+  containing whitespace is rejected outright. Dutch's own genuinely useful single-word forms (subordinate-
+  clause forms, both participles) were already present as their own single-word entries, so nothing real was
+  lost - re-run after the fix: verb ratio corrected to a real 0.6667 (n=14,648 pairs), contaminated rows
+  dropped from 18,025 to 5.
+
+  The entire `nlwiki-latest-pages-articles.xml.bz2` (2.04GB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor - 2,225,912 real pages, 391,313,011 real tokens.
+
+  **Net result** (after the fix): `dict.tsv` 715,368 rows (463,009 initial + 252,359 from full Wortfamilien
+  completion - 174,646 noun, 27,951 verb, 49,762 adjective generated forms; calibration ratios noun=0.5000
+  (n=24,477), verb=0.6667 (n=14,648, post-fix), adjective=1.0000 (n=7,845)). POS tagging: 331,809 words kept
+  unrecognised-by-kaikki (corpus count >=20), 2,058,610 dropped below that floor, 12,614 removed as
+  common-English-word contamination. Proper-noun handling: 6,108 tagged, 917 skipped as real-word collisions.
+  Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 2,361,683 rows (>=10 cutoff) from
+  6,046,978 rows at the raw >=3 extraction floor. Quality gate: 0 duplicates, 0 non-positive frequencies, 0
+  orphaned lemma links, 0 bare-NOUN rows - PASS.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Dutch's own: `hints.tsv` keeps German's 10 language-
+  neutral assignments and gives the remaining 16 letters Dutch content - e=ë, i=ï, o=ö, u=ü (trema/diaeresis
+  marks - `diacritics.tsv` keeps the fuller set: e→ë,é,è; i→ï; o→ö; u→ü), g=„/r=" (Dutch low-quote
+  convention), s=€, t=— (em dash), c=§, a=† (a genuinely Dutch obituary/genealogy convention - "Jan Jansen
+  †1990"), j/k/l/w/y/z filled with generically useful remaining typography (…, &, %, ~, •, ±).
+  `abbreviations.tsv`: a hand-curated ~27-entry Dutch sentence-boundary list (dhr./mevr./dr./prof./bv./
+  enz./...).
+
+  `DutchRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`="uur" - unlike
+  French/Spanish/Portuguese/Italian, Dutch DOES have a real single-word S-08-style convention after a typed
+  time ("om 14.30 uur"), naively filled rather than left null. `bundledConfusablesBlacklist`=empty -
+  `confusables_scan.py` found 1,364 candidate pairs, left deliberately uncurated for the same reasoning every
+  non-German round documents.
+
+  New tests: `DutchRules`'s registry/test wiring was already committed alongside Portuguese's own round
+  (§418). `versionCode` 475 -> 476, `versionName` `"1.1.58"` -> `"1.1.59"`. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+  who actually speaks Dutch. Real, full-dump corpus scale (391.31M real tokens) and a complete, real lexicon
+  with full noun/verb/adjective Wortfamilien parity (once the periphrastic-form bug above was found and
+  fixed) - but still "pretty good" in the guide's own sense, not native-reviewed quality. Not
+  device-confirmed either. **This closes the three-language (pt/it/nl) overnight one-shot round** - see
+  §418/§419/§420 together for the complete picture, and the Language Contribution Guide itself is worth a
+  future hardening pass to fold in this round's own two new lessons (the reversed native-vs-English-coverage
+  file-size pattern; the `last_token()` heuristic's own French-specific shape assumption) the same way D-444
+  hardened it after the wrong-Wiktionary-source mistake.
 
 - **§419 (v1.1.58): D-446 - first Italian language pack, second of the three-language (pt/it/nl) one-shot**
   **overnight round (see §418/D-445 directly below for the shared context).** Italian already used ordinary

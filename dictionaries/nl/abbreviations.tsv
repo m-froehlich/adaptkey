@@ -1,0 +1,30 @@
+# Dutch sentence-boundary abbreviations (D-434, §6) - a period after one of these does not by itself mark
+# a sentence end, so §6's auto-capitalisation does not fire right after it. Lower-cased, period included,
+# one per line, matching Abbreviations.parse()'s own format.
+dhr.
+mevr.
+mw.
+dr.
+prof.
+ir.
+drs.
+mr.
+ing.
+bv.
+nr.
+blz.
+p.
+afd.
+t.a.v.
+i.p.v.
+e.d.
+o.a.
+m.a.w.
+enz.
+etc.
+z.g.a.n.
+ca.
+excl.
+incl.
+resp.
+evt.
