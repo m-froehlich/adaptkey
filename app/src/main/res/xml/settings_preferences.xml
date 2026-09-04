@@ -210,6 +210,36 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/cat_key_behavior">
+
+        <SeekBarPreference
+            android:key="d32_longpress_delay_ms"
+            android:title="@string/d32_title"
+            android:summary="@string/d32_summary"
+            android:defaultValue="320"
+            android:max="600"
+            app:min="150"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="double_tap_delay_ms"
+            android:title="@string/double_tap_delay_title"
+            android:summary="@string/double_tap_delay_summary"
+            android:defaultValue="400"
+            android:max="800"
+            app:min="200"
+            app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="d361_backspace_sticky"
+            android:title="@string/d361_backspace_sticky_title"
+            android:summary="@string/d361_backspace_sticky_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/cat_layout">
 
         <SwitchPreferenceCompat
@@ -242,26 +272,6 @@
             android:max="25"
             app:min="0"
             app:seekBarIncrement="1"
-            app:showSeekBarValue="true" />
-
-        <SeekBarPreference
-            android:key="d32_longpress_delay_ms"
-            android:title="@string/d32_title"
-            android:summary="@string/d32_summary"
-            android:defaultValue="320"
-            android:max="600"
-            app:min="150"
-            app:seekBarIncrement="10"
-            app:showSeekBarValue="true" />
-
-        <SeekBarPreference
-            android:key="double_tap_delay_ms"
-            android:title="@string/double_tap_delay_title"
-            android:summary="@string/double_tap_delay_summary"
-            android:defaultValue="400"
-            android:max="800"
-            app:min="200"
-            app:seekBarIncrement="10"
             app:showSeekBarValue="true" />
 
         <SeekBarPreference
@@ -301,12 +311,6 @@
             app:min="0"
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
-
-        <SwitchPreferenceCompat
-            android:key="d361_backspace_sticky"
-            android:title="@string/d361_backspace_sticky_title"
-            android:summary="@string/d361_backspace_sticky_summary"
-            android:defaultValue="true" />
 
         <SeekBarPreference
             android:key="c01_shift_extra"

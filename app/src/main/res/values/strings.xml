@@ -95,7 +95,8 @@
     <string name="d89_f33_desc">Tapping Shift twice quickly locks it on, instead of having to hold it or tap it before every single letter.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
-    <string name="cat_layout">Layout &amp; Keys</string>
+    <string name="cat_key_behavior">Key Behaviour</string>
+    <string name="cat_layout">Layout</string>
     <string name="cat_dictionary">Dictionary</string>
     <string name="cat_capitalisation">Correction &amp; Suggestions</string>
 
@@ -105,7 +106,7 @@
     <string name="c01_period_title">Full-stop width</string>
     <string name="c01_backspace_title">Extra backspace width</string>
     <string name="c01_backspace_summary">Percentage surcharge, taken from the neighbouring keys (L-04).</string>
-    <string name="d361_backspace_sticky_title">Sticky Backspace while typing fast</string>
+    <string name="d361_backspace_sticky_title">Sticky Backspace</string>
     <string name="d361_backspace_sticky_summary">A quick re-tap right after Backspace stays Backspace, even if it lands on a neighbouring key (e.g. Enter). Uses the double-tap delay above as the window.</string>
     <string name="c01_shift_title">Extra shift width</string>
     <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
@@ -133,8 +134,8 @@
     <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
     <string name="d32_title">Long-press delay</string>
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
-    <string name="double_tap_delay_title">Double-tap Shift delay</string>
-    <string name="double_tap_delay_summary">Maximum time between two Shift taps to toggle the current word\'s first-letter case, in ms.</string>
+    <string name="double_tap_delay_title">Double-tap delay</string>
+    <string name="double_tap_delay_summary">Maximum time between two taps to count as a double-tap, in ms - Shift case-toggle, double-tap Backspace to revert, and sticky Backspace all share this window.</string>
     <string name="d59_title">\?123/ABC key</string>
     <string name="d59_summary">Show the combined ?123 key. With this off, the key disappears and its slot stays empty (D-59).</string>
     <string name="d55_below_title">Space below number row</string>

@@ -95,7 +95,8 @@
     <string name="d89_f33_desc">Zweimal schnell auf Umschalt tippen aktiviert die Feststelltaste, statt sie halten oder vor jedem einzelnen Buchstaben antippen zu müssen.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
-    <string name="cat_layout">Layout &amp; Tasten</string>
+    <string name="cat_key_behavior">Tasten-Verhalten</string>
+    <string name="cat_layout">Layout</string>
     <string name="cat_dictionary">Wörterbuch</string>
     <string name="cat_capitalisation">Korrektur &amp; Vorschläge</string>
 
@@ -105,8 +106,8 @@
     <string name="c01_period_title">Breite des Punkts</string>
     <string name="c01_backspace_title">Zusatzbreite der Rücktaste</string>
     <string name="c01_backspace_summary">Prozentualer Aufschlag, von den Nachbartasten genommen (L-04).</string>
-    <string name="d361_backspace_sticky_title">Rücktaste beim schnellen Tippen klebend</string>
-    <string name="d361_backspace_sticky_summary">Ein schneller erneuter Tipp direkt nach der Rücktaste bleibt Rücktaste, auch wenn er auf einer Nachbartaste landet (z. B. Enter). Nutzt oben stehendes Doppel-Tipp-Delay als Zeitfenster.</string>
+    <string name="d361_backspace_sticky_title">Backspace klebend</string>
+    <string name="d361_backspace_sticky_summary">Ein schneller erneuter Tipp direkt nach der Rücktaste bleibt Rücktaste, auch wenn er auf einer Nachbartaste landet (z. B. Enter). Nutzt oben stehendes Doppeltipp-Delay als Zeitfenster.</string>
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>
     <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 
@@ -121,7 +122,7 @@
     <string name="d353_autocorrect_aggressiveness_cautious">Vorsichtig</string>
     <string name="d353_autocorrect_aggressiveness_medium">Mittel</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Aggressiv</string>
-    <string name="d348_double_tap_backspace_undo_title">Doppel-Tipp Backspace zum Zurücksetzen</string>
+    <string name="d348_double_tap_backspace_undo_title">Doppel Backspace zum Zurücksetzen</string>
     <string name="d348_double_tap_backspace_undo_summary">Wenn aktiv, löscht ein einzelner Backspace nach einer Autokorrektur nur ein Zeichen; drücke Backspace zweimal schnell hintereinander, um die Korrektur zurückzunehmen.</string>
     <string name="c04_color_title">Highlight-Farbe</string>
     <string name="c02_title">Re-Sort-Verzögerung</string>
@@ -133,8 +134,8 @@
     <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
     <string name="d32_title">Long-Press-Verzögerung</string>
     <string name="d32_summary">Wie lange eine Taste gehalten werden muss, bis die Alternativen erscheinen, in ms (D-32).</string>
-    <string name="double_tap_delay_title">Doppeltipp-Shift-Verzögerung</string>
-    <string name="double_tap_delay_summary">Maximale Zeit zwischen zwei Shift-Tipps, um die Groß-/Kleinschreibung des aktuellen Wortanfangs umzuschalten, in ms.</string>
+    <string name="double_tap_delay_title">Doppeltipp-Verzögerung</string>
+    <string name="double_tap_delay_summary">Maximale Zeit zwischen zwei Tipps, um als Doppeltipp zu zählen, in ms - Shift-Großschreibung umschalten, Doppel-Backspace zum Zurücksetzen und klebende Rücktaste teilen sich dieses Zeitfenster.</string>
     <string name="d59_title">\?123/ABC-Taste</string>
     <string name="d59_summary">Die kombinierte ?123-Taste anzeigen. Wenn diese aus ist, verschwindet die Taste und ihr Platz bleibt leer (D-59).</string>
     <string name="d55_below_title">Abstand unter der Ziffernreihe</string>

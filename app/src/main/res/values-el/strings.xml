@@ -95,7 +95,8 @@
     <string name="d89_f33_desc">Δύο γρήγορα αγγίγματα στο Shift το κλειδώνουν ενεργό, αντί να χρειάζεται να το κρατάς πατημένο ή να το αγγίζεις πριν από κάθε γράμμα.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
-    <string name="cat_layout">Διάταξη &amp; Πλήκτρα</string>
+    <string name="cat_key_behavior">Συμπεριφορά πλήκτρων</string>
+    <string name="cat_layout">Διάταξη</string>
     <string name="cat_dictionary">Λεξικό</string>
     <string name="cat_capitalisation">Διόρθωση &amp; Προτάσεις</string>
 
@@ -105,7 +106,7 @@
     <string name="c01_period_title">Πλάτος τελείας</string>
     <string name="c01_backspace_title">Πρόσθετο πλάτος backspace</string>
     <string name="c01_backspace_summary">Ποσοστιαία προσαύξηση, από τα γειτονικά πλήκτρα (L-04).</string>
-    <string name="d361_backspace_sticky_title">Κολλώδες Backspace κατά το γρήγορο πάτημα</string>
+    <string name="d361_backspace_sticky_title">Κολλώδες Backspace</string>
     <string name="d361_backspace_sticky_summary">Ένα γρήγορο δεύτερο πάτημα αμέσως μετά το Backspace παραμένει Backspace, ακόμη κι αν προσγειωθεί σε γειτονικό πλήκτρο (π.χ. Enter). Χρησιμοποιεί την παραπάνω καθυστέρηση διπλού πατήματος ως χρονικό παράθυρο.</string>
     <string name="c01_shift_title">Πρόσθετο πλάτος Shift</string>
     <string name="c01_shift_summary">Ποσοστιαία προσαύξηση για το πλήκτρο Shift (D-16). Προρυθμίζεται από τη βαθμονόμηση· ρυθμιζόμενο.</string>
@@ -133,8 +134,8 @@
     <string name="c09_summary">Μόνιμη σειρά ψηφίων πάνω από τα γράμματα (L-06).</string>
     <string name="d32_title">Καθυστέρηση παρατεταμένου πατήματος</string>
     <string name="d32_summary">Πόση ώρα να κρατηθεί ένα πλήκτρο μέχρι να εμφανιστούν οι εναλλακτικές, σε ms (D-32).</string>
-    <string name="double_tap_delay_title">Καθυστέρηση διπλού πατήματος Shift</string>
-    <string name="double_tap_delay_summary">Μέγιστος χρόνος μεταξύ δύο πατημάτων Shift για εναλλαγή πεζών/κεφαλαίων στην αρχή της τρέχουσας λέξης, σε ms.</string>
+    <string name="double_tap_delay_title">Καθυστέρηση διπλού πατήματος</string>
+    <string name="double_tap_delay_summary">Μέγιστος χρόνος μεταξύ δύο πατημάτων για να μετρήσει ως διπλό πάτημα, σε ms - η εναλλαγή πεζών/κεφαλαίων με Shift, το διπλό Backspace για αναίρεση και το κολλώδες Backspace μοιράζονται αυτό το χρονικό παράθυρο.</string>
     <string name="d59_title">Πλήκτρο ?123/ABC</string>
     <string name="d59_summary">Εμφάνιση του συνδυασμένου πλήκτρου ?123. Όταν αυτό είναι ανενεργό, το πλήκτρο εξαφανίζεται και η θέση του μένει κενή (D-59).</string>
     <string name="d55_below_title">Κενό κάτω από τη σειρά αριθμών</string>

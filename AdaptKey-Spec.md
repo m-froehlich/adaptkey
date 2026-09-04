@@ -135,14 +135,15 @@ layout. The exact proportion is user-configurable (C-01). The chosen typing styl
 whether the extra width favours the backspace side or the Shift side by default, matching which hand/finger
 is expected to reach that corner.
 
-D-361 (default **on**, toggle in Layout settings): fast Backspace activity - a tap or an active accelerating
-hold (D-07/D-31) - temporarily biases key resolution toward Backspace itself for whichever key currently sits
-next to it, so a mistimed re-tap right after Backspace does not land on a neighbour (Enter being the reported
-case) instead. A tap in the portion of that neighbour nearest Backspace, within the sticky window, resolves to
-Backspace; the neighbour's own far portion stays normally reachable. The neighbour itself is never a fixed,
-per-language list - it is derived from the actually rendered key layout each time, so this holds unchanged on
-every surface (letters, symbols, calculator, ...) and every language's own geometry. The sticky window reuses
-the double-tap delay setting's own current value rather than a separately tuned duration of its own.
+D-361 ("Sticky Backspace", default **on**, toggle in the Key Behaviour settings category): fast Backspace
+activity - a tap or an active accelerating hold (D-07/D-31) - temporarily biases key resolution toward
+Backspace itself for whichever key currently sits next to it, so a mistimed re-tap right after Backspace does
+not land on a neighbour (Enter being the reported case) instead. A tap in the portion of that neighbour
+nearest Backspace, within the sticky window, resolves to Backspace; the neighbour's own far portion stays
+normally reachable. The neighbour itself is never a fixed, per-language list - it is derived from the actually
+rendered key layout each time, so this holds unchanged on every surface (letters, symbols, calculator, ...) and
+every language's own geometry. The sticky window reuses the double-tap delay setting's own current value
+rather than a separately tuned duration of its own.
 
 ### L-05 - Secondary Symbols via Long-Press (AltGr-Style)
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
@@ -326,8 +327,10 @@ addendum below; this works independent of claim state, including where the react
 suppressed (D-351). Only when nothing at all touches the caret does the double-tap fall back to simply
 disarming the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot uppercase.
 
-The double-tap delay is configurable via a slider in the Layout settings category, placed directly below the
-long-press delay slider. Default: 400 ms. Range: 200-800 ms, in 10 ms steps.
+The double-tap delay is configurable via a slider in the Key Behaviour settings category, placed directly
+below the long-press delay slider. Default: 400 ms. Range: 200-800 ms, in 10 ms steps. Shared with the D-348
+double-tap-Backspace-undo window and the D-361 sticky-Backspace window - one generic "how fast counts as a
+double-tap" setting, not a Shift-specific one, even though this is the only place it is derived (G-05).
 
 Committing a case-locked token (one toggled via this gesture) still bypasses autocorrect, §6 capitalisation,
 and single-word correction entirely — "the user has hand-finished it" — **except** for A-05 retroactive word

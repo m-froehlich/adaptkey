@@ -782,6 +782,68 @@ non-trivial changes).
 
 ## Current State
 
+- **§392 (v1.1.31): settings-screen follow-up from testing §391 - a stale-APK false alarm led to a real,**
+  **useful settings-screen review round.** User reported seeing no Sticky-Backspace effect, no new setting, and
+  the double-tap-delay slider itself missing entirely after installing what turned out to still be v1.1.29, not
+  the freshly built v1.1.30 - a install/deployment mix-up, not a code bug (confirmed: `settings_preferences.xml`
+  was already syntactically valid and correctly ordered before this round; a fresh rebuild's `AdaptKey.apk`
+  matched the latest commit exactly). That prompted a real settings-screen review, five distinct, unrelated
+  points:
+
+  1. **A genuine layout bug, found and root-caused, not just re-confirmed:** the first two rows under
+     "Korrektur & Vorschläge" (`d353_autocorrect_aggressiveness`/`d352_auto_split_mode`, both
+     `LabeledSeekBarPreference`) sit less indented than every ordinary sibling preference. Root cause:
+     `preference_labeled_seekbar.xml` (`LabeledSeekBarPreference`'s own layout, D-407/D-408) still carried the
+     *original*, never-actually-fixed deviation from the real AndroidX default (`marginStart=16dp`/`marginEnd=
+     8dp` instead of the real `15dip`/`6dip`, `textAppearanceMedium` with no explicit colour instead of
+     `textAppearanceLarge` + `textColorPrimary`, a plain `ImageView` icon frame instead of the real
+     `FrameLayout` structure) - the *exact* deviations §382 (v1.1.21) found and fixed, but only ever in
+     `preference_tier3_model.xml`, a file that had merely been hand-copied *from* this one; this file itself,
+     the actual original template, was never corrected. Fixed the same way §383/§384's own final, real-device-
+     confirmed approach settled on (not by re-tweaking individual attributes again): `<include layout=
+     "@layout/preference_material" />` (not `@layout/preference` - this app's theme maps `preferenceStyle` to
+     `Preference.Material`, confirmed the hard way in that earlier round) for the icon/title/summary column
+     verbatim, with only the SeekBar+value row appended below it, using the same `listPreferredItemPaddingStart`/
+     `End` + 56dp leading `Space` pattern `preference_tier3_model.xml` already established. Both
+     `LabeledSeekBarPreference` rows in this screen (and any future one) inherit the fix automatically - no
+     Kotlin change needed, `onBindViewHolder` only ever looked up its own `R.id.labeled_seekbar`/
+     `R.id.labeled_seekbar_value` ids, confirmed before touching the layout.
+  2. **The double-tap-delay setting's own name was genuinely misleading, not merely a display issue**: labelled
+     "Doppeltipp-**Shift**-Verzögerung" even though it was already shared by G-05 (Shift), D-348 (double-tap
+     Backspace undo) and now D-361 (sticky Backspace) - user's own diagnosis, reported directly (not something
+     this session had flagged). Renamed to the generic "Doppeltipp-Verzögerung"/"Double-tap delay" (all three
+     languages), summary rewritten to name all three consumers instead of only Shift. Spec's G-05 section and
+     L-04's D-361 addendum both corrected to match (no longer call it Shift-specific or claim it lives in
+     "Layout").
+  3. **Two truncated/over-long titles shortened**, per direct device screenshots: `d361_backspace_sticky_title`
+     ("Rücktaste beim schnellen Tippen klebend" → "Backspace klebend" / "Sticky Backspace while typing fast" →
+     "Sticky Backspace"); `d348_double_tap_backspace_undo_title` (German only, the one actually reported
+     truncated: "Doppel-Tipp Backspace zum Zurücksetzen" → "Doppel Backspace zum Zurücksetzen").
+  4. **A new settings category, split out of the renamed "Layout" (was "Layout & Tasten"/"Layout & Keys"),**
+     per the user's own explicit request: **"Tasten-Verhalten"/"Key Behaviour"**, sitting directly above
+     "Layout", now holding `d32_longpress_delay_ms`, the renamed `double_tap_delay_ms`, and `d361_backspace_
+     sticky` (all three moved out of "Layout", which keeps everything else - number row, symbol key, the two
+     D-55 spacing sliders, the C-01 weight/backspace/shift sliders). `SettingsStore.EXPORT_SETTINGS_KEY_ORDER`
+     reordered to match, per that list's own documented "mirrors the settings screen's own order" contract.
+  5. **The left indentation the fix in point 1 relies on is the AndroidX-reserved icon-frame column** (56dp,
+     confirmed in the §385 investigation) - currently unused by every preference in this app (no `android:icon`
+     set anywhere). User asked directly whether adding glyph icons there would be worth doing. Answered as a
+     discussion, not implemented: a real polish idea, but a genuinely new investment (no icon asset pipeline
+     exists in this app yet; F-Droid's own licensing discipline, per the release-channel work, means any
+     sourced icon set needs its licence checked and credited, same as `CREDITS.md` already does for every other
+     bundled asset) with a real scoping question first - individual numeric-tuning sliders mostly have no
+     natural pictographic meaning, so icons would likely only make sense on the handful of sub-screen-opening
+     entry points (language packs, blacklist, learned words, credentials, backup, diagnostics), not on every
+     row. Left for the user's own call whether to pursue as its own future round - not tracked as a firm open
+     TODO yet, since no decision was actually made either way.
+
+  No new tests (pure settings-screen resource/layout/naming changes, Android view glue - the same untested
+  boundary every other settings-screen-only round in this project already sits on). 1244 unit tests unchanged,
+  all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 447 -> 448, `versionName`
+  `"1.1.30"` -> `"1.1.31"`. **Not yet device-confirmed** - this is the actual fresh build the user needs to
+  install to re-test §391/D-361 in the first place; also needs a real look at whether the
+  `LabeledSeekBarPreference` rows now align with their siblings.
+
 - **§391 (v1.1.30): D-361 - fast Backspace typing let neighbour keys (Enter reported specifically) react**
   **instead of Backspace.** Design discussed first per this project's own convention (touches key
   hit-testing/`resolveKey`): two ideas were weighed - (A) temporarily grow Backspace's own touch zone while

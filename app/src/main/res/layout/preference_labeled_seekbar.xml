@@ -1,103 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- D-407: layout for LabeledSeekBarPreference - mirrors androidx.preference.SeekBarPreference's own
-     preference_widget_seekbar.xml, except the value label is a text width wide enough for a whole
-     translated word ("Vorsichtig", "Aggressive"), not a couple of digits - the SeekBar (layout_weight="1",
-     layout_width="0dp") shrinks to whatever width remains automatically. -->
+<!-- D-433-followup-derived fix: mirrors preference_tier3_model.xml's own real-device-confirmed pattern
+     (see its history) - <include> the theme's actual Preference.Material layout (preference_material, not
+     the plain pre-Material default @layout/preference - this app's theme maps preferenceStyle to
+     Preference.Material) for icon/title/summary verbatim, so this row renders byte-identical to every
+     ordinary sibling Preference; only the SeekBar+value row below is this class's own content. Replaces the
+     earlier hand-copied RelativeLayout structure, which never actually matched the real AndroidX default
+     (marginStart/End, title textAppearance/colour, icon frame shape all differed) - that mismatch is exactly
+     what §382-§385's own device-confirmed fixes for preference_tier3_model.xml later found and fixed there,
+     but this file itself, the template those fixes were copied from, was never corrected to match. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    android:gravity="center_vertical"
-    android:paddingEnd="?android:attr/scrollbarSize"
-    android:paddingRight="?android:attr/scrollbarSize"
-    android:clipChildren="false"
-    android:clipToPadding="false"
+    android:orientation="vertical"
 >
-    <ImageView
-        android:id="@android:id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:minWidth="48dp"
-    />
+    <include layout="@layout/preference_material" />
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <!-- D-408: layout_marginTop kept - flush against the summary read as cramped, unlike this screen's
+         other (plain androidx.preference.SeekBarPreference) sliders, whose SeekBar's own larger touch-target
+         padding creates that breathing room implicitly. Same theme-derived paddingStart/End the included
+         preference_material.xml's own root uses, plus a 56dp leading Space matching image_frame.xml's own
+         reserved icon-frame width - this row has no icon_frame of its own, so without it the SeekBar/value
+         would align under where an icon would sit, not under the title/summary column. -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
-        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="10dp"
         android:clipChildren="false"
         android:clipToPadding="false"
     >
-        <TextView
-            android:id="@android:id/title"
-            android:layout_width="wrap_content"
+
+        <Space
+            android:layout_width="56dp"
             android:layout_height="wrap_content"
+        />
+
+        <SeekBar
+            android:id="@+id/labeled_seekbar"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:paddingStart="0dp"
+            android:paddingLeft="0dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:focusable="false"
+            android:clickable="false"
+            android:background="@null"
+        />
+
+        <!-- D-408: wrap_content, not match_parent - stretching this TextView to match the SeekBar's own
+             (shorter) intrinsic height clipped descenders (g/j in "Vorsichtig"/"Aggressiv") against its
+             squeezed bounds. Invisible in AndroidX's own original numeric value label (no digit has a
+             descender), only surfaced once this label started showing real words. -->
+        <TextView
+            android:id="@+id/labeled_seekbar_value"
+            android:layout_width="88dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
             android:singleLine="true"
+            android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
         />
 
-        <TextView
-            android:id="@android:id/summary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@android:id/title"
-            android:layout_alignStart="@android:id/title"
-            android:layout_alignLeft="@android:id/title"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorSecondary"
-            android:maxLines="4"
-        />
+    </LinearLayout>
 
-        <!-- D-408: layout_marginTop widened - flush against the summary read as cramped, unlike this
-             screen's other (plain androidx.preference.SeekBarPreference) sliders, whose SeekBar's own
-             larger touch-target padding creates that breathing room implicitly. -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@android:id/summary"
-            android:layout_marginTop="10dp"
-            android:layout_alignStart="@android:id/title"
-            android:layout_alignLeft="@android:id/title"
-            android:gravity="center_vertical"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-        >
-            <SeekBar
-                android:id="@+id/labeled_seekbar"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:paddingStart="0dp"
-                android:paddingLeft="0dp"
-                android:paddingEnd="16dp"
-                android:paddingRight="16dp"
-                android:focusable="false"
-                android:clickable="false"
-                android:background="@null"
-            />
-
-            <!-- D-408: wrap_content, not match_parent - stretching this TextView to match the SeekBar's
-                 own (shorter) intrinsic height clipped descenders (g/j in "Vorsichtig"/"Aggressiv") against
-                 its squeezed bounds. Invisible in AndroidX's own original numeric value label (no digit has
-                 a descender), only surfaced once this label started showing real words. -->
-            <TextView
-                android:id="@+id/labeled_seekbar_value"
-                android:layout_width="88dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-            />
-        </LinearLayout>
-
-    </RelativeLayout>
 </LinearLayout>
