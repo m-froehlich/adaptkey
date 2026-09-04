@@ -25,11 +25,13 @@ import androidx.core.content.res.ResourcesCompat
  *
  * @param glyph the single character (or short character sequence, e.g. one code point plus a variation
  *        selector) to draw, centred within this drawable's own bounds
- * @param sizeDp the drawable's own intrinsic width/height, in dp - 24dp matches the icon-frame's own real
- *        AndroidX default sizing (`image_frame.xml`'s `maxWidth`/`maxHeight`, confirmed directly in the
- *        §382/§383 investigation), so no ad-hoc host-side scaling is needed
+ * @param sizeDp the drawable's own intrinsic width/height, in dp - still comfortably under the icon-frame's
+ *        own real AndroidX default cap (`image_frame.xml`'s `maxWidth`/`maxHeight="48dp"`, confirmed
+ *        directly in the §382/§383 investigation), so no ad-hoc host-side scaling is needed. D-361-followup
+ *        (v2): widened from the original 24dp - reported as reading too small/thin on a real device once the
+ *        first glyph set (thin-stroke Mathematical Operators/Arrows characters) shipped.
  */
-class GlyphIconDrawable(context: Context, private val glyph: String, sizeDp: Float = 24f) : Drawable() {
+class GlyphIconDrawable(context: Context, private val glyph: String, sizeDp: Float = 28f) : Drawable() {
     
     private val sizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, sizeDp, context.resources.displayMetrics).toInt()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -39,7 +41,8 @@ class GlyphIconDrawable(context: Context, private val glyph: String, sizeDp: Flo
             color = runCatching { ResourcesCompat.getColor(context.resources, secondary.resourceId, context.theme) }
                 .getOrDefault(color)
         }
-        textSize = sizePx * 0.75f
+        // D-361-followup (v2): widened from 0.75f alongside sizeDp - the same "too small" report.
+        textSize = sizePx * 0.9f
         textAlign = Paint.Align.CENTER
     }
     private val textBounds = Rect().also { paint.getTextBounds(glyph, 0, glyph.length, it) }

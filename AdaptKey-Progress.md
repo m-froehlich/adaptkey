@@ -782,6 +782,24 @@ non-trivial changes).
 
 ## Current State
 
+- **§394 (v1.1.33): D-361-followup (v2) - §393's glyph icons read as thin, faint line-art on a real device,**
+  **not as proper icons.** Direct device feedback right after §393 shipped: "die sind aber klein und
+  minimalistisch... weniger nackte Linien und mehr Icons." Root cause of the "line-art" look: the original
+  eight characters were mostly drawn from the Mathematical Operators/Supplemental Arrows/Miscellaneous
+  Technical blocks (⌖/⊘/⟲), which are thin-stroke notation glyphs by design, not solid pictographs. Fixed two
+  independent ways at once:
+  - `GlyphIconDrawable`'s own size widened 24dp -> 28dp and its `textSize` fraction 0.75 -> 0.9 (still well
+    under the icon-frame's real 48dp cap, confirmed again against the actual AndroidX layout).
+  - Four of the eight characters replaced with bolder, more solidly-shaped ones from the Miscellaneous
+    Symbols/Dingbats blocks: Calibration ⌖ -> ◎ (bullseye), Blacklist ⊘ -> ✗ (ballot X), Learned Words ✎ -> ✒
+    (black nib), Backup ⟲ -> ☁ (cloud). Language packs (文), Credentials (⚿), Diagnostics log (☰) and Feature
+    overview (ℹ) were already reasonably solid/bold shapes and kept unchanged.
+
+  No new tests (same `GlyphIconDrawable`/Android-rendering-glue boundary as §393). 1244 unit tests unchanged,
+  all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. `versionCode` 449 -> 450,
+  `versionName` `"1.1.32"` -> `"1.1.33"`. **Not yet device-confirmed** - still cannot be visually verified from
+  here; needs the same real-device look §393 itself never got before this round already replaced it.
+
 - **§393 (v1.1.32): D-361-followup - monochrome glyph icons for the settings screen's own sub-screen entry**
   **points.** Direct follow-up to §392's icon discussion: user corrected the assumed cost ("Icon-Glyph, nicht
   Icon-Image" - a single Unicode character needs no bundled asset, no licence to source/credit, unlike a real

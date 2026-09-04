@@ -83,14 +83,18 @@ class SettingsActivity : AppCompatActivity() {
             
             // D-361-followup: monochrome glyph icons (GlyphIconDrawable) for the settings screen's own
             // sub-screen entry points only, per the user's own explicit scoping - a plain preference with no
-            // dedicated screen of its own stays without an icon.
+            // dedicated screen of its own stays without an icon. D-361-followup (v2): the original set drew
+            // from the Mathematical Operators/Supplemental Arrows blocks, which read as thin, faint line-art
+            // rather than proper icons once seen on a real device - replaced with bolder, more solidly-shaped
+            // characters from the Miscellaneous Symbols/Dingbats blocks instead (alongside GlyphIconDrawable's
+            // own larger size/textSize bump).
             mapOf(
-                "k01_calibration" to "⌖",
+                "k01_calibration" to "◎",
                 "d280_language_packs" to "文",
-                "c05_blacklist" to "⊘",
-                "d177_learned_words" to "✎",
+                "c05_blacklist" to "✗",
+                "d177_learned_words" to "✒",
                 "d142_credentials" to "⚿",
-                "d278_backup" to "⟲",
+                "d278_backup" to "☁",
                 "d_diag_log" to "☰",
                 "d89_feature_overview" to "ℹ"
             ).forEach { (key, glyph) ->
