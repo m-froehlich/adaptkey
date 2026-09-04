@@ -810,6 +810,21 @@ non-trivial changes).
 
 ## Current State
 
+- **§409 (v1.1.48): D-396-followup (v5) - device feedback on §408: the popup-open cue's removal confirmed**
+  **correct, but accepting an alt-char (`HapticTier.CORRECTION`, still `DEFAULT_AMPLITUDE`) felt considerably**
+  **too pronounced/heavy.** User self-diagnosed correctly ("das ist der Chip-Annahme-Effekt") - `CORRECTION`
+  was tuned for the rarer suggestion-chip case originally and had never actually been felt for a much more
+  frequent everyday action until §408 also routed alt-char acceptance through it. Added a new, explicitly
+  lowered `CORRECTION_AMPLITUDE` (a considered starting point, not yet device-tuned) instead of
+  `DEFAULT_AMPLITUDE` - deliberately kept a bit firmer than `KEY_PRESS_AMPLITUDE`, since accepting a selection
+  is still rarer/more deliberate than routine typing. `MODE_SWITCH` untouched, still `DEFAULT_AMPLITUDE`.
+
+  No new tests - same Android `Vibrator` glue boundary as §405-§408. 1304 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a further addendum. `versionCode`
+  464 -> 465, `versionName` `"1.1.47"` -> `"1.1.48"`. **Not yet device-confirmed** - needs a real feel-check
+  on the Pixel 9a that accepting an alt-char (and a suggestion chip) now feels appropriately toned down;
+  likely needs at least one further tuning round given how subjective this keeps turning out to be.
+
 - **§408 (v1.1.47): D-396-followup (v4) - §407's `EFFECT_TICK` confirmed exactly right on the Pixel 9a**
   **(genuinely the real effect, not the pre-API-29 fallback); user then asked to fix the L-05 long-press-**
   **popup flow's own haptics while still in the same round.** Three distinct moments around a popup, and only
@@ -825,9 +840,8 @@ non-trivial changes).
 
   No new tests - same Android View-glue touch/haptics boundary as §405-§407. 1304 unit tests unchanged, all
   green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a further addendum.
-  `versionCode` 463 -> 464, `versionName` `"1.1.46"` -> `"1.1.47"`. **Not yet device-confirmed** - needs a
-  real check on the Pixel 9a that a long-press popup now stays silent on open and vibrates once on accepting
-  an alternative.
+  `versionCode` 463 -> 464, `versionName` `"1.1.46"` -> `"1.1.47"`. **Device-confirmed (2026-09-04, Pixel 9a)**
+  **for the popup-open silence - correct; the accept-a-selection cue turned out too strong, see §409.**
 
 - **§407 (v1.1.46): D-396-followup (v2) - user feedback on §406: `HapticTier.KEY_PRESS` should read as a**
   **short click/detent ("Rasten oder Klicken"), not a brief buzz, and quieter still.** A manually-timed

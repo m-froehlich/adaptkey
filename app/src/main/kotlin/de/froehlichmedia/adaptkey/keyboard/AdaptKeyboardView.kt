@@ -1536,16 +1536,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // plain amplitude), so HapticTier's quantity gating above is unaffected either way. Below API 29,
             // createOneShot() is the only option - KEY_PRESS_FALLBACK_DURATION_MS/KEY_PRESS_AMPLITUDE are
             // shortened/quietened starting points (not yet device-tuned) to approximate the same short, quiet
-            // feel as closely as a plain on/off pulse can. MODE_SWITCH/CORRECTION are unaffected by any of
-            // this - still the ordinary HAPTIC_DURATION_MS/DEFAULT_AMPLITUDE one-shot, confirmed already fine.
-            val effect = if (tier == HapticTier.KEY_PRESS) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // feel as closely as a plain on/off pulse can. MODE_SWITCH is unaffected by any of this - still
+            // the ordinary HAPTIC_DURATION_MS/DEFAULT_AMPLITUDE one-shot, confirmed already fine.
+            // D-396-followup (v5): CORRECTION was still DEFAULT_AMPLITUDE too - fine as the rarer suggestion-
+            // chip-acceptance cue alone, but reusing it for commitPopupSelection() (v3, above) made a second,
+            // much more frequent everyday action (every accepted alt-char) carry the same "heavy" amplitude,
+            // and the user reported it as considerably too pronounced once actually felt that often. Lowered
+            // to CORRECTION_AMPLITUDE - a considered starting point, not yet device-tuned - deliberately still
+            // a bit firmer than KEY_PRESS_AMPLITUDE (a still-rarer, more deliberate action than routine
+            // typing), not reduced all the way down to it.
+            val effect = when (tier) {
+                HapticTier.KEY_PRESS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
                 } else {
                     VibrationEffect.createOneShot(KEY_PRESS_FALLBACK_DURATION_MS, KEY_PRESS_AMPLITUDE)
                 }
-            } else {
-                VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+                HapticTier.CORRECTION -> VibrationEffect.createOneShot(HAPTIC_DURATION_MS, CORRECTION_AMPLITUDE)
+                HapticTier.MODE_SWITCH -> VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
             }
             // D-75 (D-66 still not firing on device): a plain vibrate(VibrationEffect) with no attributes
             // falls into an unclassified usage bucket that some OEM vibration-intensity settings scale to
@@ -2098,6 +2105,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // stays in a comfortably subtle range on the API 26-28 fallback path above - a considered starting
         // point, not yet device-tuned; see fireHaptic()'s own comment for the reasoning.
         private const val KEY_PRESS_AMPLITUDE = 30
+        
+        // D-396-followup (v5): CORRECTION (suggestion-chip acceptance, and since v3 also accepting an L-05
+        // alt-char) felt considerably too pronounced at DEFAULT_AMPLITUDE once it started firing for the more
+        // frequent alt-char case too - a considered starting point, not yet device-tuned, deliberately still
+        // a bit firmer than KEY_PRESS_AMPLITUDE (a rarer, more deliberate action than routine typing).
+        private const val CORRECTION_AMPLITUDE = 70
         
         // D-396: the OS's own per-usage vibration-intensity key (0 off - 3 high) - not a named public
         // Settings.System constant, confirmed instead directly against AOSP's VibratorService source

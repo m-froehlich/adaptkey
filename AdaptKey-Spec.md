@@ -2472,6 +2472,15 @@ G-06's own Caps Lock long-press is unaffected by any of this - it already had it
 `playCapsLockHaptic()`/`MODE_SWITCH` call at the long-press-fires moment, never the generic
 `performHapticFeedback` call this change removes.
 
+**D-396-followup (v5):** device feedback on the above - the popup-open cue's removal was confirmed correct,
+but accepting an alt-char (still `DEFAULT_AMPLITUDE`, unchanged since D-396's own original round) turned out
+considerably too pronounced once the user actually felt it fire for this much more frequent everyday action,
+not just for the rarer suggestion-chip case `CORRECTION` was originally tuned for. `CORRECTION` now uses a
+new, explicitly lowered `CORRECTION_AMPLITUDE` instead of `DEFAULT_AMPLITUDE` (a considered starting point,
+not yet device-tuned) - deliberately kept a bit firmer than `KEY_PRESS_AMPLITUDE`, since accepting a selection
+is still a rarer, more deliberate action than routine typing. `MODE_SWITCH` is untouched, still
+`DEFAULT_AMPLITUDE`.
+
 ---
 
 ## Prerequisite
