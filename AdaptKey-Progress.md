@@ -633,6 +633,15 @@ non-trivial changes).
   - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
     letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
     produce an unwanted `q` instead of the intended `a` below it.
+  - **D-440 - OPEN, temporary diagnostic logging added (§410, v1.1.49), awaiting real device data.**
+    Next-word-prediction chips for a word whose only bundled dictionary entry is correctly cased ("Grüße",
+    `NOUN,VERB`) stay lowercase and never get learned regardless of repeated retyping, and even a word
+    already confirmed correctly capitalised in `TABLE_LEARNED` ("Fröhlich", via D-439's own fix) still shows
+    lowercase in this one specific chip - both contradict `SqliteDictionaryStore.canonicalWordFor()`'s own
+    straightforward learned-then-bundled-then-raw-key resolution as read from source. "dank" itself is a
+    separate, already-fully-understood case (see §410) - a genuine, permanent dictionary ambiguity with no
+    dual-casing-chip coverage for next-word predictions, not a bug to chase further here. Next step: the
+    user reproduces with Diagnostic Log enabled and shares the `[AdaptKeyNextWordCasing]` lines.
   - **D-398 - RESOLVED (§330, v1.0.82).** The automatic language-switch threshold (D-130, formerly a
     hardcoded 5) is now C-23, a 0-8 slider under the Dictionary category's language section, default 5;
     0 disables the automatic switch entirely (manual G-01 swipe unaffected).
@@ -813,6 +822,39 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§410 (v1.1.49, temporary diagnostic): D-440 - user-reported follow-up on §404/D-438+D-439: "vielen**
+  **Dank"/"viele Grüße"/"Marvin Fröhlich" next-word-prediction chips stay lowercase ("dank"/"grüße"/**
+  **"fröhlich") no matter how often retyped.** Root-caused as far as static code reading allows before this
+  round, then hit a real contradiction that needed device data instead of more guessing (this project's own
+  established pattern for exactly this class of bug):
+  - **"dank" - fully explained, no fix needed here.** `dictionaries/de/dict.tsv` confirmed directly: `dank`
+    is a single row, `NOUN,PREPOSITION,OTHER`, genuinely stored lowercase - the same intentional §6-rule-5
+    ambiguity as "Weg"/"weg" (`CapitalisationEngine.isAmbiguousCasing`). The existing dual-casing-chip
+    mechanism for this (`ambiguousCasingChips()`, D-404-followup) only ever resolves it while typing - it
+    returns `emptyList()` outright for an empty `input` ([AdaptKeyService.kt:5522](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:5522)), which a next-word
+    prediction always is (nothing typed yet) - so `showNextWordPredictions()` never reaches it. A genuine,
+    confirmed gap - but a design question (dual chips before typing even starts, vs. a single best-guess
+    reading?) belongs to its own round once D-440's more surprising half is understood.
+  - **"grüße"/"fröhlich" - contradicted a straightforward code reading, real bug still open.**
+    `dictionaries/de/dict.tsv` confirmed `Grüße` (capital G) is already the single, correctly-cased bundled
+    row (`NOUN,VERB`) - unlike "dank", there is no missing-casing dictionary gap here at all. `canonicalWordFor
+    (wkey) = learnedEntryOf(wkey)?.word ?: bundledEntryOf(wkey)?.word ?: wkey` should therefore already
+    resolve "grüße" to "Grüße" via the bundled fallback alone. Then a real contradiction: the user confirmed
+    "Fröhlich" already sits in `TABLE_LEARNED` correctly capitalised (from D-439's own fix) - `canonicalWordFor`
+    should hit that on its very first lookup - yet the next-word chip still shows lowercase "fröhlich" after
+    repeated retyping, and "Grüße" stays lowercase and never gets learned at all despite four more real,
+    confirmed-fresh-pack retypes of "Viele Grüße". Both directly contradict this function's own code as read
+    from source. Added temporary diagnostic logging (`[AdaptKeyNextWordCasing]`, gated by the existing X-01
+    toggle) to `SqliteDictionaryStore.canonicalWordFor()` (what `learnedEntryOf`/`bundledEntryOf` actually
+    found, if anything) and `nextWords()` (the raw wkeys the bigram queries actually returned, before any
+    casing resolution) - removed once D-440 is closed. Needs the user to enable Diagnostic Log, reproduce
+    (type "Marvin " / "viele " and check the chip), and share the `[AdaptKeyNextWordCasing]` lines back.
+
+  No new tests - `SqliteDictionaryStore` is this project's own established instrumented-test/device-only
+  boundary. 1304 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 465 -> 466, `versionName` `"1.1.48"` -> `"1.1.49"`. No spec change - diagnostic-only, no
+  user-facing behaviour changed.
 
 - **§409 (v1.1.48): D-396-followup (v5) - device feedback on §408: the popup-open cue's removal confirmed**
   **correct, but accepting an alt-char (`HapticTier.CORRECTION`, still `DEFAULT_AMPLITUDE`) felt considerably**
