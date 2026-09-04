@@ -622,10 +622,14 @@ non-trivial changes).
     since traced it to a personal, temporary cause instead: typing with the middle finger during an injury,
     which does not reach the gesture zone as cleanly as the index finger - confirmed gone entirely once back to
     typing normally. Not an app issue at all; nothing to build.
-  - **D-396 - RESOLVED (§405, v1.1.44); not yet device-confirmed.** Reread during implementation: "three
-    levels" turned out to mean the OS's own Haptic-feedback intensity slider, not app-invented
-    stronger/weaker signals - see §405/spec §42 for the actual mechanism (strength via touch-classified
-    `vibrate()` calls at every API level, quantity via a new `HapticTier` gate keyed to that same slider).
+  - **D-396 - RESOLVED and device-confirmed (§405-§409, v1.1.44-v1.1.48).** Reread during implementation:
+    "three levels" turned out to mean the OS's own Haptic-feedback intensity slider, not app-invented
+    stronger/weaker signals - see §405-§409/spec §42 for the full mechanism (strength via touch-classified
+    `vibrate()` calls at every API level, quantity via a new `HapticTier` gate keyed to that same slider) and
+    its four device-feedback tuning rounds (`KEY_PRESS` moved to a real `EFFECT_TICK` click/detent effect;
+    the L-05 popup-open cue removed as redundant, popup-accept given the one it was genuinely missing;
+    `CORRECTION`'s amplitude lowered once it started firing for that same frequent accept-a-selection case).
+    User's own closing word: "So ist der Effekt perfekt! Wir können den Punkt abschließen."
   - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
     letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
     produce an unwanted `q` instead of the intended `a` below it.
