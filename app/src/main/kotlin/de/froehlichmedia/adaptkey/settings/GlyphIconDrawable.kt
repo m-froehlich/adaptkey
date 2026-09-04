@@ -45,7 +45,19 @@ class GlyphIconDrawable(context: Context, private val glyph: String, sizeDp: Flo
         textSize = sizePx * 0.9f
         textAlign = Paint.Align.CENTER
     }
-    private val textBounds = Rect().also { paint.getTextBounds(glyph, 0, glyph.length, it) }
+    // D-361-followup (v3): a wide glyph string (e.g. a two-flag "language switch" icon, or a single
+    // naturally-wide character) would otherwise overflow this drawable's own square bounds sideways - Canvas
+    // does not clip to bounds on its own, so that would draw into whatever sits next to the icon column, not
+    // just look cramped. Shrinking the paint's own textSize to fit keeps every icon's footprint the same
+    // regardless of how wide its particular glyph string happens to be.
+    private val textBounds = Rect().also { rect ->
+        paint.getTextBounds(glyph, 0, glyph.length, rect)
+        val maxWidth = sizePx * MAX_WIDTH_FRACTION
+        if (rect.width() > maxWidth) {
+            paint.textSize *= maxWidth / rect.width()
+            paint.getTextBounds(glyph, 0, glyph.length, rect)
+        }
+    }
     
     override fun draw(canvas: Canvas) {
         val bounds = bounds
@@ -64,4 +76,8 @@ class GlyphIconDrawable(context: Context, private val glyph: String, sizeDp: Flo
     }
     @Deprecated("Deprecated in Java", ReplaceWith("PixelFormat.TRANSLUCENT"))
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+    
+    companion object {
+        private const val MAX_WIDTH_FRACTION = 0.95f
+    }
 }

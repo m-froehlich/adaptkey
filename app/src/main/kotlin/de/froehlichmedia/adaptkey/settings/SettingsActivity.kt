@@ -82,21 +82,43 @@ class SettingsActivity : AppCompatActivity() {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
             
             // D-361-followup: monochrome glyph icons (GlyphIconDrawable) for the settings screen's own
-            // sub-screen entry points only, per the user's own explicit scoping - a plain preference with no
-            // dedicated screen of its own stays without an icon. D-361-followup (v2): the original set drew
-            // from the Mathematical Operators/Supplemental Arrows blocks, which read as thin, faint line-art
-            // rather than proper icons once seen on a real device - replaced with bolder, more solidly-shaped
-            // characters from the Miscellaneous Symbols/Dingbats blocks instead (alongside GlyphIconDrawable's
-            // own larger size/textSize bump).
+            // sub-screen entry points, plus (v3) every PreferenceCategory header and two further individual
+            // preferences the user specifically asked for by name - no longer strictly "sub-screens only",
+            // the user extended scope directly. D-361-followup (v2): the original entry-point set drew from
+            // the Mathematical Operators/Supplemental Arrows blocks, which read as thin, faint line-art
+            // rather than proper icons on a real device - replaced with bolder, more solidly-shaped
+            // characters from the Miscellaneous Symbols/Dingbats blocks (alongside GlyphIconDrawable's own
+            // larger size/textSize). D-361-followup (v3): three icons are genuine colour emoji, not
+            // monochrome symbols, per the user's own explicit request (flags for the two language-related
+            // entries, a graduation cap for Learned Words) - a deliberate, disclosed exception to the
+            // otherwise-monochrome set, not an oversight.
             mapOf(
+                // Sub-screen entry points (unchanged from v2 unless noted).
                 "k01_calibration" to "◎",
-                "d280_language_packs" to "文",
+                "d280_language_packs" to "🇩🇪", // v3: was 文 - "sieht aus wie ein Strichmännchen"
                 "c05_blacklist" to "✗",
-                "d177_learned_words" to "✒",
+                "d177_learned_words" to "🎓", // v3: was ✒ - the user's own "Akademiker-Hut" request
                 "d142_credentials" to "⚿",
                 "d278_backup" to "☁",
                 "d_diag_log" to "☰",
-                "d89_feature_overview" to "ℹ"
+                "d89_feature_overview" to "ℹ",
+                // D-361-followup (v3): a plain setting, not a sub-screen entry - the user asked for it by
+                // name regardless ("Automatischer Sprachwechsel könnte eine Ligatur aus zwei Flaggen sein").
+                // Unicode has no true single-glyph flag ligature, so this is simply two flag sequences drawn
+                // as one string; GlyphIconDrawable's own shrink-to-fit keeps it from overflowing its bounds.
+                "d398_sustained_language_switch_threshold" to "🇩🇪🇬🇧",
+                // Category headers (v3) - PreferenceCategory is a Preference too, and its own Material
+                // layout already reserves the identical icon-frame column (confirmed directly in the
+                // androidx.preference AAR's preference_category_material.xml before relying on it).
+                "cat_info_group" to "ℹ",
+                "cat_calibration_group" to "◎",
+                "cat_dictionary_group" to "📚",
+                "cat_capitalisation_group" to "✓",
+                "cat_key_behavior_group" to "⌨",
+                "cat_layout_group" to "▦",
+                "cat_feedback_group" to "♪",
+                "cat_backup_group" to "☁",
+                "cat_diagnostics_group" to "☰"
             ).forEach { (key, glyph) ->
                 findPreference<Preference>(key)?.icon = GlyphIconDrawable(requireContext(), glyph)
             }

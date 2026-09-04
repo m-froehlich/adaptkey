@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="@string/cat_info">
+    <PreferenceCategory android:key="cat_info_group" android:title="@string/cat_info">
 
         <Preference
             android:key="info_privacy"
@@ -37,7 +37,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_calibration">
+    <PreferenceCategory android:key="cat_calibration_group" android:title="@string/cat_calibration">
 
         <!-- D-237: the only top-level entry now - style picking, the live zone overlay, and the
              reset action all live inside CalibrationActivity itself. -->
@@ -52,7 +52,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_dictionary">
+    <PreferenceCategory android:key="cat_dictionary_group" android:title="@string/cat_dictionary">
 
         <Preference
             android:key="d280_language_packs"
@@ -132,7 +132,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_capitalisation">
+    <PreferenceCategory android:key="cat_capitalisation_group" android:title="@string/cat_capitalisation">
 
         <de.froehlichmedia.adaptkey.settings.LabeledSeekBarPreference
             android:key="d353_autocorrect_aggressiveness"
@@ -210,7 +210,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_key_behavior">
+    <PreferenceCategory android:key="cat_key_behavior_group" android:title="@string/cat_key_behavior">
 
         <SeekBarPreference
             android:key="d32_longpress_delay_ms"
@@ -240,7 +240,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_layout">
+    <PreferenceCategory android:key="cat_layout_group" android:title="@string/cat_layout">
 
         <SwitchPreferenceCompat
             android:key="c09_number_row"
@@ -324,7 +324,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_feedback">
+    <PreferenceCategory android:key="cat_feedback_group" android:title="@string/cat_feedback">
 
         <SwitchPreferenceCompat
             android:key="d05_key_sound"
@@ -346,7 +346,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_backup">
+    <PreferenceCategory android:key="cat_backup_group" android:title="@string/cat_backup">
 
         <Preference
             android:key="d278_backup"
@@ -359,7 +359,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/cat_diagnostics">
+    <PreferenceCategory android:key="cat_diagnostics_group" android:title="@string/cat_diagnostics">
 
         <SwitchPreferenceCompat
             android:key="d_diag_enabled"

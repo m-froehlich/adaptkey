@@ -782,6 +782,43 @@ non-trivial changes).
 
 ## Current State
 
+- **§395 (v1.1.34): D-361-followup (v3) - category header icons, plus three glyphs swapped for genuine**
+  **colour emoji per direct user request.** Two independent extensions on top of §393/§394, confirmed
+  "Schon besser" first:
+  1. **Every `PreferenceCategory` now has its own icon too** - "Kategorien sollen bitte auch Icons haben."
+     `PreferenceCategory` is a `Preference` subclass with no `android:key` in `settings_preferences.xml`
+     originally (nothing to find it by); each of the nine gained one (`cat_info_group`,
+     `cat_calibration_group`, ..., purely a lookup handle, never persisted - categories hold no value of
+     their own). Confirmed directly in the real `androidx.preference` AAR before relying on it:
+     `preference_category_material.xml` already `<include>`s the identical `image_frame.xml` icon column
+     every ordinary preference uses, so the existing `GlyphIconDrawable` mechanism applies unchanged, no new
+     layout work needed. Assignments: Info ℹ, Kalibrierung ◎, Wörterbuch 📚, Korrektur & Vorschläge ✓,
+     Tasten-Verhalten ⌨, Layout ▦, Tasten-Rückmeldung ♪, Sicherung ☁, Diagnose ☰.
+  2. **Three icons swapped for real colour emoji**, deliberately breaking the otherwise-monochrome set - the
+     user's own explicit, named requests, not a reinterpretation: Language packs' 文 ("sieht aus wie ein
+     Strichmännchen") -> 🇩🇪 (a single flag, arbitrarily chosen among the app's supported languages - easy to
+     swap for a different one on request); Learned Words' ✎/✒ -> 🎓 ("dieser übliche Akademiker-Hut");
+     and a **new** icon for `d398_sustained_language_switch_threshold` (the automatic-language-switch
+     threshold, C-23) - 🇩🇪🇬🇧, two flag sequences drawn as one string ("könnte eine Ligatur aus zwei Flaggen
+     sein oder so" - Unicode has no true single-glyph two-flag ligature, so this is literally two adjacent
+     flags, not one fused glyph). This last one is a genuine scope extension beyond the original "only
+     sub-screen entries" agreement from §392/§393 - flagged here rather than silently expanded, since the
+     user directed it by naming the specific setting rather than restating the scope rule.
+
+  **`GlyphIconDrawable` gained a real correctness fix while implementing the two-flag icon**, not just a
+  cosmetic one: `Canvas.drawText` does not clip to the drawable's own bounds, so a glyph string wide enough
+  to exceed the intended box (the two-flag case, but potentially any single unusually-wide character too)
+  would have drawn past its own square into whatever sits next to the icon column. Fixed with a shrink-to-fit
+  step - if the measured text width exceeds 95% of the drawable's own size, `paint.textSize` is scaled down
+  by the overflow ratio and bounds re-measured - applied uniformly, not only to the multi-flag case.
+
+  No new tests (same `GlyphIconDrawable`/Android-rendering-glue boundary as §393/§394). 1244 unit tests
+  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. `versionCode`
+  450 -> 451, `versionName` `"1.1.33"` -> `"1.1.34"`. **Not yet device-confirmed** - cannot be visually
+  verified from here; needs a real look that the category icons actually render (the AAR inspection confirms
+  the layout supports it, but binding behavour was never seen on a real device) and that the emoji glyphs
+  read as intended rather than a "tofu" box or an unexpected fallback rendering.
+
 - **§394 (v1.1.33): D-361-followup (v2) - §393's glyph icons read as thin, faint line-art on a real device,**
   **not as proper icons.** Direct device feedback right after §393 shipped: "die sind aber klein und
   minimalistisch... weniger nackte Linien und mehr Icons." Root cause of the "line-art" look: the original
