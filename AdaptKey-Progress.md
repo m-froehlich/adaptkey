@@ -386,7 +386,14 @@ non-trivial changes).
   separate from noise; see `FrenchRules`'s own KDoc. **Not yet done, flagged honestly per the guide's own
   step 11**: no native French speaker has sanity-checked the output yet - real corpus scale now, but still
   a "pretty good" pipeline pack, not native-reviewed quality, and should not be treated as ready to
-  publish without that review.
+  publish without that review. **D-444 (§417, v1.1.56): the POS-tagging source above (kaikki.org's French**
+  **Wiktionary extract, 402,395 entries) turned out to be the wrong, thinner one** - the *English*
+  Wiktionary's own coverage of French, not French Wiktionnaire's own native edition (714.6MB vs. 56.5MB, a
+  12x gap) - found when directly asked "why is the French one so small?". Rebuilt from the correct source
+  with real Wortfamilien lemma-linking added (previously entirely absent) - see §417/`AdaptKey-History.md`'s
+  own D-444 entry for the full account, including two more real bugs found and fixed along the way. `dict.tsv`
+  208,204 -> 373,700 rows. Still not native-speaker reviewed - this fix is a real quality improvement, not a
+  substitute for step 11.
 
 - **D-443 - RESOLVED (§416, v1.1.55): first Spanish `dictionaries/es/` pack, built fully autonomously and**
   **directly to the real-corpus/real-lexicon method D-441-followup ended up on - no intermediate/heuristic**
@@ -408,7 +415,17 @@ non-trivial changes).
   guide's own step 11**: no native Spanish speaker has sanity-checked the output yet - real corpus scale and
   a real lexicon from the very first pass this time (unlike French's own two-round history), but still a
   "pretty good" pipeline pack, not native-reviewed quality, and should not be treated as ready to publish
-  without that review.
+  without that review. **D-444 (§417, v1.1.56): the POS-tagging source above (kaikki.org's Spanish**
+  **Wiktionary extract, 809,603 entries) turned out to be the wrong one too** - `kaikki.org/dictionary/
+  Spanish/` (91MB) is the English Wiktionary's own coverage of Spanish, not `kaikki.org/dictionary/
+  downloads/es/es-extract.jsonl.gz` (99.3MB), Spanish Wiktionary's own native edition - a smaller gap than
+  French's own 12x one, but the same wrong file regardless, found the same session French's was. Rebuilt
+  from the correct source with real Wortfamilien lemma-linking added (previously entirely absent, contrary
+  to this bullet's own original "likely already covered incidentally" guess above - checked directly this
+  time, it was not) - see §417/`AdaptKey-History.md`'s own D-444 entry for the full account, including two
+  more real bugs found and fixed along the way (one shared with French's own round, one French-specific).
+  `dict.tsv` 233,636 -> 419,571 rows. Still not native-speaker reviewed - this fix is a real quality
+  improvement, not a substitute for step 11.
 
 - **`KeyboardProximity` hardcoded to QWERTZ - RESOLVED by D-442 (§414, v1.1.53).** Found while building**
   **French's D-441 language pack; fixed properly and generally the same session, on explicit user**
@@ -899,6 +916,63 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§417 (v1.1.56): D-444 - French/Spanish rebuilt from the correct native Wiktionary source with real**
+  **Wortfamilien completion; the same wrong-source mistake and a genuine bare-noun capitalisation bug fixed**
+  **in English/Greek too; the Language Contribution Guide hardened against both.** Direct follow-up question
+  right after §416: "did French/Spanish also get Wortfamilien completion?" - checked directly, neither had a
+  `lemma` column at all. Investigating the RAM sizing for the fix surfaced the real root cause: both
+  language's own kaikki source (`kaikki.org/dictionary/<Language>/`) was the *English* Wiktionary's own
+  coverage of that language, not its genuinely native edition
+  (`kaikki.org/dictionary/downloads/<code>/<code>-extract.jsonl.gz` - French: 714.6MB vs. the wrong file's
+  56.5MB, a 12x gap; Spanish: 99.3MB vs. 91MB, smaller but still wrong) - the same source German/Greek always
+  used, never applied to French/Spanish until now. Full method, every real bug found and fixed along the way
+  (a form-of-entry miscount inflating French's raw verb count 30x; a French "il/elle/on mange" combined-
+  pronoun-slot notation poisoning frequency calibration to an impossible ~163x; a proper-noun collision check
+  that missed "les" - a common pronoun in both languages - having a rare Wiktionary surname entry too), and
+  the full Guide hardening are in `AdaptKey-History.md` §417 - not repeated here.
+
+  **A second, independent, more serious bug found along the way, affecting the already-shipped English and**
+  **Greek dictionaries too, not just French/Spanish:** neither language's own D-422/D-424 Wortfamilien merge
+  had ever paired a resulting bare `{NOUN}` tag with `OTHER` the way French/Spanish's own `merge_dict.py`
+  already did from day one - 36,580 rows in English's bundled `dict.tsv` and 46,608 in Greek's carried a bare
+  `NOUN` tag, including ordinary function words (`and`, `it`, `he`, `or`, `were`, `this`, `not`, `its`) with
+  one genuine but vanishingly rare technical/archaic noun sense. `CapitalisationEngine`'s rule 3 reads only
+  the tag set, never frequency - every one of these would have been force-capitalised on ordinary typing, a
+  real production bug found only because this round's own investigation asked "does the same gap exist
+  elsewhere?" rather than staying scoped to French/Spanish. Fixed mechanically for both
+  (`dictionaries/en/fix_bare_noun.py`, copied to `dictionaries/el/`) - confirmed via diff that nothing else
+  changed. `dictionaries/el/version.txt` 5 -> 6, pack rebuilt; English is bundled, ships with the next
+  ordinary app release.
+
+  **Net results** (full numbers in each language's own `LanguagePackCatalog.kt` `Entry` comment): French
+  `dict.tsv` 208,204 -> 373,700 rows (+165,496, first `lemma` linking), Spanish 233,636 -> 419,571
+  (+185,935, first `lemma` linking), English/Greek unchanged row counts, only retagged. Every output
+  re-verified: 0 duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-`NOUN` rows, known
+  name/common-word collisions (`pierre`/`jean`, `sol`/`paz`/`victoria`/...) still correct.
+  `dictionaries/confusables_scan.py` re-run against both larger dictionaries (French 994 -> 1,050
+  candidates, Spanish 625 -> 650) - same shape, left uncurated for the same native-review reason.
+  `dictionaries/fr/version.txt`/`dictionaries/es/version.txt` both 1 -> 2, packs rebuilt. The now-dead
+  `extract_kaikki.py`/`kaikki_pos.tsv` for both languages (wrong-source, fully superseded) deleted; both
+  `merge_dict.py` scripts updated to read the new `wiktionary_allpos.tsv` instead, so the whole pipeline now
+  runs from one native Wiktionary source throughout. `AdaptKey-Spec.md`'s A-01/D-404-Tier-2 addendum updated
+  to list French/Spanish alongside German/English/Greek as lemma-populated.
+
+  No new tests (data-only; `LanguageRulesTest`/`LanguagePackCatalogTest` needed no change, already fully
+  generic). 1340 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 472 -> 473, `versionName` `"1.1.55"` -> `"1.1.56"`.
+
+  **The Language Contribution Guide hardened against both classes of mistake, per explicit user instruction**
+  **("das soll direkt beim ersten Mal sitzen") before any future language is attempted:** a new "no
+  shortcuts, no partial runs" statement naming both mistakes by name with real numbers; a **mandatory
+  pre-flight check** (curl -I both candidate URLs, compare sizes, before downloading anything for real) with
+  `kaikki.org/dictionary/rawdata.html` named as the canonical native-edition list; step 0 pointed at the now-
+  real `extract_wiki_dump.py` reference scripts (previously stated none existed - stale); step 3 rewritten
+  with the correct-vs-wrong URL pattern and real measured size gaps; step 4 rewritten to require one shared
+  native-extract parse feeding both POS tagging and Wortfamilien completion, to prefer Greek's own generic
+  per-form extraction for any language with non-trivial verb morphology, and to make the bare-noun safety
+  check **mandatory and structural**, with the real English/Greek numbers as the cautionary tale. Every new
+  script this round is a real, checked-in reference implementation for the next language, not a description.
 
 - **§416 (v1.1.55): D-443 - first Spanish language pack, built fully autonomously, directly to the**
   **real-corpus/real-lexicon method D-441-followup (French, §415) ended up on - no intermediate/heuristic**

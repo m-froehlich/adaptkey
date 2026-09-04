@@ -449,7 +449,21 @@ object LanguagePackCatalog {
             // caught and re-verified, not a real data issue). `dictionaries/el/version.txt` 4 -> 5, pack
             // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 4 -> 5. No new
             // tests (data-only). Not yet device-confirmed.
-            version = 5
+            //
+            // D-444: bare-NOUN capitalisation-safety fix - 46,608 rows carried the tag set exactly `{NOUN}`
+            // with no `OTHER` paired in, found while building French's/Spanish's own Wortfamilien completion
+            // (the Language Contribution Guide's own step 4 "mandatory bare-noun safety check", added this
+            // round). `CapitalisationEngine`'s rule 3 (`isPureNoun -> true`) reads only the tag set, not
+            // frequency or how central a sense actually is - a genuine but rare/archaic Wiktionary noun sense
+            // for an otherwise non-nominal word was enough to wrongly force capitalisation every time that
+            // word was typed, same root cause as English's own D-444 fix (see that entry above). Mechanical,
+            // unconditional fix (`dictionaries/el/fix_bare_noun.py`): every row whose tag set is exactly
+            // `{NOUN}` gets `OTHER` added; word/frequency columns and every other tag combination (including
+            // every `PROPER_NOUN` row) untouched - confirmed via diff, not assumed. `dictionaries/el/
+            // version.txt` 5 -> 6, pack rebuilt (new `dictionaries/el/build_zip.py`, this pack never had one
+            // checked in before), `LanguagePackCatalog` version 5 -> 6. No new tests (data-only). Not yet
+            // device-confirmed.
+            version = 6
         ),
         Entry(
             Language.FRENCH,
@@ -501,7 +515,55 @@ object LanguagePackCatalog {
             // mandatory step 11 - not yet reviewed by a native French speaker: this is a "pretty good",
             // pipeline-built pack (now built from real corpus data at real scale, not a small proxy
             // source), not native-reviewed quality.
-            version = 1
+            //
+            // D-444: dict.tsv's own POS source was itself the wrong kaikki file - found only when the user
+            // directly asked "why is the French one so small?" while a completely separate task (Spanish
+            // Wortfamilien completion) was underway. `kaikki.org/dictionary/French/` (used above, 56.5MB)
+            // is the *English* Wiktionary edition's own coverage of French; `kaikki.org/dictionary/
+            // downloads/fr/fr-extract.jsonl.gz` (714.6MB - a 12x difference) is French Wiktionnaire's own,
+            // genuinely native edition - the correct source, used for German/Greek from the start but never
+            // for French/Spanish until now. Rebuilt dict.tsv's POS tagging and, new this round, its full
+            // Wortfamilien lemma-linking (D-412, previously entirely absent for French - `dict.tsv` never
+            // carried a 4th `lemma` column at all) from this corrected source, keeping the existing real
+            // Wikipedia-dump frequency numbers unchanged (those were never wrong - only the POS source was).
+            // `dictionaries/fr/extract_wiktionary.py`/`merge_wiktionary.py` (new, modelled directly on
+            // `dictionaries/el/extract_wiktionary.py`'s own generic per-form extraction, not English's
+            // fixed-slot one - French's conjugation has too many combinations for named slots, the identical
+            // reasoning Greek's own module comment already gives). Two real, found-the-hard-way bugs fixed
+            // in the same round, both documented in `AdaptKey-History.md`'s own D-444 entry in full:
+            // (1) a whole class of entries in this edition are individually-paged conjugated *forms* of
+            // another lemma (`senses[].form_of`, not the top-level `tags` field English/Greek's own scripts
+            // check) - unfiltered, this inflated the raw "verb" entry count 30x (1,265,901 raw vs. 40,263
+            // genuine lemmas); (2) this edition writes an ambiguous-subject slot as one string, "il/elle/on
+            // mange" (the pronoun alternatives joined by "/", the real verb glued on after a space only on
+            // the last one) - naively splitting on "/" first produced bogus bare-pronoun "forms" ("il"/
+            // "elle"), which poisoned the frequency-ratio calibration (verb ratio briefly computed as
+            // ~163x, an impossible value for a real form/lemma relationship) before a sanity-check of the
+            // calibration's own top outliers caught it; fixed by taking the last whitespace-separated token
+            // first, only then splitting for a genuine word-level alternation.
+            //
+            // Also new this round: proper-noun tagging now checks the word's own *full* kaikki pos
+            // vocabulary (a new `wiktionary_allpos.tsv`), not just whether the existing dict.tsv row already
+            // carried a non-`OTHER` tag - the row-based check missed a real collision (French "les", a
+            // pronoun, also has a rare Wiktionary "name"/surname entry; its dict.tsv row's prior tag was
+            // bare `OTHER`, which the old check treated as "no collision"), confirmed and fixed the same
+            // session the bare-noun safety check below was written. And the mandatory bare-noun safety check
+            // itself (Language Contribution Guide's own revised step 4, written this round after the same
+            // gap was found - independently - in English's and Greek's own already-shipped dictionaries,
+            // see those Entries' own D-444 notes): any tag set that becomes exactly `{NOUN}` gets `OTHER`
+            // added automatically, verified zero remaining bare-`NOUN` rows in the final file.
+            //
+            // Net result: `dict.tsv` 208,204 -> 373,700 rows (+165,496: 74,006 existing lemmas newly tagged
+            // via the correct source, 100,205 existing rows linked to a lemma, 165,496 missing inflected
+            // forms generated - noun ratio 0.50, verb ratio 0.25, adjective ratio 0.53, each calibrated from
+            // real already-matched pairs). Re-verified clean: 0 case-insensitive duplicates, 0 non-positive
+            // frequencies, 0 orphaned lemma links, 0 bare-NOUN rows, `pierre`/`jean` still correctly
+            // `NOUN,OTHER` not `PROPER_NOUN`. `dictionaries/confusables_scan.py` re-run against the much
+            // larger dictionary: 1,050 candidates (was 994) - same shape as before, left uncurated for the
+            // same native-review reason. `dictionaries/fr/version.txt` 1 -> 2, pack rebuilt (7.7MB -> 8.7MB).
+            // No new tests (data-only). Not device-confirmed. Still not native-speaker reviewed (guide step
+            // 11) - the correction this round is a real quality improvement, not a substitute for that gate.
+            version = 2
         ),
         Entry(
             Language.SPANISH,
@@ -578,7 +640,50 @@ object LanguagePackCatalog {
             // have passed a native-Spanish-speaker review: real corpus scale from the start this time (no
             // superseded first pass, unlike French's own D-441/D-441-followup history), but still a "pretty
             // good" pipeline-built pack, not native-reviewed quality.
-            version = 1
+            //
+            // D-444: same wrong-kaikki-source bug as French's own D-444 entry (see that Entry above for the
+            // full story of how it was found: the user asking "why is the French one so small?" mid-way
+            // through this pack's own Wortfamilien completion). `kaikki.org/dictionary/Spanish/` (used
+            // above, 91MB) is the English Wiktionary edition's own coverage of Spanish; `kaikki.org/
+            // dictionary/downloads/es/es-extract.jsonl.gz` (99.3MB - a smaller, easy-to-miss gap than
+            // French's own 12x one, but the wrong file regardless) is Spanish Wiktionary's own genuinely
+            // native edition. Rebuilt dict.tsv's POS tagging and added its first-ever Wortfamilien
+            // lemma-linking (D-412 - `dict.tsv` never carried a `lemma` column before this round) from the
+            // corrected source, keeping the existing real Wikipedia-dump frequency numbers unchanged.
+            // `dictionaries/es/extract_wiktionary.py`/`merge_wiktionary.py` (new, same generic per-form
+            // shape as `dictionaries/fr/extract_wiktionary.py`'s own D-444 round, built the same session -
+            // Spanish's real verb count (647,802 raw "verb" entries, only ~19,000 genuine lemmas with their
+            // own conjugation table) shows the identical individually-paged-conjugated-form shape French's
+            // own round found, so the same `senses[].form_of` filter applies here too; Spanish's own output
+            // was checked directly and does *not* have French's second bug (the "il/elle/on mange" combined-
+            // pronoun slot notation - every generated form was already a clean single word), but the same
+            // defensive fix was ported over anyway so both language scripts share one robust extraction rule
+            // rather than relying on this edition happening not to need it.
+            //
+            // Also new this round: proper-noun tagging now checks the word's own *full* kaikki pos
+            // vocabulary (a new `wiktionary_allpos.tsv`), not just whether the existing dict.tsv row already
+            // carried a non-`OTHER` tag - the row-based check missed a real collision (Spanish "les", a
+            // pronoun, also has a rare Wiktionary "name"/surname entry; its dict.tsv row's prior tag was
+            // bare `OTHER`, which the old check treated as "no collision" - confirmed via direct grep before
+            // the fix, and confirmed correctly `OTHER` again afterward). And the mandatory bare-noun safety
+            // check itself (Language Contribution Guide's own revised step 4, written this round after the
+            // same gap was found independently in English's and Greek's own already-shipped dictionaries,
+            // see those Entries' own D-444 notes): any tag set that becomes exactly `{NOUN}` gets `OTHER`
+            // added automatically - re-verified the `sol`/`paz`/`victoria`/... name/common-noun collisions
+            // this pack's own first pass already found stay correctly `NOUN,OTHER`, never `PROPER_NOUN`,
+            // after this round's retagging too.
+            //
+            // Net result: `dict.tsv` 233,636 -> 419,571 rows (+185,935: 51,200 existing lemmas newly tagged
+            // via the correct source, 101,620 existing rows linked to a lemma, 185,935 missing inflected
+            // forms generated - noun ratio 0.47, verb ratio 0.33, adjective ratio 0.60, each calibrated from
+            // real already-matched pairs). Re-verified clean: 0 case-insensitive duplicates, 0 non-positive
+            // frequencies, 0 orphaned lemma links, 0 bare-NOUN rows. `dictionaries/confusables_scan.py`
+            // re-run against the much larger dictionary: 650 candidates (was 625) - same shape as before,
+            // left uncurated for the same native-review reason. `dictionaries/es/version.txt` 1 -> 2, pack
+            // rebuilt (6.1MB -> 7.1MB). No new tests (data-only). Not device-confirmed. Still not
+            // native-speaker reviewed (guide step 11) - the correction this round is a real quality
+            // improvement, not a substitute for that gate.
+            version = 2
         )
     )
 }

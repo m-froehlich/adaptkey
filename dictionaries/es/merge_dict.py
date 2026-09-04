@@ -1,17 +1,31 @@
 # Merges the real Spanish-Wikipedia-dump frequency counts (wiki_dump_freq.tsv, from
-# extract_wiki_dump.py) with real POS tags from kaikki.org's Wiktionary extract (kaikki_pos.tsv, from
-# extract_kaikki.py) into the final dict.tsv - directly modelled on dictionaries/fr/merge_dict.py
-# (D-441-followup, AdaptKey-History.md §415), the real-corpus/real-lexicon method, not the earlier,
-# explicitly-superseded heuristic-suffix-tagged approach.
+# extract_wiki_dump.py) with real POS tags from kaikki.org's NATIVE Spanish Wiktionary extract
+# (wiktionary_allpos.tsv, from extract_wiktionary.py - the same native-edition extraction step 4's own
+# Wortfamilien completion also reads, see merge_wiktionary.py) into the initial dict.tsv - directly
+# modelled on dictionaries/fr/merge_dict.py. D-444: previously read a dedicated kaikki_pos.tsv from a
+# since-deleted extract_kaikki.py, which used the smaller, wrong (English-Wiktionary-coverage-of-Spanish)
+# source - see AdaptKey-History.md's own D-444 entry for the full story of why that was wrong and how it
+# was found.
 
 from pathlib import Path
 
 BASE = Path(__file__).parent
 FREQ_IN = BASE / "wiki_dump_freq.tsv"
-KAIKKI_IN = BASE / "kaikki_pos.tsv"
+ALLPOS_IN = BASE / "wiktionary_allpos.tsv"
 EN_DICT_IN = BASE.parent.parent / "app" / "src" / "main" / "assets" / "en" / "dict.tsv"
 OUT = BASE / "dict.tsv"
 NOISE_REVIEW_OUT = BASE / "noise_review_candidates.tsv"
+
+# kaikki/wiktextract's own raw "pos" values -> this project's PartOfSpeech (NOUN/VERB/ADJECTIVE/
+# PREPOSITION/PROPER_NOUN/OTHER only) - identical mapping to the deleted extract_kaikki.py's own POS_MAP.
+POS_MAP = {
+    "noun": "NOUN",
+    "verb": "VERB",
+    "adj": "ADJECTIVE",
+    "prep": "PREPOSITION",
+    "prep_phrase": "PREPOSITION",
+    "name": "PROPER_NOUN",
+}
 
 # Step-2-style batched noise removal (Language Contribution Guide §8): a word not recognised by kaikki
 # at all is real noise disproportionately often when it is *also* a common English word - Spanish
@@ -34,12 +48,17 @@ ENUM_ORDER = ["NOUN", "VERB", "ADJECTIVE", "PREPOSITION", "PROPER_NOUN", "OTHER"
 
 
 def load_kaikki():
+    """word -> mapped PartOfSpeech tag set, from wiktionary_allpos.tsv's raw per-word pos vocabulary
+    (extract_wiktionary.py) - a raw pos value with no PartOfSpeech mapping (pron/adv/conj/det/intj/num/...)
+    is simply dropped, matching this project's own closed-class-folds-to-OTHER convention."""
     pos_map = {}
-    for line in KAIKKI_IN.read_text(encoding="utf-8").splitlines():
+    for line in ALLPOS_IN.read_text(encoding="utf-8").splitlines()[1:]:
         parts = line.split("\t")
-        if len(parts) != 2:
+        if len(parts) != 2 or not parts[1]:
             continue
-        pos_map[parts[0]] = set(parts[1].split(","))
+        mapped = {POS_MAP[p] for p in parts[1].split(",") if p in POS_MAP}
+        if mapped:
+            pos_map[parts[0]] = mapped
     return pos_map
 
 

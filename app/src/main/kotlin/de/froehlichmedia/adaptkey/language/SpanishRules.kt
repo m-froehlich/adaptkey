@@ -40,7 +40,9 @@ object SpanishRules : LanguageRules {
      * curated into a blacklist this round: the same "cannot confidently separate a genuine short Spanish
      * word/abbreviation from real corpus noise without native fluency" reasoning [FrenchRules] documents
      * for its own AZERTY scan applies here too - left for a native-speaker-guided pass (see the Language
-     * Contribution Guide's own step 11) rather than guessed at.
+     * Contribution Guide's own step 11) rather than guessed at. 625 candidates found originally, 650 after
+     * D-444's own dictionary rebuild against the correct native Wiktionary source - same shape, not
+     * re-reviewed word by word.
      */
     override fun bundledConfusablesBlacklist(): Set<String> = emptySet()
     

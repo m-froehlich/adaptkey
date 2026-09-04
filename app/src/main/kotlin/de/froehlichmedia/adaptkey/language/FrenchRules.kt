@@ -37,8 +37,10 @@ object FrenchRules : LanguageRules {
     /**
      * D-442-followup: `dictionaries/confusables_scan.py dictionaries/fr/dict.tsv azerty` (now runnable at
      * all only since [de.froehlichmedia.adaptkey.suggestion.KeyboardProximityAzerty] exists) found 994
-     * real candidate pairs, the overwhelming majority short (2-3 letter) tokens - `ve`/`xe`/`re`/`ka`/`ma`/
-     * `st`/... - risking autocorrect into a very common neighbouring function word (`de`/`la`/`le`/`et`).
+     * real candidate pairs (D-444: 1,050 after that round's own dictionary rebuild against the correct
+     * native Wiktionary source - same shape, not re-reviewed word by word), the overwhelming majority short
+     * (2-3 letter) tokens - `ve`/`xe`/`re`/`ka`/`ma`/`st`/... - risking autocorrect into a very common
+     * neighbouring function word (`de`/`la`/`le`/`et`).
      * Deliberately left empty rather than guessed at: several of these are genuine French abbreviations/
      * loanwords this round's own non-native French judgement cannot confidently separate from corpus
      * noise at this length (`dj`, `led`, `fn`, `lr`, `crs`, `onf` are all real; `ma` itself is an

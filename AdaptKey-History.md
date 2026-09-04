@@ -18903,4 +18903,153 @@ their own individually kaikki-tagged entries, so this gap is likely already subs
 incidental side effect of the merge itself, the same way it was for French, but this was not separately
 verified this round the way D-412's own explicit lemma-population work verified it for German/Greek/English.
 
+## §417 - D-444: French/Spanish rebuilt from the correct native Wiktionary source with real Wortfamilien completion; the same wrong-source mistake and a genuine bare-noun capitalisation bug fixed in English/Greek too; the Language Contribution Guide hardened against both
+
+Direct follow-up question from the user right after §416 shipped: "Hast du bei Französisch und Spanisch auch
+die Wortfamilien vervollständigt und verlinkt?" Checked directly rather than assumed: neither
+`dictionaries/fr/dict.tsv` nor `dictionaries/es/dict.tsv` carried a 4th `lemma` column at all (German/English/
+Greek all do, populated by their own D-412/D-422/D-424 rounds) - confirmed by column-count distribution, not
+guessed. Before starting the fix, comparing French's own kaikki source size against Spanish's own (to size a
+reasonable RAM cap the way §416 had) surfaced the real root cause: `kaikki.org/dictionary/French/` (§413/§415's
+own source, 56.5MB) is the *English* Wiktionary edition's own coverage of French - `kaikki.org/dictionary/
+downloads/fr/fr-extract.jsonl.gz` (714.6MB, a 12x difference) is French Wiktionnaire's own, genuinely native
+edition, the same shape of source German's/Greek's own dictionaries were always built from. Spanish's own gap
+was smaller in absolute size (91MB vs. the correct 99.3MB) but the same wrong file regardless. Neither had ever
+been noticed before this session asked the pointed question.
+
+**Scope, agreed directly with the user before starting (this project's own convention for a design change this
+size):** redo French/Spanish's POS tagging from the correct native source, add real Wortfamilien completion to
+both, hunt down and fix whatever else the wrong-source mistake had caused, and hardened the Language
+Contribution Guide itself so a future language never repeats either failure - all before drafting the
+one-shot prompt the user asked for at the very end (Portuguese/Italian/Dutch, see below).
+
+**A second, independent, more serious bug found while building the fix, not by design.** Greek's/English's own
+`merge_wiktionary.py` (D-422/D-424) tags a lemma with whatever real POS Wiktionary documents, with no regard
+for how rare or archaic that sense is relative to the word's actual everyday use, and neither script ever
+pairs a resulting bare `{NOUN}` tag with `OTHER` the way this project's own French/Spanish `merge_dict.py`
+already did from its first day (D-441/D-443's own `resolve_tags()`). Checked directly, not assumed:
+`app/src/main/assets/en/dict.tsv` carried 36,580 bare-`NOUN` rows, `dictionaries/el/dict.tsv` 46,608 -
+including ordinary, extremely common function words (`and`, `or`, `it`, `he`, `were`, `this`, `not`, `its`)
+that happen to have one genuine but vanishingly rare technical/archaic noun sense Wiktionary documents (`and`/
+`or` as logic-gate nouns, and more). `CapitalisationEngine`'s own rule 3 (`isPureNoun -> true`) reads only the
+tag set, never frequency - every one of these would have been force-capitalised on ordinary typing in English/
+Greek, a real, previously-undiscovered production bug, not a French/Spanish-only concern. Fixed mechanically
+and unconditionally (`dictionaries/en/fix_bare_noun.py`, copied to `dictionaries/el/`): any row whose tag set
+is exactly `{NOUN}` gets `OTHER` added; confirmed via diff that word/frequency columns and every other tag
+combination (including every `PROPER_NOUN` row) were untouched. `dictionaries/el/version.txt` bumped 5 -> 6
+and the pack rebuilt (`dictionaries/el/build_zip.py`, new - this pack never had one checked in before);
+English is bundled in the APK, so its own fix ships with the next ordinary app release, no separate pack
+version to bump. Full detail lives in each language's own `LanguagePackCatalog.kt` `Entry` comment (a new
+D-444 block appended to German... no, to English's/Greek's/French's/Spanish's own four entries respectively),
+not duplicated here.
+
+**French's own rebuild (`dictionaries/fr/extract_wiktionary.py`/`merge_wiktionary.py`, new) surfaced two more
+real, structural bugs, both found the hard way (by running the real thing and sanity-checking its own output),
+neither of them previously known from the German/Greek/English rounds:**
+
+1. **A whole class of entries in this edition are individually-paged conjugated *forms* of another lemma, not
+   independent lemmas at all** - unlike Deutsch/Griechisch/Englisch, this edition marks that fact only inside
+   each `senses[].form_of` (and `senses[].tags`), never in the entry's own top-level `tags` field the existing
+   scripts already check. Unfiltered, this inflated the raw "verb" `pos` count by roughly 30x (1,265,901 raw
+   entries, confirmed by direct count, against only 40,263 genuine lemmas with their own real conjugation
+   table) - "hablo" as its own top-level page linking back to "hablar" via `senses[0].form_of`, not merely a
+   `forms[]` entry on "hablar" itself, is the concrete shape. Fixed by skipping any entry where *any* sense
+   carries a `form_of` value, checked before the existing pos-allowlist filter runs at all.
+2. **This edition writes an ambiguous-subject verb slot ("il"/"elle"/"on" all take the identical 3rd-person-
+   singular form) as one combined string, `"il/elle/on étourdit"` - the pronoun alternatives joined by `/`,**
+   **the real conjugated verb glued on after a space only on the very last alternative.** The existing
+   Greek-style `split_alternate_forms()` (splits the whole raw string on `/` first, for a genuine case like
+   Greek's own `"άρκεσε/ήρκεσε"` where each half really is a complete, independent word) turns this into three
+   fragments - `"il"`, `"elle"`, `"on étourdit"` - the first two of which pass every remaining check (real
+   letters, no exclude-qualifier tag) and get wrongly recorded as if they were genuine one-word verb forms of
+   *every* verb carrying this slot. Not a cosmetic problem: "il" is itself an extremely common word (corpus
+   frequency 106,581), so it dragged the frequency-ratio calibration for generated verb forms up to a
+   genuinely impossible ~163x (a form should essentially never be two orders of magnitude more frequent than
+   its own lemma) - caught only by sanity-checking the calibration step's own top outliers before trusting it,
+   not by any error or crash (the pipeline "ran cleanly" throughout, exactly the shape of failure the guide's
+   own new intro warning now names explicitly). Fixed by taking the *last whitespace-separated token* of the
+   raw form first (`"il/elle/on étourdit"` -> `"étourdit"`, `"avoir lu"` -> `"lu"`), only *then* splitting that
+   final single token on `/` for a genuine word-level alternation - stripping any pronoun-subject or auxiliary-
+   verb prefix cleanly regardless of how many alternatives precede it. A periphrastic tense's own explicit
+   `"multiword-construction"` tag is now also excluded outright before this runs at all; its only useful
+   single-word content (the participle, e.g. "lu") is already captured directly via its own dedicated
+   `['participle','past']`-tagged `forms[]` entry, so nothing is lost by dropping the compound listing itself.
+   Verified directly: re-running the calibration after both fixes gives noun/verb/adjective ratios of
+   0.50/0.25/0.53 - the same sane order of magnitude as every other language's own calibration, and a targeted
+   `grep` for `il`/`elle` as a generated form's own lemma link came back empty. Spanish's own extraction was
+   checked directly and does not exhibit this shape (every generated form was already a clean single word,
+   zero remaining spaces or slashes) - the same defensive fix was ported to `dictionaries/es/
+   extract_wiktionary.py` anyway, so both scripts share one robust rule rather than relying on this edition
+   happening not to need it.
+
+**A third, independent bug, found while building the proper-noun tagging for both languages' own Wortfamilien
+merge, not previously present in German/Greek/English's own dictionaries in quite this shape.** The first
+version of `process_proper_nouns()` (mirroring D-441's own original `resolve_tags()` collision-safety
+principle, "never force-capitalise a word Wiktionary also documents another real reading for") checked the
+*existing dict.tsv row's own prior tag* - skip if it already carried a real tag beyond bare `OTHER`. Real,
+found example: French "les" (a common pronoun, "them") and Spanish "les" (a common pronoun, "to them") each
+also have a genuine but rare Wiktionary "name" (surname) entry - but PartOfSpeech has no `PRONOUN` category at
+all, so their own dict.tsv row's prior tag was bare `OTHER` (the generic "kept from the Wikipedia-frequency
+pass, no POS resolved yet" default), which the row-based check wrongly read as "no real collision" and tagged
+`PROPER_NOUN` - would have force-capitalised an extremely common pronoun on every ordinary use. Root cause: the
+row-based check only ever "saw" a collision with the *specific* noun/verb/adjective categories this same merge
+pass itself processes, never a closed-class reading (pronoun, adverb, conjunction, determiner, interjection,
+...) that PartOfSpeech was never built to represent at all. Fixed by tracking, in `extract_wiktionary.py`
+itself, the *complete* set of raw `pos` values kaikki documents for every word (`wiktionary_allpos.tsv`, every
+`pos` type seen, not only the four this script builds forms for) and checking *that* full vocabulary instead
+of the dict.tsv row's own state - `all_pos["les"]` correctly contains `{"pron", "name"}` for both languages,
+catching the real collision the row-based check missed. Confirmed directly, not assumed: French `les`/Spanish
+`les` both `OTHER` again after the fix (were wrongly `PROPER_NOUN` before it); `pierre`/`jean` (French) and
+`sol`/`paz`/`victoria`/... (Spanish) - the collisions §415/§416 already found and fixed once - re-verified
+still correct after this round's full retagging.
+
+**The mandatory bare-noun safety check itself (new, both `merge_wiktionary.py` scripts) - the fix for the
+second bug above, applied structurally rather than case by case.** `add_tag()` now checks, immediately after
+every tag assignment, whether the row's resulting tag set is now exactly `{NOUN}` - if so, `OTHER` is added
+automatically, unconditionally, for every language whose own step-8 decision is "does not capitalise common
+nouns" (French/Spanish, like English before this round's own fix). This is the same discipline
+`dictionaries/fr/dict.tsv`'s original `resolve_tags()` already had from day one (D-441) - now also applied to
+every row touched by the *later* Wortfamilien completion pass, which previously had no such check at all.
+
+**Net results, full numbers in each language's own `LanguagePackCatalog.kt` `Entry` comment:** French
+`dict.tsv` 208,204 -> 373,700 rows (+165,496, first-ever `lemma` linking); Spanish `dict.tsv` 233,636 -> 419,571
+rows (+185,935, first-ever `lemma` linking); English `dict.tsv` unchanged row count, 36,580 rows retagged
+`NOUN` -> `NOUN,OTHER`; Greek `dict.tsv` unchanged row count, 46,608 rows retagged the same way. Every output
+re-verified against the same quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0
+orphaned lemma links, 0 remaining bare-`NOUN` rows, known name/common-word collisions (`pierre`/`jean`,
+`sol`/`paz`/`victoria`/...) still correctly resolved. `dictionaries/confusables_scan.py` re-run against both
+larger dictionaries: French 994 -> 1,050 candidates, Spanish 625 -> 650 - same shape as before (short 2-3
+letter tokens, several confirmed-real words sitting alongside genuinely ambiguous fragments), left uncurated
+for the same native-review reason as before, not re-reviewed word by word. `dictionaries/fr/version.txt` and
+`dictionaries/es/version.txt` both 1 -> 2, both packs rebuilt (French 7.7MB -> 8.7MB, Spanish 6.1MB -> 7.1MB).
+The now-dead `dictionaries/fr/extract_kaikki.py`/`kaikki_pos.tsv` and `dictionaries/es/extract_kaikki.py`/
+`kaikki_pos.tsv` (built from the wrong source, fully superseded) were deleted rather than left alongside the
+new pipeline. Both language's own `merge_dict.py` (the initial Wikipedia-frequency-merge step, still the
+correct tool for a genuine from-scratch rebuild) updated to read the new `wiktionary_allpos.tsv` instead of
+the deleted `extract_kaikki.py`'s own output format, so the whole pipeline now runs from one native Wiktionary
+source throughout rather than two different ones. `AdaptKey-Spec.md`'s A-01/D-404-Tier-2 addendum updated to
+list French/Spanish alongside German/English/Greek as lemma-populated. No new tests (data-only; existing
+`LanguageRulesTest`/`LanguagePackCatalogTest` needed no change, already fully generic). 1340 unit tests
+unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 472 -> 473,
+`versionName` `"1.1.55"` -> `"1.1.56"`.
+
+**The Language Contribution Guide (`AdaptKey-Language-Contribution-Guide.md`) hardened against both classes of
+mistake, per explicit user instruction ("das soll direkt beim ersten Mal sitzen") before any future language is
+attempted.** §8 gained: a new "no shortcuts, no partial runs" statement naming both this round's and §413's own
+earlier mistake as cautionary tales, by name, with real numbers; a **mandatory pre-flight check** (run before
+downloading anything for real) that `curl -I`s both the correct native-edition URL
+(`kaikki.org/dictionary/downloads/<code>/<code>-extract.jsonl.gz`) and the wrong English-Wiktionary-coverage
+one, comparing sizes, with `kaikki.org/dictionary/rawdata.html` named as the canonical list of which twenty
+languages currently have a native edition at all (covering every language this project has built or is likely
+to build next - `de`/`el`/`es`/`fr`/`it`/`nl`/`pt` all present); step 0 updated to point at the real, now-
+existing `dictionaries/fr/`/`dictionaries/es/` `extract_wiki_dump.py` scripts as reference implementations
+(previously stated no such script existed at all - stale since §415); step 3 rewritten to state the correct-
+vs-wrong URL pattern explicitly, with the real measured size gap for both languages as evidence; step 4
+rewritten to require the **same native extract** feed both POS tagging and Wortfamilien completion (one parse,
+not two), to prefer Greek's own generic per-form extraction over English's fixed-slot one for any language with
+non-trivial verb morphology, and to make the bare-noun safety check itself **mandatory and structural** -
+complete with the real English/Greek numbers as the cautionary tale for skipping it. Every new script this
+round (`extract_wiktionary.py`/`merge_wiktionary.py` for both languages, `fix_bare_noun.py`) is a real, checked-
+in reference implementation for the next language to adapt, not just a description.
+
 

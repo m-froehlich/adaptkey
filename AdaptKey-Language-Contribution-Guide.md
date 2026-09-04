@@ -272,12 +272,82 @@ many months. There is no shortcut past that for true native-level quality; do no
 pack as anything more than "pretty good" in its own PR description. Step 11 below is the one non-optional
 gate between "the pipeline ran" and "this is fit to publish."
 
+**No shortcuts, no partial runs.** Every numbered step below is required, in order, for every language this
+pipeline builds - "I'll do the dictionary now and the word families later" is exactly how French shipped
+twice with a real, silently-lower-quality dictionary each time (see the two cautionary tales immediately
+below): once with step 0's frequency corpus swapped for a small, wrong-shaped proxy source instead of a real
+Wikipedia dump, and once with step 3/4's own Wiktionary source silently the wrong (thinner) one. Neither was a
+deliberate scope cut - both were an implicit "this is probably close enough" that turned out not to be, caught
+only because a human asked a pointed question afterwards. Run every step, verify each against the checks it
+names, and only then move to the next.
+
+**Two real, previously-shipped mistakes, so a future run does not repeat either of them:**
+
+- **Step 0's corpus must be an actual Wikipedia dump, not a smaller proxy** (a pre-built word-frequency list,
+  a handful of live API-sampled articles, ...). French's own first pass (superseded, see `AdaptKey-History.md`
+  §413/§415) used `hermitdave/FrequencyWords`' OpenSubtitles-derived list capped at 12,000 words plus
+  suffix-heuristic POS tagging, reasoned as "close enough for one sitting" - it was not: 12,000 words is a
+  toy vocabulary next to German's/Greek's own 150,000+, and heuristic suffix tagging reintroduced exactly the
+  false-positive class (`Krieg`/`kriegen`-style spelling collisions) step 3 below exists to avoid. Redone
+  properly in §415 once a real reader asked "that's only 12k words?" - do the real dump extraction the first
+  time; see step 0 below for how, and read `dictionaries/fr/extract_wiki_dump.py`/`dictionaries/es/
+  extract_wiki_dump.py` as real, working reference implementations (including the memory-leak/performance/
+  stdout-buffering pitfalls their own comments document) before writing a new one from scratch.
+- **Step 3/4's Wiktionary source must be the target language's *own*, native-language Wiktionary edition, not
+  the English Wiktionary's coverage of that language.** kaikki.org publishes both, and the URL that a human
+  (or an LLM) naturally lands on first - `kaikki.org/dictionary/<Language>/` (e.g. `.../French/`,
+  `.../Spanish/`) - is the *wrong* one for this purpose: it is the English-language Wiktionary edition's own
+  documentation of foreign words, filtered to your target language, and is systematically thinner than that
+  language's own speakers' own Wiktionary (real, measured numbers: French's correct source is 714.6MB
+  compressed vs. the wrong one's 56.5MB - a 12x difference; Spanish's is closer, 99.3MB vs. 91MB, but still the
+  wrong file). This was used for **both** French and Spanish's own first dictionary builds without anyone
+  noticing until directly asked "why is the French one so small?" - see step 3 below for the correct URL
+  pattern and how to verify you have the right file *before* spending an hour parsing it.
+
+Both mistakes share the same shape: a smaller, more-convenient-to-fetch source that still *produces output*
+- nothing errors, nothing looks obviously broken, the pipeline "runs cleanly" - so the only real defence is
+checking each step's own stated size/scale expectations before trusting its output, not just checking that it
+completed.
+
+**Mandatory pre-flight check, before downloading anything for real: verify both sources' real sizes first,
+every time, even if you are confident you already know the right URL.** This is a hard gate, not a
+suggestion - do not start step 0's or step 3's actual extraction until both checks below have been run and
+their numbers written down (in your own working notes, or directly in the PR):
+
+```bash
+# Wikipedia corpus (step 0) - confirm you are looking at a real dump part, not a proxy list
+curl -sI "https://dumps.wikimedia.org/<code>wiki/latest/" | ...   # list available parts first, then:
+curl -sI "https://dumps.wikimedia.org/<code>wiki/latest/<code>wiki-latest-pages-articles1.xml-p1p<N>.bz2"
+# Expect: low hundreds of MB to low GB for a major language's first split. A number in the single-digit MBs
+# means you found the wrong file (or a near-empty language edition) - stop and re-check the listing.
+
+# Wiktionary corpus (step 3/4) - confirm you have the NATIVE edition, not the English-Wiktionary-coverage one
+curl -sI "https://kaikki.org/dictionary/downloads/<code>/<code>-extract.jsonl.gz"        # correct
+curl -sI "https://kaikki.org/dictionary/<Language>/kaikki.org-dictionary-<Language>.jsonl.gz"  # wrong for this
+# Compare Content-Length of both. Always use the downloads/<code>/ one when it exists (check
+# https://kaikki.org/dictionary/rawdata.html first) - even when the two sizes happen to be close (Spanish's
+# own case), not only when the gap is dramatic (French's own case, 12x).
+```
+
+If the `downloads/<code>/<code>-extract.jsonl.gz` URL 404s, your language genuinely has no native Wiktionary
+edition yet (check the `rawdata.html` list to be sure, not just this one 404) - the English-Wiktionary-coverage
+page is then the *correct*, only available choice, not a fallback to feel bad about; say so plainly in the PR
+rather than silently treating it as equivalent to a language that does have its own edition.
+
 0. **Base corpus extraction** - `dict.tsv` (word + frequency + optional POS) and `bigram.tsv`
-   (`previousWord<TAB>word<TAB>count`) from a Wikipedia dump of your target language, the same source German
-   and Greek's own bundled dictionaries were built from. **No script for this step is currently checked into
-   this repository** - it is the one genuine prerequisite this guide cannot hand you ready-made; building or
-   reusing a Wikipedia-dump-to-frequency-list extractor is real work that has to happen before any later step
-   has anything to operate on.
+   (`previousWord<TAB>word<TAB>count`) from a real Wikipedia XML dump of your target language, the same source
+   German/Greek's own bundled dictionaries and French's/Spanish's own were built from - **an actual dump part
+   from `https://dumps.wikimedia.org/<code>wiki/latest/`, streamed and parsed, not a pre-built word-frequency
+   list or a small live-API sample.** `dictionaries/fr/extract_wiki_dump.py` and `dictionaries/es/
+   extract_wiki_dump.py` are real, checked-in reference implementations - adapt one of them (mostly just the
+   target-language letter set/tokeniser regex) rather than writing this from scratch; their own comments
+   document three real pitfalls worth reading before you start, not after: an `iterparse` memory leak
+   (`root.clear()`, not only `elem.clear()`, after every page), a too-slow per-character template stripper
+   (use the regex-driven iterative version instead), and `python -u` for the background run (a fully-buffered
+   redirected stdout can make a genuinely healthy multi-hour process look stuck for a long stretch). Check the
+   machine's actual free RAM live (`Get-CimInstance Win32_OperatingSystem` on Windows) before choosing how many
+   pages to cap the run at - conservative, reasoned from a previous run's own confirmed-safe resident-memory
+   figure, never blindly copied from a different machine's number.
 
 1. **Frequency-scale calibration.** Several ranking/correction formulas are tuned against the *magnitude* of
    German Wikipedia's own frequency numbers - `CorrectionConfidence.NOUN_REFERENCE_FREQUENCY` (2000.0), the
@@ -293,23 +363,70 @@ gate between "the pipeline ran" and "this is fit to publish."
    time - individual per-word LLM calls do not scale to a corpus this size) and have the model flag
    tokeniser artefacts, foreign-language leakage, and Wikipedia-markup fragments for removal.
 
-3. **LLM-based part-of-speech tagging, including homograph disambiguation.** Tag every entry with
-   `PartOfSpeech` (§3 above), and - unlike German's own retrofitted D-368 sweep, which had to lean on an
-   error-prone `+n`/`+en` spelling heuristic (`Krieg`/`kriegen` vs. `Krieg`/`Kriege`, indistinguishable from
-   spelling alone) - ask the model directly "what part(s) of speech does this word have in \<language\>",
-   which sidesteps that whole class of false positive. This is arguably a genuine improvement over how German
-   itself was tagged, not merely a faster imitation of it - worth revisiting for German too, separately, if
-   this pipeline proves itself.
+3. **LLM/Wiktionary-based part-of-speech tagging, including homograph disambiguation - from the correct
+   source, verified before you trust it.** Tag every entry with `PartOfSpeech` (§3 above). Prefer a real
+   Wiktionary extract over an LLM's own per-word judgement wherever one exists (more reliable, and doubles as
+   step 4's own input) - but **the extract must be the target language's own, native-language Wiktionary
+   edition**, not the English Wiktionary's coverage of that language:
+   - **Correct**: `https://kaikki.org/dictionary/downloads/<code>/<code>-extract.jsonl.gz` (e.g. `.../fr/
+     fr-extract.jsonl.gz`, `.../es/es-extract.jsonl.gz`) - that language's own Wiktionary (fr.wiktionary.org,
+     es.wiktionary.org, ...) documenting itself. Check
+     [`kaikki.org/dictionary/rawdata.html`](https://kaikki.org/dictionary/rawdata.html) first for the current
+     list of languages with their own native edition (twenty as of this writing, including `de`/`el`/`es`/
+     `fr`/`it`/`nl`/`pt` - covers every language this project has built or is likely to build next). A
+     language *not* on that list has no native Wiktionary edition to extract from at all - fall back to the
+     English-Wiktionary-coverage page below and say so explicitly in your PR, rather than silently treating it
+     as equivalent.
+   - **Wrong for this purpose, easy to land on by accident**: `https://kaikki.org/dictionary/<Language>/
+     kaikki.org-dictionary-<Language>.jsonl(.gz)` (e.g. `.../French/`, `.../Spanish/`) - this is the *English*
+     Wiktionary edition's own documentation of foreign words, filtered to your target language. It looks like
+     exactly what you want (a per-language kaikki page, a working `.jsonl.gz` download) and produces real,
+     valid-looking output either way - the only way to tell you have the thinner source is to notice the file
+     is suspiciously small. **Before trusting either file, `curl -I` both URLs and compare sizes** - a large
+     gap (French's own real numbers: 714.6MB native vs. 56.5MB English-coverage, a 12x difference) is the tell.
+     If they are close in size (Spanish's own case: 99.3MB vs. 91MB), the native one is still correct - prefer
+     it on principle, not only when the size gap makes the mistake obvious.
+   - Ask the model directly "what part(s) of speech does this word have in \<language\>" only for words the
+     Wiktionary extract itself does not resolve (unlike German's own retrofitted D-368 sweep, which had to lean
+     on an error-prone `+n`/`+en` spelling heuristic, `Krieg`/`kriegen` vs. `Krieg`/`Kriege`,
+     indistinguishable from spelling alone) - direct LLM POS questions sidestep that whole class of false
+     positive for the remainder.
 
-4. **Wortfamilien / lemma completion via Wiktionary.** Generate full inflectional paradigms (verb
-   conjugations, noun declensions/plurals, adjective degree/declension) and link every generated form back to
-   its lemma (the `lemma` column, D-412), the same way German's and Greek's own dictionaries were built
-   (`dictionaries/de/extract_wiktionary_*.py`, `dictionaries/el/extract_wiktionary.py` /
-   `merge_wiktionary.py` are real, checked-in reference implementations to adapt, not just a description -
-   read them before writing your own). Rule-based generation plus curated exception tables, not
-   individual-candidate review - the German/Greek scale (tens of thousands of generated forms) makes manual
-   review of every one infeasible, the same conclusion the (now-superseded, deleted)
-   `AdaptKey-Plan-Wortfamilien.md`/`AdaptKey-Plan-Adjektive.md` design docs reached.
+4. **Wortfamilien / lemma completion via Wiktionary, with a mandatory bare-noun safety check.** Generate full
+   inflectional paradigms (verb conjugations, noun declensions/plurals, adjective degree/declension) and link
+   every generated form back to its lemma (the `lemma` column, D-412), from the **same native-language
+   Wiktionary extract step 3 already fetched** - one parse, feeding both steps, not a second download.
+   `dictionaries/de/extract_wiktionary_*.py`, `dictionaries/el/extract_wiktionary.py`/`merge_wiktionary.py`,
+   and `dictionaries/en/extract_wiktionary.py`/`merge_wiktionary.py` are real, checked-in reference
+   implementations to adapt, not just a description - read them before writing your own; prefer the Greek
+   one's *generic* per-form extraction (`word<TAB>form`, many rows per lemma, grouped back at merge time) over
+   English's own fixed-named-slot approach (`s_form`/`ing_form`/`past`/`participle`) unless your language's own
+   morphology is genuinely as small and regular as English's - German/Greek/French/Spanish all needed the
+   generic shape. Rule-based generation plus curated exception tables, not individual-candidate review - the
+   German/Greek scale (tens of thousands of generated forms) makes manual review of every one infeasible, the
+   same conclusion the (now-superseded, deleted) `AdaptKey-Plan-Wortfamilien.md`/`AdaptKey-Plan-Adjektive.md`
+   design docs reached.
+
+   **Mandatory, structural check, not a judgement call: after tagging (this step or step 3), no row may carry
+   a bare `{NOUN}` tag set - alone, with nothing else - in a language whose step-8 decision (below) is "does
+   not capitalise common nouns."** This is not optional or "usually fine": English's and Greek's own
+   already-shipped `merge_wiktionary.py` scripts had no such check at all - `add_tag()` simply adds whichever
+   POS a Wiktionary entry documents, discarding `OTHER`, with no regard for how rare or archaic that sense is
+   relative to the word's actual everyday use. Real, measured consequence, found only by directly grepping the
+   shipped data rather than trusting the pipeline had worked: 36,580 rows in English's bundled `dict.tsv` and
+   46,608 in Greek's carried a bare `NOUN` tag this way, including ordinary function words with one genuine but
+   vanishingly rare technical/archaic noun sense Wiktionary happens to document (`and`/`or` as logic-gate
+   nouns, `he`/`it` as rare informal nouns, `were` as a homograph of an unrelated word, and more) -
+   `CapitalisationEngine`'s own rule 3 (`isPureNoun -> true`) reads *only* the tag set, never frequency or
+   how central that sense actually is, so every one of these would auto-capitalise on ordinary typing. Enforce
+   the fix as one unconditional, mechanical step over the *entire* output, not a per-word review: any row whose
+   final tag set is exactly `{NOUN}` gets `OTHER` added (`{NOUN, OTHER}`) - safe and cheap, since it only ever
+   suppresses rule 3's forced capitalisation and never removes the real `NOUN` signal A-05's split-safety gate
+   and this same step's own lemma-linking still depend on. A row already carrying `PROPER_NOUN` is correctly
+   unaffected either way (`isProper` forces capitalisation regardless of language - see `CapitalisationEngine`'s
+   own hierarchy). For a language whose step-8 decision *is* "capitalises common nouns like German" (rare -
+   German is the only one so far), this check does not apply; say which case you are in, explicitly, in your
+   PR, the same way step 8 already asks you to.
 
 5. **AltGr / long-press hint set (`hints.tsv`) and the diacritics table (`diacritics.tsv`, D-436) - one
    research pass, two files.** More automatable than an earlier draft of this guide assumed, for one large,
