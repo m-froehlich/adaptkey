@@ -1776,19 +1776,29 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-361: whether [x]/[y] falls within the portion of [neighbor] nearest to [backspace] - only true when
-     * [neighbor] is actually adjacent to it (an edge lining up within [gapPx], the same deliberate spacing
-     * [layoutKeys] already leaves between every key/row, plus a little slack for rounding) on one of the
-     * four sides, with genuine overlap on the perpendicular axis too (so two keys whose edges merely happen
-     * to line up numerically without actually facing each other never match). Deliberately derived from the
-     * live, currently-rendered [keyRects] geometry rather than a hardcoded per-layout/per-language neighbour
-     * list - holds for whichever key genuinely sits next to Backspace on the active layout/surface (a
-     * punctuation key, Enter, a differently-shaped calculator-page neighbour, ...) without any changes here.
+     * [neighbor] is actually adjacent to it (an edge lining up within [gapPx] plus the D-55 extra-spacing
+     * sliders' own currently configured values - see the D-361-followup (v5) note below - and a little slack
+     * for rounding) on one of the four sides, with genuine overlap on the perpendicular axis too (so two keys
+     * whose edges merely happen to line up numerically without actually facing each other never match).
+     * Deliberately derived from the live, currently-rendered [keyRects] geometry rather than a hardcoded
+     * per-layout/per-language neighbour list - holds for whichever key genuinely sits next to Backspace on
+     * the active layout/surface (a punctuation key, Enter, a differently-shaped calculator-page neighbour,
+     * ...) without any changes here.
+     *
+     * D-361-followup (v5): the fixed `gapPx * 1.5f` tolerance this shipped with only ever covered the plain
+     * inter-row gap [layoutKeys] always leaves - never the *additional* D-55 gap it adds specifically above
+     * the space/Enter row ([extraSpaceAboveSpaceRowDp], 7dp by default, up to 25dp) or below the number row
+     * ([extraSpaceBelowNumberRowDp]). Enter sits directly below Backspace across exactly that first,
+     * widened gap - real device feedback confirmed the zone bled sideways (toward `m`) but never vertically
+     * at all, i.e. never into Enter, the one neighbour D-361 actually exists for. Both D-55 values are added
+     * to the tolerance now (defensively, both directions, rather than assuming which specific boundary a
+     * given neighbour sits across).
      */
     private fun isWithinBackspaceStickyZone(backspace: RectF, neighbor: RectF, x: Float, y: Float): Boolean {
         if (!neighbor.contains(x, y)) {
             return false
         }
-        val tolerance = gapPx * 1.5f
+        val tolerance = gapPx * 1.5f + dp(extraSpaceAboveSpaceRowDp.toFloat()) + dp(extraSpaceBelowNumberRowDp.toFloat())
         val overlapsHorizontally = neighbor.right > backspace.left && neighbor.left < backspace.right
         val overlapsVertically = neighbor.bottom > backspace.top && neighbor.top < backspace.bottom
         return when {
@@ -1924,8 +1934,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
         private const val M_BACKSPACE_OFFSET_FACTOR = 0.25
         
         // D-361: how far isWithinBackspaceStickyZone() reaches into an adjacent key's own near side while
-        // the sticky window is active - a considered starting point, not yet device-tuned.
-        private const val BACKSPACE_STICKY_ZONE_FRACTION = 0.35f
+        // the sticky window is active. D-361-followup (v5): widened from 0.35 - real device feedback ("klebt
+        // mir noch nicht weit genug") once the (separate, more serious) vertical-tolerance bug right above
+        // was fixed too - still a considered value, not device-re-tuned beyond that one report.
+        private const val BACKSPACE_STICKY_ZONE_FRACTION = 0.45f
         
         // D-260: the maximum share of a row's own height the space key's touch zone may extend downward
         // into the reclaimable part of the bottom gesture inset (setSpaceTouchExtension()'s own cap,

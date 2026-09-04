@@ -782,6 +782,27 @@ non-trivial changes).
 
 ## Current State
 
+- **§397 (v1.1.36): D-361-followup (v5) - the sticky Backspace zone never actually bled toward Enter, the**
+  **one neighbour it exists for.** First real device confirmation of D-361 itself: "klebt mir noch nicht weit
+  genug... nach oben und unten strahlt sie gar nicht." Root-caused, not guessed - `layoutKeys()` adds the D-55
+  `extraSpaceAboveSpaceRowDp` gap (7dp default, up to 25dp) *on top of* the ordinary `gapPx` row spacing
+  specifically above the space/Enter row, and Enter sits directly across exactly that widened gap from
+  Backspace. `isWithinBackspaceStickyZone()`'s own adjacency tolerance (`gapPx * 1.5f`, ~7.5dp-equivalent)
+  never covered this - it only ever matched the plain inter-row/inter-key gap, so the vertical branches
+  (toward Enter, and symmetrically upward) silently never fired, while the horizontal one (toward `m`, no
+  D-55 gap in the way) worked as designed - exactly the asymmetry reported. Fixed by adding both D-55 values
+  (`extraSpaceAboveSpaceRowDp` + `extraSpaceBelowNumberRowDp`, read live from the view's own already-applied
+  settings, defensively both rather than assuming which boundary a given neighbour sits across) to the
+  tolerance. Separately, `BACKSPACE_STICKY_ZONE_FRACTION` widened 0.35 -> 0.45, the same report's own "nicht
+  weit genug" headline complaint about the (already-working) horizontal reach.
+
+  No new tests (same `AdaptKeyboardView` touch-resolution/Android-view-glue boundary the whole D-361 mechanism
+  already sits on). 1249 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. No spec change - the spec's own D-361/L-04 text never claimed a specific tolerance value, so nothing
+  there was actually wrong, only the implementation. `versionCode` 452 -> 453, `versionName` `"1.1.35"` ->
+  `"1.1.36"`. **Not yet device-confirmed** - needs the same real typing test repeated: does Backspace now
+  reliably absorb a mistimed re-tap that lands on Enter, not just on `m`.
+
 - **§396 (v1.1.35): D-361-followup (v4) - the language-related flag icons now resolve from the device's own**
   **system locale, instead of a hardcoded 🇩🇪.** User's own reasoning, weighing three options directly (EU
   flag / a genuinely generic non-national flag / system-locale-derived) before picking the third explicitly:
