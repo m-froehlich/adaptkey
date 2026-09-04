@@ -810,6 +810,27 @@ non-trivial changes).
 
 ## Current State
 
+- **§406 (v1.1.45): D-396-followup - device-confirmed on the Pixel 9a: the quantity gate (§405) works**
+  **exactly as designed, but `HapticTier.KEY_PRESS` felt too strong at the system's own high level.** User
+  first proposed either tuning the raw amplitude down for that specific level, or - preferred - making the
+  effect not scale with the system level at all; asked directly for an assessment rather than a blind
+  implementation. Researched against AOSP's `VibrationScaler` source before answering: the OS's own scaling
+  is a modest 0.6x-1.4x delta around whatever amplitude the app itself requests, applied to every usage
+  category including "unknown" - there is no legitimate way to exempt a vibration from it, and deliberately
+  going unclassified to try would not achieve that anyway (still scaled, just against a different, less
+  predictable category) while reopening the D-06/D-34/D-66/D-75 OEM-mute risk this project already fixed.
+  Recommended, and user agreed: keep the classification, request a deliberately low, fixed amplitude
+  (`KEY_PRESS_AMPLITUDE`, a considered starting point, not individually device-tuned) for `KEY_PRESS` only
+  instead of `VibrationEffect.DEFAULT_AMPLITUDE` - keeps the whole 0.6x-1.4x range comfortably quiet without
+  fighting the OS's own (working-as-designed) scaling. `MODE_SWITCH`/`CORRECTION` unaffected, still
+  `DEFAULT_AMPLITUDE`, matching what the user reported as already fine.
+
+  No new tests - same Android `Vibrator` glue boundary as §405. 1304 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a device-confirmation addendum.
+  `versionCode` 461 -> 462, `versionName` `"1.1.44"` -> `"1.1.45"`. **Not yet device-confirmed** - needs a
+  real feel-check on the Pixel 9a that `KEY_PRESS_AMPLITUDE`'s starting value is actually subtle enough
+  across all three system levels; likely needs at least one further tuning round.
+
 - **§405 (v1.1.44): D-396 - per-key/Caps-Lock vibration now respects the OS's own three-level "Haptic**
   **feedback" intensity slider, both in strength and in quantity.** Design discussed and agreed with the user
   first (this project's own rule for non-trivial design decisions), including a real API-research round
@@ -836,10 +857,8 @@ non-trivial changes).
   boundary (mirrors D-361/D-380's identical touch/haptics work); the one new call site inside
   `AdaptKeyService` (`notifySuggestionAccepted`) is this project's own established untested orchestrator glue
   too. 1304 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec
-  gained new §42. `versionCode` 460 -> 461, `versionName` `"1.1.43"` -> `"1.1.44"`. **Not yet
-  device-confirmed** - needs a real check on the user's own Pixel 9a: toggle Settings > Sound & vibration >
-  Haptic feedback through its three levels and confirm the described tier gating (and, ideally, a
-  perceptible strength difference) actually happens.
+  gained new §42. `versionCode` 460 -> 461, `versionName` `"1.1.43"` -> `"1.1.44"`. **Device-confirmed for the
+  quantity gate (2026-09-04, Pixel 9a) - the strength half needed a follow-up fix, see §406.**
 
 - **§404 (v1.1.43): D-438/D-439 - two real, root-caused bugs reported together: "vielen Dank"/"viele Grüße"**
   **never got next-word suggestions despite frequent typing, and "Fröhlich" (a surname) after "Marvin" only**

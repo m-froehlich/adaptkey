@@ -2417,9 +2417,20 @@ sound it already triggered there.
 C-13 (the app's own per-key haptics toggle, default off) and G-06's separate, independent Caps-Lock-haptic
 toggle (default on) are both unchanged and still gate everything first, exactly as before - D-396 only adds
 a further, system-level filter on top of whichever of those the user has already turned on; it introduces no
-new setting of its own. Not yet device-confirmed - needs a real check that the system's own three-level
-slider (Settings > Sound & vibration > Haptic feedback) actually produces the described behaviour on a real
-device (Pixel 9a).
+new setting of its own.
+
+Device-confirmed (2026-09-04, Pixel 9a): the quantity gate above works exactly as described - fewer of the
+app's own event tiers vibrate at a lower system level. The *strength* half needed a follow-up though: the
+`HapticTier.KEY_PRESS` feedback felt too strong at the system's own high level. Researched directly against
+AOSP's `VibrationScaler` source before changing anything, not guessed: the OS's own per-level scaling is a
+modest 0.6x-1.4x delta around whatever amplitude the app itself requests - never an exemption, and never
+avoidable by deliberately going unclassified either (every usage category, including "unknown", goes through
+the identical scaling computation), which would only reopen the D-06/D-34/D-66/D-75 OEM-mute risk this
+project already fixed once. So `HapticTier.KEY_PRESS` (the frequent, should-stay-subtle tier) now requests a
+deliberately low, fixed amplitude (`KEY_PRESS_AMPLITUDE`, a considered starting point, not yet individually
+device-tuned) instead of `VibrationEffect.DEFAULT_AMPLITUDE`, keeping its whole 0.6x-1.4x range comfortably
+quiet; `MODE_SWITCH`/`CORRECTION` are unaffected, still `DEFAULT_AMPLITUDE` - firmer confirmation for their
+rarer, more significant events, matching what the user actually reported as fine.
 
 ---
 
