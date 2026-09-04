@@ -1,0 +1,14 @@
+# Spanish diacritic-fold table (D-436) - base letter -> every real accented variant, so a token typed
+# without its accent ("nino") still reaches the correctly-spelled word ("niño"), both live while typing
+# and at autocorrect/split-repair time. hints.tsv (same folder) picks one representative symbol per key
+# for the AltGr long-press hint; this file keeps the complete set per base letter. "n" is included too:
+# n is spelled without a tilde only via a typo, never a genuine alternate ASCII convention the way German
+# ss/ß has two legitimate spellings - but the tilde-to-base-letter relationship is otherwise the same
+# shape D-436's DataDiacriticFolding already handles generically (one base letter, one real ASCII
+# substitution), so a dedicated hardcoded special case like German's own Umlaut object is not needed here.
+a	á
+e	é
+i	í
+n	ñ
+o	ó
+u	ú,ü

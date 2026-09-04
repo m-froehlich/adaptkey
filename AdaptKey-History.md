@@ -18714,3 +18714,193 @@ green. `versionCode` 470 -> 471, `versionName` `"1.1.53"` -> `"1.1.54"`. Not dev
 the guide's own mandatory step 11, restated again deliberately - still not reviewed by a native French
 speaker: real corpus scale now, but still a "pretty good" pipeline pack, not native-reviewed quality.
 
+## §416 - D-443: first Spanish language pack, built fully autonomously and directly to the real-corpus/real-lexicon method French's own D-441-followup round ended up on
+
+Explicit user request: build a Spanish (`Language.SPANISH`) language pack following the same Language
+Contribution Guide, but starting directly from the method §415 (French, D-441-followup) landed on - real
+Wikipedia-dump extraction, real kaikki.org Wiktionary POS tags, real dump-derived bigrams - with no
+intermediate heuristic pass and none of §413/§415's own already-diagnosed pitfalls (OpenSubtitles/hermitdave
+frequency lists, suffix-heuristic POS tagging, live-random-article MediaWiki-API bigram sampling) repeated.
+§413/§414/§415 were read first, as instructed, specifically to avoid rebuilding what those rounds already
+found and discarded.
+
+**Prerequisites already satisfied, unlike French.** Spanish needed neither a new keyboard geometry (D-314 had
+to build AZERTY for French; Spanish already resolves to `LayoutKind.LATIN_QWERTY` via `LayoutRegistry.
+kindFor`'s own default) nor a new character-trigram profile (`language_profiles.tsv` already carries 200 real
+`es` rows, since D-280) - this round is dictionary/hints/diacritics/abbreviations/rules content only, the
+same shape as D-441's own second half, with no D-442-style unblocking work needed first either
+(`KeyboardProximityQwerty` already existed for D-442's own English confusables round).
+
+**Step 0, base corpus extraction (`dictionaries/es/extract_wiki_dump.py`, directly modelled on
+`dictionaries/fr/extract_wiki_dump.py`).** The eswiki dump file listing
+(`https://dumps.wikimedia.org/eswiki/latest/`) was fetched directly rather than guessing a filename; the
+official first split, `eswiki-latest-pages-articles1.xml-p1p159400.bz2` (317.7MB compressed, confirmed via a
+`curl -I` size check before downloading, not assumed), was chosen the same way French's own first split was -
+a sensible official part, not the full dump. The machine's actual free RAM was checked live
+(`Get-CimInstance Win32_OperatingSystem`) immediately before starting, per explicit user instruction not to
+reuse French's own 80,000-page cap blindly: ~6.3GB free, more headroom than French's own ~4.5GB, but the
+extractor's `PAGE_CAP` was raised only modestly (to 100,000, not scaled up proportionally) - a deliberately
+conservative choice, reasoned from French's own confirmed-safe 80,000-page/~3.3GB-resident data point rather
+than extrapolated from the raw RAM ratio alone. §415's own three real findings were built in from the very
+first version of this script rather than rediscovered: `root.clear()` alongside `elem.clear()` in
+`iter_page_texts` (the genuine iterparse memory-leak fix - clearing only the page element leaves it parented
+under the streamed root until the root itself is cleared too); the regex-driven, "remove the innermost
+`{{...}}`/`{|...|}` span, repeat until stable" template/table stripper (`strip_templates_and_tables`) rather
+than a manual per-character scan (confirmed too slow at real dump scale in French's own first attempt at this
+- a single 20,000-page slice did not finish in 180s); and `python -u` (unbuffered stdout) for the background
+launch, since a fully-buffered redirected stdout previously cost real time twice in the French round by
+making a genuinely healthy process look "stuck".
+
+In the event, `PAGE_CAP` was never reached at all: the chosen dump part's own `<page>` count includes talk
+pages, redirects, and other non-`ns=0` entries the extractor already filters out, and the genuine content-page
+total for this particular split turned out to be only 47,669 - smaller than the cap, so the *entire* first
+split was processed in one run, not merely a capped prefix of it. Result: 91,966,754 real tokens, 936,975
+distinct words, 2,489,688 distinct bigram pairs at the extraction-time `>=3` floor. Peak resident memory was
+tracked live throughout the run (`Get-Process python | Select WorkingSet64`, checked repeatedly, not only at
+the end) - it grew from ~1.4GB at 10,000 pages to ~3.0GB by the time the run finished, consistent with the
+same sublinear (Heaps'-law) growth shape French's own capped run confirmed, and system-free RAM never dropped
+below roughly 4-6GB at any checked point, comfortable margin the whole way through.
+
+**One genuine process-management mistake this round, caught before it caused real harm.** The first launch
+attempt chained the working-directory change and the backgrounded launch into one shell job -
+`cd dictionaries/es && nohup python -u extract_wiki_dump.py > extract_log.txt 2>&1 &` - which is a subtle
+POSIX-shell trap: because the entire `cd ... && nohup ... &` construct is itself backgrounded as a single
+subshell job, the `cd` only ever takes effect *inside* that subshell, never in the parent shell issuing the
+command. The very next command in the same call, a plain `cat extract_log.txt` meant to sanity-check that
+logging had started, therefore failed with "No such file or directory" - not because the background job had
+failed to start (it had, correctly, inside its own subshell, writing to the right path), but because the
+*parent* shell was still sitting in the project root and looking for the file there instead. Not immediately
+recognising this, a second, correctly-invoked attempt (a plain, un-backgrounded `cd` on its own line first,
+*then* a separately backgrounded `nohup ... &`) was launched before the first mistake was fully understood -
+briefly running two independent, full extraction processes over the identical dump part in parallel. Caught
+within seconds via `ps -ef | grep python` (which also usefully printed each process's own full command line,
+making the duplication unambiguous rather than merely suspected) and the older, subshell-launched process
+killed outright (`kill -9`) before it could meaningfully compound the first process's own memory footprint.
+No data was lost or corrupted by this - the second process's own checkpoint files simply overwrote whatever
+the first had already written, and killing the stray process left the surviving one's own output untouched.
+
+**Step 3, POS tagging (`dictionaries/es/extract_kaikki.py`, directly modelled on
+`dictionaries/fr/extract_kaikki.py`, identical `POS_MAP`).** kaikki.org's own Spanish dictionary page
+(`https://kaikki.org/dictionary/Spanish/`) was fetched directly to find the real current download link rather
+than guessing a URL pattern from French's own filename - the gzip-compressed variant
+(`kaikki.org-dictionary-Spanish.jsonl.gz`, ~91MB, versus a ~1.03GB uncompressed alternative also found on the
+same page) was used. 809,603 real entries, 769,370 distinct Spanish word strings - noticeably larger than
+French's own 402,395/385,932, Spanish Wiktionary being the bigger extract of the two.
+
+**The merge (`dictionaries/es/merge_dict.py`, directly modelled on `dictionaries/fr/merge_dict.py`, identical
+thresholds and mechanism - `UNRECOGNISED_MIN_COUNT`=20, `EN_COMMON_MIN_FREQ`=100, `TARGET_TOP`=1,000,000).**
+`dict.tsv`: 233,636 rows (30,516 words kept unrecognised-by-kaikki once their own real corpus count cleared
+20 occurrences; 691,290 further unrecognised words below that floor dropped outright; 12,049 rows removed as
+common-English-word contamination - the same targeted, bounded noise signal French's own round used, not
+individually re-derived). `bigram.tsv`: French's own published pack applies a final `>=10`-occurrence cutoff
+to its own raw `>=3` extraction output that is not actually present as a step in `merge_dict.py` itself
+(confirmed directly by inspecting `dictionaries/fr/bigram.tsv`'s own minimum count column, which reads 10, not
+3) - the same cutoff was applied here via a one-line `awk` filter over `wiki_dump_bigram.tsv`, producing
+732,856 final rows from the 2,489,688 raw pairs.
+
+**The capitalisation-safety mechanism (D-441's own structural finding, §6 rules 3/4 not `Language`-gated in
+`CapitalisationEngine`) re-applied via the identical `resolve_tags()` logic, and - per explicit user
+instruction - actively searched for Spanish's own version of French's `pierre`/`jean` collision, not merely
+trusted to have worked.** Verified directly: zero bare-`NOUN` rows in the final `dict.tsv`. The `PROPER_NOUN`-
+drop-on-collision check was specifically probed against a real Spanish pattern the user named as worth
+checking (`sol`/`paz`/`victoria`, plus more found the same way): every one of `sol`("sun"), `paz`("peace"),
+`victoria`("victory"), `luz`("light"), `estrella`("star"), `blanca`("white"), `clara`("clear"), `esperanza`
+("hope"), `flor`("flower"), `dolores`("pains"), `pilar`("pillar"), `mercedes`("mercies"), `rosario`("rosary"),
+`milagros`("miracles"), `amparo`("shelter"), `remedios`("remedies"), and `consuelo`("consolation") is *also* a
+common real Spanish first/female name - kaikki tags each with both readings, and `resolve_tags()` correctly
+dropped the `PROPER_NOUN` tag for every one of them (confirmed by direct `grep` against the final `dict.tsv`,
+not assumed), landing each on its real common-noun tag combination instead (`NOUN,OTHER`/`NOUN,ADJECTIVE`/
+`NOUN,VERB`). Without this, any of "el sol", "la paz", "una flor" would have been wrongly force-capitalised
+every time - `PROPER_NOUN` is checked ahead of `isPureNoun` in `CapitalisationEngine`'s own hierarchy, exactly
+as French's own `pierre`/`jean` case already demonstrated.
+
+**`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` - Spanish's own content, designed fresh rather than copied
+from German or French, per explicit instruction.** `hints.tsv` keeps German's 10 language-neutral math/
+typography assignments unchanged (`b`=*, `d`=°, `f`=ƒ, `h`=#, `m`=-, `n`=+, `p`=π, `q`=@, `v`=/, `x`=×) and
+gives the remaining 16 letters real Spanish content: the five accented vowels on their own letters (`a`=á,
+`e`=é, `i`=í, `o`=ó, `u`=ú); `w`=ü, since `u` is already spoken for by `ú` and the diaeresis (needed for
+"güe"/"güi" words such as "pingüino"/"vergüenza") therefore needs a different host - the loanword-only letter
+`w` was chosen for it; `l`=ñ, deliberately *not* `n` per explicit user instruction (`n` already carries the
+language-neutral "+", and a genuine Spanish hardware keyboard physically places Ñ immediately next to L
+anyway, the mnemonic this placement borrows rather than an arbitrary choice); `c`=¿, `j`=¡, the two
+Spanish-iconic inverted punctuation marks; `g`=«, `r`=», Spain's own standard prose quotation-mark convention;
+`s`=€ (matching French's own choice for the same neutral currency need); `t`=º, `y`=ª, the masculine/feminine
+ordinal indicators - a genuinely Spanish-specific everyday typographic need with no real German or French
+equivalent, filling the same functional role German's own ° already does for degree; the two remaining
+letters `k`/`z` given generically useful remaining typography (—, …). `diacritics.tsv`: `a`→á, `e`→é, `i`→í,
+`o`→ó, `u`→ú,ü, and - the one genuinely new design question this round had to answer, not present in French's
+own round - `n`→ñ. Checked directly against D-436's own design note (the "L-05 AltGr host-key" precedent:
+exactly one physical key hosts a given diacritic, and dropping the mark already equals that host letter)
+before deciding no dedicated hardcoded special case (the way German's own `Umlaut` object is one, for `ß`'s
+genuine dual-ASCII-convention complexity) is needed here: unlike `ß`, there is no legitimate alternate-ASCII-
+spelling tradition for `ñ` (nobody writes "nn" for "ñ" the way "ss" genuinely substitutes for "ß" in formal
+contexts) - the base-letter-to-real-variant shape is otherwise identical to every other entry in this file,
+so the ordinary, purely data-driven `DataDiacriticFolding` mechanism already handles it correctly with zero
+code change. `abbreviations.tsv`: a hand-curated 26-entry Spanish sentence-boundary abbreviation list (sr./
+sra./srta./dr./dra./prof./ud./uds./pág./págs./núm./art./cap./vol./ej./aprox./tel./dpto./depto./av./avda./
+cta./ltda./etc./a.c./d.c.), the same low-risk-even-if-incomplete shape the guide itself describes.
+
+**`SpanishRules` (`LanguageRulesRegistry`), mirroring `FrenchRules`'s own shape exactly.**
+`decimalCommaGluesDigits()` = true (the RAE/Spain convention this pack follows; several Latin American
+locales genuinely use a point instead, a real, explicitly-named scope limit rather than a silently-ignored
+one, since this app has no per-region Spanish variant to target separately). `timeSuggestionWord()` = null
+(no Spanish equivalent of German's S-08 "Uhr"). The six German-specific compounding/inflection hooks stay the
+same documented no-op `NoOpLanguageRules` gives every other unimplemented language.
+`bundledConfusablesBlacklist()` stays empty: `dictionaries/confusables_scan.py dictionaries/es/dict.tsv
+qwerty 30` ran directly against the real `KeyboardProximityQwerty` grid (no D-442-style prerequisite fix
+needed, unlike French's own AZERTY gap) and found 625 candidate pairs at/above the chip-offer threshold,
+reviewed by hand per explicit instruction to apply genuine language judgement rather than reflexively leaving
+the list empty without looking. The review surfaced the same fundamental difficulty French's own AZERTY scan
+hit: several short (2-3 letter) risky tokens are confirmed-real Spanish words or contractions once actually
+checked (`fe`="faith", `ve`="goes"/"sees" - imperative of "ir"/present of "ver", `re`=a musical note and a
+colloquial intensifier, `pa`=the colloquial contraction of "para", `eh`=a genuine interjection) - none of
+these were blacklisted. Others (`we`, `ce`, `dd`, `sn`, `rn`, and more of similar shape) could not be
+confidently classified either way: some are plausibly abbreviations with their period stripped by the
+extractor's own letters-only tokenisation (e.g. "ej." -> "ej"), others plausibly foreign name fragments or
+genuine corpus noise - without native Spanish fluency to adjudicate each one with real confidence, the
+explicit instruction for this round ("im Zweifel lieber leer lassen und als offenen Punkt dokumentieren,
+statt zu raten") was followed: the list stays empty, and the finding is documented here and in
+`SpanishRules`'s own KDoc rather than guessed at.
+
+**Packaging (`dictionaries/es/build_zip.py`, directly modelled on `dictionaries/fr/build_zip.py`).**
+`language-packs/adaptkey-lang-es.zip` (6.1MB, the same six files at the archive root, no directory prefix, as
+every other language pack). One new `LanguagePackCatalog.Entry(Language.SPANISH, ..., version = 1)` added,
+with a detailed inline comment covering this round's own method, real numbers, and honesty caveats, mirroring
+German's/Greek's/French's own precedent of documenting each dictionary round's provenance directly in that
+file. The class-level KDoc's own "not yet built" language list updated to drop `SPANISH` now that a real entry
+exists. Working intermediates (`wiki_dump_freq.tsv`, `wiki_dump_bigram.tsv`, `noise_review_candidates.tsv`,
+the extraction log) were deleted after the final `dict.tsv`/`bigram.tsv` were produced from them, rather than
+committed alongside the pipeline scripts - `kaikki_pos.tsv` (14MB) was kept, the same "keep the direct
+Wiktionary-derived reference file, not the much larger raw intermediate" precedent German/Greek/French already
+established.
+
+**Tests.** `LanguageRulesTest` gained a `Spanish resolves to SpanishRules` case and its own `SpanishRules`-
+mirroring test block (decimal comma, no time-suggestion word, empty blacklist, all six German-specific
+compounding-grammar hooks confirmed no-op), directly matching the existing `FrenchRules` test block's shape;
+its class-level KDoc updated to list Spanish (D-443) alongside German/English/French as a language with a
+real `LanguageRules` implementation. `LanguagePackCatalogTest` needed no change at all - already fully
+generic over `LanguagePackCatalog.ENTRIES`, with no hardcoded language count or per-entry assertion to update.
+1335 -> 1340 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+471 -> 472, `versionName` `"1.1.54"` -> `"1.1.55"`.
+
+**No `AdaptKey-Spec.md` change.** Unlike French's own D-441 round, this round did not surface a *new*
+structural finding - it actively re-confirmed an already-documented one (D-441's own §6 addendum, "rules 3/4
+are not `Language`-gated") against a second language's real data, which is exactly what that addendum already
+predicts would happen for any language tagging common nouns `NOUN,OTHER` instead of a bare `NOUN`. No fresh
+spec addendum was needed.
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied, the same standard every prior language pack in
+this project has been held to.** This pack has not been reviewed by anyone who actually speaks Spanish. It
+starts from a stronger position than French's own first pass did - real Wikipedia-dump corpus scale and a
+real kaikki.org lexicon from the very first and only round, with no superseded heuristic pass preceding it -
+but it is still, in the guide's own words, a "pretty good" pipeline-built pack, not native-reviewed quality,
+and should not be treated as ready to publish without that review. Not device-confirmed either, consistent
+with this project's own established testing-gap acceptance for environments with no real Android device
+available. One further, narrower gap worth naming honestly: unlike German's/Greek's/French's own dictionaries,
+this round did not run a dedicated Wortfamilien-style paradigm-completion/lemma-linking pass over
+`dictionaries/es/dict.tsv` - Spanish Wiktionary, like French's own, already lists most inflected forms as
+their own individually kaikki-tagged entries, so this gap is likely already substantially covered as an
+incidental side effect of the merge itself, the same way it was for French, but this was not separately
+verified this round the way D-412's own explicit lemma-population work verified it for German/Greek/English.
+
+

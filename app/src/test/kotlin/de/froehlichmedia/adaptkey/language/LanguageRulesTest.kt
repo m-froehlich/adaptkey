@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test
 
 /**
  * D-410: [LanguageRulesRegistry] resolves each [Language]'s own [LanguageRules] - German, English
- * (D-number) and French (D-441) get real implementations, every other (bundled or not) language gets
- * [NoOpLanguageRules], so a language-specific grammar/orthography rule can never silently apply while a
- * different language is active.
+ * (D-number), French (D-441) and Spanish (D-443) get real implementations, every other (bundled or not)
+ * language gets [NoOpLanguageRules], so a language-specific grammar/orthography rule can never silently
+ * apply while a different language is active.
  */
 class LanguageRulesTest {
     
@@ -31,6 +31,11 @@ class LanguageRulesTest {
     @Test
     fun `French resolves to FrenchRules`() {
         assertSame(FrenchRules, LanguageRulesRegistry.rulesFor(Language.FRENCH))
+    }
+    
+    @Test
+    fun `Spanish resolves to SpanishRules`() {
+        assertSame(SpanishRules, LanguageRulesRegistry.rulesFor(Language.SPANISH))
     }
     
     @Test
@@ -168,6 +173,31 @@ class LanguageRulesTest {
         assertFalse(FrenchRules.isPlausibleVerbInflection("parlons") { true })
         assertFalse(FrenchRules.isPlausibleAdjectiveComparative("plus grand") { true })
         assertNull(FrenchRules.splitCompound("motclé", { true }) { it })
+    }
+    
+    @Test
+    fun `Spanish glues a decimal comma`() {
+        assertTrue(SpanishRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Spanish has no time-suggestion word`() {
+        assertNull(SpanishRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Spanish curates no bundled blacklist yet`() {
+        assertTrue(SpanishRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Spanish leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(SpanishRules.blocksAsSplitPrefix("un", 0L))
+        assertFalse(SpanishRules.blocksAsFeminineAgentException("in", "maestro", true))
+        assertFalse(SpanishRules.blocksAsCompoundPrefix("bien", true))
+        assertFalse(SpanishRules.isPlausibleVerbInflection("hablamos") { true })
+        assertFalse(SpanishRules.isPlausibleAdjectiveComparative("más grande") { true })
+        assertNull(SpanishRules.splitCompound("palabraclave", { true }) { it })
     }
     
     @Test

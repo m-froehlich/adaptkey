@@ -388,6 +388,28 @@ non-trivial changes).
   a "pretty good" pipeline pack, not native-reviewed quality, and should not be treated as ready to
   publish without that review.
 
+- **D-443 - RESOLVED (§416, v1.1.55): first Spanish `dictionaries/es/` pack, built fully autonomously and**
+  **directly to the real-corpus/real-lexicon method D-441-followup ended up on - no intermediate/heuristic**
+  **pass this time, per explicit user instruction.** Spanish needed neither a new keyboard geometry (already
+  QWERTY) nor a new trigram profile (already in `language_profiles.tsv` since D-280), so this round is
+  dictionary/hints/diacritics/abbreviations/rules content only, same shape as D-441's own second half. See
+  §416 in Current State for the complete build method, real numbers, and every deliberate scope cut. Final:
+  `dict.tsv` (233,636 words, real Wikipedia-dump frequencies + real kaikki.org Wiktionary POS),
+  `bigram.tsv` (732,856 rows, same real dump corpus), `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv`
+  (Spanish's own, not reused from German/French), `SpanishRules` (`LanguageRulesRegistry`), one
+  `LanguagePackCatalog` entry. D-441's own structural finding (§6 rules 3/4 not `Language`-gated) was
+  actively re-checked against Spanish's own real name/common-noun collisions (`sol`/`paz`/`victoria`/`luz`
+  and more, per explicit user instruction to search for this pattern specifically rather than only trust the
+  mechanical rule) and confirmed working correctly. `dictionaries/confusables_scan.py` ran directly (Spanish
+  already had `KeyboardProximityQwerty`, no D-442-style prerequisite needed) - 625 candidates found, reviewed
+  by hand, left un-curated (`bundledConfusablesBlacklist()` stays empty) for the same "cannot confidently
+  separate a genuine short Spanish word/abbreviation from corpus noise without native fluency" reason
+  French's own AZERTY scan gave; see `SpanishRules`'s own KDoc. **Not yet done, flagged honestly per the
+  guide's own step 11**: no native Spanish speaker has sanity-checked the output yet - real corpus scale and
+  a real lexicon from the very first pass this time (unlike French's own two-round history), but still a
+  "pretty good" pipeline pack, not native-reviewed quality, and should not be treated as ready to publish
+  without that review.
+
 - **`KeyboardProximity` hardcoded to QWERTZ - RESOLVED by D-442 (§414, v1.1.53).** Found while building**
   **French's D-441 language pack; fixed properly and generally the same session, on explicit user**
   **instruction, not merely patched for AZERTY alone.** Now a real interface
@@ -412,10 +434,11 @@ non-trivial changes).
      not confirmed noise via a real review, and English has never had a dedicated noise-removal pass the
      way German (§301) and Greek (§371/D-425) did. Worth its own dedicated round if picked up.
 
-- **D-280/D-281 follow-up: `SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language` enum and**
-  **already fully typeable via QWERTY, but none has a dictionary or its own hint set built/hosted yet** - a
-  genuine, ready-to-pick-up community contribution opportunity, same shape as the French gap above but without
-  even a geometry question to resolve first (see `AdaptKey-Language-Contribution-Guide.md`). Separately, the
+- **D-280/D-281 follow-up: `ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language` enum and already**
+  **fully typeable via QWERTY, but none has a dictionary or its own hint set built/hosted yet** - a genuine,
+  ready-to-pick-up community contribution opportunity, same shape as the French/Spanish gap was, without even
+  a geometry question to resolve first (see `AdaptKey-Language-Contribution-Guide.md`). `SPANISH` itself moved
+  out of this list via D-443 (§416) - see that round for the real pack now built and hosted. Separately, the
   Python script that originally built `language_profiles.tsv` (A-03's trigram classifier data) is not in this
   repository - reconstructing it is only needed if a future language falls outside the eight already covered
   there.
@@ -876,6 +899,122 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§416 (v1.1.55): D-443 - first Spanish language pack, built fully autonomously, directly to the**
+  **real-corpus/real-lexicon method D-441-followup (French, §415) ended up on - no intermediate/heuristic**
+  **pass, per explicit user instruction not to re-walk the superseded French D-441 first attempt.** Spanish
+  (`Language.SPANISH`) already used ordinary QWERTY (`LayoutRegistry.kindFor` -> `LayoutKind.LATIN_QWERTY`,
+  no new layout code) and already had a real character-trigram profile (`language_profiles.tsv`, "es",
+  since D-280) - both prerequisites §413/§414 had to build for French were already satisfied here.
+
+  **Machine-memory check, done live rather than reusing French's own number (explicit user instruction):**
+  `Get-CimInstance Win32_OperatingSystem` showed ~6.3GB free (vs. French's own ~4.5GB) just before starting.
+  Deliberately not scaled up proportionally: `dictionaries/es/extract_wiki_dump.py`'s `PAGE_CAP` was set to
+  100,000 (a modest, conservative increase over French's own confirmed-safe 80,000-page/~3.3GB-resident data
+  point), with the same `root.clear()` fix, regex-based (not per-character) template stripping, `python -u`
+  unbuffered invocation, and 5,000-page disk checkpointing already built in from the start - none of §415's
+  own three real problems (an iterparse memory leak, a too-slow template stripper, stdout-buffering-under-
+  redirection read as a false "stuck" process) were rediscovered this round. In the event, the cap was never
+  reached: `eswiki-latest-pages-articles1.xml-p1p159400.bz2` (the official first split, 317.7MB compressed)
+  contains only 47,669 real (ns=0, non-redirect) content pages - the *entire* first split was processed,
+  91.97M real tokens, peaking at ~3GB resident with 6.4GB system-free still remaining, confirmed by direct
+  `Get-Process`/`Get-CimInstance` checks during the run rather than assumed safe. One genuine process-
+  management slip this round, caught and fixed before it could waste memory: the first launch attempt
+  chained `cd es-dir && nohup ... &` as one backgrounded shell job, which silently left the *outer* shell's
+  own cwd unchanged (the `cd` only applied inside the backgrounded subshell) - the immediate `cat
+  extract_log.txt` right after therefore failed ("No such file"), but the background job itself had already
+  started correctly. Not realising this at first, a second, correctly-invoked attempt was launched before the
+  mistake was understood, briefly running two full extraction processes over the same dump in parallel -
+  caught via `ps aux` and the older one killed immediately, before any real memory pressure built up.
+
+  **POS tagging (kaikki.org's Spanish Wiktionary extract, `dictionaries/es/extract_kaikki.py`, directly
+  modelled on `dictionaries/fr/extract_kaikki.py`):** 809,603 entries, 769,370 distinct Spanish word strings -
+  larger than French's own 402,395/385,932, Spanish Wiktionary being the bigger extract. Identical POS mapping
+  (`noun`/`verb`/`adj`/`prep`+`prep_phrase`/`name` -> `NOUN`/`VERB`/`ADJECTIVE`/`PREPOSITION`/`PROPER_NOUN`,
+  everything else `OTHER`).
+
+  **The merge (`dictionaries/es/merge_dict.py`, directly modelled on `dictionaries/fr/merge_dict.py`, same
+  thresholds: `UNRECOGNISED_MIN_COUNT`=20, common-English-word noise filter at `en/dict.tsv` frequency >=100,
+  rank-1 rescaled to ~1,000,000):** `dict.tsv` 233,636 rows (30,516 kept unrecognised-by-kaikki at count>=20,
+  691,290 dropped below that floor, 12,049 removed as common-English-word contamination). `bigram.tsv`:
+  732,856 rows at the same final >=10-occurrence cutoff French's own published pack uses (2,489,688 distinct
+  pairs existed at the raw >=3 extraction-time floor before this cutoff).
+
+  **The capitalisation-safety mechanism (§6 rule 3 not being `Language`-gated, D-441's own structural finding)
+  re-applied and actively re-verified against Spanish's own real collision pattern, per explicit user
+  instruction to search for it rather than only trust the mechanical rule:** zero bare-`NOUN` rows confirmed
+  directly in the final `dict.tsv` (every Spanish common noun lands `NOUN,OTHER`/`NOUN,ADJECTIVE`/`NOUN,VERB`
+  instead). The `PROPER_NOUN`-drop-on-collision rule (`resolve_tags()`) was checked against exactly the kind
+  of case the user named - a real Spanish first name that is *also* an ordinary common noun - and confirmed
+  working correctly by direct inspection, not assumed: `sol`/`paz`/`victoria`/`luz`/`estrella`/`blanca`/
+  `clara`/`esperanza`/`flor`/`dolores`/`pilar`/`mercedes`/`rosario`/`milagros`/`amparo`/`remedios`/`consuelo`
+  all resolved to their common-noun tags, never `PROPER_NOUN` - a forced capital on the far more frequent
+  common-noun reading (`el sol`, `la paz`, `una flor`) would otherwise have fired every time.
+
+  **`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` - Spanish's own, not reused from German or French:**
+  `hints.tsv` keeps German's 10 language-neutral math/typography assignments (`b`=*, `d`=°, `f`=ƒ, `h`=#,
+  `m`=-, `n`=+, `p`=π, `q`=@, `v`=/, `x`=×) and gives the remaining 16 letters real Spanish content: `a`=á,
+  `e`=é, `i`=í, `o`=ó, `u`=ú (the five accented vowels); `w`=ü (u already hosts ú, so the diaeresis - needed
+  for `güe`/`güi` words like "pingüino" - sits on the loanword-only letter w instead); `l`=ñ, deliberately
+  *not* `n` (explicit user instruction: `n` already carries the neutral "+", and a real Spanish hardware
+  keyboard places Ñ physically next to L anyway, the mnemonic this placement borrows); `c`=¿, `j`=¡ (the two
+  Spanish-iconic inverted punctuation marks); `g`=«, `r`=» (Spain's own standard quotation-mark convention);
+  `s`=€; `t`=º, `y`=ª (the masculine/feminine ordinal indicators, a genuinely Spanish-specific typographic
+  need, the same role German's own ° already fills for degree); `k`/`z` filled with the remaining generically
+  useful glyphs (—, …). `diacritics.tsv`: `a`→á, `e`→é, `i`→í, `o`→ó, `u`→ú,ü, and `n`→ñ - included on the
+  explicit understanding, checked directly against D-436's own design note before writing it, that ñ needs no
+  dedicated hardcoded special case the way German's ß does (there is no genuine alternate-ASCII-spelling
+  convention for ñ the way ss substitutes for ß - the base-letter-to-real-variant shape is otherwise identical
+  to every other entry, so the ordinary data-driven `DataDiacriticFolding` already handles it correctly).
+  `abbreviations.tsv`: a hand-curated 26-entry Spanish sentence-boundary list (sr./sra./dr./ud./pág./núm./
+  etc./...).
+
+  **`SpanishRules` (`LanguageRulesRegistry`):** `decimalCommaGluesDigits`=true (the RAE/Spain convention this
+  pack follows - several Latin American locales use a point instead, not representable separately since this
+  app has no per-region Spanish variant, a real, named scope limit rather than a silently-ignored one),
+  `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty. `dictionaries/confusables_scan.py
+  dictionaries/es/dict.tsv qwerty 30` ran directly (no `KeyboardProximity` prerequisite to unblock first,
+  unlike French's own D-442 AZERTY work) and found 625 candidate pairs, reviewed by hand per explicit
+  instruction to use real language judgement rather than reflexively leaving it empty: mostly short (2-3
+  letter) tokens risking autocorrect into a common neighbouring function word. Several are confirmed-real
+  Spanish words/contractions (`fe`=faith, `ve`="goes"/"sees", `re`=musical note/colloquial intensifier,
+  `pa`=colloquial "para", `eh`=interjection) sitting right alongside genuinely ambiguous short fragments
+  (`we`, `ce`, `dd`, `sn`, `rn`, and more) this round's own non-native judgement could not confidently rule
+  out as pure noise rather than an abbreviation-with-its-period-stripped artefact (the tokeniser drops all
+  punctuation, so e.g. "ej." becomes bare "ej") or a foreign name fragment - left empty for a native-speaker-
+  guided pass rather than guessed at, matching the explicit "im Zweifel lieber leer lassen" instruction for
+  this round.
+
+  **Packaging:** `language-packs/adaptkey-lang-es.zip` (6.1MB, six files at the archive root, no directory
+  prefix), one new `LanguagePackCatalog.Entry(Language.SPANISH, ..., version = 1)` with a detailed inline
+  comment covering this round's own method/numbers/honesty caveats, mirroring German/Greek/French's own
+  precedent. Working intermediates not committed (`wiki_dump_freq.tsv`/`wiki_dump_bigram.tsv`/
+  `noise_review_candidates.tsv`/the extraction log) - only the final `dict.tsv`/`bigram.tsv`/`hints.tsv`/
+  `diacritics.tsv`/`abbreviations.tsv`/`version.txt`, the pipeline scripts themselves, and `kaikki_pos.tsv`
+  (14MB, the direct kaikki-derived reference file `merge_dict.py` actually reads) were kept, mirroring
+  French's own `kaikki_pos.tsv`/German's/Greek's own Wiktionary-derived reference-file precedent.
+
+  New tests: `LanguageRulesTest` gained a `Spanish resolves to SpanishRules` case plus its own
+  `SpanishRules`-mirroring test block (decimal comma, no time-suggestion word, empty blacklist, all six
+  German-specific hooks no-op), matching `FrenchRules`'s existing shape exactly. `LanguagePackCatalogTest`
+  needed no change - already fully generic over `ENTRIES`. 1335 -> 1340 unit tests, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. No `AdaptKey-Spec.md` change - this round confirmed
+  D-441's own existing structural finding (§6 rule 3 not `Language`-gated) rather than discovering a new one,
+  so no fresh addendum was needed there; `LanguagePackCatalog`'s own class KDoc updated to drop `SPANISH` from
+  the "not yet built" list. `versionCode` 471 -> 472, `versionName` `"1.1.54"` -> `"1.1.55"`.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**, same standard as French: this pack has not
+  been reviewed by anyone who actually speaks Spanish. Real corpus scale and a real lexicon from the very
+  first pass this time (no superseded heuristic round preceding it, unlike French's own D-441/D-441-followup
+  two-round history) - genuinely a stronger starting point than French's own first pass was - but still
+  "pretty good" in the guide's own sense, not native-reviewed quality. Not device-confirmed either (no real
+  device available in this environment). Where this pack currently stands relative to the other three: ahead
+  of French on data-collection method maturity (built to the real-corpus method from the start, one round
+  instead of two), but behind German/English/Greek's own months of real native-speaker device feedback, and
+  behind French in one narrow respect - `dictionaries/es/dict.tsv` has not yet had a Wortfamilien-style
+  paradigm-completion pass the way German's/Greek's/French's own kaikki-native-inflection-forms did (Spanish
+  Wiktionary, like French's, already lists most inflected forms as their own individually-tagged kaikki
+  entries, so this is likely already largely covered incidentally - not separately verified this round).
 
 - **§415 (v1.1.54): D-441-followup - French dictionary rebuilt from a real Wikipedia dump + kaikki.org**
   **Wiktionary POS data, after direct user feedback that §413's first pass (12,000 words, heuristic POS**
@@ -1628,336 +1767,7 @@ non-trivial changes).
   install to re-test §391/D-361 in the first place; also needs a real look at whether the
   `LabeledSeekBarPreference` rows now align with their siblings.
 
-- **§391 (v1.1.30): D-361 - fast Backspace typing let neighbour keys (Enter reported specifically) react**
-  **instead of Backspace.** Design discussed first per this project's own convention (touches key
-  hit-testing/`resolveKey`): two ideas were weighed - (A) temporarily grow Backspace's own touch zone while
-  typing fast, (B) retroactively reinterpret a wrong neighbour-tap as Backspace after the fact. Flagged to the
-  user that B has gotten meaningfully riskier since D-393 (same round): a wrongly-landed Enter tap can now
-  genuinely submit a real action (search, send, login) in more fields, which is not undoable after the fact.
-  User's own call: implement A only, shelve B (not declined outright - revisit only if A alone proves
-  insufficient).
-
-  **A's mechanism**, entirely in `AdaptKeyboardView` (the class already owning `resolveKey()`/D-231/D-233's
-  own static Backspace/Enter/`m` drift caps): a new `lastBackspaceActivationAtMs` timestamp, stamped on every
-  resolved Backspace `ACTION_DOWN` and on every accelerating-hold repeat tick (`scheduleBackspaceRepeat()`'s
-  own runnable) so a still-active hold keeps the window freshly armed too. `resolveKey()` now checks, right
-  after the existing Space special-case and before the offset-model resolution (so it is not diluted by a
-  neighbour's own learned drift): while `backspaceStickyEnabled` and within `backspaceStickyDelayMs` of that
-  timestamp, a new `isWithinBackspaceStickyZone()` resolves a tap to Backspace instead of whichever key it
-  actually landed in, for the near portion (35%, `BACKSPACE_STICKY_ZONE_FRACTION`) of any key genuinely
-  geometrically adjacent to Backspace's own rendered rect - adjacency and direction (above/below/left/right)
-  are derived from the live `keyRects` geometry each time (an edge lining up within `gapPx` plus slack, with
-  real overlap required on the perpendicular axis too), never a hardcoded per-language key list, so it holds
-  unchanged for whichever key actually sits there on the active layout/surface.
-
-  **Setting**: user found the originally-proposed idea of a brand-new duration slider unnecessary once shown
-  the existing "Doppel-Tipp-Shift-Verzögerung" (`doubleTapDelayMs`, G-05, default 400 ms/200-800 ms range) -
-  "das kann sich exakt an den generellen Doppel-Tap-Delay hängen." Implemented as a single new boolean,
-  `backspaceStickyEnabled` (D-361, default **on**), added the same way as the D-348 double-tap-Backspace-undo
-  toggle right next to it in the settings layer (`AdaptSettings`/`SettingsMapper`/`SettingsStore`, new
-  `SwitchPreferenceCompat` in the Layout category right after the enlarged-backspace-width slider, localised
-  de/en/el) - `backspaceStickyDelayMs` itself is not a stored setting at all, `applySettings()` feeds it
-  `s.doubleTapDelayMs` directly every time settings are applied, so it always tracks that slider's current
-  value live, with no separate value to fall out of sync.
-
-  1 new test (`SettingsMapperTest`: the new flag passes through unchanged, defaulting to on) - the geometry
-  itself (`isWithinBackspaceStickyZone`/`resolveKey`) is `AdaptKeyboardView` Android view glue, untested per
-  this project's own convention, the same boundary `isWithinSpaceHitZone`/the offset-factor functions already
-  sit on. 1243 -> 1244 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec:
-  L-04 gained the D-361 addendum. `versionCode` 446 -> 447, `versionName` `"1.1.29"` -> `"1.1.30"`. **Not yet
-  device-confirmed** - needs real fast-Backspace-typing use (ideally including the originally-reported
-  Backspace-into-Enter case) to confirm the sticky zone actually helps without getting in the way of a
-  genuine, deliberate tap on the neighbour key.
-
-- **§390 (v1.1.29): D-393 - Enter did nothing in the Google Play Store's own search bar instead of**
-  **submitting the search.** Reported with a real device log (`AdaptKeyJitter`/`AdaptKeyHaptics`), root-caused
-  directly rather than guessed: `com.android.vending`'s search field reports `inputType=0x228001`, which
-  includes `TYPE_TEXT_FLAG_MULTI_LINE` (0x20000) despite being a genuine single-line, submit-on-enter search
-  box. `handleEnter()` checked `multiLine` first and returned immediately with `finalizeAndCommit(ic, "\n")`
-  whenever it was set, never reaching the action-handling code below at all - the log's own
-  `finalizeAndCommit: typed="Whatsapp" -> finalWord="Whatsapp" delimiter="\n"` line is the literal proof: a
-  raw newline was committed straight into the search bar, with no `performEditorAction`/submit anywhere
-  afterward.
-
-  Fixed by re-ordering the check: a field that declares a genuine IME action (Go/Search/Send/Done) and has not
-  opted out via `IME_FLAG_NO_ENTER_ACTION` now always submits on Enter, regardless of whether `MULTI_LINE` is
-  also set - `hasRealAction` is now computed first, and the `multiLine` newline branch only fires when
-  `!hasRealAction`. The existing `IME_FLAG_NO_ENTER_ACTION` check (unchanged) is exactly the mechanism a
-  genuinely multi-line field with its own action button elsewhere (e.g. a chat app's compose box) already
-  uses to keep Enter as a plain newline despite declaring an action - confirmed this reordering does not
-  affect that case, and does not affect D-383/Google Keep's own note-body field either (multi-line, no real
-  action either way).
-
-  Design discussed first per this project's own convention (a genuine behaviour change to Enter handling,
-  affecting every app, not just Play Store) - user confirmed the re-ordering before implementation. One
-  assumption remains unverified from the log alone (`imeOptions`/the actual declared action is not currently
-  logged) - inferred from the field being an unambiguous search box, not proven bit-for-bit; flagged to the
-  user as the one open question. Spec gained a new G-07 describing the resulting Submit-vs-Newline resolution
-  order. No new tests (`AdaptKeyService.kt`'s `InputConnection`/`EditorInfo` glue, untested per this project's
-  own convention). 1243 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. `versionCode` 445 -> 446, `versionName` `"1.1.28"` -> `"1.1.29"`. **2026-09-03: device-confirmed.**
-
-- **§389 (v1.1.28): D-383 - in Google Keep's list mode, pressing Enter with the caret right before a**
-  **reclaimed word deleted that word.** Reported with a real device log (`AdaptKeyJitter`), root-caused from it
-  directly rather than guessed: the field is multi-line (`inputType=0x2ac001`), so `handleEnter()` routes
-  through `finalizeAndCommit(ic, "\n")`; since the caret sat exactly at the composing word's own start
-  (`cursor=0`, not at its end), that took the mid-word split branch, `splitComposingAtCaretAndCommit()`. With
-  the "before" half empty, that function's own first step (`ic.setComposingText("", 1)`) collapsed the *real*
-  composing region to nothing - genuinely deleting the word from the document, not just resetting internal
-  state - before re-inserting it moments later as fresh, still-provisional composing text at the new position
-  after the newline. The log showed exactly this sequence, then an `onUpdateSelection` mismatch with "ground
-  truth unavailable", then an immediate fresh `onStartInput` for the same package - Google Keep recreates the
-  list item's own `InputConnection` the instant the committed `"\n"` splits the line, arriving before the
-  re-inserted word ever reached the (now-superseded) old connection, so it was lost for good.
-
-  Fixed narrowly, keyed off the same `beforeText.isEmpty()` condition already computed in
-  `splitComposingAtCaretAndCommit()`: `ic.finishComposingText()` (commits the word for real, in place, deletes
-  nothing) instead of `ic.setComposingText("", 1)` when there is no "before" half to shrink down to - the word
-  becomes genuine, committed document text *before* the delimiter is ever touched, so nothing is at risk even
-  if the host tears down its `InputConnection` immediately after. Because the word is now already real text at
-  its final position rather than absent, the closing step also had to change: routing it back through the
-  ordinary `updateComposing()` (which always calls `setComposingText`, i.e. *inserts* text at the cursor) would
-  have inserted a second, duplicate copy right in front of the text already there - fixed by calling
-  `ic.setComposingRegion(anchor, anchor + afterText.length)` directly in this one branch instead, marking the
-  already-present range as composing without writing anything.
-
-  Design discussed first per this project's own convention (the change touches exactly the composing-state/
-  batch-edit machinery spec §1's guiding principle flags as historically fragile) - user confirmed the
-  finishComposingText-first approach before it was implemented. Spec §1's guiding principle gained a fourth
-  numbered invariant documenting this failure class (delete-then-reinsert of already-real content is unsafe
-  whenever the host might tear down the `InputConnection` in direct reaction to the delimiter itself) for any
-  future change in this area. No new tests (`AdaptKeyService.kt`'s `InputConnection` glue, untested per this
-  project's own convention). 1243 unit tests unchanged, all green. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 444 -> 445, `versionName` `"1.1.27"` -> `"1.1.28"`. **2026-09-03:
-  device-confirmed.**
-
-- **§388 (v1.1.27): D-404 Tier 2 - `shouldOverrideKnownWord` now vetoes A-01's ratio override outright when**
-  **the typed word and the candidate share a D-412 word family.** Design discussed first per this project's own
-  convention (non-trivial algorithm decision): hard veto vs. a softer raised ratio bar, and scope (this one
-  gate only vs. also touching ordinary ranking/`forUnknownToken`) - user confirmed hard veto, scope limited to
-  `shouldOverrideKnownWord`. Two corrections surfaced during that discussion, both verified live rather than
-  taken on trust: D-412 (see below) was already fully resolved, not "5 bands remain" as this file's own
-  stale Open-TODOs text still said at the time (fixed separately first, commit `18a4503`); and `lemma`
-  coverage is **not** German-only - D-422/D-424 (§368/§370) already extended the identical Wortfamilien
-  parity to English and Greek, confirmed by directly counting non-empty `lemma` rows in all three dict.tsv
-  files before writing anything (`en/dict.tsv` 43,799/116,388, `dictionaries/el/dict.tsv` 64,828/154,338,
-  `dictionaries/de/dict.tsv` 84,429/188,252).
-
-  New `DictionarySuggestionProvider.sameWordFamily(wordLower, candidateLower)`: resolves each side's family
-  key via `store.entryOf(...)?.let { it.lemma ?: it.word }.lowercase()` (mirrors `LearnedWordExpirySweep`'s
-  own D-389 grouping pattern, lower-cased explicitly since `lemma` is stored in the base entry's own
-  canonical case, not a lower-case key) and compares them; `shouldOverrideKnownWord` returns `false`
-  immediately on a match, before `CorrectionConfidence.forKnownWordOverride`'s ratio is even computed. Reuses
-  `store.entryOf` (already merges bundled+learned lemma links, D-264/D-404) rather than a dedicated lookup,
-  so a learned/LLM-derived family link (D-323/D-324) is honoured too, at no extra query cost worth
-  mentioning. Deliberately narrow: `forUnknownToken` (ordinary typo correction) and suggestion-bar ranking are
-  untouched - D-404 Tier 2's own framing was always specifically about A-01's override gate.
-
-  3 new tests in `DictionarySuggestionProviderTest`: the motivating "Kugel"/"Kugeln" case at an extreme,
-  would-otherwise-clear-every-threshold ratio; a shared-third-base pair ("lief"/"läuft", both linked to
-  "laufen"); and a regression guard confirming an unrelated, unlinked pair (`ddr`/`der`) still overrides
-  exactly as before. 1240 → 1243 unit tests, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. Spec: A-01 gained the D-404 Tier 2 addendum. `versionCode` 443 → 444, `versionName` `"1.1.26"` ->
-  `"1.1.27"`. **2026-09-03: closed without a dedicated device test, per the user's own call** - pure
-  dictionary/ranking logic with no directly observable behaviour to check for; will be revisited only if a
-  negative report comes in.
-
-- **§387 (v1.1.26): D-431-followup closed - real device log confirmed the gate fix works, found a genuinely**
-  **structural (non-bug) limitation, and caught a real performance regression the diagnostic round itself had
-  introduced.** Three distinct outcomes from one real `AdaptKeyA13` log, all confirmed from the log's own
-  content, not inferred:
-
-  1. **The D-431 gate fix is confirmed correct.** `hasObviousCandidate=false` for `"welxmche"` even with
-     `"Welsche"` sitting in `candidates`, and `recover() candidates=[welche]` / `first known-word
-     candidate=welche` - A-13 fires and finds the right word, exactly as designed.
-  2. **A genuine, structural, not-a-bug limitation, confirmed from the same log**: an earlier attempt at this
-     exact repro showed `composingTaps.size=0` against a 7-character reclaimed token
-     (`reclaimSurroundingWord: before="welxmch"`) - traced to `reclaimSurroundingWord(ic, tap: TapPoint?)`'s
-     own `if (tap != null) { composingTaps.addAll(...) }` guard: the D-421 initial-caret-position reclaim (a
-     field reopening with the caret already inside existing text) passes `tap = null`, since there genuinely
-     is no live tap history for text from a previous session - deliberately never fabricated. Because
-     `MissedBackspaceRecovery`/`RawCoordinateCorrection` both require an exact `token.length == taps.size`
-     match, a single reclaimed character anywhere in the token makes the whole thing ineligible. Confirmed not
-     a regression: typing the same garbled word freshly, in one unbroken session (no field reopening), worked
-     immediately - documented as a known, accepted boundary in spec A-13.
-  3. **A real, self-inflicted performance regression, found in the very same log**: `handleKey: key=DELETE`
-     entries during a backspace-hold on the still-long, unknown token took 370-400ms each (`welxmche`->`welxm`),
-     dropping to 30ms once the token shortened - the classic profile of an expensive per-keystroke search this
-     project has fought to keep off the hot path several times before (D-138/D-160/D-208/D-211/D-215). Root
-     cause: §386's own diagnostic logging had extracted `provider.hasObviousCandidate(...)` into its own eager
-     `val` so the gate decision could be logged, breaking the `||` chain's short-circuit evaluation that
-     previously skipped this expensive call entirely whenever `duringRepeat` or `!includeExpensiveFallbacks`
-     already made the result irrelevant - so it now ran on *every* keystroke, including every backspace-repeat
-     tick. Fixed by restoring the original inline `if (duringRepeat || !includeExpensiveFallbacks ||
-     provider.hasObviousCandidate(...))` short-circuit shape while removing the temporary logging (both changes
-     land in the same edit, since the logging was the only reason the short-circuit had been broken up).
-
-  `AdaptKeyA13`'s own temporary diagnostic logging (both in `refreshSuggestions()`'s gate and inside
-  `missedBackspaceCorrection()`) fully removed now that it has served its purpose. No new tests (the fix
-  restores previously-tested-and-shipped control flow rather than changing behaviour; the perf characteristic
-  itself is not something this project's unit tests measure). 1240 unit tests unchanged, all green.
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec: A-13 gained the D-431-followup addendum
-  documenting the reclaimed-token limitation. `versionCode` 442 -> 443, `versionName` `"1.1.25"` ->
-  `"1.1.26"`. **2026-09-03: device-confirmed working** - both the A-13 fix itself and the performance
-  regression fix (Backspace-hold stays fast throughout).
-
-- **§386 (v1.1.25): D-431-followup - "welche" still not suggested for "welxmche" on a real device after**
-  **D-431 shipped; temporary diagnostic logging added instead of a third blind patch.** The gate fix itself
-  was re-verified directly (both by re-reading `hasObviousCandidate`'s own logic and by re-confirming the
-  existing `LearnedBigramBoostTest`-style unit test for this exact repro still passes) - `"welsche"`/`"Welsche"`
-  are real, separate dictionary rows only reachable via the D-117 wide-fuzzy fallback (cost 3, `x`/`s` being
-  keyboard-adjacent), correctly excluded from `hasObviousCandidate`'s own narrower search, so the gate itself
-  should not be blocking A-13 here. Rather than guess a third mechanism (composingTaps desync, a stale
-  reclaim, the raw tap simply not landing close enough to Backspace on this occasion - all plausible, none
-  confirmable from code alone), this project's own established pattern for exactly this class of bug (spec
-  §1's guiding principle; D-355/D-373-followup's own precedent) applies: a new `AdaptKeyA13` diagnostic tag
-  now logs, via the existing `diag()` helper (`Log.d` + the in-app X-01 diagnostic log, Settings ->
-  Diagnostics), the gate decision itself (`hasObviousCandidate` result and the candidates already found) and,
-  inside `missedBackspaceCorrection()`, the backspace geometry, `composingTaps.size` vs. the typed token's
-  own length, `MissedBackspaceRecovery.recover()`'s own raw candidate list before the dictionary filter, and
-  the final known-word result. Reachable via `adb logcat -s AdaptKeyA13:D` or the in-app Diagnostics log.
-  Genuinely no working theory left worth coding blind against - waiting on a real repro's log output before
-  touching either mechanism again. No new tests (diagnostic logging only, no behaviour change). 1240 unit
-  tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change (no
-  behaviour changed). `versionCode` 441 -> 442, `versionName` `"1.1.24"` -> `"1.1.25"`.
-
-- **§385 (v1.1.24): D-433-followup (v5) - the last remaining gap: "Mehr erfahren" still sat flush left,**
-  **not indented with the title/summary column above it.** Reported directly, once §384's own title/summary
-  fix was confirmed correct. Root-caused, not re-guessed: `preference_material.xml`'s own icon column
-  (`<include layout="@layout/image_frame"/>`) is a `LinearLayout` with `android:minWidth="56dp"` - reserved
-  at that fixed width *regardless* of whether an icon is actually shown, confirmed by reading `image_frame.xml`
-  directly. The button row below the include has no icon_frame of its own, so its own
-  `listPreferredItemPaddingStart` padding alone landed it under where an icon would sit, not under the
-  title/summary text one column further right. Fixed with a leading `56dp` `Space` before the two-button
-  `LinearLayout`, matching that exact reserved width. No new tests (pure layout fix). 1240 unit tests
-  unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 440 -> 441,
-  `versionName` `"1.1.23"` -> `"1.1.24"`. **2026-09-03: device-confirmed.**
-
-- **§384 (v1.1.23): D-433-followup (v4) - v3's own `<include>` pointed at the wrong layout resource.**
-  Screenshot confirmed the exact symptom precisely: "Mini-LLM (Tier 3)" rendered larger but not bold, and
-  visibly further left than every sibling title/summary in the same list. Root-caused properly this time by
-  reading the actual style chain inside the `androidx.preference:1.2.1` AAR rather than assuming
-  `@layout/preference` (the plain, pre-Material default `v3` included) was what this screen actually uses:
-  `values/themes.xml` sets `preferenceTheme="@style/PreferenceThemeOverlay"`, whose own `BasePreferenceThemeOverlay`
-  parent maps `preferenceStyle` to `@style/Preference.Material`, whose own `android:layout` is
-  `@layout/preference_material` - a genuinely different file from `@layout/preference` (confirmed by reading
-  both directly): theme-derived `?android:attr/listPreferredItemPadding*` instead of a fixed margin, and
-  `?android:attr/textAppearanceListItem` for the title instead of `textAppearanceLarge` - exactly the two
-  attributes behind both symptoms in the screenshot. Fixed by including `@layout/preference_material`
-  instead - the literal layout every sibling plain `Preference` in this screen already renders through - and
-  by switching the two-button row's own horizontal padding from a hard-coded `16dp` guess to the identical
-  `listPreferredItemPaddingStart`/`End` theme attributes the included layout's own title/summary column uses,
-  so the buttons line up under that text by construction rather than by an approximated constant. No new
-  tests (pure layout-resource fix). 1240 unit tests unchanged, all green. `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 439 -> 440, `versionName` `"1.1.22"` -> `"1.1.23"`. **2026-09-03:
-  device-confirmed.**
-
-- **§383 (v1.1.22): D-433-followup (v3) - §382's own fix made it worse (fully flush left, still not bold) -**
-  **the real root cause was more fundamental than wrong margin/textAppearance values.** Reported directly:
-  after §382 shipped, the row went from "a few pixels off" to completely unindented, and the title, while now
-  a larger font, still was not bold. Root-caused properly this time, not patched again by further attribute
-  tweaking: `preference_tier3_model.xml` re-declared `android:id="@+id/icon_frame"` - inside this app's own
-  layout resource, that mints a **new** id under this app's own `R` class, a different numeric value than
-  `androidx.preference.R.id.icon_frame`, the id `Preference.onBindViewHolder()` is actually compiled to look
-  up internally to manage that view's own visibility (same name, unrelated id - resource ids are scoped per
-  compiled `R` class, not aliased by name across a library boundary). The library's own icon-frame handling
-  therefore silently never reached this layout's view at all in either v1 or v2; §382's own change (dropping
-  the `minWidth` safety net that happened to reserve *some* space in v1) simply removed the one thing that had
-  been accidentally producing an approximately-plausible result, exposing the real gap.
-
-  Fixed properly by not hand-copying AndroidX's internal structure at all: `preference_tier3_model.xml` now
-  `<include layout="@layout/preference" />`s the library's own real default layout resource verbatim -
-  the exact same physical XML `androidx.preference.Preference` already renders for every sibling row in this
-  screen, ids included, so title/icon/summary rendering is now byte-identical to every other preference by
-  construction, not by re-derivation. Only the two-button row is this project's own content, appended below
-  the include in the same wrapping `LinearLayout`. `Tier3ModelPreference.onBindViewHolder()` itself needed no
-  change - it only ever looked up its own `tier3_pref_setup`/`tier3_pref_learn_more` ids, never the library's.
-  No new tests (pure layout fix, Android view glue). 1240 unit tests unchanged, all green.
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green (confirms `@layout/preference` resolves correctly
-  against the `androidx.preference` dependency, not shadowed by any local resource of the same name).
-  `versionCode` 438 -> 439, `versionName` `"1.1.21"` -> `"1.1.22"`. **2026-09-03: device-confirmed.**
-
-- **§382 (v1.1.21): D-433-followup (v2) - three real visual bugs in §381's own hand-built preference layout,**
-  **root-caused by diffing against AndroidX's real default layout, not guessed.** Reported directly: the row
-  sat a few pixels left of every other setting, its own title was no longer bold, and the "Jetzt einrichten"
-  button's text was nearly invisible (pale on light grey). Root cause confirmed by extracting the actual
-  `preference.xml` straight out of the `androidx.preference:preference:1.2.1` AAR in the local Gradle cache
-  (`~/.gradle/caches/modules-2/files-2.1/androidx.preference/...`) and diffing it line-for-line against
-  `preference_tier3_model.xml` - which had been hand-copied from this project's own pre-existing
-  `preference_labeled_seekbar.xml` template (D-407/D-408) rather than the true AndroidX default, and that
-  template itself turns out to already carry small, previously-unnoticed deviations (masked there by the
-  SeekBar's own visual weight, never masked here):
-
-  - **The shift**: `preference_labeled_seekbar.xml`'s own title/summary `RelativeLayout` uses
-    `marginStart=16dp`/`marginEnd=8dp`; the real default uses `marginStart=15dip`/`marginEnd=6dip`. Fixed to
-    the exact real-default values.
-  - **The missing bold**: the template's title `TextView` uses `textAppearance="?android:attr/
-    textAppearanceMedium"` with no explicit colour; the real default uses `textAppearanceLarge` plus an
-    explicit `textColor="?android:attr/textColorPrimary"`. Copied verbatim.
-  - **The unreadable button**: the new setup button (`Kind.tier3_pref_setup`) inherited `?android:attr/
-    borderlessButtonStyle`'s own default text colour with no override - resolves to a pale tone against this
-    screen's light background. Fixed with an explicit `textColor="?android:attr/textColorPrimary"`, matching
-    the same attribute the title itself now correctly uses (the "Mehr erfahren" button's own deliberate blue
-    `link_text` override is untouched - that one was never the complaint).
-
-  The icon frame was also switched from the template's bare `ImageView` (`android:minWidth="48dp"`) to the
-  real default's exact `FrameLayout` + `ImageView` (`maxWidth`/`maxHeight` 48dp, no `minWidth`) structure -
-  the one piece a plain diff alone could not fully explain (would need on-device measurement to confirm it
-  was actually contributing to the shift), but replicating the identical structure removes it as a possible
-  factor entirely rather than leaving an approximation in place. No new tests (pure layout-attribute fix,
-  Android view glue). 1240 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
-  green. `versionCode` 437 -> 438, `versionName` `"1.1.20"` -> `"1.1.21"`. **2026-09-03: device-confirmed.**
-
-- **§381 (v1.1.20): D-433-followup - reworked the Mini-LLM settings row itself, plus a real, unrelated bug**
-  **found and fixed in passing.** Direct feedback right after §380 shipped, several distinct points at once:
-
-  1. **The settings-list summary was confirmed to fit without truncating, but judged too thin** - "etwas mehr
-     könnte man an dieser Stelle schon dazu erzählen." `c06_model_pref_summary` widened moderately (one
-     two-clause sentence covering both the contextual-completion and ambiguous-capitalisation benefits) - a
-     deliberate middle length between the original one-liner and the full paragraph that prompted §380's own
-     truncation report in the first place, since there is no device here to test the exact new wrap point
-     against.
-  2. **The row must show, at a glance, whether the model is actually installed.** Rather than a separate bold
-     status line (the D-419 `ListPreference` pattern doesn't fit here - this isn't a list of named choices),
-     folded directly into the new setup button's own label instead (see point 4).
-  3. **A real, unrelated bug, reported in passing:** `Tier3ModelActivity` was missing the edge-to-edge inset
-     fix every other settings sub-screen already has (`BlacklistActivity`'s own K-01-derived fix, §13,
-     confirmed by grep - `LanguagePacksActivity`/`CredentialsActivity`/`CalibrationActivity`/
-     `DiagnosticLogActivity`/`BackupActivity`/`LearnedWordsActivity` all have it; this one alone never did).
-     Its content sat under the status bar/display cutout instead of being pushed down below it. Fixed with
-     the identical `ViewCompat.setOnApplyWindowInsetsListener` block every sibling screen already uses,
-     against a newly-named `@id/tier3_root` (the screen's own root `ScrollView`, padding moved there from the
-     inner `LinearLayout` to match the established convention exactly).
-  4. **The settings row itself redesigned**: the on-screen "why" paragraph that used to live at the top of
-     `Tier3ModelActivity` (`c06_model_benefit`, added only in §380) is gone entirely - "der hier angezeigte
-     Text [ist] unnötig... man kann ihn sicher so kompakt halten, dass er einfach in die Settings View
-     passt." The settings-list row itself now hosts two independent buttons directly beneath its (widened)
-     summary: "Mehr erfahren" (opens the same detail dialog immediately, no navigation at all) and a
-     status-aware button reading "Bereit" when a model is installed or "Jetzt einrichten" otherwise (tapping
-     either state still opens `Tier3ModelActivity`, to manage/remove or to actually install). A plain
-     `Preference` cannot express two independently-clickable regions with different actions - built as a new
-     `Tier3ModelPreference` (custom `layoutResource`, `isSelectable = false` so only the two buttons react,
-     mirroring `LabeledSeekBarPreference`'s own D-407 precedent for a custom-layout preference in this same
-     screen) with a new `preference_tier3_model.xml` layout (mirrors `preference_labeled_seekbar.xml`'s own
-     icon/title/summary structure, D-407/D-408, with a two-button row in place of the SeekBar).
-     `settings_preferences.xml`'s `c06_model` entry now declares the custom class directly, dropping the old
-     `<intent>` child (navigation is now the setup button's own explicit `startActivity` call, not the whole
-     row's). `Tier3ModelActivity.showDetailsDialog()` promoted to a companion function taking a `Context`, so
-     the preference's own button can show it without ever creating the activity. The setup button's own label
-     is re-derived on every bind, refreshed via a new public `Tier3ModelPreference.refresh()` (`notifyChanged()`
-     itself is protected) called from `SettingsFragment.onResume()` - identical reasoning to the pre-existing
-     K-01 calibration-summary refresh right next to it: the install state only ever changes via the separate
-     `Tier3ModelActivity`, so returning from it must re-bind this row to pick up a fresh
-     `Tier3ModelStorage.isModelInstalled()` read.
-
-  Localised into all three languages (de/en/el) - `c06_model_pref_summary` revised, two new button-label
-  strings (`c06_model_pref_ready`/`c06_model_pref_setup_now`), `c06_model_benefit` removed (confirmed no
-  remaining reference anywhere). No new tests (pure Android view/`Preference`/dialog glue, all untested per
-  this project's own convention, same as every other settings-screen change). 1240 unit tests unchanged, all
-  green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change - same D-89 precedent as §380.
-  `versionCode` 436 -> 437, `versionName` `"1.1.19"` -> `"1.1.20"`. **2026-09-03: device-confirmed.**
-
-## Older Rounds (§1-§380, v0.7.6 through v1.1.19) - Pruned From This File
+## Older Rounds (§1-§391, v0.7.6 through v1.1.30) - Pruned From This File
 
 This file only tracks the current status plus the recent working set - it is not a lossy summary of the
 rounds removed below. Every pruned round's full detail (root cause, rejected alternatives, real device-log

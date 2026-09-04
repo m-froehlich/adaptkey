@@ -13,10 +13,11 @@ import de.froehlichmedia.adaptkey.language.Language
  * here rather than a UI change.
  * 
  * Deliberately does **not** list every [Language] enum value - [de.froehlichmedia.adaptkey.language.
- * Language.FRENCH]/`SPANISH`/`ITALIAN`/`DUTCH`/`PORTUGUESE` are already fully typeable (the ordinary Latin
+ * Language.ITALIAN]/`DUTCH`/`PORTUGUESE` are already fully typeable (the ordinary Latin
  * [de.froehlichmedia.adaptkey.keyboard.LayoutRegistry] default needs no new layout code for any of them),
  * but none has an actual dictionary built and hosted yet - offering a download button with nothing behind
- * it would be worse than not listing them at all.
+ * it would be worse than not listing them at all. `FRENCH` (D-441) and `SPANISH` (D-443) have already
+ * moved from that state to a real, listed entry below.
  */
 object LanguagePackCatalog {
     
@@ -500,6 +501,83 @@ object LanguagePackCatalog {
             // mandatory step 11 - not yet reviewed by a native French speaker: this is a "pretty good",
             // pipeline-built pack (now built from real corpus data at real scale, not a small proxy
             // source), not native-reviewed quality.
+            version = 1
+        ),
+        Entry(
+            Language.SPANISH,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-es.zip",
+            // D-443: first Spanish language pack, built directly to the real-corpus/real-lexicon method
+            // D-441-followup (French, AdaptKey-History.md §415) ended up on - not the earlier, explicitly-
+            // superseded first pass (a small OpenSubtitles-derived list, heuristic suffix-based POS tagging,
+            // live-random-article bigram sampling). No intermediate/heuristic step was taken for Spanish at
+            // all, per explicit user instruction. Spanish already uses the ordinary QWERTY row geometry
+            // (LayoutRegistry.kindFor -> LayoutKind.LATIN_QWERTY, no dedicated layout code needed, unlike
+            // French's own D-314 AZERTY work) and already had a real character-trigram profile
+            // (language_profiles.tsv, "es", since D-280) - both prerequisites already satisfied.
+            //
+            // dict.tsv: 233,636 words - real frequency counts from an actual Spanish Wikipedia XML dump
+            // (eswiki-latest-pages-articles1.xml-p1p159400.bz2, the official first split - the entire
+            // ns=0/non-redirect content of that split was processed, 47,669 pages, well under the extractor's
+            // own PAGE_CAP=100,000 safety cap; the machine's real free RAM was checked live before starting
+            // (~6.3GB, more headroom than French's own ~4.5GB) and the cap was raised only modestly, not
+            // scaled up blindly, following the French round's own confirmed-safe 80,000-page/~3.3GB-resident
+            // data point). 91.97M real tokens processed, rescaled to German's own frequency magnitude
+            // (rank-1 -> ~1,000,000). POS tags are real, not guessed: merged against kaikki.org's Spanish
+            // Wiktionary extract (wiktextract, MIT tool / CC BY-SA content - same licence family as German's/
+            // Greek's/French's own Wiktionary-derived data, 809,603 entries, 769,370 distinct word strings) -
+            // a word found there gets kaikki's own real part of speech; one not found is still kept, tagged
+            // OTHER, once its own real corpus count clears 20 occurrences, *unless* it is also a common word
+            // (frequency >= 100) in this project's own bundled en/dict.tsv - 12,049 rows removed this way,
+            // the same targeted noise signal French's own round used. A Spanish common noun is deliberately
+            // tagged NOUN,OTHER rather than a bare NOUN (verified: zero bare-NOUN rows in the final file) -
+            // CapitalisationEngine's own §6 rule 3 is unconditional, not gated by Language, and Spanish -
+            // like French/English, unlike German - does not capitalise common nouns. A PROPER_NOUN tag is
+            // dropped whenever kaikki also saw the same string used as anything else - actively checked for
+            // Spanish's own real name/common-noun collisions (per explicit user instruction, not merely
+            // reusing the French pierre/jean precedent): "sol"/"paz"/"victoria"/"luz"/"estrella"/"blanca"/
+            // "clara"/"esperanza"/"flor"/"dolores"/"pilar"/"mercedes"/"rosario"/"milagros"/"amparo"/
+            // "remedios"/"consuelo" - every one a real Spanish first name and a real common noun - all
+            // correctly landed as NOUN,OTHER/NOUN,ADJECTIVE/NOUN,VERB, never PROPER_NOUN, confirmed by direct
+            // inspection of the final dict.tsv rather than assumed. bigram.tsv: 732,856 rows (>=10 real
+            // occurrences each, the same final cutoff French's own published pack uses) from the identical
+            // real dump corpus (2,489,688 distinct pairs at >=3 before this cutoff). hints.tsv/diacritics.tsv/
+            // abbreviations.tsv are Spanish's own, not reused from German/French: hints.tsv keeps German's 10
+            // language-neutral math/typography assignments (b=*, d=°, f=ƒ, h=#, m=-, n=+, p=π, q=@, v=/, x=×)
+            // and gives the remaining 16 letters Spanish's own accents/punctuation - a=á, e=é, i=í, o=ó, u=ú,
+            // w=ü (u is already spoken for by ú, so the diaeresis - needed for "güe"/"güi" words like
+            // "pingüino" - sits on the rare loanword-only letter w instead), l=ñ (mirroring the real Spanish
+            // hardware keyboard's own Ñ-next-to-L placement, per explicit user instruction that ñ must not
+            // sit on n - n already carries the language-neutral "+"), c=¿, j=¡ (the two Spanish-iconic
+            // inverted punctuation marks), g=«, r=» (Spanish's own standard quotation-mark convention), s=€,
+            // t=º, y=ª (the masculine/feminine ordinal indicators - a genuinely Spanish-specific typographic
+            // convention, the same "°" role German's own set already fills for degree), k/z filled with
+            // generically useful remaining typography (—, …). diacritics.tsv: a→á, e→é, i→í, o→ó, u→ú,ü, and
+            // n→ñ - included even though ñ is not a genuine alternate-ASCII-spelling convention the way
+            // German's ß/ss is (there is no legitimate "write ñ as nn" tradition), but the underlying
+            // base-letter-to-real-variant shape is otherwise identical to every other entry here, so the
+            // ordinary DataDiacriticFolding mechanism (D-436) already handles it correctly with no dedicated
+            // hardcoded special case needed, unlike German's own Umlaut object. abbreviations.tsv: a
+            // hand-curated ~26-entry Spanish sentence-boundary abbreviation list (sr./sra./dr./ud./pág./núm./
+            // etc.).
+            //
+            // SpanishRules (LanguageRulesRegistry): decimalCommaGluesDigits=true (the RAE/Spain convention;
+            // several Latin American locales use a point instead, not representable separately in this app's
+            // current per-language, not per-region, model), timeSuggestionWord=null,
+            // bundledConfusablesBlacklist=empty. `dictionaries/confusables_scan.py dictionaries/es/dict.tsv
+            // qwerty 30` ran cleanly (Spanish needed no KeyboardProximity work first, unlike French's own
+            // D-442 AZERTY prerequisite) and found 625 candidate pairs, the overwhelming majority short (2-3
+            // letter) tokens risking autocorrect into a common neighbouring function word - reviewed by hand,
+            // same as French's own AZERTY scan, and left deliberately uncurated: several are genuine Spanish
+            // words/contractions this round's own non-native judgement confirmed real (fe/ve/re/pa/eh - faith/
+            // "goes or sees"/musical note or colloquial intensifier/colloquial "para"/interjection) sitting
+            // right alongside genuinely ambiguous short fragments (we/ce/dd/sn/rn) this round could not
+            // confidently rule out as pure noise rather than an abbreviation-with-its-period-stripped
+            // artefact or a foreign name fragment - left for native review rather than guessed at.
+            //
+            // Not device-confirmed, and - per the guide's own mandatory step 11 - deliberately NOT claimed to
+            // have passed a native-Spanish-speaker review: real corpus scale from the start this time (no
+            // superseded first pass, unlike French's own D-441/D-441-followup history), but still a "pretty
+            // good" pipeline-built pack, not native-reviewed quality.
             version = 1
         )
     )

@@ -124,7 +124,8 @@ object LanguageRulesRegistry {
     private val RULES: Map<Language, LanguageRules> = mapOf(
         Language.GERMAN to GermanRules,
         Language.ENGLISH to EnglishRules,
-        Language.FRENCH to FrenchRules
+        Language.FRENCH to FrenchRules,
+        Language.SPANISH to SpanishRules
     )
     
     /**
