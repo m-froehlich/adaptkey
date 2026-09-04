@@ -764,6 +764,15 @@ A period does **not** start a new sentence when it terminates a known abbreviati
 - **Known abbreviations:** abbreviations whose canonical form always ends in a period, either already present in the dictionary (e.g. `usw.`, `z. B.`, `d. h.`, `ca.`, `Nr.`) or learned from the user's own input. Such an entry is flagged as *abbreviation* so its trailing period is understood as part of the token rather than a sentence terminator.
 - **Enumerators:** a run of digits followed by a period at a list position (e.g. `1.`, `2.`, `10.`) is an ordinal / list marker, not a sentence end.
 
+D-434: the known-abbreviation list itself is the active language's own - not, as before this fix, always
+German's regardless of which language is actually active (a genuine cross-language leak: any non-German text
+silently had its sentence-boundary detection run against German abbreviations like `bzgl.`/`zzgl.`). Bundled
+for English inside the APK, or an installable language pack's own optional `abbreviations.tsv` (D-280/D-281's
+same per-language-file convention as the L-05 AltGr hint set) for every other language; a language with no
+file of its own falls back to the compiled-in German list - functional but not tailored, the same fallback
+role `KeyboardLayout.DEFAULT_LETTER_HINTS` already plays for L-05 - rather than having no abbreviation
+handling at all.
+
 ---
 
 ## 7. Autocorrect Policy

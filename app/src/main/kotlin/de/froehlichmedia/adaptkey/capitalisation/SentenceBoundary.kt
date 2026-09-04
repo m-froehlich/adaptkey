@@ -27,9 +27,15 @@ object SentenceBoundary {
      * @param before the text before the cursor (e.g. from `getTextBeforeCursor`)
      * @param suppressAfterCommaLine whether a comma-terminated line suppresses the next line's
      *        sentence start (C-10)
+     * @param abbreviations the active language's own abbreviation set (D-434); defaults to
+     *        [Abbreviations.GERMAN] for callers with no language context of their own
      * @return true when the next word starts a new sentence and should be auto-capitalised
      */
-    fun isSentenceStart(before: String, suppressAfterCommaLine: Boolean): Boolean {
+    fun isSentenceStart(
+        before: String,
+        suppressAfterCommaLine: Boolean,
+        abbreviations: Set<String> = Abbreviations.GERMAN
+    ): Boolean {
         val trailingWhitespace = before.takeLastWhile { it.isWhitespace() }
         val trimmed = before.substring(0, before.length - trailingWhitespace.length)
         if (trimmed.isEmpty()) {
@@ -43,7 +49,7 @@ object SentenceBoundary {
         val lastChar = trimmed.last()
         val lineStart = trailingWhitespace.any { it == '\n' || it == '\r' }
         if (lastChar == '.' || lastChar == '!' || lastChar == '?') {
-            if (lastChar == '.' && Abbreviations.isNonTerminalPeriod(lastToken(trimmed))) {
+            if (lastChar == '.' && Abbreviations.isNonTerminalPeriod(lastToken(trimmed), abbreviations)) {
                 // e.g. "… usw. x" / "1. x": the period is not a terminator; only a real new line starts over.
                 return lineStart
             }
@@ -70,17 +76,22 @@ object SentenceBoundary {
      *
      * @param before the text before the cursor; must already be known to end in `"-"`
      * @param suppressAfterCommaLine forwarded to [isSentenceStart] for the previous segment's own context
+     * @param abbreviations forwarded to [isSentenceStart]; see its own KDoc
      * @return the previous segment's own text (real casing preserved) and whether it was a sentence start,
      *         or null when [before] ends in a bare hyphen with no letters before it at all
      */
-    fun previousHyphenSegment(before: String, suppressAfterCommaLine: Boolean): Pair<String, Boolean>? {
+    fun previousHyphenSegment(
+        before: String,
+        suppressAfterCommaLine: Boolean,
+        abbreviations: Set<String> = Abbreviations.GERMAN
+    ): Pair<String, Boolean>? {
         val beforeHyphen = before.dropLast(1)
         val segment = beforeHyphen.takeLastWhile { it.isLetter() }
         if (segment.isEmpty()) {
             return null
         }
         val contextBeforeSegment = beforeHyphen.substring(0, beforeHyphen.length - segment.length)
-        return segment to isSentenceStart(contextBeforeSegment, suppressAfterCommaLine)
+        return segment to isSentenceStart(contextBeforeSegment, suppressAfterCommaLine, abbreviations)
     }
     
     private const val BARE_TERMINATORS = ".!?"

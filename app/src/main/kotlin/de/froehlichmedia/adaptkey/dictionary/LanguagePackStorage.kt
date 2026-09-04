@@ -50,6 +50,14 @@ object LanguagePackStorage {
     fun hintsFile(context: Context, language: Language): File = File(languageDir(context, language), "hints.tsv")
     
     /**
+     * D-434: the installed abbreviation-list default (§6's sentence-boundary detection) for [language],
+     * whether or not it actually exists yet - optional, like [hintsFile]: a language pack without one falls
+     * back to [de.froehlichmedia.adaptkey.capitalisation.Abbreviations.GERMAN].
+     */
+    fun abbreviationsFile(context: Context, language: Language): File =
+        File(languageDir(context, language), "abbreviations.tsv")
+    
+    /**
      * @param context any valid context
      * @param language the language to check
      * @return true when a language pack is installed for [language] (its unigram file is present - a
@@ -72,6 +80,11 @@ object LanguagePackStorage {
         return runCatching { hintsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
     }
     
+    /** @return the installed abbreviation-list file's content, or null when not installed / unreadable */
+    fun readAbbreviations(context: Context, language: Language): String? {
+        return runCatching { abbreviationsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
+    }
+    
     /**
      * Removes [language]'s installed pack files (not the dictionary database itself - the caller is
      * responsible for also deleting that, see [DictionaryLoader.databaseName]).
@@ -83,8 +96,9 @@ object LanguagePackStorage {
         wordsFile(context, language).delete()
         bigramsFile(context, language).delete()
         hintsFile(context, language).delete()
+        abbreviationsFile(context, language).delete()
         // Best-effort: File.delete() on a directory only succeeds when it is already empty, exactly the
-        // state the three deletes above just left it in (barring a stray unrelated file, harmless either way).
+        // state the deletes above just left it in (barring a stray unrelated file, harmless either way).
         languageDir(context, language).delete()
     }
 }

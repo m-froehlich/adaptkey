@@ -788,6 +788,70 @@ non-trivial changes).
 
 ## Current State
 
+- **§400 (v1.1.39): D-434 - `Abbreviations.isNonTerminalPeriod`/`isAbbreviation` always checked the token**
+  **against the German list regardless of the active language - a genuine cross-language leak, found while
+  auditing the language-pack pipeline for the Contribution Guide work below, not from a device report.** Every
+  non-German field's §6 sentence-boundary detection silently ran against German abbreviations (harmless
+  overlap for a shared Latin abbreviation like `etc.`, actively wrong for a German-specific one like
+  `bzgl.`/`zzgl.` inside non-German text). Fixed by making the abbreviation set a parameter throughout
+  (`Abbreviations`/`SentenceBoundary`, both default to `GERMAN` so every existing caller/test keeps its old
+  behaviour unchanged) and adding a full per-language data-file mechanism mirroring D-281's `hints.tsv`
+  exactly: a new optional `abbreviations.tsv` in a language pack (`LanguagePackInstaller`/`LanguagePackStorage`,
+  D-310 fixed-filename convention), a bundled-asset-or-installed-pack loader
+  (`LanguageAbbreviationsLoader`, mirrors `LanguageLetterHintsLoader`), threaded through `AdaptSettings`/
+  `SettingsMapper`/`SettingsStore` exactly like `letterHints` already is, including the same "reload on a
+  plain G-01 language swipe, not just on a full settings reload" fix `applyActiveLanguageToView()` already had
+  to do for `letterHints` (`toggleLanguage()` never calls `applySettings()`). A language with no
+  `abbreviations.tsv` of its own falls back to the compiled-in `Abbreviations.GERMAN` list - the same
+  "functional but not tailored" fallback role `KeyboardLayout.DEFAULT_LETTER_HINTS` already plays for L-05, not
+  a regression from today's German-only behaviour. No bundled/installed `abbreviations.tsv` files were added
+  for English/German themselves this round - the fallback already reproduces current behaviour for both, and
+  a real per-language content decision was deliberately left out of scope here (see the Contribution Guide's
+  own new §8 below for how a future language's own list should actually be drafted). New/updated tests:
+  `AbbreviationsTest`/`SentenceBoundaryTest` (the parameterised behaviour, default-preserves-old-behaviour, and
+  `parse()`), `LanguagePackInstallerTest` (the new optional archive entry, write + clear),
+  `SettingsMapperTest` (empty-set-falls-back-to-GERMAN, a custom set is preserved). 1249 -> 1262 unit tests,
+  all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §6 "No Sentence Start After Known
+  Abbreviations and Enumerators" gained a D-434 addendum documenting the new per-language mechanism and
+  fallback. `versionCode` 455 -> 456, `versionName` `"1.1.38"` -> `"1.1.39"`.
+
+  **Same round, doc-only:** `AdaptKey-Language-Contribution-Guide.md` gained a new §8, "A 'pretty good'
+  one-shot pipeline (LLM-assisted, not a substitute for a native speaker)" - written after a design discussion
+  on whether more bundled languages are needed before wider (F-Droid) release (assessed: no, DE/EN/EL is an
+  honest starting point, F-Droid itself does not gate on language coverage; Spanish/French would be the
+  highest-value additions if the project ever wants to actively pursue reach). The user's own follow-up ask:
+  fold the LLM-assisted content-generation steps discussed there directly into the Guide as a repeatable
+  pipeline, explicitly scoped to "pretty good", never claimed equal to German's own native-speaker-reviewed
+  quality bar. Twelve steps, in dependency order: base corpus extraction (flagged as the one genuine
+  prerequisite with no script yet in this repo), frequency-scale calibration against the app's own tuned
+  constants, LLM-based noise removal (batched, replacing §301's manual per-band review), LLM-based POS tagging
+  including homograph disambiguation (direct "what part of speech" prompting instead of D-368's own
+  error-prone `+n`/`+en` spelling heuristic - arguably a real improvement on method, not just a faster
+  imitation), Wortfamilien/lemma completion via Wiktionary (pointing at the real, checked-in
+  `dictionaries/de/extract_wiktionary_*.py`/`dictionaries/el/extract_wiktionary.py` scripts as reference
+  implementations now that the design-plan docs that originally described the method have been deleted as
+  superseded), the AltGr hint set (§3, this round's own D-434 file as a worked example of the mechanism), the
+  new abbreviations.tsv itself, the confusables/keyboard-adjacency scan (D-304/D-330-followup's method
+  generalised), an explicit capitalisation-rule-applicability decision (§6 rules 3/4 are a German convention,
+  not universal), `LanguageRules` naive-fill scoping (the user's own late addition to this list mid-session -
+  three of its nine hooks are plain factual questions an LLM can answer directly and safely
+  (`decimalCommaGluesDigits`/`timeSuggestionWord`/`bundledConfusablesBlacklist`, the last reusing the
+  confusables-scan step's own output), the other six encode real per-language grammar algorithms
+  (A-05's split/compound vetoes, regular-inflection recognition) that stay genuine manual grammar-engineering
+  work - most contributed languages will legitimately keep `NoOpLanguageRules` for these six, a documented
+  accepted state, not a defect; also noted that unlike every data file in §3, `LanguageRules` still needs an
+  actual Kotlin class and PR even for the three naively-fillable answers, no data-file mechanism exists for it
+  today), trigram language-profile data (closing the existing "known gap, not a design choice" from §6 in the
+  same pass), and a mandatory closing gate - a real speaker's random-sample spot check across frequency bands
+  before a pipeline-generated pack may be called "pretty good" and published, since a clean pipeline run is not
+  the same thing as a correct one and an LLM pipeline has no ground truth of its own to check itself against.
+  One correction folded in from the user's own pushback on an earlier, too-pessimistic draft of the AltGr
+  point specifically: a Latin-script language whose special characters are diacritic variants of an existing
+  letter (Turkish `ğ ş ı`, Polish `ł ż ń ć ś`, ...) maps onto that base letter's own popup unambiguously and
+  can be LLM-drafted reliably - only the symbol/punctuation choices on top of that remain a real judgement call
+  needing human/native confirmation, not the whole file. No code change, no version bump for this half (this
+  project's own "pure doc update" convention) - the version bump above is entirely for the D-434 fix.
+
 - **§399 (v1.1.38): D-361-followup (v6) - the real cause of "oben wirkt gar nicht", found from the §398**
   **diagnostic log the very first time it was captured.** User's own repro nailed it precisely: rapid
   Backspace tapping while the finger drifts upward types `LLLLLLKKKKK` instead of deleting, the moment the

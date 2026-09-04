@@ -74,7 +74,7 @@ If yours is already there:
 
 ## 3. Building the dictionary (and your own AltGr hint set)
 
-Up to four plain text files, UTF-8, one language - D-310: every file here uses a fixed, un-suffixed name
+Up to five plain text files, UTF-8, one language - D-310: every file here uses a fixed, un-suffixed name
 (`dict.tsv`, not `dict_<code>.tsv`), since each archive/folder is already scoped to exactly one language by
 its own location, not by its filenames:
 
@@ -114,9 +114,17 @@ its own location, not by its filenames:
   need to hand-tune its popup's left/right direction: D-282 made that automatic, based on the real popup
   width and the key's actual screen position, not on which key it happens to be - it works the same whether
   the alternatives came from this file or from hand-written Kotlin.
+- **`abbreviations.tsv`** (optional, D-434 - §6's sentence-boundary detection): one lower-cased abbreviation
+  per line, period included (e.g. `usw.`, `etc.`), parsed by `Abbreviations.parse()`; blank lines and `#`
+  comment lines are ignored. Without this file, your language falls back to `Abbreviations.GERMAN` -
+  functional but not tailored (the exact same fallback shape `hints.tsv` has above), so it is worth
+  providing your own list of the abbreviations that actually end a sentence-final period in your language,
+  rather than leaving German's own list (`usw.`, `bzgl.`, `z.b.`, ...) silently applied to your text instead.
+  Getting this wrong only ever costs a missed/extra auto-capitalisation after a period - never anything
+  destructive - so a rough first list is a safe, low-risk contribution even before it is exhaustive.
 - **`version.txt`** (optional but strongly recommended, D-308): its first line is a single plain integer,
   e.g. `1` - this pack's own version, bumped by *you* every time you publish a revised
-  `dict.tsv`/`bigram.tsv`/`hints.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
+  `dict.tsv`/`bigram.tsv`/`hints.tsv`/`abbreviations.tsv` under the same hosted URL. `LanguagePacksActivity`'s Download/Import
   buttons stay available at any time (even for an already-installed language) so a user can always manually
   re-check; re-importing only actually applies the freshly downloaded archive when *its own* version is
   strictly newer than what is already installed - if it is exactly the same, the user is told it is already
@@ -232,3 +240,127 @@ a from-scratch, careful exercise if you take it on, not a quick copy-paste.
   other change in this project's history is recorded - `AdaptKey-Progress.md`'s "Current State" section has
   many examples of the expected shape and level of detail.
 - Run `:app:assembleRelease :app:testDebugUnitTest` before opening the pull request; both must be green.
+
+---
+
+## 8. A "pretty good" one-shot pipeline (LLM-assisted, not a substitute for a native speaker)
+
+§§3-6 above describe *what* files a language pack needs and *how* to package/host them, once you already
+have their content. This section is the *how to actually generate that content fast*, using an LLM to do in
+one sitting what German's own dictionary took many separate, individually-reviewed rounds to reach (see
+`AdaptKey-Progress.md`'s D-368/D-402/D-412/D-412-adjacent entries for that real history). Read it before
+starting a language you do not speak yourself.
+
+**Be honest about the ceiling.** This pipeline gets a new language to "pretty good" - typable, with
+reasonable autocorrect/suggestions and no glaring false-positive corrections - not to the same bar as German
+today, which reflects a genuine native speaker (the app's own maintainer) reviewing real device feedback over
+many months. There is no shortcut past that for true native-level quality; do not label a pipeline-only
+pack as anything more than "pretty good" in its own PR description. Step 11 below is the one non-optional
+gate between "the pipeline ran" and "this is fit to publish."
+
+0. **Base corpus extraction** - `dict.tsv` (word + frequency + optional POS) and `bigram.tsv`
+   (`previousWord<TAB>word<TAB>count`) from a Wikipedia dump of your target language, the same source German
+   and Greek's own bundled dictionaries were built from. **No script for this step is currently checked into
+   this repository** - it is the one genuine prerequisite this guide cannot hand you ready-made; building or
+   reusing a Wikipedia-dump-to-frequency-list extractor is real work that has to happen before any later step
+   has anything to operate on.
+
+1. **Frequency-scale calibration.** Several ranking/correction formulas are tuned against the *magnitude* of
+   German Wikipedia's own frequency numbers - `CorrectionConfidence.NOUN_REFERENCE_FREQUENCY` (2000.0), the
+   D-411 log-scaling calibrated to "50 personal uses ≈ a moderately common dictionary word", and similar
+   constants elsewhere. A corpus of very different size (most languages' Wikipedia is smaller than German's)
+   produces systematically different frequency magnitudes, which can silently misfire these thresholds without
+   ever throwing an error. Sanity-check your own corpus's frequency distribution (e.g. compare the frequency
+   of a handful of common vs. rare words against the equivalent German ones) before trusting downstream
+   ranking to behave the same way it does for German/English/Greek.
+
+2. **LLM-based noise removal**, replacing the manual, band-by-band review German's own dictionary went
+   through (`AdaptKey-Progress.md` §301): batch your `dict.tsv` entries (by frequency band, not one word at a
+   time - individual per-word LLM calls do not scale to a corpus this size) and have the model flag
+   tokeniser artefacts, foreign-language leakage, and Wikipedia-markup fragments for removal.
+
+3. **LLM-based part-of-speech tagging, including homograph disambiguation.** Tag every entry with
+   `PartOfSpeech` (§3 above), and - unlike German's own retrofitted D-368 sweep, which had to lean on an
+   error-prone `+n`/`+en` spelling heuristic (`Krieg`/`kriegen` vs. `Krieg`/`Kriege`, indistinguishable from
+   spelling alone) - ask the model directly "what part(s) of speech does this word have in \<language\>",
+   which sidesteps that whole class of false positive. This is arguably a genuine improvement over how German
+   itself was tagged, not merely a faster imitation of it - worth revisiting for German too, separately, if
+   this pipeline proves itself.
+
+4. **Wortfamilien / lemma completion via Wiktionary.** Generate full inflectional paradigms (verb
+   conjugations, noun declensions/plurals, adjective degree/declension) and link every generated form back to
+   its lemma (the `lemma` column, D-412), the same way German's and Greek's own dictionaries were built
+   (`dictionaries/de/extract_wiktionary_*.py`, `dictionaries/el/extract_wiktionary.py` /
+   `merge_wiktionary.py` are real, checked-in reference implementations to adapt, not just a description -
+   read them before writing your own). Rule-based generation plus curated exception tables, not
+   individual-candidate review - the German/Greek scale (tens of thousands of generated forms) makes manual
+   review of every one infeasible, the same conclusion the (now-superseded, deleted)
+   `AdaptKey-Plan-Wortfamilien.md`/`AdaptKey-Plan-Adjektive.md` design docs reached.
+
+5. **AltGr / long-press hint set (`hints.tsv`, §3).** More automatable than the original guide text above
+   suggests for one large, common case: a Latin-script language whose own special characters are diacritic
+   variants of an existing Latin letter - Turkish `ğ ş ı`, Polish `ł ż ń ć ś`, and similar - maps unambiguously
+   onto that base letter's own popup (`ğ`/`ş` belong on `g`/`s`, `ł` on `l`, exactly the same relationship
+   `ä`/`ö`/`ü` already have to `a`/`o`/`u` in German's own set). An LLM can draft this mapping directly and
+   reliably, since the target key is never in question. Symbol/punctuation choices (currency signs, quotation
+   marks, math symbols) are more of a genuine UX judgement call about what that language's users actually
+   reach for day to day - still worth an LLM first draft, but flag it explicitly for a human/native check
+   rather than trusting it the way the diacritic mapping can be trusted.
+
+6. **Abbreviation list (`abbreviations.tsv`, D-434, §3).** Have the model draft a first list of the
+   sentence-final-period abbreviations actually used in the target language (the German list itself,
+   `Abbreviations.GERMAN`, is a real reference example of the shape/size to aim for). Low risk even before
+   it is exhaustive - see §3's own note on what getting this wrong actually costs.
+
+7. **Confusables / keyboard-adjacency risk scan.** Needs the language's own actual keyboard geometry, so it
+   only makes sense once §0/§5's layout question is settled. Mirrors the method D-304/D-330-followup used for
+   German's own possessive-determiner collisions: for pairs of real, frequent words that are a single
+   keyboard-adjacent-key substitution apart (via `KeyboardProximity.kt`'s real adjacency grid), check the
+   live `CorrectionConfidence` formula for whether one could silently and wrongly autocorrect into the other,
+   and blacklist the genuine risks. This is the mechanism `AdaptKey-Progress.md`'s open TODO ("
+   `seedBundledBlacklist`'s cross-language-confusables set is German-only") is asking a future language to
+   extend - see item 9 below for why doing so still needs a real Kotlin `LanguageRules` implementation today,
+   not just a data file.
+
+8. **Capitalisation-rule applicability - an explicit decision, not a silent default.** §6 rules 3/4 (automatic
+   noun capitalisation) are a German-specific orthographic convention, not a universal one. Decide
+   consciously whether the target language shares it: if not, still tag nouns accurately in step 3 (other
+   mechanisms, e.g. A-05's split-safety gate, read the `NOUN` tag independent of capitalisation), but the
+   language simply never triggers rules 3/4's automatic capitalisation in practice, precisely because "noun"
+   there does not imply "always capitalised" the way it does in German. Write this decision down in your PR -
+   do not let a future reader assume it was silently inherited from German's own behaviour.
+
+9. **`LanguageRules` (§4's own D-410 seam, `language/LanguageRules.kt`) - naive-fill where genuinely possible,
+   left `NoOpLanguageRules` everywhere else, and say so explicitly.** Today only German has a real
+   implementation (`GermanRules`); every other language silently gets the no-op default (every check answers
+   "does not apply"). Of its nine hooks, three are plain factual questions an LLM can answer directly and
+   safely: `decimalCommaGluesDigits()` (does this language write decimals with a comma or a point - a simple
+   locale fact), `timeSuggestionWord()` (the S-08-style word, if any, this language's speakers write after a
+   clock time - `null` is a perfectly correct answer for most languages), and `bundledConfusablesBlacklist()`
+   (directly reuses step 7's own scan output). The other six -
+   `blocksAsSplitPrefix`/`blocksAsFeminineAgentException`/`blocksAsCompoundPrefix` (A-05's German-compounding-
+   specific split vetoes) and `isPlausibleVerbInflection`/`isPlausibleAdjectiveComparative`/`splitCompound`
+   (regular-inflection/compound recognition) - encode real, language-specific grammatical algorithms, not data
+   lookups; an LLM can only draft a first attempt at these for a human who actually knows the language's
+   grammar to rework, and most contributed languages will legitimately ship with `NoOpLanguageRules` doing
+   nothing for these six until someone invests that real grammar-engineering effort. That is a documented,
+   accepted degraded state (exactly what `NoOpLanguageRules`'s own KDoc already describes), not a defect to
+   silently paper over with a naive implementation that gets the grammar wrong. **This hook, unlike every
+   other file in §3, still requires an actual Kotlin class and a PR even for the three naively-fillable
+   answers** - there is no data-file mechanism for `LanguageRules` today (the D-434 pipeline step 6 above is
+   the closest recent precedent for what turning it into one would look like, if a future round takes that on).
+
+10. **Character-trigram profile data (§6, `language_profiles.tsv`) - worth closing in the same pass.** The
+    builder script for this is documented as "a known gap, not a design choice" (§6 above); since you are
+    already building a full pipeline, generate this alongside everything else rather than leaving language
+    detection (A-03) degraded for your language too. Match `language/CharNgrams.kt`'s normalisation
+    byte-for-byte (§6's own warning) or the classifier's accuracy collapses silently.
+
+11. **The mandatory gate: a real speaker's sanity sample, before calling any of the above "pretty good."** An
+    LLM pipeline has no ground truth of its own to check itself against. Before publishing, have someone who
+    actually speaks the language (does not need to be a programmer) spot-check a genuine random sample across
+    several frequency bands - noise survived removal, POS tags plausible, no obviously wrong autocorrect
+    pairs. A confidently-shipped, silently-wrong dictionary is worse for that language's users than shipping
+    no dictionary at all (§0's own honest "typable, no smart features" fallback tells the truth about its own
+    limits; a wrong dictionary does not). Do not skip this step because every earlier step ran cleanly - a
+    clean pipeline run is not the same thing as a correct one.

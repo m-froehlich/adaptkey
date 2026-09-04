@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
@@ -24,6 +25,12 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property showNumberRow whether the persistent number row is shown (C-09)
  * @property letterHints the per-letter secondary-symbol map (C-08), always the active language's own
  *           bundled default - no longer user-configurable
+ * @property abbreviations D-434: the active language's own §6 sentence-boundary abbreviation list (e.g.
+ *           German's `usw.`/`bzgl.`) - always the active language's own bundled/installed default, never
+ *           user-configurable, mirroring [letterHints]. Falls back to [Abbreviations.GERMAN] for a language
+ *           with no abbreviation file of its own, exactly like [letterHints] falls back to
+ *           [KeyboardLayout.DEFAULT_LETTER_HINTS] - before D-434 this fallback was not a fallback at all but
+ *           the *only* behaviour, unconditionally, regardless of the active language.
  * @property shiftGraceWindowMs the shift grace window against surprising field capitalisation (C-07,
  *           0-500 ms); persisted only, the consuming logic does not exist yet
  * @property commaLineNotSentenceStart whether the content line after a comma-terminated line is not a
@@ -115,6 +122,7 @@ data class AdaptSettings(
     val suggestionConfig: SuggestionConfig = SuggestionConfig(),
     val showNumberRow: Boolean = true,
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
+    val abbreviations: Set<String> = Abbreviations.GERMAN,
     val shiftGraceWindowMs: Long = DEFAULT_SHIFT_GRACE_WINDOW_MS,
     val commaLineNotSentenceStart: Boolean = true,
     val llmActivationThreshold: LlmActivationThreshold = LlmActivationThreshold.DEFAULT,

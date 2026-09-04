@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
@@ -274,6 +275,19 @@ class SettingsMapperTest {
         val custom = mapOf('q' to "!", 'e' to "?")
         val resolved = SettingsMapper.toAdaptSettings(RawSettings(letterHints = custom))
         assertEquals(custom, resolved.letterHints)
+    }
+    
+    @Test
+    fun `D-434 an empty abbreviation set falls back to the default GERMAN set`() {
+        val resolved = SettingsMapper.toAdaptSettings(RawSettings(abbreviations = emptySet()))
+        assertEquals(Abbreviations.GERMAN, resolved.abbreviations)
+    }
+    
+    @Test
+    fun `D-434 a custom abbreviation set is preserved`() {
+        val custom = setOf("etc.", "vs.")
+        val resolved = SettingsMapper.toAdaptSettings(RawSettings(abbreviations = custom))
+        assertEquals(custom, resolved.abbreviations)
     }
     
     @Test

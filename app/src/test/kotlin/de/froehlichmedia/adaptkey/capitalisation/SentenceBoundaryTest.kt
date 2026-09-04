@@ -151,4 +151,36 @@ class SentenceBoundaryTest {
         assertEquals(null, SentenceBoundary.previousHyphenSegment("-", suppressAfterCommaLine = true))
         assertEquals(null, SentenceBoundary.previousHyphenSegment("  -", suppressAfterCommaLine = true))
     }
+    
+    @Test
+    fun `D-434 isSentenceStart defaults to the German abbreviation set when none is passed, matching the old behaviour`() {
+        assertFalse(start("und so weiter usw. "))
+    }
+    
+    @Test
+    fun `D-434 isSentenceStart honours an explicitly passed-in, non-German abbreviation set`() {
+        // "usw." is not in this made-up set, so its period genuinely terminates the sentence here.
+        assertTrue(SentenceBoundary.isSentenceStart("und so weiter usw. ", true, setOf("etc.")))
+        // "etc." now IS in the passed-in set, so it correctly suppresses the sentence start.
+        assertFalse(SentenceBoundary.isSentenceStart("and so on etc. ", true, setOf("etc.")))
+    }
+    
+    @Test
+    fun `D-434 isSentenceStart with an empty abbreviation set never vetoes any period`() {
+        assertTrue(SentenceBoundary.isSentenceStart("und so weiter usw. ", true, emptySet()))
+    }
+    
+    @Test
+    fun `D-434 previousHyphenSegment forwards the passed-in abbreviation set to the segment's own sentence-start check`() {
+        // The segment is "Wichtig"; the context right before it ("usw. ") only counts as a sentence start
+        // when "usw." is NOT in the forwarded abbreviation set (otherwise its period is vetoed as non-terminal).
+        val withDefault = SentenceBoundary.previousHyphenSegment("usw. Wichtig-", suppressAfterCommaLine = true)
+        assertEquals("Wichtig", withDefault?.first)
+        assertFalse(withDefault?.second == true)
+        
+        val withEmptySet = SentenceBoundary.previousHyphenSegment(
+            "usw. Wichtig-", suppressAfterCommaLine = true, abbreviations = emptySet()
+        )
+        assertTrue(withEmptySet?.second == true)
+    }
 }

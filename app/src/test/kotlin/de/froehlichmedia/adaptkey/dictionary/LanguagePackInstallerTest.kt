@@ -56,6 +56,7 @@ class LanguagePackInstallerTest {
         assertTrue(File(dir, "fr/dict.tsv").isFile)
         assertFalse(File(dir, "fr/bigram.tsv").exists())
         assertFalse(File(dir, "fr/hints.tsv").exists())
+        assertFalse(File(dir, "fr/abbreviations.tsv").exists())
     }
     
     @Test
@@ -65,6 +66,15 @@ class LanguagePackInstallerTest {
         LanguagePackInstaller.install(archive, dir, Language.GERMAN)
         
         assertEquals("a=ä;s=ß", File(dir, "de/hints.tsv").readText())
+    }
+    
+    @Test
+    fun `D-434 install writes an optional abbreviations file when the archive includes one`(@TempDir dir: File) {
+        val archive = zipOf("dict.tsv" to "der\t100\n", "abbreviations.tsv" to "usw.\nbzgl.\n")
+        
+        LanguagePackInstaller.install(archive, dir, Language.GERMAN)
+        
+        assertEquals("usw.\nbzgl.\n", File(dir, "de/abbreviations.tsv").readText())
     }
     
     @Test
@@ -123,7 +133,12 @@ class LanguagePackInstallerTest {
     @Test
     fun `clear removes an installed pack including hints and its own subfolder, reports true`(@TempDir dir: File) {
         LanguagePackInstaller.install(
-            zipOf("dict.tsv" to "bonjour\t100\n", "bigram.tsv" to "a\tb\t1\n", "hints.tsv" to "a=à"),
+            zipOf(
+                "dict.tsv" to "bonjour\t100\n",
+                "bigram.tsv" to "a\tb\t1\n",
+                "hints.tsv" to "a=à",
+                "abbreviations.tsv" to "etc.\n"
+            ),
             dir,
             Language.FRENCH
         )
@@ -133,6 +148,7 @@ class LanguagePackInstallerTest {
         assertFalse(File(dir, "fr/dict.tsv").exists())
         assertFalse(File(dir, "fr/bigram.tsv").exists())
         assertFalse(File(dir, "fr/hints.tsv").exists())
+        assertFalse(File(dir, "fr/abbreviations.tsv").exists())
         assertFalse(File(dir, "fr").exists())
     }
     

@@ -953,6 +953,11 @@ class AdaptKeyService : InputMethodService() {
     private fun applyActiveLanguageToView() {
         keyboardView?.layoutKind = LayoutRegistry.kindFor(Locale.getDefault(), activeLanguage)
         keyboardView?.letterHints = SettingsStore.loadLetterHints(this, activeLanguage)
+        // D-434: also refresh settings' own abbreviations (§6 sentence-boundary detection) here -
+        // toggleLanguage() never calls applySettings()/reloads settings wholesale on a plain G-01 swipe
+        // (only the view needs an immediate visual update), so without this the previous language's
+        // abbreviation list would keep being used until some unrelated setting change next reloaded settings.
+        settings = settings.copy(abbreviations = SettingsStore.loadAbbreviations(this, activeLanguage))
     }
     
     /**
@@ -6355,12 +6360,12 @@ class AdaptKeyService : InputMethodService() {
     
     private fun captureTokenContext(ic: InputConnection) {
         val before = ic.getTextBeforeCursor(MAX_CONTEXT_LOOKBACK, 0)?.toString() ?: ""
-        tokenSentenceStart = SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart)
+        tokenSentenceStart = SentenceBoundary.isSentenceStart(before, settings.commaLineNotSentenceStart, settings.abbreviations)
         tokenAfterHyphen = before.endsWith("-")
         // D-373: only meaningful directly after a hyphen - see SentenceBoundary.previousHyphenSegment()'s
         // own KDoc and CapitalisationEngine.previousSegmentPropagates() for how these two are used.
         val previousSegment = if (tokenAfterHyphen) {
-            SentenceBoundary.previousHyphenSegment(before, settings.commaLineNotSentenceStart)
+            SentenceBoundary.previousHyphenSegment(before, settings.commaLineNotSentenceStart, settings.abbreviations)
         } else {
             null
         }
@@ -6742,7 +6747,8 @@ class AdaptKeyService : InputMethodService() {
         // needing to know about the deferred model itself.
         return SentenceBoundary.isSentenceStart(
             SentenceBoundary.withPendingTerminatorSpace(before),
-            settings.commaLineNotSentenceStart
+            settings.commaLineNotSentenceStart,
+            settings.abbreviations
         )
     }
     

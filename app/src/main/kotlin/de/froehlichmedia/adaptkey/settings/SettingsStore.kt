@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.preference.PreferenceManager
+import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
@@ -158,6 +159,7 @@ object SettingsStore {
             highlightColor = parseColor(highlightColorRaw),
             showNumberRow = p.getBoolean(KEY_NUMBER_ROW, true),
             letterHints = loadLetterHints(context),
+            abbreviations = loadAbbreviations(context),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
             commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true),
             llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null),
@@ -199,6 +201,20 @@ object SettingsStore {
      */
     fun loadLetterHints(context: Context, language: Language = ActiveLanguageStore.load(context)): Map<Char, String> {
         return LanguageLetterHintsLoader.loadFor(context, language) ?: KeyboardLayout.DEFAULT_LETTER_HINTS
+    }
+    
+    /**
+     * D-434: loads the §6 sentence-boundary abbreviation list, always [language]'s own default - not
+     * user-configurable, mirroring [loadLetterHints]'s own per-language-default (not per-key-override)
+     * philosophy (D-301's own rejected override editor).
+     *
+     * @param context any valid context
+     * @param language the language whose own abbreviation list to resolve; defaults to whichever language
+     *        is currently active ([ActiveLanguageStore])
+     * @return [language]'s own abbreviation set, or [Abbreviations.GERMAN] when [language] has none
+     */
+    fun loadAbbreviations(context: Context, language: Language = ActiveLanguageStore.load(context)): Set<String> {
+        return LanguageAbbreviationsLoader.loadFor(context, language) ?: Abbreviations.GERMAN
     }
     
     /**

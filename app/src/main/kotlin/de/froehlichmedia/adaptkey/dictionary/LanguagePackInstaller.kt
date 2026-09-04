@@ -15,8 +15,9 @@ import java.util.zip.ZipInputStream
  * directory (D-280).
  *
  * The archive is a plain zip bundling a language's unigram (`dict.tsv`) and, optionally, bigram
- * (`bigram.tsv`), letter-hint (`hints.tsv`, D-281), and version (`version.txt`, D-308) files, all at the
- * archive's own root with fixed names - D-310: no `<code>` suffix on any of them any more, since the
+ * (`bigram.tsv`), letter-hint (`hints.tsv`, D-281), abbreviation-list (`abbreviations.tsv`, D-434), and
+ * version (`version.txt`, D-308) files, all at the archive's own root with fixed names - D-310: no `<code>`
+ * suffix on any of them any more, since the
  * archive itself is already scoped to exactly one language, and [write] now extracts into that language's
  * own subfolder under [packDir] rather than a shared flat directory (see [LanguagePackStorage]'s own KDoc
  * for the full reasoning). The Android layer opens an [InputStream] from the file the user picked (a system
@@ -37,6 +38,7 @@ object LanguagePackInstaller {
     private const val WORDS_ENTRY_NAME = "dict.tsv"
     private const val BIGRAMS_ENTRY_NAME = "bigram.tsv"
     private const val HINTS_ENTRY_NAME = "hints.tsv"
+    private const val ABBREVIATIONS_ENTRY_NAME = "abbreviations.tsv"
     private const val VERSION_ENTRY_NAME = "version.txt"
     
     /**
@@ -46,6 +48,9 @@ object LanguagePackInstaller {
      * @property words the unigram file's raw bytes (always present - [parse] throws otherwise)
      * @property bigrams the optional bigram file's raw bytes
      * @property hints the optional letter-hint file's raw bytes
+     * @property abbreviations the optional abbreviation-list file's raw bytes (D-434, §6 sentence-boundary
+     *           detection) - a language pack without one simply falls back to
+     *           [de.froehlichmedia.adaptkey.capitalisation.Abbreviations.GERMAN]
      * @property version D-308: the pack's own version, read from its `version.txt` entry - falls back to
      *           [InstalledLanguagesStore.DEFAULT_VERSION] when the entry is absent or unparseable (an
      *           archive built before this convention existed, or a malformed one). The project is young
@@ -58,6 +63,7 @@ object LanguagePackInstaller {
         val words: ByteArray,
         val bigrams: ByteArray?,
         val hints: ByteArray?,
+        val abbreviations: ByteArray?,
         val version: Int
     )
     
@@ -153,6 +159,7 @@ object LanguagePackInstaller {
         var words: ByteArray? = null
         var bigrams: ByteArray? = null
         var hints: ByteArray? = null
+        var abbreviations: ByteArray? = null
         var versionBytes: ByteArray? = null
         ZipInputStream(source).use { zip ->
             var entry = zip.nextEntry
@@ -161,6 +168,7 @@ object LanguagePackInstaller {
                     WORDS_ENTRY_NAME -> words = zip.readBytes()
                     BIGRAMS_ENTRY_NAME -> bigrams = zip.readBytes()
                     HINTS_ENTRY_NAME -> hints = zip.readBytes()
+                    ABBREVIATIONS_ENTRY_NAME -> abbreviations = zip.readBytes()
                     VERSION_ENTRY_NAME -> versionBytes = zip.readBytes()
                 }
                 zip.closeEntry()
@@ -176,7 +184,7 @@ object LanguagePackInstaller {
         if (declaredCode != null && !declaredCode.equals(language.code, ignoreCase = true)) {
             throw LanguageMismatchException(declaredCode, language.code)
         }
-        return ParsedPack(language, wordsBytes, bigrams, hints, version)
+        return ParsedPack(language, wordsBytes, bigrams, hints, abbreviations, version)
     }
     
     /**
@@ -197,6 +205,7 @@ object LanguagePackInstaller {
         writeAtomically(File(languageDir, WORDS_ENTRY_NAME), pack.words)
         pack.bigrams?.let { writeAtomically(File(languageDir, BIGRAMS_ENTRY_NAME), it) }
         pack.hints?.let { writeAtomically(File(languageDir, HINTS_ENTRY_NAME), it) }
+        pack.abbreviations?.let { writeAtomically(File(languageDir, ABBREVIATIONS_ENTRY_NAME), it) }
     }
     
     /**
@@ -213,8 +222,10 @@ object LanguagePackInstaller {
         File(languageDir, WORDS_ENTRY_NAME + TEMP_SUFFIX).delete()
         File(languageDir, BIGRAMS_ENTRY_NAME + TEMP_SUFFIX).delete()
         File(languageDir, HINTS_ENTRY_NAME + TEMP_SUFFIX).delete()
+        File(languageDir, ABBREVIATIONS_ENTRY_NAME + TEMP_SUFFIX).delete()
         File(languageDir, BIGRAMS_ENTRY_NAME).delete()
         File(languageDir, HINTS_ENTRY_NAME).delete()
+        File(languageDir, ABBREVIATIONS_ENTRY_NAME).delete()
         val removed = File(languageDir, WORDS_ENTRY_NAME).delete()
         // Best-effort: only actually deletes once the directory is empty, exactly the state the deletes
         // above just left it in (barring a stray unrelated file, harmless either way).

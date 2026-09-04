@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
@@ -31,6 +32,7 @@ data class RawSettings(
     val highlightColor: Int = SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR,
     val showNumberRow: Boolean = true,
     val letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
+    val abbreviations: Set<String> = Abbreviations.GERMAN,
     val shiftGraceWindowMs: Long = AdaptSettings.DEFAULT_SHIFT_GRACE_WINDOW_MS,
     val commaLineNotSentenceStart: Boolean = true,
     val llmThresholdKey: String? = null,
@@ -233,8 +235,10 @@ object SettingsMapper {
     
     /**
      * Resolves the full validated configuration. An empty per-key hint map falls back to the default
-     * mapping so the keyboard never ends up with no secondary symbols at all.
-     * 
+     * mapping so the keyboard never ends up with no secondary symbols at all; an empty abbreviation set
+     * (D-434) falls back to [Abbreviations.GERMAN] the same way, so sentence-boundary detection never ends
+     * up with none at all either.
+     *
      * @param raw the raw stored values
      * @return the validated [AdaptSettings]
      */
@@ -245,6 +249,7 @@ object SettingsMapper {
             suggestionConfig = toSuggestionConfig(raw),
             showNumberRow = raw.showNumberRow,
             letterHints = hints,
+            abbreviations = raw.abbreviations.takeIf { it.isNotEmpty() } ?: Abbreviations.GERMAN,
             shiftGraceWindowMs = shiftGraceWindowMs(raw),
             commaLineNotSentenceStart = raw.commaLineNotSentenceStart,
             llmActivationThreshold = toLlmActivationThreshold(raw),
