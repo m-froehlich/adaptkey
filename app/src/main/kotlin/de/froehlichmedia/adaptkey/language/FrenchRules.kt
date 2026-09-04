@@ -6,24 +6,16 @@ package de.froehlichmedia.adaptkey.language
 import de.froehlichmedia.adaptkey.dictionary.CompoundSplit
 
 /**
- * D-number (this round): the French [LanguageRules] implementation - see the Language Contribution
- * Guide's own §8 step 9 for why only three of the nine hooks are ever naively fillable without real
- * French grammar-engineering work: [decimalCommaGluesDigits] and [timeSuggestionWord] are plain
- * locale facts, [bundledConfusablesBlacklist] reuses this round's own confusables scan (currently
- * empty - see the guide's step 7/this class's own KDoc for why). The remaining six hooks encode
- * German-specific compounding/inflection grammar ([blocksAsSplitPrefix]/
- * [blocksAsFeminineAgentException]/[blocksAsCompoundPrefix]/[isPlausibleVerbInflection]/
- * [isPlausibleAdjectiveComparative]/[splitCompound]) that has no French equivalent implemented yet -
- * left as the same "does not apply" no-op [NoOpLanguageRules] gives every other unimplemented
- * language, per that object's own documented, accepted degraded state, not silently faked.
- *
- * [bundledConfusablesBlacklist] is deliberately empty rather than a naive port of the German list:
- * [de.froehlichmedia.adaptkey.suggestion.KeyboardProximity] (the adjacency grid the guide's step 7
- * confusables method needs) is hardcoded to the QWERTZ row geometry and is not aware of
- * [de.froehlichmedia.adaptkey.keyboard.AzertyLayout] at all, so a real keyboard-adjacency scan
- * against AZERTY's actual physical layout is not possible without first making that class
- * layout-aware - a genuine, newly-found structural gap (see AdaptKey-Progress.md's own Open TODOs
- * for the tracking entry), not something this language-pack round attempts to fix.
+ * D-441: the French [LanguageRules] implementation - see the Language Contribution Guide's own §8 step 9
+ * for why only three of the nine hooks are ever naively fillable without real French grammar-engineering
+ * work: [decimalCommaGluesDigits] and [timeSuggestionWord] are plain locale facts,
+ * [bundledConfusablesBlacklist] reuses this round's own confusables scan (see that function's own KDoc).
+ * The remaining six hooks encode German-specific compounding/inflection grammar
+ * ([blocksAsSplitPrefix]/[blocksAsFeminineAgentException]/[blocksAsCompoundPrefix]/
+ * [isPlausibleVerbInflection]/[isPlausibleAdjectiveComparative]/[splitCompound]) that has no French
+ * equivalent implemented yet - left as the same "does not apply" no-op [NoOpLanguageRules] gives every
+ * other unimplemented language, per that object's own documented, accepted degraded state, not silently
+ * faked.
  */
 object FrenchRules : LanguageRules {
     
@@ -42,6 +34,19 @@ object FrenchRules : LanguageRules {
     /** French has no single-word equivalent to German's S-08 "Uhr" convention after a typed time. */
     override fun timeSuggestionWord(): String? = null
     
+    /**
+     * D-442-followup: `dictionaries/confusables_scan.py dictionaries/fr/dict.tsv azerty` (now runnable at
+     * all only since [de.froehlichmedia.adaptkey.suggestion.KeyboardProximityAzerty] exists) found 994
+     * real candidate pairs, the overwhelming majority short (2-3 letter) tokens - `ve`/`xe`/`re`/`ka`/`ma`/
+     * `st`/... - risking autocorrect into a very common neighbouring function word (`de`/`la`/`le`/`et`).
+     * Deliberately left empty rather than guessed at: several of these are genuine French abbreviations/
+     * loanwords this round's own non-native French judgement cannot confidently separate from corpus
+     * noise at this length (`dj`, `led`, `fn`, `lr`, `crs`, `onf` are all real; `ma` itself is an
+     * extremely common real word, not noise, at risk only because it is short - the identical ambiguity
+     * D-442's own English scan resolved for `fir`/`otter` via frequency correction, not blacklisting).
+     * Curating this list correctly needs the same native-speaker review the guide's own step 11 already
+     * asks for before publishing this pack as more than "pretty good" - not attempted here.
+     */
     override fun bundledConfusablesBlacklist(): Set<String> = emptySet()
     
     /** French, like German, writes decimals with a comma ("3,14"), not a point. */

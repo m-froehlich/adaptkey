@@ -366,23 +366,27 @@ non-trivial changes).
   false-positive split is reported again (for German or any other bundled language), treat it the same way
   rather than assuming §301 caught everything.
 
-- **D-441 - RESOLVED (§413, v1.1.52): D-314's AZERTY geometry now has a real `dictionaries/fr/` pack**
-  **behind it - the full one-shot pipeline from the Language Contribution Guide's own §8, run end to end**
-  **on explicit user request to see how well it works, fully autonomously.** See §413 in Current State for
-  the complete build method, real numbers, and every deliberate scope cut. Short version: `dict.tsv` (12,000
-  words, real `hermitdave/FrequencyWords` OpenSubtitles-corpus frequencies, rule-based POS tagging - no
-  per-word LLM pass, that does not scale), `bigram.tsv` (real French-Wikipedia-derived, smaller than
-  German/Greek's own full-dump corpus - the live-fetch approach hit Wikipedia's anonymous-API rate limit
-  partway through), `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` (French's own, not a German reuse),
-  `FrenchRules` (`LanguageRulesRegistry`, the three naively-fillable hooks only), one `LanguagePackCatalog`
-  entry. **A genuinely new, structural finding surfaced along the way, not specific to French**: §6 rules
-  3/4 (automatic noun capitalisation) are not gated by `Language` anywhere in `CapitalisationEngine` - see
-  the new D-441 addendum to spec §6. **Not yet done, flagged honestly per the guide's own step 11**: no
-  native French speaker has sanity-checked the output yet - this is a "pretty good", pipeline-built pack,
-  not native-reviewed quality, and should not be treated as ready to publish without that review. Also
-  still open: a real AZERTY-adjacency confusables scan (guide step 7) turned out to need
-  `KeyboardProximity` to be layout-aware, which it is not today - `bundledConfusablesBlacklist()` stays
-  empty for French, same as it always has for English/Greek.
+- **D-441 - RESOLVED (§413 + §415, v1.1.54): D-314's AZERTY geometry now has a real `dictionaries/fr/`**
+  **pack behind it - the full one-shot pipeline from the Language Contribution Guide's own §8, run end to**
+  **end on explicit user request to see how well it works, fully autonomously.** §413's first pass (12,000
+  words from a small OpenSubtitles-derived list) was explicitly rejected by the user as too thin and not
+  a real run of the guide's own pipeline - §415 redid it properly against a real French Wikipedia dump
+  (80,000 articles, 136.8M real tokens, capped for this machine's real memory headroom - see §415 for the
+  two real bugs, a memory leak and a performance bug, found and fixed along the way) merged with real POS
+  data from kaikki.org's French Wiktionary extract (402,395 entries). See §413/§415 in Current State for
+  the complete build method, real numbers, and every deliberate scope cut. Final: `dict.tsv` (208,204
+  words, real corpus frequencies + real POS, not heuristic-guessed), `bigram.tsv` (984,792 rows, the same
+  real dump corpus), `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` (French's own, not a German reuse),
+  `FrenchRules` (`LanguageRulesRegistry`), one `LanguagePackCatalog` entry. **A genuinely new, structural
+  finding surfaced along the way, not specific to French**: §6 rules 3/4 (automatic noun capitalisation)
+  are not gated by `Language` anywhere in `CapitalisationEngine` - see the D-441 addendum to spec §6.
+  D-442 (§414) made `KeyboardProximity` layout-aware, unblocking a real AZERTY confusables scan (994
+  candidates found) - left un-curated (`bundledConfusablesBlacklist()` stays empty for French) since
+  several are genuine French abbreviations this round's own non-native judgement could not confidently
+  separate from noise; see `FrenchRules`'s own KDoc. **Not yet done, flagged honestly per the guide's own
+  step 11**: no native French speaker has sanity-checked the output yet - real corpus scale now, but still
+  a "pretty good" pipeline pack, not native-reviewed quality, and should not be treated as ready to
+  publish without that review.
 
 - **`KeyboardProximity` hardcoded to QWERTZ - RESOLVED by D-442 (§414, v1.1.53).** Found while building**
   **French's D-441 language pack; fixed properly and generally the same session, on explicit user**
@@ -872,6 +876,32 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§415 (v1.1.54): D-441-followup - French dictionary rebuilt from a real Wikipedia dump + kaikki.org**
+  **Wiktionary POS data, after direct user feedback that §413's first pass (12,000 words, heuristic POS**
+  **tagging) was too thin and not a genuine run of the guide's own pipeline.** Full method, real numbers,
+  and the two real bugs found/fixed along the way (a memory leak, a performance bug - both confirmed the
+  hard way by running the real thing, not reasoned about abstractly) are in `AdaptKey-History.md` §415.
+  Short version: a new `extract_wiki_dump.py` streams an actual French Wikipedia dump part (80,000 of
+  306,134 articles, capped for this machine's real ~4.5GB free RAM, checkpointed every 5,000 pages so a
+  safety stop never loses data) for real word/bigram frequencies; a new `extract_kaikki.py` pulls real POS
+  tags from kaikki.org's French Wiktionary extract (402,395 entries) instead of suffix-guessing; a new
+  `merge_dict.py` combines both, with a real (if bounded) noise-removal pass - any word not in kaikki that
+  is also a common word in this project's own bundled `en/dict.tsv` is dropped (11,086 rows), confirmed by
+  hand-sampling to catch genuine English-quote contamination while leaving rare-but-real French vocabulary
+  alone. `dict.tsv` 12,000 -> 208,204 rows, `bigram.tsv` 2,293 -> 984,792 rows - both real corpus data now,
+  not a small proxy source. The same capitalisation-safety mechanism (§413) re-verified against the much
+  larger output (zero bare-`NOUN` rows); a new related case found and fixed - `PROPER_NOUN` is now dropped
+  whenever kaikki also saw the same string used as an ordinary word (`pierre`/`jean` would otherwise have
+  been wrongly force-capitalised every time). D-442's own `KeyboardProximity` fix unblocked a real AZERTY
+  confusables scan (994 candidates) - deliberately left un-curated, the same "several are genuine French
+  abbreviations this round can't confidently separate from noise" reasoning as D-442's own English scan.
+
+  No test changes (data + doc-only). 1335 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 470 -> 471, `versionName` `"1.1.53"`
+  -> `"1.1.54"`. Not device-confirmed, and - restated deliberately, per the guide's own mandatory step 11 -
+  still not reviewed by a native French speaker: real corpus scale now, but still "pretty good", not
+  native-reviewed quality.
 
 - **§414 (v1.1.53): D-442 - `KeyboardProximity` turned into a real per-layout interface**
   **(QWERTZ/QWERTY/AZERTY/Greek), plus English's own real confusables blacklist - explicit user request,**

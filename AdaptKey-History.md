@@ -18593,3 +18593,124 @@ separate bundled list too. `AdaptKey-Progress.md`'s own
 `KeyboardProximity`-hardcoded-to-QWERTZ Open TODO (added earlier this same session, during D-441) closed as
 RESOLVED by this round. Not device-confirmed - pure dictionary/ranking logic, no Android glue touched.
 
+## §415 - D-441-followup: French dictionary rebuilt from a real Wikipedia dump + kaikki.org Wiktionary POS data, after the user rejected the first pass as too thin
+
+Direct, blunt user feedback on §413's own first pass: "Das Französische Wörterbuch hat 12k Einträge? Das
+ist sehr mager!" - and, correctly, that the noise-removal/POS-tagging/word-family steps the guide's own
+§8 pipeline describes were not genuinely done, only approximated with heuristics over a small non-
+Wikipedia source. Explicit instruction: find out why it was so thin, then redo it "nach echtem Dump" (from
+a real dump) following the guide's actual steps.
+
+**Root cause, checked directly rather than assumed**: §413 used `hermitdave/FrequencyWords`'s
+OpenSubtitles-2018 list (a real corpus, but small and not the source the guide itself calls for) capped at
+its own top 12,000 words, and POS-tagged the result with hand-written suffix heuristics rather than a real
+lexicon - never attempted the guide's step-0 Wikipedia-dump extraction (no such extractor existed in this
+repo, a documented gap) or step-4's Wiktionary-based word-family completion at all.
+
+**Step 0, done properly this time**: `dictionaries/fr/extract_wiki_dump.py` (new - no such extractor
+existed in this repo before either round) streams an actual French Wikipedia XML dump part
+(`frwiki-latest-pages-articles1.xml-p1p306134.bz2`, the official first split, 680MB compressed, ~306,134
+articles - downloaded directly from `dumps.wikimedia.org`) via `bz2.BZ2File` + `xml.etree.ElementTree.
+iterparse`, strips MediaWiki markup (templates/tables/refs/links/headers) to plain text, and tokenises for
+real word/bigram frequency counts. Two real implementation bugs found and fixed along the way, both the
+hard way (by running the real thing, not by reasoning about it in the abstract):
+1. **A genuine memory leak**: `iterparse` keeps every finished element parented under the streamed root
+   element - `elem.clear()` alone only empties that one element's own text/children, not its place in the
+   tree, so memory grew for the entire run's duration (confirmed directly: exceeded 2GB resident before
+   ever reaching the first 20,000-page progress checkpoint). Fixed by also calling `root.clear()` after
+   every page, the standard idiom for this class of bug.
+2. **A genuine performance bug, found only after the memory fix**: the original wikitext-template stripper
+   was a manual, per-character Python loop (`strip_balanced`) - correct, but far too slow at real-dump
+   scale (a 20,000-page diagnostic slice did not finish in 180s). Replaced with a regex-driven, C-speed
+   iterative "remove the innermost `{{...}}`/`{|...|}` span, repeat until stable" approach
+   (`strip_templates_and_tables`) - confirmed ~500 pages/second afterward, both by a standalone timed
+   sample and by the real run.
+3. **A red herring that cost real time before either real bug was found**: stdout was fully buffered once
+   redirected to a log file (not a terminal), so the process's own progress prints simply were not visible
+   yet for a long stretch even while it was genuinely working - two earlier "stuck" processes were killed
+   under that false impression before `python -u` (unbuffered) made real progress visible and separated
+   the true bugs above from this observation artifact.
+
+**A genuine machine-memory constraint, checked directly rather than guessed**: this environment has 16GB
+RAM with only ~4.5GB actually free once the rest of this session's own work is accounted for
+(`Get-CimInstance Win32_OperatingSystem`) - the first uncapped, fixed run reached ~2.1GB resident at just
+20,000 of the part's 306,134 pages, real growth but not yet confirmed sublinear enough to safely
+extrapolate to the full part. Rather than risk exhausting real memory partway through an unattended run,
+`extract_wiki_dump.py` caps at a fixed `PAGE_CAP = 80,000` (still 160x the entire first pass's own word
+count, and 26% of the full dump part) and checkpoints its output to disk every 5,000 pages - so a future
+memory-safety stop, unlike the two earlier killed attempts, would never lose already-accumulated real
+corpus data. The capped run completed cleanly: 80,000 pages, 136,777,886 real tokens processed, 1,315,843
+distinct words, 3,323,663 distinct bigram pairs (>=3 occurrences) - peaking at ~3.3GB resident, confirming
+the growth genuinely was sublinear (Heaps' law) and the cap held with real headroom to spare.
+
+**Step 3 (POS tagging), done with a real lexicon instead of suffix heuristics**: `dictionaries/fr/
+extract_kaikki.py` (new) downloads and parses kaikki.org's French Wiktionary extract (`wiktextract`,
+MIT-licensed tool / CC BY-SA-licensed content - the same licence family already accepted for German's/
+Greek's own Wiktionary-derived `dict.tsv` data, see §322/§424) - 402,395 entries, 385,932 distinct French
+word strings, each with a real part of speech. Unlike German's/Greek's own Wortfamilien projects, French
+Wiktionary already lists most inflected forms as their own individually-tagged entries (a conjugated verb
+form is its own `pos: verb` row, not merely implied by a lemma's own conjugation table) - so this step
+doubles as most of step 4 (word-family completion) for free, without needing a from-scratch rule-based
+generator the way German's/Greek's nouns/verbs/adjectives needed.
+
+**The merge (`dictionaries/fr/merge_dict.py`, new)**: for each real-corpus word, a kaikki match supplies
+its real POS; a non-match is still kept - tagged `OTHER` - once its own corpus count clears 20 occurrences
+(low enough for genuine Wiktionary-missing words, high enough that one-off tokeniser noise mostly does
+not). **Step 2 (noise removal), done as a real targeted pass, not skipped**: rather than individually
+reviewing tens of thousands of not-in-kaikki candidates by hand (infeasible at this scale in one sitting,
+per the guide's own step 2 note that per-word review does not scale), cross-referenced every non-kaikki
+candidate against this project's own already-reviewed bundled `en/dict.tsv` (frequency >=100) - French
+Wikipedia legitimately quotes English titles/technical terms/proper nouns verbatim often enough that "is
+this also a common English word" turned out to be a real, targeted noise signal: 11,086 rows removed this
+way, confirmed correct by hand-sampling both sides (`countries`/`reviews`/`genocide`/`tourist`/`ads`/
+`worm` correctly caught; `écobuage`/`hémiptères`/`inexactitudes`/`anglo-irlandais` - genuine, if rare,
+French vocabulary - correctly left alone). Not claimed exhaustive - a real, bounded pass, the same honesty
+standard as every other step in this round.
+
+**The same capitalisation-safety mechanism from §413 re-verified against the new, much larger data**: a
+French common noun is tagged `NOUN,OTHER`, never a bare `NOUN` (`CapitalisationEngine`'s §6 rule 3 is not
+language-gated - see spec §6's D-441 addendum) - `resolve_tags()` forces this whenever kaikki's own tags
+for a word resolve to exactly `{NOUN}`, and re-verified directly against the 208,204-row output: zero bare
+`NOUN` rows. A new related case surfaced by the larger, real data and fixed the same session: kaikki tags
+`PROPER_NOUN` for a word purely by its own Wiktionary entry existing under a "name" heading, with no
+awareness that the identical string might *also* be a common word elsewhere in Wiktionary - `pierre`
+(stone) and `jean` (denim), both also real first names, would have been wrongly force-capitalised every
+time (`isProper` is checked ahead of `isPureNoun` in the hierarchy, so pairing `PROPER_NOUN` with anything
+else does not help the way pairing `NOUN` with `OTHER` does). Fixed in `resolve_tags()`: `PROPER_NOUN` is
+dropped from the tag set whenever kaikki saw the same string used as anything else at all, kept only when
+it is the *only* reading kaikki ever recorded.
+
+**Net result**: `dict.tsv` 12,000 -> 208,204 rows (real POS for the 145,461 rows kaikki recognised; the
+remaining 62,743 real-but-Wiktionary-missing words tagged `OTHER`), `bigram.tsv` 2,293 -> 984,792 rows (a
+genuinely different, much larger real-corpus source, not an extension of the OpenSubtitles-derived one)
+- both rebuilt from scratch, not patched. The pack's own `language-packs/adaptkey-lang-fr.zip` grew from
+roughly 30KB to 7.7MB accordingly (compare German's 1.7MB/Greek's 1.8MB - larger here mainly because this
+round's own `bigram.tsv` is more than 10x either of theirs, a deliberate choice given real, cheap-to-
+generate corpus data was available, not a target this round tried to hit). The superseded first-pass
+working files (`fr_50k_raw.txt`, `wiki_corpus_raw.txt`, `build_dict.py`, `build_bigrams.py`) were removed
+outright rather than left alongside the new pipeline, and the large raw dump-derived intermediates
+(`wiki_dump_freq.tsv`/`wiki_dump_bigram.tsv`, ~74MB combined) were removed once merged into the final,
+much smaller `dict.tsv`/`bigram.tsv` - `kaikki_pos.tsv` (6.9MB, the direct kaikki-derived reference
+`merge_dict.py` actually reads) was kept, mirroring German's/Greek's own precedent of keeping a
+similarly-sized Wiktionary-derived reference file in `dictionaries/<code>/`, not the raw multi-hundred-MB
+dump itself.
+
+**D-442's own KeyboardProximity fix (§414) unblocked the AZERTY confusables scan (guide step 7) this**
+**round could not run before** - `dictionaries/confusables_scan.py dictionaries/fr/dict.tsv azerty 30`
+found 994 real candidate pairs against the new, much larger dictionary, mostly short (2-3 letter) tokens
+(`ve`/`ka`/`st`/`ma`/...) risking autocorrect into a common neighbouring function word. Reviewed by hand
+rather than blindly accepted: several are genuine French abbreviations/loanwords this round's own
+non-native French judgement could not confidently separate from corpus noise at this length (`dj`, `led`,
+`fn`, `lr`, `crs`, `onf` are all real; `ma` itself is an extremely common real word, not noise, at risk
+only because it is short - the identical ambiguity D-442's own English scan resolved via frequency
+correction, not blacklisting). `FrenchRules.bundledConfusablesBlacklist()` deliberately stays empty rather
+than risk blacklisting a real word on a judgement call this round is not well positioned to make
+confidently - left for a native-speaker-guided pass, the same honesty stance as everything else in this
+round.
+
+No new/changed tests (data-only + doc-only Kotlin comment updates to `FrenchRules`/`LanguagePackCatalog` -
+no logic changed). 1335 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest`
+green. `versionCode` 470 -> 471, `versionName` `"1.1.53"` -> `"1.1.54"`. Not device-confirmed, and - per
+the guide's own mandatory step 11, restated again deliberately - still not reviewed by a native French
+speaker: real corpus scale now, but still a "pretty good" pipeline pack, not native-reviewed quality.
+
