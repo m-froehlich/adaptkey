@@ -767,11 +767,78 @@ object LanguagePackCatalog {
             // shape. `LanguagePackCatalogTest` needed no change - already fully generic over `ENTRIES`.
             //
             // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
-            // reviewed by anyone who actually speaks Portuguese. Real corpus scale (the largest raw-token
-            // count of any language pack this project has built) and a real lexicon, but still "pretty good"
-            // in the guide's own sense - and, unlike French/Spanish/Italian/Dutch, genuinely incomplete for
-            // noun/adjective word-family data specifically (a confirmed source limitation, not merely
-            // "not yet reviewed"). Not device-confirmed either.
+            // reviewed by anyone who actually speaks Portuguese. Real, full-dump corpus scale (488.96M real
+            // tokens) and a real lexicon, but still "pretty good" in the guide's own sense - and, unlike
+            // French/Spanish/Italian/Dutch, genuinely incomplete for noun/adjective word-family data
+            // specifically (a confirmed source limitation, not merely "not yet reviewed"). Not
+            // device-confirmed either.
+            version = 1
+        ),
+        Entry(
+            Language.ITALIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-it.zip",
+            // D-446: first Italian language pack - see the Portuguese Entry (D-445) directly above for the
+            // shared context (the same one-shot autonomous pt/it/nl round, full-dump-only per the user's own
+            // mid-round correction, the multiprocessing/hapax-pruning extractor). Italian already used
+            // ordinary QWERTY and already had a real character-trigram profile (`language_profiles.tsv`,
+            // "it", since D-280).
+            //
+            // Unlike Portuguese, Italian's own native Wiktionary edition (`kaikki.org/dictionary/downloads/
+            // it/it-extract.jsonl.gz`, 40.0MB - again smaller than the wrong English-Wiktionary-coverage
+            // file, 74.2MB, the same reversed-from-French/Spanish size pattern Portuguese's own round found,
+            // still the correct mandatory choice regardless) documents noun/adjective inflection RICHLY, not
+            // sparsely - confirmed directly before assuming Portuguese's own scope limitation would repeat
+            // here: 22,738 of 37,208 real noun lemmas have real plural/gender forms, 12,072 of 14,972
+            // adjective lemmas have real plural/gender/superlative forms (both far above Portuguese's own
+            // 137/52,477 and 70/18,413). Verbs show the identical individually-paged-conjugated-form shape
+            // every native edition this project has processed shows (462,027 raw "verb" entries, 454,157
+            // `senses[].form_of` references - ~7,870 real lemmas). Full three-category Wortfamilien
+            // completion therefore applies here, matching French's/Spanish's own parity rather than
+            // Portuguese's own verb-only scope.
+            //
+            // The entire `itwiki-latest-pages-articles.xml.bz2` (4.24GB compressed, the largest dump this
+            // project has processed) was processed via the same multiprocessing/hapax-pruning extractor
+            // D-445 built - 1,984,914 real pages, 785,078,705 real tokens, the largest raw-token count of any
+            // language pack this project has built so far, completed well within the same overnight run.
+            //
+            // `dict.tsv`: 613,988 rows (455,757 from the initial Wikipedia-frequency + kaikki-POS merge,
+            // +158,231 from full Wortfamilien completion - 8,862 noun, 143,232 verb, 6,137 adjective
+            // generated forms; calibration ratios noun=0.4340 (n=16,685 pairs), verb=0.5000 (n=36,090),
+            // adjective=0.5000 (n=20,583) - all three well-populated, unlike Portuguese's own sparse noun/
+            // adjective pair counts). POS tagging: 403,958 words kept unrecognised-by-kaikki (corpus count
+            // >=20), 3,522,925 dropped below that floor, 15,053 removed as common-English-word contamination.
+            // Proper-noun handling: 3,842 tagged, 595 skipped as real-word collisions (the same `all_pos`
+            // broad-collision check French's/Spanish's own D-444 round added). Mandatory bare-noun safety
+            // check: 0 bare-NOUN rows. `bigram.tsv`: 4,289,075 rows (>=10 cutoff) from 9,161,636 rows at the
+            // raw >=3 extraction floor. Quality gate (`dictionaries/quality_gate.py`): 0 case-insensitive
+            // duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Italian's own: `hints.tsv` keeps German's
+            // 10 language-neutral assignments and gives the remaining 16 letters Italian content - a=à, e=è,
+            // i=ì, o=ò, u=ù (Italian's five accented vowels - `diacritics.tsv` keeps the fuller set: a→à;
+            // e→è,é; i→ì; o→ò,ó; u→ù), g=«/r=» (quotes), s=€ (currency), t=º/y=ª (ordinal indicators, also a
+            // genuine Italian convention - "3ª edizione"), c=§ (section sign, legal/formal use), and
+            // j/k/l/w/z filled with generically useful remaining typography (—, …, &, ₤ - a nod to the
+            // historical lira, •). `abbreviations.tsv`: a hand-curated ~27-entry Italian sentence-boundary
+            // list (sig./dott./prof./avv./ecc./...).
+            //
+            // `ItalianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null (no single-word "Uhr"-style convention), `bundledConfusablesBlacklist`=empty -
+            // `confusables_scan.py dictionaries/it/dict.tsv qwerty 30` found 2,026 candidate pairs, left
+            // deliberately uncurated for the same "cannot confidently separate a genuine short word from
+            // real corpus noise without native fluency" reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest`'s `Italian resolves to ItalianRules` case and its own
+            // `ItalianRules`-mirroring test block were already added alongside Portuguese's own commit (both
+            // are language-neutral, zero dictionary-file dependency) - only this `Entry`'s own real numbers
+            // were pending until this round's data pipeline actually finished. `LanguagePackCatalogTest`
+            // needed no change.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Italian. Real, full-dump corpus scale (785.08M real
+            // tokens, the largest of any language pack this project has built) and a complete, real lexicon
+            // with full noun/verb/adjective Wortfamilien parity - but still "pretty good" in the guide's own
+            // sense, not native-reviewed quality. Not device-confirmed either.
             version = 1
         )
     )

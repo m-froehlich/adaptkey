@@ -451,14 +451,14 @@ non-trivial changes).
      not confirmed noise via a real review, and English has never had a dedicated noise-removal pass the
      way German (§301) and Greek (§371/D-425) did. Worth its own dedicated round if picked up.
 
-- **D-280/D-281 follow-up: `ITALIAN`/`DUTCH` are still in the `Language` enum and already fully typeable via**
-  **QWERTY, but neither has a dictionary or its own hint set built/hosted yet** - a genuine, ready-to-pick-up
-  community contribution opportunity, same shape as the French/Spanish gap was, without even a geometry
-  question to resolve first (see `AdaptKey-Language-Contribution-Guide.md`). `SPANISH` moved out of this list
-  via D-443 (§416); `PORTUGUESE` moved out via D-445 (§418) - see those rounds for the real packs now built
-  and hosted. Separately, the Python script that originally built `language_profiles.tsv` (A-03's trigram
-  classifier data) is not in this repository - reconstructing it is only needed if a future language falls
-  outside the eight already covered there.
+- **D-280/D-281 follow-up: `DUTCH` is still in the `Language` enum and already fully typeable via QWERTY,**
+  **but has no dictionary or its own hint set built/hosted yet** - a genuine, ready-to-pick-up community
+  contribution opportunity, same shape as the French/Spanish gap was, without even a geometry question to
+  resolve first (see `AdaptKey-Language-Contribution-Guide.md`). `SPANISH` moved out of this list via D-443
+  (§416); `PORTUGUESE` via D-445 (§418); `ITALIAN` via D-446 (§419) - see those rounds for the real packs now
+  built and hosted. Separately, the Python script that originally built `language_profiles.tsv` (A-03's
+  trigram classifier data) is not in this repository - reconstructing it is only needed if a future language
+  falls outside the eight already covered there.
 
 - **Tier-3 mini-LLM and first-run dictionary import: code-complete, real-device validation still outstanding.**
   Everything code-side (orchestration, the C-06 setting, §6 rule-6 hook, adaptive learning, tokenizer +
@@ -916,6 +916,61 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§419 (v1.1.58): D-446 - first Italian language pack, second of the three-language (pt/it/nl) one-shot**
+  **overnight round (see §418/D-445 directly below for the shared context).** Italian already used ordinary
+  QWERTY and already had a real character-trigram profile (`language_profiles.tsv`, "it").
+
+  **Unlike Portuguese, Italian's own native Wiktionary edition documents noun/adjective inflection richly -**
+  **checked directly before assuming Portuguese's own scope limitation would repeat here, not assumed.**
+  `kaikki.org/dictionary/downloads/it/it-extract.jsonl.gz` (40.0MB - again smaller than the wrong English-
+  Wiktionary-coverage file, 74.2MB, the same reversed-from-French/Spanish size pattern Portuguese's own round
+  found, still the correct mandatory choice regardless of size per the guide's own unconditional rule):
+  22,738 of 37,208 real noun lemmas have real plural/gender forms, 12,072 of 14,972 adjective lemmas have
+  real plural/gender/superlative forms - both far richer than Portuguese's own 137/52,477 and 70/18,413.
+  Verbs show the identical individually-paged-conjugated-form shape every native edition this project has
+  processed shows (462,027 raw "verb" entries, 454,157 `senses[].form_of` references - ~7,870 real lemmas).
+  Full three-category Wortfamilien completion therefore applies here, matching French's/Spanish's own parity
+  rather than Portuguese's own verb-only scope.
+
+  The entire `itwiki-latest-pages-articles.xml.bz2` (4.24GB compressed, the largest dump this project has
+  processed) was processed via the same multiprocessing/hapax-pruning extractor D-445 built (§418) -
+  1,984,914 real pages, 785,078,705 real tokens, the largest raw-token count of any language pack this
+  project has built so far, completed well within the same overnight run (no memory-safety stop needed).
+
+  **Net result**: `dict.tsv` 613,988 rows (455,757 from the initial Wikipedia-frequency + kaikki-POS merge,
+  +158,231 from full Wortfamilien completion - 8,862 noun, 143,232 verb, 6,137 adjective generated forms;
+  calibration ratios noun=0.4340 (n=16,685 pairs), verb=0.5000 (n=36,090), adjective=0.5000 (n=20,583) - all
+  three well-populated, unlike Portuguese's own sparse noun/adjective pair counts). POS tagging: 403,958
+  words kept unrecognised-by-kaikki (corpus count >=20), 3,522,925 dropped below that floor, 15,053 removed
+  as common-English-word contamination. Proper-noun handling: 3,842 tagged, 595 skipped as real-word
+  collisions (the D-444 broad `all_pos` collision check). Mandatory bare-noun safety check: 0 bare-NOUN rows.
+  `bigram.tsv`: 4,289,075 rows (>=10 cutoff) from 9,161,636 rows at the raw >=3 extraction floor. Quality
+  gate (`dictionaries/quality_gate.py`): 0 case-insensitive duplicates, 0 non-positive frequencies, 0
+  orphaned lemma links, 0 bare-NOUN rows - PASS.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Italian's own: `hints.tsv` keeps German's 10 language-
+  neutral assignments and gives the remaining 16 letters Italian content - a=à, e=è, i=ì, o=ò, u=ù (`diacritics.
+  tsv` keeps the fuller set: a→à; e→è,é; i→ì; o→ò,ó; u→ù), g=«/r=» (quotes), s=€ (currency), t=º/y=ª
+  (ordinal indicators - a genuine Italian convention too, "3ª edizione"), c=§ (section sign), j/k/l/w/z
+  filled with generically useful remaining typography (—, …, &, ₤, •). `abbreviations.tsv`: a hand-curated
+  ~27-entry Italian sentence-boundary list (sig./dott./prof./avv./ecc./...).
+
+  `ItalianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,026 candidate pairs, left deliberately
+  uncurated for the same "cannot confidently separate a genuine short word from real corpus noise without
+  native fluency" reasoning every non-German round documents.
+
+  New tests: `ItalianRules`'s registry/test wiring was already committed alongside Portuguese's own round
+  (§418) since it is language-neutral, zero dictionary-file dependency - only this round's real dictionary
+  numbers were pending. `versionCode` 474 -> 475, `versionName` `"1.1.57"` -> `"1.1.58"`.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+  who actually speaks Italian. Real, full-dump corpus scale (785.08M real tokens, the largest of any
+  language pack this project has built) and a complete, real lexicon with full noun/verb/adjective
+  Wortfamilien parity - but still "pretty good" in the guide's own sense, not native-reviewed quality. Not
+  device-confirmed either. Dutch continues in the same autonomous overnight session.
 
 - **§418 (v1.1.57): D-445 - first Portuguese language pack, first of a three-language (pt/it/nl) one-shot**
   **autonomous round run overnight per explicit user instruction, full-dump-only this time (see below).**
