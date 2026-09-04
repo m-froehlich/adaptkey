@@ -521,7 +521,7 @@ non-trivial changes).
     State for the mechanism.
   - **D-379 - RESOLVED (§330, v1.0.82).** `"bzgl."` added to `Abbreviations.GERMAN` alongside the
     already-present `abzgl.`/`zzgl.` family.
-  - **D-380 - RESOLVED (§403, v1.1.42); not yet device-confirmed.** A long-press smear leaving the key's own
+  - **D-380 - RESOLVED and device-confirmed (§403, v1.1.42).** A long-press smear leaving the key's own
     bounds (e.g. into the inter-key/inter-row gap) unconditionally cancelled the pending popup even when the
     smear was nowhere near swipe-sized - the user's own precise repro: within the key it works reliably,
     off the key it silently does nothing. Fixed in `AdaptKeyboardView`'s own ACTION_MOVE handling - see §403.
@@ -884,9 +884,9 @@ non-trivial changes).
   No new tests - `AdaptKeyboardView`'s touch resolution is Android View glue, this project's own established
   untested boundary (mirrors D-361's identical touch-zone work). 1300 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's L-05 gained a D-380/D-437 addendum.
-  `versionCode` 458 -> 459, `versionName` `"1.1.41"` -> `"1.1.42"`. **Not yet device-confirmed** - needs a real
-  repro check: long-press the `o` key (or any letter with an AltGr alternative) and smear down off the key
-  without swiping, confirm the popup still opens.
+  `versionCode` 458 -> 459, `versionName` `"1.1.41"` -> `"1.1.42"`. **Device-confirmed (2026-09-04):** long-press
+  the `o` key (and any letter with an AltGr alternative), smear down off the key without swiping - the popup
+  still opens.
 
 - **§402 (v1.1.41): D-436 - the actual per-language diacritics data mechanism D-387 asked for, built on top**
   **of §401's architecture fix.** New optional sixth language-pack file `diacritics.tsv` (base letter ->
