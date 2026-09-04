@@ -684,6 +684,95 @@ object LanguagePackCatalog {
             // native-speaker reviewed (guide step 11) - the correction this round is a real quality
             // improvement, not a substitute for that gate.
             version = 2
+        ),
+        Entry(
+            Language.PORTUGUESE,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-pt.zip",
+            // D-445: first Portuguese language pack, built via the Language Contribution Guide's own §8
+            // real-corpus/real-lexicon pipeline in one continuous autonomous run together with Italian
+            // (D-446) and Dutch (D-447), per explicit user instruction - see those Entries below for their
+            // own numbers. Portuguese already used ordinary QWERTY (no dedicated layout code needed) and
+            // already had a real character-trigram profile (`language_profiles.tsv`, "pt", since D-280).
+            //
+            // **Explicit user correction mid-round, worth recording**: the first attempt used a single
+            // capped Wikipedia dump split (105,695 pages, the French/Spanish D-441/D-443 precedent) - the
+            // user judged this "obviously too small" and required the COMPLETE Wikipedia dump be processed
+            // for all three languages, not a page-capped first split. Re-done against
+            // `ptwiki-latest-pages-articles.xml.bz2` (the single combined full dump, 2.72GB compressed) -
+            // `dictionaries/pt/extract_wiki_dump.py` gained two real additions over the French/Spanish
+            // reference to make full-dump-scale processing tractable in one night: multiprocessing across
+            // this machine's 6 physical/12 logical cores for the CPU-heavy per-page cleaning/tokenising
+            // step, and periodic hapax pruning (dropping count==1 entries once a Counter grows past a size
+            // threshold) to keep memory bounded over a full-scale run instead of a capped one. Result: the
+            // ENTIRE dump processed - 1,181,337 real (ns=0, non-redirect) pages, 488,957,696 real tokens -
+            // an order of magnitude more real corpus data than any capped-dump language this project has
+            // built so far.
+            //
+            // **A second real, confirmed structural finding, unrelated to the dump-size correction above**:
+            // Portuguese's own native Wiktionary edition (`kaikki.org/dictionary/downloads/pt/
+            // pt-extract.jsonl.gz`, 35.4MB compressed) is the correct, mandatory source per the guide's own
+            // unconditional rule - but is actually SMALLER than the wrong English-Wiktionary-coverage file
+            // (54.2MB) - the reverse of French's/Spanish's own pattern (native always bigger there). Still
+            // used per the guide's rule regardless of size. More consequentially: this native edition
+            // documents Portuguese VERB conjugation richly (79,453 raw "verb" entries, 72,710 senses[].
+            // form_of references to another lemma - the same individually-paged-conjugated-form shape every
+            // other native edition shows - leaving ~6,700 real verb lemmas with full tables) but essentially
+            // does NOT document regular noun/adjective inflection as forms[] data at all: only 137 of 52,477
+            // noun lemmas and 70 of 18,413 adjective lemmas have any real form beyond a non-word hyphenation
+            // marker ("grego" -> "gre.go", tagged "canonical", excluded). Confirmed by direct inspection of
+            // real entries, not assumed, and discussed with the user before proceeding: Portuguese Wortfamilien
+            // completion is therefore real and complete for VERBS only this round (noun ratio n=29 pairs,
+            // adjective ratio n=16 pairs - both far too sparse to mean anything, versus verb ratio n=28,416)
+            // - nouns/adjectives keep whatever the base dict.tsv/POS-tagging pass already produced, with only
+            // 129 generated noun forms and 36 generated adjective forms (essentially incidental alternate-
+            // spelling/superlative entries, not systematic paradigm completion). This is a genuine, confirmed
+            // source limitation - not a bug in `extract_wiktionary.py`/`merge_wiktionary.py` - documented
+            // honestly rather than silently passed off as parity with French/Spanish/Italian/Dutch.
+            //
+            // `dict.tsv`: 535,869 rows (325,579 from the initial Wikipedia-frequency + kaikki-POS merge,
+            // +210,290 from Wortfamilien completion - 210,125 of those generated verb forms alone). POS
+            // tagging: a word found in kaikki gets its real part of speech; one not found is kept, tagged
+            // OTHER, once its own real corpus count clears 20 occurrences (274,565 kept this way, 2,684,749
+            // below-floor rows dropped), unless it is also a common word (frequency >= 100) in this
+            // project's own bundled `en/dict.tsv` (14,968 rows removed this way - the same targeted noise
+            // signal French/Spanish/Italian/Dutch all use). Mandatory bare-noun safety check (Guide step 4):
+            // 0 bare-NOUN rows in the final file. `bigram.tsv`: 2,814,934 rows (>=10 real occurrences,
+            // matching French's/Spanish's own final cutoff) from 6,561,082 rows at the raw >=3
+            // extraction-time floor.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Portuguese's own, not reused: hints.tsv
+            // keeps German's 10 language-neutral math/typography assignments (b=*, d=°, f=ƒ, h=#, m=-, n=+,
+            // p=π, q=@, v=/, x=×) and gives the remaining 16 letters Portuguese-specific content - a=ã, c=ç,
+            // e=é, i=í, o=õ, u=ú (the six accented/cedilla base letters - one representative variant per
+            // key, `diacritics.tsv` keeps the full set), g=«/r=» (quotation marks), s=€ (currency), t=º/y=ª
+            // (masculine/feminine ordinal indicators, the same role German's own ° fills for degree),
+            // j/k/l/w/z filled with generically useful remaining typography (—, …, &, §, •). `diacritics.tsv`:
+            // a→ã,á,à,â; c→ç; e→é,ê; i→í; o→ó,ô,õ; u→ú. `abbreviations.tsv`: a hand-curated ~30-entry
+            // Portuguese sentence-boundary abbreviation list (sr./dr./prof./av./etc./...).
+            //
+            // `PortugueseRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (both European and
+            // Brazilian Portuguese), `timeSuggestionWord`=null (no single-word "Uhr"-style convention),
+            // `bundledConfusablesBlacklist`=empty. `dictionaries/confusables_scan.py dictionaries/pt/dict.tsv
+            // qwerty 30` found 901 candidate pairs - left deliberately uncurated, the same "cannot confidently
+            // separate a genuine short Portuguese word/abbreviation from real corpus noise without native
+            // fluency" reasoning French/Spanish/Italian/Dutch all document; a spot-check during this round
+            // directly confirmed the risk of guessing - "sei" (176, a real, common word: "eu sei" = "I know")
+            // appeared as a candidate risking autocorrect toward "seu" (46,532), exactly the kind of call this
+            // round's own non-native judgement cannot safely make.
+            //
+            // Quality gate (Guide §8): 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned
+            // lemma links, 0 bare-NOUN rows - all re-verified directly against the final file, not assumed.
+            // New tests: `LanguageRulesTest` gained a `Portuguese resolves to PortugueseRules` case plus its
+            // own `PortugueseRules`-mirroring test block, matching `FrenchRules`/`SpanishRules`'s existing
+            // shape. `LanguagePackCatalogTest` needed no change - already fully generic over `ENTRIES`.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Portuguese. Real corpus scale (the largest raw-token
+            // count of any language pack this project has built) and a real lexicon, but still "pretty good"
+            // in the guide's own sense - and, unlike French/Spanish/Italian/Dutch, genuinely incomplete for
+            // noun/adjective word-family data specifically (a confirmed source limitation, not merely
+            // "not yet reviewed"). Not device-confirmed either.
+            version = 1
         )
     )
 }

@@ -39,6 +39,21 @@ class LanguageRulesTest {
     }
     
     @Test
+    fun `Portuguese resolves to PortugueseRules`() {
+        assertSame(PortugueseRules, LanguageRulesRegistry.rulesFor(Language.PORTUGUESE))
+    }
+    
+    @Test
+    fun `Italian resolves to ItalianRules`() {
+        assertSame(ItalianRules, LanguageRulesRegistry.rulesFor(Language.ITALIAN))
+    }
+    
+    @Test
+    fun `Dutch resolves to DutchRules`() {
+        assertSame(DutchRules, LanguageRulesRegistry.rulesFor(Language.DUTCH))
+    }
+    
+    @Test
     fun `every other bundled language resolves to the no-op default`() {
         assertSame(NoOpLanguageRules, LanguageRulesRegistry.rulesFor(Language.GREEK))
         assertSame(NoOpLanguageRules, LanguageRulesRegistry.rulesFor(Language.UNKNOWN))
@@ -223,5 +238,80 @@ class LanguageRulesTest {
         assertFalse(EnglishRules.isPlausibleVerbInflection("walks") { true })
         assertFalse(EnglishRules.isPlausibleAdjectiveComparative("faster") { true })
         assertNull(EnglishRules.splitCompound("keyword", { true }) { it })
+    }
+    
+    @Test
+    fun `Portuguese glues a decimal comma`() {
+        assertTrue(PortugueseRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Portuguese has no time-suggestion word`() {
+        assertNull(PortugueseRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Portuguese curates no bundled blacklist yet`() {
+        assertTrue(PortugueseRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Portuguese leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(PortugueseRules.blocksAsSplitPrefix("um", 0L))
+        assertFalse(PortugueseRules.blocksAsFeminineAgentException("a", "professor", true))
+        assertFalse(PortugueseRules.blocksAsCompoundPrefix("bem", true))
+        assertFalse(PortugueseRules.isPlausibleVerbInflection("falamos") { true })
+        assertFalse(PortugueseRules.isPlausibleAdjectiveComparative("maior") { true })
+        assertNull(PortugueseRules.splitCompound("palavrachave", { true }) { it })
+    }
+    
+    @Test
+    fun `Italian glues a decimal comma`() {
+        assertTrue(ItalianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Italian has no time-suggestion word`() {
+        assertNull(ItalianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Italian curates no bundled blacklist yet`() {
+        assertTrue(ItalianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Italian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(ItalianRules.blocksAsSplitPrefix("un", 0L))
+        assertFalse(ItalianRules.blocksAsFeminineAgentException("a", "maestro", true))
+        assertFalse(ItalianRules.blocksAsCompoundPrefix("bene", true))
+        assertFalse(ItalianRules.isPlausibleVerbInflection("parliamo") { true })
+        assertFalse(ItalianRules.isPlausibleAdjectiveComparative("più grande") { true })
+        assertNull(ItalianRules.splitCompound("parolachiave", { true }) { it })
+    }
+    
+    @Test
+    fun `Dutch glues a decimal comma`() {
+        assertTrue(DutchRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Dutch suggests uur after a time`() {
+        assertEquals("uur", DutchRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Dutch curates no bundled blacklist yet`() {
+        assertTrue(DutchRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Dutch leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(DutchRules.blocksAsSplitPrefix("een", 0L))
+        assertFalse(DutchRules.blocksAsFeminineAgentException("in", "leraar", true))
+        assertFalse(DutchRules.blocksAsCompoundPrefix("goed", true))
+        assertFalse(DutchRules.isPlausibleVerbInflection("praten") { true })
+        assertFalse(DutchRules.isPlausibleAdjectiveComparative("groter") { true })
+        assertNull(DutchRules.splitCompound("sleutelwoord", { true }) { it })
     }
 }

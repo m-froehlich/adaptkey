@@ -897,8 +897,12 @@ originally named: a far more frequent inflected sibling (e.g. plural "Kugeln" ag
 family sibling is by definition a genuine, currently-in-use word, never the coincidental dictionary-noise
 collision the ratio rule exists to catch (`due`/`ddr`), so no ratio is even computed once a family match is
 found. Coverage follows wherever the D-412 linking/generation passes actually reached - German (§305-§322,
-§360), English (D-422), Greek (D-424), and - since D-444 - French and Spanish are all lemma-populated; a
-word/language pair the linking passes never reached simply yields no family match, leaving the ratio check as
+§360), English (D-422), Greek (D-424), and - since D-444 - French and Spanish are all lemma-populated; since
+D-445, Portuguese is lemma-populated for VERBS only - its own native Wiktionary source does not document
+regular noun/adjective inflection as generatable form data at all (a confirmed source limitation, not a
+scope choice - see `AdaptKey-Progress.md`'s D-445 entry), so a noun/adjective family match essentially never
+fires for Portuguese today, only a verb one. A word/language pair the linking passes never reached simply
+yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated
 unknown-token confidence formula (D-353's `forUnknownToken`), and neither was touched here.

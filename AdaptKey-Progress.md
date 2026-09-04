@@ -451,14 +451,14 @@ non-trivial changes).
      not confirmed noise via a real review, and English has never had a dedicated noise-removal pass the
      way German (§301) and Greek (§371/D-425) did. Worth its own dedicated round if picked up.
 
-- **D-280/D-281 follow-up: `ITALIAN`/`DUTCH`/`PORTUGUESE` are already in the `Language` enum and already**
-  **fully typeable via QWERTY, but none has a dictionary or its own hint set built/hosted yet** - a genuine,
-  ready-to-pick-up community contribution opportunity, same shape as the French/Spanish gap was, without even
-  a geometry question to resolve first (see `AdaptKey-Language-Contribution-Guide.md`). `SPANISH` itself moved
-  out of this list via D-443 (§416) - see that round for the real pack now built and hosted. Separately, the
-  Python script that originally built `language_profiles.tsv` (A-03's trigram classifier data) is not in this
-  repository - reconstructing it is only needed if a future language falls outside the eight already covered
-  there.
+- **D-280/D-281 follow-up: `ITALIAN`/`DUTCH` are still in the `Language` enum and already fully typeable via**
+  **QWERTY, but neither has a dictionary or its own hint set built/hosted yet** - a genuine, ready-to-pick-up
+  community contribution opportunity, same shape as the French/Spanish gap was, without even a geometry
+  question to resolve first (see `AdaptKey-Language-Contribution-Guide.md`). `SPANISH` moved out of this list
+  via D-443 (§416); `PORTUGUESE` moved out via D-445 (§418) - see those rounds for the real packs now built
+  and hosted. Separately, the Python script that originally built `language_profiles.tsv` (A-03's trigram
+  classifier data) is not in this repository - reconstructing it is only needed if a future language falls
+  outside the eight already covered there.
 
 - **Tier-3 mini-LLM and first-run dictionary import: code-complete, real-device validation still outstanding.**
   Everything code-side (orchestration, the C-06 setting, §6 rule-6 hook, adaptive learning, tokenizer +
@@ -916,6 +916,85 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§418 (v1.1.57): D-445 - first Portuguese language pack, first of a three-language (pt/it/nl) one-shot**
+  **autonomous round run overnight per explicit user instruction, full-dump-only this time (see below).**
+  Portuguese (`Language.PORTUGUESE`) already used ordinary QWERTY and already had a real character-trigram
+  profile (`language_profiles.tsv`, "pt", since D-280) - both prerequisites §414/§415-style prep already
+  satisfied.
+
+  **Mid-round correction from the user, applied before this round's real extraction began**: the first
+  attempt used a single capped Wikipedia dump split (105,695 pages - the French/Spanish D-441/D-443
+  precedent), explicitly rejected as "obviously too small" - the user required the COMPLETE Wikipedia dump
+  processed for all three languages this round, not a page-capped first split. `dictionaries/pt/
+  extract_wiki_dump.py` (and its `it`/`nl` siblings, prepared the same session) gained two real additions
+  over the French/Spanish reference script to make full-dump-scale processing tractable overnight:
+  multiprocessing (this machine's 6 physical/12 logical cores, a worker pool doing the CPU-heavy per-page
+  wikitext-cleaning/tokenising step while the main process alone streams the iterparse XML) and periodic
+  hapax pruning (dropping count==1 entries once a Counter exceeds a size threshold, standard streaming-
+  frequency practice - a genuinely common word keeps accumulating from later occurrences regardless of an
+  early one being pruned, and `merge_dict.py`'s own >=20 floor discards anything this rare anyway). Result:
+  the ENTIRE `ptwiki-latest-pages-articles.xml.bz2` (2.72GB compressed) processed in roughly 1.5 hours -
+  1,181,337 real (ns=0, non-redirect) pages, 488,957,696 real tokens - an order of magnitude more real corpus
+  data than any capped-dump language this project has built before.
+
+  **A second, independent, real structural finding, found during the mandatory pre-flight size check
+  (Guide's own hard gate) and confirmed by direct inspection of real entries, not assumed**: Portuguese's own
+  native Wiktionary edition (`kaikki.org/dictionary/downloads/pt/pt-extract.jsonl.gz`, 35.4MB compressed) -
+  still the correct, mandatory source per the guide's own unconditional rule - is actually SMALLER than the
+  wrong English-Wiktionary-coverage file (54.2MB), the reverse of French's/Spanish's own "native always
+  bigger" pattern. Used per the guide's rule regardless. More consequentially: this native edition documents
+  Portuguese VERB conjugation richly (79,453 raw "verb" entries, 72,710 `senses[].form_of` references to
+  another lemma - the identical individually-paged-conjugated-form shape every other native edition already
+  showed - leaving ~6,700 real verb lemmas with full tables) but essentially does NOT document regular noun/
+  adjective inflection as `forms[]` data at all: only 137 of 52,477 noun lemmas and 70 of 18,413 adjective
+  lemmas have any real form beyond a non-word hyphenation marker (`"grego"` -> `"gre.go"`, tagged
+  `"canonical"`, now excluded in every language's own `extract_wiktionary.py` via a new shared
+  `EXCLUDE_FORM_TAGS` check). Raised with the user before proceeding (a real design fork, not a routine
+  judgement call) - agreed outcome: Portuguese Wortfamilien completion is real and complete for VERBS only
+  this round (calibration pair counts confirm the gap directly: noun ratio n=29 pairs, adjective ratio n=16
+  pairs - both far too sparse to mean anything - versus verb ratio n=28,416 pairs); nouns/adjectives keep
+  whatever the base dict.tsv/POS-tagging pass already produced, with only 129 generated noun forms and 36
+  generated adjective forms (incidental alternate-spelling/superlative entries, not systematic paradigm
+  completion) - a rule-based Portuguese noun-plural/adjective-agreement generator (the German-precedent
+  alternative) was discussed and deliberately deferred as its own, separate future round, not built this
+  time. This is a genuine, confirmed source limitation - not a bug in the extraction/merge scripts -
+  documented honestly here rather than silently passed off as parity with French/Spanish.
+
+  **Net result**: `dict.tsv` 535,869 rows (325,579 from the initial Wikipedia-frequency + kaikki-POS merge,
+  +210,290 from Wortfamilien completion, 210,125 of those generated verb forms alone). POS tagging: a word
+  found in kaikki gets its real part of speech; one not found is kept, tagged OTHER, once its own real corpus
+  count clears 20 occurrences (274,565 kept this way, 2,684,749 below-floor rows dropped), unless it is also
+  a common word (frequency >= 100) in this project's own bundled `en/dict.tsv` (14,968 rows removed this way
+  - the same targeted noise signal every prior pipeline round uses). `bigram.tsv`: 2,814,934 rows (>=10 real
+  occurrences, matching French's/Spanish's own final cutoff) from 6,561,082 rows at the raw >=3 extraction-
+  time floor. Quality gate (Guide §8, now backed by a new shared `dictionaries/quality_gate.py` script rather
+  than ad hoc checks each round): 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma
+  links, 0 bare-NOUN rows - PASS.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Portuguese's own: `hints.tsv` keeps German's 10
+  language-neutral assignments and gives the remaining 16 letters Portuguese content - a=ã, c=ç, e=é, i=í,
+  o=õ, u=ú (accents/cedilla), g=«/r=» (quotes), s=€, t=º/y=ª (ordinal indicators), j/k/l/w/z filled with
+  generically useful remaining typography (—, …, &, §, •). `diacritics.tsv`: a→ã,á,à,â; c→ç; e→é,ê; i→í;
+  o→ó,ô,õ; u→ú. `abbreviations.tsv`: a hand-curated ~30-entry list. `PortugueseRules`
+  (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 901 candidate pairs, left deliberately
+  uncurated (a direct spot-check during this round confirmed why: "sei", 176, a genuine common word - "eu
+  sei" - surfaced as a candidate risking autocorrect toward "seu", 46,532 - exactly the kind of call non-
+  native judgement cannot safely make).
+
+  New tests: `LanguageRulesTest` gained a `Portuguese resolves to PortugueseRules` case plus its own
+  `PortugueseRules`-mirroring test block; the same round also added `ItalianRules`/`DutchRules` (both
+  language-neutral, zero dictionary dependency, so written and tested alongside Portuguese's even though
+  their own dictionaries are still in progress at commit time) and their own registry/test entries.
+  `LanguagePackCatalogTest` needed no change - already fully generic over `ENTRIES`. `versionCode` 473 -> 474,
+  `versionName` `"1.1.56"` -> `"1.1.57"`.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+  who actually speaks Portuguese. Real corpus scale (the largest raw-token count of any language pack this
+  project has built) and a real lexicon, but still "pretty good" in the guide's own sense - and, unlike
+  French/Spanish, genuinely incomplete for noun/adjective word-family data specifically (a confirmed source
+  limitation, not merely "not yet reviewed"). Not device-confirmed either.
 
 - **§417 (v1.1.56): D-444 - French/Spanish rebuilt from the correct native Wiktionary source with real**
   **Wortfamilien completion; the same wrong-source mistake and a genuine bare-noun capitalisation bug fixed**

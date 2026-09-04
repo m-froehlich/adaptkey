@@ -19052,4 +19052,142 @@ complete with the real English/Greek numbers as the cautionary tale for skipping
 round (`extract_wiktionary.py`/`merge_wiktionary.py` for both languages, `fix_bare_noun.py`) is a real, checked-
 in reference implementation for the next language to adapt, not just a description.
 
+## §418 - D-445: first Portuguese language pack, run fully autonomously overnight as the first of a three-language (pt/it/nl) one-shot round, full-dump-only per an explicit mid-round user correction
+
+The user's own instruction for this round, given right after §417 shipped: build Portuguese, Italian, and
+Dutch language packs in one continuous autonomous run, each language completely finished (dictionary, rules,
+tests, docs, version bump, build/test, commit) before the next begins - "ein zusammenhängender Durchlauf",
+explicitly not stopping to ask for routine work, but pausing on a genuine structural surprise between the
+three languages the way French's own history had one. Read the Guide's own §8 pipeline end to end again
+before starting, and `dictionaries/fr/`/`dictionaries/es/` as the real, just-hardened reference
+implementation (both freshly cleared of the two D-444 mistakes) - not guessed at from memory.
+
+**First real structural surprise, raised with the user before proceeding rather than built over silently**:
+the mandatory pre-flight size check (Guide's own hard gate) found Portuguese's own native Wiktionary edition
+(`kaikki.org/dictionary/downloads/pt/pt-extract.jsonl.gz`, 35.4MB) is actually SMALLER than the wrong
+English-Wiktionary-coverage file (`kaikki.org/dictionary/Portuguese/...`, 54.2MB) - the reverse of French's/
+Spanish's own "native always bigger" pattern (12x/1.1x respectively). Still the correct, mandatory choice per
+the guide's own unconditional rule regardless of size - not raised as a source-selection question, since the
+rule already settles it - but flagged because a first pass through the actual native file's real content then
+surfaced something that DID need a real decision: nouns/adjectives in this edition carry almost no `forms[]`
+data at all. Direct inspection (not assumed): of 52,477 real noun lemmas, only 137 have any form beyond a
+non-word hyphenation marker (`"grego"` -> `"gre.go"`, tagged `"canonical"` - itself a new finding, since no
+earlier language's own extraction script had ever seen this tag shape; excluded via a new `EXCLUDE_FORM_TAGS`
+check now shared by every language's `extract_wiktionary.py`, including French's/Spanish's own already-built
+ones); of 18,413 adjective lemmas, only 70. Verbs, by contrast, are documented richly (79,453 raw "verb"
+entries, 72,710 `senses[].form_of` references to another lemma - confirming the identical individually-paged-
+conjugated-form shape every other native edition already showed - leaving ~6,700 real lemmas with full
+conjugation tables).
+
+Presented to the user as a real three-way fork before writing any merge code for it: (1) ship verb-only
+Wortfamilien completion, document the noun/adjective gap honestly; (2) build a real rule-based Portuguese
+noun-plural/adjective-agreement generator (Portuguese pluralisation - vowel/n/r/s/z -> +s; -m -> -ns; -ão ->
+-ões/-ães/-ãos with a real exception list; -al/-el/-ol/-ul -> -ais/-eis/-ois/-uis; -il -> -is/-eis - is far
+more regular than German's own declension, so this was judged genuinely feasible, not a repeat of German's
+own multi-round plural-class struggle); (3) look for a different/better source. The user's own reply
+("erstens ist der Wikipedia Dump offensichtlich zu klein... zweitens... jetzt leg bitte los") answered a
+different, more urgent problem first (see below) and implicitly endorsed the session's own already-stated
+recommendation (option 1) by saying to proceed without further pausing - taken as the actual decision for
+this round; option 2 stays open as a named, not-yet-started future item (see `AdaptKey-Progress.md`).
+
+**The more urgent correction, and the one that actually blocked real progress**: the session's first attempt
+had used a single capped Wikipedia dump split (`ptwiki-latest-pages-articles1.xml-p1p105695.bz2`, 105,695
+pages) - directly copying the French/Spanish D-441/D-443 precedent without re-deriving whether that precedent
+still applied. The user rejected this outright: "der Wikipedia Dump ist offensichtlich zu klein... nimm bitte
+den kompletten" - and separately called out the session's own process failure directly: stopping the whole
+three-language round after the very first dictionary's own extraction turned out imperfect, rather than
+continuing to push through problems across all three the way a genuine one-shot run requires ("jetzt stoppst
+du nach dem ersten falsch extrahierten Wörterbuch"). Both corrections readable as the same underlying lesson:
+a page cap chosen once, for one language, on one machine's memory state, is not a fact to carry forward
+unexamined - and an autonomous multi-language round should surface problems as findings to report or genuine
+forks to ask about, not reasons to stop the whole run.
+
+Fixed properly: `dictionaries/pt/extract_wiki_dump.py` (and its newly-written `it`/`nl` siblings, built the
+same session so all three languages could proceed back to back without another mid-round pause) now targets
+the single COMBINED dump file (`<code>wiki-latest-pages-articles.xml.bz2` - confirmed via the real directory
+listing that Wikipedia publishes this alongside the numbered per-split files for every wiki, large or small,
+not only the smaller ones) rather than any capped split, with two real additions needed to make full-dump-
+scale processing (over a million real pages per language, not tens of thousands) tractable overnight on this
+one machine:
+
+1. **Multiprocessing.** The per-page wikitext-cleaning/tokenising step is genuine, regex-heavy CPU work: this
+   machine reports 6 physical / 12 logical cores (`Get-CimInstance Win32_Processor`), so a `multiprocessing.
+   Pool` of 5 worker processes now does that work in parallel while the main process alone streams the
+   `iterparse` XML (its own internal state cannot be shared across processes, so it stays single-threaded by
+   necessity) and merges each worker's returned `(word list, bigram list)` into the accumulating `Counter`s.
+   Confirmed effective in practice, not just reasoned about: Portuguese's own full 1,181,337-page run (2.72GB
+   compressed dump) completed in roughly 1.5 hours, a rate that would very plausibly have taken most of a full
+   day single-threaded.
+2. **Periodic hapax pruning.** An uncapped run's word/bigram `Counter`s would otherwise grow without bound -
+   full-scale Wikipedia has millions of distinct tokens/pairs, the overwhelming majority appearing exactly
+   once. Every 20,000-page checkpoint, any entry with `count == 1` is dropped once the `Counter` has grown past
+   a size threshold (4M words / 8M bigrams) - a standard streaming-frequency technique, safe for this
+   project's own purposes since a genuinely common word/pair keeps accumulating from its many later
+   occurrences regardless of one early instance being pruned away, and `merge_dict.py`'s own `>=20`
+   unrecognised-word floor already discards anything this rare from the final dictionary anyway. Confirmed
+   working live in the real run's own checkpoint log (e.g. bigram counts pruned from 9.9M to 8.4M entries at
+   one checkpoint, well before memory pressure could build).
+
+Live-checked free RAM before the real run (`Get-CimInstance Win32_OperatingSystem`): ~6.0-6.2GB free of 16GB
+total - noted as this round's own real starting point rather than reused from French's/Spanish's own earlier,
+different-session numbers, per the guide's own step-0 warning against exactly that. Memory stayed healthy
+throughout (~5.1GB free with the pool running, main process the largest single consumer at ~535MB resident at
+one spot-check) - the pruning design worked as intended, no safety stop was ever needed.
+
+**Net result**: `dict.tsv` 535,869 rows (325,579 from the initial Wikipedia-frequency + kaikki-POS merge,
++210,290 from Wortfamilien completion - 210,125 generated verb forms, 129 noun, 36 adjective, matching the
+scope decision above exactly). POS tagging follows the same method French's/Spanish's own corrected D-444
+round established: a word found in kaikki gets its real part of speech; one not found is kept, tagged OTHER,
+once its own corpus count clears 20 occurrences (274,565 kept this way, 2,684,749 below-floor rows dropped),
+unless it is also a common word (frequency >= 100) in this project's own bundled `en/dict.tsv` (14,968 rows
+removed as contamination). Mandatory bare-noun safety check: 0 bare-NOUN rows in the final file, verified
+directly. `bigram.tsv`: 2,814,934 rows at a final >=10-occurrence cutoff (matching French's/Spanish's own
+published packs), from 6,561,082 rows at the raw >=3 extraction-time floor.
+
+A new shared `dictionaries/quality_gate.py` script (0 case-insensitive duplicates, 0 non-positive
+frequencies, 0 orphaned lemma links, 0 bare-NOUN rows) replaces the ad hoc per-round verification every
+earlier language pack used - written once this round, reusable for Italian/Dutch and any future language
+without re-deriving the same four checks by hand each time. All four passed cleanly for Portuguese.
+
+`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Portuguese's own, researched fresh rather than copied:
+`hints.tsv` keeps German's 10 language-neutral math/typography assignments and gives the remaining 16 letters
+real Portuguese content - `a=ã, c=ç, e=é, i=í, o=õ, u=ú` (one representative accent/cedilla variant per key -
+`diacritics.tsv` keeps the complete set: `a`->`ã,á,à,â`; `c`->`ç`; `e`->`é,ê`; `i`->`í`; `o`->`ó,ô,õ`;
+`u`->`ú`), `g=«`/`r=»` (quotation marks), `s=€` (currency), `t=º`/`y=ª` (masculine/feminine ordinal
+indicators - the same role German's own `°` fills for degree), `j/k/l/w/z` filled with generically useful
+remaining typography (`—`, `…`, `&`, `§`, `•`). `abbreviations.tsv`: a hand-curated ~30-entry Portuguese
+sentence-boundary list (`sr.`/`dr.`/`prof.`/`av.`/`etc.`/...).
+
+`PortugueseRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (both European and Brazilian
+Portuguese), `timeSuggestionWord`=null (no single-word "Uhr"-style convention), `bundledConfusablesBlacklist`
+=empty. `dictionaries/confusables_scan.py dictionaries/pt/dict.tsv qwerty 30` found 901 candidate pairs, left
+deliberately uncurated for the same "cannot confidently separate a genuine short word/abbreviation from real
+corpus noise without native fluency" reasoning every prior non-German round has documented - directly
+confirmed as the right call by one spot-check during this very round: `"sei"` (176, a real, extremely common
+word - "eu sei" = "I know") surfaced as a candidate risking silent autocorrect toward `"seu"` (46,532) -
+exactly the kind of judgement call a non-native reviewer must not guess at.
+
+New tests: `LanguageRulesTest` gained `Portuguese resolves to PortugueseRules` plus a full `PortugueseRules`-
+mirroring block. The same session also wrote `ItalianRules`/`DutchRules` and their own registry/test entries
+alongside Portuguese's - both are genuinely complete, language-neutral Kotlin with zero dictionary-file
+dependency (the three naively-fillable hooks are locale facts, the other six are the same documented no-op
+every unimplemented language gets), so committing them together with Portuguese's own commit does not
+misrepresent Italian's/Dutch's own dictionary work as finished - only their own `LanguagePackCatalog.Entry`
+(written once each language's real data pipeline completes) carries the per-language numbers that actually
+prove a pack is done. `dictionaries/pt/extract_wiktionary.py`'s own module docstring documents the Portuguese-
+specific `canonical`-tag/scope-limit finding in full for the next reader; `dictionaries/it/`/`dictionaries/
+nl/extract_wiktionary.py` (prepared the same session, ready for their own languages' turn) inherit the same
+`EXCLUDE_FORM_TAGS` defensive check even though neither was confirmed to need it, matching this project's own
+established "share one robust rule rather than relying on an edition happening not to need it" convention
+(the same reasoning French's own D-444-followup `last_token()` fix already established for the pronoun-slash
+case). `versionCode` 473 -> 474, `versionName` `"1.1.56"` -> `"1.1.57"`. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green (see `AdaptKey-Progress.md` for the exact test count).
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone who
+actually speaks Portuguese. Real corpus scale (the largest raw-token count of any language pack this project
+has built so far, at 488.96M real tokens) and a real lexicon, but still "pretty good" in the guide's own
+sense - and, unlike French/Spanish, genuinely incomplete for noun/adjective word-family data specifically (a
+confirmed source limitation, not merely "not yet reviewed" - see above). Not device-confirmed either. Italian
+and Dutch continue in the same autonomous overnight session - see their own forthcoming §419/§420 entries.
+
 

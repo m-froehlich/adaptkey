@@ -125,7 +125,10 @@ object LanguageRulesRegistry {
         Language.GERMAN to GermanRules,
         Language.ENGLISH to EnglishRules,
         Language.FRENCH to FrenchRules,
-        Language.SPANISH to SpanishRules
+        Language.SPANISH to SpanishRules,
+        Language.PORTUGUESE to PortugueseRules,
+        Language.ITALIAN to ItalianRules,
+        Language.DUTCH to DutchRules
     )
     
     /**

@@ -1,0 +1,10 @@
+# Portuguese diacritic-fold table (D-436) - base letter -> every real accented/cedilla variant, so a token
+# typed without its diacritic ("nao") still reaches the correctly-spelled word ("não"), both live while
+# typing and at autocorrect/split-repair time. hints.tsv (same folder) picks one representative symbol per
+# key for the AltGr long-press hint; this file keeps the complete set per base letter.
+a	ã,á,à,â
+c	ç
+e	é,ê
+i	í
+o	ó,ô,õ
+u	ú

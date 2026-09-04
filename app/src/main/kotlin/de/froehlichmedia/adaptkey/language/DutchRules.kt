@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Froehlich Media
+
+package de.froehlichmedia.adaptkey.language
+
+import de.froehlichmedia.adaptkey.dictionary.CompoundSplit
+
+/**
+ * D-447: the Dutch [LanguageRules] implementation - built via the Language Contribution Guide's own §8
+ * real-corpus/real-lexicon pipeline, directly to the method [FrenchRules]/[SpanishRules]/[PortugueseRules]/
+ * [ItalianRules] were built/rebuilt to. Like every other implemented language, only three of the nine hooks
+ * are naively fillable without real Dutch grammar-engineering work: [decimalCommaGluesDigits] and
+ * [timeSuggestionWord] are plain locale facts, [bundledConfusablesBlacklist] would reuse a real confusables
+ * scan (see that function's own KDoc for why it stays empty for now). The remaining six hooks encode
+ * German-specific compounding/inflection grammar that has no Dutch equivalent implemented yet - left as the
+ * same "does not apply" no-op [NoOpLanguageRules] gives every other unimplemented language, even though
+ * Dutch (like German) is itself a genuinely compounding language - building real Dutch compound-splitting
+ * grammar is a separate, not-yet-started effort, not something this naive-fill round attempts.
+ */
+object DutchRules : LanguageRules {
+    
+    override fun blocksAsSplitPrefix(candidate: String, frequency: Long): Boolean = false
+    
+    override fun blocksAsFeminineAgentException(rightHalf: String, leftHalf: String, leftIsNoun: Boolean): Boolean = false
+    
+    override fun blocksAsCompoundPrefix(candidate: String, rightIsNoun: Boolean): Boolean = false
+    
+    override fun isPlausibleVerbInflection(token: String, isKnownWord: (String) -> Boolean): Boolean = false
+    
+    override fun isPlausibleAdjectiveComparative(token: String, isPlausiblePositive: (String) -> Boolean): Boolean = false
+    
+    override fun splitCompound(token: String, isKnownNoun: (String) -> Boolean, resolveRest: (String) -> String?): CompoundSplit.Result? = null
+    
+    /**
+     * D-447: unlike French/Spanish/Portuguese/Italian, Dutch does have a real single-word S-08-style
+     * convention after a typed time ("om 14.30 uur") - a genuine locale fact, not deep grammar engineering,
+     * so it is naively filled here rather than left null.
+     */
+    override fun timeSuggestionWord(): String? = "uur"
+    
+    /**
+     * D-447: `dictionaries/confusables_scan.py dictionaries/nl/dict.tsv qwerty` is directly runnable (Dutch
+     * already uses plain QWERTY, no dedicated layout prerequisite needed) but deliberately not curated into
+     * a blacklist this round - the same "cannot confidently separate a genuine short Dutch word/abbreviation
+     * from real corpus noise without native fluency" reasoning [FrenchRules]/[SpanishRules]/
+     * [PortugueseRules]/[ItalianRules] document for their own scans applies here too - left for a
+     * native-speaker-guided pass (see the Language Contribution Guide's own step 11) rather than guessed at.
+     */
+    override fun bundledConfusablesBlacklist(): Set<String> = emptySet()
+    
+    /** Dutch writes decimals with a comma ("3,14"), like German/French/Spanish/Portuguese/Italian. */
+    override fun decimalCommaGluesDigits(): Boolean = true
+}
