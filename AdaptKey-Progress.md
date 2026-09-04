@@ -810,6 +810,29 @@ non-trivial changes).
 
 ## Current State
 
+- **§407 (v1.1.46): D-396-followup (v2) - user feedback on §406: `HapticTier.KEY_PRESS` should read as a**
+  **short click/detent ("Rasten oder Klicken"), not a brief buzz, and quieter still.** A manually-timed
+  `createOneShot()` pulse is just an on/off motor tap and cannot really render a "click" feel on its own -
+  switched `KEY_PRESS` to `VibrationEffect.EFFECT_TICK` (API 29+), a real, hardware-tuned predefined effect
+  built for exactly this lighter click/detent sensation. `createPredefined()`'s own documented behaviour
+  already falls back to a generic pattern on a device with no dedicated implementation, so no capability
+  check was added. Confirmed against source before relying on it: `VibrationScaler` maps the system's
+  intensity setting directly to a predefined effect's own hardware LIGHT/MEDIUM/STRONG strength (the
+  prebaked-effect equivalent of the plain-amplitude scaling §406 already confirmed), so `HapticTier`'s own
+  quantity gate keeps working unchanged. Below API 29 (no predefined effects), `createOneShot()` remains the
+  only option - its own duration/amplitude both further shortened/lowered (new `KEY_PRESS_FALLBACK_DURATION_MS`
+  = 15L, `KEY_PRESS_AMPLITUDE` 50 -> 30), both considered starting points, not device-tuned - flagged against
+  D-06/D-34's own older, opposite-direction finding that a *very* short pulse could read as imperceptible on
+  that device, so this specific fallback path deserves its own real check if ever exercised on genuinely old
+  (API 26-28) hardware; the user's own Pixel 9a (API 34+) never reaches it. `MODE_SWITCH`/`CORRECTION`
+  unaffected, still the ordinary `HAPTIC_DURATION_MS`/`DEFAULT_AMPLITUDE` one-shot.
+
+  No new tests - same Android `Vibrator` glue boundary as §405/§406. 1304 unit tests unchanged, all green.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a further addendum. `versionCode`
+  462 -> 463, `versionName` `"1.1.45"` -> `"1.1.46"`. **Not yet device-confirmed** - needs a real feel-check
+  on the Pixel 9a that `EFFECT_TICK` actually reads as the intended short click/detent and is quiet enough;
+  likely needs at least one further tuning round given how subjective "dezent genug" is.
+
 - **§406 (v1.1.45): D-396-followup - device-confirmed on the Pixel 9a: the quantity gate (§405) works**
   **exactly as designed, but `HapticTier.KEY_PRESS` felt too strong at the system's own high level.** User
   first proposed either tuning the raw amplitude down for that specific level, or - preferred - making the
@@ -827,9 +850,9 @@ non-trivial changes).
 
   No new tests - same Android `Vibrator` glue boundary as §405. 1304 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a device-confirmation addendum.
-  `versionCode` 461 -> 462, `versionName` `"1.1.44"` -> `"1.1.45"`. **Not yet device-confirmed** - needs a
-  real feel-check on the Pixel 9a that `KEY_PRESS_AMPLITUDE`'s starting value is actually subtle enough
-  across all three system levels; likely needs at least one further tuning round.
+  `versionCode` 461 -> 462, `versionName` `"1.1.44"` -> `"1.1.45"`. **Device-confirmed (2026-09-04, Pixel**
+  **9a) as closer, but still not quite right - "buzz" vs. the wanted "click/detent" feel, and still not
+  quiet enough** - see §407 for the resulting follow-up.
 
 - **§405 (v1.1.44): D-396 - per-key/Caps-Lock vibration now respects the OS's own three-level "Haptic**
   **feedback" intensity slider, both in strength and in quantity.** Design discussed and agreed with the user

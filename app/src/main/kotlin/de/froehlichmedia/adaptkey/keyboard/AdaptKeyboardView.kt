@@ -1511,18 +1511,28 @@ class AdaptKeyboardView @JvmOverloads constructor(
             return
         }
         runCatching {
-            // D-396-followup: the OS's own per-level scaling (`VibrationScaler`, confirmed against AOSP
-            // source) is a modest 0.6x-1.4x delta around this app's own requested amplitude, never an
-            // exemption - there is no way to make a vibration immune to it, and deliberately going
-            // unclassified to try does not escape scaling either (every usage, including "unknown", goes
-            // through the identical computation) - it would only reopen the D-06/D-34/D-66/D-75 OEM-mute
-            // risk this project already fixed. So KEY_PRESS - the frequent, should-stay-subtle tier - asks
-            // for a deliberately low fixed amplitude instead of DEFAULT_AMPLITUDE, keeping the whole
-            // 0.6x-1.4x range comfortably quiet; MODE_SWITCH/CORRECTION stay at DEFAULT_AMPLITUDE, a firmer
-            // confirmation for their rarer, more significant events. KEY_PRESS_AMPLITUDE is a considered
-            // starting point, not yet device-tuned - perceived strength cannot be judged from source alone.
-            val amplitude = if (tier == HapticTier.KEY_PRESS) KEY_PRESS_AMPLITUDE else VibrationEffect.DEFAULT_AMPLITUDE
-            val effect = VibrationEffect.createOneShot(HAPTIC_DURATION_MS, amplitude)
+            // D-396-followup (v2): KEY_PRESS should read as a short click/detent, not a brief buzz - a
+            // manually-timed createOneShot() can only approximate that (it is just an on/off motor pulse),
+            // whereas EFFECT_TICK is a real, hardware-tuned predefined effect (API 29+) built for exactly
+            // this "light click" feel, and createPredefined()'s own documented behaviour already falls back
+            // to a generic pattern on a device with no dedicated implementation - no capability check of our
+            // own needed. Still respects the OS's own per-level scaling (VibrationScaler translates the
+            // system's intensity setting directly to the predefined effect's own LIGHT/MEDIUM/STRONG hardware
+            // strength for a Prebaked effect, the same mechanism D-396-followup (v1) already confirmed for a
+            // plain amplitude), so HapticTier's quantity gating above is unaffected either way. Below API 29,
+            // createOneShot() is the only option - KEY_PRESS_FALLBACK_DURATION_MS/KEY_PRESS_AMPLITUDE are
+            // shortened/quietened starting points (not yet device-tuned) to approximate the same short, quiet
+            // feel as closely as a plain on/off pulse can. MODE_SWITCH/CORRECTION are unaffected by any of
+            // this - still the ordinary HAPTIC_DURATION_MS/DEFAULT_AMPLITUDE one-shot, confirmed already fine.
+            val effect = if (tier == HapticTier.KEY_PRESS) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
+                } else {
+                    VibrationEffect.createOneShot(KEY_PRESS_FALLBACK_DURATION_MS, KEY_PRESS_AMPLITUDE)
+                }
+            } else {
+                VibrationEffect.createOneShot(HAPTIC_DURATION_MS, VibrationEffect.DEFAULT_AMPLITUDE)
+            }
             // D-75 (D-66 still not firing on device): a plain vibrate(VibrationEffect) with no attributes
             // falls into an unclassified usage bucket that some OEM vibration-intensity settings scale to
             // zero independently of the (already-bypassed) "touch vibration" toggle. USAGE_TOUCH/
@@ -2060,10 +2070,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
         private const val SOUND_MAX_STREAMS = 4
         private const val HAPTIC_DURATION_MS = 40L
         
-        // D-396-followup: deliberately quiet fixed amplitude (of 1..255) for HapticTier.KEY_PRESS, so the
-        // OS's own 0.6x-1.4x per-level scaling (VibrationScaler) stays in a comfortably subtle range - a
-        // considered starting point, not yet device-tuned; see fireHaptic()'s own comment for the reasoning.
-        private const val KEY_PRESS_AMPLITUDE = 50
+        // D-396-followup (v2): below API 29 there is no VibrationEffect.EFFECT_TICK (see fireHaptic()'s own
+        // comment) - createOneShot() with a short duration/low amplitude is the closest a plain on/off motor
+        // pulse can get to the same short, quiet "tick" feel. Both are considered starting points, not yet
+        // device-tuned - note D-06/D-34's own older finding (above) that a *very* short pulse could read as
+        // imperceptible on that device, so this fallback path specifically deserves its own real check if it
+        // is ever exercised on genuinely old (API 26-28) hardware, unlike EFFECT_TICK's own device-tuned,
+        // graceful degradation on every device new enough to reach it.
+        private const val KEY_PRESS_FALLBACK_DURATION_MS = 15L
+        
+        // D-396-followup (v1 -> v2): deliberately quiet fixed amplitude (of 1..255), lowered further per the
+        // user's own on-device feel-check, so the OS's own 0.6x-1.4x per-level scaling (VibrationScaler)
+        // stays in a comfortably subtle range on the API 26-28 fallback path above - a considered starting
+        // point, not yet device-tuned; see fireHaptic()'s own comment for the reasoning.
+        private const val KEY_PRESS_AMPLITUDE = 30
         
         // D-396: the OS's own per-usage vibration-intensity key (0 off - 3 high) - not a named public
         // Settings.System constant, confirmed instead directly against AOSP's VibratorService source

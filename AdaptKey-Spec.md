@@ -2432,6 +2432,22 @@ device-tuned) instead of `VibrationEffect.DEFAULT_AMPLITUDE`, keeping its whole 
 quiet; `MODE_SWITCH`/`CORRECTION` are unaffected, still `DEFAULT_AMPLITUDE` - firmer confirmation for their
 rarer, more significant events, matching what the user actually reported as fine.
 
+Further feedback (still same session): the user wanted `HapticTier.KEY_PRESS` to read as a short click/detent
+rather than a brief buzz, and quieter still. A manually-timed `createOneShot()` pulse is just an on/off motor
+tap - it cannot really render a "click" feel on its own. `VibrationEffect.EFFECT_TICK` (API 29+) is a real,
+hardware-tuned predefined effect built for exactly this lighter click/detent sensation, with `createPredefined
+()`'s own documented graceful fallback to a generic pattern on a device without a dedicated implementation -
+no capability check of the app's own needed - and it still respects the OS's own per-level scaling (confirmed
+against source: `VibrationScaler` maps the system's intensity setting directly to a predefined effect's own
+hardware LIGHT/MEDIUM/STRONG strength, the prebaked-effect equivalent of the plain-amplitude scaling already
+confirmed above), so `HapticTier`'s own quantity gating is unaffected either way. `KEY_PRESS` now uses
+`EFFECT_TICK` on API 29+; below that (no predefined effects at all), `createOneShot()` remains the only
+option, with its own duration/amplitude both further shortened/lowered (`KEY_PRESS_FALLBACK_DURATION_MS`/
+`KEY_PRESS_AMPLITUDE`, both considered starting points, not device-tuned) to approximate the same short, quiet
+feel as closely as a plain pulse can - noting D-06/D-34's own older, opposite-direction finding that a *very*
+short pulse could read as imperceptible on that device, so this specific fallback path deserves its own real
+check if ever exercised on genuinely old (API 26-28) hardware.
+
 ---
 
 ## Prerequisite
