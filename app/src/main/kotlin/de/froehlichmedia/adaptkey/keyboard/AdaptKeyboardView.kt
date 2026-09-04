@@ -1248,18 +1248,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val runnable = Runnable {
             if (pressedKey === key) {
                 longPressFired = true
-                // G-06: the Shift long-press engages Caps Lock — its haptic confirmation is governed by
-                // capsLockHapticsEnabled (a separate setting), not the system long-press feedback.
-                if (key.code == KeyCode.SHIFT) {
-                    playCapsLockHaptic()
-                } else {
-                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                }
                 // D-01 / D-14: any key with an alternative shows the popup - a visible on-keyboard preview
                 // (Gboard-style) that confirms the long-press and commits on release. A single-alternative
                 // key shows a one-cell popup; a key with no alternative (the combined ?123 key, or Shift)
                 // falls back to its listener action.
                 val alternatives = popupAlternativesFor(key)
+                // G-06: the Shift long-press engages Caps Lock — its haptic confirmation is governed by
+                // capsLockHapticsEnabled (a separate setting), not the system long-press feedback.
+                // D-396-followup (v3): a popup opening gets no haptic of its own any more - the initial
+                // tap-down KEY_PRESS feedback already confirmed the press, and commitPopupSelection() now
+                // fires its own confirmation once an alternative is actually accepted, per user feedback
+                // ("das Feedback beim Antippen ist ok, beim Aufpoppen braucht es keins, aber beim Annehmen
+                // fehlt eins"). The plain system long-press haptic is kept for the one remaining case that
+                // never shows a popup at all (a key whose only long-press action is the listener callback).
+                when {
+                    key.code == KeyCode.SHIFT -> playCapsLockHaptic()
+                    alternatives.isEmpty() -> performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                }
                 if (alternatives.isNotEmpty()) {
                     openPopup(key, alternatives)
                 } else {
@@ -1386,6 +1391,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val alternative = popupAlternatives.getOrNull(popupSelectedIndex)
         dismissPopup()
         if (key != null && alternative != null) {
+            // D-396-followup (v3): the one genuinely missing haptic in this flow - accepting an alt-char
+            // was previously silent (only the initial tap-down and the now-removed popup-open cue fired).
+            // HapticTier.CORRECTION, the same "a deliberate selection was just accepted" tier a suggestion
+            // chip already uses - this is not routine typing (KEY_PRESS) nor a mode change (MODE_SWITCH).
+            if (hapticsEnabled) {
+                fireHaptic(HapticTier.CORRECTION, "commitPopupSelection")
+            }
             onLongPressPopupListener?.onLongPressAlternative(key, alternative)
         }
     }
@@ -1460,7 +1472,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * D-396/D-88: fires a [HapticTier.CORRECTION]-tier vibration for a silently-applied autocorrection or
      * an accepted suggestion chip - called by [AdaptKeyService.notifySuggestionAccepted], the single
      * existing choke point both already flow through. Gated internally on [hapticsEnabled] exactly like
-     * [playKeyFeedback], so the caller needs no gating of its own.
+     * [playKeyFeedback], so the caller needs no gating of its own. [commitPopupSelection] fires the same
+     * tier directly (D-396-followup v3) for the third case it covers - accepting an L-05 long-press
+     * alternative.
      */
     fun fireCorrectionHaptic() {
         if (hapticsEnabled) {

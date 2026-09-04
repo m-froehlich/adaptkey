@@ -810,6 +810,25 @@ non-trivial changes).
 
 ## Current State
 
+- **§408 (v1.1.47): D-396-followup (v4) - §407's `EFFECT_TICK` confirmed exactly right on the Pixel 9a**
+  **(genuinely the real effect, not the pre-API-29 fallback); user then asked to fix the L-05 long-press-**
+  **popup flow's own haptics while still in the same round.** Three distinct moments around a popup, and only
+  one needed a vibration: tap-down (already `KEY_PRESS`, correctly kept - delaying it would make every
+  ordinary tap feel unacknowledged), popup opening (previously fired the platform's own generic
+  `performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)` unconditionally - redundant per the user, the
+  tap-down cue already confirms the press, removed for the popup case specifically), and accepting an
+  alternative (`commitPopupSelection()` - previously silent, the one genuinely missing cue, now fires
+  `HapticTier.CORRECTION`, the same tier a suggestion chip already uses for "a deliberate selection was just
+  accepted"). The plain system long-press haptic is kept for the one remaining branch with no popup at all (a
+  key whose only long-press action is the listener callback); G-06's own Caps-Lock haptic was already routed
+  through its own dedicated call, never through the removed generic one, so it is unaffected.
+
+  No new tests - same Android View-glue touch/haptics boundary as §405-§407. 1304 unit tests unchanged, all
+  green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a further addendum.
+  `versionCode` 463 -> 464, `versionName` `"1.1.46"` -> `"1.1.47"`. **Not yet device-confirmed** - needs a
+  real check on the Pixel 9a that a long-press popup now stays silent on open and vibrates once on accepting
+  an alternative.
+
 - **§407 (v1.1.46): D-396-followup (v2) - user feedback on §406: `HapticTier.KEY_PRESS` should read as a**
   **short click/detent ("Rasten oder Klicken"), not a brief buzz, and quieter still.** A manually-timed
   `createOneShot()` pulse is just an on/off motor tap and cannot really render a "click" feel on its own -
@@ -829,9 +848,8 @@ non-trivial changes).
 
   No new tests - same Android `Vibrator` glue boundary as §405/§406. 1304 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. Spec's §42 gained a further addendum. `versionCode`
-  462 -> 463, `versionName` `"1.1.45"` -> `"1.1.46"`. **Not yet device-confirmed** - needs a real feel-check
-  on the Pixel 9a that `EFFECT_TICK` actually reads as the intended short click/detent and is quiet enough;
-  likely needs at least one further tuning round given how subjective "dezent genug" is.
+  462 -> 463, `versionName` `"1.1.45"` -> `"1.1.46"`. **Device-confirmed (2026-09-04, Pixel 9a) - exactly**
+  **right ("das gefällt mir richtig gut"), and genuinely the real `EFFECT_TICK`, not the fallback path.**
 
 - **§406 (v1.1.45): D-396-followup - device-confirmed on the Pixel 9a: the quantity gate (§405) works**
   **exactly as designed, but `HapticTier.KEY_PRESS` felt too strong at the system's own high level.** User

@@ -2448,6 +2448,30 @@ feel as closely as a plain pulse can - noting D-06/D-34's own older, opposite-di
 short pulse could read as imperceptible on that device, so this specific fallback path deserves its own real
 check if ever exercised on genuinely old (API 26-28) hardware.
 
+Device-confirmed (2026-09-04, Pixel 9a): `EFFECT_TICK` gives exactly the click/detent feel and quietness the
+user wanted ("das gefällt mir richtig gut") - genuinely `EFFECT_TICK` itself, not the pre-API-29 fallback, on
+this device.
+
+**D-396-followup (v3): the L-05 long-press-popup flow's own haptics, raised by the user in the same round.**
+Three distinct moments exist around a popup - the initial tap-down, the popup opening, and an alternative
+being accepted - and only one of the three actually needed a vibration:
+
+- **Tap-down** (already `HapticTier.KEY_PRESS`, unchanged): correctly kept - delaying it until a long-press
+  is confirmed would make every ordinary, non-held tap feel unacknowledged.
+- **Popup opening**: previously fired the platform's own generic `performHapticFeedback(HapticFeedbackConstants
+  .LONG_PRESS)` unconditionally for every non-Shift long-press with alternatives - judged redundant by the
+  user (the tap-down cue already confirmed the press) and removed for that case. Still kept for the one
+  remaining branch that shows no popup at all (a key whose only long-press action is the listener callback,
+  `onLongPressListener`) - untouched, since the user's own complaint was specifically about the popup case.
+- **Accepting an alternative** (`AdaptKeyboardView.commitPopupSelection()`, on release with a real
+  `popupKey`/selected alternative): previously silent - the one genuinely missing cue. Now fires
+  `HapticTier.CORRECTION`, the same "a deliberate selection was just accepted" tier a suggestion chip already
+  uses - not routine typing (`KEY_PRESS`), not a mode change (`MODE_SWITCH`).
+
+G-06's own Caps Lock long-press is unaffected by any of this - it already had its own dedicated
+`playCapsLockHaptic()`/`MODE_SWITCH` call at the long-press-fires moment, never the generic
+`performHapticFeedback` call this change removes.
+
 ---
 
 ## Prerequisite
