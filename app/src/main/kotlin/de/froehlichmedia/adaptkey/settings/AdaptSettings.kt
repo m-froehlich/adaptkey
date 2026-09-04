@@ -147,7 +147,11 @@ data class AdaptSettings(
         /** Default long-press delay (D-32, ~20 % below the typical system timeout). */
         const val DEFAULT_LONGPRESS_DELAY_MS = 320L
         
-        /** Default double-tap Shift delay (G-05, matching the former hardcoded 400 ms). */
+        /**
+         * Default double-tap delay (originally G-05's own hardcoded 400 ms) - the generic "how fast counts
+         * as a double-tap" window, shared by G-05 (Shift word-start-case toggle), D-348 (double-tap
+         * Backspace undo) and D-361 (sticky Backspace), not a Shift-specific value.
+         */
         const val DEFAULT_DOUBLE_TAP_DELAY_MS = 400L
         
         /** Default extra row spacing in dp (D-55). */

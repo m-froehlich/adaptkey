@@ -86,10 +86,10 @@ object SettingsMapper {
     /** D-32 maximum long-press delay in ms. */
     const val MAX_LONGPRESS_DELAY_MS = 600L
     
-    /** G-05 minimum double-tap Shift delay in ms. */
+    /** Minimum double-tap delay in ms (the generic window shared by G-05/D-348/D-361, see [AdaptSettings.DEFAULT_DOUBLE_TAP_DELAY_MS]). */
     const val MIN_DOUBLE_TAP_DELAY_MS = 200L
     
-    /** G-05 maximum double-tap Shift delay in ms. */
+    /** Maximum double-tap delay in ms (the generic window shared by G-05/D-348/D-361, see [AdaptSettings.DEFAULT_DOUBLE_TAP_DELAY_MS]). */
     const val MAX_DOUBLE_TAP_DELAY_MS = 800L
     
     /** D-55 minimum extra row spacing in dp. */

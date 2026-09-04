@@ -108,7 +108,7 @@ object SettingsStore {
     /** Default stored integer for the long-press delay slider (D-32, 320 ms). */
     const val DEF_LONGPRESS_DELAY = 320
     
-    /** Default stored integer for the double-tap Shift delay slider (G-05, 400 ms). */
+    /** Default stored integer for the double-tap delay slider (the generic G-05/D-348/D-361 window, 400 ms). */
     const val DEF_DOUBLE_TAP_DELAY = 400
     
     /** Default stored boolean for the Caps Lock haptic feedback (G-06, on). */
