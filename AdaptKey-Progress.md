@@ -424,13 +424,19 @@ non-trivial changes).
     ask, see below).
   - **D-360 - OPEN.** A commit + autocorrect right before an Enter/newline must still be revertible by a
     plain Backspace afterward.
-  - **D-361 - RESOLVED for the "grow the zone" half (§391, v1.1.30); the retroactive-reinterpretation half**
-    **deliberately shelved, not implemented.** Fast Backspace typing was letting neighbour keys (including
+  - **D-361 - RESOLVED and device-confirmed (§391-§399, v1.1.30-v1.1.38); the retroactive-reinterpretation**
+    **half deliberately shelved, not implemented.** Fast Backspace typing was letting neighbour keys (including
     Enter) react instead of Backspace. Design discussed first (touches key hit-testing): two ideas were on the
     table - (A) temporarily growing Backspace's own touch zone while typing fast, (B) retroactively
     reinterpreting a wrong neighbour-tap as Backspace after the fact. User's own call: pursue A only for now -
     B is riskier than when originally floated, since D-393 (same round) made a wrongly-landed Enter tap
     genuinely submit real actions (search, send, login) in more fields, which cannot be undone after the fact.
+    A itself took six real-device-log-driven rounds to actually nail down (§391 shipped it; §392 was an
+    unrelated settings-screen detour; §393-§396 built out the settings-icon side quest; §397 fixed the
+    vertical/Enter direction (a missing D-55 extra-spacing allowance); §398 added temporary diagnostics once
+    re-reading the geometry alone stopped finding the cause; §399 found and fixed the real remaining gap - a
+    raw tap landing in the inter-row gap itself matched no key's rect at all and fell through to the personal
+    offset model instead of the sticky check) - 2026-09-04: device-confirmed working end to end.
     Revisit B only if A alone turns out insufficient. See spec's L-04 addendum and Current State for A's
     mechanism.
   - **D-362 - RESOLVED (§338, v1.0.90).** The loading-indicator chip (D-346) is now bold, 20sp (vs. the
@@ -804,8 +810,9 @@ non-trivial changes).
 
   No new tests (same `AdaptKeyboardView` touch-resolution boundary). 1249 unit tests unchanged, all green.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. No spec change. `versionCode` 454 -> 455,
-  `versionName` `"1.1.37"` -> `"1.1.38"`. **Not yet device-confirmed** - needs the exact same repro (fast
-  Backspace, finger drifting onto L/K) retried to confirm the gap taps are now caught too.
+  `versionName` `"1.1.37"` -> `"1.1.38"`. **2026-09-04: device-confirmed** - the exact repro (fast Backspace,
+  finger drifting onto L/K) no longer types letters. D-361 itself (§391-§399, the sticky-Backspace-zone
+  feature as a whole) is now closed end to end.
 
 - **§398 (v1.1.37): D-361-followup - "oben" still does not stick after v5, temporary diagnostic logging**
   **added instead of a third blind patch.** Reported right after v5 (which fixed "unten"/Enter): left/right
