@@ -933,7 +933,9 @@ lemma-populated (32,140 lemmas + 3 proper nouns of 353,591, about 9.1%): here th
 native source's own coverage BREADTH (how much of the real corpus vocabulary it documents at all, including
 an unusually thin proper-noun catalogue - only 7 raw entries in the whole file), not richness per documented
 word the way a fallback source is thin - a genuinely different reason for a similarly low ratio, see
-`AdaptKey-Progress.md`'s own D-450 entry. A word/language pair the
+`AdaptKey-Progress.md`'s own D-450 entry. Slovak is likewise only partially lemma-populated (6,314 lemmas +
+3,044 proper nouns of 144,615, about 6.5% - the lowest ratio of any fallback-sourced language in this round,
+directly reflecting its own source being the smallest fallback source checked so far). A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated

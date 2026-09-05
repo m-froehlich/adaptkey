@@ -1552,6 +1552,97 @@ object LanguagePackCatalog {
             // specific to this source. Not device-confirmed either. Slovak, Hungarian, and Romanian continue
             // next in the same round.
             version = 1
+        ),
+        Entry(
+            Language.SLOVAK,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-sk.zip",
+            // D-450 (continued): sixth language of the same 18-language round, right after Czech - see the
+            // Swedish Entry earlier in this file for the shared structural context. Added `Language.SLOVAK`
+            // (`"sk"`, endonym `"Slovenčina"`) to the enum.
+            //
+            // **No native Slovak Wiktionary edition exists on kaikki.org.** Built from the English
+            // Wiktionary's own coverage instead (`kaikki.org/dictionary/Slovak/kaikki.org-dictionary-
+            // Slovak.jsonl.gz`, 5.3MB - by far the SMALLEST fallback source checked so far this project,
+            // smaller even than Norwegian Bokmål's own 9.68MB).
+            //
+            // **A genuinely different, structurally new data-shape finding, found by direct inspection before
+            // writing any parsing logic - not assumed to match any prior language**: Slovak NOUN entries
+            // encode their declension table as a FLAT, POSITIONAL stream of `forms[]` entries with NO `tags`
+            // key on the actual word-form values at all - English case/number LABEL WORDS ("singular",
+            // "plural", "nominative", "genitive", ...) appear as their OWN, also-untagged entries interleaved
+            // among the real word forms, acting as row/column headers for a table wiktextract has flattened
+            // without preserving row/column position reliably (confirmed directly: one real noun's own
+            // "accusative" label was followed by ZERO forms, and its own "instrumental" label by only ONE
+            // form instead of the expected two). Since this project's own dict.tsv format only ever needs the
+            // SET of real form-strings per lemma - the specific case/number tag is discarded downstream by
+            // `merge_wiktionary.py`'s own `read_grouped()` for every language already - the positional
+            // unreliability does not actually matter: `usable_forms()` was rewritten to NOT require a `tags`
+            // key at all, instead explicitly excluding a small, closed, English-only label vocabulary
+            // (confirmed no real Slovak word collides with any of "nominative"/"genitive"/"singular"/etc.).
+            // Verbs and adjectives were checked separately and do NOT share this shape - both carry full,
+            // real tags on every form entry, the ordinary shape every other language uses. Re-derived against
+            // a real example ("august"/"August" the month): the label-skip approach correctly recovered all
+            // 9 real declined forms with no positional-alignment risk, since case/number identity was never
+            // needed in the first place.
+            //
+            // A second, smaller real finding from the same investigation: a genuine abbreviation ("aug" for
+            // "august") turned up tagged only `["alternative", "abbreviation"]` - "alternative" alone does
+            // not exclude it elsewhere in this project's shared qualifier set, so `"abbreviation"` was added
+            // explicitly to Slovak's own `EXCLUDE_QUALIFIERS` copy, a genuine, evidence-based per-language
+            // addition, not a guess.
+            //
+            // The entire `skwiki-latest-pages-articles.xml.bz2` (355MB compressed) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 261,162 real pages, 57,454,537 real tokens, 1,486,293
+            // distinct words, 2,050,500 raw (>=3) bigram rows. Slovak's own periphrastic verb forms ("cestoval
+            // som" - "I travelled") were confirmed via direct inspection to follow the same marker-first
+            // analytic pattern as every other language this round - the standard whitespace-rejection rule
+            // applies unmodified.
+            //
+            // **Net result**: `dict.tsv` 184,403 rows (144,615 initial Wikipedia-frequency + kaikki-POS
+            // merge, +39,788 from Wortfamilien completion - 22,544 noun + 6,896 verb-delta + 10,348 adjective-
+            // delta generated forms; calibration ratios noun=0.3406 (n=11,838 pairs), verb=0.8061 (n=2,117),
+            // adjective=0.4727 (n=5,136) - all three sane despite the small source). POS tagging: 135,406
+            // words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,327,896 dropped below the count->=20
+            // floor, 13,782 removed as common-English-word contamination. Wiktionary matching: 6,314 lemmas
+            // tagged with real grammatical info, 490 unmatched; 19,230 existing forms linked, 39,788
+            // generated. Proper-noun handling: 3,044 tagged, 471 unmatched, 249 skipped as real-word
+            // collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 527,103 rows
+            // (>=10 cutoff) from the 2,050,500-row raw floor. Quality gate: 0 case-insensitive duplicates, 0
+            // non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect** (the same mandatory
+            // documentation Swedish's own entry introduced): of `dict.tsv`'s 184,403 rows, only 6,314 lemmas
+            // plus 3,044 proper nouns - about 6.5% of the 144,615 pre-Wortfamilien base entries, the LOWEST
+            // ratio of any fallback-sourced language this round, directly reflecting this being by far the
+            // smallest fallback source checked - carry a real kaikki-derived POS tag and `lemma`/form link.
+            // The remaining 135,406 rows are real Slovak words by Wikipedia-corpus frequency alone,
+            // undocumented for part of speech. The same two mechanisms are weakened, more acutely than for any
+            // prior fallback-sourced language: (1) A-05's split-safety gate cannot veto a wrong compound split
+            // built from any of these 135,406 untagged words. (2) D-404 Tier 2's family-match ratio override
+            // cannot fire for a correct-but-rarer word among the 135,406 untagged rows. Expect Slovak to need
+            // the most manual curation follow-up of any language in this round so far, as a direct, honestly
+            // quantified consequence of its own source's small size.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Slovak's own: 14 base letters carry a real
+            // diacritic (`a=á/ä, c=č, d=ď, e=é, i=í, l=ĺ/ľ, n=ň, o=ó/ô, r=ŕ, s=š, t=ť, u=ú, y=ý, z=ž`), the
+            // second-most of any language this project has built (after Czech's own 13, since Slovak's `a`
+            // and `l`/`o` each carry two real variants). `g=„`/`h="` (the same low-quote convention as Czech).
+            // `abbreviations.tsv`: a hand-curated 17-entry Slovak sentence-boundary list.
+            //
+            // `SlovakRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,426 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Slovak resolves to SlovakRules` case plus its own
+            // mirroring test block. `language_profiles.tsv` not built for Slovak either, same accepted gap.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Slovak. Real, full-dump corpus scale (57.45M real tokens) - but
+            // the thinnest fallback-source coverage of any language this round, honestly quantified above
+            // rather than left as a vague caveat, plus a genuinely novel positional-data-shape finding
+            // resolved by design rather than guesswork. Not device-confirmed either. Hungarian and Romanian
+            // continue next in the same round.
+            version = 1
         )
     )
 }

@@ -915,6 +915,62 @@ non-trivial changes).
 
 ## Current State
 
+- **§429 (v1.1.68): D-450 (continued) - first Slovak language pack, sixth of the 18-language round - a**
+  **genuinely new positional/untagged noun-table data shape, found and resolved by design.** Added
+  `Language.SLOVAK` (`"sk"`, `"Slovenčina"`) to the enum. No native Slovak edition exists - built from the
+  English Wiktionary's own coverage instead (5.3MB, the SMALLEST fallback source checked so far this
+  project).
+
+  **Structural finding**: Slovak noun entries encode their declension table as a flat, positional stream of
+  `forms[]` entries with NO `tags` key at all - English case/number LABEL WORDS ("singular", "nominative",
+  ...) appear as their own untagged entries interleaved among the real word forms, and the raw form COUNT
+  following a label cannot be trusted to reliably encode which number a form belongs to (confirmed: one real
+  noun's "accusative" label was followed by zero forms, "instrumental" by only one instead of two). Since
+  this project's dict.tsv format only ever needs the SET of real forms per lemma (case/number tags are
+  discarded downstream anyway), `usable_forms()` was rewritten to not require a `tags` key, instead excluding
+  a small, closed English label vocabulary - verified no real Slovak word collides with any of them. Verbs
+  and adjectives checked separately and do NOT share this shape (fully tagged, ordinary format). A second,
+  smaller finding: a real abbreviation ("aug") needed an explicit `"abbreviation"` qualifier exclusion not
+  already covered by the shared set.
+
+  The entire `skwiki-latest-pages-articles.xml.bz2` (355MB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor - 261,162 real pages, 57,454,537 real tokens, 1,486,293 distinct
+  words, 2,050,500 raw (>=3) bigram rows.
+
+  **Net result**: `dict.tsv` 184,403 rows (144,615 initial + 39,788 from Wortfamilien completion; calibration
+  ratios noun=0.3406 (n=11,838), verb=0.8061 (n=2,117), adjective=0.4727 (n=5,136), all sane despite the
+  small source). POS tagging: 135,406 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,327,896
+  dropped, 13,782 removed as common-English-word contamination. Wiktionary matching: 6,314 lemmas tagged,
+  490 unmatched; 19,230 existing forms linked, 39,788 generated. Proper-noun handling: 3,044 tagged, 471
+  unmatched, 249 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`:
+  527,103 rows (>=10 cutoff) from 2,050,500 raw. Quality gate: 0 case-insensitive duplicates, 0 non-positive
+  frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+
+  **What exactly is thinner, and its concrete app-level effect**: only 6,314 lemmas + 3,044 proper nouns
+  (~6.5% of the 144,615 pre-Wortfamilien base entries - the LOWEST ratio of any fallback-sourced language
+  this round, directly reflecting the smallest source size) carry a real kaikki-derived POS tag and
+  `lemma`/form link. Same two mechanisms weakened, more acutely than any prior language: (1) A-05's
+  split-safety gate cannot veto a wrong compound split built from any untagged word. (2) D-404 Tier 2's
+  family-match ratio override cannot fire for a correct-but-rarer untagged word. Slovak should need the most
+  manual curation follow-up of any language in this round so far.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Slovak's own: 14 base letters carry a real diacritic
+  (`a=á/ä, c=č, d=ď, e=é, i=í, l=ĺ/ľ, n=ň, o=ó/ô, r=ŕ, s=š, t=ť, u=ú, y=ý, z=ž`), second-most of any language
+  built so far (after Czech's 13). `g=„`/`h="` (same low-quote convention as Czech). `abbreviations.tsv`: a
+  hand-curated 17-entry list.
+
+  `SlovakRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,426 candidate pairs, left deliberately
+  uncurated.
+
+  New tests: `LanguageRulesTest` gained a `Slovak resolves to SlovakRules` case plus its own mirroring test
+  block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
+  Slovak. Real, full-dump corpus scale (57.45M real tokens) but the thinnest fallback-source coverage of any
+  language this round, plus a genuinely novel positional-data-shape finding resolved by design. Not
+  device-confirmed either. Hungarian and Romanian continue next.
+
 - **§428 (v1.1.67): D-450 (continued) - first Czech language pack, fifth of the 18-language round, first of**
   **the cs/sk/hu/ro group.** Added `Language.CZECH` (`"cs"`, `"Čeština"`) to the enum. Czech DOES have a
   native Wiktionary edition (Wikislovník) - one of only 3 of the 18 languages this round with real native
