@@ -406,6 +406,16 @@ rather than silently treating it as equivalent to a language that does have its 
      `sin`, and more - all present) - the mapping already lives in every `merge_dict.py`'s own `POS_MAP` dict,
      so a new language copying that script correctly gets this for free; the risk is only in a rewritten or
      partial `POS_MAP` silently missing the `prep`/`prep_phrase` -> `PREPOSITION` entries.
+     **A real exception, found while building Turkish (D-449) - check for it, do not assume every language
+     has this tag at all**: a postpositional language (adpositions follow the noun rather than precede it -
+     Turkish is the case confirmed so far) may have NO `prep`/`prep_phrase` pos value anywhere in its own
+     kaikki extract, because that closed class is tagged inconsistently across `particle`/`adv`/`conj`/
+     `noun`/`adj` instead, often on words that already carry a real, competing sense under one of those tags.
+     Do not force a curated exception list to fill this gap unless you can verify every candidate's own
+     competing senses with real fluency in the language - confirmed directly for Turkish's own best-known
+     postpositions (`sonra`/`doğru`/`karşı`/`dolayı` all carry real noun/adjective/adverb senses in the same
+     data) that this is a genuine judgement call, not a mechanical one. Report 0 `PREPOSITION` rows honestly
+     rather than guessing at a list.
 
 4. **Wortfamilien / lemma completion via Wiktionary, with a mandatory bare-noun safety check.** Generate full
    inflectional paradigms (verb conjugations, noun declensions/plurals, adjective degree/declension) and link
@@ -461,7 +471,31 @@ rather than silently treating it as equivalent to a language that does have its 
    language's own multi-word forms first (which word is grammatically "the real one" - first or last?) before
    deciding whether to reuse it, adapt it, or - as Dutch's own fix does - skip the recovery entirely and treat
    any whitespace-containing raw form as out of scope (safe by construction, and often loses nothing real:
-   Dutch's own genuinely useful single-word forms were already present as their own separate entries).
+   Dutch's own genuinely useful single-word forms were already present as their own separate entries). **A
+   third real example, found while building Turkish (D-449), confirms this is not only a multi-word-form
+   problem**: an adjective calibration ratio of ~3105x was traced to a single mistagged entry (`"obez"`)
+   whose own `forms[]` documented the analytic comparative/superlative marker word (`"daha"`/`"en"`, which
+   Turkish ordinarily writes attached to the adjective - `"daha X"`/`"en X"`) completely bare, unlike every
+   other sampled adjective - a source annotation inconsistency (confirmed: 2 of 21,994 comparative/
+   superlative forms in the whole file), not a multi-word-splitting decision at all. The lesson generalises
+   beyond `last_token()` specifically: **always pull the real raw JSON for the actual outlier pair before
+   accepting or dismissing it** - a ratio-sanity failure can come from a systemic shape decision (French's/
+   Dutch's own bugs) or a single mistagged source entry (Turkish's own), and only reading the real entry
+   tells you which.
+
+   **A related, separate class of real bug worth checking for on any language with its own special casing
+   rules, found the same round (D-449, Turkish)**: ordinary `str.lower()`/`str.upper()` in your own
+   extraction scripts can silently produce a *plausible-looking but wrong* word for a language whose casing
+   rules differ from the ASCII default. Turkish's own dotted/dotless İ/I pair is the concrete, confirmed
+   case: Unicode's default casefolding maps ASCII `"I"` to dotted `"i"`, but Turkish requires `"I"` -> dotless
+   `"ı"` - so a naive `.lower()` in your own script (not the app's own runtime, which is a separate, later
+   question - see step 8's own capitalisation-applicability decision) can corrupt a word's spelling in the
+   dictionary itself before it ever reaches the app. Check whether your target language has any such
+   locale-specific casing quirk before trusting your own extraction script's `.lower()`/`.upper()` calls, and
+   write a small language-specific case-mapping helper if it does (see `dictionaries/tr/extract_wiki_dump.py`'s
+   own `turkish_lower()` for a real, checked-in reference implementation) - verify it against a few real
+   words directly (e.g. confirm `"IŞIK".lower()` produces `"ışık"`, not `"işik"`) rather than assuming
+   Python's own default is safe for every language.
 
 5. **AltGr / long-press hint set (`hints.tsv`) and the diacritics table (`diacritics.tsv`, D-436) - one
    research pass, two files.** More automatable than an earlier draft of this guide assumed, for one large,

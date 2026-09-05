@@ -1,0 +1,11 @@
+# Turkish diacritic-fold table (D-436) - base letter -> its real Turkish variant, so a token typed without
+# it ("yagmur") still reaches the correctly-spelled word ("yağmur"), both live while typing and at
+# autocorrect/split-repair time. hints.tsv (same folder) picks the same single symbol per key for the AltGr
+# long-press hint, since every one of these base letters has exactly one real Turkish variant (unlike
+# French's/Portuguese's own multi-variant base letters).
+c	ç
+g	ğ
+i	ı
+o	ö
+s	ş
+u	ü

@@ -19593,4 +19593,155 @@ project has built) - but still "pretty good" in the guide's own sense, not nativ
 device-confirmed either. Turkish continues in the same autonomous session - see its own forthcoming §423
 entry.
 
+## §423 - D-449: first Turkish language pack, second and final of the pl/tr autonomous round - a postpositional-language finding, a third real calibration bug of the same class French's/Dutch's own share, and a genuine own-code casing bug found before it could corrupt data
+
+Continuing directly from §422/D-448 in the same autonomous session - Turkish already used ordinary QWERTY
+(confirmed the "Turkish Q" convention is the dominant real-world mobile-keyboard standard, not the
+historical, now largely superseded "Turkish F" arrangement, so no new layout geometry was needed) and was
+not yet in the `Language` enum - added (`"tr"`, endonym `"Türkçe"`) alongside Polish's own addition.
+
+Turkish's own native Wiktionary edition (`kaikki.org/dictionary/downloads/tr/tr-extract.jsonl.gz`, 43.3MB,
+correctly bigger than the wrong English-Wiktionary-coverage file's 34.1MB) documents noun/adjective
+inflection richly: 55,687 of 91,839 real noun lemmas have real forms (the full 6-case system - nominative/
+genitive/dative/accusative/locative/ablative - singular+plural+possessive-person paradigms); 11,009 of
+12,081 adjective lemmas (comparative/superlative plus the same case system used predicatively). Verbs show
+the same "most lemmas carry their own full forms[] table directly" shape Polish's own D-448 round found
+(only 6,621 of 77,658 raw "verb" entries, 8.5%, are `senses[].form_of` references).
+
+**Finding 1, confirmed by direct inspection before writing any merge code, not assumed either way: Turkish
+is a postpositional, not prepositional, language, and this Wiktionary edition has no dedicated closed-class
+tag for its own postpositions at all.** Checked directly: 0 entries tagged `prep`/`prep_phrase` anywhere in
+the whole file - genuinely absent, not merely rare. Looked up a dozen well-known Turkish postpositions
+(`için`/`gibi`/`kadar`/`önce`/`sonra`/`göre`/`ile`/`doğru`/`rağmen`/`karşı`/`üzere`/`dolayı`) directly in the
+raw data to see what they ARE tagged as: inconsistently, across `particle`/`adv`/`conj`/`noun`/`adj`
+depending on the specific word's own other senses - `gibi`/`için` are cleanly `particle`-only, but
+`sonra`/`doğru`/`karşı`/`dolayı` already carry real, competing noun/adjective/adverb senses in this same
+data. A small hand-curated exception list (tagging only the cleanly-single-sense postpositions
+`PREPOSITION`) was considered and deliberately not built - confidently deciding which of the ambiguous,
+multi-sense words should ALSO gain the tag without native Turkish fluency was judged too risky, the identical
+reasoning that ruled out a curated `-ão` exception list for Portuguese (D-445-followup). `dict.tsv` therefore
+has 0 `PREPOSITION`-tagged rows for Turkish - reported as a genuine, structural finding, not silently patched
+over or left unmentioned. The Language Contribution Guide's own preposition-tagging step (added the previous
+round, D-445-followup) now names this exact exception explicitly, so a future postpositional language is not
+mistaken for a script bug the way an unexplained "0 rows" result might otherwise read.
+
+**Finding 2 - a real calibration bug, the third real example of the identical symptom-class French's
+(D-444-followup) and Dutch's (D-447) own bugs share, caught the same way (the Guide's own mandatory
+calibration-ratio sanity check).** The first adjective calibration pass returned a ratio of ~3105x from 197
+pairs - immediately recognisable as impossible purely because this session already knew, from the two prior
+bugs' own history, to check for exactly this shape before trusting a calibration number. Diagnosed by pulling
+the individual ratios and inspecting the top outliers directly (not just the aggregate): two pairs, both
+involving the same lemma, `"obez"` ("obese", frequency 34) linked to bare `"en"` (105,577) and bare `"daha"`
+(102,492) - the analytic comparative/superlative marker words Turkish ordinarily writes attached directly to
+the adjective (`"daha X"`/`"en X"` - "more X"/"most X", never a single inflected word). Root-caused by
+pulling `"obez"`'s own real raw JSON entry rather than guessing from the pattern alone: its `forms[]`
+documents these two markers completely bare, with no adjective attached, unlike every other adjective
+sampled during the earlier multi-word-form check (`aralık`/`gri`/`Fransızca`/`Türkçe`/`Almanca`, all correctly
+`"daha X"`/`"en X"`) - confirmed, via a full-file scan, to be a genuine, isolated source-annotation
+inconsistency: only 2 of 21,994 real comparative/superlative forms in the entire file show this bare shape,
+`"obez"` being the sole affected lemma. This is a structurally different root cause from French's/Dutch's own
+bugs (neither a pronoun-prefix mis-split nor a periphrastic-auxiliary mis-extraction) - the same *symptom*
+(an impossible ratio) but a different *cause* each time, confirming the sanity check's own value is in
+catching the symptom class generically, not in any one specific fix generalising to the next language. Fixed
+with a narrow, evidence-based exclusion (bare `"daha"`/`"en"` values specifically, only when tagged
+comparative/superlative - mirroring Polish's own `"nie"`-as-placeholder fix in shape, a small, confirmed-real
+exception rather than a structural rework). Re-run confirmed 0 remaining contamination; adjective ratio
+corrected from the impossible ~3105x down to a real, plausible 0.0303 (n=195). One further, much smaller
+residual noted but deliberately not chased: `"iç"` (an adjective meaning "inner", freq 11,598) linked to
+`"için"` (freq 170,027, the extremely common postposition "for") at ratio 14.66x - a real, single, arguably
+correct-but-debatable etymological link (`"için"` is historically `"iç"` + a fossilised case suffix) that has
+zero effect on the actual median ratio used for generation, unlike the systemic `"obez"` contamination -
+accepted as ordinary residual noise, the same standard every prior round's own small leftover quirks were
+held to.
+
+**Finding 3 - a real bug in this project's OWN extraction code, found and fixed before it could silently
+corrupt the dictionary's own content, genuinely separate from the (still-open, deliberately-deferred) question
+of how the app itself should capitalise Turkish text at runtime.** Ordinary Python `str.lower()`/`str.upper()`
+get exactly one Turkish letter pair wrong: Unicode's own default casefolding maps ASCII `"I"` (U+0049) to
+dotted lower-case `"i"` (U+0069), but Turkish orthography requires `"I"` -> dotless `"ı"` (U+0131), and maps
+`"İ"` (dotted capital, U+0130) to a two-character "i + combining dot above" sequence rather than the single
+correct `"i"`. Confirmed the real, silent-corruption risk directly, not merely reasoned about abstractly:
+plain Python `"IŞIK".lower()` produces `"işik"` - a *different, still perfectly plausible-looking* Turkish
+word, not an error of any kind, meaning this would have corrupted real frequency data silently rather than
+failing loudly enough to notice. A small `turkish_lower()` helper (`str.maketrans` swapping İ/I to their
+correct Turkish lower-case forms first, then deferring to ordinary `.lower()` for everything else - ç/ğ/ö/ş/ü
+have no such quirk and are handled correctly by Unicode's own default rules already) is used throughout both
+`dictionaries/tr/extract_wiki_dump.py`'s own tokenisation and `dictionaries/tr/extract_wiktionary.py`'s own
+word/form normalisation. Verified directly against the real corpus output before trusting it, not assumed
+correct: `"ışık"` ("light") correctly appears at real frequency 15,401; the wrong spelling `"işik"` the bug
+would have produced appears only twice in the whole corpus, consistent with ordinary organic typo noise
+rather than a systematic casing failure. This is pure data-correctness work - getting Turkish *spellings*
+right in the dictionary content itself - fully separate from and not a substitute for the still-open,
+explicitly-deferred design question of how `CapitalisationEngine` itself should handle Turkish's own
+capitalisation behaviour (see immediately below); the Guide's own calibration-sanity-check section now names
+this as a related, separate class of check worth doing for any future language with its own special casing
+rules, with `turkish_lower()` itself kept as a real, checked-in reference implementation.
+
+The entire `trwiki-latest-pages-articles.xml.bz2` (1.05GB compressed) was processed via the same
+multiprocessing/hapax-pruning extractor D-445 built - 698,557 real pages, 136,688,360 real tokens, completed
+within the same session.
+
+**Net result**: `dict.tsv` 706,502 rows (257,407 from the initial Wikipedia-frequency + kaikki-POS merge,
++449,095 from noun/verb/adjective Wortfamilien completion; calibration ratios noun=0.0667 (n=33,751 pairs),
+verb=0.2797 (n=8,090), adjective=0.0303 (n=195, post-fix) - all sane, re-verified against the Guide's own
+mandatory sanity check). POS tagging: 182,351 words kept unrecognised-by-kaikki (corpus count >=20),
+1,909,033 dropped below that floor, 13,477 removed as common-English-word contamination. Proper-noun
+handling: 21,575 tagged, 3,956 skipped as real-word collisions. Mandatory bare-noun safety check: 0 bare-NOUN
+rows. `bigram.tsv`: 1,122,647 rows (>=10 cutoff) from 3,536,280 rows at the raw >=3 extraction floor. The
+shared `dictionaries/quality_gate.py` ran clean: 0 case-insensitive duplicates, 0 non-positive frequencies, 0
+orphaned lemma links, 0 bare-NOUN rows.
+
+`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Turkish's own, researched fresh: the real, closed
+29-letter Turkish alphabet (deliberately excludes q/w/x - not native letters, their presence in a token
+usually signals a foreign loanword/proper noun) has six real diacritic letters, each with exactly one genuine
+variant (unlike French's/Portuguese's/Polish's own multi-variant base letters) - `c=ç, g=ğ, i=ı, o=ö, s=ş,
+u=ü` (`diacritics.tsv` keeps the identical one-to-one set). German's 10 language-neutral assignments fit
+without conflict this time (unlike Polish's own `n`/`ń` clash) - `b=*, d=°, f=ƒ, h=#, m=-, n=+, p=π, q=@,
+v=/, x=×`. Remaining letters: `t=₺` (the Turkish lira symbol, a real dedicated Unicode currency character,
+unlike most currencies this project has had to approximate with `€`/`zł`), `l=«`/`r="` (quotation marks),
+`a/e/j/k/w/y/z` filled with generically useful remaining typography (`&`, `…`, `—`, `%`, `§`, `•`, `±`).
+`abbreviations.tsv`: a hand-curated ~24-entry Turkish sentence-boundary list (`dr.`/`prof.`/`doç.`/`vb.`/
+`vs.`/...).
+
+`TurkishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null (no
+single-word "Uhr"-style convention), `bundledConfusablesBlacklist`=empty. `dictionaries/confusables_scan.py
+dictionaries/tr/dict.tsv qwerty 30` found 4,461 candidate pairs - the largest candidate count of any language
+scan so far - left deliberately uncurated for the same "cannot confidently separate a genuine short word from
+real corpus noise without native fluency" reasoning every non-German round has documented. None of
+`TurkishRules`'s nine hooks touch capitalisation at all, by design - that question lives entirely in
+`CapitalisationEngine` instead, and stays open (see below).
+
+New tests: `LanguageRulesTest` gained `Turkish resolves to TurkishRules` plus a full `TurkishRules`-mirroring
+block. `language_profiles.tsv` (A-03's own trigram classifier data) was NOT built for Turkish either, the
+same accepted, named gap as Polish's own entry. `versionCode` 478 -> 479, `versionName` `"1.1.61"` ->
+`"1.1.62"`. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+
+**Deliberately NOT attempted this round, per explicit user instruction given at the very start of this
+two-language round: Turkish's own dotted/dotless İ/I *capitalisation* behaviour** (genuinely distinct from
+Finding 3's own extraction-time casing fix above, which is already fully resolved and unrelated). Turkish
+maps `"I"` (capital) -> `"ı"` (dotless) and `"i"` (lower) -> `"İ"` (dotted capital) when capitalising -
+different from the simple ASCII i/I pair every other language built so far treats as the same letter, no
+special handling needed. Checked first, before deferring the actual decision: this project's own
+capitalisation-adjacent code uses Kotlin's own locale-invariant `.lowercase()`/`.uppercase()` everywhere (a
+full grep for the locale-*default*-dependent legacy `toLowerCase()`/`toUpperCase()` calls found zero
+occurrences anywhere in the codebase) - so no other language's own capitalisation behaviour is put at risk by
+Turkish's mere presence in the `Language` enum, but genuinely correct Turkish capitalisation ("istanbul" ->
+"İstanbul") is simply not implemented anywhere yet. This is a real, still-open design question for
+`CapitalisationEngine` itself - explicitly deferred for its own dedicated discussion once this round's own
+pure data work was finished, exactly as the user asked; not decided, not guessed at, and not silently assumed
+"probably fine" in the meantime.
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+who actually speaks Turkish. Real, full-dump corpus scale (136.69M real tokens) and a real lexicon with full
+noun/verb/adjective Wortfamilien coverage - but still "pretty good" in the guide's own sense, and, unlike
+every other implemented language, genuinely incomplete for prepositions specifically (a confirmed structural/
+linguistic finding, not an oversight - see Finding 1 above). Not device-confirmed either.
+
+**This closes the two-language (pl/tr) autonomous round.** The Language Contribution Guide gained two further
+hardening passes this round, the same "close the loop immediately, not later" discipline every prior round
+has followed: the postpositional-language exception (step 3's own preposition-tagging note) and the
+calibration-bug generalisation plus locale-specific-casing check (step 4's own sanity-check section). Both
+Polish and Turkish remain, like every other pipeline-built language pack before them, honestly "pretty good"
+rather than native-reviewed - step 11 stays the real, un-fakeable gate between the two.
+
 
