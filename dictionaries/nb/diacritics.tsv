@@ -1,0 +1,6 @@
+# Norwegian Bokmål diacritic-fold table (D-436) - base letter -> every real variant, so a token typed
+# without it ("ar") still reaches the correctly-spelled word ("år"/"ær"), both live while typing and at
+# autocorrect/split-repair time. æ/ø/å are their own additional letters in the Norwegian alphabet (not
+# merely accented a/o), but the same base-letter-fold mechanism still applies for typing convenience.
+a	å,æ
+o	ø

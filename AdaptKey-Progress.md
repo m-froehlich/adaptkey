@@ -915,6 +915,52 @@ non-trivial changes).
 
 ## Current State
 
+- **§425 (v1.1.64): D-450 (continued) - first Norwegian Bokmål language pack, second of the 18-language**
+  **round - Bokmål only, per explicit user decision (Nynorsk not built).** Added `Language.NORWEGIAN`
+  (`"nb"`, `"Norsk bokmål"`) to the enum. No native Norwegian Bokmål Wiktionary edition exists on
+  kaikki.org - built from the English Wiktionary's own coverage instead (9.68MB, the smallest fallback
+  source of this round so far).
+
+  The entire `nowiki-latest-pages-articles.xml.bz2` (831MB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor - 689,377 real pages, 150,939,253 real tokens, 2,902,707 distinct
+  words, 3,546,745 raw (>=3) bigram rows. Multi-word-form shape verified directly (not assumed to carry over
+  from Swedish): the same marker-first "mer X"/"mest X" pattern, the same reject-whitespace-outright rule
+  applies unmodified.
+
+  **Net result**: `dict.tsv` 250,821 rows (220,865 initial + 29,956 from Wortfamilien completion; calibration
+  ratios noun=0.3571 (n=16,394), verb=1.0000 (n=7,283), adjective=0.7846 (n=3,271), all sane). POS tagging:
+  201,380 words kept unrecognised-by-kaikki (tagged `OTHER` only), 2,666,944 dropped, 14,898 removed as
+  common-English-word contamination. Wiktionary matching: 18,794 lemmas tagged, 775 unmatched; 27,253
+  existing forms linked, 29,956 generated. Prepositions: 78 tagged, 1 unmatched. Proper-noun handling: 1,138
+  tagged, 17 unmatched, 41 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows.
+  `bigram.tsv`: 1,169,388 rows (>=10 cutoff) from 3,546,745 raw. Quality gate: 0 case-insensitive duplicates,
+  0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+
+  **What exactly is thinner, and its concrete app-level effect** (same mandatory documentation as Swedish's
+  own §424 entry, Norwegian's own real numbers): only 18,794 lemmas + 1,138 proper nouns (~9.0% of the
+  220,865 pre-Wortfamilien base entries) carry a real kaikki-derived POS tag and `lemma`/form link; the
+  remaining 201,380 rows are real words by corpus frequency alone, with no part-of-speech data. Same two
+  mechanisms weakened: (1) A-05's split-safety gate cannot veto a wrong compound split built from any
+  untagged word (no `NOUN` tag to check). (2) D-404 Tier 2's family-match ratio override cannot fire for a
+  correct-but-rarer untagged word, so a more frequent, merely-related inflected sibling could wrongly out-
+  rank it.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Norwegian Bokmål's own: `a=å, o=ø` (same pattern as
+  Swedish, `diacritics.tsv` additionally keeps `a -> å,æ`), `t=kr` (krone currency, shared with Swedish/
+  Danish), `g=«`/`r=»` (same guillemet convention as Swedish). `abbreviations.tsv`: a hand-curated 20-entry
+  list.
+
+  `NorwegianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,896 candidate pairs, left deliberately
+  uncurated.
+
+  New tests: `LanguageRulesTest` gained a `Norwegian resolves to NorwegianRules` case plus its own mirroring
+  test block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
+  Norwegian. Real, full-dump corpus scale (150.94M real tokens) but thinner Wortfamilien/POS coverage than
+  every native-edition language. Not device-confirmed either. Danish and Finnish continue next in this round.
+
 - **§424 (v1.1.63): D-450 - first Swedish language pack, first of a large 18-language autonomous round -**
   **no native Swedish Wiktionary edition exists on kaikki.org, so this pack was built from the thinner**
   **English-Wiktionary-of-Swedish fallback coverage, honestly documented with concrete numbers and**

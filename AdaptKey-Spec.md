@@ -916,7 +916,9 @@ no native Swedish Wiktionary edition exists, so the thinner English-Wiktionary-o
 only documents real grammatical/lemma links for about 8.4% of the dictionary's base entries (44,084 lemmas +
 2,287 proper nouns of 374,316); the remaining words carry no `NOUN`/`lemma` data at all, a confirmed, honestly
 documented source limitation with concrete app-level impact (see `AdaptKey-Progress.md`'s D-450 entry) - not
-a scope choice, and not the same "fully lemma-populated" state as any native-edition language above. A word/language pair the
+a scope choice, and not the same "fully lemma-populated" state as any native-edition language above. Norwegian
+Bokmål shares the identical, honestly documented thin-fallback state (18,794 lemmas + 1,138 proper nouns of
+220,865, about 9.0%). A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated
