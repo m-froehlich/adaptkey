@@ -143,7 +143,9 @@ object LanguageRulesRegistry {
         Language.BOSNIAN to BosnianRules,
         Language.ESTONIAN to EstonianRules,
         Language.LATVIAN to LatvianRules,
-        Language.LITHUANIAN to LithuanianRules
+        Language.LITHUANIAN to LithuanianRules,
+        Language.INDONESIAN to IndonesianRules,
+        Language.MALAY to MalayRules
     )
     
     /**

@@ -946,7 +946,15 @@ Serbian "Serbo-Croatian" Wiktionary edition (D-450). Bosnian is likewise only pa
 (15,953 lemmas + 1,931 proper nouns of 88,637, about 18.0%), sharing the identical Wiktionary source.
 Estonian (5,362 lemmas + 1,394 proper nouns of 165,557, ~4.1%), Latvian (7,534 lemmas + 1,156 proper nouns
 of 88,979, ~8.5%), and Lithuanian (5,274 lemmas + 1,614 proper nouns of 113,936, ~6.0%) are likewise only
-partially lemma-populated (D-450). A word/language pair the
+partially lemma-populated (D-450). Malay - despite having a real NATIVE Wiktionary edition - is likewise
+only partially lemma-populated (5,713 lemmas + 233 proper nouns of 79,621, ~7.5%): here the limiting factor
+is this native source's own real, honestly-documented Wortfamilien scope for verbs/adjectives (near-zero
+conjugation data - Malay's real affixation-based verb morphology is catalogued as separate lemmas, not
+inflected forms), not source thinness the way a fallback source is thin (D-450). Indonesian - also a real
+NATIVE edition - is likewise only partially lemma-populated (12,916 lemmas + 2 proper nouns of 188,870,
+~6.8%), limited by this source's own thin proper-noun coverage and a real calibration-bug fix (D-450: a
+self-reduplication backwards-lemma pattern shared with Malay, found and fixed) that left 0 adjective
+family-match signal. A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated

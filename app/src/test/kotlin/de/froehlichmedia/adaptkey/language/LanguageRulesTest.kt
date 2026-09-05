@@ -764,4 +764,64 @@ class LanguageRulesTest {
         assertFalse(LithuanianRules.isPlausibleAdjectiveComparative("didesnis") { true })
         assertNull(LithuanianRules.splitCompound("raktazodis", { true }) { it })
     }
+    
+    @Test
+    fun `Malay resolves to MalayRules`() {
+        assertSame(MalayRules, LanguageRulesRegistry.rulesFor(Language.MALAY))
+    }
+    
+    @Test
+    fun `Malay does not glue a decimal comma`() {
+        assertFalse(MalayRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Malay has no time-suggestion word`() {
+        assertNull(MalayRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Malay curates no bundled blacklist yet`() {
+        assertTrue(MalayRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Malay leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(MalayRules.blocksAsSplitPrefix("tidak", 0L))
+        assertFalse(MalayRules.blocksAsFeminineAgentException("wati", "guru", true))
+        assertFalse(MalayRules.blocksAsCompoundPrefix("baik", true))
+        assertFalse(MalayRules.isPlausibleVerbInflection("membaca") { true })
+        assertFalse(MalayRules.isPlausibleAdjectiveComparative("lebih_besar") { true })
+        assertNull(MalayRules.splitCompound("kata_kunci", { true }) { it })
+    }
+    
+    @Test
+    fun `Indonesian resolves to IndonesianRules`() {
+        assertSame(IndonesianRules, LanguageRulesRegistry.rulesFor(Language.INDONESIAN))
+    }
+    
+    @Test
+    fun `Indonesian glues a decimal comma`() {
+        assertTrue(IndonesianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Indonesian has no time-suggestion word`() {
+        assertNull(IndonesianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Indonesian curates no bundled blacklist yet`() {
+        assertTrue(IndonesianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Indonesian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(IndonesianRules.blocksAsSplitPrefix("tidak", 0L))
+        assertFalse(IndonesianRules.blocksAsFeminineAgentException("wati", "guru", true))
+        assertFalse(IndonesianRules.blocksAsCompoundPrefix("baik", true))
+        assertFalse(IndonesianRules.isPlausibleVerbInflection("membaca") { true })
+        assertFalse(IndonesianRules.isPlausibleAdjectiveComparative("lebih_besar") { true })
+        assertNull(IndonesianRules.splitCompound("kata_kunci", { true }) { it })
+    }
 }

@@ -1,0 +1,49 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 Froehlich Media
+
+package de.froehlichmedia.adaptkey.language
+
+import de.froehlichmedia.adaptkey.dictionary.CompoundSplit
+
+/**
+ * D-450: the Malay [LanguageRules] implementation - built via the Language Contribution Guide's own §8
+ * pipeline, from Malay's own NATIVE Wiktionary edition (confirmed directly on kaikki.org). Like every other
+ * implemented language, only three of the nine hooks are naively fillable: [decimalCommaGluesDigits] and
+ * [timeSuggestionWord] are plain locale facts, [bundledConfusablesBlacklist] would reuse a real confusables
+ * scan. The remaining six hooks encode German-specific compounding/inflection grammar with no Malay
+ * equivalent implemented yet - Malay's own real reduplication-plural and affixation-based verb morphology
+ * are a much smaller, honestly documented Wortfamilien scope this round (see `AdaptKey-Progress.md`'s own
+ * D-450 entry), not attempted as dedicated grammar hooks here.
+ */
+object MalayRules : LanguageRules {
+    
+    override fun blocksAsSplitPrefix(candidate: String, frequency: Long): Boolean = false
+    
+    override fun blocksAsFeminineAgentException(rightHalf: String, leftHalf: String, leftIsNoun: Boolean): Boolean = false
+    
+    override fun blocksAsCompoundPrefix(candidate: String, rightIsNoun: Boolean): Boolean = false
+    
+    override fun isPlausibleVerbInflection(token: String, isKnownWord: (String) -> Boolean): Boolean = false
+    
+    override fun isPlausibleAdjectiveComparative(token: String, isPlausiblePositive: (String) -> Boolean): Boolean = false
+    
+    override fun splitCompound(token: String, isKnownNoun: (String) -> Boolean, resolveRest: (String) -> String?): CompoundSplit.Result? = null
+    
+    /** Malay has no single-word equivalent to German's S-08 "Uhr" convention after a typed time. */
+    override fun timeSuggestionWord(): String? = null
+    
+    /**
+     * D-450: deliberately not curated into a blacklist this round - the same "cannot confidently separate a
+     * genuine short word from real corpus noise without native fluency" reasoning every other implemented
+     * language documents for its own scan applies here too.
+     */
+    override fun bundledConfusablesBlacklist(): Set<String> = emptySet()
+    
+    /**
+     * D-450: unlike every other language implemented so far, Malay (Malaysia) does NOT use a comma as its
+     * own decimal separator - Malaysia follows the British/American convention (period as decimal, e.g.
+     * "RM10.50"), a real consequence of its colonial history, verified directly rather than assumed to
+     * match every other language's own comma convention.
+     */
+    override fun decimalCommaGluesDigits(): Boolean = false
+}

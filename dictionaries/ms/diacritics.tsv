@@ -1,0 +1,3 @@
+# Malay diacritic-fold table (D-450) - deliberately EMPTY. Confirmed directly against the real Wiktionary
+# source: Malay's own alphabet is the plain 26-letter Latin set with no diacritic letters at all - unlike
+# every other language built this round, this file has nothing to fold.
