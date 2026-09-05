@@ -915,6 +915,48 @@ non-trivial changes).
 
 ## Current State
 
+- **§421 (v1.1.60): D-445-followup - conservative, rule-based Portuguese noun/adjective PLURAL generator,**
+  **plus a preposition-tagging audit across every non-German pack and a new mandatory Guide step for it.**
+  Two separate, explicit user requests handled in one round.
+
+  **Preposition audit (no fix needed, verified clean)**: checked whether French/Spanish/Italian/Dutch/
+  Portuguese all correctly tag `PREPOSITION` - they do (97/71/93/134/45 rows respectively), spot-checked
+  against each language's own most common prepositions (`de`/`à`/`en`/`avec`/`pour`/`sur`/`sans`/`chez` for
+  French; `de`/`a`/`en`/`con`/`sin`/`sobre`/`para`/`por` for Spanish, and more) - all present with sensible
+  frequencies. The mechanism was already correct in every `merge_dict.py`'s own `POS_MAP`; what was missing
+  was a documented, named Guide step making this an explicit, checked requirement rather than an incidental
+  side-effect of copying an existing script - added to the Guide's own step 3.
+
+  **Portuguese plural generator (`dictionaries/pt/generate_plurals.py`, new)**: built on explicit instruction
+  to close part of D-445's own noun/adjective Wortfamilien gap, but scoped deliberately narrowly to only
+  mechanical, low-risk suffix rules, per direct instruction not to manufacture data the pipeline cannot be
+  confident about:
+  - Applied: vowel-ending -> +s; -m -> -ns; -r -> +es; -z -> +es (skipped when preceded by "ui"/"ai" - the
+    juiz/raiz-style hiatus-accent risk); -al/-el/-ol/-ul -> -ais/-éis/-óis/-uis (skipped when the word already
+    carries an earlier accent, a proparoxytone signal like `cônsul`).
+  - Deliberately NOT attempted, explicitly documented as a known scope limit rather than guessed: -s-ending
+    words (`lápis`/`vírus`-style invariable vs. `mês`/`país`-style oxytone -es, not reliably distinguishable
+    from spelling alone); -il-ending words (the identical stress ambiguity); -ão-ending words (three genuinely
+    competing patterns - -ões/-ães/-ãos - with real dialectal variation even in reference grammars for some
+    members, no confident curated list was possible); adjective gender-pair (-o/-a) generation (no reliable
+    per-word signal for which adjectives even take this alternation in the available data).
+  - Calibration ratio (0.4474) measured empirically from 17,223 real already-matched pairs (the predicted
+    plural already existing as its own real `dict.tsv` entry), the same technique `merge_wiktionary.py`
+    already uses for Wortfamilien ratios, not guessed.
+  - Result: `dict.tsv` 535,869 -> 558,148 rows (+22,279 generated plurals; 17,225 further existing words
+    linked to their singular via `lemma`; 6,736 eligible words correctly matched no safe rule and were left
+    untouched, exactly as intended). Spot-checked a dozen predictions by hand before trusting the run
+    (`hotel`->`hotéis`, `farol`->`faróis`, `azul`->`azuis`, `animal`->`animais`, `jardim`->`jardins`,
+    `homem`->`homens`, `mulher`->`mulheres`, `motor`->`motores`, `cartaz`->`cartazes`, `rapaz`->`rapazes` - all
+    correct; `cônsul`/`juiz`/`raiz`/`país`/`lápis`/`fóssil`/`barril`/`pão`/`irmão` all correctly skipped).
+    Quality gate re-verified clean: 0 duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0
+    bare-NOUN rows. `dictionaries/pt/version.txt` 1 -> 2, pack rebuilt, `LanguagePackCatalog` version 1 -> 2.
+
+  No new tests (data-only). `versionCode` 476 -> 477, `versionName` `"1.1.59"` -> `"1.1.60"`.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. Portuguese's own remaining gaps (the four skipped
+  classes above, plus verb-only Wortfamilien from D-445 itself) are unchanged by this round and still worth
+  a future, more careful pass - not claimed complete, only conservatively improved.
+
 - **§420 (v1.1.59): D-447 - first Dutch language pack, third and final of the three-language (pt/it/nl)**
   **overnight one-shot round - and a real, serious bug caught before shipping, the identical class of**
   **"impossible calibration ratio" French's own D-444-followup already taught this project to watch for.**

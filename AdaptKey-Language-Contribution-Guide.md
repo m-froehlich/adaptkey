@@ -396,6 +396,16 @@ rather than silently treating it as equivalent to a language that does have its 
      on an error-prone `+n`/`+en` spelling heuristic, `Krieg`/`kriegen` vs. `Krieg`/`Kriege`,
      indistinguishable from spelling alone) - direct LLM POS questions sidestep that whole class of false
      positive for the remainder.
+   - **Mandatory, easy to forget precisely because it is cheap: tag `PREPOSITION` from the same extract's own
+     closed-class `pos` values (`prep`/`prep_phrase` in kaikki's own vocabulary), not just `NOUN`/`VERB`/
+     `ADJECTIVE`.** This is a genuinely closed, small class (dozens to ~150 words depending on the language),
+     so it costs almost nothing to include, but it is easy to silently drop if a POS_MAP dict is copied
+     without checking every key survived the copy. Verified directly across every language pack this project
+     has built so far (French/Spanish/Italian/Dutch/Portuguese all correctly tag `PREPOSITION`, spot-checked
+     against each language's own most common prepositions - `de`/`à`/`en`/`avec`/`pour`, `de`/`a`/`en`/`con`/
+     `sin`, and more - all present) - the mapping already lives in every `merge_dict.py`'s own `POS_MAP` dict,
+     so a new language copying that script correctly gets this for free; the risk is only in a rewritten or
+     partial `POS_MAP` silently missing the `prep`/`prep_phrase` -> `PREPOSITION` entries.
 
 4. **Wortfamilien / lemma completion via Wiktionary, with a mandatory bare-noun safety check.** Generate full
    inflectional paradigms (verb conjugations, noun declensions/plurals, adjective degree/declension) and link

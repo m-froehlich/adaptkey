@@ -898,10 +898,14 @@ family sibling is by definition a genuine, currently-in-use word, never the coin
 collision the ratio rule exists to catch (`due`/`ddr`), so no ratio is even computed once a family match is
 found. Coverage follows wherever the D-412 linking/generation passes actually reached - German (§305-§322,
 §360), English (D-422), Greek (D-424), and - since D-444 - French and Spanish are all lemma-populated; since
-D-445, Portuguese is lemma-populated for VERBS only - its own native Wiktionary source does not document
-regular noun/adjective inflection as generatable form data at all (a confirmed source limitation, not a
-scope choice - see `AdaptKey-Progress.md`'s D-445 entry), so a noun/adjective family match essentially never
-fires for Portuguese today, only a verb one. Since D-446, Italian is fully lemma-populated (nouns, verbs, and
+D-445, Portuguese is lemma-populated for VERBS from Wiktionary directly - its own native Wiktionary source
+does not document regular noun/adjective inflection as generatable form data at all (a confirmed source
+limitation, not a scope choice - see `AdaptKey-Progress.md`'s D-445 entry). D-445-followup added a further,
+narrower noun/adjective family signal via a conservative rule-based PLURAL generator (singular<->plural only,
+not full paradigms, and only for the mechanical suffix classes that generator judges safe - see that entry's
+own scope limits), so a noun/adjective family match can fire for Portuguese today in that one narrow case,
+still well short of German/English/Greek/French/Spanish/Italian/Dutch's own full Wiktionary-sourced coverage.
+Since D-446, Italian is fully lemma-populated (nouns, verbs, and
 adjectives alike - its own native Wiktionary source documents all three richly, unlike Portuguese). Since
 D-447, Dutch is likewise fully lemma-populated (nouns, verbs, and adjectives alike). A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as

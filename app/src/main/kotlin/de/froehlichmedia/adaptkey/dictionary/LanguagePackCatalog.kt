@@ -772,7 +772,28 @@ object LanguagePackCatalog {
             // French/Spanish/Italian/Dutch, genuinely incomplete for noun/adjective word-family data
             // specifically (a confirmed source limitation, not merely "not yet reviewed"). Not
             // device-confirmed either.
-            version = 1
+            //
+            // D-445-followup (`dictionaries/pt/generate_plurals.py`, new): a conservative, rule-based noun/
+            // adjective PLURAL generator, built on explicit user request to close part of the gap above,
+            // scoped deliberately narrowly to only mechanical, low-risk suffix rules - vowel-ending -> +s;
+            // -m -> -ns; -r -> +es; -z -> +es (skipped when preceded by "ui"/"ai" - the juiz/raiz-style
+            // hiatus-accent risk); -al/-el/-ol/-ul -> -ais/-éis/-óis/-uis (skipped when the word already
+            // carries an earlier accent, a proparoxytone signal like cônsul). Every genuinely ambiguous class
+            // is explicitly skipped rather than guessed at, per direct instruction not to manufacture data:
+            // -s-ending words (lápis/vírus-style invariable vs. mês/país-style oxytone -es, not reliably
+            // distinguishable by spelling), -il-ending words (the identical stress ambiguity), -ão-ending
+            // words (three genuinely competing patterns - -ões/-ães/-ãos - with real dialectal variation even
+            // in reference grammars for some members), and adjective gender-pair (-o/-a) generation (no
+            // reliable per-word signal for which adjectives even take this alternation). Calibration ratio
+            // (0.4474) measured empirically from 17,223 real already-matched pairs (the predicted plural
+            // already existing as its own real dict.tsv entry), the same technique `merge_wiktionary.py`
+            // already uses, not guessed. Result: `dict.tsv` 535,869 -> 558,148 rows (+22,279 generated
+            // plurals; 17,225 further existing words linked to their singular via `lemma`; 6,736 eligible
+            // words correctly matched no safe rule and were left untouched). Quality gate re-verified: 0
+            // duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows. `dictionaries/
+            // pt/version.txt` 1 -> 2, pack rebuilt. Verbs/adjectives' own Wortfamilien scope from D-445 itself
+            // is otherwise unchanged - this round only adds plurals, nothing else.
+            version = 2
         ),
         Entry(
             Language.ITALIAN,

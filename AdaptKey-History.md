@@ -19400,4 +19400,92 @@ abbreviations, a `LanguageRules` implementation, `LanguageRulesTest` coverage, a
 with the real numbers, and an honest step-11 gate - none reviewed yet by an actual native speaker of that
 language, all "pretty good" by the guide's own explicit standard, not more.
 
+## §421 - D-445-followup: a conservative, rule-based Portuguese noun/adjective plural generator, plus a preposition-tagging audit across every non-German pack (clean) and a new mandatory Guide step for it
+
+Two separate user requests after §420 shipped, handled together in one round: "was kann man noch tun, um die
+portugiesischen Wortfamilien zu vervollständigen?" (discussed as an exploratory question first, options laid
+out, no commitment made) followed by an explicit go-ahead - "mach das mit der regelbasierten Runde... aber
+bitte baue nur das auf, das du ohne großes Fehlerpotential machen kannst. Müll müssen wir nicht künstlich
+aufbauen" - and, separately, "ich sehe gerade, dass du nichts zu Präpositionen sagst. Bitte prüfe...".
+
+**Preposition audit first, since it was quick and gated nothing else.** Checked `dict.tsv` for French,
+Spanish, Italian, Dutch, and Portuguese directly: all five already carry real `PREPOSITION` tags (97/71/93/
+134/45 rows respectively) - `merge_dict.py`'s own `POS_MAP` already mapped kaikki's `prep`/`prep_phrase` pos
+values correctly in every pack, inherited from the French template every later language's own script was
+adapted from. Spot-checked each language's own most common prepositions directly against `dict.tsv`
+(French: `de`/`à`/`en`/`dans`/`sur`/`sous`/`avec`/`sans`/`pour`/`par`/`chez`/`vers`/`entre`/`pendant`/
+`depuis`; Spanish: `de`/`a`/`en`/`con`/`sin`/`sobre`/`para`/`por`/`hacia`/`desde`/`entre`/`ante`/`bajo`/
+`durante`/`mediante`) - every one present with a sensible frequency, no gaps found. Nothing needed fixing;
+the only real action item was documentation - the mechanism worked correctly in every pack built so far
+purely because each new language's script was adapted from one that already had it right, not because any
+guide step required it explicitly. Added as a new mandatory sub-step under the Guide's own step 3 (POS
+tagging), naming the closed-class `prep`/`prep_phrase` mapping explicitly and citing this round's own
+five-language clean-audit as the evidence it already works when copied correctly - the real risk named is a
+*rewritten* or partial `POS_MAP` silently dropping the mapping, not the mapping itself being hard to get
+right.
+
+**The Portuguese plural generator (`dictionaries/pt/generate_plurals.py`, new)**, scoped conservatively per
+explicit instruction. Design principle stated up front and held to throughout: every rule applied must be a
+*mechanical, suffix-only* operation (never touching more than the final 1-2 characters, so a rule can never
+corrupt the rest of a word even if applied to a word it shouldn't have matched), and every genuinely
+ambiguous class must be *skipped outright* rather than guessed at, resolved via a curated exception list, or
+"probably fine" reasoning - the explicit instruction ("kein Müll") was read as a hard constraint on this
+round's own risk tolerance, not just a general preference.
+
+Rules actually applied, each reasoned through for edge cases before writing: vowel-ending (a/e/i/o/u and
+their six accented Portuguese variants: á à â ã é ê í ó ô õ ú) -> `+s`, the majority pattern and entirely
+safe; `-m` -> `-ns` (fully regular in modern Portuguese, no known exceptions - `jardim`->`jardins`,
+`homem`->`homens`); `-r` -> `+es` (consonant-final words are reliably stressed on that final syllable, no
+accent-insertion risk - `motor`->`motores`); `-z` -> `+es`, *except* skipped when the word ends in `"uiz"` or
+`"aiz"` (`juiz`/`raiz` are hiatus exceptions needing an accent - `juiz`->`juízes` - this rule does not attempt
+that insertion, so it skips rather than emits `"juizes"`); `-al`/`-el`/`-ol`/`-ul` -> `-ais`/`-éis`/`-óis`/
+`-uis` (a fixed, mechanical suffix replacement - only the last two characters are ever touched, so the
+accent insertion for `é`/`ó` can never be wrong about the rest of the word), *except* skipped whenever the
+word already contains another accented vowel earlier in the stem - a reliable proparoxytone signal
+(`cônsul` has its own accent on `ô`, correctly skipped rather than wrongly producing `"cônsuis"`; the real
+plural, `"cônsules"`, needs a rule this round does not build).
+
+Explicitly not attempted, each with its own real, considered reason rather than "ran out of time": `-s`-
+ending words (`lápis`/`ônibus`/`vírus` are invariable paroxytones, but `mês`/`país`/`português` are oxytones
+taking `-es` - not reliably separable by spelling alone, and Latin loanwords like `vírus` keep a non-final
+written accent that would defeat an accent-presence heuristic anyway); `-il`-ending words (the identical
+oxytone/paroxytone stress ambiguity - `barril`->`barris` vs. `fóssil`->`fósseis`); `-ão`-ending words (three
+genuinely competing patterns - `-ões`/`-ães`/`-ãos` - considered building a curated exception list for the
+small `-ães` class, the same "regular rule + curated exceptions" shape the guide already sanctions elsewhere,
+but abandoned once several candidate members turned out to have real, contested dialectal variation even in
+reference grammars, which this session has no native fluency to adjudicate confidently); adjective gender-
+pair (`-o`/`-a`) generation (kaikki's own Portuguese adjective entries carry no reliable per-word signal for
+which adjectives even take this alternation at all, unlike nouns which sometimes carry an explicit
+`masculine`/`feminine` tag).
+
+**Calibration measured empirically, not guessed**, reusing the exact technique `merge_wiktionary.py` already
+established: for every eligible word, check whether this rule's own predicted plural already exists as its
+own independently-corpus-attested `dict.tsv` entry, and take the median of those real ratios - 17,223 such
+real pairs, ratio 0.4474 (a plural form is, on average, less than half as frequent as its singular - a
+plausible, real value, comparable in shape to Italian's own D-446 noun ratio of 0.4340).
+
+Spot-checked a dozen real predictions by hand before trusting the full run, both the applied and the
+skipped cases (`hotel`->`hotéis`, `farol`->`faróis`, `azul`->`azuis`, `animal`->`animais`, `jardim`->
+`jardins`, `homem`->`homens`, `mulher`->`mulheres`, `motor`->`motores`, `cartaz`->`cartazes`, `rapaz`->
+`rapazes` - all correct; `cônsul`/`juiz`/`raiz`/`país`/`lápis`/`fóssil`/`barril`/`pão`/`irmão` - all correctly
+skipped, none of them received a wrong or invented form). One genuine collision-handling subtlety found
+during the spot-check, not a bug: `"hoteis"` (a pre-existing, real corpus-attested misspelling/variant
+already in `dict.tsv` at a low frequency, untagged with any lemma) was left untouched exactly as it was,
+while the correctly-accented `"hotéis"` was added as its own new row, linked to `hotel` - the two coexist
+rather than one overwriting the other, matching every other merge script's own established collision
+convention (never touch an existing row's own identity, only add alongside it).
+
+**Result**: `dict.tsv` 535,869 -> 558,148 rows (+22,279 generated plurals; 17,225 further existing words
+newly linked to their singular via `lemma`; 6,736 eligible nouns/adjectives correctly matched no safe rule
+and were left untouched, exactly as intended by the design - not a shortfall). Quality gate re-verified
+clean: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows.
+`dictionaries/pt/version.txt` 1 -> 2, pack rebuilt, `LanguagePackCatalog` version 1 -> 2. No new tests
+(data-only). `versionCode` 476 -> 477, `versionName` `"1.1.59"` -> `"1.1.60"`. `:app:assembleRelease`/
+`:app:testDebugUnitTest` green.
+
+Portuguese's own remaining gaps are unchanged and still real: the four explicitly-skipped classes above, and
+D-445's own verb-only Wortfamilien scope (nouns/adjectives still have no generated conjugation/agreement
+paradigms beyond the plurals this round adds). Not claimed complete - conservatively improved, exactly the
+scope the user asked for.
+
 
