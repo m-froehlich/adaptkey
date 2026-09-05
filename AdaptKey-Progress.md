@@ -915,6 +915,57 @@ non-trivial changes).
 
 ## Current State
 
+- **§431 (v1.1.70): D-450 (continued) - first Romanian language pack, eighth of the 18-language round,**
+  **closing the cs/sk/hu/ro group - the richest fallback-source coverage ratio of any language this round.**
+  Added `Language.ROMANIAN` (`"ro"`, `"Română"`) to the enum. No native edition exists - built from the
+  English Wiktionary's own coverage instead (28.5MB).
+
+  A real script-standard check, per direct inspection rather than assumption: modern comma-below Ș/Ț
+  (U+0218/U+0219, U+021A/U+021B) confirmed as this source's own standard (25,970 real words use it; only one
+  stray legacy cedilla entry, negligible).
+
+  The entire `rowiki-latest-pages-articles.xml.bz2` (776MB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor - 547,539 real pages, 145,503,966 real tokens, 1,804,278 distinct
+  words, 3,461,652 raw (>=3) bigram rows. Multi-word-form shape verified directly: Romanian's own infinitive
+  ("a abate") and subjunctive/negative-imperative moods ("să abat"/"nu abate") use leading marker words, the
+  same marker-first pattern as every Nordic language and Turkish - reject-whitespace-outright rule applies
+  unmodified.
+
+  **Net result**: `dict.tsv` 437,905 rows (210,494 initial + 227,411 from Wortfamilien completion;
+  calibration ratios noun=0.4667 (n=33,172), verb=1.0000 (n=10,803), adjective=0.7143 (n=12,641), all sane).
+  POS tagging: 150,909 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,579,761 dropped, 14,023
+  removed as common-English-word contamination. Wiktionary matching: 46,888 lemmas tagged, 18,295 unmatched;
+  59,407 existing forms linked, 227,411 generated. Proper-noun handling: 14,200 tagged (richest of any
+  fallback-sourced language this round), 3,221 unmatched, 1,736 skipped as collisions. Mandatory bare-noun
+  safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,128,439 rows (>=10 cutoff) from 3,461,652 raw. Quality
+  gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows
+  - PASS.
+
+  **What exactly is thinner, and its concrete app-level effect**: only 46,888 lemmas + 14,200 proper nouns
+  (~29.1% of the 210,494 pre-Wortfamilien base entries - the RICHEST ratio of any fallback-sourced language
+  this entire round, ahead even of Finnish's own unusually rich source) carry a real kaikki-derived POS tag
+  and `lemma`/form link; the remaining 150,909 rows are real words by corpus frequency alone. Same two
+  mechanisms weakened, though less acutely than most other fallback languages this round given the strong
+  ratio: (1) A-05's split-safety gate. (2) D-404 Tier 2's family-match ratio override.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Romanian's own: only 4 base letters carry a real
+  diacritic, `a` hosting two variants (`a=ă/â, i=î, s=ș, t=ț`, modern comma-below standard). 22 free letters
+  left room for generic typography; `g=„`/`h="` (same low-quote convention as Czech/Slovak/Hungarian).
+  `abbreviations.tsv`: a hand-curated 14-entry list.
+
+  `RomanianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,834 candidate pairs, left deliberately
+  uncurated.
+
+  New tests: `LanguageRulesTest` gained a `Romanian resolves to RomanianRules` case plus its own mirroring
+  test block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
+  Romanian. Real, full-dump corpus scale (145.50M real tokens) and the richest fallback-source coverage ratio
+  of any language this round - but still thinner than any native-edition language's own full coverage. Not
+  device-confirmed either. **This closes the cs/sk/hu/ro group** - Croatian, Bosnian, Serbian, Estonian,
+  Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
+
 - **§430 (v1.1.69): D-450 (continued) - first Hungarian language pack, seventh of the 18-language round -**
   **the same possessive-suffix paradigm cap already decided for Finnish applied consistently (no re-pause**
   **needed, real scale confirmed sane), plus a real tag-vocabulary collision found and fixed before it could**
