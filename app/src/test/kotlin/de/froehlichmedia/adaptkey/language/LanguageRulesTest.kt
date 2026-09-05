@@ -824,4 +824,64 @@ class LanguageRulesTest {
         assertFalse(IndonesianRules.isPlausibleAdjectiveComparative("lebih_besar") { true })
         assertNull(IndonesianRules.splitCompound("kata_kunci", { true }) { it })
     }
+    
+    @Test
+    fun `Swahili resolves to SwahiliRules`() {
+        assertSame(SwahiliRules, LanguageRulesRegistry.rulesFor(Language.SWAHILI))
+    }
+    
+    @Test
+    fun `Swahili does not glue a decimal comma`() {
+        assertFalse(SwahiliRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Swahili has no time-suggestion word`() {
+        assertNull(SwahiliRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Swahili curates no bundled blacklist yet`() {
+        assertTrue(SwahiliRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Swahili leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(SwahiliRules.blocksAsSplitPrefix("hapana", 0L))
+        assertFalse(SwahiliRules.blocksAsFeminineAgentException("kazi", "mwalimu", true))
+        assertFalse(SwahiliRules.blocksAsCompoundPrefix("vizuri", true))
+        assertFalse(SwahiliRules.isPlausibleVerbInflection("tunasoma") { true })
+        assertFalse(SwahiliRules.isPlausibleAdjectiveComparative("kubwa_zaidi") { true })
+        assertNull(SwahiliRules.splitCompound("neno_muhimu", { true }) { it })
+    }
+    
+    @Test
+    fun `Tagalog resolves to TagalogRules`() {
+        assertSame(TagalogRules, LanguageRulesRegistry.rulesFor(Language.TAGALOG))
+    }
+    
+    @Test
+    fun `Tagalog does not glue a decimal comma`() {
+        assertFalse(TagalogRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Tagalog has no time-suggestion word`() {
+        assertNull(TagalogRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Tagalog curates no bundled blacklist yet`() {
+        assertTrue(TagalogRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Tagalog leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(TagalogRules.blocksAsSplitPrefix("hindi", 0L))
+        assertFalse(TagalogRules.blocksAsFeminineAgentException("guro", "titser", true))
+        assertFalse(TagalogRules.blocksAsCompoundPrefix("mabuti", true))
+        assertFalse(TagalogRules.isPlausibleVerbInflection("babasahin") { true })
+        assertFalse(TagalogRules.isPlausibleAdjectiveComparative("mas_malaki") { true })
+        assertNull(TagalogRules.splitCompound("susing_salita", { true }) { it })
+    }
 }

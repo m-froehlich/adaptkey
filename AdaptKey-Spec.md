@@ -954,7 +954,9 @@ inflected forms), not source thinness the way a fallback source is thin (D-450).
 NATIVE edition - is likewise only partially lemma-populated (12,916 lemmas + 2 proper nouns of 188,870,
 ~6.8%), limited by this source's own thin proper-noun coverage and a real calibration-bug fix (D-450: a
 self-reduplication backwards-lemma pattern shared with Malay, found and fixed) that left 0 adjective
-family-match signal. A word/language pair the
+family-match signal. Swahili (7,059 lemmas + 406 proper nouns of 27,677, ~27.0%) and Tagalog (15,498 lemmas
++ 3,027 proper nouns of 36,957, ~41.9% - the richest fallback-source ratio of this entire 18-language round)
+are likewise only partially lemma-populated (D-450). A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated

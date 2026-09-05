@@ -145,7 +145,9 @@ object LanguageRulesRegistry {
         Language.LATVIAN to LatvianRules,
         Language.LITHUANIAN to LithuanianRules,
         Language.INDONESIAN to IndonesianRules,
-        Language.MALAY to MalayRules
+        Language.MALAY to MalayRules,
+        Language.SWAHILI to SwahiliRules,
+        Language.TAGALOG to TagalogRules
     )
     
     /**

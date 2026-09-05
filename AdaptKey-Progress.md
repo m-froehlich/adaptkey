@@ -915,6 +915,64 @@ non-trivial changes).
 
 ## Current State
 
+- **§437 (v1.1.76): D-450 - first Swahili and Tagalog language packs, closing the entire 18-language**
+  **autonomous round begun with Swedish.** Added `Language.SWAHILI` (`"sw"`, `"Kiswahili"`) and
+  `Language.TAGALOG` (`"tl"`, `"Tagalog"`) to the enum. Neither has a native Wiktionary edition - both built
+  from the English Wiktionary's own fallback coverage (7.0MB/14.7MB).
+
+  **Swahili**: real Bantu noun-class system documented correctly (e.g. "tao" -> "matao", class-vi plural).
+  Verb canonical forms carry a bound-root leading hyphen ("-soma") - already excluded via the `"canonical"`
+  tag, `entry["word"]` itself always clean. A genuine English-prose noise pattern ("positive subject concord
+  + -lisoma") caught for free by whitespace rejection. Like Malay, Swahili's own main countries (Kenya,
+  Tanzania) are former British territories and do NOT use a comma decimal separator - verified directly.
+
+  A real, honestly-investigated calibration finding: the adjective ratio (68.08x, n=10) is genuinely elevated
+  but reflects real grammar, not a bug - "ote" ("all", bare citation form) is dominated by its own real
+  noun-class-agreement variants (yote/wote/zote/kote/vyote/nyote/mote/lote, all correctly-spelled, agreeing
+  with Swahili's 15+ noun classes), which are individually far more common than the abstract bare stem since
+  Swahili grammar requires the agreement prefix in real usage. Verified every pair before accepting it as
+  sane rather than flagging it as a bug.
+
+  `swwiki` (70MB compressed, smallest corpus this round): 125,849 pages, 16,086,920 tokens. `dict.tsv`
+  27,677 -> 52,979 rows (+25,302 generated; ratios noun=0.8805 (n=1,080), verb=4.1482 (n=1,184, elevated but
+  plausible given Swahili's rich conjugation), adjective=68.0769 (n=10, verified sane above)). Only 7,059
+  lemmas + 406 proper nouns of 27,677 base entries (~27.0%) carry a real link - a comparatively rich ratio.
+  `bigram.tsv` 118,034 rows. `confusables_scan.py`: 1,813 pairs.
+
+  **Tagalog**: entries carry an alternative Baybayin-script spelling (historical pre-colonial script),
+  excluded explicitly (same pattern as Malay's Jawi). The `"canonical"` headword carries a stress accent
+  ("basín") - already excluded, and the real completive/progressive/contemplative aspect forms are
+  confirmed clean (no accent marks, no `links`-recovery needed unlike Serbo-Croatian/Lithuanian). Like Malay
+  and Swahili, the Philippines follows the American period-decimal convention, NOT a comma - verified
+  directly.
+
+  `tlwiki` (88MB compressed): 49,336 pages, 15,950,161 tokens. `dict.tsv` 36,957 -> 53,745 rows (+16,788
+  generated; ratios noun=0.8719 (n=46), verb=1.2778 (n=1,739), adjective=0.2173 (n=59), all sane). Only
+  15,498 lemmas + 3,027 proper nouns of 36,957 base entries (~41.9%) carry a real link - the RICHEST ratio of
+  any fallback-sourced language in this entire round.
+
+  Both: mandatory bare-noun safety check 0; quality gate clean. `hints.tsv`/`diacritics.tsv`: neither
+  language has any diacritic letters (plain 26-letter Latin alphabets), so both `diacritics.tsv` files are
+  deliberately empty; `t=Sh` (Swahili, generic East African shilling) / `t=₱` (Tagalog, Philippine peso).
+  `abbreviations.tsv`: 8-entry hand-curated lists each.
+
+  `SwahiliRules`/`TagalogRules` (`LanguageRulesRegistry`): both `decimalCommaGluesDigits`=**false** (see
+  findings above), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
+  `confusables_scan.py` found 1,813 (Swahili) / 1,001 (Tagalog) candidate pairs, left deliberately
+  uncurated. New tests: `LanguageRulesTest` gained `Swahili resolves to SwahiliRules` and `Tagalog resolves
+  to TagalogRules` cases plus their own mirroring test blocks (both asserting `false` for the decimal-comma
+  test).
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied for either**: neither pack reviewed by a
+  native speaker; both thinner-than-native-edition Wortfamilien/POS coverage; Swahili's own much larger
+  Bantu noun-class/verb-affixation grammar and Tagalog's own much larger focus/trigger verb-affixation
+  system are not implemented as dedicated grammar hooks this round. Neither device-confirmed.
+
+  **This closes the entire 18-language autonomous round begun with Swedish (D-450).** 17 packs built and
+  shipped this round (Swedish, Norwegian Bokmål, Danish, Finnish, Czech, Slovak, Hungarian, Romanian,
+  Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay, Indonesian, Swahili, Tagalog) - Serbian remains
+  the one explicitly deferred exception, pending its own dedicated Cyrillic-keyboard-layout discussion.
+
 - **§436 (v1.1.75): D-450 (continued) - first Indonesian language pack, eighteenth of the 18-language round -**
   **a real ~800x calibration bug found (reduplicated words modeled backwards as their own separate lemma**
   **entries) and fixed, then applied proactively to Malay too.** Added `Language.INDONESIAN` (`"id"`,

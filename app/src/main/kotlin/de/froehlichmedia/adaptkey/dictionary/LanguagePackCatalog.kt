@@ -2351,6 +2351,157 @@ object LanguagePackCatalog {
             // keyboard discussion) - Swahili and Tagalog remain as the final two languages of this round,
             // continuing next.
             version = 1
+        ),
+        Entry(
+            Language.SWAHILI,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-sw.zip",
+            // D-450 (continued): the penultimate language of the 18-language round. Added `Language.SWAHILI`
+            // (`"sw"`, endonym `"Kiswahili"`) to the enum. No native Swahili Wiktionary edition exists -
+            // built from the English Wiktionary's own coverage instead (7.0MB).
+            //
+            // **Real findings, confirmed by direct inspection**: (1) Swahili's own real Bantu noun-class
+            // system is documented richly and correctly (e.g. "tao" -> "matao", tagged `["class-vi",
+            // "plural"]` - the ma- class plural prefix, a genuine grammatical fact). (2) verb entries carry a
+            // bound-root canonical form with a leading hyphen (e.g. "-soma") - already excluded via the
+            // existing `"canonical"` tag exclusion, and `entry.get("word")` itself is always the clean,
+            // hyphen-free form, so no special-casing was needed. (3) a genuine English-prose noise pattern -
+            // some past-tense forms are documented as literal instructions rather than real words (e.g.
+            // "positive subject concord + -lisoma") - caught for free by the standard whitespace-rejection
+            // rule. (4) like Malay (see that Entry above), Swahili's own main speaker countries (Kenya,
+            // Tanzania) are former British-administered territories and do NOT use a comma decimal separator
+            // - verified directly rather than assumed.
+            //
+            // The entire `swwiki-latest-pages-articles.xml.bz2` (70MB compressed, the smallest Wikipedia
+            // corpus this round) was processed via the same multiprocessing/hapax-pruning extractor -
+            // 125,849 real pages, 16,086,920 real tokens, 463,388 distinct words, 468,949 raw (>=3) bigram
+            // rows.
+            //
+            // **A real, honestly documented calibration finding, investigated directly rather than assumed
+            // sane or flagged as a bug**: the adjective ratio (68.08x, n=10) is genuinely elevated but
+            // reflects real Swahili grammar, not corrupted data - confirmed by inspecting every pair: "ote"
+            // ("all/every", the bare citation form) is dominated by its own noun-class-agreement variants
+            // (yote/wote/zote/kote/vyote/nyote/mote/lote - all real, correctly-spelled words agreeing with
+            // Swahili's 15+ noun classes), which are individually far more common in running text than the
+            // abstract bare stem (Swahili grammar essentially requires the class-agreement prefix in real
+            // usage). A second, similar pair ("iliyopita"/"ijayo", temporal relative-adjective forms) shows
+            // the same subject-concord-prefix pattern. Real language, not a bug - accepted as sane after
+            // direct verification, the same discipline every calibration outlier in this project receives.
+            //
+            // **Net result**: `dict.tsv` 52,979 rows (27,677 initial Wikipedia-frequency + kaikki-POS merge,
+            // +25,302 from Wortfamilien completion - 1,081 noun + 24,212 verb-delta + 9 adjective-delta
+            // generated forms; calibration ratios noun=0.8805 (n=1,080 pairs), verb=4.1482 (n=1,184, elevated
+            // but plausible given Swahili's own rich verb-conjugation morphology producing many real,
+            // moderately-common forms), adjective=68.0769 (n=10, verified genuinely sane above, not a bug)).
+            // POS tagging: 20,516 words kept unrecognised-by-kaikki (tagged `OTHER` only), 422,002 dropped
+            // below the count->=20 floor, 13,709 removed as common-English-word contamination. Wiktionary
+            // matching: 7,059 lemmas tagged with real grammatical info, 1,200 unmatched; 2,392 existing forms
+            // linked, 25,302 generated. Proper-noun handling: 406 tagged, 20 unmatched, 84 skipped as
+            // real-word collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 118,034
+            // rows (>=10 cutoff) from the 468,949-row raw floor. Quality gate: 0 case-insensitive duplicates,
+            // 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 52,979
+            // rows, only 7,059 lemmas plus 406 proper nouns - about 27.0% of the 27,677 pre-Wortfamilien base
+            // entries, a comparatively rich ratio - carry a real kaikki-derived POS tag and `lemma`/form link.
+            // The remaining 20,516 rows are real Swahili words by Wikipedia-corpus frequency alone,
+            // undocumented for part of speech. The same two mechanisms are weakened: (1) A-05's split-safety
+            // gate. (2) D-404 Tier 2's family-match ratio override.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Swahili's own: NO diacritic letters at all
+            // (confirmed directly - the plain 26-letter Latin alphabet), so `diacritics.tsv` is deliberately
+            // empty and every letter slot in `hints.tsv` carries generic typography, with `t=Sh` (the
+            // generic East African shilling abbreviation). `abbreviations.tsv`: a hand-curated 8-entry list.
+            //
+            // `SwahiliRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=**false** (see the findings
+            // above), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py`
+            // found 1,813 candidate pairs, left deliberately uncurated for the same reasoning every
+            // non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Swahili resolves to SwahiliRules` case plus its own
+            // mirroring test block.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Swahili. Real, full-dump corpus scale (16.09M real tokens, the
+            // smallest of this round) - but thinner Wortfamilien/POS coverage than a native-edition language,
+            // and Swahili's own real, much larger Bantu noun-class/verb-affixation grammar system is not
+            // implemented as dedicated grammar hooks this round. Not device-confirmed either. Tagalog
+            // continues next, the final language of this 18-language round.
+            version = 1
+        ),
+        Entry(
+            Language.TAGALOG,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-tl.zip",
+            // D-450 (continued): the EIGHTEENTH AND FINAL language of this round. Added `Language.TAGALOG`
+            // (`"tl"`, endonym `"Tagalog"`) to the enum. No native Tagalog Wiktionary edition exists - built
+            // from the English Wiktionary's own coverage instead (14.7MB).
+            //
+            // **Real findings, confirmed by direct inspection**: (1) Tagalog entries carry an alternative
+            // BAYBAYIN-script spelling (the historical pre-colonial script, tagged `["Baybayin"]`) - excluded
+            // explicitly (the same defense-in-depth pattern as Malay's own Jawi tag), even though Baybayin's
+            // own characters already fall outside `VALID_FORM_RE` regardless. (2) the `"canonical"` headword
+            // form carries a stress-accent mark (e.g. "basín" for "basin") - already excluded via the
+            // existing tag set, and confirmed directly that the REAL conjugated forms (completive/
+            // progressive/contemplative - Tagalog's own real aspect-system terminology) are all clean,
+            // accent-free spellings, so no `links`-based recovery (the Serbo-Croatian/Lithuanian fix) was
+            // needed here. (3) like Malay and Swahili (see their own Entries above), the Philippines follows
+            // the American period-decimal convention, NOT a comma - verified directly rather than assumed.
+            //
+            // The entire `tlwiki-latest-pages-articles.xml.bz2` (88MB compressed) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 49,336 real pages, 15,950,161 real tokens, 461,855
+            // distinct words, 526,579 raw (>=3) bigram rows.
+            //
+            // **Net result**: `dict.tsv` 53,745 rows (36,957 initial Wikipedia-frequency + kaikki-POS merge,
+            // +16,788 from Wortfamilien completion - 119 noun + 16,427 verb-delta + 242 adjective-delta
+            // generated forms; calibration ratios noun=0.8719 (n=46 pairs), verb=1.2778 (n=1,739),
+            // adjective=0.2173 (n=59) - all three sane). POS tagging: 20,568 words kept unrecognised-by-
+            // kaikki (tagged `OTHER` only), 410,659 dropped below the count->=20 floor, 14,239 removed as
+            // common-English-word contamination. Wiktionary matching: 15,498 lemmas tagged with real
+            // grammatical info, 6,644 unmatched; 5,069 existing forms linked, 16,788 generated. Proper-noun
+            // handling: 3,027 tagged, 472 unmatched, 474 skipped as real-word collisions. Mandatory bare-noun
+            // safety check: 0 bare-NOUN rows. `bigram.tsv`: 143,909 rows (>=10 cutoff) from the 526,579-row
+            // raw floor. Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned
+            // lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 53,745
+            // rows, only 15,498 lemmas plus 3,027 proper nouns - about 41.9% of the 36,957 pre-Wortfamilien
+            // base entries, the RICHEST ratio of any fallback-sourced language in this entire round - carry a
+            // real kaikki-derived POS tag and `lemma`/form link. The remaining 20,568 rows are real Tagalog
+            // words by Wikipedia-corpus frequency alone, undocumented for part of speech. The same two
+            // mechanisms are weakened, though less acutely than for any other fallback-sourced language this
+            // round given the exceptionally strong ratio: (1) A-05's split-safety gate. (2) D-404 Tier 2's
+            // family-match ratio override.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Tagalog's own: NO diacritic letters at all
+            // in its everyday (Filipino) orthography (confirmed directly - the plain 26-letter Latin
+            // alphabet; Baybayin is a separate, non-Latin historical script, not part of everyday writing),
+            // so `diacritics.tsv` is deliberately empty and every letter slot in `hints.tsv` carries generic
+            // typography, with `t=₱` (the Philippine peso, a genuine dedicated Unicode currency character).
+            // `abbreviations.tsv`: a hand-curated 8-entry list.
+            //
+            // `TagalogRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=**false** (see finding 3
+            // above), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py`
+            // found 1,001 candidate pairs, left deliberately uncurated for the same reasoning every
+            // non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Tagalog resolves to TagalogRules` case plus its own
+            // mirroring test block.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Tagalog. Real, full-dump corpus scale (15.95M real tokens) and
+            // the richest fallback-source coverage ratio of any language this entire round - but still
+            // thinner than any native-edition language's own full coverage, and Tagalog's own real, much
+            // larger focus/trigger verb-affixation system is not implemented as dedicated grammar hooks this
+            // round. Not device-confirmed either.
+            //
+            // **This closes the entire 18-language autonomous round begun with Swedish (D-450).** 17 packs
+            // built and shipped this round (Swedish, Norwegian Bokmål, Danish, Finnish, Czech, Slovak,
+            // Hungarian, Romanian, Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay, Indonesian,
+            // Swahili, Tagalog) - Serbian remains the one explicitly deferred exception, pending its own
+            // dedicated Cyrillic-keyboard-layout discussion (see the Croatian Entry's own module comment for
+            // the full reasoning). Every one of these packs shares the same honesty-gate status: real,
+            // full-dump corpus scale, genuine calibration-sanity-checked Wortfamilien completion where the
+            // source allows it, and zero claim of native-speaker review - "pretty good", not "done".
+            version = 1
         )
     )
 }

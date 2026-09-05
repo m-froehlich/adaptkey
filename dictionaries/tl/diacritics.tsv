@@ -1,0 +1,4 @@
+# Tagalog diacritic-fold table (D-450) - deliberately EMPTY. Confirmed directly against the real Wiktionary
+# source: Tagalog's own everyday (Filipino) alphabet is the plain 26-letter Latin set with no diacritic
+# letters at all - the historical Baybayin script is a separate, non-Latin alternative, not part of everyday
+# orthography - unlike every other language built this round, this file has nothing to fold.
