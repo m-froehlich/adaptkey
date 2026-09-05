@@ -1,0 +1,6 @@
+# Finnish diacritic-fold table (D-436) - base letter -> every real variant, so a token typed without it
+# ("aani") still reaches the correctly-spelled word ("ääni"), both live while typing and at autocorrect/
+# split-repair time. ä/ö are their own additional letters in the Finnish alphabet (not merely accented a/o),
+# but the same base-letter-fold mechanism still applies for typing convenience.
+a	ä
+o	ö

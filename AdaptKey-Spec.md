@@ -920,7 +920,14 @@ a scope choice, and not the same "fully lemma-populated" state as any native-edi
 Bokmål shares the identical, honestly documented thin-fallback state (18,794 lemmas + 1,138 proper nouns of
 220,865, about 9.0%). Since D-450, Danish is likewise only partially lemma-populated (18,715 lemmas + 1,553
 proper nouns of 138,330, about 14.7% - the richest ratio of the three Nordic fallback-sourced languages so
-far, still well short of a native-edition language's full coverage). A word/language pair the
+far, still well short of a native-edition language's full coverage). Finnish is likewise only partially
+lemma-populated (89,509 lemmas + 7,260 proper nouns of 380,516, about 25.5% - richer than the other three
+Nordic languages, reflecting its own particularly rich fallback source), with a second, genuinely different
+limitation on top: per an explicit user decision (D-450, the paradigm-size structural finding), Finnish's own
+noun/adjective Wortfamilien generation was deliberately capped to the core case x number paradigm, excluding
+real possessive-suffixed forms (e.g. "taloni") - so even a tagged Finnish lemma's family-match override will
+not recognise its own possessive-suffixed forms, a bounded, user-approved scope limit distinct from the
+"thin source" limitation the other fallback-sourced languages document. A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated

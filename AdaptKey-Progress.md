@@ -915,6 +915,72 @@ non-trivial changes).
 
 ## Current State
 
+- **§427 (v1.1.66): D-450 (continued) - first Finnish language pack, fourth and final of the Nordic batch -**
+  **a genuine paradigm-size structural finding (13.46M raw generated forms, 570MB), surfaced via**
+  **`AskUserQuestion` and resolved by capping to core case forms per the user's own decision.** Added
+  `Language.FINNISH` (`"fi"`, `"Suomi"`) to the enum. No native Finnish edition exists - built from the
+  English Wiktionary's own coverage instead (268.7MB, by far the largest fallback source checked so far,
+  and unusually rich: 125,244/125,814 noun lemmas have real forms).
+
+  The entire `fiwiki-latest-pages-articles.xml.bz2` (983MB compressed, the largest dump of this round) was
+  processed via the same multiprocessing/hapax-pruning extractor - 624,121 real pages, 129,787,537 real
+  tokens, 2,794,769 distinct words, 3,518,226 raw (>=3) bigram rows. Finnish's own `postp` tag is clean and
+  unambiguous (unlike Turkish's own structural gap) - mapped directly to `PREPOSITION`, 256 tagged.
+
+  **Structural finding - a real paradigm-size decision point, not guessed at**: an unfiltered first pass
+  generated 13.46 million noun/adjective family forms (~158 real forms per noun lemma - the full case x
+  number paradigm PLUS six possessive-suffix combinations, confirmed directly against real raw JSON for
+  "talo"/"house": 28 case+number forms plus ~130 possessive-suffix forms like "taloni"/"talollani") - a
+  dict.tsv that would have been 570MB raw, 20-40x bigger than any other pack in this project (5-32MB range).
+  Surfaced to the user via `AskUserQuestion` as a genuine structural fork; the user chose to cap generation
+  to the core case x number paradigm only. Possessive-suffix forms are unambiguously identified by the
+  `"possessive"`/`"singular-possessive"`/`"plural-possessive"` tags - confirmed these never co-occur with
+  ordinary verb personal-conjugation forms, so the exclusion cannot strip real verb data, only the
+  genuinely-possessive-suffixed forms (including a handful of possessive-suffixed non-finite verb forms, the
+  same bloat class, dropped for the same reason). Re-run after the cap: 2.83M noun form rows (down from
+  18.46M).
+
+  **Net result (after the cap)**: `dict.tsv` 2,537,125 rows (380,516 initial + 2,156,609 from capped
+  Wortfamilien completion; calibration ratios noun=0.3846 (n=93,590), verb=0.4438 (n=19,875),
+  adjective=0.2105 (n=23,512), all sane). POS tagging: 285,052 words kept unrecognised-by-kaikki (tagged
+  `OTHER` only), 2,400,125 dropped, 14,128 removed as common-English-word contamination. Wiktionary
+  matching: 89,509 lemmas tagged, 51,437 unmatched; 169,408 existing forms linked, 2,156,609 generated.
+  Proper-noun handling: 7,260 tagged, 196 unmatched, 1,316 skipped as collisions. Mandatory bare-noun safety
+  check: 0 bare-NOUN rows. `bigram.tsv`: 1,049,602 rows (>=10 cutoff) from 3,518,226 raw. Quality gate: 0
+  case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+  Even after the cap, this pack (94MB raw dict.tsv, 18MB zipped) remains noticeably larger than any other
+  language pack - a genuine, honestly documented consequence of Finnish's own real morphological richness,
+  not an extraction defect.
+
+  **What exactly is thinner, and its concrete app-level effect**: only 89,509 lemmas + 7,260 proper nouns
+  (~25.5% of the 380,516 pre-Wortfamilien base entries - the richest tagged-lemma ratio of any fallback-
+  sourced language this round) carry a real kaikki-derived POS tag and `lemma`/form link; the remaining
+  285,052 rows are real words by corpus frequency alone. Same two mechanisms weakened: (1) A-05's
+  split-safety gate cannot veto a wrong compound split built from any untagged word - practically relevant
+  since Finnish is a genuinely compound-forming language. (2) D-404 Tier 2's family-match ratio override
+  cannot fire for a correct-but-rarer untagged word. A third, separate limitation from the deliberate
+  paradigm cap: even for tagged lemmas, the family-match override will not recognise a real possessive-
+  suffixed form (e.g. "taloni") as belonging to its lemma's family, since those forms were deliberately not
+  generated - a real, bounded scope limit, not a bug.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Finnish's own: `a=ä, o=ö` (matching Swedish), `s=€`
+  (Finland is the only Eurozone country of this Nordic batch, unlike Sweden/Norway/Denmark's own `t=kr`),
+  `g=«`/`r=»` (matching Swedish/Norwegian). `abbreviations.tsv`: a hand-curated 15-entry list.
+
+  `FinnishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,466 candidate pairs, left deliberately
+  uncurated.
+
+  New tests: `LanguageRulesTest` gained a `Finnish resolves to FinnishRules` case plus its own mirroring
+  test block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually
+  speaks Finnish. Real, full-dump corpus scale (129.79M real tokens) and an unusually rich fallback source
+  for its class - but still thinner POS/lemma coverage than a native-edition language, plus a deliberate,
+  user-approved paradigm-size cap. Not device-confirmed either. **This closes the four-language Nordic batch
+  of the larger 18-language round** - Czech, Slovak, Hungarian, Romanian, Croatian, Bosnian, Serbian,
+  Estonian, Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
+
 - **§426 (v1.1.65): D-450 (continued) - first Danish language pack, third of the 18-language round.**
   Added `Language.DANISH` (`"da"`, `"Dansk"`) to the enum. No native Danish Wiktionary edition exists -
   built from the English Wiktionary's own coverage instead (11.0MB).
