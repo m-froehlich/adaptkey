@@ -1153,6 +1153,92 @@ object LanguagePackCatalog {
             // for prepositions specifically (a confirmed structural/linguistic finding, not an oversight -
             // see above). Not device-confirmed either. This closes the two-language (pl/tr) autonomous round.
             version = 1
+        ),
+        Entry(
+            Language.SWEDISH,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-sv.zip",
+            // D-450: first of a large (18-language) autonomous round - see AdaptKey-Progress.md's own D-450
+            // entry for the full structural context (which of the 18 have a native kaikki.org Wiktionary
+            // edition and which do not, confirmed directly against `kaikki.org/dictionary/rawdata.html` before
+            // starting, not assumed). Swedish was NOT yet in the `Language` enum - added (`"sv"`, endonym
+            // `"Svenska"`) this round, alongside all 17 other new languages added in the same batch.
+            //
+            // **No native Swedish Wiktionary edition exists on kaikki.org.** This pack was built from the
+            // English Wiktionary's own coverage of Swedish instead (`kaikki.org/dictionary/Swedish/kaikki.org-
+            // dictionary-Swedish.jsonl.gz`, 32.3MB) - the same accepted fallback already used for Dutch/
+            // Polish's own predecessors where applicable, now explicitly named in the Guide as the standing
+            // approach for any language without a native edition (see the Guide's own newly-added fallback-
+            // source requirement below). Languages with a real native edition on this project so far: German,
+            // English, Greek, French, Spanish, Portuguese, Italian, Dutch, Polish, Turkish, and (within this
+            // same 18-language round) Czech, Indonesian, Malay.
+            //
+            // The entire `svwiki-latest-pages-articles.xml.bz2` was processed via the same multiprocessing/
+            // hapax-pruning extractor built for every prior round - 2,627,827 real pages, 268,255,177 real
+            // tokens, 3,950,407 distinct words, 5,501,462 raw (>=3) bigram rows.
+            //
+            // **A real multi-word-form shape check, per the Guide's own D-447 hardening**: confirmed directly
+            // that Swedish's own analytic comparative/superlative construction is marker-FIRST ("mer X"/
+            // "mest X"), the same shape already found for Dutch's periphrastic verbs and Turkish's own "daha
+            // X"/"en X" - so the same "reject any whitespace-containing form outright, no last_token recovery"
+            // rule applies here too (unlike Polish's own marker-LAST "jestem / -(e)m" shape, which needed the
+            // opposite fix). `EXCLUDE_FORM_TAGS` gained a new `"error-unrecognized-form"` entry, a genuine new
+            // wiktextract diagnostic tag found in this data specifically.
+            //
+            // **Net result**: `dict.tsv` 521,823 rows (374,316 from the initial Wikipedia-frequency + kaikki-
+            // POS merge, +147,507 from Wortfamilien completion - 111,218 noun + 20,546 verb-delta + 15,743
+            // adjective-delta generated forms; calibration ratios noun=0.2857 (n=22,225 pairs), verb=0.6667
+            // (n=15,249), adjective=0.9000 (n=8,223) - all three sane, checked against the Guide's own
+            // mandatory calibration-ratio sanity check before being trusted). POS tagging: 328,566 words kept
+            // unrecognised-by-kaikki (corpus count >=20, tagged `OTHER` only), 3,561,716 dropped below that
+            // floor, 14,375 removed as common-English-word contamination. Wiktionary matching: 44,084 lemmas
+            // tagged with real grammatical info, 3,446 unmatched; 46,461 existing forms linked to their lemma,
+            // 147,507 forms generated. Proper-noun handling: 2,287 tagged, 22 unmatched, 190 skipped as real-
+            // word collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,689,546
+            // rows (>=10 cutoff) from the 5,501,462-row raw floor. Quality gate: 0 case-insensitive
+            // duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete effect on this pack's own app behaviour** (per
+            // explicit user instruction - not a generic disclaimer): of `dict.tsv`'s 521,823 rows, only 44,084
+            // lemmas (plus 2,287 proper nouns) - about 8.4% of the pre-Wortfamilien 374,316 base entries -
+            // carry a real kaikki-derived POS tag and `lemma`/form link at all. The remaining 328,566 rows
+            // (tagged `OTHER` only) are real Swedish words by Wikipedia-corpus frequency, but this thin English-
+            // Wiktionary-of-Swedish coverage simply does not document what part of speech they are. This has
+            // two concrete, mechanism-level consequences, not just "less complete":
+            // 1. **A-05's split-safety gate** only vetoes a wrong compound split when it can see a genuine
+            //    `NOUN` tag on the candidate word. A real Swedish noun that landed in the untagged/`OTHER`-only
+            //    328,566 bucket (because this fallback source never covered it) has no such tag, so this
+            //    protection silently does not apply to it - a real Swedish compound built from such a noun
+            //    could be wrongly offered as two separate shorter words where a native-edition language (e.g.
+            //    Polish/Turkish) would have been protected.
+            // 2. **D-404 Tier 2's family-match ratio override** only fires between forms connected by a real
+            //    `lemma` link - exactly the 44,084+46,461+147,507 rows this round's Wiktionary matching
+            //    produced. A correct-but-rarer Swedish word among the 328,566 untagged rows cannot benefit from
+            //    this override at all: if a more frequent, merely-related word's inflected form competes with
+            //    it in a suggestion, the untagged-but-correct word can be wrongly out-ranked, whereas a linked
+            //    pair would have been protected by the ratio check. In practice: expect noticeably more manual
+            //    curation need for Swedish (and every other fallback-sourced language this round) than for
+            //    Polish or Turkish's own native-edition packs.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Swedish's own: `a=ä, o=ö` (Swedish's two
+            // umlauted vowels), `t=kr` (the krona currency abbreviation, a genuine two-character symbol, fits
+            // `LetterHints.MAX_SYMBOL_LENGTH`=2), `g=«`/`r=»` (Swedish's own guillemet quotation convention).
+            // `abbreviations.tsv`: a hand-curated 22-entry Swedish sentence-boundary list (`t.ex.`/`dvs.`/
+            // `bl.a.`/`m.fl.`/...).
+            //
+            // `SwedishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,733 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents (no native
+            // Swedish fluency available to safely separate real short words from corpus noise).
+            //
+            // New tests: `LanguageRulesTest` gained a `Swedish resolves to SwedishRules` case plus its own
+            // mirroring test block. `language_profiles.tsv` (A-03 trigram data) not built for Swedish either,
+            // same accepted, named gap as every prior non-trigram round.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Swedish. Real, full-dump corpus scale (268.26M real tokens) - but
+            // thinner Wortfamilien/POS coverage than every native-edition language built so far (see above,
+            // concrete numbers and mechanism-level impact, not a vague caveat). Not device-confirmed either.
+            version = 1
         )
     )
 }

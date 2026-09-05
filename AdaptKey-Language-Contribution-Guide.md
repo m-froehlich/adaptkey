@@ -376,7 +376,13 @@ rather than silently treating it as equivalent to a language that does have its 
      `fr`/`it`/`nl`/`pt` - covers every language this project has built or is likely to build next). A
      language *not* on that list has no native Wiktionary edition to extract from at all - fall back to the
      English-Wiktionary-coverage page below and say so explicitly in your PR, rather than silently treating it
-     as equivalent.
+     as equivalent. **Mandatory when you do fall back (added after the pl/tr round's own D-448/D-449 finding
+     that only 3 of 18 further-requested languages had a native edition at all): state plainly, in the PR and
+     in the `LanguagePackCatalog.Entry` comment itself, that this pack's source data is thinner than a
+     native-sourced one and should be EXPECTED to need more follow-up curation later** (noise cleanup, missing
+     POS coverage, thinner Wortfamilien completion) than German/English/Greek/French/Spanish/Portuguese/
+     Italian/Dutch/Polish/Turkish/Czech/Indonesian/Malay ever needed for this specific reason - not a vague
+     caveat, a concrete expectation to set for whoever reads the catalog entry later.
    - **Wrong for this purpose, easy to land on by accident**: `https://kaikki.org/dictionary/<Language>/
      kaikki.org-dictionary-<Language>.jsonl(.gz)` (e.g. `.../French/`, `.../Spanish/`) - this is the *English*
      Wiktionary edition's own documentation of foreign words, filtered to your target language. It looks like

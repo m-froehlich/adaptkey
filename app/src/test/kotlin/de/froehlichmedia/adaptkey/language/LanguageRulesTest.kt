@@ -374,4 +374,124 @@ class LanguageRulesTest {
         assertFalse(TurkishRules.isPlausibleAdjectiveComparative("daha buyuk") { true })
         assertNull(TurkishRules.splitCompound("anahtarkelime", { true }) { it })
     }
+    
+    @Test
+    fun `Swedish resolves to SwedishRules`() {
+        assertSame(SwedishRules, LanguageRulesRegistry.rulesFor(Language.SWEDISH))
+    }
+    
+    @Test
+    fun `Swedish glues a decimal comma`() {
+        assertTrue(SwedishRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Swedish has no time-suggestion word`() {
+        assertNull(SwedishRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Swedish curates no bundled blacklist yet`() {
+        assertTrue(SwedishRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Swedish leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(SwedishRules.blocksAsSplitPrefix("nej", 0L))
+        assertFalse(SwedishRules.blocksAsFeminineAgentException("inna", "larare", true))
+        assertFalse(SwedishRules.blocksAsCompoundPrefix("bra", true))
+        assertFalse(SwedishRules.isPlausibleVerbInflection("laser") { true })
+        assertFalse(SwedishRules.isPlausibleAdjectiveComparative("storre") { true })
+        assertNull(SwedishRules.splitCompound("nyckelord", { true }) { it })
+    }
+    
+    @Test
+    fun `Norwegian resolves to NorwegianRules`() {
+        assertSame(NorwegianRules, LanguageRulesRegistry.rulesFor(Language.NORWEGIAN))
+    }
+    
+    @Test
+    fun `Norwegian glues a decimal comma`() {
+        assertTrue(NorwegianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Norwegian has no time-suggestion word`() {
+        assertNull(NorwegianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Norwegian curates no bundled blacklist yet`() {
+        assertTrue(NorwegianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Norwegian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(NorwegianRules.blocksAsSplitPrefix("nei", 0L))
+        assertFalse(NorwegianRules.blocksAsFeminineAgentException("inne", "larer", true))
+        assertFalse(NorwegianRules.blocksAsCompoundPrefix("bra", true))
+        assertFalse(NorwegianRules.isPlausibleVerbInflection("leser") { true })
+        assertFalse(NorwegianRules.isPlausibleAdjectiveComparative("storre") { true })
+        assertNull(NorwegianRules.splitCompound("nokkelord", { true }) { it })
+    }
+    
+    @Test
+    fun `Danish resolves to DanishRules`() {
+        assertSame(DanishRules, LanguageRulesRegistry.rulesFor(Language.DANISH))
+    }
+    
+    @Test
+    fun `Danish glues a decimal comma`() {
+        assertTrue(DanishRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Danish has no time-suggestion word`() {
+        assertNull(DanishRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Danish curates no bundled blacklist yet`() {
+        assertTrue(DanishRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Danish leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(DanishRules.blocksAsSplitPrefix("nej", 0L))
+        assertFalse(DanishRules.blocksAsFeminineAgentException("inde", "laerer", true))
+        assertFalse(DanishRules.blocksAsCompoundPrefix("godt", true))
+        assertFalse(DanishRules.isPlausibleVerbInflection("laeser") { true })
+        assertFalse(DanishRules.isPlausibleAdjectiveComparative("storre") { true })
+        assertNull(DanishRules.splitCompound("noegleord", { true }) { it })
+    }
+    
+    @Test
+    fun `Finnish resolves to FinnishRules`() {
+        assertSame(FinnishRules, LanguageRulesRegistry.rulesFor(Language.FINNISH))
+    }
+    
+    @Test
+    fun `Finnish glues a decimal comma`() {
+        assertTrue(FinnishRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Finnish has no time-suggestion word`() {
+        assertNull(FinnishRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Finnish curates no bundled blacklist yet`() {
+        assertTrue(FinnishRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Finnish leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(FinnishRules.blocksAsSplitPrefix("ei", 0L))
+        assertFalse(FinnishRules.blocksAsFeminineAgentException("tar", "opettaja", true))
+        assertFalse(FinnishRules.blocksAsCompoundPrefix("hyvin", true))
+        assertFalse(FinnishRules.isPlausibleVerbInflection("luemme") { true })
+        assertFalse(FinnishRules.isPlausibleAdjectiveComparative("suurempi") { true })
+        assertNull(FinnishRules.splitCompound("avainsana", { true }) { it })
+    }
 }

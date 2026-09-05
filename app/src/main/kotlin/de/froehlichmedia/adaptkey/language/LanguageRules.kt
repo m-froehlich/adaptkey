@@ -130,7 +130,11 @@ object LanguageRulesRegistry {
         Language.ITALIAN to ItalianRules,
         Language.DUTCH to DutchRules,
         Language.POLISH to PolishRules,
-        Language.TURKISH to TurkishRules
+        Language.TURKISH to TurkishRules,
+        Language.SWEDISH to SwedishRules,
+        Language.NORWEGIAN to NorwegianRules,
+        Language.DANISH to DanishRules,
+        Language.FINNISH to FinnishRules
     )
     
     /**

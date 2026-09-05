@@ -1,0 +1,6 @@
+# Swedish diacritic-fold table (D-436) - base letter -> every real variant, so a token typed without it
+# ("ar") still reaches the correctly-spelled word ("är"/"år"), both live while typing and at autocorrect/
+# split-repair time. å/ä/ö are traditionally treated as their own additional letters in the Swedish alphabet
+# (not merely accented a/o), but the same base-letter-fold mechanism still applies for typing convenience.
+a	ä,å
+o	ö

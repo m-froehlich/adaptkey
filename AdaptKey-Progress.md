@@ -915,6 +915,69 @@ non-trivial changes).
 
 ## Current State
 
+- **§424 (v1.1.63): D-450 - first Swedish language pack, first of a large 18-language autonomous round -**
+  **no native Swedish Wiktionary edition exists on kaikki.org, so this pack was built from the thinner**
+  **English-Wiktionary-of-Swedish fallback coverage, honestly documented with concrete numbers and**
+  **mechanism-level app impact, per explicit user instruction.** Added `Language.SWEDISH` (`"sv"`,
+  `"Svenska"`) to the enum, the first of 18 new languages added in this same batch (Norwegian Bokmål,
+  Danish, Finnish, Czech, Slovak, Hungarian, Romanian, Croatian, Bosnian, Serbian, Estonian, Latvian,
+  Lithuanian, Indonesian, Malay, Swahili, Tagalog to follow in the same round).
+
+  Confirmed directly against `kaikki.org/dictionary/rawdata.html` before starting: only Czech, Indonesian,
+  and Malay of these 18 have a native Wiktionary edition; the other 15 (including Swedish) use the English
+  Wiktionary's own coverage instead - the same accepted fallback already used where needed for Dutch/Polish's
+  predecessors, now explicitly named as the standing approach in the Guide's own step 3.
+
+  The entire `svwiki-latest-pages-articles.xml.bz2` was processed via the same multiprocessing/hapax-pruning
+  extractor built for every prior round - 2,627,827 real pages, 268,255,177 real tokens, 3,950,407 distinct
+  words, 5,501,462 raw (>=3) bigram rows.
+
+  **A real multi-word-form shape check, per the Guide's own D-447 hardening**: Swedish's own analytic
+  comparative/superlative is marker-FIRST ("mer X"/"mest X"), the same shape as Dutch's periphrastic verbs
+  and Turkish's "daha X"/"en X" - so the same "reject any whitespace-containing form outright" rule applies,
+  unlike Polish's opposite marker-LAST shape. `EXCLUDE_FORM_TAGS` gained a new `"error-unrecognized-form"`
+  entry, a genuine new wiktextract diagnostic tag found in this data.
+
+  **Net result**: `dict.tsv` 521,823 rows (374,316 initial Wikipedia-frequency + kaikki-POS merge, +147,507
+  from Wortfamilien completion - 111,218 noun + 20,546 verb-delta + 15,743 adjective-delta generated forms;
+  calibration ratios noun=0.2857 (n=22,225), verb=0.6667 (n=15,249), adjective=0.9000 (n=8,223), all sane).
+  POS tagging: 328,566 words kept unrecognised-by-kaikki (tagged `OTHER` only), 3,561,716 dropped below the
+  count->=20 floor, 14,375 removed as common-English-word contamination. Wiktionary matching: 44,084 lemmas
+  tagged with real grammatical info, 3,446 unmatched; 46,461 existing forms linked, 147,507 generated.
+  Proper-noun handling: 2,287 tagged, 22 unmatched, 190 skipped as collisions. Mandatory bare-noun safety
+  check: 0 bare-NOUN rows. `bigram.tsv`: 1,689,546 rows (>=10 cutoff) from the 5,501,462-row raw floor.
+  Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0
+  bare-NOUN rows - PASS.
+
+  **What exactly is thinner, and its concrete app-level effect (per explicit user instruction, not a generic
+  disclaimer)**: only 44,084 lemmas + 2,287 proper nouns (~8.4% of the 374,316 pre-Wortfamilien base entries)
+  carry a real kaikki-derived POS tag and `lemma`/form link. The remaining 328,566 rows are real Swedish
+  words by corpus frequency, but this thin fallback source never documented their part of speech. Two
+  concrete mechanisms are weakened, not just "less complete": (1) **A-05's split-safety gate** only vetoes a
+  wrong compound split when it sees a genuine `NOUN` tag - a real Swedish noun stuck in the untagged/`OTHER`
+  bucket has no such protection, so a legitimate compound built from it could be wrongly offered as two
+  separate words. (2) **D-404 Tier 2's family-match ratio override** only fires between forms connected by a
+  real `lemma` link - a correct-but-rarer word among the 328,566 untagged rows cannot benefit from it, so a
+  more frequent, merely-related inflected sibling could wrongly out-rank it in a suggestion. Expect more
+  manual curation need for Swedish (and the other 14 fallback-sourced languages this round) than for the
+  native-edition packs.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Swedish's own: `a=ä, o=ö` (the two umlauted vowels),
+  `t=kr` (krona currency abbreviation), `g=«`/`r=»` (Swedish's guillemet quoting convention).
+  `abbreviations.tsv`: a hand-curated 22-entry list.
+
+  `SwedishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,733 candidate pairs, left deliberately
+  uncurated (no native Swedish fluency available).
+
+  New tests: `LanguageRulesTest` gained a `Swedish resolves to SwedishRules` case plus its own mirroring test
+  block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
+  Swedish. Real, full-dump corpus scale (268.26M real tokens) but thinner Wortfamilien/POS coverage than
+  every native-edition language (see above, concrete numbers and mechanism-level impact). Not
+  device-confirmed either.
+
 - **§423 (v1.1.62): D-449 - first Turkish language pack, second and final of the pl/tr autonomous round -**
   **a postpositional-language finding (0 PREPOSITION rows, honestly documented) and a real ~3105x**
   **calibration bug caught and fixed, the third real example of that same symptom-class.** Added

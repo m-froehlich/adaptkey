@@ -911,7 +911,12 @@ D-447, Dutch is likewise fully lemma-populated (nouns, verbs, and adjectives ali
 likewise fully lemma-populated (nouns, verbs, and adjectives alike - the richest inflectional coverage of any
 language built so far). Since D-449, Turkish is likewise fully lemma-populated for nouns, verbs, and
 adjectives (though, unlike every other implemented language, it has no `PREPOSITION`-tagged words at all - a
-postpositional language, see that entry's own note). A word/language pair the
+postpositional language, see that entry's own note). Since D-450, Swedish is only partially lemma-populated -
+no native Swedish Wiktionary edition exists, so the thinner English-Wiktionary-of-Swedish fallback source
+only documents real grammatical/lemma links for about 8.4% of the dictionary's base entries (44,084 lemmas +
+2,287 proper nouns of 374,316); the remaining words carry no `NOUN`/`lemma` data at all, a confirmed, honestly
+documented source limitation with concrete app-level impact (see `AdaptKey-Progress.md`'s D-450 entry) - not
+a scope choice, and not the same "fully lemma-populated" state as any native-edition language above. A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated
