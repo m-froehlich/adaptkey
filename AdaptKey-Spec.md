@@ -942,7 +942,8 @@ identical agglutinative structure - see `AdaptKey-Progress.md`'s own D-450 entry
 partially lemma-populated but with the RICHEST fallback-source ratio of any language in this round (46,888
 lemmas + 14,200 proper nouns of 210,494, about 29.1%). Croatian is likewise only partially lemma-populated
 (17,856 lemmas + 2,013 proper nouns of 149,011, about 12.0%), sourced from the shared Croatian/Bosnian/
-Serbian "Serbo-Croatian" Wiktionary edition (D-450). A word/language pair the
+Serbian "Serbo-Croatian" Wiktionary edition (D-450). Bosnian is likewise only partially lemma-populated
+(15,953 lemmas + 1,931 proper nouns of 88,637, about 18.0%), sharing the identical Wiktionary source. A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated

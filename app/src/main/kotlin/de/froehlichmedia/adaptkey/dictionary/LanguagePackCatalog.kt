@@ -1928,6 +1928,78 @@ object LanguagePackCatalog {
             // continues next, reusing the identical shared Wiktionary extraction with its own separate
             // Wikipedia corpus.
             version = 1
+        ),
+        Entry(
+            Language.BOSNIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-bs.zip",
+            // D-450 (continued): tenth language of the same 18-language round, reusing the identical shared
+            // "Serbo-Croatian" Wiktionary extraction Croatian's own entry (directly above) documents in full
+            // - see that entry for the shared structural context (the pitch-accent recovery, the
+            // "error-unrecognized-form" exception, the sparse-verb-table source limitation, and the deferred
+            // Serbian decision). Added `Language.BOSNIAN` (`"bs"`, endonym `"Bosanski"`) to the enum. Bosnian
+            // uses the identical Latin-script wiktionary_*.tsv files as Croatian (copied, not regenerated).
+            //
+            // The entire `bswiki-latest-pages-articles.xml.bz2` (178MB compressed, the smallest Wikipedia
+            // corpus of the trio) was processed via the same multiprocessing/hapax-pruning extractor -
+            // 98,698 real pages, 31,462,803 real tokens, 996,635 distinct words, 1,205,156 raw (>=3) bigram
+            // rows.
+            //
+            // **Calibration ratio spot-check, verified directly rather than assumed sane just because it's
+            // below an arbitrary threshold**: the verb ratio (3.1847) sits right at the edge of the Guide's
+            // own sanity-check warning zone. Investigated directly before trusting it: the highest-ratio
+            // pairs are all genuine, correctly-spelled Bosnian words where a common deverbative noun or
+            // grammaticalised participle vastly outstrips its own rare source-verb lemma in real corpus
+            // frequency - e.g. "zahvaljivati" ("to thank", freq 2) -> "zahvaljujući" ("thanks to/owing to", a
+            // grammaticalised preposition-like word in its own right, freq 1,646); "-anje"/"-enje" deverbative
+            // abstract nouns ("zaustavljanje"/"stanovanje"/"zračenje") that are genuinely far more common in
+            // running text than their own rare verb infinitive. Real language, not an extraction bug - this
+            // shared source's own broad "verb family" concept includes participles-as-adjectives and
+            // deverbative nouns, which naturally diverge frequency-wise from their source verb.
+            //
+            // **Net result**: `dict.tsv` 185,506 rows (88,637 initial Wikipedia-frequency + kaikki-POS merge,
+            // +96,869 from Wortfamilien completion - 35,215 noun + 3,085 verb-delta + 58,569 adjective-delta
+            // generated forms; calibration ratios noun=0.4609 (n=13,069 pairs), verb=3.1847 (n=1,058, verified
+            // sane above), adjective=0.8000 (n=10,334)). POS tagging: 70,913 words kept unrecognised-by-
+            // kaikki (tagged `OTHER` only), 900,556 dropped below the count->=20 floor, 7,442 removed as
+            // common-English-word contamination. Wiktionary matching: 15,953 lemmas tagged with real
+            // grammatical info, 5,836 unmatched; 25,048 existing forms linked, 96,869 generated. Proper-noun
+            // handling: 1,931 tagged, 261 unmatched, 169 skipped as real-word collisions. Mandatory bare-noun
+            // safety check: 0 bare-NOUN rows. `bigram.tsv`: 279,223 rows (>=10 cutoff) from the 1,205,156-row
+            // raw floor. Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned
+            // lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 185,506
+            // rows, only 15,953 lemmas plus 1,931 proper nouns - about 18.0% of the 88,637 pre-Wortfamilien
+            // base entries, a richer ratio than Croatian's own despite sharing the identical Wiktionary
+            // source (a direct consequence of Bosnian's own smaller Wikipedia corpus producing fewer, more
+            // core-vocabulary-weighted base entries overall) - carry a real kaikki-derived POS tag and
+            // `lemma`/form link. The remaining 70,913 rows are real Bosnian words by Wikipedia-corpus
+            // frequency alone, undocumented for part of speech. The same two mechanisms are weakened: (1)
+            // A-05's split-safety gate. (2) D-404 Tier 2's family-match ratio override. The same sparse-verb-
+            // table source limitation Croatian's own entry documents applies identically here.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Bosnian's own: identical diacritic set to
+            // Croatian (`c=č/ć, d=đ, s=š, z=ž`) - but `t=KM` (Bosnia's own convertible-mark currency
+            // abbreviation, genuinely different from Croatia's own `t=€` since Bosnia has not adopted the
+            // Euro). `g=„`/`h="` (same low-quote convention as Croatian). `abbreviations.tsv`: the same
+            // 12-entry list as Croatian (the two languages' own sentence-boundary abbreviations are
+            // effectively identical).
+            //
+            // `BosnianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 3,741 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Bosnian resolves to BosnianRules` case plus its own
+            // mirroring test block. `language_profiles.tsv` not built for Bosnian either, same accepted gap.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Bosnian. Real, full-dump corpus scale (31.46M real tokens, the
+            // smallest Wikipedia corpus of the trio) - but thinner Wortfamilien/POS coverage than a native-
+            // edition language, plus the same source-wide sparse-verb-table limitation Croatian's own entry
+            // documents. Not device-confirmed either. **This closes the Croatian/Bosnian pair of the trio** -
+            // Serbian remains explicitly deferred (see Croatian's own entry above). Estonian, Latvian,
+            // Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain in this 18-language round.
+            version = 1
         )
     )
 }
