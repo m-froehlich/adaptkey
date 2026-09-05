@@ -1643,6 +1643,112 @@ object LanguagePackCatalog {
             // resolved by design rather than guesswork. Not device-confirmed either. Hungarian and Romanian
             // continue next in the same round.
             version = 1
+        ),
+        Entry(
+            Language.HUNGARIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-hu.zip",
+            // D-450 (continued): seventh language of the same 18-language round, right after Slovak - see the
+            // Swedish Entry earlier in this file for the shared structural context. Added `Language.HUNGARIAN`
+            // (`"hu"`, endonym `"Magyar"`) to the enum.
+            //
+            // **No native Hungarian Wiktionary edition exists on kaikki.org.** Built from the English
+            // Wiktionary's own coverage instead (`kaikki.org/dictionary/Hungarian/kaikki.org-dictionary-
+            // Hungarian.jsonl.gz`, 53.4MB).
+            //
+            // **Two real, per-language findings, both confirmed by direct inspection before reusing any
+            // prior language's own logic unmodified:**
+            // 1. **The same possessive-suffix paradigm-size class already resolved for Finnish this round,
+            //    applied consistently rather than re-litigated**: Hungarian, like Finnish, is agglutinative
+            //    and its own noun declension table ALSO carries genuine possessive-suffix forms on top of its
+            //    famously large (~18-case) case x number paradigm - confirmed directly against a real entry
+            //    ("fa"/"tree": 12 real possessive-suffix forms like "fam"/"fád"/"fája", tagged `["possessive",
+            //    "possessed-single"/"possessed-many", "first-person"/"second-person"/"third-person"]`, on top
+            //    of ~36 real case x number forms). Per the user's own explicit decision for Finnish's
+            //    identical structural situation, the same cap was applied here proactively rather than
+            //    re-asking the same question - `EXCLUDE_FORM_TAGS` excludes `"possessive"`/
+            //    `"possessed-single"`/`"possessed-many"` forms, keeping the core case x number paradigm only.
+            //    Unlike Finnish, Hungarian's own possessive paradigm here was NOT crossed with the full case
+            //    system (only ~12 possessive forms per noun, not ~130) - confirmed directly this kept the
+            //    resulting `dict.tsv` at a normal scale (985,299 rows, 31MB - comparable to Polish's own
+            //    884,720 rows, not remotely close to Finnish's pre-cap 13.46M-row explosion), so this did NOT
+            //    require a second full `AskUserQuestion` pause - the same decision already made for the
+            //    identical structural situation was simply applied, and the real resulting scale confirmed it
+            //    was the right call before moving on, not assumed safe.
+            // 2. **A genuine per-language tag-vocabulary collision, found by direct inspection before reusing
+            //    the shared `EXCLUDE_QUALIFIERS` set unmodified**: Hungarian verb conjugation forms use
+            //    `"formal"`/`"informal"` tags for a REAL GRAMMATICAL distinction (the T-V polite/informal
+            //    second-person address form, e.g. formal "van" vs informal "vagy" for "you are") - NOT a
+            //    stylistic-register/slang marker the way every other language's own `"informal"` tag has
+            //    meant so far. Confirmed directly against a real verb ("van"): blindly reusing the shared
+            //    `EXCLUDE_QUALIFIERS` (which includes `"informal"` for slang-register exclusion in every
+            //    other language) would have silently dropped the entire informal-address conjugation paradigm
+            //    for every Hungarian verb - a real, silent, systematic under-coverage bug specific to this
+            //    language, caught before it could happen. Hungarian's own `EXCLUDE_QUALIFIERS` deliberately
+            //    omits `"informal"` for this reason.
+            //
+            // The entire `huwiki-latest-pages-articles.xml.bz2` (1.25GB compressed) was processed via the
+            // same multiprocessing/hapax-pruning extractor - 573,285 real pages, 193,365,986 real tokens,
+            // 2,918,360 distinct words, 4,765,421 raw (>=3) bigram rows. Hungarian's own postposition tag
+            // (`postp`) turned out clean and unambiguous, like Finnish's own - unlike Turkish's real
+            // structural gap (D-449) - mapped directly to `PREPOSITION`, 112 tagged.
+            //
+            // **Multi-word-form shape, verified directly**: a genuine English-prose noise pattern was found
+            // and confirmed - Hungarian's own "definite" conjugation (used when the object is a specific,
+            // known entity) does not apply to intransitive verbs, and this fact is recorded as literal
+            // English prose values ("intransitive verb", "definite forms are not used") in the same forms[]
+            // table - caught for free by the standard whitespace-rejection rule, no special-casing needed.
+            //
+            // **Net result**: `dict.tsv` 985,299 rows (362,799 initial Wikipedia-frequency + kaikki-POS
+            // merge, +622,500 from capped Wortfamilien completion - 468,994 noun + 1,970 verb-delta + 151,536
+            // adjective-delta generated forms; calibration ratios noun=0.0612 (n=56,615 pairs), verb=0.0290
+            // (n=258, a notably thin verb-calibration sample - honestly noted, not hidden), adjective=0.0263
+            // (n=7,348) - all three low but sane, consistent with Hungarian's own rich case-suffixed forms
+            // being naturally much rarer than their bare lemma, the same pattern Turkish's own D-449 entry
+            // already documented for a similarly agglutinative language). POS tagging: 335,543 words kept
+            // unrecognised-by-kaikki (tagged `OTHER` only), 2,540,708 dropped below the count->=20 floor,
+            // 14,853 removed as common-English-word contamination. Wiktionary matching: 26,115 lemmas tagged
+            // with real grammatical info, 4,551 unmatched; 96,547 existing forms linked, 622,500 generated.
+            // Proper-noun handling: 2,435 tagged, 20 unmatched, 221 skipped as real-word collisions.
+            // Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,590,443 rows (>=10 cutoff)
+            // from the 4,765,421-row raw floor. Quality gate: 0 case-insensitive duplicates, 0 non-positive
+            // frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 985,299
+            // rows, only 26,115 lemmas plus 2,435 proper nouns - about 7.4% of the 362,799 pre-Wortfamilien
+            // base entries - carry a real kaikki-derived POS tag and `lemma`/form link. The remaining 335,543
+            // rows are real Hungarian words by Wikipedia-corpus frequency alone, undocumented for part of
+            // speech. The same two mechanisms are weakened: (1) A-05's split-safety gate cannot veto a wrong
+            // compound split built from any of these 335,543 untagged words. (2) D-404 Tier 2's family-match
+            // ratio override cannot fire for a correct-but-rarer word among the 335,543 untagged rows. A
+            // third, separate limitation shared with Finnish's own §427 entry: even for the 26,115 tagged
+            // lemmas, the family-match override will not recognise a real possessive-suffixed Hungarian form
+            // (e.g. "fám" - "my tree") as belonging to its lemma's family, since those forms were deliberately
+            // not generated - a bounded, consistent-with-Finnish scope limit, not a bug.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Hungarian's own: only 5 base letters carry
+            // a real diacritic, but two of them (`o`, `u`) each host THREE real, distinct variants - `a=á,
+            // e=é, i=í, o=ó/ö/ő, u=ú/ü/ű` (`ő`/`ű`, the double-acute letters, are genuinely unique to
+            // Hungarian among Latin-alphabet languages, not alternate spellings). This left 21 free letters,
+            // enough for a real currency assignment - `t=Ft` (forint, a genuine two-character abbreviation) -
+            // plus `g=„`/`h="` (the same low-quote convention as Czech/Slovak). `abbreviations.tsv`: a
+            // hand-curated 16-entry Hungarian sentence-boundary list.
+            //
+            // `HungarianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found only 484 candidate
+            // pairs, the lowest count of any language scan so far (plausibly Hungarian's own long,
+            // agglutinative words are simply less prone to single-keystroke confusable collisions), left
+            // deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Hungarian resolves to HungarianRules` case plus its
+            // own mirroring test block. `language_profiles.tsv` not built for Hungarian either, same accepted
+            // gap.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Hungarian. Real, full-dump corpus scale (193.37M real tokens) -
+            // but thinner Wortfamilien/POS coverage than a native-edition language, plus the same possessive-
+            // suffix scope limit Finnish's own entry documents. Not device-confirmed either. Romanian
+            // continues next, the last of the cs/sk/hu/ro group.
+            version = 1
         )
     )
 }
