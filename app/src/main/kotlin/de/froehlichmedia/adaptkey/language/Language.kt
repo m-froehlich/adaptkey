@@ -25,6 +25,8 @@ enum class Language(val code: String, val endonym: String) {
     ITALIAN("it", "Italiano"),
     DUTCH("nl", "Nederlands"),
     PORTUGUESE("pt", "Português"),
+    POLISH("pl", "Polski"),
+    TURKISH("tr", "Türkçe"),
     UNKNOWN("??", "?");
     
     companion object {

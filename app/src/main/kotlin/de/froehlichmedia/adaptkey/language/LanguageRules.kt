@@ -128,7 +128,9 @@ object LanguageRulesRegistry {
         Language.SPANISH to SpanishRules,
         Language.PORTUGUESE to PortugueseRules,
         Language.ITALIAN to ItalianRules,
-        Language.DUTCH to DutchRules
+        Language.DUTCH to DutchRules,
+        Language.POLISH to PolishRules,
+        Language.TURKISH to TurkishRules
     )
     
     /**

@@ -1,0 +1,13 @@
+# Polish diacritic-fold table (D-436) - base letter -> every real accented variant, so a token typed
+# without its diacritic ("zolty") still reaches the correctly-spelled word ("żółty"), both live while typing
+# and at autocorrect/split-repair time. hints.tsv (same folder) picks one representative symbol per key for
+# the AltGr long-press hint; this file keeps the complete set per base letter - z hosts two real variants
+# (ź and ż, both genuine distinct Polish letters, not alternate spellings of each other).
+a	ą
+c	ć
+e	ę
+l	ł
+n	ń
+o	ó
+s	ś
+z	ź,ż

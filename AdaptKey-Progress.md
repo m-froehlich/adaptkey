@@ -915,6 +915,65 @@ non-trivial changes).
 
 ## Current State
 
+- **§422 (v1.1.61): D-448 - first Polish language pack, first of a second two-language (pl/tr) autonomous**
+  **round, requested directly after checking that both languages had every prerequisite the pipeline needs.**
+  Added `Language.POLISH` (`"pl"`, `"Polski"`) to the enum - was not present before this round; QWERTY
+  ("Polish programmers" layout, diacritics via AltGr) needed no new layout code, confirmed via the standard
+  §0/§5 check first.
+
+  **Richest inflectional data of any language built so far**: Polish's own native Wiktionary edition
+  (`kaikki.org/dictionary/downloads/pl/pl-extract.jsonl.gz`, 130.7MB, correctly bigger than the wrong
+  English-Wiktionary-coverage file's 65.1MB) documents the full 7-case declension for nouns (nominative/
+  genitive/dative/accusative/instrumental/locative/vocative, singular+plural - 50,380/67,607 real lemmas)
+  and the same 7 cases x 4 genders for adjectives plus comparative/superlative (19,060/22,126). Verbs show a
+  genuinely different shape from every language built before this round: only 6.5% of raw "verb" entries are
+  `senses[].form_of` references (vs. 70-95% for French/Spanish/Italian/Dutch/Portuguese) - most Polish verb
+  lemmas carry their own complete conjugation table directly.
+
+  **A real multi-word-form shape check, per the Guide's own D-447 hardening**: Polish's own multi-word forms
+  are a slash-separated real-word/grammatical-shorthand pair (e.g. `"jestem / -(e)m"`), the OPPOSITE shape
+  from Dutch's own periphrastic problem - splitting on "/" FIRST (before any whitespace check, the reverse
+  order from Dutch's own fix) correctly recovers the real word while the shorthand half is separately
+  rejected by `VALID_FORM_RE`. A small, separate real quirk was also found and fixed: `"nie"` ("no") turns up
+  as a literal "this form does not exist" placeholder in a handful of conjugation-table cells (9 rows,
+  confirmed against one real raw entry before excluding it).
+
+  The entire `plwiki-latest-pages-articles.xml.bz2` (2.73GB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor D-445 built - 1,706,354 real pages, 383,934,279 real tokens.
+
+  **Net result**: `dict.tsv` 884,720 rows (491,933 initial + 392,787 from full Wortfamilien completion -
+  147,229 noun, 153,306 verb, 92,252 adjective generated forms; calibration ratios noun=0.3684 (n=64,346
+  pairs), verb=0.9474 (n=26,141), adjective=0.6667 (n=47,068) - all three sane, checked against the Guide's
+  own new mandatory calibration-ratio sanity check before trusting them). POS tagging: 425,849 words kept
+  unrecognised-by-kaikki (corpus count >=20), 3,487,618 dropped below that floor, 14,510 removed as
+  common-English-word contamination. Proper-noun handling: 6,203 tagged, 756 skipped as real-word collisions.
+  Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 2,855,627 rows (>=10 cutoff) from
+  7,167,156 rows at the raw >=3 extraction floor. Quality gate clean.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Polish's own: `hints.tsv` mostly keeps German's 10
+  language-neutral assignments (`n` reassigned to `ń` - Polish's own diacritic set is systematic enough to
+  deserve its natural base letter, unlike Spanish's single `ñ`; `+` moved to `j`) and gives the remaining
+  letters real Polish content - `a=ą, c=ć, e=ę, l=ł, n=ń, o=ó, s=ś, z=ż` (`diacritics.tsv` keeps the fuller
+  set, `z`->`ź,ż`), `g=„`/`r="` (Polish low-quotes), `t=zł` (the złoty currency symbol, a genuine 2-character
+  glyph), `k=—` (Polish's own em-dash dialogue convention), `w=§`, `i/u/y` filled with generically useful
+  remaining typography. `abbreviations.tsv`: a hand-curated ~25-entry list.
+
+  `PolishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,198 candidate pairs, left deliberately
+  uncurated. New tests: `LanguageRulesTest` gained a `Polish resolves to PolishRules` case plus its own
+  mirroring test block. `language_profiles.tsv` (A-03 trigram data) NOT built for Polish this round - the
+  builder script is a documented, pre-existing gap not in this repository; the classifier degrades gracefully
+  without it (per the Guide's own §6), an accepted state, not an oversight.
+
+  `versionCode` 477 -> 478, `versionName` `"1.1.60"` -> `"1.1.61"`. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+  who actually speaks Polish. Real, full-dump corpus scale (383.93M real tokens) and a complete, real lexicon
+  with full noun/verb/adjective Wortfamilien parity (the richest of any language built so far) - but still
+  "pretty good" in the guide's own sense, not native-reviewed quality. Not device-confirmed either. Turkish
+  continues in the same autonomous session - see its own forthcoming §423 entry.
+
 - **§421 (v1.1.60): D-445-followup - conservative, rule-based Portuguese noun/adjective PLURAL generator,**
   **plus a preposition-tagging audit across every non-German pack and a new mandatory Guide step for it.**
   Two separate, explicit user requests handled in one round.

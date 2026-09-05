@@ -54,6 +54,16 @@ class LanguageRulesTest {
     }
     
     @Test
+    fun `Polish resolves to PolishRules`() {
+        assertSame(PolishRules, LanguageRulesRegistry.rulesFor(Language.POLISH))
+    }
+    
+    @Test
+    fun `Turkish resolves to TurkishRules`() {
+        assertSame(TurkishRules, LanguageRulesRegistry.rulesFor(Language.TURKISH))
+    }
+    
+    @Test
     fun `every other bundled language resolves to the no-op default`() {
         assertSame(NoOpLanguageRules, LanguageRulesRegistry.rulesFor(Language.GREEK))
         assertSame(NoOpLanguageRules, LanguageRulesRegistry.rulesFor(Language.UNKNOWN))
@@ -313,5 +323,55 @@ class LanguageRulesTest {
         assertFalse(DutchRules.isPlausibleVerbInflection("praten") { true })
         assertFalse(DutchRules.isPlausibleAdjectiveComparative("groter") { true })
         assertNull(DutchRules.splitCompound("sleutelwoord", { true }) { it })
+    }
+    
+    @Test
+    fun `Polish glues a decimal comma`() {
+        assertTrue(PolishRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Polish has no time-suggestion word`() {
+        assertNull(PolishRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Polish curates no bundled blacklist yet`() {
+        assertTrue(PolishRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Polish leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(PolishRules.blocksAsSplitPrefix("nie", 0L))
+        assertFalse(PolishRules.blocksAsFeminineAgentException("ka", "nauczyciel", true))
+        assertFalse(PolishRules.blocksAsCompoundPrefix("dobrze", true))
+        assertFalse(PolishRules.isPlausibleVerbInflection("czytamy") { true })
+        assertFalse(PolishRules.isPlausibleAdjectiveComparative("większy") { true })
+        assertNull(PolishRules.splitCompound("słowokluczowe", { true }) { it })
+    }
+    
+    @Test
+    fun `Turkish glues a decimal comma`() {
+        assertTrue(TurkishRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Turkish has no time-suggestion word`() {
+        assertNull(TurkishRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Turkish curates no bundled blacklist yet`() {
+        assertTrue(TurkishRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Turkish leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(TurkishRules.blocksAsSplitPrefix("hayir", 0L))
+        assertFalse(TurkishRules.blocksAsFeminineAgentException("ci", "ogretmen", true))
+        assertFalse(TurkishRules.blocksAsCompoundPrefix("iyi", true))
+        assertFalse(TurkishRules.isPlausibleVerbInflection("okuyoruz") { true })
+        assertFalse(TurkishRules.isPlausibleAdjectiveComparative("daha buyuk") { true })
+        assertNull(TurkishRules.splitCompound("anahtarkelime", { true }) { it })
     }
 }

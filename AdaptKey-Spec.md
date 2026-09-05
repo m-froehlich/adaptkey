@@ -907,7 +907,9 @@ own scope limits), so a noun/adjective family match can fire for Portuguese toda
 still well short of German/English/Greek/French/Spanish/Italian/Dutch's own full Wiktionary-sourced coverage.
 Since D-446, Italian is fully lemma-populated (nouns, verbs, and
 adjectives alike - its own native Wiktionary source documents all three richly, unlike Portuguese). Since
-D-447, Dutch is likewise fully lemma-populated (nouns, verbs, and adjectives alike). A word/language pair the
+D-447, Dutch is likewise fully lemma-populated (nouns, verbs, and adjectives alike). Since D-448, Polish is
+likewise fully lemma-populated (nouns, verbs, and adjectives alike - the richest inflectional coverage of any
+language built so far). A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated
