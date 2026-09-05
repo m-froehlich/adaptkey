@@ -138,7 +138,9 @@ object LanguageRulesRegistry {
         Language.CZECH to CzechRules,
         Language.SLOVAK to SlovakRules,
         Language.HUNGARIAN to HungarianRules,
-        Language.ROMANIAN to RomanianRules
+        Language.ROMANIAN to RomanianRules,
+        Language.CROATIAN to CroatianRules,
+        Language.BOSNIAN to BosnianRules
     )
     
     /**

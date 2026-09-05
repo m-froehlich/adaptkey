@@ -1,0 +1,8 @@
+# Croatian diacritic-fold table (D-450) - base letter -> every real accented variant, so a token typed
+# without its diacritic still reaches the correctly-spelled word. hints.tsv (same folder) picks one
+# representative symbol per key for the AltGr long-press hint; this file keeps the complete set per base
+# letter - c hosts two real, distinct Croatian letters (č and ć, not alternate spellings of each other).
+c	č,ć
+d	đ
+s	š
+z	ž

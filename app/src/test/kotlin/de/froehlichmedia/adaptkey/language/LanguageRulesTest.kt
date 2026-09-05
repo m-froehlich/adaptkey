@@ -614,4 +614,64 @@ class LanguageRulesTest {
         assertFalse(RomanianRules.isPlausibleAdjectiveComparative("mai_mare") { true })
         assertNull(RomanianRules.splitCompound("cuvant_cheie", { true }) { it })
     }
+    
+    @Test
+    fun `Croatian resolves to CroatianRules`() {
+        assertSame(CroatianRules, LanguageRulesRegistry.rulesFor(Language.CROATIAN))
+    }
+    
+    @Test
+    fun `Croatian glues a decimal comma`() {
+        assertTrue(CroatianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Croatian has no time-suggestion word`() {
+        assertNull(CroatianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Croatian curates no bundled blacklist yet`() {
+        assertTrue(CroatianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Croatian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(CroatianRules.blocksAsSplitPrefix("ne", 0L))
+        assertFalse(CroatianRules.blocksAsFeminineAgentException("ica", "ucitelj", true))
+        assertFalse(CroatianRules.blocksAsCompoundPrefix("dobro", true))
+        assertFalse(CroatianRules.isPlausibleVerbInflection("citamo") { true })
+        assertFalse(CroatianRules.isPlausibleAdjectiveComparative("veci") { true })
+        assertNull(CroatianRules.splitCompound("kljucna_rijec", { true }) { it })
+    }
+    
+    @Test
+    fun `Bosnian resolves to BosnianRules`() {
+        assertSame(BosnianRules, LanguageRulesRegistry.rulesFor(Language.BOSNIAN))
+    }
+    
+    @Test
+    fun `Bosnian glues a decimal comma`() {
+        assertTrue(BosnianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Bosnian has no time-suggestion word`() {
+        assertNull(BosnianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Bosnian curates no bundled blacklist yet`() {
+        assertTrue(BosnianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Bosnian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(BosnianRules.blocksAsSplitPrefix("ne", 0L))
+        assertFalse(BosnianRules.blocksAsFeminineAgentException("ica", "ucitelj", true))
+        assertFalse(BosnianRules.blocksAsCompoundPrefix("dobro", true))
+        assertFalse(BosnianRules.isPlausibleVerbInflection("citamo") { true })
+        assertFalse(BosnianRules.isPlausibleAdjectiveComparative("veci") { true })
+        assertNull(BosnianRules.splitCompound("kljucna_rijec", { true }) { it })
+    }
 }

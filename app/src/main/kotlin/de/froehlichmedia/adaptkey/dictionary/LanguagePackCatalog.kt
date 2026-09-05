@@ -1825,6 +1825,109 @@ object LanguagePackCatalog {
             // cs/sk/hu/ro group of the larger 18-language round** - Croatian, Bosnian, Serbian, Estonian,
             // Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
             version = 1
+        ),
+        Entry(
+            Language.CROATIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-hr.zip",
+            // D-450 (continued): ninth language of the same 18-language round, starting the Croatian/Bosnian/
+            // Serbian trio - see the Swedish Entry earlier in this file for the shared structural context.
+            // Added `Language.CROATIAN` (`"hr"`, endonym `"Hrvatski"`) to the enum.
+            //
+            // **A real, structural, pre-round finding, confirmed directly rather than assumed**: kaikki.org
+            // treats Croatian, Bosnian, and Serbian as ONE shared Wiktionary language edition ("Serbo-
+            // Croatian", `lang_code == "sh"`, confirmed against all 70,075 real entries) - there is no
+            // separate native or per-country fallback edition to choose between. Per the user's own explicit
+            // decision (the pre-round `AskUserQuestion`), this ONE shared source
+            // (`kaikki.org/dictionary/Serbo-Croatian/kaikki.org-dictionary-SerboCroatian.jsonl`, 276.5MB
+            // uncompressed - marked DEPRECATED by kaikki.org itself, downloaded and archived before it can be
+            // removed) feeds all three of this project's own separate language packs, each still built from
+            // its OWN Wikipedia corpus (hrwiki here; bswiki/srwiki for the other two).
+            //
+            // **Two real data-shape findings in this shared source, found by direct inspection before writing
+            // any extraction logic:**
+            // 1. This source's own inflection-table forms are written in traditional PITCH-ACCENT dictionary
+            //    notation (e.g. "kȕća" for "kuća"/"house", using precomposed Unicode pitch-accent letters
+            //    outside the ordinary Latin alphabet) - not the plain orthography anyone actually types.
+            //    These accent marks would have been silently rejected by the ordinary `VALID_FORM_RE` check
+            //    with no special-casing, quietly losing every inflected form this source documents. Confirmed
+            //    directly that each such form instead carries a `links` field whose second element is the
+            //    real, plain-orthography spelling (`[["kȕća", "kuća#Serbo-Croatian"]]`) - `usable_forms()`
+            //    prefers this recovered spelling over the raw pitch-accented one, recovering real coverage
+            //    rather than merely working around the accent marks by discarding them.
+            // 2. This source's own `"error-unrecognized-form"` tag (excluded as noise everywhere else in
+            //    this project, e.g. Finnish's own D-450 entry) turns up here on entries that ARE real, valid
+            //    words (confirmed: "pisati"/"to write" has two real participle forms tagged this way purely
+            //    because wiktextract's own parser could not recognise this source's own conjugation-table
+            //    template - the `links` field still resolves them correctly) - deliberately NOT excluded for
+            //    this shared source, a genuine, source-specific exception.
+            //
+            // **A real, honestly documented source-richness limitation**: this source's own verb conjugation
+            // tables turned out unusually sparse compared to every other language this project has built -
+            // confirmed directly against two common verbs ("raditi"/"to work", "pisati"/"to write"): only the
+            // infinitive, two participle forms, and one deverbative noun are documented per verb, with NO
+            // personal present/past-tense conjugation paradigm at all.
+            //
+            // The entire `hrwiki-latest-pages-articles.xml.bz2` (348MB compressed) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 221,828 real pages, 65,675,004 real tokens, 1,375,544
+            // distinct words, 2,310,181 raw (>=3) bigram rows.
+            //
+            // **Net result**: `dict.tsv` 248,453 rows (149,011 initial Wikipedia-frequency + kaikki-POS
+            // merge, +99,442 from Wortfamilien completion - 32,865 noun + 3,445 verb-delta + 63,132 adjective-
+            // delta generated forms; calibration ratios noun=0.3732 (n=18,737 pairs), verb=1.6286 (n=1,569,
+            // a small sample given the source's own sparse verb tables above - still within the sane range,
+            // not the multi-hundred-x symptom of a real bug), adjective=0.6667 (n=15,919)). POS tagging:
+            // 129,278 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,218,746 dropped below the
+            // count->=20 floor, 7,787 removed as common-English-word contamination. Wiktionary matching:
+            // 17,856 lemmas tagged with real grammatical info, 3,933 unmatched; 36,707 existing forms linked,
+            // 99,442 generated. Proper-noun handling: 2,013 tagged, 179 unmatched, 169 skipped as real-word
+            // collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 636,290 rows
+            // (>=10 cutoff) from the 2,310,181-row raw floor. Quality gate: 0 case-insensitive duplicates, 0
+            // non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect** (the same mandatory
+            // documentation Swedish's own entry introduced): of `dict.tsv`'s 248,453 rows, only 17,856 lemmas
+            // plus 2,013 proper nouns - about 12.0% of the 149,011 pre-Wortfamilien base entries - carry a
+            // real kaikki-derived POS tag and `lemma`/form link. The remaining 129,278 rows are real Croatian
+            // words by Wikipedia-corpus frequency alone, undocumented for part of speech. The same two
+            // mechanisms are weakened: (1) A-05's split-safety gate cannot veto a wrong compound split built
+            // from any of these 129,278 untagged words. (2) D-404 Tier 2's family-match ratio override cannot
+            // fire for a correct-but-rarer word among the 129,278 untagged rows. A separate, real gap shared
+            // with every fallback-sourced language this round's own verb coverage, but more acute here given
+            // the source's own sparse verb tables: Croatian's own rich verb-aspect/conjugation system is only
+            // thinly represented in the family-match data even for tagged verb lemmas.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Croatian's own: 4 base letters carry a real
+            // diacritic, `c` hosting two real, distinct variants - `c=č/ć, d=đ, s=š, z=ž`. 22 free letters
+            // left generous room: `t=€` (Croatia adopted the Euro in 2023, a real, current fact - not the
+            // historical kuna), `g=„`/`h="` (Croatian's own low-quote convention). `abbreviations.tsv`: a
+            // hand-curated 12-entry Croatian sentence-boundary list.
+            //
+            // `CroatianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 4,171 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Croatian resolves to CroatianRules` case plus its own
+            // mirroring test block. `language_profiles.tsv` not built for Croatian either, same accepted gap.
+            //
+            // **A genuine structural fork, surfaced to the user rather than guessed at or silently worked
+            // around**: Serbian - the third language of this originally-planned trio - was found to need a
+            // real, from-scratch Cyrillic keyboard layout (this app's own `LayoutRegistry`/`GreekLayout.kt`
+            // shows the only prior non-Latin script, Greek, required a genuine ~140-line feature addition,
+            // not a data-pipeline change) - confirmed directly that Serbian's own real-world usage is
+            // overwhelmingly Cyrillic (839,282 vs. 151,666 Latin characters sampled from the real srwiki
+            // dump, ~5.5:1). Presented to the user via `AskUserQuestion` with four concrete options; **the
+            // user chose to skip Serbian this round entirely**, deferring it to its own dedicated discussion
+            // once the Cyrillic-keyboard question can be addressed on its own terms. The already-downloaded
+            // Serbian Wikipedia dump and the shared Wiktionary source's own Cyrillic-tagged extraction remain
+            // archived locally for whenever that discussion happens, not discarded.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Croatian. Real, full-dump corpus scale (65.68M real tokens) - but
+            // thinner Wortfamilien/POS coverage than a native-edition language, and a source-wide sparse-verb-
+            // table limitation shared with Bosnian's own upcoming entry. Not device-confirmed either. Bosnian
+            // continues next, reusing the identical shared Wiktionary extraction with its own separate
+            // Wikipedia corpus.
+            version = 1
         )
     )
 }
