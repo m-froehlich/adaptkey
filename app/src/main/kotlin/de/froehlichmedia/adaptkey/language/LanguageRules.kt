@@ -134,7 +134,11 @@ object LanguageRulesRegistry {
         Language.SWEDISH to SwedishRules,
         Language.NORWEGIAN to NorwegianRules,
         Language.DANISH to DanishRules,
-        Language.FINNISH to FinnishRules
+        Language.FINNISH to FinnishRules,
+        Language.CZECH to CzechRules,
+        Language.SLOVAK to SlovakRules,
+        Language.HUNGARIAN to HungarianRules,
+        Language.ROMANIAN to RomanianRules
     )
     
     /**

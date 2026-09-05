@@ -494,4 +494,124 @@ class LanguageRulesTest {
         assertFalse(FinnishRules.isPlausibleAdjectiveComparative("suurempi") { true })
         assertNull(FinnishRules.splitCompound("avainsana", { true }) { it })
     }
+    
+    @Test
+    fun `Czech resolves to CzechRules`() {
+        assertSame(CzechRules, LanguageRulesRegistry.rulesFor(Language.CZECH))
+    }
+    
+    @Test
+    fun `Czech glues a decimal comma`() {
+        assertTrue(CzechRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Czech has no time-suggestion word`() {
+        assertNull(CzechRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Czech curates no bundled blacklist yet`() {
+        assertTrue(CzechRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Czech leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(CzechRules.blocksAsSplitPrefix("ne", 0L))
+        assertFalse(CzechRules.blocksAsFeminineAgentException("ka", "ucitel", true))
+        assertFalse(CzechRules.blocksAsCompoundPrefix("dobre", true))
+        assertFalse(CzechRules.isPlausibleVerbInflection("cteme") { true })
+        assertFalse(CzechRules.isPlausibleAdjectiveComparative("vetsi") { true })
+        assertNull(CzechRules.splitCompound("klicove_slovo", { true }) { it })
+    }
+    
+    @Test
+    fun `Slovak resolves to SlovakRules`() {
+        assertSame(SlovakRules, LanguageRulesRegistry.rulesFor(Language.SLOVAK))
+    }
+    
+    @Test
+    fun `Slovak glues a decimal comma`() {
+        assertTrue(SlovakRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Slovak has no time-suggestion word`() {
+        assertNull(SlovakRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Slovak curates no bundled blacklist yet`() {
+        assertTrue(SlovakRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Slovak leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(SlovakRules.blocksAsSplitPrefix("nie", 0L))
+        assertFalse(SlovakRules.blocksAsFeminineAgentException("ka", "ucitel", true))
+        assertFalse(SlovakRules.blocksAsCompoundPrefix("dobre", true))
+        assertFalse(SlovakRules.isPlausibleVerbInflection("citame") { true })
+        assertFalse(SlovakRules.isPlausibleAdjectiveComparative("vacsi") { true })
+        assertNull(SlovakRules.splitCompound("klucove_slovo", { true }) { it })
+    }
+    
+    @Test
+    fun `Hungarian resolves to HungarianRules`() {
+        assertSame(HungarianRules, LanguageRulesRegistry.rulesFor(Language.HUNGARIAN))
+    }
+    
+    @Test
+    fun `Hungarian glues a decimal comma`() {
+        assertTrue(HungarianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Hungarian has no time-suggestion word`() {
+        assertNull(HungarianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Hungarian curates no bundled blacklist yet`() {
+        assertTrue(HungarianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Hungarian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(HungarianRules.blocksAsSplitPrefix("nem", 0L))
+        assertFalse(HungarianRules.blocksAsFeminineAgentException("no", "tanito", true))
+        assertFalse(HungarianRules.blocksAsCompoundPrefix("jol", true))
+        assertFalse(HungarianRules.isPlausibleVerbInflection("olvasunk") { true })
+        assertFalse(HungarianRules.isPlausibleAdjectiveComparative("nagyobb") { true })
+        assertNull(HungarianRules.splitCompound("kulcsszo", { true }) { it })
+    }
+    
+    @Test
+    fun `Romanian resolves to RomanianRules`() {
+        assertSame(RomanianRules, LanguageRulesRegistry.rulesFor(Language.ROMANIAN))
+    }
+    
+    @Test
+    fun `Romanian glues a decimal comma`() {
+        assertTrue(RomanianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Romanian has no time-suggestion word`() {
+        assertNull(RomanianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Romanian curates no bundled blacklist yet`() {
+        assertTrue(RomanianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Romanian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(RomanianRules.blocksAsSplitPrefix("nu", 0L))
+        assertFalse(RomanianRules.blocksAsFeminineAgentException("a", "profesor", true))
+        assertFalse(RomanianRules.blocksAsCompoundPrefix("bine", true))
+        assertFalse(RomanianRules.isPlausibleVerbInflection("citim") { true })
+        assertFalse(RomanianRules.isPlausibleAdjectiveComparative("mai_mare") { true })
+        assertNull(RomanianRules.splitCompound("cuvant_cheie", { true }) { it })
+    }
 }

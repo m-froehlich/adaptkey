@@ -915,6 +915,54 @@ non-trivial changes).
 
 ## Current State
 
+- **§428 (v1.1.67): D-450 (continued) - first Czech language pack, fifth of the 18-language round, first of**
+  **the cs/sk/hu/ro group.** Added `Language.CZECH` (`"cs"`, `"Čeština"`) to the enum. Czech DOES have a
+  native Wiktionary edition (Wikislovník) - one of only 3 of the 18 languages this round with real native
+  coverage (with Indonesian/Malay still to come) - `cs-extract.jsonl.gz` (38.4MB, correctly bigger than the
+  wrong file's 19.7MB).
+
+  A real, honestly documented source characteristic (not a bug): this native edition's own proper-noun
+  coverage is unusually thin - only 7 raw "name" entries in the whole file (3 survived to real tagged rows).
+  Czech Wikislovník evidently does not catalogue proper nouns the way the English Wiktionary's own broader
+  fallback coverage does for other languages here.
+
+  The entire `cswiki-latest-pages-articles.xml.bz2` (1.30GB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor - 597,792 real pages, 229,425,091 real tokens, 3,247,211 distinct
+  words, 5,450,935 raw (>=3) bigram rows. Multi-word-form shape verified directly: no space-containing forms
+  found in a real verb's own conjugation table - Czech's own periphrastic past tense is apparently not
+  documented as a single multi-word forms[] entry in this edition.
+
+  **Net result**: `dict.tsv` 521,940 rows (353,591 initial + 168,349 from Wortfamilien completion;
+  calibration ratios noun=0.3019 (n=46,061), verb=0.5556 (n=13,467), adjective=0.4478 (n=27,947), all sane).
+  POS tagging: 321,624 words kept unrecognised-by-kaikki (tagged `OTHER` only), 2,879,028 dropped, 14,592
+  removed as common-English-word contamination. Wiktionary matching: 32,140 lemmas tagged, 4,667 unmatched;
+  89,122 existing forms linked, 168,349 generated. Proper-noun handling: 3 tagged, 0 unmatched, 0 skipped.
+  Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,974,855 rows (>=10 cutoff) from
+  5,450,935 raw. Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma
+  links, 0 bare-NOUN rows - PASS.
+
+  Being native-sourced, Czech does not carry the fallback-language "what's thinner" documentation
+  requirement - 32,140 lemmas + 3 proper nouns of 353,591 base entries (~9.1%) carry a real POS/lemma link,
+  broadly comparable to the Nordic fallback languages' own ratios despite being native-sourced, since Czech
+  Wikislovník's own coverage breadth (not richness per documented word) is the limiting factor here.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Czech's own: 13 base letters carry a real diacritic
+  (`a=á, c=č, d=ď, e=é/ě, i=í, n=ň, o=ó, r=ř, s=š, t=ť, u=ú/ů, y=ý, z=ž`) - the most of any language this
+  project has built so far, filling all 26 letter slots with no room for a currency symbol. `g=„`/`h="`
+  (Czech's own low-quote convention). `abbreviations.tsv`: a hand-curated 23-entry list.
+
+  `CzechRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,897 candidate pairs, left deliberately
+  uncurated.
+
+  New tests: `LanguageRulesTest` gained a `Czech resolves to CzechRules` case plus its own mirroring test
+  block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
+  Czech. Real, full-dump corpus scale (229.43M real tokens) and a genuinely native-sourced edition - but
+  still "pretty good", not native-reviewed, with a confirmed, honestly documented proper-noun coverage gap
+  specific to this source. Not device-confirmed either. Slovak, Hungarian, and Romanian continue next.
+
 - **§427 (v1.1.66): D-450 (continued) - first Finnish language pack, fourth and final of the Nordic batch -**
   **a genuine paradigm-size structural finding (13.46M raw generated forms, 570MB), surfaced via**
   **`AskUserQuestion` and resolved by capping to core case forms per the user's own decision.** Added

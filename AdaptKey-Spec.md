@@ -927,7 +927,13 @@ limitation on top: per an explicit user decision (D-450, the paradigm-size struc
 noun/adjective Wortfamilien generation was deliberately capped to the core case x number paradigm, excluding
 real possessive-suffixed forms (e.g. "taloni") - so even a tagged Finnish lemma's family-match override will
 not recognise its own possessive-suffixed forms, a bounded, user-approved scope limit distinct from the
-"thin source" limitation the other fallback-sourced languages document. A word/language pair the
+"thin source" limitation the other fallback-sourced languages document. Since D-450, Czech - despite having a
+real NATIVE Wiktionary edition, unlike the Nordic languages above - is similarly only partially
+lemma-populated (32,140 lemmas + 3 proper nouns of 353,591, about 9.1%): here the limiting factor is this
+native source's own coverage BREADTH (how much of the real corpus vocabulary it documents at all, including
+an unusually thin proper-noun catalogue - only 7 raw entries in the whole file), not richness per documented
+word the way a fallback source is thin - a genuinely different reason for a similarly low ratio, see
+`AdaptKey-Progress.md`'s own D-450 entry. A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated

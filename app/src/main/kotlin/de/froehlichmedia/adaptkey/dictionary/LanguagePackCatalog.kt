@@ -1476,6 +1476,82 @@ object LanguagePackCatalog {
             // - Czech, Slovak, Hungarian, Romanian, Croatian, Bosnian, Serbian, Estonian, Latvian, Lithuanian,
             // Indonesian, Malay, Swahili, and Tagalog remain.
             version = 1
+        ),
+        Entry(
+            Language.CZECH,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-cs.zip",
+            // D-450 (continued): fifth language of the same 18-language round, first of the cs/sk/hu/ro
+            // group - see the Swedish Entry earlier in this file for the shared structural context (the
+            // fallback-source decision, and the mandatory "what's thinner + concrete app impact"
+            // documentation requirement, applied only where relevant - see below). Added `Language.CZECH`
+            // (`"cs"`, endonym `"Čeština"`) to the enum.
+            //
+            // **Czech DOES have a native Wiktionary edition on kaikki.org** (Wikislovník) - confirmed
+            // directly against `kaikki.org/dictionary/rawdata.html` before starting, one of only three
+            // languages in this 18-language round with real native coverage (alongside Indonesian and Malay,
+            // still to come). `kaikki.org/dictionary/downloads/cs/cs-extract.jsonl.gz` (38.4MB, correctly
+            // bigger than the wrong English-Wiktionary-coverage file's 19.7MB) was used, per the Guide's own
+            // mandatory pre-flight size check.
+            //
+            // **A real, honestly documented source characteristic found by direct inspection, not a bug**:
+            // this native edition's own proper-noun coverage is unusually thin - only 7 raw "name" entries in
+            // the WHOLE file (3 survived to real tagged rows after the usual word-validity/collision checks).
+            // Czech Wikislovník evidently does not catalogue proper nouns the way the English Wiktionary's
+            // own broader fallback coverage does for other languages this project has built - a real,
+            // confirmed gap specific to this one native source, not something a native-edition language
+            // should otherwise be expected to have.
+            //
+            // The entire `cswiki-latest-pages-articles.xml.bz2` (1.30GB compressed) was processed via the
+            // same multiprocessing/hapax-pruning extractor - 597,792 real pages, 229,425,091 real tokens,
+            // 3,247,211 distinct words, 5,450,935 raw (>=3) bigram rows.
+            //
+            // **Multi-word-form shape, verified directly**: checked a real verb's own conjugation table
+            // ("dělat"/"to do", 28 forms) - no space-containing forms found at all; Czech's own periphrastic
+            // past tense ("dělal jsem") is apparently not documented as a single multi-word forms[] entry in
+            // this edition, so the standard whitespace-rejection rule (kept regardless, as the universal
+            // safety net every language in this project carries) had nothing to catch here specifically.
+            //
+            // **Net result**: `dict.tsv` 521,940 rows (353,591 initial Wikipedia-frequency + kaikki-POS
+            // merge, +168,349 from full Wortfamilien completion - 93,109 noun + 34,943 verb-delta + 40,297
+            // adjective-delta generated forms; calibration ratios noun=0.3019 (n=46,061 pairs), verb=0.5556
+            // (n=13,467), adjective=0.4478 (n=27,947) - all three sane). POS tagging: 321,624 words kept
+            // unrecognised-by-kaikki (tagged `OTHER` only), 2,879,028 dropped below the count->=20 floor,
+            // 14,592 removed as common-English-word contamination. Wiktionary matching: 32,140 lemmas tagged
+            // with real grammatical info, 4,667 unmatched; 89,122 existing forms linked, 168,349 generated.
+            // Proper-noun handling: 3 tagged, 0 unmatched, 0 skipped (the thin native proper-noun coverage
+            // noted above). Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,974,855 rows
+            // (>=10 cutoff) from the 5,450,935-row raw floor. Quality gate: 0 case-insensitive duplicates, 0
+            // non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // Being a native-edition language, Czech does NOT carry the "what exactly is thinner" mandatory
+            // documentation Swedish/Norwegian/Danish/Finnish's own entries above require for fallback-sourced
+            // languages - 32,140 lemmas + 3 proper nouns of 353,591 pre-Wortfamilien base entries (~9.1%)
+            // carry a real POS/lemma link, broadly comparable to the Nordic fallback languages' own ratios
+            // despite being native-sourced, since Czech Wikislovník's own coverage breadth (not richness per
+            // documented word) is the limiting factor here rather than source-type thinness.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Czech's own: 13 base letters carry a real
+            // diacritic (`a=á, c=č, d=ď, e=é/ě, i=í, n=ň, o=ó, r=ř, s=š, t=ť, u=ú/ů, y=ý, z=ž`) - the most of
+            // any language this project has built so far - filling all 26 letter slots without room left for
+            // a dedicated currency symbol (Czech koruna "Kč" was considered and deliberately dropped in favour
+            // of the diacritic coverage). `g=„`/`h=""` (Czech's own low-quote convention).
+            // `abbreviations.tsv`: a hand-curated 23-entry Czech sentence-boundary list (`např.`/`tj.`/
+            // `tzv.`/`atd.`/...).
+            //
+            // `CzechRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,897 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Czech resolves to CzechRules` case plus its own
+            // mirroring test block. `language_profiles.tsv` not built for Czech either, same accepted gap.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Czech. Real, full-dump corpus scale (229.43M real tokens) and a
+            // genuinely native-sourced Wiktionary edition - but still "pretty good" in the guide's own sense,
+            // not native-reviewed quality, and with a confirmed, honestly documented proper-noun coverage gap
+            // specific to this source. Not device-confirmed either. Slovak, Hungarian, and Romanian continue
+            // next in the same round.
+            version = 1
         )
     )
 }
