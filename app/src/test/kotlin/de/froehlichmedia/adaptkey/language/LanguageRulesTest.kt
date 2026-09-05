@@ -674,4 +674,94 @@ class LanguageRulesTest {
         assertFalse(BosnianRules.isPlausibleAdjectiveComparative("veci") { true })
         assertNull(BosnianRules.splitCompound("kljucna_rijec", { true }) { it })
     }
+    
+    @Test
+    fun `Estonian resolves to EstonianRules`() {
+        assertSame(EstonianRules, LanguageRulesRegistry.rulesFor(Language.ESTONIAN))
+    }
+    
+    @Test
+    fun `Estonian glues a decimal comma`() {
+        assertTrue(EstonianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Estonian has no time-suggestion word`() {
+        assertNull(EstonianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Estonian curates no bundled blacklist yet`() {
+        assertTrue(EstonianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Estonian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(EstonianRules.blocksAsSplitPrefix("ei", 0L))
+        assertFalse(EstonianRules.blocksAsFeminineAgentException("tar", "opetaja", true))
+        assertFalse(EstonianRules.blocksAsCompoundPrefix("hasti", true))
+        assertFalse(EstonianRules.isPlausibleVerbInflection("loeme") { true })
+        assertFalse(EstonianRules.isPlausibleAdjectiveComparative("suurem") { true })
+        assertNull(EstonianRules.splitCompound("votmesona", { true }) { it })
+    }
+    
+    @Test
+    fun `Latvian resolves to LatvianRules`() {
+        assertSame(LatvianRules, LanguageRulesRegistry.rulesFor(Language.LATVIAN))
+    }
+    
+    @Test
+    fun `Latvian glues a decimal comma`() {
+        assertTrue(LatvianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Latvian has no time-suggestion word`() {
+        assertNull(LatvianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Latvian curates no bundled blacklist yet`() {
+        assertTrue(LatvianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Latvian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(LatvianRules.blocksAsSplitPrefix("ne", 0L))
+        assertFalse(LatvianRules.blocksAsFeminineAgentException("iece", "skolotajs", true))
+        assertFalse(LatvianRules.blocksAsCompoundPrefix("labi", true))
+        assertFalse(LatvianRules.isPlausibleVerbInflection("lasam") { true })
+        assertFalse(LatvianRules.isPlausibleAdjectiveComparative("lielaks") { true })
+        assertNull(LatvianRules.splitCompound("atslegvards", { true }) { it })
+    }
+    
+    @Test
+    fun `Lithuanian resolves to LithuanianRules`() {
+        assertSame(LithuanianRules, LanguageRulesRegistry.rulesFor(Language.LITHUANIAN))
+    }
+    
+    @Test
+    fun `Lithuanian glues a decimal comma`() {
+        assertTrue(LithuanianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Lithuanian has no time-suggestion word`() {
+        assertNull(LithuanianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Lithuanian curates no bundled blacklist yet`() {
+        assertTrue(LithuanianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Lithuanian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(LithuanianRules.blocksAsSplitPrefix("ne", 0L))
+        assertFalse(LithuanianRules.blocksAsFeminineAgentException("ge", "mokytojas", true))
+        assertFalse(LithuanianRules.blocksAsCompoundPrefix("gerai", true))
+        assertFalse(LithuanianRules.isPlausibleVerbInflection("skaitome") { true })
+        assertFalse(LithuanianRules.isPlausibleAdjectiveComparative("didesnis") { true })
+        assertNull(LithuanianRules.splitCompound("raktazodis", { true }) { it })
+    }
 }

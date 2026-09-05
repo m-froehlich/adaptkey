@@ -915,6 +915,54 @@ non-trivial changes).
 
 ## Current State
 
+- **§434 (v1.1.73): D-450 (continued) - Estonian, Latvian, and Lithuanian language packs, closing the**
+  **Baltic trio (fourteenth/fifteenth/sixteenth languages of the 18-language round) - a real calibration**
+  **bug found and fixed in Latvian (16.16x verb ratio from bare pronoun-subject table headers).** Added
+  `Language.ESTONIAN`/`LATVIAN`/`LITHUANIAN` (`"et"`/`"Eesti"`, `"lv"`/`"Latviešu"`, `"lt"`/`"Lietuvių"`) to
+  the enum. None has a native Wiktionary edition - all three built from the English Wiktionary's own
+  coverage (5.2MB/16.5MB/8.7MB respectively).
+
+  **Estonian**: checked directly (not assumed) that unlike Finnish, Estonian's noun paradigm has no
+  possessive-suffix forms (uses separate possessive pronouns instead) - no paradigm-size cap needed. Its own
+  `postp` tag is clean, mapped to `PREPOSITION` like Finnish's. `etwiki` (307MB compressed): 261,738 pages,
+  55,645,450 tokens. `dict.tsv` 301,216 rows (165,557 initial + 135,659 generated; ratios noun=0.1519
+  (n=18,376), verb=1.6062 (n=5,120), adjective=0.1361 (n=3,607), all sane). Only 5,362 lemmas + 1,394 proper
+  nouns of 165,557 base entries (~4.1%) carry a real POS/lemma link - one of the lowest ratios this round.
+  `bigram.tsv` 488,694 rows. `confusables_scan.py`: 4,841 pairs.
+
+  **Latvian - a real calibration bug, caught by the mandatory ratio sanity check**: the first verb pass found
+  an impossible 16.16x ratio. Investigated directly: this source's own verb table includes the row-header
+  PRONOUN SUBJECT as its own genuinely tagged forms[] entry on every verb (e.g. `viņš`/"he", freq 74,031,
+  linked as a spurious "form" of dozens of unrelated rare verbs - a real Latvian verb inflection can never
+  literally equal a personal pronoun). Fixed with a literal-value exclusion (es/tu/viņš/viņa/mēs/jūs/viņi/
+  viņas); re-run confirmed 0 remaining contamination, ratio corrected to a real 0.7647x. `lvwiki` (206MB
+  compressed): 145,425 pages, 30,794,845 tokens. `dict.tsv` 150,796 rows (88,979 initial + 61,817 generated;
+  ratios noun=0.6818 (n=11,587), verb=0.7647 (n=3,213, post-fix), adjective=0.9514 (n=4,968)). Only 7,534
+  lemmas + 1,156 proper nouns of 88,979 base entries (~8.5%) carry a real link. `bigram.tsv` 309,403 rows.
+  `confusables_scan.py`: 2,712 pairs.
+
+  **Lithuanian**: two findings already known from other sources this round, independently reconfirmed rather
+  than assumed to transfer - (1) the same pitch-accent notation as the shared Serbo-Croatian source
+  (`links`-based recovery applies unmodified), (2) the same `"error-unrecognized-form"` tag marking real,
+  valid words here too (deliberately not excluded). `ltwiki` (243MB compressed): 224,117 pages, 37,246,517
+  tokens. `dict.tsv` 180,032 rows (113,936 initial + 66,096 generated; ratios noun=0.3764 (n=13,261),
+  verb=0.5671 (n=2,140), adjective=0.2945 (n=5,908), all sane). Only 5,274 lemmas + 1,614 proper nouns of
+  113,936 base entries (~6.0%) carry a real link. `bigram.tsv` 335,409 rows. `confusables_scan.py`: 2,322
+  pairs.
+
+  All three: mandatory bare-noun safety check 0; quality gate clean (0 duplicates, 0 non-positive
+  frequencies, 0 orphaned lemma links, 0 bare-NOUN rows). `hints.tsv`/`diacritics.tsv` reflect each
+  language's own real diacritic set (Estonian `a=ä,o=õ/ö,u=ü`; Latvian 11 single-variant diacritic letters;
+  Lithuanian 7 letters with `e`/`u` each hosting two variants) with `t=€` for all three (Baltic states all
+  use the Euro) and a Baltic-region `g=„`/`h="` low-quote convention (Latvian's own `g` is taken by `ģ`, so
+  uses `f=„`/`h="` instead). Each got its own `*Rules` object (`decimalCommaGluesDigits`=true,
+  `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty) and `LanguageRulesTest` mirroring blocks.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied for any of the three**: none reviewed by a
+  native speaker; all thinner-than-native-edition Wortfamilien/POS coverage, honestly quantified above. Not
+  device-confirmed. **This closes the Estonian/Latvian/Lithuanian Baltic trio.** Indonesian, Malay, Swahili,
+  and Tagalog remain in this 18-language round.
+
 - **§433 (v1.1.72): D-450 (continued) - first Bosnian language pack, tenth of the 18-language round,**
   **closing the Croatian/Bosnian pair - reuses the identical shared Serbo-Croatian Wiktionary extraction.**
   Added `Language.BOSNIAN` (`"bs"`, `"Bosanski"`) to the enum. Bosnian uses the identical Latin-script

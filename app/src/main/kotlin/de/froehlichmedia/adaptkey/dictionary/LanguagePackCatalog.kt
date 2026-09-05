@@ -2000,6 +2000,190 @@ object LanguagePackCatalog {
             // Serbian remains explicitly deferred (see Croatian's own entry above). Estonian, Latvian,
             // Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain in this 18-language round.
             version = 1
+        ),
+        Entry(
+            Language.ESTONIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-et.zip",
+            // D-450 (continued): eleventh language of the same 18-language round, starting the Estonian/
+            // Latvian/Lithuanian (Baltic) trio - see the Swedish Entry earlier in this file for the shared
+            // structural context. Added `Language.ESTONIAN` (`"et"`, endonym `"Eesti"`) to the enum. No
+            // native Estonian Wiktionary edition exists - built from the English Wiktionary's own coverage
+            // instead (`kaikki.org/dictionary/Estonian/kaikki.org-dictionary-Estonian.jsonl.gz`, 5.2MB).
+            //
+            // **Checked directly before assuming, per the Guide's own hardening**: unlike its close Finnic
+            // relative Finnish (D-450's own paradigm-size structural finding), Estonian's noun paradigm
+            // carries NO possessive-suffix forms at all - Estonian uses separate possessive pronouns instead
+            // of possessive suffixes, a genuine typological difference confirmed directly against a real
+            // noun's own full tag vocabulary, so no paradigm-size cap was needed here. Estonian's own
+            // postposition tag (`postp`) is real and clean, mapped to `PREPOSITION` like Finnish's own.
+            //
+            // The entire `etwiki-latest-pages-articles.xml.bz2` (307MB compressed) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 261,738 real pages, 55,645,450 real tokens, 2,360,375
+            // distinct words, 1,993,523 raw (>=3) bigram rows.
+            //
+            // **Net result**: `dict.tsv` 301,216 rows (165,557 initial Wikipedia-frequency + kaikki-POS
+            // merge, +135,659 from Wortfamilien completion - 101,965 noun + 18,762 verb-delta + 14,932
+            // adjective-delta generated forms; calibration ratios noun=0.1519 (n=18,376 pairs), verb=1.6062
+            // (n=5,120), adjective=0.1361 (n=3,607) - all sane). POS tagging: 158,805 words kept unrecognised-
+            // by-kaikki (tagged `OTHER` only), 2,180,183 dropped below the count->=20 floor, 14,635 removed as
+            // common-English-word contamination. Wiktionary matching: 5,362 lemmas tagged with real
+            // grammatical info, 187 unmatched; 28,449 existing forms linked, 135,659 generated. Proper-noun
+            // handling: 1,394 tagged, 7 unmatched, 162 skipped as real-word collisions. Mandatory bare-noun
+            // safety check: 0 bare-NOUN rows. `bigram.tsv`: 488,694 rows (>=10 cutoff) from the 1,993,523-row
+            // raw floor. Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned
+            // lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 301,216
+            // rows, only 5,362 lemmas plus 1,394 proper nouns - about 4.1% of the 165,557 pre-Wortfamilien
+            // base entries, one of the lowest ratios of any fallback-sourced language this round - carry a
+            // real kaikki-derived POS tag and `lemma`/form link. The remaining 158,805 rows are real Estonian
+            // words by Wikipedia-corpus frequency alone, undocumented for part of speech. The same two
+            // mechanisms are weakened: (1) A-05's split-safety gate cannot veto a wrong compound split built
+            // from any of these 158,805 untagged words - practically relevant since Estonian, like Finnish, is
+            // a genuinely compound-forming language. (2) D-404 Tier 2's family-match ratio override cannot
+            // fire for a correct-but-rarer word among the 158,805 untagged rows.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Estonian's own: `a=ä, o=õ/ö, u=ü` (o hosts
+            // two real variants; õ is genuinely unique to Estonian among its close relatives). `t=€` (Estonia
+            // uses the Euro). `g=„`/`h="` (Estonian's own low-quote convention). `abbreviations.tsv`: a
+            // hand-curated 12-entry list.
+            //
+            // `EstonianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 4,841 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained an `Estonian resolves to EstonianRules` case plus its own
+            // mirroring test block.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Estonian. Real, full-dump corpus scale (55.65M real tokens) - but
+            // thinner Wortfamilien/POS coverage than a native-edition language. Not device-confirmed either.
+            // Latvian and Lithuanian continue next in the same Baltic trio.
+            version = 1
+        ),
+        Entry(
+            Language.LATVIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-lv.zip",
+            // D-450 (continued): twelfth language of the same 18-language round, continuing the Baltic trio -
+            // see the Estonian Entry directly above for the shared structural context. Added
+            // `Language.LATVIAN` (`"lv"`, endonym `"Latviešu"`) to the enum. No native Latvian Wiktionary
+            // edition exists - built from the English Wiktionary's own coverage instead
+            // (`kaikki.org/dictionary/Latvian/kaikki.org-dictionary-Latvian.jsonl.gz`, 16.5MB).
+            //
+            // **A real calibration bug, caught by the Guide's own mandatory ratio sanity check, not missed**:
+            // the first verb calibration pass found an impossible 16.16x ratio. Investigated directly rather
+            // than dismissed: this source's own verb-conjugation table includes the row-header PRONOUN
+            // SUBJECT as its own, genuinely tagged forms[] entry on every single verb (e.g. `{"form": "viņš",
+            // "tags": ["indicative", "singular", "third-person"]}`) - "viņš" ("he", freq 74,031) was being
+            // linked as a spurious "form" of dozens of unrelated, mostly rare verbs, since a real Latvian verb
+            // inflection can never literally equal one of these closed-class pronoun strings. Fixed with a
+            // small, evidence-based literal-value exclusion (`es`/`tu`/`viņš`/`viņa`/`mēs`/`jūs`/`viņi`/
+            // `viņas`) - re-run confirmed 0 remaining contamination, verb ratio corrected from 16.16x down to
+            // a real, sane 0.7647x.
+            //
+            // The entire `lvwiki-latest-pages-articles.xml.bz2` (206MB compressed) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 145,425 real pages, 30,794,845 real tokens, 917,230
+            // distinct words, 1,333,362 raw (>=3) bigram rows.
+            //
+            // **Net result (post-fix)**: `dict.tsv` 150,796 rows (88,979 initial Wikipedia-frequency +
+            // kaikki-POS merge, +61,817 from Wortfamilien completion - 17,630 noun + 16,552 verb-delta +
+            // 27,635 adjective-delta generated forms; calibration ratios noun=0.6818 (n=11,587 pairs),
+            // verb=0.7647 (n=3,213, post-fix), adjective=0.9514 (n=4,968) - all three sane). POS tagging:
+            // 80,928 words kept unrecognised-by-kaikki (tagged `OTHER` only), 815,430 dropped below the
+            // count->=20 floor, 12,821 removed as common-English-word contamination. Wiktionary matching:
+            // 7,534 lemmas tagged with real grammatical info, 4,502 unmatched; 21,816 existing forms linked,
+            // 61,817 generated. Proper-noun handling: 1,156 tagged, 11 unmatched, 78 skipped as real-word
+            // collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 309,403 rows
+            // (>=10 cutoff) from the 1,333,362-row raw floor. Quality gate: 0 case-insensitive duplicates, 0
+            // non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 150,796
+            // rows, only 7,534 lemmas plus 1,156 proper nouns - about 8.5% of the 88,979 pre-Wortfamilien
+            // base entries - carry a real kaikki-derived POS tag and `lemma`/form link. The remaining 80,928
+            // rows are real Latvian words by Wikipedia-corpus frequency alone, undocumented for part of
+            // speech. The same two mechanisms are weakened: (1) A-05's split-safety gate. (2) D-404 Tier 2's
+            // family-match ratio override.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Latvian's own: 11 base letters carry a real
+            // diacritic, each with exactly one variant - `a=ā, c=č, e=ē, g=ģ, i=ī, k=ķ, l=ļ, n=ņ, s=š, u=ū,
+            // z=ž`. `t=€` (Latvia uses the Euro). `f=„`/`h="` (quote convention, g being unavailable here
+            // unlike Estonian/Croatian). `abbreviations.tsv`: a hand-curated 9-entry list.
+            //
+            // `LatvianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,712 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Latvian resolves to LatvianRules` case plus its own
+            // mirroring test block.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Latvian. Real, full-dump corpus scale (30.79M real tokens) - but
+            // thinner Wortfamilien/POS coverage than a native-edition language, and a real calibration bug
+            // found and fixed (see above). Not device-confirmed either. Lithuanian continues next, the last
+            // of the Baltic trio.
+            version = 1
+        ),
+        Entry(
+            Language.LITHUANIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-lt.zip",
+            // D-450 (continued): thirteenth language of the same 18-language round, closing the Baltic trio -
+            // see the Estonian/Latvian Entries directly above for the shared structural context. Added
+            // `Language.LITHUANIAN` (`"lt"`, endonym `"Lietuvių"`) to the enum. No native Lithuanian
+            // Wiktionary edition exists - built from the English Wiktionary's own coverage instead
+            // (`kaikki.org/dictionary/Lithuanian/kaikki.org-dictionary-Lithuanian.jsonl.gz`, 8.7MB).
+            //
+            // **Two real findings, both already known from other sources this round but independently
+            // reconfirmed here rather than assumed to transfer automatically**: (1) this source's own
+            // inflection-table forms use the SAME traditional pitch-accent dictionary notation already found
+            // and solved for the shared Serbo-Croatian source (e.g. "nãmas"/"namai̇̃" for "namas"/"house") -
+            // the identical `links`-based recovery applies unmodified. (2) this source's own
+            // `"error-unrecognized-form"` tag ALSO turns up here on entries that ARE real, valid words
+            // (confirmed against "dirbti"/"to work": almost its entire personal-conjugation table is tagged
+            // this way purely because wiktextract's own parser could not recognise this source's own
+            // template) - deliberately NOT excluded here either, the same source-specific exception as
+            // Serbo-Croatian.
+            //
+            // The entire `ltwiki-latest-pages-articles.xml.bz2` (243MB compressed) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 224,117 real pages, 37,246,517 real tokens, 1,327,377
+            // distinct words, 1,493,717 raw (>=3) bigram rows.
+            //
+            // **Net result**: `dict.tsv` 180,032 rows (113,936 initial Wikipedia-frequency + kaikki-POS
+            // merge, +66,096 from Wortfamilien completion - 20,682 noun + 9,935 verb-delta + 35,479 adjective-
+            // delta generated forms; calibration ratios noun=0.3764 (n=13,261 pairs), verb=0.5671 (n=2,140),
+            // adjective=0.2945 (n=5,908) - all three sane). POS tagging: 107,079 words kept unrecognised-by-
+            // kaikki (tagged `OTHER` only), 1,200,189 dropped below the count->=20 floor, 13,252 removed as
+            // common-English-word contamination. Wiktionary matching: 5,274 lemmas tagged with real
+            // grammatical info, 742 unmatched; 21,667 existing forms linked, 66,096 generated. Proper-noun
+            // handling: 1,614 tagged, 149 unmatched, 50 skipped as real-word collisions. Mandatory bare-noun
+            // safety check: 0 bare-NOUN rows. `bigram.tsv`: 335,409 rows (>=10 cutoff) from the 1,493,717-row
+            // raw floor. Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned
+            // lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // **What exactly is thinner here, and its concrete app-level effect**: of `dict.tsv`'s 180,032
+            // rows, only 5,274 lemmas plus 1,614 proper nouns - about 6.0% of the 113,936 pre-Wortfamilien
+            // base entries - carry a real kaikki-derived POS tag and `lemma`/form link. The remaining 107,079
+            // rows are real Lithuanian words by Wikipedia-corpus frequency alone, undocumented for part of
+            // speech. The same two mechanisms are weakened: (1) A-05's split-safety gate. (2) D-404 Tier 2's
+            // family-match ratio override.
+            //
+            // `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Lithuanian's own: 7 base letters carry a
+            // real diacritic, `e` and `u` each hosting two real, distinct variants - `a=ą, c=č, e=ę/ė, i=į,
+            // s=š, u=ų/ū, z=ž`. `t=€` (Lithuania uses the Euro). `g=„`/`h="` (Baltic-region low-quote
+            // convention). `abbreviations.tsv`: a hand-curated 8-entry list.
+            //
+            // `LithuanianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`
+            // =null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,322 candidate pairs,
+            // left deliberately uncurated for the same reasoning every non-German round documents.
+            //
+            // New tests: `LanguageRulesTest` gained a `Lithuanian resolves to LithuanianRules` case plus its
+            // own mirroring test block.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed
+            // by anyone who actually speaks Lithuanian. Real, full-dump corpus scale (37.25M real tokens) -
+            // but thinner Wortfamilien/POS coverage than a native-edition language. Not device-confirmed
+            // either. **This closes the Estonian/Latvian/Lithuanian Baltic trio.** Indonesian, Malay, Swahili,
+            // and Tagalog remain in this 18-language round.
+            version = 1
         )
     )
 }

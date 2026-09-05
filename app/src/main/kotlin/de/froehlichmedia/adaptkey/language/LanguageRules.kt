@@ -140,7 +140,10 @@ object LanguageRulesRegistry {
         Language.HUNGARIAN to HungarianRules,
         Language.ROMANIAN to RomanianRules,
         Language.CROATIAN to CroatianRules,
-        Language.BOSNIAN to BosnianRules
+        Language.BOSNIAN to BosnianRules,
+        Language.ESTONIAN to EstonianRules,
+        Language.LATVIAN to LatvianRules,
+        Language.LITHUANIAN to LithuanianRules
     )
     
     /**
