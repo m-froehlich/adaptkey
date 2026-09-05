@@ -915,6 +915,48 @@ non-trivial changes).
 
 ## Current State
 
+- **§426 (v1.1.65): D-450 (continued) - first Danish language pack, third of the 18-language round.**
+  Added `Language.DANISH` (`"da"`, `"Dansk"`) to the enum. No native Danish Wiktionary edition exists -
+  built from the English Wiktionary's own coverage instead (11.0MB).
+
+  The entire `dawiki-latest-pages-articles.xml.bz2` (455MB compressed) was processed via the same
+  multiprocessing/hapax-pruning extractor - 315,686 real pages, 80,803,420 real tokens, 1,846,772 distinct
+  words, 2,355,076 raw (>=3) bigram rows. Multi-word-form shape verified directly: the same marker-first
+  "mere X"/"mest X" pattern as Swedish/Norwegian, same reject-whitespace-outright rule applies unmodified.
+  `EXCLUDE_FORM_TAGS` gained a new `"error-unknown-tag"` entry, found in Danish's own adjective data.
+
+  **Net result**: `dict.tsv` 208,383 rows (138,330 initial + 70,053 from Wortfamilien completion; calibration
+  ratios noun=0.2604 (n=13,575), verb=0.9031 (n=7,282), adjective=0.9791 (n=2,761), all sane). POS tagging:
+  118,631 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,694,172 dropped, 14,270 removed as
+  common-English-word contamination. Wiktionary matching: 18,715 lemmas tagged, 1,080 unmatched; 24,402
+  existing forms linked, 70,053 generated. Prepositions: 60 tagged, 1 unmatched. Proper-noun handling: 1,553
+  tagged, 15 unmatched, 103 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows.
+  `bigram.tsv`: 702,019 rows (>=10 cutoff) from 2,355,076 raw. Quality gate: 0 case-insensitive duplicates,
+  0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+
+  **What exactly is thinner, and its concrete app-level effect**: only 18,715 lemmas + 1,553 proper nouns
+  (~14.7% of the 138,330 pre-Wortfamilien base entries - the richest ratio of the three Nordic languages so
+  far) carry a real kaikki-derived POS tag and `lemma`/form link; the remaining 118,631 rows are real words
+  by corpus frequency alone. Same two mechanisms weakened: (1) A-05's split-safety gate cannot veto a wrong
+  compound split built from any untagged word. (2) D-404 Tier 2's family-match ratio override cannot fire
+  for a correct-but-rarer untagged word.
+
+  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Danish's own: `a=å, o=ø` (same pattern as Swedish/
+  Norwegian), `t=kr` (same krone abbreviation), `g=„`/`r="` (Danish's own German-style low-quote convention,
+  unlike Swedish/Norwegian's guillemets - verified directly). `abbreviations.tsv`: a hand-curated 20-entry
+  list.
+
+  `DanishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,544 candidate pairs, left deliberately
+  uncurated.
+
+  New tests: `LanguageRulesTest` gained a `Danish resolves to DanishRules` case plus its own mirroring test
+  block.
+
+  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
+  Danish. Real, full-dump corpus scale (80.80M real tokens) but thinner Wortfamilien/POS coverage than every
+  native-edition language. Not device-confirmed either. Finnish continues next, the last of the Nordic batch.
+
 - **§425 (v1.1.64): D-450 (continued) - first Norwegian Bokmål language pack, second of the 18-language**
   **round - Bokmål only, per explicit user decision (Nynorsk not built).** Added `Language.NORWEGIAN`
   (`"nb"`, `"Norsk bokmål"`) to the enum. No native Norwegian Bokmål Wiktionary edition exists on

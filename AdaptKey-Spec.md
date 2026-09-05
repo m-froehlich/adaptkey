@@ -918,7 +918,9 @@ only documents real grammatical/lemma links for about 8.4% of the dictionary's b
 documented source limitation with concrete app-level impact (see `AdaptKey-Progress.md`'s D-450 entry) - not
 a scope choice, and not the same "fully lemma-populated" state as any native-edition language above. Norwegian
 Bokmål shares the identical, honestly documented thin-fallback state (18,794 lemmas + 1,138 proper nouns of
-220,865, about 9.0%). A word/language pair the
+220,865, about 9.0%). Since D-450, Danish is likewise only partially lemma-populated (18,715 lemmas + 1,553
+proper nouns of 138,330, about 14.7% - the richest ratio of the three Nordic fallback-sourced languages so
+far, still well short of a native-edition language's full coverage). A word/language pair the
 linking passes never reached simply yields no family match, leaving the ratio check as
 the only signal, exactly as before D-404 Tier 2. Scoped deliberately narrowly to this one ratio-override gate
 (§44) - D-404's own tier-2 framing never proposed touching ordinary suggestion-bar ranking or the unrelated
