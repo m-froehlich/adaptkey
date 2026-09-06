@@ -915,6 +915,53 @@ non-trivial changes).
 
 ## Current State
 
+- **§438 (v1.1.77): D-449-followup - Turkish's dotted/dotless İ/I capitalisation, closing the "still-open**
+  **design question" named at the end of D-449 (§423/v1.1.62).** `CapitalisationEngine` gained a new,
+  deliberately separate seam - `capitalisation/CasingRules` (interface + `DefaultCasingRules` + a
+  `CasingRulesRegistry` keyed by `Language`, mirroring `LanguageRules`/`DiacriticFolding`'s identical D-410/
+  D-435 "delegate to the active language, default to doing nothing special" shape) - rather than a tenth hook
+  on `LanguageRules` itself: every existing `LanguageRules` hook encodes German compounding/inflection
+  grammar with no bearing on single-character case mapping, and `CapitalisationEngine` is the only reader, so
+  the two seams are kept apart on purpose. `CapitalisationEngine` now takes an optional
+  `casing: CasingRules = DefaultCasingRules` constructor param (default preserves every existing caller's/
+  test's behaviour byte-for-byte); its three `word.uppercase()`/`replaceFirstChar { it.uppercaseChar() }`/
+  `replaceFirstChar { it.lowercaseChar() }` call sites now go through `casing.uppercaseAll`/`uppercaseFirst`/
+  `lowercaseFirst`. `AdaptKeyService.installStores()` resolves `CasingRulesRegistry.rulesFor(language)` per
+  language the same way it already resolves `LanguageRulesRegistry`/`KeyboardProximityRegistry`.
+  
+  `TurkishCasingRules` (`capitalisation/`, not `language/` - a character-casing convention, not a
+  compounding/inflection grammar rule) implements the real Turkic dotted/dotless pair, verified directly
+  against Unicode's own `SpecialCasing.txt` `tr`/`az` section rather than guessed: of its four Turkish-
+  specific case-mapping lines, only two actually differ from Kotlin's locale-invariant default - `'ı'`
+  already uppercases to `'I'` and `'İ'` already lowercases to `'i'` under the ordinary Unicode simple-case
+  tables, so the implementation is a genuinely minimal two-character override: uppercasing plain `'i'` yields
+  `'İ'` (not the ordinary `'I'`), and lowercasing plain `'I'` yields `'ı'` (not the ordinary `'i'`). Every
+  other character defers to `Char.uppercaseChar()`/`lowercaseChar()` unchanged.
+  
+  New tests: `CasingRulesTest` (7 cases: `DefaultCasingRules` matches historical behaviour incl. NOT dotting
+  Turkish `i`, registry resolution for Turkish vs. every other language incl. `UNKNOWN`) and
+  `TurkishCasingRulesTest` (7 cases: `istanbul`->`İstanbul`, `Işık`->`ışık`, `ışık`->`IŞIK`, `İstanbul`->
+  `istanbul`, whole-word `izmir`->`İZMİR`, non-i letters unaffected, empty-string no-op). 1461 unit tests
+  green (was 1454). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+  
+  **Scope note, asked and answered the same session**: the user asked whether Azerbaijani/Uzbek (both
+  deferred as Turkish-related, not yet in the `Language` enum) have further prerequisites now that this
+  casing seam exists. Researched, not guessed: **Azerbaijani** shares the identical dotted/dotless İ/I pair
+  with Turkish (Unicode's own `SpecialCasing.txt` groups `tr`/`az` under the same rule) - `TurkishCasingRules`
+  would apply unchanged once `Language.AZERBAIJANI` exists (just add a registry entry, no new logic), but its
+  real-world standard keyboard is **not** plain QWERTY - the "QÜERTY" layout (Ü replaces W, W not directly
+  reachable) - so a dedicated layout is a real prerequisite, the same shape as Serbian's Cyrillic layout gap
+  below, not a data-only round; decimal separator is comma, like every language implemented so far; kaikki.org
+  has no native `az.wiktionary.org` edition, only the (thin) English-Wiktionary-derived extraction - coverage
+  depth unverified, would need direct measurement before committing to a round. **Uzbek** does **not** have
+  the dotted/dotless distinction at all in its modern Latin alphabet (confirmed - only Turkish, Azerbaijani,
+  Crimean Tatar, Gagauz, Kazakh and Tatar use it) - `TurkishCasingRules` would not apply to it; its standard
+  layout is QWERTY-compatible (the two special letters `oʻ`/`gʻ` use a modifier-letter apostrophe, typically
+  typed via AltGr or a plain apostrophe substitute - no new layout class needed, unlike Azerbaijani); kaikki.org's
+  own Uzbek dictionary is tiny (~4,174 words in the English-Wiktionary-derived extraction) - a real, verified
+  coverage concern, not yet investigated further. Neither language was added to the `Language` enum or built
+  this round - this was a prerequisites check only, not a go-ahead to build.
+
 - **§437 (v1.1.76): D-450 - first Swahili and Tagalog language packs, closing the entire 18-language**
   **autonomous round begun with Swedish.** Added `Language.SWAHILI` (`"sw"`, `"Kiswahili"`) and
   `Language.TAGALOG` (`"tl"`, `"Tagalog"`) to the enum. Neither has a native Wiktionary edition - both built

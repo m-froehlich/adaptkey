@@ -29,8 +29,15 @@ import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
  * is applied through the optional [llmForcesUpper] flag, which the caller derives from a tier-3
  * proposal via {@link de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation}; it can lift
  * an otherwise-lowercased word to upper-case but never lowercases anything.
+ *
+ * @property casing D-449-followup: the active language's own single-character case-mapping convention (see
+ *           [CasingRules]) - delegated rather than hardcoded so a non-Turkish store is never subject to (or,
+ *           before this, silently starved of) Turkish's dotted/dotless İ/I distinction. Defaults to
+ *           [DefaultCasingRules] so every existing caller/test that does not pass one explicitly keeps this
+ *           class's historical behaviour unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one
+ *           production caller that resolves and passes the value matching the actually active language.
  */
-class CapitalisationEngine(private val store: DictionaryStore) {
+class CapitalisationEngine(private val store: DictionaryStore, private val casing: CasingRules = DefaultCasingRules) {
     
     /**
      * Returns [word] with its first character cased according to the hierarchy. Characters beyond
@@ -47,7 +54,7 @@ class CapitalisationEngine(private val store: DictionaryStore) {
             return word
         }
         if (context.capsMode == CapsMode.CHARACTERS) {
-            return word.uppercase()
+            return casing.uppercaseAll(word)
         }
         
         val pos = store.partsOfSpeech(word)
@@ -84,10 +91,10 @@ class CapitalisationEngine(private val store: DictionaryStore) {
         }
         
         return if (upper) {
-            word.replaceFirstChar { it.uppercaseChar() }
+            casing.uppercaseFirst(word)
         } else {
             // Never lowercases an explicit uppercase: that path returns above via upper == true.
-            word.replaceFirstChar { it.lowercaseChar() }
+            casing.lowercaseFirst(word)
         }
     }
     

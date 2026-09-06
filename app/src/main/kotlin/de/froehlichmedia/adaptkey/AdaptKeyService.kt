@@ -52,6 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
+import de.froehlichmedia.adaptkey.capitalisation.CasingRulesRegistry
 import de.froehlichmedia.adaptkey.capitalisation.SentenceBoundary
 import de.froehlichmedia.adaptkey.capitalisation.ShiftGrace
 import de.froehlichmedia.adaptkey.capitalisation.WordEndShift
@@ -932,7 +933,7 @@ class AdaptKeyService : InputMethodService() {
                 keyboardProximity = KeyboardProximityRegistry.forLayoutKind(LayoutRegistry.kindFor(language))
             )
         }
-        engines = newStores.mapValues { (_, store) -> CapitalisationEngine(store) }
+        engines = newStores.mapValues { (language, store) -> CapitalisationEngine(store, CasingRulesRegistry.rulesFor(language)) }
         if (activeLanguage !in newStores) {
             activeLanguage = Language.ENGLISH
             ActiveLanguageStore.save(this, activeLanguage)

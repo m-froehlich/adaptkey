@@ -814,6 +814,17 @@ scope covering pending capitalisation-only changes - not only pending spelling s
 equivalent pending state to preview any more (D-405) - it is resolved live, before the word is even typed,
 so there is nothing left pending by the time a suggestion could show one.
 
+D-449-followup: the single-character mapping every rule above ultimately applies (upper-casing/lower-casing a
+word's first character, or the whole word under C-04's `CHARACTERS` mode) is itself a per-language convention,
+not a universal constant - Turkish (and the closely related Azerbaijani, should it ever be built) distinguish
+a dotted `İ`/`i` pair from a dotless `I`/`ı` pair, where every other implemented language treats `I`/`i` as one
+pair. `CapitalisationEngine` delegates this single step to a `CasingRules` seam
+(`capitalisation/CasingRules.kt`, resolved per active language exactly like `LanguageRules`/`DiacriticFolding`
+already are) rather than hardcoding Kotlin's own locale-invariant `Char.uppercaseChar()`/`lowercaseChar()` -
+`TurkishCasingRules` is the one real implementation so far; every other language keeps the original behaviour
+unchanged via the default. This is orthogonal to rules 1-6 above: it changes *which character* a rule's
+decision produces, never *whether* a rule fires.
+
 This entire section (all of §6) is bypassed for email-mode, URL-mode, and login-field fragments (§10-§12),
 and for one of the app's *own* fields that explicitly declares itself opted out of suggestions
 (`TYPE_TEXT_FLAG_NO_SUGGESTIONS`, the standard Android signal for this - e.g. the Learned-Words casing-edit

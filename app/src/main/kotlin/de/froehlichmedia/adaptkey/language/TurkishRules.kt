@@ -14,10 +14,11 @@ import de.froehlichmedia.adaptkey.dictionary.CompoundSplit
  * German-specific compounding/inflection grammar that has no Turkish equivalent implemented yet - left as
  * the same "does not apply" no-op [NoOpLanguageRules] gives every other unimplemented language.
  *
- * None of these nine hooks touch capitalisation - Turkish's own real, still-open design question (the
- * dotted/dotless İ/I distinction, deliberately deferred for a dedicated discussion rather than decided here,
- * see `AdaptKey-Progress.md`'s D-449 entry) lives in [de.froehlichmedia.adaptkey.capitalisation.
- * CapitalisationEngine] instead, not in this object.
+ * None of these nine hooks touch capitalisation - Turkish's own dotted/dotless İ/I distinction (originally
+ * left as a still-open design question, see `AdaptKey-Progress.md`'s D-449 entry) is resolved separately, via
+ * [de.froehlichmedia.adaptkey.capitalisation.TurkishCasingRules] (D-449-followup), a dedicated
+ * [de.froehlichmedia.adaptkey.capitalisation.CasingRules] implementation - not in this object, since it is a
+ * character-casing convention, not a compounding/inflection grammar rule.
  */
 object TurkishRules : LanguageRules {
     
