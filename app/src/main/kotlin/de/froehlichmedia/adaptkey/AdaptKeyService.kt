@@ -4055,7 +4055,15 @@ class AdaptKeyService : InputMethodService() {
         // confidently-foreign but unsupported language. D-106 stage 2: also suppressed when the token is
         // already a known word in some other consulted language (mandatory English + every G-01-cycle
         // language) - an embedded loanword like "Word" must never be silently corrected away.
-        val dictChoice = selectActiveDictionary("$tokenContextBefore $typed")
+        // D-458: tokenContextBefore is real document text (captureTokenContext() sets it straight from
+        // getTextBeforeCursor()), already ending in whatever real whitespace actually precedes the caret
+        // (e.g. "Test " right after committing "Test" + a space) - concatenating a further literal space
+        // here produced a spurious double space ("Test  " + typed) once a second word was reached, never on
+        // a field's very first word (tokenContextBefore == "" there, so only a harmless single leading
+        // space resulted) - exactly why this silently escaped notice until now. The same bug existed at
+        // refreshSuggestions()'s own identical call site (see its own D-458 note); this app already has the
+        // correct, no-extra-space convention elsewhere (the sentence string built for the tier-3 prompt).
+        val dictChoice = selectActiveDictionary("$tokenContextBefore$typed")
         // D-172 (temporary diagnostic): the previous round's diag only showed the OR'd suppressAutocorrect,
         // which conflates two entirely different sources (A-03's foreign-language classification vs D-106
         // stage 2's cross-language protection) and never showed tokenContextBefore itself - needed now that
@@ -5217,9 +5225,17 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         // A-03: pick the dictionary for the recent context; an unsupported foreign context shows nothing.
-        val activeDict = selectActiveDictionary("$tokenContextBefore $input")
+        // D-458: real root cause, confirmed from a real device log - tokenContextBefore is real document
+        // text, already ending in whatever real whitespace precedes the caret (e.g. "Test " right after a
+        // committed word), so concatenating a further literal space here produced a spurious double space
+        // ("Test  " + input) from the second word onward - `selectActiveDictionary("Test  l")` in the
+        // captured log - confusing the A-03 language classifier into wrongly reading the context as foreign
+        // and suppressing every suggestion from then on. Never on a field's first word (tokenContextBefore
+        // == "" there), exactly why this silently escaped notice until now. finalizeAndCommit() had the
+        // identical bug at its own call site - see that fix's own KDoc.
+        val activeDict = selectActiveDictionary("$tokenContextBefore$input")
         if (activeDict.suppressAutocorrect) {
-            diag("AdaptKeySuggest", "refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary(\"$tokenContextBefore $input\")")
+            diag("AdaptKeySuggest", "refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary(\"$tokenContextBefore$input\")")
             clearSuggestions()
             return
         }
@@ -5232,12 +5248,18 @@ class AdaptKeyService : InputMethodService() {
         // exactly the same reasoning already applied to every other addition below.
         // D-211: precomputedExpensiveCandidates, when given, is the background search's own already-final
         // result (see the dispatch below) - used as-is instead of calling suggestionsFor() a second time.
+        // D-452/D-458 (temporary diagnostic): timed the same way D-217/D-220 already time handleKey()/
+        // finalizeAndCommit() - this is the single call D-153/D-207/D-211's own comments above already
+        // name as the per-keystroke cost driver, so measuring it directly (not guessing from candidate
+        // count alone) is the fastest way to confirm or rule it out against a real reported stall.
+        val candidatesStartedAt = SystemClock.uptimeMillis()
         val candidates = when {
             duringRepeat -> emptyList()
             precomputedExpensiveCandidates != null -> precomputedExpensiveCandidates
             else -> provider.suggestionsFor(input, previousWord, previousPreviousWord, includeExpensiveFallbacks)
         }
-        diag("AdaptKeySuggest", "refreshSuggestions: candidates=${candidates.size} for input=\"$input\" duringRepeat=$duringRepeat")
+        val candidatesMs = SystemClock.uptimeMillis() - candidatesStartedAt
+        diag("AdaptKeySuggest", "refreshSuggestions: candidates=${candidates.size} tookMs=$candidatesMs for input=\"$input\" duringRepeat=$duringRepeat includeExpensiveFallbacks=$includeExpensiveFallbacks")
         // D-404-followup: computed from this call's own candidates above (no separate dictionary query) -
         // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
         // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
@@ -5557,6 +5579,9 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun showSuggestions() {
+        // D-452/D-458 (temporary diagnostic): total wall time for this function - see refreshSuggestions()'s
+        // own timing note right above it.
+        val showSuggestionsStartedAt = SystemClock.uptimeMillis()
         // D-196: SuggestionController itself stays free of any capitalisation/Android dependency (its own
         // S-02/S-03 identity and dedup logic already relies on comparing raw canonical dictionary words, not
         // display text - capitalising earlier would break that), so every Kind.NORMAL entry's *display* text
@@ -5622,7 +5647,7 @@ class AdaptKeyService : InputMethodService() {
             withLoading
         }
         // D-457 (temporary diagnostic): see refreshSuggestions()'s own note.
-        diag("AdaptKeySuggest", "showSuggestions: items=${items.size} withAmbiguousCasing=${withAmbiguousCasing.size} withCompound=${withCompound.size} withLoading=${withLoading.size} withReclaim=${withReclaim.size} final=${withReclaim.map { it.text }}")
+        diag("AdaptKeySuggest", "showSuggestions: items=${items.size} withAmbiguousCasing=${withAmbiguousCasing.size} withCompound=${withCompound.size} withLoading=${withLoading.size} withReclaim=${withReclaim.size} tookMs=${SystemClock.uptimeMillis() - showSuggestionsStartedAt} final=${withReclaim.map { it.text }}")
         setSuggestionBarItems(withReclaim)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.

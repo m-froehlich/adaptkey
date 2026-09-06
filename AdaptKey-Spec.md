@@ -1034,6 +1034,14 @@ toggle (G-01): a configurable run of consecutive words classified in a different
 currently active (C-23, D-398, default 5) triggers a real language switch, not merely per-token filtering -
 or never does, when that threshold is set to 0 (off).
 
+D-458: the context string fed to the classifier is the real, already-committed document text immediately
+preceding the token plus the token itself, joined with no separator of its own added - the preceding text
+already carries whatever real whitespace actually separates it from the token (e.g. a previous word's own
+trailing space), so inserting an additional one produces a spurious double space from the second word of a
+field onward. A real device log confirmed this genuinely confuses the classifier's own matching into reading
+an otherwise perfectly ordinary short second word as foreign, suppressing every suggestion for it - fixed at
+both call sites that build this string.
+
 ### A-04 - Blacklist for Unwanted Words
 Words can be permanently excluded from suggestions and autocorrect. The blacklist is persisted in SQLite and
 survives app updates, with a category distinction between a bundled entry and a user-added one. A small

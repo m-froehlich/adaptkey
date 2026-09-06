@@ -941,11 +941,18 @@ non-trivial changes).
   confirmation again, reversing D-396-followup (v3)'s earlier removal - see §448 in Current State for the
   mechanism.
 
-- **D-452 - WON'T FIX (2026-09-06, no code change - not reproducible).** User's own account: no longer
-  reproducible on their device right now. Closed without ever identifying the "Wahrscheinlich" concern's
-  original cause - per this project's own diagnosis convention, nothing was guessed at or changed based on
-  the description alone, and none ever arrived to investigate further. Revisit only if it recurs with a real
-  device log.
+- **D-452 - REOPENED, still not root-caused - timing diagnostics added (§451, v1.2.11).** Originally closed
+  WON'T FIX as not reproducible; the user later sent a real device log describing it as "das immer
+  wiederkehrende Performance-Problem" (the recurring performance problem), captured incidentally while typing
+  in Gemini. That specific log showed no smoking gun - `showSuggestions()` fired redundantly 2-4x in a row for
+  an identical, already-empty result around a field restart, but that call does no dictionary work and cannot
+  plausibly cost anything perceptible; the multi-second gaps between logged events show no activity at all
+  during them, consistent with either a genuine user pause or a real, still-unlogged stall - not
+  distinguishable from the log alone. Per this project's own diagnosis convention, nothing was guessed at or
+  changed based on that log alone. See §451: real wall-clock timing (`tookMs=`) was added to
+  `refreshSuggestions()`'s own dictionary-lookup call and to `showSuggestions()`'s total duration - the next
+  captured log, ideally taken at the exact moment something feels slow, should show directly whether either
+  is the real cost or whether the stall (if real) lies somewhere else entirely.
 
 - **D-453 - RESOLVED (§448, v1.2.8).** Double-consonant "unfold" for autocorrect/chip suggestion
   (`"bite"` → `"bitte"`, `"tipen"` → `"tippen"`), implemented exactly as agreed - an extension of S-09's
@@ -956,9 +963,9 @@ non-trivial changes).
   (`LanguagePacksActivity`/`activity_language_packs`, D-280) per the user's own six-point list - see §447 in
   Current State for the full implementation.
 
-- **D-455 - RESOLVED (§450, v1.2.10).** In a `reclaimOnCaretMoveSuppressed` field (Gemini, D-351), moving the
-  caret between existing words now correctly re-derives Shift/Caps fresh, independent of the composing-region
-  reclaim itself staying suppressed there - see §450 in Current State for the mechanism.
+- **D-455 - RESOLVED, device-confirmed (§450, v1.2.10).** In a `reclaimOnCaretMoveSuppressed` field (Gemini,
+  D-351), moving the caret between existing words now correctly re-derives Shift/Caps fresh, independent of
+  the composing-region reclaim itself staying suppressed there - see §450 in Current State for the mechanism.
 
 - **D-456 - OPEN, likely already substantially covered by an existing mechanism - needs a real repro before**
   **further action (2026-09-06).** User's ask: with D-348 (double-tap-Backspace-undo) enabled, when a word
@@ -986,23 +993,46 @@ non-trivial changes).
   §450 in Current State for the real root cause (traced through three separate layers, not guessed) and the
   fix.
 
-- **D-458 - OPEN, temporary diagnostic logging added, awaiting a real device log (2026-09-06).** User's report:
-  "ab dem zweiten Wort" (from the second word onward) no suggestion chips appear at all any more - not scoped
-  to any one field or action sequence, described as something fundamental being wrong. Not yet root-caused;
-  raised right after this same session's own D-455 change (`scheduleReclaimAndChipRefresh`/
-  `reclaimWordAtCaret`/the new `rearmShiftForCaretMove*` functions) and D-357's own earlier fix, both real
-  suspects given the timing, but not confirmed as the cause over a genuinely pre-existing, only-just-noticed
-  bug - per this project's own diagnosis convention, nothing is being guessed at or changed based on the
-  description alone. A new `"AdaptKeySuggest"` diagnostic tag (mirroring the established `diag()`/
-  `DiagnosticLog` mechanism - Settings' own in-app log viewer needs no PC/USB tether) now logs every early-
-  return branch in `refreshSuggestions()` (`AdaptKeyService.kt`, `urlMode`/`noSuggestionsField`/login-field/
-  empty-composing/underscore/`suppressAutocorrect` from `selectActiveDictionary()`, plus the final candidate
-  count), `showSuggestions()`'s own item-count pipeline right before `setSuggestionBarItems()`, and the D-455
-  reclaim/Shift-rearm functions' own early returns - temporary, remove once found and fixed (same lifecycle as
-  D-193/D-398/D-410's own temporary diagnostics). Needs the user's own captured log from a real repro of "type
-  a word, commit it, type a second word, no chips appear" before proceeding further.
+- **D-458 - RESOLVED (§451, v1.2.11).** "Ab dem zweiten Wort" no suggestion chips appeared at all any more -
+  root-caused directly from a real device log the user captured (typing "Test llm"), not guessed: a spurious
+  double space in the A-03 language-classification context string (`selectActiveDictionary("Test  l")`,
+  visible verbatim in the log) confused the classifier into reading the context as foreign, suppressing every
+  suggestion from the second word onward. See §451 in Current State for the exact mechanism and fix. Turned
+  out unrelated to D-455/D-357 - both real suspects given the timing, neither actually involved.
 
 ## Current State
+
+- **§451 (v1.2.11): D-458 root-caused and fixed - a spurious double space in the A-03 context string**
+  **wrongly suppressed every suggestion from the second word onward - plus D-452's own timing diagnostics.**
+
+  **D-458**: the user's device log, captured typing `"Test llm"`, showed it directly:
+  `refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary("Test  l")` - a literal
+  double space between the previous word and the new token. `tokenContextBefore` is real document text
+  (`captureTokenContext()` sets it straight from `getTextBeforeCursor()`), already ending in whatever real
+  whitespace precedes the caret (`"Test "` right after committing "Test" + its trailing space) - both
+  `finalizeAndCommit()` and `refreshSuggestions()` then concatenated a *further* literal space before the
+  typed token (`"$tokenContextBefore $typed"`/`"$tokenContextBefore $input"`), producing `"Test  l"` from the
+  second word onward. Never on a field's first word (`tokenContextBefore == ""` there, so only ever a
+  harmless single leading space resulted) - exactly why this silently escaped notice until a real log caught
+  it. The extra space confused `LanguageClassifier`'s own n-gram matching enough to misread the context as
+  foreign, setting `suppressAutocorrect = true` and clearing the bar for every keystroke of the second word
+  onward. Fixed at both call sites (`"$tokenContextBefore$typed"`/`"$tokenContextBefore$input"`, no
+  space) - matching the already-correct convention `refreshSuggestions()`'s own tier-3 prompt-sentence string
+  used a few hundred lines below all along. No new unit test - both call sites are inside
+  `AdaptKeyService`/`InputConnection`-glue with no existing test harness, this project's own accepted,
+  established gap for this class of code; verification is the device repro itself, per D-357's own identical
+  precedent just before this round.
+
+  **D-452**: real wall-clock timing (mirroring D-217/D-220's own established `SystemClock.uptimeMillis()`
+  before/after pattern) added to `refreshSuggestions()`'s own `provider.suggestionsFor()` call (the one D-153/
+  D-207/D-211 already name as the per-keystroke cost driver) and to `showSuggestions()`'s total duration -
+  both logged under the same `"AdaptKeySuggest"` tag D-458's own diagnostics already use. The device log the
+  user sent for this item showed no smoking gun (no dictionary work fired repeatedly, only cheap, already-
+  empty `showSuggestions()` re-renders around a field restart) - still open, needs a log that actually
+  captures the perceived-slow moment with this new timing data to make further progress.
+
+  1557 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  506 -> 507, `versionName` `"1.2.10"` -> `"1.2.11"`.
 
 - **§450 (v1.2.10): D-455 (Gemini Shift re-derivation) + D-457 (mangled learned-acronym casing), plus D-458's**
   **own temporary diagnostic logging for a new, not-yet-root-caused report.**
