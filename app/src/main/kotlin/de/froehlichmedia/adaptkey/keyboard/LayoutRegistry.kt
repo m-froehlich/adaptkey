@@ -35,10 +35,10 @@ enum class LayoutKind {
  * The writing system a [LayoutKind] uses - a coarser grouping than [LayoutKind] itself, since several
  * distinct non-Latin `LayoutKind`s can share one script despite each having its own real, distinct physical
  * layout (D-450-followup: Russian/Ukrainian/Serbian are all [CYRILLIC] even though [LayoutRegistry.KINDS]
- * correctly gives each its own `LayoutKind` - [LayoutRegistry.NON_LATIN_LANGUAGES]'s own canary test checks
- * for a shared [Script], not a shared `LayoutKind`, precisely because two languages sharing a script but not
- * a `LayoutKind` is exactly the case that needs a real same-script classifier, not two separate ones that
- * happen to never collide).
+ * correctly gives each its own `LayoutKind`). This is exactly the grouping [LayoutRegistry.CYRILLIC_LANGUAGES]
+ * scopes `AdaptKeyService`'s own Cyrillic-sibling classifier to - a shared [Script] but not a shared
+ * `LayoutKind` is precisely the case that needs a real same-script classifier, not two languages that happen
+ * to never collide.
  */
 enum class Script { LATIN, GREEK, CYRILLIC }
 
@@ -92,18 +92,33 @@ object LayoutRegistry {
     val NON_LATIN_LANGUAGES: Set<Language> = KINDS.keys.filterTo(HashSet()) { scriptFor(it) != Script.LATIN }
     
     /**
+     * D-450-followup: the [Script.CYRILLIC] subset of [NON_LATIN_LANGUAGES] - Serbian, Russian, and
+     * Ukrainian, each with its own distinct [LayoutKind]/real physical layout but sharing one script. Named
+     * separately (rather than inline-filtered at each call site, as the original gap-documenting canary test
+     * in `LayoutRegistryTest` did) now that a real use exists for it: `AdaptKeyService.resolveDict()`'s own
+     * Cyrillic-sibling classifier scopes its comparison to exactly this set, once real `language_profiles.tsv`
+     * trigram data exists for all three (it now does, as of this round - see that function's own KDoc).
+     */
+    val CYRILLIC_LANGUAGES: Set<Language> = KINDS.keys.filterTo(HashSet()) { scriptFor(it) == Script.CYRILLIC }
+    
+    /**
      * D-400: the actual layout shown day to day - deliberately independent of [activeLanguage] (the
-     * dictionary/suggestion language, changed freely by both the manual G-01 swipe and D-130's automatic
-     * sustained-English promotion) in the ordinary case, pinned instead to the device's own system
+     * dictionary/suggestion language, changed freely by the manual G-01 swipe and D-130's automatic
+     * sustained-language promotion) in the ordinary case, pinned instead to the device's own system
      * language, so a language switch alone - whichever of the two triggers it - never rearranges physical
      * keys the user did not ask to rearrange ("niemand will plötzlich von QWERTZ auf QWERTY wechseln").
      * Two cases override that default, in order:
-     * 1. [activeLanguage] itself has a non-Latin layout ([NON_LATIN_LANGUAGES], Greek today) - always wins,
-     *    since every other Latin layout is otherwise physically incapable of typing it at all. In practice
-     *    this can only ever be reached via an explicit G-01 swipe *into* that language, never D-130's
-     *    automatic promotion (which only ever targets English, and can only ever fire from an already-Latin
-     *    active language to begin with - Greek's own layout has no Latin key positions to type the English
-     *    words that would trigger it from).
+     * 1. [activeLanguage] itself has a non-Latin layout ([NON_LATIN_LANGUAGES], Greek or any
+     *    [Script.CYRILLIC] language) - always wins, since every other layout is otherwise physically
+     *    incapable of typing it at all. Reachable either via an explicit G-01 swipe *into* that language, or
+     *    - D-450-followup, once the Cyrillic-sibling classifier existed to drive it - D-130's own automatic
+     *    promotion firing FROM one [Script.CYRILLIC] language TO another (Russian typed while Ukrainian is
+     *    active, say): unlike the English case, this really does need a genuine layout change (`JcukenLayout`'s
+     *    own `ukrainian` flag differs), which is exactly why the promotion path calls
+     *    `AdaptKeyService.applyActiveLanguageToView()` rather than only updating the space-bar label. Greek
+     *    itself still cannot be an automatic-promotion target either way - it has no sibling script to be
+     *    promoted FROM, and no Latin layout has Greek key positions to type the words that would trigger a
+     *    promotion INTO it from a Latin language to begin with.
      * 2. The system language itself has no sensible Latin layout to offer (it resolves to a non-Latin
      *    language - Greek - or to nothing this app recognises at all) while [activeLanguage] is a genuine,
      *    explicit choice with its own real layout convention - falls back to [activeLanguage]'s own layout

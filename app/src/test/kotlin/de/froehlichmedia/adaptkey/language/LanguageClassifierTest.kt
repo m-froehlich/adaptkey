@@ -113,4 +113,27 @@ class LanguageClassifierTest {
         assertEquals("", LanguageClassifier.lastWords("   ", 5))
         assertEquals("", LanguageClassifier.lastWords("a b c", 0))
     }
+    
+    /**
+     * D-450-followup: [LanguageClassifier] was already fully script-agnostic - `classify()` just picks the
+     * smallest out-of-place distance among whatever [CharNgramProfile]s it is given, with no Latin-specific
+     * assumption anywhere in it. This confirms that directly for three real Cyrillic siblings (mirroring
+     * `AdaptKeyService`'s own `cyrillicClassifier`, built the same way from
+     * `LayoutRegistry.CYRILLIC_LANGUAGES`'s own real profiles) - the mechanism needed no change at all to
+     * support same-script discrimination once real profile data existed for more than one Cyrillic language;
+     * only the data (and the service-level wiring to use it) was missing.
+     */
+    @Test
+    fun `distinguishes real Cyrillic siblings from each other, not just from Latin scripts`() {
+        val russian = profileFrom(Language.RUSSIAN, "хорошо когда дома тепло и уютно очень приятно")
+        val ukrainian = profileFrom(Language.UKRAINIAN, "добре коли вдома тепло і затишно дуже приємно")
+        val serbian = profileFrom(Language.SERBIAN, "добро када код куће топло и пријатно врло лепо")
+        val classifier = LanguageClassifier(
+            mapOf(Language.RUSSIAN to russian, Language.UKRAINIAN to ukrainian, Language.SERBIAN to serbian)
+        )
+        
+        assertEquals(Language.RUSSIAN, classifier.classify("хорошо и очень уютно дома").language)
+        assertEquals(Language.UKRAINIAN, classifier.classify("дуже затишно вдома і приємно").language)
+        assertEquals(Language.SERBIAN, classifier.classify("врло пријатно и лепо код куће").language)
+    }
 }

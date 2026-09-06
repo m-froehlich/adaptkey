@@ -252,6 +252,15 @@ class AdaptKeyService : InputMethodService() {
     // non-German, the German autocorrect is held back so foreign words are not mangled.
     private var languageClassifier = LanguageClassifier(emptyMap())
     
+    // D-450-followup: a SECOND classifier instance, scoped to only LayoutRegistry.CYRILLIC_LANGUAGES's own
+    // profiles (built once in onCreate from the same asset languageClassifier itself loads from) - used
+    // exclusively by resolveDict()'s own Cyrillic-sibling branch, never consulted while a Latin language is
+    // active. A dedicated instance rather than filtering languageClassifier's own profiles per call: the
+    // filtered map is identical on every call (it depends only on which language packs are bundled, not on
+    // typed text), so building it once is strictly better than repeating the filter on every keystroke, and
+    // keeping two named instances makes each call site's own intent obvious without a comment every time.
+    private var cyrillicClassifier = LanguageClassifier(emptyMap())
+    
     // §9 / C-06: tier-3 mini-LLM orchestration. Defaults to the inert no-op backend; when the user has
     // imported a model, onnxProvider is built off-thread and swapped in. When a real backend is active,
     // the orchestrator (and thus the heavy inference) is run on a background thread (tier3Async) so the
@@ -282,10 +291,16 @@ class AdaptKeyService : InputMethodService() {
     // English here too, the one language DictionaryLoader.BUNDLED_LANGUAGES always guarantees is loaded.
     private var activeLanguage = Language.ENGLISH
     
-    // D-130/D-398: consecutive commits routed to English by A-03 while German/Greek stays active - once
-    // this reaches settings.sustainedLanguageSwitchThreshold, trackSustainedEnglishUsage() promotes it to a
-    // real switch (a stored threshold of 0 disables the mechanism entirely).
-    private var consecutiveEnglishWords = 0
+    // D-130/D-398: consecutive commits routed to some language OTHER than activeLanguage by A-03/resolveDict()
+    // - once this reaches settings.sustainedLanguageSwitchThreshold, trackSustainedLanguageUsage() promotes
+    // it to a real switch (a stored threshold of 0 disables the mechanism entirely). Originally English-only
+    // (the field was consecutiveEnglishWords - A-03 could only ever route to English while some other Latin
+    // language stayed active); D-450-followup generalised it to track WHICH language is accumulating too,
+    // once resolveDict() gained a second routing target (a Cyrillic sibling) that is not always the same one
+    // - see trackSustainedLanguageUsage()'s own KDoc for why this is a safe, behaviour-preserving
+    // generalisation for the pre-existing English case.
+    private var consecutiveForeignWords = 0
+    private var consecutiveForeignLanguage: Language? = null
     
     // L-03: which layer is shown, the numeric/symbol layer's current page, the bundled emoji dataset
     // and the persisted recent/frequently-used emoji (MRU).
@@ -836,7 +851,9 @@ class AdaptKeyService : InputMethodService() {
         emojiDataset = EmojiDatasetLoader.load(this)
         emojiKeywordIndex = EmojiKeywordLoader.load(this)
         recentEmojis = RecentEmojiStore.load(this)
-        languageClassifier = LanguageProfileLoader.loadClassifier(this)
+        val languageProfiles = LanguageProfileLoader.loadProfiles(this)
+        languageClassifier = LanguageClassifier(languageProfiles)
+        cyrillicClassifier = LanguageClassifier(languageProfiles.filterKeys { it in LayoutRegistry.CYRILLIC_LANGUAGES })
         loadTier3ProviderAsync()
         SettingsStore.prefs(this).registerOnSharedPreferenceChangeListener(prefsListener)
         OffsetStore.prefs(this).registerOnSharedPreferenceChangeListener(offsetModelPrefsListener)
@@ -4162,41 +4179,67 @@ class AdaptKeyService : InputMethodService() {
             ?: learnRecord.word.takeIf { learnRecord.outcome == LearnOutcome.PROMOTED }
         showNextWordPredictions(justPromoted)
         armShiftForNextWordUnlessOpener(ic, delimiter)
-        trackSustainedEnglishUsage(ic, dictChoice.language)
+        trackSustainedLanguageUsage(ic, dictChoice.language)
         return finalWord.length + delimiter.length
     }
     
     /**
-     * D-130: promotes A-03's per-token English routing (used while German/Greek stays active) to a real
+     * D-130: promotes A-03's per-token routing to some language other than [activeLanguage] to a real
      * active-language switch after [AdaptSettings.sustainedLanguageSwitchThreshold] consecutive commits
-     * routed to English - the existing per-token routing, and D-106 stage 2's cross-language autocorrect
-     * protection, already work well for a single embedded loanword; a sustained run of English words is a
-     * different, stronger signal that the user has genuinely switched languages, not just borrowed one word.
-     * D-398: a stored threshold of 0 disables this promotion entirely - only the manual G-01 swipe still
-     * changes the active language. D-400: never touches [AdaptKeyboardView.layoutKind] - this promotion
-     * can only ever fire between already-Latin-typeable languages to begin with (English is its only
-     * target, and reaching it requires the previous few words to have actually been typed as Latin
-     * letters), so the layout - pinned to the system language, see [LayoutRegistry.kindFor] - is already
-     * correct and simply stays exactly as it was.
+     * routed to that SAME other language - the existing per-token routing, and D-106 stage 2's cross-language
+     * autocorrect protection, already work well for a single embedded loanword/sibling-language word; a
+     * sustained run of them is a different, stronger signal that the user has genuinely switched languages,
+     * not just borrowed one word. D-398: a stored threshold of 0 disables this promotion entirely - only the
+     * manual G-01 swipe still changes the active language.
+     *
+     * D-450-followup: generalised from `trackSustainedEnglishUsage` (English was the only possible
+     * [tokenLanguage] `resolveDict()` could ever route to while some other Latin language stayed active,
+     * so the old field only needed a plain counter) once `resolveDict()` gained a second routing target -
+     * a Cyrillic sibling, which is not always the SAME sibling from one call to the next the way the target
+     * was always English before. [consecutiveForeignLanguage] tracks which language is currently
+     * accumulating so a run of Russian-routed commits does not silently count towards an unrelated prior
+     * Ukrainian run (or vice versa); resets to [tokenLanguage] whenever it changes rather than continuing an
+     * unrelated tally. Behaviour for the pre-existing English case is unchanged: [tokenLanguage] there is
+     * always either [activeLanguage] itself (resets the counter, exactly as `!= Language.ENGLISH` used to)
+     * or [Language.ENGLISH] (accumulates, exactly as before) - it is never a third value, so this
+     * generalisation is a strict superset of the old logic, not a behaviour change for it.
+     *
+     * D-400: [applyActiveLanguageToView] IS now called here (the old English-only version deliberately did
+     * NOT, since "this promotion can only ever fire between already-Latin-typeable languages... the layout
+     * ... is already correct and simply stays exactly as it was" - true for English, since it needs no
+     * layout of its own, but NOT true for a Cyrillic-sibling promotion: Russian and Ukrainian are both
+     * [LayoutRegistry.Script.CYRILLIC] but genuinely different [de.froehlichmedia.adaptkey.keyboard.LayoutKind]s
+     * (`JcukenLayout`'s own `ukrainian` flag), so the physical keys really must change too. Calling it
+     * unconditionally is still safe for the English case - [LayoutRegistry.kindFor] pins the layout to the
+     * system language regardless of [activeLanguage] whenever [activeLanguage] itself is not
+     * [LayoutRegistry.NON_LATIN_LANGUAGES], so re-deriving it for an English promotion yields the identical
+     * result the old code left untouched, just computed instead of assumed.
      *
      * @param ic the current input connection
      * @param tokenLanguage the language [finalizeAndCommit] actually routed the just-committed token to
      */
-    private fun trackSustainedEnglishUsage(ic: InputConnection, tokenLanguage: Language) {
+    private fun trackSustainedLanguageUsage(ic: InputConnection, tokenLanguage: Language) {
         val threshold = settings.sustainedLanguageSwitchThreshold
-        if (threshold <= 0 || activeLanguage == Language.ENGLISH || tokenLanguage != Language.ENGLISH) {
-            consecutiveEnglishWords = 0
+        if (threshold <= 0 || tokenLanguage == activeLanguage) {
+            consecutiveForeignWords = 0
+            consecutiveForeignLanguage = null
             return
         }
-        consecutiveEnglishWords++
-        if (consecutiveEnglishWords < threshold) {
+        if (tokenLanguage != consecutiveForeignLanguage) {
+            consecutiveForeignLanguage = tokenLanguage
+            consecutiveForeignWords = 0
+        }
+        consecutiveForeignWords++
+        if (consecutiveForeignWords < threshold) {
             return
         }
-        consecutiveEnglishWords = 0
+        consecutiveForeignWords = 0
+        consecutiveForeignLanguage = null
         // D-130: acknowledge the switch on the space bar, the same way the manual G-01 swipe now does.
         keyboardView?.beginLanguageChangeFade()
-        activeLanguage = Language.ENGLISH
+        activeLanguage = tokenLanguage
         ActiveLanguageStore.save(this, activeLanguage)
+        applyActiveLanguageToView()
         updateSpaceLabel()
         clearSuggestions()
         Toast.makeText(this, languageLabel(activeLanguage), Toast.LENGTH_SHORT).show()
@@ -6481,21 +6524,35 @@ class AdaptKeyService : InputMethodService() {
      * D-450-followup: the non-Latin branch below is NOT "these languages can never be auto-switched away
      * from" in general - it is "[languageClassifier]'s own n-gram profiles are exclusively Latin-script and
      * its [LanguageClassifier.isForeign] guard specifically measures GERMAN's own margin, so consulting
-     * either one while a non-Latin language (Greek, or any [LayoutRegistry.Script.CYRILLIC] language -
-     * Serbian, Russian, Ukrainian) is active would compare that script's text against a mechanism that has
-     * nothing meaningful to say about it - almost certainly misfiring rather than helping."
-     *
-     * D-450-followup update: Serbian, Russian, and Ukrainian are now all real, distinct
-     * [de.froehlichmedia.adaptkey.keyboard.LayoutKind]s sharing one [LayoutRegistry.Script.CYRILLIC] (see
-     * [LayoutRegistry.scriptFor]) - a deliberate decision, not an oversight this time: this branch still
-     * trusts whichever one is active unconditionally, because there is genuinely nothing to distinguish them
-     * *with* yet - no per-language Cyrillic `language_profiles.tsv` trigram data exists for any of the three
-     * (dictionary-pipeline work, out of scope for the layouts-only round that added Russian/Ukrainian/
-     * Azerbaijani - see `AdaptKey-Progress.md`'s own Open TODOs). A real same-script classifier (mirroring
-     * [ScriptDetector]'s existing Greek-fraction fast path, generalised per-script) becomes buildable, and
-     * should replace this shortcut, once that data exists.
+     * either one while a non-Latin language is active would compare that script's text against a mechanism
+     * that has nothing meaningful to say about it - almost certainly misfiring rather than helping." That
+     * reasoning still holds for Greek (no sibling script exists to compare it against), but no longer for
+     * [LayoutRegistry.Script.CYRILLIC]: Serbian, Russian, and Ukrainian are three real, distinct
+     * [de.froehlichmedia.adaptkey.keyboard.LayoutKind]s sharing one script (see [LayoutRegistry.scriptFor]),
+     * and once real `language_profiles.tsv` trigram data existed for all three (D-450-followup's own
+     * Russian/Ukrainian dictionary rounds, plus Serbian's own profile built specifically to unblock this),
+     * [cyrillicClassifier] - the same generic [LanguageClassifier] mechanism [languageClassifier] already
+     * uses, just constructed from [LayoutRegistry.CYRILLIC_LANGUAGES]'s own profiles only, mirroring
+     * [ScriptDetector]'s existing Greek-fraction fast path's spirit (script-scoped comparison) rather than
+     * its literal mechanism (there is no cheap character-set test that tells Russian from Ukrainian the way
+     * Greek's own disjoint alphabet does, so this needs the real n-gram distance, not a fast path) - became
+     * buildable and now IS consulted below, exactly like English is for the Latin branch. A confident result
+     * for a DIFFERENT, currently-INSTALLED Cyrillic sibling routes this token to it (mirroring the English
+     * case's own `suppressAutocorrect = false` - the sibling's own dictionary is perfectly usable, nothing
+     * about this text is actually foreign to that language); everything else - Greek, an uninstalled
+     * sibling, or [cyrillicClassifier] itself returning [Language.UNKNOWN] (too little text, or genuinely
+     * ambiguous between siblings) - falls through to trusting the active language, unchanged from before.
      */
     private fun resolveDict(context: String): DictChoice {
+        if (activeLanguage in LayoutRegistry.CYRILLIC_LANGUAGES) {
+            val sibling = cyrillicClassifier.classify(LanguageClassifier.lastWords(context, LANGUAGE_WINDOW))
+            if (sibling.language != activeLanguage && sibling.language in LayoutRegistry.CYRILLIC_LANGUAGES &&
+                sibling.confidence >= CYRILLIC_SIBLING_MARGIN && providers.containsKey(sibling.language)
+            ) {
+                return DictChoice(sibling.language, suppressAutocorrect = false)
+            }
+            return DictChoice(activeLanguage, suppressAutocorrect = false)
+        }
         if (activeLanguage in LayoutRegistry.NON_LATIN_LANGUAGES) {
             return DictChoice(activeLanguage, suppressAutocorrect = false)
         }
@@ -6973,6 +7030,13 @@ class AdaptKeyService : InputMethodService() {
         
         // A-03: how many trailing words of context feed the language detector (spec: last 3-5 words).
         private const val LANGUAGE_WINDOW = 5
+        
+        // D-450-followup: how much better a Cyrillic sibling must beat the runner-up (LanguageClassifier's
+        // own [0,1] confidence measure) before resolveDict() routes a token to it instead of the active
+        // language - reuses LanguageClassifier.isForeign()'s own default germanMargin value rather than
+        // inventing a separate number, since both answer the same shape of question ("is the alternative
+        // clearly better, not just a near-tie") against the same underlying distance metric.
+        private const val CYRILLIC_SIBLING_MARGIN = 0.15
         
         // Height of the embedded suggestion strip.
         private const val SUGGESTION_BAR_HEIGHT_DP = 44

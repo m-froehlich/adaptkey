@@ -268,24 +268,12 @@ non-trivial changes).
      18-language D-450 round) - resolved: `keyboard/SerbianLayout.kt`, researched against the real Microsoft
      `KBDYCC` standard, plus the first real Serbian language pack. See §440 (v1.2.0).
 
-- **Cyrillic-vs-Cyrillic auto-detection not implemented - a real, deliberate, NOT YET ACTIONED gap (added**
-  **§441, v1.2.1; prerequisite (1) below UPDATED §442-§445, v1.2.2-v1.2.5 - still not started).** Serbian,
-  Russian, and Ukrainian all share `Script.CYRILLIC` (`LayoutRegistry.scriptFor`) but each has its own
-  distinct `LayoutKind`/real physical layout. `AdaptKeyService.resolveDict()` trusts whichever one is active
-  unconditionally when it is the active language - correct today, but only because there is genuinely
-  nothing to distinguish them *with*. Concretely missing: if a user has Russian active and starts typing
-  Ukrainian (or Serbian) text without an explicit G-01 switch, nothing detects that - the German-centric
-  Latin `LanguageClassifier.isForeign()` mechanism is deliberately never consulted for a non-Latin active
-  language (see that function's own D-450-followup KDoc), and no same-script alternative exists yet.
-  `LayoutRegistryTest`'s own canary test (`D-450-followup real, deliberate gap - Cyrillic siblings share a
-  script...`) documents the exact invariant this rests on. Fixing this needs: (1) real Cyrillic dictionaries
-  AND their own `language_profiles.tsv` trigram data - **as of §442/§443 (v1.2.2/v1.2.3), Russian and
-  Ukrainian now have BOTH** (real `dict.tsv` corpora and real 200-ngram profiles); only Serbian's own
-  profile is still missing (deliberately skipped per its own §440 entry - Serbian's pack shipped without
-  one). So two of the three prerequisite corpora now genuinely exist - only Serbian's own profile and (2) a
-  script-aware generalisation of `ScriptDetector`'s existing Greek-fraction-style fast path (or an
-  equivalent per-script classifier) remain. Still not started - do not build without the user's own
-  go-ahead; worth raising with them now that most of the data prerequisite is actually satisfied.
+- **Cyrillic-vs-Cyrillic auto-detection - RESOLVED (§446, v1.2.6).** Originally added §441 (v1.2.1) as a
+  deliberate, named gap; prerequisite (1) tracked as partially satisfied through §442-§445 (v1.2.2-v1.2.5).
+  Closed for real once the user explicitly asked for it with Serbian's own profile built specifically to
+  unblock it (the one remaining missing piece). See §446's own "Current State" entry for the full
+  implementation; recorded here only so this section's own history of the gap ends with its resolution,
+  not with a since-superseded "still not started."
 
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) - CLOSED BY**
   **DESIGN (2026-09-04, no code change - user's own explicit call).** Found while auditing every place that
@@ -1003,6 +991,64 @@ non-trivial changes).
      to be made at implementation time - not enumerated here.
 
 ## Current State
+
+- **§446 (v1.2.6): D-450-followup - Cyrillic-vs-Cyrillic auto-detection, closing the Open TODO §441 first**
+  **flagged.** Explicit user request, made once Russian/Ukrainian's own §442/§443 dictionaries had already
+  built real `language_profiles.tsv` data - the one remaining piece, Serbian's own profile (deliberately
+  skipped when its pack shipped, §440), was built specifically to unblock this
+  (`dictionaries/build_language_profiles.py sr`, appended to the bundled asset - now 6,000 lines / 30
+  languages total).
+
+  **The actual mechanism needed almost no new logic** - `LanguageClassifier` was already fully generic
+  (picks the smallest out-of-place n-gram distance among whatever profiles it is given; nothing in it
+  assumes Latin script). `LayoutRegistry` gained a real `CYRILLIC_LANGUAGES` set (the `Script.CYRILLIC`
+  subset of `NON_LATIN_LANGUAGES`, replacing the inline `.filter{}` the old gap-documenting canary test
+  used). `LanguageProfileLoader` gained `loadProfiles()` (exposing the parsed map, not just a ready-made
+  classifier) so `AdaptKeyService.onCreate()` could build a SECOND `LanguageClassifier` instance -
+  `cyrillicClassifier` - scoped to exactly `CYRILLIC_LANGUAGES`'s own profiles, alongside the existing
+  all-languages `languageClassifier`.
+
+  `resolveDict()` gained a new branch, checked before the old "trust the active non-Latin language
+  unconditionally" fallback: when `activeLanguage` is itself a Cyrillic language, `cyrillicClassifier`
+  classifies the recent context; a confident (`>= CYRILLIC_SIBLING_MARGIN`, reusing `isForeign()`'s own
+  0.15 default rather than inventing a new number), currently-INSTALLED, different sibling routes that
+  token to its own dictionary (`suppressAutocorrect = false`, mirroring the existing English-routing case -
+  the sibling's own dictionary is perfectly usable, nothing about the text is actually foreign to it). The
+  installed-check matters: unlike English (always bundled), Russian/Ukrainian/Serbian are all optional
+  downloads - routing to an uninstalled sibling would crash `providers.getValue(...)` in
+  `selectActiveDictionary()`, so the new branch checks `providers.containsKey(...)` first.
+
+  **Real active-language promotion, not just per-token routing** - the user's own wording ("ein paar
+  Worte tippen... muss das Wörterbuch switchen") asked for the same sustained-usage-promotes-to-a-real-
+  switch behaviour D-130 already gives English, not just a silent per-token dictionary override.
+  `trackSustainedEnglishUsage`/`consecutiveEnglishWords` generalised to
+  `trackSustainedLanguageUsage`/`consecutiveForeignWords`+`consecutiveForeignLanguage` (the language being
+  accumulated now needs tracking too, since it is not always the same target the way it was always English
+  before) - confirmed this is a strict superset of the old behaviour for the pre-existing English case, not
+  a change to it: `tokenLanguage` there was always either `activeLanguage` itself or `Language.ENGLISH`,
+  never a third value.
+
+  **One real, substantive difference from the English case, not just a rename**: the promotion now calls
+  `applyActiveLanguageToView()` (D-130's own English-only version deliberately did not, since English needs
+  no layout of its own - "the layout... is already correct and simply stays exactly as it was"). A
+  Russian-to-Ukrainian promotion genuinely needs the physical keys to change (`JcukenLayout`'s own
+  `ukrainian` flag), so this call is no longer a no-op for every possible promotion target. Verified safe
+  for the English case too: `LayoutRegistry.kindFor` already pins the layout to the system language
+  whenever `activeLanguage` is not itself non-Latin, so calling it during an English promotion re-derives
+  the identical layout the old code left untouched, just computed instead of assumed.
+
+  New tests: `LayoutRegistryTest` gained `CYRILLIC_LANGUAGES` coverage (replacing the old gap-documenting
+  canary, which is retired now that the gap it named is closed); `LanguageClassifierTest` gained a direct
+  demonstration that the already-generic classifier discriminates three real Cyrillic siblings from each
+  other (not just from Latin text) using real short Russian/Ukrainian/Serbian sample sentences. `resolveDict()`
+  itself stays untested directly, same as every other Android-Service-internal branch in this file.
+  `versionCode` 501 -> 502, `versionName` "1.2.5" -> "1.2.6". Build + full test suite green.
+
+  Also done same session: `CREDITS.md`'s language-dictionary and language-detection-profile sections,
+  stale since long before this round (still described only the original German/English/Greek bundled trio
+  and a UDHR-only profile source), rewritten to name all 30 downloadable languages plus bundled English and
+  to correctly split the two real profile sources (UDHR for the original 8, real Wikipedia `dict.tsv` data
+  for every D-450-round addition since).
 
 - **§445 (v1.2.5): D-450-followup - first Uzbek language pack, last of the four §441 keyboard-layout-only**
   **languages, closing the round.** No new keyboard code needed - Uzbek is Latin-QWERTY-compatible.

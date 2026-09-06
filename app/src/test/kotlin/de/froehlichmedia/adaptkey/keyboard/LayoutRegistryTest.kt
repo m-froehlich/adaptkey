@@ -50,20 +50,30 @@ class LayoutRegistryTest {
     }
     
     @Test
-    fun `D-450-followup real, deliberate gap - Cyrillic siblings share a script but resolveDict() cannot yet tell them apart`() {
-        // The original canary here asserted no two NON_LATIN_LANGUAGES shared a LayoutKind, to force a
-        // conscious decision the day a second same-script language arrived. That day is this one: Serbian,
-        // Russian, and Ukrainian are all genuinely Script.CYRILLIC (confirmed above), each with its own real,
-        // distinct LayoutKind. The decision, made here rather than silently: AdaptKeyService.resolveDict()
-        // still trusts whichever one is active UNCONDITIONALLY - not because the gap doesn't exist, but
-        // because there is genuinely nothing to distinguish them WITH yet (no per-language Cyrillic
-        // language_profiles.tsv trigram data exists for any of the three - that is dictionary-pipeline work,
-        // deliberately out of scope for this layouts-only round, see AdaptKey-Progress.md's own Open TODOs).
-        // This test documents the real invariant that decision rests on - it fails the moment it stops being
-        // true, which is exactly when a real same-script classifier becomes buildable and resolveDict()'s
-        // own shortcut should be revisited for real.
-        val cyrillic = LayoutRegistry.NON_LATIN_LANGUAGES.filter { LayoutRegistry.scriptFor(it) == Script.CYRILLIC }
-        assertEquals(setOf(Language.SERBIAN, Language.RUSSIAN, Language.UKRAINIAN), cyrillic.toSet())
+    fun `CYRILLIC_LANGUAGES is exactly the Script CYRILLIC subset of NON_LATIN_LANGUAGES`() {
+        assertEquals(setOf(Language.SERBIAN, Language.RUSSIAN, Language.UKRAINIAN), LayoutRegistry.CYRILLIC_LANGUAGES)
+        assertEquals(
+            LayoutRegistry.NON_LATIN_LANGUAGES.filter { LayoutRegistry.scriptFor(it) == Script.CYRILLIC }.toSet(),
+            LayoutRegistry.CYRILLIC_LANGUAGES
+        )
+    }
+    
+    @Test
+    fun `D-450-followup resolved - the Cyrillic-sibling gap this canary used to document now has real data behind it`() {
+        // This test replaces the original gap-documenting canary (it asserted the three Cyrillic siblings'
+        // shared Script with a comment explaining WHY AdaptKeyService.resolveDict() could not yet tell them
+        // apart: no per-language Cyrillic language_profiles.tsv trigram data existed for any of them). That
+        // gap is now closed - Russian's and Ukrainian's own real dict.tsv-derived profiles landed with their
+        // language packs (§442/§443), and Serbian's own profile (deliberately skipped when its pack shipped,
+        // §440) was built the same way once the classifier this test set out to unblock actually needed it.
+        // AdaptKeyService.resolveDict() now runs its own Cyrillic-scoped LanguageClassifier instance (built
+        // from exactly CYRILLIC_LANGUAGES's own profiles) instead of trusting the active language
+        // unconditionally - see that function's own KDoc for the real mechanism. Nothing here can directly
+        // exercise resolveDict() itself (Android Service internals stay instrumented-test territory, per this
+        // project's own established policy), but this file's own LayoutRegistry surface - CYRILLIC_LANGUAGES
+        // existing at all - is the real, pure prerequisite that test once waited on, so asserting it here
+        // keeps this the one place a future reader finds the whole story.
+        assertEquals(3, LayoutRegistry.CYRILLIC_LANGUAGES.size)
     }
     
     @Test
