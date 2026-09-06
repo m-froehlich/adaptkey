@@ -915,6 +915,59 @@ non-trivial changes).
 
 ## Current State
 
+- **§439 (v1.1.78): D-450-followup - `language_profiles.tsv` (A-03 trigram language detection) built for**
+  **all seventeen D-450-round languages, closing a gap named as an "accepted, named gap" in every one of**
+  **their own §422-§437 entries.** The original builder (a throwaway scratchpad script that worked from a
+  small UDHR sentence corpus, 80/20 train/eval split) is confirmed gone from this repo, per the existing
+  Progress.md note - reconstructed as a real, **committed** script this time (`dictionaries/
+  build_language_profiles.py`, not scratchpad, since a future language will need it again), working from a
+  much bigger real source than the original ever had: each language's own already-extracted, already-shipped
+  `dict.tsv` word-frequency table (a whole Wikipedia dump's worth of real word frequencies). Byte-for-byte
+  parity with `language.CharNgrams.normalize()`/`rankedProfile()` was the one correctness-critical point
+  (same as A-03's original Python/Kotlin parity requirement) - lowercase, non-letter runs collapse to a
+  single space, trim, wrap with one leading/trailing space, top-200 bi+trigrams by weighted count, ties
+  broken by the n-gram ascending; each `dict.tsv` row's own frequency is the weight (equivalent to treating
+  every dictionary word as that many independent, space-wrapped occurrences - reconstructs the true n-gram
+  frequency distribution for every n-gram that does not straddle two different words, which is the dominant
+  majority of any top-200 profile). Added: Swedish, Norwegian Bokmål, Danish, Finnish, Czech, Slovak,
+  Hungarian, Romanian, Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay, Indonesian, Swahili, Tagalog
+  (`sv`/`nb`/`da`/`fi`/`cs`/`sk`/`hu`/`ro`/`hr`/`bs`/`et`/`lv`/`lt`/`ms`/`id`/`sw`/`tl`) - 17 x 200 = 3,400 new
+  lines appended after the existing 8 languages' 1,600 (never touched), `language_profiles.tsv` now 5,000
+  lines / 25 languages total.
+
+  **Real verification against the A-03 classifier, not just a build-and-ship**: extended
+  `app/src/test/resources/language_eval.tsv` (116 -> 478 lines) with independent held-out real text for all
+  17 - UDHR translations (`eric-muller/udhr`, same source the original 8 used) for the 16 that have one
+  (confirmed directly via the repo's own file tree; Norwegian's is `nob`, Romanian's newest is `ron_2006`,
+  Bosnian's is `bos_latn` not the Cyrillic `bos_cyrl` variant), and - **Malay has no UDHR translation at
+  all**, a real, confirmed gap in that source, not an oversight - five real Malay Wikipedia article extracts
+  (`ms.wikipedia.org`, topics: Malaysia, Bahasa Melayu, Kuala Lumpur, Bola sepak, Matematik) instead, clearly
+  documented as a different-source exception in `LanguageDetectionEvaluationTest`'s own KDoc. This is
+  actually a **cleaner** split than the original 8 languages' own same-domain 80/20 UDHR split: profiles are
+  now built from one real corpus (Wikipedia word frequencies) and evaluated against a genuinely independent
+  one (UDHR / Wikipedia article prose), not different slices of the same small source.
+
+  **A real, fully-explained accuracy finding, not a silently-lowered bar**: with 25 languages the held-out
+  suite's accuracy came in at 0.864, below the original 8-language 0.90 floor. Diagnosed directly (a
+  standalone Python re-implementation of the exact same normalize/rank/distance algorithm, cross-checked
+  byte-for-byte against the real Gradle failure's own reported accuracy number before being trusted) rather
+  than just loosening the assertion: **every single misclassification in the whole 478-sentence corpus lands
+  on a specific, named, explicable confusable language, never a random unrelated one.** Four groups, all
+  genuinely near-identical or closely-related national-standard language pairs: Bosnian/Croatian, Czech/
+  Slovak, Indonesian/Malay, Lithuanian/Latvian (one-directional - Latvian was never mistaken for Lithuanian),
+  plus the Scandinavian trio Swedish/Danish/Norwegian-Bokmål and a single stray Romanian/Portuguese instance
+  (two Romance languages). One further, less obvious empirical finding, not a known linguistic-relatedness
+  fact: Swahili is measurably confusable with Tagalog/Indonesian/Malay specifically, most likely because all
+  four share a simple open-CV-syllable shape despite belonging to unrelated language families (Bantu vs.
+  Austronesian) - confirmed by inspecting every Swahili miss individually, all landing in that exact set,
+  never elsewhere. `LanguageDetectionEvaluationTest` now encodes this as a real, lasting regression guard
+  rather than just a lower number: a new `CONFUSABLE_GROUPS` table plus a new test
+  (`misclassifications never escape a known closely-related-language group`) asserts every miss across all
+  25 languages lands inside its own group - a future stray miss to an unrelated language fails this test
+  even though the (honestly, evidence-based) lowered blanket floor (0.90 -> 0.85, real headroom above the
+  measured 0.864) might still pass. 1,462 unit tests green (was 1,461).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
 - **§438 (v1.1.77): D-449-followup - Turkish's dotted/dotless İ/I capitalisation, closing the "still-open**
   **design question" named at the end of D-449 (§423/v1.1.62).** `CapitalisationEngine` gained a new,
   deliberately separate seam - `capitalisation/CasingRules` (interface + `DefaultCasingRules` + a
