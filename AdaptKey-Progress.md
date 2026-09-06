@@ -946,6 +946,58 @@ non-trivial changes).
      would be this app's first use of a floating IME overlay at all.
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
+- **D-451 - OPEN, reopened (2026-09-06).** The L-05 AltGr/long-press popup opening should get its own haptic
+  confirmation again, using the same effect as an ordinary key touch (`HapticTier.KEY_PRESS`'s `EFFECT_TICK`-
+  with-fallback path in `fireHaptic()`) - not the plain `performHapticFeedback(HapticFeedbackConstants.
+  LONG_PRESS)` system call `scheduleLongPress()` currently only reaches for a no-alternative long-press key.
+  D-396-followup (v3) had deliberately removed the popup-open haptic ("beim Aufpoppen braucht es keins, aber
+  beim Annehmen fehlt eins", the user's own words at the time) - the user has now reversed that call.
+  Additionally: unlike ordinary `KEY_PRESS` (`minSystemLevel = 3`, the OS slider's highest setting), this
+  event must already vibrate at system level 1 - needs its own `HapticTier` entry (or an equivalent gating
+  override), since `KEY_PRESS`'s existing threshold is tuned for the much more frequent plain keystroke, not
+  this rarer popup-open event. Not started.
+
+- **D-452 - OPEN, awaiting a device log from the user (2026-09-06).** A concern that something in the app the
+  user refers to as "Wahrscheinlich" takes noticeably long to resolve - possibly a real, not-yet-found
+  performance regression, not merely a slow but expected computation. Per this project's own diagnosis
+  convention, the cause is not to be guessed at or fixed before the user's own device log arrives - see that
+  log once supplied, do not speculate from this description alone.
+
+- **D-453 - OPEN, design question raised, not yet actioned pending explicit go (2026-09-06).** Double-
+  consonant "unfold" for autocorrect/chip suggestion: a typed `"bite"` should suggest `"bitte"`, `"tipen"`
+  should suggest `"tippen"` - certain German consonants are frequently under-doubled by a fast typist.
+  Recommendation discussed with the user, not yet implemented: model this as an extension of S-09's existing
+  neighbour-prefix escalation (D-328) - trying a duplicated-last-consonant prefix once the literal prefix
+  search finds nothing - rather than as a new unconditional fold/unfold table (`Umlaut`/`DataDiacriticFolding`,
+  D-435/D-436). Unlike `ß`->`"ss"` or a diacritic's ASCII form, doubling is not a fixed 1:1 substitution and
+  must stay conditional on an actual dictionary hit (else `"kaufen"` would spuriously suggest `"kauffen"`) -
+  exactly the conditionality S-09's mechanism already has and a static fold table does not. Needs the user's
+  own explicit go before implementing, per this project's own non-trivial-design-decision rule.
+
+- **D-454 - OPEN, awaiting the user's own "Startschuss" to implement in one pass (2026-09-06).** Restructure
+  the Language Packs settings screen (`LanguagePacksActivity`/`activity_language_packs`, D-280):
+  1. The intro `d280_intro` string currently explains both "how to install a further pack" and "English is
+     bundled" in one paragraph - split it: the intro stays only about the install/import flow for further
+     packs, no mention of English at all.
+  2. English gets its own row like every other language (bold endonym heading, status line), but its action
+     button must show it is built-in and must not be clickable - instead of being folded into the intro text.
+     `LanguagePackCatalog.ENTRIES` does not include English today (`rebuild()`'s loop only iterates that
+     list), so this needs a dedicated English row built outside/alongside that loop.
+  3. Sort the list alphabetically by each language's own endonym transliteration (`Language.endonym`) -
+     `rebuild()` currently iterates `LanguagePackCatalog.ENTRIES` in its declared catalog order, unsorted.
+  4. Installed languages float to the top of that list, themselves alphabetically sorted among each other
+     (not-installed languages below, also alphabetical).
+  5. `removePack()` (currently removes immediately with only a completion Toast, no confirmation) needs a
+     confirmation dialog ("einfache Nachfrage") before it actually runs.
+  6. A flag glyph before each language's own label. Which flag(s) to show per language is an open
+     sub-question, discussed with the user but not fully resolved for every language: Portuguese and Spanish
+     in particular have no single obviously-correct country, since both packs were built from the generic
+     `pt.wikipedia.org`/`es.wikipedia.org` dumps rather than a region-specific corpus (`PortugueseRules`
+     explicitly documents handling both European and Brazilian conventions). Working recommendation discussed
+     in conversation: one single, deliberately-chosen flag per language (not a country list), for UI
+     simplicity - resolve the exact per-language choice before or during implementation, not deferred past
+     the "Startschuss".
+
 ## Current State
 
 - **§441 (v1.2.1): D-450-followup - keyboard layouts (only - no dictionaries yet) for Russian, Ukrainian,**
