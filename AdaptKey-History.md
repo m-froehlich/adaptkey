@@ -20988,4 +20988,596 @@ or device-confirmed. Per the user's own mid-round process feedback (§432), late
 progressively more concise without sacrificing the real numbers or the honest documentation of every
 genuine finding - the same discipline this project has followed since its very first language pack.
 
+## §438 - D-449-followup - Turkish's dotted/dotless İ/I capitalisation, closing the "still-open design question" named at the end of D-449 (§423/v1.1.62).
+
+`CapitalisationEngine` gained a new,
+deliberately separate seam - `capitalisation/CasingRules` (interface + `DefaultCasingRules` + a
+`CasingRulesRegistry` keyed by `Language`, mirroring `LanguageRules`/`DiacriticFolding`'s identical D-410/
+D-435 "delegate to the active language, default to doing nothing special" shape) - rather than a tenth hook
+on `LanguageRules` itself: every existing `LanguageRules` hook encodes German compounding/inflection
+grammar with no bearing on single-character case mapping, and `CapitalisationEngine` is the only reader, so
+the two seams are kept apart on purpose. `CapitalisationEngine` now takes an optional
+`casing: CasingRules = DefaultCasingRules` constructor param (default preserves every existing caller's/
+test's behaviour byte-for-byte); its three `word.uppercase()`/`replaceFirstChar { it.uppercaseChar() }`/
+`replaceFirstChar { it.lowercaseChar() }` call sites now go through `casing.uppercaseAll`/`uppercaseFirst`/
+`lowercaseFirst`. `AdaptKeyService.installStores()` resolves `CasingRulesRegistry.rulesFor(language)` per
+language the same way it already resolves `LanguageRulesRegistry`/`KeyboardProximityRegistry`.
+
+`TurkishCasingRules` (`capitalisation/`, not `language/` - a character-casing convention, not a
+compounding/inflection grammar rule) implements the real Turkic dotted/dotless pair, verified directly
+against Unicode's own `SpecialCasing.txt` `tr`/`az` section rather than guessed: of its four Turkish-
+specific case-mapping lines, only two actually differ from Kotlin's locale-invariant default - `'ı'`
+already uppercases to `'I'` and `'İ'` already lowercases to `'i'` under the ordinary Unicode simple-case
+tables, so the implementation is a genuinely minimal two-character override: uppercasing plain `'i'` yields
+`'İ'` (not the ordinary `'I'`), and lowercasing plain `'I'` yields `'ı'` (not the ordinary `'i'`). Every
+other character defers to `Char.uppercaseChar()`/`lowercaseChar()` unchanged.
+
+New tests: `CasingRulesTest` (7 cases: `DefaultCasingRules` matches historical behaviour incl. NOT dotting
+Turkish `i`, registry resolution for Turkish vs. every other language incl. `UNKNOWN`) and
+`TurkishCasingRulesTest` (7 cases: `istanbul`->`İstanbul`, `Işık`->`ışık`, `ışık`->`IŞIK`, `İstanbul`->
+`istanbul`, whole-word `izmir`->`İZMİR`, non-i letters unaffected, empty-string no-op). 1461 unit tests
+green (was 1454). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+**Scope note, asked and answered the same session**: the user asked whether Azerbaijani/Uzbek (both
+deferred as Turkish-related, not yet in the `Language` enum) have further prerequisites now that this
+casing seam exists. Researched, not guessed: **Azerbaijani** shares the identical dotted/dotless İ/I pair
+with Turkish (Unicode's own `SpecialCasing.txt` groups `tr`/`az` under the same rule) - `TurkishCasingRules`
+would apply unchanged once `Language.AZERBAIJANI` exists (just add a registry entry, no new logic), but its
+real-world standard keyboard is **not** plain QWERTY - the "QÜERTY" layout (Ü replaces W, W not directly
+reachable) - so a dedicated layout is a real prerequisite, the same shape as Serbian's Cyrillic layout gap
+below, not a data-only round; decimal separator is comma, like every language implemented so far; kaikki.org
+has no native `az.wiktionary.org` edition, only the (thin) English-Wiktionary-derived extraction - coverage
+depth unverified, would need direct measurement before committing to a round. **Uzbek** does **not** have
+the dotted/dotless distinction at all in its modern Latin alphabet (confirmed - only Turkish, Azerbaijani,
+Crimean Tatar, Gagauz, Kazakh and Tatar use it) - `TurkishCasingRules` would not apply to it; its standard
+layout is QWERTY-compatible (the two special letters `oʻ`/`gʻ` use a modifier-letter apostrophe, typically
+typed via AltGr or a plain apostrophe substitute - no new layout class needed, unlike Azerbaijani); kaikki.org's
+own Uzbek dictionary is tiny (~4,174 words in the English-Wiktionary-derived extraction) - a real, verified
+coverage concern, not yet investigated further. Neither language was added to the `Language` enum or built
+this round - this was a prerequisites check only, not a go-ahead to build.
+
+## §439 - D-450-followup - `language_profiles.tsv` (A-03 trigram language detection) built for all seventeen D-450-round languages, closing a gap named as an "accepted, named gap" in every one of their own §422-§437 entries.
+
+The original builder (a throwaway scratchpad script that worked from a
+small UDHR sentence corpus, 80/20 train/eval split) is confirmed gone from this repo, per the existing
+Progress.md note - reconstructed as a real, **committed** script this time (`dictionaries/
+build_language_profiles.py`, not scratchpad, since a future language will need it again), working from a
+much bigger real source than the original ever had: each language's own already-extracted, already-shipped
+`dict.tsv` word-frequency table (a whole Wikipedia dump's worth of real word frequencies). Byte-for-byte
+parity with `language.CharNgrams.normalize()`/`rankedProfile()` was the one correctness-critical point
+(same as A-03's original Python/Kotlin parity requirement) - lowercase, non-letter runs collapse to a
+single space, trim, wrap with one leading/trailing space, top-200 bi+trigrams by weighted count, ties
+broken by the n-gram ascending; each `dict.tsv` row's own frequency is the weight (equivalent to treating
+every dictionary word as that many independent, space-wrapped occurrences - reconstructs the true n-gram
+frequency distribution for every n-gram that does not straddle two different words, which is the dominant
+majority of any top-200 profile). Added: Swedish, Norwegian Bokmål, Danish, Finnish, Czech, Slovak,
+Hungarian, Romanian, Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay, Indonesian, Swahili, Tagalog
+(`sv`/`nb`/`da`/`fi`/`cs`/`sk`/`hu`/`ro`/`hr`/`bs`/`et`/`lv`/`lt`/`ms`/`id`/`sw`/`tl`) - 17 x 200 = 3,400 new
+lines appended after the existing 8 languages' 1,600 (never touched), `language_profiles.tsv` now 5,000
+lines / 25 languages total.
+
+**Real verification against the A-03 classifier, not just a build-and-ship**: extended
+`app/src/test/resources/language_eval.tsv` (116 -> 478 lines) with independent held-out real text for all
+17 - UDHR translations (`eric-muller/udhr`, same source the original 8 used) for the 16 that have one
+(confirmed directly via the repo's own file tree; Norwegian's is `nob`, Romanian's newest is `ron_2006`,
+Bosnian's is `bos_latn` not the Cyrillic `bos_cyrl` variant), and - **Malay has no UDHR translation at
+all**, a real, confirmed gap in that source, not an oversight - five real Malay Wikipedia article extracts
+(`ms.wikipedia.org`, topics: Malaysia, Bahasa Melayu, Kuala Lumpur, Bola sepak, Matematik) instead, clearly
+documented as a different-source exception in `LanguageDetectionEvaluationTest`'s own KDoc. This is
+actually a **cleaner** split than the original 8 languages' own same-domain 80/20 UDHR split: profiles are
+now built from one real corpus (Wikipedia word frequencies) and evaluated against a genuinely independent
+one (UDHR / Wikipedia article prose), not different slices of the same small source.
+
+**A real, fully-explained accuracy finding, not a silently-lowered bar**: with 25 languages the held-out
+suite's accuracy came in at 0.864, below the original 8-language 0.90 floor. Diagnosed directly (a
+standalone Python re-implementation of the exact same normalize/rank/distance algorithm, cross-checked
+byte-for-byte against the real Gradle failure's own reported accuracy number before being trusted) rather
+than just loosening the assertion: **every single misclassification in the whole 478-sentence corpus lands
+on a specific, named, explicable confusable language, never a random unrelated one.** Four groups, all
+genuinely near-identical or closely-related national-standard language pairs: Bosnian/Croatian, Czech/
+Slovak, Indonesian/Malay, Lithuanian/Latvian (one-directional - Latvian was never mistaken for Lithuanian),
+plus the Scandinavian trio Swedish/Danish/Norwegian-Bokmål and a single stray Romanian/Portuguese instance
+(two Romance languages). One further, less obvious empirical finding, not a known linguistic-relatedness
+fact: Swahili is measurably confusable with Tagalog/Indonesian/Malay specifically, most likely because all
+four share a simple open-CV-syllable shape despite belonging to unrelated language families (Bantu vs.
+Austronesian) - confirmed by inspecting every Swahili miss individually, all landing in that exact set,
+never elsewhere. `LanguageDetectionEvaluationTest` now encodes this as a real, lasting regression guard
+rather than just a lower number: a new `CONFUSABLE_GROUPS` table plus a new test
+(`misclassifications never escape a known closely-related-language group`) asserts every miss across all
+25 languages lands inside its own group - a future stray miss to an unrelated language fails this test
+even though the (honestly, evidence-based) lowered blanket floor (0.90 -> 0.85, real headroom above the
+measured 0.864) might still pass. 1,462 unit tests green (was 1,461).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+## §440 - D-450-followup - first Serbian language pack, closing the one deferred exception from the 18-language D-450 round: a real Cyrillic keyboard layout.
+
+Added `LayoutKind.SERBIAN_CYRILLIC` +
+`keyboard/SerbianLayout.kt`, researched (not guessed) against the real, established standard - Microsoft's
+own `KBDYCC` "Serbian (Cyrillic)" layout, the JUSCII-descended QWERTZ-based physical layout every Serbian
+Windows/Linux install ships (verified directly against `kbdlayout.info/KBDYCC` and
+`learn.microsoft.com/.../kbdycc.html`). The 30-letter Vuk Karadžić alphabet maps unevenly onto the QWERTZ
+grid - 13 letters top row, 11 middle, 6 bottom - kept faithfully asymmetric rather than rebalanced for a
+tidier mobile look, since matching genuine muscle memory is the whole point; the historical `Ѕ` (Macedonian
+dze) filler at the desktop layout's own ISO-only key is correctly dropped (not part of the real Serbian
+alphabet at all). Unlike every Latin-script language, no `letterHints`/`hints.tsv`/`diacritics.tsv` -
+Serbian Cyrillic's five letters not shared with Russian/Bulgarian Cyrillic (Ђ/Љ/Њ/Ћ/Џ) are standalone code
+points, not diacritic composites, the same reasoning [GreekLayout.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/GreekLayout.kt)
+already established for the only other non-Latin-script pack. New `KeyboardProximitySerbianCyrillic`
+(matches the layout's own rows exactly) and a `"serbian_cyrillic"` row layout added to
+`confusables_scan.py`.
+
+**A real architectural generalisation, not just a new layout**: `LayoutRegistry.NON_LATIN_LANGUAGES` was
+Greek-only by construction (`filterValues { it == GREEK }`) - generalised to `filterValues { it !in
+LATIN_KINDS }` so any future non-Latin script gets the same treatment automatically.
+`AdaptKeyService.resolveDict()`'s own Greek-only unconditional-trust branch (`if (activeLanguage ==
+Language.GREEK) ...`) was generalised the same way, for a real correctness reason found while wiring
+Serbian in, not merely for symmetry: `LanguageClassifier.isForeign()`'s n-gram profiles are exclusively
+Latin-script and its own guard specifically measures GERMAN's margin (a known, already-documented
+simplification) - running Cyrillic text through it while Serbian is active would almost certainly misfire,
+silently suppressing Serbian's own autocorrect. **Deliberately NOT built**: real Cyrillic-vs-Cyrillic
+switching logic - there is only one Cyrillic language today, nothing to distinguish from, and building
+speculative same-script classification with no second real profile to verify it against would be pure
+guesswork. Instead, a new `LayoutRegistryTest` canary test asserts no two languages share a non-Latin
+`LayoutKind` yet - it is designed to **fail** the moment a second Cyrillic language joins Serbian, forcing
+that future round back to this exact spot rather than letting the gap survive silently. (Session note: the
+user asked mid-session whether restructuring the check to "look at other installed same-layout languages"
+would avoid a future code change - the answer, recorded here for continuity, is no: with zero Cyrillic
+profiles existing today, any such branch would be dead code with identical behaviour; the canary test
+achieves the actual goal - a loud, automatic reminder - without speculative branching.) Also: `Language
+.SERBIAN`'s own `endonym` corrected `"Srpski"` -> `"Српски"` (Cyrillic, matching this pack's own script
+commitment, the same convention Greek's `"Ελληνικά"` already follows).
+
+**Two real bugs found and fixed in the shared `dictionaries/sh/extract_wiktionary.py` extractor** (the
+Croatian/Bosnian/Serbian shared "sh" Wiktionary source, per kaikki.org's own single-edition treatment of
+all three) - both found via direct data inspection and the Guide's own mandatory calibration-ratio check,
+neither caught during the original hr/bs round since both use the unaffected Latin path:
+1. `usable_forms()`'s Cyrillic branch originally kept a form only when explicitly `"Cyrillic"`-tagged - but
+   a Cyrillic-headword entry (e.g. "жена") documents its OWN paradigm in Cyrillic by default, tagging the
+   rare Latin alternate `"romanization"` instead (confirmed: "жена" has 20 real forms, 0 tagged
+   `"Cyrillic"`) - the exact mirror of a Latin-headword entry's own tagging. Nearly every Serbian word got
+   zero usable forms as a direct, mechanical consequence. Fixed by making the exclusion tag
+   direction-dependent; no transliteration needed since the source already provides genuine native-script
+   forms either way.
+2. After fixing (1), the calibration check still measured an implausible verb ratio, traced to
+   "клечати"[freq 1] pairing with "био"/"буде"/"били"/"буду" at up to 54,830x: a periphrastic/compound-tense
+   raw form (e.g. "будем клечао") carries one `links` pair PER WORD, and `resolve_form_string()` naively
+   read only `links[0]` - always the auxiliary verb's own form, never the actual content verb. Same
+   symptom-class as French's D-444-followup/Dutch's D-447 (different root cause each time). Fixed Dutch's
+   way: skip the whole form when its raw string is multi-word, checked BEFORE any `links` substitution.
+   Directly spot-checked (not assumed) that the already-shipped Croatian pack shows no auxiliary-linked
+   absurd ratios in practice, so no republish was needed there - the fix is shared going forward regardless.
+
+Script confirmed the same way D-450's own Croatian entry already recorded: a direct 500-page sample of
+this pack's own Wikipedia dump measured 839,282 Cyrillic letters vs. 151,666 Latin (~5.5:1) - Cyrillic
+matches both the dominant real corpus content and Serbia's own constitutional primary script.
+`srwiki-latest-pages-articles.xml.bz2` (1.16GB compressed, re-downloaded this round - the previous
+session's own copy had been cleaned up) was processed via the same multiprocessing/hapax-pruning
+extractor - 708,165 real pages, 152,283,830 real tokens, the largest single-language token count of any
+D-450-family round so far (ahead of Turkish's 136.69M).
+
+**Net result**: `dict.tsv` 315,689 rows (217,476 initial Wikipedia-frequency + kaikki-POS merge + 98,213
+from Wortfamilien completion; calibration ratios noun=0.3333 (n=26,769), verb=3.3333 (n=1,982 - elevated
+but explicable: productive "noun-from-verb" deverbal nouns like "питање"/"question" from "питати"/"to ask"
+genuinely out-frequency their own parent infinitive, consistent with the Balkan-Sprachbund
+infinitive-avoidance feature Serbian shares with Bulgarian/Macedonian/Romanian), adjective=0.6512
+(n=19,975) - all sane, verified pair-by-pair). POS tagging: 198,290 unrecognised-by-kaikki kept (`OTHER`),
+1,711,924 dropped, 0 common-English-word contamination (structurally impossible, Cyrillic vs. Latin
+script). Wiktionary matching: 18,293 lemmas tagged, 3,047 unmatched; 49,220 existing forms linked, 98,213
+generated. Proper nouns: 1,018 tagged, 92 unmatched, 62 skipped as collisions. Mandatory bare-noun safety
+check: 0. `bigram.tsv`: 1,144,589 rows (>=10 cutoff) from 3,595,744 at the raw >=3 floor. Quality gate
+clean (0 duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows).
+
+`abbreviations.tsv`: a 12-entry list transliterated directly from Croatian's own already-vetted one (same
+South Slavic convention, same shared Wiktionary source language family), not drafted from scratch.
+`SerbianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (directly verified - Serbia uses
+a decimal comma), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
+`confusables_scan.py sr/dict.tsv serbian_cyrillic 30` found 2,621 candidate pairs, left deliberately
+uncurated per the same reasoning every non-German round documents. Capitalisation (Guide step 8): does NOT
+capitalise common nouns like German - `merge_dict.py`'s own `resolve_tags()` already guarantees this
+structurally (a bare `NOUN` gains `OTHER` too), the same default every non-German language built via this
+template shares. New tests: `SerbianLayoutTest`, `KeyboardProximitySerbianCyrillicTest`,
+`LanguageRulesTest`'s `Serbian resolves to SerbianRules` block, `LayoutRegistryTest` additions incl. the
+canary test above. 1,487 unit tests green (was 1,462). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+**Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
+who actually speaks Serbian. Real, full-dump corpus scale (152.28M real tokens, the largest of any
+language this project has built) and a real, freshly-fixed Wortfamilien pipeline - but the same "pretty
+good, not done" ceiling as every other pipeline-built language. Not device-confirmed either. **This closes the Cyrillic-keyboard-layout gap named at the end of the 18-language D-450 round.**
+
+## §441 - D-450-followup - keyboard layouts (only - no dictionaries yet) for Russian, Ukrainian, Azerbaijani, and Uzbek, in preparation for building all four as real language packs in a future session.
+
+Added `Language.RUSSIAN`/`UKRAINIAN`/`AZERBAIJANI`/`UZBEK` to the enum. Uzbek needs no new layout code at
+all - its own real standard is Latin-QWERTY-compatible (confirmed via research: the two special letters
+`oʻ`/`gʻ` use a modifier-letter apostrophe, handled the same way any other Latin diacritic's `hints.tsv`
+entry would be - dictionary-round work, not layout work).
+
+**Russian + Ukrainian share ONE new `JcukenLayout.kt`, mirroring `KeyboardLayout`'s own QWERTY/QWERTZ variant-flag pattern - a real architectural question the user raised mid-session, verified letter-by-letter before answering it.** Both researched against the real Microsoft standards (`KBDRU`/`KBDUR`,
+`kbdlayout.info`/`learn.microsoft.com`) - confirmed the two are the SAME real historical ЙЦУКЕН keyboard
+with only three substituted letters plus one added key, not two unrelated standards: top row differs only
+in its last letter (`ъ` vs. `ї`), middle row differs in position 2 (`ы` vs. `і`) and its last letter (`э`
+vs. `є`), and Ukrainian's own bottom row adds a leading `ґ` where Russian's own leading slot is punctuation
+(a real desktop ISO-key artifact, not a letter either way). `JcukenLayout.rows(..., ukrainian: Boolean)`
+captures this with one shared implementation and two row-string constants per row, exactly like
+`KeyboardLayout.rows(qwerty: Boolean)` does for Latin. Russian's own `ё` (a real, distinct letter with no
+slot in this app's mobile row shape, same practical constraint every desktop-only extra key already has
+here) is offered as a long-press secondary on `е` instead, mirroring `GreekLayout`'s own accent-on-vowel
+convention - Ukrainian does not get this secondary at all, since `ё` is not part of its alphabet.
+
+**The user also asked whether the already-built Serbian layout could be refolded into this same
+Russian-based "variant" pattern - verified directly and answered no, with the real evidence, not just
+reasserting the original design call:** Serbian's own JUSCII-descended layout (see its own D-450-followup
+entry above) is phonetically mapped onto the LATIN QWERTZ physical grid (its own `з`/`у`/`и`/`о`/`п` sit
+exactly where Latin `z`/`u`/`i`/`o`/`p` do) - a completely different historical lineage from Russian's own
+ЙЦУКЕН, which has its own independent typewriter-derived arrangement unrelated to Latin key positions at
+all. The two share no meaningful structural overlap (`у` appears in both, but at column 7 in Serbian vs.
+column 3 in Russian) - `SerbianLayout` correctly stays its own independent object.
+
+**A real gap in the D-450-followup Cyrillic generalisation, found and fixed while wiring these two in, not before shipping**: `LayoutRegistry.NON_LATIN_LANGUAGES`'s own canary test (added for Serbian, see above)
+checked for a shared `LayoutKind`, not a shared *script* - Russian and Ukrainian each correctly get their
+own distinct `LayoutKind` (real, different physical layouts), so that test would have kept silently passing
+even though they - and Serbian - are all genuinely Cyrillic and share the exact same "AdaptKeyService.
+resolveDict() cannot yet tell these apart" concern the canary existed to catch. Fixed properly, not
+patched: added a real `Script` enum (`LATIN`/`GREEK`/`CYRILLIC`) and a `LayoutRegistry.scriptFor(Language)`
+function, and rewrote the canary to check for a shared `Script` instead. It now correctly documents the
+real, deliberate state: Serbian/Russian/Ukrainian **do** share a script, `resolveDict()` still trusts
+whichever is active unconditionally (unchanged, no code needed there), and this is a conscious decision,
+not a silent gap - because no per-language Cyrillic `language_profiles.tsv` trigram data exists yet for
+any of the three to build a real same-script classifier from (dictionary-pipeline work, added to Open
+TODOs below).
+
+**Azerbaijani needed its own full `AzerbaijaniLayout.kt` - the real standard turned out to be a much bigger restructuring than an earlier casual description suggested, caught by pulling the real Microsoft table instead of trusting a summary.** An earlier web-search summary (from the session's own prerequisites
+check) described it as "QÜERTY - Ü replaces W", implying a single-letter QWERTZ-style swap; the real
+`KBDAZST` standard (`learn.microsoft.com/en-us/globalization/keyboards/kbdazst.html`) shows `q`/`w` do not
+even sit at their ordinary QWERTY positions at all (`q` is on the bottom row, `w` is dropped from the
+primary rows entirely) - a genuine cross-row restructuring, the same "AZERTY" category (D-314) as French's
+own layout, not a same-row variant flag. All 32 letters of the Azerbaijani Latin alphabet (including the
+dotted/dotless İ/I pair - `TurkishCasingRules`'s own Unicode `SpecialCasing.txt` `tr`/`az` rule applies
+unchanged here, needing only a future registry entry) sit directly on the three primary rows with no AltGr
+dependency, matching the real standard. Still genuinely Latin script, so it keeps the L-05/C-08
+`letterHints` AltGr overlay and reuses `KeyboardLayout.topRowKey`/`letterKey` so `p`/`o`/`a`/`e`/`n` keep
+their existing math-symbol popups (D-99) wherever they land - confirmed this lookup is keyed by character,
+not row/column position, so it works unchanged for a fully rearranged layout.
+
+New `KeyboardProximityRussianCyrillic`/`UkrainianCyrillic`/`Azerbaijani` (each matching its own layout's
+rows exactly - three separate grids, not shared, since the real letter positions genuinely differ even
+where Russian/Ukrainian share most of their skeleton). New tests: `JcukenLayoutTest` (12 cases covering
+both variants + the real 33/33-letter completeness check), `AzerbaijaniLayoutTest` (9 cases), three new
+`KeyboardProximity*Test` files, `LayoutRegistryTest` additions (`scriptFor` coverage, the rewritten canary,
+Uzbek's own QWERTY-default case). 1,526 unit tests green (was 1,487).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green.
+
+**Explicitly out of scope this round, by the user's own direction**: no `LanguageRules`/dictionary/catalog
+work for any of the four - layouts only, so the actual language packs (full Wikipedia-dump extraction,
+Wiktionary-based Wortfamilien completion, calibration/quality-gate/confusables-scan checks, catalog
+entries) are a deliberately separate, future session's work. New Open TODO added below for the real
+Cyrillic-vs-Cyrillic classifier gap this round's own `resolveDict()` KDoc update documents.
+
+## §442 - D-450-followup - first Russian language pack, first of the four §441 keyboard-layout-only languages to get a real dictionary.
+
+Full Language Contribution Guide §8 pipeline. By far the largest
+corpus this project has processed: the entire `ruwiki-latest-pages-articles.xml.bz2`
+(5,986,059,762 bytes compressed, ~5x the previous largest, Serbian's own) - live-verified before
+downloading. Free RAM checked first (~6.6GB of 16GB) and the extractor tuned down from Serbian's own
+settings rather than reused unchanged: 3 workers (not 5), more aggressive hapax-pruning triggers (2M/4M,
+not 4M/8M). Real result: 2,116,244 pages (matching `ru.wikipedia.org`'s own live `siteinfo` article count,
+2,116,865, almost exactly), 756,562,343 tokens, 2,410,579 distinct words, 9,687,936 raw bigram rows (>=3).
+RAM stayed stable throughout, never climbing unboundedly.
+
+**Wiktionary: Russian has a genuinely native edition** (`kaikki.org/dictionary/downloads/ru/ru-extract.jsonl.gz`,
+290,531,383 bytes - directly verified bigger than the wrong English-coverage file's 88,879,732 bytes) - the
+richest native Wiktionary source this project has processed (175,567 nouns, 187,834 verbs, 52,561
+adjectives, 136 prepositions, 21,282 proper nouns).
+
+**A real, serious bug found and fixed via the Guide's own mandatory calibration-ratio sanity check - not
+dismissed as "the pipeline ran cleanly, so it's probably fine."** The first pass's adjective ratio came
+back 21.0x (n=449), a stark outlier next to noun/verb's own ~0.4x/~0.97x. Pulling the real matched pairs
+directly showed the lemma side was corrupted: extremely common adjectives ("новый"/"new", "другой"/"other",
+"последний"/"last") had lost their trailing й, becoming the wrong but still valid-LOOKING words "новыи"/
+"другои"/"последнии" - the plain-Cyrillic-letters validation regex never caught it, which is exactly why
+this needed the ratio check to surface at all. Root cause: `strip_stress()` (added to remove the source's
+own combining stress marks, e.g. "дома́") NFD-normalised the whole string and dropped every Unicode
+category-Mn character, on an assumption ("no Russian letter decomposes under NFD") that was never actually
+verified and turned out false - й (U+0439) canonically decomposes to и (U+0438) + COMBINING BREVE (U+0306,
+also Mn), ё (U+0451) to е (U+0435) + COMBINING DIAERESIS (U+0308, also Mn), confirmed directly with
+Python's own `unicodedata.normalize`. Fixed by not normalising at all - the source text is already NFC, so
+`strip_stress()` now strips only the two specific stress-mark codepoints (U+0301/U+0300) directly, leaving
+й/ё untouched. Re-extracted from scratch; ratios came back sane (noun 0.3684, verb 0.6875, adjective
+0.6316) and the pure-`ADJECTIVE` tag count alone jumped 601 -> 23,172 in the initial kaikki merge, showing
+how much real data the bug had silently been losing.
+
+Also verified before writing the extractor, not assumed: Russian's periphrastic imperfective future is
+documented as one literal placeholder row ("бу́ду/бу́дешь… де́лать", tagged just "future") - excluded via the
+established "reject any form containing whitespace" rule (Turkish/Dutch precedent); no dotted/dotless-I
+casing quirk; genuinely prepositional (no Turkish-style prep-tag gap).
+
+**Net result**: `dict.tsv` 789,336 initial rows -> 1,581,888 after Wortfamilien completion (+792,552:
+154,897 lemmas tagged, 339,224 forms linked, 792,552 generated; ratios noun 0.3684/verb 0.6875/adjective
+0.6316, all sane). Proper nouns: 14,543 tagged, 4,944 unmatched, 1,795 collision-skipped. Bare-noun safety
+check: 0. `bigram.tsv`: 4,349,059 rows (>=10 cutoff, largest of any pack so far) from 9,687,936 raw.
+Quality gate: 0 duplicates/non-positive/orphaned-lemma/bare-NOUN - PASS. No `hints.tsv`/`diacritics.tsv`
+(Cyrillic letters are standalone code points, same as Serbian/Greek); `abbreviations.tsv` hand-drafted
+(26 entries). `RussianRules`: `decimalCommaGluesDigits`=true (GOST 8.417), `timeSuggestionWord`=null,
+`bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained `"russian_jcuken"`/`"ukrainian_jcuken"`
+row layouts (Ukrainian's own added now too, since it's next) and found 1,166 candidate pairs, left
+uncurated for the usual no-native-fluency reason. `language_profiles.tsv` gained a real 200-ngram Russian
+profile. Capitalisation: does not capitalise common nouns, like every other non-German language.
+**Honesty gate (step 11) NOT satisfied**: not reviewed by a Russian speaker, not device-confirmed.
+`versionCode` 497 -> 498, `versionName` "1.2.1" -> "1.2.2". Next: Ukrainian, then Azerbaijani, then Uzbek
+(same D-450-followup round).
+
+## §443 - D-450-followup - first Ukrainian language pack, second of the four §441 keyboard-layout-only languages to get a real dictionary.
+
+Full Guide §8 pipeline. `ukwiki-latest-pages-articles.xml.bz2`
+(2,689,611,157 bytes, live-verified) -> 1,433,142 pages (matching `uk.wikipedia.org`'s own live `siteinfo`
+count, 1,433,512), 389,701,751 tokens, 2,397,542 distinct words. Extractor settings reasoned from the real
+size ratio to Russian's own dump (2.69GB vs. 5.99GB): 4 workers, 3M/6M hapax-pruning triggers. Ukrainian's
+apostrophe (e.g. "п'ять"/"five") is a genuine letter-boundary marker, not punctuation - tokeniser allows it
+inside a run of letters like "-" for compounds.
+
+**No native Wiktionary edition** (`kaikki.org/dictionary/downloads/uk/` 404s, confirmed against
+`rawdata.html`) - used the English-Wiktionary-coverage fallback (27,908,333 bytes), genuinely thinner than
+Russian's own native source (11,250 nouns/5,348 verbs/5,126 adjectives vs. Russian's 175,567/187,834/
+52,561) - flagged explicitly in the catalog entry as needing more future curation than Russian's round.
+Learned proactively from Russian's own real bug: this fallback carries the identical combining-stress-mark
+shape, so the already-fixed `strip_stress()` (strip only U+0301/U+0300 directly, never NFD-normalise) was
+applied from the first pass - calibration ratios came back sane immediately (noun 0.2708, verb 0.5833,
+adjective 0.4667), no second debugging round needed this time.
+
+**Net result**: `dict.tsv` 471,516 -> 606,723 rows (+135,207 from Wortfamilien completion, all ratios sane).
+Bare-noun safety check: 0. `bigram.tsv`: 2,700,448 rows (>=10 cutoff) from 6,370,404 raw. Quality gate PASS.
+No `hints.tsv`/`diacritics.tsv` (standalone Cyrillic code points). `abbreviations.tsv`: 22 hand-drafted
+entries. `UkrainianRules`: `decimalCommaGluesDigits`=true (DSTU), `timeSuggestionWord`=null,
+`bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained `"ukrainian_jcuken"` (found 3,832
+candidates, left uncurated, usual no-native-fluency reason). `language_profiles.tsv` gained a real
+200-ngram Ukrainian profile. Capitalisation: does not capitalise common nouns.
+**Honesty gate (step 11) NOT satisfied**: not reviewed by a Ukrainian speaker, not device-confirmed, and
+the thin Wiktionary source makes this one more likely than Russian's to need follow-up curation.
+`versionCode` 498 -> 499, `versionName` "1.2.2" -> "1.2.3". Next: Azerbaijani, then Uzbek.
+
+## §444 - D-450-followup - first Azerbaijani language pack, third of the four §441 keyboard-layout-only languages to get a real dictionary.
+
+Full Guide §8 pipeline. `azwiki-latest-pages-articles.xml.bz2`
+(323,312,325 bytes, live-verified, a small dump) -> 216,948 pages (matching `az.wikipedia.org`'s own live
+`siteinfo` count, 217,036), 55,499,902 tokens, 1,597,408 distinct words. RAM was not a constraint at this
+scale, so the extractor reused Serbian's own original settings (5 workers, 4M/8M triggers).
+
+**Real casing fix applied proactively**: Azerbaijani shares Turkish's own dotted/dotless İ/I Unicode
+SpecialCasing rule (confirmed against Unicode's own SpecialCasing.txt) - `azerbaijani_lower()` (Turkish's
+own mapping, reused unchanged) applied in both extraction scripts, and `CasingRulesRegistry` gained a
+one-line `Language.AZERBAIJANI to TurkishCasingRules` entry at the app's own runtime - no new logic needed.
+
+**No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback (15,724,873 bytes),
+which despite being the "wrong"/thinner file by size turned out structurally rich: real possessive-suffix
+noun paradigms at a similar scale to Turkish's own native edition, no combining stress marks at all. **Like
+Turkish (D-449), Azerbaijani is postpositional, not prepositional** - only 3 words tagged `prep`/
+`prep_phrase` in the whole file, no curated exception list built for the same no-native-fluency reason.
+
+Calibration ratios checked directly even though none crossed the guide's own outlier threshold: noun
+0.0893 (n=26,669), verb 0.4712 (n=6,685), adjective 0.0972 (n=56, smallest sample calibrated so far). Real
+pairs pulled directly showed genuine Azerbaijani morphology (possessive/predicative suffix chains, real
+intensive-reduplication forms like "yaşıl"->"yamyaşıl"/"very green") - not a bug, confirmed rather than
+assumed.
+
+**Net result**: `dict.tsv` 117,643 -> 651,702 rows (+534,059 from Wortfamilien completion). Bare-noun
+safety check: 0. `bigram.tsv`: 509,198 rows (>=10 cutoff) from 1,970,071 raw. Quality gate PASS. Unlike the
+two Cyrillic packs, this one DOES ship `hints.tsv`/`diacritics.tsv` - but with a real twist: every
+diacritic-pair letter (ç/ə/ğ/ı/ö/ş/ü) already has its own dedicated primary key on `AzerbaijaniLayout`, so
+`diacritics.tsv` (6 pairs shared with Turkish, "e"/"ə" the Azerbaijani-specific addition) is purely about
+typed-without-diacritic autocorrect recovery, not AltGr access. `hints.tsv` reuses the 10 language-neutral
+assignments every Latin-script pack shares plus a first-draft, explicitly-flagged UX set (manat sign,
+guillemets) for the remaining keys. `abbreviations.tsv`: 13 hand-drafted entries. `AzerbaijaniRules`:
+`decimalCommaGluesDigits`=true, `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
+`confusables_scan.py` gained `"azerbaijani"` (4,409 candidates, left uncurated). `language_profiles.tsv`
+gained a real 200-ngram Azerbaijani profile. Capitalisation: does not capitalise common nouns.
+**Honesty gate (step 11) NOT satisfied**: not reviewed by an Azerbaijani speaker, `hints.tsv`'s own
+currency/punctuation choices are a first draft not a verified fact, not device-confirmed.
+`versionCode` 499 -> 500, `versionName` "1.2.3" -> "1.2.4". Next and last: Uzbek.
+
+## §445 - D-450-followup - first Uzbek language pack, last of the four §441 keyboard-layout-only languages, closing the round.
+
+No new keyboard code needed - Uzbek is Latin-QWERTY-compatible.
+`uzwiki-latest-pages-articles.xml.bz2` (309,775,381 bytes, live-verified) -> 359,331 pages (matching
+`uz.wikipedia.org`'s own live `siteinfo` count, 359,635), 49,202,207 tokens, 1,555,474 distinct words.
+
+**Real structural finding, checked directly before writing the extractor**: Uzbek's "oʻ"/"gʻ" modifier-
+letter apostrophe is FIVE different Unicode characters in practice (U+02BB 231,133 occurrences, plain
+ASCII U+0027 211,260, U+02BC 30,841, curly quotes 5,653/3,199 - counted in a 50MB dump sample), tangling
+together two genuinely different orthographic phenomena: U+02BB marks "oʻ"/"gʻ" itself, U+02BC marks an
+unrelated loanword glottal stop (sanʼat/"art"). `normalize_apostrophes()` (shared between both extraction
+scripts) resolves every variant contextually - after o/g becomes U+02BB, elsewhere becomes U+02BC -
+without this, the same word would fragment across up to five spellings.
+
+**No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback (1,860,421 bytes),
+the **thinnest Wiktionary source of any pack this project has built** (4,465 total entries). One positive
+finding unlike Turkish/Azerbaijani: a clean `postp` tag (16 words, no ambiguity) mapped straight to
+`PREPOSITION`. `EXCLUDE_FORM_TAGS` deliberately omits `"error-unrecognized-form"` here (confirmed marking
+genuine words like "uydek"/"like a house", not noise - same finding sh's own script already documents).
+
+**Calibration check confirmed a genuine, surprising linguistic fact rather than a bug**: verb ratio 26.0x
+(n=1,101, a real sample) - Uzbek's own "-moq" infinitive citation form is rarely used in real prose
+compared to conjugated/converb forms ("boʻlmoq"/46 vastly outranked by "boʻlgan"/168,686), the same shape
+this project's own Greek pack already documents for its own citation convention. Confirmed via direct
+pair inspection across dozens of verbs, not assumed.
+
+**Net result**: `dict.tsv` 102,548 -> 215,306 rows (+112,758). Bare-noun safety check: 0. `bigram.tsv`:
+410,666 rows (>=10 cutoff) from 1,648,280 raw. Quality gate PASS.
+
+**Real architectural finding**: no `diacritics.tsv` shipped - `DiacriticTable.parse()` requires single-
+character variants, and "oʻ"/"gʻ" is a two-character digraph, so such an entry would silently become a
+non-functional empty mapping. `hints.tsv` DOES work correctly for the long-press typing side (verified
+against `AlternativeScript.extendsWord()` directly - both characters count as letters, so `o=oʻ`/`g=gʻ`
+correctly append the full sequence) plus the 10 language-neutral assignments every Latin-script pack
+shares. `abbreviations.tsv`: 11 hand-drafted entries. `UzbekRules`: `decimalCommaGluesDigits`=true,
+`timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py`'s plain `"qwerty"`
+layout found 1,693 candidates, left uncurated. `language_profiles.tsv` gained a real 200-ngram profile.
+Capitalisation: does not capitalise common nouns.
+**Honesty gate (step 11) NOT satisfied**: not reviewed by an Uzbek speaker, thinnest Wiktionary source of
+any pack built so far, and the `diacritics.tsv` gap is a real, documented limitation - expect this pack to
+need the most follow-up curation of the whole round. Not device-confirmed.
+`versionCode` 500 -> 501, `versionName` "1.2.4" -> "1.2.5". **This closes the four-language Russian/
+Ukrainian/Azerbaijani/Uzbek D-450-followup round** (§442-§445).
+
+## §446 - D-450-followup - Cyrillic-vs-Cyrillic auto-detection, closing the Open TODO §441 first flagged.
+
+Explicit user request, made once Russian/Ukrainian's own §442/§443 dictionaries had already
+built real `language_profiles.tsv` data - the one remaining piece, Serbian's own profile (deliberately
+skipped when its pack shipped, §440), was built specifically to unblock this
+(`dictionaries/build_language_profiles.py sr`, appended to the bundled asset - now 6,000 lines / 30
+languages total).
+
+**The actual mechanism needed almost no new logic** - `LanguageClassifier` was already fully generic
+(picks the smallest out-of-place n-gram distance among whatever profiles it is given; nothing in it
+assumes Latin script). `LayoutRegistry` gained a real `CYRILLIC_LANGUAGES` set (the `Script.CYRILLIC`
+subset of `NON_LATIN_LANGUAGES`, replacing the inline `.filter{}` the old gap-documenting canary test
+used). `LanguageProfileLoader` gained `loadProfiles()` (exposing the parsed map, not just a ready-made
+classifier) so `AdaptKeyService.onCreate()` could build a SECOND `LanguageClassifier` instance -
+`cyrillicClassifier` - scoped to exactly `CYRILLIC_LANGUAGES`'s own profiles, alongside the existing
+all-languages `languageClassifier`.
+
+`resolveDict()` gained a new branch, checked before the old "trust the active non-Latin language
+unconditionally" fallback: when `activeLanguage` is itself a Cyrillic language, `cyrillicClassifier`
+classifies the recent context; a confident (`>= CYRILLIC_SIBLING_MARGIN`, reusing `isForeign()`'s own
+0.15 default rather than inventing a new number), currently-INSTALLED, different sibling routes that
+token to its own dictionary (`suppressAutocorrect = false`, mirroring the existing English-routing case -
+the sibling's own dictionary is perfectly usable, nothing about the text is actually foreign to it). The
+installed-check matters: unlike English (always bundled), Russian/Ukrainian/Serbian are all optional
+downloads - routing to an uninstalled sibling would crash `providers.getValue(...)` in
+`selectActiveDictionary()`, so the new branch checks `providers.containsKey(...)` first.
+
+**Real active-language promotion, not just per-token routing** - the user's own wording ("ein paar
+Worte tippen... muss das Wörterbuch switchen") asked for the same sustained-usage-promotes-to-a-real-
+switch behaviour D-130 already gives English, not just a silent per-token dictionary override.
+`trackSustainedEnglishUsage`/`consecutiveEnglishWords` generalised to
+`trackSustainedLanguageUsage`/`consecutiveForeignWords`+`consecutiveForeignLanguage` (the language being
+accumulated now needs tracking too, since it is not always the same target the way it was always English
+before) - confirmed this is a strict superset of the old behaviour for the pre-existing English case, not
+a change to it: `tokenLanguage` there was always either `activeLanguage` itself or `Language.ENGLISH`,
+never a third value.
+
+**One real, substantive difference from the English case, not just a rename**: the promotion now calls
+`applyActiveLanguageToView()` (D-130's own English-only version deliberately did not, since English needs
+no layout of its own - "the layout... is already correct and simply stays exactly as it was"). A
+Russian-to-Ukrainian promotion genuinely needs the physical keys to change (`JcukenLayout`'s own
+`ukrainian` flag), so this call is no longer a no-op for every possible promotion target. Verified safe
+for the English case too: `LayoutRegistry.kindFor` already pins the layout to the system language
+whenever `activeLanguage` is not itself non-Latin, so calling it during an English promotion re-derives
+the identical layout the old code left untouched, just computed instead of assumed.
+
+New tests: `LayoutRegistryTest` gained `CYRILLIC_LANGUAGES` coverage (replacing the old gap-documenting
+canary, which is retired now that the gap it named is closed); `LanguageClassifierTest` gained a direct
+demonstration that the already-generic classifier discriminates three real Cyrillic siblings from each
+other (not just from Latin text) using real short Russian/Ukrainian/Serbian sample sentences. `resolveDict()`
+itself stays untested directly, same as every other Android-Service-internal branch in this file.
+`versionCode` 501 -> 502, `versionName` "1.2.5" -> "1.2.6". Build + full test suite green.
+
+Also done same session: `CREDITS.md`'s language-dictionary and language-detection-profile sections,
+stale since long before this round (still described only the original German/English/Greek bundled trio
+and a UDHR-only profile source), rewritten to name all 30 downloadable languages plus bundled English and
+to correctly split the two real profile sources (UDHR for the original 8, real Wikipedia `dict.tsv` data
+for every D-450-round addition since).
+
+## §447 - D-454 - Language Packs settings screen restructured, per the user's own six-point list
+
+`d280_intro` no longer mentions English
+at all - it now gets its own row (`LanguagePacksActivity.buildBuiltInRow()`), identical in shape to every
+other language's (flag glyph + bold endonym heading) but with one permanently-disabled "Built-in" button in
+place of the usual status text + install/remove/download buttons. `rebuild()` now builds one combined,
+sorted list (English plus every `LanguagePackCatalog.ENTRIES` row) instead of iterating the catalog in its
+raw declared order: available-for-typing-right-now (English, or an installed pack) sorts before everything
+else, each half then alphabetical by `Language.endonym` via a locale-independent `Collator.getInstance()`
+(deliberately not a per-language one - this list mixes many languages/scripts at once, so no single
+language's own collation rules are more "correct" here than any other's). `removePack()` now goes through a
+new `confirmRemove()` first - a plain `AlertDialog`, mirroring `BlacklistActivity.confirmRemove()`'s own
+existing pattern exactly rather than inventing a new one.
+
+**The flag glyphs are a new `LANGUAGE_FLAGS: Map<Language, String>`** (companion object, `LanguagePacksActivity`
+itself - UI-only data, deliberately not added to the pure/testable `Language` enum). One glyph per language,
+chosen editorially per the design discussed with the user (usually the language's own eponymous country -
+e.g. `🇩🇪` German, `🇫🇷` French, `🇪🇸` Spanish, `🇵🇹` Portuguese - see spec's own D-454 note for why a single
+"correct" choice does not exist for every language), with two deliberate exceptions worth naming: `🇬🇧🇺🇸`
+for English (the user's own explicit call - both flags shown together, not one), and `🇹🇿` for Swahili
+(Tanzania, not Kenya - the only one of the two where Swahili is the *sole* official national language,
+rather than sharing that role with English, the more defensible single-country pick between real
+alternatives). Every `Language` enum value this app currently ships a layout or pack for has an entry;
+`flagFor()` falls back to an empty string for anything missing one (`UNKNOWN` only, today).
+
+Android-view glue (`LanguagePacksActivity`) - covered by the existing build (`:app:assembleRelease
+:app:testDebugUnitTest`, both green, no new unit tests needed or possible here) rather than a device check,
+per this project's own established convention for this class of screen.
+
+## §448 - D-451 (AltGr popup haptic, reinstated) + D-453 (double-consonant unfold), one small round.
+
+**D-451**: `HapticTier` gained a fourth value, `POPUP_OPEN(1)` - plays the identical click effect
+`KEY_PRESS` does (`fireHaptic()`'s own `when (tier)` branch now matches both together), so it is the
+literal "same system-standard click with fallback" the user asked for, but with `minSystemLevel = 1`
+instead of `KEY_PRESS`'s own 3 - it still fires even with the OS's "Haptic feedback" slider at its lowest
+setting. A new `AdaptKeyboardView.playPopupOpenHaptic()` (gated on `hapticsEnabled`, mirroring
+`playKeyFeedback()`) is called from `scheduleLongPress()`'s own `when` block for the one branch that was
+previously silent - a key whose long-press opens a real L-05 alternatives popup (not Shift's Caps Lock,
+not the popup-less listener-callback case). Reverses D-396-followup (v3)'s "beim Aufpoppen braucht es
+keins" call on the user's own later reconsideration - see spec §42's new D-451 note.
+
+**D-453**: `DictionarySuggestionProvider` gained a second D-328-shaped escalation,
+`doubledConsonantPrefixVariants()` - the insertion counterpart of `neighbourPrefixVariants()`'s own
+substitution, run directly after it in `obviousCandidates()` under the identical
+`candidates.isEmpty()`-gated shape. Tries, for every position holding one of `DOUBLING_ELIGIBLE_CONSONANTS`
+(`b d f g k l m n p r s t` - the German-orthography doubling set) not already doubled there, the variant
+with that consonant doubled, fed through the same `diacriticFolding.unfoldCandidates` +
+`unigramsByPrefix` loop as every other prefix variant. `MIN_DOUBLING_PREFIX_LENGTH = 3` (lower than D-328's
+own 5) since the shortest real example ("bite", 4 characters) is well below it, and - unlike a neighbour
+substitution, which multiplies by every adjacent key - this variant set is already naturally bounded by the
+token's own length, so a lower minimum does not risk the same combinatorial blow-up; confirmed the reason a
+shorter typed prefix of the same word (e.g. "bit" for "bitte") never needed this escalation in the first
+place: it is still a genuine literal prefix match on its own; only once the user types *past* the missed
+double does the mismatch - and the need for this escalation - actually arise. Not language-gated, same as
+D-328 itself - a pure keyboard/spelling heuristic, self-limiting by whatever the active language's own real
+dictionary actually contains. Four new `DictionarySuggestionProviderTest` cases (two positive - the user's
+own two examples - plus the length-gate's boundary and just-below-it) - see spec S-09's own D-453 addendum.
+
+Both closed the same round; `AdaptKeyboardView`/`DictionarySuggestionProvider` are unrelated files, no
+shared mechanism between the two beyond both reusing an existing pattern (`HapticTier`'s own tier-per-event
+gating; D-328's own escalation shape) rather than inventing a new one.
+
+## §449 - D-357 reopened and fixed for real, device-confirmed - mid-word edit + double-tap Shift capitalising the wrong letter.
+
+Closed once (2026-09-01) as not reproducible; the user captured a real
+Google Keep device log reproducing it and asked for a fresh look, per this project's own "re-derive from
+real logs, don't
+guess" convention for exactly this class of bug (spec §1's guiding principle).
+
+**Root cause, traced line-by-line against the log**: reclaim "bar" (caret between b/a) → Backspace deletes
+'b' (composing "ar", `composingCursor` now 0) → a second Backspace has nothing left inside composing to
+remove, so `deleteComposingChar()`'s own `composingCursor == 0` branch
+([AdaptKeyService.kt:3576](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:3576)) reaches
+past composing's own start and deletes the character immediately before it via `deleteOneBefore` - the log
+showed `composingAnchor` shift from 100 to 99 while composing's own text stayed exactly "ar". That branch
+only ever shifted `composingAnchor` to match - correct when the deleted character was an ordinary
+word-boundary delimiter, but the user's own real note had no space there at all: deleting it exposed a
+*letter* of a directly-adjacent word now glued to "ar" with nothing between them (the document reads one
+continuous word), which the old code never absorbed into composing. Retyping 'b' afterward only ever grew
+the still-too-short composing token back to "bar" - not the now-actually-longer real word - so
+`flipFirstInComposing` (G-05's double-tap-Shift toggle) correctly flipped composing's own first character,
+which was by then no longer the true word's first letter. The user's own hunch that this connects to Gemini
+(`reclaimOnCaretMoveSuppressed`) doesn't hold for the mechanism itself - this exact code path fires
+regardless of that flag, and the captured log is from Google Keep, not Gemini - but Gemini's suppression
+plausibly makes the *preconditions* (several plain Backspaces reaching past a short reclaimed token's own
+start) more common in practice, since a suppressed field leans more on explicit Backspace-driven reclaims
+than the ordinary reactive one.
+
+**Fix**: the `composingCursor == 0` branch now checks, *after* `deleteOneBefore` runs, whether the newly
+exposed character (not the deleted one - checked before, this was tried first and found to be the wrong
+character to inspect, see the code's own KDoc) is a letter, using exactly
+[`WordExtent.reclaim`](app/src/main/kotlin/de/froehlichmedia/adaptkey/gesture/WordExtent.kt)'s own
+boundary. A letter means composing must absorb the newly-adjacent word - handled by tearing composing down
+(`finishComposingText` + `clearComposing`) and calling `reclaimWordAtCaret()`, the same mechanism a fresh
+tap into a word already uses, rather than hand-rolling a character-by-character merge of composing's own
+per-character bookkeeping (`composingFlags`/`composingTaps`). `reclaimWordAtCaret()` already correctly
+defers to `applyShiftAfterDelete`'s own `shiftArmedByDelete` result from the deletion just above (D-335),
+confirmed by reading that existing interaction rather than assumed, so Shift state is unaffected by going
+through it here. A non-letter newly exposed (the ordinary case) keeps the original, simpler
+`composingAnchor`-only behaviour unchanged. No new unit test - this is `InputConnection`-glue logic with no
+existing `AdaptKeyService` test harness, this project's own accepted, established gap for this class of
+code; verification is the device repro itself. **Device-confirmed** against the exact repro parcours
+derived from the user's own log ("hat funktioniert").
+
 
