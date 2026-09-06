@@ -21,3 +21,9 @@ build/
 # and it may become unavailable, but is deliberately excluded from git history for its size - re-download
 # from https://kaikki.org/dictionary/Serbo-Croatian/kaikki.org-dictionary-SerboCroatian.jsonl if needed.
 dictionaries/*/*.jsonl
+
+# 2026-09-06: dictionaries/ru/bigram.tsv (141 MB) exceeds GitHub's 100 MB hard per-file push limit - Cyrillic's
+# heavier UTF-8 byte-width roughly doubles this file's size versus a Latin-script bigram table of comparable
+# row count. Kept locally only (regenerate from the Russian corpus pipeline if needed); the already-committed
+# language-packs/adaptkey-lang-ru.zip ships the same data compressed (49.7 MB) and is unaffected.
+dictionaries/ru/bigram.tsv
