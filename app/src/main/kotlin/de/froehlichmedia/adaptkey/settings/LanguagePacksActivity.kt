@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,6 +27,7 @@ import de.froehlichmedia.adaptkey.dictionary.LanguagePackStorage
 import de.froehlichmedia.adaptkey.download.DownloadFileSupport
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
+import java.text.Collator
 
 /**
  * D-280: install/remove screen for the languages beyond English (always bundled) - reachable from Settings
@@ -88,13 +90,60 @@ class LanguagePacksActivity : AppCompatActivity() {
         rebuild()
     }
     
+    /**
+     * D-454: English (always built-in, never in [LanguagePackCatalog.ENTRIES]) is folded into the same
+     * sorted list as every downloadable pack rather than described separately above it - see
+     * [buildBuiltInRow]. Sort order: available-for-typing-right-now (English, or an installed pack) before
+     * everything else, each half then alphabetical by [Language.endonym] via a locale-independent
+     * [Collator] (this list mixes many languages/scripts at once, so no single language's own collation
+     * rules would be more "correct" here than any other's).
+     */
     private fun rebuild() {
         container.removeAllViews()
         val installed = InstalledLanguagesStore.load(this)
-        for (entry in LanguagePackCatalog.ENTRIES) {
-            container.addView(buildRow(entry, entry.language in installed))
+        val collator = Collator.getInstance()
+        val entries = (LanguagePackCatalog.ENTRIES.map { it.language to it } + (Language.ENGLISH to null))
+            .sortedWith(
+                compareByDescending<Pair<Language, LanguagePackCatalog.Entry?>> { (language, entry) ->
+                    entry == null || language in installed
+                }.thenBy(collator) { (language, _) -> language.endonym }
+            )
+        for ((language, entry) in entries) {
+            container.addView(if (entry == null) buildBuiltInRow(language) else buildRow(entry, language in installed))
         }
     }
+    
+    /**
+     * D-454: the built-in English row - same heading style as [buildRow], but a single, permanently
+     * disabled button in place of the usual status text + action buttons, since English can be neither
+     * installed nor removed.
+     */
+    private fun buildBuiltInRow(language: Language): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                topMargin = dp(16)
+            }
+        }
+        row.addView(TextView(this).apply {
+            text = "${flagFor(language)} ${language.endonym}"
+            setTypeface(typeface, Typeface.BOLD)
+        })
+        row.addView(Button(this).apply {
+            setText(R.string.d280_builtin)
+            isEnabled = false
+        })
+        return row
+    }
+    
+    /**
+     * D-454: the single, editorially-chosen flag glyph shown before a language's own label - not a claim
+     * about where a language is spoken, just a recognisable visual anchor per row. Every language gets
+     * exactly one flag, chosen for the country most closely associated with it (usually its own eponymous
+     * country), except [Language.ENGLISH] - the user's own explicit call - which shows both the UK's and
+     * the US's flags side by side rather than picking one.
+     */
+    private fun flagFor(language: Language): String = LANGUAGE_FLAGS[language].orEmpty()
     
     /**
      * D-307/D-308: a language pack row shows three status texts - not installed, installed and current, or
@@ -122,7 +171,7 @@ class LanguagePacksActivity : AppCompatActivity() {
             }
         }
         row.addView(TextView(this).apply {
-            text = entry.language.endonym
+            text = "${flagFor(entry.language)} ${entry.language.endonym}"
             setTypeface(typeface, Typeface.BOLD)
         })
         row.addView(TextView(this).apply {
@@ -138,7 +187,7 @@ class LanguagePacksActivity : AppCompatActivity() {
             row.addView(Button(this).apply {
                 setText(R.string.d280_remove)
                 isEnabled = !busy
-                setOnClickListener { removePack(entry.language) }
+                setOnClickListener { confirmRemove(entry.language) }
             })
         }
         row.addView(Button(this).apply {
@@ -258,6 +307,18 @@ class LanguagePacksActivity : AppCompatActivity() {
         }
     }
     
+    /**
+     * D-454: a simple confirmation before [removePack] actually runs - mirrors [BlacklistActivity]'s own
+     * [AlertDialog] pattern for the identical "the button itself is the only warning otherwise" concern.
+     */
+    private fun confirmRemove(language: Language) {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.d280_remove_confirm_title, language.endonym))
+            .setPositiveButton(R.string.d280_remove) { _, _ -> removePack(language) }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+    
     private fun removePack(language: Language) {
         LanguagePackInstaller.clear(LanguagePackStorage.packDir(this), language)
         deleteDatabase(DictionaryLoader.databaseName(language))
@@ -272,4 +333,50 @@ class LanguagePacksActivity : AppCompatActivity() {
     }
     
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+    
+    companion object {
+        
+        /**
+         * D-454: one editorially-chosen flag per language (two for [Language.ENGLISH], the user's own
+         * explicit exception - see [flagFor]'s own KDoc). Not present here means no flag is shown
+         * ([flagFor] falls back to an empty string) - every [Language] this app currently ships a layout or
+         * pack for is covered; a future new language needs its own entry added here too.
+         */
+        private val LANGUAGE_FLAGS: Map<Language, String> = mapOf(
+            Language.GERMAN to "🇩🇪",
+            Language.ENGLISH to "🇬🇧🇺🇸",
+            Language.GREEK to "🇬🇷",
+            Language.FRENCH to "🇫🇷",
+            Language.SPANISH to "🇪🇸",
+            Language.ITALIAN to "🇮🇹",
+            Language.DUTCH to "🇳🇱",
+            Language.PORTUGUESE to "🇵🇹",
+            Language.POLISH to "🇵🇱",
+            Language.TURKISH to "🇹🇷",
+            Language.SWEDISH to "🇸🇪",
+            Language.NORWEGIAN to "🇳🇴",
+            Language.DANISH to "🇩🇰",
+            Language.FINNISH to "🇫🇮",
+            Language.CZECH to "🇨🇿",
+            Language.SLOVAK to "🇸🇰",
+            Language.HUNGARIAN to "🇭🇺",
+            Language.ROMANIAN to "🇷🇴",
+            Language.CROATIAN to "🇭🇷",
+            Language.BOSNIAN to "🇧🇦",
+            Language.SERBIAN to "🇷🇸",
+            Language.ESTONIAN to "🇪🇪",
+            Language.LATVIAN to "🇱🇻",
+            Language.LITHUANIAN to "🇱🇹",
+            Language.INDONESIAN to "🇮🇩",
+            Language.MALAY to "🇲🇾",
+            // Swahili is the sole official national language across the whole of Tanzania (unlike Kenya,
+            // where it shares that role with English) - the more defensible single-country pick of the two.
+            Language.SWAHILI to "🇹🇿",
+            Language.TAGALOG to "🇵🇭",
+            Language.RUSSIAN to "🇷🇺",
+            Language.UKRAINIAN to "🇺🇦",
+            Language.AZERBAIJANI to "🇦🇿",
+            Language.UZBEK to "🇺🇿"
+        )
+    }
 }

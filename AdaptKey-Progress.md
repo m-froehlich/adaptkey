@@ -962,33 +962,9 @@ non-trivial changes).
   an actual dictionary hit (else `"kaufen"` would spuriously suggest `"kauffen"`) - exactly the conditionality
   S-09's mechanism already has and a static fold table does not. Not yet scheduled for a specific round.
 
-- **D-454 - OPEN, awaiting the user's own "Startschuss" to implement in one pass (2026-09-06).** Restructure
-  the Language Packs settings screen (`LanguagePacksActivity`/`activity_language_packs`, D-280):
-  1. The intro `d280_intro` string currently explains both "how to install a further pack" and "English is
-     bundled" in one paragraph - split it: the intro stays only about the install/import flow for further
-     packs, no mention of English at all.
-  2. English gets its own row like every other language (bold endonym heading, status line), but its action
-     button must show it is built-in and must not be clickable - instead of being folded into the intro text.
-     `LanguagePackCatalog.ENTRIES` does not include English today (`rebuild()`'s loop only iterates that
-     list), so this needs a dedicated English row built outside/alongside that loop.
-  3. Sort the list alphabetically by each language's own endonym transliteration (`Language.endonym`) -
-     `rebuild()` currently iterates `LanguagePackCatalog.ENTRIES` in its declared catalog order, unsorted.
-  4. Installed languages float to the top of that list, themselves alphabetically sorted among each other
-     (not-installed languages below, also alphabetical).
-  5. `removePack()` (currently removes immediately with only a completion Toast, no confirmation) needs a
-     confirmation dialog ("einfache Nachfrage") before it actually runs.
-  6. A flag glyph before each language's own label. **Resolved (2026-09-06): one single, editorially-chosen**
-     **flag per language** (not a country list) - simplest for the UI, and no per-language choice is
-     objectively "correct" anyway (Portuguese/Spanish in particular have no single obviously-right country,
-     since both packs were built from the generic `pt.wikipedia.org`/`es.wikipedia.org` dumps rather than a
-     region-specific corpus - `PortugueseRules` explicitly documents handling both European and Brazilian
-     conventions). The user is aware a chosen flag could read as exclusionary to some speakers and has
-     explicitly deferred that concern ("kann ich nicht beurteilen... wäre ein Problem für später") rather than
-     designing around it now. **One explicit exception, the user's own call**: English shows both 🇬🇧 and 🇺🇸
-     side by side, not a single flag - no line-wrap risk here, and the US's much larger population of English
-     speakers should not be represented solely by the UK flag. Every other language still gets exactly one
-     flag. The concrete per-language flag choice itself (which single country for each language) still needs
-     to be made at implementation time - not enumerated here.
+- **D-454 - RESOLVED (§447, v1.2.7).** Restructured the Language Packs settings screen
+  (`LanguagePacksActivity`/`activity_language_packs`, D-280) per the user's own six-point list - see §447 in
+  Current State for the full implementation.
 
 - **D-455 - OPEN, root-caused, not yet fixed (2026-09-06).** In a `reclaimOnCaretMoveSuppressed` field
   (Gemini, D-351), moving the caret from one existing word into another leaves Caps/Shift stuck at whatever
@@ -1047,6 +1023,34 @@ non-trivial changes).
   (not `unigramsByPrefix` itself) before implementing anything - not yet done.
 
 ## Current State
+
+- **§447 (v1.2.7): D-454 - Language Packs settings screen restructured**, per the user's own six-point list
+  (see the now-closed backlog entry above for the full original ask). `d280_intro` no longer mentions English
+  at all - it now gets its own row (`LanguagePacksActivity.buildBuiltInRow()`), identical in shape to every
+  other language's (flag glyph + bold endonym heading) but with one permanently-disabled "Built-in" button in
+  place of the usual status text + install/remove/download buttons. `rebuild()` now builds one combined,
+  sorted list (English plus every `LanguagePackCatalog.ENTRIES` row) instead of iterating the catalog in its
+  raw declared order: available-for-typing-right-now (English, or an installed pack) sorts before everything
+  else, each half then alphabetical by `Language.endonym` via a locale-independent `Collator.getInstance()`
+  (deliberately not a per-language one - this list mixes many languages/scripts at once, so no single
+  language's own collation rules are more "correct" here than any other's). `removePack()` now goes through a
+  new `confirmRemove()` first - a plain `AlertDialog`, mirroring `BlacklistActivity.confirmRemove()`'s own
+  existing pattern exactly rather than inventing a new one.
+  
+  **The flag glyphs are a new `LANGUAGE_FLAGS: Map<Language, String>`** (companion object, `LanguagePacksActivity`
+  itself - UI-only data, deliberately not added to the pure/testable `Language` enum). One glyph per language,
+  chosen editorially per the design discussed with the user (usually the language's own eponymous country -
+  e.g. `🇩🇪` German, `🇫🇷` French, `🇪🇸` Spanish, `🇵🇹` Portuguese - see spec's own D-454 note for why a single
+  "correct" choice does not exist for every language), with two deliberate exceptions worth naming: `🇬🇧🇺🇸`
+  for English (the user's own explicit call - both flags shown together, not one), and `🇹🇿` for Swahili
+  (Tanzania, not Kenya - the only one of the two where Swahili is the *sole* official national language,
+  rather than sharing that role with English, the more defensible single-country pick between real
+  alternatives). Every `Language` enum value this app currently ships a layout or pack for has an entry;
+  `flagFor()` falls back to an empty string for anything missing one (`UNKNOWN` only, today).
+  
+  Android-view glue (`LanguagePacksActivity`) - covered by the existing build (`:app:assembleRelease
+  :app:testDebugUnitTest`, both green, no new unit tests needed or possible here) rather than a device check,
+  per this project's own established convention for this class of screen.
 
 - **§446 (v1.2.6): D-450-followup - Cyrillic-vs-Cyrillic auto-detection, closing the Open TODO §441 first**
   **flagged.** Explicit user request, made once Russian/Ukrainian's own §442/§443 dictionaries had already

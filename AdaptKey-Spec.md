@@ -1460,6 +1460,17 @@ fixed, un-suffixed name - a downloaded pack is extracted into its own per-langua
 rather than a shared flat directory, and the same fixed names are used for the bundled-English assets too
 (one naming convention regardless of whether a language ships inside the APK or is downloaded separately).
 
+D-454: the settings screen itself no longer describes English in its intro paragraph - it gets its own row,
+identical in shape to every other language's (a flag glyph + bold endonym heading) but with a single,
+permanently disabled button reading "Built-in" in place of the usual status text and install/remove/download
+buttons, since it can be neither installed nor removed. Every row - English included - is sorted into one
+list: available-for-typing-right-now (English, or an installed pack) before everything else, each half then
+alphabetical by the language's own endonym. Removing an installed pack now asks for confirmation first. Every
+row's heading is preceded by a single, editorially-chosen flag glyph (two for English - the UK's and the
+US's, shown together rather than picking one) - not a claim about where a language is actually spoken, just a
+recognisable per-row visual anchor; which single country stands in for a language with no obviously "correct"
+one (e.g. Portuguese, Spanish) is a deliberate editorial call, not a derived fact.
+
 ### Adaptive Learning
 A tier-3-confident-but-tier-1-unknown word feeds back into the same dictionary-learning pipeline as any
 other confirmed word. Because that learning signal is only generated when tier-1 didn't already know the

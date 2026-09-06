@@ -214,13 +214,20 @@
     <string name="d398_title">Automatic language switch</string>
     <string name="d398_summary">Consecutive words in another language before the keyboard switches to it on its own (0 = off, manual switch only).</string>
     <string name="d280_title">Language packs</string>
-    <string name="d280_intro">English is always available. Every other language is an optional download (its dictionary is not bundled in the app, to keep it small) - download it once in the browser, then import the file. Afterwards it works fully offline, like everything else here.</string>
+    <!-- D-454: no longer mentions English at all - it gets its own row (built-in) alongside every other
+         language rather than being described separately in this intro. -->
+    <string name="d280_intro">Additional languages are optional downloads (each one\'s dictionary is not bundled in the app, to keep it small) - download the file once in the browser, then import it here. Afterwards it works fully offline, like everything else in this app.</string>
     <string name="d280_status_installed">Installed.</string>
     <string name="d280_status_update_available">Installed - update available.</string>
     <string name="d280_status_not_installed">Not installed.</string>
     <string name="d280_download">1. Download (in the browser)</string>
     <string name="d280_import">2. Import the downloaded file</string>
     <string name="d280_remove">Remove</string>
+    <!-- D-454: English's own row - a disabled button standing in for the usual status/action buttons, since
+         it is always built into the app and can be neither installed nor removed. -->
+    <string name="d280_builtin">Built-in</string>
+    <!-- D-454: %1$s = the language's own endonym, e.g. "Français". -->
+    <string name="d280_remove_confirm_title">Remove %1$s?</string>
     <string name="d280_imported">Language installed.</string>
     <string name="d280_already_current">Already up to date.</string>
     <!-- D-386-followup: distinct from "already up to date" - the found file is actually older than what
