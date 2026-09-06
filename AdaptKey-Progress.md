@@ -521,10 +521,11 @@ non-trivial changes).
     root-caused further since there is nothing left to fix.
   - **D-356 - OPEN, awaiting a concrete example.** A typed umlaut should not be carelessly reverted by
     autocorrect. Per §277: no concrete repro has been supplied yet to design against.
-  - **D-357 - REOPENED then RESOLVED for real (§449, v1.2.9).** The 2026-09-01 "no longer reproducible"
-    closure did not hold - the user captured a real device log reproducing it in Google Keep and asked for it
-    to be re-investigated. See §449 in Current State for the real root cause (traced from that log, not
-    guessed) and the fix.
+  - **D-357 - REOPENED then RESOLVED for real, device-confirmed (§449, v1.2.9).** The 2026-09-01 "no longer
+    reproducible" closure did not hold - the user captured a real device log reproducing it in Google Keep
+    and asked for it to be re-investigated. See §449 in Current State for the real root cause (traced from
+    that log, not guessed) and the fix. Confirmed working against the exact repro parcours derived from that
+    log ("hat funktioniert").
   - **D-358 - RESOLVED (§289 v1.0.44).** Double-tap-Backspace revert was broken right after punctuation -
     fixed alongside D-359.
   - **D-359 - RESOLVED (§289 v1.0.44).** A word reverted via double-tap Backspace was immediately
@@ -1013,9 +1014,10 @@ non-trivial changes).
 
 ## Current State
 
-- **§449 (v1.2.9): D-357 reopened and fixed for real - mid-word edit + double-tap Shift capitalising the**
-  **wrong letter.** Closed once (2026-09-01) as not reproducible; the user captured a real Google Keep device
-  log reproducing it and asked for a fresh look, per this project's own "re-derive from real logs, don't
+- **§449 (v1.2.9): D-357 reopened and fixed for real, device-confirmed - mid-word edit + double-tap Shift**
+  **capitalising the wrong letter.** Closed once (2026-09-01) as not reproducible; the user captured a real
+  Google Keep device log reproducing it and asked for a fresh look, per this project's own "re-derive from
+  real logs, don't
   guess" convention for exactly this class of bug (spec §1's guiding principle).
   
   **Root cause, traced line-by-line against the log**: reclaim "bar" (caret between b/a) → Backspace deletes
@@ -1050,7 +1052,8 @@ non-trivial changes).
   through it here. A non-letter newly exposed (the ordinary case) keeps the original, simpler
   `composingAnchor`-only behaviour unchanged. No new unit test - this is `InputConnection`-glue logic with no
   existing `AdaptKeyService` test harness, this project's own accepted, established gap for this class of
-  code; verification is the device repro itself.
+  code; verification is the device repro itself. **Device-confirmed** against the exact repro parcours
+  derived from the user's own log ("hat funktioniert").
 
 - **§448 (v1.2.8): D-451 (AltGr popup haptic, reinstated) + D-453 (double-consonant unfold), one small round.**
   
