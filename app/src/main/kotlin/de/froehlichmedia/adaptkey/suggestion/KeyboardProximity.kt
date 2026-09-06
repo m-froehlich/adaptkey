@@ -145,3 +145,23 @@ object KeyboardProximityGreek : KeyboardProximity {
     
     override fun neighboursOf(c: Char): Set<Char> = neighbours[c] ?: emptySet()
 }
+
+/**
+ * The Serbian Cyrillic keyboard geometry ([de.froehlichmedia.adaptkey.keyboard.LayoutKind.SERBIAN_CYRILLIC]),
+ * matching [de.froehlichmedia.adaptkey.keyboard.SerbianLayout]'s own `ROW_TOP`/`ROW_MIDDLE`/`ROW_BOTTOM`
+ * exactly (D-450-followup).
+ */
+object KeyboardProximitySerbianCyrillic : KeyboardProximity {
+    
+    private val ROWS = listOf("1234567890", "љњертзуиопшђж", "асдфгхјклчћ", "џцвбнм")
+    private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
+    
+    override fun adjacent(a: Char, b: Char): Boolean {
+        if (a == b) {
+            return false
+        }
+        return neighbours[a]?.contains(b) == true
+    }
+    
+    override fun neighboursOf(c: Char): Set<Char> = neighbours[c] ?: emptySet()
+}

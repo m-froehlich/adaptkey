@@ -141,6 +141,7 @@ object LanguageRulesRegistry {
         Language.ROMANIAN to RomanianRules,
         Language.CROATIAN to CroatianRules,
         Language.BOSNIAN to BosnianRules,
+        Language.SERBIAN to SerbianRules,
         Language.ESTONIAN to EstonianRules,
         Language.LATVIAN to LatvianRules,
         Language.LITHUANIAN to LithuanianRules,

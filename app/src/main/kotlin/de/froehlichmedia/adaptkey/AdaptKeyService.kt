@@ -6464,8 +6464,9 @@ class AdaptKeyService : InputMethodService() {
     private data class DictChoice(val language: Language, val suppressAutocorrect: Boolean)
     
     /**
-     * A-03 / D-106 stage 1 / D-280: chooses the dictionary for the recent [context]. Greek mode and English
-     * mode (both explicit G-01 language choices now, English promoted from an auto-detected-only fallback)
+     * A-03 / D-106 stage 1 / D-280: chooses the dictionary for the recent [context]. A non-Latin active
+     * language (D-450-followup: generalised from a Greek-only check - see [LayoutRegistry.NON_LATIN_LANGUAGES])
+     * and English mode (an explicit G-01 language choice now, promoted from an auto-detected-only fallback)
      * force their own lexicon unconditionally; otherwise the detector decides while whichever *other*
      * language is active (German, or any further installed language reached via [LanguageCycle]) - a
      * confidently English context uses the English lexicon, a confidently other-foreign context (one the
@@ -6476,10 +6477,22 @@ class AdaptKeyService : InputMethodService() {
      * from English regardless of which other language is actually active, so this must route to whatever
      * *is* active rather than assuming it is always German. Conservative by construction (see
      * [LanguageClassifier.isForeign]).
+     *
+     * D-450-followup: the non-Latin branch below is NOT "these languages can never be auto-switched away
+     * from" in general - it is "[languageClassifier]'s own n-gram profiles are exclusively Latin-script and
+     * its [LanguageClassifier.isForeign] guard specifically measures GERMAN's own margin, so consulting
+     * either one while a non-Latin language (Serbian Cyrillic, Greek) is active would compare that script's
+     * text against a mechanism that has nothing meaningful to say about it - almost certainly misfiring
+     * rather than helping." Serbian is the *only* Cyrillic-script language today, so this reduces to
+     * "trust it unconditionally," identical to Greek's own long-standing behaviour. A future second
+     * Cyrillic-script language would warrant its own dedicated same-script classifier (mirroring
+     * [ScriptDetector]'s existing Greek-fraction fast path, generalised) to allow switching *between*
+     * Cyrillic siblings while still never falling through to this Latin-only mechanism - deliberately not
+     * built now, since there is no second Cyrillic language yet to build or verify it against.
      */
     private fun resolveDict(context: String): DictChoice {
-        if (activeLanguage == Language.GREEK) {
-            return DictChoice(Language.GREEK, suppressAutocorrect = false)
+        if (activeLanguage in LayoutRegistry.NON_LATIN_LANGUAGES) {
+            return DictChoice(activeLanguage, suppressAutocorrect = false)
         }
         if (activeLanguage == Language.ENGLISH) {
             return DictChoice(Language.ENGLISH, suppressAutocorrect = false)

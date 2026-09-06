@@ -16,13 +16,30 @@ class LayoutRegistryTest {
         assertEquals(LayoutKind.LATIN_QWERTZ, LayoutRegistry.kindFor(Language.GERMAN))
         assertEquals(LayoutKind.LATIN_AZERTY, LayoutRegistry.kindFor(Language.FRENCH))
         assertEquals(LayoutKind.GREEK, LayoutRegistry.kindFor(Language.GREEK))
+        assertEquals(LayoutKind.SERBIAN_CYRILLIC, LayoutRegistry.kindFor(Language.SERBIAN))
         assertEquals(LayoutKind.LATIN_QWERTY, LayoutRegistry.kindFor(Language.ENGLISH))
         assertEquals(LayoutKind.LATIN_QWERTY, LayoutRegistry.kindFor(Language.SPANISH))
     }
     
     @Test
-    fun `NON_LATIN_LANGUAGES contains only Greek`() {
-        assertEquals(setOf(Language.GREEK), LayoutRegistry.NON_LATIN_LANGUAGES)
+    fun `NON_LATIN_LANGUAGES contains every non-Latin script`() {
+        assertEquals(setOf(Language.GREEK, Language.SERBIAN), LayoutRegistry.NON_LATIN_LANGUAGES)
+    }
+    
+    @Test
+    fun `D-450-followup no two languages share a non-Latin layout kind yet`() {
+        // AdaptKeyService.resolveDict() trusts any NON_LATIN_LANGUAGES member's own dictionary
+        // unconditionally, precisely BECAUSE no two of them share a LayoutKind today - there is nothing a
+        // same-script classifier could distinguish between yet (see that function's own D-450-followup
+        // KDoc). This test is the canary: it fails the moment a second language shares an existing non-Latin
+        // LayoutKind (e.g. a second Cyrillic language joining Serbian), which is exactly when resolveDict's
+        // own unconditional-trust shortcut must be revisited and given a real same-script classifier instead.
+        val kinds = LayoutRegistry.NON_LATIN_LANGUAGES.map { LayoutRegistry.kindFor(it) }
+        assertEquals(
+            kinds.size, kinds.toSet().size,
+            "a second language now shares a non-Latin LayoutKind - AdaptKeyService.resolveDict()'s " +
+                "unconditional non-Latin trust must be revisited with a real same-script classifier"
+        )
     }
     
     @Test
@@ -42,6 +59,8 @@ class LayoutRegistryTest {
     fun `D-400 an explicit switch into a non-Latin active language always wins, regardless of system language`() {
         assertEquals(LayoutKind.GREEK, LayoutRegistry.kindFor(Locale.GERMANY, Language.GREEK))
         assertEquals(LayoutKind.GREEK, LayoutRegistry.kindFor(Locale("el"), Language.GREEK))
+        assertEquals(LayoutKind.SERBIAN_CYRILLIC, LayoutRegistry.kindFor(Locale.GERMANY, Language.SERBIAN))
+        assertEquals(LayoutKind.SERBIAN_CYRILLIC, LayoutRegistry.kindFor(Locale("sr"), Language.SERBIAN))
     }
     
     @Test

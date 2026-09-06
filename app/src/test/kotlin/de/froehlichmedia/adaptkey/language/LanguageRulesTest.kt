@@ -676,6 +676,36 @@ class LanguageRulesTest {
     }
     
     @Test
+    fun `Serbian resolves to SerbianRules`() {
+        assertSame(SerbianRules, LanguageRulesRegistry.rulesFor(Language.SERBIAN))
+    }
+    
+    @Test
+    fun `Serbian glues a decimal comma`() {
+        assertTrue(SerbianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Serbian has no time-suggestion word`() {
+        assertNull(SerbianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Serbian curates no bundled blacklist yet`() {
+        assertTrue(SerbianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Serbian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(SerbianRules.blocksAsSplitPrefix("не", 0L))
+        assertFalse(SerbianRules.blocksAsFeminineAgentException("ица", "учитељ", true))
+        assertFalse(SerbianRules.blocksAsCompoundPrefix("добро", true))
+        assertFalse(SerbianRules.isPlausibleVerbInflection("читамо") { true })
+        assertFalse(SerbianRules.isPlausibleAdjectiveComparative("већи") { true })
+        assertNull(SerbianRules.splitCompound("кључна_реч", { true }) { it })
+    }
+    
+    @Test
     fun `Estonian resolves to EstonianRules`() {
         assertSame(EstonianRules, LanguageRulesRegistry.rulesFor(Language.ESTONIAN))
     }

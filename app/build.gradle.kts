@@ -37,8 +37,11 @@ android {
         // D-404: explicit user request bumped 1.0.112 -> 1.1.0 - a minor-version milestone marker, not a
         // further third-digit step, requested right after the adjective paradigm project (Tier 1, all three
         // parts of speech) and its non-LLM lemma-linking follow-up closed out D-404 end to end.
-        versionCode = 495
-        versionName = "1.1.78"
+        // D-450-followup: explicit user request bumped 1.1.78 -> 1.2.0 - a minor-version milestone marker,
+        // not a further third-digit step, requested on the same commit that adds the first Cyrillic-script
+        // language pack (Serbian) and the non-Latin-layout generalisation it required.
+        versionCode = 496
+        versionName = "1.2.0"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing

@@ -13,3 +13,11 @@ build/
 *.keystore
 !debug.keystore
 /keystore.properties
+
+# D-450-followup: raw multi-hundred-MB source dumps (Wiktionary/Wikipedia) are working material for the
+# dictionaries/<lang>/ pipeline scripts, never committed - matches the existing convention for Wikipedia XML
+# dumps (downloaded to a scratchpad, never checked in). dictionaries/sh/sh-extract.jsonl (277MB, the shared
+# Croatian/Bosnian/Serbian Wiktionary source) is kept locally for now since kaikki.org marks it deprecated
+# and it may become unavailable, but is deliberately excluded from git history for its size - re-download
+# from https://kaikki.org/dictionary/Serbo-Croatian/kaikki.org-dictionary-SerboCroatian.jsonl if needed.
+dictionaries/*/*.jsonl

@@ -19,6 +19,9 @@ ROW_LAYOUTS = {
     "qwertz": ["1234567890", "qwertzuiop", "asdfghjkl", "yxcvbnm"],
     "qwerty": ["1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm"],
     "azerty": ["1234567890", "azertyuiop", "qsdfghjklm", "wxcvbn"],
+    # D-450-followup: matches app/.../keyboard/SerbianLayout.kt's own ROW_TOP/ROW_MIDDLE/ROW_BOTTOM exactly
+    # (the real Serbian Cyrillic standard, Microsoft's KBDYCC - see that Kotlin object's own KDoc).
+    "serbian_cyrillic": ["1234567890", "љњертзуиопшђж", "асдфгхјклчћ", "џцвбнм"],
 }
 
 

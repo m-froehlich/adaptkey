@@ -24,7 +24,8 @@ enum class LayoutKind {
     LATIN_QWERTZ,
     LATIN_QWERTY,
     LATIN_AZERTY,
-    GREEK
+    GREEK,
+    SERBIAN_CYRILLIC
 }
 
 object LayoutRegistry {
@@ -32,8 +33,13 @@ object LayoutRegistry {
     private val KINDS: Map<Language, LayoutKind> = mapOf(
         Language.GERMAN to LayoutKind.LATIN_QWERTZ,
         Language.FRENCH to LayoutKind.LATIN_AZERTY,
-        Language.GREEK to LayoutKind.GREEK
+        Language.GREEK to LayoutKind.GREEK,
+        Language.SERBIAN to LayoutKind.SERBIAN_CYRILLIC
     )
+    
+    /** Every genuinely Latin-alphabet [LayoutKind] - everything else in the enum is a distinct, non-Latin
+     *  script requiring its own dedicated layout object. */
+    private val LATIN_KINDS: Set<LayoutKind> = setOf(LayoutKind.LATIN_QWERTZ, LayoutKind.LATIN_QWERTY, LayoutKind.LATIN_AZERTY)
     
     /**
      * @param language a keyboard-typing language
@@ -43,9 +49,14 @@ object LayoutRegistry {
      */
     fun kindFor(language: Language): LayoutKind = KINDS[language] ?: LayoutKind.LATIN_QWERTY
     
-    /** Languages with a genuinely different (non-Latin) alphabet, requiring dedicated layout code
-     *  ([GreekLayout]) rather than reusing [KeyboardLayout]. */
-    val NON_LATIN_LANGUAGES: Set<Language> = KINDS.filterValues { it == LayoutKind.GREEK }.keys
+    /**
+     * Languages with a genuinely different (non-Latin) alphabet, requiring dedicated layout code
+     * ([GreekLayout], [SerbianLayout]) rather than reusing [KeyboardLayout] - generalised (D-450-followup)
+     * from a Greek-only set to any non-[LATIN_KINDS] entry, so a second script sharing this same "always
+     * trust the active language, no QWERTY/QWERTZ/AZERTY fallback makes sense" treatment (a future further
+     * Cyrillic language, say) needs only its own `KINDS` entry above, not a change here too.
+     */
+    val NON_LATIN_LANGUAGES: Set<Language> = KINDS.filterValues { it !in LATIN_KINDS }.keys
     
     /**
      * D-400: the actual layout shown day to day - deliberately independent of [activeLanguage] (the

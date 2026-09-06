@@ -1,0 +1,18 @@
+# Serbian sentence-boundary abbreviations (D-450-followup, §6) - a period after one of these does not by
+# itself mark a sentence end, so §6's auto-capitalisation does not fire right after it. Lower-cased, period
+# included, one per line, matching Abbreviations.parse()'s own format. Transliterated directly from
+# dictionaries/hr/abbreviations.tsv's own already-vetted list (same South Slavic abbreviation convention,
+# same shared "sh" Wiktionary source language family - see SerbianRules' own KDoc) rather than drafted from
+# scratch.
+нпр.
+тј.
+итд.
+год.
+стр.
+бр.
+др.
+проф.
+мр.
+госп.
+сл.
+тзв.

@@ -2502,6 +2502,118 @@ object LanguagePackCatalog {
             // full-dump corpus scale, genuine calibration-sanity-checked Wortfamilien completion where the
             // source allows it, and zero claim of native-speaker review - "pretty good", not "done".
             version = 1
+        ),
+        Entry(
+            Language.SERBIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-sr.zip",
+            // D-450-followup: closes the one deferred exception from the 18-language D-450 round - Serbian
+            // needed a real Cyrillic keyboard layout (see `keyboard/SerbianLayout.kt`'s own KDoc: the real
+            // Microsoft/JUSCII-descended `KBDYCC` standard, researched directly against `kbdlayout.info`/
+            // `learn.microsoft.com`, not guessed), which is why it was deferred rather than built alongside
+            // Croatian/Bosnian in that round. Script is Cyrillic - directly measured (not assumed) against a
+            // real 500-page sample of this pack's own Wikipedia dump before deciding: 839,282 Cyrillic
+            // letters vs. 151,666 Latin (~5.5:1), confirming Serbian's own Wikipedia corpus is overwhelmingly
+            // Cyrillic, matching Serbia's own constitutional primary script - see
+            // `dictionaries/sr/extract_wiki_dump.py`'s own module docstring for the full measurement.
+            //
+            // POS/Wortfamilien source: the same shared "Serbo-Croatian" Wiktionary edition Croatian/Bosnian
+            // already use (kaikki.org treats all three as one "sh" language) - but genuinely NEW extraction
+            // work was still needed, not a reused copy: `dictionaries/sh/extract_wiktionary.py`'s own
+            // Cyrillic-script path (`want_cyrillic=True`) was **broken** until this round, in two real,
+            // separately-found ways - see below.
+            //
+            // **Real bug 1, found via direct data inspection before trusting the output (not caught during
+            // the original hr/bs round, since both use the unaffected Latin path)**: `usable_forms()`'s
+            // Cyrillic branch originally kept a form only when that specific form entry carried an explicit
+            // `"Cyrillic"` tag - but a CYRILLIC-headword entry (e.g. "жена", which is what `main()`'s own
+            // word-pattern filter actually selects for this pass) documents its OWN paradigm in Cyrillic BY
+            // DEFAULT, with the rare Latin alternate tagged `"romanization"` instead - the exact mirror image
+            // of a Latin-headword entry's own tagging (confirmed directly: "жена" has 20 real forms, 0 tagged
+            // `"Cyrillic"`). The original logic therefore kept zero usable forms for nearly every Serbian
+            // word. Fixed by making the exclusion tag direction-dependent (`"romanization"` for the Cyrillic
+            // pass, `"Cyrillic"` for the Latin pass, unchanged) - no transliteration needed, since the source
+            // already provides genuine native-script forms for both entries.
+            //
+            // **Real bug 2, found via the Guide's own mandatory calibration-ratio sanity check** (the first
+            // fixed run still measured an implausible verb ratio, driven by outliers like "клечати"[freq 1]
+            // paired with "био"/"буде"/"били"/"буду" at up to 54,830x): a periphrastic/compound-tense raw
+            // form (e.g. "будем клечао", future-ii of "клечати"/"to kneel") carries one `links` pair PER
+            // WORD, not one for the whole phrase - `resolve_form_string()` naively read only `links[0]`,
+            // always recovering the AUXILIARY verb's own form ("будем"), never the actual content verb
+            // ("клечао"). The exact same symptom-class French's D-444-followup and Dutch's D-447 already hit
+            // for this project (different root cause each time - see the Guide's own step-4 calibration
+            // section). Fixed the same way Dutch's own fix chose: skip the whole form when its RAW string
+            // (before any `links` substitution) is multi-word - checked directly that the already-shipped
+            // Croatian pack is unaffected in practice (spot-checked its own top verb-ratio outliers: no
+            // auxiliary-linked absurd pairs), so no republish was needed there, only the fix itself, shared
+            // by both directions going forward.
+            //
+            // The entire `srwiki-latest-pages-articles.xml.bz2` (1.16GB compressed, re-downloaded this round
+            // - the previous session's own copy had already been cleaned up) was processed via the same
+            // multiprocessing/hapax-pruning extractor - 708,165 real pages, 152,283,830 real tokens (the
+            // largest single-language token count of any D-450-family round so far, ahead of Turkish's
+            // 136.69M).
+            //
+            // **Net result**: `dict.tsv` 315,689 rows (217,476 initial Wikipedia-frequency + kaikki-POS merge
+            // + 98,213 from Wortfamilien completion - 33,341 noun-delta + 2,900 verb-delta + 61,972
+            // adjective-delta generated forms; calibration ratios noun=0.3333 (n=26,769), verb=3.3333
+            // (n=1,982 - a genuinely elevated but explicable median, driven by productive "noun-from-verb"
+            // deverbal-noun forms like "питање"/"question" from "питати"/"to ask" being far more common than
+            // their own parent verb's infinitive, a well-documented pattern in this language family; also
+            // consistent with the Balkan-Sprachbund infinitive-avoidance feature Serbian shares with
+            // Bulgarian/Macedonian/Romanian - conjugated forms genuinely do out-frequency the bare infinitive
+            // here), adjective=0.6512 (n=19,975) - all three sane, verified pair-by-pair before accepting).
+            // POS tagging: 198,290 words kept unrecognised-by-kaikki (tagged `OTHER`), 1,711,924 dropped,
+            // 0 common-English-word contamination (structurally impossible - Cyrillic vs. Latin script).
+            // Wiktionary matching: 18,293 lemmas tagged with real grammatical info, 3,047 unmatched; 49,220
+            // existing forms linked, 98,213 generated. Proper-noun handling: 1,018 tagged, 92 unmatched, 62
+            // skipped as real-word collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows.
+            // `bigram.tsv`: 1,144,589 rows (>=10 cutoff) from 3,595,744 at the raw >=3 floor. Quality gate:
+            // 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN
+            // rows - PASS.
+            //
+            // `hints.tsv`/`diacritics.tsv` are deliberately ABSENT, unlike every Latin-script language -
+            // Serbian Cyrillic's five letters not shared with Russian/Bulgarian Cyrillic (Ђ/Љ/Њ/Ћ/Џ) are
+            // standalone code points, not diacritic composites of a plainer base letter, so neither mechanism
+            // has anything to do (see `SerbianLayout.kt`'s own KDoc) - Greek, the only other non-Latin-script
+            // pack, omits both for the identical reason. `abbreviations.tsv`: a 12-entry list transliterated
+            // directly from Croatian's own already-vetted one (same South Slavic abbreviation convention,
+            // same shared Wiktionary source language family), not drafted from scratch.
+            //
+            // `SerbianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (directly verified,
+            // not assumed - Serbia uses comma as its decimal separator), `timeSuggestionWord`=null,
+            // `bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained a new `"serbian_cyrillic"`
+            // row layout (matching `SerbianLayout.kt`'s own `ROW_TOP`/`ROW_MIDDLE`/`ROW_BOTTOM` exactly) and
+            // found 2,621 candidate pairs, left deliberately uncurated for the same reasoning every
+            // non-German round documents. New tests: `LanguageRulesTest` gained a `Serbian resolves to
+            // SerbianRules` case plus its own mirroring test block.
+            //
+            // **Capitalisation-rule applicability (Guide step 8)**: Serbian does NOT capitalise common nouns
+            // like German - `merge_dict.py`'s own `resolve_tags()` already guarantees this structurally (a
+            // bare `NOUN` tag always gains `OTHER` too), the same default every other non-German language
+            // built via this template shares.
+            //
+            // **Keyboard layout (Guide step 5) - the actual reason this pack was deferred, now closed**: a
+            // brand new `LayoutKind.SERBIAN_CYRILLIC` + `keyboard/SerbianLayout.kt`, researched against the
+            // real Microsoft `KBDYCC` standard (13/11/6 letters per row, matching the genuine desktop
+            // standard's own uneven grouping rather than rebalancing it for a tidier mobile look - see that
+            // file's own KDoc for the full reasoning, including why the historical non-Serbian `Ѕ` filler is
+            // correctly dropped). `LayoutRegistry.NON_LATIN_LANGUAGES` generalised from a Greek-only set to
+            // any non-Latin `LayoutKind`; `AdaptKeyService.resolveDict()`'s own Greek-only unconditional-trust
+            // branch generalised the same way, since a non-Latin active language run through the Latin/
+            // German-centric `LanguageClassifier.isForeign()` guard would almost certainly misfire. A new
+            // `LayoutRegistryTest` canary test asserts no two languages share a non-Latin `LayoutKind` yet -
+            // it is designed to fail the day a second Cyrillic-script language joins Serbian, forcing that
+            // future round to give `resolveDict()` a real same-script classifier instead of silently
+            // inheriting an unconditional-trust shortcut that no longer makes sense once there is a genuine
+            // sibling to distinguish from.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Serbian. Real, full-dump corpus scale (152.28M real
+            // tokens, the largest of any language this project has built) and a real, freshly-fixed
+            // Wortfamilien pipeline - but the same "pretty good, not done" ceiling as every other
+            // pipeline-built language. Not device-confirmed either.
+            version = 1
         )
     )
 }

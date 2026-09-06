@@ -22,7 +22,8 @@ object KeyboardProximityRegistry {
         LayoutKind.LATIN_QWERTZ to KeyboardProximityQwertz,
         LayoutKind.LATIN_QWERTY to KeyboardProximityQwerty,
         LayoutKind.LATIN_AZERTY to KeyboardProximityAzerty,
-        LayoutKind.GREEK to KeyboardProximityGreek
+        LayoutKind.GREEK to KeyboardProximityGreek,
+        LayoutKind.SERBIAN_CYRILLIC to KeyboardProximitySerbianCyrillic
     )
     
     /**

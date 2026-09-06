@@ -37,7 +37,7 @@ enum class Language(val code: String, val endonym: String) {
     ROMANIAN("ro", "Română"),
     CROATIAN("hr", "Hrvatski"),
     BOSNIAN("bs", "Bosanski"),
-    SERBIAN("sr", "Srpski"),
+    SERBIAN("sr", "Српски"),
     ESTONIAN("et", "Eesti"),
     LATVIAN("lv", "Latviešu"),
     LITHUANIAN("lt", "Lietuvių"),
