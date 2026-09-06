@@ -98,7 +98,8 @@ class DictionarySuggestionProvider(
     /**
      * D-431: whether [suggestionsFor] would find anything "obvious" for [input] without resorting to
      * [wideFuzzyNeighbours]'s own last-resort, never-trusted-even-for-a-chip fallback (D-117) - a real
-     * prefix completion (including a D-144 umlaut-unfolded or D-328 neighbour-substituted-prefix variant),
+     * prefix completion (including a D-144 umlaut-unfolded, D-328 neighbour-substituted, or D-453
+     * consonant-doubled prefix variant),
      * a close ([MAX_CORRECTION_COST]) fuzzy match (D-12), or a recognised unhyphenated compound (D-116).
      *
      * Used by [de.froehlichmedia.adaptkey.AdaptKeyService]'s own A-13 gate
@@ -168,6 +169,32 @@ class DictionarySuggestionProvider(
         // candidates map, so S-02 (never the exact input) and A-04 (blacklist) apply unchanged.
         if (includeExpensiveFallbacks && candidates.isEmpty() && token.length >= MIN_NEIGHBOUR_PREFIX_LENGTH) {
             for (prefixVariant in neighbourPrefixVariants(token)) {
+                if (isCancelled()) {
+                    break
+                }
+                for (unfolded in diacriticFolding.unfoldCandidates(prefixVariant)) {
+                    if (isCancelled()) {
+                        break
+                    }
+                    for (entry in store.unigramsByPrefix(unfolded, maxCandidates)) {
+                        if (candidates.containsKey(entry.word) || store.isBlacklisted(entry.word)) {
+                            continue // A-04
+                        }
+                        val extraLength = entry.word.length - token.length
+                        candidates[entry.word] =
+                            Suggestion(entry.word, scoreWithPrefixDistance(entry.word, entry.frequency, previousWord, previousPreviousWord, extraLength))
+                    }
+                }
+            }
+        }
+        // D-453: the same escalation shape as D-328 directly above, for the opposite typo class - a
+        // consonant German spelling doubles that a fast/careless typist left single ("tipen" -> "tippen",
+        // "bite" -> "bitte") rather than a wrong key. Also only once the literal prefix found nothing;
+        // MIN_DOUBLING_PREFIX_LENGTH is lower than D-328's own minimum since the shortest real example is
+        // only 4 characters and this variant set cannot explode combinatorially the way a neighbour
+        // substitution can (see doubledConsonantPrefixVariants's own KDoc).
+        if (includeExpensiveFallbacks && candidates.isEmpty() && token.length >= MIN_DOUBLING_PREFIX_LENGTH) {
+            for (prefixVariant in doubledConsonantPrefixVariants(token)) {
                 if (isCancelled()) {
                     break
                 }
@@ -422,6 +449,37 @@ class DictionarySuggestionProvider(
         }
         return results.toList()
     }
+    
+    /**
+     * D-453: every single-position "double this consonant" variant of [token] (e.g. "tipen" -> "tippen",
+     * "bite" -> "bitte"), capped at [MAX_DOUBLING_PREFIX_VARIANTS] - the insertion counterpart of
+     * [neighbourPrefixVariants]'s own substitution, fed through the identical
+     * `diacriticFolding.unfoldCandidates` + [DictionaryStore.unigramsByPrefix] loop by the caller. Only
+     * [DOUBLING_ELIGIBLE_CONSONANTS] are tried, and never at a position already doubled (that position is
+     * already a length-2 run - doubling it again is never the fix). Used only as an escalation when the
+     * literal prefix found nothing, so a correctly-typed word never pays for it.
+     *
+     * @param token the lower-cased composing token (already length-checked by the caller)
+     * @return the distinct single-consonant-doubled variants, never including [token] itself
+     */
+    private fun doubledConsonantPrefixVariants(token: String): List<String> {
+        val results = LinkedHashSet<String>()
+        for (i in token.indices) {
+            val c = token[i]
+            if (c !in DOUBLING_ELIGIBLE_CONSONANTS) {
+                continue
+            }
+            if ((i > 0 && token[i - 1] == c) || (i + 1 < token.length && token[i + 1] == c)) {
+                continue // Already doubled here - doubling it again is never the fix.
+            }
+            if (results.size >= MAX_DOUBLING_PREFIX_VARIANTS) {
+                return results.toList()
+            }
+            results.add(token.substring(0, i + 1) + c + token.substring(i + 1))
+        }
+        return results.toList()
+    }
+    
     
     /**
      * The proximity-aware weighted edit cost between the folded token and a candidate (D-28 / D-38): a
@@ -957,5 +1015,16 @@ class DictionarySuggestionProvider(
         // (on a 2-3 letter token it would match far too much); the variant cap bounds the indexed scans.
         private const val MIN_NEIGHBOUR_PREFIX_LENGTH = 5
         private const val MAX_NEIGHBOUR_PREFIX_VARIANTS = 24
+        
+        // D-453: consonant-doubling prefix escalation - a fast/careless typist often leaves a consonant
+        // single where German orthography doubles it after a short stressed vowel ("tipen" -> "tippen",
+        // "bite" -> "bitte"). L >= 3 stays lower than D-328's own MIN_NEIGHBOUR_PREFIX_LENGTH deliberately -
+        // the shortest real example ("bite") is only 4 characters, and unlike a neighbour substitution
+        // (which multiplies by every adjacent key) this variant set is naturally bounded by the token's own
+        // length already, so a lower minimum does not risk the same combinatorial noise. The consonant set
+        // is exactly the letters German spelling actually doubles - not an exhaustive alphabet scan.
+        private const val MIN_DOUBLING_PREFIX_LENGTH = 3
+        private const val MAX_DOUBLING_PREFIX_VARIANTS = 24
+        private val DOUBLING_ELIGIBLE_CONSONANTS = setOf('b', 'd', 'f', 'g', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't')
     }
 }

@@ -50,6 +50,7 @@ import de.froehlichmedia.adaptkey.touch.TapAmbiguity
  */
 enum class HapticTier(val minSystemLevel: Int) {
     MODE_SWITCH(1),
+    POPUP_OPEN(1),
     CORRECTION(2),
     KEY_PRESS(3)
 }
@@ -1259,15 +1260,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val alternatives = popupAlternativesFor(key)
                 // G-06: the Shift long-press engages Caps Lock — its haptic confirmation is governed by
                 // capsLockHapticsEnabled (a separate setting), not the system long-press feedback.
-                // D-396-followup (v3): a popup opening gets no haptic of its own any more - the initial
-                // tap-down KEY_PRESS feedback already confirmed the press, and commitPopupSelection() now
-                // fires its own confirmation once an alternative is actually accepted, per user feedback
-                // ("das Feedback beim Antippen ist ok, beim Aufpoppen braucht es keins, aber beim Annehmen
-                // fehlt eins"). The plain system long-press haptic is kept for the one remaining case that
+                // D-396-followup (v3) had removed the popup-open haptic entirely ("beim Aufpoppen braucht es
+                // keins, aber beim Annehmen fehlt eins") - the initial tap-down KEY_PRESS feedback already
+                // confirmed the press, and commitPopupSelection() fires its own confirmation once an
+                // alternative is actually accepted. D-451 reinstates it on the user's own later reversal of
+                // that call: opening the popup should also carry its own confirmation, the same click as an
+                // ordinary key touch (see playPopupOpenHaptic()) - just gated to still fire at the OS's
+                // lowest "Haptic feedback" slider setting (HapticTier.POPUP_OPEN) rather than KEY_PRESS's own
+                // highest. The plain system long-press haptic below is kept for the one remaining case that
                 // never shows a popup at all (a key whose only long-press action is the listener callback).
                 when {
                     key.code == KeyCode.SHIFT -> playCapsLockHaptic()
                     alternatives.isEmpty() -> performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    else -> playPopupOpenHaptic()
                 }
                 if (alternatives.isNotEmpty()) {
                     openPopup(key, alternatives)
@@ -1459,6 +1464,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-451: fires when the L-05 alternatives popup itself opens, confirming the long-press the same way an
+     * ordinary key touch does - [HapticTier.POPUP_OPEN] plays [HapticTier.KEY_PRESS]'s own click effect (see
+     * [fireHaptic]), just gated to register at the OS's lowest "Haptic feedback" slider setting
+     * ([HapticTier.POPUP_OPEN]'s own `minSystemLevel` = 1) rather than [HapticTier.KEY_PRESS]'s highest (3) -
+     * a deliberate, rarer event, unlike routine typing. Gated on [hapticsEnabled] exactly like
+     * [playKeyFeedback] - conceptually still an ordinary key-touch confirmation, not a setting of its own.
+     */
+    private fun playPopupOpenHaptic() {
+        if (hapticsEnabled) {
+            fireHaptic(HapticTier.POPUP_OPEN, "playPopupOpenHaptic")
+        }
+    }
+    
+    /**
      * G-06: plays a short vibration when Caps Lock engages via long-press on Shift. Governed by
      * [capsLockHapticsEnabled] (default on), independent of [hapticsEnabled] — confirming a deliberate
      * Caps Lock engagement should feel the same whether or not per-key haptics are turned on. Classified
@@ -1550,7 +1569,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // a bit firmer than KEY_PRESS_AMPLITUDE (a still-rarer, more deliberate action than routine
             // typing), not reduced all the way down to it.
             val effect = when (tier) {
-                HapticTier.KEY_PRESS -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // D-451: POPUP_OPEN plays the exact same click as KEY_PRESS - only fireHaptic()'s own
+                // systemHapticLevel gate above (via HapticTier.minSystemLevel) tells the two apart.
+                HapticTier.KEY_PRESS, HapticTier.POPUP_OPEN -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK)
                 } else {
                     VibrationEffect.createOneShot(KEY_PRESS_FALLBACK_DURATION_MS, KEY_PRESS_AMPLITUDE)

@@ -135,6 +135,49 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-453 a missing double consonant still surfaces the completion`() {
+        store.putWord(WordEntry("bitte", 500L))
+        
+        // "bite" (missing the second t) is not a literal prefix of "bitte" at all - it mismatches exactly at
+        // the position needing the double (token has "e", "bitte" has "t" there) - so only the
+        // consonant-doubling escalation reaches it.
+        val words = provider.suggestionsFor("bite", null).map { it.word }
+        assertTrue(words.contains("bitte"))
+    }
+    
+    @Test
+    fun `D-453 a missing double consonant works for a different consonant too`() {
+        store.putWord(WordEntry("tippen", 500L))
+        
+        val words = provider.suggestionsFor("tipen", null).map { it.word }
+        assertTrue(words.contains("tippen"))
+    }
+    
+    @Test
+    fun `D-453 the doubling escalation does not fire on a token below the minimum length`() {
+        store.putWord(WordEntry("ssop", 500L))
+        
+        // L = 2 ("so"): doubling the leading "s" would reach "sso", a real prefix of "ssop" - but real
+        // German never doubles a word-initial consonant (nothing precedes it to double it "after"), so this
+        // pair is synthetic by construction, purely to isolate MIN_DOUBLING_PREFIX_LENGTH's own gate. "ssop"
+        // is not itself a literal prefix match for "so" (mismatch at the second character), so only the
+        // escalation could ever reach it - and below the minimum length, it correctly does not.
+        val words = provider.suggestionsFor("so", null).map { it.word }
+        assertFalse(words.contains("ssop"))
+    }
+    
+    @Test
+    fun `D-453 the escalation fires at the minimum length boundary of 3`() {
+        store.putWord(WordEntry("ebbe", 500L))
+        
+        // L = 3 ("ebe"): doubling the b at position 1 (not the token's last character) reaches "ebbe",
+        // which is not a literal prefix of "ebe" (mismatch at the third character) - 3 is exactly
+        // MIN_DOUBLING_PREFIX_LENGTH's own inclusive lower bound.
+        val words = provider.suggestionsFor("ebe", null).map { it.word }
+        assertTrue(words.contains("ebbe"))
+    }
+    
+    @Test
     fun `A-04 blacklisted words are excluded from suggestions`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putWord(WordEntry("Haus", 100L))

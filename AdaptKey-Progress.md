@@ -935,32 +935,20 @@ non-trivial changes).
      would be this app's first use of a floating IME overlay at all.
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
-- **D-451 - OPEN, reopened (2026-09-06).** The L-05 AltGr/long-press popup opening should get its own haptic
-  confirmation again, using the same effect as an ordinary key touch (`HapticTier.KEY_PRESS`'s `EFFECT_TICK`-
-  with-fallback path in `fireHaptic()`) - not the plain `performHapticFeedback(HapticFeedbackConstants.
-  LONG_PRESS)` system call `scheduleLongPress()` currently only reaches for a no-alternative long-press key.
-  D-396-followup (v3) had deliberately removed the popup-open haptic ("beim Aufpoppen braucht es keins, aber
-  beim Annehmen fehlt eins", the user's own words at the time) - the user has now reversed that call.
-  Additionally: unlike ordinary `KEY_PRESS` (`minSystemLevel = 3`, the OS slider's highest setting), this
-  event must already vibrate at system level 1 - needs its own `HapticTier` entry (or an equivalent gating
-  override), since `KEY_PRESS`'s existing threshold is tuned for the much more frequent plain keystroke, not
-  this rarer popup-open event. Not started.
+- **D-451 - RESOLVED (§448, v1.2.8).** The L-05 AltGr/long-press popup opening now fires its own haptic
+  confirmation again, reversing D-396-followup (v3)'s earlier removal - see §448 in Current State for the
+  mechanism.
 
-- **D-452 - OPEN, awaiting a device log from the user (2026-09-06).** A concern that something in the app the
-  user refers to as "Wahrscheinlich" takes noticeably long to resolve - possibly a real, not-yet-found
-  performance regression, not merely a slow but expected computation. Per this project's own diagnosis
-  convention, the cause is not to be guessed at or fixed before the user's own device log arrives - see that
-  log once supplied, do not speculate from this description alone.
+- **D-452 - WON'T FIX (2026-09-06, no code change - not reproducible).** User's own account: no longer
+  reproducible on their device right now. Closed without ever identifying the "Wahrscheinlich" concern's
+  original cause - per this project's own diagnosis convention, nothing was guessed at or changed based on
+  the description alone, and none ever arrived to investigate further. Revisit only if it recurs with a real
+  device log.
 
-- **D-453 - OPEN, design agreed (2026-09-06), not yet scheduled/implemented.** Double-consonant "unfold" for
-  autocorrect/chip suggestion: a typed `"bite"` should suggest `"bitte"`, `"tipen"` should suggest `"tippen"` -
-  certain German consonants are frequently under-doubled by a fast typist. **Agreed approach, confirmed by the
-  user - implement it exactly this way once picked up**: an extension of S-09's existing neighbour-prefix
-  escalation (D-328) - trying a duplicated-last-consonant prefix once the literal prefix search finds nothing -
-  rather than a new unconditional fold/unfold table (`Umlaut`/`DataDiacriticFolding`, D-435/D-436). Unlike
-  `ß`->`"ss"` or a diacritic's ASCII form, doubling is not a fixed 1:1 substitution and must stay conditional on
-  an actual dictionary hit (else `"kaufen"` would spuriously suggest `"kauffen"`) - exactly the conditionality
-  S-09's mechanism already has and a static fold table does not. Not yet scheduled for a specific round.
+- **D-453 - RESOLVED (§448, v1.2.8).** Double-consonant "unfold" for autocorrect/chip suggestion
+  (`"bite"` → `"bitte"`, `"tipen"` → `"tippen"`), implemented exactly as agreed - an extension of S-09's
+  existing neighbour-prefix escalation (D-328), not a new fold/unfold table - see §448 in Current State for
+  the mechanism.
 
 - **D-454 - RESOLVED (§447, v1.2.7).** Restructured the Language Packs settings screen
   (`LanguagePacksActivity`/`activity_language_packs`, D-280) per the user's own six-point list - see §447 in
@@ -1023,6 +1011,39 @@ non-trivial changes).
   (not `unigramsByPrefix` itself) before implementing anything - not yet done.
 
 ## Current State
+
+- **§448 (v1.2.8): D-451 (AltGr popup haptic, reinstated) + D-453 (double-consonant unfold), one small round.**
+  
+  **D-451**: `HapticTier` gained a fourth value, `POPUP_OPEN(1)` - plays the identical click effect
+  `KEY_PRESS` does (`fireHaptic()`'s own `when (tier)` branch now matches both together), so it is the
+  literal "same system-standard click with fallback" the user asked for, but with `minSystemLevel = 1`
+  instead of `KEY_PRESS`'s own 3 - it still fires even with the OS's "Haptic feedback" slider at its lowest
+  setting. A new `AdaptKeyboardView.playPopupOpenHaptic()` (gated on `hapticsEnabled`, mirroring
+  `playKeyFeedback()`) is called from `scheduleLongPress()`'s own `when` block for the one branch that was
+  previously silent - a key whose long-press opens a real L-05 alternatives popup (not Shift's Caps Lock,
+  not the popup-less listener-callback case). Reverses D-396-followup (v3)'s "beim Aufpoppen braucht es
+  keins" call on the user's own later reconsideration - see spec §42's new D-451 note.
+  
+  **D-453**: `DictionarySuggestionProvider` gained a second D-328-shaped escalation,
+  `doubledConsonantPrefixVariants()` - the insertion counterpart of `neighbourPrefixVariants()`'s own
+  substitution, run directly after it in `obviousCandidates()` under the identical
+  `candidates.isEmpty()`-gated shape. Tries, for every position holding one of `DOUBLING_ELIGIBLE_CONSONANTS`
+  (`b d f g k l m n p r s t` - the German-orthography doubling set) not already doubled there, the variant
+  with that consonant doubled, fed through the same `diacriticFolding.unfoldCandidates` +
+  `unigramsByPrefix` loop as every other prefix variant. `MIN_DOUBLING_PREFIX_LENGTH = 3` (lower than D-328's
+  own 5) since the shortest real example ("bite", 4 characters) is well below it, and - unlike a neighbour
+  substitution, which multiplies by every adjacent key - this variant set is already naturally bounded by the
+  token's own length, so a lower minimum does not risk the same combinatorial blow-up; confirmed the reason a
+  shorter typed prefix of the same word (e.g. "bit" for "bitte") never needed this escalation in the first
+  place: it is still a genuine literal prefix match on its own; only once the user types *past* the missed
+  double does the mismatch - and the need for this escalation - actually arise. Not language-gated, same as
+  D-328 itself - a pure keyboard/spelling heuristic, self-limiting by whatever the active language's own real
+  dictionary actually contains. Four new `DictionarySuggestionProviderTest` cases (two positive - the user's
+  own two examples - plus the length-gate's boundary and just-below-it) - see spec S-09's own D-453 addendum.
+  
+  Both closed the same round; `AdaptKeyboardView`/`DictionarySuggestionProvider` are unrelated files, no
+  shared mechanism between the two beyond both reusing an existing pattern (`HapticTier`'s own tier-per-event
+  gating; D-328's own escalation shape) rather than inventing a new one.
 
 - **§447 (v1.2.7): D-454 - Language Packs settings screen restructured**, per the user's own six-point list
   (see the now-closed backlog entry above for the full original ask). `d280_intro` no longer mentions English

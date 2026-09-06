@@ -680,6 +680,18 @@ Umlaut.unfoldCandidates + unigramsByPrefix loop, so a typo plus a missing umlaut
 variants is capped. Suggestion-only by construction — S-02 (never the exact input) and A-04 (blacklist) apply
 unchanged. Runs in the deferred/background pass (no main-thread cost), so it adds no per-keystroke latency.
 
+D-453 adds a second escalation of the same shape, for the opposite typo class: a consonant German spelling
+doubles after a short stressed vowel that a fast/careless typist left single ("tipen" → "tippen", "bite" →
+"bitte"). Tried only when the literal prefix still found nothing (same gate as D-328's own escalation, run
+directly after it), for every single-position "double this consonant" variant of the token, restricted to the
+consonants German spelling actually doubles (`b d f g k l m n p r s t`) and never re-doubling a position
+already doubled. The minimum token length (3) is lower than D-328's own (5) - the shortest real example
+("bite") is only 4 characters, and unlike a neighbour substitution (which multiplies by every adjacent key)
+this variant set is already naturally bounded by the token's own length, so a shorter minimum does not risk
+the same combinatorial noise. Not language-gated (like D-328's own mechanism) - purely a keyboard/spelling
+heuristic that only ever matters when the resulting variant happens to match the active language's own real
+dictionary.
+
 ### S-10 - Manual Reclaim Chip
 D-62's reclaim (§58) normally fires reactively the moment the caret lands on an existing word - but D-351/
 D-351-followup found real fields (Gemini's search field; Total Commander's rename-date field) whose own
@@ -2615,6 +2627,15 @@ new, explicitly lowered `CORRECTION_AMPLITUDE` instead of `DEFAULT_AMPLITUDE` (a
 not yet device-tuned) - deliberately kept a bit firmer than `KEY_PRESS_AMPLITUDE`, since accepting a selection
 is still a rarer, more deliberate action than routine typing. `MODE_SWITCH` is untouched, still
 `DEFAULT_AMPLITUDE`.
+
+**D-451: the popup-opening cue from D-396-followup (v3) is reinstated - the user's own later reversal of**
+**that earlier call.** Opening the L-05 alternatives popup now fires a haptic again, via a new
+`HapticTier.POPUP_OPEN` that plays the identical click effect `KEY_PRESS` does (`EFFECT_TICK` on API 29+,
+the same timed fallback below it) - "the same system-standard click, with fallback" the user asked for -
+but with its own `minSystemLevel` of 1 rather than `KEY_PRESS`'s own 3, so it still registers even with the
+OS's "Haptic feedback" slider turned down to its lowest setting, the same way `MODE_SWITCH` already does.
+Gated on the ordinary `hapticsEnabled` toggle, exactly like `KEY_PRESS` - conceptually still an ordinary
+key-touch confirmation, not a setting of its own.
 
 ---
 
