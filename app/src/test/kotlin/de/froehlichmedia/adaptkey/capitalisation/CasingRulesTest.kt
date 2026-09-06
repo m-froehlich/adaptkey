@@ -31,6 +31,11 @@ class CasingRulesTest {
     }
     
     @Test
+    fun `Azerbaijani resolves to TurkishCasingRules too - the shared tr slash az dotted-I rule`() {
+        assertSame(TurkishCasingRules, CasingRulesRegistry.rulesFor(Language.AZERBAIJANI))
+    }
+    
+    @Test
     fun `every other language resolves to DefaultCasingRules`() {
         assertSame(DefaultCasingRules, CasingRulesRegistry.rulesFor(Language.GERMAN))
         assertSame(DefaultCasingRules, CasingRulesRegistry.rulesFor(Language.ENGLISH))

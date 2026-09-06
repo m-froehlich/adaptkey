@@ -974,4 +974,34 @@ class LanguageRulesTest {
         assertFalse(UkrainianRules.isPlausibleAdjectiveComparative("краще") { true })
         assertNull(UkrainianRules.splitCompound("ключове_слово", { true }) { it })
     }
+    
+    @Test
+    fun `Azerbaijani resolves to AzerbaijaniRules`() {
+        assertSame(AzerbaijaniRules, LanguageRulesRegistry.rulesFor(Language.AZERBAIJANI))
+    }
+    
+    @Test
+    fun `Azerbaijani glues a decimal comma`() {
+        assertTrue(AzerbaijaniRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Azerbaijani has no time-suggestion word`() {
+        assertNull(AzerbaijaniRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Azerbaijani curates no bundled blacklist yet`() {
+        assertTrue(AzerbaijaniRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Azerbaijani leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(AzerbaijaniRules.blocksAsSplitPrefix("və", 0L))
+        assertFalse(AzerbaijaniRules.blocksAsFeminineAgentException("çi", "müəllim", true))
+        assertFalse(AzerbaijaniRules.blocksAsCompoundPrefix("yaxşı", true))
+        assertFalse(AzerbaijaniRules.isPlausibleVerbInflection("oxuyuruq") { true })
+        assertFalse(AzerbaijaniRules.isPlausibleAdjectiveComparative("daha yaxşı") { true })
+        assertNull(AzerbaijaniRules.splitCompound("açar_söz", { true }) { it })
+    }
 }

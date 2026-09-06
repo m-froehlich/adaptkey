@@ -2776,6 +2776,102 @@ object LanguagePackCatalog {
             // English-coverage fallback (thinner than a native-sourced pack by design, see above) - expect
             // this one to need more follow-up curation than Russian's own round. Not device-confirmed either.
             version = 1
+        ),
+        Entry(
+            Language.AZERBAIJANI,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-az.zip",
+            // D-450-followup: third of the four §441 keyboard-layout-only languages to get a real dictionary.
+            // Uses the already-existing `LayoutKind.LATIN_AZERBAIJANI` (`AzerbaijaniLayout.kt`, a genuine
+            // cross-row restructuring built in the previous round, all 32 alphabet letters on the three
+            // primary rows with no AltGr dependency - unlike Russian/Ukrainian, this one is Latin script, so
+            // it gets `hints.tsv`/`diacritics.tsv` (see below) the two Cyrillic packs could not.
+            //
+            // The entire `azwiki-latest-pages-articles.xml.bz2` (323,312,325 bytes, live-verified before
+            // downloading - a small dump, similar scale to Bosnian/Croatian's own) was processed: 216,948
+            // pages (matching `az.wikipedia.org`'s own live `siteinfo` "articles" count, 217,036, almost
+            // exactly), 55,499,902 tokens, 1,597,408 distinct words. RAM was not a constraint at this scale,
+            // so the extractor reused Serbian's own original settings (5 workers, 4M/8M hapax-pruning
+            // triggers) rather than Russian's/Ukrainian's own reduced ones.
+            //
+            // **Real casing fix applied proactively, not found the hard way**: Azerbaijani shares Turkish's
+            // own dotted/dotless İ/I Unicode SpecialCasing rule (confirmed directly against Unicode's own
+            // SpecialCasing.txt - both "tr" and "az" locales are listed together) - `azerbaijani_lower()` is
+            // Turkish's own `turkish_lower()` mapping applied unchanged in both `extract_wiki_dump.py` and
+            // `extract_wiktionary.py`, learned from Turkish's own D-449 round rather than rediscovered. The
+            // same rule now also applies at the app's own runtime: `CasingRulesRegistry` gained a one-line
+            // `Language.AZERBAIJANI to TurkishCasingRules` entry (`capitalisation/CasingRules.kt`) - no new
+            // logic needed, `TurkishCasingRules`'s own dotted/dotless mapping is already locale-generic for
+            // this exact shared rule, not Turkish-specific in its actual implementation.
+            //
+            // **No native Wiktionary edition** (`kaikki.org/dictionary/downloads/az/` 404s, confirmed against
+            // `rawdata.html`) - used the English-Wiktionary-coverage fallback (15,724,873 bytes) instead, per
+            // the Guide's own mandatory disclosure rule. Despite being the "wrong"/thinner file by size, this
+            // source turned out structurally rich - real, directly-verified possessive-suffix noun paradigms
+            // (nominative/accusative/dative/locative/ablative/genitive x singular/plural x first/second/
+            // third-person possessive) at a similar scale to Turkish's own native edition. No combining
+            // stress marks at all (confirmed directly - unlike Russian's/Ukrainian's own sources), so no
+            // stress-stripping step was needed.
+            //
+            // **A genuinely Turkic-family finding, not a bug, confirmed by direct inspection - like Turkish**
+            // **(D-449), Azerbaijani is postpositional, not prepositional**: this source tagged only 3 words
+            // `pos=="prep"/"prep_phrase"` in the whole file. No curated postposition exception list built
+            // this round either, the same "cannot confidently separate a genuine postposition from a real
+            // competing sense without native fluency" reasoning Turkish's own round documents.
+            //
+            // **Calibration ratios checked directly, including the low-n adjective one, before trusting them
+            // - not dismissed as "probably fine" just because none crossed the guide's own numeric outlier
+            // threshold**: noun 0.0893 (n=26,669), verb 0.4712 (n=6,685), adjective 0.0972 (n=56, the
+            // smallest sample of any ratio this project has calibrated). All three are lower than most other
+            // languages' own ratios, but pulling the real top/bottom pairs directly (per the Guide's own
+            // instruction, applied here even though no threshold was technically crossed) showed genuine,
+            // unremarkable Azerbaijani morphology - possessive/predicative suffix chains ("var"->"vardır"/
+            // "varsan"/"varam") and real intensive-reduplication forms ("yaşıl"/"green"->"yamyaşıl"/"very
+            // green", "ağ"/"white"->"ağappaq"/"very white", a genuine Turkic morphological process) - not any
+            // repeat of Russian's own corruption pattern or a new one. The low ratios reflect Azerbaijani's
+            // own rich agglutinative suffixing spreading a lemma's frequency mass across many individually
+            // rarer forms, a real property of the language, confirmed rather than assumed.
+            //
+            // **Net result**: `dict.tsv` 117,643 initial rows -> 651,702 after Wortfamilien completion
+            // (+534,059: 8,086 lemmas tagged, 34,630 forms linked, 534,059 generated). Proper nouns: 666
+            // tagged, 7 unmatched, 86 collision-skipped. Bare-noun safety check: 0. `bigram.tsv`: 509,198
+            // rows (>=10 cutoff) from 1,970,071 raw. Quality gate: 0 duplicates/non-positive/orphaned-lemma/
+            // bare-NOUN - PASS.
+            //
+            // `hints.tsv`/`diacritics.tsv` - genuinely meaningful here, unlike the Cyrillic packs, but with a
+            // real structural twist confirmed directly before writing either: every one of Azerbaijani's own
+            // seven diacritic-pair letters (ç/ə/ğ/ı/ö/ş/ü) already has its OWN dedicated primary key on
+            // `AzerbaijaniLayout` (unlike German/Turkish, where the diacritic sits on the base letter's own
+            // AltGr hint) - so `diacritics.tsv` (c/ç, e/ə, g/ğ, i/ı, o/ö, s/ş, u/ü - six pairs identical to
+            // Turkish's own table, "e"/"ə" the one Azerbaijani-specific addition) is purely about typed-
+            // without-diacritic autocorrect RECOVERY, not about AltGr key access. `hints.tsv` therefore reuses
+            // the ten language-neutral math/typography assignments every other Latin-script pack shares
+            // (b=*, d=°, f=ƒ, h=#, m=-, n=+, p=π, q=@, v=/, x=×) plus a first-draft, explicitly-flagged UX
+            // set for the remaining free keys (t=₼ the manat currency sign, g=«/r=» quotation marks, y=—,
+            // z=…) - a genuine judgement call the Guide's own step 5 says to draft but flag for native review,
+            // not a fact to trust the way the diacritic mapping can be. `abbreviations.tsv`: a hand-drafted,
+            // explicitly-modest 13-entry list (dr./prof./dos./akad./məs./bx./s./tel./küç./ş./v.s./e.ə./m.ö.).
+            //
+            // `AzerbaijaniRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (like Turkish),
+            // `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained a
+            // new `"azerbaijani"` row layout (matching `AzerbaijaniLayout.kt`'s own `TOP_ROW`/`MIDDLE_ROW`/
+            // `THIRD_ROW` exactly) and found 4,409 candidate pairs, overwhelmingly short 2-letter tokens
+            // risking autocorrect into a common short conjunction/suffix-word (və/ci/bu/də/cü/il/cı/ən/cu/öz)
+            // - left deliberately uncurated for the usual no-native-fluency reason. New tests:
+            // `LanguageRulesTest` gained an "Azerbaijani resolves to AzerbaijaniRules" case plus its own
+            // mirroring test block; `CasingRulesTest` gained an "Azerbaijani resolves to TurkishCasingRules
+            // too" case. `language_profiles.tsv` gained a real 200-ngram Azerbaijani profile.
+            //
+            // **Capitalisation-rule applicability (Guide step 8)**: Azerbaijani does NOT capitalise common
+            // nouns like German - structurally guaranteed the same way as every other non-German language.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Azerbaijani, and its own Wiktionary source is the
+            // English-coverage fallback (thinner than a native-sourced pack by design, though structurally
+            // richer than its own file size alone suggested) - expect this one to need more follow-up
+            // curation than Russian's own native-sourced round. `hints.tsv`'s own currency/punctuation
+            // choices are a first draft flagged for native review, not a verified fact like the diacritic
+            // table. Not device-confirmed either.
+            version = 1
         )
     )
 }

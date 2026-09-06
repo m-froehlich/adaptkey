@@ -56,7 +56,10 @@ object DefaultCasingRules : CasingRules {
 object CasingRulesRegistry {
     
     private val RULES: Map<Language, CasingRules> = mapOf(
-        Language.TURKISH to TurkishCasingRules
+        Language.TURKISH to TurkishCasingRules,
+        // D-450-followup: Azerbaijani shares Turkish's own dotted/dotless İ/I Unicode SpecialCasing rule -
+        // see TurkishCasingRules's own KDoc. No new logic needed, just this registry line.
+        Language.AZERBAIJANI to TurkishCasingRules
     )
     
     /**

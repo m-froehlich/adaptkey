@@ -1,0 +1,18 @@
+# Azerbaijani diacritic-fold table (D-436) - base letter -> its real Azerbaijani variant, so a token typed
+# without it (e.g. plain-ASCII "sey" for "şey") still reaches the correctly-spelled word, both live while
+# typing and at autocorrect/split-repair time. Six of these seven pairs are identical to Turkish's own table
+# (dictionaries/tr/diacritics.tsv) - genuinely the same letters, not copy-pasted without checking: c/ç, g/ğ,
+# i/ı, o/ö, s/ş, u/ü are shared between the two alphabets. "e" -> "ə" is Azerbaijani-specific (the schwa
+# letter Turkish does not have) - "e" is its conventional ASCII-fallback base, matching the common informal
+# transliteration convention and its own physical keyboard adjacency to e/a on AzerbaijaniLayout's own
+# MIDDLE_ROW. Unlike German/Turkish, every one of these seven variant letters already has its OWN dedicated
+# primary key on AzerbaijaniLayout (confirmed: all 32 alphabet letters sit directly on the three main rows,
+# no AltGr dependency) - this table is therefore purely about typed-without-diacritic RECOVERY, not about
+# which key each letter physically lives on.
+c	ç
+e	ə
+g	ğ
+i	ı
+o	ö
+s	ş
+u	ü

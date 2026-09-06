@@ -1003,6 +1003,44 @@ non-trivial changes).
 
 ## Current State
 
+- **§444 (v1.2.4): D-450-followup - first Azerbaijani language pack, third of the four §441 keyboard-layout-**
+  **only languages to get a real dictionary.** Full Guide §8 pipeline. `azwiki-latest-pages-articles.xml.bz2`
+  (323,312,325 bytes, live-verified, a small dump) -> 216,948 pages (matching `az.wikipedia.org`'s own live
+  `siteinfo` count, 217,036), 55,499,902 tokens, 1,597,408 distinct words. RAM was not a constraint at this
+  scale, so the extractor reused Serbian's own original settings (5 workers, 4M/8M triggers).
+
+  **Real casing fix applied proactively**: Azerbaijani shares Turkish's own dotted/dotless İ/I Unicode
+  SpecialCasing rule (confirmed against Unicode's own SpecialCasing.txt) - `azerbaijani_lower()` (Turkish's
+  own mapping, reused unchanged) applied in both extraction scripts, and `CasingRulesRegistry` gained a
+  one-line `Language.AZERBAIJANI to TurkishCasingRules` entry at the app's own runtime - no new logic needed.
+
+  **No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback (15,724,873 bytes),
+  which despite being the "wrong"/thinner file by size turned out structurally rich: real possessive-suffix
+  noun paradigms at a similar scale to Turkish's own native edition, no combining stress marks at all. **Like
+  Turkish (D-449), Azerbaijani is postpositional, not prepositional** - only 3 words tagged `prep`/
+  `prep_phrase` in the whole file, no curated exception list built for the same no-native-fluency reason.
+
+  Calibration ratios checked directly even though none crossed the guide's own outlier threshold: noun
+  0.0893 (n=26,669), verb 0.4712 (n=6,685), adjective 0.0972 (n=56, smallest sample calibrated so far). Real
+  pairs pulled directly showed genuine Azerbaijani morphology (possessive/predicative suffix chains, real
+  intensive-reduplication forms like "yaşıl"->"yamyaşıl"/"very green") - not a bug, confirmed rather than
+  assumed.
+
+  **Net result**: `dict.tsv` 117,643 -> 651,702 rows (+534,059 from Wortfamilien completion). Bare-noun
+  safety check: 0. `bigram.tsv`: 509,198 rows (>=10 cutoff) from 1,970,071 raw. Quality gate PASS. Unlike the
+  two Cyrillic packs, this one DOES ship `hints.tsv`/`diacritics.tsv` - but with a real twist: every
+  diacritic-pair letter (ç/ə/ğ/ı/ö/ş/ü) already has its own dedicated primary key on `AzerbaijaniLayout`, so
+  `diacritics.tsv` (6 pairs shared with Turkish, "e"/"ə" the Azerbaijani-specific addition) is purely about
+  typed-without-diacritic autocorrect recovery, not AltGr access. `hints.tsv` reuses the 10 language-neutral
+  assignments every Latin-script pack shares plus a first-draft, explicitly-flagged UX set (manat sign,
+  guillemets) for the remaining keys. `abbreviations.tsv`: 13 hand-drafted entries. `AzerbaijaniRules`:
+  `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
+  `confusables_scan.py` gained `"azerbaijani"` (4,409 candidates, left uncurated). `language_profiles.tsv`
+  gained a real 200-ngram Azerbaijani profile. Capitalisation: does not capitalise common nouns.
+  **Honesty gate (step 11) NOT satisfied**: not reviewed by an Azerbaijani speaker, `hints.tsv`'s own
+  currency/punctuation choices are a first draft not a verified fact, not device-confirmed.
+  `versionCode` 499 -> 500, `versionName` "1.2.3" -> "1.2.4". Next and last: Uzbek.
+
 - **§443 (v1.2.3): D-450-followup - first Ukrainian language pack, second of the four §441 keyboard-layout-**
   **only languages to get a real dictionary.** Full Guide §8 pipeline. `ukwiki-latest-pages-articles.xml.bz2`
   (2,689,611,157 bytes, live-verified) -> 1,433,142 pages (matching `uk.wikipedia.org`'s own live `siteinfo`

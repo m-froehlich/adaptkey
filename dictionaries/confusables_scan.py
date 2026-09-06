@@ -28,6 +28,9 @@ ROW_LAYOUTS = {
     # D-450-followup: matches JcukenLayout.kt's own ROW_TOP_UK/ROW_MIDDLE_UK/ROW_BOTTOM_UK exactly (the real
     # Ukrainian ЙЦУКЕН standard, Microsoft's KBDUR).
     "ukrainian_jcuken": ["1234567890", "йцукенгшщзхї", "фівапролджє", "ґячсмитьбю"],
+    # D-450-followup: matches AzerbaijaniLayout.kt's own TOP_ROW/MIDDLE_ROW/THIRD_ROW exactly (the real
+    # Azerbaijani standard, Microsoft's KBDAZST).
+    "azerbaijani": ["1234567890", "püşudbmyohxj", "gısarnəlicğ", "çfvtkeqzö"],
 }
 
 
