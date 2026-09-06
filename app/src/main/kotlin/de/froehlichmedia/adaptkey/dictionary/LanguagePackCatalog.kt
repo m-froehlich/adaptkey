@@ -2706,6 +2706,76 @@ object LanguagePackCatalog {
             // pipeline - but the same "pretty good, not done" ceiling as every other pipeline-built language.
             // Not device-confirmed either.
             version = 1
+        ),
+        Entry(
+            Language.UKRAINIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-uk.zip",
+            // D-450-followup: second of the four §441 keyboard-layout-only languages to get a real dictionary
+            // (Russian first). Uses the already-existing `LayoutKind.UKRAINIAN_CYRILLIC`
+            // (`JcukenLayout.rows(ukrainian = true)`) - no new keyboard code needed this round.
+            //
+            // The entire `ukwiki-latest-pages-articles.xml.bz2` (2,689,611,157 bytes compressed, live-verified
+            // before downloading) was processed: 1,433,142 pages (matching `uk.wikipedia.org`'s own live
+            // `siteinfo` "articles" count, 1,433,512, almost exactly), 389,701,751 tokens, 2,397,542 distinct
+            // words, 6,370,404 raw bigram rows (>=3). Extractor tuning reasoned from the real dump-size ratio
+            // to Russian's own (this one is ~2.69GB, Russian's own was 5.99GB) rather than reusing either
+            // language's settings unchanged: 4 workers (Russian used 3, Serbian used 5), hapax-pruning
+            // triggers between the two (3M words/6M bigrams). Directly adapted from `dictionaries/ru/
+            // extract_wiki_dump.py`, with one real orthographic addition Russian does not have: the apostrophe
+            // is a genuine letter-boundary marker inside real Ukrainian words (e.g. "п'ять"/"five"), not
+            // punctuation to strip - the tokeniser allows it inside a run of letters, mirroring "-" for
+            // compounds.
+            //
+            // **Ukrainian has NO native Wiktionary edition** - `kaikki.org/dictionary/downloads/uk/
+            // uk-extract.jsonl.gz` 404s, confirmed directly against `rawdata.html` before falling back, per
+            // the Guide's own mandatory disclosure rule. Used the English-Wiktionary-coverage fallback
+            // instead (`kaikki.org/dictionary/Ukrainian/kaikki.org-dictionary-Ukrainian.jsonl.gz`,
+            // 27,908,333 bytes) - genuinely thinner than Russian's own native 290.5MB source (11,250 nouns,
+            // 5,348 verbs, 5,126 adjectives, 75 prepositions, 2,563 proper nouns vs. Russian's 175,567/
+            // 187,834/52,561/136/21,282) - **this pack's POS/Wortfamilien coverage should be expected to need
+            // more follow-up curation than Russian's own native-sourced round did.**
+            //
+            // Verified directly before writing the extractor, learning proactively from the Russian round's
+            // own real bug rather than repeating it: this fallback source carries the identical
+            // combining-stress-mark shape Russian's native edition does (e.g. "буди́нок"/"house") - the
+            // already-fixed `strip_stress()` (strip only U+0301/U+0300 directly, never NFD-normalise the
+            // whole string, since that would corrupt any Ukrainian letter with its own canonical NFD
+            // decomposition the same way it silently corrupted Russian's й/ё before that bug was found) was
+            // applied from the very first pass here - the calibration ratios came back sane on the first try
+            // (noun 0.2708, verb 0.5833, adjective 0.4667, n=44,220/22,009/39,297), no second debugging round
+            // needed. Also carries "class"/"table-tags"/"inflection-template" template-diagnostic noise rows
+            // and "romanization" Latin-transliteration rows - the former excluded via `EXCLUDE_FORM_TAGS`,
+            // the latter naturally rejected by the Cyrillic-only validation regex. No dotted/dotless-I casing
+            // quirk; genuinely prepositional.
+            //
+            // **Net result**: `dict.tsv` 471,516 initial rows -> 606,723 after Wortfamilien completion
+            // (+135,207: 20,403 lemmas tagged, 106,855 forms linked, 135,207 generated - all three ratios
+            // sane on the first pass, see above). Proper nouns: 2,361 tagged, 72 unmatched, 130
+            // collision-skipped. Bare-noun safety check: 0. `bigram.tsv`: 2,700,448 rows (>=10 cutoff) from
+            // 6,370,404 raw. Quality gate: 0 duplicates/non-positive/orphaned-lemma/bare-NOUN - PASS.
+            //
+            // `hints.tsv`/`diacritics.tsv` deliberately ABSENT (same reasoning as Russian/Serbian/Greek -
+            // standalone Cyrillic code points). `abbreviations.tsv`: a hand-drafted 22-entry list (т.д./т.п./
+            // т.зв./ін./напр./див./пор./ст./рр./р./м./вул./обл./проф./акад./ім./гл./канд./доц./гр./грн./коп.).
+            //
+            // `UkrainianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (DSTU convention,
+            // directly verified), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
+            // `confusables_scan.py`'s new `"ukrainian_jcuken"` row layout (added alongside Russian's own
+            // `"russian_jcuken"` in the previous round, matching `JcukenLayout.kt`'s `ROW_TOP_UK`/
+            // `ROW_MIDDLE_UK`/`ROW_BOTTOM_UK` exactly) found 3,832 candidate pairs, overwhelmingly short
+            // 2-letter tokens risking autocorrect into a common short preposition/conjunction (на/та/до/за/
+            // що/не) - left deliberately uncurated for the usual no-native-fluency reason. New tests:
+            // `LanguageRulesTest` gained a "Ukrainian resolves to UkrainianRules" case plus its own mirroring
+            // test block. `language_profiles.tsv` gained a real 200-ngram Ukrainian profile.
+            //
+            // **Capitalisation-rule applicability (Guide step 8)**: Ukrainian does NOT capitalise common
+            // nouns like German - structurally guaranteed the same way as Russian.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Ukrainian, and its own Wiktionary source is the
+            // English-coverage fallback (thinner than a native-sourced pack by design, see above) - expect
+            // this one to need more follow-up curation than Russian's own round. Not device-confirmed either.
+            version = 1
         )
     )
 }

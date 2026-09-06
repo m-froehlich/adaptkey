@@ -149,7 +149,8 @@ object LanguageRulesRegistry {
         Language.MALAY to MalayRules,
         Language.SWAHILI to SwahiliRules,
         Language.TAGALOG to TagalogRules,
-        Language.RUSSIAN to RussianRules
+        Language.RUSSIAN to RussianRules,
+        Language.UKRAINIAN to UkrainianRules
     )
     
     /**

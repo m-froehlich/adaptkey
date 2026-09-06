@@ -944,4 +944,34 @@ class LanguageRulesTest {
         assertFalse(RussianRules.isPlausibleAdjectiveComparative("лучше") { true })
         assertNull(RussianRules.splitCompound("ключевое_слово", { true }) { it })
     }
+    
+    @Test
+    fun `Ukrainian resolves to UkrainianRules`() {
+        assertSame(UkrainianRules, LanguageRulesRegistry.rulesFor(Language.UKRAINIAN))
+    }
+    
+    @Test
+    fun `Ukrainian glues a decimal comma`() {
+        assertTrue(UkrainianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Ukrainian has no time-suggestion word`() {
+        assertNull(UkrainianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Ukrainian curates no bundled blacklist yet`() {
+        assertTrue(UkrainianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Ukrainian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(UkrainianRules.blocksAsSplitPrefix("не", 0L))
+        assertFalse(UkrainianRules.blocksAsFeminineAgentException("ниця", "вчитель", true))
+        assertFalse(UkrainianRules.blocksAsCompoundPrefix("добре", true))
+        assertFalse(UkrainianRules.isPlausibleVerbInflection("читаємо") { true })
+        assertFalse(UkrainianRules.isPlausibleAdjectiveComparative("краще") { true })
+        assertNull(UkrainianRules.splitCompound("ключове_слово", { true }) { it })
+    }
 }
