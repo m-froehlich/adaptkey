@@ -1003,6 +1003,58 @@ non-trivial changes).
 
 ## Current State
 
+- **§442 (v1.2.2): D-450-followup - first Russian language pack, first of the four §441 keyboard-layout-only**
+  **languages to get a real dictionary.** Full Language Contribution Guide §8 pipeline. By far the largest
+  corpus this project has processed: the entire `ruwiki-latest-pages-articles.xml.bz2`
+  (5,986,059,762 bytes compressed, ~5x the previous largest, Serbian's own) - live-verified before
+  downloading. Free RAM checked first (~6.6GB of 16GB) and the extractor tuned down from Serbian's own
+  settings rather than reused unchanged: 3 workers (not 5), more aggressive hapax-pruning triggers (2M/4M,
+  not 4M/8M). Real result: 2,116,244 pages (matching `ru.wikipedia.org`'s own live `siteinfo` article count,
+  2,116,865, almost exactly), 756,562,343 tokens, 2,410,579 distinct words, 9,687,936 raw bigram rows (>=3).
+  RAM stayed stable throughout, never climbing unboundedly.
+
+  **Wiktionary: Russian has a genuinely native edition** (`kaikki.org/dictionary/downloads/ru/ru-extract.jsonl.gz`,
+  290,531,383 bytes - directly verified bigger than the wrong English-coverage file's 88,879,732 bytes) - the
+  richest native Wiktionary source this project has processed (175,567 nouns, 187,834 verbs, 52,561
+  adjectives, 136 prepositions, 21,282 proper nouns).
+
+  **A real, serious bug found and fixed via the Guide's own mandatory calibration-ratio sanity check - not
+  dismissed as "the pipeline ran cleanly, so it's probably fine."** The first pass's adjective ratio came
+  back 21.0x (n=449), a stark outlier next to noun/verb's own ~0.4x/~0.97x. Pulling the real matched pairs
+  directly showed the lemma side was corrupted: extremely common adjectives ("новый"/"new", "другой"/"other",
+  "последний"/"last") had lost their trailing й, becoming the wrong but still valid-LOOKING words "новыи"/
+  "другои"/"последнии" - the plain-Cyrillic-letters validation regex never caught it, which is exactly why
+  this needed the ratio check to surface at all. Root cause: `strip_stress()` (added to remove the source's
+  own combining stress marks, e.g. "дома́") NFD-normalised the whole string and dropped every Unicode
+  category-Mn character, on an assumption ("no Russian letter decomposes under NFD") that was never actually
+  verified and turned out false - й (U+0439) canonically decomposes to и (U+0438) + COMBINING BREVE (U+0306,
+  also Mn), ё (U+0451) to е (U+0435) + COMBINING DIAERESIS (U+0308, also Mn), confirmed directly with
+  Python's own `unicodedata.normalize`. Fixed by not normalising at all - the source text is already NFC, so
+  `strip_stress()` now strips only the two specific stress-mark codepoints (U+0301/U+0300) directly, leaving
+  й/ё untouched. Re-extracted from scratch; ratios came back sane (noun 0.3684, verb 0.6875, adjective
+  0.6316) and the pure-`ADJECTIVE` tag count alone jumped 601 -> 23,172 in the initial kaikki merge, showing
+  how much real data the bug had silently been losing.
+
+  Also verified before writing the extractor, not assumed: Russian's periphrastic imperfective future is
+  documented as one literal placeholder row ("бу́ду/бу́дешь… де́лать", tagged just "future") - excluded via the
+  established "reject any form containing whitespace" rule (Turkish/Dutch precedent); no dotted/dotless-I
+  casing quirk; genuinely prepositional (no Turkish-style prep-tag gap).
+
+  **Net result**: `dict.tsv` 789,336 initial rows -> 1,581,888 after Wortfamilien completion (+792,552:
+  154,897 lemmas tagged, 339,224 forms linked, 792,552 generated; ratios noun 0.3684/verb 0.6875/adjective
+  0.6316, all sane). Proper nouns: 14,543 tagged, 4,944 unmatched, 1,795 collision-skipped. Bare-noun safety
+  check: 0. `bigram.tsv`: 4,349,059 rows (>=10 cutoff, largest of any pack so far) from 9,687,936 raw.
+  Quality gate: 0 duplicates/non-positive/orphaned-lemma/bare-NOUN - PASS. No `hints.tsv`/`diacritics.tsv`
+  (Cyrillic letters are standalone code points, same as Serbian/Greek); `abbreviations.tsv` hand-drafted
+  (26 entries). `RussianRules`: `decimalCommaGluesDigits`=true (GOST 8.417), `timeSuggestionWord`=null,
+  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained `"russian_jcuken"`/`"ukrainian_jcuken"`
+  row layouts (Ukrainian's own added now too, since it's next) and found 1,166 candidate pairs, left
+  uncurated for the usual no-native-fluency reason. `language_profiles.tsv` gained a real 200-ngram Russian
+  profile. Capitalisation: does not capitalise common nouns, like every other non-German language.
+  **Honesty gate (step 11) NOT satisfied**: not reviewed by a Russian speaker, not device-confirmed.
+  `versionCode` 497 -> 498, `versionName` "1.2.1" -> "1.2.2". Next: Ukrainian, then Azerbaijani, then Uzbek
+  (same D-450-followup round).
+
 - **§441 (v1.2.1): D-450-followup - keyboard layouts (only - no dictionaries yet) for Russian, Ukrainian,**
   **Azerbaijani, and Uzbek, in preparation for building all four as real language packs in a future session.**
   Added `Language.RUSSIAN`/`UKRAINIAN`/`AZERBAIJANI`/`UZBEK` to the enum. Uzbek needs no new layout code at

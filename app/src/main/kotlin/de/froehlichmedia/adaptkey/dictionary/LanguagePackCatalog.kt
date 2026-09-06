@@ -2614,6 +2614,98 @@ object LanguagePackCatalog {
             // Wortfamilien pipeline - but the same "pretty good, not done" ceiling as every other
             // pipeline-built language. Not device-confirmed either.
             version = 1
+        ),
+        Entry(
+            Language.RUSSIAN,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-ru.zip",
+            // D-450-followup: first of the four language packs following D-450-followup's own keyboard-only
+            // round (Russian/Ukrainian/Azerbaijani/Uzbek, `JcukenLayout.kt`/`AzerbaijaniLayout.kt` already
+            // built and committed separately). Uses the already-existing `LayoutKind.RUSSIAN_CYRILLIC`
+            // (`JcukenLayout.rows(ukrainian = false)`) - no new keyboard code needed this round.
+            //
+            // **By far the largest corpus this project has processed**: the entire
+            // `ruwiki-latest-pages-articles.xml.bz2` (5,986,059,762 bytes compressed, ~5x the previous
+            // largest single dump, Serbian's own 1.16GB) - verified live before downloading, not assumed.
+            // The machine's real free RAM was checked first (Get-CimInstance Win32_OperatingSystem, ~6.6GB
+            // free of 16GB total) and `extract_wiki_dump.py` tuned accordingly rather than reusing Serbian's
+            // own settings unchanged: 3 worker processes (not 5) and more aggressive hapax-pruning triggers
+            // (2M words / 4M bigrams, not 4M/8M) to keep the resident Counter size bounded. Real result:
+            // 2,116,244 pages processed (matching `ru.wikipedia.org`'s own live `siteinfo` "articles" count,
+            // 2,116,865, almost exactly), 756,562,343 real tokens, 2,410,579 distinct words, 9,687,936 raw
+            // bigram rows (>=3) - RAM stayed stable throughout (oscillating between hapax-prune checkpoints,
+            // never climbing unboundedly).
+            //
+            // **Wiktionary source: Russian has a genuinely native edition** (`kaikki.org/dictionary/
+            // downloads/ru/ru-extract.jsonl.gz`, 290,531,383 bytes - directly verified larger than the wrong
+            // English-Wiktionary-coverage file's 88,879,732 bytes, and the richest native Wiktionary source
+            // this project has processed: 175,567 nouns, 187,834 verbs, 52,561 adjectives, 136 prepositions,
+            // 21,282 proper nouns).
+            //
+            // **Real bug found and fixed via the Guide's own mandatory calibration-ratio sanity check** - not
+            // dismissed as "probably fine" despite the pipeline running cleanly end to end. The first pass's
+            // adjective ratio came back 21.0x (n=449), a stark outlier next to the noun/verb ratios' own
+            // ~0.4x/~0.97x. Pulling the real matched pairs directly (per the Guide's own instruction) showed
+            // the lemma side was corrupted: extremely common adjectives like "новый" ("new"), "другой"
+            // ("other"), "последний" ("last") had lost their trailing й, becoming the wrong words "новыи"/
+            // "другои"/"последнии" - still valid-LOOKING Russian words, so the plain-Cyrillic-letters
+            // validation regex never caught it. Root cause: `strip_stress()` (added to remove the source's
+            // own combining stress marks, e.g. "дома́") NFD-normalised the whole string and dropped every
+            // Unicode category-Mn character - an assumption ("no Russian letter decomposes under NFD") that
+            // was never actually verified and turned out false: й (U+0439) canonically decomposes to и
+            // (U+0438) + COMBINING BREVE (U+0306, also Mn), and ё (U+0451) to е (U+0435) + COMBINING
+            // DIAERESIS (U+0308, also Mn) - confirmed directly with Python's own `unicodedata.normalize`.
+            // Fixed by not normalising at all: the source text is already NFC, so `strip_stress()` now only
+            // strips the two specific stress-mark codepoints (U+0301 primary, U+0300 secondary) directly,
+            // leaving й/ё completely untouched. Re-extracted from scratch with the fix; ratios came back sane
+            // (noun 0.3684, verb 0.6875, adjective 0.6316) and the pure-`ADJECTIVE` tag count alone jumped
+            // 601 -> 23,172 in the initial kaikki merge, confirming how much real data the bug had silently
+            // been losing before the fix, not merely a cosmetic difference.
+            //
+            // **Also verified before writing the extractor, not assumed**: Russian's imperfective future is
+            // periphrastic (auxiliary "быть" + infinitive) and the source documents it as one literal
+            // placeholder row ("бу́ду/бу́дешь… де́лать", tagged just "future") - excluded via the same "reject
+            // any form containing whitespace, no last_token() recovery" rule Turkish's/Dutch's own fixes
+            // established (nothing real lost - the periphrastic future's own single-word building blocks are
+            // already separate entries). Russian has no dotted/dotless-I-style casing quirk (plain
+            // `str.lower()` verified safe) and is genuinely prepositional (no Turkish-style prep-tag gap).
+            //
+            // **Net result**: `dict.tsv` 789,336 initial Wikipedia-frequency+kaikki-POS rows -> 1,581,888
+            // after Wortfamilien completion (+792,552: 154,897 existing lemmas tagged, 339,224 existing forms
+            // linked, 792,552 generated - noun ratio 0.3684 (n=146,913), verb ratio 0.6875 (n=81,619),
+            // adjective ratio 0.6316 (n=100,433), all sane). Proper-noun handling: 14,543 tagged, 4,944
+            // unmatched, 1,795 skipped as real-word collisions. Mandatory bare-noun safety check: 0 bare-NOUN
+            // rows. `bigram.tsv`: 4,349,059 rows (>=10 cutoff, the largest of any language pack this project
+            // has built) from 9,687,936 at the raw >=3 floor. Quality gate: 0 case-insensitive duplicates, 0
+            // non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
+            //
+            // `hints.tsv`/`diacritics.tsv` deliberately ABSENT - Russian Cyrillic's own letters are standalone
+            // code points, not diacritic composites of a plainer base letter, so neither mechanism has
+            // anything to do (same reasoning as Serbian/Greek). `abbreviations.tsv`: a hand-drafted 26-entry
+            // list (т.е./т.д./т.п./т.к./др./проф./акад./им./гл./стр./см./напр./г./гг./в./вв./руб./коп./обл./
+            // ул./д./изд./ред./рис./табл./прим.).
+            //
+            // `RussianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (GOST 8.417, directly
+            // verified), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
+            // `confusables_scan.py` gained new `"russian_jcuken"`/`"ukrainian_jcuken"` row layouts (matching
+            // `JcukenLayout.kt`'s own `ROW_TOP_RU`/`ROW_MIDDLE_RU`/`ROW_BOTTOM_RU` and `_UK` constants exactly
+            // - both added now since Ukrainian will need its own next) and found 1,166 candidate pairs,
+            // overwhelmingly short 2-3-letter tokens risking autocorrect into a common short preposition
+            // (на/по/из/не/от/за/до/во/но/что/как/при/или) - left deliberately uncurated for the same
+            // "cannot confidently separate genuine short words from corpus noise without native fluency"
+            // reasoning every non-German round documents. New tests: `LanguageRulesTest` gained a "Russian
+            // resolves to RussianRules" case plus its own mirroring test block. `language_profiles.tsv`
+            // (A-03) gained a real 200-ngram Russian profile, built from this pack's own finished `dict.tsv`.
+            //
+            // **Capitalisation-rule applicability (Guide step 8)**: Russian does NOT capitalise common nouns
+            // like German - `merge_dict.py`'s own `resolve_tags()` guarantees this structurally (a bare
+            // `NOUN` tag always gains `OTHER` too), the same default every other non-German language shares.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Russian. Real, full-dump corpus scale (by far the
+            // largest of any language this project has built) and a real, freshly-fixed Wortfamilien
+            // pipeline - but the same "pretty good, not done" ceiling as every other pipeline-built language.
+            // Not device-confirmed either.
+            version = 1
         )
     )
 }

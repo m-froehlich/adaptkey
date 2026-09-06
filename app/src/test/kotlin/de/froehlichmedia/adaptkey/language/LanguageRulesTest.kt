@@ -914,4 +914,34 @@ class LanguageRulesTest {
         assertFalse(TagalogRules.isPlausibleAdjectiveComparative("mas_malaki") { true })
         assertNull(TagalogRules.splitCompound("susing_salita", { true }) { it })
     }
+    
+    @Test
+    fun `Russian resolves to RussianRules`() {
+        assertSame(RussianRules, LanguageRulesRegistry.rulesFor(Language.RUSSIAN))
+    }
+    
+    @Test
+    fun `Russian glues a decimal comma`() {
+        assertTrue(RussianRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Russian has no time-suggestion word`() {
+        assertNull(RussianRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Russian curates no bundled blacklist yet`() {
+        assertTrue(RussianRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Russian leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(RussianRules.blocksAsSplitPrefix("не", 0L))
+        assertFalse(RussianRules.blocksAsFeminineAgentException("ница", "учитель", true))
+        assertFalse(RussianRules.blocksAsCompoundPrefix("хорошо", true))
+        assertFalse(RussianRules.isPlausibleVerbInflection("читаем") { true })
+        assertFalse(RussianRules.isPlausibleAdjectiveComparative("лучше") { true })
+        assertNull(RussianRules.splitCompound("ключевое_слово", { true }) { it })
+    }
 }

@@ -22,6 +22,12 @@ ROW_LAYOUTS = {
     # D-450-followup: matches app/.../keyboard/SerbianLayout.kt's own ROW_TOP/ROW_MIDDLE/ROW_BOTTOM exactly
     # (the real Serbian Cyrillic standard, Microsoft's KBDYCC - see that Kotlin object's own KDoc).
     "serbian_cyrillic": ["1234567890", "љњертзуиопшђж", "асдфгхјклчћ", "џцвбнм"],
+    # D-450-followup: matches app/.../keyboard/JcukenLayout.kt's own ROW_TOP_RU/ROW_MIDDLE_RU/ROW_BOTTOM_RU
+    # exactly (the real Russian ЙЦУКЕН standard, Microsoft's KBDRU).
+    "russian_jcuken": ["1234567890", "йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю"],
+    # D-450-followup: matches JcukenLayout.kt's own ROW_TOP_UK/ROW_MIDDLE_UK/ROW_BOTTOM_UK exactly (the real
+    # Ukrainian ЙЦУКЕН standard, Microsoft's KBDUR).
+    "ukrainian_jcuken": ["1234567890", "йцукенгшщзхї", "фівапролджє", "ґячсмитьбю"],
 }
 
 
