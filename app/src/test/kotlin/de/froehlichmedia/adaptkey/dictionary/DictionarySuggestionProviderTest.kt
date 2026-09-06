@@ -178,6 +178,14 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-457 a learned all-caps acronym reaches the candidate pool when typed lowercase`() {
+        store.learn("LLM", null, null, categoryHint = PartOfSpeech.NOUN)
+        
+        assertTrue(provider.suggestionsFor("ll", null).map { it.word }.contains("LLM"))
+        assertTrue(provider.suggestionsFor("llm", null).map { it.word }.contains("LLM"))
+    }
+    
+    @Test
     fun `A-04 blacklisted words are excluded from suggestions`() {
         store.putWord(WordEntry("Hund", 10L))
         store.putWord(WordEntry("Haus", 100L))

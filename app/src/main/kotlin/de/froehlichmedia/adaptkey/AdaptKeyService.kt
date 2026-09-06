@@ -634,6 +634,15 @@ class AdaptKeyService : InputMethodService() {
         showSuggestions()
     }
     
+    // D-455: a third debounced runnable alongside the two above, scheduled only in a
+    // reclaimOnCaretMoveSuppressed field (Gemini) where reclaimWordAtCaretRunnable itself never runs - the
+    // composing-region reclaim must stay suppressed there (D-351), but Shift/Caps still needs re-deriving
+    // fresh for the new caret position (D-313/D-406's own "every newly-reached position gets Shift
+    // re-derived" principle), which was previously only ever done as a side effect of the now-suppressed
+    // reclaim. See rearmShiftForCaretMoveWhenReclaimSuppressed()'s own KDoc. Cancelled in clearComposing()
+    // for the identical reason reclaimWordAtCaretRunnable is.
+    private val rearmShiftForCaretMoveRunnable = Runnable { rearmShiftForCaretMoveWhenReclaimSuppressed() }
+    
     // D-211: the actual search now runs on this dedicated background thread (mirroring the existing
     // tier3Executor precedent below), so it never blocks the main thread (or the key-press flash render)
     // the way D-160's original Handler.postDelayed-on-the-main-thread debounce still did once its delay
@@ -1704,10 +1713,12 @@ class AdaptKeyService : InputMethodService() {
      * reclaim (see that function's own D-421 note) share one single scheduling point rather than two
      * independently-maintained copies of the same two `postDelayed` calls.
      *
-     * D-351: the reclaim itself is skipped in a field where it is suppressed (Gemini); the chip's own
-     * refresh is scheduled unconditionally regardless - see [reclaimEnabledRunnable]'s own KDoc for why.
-     * [reclaimPending] is set only in the non-suppressed branch, matching that same distinction - see its
-     * own field KDoc.
+     * D-351: the composing-region reclaim itself is skipped in a field where it is suppressed (Gemini); the
+     * chip's own refresh is scheduled unconditionally regardless - see [reclaimEnabledRunnable]'s own KDoc
+     * for why. [reclaimPending] is set only in the non-suppressed branch, matching that same distinction -
+     * see its own field KDoc. D-455: a suppressed field still gets its own debounced
+     * [rearmShiftForCaretMoveRunnable] instead - Shift/Caps must still be re-derived fresh for the new caret
+     * position even though the composing-region reclaim itself stays suppressed there.
      *
      * D-36-followup: a no-op while [reclaimChipRefreshSuppressedUntil] is still in the future -
      * [openClipboardPeek] arms a short window there right before its own `finalizeAndCommit()` call, whose
@@ -1723,17 +1734,79 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun scheduleReclaimAndChipRefresh() {
         if (SystemClock.uptimeMillis() < reclaimChipRefreshSuppressedUntil) {
+            diag("AdaptKeySuggest", "scheduleReclaimAndChipRefresh: suppressed by reclaimChipRefreshSuppressedUntil")
             return
         }
+        diag("AdaptKeySuggest", "scheduleReclaimAndChipRefresh: reclaimOnCaretMoveSuppressed=$reclaimOnCaretMoveSuppressed composing=\"$composing\"")
         if (!reclaimOnCaretMoveSuppressed) {
             reclaimPending = true
             handler.removeCallbacks(reclaimWordAtCaretRunnable)
             handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
+        } else {
+            handler.removeCallbacks(rearmShiftForCaretMoveRunnable)
+            handler.postDelayed(rearmShiftForCaretMoveRunnable, RECLAIM_DEBOUNCE_MS)
         }
         // D-414-followup: scheduled unconditionally - see reclaimEnabledRunnable's own KDoc for why the
         // chip's visibility must not share the reclaim runnable's own suppression gate above.
         handler.removeCallbacks(reclaimEnabledRunnable)
         handler.postDelayed(reclaimEnabledRunnable, RECLAIM_DEBOUNCE_MS)
+    }
+    
+    /**
+     * D-455: the Shift/Caps re-derivation core shared between [reclaimWordAtCaret] (the composing-region
+     * reclaim, every ordinary field) and [rearmShiftForCaretMoveWhenReclaimSuppressed] (Shift only, the
+     * `reclaimOnCaretMoveSuppressed` fields where the composing-region reclaim itself must stay suppressed)
+     * - both callers already read+consume [shiftPreservedAfterOpener] and check [composing]'s own emptiness
+     * themselves before calling this, and already run inside their own `ic.beginBatchEdit()`.
+     */
+    private fun rearmShiftForCaretMove(ic: InputConnection, preserveShiftAfterOpener: Boolean) {
+        captureTokenContext(ic)
+        resetWordEndShift()
+        // D-335: when a backspace just deleted an uppercase character (applyShiftAfterDelete armed Shift
+        // and set shiftArmedByDelete), skip the fresh sentence-start derivation here - it would
+        // overwrite the delete-derived Shift state with whatever sentenceStartBefore() reports for the
+        // caret's current position, which is not a sentence start in the common case (the cursor sits
+        // where the just-deleted capital was), un-arming Shift and lowercasing the user's very next
+        // keystroke. The flag is consumed here so a subsequent genuine tap-into-word reclaim still
+        // re-derives Shift normally (D-313's own purpose).
+        if (shiftArmedByDelete) {
+            shiftArmedByDelete = false
+        } else if (!tokenShiftLiveArmed && !preserveShiftAfterOpener) {
+            // D-373-followup (v2) / D-378-followup (v2): captureTokenContext() just above may have
+            // already live-armed Shift for the D-373 hyphen-propagation case (tokenShiftLiveArmed), or
+            // the most recent commit may have been a D-378 opener whose whole point was leaving Shift
+            // untouched (preserveShiftAfterOpener) - re-deriving here (D-313's own reactive purpose, for
+            // a caret landing on an existing word) would silently overwrite either back to the generic
+            // "not a sentence start" answer, exactly mirroring the shiftArmedByDelete protection right
+            // above for the delete-driven case. Root-caused from two real device logs: the debounced D-62
+            // reclaim fires here ~100ms after the hyphen/opener commits (composing is empty there too),
+            // so this was clobbering both every time.
+            armShiftForNextWord(ic)
+        }
+    }
+    
+    /**
+     * D-455: in a `reclaimOnCaretMoveSuppressed` field (Gemini), [scheduleReclaimAndChipRefresh] never
+     * schedules the ordinary [reclaimWordAtCaretRunnable] - the composing-region reclaim (WordExtent-based,
+     * mutates the document's own composing span) must stay suppressed there (D-351: the cursor-handle-drag
+     * case). But a caret move into a genuinely new position must still re-derive Shift fresh regardless
+     * (D-313/D-406's own "every newly-reached position gets Shift re-derived" principle), which used to only
+     * ever happen as a side effect of the now-suppressed reclaim itself. Runs exactly [reclaimWordAtCaret]'s
+     * own Shift-only half ([rearmShiftForCaretMove]) - never [reclaimSurroundingWord]/[updateComposing].
+     */
+    private fun rearmShiftForCaretMoveWhenReclaimSuppressed() {
+        val ic = currentInputConnection ?: return
+        val preserveShiftAfterOpener = shiftPreservedAfterOpener
+        shiftPreservedAfterOpener = false
+        if (composing.isNotEmpty()) {
+            return
+        }
+        ic.beginBatchEdit()
+        try {
+            rearmShiftForCaretMove(ic, preserveShiftAfterOpener)
+        } finally {
+            ic.endBatchEdit()
+        }
     }
     
     private fun reclaimWordAtCaret() {
@@ -1752,33 +1825,12 @@ class AdaptKeyService : InputMethodService() {
         // fires, a keystroke may already have started a real composing token in the meantime, which this
         // function must not append reclaimed text onto.
         if (composing.isNotEmpty()) {
+            diag("AdaptKeySuggest", "reclaimWordAtCaret: aborted - composing already non-empty (\"$composing\")")
             return
         }
         ic.beginBatchEdit()
         try {
-            captureTokenContext(ic)
-            resetWordEndShift()
-            // D-335: when a backspace just deleted an uppercase character (applyShiftAfterDelete armed Shift
-            // and set shiftArmedByDelete), skip the fresh sentence-start derivation here - it would
-            // overwrite the delete-derived Shift state with whatever sentenceStartBefore() reports for the
-            // caret's current position, which is not a sentence start in the common case (the cursor sits
-            // where the just-deleted capital was), un-arming Shift and lowercasing the user's very next
-            // keystroke. The flag is consumed here so a subsequent genuine tap-into-word reclaim still
-            // re-derives Shift normally (D-313's own purpose).
-            if (shiftArmedByDelete) {
-                shiftArmedByDelete = false
-            } else if (!tokenShiftLiveArmed && !preserveShiftAfterOpener) {
-                // D-373-followup (v2) / D-378-followup (v2): captureTokenContext() just above may have
-                // already live-armed Shift for the D-373 hyphen-propagation case (tokenShiftLiveArmed), or
-                // the most recent commit may have been a D-378 opener whose whole point was leaving Shift
-                // untouched (preserveShiftAfterOpener) - re-deriving here (D-313's own reactive purpose, for
-                // a caret landing on an existing word) would silently overwrite either back to the generic
-                // "not a sentence start" answer, exactly mirroring the shiftArmedByDelete protection right
-                // above for the delete-driven case. Root-caused from two real device logs: the debounced D-62
-                // reclaim fires here ~100ms after the hyphen/opener commits (composing is empty there too),
-                // so this was clobbering both every time.
-                armShiftForNextWord(ic)
-            }
+            rearmShiftForCaretMove(ic, preserveShiftAfterOpener)
             // D-123 / D-416: skip the reset exactly once when this call is only the echo of a
             // suggestion-bar tap's own commit, not a genuine subsequent caret move - otherwise D-29's
             // space-eating flag never survives to see the very keystroke it is meant to react to. (Before
@@ -1791,12 +1843,14 @@ class AdaptKeyService : InputMethodService() {
             }
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
+                diag("AdaptKeySuggest", "reclaimWordAtCaret: nothing reclaimed at this position")
                 return
             }
             updateComposing(ic)
         } finally {
             ic.endBatchEdit()
         }
+        diag("AdaptKeySuggest", "reclaimWordAtCaret: reclaimed \"$composing\" - calling refreshSuggestions()")
         refreshSuggestions()
     }
     
@@ -4857,6 +4911,9 @@ class AdaptKeyService : InputMethodService() {
         // D-414-followup: same reasoning as reclaimWordAtCaretRunnable above - a stale enabled-state push
         // must never land on whatever field/word comes next.
         handler.removeCallbacks(reclaimEnabledRunnable)
+        // D-455: same reasoning again - a stale Shift re-derivation for a position that no longer exists
+        // must never land on whatever field/word comes next.
+        handler.removeCallbacks(rearmShiftForCaretMoveRunnable)
         composingPreviewToken = null
         composingPreviewFor = null
         // D-346: no token left to search for - any pending deferred search is now moot.
@@ -5128,7 +5185,12 @@ class AdaptKeyService : InputMethodService() {
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
         // useful while entering one, so the bar simply stays empty. D-293: a field explicitly opted out of
         // suggestions (TYPE_TEXT_FLAG_NO_SUGGESTIONS) gets the identical bare-bar treatment.
+        // D-457 (temporary diagnostic): tracing a real report that suggestion chips stop appearing at all
+        // from the second word onward - logs every early-return branch below plus the final candidate
+        // count, so a captured device log shows exactly which gate is firing. Remove once found and fixed.
+        diag("AdaptKeySuggest", "refreshSuggestions: composing=\"$composing\" urlMode=$urlMode noSuggestionsField=$noSuggestionsField loginFieldKind=$loginFieldKind previousWord=$previousWord tokenContextBefore=\"$tokenContextBefore\"")
         if (urlMode || noSuggestionsField) {
+            diag("AdaptKeySuggest", "refreshSuggestions: cleared - urlMode/noSuggestionsField")
             clearSuggestions()
             return
         }
@@ -5136,11 +5198,13 @@ class AdaptKeyService : InputMethodService() {
         // dictionary word while entering a username/email is never useful, and a password field shows no
         // suggestions at all (see showCredentialSuggestions).
         if (loginFieldKind != LoginFieldKind.NONE) {
+            diag("AdaptKeySuggest", "refreshSuggestions: routed to credential suggestions - loginFieldKind=$loginFieldKind")
             showCredentialSuggestions()
             return
         }
         val input = composing.toString()
         if (input.isEmpty()) {
+            diag("AdaptKeySuggest", "refreshSuggestions: cleared - composing is empty")
             clearSuggestions()
             return
         }
@@ -5148,11 +5212,14 @@ class AdaptKeyService : InputMethodService() {
         // suggestion and no pending-correction chip is ever useful for it, mirroring urlMode's own bypass
         // above. Checked before the A-03 dictionary lookup so no store query runs for it at all.
         if ('_' in input) {
+            diag("AdaptKeySuggest", "refreshSuggestions: cleared - underscore in input")
             clearSuggestions()
             return
         }
         // A-03: pick the dictionary for the recent context; an unsupported foreign context shows nothing.
-        if (selectActiveDictionary("$tokenContextBefore $input").suppressAutocorrect) {
+        val activeDict = selectActiveDictionary("$tokenContextBefore $input")
+        if (activeDict.suppressAutocorrect) {
+            diag("AdaptKeySuggest", "refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary(\"$tokenContextBefore $input\")")
             clearSuggestions()
             return
         }
@@ -5170,6 +5237,7 @@ class AdaptKeyService : InputMethodService() {
             precomputedExpensiveCandidates != null -> precomputedExpensiveCandidates
             else -> provider.suggestionsFor(input, previousWord, previousPreviousWord, includeExpensiveFallbacks)
         }
+        diag("AdaptKeySuggest", "refreshSuggestions: candidates=${candidates.size} for input=\"$input\" duringRepeat=$duringRepeat")
         // D-404-followup: computed from this call's own candidates above (no separate dictionary query) -
         // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
         // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
@@ -5553,6 +5621,8 @@ class AdaptKeyService : InputMethodService() {
         } else {
             withLoading
         }
+        // D-457 (temporary diagnostic): see refreshSuggestions()'s own note.
+        diag("AdaptKeySuggest", "showSuggestions: items=${items.size} withAmbiguousCasing=${withAmbiguousCasing.size} withCompound=${withCompound.size} withLoading=${withLoading.size} withReclaim=${withReclaim.size} final=${withReclaim.map { it.text }}")
         setSuggestionBarItems(withReclaim)
         // D-50: the bar stays visible even when empty, so its slot never collapses and the keyboard below
         // it never jumps.

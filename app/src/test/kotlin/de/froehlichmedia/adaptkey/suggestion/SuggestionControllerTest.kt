@@ -123,4 +123,14 @@ class SuggestionControllerTest {
         controller.clear()
         assertTrue(controller.displayed().isEmpty())
     }
+    
+    @Test
+    fun `D-457 a differently-cased candidate is never mistaken for the S-02 verbatim-input match`() {
+        // S-02's own "never offer the word exactly as typed" check (this class's own KDoc) is a plain,
+        // case-sensitive String comparison - "LLM" typed as lowercase "llm" must still survive it.
+        val controller = controller()
+        controller.update("llm", listOf(Suggestion("LLM", 1322.19)), null)
+        
+        assertEquals(listOf("LLM"), words(controller))
+    }
 }

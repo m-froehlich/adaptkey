@@ -165,4 +165,26 @@ class CapitalisationEngineTest {
     fun `D-373 no previous segment recorded falls back to plain B-02`() {
         assertEquals("teil", engine.capitalise("Teil", ctx(afterHyphen = true)))
     }
+    
+    @Test
+    fun `D-457 a learned all-caps acronym with no noun tag is never mangled to a half-lowercase hybrid`() {
+        // Confirmed real bug, traced from a device report: an untagged learned acronym (categoryHint was
+        // never set - e.g. the word was first learned at a sentence start, where learnWord() deliberately
+        // withholds the NOUN hint) used to come back "lLM" - only the first character touched by
+        // lowercaseFirst(), the rest left exactly as learned. Acronym.isAcronym() must veto this entirely.
+        val untaggedStore = InMemoryDictionaryStore().apply {
+            learn("LLM", null, null)
+        }
+        val untaggedEngine = CapitalisationEngine(untaggedStore)
+        assertEquals("LLM", untaggedEngine.capitalise("LLM", ctx(explicit = false)))
+    }
+    
+    @Test
+    fun `D-457 a learned all-caps acronym tagged NOUN was already correct and stays so`() {
+        val taggedStore = InMemoryDictionaryStore().apply {
+            learn("LLM", null, null, categoryHint = PartOfSpeech.NOUN)
+        }
+        val taggedEngine = CapitalisationEngine(taggedStore)
+        assertEquals("LLM", taggedEngine.capitalise("LLM", ctx(explicit = false)))
+    }
 }

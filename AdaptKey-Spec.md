@@ -468,6 +468,15 @@ per-character bookkeeping (`composingFlags`/`composingTaps`). `reclaimWordAtCare
 to the deletion's own `shiftArmedByDelete` result (D-335, directly above), so Shift state is unaffected by
 going through it here.
 
+### Addendum to G-05 - Shift Re-Derives on a Caret Move Even Where the Reclaim Itself Is Suppressed
+D-455: S-10's `reclaimOnCaretMoveSuppressed` (Gemini, D-351) only ever suppresses the composing-region reclaim
+itself - moving the caret from one existing word into another there must still re-derive Shift/Caps fresh for
+the new position (the same D-313/D-406 principle every other newly-reached position already gets), which
+previously only ever happened as a side effect of the now-suppressed reclaim. A caret move in such a field now
+schedules a dedicated, debounced Shift-only re-derivation instead - exactly `reclaimWordAtCaret`'s own
+Shift-arming logic, run standalone, never the composing-region reclaim (`reclaimSurroundingWord`/
+`updateComposing`) itself, which stays suppressed there as before.
+
 ### G-07 - Enter Key: Submit vs. Newline
 Pressing Enter either inserts a literal newline or submits the field, depending on what the target editor
 itself declares - never on a fixed per-app or per-field-type assumption. A field that declares a genuine IME
@@ -845,6 +854,15 @@ Rules 3/4's outcome is now visible in the suggestion bar *before* it silently ap
 scope covering pending capitalisation-only changes - not only pending spelling substitutions. Rule 2 has no
 equivalent pending state to preview any more (D-405) - it is resolved live, before the word is even typed,
 so there is nothing left pending by the time a suggestion could show one.
+
+D-457: a candidate word that is itself a deliberate all-caps acronym (`Acronym.isAcronym()`, D-403/
+D-404-followup - at least two letters, every one uppercase) is never touched by `capitalise()`'s own "no
+signal, lowercase it" fallback, regardless of what rules 3-5 above conclude for it. That fallback only ever
+mutates a word's first character (correct for an ordinary word, where the rest is already lowercase either
+way), but a learned acronym with no noun/proper-noun tag of its own used to be silently mangled into a
+nonsensical hybrid this way (`"LLM"` -> `"lLM"`) rather than left alone - confirmed via direct tracing that
+this is where the defect actually lived, not the dictionary lookup or the suggestion-bar pipeline, both of
+which already handled the differently-cased candidate correctly on their own.
 
 D-449-followup: the single-character mapping every rule above ultimately applies (upper-casing/lower-casing a
 word's first character, or the whole word under C-04's `CHARACTERS` mode) is itself a per-language convention,

@@ -956,21 +956,9 @@ non-trivial changes).
   (`LanguagePacksActivity`/`activity_language_packs`, D-280) per the user's own six-point list - see §447 in
   Current State for the full implementation.
 
-- **D-455 - OPEN, root-caused, not yet fixed (2026-09-06).** In a `reclaimOnCaretMoveSuppressed` field
-  (Gemini, D-351), moving the caret from one existing word into another leaves Caps/Shift stuck at whatever
-  state was active before the move - the fresh-derivation-per-position mechanism (D-313/D-406's
-  `armShiftForNextWord`) never runs there. Confirmed in code, not guessed: `scheduleReclaimAndChipRefresh()`
-  ([AdaptKeyService.kt:1724](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:1724)) only
-  schedules `reclaimWordAtCaretRunnable` - the sole call site that ever invokes `armShiftForNextWord` for this
-  "tap into an existing word" case (inside `reclaimWordAtCaret()`) - when `!reclaimOnCaretMoveSuppressed`; the
-  chip-visibility refresh right below it was already deliberately split out to run unconditionally
-  (D-414-followup, "the chip's own refresh is scheduled unconditionally regardless"), but the Shift
-  re-derivation was not given the same treatment. The user wants exactly that: Shift/Caps re-derivation on a
-  caret move must happen independent of whether the actual composing-region reclaim is suppressed. Fix shape
-  (not yet implemented): extract just the position-only "is this now a fresh Shift-relevant position, and if
-  so what should Shift be" check out of `reclaimWordAtCaret()`'s body into its own function, called from
-  `scheduleReclaimAndChipRefresh()` unconditionally, mirroring `reclaimEnabledRunnable`'s own precedent
-  exactly - without touching the composing-region reclaim itself, which must stay suppressed in Gemini.
+- **D-455 - RESOLVED (§450, v1.2.10).** In a `reclaimOnCaretMoveSuppressed` field (Gemini, D-351), moving the
+  caret between existing words now correctly re-derives Shift/Caps fresh, independent of the composing-region
+  reclaim itself staying suppressed there - see §450 in Current State for the mechanism.
 
 - **D-456 - OPEN, likely already substantially covered by an existing mechanism - needs a real repro before**
   **further action (2026-09-06).** User's ask: with D-348 (double-tap-Backspace-undo) enabled, when a word
@@ -993,26 +981,69 @@ non-trivial changes).
   it. Needs an actual device repro (or a targeted unit test walking both scenarios against the real
   `AdaptKeyService`/`SqliteDictionaryStore` pair) before deciding whether anything needs to change at all.
 
-- **D-457 - OPEN, root-cause hypothesis only, not confirmed (2026-09-06).** A learned all-caps acronym (the
-  user's example: `"LLM"`, already learned/promoted) is not offered at all while typing its lowercase form
-  (`"ll"`/`"llm"`) - no chip appears until the very first letter is typed uppercase. Confirmed NOT a data/SQL
-  problem: `SqliteDictionaryStore.unigramsByPrefix()`
-  ([SqliteDictionaryStore.kt:947](app/src/main/kotlin/de/froehlichmedia/adaptkey/dictionary/SqliteDictionaryStore.kt:947))
-  queries `TABLE_LEARNED` by `wkey LIKE prefix.lowercase() + '%'`, which is already fully case-insensitive and
-  would return the learned `"LLM"` entry for either prefix - the entry reaches the candidate pool. Leading
-  hypothesis, not yet traced end-to-end: the same class of bug D-440/D-440-followup fixed for the
-  composing-*empty* next-word-prediction case (`CapitalisationEngine.capitalise()`'s rule 1, "explicit user
-  input is never changed", reading a meaningless `context.explicitFirstUpper` and silently discarding an
-  already-correct learned casing) may still apply, unfixed, to the composing-*not*-empty case D-440's own
-  write-up explicitly left alone ("that half of the design is correct and unchanged... needs fresh §6
-  derivation from live context") - except here `explicitFirstUpper` is not meaningless, it is genuinely
-  `false` (the user really did type a lowercase `l`), so rule 1 may be faithfully doing exactly what it is
-  documented to do (never override explicit user input) and simply was never taught that an *exact, case-
-  insensitive prefix match against an already-learned all-caps entry* is a different situation from an
-  ordinary ambiguous-noun default. Needs real tracing through `showSuggestions()`'s candidate-to-chip pipeline
-  (not `unigramsByPrefix` itself) before implementing anything - not yet done.
+- **D-457 - RESOLVED (§450, v1.2.10).** A learned all-caps acronym (`"LLM"`) with no noun/proper-noun tag of
+  its own used to come back a mangled `"lLM"` - not literally "no chip", but close enough to read as one - see
+  §450 in Current State for the real root cause (traced through three separate layers, not guessed) and the
+  fix.
+
+- **D-458 - OPEN, temporary diagnostic logging added, awaiting a real device log (2026-09-06).** User's report:
+  "ab dem zweiten Wort" (from the second word onward) no suggestion chips appear at all any more - not scoped
+  to any one field or action sequence, described as something fundamental being wrong. Not yet root-caused;
+  raised right after this same session's own D-455 change (`scheduleReclaimAndChipRefresh`/
+  `reclaimWordAtCaret`/the new `rearmShiftForCaretMove*` functions) and D-357's own earlier fix, both real
+  suspects given the timing, but not confirmed as the cause over a genuinely pre-existing, only-just-noticed
+  bug - per this project's own diagnosis convention, nothing is being guessed at or changed based on the
+  description alone. A new `"AdaptKeySuggest"` diagnostic tag (mirroring the established `diag()`/
+  `DiagnosticLog` mechanism - Settings' own in-app log viewer needs no PC/USB tether) now logs every early-
+  return branch in `refreshSuggestions()` (`AdaptKeyService.kt`, `urlMode`/`noSuggestionsField`/login-field/
+  empty-composing/underscore/`suppressAutocorrect` from `selectActiveDictionary()`, plus the final candidate
+  count), `showSuggestions()`'s own item-count pipeline right before `setSuggestionBarItems()`, and the D-455
+  reclaim/Shift-rearm functions' own early returns - temporary, remove once found and fixed (same lifecycle as
+  D-193/D-398/D-410's own temporary diagnostics). Needs the user's own captured log from a real repro of "type
+  a word, commit it, type a second word, no chips appear" before proceeding further.
 
 ## Current State
+
+- **§450 (v1.2.10): D-455 (Gemini Shift re-derivation) + D-457 (mangled learned-acronym casing), plus D-458's**
+  **own temporary diagnostic logging for a new, not-yet-root-caused report.**
+
+  **D-455**: `AdaptKeyService` gained `rearmShiftForCaretMove(ic, preserveShiftAfterOpener)` - the exact
+  Shift/Caps re-derivation core `reclaimWordAtCaret()` already had inline (`captureTokenContext`/
+  `resetWordEndShift`/the `shiftArmedByDelete`/`tokenShiftLiveArmed`/`preserveShiftAfterOpener` decision),
+  extracted verbatim rather than rewritten so the ordinary (non-suppressed) path stays byte-identical. A new
+  `rearmShiftForCaretMoveWhenReclaimSuppressed()` calls it standalone - own flag consumption, own
+  `composing.isNotEmpty()` guard, own `ic.beginBatchEdit()`, mirroring `reclaimWordAtCaret()`'s own structure
+  exactly rather than the IPC calls migrating outside a batch edit. `scheduleReclaimAndChipRefresh()`'s
+  `reclaimOnCaretMoveSuppressed` branch now schedules a new debounced `rearmShiftForCaretMoveRunnable` instead
+  of doing nothing, mirroring `reclaimEnabledRunnable`'s own existing "runs unconditionally regardless of
+  suppression" precedent (D-414-followup) - cancelled in `clearComposing()` for the identical stale-callback
+  reason `reclaimWordAtCaretRunnable` already is. See spec's new G-05 addendum.
+
+  **D-457**: root-caused by tracing three separate layers with real (throwaway, later replaced by permanent
+  assertions) diagnostic tests rather than guessing from the original hypothesis, which turned out wrong -
+  `DictionarySuggestionProvider.suggestionsFor()` and `SuggestionController.displayed()` both already handle a
+  differently-cased learned candidate correctly (confirmed directly, not assumed); the real bug was in
+  `CapitalisationEngine.capitalise()`'s own "no signal, lowercase it" branch, which only ever touches a word's
+  first character (`casing.lowercaseFirst()`) - correct for an ordinary word, but silently mangling a
+  deliberately all-caps, not-noun-tagged learned acronym into a nonsensical hybrid (`"LLM"` -> `"lLM"`) instead
+  of leaving it alone. Fixed with a new branch reusing the already-established `Acronym.isAcronym()` signal
+  (D-403/D-404-followup) ahead of the plain lowercase fallback: `word` is returned completely unchanged
+  whenever it is a genuine acronym, since the "upper" branch right above it already produces the correct,
+  no-op result for one (`uppercaseFirst("LLM") == "LLM"`), so only the lowercase branch ever needed the guard.
+  Two new `CapitalisationEngineTest` cases (the confirmed-broken untagged case, plus the already-working
+  NOUN-tagged case as a non-regression check) plus one each in `DictionarySuggestionProviderTest`/
+  `SuggestionControllerTest` (converted from the exploratory diagnostics into permanent assertions once they
+  had done their job) - see spec's new §6 addendum.
+
+  **D-458 (new, not part of this fix - see its own Open TODos entry)**: while implementing the two rounds
+  above, the user reported a real, more severe, not-yet-root-caused regression ("ab dem zweiten Wort keine
+  Chips mehr") and asked for diagnostic logging rather than a guessed fix - a new `"AdaptKeySuggest"` `diag()`
+  tag now covers `refreshSuggestions()`'s own early-return branches and final candidate count,
+  `showSuggestions()`'s item-count pipeline, and the D-455 functions' own early returns. Temporary, to be
+  removed once a real device log pins down the actual cause.
+
+  1557 unit tests green (was 1553). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  505 -> 506, `versionName` `"1.2.9"` -> `"1.2.10"`.
 
 - **§449 (v1.2.9): D-357 reopened and fixed for real, device-confirmed - mid-word edit + double-tap Shift**
   **capitalising the wrong letter.** Closed once (2026-09-01) as not reproducible; the user captured a real

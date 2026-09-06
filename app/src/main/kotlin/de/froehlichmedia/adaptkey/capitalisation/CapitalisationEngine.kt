@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.capitalisation
 
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
+import de.froehlichmedia.adaptkey.suggestion.Acronym
 
 /**
  * Applies the capitalisation hierarchy (§6) to a single token, using the part-of-speech tags in
@@ -90,11 +91,17 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
             else -> false
         }
         
-        return if (upper) {
-            casing.uppercaseFirst(word)
-        } else {
+        return when {
+            upper -> casing.uppercaseFirst(word)
+            // D-457: a deliberately all-caps acronym (e.g. a learned "LLM" with no noun/proper-noun tag of
+            // its own, reached while its lowercase prefix is still being typed) must never have its casing
+            // touched at all here - lowercaseFirst() only ever handles the first character, so applying it
+            // to an acronym produces a nonsensical hybrid ("lLM") instead of leaving the deliberate all-caps
+            // spelling intact. Checked only in this branch: the upper branch above already returns the
+            // correct, unchanged acronym as a harmless no-op (uppercaseFirst("LLM") == "LLM").
+            Acronym.isAcronym(word) -> word
             // Never lowercases an explicit uppercase: that path returns above via upper == true.
-            casing.lowercaseFirst(word)
+            else -> casing.lowercaseFirst(word)
         }
     }
     
