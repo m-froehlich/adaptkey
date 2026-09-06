@@ -521,9 +521,10 @@ non-trivial changes).
     root-caused further since there is nothing left to fix.
   - **D-356 - OPEN, awaiting a concrete example.** A typed umlaut should not be carelessly reverted by
     autocorrect. Per §277: no concrete repro has been supplied yet to design against.
-  - **D-357 - RESOLVED (2026-09-01, no code change - user confirmation).** User confirmed no longer
-    reproducible. No dedicated fix identified as the cause; not root-caused further since there is nothing
-    left to fix.
+  - **D-357 - REOPENED then RESOLVED for real (§449, v1.2.9).** The 2026-09-01 "no longer reproducible"
+    closure did not hold - the user captured a real device log reproducing it in Google Keep and asked for it
+    to be re-investigated. See §449 in Current State for the real root cause (traced from that log, not
+    guessed) and the fix.
   - **D-358 - RESOLVED (§289 v1.0.44).** Double-tap-Backspace revert was broken right after punctuation -
     fixed alongside D-359.
   - **D-359 - RESOLVED (§289 v1.0.44).** A word reverted via double-tap Backspace was immediately
@@ -1011,6 +1012,45 @@ non-trivial changes).
   (not `unigramsByPrefix` itself) before implementing anything - not yet done.
 
 ## Current State
+
+- **§449 (v1.2.9): D-357 reopened and fixed for real - mid-word edit + double-tap Shift capitalising the**
+  **wrong letter.** Closed once (2026-09-01) as not reproducible; the user captured a real Google Keep device
+  log reproducing it and asked for a fresh look, per this project's own "re-derive from real logs, don't
+  guess" convention for exactly this class of bug (spec §1's guiding principle).
+  
+  **Root cause, traced line-by-line against the log**: reclaim "bar" (caret between b/a) → Backspace deletes
+  'b' (composing "ar", `composingCursor` now 0) → a second Backspace has nothing left inside composing to
+  remove, so `deleteComposingChar()`'s own `composingCursor == 0` branch
+  ([AdaptKeyService.kt:3576](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:3576)) reaches
+  past composing's own start and deletes the character immediately before it via `deleteOneBefore` - the log
+  showed `composingAnchor` shift from 100 to 99 while composing's own text stayed exactly "ar". That branch
+  only ever shifted `composingAnchor` to match - correct when the deleted character was an ordinary
+  word-boundary delimiter, but the user's own real note had no space there at all: deleting it exposed a
+  *letter* of a directly-adjacent word now glued to "ar" with nothing between them (the document reads one
+  continuous word), which the old code never absorbed into composing. Retyping 'b' afterward only ever grew
+  the still-too-short composing token back to "bar" - not the now-actually-longer real word - so
+  `flipFirstInComposing` (G-05's double-tap-Shift toggle) correctly flipped composing's own first character,
+  which was by then no longer the true word's first letter. The user's own hunch that this connects to Gemini
+  (`reclaimOnCaretMoveSuppressed`) doesn't hold for the mechanism itself - this exact code path fires
+  regardless of that flag, and the captured log is from Google Keep, not Gemini - but Gemini's suppression
+  plausibly makes the *preconditions* (several plain Backspaces reaching past a short reclaimed token's own
+  start) more common in practice, since a suppressed field leans more on explicit Backspace-driven reclaims
+  than the ordinary reactive one.
+  
+  **Fix**: the `composingCursor == 0` branch now checks, *after* `deleteOneBefore` runs, whether the newly
+  exposed character (not the deleted one - checked before, this was tried first and found to be the wrong
+  character to inspect, see the code's own KDoc) is a letter, using exactly
+  [`WordExtent.reclaim`](app/src/main/kotlin/de/froehlichmedia/adaptkey/gesture/WordExtent.kt)'s own
+  boundary. A letter means composing must absorb the newly-adjacent word - handled by tearing composing down
+  (`finishComposingText` + `clearComposing`) and calling `reclaimWordAtCaret()`, the same mechanism a fresh
+  tap into a word already uses, rather than hand-rolling a character-by-character merge of composing's own
+  per-character bookkeeping (`composingFlags`/`composingTaps`). `reclaimWordAtCaret()` already correctly
+  defers to `applyShiftAfterDelete`'s own `shiftArmedByDelete` result from the deletion just above (D-335),
+  confirmed by reading that existing interaction rather than assumed, so Shift state is unaffected by going
+  through it here. A non-letter newly exposed (the ordinary case) keeps the original, simpler
+  `composingAnchor`-only behaviour unchanged. No new unit test - this is `InputConnection`-glue logic with no
+  existing `AdaptKeyService` test harness, this project's own accepted, established gap for this class of
+  code; verification is the device repro itself.
 
 - **§448 (v1.2.8): D-451 (AltGr popup haptic, reinstated) + D-453 (double-consonant unfold), one small round.**
   

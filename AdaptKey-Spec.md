@@ -448,6 +448,26 @@ moment after the commit correctly left it alone. A new one-shot flag, consumed e
 `shiftArmedByDelete`/D-373-followup's own `tokenShiftLiveArmed` guards right next to it, carries the "this was
 just an opener" decision forward to that one call site.
 
+### Addendum to G-05 - A Backspace That Absorbs an Adjacent Word Re-Derives Composing First
+D-357: reported repro - place the caret mid-word in an existing word, delete past the token's own start (so
+the next Backspace reaches into the document before it), retype, then double-tap Shift: the first character
+of the *retyped* portion is capitalised instead of the now-longer word's genuine start. Closed once as not
+reproducible (no code change), reopened on a real device log: Backspace at `composingCursor == 0` (nothing
+left inside composing to remove) deletes the character immediately before the composing region via
+`deleteOneBefore` - normally an ordinary word-boundary delimiter, in which case only `composingAnchor` shifts
+to match, correctly. When that deletion instead exposes a *letter* directly against composing with no
+delimiter left between them (e.g. deleting the space between "foo" and a reclaimed "ar" leaves "foo"'s own
+trailing "o" glued to it - the document now reads one continuous word, "fooar") the fix from before this
+addendum only ever shifted `composingAnchor` to match, never extending composing's own text to absorb the
+newly-adjacent word - so `flipFirstInComposing` (this section's own double-tap-Shift toggle) went on to flip
+a character that was no longer the now-longer word's real first letter. Fixed by re-deriving the composing
+token from scratch via the same `reclaimWordAtCaret` mechanism a fresh tap into the word already uses -
+checked after the deletion (it is whichever character the deletion exposes that decides this, not the
+deleted character itself) - rather than hand-rolling a character-by-character merge of composing's own
+per-character bookkeeping (`composingFlags`/`composingTaps`). `reclaimWordAtCaret` already correctly defers
+to the deletion's own `shiftArmedByDelete` result (D-335, directly above), so Shift state is unaffected by
+going through it here.
+
 ### G-07 - Enter Key: Submit vs. Newline
 Pressing Enter either inserts a literal newline or submits the field, depending on what the target editor
 itself declares - never on a fixed per-app or per-field-type assumption. A field that declares a genuine IME

@@ -3551,11 +3551,28 @@ class AdaptKeyService : InputMethodService() {
      * be mid-word, not the end, while a reclaimed "after" fragment still follows), keeping the ambiguity
      * flags (A-05) in step and refreshing the composing text / suggestions. Re-arms Shift when the removed
      * character was uppercase (G-05 addendum).
-     * 
+     *
      * When the edit point is already at the very start of composing - nothing left to remove on this side,
      * though a reclaimed "after" fragment may still be sitting there - the real character just before the
-     * composing region is deleted instead, via [deleteOneBefore].
-     * 
+     * composing region is deleted instead, via [deleteOneBefore]. D-357: that deletion can expose a
+     * *different* letter now sitting directly against composing with no delimiter between them (e.g.
+     * deleting the space between "foo" and a reclaimed "ar" leaves "foo"'s own trailing "o" directly glued
+     * to it) - the same boundary [de.froehlichmedia.adaptkey.gesture.WordExtent.reclaim] itself draws. Left
+     * alone, that newly-adjacent word must be absorbed into composing (the document now reads one
+     * continuous word, "fooar"), but composing's own text never grows to match, so [flipFirstInComposing]
+     * (G-05's double-tap Shift) goes on to flip a character that is no longer the now-longer word's real
+     * first letter. Real repro, traced from a real device log: reclaim "bar", Backspace once (composing
+     * becomes "ar"), Backspace again at composing's own start deletes the delimiter before it and exposes a
+     * directly-adjacent preceding letter; composing still reads "ar" (soon "bar" again once retyped) even
+     * though the visible word is now longer. Handled by re-deriving the composing token from scratch via
+     * [reclaimWordAtCaret] - the same mechanism a fresh tap into the word already uses - rather than
+     * hand-rolling a character-by-character merge (and its own [composingFlags]/[composingTaps]
+     * bookkeeping); [reclaimWordAtCaret] already correctly defers to [applyShiftAfterDelete]'s own
+     * `shiftArmedByDelete` result from the deletion just above (D-335), so Shift state is unaffected by
+     * going through it here. A non-letter newly exposed (the ordinary case - the deleted character merely
+     * uncovers a genuine word boundary, e.g. another space or the start of the field) keeps the original,
+     * simpler behaviour unchanged.
+     *
      * @param duringRepeat D-138: true when called from [handleBackspaceRepeat] - passed through to
      *        [refreshSuggestions] to skip its more expensive per-keystroke lookups for this tick (see there)
      */
@@ -3566,8 +3583,18 @@ class AdaptKeyService : InputMethodService() {
             // "after" fragment) left by one character before composingAnchor is adjusted to match.
             ic.beginBatchEdit()
             try {
-                if (deleteOneBefore(ic) && composingAnchor >= 0) {
-                    composingAnchor--
+                if (deleteOneBefore(ic)) {
+                    // D-357: checked *after* the deletion - it is whatever character the deletion just
+                    // exposed immediately before composing, not the deleted character itself, that decides
+                    // whether composing must now absorb an adjacent word (see this function's own KDoc).
+                    val exposedChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
+                    if (exposedChar != null && exposedChar.isLetter()) {
+                        ic.finishComposingText()
+                        clearComposing()
+                        reclaimWordAtCaret()
+                    } else if (composingAnchor >= 0) {
+                        composingAnchor--
+                    }
                 }
             } finally {
                 ic.endBatchEdit()
