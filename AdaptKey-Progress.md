@@ -963,16 +963,15 @@ non-trivial changes).
   convention, the cause is not to be guessed at or fixed before the user's own device log arrives - see that
   log once supplied, do not speculate from this description alone.
 
-- **D-453 - OPEN, design question raised, not yet actioned pending explicit go (2026-09-06).** Double-
-  consonant "unfold" for autocorrect/chip suggestion: a typed `"bite"` should suggest `"bitte"`, `"tipen"`
-  should suggest `"tippen"` - certain German consonants are frequently under-doubled by a fast typist.
-  Recommendation discussed with the user, not yet implemented: model this as an extension of S-09's existing
-  neighbour-prefix escalation (D-328) - trying a duplicated-last-consonant prefix once the literal prefix
-  search finds nothing - rather than as a new unconditional fold/unfold table (`Umlaut`/`DataDiacriticFolding`,
-  D-435/D-436). Unlike `ß`->`"ss"` or a diacritic's ASCII form, doubling is not a fixed 1:1 substitution and
-  must stay conditional on an actual dictionary hit (else `"kaufen"` would spuriously suggest `"kauffen"`) -
-  exactly the conditionality S-09's mechanism already has and a static fold table does not. Needs the user's
-  own explicit go before implementing, per this project's own non-trivial-design-decision rule.
+- **D-453 - OPEN, design agreed (2026-09-06), not yet scheduled/implemented.** Double-consonant "unfold" for
+  autocorrect/chip suggestion: a typed `"bite"` should suggest `"bitte"`, `"tipen"` should suggest `"tippen"` -
+  certain German consonants are frequently under-doubled by a fast typist. **Agreed approach, confirmed by the
+  user - implement it exactly this way once picked up**: an extension of S-09's existing neighbour-prefix
+  escalation (D-328) - trying a duplicated-last-consonant prefix once the literal prefix search finds nothing -
+  rather than a new unconditional fold/unfold table (`Umlaut`/`DataDiacriticFolding`, D-435/D-436). Unlike
+  `ß`->`"ss"` or a diacritic's ASCII form, doubling is not a fixed 1:1 substitution and must stay conditional on
+  an actual dictionary hit (else `"kaufen"` would spuriously suggest `"kauffen"`) - exactly the conditionality
+  S-09's mechanism already has and a static fold table does not. Not yet scheduled for a specific round.
 
 - **D-454 - OPEN, awaiting the user's own "Startschuss" to implement in one pass (2026-09-06).** Restructure
   the Language Packs settings screen (`LanguagePacksActivity`/`activity_language_packs`, D-280):
@@ -989,14 +988,18 @@ non-trivial changes).
      (not-installed languages below, also alphabetical).
   5. `removePack()` (currently removes immediately with only a completion Toast, no confirmation) needs a
      confirmation dialog ("einfache Nachfrage") before it actually runs.
-  6. A flag glyph before each language's own label. Which flag(s) to show per language is an open
-     sub-question, discussed with the user but not fully resolved for every language: Portuguese and Spanish
-     in particular have no single obviously-correct country, since both packs were built from the generic
-     `pt.wikipedia.org`/`es.wikipedia.org` dumps rather than a region-specific corpus (`PortugueseRules`
-     explicitly documents handling both European and Brazilian conventions). Working recommendation discussed
-     in conversation: one single, deliberately-chosen flag per language (not a country list), for UI
-     simplicity - resolve the exact per-language choice before or during implementation, not deferred past
-     the "Startschuss".
+  6. A flag glyph before each language's own label. **Resolved (2026-09-06): one single, editorially-chosen**
+     **flag per language** (not a country list) - simplest for the UI, and no per-language choice is
+     objectively "correct" anyway (Portuguese/Spanish in particular have no single obviously-right country,
+     since both packs were built from the generic `pt.wikipedia.org`/`es.wikipedia.org` dumps rather than a
+     region-specific corpus - `PortugueseRules` explicitly documents handling both European and Brazilian
+     conventions). The user is aware a chosen flag could read as exclusionary to some speakers and has
+     explicitly deferred that concern ("kann ich nicht beurteilen... wäre ein Problem für später") rather than
+     designing around it now. **One explicit exception, the user's own call**: English shows both 🇬🇧 and 🇺🇸
+     side by side, not a single flag - no line-wrap risk here, and the US's much larger population of English
+     speakers should not be represented solely by the UK flag. Every other language still gets exactly one
+     flag. The concrete per-language flag choice itself (which single country for each language) still needs
+     to be made at implementation time - not enumerated here.
 
 ## Current State
 
