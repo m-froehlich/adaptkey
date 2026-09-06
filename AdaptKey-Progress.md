@@ -990,6 +990,62 @@ non-trivial changes).
      flag. The concrete per-language flag choice itself (which single country for each language) still needs
      to be made at implementation time - not enumerated here.
 
+- **D-455 - OPEN, root-caused, not yet fixed (2026-09-06).** In a `reclaimOnCaretMoveSuppressed` field
+  (Gemini, D-351), moving the caret from one existing word into another leaves Caps/Shift stuck at whatever
+  state was active before the move - the fresh-derivation-per-position mechanism (D-313/D-406's
+  `armShiftForNextWord`) never runs there. Confirmed in code, not guessed: `scheduleReclaimAndChipRefresh()`
+  ([AdaptKeyService.kt:1724](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:1724)) only
+  schedules `reclaimWordAtCaretRunnable` - the sole call site that ever invokes `armShiftForNextWord` for this
+  "tap into an existing word" case (inside `reclaimWordAtCaret()`) - when `!reclaimOnCaretMoveSuppressed`; the
+  chip-visibility refresh right below it was already deliberately split out to run unconditionally
+  (D-414-followup, "the chip's own refresh is scheduled unconditionally regardless"), but the Shift
+  re-derivation was not given the same treatment. The user wants exactly that: Shift/Caps re-derivation on a
+  caret move must happen independent of whether the actual composing-region reclaim is suppressed. Fix shape
+  (not yet implemented): extract just the position-only "is this now a fresh Shift-relevant position, and if
+  so what should Shift be" check out of `reclaimWordAtCaret()`'s body into its own function, called from
+  `scheduleReclaimAndChipRefresh()` unconditionally, mirroring `reclaimEnabledRunnable`'s own precedent
+  exactly - without touching the composing-region reclaim itself, which must stay suppressed in Gemini.
+
+- **D-456 - OPEN, likely already substantially covered by an existing mechanism - needs a real repro before**
+  **further action (2026-09-06).** User's ask: with D-348 (double-tap-Backspace-undo) enabled, when a word
+  committed *without* any autocorrect firing (so it was only ever plain-learned/counted-up, never protected by
+  the A-07 undo window), backspacing back into it and changing it should un-learn the original word - "sonst
+  wird ein Tippfehler dauerhaft mitgelernt, nur weil kein Autocorrect dagegen lief." An existing, closely
+  related mechanism already does most of this: D-248/D-140
+  (`rememberForBackspaceUnlearn`/`recentLearnRecords`/`maybeUnlearnOnBackspaceReturn`,
+  [AdaptKeyService.kt:6109-6148](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:6109))
+  already un-learns immediately once a plain Backspace (composing empty) lands with the caret back at the end
+  of one of the last `RECENT_LEARN_HISTORY_SIZE` (5) learned words - and D-348's own armed-tail no-op branch
+  only ever engages while `undoTyped != null` (i.e. only right after a genuine autocorrect), so for a plain,
+  uncorrected commit this D-248 path should already be reached directly, seemingly regardless of whether
+  D-348 is enabled. Two concrete open questions before treating this as closed, matching the user's own
+  worry ("manche Dinge sind längst vergessen"): (1) does the punctuation-committed case (the user's own named
+  example - deleting the trailing punctuation mark first) actually land the caret back at the word's end in
+  time for the very same backspace's own check, or does it need a second Backspace as the user expected; (2)
+  is `RECENT_LEARN_HISTORY_SIZE = 5` ever exhausted in a realistic "typed a few more words, then went back"
+  scenario, silently letting the target record fall out of `recentLearnRecords` before the user gets back to
+  it. Needs an actual device repro (or a targeted unit test walking both scenarios against the real
+  `AdaptKeyService`/`SqliteDictionaryStore` pair) before deciding whether anything needs to change at all.
+
+- **D-457 - OPEN, root-cause hypothesis only, not confirmed (2026-09-06).** A learned all-caps acronym (the
+  user's example: `"LLM"`, already learned/promoted) is not offered at all while typing its lowercase form
+  (`"ll"`/`"llm"`) - no chip appears until the very first letter is typed uppercase. Confirmed NOT a data/SQL
+  problem: `SqliteDictionaryStore.unigramsByPrefix()`
+  ([SqliteDictionaryStore.kt:947](app/src/main/kotlin/de/froehlichmedia/adaptkey/dictionary/SqliteDictionaryStore.kt:947))
+  queries `TABLE_LEARNED` by `wkey LIKE prefix.lowercase() + '%'`, which is already fully case-insensitive and
+  would return the learned `"LLM"` entry for either prefix - the entry reaches the candidate pool. Leading
+  hypothesis, not yet traced end-to-end: the same class of bug D-440/D-440-followup fixed for the
+  composing-*empty* next-word-prediction case (`CapitalisationEngine.capitalise()`'s rule 1, "explicit user
+  input is never changed", reading a meaningless `context.explicitFirstUpper` and silently discarding an
+  already-correct learned casing) may still apply, unfixed, to the composing-*not*-empty case D-440's own
+  write-up explicitly left alone ("that half of the design is correct and unchanged... needs fresh §6
+  derivation from live context") - except here `explicitFirstUpper` is not meaningless, it is genuinely
+  `false` (the user really did type a lowercase `l`), so rule 1 may be faithfully doing exactly what it is
+  documented to do (never override explicit user input) and simply was never taught that an *exact, case-
+  insensitive prefix match against an already-learned all-caps entry* is a different situation from an
+  ordinary ambiguous-noun default. Needs real tracing through `showSuggestions()`'s candidate-to-chip pipeline
+  (not `unigramsByPrefix` itself) before implementing anything - not yet done.
+
 ## Current State
 
 - **§446 (v1.2.6): D-450-followup - Cyrillic-vs-Cyrillic auto-detection, closing the Open TODO §441 first**
