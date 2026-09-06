@@ -45,6 +45,10 @@ enum class Language(val code: String, val endonym: String) {
     MALAY("ms", "Bahasa Melayu"),
     SWAHILI("sw", "Kiswahili"),
     TAGALOG("tl", "Tagalog"),
+    RUSSIAN("ru", "Русский"),
+    UKRAINIAN("uk", "Українська"),
+    AZERBAIJANI("az", "Azərbaycanca"),
+    UZBEK("uz", "Oʻzbekcha"),
     UNKNOWN("??", "?");
     
     companion object {

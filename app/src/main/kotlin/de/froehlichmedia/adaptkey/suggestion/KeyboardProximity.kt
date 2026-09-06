@@ -165,3 +165,69 @@ object KeyboardProximitySerbianCyrillic : KeyboardProximity {
     
     override fun neighboursOf(c: Char): Set<Char> = neighbours[c] ?: emptySet()
 }
+
+/**
+ * The Russian ЙЦУКЕН keyboard geometry ([de.froehlichmedia.adaptkey.keyboard.LayoutKind.RUSSIAN_CYRILLIC]),
+ * matching [de.froehlichmedia.adaptkey.keyboard.JcukenLayout]'s own Russian rows exactly (D-450-followup).
+ * `ё` (a long-press secondary on `е`, not a primary key) is deliberately not part of this adjacency grid,
+ * matching how no layout's own accent/hint secondaries are.
+ */
+object KeyboardProximityRussianCyrillic : KeyboardProximity {
+    
+    private val ROWS = listOf("1234567890", "йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю")
+    private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
+    
+    override fun adjacent(a: Char, b: Char): Boolean {
+        if (a == b) {
+            return false
+        }
+        return neighbours[a]?.contains(b) == true
+    }
+    
+    override fun neighboursOf(c: Char): Set<Char> = neighbours[c] ?: emptySet()
+}
+
+/**
+ * The Ukrainian ЙЦУКЕН keyboard geometry
+ * ([de.froehlichmedia.adaptkey.keyboard.LayoutKind.UKRAINIAN_CYRILLIC]), matching
+ * [de.froehlichmedia.adaptkey.keyboard.JcukenLayout]'s own Ukrainian rows exactly (D-450-followup) - a
+ * separate grid from [KeyboardProximityRussianCyrillic] since the two real standards differ in exactly the
+ * positions [de.froehlichmedia.adaptkey.keyboard.JcukenLayout]'s own KDoc documents (`ъ`/`ї`, `ы`/`і`,
+ * `э`/`є`, and Ukrainian's own leading `ґ`).
+ */
+object KeyboardProximityUkrainianCyrillic : KeyboardProximity {
+    
+    private val ROWS = listOf("1234567890", "йцукенгшщзхї", "фівапролджє", "ґячсмитьбю")
+    private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
+    
+    override fun adjacent(a: Char, b: Char): Boolean {
+        if (a == b) {
+            return false
+        }
+        return neighbours[a]?.contains(b) == true
+    }
+    
+    override fun neighboursOf(c: Char): Set<Char> = neighbours[c] ?: emptySet()
+}
+
+/**
+ * The Azerbaijani standard keyboard geometry
+ * ([de.froehlichmedia.adaptkey.keyboard.LayoutKind.LATIN_AZERBAIJANI]), matching
+ * [de.froehlichmedia.adaptkey.keyboard.AzerbaijaniLayout]'s own `TOP_ROW`/`MIDDLE_ROW`/`THIRD_ROW` exactly
+ * (D-450-followup) - a genuinely different Latin arrangement from QWERTY/QWERTZ/AZERTY, mirroring
+ * [KeyboardProximityAzerty]'s own reasoning for why this needs its own grid rather than reusing one.
+ */
+object KeyboardProximityAzerbaijani : KeyboardProximity {
+    
+    private val ROWS = listOf("1234567890", "püşudbmyohxj", "gısarnəlicğ", "çfvtkeqzö")
+    private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
+    
+    override fun adjacent(a: Char, b: Char): Boolean {
+        if (a == b) {
+            return false
+        }
+        return neighbours[a]?.contains(b) == true
+    }
+    
+    override fun neighboursOf(c: Char): Set<Char> = neighbours[c] ?: emptySet()
+}

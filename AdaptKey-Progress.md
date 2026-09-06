@@ -268,6 +268,24 @@ non-trivial changes).
      18-language D-450 round) - resolved: `keyboard/SerbianLayout.kt`, researched against the real Microsoft
      `KBDYCC` standard, plus the first real Serbian language pack. See §440 (v1.2.0).
 
+- **Cyrillic-vs-Cyrillic auto-detection not implemented - a real, deliberate, NOT YET ACTIONED gap (added**
+  **§441, v1.2.1).** Serbian, Russian, and Ukrainian all share `Script.CYRILLIC` (`LayoutRegistry.scriptFor`)
+  but each has its own distinct `LayoutKind`/real physical layout. `AdaptKeyService.resolveDict()` trusts
+  whichever one is active unconditionally when it is the active language - correct today, but only because
+  there is genuinely nothing to distinguish them *with*: no per-language Cyrillic `language_profiles.tsv`
+  trigram data exists for any of the three yet. Concretely missing: if a user has Russian active and starts
+  typing Ukrainian (or Serbian) text without an explicit G-01 switch, nothing detects that - the German-
+  centric Latin `LanguageClassifier.isForeign()` mechanism is deliberately never consulted for a non-Latin
+  active language (see that function's own D-450-followup KDoc), and no same-script alternative exists yet.
+  `LayoutRegistryTest`'s own canary test (`D-450-followup real, deliberate gap - Cyrillic siblings share a
+  script...`) documents the exact invariant this rests on and will need revisiting once real trigram data
+  exists for at least two of the three. Fixing this needs: (1) real Cyrillic dictionaries built first (none
+  of Serbian/Russian/Ukrainian's own `language_profiles.tsv` entries exist - Serbian's own pack deliberately
+  skipped this per its own §440 entry, and Russian/Ukrainian have no dictionary at all yet, only layouts), (2)
+  a script-aware generalisation of `ScriptDetector`'s existing Greek-fraction-style fast path or an
+  equivalent per-script classifier. Not started - do not build without the user's own go-ahead, and only
+  once real Cyrillic corpora exist to build and verify it against.
+
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) - CLOSED BY**
   **DESIGN (2026-09-04, no code change - user's own explicit call).** Found while auditing every place that
   does *not* route through the active-language pipeline (history §210's own D-287 fix) - deliberately scoped
@@ -929,6 +947,79 @@ non-trivial changes).
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
 ## Current State
+
+- **§441 (v1.2.1): D-450-followup - keyboard layouts (only - no dictionaries yet) for Russian, Ukrainian,**
+  **Azerbaijani, and Uzbek, in preparation for building all four as real language packs in a future session.**
+  Added `Language.RUSSIAN`/`UKRAINIAN`/`AZERBAIJANI`/`UZBEK` to the enum. Uzbek needs no new layout code at
+  all - its own real standard is Latin-QWERTY-compatible (confirmed via research: the two special letters
+  `oʻ`/`gʻ` use a modifier-letter apostrophe, handled the same way any other Latin diacritic's `hints.tsv`
+  entry would be - dictionary-round work, not layout work).
+  
+  **Russian + Ukrainian share ONE new `JcukenLayout.kt`, mirroring `KeyboardLayout`'s own QWERTY/QWERTZ**
+  **variant-flag pattern - a real architectural question the user raised mid-session, verified letter-by-**
+  **letter before answering it.** Both researched against the real Microsoft standards (`KBDRU`/`KBDUR`,
+  `kbdlayout.info`/`learn.microsoft.com`) - confirmed the two are the SAME real historical ЙЦУКЕН keyboard
+  with only three substituted letters plus one added key, not two unrelated standards: top row differs only
+  in its last letter (`ъ` vs. `ї`), middle row differs in position 2 (`ы` vs. `і`) and its last letter (`э`
+  vs. `є`), and Ukrainian's own bottom row adds a leading `ґ` where Russian's own leading slot is punctuation
+  (a real desktop ISO-key artifact, not a letter either way). `JcukenLayout.rows(..., ukrainian: Boolean)`
+  captures this with one shared implementation and two row-string constants per row, exactly like
+  `KeyboardLayout.rows(qwerty: Boolean)` does for Latin. Russian's own `ё` (a real, distinct letter with no
+  slot in this app's mobile row shape, same practical constraint every desktop-only extra key already has
+  here) is offered as a long-press secondary on `е` instead, mirroring `GreekLayout`'s own accent-on-vowel
+  convention - Ukrainian does not get this secondary at all, since `ё` is not part of its alphabet.
+  
+  **The user also asked whether the already-built Serbian layout could be refolded into this same
+  Russian-based "variant" pattern - verified directly and answered no, with the real evidence, not just
+  reasserting the original design call:** Serbian's own JUSCII-descended layout (see its own D-450-followup
+  entry above) is phonetically mapped onto the LATIN QWERTZ physical grid (its own `з`/`у`/`и`/`о`/`п` sit
+  exactly where Latin `z`/`u`/`i`/`o`/`p` do) - a completely different historical lineage from Russian's own
+  ЙЦУКЕН, which has its own independent typewriter-derived arrangement unrelated to Latin key positions at
+  all. The two share no meaningful structural overlap (`у` appears in both, but at column 7 in Serbian vs.
+  column 3 in Russian) - `SerbianLayout` correctly stays its own independent object.
+  
+  **A real gap in the D-450-followup Cyrillic generalisation, found and fixed while wiring these two in, not**
+  **before shipping**: `LayoutRegistry.NON_LATIN_LANGUAGES`'s own canary test (added for Serbian, see above)
+  checked for a shared `LayoutKind`, not a shared *script* - Russian and Ukrainian each correctly get their
+  own distinct `LayoutKind` (real, different physical layouts), so that test would have kept silently passing
+  even though they - and Serbian - are all genuinely Cyrillic and share the exact same "AdaptKeyService.
+  resolveDict() cannot yet tell these apart" concern the canary existed to catch. Fixed properly, not
+  patched: added a real `Script` enum (`LATIN`/`GREEK`/`CYRILLIC`) and a `LayoutRegistry.scriptFor(Language)`
+  function, and rewrote the canary to check for a shared `Script` instead. It now correctly documents the
+  real, deliberate state: Serbian/Russian/Ukrainian **do** share a script, `resolveDict()` still trusts
+  whichever is active unconditionally (unchanged, no code needed there), and this is a conscious decision,
+  not a silent gap - because no per-language Cyrillic `language_profiles.tsv` trigram data exists yet for
+  any of the three to build a real same-script classifier from (dictionary-pipeline work, added to Open
+  TODOs below).
+  
+  **Azerbaijani needed its own full `AzerbaijaniLayout.kt` - the real standard turned out to be a much**
+  **bigger restructuring than an earlier casual description suggested, caught by pulling the real Microsoft**
+  **table instead of trusting a summary.** An earlier web-search summary (from the session's own prerequisites
+  check) described it as "QÜERTY - Ü replaces W", implying a single-letter QWERTZ-style swap; the real
+  `KBDAZST` standard (`learn.microsoft.com/en-us/globalization/keyboards/kbdazst.html`) shows `q`/`w` do not
+  even sit at their ordinary QWERTY positions at all (`q` is on the bottom row, `w` is dropped from the
+  primary rows entirely) - a genuine cross-row restructuring, the same "AZERTY" category (D-314) as French's
+  own layout, not a same-row variant flag. All 32 letters of the Azerbaijani Latin alphabet (including the
+  dotted/dotless İ/I pair - `TurkishCasingRules`'s own Unicode `SpecialCasing.txt` `tr`/`az` rule applies
+  unchanged here, needing only a future registry entry) sit directly on the three primary rows with no AltGr
+  dependency, matching the real standard. Still genuinely Latin script, so it keeps the L-05/C-08
+  `letterHints` AltGr overlay and reuses `KeyboardLayout.topRowKey`/`letterKey` so `p`/`o`/`a`/`e`/`n` keep
+  their existing math-symbol popups (D-99) wherever they land - confirmed this lookup is keyed by character,
+  not row/column position, so it works unchanged for a fully rearranged layout.
+  
+  New `KeyboardProximityRussianCyrillic`/`UkrainianCyrillic`/`Azerbaijani` (each matching its own layout's
+  rows exactly - three separate grids, not shared, since the real letter positions genuinely differ even
+  where Russian/Ukrainian share most of their skeleton). New tests: `JcukenLayoutTest` (12 cases covering
+  both variants + the real 33/33-letter completeness check), `AzerbaijaniLayoutTest` (9 cases), three new
+  `KeyboardProximity*Test` files, `LayoutRegistryTest` additions (`scriptFor` coverage, the rewritten canary,
+  Uzbek's own QWERTY-default case). 1,526 unit tests green (was 1,487).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green.
+  
+  **Explicitly out of scope this round, by the user's own direction**: no `LanguageRules`/dictionary/catalog
+  work for any of the four - layouts only, so the actual language packs (full Wikipedia-dump extraction,
+  Wiktionary-based Wortfamilien completion, calibration/quality-gate/confusables-scan checks, catalog
+  entries) are a deliberately separate, future session's work. New Open TODO added below for the real
+  Cyrillic-vs-Cyrillic classifier gap this round's own `resolveDict()` KDoc update documents.
 
 - **§440 (v1.2.0): D-450-followup - first Serbian language pack, closing the one deferred exception from**
   **the 18-language D-450 round: a real Cyrillic keyboard layout.** Added `LayoutKind.SERBIAN_CYRILLIC` +

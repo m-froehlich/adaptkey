@@ -753,7 +753,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
             InputSurface.LETTERS -> when (layoutKind) {
                 LayoutKind.GREEK -> GreekLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
                 LayoutKind.SERBIAN_CYRILLIC -> SerbianLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
+                LayoutKind.RUSSIAN_CYRILLIC -> JcukenLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale, ukrainian = false)
+                LayoutKind.UKRAINIAN_CYRILLIC -> JcukenLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale, ukrainian = true)
                 LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale)
+                LayoutKind.LATIN_AZERBAIJANI -> AzerbaijaniLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale)
                 LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale)
                 LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale)
             }

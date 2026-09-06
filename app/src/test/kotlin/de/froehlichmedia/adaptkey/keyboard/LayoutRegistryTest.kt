@@ -15,31 +15,55 @@ class LayoutRegistryTest {
     fun `kindFor a language alone returns its own compiled-in layout, QWERTY for everything else`() {
         assertEquals(LayoutKind.LATIN_QWERTZ, LayoutRegistry.kindFor(Language.GERMAN))
         assertEquals(LayoutKind.LATIN_AZERTY, LayoutRegistry.kindFor(Language.FRENCH))
+        assertEquals(LayoutKind.LATIN_AZERBAIJANI, LayoutRegistry.kindFor(Language.AZERBAIJANI))
         assertEquals(LayoutKind.GREEK, LayoutRegistry.kindFor(Language.GREEK))
         assertEquals(LayoutKind.SERBIAN_CYRILLIC, LayoutRegistry.kindFor(Language.SERBIAN))
+        assertEquals(LayoutKind.RUSSIAN_CYRILLIC, LayoutRegistry.kindFor(Language.RUSSIAN))
+        assertEquals(LayoutKind.UKRAINIAN_CYRILLIC, LayoutRegistry.kindFor(Language.UKRAINIAN))
         assertEquals(LayoutKind.LATIN_QWERTY, LayoutRegistry.kindFor(Language.ENGLISH))
         assertEquals(LayoutKind.LATIN_QWERTY, LayoutRegistry.kindFor(Language.SPANISH))
+        // Uzbek needs no new layout at all - its own real standard is Latin-QWERTY-compatible (confirmed via
+        // research, not assumed - see the D-450-followup session note in AdaptKey-Progress.md).
+        assertEquals(LayoutKind.LATIN_QWERTY, LayoutRegistry.kindFor(Language.UZBEK))
+    }
+    
+    @Test
+    fun `scriptFor groups layouts by writing system, not by exact physical arrangement`() {
+        assertEquals(Script.LATIN, LayoutRegistry.scriptFor(Language.GERMAN))
+        assertEquals(Script.LATIN, LayoutRegistry.scriptFor(Language.FRENCH))
+        assertEquals(Script.LATIN, LayoutRegistry.scriptFor(Language.AZERBAIJANI))
+        assertEquals(Script.GREEK, LayoutRegistry.scriptFor(Language.GREEK))
+        // Serbian, Russian, and Ukrainian each have their own distinct LayoutKind (real, different physical
+        // layouts - see JcukenLayout's own KDoc for why Serbian is NOT a variant of the other two) but all
+        // three share one Script.
+        assertEquals(Script.CYRILLIC, LayoutRegistry.scriptFor(Language.SERBIAN))
+        assertEquals(Script.CYRILLIC, LayoutRegistry.scriptFor(Language.RUSSIAN))
+        assertEquals(Script.CYRILLIC, LayoutRegistry.scriptFor(Language.UKRAINIAN))
     }
     
     @Test
     fun `NON_LATIN_LANGUAGES contains every non-Latin script`() {
-        assertEquals(setOf(Language.GREEK, Language.SERBIAN), LayoutRegistry.NON_LATIN_LANGUAGES)
+        assertEquals(
+            setOf(Language.GREEK, Language.SERBIAN, Language.RUSSIAN, Language.UKRAINIAN),
+            LayoutRegistry.NON_LATIN_LANGUAGES
+        )
     }
     
     @Test
-    fun `D-450-followup no two languages share a non-Latin layout kind yet`() {
-        // AdaptKeyService.resolveDict() trusts any NON_LATIN_LANGUAGES member's own dictionary
-        // unconditionally, precisely BECAUSE no two of them share a LayoutKind today - there is nothing a
-        // same-script classifier could distinguish between yet (see that function's own D-450-followup
-        // KDoc). This test is the canary: it fails the moment a second language shares an existing non-Latin
-        // LayoutKind (e.g. a second Cyrillic language joining Serbian), which is exactly when resolveDict's
-        // own unconditional-trust shortcut must be revisited and given a real same-script classifier instead.
-        val kinds = LayoutRegistry.NON_LATIN_LANGUAGES.map { LayoutRegistry.kindFor(it) }
-        assertEquals(
-            kinds.size, kinds.toSet().size,
-            "a second language now shares a non-Latin LayoutKind - AdaptKeyService.resolveDict()'s " +
-                "unconditional non-Latin trust must be revisited with a real same-script classifier"
-        )
+    fun `D-450-followup real, deliberate gap - Cyrillic siblings share a script but resolveDict() cannot yet tell them apart`() {
+        // The original canary here asserted no two NON_LATIN_LANGUAGES shared a LayoutKind, to force a
+        // conscious decision the day a second same-script language arrived. That day is this one: Serbian,
+        // Russian, and Ukrainian are all genuinely Script.CYRILLIC (confirmed above), each with its own real,
+        // distinct LayoutKind. The decision, made here rather than silently: AdaptKeyService.resolveDict()
+        // still trusts whichever one is active UNCONDITIONALLY - not because the gap doesn't exist, but
+        // because there is genuinely nothing to distinguish them WITH yet (no per-language Cyrillic
+        // language_profiles.tsv trigram data exists for any of the three - that is dictionary-pipeline work,
+        // deliberately out of scope for this layouts-only round, see AdaptKey-Progress.md's own Open TODOs).
+        // This test documents the real invariant that decision rests on - it fails the moment it stops being
+        // true, which is exactly when a real same-script classifier becomes buildable and resolveDict()'s
+        // own shortcut should be revisited for real.
+        val cyrillic = LayoutRegistry.NON_LATIN_LANGUAGES.filter { LayoutRegistry.scriptFor(it) == Script.CYRILLIC }
+        assertEquals(setOf(Language.SERBIAN, Language.RUSSIAN, Language.UKRAINIAN), cyrillic.toSet())
     }
     
     @Test

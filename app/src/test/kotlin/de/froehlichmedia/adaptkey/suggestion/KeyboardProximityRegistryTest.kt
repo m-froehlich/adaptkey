@@ -17,5 +17,8 @@ class KeyboardProximityRegistryTest {
         assertSame(KeyboardProximityAzerty, KeyboardProximityRegistry.forLayoutKind(LayoutKind.LATIN_AZERTY))
         assertSame(KeyboardProximityGreek, KeyboardProximityRegistry.forLayoutKind(LayoutKind.GREEK))
         assertSame(KeyboardProximitySerbianCyrillic, KeyboardProximityRegistry.forLayoutKind(LayoutKind.SERBIAN_CYRILLIC))
+        assertSame(KeyboardProximityRussianCyrillic, KeyboardProximityRegistry.forLayoutKind(LayoutKind.RUSSIAN_CYRILLIC))
+        assertSame(KeyboardProximityUkrainianCyrillic, KeyboardProximityRegistry.forLayoutKind(LayoutKind.UKRAINIAN_CYRILLIC))
+        assertSame(KeyboardProximityAzerbaijani, KeyboardProximityRegistry.forLayoutKind(LayoutKind.LATIN_AZERBAIJANI))
     }
 }

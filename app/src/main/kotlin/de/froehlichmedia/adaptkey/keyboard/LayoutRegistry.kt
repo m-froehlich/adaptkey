@@ -24,22 +24,48 @@ enum class LayoutKind {
     LATIN_QWERTZ,
     LATIN_QWERTY,
     LATIN_AZERTY,
+    LATIN_AZERBAIJANI,
     GREEK,
-    SERBIAN_CYRILLIC
+    SERBIAN_CYRILLIC,
+    RUSSIAN_CYRILLIC,
+    UKRAINIAN_CYRILLIC
 }
+
+/**
+ * The writing system a [LayoutKind] uses - a coarser grouping than [LayoutKind] itself, since several
+ * distinct non-Latin `LayoutKind`s can share one script despite each having its own real, distinct physical
+ * layout (D-450-followup: Russian/Ukrainian/Serbian are all [CYRILLIC] even though [LayoutRegistry.KINDS]
+ * correctly gives each its own `LayoutKind` - [LayoutRegistry.NON_LATIN_LANGUAGES]'s own canary test checks
+ * for a shared [Script], not a shared `LayoutKind`, precisely because two languages sharing a script but not
+ * a `LayoutKind` is exactly the case that needs a real same-script classifier, not two separate ones that
+ * happen to never collide).
+ */
+enum class Script { LATIN, GREEK, CYRILLIC }
 
 object LayoutRegistry {
     
     private val KINDS: Map<Language, LayoutKind> = mapOf(
         Language.GERMAN to LayoutKind.LATIN_QWERTZ,
         Language.FRENCH to LayoutKind.LATIN_AZERTY,
+        Language.AZERBAIJANI to LayoutKind.LATIN_AZERBAIJANI,
         Language.GREEK to LayoutKind.GREEK,
-        Language.SERBIAN to LayoutKind.SERBIAN_CYRILLIC
+        Language.SERBIAN to LayoutKind.SERBIAN_CYRILLIC,
+        Language.RUSSIAN to LayoutKind.RUSSIAN_CYRILLIC,
+        Language.UKRAINIAN to LayoutKind.UKRAINIAN_CYRILLIC
     )
     
-    /** Every genuinely Latin-alphabet [LayoutKind] - everything else in the enum is a distinct, non-Latin
-     *  script requiring its own dedicated layout object. */
-    private val LATIN_KINDS: Set<LayoutKind> = setOf(LayoutKind.LATIN_QWERTZ, LayoutKind.LATIN_QWERTY, LayoutKind.LATIN_AZERTY)
+    /** Every [LayoutKind]'s own [Script] - see that enum's own KDoc for why this is a separate mapping from
+     *  [KINDS] rather than folding "is it Latin" into [LayoutKind] itself. */
+    private val SCRIPTS: Map<LayoutKind, Script> = mapOf(
+        LayoutKind.LATIN_QWERTZ to Script.LATIN,
+        LayoutKind.LATIN_QWERTY to Script.LATIN,
+        LayoutKind.LATIN_AZERTY to Script.LATIN,
+        LayoutKind.LATIN_AZERBAIJANI to Script.LATIN,
+        LayoutKind.GREEK to Script.GREEK,
+        LayoutKind.SERBIAN_CYRILLIC to Script.CYRILLIC,
+        LayoutKind.RUSSIAN_CYRILLIC to Script.CYRILLIC,
+        LayoutKind.UKRAINIAN_CYRILLIC to Script.CYRILLIC
+    )
     
     /**
      * @param language a keyboard-typing language
@@ -50,13 +76,20 @@ object LayoutRegistry {
     fun kindFor(language: Language): LayoutKind = KINDS[language] ?: LayoutKind.LATIN_QWERTY
     
     /**
-     * Languages with a genuinely different (non-Latin) alphabet, requiring dedicated layout code
-     * ([GreekLayout], [SerbianLayout]) rather than reusing [KeyboardLayout] - generalised (D-450-followup)
-     * from a Greek-only set to any non-[LATIN_KINDS] entry, so a second script sharing this same "always
-     * trust the active language, no QWERTY/QWERTZ/AZERTY fallback makes sense" treatment (a future further
-     * Cyrillic language, say) needs only its own `KINDS` entry above, not a change here too.
+     * @param language a keyboard-typing language
+     * @return its [Script] - [Script.LATIN] for every language without its own [KINDS] entry, mirroring
+     *         [kindFor]'s own default
      */
-    val NON_LATIN_LANGUAGES: Set<Language> = KINDS.filterValues { it !in LATIN_KINDS }.keys
+    fun scriptFor(language: Language): Script = SCRIPTS[kindFor(language)] ?: Script.LATIN
+    
+    /**
+     * Languages with a genuinely different (non-Latin) alphabet, requiring dedicated layout code
+     * ([GreekLayout], [SerbianLayout], [JcukenLayout]) rather than reusing [KeyboardLayout] - generalised
+     * (D-450-followup) from a Greek-only set to any non-[Script.LATIN] entry, so a second script sharing this
+     * same "always trust the active language, no QWERTY/QWERTZ/AZERTY fallback makes sense" treatment needs
+     * only its own `KINDS`/`SCRIPTS` entry above, not a change here too.
+     */
+    val NON_LATIN_LANGUAGES: Set<Language> = KINDS.keys.filterTo(HashSet()) { scriptFor(it) != Script.LATIN }
     
     /**
      * D-400: the actual layout shown day to day - deliberately independent of [activeLanguage] (the

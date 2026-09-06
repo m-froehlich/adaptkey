@@ -6481,14 +6481,19 @@ class AdaptKeyService : InputMethodService() {
      * D-450-followup: the non-Latin branch below is NOT "these languages can never be auto-switched away
      * from" in general - it is "[languageClassifier]'s own n-gram profiles are exclusively Latin-script and
      * its [LanguageClassifier.isForeign] guard specifically measures GERMAN's own margin, so consulting
-     * either one while a non-Latin language (Serbian Cyrillic, Greek) is active would compare that script's
-     * text against a mechanism that has nothing meaningful to say about it - almost certainly misfiring
-     * rather than helping." Serbian is the *only* Cyrillic-script language today, so this reduces to
-     * "trust it unconditionally," identical to Greek's own long-standing behaviour. A future second
-     * Cyrillic-script language would warrant its own dedicated same-script classifier (mirroring
-     * [ScriptDetector]'s existing Greek-fraction fast path, generalised) to allow switching *between*
-     * Cyrillic siblings while still never falling through to this Latin-only mechanism - deliberately not
-     * built now, since there is no second Cyrillic language yet to build or verify it against.
+     * either one while a non-Latin language (Greek, or any [LayoutRegistry.Script.CYRILLIC] language -
+     * Serbian, Russian, Ukrainian) is active would compare that script's text against a mechanism that has
+     * nothing meaningful to say about it - almost certainly misfiring rather than helping."
+     *
+     * D-450-followup update: Serbian, Russian, and Ukrainian are now all real, distinct
+     * [de.froehlichmedia.adaptkey.keyboard.LayoutKind]s sharing one [LayoutRegistry.Script.CYRILLIC] (see
+     * [LayoutRegistry.scriptFor]) - a deliberate decision, not an oversight this time: this branch still
+     * trusts whichever one is active unconditionally, because there is genuinely nothing to distinguish them
+     * *with* yet - no per-language Cyrillic `language_profiles.tsv` trigram data exists for any of the three
+     * (dictionary-pipeline work, out of scope for the layouts-only round that added Russian/Ukrainian/
+     * Azerbaijani - see `AdaptKey-Progress.md`'s own Open TODOs). A real same-script classifier (mirroring
+     * [ScriptDetector]'s existing Greek-fraction fast path, generalised per-script) becomes buildable, and
+     * should replace this shortcut, once that data exists.
      */
     private fun resolveDict(context: String): DictChoice {
         if (activeLanguage in LayoutRegistry.NON_LATIN_LANGUAGES) {
