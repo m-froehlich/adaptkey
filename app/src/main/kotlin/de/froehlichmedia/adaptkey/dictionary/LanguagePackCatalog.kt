@@ -2872,6 +2872,111 @@ object LanguagePackCatalog {
             // choices are a first draft flagged for native review, not a verified fact like the diacritic
             // table. Not device-confirmed either.
             version = 1
+        ),
+        Entry(
+            Language.UZBEK,
+            "https://raw.githubusercontent.com/m-froehlich/adaptkey/main/language-packs/adaptkey-lang-uz.zip",
+            // D-450-followup: last of the four §441 keyboard-layout-only languages to get a real dictionary.
+            // Needs no new keyboard code at all - Uzbek's own real standard is Latin-QWERTY-compatible
+            // (confirmed during the layout-only round), so this pack uses `LayoutKind.LATIN_QWERTY` like
+            // most Latin-script languages here.
+            //
+            // The entire `uzwiki-latest-pages-articles.xml.bz2` (309,775,381 bytes, live-verified, a small
+            // dump similar to Azerbaijani's own) was processed: 359,331 pages (matching `uz.wikipedia.org`'s
+            // own live `siteinfo` "articles" count, 359,635, almost exactly), 49,202,207 tokens, 1,555,474
+            // distinct words. RAM was not a constraint at this scale (Serbian's own original settings reused:
+            // 5 workers, 4M/8M triggers).
+            //
+            // **A real, structural finding checked directly before writing the extractor, not assumed from
+            // the task description alone: Uzbek's modifier-letter apostrophe ("oʻ"/"gʻ") is not one character
+            // in real text but FIVE, used interchangeably** - counted directly in a 50MB sample of this very
+            // dump: U+02BB MODIFIER LETTER TURNED COMMA (231,133, the correct Unicode character), plain ASCII
+            // U+0027 apostrophe (211,260, the single most common in practice), U+02BC MODIFIER LETTER
+            // APOSTROPHE (30,841), U+2018/U+2019 curly quotes (5,653/3,199). Two genuinely different real
+            // orthographic phenomena are tangled together here, confirmed by direct inspection of real
+            // Wiktionary headwords: U+02BB and its variants mark the "oʻ"/"gʻ" letter pair itself (og'ir/
+            // ogʻir/og'ir - all the same real word, "heavy"), while U+02BC and its variants mark an UNRELATED
+            // glottal stop in Arabic/Persian loanwords after other consonants (sanʼat/san'at - "art"). Left
+            // unhandled, the same real word would fragment across up to five different spellings, wrecking
+            // frequency ranking. `normalize_apostrophes()` (shared verbatim between `extract_wiki_dump.py`
+            // and `extract_wiktionary.py`) resolves every variant contextually: immediately after "o"/"g" it
+            // becomes the canonical U+02BB, elsewhere it becomes U+02BC - a deliberate, documented judgement
+            // call (real word-internal apostrophe usage is common enough here, confirmed above, that this is
+            // the right default; residual quotation-mark contamination is diluted across a huge corpus and
+            // filtered by the existing frequency-threshold/noise-review step like any other extraction
+            // noise). No dotted/dotless-I casing quirk (Uzbek's Latin alphabet has only plain "i").
+            //
+            // **No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback
+            // (1,860,421 bytes) - **the THINNEST Wiktionary source of any language pack this project has
+            // built** (4,465 total entries: 2,134 nouns, 172 verbs, 441 adjectives, 16 prepositions, 346
+            // proper nouns - well under even Ukrainian's own already-thin 27.9MB fallback). Explicitly
+            // flagged here as the thinnest data foundation of any pack this project has shipped. One genuine
+            // positive finding, unlike Turkish's/Azerbaijani's own postpositional gap: this source carries a
+            // small, clean `postp` tag (16 words, no competing-sense ambiguity found) - mapped to
+            // `PREPOSITION` in `merge_dict.py`'s own `POS_MAP` alongside `prep`/`prep_phrase`, no exception-
+            // list judgement call needed. Also: `EXCLUDE_FORM_TAGS` deliberately OMITS
+            // `"error-unrecognized-form"` here - a real sample ("uy"/"house") showed forms tagged with it
+            // (`"uydek"`/"like a house") that are genuine valid words, not parser noise, the same
+            // genuinely-different-meaning-per-source situation `dictionaries/sh/extract_wiktionary.py`'s own
+            // module docstring already documents for a different source.
+            //
+            // **A genuinely surprising calibration ratio, verified real rather than assumed a bug - the
+            // Guide's own mandatory sanity check earning its keep again, this time confirming rather than
+            // fixing**: the verb ratio came back 26.0x (n=1,101, a substantial sample, not a small-n fluke).
+            // Pulling the real top pairs directly showed a clear, consistent, systemic pattern across dozens
+            // of different verbs, not one bad word: Uzbek's own "-moq" infinitive citation form is a rare,
+            // formal dictionary form barely used in real running text, while its own conjugated/converb forms
+            // dominate real prose - `boʻlmoq`("to be", freq 46) vastly outranked by `boʻlgan`("having been",
+            // freq 168,686), `kirmoq`("to enter", freq 2) by `kiradi`("enters", freq 68,204), and more,
+            // consistently in the same direction. The EXACT same shape this project's own Greek pack already
+            // documents (that language's own citation-form convention is also grammatically rarer in real
+            // prose than the forms being generated) - a genuine, verified property of the language's own
+            // register conventions, not a bug, confirmed by direct inspection rather than dismissed. Noun
+            // 0.0696 (n=8,452) and adjective 0.0195 (n=47) both stayed low but unremarkable, consistent with
+            // Azerbaijani's own similarly rich-agglutination-driven low ratios.
+            //
+            // **Net result**: `dict.tsv` 102,548 initial rows -> 215,306 after Wortfamilien completion
+            // (+112,758: 2,593 lemmas tagged, 9,637 forms linked, 112,758 generated). Proper nouns: 324
+            // tagged, 5 unmatched, 17 collision-skipped. Bare-noun safety check: 0. `bigram.tsv`: 410,666 rows
+            // (>=10 cutoff) from 1,648,280 raw. Quality gate: 0 duplicates/non-positive/orphaned-lemma/
+            // bare-NOUN - PASS.
+            //
+            // **A real architectural finding about `diacritics.tsv`, checked before shipping a non-functional
+            // file rather than assumed to "just work like German's ä"**: `DiacriticTable.parse()` requires
+            // every variant to be exactly ONE character (`variants.filter { it.length == 1 }`) - Uzbek's own
+            // "oʻ"/"gʻ" is a two-character digraph (base letter + U+02BB modifier), not a single precomposed
+            // accented letter, so a `diacritics.tsv` entry for it would be silently filtered to an empty
+            // variant list and dropped entirely, a non-functional file that would misleadingly look complete.
+            // **No `diacritics.tsv` shipped for this reason** - the typed-without-diacritic autocorrect-
+            // RECOVERY mechanism genuinely cannot represent this case with the existing data format. `hints.tsv`
+            // DOES work correctly for the long-press TYPING side, verified directly against
+            // `AlternativeScript.extendsWord()` before trusting it: `o=oʻ`/`g=gʻ` (both characters count as
+            // Unicode letters, neither in `LATIN_SYMBOL_LETTERS`, neither Greek-script, so `commitLongPressSymbol`
+            // correctly routes through `appendLongPressLetter` and appends the full two-character sequence into
+            // the composing word) plus the ten language-neutral math/typography assignments every Latin-script
+            // pack shares (b=*, d=°, f=ƒ, h=#, m=-, n=+, p=π, q=@, v=/, x=×). `abbreviations.tsv`: a hand-
+            // drafted, explicitly-modest 11-entry list (mas./prof./dots./akad./va b./va h.k./tel./koʻch./sh./
+            // y./a.).
+            //
+            // `UzbekRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
+            // `bundledConfusablesBlacklist`=empty - `confusables_scan.py`'s plain `"qwerty"` layout (no new
+            // geometry needed) found 1,693 candidate pairs, overwhelmingly short 3-4-letter tokens risking
+            // autocorrect into a common everyday word (bir/yil/deb/katta/kishi) - left deliberately uncurated
+            // for the usual no-native-fluency reason. New tests: `LanguageRulesTest` gained a "Uzbek resolves
+            // to UzbekRules" case plus its own mirroring test block. `language_profiles.tsv` gained a real
+            // 200-ngram Uzbek profile.
+            //
+            // **Capitalisation-rule applicability (Guide step 8)**: Uzbek does NOT capitalise common nouns
+            // like German - structurally guaranteed the same way as every other non-German language.
+            //
+            // **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been
+            // reviewed by anyone who actually speaks Uzbek, its own Wiktionary source is the thinnest of any
+            // pack this project has built, and its own `diacritics.tsv` gap (a real architectural limitation,
+            // not an oversight) means typed-without-diacritic "oʻ"/"gʻ" recovery does not work the way it
+            // does for German's ä/ö/ü - expect this pack to need the most follow-up curation of the whole
+            // D-450-followup round. Not device-confirmed either. **This closes the four-language
+            // Russian/Ukrainian/Azerbaijani/Uzbek D-450-followup round.**
+            version = 1
         )
     )
 }

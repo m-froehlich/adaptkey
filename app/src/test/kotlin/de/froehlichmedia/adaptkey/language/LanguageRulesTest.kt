@@ -1004,4 +1004,34 @@ class LanguageRulesTest {
         assertFalse(AzerbaijaniRules.isPlausibleAdjectiveComparative("daha yaxşı") { true })
         assertNull(AzerbaijaniRules.splitCompound("açar_söz", { true }) { it })
     }
+    
+    @Test
+    fun `Uzbek resolves to UzbekRules`() {
+        assertSame(UzbekRules, LanguageRulesRegistry.rulesFor(Language.UZBEK))
+    }
+    
+    @Test
+    fun `Uzbek glues a decimal comma`() {
+        assertTrue(UzbekRules.decimalCommaGluesDigits())
+    }
+    
+    @Test
+    fun `Uzbek has no time-suggestion word`() {
+        assertNull(UzbekRules.timeSuggestionWord())
+    }
+    
+    @Test
+    fun `Uzbek curates no bundled blacklist yet`() {
+        assertTrue(UzbekRules.bundledConfusablesBlacklist().isEmpty())
+    }
+    
+    @Test
+    fun `Uzbek leaves every German-specific compounding-grammar hook a no-op`() {
+        assertFalse(UzbekRules.blocksAsSplitPrefix("bir", 0L))
+        assertFalse(UzbekRules.blocksAsFeminineAgentException("chi", "oʻqituvchi", true))
+        assertFalse(UzbekRules.blocksAsCompoundPrefix("yaxshi", true))
+        assertFalse(UzbekRules.isPlausibleVerbInflection("oʻqiymiz") { true })
+        assertFalse(UzbekRules.isPlausibleAdjectiveComparative("yaxshiroq") { true })
+        assertNull(UzbekRules.splitCompound("kalit_soʻz", { true }) { it })
+    }
 }

@@ -151,7 +151,8 @@ object LanguageRulesRegistry {
         Language.TAGALOG to TagalogRules,
         Language.RUSSIAN to RussianRules,
         Language.UKRAINIAN to UkrainianRules,
-        Language.AZERBAIJANI to AzerbaijaniRules
+        Language.AZERBAIJANI to AzerbaijaniRules,
+        Language.UZBEK to UzbekRules
     )
     
     /**

@@ -1003,6 +1003,49 @@ non-trivial changes).
 
 ## Current State
 
+- **§445 (v1.2.5): D-450-followup - first Uzbek language pack, last of the four §441 keyboard-layout-only**
+  **languages, closing the round.** No new keyboard code needed - Uzbek is Latin-QWERTY-compatible.
+  `uzwiki-latest-pages-articles.xml.bz2` (309,775,381 bytes, live-verified) -> 359,331 pages (matching
+  `uz.wikipedia.org`'s own live `siteinfo` count, 359,635), 49,202,207 tokens, 1,555,474 distinct words.
+
+  **Real structural finding, checked directly before writing the extractor**: Uzbek's "oʻ"/"gʻ" modifier-
+  letter apostrophe is FIVE different Unicode characters in practice (U+02BB 231,133 occurrences, plain
+  ASCII U+0027 211,260, U+02BC 30,841, curly quotes 5,653/3,199 - counted in a 50MB dump sample), tangling
+  together two genuinely different orthographic phenomena: U+02BB marks "oʻ"/"gʻ" itself, U+02BC marks an
+  unrelated loanword glottal stop (sanʼat/"art"). `normalize_apostrophes()` (shared between both extraction
+  scripts) resolves every variant contextually - after o/g becomes U+02BB, elsewhere becomes U+02BC -
+  without this, the same word would fragment across up to five spellings.
+
+  **No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback (1,860,421 bytes),
+  the **thinnest Wiktionary source of any pack this project has built** (4,465 total entries). One positive
+  finding unlike Turkish/Azerbaijani: a clean `postp` tag (16 words, no ambiguity) mapped straight to
+  `PREPOSITION`. `EXCLUDE_FORM_TAGS` deliberately omits `"error-unrecognized-form"` here (confirmed marking
+  genuine words like "uydek"/"like a house", not noise - same finding sh's own script already documents).
+
+  **Calibration check confirmed a genuine, surprising linguistic fact rather than a bug**: verb ratio 26.0x
+  (n=1,101, a real sample) - Uzbek's own "-moq" infinitive citation form is rarely used in real prose
+  compared to conjugated/converb forms ("boʻlmoq"/46 vastly outranked by "boʻlgan"/168,686), the same shape
+  this project's own Greek pack already documents for its own citation convention. Confirmed via direct
+  pair inspection across dozens of verbs, not assumed.
+
+  **Net result**: `dict.tsv` 102,548 -> 215,306 rows (+112,758). Bare-noun safety check: 0. `bigram.tsv`:
+  410,666 rows (>=10 cutoff) from 1,648,280 raw. Quality gate PASS.
+
+  **Real architectural finding**: no `diacritics.tsv` shipped - `DiacriticTable.parse()` requires single-
+  character variants, and "oʻ"/"gʻ" is a two-character digraph, so such an entry would silently become a
+  non-functional empty mapping. `hints.tsv` DOES work correctly for the long-press typing side (verified
+  against `AlternativeScript.extendsWord()` directly - both characters count as letters, so `o=oʻ`/`g=gʻ`
+  correctly append the full sequence) plus the 10 language-neutral assignments every Latin-script pack
+  shares. `abbreviations.tsv`: 11 hand-drafted entries. `UzbekRules`: `decimalCommaGluesDigits`=true,
+  `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py`'s plain `"qwerty"`
+  layout found 1,693 candidates, left uncurated. `language_profiles.tsv` gained a real 200-ngram profile.
+  Capitalisation: does not capitalise common nouns.
+  **Honesty gate (step 11) NOT satisfied**: not reviewed by an Uzbek speaker, thinnest Wiktionary source of
+  any pack built so far, and the `diacritics.tsv` gap is a real, documented limitation - expect this pack to
+  need the most follow-up curation of the whole round. Not device-confirmed.
+  `versionCode` 500 -> 501, `versionName` "1.2.4" -> "1.2.5". **This closes the four-language Russian/
+  Ukrainian/Azerbaijani/Uzbek D-450-followup round** (§442-§445).
+
 - **§444 (v1.2.4): D-450-followup - first Azerbaijani language pack, third of the four §441 keyboard-layout-**
   **only languages to get a real dictionary.** Full Guide §8 pipeline. `azwiki-latest-pages-articles.xml.bz2`
   (323,312,325 bytes, live-verified, a small dump) -> 216,948 pages (matching `az.wikipedia.org`'s own live
