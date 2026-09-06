@@ -1734,10 +1734,8 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun scheduleReclaimAndChipRefresh() {
         if (SystemClock.uptimeMillis() < reclaimChipRefreshSuppressedUntil) {
-            diag("AdaptKeySuggest", "scheduleReclaimAndChipRefresh: suppressed by reclaimChipRefreshSuppressedUntil")
             return
         }
-        diag("AdaptKeySuggest", "scheduleReclaimAndChipRefresh: reclaimOnCaretMoveSuppressed=$reclaimOnCaretMoveSuppressed composing=\"$composing\"")
         if (!reclaimOnCaretMoveSuppressed) {
             reclaimPending = true
             handler.removeCallbacks(reclaimWordAtCaretRunnable)
@@ -1825,7 +1823,6 @@ class AdaptKeyService : InputMethodService() {
         // fires, a keystroke may already have started a real composing token in the meantime, which this
         // function must not append reclaimed text onto.
         if (composing.isNotEmpty()) {
-            diag("AdaptKeySuggest", "reclaimWordAtCaret: aborted - composing already non-empty (\"$composing\")")
             return
         }
         ic.beginBatchEdit()
@@ -1843,14 +1840,12 @@ class AdaptKeyService : InputMethodService() {
             }
             reclaimSurroundingWord(ic, tap = null)
             if (composing.isEmpty()) {
-                diag("AdaptKeySuggest", "reclaimWordAtCaret: nothing reclaimed at this position")
                 return
             }
             updateComposing(ic)
         } finally {
             ic.endBatchEdit()
         }
-        diag("AdaptKeySuggest", "reclaimWordAtCaret: reclaimed \"$composing\" - calling refreshSuggestions()")
         refreshSuggestions()
     }
     
@@ -5193,12 +5188,7 @@ class AdaptKeyService : InputMethodService() {
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
         // useful while entering one, so the bar simply stays empty. D-293: a field explicitly opted out of
         // suggestions (TYPE_TEXT_FLAG_NO_SUGGESTIONS) gets the identical bare-bar treatment.
-        // D-457 (temporary diagnostic): tracing a real report that suggestion chips stop appearing at all
-        // from the second word onward - logs every early-return branch below plus the final candidate
-        // count, so a captured device log shows exactly which gate is firing. Remove once found and fixed.
-        diag("AdaptKeySuggest", "refreshSuggestions: composing=\"$composing\" urlMode=$urlMode noSuggestionsField=$noSuggestionsField loginFieldKind=$loginFieldKind previousWord=$previousWord tokenContextBefore=\"$tokenContextBefore\"")
         if (urlMode || noSuggestionsField) {
-            diag("AdaptKeySuggest", "refreshSuggestions: cleared - urlMode/noSuggestionsField")
             clearSuggestions()
             return
         }
@@ -5206,13 +5196,11 @@ class AdaptKeyService : InputMethodService() {
         // dictionary word while entering a username/email is never useful, and a password field shows no
         // suggestions at all (see showCredentialSuggestions).
         if (loginFieldKind != LoginFieldKind.NONE) {
-            diag("AdaptKeySuggest", "refreshSuggestions: routed to credential suggestions - loginFieldKind=$loginFieldKind")
             showCredentialSuggestions()
             return
         }
         val input = composing.toString()
         if (input.isEmpty()) {
-            diag("AdaptKeySuggest", "refreshSuggestions: cleared - composing is empty")
             clearSuggestions()
             return
         }
@@ -5220,22 +5208,15 @@ class AdaptKeyService : InputMethodService() {
         // suggestion and no pending-correction chip is ever useful for it, mirroring urlMode's own bypass
         // above. Checked before the A-03 dictionary lookup so no store query runs for it at all.
         if ('_' in input) {
-            diag("AdaptKeySuggest", "refreshSuggestions: cleared - underscore in input")
             clearSuggestions()
             return
         }
         // A-03: pick the dictionary for the recent context; an unsupported foreign context shows nothing.
-        // D-458: real root cause, confirmed from a real device log - tokenContextBefore is real document
-        // text, already ending in whatever real whitespace precedes the caret (e.g. "Test " right after a
-        // committed word), so concatenating a further literal space here produced a spurious double space
-        // ("Test  " + input) from the second word onward - `selectActiveDictionary("Test  l")` in the
-        // captured log - confusing the A-03 language classifier into wrongly reading the context as foreign
-        // and suppressing every suggestion from then on. Never on a field's first word (tokenContextBefore
-        // == "" there), exactly why this silently escaped notice until now. finalizeAndCommit() had the
-        // identical bug at its own call site - see that fix's own KDoc.
+        // D-458: tokenContextBefore is real document text, already ending in whatever real whitespace
+        // precedes the caret - concatenated with no separator of its own added (see finalizeAndCommit()'s
+        // own identical call site for the full history of why an extra space here was a real, confirmed bug).
         val activeDict = selectActiveDictionary("$tokenContextBefore$input")
         if (activeDict.suppressAutocorrect) {
-            diag("AdaptKeySuggest", "refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary(\"$tokenContextBefore$input\")")
             clearSuggestions()
             return
         }
@@ -5248,10 +5229,11 @@ class AdaptKeyService : InputMethodService() {
         // exactly the same reasoning already applied to every other addition below.
         // D-211: precomputedExpensiveCandidates, when given, is the background search's own already-final
         // result (see the dispatch below) - used as-is instead of calling suggestionsFor() a second time.
-        // D-452/D-458 (temporary diagnostic): timed the same way D-217/D-220 already time handleKey()/
+        // D-452 (temporary diagnostic): timed the same way D-217/D-220 already time handleKey()/
         // finalizeAndCommit() - this is the single call D-153/D-207/D-211's own comments above already
         // name as the per-keystroke cost driver, so measuring it directly (not guessing from candidate
-        // count alone) is the fastest way to confirm or rule it out against a real reported stall.
+        // count alone) is the fastest way to confirm or rule it out against a real reported stall. Remove
+        // once D-452 is closed.
         val candidatesStartedAt = SystemClock.uptimeMillis()
         val candidates = when {
             duringRepeat -> emptyList()
@@ -5579,8 +5561,8 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun showSuggestions() {
-        // D-452/D-458 (temporary diagnostic): total wall time for this function - see refreshSuggestions()'s
-        // own timing note right above it.
+        // D-452 (temporary diagnostic): total wall time for this function - see refreshSuggestions()'s own
+        // timing note right above it. Remove once D-452 is closed.
         val showSuggestionsStartedAt = SystemClock.uptimeMillis()
         // D-196: SuggestionController itself stays free of any capitalisation/Android dependency (its own
         // S-02/S-03 identity and dedup logic already relies on comparing raw canonical dictionary words, not

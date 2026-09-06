@@ -864,6 +864,15 @@ nonsensical hybrid this way (`"LLM"` -> `"lLM"`) rather than left alone - confir
 this is where the defect actually lived, not the dictionary lookup or the suggestion-bar pipeline, both of
 which already handled the differently-cased candidate correctly on their own.
 
+D-457-followup: the fix above only helps once `word` already carries the acronym's own spelling - typing the
+*entire* word in lower case (e.g. `"llm"` for a learned `"LLM"`) still reached the ordinary per-first-
+character hierarchy, which can only ever adjust `word[0]` and so could never reconstruct a multi-capital
+canonical form from a fully lower-case string, tagged as a noun or not. `capitalise()` now checks
+`store.entryOf(word)` first (case-insensitive lookup, resolves to the entry's own real casing regardless of
+the query's casing) - if that canonical form is itself an acronym, it is returned directly, bypassing the
+whole hierarchy for it. Skipped whenever the caller's own first character was an explicit, deliberate choice
+(`context.explicitFirstUpper`) - rule 1 keeps its existing absolute priority.
+
 D-449-followup: the single-character mapping every rule above ultimately applies (upper-casing/lower-casing a
 word's first character, or the whole word under C-04's `CHARACTERS` mode) is itself a per-language convention,
 not a universal constant - Turkish (and the closely related Azerbaijani, should it ever be built) distinguish

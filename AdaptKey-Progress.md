@@ -988,12 +988,16 @@ non-trivial changes).
   it. Needs an actual device repro (or a targeted unit test walking both scenarios against the real
   `AdaptKeyService`/`SqliteDictionaryStore` pair) before deciding whether anything needs to change at all.
 
-- **D-457 - RESOLVED (§450, v1.2.10).** A learned all-caps acronym (`"LLM"`) with no noun/proper-noun tag of
-  its own used to come back a mangled `"lLM"` - not literally "no chip", but close enough to read as one - see
-  §450 in Current State for the real root cause (traced through three separate layers, not guessed) and the
-  fix.
+- **D-457 - RESOLVED, device-confirmed (§450 + §452 followup, v1.2.10/v1.2.12).** A learned all-caps acronym
+  (`"LLM"`) with no noun/proper-noun tag of its own used to come back a mangled `"lLM"` - not literally "no
+  chip", but close enough to read as one (§450). §450's own fix only covered *`word` already spelled as the
+  acronym itself* (e.g. the ordinary suggestion-list candidate, already correctly cased by
+  `unigramsByPrefix()`) - a real device log then showed the *full lowercase spelling* case (typing the whole
+  word `"llm"`, not just its prefix) still came back `"Llm"`, since every branch of the hierarchy can only
+  ever touch a word's own first character, never reconstruct a multi-capital canonical form from scratch. See
+  §452 in Current State for that follow-up fix (`store.entryOf()`'s own case-insensitive canonical lookup).
 
-- **D-458 - RESOLVED (§451, v1.2.11).** "Ab dem zweiten Wort" no suggestion chips appeared at all any more -
+- **D-458 - RESOLVED, device-confirmed (§451, v1.2.11).** "Ab dem zweiten Wort" no suggestion chips appeared at all any more -
   root-caused directly from a real device log the user captured (typing "Test llm"), not guessed: a spurious
   double space in the A-03 language-classification context string (`selectActiveDictionary("Test  l")`,
   visible verbatim in the log) confused the classifier into reading the context as foreign, suppressing every
@@ -1001,6 +1005,41 @@ non-trivial changes).
   out unrelated to D-455/D-357 - both real suspects given the timing, neither actually involved.
 
 ## Current State
+
+- **§452 (v1.2.12): D-457-followup - the full lowercase spelling of a learned acronym (typing the whole word,**
+  **not just its prefix) still resolved to a mangled casing; plus D-455/D-457/D-458's own temporary**
+  **diagnostic logging removed now that all three are device-confirmed fixed.**
+
+  **The deeper D-457 gap**: §450's own fix only covered `capitalise()` being called with `word` already
+  spelled as the acronym itself (e.g. the ordinary ranked suggestion, already correctly cased by
+  `unigramsByPrefix()`'s own casing-merge). A real device log then showed typing the *entire* word `"llm"`
+  lower-case (not just "ll") still produced `"Llm"`: `isPureNoun` correctly decided "uppercase" (the learned
+  entry carries a `NOUN` tag), but every branch of the hierarchy can only ever touch `word`'s own first
+  character (`uppercaseFirst`/`lowercaseFirst`) - none of them could ever reconstruct the real multi-capital
+  `"LLM"` from a fully lower-case `"llm"`, tagged or not. Root cause is structurally different from §450's -
+  not a missing veto, but `capitalise()` never having a way to learn the *real* canonical spelling of the
+  word it was asked to case in the first place.
+
+  **Fix**: a new check right after the `CapsMode.CHARACTERS` special case - `store.entryOf(word)` resolves
+  case-insensitively and returns the entry's own real casing regardless of the query's own case, so if `word`
+  is not already acronym-shaped but its canonical dictionary/learned entry *is* (`Acronym.isAcronym`), that
+  canonical form is returned directly, skipping the whole per-first-character hierarchy for it entirely.
+  Deliberately narrow: skipped whenever `context.explicitFirstUpper` is true, so rule 1 (explicit user input
+  always wins) keeps its existing absolute priority unchanged - this is a later-priority fallback for the
+  reported all-lowercase-typing case specifically, not a new standing exception to rule 1. Three new
+  `CapitalisationEngineTest` cases: the confirmed-broken full-lowercase-typing case, explicit input still
+  winning over it, and an ordinary lowercase word with no acronym-shaped entry staying unaffected (regression
+  safety). Device-confirmed by the user ("Ja, ich bestätige, dass 'LLM' jetzt als Chip kommt").
+
+  **Diagnostic cleanup**: D-455/D-457/D-458 are now all device-confirmed fixed, so their own temporary
+  `"AdaptKeySuggest"` logging (`scheduleReclaimAndChipRefresh`'s suppression-state line,
+  `reclaimWordAtCaret`'s three early-return/success lines, and every early-return branch inside
+  `refreshSuggestions()`) is removed - only D-452's own two `tookMs=` timing lines (`refreshSuggestions`'s
+  `provider.suggestionsFor()` call and `showSuggestions`'s total duration) remain, since that item is still
+  open and still needs them for its next capture.
+
+  1560 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  507 -> 508, `versionName` `"1.2.11"` -> `"1.2.12"`.
 
 - **§451 (v1.2.11): D-458 root-caused and fixed - a spurious double space in the A-03 context string**
   **wrongly suppressed every suggestion from the second word onward - plus D-452's own timing diagnostics.**

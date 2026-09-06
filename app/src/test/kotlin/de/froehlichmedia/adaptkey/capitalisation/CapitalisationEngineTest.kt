@@ -187,4 +187,34 @@ class CapitalisationEngineTest {
         val taggedEngine = CapitalisationEngine(taggedStore)
         assertEquals("LLM", taggedEngine.capitalise("LLM", ctx(explicit = false)))
     }
+    
+    @Test
+    fun `D-457-followup the full lowercase spelling of a learned acronym resolves to its real casing`() {
+        // Confirmed real bug from a device log: typing the whole word "llm" lower-case (not just its
+        // prefix) for a learned "LLM" (tagged NOUN) came back "Llm" - isPureNoun correctly decided
+        // "uppercase", but uppercaseFirst("llm") can only ever touch the first character, never
+        // reconstruct the real multi-capital spelling. store.entryOf() resolves case-insensitively to the
+        // real casing, so this is checked directly rather than re-deriving it from the hierarchy at all.
+        val store = InMemoryDictionaryStore().apply {
+            learn("LLM", null, null, categoryHint = PartOfSpeech.NOUN)
+        }
+        val engine = CapitalisationEngine(store)
+        assertEquals("LLM", engine.capitalise("llm", ctx(explicit = false)))
+    }
+    
+    @Test
+    fun `D-457-followup explicit user input still wins over the acronym's own canonical casing`() {
+        // Rule 1 (explicit user input) must stay absolute - a deliberately typed capital first letter is
+        // never overridden by the canonical-acronym lookup, even if it case-insensitively matches one.
+        val store = InMemoryDictionaryStore().apply {
+            learn("LLM", null, null, categoryHint = PartOfSpeech.NOUN)
+        }
+        val engine = CapitalisationEngine(store)
+        assertEquals("Llm", engine.capitalise("Llm", ctx(explicit = true)))
+    }
+    
+    @Test
+    fun `D-457-followup an ordinary lowercase word with no acronym-shaped entry is unaffected`() {
+        assertEquals("Haus", engine.capitalise("haus", ctx(explicit = false)))
+    }
 }

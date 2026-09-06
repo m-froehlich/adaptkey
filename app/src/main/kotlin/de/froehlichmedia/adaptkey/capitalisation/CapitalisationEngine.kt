@@ -57,6 +57,24 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
         if (context.capsMode == CapsMode.CHARACTERS) {
             return casing.uppercaseAll(word)
         }
+        // D-457-followup: [word] may be a differently-cased spelling of an already-known acronym (e.g. the
+        // literal typed "llm" for a learned "LLM") rather than the acronym's own canonical spelling itself -
+        // confirmed from a real device log that this genuinely happens (typing the full word "llm" lower-
+        // case, not just its prefix). Every branch below can only ever adjust word's own first character
+        // (uppercaseFirst/lowercaseFirst), so none of them could ever reconstruct "LLM" from "llm" even once
+        // correctly deciding "uppercase" for it (isPureNoun was already true here - the result was still
+        // only "Llm"). [store.entryOf] resolves case-insensitively and returns the entry's own real casing,
+        // so this is checked directly rather than guessed at. Skipped when [word] already carries the
+        // acronym's own shape (the two branches inside the `when` below already handle that exactly) and
+        // when the caller's own first character was an explicit, deliberate choice (rule 1 - context.
+        // explicitFirstUpper - still wins outright, unchanged; this is a narrower, later-priority fallback
+        // for the reported all-lowercase-typing case specifically, not a new standing exception to rule 1).
+        if (!context.explicitFirstUpper && !Acronym.isAcronym(word)) {
+            val canonical = store.entryOf(word)?.word
+            if (canonical != null && Acronym.isAcronym(canonical)) {
+                return canonical
+            }
+        }
         
         val pos = store.partsOfSpeech(word)
         val isProper = pos.contains(PartOfSpeech.PROPER_NOUN)
