@@ -269,22 +269,23 @@ non-trivial changes).
      `KBDYCC` standard, plus the first real Serbian language pack. See §440 (v1.2.0).
 
 - **Cyrillic-vs-Cyrillic auto-detection not implemented - a real, deliberate, NOT YET ACTIONED gap (added**
-  **§441, v1.2.1).** Serbian, Russian, and Ukrainian all share `Script.CYRILLIC` (`LayoutRegistry.scriptFor`)
-  but each has its own distinct `LayoutKind`/real physical layout. `AdaptKeyService.resolveDict()` trusts
-  whichever one is active unconditionally when it is the active language - correct today, but only because
-  there is genuinely nothing to distinguish them *with*: no per-language Cyrillic `language_profiles.tsv`
-  trigram data exists for any of the three yet. Concretely missing: if a user has Russian active and starts
-  typing Ukrainian (or Serbian) text without an explicit G-01 switch, nothing detects that - the German-
-  centric Latin `LanguageClassifier.isForeign()` mechanism is deliberately never consulted for a non-Latin
-  active language (see that function's own D-450-followup KDoc), and no same-script alternative exists yet.
+  **§441, v1.2.1; prerequisite (1) below UPDATED §442-§445, v1.2.2-v1.2.5 - still not started).** Serbian,
+  Russian, and Ukrainian all share `Script.CYRILLIC` (`LayoutRegistry.scriptFor`) but each has its own
+  distinct `LayoutKind`/real physical layout. `AdaptKeyService.resolveDict()` trusts whichever one is active
+  unconditionally when it is the active language - correct today, but only because there is genuinely
+  nothing to distinguish them *with*. Concretely missing: if a user has Russian active and starts typing
+  Ukrainian (or Serbian) text without an explicit G-01 switch, nothing detects that - the German-centric
+  Latin `LanguageClassifier.isForeign()` mechanism is deliberately never consulted for a non-Latin active
+  language (see that function's own D-450-followup KDoc), and no same-script alternative exists yet.
   `LayoutRegistryTest`'s own canary test (`D-450-followup real, deliberate gap - Cyrillic siblings share a
-  script...`) documents the exact invariant this rests on and will need revisiting once real trigram data
-  exists for at least two of the three. Fixing this needs: (1) real Cyrillic dictionaries built first (none
-  of Serbian/Russian/Ukrainian's own `language_profiles.tsv` entries exist - Serbian's own pack deliberately
-  skipped this per its own §440 entry, and Russian/Ukrainian have no dictionary at all yet, only layouts), (2)
-  a script-aware generalisation of `ScriptDetector`'s existing Greek-fraction-style fast path or an
-  equivalent per-script classifier. Not started - do not build without the user's own go-ahead, and only
-  once real Cyrillic corpora exist to build and verify it against.
+  script...`) documents the exact invariant this rests on. Fixing this needs: (1) real Cyrillic dictionaries
+  AND their own `language_profiles.tsv` trigram data - **as of §442/§443 (v1.2.2/v1.2.3), Russian and
+  Ukrainian now have BOTH** (real `dict.tsv` corpora and real 200-ngram profiles); only Serbian's own
+  profile is still missing (deliberately skipped per its own §440 entry - Serbian's pack shipped without
+  one). So two of the three prerequisite corpora now genuinely exist - only Serbian's own profile and (2) a
+  script-aware generalisation of `ScriptDetector`'s existing Greek-fraction-style fast path (or an
+  equivalent per-script classifier) remain. Still not started - do not build without the user's own
+  go-ahead; worth raising with them now that most of the data prerequisite is actually satisfied.
 
 - **`seedBundledBlacklist`'s cross-language-confusables set (A-04, `due`/`sue`/`ddr`/`aks`) - CLOSED BY**
   **DESIGN (2026-09-04, no code change - user's own explicit call).** Found while auditing every place that
